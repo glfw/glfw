@@ -1,6 +1,6 @@
 /************************************************************************
  * GLFW - An OpenGL framework
- * API version: 2.7
+ * API version: 3.0
  * WWW:         http://www.glfw.org/
  *------------------------------------------------------------------------
  * Copyright (c) 2002-2006 Marcus Geelnard
@@ -170,8 +170,8 @@ extern "C" {
  * GLFW version
  *************************************************************************/
 
-#define GLFW_VERSION_MAJOR    2
-#define GLFW_VERSION_MINOR    7
+#define GLFW_VERSION_MAJOR    3
+#define GLFW_VERSION_MINOR    0
 #define GLFW_VERSION_REVISION 0
 
 

@@ -1,7 +1,7 @@
 //========================================================================
 // GLFW - An OpenGL framework
 // Platform:    Cocoa/NSOpenGL
-// API Version: 2.7
+// API Version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>

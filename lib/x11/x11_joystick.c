@@ -1,7 +1,7 @@
 //========================================================================
 // GLFW - An OpenGL framework
 // Platform:    X11/GLX
-// API version: 2.7
+// API version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard

@@ -1,0 +1,46 @@
+LIBRARY GLFW.DLL
+
+EXPORTS
+glfwCloseWindow = glfwCloseWindow@0
+glfwDisable = glfwDisable@4
+glfwEnable = glfwEnable@4
+glfwExtensionSupported = glfwExtensionSupported@4
+glfwGetDesktopMode = glfwGetDesktopMode@4
+glfwGetGLVersion = glfwGetGLVersion@12
+glfwGetJoystickButtons = glfwGetJoystickButtons@12
+glfwGetJoystickParam = glfwGetJoystickParam@8
+glfwGetJoystickPos = glfwGetJoystickPos@12
+glfwGetKey = glfwGetKey@4
+glfwGetMouseButton = glfwGetMouseButton@4
+glfwGetMousePos = glfwGetMousePos@8
+glfwGetMouseWheel = glfwGetMouseWheel@0
+glfwGetProcAddress = glfwGetProcAddress@4
+glfwGetTime = glfwGetTime@0
+glfwGetVersion = glfwGetVersion@12
+glfwGetVideoModes = glfwGetVideoModes@8
+glfwGetWindowParam = glfwGetWindowParam@4
+glfwGetWindowSize = glfwGetWindowSize@8
+glfwIconifyWindow = glfwIconifyWindow@0
+glfwInit = glfwInit@0
+glfwOpenWindow = glfwOpenWindow@36
+glfwOpenWindowHint = glfwOpenWindowHint@8
+glfwPollEvents = glfwPollEvents@0
+glfwRestoreWindow = glfwRestoreWindow@0
+glfwSetCharCallback = glfwSetCharCallback@4
+glfwSetKeyCallback = glfwSetKeyCallback@4
+glfwSetMouseButtonCallback = glfwSetMouseButtonCallback@4
+glfwSetMousePos = glfwSetMousePos@8
+glfwSetMousePosCallback = glfwSetMousePosCallback@4
+glfwSetMouseWheel = glfwSetMouseWheel@4
+glfwSetMouseWheelCallback = glfwSetMouseWheelCallback@4
+glfwSetTime = glfwSetTime@8
+glfwSetWindowCloseCallback = glfwSetWindowCloseCallback@4
+glfwSetWindowRefreshCallback = glfwSetWindowRefreshCallback@4
+glfwSetWindowPos = glfwSetWindowPos@8
+glfwSetWindowSize = glfwSetWindowSize@8
+glfwSetWindowSizeCallback = glfwSetWindowSizeCallback@4
+glfwSetWindowTitle = glfwSetWindowTitle@4
+glfwSwapBuffers = glfwSwapBuffers@0
+glfwSwapInterval = glfwSwapInterval@4
+glfwTerminate = glfwTerminate@0
+glfwWaitEvents = glfwWaitEvents@0

@@ -37,16 +37,13 @@
 //************************************************************************
 
 //========================================================================
-// glfwInit() - Initialize various GLFW state
+// Initialize various GLFW state
 //========================================================================
 
 GLFWAPI int glfwInit( void )
 {
-    // Is GLFW already initialized?
     if( _glfwInitialized )
-    {
         return GL_TRUE;
-    }
 
     memset( &_glfwLibrary, 0, sizeof( _glfwLibrary ) );
     memset( &_glfwWin, 0, sizeof( _glfwWin ) );
@@ -62,9 +59,7 @@ GLFWAPI int glfwInit( void )
 
     // Platform specific initialization
     if( !_glfwPlatformInit() )
-    {
         return GL_FALSE;
-    }
 
     // Form now on, GLFW state is valid
     _glfwInitialized = GL_TRUE;
@@ -73,24 +68,18 @@ GLFWAPI int glfwInit( void )
 }
 
 
-
 //========================================================================
 // Close window and shut down library
 //========================================================================
 
 GLFWAPI void glfwTerminate( void )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized )
-    {
         return;
-    }
 
     // Platform specific termination
     if( !_glfwPlatformTerminate() )
-    {
         return;
-    }
 
     // GLFW is no longer initialized
     _glfwInitialized = GL_FALSE;
@@ -98,13 +87,18 @@ GLFWAPI void glfwTerminate( void )
 
 
 //========================================================================
-// glfwGetVersion() - Get GLFW version
+// Get GLFW version
 //========================================================================
 
 GLFWAPI void glfwGetVersion( int *major, int *minor, int *rev )
 {
-    if( major != NULL ) *major = GLFW_VERSION_MAJOR;
-    if( minor != NULL ) *minor = GLFW_VERSION_MINOR;
-    if( rev   != NULL ) *rev   = GLFW_VERSION_REVISION;
+    if( major != NULL )
+        *major = GLFW_VERSION_MAJOR;
+
+    if( minor != NULL )
+        *minor = GLFW_VERSION_MINOR;
+
+    if( rev != NULL )
+        *rev = GLFW_VERSION_REVISION;
 }
 

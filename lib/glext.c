@@ -52,30 +52,24 @@ void _glfwParseGLVersion( int *major, int *minor, int *rev )
     // Get OpenGL version string
     version = glGetString( GL_VERSION );
     if( !version )
-    {
         return;
-    }
 
     // Parse string
     ptr = version;
     for( _major = 0; *ptr >= '0' && *ptr <= '9'; ptr ++ )
-    {
         _major = 10*_major + (*ptr - '0');
-    }
+
     if( *ptr == '.' )
     {
         ptr ++;
         for( _minor = 0; *ptr >= '0' && *ptr <= '9'; ptr ++ )
-        {
             _minor = 10*_minor + (*ptr - '0');
-        }
+
         if( *ptr == '.' )
         {
             ptr ++;
             for( _rev = 0; *ptr >= '0' && *ptr <= '9'; ptr ++ )
-            {
                 _rev = 10*_rev + (*ptr - '0');
-            }
         }
     }
 
@@ -103,17 +97,15 @@ int _glfwStringInExtensionString( const char *string,
     {
         where = (GLubyte *) strstr( (const char *) start, string );
         if( !where )
-        {
             return GL_FALSE;
-        }
+
         terminator = where + strlen( string );
         if( where == start || *(where - 1) == ' ' )
         {
             if( *terminator == ' ' || *terminator == '\0' )
-            {
                 break;
-            }
         }
+
         start = terminator;
     }
 
@@ -137,18 +129,13 @@ GLFWAPI int glfwExtensionSupported( const char *extension )
     GLint count;
     int i;
 
-    // Is GLFW initialized?
     if( !_glfwInitialized || !_glfwWin.opened )
-    {
         return GL_FALSE;
-    }
 
     // Extension names should not have spaces
     where = (GLubyte *) strchr( extension, ' ' );
     if( where || *extension == '\0' )
-    {
         return GL_FALSE;
-    }
 
     if( _glfwWin.glMajor < 3 )
     {
@@ -158,9 +145,7 @@ GLFWAPI int glfwExtensionSupported( const char *extension )
         if( extensions != NULL )
         {
             if( _glfwStringInExtensionString( extension, extensions ) )
-            {
                 return GL_TRUE;
-            }
         }
     }
     else
@@ -181,9 +166,7 @@ GLFWAPI int glfwExtensionSupported( const char *extension )
 
     // Additional platform specific extension checking (e.g. WGL)
     if( _glfwPlatformExtensionSupported( extension ) )
-    {
         return GL_TRUE;
-    }
 
     return GL_FALSE;
 }
@@ -196,11 +179,8 @@ GLFWAPI int glfwExtensionSupported( const char *extension )
 
 GLFWAPI void * glfwGetProcAddress( const char *procname )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized || !_glfwWin.opened )
-    {
         return NULL;
-    }
 
     return _glfwPlatformGetProcAddress( procname );
 }
@@ -212,23 +192,16 @@ GLFWAPI void * glfwGetProcAddress( const char *procname )
 
 GLFWAPI void glfwGetGLVersion( int *major, int *minor, int *rev )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized || !_glfwWin.opened )
-    {
         return;
-    }
 
     if( major != NULL )
-    {
         *major = _glfwWin.glMajor;
-    }
+
     if( minor != NULL )
-    {
         *minor = _glfwWin.glMinor;
-    }
+
     if( rev != NULL )
-    {
         *rev = _glfwWin.glRevision;
-    }
 }
 

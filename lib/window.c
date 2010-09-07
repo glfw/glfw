@@ -33,7 +33,6 @@
 #include <limits.h>
 
 
-
 //************************************************************************
 //****                  GLFW internal functions                       ****
 //************************************************************************
@@ -66,18 +65,14 @@ void _glfwInputDeactivation( void )
     for( i = 0; i <= GLFW_KEY_LAST; i ++ )
     {
         if( _glfwInput.Key[ i ] == GLFW_PRESS )
-        {
             _glfwInputKey( i, GLFW_RELEASE );
-        }
     }
 
     // Release all mouse buttons
     for( i = 0; i <= GLFW_MOUSE_BUTTON_LAST; i ++ )
     {
         if( _glfwInput.MouseButton[ i ] == GLFW_PRESS )
-        {
             _glfwInputMouseClick( i, GLFW_RELEASE );
-        }
     }
 }
 
@@ -92,18 +87,14 @@ void _glfwClearInput( void )
 
     // Release all keyboard keys
     for( i = 0; i <= GLFW_KEY_LAST; i ++ )
-    {
         _glfwInput.Key[ i ] = GLFW_RELEASE;
-    }
 
     // Clear last character
     _glfwInput.LastChar = 0;
 
     // Release all mouse buttons
     for( i = 0; i <= GLFW_MOUSE_BUTTON_LAST; i ++ )
-    {
         _glfwInput.MouseButton[ i ] = GLFW_RELEASE;
-    }
 
     // Set mouse position to (0,0)
     _glfwInput.MousePosX = 0;
@@ -130,21 +121,15 @@ void _glfwInputKey( int key, int action )
     int keyrepeat = 0;
 
     if( key < 0 || key > GLFW_KEY_LAST )
-    {
         return;
-    }
 
     // Are we trying to release an already released key?
     if( action == GLFW_RELEASE && _glfwInput.Key[ key ] != GLFW_PRESS )
-    {
         return;
-    }
 
     // Register key action
     if( action == GLFW_RELEASE && _glfwInput.StickyKeys )
-    {
         _glfwInput.Key[ key ] = GLFW_STICK;
-    }
     else
     {
         keyrepeat = (_glfwInput.Key[ key ] == GLFW_PRESS) &&
@@ -154,9 +139,7 @@ void _glfwInputKey( int key, int action )
 
     // Call user callback function
     if( _glfwWin.keyCallback && (_glfwInput.KeyRepeat || !keyrepeat) )
-    {
         _glfwWin.keyCallback( key, action );
-    }
 }
 
 
@@ -170,25 +153,17 @@ void _glfwInputChar( int character, int action )
 
     // Valid Unicode (ISO 10646) character?
     if( !( (character >= 32 && character <= 126) || character >= 160 ) )
-    {
         return;
-    }
 
     // Is this a key repeat?
     if( action == GLFW_PRESS && _glfwInput.LastChar == character )
-    {
         keyrepeat = 1;
-    }
 
     // Store this character as last character (or clear it, if released)
     if( action == GLFW_PRESS )
-    {
         _glfwInput.LastChar = character;
-    }
     else
-    {
         _glfwInput.LastChar = 0;
-    }
 
     if( action != GLFW_PRESS )
     {
@@ -209,9 +184,7 @@ void _glfwInputChar( int character, int action )
     }
 
     if( _glfwWin.charCallback && (_glfwInput.KeyRepeat || !keyrepeat) )
-    {
         _glfwWin.charCallback( character, action );
-    }
 }
 
 
@@ -225,19 +198,13 @@ void _glfwInputMouseClick( int button, int action )
     {
         // Register mouse button action
         if( action == GLFW_RELEASE && _glfwInput.StickyMouseButtons )
-        {
             _glfwInput.MouseButton[ button ] = GLFW_STICK;
-        }
         else
-        {
             _glfwInput.MouseButton[ button ] = (char) action;
-        }
 
         // Call user callback function
         if( _glfwWin.mouseButtonCallback )
-        {
             _glfwWin.mouseButtonCallback( button, action );
-        }
     }
 }
 
@@ -282,24 +249,16 @@ const _GLFWfbconfig *_glfwChooseFBConfig( const _GLFWfbconfig *desired,
             missing = 0;
 
             if( desired->alphaBits > 0 && current->alphaBits == 0 )
-            {
                 missing++;
-            }
 
             if( desired->depthBits > 0 && current->depthBits == 0 )
-            {
                 missing++;
-            }
 
             if( desired->stencilBits > 0 && current->stencilBits == 0 )
-            {
                 missing++;
-            }
 
             if( desired->auxBuffers > 0 && current->auxBuffers < desired->auxBuffers )
-            {
                 missing += desired->auxBuffers - current->auxBuffers;
-            }
 
             if( desired->samples > 0 && current->samples == 0 )
             {
@@ -392,9 +351,7 @@ const _GLFWfbconfig *_glfwChooseFBConfig( const _GLFWfbconfig *desired,
         // Figure out if the current one is better than the best one found so far
 
         if( missing < leastMissing )
-        {
             closest = current;
-        }
         else if( missing == leastMissing )
         {
             if( desiresColor )
@@ -442,11 +399,8 @@ GLFWAPI int glfwOpenWindow( int width, int height,
     _GLFWfbconfig fbconfig;
     _GLFWwndconfig wndconfig;
 
-    // Is GLFW initialized?
     if( !_glfwInitialized || _glfwWin.opened )
-    {
         return GL_FALSE;
-    }
 
     // Set up desired framebuffer config
     fbconfig.redBits        = Max( redbits, 0 );
@@ -511,9 +465,7 @@ GLFWAPI int glfwOpenWindow( int width, int height,
 
     // Check input arguments
     if( mode != GLFW_WINDOW && mode != GLFW_FULLSCREEN )
-    {
         return GL_FALSE;
-    }
 
     // Clear GLFW window state
     _glfwWin.active         = GL_TRUE;
@@ -557,9 +509,7 @@ GLFWAPI int glfwOpenWindow( int width, int height,
 
     // Platform specific window opening routine
     if( !_glfwPlatformOpenWindow( width, height, &wndconfig, &fbconfig ) )
-    {
         return GL_FALSE;
-    }
 
     // Flag that window is now opened
     _glfwWin.opened = GL_TRUE;
@@ -601,9 +551,7 @@ GLFWAPI int glfwOpenWindow( int width, int height,
 
     // If full-screen mode was requested, disable mouse cursor
     if( mode == GLFW_FULLSCREEN )
-    {
         glfwDisable( GLFW_MOUSE_CURSOR );
-    }
 
     // Start by clearing the front buffer to black (avoid ugly desktop
     // remains in our OpenGL window)
@@ -622,9 +570,7 @@ GLFWAPI void glfwOpenWindowHint( int target, int hint )
 {
     // Is GLFW initialized?
     if( !_glfwInitialized )
-    {
         return;
-    }
 
     switch( target )
     {
@@ -683,9 +629,7 @@ GLFWAPI void glfwOpenWindowHint( int target, int hint )
 GLFWAPI void glfwCloseWindow( void )
 {
     if( !_glfwInitialized )
-    {
         return;
-    }
 
     // Show mouse pointer again (if hidden)
     glfwEnable( GLFW_MOUSE_CURSOR );
@@ -703,11 +647,8 @@ GLFWAPI void glfwCloseWindow( void )
 
 GLFWAPI void glfwSetWindowTitle( const char *title )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized || !_glfwWin.opened )
-    {
         return;
-    }
 
     // Set window title
     _glfwPlatformSetWindowTitle( title );
@@ -721,13 +662,10 @@ GLFWAPI void glfwSetWindowTitle( const char *title )
 GLFWAPI void glfwGetWindowSize( int *width, int *height )
 {
     if( width != NULL )
-    {
         *width = _glfwWin.width;
-    }
+
     if( height != NULL )
-    {
         *height = _glfwWin.height;
-    }
 }
 
 
@@ -737,17 +675,12 @@ GLFWAPI void glfwGetWindowSize( int *width, int *height )
 
 GLFWAPI void glfwSetWindowSize( int width, int height )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized || !_glfwWin.opened || _glfwWin.iconified )
-    {
         return;
-    }
 
     // Don't do anything if the window size did not change
     if( width == _glfwWin.width && height == _glfwWin.height )
-    {
         return;
-    }
 
     // Change window size
     _glfwPlatformSetWindowSize( width, height );
@@ -764,7 +697,6 @@ GLFWAPI void glfwSetWindowSize( int width, int height )
 
 GLFWAPI void glfwSetWindowPos( int x, int y )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized || !_glfwWin.opened || _glfwWin.fullscreen ||
         _glfwWin.iconified )
     {
@@ -782,11 +714,8 @@ GLFWAPI void glfwSetWindowPos( int x, int y )
 
 GLFWAPI void glfwIconifyWindow( void )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized || !_glfwWin.opened || _glfwWin.iconified )
-    {
         return;
-    }
 
     // Iconify window
     _glfwPlatformIconifyWindow();
@@ -799,11 +728,8 @@ GLFWAPI void glfwIconifyWindow( void )
 
 GLFWAPI void glfwRestoreWindow( void )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized || !_glfwWin.opened || !_glfwWin.iconified )
-    {
         return;
-    }
 
     // Restore iconified window
     _glfwPlatformRestoreWindow();
@@ -819,23 +745,16 @@ GLFWAPI void glfwRestoreWindow( void )
 
 GLFWAPI void glfwSwapBuffers( void )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized || !_glfwWin.opened )
-    {
         return;
-    }
 
     // Update display-buffer
     if( _glfwWin.opened )
-    {
         _glfwPlatformSwapBuffers();
-    }
 
     // Check for window messages
     if( _glfwWin.autoPollEvents )
-    {
         glfwPollEvents();
-    }
 }
 
 
@@ -845,11 +764,8 @@ GLFWAPI void glfwSwapBuffers( void )
 
 GLFWAPI void glfwSwapInterval( int interval )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized || !_glfwWin.opened )
-    {
         return;
-    }
 
     // Set double buffering swap interval
     _glfwPlatformSwapInterval( interval );
@@ -862,19 +778,14 @@ GLFWAPI void glfwSwapInterval( int interval )
 
 GLFWAPI int glfwGetWindowParam( int param )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized )
-    {
         return 0;
-    }
 
-    // Is the window opened?
     if( !_glfwWin.opened )
     {
         if( param == GLFW_OPENED )
-        {
             return GL_FALSE;
-        }
+
         return 0;
     }
 
@@ -941,11 +852,8 @@ GLFWAPI int glfwGetWindowParam( int param )
 
 GLFWAPI void glfwSetWindowSizeCallback( GLFWwindowsizefun cbfun )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized || !_glfwWin.opened )
-    {
         return;
-    }
 
     // Set callback function
     _glfwWin.windowSizeCallback = cbfun;
@@ -953,9 +861,7 @@ GLFWAPI void glfwSetWindowSizeCallback( GLFWwindowsizefun cbfun )
     // Call the callback function to let the application know the current
     // window size
     if( cbfun )
-    {
         cbfun( _glfwWin.width, _glfwWin.height );
-    }
 }
 
 //========================================================================
@@ -964,11 +870,8 @@ GLFWAPI void glfwSetWindowSizeCallback( GLFWwindowsizefun cbfun )
 
 GLFWAPI void glfwSetWindowCloseCallback( GLFWwindowclosefun cbfun )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized || !_glfwWin.opened )
-    {
         return;
-    }
 
     // Set callback function
     _glfwWin.windowCloseCallback = cbfun;
@@ -981,11 +884,8 @@ GLFWAPI void glfwSetWindowCloseCallback( GLFWwindowclosefun cbfun )
 
 GLFWAPI void glfwSetWindowRefreshCallback( GLFWwindowrefreshfun cbfun )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized || !_glfwWin.opened )
-    {
         return;
-    }
 
     // Set callback function
     _glfwWin.windowRefreshCallback = cbfun;
@@ -998,11 +898,8 @@ GLFWAPI void glfwSetWindowRefreshCallback( GLFWwindowrefreshfun cbfun )
 
 GLFWAPI void glfwPollEvents( void )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized || !_glfwWin.opened )
-    {
         return;
-    }
 
     // Poll for new events
     _glfwPlatformPollEvents();
@@ -1015,11 +912,8 @@ GLFWAPI void glfwPollEvents( void )
 
 GLFWAPI void glfwWaitEvents( void )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized || !_glfwWin.opened )
-    {
         return;
-    }
 
     // Poll for new events
     _glfwPlatformWaitEvents();

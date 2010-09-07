@@ -41,13 +41,11 @@
 
 GLFWAPI int glfwGetVideoModes( GLFWvidmode *list, int maxcount )
 {
-    int         count, i, swap, res1, res2, depth1, depth2;
+    int count, i, swap, res1, res2, depth1, depth2;
     GLFWvidmode vm;
 
     if( !_glfwInitialized || maxcount <= 0 || list == (GLFWvidmode*) 0 )
-    {
         return 0;
-    }
 
     // Get list of video modes
     count = _glfwPlatformGetVideoModes( list, maxcount );
@@ -63,7 +61,8 @@ GLFWAPI int glfwGetVideoModes( GLFWvidmode *list, int maxcount )
             res2   = list[i+1].Width*list[i+1].Height;
             depth2 = list[i+1].RedBits+list[i+1].GreenBits+
                      list[i+1].BlueBits;
-            if( (depth2<depth1) || ((depth2==depth1) && (res2<res1)) )
+
+            if( (depth2 < depth1) || ((depth2 == depth1) && (res2 < res1)) )
             {
                 vm = list[i];
                 list[i] = list[i+1];
@@ -85,9 +84,7 @@ GLFWAPI int glfwGetVideoModes( GLFWvidmode *list, int maxcount )
 GLFWAPI void glfwGetDesktopMode( GLFWvidmode *mode )
 {
     if( !_glfwInitialized || mode == (GLFWvidmode*) 0 )
-    {
         return;
-    }
 
     _glfwPlatformGetDesktopMode( mode );
 }

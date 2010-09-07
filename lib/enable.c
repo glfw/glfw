@@ -44,9 +44,7 @@ static void enableMouseCursor( void )
     int centerPosX, centerPosY;
 
     if( !_glfwWin.opened || !_glfwWin.mouseLock )
-    {
         return;
-    }
 
     // Show mouse cursor
     _glfwPlatformShowMouseCursor();
@@ -79,9 +77,7 @@ static void enableMouseCursor( void )
 static void disableMouseCursor( void )
 {
     if( !_glfwWin.opened || _glfwWin.mouseLock )
-    {
         return;
-    }
 
     // Hide mouse cursor
     _glfwPlatformHideMouseCursor();
@@ -118,9 +114,7 @@ static void disableStickyKeys( void )
     for( i = 0; i <= GLFW_KEY_LAST; i++ )
     {
         if( _glfwInput.Key[ i ] == 2 )
-        {
             _glfwInput.Key[ i ] = 0;
-        }
     }
 }
 
@@ -148,9 +142,7 @@ static void disableStickyMouseButtons( void )
     for( i = 0; i <= GLFW_MOUSE_BUTTON_LAST; i++ )
     {
         if( _glfwInput.MouseButton[ i ] == 2 )
-        {
             _glfwInput.MouseButton[ i ] = 0;
-        }
     }
 }
 
@@ -162,9 +154,7 @@ static void disableStickyMouseButtons( void )
 static void enableSystemKeys( void )
 {
     if( !_glfwWin.sysKeysDisabled )
-    {
         return;
-    }
 
     _glfwPlatformEnableSystemKeys();
 
@@ -179,9 +169,7 @@ static void enableSystemKeys( void )
 static void disableSystemKeys( void )
 {
     if( _glfwWin.sysKeysDisabled )
-    {
         return;
-    }
 
     _glfwPlatformDisableSystemKeys();
 
@@ -228,7 +216,6 @@ static void disableAutoPollEvents( void )
 }
 
 
-
 //************************************************************************
 //****                    GLFW user functions                         ****
 //************************************************************************
@@ -239,11 +226,8 @@ static void disableAutoPollEvents( void )
 
 GLFWAPI void glfwEnable( int token )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized )
-    {
         return;
-    }
 
     switch( token )
     {
@@ -277,11 +261,8 @@ GLFWAPI void glfwEnable( int token )
 
 GLFWAPI void glfwDisable( int token )
 {
-    // Is GLFW initialized?
     if( !_glfwInitialized )
-    {
         return;
-    }
 
     switch( token )
     {

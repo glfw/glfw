@@ -36,7 +36,7 @@
 //************************************************************************
 
 //========================================================================
-// glfwGetVideoModes() - Get a list of available video modes
+// Get a list of available video modes
 //========================================================================
 
 GLFWAPI int glfwGetVideoModes( GLFWvidmode *list, int maxcount )
@@ -79,7 +79,7 @@ GLFWAPI int glfwGetVideoModes( GLFWvidmode *list, int maxcount )
 
 
 //========================================================================
-// glfwGetDesktopMode() - Get the desktop video mode
+// Get the desktop video mode
 //========================================================================
 
 GLFWAPI void glfwGetDesktopMode( GLFWvidmode *mode )

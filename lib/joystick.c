@@ -36,7 +36,7 @@
 //************************************************************************
 
 //========================================================================
-// glfwGetJoystickParam() - Determine joystick capabilities
+// Determine joystick capabilities
 //========================================================================
 
 GLFWAPI int glfwGetJoystickParam( int joy, int param )
@@ -52,7 +52,7 @@ GLFWAPI int glfwGetJoystickParam( int joy, int param )
 
 
 //========================================================================
-// glfwGetJoystickPos() - Get joystick axis positions
+// Get joystick axis positions
 //========================================================================
 
 GLFWAPI int glfwGetJoystickPos( int joy, float *pos, int numaxes )
@@ -76,7 +76,7 @@ GLFWAPI int glfwGetJoystickPos( int joy, float *pos, int numaxes )
 
 
 //========================================================================
-// glfwGetJoystickButtons() - Get joystick button states
+// Get joystick button states
 //========================================================================
 
 GLFWAPI int glfwGetJoystickButtons( int joy,

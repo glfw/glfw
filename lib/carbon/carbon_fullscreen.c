@@ -32,27 +32,27 @@
 #include "internal.h"
 
 //========================================================================
-// _glfwVideoModesEqual() - Compares two video modes
+// Compares two video modes
 //========================================================================
 
 static int _glfwVideoModesEqual( GLFWvidmode* first,
                                  GLFWvidmode* second )
 {
     if( first->Width != second->Width )
-	return 0;
-		
+        return 0;
+
     if( first->Height != second->Height )
-	return 0;
-		
+        return 0;
+
     if( first->RedBits + first->GreenBits + first->BlueBits !=
       second->RedBits + second->GreenBits + second->BlueBits )
-	return 0;
-	
+        return 0;
+
     return 1;
 }
-                            
+
 //========================================================================
-// _glfwCGToGLFWVideoMode() - Converts a CG mode to a GLFW mode
+// Converts a CG mode to a GLFW mode
 //========================================================================
 
 static void _glfwCGToGLFWVideoMode( CFDictionaryRef cgMode,
@@ -77,7 +77,7 @@ static void _glfwCGToGLFWVideoMode( CFDictionaryRef cgMode,
 }
 
 //========================================================================
-// _glfwPlatformGetVideoModes() - Get a list of available video modes
+// Get a list of available video modes
 //========================================================================
 
 int _glfwPlatformGetVideoModes( GLFWvidmode *list, int maxcount )
@@ -98,26 +98,28 @@ int _glfwPlatformGetVideoModes( GLFWvidmode *list, int maxcount )
                                 &mode );
 
         // Is it a valid mode? (only list depths >= 15 bpp)
-	if( mode.RedBits + mode.GreenBits + mode.BlueBits < 15 )
-	    continue;
-			
+        if( mode.RedBits + mode.GreenBits + mode.BlueBits < 15 )
+            continue;
+
         // Check for duplicate of current mode in target list
-      	for( j = 0; j < numModes; ++j )
-      	{
-      	    if( _glfwVideoModesEqual( &mode, &(list[j]) ) )
-      		break;
-      	}
-      	
-      	// If empty list or no match found
-      	if( numModes == 0 || j == numModes )
-      	    list[numModes++] = mode;
+        for( j = 0; j < numModes; ++j )
+        {
+            if( _glfwVideoModesEqual( &mode, &(list[j]) ) )
+                break;
+        }
+
+        // If empty list or no match found
+        if( numModes == 0 || j == numModes )
+        {
+            list[numModes++] = mode;
+        }
     }
 
     return numModes;
 }
 
 //========================================================================
-// glfwGetDesktopMode() - Get the desktop video mode
+// Get the desktop video mode
 //========================================================================
 
 void _glfwPlatformGetDesktopMode( GLFWvidmode *mode )

@@ -206,7 +206,7 @@ void _glfwSetVideoModeMODE( int mode )
 
 
 //========================================================================
-// _glfwSetVideoMode() - Change the current video mode
+// Change the current video mode
 //========================================================================
 
 void _glfwSetVideoMode( int *w, int *h, int r, int g, int b, int refresh )
@@ -226,7 +226,7 @@ void _glfwSetVideoMode( int *w, int *h, int r, int g, int b, int refresh )
 //************************************************************************
 
 //========================================================================
-// _glfwPlatformGetVideoModes() - Get a list of available video modes
+// Get a list of available video modes
 //========================================================================
 
 int _glfwPlatformGetVideoModes( GLFWvidmode *list, int maxcount )

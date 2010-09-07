@@ -36,7 +36,7 @@
 //************************************************************************
 
 //========================================================================
-// glfwGetTime() - Return timer value in seconds
+// Return timer value in seconds
 //========================================================================
 
 GLFWAPI double glfwGetTime( void )
@@ -52,7 +52,7 @@ GLFWAPI double glfwGetTime( void )
 
 
 //========================================================================
-// glfwSetTime() - Set timer value in seconds
+// Set timer value in seconds
 //========================================================================
 
 GLFWAPI void glfwSetTime( double time )

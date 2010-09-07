@@ -32,7 +32,7 @@
 
 
 //========================================================================
-// glfwGetKey()
+// 
 //========================================================================
 
 GLFWAPI int glfwGetKey( int key )
@@ -61,7 +61,7 @@ GLFWAPI int glfwGetKey( int key )
 
 
 //========================================================================
-// glfwGetMouseButton()
+// 
 //========================================================================
 
 GLFWAPI int glfwGetMouseButton( int button )
@@ -90,7 +90,7 @@ GLFWAPI int glfwGetMouseButton( int button )
 
 
 //========================================================================
-// glfwGetMousePos()
+// 
 //========================================================================
 
 GLFWAPI void glfwGetMousePos( int *xpos, int *ypos )
@@ -114,7 +114,7 @@ GLFWAPI void glfwGetMousePos( int *xpos, int *ypos )
 
 
 //========================================================================
-// glfwSetMousePos()
+// 
 //========================================================================
 
 GLFWAPI void glfwSetMousePos( int xpos, int ypos )
@@ -147,7 +147,7 @@ GLFWAPI void glfwSetMousePos( int xpos, int ypos )
 
 
 //========================================================================
-// glfwGetMouseWheel()
+// 
 //========================================================================
 
 GLFWAPI int glfwGetMouseWheel( void )
@@ -164,7 +164,7 @@ GLFWAPI int glfwGetMouseWheel( void )
 
 
 //========================================================================
-// glfwSetMouseWheel()
+// 
 //========================================================================
 
 GLFWAPI void glfwSetMouseWheel( int pos )
@@ -181,7 +181,7 @@ GLFWAPI void glfwSetMouseWheel( int pos )
 
 
 //========================================================================
-// glfwSetKeyCallback() - Set callback function for keyboard input
+// Set callback function for keyboard input
 //========================================================================
 
 GLFWAPI void glfwSetKeyCallback( GLFWkeyfun cbfun )
@@ -198,7 +198,7 @@ GLFWAPI void glfwSetKeyCallback( GLFWkeyfun cbfun )
 
 
 //========================================================================
-// glfwSetCharCallback() - Set callback function for character input
+// Set callback function for character input
 //========================================================================
 
 GLFWAPI void glfwSetCharCallback( GLFWcharfun cbfun )
@@ -215,7 +215,7 @@ GLFWAPI void glfwSetCharCallback( GLFWcharfun cbfun )
 
 
 //========================================================================
-// glfwSetMouseButtonCallback() - Set callback function for mouse clicks
+// Set callback function for mouse clicks
 //========================================================================
 
 GLFWAPI void glfwSetMouseButtonCallback( GLFWmousebuttonfun cbfun )
@@ -232,7 +232,7 @@ GLFWAPI void glfwSetMouseButtonCallback( GLFWmousebuttonfun cbfun )
 
 
 //========================================================================
-// glfwSetMousePosCallback() - Set callback function for mouse moves
+// Set callback function for mouse moves
 //========================================================================
 
 GLFWAPI void glfwSetMousePosCallback( GLFWmouseposfun cbfun )
@@ -256,7 +256,7 @@ GLFWAPI void glfwSetMousePosCallback( GLFWmouseposfun cbfun )
 
 
 //========================================================================
-// glfwSetMouseWheelCallback() - Set callback function for mouse wheel
+// Set callback function for mouse wheel
 //========================================================================
 
 GLFWAPI void glfwSetMouseWheelCallback( GLFWmousewheelfun cbfun )

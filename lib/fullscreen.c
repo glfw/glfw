@@ -56,10 +56,10 @@ GLFWAPI int glfwGetVideoModes(GLFWvidmode* list, int maxcount)
         swap = 0;
         for (i = 0;  i < count - 1;  i++)
         {
-            res1   = list[i].width*list[i].height;
-            depth1 = list[i].redBits+list[i].greenBits+list[i].blueBits;
-            res2   = list[i + 1].width*list[i + 1].height;
-            depth2 = list[i + 1].redBits+list[i + 1].greenBits+
+            res1   = list[i].width * list[i].height;
+            depth1 = list[i].redBits + list[i].greenBits + list[i].blueBits;
+            res2   = list[i + 1].width * list[i + 1].height;
+            depth2 = list[i + 1].redBits + list[i + 1].greenBits +
                      list[i + 1].blueBits;
 
             if ((depth2 < depth1) || ((depth2 == depth1) && (res2 < res1)))

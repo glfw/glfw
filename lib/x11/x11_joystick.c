@@ -74,7 +74,7 @@ struct js_event {
 
 
 //========================================================================
-// _glfwInitJoysticks() - Initialize joystick interface
+// Initialize joystick interface
 //========================================================================
 
 void _glfwInitJoysticks( void )
@@ -89,9 +89,7 @@ void _glfwInitJoysticks( void )
 
     // Start by saying that there are no sticks
     for( i = 0; i <= GLFW_JOYSTICK_LAST; ++ i )
-    {
         _glfwJoy[ i ].Present = GL_FALSE;
-    }
 
 #ifdef _GLFW_USE_LINUX_JOYSTICKS
 
@@ -160,13 +158,10 @@ void _glfwInitJoysticks( void )
 
                 // Clear joystick state
                 for( n = 0; n < _glfwJoy[ joy_count ].NumAxes; ++ n )
-                {
                     _glfwJoy[ joy_count ].Axis[ n ] = 0.0f;
-                }
+
                 for( n = 0; n < _glfwJoy[ joy_count ].NumButtons; ++ n )
-                {
                     _glfwJoy[ joy_count ].Button[ n ] = GLFW_RELEASE;
-                }
 
                 // The joystick is supported and connected
                 _glfwJoy[ joy_count ].Present = GL_TRUE;
@@ -181,7 +176,7 @@ void _glfwInitJoysticks( void )
 
 
 //========================================================================
-// _glfwTerminateJoysticks() - Close all opened joystick handles
+// Close all opened joystick handles
 //========================================================================
 
 void _glfwTerminateJoysticks( void )
@@ -269,16 +264,13 @@ static void pollJoystickEvents( void )
 //************************************************************************
 
 //========================================================================
-// _glfwPlatformGetJoystickParam() - Determine joystick capabilities
+// Determine joystick capabilities
 //========================================================================
 
 int _glfwPlatformGetJoystickParam( int joy, int param )
 {
-    // Is joystick present?
     if( !_glfwJoy[ joy ].Present )
-    {
         return 0;
-    }
 
     switch( param )
     {
@@ -300,67 +292,53 @@ int _glfwPlatformGetJoystickParam( int joy, int param )
 
 
 //========================================================================
-// _glfwPlatformGetJoystickPos() - Get joystick axis positions
+// Get joystick axis positions
 //========================================================================
 
 int _glfwPlatformGetJoystickPos( int joy, float *pos, int numaxes )
 {
     int i;
 
-    // Is joystick present?
     if( !_glfwJoy[ joy ].Present )
-    {
         return 0;
-    }
 
     // Update joystick state
     pollJoystickEvents();
 
     // Does the joystick support less axes than requested?
     if( _glfwJoy[ joy ].NumAxes < numaxes )
-    {
         numaxes = _glfwJoy[ joy ].NumAxes;
-    }
 
     // Copy axis positions from internal state
     for( i = 0; i < numaxes; ++ i )
-    {
         pos[ i ] = _glfwJoy[ joy ].Axis[ i ];
-    }
 
     return numaxes;
 }
 
 
 //========================================================================
-// _glfwPlatformGetJoystickButtons() - Get joystick button states
+// Get joystick button states
 //========================================================================
 
 int _glfwPlatformGetJoystickButtons( int joy, unsigned char *buttons,
-    int numbuttons )
+                                     int numbuttons )
 {
     int i;
 
-    // Is joystick present?
     if( !_glfwJoy[ joy ].Present )
-    {
         return 0;
-    }
 
     // Update joystick state
     pollJoystickEvents();
 
     // Does the joystick support less buttons than requested?
     if( _glfwJoy[ joy ].NumButtons < numbuttons )
-    {
         numbuttons = _glfwJoy[ joy ].NumButtons;
-    }
 
     // Copy button states from internal state
     for( i = 0; i < numbuttons; ++ i )
-    {
         buttons[ i ] = _glfwJoy[ joy ].Button[ i ];
-    }
 
     return numbuttons;
 }

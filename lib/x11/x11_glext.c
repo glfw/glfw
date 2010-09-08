@@ -70,9 +70,7 @@ int _glfwPlatformExtensionSupported( const char *extension )
     if( extensions != NULL )
     {
         if( _glfwStringInExtensionString( extension, extensions ) )
-        {
             return GL_TRUE;
-        }
     }
 
     return GL_FALSE;

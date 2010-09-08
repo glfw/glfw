@@ -53,13 +53,10 @@ static void BPP2RGB( int bpp, int *r, int *g, int *b )
     *r = *g = *b = bpp / 3;
     delta = bpp - (*r * 3);
     if( delta >= 1 )
-    {
         *g = *g + 1;
-    }
+
     if( delta == 2 )
-    {
         *r = *r + 1;
-    }
 }
 
 
@@ -123,19 +120,15 @@ int _glfwGetClosestVideoMode( int screen, int *width, int *height, int *rate )
                 }
 
                 if( bestrate != -1 )
-                {
                     *rate = bestrate;
-                }
             }
         }
 
-            // Free modelist
+        // Free modelist
         XRRFreeScreenConfigInfo( sc );
 
         if( bestsize != -1 )
-        {
             return bestsize;
-        }
     }
 #elif defined( _GLFW_HAS_XF86VIDMODE )
     XF86VidModeModeInfo **modelist;
@@ -175,9 +168,7 @@ int _glfwGetClosestVideoMode( int screen, int *width, int *height, int *rate )
         XFree( modelist );
 
         if( bestmode != -1 )
-        {
             return bestmode;
-        }
     }
 #endif
 
@@ -251,9 +242,7 @@ void _glfwSetVideoModeMODE( int screen, int mode, int rate )
 
         // Unlock mode switch if necessary
         if( _glfwWin.FS.modeChanged )
-        {
             XF86VidModeLockModeSwitch( _glfwLibrary.display, screen, 0 );
-        }
 
         // Change the video mode to the desired mode
         XF86VidModeSwitchToMode(  _glfwLibrary.display, screen,
@@ -285,7 +274,7 @@ void _glfwSetVideoModeMODE( int screen, int mode, int rate )
 
 void _glfwSetVideoMode( int screen, int *width, int *height, int *rate )
 {
-    int     bestmode;
+    int bestmode;
 
     // Find a best match mode
     bestmode = _glfwGetClosestVideoMode( screen, width, height, rate );
@@ -379,9 +368,7 @@ int _glfwPlatformGetVideoModes( GLFWvidmode *list, int maxcount )
     // Get list of visuals
     vislist = XGetVisualInfo( dpy, 0, &dummy, &viscount );
     if( vislist == NULL )
-    {
         return 0;
-    }
 
     rgbarray = (int*) malloc( sizeof(int) * viscount );
     rgbcount = 0;
@@ -405,10 +392,9 @@ int _glfwPlatformGetVideoModes( GLFWvidmode *list, int maxcount )
             for( l = 0; l < rgbcount; l++ )
             {
                 if( depth == rgbarray[ l ] )
-                {
                     break;
-                }
             }
+
             if( l >= rgbcount )
             {
                 rgbarray[ rgbcount ] = depth;
@@ -454,9 +440,7 @@ int _glfwPlatformGetVideoModes( GLFWvidmode *list, int maxcount )
             for( l = 0; l < rescount; l++ )
             {
                 if( width == resarray[ l ].width && height == resarray[ l ].height )
-                {
                     break;
-                }
             }
 
             if( l >= rescount )

@@ -873,22 +873,16 @@ long _glfwKeySym2Unicode( KeySym keysym )
 
     /* Also check for directly encoded 24-bit UCS characters */
     if( (keysym & 0xff000000) == 0x01000000 )
-    {
         return keysym & 0x00ffffff;
-    }
 
     /* Binary search in table */
     while( max >= min )
     {
         mid = (min + max) / 2;
         if( keysymtab[mid].keysym < keysym )
-        {
             min = mid + 1;
-        }
         else if( keysymtab[mid].keysym > keysym )
-        {
             max = mid - 1;
-        }
         else
         {
             /* Found it! */

@@ -31,7 +31,6 @@
 #include "internal.h"
 
 
-
 //************************************************************************
 //****                  GLFW internal functions                       ****
 //************************************************************************
@@ -155,11 +154,8 @@ static void terminateDisplay( void )
 
 int _glfwPlatformInit( void )
 {
-    // Initialize display
     if( !initDisplay() )
-    {
         return GL_FALSE;
-    }
 
     // Try to load libGL.so if necessary
     initLibraries();

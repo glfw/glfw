@@ -39,11 +39,11 @@
 // Enable system keys
 //========================================================================
 
-void _glfwPlatformEnableSystemKeys( void )
+void _glfwPlatformEnableSystemKeys(void)
 {
-    if( _glfwWin.keyboardGrabbed )
+    if (_glfwWin.keyboardGrabbed)
     {
-        XUngrabKeyboard( _glfwLibrary.display, CurrentTime );
+        XUngrabKeyboard(_glfwLibrary.display, CurrentTime);
         _glfwWin.keyboardGrabbed = GL_FALSE;
     }
 }
@@ -52,11 +52,11 @@ void _glfwPlatformEnableSystemKeys( void )
 // Disable system keys
 //========================================================================
 
-void _glfwPlatformDisableSystemKeys( void )
+void _glfwPlatformDisableSystemKeys(void)
 {
-    if( XGrabKeyboard( _glfwLibrary.display, _glfwWin.window, True,
-                        GrabModeAsync, GrabModeAsync, CurrentTime ) ==
-        GrabSuccess )
+    if (XGrabKeyboard(_glfwLibrary.display, _glfwWin.window,
+                      True, GrabModeAsync, GrabModeAsync, CurrentTime)
+        == GrabSuccess)
     {
         _glfwWin.keyboardGrabbed = GL_TRUE;
     }

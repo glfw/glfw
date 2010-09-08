@@ -38,13 +38,13 @@ void (*glXGetProcAddressEXT(const GLubyte *procName))();
 // We support four different ways for getting addresses for GL/GLX
 // extension functions: glXGetProcAddress, glXGetProcAddressARB,
 // glXGetProcAddressEXT, and dlsym
-#if   defined( _GLFW_HAS_GLXGETPROCADDRESSARB )
+#if   defined(_GLFW_HAS_GLXGETPROCADDRESSARB)
  #define _glfw_glXGetProcAddress(x) glXGetProcAddressARB(x)
-#elif defined( _GLFW_HAS_GLXGETPROCADDRESS )
+#elif defined(_GLFW_HAS_GLXGETPROCADDRESS)
  #define _glfw_glXGetProcAddress(x) glXGetProcAddress(x)
-#elif defined( _GLFW_HAS_GLXGETPROCADDRESSEXT )
+#elif defined(_GLFW_HAS_GLXGETPROCADDRESSEXT)
  #define _glfw_glXGetProcAddress(x) glXGetProcAddressEXT(x)
-#elif defined( _GLFW_HAS_DLOPEN )
+#elif defined(_GLFW_HAS_DLOPEN)
  #define _glfw_glXGetProcAddress(x) dlsym(_glfwLibs.libGL,x)
  #define _GLFW_DLOPEN_LIBGL
 #else
@@ -60,16 +60,16 @@ void (*glXGetProcAddressEXT(const GLubyte *procName))();
 // Check if an OpenGL extension is available at runtime
 //========================================================================
 
-int _glfwPlatformExtensionSupported( const char *extension )
+int _glfwPlatformExtensionSupported(const char *extension)
 {
     const GLubyte *extensions;
 
     // Get list of GLX extensions
-    extensions = (const GLubyte*) glXQueryExtensionsString( _glfwLibrary.display,
-                                                            _glfwWin.screen );
-    if( extensions != NULL )
+    extensions = (const GLubyte*) glXQueryExtensionsString(_glfwLibrary.display,
+                                                           _glfwWin.screen);
+    if (extensions != NULL)
     {
-        if( _glfwStringInExtensionString( extension, extensions ) )
+        if (_glfwStringInExtensionString(extension, extensions))
             return GL_TRUE;
     }
 
@@ -81,8 +81,8 @@ int _glfwPlatformExtensionSupported( const char *extension )
 // Get the function pointer to an OpenGL function
 //========================================================================
 
-void * _glfwPlatformGetProcAddress( const char *procname )
+void * _glfwPlatformGetProcAddress(const char *procname)
 {
-    return (void *) _glfw_glXGetProcAddress( (const GLubyte *) procname );
+    return (void *) _glfw_glXGetProcAddress((const GLubyte *) procname);
 }
 

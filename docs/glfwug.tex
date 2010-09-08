@@ -42,7 +42,7 @@
 This document is a users guide for the \GLFW\ API that gives a practical
 introduction to using \GLFW . For a more detailed description of the
 \GLFW\ API you should refer to the \textit{GLFW Reference Manual}.
-\vspace{10cm}
+\vspace{5cm}
 
 \large
 Trademarks
@@ -93,27 +93,26 @@ to remedy this by providing the following functionality:
 \begin{itemize}
 \item Opening and managing an \OpenGL\ window.
 \item Keyboard, mouse and joystick input.
-\item A high precision timer.
+\item High precision time input.
 \item Support for querying and using \OpenGL\ extensions.
 \end{itemize}
 \vspace{18pt}
 
 All this functionality is implemented as a set of easy-to-use functions,
 which makes it possible to write an \OpenGL\ application framework in just a
-few lines of code. The \GLFW\ API is completely operating system and
-platform independent, which makes it very simple to port \GLFW\ based \OpenGL\
-applications to a variety of platforms.
+few lines of code. The \GLFW\ API is operating system and platform independent,
+making it very simple to port \GLFW\ based \OpenGL\ applications between the
+supported platforms.
 
 Currently supported platforms are:
 \begin{itemize}
-\item Microsoft Windows\textsuperscript{\textregistered} 95/98/ME/NT/2000/XP/.NET Server.
+\item Microsoft Windows\textsuperscript{\textregistered}
 \item Unix\textsuperscript{\textregistered} or Unix­-like systems running the
-X Window System\texttrademark, e.g. Linux\textsuperscript{\textregistered},
-IRIX\textsuperscript{\textregistered}, FreeBSD\textsuperscript{\textregistered},
-Solaris\texttrademark, QNX\textsuperscript{\textregistered} and
-Mac OS\textsuperscript{\textregistered} X.
-\item Mac OS\textsuperscript{\textregistered} X (Carbon)\footnote{Support for joysticks missing at the time of writing.}
+X Window System\texttrademark with GLX version 1.3 or later
+\item Mac OS X\textsuperscript{\textregistered} 10.5 and later, using Cocoa\footnote{Support for joysticks missing at the time of writing.}
 \end{itemize}
+
+There is also deprecated support for Mac OS X versions 10.3 and 10.4, using the Carbon API.
 
 
 %-------------------------------------------------------------------------
@@ -129,50 +128,47 @@ read some user keyboard input.
 %-------------------------------------------------------------------------
 \section{Initializing GLFW}
 Before using any of the \GLFW\ functions, it is necessary to call
-\textbf{glfwInit}. It initializes internal working variables that are used
-by other \GLFW\ functions. The C syntax is:
+\textbf{glfwInit}. It initializes the parts of \GLFW\ that are not dependent on
+a window, such as time and joystick input. The C syntax is:
 
 \begin{lstlisting}
-int glfwInit( void )
+int glfwInit(void)
 \end{lstlisting}
 
 \textbf{glfwInit} returns GL\_TRUE if initialization succeeded, or
 GL\_FALSE if it failed.
 
 When your application is done using \GLFW , typically at the very end of
-the program, you should call \textbf{glfwTerminate}, which makes a clean
-up and places \GLFW\ in a non-initialized state (i.e. it is necessary to
-call \textbf{glfwInit} again before using any \GLFW\ functions). The C
-syntax is:
+the program, you should call \textbf{glfwTerminate}.  The C syntax is:
 
 \begin{lstlisting}
-void glfwTerminate( void )
+void glfwTerminate(void)
 \end{lstlisting}
 
-Among other things, \textbf{glfwTerminate} closes the \OpenGL\ window
-unless it was closed manually.
-
+This releases any resources allocated by GLFW and closes the window if it is
+open.  After this call, you must call \textbf{glfwInit} again before using any
+\GLFW\ functions).
 
 %-------------------------------------------------------------------------
 \section{Opening An OpenGL Window}
-Opening an \OpenGL\ window is done with the function
-\textbf{glfwOpenWindow}. The function takes nine arguments, which are used
-to describe the following properties of the window to open:
+Opening an \OpenGL\ window is done with the \textbf{glfwOpenWindow} function.
+The function takes nine arguments, which are used to describe the following
+properties of the requested window:
 
 \begin{itemize}
 \item Window dimensions (width and height) in pixels.
-\item Color and alpha buffer depth.
-\item Depth buffer (Z-buffer) depth.
-\item Stencil buffer depth.
-\item Fullscreen or windowed mode.
+\item Color and alpha buffer bit depth.
+\item Depth buffer (Z-buffer) bit depth.
+\item Stencil buffer bit depth.
+\item Whether to use fullscreen or windowed mode.
 \end{itemize}
 
 The C language syntax for \textbf{glfwOpenWindow} is:
 \begin{lstlisting}
-int glfwOpenWindow( int width, int height,
-    int redbits, int greenbits, int bluebits,
-    int alphabits, int depthbits, int stencilbits,
-    int mode )
+int glfwOpenWindow(int width, int height,
+                   int redbits, int greenbits, int bluebits,
+                   int alphabits, int depthbits, int stencilbits,
+                   int mode)
 \end{lstlisting}
 
 \textbf{glfwOpenWindow} returns GL\_TRUE if the window was opened
@@ -189,15 +185,15 @@ The \textit{mode} argument is used to specify if the window is to be a
 s.c. fullscreen window, or a regular window.
 
 If \textit{mode} is GLFW\_FULLSCREEN, the window will cover the entire
-screen and no window borders will be visible. If possible, the video mode
-will be changed to the mode that closest matches the \textit{width},
-\textit{height}, \textit{redbits}, \textit{greenbits}, \textit{bluebits}
-and \textit{alphabits} arguments. Furthermore, the mouse pointer will be
-hidden, and screensavers are prohibited. This is usually the best mode for
-games and demos.
+screen and no window border or decorations will be visible. If possible, the
+video mode will be changed to the mode that closest matches the \textit{width},
+\textit{height}, \textit{redbits}, \textit{greenbits}, \textit{bluebits} and
+\textit{alphabits} arguments. Furthermore, the mouse pointer will be hidden,
+and screensavers are prohibited. This is usually the best mode for games and
+demos.
 
-If \textit{mode} is GLFW\_WINDOW, the window will be opened as a normal
-window on the desktop. The mouse pointer will not be hidden, and
+If \textit{mode} is GLFW\_WINDOW, the window will be opened as a normal,
+decorated window on the desktop. The mouse pointer will not be hidden and
 screensavers are allowed to be activated.
 
 To close the window, you can either use \textbf{glfwTerminate}, as
@@ -205,8 +201,12 @@ described earlier, or you can use the more explicit approach by calling
 \textbf{glfwCloseWindow}, which has the C syntax:
 
 \begin{lstlisting}
-void glfwCloseWindow( void )
+void glfwCloseWindow(void)
 \end{lstlisting}
+
+Note that you do not need to call \textbf{glfwTerminate} and \textbf{glfwInit}
+before opening a new window after having closed the current one using
+\textbf{glfwCloseWindow}.
 
 
 %-------------------------------------------------------------------------
@@ -217,7 +217,7 @@ simplest ways of checking for keyboard input is to use the function
 \textbf{glfwGetKey}:
 
 \begin{lstlisting}
-int glfwGetKey( int key )
+int glfwGetKey(int key)
 \end{lstlisting}
 
 It queries the current status of individual keyboard keys. The argument
@@ -225,12 +225,12 @@ It queries the current status of individual keyboard keys. The argument
 uppercase printable ISO 8859-1 (Latin 1) character (e.g. `A', `3' or `.'),
 or a special key identifier (see the \textit{GLFW Reference Manual} for a
 list of special key identifiers). \textbf{glfwGetKey} returns GLFW\_PRESS
-(or 1) if the key is currently held down, or GLFW\_RELEASE (or 0) if the
-key is not being held down. For example:
+if the key is currently held down, or GLFW\_RELEASE if the key is not being
+held down. For example:
 
 \begin{lstlisting}
-A_pressed = glfwGetKey( 'A' );
-esc_pressed = glfwGetKey( GLFW_KEY_ESC );
+A_pressed = glfwGetKey('A');
+esc_pressed = glfwGetKey(GLFW_KEY_ESC);
 \end{lstlisting}
 
 In order for \textbf{glfwGetKey} to have any effect, you need to poll for
@@ -251,46 +251,46 @@ second in order for \GLFW\ to maintain an up to date input state.
 %-------------------------------------------------------------------------
 \section{Putting It Together: A Minimal GLFW Application}
 Now that you know how to initialize \GLFW , open a window and poll for
-keyboard input, let us exemplify this with a simple \OpenGL\ program. In
-the following example some error-checking has been omitted for the sake of
-brevity:
+keyboard input, let us exemplify this with a simple \OpenGL\ program:
 
 \begin{lstlisting}
 #include <GL/glfw.h>
+#include <stdlib.h>
 
-int main( void )
+int main(void)
 {
     int running = GL_TRUE;
 
     // Initialize GLFW
-    glfwInit();
+    if (!glfwInit())
+        exit(EXIT_FAILURE);
 
     // Open an OpenGL window
-    if( !glfwOpenWindow( 300,300, 0,0,0,0,0,0, GLFW_WINDOW ) )
+    if (!glfwOpenWindow(300,300, 0,0,0,0,0,0, GLFW_WINDOW))
     {
         glfwTerminate();
-        return 0;
+        exit(EXIT_FAILURE);
     }
 
     // Main loop
-    while( running )
+    while (running)
     {
         // OpenGL rendering goes here...
-        glClear( GL_COLOR_BUFFER_BIT );
+        glClear(GL_COLOR_BUFFER_BIT);
 
         // Swap front and back rendering buffers
         glfwSwapBuffers();
 
         // Check if ESC key was pressed or window was closed
-        running = !glfwGetKey( GLFW_KEY_ESC ) &&
-                  glfwGetWindowParam( GLFW_OPENED );
+        running = !glfwGetKey(GLFW_KEY_ESC) &&
+                  glfwGetWindowParam(GLFW_OPENED);
     }
 
     // Close window and terminate GLFW
     glfwTerminate();
 
     // Exit program
-    return 0;
+    exit(EXIT_SUCCESS);
 }
 \end{lstlisting}
 
@@ -305,7 +305,7 @@ is done in this example is to clear the window.
 \chapter{Window Operations}
 \thispagestyle{fancy}
 In this chapter, you will learn more about window related \GLFW\
-functionality, including: setting and getting window properties, buffer
+functionality, including setting and getting window properties, buffer
 swap control and video mode querying.
 
 
@@ -313,12 +313,12 @@ swap control and video mode querying.
 \section{Setting Window Properties}
 In the previous chapter the \textbf{glfwOpenWindow} function was
 described, which specifies the sizes of the color, alpha, depth and
-stencil buffers. It is also possible to request an accumulator buffer,
-auxiliary buffers and stereo rendering by using the
-\textbf{glfwOpenWindowHint} function:
+stencil buffers. It is also possible to request a specific minimum OpenGL
+version, multisampling anti-aliasing, an accumulation buffer, stereo
+rendering and more by using the \textbf{glfwOpenWindowHint} function:
 
 \begin{lstlisting}
-void glfwOpenWindowHint( int target, int hint )
+void glfwOpenWindowHint(int target, int hint)
 \end{lstlisting}
 
 The \textit{target} argument can be one of the constants listed in table~
@@ -331,20 +331,21 @@ specified target.
 \begin{tabular}{|l|l|p{7.0cm}|} \hline \raggedright
 \textbf{Name}            & \textbf{Default} & \textbf{Description} \\ \hline
 GLFW\_REFRESH\_RATE      & 0                & Vertical monitor refresh rate in Hz (only used for fullscreen windows). Zero means system default.\\ \hline
-GLFW\_ACCUM\_RED\_BITS   & 0                & Number of bits for the red channel of the accumulator buffer.\\ \hline
-GLFW\_ACCUM\_GREEN\_BITS & 0                & Number of bits for the green channel of the accumulator buffer.\\ \hline
-GLFW\_ACCUM\_BLUE\_BITS  & 0                & Number of bits for the blue channel of the accumulator buffer.\\ \hline
-GLFW\_ACCUM\_ALPHA\_BITS & 0                & Number of bits for the alpha channel of the accumulator buffer.\\ \hline
+GLFW\_ACCUM\_RED\_BITS   & 0                & Number of bits for the red channel of the accumulation buffer.\\ \hline
+GLFW\_ACCUM\_GREEN\_BITS & 0                & Number of bits for the green channel of the accumulation buffer.\\ \hline
+GLFW\_ACCUM\_BLUE\_BITS  & 0                & Number of bits for the blue channel of the accumulation buffer.\\ \hline
+GLFW\_ACCUM\_ALPHA\_BITS & 0                & Number of bits for the alpha channel of the accumulation buffer.\\ \hline
 GLFW\_AUX\_BUFFERS       & 0                & Number of auxiliary buffers.\\ \hline
 GLFW\_STEREO             & GL\_FALSE        & Specify if stereo rendering should be supported (can be GL\_TRUE or GL\_FALSE).\\ \hline
-GLFW\_WINDOW\_NO\_RESIZE & GL\_FALSE        & Specify whether the window can be resized (not used for fullscreen windows).\\ \hline
+GLFW\_WINDOW\_NO\_RESIZE & GL\_FALSE        & Specify whether the window can be resized by the user (not used for fullscreen windows).\\ \hline
 GLFW\_FSAA\_SAMPLES      & 0                & Number of samples to use for the multisampling buffer. Zero disables multisampling.\\ \hline
-GLFW\_OPENGL\_VERSION\_MAJOR & 0	    & Major number of the desired OpenGL version.
-                                              The default requests the highest OpenGL version equal to or lower than 2.1.\\ \hline
-GLFW\_OPENGL\_VERSION\_MINOR & 0	    & Minor number of the desired OpenGL version.
-                                              The default requests the highest OpenGL version equal to or lower than 2.1.\\ \hline
-GLFW\_OPENGL\_FORWARD\_COMPAT & GL\_FALSE   & Specify whether the OpenGL context should be forward compatible (i.e. disallow legacy functionality).
-                                              This hint is ignored for OpenGL version 2.1 and below.\\ \hline
+GLFW\_OPENGL\_VERSION\_MAJOR & 1	        & Major number of the desired minimum OpenGL version.\\ \hline
+GLFW\_OPENGL\_VERSION\_MINOR & 1	        & Minor number of the desired minimum OpenGL version.\\ \hline
+GLFW\_OPENGL\_FORWARD\_COMPAT & GL\_FALSE   & Specify whether the OpenGL context should be forward-compatible (i.e. disallow legacy functionality).
+                                              This should only be used when requesting OpenGL version 3.0 or above.\\ \hline
+GLFW\_OPENGL\_DEBUG\_CONTEXT & GL\_FALSE    & Specify whether a debug context should be created.\\ \hline
+GLFW\_OPENGL\_PROFILE    & 0                & The OpenGL profile the context should implement, or zero to let the system choose.
+                                              Available profiles are GLFW\_OPENGL\_CORE\_PROFILE and GLFW\_OPENGL\_COMPAT\_PROFILE.\\ \hline
 \end{tabular}
 \end{center}
 \caption{Targets for \textbf{glfwOpenWindowHint}}
@@ -356,7 +357,7 @@ For a hint to have any effect, the \textbf{glfwOpenWindowHint} function
 must be called before opening the window with the \textbf{glfwOpenWindow}
 function.
 
-To request an accumulator buffer, set the GLFW\_ACCUM\_x\_BITS targets to
+To request an accumulation buffer, set the GLFW\_ACCUM\_x\_BITS targets to
 values greater than zero (usually eight or sixteen bits per component).
 To request auxiliary buffers, set the GLFW\_AUX\_BUFFERS target to a value
 greater than zero. To request a stereo rendering capable window, set the
@@ -369,10 +370,19 @@ fulfil the request, \GLFW\ will degrade gracefully and disable FSAA if necessary
 The GLFW\_REFRESH\_RATE target should be used with caution, since it may
 result in suboptimal operation, or even a blank or damaged screen.
 
-If you want to create a context with OpenGL version 3.0 or above you have to
-set the GLFW\_OPENGL\_VERSION\_MAJOR and GLFW\_OPENGL\_VERSION\_MINOR hints
-accordingly. If you don't do this, the highest OpenGL version available for a
-context is 2.1 or lower.
+If you want to create a forward-compatible \OpenGL\ context, set the
+GLFW\_OPENGL\_FORWARD\_COMPAT hint to GL\_TRUE.  Note that such contexts are
+only available for \OpenGL\ version 3.0 and above, so you will need to specify
+a valid minimum version using the GLFW\_OPENGL\_VERSION\_MAJOR and
+GLFW\_OPENGL\_VERSION\_MINOR hints.
+
+If you want to create a context using the core profile as available in \OpenGL\
+version 3.2 and above, set the GLFW\_OPENGL\_PROFILE hint accordingly.  Note that
+as above you have to set a valid minimum version for this to work.
+
+Also note that at the time of this release, Mac OS X did not support \OpenGL\
+version 3.0 or above; thus GLFW cannot create contexts of versions above 2.1
+on that platform.
 
 Besides the parameters that are given with the \textbf{glfwOpenWindow} and
 \textbf{glfwOpenWindowHint} functions, a few more properties of a window
@@ -383,12 +393,12 @@ To change the window title of an open window, use the
 \textbf{glfwSetWindowTitle} function:
 
 \begin{lstlisting}
-void glfwSetWindowTitle( const char *title )
+void glfwSetWindowTitle(const char* title)
 \end{lstlisting}
 
 \textit{title} is a null terminated ISO~8859-1 (8-bit Latin~1) string that
 will be used as the window title. It will also be used as the application
-name (for instance in the application list when using \texttt{ALT+TAB}
+name (for instance in the application list when using \texttt{Alt+Tab}
 under Windows, or as the icon name when the window is iconified under
 the X Window System). The default window name is ``GLFW Window'', which
 will be used unless \textbf{glfwSetWindowTitle} is called after the window
@@ -397,7 +407,7 @@ has been opened.
 To change the size of a window, call \textbf{glfwSetWindowSize}:
 
 \begin{lstlisting}
-void glfwSetWindowSize( int width, int height )
+void glfwSetWindowSize(int width, int height)
 \end{lstlisting}
 
 Where \textit{width} and \textit{height} are the new dimensions of the
@@ -406,7 +416,7 @@ window.
 To change the position of a window, call \textbf{glfwSetWindowPos}:
 
 \begin{lstlisting}
-void glfwSetWindowPos( int x, int y )
+void glfwSetWindowPos(int x, int y)
 \end{lstlisting}
 
 Where \textit{x} and \textit{y} are the new desktop coordinates of the
@@ -421,7 +431,7 @@ application relies on (e.g. number of stencil bits) using
 \textbf{glfwGetWindowParam}, which has the C syntax:
 
 \begin{lstlisting}
-int glfwGetWindowParam( int param )
+int glfwGetWindowParam(int param)
 \end{lstlisting}
 
 The argument \textit{param} can be one of the tokens listed in table
@@ -444,18 +454,19 @@ GLFW\_ALPHA\_BITS        & Number of bits for the alpha buffer.\\ \hline
 GLFW\_DEPTH\_BITS        & Number of bits for the depth buffer.\\ \hline
 GLFW\_STENCIL\_BITS      & Number of bits for the stencil buffer.\\ \hline
 GLFW\_REFRESH\_RATE      & Vertical monitor refresh rate in Hz. Zero indicates an unknown or a default refresh rate.\\ \hline
-GLFW\_ACCUM\_RED\_BITS   & Number of bits for the red channel of the accumulator buffer.\\ \hline
-GLFW\_ACCUM\_GREEN\_BITS & Number of bits for the green channel of the accumulator buffer.\\ \hline
-GLFW\_ACCUM\_BLUE\_BITS  & Number of bits for the blue channel of the accumulator buffer.\\ \hline
-GLFW\_ACCUM\_ALPHA\_BITS & Number of bits for the alpha channel of the accumulator buffer.\\ \hline
+GLFW\_ACCUM\_RED\_BITS   & Number of bits for the red channel of the accumulation buffer.\\ \hline
+GLFW\_ACCUM\_GREEN\_BITS & Number of bits for the green channel of the accumulation buffer.\\ \hline
+GLFW\_ACCUM\_BLUE\_BITS  & Number of bits for the blue channel of the accumulation buffer.\\ \hline
+GLFW\_ACCUM\_ALPHA\_BITS & Number of bits for the alpha channel of the accumulation buffer.\\ \hline
 GLFW\_AUX\_BUFFERS       & Number of auxiliary buffers.\\ \hline
 GLFW\_STEREO             & GL\_TRUE if stereo rendering is supported, else GL\_FALSE.\\ \hline
-GLFW\_WINDOW\_NO\_RESIZE & GL\_TRUE if the window cannot be resized, else GL\_FALSE.\\ \hline
+GLFW\_WINDOW\_NO\_RESIZE & GL\_TRUE if the window cannot be resized by the user, else GL\_FALSE.\\ \hline
 GLFW\_FSAA\_SAMPLES      & Number of multisampling buffer samples. Zero indicated multisampling is disabled.\\ \hline
-GLFW\_OPENGL\_VERSION\_MAJOR & Major number of the desired OpenGL version.\\ \hline
-GLFW\_OPENGL\_VERSION\_MINOR & Minor number of the desired OpenGL version.\\ \hline
-GLFW\_OPENGL\_FORWARD\_COMPAT & GL\_TRUE if the OpenGL context is forward compatible (i.e. disallows legacy functionality), else GL\_FALSE.
-This is always GL\_FALSE for OpenGL version 2.1 and below.\\ \hline
+GLFW\_OPENGL\_VERSION\_MAJOR & Major number of the actual version of the context.\\ \hline
+GLFW\_OPENGL\_VERSION\_MINOR & Minor number of the actual version of the context.\\ \hline
+GLFW\_OPENGL\_FORWARD\_COMPAT & GL\_TRUE if the context is forward-compatible, else GL\_FALSE.\\ \hline
+GLFW\_OPENGL\_DEBUG\_CONTEXT & GL\_TRUE if the context is a debug context.\\ \hline
+GLFW\_OPENGL\_PROFILE    & The profile implemented by the context, or zero.\\ \hline
 \end{tabular}
 \end{center}
 \caption{Window parameters for \textbf{glfwGetWindowParam}}
@@ -468,13 +479,13 @@ specifies a user function that will be called every time the window size
 has changed. The C syntax is:
 
 \begin{lstlisting}
-void glfwSetWindowSizeCallback( GLFWwindowsizefun cbfun )
+void glfwSetWindowSizeCallback(GLFWwindowsizefun cbfun)
 \end{lstlisting}
 
 The user function \textit{fun} should be of the type:
 
 \begin{lstlisting}
-void GLFWCALL fun( int width, int height )
+void fun(int width, int height)
 \end{lstlisting}
 
 The first argument passed to the user function is the width of the window,
@@ -482,18 +493,18 @@ and the second argument is the height of the window. Here is an example
 of how to use a window size callback function:
 
 \begin{lstlisting}
-int WinWidth, WinHeight;
+int windowWidth, windowHeight;
 
-void GLFWCALL WindowResize( int width, int height )
+void WindowResize(int width, int height)
 {
-    WinWidth  = width;
-    WinHeight = height;
+    windowWidth  = width;
+    windowHeight = height;
 }
 
-int main( void )
+int main(void)
 {
     ...
-    glfwSetWindowSizeCallback( WindowResize );
+    glfwSetWindowSizeCallback(WindowResize);
     ...
 }
 \end{lstlisting}
@@ -507,11 +518,12 @@ An alternative to using a callback function for getting the window size,
 is to use the function \textbf{glfwGetWindowSize}:
 
 \begin{lstlisting}
-void glfwGetWindowSize( int *width, int *height )
+void glfwGetWindowSize(int* width, int* height)
 \end{lstlisting}
 
-The \textit{width} and \textit{height} arguments are filled out with the
-current window dimensions.
+The variables pointed to by \textit{width} and \textit{height} are set to the
+current window dimensions.  Note that either of these may be NULL; that
+argument is then ignored.
 
 
 %-------------------------------------------------------------------------
@@ -531,14 +543,17 @@ frame, and begin rendering a new frame. This is done with the command
 \textbf{glfwSwapBuffers}. The C syntax is:
 
 \begin{lstlisting}
-void glfwSwapBuffers( void )
+void glfwSwapBuffers(void)
 \end{lstlisting}
 
-Besides swapping the front and back rendering buffers,
-\textbf{glfwSwapBuffers} also calls \textbf{glfwPollEvents}\footnote{This
-behavior can be disabled by calling \textbf{glfwDisable} with the argument
-GLFW\_AUTO\_POLL\_EVENTS.}. This is to ensure frequent polling of events,
-such as keyboard and mouse input, and window reshaping events.
+After swapping the front and back rendering buffers, \textbf{glfwSwapBuffers}
+by default calls \textbf{glfwPollEvents}\footnote{This behavior can be disabled
+by calling \textbf{glfwDisable} with the argument GLFW\_AUTO\_POLL\_EVENTS.}.
+This is to ensure frequent polling of events, such as keyboard and mouse input,
+and window reshaping events.  Even if a given application does not use input
+events, without frequent polling of events (at \emph{least} once every few
+seconds), most modern window systems will flag the application as unresponsive
+and may suggest that the user terminate it.
 
 Sometimes it can be useful to select when the buffer swap will occur. With
 the function \textbf{glfwSwapInterval} it is possible to select the
@@ -546,7 +561,7 @@ minimum number of vertical retraces the video raster line should do before
 swapping the buffers:
 
 \begin{lstlisting}
-void glfwSwapInterval( int interval )
+void glfwSwapInterval(int interval)
 \end{lstlisting}
 
 If \textit{interval} is zero, the swap will take place immediately when
@@ -558,11 +573,12 @@ when it is not desirable to measure the time it takes to wait for the
 vertical retrace. However, a swap interval of 1 generally gives better
 visual quality.
 
-It should be noted that not all \OpenGL\ implementations and hardware
-support this function, in which case \textbf{glfwSwapInterval} will have
-no effect. Sometimes it is only possible to affect the swap interval
-through driver settings (e.g. the display settings under Windows, or as an
-environment variable setting under Unix).
+It should be noted that not all \OpenGL\ implementations and hardware support
+this function, in which case \textbf{glfwSwapInterval} will have no effect.  ATI
+Radeon cards under Microsoft Windows are especially notorious in this regard.
+Sometimes it is only possible to affect the swap interval through driver
+settings (e.g.  the display settings under Windows, or as an environment
+variable setting under Unix).
 
 
 %-------------------------------------------------------------------------
@@ -575,22 +591,22 @@ from. To get a list of available video modes, you can use the function
 \textbf{glfwGetVideoModes}:
 
 \begin{lstlisting}
-int glfwGetVideoModes( GLFWvidmode *list, int maxcount )
+int glfwGetVideoModes(GLFWvidmode* list, int maxcount)
 \end{lstlisting}
 
 The argument \textit{list} is a vector of GLFWvidmode structures, and
-\textit{maxcount} is the maximum number of video modes that your vector
-can hold. \textbf{glfwGetVideoModes} will return the actual number of
-video modes detected on the system.
+\textit{maxcount} is the maximum number of video modes that your vector can
+hold. \textbf{glfwGetVideoModes} will return the number of video modes detected
+on the system, up to \textit{maxcount}.
 
 The GLFWvidmode structure looks like this:
 
 \begin{lstlisting}
 typedef struct {
-   int Width, Height;   // Video resolution
-   int RedBits;         // Red bits per pixel
-   int GreenBits;       // Green bits per pixel
-   int BlueBits;        // Blue bits per pixel
+    int Width, Height;   // Video resolution
+    int RedBits;         // Red bits per pixel
+    int GreenBits;       // Green bits per pixel
+    int BlueBits;        // Blue bits per pixel
 } GLFWvidmode;
 \end{lstlisting}
 
@@ -598,8 +614,8 @@ Here is an example of retrieving all available video modes:
 
 \begin{lstlisting}
 int nummodes;
-GLFWvidmode list[ 200 ];
-nummodes = glfwGetVideoModes( list, 200 );
+GLFWvidmode list[200];
+nummodes = glfwGetVideoModes(list, 200);
 \end{lstlisting}
 
 The returned list is sorted, first by color depth ($RedBits + GreenBits +
@@ -610,7 +626,7 @@ To get the desktop video mode, use the function
 \textbf{glfwGetDesktopMode}:
 
 \begin{lstlisting}
-void glfwGetDesktopMode( GLFWvidmode *mode )
+void glfwGetDesktopMode(GLFWvidmode* mode)
 \end{lstlisting}
 
 The function returns the resolution and color depth of the user desktop in
@@ -634,12 +650,16 @@ The first thing to know about input handling in \GLFW\ is that all
 keyboard and mouse input is collected by checking for input events. This
 has do be done manually by calling either \textbf{glfwPollEvents} or
 \textbf{glfwSwapBuffers} (which implicitly calls \textbf{glfwPollEvents}
-for you). Normally this does not have to be a concern, since
+for you). Normally this is not a cause for concern, as
 \textbf{glfwSwapBuffers} is called every frame, which should be often
-enough (about 10-100 times per second for a normal \OpenGL\ application).
-One exception is when rendering is paused, and then the program waits for
-input to begin animation again. In this case \textbf{glfwPollEvents} has
-to be called repeatedly until any new input events arrive.
+enough (about 10-100 times per second for a normal \OpenGL\ application) that
+the window will feel responsive.
+
+One exception is when an application is updating its view only in response to input.
+In this case the \textbf{glfwWaitEvents} is useful, as it blocks the calling
+thread until an event arrives.  The refresh callback, set with
+\textbf{glfwSetWindowRefreshCallback}, may also be useful for such
+applications, especially on unbuffered window systems.
 
 If it is not desirable that \textbf{glfwPollEvents is} called implicitly
 from \textbf{glfwSwapBuffers}, call \textbf{glfwDisable} with the argument
@@ -652,7 +672,7 @@ called.
 
 %-------------------------------------------------------------------------
 \section{Keyboard Input}
-\GLFW\ gives three options for getting keyboard input:
+\GLFW\ provides three mechanisms for getting keyboard input:
 
 \begin{itemize}
 \item Manually polling the state of individual keys.
@@ -661,12 +681,12 @@ called.
 \item Automatically receive characters, using a callback function.
 \end{itemize}
 
-Depending on what the keyboard input will be used for, either of the
-methods may be more suitable. The main difference between the two last
-options is that while characters are affected by modifier keys (such as
-shift), key state is independent of any modifier keys. Also, special keys
-(such as function keys, cursor keys and modifier keys) are not reported to
-the character callback function.
+Depending on what the keyboard input will be used for, different methods may be
+preferred. The main difference between the two last methods is that while
+characters are affected by modifier keys (such as shift), key state is
+independent of any modifier keys. Also, special keys (such as function keys,
+cursor keys and modifier keys) are not reported to the character callback
+function.
 
 %-------------------------------------------------------------------------
 \subsection{Key state}
@@ -674,7 +694,7 @@ To check if a key is held down or not at any given moment, use the
 function \textbf{glfwGetKey}:
 
 \begin{lstlisting}
-int glfwGetKey( int key )
+int glfwGetKey(int key)
 \end{lstlisting}
 
 It queries the current status of individual keyboard keys. The argument
@@ -691,14 +711,14 @@ enabling sticky keys, which is done by calling \textbf{glfwEnable} with
 the argument GLFW\_STICKY\_KEYS, as in the following example:
 
 \begin{lstlisting}
-glfwEnable( GLFW_STICKY_KEYS );
+glfwEnable(GLFW_STICKY_KEYS);
 \end{lstlisting}
 
 When sticky keys are enabled, a key will not be released until it is
 checked with \textbf{glfwGetKey}. To disable sticky keys, call
 \textbf{glfwDisable} witht the argument GLFW\_STICKY\_KEYS. Then all keys
-that are not currently held down will be released, and future key releases
-will take place immediately when the user releases the key, without
+that are not currently held down will be released and future key releases
+will take place immediately when the user releases the key without
 waiting for \textbf{glfwGetKey} to check the key. By default sticky keys
 are disabled.
 
@@ -714,11 +734,11 @@ recording many key presses in the first section that will be detected in
 the second section. To avoid this problem, always disable sticky keys
 before leaving a section of a program.
 
-An alternative to using \textbf{glfwGetKey} is to register a keyboard
-input callback function with \textbf{glfwSetKeyCallback}:
+A usually better alternative to using \textbf{glfwGetKey} is to register a
+keyboard input callback function with \textbf{glfwSetKeyCallback}:
 
 \begin{lstlisting}
-void glfwSetKeyCallback( GLFWkeyfun cbfun )
+void glfwSetKeyCallback(GLFWkeyfun cbfun)
 \end{lstlisting}
 
 The argument \textit{fun} is a pointer to a callback function. The
@@ -727,8 +747,10 @@ identifier, and the second is the new key state, which can be GLFW\_PRESS
 or GLFW\_RELEASE. To unregister a callback function, call
 \textbf{glfwSetKeyCallback} with \textit{fun} = NULL.
 
-A callback function can be useful in some situations. For instance it can
-replace multiple \textbf{glfwGetKey} calls with a switch/case statement.
+Using the callback function, you can be sure not to miss any key press or
+release events, regardless of how many may have occurred during the last frame.
+It also encourages event-based design, where the application responds only to
+actual events instead of having to poll for every supported event.
 
 %-------------------------------------------------------------------------
 \subsection{Character input}
@@ -738,12 +760,12 @@ function is more suitable. To register a character callback function, use
 \textbf{glfwSetCharCallback}:
 
 \begin{lstlisting}
-void glfwSetCharCallback( GLFWcharfun cbfun )
+void glfwSetCharCallback(GLFWcharfun cbfun)
 \end{lstlisting}
 
 The argument \textit{fun} is a pointer to a callback function. The
 callback function shall take two integer arguments. The first is a Unicode
-character code, and the second is  GLFW\_PRESS if the key that generated
+code point, and the second is  GLFW\_PRESS if the key that generated
 the character was pressed, or GLFW\_RELEASE if it was released. To
 unregister a callback function, call \textbf{glfwSetCharCallback} with
 \textit{fun} = NULL.
@@ -765,7 +787,7 @@ To activate key repeat, call \textbf{glfwEnable} with the argument
 GLFW\_KEY\_REPEAT:
 
 \begin{lstlisting}
-glfwEnable( GLFW_KEY_REPEAT );
+glfwEnable(GLFW_KEY_REPEAT);
 \end{lstlisting}
 
 This will let a registered key or character callback function receive key
@@ -783,7 +805,7 @@ With \GLFW\ it is possible to do by calling \textbf{glfwDisable} with the
 argument GLFW\_SYSTEM\_KEYS:
 
 \begin{lstlisting}
-glfwDisable( GLFW_SYSTEM_KEYS );
+glfwDisable(GLFW_SYSTEM_KEYS);
 \end{lstlisting}
 
 By doing so, most system keys will have no effect and will not interfere
@@ -800,25 +822,31 @@ polling or callback functions.
 
 %-------------------------------------------------------------------------
 \subsection{Mouse position}
-To read the mouse position, you can use the function
-\textbf{glfwGetMousePos}:
+To query the position of the mouse cursor, call \textbf{glfwGetMousePos}:
 
 \begin{lstlisting}
-void glfwGetMousePos( int *x, int *y )
+void glfwGetMousePos(int* x, int* y)
 \end{lstlisting}
 
-The arguments \textit{x} and \textit{y} point to integer variables that
-will be updated with the current absolute mouse position. An alternative
-is to use a callback function instead, which can be set with
+The variables pointed to by \textit{x} and \textit{y} will be updated with the
+current position of the mouse cursor relative to the upper-left corner of the
+client area of the \GLFW\ window.
+
+An alternative is to use a callback function, which can be set with
 \textbf{glfwSetMousePosCallback}:
 
 \begin{lstlisting}
-void glfwSetMousePosCallback( GLFWmouseposfun cbfun )
+void glfwSetMousePosCallback(GLFWmouseposfun cbfun)
 \end{lstlisting}
 
 The function that \textit{fun} points to will be called every time the
-mouse position changes. The first argument to the callback function is
-the mouse x position, and the second argument is the mouse y position.
+mouse cursor moves.  The first argument to the callback function is
+the cursor x-coordinate and the second the cursor y-coordinate, both relative
+to the upper-left corner of the client area of the \GLFW\ window.
+
+Note that while the \textbf{glfwGetMousePos} function only reports the final
+position after cursor movement events have been processed, using a callback
+function lets the application see each and every such event.
 
 
 %-------------------------------------------------------------------------
@@ -826,27 +854,27 @@ the mouse x position, and the second argument is the mouse y position.
 To query the state of a mouse button, call \textbf{glfwGetMouseButton}:
 
 \begin{lstlisting}
-int glfwGetMouseButton( int button )
+int glfwGetMouseButton(int button)
 \end{lstlisting}
 
-The argument \textit{button} can be one of the following mouse button
-identifiers: GLFW\_MOUSE\_BUTTON\_LEFT, GLFW\_MOUSE\_BUTTON\_RIGHT or
+The argument \textit{button} can be any \GLFW\ mouse button token, i.e.
+GLFW\_MOUSE\_BUTTON\_1 through GLFW\_MOUSE\_BUTTON\_8 or one of
+GLFW\_MOUSE\_BUTTON\_LEFT, GLFW\_MOUSE\_BUTTON\_RIGHT or
 GLFW\_MOUSE\_BUTTON\_MIDDLE. \textbf{glfwGetMouseButton} will return
-GLFW\_PRESS (which is a non-zero value) if the corresponding mouse
-button is held down, otherwise it will return GLFW\_RELEASE (which is
-equal to zero).
+GLFW\_PRESS (which is a non-zero value) if the corresponding mouse button is
+held down, otherwise it will return GLFW\_RELEASE (which is equal to zero).
 
-Just as it is possible to make keys ``sticky'', it is also possible to
-make mouse buttons appear as held down until the button is checked for
-with \textbf{glfwGetMouseButton}. To enable sticky mouse buttons, call
+Just as it is possible to make keys ``sticky'', it is also possible to make
+each mouse button appear as held down until it is checked with
+\textbf{glfwGetMouseButton}.  To enable sticky mouse buttons, call
 \textbf{glfwEnable} with the argument GLFW\_STICKY\_MOUSE\_BUTTONS.
 
 When sticky mouse buttons are enabled, a mouse button will not be released
 until it is checked with \textbf{glfwGetMouseButton}. To disable sticky
 mouse buttons, call \textbf{glfwDisable} with the argument
 GLFW\_STICKY\_MOUSE\_BUTTONS. Then all mouse buttons that are not
-currently held down will be released, and future mouse button releases
-will take place immediately when the user releases the mouse button,
+currently held down will be released and future mouse button releases
+will take place immediately when the user releases the mouse button
 without waiting for \textbf{glfwGetMouseButton} to check for the mouse
 button. By default sticky mouse buttons are disabled.
 
@@ -854,7 +882,7 @@ There is also a callback function for mouse button activities, which can
 be set with \textbf{glfwSetMouseButtonCallback}:
 
 \begin{lstlisting}
-void glfwSetMouseButtonCallback( GLFWmousebuttonfun fun )
+void glfwSetMouseButtonCallback(GLFWmousebuttonfun fun)
 \end{lstlisting}
 
 The argument \textit{fun} specifies a function that will be called
@@ -866,23 +894,25 @@ depending on the new state of the corresponding mouse button.
 
 %-------------------------------------------------------------------------
 \subsection{Mouse wheel}
-Some mice have a mouse wheel, which can be thought of as a third mouse
-axis. To get the position of the mouse wheel, call
-\textbf{glfwGetMouseWheel}:
+Some mice have a mouse wheel, most commonly used for vertical scrolling.  Also,
+most modern touchpads allow the user to scroll at least vertically, either by
+reserving an area for scrolling or through multi-finger gestures. To get the
+position of the mouse wheel, call \textbf{glfwGetMouseWheel}:
 
 \begin{lstlisting}
-int glfwGetMouseWheel( void )
+int glfwGetMouseWheel(void)
 \end{lstlisting}
 
 The function returns an integer that represents the position of the mouse
 wheel. When the user turns the wheel, the wheel position will increase or
-decrease.
+decrease.  Note that since scrolling hardware has no absolute position, \GLFW\
+simply sets the position to zero when the window is opened.
 
 It is also possible to register a callback function for mouse wheel events
 with the \textbf{glfwSetMouseWheelCallback} function:
 
 \begin{lstlisting}
-void glfwSetMouseWheelCallback( GLFWmousewheelfun fun )
+void glfwSetMouseWheelCallback(GLFWmousewheelfun fun)
 \end{lstlisting}
 
 The argument \textit{fun} specifies a function that will be called
@@ -896,7 +926,7 @@ mouse wheel.
 It is possible to hide the mouse cursor with the function call:
 
 \begin{lstlisting}
-glfwDisable( GLFW_MOUSE_CURSOR );
+glfwDisable(GLFW_MOUSE_CURSOR);
 \end{lstlisting}
 
 Hiding the mouse cursor has three effects:
@@ -911,7 +941,7 @@ To show the mouse cursor again, call \textbf{glfwEnable} with the
 argument GLFW\_MOUSE\_CURSOR:
 
 \begin{lstlisting}
-glfwEnable( GLFW_MOUSE_CURSOR );
+glfwEnable(GLFW_MOUSE_CURSOR);
 \end{lstlisting}
 
 By default the mouse cursor is hidden if a window is opened in fullscreen
@@ -930,12 +960,12 @@ have to be called in order for joystick state to be updated.
 
 %-------------------------------------------------------------------------
 \subsection{Joystick capabilities}
-First, it is often necessary to determine if a joystick is connected, and
+First, it is often necessary to determine if a joystick is connected and
 what its capabilities are. To get this information the function
 \textbf{glfwGetJoystickParam} can be used:
 
 \begin{lstlisting}
-int glfwGetJoystickParam( int joy, int param )
+int glfwGetJoystickParam(int joy, int param)
 \end{lstlisting}
 
 The \textit{joy} argument specifies which joystick to retrieve the
@@ -948,6 +978,10 @@ To determine the number of axes or buttons that are supported by the
 joystick, \textit{param} should be GLFW\_AXES or GLFW\_BUTTONS,
 respectively.
 
+Note that \GLFW\ supports both D-pads and POVs, even though they are not
+explicitly mentioned in the API.  D-pads are exposed as a set of four buttons
+and POVs are as two axes.
+
 
 %-------------------------------------------------------------------------
 \subsection{Joystick position}
@@ -955,13 +989,13 @@ To get the current axis positions of the joystick, the
 \textbf{glfwGetJoystickPos} is used:
 
 \begin{lstlisting}
-int glfwGetJoystickPos( int joy, float *pos, int numaxes )
+int glfwGetJoystickPos(int joy, float* pos, int numaxes)
 \end{lstlisting}
 
 As with \textbf{glfwGetJoystickParam}, the \textit{joy} argument
 specifies which joystick to retrieve information from. The
-\textit{numaxes} argument specifies how many axes to return, and the
-\textit{pos} argument specifies an array in which all the axis positions
+\textit{numaxes} argument specifies how many axes to return positions for and the
+\textit{pos} argument specifies an array in which they
 are stored. The function returns the actual number of axes that were
 returned, which could be less than \textit{numaxes} if the joystick does
 not support all the requested axes, or if the joystick is not connected.
@@ -970,9 +1004,9 @@ For instance, to get the position of the first two axes (the X and Y axes)
 of joystick 1, the following code can be used:
 
 \begin{lstlisting}
-float position[ 2 ];
+float position[2];
 
-glfwGetJoystickPos( GLFW_JOYSTICK_1, position, 2 );
+glfwGetJoystickPos(GLFW_JOYSTICK_1, position, 2);
 \end{lstlisting}
 
 After this call, the first element of the \textit{position} array will
@@ -995,16 +1029,16 @@ available for querying the state of joystick buttons, namely the
 \textbf{glfwGetJoystickButtons} function:
 
 \begin{lstlisting}
-int glfwGetJoystickButtons( int joy, unsigned char *buttons,
-                            int numbuttons )
+int glfwGetJoystickButtons(int joy, unsigned char* buttons,
+                           int numbuttons)
 \end{lstlisting}
 
-The function works just like the \textbf{glfwGetJoystickAxis} function,
-except that it returns the state of joystick buttons instead of axis
-positions. Each button in the array specified by the \textit{buttons}
-argument can be either GLFW\_PRESS or GLFW\_RELEASE, telling if the
-corresponding button is currently held down or not. Unsupported buttons
-will have the value GLFW\_RELEASE.
+The function works just like the \textbf{glfwGetJoystickAxis} function, except
+that it returns the state of joystick buttons instead of axis positions. Each
+button in the array specified by the \textit{buttons} argument can be either
+GLFW\_PRESS or GLFW\_RELEASE, indicating whether the corresponding button is
+currently held down or not. Unsupported buttons will have the value
+GLFW\_RELEASE.
 
 
 %-------------------------------------------------------------------------
@@ -1028,7 +1062,7 @@ since \textbf{glfwInit} was called. The timer is accessed with the
 function \textbf{glfwGetTime}:
 
 \begin{lstlisting}
-double glfwGetTime( void )
+double glfwGetTime(void)
 \end{lstlisting}
 
 The precision of the timer depends on which computer and operating
@@ -1040,7 +1074,7 @@ It is possible to set the value of the high precision timer using the
 \textbf{glfwSetTime} function:
 
 \begin{lstlisting}
-void glfwSetTime( double time )
+void glfwSetTime(double time)
 \end{lstlisting}
 
 The argument \textit{time} is the time, in seconds, that the timer should
@@ -1065,8 +1099,8 @@ An extension is defined by:
 \end{enumerate}
 
 A list of official extensions, together with their definitions, can be
-found at the \textit{OpenGL Extension Registry}
-(\url{http://oss.sgi.com/projects/ogl-sample/registry/}).
+found at the \textit{OpenGL Registry}
+(\url{http://www.opengl.org/registry/}).
 
 To use a certain extension, the following steps must be performed:
 
@@ -1080,6 +1114,12 @@ To use a certain extension, the following steps must be performed:
 How this is done using \GLFW\ is described in the following sections.
 Please note that this chapter covers some advanced topics, and is quite
 specific to the C programming language.
+
+For a much easier way to get access to \OpenGL\ extensions, you should probably
+use a dedicated extension loading library such as GLEW or GLee.  This kind of
+library greatly reduces the amount of work necessary to use \OpenGL\
+extensions.  GLEW in particular has been extensively tested with and works well
+with \GLFW .
 
 
 %-------------------------------------------------------------------------
@@ -1095,25 +1135,25 @@ is an example of how to check for the extension GL\_ARB\_multitexture:
     // Extension is supported by the include files
 #else
     // Extension is not supported by the include files
-    // Update your <GL/gl.h> file!
+    // Get a more up-to-date <GL/gl.h> file!
 #endif
 \end{lstlisting}
 
 
 %-------------------------------------------------------------------------
 \section{Runtime Check}
-Even if the compiler include files have defined all the necessary tokens,
-the target system may not support the extension (perhaps it has a
-different graphic card with a different \OpenGL\ implementation, or it has
-an older driver). That is why it is necessary to do a run time check for
-the extension support as well. This is done with the \GLFW\ function
-\textbf{glfwExtensionSupported}, which has the C syntax:
+Even if the compiler include files have defined all the necessary tokens, a
+given machine may not actually support the extension (it may have a graphics
+card with a different \OpenGL\ implementation, or an older driver). That is why
+it is necessary to do a run time check for the extension support as well. This
+is done with the \GLFW\ function \textbf{glfwExtensionSupported}, which has the
+C syntax:
 
 \begin{lstlisting}
-int glfwExtensionSupported( const char *extension )
+int glfwExtensionSupported(const char* extension)
 \end{lstlisting}
 
-The argument \textit{extension} is a null terminated ISO~8859-1 string
+The argument \textit{extension} is a null terminated ASCII string
 with the extension name. \textbf{glfwExtensionSupported} returns GL\_TRUE
 if the extension is supported, otherwise it returns GL\_FALSE.
 
@@ -1127,11 +1167,10 @@ int multitexture_supported;
 
 #ifdef GL_ARB_multitexture
     // Check if extension is supported at run time
-    multitexture_supported =
-        glfwExtensionSupported( "GL_ARB_multitexture" );
+    multitexture_supported = glfwExtensionSupported("GL_ARB_multitexture");
 #else
     // Extension is not supported by the include files
-    // Update your <GL/gl.h> file!
+    // Get a more up-to-date <GL/gl.h> file!
     multitexture_supported = GL_FALSE;
 #endif
 \end{lstlisting}
@@ -1139,7 +1178,7 @@ int multitexture_supported;
 Now it is easy to check for the extension within the program, simply do:
 
 \begin{lstlisting}
-    if( multitexture_supported )
+    if (multitexture_supported)
     {
         // Use multi texturing
     }
@@ -1152,16 +1191,16 @@ Now it is easy to check for the extension within the program, simply do:
 
 %-------------------------------------------------------------------------
 \section{Fetching Function Pointers}
-Some extensions (not all) require the use of new \OpenGL\ functions, which
-are not necessarily defined by your link libraries. Thus it is necessary
-to get the function pointers dynamically at run time. This is done with
-the \GLFW\ function \textbf{glfwGetProcAddress}:
+Some extensions, though not all, require the use of new \OpenGL\ functions.
+These entry points are not necessarily exposed by your link libraries, making
+it necessary to find them dynamically at run time.  You can retrieve these
+entry points using the \textbf{glfwGetProcAddress} function:
 
 \begin{lstlisting}
-void * glfwGetProcAddress( const char *procname )
+void* glfwGetProcAddress(const char* procname)
 \end{lstlisting}
 
-The argument \textit{procname} is a null terminated ISO~8859-1 string
+The argument \textit{procname} is a null terminated ASCII string
 holding the name of the \OpenGL\ function. \textbf{glfwGetProcAddress}
 returns the address to the function if the function is available,
 otherwise NULL is returned.
@@ -1170,7 +1209,7 @@ Obviously, fetching the function pointer is trivial. For instance, if we
 want to obtain the pointer to \textbf{glActiveTextureARB}, we simply call:
 
 \begin{lstlisting}
-glActiveTextureARB = glfwGetProcAddress( "glActiveTextureARB" );
+glActiveTextureARB = glfwGetProcAddress("glActiveTextureARB");
 \end{lstlisting}
 
 However, there are many possible naming and type definition conflicts
@@ -1179,21 +1218,20 @@ errors. My proposed solution is the following:
 
 \begin{itemize}
 \item Do not use the function name for the variable name. Use something
-      similar (perhaps with a prefix or suffix), and then use
+      similar, perhaps by adding a prefix or suffix, and then use
       \texttt{\#define} to map the function name to your variable.
 \item The standard type definition naming convention for function pointers
       is \texttt{PFN\textit{xxxx}PROC}, where \texttt{\textit{xxxx}} is
       the uppercase version of the function name (e.g.
-      \texttt{PFNGLACTIVETEXTUREARBPROC}). Either make sure that a
-      compatible \texttt{gl.h} and/or \texttt{glext.h} file is used by
-      your compiler and rely on it to do the type definitions for you, or
-      use a custom type definition naming convention (e.g.
-      \texttt{\textit{xxxx}\_T} or something) and do the type definitions
-      yourself.
+      \texttt{PFNGLACTIVETEXTUREARBPROC}). Either make sure your compiler uses
+      a compatible \texttt{gl.h} and/or \texttt{glext.h} file and rely on it to
+      define these types, or use define the types yourself using a different
+      naming convention (for example  \texttt{\textit{xxxx}\_T}) and do the
+      type definitions yourself.
 \end{itemize}
 
-Here is an example of how to do it (here we use our own function pointer
-type defintion):
+Here is a slightly longer example of how to use an extension, this time using
+our own function pointer type definition):
 
 \begin{lstlisting}
 // Type definition of the function pointer
@@ -1208,11 +1246,11 @@ int multitexture_supported;
 
 #ifdef GL_ARB_multitexture
     // Check if extension is supported at run time
-    if( glfwExtensionSupported( "GL_ARB_multitexture" ) )
+    if (glfwExtensionSupported("GL_ARB_multitexture"))
     {
         // Get the function pointer
         glActiveTextureARB = (GLACTIVETEXTUREARB_T)
-            glfwGetProcAddress( "glActiveTextureARB" );
+            glfwGetProcAddress("glActiveTextureARB");
 
         multitexture_supported = GL_TRUE;
     }
@@ -1226,30 +1264,28 @@ int multitexture_supported;
 #endif
 \end{lstlisting}
 
-Please note that the code example is not 100\% complete. First of all,
-the GL\_ARB\_multitexture extension defines many more functions than the
-single function that the code example defines. Secondly, checking if an
-extension is supported using \textbf{glfwExtensionSupported} is not enough
-to ensure that the corresponding functions will be valid. You also need to
-check if the function pointers returned by \textbf{glfwGetProcAddress} are
-non-NULL values.
+Even this example leaves some things to be desired. First of all, the
+GL\_ARB\_multitexture extension defines many more functions than the single
+function used above.  Secondly, checking if an extension is supported using
+\textbf{glfwExtensionSupported} is not enough to ensure that the corresponding
+functions will be valid.  You also need to check that the all function pointers
+returned by \textbf{glfwGetProcAddress} are non-NULL.
 
 
 %-------------------------------------------------------------------------
 \subsection{Function pointer type definitions}
 To make a function pointer type definition, you need to know the function
 prototype. This can often be found in the extension definitions (e.g. at
-the \textit{OpenGL Extension Registry}). All the functions that are
-defined for an extension are listed with their C prototype definitions
-under the section \textit{New Procedures and Functions} in the extension
-definition.
+the \textit{OpenGL Registry}).  All the entry points that are defined by an
+extension are listed with their C prototype definitions under the section
+\textit{New Procedures and Functions} in the extension definition.
 
 For instance, if we look at the definition of the
 GL\_ARB\_texture\_compression extension, we find a list of new functions.
-One of the functions looks like this:
+One of these is declared like this:
 
 \begin{lstlisting}
-void GetCompressedTexImageARB(enum target, int lod, void *img);
+void GetCompressedTexImageARB(enum target, int lod, void* img);
 \end{lstlisting}
 
 Like in most official \OpenGL\ documentation, all the \texttt{GL} and
@@ -1257,7 +1293,7 @@ Like in most official \OpenGL\ documentation, all the \texttt{GL} and
 prototype would look like this:
 
 \begin{lstlisting}
-void glGetCompressedTexImageARB(GLenum target, GLint lod, void *img);
+void glGetCompressedTexImageARB(GLenum target, GLint lod, void* img);
 \end{lstlisting}
 
 All we have to do to turn this prototype definition into a function
@@ -1265,23 +1301,16 @@ pointer type definition, is to replace the function name with
 \texttt{(APIENTRY * \textit{xxxx}\_T)}, where \textit{xxxx} is the
 uppercase version of the name (according to the proposed naming
 convention). The keyword \texttt{APIENTRY} is needed to be compatible
-between different platforms. The \GLFW\ include file \texttt{GL/glfw.h}
-always makes sure that \texttt{APIENTRY} is properly defined, regardless
-of which platform the program is compiled on.
+between different platforms. The \GLFW\ header file \texttt{GL/glfw.h}
+ensures that \texttt{APIENTRY} is properly defined on all supported platforms.
 
 In other words, for the function \textbf{glGetCompressedTexImageARB} we
 get:
 
 \begin{lstlisting}
 typedef void (APIENTRY * GLGETCOMPRESSEDTEXIMAGEARB_T)
-             (GLenum target, GLint level, void *img);
+             (GLenum target, GLint level, void* img);
 \end{lstlisting}
 
-
-
-%-------------------------------------------------------------------------
-% Index
-%-------------------------------------------------------------------------
-% ...
 
 \end{document}

@@ -51,15 +51,6 @@
 #define GLFW_STICK 2
 
 
-//========================================================================
-// System independent include files
-//========================================================================
-
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-
-
 //------------------------------------------------------------------------
 // Window opening hints (set by glfwOpenWindowHint)
 // A bucket of semi-random stuff bunched together for historical reasons

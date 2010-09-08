@@ -31,6 +31,7 @@
 #include "internal.h"
 
 #include <limits.h>
+#include <string.h>
 
 
 //************************************************************************

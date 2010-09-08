@@ -30,6 +30,8 @@
 
 #include "internal.h"
 
+#include <stdio.h>
+
 
 //************************************************************************
 //****                  GLFW internal functions                       ****

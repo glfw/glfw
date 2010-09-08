@@ -31,6 +31,8 @@
 #define _init_c_
 #include "internal.h"
 
+#include <string.h>
+
 
 //************************************************************************
 //****                    GLFW user functions                         ****

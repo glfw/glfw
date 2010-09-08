@@ -31,6 +31,9 @@
 #include "internal.h"
 
 #include <limits.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 
 /* Define GLX 1.4 FSAA tokens if not already defined */

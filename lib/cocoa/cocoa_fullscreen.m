@@ -57,11 +57,11 @@ static GLFWvidmode vidmodeFromCGDisplayMode( NSDictionary *mode )
     unsigned int bps = [[mode objectForKey:(id)kCGDisplayBitsPerSample] unsignedIntValue];
 
     GLFWvidmode result;
-    result.Width = width;
-    result.Height = height;
-    result.RedBits = bps;
-    result.GreenBits = bps;
-    result.BlueBits = bps;
+    result.width = width;
+    result.height = height;
+    result.redBits = bps;
+    result.greenBits = bps;
+    result.blueBits = bps;
     return result;
 }
 

@@ -258,9 +258,9 @@ int _glfwPlatformGetVideoModes( GLFWvidmode *list, int maxcount )
             for( i = 0; i < count; i ++ )
             {
                 // Mode "code" for already listed mode
-                bpp = list[i].RedBits + list[i].GreenBits +
-                      list[i].BlueBits;
-                m2 = (bpp << 25) | (list[i].Width * list[i].Height);
+                bpp = list[i].redBits + list[i].greenBits +
+                      list[i].blueBits;
+                m2 = (bpp << 25) | (list[i].width * list[i].height);
                 if( m1 <= m2 )
                 {
                     break;
@@ -270,11 +270,11 @@ int _glfwPlatformGetVideoModes( GLFWvidmode *list, int maxcount )
             // New entry at the end of the list?
             if( i >= count )
             {
-                list[count].Width     = dm.dmPelsWidth;
-                list[count].Height    = dm.dmPelsHeight;
-                list[count].RedBits   = r;
-                list[count].GreenBits = g;
-                list[count].BlueBits  = b;
+                list[count].width     = dm.dmPelsWidth;
+                list[count].height    = dm.dmPelsHeight;
+                list[count].redBits   = r;
+                list[count].greenBits = g;
+                list[count].blueBits  = b;
                 count ++;
             }
             // Insert new entry in the list?
@@ -284,11 +284,11 @@ int _glfwPlatformGetVideoModes( GLFWvidmode *list, int maxcount )
                 {
                     list[j] = list[j-1];
                 }
-                list[i].Width     = dm.dmPelsWidth;
-                list[i].Height    = dm.dmPelsHeight;
-                list[i].RedBits   = r;
-                list[i].GreenBits = g;
-                list[i].BlueBits  = b;
+                list[i].width     = dm.dmPelsWidth;
+                list[i].height    = dm.dmPelsHeight;
+                list[i].redBits   = r;
+                list[i].greenBits = g;
+                list[i].blueBits  = b;
                 count ++;
             }
         }
@@ -313,8 +313,8 @@ void _glfwPlatformGetDesktopMode( GLFWvidmode *mode )
     (void) EnumDisplaySettings( NULL, ENUM_REGISTRY_SETTINGS, &dm );
 
     // Return desktop mode parameters
-    mode->Width  = dm.dmPelsWidth;
-    mode->Height = dm.dmPelsHeight;
-    bpp2rgb( dm.dmBitsPerPel, &mode->RedBits, &mode->GreenBits, &mode->BlueBits );
+    mode->width  = dm.dmPelsWidth;
+    mode->height = dm.dmPelsHeight;
+    bpp2rgb( dm.dmBitsPerPel, &mode->redBits, &mode->greenBits, &mode->blueBits );
 }
 

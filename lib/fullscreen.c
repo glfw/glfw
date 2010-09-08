@@ -39,7 +39,7 @@
 // Get a list of available video modes
 //========================================================================
 
-GLFWAPI int glfwGetVideoModes(GLFWvidmode *list, int maxcount)
+GLFWAPI int glfwGetVideoModes(GLFWvidmode* list, int maxcount)
 {
     int count, i, swap, res1, res2, depth1, depth2;
     GLFWvidmode vm;
@@ -56,11 +56,11 @@ GLFWAPI int glfwGetVideoModes(GLFWvidmode *list, int maxcount)
         swap = 0;
         for (i = 0;  i < count - 1;  i++)
         {
-            res1   = list[i].Width*list[i].Height;
-            depth1 = list[i].RedBits+list[i].GreenBits+list[i].BlueBits;
-            res2   = list[i + 1].Width*list[i + 1].Height;
-            depth2 = list[i + 1].RedBits+list[i + 1].GreenBits+
-                     list[i + 1].BlueBits;
+            res1   = list[i].width*list[i].height;
+            depth1 = list[i].redBits+list[i].greenBits+list[i].blueBits;
+            res2   = list[i + 1].width*list[i + 1].height;
+            depth2 = list[i + 1].redBits+list[i + 1].greenBits+
+                     list[i + 1].blueBits;
 
             if ((depth2 < depth1) || ((depth2 == depth1) && (res2 < res1)))
             {
@@ -81,7 +81,7 @@ GLFWAPI int glfwGetVideoModes(GLFWvidmode *list, int maxcount)
 // Get the desktop video mode
 //========================================================================
 
-GLFWAPI void glfwGetDesktopMode(GLFWvidmode *mode)
+GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode)
 {
     if (!_glfwInitialized || mode == NULL)
         return;

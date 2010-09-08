@@ -28,8 +28,8 @@ int main( void )
     // Show desktop video mode
     glfwGetDesktopMode( &dtmode );
     printf( "Desktop mode: %d x %d x %d\n\n",
-            dtmode.Width, dtmode.Height, dtmode.RedBits +
-            dtmode.GreenBits + dtmode.BlueBits );
+            dtmode.width, dtmode.height, dtmode.redBits +
+            dtmode.greenBits + dtmode.blueBits );
 
     // List available video modes
     modecount = glfwGetVideoModes( modes, MAX_NUM_MODES );
@@ -37,8 +37,8 @@ int main( void )
     for( i = 0; i < modecount; i ++ )
     {
         printf( "%3d: %d x %d x %d\n", i,
-                modes[i].Width, modes[i].Height, modes[i].RedBits +
-                modes[i].GreenBits + modes[i].BlueBits );
+                modes[i].width, modes[i].height, modes[i].redBits +
+                modes[i].greenBits + modes[i].blueBits );
     }
 
     // Terminate GLFW

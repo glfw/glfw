@@ -471,11 +471,11 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
     {
         for (l = 0;  l < rescount && count < maxcount;  l++)
         {
-            list[count].Width     = resarray[l].width;
-            list[count].Height    = resarray[l].height;
-            list[count].RedBits   = (rgbarray[k] >> 16) & 255;
-            list[count].GreenBits = (rgbarray[k] >> 8) & 255;
-            list[count].BlueBits  = rgbarray[k] & 255;
+            list[count].width     = resarray[l].width;
+            list[count].height    = resarray[l].height;
+            list[count].redBits   = (rgbarray[k] >> 16) & 255;
+            list[count].greenBits = (rgbarray[k] >> 8) & 255;
+            list[count].blueBits  = rgbarray[k] & 255;
             count++;
         }
     }
@@ -511,15 +511,15 @@ void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
     bpp = DefaultDepth(dpy, screen);
 
     // Convert BPP to RGB bits
-    BPP2RGB(bpp, &mode->RedBits, &mode->GreenBits, &mode->BlueBits);
+    BPP2RGB(bpp, &mode->redBits, &mode->greenBits, &mode->blueBits);
 
 #if defined(_GLFW_HAS_XRANDR)
     if (_glfwLibrary.XRandR.available)
     {
         if (_glfwWin.FS.modeChanged)
         {
-            mode->Width  = _glfwWin.FS.oldWidth;
-            mode->Height = _glfwWin.FS.oldHeight;
+            mode->width  = _glfwWin.FS.oldWidth;
+            mode->height = _glfwWin.FS.oldHeight;
             return;
         }
     }
@@ -529,8 +529,8 @@ void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
         if (_glfwWin.FS.modeChanged)
         {
             // The old (desktop) mode is stored in _glfwWin.FS.oldMode
-            mode->Width  = _glfwWin.FS.oldMode.hdisplay;
-            mode->Height = _glfwWin.FS.oldMode.vdisplay;
+            mode->width  = _glfwWin.FS.oldMode.hdisplay;
+            mode->height = _glfwWin.FS.oldMode.vdisplay;
         }
         else
         {
@@ -538,8 +538,8 @@ void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
             XF86VidModeGetAllModeLines(dpy, screen, &modecount, &modelist);
 
             // The first mode in the list is the current (desktio) mode
-            mode->Width  = modelist[0]->hdisplay;
-            mode->Height = modelist[0]->vdisplay;
+            mode->width  = modelist[0]->hdisplay;
+            mode->height = modelist[0]->vdisplay;
 
             // Free list
             XFree(modelist);
@@ -550,7 +550,7 @@ void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
 #endif
 
     // Get current display width and height
-    mode->Width  = DisplayWidth(dpy, screen);
-    mode->Height = DisplayHeight(dpy, screen);
+    mode->width  = DisplayWidth(dpy, screen);
+    mode->height = DisplayHeight(dpy, screen);
 }
 

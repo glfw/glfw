@@ -38,14 +38,14 @@
 static int _glfwVideoModesEqual( GLFWvidmode* first,
                                  GLFWvidmode* second )
 {
-    if( first->Width != second->Width )
+    if( first->width != second->width )
         return 0;
 
-    if( first->Height != second->Height )
+    if( first->height != second->height )
         return 0;
 
-    if( first->RedBits + first->GreenBits + first->BlueBits !=
-      second->RedBits + second->GreenBits + second->BlueBits )
+    if( first->redBits + first->greenBits + first->blueBits !=
+      second->redBits + second->greenBits + second->blueBits )
         return 0;
 
     return 1;
@@ -62,18 +62,18 @@ static void _glfwCGToGLFWVideoMode( CFDictionaryRef cgMode,
 
     CFNumberGetValue( CFDictionaryGetValue( cgMode, kCGDisplayWidth ),
                      kCFNumberIntType,
-                     &(glfwMode->Width) );
+                     &(glfwMode->width) );
     CFNumberGetValue( CFDictionaryGetValue( cgMode, kCGDisplayHeight ),
                      kCFNumberIntType,
-                     &(glfwMode->Height) );
+                     &(glfwMode->height) );
 
     CFNumberGetValue( CFDictionaryGetValue( cgMode, kCGDisplayBitsPerSample ),
                      kCFNumberIntType,
                      &bitsPerSample );
 
-    glfwMode->RedBits = bitsPerSample;
-    glfwMode->GreenBits = bitsPerSample;
-    glfwMode->BlueBits = bitsPerSample;
+    glfwMode->redBits = bitsPerSample;
+    glfwMode->greenBits = bitsPerSample;
+    glfwMode->blueBits = bitsPerSample;
 }
 
 //========================================================================
@@ -98,7 +98,7 @@ int _glfwPlatformGetVideoModes( GLFWvidmode *list, int maxcount )
                                 &mode );
 
         // Is it a valid mode? (only list depths >= 15 bpp)
-        if( mode.RedBits + mode.GreenBits + mode.BlueBits < 15 )
+        if( mode.redBits + mode.greenBits + mode.blueBits < 15 )
             continue;
 
         // Check for duplicate of current mode in target list

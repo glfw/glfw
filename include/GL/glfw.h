@@ -345,7 +345,6 @@ extern "C" {
 #define GLFW_STICKY_MOUSE_BUTTONS 0x00030003
 #define GLFW_SYSTEM_KEYS          0x00030004
 #define GLFW_KEY_REPEAT           0x00030005
-#define GLFW_AUTO_POLL_EVENTS     0x00030006
 
 /* glfwGetJoystickParam tokens */
 #define GLFW_PRESENT              0x00050001

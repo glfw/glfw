@@ -293,7 +293,6 @@ struct _GLFWwin_struct {
     // User selected window settings
     int       fullscreen;      // Fullscreen flag
     int       mouseLock;       // Mouse-lock flag
-    int       autoPollEvents;  // Auto polling flag
     int       sysKeysDisabled; // System keys disabled flag
     int       windowNoResize;  // Resize- and maximize gadgets disabled flag
     int       refreshRate;     // Vertical monitor refresh rate

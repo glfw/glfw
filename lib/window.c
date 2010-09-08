@@ -470,10 +470,9 @@ GLFWAPI int glfwOpenWindow(int width, int height,
         return GL_FALSE;
 
     // Clear GLFW window state
-    _glfwWin.active         = GL_TRUE;
-    _glfwWin.iconified      = GL_FALSE;
-    _glfwWin.mouseLock      = GL_FALSE;
-    _glfwWin.autoPollEvents = GL_TRUE;
+    _glfwWin.active    = GL_TRUE;
+    _glfwWin.iconified = GL_FALSE;
+    _glfwWin.mouseLock = GL_FALSE;
     _glfwClearInput();
 
     // Unregister all callback functions
@@ -742,10 +741,6 @@ GLFWAPI void glfwSwapBuffers(void)
     // Update display-buffer
     if (_glfwWin.opened)
         _glfwPlatformSwapBuffers();
-
-    // Check for window messages
-    if (_glfwWin.autoPollEvents)
-        glfwPollEvents();
 }
 
 

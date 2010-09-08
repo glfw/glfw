@@ -197,25 +197,6 @@ static void disableKeyRepeat(void)
 }
 
 
-//========================================================================
-// Enable automatic event polling
-//========================================================================
-
-static void enableAutoPollEvents(void)
-{
-    _glfwWin.autoPollEvents = 1;
-}
-
-//========================================================================
-// Disable automatic event polling
-//========================================================================
-
-static void disableAutoPollEvents(void)
-{
-    _glfwWin.autoPollEvents = 0;
-}
-
-
 //************************************************************************
 //****                    GLFW user functions                         ****
 //************************************************************************
@@ -245,9 +226,6 @@ GLFWAPI void glfwEnable(int token)
             break;
         case GLFW_KEY_REPEAT:
             enableKeyRepeat();
-            break;
-        case GLFW_AUTO_POLL_EVENTS:
-            enableAutoPollEvents();
             break;
         default:
             break;
@@ -280,9 +258,6 @@ GLFWAPI void glfwDisable(int token)
             break;
         case GLFW_KEY_REPEAT:
             disableKeyRepeat();
-            break;
-        case GLFW_AUTO_POLL_EVENTS:
-            disableAutoPollEvents();
             break;
         default:
             break;

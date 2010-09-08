@@ -475,9 +475,6 @@ int main( void )
     // Enable mouse cursor (only needed for fullscreen mode)
     glfwEnable( GLFW_MOUSE_CURSOR );
 
-    // Disable automatic event polling
-    glfwDisable( GLFW_AUTO_POLL_EVENTS );
-
     // Set callback functions
     glfwSetWindowSizeCallback( windowSizeFun );
     glfwSetWindowRefreshCallback( windowRefreshFun );

@@ -96,7 +96,6 @@ static GLboolean open_window(void)
     glfwGetMousePos(&x, &y);
     printf("Mouse position: %i %i\n", x, y);
 
-    glfwDisable(GLFW_AUTO_POLL_EVENTS);
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSetMousePosCallback(mouse_position_callback);
     glfwSetKeyCallback(key_callback);

@@ -43,11 +43,11 @@
 // Parses the OpenGL version string and extracts the version number
 //========================================================================
 
-void _glfwParseGLVersion(int *major, int *minor, int *rev)
+void _glfwParseGLVersion(int* major, int* minor, int* rev)
 {
     GLuint _major, _minor = 0, _rev = 0;
-    const GLubyte *version;
-    const GLubyte *ptr;
+    const GLubyte* version;
+    const GLubyte* ptr;
 
     // Get OpenGL version string
     version = glGetString(GL_VERSION);
@@ -83,11 +83,12 @@ void _glfwParseGLVersion(int *major, int *minor, int *rev)
 // Check if a string can be found in an OpenGL extension string
 //========================================================================
 
-int _glfwStringInExtensionString(const char *string,
-                                 const GLubyte *extensions)
+int _glfwStringInExtensionString(const char* string,
+                                 const GLubyte* extensions)
 {
-    const GLubyte *start;
-    GLubyte *where, *terminator;
+    const GLubyte* start;
+    GLubyte* where;
+    GLubyte* terminator;
 
     // It takes a bit of care to be fool-proof about parsing the
     // OpenGL extensions string. Don't be fooled by sub-strings,
@@ -95,7 +96,7 @@ int _glfwStringInExtensionString(const char *string,
     start = extensions;
     for (;;)
     {
-        where = (GLubyte *) strstr((const char *) start, string);
+        where = (GLubyte*) strstr((const char*) start, string);
         if (!where)
             return GL_FALSE;
 
@@ -122,10 +123,10 @@ int _glfwStringInExtensionString(const char *string,
 // Check if an OpenGL extension is available at runtime
 //========================================================================
 
-GLFWAPI int glfwExtensionSupported(const char *extension)
+GLFWAPI int glfwExtensionSupported(const char* extension)
 {
-    const GLubyte *extensions;
-    GLubyte *where;
+    const GLubyte* extensions;
+    GLubyte* where;
     GLint count;
     int i;
 
@@ -133,7 +134,7 @@ GLFWAPI int glfwExtensionSupported(const char *extension)
         return GL_FALSE;
 
     // Extension names should not have spaces
-    where = (GLubyte *) strchr(extension, ' ');
+    where = (GLubyte*) strchr(extension, ' ');
     if (where || *extension == '\0')
         return GL_FALSE;
 
@@ -177,7 +178,7 @@ GLFWAPI int glfwExtensionSupported(const char *extension)
 // This function can be used to get access to extended OpenGL functions.
 //========================================================================
 
-GLFWAPI void * glfwGetProcAddress(const char *procname)
+GLFWAPI void* glfwGetProcAddress(const char* procname)
 {
     if (!_glfwInitialized || !_glfwWin.opened)
         return NULL;
@@ -190,7 +191,7 @@ GLFWAPI void * glfwGetProcAddress(const char *procname)
 // Returns the OpenGL version
 //========================================================================
 
-GLFWAPI void glfwGetGLVersion(int *major, int *minor, int *rev)
+GLFWAPI void glfwGetGLVersion(int* major, int* minor, int* rev)
 {
     if (!_glfwInitialized || !_glfwWin.opened)
         return;

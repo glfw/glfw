@@ -31,9 +31,9 @@
 #include "internal.h"
 
 
-void (*glXGetProcAddress(const GLubyte *procName))();
-void (*glXGetProcAddressARB(const GLubyte *procName))();
-void (*glXGetProcAddressEXT(const GLubyte *procName))();
+void (*glXGetProcAddress(const GLubyte* procName))();
+void (*glXGetProcAddressARB(const GLubyte* procName))();
+void (*glXGetProcAddressEXT(const GLubyte* procName))();
 
 // We support four different ways for getting addresses for GL/GLX
 // extension functions: glXGetProcAddress, glXGetProcAddressARB,
@@ -60,9 +60,9 @@ void (*glXGetProcAddressEXT(const GLubyte *procName))();
 // Check if an OpenGL extension is available at runtime
 //========================================================================
 
-int _glfwPlatformExtensionSupported(const char *extension)
+int _glfwPlatformExtensionSupported(const char* extension)
 {
-    const GLubyte *extensions;
+    const GLubyte* extensions;
 
     // Get list of GLX extensions
     extensions = (const GLubyte*) glXQueryExtensionsString(_glfwLibrary.display,
@@ -81,8 +81,8 @@ int _glfwPlatformExtensionSupported(const char *extension)
 // Get the function pointer to an OpenGL function
 //========================================================================
 
-void * _glfwPlatformGetProcAddress(const char *procname)
+void* _glfwPlatformGetProcAddress(const char* procname)
 {
-    return (void *) _glfw_glXGetProcAddress((const GLubyte *) procname);
+    return (void*) _glfw_glXGetProcAddress((const GLubyte*) procname);
 }
 

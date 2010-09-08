@@ -52,7 +52,7 @@ GLFWAPI int glfwGetJoystickParam(int joy, int param)
 // Get joystick axis positions
 //========================================================================
 
-GLFWAPI int glfwGetJoystickPos(int joy, float *pos, int numaxes)
+GLFWAPI int glfwGetJoystickPos(int joy, float* pos, int numaxes)
 {
     int i;
 
@@ -72,7 +72,7 @@ GLFWAPI int glfwGetJoystickPos(int joy, float *pos, int numaxes)
 //========================================================================
 
 GLFWAPI int glfwGetJoystickButtons(int joy,
-                                   unsigned char *buttons,
+                                   unsigned char* buttons,
                                    int numbuttons)
 {
     int i;

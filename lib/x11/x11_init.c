@@ -43,7 +43,7 @@ static void initLibraries(void)
 {
 #ifdef _GLFW_DLOPEN_LIBGL
     int i;
-    char *libGL_names[ ] =
+    char* libGL_names[ ] =
     {
         "libGL.so",
         "libGL.so.1",

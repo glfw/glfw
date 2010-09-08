@@ -55,7 +55,7 @@
 // Checks whether the event is a MapNotify for the specified window
 //========================================================================
 
-static Bool isMapNotify(Display *d, XEvent *e, char *arg)
+static Bool isMapNotify(Display* d, XEvent* e, char* arg)
 {
     return (e->type == MapNotify) && (e->xmap.window == (Window)arg);
 }
@@ -125,8 +125,8 @@ static Atom getSupportedAtom(Atom* supportedAtoms,
 
 static GLboolean checkForEWMH(void)
 {
-    Window *windowFromRoot = NULL;
-    Window *windowFromChild = NULL;
+    Window* windowFromRoot = NULL;
+    Window* windowFromChild = NULL;
 
     // Hey kids; let's see if the window manager supports EWMH!
 
@@ -175,7 +175,7 @@ static GLboolean checkForEWMH(void)
 
     // We are now fairly sure that an EWMH-compliant window manager is running
 
-    Atom *supportedAtoms;
+    Atom* supportedAtoms;
     unsigned long atomCount;
 
     // Now we need to check the _NET_SUPPORTED property of the root window
@@ -338,7 +338,7 @@ static int translateKey(int keycode)
 // Translates an X Window event to Unicode
 //========================================================================
 
-static int translateChar(XKeyEvent *event)
+static int translateChar(XKeyEvent* event)
 {
     KeySym keysym;
 
@@ -354,7 +354,7 @@ static int translateChar(XKeyEvent *event)
 // Create a blank cursor (for locked mouse mode)
 //========================================================================
 
-static Cursor createNULLCursor(Display *display, Window root)
+static Cursor createNULLCursor(Display* display, Window root)
 {
     Pixmap    cursormask;
     XGCValues xgc;
@@ -403,10 +403,10 @@ static int getFBConfigAttrib(GLXFBConfig fbconfig, int attrib)
 // Return a list of available and usable framebuffer configs
 //========================================================================
 
-static _GLFWfbconfig *getFBConfigs(unsigned int *found)
+static _GLFWfbconfig* getFBConfigs(unsigned int* found)
 {
-    GLXFBConfig *fbconfigs;
-    _GLFWfbconfig *result;
+    GLXFBConfig* fbconfigs;
+    _GLFWfbconfig* result;
     int i, count = 0;
 
     *found = 0;
@@ -510,11 +510,11 @@ static _GLFWfbconfig *getFBConfigs(unsigned int *found)
     attribs[index++] = attribName; \
     attribs[index++] = attribValue;
 
-static int createContext(const _GLFWwndconfig *wndconfig, GLXFBConfigID fbconfigID)
+static int createContext(const _GLFWwndconfig* wndconfig, GLXFBConfigID fbconfigID)
 {
     int attribs[40];
     int flags, dummy, index;
-    GLXFBConfig *fbconfig;
+    GLXFBConfig* fbconfig;
 
     // Retrieve the previously selected GLXFBConfig
     {
@@ -723,7 +723,7 @@ static void initGLXExtensions(void)
 //========================================================================
 
 static GLboolean createWindow(int width, int height,
-                              const _GLFWwndconfig *wndconfig)
+                              const _GLFWwndconfig* wndconfig)
 {
     XEvent event;
     unsigned long wamask;
@@ -829,7 +829,7 @@ static GLboolean createWindow(int width, int height,
 
     // Set ICCCM WM_HINTS property
     {
-        XWMHints *hints = XAllocWMHints();
+        XWMHints* hints = XAllocWMHints();
         if (!hints)
         {
             _glfwPlatformCloseWindow();
@@ -845,7 +845,7 @@ static GLboolean createWindow(int width, int height,
 
     // Set ICCCM WM_NORMAL_HINTS property (even if no parts are set)
     {
-        XSizeHints *hints = XAllocSizeHints();
+        XSizeHints* hints = XAllocSizeHints();
         if (!hints)
         {
             _glfwPlatformCloseWindow();
@@ -1348,8 +1348,8 @@ int _glfwPlatformOpenWindow(int width, int height,
     // Choose the best available fbconfig
     {
         unsigned int fbcount;
-        _GLFWfbconfig *fbconfigs;
-        const _GLFWfbconfig *result;
+        _GLFWfbconfig* fbconfigs;
+        const _GLFWfbconfig* result;
 
         fbconfigs = getFBConfigs(&fbcount);
         if (!fbconfigs)
@@ -1474,7 +1474,7 @@ void _glfwPlatformCloseWindow(void)
 // Set the window title
 //========================================================================
 
-void _glfwPlatformSetWindowTitle(const char *title)
+void _glfwPlatformSetWindowTitle(const char* title)
 {
     // Set window & icon title
     XStoreName(_glfwLibrary.display, _glfwWin.window, title);
@@ -1489,7 +1489,7 @@ void _glfwPlatformSetWindowTitle(const char *title)
 void _glfwPlatformSetWindowSize(int width, int height)
 {
     int mode = 0, rate, sizeChanged = GL_FALSE;
-    XSizeHints *sizehints;
+    XSizeHints* sizehints;
 
     rate = _glfwWin.refreshRate;
 
@@ -1605,9 +1605,9 @@ void _glfwPlatformSwapInterval(int interval)
 void _glfwPlatformRefreshWindowParams(void)
 {
     int dummy;
-    GLXFBConfig *fbconfig;
+    GLXFBConfig* fbconfig;
 #if defined(_GLFW_HAS_XRANDR)
-    XRRScreenConfiguration *sc;
+    XRRScreenConfiguration* sc;
 #elif defined(_GLFW_HAS_XF86VIDMODE)
     XF86VidModeModeLine modeline;
     int dotclock;

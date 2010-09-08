@@ -81,7 +81,8 @@ void _glfwInitJoysticks(void)
 {
 #ifdef _GLFW_USE_LINUX_JOYSTICKS
     int  k, n, fd, joy_count;
-    char *joy_base_name, joy_dev_name[20];
+    char* joy_base_name;
+    char joy_dev_name[20];
     int  driver_version = 0x000800;
     char ret_data;
 #endif // _GLFW_USE_LINUX_JOYSTICKS
@@ -139,7 +140,7 @@ void _glfwInitJoysticks(void)
 
                 // Allocate memory for joystick state
                 _glfwJoy[joy_count].Axis =
-                    (float *) malloc(sizeof(float) *
+                    (float*) malloc(sizeof(float) *
                                      _glfwJoy[joy_count].NumAxes);
                 if (_glfwJoy[joy_count].Axis == NULL)
                 {
@@ -147,7 +148,7 @@ void _glfwInitJoysticks(void)
                     continue;
                 }
                 _glfwJoy[joy_count].Button =
-                    (unsigned char *) malloc(sizeof(char) *
+                    (unsigned char*) malloc(sizeof(char) *
                                      _glfwJoy[joy_count].NumButtons);
                 if (_glfwJoy[joy_count].Button == NULL)
                 {
@@ -287,7 +288,7 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
 // Get joystick axis positions
 //========================================================================
 
-int _glfwPlatformGetJoystickPos(int joy, float *pos, int numaxes)
+int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
 {
     int i;
 
@@ -313,7 +314,7 @@ int _glfwPlatformGetJoystickPos(int joy, float *pos, int numaxes)
 // Get joystick button states
 //========================================================================
 
-int _glfwPlatformGetJoystickButtons(int joy, unsigned char *buttons,
+int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
                                     int numbuttons)
 {
     int i;

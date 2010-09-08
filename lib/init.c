@@ -90,7 +90,7 @@ GLFWAPI void glfwTerminate(void)
 // Get GLFW version
 //========================================================================
 
-GLFWAPI void glfwGetVersion(int *major, int *minor, int *rev)
+GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)
 {
     if (major != NULL)
         *major = GLFW_VERSION_MAJOR;

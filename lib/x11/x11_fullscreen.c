@@ -41,7 +41,7 @@
 // Convert BPP to RGB bits (based on "best guess")
 //========================================================================
 
-static void BPP2RGB(int bpp, int *r, int *g, int *b)
+static void BPP2RGB(int bpp, int* r, int* g, int* b)
 {
     int delta;
 
@@ -64,15 +64,15 @@ static void BPP2RGB(int bpp, int *r, int *g, int *b)
 // Finds the video mode closest in size to the specified desired size
 //========================================================================
 
-int _glfwGetClosestVideoMode(int screen, int *width, int *height, int *rate)
+int _glfwGetClosestVideoMode(int screen, int* width, int* height, int* rate)
 {
 #if defined(_GLFW_HAS_XRANDR)
     int i, match, bestmatch;
     int sizecount, bestsize;
     int ratecount, bestrate;
-    short *ratelist;
-    XRRScreenConfiguration *sc;
-    XRRScreenSize *sizelist;
+    short* ratelist;
+    XRRScreenConfiguration* sc;
+    XRRScreenSize* sizelist;
 
     if (_glfwLibrary.XRandR.available)
     {
@@ -131,7 +131,7 @@ int _glfwGetClosestVideoMode(int screen, int *width, int *height, int *rate)
             return bestsize;
     }
 #elif defined(_GLFW_HAS_XF86VIDMODE)
-    XF86VidModeModeInfo **modelist;
+    XF86VidModeModeInfo** modelist;
     int modecount, i, bestmode, bestmatch, match;
 
     // Use the XF86VidMode extension to control video resolution
@@ -187,7 +187,7 @@ int _glfwGetClosestVideoMode(int screen, int *width, int *height, int *rate)
 void _glfwSetVideoModeMODE(int screen, int mode, int rate)
 {
 #if defined(_GLFW_HAS_XRANDR)
-    XRRScreenConfiguration *sc;
+    XRRScreenConfiguration* sc;
     Window root;
 
     if (_glfwLibrary.XRandR.available)
@@ -272,7 +272,7 @@ void _glfwSetVideoModeMODE(int screen, int mode, int rate)
 // Change the current video mode
 //========================================================================
 
-void _glfwSetVideoMode(int screen, int *width, int *height, int *rate)
+void _glfwSetVideoMode(int screen, int* width, int* height, int* rate)
 {
     int bestmode;
 
@@ -295,7 +295,7 @@ void _glfwRestoreVideoMode(void)
 #if defined(_GLFW_HAS_XRANDR)
         if (_glfwLibrary.XRandR.available)
         {
-            XRRScreenConfiguration *sc;
+            XRRScreenConfiguration* sc;
 
             if (_glfwLibrary.XRandR.available)
             {
@@ -343,21 +343,22 @@ struct _glfwResolution
 // List available video modes
 //========================================================================
 
-int _glfwPlatformGetVideoModes(GLFWvidmode *list, int maxcount)
+int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
 {
     int count, k, l, r, g, b, rgba, gl;
     int depth, screen;
-    Display *dpy;
-    XVisualInfo *vislist, dummy;
+    Display* dpy;
+    XVisualInfo* vislist;
+    XVisualInfo dummy;
     int viscount, rgbcount, rescount;
-    int *rgbarray;
-    struct _glfwResolution *resarray;
+    int* rgbarray;
+    struct _glfwResolution* resarray;
 #if defined(_GLFW_HAS_XRANDR)
-    XRRScreenConfiguration *sc;
-    XRRScreenSize *sizelist;
+    XRRScreenConfiguration* sc;
+    XRRScreenSize* sizelist;
     int sizecount;
 #elif defined(_GLFW_HAS_XF86VIDMODE)
-    XF86VidModeModeInfo **modelist;
+    XF86VidModeModeInfo** modelist;
     int modecount, width, height;
 #endif
 
@@ -493,12 +494,12 @@ int _glfwPlatformGetVideoModes(GLFWvidmode *list, int maxcount)
 // Get the desktop video mode
 //========================================================================
 
-void _glfwPlatformGetDesktopMode(GLFWvidmode *mode)
+void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
 {
-    Display *dpy;
+    Display* dpy;
     int bpp, screen;
 #if defined(_GLFW_HAS_XF86VIDMODE)
-    XF86VidModeModeInfo **modelist;
+    XF86VidModeModeInfo** modelist;
     int modecount;
 #endif
 

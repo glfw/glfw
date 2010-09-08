@@ -214,8 +214,8 @@ void _glfwInputMouseClick(int button, int action)
 // This is based on the manual GLX Visual selection from 2.6
 //========================================================================
 
-const _GLFWfbconfig *_glfwChooseFBConfig(const _GLFWfbconfig *desired,
-                                         const _GLFWfbconfig *alternatives,
+const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
+                                         const _GLFWfbconfig* alternatives,
                                          unsigned int count)
 {
     unsigned int i;
@@ -223,8 +223,8 @@ const _GLFWfbconfig *_glfwChooseFBConfig(const _GLFWfbconfig *desired,
     unsigned int colorDiff, leastColorDiff = UINT_MAX;
     unsigned int extraDiff, leastExtraDiff = UINT_MAX;
     GLboolean desiresColor = GL_FALSE;
-    const _GLFWfbconfig *current;
-    const _GLFWfbconfig *closest = NULL;
+    const _GLFWfbconfig* current;
+    const _GLFWfbconfig* closest = NULL;
 
     // Cache some long-winded preferences
 
@@ -635,7 +635,7 @@ GLFWAPI void glfwCloseWindow(void)
 // Set the window title
 //========================================================================
 
-GLFWAPI void glfwSetWindowTitle(const char *title)
+GLFWAPI void glfwSetWindowTitle(const char* title)
 {
     if (!_glfwInitialized || !_glfwWin.opened)
         return;
@@ -649,7 +649,7 @@ GLFWAPI void glfwSetWindowTitle(const char *title)
 // Get the window size
 //========================================================================
 
-GLFWAPI void glfwGetWindowSize(int *width, int *height)
+GLFWAPI void glfwGetWindowSize(int* width, int* height)
 {
     if (width != NULL)
         *width = _glfwWin.width;

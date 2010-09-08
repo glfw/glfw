@@ -83,7 +83,7 @@ GLFWAPI int glfwGetMouseButton(int button)
 // 
 //========================================================================
 
-GLFWAPI void glfwGetMousePos(int *xpos, int *ypos)
+GLFWAPI void glfwGetMousePos(int* xpos, int* ypos)
 {
     if (!_glfwInitialized || !_glfwWin.opened)
         return;

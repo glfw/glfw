@@ -530,16 +530,6 @@ GLFWAPI int glfwOpenWindow(int width, int height,
         return GL_FALSE;
     }
 
-    // Do we have non-power-of-two textures (added to core in version 2.0)?
-    _glfwWin.has_GL_ARB_texture_non_power_of_two =
-        (_glfwWin.glMajor >= 2) ||
-        glfwExtensionSupported("GL_ARB_texture_non_power_of_two");
-
-    // Do we have automatic mipmap generation (added to core in version 1.4)?
-    _glfwWin.has_GL_SGIS_generate_mipmap =
-        (_glfwWin.glMajor >= 2) || (_glfwWin.glMinor >= 4) ||
-        glfwExtensionSupported("GL_SGIS_generate_mipmap");
-
     if (_glfwWin.glMajor > 2)
     {
         _glfwWin.GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");

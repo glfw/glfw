@@ -36,7 +36,7 @@
 // module (all other modules reference global variables as 'extern')
 //========================================================================
 
-#if defined( _init_c_ )
+#if defined(_init_c_)
 #define GLFWGLOBAL
 #else
 #define GLFWGLOBAL extern
@@ -131,7 +131,7 @@ typedef struct {
 //========================================================================
 
 // Flag indicating if GLFW has been initialized
-#if defined( _init_c_ )
+#if defined(_init_c_)
 int _glfwInitialized = 0;
 #else
 GLFWGLOBAL int _glfwInitialized;
@@ -143,46 +143,46 @@ GLFWGLOBAL int _glfwInitialized;
 //========================================================================
 
 // Init/terminate
-int _glfwPlatformInit( void );
-int _glfwPlatformTerminate( void );
+int _glfwPlatformInit(void);
+int _glfwPlatformTerminate(void);
 
 // Enable/Disable
-void _glfwPlatformEnableSystemKeys( void );
-void _glfwPlatformDisableSystemKeys( void );
+void _glfwPlatformEnableSystemKeys(void);
+void _glfwPlatformDisableSystemKeys(void);
 
 // Fullscreen
-int  _glfwPlatformGetVideoModes( GLFWvidmode *list, int maxcount );
-void _glfwPlatformGetDesktopMode( GLFWvidmode *mode );
+int  _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount);
+void _glfwPlatformGetDesktopMode(GLFWvidmode* mode);
 
 // OpenGL extensions
-int _glfwPlatformExtensionSupported( const char *extension );
-void * _glfwPlatformGetProcAddress( const char *procname );
+int _glfwPlatformExtensionSupported(const char* extension);
+void* _glfwPlatformGetProcAddress(const char* procname);
 
 // Joystick
-int _glfwPlatformGetJoystickParam( int joy, int param );
-int _glfwPlatformGetJoystickPos( int joy, float *pos, int numaxes );
-int _glfwPlatformGetJoystickButtons( int joy, unsigned char *buttons, int numbuttons );
+int _glfwPlatformGetJoystickParam(int joy, int param);
+int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes);
+int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons, int numbuttons);
 
 // Time
-double _glfwPlatformGetTime( void );
-void _glfwPlatformSetTime( double time );
+double _glfwPlatformGetTime(void);
+void _glfwPlatformSetTime(double time);
 
 // Window management
-int  _glfwPlatformOpenWindow( int width, int height, const _GLFWwndconfig *wndconfig, const _GLFWfbconfig *fbconfig );
-void _glfwPlatformCloseWindow( void );
-void _glfwPlatformSetWindowTitle( const char *title );
-void _glfwPlatformSetWindowSize( int width, int height );
-void _glfwPlatformSetWindowPos( int x, int y );
-void _glfwPlatformIconifyWindow( void );
-void _glfwPlatformRestoreWindow( void );
-void _glfwPlatformSwapBuffers( void );
-void _glfwPlatformSwapInterval( int interval );
-void _glfwPlatformRefreshWindowParams( void );
-void _glfwPlatformPollEvents( void );
-void _glfwPlatformWaitEvents( void );
-void _glfwPlatformHideMouseCursor( void );
-void _glfwPlatformShowMouseCursor( void );
-void _glfwPlatformSetMouseCursorPos( int x, int y );
+int  _glfwPlatformOpenWindow(int width, int height, const _GLFWwndconfig* wndconfig, const _GLFWfbconfig* fbconfig);
+void _glfwPlatformCloseWindow(void);
+void _glfwPlatformSetWindowTitle(const char* title);
+void _glfwPlatformSetWindowSize(int width, int height);
+void _glfwPlatformSetWindowPos(int x, int y);
+void _glfwPlatformIconifyWindow(void);
+void _glfwPlatformRestoreWindow(void);
+void _glfwPlatformSwapBuffers(void);
+void _glfwPlatformSwapInterval(int interval);
+void _glfwPlatformRefreshWindowParams(void);
+void _glfwPlatformPollEvents(void);
+void _glfwPlatformWaitEvents(void);
+void _glfwPlatformHideMouseCursor(void);
+void _glfwPlatformShowMouseCursor(void);
+void _glfwPlatformSetMouseCursorPos(int x, int y);
 
 
 //========================================================================
@@ -190,23 +190,23 @@ void _glfwPlatformSetMouseCursorPos( int x, int y );
 //========================================================================
 
 // Window management (window.c)
-void _glfwClearWindowHints( void );
+void _glfwClearWindowHints(void);
 
 // Input handling (window.c)
-void _glfwClearInput( void );
-void _glfwInputDeactivation( void );
-void _glfwInputKey( int key, int action );
-void _glfwInputChar( int character, int action );
-void _glfwInputMouseClick( int button, int action );
+void _glfwClearInput(void);
+void _glfwInputDeactivation(void);
+void _glfwInputKey(int key, int action);
+void _glfwInputChar(int character, int action);
+void _glfwInputMouseClick(int button, int action);
 
 // OpenGL extensions (glext.c)
-void _glfwParseGLVersion( int *major, int *minor, int *rev );
-int _glfwStringInExtensionString( const char *string, const GLubyte *extensions );
+void _glfwParseGLVersion(int* major, int* minor, int* rev);
+int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);
 
 // Framebuffer configs
-const _GLFWfbconfig *_glfwChooseFBConfig( const _GLFWfbconfig *desired,
-                                          const _GLFWfbconfig *alternatives,
-                                          unsigned int count );
+const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
+                                         const _GLFWfbconfig* alternatives,
+                                         unsigned int count);
 
 
 #endif // _internal_h_

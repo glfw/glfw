@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-static void GLFWCALL window_size_callback(int width, int height)
+static void window_size_callback(int width, int height)
 {
     glViewport(0, 0, width, height);
 }

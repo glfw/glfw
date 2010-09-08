@@ -38,7 +38,7 @@
 #define GL_MULTISAMPLE_ARB 0x809D
 #endif
 
-static void GLFWCALL window_size_callback(int width, int height)
+static void window_size_callback(int width, int height)
 {
     glViewport(0, 0, width, height);
 }

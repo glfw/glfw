@@ -53,19 +53,19 @@ static const char* get_mode_name(int mode)
     }
 }
 
-static void GLFWCALL window_size_callback(int width, int height)
+static void window_size_callback(int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 
-static int GLFWCALL window_close_callback(void)
+static int window_close_callback(void)
 {
     printf("Close callback triggered\n");
     closed = GL_TRUE;
     return 0;
 }
 
-static void GLFWCALL key_callback(int key, int action)
+static void key_callback(int key, int action)
 {
     if (action != GLFW_PRESS)
         return;

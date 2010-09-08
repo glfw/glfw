@@ -37,7 +37,7 @@
 static int cursor_x = 0, cursor_y = 0;
 static int window_width = 640, window_height = 480;
 
-static void GLFWCALL window_size_callback(int width, int height)
+static void window_size_callback(int width, int height)
 {
     window_width = width;
     window_height = height;
@@ -49,7 +49,7 @@ static void GLFWCALL window_size_callback(int width, int height)
     gluOrtho2D(0.f, window_width, 0.f, window_height);
 }
 
-static void GLFWCALL mouse_position_callback(int x, int y)
+static void mouse_position_callback(int x, int y)
 {
     cursor_x = x;
     cursor_y = y;

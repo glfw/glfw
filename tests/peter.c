@@ -49,12 +49,12 @@ static void toggle_mouse_cursor(void)
     cursor_enabled = !cursor_enabled;
 }
 
-static void GLFWCALL mouse_position_callback(int x, int y)
+static void mouse_position_callback(int x, int y)
 {
     printf("Mouse moved to: %i %i\n", x, y);
 }
 
-static void GLFWCALL key_callback(int key, int action)
+static void key_callback(int key, int action)
 {
     switch (key)
     {
@@ -79,7 +79,7 @@ static void GLFWCALL key_callback(int key, int action)
     }
 }
 
-static void GLFWCALL window_size_callback(int width, int height)
+static void window_size_callback(int width, int height)
 {
     glViewport(0, 0, width, height);
 }

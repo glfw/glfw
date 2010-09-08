@@ -40,13 +40,13 @@
 // Initialize various GLFW state
 //========================================================================
 
-GLFWAPI int glfwInit( void )
+GLFWAPI int glfwInit(void)
 {
-    if( _glfwInitialized )
+    if (_glfwInitialized)
         return GL_TRUE;
 
-    memset( &_glfwLibrary, 0, sizeof( _glfwLibrary ) );
-    memset( &_glfwWin, 0, sizeof( _glfwWin ) );
+    memset(&_glfwLibrary, 0, sizeof(_glfwLibrary));
+    memset(&_glfwWin, 0, sizeof(_glfwWin ));
 
     // Window is not yet opened
     _glfwWin.opened = GL_FALSE;
@@ -58,7 +58,7 @@ GLFWAPI int glfwInit( void )
     _glfwClearWindowHints();
 
     // Platform specific initialization
-    if( !_glfwPlatformInit() )
+    if (!_glfwPlatformInit())
         return GL_FALSE;
 
     // Form now on, GLFW state is valid
@@ -72,13 +72,13 @@ GLFWAPI int glfwInit( void )
 // Close window and shut down library
 //========================================================================
 
-GLFWAPI void glfwTerminate( void )
+GLFWAPI void glfwTerminate(void)
 {
-    if( !_glfwInitialized )
+    if (!_glfwInitialized)
         return;
 
     // Platform specific termination
-    if( !_glfwPlatformTerminate() )
+    if (!_glfwPlatformTerminate())
         return;
 
     // GLFW is no longer initialized
@@ -90,15 +90,15 @@ GLFWAPI void glfwTerminate( void )
 // Get GLFW version
 //========================================================================
 
-GLFWAPI void glfwGetVersion( int *major, int *minor, int *rev )
+GLFWAPI void glfwGetVersion(int *major, int *minor, int *rev)
 {
-    if( major != NULL )
+    if (major != NULL)
         *major = GLFW_VERSION_MAJOR;
 
-    if( minor != NULL )
+    if (minor != NULL)
         *minor = GLFW_VERSION_MINOR;
 
-    if( rev != NULL )
+    if (rev != NULL)
         *rev = GLFW_VERSION_REVISION;
 }
 

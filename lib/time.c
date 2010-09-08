@@ -39,9 +39,9 @@
 // Return timer value in seconds
 //========================================================================
 
-GLFWAPI double glfwGetTime( void )
+GLFWAPI double glfwGetTime(void)
 {
-    if( !_glfwInitialized )
+    if (!_glfwInitialized)
         return 0.0;
 
     return _glfwPlatformGetTime();
@@ -52,11 +52,11 @@ GLFWAPI double glfwGetTime( void )
 // Set timer value in seconds
 //========================================================================
 
-GLFWAPI void glfwSetTime( double time )
+GLFWAPI void glfwSetTime(double time)
 {
-    if( !_glfwInitialized )
+    if (!_glfwInitialized)
         return;
 
-    _glfwPlatformSetTime( time );
+    _glfwPlatformSetTime(time);
 }
 

@@ -43,32 +43,32 @@
 // Parses the OpenGL version string and extracts the version number
 //========================================================================
 
-void _glfwParseGLVersion( int *major, int *minor, int *rev )
+void _glfwParseGLVersion(int *major, int *minor, int *rev)
 {
     GLuint _major, _minor = 0, _rev = 0;
     const GLubyte *version;
     const GLubyte *ptr;
 
     // Get OpenGL version string
-    version = glGetString( GL_VERSION );
-    if( !version )
+    version = glGetString(GL_VERSION);
+    if (!version)
         return;
 
     // Parse string
     ptr = version;
-    for( _major = 0; *ptr >= '0' && *ptr <= '9'; ptr ++ )
-        _major = 10*_major + (*ptr - '0');
+    for (_major = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
+        _major = 10 * _major + (*ptr - '0');
 
-    if( *ptr == '.' )
+    if (*ptr == '.')
     {
-        ptr ++;
-        for( _minor = 0; *ptr >= '0' && *ptr <= '9'; ptr ++ )
+        ptr++;
+        for (_minor = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
             _minor = 10*_minor + (*ptr - '0');
 
-        if( *ptr == '.' )
+        if (*ptr == '.')
         {
-            ptr ++;
-            for( _rev = 0; *ptr >= '0' && *ptr <= '9'; ptr ++ )
+            ptr++;
+            for (_rev = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
                 _rev = 10*_rev + (*ptr - '0');
         }
     }
@@ -83,8 +83,8 @@ void _glfwParseGLVersion( int *major, int *minor, int *rev )
 // Check if a string can be found in an OpenGL extension string
 //========================================================================
 
-int _glfwStringInExtensionString( const char *string,
-                                  const GLubyte *extensions )
+int _glfwStringInExtensionString(const char *string,
+                                 const GLubyte *extensions)
 {
     const GLubyte *start;
     GLubyte *where, *terminator;
@@ -93,16 +93,16 @@ int _glfwStringInExtensionString( const char *string,
     // OpenGL extensions string. Don't be fooled by sub-strings,
     // etc.
     start = extensions;
-    while( 1 )
+    for (;;)
     {
-        where = (GLubyte *) strstr( (const char *) start, string );
-        if( !where )
+        where = (GLubyte *) strstr((const char *) start, string);
+        if (!where)
             return GL_FALSE;
 
-        terminator = where + strlen( string );
-        if( where == start || *(where - 1) == ' ' )
+        terminator = where + strlen(string);
+        if (where == start || *(where - 1) == ' ')
         {
-            if( *terminator == ' ' || *terminator == '\0' )
+            if (*terminator == ' ' || *terminator == '\0')
                 break;
         }
 
@@ -122,29 +122,29 @@ int _glfwStringInExtensionString( const char *string,
 // Check if an OpenGL extension is available at runtime
 //========================================================================
 
-GLFWAPI int glfwExtensionSupported( const char *extension )
+GLFWAPI int glfwExtensionSupported(const char *extension)
 {
     const GLubyte *extensions;
     GLubyte *where;
     GLint count;
     int i;
 
-    if( !_glfwInitialized || !_glfwWin.opened )
+    if (!_glfwInitialized || !_glfwWin.opened)
         return GL_FALSE;
 
     // Extension names should not have spaces
-    where = (GLubyte *) strchr( extension, ' ' );
-    if( where || *extension == '\0' )
+    where = (GLubyte *) strchr(extension, ' ');
+    if (where || *extension == '\0')
         return GL_FALSE;
 
-    if( _glfwWin.glMajor < 3 )
+    if (_glfwWin.glMajor < 3)
     {
         // Check if extension is in the old style OpenGL extensions string
 
-        extensions = glGetString( GL_EXTENSIONS );
-        if( extensions != NULL )
+        extensions = glGetString(GL_EXTENSIONS);
+        if (extensions != NULL)
         {
-            if( _glfwStringInExtensionString( extension, extensions ) )
+            if (_glfwStringInExtensionString(extension, extensions))
                 return GL_TRUE;
         }
     }
@@ -152,12 +152,12 @@ GLFWAPI int glfwExtensionSupported( const char *extension )
     {
         // Check if extension is in the modern OpenGL extensions string list
 
-        glGetIntegerv( GL_NUM_EXTENSIONS, &count );
+        glGetIntegerv(GL_NUM_EXTENSIONS, &count);
 
-        for( i = 0;  i < count;  i++ )
+        for (i = 0;  i < count;  i++)
         {
-             if( strcmp( (const char*) _glfwWin.GetStringi( GL_EXTENSIONS, i ),
-                         extension ) == 0 )
+             if (strcmp((const char*) _glfwWin.GetStringi(GL_EXTENSIONS, i),
+                         extension) == 0)
              {
                  return GL_TRUE;
              }
@@ -165,7 +165,7 @@ GLFWAPI int glfwExtensionSupported( const char *extension )
     }
 
     // Additional platform specific extension checking (e.g. WGL)
-    if( _glfwPlatformExtensionSupported( extension ) )
+    if (_glfwPlatformExtensionSupported(extension))
         return GL_TRUE;
 
     return GL_FALSE;
@@ -177,12 +177,12 @@ GLFWAPI int glfwExtensionSupported( const char *extension )
 // This function can be used to get access to extended OpenGL functions.
 //========================================================================
 
-GLFWAPI void * glfwGetProcAddress( const char *procname )
+GLFWAPI void * glfwGetProcAddress(const char *procname)
 {
-    if( !_glfwInitialized || !_glfwWin.opened )
+    if (!_glfwInitialized || !_glfwWin.opened)
         return NULL;
 
-    return _glfwPlatformGetProcAddress( procname );
+    return _glfwPlatformGetProcAddress(procname);
 }
 
 
@@ -190,18 +190,18 @@ GLFWAPI void * glfwGetProcAddress( const char *procname )
 // Returns the OpenGL version
 //========================================================================
 
-GLFWAPI void glfwGetGLVersion( int *major, int *minor, int *rev )
+GLFWAPI void glfwGetGLVersion(int *major, int *minor, int *rev)
 {
-    if( !_glfwInitialized || !_glfwWin.opened )
+    if (!_glfwInitialized || !_glfwWin.opened)
         return;
 
-    if( major != NULL )
+    if (major != NULL)
         *major = _glfwWin.glMajor;
 
-    if( minor != NULL )
+    if (minor != NULL)
         *minor = _glfwWin.glMinor;
 
-    if( rev != NULL )
+    if (rev != NULL)
         *rev = _glfwWin.glRevision;
 }
 

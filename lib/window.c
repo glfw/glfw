@@ -46,9 +46,9 @@ static int Max(int a, int b)
 // Clear all open window hints
 //========================================================================
 
-void _glfwClearWindowHints( void )
+void _glfwClearWindowHints(void)
 {
-    memset( &_glfwLibrary.hints, 0, sizeof( _glfwLibrary.hints ) );
+    memset(&_glfwLibrary.hints, 0, sizeof(_glfwLibrary.hints));
     _glfwLibrary.hints.glMajor = 1;
 }
 
@@ -57,22 +57,22 @@ void _glfwClearWindowHints( void )
 // Handle the input tracking part of window deactivation
 //========================================================================
 
-void _glfwInputDeactivation( void )
+void _glfwInputDeactivation(void)
 {
     int i;
 
     // Release all keyboard keys
-    for( i = 0; i <= GLFW_KEY_LAST; i ++ )
+    for (i = 0;  i <= GLFW_KEY_LAST;  i++)
     {
-        if( _glfwInput.Key[ i ] == GLFW_PRESS )
-            _glfwInputKey( i, GLFW_RELEASE );
+        if(_glfwInput.Key[i] == GLFW_PRESS)
+           _glfwInputKey(i, GLFW_RELEASE);
     }
 
     // Release all mouse buttons
-    for( i = 0; i <= GLFW_MOUSE_BUTTON_LAST; i ++ )
+    for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
     {
-        if( _glfwInput.MouseButton[ i ] == GLFW_PRESS )
-            _glfwInputMouseClick( i, GLFW_RELEASE );
+        if (_glfwInput.MouseButton[i] == GLFW_PRESS)
+            _glfwInputMouseClick(i, GLFW_RELEASE);
     }
 }
 
@@ -81,20 +81,20 @@ void _glfwInputDeactivation( void )
 // Clear all input state
 //========================================================================
 
-void _glfwClearInput( void )
+void _glfwClearInput(void)
 {
     int i;
 
     // Release all keyboard keys
-    for( i = 0; i <= GLFW_KEY_LAST; i ++ )
-        _glfwInput.Key[ i ] = GLFW_RELEASE;
+    for (i = 0;  i <= GLFW_KEY_LAST;  i++)
+        _glfwInput.Key[i] = GLFW_RELEASE;
 
     // Clear last character
     _glfwInput.LastChar = 0;
 
     // Release all mouse buttons
-    for( i = 0; i <= GLFW_MOUSE_BUTTON_LAST; i ++ )
-        _glfwInput.MouseButton[ i ] = GLFW_RELEASE;
+    for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
+        _glfwInput.MouseButton[i] = GLFW_RELEASE;
 
     // Set mouse position to (0,0)
     _glfwInput.MousePosX = 0;
@@ -116,30 +116,30 @@ void _glfwClearInput( void )
 // Register keyboard activity
 //========================================================================
 
-void _glfwInputKey( int key, int action )
+void _glfwInputKey(int key, int action)
 {
     int keyrepeat = 0;
 
-    if( key < 0 || key > GLFW_KEY_LAST )
+    if (key < 0 || key > GLFW_KEY_LAST)
         return;
 
     // Are we trying to release an already released key?
-    if( action == GLFW_RELEASE && _glfwInput.Key[ key ] != GLFW_PRESS )
+    if (action == GLFW_RELEASE && _glfwInput.Key[key] != GLFW_PRESS)
         return;
 
     // Register key action
-    if( action == GLFW_RELEASE && _glfwInput.StickyKeys )
-        _glfwInput.Key[ key ] = GLFW_STICK;
+    if(action == GLFW_RELEASE && _glfwInput.StickyKeys)
+        _glfwInput.Key[key] = GLFW_STICK;
     else
     {
-        keyrepeat = (_glfwInput.Key[ key ] == GLFW_PRESS) &&
+        keyrepeat = (_glfwInput.Key[key] == GLFW_PRESS) &&
                     (action == GLFW_PRESS);
-        _glfwInput.Key[ key ] = (char) action;
+        _glfwInput.Key[key] = (char) action;
     }
 
     // Call user callback function
-    if( _glfwWin.keyCallback && (_glfwInput.KeyRepeat || !keyrepeat) )
-        _glfwWin.keyCallback( key, action );
+    if (_glfwWin.keyCallback && (_glfwInput.KeyRepeat || !keyrepeat) )
+        _glfwWin.keyCallback(key, action);
 }
 
 
@@ -147,25 +147,25 @@ void _glfwInputKey( int key, int action )
 // Register (keyboard) character activity
 //========================================================================
 
-void _glfwInputChar( int character, int action )
+void _glfwInputChar(int character, int action)
 {
     int keyrepeat = 0;
 
     // Valid Unicode (ISO 10646) character?
-    if( !( (character >= 32 && character <= 126) || character >= 160 ) )
+    if (!((character >= 32 && character <= 126) || character >= 160))
         return;
 
     // Is this a key repeat?
-    if( action == GLFW_PRESS && _glfwInput.LastChar == character )
+    if (action == GLFW_PRESS && _glfwInput.LastChar == character)
         keyrepeat = 1;
 
     // Store this character as last character (or clear it, if released)
-    if( action == GLFW_PRESS )
+    if (action == GLFW_PRESS)
         _glfwInput.LastChar = character;
     else
         _glfwInput.LastChar = 0;
 
-    if( action != GLFW_PRESS )
+    if (action != GLFW_PRESS)
     {
         // This intentionally breaks release notifications for Unicode
         // characters, partly to see if anyone cares but mostly because it's
@@ -183,8 +183,8 @@ void _glfwInputChar( int character, int action )
         return;
     }
 
-    if( _glfwWin.charCallback && (_glfwInput.KeyRepeat || !keyrepeat) )
-        _glfwWin.charCallback( character, action );
+    if (_glfwWin.charCallback && (_glfwInput.KeyRepeat || !keyrepeat))
+        _glfwWin.charCallback(character, action);
 }
 
 
@@ -192,19 +192,19 @@ void _glfwInputChar( int character, int action )
 // Register mouse button clicks
 //========================================================================
 
-void _glfwInputMouseClick( int button, int action )
+void _glfwInputMouseClick(int button, int action)
 {
-    if( button >= 0 && button <= GLFW_MOUSE_BUTTON_LAST )
+    if (button >= 0 && button <= GLFW_MOUSE_BUTTON_LAST)
     {
         // Register mouse button action
-        if( action == GLFW_RELEASE && _glfwInput.StickyMouseButtons )
-            _glfwInput.MouseButton[ button ] = GLFW_STICK;
+        if (action == GLFW_RELEASE && _glfwInput.StickyMouseButtons)
+            _glfwInput.MouseButton[button] = GLFW_STICK;
         else
-            _glfwInput.MouseButton[ button ] = (char) action;
+            _glfwInput.MouseButton[button] = (char) action;
 
         // Call user callback function
-        if( _glfwWin.mouseButtonCallback )
-            _glfwWin.mouseButtonCallback( button, action );
+        if (_glfwWin.mouseButtonCallback)
+            _glfwWin.mouseButtonCallback(button, action);
     }
 }
 
@@ -214,9 +214,9 @@ void _glfwInputMouseClick( int button, int action )
 // This is based on the manual GLX Visual selection from 2.6
 //========================================================================
 
-const _GLFWfbconfig *_glfwChooseFBConfig( const _GLFWfbconfig *desired,
-                                          const _GLFWfbconfig *alternatives,
-                                          unsigned int count )
+const _GLFWfbconfig *_glfwChooseFBConfig(const _GLFWfbconfig *desired,
+                                         const _GLFWfbconfig *alternatives,
+                                         unsigned int count)
 {
     unsigned int i;
     unsigned int missing, leastMissing = UINT_MAX;
@@ -228,17 +228,17 @@ const _GLFWfbconfig *_glfwChooseFBConfig( const _GLFWfbconfig *desired,
 
     // Cache some long-winded preferences
 
-    if( desired->redBits || desired->greenBits || desired->blueBits ||
-        desired->alphaBits )
+    if (desired->redBits || desired->greenBits || desired->blueBits ||
+        desired->alphaBits)
     {
         desiresColor = GL_TRUE;
     }
 
-    for( i = 0;  i < count;  i++ )
+    for (i = 0;  i < count;  i++)
     {
         current = alternatives + i;
 
-        if( desired->stereo > 0 && current->stereo == 0 )
+        if (desired->stereo > 0 && current->stereo == 0)
         {
             // Stereo is a hard constraint
             continue;
@@ -248,19 +248,19 @@ const _GLFWfbconfig *_glfwChooseFBConfig( const _GLFWfbconfig *desired,
         {
             missing = 0;
 
-            if( desired->alphaBits > 0 && current->alphaBits == 0 )
+            if (desired->alphaBits > 0 && current->alphaBits == 0)
                 missing++;
 
-            if( desired->depthBits > 0 && current->depthBits == 0 )
+            if (desired->depthBits > 0 && current->depthBits == 0)
                 missing++;
 
-            if( desired->stencilBits > 0 && current->stencilBits == 0 )
+            if (desired->stencilBits > 0 && current->stencilBits == 0)
                 missing++;
 
-            if( desired->auxBuffers > 0 && current->auxBuffers < desired->auxBuffers )
+            if (desired->auxBuffers > 0 && current->auxBuffers < desired->auxBuffers)
                 missing += desired->auxBuffers - current->auxBuffers;
 
-            if( desired->samples > 0 && current->samples == 0 )
+            if (desired->samples > 0 && current->samples == 0)
             {
                 // Technically, several multisampling buffers could be
                 // involved, but that's a lower level implementation detail and
@@ -276,22 +276,22 @@ const _GLFWfbconfig *_glfwChooseFBConfig( const _GLFWfbconfig *desired,
         {
             colorDiff = 0;
 
-            if ( desired->redBits > 0 )
+            if (desired->redBits > 0)
             {
-                colorDiff += ( desired->redBits - current->redBits ) *
-                             ( desired->redBits - current->redBits );
+                colorDiff += (desired->redBits - current->redBits) *
+                             (desired->redBits - current->redBits);
             }
 
-            if ( desired->greenBits > 0 )
+            if (desired->greenBits > 0)
             {
-                colorDiff += ( desired->greenBits - current->greenBits ) *
-                             ( desired->greenBits - current->greenBits );
+                colorDiff += (desired->greenBits - current->greenBits) *
+                             (desired->greenBits - current->greenBits);
             }
 
-            if ( desired->blueBits > 0 )
+            if (desired->blueBits > 0)
             {
-                colorDiff += ( desired->blueBits - current->blueBits ) *
-                             ( desired->blueBits - current->blueBits );
+                colorDiff += (desired->blueBits - current->blueBits) *
+                             (desired->blueBits - current->blueBits);
             }
         }
 
@@ -299,80 +299,80 @@ const _GLFWfbconfig *_glfwChooseFBConfig( const _GLFWfbconfig *desired,
         {
             extraDiff = 0;
 
-            if( desired->alphaBits > 0 )
+            if (desired->alphaBits > 0)
             {
-                extraDiff += ( desired->alphaBits - current->alphaBits ) *
-                             ( desired->alphaBits - current->alphaBits );
+                extraDiff += (desired->alphaBits - current->alphaBits) *
+                             (desired->alphaBits - current->alphaBits);
             }
 
-            if( desired->depthBits > 0 )
+            if (desired->depthBits > 0)
             {
-                extraDiff += ( desired->depthBits - current->depthBits ) *
-                             ( desired->depthBits - current->depthBits );
+                extraDiff += (desired->depthBits - current->depthBits) *
+                             (desired->depthBits - current->depthBits);
             }
 
-            if( desired->stencilBits > 0 )
+            if (desired->stencilBits > 0)
             {
-                extraDiff += ( desired->stencilBits - current->stencilBits ) *
-                             ( desired->stencilBits - current->stencilBits );
+                extraDiff += (desired->stencilBits - current->stencilBits) *
+                             (desired->stencilBits - current->stencilBits);
             }
 
-            if( desired->accumRedBits > 0 )
+            if (desired->accumRedBits > 0)
             {
-                extraDiff += ( desired->accumRedBits - current->accumRedBits ) *
-                             ( desired->accumRedBits - current->accumRedBits );
+                extraDiff += (desired->accumRedBits - current->accumRedBits) *
+                             (desired->accumRedBits - current->accumRedBits);
             }
 
-            if( desired->accumGreenBits > 0 )
+            if (desired->accumGreenBits > 0)
             {
-                extraDiff += ( desired->accumGreenBits - current->accumGreenBits ) *
-                             ( desired->accumGreenBits - current->accumGreenBits );
+                extraDiff += (desired->accumGreenBits - current->accumGreenBits) *
+                             (desired->accumGreenBits - current->accumGreenBits);
             }
 
-            if( desired->accumBlueBits > 0 )
+            if (desired->accumBlueBits > 0)
             {
-                extraDiff += ( desired->accumBlueBits - current->accumBlueBits ) *
-                             ( desired->accumBlueBits - current->accumBlueBits );
+                extraDiff += (desired->accumBlueBits - current->accumBlueBits) *
+                             (desired->accumBlueBits - current->accumBlueBits);
             }
 
-            if( desired->accumAlphaBits > 0 )
+            if (desired->accumAlphaBits > 0)
             {
-                extraDiff += ( desired->accumAlphaBits - current->accumAlphaBits ) *
-                             ( desired->accumAlphaBits - current->accumAlphaBits );
+                extraDiff += (desired->accumAlphaBits - current->accumAlphaBits) *
+                             (desired->accumAlphaBits - current->accumAlphaBits);
             }
 
-            if( desired->samples > 0 )
+            if (desired->samples > 0)
             {
-                extraDiff += ( desired->samples - current->samples ) *
-                             ( desired->samples - current->samples );
+                extraDiff += (desired->samples - current->samples) *
+                             (desired->samples - current->samples);
             }
         }
 
         // Figure out if the current one is better than the best one found so far
 
-        if( missing < leastMissing )
+        if (missing < leastMissing)
             closest = current;
-        else if( missing == leastMissing )
+        else if (missing == leastMissing)
         {
-            if( desiresColor )
+            if (desiresColor)
             {
-                if( ( colorDiff < leastColorDiff ) ||
-                    ( colorDiff == leastColorDiff && extraDiff < leastExtraDiff ) )
+                if ((colorDiff < leastColorDiff) ||
+                    (colorDiff == leastColorDiff && extraDiff < leastExtraDiff))
                 {
                     closest = current;
                 }
             }
             else
             {
-                if( ( extraDiff < leastExtraDiff ) ||
-                    ( extraDiff == leastExtraDiff && colorDiff < leastColorDiff ) )
+                if ((extraDiff < leastExtraDiff) ||
+                    (extraDiff == leastExtraDiff && colorDiff < leastColorDiff))
                 {
                     closest = current;
                 }
             }
         }
 
-        if( current == closest )
+        if (current == closest)
         {
             leastMissing = missing;
             leastColorDiff = colorDiff;
@@ -392,52 +392,53 @@ const _GLFWfbconfig *_glfwChooseFBConfig( const _GLFWfbconfig *desired,
 // Create the GLFW window and its associated context
 //========================================================================
 
-GLFWAPI int glfwOpenWindow( int width, int height,
-    int redbits, int greenbits, int bluebits, int alphabits,
-    int depthbits, int stencilbits, int mode )
+GLFWAPI int glfwOpenWindow(int width, int height,
+                           int redbits, int greenbits, int bluebits,
+                           int alphabits, int depthbits, int stencilbits,
+                           int mode)
 {
     _GLFWfbconfig fbconfig;
     _GLFWwndconfig wndconfig;
 
-    if( !_glfwInitialized || _glfwWin.opened )
+    if (!_glfwInitialized || _glfwWin.opened)
         return GL_FALSE;
 
     // Set up desired framebuffer config
-    fbconfig.redBits        = Max( redbits, 0 );
-    fbconfig.greenBits      = Max( greenbits, 0 );
-    fbconfig.blueBits       = Max( bluebits, 0 );
-    fbconfig.alphaBits      = Max( alphabits, 0 );
-    fbconfig.depthBits      = Max( depthbits, 0 );
-    fbconfig.stencilBits    = Max( stencilbits, 0 );
-    fbconfig.accumRedBits   = Max( _glfwLibrary.hints.accumRedBits, 0 );
-    fbconfig.accumGreenBits = Max( _glfwLibrary.hints.accumGreenBits, 0 );
-    fbconfig.accumBlueBits  = Max( _glfwLibrary.hints.accumBlueBits, 0 );
-    fbconfig.accumAlphaBits = Max( _glfwLibrary.hints.accumAlphaBits, 0 );
-    fbconfig.auxBuffers     = Max( _glfwLibrary.hints.auxBuffers, 0 );
+    fbconfig.redBits        = Max(redbits, 0);
+    fbconfig.greenBits      = Max(greenbits, 0);
+    fbconfig.blueBits       = Max(bluebits, 0);
+    fbconfig.alphaBits      = Max(alphabits, 0);
+    fbconfig.depthBits      = Max(depthbits, 0);
+    fbconfig.stencilBits    = Max(stencilbits, 0);
+    fbconfig.accumRedBits   = Max(_glfwLibrary.hints.accumRedBits, 0);
+    fbconfig.accumGreenBits = Max(_glfwLibrary.hints.accumGreenBits, 0);
+    fbconfig.accumBlueBits  = Max(_glfwLibrary.hints.accumBlueBits, 0);
+    fbconfig.accumAlphaBits = Max(_glfwLibrary.hints.accumAlphaBits, 0);
+    fbconfig.auxBuffers     = Max(_glfwLibrary.hints.auxBuffers, 0);
     fbconfig.stereo         = _glfwLibrary.hints.stereo ? GL_TRUE : GL_FALSE;
-    fbconfig.samples        = Max( _glfwLibrary.hints.samples, 0 );
+    fbconfig.samples        = Max(_glfwLibrary.hints.samples, 0);
 
     // Set up desired window config
     wndconfig.mode           = mode;
-    wndconfig.refreshRate    = Max( _glfwLibrary.hints.refreshRate, 0 );
+    wndconfig.refreshRate    = Max(_glfwLibrary.hints.refreshRate, 0);
     wndconfig.windowNoResize = _glfwLibrary.hints.windowNoResize ? GL_TRUE : GL_FALSE;
-    wndconfig.glMajor        = Max( _glfwLibrary.hints.glMajor, 1 );
-    wndconfig.glMinor        = Max( _glfwLibrary.hints.glMinor, 0 );
+    wndconfig.glMajor        = Max(_glfwLibrary.hints.glMajor, 1);
+    wndconfig.glMinor        = Max(_glfwLibrary.hints.glMinor, 0);
     wndconfig.glForward      = _glfwLibrary.hints.glForward ? GL_TRUE : GL_FALSE;
     wndconfig.glDebug        = _glfwLibrary.hints.glDebug ? GL_TRUE : GL_FALSE;
     wndconfig.glProfile      = _glfwLibrary.hints.glProfile;
 
-    if( wndconfig.glMajor == 1 && wndconfig.glMinor > 5 )
+    if (wndconfig.glMajor == 1 && wndconfig.glMinor > 5)
     {
         // OpenGL 1.x series ended with version 1.5
         return GL_FALSE;
     }
-    else if( wndconfig.glMajor == 2 && wndconfig.glMinor > 1 )
+    else if (wndconfig.glMajor == 2 && wndconfig.glMinor > 1)
     {
         // OpenGL 2.x series ended with version 2.1
         return GL_FALSE;
     }
-    else if( wndconfig.glMajor == 3 && wndconfig.glMinor > 3 )
+    else if (wndconfig.glMajor == 3 && wndconfig.glMinor > 3)
     {
         // OpenGL 3.x series ended with version 3.3
         return GL_FALSE;
@@ -447,14 +448,14 @@ GLFWAPI int glfwOpenWindow( int width, int height,
         // For now, let everything else through
     }
 
-    if( wndconfig.glProfile &&
-        ( wndconfig.glMajor < 3 || ( wndconfig.glMajor == 3 && wndconfig.glMinor < 2 ) ) )
+    if (wndconfig.glProfile &&
+        (wndconfig.glMajor < 3 || (wndconfig.glMajor == 3 && wndconfig.glMinor < 2)))
     {
         // Context profiles are only defined for OpenGL version 3.2 and above
         return GL_FALSE;
     }
 
-    if( wndconfig.glForward && wndconfig.glMajor < 3 )
+    if (wndconfig.glForward && wndconfig.glMajor < 3)
     {
         // Forward-compatible contexts are only defined for OpenGL version 3.0 and above
         return GL_FALSE;
@@ -464,7 +465,7 @@ GLFWAPI int glfwOpenWindow( int width, int height,
     _glfwClearWindowHints();
 
     // Check input arguments
-    if( mode != GLFW_WINDOW && mode != GLFW_FULLSCREEN )
+    if (mode != GLFW_WINDOW && mode != GLFW_FULLSCREEN)
         return GL_FALSE;
 
     // Clear GLFW window state
@@ -485,17 +486,17 @@ GLFWAPI int glfwOpenWindow( int width, int height,
     _glfwWin.mouseWheelCallback    = NULL;
 
     // Check width & height
-    if( width > 0 && height <= 0 )
+    if (width > 0 && height <= 0)
     {
         // Set the window aspect ratio to 4:3
         height = (width * 3) / 4;
     }
-    else if( width <= 0 && height > 0 )
+    else if (width <= 0 && height > 0)
     {
         // Set the window aspect ratio to 4:3
         width = (height * 4) / 3;
     }
-    else if( width <= 0 && height <= 0 )
+    else if (width <= 0 && height <= 0)
     {
         // Default window size
         width  = 640;
@@ -508,7 +509,7 @@ GLFWAPI int glfwOpenWindow( int width, int height,
     _glfwWin.fullscreen = (mode == GLFW_FULLSCREEN ? GL_TRUE : GL_FALSE);
 
     // Platform specific window opening routine
-    if( !_glfwPlatformOpenWindow( width, height, &wndconfig, &fbconfig ) )
+    if (!_glfwPlatformOpenWindow(width, height, &wndconfig, &fbconfig))
         return GL_FALSE;
 
     // Flag that window is now opened
@@ -518,12 +519,12 @@ GLFWAPI int glfwOpenWindow( int width, int height,
     _glfwPlatformRefreshWindowParams();
 
     // Get OpenGL version
-    _glfwParseGLVersion( &_glfwWin.glMajor, &_glfwWin.glMinor,
-                         &_glfwWin.glRevision );
+    _glfwParseGLVersion(&_glfwWin.glMajor, &_glfwWin.glMinor,
+                        &_glfwWin.glRevision);
 
-    if( _glfwWin.glMajor < wndconfig.glMajor ||
-        ( _glfwWin.glMajor == wndconfig.glMajor &&
-          _glfwWin.glMinor < wndconfig.glMinor ) )
+    if (_glfwWin.glMajor < wndconfig.glMajor ||
+        (_glfwWin.glMajor == wndconfig.glMajor &&
+         _glfwWin.glMinor < wndconfig.glMinor))
     {
         _glfwPlatformCloseWindow();
         return GL_FALSE;
@@ -531,18 +532,18 @@ GLFWAPI int glfwOpenWindow( int width, int height,
 
     // Do we have non-power-of-two textures (added to core in version 2.0)?
     _glfwWin.has_GL_ARB_texture_non_power_of_two =
-        ( _glfwWin.glMajor >= 2 ) ||
-        glfwExtensionSupported( "GL_ARB_texture_non_power_of_two" );
+        (_glfwWin.glMajor >= 2) ||
+        glfwExtensionSupported("GL_ARB_texture_non_power_of_two");
 
     // Do we have automatic mipmap generation (added to core in version 1.4)?
     _glfwWin.has_GL_SGIS_generate_mipmap =
-        ( _glfwWin.glMajor >= 2 ) || ( _glfwWin.glMinor >= 4 ) ||
-        glfwExtensionSupported( "GL_SGIS_generate_mipmap" );
+        (_glfwWin.glMajor >= 2) || (_glfwWin.glMinor >= 4) ||
+        glfwExtensionSupported("GL_SGIS_generate_mipmap");
 
-    if( _glfwWin.glMajor > 2 )
+    if (_glfwWin.glMajor > 2)
     {
-        _glfwWin.GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress( "glGetStringi" );
-        if( !_glfwWin.GetStringi )
+        _glfwWin.GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
+        if (!_glfwWin.GetStringi)
         {
             _glfwPlatformCloseWindow();
             return GL_FALSE;
@@ -550,12 +551,12 @@ GLFWAPI int glfwOpenWindow( int width, int height,
     }
 
     // If full-screen mode was requested, disable mouse cursor
-    if( mode == GLFW_FULLSCREEN )
-        glfwDisable( GLFW_MOUSE_CURSOR );
+    if (mode == GLFW_FULLSCREEN)
+        glfwDisable(GLFW_MOUSE_CURSOR);
 
     // Start by clearing the front buffer to black (avoid ugly desktop
     // remains in our OpenGL window)
-    glClear( GL_COLOR_BUFFER_BIT );
+    glClear(GL_COLOR_BUFFER_BIT);
     _glfwPlatformSwapBuffers();
 
     return GL_TRUE;
@@ -566,13 +567,12 @@ GLFWAPI int glfwOpenWindow( int width, int height,
 // Set hints for opening the window
 //========================================================================
 
-GLFWAPI void glfwOpenWindowHint( int target, int hint )
+GLFWAPI void glfwOpenWindowHint(int target, int hint)
 {
-    // Is GLFW initialized?
-    if( !_glfwInitialized )
+    if (!_glfwInitialized)
         return;
 
-    switch( target )
+    switch (target)
     {
         case GLFW_REFRESH_RATE:
             _glfwLibrary.hints.refreshRate = hint;
@@ -626,17 +626,17 @@ GLFWAPI void glfwOpenWindowHint( int target, int hint )
 // Properly kill the window / video display
 //========================================================================
 
-GLFWAPI void glfwCloseWindow( void )
+GLFWAPI void glfwCloseWindow(void)
 {
-    if( !_glfwInitialized )
+    if (!_glfwInitialized)
         return;
 
     // Show mouse pointer again (if hidden)
-    glfwEnable( GLFW_MOUSE_CURSOR );
+    glfwEnable(GLFW_MOUSE_CURSOR);
 
     _glfwPlatformCloseWindow();
 
-    memset( &_glfwWin, 0, sizeof(_glfwWin) );
+    memset(&_glfwWin, 0, sizeof(_glfwWin));
     _glfwWin.opened = GL_FALSE;
 }
 
@@ -645,13 +645,13 @@ GLFWAPI void glfwCloseWindow( void )
 // Set the window title
 //========================================================================
 
-GLFWAPI void glfwSetWindowTitle( const char *title )
+GLFWAPI void glfwSetWindowTitle(const char *title)
 {
-    if( !_glfwInitialized || !_glfwWin.opened )
+    if (!_glfwInitialized || !_glfwWin.opened)
         return;
 
     // Set window title
-    _glfwPlatformSetWindowTitle( title );
+    _glfwPlatformSetWindowTitle(title);
 }
 
 
@@ -659,12 +659,12 @@ GLFWAPI void glfwSetWindowTitle( const char *title )
 // Get the window size
 //========================================================================
 
-GLFWAPI void glfwGetWindowSize( int *width, int *height )
+GLFWAPI void glfwGetWindowSize(int *width, int *height)
 {
-    if( width != NULL )
+    if (width != NULL)
         *width = _glfwWin.width;
 
-    if( height != NULL )
+    if (height != NULL)
         *height = _glfwWin.height;
 }
 
@@ -673,17 +673,17 @@ GLFWAPI void glfwGetWindowSize( int *width, int *height )
 // Set the window size
 //========================================================================
 
-GLFWAPI void glfwSetWindowSize( int width, int height )
+GLFWAPI void glfwSetWindowSize(int width, int height)
 {
-    if( !_glfwInitialized || !_glfwWin.opened || _glfwWin.iconified )
+    if (!_glfwInitialized || !_glfwWin.opened || _glfwWin.iconified)
         return;
 
     // Don't do anything if the window size did not change
-    if( width == _glfwWin.width && height == _glfwWin.height )
+    if (width == _glfwWin.width && height == _glfwWin.height)
         return;
 
     // Change window size
-    _glfwPlatformSetWindowSize( width, height );
+    _glfwPlatformSetWindowSize(width, height);
 
     // Refresh window parameters (may have changed due to changed video
     // modes)
@@ -695,16 +695,16 @@ GLFWAPI void glfwSetWindowSize( int width, int height )
 // Set the window position
 //========================================================================
 
-GLFWAPI void glfwSetWindowPos( int x, int y )
+GLFWAPI void glfwSetWindowPos(int x, int y)
 {
-    if( !_glfwInitialized || !_glfwWin.opened || _glfwWin.fullscreen ||
-        _glfwWin.iconified )
+    if (!_glfwInitialized || !_glfwWin.opened || _glfwWin.fullscreen ||
+        _glfwWin.iconified)
     {
         return;
     }
 
     // Set window position
-    _glfwPlatformSetWindowPos( x, y );
+    _glfwPlatformSetWindowPos(x, y);
 }
 
 
@@ -712,9 +712,9 @@ GLFWAPI void glfwSetWindowPos( int x, int y )
 // Window iconification
 //========================================================================
 
-GLFWAPI void glfwIconifyWindow( void )
+GLFWAPI void glfwIconifyWindow(void)
 {
-    if( !_glfwInitialized || !_glfwWin.opened || _glfwWin.iconified )
+    if (!_glfwInitialized || !_glfwWin.opened || _glfwWin.iconified)
         return;
 
     // Iconify window
@@ -726,9 +726,9 @@ GLFWAPI void glfwIconifyWindow( void )
 // Window un-iconification
 //========================================================================
 
-GLFWAPI void glfwRestoreWindow( void )
+GLFWAPI void glfwRestoreWindow(void)
 {
-    if( !_glfwInitialized || !_glfwWin.opened || !_glfwWin.iconified )
+    if (!_glfwInitialized || !_glfwWin.opened || !_glfwWin.iconified)
         return;
 
     // Restore iconified window
@@ -743,17 +743,17 @@ GLFWAPI void glfwRestoreWindow( void )
 // Swap buffers (double-buffering) and poll any new events
 //========================================================================
 
-GLFWAPI void glfwSwapBuffers( void )
+GLFWAPI void glfwSwapBuffers(void)
 {
-    if( !_glfwInitialized || !_glfwWin.opened )
+    if (!_glfwInitialized || !_glfwWin.opened)
         return;
 
     // Update display-buffer
-    if( _glfwWin.opened )
+    if (_glfwWin.opened)
         _glfwPlatformSwapBuffers();
 
     // Check for window messages
-    if( _glfwWin.autoPollEvents )
+    if (_glfwWin.autoPollEvents)
         glfwPollEvents();
 }
 
@@ -762,13 +762,13 @@ GLFWAPI void glfwSwapBuffers( void )
 // Set double buffering swap interval (0 = vsync off)
 //========================================================================
 
-GLFWAPI void glfwSwapInterval( int interval )
+GLFWAPI void glfwSwapInterval(int interval)
 {
-    if( !_glfwInitialized || !_glfwWin.opened )
+    if (!_glfwInitialized || !_glfwWin.opened)
         return;
 
     // Set double buffering swap interval
-    _glfwPlatformSwapInterval( interval );
+    _glfwPlatformSwapInterval(interval);
 }
 
 
@@ -776,21 +776,21 @@ GLFWAPI void glfwSwapInterval( int interval )
 // Get window parameter
 //========================================================================
 
-GLFWAPI int glfwGetWindowParam( int param )
+GLFWAPI int glfwGetWindowParam(int param)
 {
-    if( !_glfwInitialized )
+    if (!_glfwInitialized)
         return 0;
 
-    if( !_glfwWin.opened )
+    if (!_glfwWin.opened)
     {
-        if( param == GLFW_OPENED )
+        if (param == GLFW_OPENED)
             return GL_FALSE;
 
         return 0;
     }
 
     // Window parameters
-    switch( param )
+    switch (param)
     {
         case GLFW_OPENED:
             return GL_TRUE;
@@ -850,9 +850,9 @@ GLFWAPI int glfwGetWindowParam( int param )
 // Set callback function for window size changes
 //========================================================================
 
-GLFWAPI void glfwSetWindowSizeCallback( GLFWwindowsizefun cbfun )
+GLFWAPI void glfwSetWindowSizeCallback(GLFWwindowsizefun cbfun)
 {
-    if( !_glfwInitialized || !_glfwWin.opened )
+    if (!_glfwInitialized || !_glfwWin.opened)
         return;
 
     // Set callback function
@@ -860,17 +860,17 @@ GLFWAPI void glfwSetWindowSizeCallback( GLFWwindowsizefun cbfun )
 
     // Call the callback function to let the application know the current
     // window size
-    if( cbfun )
-        cbfun( _glfwWin.width, _glfwWin.height );
+    if (cbfun)
+        cbfun(_glfwWin.width, _glfwWin.height);
 }
 
 //========================================================================
 // Set callback function for window close events
 //========================================================================
 
-GLFWAPI void glfwSetWindowCloseCallback( GLFWwindowclosefun cbfun )
+GLFWAPI void glfwSetWindowCloseCallback(GLFWwindowclosefun cbfun)
 {
-    if( !_glfwInitialized || !_glfwWin.opened )
+    if (!_glfwInitialized || !_glfwWin.opened)
         return;
 
     // Set callback function
@@ -882,9 +882,9 @@ GLFWAPI void glfwSetWindowCloseCallback( GLFWwindowclosefun cbfun )
 // Set callback function for window refresh events
 //========================================================================
 
-GLFWAPI void glfwSetWindowRefreshCallback( GLFWwindowrefreshfun cbfun )
+GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindowrefreshfun cbfun)
 {
-    if( !_glfwInitialized || !_glfwWin.opened )
+    if (!_glfwInitialized || !_glfwWin.opened)
         return;
 
     // Set callback function
@@ -896,9 +896,9 @@ GLFWAPI void glfwSetWindowRefreshCallback( GLFWwindowrefreshfun cbfun )
 // Poll for new window and input events
 //========================================================================
 
-GLFWAPI void glfwPollEvents( void )
+GLFWAPI void glfwPollEvents(void)
 {
-    if( !_glfwInitialized || !_glfwWin.opened )
+    if (!_glfwInitialized || !_glfwWin.opened)
         return;
 
     // Poll for new events
@@ -910,9 +910,9 @@ GLFWAPI void glfwPollEvents( void )
 // Wait for new window and input events
 //========================================================================
 
-GLFWAPI void glfwWaitEvents( void )
+GLFWAPI void glfwWaitEvents(void)
 {
-    if( !_glfwInitialized || !_glfwWin.opened )
+    if (!_glfwInitialized || !_glfwWin.opened)
         return;
 
     // Poll for new events

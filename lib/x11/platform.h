@@ -31,12 +31,9 @@
 #ifndef _platform_h_
 #define _platform_h_
 
-
 // This is the X11 version of GLFW
 #define _GLFW_X11
 
-
-// Include files
 #include <sys/time.h>
 #include <unistd.h>
 #include <signal.h>
@@ -54,21 +51,21 @@
  #error "GLX header version 1.3 or above is required"
 #endif
 
-#if defined( _GLFW_HAS_XF86VIDMODE ) && defined( _GLFW_HAS_XRANDR )
+#if defined(_GLFW_HAS_XF86VIDMODE) && defined(_GLFW_HAS_XRANDR)
  #error "Xf86VidMode and RandR extensions cannot both be enabled"
 #endif
 
 // With XFree86, we can use the XF86VidMode extension
-#if defined( _GLFW_HAS_XF86VIDMODE )
+#if defined(_GLFW_HAS_XF86VIDMODE)
  #include <X11/extensions/xf86vmode.h>
 #endif
 
-#if defined( _GLFW_HAS_XRANDR )
+#if defined(_GLFW_HAS_XRANDR)
  #include <X11/extensions/Xrandr.h>
 #endif
 
 // Do we have support for dlopen/dlsym?
-#if defined( _GLFW_HAS_DLOPEN )
+#if defined(_GLFW_HAS_DLOPEN)
  #include <dlfcn.h>
 #endif
 
@@ -80,7 +77,7 @@ typedef intptr_t GLFWintptr;
 #ifndef GLX_SGI_swap_control
 
 // Function signature for GLX_SGI_swap_control
-typedef int ( * PFNGLXSWAPINTERVALSGIPROC) (int interval);
+typedef int (*PFNGLXSWAPINTERVALSGIPROC)(int interval);
 
 #endif /*GLX_SGI_swap_control*/
 
@@ -89,13 +86,24 @@ typedef int ( * PFNGLXSWAPINTERVALSGIPROC) (int interval);
 
 /* Type definitions for GLX_SGIX_fbconfig */
 typedef XID GLXFBConfigIDSGIX;
-typedef struct __GLXFBConfigRec *GLXFBConfigSGIX;
+typedef struct __GLXFBConfigRec* GLXFBConfigSGIX;
 
 /* Function signatures for GLX_SGIX_fbconfig */
-typedef int ( * PFNGLXGETFBCONFIGATTRIBSGIXPROC) (Display *dpy, GLXFBConfigSGIX config, int attribute, int *value);
-typedef GLXFBConfigSGIX * ( * PFNGLXCHOOSEFBCONFIGSGIXPROC) (Display *dpy, int screen, int *attrib_list, int *nelements);
-typedef GLXContext ( * PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC) (Display *dpy, GLXFBConfigSGIX config, int render_type, GLXContext share_list, Bool direct);
-typedef XVisualInfo * ( * PFNGLXGETVISUALFROMFBCONFIGSGIXPROC) (Display *dpy, GLXFBConfigSGIX config);
+typedef int (*PFNGLXGETFBCONFIGATTRIBSGIXPROC)(Display* dpy,
+                                               GLXFBConfigSGIX config,
+                                               int attribute,
+                                               int* value);
+typedef GLXFBConfigSGIX* (*PFNGLXCHOOSEFBCONFIGSGIXPROC)(Display* dpy,
+                                                         int screen,
+                                                         int* attrib_list,
+                                                         int* nelements);
+typedef GLXContext (*PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC)(Display* dpy,
+                                                            GLXFBConfigSGIX config,
+                                                            int render_type,
+                                                            GLXContext share_list,
+                                                            Bool direct);
+typedef XVisualInfo* (*PFNGLXGETVISUALFROMFBCONFIGSGIXPROC)(Display* dpy,
+                                                            GLXFBConfigSGIX config);
 
 /* Tokens for GLX_SGIX_fbconfig */
 #define GLX_WINDOW_BIT_SGIX                0x00000001
@@ -125,7 +133,11 @@ typedef XVisualInfo * ( * PFNGLXGETVISUALFROMFBCONFIGSGIXPROC) (Display *dpy, GL
 #define GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB  0x0002
 
 /* Prototype for glXCreateContextAttribs */
-typedef GLXContext (*PFNGLXCREATECONTEXTATTRIBSARBPROC)( Display *display, GLXFBConfig config, GLXContext share_context, Bool direct, const int *attrib_list);
+typedef GLXContext (*PFNGLXCREATECONTEXTATTRIBSARBPROC)(Display* display,
+                                                        GLXFBConfig config,
+                                                        GLXContext share_context,
+                                                        Bool direct,
+                                                        const int* attrib_list);
 
 #endif /*GLX_ARB_create_context*/
 
@@ -144,7 +156,7 @@ typedef GLXContext (*PFNGLXCREATECONTEXTATTRIBSARBPROC)( Display *display, GLXFB
 
 #ifndef GL_VERSION_3_0
 
-typedef const GLubyte * (APIENTRY *PFNGLGETSTRINGIPROC) (GLenum, GLuint);
+typedef const GLubyte* (APIENTRY *PFNGLGETSTRINGIPROC)(GLenum, GLuint);
 
 #endif /*GL_VERSION_3_0*/
 
@@ -217,7 +229,7 @@ struct _GLFWwin_struct {
     Window        window;            // Window
     Window        root;              // Root window for screen
     int           screen;            // Screen ID
-    XVisualInfo  *visual;            // Visual for selected GLXFBConfig
+    XVisualInfo*  visual;            // Visual for selected GLXFBConfig
     GLXFBConfigID fbconfigID;        // ID of selected GLXFBConfig
     GLXContext    context;           // OpenGL rendering context
     Atom          wmDeleteWindow;    // WM_DELETE_WINDOW atom
@@ -259,10 +271,10 @@ struct _GLFWwin_struct {
     // Fullscreen data
     struct {
         int     modeChanged;
-#if defined( _GLFW_HAS_XF86VIDMODE )
+#if defined(_GLFW_HAS_XF86VIDMODE)
         XF86VidModeModeInfo oldMode;
 #endif
-#if defined( _GLFW_HAS_XRANDR )
+#if defined(_GLFW_HAS_XRANDR)
         SizeID   oldSizeID;
         int      oldWidth;
         int      oldHeight;
@@ -316,7 +328,7 @@ GLFWGLOBAL struct {
 
 // ========= PLATFORM SPECIFIC PART ======================================
 
-    Display        *display;
+    Display*        display;
 
     // Server-side GLX version
     int             glxMajor, glxMinor;
@@ -341,7 +353,7 @@ GLFWGLOBAL struct {
 
 #if defined(_GLFW_DLOPEN_LIBGL)
     struct {
-        void       *libGL;  // dlopen handle for libGL.so
+        void*       libGL;  // dlopen handle for libGL.so
     } Libs;
 #endif
 } _glfwLibrary;
@@ -355,9 +367,9 @@ GLFWGLOBAL struct {
     int           fd;
     int           NumAxes;
     int           NumButtons;
-    float         *Axis;
-    unsigned char *Button;
-} _glfwJoy[ GLFW_JOYSTICK_LAST + 1 ];
+    float*        Axis;
+    unsigned char* Button;
+} _glfwJoy[GLFW_JOYSTICK_LAST + 1];
 
 
 //========================================================================
@@ -365,20 +377,20 @@ GLFWGLOBAL struct {
 //========================================================================
 
 // Time
-void _glfwInitTimer( void );
+void _glfwInitTimer(void);
 
 // Fullscreen support
-int  _glfwGetClosestVideoMode( int screen, int *width, int *height, int *rate );
-void _glfwSetVideoModeMODE( int screen, int mode, int rate );
-void _glfwSetVideoMode( int screen, int *width, int *height, int *rate );
-void _glfwRestoreVideoMode( void );
+int  _glfwGetClosestVideoMode(int screen, int* width, int* height, int* rate);
+void _glfwSetVideoModeMODE(int screen, int mode, int rate);
+void _glfwSetVideoMode(int screen, int* width, int* height, int* rate);
+void _glfwRestoreVideoMode(void);
 
 // Joystick input
-void _glfwInitJoysticks( void );
-void _glfwTerminateJoysticks( void );
+void _glfwInitJoysticks(void);
+void _glfwTerminateJoysticks(void);
 
 // Unicode support
-long _glfwKeySym2Unicode( KeySym keysym );
+long _glfwKeySym2Unicode(KeySym keysym);
 
 
 #endif // _platform_h_

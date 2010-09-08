@@ -101,14 +101,17 @@ void _glfwInitJoysticks(void)
         // Pick joystick base name
         switch (k)
         {
-        case 0:
-            joy_base_name = "/dev/input/js";  // USB sticks
-            break;
-        case 1:
-            joy_base_name = "/dev/js";        // "Legacy" sticks
-            break;
-        default:
-            continue;                         // (should never happen)
+            case 0:
+                // USB joysticks
+                joy_base_name = "/dev/input/js";
+                break;
+            case 1:
+                // "Legacy" joysticks
+                joy_base_name = "/dev/js";
+                break;
+            default:
+                // This should never happen
+                continue;
         }
 
         // Try to open a few of these sticks
@@ -229,21 +232,21 @@ static void pollJoystickEvents(void)
                 // Check event type
                 switch (e.type)
                 {
-                case JS_EVENT_AXIS:
-                    _glfwJoy[i].Axis[e.number] = (float) e.value / 32767.0f;
-                    // We need to change the sign for the Y axes, so that
-                    // positive = up/forward, according to the GLFW spec.
-                    if (e.number & 1)
-                        _glfwJoy[i].Axis[e.number] = -_glfwJoy[i].Axis[e.number];
-                    break;
+                    case JS_EVENT_AXIS:
+                        _glfwJoy[i].Axis[e.number] = (float) e.value / 32767.0f;
+                        // We need to change the sign for the Y axes, so that
+                        // positive = up/forward, according to the GLFW spec.
+                        if (e.number & 1)
+                            _glfwJoy[i].Axis[e.number] = -_glfwJoy[i].Axis[e.number];
+                        break;
 
-                case JS_EVENT_BUTTON:
-                    _glfwJoy[i].Button[e.number] =
-                        e.value ? GLFW_PRESS : GLFW_RELEASE;
-                    break;
+                    case JS_EVENT_BUTTON:
+                        _glfwJoy[i].Button[e.number] =
+                            e.value ? GLFW_PRESS : GLFW_RELEASE;
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
                 }
             }
         }
@@ -267,17 +270,17 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
 
     switch (param)
     {
-    case GLFW_PRESENT:
-        return GL_TRUE;
+        case GLFW_PRESENT:
+            return GL_TRUE;
 
-    case GLFW_AXES:
-        return _glfwJoy[joy].NumAxes;
+        case GLFW_AXES:
+            return _glfwJoy[joy].NumAxes;
 
-    case GLFW_BUTTONS:
-        return _glfwJoy[joy].NumButtons;
+        case GLFW_BUTTONS:
+            return _glfwJoy[joy].NumButtons;
 
-    default:
-        break;
+        default:
+            break;
     }
 
     return 0;

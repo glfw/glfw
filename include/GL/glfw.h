@@ -387,6 +387,10 @@ GLFWAPI int  glfwInit(void);
 GLFWAPI void glfwTerminate(void);
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
 
+/* Error handling */
+GLFWAPI int glfwGetError(void);
+GLFWAPI const char* glfwErrorString(int error);
+
 /* Video mode functions */
 GLFWAPI int  glfwGetVideoModes(GLFWvidmode* list, int maxcount);
 GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode);

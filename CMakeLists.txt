@@ -18,6 +18,7 @@ find_package(OpenGL REQUIRED)
 
 set(common_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/enable.c 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/error.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/fullscreen.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/glext.c 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/init.c 

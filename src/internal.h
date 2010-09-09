@@ -231,6 +231,9 @@ GLFWGLOBAL _GLFWlibrary _glfwLibrary;
 int _glfwPlatformInit(void);
 int _glfwPlatformTerminate(void);
 
+// Error handling
+void _glfwSetError(int error);
+
 // Enable/Disable
 void _glfwPlatformEnableSystemKeys(_GLFWwindow* window);
 void _glfwPlatformDisableSystemKeys(_GLFWwindow* window);

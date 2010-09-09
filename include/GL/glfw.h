@@ -309,16 +309,16 @@ extern "C" {
 #define GLFW_ACTIVE               0x00020002
 #define GLFW_ICONIFIED            0x00020003
 #define GLFW_ACCELERATED          0x00020004
+
+/* The following constants are used for both glfwGetWindowParam
+ * and glfwOpenWindowHint
+ */
 #define GLFW_RED_BITS             0x00020005
 #define GLFW_GREEN_BITS           0x00020006
 #define GLFW_BLUE_BITS            0x00020007
 #define GLFW_ALPHA_BITS           0x00020008
 #define GLFW_DEPTH_BITS           0x00020009
 #define GLFW_STENCIL_BITS         0x0002000A
-
-/* The following constants are used for both glfwGetWindowParam
- * and glfwOpenWindowHint
- */
 #define GLFW_REFRESH_RATE         0x0002000B
 #define GLFW_ACCUM_RED_BITS       0x0002000C
 #define GLFW_ACCUM_GREEN_BITS     0x0002000D
@@ -392,7 +392,7 @@ GLFWAPI int  glfwGetVideoModes(GLFWvidmode* list, int maxcount);
 GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode);
 
 /* Window handling */
-GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int redbits, int greenbits, int bluebits, int alphabits, int depthbits, int stencilbits, int mode);
+GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode);
 GLFWAPI void glfwOpenWindowHint(int target, int hint);
 GLFWAPI void glfwMakeWindowCurrent(GLFWwindow window);
 GLFWAPI int  glfwIsWindow(GLFWwindow window);

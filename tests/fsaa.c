@@ -55,7 +55,7 @@ int main(void)
 
     glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 4);
 
-    window = glfwOpenWindow(400, 400, 0, 0, 0, 0, 0, 0, GLFW_WINDOW);
+    window = glfwOpenWindow(400, 400, GLFW_WINDOW);
     if (!window)
     {
         glfwTerminate();

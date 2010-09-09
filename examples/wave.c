@@ -334,8 +334,10 @@ int main(int argc, char* argv[])
   height = 480;
   mode   = GLFW_WINDOW;
 
+  glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
+
   /* Open window */
-  window = glfwOpenWindow(width,height,0,0,0,0,16,0,mode);
+  window = glfwOpenWindow(width,height,mode);
   if (!window)
   {
     fprintf(stderr, "Could not open window\n");

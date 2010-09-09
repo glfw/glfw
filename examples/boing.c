@@ -574,7 +574,9 @@ int main( void )
       exit( EXIT_FAILURE );
    }
 
-   GLFWwindow window = glfwOpenWindow( 400,400, 0,0,0,0, 16,0, GLFW_WINDOW );
+   glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
+
+   GLFWwindow window = glfwOpenWindow( 400, 400, GLFW_WINDOW );
    if (!window)
    {
        fprintf( stderr, "Failed to open GLFW window\n" );

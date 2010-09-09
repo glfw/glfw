@@ -457,8 +457,10 @@ int main( void )
         exit( EXIT_FAILURE );
     }
 
+    glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
+
     // Open OpenGL window
-    window = glfwOpenWindow( 500, 500, 0,0,0,0, 16,0, GLFW_WINDOW );
+    window = glfwOpenWindow( 500, 500, GLFW_WINDOW );
     if (!window)
     {
         fprintf( stderr, "Failed to open GLFW window\n" );

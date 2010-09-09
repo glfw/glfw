@@ -274,7 +274,7 @@ int main(void)
 
     printf("Library initialized\n");
 
-    window = glfwOpenWindow(0, 0, 0, 0, 0, 0, 0, 0, GLFW_WINDOW);
+    window = glfwOpenWindow(0, 0, GLFW_WINDOW);
     if (!window)
     {
         glfwTerminate();

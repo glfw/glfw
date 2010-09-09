@@ -365,10 +365,7 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
 // Create the GLFW window and its associated context
 //========================================================================
 
-GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
-                                  int redbits, int greenbits, int bluebits,
-                                  int alphabits, int depthbits, int stencilbits,
-                                  int mode)
+GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode)
 {
     _GLFWfbconfig fbconfig;
     _GLFWwndconfig wndconfig;
@@ -386,12 +383,12 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     memset(window, 0, sizeof(_GLFWwindow));
 
     // Set up desired framebuffer config
-    fbconfig.redBits        = Max(redbits, 0);
-    fbconfig.greenBits      = Max(greenbits, 0);
-    fbconfig.blueBits       = Max(bluebits, 0);
-    fbconfig.alphaBits      = Max(alphabits, 0);
-    fbconfig.depthBits      = Max(depthbits, 0);
-    fbconfig.stencilBits    = Max(stencilbits, 0);
+    fbconfig.redBits        = Max(_glfwLibrary.hints.redBits, 0);
+    fbconfig.greenBits      = Max(_glfwLibrary.hints.greenBits, 0);
+    fbconfig.blueBits       = Max(_glfwLibrary.hints.blueBits, 0);
+    fbconfig.alphaBits      = Max(_glfwLibrary.hints.alphaBits, 0);
+    fbconfig.depthBits      = Max(_glfwLibrary.hints.depthBits, 0);
+    fbconfig.stencilBits    = Max(_glfwLibrary.hints.stencilBits, 0);
     fbconfig.accumRedBits   = Max(_glfwLibrary.hints.accumRedBits, 0);
     fbconfig.accumGreenBits = Max(_glfwLibrary.hints.accumGreenBits, 0);
     fbconfig.accumBlueBits  = Max(_glfwLibrary.hints.accumBlueBits, 0);
@@ -572,6 +569,24 @@ GLFWAPI void glfwOpenWindowHint(int target, int hint)
 
     switch (target)
     {
+        case GLFW_RED_BITS:
+            _glfwLibrary.hints.redBits = hint;
+            break;
+        case GLFW_GREEN_BITS:
+            _glfwLibrary.hints.greenBits = hint;
+            break;
+        case GLFW_BLUE_BITS:
+            _glfwLibrary.hints.blueBits = hint;
+            break;
+        case GLFW_ALPHA_BITS:
+            _glfwLibrary.hints.alphaBits = hint;
+            break;
+        case GLFW_DEPTH_BITS:
+            _glfwLibrary.hints.depthBits = hint;
+            break;
+        case GLFW_STENCIL_BITS:
+            _glfwLibrary.hints.stencilBits = hint;
+            break;
         case GLFW_REFRESH_RATE:
             _glfwLibrary.hints.refreshRate = hint;
             break;

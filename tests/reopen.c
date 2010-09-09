@@ -84,7 +84,9 @@ static int open_window(int width, int height, int mode)
 {
     double base = glfwGetTime();
 
-    window_handle = glfwOpenWindow(width, height, 0, 0, 0, 0, 16, 0, mode);
+    glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
+
+    window_handle = glfwOpenWindow(width, height, mode);
     if (!window_handle)
     {
         fprintf(stderr, "Failed to create %s mode GLFW window\n", get_mode_name(mode));

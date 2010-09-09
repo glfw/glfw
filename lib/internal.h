@@ -66,6 +66,12 @@
 // parameters passed to us by glfwOpenWindowHint
 //------------------------------------------------------------------------
 typedef struct {
+    int         redBits;
+    int         greenBits;
+    int         blueBits;
+    int         alphaBits;
+    int         depthBits;
+    int         stencilBits;
     int         refreshRate;
     int         accumRedBits;
     int         accumGreenBits;

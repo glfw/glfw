@@ -574,16 +574,17 @@ int main( void )
       exit( EXIT_FAILURE );
    }
 
-   if( !glfwOpenWindow( 400,400, 0,0,0,0, 16,0, GLFW_WINDOW ) )
+   GLFWwindow window = glfwOpenWindow( 400,400, 0,0,0,0, 16,0, GLFW_WINDOW );
+   if (!window)
    {
        fprintf( stderr, "Failed to open GLFW window\n" );
        glfwTerminate();
        exit( EXIT_FAILURE );
    }
 
-   glfwSetWindowTitle( "Boing (classic Amiga demo)" );
-   glfwSetWindowSizeCallback( reshape );
-   glfwEnable( GLFW_STICKY_KEYS );
+   glfwSetWindowTitle( window, "Boing (classic Amiga demo)" );
+   glfwSetWindowSizeCallback( window, reshape );
+   glfwEnable( window, GLFW_STICKY_KEYS );
    glfwSwapInterval( 1 );
    glfwSetTime( 0.0 );
 
@@ -602,10 +603,10 @@ int main( void )
 
        /* Swap buffers */
        glfwSwapBuffers();
+       glfwPollEvents();
 
        /* Check if we are still running */
-       running = !glfwGetKey( GLFW_KEY_ESC ) &&
-                 glfwGetWindowParam( GLFW_OPENED );
+       running = !glfwGetKey( window, GLFW_KEY_ESC );
    }
    while( running );
 

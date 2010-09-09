@@ -264,12 +264,10 @@ typedef struct _GLFWlibraryX11
     struct {
         double      resolution;
         long long   t0;
-    } Timer;
+    } timer;
 
 #if defined(_GLFW_DLOPEN_LIBGL)
-    struct {
-        void*       libGL;  // dlopen handle for libGL.so
-    } Libs;
+    void*       libGL;  // dlopen handle for libGL.so
 #endif
 } _GLFWlibraryX11;
 

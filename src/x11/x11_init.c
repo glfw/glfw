@@ -54,11 +54,11 @@ static void initLibraries(void)
         NULL
     };
 
-    _glfwLibrary.Libs.libGL = NULL;
+    _glfwLibrary.X11.libGL = NULL;
     for (i = 0;  libGL_names[i] != NULL;  i++)
     {
-        _glfwLibrary.Libs.libGL = dlopen(libGL_names[i], RTLD_LAZY | RTLD_GLOBAL);
-        if (_glfwLibrary.Libs.libGL)
+        _glfwLibrary.X11.libGL = dlopen(libGL_names[i], RTLD_LAZY | RTLD_GLOBAL);
+        if (_glfwLibrary.X11.libGL)
             break;
     }
 #endif
@@ -191,10 +191,10 @@ int _glfwPlatformTerminate(void)
 
     // Unload libGL.so if necessary
 #ifdef _GLFW_DLOPEN_LIBGL
-    if (_glfwLibrary.Libs.libGL != NULL)
+    if (_glfwLibrary.X11.libGL != NULL)
     {
-        dlclose(_glfwLibrary.Libs.libGL);
-        _glfwLibrary.Libs.libGL = NULL;
+        dlclose(_glfwLibrary.X11.libGL);
+        _glfwLibrary.X11.libGL = NULL;
     }
 #endif
 

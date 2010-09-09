@@ -15,22 +15,24 @@ if(APPLE)
   add_executable(Accuracy MACOSX_BUNDLE accuracy.c)
   add_executable(FSAA MACOSX_BUNDLE fsaa.c)
   add_executable(Tearing MACOSX_BUNDLE tearing.c)
+  add_executable(Windows MACOSX_BUNDLE windows.c)
 else()
   # Set boring names for executables
   add_executable(accuracy WIN32 accuracy.c)
   add_executable(tearing WIN32 tearing.c)
   add_executable(fsaa WIN32 fsaa.c)
+  add_executable(windows WIN32 windows.c)
 endif(APPLE)
 
 if(MSVC)
   # Tell MSVC to use main instead of WinMain for Windows subsystem executables
-  set_target_properties(accuracy defaults events fsaa peter reopen tearing version PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
+  set_target_properties(accuracy defaults events fsaa peter reopen tearing version windows PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
 endif(MSVC)
 
 if(CYGWIN)
   # Set cross-compile and subsystem compile and link flags
-  set_target_properties(accuracy defaults events fsaa joysticks peter reopen tearing version PROPERTIES COMPILE_FLAGS "-mno-cygwin")
-  set_target_properties(accuracy fsaa tearing PROPERTIES LINK_FLAGS "-mno-cygwin -mwindows")
+  set_target_properties(accuracy defaults events fsaa joysticks peter reopen tearing version windows PROPERTIES COMPILE_FLAGS "-mno-cygwin")
+  set_target_properties(accuracy fsaa tearing windows PROPERTIES LINK_FLAGS "-mno-cygwin -mwindows")
   set_target_properties(events defaults joysticks peter reopen version PROPERTIES LINK_FLAGS "-mno-cygwin -mconsole")
 endif(CYGWIN)
 

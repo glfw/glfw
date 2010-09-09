@@ -565,11 +565,24 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
 
 GLFWAPI void glfwMakeWindowCurrent(GLFWwindow window)
 {
-    if (_glfwLibrary.currentWindow == window)
+    if (!_glfwInitialized || _glfwLibrary.currentWindow == window)
         return;
 
     _glfwPlatformMakeWindowCurrent(window);
     _glfwLibrary.currentWindow = window;
+}
+
+
+//========================================================================
+// Returns GL_TRUE if the specified window handle is an actual window
+//========================================================================
+
+GLFWAPI int glfwIsWindow(GLFWwindow window)
+{
+    if (!_glfwInitialized)
+        return;
+
+    return window == _glfwLibrary.window;
 }
 
 

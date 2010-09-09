@@ -606,7 +606,7 @@ int main( void )
        glfwPollEvents();
 
        /* Check if we are still running */
-       running = !glfwGetKey( window, GLFW_KEY_ESC );
+       running = glfwIsWindow(window) && !glfwGetKey( window, GLFW_KEY_ESC );
    }
    while( running );
 

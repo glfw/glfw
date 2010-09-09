@@ -391,6 +391,7 @@ GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode);
 GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int redbits, int greenbits, int bluebits, int alphabits, int depthbits, int stencilbits, int mode);
 GLFWAPI void glfwOpenWindowHint(int target, int hint);
 GLFWAPI void glfwMakeWindowCurrent(GLFWwindow window);
+GLFWAPI int  glfwIsWindow(GLFWwindow window);
 GLFWAPI void glfwCloseWindow(GLFWwindow window);
 GLFWAPI void glfwSetWindowTitle(GLFWwindow, const char* title);
 GLFWAPI void glfwGetWindowSize(GLFWwindow, int* width, int* height);

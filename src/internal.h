@@ -60,12 +60,13 @@
 
 
 //------------------------------------------------------------------------
-// Window opening hints (set by glfwOpenWindowHint)
-// A bucket of semi-random stuff bunched together for historical reasons
+// Window hints, set by glfwOpenWindowHint and consumed by glfwOpenWindow
+// A bucket of semi-random stuff lumped together for historical reasons
 // This is used only by the platform independent code and only to store
 // parameters passed to us by glfwOpenWindowHint
 //------------------------------------------------------------------------
-typedef struct {
+typedef struct _GLFWhints
+{
     int         redBits;
     int         greenBits;
     int         blueBits;
@@ -95,7 +96,8 @@ typedef struct {
 // This is used to pass window and context creation parameters from the
 // platform independent code to the platform specific code
 //------------------------------------------------------------------------
-typedef struct {
+typedef struct _GLFWwndconfig
+{
     int         mode;
     int         refreshRate;
     int         windowNoResize;
@@ -114,7 +116,8 @@ typedef struct {
 // code to the platform specific code, and also to enumerate and select
 // available framebuffer configurations
 //------------------------------------------------------------------------
-typedef struct {
+typedef struct _GLFWfbconfig
+{
     int         redBits;
     int         greenBits;
     int         blueBits;
@@ -135,8 +138,8 @@ typedef struct {
 //------------------------------------------------------------------------
 // Window structure
 //------------------------------------------------------------------------
-typedef struct _GLFWwindow {
-
+typedef struct _GLFWwindow
+{
     // User callback functions
     GLFWwindowsizefun    windowSizeCallback;
     GLFWwindowclosefun   windowCloseCallback;
@@ -147,13 +150,16 @@ typedef struct _GLFWwindow {
     GLFWkeyfun           keyCallback;
     GLFWcharfun          charCallback;
 
-    // User selected window settings
-    int       mode;
-    GLboolean sysKeysDisabled; // System keys disabled flag
-    GLboolean windowNoResize;  // Resize- and maximize gadgets disabled flag
-    int       refreshRate;     // Vertical monitor refresh rate
+    // Window settings and state
+    GLboolean active;          // GL_TRUE if this window is active
+    GLboolean iconified;       // GL_TRUE if this window is iconified
+    int       width, height;
+    int       mode;            // GLFW_WINDOW or GLFW_FULLSCREEN
+    GLboolean sysKeysDisabled; // system keys disabled flag
+    GLboolean windowNoResize;  // resize- and maximize gadgets disabled flag
+    int       refreshRate;     // monitor refresh rate
 
-    // Input
+    // Window input state
     GLboolean stickyKeys;
     GLboolean stickyMouseButtons;
     GLboolean keyRepeat;
@@ -162,12 +168,6 @@ typedef struct _GLFWwindow {
     char      mouseButton[GLFW_MOUSE_BUTTON_LAST + 1];
     char      key[GLFW_KEY_LAST + 1];
     int       lastChar;
-
-    // Window status & parameters
-    GLboolean active;          // Application active flag
-    GLboolean iconified;       // Window iconified flag
-    int       width, height;   // Window width and heigth
-    GLboolean accelerated;     // GL_TRUE if window is HW accelerated
 
     // Framebuffer attributes
     int       redBits;
@@ -185,9 +185,9 @@ typedef struct _GLFWwindow {
     int       samples;
 
     // OpenGL extensions and context attributes
+    GLboolean accelerated;     // GL_TRUE if OpenGL context is "accelerated"
     int       glMajor, glMinor, glRevision;
     int       glForward, glDebug, glProfile;
-
     PFNGLGETSTRINGIPROC GetStringi;
 
     _GLFW_PLATFORM_WINDOW_STATE;
@@ -197,7 +197,8 @@ typedef struct _GLFWwindow {
 //------------------------------------------------------------------------
 // Library global data
 //------------------------------------------------------------------------
-typedef struct {
+typedef struct _GLFWlibrary
+{
     _GLFWhints   hints;
     _GLFWwindow* window;
     _GLFWwindow* currentWindow;
@@ -213,9 +214,9 @@ typedef struct {
 
 // Flag indicating if GLFW has been initialized
 #if defined(_init_c_)
-int _glfwInitialized = 0;
+GLboolean _glfwInitialized = GL_FALSE;
 #else
-GLFWGLOBAL int _glfwInitialized;
+GLFWGLOBAL GLboolean _glfwInitialized;
 #endif
 
 GLFWGLOBAL _GLFWlibrary _glfwLibrary;

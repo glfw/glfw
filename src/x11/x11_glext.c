@@ -67,7 +67,7 @@ int _glfwPlatformExtensionSupported(const char* extension)
     // Get list of GLX extensions
     // Yuck
     extensions = (const GLubyte*) glXQueryExtensionsString(_glfwLibrary.X11.display,
-                                                           _glfwLibrary.window->X11.screen);
+                                                           _glfwLibrary.X11.screen);
     if (extensions != NULL)
     {
         if (_glfwStringInExtensionString(extension, extensions))

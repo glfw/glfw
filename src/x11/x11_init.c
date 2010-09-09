@@ -90,6 +90,12 @@ static GLboolean initDisplay(void)
         return GL_FALSE;
     }
 
+    // As the API currently doesn't understand multiple display devices, we hardcode
+    // this choice and hope for the best
+    _glfwLibrary.X11.screen = DefaultScreen(_glfwLibrary.X11.display);
+    _glfwLibrary.X11.root = RootWindow(_glfwLibrary.X11.display,
+                                       _glfwLibrary.X11.screen);
+
     // Check for XF86VidMode extension
 #ifdef _GLFW_HAS_XF86VIDMODE
     _glfwLibrary.X11.XF86VidMode.available =
@@ -139,7 +145,6 @@ static GLboolean initDisplay(void)
 
 static void terminateDisplay(void)
 {
-    // Open display
     if (_glfwLibrary.X11.display)
     {
         XCloseDisplay(_glfwLibrary.X11.display);

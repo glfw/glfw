@@ -203,8 +203,6 @@ typedef struct _GLFWwindowX11
     // Platform specific window resources
     Colormap      colormap;          // Window colormap
     Window        window;            // Window
-    Window        root;              // Root window for screen
-    int           screen;            // Screen ID
     Atom          wmDeleteWindow;    // WM_DELETE_WINDOW atom
     Atom          wmPing;            // _NET_WM_PING atom
     Atom          wmState;           // _NET_WM_STATE atom
@@ -230,6 +228,8 @@ typedef struct _GLFWwindowX11
 typedef struct _GLFWlibraryX11
 {
     Display*        display;
+    int             screen;
+    Window          root;
 
     // Server-side GLX version
     int             glxMajor, glxMinor;

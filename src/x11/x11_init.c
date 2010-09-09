@@ -188,8 +188,8 @@ int _glfwPlatformInit(void)
 
 int _glfwPlatformTerminate(void)
 {
-    if (_glfwLibrary.window)
-        glfwCloseWindow(_glfwLibrary.window);
+    while (_glfwLibrary.windowListHead)
+        glfwCloseWindow(_glfwLibrary.windowListHead);
 
     // Terminate display
     terminateDisplay();

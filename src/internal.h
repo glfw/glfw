@@ -140,6 +140,8 @@ typedef struct _GLFWfbconfig
 //------------------------------------------------------------------------
 typedef struct _GLFWwindow
 {
+    struct _GLFWwindow* next;
+
     // User callback functions
     GLFWwindowsizefun    windowSizeCallback;
     GLFWwindowclosefun   windowCloseCallback;
@@ -153,6 +155,7 @@ typedef struct _GLFWwindow
     // Window settings and state
     GLboolean active;          // GL_TRUE if this window is active
     GLboolean iconified;       // GL_TRUE if this window is iconified
+    GLboolean closed;          // GL_TRUE if this window should be closed
     int       width, height;
     int       mode;            // GLFW_WINDOW or GLFW_FULLSCREEN
     GLboolean sysKeysDisabled; // system keys disabled flag
@@ -202,7 +205,8 @@ typedef struct _GLFWwindow
 typedef struct _GLFWlibrary
 {
     _GLFWhints   hints;
-    _GLFWwindow* window;
+
+    _GLFWwindow* windowListHead;
     _GLFWwindow* currentWindow;
     _GLFWwindow* cursorLockWindow;
 

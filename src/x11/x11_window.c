@@ -1026,15 +1026,31 @@ static void leaveFullscreenMode(_GLFWwindow* window)
         _glfwPlatformShowMouseCursor(window);
 }
 
+
+//========================================================================
+// Return the GLFW window corresponding to the specified X11 window
+//========================================================================
+static _GLFWwindow* findWindow(Window handle)
+{
+    _GLFWwindow* window;
+
+    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+    {
+        if (window->X11.window == handle)
+            return window;
+    }
+
+    return NULL;
+}
+
+
 //========================================================================
 // Get and process next X event (called by _glfwPlatformPollEvents)
-// Returns GL_TRUE if a window close request was received
 //========================================================================
 
-static GLboolean processSingleEvent(void)
+static void processSingleEvent(void)
 {
-    // Yuck
-    _GLFWwindow* window = _glfwLibrary.window;
+    _GLFWwindow* window;
 
     XEvent event;
     XNextEvent(_glfwLibrary.X11.display, &event);
@@ -1044,6 +1060,12 @@ static GLboolean processSingleEvent(void)
         case KeyPress:
         {
             // A keyboard key was pressed
+            window = findWindow(event.xkey.window);
+            if (window == NULL)
+            {
+                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                return;
+            }
 
             // Translate and report key press
             _glfwInputKey(window, translateKey(event.xkey.keycode), GLFW_PRESS);
@@ -1057,6 +1079,12 @@ static GLboolean processSingleEvent(void)
         case KeyRelease:
         {
             // A keyboard key was released
+            window = findWindow(event.xkey.window);
+            if (window == NULL)
+            {
+                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                return;
+            }
 
             // Do not report key releases for key repeats. For key repeats we
             // will get KeyRelease/KeyPress pairs with similar or identical
@@ -1093,6 +1121,12 @@ static GLboolean processSingleEvent(void)
         case ButtonPress:
         {
             // A mouse button was pressed or a scrolling event occurred
+            window = findWindow(event.xbutton.window);
+            if (window == NULL)
+            {
+                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                return;
+            }
 
             if (event.xbutton.button == Button1)
                 _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS);
@@ -1121,6 +1155,12 @@ static GLboolean processSingleEvent(void)
         case ButtonRelease:
         {
             // A mouse button was released
+            window = findWindow(event.xbutton.window);
+            if (window == NULL)
+            {
+                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                return;
+            }
 
             if (event.xbutton.button == Button1)
             {
@@ -1146,6 +1186,12 @@ static GLboolean processSingleEvent(void)
         case MotionNotify:
         {
             // The mouse cursor was moved
+            window = findWindow(event.xmotion.window);
+            if (window == NULL)
+            {
+                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                return;
+            }
 
             if (event.xmotion.x != window->X11.cursorPosX ||
                 event.xmotion.y != window->X11.cursorPosY)
@@ -1184,6 +1230,14 @@ static GLboolean processSingleEvent(void)
 
         case ConfigureNotify:
         {
+            // The window configuration changed somehow
+            window = findWindow(event.xconfigure.window);
+            if (window == NULL)
+            {
+                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                return;
+            }
+
             if (event.xconfigure.width != window->width ||
                 event.xconfigure.height != window->height)
             {
@@ -1203,12 +1257,20 @@ static GLboolean processSingleEvent(void)
 
         case ClientMessage:
         {
+            // Custom client message, probably from the window manager
+            window = findWindow(event.xclient.window);
+            if (window == NULL)
+            {
+                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                return;
+            }
+
             if ((Atom) event.xclient.data.l[ 0 ] == window->X11.wmDeleteWindow)
             {
                 // The window manager was asked to close the window, for example by
                 // the user pressing a 'close' window decoration button
 
-                return GL_TRUE;
+                window->closed = GL_TRUE;
             }
             else if (window->X11.wmPing != None &&
                      (Atom) event.xclient.data.l[ 0 ] == window->X11.wmPing)
@@ -1230,6 +1292,12 @@ static GLboolean processSingleEvent(void)
         case MapNotify:
         {
             // The window was mapped
+            window = findWindow(event.xmap.window);
+            if (window == NULL)
+            {
+                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                return;
+            }
 
             window->iconified = GL_FALSE;
             break;
@@ -1238,6 +1306,12 @@ static GLboolean processSingleEvent(void)
         case UnmapNotify:
         {
             // The window was unmapped
+            window = findWindow(event.xmap.window);
+            if (window == NULL)
+            {
+                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                return;
+            }
 
             window->iconified = GL_TRUE;
             break;
@@ -1246,6 +1320,12 @@ static GLboolean processSingleEvent(void)
         case FocusIn:
         {
             // The window gained focus
+            window = findWindow(event.xfocus.window);
+            if (window == NULL)
+            {
+                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                return;
+            }
 
             window->active = GL_TRUE;
 
@@ -1258,6 +1338,12 @@ static GLboolean processSingleEvent(void)
         case FocusOut:
         {
             // The window lost focus
+            window = findWindow(event.xfocus.window);
+            if (window == NULL)
+            {
+                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                return;
+            }
 
             window->active = GL_FALSE;
             _glfwInputDeactivation(window);
@@ -1271,6 +1357,12 @@ static GLboolean processSingleEvent(void)
         case Expose:
         {
             // The window's contents was damaged
+            window = findWindow(event.xexpose.window);
+            if (window == NULL)
+            {
+                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                return;
+            }
 
             if (window->windowRefreshCallback)
                 window->windowRefreshCallback(window);
@@ -1280,7 +1372,7 @@ static GLboolean processSingleEvent(void)
 
         // Was the window destroyed?
         case DestroyNotify:
-            return GL_FALSE;
+            return;
 
         default:
         {
@@ -1298,9 +1390,6 @@ static GLboolean processSingleEvent(void)
             break;
         }
     }
-
-    // The window was not destroyed
-    return GL_FALSE;
 }
 
 
@@ -1690,33 +1779,39 @@ void _glfwPlatformRefreshWindowParams(void)
 
 void _glfwPlatformPollEvents(void)
 {
-    GLboolean closeRequested = GL_FALSE;
-
-    _GLFWwindow* window = _glfwLibrary.window;
+    _GLFWwindow* window;
 
     // Flag that the cursor has not moved
-    window->X11.mouseMoved = GL_FALSE;
+    if (window = _glfwLibrary.cursorLockWindow)
+        window->X11.mouseMoved = GL_FALSE;
 
     // Process all pending events
     while (XPending(_glfwLibrary.X11.display))
-    {
-        if (processSingleEvent())
-            closeRequested = GL_TRUE;
-    }
+        processSingleEvent();
 
     // Did we get mouse movement in fully enabled hidden cursor mode?
-    if (window->X11.mouseMoved && window->X11.pointerHidden)
+    if (window = _glfwLibrary.cursorLockWindow)
     {
-        _glfwPlatformSetMouseCursorPos(window,
-                                       window->width / 2,
-                                       window->height / 2);
+        if (window->X11.mouseMoved && window->X11.pointerHidden)
+        {
+            _glfwPlatformSetMouseCursorPos(window,
+                                           window->width / 2,
+                                           window->height / 2);
+        }
     }
 
-    if (closeRequested && window->windowCloseCallback)
-        closeRequested = window->windowCloseCallback(window);
+    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+    {
+        if (window->closed && window->windowCloseCallback)
+            window->closed = window->windowCloseCallback(window);
 
-    if (closeRequested)
-        glfwCloseWindow(window);
+        if (window->closed)
+        {
+            _GLFWwindow* next = window->next;
+            glfwCloseWindow(window);
+            window = next;
+        }
+    }
 }
 
 

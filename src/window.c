@@ -381,13 +381,6 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode)
         return NULL;
     }
 
-    if (_glfwLibrary.window)
-    {
-        // TODO: Remove this once multi-window is completed
-        _glfwSetError(GLFW_INTERNAL_ERROR);
-        return NULL;
-    }
-
     window = (_GLFWwindow*) malloc(sizeof(_GLFWwindow));
     if (!window)
     {
@@ -395,7 +388,8 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode)
         return NULL;
     }
 
-    _glfwLibrary.window = window;
+    window->next = _glfwLibrary.windowListHead;
+    _glfwLibrary.windowListHead = window;
 
     memset(window, 0, sizeof(_GLFWwindow));
 
@@ -579,6 +573,8 @@ GLFWAPI void glfwMakeWindowCurrent(GLFWwindow window)
 
 GLFWAPI int glfwIsWindow(GLFWwindow window)
 {
+    _GLFWwindow* entry;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED);
@@ -588,7 +584,13 @@ GLFWAPI int glfwIsWindow(GLFWwindow window)
     if (window == NULL)
         return GL_FALSE;
 
-    return (window == _glfwLibrary.window) ? GL_TRUE : GL_FALSE;
+    for (entry = _glfwLibrary.windowListHead;  entry;  entry = entry->next)
+    {
+        if (entry == window)
+            return GL_TRUE;
+    }
+
+    return GL_FALSE;
 }
 
 
@@ -678,6 +680,8 @@ GLFWAPI void glfwOpenWindowHint(int target, int hint)
 
 GLFWAPI void glfwCloseWindow(GLFWwindow window)
 {
+    _GLFWwindow** prev;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED);
@@ -695,8 +699,11 @@ GLFWAPI void glfwCloseWindow(GLFWwindow window)
 
     free(window);
 
-    // Yuck
-    _glfwLibrary.window = NULL;
+    prev = &_glfwLibrary.windowListHead;
+    while (*prev != window)
+        prev = &((*prev)->next);
+
+    *prev = window->next;
 }
 
 

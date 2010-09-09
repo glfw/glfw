@@ -36,32 +36,33 @@
 #include <stdlib.h>
 
 static GLboolean cursor_enabled = GL_TRUE;
+static GLFWwindow window_handle = NULL;
 
 static GLboolean open_window(void);
 
-static void toggle_mouse_cursor(void)
+static void toggle_mouse_cursor(GLFWwindow window)
 {
     if (cursor_enabled)
-        glfwDisable(GLFW_MOUSE_CURSOR);
+        glfwDisable(window, GLFW_MOUSE_CURSOR);
     else
-        glfwEnable(GLFW_MOUSE_CURSOR);
+        glfwEnable(window, GLFW_MOUSE_CURSOR);
 
     cursor_enabled = !cursor_enabled;
 }
 
-static void mouse_position_callback(int x, int y)
+static void mouse_position_callback(GLFWwindow window, int x, int y)
 {
     printf("Mouse moved to: %i %i\n", x, y);
 }
 
-static void key_callback(int key, int action)
+static void key_callback(GLFWwindow window, int key, int action)
 {
     switch (key)
     {
         case GLFW_KEY_SPACE:
         {
             if (action == GLFW_PRESS)
-                toggle_mouse_cursor();
+                toggle_mouse_cursor(window);
 
             break;
         }
@@ -70,7 +71,7 @@ static void key_callback(int key, int action)
         {
             if (action == GLFW_PRESS)
             {
-                glfwCloseWindow();
+                glfwCloseWindow(window);
                 open_window();
             }
 
@@ -79,7 +80,7 @@ static void key_callback(int key, int action)
     }
 }
 
-static void window_size_callback(int width, int height)
+static void window_size_callback(GLFWwindow window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
@@ -88,17 +89,18 @@ static GLboolean open_window(void)
 {
     int x, y;
 
-    if (!glfwOpenWindow(0, 0, 0, 0, 0, 0, 0, 0, GLFW_WINDOW))
+    window_handle = glfwOpenWindow(0, 0, 0, 0, 0, 0, 0, 0, GLFW_WINDOW);
+    if (!window_handle)
         return GL_FALSE;
 
-    glfwSetWindowTitle("Peter Detector");
+    glfwSetWindowTitle(window_handle, "Peter Detector");
 
-    glfwGetMousePos(&x, &y);
+    glfwGetMousePos(window_handle, &x, &y);
     printf("Mouse position: %i %i\n", x, y);
 
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetMousePosCallback(mouse_position_callback);
-    glfwSetKeyCallback(key_callback);
+    glfwSetWindowSizeCallback(window_handle, window_size_callback);
+    glfwSetMousePosCallback(window_handle, mouse_position_callback);
+    glfwSetKeyCallback(window_handle, key_callback);
     glfwSwapInterval(1);
 
     return GL_TRUE;
@@ -122,7 +124,7 @@ int main(void)
 
     glClearColor(0.f, 0.f, 0.f, 0.f);
 
-    while (glfwGetWindowParam(GLFW_OPENED))
+    while (glfwIsWindow(window_handle))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 

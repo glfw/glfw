@@ -250,7 +250,7 @@ void calc( void )
 
 
 /* Handle key strokes */
-void handle_key_down(int key, int action)
+void handle_key_down(GLFWwindow window, int key, int action)
 {
   if( action != GLFW_PRESS )
   {
@@ -289,7 +289,7 @@ void handle_key_down(int key, int action)
 
 
 /* Callback function for window resize events */
-void handle_resize( int width, int height )
+void handle_resize( GLFWwindow window, int width, int height )
 {
   float ratio = 1.0f;
 
@@ -320,6 +320,7 @@ int main(int argc, char* argv[])
   int mode;
   /* Frame time */
   double t, t_old, dt_total;
+  GLFWwindow window;
 
   /* Initialize GLFW */
   if(glfwInit() == GL_FALSE)
@@ -334,7 +335,8 @@ int main(int argc, char* argv[])
   mode   = GLFW_WINDOW;
 
   /* Open window */
-  if( glfwOpenWindow(width,height,0,0,0,0,16,0,mode) == GL_FALSE )
+  window = glfwOpenWindow(width,height,0,0,0,0,16,0,mode);
+  if (!window)
   {
     fprintf(stderr, "Could not open window\n");
     glfwTerminate();
@@ -342,16 +344,16 @@ int main(int argc, char* argv[])
   }
 
   /* Set title */
-  glfwSetWindowTitle( "Wave Simulation" );
+  glfwSetWindowTitle( window, "Wave Simulation" );
 
   glfwSwapInterval( 1 );
 
   /* Keyboard handler */
-  glfwSetKeyCallback( handle_key_down );
-  glfwEnable( GLFW_KEY_REPEAT );
+  glfwSetKeyCallback( window, handle_key_down );
+  glfwEnable( window, GLFW_KEY_REPEAT );
 
   /* Window resize handler */
-  glfwSetWindowSizeCallback( handle_resize );
+  glfwSetWindowSizeCallback( window, handle_resize );
 
   /* Initialize OpenGL */
   setup_opengl();
@@ -389,8 +391,10 @@ int main(int argc, char* argv[])
     /* Draw wave grid to OpenGL display */
     draw_screen();
 
+    glfwPollEvents();
+
     /* Still running? */
-    running = running && glfwGetWindowParam( GLFW_OPENED );
+    running = running && glfwIsWindow( window );
   }
 
   glfwTerminate();

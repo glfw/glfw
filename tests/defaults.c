@@ -67,6 +67,7 @@ static Param parameters[] =
 int main(void)
 {
     int i, width, height;
+    GLFWwindow window;
 
     if (!glfwInit())
     {
@@ -74,7 +75,8 @@ int main(void)
         exit(1);
     }
 
-    if (!glfwOpenWindow(0, 0, 0, 0, 0, 0, 0, 0, GLFW_WINDOW))
+    window = glfwOpenWindow(0, 0, 0, 0, 0, 0, 0, 0, GLFW_WINDOW);
+    if (!window)
     {
         glfwTerminate();
 
@@ -82,16 +84,20 @@ int main(void)
         exit(1);
     }
 
-    glfwGetWindowSize(&width, &height);
+    glfwGetWindowSize(window, &width, &height);
 
     printf("window size: %ix%i\n", width, height);
 
     for (i = 0;  (size_t) i < sizeof(parameters) / sizeof(parameters[0]);  i++)
     {
-        printf("%s: %i\n", parameters[i].name, glfwGetWindowParam(parameters[i].param));
+        printf("%s: %i\n",
+               parameters[i].name,
+               glfwGetWindowParam(window, parameters[i].param));
     }
 
-    glfwCloseWindow();
+    glfwCloseWindow(window);
+    window = NULL;
+
     glfwTerminate();
     exit(0);
 }

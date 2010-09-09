@@ -13,6 +13,7 @@ int main( void )
 {
     int width, height, x;
     double t;
+    GLFWwindow window;
 
     // Initialise GLFW
     if( !glfwInit() )
@@ -22,7 +23,8 @@ int main( void )
     }
 
     // Open a window and create its OpenGL context
-    if( !glfwOpenWindow( 640, 480, 0,0,0,0, 0,0, GLFW_WINDOW ) )
+    window = glfwOpenWindow( 640, 480, 0,0,0,0, 0,0, GLFW_WINDOW );
+    if (!window)
     {
         fprintf( stderr, "Failed to open GLFW window\n" );
 
@@ -30,10 +32,10 @@ int main( void )
         exit( EXIT_FAILURE );
     }
 
-    glfwSetWindowTitle( "Spinning Triangle" );
+    glfwSetWindowTitle( window, "Spinning Triangle" );
 
     // Ensure we can capture the escape key being pressed below
-    glfwEnable( GLFW_STICKY_KEYS );
+    glfwEnable( window, GLFW_STICKY_KEYS );
 
     // Enable vertical sync (on cards that support it)
     glfwSwapInterval( 1 );
@@ -41,10 +43,10 @@ int main( void )
     do
     {
         t = glfwGetTime();
-        glfwGetMousePos( &x, NULL );
+        glfwGetMousePos( window, &x, NULL );
 
         // Get window size (may be different than the requested size)
-        glfwGetWindowSize( &width, &height );
+        glfwGetWindowSize( window, &width, &height );
 
         // Special case: avoid division by zero below
         height = height > 0 ? height : 1;
@@ -81,10 +83,11 @@ int main( void )
 
         // Swap buffers
         glfwSwapBuffers();
+        glfwPollEvents();
 
     } // Check if the ESC key was pressed or the window was closed
-    while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS &&
-           glfwGetWindowParam( GLFW_OPENED ) );
+    while( glfwIsWindow(window) &&
+           glfwGetKey( window, GLFW_KEY_ESC ) != GLFW_PRESS );
 
     // Close OpenGL window and terminate GLFW
     glfwTerminate();

@@ -37,7 +37,7 @@
 static int cursor_x = 0, cursor_y = 0;
 static int window_width = 640, window_height = 480;
 
-static void window_size_callback(int width, int height)
+static void window_size_callback(GLFWwindow window, int width, int height)
 {
     window_width = width;
     window_height = height;
@@ -49,7 +49,7 @@ static void window_size_callback(int width, int height)
     gluOrtho2D(0.f, window_width, 0.f, window_height);
 }
 
-static void mouse_position_callback(int x, int y)
+static void mouse_position_callback(GLFWwindow window, int x, int y)
 {
     cursor_x = x;
     cursor_y = y;
@@ -57,13 +57,16 @@ static void mouse_position_callback(int x, int y)
 
 int main(void)
 {
+    GLFWwindow window;
+
     if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW\n");
         exit(EXIT_FAILURE);
     }
 
-    if (!glfwOpenWindow(window_width, window_height, 0, 0, 0, 0, 0, 0, GLFW_WINDOW))
+    window = glfwOpenWindow(window_width, window_height, 0, 0, 0, 0, 0, 0, GLFW_WINDOW);
+    if (!window)
     {
         glfwTerminate();
 
@@ -71,9 +74,9 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glfwSetWindowTitle("Cursor Inaccuracy Detector");
-    glfwSetMousePosCallback(mouse_position_callback);
-    glfwSetWindowSizeCallback(window_size_callback);
+    glfwSetWindowTitle(window, "Cursor Inaccuracy Detector");
+    glfwSetMousePosCallback(window, mouse_position_callback);
+    glfwSetWindowSizeCallback(window, window_size_callback);
     glfwSwapInterval(1);
 
     glClearColor(0, 0, 0, 0);
@@ -81,7 +84,7 @@ int main(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    while (glfwGetWindowParam(GLFW_OPENED))
+    while (glfwIsWindow(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -95,6 +98,7 @@ int main(void)
         glEnd();
 
         glfwSwapBuffers();
+        glfwPollEvents();
     }
 
     glfwTerminate();

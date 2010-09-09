@@ -38,13 +38,15 @@
 #define GL_MULTISAMPLE_ARB 0x809D
 #endif
 
-static void window_size_callback(int width, int height)
+static void window_size_callback(GLFWwindow window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 
 int main(void)
 {
+    GLFWwindow window;
+
     if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW\n");
@@ -53,7 +55,8 @@ int main(void)
 
     glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 4);
 
-    if (!glfwOpenWindow(400, 400, 0, 0, 0, 0, 0, 0, GLFW_WINDOW))
+    window = glfwOpenWindow(400, 400, 0, 0, 0, 0, 0, 0, GLFW_WINDOW);
+    if (!window)
     {
         glfwTerminate();
 
@@ -61,11 +64,11 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glfwSetWindowTitle("Aliasing Detector");
-    glfwSetWindowSizeCallback(window_size_callback);
+    glfwSetWindowTitle(window, "Aliasing Detector");
+    glfwSetWindowSizeCallback(window, window_size_callback);
     glfwSwapInterval(1);
 
-    int samples = glfwGetWindowParam(GLFW_FSAA_SAMPLES);
+    int samples = glfwGetWindowParam(window, GLFW_FSAA_SAMPLES);
     if (samples)
         printf("Context reports FSAA is supported with %i samples\n", samples);
     else
@@ -74,7 +77,7 @@ int main(void)
     glMatrixMode(GL_PROJECTION);
     gluOrtho2D(0.f, 1.f, 0.f, 1.f);
 
-    while (glfwGetWindowParam(GLFW_OPENED))
+    while (glfwIsWindow(window))
     {
         GLfloat time = (GLfloat) glfwGetTime();
 
@@ -97,6 +100,7 @@ int main(void)
         glRectf(-0.25f, -0.25f, 0.25f, 0.25f);
 
         glfwSwapBuffers();
+        glfwPollEvents();
     }
 
     glfwTerminate();

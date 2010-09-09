@@ -357,7 +357,7 @@ static void drawAllViews( void )
 // Window size callback function
 //========================================================================
 
-static void windowSizeFun( int w, int h )
+static void windowSizeFun( GLFWwindow window, int w, int h )
 {
     width  = w;
     height = h > 0 ? h : 1;
@@ -369,7 +369,7 @@ static void windowSizeFun( int w, int h )
 // Window refresh callback function
 //========================================================================
 
-static void windowRefreshFun( void )
+static void windowRefreshFun( GLFWwindow window )
 {
     do_redraw = 1;
 }
@@ -379,7 +379,7 @@ static void windowRefreshFun( void )
 // Mouse position callback function
 //========================================================================
 
-static void mousePosFun( int x, int y )
+static void mousePosFun( GLFWwindow window, int x, int y )
 {
     // Depending on which view was selected, rotate around different axes
     switch( active_view )
@@ -414,7 +414,7 @@ static void mousePosFun( int x, int y )
 // Mouse button callback function
 //========================================================================
 
-static void mouseButtonFun( int button, int action )
+static void mouseButtonFun( GLFWwindow window, int button, int action )
 {
     // Button clicked?
     if( ( button == GLFW_MOUSE_BUTTON_LEFT ) && action == GLFW_PRESS )
@@ -448,6 +448,8 @@ static void mouseButtonFun( int button, int action )
 
 int main( void )
 {
+    GLFWwindow window;
+
     // Initialise GLFW
     if( !glfwInit() )
     {
@@ -456,7 +458,8 @@ int main( void )
     }
 
     // Open OpenGL window
-    if( !glfwOpenWindow( 500, 500, 0,0,0,0, 16,0, GLFW_WINDOW ) )
+    window = glfwOpenWindow( 500, 500, 0,0,0,0, 16,0, GLFW_WINDOW );
+    if (!window)
     {
         fprintf( stderr, "Failed to open GLFW window\n" );
         glfwTerminate();
@@ -467,19 +470,19 @@ int main( void )
     glfwSwapInterval( 1 );
 
     // Set window title
-    glfwSetWindowTitle( "Split view demo" );
+    glfwSetWindowTitle( window, "Split view demo" );
 
     // Enable sticky keys
-    glfwEnable( GLFW_STICKY_KEYS );
+    glfwEnable( window, GLFW_STICKY_KEYS );
 
     // Enable mouse cursor (only needed for fullscreen mode)
-    glfwEnable( GLFW_MOUSE_CURSOR );
+    glfwEnable( window, GLFW_MOUSE_CURSOR );
 
     // Set callback functions
-    glfwSetWindowSizeCallback( windowSizeFun );
-    glfwSetWindowRefreshCallback( windowRefreshFun );
-    glfwSetMousePosCallback( mousePosFun );
-    glfwSetMouseButtonCallback( mouseButtonFun );
+    glfwSetWindowSizeCallback( window, windowSizeFun );
+    glfwSetWindowRefreshCallback( window, windowRefreshFun );
+    glfwSetMousePosCallback( window, mousePosFun );
+    glfwSetMouseButtonCallback( window, mouseButtonFun );
 
     // Main loop
     do
@@ -500,8 +503,8 @@ int main( void )
         glfwWaitEvents();
 
     } // Check if the ESC key was pressed or the window was closed
-    while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS &&
-           glfwGetWindowParam( GLFW_OPENED ) );
+    while( glfwIsWindow(window) &&
+           glfwGetKey(window, GLFW_KEY_ESC) != GLFW_PRESS );
 
     // Close OpenGL window and terminate GLFW
     glfwTerminate();

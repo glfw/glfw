@@ -63,7 +63,7 @@ int main(void)
     if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW\n");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     for (i = 0;  i < 4;  i++)

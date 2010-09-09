@@ -868,6 +868,12 @@ GLFWAPI void glfwSwapInterval(int interval)
         return;
     }
 
+    if (!_glfwLibrary.currentWindow)
+    {
+        _glfwSetError(GLFW_NO_CURRENT_WINDOW);
+        return;
+    }
+
     _glfwPlatformSwapInterval(interval);
 }
 

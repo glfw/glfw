@@ -1063,7 +1063,7 @@ static void processSingleEvent(void)
             window = findWindow(event.xkey.window);
             if (window == NULL)
             {
-                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                fprintf(stderr, "Cannot find GLFW window structure for KeyPress event\n");
                 return;
             }
 
@@ -1082,7 +1082,7 @@ static void processSingleEvent(void)
             window = findWindow(event.xkey.window);
             if (window == NULL)
             {
-                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                fprintf(stderr, "Cannot find GLFW window structure for KeyRelease event\n");
                 return;
             }
 
@@ -1124,7 +1124,7 @@ static void processSingleEvent(void)
             window = findWindow(event.xbutton.window);
             if (window == NULL)
             {
-                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                fprintf(stderr, "Cannot find GLFW window structure for ButtonPress event\n");
                 return;
             }
 
@@ -1158,7 +1158,7 @@ static void processSingleEvent(void)
             window = findWindow(event.xbutton.window);
             if (window == NULL)
             {
-                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                fprintf(stderr, "Cannot find GLFW window structure for ButtonRelease event\n");
                 return;
             }
 
@@ -1189,7 +1189,7 @@ static void processSingleEvent(void)
             window = findWindow(event.xmotion.window);
             if (window == NULL)
             {
-                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                fprintf(stderr, "Cannot find GLFW window structure for MotionNotify event\n");
                 return;
             }
 
@@ -1234,7 +1234,7 @@ static void processSingleEvent(void)
             window = findWindow(event.xconfigure.window);
             if (window == NULL)
             {
-                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                fprintf(stderr, "Cannot find GLFW window structure for ConfigureNotify event\n");
                 return;
             }
 
@@ -1261,7 +1261,7 @@ static void processSingleEvent(void)
             window = findWindow(event.xclient.window);
             if (window == NULL)
             {
-                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                fprintf(stderr, "Cannot find GLFW window structure for ClientMessage event\n");
                 return;
             }
 
@@ -1295,7 +1295,7 @@ static void processSingleEvent(void)
             window = findWindow(event.xmap.window);
             if (window == NULL)
             {
-                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                fprintf(stderr, "Cannot find GLFW window structure for MapNotify event\n");
                 return;
             }
 
@@ -1309,7 +1309,7 @@ static void processSingleEvent(void)
             window = findWindow(event.xmap.window);
             if (window == NULL)
             {
-                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                fprintf(stderr, "Cannot find GLFW window structure for UnmapNotify event\n");
                 return;
             }
 
@@ -1323,7 +1323,7 @@ static void processSingleEvent(void)
             window = findWindow(event.xfocus.window);
             if (window == NULL)
             {
-                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                fprintf(stderr, "Cannot find GLFW window structure for FocusIn event\n");
                 return;
             }
 
@@ -1341,7 +1341,7 @@ static void processSingleEvent(void)
             window = findWindow(event.xfocus.window);
             if (window == NULL)
             {
-                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                fprintf(stderr, "Cannot find GLFW window structure for FocusOut event\n");
                 return;
             }
 
@@ -1360,7 +1360,7 @@ static void processSingleEvent(void)
             window = findWindow(event.xexpose.window);
             if (window == NULL)
             {
-                fprintf(stderr, "Cannot find GLFW window structure for event\n");
+                fprintf(stderr, "Cannot find GLFW window structure for Expose event\n");
                 return;
             }
 
@@ -1800,7 +1800,7 @@ void _glfwPlatformPollEvents(void)
         }
     }
 
-    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+    for (window = _glfwLibrary.windowListHead;  window; )
     {
         if (window->closed && window->windowCloseCallback)
             window->closed = window->windowCloseCallback(window);
@@ -1811,6 +1811,8 @@ void _glfwPlatformPollEvents(void)
             glfwCloseWindow(window);
             window = next;
         }
+        else
+            window = window->next;
     }
 }
 

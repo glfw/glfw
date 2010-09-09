@@ -75,10 +75,7 @@ int main(void)
             exit(EXIT_FAILURE);
         }
 
-        glClearColor((i & 0x01) ? 1.0 : 0.0,
-                        (i & 0x02) ? 1.0 : 0.0,
-                        0.0,
-                        0.0);
+        glClearColor((i & 0x01) ? 1.0 : 0.0, (i & 0x02) ? 1.0 : 0.0, 0.0, 0.0);
     }
 
     while (running)

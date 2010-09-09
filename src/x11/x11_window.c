@@ -365,6 +365,8 @@ static Cursor createNULLCursor(Display* display, Window root)
     XColor    col;
     Cursor    cursor;
 
+    // TODO: Add error checks
+
     cursormask = XCreatePixmap(display, root, 1, 1, 1);
     xgc.function = GXclear;
     gc = XCreateGC(display, cursormask, GCFunction, &xgc);
@@ -419,6 +421,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         if (!window->GLX.has_GLX_SGIX_fbconfig)
         {
             fprintf(stderr, "GLXFBConfigs are not supported by the X server\n");
+            _glfwSetError(GLFW_NO_PIXEL_FORMAT);
             return NULL;
         }
     }
@@ -432,6 +435,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         if (!count)
         {
             fprintf(stderr, "No GLXFBConfigs returned\n");
+            _glfwSetError(GLFW_NO_PIXEL_FORMAT);
             return NULL;
         }
     }
@@ -441,6 +445,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         if (!count)
         {
             fprintf(stderr, "No GLXFBConfigs returned\n");
+            _glfwSetError(GLFW_NO_PIXEL_FORMAT);
             return NULL;
         }
     }
@@ -448,7 +453,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
     result = (_GLFWfbconfig*) malloc(sizeof(_GLFWfbconfig) * count);
     if (!result)
     {
-        fprintf(stderr, "Out of memory\n");
+        _glfwSetError(GLFW_OUT_OF_MEMORY);
         return NULL;
     }
 
@@ -544,6 +549,7 @@ static int createContext(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, G
         if (fbconfig == NULL)
         {
             fprintf(stderr, "Unable to retrieve the selected GLXFBConfig\n");
+            _glfwSetError(GLFW_INTERNAL_ERROR);
             return GL_FALSE;
         }
     }
@@ -565,6 +571,7 @@ static int createContext(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, G
         XFree(fbconfig);
 
         fprintf(stderr, "Unable to retrieve visual for GLXFBconfig\n");
+        _glfwSetError(GLFW_INTERNAL_ERROR);
         return GL_FALSE;
     }
 
@@ -599,6 +606,7 @@ static int createContext(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, G
             {
                 fprintf(stderr, "OpenGL profile requested but GLX_ARB_create_context_profile "
                                 "is unavailable\n");
+                _glfwSetError(GLFW_UNAVAILABLE_VERSION);
                 return GL_FALSE;
             }
 
@@ -643,6 +651,8 @@ static int createContext(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, G
     if (window->GLX.context == NULL)
     {
         fprintf(stderr, "Unable to create OpenGL context\n");
+        // TODO: Handle all the various error codes here
+        _glfwSetError(GLFW_INTERNAL_ERROR);
         return GL_FALSE;
     }
 
@@ -759,7 +769,11 @@ static GLboolean createWindow(_GLFWwindow* window,
         );
 
         if (!window->X11.window)
+        {
+            // TODO: Handle all the various error codes here
+            _glfwSetError(GLFW_INTERNAL_ERROR);
             return GL_FALSE;
+        }
     }
 
     // Check whether an EWMH-compliant window manager is running
@@ -817,7 +831,10 @@ static GLboolean createWindow(_GLFWwindow* window,
     {
         XWMHints* hints = XAllocWMHints();
         if (!hints)
+        {
+            _glfwSetError(GLFW_OUT_OF_MEMORY);
             return GL_FALSE;
+        }
 
         hints->flags = StateHint;
         hints->initial_state = NormalState;
@@ -830,7 +847,10 @@ static GLboolean createWindow(_GLFWwindow* window,
     {
         XSizeHints* hints = XAllocSizeHints();
         if (!hints)
+        {
+            _glfwSetError(GLFW_OUT_OF_MEMORY);
             return GL_FALSE;
+        }
 
         hints->flags = 0;
 
@@ -1610,7 +1630,7 @@ void _glfwPlatformRefreshWindowParams(void)
     if (fbconfig == NULL)
     {
         // This should never ever happen
-        // TODO: Figure out what to do when this happens
+        // TODO: Flag this as an error and propagate up
         fprintf(stderr, "Cannot find known GLXFBConfig by ID. "
                         "This cannot happen. Have a nice day.\n");
         abort();

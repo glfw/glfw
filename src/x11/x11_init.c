@@ -79,13 +79,14 @@ static void glfw_atexit(void)
 // Initialize X11 display
 //========================================================================
 
-static int initDisplay(void)
+static GLboolean initDisplay(void)
 {
     // Open display
     _glfwLibrary.X11.display = XOpenDisplay(0);
     if (!_glfwLibrary.X11.display)
     {
         fprintf(stderr, "Failed to open X display\n");
+        _glfwSetError(GLFW_OPENGL_NOT_SUPPORTED);
         return GL_FALSE;
     }
 
@@ -114,6 +115,7 @@ static int initDisplay(void)
     if (!glXQueryExtension(_glfwLibrary.X11.display, NULL, NULL))
     {
         fprintf(stderr, "GLX not supported\n");
+        _glfwSetError(GLFW_OPENGL_NOT_SUPPORTED);
         return GL_FALSE;
     }
 
@@ -123,6 +125,7 @@ static int initDisplay(void)
                          &_glfwLibrary.X11.glxMinor))
     {
         fprintf(stderr, "Unable to query GLX version\n");
+        _glfwSetError(GLFW_OPENGL_NOT_SUPPORTED);
         return GL_FALSE;
     }
 

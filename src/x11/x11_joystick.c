@@ -266,7 +266,10 @@ static void pollJoystickEvents(void)
 int _glfwPlatformGetJoystickParam(int joy, int param)
 {
     if (!_glfwJoy[joy].Present)
+    {
+        // TODO: Figure out if this is an error
         return 0;
+    }
 
     switch (param)
     {
@@ -296,7 +299,10 @@ int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
     int i;
 
     if (!_glfwJoy[joy].Present)
+    {
+        // TODO: Figure out if this is an error
         return 0;
+    }
 
     // Update joystick state
     pollJoystickEvents();
@@ -323,7 +329,10 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
     int i;
 
     if (!_glfwJoy[joy].Present)
+    {
+        // TODO: Figure out if this is an error
         return 0;
+    }
 
     // Update joystick state
     pollJoystickEvents();

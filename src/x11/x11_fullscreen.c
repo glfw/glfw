@@ -372,7 +372,10 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
     // Get list of visuals
     vislist = XGetVisualInfo(dpy, 0, &dummy, &viscount);
     if (vislist == NULL)
+    {
+        // TODO: Figure out which error this is
         return 0;
+    }
 
     rgbarray = (int*) malloc(sizeof(int) * viscount);
     rgbcount = 0;

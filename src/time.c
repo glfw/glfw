@@ -42,7 +42,10 @@
 GLFWAPI double glfwGetTime(void)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return 0.0;
+    }
 
     return _glfwPlatformGetTime();
 }
@@ -55,7 +58,10 @@ GLFWAPI double glfwGetTime(void)
 GLFWAPI void glfwSetTime(double time)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
 
     _glfwPlatformSetTime(time);
 }

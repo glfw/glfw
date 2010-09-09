@@ -132,10 +132,19 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
     GLint count;
     int i;
 
-    if (!_glfwInitialized || !_glfwLibrary.window)
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return GL_FALSE;
+    }
 
-    _GLFWwindow* window = _glfwLibrary.window;
+    if (!_glfwLibrary.currentWindow)
+    {
+        _glfwSetError(GLFW_NO_CURRENT_WINDOW);
+        return GL_FALSE;
+    }
+
+    _GLFWwindow* window = _glfwLibrary.currentWindow;
 
     // Extension names should not have spaces
     where = (GLubyte*) strchr(extension, ' ');
@@ -184,8 +193,17 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 
 GLFWAPI void* glfwGetProcAddress(const char* procname)
 {
-    if (!_glfwInitialized || !_glfwLibrary.window)
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return NULL;
+    }
+
+    if (!_glfwLibrary.currentWindow)
+    {
+        _glfwSetError(GLFW_NO_CURRENT_WINDOW);
+        return NULL;
+    }
 
     return _glfwPlatformGetProcAddress(procname);
 }
@@ -197,10 +215,19 @@ GLFWAPI void* glfwGetProcAddress(const char* procname)
 
 GLFWAPI void glfwGetGLVersion(int* major, int* minor, int* rev)
 {
-    if (!_glfwInitialized || !_glfwLibrary.window)
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
 
-    _GLFWwindow* window = _glfwLibrary.window;
+    if (!_glfwLibrary.currentWindow)
+    {
+        _glfwSetError(GLFW_NO_CURRENT_WINDOW);
+        return;
+    }
+
+    _GLFWwindow* window = _glfwLibrary.currentWindow;
 
     if (major != NULL)
         *major = window->glMajor;

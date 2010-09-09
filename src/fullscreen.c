@@ -44,8 +44,17 @@ GLFWAPI int glfwGetVideoModes(GLFWvidmode* list, int maxcount)
     int count, i, swap, res1, res2, depth1, depth2;
     GLFWvidmode vm;
 
-    if (!_glfwInitialized || maxcount <= 0 || list == NULL)
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
+        return;
+    }
+
+    if (maxcount <= 0 || list == NULL)
+    {
+        // TODO: Figure out if this is an error
         return 0;
+    }
 
     // Get list of video modes
     count = _glfwPlatformGetVideoModes(list, maxcount);
@@ -83,8 +92,17 @@ GLFWAPI int glfwGetVideoModes(GLFWvidmode* list, int maxcount)
 
 GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode)
 {
-    if (!_glfwInitialized || mode == NULL)
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
+
+    if (mode == NULL)
+    {
+        _glfwSetError(GLFW_INVALID_VALUE);
+        return;
+    }
 
     _glfwPlatformGetDesktopMode(mode);
 }

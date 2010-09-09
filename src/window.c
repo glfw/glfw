@@ -375,12 +375,25 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode)
     _GLFWwndconfig wndconfig;
     _GLFWwindow* window;
 
-    if (!_glfwInitialized || _glfwLibrary.window)
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return NULL;
+    }
+
+    if (_glfwLibrary.window)
+    {
+        // TODO: Remove this once multi-window is completed
+        _glfwSetError(GLFW_INTERNAL_ERROR);
+        return NULL;
+    }
 
     window = (_GLFWwindow*) malloc(sizeof(_GLFWwindow));
     if (!window)
+    {
+        _glfwSetError(GLFW_OUT_OF_MEMORY);
         return NULL;
+    }
 
     _glfwLibrary.window = window;
 
@@ -418,18 +431,21 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode)
     {
         // OpenGL 1.x series ended with version 1.5
         glfwCloseWindow(window);
+        _glfwSetError(GLFW_INVALID_VALUE);
         return GL_FALSE;
     }
     else if (wndconfig.glMajor == 2 && wndconfig.glMinor > 1)
     {
         // OpenGL 2.x series ended with version 2.1
         glfwCloseWindow(window);
+        _glfwSetError(GLFW_INVALID_VALUE);
         return GL_FALSE;
     }
     else if (wndconfig.glMajor == 3 && wndconfig.glMinor > 3)
     {
         // OpenGL 3.x series ended with version 3.3
         glfwCloseWindow(window);
+        _glfwSetError(GLFW_INVALID_VALUE);
         return GL_FALSE;
     }
     else
@@ -442,6 +458,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode)
     {
         // Context profiles are only defined for OpenGL version 3.2 and above
         glfwCloseWindow(window);
+        _glfwSetError(GLFW_INVALID_VALUE);
         return GL_FALSE;
     }
 
@@ -449,6 +466,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode)
     {
         // Forward-compatible contexts are only defined for OpenGL version 3.0 and above
         glfwCloseWindow(window);
+        _glfwSetError(GLFW_INVALID_VALUE);
         return GL_FALSE;
     }
 
@@ -456,6 +474,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode)
     {
         // Invalid window mode
         glfwCloseWindow(window);
+        _glfwSetError(GLFW_INVALID_ENUM);
         return GL_FALSE;
     }
 
@@ -506,6 +525,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode)
         // The desired OpenGL version is greater than the actual version
         // This only happens if the machine lacks {GLX|WGL}_ARB_create_context
         glfwCloseWindow(window);
+        _glfwSetError(GLFW_UNAVAILABLE_VERSION);
         return GL_FALSE;
     }
 
@@ -515,6 +535,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode)
         if (!window->GetStringi)
         {
             glfwCloseWindow(window);
+            _glfwSetError(GLFW_INTERNAL_ERROR);
             return GL_FALSE;
         }
     }
@@ -538,7 +559,13 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode)
 
 GLFWAPI void glfwMakeWindowCurrent(GLFWwindow window)
 {
-    if (!_glfwInitialized || _glfwLibrary.currentWindow == window)
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
+        return;
+    }
+
+    if (_glfwLibrary.currentWindow == window)
         return;
 
     _glfwPlatformMakeWindowCurrent(window);
@@ -553,7 +580,10 @@ GLFWAPI void glfwMakeWindowCurrent(GLFWwindow window)
 GLFWAPI int glfwIsWindow(GLFWwindow window)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return GL_FALSE;
+    }
 
     if (window == NULL)
         return GL_FALSE;
@@ -569,7 +599,10 @@ GLFWAPI int glfwIsWindow(GLFWwindow window)
 GLFWAPI void glfwOpenWindowHint(int target, int hint)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
 
     switch (target)
     {
@@ -646,7 +679,10 @@ GLFWAPI void glfwOpenWindowHint(int target, int hint)
 GLFWAPI void glfwCloseWindow(GLFWwindow window)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
 
     // Show mouse pointer again (if hidden)
     if (window == _glfwLibrary.cursorLockWindow)
@@ -671,7 +707,10 @@ GLFWAPI void glfwCloseWindow(GLFWwindow window)
 GLFWAPI void glfwSetWindowTitle(GLFWwindow window, const char* title)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
 
     _glfwPlatformSetWindowTitle(window, title);
 }
@@ -684,7 +723,10 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow window, const char* title)
 GLFWAPI void glfwGetWindowSize(GLFWwindow window, int* width, int* height)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
 
     if (width != NULL)
         *width = window->width;
@@ -700,8 +742,17 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow window, int* width, int* height)
 
 GLFWAPI void glfwSetWindowSize(GLFWwindow window, int width, int height)
 {
-    if (!_glfwInitialized || window->iconified)
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
+
+    if (window->iconified)
+    {
+        // TODO: Figure out if this is an error
+        return;
+    }
 
     // Don't do anything if the window size did not change
     if (width == window->width && height == window->height)
@@ -724,8 +775,15 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow window, int width, int height)
 
 GLFWAPI void glfwSetWindowPos(GLFWwindow window, int x, int y)
 {
-    if (!_glfwInitialized || window->mode == GLFW_FULLSCREEN || window->iconified)
+    if (!_glfwInitialized)
     {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
+        return;
+    }
+
+    if (window->mode == GLFW_FULLSCREEN || window->iconified)
+    {
+        // TODO: Figure out if this is an error
         return;
     }
 
@@ -739,7 +797,13 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow window, int x, int y)
 
 GLFWAPI void glfwIconifyWindow(GLFWwindow window)
 {
-    if (!_glfwInitialized || window->iconified)
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
+        return;
+    }
+
+    if (window->iconified)
         return;
 
     _glfwPlatformIconifyWindow(window);
@@ -752,7 +816,13 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow window)
 
 GLFWAPI void glfwRestoreWindow(GLFWwindow window)
 {
-    if (!_glfwInitialized || !window->iconified)
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
+        return;
+    }
+
+    if (!window->iconified)
         return;
 
     // Restore iconified window
@@ -770,7 +840,16 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow window)
 GLFWAPI void glfwSwapBuffers(void)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
+
+    if (!_glfwLibrary.currentWindow)
+    {
+        _glfwSetError(GLFW_NO_CURRENT_WINDOW);
+        return;
+    }
 
     if (_glfwLibrary.currentWindow)
         _glfwPlatformSwapBuffers();
@@ -784,7 +863,10 @@ GLFWAPI void glfwSwapBuffers(void)
 GLFWAPI void glfwSwapInterval(int interval)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
 
     _glfwPlatformSwapInterval(interval);
 }
@@ -797,7 +879,10 @@ GLFWAPI void glfwSwapInterval(int interval)
 GLFWAPI int glfwGetWindowParam(GLFWwindow window, int param)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return 0;
+    }
 
     switch (param)
     {
@@ -860,7 +945,10 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow window, int param)
 GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfun)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
 
     window->windowSizeCallback = cbfun;
 
@@ -877,7 +965,10 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfu
 GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cbfun)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
 
     window->windowCloseCallback = cbfun;
 }
@@ -890,7 +981,10 @@ GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cb
 GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfun cbfun)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
 
     window->windowRefreshCallback = cbfun;
 }
@@ -903,7 +997,10 @@ GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfu
 GLFWAPI void glfwPollEvents(void)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
 
     _glfwPlatformPollEvents();
 }
@@ -916,7 +1013,10 @@ GLFWAPI void glfwPollEvents(void)
 GLFWAPI void glfwWaitEvents(void)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
 
     _glfwPlatformWaitEvents();
 }

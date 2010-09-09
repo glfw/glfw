@@ -184,7 +184,10 @@ static void disableKeyRepeat(_GLFWwindow* window)
 GLFWAPI void glfwEnable(GLFWwindow window, int token)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
 
     switch (token)
     {
@@ -216,7 +219,10 @@ GLFWAPI void glfwEnable(GLFWwindow window, int token)
 GLFWAPI void glfwDisable(GLFWwindow window, int token)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
+    }
 
     switch (token)
     {

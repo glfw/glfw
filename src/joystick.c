@@ -42,7 +42,10 @@
 GLFWAPI int glfwGetJoystickParam(int joy, int param)
 {
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return 0;
+    }
 
     return _glfwPlatformGetJoystickParam(joy, param);
 }
@@ -57,7 +60,10 @@ GLFWAPI int glfwGetJoystickPos(int joy, float* pos, int numaxes)
     int i;
 
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return 0;
+    }
 
     // Clear positions
     for (i = 0;  i < numaxes;  i++)
@@ -78,7 +84,10 @@ GLFWAPI int glfwGetJoystickButtons(int joy,
     int i;
 
     if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
         return 0;
+    }
 
     // Clear button states
     for (i = 0;  i < numbuttons;  i++)

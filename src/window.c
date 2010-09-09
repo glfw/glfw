@@ -388,10 +388,10 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode)
         return NULL;
     }
 
+    memset(window, 0, sizeof(_GLFWwindow));
+
     window->next = _glfwLibrary.windowListHead;
     _glfwLibrary.windowListHead = window;
-
-    memset(window, 0, sizeof(_GLFWwindow));
 
     // Set up desired framebuffer config
     fbconfig.redBits        = Max(_glfwLibrary.hints.redBits, 0);
@@ -697,13 +697,13 @@ GLFWAPI void glfwCloseWindow(GLFWwindow window)
 
     _glfwPlatformCloseWindow(window);
 
-    free(window);
-
     prev = &_glfwLibrary.windowListHead;
     while (*prev != window)
         prev = &((*prev)->next);
 
     *prev = window->next;
+
+    free(window);
 }
 
 

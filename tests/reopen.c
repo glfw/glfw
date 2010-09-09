@@ -38,6 +38,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static GLFWwindow window_handle = NULL;
 static GLboolean closed = GL_FALSE;
 
 static const char* get_mode_name(int mode)
@@ -53,19 +54,19 @@ static const char* get_mode_name(int mode)
     }
 }
 
-static void window_size_callback(int width, int height)
+static void window_size_callback(GLFWwindow window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 
-static int window_close_callback(void)
+static int window_close_callback(GLFWwindow window)
 {
     printf("Close callback triggered\n");
-    closed = GL_TRUE;
+    window_handle = NULL;
     return 0;
 }
 
-static void key_callback(int key, int action)
+static void key_callback(GLFWwindow window, int key, int action)
 {
     if (action != GLFW_PRESS)
         return;
@@ -83,16 +84,17 @@ static int open_window(int width, int height, int mode)
 {
     double base = glfwGetTime();
 
-    if (!glfwOpenWindow(width, height, 0, 0, 0, 0, 16, 0, mode))
+    window_handle = glfwOpenWindow(width, height, 0, 0, 0, 0, 16, 0, mode);
+    if (!window_handle)
     {
         fprintf(stderr, "Failed to create %s mode GLFW window\n", get_mode_name(mode));
         return 0;
     }
 
-    glfwSetWindowTitle("Window Re-opener");
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetWindowCloseCallback(window_close_callback);
-    glfwSetKeyCallback(key_callback);
+    glfwSetWindowTitle(window_handle, "Window Re-opener");
+    glfwSetWindowSizeCallback(window_handle, window_size_callback);
+    glfwSetWindowCloseCallback(window_handle, window_close_callback);
+    glfwSetKeyCallback(window_handle, key_callback);
     glfwSwapInterval(1);
 
     printf("Opening %s mode window took %0.3f seconds\n",
@@ -106,7 +108,8 @@ static void close_window(void)
 {
     double base = glfwGetTime();
 
-    glfwCloseWindow();
+    glfwCloseWindow(window_handle);
+    window_handle = NULL;
 
     printf("Closing window took %0.3f seconds\n", glfwGetTime() - base);
 }
@@ -152,7 +155,7 @@ int main(int argc, char** argv)
             if (closed)
                 close_window();
 
-            if (!glfwGetWindowParam(GLFW_OPENED))
+            if (!glfwIsWindow(window_handle))
             {
                 printf("User closed window\n");
 

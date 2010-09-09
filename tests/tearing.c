@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-static void window_size_callback(int width, int height)
+static void window_size_callback(GLFWwindow window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
@@ -42,6 +42,7 @@ static void window_size_callback(int width, int height)
 int main(void)
 {
     float position;
+    GLFWwindow window;
 
     if (!glfwInit())
     {
@@ -49,7 +50,8 @@ int main(void)
         exit(1);
     }
 
-    if (!glfwOpenWindow(0, 0, 0, 0, 0, 0, 0, 0, GLFW_WINDOW))
+    window = glfwOpenWindow(0, 0, 0, 0, 0, 0, 0, 0, GLFW_WINDOW);
+    if (!window)
     {
         glfwTerminate();
 
@@ -57,8 +59,8 @@ int main(void)
         exit(1);
     }
 
-    glfwSetWindowTitle("Tearing Detector");
-    glfwSetWindowSizeCallback(window_size_callback);
+    glfwSetWindowTitle(window, "Tearing Detector");
+    glfwSetWindowSizeCallback(window, window_size_callback);
     glfwSwapInterval(1);
 
     glClearColor(0.f, 0.f, 0.f, 0.f);
@@ -68,7 +70,7 @@ int main(void)
     glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);
     glMatrixMode(GL_MODELVIEW);
 
-    while (glfwGetWindowParam(GLFW_OPENED) == GL_TRUE)
+    while (glfwIsWindow(window) == GL_TRUE)
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -76,6 +78,7 @@ int main(void)
         glRectf(position - 0.25f, -1.f, position + 0.25f, 1.f);
 
         glfwSwapBuffers();
+        glfwPollEvents();
     }
 
     glfwTerminate();

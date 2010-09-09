@@ -371,7 +371,7 @@ typedef void (* GLFWmousebuttonfun)(GLFWwindow,int,int);
 typedef void (* GLFWmouseposfun)(GLFWwindow,int,int);
 typedef void (* GLFWmousewheelfun)(GLFWwindow,int);
 typedef void (* GLFWkeyfun)(GLFWwindow,int,int);
-typedef void (* GLFWcharfun)(GLFWwindow,int,int);
+typedef void (* GLFWcharfun)(GLFWwindow,int);
 
 
 /*************************************************************************

@@ -149,7 +149,7 @@ void _glfwInputKey(_GLFWwindow* window, int key, int action)
 // Register (keyboard) character activity
 //========================================================================
 
-void _glfwInputChar(_GLFWwindow* window, int character, int action)
+void _glfwInputChar(_GLFWwindow* window, int character)
 {
     int keyrepeat = 0;
 
@@ -157,36 +157,8 @@ void _glfwInputChar(_GLFWwindow* window, int character, int action)
     if (!((character >= 32 && character <= 126) || character >= 160))
         return;
 
-    // Is this a key repeat?
-    if (action == GLFW_PRESS && window->lastChar == character)
-        keyrepeat = 1;
-
-    // Store this character as last character (or clear it, if released)
-    if (action == GLFW_PRESS)
-        window->lastChar = character;
-    else
-        window->lastChar = 0;
-
-    if (action != GLFW_PRESS)
-    {
-        // This intentionally breaks release notifications for Unicode
-        // characters, partly to see if anyone cares but mostly because it's
-        // a nonsensical concept to begin with
-        //
-        // It will remain broken either until its removal in the 3.0 API or
-        // until someone explains, in a way that makes sense to people outside
-        // the US and Scandinavia, what "Unicode character up" actually means
-        //
-        // If what you want is "physical key up" then you should be using the
-        // key functions and/or the key callback, NOT the Unicode input
-        //
-        // However, if your particular application uses this misfeature for...
-        // something, you can re-enable it by removing this if-statement
-        return;
-    }
-
     if (window->charCallback && (window->keyRepeat || !keyrepeat))
-        window->charCallback(window, character, action);
+        window->charCallback(window, character);
 }
 
 

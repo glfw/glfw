@@ -276,7 +276,7 @@ void _glfwClearWindowHints(void);
 void _glfwClearInput(_GLFWwindow* window);
 void _glfwInputDeactivation(_GLFWwindow* window);
 void _glfwInputKey(_GLFWwindow* window, int key, int action);
-void _glfwInputChar(_GLFWwindow* window, int character, int action);
+void _glfwInputChar(_GLFWwindow* window, int character);
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action);
 
 // OpenGL extensions (glext.c)

@@ -1027,7 +1027,7 @@ static GLboolean processSingleEvent(void)
             _glfwInputKey(window, translateKey(event.xkey.keycode), GLFW_PRESS);
 
             // Translate and report character input
-            _glfwInputChar(window, translateChar(&event.xkey), GLFW_PRESS);
+            _glfwInputChar(window, translateChar(&event.xkey));
 
             break;
         }
@@ -1064,9 +1064,6 @@ static GLboolean processSingleEvent(void)
 
             // Translate and report key release
             _glfwInputKey(window, translateKey(event.xkey.keycode), GLFW_RELEASE);
-
-            // Translate and report character input
-            _glfwInputChar(window, translateChar(&event.xkey), GLFW_RELEASE);
 
             break;
         }

@@ -862,18 +862,20 @@ static GLboolean createWindow(_GLFWwindow* window,
 
 static void enterFullscreenMode(_GLFWwindow* window)
 {
-    if (!_glfwLibrary.X11.Saver.changed)
+    if (!_glfwLibrary.X11.saver.changed)
     {
         // Remember old screen saver settings
         XGetScreenSaver(_glfwLibrary.X11.display,
-                        &_glfwLibrary.X11.Saver.timeout, &_glfwLibrary.X11.Saver.interval,
-                        &_glfwLibrary.X11.Saver.blanking, &_glfwLibrary.X11.Saver.exposure);
+                        &_glfwLibrary.X11.saver.timeout,
+                        &_glfwLibrary.X11.saver.interval,
+                        &_glfwLibrary.X11.saver.blanking,
+                        &_glfwLibrary.X11.saver.exposure);
 
         // Disable screen saver
         XSetScreenSaver(_glfwLibrary.X11.display, 0, 0, DontPreferBlanking,
                         DefaultExposures);
 
-        _glfwLibrary.X11.Saver.changed = GL_TRUE;
+        _glfwLibrary.X11.saver.changed = GL_TRUE;
     }
 
     _glfwSetVideoMode(window->X11.screen,
@@ -962,16 +964,16 @@ static void leaveFullscreenMode(_GLFWwindow* window)
     _glfwRestoreVideoMode(window->X11.screen);
 
     // Did we change the screen saver setting?
-    if (_glfwLibrary.X11.Saver.changed)
+    if (_glfwLibrary.X11.saver.changed)
     {
         // Restore old screen saver settings
         XSetScreenSaver(_glfwLibrary.X11.display,
-                        _glfwLibrary.X11.Saver.timeout,
-                        _glfwLibrary.X11.Saver.interval,
-                        _glfwLibrary.X11.Saver.blanking,
-                        _glfwLibrary.X11.Saver.exposure);
+                        _glfwLibrary.X11.saver.timeout,
+                        _glfwLibrary.X11.saver.interval,
+                        _glfwLibrary.X11.saver.blanking,
+                        _glfwLibrary.X11.saver.exposure);
 
-        _glfwLibrary.X11.Saver.changed = GL_FALSE;
+        _glfwLibrary.X11.saver.changed = GL_FALSE;
     }
 
     if (window->X11.hasEWMH &&

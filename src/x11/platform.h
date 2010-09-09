@@ -244,7 +244,7 @@ typedef struct _GLFWlibraryX11
         int     interval;
         int     blanking;
         int     exposure;
-    } Saver;
+    } saver;
 
     // Fullscreen data
     struct {

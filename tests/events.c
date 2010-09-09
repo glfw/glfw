@@ -240,7 +240,7 @@ static void key_callback(GLFWwindow window, int key, int action)
         case 'S':
         {
             systemkeys = !systemkeys;
-            if( systemkeys )
+            if (systemkeys)
                 glfwEnable(window, GLFW_SYSTEM_KEYS);
             else
                 glfwDisable(window, GLFW_SYSTEM_KEYS);

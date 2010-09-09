@@ -151,6 +151,7 @@ int main(int argc, char** argv)
             glPopMatrix();
 
             glfwSwapBuffers();
+            glfwPollEvents();
 
             if (closed)
                 close_window();

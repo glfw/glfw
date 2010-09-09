@@ -358,9 +358,13 @@ extern "C" {
 typedef struct _GLFWwindow* GLFWwindow;
 
 /* The video mode structure used by glfwGetVideoModes() */
-typedef struct {
-    int width, height;
-    int redBits, blueBits, greenBits;
+typedef struct
+{
+    int width;
+    int height;
+    int redBits;
+    int blueBits;
+    int greenBits;
 } GLFWvidmode;
 
 /* Function pointer types */

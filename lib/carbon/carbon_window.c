@@ -581,8 +581,8 @@ if (AGLparameter != 0) \
 #define _setCGLAttribute(cglAttributeName, CGLparameter) \
 if (CGLparameter != 0) \
 { \
-    CGLpixelFormatAttributes[ numCGLAttrs++ ] = cglAttributeName; \
-    CGLpixelFormatAttributes[ numCGLAttrs++ ] = CGLparameter; \
+    CGLpixelFormatAttributes[numCGLAttrs++] = cglAttributeName; \
+    CGLpixelFormatAttributes[numCGLAttrs++] = CGLparameter; \
 }
 
 //========================================================================
@@ -823,20 +823,20 @@ int  _glfwPlatformOpenWindow(int width, int height,
                          CGDisplayIDToOpenGLDisplayMask(kCGDirectMainDisplay));
 
         if (fbconfig->stereo)
-            CGLpixelFormatAttributes[ numCGLAttrs++ ] = kCGLPFAStereo;
+            CGLpixelFormatAttributes[numCGLAttrs++] = kCGLPFAStereo;
 
         if (fbconfig->samples > 1)
         {
             _setCGLAttribute(kCGLPFASamples,       (CGLPixelFormatAttribute)fbconfig->samples);
             _setCGLAttribute(kCGLPFASampleBuffers, (CGLPixelFormatAttribute)1);
-            CGLpixelFormatAttributes[ numCGLAttrs++ ] = kCGLPFANoRecovery;
+            CGLpixelFormatAttributes[numCGLAttrs++] = kCGLPFANoRecovery;
         }
 
-        CGLpixelFormatAttributes[ numCGLAttrs++ ] = kCGLPFAFullScreen;
-        CGLpixelFormatAttributes[ numCGLAttrs++ ] = kCGLPFADoubleBuffer;
-        CGLpixelFormatAttributes[ numCGLAttrs++ ] = kCGLPFAAccelerated;
-        CGLpixelFormatAttributes[ numCGLAttrs++ ] = kCGLPFANoRecovery;
-        CGLpixelFormatAttributes[ numCGLAttrs++ ] = kCGLPFAMinimumPolicy;
+        CGLpixelFormatAttributes[numCGLAttrs++] = kCGLPFAFullScreen;
+        CGLpixelFormatAttributes[numCGLAttrs++] = kCGLPFADoubleBuffer;
+        CGLpixelFormatAttributes[numCGLAttrs++] = kCGLPFAAccelerated;
+        CGLpixelFormatAttributes[numCGLAttrs++] = kCGLPFANoRecovery;
+        CGLpixelFormatAttributes[numCGLAttrs++] = kCGLPFAMinimumPolicy;
 
         _setCGLAttribute(kCGLPFAAccumSize,
                          (CGLPixelFormatAttribute)( fbconfig->accumRedBits \
@@ -849,7 +849,7 @@ int  _glfwPlatformOpenWindow(int width, int height,
         _setCGLAttribute(kCGLPFAStencilSize, (CGLPixelFormatAttribute)fbconfig->stencilBits);
         _setCGLAttribute(kCGLPFAAuxBuffers,  (CGLPixelFormatAttribute)fbconfig->auxBuffers);
 
-        CGLpixelFormatAttributes[ numCGLAttrs++ ] = (CGLPixelFormatAttribute)NULL;
+        CGLpixelFormatAttributes[numCGLAttrs++] = (CGLPixelFormatAttribute)NULL;
 
         // create a suitable pixel format with above attributes..
         cglErr = CGLChoosePixelFormat(CGLpixelFormatAttributes,

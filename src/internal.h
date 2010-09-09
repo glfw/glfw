@@ -191,6 +191,7 @@ typedef struct _GLFWwindow
     PFNGLGETSTRINGIPROC GetStringi;
 
     _GLFW_PLATFORM_WINDOW_STATE;
+    _GLFW_PLATFORM_CONTEXT_STATE;
 } _GLFWwindow;
 
 

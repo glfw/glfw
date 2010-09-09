@@ -163,6 +163,7 @@ typedef const GLubyte* (APIENTRY *PFNGLGETSTRINGIPROC)(GLenum, GLuint);
 
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowX11 X11
 #define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryX11 X11
+#define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextGLX GLX
 
 
 
@@ -171,26 +172,13 @@ typedef const GLubyte* (APIENTRY *PFNGLGETSTRINGIPROC)(GLenum, GLuint);
 //========================================================================
 
 //------------------------------------------------------------------------
-// Window structure
+// OpenGL context structure
 //------------------------------------------------------------------------
-typedef struct _GLFWwindowX11
+typedef struct _GLFWcontextGLX
 {
-    // Platform specific window resources
-    Colormap      colormap;          // Window colormap
-    Window        window;            // Window
-    Window        root;              // Root window for screen
-    int           screen;            // Screen ID
-    XVisualInfo*  visual;            // Visual for selected GLXFBConfig
     GLXFBConfigID fbconfigID;        // ID of selected GLXFBConfig
     GLXContext    context;           // OpenGL rendering context
-    Atom          wmDeleteWindow;    // WM_DELETE_WINDOW atom
-    Atom          wmPing;            // _NET_WM_PING atom
-    Atom          wmState;           // _NET_WM_STATE atom
-    Atom          wmStateFullscreen; // _NET_WM_STATE_FULLSCREEN atom
-    Atom          wmActiveWindow;    // _NET_ACTIVE_WINDOW atom
-    Cursor        cursor;            // Invisible cursor for hidden cursor
-
-    int  mouseMoved, cursorPosX, cursorPosY;
+    XVisualInfo*  visual;            // Visual for selected GLXFBConfig
 
     // GLX extensions
     PFNGLXSWAPINTERVALSGIPROC             SwapIntervalSGI;
@@ -204,6 +192,27 @@ typedef struct _GLFWwindowX11
     GLboolean   has_GLX_ARB_multisample;
     GLboolean   has_GLX_ARB_create_context;
     GLboolean   has_GLX_ARB_create_context_profile;
+} _GLFWcontextGLX;
+
+
+//------------------------------------------------------------------------
+// Window structure
+//------------------------------------------------------------------------
+typedef struct _GLFWwindowX11
+{
+    // Platform specific window resources
+    Colormap      colormap;          // Window colormap
+    Window        window;            // Window
+    Window        root;              // Root window for screen
+    int           screen;            // Screen ID
+    Atom          wmDeleteWindow;    // WM_DELETE_WINDOW atom
+    Atom          wmPing;            // _NET_WM_PING atom
+    Atom          wmState;           // _NET_WM_STATE atom
+    Atom          wmStateFullscreen; // _NET_WM_STATE_FULLSCREEN atom
+    Atom          wmActiveWindow;    // _NET_ACTIVE_WINDOW atom
+    Cursor        cursor;            // Invisible cursor for hidden cursor
+
+    int  mouseMoved, cursorPosX, cursorPosY;
 
     // Various platform specific internal variables
     GLboolean   hasEWMH;          // True if window manager supports EWMH

@@ -17,14 +17,14 @@ include(CheckSymbolExists)
 find_package(OpenGL REQUIRED)
 
 set(common_SOURCES 
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/enable.c 
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/fullscreen.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/glext.c 
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/init.c 
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/input.c 
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/joystick.c 
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/time.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/window.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/enable.c 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/fullscreen.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/glext.c 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/init.c 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/input.c 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/joystick.c 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/time.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/window.c
 )
 
 # Stuff specific to WGL on Win32
@@ -37,7 +37,7 @@ if (WIN32)
     list(APPEND GLFW_LIBRARIES ${OPENGL_gl_LIBRARY})
 
     # Select platform specific code
-    add_subdirectory(lib/win32)
+    add_subdirectory(src/win32)
 endif (WIN32)
 
 # Stuff specific to GLX on Unix-like platforms
@@ -91,7 +91,7 @@ if (UNIX AND NOT APPLE AND NOT CYGWIN)
            NOT _GLFW_HAS_GLXGETPROCADDRESSEXT)
 
     # Select platform specific code
-    add_subdirectory(lib/x11)
+    add_subdirectory(src/x11)
 endif(UNIX AND NOT APPLE AND NOT CYGWIN)
 
 # Stuff specific to AGL and CGL on Mac OS X
@@ -109,7 +109,7 @@ if (UNIX AND APPLE)
     list(APPEND GLFW_LIBRARIES ${OPENGL_gl_LIBRARY})
 
     # Select platform specific code
-    add_subdirectory(lib/cocoa)
+    add_subdirectory(src/cocoa)
 endif(UNIX AND APPLE)
 
 add_subdirectory(examples)

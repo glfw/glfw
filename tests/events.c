@@ -152,14 +152,15 @@ static const char* get_button_name(int button)
 
 static const char* get_character_string(int character)
 {
-  static char result[6 + 1];
+    // This assumes UTF-8, which is stupid
+    static char result[6 + 1];
 
-  int length = wctomb(result, character);
-  if (length == -1)
-    length = 0;
+    int length = wctomb(result, character);
+    if (length == -1)
+        length = 0;
 
-  result[length] = '\0';
-  return result;
+    result[length] = '\0';
+    return result;
 }
 
 static void window_size_callback(GLFWwindow window, int width, int height)

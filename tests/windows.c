@@ -32,6 +32,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static const char* titles[] =
+{
+    "Foo",
+    "Bar",
+    "Baz",
+    "Quux"
+};
+
 static GLFWwindow open_window(int width, int height, const char* title)
 {
     GLFWwindow window = glfwOpenWindow(width, height, GLFW_WINDOW);
@@ -60,7 +68,7 @@ int main(void)
 
     for (i = 0;  i < 4;  i++)
     {
-        windows[i] = open_window(200, 200, "Foo");
+        windows[i] = open_window(200, 200, titles[i]);
         if (!windows[i])
         {
             glfwTerminate();

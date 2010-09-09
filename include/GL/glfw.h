@@ -421,6 +421,8 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow, int x, int y);
 GLFWAPI void glfwIconifyWindow(GLFWwindow window);
 GLFWAPI void glfwRestoreWindow(GLFWwindow window);
 GLFWAPI int  glfwGetWindowParam(GLFWwindow window, int param);
+GLFWAPI void glfwSetWindowUserPointer(GLFWwindow window, void* pointer);
+GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow window);
 GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfun);
 GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cbfun);
 GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfun cbfun);

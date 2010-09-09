@@ -158,6 +158,7 @@ typedef struct _GLFWwindow
     GLboolean sysKeysDisabled; // system keys disabled flag
     GLboolean windowNoResize;  // resize- and maximize gadgets disabled flag
     int       refreshRate;     // monitor refresh rate
+    void*     userPointer;
 
     // Window input state
     GLboolean stickyKeys;

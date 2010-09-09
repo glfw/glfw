@@ -945,6 +945,38 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow window, int param)
 
 
 //========================================================================
+// Set the user pointer for the specified window
+//========================================================================
+
+GLFWAPI void glfwSetWindowUserPointer(GLFWwindow window, void* pointer)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
+        return;
+    }
+
+    window->userPointer = pointer;
+}
+
+
+//========================================================================
+// Get the user pointer for the specified window
+//========================================================================
+
+GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow window)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
+        return;
+    }
+
+    return window->userPointer;
+}
+
+
+//========================================================================
 // Set callback function for window size changes
 //========================================================================
 

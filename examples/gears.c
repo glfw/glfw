@@ -215,13 +215,13 @@ static void animate(void)
 
 
 /* change view angle, exit upon ESC */
-void key( int k, int action )
+void key( GLFWwindow window, int k, int action )
 {
   if( action != GLFW_PRESS ) return;
 
   switch (k) {
   case 'Z':
-    if( glfwGetKey( GLFW_KEY_LSHIFT ) )
+    if( glfwGetKey( window, GLFW_KEY_LSHIFT ) )
       view_rotz -= 5.0;
     else
       view_rotz += 5.0;
@@ -248,7 +248,7 @@ void key( int k, int action )
 
 
 /* new window size */
-void reshape( int width, int height )
+void reshape( GLFWwindow window, int width, int height )
 {
   GLfloat h = (GLfloat) height / (GLfloat) width;
   GLfloat xmax, znear, zfar;
@@ -321,29 +321,32 @@ static void init(int argc, char *argv[])
 /* program entry */
 int main(int argc, char *argv[])
 {
+    GLFWwindow window;
+
     if( !glfwInit() )
     {
         fprintf( stderr, "Failed to initialize GLFW\n" );
         exit( EXIT_FAILURE );
     }
 
-    if( !glfwOpenWindow( 300,300, 0,0,0,0, 16,0, GLFW_WINDOW ) )
+    window = glfwOpenWindow( 300,300, 0,0,0,0, 16,0, GLFW_WINDOW );
+    if (!window)
     {
         fprintf( stderr, "Failed to open GLFW window\n" );
         glfwTerminate();
         exit( EXIT_FAILURE );
     }
 
-    glfwSetWindowTitle( "Gears" );
-    glfwEnable( GLFW_KEY_REPEAT );
+    glfwSetWindowTitle( window, "Gears" );
+    glfwEnable( window, GLFW_KEY_REPEAT );
     glfwSwapInterval( 1 );
 
     // Parse command-line options
     init(argc, argv);
 
     // Set callback functions
-    glfwSetWindowSizeCallback( reshape );
-    glfwSetKeyCallback( key );
+    glfwSetWindowSizeCallback( window, reshape );
+    glfwSetKeyCallback( window, key );
 
     // Main loop
     while( running )
@@ -356,9 +359,10 @@ int main(int argc, char *argv[])
 
         // Swap buffers
         glfwSwapBuffers();
+        glfwPollEvents();
 
         // Was the window closed?
-        if( !glfwGetWindowParam( GLFW_OPENED ) )
+        if( !glfwIsWindow( window ) )
         {
             running = 0;
         }

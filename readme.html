@@ -261,9 +261,22 @@ version of GLFW.</p>
 
 <h3>v3.0</h3>
 <ul>
+  <li>Added <code>GLFWwindow</code> window handle type and updated window-related functions and callbacks to take a window handle</li>
+  <li>Added <code>glfwIsWindow</code> function for verifying that a given window handle is (still) valid</li>
+  <li>Added <code>glfwMakeWindowCurrent</code> function for making the context of the specified window current</li>
+  <li>Added <code>glfwGetError</code> and <code>glfwErrorString</code> error reporting functions and a number of error tokens</li>
+  <li>Changed buffer bit depth parameters of <code>glfwOpenWindow</code> to window hints</li>
+  <li>Renamed <code>lib</code> source code directory to <code>src</code></li>
   <li>Replaced ad hoc build system with CMake</li>
-  <li>Removed threading API</li>
-  <li>Removed image loading API</li>
+  <li>Updated all included test and example programs to use the new API</li>
+  <li>Removed event auto-polling and the <code>GLFW_AUTO_POLL_EVENTS</code> window enable</li>
+  <li>Removed the entire threading API</li>
+  <li>Removed the entire image loading API</li>
+  <li>Removed <code>glfwSleep</code> function</li>
+  <li>Removed <code>glfwGetNumberOfProcessors</code> function</li>
+  <li>Removed <code>GLFW_OPENED</code> window parameter</li>
+  <li>Removed nonsensical key actions for Unicode character input</li>
+  <li>Removed <code>GLFWCALL</code> and <code>GLFWAPIENTRY</code> macros for stdcall calling convention</li>
 </ul>
 
 <h3>v2.7</h3>

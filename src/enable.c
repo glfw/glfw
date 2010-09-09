@@ -31,12 +31,8 @@
 #include "internal.h"
 
 
-//************************************************************************
-//****                  GLFW internal functions                       ****
-//************************************************************************
-
 //========================================================================
-// Enable (show) mouse cursor
+// Enable and disable locked cursor mode
 //========================================================================
 
 static void enableMouseCursor(_GLFWwindow* window)
@@ -46,7 +42,6 @@ static void enableMouseCursor(_GLFWwindow* window)
     if (_glfwLibrary.cursorLockWindow != window)
         return;
 
-    // Show mouse cursor
     _glfwPlatformShowMouseCursor(window);
 
     centerPosX = window->width / 2;
@@ -71,16 +66,11 @@ static void enableMouseCursor(_GLFWwindow* window)
     _glfwLibrary.cursorLockWindow = NULL;
 }
 
-//========================================================================
-// Disable (hide) mouse cursor
-//========================================================================
-
 static void disableMouseCursor(_GLFWwindow* window)
 {
     if (_glfwLibrary.cursorLockWindow)
         return;
 
-    // Hide mouse cursor
     _glfwPlatformHideMouseCursor(window);
 
     // Move cursor to the middle of the window
@@ -94,17 +84,13 @@ static void disableMouseCursor(_GLFWwindow* window)
 
 
 //========================================================================
-// Enable sticky keys
+// Enable and disable sticky keys mode
 //========================================================================
 
 static void enableStickyKeys(_GLFWwindow* window)
 {
     window->stickyKeys = GL_TRUE;
 }
-
-//========================================================================
-// Disable sticky keys
-//========================================================================
 
 static void disableStickyKeys(_GLFWwindow* window)
 {
@@ -122,17 +108,13 @@ static void disableStickyKeys(_GLFWwindow* window)
 
 
 //========================================================================
-// Enable sticky mouse buttons
+// Enable and disable sticky mouse buttons mode
 //========================================================================
 
 static void enableStickyMouseButtons(_GLFWwindow* window)
 {
     window->stickyMouseButtons = GL_TRUE;
 }
-
-//========================================================================
-// Disable sticky mouse buttons
-//========================================================================
 
 static void disableStickyMouseButtons(_GLFWwindow* window)
 {
@@ -150,7 +132,7 @@ static void disableStickyMouseButtons(_GLFWwindow* window)
 
 
 //========================================================================
-// Enable system keys
+// Enable and disable system keys
 //========================================================================
 
 static void enableSystemKeys(_GLFWwindow* window)
@@ -163,10 +145,6 @@ static void enableSystemKeys(_GLFWwindow* window)
     // Indicate that system keys are no longer disabled
     window->sysKeysDisabled = GL_FALSE;
 }
-
-//========================================================================
-// Disable system keys
-//========================================================================
 
 static void disableSystemKeys(_GLFWwindow* window)
 {
@@ -181,7 +159,7 @@ static void disableSystemKeys(_GLFWwindow* window)
 
 
 //========================================================================
-// Enable key repeat
+// Enable and disable key repeat
 //========================================================================
 
 static void enableKeyRepeat(_GLFWwindow* window)
@@ -189,19 +167,15 @@ static void enableKeyRepeat(_GLFWwindow* window)
     window->keyRepeat = GL_TRUE;
 }
 
-//========================================================================
-// Disable key repeat
-//========================================================================
-
 static void disableKeyRepeat(_GLFWwindow* window)
 {
     window->keyRepeat = GL_FALSE;
 }
 
 
-//************************************************************************
-//****                    GLFW user functions                         ****
-//************************************************************************
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW public API                       //////
+//////////////////////////////////////////////////////////////////////////
 
 //========================================================================
 // Enable certain GLFW/window/system functions

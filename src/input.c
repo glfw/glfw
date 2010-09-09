@@ -31,8 +31,12 @@
 #include "internal.h"
 
 
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW public API                       //////
+//////////////////////////////////////////////////////////////////////////
+
 //========================================================================
-// 
+// Returns the state of the specified key for the specified window
 //========================================================================
 
 GLFWAPI int glfwGetKey(GLFWwindow window, int key)
@@ -56,7 +60,7 @@ GLFWAPI int glfwGetKey(GLFWwindow window, int key)
 
 
 //========================================================================
-// 
+// Returns the state of the specified mouse button for the specified window
 //========================================================================
 
 GLFWAPI int glfwGetMouseButton(GLFWwindow window, int button)
@@ -80,7 +84,7 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow window, int button)
 
 
 //========================================================================
-// 
+// Returns the last reported cursor position for the specified window
 //========================================================================
 
 GLFWAPI void glfwGetMousePos(GLFWwindow window, int* xpos, int* ypos)
@@ -98,7 +102,8 @@ GLFWAPI void glfwGetMousePos(GLFWwindow window, int* xpos, int* ypos)
 
 
 //========================================================================
-// 
+// Sets the cursor position relative to the position of the client area of
+// the specified window
 //========================================================================
 
 GLFWAPI void glfwSetMousePos(GLFWwindow window, int xpos, int ypos)
@@ -124,7 +129,7 @@ GLFWAPI void glfwSetMousePos(GLFWwindow window, int xpos, int ypos)
 
 
 //========================================================================
-// 
+// Returns the mouse wheel "position" for the specified window
 //========================================================================
 
 GLFWAPI int glfwGetMouseWheel(GLFWwindow window)
@@ -137,7 +142,7 @@ GLFWAPI int glfwGetMouseWheel(GLFWwindow window)
 
 
 //========================================================================
-// 
+// Sets the mouse wheel "position" for the specified window
 //========================================================================
 
 GLFWAPI void glfwSetMouseWheel(GLFWwindow window, int pos)

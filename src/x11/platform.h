@@ -173,8 +173,8 @@ typedef const GLubyte* (APIENTRY *PFNGLGETSTRINGIPROC)(GLenum, GLuint);
 //------------------------------------------------------------------------
 // Window structure
 //------------------------------------------------------------------------
-typedef struct _GLFWwindowX11 {
-
+typedef struct _GLFWwindowX11
+{
     // Platform specific window resources
     Colormap      colormap;          // Window colormap
     Window        window;            // Window
@@ -218,7 +218,8 @@ typedef struct _GLFWwindowX11 {
 //------------------------------------------------------------------------
 // Platform-specific ibrary global data
 //------------------------------------------------------------------------
-typedef struct {
+typedef struct _GLFWlibraryX11
+{
     Display*        display;
 
     // Server-side GLX version

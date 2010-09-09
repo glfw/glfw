@@ -203,7 +203,7 @@ GLFWAPI void glfwSetMousePosCallback(GLFWwindow window, GLFWmouseposfun cbfun)
     // Call the callback function to let the application know the current
     // mouse position
     if (cbfun)
-        cbfun(window->mousePosX, window->mousePosY);
+        cbfun(window, window->mousePosX, window->mousePosY);
 }
 
 
@@ -222,6 +222,6 @@ GLFWAPI void glfwSetMouseWheelCallback(GLFWwindow window, GLFWmousewheelfun cbfu
     // Call the callback function to let the application know the current
     // mouse wheel position
     if (cbfun)
-        cbfun(window->wheelPos);
+        cbfun(window, window->wheelPos);
 }
 

@@ -141,7 +141,7 @@ void _glfwInputKey(_GLFWwindow* window, int key, int action)
 
     // Call user callback function
     if (window->keyCallback && (window->keyRepeat || !keyrepeat) )
-        window->keyCallback(key, action);
+        window->keyCallback(window, key, action);
 }
 
 
@@ -186,7 +186,7 @@ void _glfwInputChar(_GLFWwindow* window, int character, int action)
     }
 
     if (window->charCallback && (window->keyRepeat || !keyrepeat))
-        window->charCallback(character, action);
+        window->charCallback(window, character, action);
 }
 
 
@@ -206,7 +206,7 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action)
         window->mouseButton[button] = (char) action;
 
     if (window->mouseButtonCallback)
-        window->mouseButtonCallback(button, action);
+        window->mouseButtonCallback(window, button, action);
 }
 
 
@@ -580,9 +580,12 @@ GLFWAPI void glfwMakeWindowCurrent(GLFWwindow window)
 GLFWAPI int glfwIsWindow(GLFWwindow window)
 {
     if (!_glfwInitialized)
-        return;
+        return GL_FALSE;
 
-    return window == _glfwLibrary.window;
+    if (window == NULL)
+        return GL_FALSE;
+
+    return (window == _glfwLibrary.window) ? GL_TRUE : GL_FALSE;
 }
 
 
@@ -873,7 +876,7 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfu
     // Call the callback function to let the application know the current
     // window size
     if (cbfun)
-        cbfun(window->width, window->height);
+        cbfun(window, window->width, window->height);
 }
 
 //========================================================================

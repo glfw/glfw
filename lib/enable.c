@@ -61,7 +61,8 @@ static void enableMouseCursor(_GLFWwindow* window)
 
         if (window->mousePosCallback)
         {
-            window->mousePosCallback(window->mousePosX,
+            window->mousePosCallback(window,
+                                     window->mousePosX,
                                      window->mousePosY);
         }
     }

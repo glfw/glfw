@@ -1088,13 +1088,13 @@ static GLboolean processSingleEvent(void)
             {
                 window->wheelPos++;  // To verify: is this up or down?
                 if (window->mouseWheelCallback)
-                    window->mouseWheelCallback(window->wheelPos);
+                    window->mouseWheelCallback(window, window->wheelPos);
             }
             else if (event.xbutton.button == Button5)
             {
                 window->wheelPos--;
                 if (window->mouseWheelCallback)
-                    window->mouseWheelCallback(window->wheelPos);
+                    window->mouseWheelCallback(window, window->wheelPos);
             }
             break;
         }
@@ -1155,7 +1155,8 @@ static GLboolean processSingleEvent(void)
 
                 if (window->mousePosCallback)
                 {
-                    window->mousePosCallback(window->mousePosX,
+                    window->mousePosCallback(window,
+                                             window->mousePosX,
                                              window->mousePosY);
                 }
             }
@@ -1173,7 +1174,8 @@ static GLboolean processSingleEvent(void)
                 window->height = event.xconfigure.height;
                 if (window->windowSizeCallback)
                 {
-                    window->windowSizeCallback(window->width,
+                    window->windowSizeCallback(window,
+                                               window->width,
                                                window->height);
                 }
             }
@@ -1252,7 +1254,7 @@ static GLboolean processSingleEvent(void)
             // The window's contents was damaged
 
             if (window->windowRefreshCallback)
-                window->windowRefreshCallback();
+                window->windowRefreshCallback(window);
 
             break;
         }
@@ -1697,7 +1699,7 @@ void _glfwPlatformPollEvents(void)
     }
 
     if (closeRequested && window->windowCloseCallback)
-        closeRequested = window->windowCloseCallback();
+        closeRequested = window->windowCloseCallback(window);
 
     if (closeRequested)
         glfwCloseWindow(window);

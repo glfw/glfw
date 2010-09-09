@@ -132,15 +132,17 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
     GLint count;
     int i;
 
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized || !_glfwLibrary.window)
         return GL_FALSE;
+
+    _GLFWwindow* window = _glfwLibrary.window;
 
     // Extension names should not have spaces
     where = (GLubyte*) strchr(extension, ' ');
     if (where || *extension == '\0')
         return GL_FALSE;
 
-    if (_glfwWin.glMajor < 3)
+    if (window->glMajor < 3)
     {
         // Check if extension is in the old style OpenGL extensions string
 
@@ -159,7 +161,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 
         for (i = 0;  i < count;  i++)
         {
-             if (strcmp((const char*) _glfwWin.GetStringi(GL_EXTENSIONS, i),
+             if (strcmp((const char*) window->GetStringi(GL_EXTENSIONS, i),
                          extension) == 0)
              {
                  return GL_TRUE;
@@ -182,7 +184,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 
 GLFWAPI void* glfwGetProcAddress(const char* procname)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized || !_glfwLibrary.window)
         return NULL;
 
     return _glfwPlatformGetProcAddress(procname);
@@ -195,16 +197,18 @@ GLFWAPI void* glfwGetProcAddress(const char* procname)
 
 GLFWAPI void glfwGetGLVersion(int* major, int* minor, int* rev)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized || !_glfwLibrary.window)
         return;
 
+    _GLFWwindow* window = _glfwLibrary.window;
+
     if (major != NULL)
-        *major = _glfwWin.glMajor;
+        *major = window->glMajor;
 
     if (minor != NULL)
-        *minor = _glfwWin.glMinor;
+        *minor = window->glMinor;
 
     if (rev != NULL)
-        *rev = _glfwWin.glRevision;
+        *rev = window->glRevision;
 }
 

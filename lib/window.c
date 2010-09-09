@@ -32,6 +32,7 @@
 
 #include <limits.h>
 #include <string.h>
+#include <stdlib.h>
 
 
 //************************************************************************
@@ -58,22 +59,22 @@ void _glfwClearWindowHints(void)
 // Handle the input tracking part of window deactivation
 //========================================================================
 
-void _glfwInputDeactivation(void)
+void _glfwInputDeactivation(_GLFWwindow* window)
 {
     int i;
 
     // Release all keyboard keys
     for (i = 0;  i <= GLFW_KEY_LAST;  i++)
     {
-        if(_glfwInput.Key[i] == GLFW_PRESS)
-           _glfwInputKey(i, GLFW_RELEASE);
+        if (window->key[i] == GLFW_PRESS)
+           _glfwInputKey(window, i, GLFW_RELEASE);
     }
 
     // Release all mouse buttons
     for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
     {
-        if (_glfwInput.MouseButton[i] == GLFW_PRESS)
-            _glfwInputMouseClick(i, GLFW_RELEASE);
+        if (window->mouseButton[i] == GLFW_PRESS)
+            _glfwInputMouseClick(window, i, GLFW_RELEASE);
     }
 }
 
@@ -82,34 +83,34 @@ void _glfwInputDeactivation(void)
 // Clear all input state
 //========================================================================
 
-void _glfwClearInput(void)
+void _glfwClearInput(_GLFWwindow* window)
 {
     int i;
 
     // Release all keyboard keys
     for (i = 0;  i <= GLFW_KEY_LAST;  i++)
-        _glfwInput.Key[i] = GLFW_RELEASE;
+        window->key[i] = GLFW_RELEASE;
 
     // Clear last character
-    _glfwInput.LastChar = 0;
+    window->lastChar = 0;
 
     // Release all mouse buttons
     for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
-        _glfwInput.MouseButton[i] = GLFW_RELEASE;
+        window->mouseButton[i] = GLFW_RELEASE;
 
     // Set mouse position to (0,0)
-    _glfwInput.MousePosX = 0;
-    _glfwInput.MousePosY = 0;
+    window->mousePosX = 0;
+    window->mousePosY = 0;
 
     // Set mouse wheel position to 0
-    _glfwInput.WheelPos = 0;
+    window->wheelPos = 0;
 
     // The default is to use non sticky keys and mouse buttons
-    _glfwInput.StickyKeys = GL_FALSE;
-    _glfwInput.StickyMouseButtons = GL_FALSE;
+    window->stickyKeys = GL_FALSE;
+    window->stickyMouseButtons = GL_FALSE;
 
     // The default is to disable key repeat
-    _glfwInput.KeyRepeat = GL_FALSE;
+    window->keyRepeat = GL_FALSE;
 }
 
 
@@ -117,30 +118,30 @@ void _glfwClearInput(void)
 // Register keyboard activity
 //========================================================================
 
-void _glfwInputKey(int key, int action)
+void _glfwInputKey(_GLFWwindow* window, int key, int action)
 {
-    int keyrepeat = 0;
+    GLboolean keyrepeat = GL_FALSE;
 
     if (key < 0 || key > GLFW_KEY_LAST)
         return;
 
     // Are we trying to release an already released key?
-    if (action == GLFW_RELEASE && _glfwInput.Key[key] != GLFW_PRESS)
+    if (action == GLFW_RELEASE && window->key[key] != GLFW_PRESS)
         return;
 
     // Register key action
-    if(action == GLFW_RELEASE && _glfwInput.StickyKeys)
-        _glfwInput.Key[key] = GLFW_STICK;
+    if(action == GLFW_RELEASE && window->stickyKeys)
+        window->key[key] = GLFW_STICK;
     else
     {
-        keyrepeat = (_glfwInput.Key[key] == GLFW_PRESS) &&
+        keyrepeat = (window->key[key] == GLFW_PRESS) &&
                     (action == GLFW_PRESS);
-        _glfwInput.Key[key] = (char) action;
+        window->key[key] = (char) action;
     }
 
     // Call user callback function
-    if (_glfwWin.keyCallback && (_glfwInput.KeyRepeat || !keyrepeat) )
-        _glfwWin.keyCallback(key, action);
+    if (window->keyCallback && (window->keyRepeat || !keyrepeat) )
+        window->keyCallback(key, action);
 }
 
 
@@ -148,7 +149,7 @@ void _glfwInputKey(int key, int action)
 // Register (keyboard) character activity
 //========================================================================
 
-void _glfwInputChar(int character, int action)
+void _glfwInputChar(_GLFWwindow* window, int character, int action)
 {
     int keyrepeat = 0;
 
@@ -157,14 +158,14 @@ void _glfwInputChar(int character, int action)
         return;
 
     // Is this a key repeat?
-    if (action == GLFW_PRESS && _glfwInput.LastChar == character)
+    if (action == GLFW_PRESS && window->lastChar == character)
         keyrepeat = 1;
 
     // Store this character as last character (or clear it, if released)
     if (action == GLFW_PRESS)
-        _glfwInput.LastChar = character;
+        window->lastChar = character;
     else
-        _glfwInput.LastChar = 0;
+        window->lastChar = 0;
 
     if (action != GLFW_PRESS)
     {
@@ -184,8 +185,8 @@ void _glfwInputChar(int character, int action)
         return;
     }
 
-    if (_glfwWin.charCallback && (_glfwInput.KeyRepeat || !keyrepeat))
-        _glfwWin.charCallback(character, action);
+    if (window->charCallback && (window->keyRepeat || !keyrepeat))
+        window->charCallback(character, action);
 }
 
 
@@ -193,20 +194,19 @@ void _glfwInputChar(int character, int action)
 // Register mouse button clicks
 //========================================================================
 
-void _glfwInputMouseClick(int button, int action)
+void _glfwInputMouseClick(_GLFWwindow* window, int button, int action)
 {
-    if (button >= 0 && button <= GLFW_MOUSE_BUTTON_LAST)
-    {
-        // Register mouse button action
-        if (action == GLFW_RELEASE && _glfwInput.StickyMouseButtons)
-            _glfwInput.MouseButton[button] = GLFW_STICK;
-        else
-            _glfwInput.MouseButton[button] = (char) action;
+    if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST)
+        return;
 
-        // Call user callback function
-        if (_glfwWin.mouseButtonCallback)
-            _glfwWin.mouseButtonCallback(button, action);
-    }
+    // Register mouse button action
+    if (action == GLFW_RELEASE && window->stickyMouseButtons)
+        window->mouseButton[button] = GLFW_STICK;
+    else
+        window->mouseButton[button] = (char) action;
+
+    if (window->mouseButtonCallback)
+        window->mouseButtonCallback(button, action);
 }
 
 
@@ -393,16 +393,25 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
 // Create the GLFW window and its associated context
 //========================================================================
 
-GLFWAPI int glfwOpenWindow(int width, int height,
-                           int redbits, int greenbits, int bluebits,
-                           int alphabits, int depthbits, int stencilbits,
-                           int mode)
+GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
+                                  int redbits, int greenbits, int bluebits,
+                                  int alphabits, int depthbits, int stencilbits,
+                                  int mode)
 {
     _GLFWfbconfig fbconfig;
     _GLFWwndconfig wndconfig;
+    _GLFWwindow* window;
 
-    if (!_glfwInitialized || _glfwWin.opened)
-        return GL_FALSE;
+    if (!_glfwInitialized || _glfwLibrary.window)
+        return NULL;
+
+    window = (_GLFWwindow*) malloc(sizeof(_GLFWwindow));
+    if (!window)
+        return NULL;
+
+    _glfwLibrary.window = window;
+
+    memset(window, 0, sizeof(_GLFWwindow));
 
     // Set up desired framebuffer config
     fbconfig.redBits        = Max(redbits, 0);
@@ -429,19 +438,25 @@ GLFWAPI int glfwOpenWindow(int width, int height,
     wndconfig.glDebug        = _glfwLibrary.hints.glDebug ? GL_TRUE : GL_FALSE;
     wndconfig.glProfile      = _glfwLibrary.hints.glProfile;
 
+    // Clear for next open call
+    _glfwClearWindowHints();
+
     if (wndconfig.glMajor == 1 && wndconfig.glMinor > 5)
     {
         // OpenGL 1.x series ended with version 1.5
+        glfwCloseWindow(window);
         return GL_FALSE;
     }
     else if (wndconfig.glMajor == 2 && wndconfig.glMinor > 1)
     {
         // OpenGL 2.x series ended with version 2.1
+        glfwCloseWindow(window);
         return GL_FALSE;
     }
     else if (wndconfig.glMajor == 3 && wndconfig.glMinor > 3)
     {
         // OpenGL 3.x series ended with version 3.3
+        glfwCloseWindow(window);
         return GL_FALSE;
     }
     else
@@ -453,37 +468,26 @@ GLFWAPI int glfwOpenWindow(int width, int height,
         (wndconfig.glMajor < 3 || (wndconfig.glMajor == 3 && wndconfig.glMinor < 2)))
     {
         // Context profiles are only defined for OpenGL version 3.2 and above
+        glfwCloseWindow(window);
         return GL_FALSE;
     }
 
     if (wndconfig.glForward && wndconfig.glMajor < 3)
     {
         // Forward-compatible contexts are only defined for OpenGL version 3.0 and above
+        glfwCloseWindow(window);
         return GL_FALSE;
     }
 
-    // Clear for next open call
-    _glfwClearWindowHints();
-
-    // Check input arguments
     if (mode != GLFW_WINDOW && mode != GLFW_FULLSCREEN)
+    {
+        // Invalid window mode
+        glfwCloseWindow(window);
         return GL_FALSE;
+    }
 
     // Clear GLFW window state
-    _glfwWin.active    = GL_TRUE;
-    _glfwWin.iconified = GL_FALSE;
-    _glfwWin.mouseLock = GL_FALSE;
-    _glfwClearInput();
-
-    // Unregister all callback functions
-    _glfwWin.windowSizeCallback    = NULL;
-    _glfwWin.windowCloseCallback   = NULL;
-    _glfwWin.windowRefreshCallback = NULL;
-    _glfwWin.keyCallback           = NULL;
-    _glfwWin.charCallback          = NULL;
-    _glfwWin.mousePosCallback      = NULL;
-    _glfwWin.mouseButtonCallback   = NULL;
-    _glfwWin.mouseWheelCallback    = NULL;
+    _glfwClearInput(window);
 
     // Check width & height
     if (width > 0 && height <= 0)
@@ -504,52 +508,68 @@ GLFWAPI int glfwOpenWindow(int width, int height,
     }
 
     // Remember window settings
-    _glfwWin.width      = width;
-    _glfwWin.height     = height;
-    _glfwWin.fullscreen = (mode == GLFW_FULLSCREEN ? GL_TRUE : GL_FALSE);
+    window->width  = width;
+    window->height = height;
+    window->mode   = mode;
 
     // Platform specific window opening routine
-    if (!_glfwPlatformOpenWindow(width, height, &wndconfig, &fbconfig))
-        return GL_FALSE;
-
-    // Flag that window is now opened
-    _glfwWin.opened = GL_TRUE;
-
-    // Get window parameters (such as color buffer bits etc)
-    _glfwPlatformRefreshWindowParams();
-
-    // Get OpenGL version
-    _glfwParseGLVersion(&_glfwWin.glMajor, &_glfwWin.glMinor,
-                        &_glfwWin.glRevision);
-
-    if (_glfwWin.glMajor < wndconfig.glMajor ||
-        (_glfwWin.glMajor == wndconfig.glMajor &&
-         _glfwWin.glMinor < wndconfig.glMinor))
+    if (!_glfwPlatformOpenWindow(window, width, height, &wndconfig, &fbconfig))
     {
-        _glfwPlatformCloseWindow();
+        glfwCloseWindow(window);
         return GL_FALSE;
     }
 
-    if (_glfwWin.glMajor > 2)
+    // Get window parameters (such as color buffer bits etc)
+    glfwMakeWindowCurrent(window);
+    _glfwPlatformRefreshWindowParams();
+
+    // Get OpenGL version
+    _glfwParseGLVersion(&window->glMajor, &window->glMinor, &window->glRevision);
+
+    if (window->glMajor < wndconfig.glMajor ||
+        (window->glMajor == wndconfig.glMajor &&
+         window->glMinor < wndconfig.glMinor))
     {
-        _glfwWin.GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
-        if (!_glfwWin.GetStringi)
+        // The desired OpenGL version is greater than the actual version
+        // This only happens if the machine lacks {GLX|WGL}_ARB_create_context
+        glfwCloseWindow(window);
+        return GL_FALSE;
+    }
+
+    if (window->glMajor > 2)
+    {
+        window->GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
+        if (!window->GetStringi)
         {
-            _glfwPlatformCloseWindow();
+            glfwCloseWindow(window);
             return GL_FALSE;
         }
     }
 
     // If full-screen mode was requested, disable mouse cursor
     if (mode == GLFW_FULLSCREEN)
-        glfwDisable(GLFW_MOUSE_CURSOR);
+        glfwDisable(window, GLFW_MOUSE_CURSOR);
 
     // Start by clearing the front buffer to black (avoid ugly desktop
     // remains in our OpenGL window)
     glClear(GL_COLOR_BUFFER_BIT);
     _glfwPlatformSwapBuffers();
 
-    return GL_TRUE;
+    return window;
+}
+
+
+//========================================================================
+// Make the OpenGL context associated with the specified window current
+//========================================================================
+
+GLFWAPI void glfwMakeWindowCurrent(GLFWwindow window)
+{
+    if (_glfwLibrary.currentWindow == window)
+        return;
+
+    _glfwPlatformMakeWindowCurrent(window);
+    _glfwLibrary.currentWindow = window;
 }
 
 
@@ -616,18 +636,24 @@ GLFWAPI void glfwOpenWindowHint(int target, int hint)
 // Properly kill the window / video display
 //========================================================================
 
-GLFWAPI void glfwCloseWindow(void)
+GLFWAPI void glfwCloseWindow(GLFWwindow window)
 {
     if (!_glfwInitialized)
         return;
 
     // Show mouse pointer again (if hidden)
-    glfwEnable(GLFW_MOUSE_CURSOR);
+    if (window == _glfwLibrary.cursorLockWindow)
+        glfwEnable(window, GLFW_MOUSE_CURSOR);
 
-    _glfwPlatformCloseWindow();
+    if (window == _glfwLibrary.currentWindow)
+        glfwMakeWindowCurrent(NULL);
 
-    memset(&_glfwWin, 0, sizeof(_glfwWin));
-    _glfwWin.opened = GL_FALSE;
+    _glfwPlatformCloseWindow(window);
+
+    free(window);
+
+    // Yuck
+    _glfwLibrary.window = NULL;
 }
 
 
@@ -635,13 +661,12 @@ GLFWAPI void glfwCloseWindow(void)
 // Set the window title
 //========================================================================
 
-GLFWAPI void glfwSetWindowTitle(const char* title)
+GLFWAPI void glfwSetWindowTitle(GLFWwindow window, const char* title)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return;
 
-    // Set window title
-    _glfwPlatformSetWindowTitle(title);
+    _glfwPlatformSetWindowTitle(window, title);
 }
 
 
@@ -649,13 +674,16 @@ GLFWAPI void glfwSetWindowTitle(const char* title)
 // Get the window size
 //========================================================================
 
-GLFWAPI void glfwGetWindowSize(int* width, int* height)
+GLFWAPI void glfwGetWindowSize(GLFWwindow window, int* width, int* height)
 {
+    if (!_glfwInitialized)
+        return;
+
     if (width != NULL)
-        *width = _glfwWin.width;
+        *width = window->width;
 
     if (height != NULL)
-        *height = _glfwWin.height;
+        *height = window->height;
 }
 
 
@@ -663,21 +691,23 @@ GLFWAPI void glfwGetWindowSize(int* width, int* height)
 // Set the window size
 //========================================================================
 
-GLFWAPI void glfwSetWindowSize(int width, int height)
+GLFWAPI void glfwSetWindowSize(GLFWwindow window, int width, int height)
 {
-    if (!_glfwInitialized || !_glfwWin.opened || _glfwWin.iconified)
+    if (!_glfwInitialized || window->iconified)
         return;
 
     // Don't do anything if the window size did not change
-    if (width == _glfwWin.width && height == _glfwWin.height)
+    if (width == window->width && height == window->height)
         return;
 
-    // Change window size
-    _glfwPlatformSetWindowSize(width, height);
+    _glfwPlatformSetWindowSize(window, width, height);
 
-    // Refresh window parameters (may have changed due to changed video
-    // modes)
-    _glfwPlatformRefreshWindowParams();
+    if (window->mode == GLFW_FULLSCREEN)
+    {
+        // Refresh window parameters (may have changed due to changed video
+        // modes)
+        _glfwPlatformRefreshWindowParams();
+    }
 }
 
 
@@ -685,16 +715,14 @@ GLFWAPI void glfwSetWindowSize(int width, int height)
 // Set the window position
 //========================================================================
 
-GLFWAPI void glfwSetWindowPos(int x, int y)
+GLFWAPI void glfwSetWindowPos(GLFWwindow window, int x, int y)
 {
-    if (!_glfwInitialized || !_glfwWin.opened || _glfwWin.fullscreen ||
-        _glfwWin.iconified)
+    if (!_glfwInitialized || window->mode == GLFW_FULLSCREEN || window->iconified)
     {
         return;
     }
 
-    // Set window position
-    _glfwPlatformSetWindowPos(x, y);
+    _glfwPlatformSetWindowPos(window, x, y);
 }
 
 
@@ -702,13 +730,12 @@ GLFWAPI void glfwSetWindowPos(int x, int y)
 // Window iconification
 //========================================================================
 
-GLFWAPI void glfwIconifyWindow(void)
+GLFWAPI void glfwIconifyWindow(GLFWwindow window)
 {
-    if (!_glfwInitialized || !_glfwWin.opened || _glfwWin.iconified)
+    if (!_glfwInitialized || window->iconified)
         return;
 
-    // Iconify window
-    _glfwPlatformIconifyWindow();
+    _glfwPlatformIconifyWindow(window);
 }
 
 
@@ -716,30 +743,29 @@ GLFWAPI void glfwIconifyWindow(void)
 // Window un-iconification
 //========================================================================
 
-GLFWAPI void glfwRestoreWindow(void)
+GLFWAPI void glfwRestoreWindow(GLFWwindow window)
 {
-    if (!_glfwInitialized || !_glfwWin.opened || !_glfwWin.iconified)
+    if (!_glfwInitialized || !window->iconified)
         return;
 
     // Restore iconified window
-    _glfwPlatformRestoreWindow();
+    _glfwPlatformRestoreWindow(window);
 
-    // Refresh window parameters
-    _glfwPlatformRefreshWindowParams();
+    if (window->mode == GLFW_FULLSCREEN)
+        _glfwPlatformRefreshWindowParams();
 }
 
 
 //========================================================================
-// Swap buffers (double-buffering) and poll any new events
+// Swap buffers (double-buffering)
 //========================================================================
 
 GLFWAPI void glfwSwapBuffers(void)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return;
 
-    // Update display-buffer
-    if (_glfwWin.opened)
+    if (_glfwLibrary.currentWindow)
         _glfwPlatformSwapBuffers();
 }
 
@@ -750,10 +776,9 @@ GLFWAPI void glfwSwapBuffers(void)
 
 GLFWAPI void glfwSwapInterval(int interval)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return;
 
-    // Set double buffering swap interval
     _glfwPlatformSwapInterval(interval);
 }
 
@@ -762,70 +787,59 @@ GLFWAPI void glfwSwapInterval(int interval)
 // Get window parameter
 //========================================================================
 
-GLFWAPI int glfwGetWindowParam(int param)
+GLFWAPI int glfwGetWindowParam(GLFWwindow window, int param)
 {
     if (!_glfwInitialized)
         return 0;
 
-    if (!_glfwWin.opened)
-    {
-        if (param == GLFW_OPENED)
-            return GL_FALSE;
-
-        return 0;
-    }
-
-    // Window parameters
     switch (param)
     {
-        case GLFW_OPENED:
-            return GL_TRUE;
         case GLFW_ACTIVE:
-            return _glfwWin.active;
+            return window->active;
         case GLFW_ICONIFIED:
-            return _glfwWin.iconified;
+            return window->iconified;
         case GLFW_ACCELERATED:
-            return _glfwWin.accelerated;
+            return window->accelerated;
         case GLFW_RED_BITS:
-            return _glfwWin.redBits;
+            return window->redBits;
         case GLFW_GREEN_BITS:
-            return _glfwWin.greenBits;
+            return window->greenBits;
         case GLFW_BLUE_BITS:
-            return _glfwWin.blueBits;
+            return window->blueBits;
         case GLFW_ALPHA_BITS:
-            return _glfwWin.alphaBits;
+            return window->alphaBits;
         case GLFW_DEPTH_BITS:
-            return _glfwWin.depthBits;
+            return window->depthBits;
         case GLFW_STENCIL_BITS:
-            return _glfwWin.stencilBits;
+            return window->stencilBits;
         case GLFW_ACCUM_RED_BITS:
-            return _glfwWin.accumRedBits;
+            return window->accumRedBits;
         case GLFW_ACCUM_GREEN_BITS:
-            return _glfwWin.accumGreenBits;
+            return window->accumGreenBits;
         case GLFW_ACCUM_BLUE_BITS:
-            return _glfwWin.accumBlueBits;
+            return window->accumBlueBits;
         case GLFW_ACCUM_ALPHA_BITS:
-            return _glfwWin.accumAlphaBits;
+            return window->accumAlphaBits;
         case GLFW_AUX_BUFFERS:
-            return _glfwWin.auxBuffers;
+            return window->auxBuffers;
         case GLFW_STEREO:
-            return _glfwWin.stereo;
+            return window->stereo;
         case GLFW_REFRESH_RATE:
-            return _glfwWin.refreshRate;
+            return window->refreshRate;
         case GLFW_WINDOW_NO_RESIZE:
-            return _glfwWin.windowNoResize;
+            return window->windowNoResize;
         case GLFW_FSAA_SAMPLES:
-            return _glfwWin.samples;
+            return window->samples;
         case GLFW_OPENGL_VERSION_MAJOR:
-            return _glfwWin.glMajor;
+            return window->glMajor;
         case GLFW_OPENGL_VERSION_MINOR:
-            return _glfwWin.glMinor;
+            return window->glMinor;
         case GLFW_OPENGL_FORWARD_COMPAT:
-            return _glfwWin.glForward;
+            return window->glForward;
         case GLFW_OPENGL_DEBUG_CONTEXT:
-            return _glfwWin.glDebug;
+            return window->glDebug;
         case GLFW_OPENGL_PROFILE:
-            return _glfwWin.glProfile;
+            return window->glProfile;
         default:
             return 0;
     }
@@ -836,31 +850,29 @@ GLFWAPI int glfwGetWindowParam(int param)
 // Set callback function for window size changes
 //========================================================================
 
-GLFWAPI void glfwSetWindowSizeCallback(GLFWwindowsizefun cbfun)
+GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfun)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return;
 
-    // Set callback function
-    _glfwWin.windowSizeCallback = cbfun;
+    window->windowSizeCallback = cbfun;
 
     // Call the callback function to let the application know the current
     // window size
     if (cbfun)
-        cbfun(_glfwWin.width, _glfwWin.height);
+        cbfun(window->width, window->height);
 }
 
 //========================================================================
 // Set callback function for window close events
 //========================================================================
 
-GLFWAPI void glfwSetWindowCloseCallback(GLFWwindowclosefun cbfun)
+GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cbfun)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return;
 
-    // Set callback function
-    _glfwWin.windowCloseCallback = cbfun;
+    window->windowCloseCallback = cbfun;
 }
 
 
@@ -868,13 +880,12 @@ GLFWAPI void glfwSetWindowCloseCallback(GLFWwindowclosefun cbfun)
 // Set callback function for window refresh events
 //========================================================================
 
-GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindowrefreshfun cbfun)
+GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfun cbfun)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return;
 
-    // Set callback function
-    _glfwWin.windowRefreshCallback = cbfun;
+    window->windowRefreshCallback = cbfun;
 }
 
 
@@ -884,10 +895,9 @@ GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindowrefreshfun cbfun)
 
 GLFWAPI void glfwPollEvents(void)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return;
 
-    // Poll for new events
     _glfwPlatformPollEvents();
 }
 
@@ -898,10 +908,9 @@ GLFWAPI void glfwPollEvents(void)
 
 GLFWAPI void glfwWaitEvents(void)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return;
 
-    // Poll for new events
     _glfwPlatformWaitEvents();
 }
 

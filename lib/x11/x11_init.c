@@ -82,8 +82,8 @@ static void glfw_atexit(void)
 static int initDisplay(void)
 {
     // Open display
-    _glfwLibrary.display = XOpenDisplay(0);
-    if (!_glfwLibrary.display)
+    _glfwLibrary.X11.display = XOpenDisplay(0);
+    if (!_glfwLibrary.X11.display)
     {
         fprintf(stderr, "Failed to open X display\n");
         return GL_FALSE;
@@ -91,36 +91,36 @@ static int initDisplay(void)
 
     // Check for XF86VidMode extension
 #ifdef _GLFW_HAS_XF86VIDMODE
-    _glfwLibrary.XF86VidMode.available =
-        XF86VidModeQueryExtension(_glfwLibrary.display,
-                                  &_glfwLibrary.XF86VidMode.eventBase,
-                                  &_glfwLibrary.XF86VidMode.errorBase);
+    _glfwLibrary.X11.XF86VidMode.available =
+        XF86VidModeQueryExtension(_glfwLibrary.X11.display,
+                                  &_glfwLibrary.X11.XF86VidMode.eventBase,
+                                  &_glfwLibrary.X11.XF86VidMode.errorBase);
 #else
-    _glfwLibrary.XF86VidMode.available = 0;
+    _glfwLibrary.X11.XF86VidMode.available = 0;
 #endif
 
     // Check for XRandR extension
 #ifdef _GLFW_HAS_XRANDR
-    _glfwLibrary.XRandR.available =
-        XRRQueryExtension(_glfwLibrary.display,
-                          &_glfwLibrary.XRandR.eventBase,
-                          &_glfwLibrary.XRandR.errorBase);
+    _glfwLibrary.X11.XRandR.available =
+        XRRQueryExtension(_glfwLibrary.X11.display,
+                          &_glfwLibrary.X11.XRandR.eventBase,
+                          &_glfwLibrary.X11.XRandR.errorBase);
 #else
-    _glfwLibrary.XRandR.available = 0;
+    _glfwLibrary.X11.XRandR.available = 0;
 #endif
 
     // Fullscreen & screen saver settings
     // Check if GLX is supported on this display
-    if (!glXQueryExtension(_glfwLibrary.display, NULL, NULL))
+    if (!glXQueryExtension(_glfwLibrary.X11.display, NULL, NULL))
     {
         fprintf(stderr, "GLX not supported\n");
         return GL_FALSE;
     }
 
     // Retrieve GLX version
-    if (!glXQueryVersion(_glfwLibrary.display,
-                         &_glfwLibrary.glxMajor,
-                         &_glfwLibrary.glxMinor))
+    if (!glXQueryVersion(_glfwLibrary.X11.display,
+                         &_glfwLibrary.X11.glxMajor,
+                         &_glfwLibrary.X11.glxMinor))
     {
         fprintf(stderr, "Unable to query GLX version\n");
         return GL_FALSE;
@@ -137,10 +137,10 @@ static int initDisplay(void)
 static void terminateDisplay(void)
 {
     // Open display
-    if (_glfwLibrary.display)
+    if (_glfwLibrary.X11.display)
     {
-        XCloseDisplay(_glfwLibrary.display);
-        _glfwLibrary.display = NULL;
+        XCloseDisplay(_glfwLibrary.X11.display);
+        _glfwLibrary.X11.display = NULL;
     }
 }
 
@@ -180,8 +180,8 @@ int _glfwPlatformInit(void)
 
 int _glfwPlatformTerminate(void)
 {
-    // Close OpenGL window
-    glfwCloseWindow();
+    if (_glfwLibrary.window)
+        glfwCloseWindow(_glfwLibrary.window);
 
     // Terminate display
     terminateDisplay();

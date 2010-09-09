@@ -52,6 +52,14 @@
 
 
 //------------------------------------------------------------------------
+// Platform specific definitions goes in platform.h (which also includes
+// glfw.h)
+//------------------------------------------------------------------------
+
+#include "platform.h"
+
+
+//------------------------------------------------------------------------
 // Window opening hints (set by glfwOpenWindowHint)
 // A bucket of semi-random stuff bunched together for historical reasons
 // This is used only by the platform independent code and only to store
@@ -73,14 +81,6 @@ typedef struct {
     int         glDebug;
     int         glProfile;
 } _GLFWhints;
-
-
-//------------------------------------------------------------------------
-// Platform specific definitions goes in platform.h (which also includes
-// glfw.h)
-//------------------------------------------------------------------------
-
-#include "platform.h"
 
 
 //------------------------------------------------------------------------
@@ -126,6 +126,81 @@ typedef struct {
 } _GLFWfbconfig;
 
 
+//------------------------------------------------------------------------
+// Window structure
+//------------------------------------------------------------------------
+typedef struct _GLFWwindow {
+
+    // User callback functions
+    GLFWwindowsizefun    windowSizeCallback;
+    GLFWwindowclosefun   windowCloseCallback;
+    GLFWwindowrefreshfun windowRefreshCallback;
+    GLFWmousebuttonfun   mouseButtonCallback;
+    GLFWmouseposfun      mousePosCallback;
+    GLFWmousewheelfun    mouseWheelCallback;
+    GLFWkeyfun           keyCallback;
+    GLFWcharfun          charCallback;
+
+    // User selected window settings
+    int       mode;
+    GLboolean sysKeysDisabled; // System keys disabled flag
+    GLboolean windowNoResize;  // Resize- and maximize gadgets disabled flag
+    int       refreshRate;     // Vertical monitor refresh rate
+
+    // Input
+    GLboolean stickyKeys;
+    GLboolean stickyMouseButtons;
+    GLboolean keyRepeat;
+    int       mousePosX, mousePosY;
+    int       wheelPos;
+    char      mouseButton[GLFW_MOUSE_BUTTON_LAST + 1];
+    char      key[GLFW_KEY_LAST + 1];
+    int       lastChar;
+
+    // Window status & parameters
+    GLboolean active;          // Application active flag
+    GLboolean iconified;       // Window iconified flag
+    int       width, height;   // Window width and heigth
+    GLboolean accelerated;     // GL_TRUE if window is HW accelerated
+
+    // Framebuffer attributes
+    int       redBits;
+    int       greenBits;
+    int       blueBits;
+    int       alphaBits;
+    int       depthBits;
+    int       stencilBits;
+    int       accumRedBits;
+    int       accumGreenBits;
+    int       accumBlueBits;
+    int       accumAlphaBits;
+    int       auxBuffers;
+    GLboolean stereo;
+    int       samples;
+
+    // OpenGL extensions and context attributes
+    int       glMajor, glMinor, glRevision;
+    int       glForward, glDebug, glProfile;
+
+    PFNGLGETSTRINGIPROC GetStringi;
+
+    _GLFW_PLATFORM_WINDOW_STATE;
+} _GLFWwindow;
+
+
+//------------------------------------------------------------------------
+// Library global data
+//------------------------------------------------------------------------
+typedef struct {
+    _GLFWhints   hints;
+    _GLFWwindow* window;
+    _GLFWwindow* currentWindow;
+    _GLFWwindow* cursorLockWindow;
+
+    _GLFW_PLATFORM_LIBRARY_STATE;
+} _GLFWlibrary;
+
+
 //========================================================================
 // System independent global variables (GLFW internals)
 //========================================================================
@@ -137,6 +212,8 @@ int _glfwInitialized = 0;
 GLFWGLOBAL int _glfwInitialized;
 #endif
 
+GLFWGLOBAL _GLFWlibrary _glfwLibrary;
+
 
 //========================================================================
 // Prototypes for platform specific implementation functions
@@ -147,16 +224,12 @@ int _glfwPlatformInit(void);
 int _glfwPlatformTerminate(void);
 
 // Enable/Disable
-void _glfwPlatformEnableSystemKeys(void);
-void _glfwPlatformDisableSystemKeys(void);
+void _glfwPlatformEnableSystemKeys(_GLFWwindow* window);
+void _glfwPlatformDisableSystemKeys(_GLFWwindow* window);
 
 // Fullscreen
 int  _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount);
 void _glfwPlatformGetDesktopMode(GLFWvidmode* mode);
-
-// OpenGL extensions
-int _glfwPlatformExtensionSupported(const char* extension);
-void* _glfwPlatformGetProcAddress(const char* procname);
 
 // Joystick
 int _glfwPlatformGetJoystickParam(int joy, int param);
@@ -168,21 +241,28 @@ double _glfwPlatformGetTime(void);
 void _glfwPlatformSetTime(double time);
 
 // Window management
-int  _glfwPlatformOpenWindow(int width, int height, const _GLFWwndconfig* wndconfig, const _GLFWfbconfig* fbconfig);
-void _glfwPlatformCloseWindow(void);
-void _glfwPlatformSetWindowTitle(const char* title);
-void _glfwPlatformSetWindowSize(int width, int height);
-void _glfwPlatformSetWindowPos(int x, int y);
-void _glfwPlatformIconifyWindow(void);
-void _glfwPlatformRestoreWindow(void);
+int  _glfwPlatformOpenWindow(_GLFWwindow* window, int width, int height, const _GLFWwndconfig* wndconfig, const _GLFWfbconfig* fbconfig);
+int  _glfwPlatformMakeWindowCurrent(_GLFWwindow* window);
+void _glfwPlatformCloseWindow(_GLFWwindow* window);
+void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title);
+void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height);
+void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y);
+void _glfwPlatformIconifyWindow(_GLFWwindow* window);
+void _glfwPlatformRestoreWindow(_GLFWwindow* window);
+void _glfwPlatformHideMouseCursor(_GLFWwindow* window);
+void _glfwPlatformShowMouseCursor(_GLFWwindow* window);
+void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y);
+
+// Event management
+void _glfwPlatformPollEvents(void);
+void _glfwPlatformWaitEvents(void);
+
+// OpenGL context management
 void _glfwPlatformSwapBuffers(void);
 void _glfwPlatformSwapInterval(int interval);
 void _glfwPlatformRefreshWindowParams(void);
-void _glfwPlatformPollEvents(void);
-void _glfwPlatformWaitEvents(void);
-void _glfwPlatformHideMouseCursor(void);
-void _glfwPlatformShowMouseCursor(void);
-void _glfwPlatformSetMouseCursorPos(int x, int y);
+int  _glfwPlatformExtensionSupported(const char* extension);
+void* _glfwPlatformGetProcAddress(const char* procname);
 
 
 //========================================================================
@@ -193,11 +273,11 @@ void _glfwPlatformSetMouseCursorPos(int x, int y);
 void _glfwClearWindowHints(void);
 
 // Input handling (window.c)
-void _glfwClearInput(void);
-void _glfwInputDeactivation(void);
-void _glfwInputKey(int key, int action);
-void _glfwInputChar(int character, int action);
-void _glfwInputMouseClick(int button, int action);
+void _glfwClearInput(_GLFWwindow* window);
+void _glfwInputDeactivation(_GLFWwindow* window);
+void _glfwInputKey(_GLFWwindow* window, int key, int action);
+void _glfwInputChar(_GLFWwindow* window, int character, int action);
+void _glfwInputMouseClick(_GLFWwindow* window, int button, int action);
 
 // OpenGL extensions (glext.c)
 void _glfwParseGLVersion(int* major, int* minor, int* rev);

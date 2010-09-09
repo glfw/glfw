@@ -161,6 +161,10 @@ typedef const GLubyte* (APIENTRY *PFNGLGETSTRINGIPROC)(GLenum, GLuint);
 #endif /*GL_VERSION_3_0*/
 
 
+#define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowX11 X11
+#define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryX11 X11
+
+
 
 //========================================================================
 // Global variables (GLFW internals)
@@ -169,59 +173,7 @@ typedef const GLubyte* (APIENTRY *PFNGLGETSTRINGIPROC)(GLenum, GLuint);
 //------------------------------------------------------------------------
 // Window structure
 //------------------------------------------------------------------------
-typedef struct _GLFWwin_struct _GLFWwin;
-
-struct _GLFWwin_struct {
-
-// ========= PLATFORM INDEPENDENT MANDATORY PART =========================
-
-    // User callback functions
-    GLFWwindowsizefun    windowSizeCallback;
-    GLFWwindowclosefun   windowCloseCallback;
-    GLFWwindowrefreshfun windowRefreshCallback;
-    GLFWmousebuttonfun   mouseButtonCallback;
-    GLFWmouseposfun      mousePosCallback;
-    GLFWmousewheelfun    mouseWheelCallback;
-    GLFWkeyfun           keyCallback;
-    GLFWcharfun          charCallback;
-
-    // User selected window settings
-    int       fullscreen;      // Fullscreen flag
-    int       mouseLock;       // Mouse-lock flag
-    int       sysKeysDisabled; // System keys disabled flag
-    int       windowNoResize;  // Resize- and maximize gadgets disabled flag
-    int       refreshRate;     // Vertical monitor refresh rate
-
-    // Window status & parameters
-    int       opened;          // Flag telling if window is opened or not
-    int       active;          // Application active flag
-    int       iconified;       // Window iconified flag
-    int       width, height;   // Window width and heigth
-    int       accelerated;     // GL_TRUE if window is HW accelerated
-
-    // Framebuffer attributes
-    int       redBits;
-    int       greenBits;
-    int       blueBits;
-    int       alphaBits;
-    int       depthBits;
-    int       stencilBits;
-    int       accumRedBits;
-    int       accumGreenBits;
-    int       accumBlueBits;
-    int       accumAlphaBits;
-    int       auxBuffers;
-    int       stereo;
-    int       samples;
-
-    // OpenGL extensions and context attributes
-    int       glMajor, glMinor, glRevision;
-    int       glForward, glDebug, glProfile;
-
-    PFNGLGETSTRINGIPROC GetStringi;
-
-
-// ========= PLATFORM SPECIFIC PART ======================================
+typedef struct _GLFWwindowX11 {
 
     // Platform specific window resources
     Colormap      colormap;          // Window colormap
@@ -237,6 +189,8 @@ struct _GLFWwin_struct {
     Atom          wmStateFullscreen; // _NET_WM_STATE_FULLSCREEN atom
     Atom          wmActiveWindow;    // _NET_ACTIVE_WINDOW atom
     Cursor        cursor;            // Invisible cursor for hidden cursor
+
+    int  mouseMoved, cursorPosX, cursorPosY;
 
     // GLX extensions
     PFNGLXSWAPINTERVALSGIPROC             SwapIntervalSGI;
@@ -257,6 +211,30 @@ struct _GLFWwin_struct {
     GLboolean   keyboardGrabbed;  // True if keyboard is currently grabbed
     GLboolean   pointerGrabbed;   // True if pointer is currently grabbed
     GLboolean   pointerHidden;    // True if pointer is currently hidden
+
+} _GLFWwindowX11;
+
+
+//------------------------------------------------------------------------
+// Platform-specific ibrary global data
+//------------------------------------------------------------------------
+typedef struct {
+    Display*        display;
+
+    // Server-side GLX version
+    int             glxMajor, glxMinor;
+
+    struct {
+        int         available;
+        int         eventBase;
+        int         errorBase;
+    } XF86VidMode;
+
+    struct {
+        int         available;
+        int         eventBase;
+        int         errorBase;
+    } XRandR;
 
     // Screensaver data
     struct {
@@ -280,69 +258,6 @@ struct _GLFWwin_struct {
         Rotation oldRotation;
 #endif
     } FS;
-};
-
-GLFWGLOBAL _GLFWwin _glfwWin;
-
-
-//------------------------------------------------------------------------
-// User input status (most of this should go in _GLFWwin)
-//------------------------------------------------------------------------
-GLFWGLOBAL struct {
-
-// ========= PLATFORM INDEPENDENT MANDATORY PART =========================
-
-    // Mouse status
-    int  MousePosX, MousePosY;
-    int  WheelPos;
-    char MouseButton[ GLFW_MOUSE_BUTTON_LAST+1 ];
-
-    // Keyboard status
-    char Key[ GLFW_KEY_LAST+1 ];
-    int  LastChar;
-
-    // User selected settings
-    int  StickyKeys;
-    int  StickyMouseButtons;
-    int  KeyRepeat;
-
-
-// ========= PLATFORM SPECIFIC PART ======================================
-
-    // Platform specific internal variables
-    int  MouseMoved, CursorPosX, CursorPosY;
-
-} _glfwInput;
-
-
-//------------------------------------------------------------------------
-// Library global data
-//------------------------------------------------------------------------
-GLFWGLOBAL struct {
-
-// ========= PLATFORM INDEPENDENT MANDATORY PART =========================
-
-    // Window opening hints
-    _GLFWhints      hints;
-
-// ========= PLATFORM SPECIFIC PART ======================================
-
-    Display*        display;
-
-    // Server-side GLX version
-    int             glxMajor, glxMinor;
-
-    struct {
-        int         available;
-        int         eventBase;
-        int         errorBase;
-    } XF86VidMode;
-
-    struct {
-        int         available;
-        int         eventBase;
-        int         errorBase;
-    } XRandR;
 
     // Timer data
     struct {
@@ -355,7 +270,7 @@ GLFWGLOBAL struct {
         void*       libGL;  // dlopen handle for libGL.so
     } Libs;
 #endif
-} _glfwLibrary;
+} _GLFWlibraryX11;
 
 
 //------------------------------------------------------------------------
@@ -382,7 +297,7 @@ void _glfwInitTimer(void);
 int  _glfwGetClosestVideoMode(int screen, int* width, int* height, int* rate);
 void _glfwSetVideoModeMODE(int screen, int mode, int rate);
 void _glfwSetVideoMode(int screen, int* width, int* height, int* rate);
-void _glfwRestoreVideoMode(void);
+void _glfwRestoreVideoMode(int screen);
 
 // Joystick input
 void _glfwInitJoysticks(void);

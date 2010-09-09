@@ -35,23 +35,23 @@
 // 
 //========================================================================
 
-GLFWAPI int glfwGetKey(int key)
+GLFWAPI int glfwGetKey(GLFWwindow window, int key)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return GLFW_RELEASE;
 
     // Is it a valid key?
     if (key < 0 || key > GLFW_KEY_LAST)
         return GLFW_RELEASE;
 
-    if (_glfwInput.Key[key] == GLFW_STICK)
+    if (window->key[key] == GLFW_STICK)
     {
         // Sticky mode: release key now
-        _glfwInput.Key[key] = GLFW_RELEASE;
+        window->key[key] = GLFW_RELEASE;
         return GLFW_PRESS;
     }
 
-    return (int) _glfwInput.Key[key];
+    return (int) window->key[key];
 }
 
 
@@ -59,23 +59,23 @@ GLFWAPI int glfwGetKey(int key)
 // 
 //========================================================================
 
-GLFWAPI int glfwGetMouseButton(int button)
+GLFWAPI int glfwGetMouseButton(GLFWwindow window, int button)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return GLFW_RELEASE;
 
     // Is it a valid mouse button?
     if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST)
         return GLFW_RELEASE;
 
-    if (_glfwInput.MouseButton[button] == GLFW_STICK)
+    if (window->mouseButton[button] == GLFW_STICK)
     {
         // Sticky mode: release mouse button now
-        _glfwInput.MouseButton[button] = GLFW_RELEASE;
+        window->mouseButton[button] = GLFW_RELEASE;
         return GLFW_PRESS;
     }
 
-    return (int) _glfwInput.MouseButton[button];
+    return (int) window->mouseButton[button];
 }
 
 
@@ -83,17 +83,17 @@ GLFWAPI int glfwGetMouseButton(int button)
 // 
 //========================================================================
 
-GLFWAPI void glfwGetMousePos(int* xpos, int* ypos)
+GLFWAPI void glfwGetMousePos(GLFWwindow window, int* xpos, int* ypos)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return;
 
     // Return mouse position
     if (xpos != NULL)
-        *xpos = _glfwInput.MousePosX;
+        *xpos = window->mousePosX;
 
     if (ypos != NULL)
-        *ypos = _glfwInput.MousePosY;
+        *ypos = window->mousePosY;
 }
 
 
@@ -101,25 +101,25 @@ GLFWAPI void glfwGetMousePos(int* xpos, int* ypos)
 // 
 //========================================================================
 
-GLFWAPI void glfwSetMousePos(int xpos, int ypos)
+GLFWAPI void glfwSetMousePos(GLFWwindow window, int xpos, int ypos)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return;
 
     // Don't do anything if the mouse position did not change
-    if (xpos == _glfwInput.MousePosX && ypos == _glfwInput.MousePosY)
+    if (xpos == window->mousePosX && ypos == window->mousePosY)
         return;
 
     // Set GLFW mouse position
-    _glfwInput.MousePosX = xpos;
-    _glfwInput.MousePosY = ypos;
+    window->mousePosX = xpos;
+    window->mousePosY = ypos;
 
     // If we have a locked mouse, do not change cursor position
-    if (_glfwWin.mouseLock)
+    if (_glfwLibrary.cursorLockWindow)
         return;
 
     // Update physical cursor position
-    _glfwPlatformSetMouseCursorPos(xpos, ypos);
+    _glfwPlatformSetMouseCursorPos(window, xpos, ypos);
 }
 
 
@@ -127,13 +127,12 @@ GLFWAPI void glfwSetMousePos(int xpos, int ypos)
 // 
 //========================================================================
 
-GLFWAPI int glfwGetMouseWheel(void)
+GLFWAPI int glfwGetMouseWheel(GLFWwindow window)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return 0;
 
-    // Return mouse wheel position
-    return _glfwInput.WheelPos;
+    return window->wheelPos;
 }
 
 
@@ -141,13 +140,12 @@ GLFWAPI int glfwGetMouseWheel(void)
 // 
 //========================================================================
 
-GLFWAPI void glfwSetMouseWheel(int pos)
+GLFWAPI void glfwSetMouseWheel(GLFWwindow window, int pos)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return;
 
-    // Set mouse wheel position
-    _glfwInput.WheelPos = pos;
+    window->wheelPos = pos;
 }
 
 
@@ -155,13 +153,12 @@ GLFWAPI void glfwSetMouseWheel(int pos)
 // Set callback function for keyboard input
 //========================================================================
 
-GLFWAPI void glfwSetKeyCallback(GLFWkeyfun cbfun)
+GLFWAPI void glfwSetKeyCallback(GLFWwindow window, GLFWkeyfun cbfun)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return;
 
-    // Set callback function
-    _glfwWin.keyCallback = cbfun;
+    window->keyCallback = cbfun;
 }
 
 
@@ -169,13 +166,12 @@ GLFWAPI void glfwSetKeyCallback(GLFWkeyfun cbfun)
 // Set callback function for character input
 //========================================================================
 
-GLFWAPI void glfwSetCharCallback(GLFWcharfun cbfun)
+GLFWAPI void glfwSetCharCallback(GLFWwindow window, GLFWcharfun cbfun)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return;
 
-    // Set callback function
-    _glfwWin.charCallback = cbfun;
+    window->charCallback = cbfun;
 }
 
 
@@ -183,13 +179,12 @@ GLFWAPI void glfwSetCharCallback(GLFWcharfun cbfun)
 // Set callback function for mouse clicks
 //========================================================================
 
-GLFWAPI void glfwSetMouseButtonCallback(GLFWmousebuttonfun cbfun)
+GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow window, GLFWmousebuttonfun cbfun)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return;
 
-    // Set callback function
-    _glfwWin.mouseButtonCallback = cbfun;
+    window->mouseButtonCallback = cbfun;
 }
 
 
@@ -197,18 +192,18 @@ GLFWAPI void glfwSetMouseButtonCallback(GLFWmousebuttonfun cbfun)
 // Set callback function for mouse moves
 //========================================================================
 
-GLFWAPI void glfwSetMousePosCallback(GLFWmouseposfun cbfun)
+GLFWAPI void glfwSetMousePosCallback(GLFWwindow window, GLFWmouseposfun cbfun)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized || !_glfwLibrary.window)
         return;
 
     // Set callback function
-    _glfwWin.mousePosCallback = cbfun;
+    _glfwLibrary.window->mousePosCallback = cbfun;
 
     // Call the callback function to let the application know the current
     // mouse position
     if (cbfun)
-        cbfun(_glfwInput.MousePosX, _glfwInput.MousePosY);
+        cbfun(window->mousePosX, window->mousePosY);
 }
 
 
@@ -216,17 +211,17 @@ GLFWAPI void glfwSetMousePosCallback(GLFWmouseposfun cbfun)
 // Set callback function for mouse wheel
 //========================================================================
 
-GLFWAPI void glfwSetMouseWheelCallback(GLFWmousewheelfun cbfun)
+GLFWAPI void glfwSetMouseWheelCallback(GLFWwindow window, GLFWmousewheelfun cbfun)
 {
-    if (!_glfwInitialized || !_glfwWin.opened)
+    if (!_glfwInitialized)
         return;
 
     // Set callback function
-    _glfwWin.mouseWheelCallback = cbfun;
+    window->mouseWheelCallback = cbfun;
 
     // Call the callback function to let the application know the current
     // mouse wheel position
     if (cbfun)
-        cbfun(_glfwInput.WheelPos);
+        cbfun(window->wheelPos);
 }
 

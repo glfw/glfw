@@ -48,13 +48,6 @@ GLFWAPI int glfwInit(void)
         return GL_TRUE;
 
     memset(&_glfwLibrary, 0, sizeof(_glfwLibrary));
-    memset(&_glfwWin, 0, sizeof(_glfwWin ));
-
-    // Window is not yet opened
-    _glfwWin.opened = GL_FALSE;
-
-    // Default enable/disable settings
-    _glfwWin.sysKeysDisabled = GL_FALSE;
 
     // Clear window hints
     _glfwClearWindowHints();

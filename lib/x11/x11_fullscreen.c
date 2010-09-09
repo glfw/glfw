@@ -75,10 +75,10 @@ int _glfwGetClosestVideoMode(int screen, int* width, int* height, int* rate)
     XRRScreenConfiguration* sc;
     XRRScreenSize* sizelist;
 
-    if (_glfwLibrary.XRandR.available)
+    if (_glfwLibrary.X11.XRandR.available)
     {
-        sc = XRRGetScreenInfo(_glfwLibrary.display,
-                              RootWindow(_glfwLibrary.display, screen));
+        sc = XRRGetScreenInfo(_glfwLibrary.X11.display,
+                              RootWindow(_glfwLibrary.X11.display, screen));
 
         sizelist = XRRConfigSizes(sc, &sizecount);
 
@@ -174,8 +174,8 @@ int _glfwGetClosestVideoMode(int screen, int* width, int* height, int* rate)
 #endif
 
     // Default: Simply use the screen resolution
-    *width = DisplayWidth(_glfwLibrary.display, screen);
-    *height = DisplayHeight(_glfwLibrary.display, screen);
+    *width = DisplayWidth(_glfwLibrary.X11.display, screen);
+    *height = DisplayHeight(_glfwLibrary.X11.display, screen);
 
     return 0;
 }
@@ -191,25 +191,25 @@ void _glfwSetVideoModeMODE(int screen, int mode, int rate)
     XRRScreenConfiguration* sc;
     Window root;
 
-    if (_glfwLibrary.XRandR.available)
+    if (_glfwLibrary.X11.XRandR.available)
     {
-        root = RootWindow(_glfwLibrary.display, screen);
-        sc   = XRRGetScreenInfo(_glfwLibrary.display, root);
+        root = RootWindow(_glfwLibrary.X11.display, screen);
+        sc   = XRRGetScreenInfo(_glfwLibrary.X11.display, root);
 
         // Remember old size and flag that we have changed the mode
-        if (!_glfwWin.FS.modeChanged)
+        if (!_glfwLibrary.X11.FS.modeChanged)
         {
-            _glfwWin.FS.oldSizeID = XRRConfigCurrentConfiguration(sc, &_glfwWin.FS.oldRotation);
-            _glfwWin.FS.oldWidth  = DisplayWidth(_glfwLibrary.display, screen);
-            _glfwWin.FS.oldHeight = DisplayHeight(_glfwLibrary.display, screen);
+            _glfwLibrary.X11.FS.oldSizeID = XRRConfigCurrentConfiguration(sc, &_glfwLibrary.X11.FS.oldRotation);
+            _glfwLibrary.X11.FS.oldWidth  = DisplayWidth(_glfwLibrary.X11.display, screen);
+            _glfwLibrary.X11.FS.oldHeight = DisplayHeight(_glfwLibrary.X11.display, screen);
 
-            _glfwWin.FS.modeChanged = GL_TRUE;
+            _glfwLibrary.X11.FS.modeChanged = GL_TRUE;
         }
 
         if (rate > 0)
         {
             // Set desired configuration
-            XRRSetScreenConfigAndRate(_glfwLibrary.display,
+            XRRSetScreenConfigAndRate(_glfwLibrary.X11.display,
                                       sc,
                                       root,
                                       mode,
@@ -220,7 +220,7 @@ void _glfwSetVideoModeMODE(int screen, int mode, int rate)
         else
         {
             // Set desired configuration
-            XRRSetScreenConfig(_glfwLibrary.display,
+            XRRSetScreenConfig(_glfwLibrary.X11.display,
                                sc,
                                root,
                                mode,
@@ -235,31 +235,31 @@ void _glfwSetVideoModeMODE(int screen, int mode, int rate)
     int modecount;
 
     // Use the XF86VidMode extension to control video resolution
-    if (_glfwLibrary.XF86VidMode.available)
+    if (_glfwLibrary.X11.XF86VidMode.available)
     {
         // Get a list of all available display modes
-        XF86VidModeGetAllModeLines(_glfwLibrary.display, screen,
+        XF86VidModeGetAllModeLines(_glfwLibrary.X11.display, screen,
                                    &modecount, &modelist);
 
         // Unlock mode switch if necessary
-        if (_glfwWin.FS.modeChanged)
-            XF86VidModeLockModeSwitch(_glfwLibrary.display, screen, 0);
+        if (_glfwLibrary.X11.FS.modeChanged)
+            XF86VidModeLockModeSwitch(_glfwLibrary.X11.display, screen, 0);
 
         // Change the video mode to the desired mode
-        XF86VidModeSwitchToMode(_glfwLibrary.display, screen,
+        XF86VidModeSwitchToMode(_glfwLibrary.X11.display, screen,
                                 modelist[mode]);
 
         // Set viewport to upper left corner (where our window will be)
-        XF86VidModeSetViewPort(_glfwLibrary.display, screen, 0, 0);
+        XF86VidModeSetViewPort(_glfwLibrary.X11.display, screen, 0, 0);
 
         // Lock mode switch
-        XF86VidModeLockModeSwitch(_glfwLibrary.display, screen, 1);
+        XF86VidModeLockModeSwitch(_glfwLibrary.X11.display, screen, 1);
 
         // Remember old mode and flag that we have changed the mode
-        if (!_glfwWin.FS.modeChanged)
+        if (!_glfwLibrary.X11.FS.modeChanged)
         {
-            _glfwWin.FS.oldMode = *modelist[0];
-            _glfwWin.FS.modeChanged = GL_TRUE;
+            _glfwLibrary.X11.FS.oldMode = *modelist[0];
+            _glfwLibrary.X11.FS.modeChanged = GL_TRUE;
         }
 
         // Free mode list
@@ -289,42 +289,44 @@ void _glfwSetVideoMode(int screen, int* width, int* height, int* rate)
 // Restore the previously saved (original) video mode
 //========================================================================
 
-void _glfwRestoreVideoMode(void)
+void _glfwRestoreVideoMode(int screen)
 {
-    if (_glfwWin.FS.modeChanged)
+    if (_glfwLibrary.X11.FS.modeChanged)
     {
 #if defined(_GLFW_HAS_XRANDR)
-        if (_glfwLibrary.XRandR.available)
+        Window root = RootWindow(_glfwLibrary.X11.display, screen);
+
+        if (_glfwLibrary.X11.XRandR.available)
         {
             XRRScreenConfiguration* sc;
 
-            if (_glfwLibrary.XRandR.available)
+            if (_glfwLibrary.X11.XRandR.available)
             {
-                sc = XRRGetScreenInfo(_glfwLibrary.display, _glfwWin.root);
+                sc = XRRGetScreenInfo(_glfwLibrary.X11.display, root);
 
-                XRRSetScreenConfig(_glfwLibrary.display,
+                XRRSetScreenConfig(_glfwLibrary.X11.display,
                                    sc,
-                                   _glfwWin.root,
-                                   _glfwWin.FS.oldSizeID,
-                                   _glfwWin.FS.oldRotation,
+                                   root,
+                                   _glfwLibrary.X11.FS.oldSizeID,
+                                   _glfwLibrary.X11.FS.oldRotation,
                                    CurrentTime);
 
                 XRRFreeScreenConfigInfo(sc);
             }
         }
 #elif defined(_GLFW_HAS_XF86VIDMODE)
-        if (_glfwLibrary.XF86VidMode.available)
+        if (_glfwLibrary.X11.XF86VidMode.available)
         {
             // Unlock mode switch
-            XF86VidModeLockModeSwitch(_glfwLibrary.display, _glfwWin.screen, 0);
+            XF86VidModeLockModeSwitch(_glfwLibrary.X11.display, screen, 0);
 
             // Change the video mode back to the old mode
-            XF86VidModeSwitchToMode(_glfwLibrary.display,
-                                    _glfwWin.screen,
-                                    &_glfwWin.FS.oldMode);
+            XF86VidModeSwitchToMode(_glfwLibrary.X11.display,
+                                    screen,
+                                    &_glfwLibrary.X11.FS.oldMode);
         }
 #endif
-        _glfwWin.FS.modeChanged = GL_FALSE;
+        _glfwLibrary.X11.FS.modeChanged = GL_FALSE;
     }
 }
 
@@ -364,7 +366,7 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
 #endif
 
     // Get display and screen
-    dpy = _glfwLibrary.display;
+    dpy = _glfwLibrary.X11.display;
     screen = DefaultScreen(dpy);
 
     // Get list of visuals
@@ -410,7 +412,7 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
 
     // Build resolution array
 #if defined(_GLFW_HAS_XRANDR)
-    if (_glfwLibrary.XRandR.available)
+    if (_glfwLibrary.X11.XRandR.available)
     {
         sc = XRRGetScreenInfo(dpy, RootWindow(dpy, screen));
         sizelist = XRRConfigSizes(sc, &sizecount);
@@ -505,7 +507,7 @@ void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
 #endif
 
     // Get display and screen
-    dpy = _glfwLibrary.display;
+    dpy = _glfwLibrary.X11.display;
     screen = DefaultScreen(dpy);
 
     // Get display depth
@@ -515,23 +517,23 @@ void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
     BPP2RGB(bpp, &mode->redBits, &mode->greenBits, &mode->blueBits);
 
 #if defined(_GLFW_HAS_XRANDR)
-    if (_glfwLibrary.XRandR.available)
+    if (_glfwLibrary.X11.XRandR.available)
     {
-        if (_glfwWin.FS.modeChanged)
+        if (_glfwLibrary.X11.FS.modeChanged)
         {
-            mode->width  = _glfwWin.FS.oldWidth;
-            mode->height = _glfwWin.FS.oldHeight;
+            mode->width  = _glfwLibrary.X11.FS.oldWidth;
+            mode->height = _glfwLibrary.X11.FS.oldHeight;
             return;
         }
     }
 #elif defined(_GLFW_HAS_XF86VIDMODE)
-    if (_glfwLibrary.XF86VidMode.available)
+    if (_glfwLibrary.X11.XF86VidMode.available)
     {
-        if (_glfwWin.FS.modeChanged)
+        if (_glfwLibrary.X11.FS.modeChanged)
         {
             // The old (desktop) mode is stored in _glfwWin.FS.oldMode
-            mode->width  = _glfwWin.FS.oldMode.hdisplay;
-            mode->height = _glfwWin.FS.oldMode.vdisplay;
+            mode->width  = _glfwLibrary.X11.FS.oldMode.hdisplay;
+            mode->height = _glfwLibrary.X11.FS.oldMode.vdisplay;
         }
         else
         {

@@ -746,7 +746,7 @@ static GLboolean createWindow(_GLFWwindow* window,
             PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
             ExposureMask | FocusChangeMask | VisibilityChangeMask;
 
-        if (wndconfig->mode == GLFW_WINDOW)
+        if (wndconfig->mode == GLFW_WINDOWED)
         {
             // The /only/ reason we are setting the background pixel here is
             // that otherwise our window wont get any decorations on systems

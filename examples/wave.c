@@ -332,7 +332,7 @@ int main(int argc, char* argv[])
   /* Desired window properties */
   width  = 640;
   height = 480;
-  mode   = GLFW_WINDOW;
+  mode   = GLFW_WINDOWED;
 
   glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
 

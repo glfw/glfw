@@ -464,7 +464,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode)
         return GL_FALSE;
     }
 
-    if (mode != GLFW_WINDOW && mode != GLFW_FULLSCREEN)
+    if (mode != GLFW_WINDOWED && mode != GLFW_FULLSCREEN)
     {
         // Invalid window mode
         glfwCloseWindow(window);

@@ -460,7 +460,7 @@ int main( void )
     glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
 
     // Open OpenGL window
-    window = glfwOpenWindow( 500, 500, GLFW_WINDOW );
+    window = glfwOpenWindow( 500, 500, GLFW_WINDOWED );
     if (!window)
     {
         fprintf( stderr, "Failed to open GLFW window\n" );

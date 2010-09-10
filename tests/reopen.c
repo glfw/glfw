@@ -45,7 +45,7 @@ static const char* get_mode_name(int mode)
 {
     switch (mode)
     {
-        case GLFW_WINDOW:
+        case GLFW_WINDOWED:
             return "windowed";
         case GLFW_FULLSCREEN:
             return "fullscreen";
@@ -128,7 +128,7 @@ int main(int argc, char** argv)
 
     for (;;)
     {
-        if (!open_window(640, 480, (count & 1) ? GLFW_FULLSCREEN : GLFW_WINDOW))
+        if (!open_window(640, 480, (count & 1) ? GLFW_FULLSCREEN : GLFW_WINDOWED))
         {
             glfwTerminate();
             exit(1);

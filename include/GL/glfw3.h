@@ -302,7 +302,7 @@ extern "C" {
  *************************************************************************/
 
 /* glfwOpenWindow modes */
-#define GLFW_WINDOW               0x00010001
+#define GLFW_WINDOWED             0x00010001
 #define GLFW_FULLSCREEN           0x00010002
 
 /* glfwGetWindowParam tokens */

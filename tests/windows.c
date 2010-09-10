@@ -42,7 +42,7 @@ static const char* titles[] =
 
 static GLFWwindow open_window(int width, int height, const char* title)
 {
-    GLFWwindow window = glfwOpenWindow(width, height, GLFW_WINDOW);
+    GLFWwindow window = glfwOpenWindow(width, height, GLFW_WINDOWED);
     if (!window)
     {
         fprintf(stderr, "Failed to open GLFW default window\n");

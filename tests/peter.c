@@ -89,7 +89,7 @@ static GLboolean open_window(void)
 {
     int x, y;
 
-    window_handle = glfwOpenWindow(0, 0, GLFW_WINDOW);
+    window_handle = glfwOpenWindow(0, 0, GLFW_WINDOWED);
     if (!window_handle)
         return GL_FALSE;
 

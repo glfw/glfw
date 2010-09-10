@@ -10,7 +10,7 @@
 //  because I am not a friend of orthogonal projections)
 //========================================================================
 
-#include <GL/glfw.h>
+#include <GL/glfw3.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>

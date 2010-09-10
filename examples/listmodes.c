@@ -4,7 +4,7 @@
 //========================================================================
 
 #include <stdio.h>
-#include <GL/glfw.h>
+#include <GL/glfw3.h>
 
 // Maximum number of modes that we want to list
 #define MAX_NUM_MODES 400

@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <GL/glfw.h>
+#include <GL/glfw3.h>
 
 
 int main( void )

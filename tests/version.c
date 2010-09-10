@@ -29,7 +29,7 @@
 //
 //========================================================================
 
-#include <GL/glfw.h>
+#include <GL/glfw3.h>
 
 #ifndef GL_VERSION_3_2
 #define GL_CONTEXT_CORE_PROFILE_BIT       0x00000001

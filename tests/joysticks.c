@@ -3,7 +3,7 @@
  * joystick input test.
  *========================================================================*/
 
-#include <GL/glfw.h>
+#include <GL/glfw3.h>
 
 #include <stdio.h>
 #include <math.h>

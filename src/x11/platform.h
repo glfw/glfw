@@ -172,7 +172,7 @@ typedef const GLubyte* (APIENTRY *PFNGLGETSTRINGIPROC)(GLenum, GLuint);
 //========================================================================
 
 //------------------------------------------------------------------------
-// OpenGL context structure
+// Platform-specific OpenGL context structure
 //------------------------------------------------------------------------
 typedef struct _GLFWcontextGLX
 {
@@ -196,7 +196,7 @@ typedef struct _GLFWcontextGLX
 
 
 //------------------------------------------------------------------------
-// Window structure
+// Platform-specific window structure
 //------------------------------------------------------------------------
 typedef struct _GLFWwindowX11
 {
@@ -223,7 +223,7 @@ typedef struct _GLFWwindowX11
 
 
 //------------------------------------------------------------------------
-// Platform-specific ibrary global data
+// Platform-specific library global data
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryX11
 {

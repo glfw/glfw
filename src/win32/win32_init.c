@@ -36,76 +36,69 @@
 #endif // __BORLANDC__
 
 
-
-//************************************************************************
-//****                  GLFW internal functions                       ****
-//************************************************************************
-
 //========================================================================
 // Load necessary libraries (DLLs)
 //========================================================================
 
-static int _glfwInitLibraries( void )
+static GLboolean initLibraries(void)
 {
     // gdi32.dll (OpenGL pixel format functions & SwapBuffers)
 #ifndef _GLFW_NO_DLOAD_GDI32
-    _glfwLibrary.Libs.gdi32 = LoadLibrary( "gdi32.dll" );
-    if( _glfwLibrary.Libs.gdi32 != NULL )
+    _glfwLibrary.Libs.gdi32 = LoadLibrary("gdi32.dll");
+    if (_glfwLibrary.Libs.gdi32 != NULL)
     {
-        _glfwLibrary.Libs.ChoosePixelFormat   = (CHOOSEPIXELFORMAT_T)
-            GetProcAddress( _glfwLibrary.Libs.gdi32, "ChoosePixelFormat" );
+        _glfwLibrary.Libs.ChoosePixelFormat = (CHOOSEPIXELFORMAT_T)
+            GetProcAddress(_glfwLibrary.Libs.gdi32, "ChoosePixelFormat");
         _glfwLibrary.Libs.DescribePixelFormat = (DESCRIBEPIXELFORMAT_T)
-            GetProcAddress( _glfwLibrary.Libs.gdi32, "DescribePixelFormat" );
-        _glfwLibrary.Libs.GetPixelFormat      = (GETPIXELFORMAT_T)
-            GetProcAddress( _glfwLibrary.Libs.gdi32, "GetPixelFormat" );
-        _glfwLibrary.Libs.SetPixelFormat      = (SETPIXELFORMAT_T)
-            GetProcAddress( _glfwLibrary.Libs.gdi32, "SetPixelFormat" );
-        _glfwLibrary.Libs.SwapBuffers         = (SWAPBUFFERS_T)
-            GetProcAddress( _glfwLibrary.Libs.gdi32, "SwapBuffers" );
-        if( _glfwLibrary.Libs.ChoosePixelFormat   == NULL ||
-            _glfwLibrary.Libs.DescribePixelFormat == NULL ||
-            _glfwLibrary.Libs.GetPixelFormat      == NULL ||
-            _glfwLibrary.Libs.SetPixelFormat      == NULL ||
-            _glfwLibrary.Libs.SwapBuffers         == NULL )
+            GetProcAddress(_glfwLibrary.Libs.gdi32, "DescribePixelFormat");
+        _glfwLibrary.Libs.GetPixelFormat = (GETPIXELFORMAT_T)
+            GetProcAddress(_glfwLibrary.Libs.gdi32, "GetPixelFormat");
+        _glfwLibrary.Libs.SetPixelFormat = (SETPIXELFORMAT_T)
+            GetProcAddress(_glfwLibrary.Libs.gdi32, "SetPixelFormat");
+        _glfwLibrary.Libs.SwapBuffers = (SWAPBUFFERS_T)
+            GetProcAddress(_glfwLibrary.Libs.gdi32, "SwapBuffers");
+
+        if (_glfwLibrary.Libs.ChoosePixelFormat &&
+            _glfwLibrary.Libs.DescribePixelFormat &&
+            _glfwLibrary.Libs.GetPixelFormat &&
+            _glfwLibrary.Libs.SetPixelFormat &&
+            _glfwLibrary.Libs.SwapBuffers)
         {
-            FreeLibrary( _glfwLibrary.Libs.gdi32 );
+            FreeLibrary(_glfwLibrary.Libs.gdi32);
             _glfwLibrary.Libs.gdi32 = NULL;
             return GL_FALSE;
         }
     }
     else
-    {
         return GL_FALSE;
-    }
 #endif // _GLFW_NO_DLOAD_GDI32
 
     // winmm.dll (for joystick and timer support)
 #ifndef _GLFW_NO_DLOAD_WINMM
-    _glfwLibrary.Libs.winmm = LoadLibrary( "winmm.dll" );
-    if( _glfwLibrary.Libs.winmm != NULL )
+    _glfwLibrary.Libs.winmm = LoadLibrary("winmm.dll");
+    if (_glfwLibrary.Libs.winmm != NULL)
     {
         _glfwLibrary.Libs.joyGetDevCapsA = (JOYGETDEVCAPSA_T)
-            GetProcAddress( _glfwLibrary.Libs.winmm, "joyGetDevCapsA" );
-        _glfwLibrary.Libs.joyGetPos      = (JOYGETPOS_T)
-            GetProcAddress( _glfwLibrary.Libs.winmm, "joyGetPos" );
-        _glfwLibrary.Libs.joyGetPosEx    = (JOYGETPOSEX_T)
-            GetProcAddress( _glfwLibrary.Libs.winmm, "joyGetPosEx" );
-        _glfwLibrary.Libs.timeGetTime    = (TIMEGETTIME_T)
-            GetProcAddress( _glfwLibrary.Libs.winmm, "timeGetTime" );
-        if( _glfwLibrary.Libs.joyGetDevCapsA == NULL ||
-            _glfwLibrary.Libs.joyGetPos      == NULL ||
-            _glfwLibrary.Libs.joyGetPosEx    == NULL ||
-            _glfwLibrary.Libs.timeGetTime    == NULL )
+            GetProcAddress(_glfwLibrary.Libs.winmm, "joyGetDevCapsA");
+        _glfwLibrary.Libs.joyGetPos = (JOYGETPOS_T)
+            GetProcAddress(_glfwLibrary.Libs.winmm, "joyGetPos");
+        _glfwLibrary.Libs.joyGetPosEx = (JOYGETPOSEX_T)
+            GetProcAddress(_glfwLibrary.Libs.winmm, "joyGetPosEx");
+        _glfwLibrary.Libs.timeGetTime = (TIMEGETTIME_T)
+            GetProcAddress(_glfwLibrary.Libs.winmm, "timeGetTime");
+
+        if (_glfwLibrary.Libs.joyGetDevCapsA &&
+            _glfwLibrary.Libs.joyGetPos &&
+            _glfwLibrary.Libs.joyGetPosEx &&
+            _glfwLibrary.Libs.timeGetTime)
         {
-            FreeLibrary( _glfwLibrary.Libs.winmm );
+            FreeLibrary(_glfwLibrary.Libs.winmm);
             _glfwLibrary.Libs.winmm = NULL;
             return GL_FALSE;
         }
     }
     else
-    {
         return GL_FALSE;
-    }
 #endif // _GLFW_NO_DLOAD_WINMM
 
     return GL_TRUE;
@@ -116,22 +109,22 @@ static int _glfwInitLibraries( void )
 // Unload used libraries (DLLs)
 //========================================================================
 
-static void _glfwFreeLibraries( void )
+static void freeLibraries(void)
 {
     // gdi32.dll
 #ifndef _GLFW_NO_DLOAD_GDI32
-    if( _glfwLibrary.Libs.gdi32 != NULL )
+    if (_glfwLibrary.Libs.gdi32 != NULL)
     {
-        FreeLibrary( _glfwLibrary.Libs.gdi32 );
+        FreeLibrary(_glfwLibrary.Libs.gdi32);
         _glfwLibrary.Libs.gdi32 = NULL;
     }
 #endif // _GLFW_NO_DLOAD_GDI32
 
     // winmm.dll
 #ifndef _GLFW_NO_DLOAD_WINMM
-    if( _glfwLibrary.Libs.winmm != NULL )
+    if (_glfwLibrary.Libs.winmm != NULL)
     {
-        FreeLibrary( _glfwLibrary.Libs.winmm );
+        FreeLibrary(_glfwLibrary.Libs.winmm);
         _glfwLibrary.Libs.winmm = NULL;
     }
 #endif // _GLFW_NO_DLOAD_WINMM
@@ -142,82 +135,65 @@ static void _glfwFreeLibraries( void )
 // Terminate GLFW when exiting application
 //========================================================================
 
-void _glfwTerminate_atexit( void )
+static void glfw_atexit(void)
 {
     glfwTerminate();
 }
 
 
-
-//************************************************************************
-//****               Platform implementation functions                ****
-//************************************************************************
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 //========================================================================
 // Initialize various GLFW state
 //========================================================================
 
-int _glfwPlatformInit( void )
+int _glfwPlatformInit(void)
 {
     OSVERSIONINFO osi;
 
     // To make SetForegroundWindow() work as we want, we need to fiddle
     // with the FOREGROUNDLOCKTIMEOUT system setting (we do this as early
     // as possible in the hope of still being the foreground process)
-    SystemParametersInfo( SPI_GETFOREGROUNDLOCKTIMEOUT, 0,
-                          &_glfwLibrary.Sys.foregroundLockTimeout, 0 );
-    SystemParametersInfo( SPI_SETFOREGROUNDLOCKTIMEOUT, 0, (LPVOID)0,
-                          SPIF_SENDCHANGE );
+    SystemParametersInfo(SPI_GETFOREGROUNDLOCKTIMEOUT, 0,
+                         &_glfwLibrary.Sys.foregroundLockTimeout, 0);
+    SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, (LPVOID) 0,
+                         SPIF_SENDCHANGE);
 
     // Check which OS version we are running
-    osi.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-    GetVersionEx( &osi );
+    osi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+    GetVersionEx(&osi);
+
     _glfwLibrary.Sys.winVer = _GLFW_WIN_UNKNOWN;
-    if( osi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS )
+
+    if (osi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
     {
-        if( osi.dwMajorVersion == 4 && osi.dwMinorVersion < 10 )
-        {
+        if (osi.dwMajorVersion == 4 && osi.dwMinorVersion < 10)
             _glfwLibrary.Sys.winVer = _GLFW_WIN_95;
-        }
-        else if( osi.dwMajorVersion == 4 && osi.dwMinorVersion < 90 )
-        {
+        else if (osi.dwMajorVersion == 4 && osi.dwMinorVersion < 90)
             _glfwLibrary.Sys.winVer = _GLFW_WIN_98;
-        }
-        else if( osi.dwMajorVersion == 4 && osi.dwMinorVersion == 90 )
-        {
+        else if (osi.dwMajorVersion == 4 && osi.dwMinorVersion == 90)
             _glfwLibrary.Sys.winVer = _GLFW_WIN_ME;
-        }
-        else if( osi.dwMajorVersion >= 4 )
-        {
+        else if (osi.dwMajorVersion >= 4)
             _glfwLibrary.Sys.winVer = _GLFW_WIN_UNKNOWN_9x;
-        }
     }
-    else if( osi.dwPlatformId == VER_PLATFORM_WIN32_NT )
+    else if (osi.dwPlatformId == VER_PLATFORM_WIN32_NT)
     {
-        if( osi.dwMajorVersion == 4 && osi.dwMinorVersion == 0 )
-        {
+        if (osi.dwMajorVersion == 4 && osi.dwMinorVersion == 0)
             _glfwLibrary.Sys.winVer = _GLFW_WIN_NT4;
-        }
-        else if( osi.dwMajorVersion == 5 && osi.dwMinorVersion == 0 )
-        {
+        else if (osi.dwMajorVersion == 5 && osi.dwMinorVersion == 0)
             _glfwLibrary.Sys.winVer = _GLFW_WIN_2K;
-        }
-        else if( osi.dwMajorVersion == 5 && osi.dwMinorVersion == 1 )
-        {
+        else if (osi.dwMajorVersion == 5 && osi.dwMinorVersion == 1)
             _glfwLibrary.Sys.winVer = _GLFW_WIN_XP;
-        }
-        else if( osi.dwMajorVersion == 5 && osi.dwMinorVersion == 2 )
-        {
+        else if (osi.dwMajorVersion == 5 && osi.dwMinorVersion == 2)
             _glfwLibrary.Sys.winVer = _GLFW_WIN_NET_SERVER;
-        }
-        else if( osi.dwMajorVersion >= 5 )
-        {
+        else if (osi.dwMajorVersion >= 5)
             _glfwLibrary.Sys.winVer = _GLFW_WIN_UNKNOWN_NT;
-        }
     }
 
     // Do we have Unicode support?
-    if( _glfwLibrary.Sys.winVer >= _GLFW_WIN_NT4 )
+    if (_glfwLibrary.Sys.winVer >= _GLFW_WIN_NT4)
     {
         // Windows NT/2000/XP/.NET has Unicode support
         _glfwLibrary.Sys.hasUnicode = GL_TRUE;
@@ -229,25 +205,23 @@ int _glfwPlatformInit( void )
     }
 
     // Load libraries (DLLs)
-    if( !_glfwInitLibraries() )
-    {
+    if (!_glfwInitLibraries())
         return GL_FALSE;
-    }
 
     // With the Borland C++ compiler, we want to disable FPU exceptions
     // (this is recommended for OpenGL applications under Windows)
 #ifdef __BORLANDC__
-    _control87( MCW_EM, MCW_EM );
+    _control87(MCW_EM, MCW_EM);
 #endif
 
     // Retrieve GLFW instance handle
-    _glfwLibrary.instance = GetModuleHandle( NULL );
+    _glfwLibrary.instance = GetModuleHandle(NULL);
 
     // System keys are not disabled
     _glfwWin.keyboardHook = NULL;
 
     // Install atexit() routine
-    atexit( _glfwTerminate_atexit );
+    atexit(glfw_atexit);
 
     // Start the timer
     _glfwInitTimer();
@@ -260,21 +234,21 @@ int _glfwPlatformInit( void )
 // Close window and shut down library
 //========================================================================
 
-int _glfwPlatformTerminate( void )
+int _glfwPlatformTerminate(void)
 {
     // Close OpenGL window
     glfwCloseWindow();
 
     // Enable system keys again (if they were disabled)
-    glfwEnable( GLFW_SYSTEM_KEYS );
+    glfwEnable(GLFW_SYSTEM_KEYS);
 
     // Unload libraries (DLLs)
     _glfwFreeLibraries();
 
     // Restore FOREGROUNDLOCKTIMEOUT system setting
-    SystemParametersInfo( SPI_SETFOREGROUNDLOCKTIMEOUT, 0,
-                          (LPVOID)_glfwLibrary.Sys.foregroundLockTimeout,
-                          SPIF_SENDCHANGE );
+    SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0,
+                         (LPVOID) _glfwLibrary.Sys.foregroundLockTimeout,
+                         SPIF_SENDCHANGE);
 
     return GL_TRUE;
 }

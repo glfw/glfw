@@ -31,36 +31,30 @@
 #include "internal.h"
 
 
-//************************************************************************
-//****                  GLFW internal functions                       ****
-//************************************************************************
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 //========================================================================
 // Return GL_TRUE if joystick is present, else return GL_FALSE.
 //========================================================================
 
-static int _glfwJoystickPresent( int joy )
+static GLboolean isJoystickPresent(int joy)
 {
     JOYINFO ji;
 
     // Windows NT 4.0 MMSYSTEM only supports 2 sticks (other Windows
     // versions support 16 sticks)
-    if( _glfwLibrary.Sys.winVer == _GLFW_WIN_NT4 && joy > GLFW_JOYSTICK_2 )
-    {
+    if (_glfwLibrary.Sys.winVer == _GLFW_WIN_NT4 && joy > GLFW_JOYSTICK_2)
         return GL_FALSE;
-    }
 
     // Is it a valid stick ID (Windows don't support more than 16 sticks)?
-    if( joy < GLFW_JOYSTICK_1 || joy > GLFW_JOYSTICK_16 )
-    {
+    if (joy < GLFW_JOYSTICK_1 || joy > GLFW_JOYSTICK_16)
         return GL_FALSE;
-    }
 
     // Is the joystick present?
-    if( _glfw_joyGetPos( joy - GLFW_JOYSTICK_1, &ji ) != JOYERR_NOERROR )
-    {
+    if (_glfw_joyGetPos(joy - GLFW_JOYSTICK_1, &ji) != JOYERR_NOERROR)
         return GL_FALSE;
-    }
 
     return GL_TRUE;
 }
@@ -70,57 +64,50 @@ static int _glfwJoystickPresent( int joy )
 // Calculate joystick position
 //========================================================================
 
-static float _glfwCalcJoystickPos( DWORD pos, DWORD min, DWORD max )
+static float calcJoystickPos(DWORD pos, DWORD min, DWORD max)
 {
     float fpos = (float) pos;
     float fmin = (float) min;
     float fmax = (float) max;
-    return (2.0f*(fpos - fmin) / (fmax - fmin)) - 1.0f;
+
+    return (2.f * (fpos - fmin) / (fmax - fmin)) - 1.f;
 }
 
 
-
-//************************************************************************
-//****               Platform implementation functions                ****
-//************************************************************************
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 //========================================================================
 // Determine joystick capabilities
 //========================================================================
 
-int _glfwPlatformGetJoystickParam( int joy, int param )
+int _glfwPlatformGetJoystickParam(int joy, int param)
 {
     JOYCAPS jc;
 
-//  return 0;
-
-    // Is joystick present?
-    if( !_glfwJoystickPresent( joy ) )
-    {
+    if (!isJoystickPresent(joy))
         return 0;
-    }
 
     // We got this far, the joystick is present
-    if( param == GLFW_PRESENT )
-    {
+    if (param == GLFW_PRESENT)
         return GL_TRUE;
-    }
 
     // Get joystick capabilities
-    _glfw_joyGetDevCaps( joy - GLFW_JOYSTICK_1, &jc, sizeof(JOYCAPS) );
+    _glfw_joyGetDevCaps(joy - GLFW_JOYSTICK_1, &jc, sizeof(JOYCAPS));
 
-    switch( param )
+    switch (param)
     {
-    case GLFW_AXES:
-        // Return number of joystick axes
-        return jc.wNumAxes;
+        case GLFW_AXES:
+            // Return number of joystick axes
+            return jc.wNumAxes;
 
-    case GLFW_BUTTONS:
-        // Return number of joystick axes
-        return jc.wNumButtons;
+        case GLFW_BUTTONS:
+            // Return number of joystick axes
+            return jc.wNumButtons;
 
-    default:
-        break;
+        default:
+            break;
     }
 
     return 0;
@@ -131,63 +118,44 @@ int _glfwPlatformGetJoystickParam( int joy, int param )
 // Get joystick axis positions
 //========================================================================
 
-int _glfwPlatformGetJoystickPos( int joy, float *pos, int numaxes )
+int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
 {
-    JOYCAPS   jc;
+    JOYCAPS jc;
     JOYINFOEX ji;
-    int       axis;
+    int axis;
 
-//  return 0;
-
-    // Is joystick present?
-    if( !_glfwJoystickPresent( joy ) )
-    {
+    if (!isJoystickPresent(joy))
         return 0;
-    }
 
     // Get joystick capabilities
-    _glfw_joyGetDevCaps( joy - GLFW_JOYSTICK_1, &jc, sizeof(JOYCAPS) );
+    _glfw_joyGetDevCaps(joy - GLFW_JOYSTICK_1, &jc, sizeof(JOYCAPS));
 
     // Get joystick state
-    ji.dwSize = sizeof( JOYINFOEX );
+    ji.dwSize = sizeof(JOYINFOEX);
     ji.dwFlags = JOY_RETURNX | JOY_RETURNY | JOY_RETURNZ |
                  JOY_RETURNR | JOY_RETURNU | JOY_RETURNV;
-    _glfw_joyGetPosEx( joy - GLFW_JOYSTICK_1, &ji );
+    _glfw_joyGetPosEx(joy - GLFW_JOYSTICK_1, &ji);
 
     // Get position values for all axes
     axis = 0;
-    if( axis < numaxes )
-    {
-        pos[ axis++ ] = _glfwCalcJoystickPos( ji.dwXpos, jc.wXmin,
-                                              jc.wXmax );
-    }
-    if( axis < numaxes )
-    {
-        pos[ axis++ ] = -_glfwCalcJoystickPos( ji.dwYpos, jc.wYmin,
-                                               jc.wYmax );
-    }
-    if( axis < numaxes && jc.wCaps & JOYCAPS_HASZ )
-    {
-        pos[ axis++ ] = _glfwCalcJoystickPos( ji.dwZpos, jc.wZmin,
-                                              jc.wZmax );
-    }
-    if( axis < numaxes && jc.wCaps & JOYCAPS_HASR )
-    {
-        pos[ axis++ ] = _glfwCalcJoystickPos( ji.dwRpos, jc.wRmin,
-                                              jc.wRmax );
-    }
-    if( axis < numaxes && jc.wCaps & JOYCAPS_HASU )
-    {
-        pos[ axis++ ] = _glfwCalcJoystickPos( ji.dwUpos, jc.wUmin,
-                                              jc.wUmax );
-    }
-    if( axis < numaxes && jc.wCaps & JOYCAPS_HASV )
-    {
-        pos[ axis++ ] = -_glfwCalcJoystickPos( ji.dwVpos, jc.wVmin,
-                                               jc.wVmax );
-    }
+    if (axis < numaxes)
+        pos[axis++] = _glfwCalcJoystickPos(ji.dwXpos, jc.wXmin, jc.wXmax);
 
-    // Return number of returned axes
+    if (axis < numaxes)
+        pos[axis++] = -_glfwCalcJoystickPos(ji.dwYpos, jc.wYmin, jc.wYmax);
+
+    if (axis < numaxes && jc.wCaps & JOYCAPS_HASZ)
+        pos[axis++] = _glfwCalcJoystickPos(ji.dwZpos, jc.wZmin, jc.wZmax);
+
+    if (axis < numaxes && jc.wCaps & JOYCAPS_HASR)
+        pos[axis++] = _glfwCalcJoystickPos(ji.dwRpos, jc.wRmin, jc.wRmax);
+
+    if (axis < numaxes && jc.wCaps & JOYCAPS_HASU)
+        pos[axis++] = _glfwCalcJoystickPos(ji.dwUpos, jc.wUmin, jc.wUmax);
+
+    if (axis < numaxes && jc.wCaps & JOYCAPS_HASV)
+        pos[axis++] = -_glfwCalcJoystickPos(ji.dwVpos, jc.wVmin, jc.wVmax);
+
     return axis;
 }
 
@@ -196,36 +164,31 @@ int _glfwPlatformGetJoystickPos( int joy, float *pos, int numaxes )
 // Get joystick button states
 //========================================================================
 
-int _glfwPlatformGetJoystickButtons( int joy, unsigned char *buttons,
-    int numbuttons )
+int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
+    int numbuttons)
 {
-    JOYCAPS   jc;
+    JOYCAPS jc;
     JOYINFOEX ji;
-    int       button;
+    int button;
 
-//  return 0;
-
-    // Is joystick present?
-    if( !_glfwJoystickPresent( joy ) )
-    {
+    if (!isJoystickPresent(joy))
         return 0;
-    }
 
     // Get joystick capabilities
-    _glfw_joyGetDevCaps( joy - GLFW_JOYSTICK_1, &jc, sizeof(JOYCAPS) );
+    _glfw_joyGetDevCaps(joy - GLFW_JOYSTICK_1, &jc, sizeof(JOYCAPS));
 
     // Get joystick state
-    ji.dwSize = sizeof( JOYINFOEX );
+    ji.dwSize = sizeof(JOYINFOEX);
     ji.dwFlags = JOY_RETURNBUTTONS;
-    _glfw_joyGetPosEx( joy - GLFW_JOYSTICK_1, &ji );
+    _glfw_joyGetPosEx(joy - GLFW_JOYSTICK_1, &ji);
 
     // Get states of all requested buttons
     button = 0;
-    while( button < numbuttons && button < (int) jc.wNumButtons )
+    while (button < numbuttons && button < (int) jc.wNumButtons)
     {
-        buttons[ button ] = (unsigned char)
+        buttons[button] = (unsigned char)
             (ji.dwButtons & (1UL << button) ? GLFW_PRESS : GLFW_RELEASE);
-        button ++;
+        button++;
     }
 
     return button;

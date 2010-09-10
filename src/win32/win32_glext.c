@@ -31,39 +31,35 @@
 #include "internal.h"
 
 
-//************************************************************************
-//****               Platform implementation functions                ****
-//************************************************************************
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 //========================================================================
 // Check if the current context supports the specified WGL extension
 //========================================================================
 
-int _glfwPlatformExtensionSupported( const char *extension )
+int _glfwPlatformExtensionSupported(const char* extension)
 {
-    const GLubyte *extensions;
+    const GLubyte* extensions;
 
-    if( _glfwWin.GetExtensionsStringEXT != NULL )
+    if (_glfwWin.GetExtensionsStringEXT != NULL)
     {
-        extensions = (GLubyte *) _glfwWin.GetExtensionsStringEXT();
-        if( extensions != NULL )
+        extensions = (GLubyte*) _glfwWin.GetExtensionsStringEXT();
+        if (extensions != NULL)
         {
-            if( _glfwStringInExtensionString( extension, extensions ) )
-            {
+            if (_glfwStringInExtensionString(extension, extensions))
                 return GL_TRUE;
-            }
         }
     }
 
-    if( _glfwWin.GetExtensionsStringARB != NULL )
+    if (_glfwWin.GetExtensionsStringARB != NULL)
     {
-        extensions = (GLubyte *) _glfwWin.GetExtensionsStringARB( _glfwWin.DC );
-        if( extensions != NULL )
+        extensions = (GLubyte*) _glfwWin.GetExtensionsStringARB(_glfwWin.DC);
+        if (extensions != NULL)
         {
-            if( _glfwStringInExtensionString( extension, extensions ) )
-            {
+            if (_glfwStringInExtensionString(extension, extensions))
                 return GL_TRUE;
-            }
         }
     }
 
@@ -75,8 +71,8 @@ int _glfwPlatformExtensionSupported( const char *extension )
 // Get the function pointer to an OpenGL function
 //========================================================================
 
-void *_glfwPlatformGetProcAddress( const char *procname )
+void* _glfwPlatformGetProcAddress(const char* procname)
 {
-    return (void *) wglGetProcAddress( procname );
+    return (void*) wglGetProcAddress(procname);
 }
 

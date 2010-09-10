@@ -43,7 +43,7 @@
 // Include files
 #include <windows.h>
 #include <mmsystem.h>
-#include "../../include/GL/glfw.h"
+#include "../../include/GL/glfw3.h"
 
 
 //========================================================================
@@ -138,11 +138,11 @@ typedef struct tagKBDLLHOOKSTRUCT {
 // wglSwapIntervalEXT typedef (Win32 buffer-swap interval control)
 typedef int (APIENTRY * WGLSWAPINTERVALEXT_T) (int);
 // wglGetPixelFormatAttribivARB typedef
-typedef BOOL (WINAPI * WGLGETPIXELFORMATATTRIBIVARB_T) (HDC, int, int, UINT, const int *, int *);
+typedef BOOL (WINAPI * WGLGETPIXELFORMATATTRIBIVARB_T) (HDC, int, int, UINT, const int* , int* );
 // wglGetExtensionStringEXT typedef
-typedef const char *(APIENTRY * WGLGETEXTENSIONSSTRINGEXT_T)( void );
+typedef const char* (APIENTRY * WGLGETEXTENSIONSSTRINGEXT_T)(void);
 // wglGetExtensionStringARB typedef
-typedef const char *(APIENTRY * WGLGETEXTENSIONSSTRINGARB_T)( HDC );
+typedef const char* (APIENTRY * WGLGETEXTENSIONSSTRINGARB_T)(HDC);
 
 /* Constants for wglGetPixelFormatAttribivARB */
 #define WGL_NUMBER_PIXEL_FORMATS_ARB    0x2000
@@ -183,7 +183,7 @@ typedef const char *(APIENTRY * WGLGETEXTENSIONSSTRINGARB_T)( HDC );
 #ifndef WGL_ARB_create_context
 
 /* wglCreateContextAttribsARB */
-typedef HGLRC (WINAPI * PFNWGLCREATECONTEXTATTRIBSARBPROC) (HDC, HGLRC, const int *);
+typedef HGLRC (WINAPI * PFNWGLCREATECONTEXTATTRIBSARBPROC) (HDC, HGLRC, const int* );
 
 /* Tokens for wglCreateContextAttribsARB attributes */
 #define WGL_CONTEXT_MAJOR_VERSION_ARB          0x2091
@@ -205,7 +205,7 @@ typedef HGLRC (WINAPI * PFNWGLCREATECONTEXTATTRIBSARBPROC) (HDC, HGLRC, const in
 
 #ifndef GL_VERSION_3_0
 
-typedef const GLubyte * (APIENTRY *PFNGLGETSTRINGIPROC) (GLenum, GLuint);
+typedef const GLubyte*  (APIENTRY *PFNGLGETSTRINGIPROC) (GLenum, GLuint);
 
 #endif /*GL_VERSION_3_0*/
 
@@ -261,6 +261,11 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 #endif // _GLFW_NO_DLOAD_WINMM
 
 
+#define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowWin32 Win32
+#define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryWin32 Win32
+#define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextWGL WGL
+
+
 //========================================================================
 // GLFW platform specific types
 //========================================================================
@@ -272,71 +277,13 @@ typedef INT_PTR GLFWintptr;
 
 
 //------------------------------------------------------------------------
-// Window structure
+// Platform-specific OpenGL context structure
 //------------------------------------------------------------------------
-typedef struct _GLFWwin_struct _GLFWwin;
-
-struct _GLFWwin_struct {
-
-// ========= PLATFORM INDEPENDENT MANDATORY PART =========================
-
-    // User callback functions
-    GLFWwindowsizefun    windowSizeCallback;
-    GLFWwindowclosefun   windowCloseCallback;
-    GLFWwindowrefreshfun windowRefreshCallback;
-    GLFWmousebuttonfun   mouseButtonCallback;
-    GLFWmouseposfun      mousePosCallback;
-    GLFWmousewheelfun    mouseWheelCallback;
-    GLFWkeyfun           keyCallback;
-    GLFWcharfun          charCallback;
-
-    // User selected window settings
-    int       fullscreen;      // Fullscreen flag
-    int       mouseLock;       // Mouse-lock flag
-    int       sysKeysDisabled; // System keys disabled flag
-    int       windowNoResize;  // Resize- and maximize gadgets disabled flag
-    int       refreshRate;     // Vertical monitor refresh rate
-
-    // Window status & parameters
-    int       opened;          // Flag telling if window is opened or not
-    int       active;          // Application active flag
-    int       iconified;       // Window iconified flag
-    int       width, height;   // Window width and heigth
-    int       accelerated;     // GL_TRUE if window is HW accelerated
-
-    // Framebuffer attributes
-    int       redBits;
-    int       greenBits;
-    int       blueBits;
-    int       alphaBits;
-    int       depthBits;
-    int       stencilBits;
-    int       accumRedBits;
-    int       accumGreenBits;
-    int       accumBlueBits;
-    int       accumAlphaBits;
-    int       auxBuffers;
-    int       stereo;
-    int       samples;
-
-    // OpenGL extensions and context attributes
-    int       glMajor, glMinor, glRevision;
-    int       glForward, glDebug, glProfile;
-
-    PFNGLGETSTRINGIPROC GetStringi;
-
-
-// ========= PLATFORM SPECIFIC PART ======================================
-
+typedef struct _GLFWcontextWGL
+{
     // Platform specific window resources
     HDC       DC;              // Private GDI device context
     HGLRC     context;         // Permanent rendering context
-    HWND      window;          // Window handle
-    ATOM      classAtom;       // Window class atom
-    int       modeID;          // Mode ID for fullscreen mode
-    HHOOK     keyboardHook;    // Keyboard hook handle
-    DWORD     dwStyle;         // Window styles used for window creation
-    DWORD     dwExStyle;       // --"--
 
     // Platform specific extensions (context specific)
     WGLSWAPINTERVALEXT_T           SwapIntervalEXT;
@@ -348,100 +295,80 @@ struct _GLFWwin_struct {
     GLboolean                      has_WGL_ARB_multisample;
     GLboolean                      has_WGL_ARB_pixel_format;
     GLboolean                      has_WGL_ARB_create_context;
+} _GLFWcontextWGL;
+
+
+//------------------------------------------------------------------------
+// Platform-specific window structure
+//------------------------------------------------------------------------
+typedef struct _GLFWwindowWin32
+{
+    // Platform specific window resources
+    HWND      handle;          // Window handle
+    ATOM      classAtom;       // Window class atom
+    int       modeID;          // Mode ID for fullscreen mode
+    HHOOK     keyboardHook;    // Keyboard hook handle
+    DWORD     dwStyle;         // Window styles used for window creation
+    DWORD     dwExStyle;       // --"--
 
     // Various platform specific internal variables
     int       oldMouseLock;    // Old mouse-lock flag (used for remembering
                                // mouse-lock state when iconifying)
     int       oldMouseLockValid;
     int       desiredRefreshRate; // Desired vertical monitor refresh rate
-
-};
-
-GLFWGLOBAL _GLFWwin _glfwWin;
-
-
-//------------------------------------------------------------------------
-// User input status (most of this should go in _GLFWwin)
-//------------------------------------------------------------------------
-GLFWGLOBAL struct {
-
-// ========= PLATFORM INDEPENDENT MANDATORY PART =========================
-
-    // Mouse status
-    int  MousePosX, MousePosY;
-    int  WheelPos;
-    char MouseButton[ GLFW_MOUSE_BUTTON_LAST+1 ];
-
-    // Keyboard status
-    char Key[ GLFW_KEY_LAST+1 ];
-    int  LastChar;
-
-    // User selected settings
-    int  StickyKeys;
-    int  StickyMouseButtons;
-    int  KeyRepeat;
-
-
-// ========= PLATFORM SPECIFIC PART ======================================
-
-    // Platform specific internal variables
-    int  MouseMoved, OldMouseX, OldMouseY;
-
-} _glfwInput;
+    int       mouseMoved;
+    int       oldMouseX, oldMouseY;
+} _GLFWwindowWin32;
 
 
 //------------------------------------------------------------------------
-// Library global data
+// Platform-specific library global data
 //------------------------------------------------------------------------
-GLFWGLOBAL struct {
+typedef struct _GLFWlibraryWin32
+{
+    // Instance of the application
+    HINSTANCE instance;
 
-    // Window opening hints
-    _GLFWhints      hints;
+    // Timer data
+    struct {
+        int          HasPerformanceCounter;
+        double       Resolution;
+        unsigned int t0_32;
+        __int64      t0_64;
+    } timer;
 
-// ========= PLATFORM SPECIFIC PART ======================================
-
-  HINSTANCE instance;        // Instance of the application
-
-  // Timer data
-  struct {
-      int          HasPerformanceCounter;
-      double       Resolution;
-      unsigned int t0_32;
-      __int64      t0_64;
-  } Timer;
-
-  // System information
-  struct {
-      int     winVer;
-      int     hasUnicode;
-      DWORD   foregroundLockTimeout;
-  } Sys;
+    // System information
+    struct {
+        int     winVer;
+        int     hasUnicode;
+        DWORD   foregroundLockTimeout;
+    } sys;
 
 #if !defined(_GLFW_NO_DLOAD_WINMM) || !defined(_GLFW_NO_DLOAD_GDI32)
-  // Library handles and function pointers
-  struct {
+    // Library handles and function pointers
+    struct {
 #ifndef _GLFW_NO_DLOAD_GDI32
-      // gdi32.dll
-      HINSTANCE             gdi32;
-      CHOOSEPIXELFORMAT_T   ChoosePixelFormat;
-      DESCRIBEPIXELFORMAT_T DescribePixelFormat;
-      GETPIXELFORMAT_T      GetPixelFormat;
-      SETPIXELFORMAT_T      SetPixelFormat;
-      SWAPBUFFERS_T         SwapBuffers;
+        // gdi32.dll
+        HINSTANCE             gdi32;
+        CHOOSEPIXELFORMAT_T   ChoosePixelFormat;
+        DESCRIBEPIXELFORMAT_T DescribePixelFormat;
+        GETPIXELFORMAT_T      GetPixelFormat;
+        SETPIXELFORMAT_T      SetPixelFormat;
+        SWAPBUFFERS_T         SwapBuffers;
 #endif // _GLFW_NO_DLOAD_GDI32
 
       // winmm.dll
 #ifndef _GLFW_NO_DLOAD_WINMM
-      HINSTANCE             winmm;
-      JOYGETDEVCAPSA_T      joyGetDevCapsA;
-      JOYGETPOS_T           joyGetPos;
-      JOYGETPOSEX_T         joyGetPosEx;
-      TIMEGETTIME_T         timeGetTime;
+        HINSTANCE             winmm;
+        JOYGETDEVCAPSA_T      joyGetDevCapsA;
+        JOYGETPOS_T           joyGetPos;
+        JOYGETPOSEX_T         joyGetPosEx;
+        TIMEGETTIME_T         timeGetTime;
 #endif // _GLFW_NO_DLOAD_WINMM
-  } Libs;
+    } libs;
 #endif
 
-} _glfwLibrary;
+} _GLFWlibraryWin32;
 
 
 //========================================================================
@@ -465,13 +392,13 @@ GLFWGLOBAL struct {
 //========================================================================
 
 // Time
-void _glfwInitTimer( void );
+void _glfwInitTimer(void);
 
 // Fullscreen support
-int _glfwGetClosestVideoModeBPP( int *w, int *h, int *bpp, int *refresh );
-int _glfwGetClosestVideoMode( int *w, int *h, int *r, int *g, int *b, int *refresh );
-void _glfwSetVideoModeMODE( int mode );
-void _glfwSetVideoMode( int *w, int *h, int r, int g, int b, int refresh );
+int _glfwGetClosestVideoModeBPP(int* w, int* h, int* bpp, int* refresh);
+int _glfwGetClosestVideoMode(int* w, int* h, int* r, int* g, int* b, int* refresh);
+void _glfwSetVideoModeMODE(int mode);
+void _glfwSetVideoMode(int* w, int* h, int r, int g, int b, int refresh);
 
 
 #endif // _platform_h_

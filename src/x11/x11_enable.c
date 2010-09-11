@@ -54,7 +54,7 @@ void _glfwPlatformEnableSystemKeys(_GLFWwindow* window)
 
 void _glfwPlatformDisableSystemKeys(_GLFWwindow* window)
 {
-    if (XGrabKeyboard(_glfwLibrary.X11.display, window->X11.window,
+    if (XGrabKeyboard(_glfwLibrary.X11.display, window->X11.handle,
                       True, GrabModeAsync, GrabModeAsync, CurrentTime)
         == GrabSuccess)
     {

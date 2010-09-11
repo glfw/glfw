@@ -202,7 +202,7 @@ typedef struct _GLFWwindowX11
 {
     // Platform specific window resources
     Colormap      colormap;          // Window colormap
-    Window        window;            // Window
+    Window        handle;            // Window handle
     Atom          wmDeleteWindow;    // WM_DELETE_WINDOW atom
     Atom          wmPing;            // _NET_WM_PING atom
     Atom          wmState;           // _NET_WM_STATE atom
@@ -210,14 +210,14 @@ typedef struct _GLFWwindowX11
     Atom          wmActiveWindow;    // _NET_ACTIVE_WINDOW atom
     Cursor        cursor;            // Invisible cursor for hidden cursor
 
-    int  mouseMoved, cursorPosX, cursorPosY;
-
     // Various platform specific internal variables
-    GLboolean   hasEWMH;          // True if window manager supports EWMH
-    GLboolean   overrideRedirect; // True if window is OverrideRedirect
-    GLboolean   keyboardGrabbed;  // True if keyboard is currently grabbed
-    GLboolean   pointerGrabbed;   // True if pointer is currently grabbed
-    GLboolean   pointerHidden;    // True if pointer is currently hidden
+    GLboolean     hasEWMH;          // True if window manager supports EWMH
+    GLboolean     overrideRedirect; // True if window is OverrideRedirect
+    GLboolean     keyboardGrabbed;  // True if keyboard is currently grabbed
+    GLboolean     pointerGrabbed;   // True if pointer is currently grabbed
+    GLboolean     pointerHidden;    // True if pointer is currently hidden
+    GLboolean     mouseMoved;
+    int           cursorPosX, cursorPosY;
 
 } _GLFWwindowX11;
 

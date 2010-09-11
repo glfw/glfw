@@ -5,6 +5,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include ${OPENGL_INCLUDE_DIR}
 
 add_executable(defaults defaults.c)
 add_executable(events events.c)
+add_executable(iconify iconify.c)
 add_executable(joysticks joysticks.c)
 add_executable(peter peter.c)
 add_executable(reopen reopen.c)
@@ -26,13 +27,13 @@ endif(APPLE)
 
 if(MSVC)
   # Tell MSVC to use main instead of WinMain for Windows subsystem executables
-  set_target_properties(accuracy defaults events fsaa peter reopen tearing version windows PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
+  set_target_properties(accuracy defaults events iconify joysticks fsaa peter reopen tearing version windows PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
 endif(MSVC)
 
 if(CYGWIN)
   # Set cross-compile and subsystem compile and link flags
-  set_target_properties(accuracy defaults events fsaa joysticks peter reopen tearing version windows PROPERTIES COMPILE_FLAGS "-mno-cygwin")
+  set_target_properties(accuracy defaults events fsaa iconify joysticks peter reopen tearing version windows PROPERTIES COMPILE_FLAGS "-mno-cygwin")
   set_target_properties(accuracy fsaa tearing windows PROPERTIES LINK_FLAGS "-mno-cygwin -mwindows")
-  set_target_properties(events defaults joysticks peter reopen version PROPERTIES LINK_FLAGS "-mno-cygwin -mconsole")
+  set_target_properties(events defaults iconify joysticks peter reopen version PROPERTIES LINK_FLAGS "-mno-cygwin -mconsole")
 endif(CYGWIN)
 

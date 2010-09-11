@@ -165,7 +165,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    if (major != 1 || minor != 1)
+    if (major != 1 || minor != 0)
     {
         glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, major);
         glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, minor);

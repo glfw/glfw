@@ -6,6 +6,7 @@
 #include <GL/glfw3.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 #define MAX_AXES     10
@@ -93,7 +94,12 @@ int main(void)
     double update;
 
     /* Initialise GLFW */
-    glfwInit();
+    if (!glfwInit())
+    {
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
+    }
+
     printf("The program will work for 20 seconds and display every seconds the state of the joysticks\n");
     printf("Your computer is going to be very slow as the program is doing an active loop .....\n");
 

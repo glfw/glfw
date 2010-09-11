@@ -91,7 +91,7 @@ int main(int argc, char** argv)
 
     if (!glfwInit())
     {
-        fprintf(stderr, "Failed to initialize GLFW\n");
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
 
@@ -112,7 +112,7 @@ int main(int argc, char** argv)
     {
         glfwTerminate();
 
-        fprintf(stderr, "Failed to open GLFW window\n");
+        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
 

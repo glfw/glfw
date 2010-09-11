@@ -84,12 +84,10 @@ static int open_window(int width, int height, int mode)
 {
     double base = glfwGetTime();
 
-    glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
-
     window_handle = glfwOpenWindow(width, height, mode);
     if (!window_handle)
     {
-        fprintf(stderr, "Failed to create %s mode GLFW window\n", get_mode_name(mode));
+        fprintf(stderr, "Failed to open %s mode GLFW window: %s\n", get_mode_name(mode), glfwErrorString(glfwGetError()));
         return 0;
     }
 
@@ -122,8 +120,8 @@ int main(int argc, char** argv)
 
     if (!glfwInit())
     {
-        fprintf(stderr, "Failed to initialize GLFW\n");
-        exit(1);
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     for (;;)
@@ -131,7 +129,7 @@ int main(int argc, char** argv)
         if (!open_window(640, 480, (count & 1) ? GLFW_FULLSCREEN : GLFW_WINDOWED))
         {
             glfwTerminate();
-            exit(1);
+            exit(EXIT_FAILURE);
         }
 
         glMatrixMode(GL_PROJECTION);
@@ -163,7 +161,7 @@ int main(int argc, char** argv)
                 printf("User closed window\n");
 
                 glfwTerminate();
-                exit(0);
+                exit(EXIT_SUCCESS);
             }
         }
 

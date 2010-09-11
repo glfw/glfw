@@ -45,7 +45,7 @@ static GLFWwindow open_window(int width, int height, const char* title)
     GLFWwindow window = glfwOpenWindow(width, height, GLFW_WINDOWED);
     if (!window)
     {
-        fprintf(stderr, "Failed to open GLFW default window\n");
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         return NULL;
     }
 
@@ -62,7 +62,7 @@ int main(void)
 
     if (!glfwInit())
     {
-        fprintf(stderr, "Failed to initialize GLFW\n");
+        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
 

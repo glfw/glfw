@@ -110,16 +110,16 @@ int main(void)
 {
     if (!glfwInit())
     {
-        fprintf(stderr, "Failed to initialize GLFW\n");
-        exit(1);
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     if (!open_window())
     {
         glfwTerminate();
 
-        fprintf(stderr, "Failed to open GLFW window\n");
-        exit(1);
+        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     glClearColor(0.f, 0.f, 0.f, 0.f);
@@ -133,6 +133,6 @@ int main(void)
     }
 
     glfwTerminate();
-    exit(0);
+    exit(EXIT_SUCCESS);
 }
 

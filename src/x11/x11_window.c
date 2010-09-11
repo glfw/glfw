@@ -134,12 +134,10 @@ static GLboolean checkForEWMH(_GLFWwindow* window)
     // Hey kids; let's see if the window manager supports EWMH!
 
     // First we need a couple of atoms, which should already be there
-    Atom supportingWmCheck = XInternAtom(_glfwLibrary.X11.display,
-                                         "_NET_SUPPORTING_WM_CHECK",
-                                         True);
-    Atom wmSupported = XInternAtom(_glfwLibrary.X11.display,
-                                   "_NET_SUPPORTED",
-                                   True);
+    Atom supportingWmCheck =
+        XInternAtom(_glfwLibrary.X11.display, "_NET_SUPPORTING_WM_CHECK", True);
+    Atom wmSupported =
+        XInternAtom(_glfwLibrary.X11.display, "_NET_SUPPORTED", True);
     if (supportingWmCheck == None || wmSupported == None)
         return GL_FALSE;
 
@@ -189,21 +187,17 @@ static GLboolean checkForEWMH(_GLFWwindow* window)
 
     // See which of the atoms we support that are supported by the WM
 
-    window->X11.wmState = getSupportedAtom(supportedAtoms,
-                                           atomCount,
-                                           "_NET_WM_STATE");
+    window->X11.wmState =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE");
 
-    window->X11.wmStateFullscreen = getSupportedAtom(supportedAtoms,
-                                                     atomCount,
-                                                     "_NET_WM_STATE_FULLSCREEN");
+    window->X11.wmStateFullscreen =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_FULLSCREEN");
 
-    window->X11.wmPing = getSupportedAtom(supportedAtoms,
-                                          atomCount,
-                                          "_NET_WM_PING");
+    window->X11.wmPing =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_PING");
 
-    window->X11.wmActiveWindow = getSupportedAtom(supportedAtoms,
-                                                  atomCount,
-                                                  "_NET_ACTIVE_WINDOW");
+    window->X11.wmActiveWindow =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_ACTIVE_WINDOW");
 
     XFree(supportedAtoms);
 

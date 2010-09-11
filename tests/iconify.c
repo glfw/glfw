@@ -28,7 +28,7 @@
 //
 //========================================================================
 
-#include <GL/glfw.h>
+#include <GL/glfw3.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,10 +37,10 @@
 
 static void usage(void)
 {
-    printf("iconify [-h] [-f]\n");
+    printf("Usage: iconify [-h] [-f]\n");
 }
 
-static void GLFWCALL key_callback(int key, int action)
+static void key_callback(GLFWwindow window, int key, int action)
 {
     printf("%0.2f Key %s\n",
            glfwGetTime(),
@@ -52,15 +52,15 @@ static void GLFWCALL key_callback(int key, int action)
     switch (key)
     {
         case GLFW_KEY_SPACE:
-            glfwIconifyWindow();
+            glfwIconifyWindow(window);
             break;
         case GLFW_KEY_ESC:
-            glfwCloseWindow();
+            glfwCloseWindow(window);
             break;
     }
 }
 
-static void GLFWCALL size_callback(int width, int height)
+static void size_callback(GLFWwindow window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
@@ -68,8 +68,9 @@ static void GLFWCALL size_callback(int width, int height)
 int main(int argc, char** argv)
 {
     int width, height, ch;
-    int mode = GLFW_WINDOW;
+    int mode = GLFW_WINDOWED;
     GLboolean active = -1, iconified = -1;
+    GLFWwindow window;
 
     while ((ch = getopt(argc, argv, "fh")) != -1)
     {
@@ -99,8 +100,8 @@ int main(int argc, char** argv)
     {
         GLFWvidmode mode;
         glfwGetDesktopMode(&mode);
-        width = mode.Width;
-        height = mode.Height;
+        width = mode.width;
+        height = mode.height;
     }
     else
     {
@@ -108,7 +109,8 @@ int main(int argc, char** argv)
         height = 0;
     }
 
-    if (!glfwOpenWindow(width, height, 0, 0, 0, 0, 0, 0, mode))
+    window = glfwOpenWindow(width, height, mode);
+    if (!window)
     {
         glfwTerminate();
 
@@ -116,22 +118,22 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    glfwSetWindowTitle("Iconify");
+    glfwSetWindowTitle(window, "Iconify");
     glfwSwapInterval(1);
-    glfwSetKeyCallback(key_callback);
-    glfwSetWindowSizeCallback(size_callback);
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetWindowSizeCallback(window, size_callback);
 
     glEnable(GL_SCISSOR_TEST);
 
-    while (glfwGetWindowParam(GLFW_OPENED))
+    while (glfwIsWindow(window))
     {
         int width, height;
 
-        if (iconified != glfwGetWindowParam(GLFW_ICONIFIED) ||
-            active != glfwGetWindowParam(GLFW_ACTIVE))
+        if (iconified != glfwGetWindowParam(window, GLFW_ICONIFIED) ||
+            active != glfwGetWindowParam(window, GLFW_ACTIVE))
         {
-            iconified = glfwGetWindowParam(GLFW_ICONIFIED);
-            active = glfwGetWindowParam(GLFW_ACTIVE);
+            iconified = glfwGetWindowParam(window, GLFW_ICONIFIED);
+            active = glfwGetWindowParam(window, GLFW_ACTIVE);
 
             printf("%0.2f %s %s\n",
                    glfwGetTime(),
@@ -139,7 +141,7 @@ int main(int argc, char** argv)
                    active ? "Active" : "Inactive");
         }
 
-        glfwGetWindowSize(&width, &height);
+        glfwGetWindowSize(window, &width, &height);
 
         glScissor(0, 0, width, height);
         glClearColor(0, 0, 0, 0);
@@ -150,6 +152,7 @@ int main(int argc, char** argv)
         glClear(GL_COLOR_BUFFER_BIT);
 
         glfwSwapBuffers();
+        glfwPollEvents();
     }
 
     glfwTerminate();

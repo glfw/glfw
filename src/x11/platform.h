@@ -208,7 +208,6 @@ typedef struct _GLFWwindowX11
     Atom          wmState;           // _NET_WM_STATE atom
     Atom          wmStateFullscreen; // _NET_WM_STATE_FULLSCREEN atom
     Atom          wmActiveWindow;    // _NET_ACTIVE_WINDOW atom
-    Cursor        cursor;            // Invisible cursor for hidden cursor
 
     // Various platform specific internal variables
     GLboolean     hasEWMH;          // True if window manager supports EWMH
@@ -230,6 +229,7 @@ typedef struct _GLFWlibraryX11
     Display*        display;
     int             screen;
     Window          root;
+    Cursor          cursor;   // Invisible cursor for hidden cursor
 
     // Server-side GLX version
     int             glxMajor, glxMinor;

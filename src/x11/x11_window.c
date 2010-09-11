@@ -348,36 +348,6 @@ static int translateChar(XKeyEvent* event)
 
 
 //========================================================================
-// Create a blank cursor (for locked mouse mode)
-//========================================================================
-
-static Cursor createNULLCursor(Display* display, Window root)
-{
-    Pixmap    cursormask;
-    XGCValues xgc;
-    GC        gc;
-    XColor    col;
-    Cursor    cursor;
-
-    // TODO: Add error checks
-
-    cursormask = XCreatePixmap(display, root, 1, 1, 1);
-    xgc.function = GXclear;
-    gc = XCreateGC(display, cursormask, GCFunction, &xgc);
-    XFillRectangle(display, cursormask, gc, 0, 0, 1, 1);
-    col.pixel = 0;
-    col.red = 0;
-    col.flags = 4;
-    cursor = XCreatePixmapCursor(display, cursormask, cursormask,
-                                 &col,&col, 0,0);
-    XFreePixmap(display, cursormask);
-    XFreeGC(display, gc);
-
-    return cursor;
-}
-
-
-//========================================================================
 // Returns the specified attribute of the specified GLXFBConfig
 // NOTE: Do not call this unless we have found GLX 1.3+ or GLX_SGIX_fbconfig
 //========================================================================
@@ -1409,9 +1379,6 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     window->refreshRate    = wndconfig->refreshRate;
     window->windowNoResize = wndconfig->windowNoResize;
 
-    // Create the invisible cursor for hidden cursor mode
-    window->X11.cursor = createNULLCursor(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
-
     initGLXExtensions(window);
 
     // Choose the best available fbconfig
@@ -1533,12 +1500,6 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
     {
         XFreeColormap(_glfwLibrary.X11.display, window->X11.colormap);
         window->X11.colormap = (Colormap) 0;
-    }
-
-    if (window->X11.cursor)
-    {
-        XFreeCursor(_glfwLibrary.X11.display, window->X11.cursor);
-        window->X11.cursor = (Cursor) 0;
     }
 }
 
@@ -1838,7 +1799,7 @@ void _glfwPlatformHideMouseCursor(_GLFWwindow* window)
     // Hide cursor
     if (!window->X11.pointerHidden)
     {
-        XDefineCursor(_glfwLibrary.X11.display, window->X11.handle, window->X11.cursor);
+        XDefineCursor(_glfwLibrary.X11.display, window->X11.handle, _glfwLibrary.X11.cursor);
         window->X11.pointerHidden = GL_TRUE;
     }
 

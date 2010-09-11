@@ -140,11 +140,47 @@ static GLboolean initDisplay(void)
 
 
 //========================================================================
+// Create a blank cursor (for locked mouse mode)
+//========================================================================
+
+static Cursor createNULLCursor(void)
+{
+    Pixmap cursormask;
+    XGCValues xgc;
+    GC gc;
+    XColor col;
+    Cursor cursor;
+
+    // TODO: Add error checks
+
+    cursormask = XCreatePixmap(_glfwLibrary.X11.display, _glfwLibrary.X11.root, 1, 1, 1);
+    xgc.function = GXclear;
+    gc = XCreateGC(_glfwLibrary.X11.display, cursormask, GCFunction, &xgc);
+    XFillRectangle(_glfwLibrary.X11.display, cursormask, gc, 0, 0, 1, 1);
+    col.pixel = 0;
+    col.red = 0;
+    col.flags = 4;
+    cursor = XCreatePixmapCursor(_glfwLibrary.X11.display, cursormask, cursormask,
+                                 &col, &col, 0, 0);
+    XFreePixmap(_glfwLibrary.X11.display, cursormask);
+    XFreeGC(_glfwLibrary.X11.display, gc);
+
+    return cursor;
+}
+
+
+//========================================================================
 // Terminate X11 display
 //========================================================================
 
 static void terminateDisplay(void)
 {
+    if (_glfwLibrary.X11.cursor)
+    {
+        XFreeCursor(_glfwLibrary.X11.display, _glfwLibrary.X11.cursor);
+        _glfwLibrary.X11.cursor = (Cursor) 0;
+    }
+
     if (_glfwLibrary.X11.display)
     {
         XCloseDisplay(_glfwLibrary.X11.display);
@@ -165,6 +201,8 @@ int _glfwPlatformInit(void)
 {
     if (!initDisplay())
         return GL_FALSE;
+
+    _glfwLibrary.X11.cursor = createNULLCursor();
 
     // Try to load libGL.so if necessary
     initLibraries();

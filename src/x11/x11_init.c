@@ -175,12 +175,6 @@ static Cursor createNULLCursor(void)
 
 static void terminateDisplay(void)
 {
-    if (_glfwLibrary.X11.cursor)
-    {
-        XFreeCursor(_glfwLibrary.X11.display, _glfwLibrary.X11.cursor);
-        _glfwLibrary.X11.cursor = (Cursor) 0;
-    }
-
     if (_glfwLibrary.X11.display)
     {
         XCloseDisplay(_glfwLibrary.X11.display);
@@ -228,6 +222,12 @@ int _glfwPlatformTerminate(void)
 {
     while (_glfwLibrary.windowListHead)
         glfwCloseWindow(_glfwLibrary.windowListHead);
+
+    if (_glfwLibrary.X11.cursor)
+    {
+        XFreeCursor(_glfwLibrary.X11.display, _glfwLibrary.X11.cursor);
+        _glfwLibrary.X11.cursor = (Cursor) 0;
+    }
 
     // Terminate display
     terminateDisplay();

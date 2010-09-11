@@ -64,10 +64,10 @@ static void usage(void)
 
 static const char* get_profile_name(GLint mask)
 {
-  if (mask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)
-    return "compatibility";
-  if (mask & GL_CONTEXT_CORE_PROFILE_BIT)
-    return "core";
+    if (mask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)
+        return "compatibility";
+    if (mask & GL_CONTEXT_CORE_PROFILE_BIT)
+        return "core";
 
   return "unknown";
 }

@@ -153,7 +153,6 @@ typedef struct _GLFWwindow
     GLFWcharfun          charCallback;
 
     // Window settings and state
-    GLboolean active;          // GL_TRUE if this window is active
     GLboolean iconified;       // GL_TRUE if this window is iconified
     GLboolean closed;          // GL_TRUE if this window should be closed
     int       width, height;
@@ -208,6 +207,7 @@ typedef struct _GLFWlibrary
 
     _GLFWwindow* windowListHead;
     _GLFWwindow* currentWindow;
+    _GLFWwindow* activeWindow;
     _GLFWwindow* cursorLockWindow;
 
     _GLFW_PLATFORM_LIBRARY_STATE;

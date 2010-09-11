@@ -1321,7 +1321,7 @@ static void processSingleEvent(void)
                 return;
             }
 
-            window->active = GL_TRUE;
+            _glfwLibrary.activeWindow = window;
 
             if (_glfwLibrary.cursorLockWindow == window)
                 _glfwPlatformHideMouseCursor(window);
@@ -1339,7 +1339,9 @@ static void processSingleEvent(void)
                 return;
             }
 
-            window->active = GL_FALSE;
+            if (_glfwLibrary.activeWindow == window)
+                _glfwLibrary.activeWindow = NULL;
+
             _glfwInputDeactivation(window);
 
             if (_glfwLibrary.cursorLockWindow == window)
@@ -1505,6 +1507,9 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
 {
     if (window->mode == GLFW_FULLSCREEN)
         leaveFullscreenMode(window);
+
+    if (_glfwLibrary.activeWindow == window)
+        _glfwLibrary.activeWindow = NULL;
 
     if (window->GLX.context)
     {

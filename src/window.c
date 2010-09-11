@@ -695,6 +695,9 @@ GLFWAPI void glfwCloseWindow(GLFWwindow window)
     if (window == _glfwLibrary.currentWindow)
         glfwMakeWindowCurrent(NULL);
 
+    if (window == _glfwLibrary.activeWindow)
+        _glfwLibrary.activeWindow = NULL;
+
     _glfwPlatformCloseWindow(window);
 
     prev = &_glfwLibrary.windowListHead;
@@ -900,7 +903,7 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow window, int param)
     switch (param)
     {
         case GLFW_ACTIVE:
-            return window->active;
+            return window == _glfwLibrary.activeWindow;
         case GLFW_ICONIFIED:
             return window->iconified;
         case GLFW_ACCELERATED:

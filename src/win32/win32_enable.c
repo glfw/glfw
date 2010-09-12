@@ -104,7 +104,7 @@ static LRESULT CALLBACK keyboardHook(int nCode, WPARAM wParam, LPARAM lParam)
 // Enable system keys
 //========================================================================
 
-void _glfwPlatformEnableSystemKeys(void)
+void _glfwPlatformEnableSystemKeys(_GLFWwindow* window)
 {
     if (_glfwLibrary.Win32.keyboardHook != NULL)
     {
@@ -118,7 +118,7 @@ void _glfwPlatformEnableSystemKeys(void)
 // Disable system keys
 //========================================================================
 
-void _glfwPlatformDisableSystemKeys(void)
+void _glfwPlatformDisableSystemKeys(_GLFWwindow* window)
 {
     _glfwLibrary.Win32.keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL,
                                                        keyboardHook,

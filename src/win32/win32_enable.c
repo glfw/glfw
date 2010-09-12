@@ -78,9 +78,11 @@ static LRESULT CALLBACK keyboardHook(int nCode, WPARAM wParam, LPARAM lParam)
     // Was it a system key combination (e.g. ALT+TAB)?
     if (syskeys)
     {
+        _GLFWwindow* window = _glfwLibrary.activeWindow;
+
         // Pass the key event to our window message loop
-        if (_glfwWin.opened)
-            PostMessage(_glfwWin.window, (UINT) wParam, p->vkCode, 0);
+        if (window)
+            PostMessage(window->Win32.handle, (UINT) wParam, p->vkCode, 0);
 
         // We've taken care of it - don't let the system know about this
         // key event
@@ -89,7 +91,7 @@ static LRESULT CALLBACK keyboardHook(int nCode, WPARAM wParam, LPARAM lParam)
     else
     {
         // It's a harmless key press, let the system deal with it
-        return CallNextHookEx(_glfwWin.keyboardHook, nCode, wParam, lParam);
+        return CallNextHookEx(_glfwLibrary.Win32.keyboardHook, nCode, wParam, lParam);
     }
 }
 
@@ -104,19 +106,11 @@ static LRESULT CALLBACK keyboardHook(int nCode, WPARAM wParam, LPARAM lParam)
 
 void _glfwPlatformEnableSystemKeys(void)
 {
-    BOOL dummy;
-
-    // Use different methods depending on operating system version
-    if (_glfwLibrary.Sys.winVer >= _GLFW_WIN_NT4)
+    if (_glfwLibrary.Win32.keyboardHook != NULL)
     {
-        if (_glfwWin.keyboardHook != NULL)
-        {
-            UnhookWindowsHookEx(_glfwWin.keyboardHook);
-            _glfwWin.keyboardHook = NULL;
-        }
+        UnhookWindowsHookEx(_glfwLibrary.Win32.keyboardHook);
+        _glfwLibrary.Win32.keyboardHook = NULL;
     }
-    else
-        SystemParametersInfo(SPI_SETSCREENSAVERRUNNING, FALSE, &dummy, 0);
 }
 
 
@@ -126,22 +120,9 @@ void _glfwPlatformEnableSystemKeys(void)
 
 void _glfwPlatformDisableSystemKeys(void)
 {
-    BOOL dummy;
-
-    // Use different methods depending on operating system version
-    if (_glfwLibrary.Sys.winVer >= _GLFW_WIN_NT4)
-    {
-        // Under Windows NT, install a low level keyboard hook
-        _glfwWin.keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL,
-                                                 keyboardHook,
-                                                 _glfwLibrary.instance,
-                                                 0);
-    }
-    else
-    {
-        // Under Windows 95/98/ME, fool Windows that a screensaver
-        // is running => prevents ALT+TAB, CTRL+ESC and CTRL+ALT+DEL
-        SystemParametersInfo(SPI_SETSCREENSAVERRUNNING, TRUE, &dummy, 0);
-    }
+    _glfwLibrary.Win32.keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL,
+                                                       keyboardHook,
+                                                       _glfwLibrary.Win32.instance,
+                                                       0);
 }
 

@@ -129,11 +129,11 @@ static void setForegroundWindow(HWND hWnd)
 // NOTE: Do not call this unless we have found WGL_ARB_pixel_format
 //========================================================================
 
-static int getPixelFormatAttrib(int pixelFormat, int attrib)
+static int getPixelFormatAttrib(_GLFWwindow* window, int pixelFormat, int attrib)
 {
     int value = 0;
 
-    if (!_glfwWin.GetPixelFormatAttribivARB(_glfwWin.DC, pixelFormat, 0, 1, &attrib, &value))
+    if (!window->WGL.GetPixelFormatAttribivARB(window->WGL.DC, pixelFormat, 0, 1, &attrib, &value))
     {
         // NOTE: We should probably handle this error somehow
         return 0;
@@ -147,7 +147,7 @@ static int getPixelFormatAttrib(int pixelFormat, int attrib)
 // Return a list of available and usable framebuffer configs
 //========================================================================
 
-static _GLFWfbconfig* getFBConfigs(unsigned int* found)
+static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
 {
     _GLFWfbconfig* result;
     PIXELFORMATDESCRIPTOR pfd;
@@ -155,10 +155,10 @@ static _GLFWfbconfig* getFBConfigs(unsigned int* found)
 
     *found = 0;
 
-    if (_glfwWin.has_WGL_ARB_pixel_format)
+    if (window->WGL.has_WGL_ARB_pixel_format)
         count = getPixelFormatAttrib(1, WGL_NUMBER_PIXEL_FORMATS_ARB);
     else
-        count = _glfw_DescribePixelFormat(_glfwWin.DC, 1, sizeof(PIXELFORMATDESCRIPTOR), NULL);
+        count = _glfw_DescribePixelFormat(window->WGL.DC, 1, sizeof(PIXELFORMATDESCRIPTOR), NULL);
 
     if (!count)
     {
@@ -175,7 +175,7 @@ static _GLFWfbconfig* getFBConfigs(unsigned int* found)
 
     for (i = 1;  i <= count;  i++)
     {
-        if (_glfwWin.has_WGL_ARB_pixel_format)
+        if (window->WGL.has_WGL_ARB_pixel_format)
         {
             // Get pixel format attributes through WGL_ARB_pixel_format
 
@@ -207,7 +207,7 @@ static _GLFWfbconfig* getFBConfigs(unsigned int* found)
             result[*found].auxBuffers = getPixelFormatAttrib(i, WGL_AUX_BUFFERS_ARB);
             result[*found].stereo = getPixelFormatAttrib(i, WGL_STEREO_ARB);
 
-            if (_glfwWin.has_WGL_ARB_multisample)
+            if (window->WGL.has_WGL_ARB_multisample)
                 result[*found].samples = getPixelFormatAttrib(i, WGL_SAMPLES_ARB);
             else
                 result[*found].samples = 0;
@@ -216,7 +216,7 @@ static _GLFWfbconfig* getFBConfigs(unsigned int* found)
         {
             // Get pixel format attributes through old-fashioned PFDs
 
-            if (!_glfw_DescribePixelFormat(_glfwWin.DC, i, sizeof(PIXELFORMATDESCRIPTOR), &pfd))
+            if (!_glfw_DescribePixelFormat(window->WGL.DC, i, sizeof(PIXELFORMATDESCRIPTOR), &pfd))
                 continue;
 
             // Only consider doublebuffered OpenGL pixel formats for windows
@@ -270,7 +270,7 @@ static _GLFWfbconfig* getFBConfigs(unsigned int* found)
 // Creates an OpenGL context on the specified device context
 //========================================================================
 
-static HGLRC createContext(HDC dc, const _GLFWwndconfig* wndconfig, int pixelFormat)
+static HGLRC createContext(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, int pixelFormat)
 {
     PIXELFORMATDESCRIPTOR pfd;
     int flags, i = 0, attribs[7];
@@ -281,7 +281,7 @@ static HGLRC createContext(HDC dc, const _GLFWwndconfig* wndconfig, int pixelFor
     if (!_glfw_SetPixelFormat(dc, pixelFormat, &pfd))
         return NULL;
 
-    if (_glfwWin.has_WGL_ARB_create_context)
+    if (window->WGL.has_WGL_ARB_create_context)
     {
         // Use the newer wglCreateContextAttribsARB
 
@@ -322,7 +322,7 @@ static HGLRC createContext(HDC dc, const _GLFWwndconfig* wndconfig, int pixelFor
 
         attribs[i++] = 0;
 
-        return _glfwWin.CreateContextAttribsARB(dc, NULL, attribs);
+        return window->WGL.CreateContextAttribsARB(dc, NULL, attribs);
     }
 
     return wglCreateContext(dc);
@@ -590,28 +590,31 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 {
     int wheelDelta, iconified;
 
+    _GLFWwindow* window = (_GLFWwindow*) GetWindowLongPtr(hWnd, 0);
+
     switch (uMsg)
     {
         // Window activate message? (iconification?)
         case WM_ACTIVATE:
         {
-            _glfwWin.active = LOWORD(wParam) != WA_INACTIVE ? GL_TRUE : GL_FALSE;
+            if (LOWORD(wParam) != WA_INACTIVE)
+                _glfwLibrary.activeWindow = window;
 
             iconified = HIWORD(wParam) ? GL_TRUE : GL_FALSE;
 
             // Were we deactivated/iconified?
-            if ((!_glfwWin.active || iconified) && !_glfwWin.iconified)
+            if ((window != _glfwLibrary.activeWindow || iconified) && !window->iconified)
             {
                 _glfwInputDeactivation();
 
                 // If we are in fullscreen mode we need to iconify
-                if (_glfwWin.opened && _glfwWin.fullscreen)
+                if (window->mode == GLFW_FULLSCREEN)
                 {
                     // Do we need to manually iconify?
                     if (!iconified)
                     {
                         // Minimize window
-                        CloseWindow(_glfwWin.window);
+                        CloseWindow(window->Win32.handle);
                         iconified = GL_TRUE;
                     }
 
@@ -620,43 +623,43 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 }
 
                 // Unlock mouse if locked
-                if (!_glfwWin.oldMouseLockValid)
+                if (!window->Win32.oldMouseLockValid)
                 {
-                    _glfwWin.oldMouseLock = _glfwWin.mouseLock;
-                    _glfwWin.oldMouseLockValid = GL_TRUE;
+                    window->Win32.oldMouseLock = window->mouseLock;
+                    window->Win32.oldMouseLockValid = GL_TRUE;
                     glfwEnable(GLFW_MOUSE_CURSOR);
                 }
             }
-            else if (_glfwWin.active || !iconified)
+            else if (window == _glfwLibrary.activeWindow || !iconified)
             {
                 // If we are in fullscreen mode we need to maximize
-                if (_glfwWin.opened && _glfwWin.fullscreen && _glfwWin.iconified)
+                if (window->mode == GLFW_FULLSCREEN && window->iconified)
                 {
                     // Change display settings to the user selected mode
-                    _glfwSetVideoModeMODE(_glfwWin.modeID);
+                    _glfwSetVideoModeMODE(window->Win32.modeID);
 
                     // Do we need to manually restore window?
                     if (iconified)
                     {
                         // Restore window
-                        OpenIcon(_glfwWin.window);
+                        OpenIcon(window->Win32.handle);
                         iconified = GL_FALSE;
 
                         // Activate window
                         ShowWindow(hWnd, SW_SHOW);
-                        setForegroundWindow(_glfwWin.window);
-                        SetFocus(_glfwWin.window);
+                        setForegroundWindow(window->Win32.handle);
+                        SetFocus(window->Win32.handle);
                     }
                 }
 
                 // Lock mouse, if necessary
-                if (_glfwWin.oldMouseLockValid && _glfwWin.oldMouseLock)
+                if (window->Win32.oldMouseLockValid && window->Win32.oldMouseLock)
                     glfwDisable(GLFW_MOUSE_CURSOR);
 
-                _glfwWin.oldMouseLockValid = GL_FALSE;
+                window->Win32.oldMouseLockValid = GL_FALSE;
             }
 
-            _glfwWin.iconified = iconified;
+            window->iconified = iconified;
             return 0;
         }
 
@@ -667,7 +670,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 case SC_SCREENSAVE:
                 case SC_MONITORPOWER:
                 {
-                    if (_glfwWin.fullscreen)
+                    if (window->mode == GLFW_FULLSCREEN)
                     {
                         // We are running in fullscreen mode, so disallow
                         // screen saver and screen blanking
@@ -697,7 +700,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         {
             _glfwInputKey(translateKey(wParam, lParam), GLFW_PRESS);
 
-            if (_glfwWin.charCallback)
+            if (window->charCallback)
                 translateChar((DWORD) wParam, (DWORD) lParam, GLFW_PRESS);
 
             return 0;
@@ -715,7 +718,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             else
                 _glfwInputKey(translateKey(wParam, lParam), GLFW_RELEASE);
 
-            if (_glfwWin.charCallback)
+            if (window->charCallback)
                 translateChar((DWORD) wParam, (DWORD) lParam, GLFW_RELEASE);
 
             return 0;
@@ -797,36 +800,36 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOUSEMOVE:
         {
-            int NewMouseX, NewMouseY;
+            int newMouseX, newMouseY;
 
             // Get signed (!) mouse position
-            NewMouseX = (int)((short)LOWORD(lParam));
-            NewMouseY = (int)((short)HIWORD(lParam));
+            newMouseX = (int)((short)LOWORD(lParam));
+            newMouseY = (int)((short)HIWORD(lParam));
 
-            if (NewMouseX != _glfwInput.OldMouseX ||
-                NewMouseY != _glfwInput.OldMouseY)
+            if (newMouseX != window->oldMouseX ||
+                newMouseY != window->oldMouseY)
             {
-                if (_glfwWin.mouseLock)
+                if (window == _glfwLibrary.cursorLockWindow)
                 {
-                    _glfwInput.MousePosX += NewMouseX -
-                                            _glfwInput.OldMouseX;
-                    _glfwInput.MousePosY += NewMouseY -
-                                            _glfwInput.OldMouseY;
+                    window->mousePosX += newMouseX -
+                                         window->oldMouseX;
+                    window->mousePosY += newMouseY -
+                                         window->oldMouseY;
                 }
                 else
                 {
-                    _glfwInput.MousePosX = NewMouseX;
-                    _glfwInput.MousePosY = NewMouseY;
+                    window->mousePosX = newMouseX;
+                    window->mousePosY = newMouseY;
                 }
 
-                _glfwInput.OldMouseX = NewMouseX;
-                _glfwInput.OldMouseY = NewMouseY;
-                _glfwInput.MouseMoved = GL_TRUE;
+                window->oldMouseX = newMouseX;
+                window->oldMouseY = newMouseY;
+                window->mouseMoved = GL_TRUE;
 
-                if (_glfwWin.mousePosCallback)
+                if (window->mousePosCallback)
                 {
-                    _glfwWin.mousePosCallback(_glfwInput.MousePosX,
-                                               _glfwInput.MousePosY);
+                    window->mousePosCallback(window->mousePosX,
+                                             window->mousePosY);
                 }
             }
 
@@ -835,35 +838,30 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOUSEWHEEL:
         {
-            // WM_MOUSEWHEEL is not supported under Windows 95
-            if (_glfwLibrary.Sys.winVer != _GLFW_WIN_95)
-            {
-                wheelDelta = (((int)wParam) >> 16) / WHEEL_DELTA;
-                _glfwInput.WheelPos += wheelDelta;
+            wheelDelta = (((int)wParam) >> 16) / WHEEL_DELTA;
+            window->wheelPos += wheelDelta;
 
-                if (_glfwWin.mouseWheelCallback)
-                    _glfwWin.mouseWheelCallback(_glfwInput.WheelPos);
+            if (window->mouseWheelCallback)
+                window->mouseWheelCallback(window->wheelPos);
 
-                return 0;
-            }
-            break;
+            return 0;
         }
 
         case WM_SIZE:
         {
-            _glfwWin.width  = LOWORD(lParam);
-            _glfwWin.height = HIWORD(lParam);
+            window->width  = LOWORD(lParam);
+            window->height = HIWORD(lParam);
 
             // If the mouse is locked, update the clipping rect
             if (_glfwWin.mouseLock)
             {
                 RECT ClipWindowRect;
-                if (GetWindowRect(_glfwWin.window, &ClipWindowRect))
+                if (GetWindowRect(window->Win32.handle, &ClipWindowRect))
                     ClipCursor(&ClipWindowRect);
             }
 
-            if (_glfwWin.windowSizeCallback)
-                _glfwWin.windowSizeCallback(LOWORD(lParam), HIWORD(lParam));
+            if (window->windowSizeCallback)
+                window->windowSizeCallback(LOWORD(lParam), HIWORD(lParam));
 
             return 0;
         }
@@ -874,7 +872,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (_glfwWin.mouseLock)
             {
                 RECT ClipWindowRect;
-                if (GetWindowRect(_glfwWin.window, &ClipWindowRect))
+                if (GetWindowRect(window->Win32.handle, &ClipWindowRect))
                     ClipCursor(&ClipWindowRect);
             }
             return 0;
@@ -883,8 +881,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         // Was the window contents damaged?
         case WM_PAINT:
         {
-            if (_glfwWin.windowRefreshCallback)
-                _glfwWin.windowRefreshCallback();
+            if (window->Win32.handleRefreshCallback)
+                window->Win32.handleRefreshCallback();
 
             break;
         }
@@ -906,7 +904,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 // Translate client window size to full window size (including window borders)
 //========================================================================
 
-static void getFullWindowSize(int clientWidth, int clientHeight,
+static void getFullWindowSize(_GLFWwindow* window,
+                              int clientWidth, int clientHeight,
                               int* fullWidth, int* fullHeight)
 {
     RECT rect;
@@ -918,7 +917,7 @@ static void getFullWindowSize(int clientWidth, int clientHeight,
     rect.bottom = (long) clientHeight - 1;
 
     // Adjust according to window styles
-    AdjustWindowRectEx(&rect, _glfwWin.dwStyle, FALSE, _glfwWin.dwExStyle);
+    AdjustWindowRectEx(&rect, window->Win32.dwStyle, FALSE, window->Win32.dwExStyle);
 
     // Calculate width and height of full window
     *fullWidth = rect.right - rect.left + 1;
@@ -934,54 +933,60 @@ static void getFullWindowSize(int clientWidth, int clientHeight,
 // decreasing the possibility of forgetting to add one without the other.
 //========================================================================
 
-static void initWGLExtensions(void)
+static void initWGLExtensions(_GLFWwindow* window)
 {
     // This needs to include every function pointer loaded below
-    _glfwWin.SwapIntervalEXT = NULL;
-    _glfwWin.GetPixelFormatAttribivARB = NULL;
-    _glfwWin.GetExtensionsStringARB = NULL;
-    _glfwWin.GetExtensionsStringEXT = NULL;
-    _glfwWin.CreateContextAttribsARB = NULL;
+    window->WGL.SwapIntervalEXT = NULL;
+    window->WGL.GetPixelFormatAttribivARB = NULL;
+    window->WGL.GetExtensionsStringARB = NULL;
+    window->WGL.GetExtensionsStringEXT = NULL;
+    window->WGL.CreateContextAttribsARB = NULL;
 
     // This needs to include every extension used below except for
     // WGL_ARB_extensions_string and WGL_EXT_extensions_string
-    _glfwWin.has_WGL_EXT_swap_control = GL_FALSE;
-    _glfwWin.has_WGL_ARB_pixel_format = GL_FALSE;
-    _glfwWin.has_WGL_ARB_multisample = GL_FALSE;
-    _glfwWin.has_WGL_ARB_create_context = GL_FALSE;
+    window->WGL.has_WGL_EXT_swap_control = GL_FALSE;
+    window->WGL.has_WGL_ARB_pixel_format = GL_FALSE;
+    window->WGL.has_WGL_ARB_multisample = GL_FALSE;
+    window->WGL.has_WGL_ARB_create_context = GL_FALSE;
 
-    _glfwWin.GetExtensionsStringEXT = (WGLGETEXTENSIONSSTRINGEXT_T)
+    window->WGL.GetExtensionsStringEXT = (WGLGETEXTENSIONSSTRINGEXT_T)
         wglGetProcAddress("wglGetExtensionsStringEXT");
-    if (!_glfwWin.GetExtensionsStringEXT)
+    if (!window->WGL.GetExtensionsStringEXT)
     {
-        _glfwWin.GetExtensionsStringARB = (WGLGETEXTENSIONSSTRINGARB_T)
+        window->WGL.GetExtensionsStringARB = (WGLGETEXTENSIONSSTRINGARB_T)
             wglGetProcAddress("wglGetExtensionsStringARB");
-        if (!_glfwWin.GetExtensionsStringARB)
+        if (!window->WGL.GetExtensionsStringARB)
             return;
     }
 
     if (_glfwPlatformExtensionSupported("WGL_ARB_multisample"))
-        _glfwWin.has_WGL_ARB_multisample = GL_TRUE;
+        window->WGL.has_WGL_ARB_multisample = GL_TRUE;
 
     if (_glfwPlatformExtensionSupported("WGL_ARB_create_context"))
     {
-        _glfwWin.has_WGL_ARB_create_context = GL_TRUE;
-        _glfwWin.CreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)
+        window->WGL.CreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)
             wglGetProcAddress("wglCreateContextAttribsARB");
+
+        if (window->WGL.CreateContextAttribsARB)
+            window->WGL.has_WGL_ARB_create_context = GL_TRUE;
     }
 
     if (_glfwPlatformExtensionSupported("WGL_EXT_swap_control"))
     {
-        _glfwWin.has_WGL_EXT_swap_control = GL_TRUE;
-        _glfwWin.SwapIntervalEXT = (WGLSWAPINTERVALEXT_T)
+        window->WGL.SwapIntervalEXT = (WGLSWAPINTERVALEXT_T)
             wglGetProcAddress("wglSwapIntervalEXT");
+
+        if (window->WGL.SwapIntervalEXT)
+            window->WGL.has_WGL_EXT_swap_control = GL_TRUE;
     }
 
     if (_glfwPlatformExtensionSupported("WGL_ARB_pixel_format"))
     {
-        _glfwWin.has_WGL_ARB_pixel_format = GL_TRUE;
-        _glfwWin.GetPixelFormatAttribivARB = (WGLGETPIXELFORMATATTRIBIVARB_T)
+        window->WGL.GetPixelFormatAttribivARB = (WGLGETPIXELFORMATATTRIBIVARB_T)
             wglGetProcAddress("wglGetPixelFormatAttribivARB");
+
+        if (window->WGL.GetPixelFormatAttribivARB)
+            window->WGL.has_WGL_ARB_pixel_format = GL_TRUE;
     }
 }
 
@@ -996,17 +1001,17 @@ static ATOM registerWindowClass(void)
 
     // Set window class parameters
     wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC; // Redraw on...
-    wc.lpfnWndProc   = (WNDPROC)windowProc;           // Message handler
+    wc.lpfnWndProc   = (WNDPROC) windowProc;          // Message handler
     wc.cbClsExtra    = 0;                             // No extra class data
-    wc.cbWndExtra    = 0;                             // No extra window data
-    wc.hInstance     = _glfwLibrary.instance;         // Set instance
-    wc.hCursor       = LoadCursor(NULL, IDC_ARROW); // Load arrow pointer
+    wc.cbWndExtra    = sizeof(void*) + sizeof(int);   // Make room for one pointer
+    wc.hInstance     = _glfwLibrary.Win32.instance;   // Set instance
+    wc.hCursor       = LoadCursor(NULL, IDC_ARROW);   // Load arrow pointer
     wc.hbrBackground = NULL;                          // No background
     wc.lpszMenuName  = NULL;                          // No menu
     wc.lpszClassName = _GLFW_WNDCLASSNAME;            // Set class name
 
     // Load user-provided icon if available
-    wc.hIcon = LoadIcon(_glfwLibrary.instance, "GLFW_ICON");
+    wc.hIcon = LoadIcon(_glfwLibrary.Win32.instance, "GLFW_ICON");
     if (!wc.hIcon)
     {
         // Load default icon
@@ -1057,7 +1062,8 @@ static int choosePixelFormat(const _GLFWfbconfig* fbconfig)
 // Creates the GLFW window and rendering context
 //========================================================================
 
-static int createWindow(const _GLFWwndconfig* wndconfig,
+static int createWindow(_GLFWwindow* window,
+                        const _GLFWwndconfig* wndconfig,
                         const _GLFWfbconfig* fbconfig)
 {
     DWORD dwStyle, dwExStyle;
@@ -1065,16 +1071,16 @@ static int createWindow(const _GLFWwndconfig* wndconfig,
     RECT wa;
     POINT pos;
 
-    _glfwWin.DC = NULL;
-    _glfwWin.context = NULL;
-    _glfwWin.window = NULL;
+    window->WGL.DC = NULL;
+    window->WGL.context = NULL;
+    window->Win32.handle = NULL;
 
     // Set common window styles
     dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE;
     dwExStyle = WS_EX_APPWINDOW;
 
     // Set window style, depending on fullscreen mode
-    if (_glfwWin.fullscreen)
+    if (window->mode == GLFW_FULLSCREEN)
     {
         dwStyle |= WS_POPUP;
 
@@ -1102,40 +1108,40 @@ static int createWindow(const _GLFWwndconfig* wndconfig,
     }
 
     // Remember window styles (used by getFullWindowSize)
-    _glfwWin.dwStyle   = dwStyle;
-    _glfwWin.dwExStyle = dwExStyle;
+    window->Win32.dwStyle   = dwStyle;
+    window->Win32.dwExStyle = dwExStyle;
 
     // Adjust window size for frame and title bar
-    getFullWindowSize(_glfwWin.width, _glfwWin.height, &fullWidth, &fullHeight);
+    getFullWindowSize(window->width, window->height, &fullWidth, &fullHeight);
 
     // Adjust window position to working area (e.g. if the task bar is at
     // the top of the display). Fullscreen windows are always opened in
     // the upper left corner regardless of the desktop working area.
-    if (_glfwWin.fullscreen)
+    if (window->mode == GLFW_FULLSCREEN)
         wa.left = wa.top = 0;
     else
         SystemParametersInfo(SPI_GETWORKAREA, 0, &wa, 0);
 
-    _glfwWin.window = CreateWindowEx(_glfwWin.dwExStyle,    // Extended style
-                                     _GLFW_WNDCLASSNAME,    // Class name
-                                     "GLFW Window",         // Window title
-                                     _glfwWin.dwStyle,      // Defined window style
-                                     wa.left, wa.top,       // Window position
-                                     fullWidth,             // Decorated window width
-                                     fullHeight,            // Decorated window height
-                                     NULL,                  // No parent window
-                                     NULL,                  // No menu
-                                     _glfwLibrary.instance, // Instance
-                                     NULL);                // Nothing to WM_CREATE
+    window->Win32.handle = CreateWindowEx(window->Win32.dwExStyle,
+                                          _GLFW_WNDCLASSNAME,
+                                          "GLFW Window",
+                                          window->Win32.dwStyle,
+                                          wa.left, wa.top,       // Window position
+                                          fullWidth,             // Decorated window width
+                                          fullHeight,            // Decorated window height
+                                          NULL,                  // No parent window
+                                          NULL,                  // No menu
+                                          _glfwLibrary.Win32.instance,
+                                          NULL);                 // No lParam to WM_CREATE
 
-    if (!_glfwWin.window)
+    if (!window->Win32.handle)
     {
         fprintf(stderr, "Unable to create Win32 window\n");
         return GL_FALSE;
     }
 
-    _glfwWin.DC = GetDC(_glfwWin.window);
-    if (!_glfwWin.DC)
+    window->WGL.DC = GetDC(window->Win32.handle);
+    if (!window->WGL.DC)
     {
         fprintf(stderr, "Unable to retrieve GLFW window DC\n");
         return GL_FALSE;
@@ -1148,14 +1154,14 @@ static int createWindow(const _GLFWwndconfig* wndconfig,
         return GL_FALSE;
     }
 
-    _glfwWin.context = createContext(_glfwWin.DC, wndconfig, pixelFormat);
-    if (!_glfwWin.context)
+    window->WGL.context = createContext(window->WGL.DC, wndconfig, pixelFormat);
+    if (!window->WGL.context)
     {
         fprintf(stderr, "Unable to create OpenGL context\n");
         return GL_FALSE;
     }
 
-    if (!wglMakeCurrent(_glfwWin.DC, _glfwWin.context))
+    if (!wglMakeCurrent(window->WGL.DC, window->WGL.context))
     {
         fprintf(stderr, "Unable to make OpenGL context current\n");
         return GL_FALSE;
@@ -1165,9 +1171,9 @@ static int createWindow(const _GLFWwndconfig* wndconfig,
 
     // Initialize mouse position data
     GetCursorPos(&pos);
-    ScreenToClient(_glfwWin.window, &pos);
-    _glfwInput.OldMouseX = _glfwInput.MousePosX = pos.x;
-    _glfwInput.OldMouseY = _glfwInput.MousePosY = pos.y;
+    ScreenToClient(window->Win32.handle, &pos);
+    window->oldMouseX = window->mousePosX = pos.x;
+    window->oldMouseY = window->mousePosY = pos.y;
 
     return GL_TRUE;
 }
@@ -1179,33 +1185,25 @@ static int createWindow(const _GLFWwndconfig* wndconfig,
 
 static void destroyWindow(void)
 {
-    if (_glfwWin.context)
+    if (window->WGL.context)
     {
         wglMakeCurrent(NULL, NULL);
-        wglDeleteContext(_glfwWin.context);
-        _glfwWin.context = NULL;
+        wglDeleteContext(window->WGL.context);
+        window->WGL.context = NULL;
     }
 
-    if (_glfwWin.DC)
+    if (window->WGL.DC)
     {
-        ReleaseDC(_glfwWin.window, _glfwWin.DC);
-        _glfwWin.DC = NULL;
+        ReleaseDC(window->Win32.handle, window->WGL.DC);
+        window->WGL.DC = NULL;
     }
 
-    if (_glfwWin.window)
+    if (window->Win32.handle)
     {
-        if (_glfwLibrary.Sys.winVer <= _GLFW_WIN_NT4)
-        {
-            // Note: Hiding the window first fixes an annoying W98/NT4
-            // remaining icon bug for fullscreen displays
-            ShowWindow(_glfwWin.window, SW_HIDE);
-        }
-
-        DestroyWindow(_glfwWin.window);
-        _glfwWin.window = NULL;
+        DestroyWindow(window->Win32.handle);
+        window->Win32.handle = NULL;
     }
 }
-
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -1217,48 +1215,35 @@ static void destroyWindow(void)
 // created
 //========================================================================
 
-int _glfwPlatformOpenWindow(int width, int height,
+int _glfwPlatformOpenWindow(_GLFWwindow* window,
                             const _GLFWwndconfig* wndconfig,
                             const _GLFWfbconfig* fbconfig)
 {
     GLboolean recreateContext = GL_FALSE;
 
-    // Clear platform specific GLFW window state
-    _glfwWin.classAtom = 0;
-    _glfwWin.oldMouseLockValid = GL_FALSE;
+    window->Win32.desiredRefreshRate = wndconfig->refreshRate;
 
-    _glfwWin.desiredRefreshRate = wndconfig->refreshRate;
-
-    _glfwWin.classAtom = registerWindowClass();
-    if (!_glfwWin.classAtom)
-    {
-        fprintf(stderr, "Failed to register GLFW window class\n");
-        _glfwPlatformCloseWindow();
+    window->Win32.classAtom = registerWindowClass();
+    if (!window->Win32.classAtom)
         return GL_FALSE;
-    }
 
-    if (_glfwWin.fullscreen)
+    if (window->mode == GLFW_FULLSCREEN)
     {
-        _glfwSetVideoMode(&_glfwWin.width, &_glfwWin.height,
-                           fbconfig->redBits, fbconfig->greenBits, fbconfig->blueBits,
-                           wndconfig->refreshRate);
+        _glfwSetVideoMode(&window->width, &window->height,
+                          fbconfig->redBits, fbconfig->greenBits, fbconfig->blueBits,
+                          wndconfig->refreshRate);
     }
 
     initWGLExtensions();
 
-    if (!createWindow(wndconfig, fbconfig))
-    {
-        fprintf(stderr, "Failed to create GLFW window\n");
-        _glfwPlatformCloseWindow();
+    if (!createWindow(window, wndconfig, fbconfig))
         return GL_FALSE;
-    }
 
     if (wndconfig->glMajor > 2)
     {
-        if (!_glfwWin.has_WGL_ARB_create_context)
+        if (!window->WGL.has_WGL_ARB_create_context)
         {
-            fprintf(stderr, "OpenGL 3.0+ is not supported\n");
-            _glfwPlatformCloseWindow();
+            _glfwSetError(GLFW_UNAVAILABLE_VERSION);
             return GL_FALSE;
         }
 
@@ -1270,7 +1255,7 @@ int _glfwPlatformOpenWindow(int width, int height,
         // We want FSAA, but can we get it?
         // FSAA is not a hard constraint, so otherwise we just don't care
 
-        if (_glfwWin.has_WGL_ARB_multisample && _glfwWin.has_WGL_ARB_pixel_format)
+        if (window->WGL.has_WGL_ARB_multisample && window->WGL.has_WGL_ARB_pixel_format)
         {
             // We appear to have both the FSAA extension and the means to ask for it
             recreateContext = GL_TRUE;
@@ -1296,23 +1281,19 @@ int _glfwPlatformOpenWindow(int width, int height,
 
         destroyWindow();
 
-        if (!createWindow(wndconfig, fbconfig))
-        {
-            fprintf(stderr, "Unable to re-create GLFW window\n");
-            _glfwPlatformCloseWindow();
+        if (!createWindow(window, wndconfig, fbconfig))
             return GL_FALSE;
-        }
     }
 
-    if (_glfwWin.fullscreen)
+    if (window->mode == GLFW_FULLSCREEN)
     {
         // Place the window above all topmost windows
-        SetWindowPos(_glfwWin.window, HWND_TOPMOST, 0,0,0,0,
+        SetWindowPos(window->Win32.handle, HWND_TOPMOST, 0,0,0,0,
                      SWP_NOMOVE | SWP_NOSIZE);
     }
 
-    setForegroundWindow(_glfwWin.window);
-    SetFocus(_glfwWin.window);
+    setForegroundWindow(window->Win32.handle);
+    SetFocus(window->Win32.handle);
 
     return GL_TRUE;
 }
@@ -1322,17 +1303,17 @@ int _glfwPlatformOpenWindow(int width, int height,
 // Properly kill the window / video display
 //========================================================================
 
-void _glfwPlatformCloseWindow(void)
+void _glfwPlatformCloseWindow(_GLFWwindow* window)
 {
     destroyWindow();
 
-    if (_glfwWin.classAtom)
+    if (window->Win32.classAtom)
     {
-        UnregisterClass(_GLFW_WNDCLASSNAME, _glfwLibrary.instance);
-        _glfwWin.classAtom = 0;
+        UnregisterClass(_GLFW_WNDCLASSNAME, _glfwLibrary.Win32.instance);
+        window->Win32.classAtom = 0;
     }
 
-    if (_glfwWin.fullscreen)
+    if (window->mode == GLFW_FULLSCREEN)
     {
         // Restore original desktop resolution
         ChangeDisplaySettings(NULL, CDS_FULLSCREEN);
@@ -1344,9 +1325,9 @@ void _glfwPlatformCloseWindow(void)
 // Set the window title
 //========================================================================
 
-void _glfwPlatformSetWindowTitle(const char* title)
+void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
-    SetWindowText(_glfwWin.window, title);
+    SetWindowText(window->Win32.handle, title);
 }
 
 
@@ -1354,14 +1335,14 @@ void _glfwPlatformSetWindowTitle(const char* title)
 // Set the window size.
 //========================================================================
 
-void _glfwPlatformSetWindowSize(int width, int height)
+void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    int     bpp, mode = 0, refresh;
-    int     sizechanged = GL_FALSE;
-    GLint   drawbuffer;
+    int bpp, mode = 0, refresh;
+    int sizechanged = GL_FALSE;
+    GLint drawbuffer;
     GLfloat clearcolor[4];
 
-    if (_glfwWin.fullscreen)
+    if (window->mode == GLFW_FULLSCREEN)
     {
         // Get some info about the current mode
 
@@ -1375,12 +1356,11 @@ void _glfwPlatformSetWindowSize(int width, int height)
             bpp = dm.dmBitsPerPel;
 
             // Get closest match for target video mode
-            refresh = _glfwWin.desiredRefreshRate;
-            mode = _glfwGetClosestVideoModeBPP(&width, &height, &bpp,
-                                                &refresh);
+            refresh = window->Win32.desiredRefreshRate;
+            mode = _glfwGetClosestVideoModeBPP(&width, &height, &bpp, &refresh);
         }
         else
-            mode = _glfwWin.modeID;
+            mode = window->Win32.modeID;
     }
     else
     {
@@ -1390,37 +1370,22 @@ void _glfwPlatformSetWindowSize(int width, int height)
     }
 
     // Change window size before changing fullscreen mode?
-    if (_glfwWin.fullscreen && (width > _glfwWin.width))
+    if (window->mode == GLFW_FULLSCREEN && (width > window->width))
     {
-        SetWindowPos(_glfwWin.window, HWND_TOP, 0, 0, width, height,
-                      SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
+        SetWindowPos(window->Win32.handle, HWND_TOP, 0, 0, width, height,
+                     SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
         sizechanged = GL_TRUE;
     }
 
     // Change fullscreen video mode?
-    if (_glfwWin.fullscreen && mode != _glfwWin.modeID)
-    {
+    if (window->mode == GLFW_FULLSCREEN && mode != window->Win32.modeID)
         _glfwSetVideoModeMODE(mode);
-
-        // Clear the front buffer to black (avoid ugly desktop remains in
-        // our OpenGL window)
-        glGetIntegerv(GL_DRAW_BUFFER, &drawbuffer);
-        glGetFloatv(GL_COLOR_CLEAR_VALUE, clearcolor);
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        if (drawbuffer == GL_BACK)
-        {
-            _glfw_SwapBuffers(_glfwWin.DC);
-        }
-        glClearColor(clearcolor[0], clearcolor[1], clearcolor[2],
-                      clearcolor[3]);
-    }
 
     // Set window size (if not already changed)
     if (!sizechanged)
     {
-        SetWindowPos(_glfwWin.window, HWND_TOP, 0, 0, width, height,
-                      SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
+        SetWindowPos(window->Win32.handle, HWND_TOP, 0, 0, width, height,
+                     SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
     }
 }
 
@@ -1429,10 +1394,10 @@ void _glfwPlatformSetWindowSize(int width, int height)
 // Set the window position
 //========================================================================
 
-void _glfwPlatformSetWindowPos(int x, int y)
+void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
 {
-    (void) SetWindowPos(_glfwWin.window, HWND_TOP, x, y, 0, 0,
-                         SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
+    SetWindowPos(window->Win32.handle, HWND_TOP, x, y, 0, 0,
+                 SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
 }
 
 
@@ -1440,24 +1405,24 @@ void _glfwPlatformSetWindowPos(int x, int y)
 // Window iconification
 //========================================================================
 
-void _glfwPlatformIconifyWindow(void)
+void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
     // Iconify window
-    CloseWindow(_glfwWin.window);
-    _glfwWin.iconified = GL_TRUE;
+    CloseWindow(window->Win32.handle);
+    window->iconified = GL_TRUE;
 
     // If we are in fullscreen mode we need to change video modes
-    if (_glfwWin.fullscreen)
+    if (window->mode == GLFW_FULLSCREEN)
     {
         // Change display settings to the desktop resolution
         ChangeDisplaySettings(NULL, CDS_FULLSCREEN);
     }
 
     // Unlock mouse
-    if (!_glfwWin.oldMouseLockValid)
+    if (!window->Win32.oldMouseLockValid)
     {
-        _glfwWin.oldMouseLock = _glfwWin.mouseLock;
-        _glfwWin.oldMouseLockValid = GL_TRUE;
+        window->Win32.oldMouseLock = _glfwWin.mouseLock;
+        window->Win32.oldMouseLockValid = GL_TRUE;
         glfwEnable(GLFW_MOUSE_CURSOR);
     }
 }
@@ -1467,31 +1432,30 @@ void _glfwPlatformIconifyWindow(void)
 // Window un-iconification
 //========================================================================
 
-void _glfwPlatformRestoreWindow(void)
+void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
-    // If we are in fullscreen mode we need to change video modes
-    if (_glfwWin.fullscreen)
+    if (window->mode == GLFW_FULLSCREEN)
     {
         // Change display settings to the user selected mode
-        _glfwSetVideoModeMODE(_glfwWin.modeID);
+        _glfwSetVideoModeMODE(window->Win32.modeID);
     }
 
     // Un-iconify window
-    OpenIcon(_glfwWin.window);
+    OpenIcon(window->Win32.handle);
 
     // Make sure that our window ends up on top of things
-    ShowWindow(_glfwWin.window, SW_SHOW);
-    setForegroundWindow(_glfwWin.window);
-    SetFocus(_glfwWin.window);
+    ShowWindow(window->Win32.handle, SW_SHOW);
+    setForegroundWindow(window->Win32.handle);
+    SetFocus(window->Win32.handle);
 
     // Window is no longer iconified
-    _glfwWin.iconified = GL_FALSE;
+    window->iconified = GL_FALSE;
 
     // Lock mouse, if necessary
-    if (_glfwWin.oldMouseLockValid && _glfwWin.oldMouseLock)
+    if (window->Win32.oldMouseLockValid && window->Win32.oldMouseLock)
         glfwDisable(GLFW_MOUSE_CURSOR);
 
-    _glfwWin.oldMouseLockValid = GL_FALSE;
+    window->Win32.oldMouseLockValid = GL_FALSE;
 }
 
 
@@ -1501,7 +1465,9 @@ void _glfwPlatformRestoreWindow(void)
 
 void _glfwPlatformSwapBuffers(void)
 {
-    _glfw_SwapBuffers(_glfwWin.DC);
+    _GLFWwindow* window = _glfwLibrary.currentWindow;
+
+    _glfw_SwapBuffers(window->WGL.DC);
 }
 
 
@@ -1511,8 +1477,10 @@ void _glfwPlatformSwapBuffers(void)
 
 void _glfwPlatformSwapInterval(int interval)
 {
-    if (_glfwWin.has_WGL_EXT_swap_control)
-        _glfwWin.SwapIntervalEXT(interval);
+    _GLFWwindow* window = _glfwLibrary.currentWindow;
+
+    if (window->WGL.has_WGL_EXT_swap_control)
+        window->WGL.SwapIntervalEXT(interval);
 }
 
 
@@ -1526,83 +1494,85 @@ void _glfwPlatformRefreshWindowParams(void)
     DEVMODE dm;
     int pixelFormat, mode;
 
-    // Obtain a detailed description of current pixel format
-    pixelFormat = _glfw_GetPixelFormat(_glfwWin.DC);
+    _GLFWwindow* window = _glfwLibrary.currentWindow;
 
-    if (_glfwWin.has_WGL_ARB_pixel_format)
+    // Obtain a detailed description of current pixel format
+    pixelFormat = _glfw_GetPixelFormat(window->WGL.DC);
+
+    if (window->WGL.has_WGL_ARB_pixel_format)
     {
         if (getPixelFormatAttrib(pixelFormat, WGL_ACCELERATION_ARB) !=
             WGL_NO_ACCELERATION_ARB)
         {
-            _glfwWin.accelerated = GL_TRUE;
+            window->accelerated = GL_TRUE;
         }
         else
-            _glfwWin.accelerated = GL_FALSE;
+            window->accelerated = GL_FALSE;
 
-        _glfwWin.redBits = getPixelFormatAttrib(pixelFormat, WGL_RED_BITS_ARB);
-        _glfwWin.greenBits = getPixelFormatAttrib(pixelFormat, WGL_GREEN_BITS_ARB);
-        _glfwWin.blueBits = getPixelFormatAttrib(pixelFormat, WGL_BLUE_BITS_ARB);
+        window->redBits = getPixelFormatAttrib(pixelFormat, WGL_RED_BITS_ARB);
+        window->greenBits = getPixelFormatAttrib(pixelFormat, WGL_GREEN_BITS_ARB);
+        window->blueBits = getPixelFormatAttrib(pixelFormat, WGL_BLUE_BITS_ARB);
 
-        _glfwWin.alphaBits = getPixelFormatAttrib(pixelFormat, WGL_ALPHA_BITS_ARB);
-        _glfwWin.depthBits = getPixelFormatAttrib(pixelFormat, WGL_DEPTH_BITS_ARB);
-        _glfwWin.stencilBits = getPixelFormatAttrib(pixelFormat, WGL_STENCIL_BITS_ARB);
+        window->alphaBits = getPixelFormatAttrib(pixelFormat, WGL_ALPHA_BITS_ARB);
+        window->depthBits = getPixelFormatAttrib(pixelFormat, WGL_DEPTH_BITS_ARB);
+        window->stencilBits = getPixelFormatAttrib(pixelFormat, WGL_STENCIL_BITS_ARB);
 
-        _glfwWin.accumRedBits = getPixelFormatAttrib(pixelFormat, WGL_ACCUM_RED_BITS_ARB);
-        _glfwWin.accumGreenBits = getPixelFormatAttrib(pixelFormat, WGL_ACCUM_GREEN_BITS_ARB);
-        _glfwWin.accumBlueBits = getPixelFormatAttrib(pixelFormat, WGL_ACCUM_BLUE_BITS_ARB);
-        _glfwWin.accumAlphaBits = getPixelFormatAttrib(pixelFormat, WGL_ACCUM_ALPHA_BITS_ARB);
+        window->accumRedBits = getPixelFormatAttrib(pixelFormat, WGL_ACCUM_RED_BITS_ARB);
+        window->accumGreenBits = getPixelFormatAttrib(pixelFormat, WGL_ACCUM_GREEN_BITS_ARB);
+        window->accumBlueBits = getPixelFormatAttrib(pixelFormat, WGL_ACCUM_BLUE_BITS_ARB);
+        window->accumAlphaBits = getPixelFormatAttrib(pixelFormat, WGL_ACCUM_ALPHA_BITS_ARB);
 
-        _glfwWin.auxBuffers = getPixelFormatAttrib(pixelFormat, WGL_AUX_BUFFERS_ARB);
-        _glfwWin.stereo = getPixelFormatAttrib(pixelFormat, WGL_STEREO_ARB) ? GL_TRUE : GL_FALSE;
+        window->auxBuffers = getPixelFormatAttrib(pixelFormat, WGL_AUX_BUFFERS_ARB);
+        window->stereo = getPixelFormatAttrib(pixelFormat, WGL_STEREO_ARB) ? GL_TRUE : GL_FALSE;
 
-        if (_glfwWin.has_WGL_ARB_multisample)
+        if (window->WGL.has_WGL_ARB_multisample)
         {
-            _glfwWin.samples = getPixelFormatAttrib(pixelFormat, WGL_SAMPLES_ARB);
+            window->samples = getPixelFormatAttrib(pixelFormat, WGL_SAMPLES_ARB);
             // Should we force 1 to 0 here for consistency, or keep 1 for transparency?
         }
         else
-            _glfwWin.samples = 0;
+            window->samples = 0;
     }
     else
     {
-        _glfw_DescribePixelFormat(_glfwWin.DC, pixelFormat,
+        _glfw_DescribePixelFormat(window->WGL.DC, pixelFormat,
                                   sizeof(PIXELFORMATDESCRIPTOR), &pfd);
 
         // Is current OpenGL context accelerated?
-        _glfwWin.accelerated = (pfd.dwFlags & PFD_GENERIC_ACCELERATED) ||
-                               !(pfd.dwFlags & PFD_GENERIC_FORMAT) ? 1 : 0;
+        window->accelerated = (pfd.dwFlags & PFD_GENERIC_ACCELERATED) ||
+                              !(pfd.dwFlags & PFD_GENERIC_FORMAT) ? 1 : 0;
 
         // "Standard" window parameters
-        _glfwWin.redBits        = pfd.cRedBits;
-        _glfwWin.greenBits      = pfd.cGreenBits;
-        _glfwWin.blueBits       = pfd.cBlueBits;
-        _glfwWin.alphaBits      = pfd.cAlphaBits;
-        _glfwWin.depthBits      = pfd.cDepthBits;
-        _glfwWin.stencilBits    = pfd.cStencilBits;
-        _glfwWin.accumRedBits   = pfd.cAccumRedBits;
-        _glfwWin.accumGreenBits = pfd.cAccumGreenBits;
-        _glfwWin.accumBlueBits  = pfd.cAccumBlueBits;
-        _glfwWin.accumAlphaBits = pfd.cAccumAlphaBits;
-        _glfwWin.auxBuffers     = pfd.cAuxBuffers;
-        _glfwWin.stereo         = (pfd.dwFlags & PFD_STEREO) ? GL_TRUE : GL_FALSE;
+        window->redBits        = pfd.cRedBits;
+        window->greenBits      = pfd.cGreenBits;
+        window->blueBits       = pfd.cBlueBits;
+        window->alphaBits      = pfd.cAlphaBits;
+        window->depthBits      = pfd.cDepthBits;
+        window->stencilBits    = pfd.cStencilBits;
+        window->accumRedBits   = pfd.cAccumRedBits;
+        window->accumGreenBits = pfd.cAccumGreenBits;
+        window->accumBlueBits  = pfd.cAccumBlueBits;
+        window->accumAlphaBits = pfd.cAccumAlphaBits;
+        window->auxBuffers     = pfd.cAuxBuffers;
+        window->stereo         = (pfd.dwFlags & PFD_STEREO) ? GL_TRUE : GL_FALSE;
 
         // If we don't have WGL_ARB_pixel_format then we can't have created a
         // multisampling context, so it's safe to hardcode zero here
-        _glfwWin.samples = 0;
+        window->samples = 0;
     }
 
     // Get refresh rate
-    mode = _glfwWin.fullscreen ? _glfwWin.modeID : ENUM_CURRENT_SETTINGS;
+    mode = (window->mode == GLFW_FULLSCREEN) ? window->Win32.modeID : ENUM_CURRENT_SETTINGS;
     dm.dmSize = sizeof(DEVMODE);
 
     if (EnumDisplaySettings(NULL, mode, &dm))
     {
-        _glfwWin.refreshRate = dm.dmDisplayFrequency;
-        if (_glfwWin.refreshRate <= 1)
-            _glfwWin.refreshRate = 0;
+        window->refreshRate = dm.dmDisplayFrequency;
+        if (window->refreshRate <= 1)
+            window->refreshRate = 0;
     }
     else
-        _glfwWin.refreshRate = 0;
+        window->refreshRate = 0;
 }
 
 
@@ -1617,16 +1587,16 @@ void _glfwPlatformPollEvents(void)
 
     // Flag: mouse was not moved (will be changed by _glfwGetNextEvent if
     // there was a mouse move event)
-    _glfwInput.MouseMoved = GL_FALSE;
+    window->mouseMoved = GL_FALSE;
     if (_glfwWin.mouseLock)
     {
-        _glfwInput.OldMouseX = _glfwWin.width/2;
-        _glfwInput.OldMouseY = _glfwWin.height/2;
+        window->oldMouseX = _glfwWin.width/2;
+        window->oldMouseY = _glfwWin.height/2;
     }
     else
     {
-        _glfwInput.OldMouseX = _glfwInput.MousePosX;
-        _glfwInput.OldMouseY = _glfwInput.MousePosY;
+        window->oldMouseX = window->mousePosX;
+        window->oldMouseY = window->mousePosY;
     }
 
     // Check for new window messages
@@ -1664,25 +1634,25 @@ void _glfwPlatformPollEvents(void)
 
         // See if this differs from our belief of what has happened
         // (we only have to check for lost key up events)
-        if (!lshift_down && _glfwInput.Key[ GLFW_KEY_LSHIFT ] == 1)
+        if (!lshift_down && window->key[GLFW_KEY_LSHIFT] == 1)
             _glfwInputKey(GLFW_KEY_LSHIFT, GLFW_RELEASE);
 
-        if (!rshift_down && _glfwInput.Key[ GLFW_KEY_RSHIFT ] == 1)
+        if (!rshift_down && window->key[GLFW_KEY_RSHIFT] == 1)
             _glfwInputKey(GLFW_KEY_RSHIFT, GLFW_RELEASE);
     }
 
     // Did we have mouse movement in locked cursor mode?
-    if (_glfwInput.MouseMoved && _glfwWin.mouseLock)
+    if (window->mouseMoved && _glfwWin.mouseLock)
     {
-        _glfwPlatformSetMouseCursorPos(_glfwWin.width / 2,
-                                        _glfwWin.height / 2);
+        _glfwPlatformSetMouseCursorPos(window->width / 2,
+                                       window->height / 2);
     }
 
     // Was there a window close request?
-    if (winclosed && _glfwWin.windowCloseCallback)
+    if (winclosed && window->closeCallback)
     {
         // Check if the program wants us to close the window
-        winclosed = _glfwWin.windowCloseCallback();
+        winclosed = window->closeCallback();
     }
     if (winclosed)
         glfwCloseWindow();
@@ -1690,7 +1660,7 @@ void _glfwPlatformPollEvents(void)
 
 
 //========================================================================
-// _glfwPlatformWaitEvents() - Wait for new window and input events
+// Wait for new window and input events
 //========================================================================
 
 void _glfwPlatformWaitEvents(void)
@@ -1705,18 +1675,18 @@ void _glfwPlatformWaitEvents(void)
 // Hide mouse cursor (lock it)
 //========================================================================
 
-void _glfwPlatformHideMouseCursor(void)
+void _glfwPlatformHideMouseCursor(_GLFWwindow* window)
 {
     RECT ClipWindowRect;
 
     ShowCursor(FALSE);
 
     // Clip cursor to the window
-    if (GetWindowRect(_glfwWin.window, &ClipWindowRect))
+    if (GetWindowRect(window->Win32.handle, &ClipWindowRect))
         ClipCursor(&ClipWindowRect);
 
     // Capture cursor to user window
-    SetCapture(_glfwWin.window);
+    SetCapture(window->Win32.handle);
 }
 
 
@@ -1724,7 +1694,7 @@ void _glfwPlatformHideMouseCursor(void)
 // Show mouse cursor (unlock it)
 //========================================================================
 
-void _glfwPlatformShowMouseCursor(void)
+void _glfwPlatformShowMouseCursor(_GLFWwindow* window)
 {
     // Un-capture cursor
     ReleaseCapture();
@@ -1740,14 +1710,14 @@ void _glfwPlatformShowMouseCursor(void)
 // Set physical mouse cursor position
 //========================================================================
 
-void _glfwPlatformSetMouseCursorPos(int x, int y)
+void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y)
 {
     POINT pos;
 
     // Convert client coordinates to screen coordinates
     pos.x = x;
     pos.y = y;
-    ClientToScreen(_glfwWin.window, &pos);
+    ClientToScreen(window->Win32.handle, &pos);
 
     SetCursorPos(pos.x, pos.y);
 }

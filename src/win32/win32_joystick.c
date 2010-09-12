@@ -43,11 +43,6 @@ static GLboolean isJoystickPresent(int joy)
 {
     JOYINFO ji;
 
-    // Windows NT 4.0 MMSYSTEM only supports 2 sticks (other Windows
-    // versions support 16 sticks)
-    if (_glfwLibrary.Sys.winVer == _GLFW_WIN_NT4 && joy > GLFW_JOYSTICK_2)
-        return GL_FALSE;
-
     // Is it a valid stick ID (Windows don't support more than 16 sticks)?
     if (joy < GLFW_JOYSTICK_1 || joy > GLFW_JOYSTICK_16)
         return GL_FALSE;

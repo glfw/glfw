@@ -47,24 +47,24 @@ void _glfwInitTimer(void)
     if (QueryPerformanceFrequency((LARGE_INTEGER*) &freq))
     {
         // Performance counter is available => use it!
-        _glfwLibrary.Timer.HasPerformanceCounter = GL_TRUE;
+        _glfwLibrary.Win32.timer.HasPerformanceCounter = GL_TRUE;
 
         // Counter resolution is 1 / counter frequency
-        _glfwLibrary.Timer.Resolution = 1.0 / (double) freq;
+        _glfwLibrary.Win32.timer.Resolution = 1.0 / (double) freq;
 
         // Set start time for timer
-        QueryPerformanceCounter((LARGE_INTEGER*) &_glfwLibrary.Timer.t0_64);
+        QueryPerformanceCounter((LARGE_INTEGER*) &_glfwLibrary.Win32.timer.t0_64);
     }
     else
     {
         // No performace counter available => use the tick counter
-        _glfwLibrary.Timer.HasPerformanceCounter = GL_FALSE;
+        _glfwLibrary.Win32.timer.HasPerformanceCounter = GL_FALSE;
 
         // Counter resolution is 1 ms
-        _glfwLibrary.Timer.Resolution = 0.001;
+        _glfwLibrary.Win32.timer.Resolution = 0.001;
 
         // Set start time for timer
-        _glfwLibrary.Timer.t0_32 = _glfw_timeGetTime();
+        _glfwLibrary.Win32.timer.t0_32 = _glfw_timeGetTime();
     }
 }
 
@@ -82,16 +82,16 @@ double _glfwPlatformGetTime(void)
     double t;
     __int64 t_64;
 
-    if (_glfwLibrary.Timer.HasPerformanceCounter)
+    if (_glfwLibrary.Win32.timer.HasPerformanceCounter)
     {
         QueryPerformanceCounter((LARGE_INTEGER*) &t_64);
-        t =  (double)(t_64 - _glfwLibrary.Timer.t0_64);
+        t =  (double)(t_64 - _glfwLibrary.Win32.timer.t0_64);
     }
     else
-        t = (double)(_glfw_timeGetTime() - _glfwLibrary.Timer.t0_32);
+        t = (double)(_glfw_timeGetTime() - _glfwLibrary.Win32.timer.t0_32);
 
     // Calculate the current time in seconds
-    return t * _glfwLibrary.Timer.Resolution;
+    return t * _glfwLibrary.Win32.timer.Resolution;
 }
 
 
@@ -103,12 +103,12 @@ void _glfwPlatformSetTime(double t)
 {
     __int64 t_64;
 
-    if (_glfwLibrary.Timer.HasPerformanceCounter)
+    if (_glfwLibrary.Win32.timer.HasPerformanceCounter)
     {
         QueryPerformanceCounter((LARGE_INTEGER*) &t_64);
-        _glfwLibrary.Timer.t0_64 = t_64 - (__int64) (t / _glfwLibrary.Timer.Resolution);
+        _glfwLibrary.Win32.timer.t0_64 = t_64 - (__int64) (t / _glfwLibrary.Win32.timer.Resolution);
     }
     else
-        _glfwLibrary.Timer.t0_32 = _glfw_timeGetTime() - (int)(t * 1000.0);
+        _glfwLibrary.Win32.timer.t0_32 = _glfw_timeGetTime() - (int)(t * 1000.0);
 }
 

@@ -37,7 +37,7 @@
 // GLFW DLL entry point
 //========================================================================
 
-BOOL WINAPI DllMain( HINSTANCE instance, DWORD reason, LPVOID reserved )
+BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
 {
     // NOTE: Some compilers complains about instance and x never being used -
     // never mind that (we don't want to use them)!

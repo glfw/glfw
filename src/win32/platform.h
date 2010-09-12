@@ -307,7 +307,6 @@ typedef struct _GLFWwindowWin32
     HWND      handle;          // Window handle
     ATOM      classAtom;       // Window class atom
     int       modeID;          // Mode ID for fullscreen mode
-    HHOOK     keyboardHook;    // Keyboard hook handle
     DWORD     dwStyle;         // Window styles used for window creation
     DWORD     dwExStyle;       // --"--
 
@@ -326,8 +325,9 @@ typedef struct _GLFWwindowWin32
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryWin32
 {
-    // Instance of the application
-    HINSTANCE instance;
+    HINSTANCE instance;        // Instance of the application
+    HHOOK     keyboardHook;    // Keyboard hook handle
+    DWORD     foregroundLockTimeout;
 
     // Timer data
     struct {
@@ -340,8 +340,6 @@ typedef struct _GLFWlibraryWin32
     // System information
     struct {
         int     winVer;
-        int     hasUnicode;
-        DWORD   foregroundLockTimeout;
     } sys;
 
 #if !defined(_GLFW_NO_DLOAD_WINMM) || !defined(_GLFW_NO_DLOAD_GDI32)

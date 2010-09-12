@@ -43,9 +43,11 @@ int _glfwPlatformExtensionSupported(const char* extension)
 {
     const GLubyte* extensions;
 
-    if (_glfwWin.GetExtensionsStringEXT != NULL)
+    _GLFWwindow* window = _glfwLibrary.currentWindow;
+
+    if (window->WGL.GetExtensionsStringEXT != NULL)
     {
-        extensions = (GLubyte*) _glfwWin.GetExtensionsStringEXT();
+        extensions = (GLubyte*) window->WGL.GetExtensionsStringEXT();
         if (extensions != NULL)
         {
             if (_glfwStringInExtensionString(extension, extensions))
@@ -53,9 +55,9 @@ int _glfwPlatformExtensionSupported(const char* extension)
         }
     }
 
-    if (_glfwWin.GetExtensionsStringARB != NULL)
+    if (window->WGL.GetExtensionsStringARB != NULL)
     {
-        extensions = (GLubyte*) _glfwWin.GetExtensionsStringARB(_glfwWin.DC);
+        extensions = (GLubyte*) window->WGL.GetExtensionsStringARB(window->WGL.DC);
         if (extensions != NULL)
         {
             if (_glfwStringInExtensionString(extension, extensions))

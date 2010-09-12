@@ -134,22 +134,22 @@ int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
     // Get position values for all axes
     axis = 0;
     if (axis < numaxes)
-        pos[axis++] = _glfwCalcJoystickPos(ji.dwXpos, jc.wXmin, jc.wXmax);
+        pos[axis++] = calcJoystickPos(ji.dwXpos, jc.wXmin, jc.wXmax);
 
     if (axis < numaxes)
-        pos[axis++] = -_glfwCalcJoystickPos(ji.dwYpos, jc.wYmin, jc.wYmax);
+        pos[axis++] = -calcJoystickPos(ji.dwYpos, jc.wYmin, jc.wYmax);
 
     if (axis < numaxes && jc.wCaps & JOYCAPS_HASZ)
-        pos[axis++] = _glfwCalcJoystickPos(ji.dwZpos, jc.wZmin, jc.wZmax);
+        pos[axis++] = calcJoystickPos(ji.dwZpos, jc.wZmin, jc.wZmax);
 
     if (axis < numaxes && jc.wCaps & JOYCAPS_HASR)
-        pos[axis++] = _glfwCalcJoystickPos(ji.dwRpos, jc.wRmin, jc.wRmax);
+        pos[axis++] = calcJoystickPos(ji.dwRpos, jc.wRmin, jc.wRmax);
 
     if (axis < numaxes && jc.wCaps & JOYCAPS_HASU)
-        pos[axis++] = _glfwCalcJoystickPos(ji.dwUpos, jc.wUmin, jc.wUmax);
+        pos[axis++] = calcJoystickPos(ji.dwUpos, jc.wUmin, jc.wUmax);
 
     if (axis < numaxes && jc.wCaps & JOYCAPS_HASV)
-        pos[axis++] = -_glfwCalcJoystickPos(ji.dwVpos, jc.wVmin, jc.wVmax);
+        pos[axis++] = -calcJoystickPos(ji.dwVpos, jc.wVmin, jc.wVmax);
 
     return axis;
 }
@@ -160,7 +160,7 @@ int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
 //========================================================================
 
 int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
-    int numbuttons)
+                                    int numbuttons)
 {
     JOYCAPS jc;
     JOYINFOEX ji;
@@ -178,12 +178,10 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
     _glfw_joyGetPosEx(joy - GLFW_JOYSTICK_1, &ji);
 
     // Get states of all requested buttons
-    button = 0;
-    while (button < numbuttons && button < (int) jc.wNumButtons)
+    for (button = 0;  button < numbuttons && button < (int) jc.wNumButtons;  button++)
     {
         buttons[button] = (unsigned char)
             (ji.dwButtons & (1UL << button) ? GLFW_PRESS : GLFW_RELEASE);
-        button++;
     }
 
     return button;

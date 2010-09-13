@@ -39,25 +39,26 @@
 
 static int compareVideoModes(const void* firstPtr, const void* secondPtr)
 {
+    int firstBPP, secondBPP, firstSize, secondSize;
     GLFWvidmode* first = (GLFWvidmode*) firstPtr;
     GLFWvidmode* second = (GLFWvidmode*) secondPtr;
 
     // First sort on color bits per pixel
 
-    int firstBPP = first->redBits +
-                   first->greenBits +
-                   first->blueBits;
-    int secondBPP = second->redBits +
-                    second->greenBits +
-                    second->blueBits;
+    firstBPP = first->redBits +
+               first->greenBits +
+               first->blueBits;
+    secondBPP = second->redBits +
+                second->greenBits +
+                second->blueBits;
 
     if (firstBPP != secondBPP)
         return firstBPP - secondBPP;
 
     // Then sort on screen area, in pixels
 
-    int firstSize = first->width * first->height;
-    int secondSize = second->width * second->height;
+    firstSize = first->width * first->height;
+    secondSize = second->width * second->height;
 
     return firstSize - secondSize;
 }

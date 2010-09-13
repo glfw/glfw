@@ -47,7 +47,7 @@ static int _glfwError = GLFW_NO_ERROR;
 
 void _glfwSetError(int error)
 {
-  _glfwError = error;
+    _glfwError = error;
 }
 
 

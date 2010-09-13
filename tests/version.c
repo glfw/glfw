@@ -207,6 +207,8 @@ int main(int argc, char** argv)
         revision != GLFW_VERSION_REVISION)
         printf("*** WARNING: GLFW version mismatch! ***\n");
 
+    printf("GLFW library version string: \"%s\"\n", glfwGetVersionString());
+
     // Report OpenGL version
 
     printf("OpenGL context version string: \"%s\"\n", glGetString(GL_VERSION));

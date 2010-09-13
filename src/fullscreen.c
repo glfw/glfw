@@ -78,7 +78,7 @@ GLFWAPI int glfwGetVideoModes(GLFWvidmode* list, int maxcount)
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED);
-        return;
+        return 0;
     }
 
     if (maxcount <= 0 || list == NULL)

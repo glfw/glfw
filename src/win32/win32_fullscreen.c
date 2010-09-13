@@ -30,6 +30,9 @@
 
 #include "internal.h"
 
+#include <stdlib.h>
+#include <limits.h>
+
 
 //========================================================================
 // Convert BPP to RGB bits based on "best guess"
@@ -56,29 +59,76 @@ static void bpp2rgb(int bpp, int* r, int* g, int* b)
 
 
 //========================================================================
-// Return closest video mode by dimensions, refresh rate and channel sizes
+// Return closest video mode by dimensions, refresh rate and bits per pixel
 //========================================================================
 
-static int getClosestVideoMode(int* w, int* h,
-                               int* r, int* g, int* b,
-                               int* refresh)
+static GLboolean getClosestVideoMode(int* width, int* height,
+                                     int* bpp, int* refreshRate,
+                                     GLboolean exactBPP)
 {
-    int bpp, bestmode;
+    int mode, bestWidth, bestHeight, bestBPP, bestRate;
+    unsigned int sizeDiff, rateDiff, leastSizeDiff, leastRateDiff;
+    GLboolean foundMode = GL_FALSE;
+    DEVMODE dm;
 
-    // Colorbits = sum of red/green/blue bits
-    bpp = *r + *g + *b;
+    leastSizeDiff = leastRateDiff = UINT_MAX;
 
-    // If colorbits < 15 (e.g. 0) or >= 24, default to 32 bpp
-    if (bpp < 15 || bpp >= 24)
-        bpp = 32;
+    for (mode = 0;  ;  mode++)
+    {
+        dm.dmSize = sizeof(DEVMODE);
+        if (!EnumDisplaySettings(NULL, mode, &dm))
+            break;
 
-    // Find best match
-    bestmode = _glfwGetClosestVideoModeBPP(w, h, &bpp, refresh);
+        if (exactBPP && dm.dmBitsPerPel != *bpp)
+            continue;
 
-    // Convert "bits per pixel" to red, green & blue sizes
-    bpp2rgb(bpp, r, g, b);
+        sizeDiff = (abs(dm.dmBitsPerPel - *bpp) << 25) |
+                   ((dm.dmPelsWidth - *width) *
+                    (dm.dmPelsWidth - *width) +
+                    (dm.dmPelsHeight - *height) *
+                    (dm.dmPelsHeight - *height));
 
-    return bestmode;
+        if (*refreshRate > 0)
+        {
+            rateDiff = (dm.dmDisplayFrequency - *refreshRate) *
+                       (dm.dmDisplayFrequency - *refreshRate);
+        }
+        else
+        {
+            // If no refresh rate was specified, then they're all the same
+            rateDiff = 0;
+        }
+
+        // We match first BPP, then screen area and last refresh rate
+
+        if ((sizeDiff < leastSizeDiff) ||
+            (sizeDiff == leastSizeDiff && (rateDiff < leastRateDiff)))
+        {
+            bestWidth  = dm.dmPelsWidth;
+            bestHeight = dm.dmPelsHeight;
+            bestBPP    = dm.dmBitsPerPel;
+            bestRate   = dm.dmDisplayFrequency;
+
+            leastSizeDiff = sizeDiff;
+            leastRateDiff = rateDiff;
+
+            foundMode = GL_TRUE;
+        }
+    }
+
+    if (!foundMode)
+        return GL_FALSE;
+
+    *width  = bestWidth;
+    *height = bestHeight;
+    *bpp    = bestBPP;
+
+    // Only save the found refresh rate if the client requested a specific
+    // rate; otherwise keep it at zero to let Windows select the best rate
+    if (*refreshRate > 0)
+        *refreshRate = bestRate;
+
+    return GL_TRUE;
 }
 
 
@@ -87,131 +137,64 @@ static int getClosestVideoMode(int* w, int* h,
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Return closest video mode by dimensions, refresh rate and bits per pixel
+// Change the current video mode
 //========================================================================
 
-int _glfwGetClosestVideoModeBPP(int* w, int* h, int* bpp, int* refresh)
+void _glfwSetVideoMode(int* width, int* height,
+                       int* bpp, int* refreshRate,
+                       GLboolean exactBPP)
 {
-    int mode, bestmode, match, bestmatch, rr, bestrr, success;
     DEVMODE dm;
+    int closestWidth, closestHeight, closestBPP, closestRate;
 
-    // Find best match
-    bestmatch = 0x7fffffff;
-    bestrr    = 0x7fffffff;
-    mode = bestmode = 0;
+    closestWidth  = *width;
+    closestHeight = *height;
+    closestBPP    = *bpp;
+    closestRate   = *refreshRate;
 
-    do
+    if (getClosestVideoMode(&closestWidth, &closestHeight,
+                            &closestBPP, &closestRate, GL_FALSE))
     {
         dm.dmSize = sizeof(DEVMODE);
-        success = EnumDisplaySettings(NULL, mode, &dm);
-        if (success)
+        dm.dmFields     = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
+        dm.dmPelsWidth  = closestWidth;
+        dm.dmPelsHeight = closestHeight;
+        dm.dmBitsPerPel = closestBPP;
+
+        if (*refreshRate > 0)
         {
-            match = dm.dmBitsPerPel - *bpp;
-            if (match < 0)
-                match = -match;
-
-            match = (match << 25) |
-                    ((dm.dmPelsWidth - *w) *
-                     (dm.dmPelsWidth - *w) +
-                     (dm.dmPelsHeight - *h) *
-                     (dm.dmPelsHeight - *h));
-            if (match < bestmatch)
-            {
-                bestmatch = match;
-                bestmode  = mode;
-                bestrr = (dm.dmDisplayFrequency - *refresh) *
-                         (dm.dmDisplayFrequency - *refresh);
-            }
-            else if (match == bestmatch && *refresh > 0)
-            {
-                rr = (dm.dmDisplayFrequency - *refresh) *
-                     (dm.dmDisplayFrequency - *refresh);
-                if (rr < bestrr)
-                {
-                    bestmatch = match;
-                    bestmode  = mode;
-                    bestrr    = rr;
-                }
-            }
+            dm.dmFields |= DM_DISPLAYFREQUENCY;
+            dm.dmDisplayFrequency = closestRate;
         }
-        mode++;
+
+        if (ChangeDisplaySettings(&dm, CDS_FULLSCREEN) == DISP_CHANGE_SUCCESSFUL)
+        {
+            *width       = closestWidth;
+            *height      = closestHeight;
+            *bpp         = closestBPP;
+            *refreshRate = closestRate;
+        }
     }
-    while (success);
-
-    // Get the parameters for the best matching display mode
-    dm.dmSize = sizeof(DEVMODE);
-    EnumDisplaySettings(NULL, bestmode, &dm);
-
-    // Fill out actual width and height
-    *w = dm.dmPelsWidth;
-    *h = dm.dmPelsHeight;
-
-    // Return bits per pixel
-    *bpp = dm.dmBitsPerPel;
-
-    // Return vertical refresh rate
-    *refresh = dm.dmDisplayFrequency;
-
-    return bestmode;
-}
-
-
-//========================================================================
-// Change the current video mode
-//========================================================================
-
-void _glfwSetVideoModeMODE(int mode)
-{
-    DEVMODE dm;
-    int success;
-
-    // Get the parameters for the best matching display mode
-    dm.dmSize = sizeof(DEVMODE);
-    EnumDisplaySettings(NULL, mode, &dm);
-
-    // Set which fields we want to specify
-    dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
-
-    // Do we have a prefered refresh rate?
-    if (_glfwWin.desiredRefreshRate > 0)
-    {
-        dm.dmFields = dm.dmFields | DM_DISPLAYFREQUENCY;
-        dm.dmDisplayFrequency = _glfwWin.desiredRefreshRate;
-    }
-
-    // Change display setting
-    dm.dmSize = sizeof(DEVMODE);
-    success = ChangeDisplaySettings(&dm, CDS_FULLSCREEN);
-
-    // If the mode change was not possible, query the current display
-    // settings (we'll use the desktop resolution for fullscreen mode)
-    if (success == DISP_CHANGE_SUCCESSFUL)
-        _glfwWin.modeID = mode;
     else
     {
-        _glfwWin.modeID = ENUM_REGISTRY_SETTINGS;
+        dm.dmSize = sizeof(DEVMODE);
         EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &dm);
-    }
 
-    // Set the window size to that of the display mode
-    _glfwWin.width  = dm.dmPelsWidth;
-    _glfwWin.height = dm.dmPelsHeight;
+        *width       = dm.dmPelsWidth;
+        *height      = dm.dmPelsHeight;
+        *bpp         = dm.dmBitsPerPel;
+        *refreshRate = dm.dmDisplayFrequency;
+    }
 }
 
 
 //========================================================================
-// Change the current video mode
+// Restore the previously saved (original) video mode
 //========================================================================
 
-void _glfwSetVideoMode(int* w, int* h, int r, int g, int b, int refresh)
+void _glfwRestoreVideoMode(void)
 {
-    int bestmode;
-
-    // Find a best match mode
-    bestmode = getClosestVideoMode(w, h, &r, &g, &b, &refresh);
-
-    // Change mode
-    _glfwSetVideoModeMODE(bestmode);
+    ChangeDisplaySettings(NULL, CDS_FULLSCREEN);
 }
 
 

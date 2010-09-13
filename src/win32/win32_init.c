@@ -30,8 +30,8 @@
 
 #include "internal.h"
 
-// With the Borland C++ compiler, we want to disable FPU exceptions
 #ifdef __BORLANDC__
+// With the Borland C++ compiler, we want to disable FPU exceptions
 #include <float.h>
 #endif // __BORLANDC__
 
@@ -42,8 +42,9 @@
 
 static GLboolean initLibraries(void)
 {
-    // gdi32.dll (OpenGL pixel format functions & SwapBuffers)
 #ifndef _GLFW_NO_DLOAD_GDI32
+    // gdi32.dll (OpenGL pixel format functions & SwapBuffers)
+
     _glfwLibrary.Win32.libs.gdi32 = LoadLibrary("gdi32.dll");
     if (_glfwLibrary.Win32.libs.gdi32 != NULL)
     {
@@ -73,8 +74,9 @@ static GLboolean initLibraries(void)
         return GL_FALSE;
 #endif // _GLFW_NO_DLOAD_GDI32
 
-    // winmm.dll (for joystick and timer support)
 #ifndef _GLFW_NO_DLOAD_WINMM
+    // winmm.dll (for joystick and timer support)
+
     _glfwLibrary.Win32.libs.winmm = LoadLibrary("winmm.dll");
     if (_glfwLibrary.Win32.libs.winmm != NULL)
     {
@@ -153,7 +155,7 @@ int _glfwPlatformInit(void)
 {
     OSVERSIONINFO osi;
 
-    // To make SetForegroundWindow() work as we want, we need to fiddle
+    // To make SetForegroundWindow work as we want, we need to fiddle
     // with the FOREGROUNDLOCKTIMEOUT system setting (we do this as early
     // as possible in the hope of still being the foreground process)
     SystemParametersInfo(SPI_GETFOREGROUNDLOCKTIMEOUT, 0,
@@ -192,26 +194,19 @@ int _glfwPlatformInit(void)
             _glfwLibrary.Win32.sys.winVer = _GLFW_WIN_UNKNOWN_NT;
     }
 
-    // Load libraries (DLLs)
     if (!_glfwInitLibraries())
         return GL_FALSE;
 
+#ifdef __BORLANDC__
     // With the Borland C++ compiler, we want to disable FPU exceptions
     // (this is recommended for OpenGL applications under Windows)
-#ifdef __BORLANDC__
     _control87(MCW_EM, MCW_EM);
 #endif
 
-    // Retrieve GLFW instance handle
     _glfwLibrary.Win32.instance = GetModuleHandle(NULL);
 
-    // System keys are not disabled
-    _glfwLibrary.Win32.keyboardHook = NULL;
-
-    // Install atexit() routine
     atexit(glfw_atexit);
 
-    // Start the timer
     _glfwInitTimer();
 
     return GL_TRUE;
@@ -224,16 +219,14 @@ int _glfwPlatformInit(void)
 
 int _glfwPlatformTerminate(void)
 {
-    // Close OpenGL window
-    glfwCloseWindow();
+    while (_glfwLibrary.windowListHead)
+        glfwCloseWindow(_glfwLibrary.windowListHead);
 
-    // Enable system keys again (if they were disabled)
-    glfwEnable(GLFW_SYSTEM_KEYS);
+    // TODO: Remove keyboard hook
 
-    // Unload libraries (DLLs)
     _glfwFreeLibraries();
 
-    // Restore FOREGROUNDLOCKTIMEOUT system setting
+    // Restore previous FOREGROUNDLOCKTIMEOUT system setting
     SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0,
                          (LPVOID) _glfwLibrary.Win32.foregroundLockTimeout,
                          SPIF_SENDCHANGE);

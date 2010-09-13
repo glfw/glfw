@@ -36,7 +36,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Return GL_TRUE if joystick is present, else return GL_FALSE.
+// Return GL_TRUE if joystick is present, otherwise GL_FALSE
 //========================================================================
 
 static GLboolean isJoystickPresent(int joy)
@@ -56,7 +56,7 @@ static GLboolean isJoystickPresent(int joy)
 
 
 //========================================================================
-// Calculate joystick position
+// Calculate normalized joystick position
 //========================================================================
 
 static float calcJoystickPos(DWORD pos, DWORD min, DWORD max)

@@ -234,11 +234,11 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 
 // gdi32.dll shortcuts
 #ifndef _GLFW_NO_DLOAD_GDI32
-#define _glfw_ChoosePixelFormat   _glfwLibrary.Libs.ChoosePixelFormat
-#define _glfw_DescribePixelFormat _glfwLibrary.Libs.DescribePixelFormat
-#define _glfw_GetPixelFormat      _glfwLibrary.Libs.GetPixelFormat
-#define _glfw_SetPixelFormat      _glfwLibrary.Libs.SetPixelFormat
-#define _glfw_SwapBuffers         _glfwLibrary.Libs.SwapBuffers
+#define _glfw_ChoosePixelFormat   _glfwLibrary.Win32.libs.ChoosePixelFormat
+#define _glfw_DescribePixelFormat _glfwLibrary.Win32.libs.DescribePixelFormat
+#define _glfw_GetPixelFormat      _glfwLibrary.Win32.libs.GetPixelFormat
+#define _glfw_SetPixelFormat      _glfwLibrary.Win32.libs.SetPixelFormat
+#define _glfw_SwapBuffers         _glfwLibrary.Win32.libs.SwapBuffers
 #else
 #define _glfw_ChoosePixelFormat   ChoosePixelFormat
 #define _glfw_DescribePixelFormat DescribePixelFormat
@@ -249,10 +249,10 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 
 // winmm.dll shortcuts
 #ifndef _GLFW_NO_DLOAD_WINMM
-#define _glfw_joyGetDevCaps _glfwLibrary.Libs.joyGetDevCapsA
-#define _glfw_joyGetPos     _glfwLibrary.Libs.joyGetPos
-#define _glfw_joyGetPosEx   _glfwLibrary.Libs.joyGetPosEx
-#define _glfw_timeGetTime   _glfwLibrary.Libs.timeGetTime
+#define _glfw_joyGetDevCaps _glfwLibrary.Win32.libs.joyGetDevCapsA
+#define _glfw_joyGetPos     _glfwLibrary.Win32.libs.joyGetPos
+#define _glfw_joyGetPosEx   _glfwLibrary.Win32.libs.joyGetPosEx
+#define _glfw_timeGetTime   _glfwLibrary.Win32.libs.timeGetTime
 #else
 #define _glfw_joyGetDevCaps joyGetDevCapsA
 #define _glfw_joyGetPos     joyGetPos
@@ -306,7 +306,6 @@ typedef struct _GLFWwindowWin32
     // Platform specific window resources
     HWND      handle;          // Window handle
     ATOM      classAtom;       // Window class atom
-    int       modeID;          // Mode ID for fullscreen mode
     DWORD     dwStyle;         // Window styles used for window creation
     DWORD     dwExStyle;       // --"--
 
@@ -339,7 +338,7 @@ typedef struct _GLFWlibraryWin32
 
     // System information
     struct {
-        int     winVer;
+        int          winVer;
     } sys;
 
 #if !defined(_GLFW_NO_DLOAD_WINMM) || !defined(_GLFW_NO_DLOAD_GDI32)
@@ -393,10 +392,10 @@ typedef struct _GLFWlibraryWin32
 void _glfwInitTimer(void);
 
 // Fullscreen support
-int _glfwGetClosestVideoModeBPP(int* w, int* h, int* bpp, int* refresh);
-int _glfwGetClosestVideoMode(int* w, int* h, int* r, int* g, int* b, int* refresh);
-void _glfwSetVideoModeMODE(int mode);
-void _glfwSetVideoMode(int* w, int* h, int r, int g, int b, int refresh);
+void _glfwSetVideoMode(int* width, int* height,
+                       int* bpp, int* refreshRate,
+                       GLboolean exactBPP);
+void _glfwRestoreVideoMode(void);
 
 
 #endif // _platform_h_

@@ -215,19 +215,20 @@ GLFWAPI void* glfwGetProcAddress(const char* procname)
 
 GLFWAPI void glfwGetGLVersion(int* major, int* minor, int* rev)
 {
+    _GLFWwindow* window;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
     }
 
-    if (!_glfwLibrary.currentWindow)
+    window = _glfwLibrary.currentWindow;
+    if (!window)
     {
         _glfwSetError(GLFW_NO_CURRENT_WINDOW);
         return;
     }
-
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
 
     if (major != NULL)
         *major = window->glMajor;

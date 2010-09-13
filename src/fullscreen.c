@@ -30,6 +30,33 @@
 
 #include "internal.h"
 
+#include <stdlib.h>
+
+
+static int compareVideoModes(const void* firstPtr, const void* secondPtr)
+{
+    GLFWvidmode* first = (GLFWvidmode*) firstPtr;
+    GLFWvidmode* second = (GLFWvidmode*) secondPtr;
+
+    // First sort on color bits per pixel
+
+    int firstBPP = first->redBits +
+                   first->greenBits +
+                   first->blueBits;
+    int secondBPP = second->redBits +
+                    second->greenBits +
+                    second->blueBits;
+
+    if (firstBPP != secondBPP)
+        return firstBPP - secondBPP;
+
+    // Then sort on screen area, in pixels
+
+    int firstSize = first->width * first->height;
+    int secondSize = second->width * second->height;
+
+    return firstSize - secondSize;
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////
@@ -41,8 +68,7 @@
 
 GLFWAPI int glfwGetVideoModes(GLFWvidmode* list, int maxcount)
 {
-    int count, i, swap, res1, res2, depth1, depth2;
-    GLFWvidmode vm;
+    int count;
 
     if (!_glfwInitialized)
     {
@@ -59,28 +85,8 @@ GLFWAPI int glfwGetVideoModes(GLFWvidmode* list, int maxcount)
     // Get list of video modes
     count = _glfwPlatformGetVideoModes(list, maxcount);
 
-    // Sort list (bubble sort)
-    do
-    {
-        swap = 0;
-        for (i = 0;  i < count - 1;  i++)
-        {
-            res1   = list[i].width * list[i].height;
-            depth1 = list[i].redBits + list[i].greenBits + list[i].blueBits;
-            res2   = list[i + 1].width * list[i + 1].height;
-            depth2 = list[i + 1].redBits + list[i + 1].greenBits +
-                     list[i + 1].blueBits;
-
-            if ((depth2 < depth1) || ((depth2 == depth1) && (res2 < res1)))
-            {
-                vm = list[i];
-                list[i] = list[i + 1];
-                list[i + 1] = vm;
-                swap = 1;
-            }
-        }
-    }
-    while (swap);
+    if (count > 0)
+        qsort(list, count, sizeof(GLFWvidmode), compareVideoModes);
 
     return count;
 }

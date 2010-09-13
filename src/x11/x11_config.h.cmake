@@ -12,3 +12,5 @@
 /* Define this to 1 if glXGetProcAddressEXT is available */
 #cmakedefine _GLFW_HAS_GLXGETPROCADDRESSEXT 1
 
+#define _GLFW_VERSION_FULL "@GLFW_VERSION_FULL@"
+

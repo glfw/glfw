@@ -247,3 +247,32 @@ int _glfwPlatformTerminate(void)
     return GL_TRUE;
 }
 
+//========================================================================
+// Get the GLFW version string
+//========================================================================
+
+const char* _glfwPlatformGetVersionString(void)
+{
+    const char* version = "GLFW " _GLFW_VERSION_FULL
+#if defined(_GLFW_HAS_XRANDR)
+        " XRandR"
+#elif defined(_GLFW_HAS_XF86VIDMODE)
+        " Xf86VidMode"
+#endif
+#if defined(_GLFW_HAS_GLXGETPROCADDRESS)
+        " glXGetProcAddress"
+#elif defined(_GLFW_HAS_GLXGETPROCADDRESSARB)
+        " glXGetProcAddressARB"
+#elif defined(_GLFW_HAS_GLXGETPROCADDRESSEXT)
+        " glXGetProcAddressEXT"
+#elif defined(_GLFW_DLOPEN_LIBGL)
+        " dlopen(libGL)"
+#endif
+#if defined(_GLFW_USE_LINUX_JOYSTICKS)
+        " Linux joystick API"
+#endif
+        ;
+
+    return version;
+}
+

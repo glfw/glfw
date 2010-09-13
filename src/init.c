@@ -97,3 +97,13 @@ GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)
         *rev = GLFW_VERSION_REVISION;
 }
 
+
+//========================================================================
+// Get the GLFW version string
+//========================================================================
+
+GLFWAPI const char* glfwGetVersionString(void)
+{
+    return _glfwPlatformGetVersionString();
+}
+

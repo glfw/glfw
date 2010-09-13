@@ -235,9 +235,7 @@ GLFWGLOBAL _GLFWlibrary _glfwLibrary;
 // Init/terminate
 int _glfwPlatformInit(void);
 int _glfwPlatformTerminate(void);
-
-// Error handling
-void _glfwSetError(int error);
+const char* _glfwPlatformGetVersionString(void);
 
 // Enable/Disable
 void _glfwPlatformEnableSystemKeys(_GLFWwindow* window);
@@ -284,6 +282,9 @@ void* _glfwPlatformGetProcAddress(const char* procname);
 //========================================================================
 // Prototypes for platform independent internal functions
 //========================================================================
+
+// Error handling
+void _glfwSetError(int error);
 
 // Window management (window.c)
 void _glfwClearWindowHints(void);

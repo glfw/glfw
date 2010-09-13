@@ -399,6 +399,7 @@ typedef void (* GLFWcharfun)(GLFWwindow,int);
 GLFWAPI int  glfwInit(void);
 GLFWAPI void glfwTerminate(void);
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
+GLFWAPI const char* glfwGetVersionString(void);
 
 /* Error handling */
 GLFWAPI int glfwGetError(void);

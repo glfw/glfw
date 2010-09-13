@@ -49,14 +49,10 @@ GLFWAPI int glfwInit(void)
 
     memset(&_glfwLibrary, 0, sizeof(_glfwLibrary));
 
-    // Clear window hints
-    _glfwClearWindowHints();
-
-    // Platform specific initialization
     if (!_glfwPlatformInit())
         return GL_FALSE;
 
-    // Form now on, GLFW state is valid
+    // From now on, GLFW state is valid
     _glfwInitialized = GL_TRUE;
 
     return GL_TRUE;
@@ -72,7 +68,6 @@ GLFWAPI void glfwTerminate(void)
     if (!_glfwInitialized)
         return;
 
-    // Platform specific termination
     if (!_glfwPlatformTerminate())
         return;
 

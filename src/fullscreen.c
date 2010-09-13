@@ -33,6 +33,10 @@
 #include <stdlib.h>
 
 
+//========================================================================
+// Lexical comparison function for GLFW video modes, used by qsort
+//========================================================================
+
 static int compareVideoModes(const void* firstPtr, const void* secondPtr)
 {
     GLFWvidmode* first = (GLFWvidmode*) firstPtr;

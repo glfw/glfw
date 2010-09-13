@@ -685,7 +685,6 @@ static void initGLXExtensions(_GLFWwindow* window)
 //========================================================================
 
 static GLboolean createWindow(_GLFWwindow* window,
-                              int width, int height,
                               const _GLFWwndconfig* wndconfig)
 {
     XEvent event;
@@ -696,9 +695,9 @@ static GLboolean createWindow(_GLFWwindow* window,
     // Create one based on the visual used by the current context
 
     window->X11.colormap = XCreateColormap(_glfwLibrary.X11.display,
-                                        _glfwLibrary.X11.root,
-                                        window->GLX.visual->visual,
-                                        AllocNone);
+                                           _glfwLibrary.X11.root,
+                                           window->GLX.visual->visual,
+                                           AllocNone);
 
     // Create the actual window
     {
@@ -1370,7 +1369,6 @@ static void processSingleEvent(void)
 //========================================================================
 
 int _glfwPlatformOpenWindow(_GLFWwindow* window,
-                            int width, int height,
                             const _GLFWwndconfig* wndconfig,
                             const _GLFWfbconfig* fbconfig)
 {
@@ -1405,7 +1403,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     if (!createContext(window, wndconfig, (GLXFBConfigID) closest.platformID))
         return GL_FALSE;
 
-    if (!createWindow(window, width, height, wndconfig))
+    if (!createWindow(window, wndconfig))
         return GL_FALSE;
 
     if (wndconfig->mode == GLFW_FULLSCREEN)

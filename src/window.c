@@ -499,7 +499,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode)
     window->mode   = mode;
 
     // Platform specific window opening routine
-    if (!_glfwPlatformOpenWindow(window, width, height, &wndconfig, &fbconfig))
+    if (!_glfwPlatformOpenWindow(window, &wndconfig, &fbconfig))
     {
         glfwCloseWindow(window);
         return GL_FALSE;

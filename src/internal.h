@@ -255,7 +255,7 @@ double _glfwPlatformGetTime(void);
 void _glfwPlatformSetTime(double time);
 
 // Window management
-int  _glfwPlatformOpenWindow(_GLFWwindow* window, int width, int height, const _GLFWwndconfig* wndconfig, const _GLFWfbconfig* fbconfig);
+int  _glfwPlatformOpenWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWfbconfig* fbconfig);
 int  _glfwPlatformMakeWindowCurrent(_GLFWwindow* window);
 void _glfwPlatformCloseWindow(_GLFWwindow* window);
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title);

@@ -128,6 +128,7 @@ int _glfwStringInExtensionString(const char* string,
 GLFWAPI int glfwExtensionSupported(const char* extension)
 {
     const GLubyte* extensions;
+    _GLFWwindow* window;
     GLubyte* where;
     GLint count;
     int i;
@@ -138,13 +139,12 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
         return GL_FALSE;
     }
 
-    if (!_glfwLibrary.currentWindow)
+    window = _glfwLibrary.currentWindow;
+    if (!window)
     {
         _glfwSetError(GLFW_NO_CURRENT_WINDOW);
         return GL_FALSE;
     }
-
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
 
     // Extension names should not have spaces
     where = (GLubyte*) strchr(extension, ' ');

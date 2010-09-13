@@ -1451,7 +1451,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 // Make the OpenGL context associated with the specified window current
 //========================================================================
 
-int _glfwPlatformMakeWindowCurrent(_GLFWwindow* window)
+void _glfwPlatformMakeWindowCurrent(_GLFWwindow* window)
 {
     if (window)
     {

@@ -44,6 +44,32 @@ static int Max(int a, int b)
     return (a > b) ? a : b;
 }
 
+
+//========================================================================
+// Close all GLFW windows with the closed flag set
+//========================================================================
+
+static void closeFlaggedWindows(void)
+{
+    _GLFWwindow* window;
+
+    for (window = _glfwLibrary.windowListHead;  window; )
+    {
+        if (window->closed && window->windowCloseCallback)
+            window->closed = window->windowCloseCallback(window);
+
+        if (window->closed)
+        {
+            _GLFWwindow* next = window->next;
+            glfwCloseWindow(window);
+            window = next;
+        }
+        else
+            window = window->next;
+    }
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -1044,8 +1070,6 @@ GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfu
 
 GLFWAPI void glfwPollEvents(void)
 {
-    _GLFWwindow* window;
-
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED);
@@ -1054,20 +1078,7 @@ GLFWAPI void glfwPollEvents(void)
 
     _glfwPlatformPollEvents();
 
-    for (window = _glfwLibrary.windowListHead;  window; )
-    {
-        if (window->closed && window->windowCloseCallback)
-            window->closed = window->windowCloseCallback(window);
-
-        if (window->closed)
-        {
-            _GLFWwindow* next = window->next;
-            glfwCloseWindow(window);
-            window = next;
-        }
-        else
-            window = window->next;
-    }
+    closeFlaggedWindows();
 }
 
 
@@ -1084,5 +1095,7 @@ GLFWAPI void glfwWaitEvents(void)
     }
 
     _glfwPlatformWaitEvents();
+
+    closeFlaggedWindows();
 }
 

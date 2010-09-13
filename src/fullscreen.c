@@ -86,9 +86,7 @@ GLFWAPI int glfwGetVideoModes(GLFWvidmode* list, int maxcount)
         return 0;
     }
 
-    // Get list of video modes
     count = _glfwPlatformGetVideoModes(list, maxcount);
-
     if (count > 0)
         qsort(list, count, sizeof(GLFWvidmode), compareVideoModes);
 

@@ -50,9 +50,11 @@ GLFWAPI int glfwInit(void)
     memset(&_glfwLibrary, 0, sizeof(_glfwLibrary));
 
     if (!_glfwPlatformInit())
+    {
+        _glfwPlatformTerminate();
         return GL_FALSE;
+    }
 
-    // From now on, GLFW state is valid
     _glfwInitialized = GL_TRUE;
 
     return GL_TRUE;
@@ -71,7 +73,6 @@ GLFWAPI void glfwTerminate(void)
     if (!_glfwPlatformTerminate())
         return;
 
-    // GLFW is no longer initialized
     _glfwInitialized = GL_FALSE;
 }
 

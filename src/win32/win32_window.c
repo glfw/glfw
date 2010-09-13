@@ -31,6 +31,7 @@
 #include "internal.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 
 // We use versioned window class names in order not to cause conflicts
@@ -611,6 +612,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
     switch (uMsg)
     {
+        case WM_CREATE:
+        {
+            CREATESTRUCT* cs = (CREATESTRUCT*) lParam;
+            SetWindowLongPtr(hWnd, 0, cs->lpCreateParams);
+            break;
+        }
+
         // Window activate message? (iconification?)
         case WM_ACTIVATE:
         {
@@ -1143,7 +1151,7 @@ static int createWindow(_GLFWwindow* window,
                                           NULL,                  // No parent window
                                           NULL,                  // No menu
                                           _glfwLibrary.Win32.instance,
-                                          NULL);                 // No lParam to WM_CREATE
+                                          window);  // Pass GLFW window to WM_CREATE
 
     if (!window->Win32.handle)
     {
@@ -1166,11 +1174,7 @@ static int createWindow(_GLFWwindow* window,
     if (!window->WGL.context)
         return GL_FALSE;
 
-    if (!wglMakeCurrent(window->WGL.DC, window->WGL.context))
-    {
-        _glfwSetError(GLFW_INTERNAL_ERROR);
-        return GL_FALSE;
-    }
+    glfwMakeWindowCurrent(window);
 
     initWGLExtensions(window);
 

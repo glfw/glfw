@@ -336,11 +336,6 @@ typedef struct _GLFWlibraryWin32
         __int64      t0_64;
     } timer;
 
-    // System information
-    struct {
-        int          winVer;
-    } sys;
-
 #if !defined(_GLFW_NO_DLOAD_WINMM) || !defined(_GLFW_NO_DLOAD_GDI32)
     // Library handles and function pointers
     struct {

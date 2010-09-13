@@ -30,6 +30,8 @@
 
 #include "internal.h"
 
+#include <stdlib.h>
+
 #ifdef __BORLANDC__
 // With the Borland C++ compiler, we want to disable FPU exceptions
 #include <float.h>
@@ -59,11 +61,11 @@ static GLboolean initLibraries(void)
         _glfwLibrary.Win32.libs.SwapBuffers = (SWAPBUFFERS_T)
             GetProcAddress(_glfwLibrary.Win32.libs.gdi32, "SwapBuffers");
 
-        if (_glfwLibrary.Win32.libs.ChoosePixelFormat &&
-            _glfwLibrary.Win32.libs.DescribePixelFormat &&
-            _glfwLibrary.Win32.libs.GetPixelFormat &&
-            _glfwLibrary.Win32.libs.SetPixelFormat &&
-            _glfwLibrary.Win32.libs.SwapBuffers)
+        if (!_glfwLibrary.Win32.libs.ChoosePixelFormat ||
+            !_glfwLibrary.Win32.libs.DescribePixelFormat ||
+            !_glfwLibrary.Win32.libs.GetPixelFormat ||
+            !_glfwLibrary.Win32.libs.SetPixelFormat ||
+            !_glfwLibrary.Win32.libs.SwapBuffers)
         {
             FreeLibrary(_glfwLibrary.Win32.libs.gdi32);
             _glfwLibrary.Win32.libs.gdi32 = NULL;
@@ -89,10 +91,10 @@ static GLboolean initLibraries(void)
         _glfwLibrary.Win32.libs.timeGetTime = (TIMEGETTIME_T)
             GetProcAddress(_glfwLibrary.Win32.libs.winmm, "timeGetTime");
 
-        if (_glfwLibrary.Win32.libs.joyGetDevCapsA &&
-            _glfwLibrary.Win32.libs.joyGetPos &&
-            _glfwLibrary.Win32.libs.joyGetPosEx &&
-            _glfwLibrary.Win32.libs.timeGetTime)
+        if (!_glfwLibrary.Win32.libs.joyGetDevCapsA ||
+            !_glfwLibrary.Win32.libs.joyGetPos ||
+            !_glfwLibrary.Win32.libs.joyGetPosEx ||
+            !_glfwLibrary.Win32.libs.timeGetTime)
         {
             FreeLibrary(_glfwLibrary.Win32.libs.winmm);
             _glfwLibrary.Win32.libs.winmm = NULL;
@@ -153,8 +155,6 @@ static void glfw_atexit(void)
 
 int _glfwPlatformInit(void)
 {
-    OSVERSIONINFO osi;
-
     // To make SetForegroundWindow work as we want, we need to fiddle
     // with the FOREGROUNDLOCKTIMEOUT system setting (we do this as early
     // as possible in the hope of still being the foreground process)
@@ -163,38 +163,7 @@ int _glfwPlatformInit(void)
     SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, (LPVOID) 0,
                          SPIF_SENDCHANGE);
 
-    // Check which OS version we are running
-    osi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-    GetVersionEx(&osi);
-
-    _glfwLibrary.Win32.sys.winVer = _GLFW_WIN_UNKNOWN;
-
-    if (osi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
-    {
-        if (osi.dwMajorVersion == 4 && osi.dwMinorVersion < 10)
-            _glfwLibrary.Win32.sys.winVer = _GLFW_WIN_95;
-        else if (osi.dwMajorVersion == 4 && osi.dwMinorVersion < 90)
-            _glfwLibrary.Win32.sys.winVer = _GLFW_WIN_98;
-        else if (osi.dwMajorVersion == 4 && osi.dwMinorVersion == 90)
-            _glfwLibrary.Win32.sys.winVer = _GLFW_WIN_ME;
-        else if (osi.dwMajorVersion >= 4)
-            _glfwLibrary.Win32.sys.winVer = _GLFW_WIN_UNKNOWN_9x;
-    }
-    else if (osi.dwPlatformId == VER_PLATFORM_WIN32_NT)
-    {
-        if (osi.dwMajorVersion == 4 && osi.dwMinorVersion == 0)
-            _glfwLibrary.Win32.sys.winVer = _GLFW_WIN_NT4;
-        else if (osi.dwMajorVersion == 5 && osi.dwMinorVersion == 0)
-            _glfwLibrary.Win32.sys.winVer = _GLFW_WIN_2K;
-        else if (osi.dwMajorVersion == 5 && osi.dwMinorVersion == 1)
-            _glfwLibrary.Win32.sys.winVer = _GLFW_WIN_XP;
-        else if (osi.dwMajorVersion == 5 && osi.dwMinorVersion == 2)
-            _glfwLibrary.Win32.sys.winVer = _GLFW_WIN_NET_SERVER;
-        else if (osi.dwMajorVersion >= 5)
-            _glfwLibrary.Win32.sys.winVer = _GLFW_WIN_UNKNOWN_NT;
-    }
-
-    if (!_glfwInitLibraries())
+    if (!initLibraries())
         return GL_FALSE;
 
 #ifdef __BORLANDC__
@@ -224,7 +193,7 @@ int _glfwPlatformTerminate(void)
 
     // TODO: Remove keyboard hook
 
-    _glfwFreeLibraries();
+    freeLibraries();
 
     // Restore previous FOREGROUNDLOCKTIMEOUT system setting
     SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0,
@@ -232,5 +201,38 @@ int _glfwPlatformTerminate(void)
                          SPIF_SENDCHANGE);
 
     return GL_TRUE;
+}
+
+
+//========================================================================
+// Get the GLFW version string
+//========================================================================
+
+const char* _glfwPlatformGetVersionString(void)
+{
+    const char* version = "GLFW "
+#if defined(__MINGW32__)
+        " MinGW"
+#elif defined(__CYGWIN__)
+        " Cygwin"
+#elif defined(_MSC_VER)
+        " Visual C++"
+#elif defined(__BORLANDC__)
+        " Borland C"
+#else
+        " (unknown compiler)"
+#endif
+#if defined(GLFW_BUILD_DLL)
+        " DLL"
+#endif
+#if !defined(_GLFW_NO_DLOAD_GDI32)
+        " load(gdi32)"
+#endif
+#if !defined(_GLFW_NO_DLOAD_WINMM)
+        " load(winmm)"
+#endif
+        ;
+
+    return version;
 }
 

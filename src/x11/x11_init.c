@@ -258,6 +258,8 @@ const char* _glfwPlatformGetVersionString(void)
         " XRandR"
 #elif defined(_GLFW_HAS_XF86VIDMODE)
         " Xf86VidMode"
+#else
+        " (no mode switching support)"
 #endif
 #if defined(_GLFW_HAS_GLXGETPROCADDRESS)
         " glXGetProcAddress"
@@ -267,9 +269,13 @@ const char* _glfwPlatformGetVersionString(void)
         " glXGetProcAddressEXT"
 #elif defined(_GLFW_DLOPEN_LIBGL)
         " dlopen(libGL)"
+#else
+        " (no OpenGL extension support)"
 #endif
 #if defined(_GLFW_USE_LINUX_JOYSTICKS)
         " Linux joystick API"
+#else
+        " (no joystick support)"
 #endif
         ;
 

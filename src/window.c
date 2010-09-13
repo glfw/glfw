@@ -979,7 +979,7 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow window)
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED);
-        return;
+        return NULL;
     }
 
     return window->userPointer;

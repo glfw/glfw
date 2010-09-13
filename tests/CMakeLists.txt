@@ -5,11 +5,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include ${OPENGL_INCLUDE_DIR}
 
 add_executable(defaults defaults.c)
 add_executable(events events.c)
-add_executable(iconify iconify.c)
+add_executable(iconify iconify.c getopt.c)
 add_executable(joysticks joysticks.c)
 add_executable(peter peter.c)
 add_executable(reopen reopen.c)
-add_executable(version version.c)
+add_executable(version version.c getopt.c)
 
 if(APPLE)
   # Set fancy names for bundles

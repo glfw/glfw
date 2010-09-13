@@ -1039,11 +1039,13 @@ GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfu
 
 
 //========================================================================
-// Poll for new window and input events
+// Poll for new window and input events and close any flagged windows
 //========================================================================
 
 GLFWAPI void glfwPollEvents(void)
 {
+    _GLFWwindow* window;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED);
@@ -1051,6 +1053,21 @@ GLFWAPI void glfwPollEvents(void)
     }
 
     _glfwPlatformPollEvents();
+
+    for (window = _glfwLibrary.windowListHead;  window; )
+    {
+        if (window->closed && window->windowCloseCallback)
+            window->closed = window->windowCloseCallback(window);
+
+        if (window->closed)
+        {
+            _GLFWwindow* next = window->next;
+            glfwCloseWindow(window);
+            window = next;
+        }
+        else
+            window = window->next;
+    }
 }
 
 

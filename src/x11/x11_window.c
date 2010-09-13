@@ -1756,21 +1756,6 @@ void _glfwPlatformPollEvents(void)
                                            window->height / 2);
         }
     }
-
-    for (window = _glfwLibrary.windowListHead;  window; )
-    {
-        if (window->closed && window->windowCloseCallback)
-            window->closed = window->windowCloseCallback(window);
-
-        if (window->closed)
-        {
-            _GLFWwindow* next = window->next;
-            glfwCloseWindow(window);
-            window = next;
-        }
-        else
-            window = window->next;
-    }
 }
 
 

@@ -234,11 +234,11 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 
 // gdi32.dll shortcuts
 #ifndef _GLFW_NO_DLOAD_GDI32
-#define _glfw_ChoosePixelFormat   _glfwLibrary.Win32.libs.ChoosePixelFormat
-#define _glfw_DescribePixelFormat _glfwLibrary.Win32.libs.DescribePixelFormat
-#define _glfw_GetPixelFormat      _glfwLibrary.Win32.libs.GetPixelFormat
-#define _glfw_SetPixelFormat      _glfwLibrary.Win32.libs.SetPixelFormat
-#define _glfw_SwapBuffers         _glfwLibrary.Win32.libs.SwapBuffers
+#define _glfw_ChoosePixelFormat   _glfwLibrary.Win32.gdi.ChoosePixelFormat
+#define _glfw_DescribePixelFormat _glfwLibrary.Win32.gdi.DescribePixelFormat
+#define _glfw_GetPixelFormat      _glfwLibrary.Win32.gdi.GetPixelFormat
+#define _glfw_SetPixelFormat      _glfwLibrary.Win32.gdi.SetPixelFormat
+#define _glfw_SwapBuffers         _glfwLibrary.Win32.gdi.SwapBuffers
 #else
 #define _glfw_ChoosePixelFormat   ChoosePixelFormat
 #define _glfw_DescribePixelFormat DescribePixelFormat
@@ -249,10 +249,10 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 
 // winmm.dll shortcuts
 #ifndef _GLFW_NO_DLOAD_WINMM
-#define _glfw_joyGetDevCaps _glfwLibrary.Win32.libs.joyGetDevCapsA
-#define _glfw_joyGetPos     _glfwLibrary.Win32.libs.joyGetPos
-#define _glfw_joyGetPosEx   _glfwLibrary.Win32.libs.joyGetPosEx
-#define _glfw_timeGetTime   _glfwLibrary.Win32.libs.timeGetTime
+#define _glfw_joyGetDevCaps _glfwLibrary.Win32.winmm.joyGetDevCapsA
+#define _glfw_joyGetPos     _glfwLibrary.Win32.winmm.joyGetPos
+#define _glfw_joyGetPosEx   _glfwLibrary.Win32.winmm.joyGetPosEx
+#define _glfw_timeGetTime   _glfwLibrary.Win32.winmm.timeGetTime
 #else
 #define _glfw_joyGetDevCaps joyGetDevCapsA
 #define _glfw_joyGetPos     joyGetPos
@@ -341,29 +341,28 @@ typedef struct _GLFWlibraryWin32
         __int64      t0_64;
     } timer;
 
-#if !defined(_GLFW_NO_DLOAD_WINMM) || !defined(_GLFW_NO_DLOAD_GDI32)
-    // Library handles and function pointers
-    struct {
 #ifndef _GLFW_NO_DLOAD_GDI32
-        // gdi32.dll
-        HINSTANCE             gdi32;
+    // gdi32.dll
+    struct {
+        HINSTANCE             instance;
         CHOOSEPIXELFORMAT_T   ChoosePixelFormat;
         DESCRIBEPIXELFORMAT_T DescribePixelFormat;
         GETPIXELFORMAT_T      GetPixelFormat;
         SETPIXELFORMAT_T      SetPixelFormat;
         SWAPBUFFERS_T         SwapBuffers;
+    } gdi;
 #endif // _GLFW_NO_DLOAD_GDI32
 
-      // winmm.dll
 #ifndef _GLFW_NO_DLOAD_WINMM
+    // winmm.dll
+    struct {
         HINSTANCE             winmm;
         JOYGETDEVCAPSA_T      joyGetDevCapsA;
         JOYGETPOS_T           joyGetPos;
         JOYGETPOSEX_T         joyGetPosEx;
         TIMEGETTIME_T         timeGetTime;
+    } winmm;
 #endif // _GLFW_NO_DLOAD_WINMM
-    } libs;
-#endif
 
 } _GLFWlibraryWin32;
 

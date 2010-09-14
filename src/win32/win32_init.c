@@ -47,62 +47,54 @@ static GLboolean initLibraries(void)
 #ifndef _GLFW_NO_DLOAD_GDI32
     // gdi32.dll (OpenGL pixel format functions & SwapBuffers)
 
-    _glfwLibrary.Win32.libs.gdi32 = LoadLibrary("gdi32.dll");
-    if (_glfwLibrary.Win32.libs.gdi32 != NULL)
-    {
-        _glfwLibrary.Win32.libs.ChoosePixelFormat = (CHOOSEPIXELFORMAT_T)
-            GetProcAddress(_glfwLibrary.Win32.libs.gdi32, "ChoosePixelFormat");
-        _glfwLibrary.Win32.libs.DescribePixelFormat = (DESCRIBEPIXELFORMAT_T)
-            GetProcAddress(_glfwLibrary.Win32.libs.gdi32, "DescribePixelFormat");
-        _glfwLibrary.Win32.libs.GetPixelFormat = (GETPIXELFORMAT_T)
-            GetProcAddress(_glfwLibrary.Win32.libs.gdi32, "GetPixelFormat");
-        _glfwLibrary.Win32.libs.SetPixelFormat = (SETPIXELFORMAT_T)
-            GetProcAddress(_glfwLibrary.Win32.libs.gdi32, "SetPixelFormat");
-        _glfwLibrary.Win32.libs.SwapBuffers = (SWAPBUFFERS_T)
-            GetProcAddress(_glfwLibrary.Win32.libs.gdi32, "SwapBuffers");
-
-        if (!_glfwLibrary.Win32.libs.ChoosePixelFormat ||
-            !_glfwLibrary.Win32.libs.DescribePixelFormat ||
-            !_glfwLibrary.Win32.libs.GetPixelFormat ||
-            !_glfwLibrary.Win32.libs.SetPixelFormat ||
-            !_glfwLibrary.Win32.libs.SwapBuffers)
-        {
-            FreeLibrary(_glfwLibrary.Win32.libs.gdi32);
-            _glfwLibrary.Win32.libs.gdi32 = NULL;
-            return GL_FALSE;
-        }
-    }
-    else
+    _glfwLibrary.Win32.gdi.instance = LoadLibrary("gdi32.dll");
+    if (!_glfwLibrary.Win32.gdi.instance)
         return GL_FALSE;
+
+    _glfwLibrary.Win32.gdi.ChoosePixelFormat = (CHOOSEPIXELFORMAT_T)
+        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "ChoosePixelFormat");
+    _glfwLibrary.Win32.gdi.DescribePixelFormat = (DESCRIBEPIXELFORMAT_T)
+        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "DescribePixelFormat");
+    _glfwLibrary.Win32.gdi.GetPixelFormat = (GETPIXELFORMAT_T)
+        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "GetPixelFormat");
+    _glfwLibrary.Win32.gdi.SetPixelFormat = (SETPIXELFORMAT_T)
+        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "SetPixelFormat");
+    _glfwLibrary.Win32.gdi.SwapBuffers = (SWAPBUFFERS_T)
+        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "SwapBuffers");
+
+    if (!_glfwLibrary.Win32.gdi.ChoosePixelFormat ||
+        !_glfwLibrary.Win32.gdi.DescribePixelFormat ||
+        !_glfwLibrary.Win32.gdi.GetPixelFormat ||
+        !_glfwLibrary.Win32.gdi.SetPixelFormat ||
+        !_glfwLibrary.Win32.gdi.SwapBuffers)
+    {
+        return GL_FALSE;
+    }
 #endif // _GLFW_NO_DLOAD_GDI32
 
 #ifndef _GLFW_NO_DLOAD_WINMM
     // winmm.dll (for joystick and timer support)
 
-    _glfwLibrary.Win32.libs.winmm = LoadLibrary("winmm.dll");
-    if (_glfwLibrary.Win32.libs.winmm != NULL)
-    {
-        _glfwLibrary.Win32.libs.joyGetDevCapsA = (JOYGETDEVCAPSA_T)
-            GetProcAddress(_glfwLibrary.Win32.libs.winmm, "joyGetDevCapsA");
-        _glfwLibrary.Win32.libs.joyGetPos = (JOYGETPOS_T)
-            GetProcAddress(_glfwLibrary.Win32.libs.winmm, "joyGetPos");
-        _glfwLibrary.Win32.libs.joyGetPosEx = (JOYGETPOSEX_T)
-            GetProcAddress(_glfwLibrary.Win32.libs.winmm, "joyGetPosEx");
-        _glfwLibrary.Win32.libs.timeGetTime = (TIMEGETTIME_T)
-            GetProcAddress(_glfwLibrary.Win32.libs.winmm, "timeGetTime");
-
-        if (!_glfwLibrary.Win32.libs.joyGetDevCapsA ||
-            !_glfwLibrary.Win32.libs.joyGetPos ||
-            !_glfwLibrary.Win32.libs.joyGetPosEx ||
-            !_glfwLibrary.Win32.libs.timeGetTime)
-        {
-            FreeLibrary(_glfwLibrary.Win32.libs.winmm);
-            _glfwLibrary.Win32.libs.winmm = NULL;
-            return GL_FALSE;
-        }
-    }
-    else
+    _glfwLibrary.Win32.winmm.instance = LoadLibrary("winmm.dll");
+    if (!_glfwLibrary.Win32.winmm.instance)
         return GL_FALSE;
+
+    _glfwLibrary.Win32.winmm.joyGetDevCapsA = (JOYGETDEVCAPSA_T)
+        GetProcAddress(_glfwLibrary.Win32.winmm.instance, "joyGetDevCapsA");
+    _glfwLibrary.Win32.winmm.joyGetPos = (JOYGETPOS_T)
+        GetProcAddress(_glfwLibrary.Win32.winmm.instance, "joyGetPos");
+    _glfwLibrary.Win32.winmm.joyGetPosEx = (JOYGETPOSEX_T)
+        GetProcAddress(_glfwLibrary.Win32.winmm.instance, "joyGetPosEx");
+    _glfwLibrary.Win32.winmm.timeGetTime = (TIMEGETTIME_T)
+        GetProcAddress(_glfwLibrary.Win32.winmm.instance, "timeGetTime");
+
+    if (!_glfwLibrary.Win32.winmm.joyGetDevCapsA ||
+        !_glfwLibrary.Win32.winmm.joyGetPos ||
+        !_glfwLibrary.Win32.winmm.joyGetPosEx ||
+        !_glfwLibrary.Win32.winmm.timeGetTime)
+    {
+        return GL_FALSE;
+    }
 #endif // _GLFW_NO_DLOAD_WINMM
 
     return GL_TRUE;
@@ -115,21 +107,19 @@ static GLboolean initLibraries(void)
 
 static void freeLibraries(void)
 {
-    // gdi32.dll
 #ifndef _GLFW_NO_DLOAD_GDI32
-    if (_glfwLibrary.Win32.libs.gdi32 != NULL)
+    if (_glfwLibrary.Win32.gdi.instance != NULL)
     {
-        FreeLibrary(_glfwLibrary.Win32.libs.gdi32);
-        _glfwLibrary.Win32.libs.gdi32 = NULL;
+        FreeLibrary(_glfwLibrary.Win32.gdi.instance);
+        _glfwLibrary.Win32.gdi.instance = NULL;
     }
 #endif // _GLFW_NO_DLOAD_GDI32
 
-    // winmm.dll
 #ifndef _GLFW_NO_DLOAD_WINMM
-    if (_glfwLibrary.Win32.libs.winmm != NULL)
+    if (_glfwLibrary.Win32.winmm.winmm != NULL)
     {
-        FreeLibrary(_glfwLibrary.Win32.libs.winmm);
-        _glfwLibrary.Win32.libs.winmm = NULL;
+        FreeLibrary(_glfwLibrary.Win32.winmm.winmm);
+        _glfwLibrary.Win32.winmm.winmm = NULL;
     }
 #endif // _GLFW_NO_DLOAD_WINMM
 }

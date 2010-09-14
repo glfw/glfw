@@ -808,6 +808,26 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow window, int width, int height)
 
 
 //========================================================================
+// Get the window position
+//========================================================================
+
+GLFWAPI void glfwGetWindowPos(GLFWwindow window, int* x, int* y)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
+        return;
+    }
+
+    if (x != NULL)
+        *x = window->positionX;
+
+    if (y != NULL)
+        *y = window->positionY;
+}
+
+
+//========================================================================
 // Set the window position
 //========================================================================
 

@@ -906,6 +906,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOVE:
         {
+            window->positionX = LOWORD(lParam);
+            window->positionY = HIWORD(lParam);
+
             // If the mouse is locked, update the clipping rect
             if (window == _glfwLibrary.cursorLockWindow)
             {

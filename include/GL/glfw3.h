@@ -418,6 +418,7 @@ GLFWAPI void glfwCloseWindow(GLFWwindow window);
 GLFWAPI void glfwSetWindowTitle(GLFWwindow, const char* title);
 GLFWAPI void glfwGetWindowSize(GLFWwindow, int* width, int* height);
 GLFWAPI void glfwSetWindowSize(GLFWwindow, int width, int height);
+GLFWAPI void glfwGetWindowPos(GLFWwindow, int* x, int* y);
 GLFWAPI void glfwSetWindowPos(GLFWwindow, int x, int y);
 GLFWAPI void glfwIconifyWindow(GLFWwindow window);
 GLFWAPI void glfwRestoreWindow(GLFWwindow window);

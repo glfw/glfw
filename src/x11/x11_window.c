@@ -1215,6 +1215,14 @@ static void processSingleEvent(void)
                                                window->height);
                 }
             }
+
+            if (event.xconfigure.x != window->positionX ||
+                event.xconfigure.y != window->positionY)
+            {
+                window->positionX = event.xconfigure.x;
+                window->positionY = event.xconfigure.y;
+            }
+
             break;
         }
 

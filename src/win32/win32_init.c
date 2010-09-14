@@ -191,6 +191,12 @@ int _glfwPlatformTerminate(void)
     while (_glfwLibrary.windowListHead)
         glfwCloseWindow(_glfwLibrary.windowListHead);
 
+    if (_glfwLibrary.Win32.classAtom)
+    {
+        UnregisterClass(_GLFW_WNDCLASSNAME, _glfwLibrary.Win32.instance);
+        _glfwLibrary.Win32.classAtom = 0;
+    }
+
     // TODO: Remove keyboard hook
 
     freeLibraries();

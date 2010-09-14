@@ -34,11 +34,6 @@
 #include <stdlib.h>
 
 
-// We use versioned window class names in order not to cause conflicts
-// between applications using different versions of GLFW
-#define _GLFW_WNDCLASSNAME "GLFW30"
-
-
 //========================================================================
 // Convert BPP to RGB bits based on "best guess"
 //========================================================================
@@ -320,18 +315,25 @@ static HGLRC createContext(_GLFWwindow* window,
                            const _GLFWwndconfig* wndconfig,
                            int pixelFormat)
 {
+    HGLRC context;
     PIXELFORMATDESCRIPTOR pfd;
     int flags, i = 0, attribs[7];
 
     if (!_glfw_DescribePixelFormat(window->WGL.DC, pixelFormat, sizeof(pfd), &pfd))
+    {
+        _glfwSetError(GLFW_INTERNAL_ERROR);
         return NULL;
+    }
 
     if (!_glfw_SetPixelFormat(window->WGL.DC, pixelFormat, &pfd))
+    {
+        _glfwSetError(GLFW_INTERNAL_ERROR);
         return NULL;
+    }
 
     if (window->WGL.has_WGL_ARB_create_context)
     {
-        // Use the newer wglCreateContextAttribsARB
+        // Use the newer wglCreateContextAttribsARB creation method
 
         if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
         {
@@ -370,10 +372,24 @@ static HGLRC createContext(_GLFWwindow* window,
 
         attribs[i++] = 0;
 
-        return window->WGL.CreateContextAttribsARB(window->WGL.DC, NULL, attribs);
+        context = window->WGL.CreateContextAttribsARB(window->WGL.DC, NULL, attribs);
+        if (!context)
+        {
+            _glfwSetError(GLFW_INTERNAL_ERROR);
+            return NULL;
+        }
+    }
+    else
+    {
+        context = wglCreateContext(window->WGL.DC);
+        if (!context)
+        {
+            _glfwSetError(GLFW_INTERNAL_ERROR);
+            return NULL;
+        }
     }
 
-    return wglCreateContext(window->WGL.DC);
+    return context;
 }
 
 
@@ -615,7 +631,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_CREATE:
         {
             CREATESTRUCT* cs = (CREATESTRUCT*) lParam;
-            SetWindowLongPtr(hWnd, 0, cs->lpCreateParams);
+            SetWindowLongPtr(hWnd, 0, (LONG_PTR) cs->lpCreateParams);
             break;
         }
 
@@ -714,9 +730,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_CLOSE:
         {
-            // Translate this to WM_QUIT so that we can handle all cases in the
-            // same place
-            PostQuitMessage(0);
+            // Flag this window for closing (handled in glfwPollEvents)
+            window->closed = GL_TRUE;
             return 0;
         }
 
@@ -1021,6 +1036,7 @@ static void initWGLExtensions(_GLFWwindow* window)
 static ATOM registerWindowClass(void)
 {
     WNDCLASS wc;
+    ATOM classAtom;
 
     // Set window class parameters
     wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC; // Redraw on...
@@ -1041,7 +1057,14 @@ static ATOM registerWindowClass(void)
         wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
     }
 
-    return RegisterClass(&wc);
+    classAtom = RegisterClass(&wc);
+    if (!classAtom)
+    {
+        _glfwSetError(GLFW_INTERNAL_ERROR);
+        return 0;
+    }
+
+    return classAtom;
 }
 
 
@@ -1231,9 +1254,12 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 
     window->Win32.desiredRefreshRate = wndconfig->refreshRate;
 
-    window->Win32.classAtom = registerWindowClass();
-    if (!window->Win32.classAtom)
-        return GL_FALSE;
+    if (!_glfwLibrary.Win32.classAtom)
+    {
+        _glfwLibrary.Win32.classAtom = registerWindowClass();
+        if (!_glfwLibrary.Win32.classAtom)
+            return GL_FALSE;
+    }
 
     if (window->mode == GLFW_FULLSCREEN)
     {
@@ -1334,17 +1360,8 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
 {
     destroyWindow(window);
 
-    if (window->Win32.classAtom)
-    {
-        UnregisterClass(_GLFW_WNDCLASSNAME, _glfwLibrary.Win32.instance);
-        window->Win32.classAtom = 0;
-    }
-
     if (window->mode == GLFW_FULLSCREEN)
-    {
-        // Restore original desktop resolution
-        ChangeDisplaySettings(NULL, CDS_FULLSCREEN);
-    }
+        _glfwRestoreVideoMode();
 }
 
 

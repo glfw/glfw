@@ -261,6 +261,11 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 #endif // _GLFW_NO_DLOAD_WINMM
 
 
+// We use versioned window class names in order not to cause conflicts
+// between applications using different versions of GLFW
+#define _GLFW_WNDCLASSNAME "GLFW30"
+
+
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowWin32 Win32
 #define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryWin32 Win32
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextWGL WGL
@@ -305,7 +310,6 @@ typedef struct _GLFWwindowWin32
 {
     // Platform specific window resources
     HWND      handle;          // Window handle
-    ATOM      classAtom;       // Window class atom
     DWORD     dwStyle;         // Window styles used for window creation
     DWORD     dwExStyle;       // --"--
 
@@ -325,6 +329,7 @@ typedef struct _GLFWwindowWin32
 typedef struct _GLFWlibraryWin32
 {
     HINSTANCE instance;        // Instance of the application
+    ATOM      classAtom;       // Window class atom
     HHOOK     keyboardHook;    // Keyboard hook handle
     DWORD     foregroundLockTimeout;
 

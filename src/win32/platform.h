@@ -356,7 +356,7 @@ typedef struct _GLFWlibraryWin32
 #ifndef _GLFW_NO_DLOAD_WINMM
     // winmm.dll
     struct {
-        HINSTANCE             winmm;
+        HINSTANCE             instance;
         JOYGETDEVCAPSA_T      joyGetDevCapsA;
         JOYGETPOS_T           joyGetPos;
         JOYGETPOSEX_T         joyGetPosEx;

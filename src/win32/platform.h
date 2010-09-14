@@ -40,14 +40,14 @@
 #define WIN32_LEAN_AND_MEAN
 #define VC_EXTRALEAN
 
-// Include files
 #include <windows.h>
 #include <mmsystem.h>
+
 #include "../../include/GL/glfw3.h"
 
 
 //========================================================================
-// Hack: Define things that some <windows.h>'s do not define
+// Hack: Define things that some windows.h variants don't
 //========================================================================
 
 // Some old versions of w32api (used by MinGW and Cygwin) define
@@ -133,15 +133,18 @@ typedef struct tagKBDLLHOOKSTRUCT {
 #define XBUTTON2 2
 #endif
 
+
+#ifndef WGL_EXT_swap_control
+
+typedef int (APIENTRY * WGLSWAPINTERVALEXT_T) (int);
+
+#endif /*WGL_EXT_swap_control*/
+
+
 #ifndef WGL_ARB_pixel_format
 
-// wglSwapIntervalEXT typedef (Win32 buffer-swap interval control)
-typedef int (APIENTRY * WGLSWAPINTERVALEXT_T) (int);
-// wglGetPixelFormatAttribivARB typedef
 typedef BOOL (WINAPI * WGLGETPIXELFORMATATTRIBIVARB_T) (HDC, int, int, UINT, const int* , int* );
-// wglGetExtensionStringEXT typedef
 typedef const char* (APIENTRY * WGLGETEXTENSIONSSTRINGEXT_T)(void);
-// wglGetExtensionStringARB typedef
 typedef const char* (APIENTRY * WGLGETEXTENSIONSSTRINGARB_T)(HDC);
 
 /* Constants for wglGetPixelFormatAttribivARB */
@@ -365,22 +368,6 @@ typedef struct _GLFWlibraryWin32
 #endif // _GLFW_NO_DLOAD_WINMM
 
 } _GLFWlibraryWin32;
-
-
-//========================================================================
-// Various Windows version constants
-//========================================================================
-
-#define _GLFW_WIN_UNKNOWN    0x0000  // Earlier than 95 or NT4
-#define _GLFW_WIN_95         0x0001
-#define _GLFW_WIN_98         0x0002
-#define _GLFW_WIN_ME         0x0003
-#define _GLFW_WIN_UNKNOWN_9x 0x0004  // Later than ME
-#define _GLFW_WIN_NT4        0x0101
-#define _GLFW_WIN_2K         0x0102
-#define _GLFW_WIN_XP         0x0103
-#define _GLFW_WIN_NET_SERVER 0x0104
-#define _GLFW_WIN_UNKNOWN_NT 0x0105  // Later than .NET Server
 
 
 //========================================================================

@@ -335,8 +335,8 @@ typedef struct _GLFWlibraryWin32
 
     // Timer data
     struct {
-        int          HasPerformanceCounter;
-        double       Resolution;
+        int          hasPerformanceCounter;
+        double       resolution;
         unsigned int t0_32;
         __int64      t0_64;
     } timer;

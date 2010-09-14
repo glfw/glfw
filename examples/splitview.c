@@ -460,7 +460,7 @@ int main( void )
     glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
 
     // Open OpenGL window
-    window = glfwOpenWindow( 500, 500, GLFW_WINDOWED );
+    window = glfwOpenWindow( 500, 500, GLFW_WINDOWED, "Split view demo" );
     if (!window)
     {
         fprintf( stderr, "Failed to open GLFW window\n" );
@@ -470,9 +470,6 @@ int main( void )
 
     // Enable vsync
     glfwSwapInterval( 1 );
-
-    // Set window title
-    glfwSetWindowTitle( window, "Split view demo" );
 
     // Enable sticky keys
     glfwEnable( window, GLFW_STICKY_KEYS );

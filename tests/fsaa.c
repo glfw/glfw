@@ -56,7 +56,7 @@ int main(void)
 
     glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 4);
 
-    window = glfwOpenWindow(400, 400, GLFW_WINDOWED);
+    window = glfwOpenWindow(400, 400, GLFW_WINDOWED, "Aliasing Detector");
     if (!window)
     {
         glfwTerminate();
@@ -65,7 +65,6 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glfwSetWindowTitle(window, "Aliasing Detector");
     glfwSetWindowSizeCallback(window, window_size_callback);
     glfwSwapInterval(1);
 

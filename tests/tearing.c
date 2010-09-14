@@ -50,7 +50,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED);
+    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Tearing Detector");
     if (!window)
     {
         glfwTerminate();
@@ -59,7 +59,6 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glfwSetWindowTitle(window, "Tearing Detector");
     glfwSetWindowSizeCallback(window, window_size_callback);
     glfwSwapInterval(1);
 

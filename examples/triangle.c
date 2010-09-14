@@ -23,7 +23,7 @@ int main( void )
     }
 
     // Open a window and create its OpenGL context
-    window = glfwOpenWindow( 640, 480, GLFW_WINDOWED );
+    window = glfwOpenWindow( 640, 480, GLFW_WINDOWED, "Spinning Triangle" );
     if (!window)
     {
         fprintf( stderr, "Failed to open GLFW window\n" );
@@ -31,8 +31,6 @@ int main( void )
         glfwTerminate();
         exit( EXIT_FAILURE );
     }
-
-    glfwSetWindowTitle( window, "Spinning Triangle" );
 
     // Ensure we can capture the escape key being pressed below
     glfwEnable( window, GLFW_STICKY_KEYS );

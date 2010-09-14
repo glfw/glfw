@@ -40,20 +40,6 @@ static const char* titles[] =
     "Quux"
 };
 
-static GLFWwindow open_window(int width, int height, const char* title)
-{
-    GLFWwindow window = glfwOpenWindow(width, height, GLFW_WINDOWED);
-    if (!window)
-    {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-        return NULL;
-    }
-
-    glfwSetWindowTitle(window, title);
-
-    return window;
-}
-
 int main(void)
 {
     int i;
@@ -62,16 +48,17 @@ int main(void)
 
     if (!glfwInit())
     {
-        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
 
     for (i = 0;  i < 4;  i++)
     {
-        windows[i] = open_window(200, 200, titles[i]);
+        windows[i] = glfwOpenWindow(200, 200, GLFW_WINDOWED, titles[i]);
         if (!windows[i])
         {
             glfwTerminate();
+            fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
             exit(EXIT_FAILURE);
         }
 

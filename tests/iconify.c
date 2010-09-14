@@ -109,7 +109,7 @@ int main(int argc, char** argv)
         height = 0;
     }
 
-    window = glfwOpenWindow(width, height, mode);
+    window = glfwOpenWindow(width, height, mode, "Iconify");
     if (!window)
     {
         glfwTerminate();
@@ -118,7 +118,6 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    glfwSetWindowTitle(window, "Iconify");
     glfwSwapInterval(1);
     glfwSetKeyCallback(window, key_callback);
     glfwSetWindowSizeCallback(window, size_callback);

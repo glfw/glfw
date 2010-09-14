@@ -75,7 +75,7 @@ int main(void)
         exit(1);
     }
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED);
+    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Defaults");
     if (!window)
     {
         glfwTerminate();

@@ -331,7 +331,7 @@ int main(int argc, char *argv[])
 
     glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
 
-    window = glfwOpenWindow( 300, 300, GLFW_WINDOWED );
+    window = glfwOpenWindow( 300, 300, GLFW_WINDOWED, "Gears" );
     if (!window)
     {
         fprintf( stderr, "Failed to open GLFW window\n" );
@@ -339,7 +339,6 @@ int main(int argc, char *argv[])
         exit( EXIT_FAILURE );
     }
 
-    glfwSetWindowTitle( window, "Gears" );
     glfwEnable( window, GLFW_KEY_REPEAT );
     glfwSwapInterval( 1 );
 

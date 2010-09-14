@@ -183,7 +183,7 @@ int main(int argc, char** argv)
     // We assume here that we stand a better chance of success by leaving all
     // possible details of pixel format selection to GLFW
 
-    if (!glfwOpenWindow(0, 0, GLFW_WINDOWED))
+    if (!glfwOpenWindow(0, 0, GLFW_WINDOWED, "Version"))
     {
         glfwTerminate();
 

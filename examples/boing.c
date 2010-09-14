@@ -577,7 +577,7 @@ int main( void )
 
    glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
 
-   window = glfwOpenWindow( 400, 400, GLFW_WINDOWED );
+   window = glfwOpenWindow( 400, 400, GLFW_WINDOWED, "Boing (classic Amiga demo)" );
    if (!window)
    {
        fprintf( stderr, "Failed to open GLFW window\n" );
@@ -585,7 +585,6 @@ int main( void )
        exit( EXIT_FAILURE );
    }
 
-   glfwSetWindowTitle( window, "Boing (classic Amiga demo)" );
    glfwSetWindowSizeCallback( window, reshape );
    glfwEnable( window, GLFW_STICKY_KEYS );
    glfwSwapInterval( 1 );

@@ -274,7 +274,7 @@ int main(void)
 
     printf("Library initialized\n");
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED);
+    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Event Linter");
     if (!window)
     {
         glfwTerminate();
@@ -285,7 +285,6 @@ int main(void)
 
     printf("Window opened\n");
 
-    glfwSetWindowTitle(window, "Event Linter");
     glfwSwapInterval(1);
 
     glfwSetWindowSizeCallback(window, window_size_callback);

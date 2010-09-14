@@ -337,16 +337,13 @@ int main(int argc, char* argv[])
   glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
 
   /* Open window */
-  window = glfwOpenWindow(width,height,mode);
+  window = glfwOpenWindow(width, height, mode, "Wave Simulation");
   if (!window)
   {
     fprintf(stderr, "Could not open window\n");
     glfwTerminate();
     exit(-1);
   }
-
-  /* Set title */
-  glfwSetWindowTitle( window, "Wave Simulation" );
 
   glfwSwapInterval( 1 );
 

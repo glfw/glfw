@@ -65,7 +65,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(window_width, window_height, GLFW_WINDOWED);
+    window = glfwOpenWindow(window_width, window_height, GLFW_WINDOWED, "Cursor Inaccuracy Detector");
     if (!window)
     {
         glfwTerminate();
@@ -74,7 +74,6 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glfwSetWindowTitle(window, "Cursor Inaccuracy Detector");
     glfwSetMousePosCallback(window, mouse_position_callback);
     glfwSetWindowSizeCallback(window, window_size_callback);
     glfwSwapInterval(1);

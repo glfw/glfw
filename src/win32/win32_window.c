@@ -1217,6 +1217,16 @@ static int createWindow(_GLFWwindow* window,
 
 static void destroyWindow(_GLFWwindow* window)
 {
+    // This is duplicated from glfwCloseWindow
+    // TODO: Stop duplicating code
+    if (window == _glfwLibrary.currentWindow)
+        glfwMakeWindowCurrent(NULL);
+
+    // This is duplicated from glfwCloseWindow
+    // TODO: Stop duplicating code
+    if (window == _glfwLibrary.activeWindow)
+        _glfwLibrary.activeWindow = NULL;
+
     if (window->WGL.context)
     {
         wglDeleteContext(window->WGL.context);

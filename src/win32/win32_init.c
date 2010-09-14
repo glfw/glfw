@@ -116,10 +116,10 @@ static void freeLibraries(void)
 #endif // _GLFW_NO_DLOAD_GDI32
 
 #ifndef _GLFW_NO_DLOAD_WINMM
-    if (_glfwLibrary.Win32.winmm.winmm != NULL)
+    if (_glfwLibrary.Win32.winmm.instance != NULL)
     {
-        FreeLibrary(_glfwLibrary.Win32.winmm.winmm);
-        _glfwLibrary.Win32.winmm.winmm = NULL;
+        FreeLibrary(_glfwLibrary.Win32.winmm.instance);
+        _glfwLibrary.Win32.winmm.instance = NULL;
     }
 #endif // _GLFW_NO_DLOAD_WINMM
 }

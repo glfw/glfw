@@ -395,7 +395,8 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
 // Create the GLFW window and its associated context
 //========================================================================
 
-GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode)
+GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
+                                  int mode, const char* title)
 {
     _GLFWfbconfig fbconfig;
     _GLFWwndconfig wndconfig;
@@ -436,6 +437,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode)
 
     // Set up desired window config
     wndconfig.mode           = mode;
+    wndconfig.title          = title;
     wndconfig.refreshRate    = Max(_glfwLibrary.hints.refreshRate, 0);
     wndconfig.windowNoResize = _glfwLibrary.hints.windowNoResize ? GL_TRUE : GL_FALSE;
     wndconfig.glMajor        = Max(_glfwLibrary.hints.glMajor, 1);

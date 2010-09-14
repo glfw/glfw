@@ -99,6 +99,7 @@ typedef struct _GLFWhints
 typedef struct _GLFWwndconfig
 {
     int         mode;
+    const char* title;
     int         refreshRate;
     int         windowNoResize;
     int         glMajor;

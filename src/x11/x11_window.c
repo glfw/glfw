@@ -828,7 +828,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         XFree(hints);
     }
 
-    _glfwPlatformSetWindowTitle(window, "GLFW Window");
+    _glfwPlatformSetWindowTitle(window, wndconfig->title);
 
     // Make sure the window is mapped before proceeding
     XMapWindow(_glfwLibrary.X11.display, window->X11.handle);

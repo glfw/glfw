@@ -1166,7 +1166,7 @@ static int createWindow(_GLFWwindow* window,
 
     window->Win32.handle = CreateWindowEx(window->Win32.dwExStyle,
                                           _GLFW_WNDCLASSNAME,
-                                          "GLFW Window",
+                                          wndconfig->title,
                                           window->Win32.dwStyle,
                                           wa.left, wa.top,       // Window position
                                           fullWidth,             // Decorated window width

@@ -410,7 +410,7 @@ GLFWAPI int  glfwGetVideoModes(GLFWvidmode* list, int maxcount);
 GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode);
 
 /* Window handling */
-GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode);
+GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode, const char* title);
 GLFWAPI void glfwOpenWindowHint(int target, int hint);
 GLFWAPI void glfwMakeWindowCurrent(GLFWwindow window);
 GLFWAPI int  glfwIsWindow(GLFWwindow window);

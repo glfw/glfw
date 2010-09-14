@@ -45,6 +45,7 @@ static void window_size_callback(GLFWwindow window, int width, int height)
 
 int main(void)
 {
+    int samples;
     GLFWwindow window;
 
     if (!glfwInit())
@@ -68,7 +69,7 @@ int main(void)
     glfwSetWindowSizeCallback(window, window_size_callback);
     glfwSwapInterval(1);
 
-    int samples = glfwGetWindowParam(window, GLFW_FSAA_SAMPLES);
+    samples = glfwGetWindowParam(window, GLFW_FSAA_SAMPLES);
     if (samples)
         printf("Context reports FSAA is supported with %i samples\n", samples);
     else

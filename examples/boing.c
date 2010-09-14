@@ -566,6 +566,7 @@ void DrawGrid( void )
 int main( void )
 {
    int running;
+   GLFWwindow window;
 
    /* Init GLFW */
    if( !glfwInit() )
@@ -576,7 +577,7 @@ int main( void )
 
    glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
 
-   GLFWwindow window = glfwOpenWindow( 400, 400, GLFW_WINDOWED );
+   window = glfwOpenWindow( 400, 400, GLFW_WINDOWED );
    if (!window)
    {
        fprintf( stderr, "Failed to open GLFW window\n" );

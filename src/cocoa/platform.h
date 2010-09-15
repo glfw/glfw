@@ -31,23 +31,31 @@
 #define _platform_h_
 
 
+#include <stdint.h>
+
+
 // This is the Mac OS X version of GLFW
 #define _GLFW_MAC_OS_X
 
 #if defined(__OBJC__)
 #import <Cocoa/Cocoa.h>
 #else
-typedef void *id;
+typedef void* id;
 #endif
 
-#include "../../include/GL/glfw.h"
+#include "../../include/GL/glfw3.h"
 
 
 #ifndef GL_VERSION_3_0
 
-typedef const GLubyte * (APIENTRY *PFNGLGETSTRINGIPROC) (GLenum, GLuint);
+typedef const GLubyte* (APIENTRY *PFNGLGETSTRINGIPROC)(GLenum, GLuint);
 
 #endif /*GL_VERSION_3_0*/
+
+
+#define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowNS NS
+#define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryNS NS
+#define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextNSGL NSGL
 
 
 //========================================================================
@@ -60,127 +68,47 @@ typedef const GLubyte * (APIENTRY *PFNGLGETSTRINGIPROC) (GLenum, GLuint);
 typedef intptr_t GLFWintptr;
 
 //------------------------------------------------------------------------
-// Window structure
+// Platform-specific OpenGL context structure
 //------------------------------------------------------------------------
-typedef struct _GLFWwin_struct _GLFWwin;
+typedef struct _GLFWcontextNSGL
+{
+    id           pixelFormat;
+    id	         context;
+} _GLFWcontextNSGL;
 
-struct _GLFWwin_struct {
 
-// ========= PLATFORM INDEPENDENT MANDATORY PART =========================
-
-    // User callback functions
-    GLFWwindowsizefun    windowSizeCallback;
-    GLFWwindowclosefun   windowCloseCallback;
-    GLFWwindowrefreshfun windowRefreshCallback;
-    GLFWmousebuttonfun   mouseButtonCallback;
-    GLFWmouseposfun      mousePosCallback;
-    GLFWmousewheelfun    mouseWheelCallback;
-    GLFWkeyfun           keyCallback;
-    GLFWcharfun          charCallback;
-
-    // User selected window settings
-    int       fullscreen;      // Fullscreen flag
-    int       mouseLock;       // Mouse-lock flag
-    int       sysKeysDisabled; // System keys disabled flag
-    int       windowNoResize;  // Resize- and maximize gadgets disabled flag
-    int       refreshRate;     // Vertical monitor refresh rate
-
-    // Window status & parameters
-    int       opened;          // Flag telling if window is opened or not
-    int       active;          // Application active flag
-    int       iconified;       // Window iconified flag
-    int       width, height;   // Window width and heigth
-    int       accelerated;     // GL_TRUE if window is HW accelerated
-
-    // Framebuffer attributes
-    int       redBits;
-    int       greenBits;
-    int       blueBits;
-    int       alphaBits;
-    int       depthBits;
-    int       stencilBits;
-    int       accumRedBits;
-    int       accumGreenBits;
-    int       accumBlueBits;
-    int       accumAlphaBits;
-    int       auxBuffers;
-    int       stereo;
-    int       samples;
-
-    // OpenGL extensions and context attributes
-    int       glMajor, glMinor, glRevision;
-    int       glForward, glDebug, glProfile;
-
-    PFNGLGETSTRINGIPROC GetStringi;
-
-// ========= PLATFORM SPECIFIC PART ======================================
-
-    id        window;
-    id        pixelFormat;
-    id	      context;
-    id	      delegate;
+//------------------------------------------------------------------------
+// Platform-specific window structure
+//------------------------------------------------------------------------
+typedef struct _GLFWwindowNS
+{
+    id           window;
+    id	         delegate;
     unsigned int modifierFlags;
-};
-
-GLFWGLOBAL _GLFWwin _glfwWin;
+    double       wheelPosFloating;
+} _GLFWwindowNS;
 
 
 //------------------------------------------------------------------------
-// Library global data
+// Platform-specific library global data
 //------------------------------------------------------------------------
-GLFWGLOBAL struct {
-
-// ========= PLATFORM INDEPENDENT MANDATORY PART =========================
-
-    // Window opening hints
-    _GLFWhints      hints;
-
-// ========= PLATFORM SPECIFIC PART ======================================
-
+typedef struct _GLFWlibraryNS
+{
     // Timer data
     struct {
         double t0;
-    } Timer;
+    } timer;
 
     // dlopen handle for dynamically-loading extension function pointers
-    void *OpenGLFramework;
+    void*       OpenGLFramework;
 
-    int Unbundled;
+    int         unbundled;
 
-    id DesktopMode;
+    id          desktopMode;
 
-    id AutoreleasePool;
+    id          autoreleasePool;
 
-} _glfwLibrary;
-
-
-//------------------------------------------------------------------------
-// User input status (some of this should go in _GLFWwin)
-//------------------------------------------------------------------------
-GLFWGLOBAL struct {
-
-// ========= PLATFORM INDEPENDENT MANDATORY PART =========================
-
-    // Mouse status
-    int  MousePosX, MousePosY;
-    int  WheelPos;
-    char MouseButton[ GLFW_MOUSE_BUTTON_LAST+1 ];
-
-    // Keyboard status
-    char Key[ GLFW_KEY_LAST+1 ];
-    int  LastChar;
-
-    // User selected settings
-    int  StickyKeys;
-    int  StickyMouseButtons;
-    int  KeyRepeat;
-
-
-// ========= PLATFORM SPECIFIC PART ======================================
-
-    double WheelPosFloating;
-
-} _glfwInput;
+} _GLFWlibraryNS;
 
 
 #endif // _platform_h_

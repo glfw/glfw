@@ -37,12 +37,12 @@
 // Enable and disable system keys
 //========================================================================
 
-void _glfwPlatformEnableSystemKeys( void )
+void _glfwPlatformEnableSystemKeys(_GLFWwindow* window)
 {
     // This is checked in macosx_window.m; we take no action here
 }
 
-void _glfwPlatformDisableSystemKeys( void )
+void _glfwPlatformDisableSystemKeys(_GLFWwindow* window)
 {
     // This is checked in macosx_window.m; we take no action here
     // I don't think it's really possible to disable stuff like Exposé

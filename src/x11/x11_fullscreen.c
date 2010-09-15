@@ -34,15 +34,11 @@
 #include <stdlib.h>
 
 
-//************************************************************************
-//****                  GLFW internal functions                       ****
-//************************************************************************
-
 //========================================================================
 // Convert BPP to RGB bits (based on "best guess")
 //========================================================================
 
-static void BPP2RGB(int bpp, int* r, int* g, int* b)
+static void bpp2rgb(int bpp, int* r, int* g, int* b)
 {
     int delta;
 
@@ -60,6 +56,10 @@ static void BPP2RGB(int bpp, int* r, int* g, int* b)
         *r = *r + 1;
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 //========================================================================
 // Finds the video mode closest in size to the specified desired size
@@ -331,10 +331,9 @@ void _glfwRestoreVideoMode(int screen)
 }
 
 
-
-//************************************************************************
-//****               Platform implementation functions                ****
-//************************************************************************
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 struct _glfwResolution
 {
@@ -392,7 +391,7 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
             depth = vislist[k].depth;
 
             // Convert to RGB
-            BPP2RGB(depth, &r, &g, &b);
+            bpp2rgb(depth, &r, &g, &b);
             depth = (r << 16) | (g << 8) | b;
 
             // Is this mode unique?
@@ -467,8 +466,8 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
         rescount = 1;
         resarray = (struct _glfwResolution*) malloc(sizeof(struct _glfwResolution) * rescount);
 
-        resarray[ 0 ].width = DisplayWidth(dpy, screen);
-        resarray[ 0 ].height = DisplayHeight(dpy, screen);
+        resarray[0].width = DisplayWidth(dpy, screen);
+        resarray[0].height = DisplayHeight(dpy, screen);
     }
 
     // Build permutations of colors and resolutions
@@ -517,7 +516,7 @@ void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
     bpp = DefaultDepth(dpy, screen);
 
     // Convert BPP to RGB bits
-    BPP2RGB(bpp, &mode->redBits, &mode->greenBits, &mode->blueBits);
+    bpp2rgb(bpp, &mode->redBits, &mode->greenBits, &mode->blueBits);
 
 #if defined(_GLFW_HAS_XRANDR)
     if (_glfwLibrary.X11.XRandR.available)

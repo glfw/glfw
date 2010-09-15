@@ -52,9 +52,9 @@ void (*glXGetProcAddressEXT(const GLubyte* procName))();
 #endif
 
 
-//************************************************************************
-//****               Platform implementation functions                ****
-//************************************************************************
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 //========================================================================
 // Check if an OpenGL extension is available at runtime
@@ -65,7 +65,6 @@ int _glfwPlatformExtensionSupported(const char* extension)
     const GLubyte* extensions;
 
     // Get list of GLX extensions
-    // Yuck
     extensions = (const GLubyte*) glXQueryExtensionsString(_glfwLibrary.X11.display,
                                                            _glfwLibrary.X11.screen);
     if (extensions != NULL)

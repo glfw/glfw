@@ -43,7 +43,7 @@ endif (WIN32)
 
 # Stuff specific to GLX on Unix-like platforms
 if (UNIX AND NOT APPLE AND NOT CYGWIN)
-    message(STATUS "Building GLFW for GLX on a Unix-like system")
+    message(STATUS "Building GLFW for X11 and GLX on a Unix-like system")
     
     # Set up library and include paths
     set(CMAKE_REQUIRED_LIBRARIES ${X11_X11_LIB} ${OPENGL_gl_LIBRARY})
@@ -97,7 +97,7 @@ endif(UNIX AND NOT APPLE AND NOT CYGWIN)
 
 # Stuff specific to AGL and CGL on Mac OS X
 if (UNIX AND APPLE)
-    message(STATUS "Building GLFW for NSOpenGL on Mac OS X")
+    message(STATUS "Building GLFW for Cocoa and NSOpenGL on Mac OS X")
         
     # Universal build, decent set of warning flags...
     set(CMAKE_OSX_ARCHITECTURES ppc;i386;ppc64;x86_64)

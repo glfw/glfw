@@ -70,6 +70,10 @@ GLFWAPI void glfwTerminate(void)
     if (!_glfwInitialized)
         return;
 
+    // Close all remaining windows
+    while (_glfwLibrary.windowListHead)
+        glfwCloseWindow(_glfwLibrary.windowListHead);
+
     if (!_glfwPlatformTerminate())
         return;
 

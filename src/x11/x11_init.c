@@ -220,9 +220,6 @@ int _glfwPlatformInit(void)
 
 int _glfwPlatformTerminate(void)
 {
-    while (_glfwLibrary.windowListHead)
-        glfwCloseWindow(_glfwLibrary.windowListHead);
-
     if (_glfwLibrary.X11.cursor)
     {
         XFreeCursor(_glfwLibrary.X11.display, _glfwLibrary.X11.cursor);

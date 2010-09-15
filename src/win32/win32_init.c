@@ -178,9 +178,6 @@ int _glfwPlatformInit(void)
 
 int _glfwPlatformTerminate(void)
 {
-    while (_glfwLibrary.windowListHead)
-        glfwCloseWindow(_glfwLibrary.windowListHead);
-
     if (_glfwLibrary.Win32.classAtom)
     {
         UnregisterClass(_GLFW_WNDCLASSNAME, _glfwLibrary.Win32.instance);

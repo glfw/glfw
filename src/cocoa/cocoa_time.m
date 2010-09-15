@@ -39,7 +39,8 @@
 
 double _glfwPlatformGetTime( void )
 {
-    return [NSDate timeIntervalSinceReferenceDate] - _glfwLibrary.Timer.t0;
+    return [NSDate timeIntervalSinceReferenceDate] -
+           _glfwLibrary.NS.timer.t0;
 }
 
 //========================================================================
@@ -48,6 +49,7 @@ double _glfwPlatformGetTime( void )
 
 void _glfwPlatformSetTime( double time )
 {
-    _glfwLibrary.Timer.t0 = [NSDate timeIntervalSinceReferenceDate] - time;
+    _glfwLibrary.NS.timer.t0 =
+        [NSDate timeIntervalSinceReferenceDate] - time;
 }
 

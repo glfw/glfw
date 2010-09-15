@@ -33,7 +33,7 @@
 // Check whether the display mode should be included in enumeration
 //========================================================================
 
-static BOOL modeIsGood( NSDictionary *mode )
+static BOOL modeIsGood(NSDictionary* mode)
 {
     // This is a bit controversial, if you've got something other than an
     // LCD computer monitor as an output device you might not want these
@@ -50,7 +50,7 @@ static BOOL modeIsGood( NSDictionary *mode )
 // Convert Core Graphics display mode to GLFW video mode
 //========================================================================
 
-static GLFWvidmode vidmodeFromCGDisplayMode( NSDictionary *mode )
+static GLFWvidmode vidmodeFromCGDisplayMode(NSDictionary* mode)
 {
     unsigned int width = [[mode objectForKey:(id)kCGDisplayWidth] unsignedIntValue];
     unsigned int height = [[mode objectForKey:(id)kCGDisplayHeight] unsignedIntValue];
@@ -74,18 +74,16 @@ static GLFWvidmode vidmodeFromCGDisplayMode( NSDictionary *mode )
 // Get a list of available video modes
 //========================================================================
 
-int _glfwPlatformGetVideoModes( GLFWvidmode *list, int maxcount )
+int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
 {
-    NSArray *modes = (NSArray *)CGDisplayAvailableModes( CGMainDisplayID() );
-
+    NSArray* modes = (NSArray*) CGDisplayAvailableModes(CGMainDisplayID());
     unsigned int i, j = 0, n = [modes count];
-    for( i = 0; i < n && i < (unsigned)maxcount; i++ )
+
+    for (i = 0;  i < n && i < (unsigned)maxcount;  i++)
     {
         NSDictionary *mode = [modes objectAtIndex:i];
-        if( modeIsGood( mode ) )
-        {
-            list[j++] = vidmodeFromCGDisplayMode( mode );
-        }
+        if (modeIsGood(mode))
+            list[j++] = vidmodeFromCGDisplayMode(mode);
     }
 
     return j;
@@ -95,8 +93,8 @@ int _glfwPlatformGetVideoModes( GLFWvidmode *list, int maxcount )
 // Get the desktop video mode
 //========================================================================
 
-void _glfwPlatformGetDesktopMode( GLFWvidmode *mode )
+void _glfwPlatformGetDesktopMode(GLFWvidmode *mode)
 {
-    *mode = vidmodeFromCGDisplayMode( _glfwLibrary.DesktopMode );
+    *mode = vidmodeFromCGDisplayMode(_glfwLibrary.NS.desktopMode);
 }
 

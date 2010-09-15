@@ -37,7 +37,7 @@
 // Check if an OpenGL extension is available at runtime
 //========================================================================
 
-int _glfwPlatformExtensionSupported( const char *extension )
+int _glfwPlatformExtensionSupported(const char* extension)
 {
     // There are no AGL, CGL or NSGL extensions.
     return GL_FALSE;
@@ -47,16 +47,16 @@ int _glfwPlatformExtensionSupported( const char *extension )
 // Get the function pointer to an OpenGL function
 //========================================================================
 
-void * _glfwPlatformGetProcAddress( const char *procname )
+void* _glfwPlatformGetProcAddress(const char* procname)
 {
-    CFStringRef symbolName = CFStringCreateWithCString( kCFAllocatorDefault,
-                                                        procname,
-                                                        kCFStringEncodingASCII );
+    CFStringRef symbolName = CFStringCreateWithCString(kCFAllocatorDefault,
+                                                       procname,
+                                                       kCFStringEncodingASCII);
 
-    void *symbol = CFBundleGetFunctionPointerForName( _glfwLibrary.OpenGLFramework,
-                                                      symbolName );
+    void* symbol = CFBundleGetFunctionPointerForName(_glfwLibrary.NS.OpenGLFramework,
+                                                     symbolName);
 
-    CFRelease( symbolName );
+    CFRelease(symbolName);
 
     return symbol;
 }

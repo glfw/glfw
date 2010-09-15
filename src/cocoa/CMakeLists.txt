@@ -3,10 +3,9 @@ configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/libglfw.pc.cmake 
     ${CMAKE_CURRENT_BINARY_DIR}/libglfw.pc @ONLY)
 
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR} 
-    ${CMAKE_SOURCE_DIR}/lib 
-    ${GLFW_INCLUDE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} 
+                    ${CMAKE_SOURCE_DIR}/src
+                    ${GLFW_INCLUDE_DIR})
 
 set(cocoa_SOURCES
     cocoa_enable.m

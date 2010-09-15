@@ -172,7 +172,6 @@ typedef struct _GLFWwindow
     int       wheelPos;
     char      mouseButton[GLFW_MOUSE_BUTTON_LAST + 1];
     char      key[GLFW_KEY_LAST + 1];
-    int       lastChar;
 
     // Framebuffer attributes
     int       redBits;

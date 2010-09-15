@@ -121,9 +121,6 @@ void _glfwClearInput(_GLFWwindow* window)
     for (i = 0;  i <= GLFW_KEY_LAST;  i++)
         window->key[i] = GLFW_RELEASE;
 
-    // Clear last character
-    window->lastChar = 0;
-
     // Release all mouse buttons
     for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
         window->mouseButton[i] = GLFW_RELEASE;

@@ -181,13 +181,11 @@ void _glfwInputKey(_GLFWwindow* window, int key, int action)
 
 void _glfwInputChar(_GLFWwindow* window, int character)
 {
-    int keyrepeat = 0;
-
     // Valid Unicode (ISO 10646) character?
     if (!((character >= 32 && character <= 126) || character >= 160))
         return;
 
-    if (window->charCallback && (window->keyRepeat || !keyrepeat))
+    if (window->charCallback)
         window->charCallback(window, character);
 }
 

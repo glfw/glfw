@@ -180,6 +180,7 @@ static GLboolean checkForEWMH(_GLFWwindow* window)
     unsigned long atomCount;
 
     // Now we need to check the _NET_SUPPORTED property of the root window
+    // It should be a list of supported WM protocol and state atoms
     atomCount = getWindowProperty(_glfwLibrary.X11.root,
                                   wmSupported,
                                   XA_ATOM,

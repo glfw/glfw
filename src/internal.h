@@ -294,7 +294,6 @@ void _glfwSetError(int error);
 void _glfwClearWindowHints(void);
 
 // Input handling (window.c)
-void _glfwClearInput(_GLFWwindow* window);
 void _glfwInputDeactivation(_GLFWwindow* window);
 void _glfwInputKey(_GLFWwindow* window, int key, int action);
 void _glfwInputChar(_GLFWwindow* window, int character);

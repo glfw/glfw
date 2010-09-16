@@ -70,6 +70,38 @@ static void closeFlaggedWindows(void)
 }
 
 
+//========================================================================
+// Clear all input state
+//========================================================================
+
+void clearInputState(_GLFWwindow* window)
+{
+    int i;
+
+    // Release all keyboard keys
+    for (i = 0;  i <= GLFW_KEY_LAST;  i++)
+        window->key[i] = GLFW_RELEASE;
+
+    // Release all mouse buttons
+    for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
+        window->mouseButton[i] = GLFW_RELEASE;
+
+    // Set mouse position to (0,0)
+    window->mousePosX = 0;
+    window->mousePosY = 0;
+
+    // Set mouse wheel position to 0
+    window->wheelPos = 0;
+
+    // The default is to use non sticky keys and mouse buttons
+    window->stickyKeys = GL_FALSE;
+    window->stickyMouseButtons = GL_FALSE;
+
+    // The default is to disable key repeat
+    window->keyRepeat = GL_FALSE;
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -106,38 +138,6 @@ void _glfwInputDeactivation(_GLFWwindow* window)
         if (window->mouseButton[i] == GLFW_PRESS)
             _glfwInputMouseClick(window, i, GLFW_RELEASE);
     }
-}
-
-
-//========================================================================
-// Clear all input state
-//========================================================================
-
-void _glfwClearInput(_GLFWwindow* window)
-{
-    int i;
-
-    // Release all keyboard keys
-    for (i = 0;  i <= GLFW_KEY_LAST;  i++)
-        window->key[i] = GLFW_RELEASE;
-
-    // Release all mouse buttons
-    for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
-        window->mouseButton[i] = GLFW_RELEASE;
-
-    // Set mouse position to (0,0)
-    window->mousePosX = 0;
-    window->mousePosY = 0;
-
-    // Set mouse wheel position to 0
-    window->wheelPos = 0;
-
-    // The default is to use non sticky keys and mouse buttons
-    window->stickyKeys = GL_FALSE;
-    window->stickyMouseButtons = GL_FALSE;
-
-    // The default is to disable key repeat
-    window->keyRepeat = GL_FALSE;
 }
 
 
@@ -495,8 +495,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
         return GL_FALSE;
     }
 
-    // Clear GLFW window state
-    _glfwClearInput(window);
+    clearInputState(window);
 
     // Check width & height
     if (width > 0 && height <= 0)

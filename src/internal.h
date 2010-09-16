@@ -284,6 +284,9 @@ void* _glfwPlatformGetProcAddress(const char* procname);
 // Prototypes for platform independent internal functions
 //========================================================================
 
+// Fullscren management (fullscreen.c)
+void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
+
 // Error handling
 void _glfwSetError(int error);
 

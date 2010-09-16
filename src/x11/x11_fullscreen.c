@@ -34,29 +34,6 @@
 #include <stdlib.h>
 
 
-//========================================================================
-// Convert BPP to RGB bits (based on "best guess")
-//========================================================================
-
-static void bpp2rgb(int bpp, int* r, int* g, int* b)
-{
-    int delta;
-
-    // Special case: BPP = 32 (I don't think this is necessary for X11??)
-    if (bpp == 32)
-        bpp = 24;
-
-    // Convert "bits per pixel" to red, green & blue sizes
-    *r = *g = *b = bpp / 3;
-    delta = bpp - (*r * 3);
-    if (delta >= 1)
-        *g = *g + 1;
-
-    if (delta == 2)
-        *r = *r + 1;
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -391,7 +368,7 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
             depth = vislist[k].depth;
 
             // Convert to RGB
-            bpp2rgb(depth, &r, &g, &b);
+            _glfwSplitBPP(depth, &r, &g, &b);
             depth = (r << 16) | (g << 8) | b;
 
             // Is this mode unique?
@@ -516,7 +493,7 @@ void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
     bpp = DefaultDepth(dpy, screen);
 
     // Convert BPP to RGB bits
-    bpp2rgb(bpp, &mode->redBits, &mode->greenBits, &mode->blueBits);
+    _glfwSplitBPP(bpp, &mode->redBits, &mode->greenBits, &mode->blueBits);
 
 #if defined(_GLFW_HAS_XRANDR)
     if (_glfwLibrary.X11.XRandR.available)

@@ -792,9 +792,7 @@ void _glfwPlatformRefreshWindowParams(void)
                            forAttribute:NSOpenGLPFAColorSize
                        forVirtualScreen:0];
     value -= window->alphaBits;
-    window->redBits = value / 3;
-    window->greenBits = value / 3;
-    window->blueBits = value / 3;
+    _glfwSplitBPP(value, &window->redBits, &window->greenBits, &window->blueBits);
 
     [window->NSGL.pixelFormat getValues:&value
                            forAttribute:NSOpenGLPFADepthSize

@@ -63,6 +63,35 @@ static int compareVideoModes(const void* firstPtr, const void* secondPtr)
     return firstSize - secondSize;
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Convert BPP to RGB bits based on "best guess"
+//========================================================================
+
+void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
+{
+    int delta;
+
+    // We assume that by 32 they really meant 24
+    if (bpp == 32)
+        bpp = 24;
+
+    // Convert "bits per pixel" to red, green & blue sizes
+
+    *red = *green = *blue = bpp / 3;
+    delta = bpp - (*red * 3);
+    if (delta >= 1)
+        *green = *green + 1;
+
+    if (delta == 2)
+        *red = *red + 1;
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////

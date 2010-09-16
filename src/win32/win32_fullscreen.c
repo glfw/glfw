@@ -35,30 +35,6 @@
 
 
 //========================================================================
-// Convert BPP to RGB bits based on "best guess"
-//========================================================================
-
-static void bpp2rgb(int bpp, int* r, int* g, int* b)
-{
-    int delta;
-
-    // We assume that by 32 they really meant 24
-    if (bpp == 32)
-        bpp = 24;
-
-    // Convert "bits per pixel" to red, green & blue sizes
-
-    *r = *g = *b = bpp / 3;
-    delta = bpp - (*r * 3);
-    if (delta >= 1)
-        *g = *g + 1;
-
-    if (delta == 2)
-        *r = *r + 1;
-}
-
-
-//========================================================================
 // Return closest video mode by dimensions, refresh rate and bits per pixel
 //========================================================================
 
@@ -226,7 +202,7 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
         if (success && dm.dmBitsPerPel >= 15)
         {
             // Convert to RGB, and back to bpp ("mask out" alpha bits etc)
-            bpp2rgb(dm.dmBitsPerPel, &r, &g, &b);
+            _glfwSplitBPP(dm.dmBitsPerPel, &r, &g, &b);
             bpp = r + g + b;
 
             // Mode "code" for this mode
@@ -289,6 +265,6 @@ void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
     // Return desktop mode parameters
     mode->width  = dm.dmPelsWidth;
     mode->height = dm.dmPelsHeight;
-    bpp2rgb(dm.dmBitsPerPel, &mode->redBits, &mode->greenBits, &mode->blueBits);
+    _glfwSplitBPP(dm.dmBitsPerPel, &mode->redBits, &mode->greenBits, &mode->blueBits);
 }
 

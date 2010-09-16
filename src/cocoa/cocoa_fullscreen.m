@@ -29,6 +29,7 @@
 
 #include "internal.h"
 
+
 //========================================================================
 // Check whether the display mode should be included in enumeration
 //========================================================================
@@ -42,8 +43,8 @@ static BOOL modeIsGood(NSDictionary* mode)
     // This seems like a decent compromise, but certain applications may
     // wish to patch this...
     return [[mode objectForKey:(id)kCGDisplayBitsPerPixel] intValue] >= 15 &&
-           [mode objectForKey:(id)kCGDisplayModeIsSafeForHardware] != nil &&
-           [mode objectForKey:(id)kCGDisplayModeIsStretched] == nil;
+            [mode objectForKey:(id)kCGDisplayModeIsSafeForHardware] != nil &&
+            [mode objectForKey:(id)kCGDisplayModeIsStretched] == nil;
 }
 
 //========================================================================
@@ -52,9 +53,12 @@ static BOOL modeIsGood(NSDictionary* mode)
 
 static GLFWvidmode vidmodeFromCGDisplayMode(NSDictionary* mode)
 {
-    unsigned int width = [[mode objectForKey:(id)kCGDisplayWidth] unsignedIntValue];
-    unsigned int height = [[mode objectForKey:(id)kCGDisplayHeight] unsignedIntValue];
-    unsigned int bps = [[mode objectForKey:(id)kCGDisplayBitsPerSample] unsignedIntValue];
+    unsigned int width =
+        [[mode objectForKey:(id)kCGDisplayWidth] unsignedIntValue];
+    unsigned int height =
+        [[mode objectForKey:(id)kCGDisplayHeight] unsignedIntValue];
+    unsigned int bps =
+        [[mode objectForKey:(id)kCGDisplayBitsPerSample] unsignedIntValue];
 
     GLFWvidmode result;
     result.width = width;

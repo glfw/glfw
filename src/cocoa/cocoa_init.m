@@ -117,7 +117,7 @@ static NSString* findAppName(void)
 // localize(d|able), etc.  Loading a nib would save us this horror, but that
 // doesn't seem like a good thing to require of GLFW's clients.
 //========================================================================
-static void setUpMenuBar( void )
+static void setUpMenuBar(void)
 {
     NSString *appName = findAppName();
 

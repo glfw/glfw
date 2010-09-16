@@ -39,13 +39,13 @@
     _GLFWwindow* window;
 }
 
-- (id)initWithGlfwWindow:(_GLFWwindow*)initWndow;
+- (id)initWithGlfwWindow:(_GLFWwindow *)initWndow;
 
 @end
 
 @implementation GLFWWindowDelegate
 
-- (id)initWithGlfwWindow:(_GLFWwindow*)initWindow
+- (id)initWithGlfwWindow:(_GLFWwindow *)initWindow
 {
     self = [super init];
     if (self != nil)
@@ -91,22 +91,22 @@
     window->positionY = flippedPos.y;
 }
 
-- (void)windowDidMiniaturize:(NSNotification*)notification
+- (void)windowDidMiniaturize:(NSNotification *)notification
 {
     window->iconified = GL_TRUE;
 }
 
-- (void)windowDidDeminiaturize:(NSNotification*)notification
+- (void)windowDidDeminiaturize:(NSNotification *)notification
 {
     window->iconified = GL_FALSE;
 }
 
-- (void)windowDidBecomeKey:(NSNotification*)notification
+- (void)windowDidBecomeKey:(NSNotification *)notification
 {
     _glfwLibrary.activeWindow = window;
 }
 
-- (void)windowDidResignKey:(NSNotification*)notification
+- (void)windowDidResignKey:(NSNotification *)notification
 {
     if (window == _glfwLibrary.activeWindow)
         _glfwLibrary.activeWindow = NULL;
@@ -298,13 +298,13 @@ static int convertMacKeyCode(unsigned int macKeyCode)
     _GLFWwindow* window;
 }
 
-- (id)initWithGlfwWindow:(_GLFWwindow*)initWindow;
+- (id)initWithGlfwWindow:(_GLFWwindow *)initWindow;
 
 @end
 
 @implementation GLFWContentView
 
-- (id)initWithGlfwWindow:(_GLFWwindow*)initWindow
+- (id)initWithGlfwWindow:(_GLFWwindow *)initWindow
 {
     self = [super init];
     if (self != nil)

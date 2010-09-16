@@ -449,11 +449,6 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
                             const _GLFWwndconfig *wndconfig,
                             const _GLFWfbconfig *fbconfig)
 {
-    window->NS.window = nil;
-    window->NS.delegate = nil;
-    window->NSGL.pixelFormat = nil;
-    window->NSGL.context = nil;
-
     // Fail if OpenGL 3.0 or above was requested
     if (wndconfig->glMajor > 2)
     {

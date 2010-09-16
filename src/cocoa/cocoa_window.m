@@ -74,6 +74,23 @@
         window->windowSizeCallback(window, window->width, window->height);
 }
 
+- (void)windowDidMove:(NSNotification *)notification
+{
+    [window->NSGL.context update];
+
+    NSRect contentRect =
+        [window->NS.window contentRectForFrameRect:[window->NS.window frame]];
+
+    CGPoint mainScreenOrigin = CGDisplayBounds(CGMainDisplayID()).origin;
+    double mainScreenHeight = CGDisplayBounds(CGMainDisplayID()).size.height;
+    CGPoint flippedPos = CGPointMake(contentRect.origin.x - mainScreenOrigin.x,
+                                      mainScreenHeight - contentRect.origin.y -
+                                          mainScreenOrigin.y - window->height);
+
+    window->positionX = flippedPos.x;
+    window->positionY = flippedPos.y;
+}
+
 - (void)windowDidMiniaturize:(NSNotification*)notification
 {
     window->iconified = GL_TRUE;

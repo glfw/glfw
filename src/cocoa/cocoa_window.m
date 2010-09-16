@@ -787,12 +787,16 @@ void _glfwPlatformRefreshWindowParams(void)
                        forVirtualScreen:0];
     window->alphaBits = value;
 
-    // It seems that the color size includes the size of the alpha channel
     [window->NSGL.pixelFormat getValues:&value
                            forAttribute:NSOpenGLPFAColorSize
                        forVirtualScreen:0];
-    value -= window->alphaBits;
-    _glfwSplitBPP(value, &window->redBits, &window->greenBits, &window->blueBits);
+
+    // It seems that the color size includes the size of the alpha channel so
+    // we subtract it before splitting
+    _glfwSplitBPP(value - window->alphaBits,
+                  &window->redBits,
+                  &window->greenBits,
+                  &window->blueBits);
 
     [window->NSGL.pixelFormat getValues:&value
                            forAttribute:NSOpenGLPFADepthSize
@@ -807,9 +811,11 @@ void _glfwPlatformRefreshWindowParams(void)
     [window->NSGL.pixelFormat getValues:&value
                            forAttribute:NSOpenGLPFAAccumSize
                        forVirtualScreen:0];
-    window->accumRedBits = value / 3;
-    window->accumGreenBits = value / 3;
-    window->accumBlueBits = value / 3;
+
+    _glfwSplitBPP(value,
+                  &window->accumRedBits,
+                  &window->accumGreenBits,
+                  &window->accumBlueBits);
 
     // TODO: Figure out what to set this value to
     window->accumAlphaBits = 0;

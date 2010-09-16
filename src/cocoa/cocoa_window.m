@@ -633,6 +633,8 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     window->mousePosX = point.x;
     window->mousePosY = point.y;
 
+    window->windowNoResize = wndconfig->windowNoResize;
+
     return GL_TRUE;
 }
 

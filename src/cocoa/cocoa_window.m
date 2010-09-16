@@ -94,7 +94,7 @@
     if (window == _glfwLibrary.activeWindow)
         _glfwLibrary.activeWindow = NULL;
 
-    _glfwClearInput(window);
+    _glfwInputDeactivation(window);
 }
 
 @end

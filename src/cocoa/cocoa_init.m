@@ -32,6 +32,7 @@
 
 #include "internal.h"
 
+
 @interface GLFWApplication : NSApplication
 @end
 
@@ -119,21 +120,21 @@ static NSString* findAppName(void)
 //========================================================================
 static void setUpMenuBar(void)
 {
-    NSString *appName = findAppName();
+    NSString* appName = findAppName();
 
-    NSMenu *bar = [[NSMenu alloc] init];
+    NSMenu* bar = [[NSMenu alloc] init];
     [NSApp setMainMenu:bar];
 
-    NSMenuItem *appMenuItem =
+    NSMenuItem* appMenuItem =
         [bar addItemWithTitle:@"" action:NULL keyEquivalent:@""];
-    NSMenu *appMenu = [[NSMenu alloc] init];
+    NSMenu* appMenu = [[NSMenu alloc] init];
     [appMenuItem setSubmenu:appMenu];
 
     [appMenu addItemWithTitle:[NSString stringWithFormat:@"About %@", appName]
                        action:@selector(orderFrontStandardAboutPanel:)
                 keyEquivalent:@""];
     [appMenu addItem:[NSMenuItem separatorItem]];
-    NSMenu *servicesMenu = [[NSMenu alloc] init];
+    NSMenu* servicesMenu = [[NSMenu alloc] init];
     [NSApp setServicesMenu:servicesMenu];
     [[appMenu addItemWithTitle:@"Services"
                        action:NULL
@@ -154,9 +155,9 @@ static void setUpMenuBar(void)
                        action:@selector(terminate:)
                 keyEquivalent:@"q"];
 
-    NSMenuItem *windowMenuItem =
+    NSMenuItem* windowMenuItem =
         [bar addItemWithTitle:@"" action:NULL keyEquivalent:@""];
-    NSMenu *windowMenu = [[NSMenu alloc] initWithTitle:@"Window"];
+    NSMenu* windowMenu = [[NSMenu alloc] initWithTitle:@"Window"];
     [NSApp setWindowsMenu:windowMenu];
     [windowMenuItem setSubmenu:windowMenu];
 
@@ -216,7 +217,7 @@ int _glfwPlatformInit(void)
 // Close window, if open, and shut down GLFW
 //========================================================================
 
-int _glfwPlatformTerminate( void )
+int _glfwPlatformTerminate(void)
 {
     // TODO: Probably other cleanup
 

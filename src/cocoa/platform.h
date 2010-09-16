@@ -44,6 +44,7 @@ typedef void* id;
 #endif
 
 #include "../../include/GL/glfw3.h"
+#include "cocoa_config.h"
 
 
 #ifndef GL_VERSION_3_0

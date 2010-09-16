@@ -178,15 +178,6 @@ static void setUpMenuBar( void )
         [NSApp setAppleMenu:appMenu];
 }
 
-//========================================================================
-// Terminate GLFW when exiting application
-//========================================================================
-
-static void glfw_atexit(void)
-{
-    glfwTerminate();
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -212,9 +203,6 @@ int _glfwPlatformInit(void)
     setUpMenuBar();
 
     [NSApp finishLaunching];
-
-    // Install atexit routine
-    atexit(glfw_atexit);
 
     _glfwPlatformSetTime(0.0);
 

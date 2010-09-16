@@ -62,16 +62,6 @@ static void initLibraries(void)
 
 
 //========================================================================
-// Terminate GLFW when exiting application
-//========================================================================
-
-static void glfw_atexit(void)
-{
-    glfwTerminate();
-}
-
-
-//========================================================================
 // Initialize X11 display
 //========================================================================
 
@@ -196,9 +186,6 @@ int _glfwPlatformInit(void)
 
     // Try to load libGL.so if necessary
     initLibraries();
-
-    // Install atexit() routine
-    atexit(glfw_atexit);
 
     // Initialize joysticks
     _glfwInitJoysticks();

@@ -30,8 +30,6 @@
 
 #include "internal.h"
 
-#include <stdlib.h>
-
 #ifdef __BORLANDC__
 // With the Borland C++ compiler, we want to disable FPU exceptions
 #include <float.h>
@@ -125,16 +123,6 @@ static void freeLibraries(void)
 }
 
 
-//========================================================================
-// Terminate GLFW when exiting application
-//========================================================================
-
-static void glfw_atexit(void)
-{
-    glfwTerminate();
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -163,8 +151,6 @@ int _glfwPlatformInit(void)
 #endif
 
     _glfwLibrary.Win32.instance = GetModuleHandle(NULL);
-
-    atexit(glfw_atexit);
 
     _glfwInitTimer();
 

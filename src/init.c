@@ -32,6 +32,17 @@
 #include "internal.h"
 
 #include <string.h>
+#include <stdlib.h>
+
+
+//========================================================================
+// Terminate GLFW when exiting application
+//========================================================================
+
+static void glfw_atexit(void)
+{
+    glfwTerminate();
+}
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -54,6 +65,8 @@ GLFWAPI int glfwInit(void)
         _glfwPlatformTerminate();
         return GL_FALSE;
     }
+
+    atexit(glfw_atexit);
 
     _glfwInitialized = GL_TRUE;
 

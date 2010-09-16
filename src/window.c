@@ -703,8 +703,6 @@ GLFWAPI void glfwOpenWindowHint(int target, int hint)
 
 GLFWAPI void glfwCloseWindow(GLFWwindow window)
 {
-    _GLFWwindow** prev;
-
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED);
@@ -715,19 +713,25 @@ GLFWAPI void glfwCloseWindow(GLFWwindow window)
     if (window == _glfwLibrary.cursorLockWindow)
         glfwEnable(window, GLFW_MOUSE_CURSOR);
 
+    // Clear the current context if this window's context is current
     if (window == _glfwLibrary.currentWindow)
         glfwMakeWindowCurrent(NULL);
 
+    // Clear the active window pointer if this is the active window
     if (window == _glfwLibrary.activeWindow)
         _glfwLibrary.activeWindow = NULL;
 
     _glfwPlatformCloseWindow(window);
 
-    prev = &_glfwLibrary.windowListHead;
-    while (*prev != window)
-        prev = &((*prev)->next);
+    // Unlink window from global linked list
+    {
+        _GLFWwindow** prev = &_glfwLibrary.windowListHead;
 
-    *prev = window->next;
+        while (*prev != window)
+            prev = &((*prev)->next);
+
+        *prev = window->next;
+    }
 
     free(window);
 }

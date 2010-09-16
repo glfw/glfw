@@ -155,7 +155,7 @@ typedef struct _GLFWwindow
 
     // Window settings and state
     GLboolean iconified;       // GL_TRUE if this window is iconified
-    GLboolean closed;          // GL_TRUE if this window should be closed
+    GLboolean closeRequested;  // GL_TRUE if this window should be closed
     int       width, height;
     int       positionX, positionY;
     int       mode;            // GLFW_WINDOW or GLFW_FULLSCREEN

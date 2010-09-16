@@ -55,10 +55,10 @@ static void closeFlaggedWindows(void)
 
     for (window = _glfwLibrary.windowListHead;  window; )
     {
-        if (window->closed && window->windowCloseCallback)
-            window->closed = window->windowCloseCallback(window);
+        if (window->closeRequested && window->windowCloseCallback)
+            window->closeRequested = window->windowCloseCallback(window);
 
-        if (window->closed)
+        if (window->closeRequested)
         {
             _GLFWwindow* next = window->next;
             glfwCloseWindow(window);

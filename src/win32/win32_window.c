@@ -731,7 +731,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_CLOSE:
         {
             // Flag this window for closing (handled in glfwPollEvents)
-            window->closed = GL_TRUE;
+            window->closeRequested = GL_TRUE;
             return 0;
         }
 
@@ -1675,7 +1675,7 @@ void _glfwPlatformPollEvents(void)
                 window = _glfwLibrary.windowListHead;
                 while (window)
                 {
-                    window->closed = GL_TRUE;
+                    window->closeRequested = GL_TRUE;
                     window = window->next;
                 }
 

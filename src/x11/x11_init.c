@@ -67,7 +67,6 @@ static void initLibraries(void)
 
 static GLboolean initDisplay(void)
 {
-    // Open display
     _glfwLibrary.X11.display = XOpenDisplay(0);
     if (!_glfwLibrary.X11.display)
     {
@@ -111,7 +110,6 @@ static GLboolean initDisplay(void)
         return GL_FALSE;
     }
 
-    // Retrieve GLX version
     if (!glXQueryVersion(_glfwLibrary.X11.display,
                          &_glfwLibrary.X11.glxMajor,
                          &_glfwLibrary.X11.glxMinor))

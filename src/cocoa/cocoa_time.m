@@ -29,15 +29,16 @@
 
 #include "internal.h"
 
-//************************************************************************
-//****               Platform implementation functions                ****
-//************************************************************************
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 //========================================================================
 // Return timer value in seconds
 //========================================================================
 
-double _glfwPlatformGetTime( void )
+double _glfwPlatformGetTime(void)
 {
     return [NSDate timeIntervalSinceReferenceDate] -
            _glfwLibrary.NS.timer.t0;
@@ -47,7 +48,7 @@ double _glfwPlatformGetTime( void )
 // Set timer value in seconds
 //========================================================================
 
-void _glfwPlatformSetTime( double time )
+void _glfwPlatformSetTime(double time)
 {
     _glfwLibrary.NS.timer.t0 =
         [NSDate timeIntervalSinceReferenceDate] - time;

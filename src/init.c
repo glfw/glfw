@@ -60,6 +60,10 @@ GLFWAPI int glfwInit(void)
 
     memset(&_glfwLibrary, 0, sizeof(_glfwLibrary));
 
+    // Not all window hints are cleared to zero, so this needs to be here
+    // despite the memset above
+    _glfwClearWindowHints();
+
     if (!_glfwPlatformInit())
     {
         _glfwPlatformTerminate();

@@ -94,20 +94,16 @@ typedef struct _GLFWwindowNS
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryNS
 {
-    // Timer data
     struct {
         double t0;
     } timer;
 
-    // dlopen handle for dynamically-loading extension function pointers
+    // dlopen handle for dynamically loading OpenGL extension entry points
     void*       OpenGLFramework;
-
     int         unbundled;
-
     id          desktopMode;
-
+    id          delegate;
     id          autoreleasePool;
-
 } _GLFWlibraryNS;
 
 

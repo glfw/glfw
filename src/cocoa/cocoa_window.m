@@ -29,9 +29,9 @@
 
 #include "internal.h"
 
+
 //========================================================================
 // Delegate for window related notifications
-// (but also used as an application delegate)
 //========================================================================
 
 @interface GLFWWindowDelegate : NSObject
@@ -39,13 +39,13 @@
     _GLFWwindow* window;
 }
 
-- (id)initWithRats:(_GLFWwindow*)initWndow;
+- (id)initWithGlfwWindow:(_GLFWwindow*)initWndow;
 
 @end
 
 @implementation GLFWWindowDelegate
 
-- (id)initWithRats:(_GLFWwindow*)initWindow
+- (id)initWithGlfwWindow:(_GLFWwindow*)initWindow
 {
     self = [super init];
     if (self != nil)
@@ -56,13 +56,8 @@
 
 - (BOOL)windowShouldClose:(id)sender
 {
-    if (window->windowCloseCallback)
-    {
-        if (!window->windowCloseCallback(window))
-            return NO;
-    }
-
     window->closed = GL_TRUE;
+
     return NO;
 }
 
@@ -79,19 +74,55 @@
         window->windowSizeCallback(window, window->width, window->height);
 }
 
+- (void)windowDidMiniaturize:(NSNotification*)notification
+{
+    window->iconified = GL_TRUE;
+}
+
+- (void)windowDidDeminiaturize:(NSNotification*)notification
+{
+    window->iconified = GL_FALSE;
+}
+
+- (void)windowDidBecomeKey:(NSNotification*)notification
+{
+    _glfwLibrary.activeWindow = window;
+}
+
+- (void)windowDidResignKey:(NSNotification*)notification
+{
+    if (window == _glfwLibrary.activeWindow)
+        _glfwLibrary.activeWindow = NULL;
+
+    _glfwClearInput(window);
+}
+
+@end
+
+//========================================================================
+// Delegate for application related notifications
+//========================================================================
+
+@interface GLFWApplicationDelegate : NSObject
+@end
+
+@implementation GLFWApplicationDelegate
+
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
-    if (window->windowCloseCallback)
-    {
-        if (!window->windowCloseCallback(window))
-            return NSTerminateCancel;
-    }
+    _GLFWwindow* window;
 
-    window->closed = GL_TRUE;
+    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+        window->closed = GL_TRUE;
+
     return NSTerminateCancel;
 }
 
 @end
+
+//========================================================================
+// Keyboard symbol translation table
+//========================================================================
 
 // TODO: Need to find mappings for F13-F15, volume down/up/mute, and eject.
 static const unsigned int MAC_TO_GLFW_KEYCODE_MAPPING[128] =
@@ -250,13 +281,13 @@ static int convertMacKeyCode(unsigned int macKeyCode)
     _GLFWwindow* window;
 }
 
-- (id)initWithRats:(_GLFWwindow*)initWindow;
+- (id)initWithGlfwWindow:(_GLFWwindow*)initWindow;
 
 @end
 
 @implementation GLFWContentView
 
-- (id)initWithRats:(_GLFWwindow*)initWindow
+- (id)initWithGlfwWindow:(_GLFWwindow*)initWindow
 {
     self = [super init];
     if (self != nil)
@@ -429,14 +460,26 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    window->NS.delegate = [[GLFWWindowDelegate alloc] initWithRats:window];
+    // We can only have one application delegate, but we only allocate it the
+    // first time we create a window to keep all window code in this file
+    if (_glfwLibrary.NS.delegate == nil)
+    {
+        _glfwLibrary.NS.delegate = [[GLFWApplicationDelegate alloc] init];
+        if (_glfwLibrary.NS.delegate == nil)
+        {
+            _glfwSetError(GLFW_INTERNAL_ERROR);
+            return GL_FALSE;
+        }
+
+        [NSApp setDelegate:_glfwLibrary.NS.delegate];
+    }
+
+    window->NS.delegate = [[GLFWWindowDelegate alloc] initWithGlfwWindow:window];
     if (window->NS.delegate == nil)
     {
         _glfwSetError(GLFW_INTERNAL_ERROR);
         return GL_FALSE;
     }
-
-    [NSApp setDelegate:window->NS.delegate];
 
     // Mac OS X needs non-zero color size, so set resonable values
     int colorBits = fbconfig->redBits + fbconfig->greenBits + fbconfig->blueBits;
@@ -470,15 +513,18 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
                 kCGDisplayModeIsSafeForHardware,
                 NULL);
 
-        window->width = [[(id)fullscreenMode objectForKey:(id)kCGDisplayWidth] intValue];
-        window->height = [[(id)fullscreenMode objectForKey:(id)kCGDisplayHeight] intValue];
+        window->width =
+            [[(id)fullscreenMode objectForKey:(id)kCGDisplayWidth] intValue];
+        window->height =
+            [[(id)fullscreenMode objectForKey:(id)kCGDisplayHeight] intValue];
     }
 
     unsigned int styleMask = 0;
 
     if (wndconfig->mode == GLFW_WINDOWED)
     {
-        styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask;
+        styleMask = NSTitledWindowMask | NSClosableWindowMask |
+                    NSMiniaturizableWindowMask;
 
         if (!wndconfig->windowNoResize)
             styleMask |= NSResizableWindowMask;
@@ -495,7 +541,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     [window->NS.window setTitle:[NSString stringWithCString:wndconfig->title
                                                    encoding:NSISOLatin1StringEncoding]];
 
-    [window->NS.window setContentView:[[GLFWContentView alloc] initWithRats:window]];
+    [window->NS.window setContentView:[[GLFWContentView alloc] initWithGlfwWindow:window]];
     [window->NS.window setDelegate:window->NS.delegate];
     [window->NS.window setAcceptsMouseMovedEvents:YES];
     [window->NS.window center];
@@ -507,10 +553,12 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     }
 
     unsigned int attribute_count = 0;
+
 #define ADD_ATTR(x) attributes[attribute_count++] = x
-#define ADD_ATTR2(x, y) (void)({ ADD_ATTR(x); ADD_ATTR(y); })
-#define MAX_ATTRS 24 // urgh
-    NSOpenGLPixelFormatAttribute attributes[MAX_ATTRS];
+#define ADD_ATTR2(x, y) { ADD_ATTR(x); ADD_ATTR(y); }
+
+    // Arbitrary array size here
+    NSOpenGLPixelFormatAttribute attributes[24];
 
     ADD_ATTR(NSOpenGLPFADoubleBuffer);
 
@@ -553,15 +601,20 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 
     ADD_ATTR(0);
 
-    window->NSGL.pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
+#undef ADD_ATTR
+#undef ADD_ATTR2
+
+    window->NSGL.pixelFormat =
+        [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
     if (window->NSGL.pixelFormat == nil)
     {
         _glfwSetError(GLFW_NO_PIXEL_FORMAT);
         return GL_FALSE;
     }
 
-    window->NSGL.context = [[NSOpenGLContext alloc] initWithFormat:window->NSGL.pixelFormat
-                                                      shareContext:nil];
+    window->NSGL.context =
+        [[NSOpenGLContext alloc] initWithFormat:window->NSGL.pixelFormat
+                                   shareContext:nil];
     if (window->NSGL.context == nil)
     {
         _glfwSetError(GLFW_INTERNAL_ERROR);
@@ -660,7 +713,8 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
 {
-    NSRect contentRect = [window->NS.window contentRectForFrameRect:[window->NS.window frame]];
+    NSRect contentRect =
+        [window->NS.window contentRectForFrameRect:[window->NS.window frame]];
 
     // We assume here that the client code wants to position the window within the
     // screen the window currently occupies
@@ -670,7 +724,7 @@ void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
                                          y - contentRect.size.height);
 
     [window->NS.window setFrame:[window->NS.window frameRectForContentRect:contentRect]
-                      display:YES];
+                        display:YES];
 }
 
 //========================================================================
@@ -875,7 +929,8 @@ void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y)
     CGPoint mainScreenOrigin = CGDisplayBounds( CGMainDisplayID() ).origin;
     double mainScreenHeight = CGDisplayBounds( CGMainDisplayID() ).size.height;
     CGPoint targetPoint = CGPointMake( globalPoint.x - mainScreenOrigin.x,
-                                       mainScreenHeight - globalPoint.y - mainScreenOrigin.y );
+                                       mainScreenHeight - globalPoint.y -
+                                           mainScreenOrigin.y );
     CGDisplayMoveCursorToPoint( CGMainDisplayID(), targetPoint );
 }
 

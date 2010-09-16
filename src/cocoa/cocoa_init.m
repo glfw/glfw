@@ -232,6 +232,10 @@ int _glfwPlatformTerminate( void )
 {
     // TODO: Probably other cleanup
 
+    [NSApp setDelegate:nil];
+    [_glfwLibrary.NS.delegate release];
+    _glfwLibrary.NS.delegate = nil;
+
     [_glfwLibrary.NS.autoreleasePool release];
     _glfwLibrary.NS.autoreleasePool = nil;
 

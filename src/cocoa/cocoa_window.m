@@ -678,7 +678,6 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
     window->NSGL.context = nil;
 
     [window->NS.window setDelegate:nil];
-    [NSApp setDelegate:nil];
     [window->NS.delegate release];
     window->NS.delegate = nil;
 

@@ -43,7 +43,6 @@
 #include <GL/glx.h>
 
 #include "../../include/GL/glfw3.h"
-#include "x11_config.h"
 
 // We need declarations for GLX version 1.3 or above even if the server doesn't
 // support version 1.3

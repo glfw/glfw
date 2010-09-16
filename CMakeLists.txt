@@ -118,6 +118,11 @@ add_subdirectory(tests)
 #add_subdirectory(docs/doxygen)
 #add_subdirectory(docs/manuals)
 
+#--------------------------------------------------------------------
+# Create shared configuration header
+#--------------------------------------------------------------------
+configure_file(${GLFW_SOURCE_DIR}/src/config.h.cmake 
+               ${GLFW_BINARY_DIR}/src/config.h @ONLY)
 
 #--------------------------------------------------------------------
 # -- Install standard files 

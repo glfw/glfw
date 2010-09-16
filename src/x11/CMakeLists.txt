@@ -1,6 +1,3 @@
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/x11_config.h.cmake 
-    ${CMAKE_CURRENT_BINARY_DIR}/x11_config.h @ONLY)
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/libglfw.pc.cmake 

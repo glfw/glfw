@@ -244,7 +244,6 @@ int _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    // TODO: Bring in CMake version
     const char* version = "GLFW " _GLFW_VERSION_FULL " Cocoa";
 
     return version;

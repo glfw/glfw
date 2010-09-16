@@ -1,9 +1,5 @@
 
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/cocoa_config.h.cmake 
-    ${CMAKE_CURRENT_BINARY_DIR}/cocoa_config.h @ONLY)
-
-configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/libglfw.pc.cmake 
     ${CMAKE_CURRENT_BINARY_DIR}/libglfw.pc @ONLY)
 

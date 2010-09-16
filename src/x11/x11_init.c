@@ -185,7 +185,6 @@ int _glfwPlatformInit(void)
     // Try to load libGL.so if necessary
     initLibraries();
 
-    // Initialize joysticks
     _glfwInitJoysticks();
 
     // Start the timer
@@ -207,10 +206,8 @@ int _glfwPlatformTerminate(void)
         _glfwLibrary.X11.cursor = (Cursor) 0;
     }
 
-    // Terminate display
     terminateDisplay();
 
-    // Terminate joysticks
     _glfwTerminateJoysticks();
 
     // Unload libGL.so if necessary

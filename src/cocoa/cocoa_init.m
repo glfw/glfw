@@ -33,6 +33,10 @@
 #include "internal.h"
 
 
+//========================================================================
+// GLFW application class
+//========================================================================
+
 @interface GLFWApplication : NSApplication
 @end
 
@@ -51,6 +55,7 @@
 
 @end
 
+
 // Prior to Snow Leopard, we need to use this oddly-named semi-private API
 // to get the application menu working properly.  Need to be careful in
 // case it goes away in a future OS update.
@@ -65,6 +70,7 @@ NSString* GLFWNameKeys[] =
     @"CFBundleName",
     @"CFBundleExecutable",
 };
+
 
 //========================================================================
 // Try to figure out what the calling application is called

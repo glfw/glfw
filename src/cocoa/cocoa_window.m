@@ -917,15 +917,15 @@ void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y)
     // Without this (once per app run, but it's convenient to do it here)
     // events will be suppressed for a default of 0.25 seconds after we
     // move the cursor.
-    CGSetLocalEventsSuppressionInterval( 0.0 );
+    CGSetLocalEventsSuppressionInterval(0.0);
 
-    NSPoint localPoint = NSMakePoint( x, y );
+    NSPoint localPoint = NSMakePoint(x, y);
     NSPoint globalPoint = [window->NS.window convertBaseToScreen:localPoint];
-    CGPoint mainScreenOrigin = CGDisplayBounds( CGMainDisplayID() ).origin;
-    double mainScreenHeight = CGDisplayBounds( CGMainDisplayID() ).size.height;
-    CGPoint targetPoint = CGPointMake( globalPoint.x - mainScreenOrigin.x,
-                                       mainScreenHeight - globalPoint.y -
-                                           mainScreenOrigin.y );
-    CGDisplayMoveCursorToPoint( CGMainDisplayID(), targetPoint );
+    CGPoint mainScreenOrigin = CGDisplayBounds(CGMainDisplayID()).origin;
+    double mainScreenHeight = CGDisplayBounds(CGMainDisplayID()).size.height;
+    CGPoint targetPoint = CGPointMake(globalPoint.x - mainScreenOrigin.x,
+                                      mainScreenHeight - globalPoint.y -
+                                          mainScreenOrigin.y);
+    CGDisplayMoveCursorToPoint(CGMainDisplayID(), targetPoint);
 }
 

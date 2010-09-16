@@ -48,7 +48,8 @@ int main(void)
 
     if (!glfwInit())
     {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        fprintf(stderr, "Failed to initialize GLFW: %s\n",
+                glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
 
@@ -57,12 +58,15 @@ int main(void)
         windows[i] = glfwOpenWindow(200, 200, GLFW_WINDOWED, titles[i]);
         if (!windows[i])
         {
+            fprintf(stderr, "Failed to open GLFW window: %s\n",
+                    glfwErrorString(glfwGetError()));
             glfwTerminate();
-            fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
             exit(EXIT_FAILURE);
         }
 
-        glClearColor((i & 0x01) ? 1.0 : 0.0, (i & 0x02) ? 1.0 : 0.0, 0.0, 0.0);
+        glfwSetWindowPos(windows[i], 100 + (i & 1) * 300, 100 + (i >> 1) * 300);
+
+        glClearColor(i & 1, i >> 1, 0.0, 0.0);
     }
 
     while (running)

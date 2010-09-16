@@ -368,9 +368,10 @@ extern "C" {
  * Typedefs
  *************************************************************************/
 
+/* Window handle type */
 typedef struct _GLFWwindow* GLFWwindow;
 
-/* The video mode structure used by glfwGetVideoModes() */
+/* The video mode structure used by glfwGetVideoModes */
 typedef struct
 {
     int width;

@@ -1,5 +1,7 @@
 project(GLFW C)
 
+cmake_minimum_required(VERSION 2.4)
+
 set(GLFW_VERSION_MAJOR "3")
 set(GLFW_VERSION_MINOR "0")
 set(GLFW_VERSION_PATCH "0")
@@ -8,27 +10,26 @@ set(GLFW_VERSION "${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}")
 set(GLFW_VERSION_FULL  
     "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA}")
 
-cmake_minimum_required(VERSION 2.4)
-
 include(CheckFunctionExists)
 include(CheckSymbolExists)
 
-# Stuff common to all platform 
 find_package(OpenGL REQUIRED)
 
 set(common_SOURCES 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/enable.c 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/error.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/fullscreen.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/glext.c 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/init.c 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/input.c 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/joystick.c 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/time.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/window.c
+    ${GLFW_SOURCE_DIR}/src/enable.c 
+    ${GLFW_SOURCE_DIR}/src/error.c
+    ${GLFW_SOURCE_DIR}/src/fullscreen.c
+    ${GLFW_SOURCE_DIR}/src/glext.c 
+    ${GLFW_SOURCE_DIR}/src/init.c 
+    ${GLFW_SOURCE_DIR}/src/input.c 
+    ${GLFW_SOURCE_DIR}/src/joystick.c 
+    ${GLFW_SOURCE_DIR}/src/time.c
+    ${GLFW_SOURCE_DIR}/src/window.c
 )
 
-# Stuff specific to WGL on Win32
+#--------------------------------------------------------------------
+# Set up GLFW for Win32 and WGL on Windows
+#--------------------------------------------------------------------
 if (WIN32)
     message(STATUS "Building GLFW for WGL on a Win32 system") 
 
@@ -41,7 +42,9 @@ if (WIN32)
     add_subdirectory(src/win32)
 endif (WIN32)
 
-# Stuff specific to GLX on Unix-like platforms
+#--------------------------------------------------------------------
+# Set up GLFW for Xlib and GLX on Unix-like systems with X Windows
+#--------------------------------------------------------------------
 if (UNIX AND NOT APPLE AND NOT CYGWIN)
     message(STATUS "Building GLFW for X11 and GLX on a Unix-like system")
     
@@ -52,7 +55,6 @@ if (UNIX AND NOT APPLE AND NOT CYGWIN)
     list(APPEND GLFW_INCLUDE_DIR ${OPENGL_INCLUDE_DIR})
     list(APPEND GLFW_LIBRARIES ${OPENGL_gl_LIBRARY})
 
-    # Detect X11 extension 
     include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/CheckX11Extensions.cmake)
     
     # Check for XRandR (modern resolution switching extension)
@@ -63,7 +65,7 @@ if (UNIX AND NOT APPLE AND NOT CYGWIN)
         list(APPEND GLFW_LIBRARIES ${X11_XRANDR_LIBRARIES})
     endif(X11_XRANDR_FOUND)
 
-    # Check for xf86vidmode (fallback legacy resolution switching extension)
+    # Check for Xf86VidMode (fallback legacy resolution switching extension)
     if (NOT X11_XRANDR_FOUND)
         CHECK_X11_XF86VIDMODE()
         if (X11_XF86VIDMODE_FOUND)
@@ -95,7 +97,9 @@ if (UNIX AND NOT APPLE AND NOT CYGWIN)
     add_subdirectory(src/x11)
 endif(UNIX AND NOT APPLE AND NOT CYGWIN)
 
-# Stuff specific to AGL and CGL on Mac OS X
+#--------------------------------------------------------------------
+# Set up GLFW for Cocoa and NSOpenGL on Mac OS X
+#--------------------------------------------------------------------
 if (UNIX AND APPLE)
     message(STATUS "Building GLFW for Cocoa and NSOpenGL on Mac OS X")
         
@@ -113,10 +117,11 @@ if (UNIX AND APPLE)
     add_subdirectory(src/cocoa)
 endif(UNIX AND APPLE)
 
+#--------------------------------------------------------------------
+# Add example and test programs
+#--------------------------------------------------------------------
 add_subdirectory(examples)
 add_subdirectory(tests)
-#add_subdirectory(docs/doxygen)
-#add_subdirectory(docs/manuals)
 
 #--------------------------------------------------------------------
 # Create shared configuration header
@@ -125,27 +130,16 @@ configure_file(${GLFW_SOURCE_DIR}/src/config.h.cmake
                ${GLFW_BINARY_DIR}/src/config.h @ONLY)
 
 #--------------------------------------------------------------------
-# -- Install standard files 
+# Install standard files 
 #--------------------------------------------------------------------
 
-# Install the GLFW header file
-install(DIRECTORY include/ DESTINATION include 
-    PATTERN ".svn" EXCLUDE 
-    PATTERN "include/*"
-)
+install(DIRECTORY include DESTINATION include 
+        PATTERN include/GL/glfw3.h)
 
-# Install documentation
-install(
-    FILES 
-        COPYING.txt 
-        readme.html 
-    DESTINATION 
-        share/doc/glfw-${GLFW_VERSION_FULL}/
-)
+install(FILES COPYING.txt readme.html 
+        DESTINATION share/doc/glfw-${GLFW_VERSION_FULL}/)
 
-#--------------------------------------------------------------------
-# -- Additional stuff 
-#--------------------------------------------------------------------
+# The respective port's CMakeLists.txt file installs the library
 
 #--------------------------------------------------------------------
 # -- Documentation generation 
@@ -158,12 +152,13 @@ install(
 #add_subdirectory(docs)
 
 #--------------------------------------------------------------------
-# -- Uninstall operation
-# -------------------------------------------------------------------
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in" 
-               "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+# Uninstall operation
+#--------------------------------------------------------------------
+configure_file(${GLFW_SOURCE_DIR}/cmake_uninstall.cmake.in
+               ${GLFW_BINARY_DIR}/cmake_uninstall.cmake
                IMMEDIATE @ONLY)
+
 add_custom_target(uninstall
-    "${CMAKE_COMMAND}" -P
-    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+                  ${CMAKE_COMMAND} -P
+                  ${GLFW_BINARY_DIR}/cmake_uninstall.cmake)
 

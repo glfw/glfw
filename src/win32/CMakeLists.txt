@@ -14,8 +14,9 @@ if(CYGWIN)
 
 endif(CYGWIN)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} 
                     ${GLFW_SOURCE_DIR}/src
+                    ${GLFW_BINARY_DIR}/src
                     ${GLFW_INCLUDE_DIR})
 
 set(libglfw_SOURCES

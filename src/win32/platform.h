@@ -317,9 +317,6 @@ typedef struct _GLFWwindowWin32
     DWORD     dwExStyle;       // --"--
 
     // Various platform specific internal variables
-    int       oldMouseLock;    // Old mouse-lock flag (used for remembering
-                               // mouse-lock state when iconifying)
-    int       oldMouseLockValid;
     int       desiredRefreshRate; // Desired vertical monitor refresh rate
     int       mouseMoved;
     int       oldMouseX, oldMouseY;
@@ -335,6 +332,15 @@ typedef struct _GLFWlibraryWin32
     ATOM      classAtom;       // Window class atom
     HHOOK     keyboardHook;    // Keyboard hook handle
     DWORD     foregroundLockTimeout;
+
+    // Default monitor
+    struct {
+        int   modeChanged;
+        int   width;
+        int   height;
+        int   bitsPerPixel;
+        int   refreshRate;
+    } monitor;
 
     // Timer data
     struct {

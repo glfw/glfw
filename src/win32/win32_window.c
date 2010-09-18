@@ -622,7 +622,7 @@ static void translateChar(_GLFWwindow* window, DWORD wParam, DWORD lParam)
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                                    WPARAM wParam, LPARAM lParam)
 {
-    int wheelDelta, iconified;
+    int wheelDelta;
 
     _GLFWwindow* window = (_GLFWwindow*) GetWindowLongPtr(hWnd, 0);
 
@@ -635,69 +635,65 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             break;
         }
 
-        // Window activate message? (iconification?)
         case WM_ACTIVATE:
         {
-            if (LOWORD(wParam) != WA_INACTIVE)
-                _glfwLibrary.activeWindow = window;
+            // Window was (de)activated and/or (de)iconified
 
-            iconified = HIWORD(wParam) ? GL_TRUE : GL_FALSE;
+            BOOL active = LOWORD(wParam) != WA_INACTIVE;
+            BOOL iconified = HIWORD(wParam) ? TRUE : FALSE;
 
-            // Were we deactivated/iconified?
-            if ((window != _glfwLibrary.activeWindow || iconified) && !window->iconified)
+            if ((!active && _glfwLibrary.activeWindow == window) ||
+                (iconified && !window->iconified))
             {
+                // The window was either deactivated, iconified or both
+
                 _glfwInputDeactivation(window);
 
-                // If we are in fullscreen mode we need to iconify
+                if (window == _glfwLibrary.cursorLockWindow)
+                    _glfwPlatformShowMouseCursor(window);
+
                 if (window->mode == GLFW_FULLSCREEN)
                 {
-                    // Do we need to manually iconify?
                     if (!iconified)
                     {
-                        // Minimize window
-                        CloseWindow(window->Win32.handle);
-                        iconified = GL_TRUE;
+                        // Iconify the (on top, borderless, oddly positioned)
+                        // window or the user will be annoyed
+                        ShowWindow(window->Win32.handle, SW_MINIMIZE);
                     }
 
-                    // Restore the original desktop resolution
-                    ChangeDisplaySettings(NULL, CDS_FULLSCREEN);
-                }
-
-                // Unlock mouse if locked
-                //if (!window->Win32.oldMouseLockValid)
-                //{
-                    //window->Win32.oldMouseLock = window->mouseLock;
-                    //window->Win32.oldMouseLockValid = GL_TRUE;
-                    //glfwEnable(GLFW_MOUSE_CURSOR);
-                //}
-            }
-            else if (window == _glfwLibrary.activeWindow || !iconified)
-            {
-                // If we are in fullscreen mode we need to maximize
-                if (window->mode == GLFW_FULLSCREEN && window->iconified)
-                {
-                    // Change display settings to the user selected mode
-                    //_glfwSetVideoModeMODE(window->Win32.modeID);
-
-                    // Do we need to manually restore window?
-                    if (iconified)
+                    if (_glfwLibrary.Win32.monitor.modeChanged)
                     {
-                        // Restore window
-                        OpenIcon(window->Win32.handle);
-                        iconified = GL_FALSE;
-
-                        // Activate window
-                        ShowWindow(hWnd, SW_SHOW);
-                        setForegroundWindow(window->Win32.handle);
-                        SetFocus(window->Win32.handle);
+                        _glfwRestoreVideoMode();
+                        _glfwLibrary.Win32.monitor.modeChanged = GL_FALSE;
                     }
                 }
+            }
+            else if (active && !iconified)
+            {
+                if (window == _glfwLibrary.cursorLockWindow)
+                    _glfwPlatformHideMouseCursor(window);
 
-                // Lock mouse, if necessary
-                //if (window->Win32.oldMouseLockValid && window->Win32.oldMouseLock)
-                    //glfwDisable(GLFW_MOUSE_CURSOR);
+                if (window->mode == GLFW_FULLSCREEN)
+                {
+                    if (!_glfwLibrary.Win32.monitor.modeChanged)
+                    {
+                        _glfwSetVideoMode(&_glfwLibrary.Win32.monitor.width,
+                                          &_glfwLibrary.Win32.monitor.height,
+                                          &_glfwLibrary.Win32.monitor.bitsPerPixel,
+                                          &_glfwLibrary.Win32.monitor.refreshRate,
+                                          GL_TRUE);
 
-                //window->Win32.oldMouseLockValid = GL_FALSE;
+                        _glfwLibrary.Win32.monitor.modeChanged = GL_TRUE;
+                    }
+                }
+            }
+
+            if (active)
+                _glfwLibrary.activeWindow = window;
+            else
+            {
+                if (window == _glfwLibrary.activeWindow)
+                    _glfwLibrary.activeWindow = NULL;
             }
 
             window->iconified = iconified;
@@ -1276,14 +1272,22 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 
     if (window->mode == GLFW_FULLSCREEN)
     {
-        int refreshRate = wndconfig->refreshRate;
-
         int bpp = fbconfig->redBits + fbconfig->greenBits + fbconfig->blueBits;
         if (bpp < 15 || bpp >= 24)
             bpp = 32;
 
-        _glfwSetVideoMode(&window->width, &window->height,
-                          &bpp, &refreshRate, GL_FALSE);
+        _glfwLibrary.Win32.monitor.width = window->width;
+        _glfwLibrary.Win32.monitor.height = window->height;
+        _glfwLibrary.Win32.monitor.refreshRate = wndconfig->refreshRate;
+        _glfwLibrary.Win32.monitor.bitsPerPixel = bpp;
+
+        _glfwSetVideoMode(&_glfwLibrary.Win32.monitor.width,
+                          &_glfwLibrary.Win32.monitor.height,
+                          &_glfwLibrary.Win32.monitor.bitsPerPixel,
+                          &_glfwLibrary.Win32.monitor.refreshRate,
+                          GL_FALSE);
+
+        _glfwLibrary.Win32.monitor.modeChanged = GL_TRUE;
     }
 
     // This call only clears the WGL extension member variables
@@ -1374,7 +1378,13 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
     destroyWindow(window);
 
     if (window->mode == GLFW_FULLSCREEN)
-        _glfwRestoreVideoMode();
+    {
+        if (_glfwLibrary.Win32.monitor.modeChanged)
+        {
+            _glfwRestoreVideoMode();
+            _glfwLibrary.Win32.monitor.modeChanged = GL_FALSE;
+        }
+    }
 }
 
 
@@ -1463,24 +1473,7 @@ void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
-    // Despite the name, this iconifies the window without closing it
-    CloseWindow(window->Win32.handle);
-    window->iconified = GL_TRUE;
-
-    // If we are in fullscreen mode we need to change video modes
-    if (window->mode == GLFW_FULLSCREEN)
-    {
-        // Change display settings to the desktop resolution
-        ChangeDisplaySettings(NULL, CDS_FULLSCREEN);
-    }
-
-    // Unlock mouse
-    //if (!window->Win32.oldMouseLockValid)
-    //{
-        //window->Win32.oldMouseLock = _glfwWin.mouseLock;
-        //window->Win32.oldMouseLockValid = GL_TRUE;
-        //glfwEnable(window, GLFW_MOUSE_CURSOR);
-    //}
+    ShowWindow(window->Win32.handle, SW_MINIMIZE);
 }
 
 
@@ -1490,28 +1483,7 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
-    if (window->mode == GLFW_FULLSCREEN)
-    {
-        // Change display settings to the user selected mode
-        //_glfwSetVideoModeMODE(window->Win32.modeID);
-    }
-
-    // Un-iconify window
-    OpenIcon(window->Win32.handle);
-
-    // Make sure that our window ends up on top of things
-    ShowWindow(window->Win32.handle, SW_SHOW);
-    setForegroundWindow(window->Win32.handle);
-    SetFocus(window->Win32.handle);
-
-    // Window is no longer iconified
-    window->iconified = GL_FALSE;
-
-    // Lock mouse, if necessary
-    //if (window->Win32.oldMouseLockValid && window->Win32.oldMouseLock)
-        //glfwDisable(GLFW_MOUSE_CURSOR);
-
-    window->Win32.oldMouseLockValid = GL_FALSE;
+    ShowWindow(window->Win32.handle, SW_RESTORE);
 }
 
 

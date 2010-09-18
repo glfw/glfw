@@ -1568,7 +1568,11 @@ void _glfwPlatformRefreshWindowParams(void)
         if (window->WGL.has_WGL_ARB_multisample)
         {
             window->samples = getPixelFormatAttrib(window, pixelFormat, WGL_SAMPLES_ARB);
-            // Should we force 1 to 0 here for consistency, or keep 1 for transparency?
+
+            // We force 1 to zero here because all the other APIs say zero when
+            // they really mean 1
+            if (window->samples == 1)
+                window->samples = 0;
         }
         else
             window->samples = 0;

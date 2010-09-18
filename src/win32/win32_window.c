@@ -1463,7 +1463,7 @@ void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
-    // Iconify window
+    // Despite the name, this iconifies the window without closing it
     CloseWindow(window->Win32.handle);
     window->iconified = GL_TRUE;
 

@@ -185,6 +185,14 @@ static void window_refresh_callback(GLFWwindow window)
     printf("%08x at %0.3f: Window refresh\n", counter++, glfwGetTime());
 }
 
+static void window_focus_callback(GLFWwindow window, int activated)
+{
+    printf("%08x at %0.3f: Window %s\n",
+           counter++,
+           glfwGetTime(),
+           activated ? "activated" : "deactivated");
+}
+
 static void mouse_button_callback(GLFWwindow window, int button, int action)
 {
     const char* name = get_button_name(button);
@@ -290,6 +298,7 @@ int main(void)
     glfwSetWindowSizeCallback(window, window_size_callback);
     glfwSetWindowCloseCallback(window, window_close_callback);
     glfwSetWindowRefreshCallback(window, window_refresh_callback);
+    glfwSetWindowFocusCallback(window, window_focus_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetMousePosCallback(window, mouse_position_callback);
     glfwSetMouseWheelCallback(window, mouse_wheel_callback);

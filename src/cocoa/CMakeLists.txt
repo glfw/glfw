@@ -4,7 +4,8 @@ configure_file(
     ${CMAKE_CURRENT_BINARY_DIR}/libglfw.pc @ONLY)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} 
-                    ${CMAKE_SOURCE_DIR}/src
+                    ${GLFW_SOURCE_DIR}/src
+                    ${GLFW_BINARY_DIR}/src
                     ${GLFW_INCLUDE_DIR})
 
 set(cocoa_SOURCES

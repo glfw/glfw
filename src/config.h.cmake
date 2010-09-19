@@ -1,8 +1,8 @@
 /* Configure build time options of GLFW */
 
-/* Define this to 1 if XRandR is available */ 
-#cmakedefine _GLFW_HAS_XRANDR      1 
-/* Define this to 1 if Xf86VidMode is available */ 
+/* Define this to 1 if XRandR is available */
+#cmakedefine _GLFW_HAS_XRANDR      1
+/* Define this to 1 if Xf86VidMode is available */
 #cmakedefine _GLFW_HAS_XF86VIDMODE 1
 
 /* Define this to 1 if glXGetProcAddress is available */

@@ -1016,6 +1016,7 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow window, int param)
         case GLFW_OPENGL_PROFILE:
             return window->glProfile;
         default:
+            _glfwSetError(GLFW_INVALID_ENUM);
             return 0;
     }
 }

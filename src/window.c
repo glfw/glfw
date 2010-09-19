@@ -143,7 +143,7 @@ void _glfwInputKey(_GLFWwindow* window, int key, int action)
     }
 
     // Call user callback function
-    if (window->keyCallback && (window->keyRepeat || !keyrepeat) )
+    if (window->keyCallback && (window->keyRepeat || !keyrepeat))
         window->keyCallback(window, key, action);
 }
 

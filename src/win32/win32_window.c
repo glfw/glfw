@@ -642,12 +642,17 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             BOOL active = LOWORD(wParam) != WA_INACTIVE;
             BOOL iconified = HIWORD(wParam) ? TRUE : FALSE;
 
-            if ((!active && _glfwLibrary.activeWindow == window) ||
-                (iconified && !window->iconified))
+            if (active && iconified)
             {
-                // The window was either deactivated, iconified or both
+                // This is a workaround for window iconification using the
+                // taskbar leading to windows being told they're active and
+                // iconified and then never told they're deactivated
+                active = FALSE;
+            }
 
-                _glfwInputDeactivation(window);
+            if (!active && _glfwLibrary.activeWindow == window)
+            {
+                // The window was deactivated (or iconified, see above)
 
                 if (window == _glfwLibrary.cursorLockWindow)
                     _glfwPlatformShowMouseCursor(window);
@@ -668,8 +673,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     }
                 }
             }
-            else if (active && !iconified)
+            else if (active && _glfwLibrary.activeWindow != window)
             {
+                // The window was activated
+
                 if (window == _glfwLibrary.cursorLockWindow)
                     _glfwPlatformHideMouseCursor(window);
 
@@ -688,13 +695,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 }
             }
 
-            if (active)
-                _glfwLibrary.activeWindow = window;
-            else
-            {
-                if (window == _glfwLibrary.activeWindow)
-                    _glfwLibrary.activeWindow = NULL;
-            }
+            _glfwInputWindowFocus(window, active);
 
             window->iconified = iconified;
             return 0;

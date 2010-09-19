@@ -148,6 +148,7 @@ typedef struct _GLFWwindow
     GLFWwindowsizefun    windowSizeCallback;
     GLFWwindowclosefun   windowCloseCallback;
     GLFWwindowrefreshfun windowRefreshCallback;
+    GLFWwindowfocusfun   windowFocusCallback;
     GLFWmousebuttonfun   mouseButtonCallback;
     GLFWmouseposfun      mousePosCallback;
     GLFWmousewheelfun    mouseWheelCallback;
@@ -295,10 +296,10 @@ void _glfwSetError(int error);
 void _glfwClearWindowHints(void);
 
 // Input handling (window.c)
-void _glfwInputDeactivation(_GLFWwindow* window);
 void _glfwInputKey(_GLFWwindow* window, int key, int action);
 void _glfwInputChar(_GLFWwindow* window, int character);
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action);
+void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated);
 
 // OpenGL extensions (glext.c)
 void _glfwParseGLVersion(int* major, int* minor, int* rev);

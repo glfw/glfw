@@ -118,30 +118,6 @@ void _glfwClearWindowHints(void)
 
 
 //========================================================================
-// Handle the input tracking part of window deactivation
-//========================================================================
-
-void _glfwInputDeactivation(_GLFWwindow* window)
-{
-    int i;
-
-    // Release all keyboard keys
-    for (i = 0;  i <= GLFW_KEY_LAST;  i++)
-    {
-        if (window->key[i] == GLFW_PRESS)
-           _glfwInputKey(window, i, GLFW_RELEASE);
-    }
-
-    // Release all mouse buttons
-    for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
-    {
-        if (window->mouseButton[i] == GLFW_PRESS)
-            _glfwInputMouseClick(window, i, GLFW_RELEASE);
-    }
-}
-
-
-//========================================================================
 // Register keyboard activity
 //========================================================================
 
@@ -204,6 +180,51 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action)
 
     if (window->mouseButtonCallback)
         window->mouseButtonCallback(window, button, action);
+}
+
+
+//========================================================================
+// Register window focus events
+//========================================================================
+
+void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated)
+{
+    if (activated)
+    {
+        if (_glfwLibrary.activeWindow != window)
+        {
+            _glfwLibrary.activeWindow = window;
+
+            if (window->windowFocusCallback)
+                window->windowFocusCallback(window, activated);
+        }
+    }
+    else
+    {
+        if (_glfwLibrary.activeWindow == window)
+        {
+            int i;
+
+            // Release all pressed keyboard keys
+            for (i = 0;  i <= GLFW_KEY_LAST;  i++)
+            {
+                if (window->key[i] == GLFW_PRESS)
+                    _glfwInputKey(window, i, GLFW_RELEASE);
+            }
+
+            // Release all pressed mouse buttons
+            for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
+            {
+                if (window->mouseButton[i] == GLFW_PRESS)
+                    _glfwInputMouseClick(window, i, GLFW_RELEASE);
+            }
+
+            _glfwLibrary.activeWindow = NULL;
+
+            if (window->windowFocusCallback)
+                window->windowFocusCallback(window, activated);
+        }
+    }
 }
 
 
@@ -1081,6 +1102,22 @@ GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfu
     }
 
     window->windowRefreshCallback = cbfun;
+}
+
+
+//========================================================================
+// Set callback function for window focus events
+//========================================================================
+
+GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow window, GLFWwindowfocusfun cbfun)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
+        return;
+    }
+
+    window->windowFocusCallback = cbfun;
 }
 
 

@@ -1299,7 +1299,7 @@ static void processSingleEvent(void)
                 return;
             }
 
-            _glfwLibrary.activeWindow = window;
+            _glfwInputWindowFocus(window, GL_TRUE);
 
             if (_glfwLibrary.cursorLockWindow == window)
                 _glfwPlatformHideMouseCursor(window);
@@ -1317,10 +1317,7 @@ static void processSingleEvent(void)
                 return;
             }
 
-            if (_glfwLibrary.activeWindow == window)
-                _glfwLibrary.activeWindow = NULL;
-
-            _glfwInputDeactivation(window);
+            _glfwInputWindowFocus(window, GL_FALSE);
 
             if (_glfwLibrary.cursorLockWindow == window)
                 _glfwPlatformShowMouseCursor(window);

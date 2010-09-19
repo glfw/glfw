@@ -663,7 +663,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     {
                         // Iconify the (on top, borderless, oddly positioned)
                         // window or the user will be annoyed
-                        ShowWindow(window->Win32.handle, SW_MINIMIZE);
+                        _glfwPlatformIconifyWindow(window);
                     }
 
                     if (_glfwLibrary.Win32.monitor.modeChanged)

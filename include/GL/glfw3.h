@@ -396,7 +396,7 @@ typedef void (* GLFWcharfun)(GLFWwindow,int);
  * Prototypes
  *************************************************************************/
 
-/* GLFW initialization, termination and version querying */
+/* Initialization, termination and version querying */
 GLFWAPI int  glfwInit(void);
 GLFWAPI void glfwTerminate(void);
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);

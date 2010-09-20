@@ -385,6 +385,8 @@ typedef struct
 typedef void (* GLFWwindowsizefun)(GLFWwindow,int,int);
 typedef int  (* GLFWwindowclosefun)(GLFWwindow);
 typedef void (* GLFWwindowrefreshfun)(GLFWwindow);
+typedef void (* GLFWwindowfocusfun)(GLFWwindow,int);
+typedef void (* GLFWwindowiconifyfun)(GLFWwindow,int);
 typedef void (* GLFWmousebuttonfun)(GLFWwindow,int,int);
 typedef void (* GLFWmouseposfun)(GLFWwindow,int,int);
 typedef void (* GLFWmousewheelfun)(GLFWwindow,int);
@@ -396,7 +398,7 @@ typedef void (* GLFWcharfun)(GLFWwindow,int);
  * Prototypes
  *************************************************************************/
 
-/* GLFW initialization, termination and version querying */
+/* Initialization, termination and version querying */
 GLFWAPI int  glfwInit(void);
 GLFWAPI void glfwTerminate(void);
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
@@ -429,6 +431,8 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow window);
 GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfun);
 GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cbfun);
 GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfun cbfun);
+GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow window, GLFWwindowfocusfun cbfun);
+GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow window, GLFWwindowiconifyfun cbfun);
 
 /* Event handling */
 GLFWAPI void glfwPollEvents(void);

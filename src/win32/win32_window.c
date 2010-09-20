@@ -622,7 +622,7 @@ static void translateChar(_GLFWwindow* window, DWORD wParam, DWORD lParam)
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                                    WPARAM wParam, LPARAM lParam)
 {
-    int wheelDelta, iconified;
+    int wheelDelta;
 
     _GLFWwindow* window = (_GLFWwindow*) GetWindowLongPtr(hWnd, 0);
 
@@ -635,72 +635,76 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             break;
         }
 
-        // Window activate message? (iconification?)
         case WM_ACTIVATE:
         {
-            if (LOWORD(wParam) != WA_INACTIVE)
-                _glfwLibrary.activeWindow = window;
+            // Window was (de)activated and/or (de)iconified
 
-            iconified = HIWORD(wParam) ? GL_TRUE : GL_FALSE;
+            BOOL active = LOWORD(wParam) != WA_INACTIVE;
+            BOOL iconified = HIWORD(wParam) ? TRUE : FALSE;
 
-            // Were we deactivated/iconified?
-            if ((window != _glfwLibrary.activeWindow || iconified) && !window->iconified)
+            if (active && iconified)
             {
-                _glfwInputDeactivation(window);
+                // This is a workaround for window iconification using the
+                // taskbar leading to windows being told they're active and
+                // iconified and then never told they're deactivated
+                active = FALSE;
+            }
 
-                // If we are in fullscreen mode we need to iconify
+            if (!active && _glfwLibrary.activeWindow == window)
+            {
+                // The window was deactivated (or iconified, see above)
+
+                if (window == _glfwLibrary.cursorLockWindow)
+                    _glfwPlatformShowMouseCursor(window);
+
                 if (window->mode == GLFW_FULLSCREEN)
                 {
-                    // Do we need to manually iconify?
                     if (!iconified)
                     {
-                        // Minimize window
-                        CloseWindow(window->Win32.handle);
-                        iconified = GL_TRUE;
+                        // Iconify the (on top, borderless, oddly positioned)
+                        // window or the user will be annoyed
+                        _glfwPlatformIconifyWindow(window);
                     }
 
-                    // Restore the original desktop resolution
-                    ChangeDisplaySettings(NULL, CDS_FULLSCREEN);
-                }
-
-                // Unlock mouse if locked
-                //if (!window->Win32.oldMouseLockValid)
-                //{
-                    //window->Win32.oldMouseLock = window->mouseLock;
-                    //window->Win32.oldMouseLockValid = GL_TRUE;
-                    //glfwEnable(GLFW_MOUSE_CURSOR);
-                //}
-            }
-            else if (window == _glfwLibrary.activeWindow || !iconified)
-            {
-                // If we are in fullscreen mode we need to maximize
-                if (window->mode == GLFW_FULLSCREEN && window->iconified)
-                {
-                    // Change display settings to the user selected mode
-                    //_glfwSetVideoModeMODE(window->Win32.modeID);
-
-                    // Do we need to manually restore window?
-                    if (iconified)
+                    if (_glfwLibrary.Win32.monitor.modeChanged)
                     {
-                        // Restore window
-                        OpenIcon(window->Win32.handle);
-                        iconified = GL_FALSE;
-
-                        // Activate window
-                        ShowWindow(hWnd, SW_SHOW);
-                        setForegroundWindow(window->Win32.handle);
-                        SetFocus(window->Win32.handle);
+                        _glfwRestoreVideoMode();
+                        _glfwLibrary.Win32.monitor.modeChanged = GL_FALSE;
                     }
                 }
+            }
+            else if (active && _glfwLibrary.activeWindow != window)
+            {
+                // The window was activated
 
-                // Lock mouse, if necessary
-                //if (window->Win32.oldMouseLockValid && window->Win32.oldMouseLock)
-                    //glfwDisable(GLFW_MOUSE_CURSOR);
+                if (window == _glfwLibrary.cursorLockWindow)
+                    _glfwPlatformHideMouseCursor(window);
 
-                //window->Win32.oldMouseLockValid = GL_FALSE;
+                if (window->mode == GLFW_FULLSCREEN)
+                {
+                    if (!_glfwLibrary.Win32.monitor.modeChanged)
+                    {
+                        _glfwSetVideoMode(&_glfwLibrary.Win32.monitor.width,
+                                          &_glfwLibrary.Win32.monitor.height,
+                                          &_glfwLibrary.Win32.monitor.bitsPerPixel,
+                                          &_glfwLibrary.Win32.monitor.refreshRate,
+                                          GL_TRUE);
+
+                        _glfwLibrary.Win32.monitor.modeChanged = GL_TRUE;
+                    }
+                }
             }
 
-            window->iconified = iconified;
+            _glfwInputWindowFocus(window, active);
+
+            if (iconified != window->iconified)
+            {
+                window->iconified = iconified;
+
+                if (window->windowIconifyCallback)
+                    window->windowIconifyCallback(window, window->iconified);
+            }
+
             return 0;
         }
 
@@ -990,11 +994,11 @@ static void initWGLExtensions(_GLFWwindow* window)
     window->WGL.has_WGL_ARB_multisample = GL_FALSE;
     window->WGL.has_WGL_ARB_create_context = GL_FALSE;
 
-    window->WGL.GetExtensionsStringEXT = (WGLGETEXTENSIONSSTRINGEXT_T)
+    window->WGL.GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)
         wglGetProcAddress("wglGetExtensionsStringEXT");
     if (!window->WGL.GetExtensionsStringEXT)
     {
-        window->WGL.GetExtensionsStringARB = (WGLGETEXTENSIONSSTRINGARB_T)
+        window->WGL.GetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)
             wglGetProcAddress("wglGetExtensionsStringARB");
         if (!window->WGL.GetExtensionsStringARB)
             return;
@@ -1014,7 +1018,7 @@ static void initWGLExtensions(_GLFWwindow* window)
 
     if (_glfwPlatformExtensionSupported("WGL_EXT_swap_control"))
     {
-        window->WGL.SwapIntervalEXT = (WGLSWAPINTERVALEXT_T)
+        window->WGL.SwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)
             wglGetProcAddress("wglSwapIntervalEXT");
 
         if (window->WGL.SwapIntervalEXT)
@@ -1023,7 +1027,7 @@ static void initWGLExtensions(_GLFWwindow* window)
 
     if (_glfwPlatformExtensionSupported("WGL_ARB_pixel_format"))
     {
-        window->WGL.GetPixelFormatAttribivARB = (WGLGETPIXELFORMATATTRIBIVARB_T)
+        window->WGL.GetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)
             wglGetProcAddress("wglGetPixelFormatAttribivARB");
 
         if (window->WGL.GetPixelFormatAttribivARB)
@@ -1276,14 +1280,22 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 
     if (window->mode == GLFW_FULLSCREEN)
     {
-        int refreshRate = wndconfig->refreshRate;
-
         int bpp = fbconfig->redBits + fbconfig->greenBits + fbconfig->blueBits;
         if (bpp < 15 || bpp >= 24)
             bpp = 32;
 
-        _glfwSetVideoMode(&window->width, &window->height,
-                          &bpp, &refreshRate, GL_FALSE);
+        _glfwLibrary.Win32.monitor.width = window->width;
+        _glfwLibrary.Win32.monitor.height = window->height;
+        _glfwLibrary.Win32.monitor.refreshRate = wndconfig->refreshRate;
+        _glfwLibrary.Win32.monitor.bitsPerPixel = bpp;
+
+        _glfwSetVideoMode(&_glfwLibrary.Win32.monitor.width,
+                          &_glfwLibrary.Win32.monitor.height,
+                          &_glfwLibrary.Win32.monitor.bitsPerPixel,
+                          &_glfwLibrary.Win32.monitor.refreshRate,
+                          GL_FALSE);
+
+        _glfwLibrary.Win32.monitor.modeChanged = GL_TRUE;
     }
 
     // This call only clears the WGL extension member variables
@@ -1374,7 +1386,13 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
     destroyWindow(window);
 
     if (window->mode == GLFW_FULLSCREEN)
-        _glfwRestoreVideoMode();
+    {
+        if (_glfwLibrary.Win32.monitor.modeChanged)
+        {
+            _glfwRestoreVideoMode();
+            _glfwLibrary.Win32.monitor.modeChanged = GL_FALSE;
+        }
+    }
 }
 
 
@@ -1463,24 +1481,7 @@ void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
-    // Iconify window
-    CloseWindow(window->Win32.handle);
-    window->iconified = GL_TRUE;
-
-    // If we are in fullscreen mode we need to change video modes
-    if (window->mode == GLFW_FULLSCREEN)
-    {
-        // Change display settings to the desktop resolution
-        ChangeDisplaySettings(NULL, CDS_FULLSCREEN);
-    }
-
-    // Unlock mouse
-    //if (!window->Win32.oldMouseLockValid)
-    //{
-        //window->Win32.oldMouseLock = _glfwWin.mouseLock;
-        //window->Win32.oldMouseLockValid = GL_TRUE;
-        //glfwEnable(window, GLFW_MOUSE_CURSOR);
-    //}
+    ShowWindow(window->Win32.handle, SW_MINIMIZE);
 }
 
 
@@ -1490,28 +1491,7 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
-    if (window->mode == GLFW_FULLSCREEN)
-    {
-        // Change display settings to the user selected mode
-        //_glfwSetVideoModeMODE(window->Win32.modeID);
-    }
-
-    // Un-iconify window
-    OpenIcon(window->Win32.handle);
-
-    // Make sure that our window ends up on top of things
-    ShowWindow(window->Win32.handle, SW_SHOW);
-    setForegroundWindow(window->Win32.handle);
-    SetFocus(window->Win32.handle);
-
-    // Window is no longer iconified
-    window->iconified = GL_FALSE;
-
-    // Lock mouse, if necessary
-    //if (window->Win32.oldMouseLockValid && window->Win32.oldMouseLock)
-        //glfwDisable(GLFW_MOUSE_CURSOR);
-
-    window->Win32.oldMouseLockValid = GL_FALSE;
+    ShowWindow(window->Win32.handle, SW_RESTORE);
 }
 
 
@@ -1596,7 +1576,11 @@ void _glfwPlatformRefreshWindowParams(void)
         if (window->WGL.has_WGL_ARB_multisample)
         {
             window->samples = getPixelFormatAttrib(window, pixelFormat, WGL_SAMPLES_ARB);
-            // Should we force 1 to 0 here for consistency, or keep 1 for transparency?
+
+            // We force 1 to zero here because all the other APIs say zero when
+            // they really mean 1
+            if (window->samples == 1)
+                window->samples = 0;
         }
         else
             window->samples = 0;

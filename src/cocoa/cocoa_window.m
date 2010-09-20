@@ -94,11 +94,17 @@
 - (void)windowDidMiniaturize:(NSNotification *)notification
 {
     window->iconified = GL_TRUE;
+
+    if (window->windowIconifyCallback)
+        window->windowIconifyCallback(window, window->iconified);
 }
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification
 {
     window->iconified = GL_FALSE;
+
+    if (window->windowIconifyCallback)
+        window->windowIconifyCallback(window, window->iconified);
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification

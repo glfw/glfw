@@ -36,14 +36,6 @@
 #include <stdlib.h>
 
 
-/* Define GLX 1.4 FSAA tokens if not already defined */
-#ifndef GLX_VERSION_1_4
-
-#define GLX_SAMPLE_BUFFERS  100000
-#define GLX_SAMPLES         100001
-
-#endif /*GLX_VERSION_1_4*/
-
 // Action for EWMH client messages
 #define _NET_WM_STATE_REMOVE        0
 #define _NET_WM_STATE_ADD           1
@@ -1272,6 +1264,10 @@ static void processSingleEvent(void)
             }
 
             window->iconified = GL_FALSE;
+
+            if (window->windowIconifyCallback)
+                window->windowIconifyCallback(window, window->iconified);
+
             break;
         }
 
@@ -1286,6 +1282,10 @@ static void processSingleEvent(void)
             }
 
             window->iconified = GL_TRUE;
+
+            if (window->windowIconifyCallback)
+                window->windowIconifyCallback(window, window->iconified);
+
             break;
         }
 
@@ -1299,7 +1299,7 @@ static void processSingleEvent(void)
                 return;
             }
 
-            _glfwLibrary.activeWindow = window;
+            _glfwInputWindowFocus(window, GL_TRUE);
 
             if (_glfwLibrary.cursorLockWindow == window)
                 _glfwPlatformHideMouseCursor(window);
@@ -1317,10 +1317,7 @@ static void processSingleEvent(void)
                 return;
             }
 
-            if (_glfwLibrary.activeWindow == window)
-                _glfwLibrary.activeWindow = NULL;
-
-            _glfwInputDeactivation(window);
+            _glfwInputWindowFocus(window, GL_FALSE);
 
             if (_glfwLibrary.cursorLockWindow == window)
                 _glfwPlatformShowMouseCursor(window);

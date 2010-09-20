@@ -26,15 +26,22 @@ else()
   add_executable(windows WIN32 windows.c)
 endif(APPLE)
 
+set(WINDOWS_BINARIES accuracy tearing windows)
+set(CONSOLE_BINARIES defaults events fsaa fsfocus iconify joysticks peter reopen version)
+
 if(MSVC)
   # Tell MSVC to use main instead of WinMain for Windows subsystem executables
-  set_target_properties(accuracy defaults events fsfocus iconify joysticks fsaa peter reopen tearing version windows PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
+  set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES}
+                        PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
 endif(MSVC)
 
 if(CYGWIN)
   # Set cross-compile and subsystem compile and link flags
-  set_target_properties(accuracy defaults events fsaa fsfocus iconify joysticks peter reopen tearing version windows PROPERTIES COMPILE_FLAGS "-mno-cygwin")
-  set_target_properties(accuracy fsaa tearing windows PROPERTIES LINK_FLAGS "-mno-cygwin -mwindows")
-  set_target_properties(events defaults fsfocus iconify joysticks peter reopen version PROPERTIES LINK_FLAGS "-mno-cygwin -mconsole")
+  set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES}
+                        PROPERTIES COMPILE_FLAGS "-mno-cygwin")
+  set_target_properties(${WINDOWS_BINARIES}
+                        PROPERTIES LINK_FLAGS "-mno-cygwin -mwindows")
+  set_target_properties(${CONSOLE_BINARIES}
+                        PROPERTIES LINK_FLAGS "-mno-cygwin -mconsole")
 endif(CYGWIN)
 

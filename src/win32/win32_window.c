@@ -994,11 +994,11 @@ static void initWGLExtensions(_GLFWwindow* window)
     window->WGL.has_WGL_ARB_multisample = GL_FALSE;
     window->WGL.has_WGL_ARB_create_context = GL_FALSE;
 
-    window->WGL.GetExtensionsStringEXT = (WGLGETEXTENSIONSSTRINGEXT_T)
+    window->WGL.GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)
         wglGetProcAddress("wglGetExtensionsStringEXT");
     if (!window->WGL.GetExtensionsStringEXT)
     {
-        window->WGL.GetExtensionsStringARB = (WGLGETEXTENSIONSSTRINGARB_T)
+        window->WGL.GetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)
             wglGetProcAddress("wglGetExtensionsStringARB");
         if (!window->WGL.GetExtensionsStringARB)
             return;
@@ -1018,7 +1018,7 @@ static void initWGLExtensions(_GLFWwindow* window)
 
     if (_glfwPlatformExtensionSupported("WGL_EXT_swap_control"))
     {
-        window->WGL.SwapIntervalEXT = (WGLSWAPINTERVALEXT_T)
+        window->WGL.SwapIntervalEXT = (PFNWGLSWAPINTERVALEXT)
             wglGetProcAddress("wglSwapIntervalEXT");
 
         if (window->WGL.SwapIntervalEXT)
@@ -1027,7 +1027,7 @@ static void initWGLExtensions(_GLFWwindow* window)
 
     if (_glfwPlatformExtensionSupported("WGL_ARB_pixel_format"))
     {
-        window->WGL.GetPixelFormatAttribivARB = (WGLGETPIXELFORMATATTRIBIVARB_T)
+        window->WGL.GetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)
             wglGetProcAddress("wglGetPixelFormatAttribivARB");
 
         if (window->WGL.GetPixelFormatAttribivARB)

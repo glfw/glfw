@@ -1018,7 +1018,7 @@ static void initWGLExtensions(_GLFWwindow* window)
 
     if (_glfwPlatformExtensionSupported("WGL_EXT_swap_control"))
     {
-        window->WGL.SwapIntervalEXT = (PFNWGLSWAPINTERVALEXT)
+        window->WGL.SwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)
             wglGetProcAddress("wglSwapIntervalEXT");
 
         if (window->WGL.SwapIntervalEXT)

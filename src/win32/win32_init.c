@@ -195,7 +195,7 @@ const char* _glfwPlatformGetVersionString(void)
 #elif defined(__CYGWIN__)
         " Cygwin"
 #elif defined(_MSC_VER)
-        " Visual C++ " #_MSC_VER
+        " Visual C++ "
 #elif defined(__BORLANDC__)
         " Borland C"
 #else

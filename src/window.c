@@ -1123,6 +1123,22 @@ GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow window, GLFWwindowfocusfun cb
 
 
 //========================================================================
+// Set callback function for window iconification events
+//========================================================================
+
+GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow window, GLFWwindowiconifyfun cbfun)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
+        return;
+    }
+
+    window->windowIconifyCallback = cbfun;
+}
+
+
+//========================================================================
 // Poll for new window and input events and close any flagged windows
 //========================================================================
 

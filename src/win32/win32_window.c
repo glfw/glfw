@@ -697,7 +697,14 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             _glfwInputWindowFocus(window, active);
 
-            window->iconified = iconified;
+            if (iconified != window->iconified)
+            {
+                window->iconified = iconified;
+
+                if (window->windowIconifyCallback)
+                    window->windowIconifyCallback(window, window->iconified);
+            }
+
             return 0;
         }
 

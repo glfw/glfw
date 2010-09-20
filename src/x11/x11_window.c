@@ -1272,6 +1272,10 @@ static void processSingleEvent(void)
             }
 
             window->iconified = GL_FALSE;
+
+            if (window->windowIconifyCallback)
+                window->windowIconifyCallback(window, window->iconified);
+
             break;
         }
 
@@ -1286,6 +1290,10 @@ static void processSingleEvent(void)
             }
 
             window->iconified = GL_TRUE;
+
+            if (window->windowIconifyCallback)
+                window->windowIconifyCallback(window, window->iconified);
+
             break;
         }
 

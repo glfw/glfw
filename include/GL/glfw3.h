@@ -386,6 +386,7 @@ typedef void (* GLFWwindowsizefun)(GLFWwindow,int,int);
 typedef int  (* GLFWwindowclosefun)(GLFWwindow);
 typedef void (* GLFWwindowrefreshfun)(GLFWwindow);
 typedef void (* GLFWwindowfocusfun)(GLFWwindow,int);
+typedef void (* GLFWwindowiconifyfun)(GLFWwindow,int);
 typedef void (* GLFWmousebuttonfun)(GLFWwindow,int,int);
 typedef void (* GLFWmouseposfun)(GLFWwindow,int,int);
 typedef void (* GLFWmousewheelfun)(GLFWwindow,int);
@@ -431,6 +432,7 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfu
 GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cbfun);
 GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfun cbfun);
 GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow window, GLFWwindowfocusfun cbfun);
+GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow window, GLFWwindowiconifyfun cbfun);
 
 /* Event handling */
 GLFWAPI void glfwPollEvents(void);

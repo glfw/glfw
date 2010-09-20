@@ -149,6 +149,7 @@ typedef struct _GLFWwindow
     GLFWwindowclosefun   windowCloseCallback;
     GLFWwindowrefreshfun windowRefreshCallback;
     GLFWwindowfocusfun   windowFocusCallback;
+    GLFWwindowiconifyfun windowIconifyCallback;
     GLFWmousebuttonfun   mouseButtonCallback;
     GLFWmouseposfun      mousePosCallback;
     GLFWmousewheelfun    mouseWheelCallback;

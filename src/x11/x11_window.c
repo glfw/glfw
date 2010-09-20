@@ -36,14 +36,6 @@
 #include <stdlib.h>
 
 
-/* Define GLX 1.4 FSAA tokens if not already defined */
-#ifndef GLX_VERSION_1_4
-
-#define GLX_SAMPLE_BUFFERS  100000
-#define GLX_SAMPLES         100001
-
-#endif /*GLX_VERSION_1_4*/
-
 // Action for EWMH client messages
 #define _NET_WM_STATE_REMOVE        0
 #define _NET_WM_STATE_ADD           1

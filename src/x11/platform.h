@@ -43,6 +43,7 @@
 #include <GL/glx.h>
 
 #include "../../include/GL/glfw3.h"
+#include "../../include/GL/glxext.h"
 
 // We need declarations for GLX version 1.3 or above even if the server doesn't
 // support version 1.3
@@ -71,86 +72,6 @@
 // Pointer length integer
 // One day, this will most likely move into glfw.h
 typedef intptr_t GLFWintptr;
-
-
-#ifndef GLX_SGI_swap_control
-
-// Function signature for GLX_SGI_swap_control
-typedef int (*PFNGLXSWAPINTERVALSGIPROC)(int interval);
-
-#endif /*GLX_SGI_swap_control*/
-
-
-#ifndef GLX_SGIX_fbconfig
-
-/* Type definitions for GLX_SGIX_fbconfig */
-typedef XID GLXFBConfigIDSGIX;
-typedef struct __GLXFBConfigRec* GLXFBConfigSGIX;
-
-/* Function signatures for GLX_SGIX_fbconfig */
-typedef int (*PFNGLXGETFBCONFIGATTRIBSGIXPROC)(Display* dpy,
-                                               GLXFBConfigSGIX config,
-                                               int attribute,
-                                               int* value);
-typedef GLXFBConfigSGIX* (*PFNGLXCHOOSEFBCONFIGSGIXPROC)(Display* dpy,
-                                                         int screen,
-                                                         int* attrib_list,
-                                                         int* nelements);
-typedef GLXContext (*PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC)(Display* dpy,
-                                                            GLXFBConfigSGIX config,
-                                                            int render_type,
-                                                            GLXContext share_list,
-                                                            Bool direct);
-typedef XVisualInfo* (*PFNGLXGETVISUALFROMFBCONFIGSGIXPROC)(Display* dpy,
-                                                            GLXFBConfigSGIX config);
-
-/* Tokens for GLX_SGIX_fbconfig */
-#define GLX_WINDOW_BIT_SGIX                0x00000001
-#define GLX_PIXMAP_BIT_SGIX                0x00000002
-#define GLX_RGBA_BIT_SGIX                  0x00000001
-#define GLX_COLOR_INDEX_BIT_SGIX           0x00000002
-#define GLX_DRAWABLE_TYPE_SGIX             0x8010
-#define GLX_RENDER_TYPE_SGIX               0x8011
-#define GLX_X_RENDERABLE_SGIX              0x8012
-#define GLX_FBCONFIG_ID_SGIX               0x8013
-#define GLX_RGBA_TYPE_SGIX                 0x8014
-#define GLX_COLOR_INDEX_TYPE_SGIX          0x8015
-#define GLX_SCREEN_EXT                     0x800C
-
-#endif /*GLX_SGIX_fbconfig*/
-
-
-#ifndef GLX_ARB_create_context
-
-/* Tokens for glXCreateContextAttribsARB attributes */
-#define GLX_CONTEXT_MAJOR_VERSION_ARB           0x2091
-#define GLX_CONTEXT_MINOR_VERSION_ARB           0x2092
-#define GLX_CONTEXT_FLAGS_ARB                   0x2094
-
-/* Bits for WGL_CONTEXT_FLAGS_ARB */
-#define GLX_CONTEXT_DEBUG_BIT_ARB               0x0001
-#define GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB  0x0002
-
-/* Prototype for glXCreateContextAttribs */
-typedef GLXContext (*PFNGLXCREATECONTEXTATTRIBSARBPROC)(Display* display,
-                                                        GLXFBConfig config,
-                                                        GLXContext share_context,
-                                                        Bool direct,
-                                                        const int* attrib_list);
-
-#endif /*GLX_ARB_create_context*/
-
-
-#ifndef GLX_ARB_create_context_profile
-
-/* Tokens for glXCreateContextAttribsARB attributes */
-#define GLX_CONTEXT_PROFILE_MASK_ARB            0x9126
-
-/* BIts for GLX_CONTEXT_PROFILE_MASK_ARB */
-#define GLX_CONTEXT_CORE_PROFILE_BIT_ARB        0x00000001
-#define GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB 0x00000002
-
-#endif /*GLX_ARB_create_context_profile*/
 
 
 #ifndef GL_VERSION_3_0

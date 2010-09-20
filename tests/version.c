@@ -129,7 +129,7 @@ int main(int argc, char** argv)
                 break;
             case 'h':
                 usage();
-                exit(0);
+                exit(EXIT_SUCCESS);
             case 'l':
                 list = GL_TRUE;
                 break;

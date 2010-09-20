@@ -113,7 +113,7 @@ static void list_extensions(int major, int minor)
 
 int main(int argc, char** argv)
 {
-    int ch, profile = 0, major = 1, minor = 1, revision;
+    int ch, profile = 0, major = 1, minor = 0, revision;
     GLboolean debug = GL_FALSE, forward = GL_FALSE, list = GL_FALSE;
     GLint flags, mask;
 

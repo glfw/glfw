@@ -21,17 +21,18 @@ else(APPLE)
   add_executable(splitview WIN32 splitview.c)
   add_executable(triangle WIN32 triangle.c)
   add_executable(wave WIN32 wave.c)
+  add_executable(heightmap WIN32 heightmap.c)
 endif(APPLE)
 
 if(MSVC)
   # Tell MSVC to use main instead of WinMain for Windows subsystem executables
-  set_target_properties(boing gears splitview triangle wave PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
+  set_target_properties(boing gears splitview triangle wave heightmap PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
 endif(MSVC)
 
 if(CYGWIN)
   # Set cross-compile and subsystem compile and link flags
-  set_target_properties(boing gears listmodes splitview triangle wave PROPERTIES COMPILE_FLAGS "-mno-cygwin")
-  set_target_properties(boing gears splitview triangle wave PROPERTIES LINK_FLAGS "-mno-cygwin -mwindows")
+  set_target_properties(boing gears listmodes splitview triangle wave heightmap PROPERTIES COMPILE_FLAGS "-mno-cygwin")
+  set_target_properties(boing gears splitview triangle wave heightmap PROPERTIES LINK_FLAGS "-mno-cygwin -mwindows")
   set_target_properties(listmodes PROPERTIES LINK_FLAGS "-mno-cygwin -mconsole")
 endif(CYGWIN)
 

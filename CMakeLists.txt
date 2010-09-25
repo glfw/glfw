@@ -94,6 +94,10 @@ if (UNIX AND NOT APPLE AND NOT CYGWIN)
            NOT _GLFW_HAS_GLXGETPROCADDRESSARB AND
            NOT _GLFW_HAS_GLXGETPROCADDRESSEXT)
 
+    if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+        set(_GLFW_USE_LINUX_JOYSTICKS 1)
+    endif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+
     # Select platform specific code
     add_subdirectory(src/x11)
 endif(UNIX AND NOT APPLE AND NOT CYGWIN)

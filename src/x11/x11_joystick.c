@@ -47,6 +47,8 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 // Joystick event types
 #define JS_EVENT_BUTTON     0x01    /* button pressed/released */

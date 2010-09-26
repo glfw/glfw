@@ -18,10 +18,10 @@ else(APPLE)
   # Set boring names for executables
   add_executable(boing WIN32 boing.c)
   add_executable(gears WIN32 gears.c)
+  add_executable(heightmap WIN32 heightmap.c)
   add_executable(splitview WIN32 splitview.c)
   add_executable(triangle WIN32 triangle.c)
   add_executable(wave WIN32 wave.c)
-  add_executable(heightmap WIN32 heightmap.c)
 endif(APPLE)
 
 set(WINDOWS_BINARIES boing gears heightmap splitview triangle wave)

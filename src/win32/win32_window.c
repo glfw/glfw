@@ -622,8 +622,6 @@ static void translateChar(_GLFWwindow* window, DWORD wParam, DWORD lParam)
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                                    WPARAM wParam, LPARAM lParam)
 {
-    int wheelDelta;
-
     _GLFWwindow* window = (_GLFWwindow*) GetWindowLongPtr(hWnd, 0);
 
     switch (uMsg)
@@ -880,12 +878,15 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOUSEWHEEL:
         {
-            wheelDelta = (((int)wParam) >> 16) / WHEEL_DELTA;
-            window->wheelPos += wheelDelta;
+            _glfwInputScroll(window, 0, (((int) wParam) >> 16) / WHEEL_DELTA);
+            return 0;
+        }
 
-            if (window->mouseWheelCallback)
-                window->mouseWheelCallback(window, window->wheelPos);
+        case WM_MOUSEHWHEEL:
+        {
+            // This message is only sent on Windows Vista and later
 
+            _glfwInputScroll(window, (((int) wParam) >> 16) / WHEEL_DELTA, 0);
             return 0;
         }
 
@@ -1634,6 +1635,12 @@ void _glfwPlatformPollEvents(void)
 {
     MSG msg;
     _GLFWwindow* window;
+
+    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+    {
+        window->scrollX = 0;
+        window->scrollY = 0;
+    }
 
     window = _glfwLibrary.cursorLockWindow;
     if (window)

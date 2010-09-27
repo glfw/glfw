@@ -120,6 +120,9 @@ typedef struct tagKBDLLHOOKSTRUCT {
 #ifndef WHEEL_DELTA
 #define WHEEL_DELTA 120
 #endif
+#ifndef WM_MOUSEHWHEEL
+#define WM_MOUSEHWHEEL 0x020E
+#endif
 
 #ifndef WM_XBUTTONDOWN
 #define WM_XBUTTONDOWN 0x020B

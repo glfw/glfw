@@ -152,7 +152,7 @@ typedef struct _GLFWwindow
     GLFWwindowiconifyfun windowIconifyCallback;
     GLFWmousebuttonfun   mouseButtonCallback;
     GLFWmouseposfun      mousePosCallback;
-    GLFWmousewheelfun    mouseWheelCallback;
+    GLFWscrollfun        scrollCallback;
     GLFWkeyfun           keyCallback;
     GLFWcharfun          charCallback;
 
@@ -172,7 +172,7 @@ typedef struct _GLFWwindow
     GLboolean stickyMouseButtons;
     GLboolean keyRepeat;
     int       mousePosX, mousePosY;
-    int       wheelPos;
+    int       scrollX, scrollY;
     char      mouseButton[GLFW_MOUSE_BUTTON_LAST + 1];
     char      key[GLFW_KEY_LAST + 1];
 

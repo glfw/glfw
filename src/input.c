@@ -148,26 +148,10 @@ GLFWAPI void glfwSetMousePos(GLFWwindow window, int xpos, int ypos)
 
 
 //========================================================================
-// Returns the mouse wheel "position" for the specified window
+// Returns the scroll offset for the specified window
 //========================================================================
 
-GLFWAPI int glfwGetMouseWheel(GLFWwindow window)
-{
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED);
-        return 0;
-    }
-
-    return window->wheelPos;
-}
-
-
-//========================================================================
-// Sets the mouse wheel "position" for the specified window
-//========================================================================
-
-GLFWAPI void glfwSetMouseWheel(GLFWwindow window, int pos)
+GLFWAPI void glfwGetScrollOffset(GLFWwindow window, int* x, int* y)
 {
     if (!_glfwInitialized)
     {
@@ -175,7 +159,11 @@ GLFWAPI void glfwSetMouseWheel(GLFWwindow window, int pos)
         return;
     }
 
-    window->wheelPos = pos;
+    if (x)
+      *x = window->scrollX;
+
+    if (y)
+      *y = window->scrollY;
 }
 
 
@@ -250,10 +238,10 @@ GLFWAPI void glfwSetMousePosCallback(GLFWwindow window, GLFWmouseposfun cbfun)
 
 
 //========================================================================
-// Set callback function for mouse wheel
+// Set callback function for scroll events
 //========================================================================
 
-GLFWAPI void glfwSetMouseWheelCallback(GLFWwindow window, GLFWmousewheelfun cbfun)
+GLFWAPI void glfwSetScrollCallback(GLFWwindow window, GLFWscrollfun cbfun)
 {
     if (!_glfwInitialized)
     {
@@ -262,11 +250,11 @@ GLFWAPI void glfwSetMouseWheelCallback(GLFWwindow window, GLFWmousewheelfun cbfu
     }
 
     // Set callback function
-    window->mouseWheelCallback = cbfun;
+    window->scrollCallback = cbfun;
 
     // Call the callback function to let the application know the current
-    // mouse wheel position
+    // scroll offset
     if (cbfun)
-        cbfun(window, window->wheelPos);
+        cbfun(window, window->scrollX, window->scrollY);
 }
 

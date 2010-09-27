@@ -91,7 +91,8 @@ void clearInputState(_GLFWwindow* window)
     window->mousePosY = 0;
 
     // Set mouse wheel position to 0
-    window->wheelPos = 0;
+    window->scrollX = 0;
+    window->scrollY = 0;
 
     // The default is to use non sticky keys and mouse buttons
     window->stickyKeys = GL_FALSE;
@@ -160,6 +161,20 @@ void _glfwInputChar(_GLFWwindow* window, int character)
 
     if (window->charCallback)
         window->charCallback(window, character);
+}
+
+
+//========================================================================
+// Register scroll events
+//========================================================================
+
+void _glfwInputScroll(_GLFWwindow* window, int x, int y)
+{
+    window->scrollX += x;
+    window->scrollY += y;
+
+    if (window->scrollCallback)
+        window->scrollCallback(window, x, y);
 }
 
 

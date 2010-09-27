@@ -389,7 +389,7 @@ typedef void (* GLFWwindowfocusfun)(GLFWwindow,int);
 typedef void (* GLFWwindowiconifyfun)(GLFWwindow,int);
 typedef void (* GLFWmousebuttonfun)(GLFWwindow,int,int);
 typedef void (* GLFWmouseposfun)(GLFWwindow,int,int);
-typedef void (* GLFWmousewheelfun)(GLFWwindow,int);
+typedef void (* GLFWscrollfun)(GLFWwindow,int,int);
 typedef void (* GLFWkeyfun)(GLFWwindow,int,int);
 typedef void (* GLFWcharfun)(GLFWwindow,int);
 
@@ -443,13 +443,12 @@ GLFWAPI int  glfwGetKey(GLFWwindow window, int key);
 GLFWAPI int  glfwGetMouseButton(GLFWwindow window, int button);
 GLFWAPI void glfwGetMousePos(GLFWwindow window, int* xpos, int* ypos);
 GLFWAPI void glfwSetMousePos(GLFWwindow window, int xpos, int ypos);
-GLFWAPI int  glfwGetMouseWheel(GLFWwindow window);
-GLFWAPI void glfwSetMouseWheel(GLFWwindow window, int pos);
+GLFWAPI void glfwGetScrollOffset(GLFWwindow window, int* x, int* y);
 GLFWAPI void glfwSetKeyCallback(GLFWwindow window, GLFWkeyfun cbfun);
 GLFWAPI void glfwSetCharCallback(GLFWwindow window, GLFWcharfun cbfun);
 GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow window, GLFWmousebuttonfun cbfun);
 GLFWAPI void glfwSetMousePosCallback(GLFWwindow window, GLFWmouseposfun cbfun);
-GLFWAPI void glfwSetMouseWheelCallback(GLFWwindow window, GLFWmousewheelfun cbfun);
+GLFWAPI void glfwSetScrollCallback(GLFWwindow window, GLFWscrollfun cbfun);
 
 /* Joystick input */
 GLFWAPI int glfwGetJoystickParam(int joy, int param);

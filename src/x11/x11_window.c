@@ -41,6 +41,9 @@
 #define _NET_WM_STATE_ADD           1
 #define _NET_WM_STATE_TOGGLE        2
 
+// Additional mouse button names for XButtonEvent
+#define Button6			6
+#define Button7			7
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -1094,17 +1097,15 @@ static void processSingleEvent(void)
             // XFree86 3.3.2 and later translates mouse wheel up/down into
             // mouse button 4 & 5 presses
             else if (event.xbutton.button == Button4)
-            {
-                window->wheelPos++;  // To verify: is this up or down?
-                if (window->mouseWheelCallback)
-                    window->mouseWheelCallback(window, window->wheelPos);
-            }
+                _glfwInputScroll(window, 0, 1);
             else if (event.xbutton.button == Button5)
-            {
-                window->wheelPos--;
-                if (window->mouseWheelCallback)
-                    window->mouseWheelCallback(window, window->wheelPos);
-            }
+                _glfwInputScroll(window, 0, -1);
+
+            else if (event.xbutton.button == Button6)
+                _glfwInputScroll(window, -1, 0);
+            else if (event.xbutton.button == Button7)
+                _glfwInputScroll(window, 1, 0);
+
             break;
         }
 
@@ -1741,8 +1742,15 @@ void _glfwPlatformPollEvents(void)
 {
     _GLFWwindow* window;
 
+    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+    {
+        window->scrollX = 0;
+        window->scrollY = 0;
+    }
+
     // Flag that the cursor has not moved
-    if (window = _glfwLibrary.cursorLockWindow)
+    window = _glfwLibrary.cursorLockWindow;
+    if (window)
         window->X11.mouseMoved = GL_FALSE;
 
     // Process all pending events
@@ -1750,7 +1758,8 @@ void _glfwPlatformPollEvents(void)
         processSingleEvent();
 
     // Did we get mouse movement in fully enabled hidden cursor mode?
-    if (window = _glfwLibrary.cursorLockWindow)
+    window = _glfwLibrary.cursorLockWindow;
+    if (window)
     {
         if (window->X11.mouseMoved && window->X11.pointerHidden)
         {

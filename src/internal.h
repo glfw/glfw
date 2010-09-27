@@ -299,6 +299,7 @@ void _glfwClearWindowHints(void);
 // Input handling (window.c)
 void _glfwInputKey(_GLFWwindow* window, int key, int action);
 void _glfwInputChar(_GLFWwindow* window, int character);
+void _glfwInputScroll(_GLFWwindow* window, int x, int y);
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action);
 void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated);
 

@@ -256,17 +256,8 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
     unsigned int missing, leastMissing = UINT_MAX;
     unsigned int colorDiff, leastColorDiff = UINT_MAX;
     unsigned int extraDiff, leastExtraDiff = UINT_MAX;
-    GLboolean desiresColor = GL_FALSE;
     const _GLFWfbconfig* current;
     const _GLFWfbconfig* closest = NULL;
-
-    // Cache some long-winded preferences
-
-    if (desired->redBits || desired->greenBits || desired->blueBits ||
-        desired->alphaBits)
-    {
-        desiresColor = GL_TRUE;
-    }
 
     for (i = 0;  i < count;  i++)
     {
@@ -383,26 +374,17 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
         }
 
         // Figure out if the current one is better than the best one found so far
+        // Missing buffers is the most important heuristic, then color buffer size
+        // mismatches and lastly size mismatches for other buffers
 
         if (missing < leastMissing)
             closest = current;
         else if (missing == leastMissing)
         {
-            if (desiresColor)
+            if ((colorDiff < leastColorDiff) ||
+                (colorDiff == leastColorDiff && extraDiff < leastExtraDiff))
             {
-                if ((colorDiff < leastColorDiff) ||
-                    (colorDiff == leastColorDiff && extraDiff < leastExtraDiff))
-                {
-                    closest = current;
-                }
-            }
-            else
-            {
-                if ((extraDiff < leastExtraDiff) ||
-                    (extraDiff == leastExtraDiff && colorDiff < leastColorDiff))
-                {
-                    closest = current;
-                }
+                closest = current;
             }
         }
 

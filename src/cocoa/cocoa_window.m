@@ -109,15 +109,12 @@
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
-    _glfwLibrary.activeWindow = window;
+    _glfwInputWindowFocus(window, GL_TRUE);
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
 {
-    if (window == _glfwLibrary.activeWindow)
-        _glfwLibrary.activeWindow = NULL;
-
-    _glfwInputDeactivation(window);
+    _glfwInputWindowFocus(window, GL_FALSE);
 }
 
 @end
@@ -449,11 +446,14 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
 - (void)scrollWheel:(NSEvent *)event
 {
-    window->NS.wheelPosFloating += [event deltaY];
-    window->wheelPos = lrint(window->NS.wheelPosFloating);
+    double deltaX = window->NS.fracScrollX + [event deltaX];
+    double deltaY = window->NS.fracScrollY + [event deltaY];
 
-    if (window->mouseWheelCallback)
-        window->mouseWheelCallback(window, window->wheelPos);
+    if ((int) deltaX || (int) deltaY)
+        _glfwInputScroll(window, (int) deltaX, (int) deltaY);
+
+    window->NS.fracScrollX = (int) (deltaX - floor(deltaX));
+    window->NS.fracScrollY = (int) (deltaY - floor(deltaY));
 }
 
 @end

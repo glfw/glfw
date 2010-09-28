@@ -85,7 +85,8 @@ typedef struct _GLFWwindowNS
     id           window;
     id	         delegate;
     unsigned int modifierFlags;
-    double       wheelPosFloating;
+    double       fracScrollX;
+    double       fracScrollY;
 } _GLFWwindowNS;
 
 

@@ -287,7 +287,10 @@ version of GLFW.</p>
   <li>Removed <code>GLFW_OPENED</code> window parameter</li>
   <li>Removed nonsensical key actions for Unicode character input</li>
   <li>Removed <code>GLFWCALL</code> and <code>GLFWAPIENTRY</code> macros for stdcall calling convention</li>
+  <li>Bugfix: The default OpenGL version in the <code>version</code> test was set to 1.1</li>
+  <li>Bugfix: The OpenGL profile and forward-compatibility window parameters were not loaded after context creation</li>
   <li>[Win32] Removed explicit support for versions of Windows older than Windows XP</li>
+  <li>[Win32] Bugfix: The <code>WGLSWAPINTERVALEXT_T</code> typedef was declared under <code>WGL_ARB_pixel_format</code></li>
 </ul>
 
 <h3>v2.7</h3>

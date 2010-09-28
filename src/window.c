@@ -574,6 +574,26 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
         }
     }
 
+    if (window->glMajor >= 3)
+    {
+        GLint flags;
+        glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+
+        if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
+            window->glForward = GL_TRUE;
+    }
+
+    if (window->glMajor > 3 || (window->glMajor == 3 && window->glMinor >= 2))
+    {
+        GLint mask;
+        glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
+
+        if (mask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)
+            window->glProfile = GLFW_OPENGL_COMPAT_PROFILE;
+        else if (mask & GL_CONTEXT_CORE_PROFILE_BIT)
+            window->glProfile = GLFW_OPENGL_CORE_PROFILE;
+    }
+
     // If full-screen mode was requested, disable mouse cursor
     if (mode == GLFW_FULLSCREEN)
         glfwDisable(window, GLFW_MOUSE_CURSOR);

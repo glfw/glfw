@@ -138,8 +138,8 @@ configure_file(${GLFW_SOURCE_DIR}/src/config.h.cmake
 # Install standard files 
 #--------------------------------------------------------------------
 
-install(DIRECTORY include DESTINATION include 
-        PATTERN include/GL/glfw3.h)
+install(DIRECTORY include/GL DESTINATION include 
+        FILES_MATCHING PATTERN glfw3.h)
 
 install(FILES COPYING.txt readme.html 
         DESTINATION share/doc/glfw-${GLFW_VERSION_FULL}/)

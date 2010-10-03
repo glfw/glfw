@@ -62,6 +62,16 @@ static void usage(void)
     printf("available profiles: core compat\n");
 }
 
+static const char* get_glfw_profile_name(int profile)
+{
+    if (profile == GLFW_OPENGL_COMPAT_PROFILE)
+        return "compatibility";
+    else if (profile == GLFW_OPENGL_CORE_PROFILE)
+        return "core";
+
+    return "unknown";
+}
+
 static const char* get_profile_name(GLint mask)
 {
     if (mask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)
@@ -69,7 +79,7 @@ static const char* get_profile_name(GLint mask)
     if (mask & GL_CONTEXT_CORE_PROFILE_BIT)
         return "core";
 
-  return "unknown";
+    return "unknown";
 }
 
 static void list_extensions(int major, int minor)
@@ -116,6 +126,7 @@ int main(int argc, char** argv)
     int ch, profile = 0, major = 1, minor = 0, revision;
     GLboolean debug = GL_FALSE, forward = GL_FALSE, list = GL_FALSE;
     GLint flags, mask;
+    GLFWwindow window;
 
     while ((ch = getopt(argc, argv, "dfhlm:n:p:")) != -1)
     {
@@ -183,7 +194,8 @@ int main(int argc, char** argv)
     // We assume here that we stand a better chance of success by leaving all
     // possible details of pixel format selection to GLFW
 
-    if (!glfwOpenWindow(0, 0, GLFW_WINDOWED, "Version"))
+    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Version");
+    if (!window)
     {
         glfwTerminate();
 
@@ -228,12 +240,18 @@ int main(int argc, char** argv)
             puts(" forward-compatible");
         else
             puts(" none");
+
+        printf("OpenGL forward-compatible flag parsed by GLFW: %s\n",
+               glfwGetWindowParam(window, GLFW_OPENGL_FORWARD_COMPAT) ? "true" : "false");
     }
 
     if (major > 3 || (major == 3 && minor >= 2))
     {
         glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
         printf("OpenGL profile mask: 0x%08x (%s)\n", mask, get_profile_name(mask));
+
+        printf("OpenGL profile parsed by GLFW: %s\n",
+               get_glfw_profile_name(glfwGetWindowParam(window, GLFW_OPENGL_PROFILE)));
     }
 
     printf("OpenGL context renderer string: \"%s\"\n", glGetString(GL_RENDERER));

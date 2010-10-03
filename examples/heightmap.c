@@ -31,10 +31,10 @@
 #include "getopt.h"
 
 
-#define GLFW_NO_GLU 1 
+#define GLFW_NO_GLU 1
 #include <GL/glfw3.h>
 
-/* OpenGL 3.3 support  
+/* OpenGL 3.3 support
  * Functions are effectively mapped in init_opengl() */
 #ifndef GL_VERSION_3_0
 /* no defines */
@@ -124,7 +124,7 @@ typedef char GLchar;
 #define GL_STENCIL_BACK_REF               0x8CA3
 #define GL_STENCIL_BACK_VALUE_MASK        0x8CA4
 #define GL_STENCIL_BACK_WRITEMASK         0x8CA5
-#endif 
+#endif
 
 
 
@@ -160,7 +160,7 @@ typedef ptrdiff_t GLsizeiptr;
 #define GL_DYNAMIC_READ                   0x88E9
 #define GL_DYNAMIC_COPY                   0x88EA
 #define GL_SAMPLES_PASSED                 0x8914
-#endif 
+#endif
 
 
 
@@ -190,14 +190,14 @@ typedef GLint (APIENTRY * PFN_glGetAttribLocation)(GLuint program, const GLchar 
 typedef void (APIENTRY * PFN_glEnableVertexAttribArray)(GLuint index);
 typedef void (APIENTRY * PFN_glVertexAttrib1f)(GLuint index, GLfloat x);
 typedef void (APIENTRY * PFN_glVertexAttribPointer)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *pointer);
-/* OpenGL 1.5 */ 
+/* OpenGL 1.5 */
 typedef void (APIENTRY * PFN_glBindBuffer)(GLenum target, GLuint buffer);
 typedef void (APIENTRY * PFN_glDeleteBuffers)(GLsizei n, const GLuint *buffers);
 typedef void (APIENTRY * PFN_glGenBuffers)(GLsizei n, GLuint *buffers);
 typedef void (APIENTRY * PFN_glBufferData)(GLenum target, GLsizeiptr size, const GLvoid *data, GLenum usage);
 typedef void (APIENTRY * PFN_glBufferSubData)(GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid *data);
 
-/* OpenGL function pointers */ 
+/* OpenGL function pointers */
 static PFN_glGenBuffers                 pglGenBuffers = NULL;
 static PFN_glGenVertexArrays            pglGenVertexArrays = NULL;
 static PFN_glDeleteVertexArrays         pglDeleteVertexArrays = NULL;

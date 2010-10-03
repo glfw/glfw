@@ -279,6 +279,7 @@ version of GLFW.</p>
   <li>Replaced mouse wheel interface with two-dimensional scrolling interface</li>
   <li>Made Unicode character input unaffected by <code>GLFW_KEY_REPEAT</code></li>
   <li>Removed event auto-polling and the <code>GLFW_AUTO_POLL_EVENTS</code> window enable</li>
+  <li>Removed the Win32 port .def files</li>
   <li>Removed the entire threading API</li>
   <li>Removed the entire image loading API</li>
   <li>Removed deprecated Carbon port</li>
@@ -288,7 +289,7 @@ version of GLFW.</p>
   <li>Removed nonsensical key actions for Unicode character input</li>
   <li>Removed <code>GLFWCALL</code> and <code>GLFWAPIENTRY</code> macros for stdcall calling convention</li>
   <li>Bugfix: The default OpenGL version in the <code>version</code> test was set to 1.1</li>
-  <li>Bugfix: The OpenGL profile and forward-compatibility window parameters were not loaded after context creation</li>
+  <li>Bugfix: The OpenGL profile and forward-compatibility window parameters were not saved after context creation</li>
   <li>[Win32] Removed explicit support for versions of Windows older than Windows XP</li>
   <li>[Win32] Bugfix: The <code>WGLSWAPINTERVALEXT_T</code> typedef was declared under <code>WGL_ARB_pixel_format</code></li>
 </ul>

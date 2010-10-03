@@ -40,9 +40,9 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
-#define GLX_GLXEXT_LEGACY 1 
+
 #include <GL/glx.h>
-#include "../../include/GL/glxext.h"
+
 #include "../../include/GL/glfw3.h"
 
 

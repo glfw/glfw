@@ -31,7 +31,7 @@ set(libglfw_SOURCES
     win32_dllmain.c)
 
 add_library(libglfwStatic STATIC ${libglfw_SOURCES})
-add_library(libglfwShared SHARED glfwdll.def ${libglfw_SOURCES}) 
+add_library(libglfwShared SHARED ${libglfw_SOURCES}) 
 
 target_link_libraries(libglfwShared ${OPENGL_gl_LIBRARY})
 set_target_properties(libglfwShared PROPERTIES 

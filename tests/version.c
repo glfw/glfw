@@ -30,21 +30,7 @@
 //========================================================================
 
 #include <GL/glfw3.h>
-
-#ifndef GL_VERSION_3_2
-#define GL_CONTEXT_CORE_PROFILE_BIT       0x00000001
-#define GL_CONTEXT_COMPATIBILITY_PROFILE_BIT 0x00000002
-#define GL_CONTEXT_PROFILE_MASK           0x9126
-#define GL_NUM_EXTENSIONS                 0x821D
-#define GL_CONTEXT_FLAGS                  0x821E
-#define GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT 0x0001
-#endif
-
-typedef const GLubyte * (APIENTRY *PFNGLGETSTRINGI) (GLenum, GLuint);
-
-#ifndef GL_VERSION_2_0
-#define GL_SHADING_LANGUAGE_VERSION 0x8B8C
-#endif
+#include <GL/glext.h>
 
 #ifdef _MSC_VER
 #define strcasecmp(x, y) _stricmp(x, y)
@@ -92,7 +78,7 @@ static void list_extensions(int major, int minor)
 
     if (major > 2)
     {
-        PFNGLGETSTRINGI glGetStringi = (PFNGLGETSTRINGI) glfwGetProcAddress("glGetStringi");
+        PFNGLGETSTRINGIPROC glGetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
         if (!glGetStringi)
         {
             fprintf(stderr, "Failed to retrieve glGetStringi entry point: %s\n", glfwErrorString(glfwGetError()));

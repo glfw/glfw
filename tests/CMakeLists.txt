@@ -16,17 +16,19 @@ if(APPLE)
   # Set fancy names for bundles
   add_executable(Accuracy MACOSX_BUNDLE accuracy.c)
   add_executable(FSAA MACOSX_BUNDLE fsaa.c)
+  add_executable(Sharing MACOSX_BUNDLE sharing.c)
   add_executable(Tearing MACOSX_BUNDLE tearing.c)
   add_executable(Windows MACOSX_BUNDLE windows.c)
 else()
   # Set boring names for executables
   add_executable(accuracy WIN32 accuracy.c)
+  add_executable(sharing WIN32 sharing.c)
   add_executable(tearing WIN32 tearing.c)
   add_executable(fsaa WIN32 fsaa.c)
   add_executable(windows WIN32 windows.c)
 endif(APPLE)
 
-set(WINDOWS_BINARIES accuracy tearing windows)
+set(WINDOWS_BINARIES accuracy sharing tearing windows)
 set(CONSOLE_BINARIES defaults events fsaa fsfocus iconify joysticks peter reopen version)
 
 if(MSVC)

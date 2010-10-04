@@ -417,6 +417,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode, const char* t
 GLFWAPI void glfwOpenWindowHint(int target, int hint);
 GLFWAPI void glfwMakeWindowCurrent(GLFWwindow window);
 GLFWAPI int  glfwIsWindow(GLFWwindow window);
+GLFWAPI GLFWwindow glfwGetCurrentWindow(void);
 GLFWAPI void glfwCloseWindow(GLFWwindow window);
 GLFWAPI void glfwSetWindowTitle(GLFWwindow, const char* title);
 GLFWAPI void glfwGetWindowSize(GLFWwindow, int* width, int* height);

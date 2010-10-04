@@ -640,6 +640,22 @@ GLFWAPI int glfwIsWindow(GLFWwindow window)
 
 
 //========================================================================
+// Returns GL_TRUE if the specified window handle is an actual window
+//========================================================================
+
+GLFWAPI GLFWwindow glfwGetCurrentWindow(void)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED);
+        return GL_FALSE;
+    }
+
+    return _glfwLibrary.currentWindow;
+}
+
+
+//========================================================================
 // Set hints for opening the window
 //========================================================================
 

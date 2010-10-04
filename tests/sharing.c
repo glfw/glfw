@@ -72,6 +72,11 @@ static GLuint create_texture(void)
 
 static void draw_quad(GLuint texture)
 {
+    int width, height;
+    glfwGetWindowSize(glfwGetCurrentWindow(), &width, &height);
+
+    glViewport(0, 0, width, height);
+
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(0.f, 1.f, 0.f, 1.f);

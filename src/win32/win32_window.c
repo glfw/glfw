@@ -1135,10 +1135,6 @@ static int createWindow(_GLFWwindow* window,
     RECT wa;
     POINT pos;
 
-    window->WGL.DC = NULL;
-    window->WGL.context = NULL;
-    window->Win32.handle = NULL;
-
     // Set common window styles
     dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE;
     dwExStyle = WS_EX_APPWINDOW;

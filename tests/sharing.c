@@ -114,6 +114,9 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
+    // This is the one and only time we create a texture
+    // It is created inside the first context created above
+    // It will then be shared with the second context created below
     texture = create_texture();
 
     windows[1] = open_window("Second", windows[0]);
@@ -126,12 +129,10 @@ int main(int argc, char** argv)
     while (glfwIsWindow(windows[0]) && glfwIsWindow(windows[1]))
     {
         glfwMakeWindowCurrent(windows[0]);
-        glClear(GL_COLOR_BUFFER_BIT);
         draw_quad(texture);
         glfwSwapBuffers();
 
         glfwMakeWindowCurrent(windows[1]);
-        glClear(GL_COLOR_BUFFER_BIT);
         draw_quad(texture);
         glfwSwapBuffers();
 

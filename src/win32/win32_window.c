@@ -311,9 +311,9 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
 // Creates an OpenGL context on the specified device context
 //========================================================================
 
-static HGLRC createContext(_GLFWwindow* window,
-                           const _GLFWwndconfig* wndconfig,
-                           int pixelFormat)
+static GLboolean createContext(_GLFWwindow* window,
+                               const _GLFWwndconfig* wndconfig,
+                               int pixelFormat)
 {
     PIXELFORMATDESCRIPTOR pfd;
     int flags, i = 0, attribs[7];

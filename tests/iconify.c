@@ -109,7 +109,7 @@ int main(int argc, char** argv)
         height = 0;
     }
 
-    window = glfwOpenWindow(width, height, mode, "Iconify");
+    window = glfwOpenWindow(width, height, mode, "Iconify", NULL);
     if (!window)
     {
         glfwTerminate();

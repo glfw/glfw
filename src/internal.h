@@ -60,13 +60,20 @@
 #include "platform.h"
 
 
+typedef struct _GLFWhints _GLFWhints;
+typedef struct _GLFWwndconfig _GLFWwndconfig;
+typedef struct _GLFWfbconfig _GLFWfbconfig;
+typedef struct _GLFWwindow _GLFWwindow;
+typedef struct _GLFWlibrary _GLFWlibrary;
+
+
 //------------------------------------------------------------------------
 // Window hints, set by glfwOpenWindowHint and consumed by glfwOpenWindow
 // A bucket of semi-random stuff lumped together for historical reasons
 // This is used only by the platform independent code and only to store
 // parameters passed to us by glfwOpenWindowHint
 //------------------------------------------------------------------------
-typedef struct _GLFWhints
+struct _GLFWhints
 {
     int         redBits;
     int         greenBits;
@@ -88,7 +95,7 @@ typedef struct _GLFWhints
     int         glForward;
     int         glDebug;
     int         glProfile;
-} _GLFWhints;
+};
 
 
 //------------------------------------------------------------------------
@@ -97,18 +104,19 @@ typedef struct _GLFWhints
 // This is used to pass window and context creation parameters from the
 // platform independent code to the platform specific code
 //------------------------------------------------------------------------
-typedef struct _GLFWwndconfig
+struct _GLFWwndconfig
 {
-    int         mode;
-    const char* title;
-    int         refreshRate;
-    int         windowNoResize;
-    int         glMajor;
-    int         glMinor;
-    int         glForward;
-    int         glDebug;
-    int         glProfile;
-} _GLFWwndconfig;
+    int           mode;
+    const char*   title;
+    int           refreshRate;
+    int           windowNoResize;
+    int           glMajor;
+    int           glMinor;
+    int           glForward;
+    int           glDebug;
+    int           glProfile;
+    _GLFWwindow*  share;
+};
 
 
 //------------------------------------------------------------------------
@@ -118,7 +126,7 @@ typedef struct _GLFWwndconfig
 // code to the platform specific code, and also to enumerate and select
 // available framebuffer configurations
 //------------------------------------------------------------------------
-typedef struct _GLFWfbconfig
+struct _GLFWfbconfig
 {
     int         redBits;
     int         greenBits;
@@ -134,13 +142,13 @@ typedef struct _GLFWfbconfig
     int         stereo;
     int         samples;
     GLFWintptr  platformID;
-} _GLFWfbconfig;
+};
 
 
 //------------------------------------------------------------------------
 // Window structure
 //------------------------------------------------------------------------
-typedef struct _GLFWwindow
+struct _GLFWwindow
 {
     struct _GLFWwindow* next;
 
@@ -199,13 +207,13 @@ typedef struct _GLFWwindow
 
     _GLFW_PLATFORM_WINDOW_STATE;
     _GLFW_PLATFORM_CONTEXT_STATE;
-} _GLFWwindow;
+};
 
 
 //------------------------------------------------------------------------
 // Library global data
 //------------------------------------------------------------------------
-typedef struct _GLFWlibrary
+struct _GLFWlibrary
 {
     _GLFWhints   hints;
 
@@ -215,7 +223,7 @@ typedef struct _GLFWlibrary
     _GLFWwindow* cursorLockWindow;
 
     _GLFW_PLATFORM_LIBRARY_STATE;
-} _GLFWlibrary;
+};
 
 
 //========================================================================

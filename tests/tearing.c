@@ -50,7 +50,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Tearing Detector");
+    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Tearing Detector", NULL);
     if (!window)
     {
         glfwTerminate();

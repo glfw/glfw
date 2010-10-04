@@ -84,7 +84,7 @@ static int open_window(int width, int height, int mode)
 {
     double base = glfwGetTime();
 
-    window_handle = glfwOpenWindow(width, height, mode, "Window Re-opener");
+    window_handle = glfwOpenWindow(width, height, mode, "Window Re-opener", NULL);
     if (!window_handle)
     {
         fprintf(stderr, "Failed to open %s mode GLFW window: %s\n", get_mode_name(mode), glfwErrorString(glfwGetError()));

@@ -315,20 +315,23 @@ static HGLRC createContext(_GLFWwindow* window,
                            const _GLFWwndconfig* wndconfig,
                            int pixelFormat)
 {
-    HGLRC context;
     PIXELFORMATDESCRIPTOR pfd;
     int flags, i = 0, attribs[7];
+    HGLRC share = NULL;
+
+    if (wndconfig->share)
+        share = wndconfig->share->WGL.context;
 
     if (!_glfw_DescribePixelFormat(window->WGL.DC, pixelFormat, sizeof(pfd), &pfd))
     {
         _glfwSetError(GLFW_INTERNAL_ERROR);
-        return NULL;
+        return GL_FALSE;
     }
 
     if (!_glfw_SetPixelFormat(window->WGL.DC, pixelFormat, &pfd))
     {
         _glfwSetError(GLFW_INTERNAL_ERROR);
-        return NULL;
+        return GL_FALSE;
     }
 
     if (window->WGL.has_WGL_ARB_create_context)
@@ -372,24 +375,35 @@ static HGLRC createContext(_GLFWwindow* window,
 
         attribs[i++] = 0;
 
-        context = window->WGL.CreateContextAttribsARB(window->WGL.DC, NULL, attribs);
-        if (!context)
+        window->WGL.context = window->WGL.CreateContextAttribsARB(window->WGL.DC,
+                                                                  share,
+                                                                  attribs);
+        if (!window->WGL.context)
         {
             _glfwSetError(GLFW_INTERNAL_ERROR);
-            return NULL;
+            return GL_FALSE;
         }
     }
     else
     {
-        context = wglCreateContext(window->WGL.DC);
-        if (!context)
+        window->WGL.context = wglCreateContext(window->WGL.DC);
+        if (!window->WGL.context)
         {
             _glfwSetError(GLFW_INTERNAL_ERROR);
-            return NULL;
+            return GL_FALSE;
+        }
+
+        if (share)
+        {
+            if (!wglShareLists(share, window->WGL.context))
+            {
+                _glfwSetError(GLFW_INTERNAL_ERROR);
+                return GL_FALSE;
+            }
         }
     }
 
-    return context;
+    return GL_TRUE;
 }
 
 
@@ -1201,8 +1215,7 @@ static int createWindow(_GLFWwindow* window,
     if (!pixelFormat)
         return GL_FALSE;
 
-    window->WGL.context = createContext(window, wndconfig, pixelFormat);
-    if (!window->WGL.context)
+    if (!createContext(window, wndconfig, pixelFormat))
         return GL_FALSE;
 
     glfwMakeWindowCurrent(window);

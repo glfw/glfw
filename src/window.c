@@ -409,7 +409,8 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
 //========================================================================
 
 GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
-                                  int mode, const char* title)
+                                  int mode, const char* title,
+                                  GLFWwindow share)
 {
     _GLFWfbconfig fbconfig;
     _GLFWwndconfig wndconfig;
@@ -458,6 +459,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     wndconfig.glForward      = _glfwLibrary.hints.glForward ? GL_TRUE : GL_FALSE;
     wndconfig.glDebug        = _glfwLibrary.hints.glDebug ? GL_TRUE : GL_FALSE;
     wndconfig.glProfile      = _glfwLibrary.hints.glProfile;
+    wndconfig.share          = share;
 
     // Clear for next open call
     _glfwClearWindowHints();

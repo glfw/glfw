@@ -331,7 +331,7 @@ int main(int argc, char *argv[])
 
     glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
 
-    window = glfwOpenWindow( 300, 300, GLFW_WINDOWED, "Gears" );
+    window = glfwOpenWindow( 300, 300, GLFW_WINDOWED, "Gears", NULL );
     if (!window)
     {
         fprintf( stderr, "Failed to open GLFW window\n" );

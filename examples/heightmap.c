@@ -587,7 +587,7 @@ int main(int argc, char** argv)
     glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwOpenWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
 
-    window = glfwOpenWindow(800, 600, GLFW_WINDOWED, "GLFW OpenGL3 Heightmap demo");
+    window = glfwOpenWindow(800, 600, GLFW_WINDOWED, "GLFW OpenGL3 Heightmap demo", NULL);
     if (! window )
     {
         fprintf(stderr, "ERROR: Unable to create the OpenGL context and associated window\n");

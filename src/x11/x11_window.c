@@ -483,6 +483,10 @@ static int createContext(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, G
     int attribs[40];
     int flags, dummy, index;
     GLXFBConfig* fbconfig;
+    GLXContext share = NULL;
+
+    if (wndconfig->share)
+        share = wndconfig->share->GLX.context;
 
     // Retrieve the previously selected GLXFBConfig
     {
@@ -580,28 +584,30 @@ static int createContext(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, G
 
         setGLXattrib(attribs, index, None, None);
 
-        window->GLX.context = window->GLX.CreateContextAttribsARB(_glfwLibrary.X11.display,
-                                                                  *fbconfig,
-                                                                  NULL,
-                                                                  True,
-                                                                  attribs);
+        window->GLX.context =
+            window->GLX.CreateContextAttribsARB(_glfwLibrary.X11.display,
+                                                *fbconfig,
+                                                share,
+                                                True,
+                                                attribs);
     }
     else
     {
         if (window->GLX.has_GLX_SGIX_fbconfig)
         {
-            window->GLX.context = window->GLX.CreateContextWithConfigSGIX(_glfwLibrary.X11.display,
-                                                                          *fbconfig,
-                                                                          GLX_RGBA_TYPE,
-                                                                          NULL,
-                                                                          True);
+            window->GLX.context =
+                window->GLX.CreateContextWithConfigSGIX(_glfwLibrary.X11.display,
+                                                        *fbconfig,
+                                                        GLX_RGBA_TYPE,
+                                                        share,
+                                                        True);
         }
         else
         {
             window->GLX.context = glXCreateNewContext(_glfwLibrary.X11.display,
                                                       *fbconfig,
                                                       GLX_RGBA_TYPE,
-                                                      NULL,
+                                                      share,
                                                       True);
         }
     }

@@ -631,9 +631,14 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         return GL_FALSE;
     }
 
+    NSOpenGLContext* share = NULL;
+
+    if (wndconfig->share)
+        share = wndconfig->share->NSGL.context;
+
     window->NSGL.context =
         [[NSOpenGLContext alloc] initWithFormat:window->NSGL.pixelFormat
-                                   shareContext:nil];
+                                   shareContext:share];
     if (window->NSGL.context == nil)
     {
         _glfwSetError(GLFW_INTERNAL_ERROR);

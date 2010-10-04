@@ -65,7 +65,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(window_width, window_height, GLFW_WINDOWED, "Cursor Inaccuracy Detector");
+    window = glfwOpenWindow(window_width, window_height, GLFW_WINDOWED, "Cursor Inaccuracy Detector", NULL);
     if (!window)
     {
         glfwTerminate();

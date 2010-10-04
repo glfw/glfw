@@ -290,7 +290,7 @@ int main(void)
 
     printf("Library initialized\n");
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Event Linter");
+    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Event Linter", NULL);
     if (!window)
     {
         glfwTerminate();

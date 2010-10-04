@@ -35,6 +35,12 @@
 #define WIDTH  400
 #define HEIGHT 400
 
+static void key_callback(GLFWwindow window, int key, int action)
+{
+    if (action == GLFW_PRESS && key == GLFW_KEY_ESC)
+        glfwCloseWindow(window);
+}
+
 static GLFWwindow open_window(const char* title, GLFWwindow share)
 {
     GLFWwindow window;
@@ -43,6 +49,7 @@ static GLFWwindow open_window(const char* title, GLFWwindow share)
     if (!window)
         return NULL;
 
+    glfwSetKeyCallback(window, key_callback);
     glfwSwapInterval(1);
 
     return window;

@@ -5,8 +5,6 @@ link_libraries(libglfwStatic ${GLFW_LIBRARIES} ${OPENGL_glu_LIBRARY})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include ${OPENGL_INCLUDE_DIR})
 
-add_executable(listmodes listmodes.c)
-
 if(APPLE)
   # Set fancy names for bundles
   add_executable(Boing MACOSX_BUNDLE boing.c)
@@ -25,21 +23,17 @@ else(APPLE)
 endif(APPLE)
 
 set(WINDOWS_BINARIES boing gears heightmap splitview triangle wave)
-set(CONSOLE_BINARIES listmodes)
 
 if(MSVC)
   # Tell MSVC to use main instead of WinMain for Windows subsystem executables
-  set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES}
+  set_target_properties(${WINDOWS_BINARIES}
                         PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
 endif(MSVC)
 
 if(CYGWIN)
   # Set cross-compile and subsystem compile and link flags
-  set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES}
-                        PROPERTIES COMPILE_FLAGS "-mno-cygwin")
   set_target_properties(${WINDOWS_BINARIES}
+                        PROPERTIES COMPILE_FLAGS "-mno-cygwin"
                         PROPERTIES LINK_FLAGS "-mno-cygwin -mwindows")
-  set_target_properties(${CONSOLE_BINARIES}
-                        PROPERTIES LINK_FLAGS "-mno-cygwin -mconsole")
 endif(CYGWIN)
 

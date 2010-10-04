@@ -8,6 +8,7 @@ add_executable(events events.c)
 add_executable(fsfocus fsfocus.c)
 add_executable(iconify iconify.c getopt.c)
 add_executable(joysticks joysticks.c)
+add_executable(listmodes listmodes.c)
 add_executable(peter peter.c)
 add_executable(reopen reopen.c)
 add_executable(version version.c getopt.c)
@@ -29,7 +30,8 @@ else()
 endif(APPLE)
 
 set(WINDOWS_BINARIES accuracy sharing tearing windows)
-set(CONSOLE_BINARIES defaults events fsaa fsfocus iconify joysticks peter reopen version)
+set(CONSOLE_BINARIES defaults events fsaa fsfocus iconify joysticks listmodes
+                     peter reopen version)
 
 if(MSVC)
   # Tell MSVC to use main instead of WinMain for Windows subsystem executables

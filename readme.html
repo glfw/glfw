@@ -292,6 +292,7 @@ version of GLFW.</p>
   <li>Removed <code>GLFWCALL</code> and <code>GLFWAPIENTRY</code> macros for stdcall calling convention</li>
   <li>Bugfix: The default OpenGL version in the <code>version</code> test was set to 1.1</li>
   <li>Bugfix: The OpenGL profile and forward-compatibility window parameters were not saved after context creation</li>
+  <li>[X11] Bugfix: Calling <code>glXCreateContextAttribsARB</code> with an unavailable OpenGL version caused the application to terminate with a <code>BadMatch</code> Xlib error</li>
   <li>[Win32] Removed explicit support for versions of Windows older than Windows XP</li>
 </ul>
 

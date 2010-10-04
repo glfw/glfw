@@ -32,11 +32,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define WIDTH  400
+#define HEIGHT 400
+
 static GLFWwindow open_window(const char* title, GLFWwindow share)
 {
     GLFWwindow window;
 
-    window = glfwOpenWindow(400, 400, GLFW_WINDOWED, title, share);
+    window = glfwOpenWindow(WIDTH, HEIGHT, GLFW_WINDOWED, title, share);
     if (!window)
         return NULL;
 
@@ -100,6 +103,7 @@ int main(int argc, char** argv)
 {
     GLFWwindow windows[2];
     GLuint texture;
+    int x, y;
 
     if (!glfwInit())
     {
@@ -114,6 +118,8 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
+    glfwGetWindowPos(windows[0], &x, &y);
+
     // This is the one and only time we create a texture
     // It is created inside the first context created above
     // It will then be shared with the second context created below
@@ -125,6 +131,8 @@ int main(int argc, char** argv)
         fprintf(stderr, "Failed to open second GLFW window: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
+
+    glfwSetWindowPos(windows[1], x + WIDTH + 50, y);
 
     while (glfwIsWindow(windows[0]) && glfwIsWindow(windows[1]))
     {

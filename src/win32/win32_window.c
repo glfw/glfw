@@ -184,7 +184,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
 
     if (!count)
     {
-        _glfwSetError(GLFW_NO_PIXEL_FORMAT);
+        _glfwSetError(GLFW_OPENGL_UNAVAILABLE);
         return NULL;
     }
 
@@ -324,13 +324,13 @@ static GLboolean createContext(_GLFWwindow* window,
 
     if (!_glfw_DescribePixelFormat(window->WGL.DC, pixelFormat, sizeof(pfd), &pfd))
     {
-        _glfwSetError(GLFW_INTERNAL_ERROR);
+        _glfwSetError(GLFW_OPENGL_UNAVAILABLE);
         return GL_FALSE;
     }
 
     if (!_glfw_SetPixelFormat(window->WGL.DC, pixelFormat, &pfd))
     {
-        _glfwSetError(GLFW_INTERNAL_ERROR);
+        _glfwSetError(GLFW_OPENGL_UNAVAILABLE);
         return GL_FALSE;
     }
 
@@ -380,7 +380,7 @@ static GLboolean createContext(_GLFWwindow* window,
                                                                   attribs);
         if (!window->WGL.context)
         {
-            _glfwSetError(GLFW_INTERNAL_ERROR);
+            _glfwSetError(GLFW_VERSION_UNAVAILABLE);
             return GL_FALSE;
         }
     }
@@ -389,7 +389,7 @@ static GLboolean createContext(_GLFWwindow* window,
         window->WGL.context = wglCreateContext(window->WGL.DC);
         if (!window->WGL.context)
         {
-            _glfwSetError(GLFW_INTERNAL_ERROR);
+            _glfwSetError(GLFW_PLATFORM_ERROR);
             return GL_FALSE;
         }
 
@@ -397,7 +397,7 @@ static GLboolean createContext(_GLFWwindow* window,
         {
             if (!wglShareLists(share, window->WGL.context))
             {
-                _glfwSetError(GLFW_INTERNAL_ERROR);
+                _glfwSetError(GLFW_PLATFORM_ERROR);
                 return GL_FALSE;
             }
         }
@@ -1082,7 +1082,7 @@ static ATOM registerWindowClass(void)
     classAtom = RegisterClass(&wc);
     if (!classAtom)
     {
-        _glfwSetError(GLFW_INTERNAL_ERROR);
+        _glfwSetError(GLFW_PLATFORM_ERROR);
         return 0;
     }
 
@@ -1196,14 +1196,14 @@ static int createWindow(_GLFWwindow* window,
 
     if (!window->Win32.handle)
     {
-        _glfwSetError(GLFW_INTERNAL_ERROR);
+        _glfwSetError(GLFW_PLATFORM_ERROR);
         return GL_FALSE;
     }
 
     window->WGL.DC = GetDC(window->Win32.handle);
     if (!window->WGL.DC)
     {
-        _glfwSetError(GLFW_INTERNAL_ERROR);
+        _glfwSetError(GLFW_PLATFORM_ERROR);
         return GL_FALSE;
     }
 

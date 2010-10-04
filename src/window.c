@@ -564,7 +564,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
         // The desired OpenGL version is greater than the actual version
         // This only happens if the machine lacks {GLX|WGL}_ARB_create_context
         glfwCloseWindow(window);
-        _glfwSetError(GLFW_UNAVAILABLE_VERSION);
+        _glfwSetError(GLFW_VERSION_UNAVAILABLE);
         return GL_FALSE;
     }
 
@@ -574,7 +574,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
         if (!window->GetStringi)
         {
             glfwCloseWindow(window);
-            _glfwSetError(GLFW_INTERNAL_ERROR);
+            _glfwSetError(GLFW_PLATFORM_ERROR);
             return GL_FALSE;
         }
     }

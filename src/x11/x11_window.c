@@ -388,7 +388,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         if (!window->GLX.has_GLX_SGIX_fbconfig)
         {
             fprintf(stderr, "GLXFBConfigs are not supported by the X server\n");
-            _glfwSetError(GLFW_NO_PIXEL_FORMAT);
+            _glfwSetError(GLFW_OPENGL_UNAVAILABLE);
             return NULL;
         }
     }
@@ -402,7 +402,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         if (!count)
         {
             fprintf(stderr, "No GLXFBConfigs returned\n");
-            _glfwSetError(GLFW_NO_PIXEL_FORMAT);
+            _glfwSetError(GLFW_OPENGL_UNAVAILABLE);
             return NULL;
         }
     }
@@ -412,7 +412,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         if (!count)
         {
             fprintf(stderr, "No GLXFBConfigs returned\n");
-            _glfwSetError(GLFW_NO_PIXEL_FORMAT);
+            _glfwSetError(GLFW_OPENGL_UNAVAILABLE);
             return NULL;
         }
     }
@@ -520,7 +520,7 @@ static int createContext(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, G
         if (fbconfig == NULL)
         {
             fprintf(stderr, "Unable to retrieve the selected GLXFBConfig\n");
-            _glfwSetError(GLFW_INTERNAL_ERROR);
+            _glfwSetError(GLFW_PLATFORM_ERROR);
             return GL_FALSE;
         }
     }
@@ -542,7 +542,7 @@ static int createContext(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, G
         XFree(fbconfig);
 
         fprintf(stderr, "Unable to retrieve visual for GLXFBconfig\n");
-        _glfwSetError(GLFW_INTERNAL_ERROR);
+        _glfwSetError(GLFW_PLATFORM_ERROR);
         return GL_FALSE;
     }
 
@@ -577,7 +577,7 @@ static int createContext(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, G
             {
                 fprintf(stderr, "OpenGL profile requested but GLX_ARB_create_context_profile "
                                 "is unavailable\n");
-                _glfwSetError(GLFW_UNAVAILABLE_VERSION);
+                _glfwSetError(GLFW_VERSION_UNAVAILABLE);
                 return GL_FALSE;
             }
 
@@ -634,7 +634,7 @@ static int createContext(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, G
     {
         fprintf(stderr, "Unable to create OpenGL context\n");
         // TODO: Handle all the various error codes here
-        _glfwSetError(GLFW_INTERNAL_ERROR);
+        _glfwSetError(GLFW_PLATFORM_ERROR);
         return GL_FALSE;
     }
 
@@ -752,7 +752,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         if (!window->X11.handle)
         {
             // TODO: Handle all the various error codes here
-            _glfwSetError(GLFW_INTERNAL_ERROR);
+            _glfwSetError(GLFW_PLATFORM_ERROR);
             return GL_FALSE;
         }
     }

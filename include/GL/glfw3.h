@@ -353,15 +353,13 @@ extern "C" {
 /* glfwGetError/glfwErrorString tokens */
 #define GLFW_NO_ERROR             0
 #define GLFW_NOT_INITIALIZED      0x00070001
-#define GLFW_INVALID_ENUM         0x00070002
-#define GLFW_INVALID_VALUE        0x00070003
-#define GLFW_OUT_OF_MEMORY        0x00070004
-#define GLFW_OPENGL_NOT_SUPPORTED 0x00070005
-#define GLFW_NO_PIXEL_FORMAT      0x00070006
-#define GLFW_VIDEO_MODE_FAILED    0x00070007
-#define GLFW_UNAVAILABLE_VERSION  0x00070008
-#define GLFW_NO_CURRENT_WINDOW    0x00070009
-#define GLFW_INTERNAL_ERROR       0x0007000A
+#define GLFW_NO_CURRENT_WINDOW    0x00070002
+#define GLFW_INVALID_ENUM         0x00070003
+#define GLFW_INVALID_VALUE        0x00070004
+#define GLFW_OUT_OF_MEMORY        0x00070005
+#define GLFW_OPENGL_UNAVAILABLE   0x00070006
+#define GLFW_VERSION_UNAVAILABLE  0x00070007
+#define GLFW_PLATFORM_ERROR       0x00070008
 
 
 /*************************************************************************

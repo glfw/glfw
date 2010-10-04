@@ -79,24 +79,20 @@ GLFWAPI const char* glfwErrorString(int error)
             return "No error";
         case GLFW_NOT_INITIALIZED:
             return "The GLFW library is not initialized";
+        case GLFW_NO_CURRENT_WINDOW:
+            return "There is no current GLFW window";
         case GLFW_INVALID_ENUM:
             return "Invalid argument for enum parameter";
         case GLFW_INVALID_VALUE:
             return "Invalid value for parameter";
         case GLFW_OUT_OF_MEMORY:
             return "Out of memory";
-        case GLFW_OPENGL_NOT_SUPPORTED:
-            return "OpenGL is not supported";
-        case GLFW_NO_PIXEL_FORMAT:
-            return "No matching framebuffer pixel format could be found";
-        case GLFW_VIDEO_MODE_FAILED:
-            return "Video mode setting failed";
-        case GLFW_UNAVAILABLE_VERSION:
+        case GLFW_OPENGL_UNAVAILABLE:
+            return "OpenGL is not available on this machine";
+        case GLFW_VERSION_UNAVAILABLE:
             return "The requested OpenGL version is unavailable";
-        case GLFW_NO_CURRENT_WINDOW:
-            return "There is no current GLFW window";
-        case GLFW_INTERNAL_ERROR:
-            return "Internal GLFW library error";
+        case GLFW_PLATFORM_ERROR:
+            return "A platform-specific error occurred";
         default:
             // TODO: Set GLFW_INVALID_ENUM here?
             return NULL;

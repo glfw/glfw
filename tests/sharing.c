@@ -130,8 +130,6 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    glfwGetWindowPos(windows[0], &x, &y);
-
     // This is the one and only time we create a texture
     // It is created inside the first context, created above
     // It will then be shared with the second context, created below
@@ -144,6 +142,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
+    glfwGetWindowPos(windows[0], &x, &y);
     glfwSetWindowPos(windows[1], x + WIDTH + 50, y);
 
     while (glfwIsWindow(windows[0]) && glfwIsWindow(windows[1]))

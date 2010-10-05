@@ -1318,7 +1318,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     {
         if (!window->WGL.has_WGL_ARB_create_context)
         {
-            _glfwSetError(GLFW_UNAVAILABLE_VERSION);
+            _glfwSetError(GLFW_VERSION_UNAVAILABLE);
             return GL_FALSE;
         }
 

@@ -1308,9 +1308,6 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         _glfwLibrary.Win32.monitor.modeChanged = GL_TRUE;
     }
 
-    // This call only clears the WGL extension member variables
-    initWGLExtensions(window);
-
     if (!createWindow(window, wndconfig, fbconfig))
         return GL_FALSE;
 

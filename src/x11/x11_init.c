@@ -224,8 +224,6 @@ static void terminateDisplay(void)
 
     if (_glfwLibrary.X11.display)
     {
-        _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
-
         XCloseDisplay(_glfwLibrary.X11.display);
         _glfwLibrary.X11.display = NULL;
     }

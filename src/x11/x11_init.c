@@ -157,6 +157,7 @@ static void initGammaRamp(void)
             // This is probably Nvidia RandR with broken gamma support
             // Flag it as useless and try Xf86VidMode below, if available
             _glfwLibrary.X11.XRandR.gammaBroken = GL_TRUE;
+            fprintf(stderr, "Ignoring broken nVidia implementation of RandR 1.2+ gamma\n");
         }
 
         XRRFreeScreenResources(rr);

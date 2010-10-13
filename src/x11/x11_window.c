@@ -1670,7 +1670,8 @@ void _glfwPlatformRefreshWindowParams(void)
     GLXFBConfig* fbconfig;
 #if defined(_GLFW_HAS_XRANDR)
     XRRScreenConfiguration* sc;
-#elif defined(_GLFW_HAS_XF86VIDMODE)
+#endif
+#if defined(_GLFW_HAS_XF86VIDMODE)
     XF86VidModeModeLine modeline;
     int dotclock;
     float pixels_per_second, pixels_per_frame;
@@ -1740,8 +1741,10 @@ void _glfwPlatformRefreshWindowParams(void)
         window->refreshRate = XRRConfigCurrentRate(sc);
         XRRFreeScreenConfigInfo(sc);
     }
-#elif defined(_GLFW_HAS_XF86VIDMODE)
-    if (_glfwLibrary.X11.XF86VidMode.available)
+#endif
+#if defined(_GLFW_HAS_XF86VIDMODE)
+    if (_glfwLibrary.X11.XF86VidMode.available &&
+        !_glfwLibrary.X11.XRandR.available)
     {
         // Use the XF86VidMode extension to get current video mode
         XF86VidModeGetModeLine(_glfwLibrary.X11.display, _glfwLibrary.X11.screen,

@@ -183,7 +183,8 @@ typedef struct _GLFWlibraryX11
         int      oldWidth;
         int      oldHeight;
         Rotation oldRotation;
-#elif defined(_GLFW_HAS_XF86VIDMODE)
+#endif
+#if defined(_GLFW_HAS_XF86VIDMODE)
         XF86VidModeModeInfo oldMode;
 #endif
     } FS;

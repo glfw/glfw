@@ -156,6 +156,8 @@ typedef int  (WINAPI * DESCRIBEPIXELFORMAT_T) (HDC,int,UINT,LPPIXELFORMATDESCRIP
 typedef int  (WINAPI * GETPIXELFORMAT_T) (HDC);
 typedef BOOL (WINAPI * SETPIXELFORMAT_T) (HDC,int,const PIXELFORMATDESCRIPTOR*);
 typedef BOOL (WINAPI * SWAPBUFFERS_T) (HDC);
+typedef BOOL (WINAPI * GETDEVICEGAMMARAMP_T) (HDC,PVOID);
+typedef BOOL (WINAPI * SETDEVICEGAMMARAMP_T) (HDC,PVOID);
 #endif // _GLFW_NO_DLOAD_GDI32
 
 // winmm.dll function pointer typedefs
@@ -174,12 +176,16 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 #define _glfw_GetPixelFormat      _glfwLibrary.Win32.gdi.GetPixelFormat
 #define _glfw_SetPixelFormat      _glfwLibrary.Win32.gdi.SetPixelFormat
 #define _glfw_SwapBuffers         _glfwLibrary.Win32.gdi.SwapBuffers
+#define _glfw_GetDeviceGammaRamp  _glfwLibrary.Win32.gdi.GetDeviceGammaRamp
+#define _glfw_SetDeviceGammaRamp  _glfwLibrary.Win32.gdi.SetDeviceGammaRamp
 #else
 #define _glfw_ChoosePixelFormat   ChoosePixelFormat
 #define _glfw_DescribePixelFormat DescribePixelFormat
 #define _glfw_GetPixelFormat      GetPixelFormat
 #define _glfw_SetPixelFormat      SetPixelFormat
 #define _glfw_SwapBuffers         SwapBuffers
+#define _glfw_GetDeviceGammaRamp  GetDeviceGammaRamp
+#define _glfw_SetDeviceGammaRamp  SetDeviceGammaRamp
 #endif // _GLFW_NO_DLOAD_GDI32
 
 // winmm.dll shortcuts
@@ -264,6 +270,7 @@ typedef struct _GLFWlibraryWin32
     ATOM      classAtom;       // Window class atom
     HHOOK     keyboardHook;    // Keyboard hook handle
     DWORD     foregroundLockTimeout;
+    HDC       desktopDC;
 
     // Default monitor
     struct {
@@ -291,6 +298,8 @@ typedef struct _GLFWlibraryWin32
         GETPIXELFORMAT_T      GetPixelFormat;
         SETPIXELFORMAT_T      SetPixelFormat;
         SWAPBUFFERS_T         SwapBuffers;
+        GETDEVICEGAMMARAMP_T  GetDeviceGammaRamp;
+        SETDEVICEGAMMARAMP_T  SetDeviceGammaRamp;
     } gdi;
 #endif // _GLFW_NO_DLOAD_GDI32
 

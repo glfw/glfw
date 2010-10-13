@@ -12,6 +12,7 @@ set(libglfw_SOURCES
     ${common_SOURCES}
     x11_enable.c 
     x11_fullscreen.c
+    x11_gamma.c
     x11_glext.c
     x11_init.c 
     x11_joystick.c

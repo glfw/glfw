@@ -480,7 +480,7 @@ void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
 {
     Display* dpy;
     int bpp, screen;
-#if defined(_GLFW_HAS_XF86VIDMODE)
+#if !defined(_GLFW_HAS_XRANDR) && defined(_GLFW_HAS_XF86VIDMODE)
     XF86VidModeModeInfo** modelist;
     int modecount;
 #endif

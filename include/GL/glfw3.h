@@ -361,6 +361,8 @@ extern "C" {
 #define GLFW_VERSION_UNAVAILABLE  0x00070007
 #define GLFW_PLATFORM_ERROR       0x00070008
 
+/* Gamma ramps */
+#define GLFW_GAMMA_RAMP_SIZE      256
 
 /*************************************************************************
  * Typedefs
@@ -378,6 +380,14 @@ typedef struct
     int blueBits;
     int greenBits;
 } GLFWvidmode;
+
+/* Gamma ramp */
+typedef struct
+{
+    unsigned short red[GLFW_GAMMA_RAMP_SIZE];
+    unsigned short green[GLFW_GAMMA_RAMP_SIZE];
+    unsigned short blue[GLFW_GAMMA_RAMP_SIZE];
+} GLFWgammaramp;
 
 /* Function pointer types */
 typedef void (* GLFWwindowsizefun)(GLFWwindow,int,int);
@@ -409,6 +419,11 @@ GLFWAPI const char* glfwErrorString(int error);
 /* Video mode functions */
 GLFWAPI int  glfwGetVideoModes(GLFWvidmode* list, int maxcount);
 GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode);
+
+/* Gamma ramp functions */
+GLFWAPI void glfwSetGammaFormula(float gamma, float blacklevel, float gain);
+GLFWAPI void glfwGetGammaRamp(GLFWgammaramp* ramp);
+GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
 
 /* Window handling */
 GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode, const char* title, GLFWwindow share);

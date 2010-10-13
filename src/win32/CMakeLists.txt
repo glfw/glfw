@@ -23,6 +23,7 @@ set(libglfw_SOURCES
     ${common_SOURCES}
     win32_enable.c 
     win32_fullscreen.c
+    win32_gamma.c
     win32_glext.c
     win32_init.c 
     win32_joystick.c

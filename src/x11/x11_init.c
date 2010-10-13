@@ -31,6 +31,7 @@
 #include "internal.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 
 //========================================================================
@@ -62,7 +63,7 @@ static void initLibraries(void)
 
 
 //========================================================================
-// Initialize X11 display
+// Initialize X11 display and look for supported X11 extensions
 //========================================================================
 
 static GLboolean initDisplay(void)
@@ -88,7 +89,7 @@ static GLboolean initDisplay(void)
                                   &_glfwLibrary.X11.XF86VidMode.eventBase,
                                   &_glfwLibrary.X11.XF86VidMode.errorBase);
 #else
-    _glfwLibrary.X11.XF86VidMode.available = 0;
+    _glfwLibrary.X11.XF86VidMode.available = GL_FALSE;
 #endif
 
     // Check for XRandR extension
@@ -97,11 +98,17 @@ static GLboolean initDisplay(void)
         XRRQueryExtension(_glfwLibrary.X11.display,
                           &_glfwLibrary.X11.XRandR.eventBase,
                           &_glfwLibrary.X11.XRandR.errorBase);
+
+    if (!XRRQueryVersion(_glfwLibrary.X11.display,
+                        &_glfwLibrary.X11.XRandR.majorVersion,
+                        &_glfwLibrary.X11.XRandR.minorVersion))
+    {
+        fprintf(stderr, "Unable to query RandR version number\n");
+    }
 #else
-    _glfwLibrary.X11.XRandR.available = 0;
+    _glfwLibrary.X11.XRandR.available = GL_FALSE;
 #endif
 
-    // Fullscreen & screen saver settings
     // Check if GLX is supported on this display
     if (!glXQueryExtension(_glfwLibrary.X11.display, NULL, NULL))
     {
@@ -120,6 +127,58 @@ static GLboolean initDisplay(void)
     }
 
     return GL_TRUE;
+}
+
+
+//========================================================================
+// Detect gamma ramp support and save original gamma ramp, if available
+//========================================================================
+
+static void initGammaRamp(void)
+{
+#ifdef _GLFW_HAS_XRANDR
+    // RandR gamma support is only available with version 1.2 and above
+    if (_glfwLibrary.X11.XRandR.available &&
+        (_glfwLibrary.X11.XRandR.majorVersion > 1 ||
+         _glfwLibrary.X11.XRandR.majorVersion == 1 &&
+         _glfwLibrary.X11.XRandR.minorVersion >= 2))
+    {
+        // FIXME: Assumes that all monitors have the same size gamma tables
+        // This is reasonable as I suspect the that if they did differ, it
+        // would imply that setting the gamma size to an arbitary size is
+        // possible as well.
+        XRRScreenResources* rr = XRRGetScreenResources(_glfwLibrary.X11.display,
+                                                       _glfwLibrary.X11.root);
+
+        _glfwLibrary.originalRampSize = XRRGetCrtcGammaSize(_glfwLibrary.X11.display,
+                                                            rr->crtcs[0]);
+        if (!_glfwLibrary.originalRampSize)
+        {
+            // This is probably Nvidia RandR with broken gamma support
+            // Flag it as useless and try Xf86VidMode below, if available
+            _glfwLibrary.X11.XRandR.gammaBroken = GL_TRUE;
+        }
+
+        XRRFreeScreenResources(rr);
+    }
+#endif
+
+#if defined(_GLFW_HAS_XF86VIDMODE)
+    if (_glfwLibrary.X11.XF86VidMode.available &&
+        !_glfwLibrary.originalRampSize)
+    {
+        // Get the gamma size using XF86VidMode
+        XF86VidModeGetGammaRampSize(_glfwLibrary.X11.display,
+                                    _glfwLibrary.X11.screen,
+                                    &_glfwLibrary.originalRampSize);
+    }
+#endif
+
+    if (!_glfwLibrary.originalRampSize)
+        fprintf(stderr, "Gamma ramp setting unsupported\n");
+
+    // Save the original gamma ramp
+    _glfwPlatformSaveGammaRamp();
 }
 
 
@@ -159,8 +218,15 @@ static Cursor createNULLCursor(void)
 
 static void terminateDisplay(void)
 {
+    if (_glfwLibrary.originalRampSize)
+    {
+        _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
+    }
+
     if (_glfwLibrary.X11.display)
     {
+        _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
+
         XCloseDisplay(_glfwLibrary.X11.display);
         _glfwLibrary.X11.display = NULL;
     }
@@ -179,6 +245,8 @@ int _glfwPlatformInit(void)
 {
     if (!initDisplay())
         return GL_FALSE;
+
+    initGammaRamp();
 
     _glfwLibrary.X11.cursor = createNULLCursor();
 
@@ -232,7 +300,8 @@ const char* _glfwPlatformGetVersionString(void)
     const char* version = "GLFW " _GLFW_VERSION_FULL
 #if defined(_GLFW_HAS_XRANDR)
         " XRandR"
-#elif defined(_GLFW_HAS_XF86VIDMODE)
+#endif
+#if defined(_GLFW_HAS_XF86VIDMODE)
         " Xf86VidMode"
 #else
         " (no mode switching support)"

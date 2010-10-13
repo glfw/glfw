@@ -215,12 +215,16 @@ struct _GLFWwindow
 //------------------------------------------------------------------------
 struct _GLFWlibrary
 {
-    _GLFWhints   hints;
+    _GLFWhints    hints;
 
-    _GLFWwindow* windowListHead;
-    _GLFWwindow* currentWindow;
-    _GLFWwindow* activeWindow;
-    _GLFWwindow* cursorLockWindow;
+    _GLFWwindow*  windowListHead;
+    _GLFWwindow*  currentWindow;
+    _GLFWwindow*  activeWindow;
+    _GLFWwindow*  cursorLockWindow;
+
+    GLFWgammaramp currentRamp;
+    GLFWgammaramp originalRamp;
+    int           originalRampSize;
 
     _GLFW_PLATFORM_LIBRARY_STATE;
 };
@@ -256,6 +260,10 @@ void _glfwPlatformDisableSystemKeys(_GLFWwindow* window);
 // Fullscreen
 int  _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount);
 void _glfwPlatformGetDesktopMode(GLFWvidmode* mode);
+
+// Gamma ramp
+void _glfwPlatformSaveGammaRamp(void);
+void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp);
 
 // Joystick
 int _glfwPlatformGetJoystickParam(int joy, int param);

@@ -6,6 +6,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include ${OPENGL_INCLUDE_DIR}
 add_executable(defaults defaults.c)
 add_executable(events events.c)
 add_executable(fsfocus fsfocus.c)
+add_executable(gamma gamma.c getopt.c)
 add_executable(iconify iconify.c getopt.c)
 add_executable(joysticks joysticks.c)
 add_executable(listmodes listmodes.c)
@@ -30,8 +31,8 @@ else()
 endif(APPLE)
 
 set(WINDOWS_BINARIES accuracy sharing tearing windows)
-set(CONSOLE_BINARIES defaults events fsaa fsfocus iconify joysticks listmodes
-                     peter reopen version)
+set(CONSOLE_BINARIES defaults events fsaa fsfocus gamma iconify joysticks
+                     listmodes peter reopen version)
 
 if(MSVC)
   # Tell MSVC to use main instead of WinMain for Windows subsystem executables

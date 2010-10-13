@@ -52,10 +52,6 @@
  #error "GLX header version 1.3 or above is required"
 #endif
 
-#if defined(_GLFW_HAS_XF86VIDMODE) && defined(_GLFW_HAS_XRANDR)
- #error "Xf86VidMode and RandR extensions cannot both be enabled"
-#endif
-
 // With XFree86, we can use the XF86VidMode extension
 #if defined(_GLFW_HAS_XF86VIDMODE)
  #include <X11/extensions/xf86vmode.h>
@@ -156,15 +152,18 @@ typedef struct _GLFWlibraryX11
     int             glxMajor, glxMinor;
 
     struct {
-        int         available;
+        GLboolean   available;
         int         eventBase;
         int         errorBase;
     } XF86VidMode;
 
     struct {
-        int         available;
+        GLboolean   available;
         int         eventBase;
         int         errorBase;
+        int         majorVersion;
+        int         minorVersion;
+        GLboolean   gammaBroken;
     } XRandR;
 
     // Screensaver data
@@ -179,14 +178,13 @@ typedef struct _GLFWlibraryX11
     // Fullscreen data
     struct {
         int     modeChanged;
-#if defined(_GLFW_HAS_XF86VIDMODE)
-        XF86VidModeModeInfo oldMode;
-#endif
 #if defined(_GLFW_HAS_XRANDR)
         SizeID   oldSizeID;
         int      oldWidth;
         int      oldHeight;
         Rotation oldRotation;
+#elif defined(_GLFW_HAS_XF86VIDMODE)
+        XF86VidModeModeInfo oldMode;
 #endif
     } FS;
 

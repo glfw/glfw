@@ -262,7 +262,7 @@ int  _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount);
 void _glfwPlatformGetDesktopMode(GLFWvidmode* mode);
 
 // Gamma ramp
-void _glfwPlatformSaveGammaRamp(void);
+void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp);
 void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp);
 
 // Joystick

@@ -178,7 +178,7 @@ static void initGammaRamp(void)
         fprintf(stderr, "Gamma ramp setting unsupported\n");
 
     // Save the original gamma ramp
-    _glfwPlatformSaveGammaRamp();
+    _glfwPlatformGetGammaRamp(&_glfwLibrary.originalRamp);
 }
 
 

@@ -41,7 +41,7 @@
 // Save the original gamma ramp so that we can restore it later
 //========================================================================
 
-void _glfwPlatformSaveGammaRamp(void)
+void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 {
     if (_glfwLibrary.X11.XRandR.available &&
         !_glfwLibrary.X11.XRandR.gammaBroken)
@@ -55,9 +55,9 @@ void _glfwPlatformSaveGammaRamp(void)
         XRRCrtcGamma* gamma = XRRGetCrtcGamma(_glfwLibrary.X11.display,
                                               rr->crtcs[0]);
 
-        memcpy(_glfwLibrary.originalRamp.red, gamma->red, size);
-        memcpy(_glfwLibrary.originalRamp.green, gamma->green, size);
-        memcpy(_glfwLibrary.originalRamp.blue, gamma->blue, size);
+        memcpy(ramp->red, gamma->red, size);
+        memcpy(ramp->green, gamma->green, size);
+        memcpy(ramp->blue, gamma->blue, size);
 
         XRRFreeGamma(gamma);
         XRRFreeScreenResources(rr);
@@ -69,9 +69,9 @@ void _glfwPlatformSaveGammaRamp(void)
         XF86VidModeGetGammaRamp(_glfwLibrary.X11.display,
                                 _glfwLibrary.X11.screen,
                                 GLFW_GAMMA_RAMP_SIZE,
-                                _glfwLibrary.originalRamp.red,
-                                _glfwLibrary.originalRamp.green,
-                                _glfwLibrary.originalRamp.blue);
+                                ramp->red,
+                                ramp->green,
+                                ramp->blue);
 #endif
     }
 }

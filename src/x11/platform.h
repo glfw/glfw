@@ -155,7 +155,7 @@ typedef struct _GLFWlibraryX11
         GLboolean   available;
         int         eventBase;
         int         errorBase;
-    } XF86VidMode;
+    } VidMode;
 
     struct {
         GLboolean   available;
@@ -164,7 +164,7 @@ typedef struct _GLFWlibraryX11
         int         majorVersion;
         int         minorVersion;
         GLboolean   gammaBroken;
-    } XRandR;
+    } RandR;
 
     // Screensaver data
     struct {

@@ -1371,7 +1371,7 @@ static void processSingleEvent(void)
         default:
         {
 #if defined(_GLFW_HAS_XRANDR)
-            switch (event.type - _glfwLibrary.X11.XRandR.eventBase)
+            switch (event.type - _glfwLibrary.X11.RandR.eventBase)
             {
                 case RRScreenChangeNotify:
                 {
@@ -1438,7 +1438,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     {
 #if defined(_GLFW_HAS_XRANDR)
         // Request screen change notifications
-        if (_glfwLibrary.X11.XRandR.available)
+        if (_glfwLibrary.X11.RandR.available)
         {
             XRRSelectInput(_glfwLibrary.X11.display,
                            window->X11.handle,
@@ -1735,7 +1735,7 @@ void _glfwPlatformRefreshWindowParams(void)
 
     // Retrieve refresh rate if possible
 #if defined(_GLFW_HAS_XRANDR)
-    if (_glfwLibrary.X11.XRandR.available)
+    if (_glfwLibrary.X11.RandR.available)
     {
         sc = XRRGetScreenInfo(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
         window->refreshRate = XRRConfigCurrentRate(sc);
@@ -1743,8 +1743,8 @@ void _glfwPlatformRefreshWindowParams(void)
     }
 #endif
 #if defined(_GLFW_HAS_XF86VIDMODE)
-    if (_glfwLibrary.X11.XF86VidMode.available &&
-        !_glfwLibrary.X11.XRandR.available)
+    if (_glfwLibrary.X11.VidMode.available &&
+        !_glfwLibrary.X11.RandR.available)
     {
         // Use the XF86VidMode extension to get current video mode
         XF86VidModeGetModeLine(_glfwLibrary.X11.display, _glfwLibrary.X11.screen,

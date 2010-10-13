@@ -58,7 +58,7 @@ int _glfwGetClosestVideoMode(int screen, int* width, int* height, int* rate)
 #endif
 
 #if defined(_GLFW_HAS_XRANDR)
-    if (_glfwLibrary.X11.XRandR.available)
+    if (_glfwLibrary.X11.RandR.available)
     {
         sc = XRRGetScreenInfo(_glfwLibrary.X11.display,
                               RootWindow(_glfwLibrary.X11.display, screen));
@@ -118,8 +118,8 @@ int _glfwGetClosestVideoMode(int screen, int* width, int* height, int* rate)
 
 #if defined(_GLFW_HAS_XF86VIDMODE)
     // Use the XF86VidMode extension to control video resolution
-    if (_glfwLibrary.X11.XF86VidMode.available &&
-        !_glfwLibrary.X11.XRandR.available)
+    if (_glfwLibrary.X11.VidMode.available &&
+        !_glfwLibrary.X11.RandR.available)
     {
         // Get a list of all available display modes
         XF86VidModeGetAllModeLines(_glfwLibrary.X11.display, screen,
@@ -180,7 +180,7 @@ void _glfwSetVideoModeMODE(int screen, int mode, int rate)
 #endif
 
 #if defined(_GLFW_HAS_XRANDR)
-    if (_glfwLibrary.X11.XRandR.available)
+    if (_glfwLibrary.X11.RandR.available)
     {
         root = RootWindow(_glfwLibrary.X11.display, screen);
         sc   = XRRGetScreenInfo(_glfwLibrary.X11.display, root);
@@ -223,8 +223,8 @@ void _glfwSetVideoModeMODE(int screen, int mode, int rate)
 
 #if defined(_GLFW_HAS_XF86VIDMODE)
     // Use the XF86VidMode extension to control video resolution
-    if (_glfwLibrary.X11.XF86VidMode.available &&
-        !_glfwLibrary.X11.XRandR.available)
+    if (_glfwLibrary.X11.VidMode.available &&
+        !_glfwLibrary.X11.RandR.available)
     {
         // Get a list of all available display modes
         XF86VidModeGetAllModeLines(_glfwLibrary.X11.display, screen,
@@ -283,11 +283,11 @@ void _glfwRestoreVideoMode(int screen)
     if (_glfwLibrary.X11.FS.modeChanged)
     {
 #if defined(_GLFW_HAS_XRANDR)
-        if (_glfwLibrary.X11.XRandR.available)
+        if (_glfwLibrary.X11.RandR.available)
         {
             XRRScreenConfiguration* sc;
 
-            if (_glfwLibrary.X11.XRandR.available)
+            if (_glfwLibrary.X11.RandR.available)
             {
                 sc = XRRGetScreenInfo(_glfwLibrary.X11.display,
                                       _glfwLibrary.X11.root);
@@ -304,8 +304,8 @@ void _glfwRestoreVideoMode(int screen)
         }
 #endif
 #if defined(_GLFW_HAS_XF86VIDMODE)
-        if (_glfwLibrary.X11.XF86VidMode.available &&
-            !_glfwLibrary.X11.XRandR.available)
+        if (_glfwLibrary.X11.VidMode.available &&
+            !_glfwLibrary.X11.RandR.available)
         {
             // Unlock mode switch
             XF86VidModeLockModeSwitch(_glfwLibrary.X11.display, screen, 0);
@@ -401,7 +401,7 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
 
     // Build resolution array
 #if defined(_GLFW_HAS_XRANDR)
-    if (_glfwLibrary.X11.XRandR.available)
+    if (_glfwLibrary.X11.RandR.available)
     {
         sc = XRRGetScreenInfo(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
         sizelist = XRRConfigSizes(sc, &sizecount);
@@ -420,8 +420,8 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
 #endif
 
 #if defined(_GLFW_HAS_XF86VIDMODE)
-    if (_glfwLibrary.X11.XF86VidMode.available &&
-        !_glfwLibrary.X11.XRandR.available)
+    if (_glfwLibrary.X11.VidMode.available &&
+        !_glfwLibrary.X11.RandR.available)
     {
         XF86VidModeGetAllModeLines(_glfwLibrary.X11.display, screen, &modecount, &modelist);
 
@@ -504,7 +504,7 @@ void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
     _glfwSplitBPP(bpp, &mode->redBits, &mode->greenBits, &mode->blueBits);
 
 #if defined(_GLFW_HAS_XRANDR)
-    if (_glfwLibrary.X11.XRandR.available)
+    if (_glfwLibrary.X11.RandR.available)
     {
         if (_glfwLibrary.X11.FS.modeChanged)
         {
@@ -515,8 +515,8 @@ void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
     }
 #endif
 #if defined(_GLFW_HAS_XF86VIDMODE)
-    if (_glfwLibrary.X11.XF86VidMode.available &&
-        !_glfwLibrary.X11.XRandR.available)
+    if (_glfwLibrary.X11.VidMode.available &&
+        !_glfwLibrary.X11.RandR.available)
     {
         if (_glfwLibrary.X11.FS.modeChanged)
         {

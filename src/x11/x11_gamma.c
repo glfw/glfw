@@ -43,8 +43,8 @@
 
 void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 {
-    if (_glfwLibrary.X11.XRandR.available &&
-        !_glfwLibrary.X11.XRandR.gammaBroken)
+    if (_glfwLibrary.X11.RandR.available &&
+        !_glfwLibrary.X11.RandR.gammaBroken)
     {
 #if defined (_GLFW_HAS_XRANDR)
         size_t size = GLFW_GAMMA_RAMP_SIZE * sizeof(unsigned short);
@@ -63,7 +63,7 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
         XRRFreeScreenResources(rr);
     }
 #endif
-    else if (_glfwLibrary.X11.XF86VidMode.available)
+    else if (_glfwLibrary.X11.VidMode.available)
     {
 #if defined (_GLFW_HAS_XF86VIDMODE)
         XF86VidModeGetGammaRamp(_glfwLibrary.X11.display,
@@ -83,8 +83,8 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 
 void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
 {
-    if (_glfwLibrary.X11.XRandR.available &&
-        !_glfwLibrary.X11.XRandR.gammaBroken)
+    if (_glfwLibrary.X11.RandR.available &&
+        !_glfwLibrary.X11.RandR.gammaBroken)
     {
 #if defined (_GLFW_HAS_XRANDR)
         int i;
@@ -109,7 +109,7 @@ void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
         XRRFreeScreenResources(rr);
     }
 #endif
-    else if (_glfwLibrary.X11.XF86VidMode.available)
+    else if (_glfwLibrary.X11.VidMode.available)
     {
 #if defined (_GLFW_HAS_XF86VIDMODE)
         XF86VidModeSetGammaRamp(_glfwLibrary.X11.display,

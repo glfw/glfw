@@ -84,29 +84,29 @@ static GLboolean initDisplay(void)
 
     // Check for XF86VidMode extension
 #ifdef _GLFW_HAS_XF86VIDMODE
-    _glfwLibrary.X11.XF86VidMode.available =
+    _glfwLibrary.X11.VidMode.available =
         XF86VidModeQueryExtension(_glfwLibrary.X11.display,
-                                  &_glfwLibrary.X11.XF86VidMode.eventBase,
-                                  &_glfwLibrary.X11.XF86VidMode.errorBase);
+                                  &_glfwLibrary.X11.VidMode.eventBase,
+                                  &_glfwLibrary.X11.VidMode.errorBase);
 #else
-    _glfwLibrary.X11.XF86VidMode.available = GL_FALSE;
+    _glfwLibrary.X11.VidMode.available = GL_FALSE;
 #endif
 
     // Check for XRandR extension
 #ifdef _GLFW_HAS_XRANDR
-    _glfwLibrary.X11.XRandR.available =
+    _glfwLibrary.X11.RandR.available =
         XRRQueryExtension(_glfwLibrary.X11.display,
-                          &_glfwLibrary.X11.XRandR.eventBase,
-                          &_glfwLibrary.X11.XRandR.errorBase);
+                          &_glfwLibrary.X11.RandR.eventBase,
+                          &_glfwLibrary.X11.RandR.errorBase);
 
     if (!XRRQueryVersion(_glfwLibrary.X11.display,
-                        &_glfwLibrary.X11.XRandR.majorVersion,
-                        &_glfwLibrary.X11.XRandR.minorVersion))
+                        &_glfwLibrary.X11.RandR.majorVersion,
+                        &_glfwLibrary.X11.RandR.minorVersion))
     {
         fprintf(stderr, "Unable to query RandR version number\n");
     }
 #else
-    _glfwLibrary.X11.XRandR.available = GL_FALSE;
+    _glfwLibrary.X11.RandR.available = GL_FALSE;
 #endif
 
     // Check if GLX is supported on this display
@@ -138,10 +138,10 @@ static void initGammaRamp(void)
 {
 #ifdef _GLFW_HAS_XRANDR
     // RandR gamma support is only available with version 1.2 and above
-    if (_glfwLibrary.X11.XRandR.available &&
-        (_glfwLibrary.X11.XRandR.majorVersion > 1 ||
-         _glfwLibrary.X11.XRandR.majorVersion == 1 &&
-         _glfwLibrary.X11.XRandR.minorVersion >= 2))
+    if (_glfwLibrary.X11.RandR.available &&
+        (_glfwLibrary.X11.RandR.majorVersion > 1 ||
+         _glfwLibrary.X11.RandR.majorVersion == 1 &&
+         _glfwLibrary.X11.RandR.minorVersion >= 2))
     {
         // FIXME: Assumes that all monitors have the same size gamma tables
         // This is reasonable as I suspect the that if they did differ, it
@@ -156,7 +156,7 @@ static void initGammaRamp(void)
         {
             // This is probably Nvidia RandR with broken gamma support
             // Flag it as useless and try Xf86VidMode below, if available
-            _glfwLibrary.X11.XRandR.gammaBroken = GL_TRUE;
+            _glfwLibrary.X11.RandR.gammaBroken = GL_TRUE;
             fprintf(stderr, "Ignoring broken nVidia implementation of RandR 1.2+ gamma\n");
         }
 
@@ -165,7 +165,7 @@ static void initGammaRamp(void)
 #endif
 
 #if defined(_GLFW_HAS_XF86VIDMODE)
-    if (_glfwLibrary.X11.XF86VidMode.available &&
+    if (_glfwLibrary.X11.VidMode.available &&
         !_glfwLibrary.originalRampSize)
     {
         // Get the gamma size using XF86VidMode

@@ -220,9 +220,7 @@ static Cursor createNULLCursor(void)
 static void terminateDisplay(void)
 {
     if (_glfwLibrary.originalRampSize)
-    {
         _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
-    }
 
     if (_glfwLibrary.X11.display)
     {

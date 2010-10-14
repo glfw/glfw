@@ -130,7 +130,7 @@ add_subdirectory(tests)
 #--------------------------------------------------------------------
 # Create shared configuration header
 #--------------------------------------------------------------------
-configure_file(${GLFW_SOURCE_DIR}/src/config.h.cmake 
+configure_file(${GLFW_SOURCE_DIR}/src/config.h.in 
                ${GLFW_BINARY_DIR}/src/config.h @ONLY)
 
 #--------------------------------------------------------------------

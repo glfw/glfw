@@ -66,10 +66,6 @@
  #include <dlfcn.h>
 #endif
 
-// Pointer length integer
-// One day, this will most likely move into glfw.h
-typedef intptr_t GLFWintptr;
-
 
 #ifndef GL_VERSION_3_0
 
@@ -83,10 +79,15 @@ typedef const GLubyte* (APIENTRY *PFNGLGETSTRINGIPROC)(GLenum, GLuint);
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextGLX GLX
 
 
+//========================================================================
+// GLFW platform specific types
+//========================================================================
 
-//========================================================================
-// Global variables (GLFW internals)
-//========================================================================
+//------------------------------------------------------------------------
+// Pointer length integer
+//------------------------------------------------------------------------
+typedef intptr_t GLFWintptr;
+
 
 //------------------------------------------------------------------------
 // Platform-specific OpenGL context structure

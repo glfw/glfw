@@ -67,6 +67,7 @@ typedef const GLubyte* (APIENTRY *PFNGLGETSTRINGIPROC)(GLenum, GLuint);
 //------------------------------------------------------------------------
 typedef intptr_t GLFWintptr;
 
+
 //------------------------------------------------------------------------
 // Platform-specific OpenGL context structure
 //------------------------------------------------------------------------

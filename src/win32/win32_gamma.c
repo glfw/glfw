@@ -41,14 +41,9 @@
 // Save the gamma ramp to our internal copy
 //========================================================================
 
-void _glfwPlatformSaveGammaRamp(int ramp)
+void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 {
-    if (!_glfwLibrary.gammaSize)
-    {
-        return;
-    }
-    _glfw_GetDeviceGammaRamp(_glfwLibrary.Win32.desktopDC,
-                             _glfwLibrary.gammaRamp[ramp]);
+    _glfw_GetDeviceGammaRamp(GetDC(GetDesktopWindow()), (WORD*) ramp);
 }
 
 
@@ -56,12 +51,8 @@ void _glfwPlatformSaveGammaRamp(int ramp)
 // Restore the gamma ramp to our internal copy of the gamma ramp
 //========================================================================
 
-void _glfwPlatformRestoreGammaRamp(int ramp)
+void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
 {
-    if (!_glfwLibrary.gammaSize)
-    {
-        return;
-    }
-    _glfw_SetDeviceGammaRamp(_glfwLibrary.Win32.desktopDC,
-                             _glfwLibrary.gammaRamp[ramp]);
+    _glfw_SetDeviceGammaRamp(GetDC(GetDesktopWindow()), (WORD*) ramp);
 }
+

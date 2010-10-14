@@ -90,7 +90,7 @@ static GLboolean initDisplay(void)
                                   &_glfwLibrary.X11.VidMode.errorBase);
 #else
     _glfwLibrary.X11.VidMode.available = GL_FALSE;
-#endif
+#endif /*_GLFW_HAS_XF86VIDMODE*/
 
     // Check for XRandR extension
 #ifdef _GLFW_HAS_XRANDR
@@ -107,7 +107,7 @@ static GLboolean initDisplay(void)
     }
 #else
     _glfwLibrary.X11.RandR.available = GL_FALSE;
-#endif
+#endif /*_GLFW_HAS_XRANDR*/
 
     // Check if GLX is supported on this display
     if (!glXQueryExtension(_glfwLibrary.X11.display, NULL, NULL))
@@ -162,7 +162,7 @@ static void initGammaRamp(void)
 
         XRRFreeScreenResources(rr);
     }
-#endif
+#endif /*_GLFW_HAS_XRANDR*/
 
 #if defined(_GLFW_HAS_XF86VIDMODE)
     if (_glfwLibrary.X11.VidMode.available &&
@@ -173,7 +173,7 @@ static void initGammaRamp(void)
                                     _glfwLibrary.X11.screen,
                                     &_glfwLibrary.originalRampSize);
     }
-#endif
+#endif /*_GLFW_HAS_XF86VIDMODE*/
 
     if (!_glfwLibrary.originalRampSize)
         fprintf(stderr, "Gamma ramp setting unsupported\n");

@@ -1252,7 +1252,7 @@ static void processSingleEvent(void)
                 return;
             }
 
-            if ((Atom) event.xclient.data.l[ 0 ] == window->X11.wmDeleteWindow)
+            if ((Atom) event.xclient.data.l[0] == window->X11.wmDeleteWindow)
             {
                 // The window manager was asked to close the window, for example by
                 // the user pressing a 'close' window decoration button
@@ -1260,7 +1260,7 @@ static void processSingleEvent(void)
                 window->closeRequested = GL_TRUE;
             }
             else if (window->X11.wmPing != None &&
-                     (Atom) event.xclient.data.l[ 0 ] == window->X11.wmPing)
+                     (Atom) event.xclient.data.l[0] == window->X11.wmPing)
             {
                 // The window manager is pinging us to make sure we are still
                 // responding to events

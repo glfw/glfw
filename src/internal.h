@@ -205,6 +205,7 @@ struct _GLFWwindow
     int       glForward, glDebug, glProfile;
     PFNGLGETSTRINGIPROC GetStringi;
 
+    // These are defined in the current port's platform.h
     _GLFW_PLATFORM_WINDOW_STATE;
     _GLFW_PLATFORM_CONTEXT_STATE;
 };
@@ -226,6 +227,7 @@ struct _GLFWlibrary
     GLFWgammaramp originalRamp;
     int           originalRampSize;
 
+    // This is defined in the current port's platform.h
     _GLFW_PLATFORM_LIBRARY_STATE;
 };
 

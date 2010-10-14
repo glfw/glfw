@@ -32,12 +32,12 @@
 #include <limits.h>
 
 
-//************************************************************************
-//****                  GLFW internal functions                       ****
-//************************************************************************
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Save the gamma ramp to our internal copy
+// Retrieve the currently set gamma ramp
 //========================================================================
 
 void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
@@ -47,7 +47,7 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 
 
 //========================================================================
-// Restore the gamma ramp to our internal copy of the gamma ramp
+// Push the specified gamma ramp to the monitor
 //========================================================================
 
 void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)

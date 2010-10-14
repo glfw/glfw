@@ -168,25 +168,25 @@ typedef struct _GLFWlibraryX11
 
     // Screensaver data
     struct {
-        int     changed;
-        int     timeout;
-        int     interval;
-        int     blanking;
-        int     exposure;
+        GLboolean   changed;
+        int         timeout;
+        int         interval;
+        int         blanking;
+        int         exposure;
     } saver;
 
     // Fullscreen data
     struct {
-        int     modeChanged;
+        GLboolean   modeChanged;
 #if defined(_GLFW_HAS_XRANDR)
-        SizeID   oldSizeID;
-        int      oldWidth;
-        int      oldHeight;
-        Rotation oldRotation;
-#endif
+        SizeID      oldSizeID;
+        int         oldWidth;
+        int         oldHeight;
+        Rotation    oldRotation;
+#endif /*_GLFW_HAS_XRANDR*/
 #if defined(_GLFW_HAS_XF86VIDMODE)
         XF86VidModeModeInfo oldMode;
-#endif
+#endif /*_GLFW_HAS_XF86VIDMODE*/
     } FS;
 
     // Timer data
@@ -196,7 +196,7 @@ typedef struct _GLFWlibraryX11
     } timer;
 
 #if defined(_GLFW_DLOPEN_LIBGL)
-    void*       libGL;  // dlopen handle for libGL.so
+    void*           libGL;  // dlopen handle for libGL.so
 #endif
 } _GLFWlibraryX11;
 

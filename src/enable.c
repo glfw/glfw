@@ -54,11 +54,11 @@ static void enableMouseCursor(_GLFWwindow* window)
         window->mousePosX = centerPosX;
         window->mousePosY = centerPosY;
 
-        if (window->mousePosCallback)
+        if (_glfwLibrary.mousePosCallback)
         {
-            window->mousePosCallback(window,
-                                     window->mousePosX,
-                                     window->mousePosY);
+            _glfwLibrary.mousePosCallback(window,
+                                          window->mousePosX,
+                                          window->mousePosY);
         }
     }
 

@@ -1197,11 +1197,11 @@ static void processSingleEvent(void)
                 window->X11.cursorPosY = event.xmotion.y;
                 window->X11.mouseMoved = GL_TRUE;
 
-                if (window->mousePosCallback)
+                if (_glfwLibrary.mousePosCallback)
                 {
-                    window->mousePosCallback(window,
-                                             window->mousePosX,
-                                             window->mousePosY);
+                    _glfwLibrary.mousePosCallback(window,
+                                                  window->mousePosX,
+                                                  window->mousePosY);
                 }
             }
             break;
@@ -1224,11 +1224,11 @@ static void processSingleEvent(void)
 
                 window->width = event.xconfigure.width;
                 window->height = event.xconfigure.height;
-                if (window->windowSizeCallback)
+                if (_glfwLibrary.windowSizeCallback)
                 {
-                    window->windowSizeCallback(window,
-                                               window->width,
-                                               window->height);
+                    _glfwLibrary.windowSizeCallback(window,
+                                                    window->width,
+                                                    window->height);
                 }
             }
 
@@ -1288,8 +1288,8 @@ static void processSingleEvent(void)
 
             window->iconified = GL_FALSE;
 
-            if (window->windowIconifyCallback)
-                window->windowIconifyCallback(window, window->iconified);
+            if (_glfwLibrary.windowIconifyCallback)
+                _glfwLibrary.windowIconifyCallback(window, window->iconified);
 
             break;
         }
@@ -1306,8 +1306,8 @@ static void processSingleEvent(void)
 
             window->iconified = GL_TRUE;
 
-            if (window->windowIconifyCallback)
-                window->windowIconifyCallback(window, window->iconified);
+            if (_glfwLibrary.windowIconifyCallback)
+                _glfwLibrary.windowIconifyCallback(window, window->iconified);
 
             break;
         }
@@ -1358,8 +1358,8 @@ static void processSingleEvent(void)
                 return;
             }
 
-            if (window->windowRefreshCallback)
-                window->windowRefreshCallback(window);
+            if (_glfwLibrary.windowRefreshCallback)
+                _glfwLibrary.windowRefreshCallback(window);
 
             break;
         }

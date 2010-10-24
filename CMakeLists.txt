@@ -8,8 +8,7 @@ set(GLFW_VERSION_MINOR "0")
 set(GLFW_VERSION_PATCH "0")
 set(GLFW_VERSION_EXTRA "")
 set(GLFW_VERSION "${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}")
-set(GLFW_VERSION_FULL  
-    "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA}")
+set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA}")
 
 include(CheckFunctionExists)
 include(CheckSymbolExists)
@@ -159,8 +158,7 @@ install(FILES COPYING.txt readme.html
 # Uninstall operation
 #--------------------------------------------------------------------
 configure_file(${GLFW_SOURCE_DIR}/cmake_uninstall.cmake.in
-               ${GLFW_BINARY_DIR}/cmake_uninstall.cmake
-               IMMEDIATE @ONLY)
+               ${GLFW_BINARY_DIR}/cmake_uninstall.cmake IMMEDIATE @ONLY)
 
 add_custom_target(uninstall
                   ${CMAKE_COMMAND} -P

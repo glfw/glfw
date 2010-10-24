@@ -152,18 +152,6 @@ struct _GLFWwindow
 {
     struct _GLFWwindow* next;
 
-    // User callback functions
-    GLFWwindowsizefun    windowSizeCallback;
-    GLFWwindowclosefun   windowCloseCallback;
-    GLFWwindowrefreshfun windowRefreshCallback;
-    GLFWwindowfocusfun   windowFocusCallback;
-    GLFWwindowiconifyfun windowIconifyCallback;
-    GLFWmousebuttonfun   mouseButtonCallback;
-    GLFWmouseposfun      mousePosCallback;
-    GLFWscrollfun        scrollCallback;
-    GLFWkeyfun           keyCallback;
-    GLFWcharfun          charCallback;
-
     // Window settings and state
     GLboolean iconified;       // GL_TRUE if this window is iconified
     GLboolean closeRequested;  // GL_TRUE if this window should be closed
@@ -222,6 +210,17 @@ struct _GLFWlibrary
     _GLFWwindow*  currentWindow;
     _GLFWwindow*  activeWindow;
     _GLFWwindow*  cursorLockWindow;
+
+    GLFWwindowsizefun    windowSizeCallback;
+    GLFWwindowclosefun   windowCloseCallback;
+    GLFWwindowrefreshfun windowRefreshCallback;
+    GLFWwindowfocusfun   windowFocusCallback;
+    GLFWwindowiconifyfun windowIconifyCallback;
+    GLFWmousebuttonfun   mouseButtonCallback;
+    GLFWmouseposfun      mousePosCallback;
+    GLFWscrollfun        scrollCallback;
+    GLFWkeyfun           keyCallback;
+    GLFWcharfun          charCallback;
 
     GLFWgammaramp currentRamp;
     GLFWgammaramp originalRamp;

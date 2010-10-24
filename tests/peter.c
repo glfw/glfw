@@ -96,9 +96,9 @@ static GLboolean open_window(void)
     glfwGetMousePos(window_handle, &x, &y);
     printf("Mouse position: %i %i\n", x, y);
 
-    glfwSetWindowSizeCallback(window_handle, window_size_callback);
-    glfwSetMousePosCallback(window_handle, mouse_position_callback);
-    glfwSetKeyCallback(window_handle, key_callback);
+    glfwSetWindowSizeCallback(window_size_callback);
+    glfwSetMousePosCallback(mouse_position_callback);
+    glfwSetKeyCallback(key_callback);
     glfwSwapInterval(1);
 
     return GL_TRUE;

@@ -303,16 +303,16 @@ int main(void)
 
     glfwSwapInterval(1);
 
-    glfwSetWindowSizeCallback(window, window_size_callback);
-    glfwSetWindowCloseCallback(window, window_close_callback);
-    glfwSetWindowRefreshCallback(window, window_refresh_callback);
-    glfwSetWindowFocusCallback(window, window_focus_callback);
-    glfwSetWindowIconifyCallback(window, window_iconify_callback);
-    glfwSetMouseButtonCallback(window, mouse_button_callback);
-    glfwSetMousePosCallback(window, mouse_position_callback);
-    glfwSetScrollCallback(window, scroll_callback);
-    glfwSetKeyCallback(window, key_callback);
-    glfwSetCharCallback(window, char_callback);
+    glfwSetWindowSizeCallback(window_size_callback);
+    glfwSetWindowCloseCallback(window_close_callback);
+    glfwSetWindowRefreshCallback(window_refresh_callback);
+    glfwSetWindowFocusCallback(window_focus_callback);
+    glfwSetWindowIconifyCallback(window_iconify_callback);
+    glfwSetMouseButtonCallback(mouse_button_callback);
+    glfwSetMousePosCallback(mouse_position_callback);
+    glfwSetScrollCallback(scroll_callback);
+    glfwSetKeyCallback(key_callback);
+    glfwSetCharCallback(char_callback);
 
     printf("Key repeat should be %s\n", keyrepeat ? "enabled" : "disabled");
     printf("System keys should be %s\n", systemkeys ? "enabled" : "disabled");

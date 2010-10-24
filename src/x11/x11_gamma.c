@@ -33,12 +33,12 @@
 #include <string.h>
 
 
-//************************************************************************
-//****                  GLFW internal functions                       ****
-//************************************************************************
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Save the original gamma ramp so that we can restore it later
+// Retrieve the currently set gamma ramp
 //========================================================================
 
 void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
@@ -54,6 +54,8 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 
         XRRCrtcGamma* gamma = XRRGetCrtcGamma(_glfwLibrary.X11.display,
                                               rr->crtcs[0]);
+
+        // TODO: Handle case of original ramp size having a size other than 256
 
         memcpy(ramp->red, gamma->red, size);
         memcpy(ramp->green, gamma->green, size);
@@ -78,7 +80,7 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 
 
 //========================================================================
-// Make the specified gamma ramp current
+// Push the specified gamma ramp to the monitor
 //========================================================================
 
 void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)

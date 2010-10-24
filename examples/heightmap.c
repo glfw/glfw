@@ -597,8 +597,8 @@ int main(int argc, char** argv)
         free(fragment_shader_src);
         exit(EXIT_FAILURE);
     }
-    glfwSetWindowCloseCallback(window, window_close_callback);
-    glfwSetKeyCallback(window, key_callback);
+    glfwSetWindowCloseCallback(window_close_callback);
+    glfwSetKeyCallback(key_callback);
     /* Register events callback */
 
     if (GL_TRUE != init_opengl())

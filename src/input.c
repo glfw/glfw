@@ -171,7 +171,7 @@ GLFWAPI void glfwGetScrollOffset(GLFWwindow window, int* x, int* y)
 // Set callback function for keyboard input
 //========================================================================
 
-GLFWAPI void glfwSetKeyCallback(GLFWwindow window, GLFWkeyfun cbfun)
+GLFWAPI void glfwSetKeyCallback(GLFWkeyfun cbfun)
 {
     if (!_glfwInitialized)
     {
@@ -179,7 +179,7 @@ GLFWAPI void glfwSetKeyCallback(GLFWwindow window, GLFWkeyfun cbfun)
         return;
     }
 
-    window->keyCallback = cbfun;
+    _glfwLibrary.keyCallback = cbfun;
 }
 
 
@@ -187,7 +187,7 @@ GLFWAPI void glfwSetKeyCallback(GLFWwindow window, GLFWkeyfun cbfun)
 // Set callback function for character input
 //========================================================================
 
-GLFWAPI void glfwSetCharCallback(GLFWwindow window, GLFWcharfun cbfun)
+GLFWAPI void glfwSetCharCallback(GLFWcharfun cbfun)
 {
     if (!_glfwInitialized)
     {
@@ -195,7 +195,7 @@ GLFWAPI void glfwSetCharCallback(GLFWwindow window, GLFWcharfun cbfun)
         return;
     }
 
-    window->charCallback = cbfun;
+    _glfwLibrary.charCallback = cbfun;
 }
 
 
@@ -203,7 +203,7 @@ GLFWAPI void glfwSetCharCallback(GLFWwindow window, GLFWcharfun cbfun)
 // Set callback function for mouse clicks
 //========================================================================
 
-GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow window, GLFWmousebuttonfun cbfun)
+GLFWAPI void glfwSetMouseButtonCallback(GLFWmousebuttonfun cbfun)
 {
     if (!_glfwInitialized)
     {
@@ -211,7 +211,7 @@ GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow window, GLFWmousebuttonfun cb
         return;
     }
 
-    window->mouseButtonCallback = cbfun;
+    _glfwLibrary.mouseButtonCallback = cbfun;
 }
 
 
@@ -219,7 +219,7 @@ GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow window, GLFWmousebuttonfun cb
 // Set callback function for mouse moves
 //========================================================================
 
-GLFWAPI void glfwSetMousePosCallback(GLFWwindow window, GLFWmouseposfun cbfun)
+GLFWAPI void glfwSetMousePosCallback(GLFWmouseposfun cbfun)
 {
     if (!_glfwInitialized)
     {
@@ -228,12 +228,17 @@ GLFWAPI void glfwSetMousePosCallback(GLFWwindow window, GLFWmouseposfun cbfun)
     }
 
     // Set callback function
-    window->mousePosCallback = cbfun;
+    _glfwLibrary.mousePosCallback = cbfun;
 
     // Call the callback function to let the application know the current
     // mouse position
     if (cbfun)
-        cbfun(window, window->mousePosX, window->mousePosY);
+    {
+        _GLFWwindow* window;
+
+        for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+            cbfun(window, window->mousePosX, window->mousePosY);
+    }
 }
 
 
@@ -241,7 +246,7 @@ GLFWAPI void glfwSetMousePosCallback(GLFWwindow window, GLFWmouseposfun cbfun)
 // Set callback function for scroll events
 //========================================================================
 
-GLFWAPI void glfwSetScrollCallback(GLFWwindow window, GLFWscrollfun cbfun)
+GLFWAPI void glfwSetScrollCallback(GLFWscrollfun cbfun)
 {
     if (!_glfwInitialized)
     {
@@ -250,11 +255,6 @@ GLFWAPI void glfwSetScrollCallback(GLFWwindow window, GLFWscrollfun cbfun)
     }
 
     // Set callback function
-    window->scrollCallback = cbfun;
-
-    // Call the callback function to let the application know the current
-    // scroll offset
-    if (cbfun)
-        cbfun(window, window->scrollX, window->scrollY);
+    _glfwLibrary.scrollCallback = cbfun;
 }
 

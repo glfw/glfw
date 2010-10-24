@@ -65,7 +65,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetWindowSizeCallback(window_size_callback);
     glfwSwapInterval(1);
 
     samples = glfwGetWindowParam(window, GLFW_FSAA_SAMPLES);

@@ -176,7 +176,7 @@ static void initGammaRamp(void)
 #endif /*_GLFW_HAS_XF86VIDMODE*/
 
     if (!_glfwLibrary.originalRampSize)
-        fprintf(stderr, "Gamma ramp setting unsupported\n");
+        fprintf(stderr, "No supported gamma ramp API found\n");
 
     // Save the original gamma ramp
     _glfwPlatformGetGammaRamp(&_glfwLibrary.originalRamp);
@@ -310,14 +310,14 @@ const char* _glfwPlatformGetVersionString(void)
 #elif defined(_GLFW_HAS_GLXGETPROCADDRESSEXT)
         " glXGetProcAddressEXT"
 #elif defined(_GLFW_DLOPEN_LIBGL)
-        " dlopen(libGL)"
+        " dlsym(libGL)"
 #else
         " (no OpenGL extension support)"
 #endif
 #if defined(_GLFW_USE_LINUX_JOYSTICKS)
-        " Linux joystick API"
+        " Linux-joystick-API"
 #else
-        " (no joystick support)"
+        " no-joystick-support"
 #endif
         ;
 

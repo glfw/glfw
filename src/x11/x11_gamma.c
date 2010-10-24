@@ -55,6 +55,8 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
         XRRCrtcGamma* gamma = XRRGetCrtcGamma(_glfwLibrary.X11.display,
                                               rr->crtcs[0]);
 
+        // TODO: Handle case of original ramp size having a size other than 256
+
         memcpy(ramp->red, gamma->red, size);
         memcpy(ramp->green, gamma->green, size);
         memcpy(ramp->blue, gamma->blue, size);

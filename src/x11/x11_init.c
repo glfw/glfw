@@ -310,7 +310,7 @@ const char* _glfwPlatformGetVersionString(void)
 #elif defined(_GLFW_HAS_GLXGETPROCADDRESSEXT)
         " glXGetProcAddressEXT"
 #elif defined(_GLFW_DLOPEN_LIBGL)
-        " dlopen(libGL)"
+        " dlsym(libGL)"
 #else
         " (no OpenGL extension support)"
 #endif

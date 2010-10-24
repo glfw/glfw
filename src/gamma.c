@@ -82,7 +82,7 @@ GLFWAPI void glfwSetGammaFormula(float gamma, float blacklevel, float gain)
 
 
 //========================================================================
-// Return the currently set gamma ramp
+// Return the cached currently set gamma ramp
 //========================================================================
 
 GLFWAPI void glfwGetGammaRamp(GLFWgammaramp* ramp)

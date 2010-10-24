@@ -160,18 +160,9 @@ int _glfwPlatformInit(void)
 
     _glfwLibrary.Win32.instance = GetModuleHandle(NULL);
 
-    // Initialise the internal gamma ramp
-    _glfwLibrary.gammaSize = 256;
-    _glfwLibrary.gammaRamp[GLFW_GAMMA_ORIG] =
-        malloc(256 * sizeof(unsigned short) * 3);
-    _glfwLibrary.gammaRamp[GLFW_GAMMA_CURR] =
-        malloc(256 * sizeof(unsigned short) * 3);
-
-    // Get the desktop DC
-    _glfwLibrary.Win32.desktopDC = GetDC(GetDesktopWindow());
-
     // Save the original gamma ramp
-    _glfwPlatformSaveGammaRamp(GLFW_GAMMA_ORIG);
+    _glfwLibrary.originalRampSize = 256;
+    _glfwPlatformGetGammaRamp(&_glfwLibrary.originalRamp);
 
     _glfwInitTimer();
 
@@ -186,11 +177,7 @@ int _glfwPlatformInit(void)
 int _glfwPlatformTerminate(void)
 {
     // Restore the original gamma ramp
-    _glfwPlatformRestoreGammaRamp(GLFW_GAMMA_ORIG);
-
-    // Free the gamma ramps
-    free(_glfwLibrary.gammaRamp[GLFW_GAMMA_ORIG]);
-    free(_glfwLibrary.gammaRamp[GLFW_GAMMA_CURR]);
+    _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
 
     if (_glfwLibrary.Win32.classAtom)
     {

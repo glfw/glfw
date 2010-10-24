@@ -1,11 +1,10 @@
 //========================================================================
 // GLFW - An OpenGL framework
 // Platform:    Win32/WGL
-// API version: 2.7
+// API version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
-// Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -33,35 +32,26 @@
 #include <limits.h>
 
 
-//************************************************************************
-//****                  GLFW internal functions                       ****
-//************************************************************************
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Save the gamma ramp to our internal copy
+// Retrieve the currently set gamma ramp
 //========================================================================
 
-void _glfwPlatformSaveGammaRamp(int ramp)
+void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 {
-    if (!_glfwLibrary.gammaSize)
-    {
-        return;
-    }
-    _glfw_GetDeviceGammaRamp(_glfwLibrary.Win32.desktopDC,
-                             _glfwLibrary.gammaRamp[ramp]);
+    _glfw_GetDeviceGammaRamp(GetDC(GetDesktopWindow()), (WORD*) ramp);
 }
 
 
 //========================================================================
-// Restore the gamma ramp to our internal copy of the gamma ramp
+// Push the specified gamma ramp to the monitor
 //========================================================================
 
-void _glfwPlatformRestoreGammaRamp(int ramp)
+void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
 {
-    if (!_glfwLibrary.gammaSize)
-    {
-        return;
-    }
-    _glfw_SetDeviceGammaRamp(_glfwLibrary.Win32.desktopDC,
-                             _glfwLibrary.gammaRamp[ramp]);
+    _glfw_SetDeviceGammaRamp(GetDC(GetDesktopWindow()), (WORD*) ramp);
 }
+

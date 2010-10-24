@@ -270,7 +270,6 @@ typedef struct _GLFWlibraryWin32
     ATOM      classAtom;       // Window class atom
     HHOOK     keyboardHook;    // Keyboard hook handle
     DWORD     foregroundLockTimeout;
-    HDC       desktopDC;
 
     // Default monitor
     struct {

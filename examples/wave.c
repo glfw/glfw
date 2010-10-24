@@ -123,8 +123,8 @@ void init_grid(void)
             d = sqrt(dx * dx + dy * dy);
             if (d < 0.1 * (double) (GRIDW / 2))
             {
-                    d = d * 10.0;
-                    p[x][y] = -cos(d * (M_PI / (double)(GRIDW * 4))) * 100.0;
+                d = d * 10.0;
+                p[x][y] = -cos(d * (M_PI / (double)(GRIDW * 4))) * 100.0;
             }
             else
                 p[x][y] = 0.0;

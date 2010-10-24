@@ -17,10 +17,10 @@
  #define M_PI 3.1415926535897932384626433832795
 #endif
 
-/* Maximum delta T to allow for differential calculations */
+// Maximum delta T to allow for differential calculations
 #define MAX_DELTA_T 0.01
 
-/* Animation speed (10.0 looks good) */
+// Animation speed (10.0 looks good)
 #define ANIMATION_SPEED 10.0
 
 GLfloat alpha = 210.f, beta = -70.f;
@@ -91,7 +91,6 @@ void init_vertices(void)
         {
             p = 4 * (y * QUADW + x);
 
-            /* first quad */
             quad[p + 0] = y       * GRIDW + x;     // Some point
             quad[p + 1] = y       * GRIDW + x + 1; // Neighbor at the right side
             quad[p + 2] = (y + 1) * GRIDW + x + 1; // Upper right neighbor
@@ -286,7 +285,7 @@ void handle_key_down(GLFWwindow window, int key, int action)
                 zoom -= 1;
             break;
         case GLFW_KEY_PAGEDOWN:
-            zoom+=1;
+            zoom += 1;
             break;
         default:
             break;

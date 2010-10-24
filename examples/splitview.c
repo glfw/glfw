@@ -468,10 +468,10 @@ int main(void)
     glfwEnable(window, GLFW_MOUSE_CURSOR);
 
     // Set callback functions
-    glfwSetWindowSizeCallback(window, windowSizeFun);
-    glfwSetWindowRefreshCallback(window, windowRefreshFun);
-    glfwSetMousePosCallback(window, mousePosFun);
-    glfwSetMouseButtonCallback(window, mouseButtonFun);
+    glfwSetWindowSizeCallback(windowSizeFun);
+    glfwSetWindowRefreshCallback(windowRefreshFun);
+    glfwSetMousePosCallback(mousePosFun);
+    glfwSetMouseButtonCallback(mouseButtonFun);
 
     // Main loop
     do

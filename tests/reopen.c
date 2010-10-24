@@ -91,9 +91,9 @@ static int open_window(int width, int height, int mode)
         return 0;
     }
 
-    glfwSetWindowSizeCallback(window_handle, window_size_callback);
-    glfwSetWindowCloseCallback(window_handle, window_close_callback);
-    glfwSetKeyCallback(window_handle, key_callback);
+    glfwSetWindowSizeCallback(window_size_callback);
+    glfwSetWindowCloseCallback(window_close_callback);
+    glfwSetKeyCallback(key_callback);
     glfwSwapInterval(1);
 
     printf("Opening %s mode window took %0.3f seconds\n",

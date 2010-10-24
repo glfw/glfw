@@ -442,11 +442,11 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow window);
 GLFWAPI int  glfwGetWindowParam(GLFWwindow window, int param);
 GLFWAPI void glfwSetWindowUserPointer(GLFWwindow window, void* pointer);
 GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow window);
-GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfun);
-GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cbfun);
-GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfun cbfun);
-GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow window, GLFWwindowfocusfun cbfun);
-GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow window, GLFWwindowiconifyfun cbfun);
+GLFWAPI void glfwSetWindowSizeCallback(GLFWwindowsizefun cbfun);
+GLFWAPI void glfwSetWindowCloseCallback(GLFWwindowclosefun cbfun);
+GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindowrefreshfun cbfun);
+GLFWAPI void glfwSetWindowFocusCallback(GLFWwindowfocusfun cbfun);
+GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindowiconifyfun cbfun);
 
 /* Event handling */
 GLFWAPI void glfwPollEvents(void);
@@ -458,11 +458,11 @@ GLFWAPI int  glfwGetMouseButton(GLFWwindow window, int button);
 GLFWAPI void glfwGetMousePos(GLFWwindow window, int* xpos, int* ypos);
 GLFWAPI void glfwSetMousePos(GLFWwindow window, int xpos, int ypos);
 GLFWAPI void glfwGetScrollOffset(GLFWwindow window, int* x, int* y);
-GLFWAPI void glfwSetKeyCallback(GLFWwindow window, GLFWkeyfun cbfun);
-GLFWAPI void glfwSetCharCallback(GLFWwindow window, GLFWcharfun cbfun);
-GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow window, GLFWmousebuttonfun cbfun);
-GLFWAPI void glfwSetMousePosCallback(GLFWwindow window, GLFWmouseposfun cbfun);
-GLFWAPI void glfwSetScrollCallback(GLFWwindow window, GLFWscrollfun cbfun);
+GLFWAPI void glfwSetKeyCallback(GLFWkeyfun cbfun);
+GLFWAPI void glfwSetCharCallback(GLFWcharfun cbfun);
+GLFWAPI void glfwSetMouseButtonCallback(GLFWmousebuttonfun cbfun);
+GLFWAPI void glfwSetMousePosCallback(GLFWmouseposfun cbfun);
+GLFWAPI void glfwSetScrollCallback(GLFWscrollfun cbfun);
 
 /* Joystick input */
 GLFWAPI int glfwGetJoystickParam(int joy, int param);

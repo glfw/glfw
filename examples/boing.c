@@ -585,7 +585,7 @@ int main( void )
        exit( EXIT_FAILURE );
    }
 
-   glfwSetWindowSizeCallback( window, reshape );
+   glfwSetWindowSizeCallback( reshape );
    glfwEnable( window, GLFW_STICKY_KEYS );
    glfwSwapInterval( 1 );
    glfwSetTime( 0.0 );

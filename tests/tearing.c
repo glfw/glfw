@@ -59,7 +59,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetWindowSizeCallback(window_size_callback);
     glfwSwapInterval(1);
 
     glClearColor(0.f, 0.f, 0.f, 0.f);

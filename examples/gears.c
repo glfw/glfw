@@ -346,8 +346,8 @@ int main(int argc, char *argv[])
     init(argc, argv);
 
     // Set callback functions
-    glfwSetWindowSizeCallback( window, reshape );
-    glfwSetKeyCallback( window, key );
+    glfwSetWindowSizeCallback( reshape );
+    glfwSetKeyCallback( key );
 
     // Main loop
     while( running )

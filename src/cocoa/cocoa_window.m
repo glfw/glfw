@@ -70,8 +70,8 @@
     window->width = contentRect.size.width;
     window->height = contentRect.size.height;
 
-    if (window->windowSizeCallback)
-        window->windowSizeCallback(window, window->width, window->height);
+    if (_glfwLibrary.windowSizeCallback)
+        _glfwLibrary.windowSizeCallback(window, window->width, window->height);
 }
 
 - (void)windowDidMove:(NSNotification *)notification
@@ -95,16 +95,16 @@
 {
     window->iconified = GL_TRUE;
 
-    if (window->windowIconifyCallback)
-        window->windowIconifyCallback(window, window->iconified);
+    if (_glfwLibrary.windowIconifyCallback)
+        _glfwLibrary.windowIconifyCallback(window, window->iconified);
 }
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification
 {
     window->iconified = GL_FALSE;
 
-    if (window->windowIconifyCallback)
-        window->windowIconifyCallback(window, window->iconified);
+    if (_glfwLibrary.windowIconifyCallback)
+        _glfwLibrary.windowIconifyCallback(window, window->iconified);
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
@@ -362,8 +362,8 @@ static int convertMacKeyCode(unsigned int macKeyCode)
         window->mousePosY = [[window->NS.window contentView] bounds].size.height - p.y;
     }
 
-    if (window->mousePosCallback)
-        window->mousePosCallback(window, window->mousePosX, window->mousePosY);
+    if (_glfwLibrary.mousePosCallback)
+        _glfwLibrary.mousePosCallback(window, window->mousePosX, window->mousePosY);
 }
 
 - (void)rightMouseDown:(NSEvent *)event

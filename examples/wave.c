@@ -339,11 +339,11 @@ int main(int argc, char* argv[])
     glfwSwapInterval(1);
 
     // Keyboard handler
-    glfwSetKeyCallback(window, key_callback);
+    glfwSetKeyCallback(key_callback);
     glfwEnable(window, GLFW_KEY_REPEAT);
 
     // Window resize handler
-    glfwSetWindowSizeCallback(window, window_resize_callback);
+    glfwSetWindowSizeCallback(window_resize_callback);
 
     // Initialize OpenGL
     init_opengl();

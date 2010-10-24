@@ -713,8 +713,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             {
                 window->iconified = iconified;
 
-                if (window->windowIconifyCallback)
-                    window->windowIconifyCallback(window, window->iconified);
+                if (_glfwLibrary.windowIconifyCallback)
+                    _glfwLibrary.windowIconifyCallback(window, window->iconified);
             }
 
             return 0;
@@ -756,7 +756,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         {
             _glfwInputKey(window, translateKey(wParam, lParam), GLFW_PRESS);
 
-            if (window->charCallback)
+            if (_glfwLibrary.charCallback)
                 translateChar(window, (DWORD) wParam, (DWORD) lParam);
 
             return 0;
@@ -879,11 +879,11 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 window->Win32.oldMouseY = newMouseY;
                 window->Win32.mouseMoved = GL_TRUE;
 
-                if (window->mousePosCallback)
+                if (_glfwLibrary.mousePosCallback)
                 {
-                    window->mousePosCallback(window,
-                                             window->mousePosX,
-                                             window->mousePosY);
+                    _glfwLibrary.mousePosCallback(window,
+                                                  window->mousePosX,
+                                                  window->mousePosY);
                 }
             }
 
@@ -917,8 +917,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     ClipCursor(&ClipWindowRect);
             }
 
-            if (window->windowSizeCallback)
-                window->windowSizeCallback(window, window->width, window->height);
+            if (_glfwLibrary.windowSizeCallback)
+                _glfwLibrary.windowSizeCallback(window, window->width, window->height);
 
             return 0;
         }
@@ -941,8 +941,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         // Was the window contents damaged?
         case WM_PAINT:
         {
-            if (window->windowRefreshCallback)
-                window->windowRefreshCallback(window);
+            if (_glfwLibrary.windowRefreshCallback)
+                _glfwLibrary.windowRefreshCallback(window);
 
             break;
         }

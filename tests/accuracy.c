@@ -74,8 +74,8 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glfwSetMousePosCallback(window, mouse_position_callback);
-    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetMousePosCallback(mouse_position_callback);
+    glfwSetWindowSizeCallback(window_size_callback);
     glfwSwapInterval(1);
 
     glClearColor(0, 0, 0, 0);

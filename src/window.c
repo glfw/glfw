@@ -55,8 +55,8 @@ static void closeFlaggedWindows(void)
 
     for (window = _glfwLibrary.windowListHead;  window; )
     {
-        if (window->closeRequested && window->windowCloseCallback)
-            window->closeRequested = window->windowCloseCallback(window);
+        if (window->closeRequested && _glfwLibrary.windowCloseCallback)
+            window->closeRequested = _glfwLibrary.windowCloseCallback(window);
 
         if (window->closeRequested)
         {
@@ -144,8 +144,8 @@ void _glfwInputKey(_GLFWwindow* window, int key, int action)
     }
 
     // Call user callback function
-    if (window->keyCallback && (window->keyRepeat || !keyrepeat))
-        window->keyCallback(window, key, action);
+    if (_glfwLibrary.keyCallback && (window->keyRepeat || !keyrepeat))
+        _glfwLibrary.keyCallback(window, key, action);
 }
 
 
@@ -159,8 +159,8 @@ void _glfwInputChar(_GLFWwindow* window, int character)
     if (!((character >= 32 && character <= 126) || character >= 160))
         return;
 
-    if (window->charCallback)
-        window->charCallback(window, character);
+    if (_glfwLibrary.charCallback)
+        _glfwLibrary.charCallback(window, character);
 }
 
 
@@ -173,8 +173,8 @@ void _glfwInputScroll(_GLFWwindow* window, int x, int y)
     window->scrollX += x;
     window->scrollY += y;
 
-    if (window->scrollCallback)
-        window->scrollCallback(window, x, y);
+    if (_glfwLibrary.scrollCallback)
+        _glfwLibrary.scrollCallback(window, x, y);
 }
 
 
@@ -193,8 +193,8 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action)
     else
         window->mouseButton[button] = (char) action;
 
-    if (window->mouseButtonCallback)
-        window->mouseButtonCallback(window, button, action);
+    if (_glfwLibrary.mouseButtonCallback)
+        _glfwLibrary.mouseButtonCallback(window, button, action);
 }
 
 
@@ -210,8 +210,8 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated)
         {
             _glfwLibrary.activeWindow = window;
 
-            if (window->windowFocusCallback)
-                window->windowFocusCallback(window, activated);
+            if (_glfwLibrary.windowFocusCallback)
+                _glfwLibrary.windowFocusCallback(window, activated);
         }
     }
     else
@@ -236,8 +236,8 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated)
 
             _glfwLibrary.activeWindow = NULL;
 
-            if (window->windowFocusCallback)
-                window->windowFocusCallback(window, activated);
+            if (_glfwLibrary.windowFocusCallback)
+                _glfwLibrary.windowFocusCallback(window, activated);
         }
     }
 }
@@ -1076,7 +1076,7 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow window)
 // Set callback function for window size changes
 //========================================================================
 
-GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfun)
+GLFWAPI void glfwSetWindowSizeCallback(GLFWwindowsizefun cbfun)
 {
     if (!_glfwInitialized)
     {
@@ -1084,19 +1084,24 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfu
         return;
     }
 
-    window->windowSizeCallback = cbfun;
+    _glfwLibrary.windowSizeCallback = cbfun;
 
     // Call the callback function to let the application know the current
     // window size
     if (cbfun)
-        cbfun(window, window->width, window->height);
+    {
+        _GLFWwindow* window;
+
+        for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+            cbfun(window, window->width, window->height);
+    }
 }
 
 //========================================================================
 // Set callback function for window close events
 //========================================================================
 
-GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cbfun)
+GLFWAPI void glfwSetWindowCloseCallback(GLFWwindowclosefun cbfun)
 {
     if (!_glfwInitialized)
     {
@@ -1104,7 +1109,7 @@ GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cb
         return;
     }
 
-    window->windowCloseCallback = cbfun;
+    _glfwLibrary.windowCloseCallback = cbfun;
 }
 
 
@@ -1112,7 +1117,7 @@ GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cb
 // Set callback function for window refresh events
 //========================================================================
 
-GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfun cbfun)
+GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindowrefreshfun cbfun)
 {
     if (!_glfwInitialized)
     {
@@ -1120,7 +1125,7 @@ GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfu
         return;
     }
 
-    window->windowRefreshCallback = cbfun;
+    _glfwLibrary.windowRefreshCallback = cbfun;
 }
 
 
@@ -1128,7 +1133,7 @@ GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfu
 // Set callback function for window focus events
 //========================================================================
 
-GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow window, GLFWwindowfocusfun cbfun)
+GLFWAPI void glfwSetWindowFocusCallback(GLFWwindowfocusfun cbfun)
 {
     if (!_glfwInitialized)
     {
@@ -1136,7 +1141,7 @@ GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow window, GLFWwindowfocusfun cb
         return;
     }
 
-    window->windowFocusCallback = cbfun;
+    _glfwLibrary.windowFocusCallback = cbfun;
 }
 
 
@@ -1144,7 +1149,7 @@ GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow window, GLFWwindowfocusfun cb
 // Set callback function for window iconification events
 //========================================================================
 
-GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow window, GLFWwindowiconifyfun cbfun)
+GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindowiconifyfun cbfun)
 {
     if (!_glfwInitialized)
     {
@@ -1152,7 +1157,7 @@ GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow window, GLFWwindowiconifyfu
         return;
     }
 
-    window->windowIconifyCallback = cbfun;
+    _glfwLibrary.windowIconifyCallback = cbfun;
 }
 
 

@@ -93,9 +93,9 @@ int main(void)
     glfwSwapInterval(1);
     glfwEnable(window, GLFW_MOUSE_CURSOR);
 
-    glfwSetWindowFocusCallback(window, window_focus_callback);
-    glfwSetKeyCallback(window, window_key_callback);
-    glfwSetWindowCloseCallback(window, window_close_callback);
+    glfwSetWindowFocusCallback(window_focus_callback);
+    glfwSetKeyCallback(window_key_callback);
+    glfwSetWindowCloseCallback(window_close_callback);
 
     while (running && glfwIsWindow(window) == GL_TRUE)
     {

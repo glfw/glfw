@@ -119,8 +119,8 @@ int main(int argc, char** argv)
     }
 
     glfwSwapInterval(1);
-    glfwSetKeyCallback(window, key_callback);
-    glfwSetWindowSizeCallback(window, size_callback);
+    glfwSetKeyCallback(key_callback);
+    glfwSetWindowSizeCallback(size_callback);
 
     glEnable(GL_SCISSOR_TEST);
 

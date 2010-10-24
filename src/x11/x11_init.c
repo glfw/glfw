@@ -176,7 +176,7 @@ static void initGammaRamp(void)
 #endif /*_GLFW_HAS_XF86VIDMODE*/
 
     if (!_glfwLibrary.originalRampSize)
-        fprintf(stderr, "Gamma ramp setting unsupported\n");
+        fprintf(stderr, "No supported gamma ramp API found\n");
 
     // Save the original gamma ramp
     _glfwPlatformGetGammaRamp(&_glfwLibrary.originalRamp);

@@ -315,9 +315,9 @@ const char* _glfwPlatformGetVersionString(void)
         " (no OpenGL extension support)"
 #endif
 #if defined(_GLFW_USE_LINUX_JOYSTICKS)
-        " Linux joystick API"
+        " Linux-joystick-API"
 #else
-        " (no joystick support)"
+        " no-joystick-support"
 #endif
         ;
 

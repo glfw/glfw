@@ -55,7 +55,7 @@ int main(void)
         // Select and setup the projection matrix
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        gluPerspective(65.0f, (GLfloat)width/(GLfloat)height, 1.f, 100.0f);
+        gluPerspective(65.f, (GLfloat) width / (GLfloat) height, 1.f, 100.f);
 
         // Select and setup the modelview matrix
         glMatrixMode( GL_MODELVIEW );

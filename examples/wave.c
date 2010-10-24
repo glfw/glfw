@@ -255,7 +255,7 @@ void calc_grid(void)
 // Handle key strokes
 //========================================================================
 
-void handle_key_down(GLFWwindow window, int key, int action)
+void key_callback(GLFWwindow window, int key, int action)
 {
     if (action != GLFW_PRESS)
         return;
@@ -297,7 +297,7 @@ void handle_key_down(GLFWwindow window, int key, int action)
 // Callback function for window resize events
 //========================================================================
 
-void handle_resize(GLFWwindow window, int width, int height)
+void window_resize_callback(GLFWwindow window, int width, int height)
 {
     float ratio = 1.f;
 
@@ -339,11 +339,11 @@ int main(int argc, char* argv[])
     glfwSwapInterval(1);
 
     // Keyboard handler
-    glfwSetKeyCallback(window, handle_key_down);
+    glfwSetKeyCallback(window, key_callback);
     glfwEnable(window, GLFW_KEY_REPEAT);
 
     // Window resize handler
-    glfwSetWindowSizeCallback(window, handle_resize);
+    glfwSetWindowSizeCallback(window, window_resize_callback);
 
     // Initialize OpenGL
     init_opengl();

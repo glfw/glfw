@@ -102,7 +102,7 @@ typedef struct _GLFWlibraryNS
 
     // dlopen handle for dynamically loading OpenGL extension entry points
     void*       OpenGLFramework;
-    int         unbundled;
+    GLboolean   unbundled;
     id          desktopMode;
     id          delegate;
     id          autoreleasePool;

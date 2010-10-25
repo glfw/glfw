@@ -256,7 +256,7 @@ typedef struct _GLFWwindowWin32
 
     // Various platform specific internal variables
     int       desiredRefreshRate; // Desired vertical monitor refresh rate
-    int       mouseMoved;
+    GLboolean mouseMoved;
     int       oldMouseX, oldMouseY;
 } _GLFWwindowWin32;
 
@@ -266,26 +266,26 @@ typedef struct _GLFWwindowWin32
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryWin32
 {
-    HINSTANCE instance;        // Instance of the application
-    ATOM      classAtom;       // Window class atom
-    HHOOK     keyboardHook;    // Keyboard hook handle
-    DWORD     foregroundLockTimeout;
+    HINSTANCE                 instance;     // Instance of the application
+    ATOM                      classAtom;    // Window class atom
+    HHOOK                     keyboardHook; // Keyboard hook handle
+    DWORD                     foregroundLockTimeout;
 
     // Default monitor
     struct {
-        int   modeChanged;
-        int   width;
-        int   height;
-        int   bitsPerPixel;
-        int   refreshRate;
+        GLboolean             modeChanged;
+        int                   width;
+        int                   height;
+        int                   bitsPerPixel;
+        int                   refreshRate;
     } monitor;
 
     // Timer data
     struct {
-        int          hasPerformanceCounter;
-        double       resolution;
-        unsigned int t0_32;
-        __int64      t0_64;
+        GLboolean             hasPerformanceCounter;
+        double                resolution;
+        unsigned int          t0_32;
+        __int64               t0_64;
     } timer;
 
 #ifndef _GLFW_NO_DLOAD_GDI32

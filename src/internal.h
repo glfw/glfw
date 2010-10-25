@@ -87,13 +87,13 @@ struct _GLFWhints
     int         accumBlueBits;
     int         accumAlphaBits;
     int         auxBuffers;
-    int         stereo;
-    int         windowNoResize;
+    GLboolean   stereo;
+    GLboolean   windowNoResize;
     int         samples;
     int         glMajor;
     int         glMinor;
-    int         glForward;
-    int         glDebug;
+    GLboolean   glForward;
+    GLboolean   glDebug;
     int         glProfile;
 };
 
@@ -109,11 +109,11 @@ struct _GLFWwndconfig
     int           mode;
     const char*   title;
     int           refreshRate;
-    int           windowNoResize;
+    GLboolean     windowNoResize;
     int           glMajor;
     int           glMinor;
-    int           glForward;
-    int           glDebug;
+    GLboolean     glForward;
+    GLboolean     glDebug;
     int           glProfile;
     _GLFWwindow*  share;
 };
@@ -139,7 +139,7 @@ struct _GLFWfbconfig
     int         accumBlueBits;
     int         accumAlphaBits;
     int         auxBuffers;
-    int         stereo;
+    GLboolean   stereo;
     int         samples;
     GLFWintptr  platformID;
 };
@@ -190,7 +190,8 @@ struct _GLFWwindow
     // OpenGL extensions and context attributes
     GLboolean accelerated;     // GL_TRUE if OpenGL context is "accelerated"
     int       glMajor, glMinor, glRevision;
-    int       glForward, glDebug, glProfile;
+    GLboolean glForward, glDebug;
+    int       glProfile;
     PFNGLGETSTRINGIPROC GetStringi;
 
     // These are defined in the current port's platform.h

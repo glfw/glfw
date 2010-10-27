@@ -9,6 +9,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 
 set(cocoa_SOURCES cocoa_enable.m
                   cocoa_fullscreen.m
+                  cocoa_gamma.m
                   cocoa_glext.m
                   cocoa_init.m
                   cocoa_joystick.m

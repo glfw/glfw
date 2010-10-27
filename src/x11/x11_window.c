@@ -485,7 +485,9 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
     attribs[index++] = attribName; \
     attribs[index++] = attribValue;
 
-static int createContext(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, GLXFBConfigID fbconfigID)
+static int createContext(_GLFWwindow* window,
+                         const _GLFWwndconfig* wndconfig,
+                         GLXFBConfigID fbconfigID)
 {
     int attribs[40];
     int flags, dummy, index;
@@ -732,7 +734,8 @@ static GLboolean createWindow(_GLFWwindow* window,
             // The /only/ reason we are setting the background pixel here is
             // that otherwise our window wont get any decorations on systems
             // using Compiz on Intel hardware
-            wa.background_pixel = BlackPixel(_glfwLibrary.X11.display, _glfwLibrary.X11.screen);
+            wa.background_pixel = BlackPixel(_glfwLibrary.X11.display,
+                                             _glfwLibrary.X11.screen);
             wamask |= CWBackPixel;
         }
 
@@ -1616,7 +1619,9 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window)
         return;
     }
 
-    XIconifyWindow(_glfwLibrary.X11.display, window->X11.handle, _glfwLibrary.X11.screen);
+    XIconifyWindow(_glfwLibrary.X11.display,
+                   window->X11.handle,
+                   _glfwLibrary.X11.screen);
 }
 
 
@@ -1821,7 +1826,9 @@ void _glfwPlatformHideMouseCursor(_GLFWwindow* window)
     // Hide cursor
     if (!window->X11.pointerHidden)
     {
-        XDefineCursor(_glfwLibrary.X11.display, window->X11.handle, _glfwLibrary.X11.cursor);
+        XDefineCursor(_glfwLibrary.X11.display,
+                      window->X11.handle,
+                      _glfwLibrary.X11.cursor);
         window->X11.pointerHidden = GL_TRUE;
     }
 

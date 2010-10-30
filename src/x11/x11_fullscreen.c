@@ -483,14 +483,14 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
 
 void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
 {
-    int bpp, screen;
+    int bpp;
 #if defined(_GLFW_HAS_XF86VIDMODE)
     XF86VidModeModeInfo** modelist;
     int modecount;
 #endif /*_GLFW_HAS_XF86VIDMODE*/
 
     // Get display depth
-    bpp = DefaultDepth(_glfwLibrary.X11.display, screen);
+    bpp = DefaultDepth(_glfwLibrary.X11.display, _glfwLibrary.X11.screen);
 
     // Convert BPP to RGB bits
     _glfwSplitBPP(bpp, &mode->redBits, &mode->greenBits, &mode->blueBits);

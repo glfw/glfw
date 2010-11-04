@@ -514,8 +514,10 @@ void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
     }
     else
     {
-        mode->width  = DisplayWidth(_glfwLibrary.X11.display, screen);
-        mode->height = DisplayHeight(_glfwLibrary.X11.display, screen);
+        mode->width = DisplayWidth(_glfwLibrary.X11.display,
+                                   _glfwLibrary.X11.screen);
+        mode->height = DisplayHeight(_glfwLibrary.X11.display,
+                                     _glfwLibrary.X11.screen);
     }
 }
 

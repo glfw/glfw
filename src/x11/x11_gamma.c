@@ -63,8 +63,8 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 
         XRRFreeGamma(gamma);
         XRRFreeScreenResources(rr);
-    }
 #endif /*_GLFW_HAS_XRANDR*/
+    }
     else if (_glfwLibrary.X11.VidMode.available)
     {
 #if defined (_GLFW_HAS_XF86VIDMODE)
@@ -109,8 +109,8 @@ void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
         }
 
         XRRFreeScreenResources(rr);
-    }
 #endif /*_GLFW_HAS_XRANDR*/
+    }
     else if (_glfwLibrary.X11.VidMode.available)
     {
 #if defined (_GLFW_HAS_XF86VIDMODE)

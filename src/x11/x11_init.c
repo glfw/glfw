@@ -300,8 +300,9 @@ const char* _glfwPlatformGetVersionString(void)
 #endif
 #if defined(_GLFW_HAS_XF86VIDMODE)
         " Xf86VidMode"
-#else
-        " (no mode switching support)"
+#endif
+#if !defined(_GLFW_HAS_XRANDR) && !defined(_GLFW_HAS_XF86VIDMODE)
+        " no-mode-switching-support"
 #endif
 #if defined(_GLFW_HAS_GLXGETPROCADDRESS)
         " glXGetProcAddress"
@@ -312,7 +313,7 @@ const char* _glfwPlatformGetVersionString(void)
 #elif defined(_GLFW_DLOPEN_LIBGL)
         " dlsym(libGL)"
 #else
-        " (no OpenGL extension support)"
+        " no-extension-support"
 #endif
 #if defined(_GLFW_USE_LINUX_JOYSTICKS)
         " Linux-joystick-API"

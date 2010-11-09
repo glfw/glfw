@@ -27,8 +27,8 @@
  *
  *************************************************************************/
 
-#ifndef __glfw_h_
-#define __glfw_h_
+#ifndef __glfw3_h__
+#define __glfw3_h__
 
 #ifdef __cplusplus
 extern "C" {
@@ -490,5 +490,5 @@ GLFWAPI void glfwDisable(GLFWwindow window, int token);
 }
 #endif
 
-#endif /* __glfw_h_ */
+#endif /* __glfw3_h__ */
 

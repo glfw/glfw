@@ -1342,9 +1342,26 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     if (!createWindow(window, wndconfig, fbconfig))
         return GL_FALSE;
 
-    if (wndconfig->glMajor > 2)
+    if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
+    {
+        if (window->WGL.has_WGL_ARB_create_context)
+            recreateContext = GL_TRUE;
+    }
+
+    if (wndconfig->glForward || wndconfig->glDebug)
     {
         if (!window->WGL.has_WGL_ARB_create_context)
+        {
+            _glfwSetError(GLFW_VERSION_UNAVAILABLE);
+            return GL_FALSE;
+        }
+
+        recreateContext = GL_TRUE;
+    }
+
+    if (wndconfig->glProfile)
+    {
+        if (!window->WGL.has_WGL_ARB_create_context_profile)
         {
             _glfwSetError(GLFW_VERSION_UNAVAILABLE);
             return GL_FALSE;

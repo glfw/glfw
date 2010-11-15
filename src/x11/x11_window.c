@@ -667,13 +667,25 @@ static int createContext(_GLFWwindow* window,
 
 static void initGLXExtensions(_GLFWwindow* window)
 {
-    if (_glfwPlatformExtensionSupported("GLX_SGI_swap_control"))
+    if (_glfwPlatformExtensionSupported("GLX_EXT_swap_control"))
     {
-        window->GLX.SwapIntervalSGI = (PFNGLXSWAPINTERVALSGIPROC)
-            _glfwPlatformGetProcAddress("glXSwapIntervalSGI");
+        window->GLX.SwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC)
+            _glfwPlatformGetProcAddress("glXSwapIntervalEXT");
 
-        if (window->GLX.SwapIntervalSGI)
-            window->GLX.has_GLX_SGI_swap_control = GL_TRUE;
+        if (window->GLX.SwapIntervalEXT)
+            window->GLX.has_GLX_EXT_swap_control = GL_TRUE;
+    }
+
+    if (!window->GLX.has_GLX_EXT_swap_control)
+    {
+        if (_glfwPlatformExtensionSupported("GLX_SGI_swap_control"))
+        {
+            window->GLX.SwapIntervalSGI = (PFNGLXSWAPINTERVALSGIPROC)
+                _glfwPlatformGetProcAddress("glXSwapIntervalSGI");
+
+            if (window->GLX.SwapIntervalSGI)
+                window->GLX.has_GLX_SGI_swap_control = GL_TRUE;
+        }
     }
 
     if (_glfwPlatformExtensionSupported("GLX_SGIX_fbconfig"))
@@ -1684,7 +1696,13 @@ void _glfwPlatformSwapInterval(int interval)
 {
     _GLFWwindow* window = _glfwLibrary.currentWindow;
 
-    if (window->GLX.has_GLX_SGI_swap_control)
+    if (window->GLX.has_GLX_EXT_swap_control)
+    {
+        window->GLX.SwapIntervalEXT(_glfwLibrary.X11.display,
+                                    window->X11.handle,
+                                    interval);
+    }
+    else if (window->GLX.has_GLX_SGI_swap_control)
         window->GLX.SwapIntervalSGI(interval);
 }
 

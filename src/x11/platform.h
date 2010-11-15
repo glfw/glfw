@@ -100,6 +100,7 @@ typedef struct _GLFWcontextGLX
 
     // GLX extensions
     PFNGLXSWAPINTERVALSGIPROC             SwapIntervalSGI;
+    PFNGLXSWAPINTERVALEXTPROC             SwapIntervalEXT;
     PFNGLXGETFBCONFIGATTRIBSGIXPROC       GetFBConfigAttribSGIX;
     PFNGLXCHOOSEFBCONFIGSGIXPROC          ChooseFBConfigSGIX;
     PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC CreateContextWithConfigSGIX;
@@ -107,6 +108,7 @@ typedef struct _GLFWcontextGLX
     PFNGLXCREATECONTEXTATTRIBSARBPROC     CreateContextAttribsARB;
     GLboolean   has_GLX_SGIX_fbconfig;
     GLboolean   has_GLX_SGI_swap_control;
+    GLboolean   has_GLX_EXT_swap_control;
     GLboolean   has_GLX_ARB_multisample;
     GLboolean   has_GLX_ARB_create_context;
     GLboolean   has_GLX_ARB_create_context_profile;

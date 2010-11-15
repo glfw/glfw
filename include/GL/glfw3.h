@@ -338,6 +338,7 @@ extern "C" {
 /* GLFW_OPENGL_PROFILE tokens */
 #define GLFW_OPENGL_CORE_PROFILE  0x00050001
 #define GLFW_OPENGL_COMPAT_PROFILE 0x00050002
+#define GLFW_OPENGL_ES2_PROFILE   0x00050004
 
 /* glfwEnable/glfwDisable tokens */
 #define GLFW_MOUSE_CURSOR         0x00030001

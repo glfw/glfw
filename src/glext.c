@@ -51,11 +51,20 @@ void _glfwParseGLVersion(int* major, int* minor, int* rev)
     GLuint _major, _minor = 0, _rev = 0;
     const GLubyte* version;
     const GLubyte* ptr;
+    const char* glesPrefix = "OpenGL ES ";
 
     // Get OpenGL version string
     version = glGetString(GL_VERSION);
     if (!version)
         return;
+
+    if (strncmp(version, glesPrefix, strlen(glesPrefix)) == 0)
+    {
+        // The version string on OpenGL ES has a prefix before the version
+        // number, so we skip past it and then continue as normal
+
+        version += strlen(glesPrefix);
+    }
 
     // Parse string
     ptr = version;

@@ -45,7 +45,7 @@
 static void usage(void)
 {
     printf("Usage: version [-h] [-m MAJOR] [-n MINOR] [-d] [-l] [-f] [-p PROFILE]\n");
-    printf("available profiles: core compat\n");
+    printf("available profiles: core compat es2\n");
 }
 
 static const char* get_glfw_profile_name(int profile)
@@ -54,6 +54,8 @@ static const char* get_glfw_profile_name(int profile)
         return "compatibility";
     else if (profile == GLFW_OPENGL_CORE_PROFILE)
         return "core";
+    else if (profile == GLFW_OPENGL_ES2_PROFILE)
+        return "es2";
 
     return "unknown";
 }
@@ -141,6 +143,8 @@ int main(int argc, char** argv)
                     profile = GLFW_OPENGL_CORE_PROFILE;
                 else if (strcasecmp(optarg, "compat") == 0)
                     profile = GLFW_OPENGL_COMPAT_PROFILE;
+                else if (strcasecmp(optarg, "es2") == 0)
+                    profile = GLFW_OPENGL_ES2_PROFILE;
                 else
                 {
                     usage();

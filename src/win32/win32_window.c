@@ -316,7 +316,7 @@ static GLboolean createContext(_GLFWwindow* window,
                                int pixelFormat)
 {
     PIXELFORMATDESCRIPTOR pfd;
-    int flags, i = 0, attribs[7];
+    int i = 0, attribs[7];
     HGLRC share = NULL;
 
     if (wndconfig->share)
@@ -350,7 +350,7 @@ static GLboolean createContext(_GLFWwindow* window,
 
         if (wndconfig->glForward || wndconfig->glDebug)
         {
-            flags = 0;
+            int flags = 0;
 
             if (wndconfig->glForward)
                 flags |= WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
@@ -364,10 +364,27 @@ static GLboolean createContext(_GLFWwindow* window,
 
         if (wndconfig->glProfile)
         {
+            int flags = 0;
+
+            if (!window->WGL.has_WGL_ARB_create_context_profile)
+            {
+                _glfwSetError(GLFW_VERSION_UNAVAILABLE);
+                return GL_FALSE;
+            }
+
+            if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE &&
+                !window->WGL.has_WGL_EXT_create_context_es2_profile)
+            {
+                _glfwSetError(GLFW_VERSION_UNAVAILABLE);
+                return GL_FALSE;
+            }
+
             if (wndconfig->glProfile == GLFW_OPENGL_CORE_PROFILE)
                 flags = WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
-            else
+            else if (wndconfig->glProfile == GLFW_OPENGL_COMPAT_PROFILE)
                 flags = WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
+            else if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE)
+                flags = WGL_CONTEXT_ES2_PROFILE_BIT_EXT;
 
             attribs[i++] = WGL_CONTEXT_PROFILE_MASK_ARB;
             attribs[i++] = flags;
@@ -1008,6 +1025,7 @@ static void initWGLExtensions(_GLFWwindow* window)
     window->WGL.has_WGL_ARB_pixel_format = GL_FALSE;
     window->WGL.has_WGL_ARB_multisample = GL_FALSE;
     window->WGL.has_WGL_ARB_create_context = GL_FALSE;
+    window->WGL.has_WGL_ARB_create_context_profile = GL_FALSE;
 
     window->WGL.GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)
         wglGetProcAddress("wglGetExtensionsStringEXT");
@@ -1029,6 +1047,19 @@ static void initWGLExtensions(_GLFWwindow* window)
 
         if (window->WGL.CreateContextAttribsARB)
             window->WGL.has_WGL_ARB_create_context = GL_TRUE;
+    }
+
+    if (window->WGL.has_WGL_ARB_create_context)
+    {
+        if (_glfwPlatformExtensionSupported("WGL_ARB_create_context_profile"))
+            window->WGL.has_WGL_ARB_create_context_profile = GL_TRUE;
+    }
+
+    if (window->WGL.has_WGL_ARB_create_context &&
+        window->WGL.has_WGL_ARB_create_context_profile)
+    {
+        if (_glfwPlatformExtensionSupported("WGL_EXT_create_context_es2_profile"))
+            window->WGL.has_WGL_EXT_create_context_es2_profile = GL_TRUE;
     }
 
     if (_glfwPlatformExtensionSupported("WGL_EXT_swap_control"))

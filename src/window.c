@@ -490,13 +490,30 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
         // For now, let everything else through
     }
 
-    if (wndconfig.glProfile &&
-        (wndconfig.glMajor < 3 || (wndconfig.glMajor == 3 && wndconfig.glMinor < 2)))
+    if (wndconfig.glProfile == GLFW_OPENGL_ES2_PROFILE)
     {
-        // Context profiles are only defined for OpenGL version 3.2 and above
-        glfwCloseWindow(window);
-        _glfwSetError(GLFW_INVALID_VALUE);
-        return GL_FALSE;
+        if (wndconfig.glMajor != 2 || wndconfig.glMinor < 0)
+        {
+            // The OpenGL ES 2.0 profile is currently only defined for version
+            // 2.0, but for compatibility with future updates to OpenGL ES, we
+            // allow everything 2.x and let the driver report invalid versions
+
+            glfwCloseWindow(window);
+            _glfwSetError(GLFW_INVALID_VALUE);
+            return GL_FALSE;
+        }
+    }
+    else if (wndconfig.glProfile)
+    {
+        if (wndconfig.glMajor < 3 || (wndconfig.glMajor == 3 && wndconfig.glMinor < 2))
+        {
+            // Desktop OpenGL context profiles are only defined for version 3.2
+            // and above
+
+            glfwCloseWindow(window);
+            _glfwSetError(GLFW_INVALID_VALUE);
+            return GL_FALSE;
+        }
     }
 
     if (wndconfig.glForward && wndconfig.glMajor < 3)

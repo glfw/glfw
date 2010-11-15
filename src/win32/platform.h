@@ -241,6 +241,8 @@ typedef struct _GLFWcontextWGL
     GLboolean                           has_WGL_ARB_multisample;
     GLboolean                           has_WGL_ARB_pixel_format;
     GLboolean                           has_WGL_ARB_create_context;
+    GLboolean                           has_WGL_ARB_create_context_profile;
+    GLboolean                           has_WGL_EXT_create_context_es2_profile;
 } _GLFWcontextWGL;
 
 

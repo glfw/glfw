@@ -490,7 +490,7 @@ static int createContext(_GLFWwindow* window,
                          GLXFBConfigID fbconfigID)
 {
     int attribs[40];
-    int flags, dummy, index;
+    int dummy, index;
     GLXFBConfig* fbconfig;
     GLXContext share = NULL;
 
@@ -562,7 +562,7 @@ static int createContext(_GLFWwindow* window,
 
         if (wndconfig->glForward || wndconfig->glDebug)
         {
-            flags = 0;
+            int flags = 0;
 
             if (wndconfig->glForward)
                 flags |= GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
@@ -575,6 +575,8 @@ static int createContext(_GLFWwindow* window,
 
         if (wndconfig->glProfile)
         {
+            int flags = 0;
+
             if (!window->GLX.has_GLX_ARB_create_context_profile)
             {
                 fprintf(stderr, "OpenGL profile requested but GLX_ARB_create_context_profile "
@@ -583,10 +585,21 @@ static int createContext(_GLFWwindow* window,
                 return GL_FALSE;
             }
 
+            if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE &&
+                !window->GLX.has_GLX_EXT_create_context_es2_profile)
+            {
+                fprintf(stderr, "OpenGL ES2 profile requested but "
+                                "GLX_EXT_create_context_es2_profile is unavailable\n");
+                _glfwSetError(GLFW_VERSION_UNAVAILABLE);
+                return GL_FALSE;
+            }
+
             if (wndconfig->glProfile == GLFW_OPENGL_CORE_PROFILE)
                 flags = GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
-            else
+            else if (wndconfig->glProfile == GLFW_OPENGL_COMPAT_PROFILE)
                 flags = GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
+            else if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE)
+                flags = GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
 
             setGLXattrib(attribs, index, GLX_CONTEXT_PROFILE_MASK_ARB, flags);
         }
@@ -695,8 +708,18 @@ static void initGLXExtensions(_GLFWwindow* window)
             window->GLX.has_GLX_ARB_create_context = GL_TRUE;
     }
 
-    if (_glfwPlatformExtensionSupported("GLX_ARB_create_context_profile"))
-        window->GLX.has_GLX_ARB_create_context_profile = GL_TRUE;
+    if (window->GLX.has_GLX_ARB_create_context)
+    {
+        if (_glfwPlatformExtensionSupported("GLX_ARB_create_context_profile"))
+            window->GLX.has_GLX_ARB_create_context_profile = GL_TRUE;
+    }
+
+    if (window->GLX.has_GLX_ARB_create_context &&
+        window->GLX.has_GLX_ARB_create_context_profile)
+    {
+        if (_glfwPlatformExtensionSupported("GLX_EXT_create_context_es2_profile"))
+            window->GLX.has_GLX_EXT_create_context_es2_profile = GL_TRUE;
+    }
 }
 
 

@@ -777,7 +777,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 translateChar(window, (DWORD) wParam, (DWORD) lParam);
 
             return 0;
-          }
+        }
 
         case WM_KEYUP:
         case WM_SYSKEYUP:

@@ -29,9 +29,9 @@ extern "C" {
 */
 
 /* Header file version number, required by OpenGL ABI for Linux */
-/* glext.h last updated $Date: 2010-09-30 01:33:03 -0700 (Thu, 30 Sep 2010) $ */
+/* glext.h last updated $Date: 2010-11-03 18:59:30 -0700 (Wed, 03 Nov 2010) $ */
 /* Current version at http://www.opengl.org/registry/ */
-#define GL_GLEXT_VERSION 65
+#define GL_GLEXT_VERSION 66
 /* Function declaration macros - to move into glplatform.h */
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)
@@ -5019,6 +5019,11 @@ extern "C" {
 #endif
 
 #ifndef GL_AMD_transform_feedback3_lines_triangles
+#endif
+
+#ifndef GL_AMD_depth_clamp_separate
+#define GL_DEPTH_CLAMP_NEAR_AMD           0x901E
+#define GL_DEPTH_CLAMP_FAR_AMD            0x901F
 #endif
 
 
@@ -11020,6 +11025,10 @@ typedef void (APIENTRYP PFNGLVDPAUUNMAPSURFACESNVPROC) (GLsizei numSurface, cons
 
 #ifndef GL_AMD_transform_feedback3_lines_triangles
 #define GL_AMD_transform_feedback3_lines_triangles 1
+#endif
+
+#ifndef GL_AMD_depth_clamp_separate
+#define GL_AMD_depth_clamp_separate 1
 #endif
 
 

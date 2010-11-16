@@ -239,6 +239,8 @@ typedef struct _GLFWcontextWGL
     PFNWGLCREATECONTEXTATTRIBSARBPROC   CreateContextAttribsARB;
     GLboolean                           has_WGL_EXT_swap_control;
     GLboolean                           has_WGL_ARB_multisample;
+    GLboolean                           has_WGL_EXT_framebuffer_sRGB;
+    GLboolean                           has_WGL_ARB_framebuffer_sRGB;
     GLboolean                           has_WGL_ARB_pixel_format;
     GLboolean                           has_WGL_ARB_create_context;
     GLboolean                           has_WGL_ARB_create_context_profile;

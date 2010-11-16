@@ -269,6 +269,12 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
             continue;
         }
 
+        if (desired->sRGB && !current->sRGB)
+        {
+            // sRGB framebuffer is a hard constraint
+            continue;
+        }
+
         // Count number of missing buffers
         {
             missing = 0;
@@ -448,6 +454,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     fbconfig.auxBuffers     = Max(_glfwLibrary.hints.auxBuffers, 0);
     fbconfig.stereo         = _glfwLibrary.hints.stereo ? GL_TRUE : GL_FALSE;
     fbconfig.samples        = Max(_glfwLibrary.hints.samples, 0);
+    fbconfig.sRGB           = _glfwLibrary.hints.sRGB ? GL_TRUE : GL_FALSE;
 
     // Set up desired window config
     wndconfig.mode           = mode;
@@ -730,6 +737,9 @@ GLFWAPI void glfwOpenWindowHint(int target, int hint)
             break;
         case GLFW_FSAA_SAMPLES:
             _glfwLibrary.hints.samples = hint;
+            break;
+        case GLFW_SRGB_CAPABLE:
+            _glfwLibrary.hints.sRGB = hint;
             break;
         case GLFW_OPENGL_VERSION_MAJOR:
             _glfwLibrary.hints.glMajor = hint;
@@ -1040,6 +1050,8 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow window, int param)
             return window->windowNoResize;
         case GLFW_FSAA_SAMPLES:
             return window->samples;
+        case GLFW_SRGB_CAPABLE:
+            return window->sRGB;
         case GLFW_OPENGL_VERSION_MAJOR:
             return window->glMajor;
         case GLFW_OPENGL_VERSION_MINOR:

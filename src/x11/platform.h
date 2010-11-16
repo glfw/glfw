@@ -110,6 +110,9 @@ typedef struct _GLFWcontextGLX
     GLboolean   has_GLX_SGI_swap_control;
     GLboolean   has_GLX_EXT_swap_control;
     GLboolean   has_GLX_ARB_multisample;
+    GLboolean   has_GLX_ARB_fbconfig_float;
+    GLboolean   has_GLX_ARB_framebuffer_sRGB;
+    GLboolean   has_GLX_EXT_framebuffer_sRGB;
     GLboolean   has_GLX_ARB_create_context;
     GLboolean   has_GLX_ARB_create_context_profile;
     GLboolean   has_GLX_EXT_create_context_es2_profile;

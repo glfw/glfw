@@ -5,6 +5,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include ${OPENGL_INCLUDE_DIR}
 
 add_executable(defaults defaults.c)
 add_executable(events events.c)
+add_executable(fsaa fsaa.c getopt.c)
 add_executable(fsfocus fsfocus.c)
 add_executable(gamma gamma.c getopt.c)
 add_executable(iconify iconify.c getopt.c)
@@ -17,7 +18,6 @@ add_executable(version version.c getopt.c)
 if(APPLE)
   # Set fancy names for bundles
   add_executable(Accuracy MACOSX_BUNDLE accuracy.c)
-  add_executable(FSAA MACOSX_BUNDLE fsaa.c)
   add_executable(Sharing MACOSX_BUNDLE sharing.c)
   add_executable(Tearing MACOSX_BUNDLE tearing.c)
   add_executable(Windows MACOSX_BUNDLE windows.c)
@@ -26,7 +26,6 @@ else()
   add_executable(accuracy WIN32 accuracy.c)
   add_executable(sharing WIN32 sharing.c)
   add_executable(tearing WIN32 tearing.c)
-  add_executable(fsaa WIN32 fsaa.c)
   add_executable(windows WIN32 windows.c)
 endif(APPLE)
 

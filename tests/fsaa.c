@@ -35,15 +35,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "getopt.h"
+
 static void window_size_callback(GLFWwindow window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 
-int main(void)
+static void usage(void)
 {
-    int samples;
+    printf("Usage: fsaa [-h] [-s SAMPLES]\n");
+}
+
+int main(int argc, char** argv)
+{
+    int ch, samples = 4;
     GLFWwindow window;
+
+    while ((ch = getopt(argc, argv, "hs:")) != -1)
+    {
+        switch (ch)
+        {
+            case 'h':
+                usage();
+                exit(EXIT_SUCCESS);
+            case 's':
+                samples = atoi(optarg);
+                break;
+            default:
+                usage();
+                exit(EXIT_FAILURE);
+        }
+    }
 
     if (!glfwInit())
     {
@@ -51,7 +74,12 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 4);
+    if (samples)
+        printf("Requesting FSAA with %i samples\n", samples);
+    else
+        printf("Requesting that FSAA not be available\n");
+
+    glfwOpenWindowHint(GLFW_FSAA_SAMPLES, samples);
 
     window = glfwOpenWindow(800, 400, GLFW_WINDOWED, "Aliasing Detector", NULL);
     if (!window)
@@ -67,9 +95,9 @@ int main(void)
 
     samples = glfwGetWindowParam(window, GLFW_FSAA_SAMPLES);
     if (samples)
-        printf("Context reports FSAA is supported with %i samples\n", samples);
+        printf("Context reports FSAA is available with %i samples\n", samples);
     else
-        printf("Context reports FSAA is unsupported\n");
+        printf("Context reports FSAA is unavailable\n");
 
     glMatrixMode(GL_PROJECTION);
     gluOrtho2D(0.f, 1.f, 0.f, 0.5f);

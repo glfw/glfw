@@ -75,13 +75,13 @@ void _glfwParseGLVersion(int* major, int* minor, int* rev)
     {
         ptr++;
         for (_minor = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
-            _minor = 10*_minor + (*ptr - '0');
+            _minor = 10 * _minor + (*ptr - '0');
 
         if (*ptr == '.')
         {
             ptr++;
             for (_rev = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
-                _rev = 10*_rev + (*ptr - '0');
+                _rev = 10 * _rev + (*ptr - '0');
         }
     }
 

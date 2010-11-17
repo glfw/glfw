@@ -53,7 +53,7 @@ int main(void)
 
     glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 4);
 
-    window = glfwOpenWindow(400, 400, GLFW_WINDOWED, "Aliasing Detector", NULL);
+    window = glfwOpenWindow(800, 400, GLFW_WINDOWED, "Aliasing Detector", NULL);
     if (!window)
     {
         glfwTerminate();
@@ -72,7 +72,8 @@ int main(void)
         printf("Context reports FSAA is unsupported\n");
 
     glMatrixMode(GL_PROJECTION);
-    gluOrtho2D(0.f, 1.f, 0.f, 1.f);
+    gluOrtho2D(0.f, 1.f, 0.f, 0.5f);
+    glMatrixMode(GL_MODELVIEW);
 
     while (glfwIsWindow(window))
     {
@@ -80,21 +81,21 @@ int main(void)
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glLoadIdentity();
-        glTranslatef(0.5f, 0.f, 0.f);
-        glRotatef(time, 0.f, 0.f, 1.f);
-
-        glEnable(GL_MULTISAMPLE_ARB);
         glColor3f(1.f, 1.f, 1.f);
-        glRectf(-0.25f, -0.25f, 0.25f, 0.25f);
 
         glLoadIdentity();
-        glTranslatef(-0.5f, 0.f, 0.f);
+        glTranslatef(0.25f, 0.25f, 0.f);
         glRotatef(time, 0.f, 0.f, 1.f);
 
         glDisable(GL_MULTISAMPLE_ARB);
-        glColor3f(1.f, 1.f, 1.f);
-        glRectf(-0.25f, -0.25f, 0.25f, 0.25f);
+        glRectf(-0.15f, -0.15f, 0.15f, 0.15f);
+
+        glLoadIdentity();
+        glTranslatef(0.75f, 0.25f, 0.f);
+        glRotatef(time, 0.f, 0.f, 1.f);
+
+        glEnable(GL_MULTISAMPLE_ARB);
+        glRectf(-0.15f, -0.15f, 0.15f, 0.15f);
 
         glfwSwapBuffers();
         glfwPollEvents();

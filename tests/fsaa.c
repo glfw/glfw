@@ -30,13 +30,10 @@
 //========================================================================
 
 #include <GL/glfw3.h>
+#include <GL/glext.h>
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#ifndef GL_ARB_multisample
-#define GL_MULTISAMPLE_ARB 0x809D
-#endif
 
 static void window_size_callback(GLFWwindow window, int width, int height)
 {

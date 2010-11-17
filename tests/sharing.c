@@ -142,6 +142,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
+    // Put the second window to the right of the first one
     glfwGetWindowPos(windows[0], &x, &y);
     glfwSetWindowPos(windows[1], x + WIDTH + 50, y);
 

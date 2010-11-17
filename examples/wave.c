@@ -27,6 +27,10 @@ GLfloat alpha = 210.f, beta = -70.f;
 GLfloat zoom = 2.f;
 
 GLboolean running = GL_TRUE;
+GLboolean locked = GL_FALSE;
+
+int cursorX;
+int cursorY;
 
 struct Vertex
 {
@@ -294,6 +298,45 @@ void key_callback(GLFWwindow window, int key, int action)
 
 
 //========================================================================
+// Callback function for mouse button events
+//========================================================================
+
+void mouse_button_callback(GLFWwindow window, int button, int action)
+{
+    if (button != GLFW_MOUSE_BUTTON_LEFT)
+        return;
+
+    if (action == GLFW_PRESS)
+    {
+        glfwDisable(window, GLFW_MOUSE_CURSOR);
+        locked = GL_TRUE;
+    }
+    else
+    {
+        locked = GL_FALSE;
+        glfwEnable(window, GLFW_MOUSE_CURSOR);
+    }
+}
+
+
+//========================================================================
+// Callback function for mouse motion events
+//========================================================================
+
+void mouse_position_callback(GLFWwindow window, int x, int y)
+{
+    if (locked)
+    {
+        alpha += (x - cursorX) / 10.f;
+        beta += (y - cursorY) / 10.f;
+    }
+
+    cursorX = x;
+    cursorY = y;
+}
+
+
+//========================================================================
 // Callback function for window resize events
 //========================================================================
 
@@ -344,6 +387,8 @@ int main(int argc, char* argv[])
 
     // Window resize handler
     glfwSetWindowSizeCallback(window_resize_callback);
+    glfwSetMouseButtonCallback(mouse_button_callback);
+    glfwSetMousePosCallback(mouse_position_callback);
 
     // Initialize OpenGL
     init_opengl();

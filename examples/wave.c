@@ -285,11 +285,12 @@ void key_callback(GLFWwindow window, int key, int action)
             beta += 5;
             break;
         case GLFW_KEY_PAGEUP:
-            if (zoom > 1)
-                zoom -= 1;
+            zoom -= 0.25f;
+            if (zoom < 0.f)
+                zoom = 0.f;
             break;
         case GLFW_KEY_PAGEDOWN:
-            zoom += 1;
+            zoom += 0.25f;
             break;
         default:
             break;
@@ -333,6 +334,18 @@ void mouse_position_callback(GLFWwindow window, int x, int y)
 
     cursorX = x;
     cursorY = y;
+}
+
+
+//========================================================================
+// Callback function for scroll events
+//========================================================================
+
+void scroll_callback(GLFWwindow window, int x, int y)
+{
+    zoom += y / 4.f;
+    if (zoom < 0)
+        zoom = 0;
 }
 
 
@@ -389,6 +402,7 @@ int main(int argc, char* argv[])
     glfwSetWindowSizeCallback(window_resize_callback);
     glfwSetMouseButtonCallback(mouse_button_callback);
     glfwSetMousePosCallback(mouse_position_callback);
+    glfwSetScrollCallback(scroll_callback);
 
     // Initialize OpenGL
     init_opengl();

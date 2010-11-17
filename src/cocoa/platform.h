@@ -34,9 +34,6 @@
 #include <stdint.h>
 
 
-// This is the Mac OS X version of GLFW
-#define _GLFW_MAC_OS_X
-
 #if defined(__OBJC__)
 #import <Cocoa/Cocoa.h>
 #else

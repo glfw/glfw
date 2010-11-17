@@ -32,9 +32,6 @@
 #define _platform_h_
 
 
-// This is the Windows version of GLFW
-#define _GLFW_WIN32
-
 // We don't need all the fancy stuff
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN

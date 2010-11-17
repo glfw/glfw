@@ -35,6 +35,13 @@
 // it.  Instead, you should modify the config.h.in file.
 //========================================================================
 
+// Define this to 1 if building GLFW for X11/GLX
+#cmakedefine _GLFW_X11_GLX
+// Define this to 1 if building GLFW for Win32/WGL
+#cmakedefine _GLFW_WIN32_WGL
+// Define this to 1 if building GLFW for Cocoa/NSOpenGL
+#cmakedefine _GLFW_COCOA_NSGL
+
 // Define this to 1 if XRandR is available
 #cmakedefine _GLFW_HAS_XRANDR      1
 // Define this to 1 if Xf86VidMode is available

@@ -31,9 +31,6 @@
 #ifndef _platform_h_
 #define _platform_h_
 
-// This is the X11 version of GLFW
-#define _GLFW_X11
-
 #include <sys/time.h>
 #include <unistd.h>
 #include <signal.h>

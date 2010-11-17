@@ -34,6 +34,9 @@ set(common_SOURCES
 if (WIN32)
     message(STATUS "Building GLFW for WGL on a Win32 system") 
 
+    # Define the platform identifier
+    set(_GLFW_WIN32_WGL 1)
+
     # Set up library and include paths
     set(CMAKE_REQUIRED_LIBRARIES ${OPENGL_gl_LIBRARY})
     list(APPEND GLFW_INCLUDE_DIR ${OPENGL_INCLUDE_DIR})
@@ -48,7 +51,10 @@ endif (WIN32)
 #--------------------------------------------------------------------
 if (UNIX AND NOT APPLE AND NOT CYGWIN)
     message(STATUS "Building GLFW for X11 and GLX on a Unix-like system")
-    
+
+    # Define the platform identifier
+    set(_GLFW_X11_GLX 1)
+
     # Set up library and include paths
     set(CMAKE_REQUIRED_LIBRARIES ${X11_X11_LIB} ${OPENGL_gl_LIBRARY})
     list(APPEND GLFW_INCLUDE_DIR ${X11_X11_INCLUDE_PATH})
@@ -106,6 +112,9 @@ endif(UNIX AND NOT APPLE AND NOT CYGWIN)
 if (UNIX AND APPLE)
     message(STATUS "Building GLFW for Cocoa and NSOpenGL on Mac OS X")
         
+    # Define the platform identifier
+    set(_GLFW_COCOA_NSGL 1)
+
     # Universal build, decent set of warning flags...
     set(CMAKE_OSX_ARCHITECTURES ppc;i386;ppc64;x86_64)
     set(CMAKE_OSX_SYSROOT /Developer/SDKs/MacOSX10.5.sdk)

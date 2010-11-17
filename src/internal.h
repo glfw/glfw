@@ -57,6 +57,10 @@
 //------------------------------------------------------------------------
 
 #include "config.h"
+
+#include "../../include/GL/glfw3.h"
+#include "../../include/GL/glext.h"
+
 #include "platform.h"
 
 

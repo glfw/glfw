@@ -43,15 +43,6 @@
 typedef void* id;
 #endif
 
-#include "../../include/GL/glfw3.h"
-
-
-#ifndef GL_VERSION_3_0
-
-typedef const GLubyte* (APIENTRY *PFNGLGETSTRINGIPROC)(GLenum, GLuint);
-
-#endif /*GL_VERSION_3_0*/
-
 
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowNS NS
 #define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryNS NS

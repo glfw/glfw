@@ -43,7 +43,6 @@
 #include <windows.h>
 #include <mmsystem.h>
 
-#include "../../include/GL/glfw3.h"
 #include "../../include/GL/wglext.h"
 
 
@@ -136,13 +135,6 @@ typedef struct tagKBDLLHOOKSTRUCT {
 #ifndef XBUTTON2
 #define XBUTTON2 2
 #endif
-
-
-#ifndef GL_VERSION_3_0
-
-typedef const GLubyte*  (APIENTRY *PFNGLGETSTRINGIPROC) (GLenum, GLuint);
-
-#endif /*GL_VERSION_3_0*/
 
 
 //========================================================================

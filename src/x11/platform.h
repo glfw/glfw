@@ -43,8 +43,6 @@
 
 #include <GL/glx.h>
 
-#include "../../include/GL/glfw3.h"
-
 
 // We need declarations for GLX version 1.3 or above even if the server doesn't
 // support version 1.3
@@ -65,13 +63,6 @@
 #if defined(_GLFW_HAS_DLOPEN)
  #include <dlfcn.h>
 #endif
-
-
-#ifndef GL_VERSION_3_0
-
-typedef const GLubyte* (APIENTRY *PFNGLGETSTRINGIPROC)(GLenum, GLuint);
-
-#endif /*GL_VERSION_3_0*/
 
 
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowX11 X11

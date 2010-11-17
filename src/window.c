@@ -71,6 +71,22 @@ static void closeFlaggedWindows(void)
 
 
 //========================================================================
+// Clear scroll offsets for all windows
+//========================================================================
+
+void clearScrollOffsets(void)
+{
+    _GLFWwindow* window;
+
+    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+    {
+        window->scrollX = 0;
+        window->scrollY = 0;
+    }
+}
+
+
+//========================================================================
 // Clear all input state
 //========================================================================
 
@@ -90,7 +106,7 @@ void clearInputState(_GLFWwindow* window)
     window->mousePosX = 0;
     window->mousePosY = 0;
 
-    // Set mouse wheel position to 0
+    // Set scroll offsets to (0,0)
     window->scrollX = 0;
     window->scrollY = 0;
 
@@ -1193,6 +1209,8 @@ GLFWAPI void glfwPollEvents(void)
         return;
     }
 
+    clearScrollOffsets();
+
     _glfwPlatformPollEvents();
 
     closeFlaggedWindows();
@@ -1210,6 +1228,8 @@ GLFWAPI void glfwWaitEvents(void)
         _glfwSetError(GLFW_NOT_INITIALIZED);
         return;
     }
+
+    clearScrollOffsets();
 
     _glfwPlatformWaitEvents();
 

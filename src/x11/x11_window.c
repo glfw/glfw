@@ -1813,12 +1813,6 @@ void _glfwPlatformPollEvents(void)
 {
     _GLFWwindow* window;
 
-    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
-    {
-        window->scrollX = 0;
-        window->scrollY = 0;
-    }
-
     // Flag that the cursor has not moved
     window = _glfwLibrary.cursorLockWindow;
     if (window)

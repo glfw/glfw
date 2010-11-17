@@ -1690,12 +1690,6 @@ void _glfwPlatformPollEvents(void)
     MSG msg;
     _GLFWwindow* window;
 
-    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
-    {
-        window->scrollX = 0;
-        window->scrollY = 0;
-    }
-
     window = _glfwLibrary.cursorLockWindow;
     if (window)
     {

@@ -1,4 +1,4 @@
-/************************************************************************
+/*************************************************************************
  * GLFW - An OpenGL framework
  * API version: 3.0
  * WWW:         http://www.glfw.org/
@@ -127,15 +127,15 @@ extern "C" {
 #if defined(_WIN32) && defined(GLFW_BUILD_DLL)
 
  /* We are building a Win32 DLL */
- #define GLFWAPI      __declspec(dllexport)
+ #define GLFWAPI __declspec(dllexport)
 
 #elif defined(_WIN32) && defined(GLFW_DLL)
 
  /* We are calling a Win32 DLL */
  #if defined(__LCC__)
-  #define GLFWAPI      extern
+  #define GLFWAPI extern
  #else
-  #define GLFWAPI      __declspec(dllimport)
+  #define GLFWAPI __declspec(dllimport)
  #endif
 
 #else

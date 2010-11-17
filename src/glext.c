@@ -58,7 +58,7 @@ void _glfwParseGLVersion(int* major, int* minor, int* rev)
     if (!version)
         return;
 
-    if (strncmp(version, glesPrefix, strlen(glesPrefix)) == 0)
+    if (strncmp((const char*) version, glesPrefix, strlen(glesPrefix)) == 0)
     {
         // The version string on OpenGL ES has a prefix before the version
         // number, so we skip past it and then continue as normal

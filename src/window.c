@@ -514,8 +514,9 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
         if (wndconfig.glMajor != 2 || wndconfig.glMinor < 0)
         {
             // The OpenGL ES 2.0 profile is currently only defined for version
-            // 2.0, but for compatibility with future updates to OpenGL ES, we
-            // allow everything 2.x and let the driver report invalid versions
+            // 2.0 (see {WGL|GLX}_EXT_create_context_es2_profile), but for
+            // compatibility with future updates to OpenGL ES, we allow
+            // everything 2.x and let the driver report invalid versions
 
             glfwCloseWindow(window);
             _glfwSetError(GLFW_INVALID_VALUE);

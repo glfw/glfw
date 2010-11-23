@@ -216,6 +216,7 @@ struct _GLFWlibrary
     _GLFWwindow*  activeWindow;
     _GLFWwindow*  cursorLockWindow;
 
+    GLFWerrorfun         errorCallback;
     GLFWwindowsizefun    windowSizeCallback;
     GLFWwindowclosefun   windowCloseCallback;
     GLFWwindowrefreshfun windowRefreshCallback;
@@ -313,7 +314,7 @@ void* _glfwPlatformGetProcAddress(const char* procname);
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 
 // Error handling
-void _glfwSetError(int error);
+void _glfwSetError(int error, const char* description);
 
 // Window management (window.c)
 void _glfwClearWindowHints(void);

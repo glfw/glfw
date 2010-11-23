@@ -387,8 +387,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
     {
         if (!window->GLX.has_GLX_SGIX_fbconfig)
         {
-            fprintf(stderr, "GLXFBConfigs are not supported by the X server\n");
-            _glfwSetError(GLFW_OPENGL_UNAVAILABLE);
+            _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "X11/GLX: GLXFBConfig support not found");
             return NULL;
         }
     }
@@ -401,8 +400,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
                                                    &count);
         if (!count)
         {
-            fprintf(stderr, "No GLXFBConfigs returned\n");
-            _glfwSetError(GLFW_OPENGL_UNAVAILABLE);
+            _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "X11/GLX: No GLXFBConfigs returned");
             return NULL;
         }
     }
@@ -411,8 +409,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         fbconfigs = glXGetFBConfigs(_glfwLibrary.X11.display, _glfwLibrary.X11.screen, &count);
         if (!count)
         {
-            fprintf(stderr, "No GLXFBConfigs returned\n");
-            _glfwSetError(GLFW_OPENGL_UNAVAILABLE);
+            _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "X11/GLX: No GLXFBConfigs returned");
             return NULL;
         }
     }
@@ -420,7 +417,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
     result = (_GLFWfbconfig*) malloc(sizeof(_GLFWfbconfig) * count);
     if (!result)
     {
-        _glfwSetError(GLFW_OUT_OF_MEMORY);
+        _glfwSetError(GLFW_OUT_OF_MEMORY, "X11/GLX: Failed to allocate _GLFWfbconfig array");
         return NULL;
     }
 
@@ -521,8 +518,7 @@ static int createContext(_GLFWwindow* window,
 
         if (fbconfig == NULL)
         {
-            fprintf(stderr, "Unable to retrieve the selected GLXFBConfig\n");
-            _glfwSetError(GLFW_PLATFORM_ERROR);
+            _glfwSetError(GLFW_PLATFORM_ERROR, "X11/GLX: Failed to retrieve the selected GLXFBConfig");
             return GL_FALSE;
         }
     }
@@ -543,8 +539,7 @@ static int createContext(_GLFWwindow* window,
     {
         XFree(fbconfig);
 
-        fprintf(stderr, "Unable to retrieve visual for GLXFBconfig\n");
-        _glfwSetError(GLFW_PLATFORM_ERROR);
+        _glfwSetError(GLFW_PLATFORM_ERROR, "X11/GLX: Failed to retrieve visual for GLXFBConfig");
         return GL_FALSE;
     }
 
@@ -579,18 +574,14 @@ static int createContext(_GLFWwindow* window,
 
             if (!window->GLX.has_GLX_ARB_create_context_profile)
             {
-                fprintf(stderr, "OpenGL profile requested but GLX_ARB_create_context_profile "
-                                "is unavailable\n");
-                _glfwSetError(GLFW_VERSION_UNAVAILABLE);
+                _glfwSetError(GLFW_VERSION_UNAVAILABLE, "X11/GLX: An OpenGL profile requested but GLX_ARB_create_context_profile is unavailable");
                 return GL_FALSE;
             }
 
             if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE &&
                 !window->GLX.has_GLX_EXT_create_context_es2_profile)
             {
-                fprintf(stderr, "OpenGL ES2 profile requested but "
-                                "GLX_EXT_create_context_es2_profile is unavailable\n");
-                _glfwSetError(GLFW_VERSION_UNAVAILABLE);
+                _glfwSetError(GLFW_VERSION_UNAVAILABLE, "X11/GLX: OpenGL ES 2.x profile requested but GLX_EXT_create_context_es2_profile is unavailable");
                 return GL_FALSE;
             }
 
@@ -647,9 +638,9 @@ static int createContext(_GLFWwindow* window,
 
     if (window->GLX.context == NULL)
     {
-        fprintf(stderr, "Unable to create OpenGL context\n");
         // TODO: Handle all the various error codes here
-        _glfwSetError(GLFW_PLATFORM_ERROR);
+
+        _glfwSetError(GLFW_PLATFORM_ERROR, "X11/GLX: Failed to create OpenGL context");
         return GL_FALSE;
     }
 
@@ -790,7 +781,8 @@ static GLboolean createWindow(_GLFWwindow* window,
         if (!window->X11.handle)
         {
             // TODO: Handle all the various error codes here
-            _glfwSetError(GLFW_PLATFORM_ERROR);
+
+            _glfwSetError(GLFW_PLATFORM_ERROR, "X11/GLX: Failed to create window");
             return GL_FALSE;
         }
     }
@@ -851,7 +843,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         XWMHints* hints = XAllocWMHints();
         if (!hints)
         {
-            _glfwSetError(GLFW_OUT_OF_MEMORY);
+            _glfwSetError(GLFW_OUT_OF_MEMORY, "X11/GLX: Failed to allocate WM hints");
             return GL_FALSE;
         }
 
@@ -867,7 +859,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         XSizeHints* hints = XAllocSizeHints();
         if (!hints)
         {
-            _glfwSetError(GLFW_OUT_OF_MEMORY);
+            _glfwSetError(GLFW_OUT_OF_MEMORY, "X11/GLX: Failed to allocate size hints");
             return GL_FALSE;
         }
 

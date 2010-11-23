@@ -45,9 +45,17 @@ static int _glfwError = GLFW_NO_ERROR;
 // Sets the current error value
 //========================================================================
 
-void _glfwSetError(int error)
+void _glfwSetError(int error, const char* description)
 {
-    _glfwError = error;
+    if (_glfwLibrary.errorCallback)
+    {
+        if (!description)
+            description = glfwErrorString(error);
+
+        _glfwLibrary.errorCallback(error, description);
+    }
+    else
+        _glfwError = error;
 }
 
 
@@ -97,5 +105,23 @@ GLFWAPI const char* glfwErrorString(int error)
             // TODO: Set GLFW_INVALID_ENUM here?
             return NULL;
     }
+}
+
+
+//========================================================================
+// Sets the callback function for GLFW errors
+//========================================================================
+
+GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun)
+{
+    if (!_glfwInitialized)
+    {
+        // TODO: Uhm... Hmm...
+
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    _glfwLibrary.errorCallback = cbfun;
 }
 

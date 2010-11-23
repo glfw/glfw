@@ -392,6 +392,7 @@ typedef struct
 } GLFWgammaramp;
 
 /* Function pointer types */
+typedef void (* GLFWerrorfun)(int,const char*);
 typedef void (* GLFWwindowsizefun)(GLFWwindow,int,int);
 typedef int  (* GLFWwindowclosefun)(GLFWwindow);
 typedef void (* GLFWwindowrefreshfun)(GLFWwindow);
@@ -417,6 +418,7 @@ GLFWAPI const char* glfwGetVersionString(void);
 /* Error handling */
 GLFWAPI int glfwGetError(void);
 GLFWAPI const char* glfwErrorString(int error);
+GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
 
 /* Video mode functions */
 GLFWAPI int  glfwGetVideoModes(GLFWvidmode* list, int maxcount);

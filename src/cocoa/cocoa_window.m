@@ -475,7 +475,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     // Fail if OpenGL 3.0 or above was requested
     if (wndconfig->glMajor > 2)
     {
-        _glfwSetError(GLFW_VERSION_UNAVAILABLE);
+        _glfwSetError(GLFW_VERSION_UNAVAILABLE, "Cocoa/NSOpenGL: Mac OS X does not support OpenGL version 3.0 or above");
         return GL_FALSE;
     }
 
@@ -486,7 +486,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         _glfwLibrary.NS.delegate = [[GLFWApplicationDelegate alloc] init];
         if (_glfwLibrary.NS.delegate == nil)
         {
-            _glfwSetError(GLFW_PLATFORM_ERROR);
+            _glfwSetError(GLFW_PLATFORM_ERROR, "Cocoa/NSOpenGL: Failed to create application delegate");
             return GL_FALSE;
         }
 
@@ -496,7 +496,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     window->NS.delegate = [[GLFWWindowDelegate alloc] initWithGlfwWindow:window];
     if (window->NS.delegate == nil)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR);
+        _glfwSetError(GLFW_PLATFORM_ERROR, "Cocoa/NSOpenGL: Failed to create window delegate");
         return GL_FALSE;
     }
 
@@ -627,7 +627,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
     if (window->NSGL.pixelFormat == nil)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR);
+        _glfwSetError(GLFW_PLATFORM_ERROR, "Cocoa/NSOpenGL: Failed to create pixel format");
         return GL_FALSE;
     }
 
@@ -641,7 +641,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
                                    shareContext:share];
     if (window->NSGL.context == nil)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR);
+        _glfwSetError(GLFW_PLATFORM_ERROR, "Cocoa/NSOpenGL: Failed to create OpenGL context");
         return GL_FALSE;
     }
 

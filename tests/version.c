@@ -48,6 +48,11 @@ static void usage(void)
     printf("available profiles: core compat es2\n");
 }
 
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s in %s\n", glfwErrorString(error), description);
+}
+
 static const char* get_glfw_profile_name(int profile)
 {
     if (profile == GLFW_OPENGL_COMPAT_PROFILE)
@@ -82,10 +87,7 @@ static void list_extensions(int major, int minor)
     {
         PFNGLGETSTRINGIPROC glGetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
         if (!glGetStringi)
-        {
-            fprintf(stderr, "Failed to retrieve glGetStringi entry point: %s\n", glfwErrorString(glfwGetError()));
             exit(EXIT_FAILURE);
-        }
 
         glGetIntegerv(GL_NUM_EXTENSIONS, &count);
 
@@ -166,6 +168,8 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
+    glfwSetErrorCallback(error_callback);
+
     if (major != 1 || minor != 0)
     {
         glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, major);
@@ -186,12 +190,7 @@ int main(int argc, char** argv)
 
     window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Version", NULL);
     if (!window)
-    {
-        glfwTerminate();
-
-        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
-    }
 
     // Report GLFW version
 

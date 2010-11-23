@@ -71,12 +71,11 @@ static GLboolean initDisplay(void)
     _glfwLibrary.X11.display = XOpenDisplay(0);
     if (!_glfwLibrary.X11.display)
     {
-        fprintf(stderr, "Failed to open X display\n");
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE);
+        _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "X11/GLX: Failed to open X display");
         return GL_FALSE;
     }
 
-    // As the API currently doesn't understand multiple display devices, we hardcode
+    // As the API currently doesn't understand multiple display devices, we hard-code
     // this choice and hope for the best
     _glfwLibrary.X11.screen = DefaultScreen(_glfwLibrary.X11.display);
     _glfwLibrary.X11.root = RootWindow(_glfwLibrary.X11.display,
@@ -99,11 +98,15 @@ static GLboolean initDisplay(void)
                           &_glfwLibrary.X11.RandR.eventBase,
                           &_glfwLibrary.X11.RandR.errorBase);
 
-    if (!XRRQueryVersion(_glfwLibrary.X11.display,
-                        &_glfwLibrary.X11.RandR.majorVersion,
-                        &_glfwLibrary.X11.RandR.minorVersion))
+    if (_glfwLibrary.X11.RandR.available)
     {
-        fprintf(stderr, "Unable to query RandR version number\n");
+        if (!XRRQueryVersion(_glfwLibrary.X11.display,
+                             &_glfwLibrary.X11.RandR.majorVersion,
+                             &_glfwLibrary.X11.RandR.minorVersion))
+        {
+            _glfwSetError(GLFW_PLATFORM_ERROR, "X11/GLX: Failed to query RandR version");
+            return GL_FALSE;
+        }
     }
 #else
     _glfwLibrary.X11.RandR.available = GL_FALSE;
@@ -112,8 +115,7 @@ static GLboolean initDisplay(void)
     // Check if GLX is supported on this display
     if (!glXQueryExtension(_glfwLibrary.X11.display, NULL, NULL))
     {
-        fprintf(stderr, "GLX not supported\n");
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE);
+        _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "X11/GLX: GLX supported not found");
         return GL_FALSE;
     }
 
@@ -121,8 +123,7 @@ static GLboolean initDisplay(void)
                          &_glfwLibrary.X11.glxMajor,
                          &_glfwLibrary.X11.glxMinor))
     {
-        fprintf(stderr, "Unable to query GLX version\n");
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE);
+        _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "X11/GLX: Failed to query GLX version");
         return GL_FALSE;
     }
 

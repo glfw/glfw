@@ -48,7 +48,7 @@ GLFWAPI void glfwSetGammaFormula(float gamma, float blacklevel, float gain)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED);
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
@@ -89,7 +89,7 @@ GLFWAPI void glfwGetGammaRamp(GLFWgammaramp* ramp)
 {
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED);
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
@@ -105,7 +105,7 @@ GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp)
 {
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED);
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 

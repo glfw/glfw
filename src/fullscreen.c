@@ -106,7 +106,7 @@ GLFWAPI int glfwGetVideoModes(GLFWvidmode* list, int maxcount)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED);
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return 0;
     }
 
@@ -132,13 +132,13 @@ GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode)
 {
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED);
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
     if (mode == NULL)
     {
-        _glfwSetError(GLFW_INVALID_VALUE);
+        _glfwSetError(GLFW_INVALID_VALUE, "glfwGetDesktopMode: Parameter 'mode' cannot be NULL");
         return;
     }
 

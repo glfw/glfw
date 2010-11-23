@@ -139,14 +139,14 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED);
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return GL_FALSE;
     }
 
     window = _glfwLibrary.currentWindow;
     if (!window)
     {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW);
+        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
         return GL_FALSE;
     }
 
@@ -199,13 +199,13 @@ GLFWAPI void* glfwGetProcAddress(const char* procname)
 {
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED);
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return NULL;
     }
 
     if (!_glfwLibrary.currentWindow)
     {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW);
+        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
         return NULL;
     }
 
@@ -223,14 +223,14 @@ GLFWAPI void glfwGetGLVersion(int* major, int* minor, int* rev)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED);
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
     window = _glfwLibrary.currentWindow;
     if (!window)
     {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW);
+        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
         return;
     }
 

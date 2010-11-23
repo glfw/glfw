@@ -115,10 +115,17 @@ if (UNIX AND APPLE)
     # Define the platform identifier
     set(_GLFW_COCOA_NSGL 1)
 
+    option(GLFW_BUILD_UNIVERSAL "Build the GLFW library and examples as Universal Binaries" FALSE)
+
     # Universal build, decent set of warning flags...
-    set(CMAKE_OSX_ARCHITECTURES ppc;i386;ppc64;x86_64)
-    set(CMAKE_OSX_SYSROOT /Developer/SDKs/MacOSX10.5.sdk)
-    set(CMAKE_C_FLAGS "-mmacosx-version-min=10.5 -Wall -Wextra -Wno-unused-parameter -Werror") 
+    if (GLFW_BUILD_UNIVERSAL)
+        message(STATUS "Building GLFW as Universal Binaries")
+        set(CMAKE_OSX_ARCHITECTURES ppc;i386;ppc64;x86_64)
+        set(CMAKE_OSX_SYSROOT /Developer/SDKs/MacOSX10.5.sdk)
+        set(CMAKE_C_FLAGS "-mmacosx-version-min=10.5 -Wall -Wextra -Wno-unused-parameter -Werror") 
+    else(GLFW_BUILD_UNIVERSAL)
+        message(STATUS "Building GLFW only for the native architecture")
+    endif(GLFW_BUILD_UNIVERSAL)
     
     # Set up library and include paths
     find_library(COCOA_FRAMEWORK Cocoa)

@@ -458,6 +458,11 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         result[*found].auxBuffers = getFBConfigAttrib(window, fbconfigs[i], GLX_AUX_BUFFERS);
         result[*found].stereo = getFBConfigAttrib(window, fbconfigs[i], GLX_STEREO);
 
+        if (window->GLX.has_GLX_EXT_framebuffer_sRGB || window->GLX.has_GLX_ARB_framebuffer_sRGB)
+            result[*found].sRGB = getFBConfigAttrib(window, fbconfigs[i], GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB);
+        else
+            result[*found].sRGB = GL_FALSE;
+
         if (window->GLX.has_GLX_ARB_multisample)
             result[*found].samples = getFBConfigAttrib(window, fbconfigs[i], GLX_SAMPLES);
         else
@@ -701,6 +706,12 @@ static void initGLXExtensions(_GLFWwindow* window)
 
     if (_glfwPlatformExtensionSupported("GLX_ARB_multisample"))
         window->GLX.has_GLX_ARB_multisample = GL_TRUE;
+
+    if (_glfwPlatformExtensionSupported("GLX_EXT_framebuffer_sRGB"))
+        window->GLX.has_GLX_EXT_framebuffer_sRGB = GL_TRUE;
+
+    if (_glfwPlatformExtensionSupported("GLX_ARB_framebuffer_sRGB"))
+        window->GLX.has_GLX_ARB_framebuffer_sRGB = GL_TRUE;
 
     if (_glfwPlatformExtensionSupported("GLX_ARB_create_context"))
     {

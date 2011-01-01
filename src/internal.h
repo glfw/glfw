@@ -94,6 +94,7 @@ struct _GLFWhints
     GLboolean   stereo;
     GLboolean   windowNoResize;
     int         samples;
+    GLboolean   sRGB;
     int         glMajor;
     int         glMinor;
     GLboolean   glForward;
@@ -145,6 +146,7 @@ struct _GLFWfbconfig
     int         auxBuffers;
     GLboolean   stereo;
     int         samples;
+    GLboolean   sRGB;
     GLFWintptr  platformID;
 };
 
@@ -190,6 +192,7 @@ struct _GLFWwindow
     int       auxBuffers;
     GLboolean stereo;
     int       samples;
+    GLboolean sRGB;
 
     // OpenGL extensions and context attributes
     GLboolean accelerated;     // GL_TRUE if OpenGL context is "accelerated"

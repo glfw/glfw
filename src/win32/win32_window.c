@@ -251,11 +251,6 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
             }
             else
                 result[*found].samples = 0;
-
-            if (window->WGL.has_WGL_EXT_framebuffer_sRGB || window->WGL.has_WGL_ARB_framebuffer_sRGB)
-                result[*found].sRGB = getPixelFormatAttrib(window, i, WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB);
-            else
-                result[*found].sRGB = GL_FALSE;
         }
         else
         {
@@ -299,9 +294,8 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
             result[*found].auxBuffers = pfd.cAuxBuffers;
             result[*found].stereo = (pfd.dwFlags & PFD_STEREO) ? GL_TRUE : GL_FALSE;
 
-            // PFD pixel formats do not support FSAA or sRGB
+            // PFD pixel formats do not support FSAA
             result[*found].samples = 0;
-            result[*found].sRGB = GL_FALSE;
         }
 
         result[*found].platformID = i;
@@ -1030,8 +1024,6 @@ static void initWGLExtensions(_GLFWwindow* window)
     window->WGL.has_WGL_EXT_swap_control = GL_FALSE;
     window->WGL.has_WGL_ARB_pixel_format = GL_FALSE;
     window->WGL.has_WGL_ARB_multisample = GL_FALSE;
-    window->WGL.has_WGL_EXT_framebuffer_sRGB = GL_FALSE;
-    window->WGL.has_WGL_ARB_framebuffer_sRGB = GL_FALSE;
     window->WGL.has_WGL_ARB_create_context = GL_FALSE;
     window->WGL.has_WGL_ARB_create_context_profile = GL_FALSE;
 
@@ -1047,12 +1039,6 @@ static void initWGLExtensions(_GLFWwindow* window)
 
     if (_glfwPlatformExtensionSupported("WGL_ARB_multisample"))
         window->WGL.has_WGL_ARB_multisample = GL_TRUE;
-
-    if (_glfwPlatformExtensionSupported("WGL_EXT_framebuffer_sRGB"))
-        window->WGL.has_WGL_EXT_framebuffer_sRGB = GL_TRUE;
-
-    if (_glfwPlatformExtensionSupported("WGL_ARB_framebuffer_sRGB"))
-        window->WGL.has_WGL_ARB_framebuffer_sRGB = GL_TRUE;
 
     if (_glfwPlatformExtensionSupported("WGL_ARB_create_context"))
     {

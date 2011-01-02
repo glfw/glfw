@@ -38,6 +38,7 @@
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
 
+#define GLX_GLXEXT_LEGACY
 #include <GL/glx.h>
 
 #include "../../include/GL/glxext.h"

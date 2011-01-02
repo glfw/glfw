@@ -46,8 +46,59 @@ static const char* get_key_name(int key)
 {
     switch (key)
     {
-        case GLFW_KEY_UNKNOWN:      return "unknown";
+        // Printable keys
+        case GLFW_KEY_A:            return "a";
+        case GLFW_KEY_B:            return "b";
+        case GLFW_KEY_C:            return "c";
+        case GLFW_KEY_D:            return "d";
+        case GLFW_KEY_E:            return "e";
+        case GLFW_KEY_F:            return "f";
+        case GLFW_KEY_G:            return "g";
+        case GLFW_KEY_H:            return "h";
+        case GLFW_KEY_I:            return "i";
+        case GLFW_KEY_J:            return "j";
+        case GLFW_KEY_K:            return "k";
+        case GLFW_KEY_L:            return "l";
+        case GLFW_KEY_M:            return "m";
+        case GLFW_KEY_N:            return "n";
+        case GLFW_KEY_O:            return "o";
+        case GLFW_KEY_P:            return "p";
+        case GLFW_KEY_Q:            return "q";
+        case GLFW_KEY_R:            return "r";
+        case GLFW_KEY_S:            return "s";
+        case GLFW_KEY_T:            return "t";
+        case GLFW_KEY_U:            return "u";
+        case GLFW_KEY_V:            return "v";
+        case GLFW_KEY_W:            return "w";
+        case GLFW_KEY_X:            return "x";
+        case GLFW_KEY_Y:            return "y";
+        case GLFW_KEY_Z:            return "z";
+        case GLFW_KEY_1:            return "1";
+        case GLFW_KEY_2:            return "2";
+        case GLFW_KEY_3:            return "3";
+        case GLFW_KEY_4:            return "4";
+        case GLFW_KEY_5:            return "5";
+        case GLFW_KEY_6:            return "6";
+        case GLFW_KEY_7:            return "7";
+        case GLFW_KEY_8:            return "8";
+        case GLFW_KEY_9:            return "9";
+        case GLFW_KEY_0:            return "0";
         case GLFW_KEY_SPACE:        return "space";
+        case GLFW_KEY_MINUS:        return "-";
+        case GLFW_KEY_EQUAL:        return "=";
+        case GLFW_KEY_LEFT_SQUARE_BRACKET: return "[";
+        case GLFW_KEY_RIGHT_SQUARE_BRACKET: return "]";
+        case GLFW_KEY_BACKSLASH:    return "\\";
+        case GLFW_KEY_SEMICOLON:    return ";";
+        case GLFW_KEY_APOSTROPHE:   return "'";
+        case GLFW_KEY_GRAVE_ACCENT: return "`";
+        case GLFW_KEY_COMMA:        return ",";
+        case GLFW_KEY_PERIOD:       return ".";
+        case GLFW_KEY_SLASH:        return "/";
+        case GLFW_KEY_WORLD_1:      return "world 1";
+        case GLFW_KEY_WORLD_2:      return "world 2";
+
+        // Special keys
         case GLFW_KEY_ESC:          return "escape";
         case GLFW_KEY_F1:           return "F1";
         case GLFW_KEY_F2:           return "F2";
@@ -78,19 +129,19 @@ static const char* get_key_name(int key)
         case GLFW_KEY_DOWN:         return "down";
         case GLFW_KEY_LEFT:         return "left";
         case GLFW_KEY_RIGHT:        return "right";
-        case GLFW_KEY_LSHIFT:       return "left shift";
-        case GLFW_KEY_RSHIFT:       return "right shift";
-        case GLFW_KEY_LCTRL:        return "left control";
-        case GLFW_KEY_RCTRL:        return "right control";
-        case GLFW_KEY_LALT:         return "left alt";
-        case GLFW_KEY_RALT:         return "right alt";
+        case GLFW_KEY_LEFT_SHIFT:   return "left shift";
+        case GLFW_KEY_RIGHT_SHIFT:  return "right shift";
+        case GLFW_KEY_LEFT_CONTROL: return "left control";
+        case GLFW_KEY_RIGHT_CONTROL: return "right control";
+        case GLFW_KEY_LEFT_ALT:     return "left alt";
+        case GLFW_KEY_RIGHT_ALT:    return "right alt";
         case GLFW_KEY_TAB:          return "tab";
         case GLFW_KEY_ENTER:        return "enter";
         case GLFW_KEY_BACKSPACE:    return "backspace";
         case GLFW_KEY_INSERT:       return "insert";
-        case GLFW_KEY_DEL:          return "delete";
-        case GLFW_KEY_PAGEUP:       return "page up";
-        case GLFW_KEY_PAGEDOWN:     return "page down";
+        case GLFW_KEY_DELETE:       return "delete";
+        case GLFW_KEY_PAGE_UP:      return "page up";
+        case GLFW_KEY_PAGE_DOWN:    return "page down";
         case GLFW_KEY_HOME:         return "home";
         case GLFW_KEY_END:          return "end";
         case GLFW_KEY_KP_0:         return "keypad 0";
@@ -110,12 +161,12 @@ static const char* get_key_name(int key)
         case GLFW_KEY_KP_DECIMAL:   return "keypad decimal";
         case GLFW_KEY_KP_EQUAL:     return "keypad equal";
         case GLFW_KEY_KP_ENTER:     return "keypad enter";
-        case GLFW_KEY_KP_NUM_LOCK:  return "keypad num lock";
+        case GLFW_KEY_NUM_LOCK:     return "num lock";
         case GLFW_KEY_CAPS_LOCK:    return "caps lock";
         case GLFW_KEY_SCROLL_LOCK:  return "scroll lock";
         case GLFW_KEY_PAUSE:        return "pause";
-        case GLFW_KEY_LSUPER:       return "left super";
-        case GLFW_KEY_RSUPER:       return "right super";
+        case GLFW_KEY_LEFT_SUPER:   return "left super";
+        case GLFW_KEY_RIGHT_SUPER:  return "right super";
         case GLFW_KEY_MENU:         return "menu";
     }
 
@@ -231,8 +282,6 @@ static void key_callback(GLFWwindow window, int key, int action)
 
     if (name)
         printf(" (%s) was %s\n", name, get_action_name(action));
-    else if (isgraph(key))
-        printf(" (%c) was %s\n", key, get_action_name(action));
     else
         printf(" was %s\n", get_action_name(action));
 
@@ -241,7 +290,7 @@ static void key_callback(GLFWwindow window, int key, int action)
 
     switch (key)
     {
-        case 'R':
+        case GLFW_KEY_R:
         {
             keyrepeat = !keyrepeat;
             if (keyrepeat)
@@ -253,7 +302,7 @@ static void key_callback(GLFWwindow window, int key, int action)
             break;
         }
 
-        case 'S':
+        case GLFW_KEY_S:
         {
             systemkeys = !systemkeys;
             if (systemkeys)

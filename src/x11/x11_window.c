@@ -386,8 +386,8 @@ static int translateKey(int keycode)
         case XK_space:          return GLFW_KEY_SPACE;
         case XK_minus:          return GLFW_KEY_MINUS;
         case XK_equal:          return GLFW_KEY_EQUAL;
-        case XK_bracketleft:    return GLFW_KEY_LEFT_SQUARE_BRACKET;
-        case XK_bracketright:   return GLFW_KEY_RIGHT_SQUARE_BRACKET;
+        case XK_bracketleft:    return GLFW_KEY_LEFT_BRACKET;
+        case XK_bracketright:   return GLFW_KEY_RIGHT_BRACKET;
         case XK_backslash:      return GLFW_KEY_BACKSLASH;
         case XK_semicolon:      return GLFW_KEY_SEMICOLON;
         case XK_apostrophe:     return GLFW_KEY_APOSTROPHE;

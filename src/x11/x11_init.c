@@ -128,8 +128,8 @@ static void updateKeyCodeLUT(void)
         else if (strcmp(name, "AD08") == 0) keyCodeGLFW = GLFW_KEY_I;
         else if (strcmp(name, "AD09") == 0) keyCodeGLFW = GLFW_KEY_O;
         else if (strcmp(name, "AD10") == 0) keyCodeGLFW = GLFW_KEY_P;
-        else if (strcmp(name, "AD11") == 0) keyCodeGLFW = GLFW_KEY_LEFT_SQUARE_BRACKET;
-        else if (strcmp(name, "AD12") == 0) keyCodeGLFW = GLFW_KEY_RIGHT_SQUARE_BRACKET;
+        else if (strcmp(name, "AD11") == 0) keyCodeGLFW = GLFW_KEY_LEFT_BRACKET;
+        else if (strcmp(name, "AD12") == 0) keyCodeGLFW = GLFW_KEY_RIGHT_BRACKET;
         else if (strcmp(name, "AC01") == 0) keyCodeGLFW = GLFW_KEY_A;
         else if (strcmp(name, "AC02") == 0) keyCodeGLFW = GLFW_KEY_S;
         else if (strcmp(name, "AC03") == 0) keyCodeGLFW = GLFW_KEY_D;

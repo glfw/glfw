@@ -245,9 +245,9 @@ extern "C" {
 #define GLFW_KEY_X                      88
 #define GLFW_KEY_Y                      89
 #define GLFW_KEY_Z                      90
-#define GLFW_KEY_LEFT_SQUARE_BRACKET    91  /* [ */
+#define GLFW_KEY_LEFT_BRACKET           91  /* [ */
 #define GLFW_KEY_BACKSLASH              92  /* \ */
-#define GLFW_KEY_RIGHT_SQUARE_BRACKET   93  /* ] */
+#define GLFW_KEY_RIGHT_BRACKET          93  /* ] */
 #define GLFW_KEY_GRAVE_ACCENT           96  /* ` */
 #define GLFW_KEY_WORLD_1                161 /* non-US #1 */
 #define GLFW_KEY_WORLD_2                162 /* non-US #2 */

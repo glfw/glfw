@@ -220,13 +220,13 @@ void key( GLFWwindow window, int k, int action )
   if( action != GLFW_PRESS ) return;
 
   switch (k) {
-  case 'Z':
-    if( glfwGetKey( window, GLFW_KEY_LSHIFT ) )
+  case GLFW_KEY_Z:
+    if( glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) )
       view_rotz -= 5.0;
     else
       view_rotz += 5.0;
     break;
-  case GLFW_KEY_ESC:
+  case GLFW_KEY_ESCAPE:
     running = 0;
     break;
   case GLFW_KEY_UP:

@@ -54,7 +54,7 @@ static void key_callback(GLFWwindow window, int key, int action)
         case GLFW_KEY_SPACE:
             glfwIconifyWindow(window);
             break;
-        case GLFW_KEY_ESC:
+        case GLFW_KEY_ESCAPE:
             glfwCloseWindow(window);
             break;
     }

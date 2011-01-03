@@ -99,7 +99,7 @@ static const char* get_key_name(int key)
         case GLFW_KEY_WORLD_2:      return "WORLD 2";
 
         // Function keys
-        case GLFW_KEY_ESC:          return "ESCAPE";
+        case GLFW_KEY_ESCAPE:       return "ESCAPE";
         case GLFW_KEY_F1:           return "F1";
         case GLFW_KEY_F2:           return "F2";
         case GLFW_KEY_F3:           return "F3";

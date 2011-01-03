@@ -37,7 +37,7 @@
 
 static void key_callback(GLFWwindow window, int key, int action)
 {
-    if (action == GLFW_PRESS && key == GLFW_KEY_ESC)
+    if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
         glfwCloseWindow(window);
 }
 

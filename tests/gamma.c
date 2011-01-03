@@ -51,35 +51,35 @@ static void key_callback(GLFWwindow window, int key, int action)
 
     switch (key)
     {
-        case GLFW_KEY_ESC:
+        case GLFW_KEY_ESCAPE:
             glfwCloseWindow(window);
             break;
-        case 'Q':
+        case GLFW_KEY_Q:
             ggamma += 0.1f;
             printf("Gamma: %f\n", ggamma);
             glfwSetGammaFormula( ggamma, gblacklevel, ggain );
             break;
-        case 'W':
+        case GLFW_KEY_W:
             ggamma -= 0.1f;
             printf("Gamma: %f\n", ggamma);
             glfwSetGammaFormula( ggamma, gblacklevel, ggain );
             break;
-        case 'A':
+        case GLFW_KEY_A:
             ggain += 0.1f;
             printf("Gain: %f\n", ggain);
             glfwSetGammaFormula( ggamma, gblacklevel, ggain );
             break;
-        case 'S':
+        case GLFW_KEY_S:
             ggain -= 0.1f;
             printf("Gain: %f\n", ggain);
             glfwSetGammaFormula( ggamma, gblacklevel, ggain );
             break;
-        case 'Z':
+        case GLFW_KEY_Z:
             gblacklevel += 0.1f;
             printf("Black Level: %f\n", gblacklevel);
             glfwSetGammaFormula( ggamma, gblacklevel, ggain );
             break;
-        case 'X':
+        case GLFW_KEY_X:
             gblacklevel -= 0.1f;
             printf("Black Level: %f\n", gblacklevel);
             glfwSetGammaFormula( ggamma, gblacklevel, ggain );

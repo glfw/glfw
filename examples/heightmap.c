@@ -497,7 +497,7 @@ static void key_callback(GLFWwindow window, int key, int action)
 {
     switch(key)
     {
-        case GLFW_KEY_ESC:
+        case GLFW_KEY_ESCAPE:
             /* Exit program on Escape */
             running = GL_FALSE;
             break;

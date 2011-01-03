@@ -49,7 +49,7 @@ static void window_key_callback(GLFWwindow window, int key, int action)
 
     switch (key)
     {
-        case GLFW_KEY_ESC:
+        case GLFW_KEY_ESCAPE:
         {
             printf("%0.3f: User pressed Escape\n", glfwGetTime());
             running = GL_FALSE;

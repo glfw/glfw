@@ -335,7 +335,7 @@ static int translateKey(int keycode)
     // a positive result if we have the Xkb extension.
     if ((keycode >= 0) && (keycode < 256))
     {
-        int result = _glfwLibrary.X11.Xkb.keyCodeLUT[keycode];
+        int result = _glfwLibrary.X11.keyCodeLUT[keycode];
         if (result >= 0)
         {
             return result;

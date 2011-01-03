@@ -68,16 +68,20 @@ static void initLibraries(void)
 
 static void updateKeyCodeLUT(void)
 {
-    int i, keyCode, keyCodeGLFW;
+#if defined(_GLFW_HAS_XKB)
+    int keyCode, keyCodeGLFW;
     char name[XkbKeyNameLength+1];
     XkbDescPtr descr;
+#endif
+    int i;
 
     // Clear the LUT
     for (i = 0; i < 256; ++i)
     {
-        _glfwLibrary.X11.Xkb.keyCodeLUT[i] = -1;
+        _glfwLibrary.X11.keyCodeLUT[i] = -1;
     }
 
+#if defined(_GLFW_HAS_XKB)
     // This functionality requires the Xkb extension
     if (!_glfwLibrary.X11.Xkb.available)
     {
@@ -154,12 +158,13 @@ static void updateKeyCodeLUT(void)
         // Update the key code LUT
         if ((keyCode >= 0) && (keyCode < 256))
         {
-            _glfwLibrary.X11.Xkb.keyCodeLUT[keyCode] = keyCodeGLFW;
+            _glfwLibrary.X11.keyCodeLUT[keyCode] = keyCodeGLFW;
         }
     }
 
     // Free the keyboard description
     XkbFreeKeyboard(descr, 0, True);
+#endif /* _GLFW_HAS_XKB */
 }
 
 
@@ -228,6 +233,7 @@ static GLboolean initDisplay(void)
     }
 
     // Check if Xkb is supported on this display
+#if defined(_GLFW_HAS_XKB)
     _glfwLibrary.X11.Xkb.majorVersion = 1;
     _glfwLibrary.X11.Xkb.minorVersion = 0;
     _glfwLibrary.X11.Xkb.available =
@@ -237,6 +243,9 @@ static GLboolean initDisplay(void)
                           &_glfwLibrary.X11.Xkb.errorBase,
                           &_glfwLibrary.X11.Xkb.majorVersion,
                           &_glfwLibrary.X11.Xkb.minorVersion);
+#else
+    _glfwLibrary.X11.Xkb.available = GL_FALSE;
+#endif /* _GLFW_HAS_XKB */
 
     // Update the key code LUT
     // FIXME: We should listen to XkbMapNotify events to track changes to

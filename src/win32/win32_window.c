@@ -489,7 +489,7 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
         {
             // Is this an extended key (i.e. right key)?
             if (lParam & 0x01000000)
-                return GLFW_KEY_RIGHT_CTRL;
+                return GLFW_KEY_RIGHT_CONTROL;
 
             // Here is a trick: "Alt Gr" sends LCTRL, then RALT. We only
             // want the RALT message, so we try to see if the next message
@@ -511,7 +511,7 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
                 }
             }
 
-            return GLFW_KEY_LEFT_CTRL;
+            return GLFW_KEY_LEFT_CONTROL;
         }
 
         // The ALT keys require special handling
@@ -1798,11 +1798,11 @@ void _glfwPlatformPollEvents(void)
 
         // See if this differs from our belief of what has happened
         // (we only have to check for lost key up events)
-        if (!lshift_down && window->key[GLFW_KEY_LSHIFT] == 1)
-            _glfwInputKey(window, GLFW_KEY_LSHIFT, GLFW_RELEASE);
+        if (!lshift_down && window->key[GLFW_KEY_LEFT_SHIFT] == 1)
+            _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, GLFW_RELEASE);
 
-        if (!rshift_down && window->key[GLFW_KEY_RSHIFT] == 1)
-            _glfwInputKey(window, GLFW_KEY_RSHIFT, GLFW_RELEASE);
+        if (!rshift_down && window->key[GLFW_KEY_RIGHT_SHIFT] == 1)
+            _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, GLFW_RELEASE);
     }
 
     // Did we have mouse movement in locked cursor mode?

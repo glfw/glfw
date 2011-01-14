@@ -64,6 +64,10 @@
  #include <dlfcn.h>
 #endif
 
+// The Xkb extension provides improved keyboard support
+#if defined(_GLFW_HAS_XKB)
+ #include <X11/XKBlib.h>
+#endif
 
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowX11 X11
 #define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryX11 X11
@@ -160,6 +164,18 @@ typedef struct _GLFWlibraryX11
         int         minorVersion;
         GLboolean   gammaBroken;
     } RandR;
+
+    struct {
+        GLboolean   available;
+        int         majorOpcode;
+        int         eventBase;
+        int         errorBase;
+        int         majorVersion;
+        int         minorVersion;
+    } Xkb;
+
+    // Key code LUT (mapping X11 key codes to GLFW key codes)
+    int         keyCodeLUT[256];
 
     // Screensaver data
     struct {

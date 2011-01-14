@@ -266,7 +266,7 @@ void key_callback(GLFWwindow window, int key, int action)
 
     switch (key)
     {
-        case GLFW_KEY_ESC:
+        case GLFW_KEY_ESCAPE:
             running = 0;
             break;
         case GLFW_KEY_SPACE:
@@ -284,12 +284,12 @@ void key_callback(GLFWwindow window, int key, int action)
         case GLFW_KEY_DOWN:
             beta += 5;
             break;
-        case GLFW_KEY_PAGEUP:
+        case GLFW_KEY_PAGE_UP:
             zoom -= 0.25f;
             if (zoom < 0.f)
                 zoom = 0.f;
             break;
-        case GLFW_KEY_PAGEDOWN:
+        case GLFW_KEY_PAGE_DOWN:
             zoom += 0.25f;
             break;
         default:

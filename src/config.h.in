@@ -47,6 +47,9 @@
 // Define this to 1 if Xf86VidMode is available
 #cmakedefine _GLFW_HAS_XF86VIDMODE 1
 
+// Define this to 1 if Xkb is available
+#cmakedefine _GLFW_HAS_XKB         1
+
 // Define this to 1 if glXGetProcAddress is available
 #cmakedefine _GLFW_HAS_GLXGETPROCADDRESS    1
 // Define this to 1 if glXGetProcAddressARB is available

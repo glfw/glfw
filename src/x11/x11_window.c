@@ -35,6 +35,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB
+    #define GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB 0x20B2
+#endif
+#ifndef GLX_CONTEXT_ES2_PROFILE_BIT_EXT
+    #define GLX_CONTEXT_ES2_PROFILE_BIT_EXT 0x00000004
+#endif
 
 // Action for EWMH client messages
 #define _NET_WM_STATE_REMOVE        0
@@ -213,123 +219,14 @@ static GLboolean checkForEWMH(_GLFWwindow* window)
 
 static int translateKey(int keycode)
 {
-    KeySym key, key_lc, key_uc;
-
-    // Try secondary keysym, for numeric keypad keys
-    // Note: This way we always force "NumLock = ON", which at least
-    // enables GLFW users to detect numeric keypad keys
-    key = XKeycodeToKeysym(_glfwLibrary.X11.display, keycode, 1);
-    switch (key)
+    // Use the pre-filled LUT (see updateKeyCodeLUT() ).
+    if ((keycode >= 0) && (keycode < 256))
     {
-        // Numeric keypad
-        case XK_KP_0:         return GLFW_KEY_KP_0;
-        case XK_KP_1:         return GLFW_KEY_KP_1;
-        case XK_KP_2:         return GLFW_KEY_KP_2;
-        case XK_KP_3:         return GLFW_KEY_KP_3;
-        case XK_KP_4:         return GLFW_KEY_KP_4;
-        case XK_KP_5:         return GLFW_KEY_KP_5;
-        case XK_KP_6:         return GLFW_KEY_KP_6;
-        case XK_KP_7:         return GLFW_KEY_KP_7;
-        case XK_KP_8:         return GLFW_KEY_KP_8;
-        case XK_KP_9:         return GLFW_KEY_KP_9;
-        case XK_KP_Separator:
-        case XK_KP_Decimal:   return GLFW_KEY_KP_DECIMAL;
-        case XK_KP_Equal:     return GLFW_KEY_KP_EQUAL;
-        case XK_KP_Enter:     return GLFW_KEY_KP_ENTER;
-        default:              break;
+        return _glfwLibrary.X11.keyCodeLUT[keycode];
     }
-
-    // Now try pimary keysym
-    key = XKeycodeToKeysym(_glfwLibrary.X11.display, keycode, 0);
-    switch (key)
+    else
     {
-        // Special keys (non character keys)
-        case XK_Escape:       return GLFW_KEY_ESC;
-        case XK_Tab:          return GLFW_KEY_TAB;
-        case XK_Shift_L:      return GLFW_KEY_LSHIFT;
-        case XK_Shift_R:      return GLFW_KEY_RSHIFT;
-        case XK_Control_L:    return GLFW_KEY_LCTRL;
-        case XK_Control_R:    return GLFW_KEY_RCTRL;
-        case XK_Meta_L:
-        case XK_Alt_L:        return GLFW_KEY_LALT;
-        case XK_Mode_switch:  // Mapped to Alt_R on many keyboards
-        case XK_Meta_R:
-        case XK_ISO_Level3_Shift: // AltGr on at least some machines
-        case XK_Alt_R:        return GLFW_KEY_RALT;
-        case XK_Super_L:      return GLFW_KEY_LSUPER;
-        case XK_Super_R:      return GLFW_KEY_RSUPER;
-        case XK_Menu:         return GLFW_KEY_MENU;
-        case XK_Num_Lock:     return GLFW_KEY_KP_NUM_LOCK;
-        case XK_Caps_Lock:    return GLFW_KEY_CAPS_LOCK;
-        case XK_Scroll_Lock:  return GLFW_KEY_SCROLL_LOCK;
-        case XK_Pause:        return GLFW_KEY_PAUSE;
-        case XK_KP_Delete:
-        case XK_Delete:       return GLFW_KEY_DEL;
-        case XK_BackSpace:    return GLFW_KEY_BACKSPACE;
-        case XK_Return:       return GLFW_KEY_ENTER;
-        case XK_KP_Home:
-        case XK_Home:         return GLFW_KEY_HOME;
-        case XK_KP_End:
-        case XK_End:          return GLFW_KEY_END;
-        case XK_KP_Page_Up:
-        case XK_Page_Up:      return GLFW_KEY_PAGEUP;
-        case XK_KP_Page_Down:
-        case XK_Page_Down:    return GLFW_KEY_PAGEDOWN;
-        case XK_KP_Insert:
-        case XK_Insert:       return GLFW_KEY_INSERT;
-        case XK_KP_Left:
-        case XK_Left:         return GLFW_KEY_LEFT;
-        case XK_KP_Right:
-        case XK_Right:        return GLFW_KEY_RIGHT;
-        case XK_KP_Down:
-        case XK_Down:         return GLFW_KEY_DOWN;
-        case XK_KP_Up:
-        case XK_Up:           return GLFW_KEY_UP;
-        case XK_F1:           return GLFW_KEY_F1;
-        case XK_F2:           return GLFW_KEY_F2;
-        case XK_F3:           return GLFW_KEY_F3;
-        case XK_F4:           return GLFW_KEY_F4;
-        case XK_F5:           return GLFW_KEY_F5;
-        case XK_F6:           return GLFW_KEY_F6;
-        case XK_F7:           return GLFW_KEY_F7;
-        case XK_F8:           return GLFW_KEY_F8;
-        case XK_F9:           return GLFW_KEY_F9;
-        case XK_F10:          return GLFW_KEY_F10;
-        case XK_F11:          return GLFW_KEY_F11;
-        case XK_F12:          return GLFW_KEY_F12;
-        case XK_F13:          return GLFW_KEY_F13;
-        case XK_F14:          return GLFW_KEY_F14;
-        case XK_F15:          return GLFW_KEY_F15;
-        case XK_F16:          return GLFW_KEY_F16;
-        case XK_F17:          return GLFW_KEY_F17;
-        case XK_F18:          return GLFW_KEY_F18;
-        case XK_F19:          return GLFW_KEY_F19;
-        case XK_F20:          return GLFW_KEY_F20;
-        case XK_F21:          return GLFW_KEY_F21;
-        case XK_F22:          return GLFW_KEY_F22;
-        case XK_F23:          return GLFW_KEY_F23;
-        case XK_F24:          return GLFW_KEY_F24;
-        case XK_F25:          return GLFW_KEY_F25;
-
-        // Numeric keypad (should have been detected in secondary keysym!)
-        case XK_KP_Divide:    return GLFW_KEY_KP_DIVIDE;
-        case XK_KP_Multiply:  return GLFW_KEY_KP_MULTIPLY;
-        case XK_KP_Subtract:  return GLFW_KEY_KP_SUBTRACT;
-        case XK_KP_Add:       return GLFW_KEY_KP_ADD;
-        case XK_KP_Equal:     return GLFW_KEY_KP_EQUAL;
-        case XK_KP_Enter:     return GLFW_KEY_KP_ENTER;
-
-        // The rest (should be printable keys)
-        default:
-            // Make uppercase
-            XConvertCase(key, &key_lc, &key_uc);
-            key = key_uc;
-
-            // Valid ISO 8859-1 character?
-            if ((key >=  32 && key <= 126) || (key >= 160 && key <= 255))
-                return (int) key;
-
-            return GLFW_KEY_UNKNOWN;
+        return -1;
     }
 }
 

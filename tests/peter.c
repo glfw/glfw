@@ -67,7 +67,7 @@ static void key_callback(GLFWwindow window, int key, int action)
             break;
         }
 
-        case 'R':
+        case GLFW_KEY_R:
         {
             if (action == GLFW_PRESS)
             {

@@ -80,6 +80,10 @@ if (UNIX AND NOT APPLE AND NOT CYGWIN)
         list(APPEND GLFW_LIBRARIES ${X11_XF86VIDMODE_LIBRARIES})
     endif(X11_XF86VIDMODE_FOUND) 
 
+    # Check for Xkb (X keyboard extension)
+    CHECK_FUNCTION_EXISTS(XkbQueryExtension _GLFW_HAS_XKB)
+
+    # Check for glXGetProcAddress
     CHECK_FUNCTION_EXISTS(glXGetProcAddress _GLFW_HAS_GLXGETPROCADDRESS)
 
     if (NOT _GLFW_HAS_GLXGETPROCADDRESS)

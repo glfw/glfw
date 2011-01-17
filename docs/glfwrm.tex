@@ -1212,28 +1212,53 @@ differently on different systems. Do not make any assumptions about when or why
 \begin{center}
 \begin{tabular}{|l|l|} \hline \raggedright
 \textbf{Name}             & \textbf{Description} \\ \hline
+GLFW\_KEY\_\textit{X}     & Letter (\textit{X} can be in the range A..Z)\\ \hline
+GLFW\_KEY\_\textit{n}     & Number (\textit{n} can be in the range 0..9)\\ \hline
 GLFW\_KEY\_SPACE          & Space\\ \hline
-GLFW\_KEY\_ESC            & Escape\\ \hline
+GLFW\_KEY\_MINUS          & Minus (-)\\ \hline
+GLFW\_KEY\_EQUAL          & Equal (=)\\ \hline
+GLFW\_KEY\_LEFT\_BRACKET  & Left bracket ([)\\ \hline
+GLFW\_KEY\_RIGHT\_BRACKET & Right bracket (])\\ \hline
+GLFW\_KEY\_GRAVE\_ACCENT  & Grave accent (`)\\ \hline
+GLFW\_KEY\_APOSTROPHE     & Apostrophe (')\\ \hline
+GLFW\_KEY\_COMMA          & Comma (,)\\ \hline
+GLFW\_KEY\_PERIOD         & Period (.)\\ \hline
+GLFW\_KEY\_SEMICOLON      & Semicolon (;)\\ \hline
+GLFW\_KEY\_SLASH          & Slash ($/$)\\ \hline
+GLFW\_KEY\_BACKSLASH      & Backslash ($\backslash$)\\ \hline
+GLFW\_KEY\_WORLD\_1       & Non-US character no. 1\\ \hline
+GLFW\_KEY\_WORLD\_2       & Non-US character no. 2\\ \hline
+\end{tabular}
+\end{center}
+\caption[Key codes for printable keys]{Key codes for printable keys. The keys are named according to the US keyboard layout, but represent physical keys (so for instance, GLFW\_KEY\_Z represents the same physical key, regardless of the system input language).}
+\label{tab:keys1}
+\end{table}
+
+\begin{table}[p]
+\begin{center}
+\begin{tabular}{|l|l|} \hline \raggedright
+\textbf{Name}             & \textbf{Description} \\ \hline
+GLFW\_KEY\_ESCAPE         & Escape\\ \hline
 GLFW\_KEY\_F\textit{n}    & Function key \textit{n} (\textit{n} can be in the range 1..25)\\ \hline
 GLFW\_KEY\_UP             & Cursor up\\ \hline
 GLFW\_KEY\_DOWN           & Cursor down\\ \hline
 GLFW\_KEY\_LEFT           & Cursor left\\ \hline
 GLFW\_KEY\_RIGHT          & Cursor right\\ \hline
-GLFW\_KEY\_LSHIFT         & Left shift key\\ \hline
-GLFW\_KEY\_RSHIFT         & Right shift key\\ \hline
-GLFW\_KEY\_LCTRL          & Left control key\\ \hline
-GLFW\_KEY\_RCTRL          & Right control key\\ \hline
-GLFW\_KEY\_LALT           & Left alternate function key\\ \hline
-GLFW\_KEY\_RALT           & Right alternate function key\\ \hline
-GLFW\_KEY\_LSUPER         & Left super key, WinKey, or command key\\ \hline
-GLFW\_KEY\_RSUPER         & Right super key, WinKey, or command key\\ \hline
+GLFW\_KEY\_LEFT\_SHIFT    & Left shift key\\ \hline
+GLFW\_KEY\_RIGHT\_SHIFT   & Right shift key\\ \hline
+GLFW\_KEY\_LEFT\_CTRL     & Left control key\\ \hline
+GLFW\_KEY\_RIGHT\_CTRL    & Right control key\\ \hline
+GLFW\_KEY\_LEFT\_ALT      & Left alternate function key\\ \hline
+GLFW\_KEY\_RIGHT\_ALT     & Right alternate function key\\ \hline
+GLFW\_KEY\_LEFT\_SUPER    & Left super key, WinKey, or command key\\ \hline
+GLFW\_KEY\_RIGHT\_SUPER   & Right super key, WinKey, or command key\\ \hline
 GLFW\_KEY\_TAB            & Tabulator\\ \hline
 GLFW\_KEY\_ENTER          & Enter\\ \hline
 GLFW\_KEY\_BACKSPACE      & Backspace\\ \hline
 GLFW\_KEY\_INSERT         & Insert\\ \hline
-GLFW\_KEY\_DEL            & Delete\\ \hline
-GLFW\_KEY\_PAGEUP         & Page up\\ \hline
-GLFW\_KEY\_PAGEDOWN       & Page down\\ \hline
+GLFW\_KEY\_DELETE         & Delete\\ \hline
+GLFW\_KEY\_PAGE\_UP       & Page up\\ \hline
+GLFW\_KEY\_PAGE\_DOWN     & Page down\\ \hline
 GLFW\_KEY\_HOME           & Home\\ \hline
 GLFW\_KEY\_END            & End\\ \hline
 GLFW\_KEY\_KP\_\textit{n} & Keypad numeric key \textit{n} (\textit{n} can be in the range 0..9)\\ \hline
@@ -1244,15 +1269,15 @@ GLFW\_KEY\_KP\_ADD        & Keypad add ($+$)\\ \hline
 GLFW\_KEY\_KP\_DECIMAL    & Keypad decimal (. or ,)\\ \hline
 GLFW\_KEY\_KP\_EQUAL      & Keypad equal (=)\\ \hline
 GLFW\_KEY\_KP\_ENTER      & Keypad enter\\ \hline
-GLFW\_KEY\_KP\_NUM\_LOCK  & Keypad num lock\\ \hline
+GLFW\_KEY\_NUM\_LOCK      & Num lock\\ \hline
 GLFW\_KEY\_CAPS\_LOCK     & Caps lock\\ \hline
 GLFW\_KEY\_SCROLL\_LOCK   & Scroll lock\\ \hline
 GLFW\_KEY\_PAUSE          & Pause key\\ \hline
 GLFW\_KEY\_MENU           & Menu key\\ \hline
 \end{tabular}
 \end{center}
-\caption{Special key identifiers}
-\label{tab:keys}
+\caption{Key codes for function keys}
+\label{tab:keys2}
 \end{table}
 
 
@@ -1283,9 +1308,8 @@ int glfwGetKey(int key)
 \begin{refparameters}
 \begin{description}
 \item [\textit{key}]\ \\
-  A keyboard key identifier, which can be either an uppercase printable
-  ISO~8859-1 (Latin~1) character (e.g. 'A', '3' or '.'), or a special key
-  identifier. Table \ref{tab:keys} lists valid special key identifiers.
+  A keyboard key identifier, which can be any of the key codes in tables
+  \ref{tab:keys1} and \ref{tab:keys2}.
 \end{description}
 \end{refparameters}
 
@@ -1499,10 +1523,8 @@ void glfwSetKeyCallback(GLFWkeyfun cbfun)
   \texttt{void functionname(int key, int action);}
 
   Where \textit{functionname} is the name of the callback function,
-  \textit{key} is a key identifier, which is an uppercase printable
-  ISO~8859-1 character or a special key identifier (see  table
-  \ref{tab:keys}), and \textit{action} is either GLFW\_PRESS or
-  GLFW\_RELEASE.
+  \textit{key} is a key code (see tables \ref{tab:keys1} and \ref{tab:keys2}),
+  and \textit{action} is either GLFW\_PRESS or GLFW\_RELEASE.
 
   If \textit{cbfun} is NULL, any previously set callback function
   will be unset.

@@ -221,16 +221,14 @@ int glfwGetKey(int key)
 \end{lstlisting}
 
 It queries the current status of individual keyboard keys. The argument
-\textit{key} specifies which key to check, and it can be either an
-uppercase printable ISO 8859-1 (Latin 1) character (e.g. `A', `3' or `.'),
-or a special key identifier (see the \textit{GLFW Reference Manual} for a
-list of special key identifiers). \textbf{glfwGetKey} returns GLFW\_PRESS
-if the key is currently held down, or GLFW\_RELEASE if the key is not being
-held down. For example:
+\textit{key} specifies which key to check, and it must be a valid GLFW key code
+(see the \textit{GLFW Reference Manual} for a list of key codes).
+\textbf{glfwGetKey} returns GLFW\_PRESS if the key is currently held down, or
+GLFW\_RELEASE if the key is not being held down. For example:
 
 \begin{lstlisting}
-A_pressed = glfwGetKey('A');
-esc_pressed = glfwGetKey(GLFW_KEY_ESC);
+A_pressed = glfwGetKey(GLFW_KEY_A);
+esc_pressed = glfwGetKey(GLFW_KEY_ESCAPE);
 \end{lstlisting}
 
 In order for \textbf{glfwGetKey} to have any effect, you need to poll for
@@ -282,7 +280,7 @@ int main(void)
         glfwSwapBuffers();
 
         // Check if ESC key was pressed or window was closed
-        running = !glfwGetKey(GLFW_KEY_ESC) &&
+        running = !glfwGetKey(GLFW_KEY_ESCAPE) &&
                   glfwGetWindowParam(GLFW_OPENED);
     }
 
@@ -698,8 +696,7 @@ int glfwGetKey(int key)
 \end{lstlisting}
 
 It queries the current status of individual keyboard keys. The argument
-\textit{key} specifies which key to check, and it can be either an
-uppercase ISO~8859-1 character, or a special key identifier.
+\textit{key} specifies which key to check, which must be a valid GLFW key code.
 \textbf{glfwGetKey} returns GLFW\_PRESS (or 1) if the key is currently
 held down, or GLFW\_RELEASE (or 0) if the key is not being held down.
 

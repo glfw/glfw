@@ -1056,11 +1056,12 @@ static void initWGLExtensions(_GLFWwindow* window)
 
     // This needs to include every extension used below except for
     // WGL_ARB_extensions_string and WGL_EXT_extensions_string
-    window->WGL.has_WGL_EXT_swap_control = GL_FALSE;
-    window->WGL.has_WGL_ARB_pixel_format = GL_FALSE;
     window->WGL.has_WGL_ARB_multisample = GL_FALSE;
     window->WGL.has_WGL_ARB_create_context = GL_FALSE;
     window->WGL.has_WGL_ARB_create_context_profile = GL_FALSE;
+    window->WGL.has_WGL_EXT_create_context_es2_profile = GL_FALSE;
+    window->WGL.has_WGL_EXT_swap_control = GL_FALSE;
+    window->WGL.has_WGL_ARB_pixel_format = GL_FALSE;
 
     window->WGL.GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)
         wglGetProcAddress("wglGetExtensionsStringEXT");

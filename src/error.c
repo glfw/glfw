@@ -104,7 +104,7 @@ GLFWAPI const char* glfwErrorString(int error)
         case GLFW_PLATFORM_ERROR:
             return "A platform-specific error occurred";
         default:
-            return "ERROR: UNKNOWN ERROR TOKEN";
+            return "ERROR: UNKNOWN ERROR TOKEN PASSED TO glfwErrorString";
     }
 }
 

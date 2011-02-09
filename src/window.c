@@ -632,13 +632,15 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
 // Make the OpenGL context associated with the specified window current
 //========================================================================
 
-GLFWAPI void glfwMakeWindowCurrent(GLFWwindow window)
+GLFWAPI void glfwMakeWindowCurrent(GLFWwindow handle)
 {
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     if (_glfwLibrary.currentWindow == window)
         return;
@@ -652,7 +654,7 @@ GLFWAPI void glfwMakeWindowCurrent(GLFWwindow window)
 // Returns GL_TRUE if the specified window handle is an actual window
 //========================================================================
 
-GLFWAPI int glfwIsWindow(GLFWwindow window)
+GLFWAPI int glfwIsWindow(GLFWwindow handle)
 {
     _GLFWwindow* entry;
 
@@ -661,6 +663,8 @@ GLFWAPI int glfwIsWindow(GLFWwindow window)
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return GL_FALSE;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     if (window == NULL)
         return GL_FALSE;
@@ -817,13 +821,15 @@ GLFWAPI void glfwCloseWindow(GLFWwindow handle)
 // Set the window title
 //========================================================================
 
-GLFWAPI void glfwSetWindowTitle(GLFWwindow window, const char* title)
+GLFWAPI void glfwSetWindowTitle(GLFWwindow handle, const char* title)
 {
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     _glfwPlatformSetWindowTitle(window, title);
 }

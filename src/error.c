@@ -47,6 +47,12 @@ static int _glfwError = GLFW_NO_ERROR;
 
 void _glfwSetError(int error, const char* description)
 {
+    if (!_glfwInitialized)
+    {
+        _glfwError = error;
+        return;
+    }
+
     if (_glfwLibrary.errorCallback)
     {
         if (!description)
@@ -117,10 +123,7 @@ GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun)
 {
     if (!_glfwInitialized)
     {
-        // We can't call _glfwSetError here as _glfwLibrary is uninitialized
-        // This should be the only place outside of _glfwSetError where we set
-        // the global error status directly
-        _glfwError = GLFW_NOT_INITIALIZED;
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 

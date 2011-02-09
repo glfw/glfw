@@ -65,6 +65,7 @@ void _glfwSetError(int error, const char* description)
 
 //========================================================================
 // Returns the current error value
+// This function may be called without GLFW having been initialized
 //========================================================================
 
 GLFWAPI int glfwGetError(void)
@@ -77,6 +78,7 @@ GLFWAPI int glfwGetError(void)
 
 //========================================================================
 // Returns a string representation of the specified error value
+// This function may be called without GLFW having been initialized
 //========================================================================
 
 GLFWAPI const char* glfwErrorString(int error)
@@ -102,8 +104,7 @@ GLFWAPI const char* glfwErrorString(int error)
         case GLFW_PLATFORM_ERROR:
             return "A platform-specific error occurred";
         default:
-            // TODO: Set GLFW_INVALID_ENUM here?
-            return NULL;
+            return "ERROR: UNKNOWN ERROR TOKEN";
     }
 }
 
@@ -116,9 +117,10 @@ GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun)
 {
     if (!_glfwInitialized)
     {
-        // TODO: Uhm... Hmm...
-
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        // We can't call _glfwSetError here as _glfwLibrary is uninitialized
+        // This should be the only place outside of _glfwSetError where we set
+        // the global error status directly
+        _glfwError = GLFW_NOT_INITIALIZED;
         return;
     }
 

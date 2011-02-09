@@ -449,7 +449,7 @@ extern "C" {
  *************************************************************************/
 
 /* Window handle type */
-typedef struct _GLFWwindow* GLFWwindow;
+typedef void* GLFWwindow;
 
 /* The video mode structure used by glfwGetVideoModes */
 typedef struct

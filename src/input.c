@@ -39,13 +39,15 @@
 // Returns the state of the specified key for the specified window
 //========================================================================
 
-GLFWAPI int glfwGetKey(GLFWwindow window, int key)
+GLFWAPI int glfwGetKey(GLFWwindow handle, int key)
 {
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return GLFW_RELEASE;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     // Is it a valid key?
     if (key < 0 || key > GLFW_KEY_LAST)
@@ -70,13 +72,15 @@ GLFWAPI int glfwGetKey(GLFWwindow window, int key)
 // Returns the state of the specified mouse button for the specified window
 //========================================================================
 
-GLFWAPI int glfwGetMouseButton(GLFWwindow window, int button)
+GLFWAPI int glfwGetMouseButton(GLFWwindow handle, int button)
 {
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return GLFW_RELEASE;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     // Is it a valid mouse button?
     if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST)
@@ -100,13 +104,15 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow window, int button)
 // Returns the last reported cursor position for the specified window
 //========================================================================
 
-GLFWAPI void glfwGetMousePos(GLFWwindow window, int* xpos, int* ypos)
+GLFWAPI void glfwGetMousePos(GLFWwindow handle, int* xpos, int* ypos)
 {
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     // Return mouse position
     if (xpos != NULL)
@@ -122,13 +128,15 @@ GLFWAPI void glfwGetMousePos(GLFWwindow window, int* xpos, int* ypos)
 // the specified window
 //========================================================================
 
-GLFWAPI void glfwSetMousePos(GLFWwindow window, int xpos, int ypos)
+GLFWAPI void glfwSetMousePos(GLFWwindow handle, int xpos, int ypos)
 {
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     // Don't do anything if the mouse position did not change
     if (xpos == window->mousePosX && ypos == window->mousePosY)
@@ -151,13 +159,15 @@ GLFWAPI void glfwSetMousePos(GLFWwindow window, int xpos, int ypos)
 // Returns the scroll offset for the specified window
 //========================================================================
 
-GLFWAPI void glfwGetScrollOffset(GLFWwindow window, int* x, int* y)
+GLFWAPI void glfwGetScrollOffset(GLFWwindow handle, int* x, int* y)
 {
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     if (x)
       *x = window->scrollX;

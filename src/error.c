@@ -43,6 +43,7 @@ static int _glfwError = GLFW_NO_ERROR;
 
 //========================================================================
 // Sets the current error value
+// This function may be called without GLFW having been initialized
 //========================================================================
 
 void _glfwSetError(int error, const char* description)

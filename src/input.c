@@ -159,7 +159,7 @@ GLFWAPI void glfwSetMousePos(GLFWwindow handle, int xpos, int ypos)
 // Returns the scroll offset for the specified window
 //========================================================================
 
-GLFWAPI void glfwGetScrollOffset(GLFWwindow handle, int* x, int* y)
+GLFWAPI void glfwGetScrollOffset(GLFWwindow handle, int* xoffset, int* yoffset)
 {
     if (!_glfwInitialized)
     {
@@ -169,11 +169,11 @@ GLFWAPI void glfwGetScrollOffset(GLFWwindow handle, int* x, int* y)
 
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
-    if (x)
-      *x = window->scrollX;
+    if (xoffset)
+      *xoffset = window->scrollX;
 
-    if (y)
-      *y = window->scrollY;
+    if (yoffset)
+      *yoffset = window->scrollY;
 }
 
 

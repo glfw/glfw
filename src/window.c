@@ -186,13 +186,13 @@ void _glfwInputChar(_GLFWwindow* window, int character)
 // Register scroll events
 //========================================================================
 
-void _glfwInputScroll(_GLFWwindow* window, int x, int y)
+void _glfwInputScroll(_GLFWwindow* window, int xoffset, int yoffset)
 {
-    window->scrollX += x;
-    window->scrollY += y;
+    window->scrollX += xoffset;
+    window->scrollY += yoffset;
 
     if (_glfwLibrary.scrollCallback)
-        _glfwLibrary.scrollCallback(window, x, y);
+        _glfwLibrary.scrollCallback(window, xoffset, yoffset);
 }
 
 
@@ -896,7 +896,7 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow handle, int width, int height)
 // Get the window position
 //========================================================================
 
-GLFWAPI void glfwGetWindowPos(GLFWwindow handle, int* x, int* y)
+GLFWAPI void glfwGetWindowPos(GLFWwindow handle, int* xpos, int* ypos)
 {
     if (!_glfwInitialized)
     {
@@ -906,11 +906,11 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow handle, int* x, int* y)
 
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
-    if (x != NULL)
-        *x = window->positionX;
+    if (xpos != NULL)
+        *xpos = window->positionX;
 
-    if (y != NULL)
-        *y = window->positionY;
+    if (ypos != NULL)
+        *ypos = window->positionY;
 }
 
 
@@ -918,7 +918,7 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow handle, int* x, int* y)
 // Set the window position
 //========================================================================
 
-GLFWAPI void glfwSetWindowPos(GLFWwindow handle, int x, int y)
+GLFWAPI void glfwSetWindowPos(GLFWwindow handle, int xpos, int ypos)
 {
     if (!_glfwInitialized)
     {
@@ -934,7 +934,7 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow handle, int x, int y)
         return;
     }
 
-    _glfwPlatformSetWindowPos(window, x, y);
+    _glfwPlatformSetWindowPos(window, xpos, ypos);
 }
 
 

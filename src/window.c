@@ -157,8 +157,7 @@ void _glfwInputKey(_GLFWwindow* window, int key, int action)
         window->key[key] = GLFW_STICK;
     else
     {
-        keyrepeat = (window->key[key] == GLFW_PRESS) &&
-                    (action == GLFW_PRESS);
+        keyrepeat = (window->key[key] == GLFW_PRESS) && (action == GLFW_PRESS);
         window->key[key] = (char) action;
     }
 

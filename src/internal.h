@@ -328,6 +328,7 @@ void _glfwFree(void* ptr);
 
 // Fullscren management (fullscreen.c)
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
+int _glfwCompareVideoModes(const void* firstPtr, const void* secondPtr);
 
 // Error handling (error.c)
 void _glfwSetError(int error, const char* description);

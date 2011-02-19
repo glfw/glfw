@@ -184,69 +184,56 @@ void _glfwRestoreVideoMode(void)
 
 int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
 {
-    int count, success, mode, i, j;
-    int m1, m2, bpp, r, g, b;
-    DEVMODE dm;
+    DEVMODE deviceMode;
+    DWORD deviceModeNum;
 
-    // Loop through all video modes and extract all the UNIQUE modes
-    count = 0;
-    mode  = 0;
+    GLFWvidmode* vidModes;
+    int vidModesCount;
+    GLFWvidmode vidMode;
 
-    do
+    deviceMode.dmSize = sizeof(DEVMODE);
+    deviceModeNum  = 0;
+
+    vidModes = NULL;
+    vidModesCount = 0;
+
+    while (EnumDisplaySettings(NULL, deviceModeNum, &deviceMode) && (!list || (vidModesCount < maxcount)))
     {
-        // Get video mode properties
-        dm.dmSize = sizeof(DEVMODE);
-        success = EnumDisplaySettings(NULL, mode, &dm);
+        deviceModeNum++;
 
-        // Is it a valid mode? (only list depths >= 15 bpp)
-        if (success && dm.dmBitsPerPel >= 15)
+        if (deviceMode.dmBitsPerPel < 15)
         {
-            // Convert to RGB, and back to bpp ("mask out" alpha bits etc)
-            _glfwSplitBPP(dm.dmBitsPerPel, &r, &g, &b);
-            bpp = r + g + b;
-
-            // Mode "code" for this mode
-            m1 = (bpp << 25) | (dm.dmPelsWidth * dm.dmPelsHeight);
-
-            // Insert mode in list (sorted), and avoid duplicates
-            for (i = 0;  i < count;  i++)
-            {
-                // Mode "code" for already listed mode
-                bpp = list[i].redBits + list[i].greenBits + list[i].blueBits;
-                m2 = (bpp << 25) | (list[i].width * list[i].height);
-                if (m1 <= m2)
-                    break;
-            }
-
-            // New entry at the end of the list?
-            if (i >= count)
-            {
-                list[count].width     = dm.dmPelsWidth;
-                list[count].height    = dm.dmPelsHeight;
-                list[count].redBits   = r;
-                list[count].greenBits = g;
-                list[count].blueBits  = b;
-                count ++;
-            }
-            // Insert new entry in the list?
-            else if (m1 < m2)
-            {
-                for (j = count;  j > i;  j--)
-                    list[j] = list[j - 1];
-
-                list[i].width     = dm.dmPelsWidth;
-                list[i].height    = dm.dmPelsHeight;
-                list[i].redBits   = r;
-                list[i].greenBits = g;
-                list[i].blueBits  = b;
-                count++;
-            }
+            continue;
         }
-        mode++;
-    }
-    while (success && (count < maxcount));
 
-    return count;
+        vidMode.height = deviceMode.dmPelsHeight;
+        vidMode.width  = deviceMode.dmPelsWidth;
+        // Convert to RGB, and back to bpp ("mask out" alpha bits etc)
+        _glfwSplitBPP(deviceMode.dmBitsPerPel,
+                      &vidMode.redBits,
+                      &vidMode.greenBits,
+                      &vidMode.blueBits);
+
+        // skip duplicates.
+        if (vidModes && bsearch(&vidMode, vidModes, vidModesCount, sizeof(GLFWvidmode), _glfwCompareVideoModes))
+        {
+            continue;
+        }
+
+        vidModes = realloc(vidModes, sizeof(GLFWvidmode) * ++vidModesCount);
+        memcpy(vidModes + (vidModesCount - 1), &vidMode, sizeof(GLFWvidmode));
+
+        qsort(vidModes, vidModesCount, sizeof(GLFWvidmode), _glfwCompareVideoModes);
+    }
+
+    if (list && maxcount)
+    {
+        memcpy(list, vidModes, sizeof(GLFWvidmode) * min(vidModesCount, maxcount));
+    }
+
+    free(vidModes);
+
+    return vidModesCount;
 }
 
 

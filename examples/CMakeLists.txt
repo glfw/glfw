@@ -1,7 +1,13 @@
 # This line is used to link with static libraries 
 # Note that the library list should be updated to be obtained from 
-# the main CMakeLists.txt 
+# the main CMakeLists.txt
 link_libraries(libglfwStatic ${GLFW_LIBRARIES} ${OPENGL_glu_LIBRARY})
+
+if (UNIX AND NOT APPLE AND NOT CYGWIN)
+    find_library(MATH_LIBRARY m)
+    find_library(REALTIME_LIBRARY rt)
+    link_libraries(${MATH_LIBRARY} ${REALTIME_LIBRARY})
+endif (UNIX AND NOT APPLE AND NOT CYGWIN)
 
 include_directories(${GLFW_SOURCE_DIR}/include
                     ${GLFW_SOURCE_DIR}/support

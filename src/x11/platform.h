@@ -108,6 +108,7 @@ typedef struct _GLFWcontextGLX
     GLboolean   has_GLX_ARB_create_context;
     GLboolean   has_GLX_ARB_create_context_profile;
     GLboolean   has_GLX_EXT_create_context_es2_profile;
+
 } _GLFWcontextGLX;
 
 

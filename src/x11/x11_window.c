@@ -35,13 +35,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB
-    #define GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB 0x20B2
-#endif
-#ifndef GLX_CONTEXT_ES2_PROFILE_BIT_EXT
-    #define GLX_CONTEXT_ES2_PROFILE_BIT_EXT 0x00000004
-#endif
-
 // Action for EWMH client messages
 #define _NET_WM_STATE_REMOVE        0
 #define _NET_WM_STATE_ADD           1

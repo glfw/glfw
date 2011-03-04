@@ -134,7 +134,7 @@ static Atom getSupportedAtom(Atom* supportedAtoms,
 // Check whether the running window manager is EWMH-compliant
 //========================================================================
 
-static GLboolean checkForEWMH(_GLFWwindow* window)
+static GLboolean hasEWMH(_GLFWwindow* window)
 {
     Window* windowFromRoot = NULL;
     Window* windowFromChild = NULL;
@@ -685,7 +685,7 @@ static GLboolean createWindow(_GLFWwindow* window,
     }
 
     // Check whether an EWMH-compliant window manager is running
-    window->X11.hasEWMH = checkForEWMH(window);
+    window->X11.hasEWMH = hasEWMH(window);
 
     if (window->mode == GLFW_FULLSCREEN && !window->X11.hasEWMH)
     {

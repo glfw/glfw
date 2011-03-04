@@ -64,7 +64,7 @@ void _glfwPlatformSwapInterval(int interval)
 
 int _glfwPlatformExtensionSupported(const char* extension)
 {
-    // There are no AGL, CGL or NSGL extensions.
+    // There are no NSGL extensions
     return GL_FALSE;
 }
 

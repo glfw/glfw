@@ -998,7 +998,7 @@ static void processSingleEvent(void)
             // Do not report key releases for key repeats. For key repeats we
             // will get KeyRelease/KeyPress pairs with similar or identical
             // time stamps. User selected key repeat filtering is handled in
-            // _glfwInputKey()/_glfwInputChar().
+            // _glfwInputKey/_glfwInputChar.
             if (XEventsQueued(_glfwLibrary.X11.display, QueuedAfterReading))
             {
                 XEvent nextEvent;

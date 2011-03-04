@@ -125,6 +125,12 @@ static void clearInputState(_GLFWwindow* window)
 
 static GLboolean isValidContextConfig(_GLFWwndconfig* wndconfig)
 {
+    if (wndconfig->glMajor < 1 || wndconfig->glMinor < 0)
+    {
+        // OpenGL 1.0 is the smallest valid version
+        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL version requested");
+        return GL_FALSE;
+    }
     if (wndconfig->glMajor == 1 && wndconfig->glMinor > 5)
     {
         // OpenGL 1.x series ended with version 1.5
@@ -537,8 +543,8 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     wndconfig.title          = title;
     wndconfig.refreshRate    = Max(_glfwLibrary.hints.refreshRate, 0);
     wndconfig.windowNoResize = _glfwLibrary.hints.windowNoResize ? GL_TRUE : GL_FALSE;
-    wndconfig.glMajor        = Max(_glfwLibrary.hints.glMajor, 1);
-    wndconfig.glMinor        = Max(_glfwLibrary.hints.glMinor, 0);
+    wndconfig.glMajor        = _glfwLibrary.hints.glMajor;
+    wndconfig.glMinor        = _glfwLibrary.hints.glMinor;
     wndconfig.glForward      = _glfwLibrary.hints.glForward ? GL_TRUE : GL_FALSE;
     wndconfig.glDebug        = _glfwLibrary.hints.glDebug ? GL_TRUE : GL_FALSE;
     wndconfig.glProfile      = _glfwLibrary.hints.glProfile;

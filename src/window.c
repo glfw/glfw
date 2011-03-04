@@ -119,6 +119,71 @@ static void clearInputState(_GLFWwindow* window)
 }
 
 
+//========================================================================
+// Checks whether the OpenGL part of the window config is sane
+//========================================================================
+
+static GLboolean isValidContextConfig(_GLFWwndconfig* wndconfig)
+{
+    if (wndconfig->glMajor == 1 && wndconfig->glMinor > 5)
+    {
+        // OpenGL 1.x series ended with version 1.5
+        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL version requested");
+        return GL_FALSE;
+    }
+    else if (wndconfig->glMajor == 2 && wndconfig->glMinor > 1)
+    {
+        // OpenGL 2.x series ended with version 2.1
+        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL version requested");
+        return GL_FALSE;
+    }
+    else if (wndconfig->glMajor == 3 && wndconfig->glMinor > 3)
+    {
+        // OpenGL 3.x series ended with version 3.3
+        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL version requested");
+        return GL_FALSE;
+    }
+    else
+    {
+        // For now, let everything else through
+    }
+
+    if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE)
+    {
+        if (wndconfig->glMajor != 2 || wndconfig->glMinor < 0)
+        {
+            // The OpenGL ES 2.0 profile is currently only defined for version
+            // 2.0 (see {WGL|GLX}_EXT_create_context_es2_profile), but for
+            // compatibility with future updates to OpenGL ES, we allow
+            // everything 2.x and let the driver report invalid 2.x versions
+
+            _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL ES 2.x version requested");
+            return GL_FALSE;
+        }
+    }
+    else if (wndconfig->glProfile)
+    {
+        if (wndconfig->glMajor < 3 || (wndconfig->glMajor == 3 && wndconfig->glMinor < 2))
+        {
+            // Desktop OpenGL context profiles are only defined for version 3.2
+            // and above
+
+            _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Context profiles only exist for OpenGL version 3.2 and above");
+            return GL_FALSE;
+        }
+    }
+
+    if (wndconfig->glForward && wndconfig->glMajor < 3)
+    {
+        // Forward-compatible contexts are only defined for OpenGL version 3.0 and above
+        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Forward compatibility only exist for OpenGL version 3.0 and above");
+        return GL_FALSE;
+    }
+
+    return GL_TRUE;
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -482,64 +547,10 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     // Clear for next open call
     _glfwClearWindowHints();
 
-    if (wndconfig.glMajor == 1 && wndconfig.glMinor > 5)
+    // Check the OpenGL bits of the window config
+    if (!isValidContextConfig(&wndconfig))
     {
-        // OpenGL 1.x series ended with version 1.5
         glfwCloseWindow(window);
-        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL version requested");
-        return GL_FALSE;
-    }
-    else if (wndconfig.glMajor == 2 && wndconfig.glMinor > 1)
-    {
-        // OpenGL 2.x series ended with version 2.1
-        glfwCloseWindow(window);
-        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL version requested");
-        return GL_FALSE;
-    }
-    else if (wndconfig.glMajor == 3 && wndconfig.glMinor > 3)
-    {
-        // OpenGL 3.x series ended with version 3.3
-        glfwCloseWindow(window);
-        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL version requested");
-        return GL_FALSE;
-    }
-    else
-    {
-        // For now, let everything else through
-    }
-
-    if (wndconfig.glProfile == GLFW_OPENGL_ES2_PROFILE)
-    {
-        if (wndconfig.glMajor != 2 || wndconfig.glMinor < 0)
-        {
-            // The OpenGL ES 2.0 profile is currently only defined for version
-            // 2.0 (see {WGL|GLX}_EXT_create_context_es2_profile), but for
-            // compatibility with future updates to OpenGL ES, we allow
-            // everything 2.x and let the driver report invalid versions
-
-            glfwCloseWindow(window);
-            _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL ES 2.x version requested");
-            return GL_FALSE;
-        }
-    }
-    else if (wndconfig.glProfile)
-    {
-        if (wndconfig.glMajor < 3 || (wndconfig.glMajor == 3 && wndconfig.glMinor < 2))
-        {
-            // Desktop OpenGL context profiles are only defined for version 3.2
-            // and above
-
-            glfwCloseWindow(window);
-            _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Context profiles only exist for OpenGL version 3.2 and above");
-            return GL_FALSE;
-        }
-    }
-
-    if (wndconfig.glForward && wndconfig.glMajor < 3)
-    {
-        // Forward-compatible contexts are only defined for OpenGL version 3.0 and above
-        glfwCloseWindow(window);
-        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Forward compatibility only exist for OpenGL version 3.0 and above");
         return GL_FALSE;
     }
 

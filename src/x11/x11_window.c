@@ -938,6 +938,7 @@ static void leaveFullscreenMode(_GLFWwindow* window)
 //========================================================================
 // Return the GLFW window corresponding to the specified X11 window
 //========================================================================
+
 static _GLFWwindow* findWindow(Window handle)
 {
     _GLFWwindow* window;

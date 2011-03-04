@@ -36,6 +36,31 @@
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
+// Swap buffers (double-buffering)
+//========================================================================
+
+void _glfwPlatformSwapBuffers(void)
+{
+    _GLFWwindow* window = _glfwLibrary.currentWindow;
+
+    _glfw_SwapBuffers(window->WGL.DC);
+}
+
+
+//========================================================================
+// Set double buffering swap interval
+//========================================================================
+
+void _glfwPlatformSwapInterval(int interval)
+{
+    _GLFWwindow* window = _glfwLibrary.currentWindow;
+
+    if (window->WGL.has_WGL_EXT_swap_control)
+        window->WGL.SwapIntervalEXT(interval);
+}
+
+
+//========================================================================
 // Check if the current context supports the specified WGL extension
 //========================================================================
 

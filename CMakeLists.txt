@@ -20,10 +20,10 @@ set(common_SOURCES
     ${GLFW_SOURCE_DIR}/src/error.c
     ${GLFW_SOURCE_DIR}/src/fullscreen.c
     ${GLFW_SOURCE_DIR}/src/gamma.c
-    ${GLFW_SOURCE_DIR}/src/glext.c 
     ${GLFW_SOURCE_DIR}/src/init.c 
     ${GLFW_SOURCE_DIR}/src/input.c 
     ${GLFW_SOURCE_DIR}/src/joystick.c 
+    ${GLFW_SOURCE_DIR}/src/opengl.c 
     ${GLFW_SOURCE_DIR}/src/time.c
     ${GLFW_SOURCE_DIR}/src/window.c
 )

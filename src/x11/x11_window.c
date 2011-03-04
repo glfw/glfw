@@ -1567,36 +1567,6 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 
 
 //========================================================================
-// Swap OpenGL buffers
-//========================================================================
-
-void _glfwPlatformSwapBuffers(void)
-{
-    glXSwapBuffers(_glfwLibrary.X11.display,
-                   _glfwLibrary.currentWindow->X11.handle);
-}
-
-
-//========================================================================
-// Set double buffering swap interval
-//========================================================================
-
-void _glfwPlatformSwapInterval(int interval)
-{
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
-
-    if (window->GLX.has_GLX_EXT_swap_control)
-    {
-        window->GLX.SwapIntervalEXT(_glfwLibrary.X11.display,
-                                    window->X11.handle,
-                                    interval);
-    }
-    else if (window->GLX.has_GLX_SGI_swap_control)
-        window->GLX.SwapIntervalSGI(interval);
-}
-
-
-//========================================================================
 // Read back framebuffer parameters from the context
 //========================================================================
 

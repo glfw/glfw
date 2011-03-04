@@ -985,51 +985,6 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow handle)
 
 
 //========================================================================
-// Swap buffers (double-buffering)
-//========================================================================
-
-GLFWAPI void glfwSwapBuffers(void)
-{
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    if (!_glfwLibrary.currentWindow)
-    {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
-        return;
-    }
-
-    if (_glfwLibrary.currentWindow)
-        _glfwPlatformSwapBuffers();
-}
-
-
-//========================================================================
-// Set double buffering swap interval (0 = vsync off)
-//========================================================================
-
-GLFWAPI void glfwSwapInterval(int interval)
-{
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    if (!_glfwLibrary.currentWindow)
-    {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
-        return;
-    }
-
-    _glfwPlatformSwapInterval(interval);
-}
-
-
-//========================================================================
 // Get window parameter
 //========================================================================
 

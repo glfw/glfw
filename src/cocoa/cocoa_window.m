@@ -771,30 +771,6 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 }
 
 //========================================================================
-// Swap buffers
-//========================================================================
-
-void _glfwPlatformSwapBuffers(void)
-{
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
-
-    // ARP appears to be unnecessary, but this is future-proof
-    [window->NSGL.context flushBuffer];
-}
-
-//========================================================================
-// Set double buffering swap interval
-//========================================================================
-
-void _glfwPlatformSwapInterval(int interval)
-{
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
-
-    GLint sync = interval;
-    [window->NSGL.context setValues:&sync forParameter:NSOpenGLCPSwapInterval];
-}
-
-//========================================================================
 // Write back window parameters into GLFW window structure
 //========================================================================
 

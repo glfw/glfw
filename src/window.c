@@ -628,6 +628,8 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     if (window->glMajor > 2)
     {
         // OpenGL 3.0+ uses a different function for extension string retrieval
+        // We cache it here instead of in glfwExtensionSupported mostly to alert
+        // users as early as possible that their build may be broken
 
         window->GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
         if (!window->GetStringi)

@@ -74,7 +74,7 @@ static void closeFlaggedWindows(void)
 // Clear scroll offsets for all windows
 //========================================================================
 
-void clearScrollOffsets(void)
+static void clearScrollOffsets(void)
 {
     _GLFWwindow* window;
 
@@ -90,7 +90,7 @@ void clearScrollOffsets(void)
 // Clear all input state
 //========================================================================
 
-void clearInputState(_GLFWwindow* window)
+static void clearInputState(_GLFWwindow* window)
 {
     int i;
 

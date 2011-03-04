@@ -457,8 +457,8 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
         }
 
         // Figure out if the current one is better than the best one found so far
-        // Missing buffers is the most important heuristic, then color buffer size
-        // mismatches and lastly size mismatches for other buffers
+        // Least number of missing buffers is the most important heuristic,
+        // then color buffer size match and lastly size match for other buffers
 
         if (missing < leastMissing)
             closest = current;
@@ -556,7 +556,6 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
 
     if (mode != GLFW_WINDOWED && mode != GLFW_FULLSCREEN)
     {
-        // Invalid window mode
         glfwCloseWindow(window);
         _glfwSetError(GLFW_INVALID_ENUM, "glfwOpenWindow: Invalid enum for 'mode' parameter");
         return GL_FALSE;
@@ -587,14 +586,14 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     window->height = height;
     window->mode   = mode;
 
-    // Platform specific window opening routine
+    // Open the actual window and create its context
     if (!_glfwPlatformOpenWindow(window, &wndconfig, &fbconfig))
     {
         glfwCloseWindow(window);
         return GL_FALSE;
     }
 
-    // Get window parameters (such as color buffer bits etc)
+    // Cache the actual (as opposed to desired) window parameters
     glfwMakeWindowCurrent(window);
     _glfwPlatformRefreshWindowParams();
 
@@ -610,6 +609,11 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     {
         // The desired OpenGL version is greater than the actual version
         // This only happens if the machine lacks {GLX|WGL}_ARB_create_context
+        // /and/ the user has requested an OpenGL version greater than 1.0
+
+        // For API consistency, we emulate the behavior of the
+        // {GLX|WGL}_ARB_create_context extension and fail here
+
         glfwCloseWindow(window);
         _glfwSetError(GLFW_VERSION_UNAVAILABLE, "glfwOpenWindow: The requested OpenGL version is not available");
         return GL_FALSE;
@@ -617,21 +621,28 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
 
     if (window->glMajor > 2)
     {
+        // OpenGL 3.0+ uses a different function for extension string retrieval
+
         window->GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
         if (!window->GetStringi)
         {
+            // This is a very common problem among people who compile GLFW
+            // on X11/GLX using custom build systems, as it needs explicit
+            // configuration in order to work
+
             glfwCloseWindow(window);
             _glfwSetError(GLFW_PLATFORM_ERROR, "glfwOpenWindow: Entry point retrieval is broken; see the build documentation for your platform");
             return GL_FALSE;
         }
     }
 
-    // If full-screen mode was requested, disable mouse cursor
+    // The GLFW specification states that fullscreen windows have the cursor
+    // locked by default
     if (mode == GLFW_FULLSCREEN)
         glfwDisable(window, GLFW_MOUSE_CURSOR);
 
-    // Start by clearing the front buffer to black (avoid ugly desktop
-    // remains in our OpenGL window)
+    // Clearing the front buffer to black to avoid garbage pixels left over
+    // from previous uses of our bit of VRAM
     glClear(GL_COLOR_BUFFER_BIT);
     _glfwPlatformSwapBuffers();
 

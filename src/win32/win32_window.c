@@ -323,7 +323,7 @@ static GLboolean createContext(_GLFWwindow* window,
                                int pixelFormat)
 {
     PIXELFORMATDESCRIPTOR pfd;
-    int i = 0, attribs[7];
+    int i = 0, attribs[9];
     HGLRC share = NULL;
 
     if (wndconfig->share)

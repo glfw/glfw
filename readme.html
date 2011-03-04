@@ -303,6 +303,7 @@ version of GLFW.</p>
   <li>[Win32] Removed explicit support for versions of Windows older than Windows XP</li>
   <li>[Win32] Bugfix: Window activation and iconification did not work as expected</li>
   <li>[Win32] Bugfix: Software rasterizer pixel formats were not discarded by the WGL_ARB_pixel_format code path</li>
+  <li>[Win32] Bugfix: The array for WGL context attributes was too small and could overflow</li>
 </ul>
 
 <h3>v2.7</h3>
@@ -896,6 +897,8 @@ their skills.  Special thanks go out to:</p>
 
   <li>TTK-Bandit, for submitting a number of input patches adding many missing
   keys to the Win32 and X11 ports</li>
+
+  <li>yuriks, for reporting a bug in Win32 context creation</li>
 
   <li>All the unmentioned and anonymous contributors in the GLFW community, for
   bug reports, patches, feedback and encouragement</li>

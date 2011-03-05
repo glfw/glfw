@@ -297,6 +297,7 @@ version of GLFW.</p>
   <li>Removed <code>GLFWCALL</code> and <code>GLFWAPIENTRY</code> macros for stdcall calling convention</li>
   <li>Bugfix: The default OpenGL version in the <code>version</code> test was set to 1.1</li>
   <li>Bugfix: The OpenGL profile and forward-compatibility window parameters were not saved after context creation</li>
+  <li>Bugfix: The FSAA test did not check for the availability of <code>GL_ARB_multisample</code></li>
   <li>[Cocoa] Bugfix: The loop condition for saving video modes used the wrong index variable</li>
   <li>[X11] Added support for the <code>GLX_EXT_swap_control</code> extension as an alternative to <code>GLX_SGI_swap_control</code></li>
   <li>[X11] Bugfix: Calling <code>glXCreateContextAttribsARB</code> with an unavailable OpenGL version caused the application to terminate with a <code>BadMatch</code> Xlib error</li>

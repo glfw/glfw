@@ -93,6 +93,7 @@ int main(int argc, char** argv)
         printf("Requesting that FSAA not be available\n");
 
     glfwSetKeyCallback(key_callback);
+    glfwSetWindowSizeCallback(window_size_callback);
 
     glfwOpenWindowHint(GLFW_FSAA_SAMPLES, samples);
 
@@ -113,7 +114,6 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    glfwSetWindowSizeCallback(window_size_callback);
     glfwSwapInterval(1);
 
     samples = glfwGetWindowParam(window, GLFW_FSAA_SAMPLES);

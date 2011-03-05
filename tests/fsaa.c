@@ -105,6 +105,14 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
+    if (!glfwExtensionSupported("GL_ARB_multisample"))
+    {
+        glfwTerminate();
+
+        fprintf(stderr, "Context reports GL_ARB_multisample is not supported\n");
+        exit(EXIT_FAILURE);
+    }
+
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSwapInterval(1);
 

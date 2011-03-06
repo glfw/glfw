@@ -87,7 +87,7 @@ static void clearScrollOffsets(void)
 
 
 //========================================================================
-// Clear all input state
+// Clear all input state for the specified window
 //========================================================================
 
 static void clearInputState(_GLFWwindow* window)

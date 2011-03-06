@@ -162,7 +162,6 @@ struct _GLFWwindow
     int       width, height;
     int       positionX, positionY;
     int       mode;            // GLFW_WINDOW or GLFW_FULLSCREEN
-    GLboolean sysKeysDisabled; // system keys disabled flag
     GLboolean windowNoResize;  // resize- and maximize gadgets disabled flag
     int       refreshRate;     // monitor refresh rate
     void*     userPointer;
@@ -171,6 +170,7 @@ struct _GLFWwindow
     GLboolean stickyKeys;
     GLboolean stickyMouseButtons;
     GLboolean keyRepeat;
+    GLboolean sysKeysDisabled; // system keys disabled flag
     int       mousePosX, mousePosY;
     int       scrollX, scrollY;
     char      mouseButton[GLFW_MOUSE_BUTTON_LAST + 1];

@@ -169,6 +169,13 @@ static GLboolean isValidContextConfig(_GLFWwndconfig* wndconfig)
     }
     else if (wndconfig->glProfile)
     {
+        if (wndconfig->glProfile != GLFW_OPENGL_CORE_PROFILE &&
+            wndconfig->glProfile != GLFW_OPENGL_COMPAT_PROFILE)
+        {
+            _glfwSetError(GLFW_INVALID_ENUM, "glfwOpenWindow: Invalid OpenGL profile");
+            return GL_FALSE;
+        }
+
         if (wndconfig->glMajor < 3 || (wndconfig->glMajor == 3 && wndconfig->glMinor < 2))
         {
             // Desktop OpenGL context profiles are only defined for version 3.2

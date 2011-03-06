@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW - An OpenGL framework
+// GLFW - An OpenGL library
 // Platform:    X11 (Unix)
 // API version: 3.0
 // WWW:         http://www.glfw.org/

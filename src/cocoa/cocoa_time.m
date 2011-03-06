@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW - An OpenGL framework
+// GLFW - An OpenGL library
 // Platform:    Cocoa/NSOpenGL
 // API Version: 3.0
 // WWW:         http://www.glfw.org/

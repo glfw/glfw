@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW - An OpenGL framework
+// GLFW - An OpenGL library
 // Platform:    Win32/WGL
 // API version: 3.0
 // WWW:         http://www.glfw.org/

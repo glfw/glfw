@@ -1630,9 +1630,6 @@ void _glfwPlatformRefreshWindowParams(void)
     else
         window->samples = 0;
 
-    // Default to refresh rate unknown (=0 according to GLFW spec)
-    window->refreshRate = 0;
-
     // Retrieve refresh rate if possible
     if (_glfwLibrary.X11.RandR.available)
     {
@@ -1652,6 +1649,11 @@ void _glfwPlatformRefreshWindowParams(void)
         pixels_per_frame  = (float) modeline.htotal * modeline.vtotal;
         window->refreshRate = (int)(pixels_per_second/pixels_per_frame+0.5);
 #endif /*_GLFW_HAS_XF86VIDMODE*/
+    }
+    else
+    {
+        // Zero means unknown according to the GLFW spec
+        window->refreshRate = 0;
     }
 
     XFree(fbconfig);

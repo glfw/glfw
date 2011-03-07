@@ -277,6 +277,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     wndconfig.glForward      = _glfwLibrary.hints.glForward ? GL_TRUE : GL_FALSE;
     wndconfig.glDebug        = _glfwLibrary.hints.glDebug ? GL_TRUE : GL_FALSE;
     wndconfig.glProfile      = _glfwLibrary.hints.glProfile;
+    wndconfig.glRobustness   = _glfwLibrary.hints.glRobustness ? GL_TRUE : GL_FALSE;
     wndconfig.share          = share;
 
     // Reset to default values for the next call
@@ -498,6 +499,9 @@ GLFWAPI void glfwOpenWindowHint(int target, int hint)
             break;
         case GLFW_OPENGL_PROFILE:
             _glfwLibrary.hints.glProfile = hint;
+            break;
+        case GLFW_OPENGL_ROBUSTNESS:
+            _glfwLibrary.hints.glRobustness = hint;
             break;
         default:
             break;
@@ -776,6 +780,8 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window->glDebug;
         case GLFW_OPENGL_PROFILE:
             return window->glProfile;
+        case GLFW_OPENGL_ROBUSTNESS:
+            return window->glRobustness;
         default:
             _glfwSetError(GLFW_INVALID_ENUM, "glfwGetWindowParam: Invalid enum value for 'param' parameter");
             return 0;

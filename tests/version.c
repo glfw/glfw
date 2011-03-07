@@ -44,8 +44,9 @@
 
 static void usage(void)
 {
-    printf("Usage: version [-h] [-m MAJOR] [-n MINOR] [-d] [-l] [-f] [-p PROFILE]\n");
+    printf("Usage: version [-h] [-m MAJOR] [-n MINOR] [-d] [-l] [-f] [-p PROFILE] [-r STRATEGY]\n");
     printf("available profiles: core compat es2\n");
+    printf("available strategies: none lose\n");
 }
 
 static void error_callback(int error, const char* description)
@@ -113,12 +114,12 @@ static void list_extensions(int major, int minor)
 
 int main(int argc, char** argv)
 {
-    int ch, profile = 0, major = 1, minor = 0, revision;
+    int ch, profile = 0, strategy = 0, major = 1, minor = 0, revision;
     GLboolean debug = GL_FALSE, forward = GL_FALSE, list = GL_FALSE;
     GLint flags, mask;
     GLFWwindow window;
 
-    while ((ch = getopt(argc, argv, "dfhlm:n:p:")) != -1)
+    while ((ch = getopt(argc, argv, "dfhlm:n:p:r:")) != -1)
     {
         switch (ch)
         {
@@ -147,6 +148,17 @@ int main(int argc, char** argv)
                     profile = GLFW_OPENGL_COMPAT_PROFILE;
                 else if (strcasecmp(optarg, "es2") == 0)
                     profile = GLFW_OPENGL_ES2_PROFILE;
+                else
+                {
+                    usage();
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 'r':
+                if (strcasecmp(optarg, "none") == 0)
+                    strategy = GLFW_OPENGL_NO_RESET_NOTIFICATION;
+                else if (strcasecmp(optarg, "lose") == 0)
+                    strategy = GLFW_OPENGL_LOSE_CONTEXT_ON_RESET;
                 else
                 {
                     usage();
@@ -184,6 +196,9 @@ int main(int argc, char** argv)
 
     if (profile != 0)
         glfwOpenWindowHint(GLFW_OPENGL_PROFILE, profile);
+
+    if (strategy)
+        glfwOpenWindowHint(GLFW_OPENGL_ROBUSTNESS, strategy);
 
     // We assume here that we stand a better chance of success by leaving all
     // possible details of pixel format selection to GLFW

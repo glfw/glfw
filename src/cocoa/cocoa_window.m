@@ -479,6 +479,13 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         return GL_FALSE;
     }
 
+    // Fail if a robustness strategy was requested
+    if (wndconfig->glRobustness)
+    {
+        _glfwSetError(GLFW_VERSION_UNAVAILABLE, "Cocoa/NSOpenGL: Mac OS X does not support OpenGL robustness strategies");
+        return GL_FALSE;
+    }
+
     // We can only have one application delegate, but we only allocate it the
     // first time we create a window to keep all window code in this file
     if (_glfwLibrary.NS.delegate == nil)

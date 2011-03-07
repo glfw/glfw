@@ -1089,7 +1089,7 @@ static void initWGLExtensions(_GLFWwindow* window)
     window->WGL.has_WGL_ARB_create_context = GL_FALSE;
     window->WGL.has_WGL_ARB_create_context_profile = GL_FALSE;
     window->WGL.has_WGL_EXT_create_context_es2_profile = GL_FALSE;
-    window->WGL.has_WGL_EXT_create_context_robustness = GL_FALSE;
+    window->WGL.has_WGL_ARB_create_context_robustness = GL_FALSE;
     window->WGL.has_WGL_EXT_swap_control = GL_FALSE;
     window->WGL.has_WGL_ARB_pixel_format = GL_FALSE;
 
@@ -1131,7 +1131,7 @@ static void initWGLExtensions(_GLFWwindow* window)
     if (window->WGL.has_WGL_ARB_create_context)
     {
         if (_glfwPlatformExtensionSupported("WGL_ARB_create_context_robustness"))
-            window->WGL.has_WGL_EXT_create_context_robustness = GL_TRUE;
+            window->WGL.has_WGL_ARB_create_context_robustness = GL_TRUE;
     }
 
     if (_glfwPlatformExtensionSupported("WGL_EXT_swap_control"))

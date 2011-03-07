@@ -34,6 +34,56 @@
 #include <limits.h>
 
 
+//========================================================================
+// Parses the OpenGL version string and extracts the version number
+//========================================================================
+
+static void parseGLVersion(int* major, int* minor, int* rev)
+{
+    GLuint _major, _minor = 0, _rev = 0;
+    const GLubyte* version;
+    const GLubyte* ptr;
+    const char* glesPrefix = "OpenGL ES ";
+
+    version = glGetString(GL_VERSION);
+    if (!version)
+        return;
+
+    if (strncmp((const char*) version, glesPrefix, strlen(glesPrefix)) == 0)
+    {
+        // The version string on OpenGL ES has a prefix before the version
+        // number, so we skip past it and then continue as normal
+
+        version += strlen(glesPrefix);
+    }
+
+    // Parse version from string
+
+    ptr = version;
+    for (_major = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
+        _major = 10 * _major + (*ptr - '0');
+
+    if (*ptr == '.')
+    {
+        ptr++;
+        for (_minor = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
+            _minor = 10 * _minor + (*ptr - '0');
+
+        if (*ptr == '.')
+        {
+            ptr++;
+            for (_rev = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
+                _rev = 10 * _rev + (*ptr - '0');
+        }
+    }
+
+    // Store result
+    *major = _major;
+    *minor = _minor;
+    *rev = _rev;
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -196,53 +246,132 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
 
 
 //========================================================================
-// Parses the OpenGL version string and extracts the version number
+// Checks whether the OpenGL part of the window config is sane
+// It blames glfwOpenWindow because that's the only caller
 //========================================================================
 
-void _glfwParseGLVersion(int* major, int* minor, int* rev)
+GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
 {
-    GLuint _major, _minor = 0, _rev = 0;
-    const GLubyte* version;
-    const GLubyte* ptr;
-    const char* glesPrefix = "OpenGL ES ";
-
-    version = glGetString(GL_VERSION);
-    if (!version)
-        return;
-
-    if (strncmp((const char*) version, glesPrefix, strlen(glesPrefix)) == 0)
+    if (wndconfig->glMajor < 1 || wndconfig->glMinor < 0)
     {
-        // The version string on OpenGL ES has a prefix before the version
-        // number, so we skip past it and then continue as normal
-
-        version += strlen(glesPrefix);
+        // OpenGL 1.0 is the smallest valid version
+        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL version requested");
+        return GL_FALSE;
+    }
+    if (wndconfig->glMajor == 1 && wndconfig->glMinor > 5)
+    {
+        // OpenGL 1.x series ended with version 1.5
+        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL version requested");
+        return GL_FALSE;
+    }
+    else if (wndconfig->glMajor == 2 && wndconfig->glMinor > 1)
+    {
+        // OpenGL 2.x series ended with version 2.1
+        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL version requested");
+        return GL_FALSE;
+    }
+    else if (wndconfig->glMajor == 3 && wndconfig->glMinor > 3)
+    {
+        // OpenGL 3.x series ended with version 3.3
+        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL version requested");
+        return GL_FALSE;
+    }
+    else
+    {
+        // For now, let everything else through
     }
 
-    // Parse version from string
-
-    ptr = version;
-    for (_major = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
-        _major = 10 * _major + (*ptr - '0');
-
-    if (*ptr == '.')
+    if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE)
     {
-        ptr++;
-        for (_minor = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
-            _minor = 10 * _minor + (*ptr - '0');
-
-        if (*ptr == '.')
+        if (wndconfig->glMajor != 2 || wndconfig->glMinor < 0)
         {
-            ptr++;
-            for (_rev = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
-                _rev = 10 * _rev + (*ptr - '0');
+            // The OpenGL ES 2.0 profile is currently only defined for version
+            // 2.0 (see {WGL|GLX}_EXT_create_context_es2_profile), but for
+            // compatibility with future updates to OpenGL ES, we allow
+            // everything 2.x and let the driver report invalid 2.x versions
+
+            _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL ES 2.x version requested");
+            return GL_FALSE;
+        }
+    }
+    else if (wndconfig->glProfile)
+    {
+        if (wndconfig->glProfile != GLFW_OPENGL_CORE_PROFILE &&
+            wndconfig->glProfile != GLFW_OPENGL_COMPAT_PROFILE)
+        {
+            _glfwSetError(GLFW_INVALID_ENUM, "glfwOpenWindow: Invalid OpenGL profile requested");
+            return GL_FALSE;
+        }
+
+        if (wndconfig->glMajor < 3 || (wndconfig->glMajor == 3 && wndconfig->glMinor < 2))
+        {
+            // Desktop OpenGL context profiles are only defined for version 3.2
+            // and above
+
+            _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Context profiles only exist for OpenGL version 3.2 and above");
+            return GL_FALSE;
         }
     }
 
-    // Store result
-    *major = _major;
-    *minor = _minor;
-    *rev = _rev;
+    if (wndconfig->glForward && wndconfig->glMajor < 3)
+    {
+        // Forward-compatible contexts are only defined for OpenGL version 3.0 and above
+        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Forward compatibility only exist for OpenGL version 3.0 and above");
+        return GL_FALSE;
+    }
+
+    return GL_TRUE;
 }
+
+//========================================================================
+// Checks whether the specified context fulfils the requirements
+// It blames glfwOpenWindow because that's the only caller
+//========================================================================
+
+GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
+{
+    parseGLVersion(&window->glMajor, &window->glMinor, &window->glRevision);
+
+    // As these are hard constraints when non-zero, we can simply copy them
+    window->glProfile = wndconfig->glProfile;
+    window->glForward = wndconfig->glForward;
+
+    if (window->glMajor < wndconfig->glMajor ||
+        (window->glMajor == wndconfig->glMajor &&
+         window->glMinor < wndconfig->glMinor))
+    {
+        // The desired OpenGL version is greater than the actual version
+        // This only happens if the machine lacks {GLX|WGL}_ARB_create_context
+        // /and/ the user has requested an OpenGL version greater than 1.0
+
+        // For API consistency, we emulate the behavior of the
+        // {GLX|WGL}_ARB_create_context extension and fail here
+
+        _glfwSetError(GLFW_VERSION_UNAVAILABLE, "glfwOpenWindow: The requested OpenGL version is not available");
+        return GL_FALSE;
+    }
+
+    if (window->glMajor > 2)
+    {
+        // OpenGL 3.0+ uses a different function for extension string retrieval
+        // We cache it here instead of in glfwExtensionSupported mostly to alert
+        // users as early as possible that their build may be broken
+
+        window->GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
+        if (!window->GetStringi)
+        {
+            // This is a very common problem among people who compile GLFW
+            // on X11/GLX using custom build systems, as it needs explicit
+            // configuration in order to work
+
+            _glfwSetError(GLFW_PLATFORM_ERROR, "glfwOpenWindow: Entry point retrieval is broken; see the build documentation for your platform");
+            return GL_FALSE;
+        }
+    }
+
+    return GL_TRUE;
+}
+
 
 //========================================================================
 // Check if a string can be found in an OpenGL extension string

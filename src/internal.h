@@ -334,11 +334,12 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action);
 void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated);
 
 // OpenGL context helpers (opengl.c)
-void _glfwParseGLVersion(int* major, int* minor, int* rev);
 int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);
 const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
                                          const _GLFWfbconfig* alternatives,
                                          unsigned int count);
+GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig);
+GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig);
 
 
 #endif // _internal_h_

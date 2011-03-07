@@ -85,84 +85,6 @@ static void clearScrollOffsets(void)
 }
 
 
-//========================================================================
-// Checks whether the OpenGL part of the window config is sane
-//========================================================================
-
-static GLboolean isValidContextConfig(_GLFWwndconfig* wndconfig)
-{
-    if (wndconfig->glMajor < 1 || wndconfig->glMinor < 0)
-    {
-        // OpenGL 1.0 is the smallest valid version
-        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL version requested");
-        return GL_FALSE;
-    }
-    if (wndconfig->glMajor == 1 && wndconfig->glMinor > 5)
-    {
-        // OpenGL 1.x series ended with version 1.5
-        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL version requested");
-        return GL_FALSE;
-    }
-    else if (wndconfig->glMajor == 2 && wndconfig->glMinor > 1)
-    {
-        // OpenGL 2.x series ended with version 2.1
-        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL version requested");
-        return GL_FALSE;
-    }
-    else if (wndconfig->glMajor == 3 && wndconfig->glMinor > 3)
-    {
-        // OpenGL 3.x series ended with version 3.3
-        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL version requested");
-        return GL_FALSE;
-    }
-    else
-    {
-        // For now, let everything else through
-    }
-
-    if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE)
-    {
-        if (wndconfig->glMajor != 2 || wndconfig->glMinor < 0)
-        {
-            // The OpenGL ES 2.0 profile is currently only defined for version
-            // 2.0 (see {WGL|GLX}_EXT_create_context_es2_profile), but for
-            // compatibility with future updates to OpenGL ES, we allow
-            // everything 2.x and let the driver report invalid 2.x versions
-
-            _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL ES 2.x version requested");
-            return GL_FALSE;
-        }
-    }
-    else if (wndconfig->glProfile)
-    {
-        if (wndconfig->glProfile != GLFW_OPENGL_CORE_PROFILE &&
-            wndconfig->glProfile != GLFW_OPENGL_COMPAT_PROFILE)
-        {
-            _glfwSetError(GLFW_INVALID_ENUM, "glfwOpenWindow: Invalid OpenGL profile");
-            return GL_FALSE;
-        }
-
-        if (wndconfig->glMajor < 3 || (wndconfig->glMajor == 3 && wndconfig->glMinor < 2))
-        {
-            // Desktop OpenGL context profiles are only defined for version 3.2
-            // and above
-
-            _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Context profiles only exist for OpenGL version 3.2 and above");
-            return GL_FALSE;
-        }
-    }
-
-    if (wndconfig->glForward && wndconfig->glMajor < 3)
-    {
-        // Forward-compatible contexts are only defined for OpenGL version 3.0 and above
-        _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Forward compatibility only exist for OpenGL version 3.0 and above");
-        return GL_FALSE;
-    }
-
-    return GL_TRUE;
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -361,7 +283,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     _glfwSetDefaultWindowHints();
 
     // Check the OpenGL bits of the window config
-    if (!isValidContextConfig(&wndconfig))
+    if (!_glfwIsValidContextConfig(&wndconfig))
         return GL_FALSE;
 
     if (mode != GLFW_WINDOWED && mode != GLFW_FULLSCREEN)
@@ -416,45 +338,10 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     glfwMakeWindowCurrent(window);
     _glfwPlatformRefreshWindowParams();
 
-    // As these are hard constraints when non-zero, we can simply copy them
-    window->glProfile = wndconfig.glProfile;
-    window->glForward = wndconfig.glForward;
-
-    _glfwParseGLVersion(&window->glMajor, &window->glMinor, &window->glRevision);
-
-    if (window->glMajor < wndconfig.glMajor ||
-        (window->glMajor == wndconfig.glMajor &&
-         window->glMinor < wndconfig.glMinor))
+    if (!_glfwIsValidContext(window, &wndconfig))
     {
-        // The desired OpenGL version is greater than the actual version
-        // This only happens if the machine lacks {GLX|WGL}_ARB_create_context
-        // /and/ the user has requested an OpenGL version greater than 1.0
-
-        // For API consistency, we emulate the behavior of the
-        // {GLX|WGL}_ARB_create_context extension and fail here
-
         glfwCloseWindow(window);
-        _glfwSetError(GLFW_VERSION_UNAVAILABLE, "glfwOpenWindow: The requested OpenGL version is not available");
         return GL_FALSE;
-    }
-
-    if (window->glMajor > 2)
-    {
-        // OpenGL 3.0+ uses a different function for extension string retrieval
-        // We cache it here instead of in glfwExtensionSupported mostly to alert
-        // users as early as possible that their build may be broken
-
-        window->GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
-        if (!window->GetStringi)
-        {
-            // This is a very common problem among people who compile GLFW
-            // on X11/GLX using custom build systems, as it needs explicit
-            // configuration in order to work
-
-            glfwCloseWindow(window);
-            _glfwSetError(GLFW_PLATFORM_ERROR, "glfwOpenWindow: Entry point retrieval is broken; see the build documentation for your platform");
-            return GL_FALSE;
-        }
     }
 
     // The GLFW specification states that fullscreen windows have the cursor

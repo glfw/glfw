@@ -35,16 +35,6 @@
 #include <stdlib.h>
 
 
-//========================================================================
-// Terminate GLFW when exiting application
-//========================================================================
-
-static void glfw_atexit(void)
-{
-    glfwTerminate();
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -125,7 +115,7 @@ GLFWAPI int glfwInitWithModels(GLFWthreadmodel* threading, GLFWallocator* alloca
         return GL_FALSE;
     }
 
-    atexit(glfw_atexit);
+    atexit(glfwTerminate);
 
     _glfwInitialized = GL_TRUE;
 

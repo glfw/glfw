@@ -201,10 +201,10 @@ static GLboolean isValidContextConfig(_GLFWwndconfig* wndconfig)
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Clear all open window hints
+// Reset all window hints to their default values
 //========================================================================
 
-void _glfwClearWindowHints(void)
+void _glfwSetDefaultWindowHints(void)
 {
     memset(&_glfwLibrary.hints, 0, sizeof(_glfwLibrary.hints));
 
@@ -399,8 +399,8 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     wndconfig.glProfile      = _glfwLibrary.hints.glProfile;
     wndconfig.share          = share;
 
-    // Clear for next open call
-    _glfwClearWindowHints();
+    // Reset to default values for the next call
+    _glfwSetDefaultWindowHints();
 
     // Check the OpenGL bits of the window config
     if (!isValidContextConfig(&wndconfig))

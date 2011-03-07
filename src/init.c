@@ -105,9 +105,9 @@ GLFWAPI int glfwInitWithModels(GLFWthreadmodel* threading, GLFWallocator* alloca
         _glfwLibrary.allocator.free = free;
     }
 
-    // Not all window hints are cleared to zero, so this needs to be here
-    // despite the memset above
-    _glfwClearWindowHints();
+    // Not all window hints have zero as their default value, so this
+    // needs to be here despite the memset above
+    _glfwSetDefaultWindowHints();
 
     if (!_glfwPlatformInit())
     {

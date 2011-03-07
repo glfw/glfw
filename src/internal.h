@@ -324,7 +324,7 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 void _glfwSetError(int error, const char* description);
 
 // Window management (window.c)
-void _glfwClearWindowHints(void);
+void _glfwSetDefaultWindowHints(void);
 
 // Input handling (window.c)
 void _glfwInputKey(_GLFWwindow* window, int key, int action);

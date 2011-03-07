@@ -327,17 +327,8 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
         return NULL;
     }
 
-    window = (_GLFWwindow*) _glfwMalloc(sizeof(_GLFWwindow));
-    if (!window)
-    {
-        _glfwSetError(GLFW_OUT_OF_MEMORY, "glfwOpenWindow: Failed to allocate window structure");
-        return NULL;
-    }
-
-    memset(window, 0, sizeof(_GLFWwindow));
-
-    window->next = _glfwLibrary.windowListHead;
-    _glfwLibrary.windowListHead = window;
+    // We need to copy these values before doing anything that can fail, as the
+    // window hints should be cleared after each call even if it fails
 
     // Set up desired framebuffer config
     fbconfig.redBits        = Max(_glfwLibrary.hints.redBits, 0);
@@ -371,14 +362,10 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
 
     // Check the OpenGL bits of the window config
     if (!isValidContextConfig(&wndconfig))
-    {
-        glfwCloseWindow(window);
         return GL_FALSE;
-    }
 
     if (mode != GLFW_WINDOWED && mode != GLFW_FULLSCREEN)
     {
-        glfwCloseWindow(window);
         _glfwSetError(GLFW_INVALID_ENUM, "glfwOpenWindow: Invalid enum for 'mode' parameter");
         return GL_FALSE;
     }
@@ -400,6 +387,18 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
         width  = 640;
         height = 480;
     }
+
+    window = (_GLFWwindow*) _glfwMalloc(sizeof(_GLFWwindow));
+    if (!window)
+    {
+        _glfwSetError(GLFW_OUT_OF_MEMORY, "glfwOpenWindow: Failed to allocate window structure");
+        return NULL;
+    }
+
+    memset(window, 0, sizeof(_GLFWwindow));
+
+    window->next = _glfwLibrary.windowListHead;
+    _glfwLibrary.windowListHead = window;
 
     // Remember window settings
     window->width  = width;

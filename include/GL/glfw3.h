@@ -451,6 +451,19 @@ extern "C" {
 /* Window handle type */
 typedef void* GLFWwindow;
 
+/* Function pointer types */
+typedef void (* GLFWerrorfun)(int,const char*);
+typedef void (* GLFWwindowsizefun)(GLFWwindow,int,int);
+typedef int  (* GLFWwindowclosefun)(GLFWwindow);
+typedef void (* GLFWwindowrefreshfun)(GLFWwindow);
+typedef void (* GLFWwindowfocusfun)(GLFWwindow,int);
+typedef void (* GLFWwindowiconifyfun)(GLFWwindow,int);
+typedef void (* GLFWmousebuttonfun)(GLFWwindow,int,int);
+typedef void (* GLFWmouseposfun)(GLFWwindow,int,int);
+typedef void (* GLFWscrollfun)(GLFWwindow,int,int);
+typedef void (* GLFWkeyfun)(GLFWwindow,int,int);
+typedef void (* GLFWcharfun)(GLFWwindow,int);
+
 /* The video mode structure used by glfwGetVideoModes */
 typedef struct
 {
@@ -468,19 +481,6 @@ typedef struct
     unsigned short green[GLFW_GAMMA_RAMP_SIZE];
     unsigned short blue[GLFW_GAMMA_RAMP_SIZE];
 } GLFWgammaramp;
-
-/* Function pointer types */
-typedef void (* GLFWerrorfun)(int,const char*);
-typedef void (* GLFWwindowsizefun)(GLFWwindow,int,int);
-typedef int  (* GLFWwindowclosefun)(GLFWwindow);
-typedef void (* GLFWwindowrefreshfun)(GLFWwindow);
-typedef void (* GLFWwindowfocusfun)(GLFWwindow,int);
-typedef void (* GLFWwindowiconifyfun)(GLFWwindow,int);
-typedef void (* GLFWmousebuttonfun)(GLFWwindow,int,int);
-typedef void (* GLFWmouseposfun)(GLFWwindow,int,int);
-typedef void (* GLFWscrollfun)(GLFWwindow,int,int);
-typedef void (* GLFWkeyfun)(GLFWwindow,int,int);
-typedef void (* GLFWcharfun)(GLFWwindow,int);
 
 
 /*************************************************************************

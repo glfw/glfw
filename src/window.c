@@ -86,39 +86,6 @@ static void clearScrollOffsets(void)
 
 
 //========================================================================
-// Clear all input state for the specified window
-//========================================================================
-
-static void clearInputState(_GLFWwindow* window)
-{
-    int i;
-
-    // Release all keyboard keys
-    for (i = 0;  i <= GLFW_KEY_LAST;  i++)
-        window->key[i] = GLFW_RELEASE;
-
-    // Release all mouse buttons
-    for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
-        window->mouseButton[i] = GLFW_RELEASE;
-
-    // Set mouse position to (0,0)
-    window->mousePosX = 0;
-    window->mousePosY = 0;
-
-    // Set scroll offsets to (0,0)
-    window->scrollX = 0;
-    window->scrollY = 0;
-
-    // The default is to use non sticky keys and mouse buttons
-    window->stickyKeys = GL_FALSE;
-    window->stickyMouseButtons = GL_FALSE;
-
-    // The default is to disable key repeat
-    window->keyRepeat = GL_FALSE;
-}
-
-
-//========================================================================
 // Checks whether the OpenGL part of the window config is sane
 //========================================================================
 
@@ -415,8 +382,6 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
         _glfwSetError(GLFW_INVALID_ENUM, "glfwOpenWindow: Invalid enum for 'mode' parameter");
         return GL_FALSE;
     }
-
-    clearInputState(window);
 
     // Check width & height
     if (width > 0 && height <= 0)

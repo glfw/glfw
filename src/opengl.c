@@ -206,7 +206,6 @@ void _glfwParseGLVersion(int* major, int* minor, int* rev)
     const GLubyte* ptr;
     const char* glesPrefix = "OpenGL ES ";
 
-    // Get OpenGL version string
     version = glGetString(GL_VERSION);
     if (!version)
         return;
@@ -219,7 +218,8 @@ void _glfwParseGLVersion(int* major, int* minor, int* rev)
         version += strlen(glesPrefix);
     }
 
-    // Parse string
+    // Parse version from string
+
     ptr = version;
     for (_major = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
         _major = 10 * _major + (*ptr - '0');
@@ -238,7 +238,7 @@ void _glfwParseGLVersion(int* major, int* minor, int* rev)
         }
     }
 
-    // Return parsed values
+    // Store result
     *major = _major;
     *minor = _minor;
     *rev = _rev;

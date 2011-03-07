@@ -360,7 +360,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
         return NULL;
     }
 
-    window = (_GLFWwindow*) malloc(sizeof(_GLFWwindow));
+    window = (_GLFWwindow*) _glfwMalloc(sizeof(_GLFWwindow));
     if (!window)
     {
         _glfwSetError(GLFW_OUT_OF_MEMORY, "glfwOpenWindow: Failed to allocate window structure");
@@ -692,7 +692,7 @@ GLFWAPI void glfwCloseWindow(GLFWwindow handle)
         *prev = window->next;
     }
 
-    free(window);
+    _glfwFree(window);
 }
 
 

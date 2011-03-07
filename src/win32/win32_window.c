@@ -188,7 +188,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         return NULL;
     }
 
-    result = (_GLFWfbconfig*) malloc(sizeof(_GLFWfbconfig) * count);
+    result = (_GLFWfbconfig*) _glfwMalloc(sizeof(_GLFWfbconfig) * count);
     if (!result)
     {
         _glfwSetError(GLFW_OUT_OF_MEMORY, "Win32/WGL: Failed to allocate _GLFWfbconfig array");
@@ -1182,13 +1182,13 @@ static int choosePixelFormat(_GLFWwindow* window, const _GLFWfbconfig* fbconfig)
     closest = _glfwChooseFBConfig(fbconfig, fbconfigs, fbcount);
     if (!closest)
     {
-        free(fbconfigs);
+        _glfwFree(fbconfigs);
         return 0;
     }
 
     pixelFormat = (int) closest->platformID;
 
-    free(fbconfigs);
+    _glfwFree(fbconfigs);
     fbconfigs = NULL;
     closest = NULL;
 

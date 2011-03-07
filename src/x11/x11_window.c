@@ -304,7 +304,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         }
     }
 
-    result = (_GLFWfbconfig*) malloc(sizeof(_GLFWfbconfig) * count);
+    result = (_GLFWfbconfig*) _glfwMalloc(sizeof(_GLFWfbconfig) * count);
     if (!result)
     {
         _glfwSetError(GLFW_OUT_OF_MEMORY, "X11/GLX: Failed to allocate _GLFWfbconfig array");
@@ -1341,12 +1341,12 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         result = _glfwChooseFBConfig(fbconfig, fbconfigs, fbcount);
         if (!result)
         {
-            free(fbconfigs);
+            _glfwFree(fbconfigs);
             return GL_FALSE;
         }
 
         closest = *result;
-        free(fbconfigs);
+        _glfwFree(fbconfigs);
     }
 
     if (!createContext(window, wndconfig, (GLXFBConfigID) closest.platformID))

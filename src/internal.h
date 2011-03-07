@@ -228,6 +228,9 @@ struct _GLFWlibrary
     GLFWkeyfun           keyCallback;
     GLFWcharfun          charCallback;
 
+    GLFWthreadmodel      threading;
+    GLFWallocator        allocator;
+
     GLFWgammaramp currentRamp;
     GLFWgammaramp originalRamp;
     int           originalRampSize;
@@ -309,6 +312,10 @@ void* _glfwPlatformGetProcAddress(const char* procname);
 //========================================================================
 // Prototypes for platform independent internal functions
 //========================================================================
+
+// Memory management (init.c)
+void* _glfwMalloc(size_t size);
+void _glfwFree(void* ptr);
 
 // Fullscren management (fullscreen.c)
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);

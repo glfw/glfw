@@ -356,7 +356,7 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
         return 0;
     }
 
-    rgbarray = (int*) malloc(sizeof(int) * viscount);
+    rgbarray = (int*) _glfwMalloc(sizeof(int) * viscount);
     rgbcount = 0;
 
     // Build RGB array
@@ -400,7 +400,7 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
         sc = XRRGetScreenInfo(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
         sizelist = XRRConfigSizes(sc, &sizecount);
 
-        resarray = (struct _glfwResolution*) malloc(sizeof(struct _glfwResolution) * sizecount);
+        resarray = (struct _glfwResolution*) _glfwMalloc(sizeof(struct _glfwResolution) * sizecount);
 
         for (k = 0;  k < sizecount;  k++)
         {
@@ -417,7 +417,7 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
 #if defined(_GLFW_HAS_XF86VIDMODE)
         XF86VidModeGetAllModeLines(_glfwLibrary.X11.display, screen, &modecount, &modelist);
 
-        resarray = (struct _glfwResolution*) malloc(sizeof(struct _glfwResolution) * modecount);
+        resarray = (struct _glfwResolution*) _glfwMalloc(sizeof(struct _glfwResolution) * modecount);
 
         for (k = 0;  k < modecount;  k++)
         {
@@ -446,7 +446,7 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
     if (!resarray)
     {
         rescount = 1;
-        resarray = (struct _glfwResolution*) malloc(sizeof(struct _glfwResolution) * rescount);
+        resarray = (struct _glfwResolution*) _glfwMalloc(sizeof(struct _glfwResolution) * rescount);
 
         resarray[0].width = DisplayWidth(_glfwLibrary.X11.display, screen);
         resarray[0].height = DisplayHeight(_glfwLibrary.X11.display, screen);
@@ -470,8 +470,8 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
     // Free visuals list
     XFree(vislist);
 
-    free(resarray);
-    free(rgbarray);
+    _glfwFree(resarray);
+    _glfwFree(rgbarray);
 
     return count;
 }

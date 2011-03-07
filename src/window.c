@@ -208,7 +208,7 @@ void _glfwSetDefaultWindowHints(void)
 {
     memset(&_glfwLibrary.hints, 0, sizeof(_glfwLibrary.hints));
 
-    // The default OpenGL version is 1.0
+    // The default minimum OpenGL version is 1.0
     _glfwLibrary.hints.glMajor = 1;
     _glfwLibrary.hints.glMinor = 0;
 }

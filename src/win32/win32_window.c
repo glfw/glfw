@@ -323,7 +323,7 @@ static GLboolean createContext(_GLFWwindow* window,
                                int pixelFormat)
 {
     PIXELFORMATDESCRIPTOR pfd;
-    int i = 0, attribs[9];
+    int i = 0, attribs[40];
     HGLRC share = NULL;
 
     if (wndconfig->share)
@@ -355,7 +355,7 @@ static GLboolean createContext(_GLFWwindow* window,
             attribs[i++] = wndconfig->glMinor;
         }
 
-        if (wndconfig->glForward || wndconfig->glDebug)
+        if (wndconfig->glForward || wndconfig->glDebug || wndconfig->glRobustness)
         {
             int flags = 0;
 
@@ -364,6 +364,9 @@ static GLboolean createContext(_GLFWwindow* window,
 
             if (wndconfig->glDebug)
                 flags |= WGL_CONTEXT_DEBUG_BIT_ARB;
+
+            if (wndconfig->glRobustness)
+                flags |= WGL_CONTEXT_ROBUST_ACCESS_BIT_ARB;
 
             attribs[i++] = WGL_CONTEXT_FLAGS_ARB;
             attribs[i++] = flags;
@@ -395,6 +398,25 @@ static GLboolean createContext(_GLFWwindow* window,
 
             attribs[i++] = WGL_CONTEXT_PROFILE_MASK_ARB;
             attribs[i++] = flags;
+        }
+
+        if (wndconfig->glRobustness)
+        {
+            int strategy;
+
+            if (!window->WGL.has_WGL_ARB_create_context_robustness)
+            {
+                _glfwSetError(GLFW_VERSION_UNAVAILABLE, "Win32/WGL: An OpenGL robustness strategy was requested but WGL_ARB_create_context_robustness is unavailable");
+                return GL_FALSE;
+            }
+
+            if (wndconfig->glRobustness == GLFW_OPENGL_NO_RESET_NOTIFICATION)
+                strategy = WGL_NO_RESET_NOTIFICATION_ARB;
+            else if (wndconfig->glRobustness == GLFW_OPENGL_LOSE_CONTEXT_ON_RESET)
+                strategy = WGL_LOSE_CONTEXT_ON_RESET_ARB;
+
+            attribs[i++] = WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB;
+            attribs[i++] = strategy;
         }
 
         attribs[i++] = 0;
@@ -1067,6 +1089,7 @@ static void initWGLExtensions(_GLFWwindow* window)
     window->WGL.has_WGL_ARB_create_context = GL_FALSE;
     window->WGL.has_WGL_ARB_create_context_profile = GL_FALSE;
     window->WGL.has_WGL_EXT_create_context_es2_profile = GL_FALSE;
+    window->WGL.has_WGL_EXT_create_context_robustness = GL_FALSE;
     window->WGL.has_WGL_EXT_swap_control = GL_FALSE;
     window->WGL.has_WGL_ARB_pixel_format = GL_FALSE;
 
@@ -1103,6 +1126,12 @@ static void initWGLExtensions(_GLFWwindow* window)
     {
         if (_glfwPlatformExtensionSupported("WGL_EXT_create_context_es2_profile"))
             window->WGL.has_WGL_EXT_create_context_es2_profile = GL_TRUE;
+    }
+
+    if (window->WGL.has_WGL_ARB_create_context)
+    {
+        if (_glfwPlatformExtensionSupported("WGL_ARB_create_context_robustness"))
+            window->WGL.has_WGL_EXT_create_context_robustness = GL_TRUE;
     }
 
     if (_glfwPlatformExtensionSupported("WGL_EXT_swap_control"))

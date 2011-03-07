@@ -99,6 +99,7 @@ struct _GLFWhints
     GLboolean   glForward;
     GLboolean   glDebug;
     int         glProfile;
+    int         glRobustness;
 };
 
 
@@ -119,6 +120,7 @@ struct _GLFWwndconfig
     GLboolean     glForward;
     GLboolean     glDebug;
     int           glProfile;
+    int           glRobustness;
     _GLFWwindow*  share;
 };
 
@@ -196,6 +198,7 @@ struct _GLFWwindow
     int       glMajor, glMinor, glRevision;
     GLboolean glForward, glDebug;
     int       glProfile;
+    int       glRobustness;
     PFNGLGETSTRINGIPROC GetStringi;
 
     // These are defined in the current port's platform.h

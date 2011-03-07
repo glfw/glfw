@@ -445,7 +445,7 @@ static int createContext(_GLFWwindow* window,
             setGLXattrib(attribs, index, GLX_CONTEXT_MINOR_VERSION_ARB, wndconfig->glMinor);
         }
 
-        if (wndconfig->glForward || wndconfig->glDebug)
+        if (wndconfig->glForward || wndconfig->glDebug || wndconfig->glRobustness)
         {
             int flags = 0;
 
@@ -454,6 +454,9 @@ static int createContext(_GLFWwindow* window,
 
             if (wndconfig->glDebug)
                 flags |= GLX_CONTEXT_DEBUG_BIT_ARB;
+
+            if (wndconfig->glRobustness)
+                flags |= GLX_CONTEXT_ROBUST_ACCESS_BIT_ARB;
 
             setGLXattrib(attribs, index, GLX_CONTEXT_FLAGS_ARB, flags);
         }
@@ -483,6 +486,24 @@ static int createContext(_GLFWwindow* window,
                 flags = GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
 
             setGLXattrib(attribs, index, GLX_CONTEXT_PROFILE_MASK_ARB, flags);
+        }
+
+        if (wndconfig->glRobustness)
+        {
+            int strategy;
+
+            if (!window->GLX.has_GLX_ARB_create_context_robustness)
+            {
+                _glfwSetError(GLFW_VERSION_UNAVAILABLE, "X11/GLX: An OpenGL robustness strategy was requested but GLX_ARB_create_context_robustness is unavailable");
+                return GL_FALSE;
+            }
+
+            if (wndconfig->glRobustness == GLFW_OPENGL_NO_RESET_NOTIFICATION)
+                strategy = GLX_NO_RESET_NOTIFICATION_ARB;
+            else if (wndconfig->glRobustness == GLFW_OPENGL_LOSE_CONTEXT_ON_RESET)
+                strategy = GLX_LOSE_CONTEXT_ON_RESET_ARB;
+
+            setGLXattrib(attribs, index, GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB, strategy);
         }
 
         setGLXattrib(attribs, index, None, None);
@@ -612,6 +633,12 @@ static void initGLXExtensions(_GLFWwindow* window)
     {
         if (_glfwPlatformExtensionSupported("GLX_EXT_create_context_es2_profile"))
             window->GLX.has_GLX_EXT_create_context_es2_profile = GL_TRUE;
+    }
+
+    if (window->GLX.has_GLX_ARB_create_context)
+    {
+        if (_glfwPlatformExtensionSupported("GLX_ARB_create_context_robustness"))
+            window->GLX.has_GLX_ARB_create_context_robustness = GL_TRUE;
     }
 }
 

@@ -320,6 +320,16 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
         return GL_FALSE;
     }
 
+    if (wndconfig->glRobustness)
+    {
+        if (wndconfig->glRobustness != GLFW_OPENGL_NO_RESET_NOTIFICATION &&
+            wndconfig->glRobustness != GLFW_OPENGL_LOSE_CONTEXT_ON_RESET)
+        {
+            _glfwSetError(GLFW_INVALID_VALUE, "glfwOpenWindow: Invalid OpenGL robustness mode requested");
+            return GL_FALSE;
+        }
+    }
+
     return GL_TRUE;
 }
 
@@ -335,6 +345,7 @@ GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
     // As these are hard constraints when non-zero, we can simply copy them
     window->glProfile = wndconfig->glProfile;
     window->glForward = wndconfig->glForward;
+    window->glRobustness = wndconfig->glRobustness;
 
     if (window->glMajor < wndconfig->glMajor ||
         (window->glMajor == wndconfig->glMajor &&

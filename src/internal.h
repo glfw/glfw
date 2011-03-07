@@ -313,7 +313,7 @@ void* _glfwPlatformGetProcAddress(const char* procname);
 // Fullscren management (fullscreen.c)
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 
-// Error handling
+// Error handling (error.c)
 void _glfwSetError(int error, const char* description);
 
 // Window management (window.c)
@@ -326,11 +326,9 @@ void _glfwInputScroll(_GLFWwindow* window, int x, int y);
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action);
 void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated);
 
-// OpenGL extensions (glext.c)
+// OpenGL context helpers (opengl.c)
 void _glfwParseGLVersion(int* major, int* minor, int* rev);
 int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);
-
-// Framebuffer configs
 const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
                                          const _GLFWfbconfig* alternatives,
                                          unsigned int count);

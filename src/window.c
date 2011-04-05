@@ -523,6 +523,10 @@ GLFWAPI void glfwCloseWindow(GLFWwindow handle)
 
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
+    // Allow closing of NULL (to match the behavior of free)
+    if (window == NULL)
+        return;
+
     // Show mouse pointer again (if hidden)
     if (window == _glfwLibrary.cursorLockWindow)
         glfwEnable(window, GLFW_MOUSE_CURSOR);

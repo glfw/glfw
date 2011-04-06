@@ -365,13 +365,13 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
 
 GLFWAPI void glfwMakeWindowCurrent(GLFWwindow handle)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
-
-    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     if (_glfwLibrary.currentWindow == window)
         return;
@@ -388,14 +388,13 @@ GLFWAPI void glfwMakeWindowCurrent(GLFWwindow handle)
 GLFWAPI int glfwIsWindow(GLFWwindow handle)
 {
     _GLFWwindow* entry;
+    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return GL_FALSE;
     }
-
-    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     if (window == NULL)
         return GL_FALSE;
@@ -515,13 +514,13 @@ GLFWAPI void glfwOpenWindowHint(int target, int hint)
 
 GLFWAPI void glfwCloseWindow(GLFWwindow handle)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
-
-    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     // Allow closing of NULL (to match the behavior of free)
     if (window == NULL)
@@ -561,13 +560,13 @@ GLFWAPI void glfwCloseWindow(GLFWwindow handle)
 
 GLFWAPI void glfwSetWindowTitle(GLFWwindow handle, const char* title)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
-
-    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     _glfwPlatformSetWindowTitle(window, title);
 }
@@ -579,13 +578,13 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow handle, const char* title)
 
 GLFWAPI void glfwGetWindowSize(GLFWwindow handle, int* width, int* height)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
-
-    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     if (width != NULL)
         *width = window->width;
@@ -601,13 +600,13 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow handle, int* width, int* height)
 
 GLFWAPI void glfwSetWindowSize(GLFWwindow handle, int width, int height)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
-
-    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     if (window->iconified)
     {
@@ -636,13 +635,13 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow handle, int width, int height)
 
 GLFWAPI void glfwGetWindowPos(GLFWwindow handle, int* xpos, int* ypos)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
-
-    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     if (xpos != NULL)
         *xpos = window->positionX;
@@ -658,13 +657,13 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow handle, int* xpos, int* ypos)
 
 GLFWAPI void glfwSetWindowPos(GLFWwindow handle, int xpos, int ypos)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
-
-    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     if (window->mode == GLFW_FULLSCREEN || window->iconified)
     {
@@ -682,13 +681,13 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow handle, int xpos, int ypos)
 
 GLFWAPI void glfwIconifyWindow(GLFWwindow handle)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
-
-    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     if (window->iconified)
         return;
@@ -703,13 +702,13 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow handle)
 
 GLFWAPI void glfwRestoreWindow(GLFWwindow handle)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
-
-    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     if (!window->iconified)
         return;
@@ -728,13 +727,13 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow handle)
 
 GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return 0;
     }
-
-    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     switch (param)
     {
@@ -799,13 +798,13 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
 
 GLFWAPI void glfwSetWindowUserPointer(GLFWwindow handle, void* pointer)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
-
-    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     window->userPointer = pointer;
 }
@@ -817,13 +816,13 @@ GLFWAPI void glfwSetWindowUserPointer(GLFWwindow handle, void* pointer)
 
 GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow handle)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return NULL;
     }
-
-    _GLFWwindow* window = (_GLFWwindow*) handle;
 
     return window->userPointer;
 }

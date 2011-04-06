@@ -86,8 +86,8 @@ static int setMinMaxAnimations(int enable)
 
 //========================================================================
 // Focus the window and bring it to the top of the stack
-// Due to some nastiness with how Win98/ME/2k/XP handles SetForegroundWindow,
-// we have to go through some really bizarre measures to achieve this
+// Due to some nastiness with how XP handles SetForegroundWindow we have
+// to go through some really bizarre measures to achieve this
 //========================================================================
 
 static void setForegroundWindow(HWND hWnd)
@@ -200,8 +200,6 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         if (window->WGL.has_WGL_ARB_pixel_format)
         {
             // Get pixel format attributes through WGL_ARB_pixel_format
-
-            // Only consider doublebuffered OpenGL pixel formats for windows
             if (!getPixelFormatAttrib(window, i, WGL_SUPPORT_OPENGL_ARB) ||
                 !getPixelFormatAttrib(window, i, WGL_DRAW_TO_WINDOW_ARB) ||
                 !getPixelFormatAttrib(window, i, WGL_DOUBLE_BUFFER_ARB))
@@ -209,14 +207,12 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
                 continue;
             }
 
-            // Only consider RGBA pixel formats
             if (getPixelFormatAttrib(window, i, WGL_PIXEL_TYPE_ARB) !=
                 WGL_TYPE_RGBA_ARB)
             {
                 continue;
             }
 
-            // Only consider "hardware-accelerated" pixel formats
             if (getPixelFormatAttrib(window, i, WGL_ACCELERATION_ARB) ==
                  WGL_NO_ACCELERATION_ARB)
             {
@@ -266,7 +262,6 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
             if (!_glfw_DescribePixelFormat(window->WGL.DC, i, sizeof(PIXELFORMATDESCRIPTOR), &pfd))
                 continue;
 
-            // Only consider doublebuffered OpenGL pixel formats for windows
             if (!(pfd.dwFlags & PFD_DRAW_TO_WINDOW) ||
                 !(pfd.dwFlags & PFD_SUPPORT_OPENGL) ||
                 !(pfd.dwFlags & PFD_DOUBLEBUFFER))
@@ -274,14 +269,12 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
                 continue;
             }
 
-            // Only consider "hardware-accelerated" pixel formats
             if (!(pfd.dwFlags & PFD_GENERIC_ACCELERATED) &&
                 (pfd.dwFlags & PFD_GENERIC_FORMAT))
             {
                 continue;
             }
 
-            // Only RGBA pixel formats considered
             if (pfd.iPixelType != PFD_TYPE_RGBA)
                 continue;
 

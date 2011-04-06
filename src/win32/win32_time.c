@@ -43,27 +43,16 @@ void _glfwInitTimer(void)
 {
     __int64 freq;
 
-    // Check if we have a performance counter
     if (QueryPerformanceFrequency((LARGE_INTEGER*) &freq))
     {
-        // Performance counter is available => use it!
         _glfwLibrary.Win32.timer.hasPerformanceCounter = GL_TRUE;
-
-        // Counter resolution is 1 / counter frequency
         _glfwLibrary.Win32.timer.resolution = 1.0 / (double) freq;
-
-        // Set start time for timer
         QueryPerformanceCounter((LARGE_INTEGER*) &_glfwLibrary.Win32.timer.t0_64);
     }
     else
     {
-        // No performace counter available => use the tick counter
         _glfwLibrary.Win32.timer.hasPerformanceCounter = GL_FALSE;
-
-        // Counter resolution is 1 ms
-        _glfwLibrary.Win32.timer.resolution = 0.001;
-
-        // Set start time for timer
+        _glfwLibrary.Win32.timer.resolution = 0.001; // winmm resolution is 1 ms
         _glfwLibrary.Win32.timer.t0_32 = _glfw_timeGetTime();
     }
 }
@@ -90,7 +79,6 @@ double _glfwPlatformGetTime(void)
     else
         t = (double)(_glfw_timeGetTime() - _glfwLibrary.Win32.timer.t0_32);
 
-    // Calculate the current time in seconds
     return t * _glfwLibrary.Win32.timer.resolution;
 }
 

@@ -500,6 +500,7 @@ typedef struct
 /* Custom threading model interface */
 typedef struct
 {
+    int dummy;
 } GLFWthreadmodel;
 
 

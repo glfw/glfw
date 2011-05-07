@@ -100,7 +100,7 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 // Get a list of available video modes
 //========================================================================
 
-GLFWAPI int glfwGetVideoModes(GLFWvidmode* list, int maxcount)
+GLFWAPI int glfwGetVideoModes(GLFWdisplay display, GLFWvidmode* list, int maxcount)
 {
     int count;
 

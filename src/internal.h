@@ -76,6 +76,7 @@ typedef struct _GLFWwndconfig _GLFWwndconfig;
 typedef struct _GLFWfbconfig _GLFWfbconfig;
 typedef struct _GLFWwindow _GLFWwindow;
 typedef struct _GLFWlibrary _GLFWlibrary;
+typedef struct _GLFWdisplay _GLFWdisplay;
 
 
 //------------------------------------------------------------------------
@@ -216,6 +217,24 @@ struct _GLFWwindow
 
 
 //------------------------------------------------------------------------
+// Display structure
+//------------------------------------------------------------------------
+struct _GLFWdisplay
+{
+    struct _GLFWdisplay* next;
+
+    void*     userPointer;
+
+    char      deviceName[GLFW_DISPLAY_PARAM_S_NAME_LEN+1];
+    // physical dimensions in millimeters.
+    int       physicalWidth;
+    int       physicalHeight;
+    // logical orientation of the screen on the desktop
+    int       screenXPosition;
+    int       screenYPosition;
+};
+
+//------------------------------------------------------------------------
 // Library global data
 //------------------------------------------------------------------------
 struct _GLFWlibrary
@@ -225,6 +244,8 @@ struct _GLFWlibrary
     _GLFWwindow*  windowListHead;
     _GLFWwindow*  currentWindow;
     _GLFWwindow*  activeWindow;
+    _GLFWwindow*  cursorLockWindow;
+    _GLFWdisplay* displayListHead;
 
     GLFWwindowsizefun    windowSizeCallback;
     GLFWwindowclosefun   windowCloseCallback;

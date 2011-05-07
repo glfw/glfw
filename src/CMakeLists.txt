@@ -27,7 +27,7 @@ include_directories(${GLFW_SOURCE_DIR}/src
                     ${GLFW_BINARY_DIR}/src
                     ${GLFW_INCLUDE_DIR})
 
-set(common_SOURCES enable.c error.c fullscreen.c gamma.c init.c input.c
+set(common_SOURCES display.c enable.c error.c fullscreen.c gamma.c init.c input.c
                    joystick.c opengl.c time.c window.c)
 
 if(_GLFW_COCOA_NSGL)
@@ -43,8 +43,8 @@ elseif(_GLFW_WIN32_WGL)
                         win32_opengl.c win32_time.c win32_window.c
                         win32_dllmain.c)
 elseif(_GLFW_X11_GLX)
-    set(libglfw_SOURCES ${common_SOURCES} x11_enable.c x11_fullscreen.c
-                        x11_gamma.c x11_init.c x11_joystick.c
+    set(libglfw_SOURCES ${common_SOURCES} x11_display.c x11_enable.c
+                        x11_fullscreen.c x11_gamma.c x11_init.c x11_joystick.c
                         x11_keysym2unicode.c x11_opengl.c x11_time.c
                         x11_window.c)
 else()

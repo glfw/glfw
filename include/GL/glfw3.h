@@ -539,8 +539,36 @@ GLFWAPI int glfwGetError(void);
 GLFWAPI const char* glfwErrorString(int error);
 GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
 
+/* Display constants */
+#define GLFW_DISPLAY_INVALID_HANDLE          (NULL)
+#define GLFW_DISPLAY_CONNECTED               0
+#define GLFW_DISPLAY_DISCONNECTED            1
+#define GLFW_DISPLAY_PARAM_S_NAME            0
+#define GLFW_DISPLAY_PARAM_I_PHYS_WIDTH      1
+#define GLFW_DISPLAY_PARAM_I_PHYS_HEIGHT     2
+#define GLFW_DISPLAY_PARAM_I_SCREEN_X_POS    3
+#define GLFW_DISPLAY_PARAM_I_SCREEN_Y_POS    4
+#define GLFW_DISPLAY_PARAM_S_NAME_LEN        30
+
+/* Display types */
+typedef struct _GLFWdisplay* GLFWdisplay;
+typedef void (* GLFWdisplaydevicefun)(GLFWdisplay,int); /* connect / disconnect */
+
+/* Display callback registration */
+GLFWAPI void glfwSetDisplayDeviceCallback(GLFWdisplaydevicefun cbfun);
+
+/* Display attributes */
+GLFWAPI void        glfwSetDisplayUserPointer(GLFWdisplay display, void* pointer);
+GLFWAPI void*       glfwGetDisplayUserPointer(GLFWdisplay display);
+GLFWAPI int         glfwGetDisplayIntegerParam(GLFWdisplay display, int param);
+GLFWAPI const char* glfwGetDisplayStringParam(GLFWdisplay display, int param);
+
+/* Display discovery */
+GLFWAPI GLFWdisplay glfwGetNextDisplay(GLFWdisplay iterator);
+
+
 /* Video mode functions */
-GLFWAPI int  glfwGetVideoModes(GLFWvidmode* list, int maxcount);
+GLFWAPI int  glfwGetVideoModes(GLFWdisplay display, GLFWvidmode* list, int maxcount);
 GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode);
 
 /* Gamma ramp functions */

@@ -261,6 +261,10 @@ void _glfwRestoreVideoMode(int screen);
 void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
+// Displays
+void _glfwInitDisplays(void);
+void _glfwTerminateDisplays(void);
+
 // Unicode support
 long _glfwKeySym2Unicode(KeySym keysym);
 

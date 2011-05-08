@@ -606,6 +606,12 @@ GLFWAPI void glfwCopyGLState(GLFWwindow hsrc, GLFWwindow hdst, unsigned long mas
     src = (_GLFWwindow*) hsrc;
     dst = (_GLFWwindow*) hdst;
 
+    if (_glfwLibrary.currentWindow == dst)
+    {
+        _glfwSetError(GLFW_INVALID_VALUE, "Cannot copy OpenGL state to a current context");
+        return;
+    }
+
     _glfwPlatformCopyGLState(src, dst, mask);
 }
 

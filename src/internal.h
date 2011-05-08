@@ -310,6 +310,7 @@ void _glfwPlatformSwapInterval(int interval);
 void _glfwPlatformRefreshWindowParams(void);
 int  _glfwPlatformExtensionSupported(const char* extension);
 void* _glfwPlatformGetProcAddress(const char* procname);
+void _glfwPlatformCopyGLState(_GLFWwindow* src, _GLFWwindow* dst, unsigned long mask);
 
 
 //========================================================================

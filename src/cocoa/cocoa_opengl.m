@@ -86,3 +86,12 @@ void* _glfwPlatformGetProcAddress(const char* procname)
     return symbol;
 }
 
+//========================================================================
+// Copies the specified OpenGL state categories from src to dst
+//========================================================================
+
+void _glfwPlatformCopyGLState(_GLFWwindow* src, _GLFWwindow* dst, unsigned long mask)
+{
+    [dst->NSGL.context copyAttributesFromContext:src->NSGL.context withMask:mask];
+}
+

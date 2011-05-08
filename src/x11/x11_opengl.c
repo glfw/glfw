@@ -116,3 +116,16 @@ void* _glfwPlatformGetProcAddress(const char* procname)
     return (void*) _glfw_glXGetProcAddress((const GLubyte*) procname);
 }
 
+
+//========================================================================
+// Copies the specified OpenGL state categories from src to dst
+//========================================================================
+
+void _glfwPlatformCopyGLState(_GLFWwindow* src, _GLFWwindow* dst, unsigned long mask)
+{
+    glXCopyContext(_glfwLibrary.X11.display,
+                   src->GLX.context,
+                   dst->GLX.context,
+                   mask);
+}
+

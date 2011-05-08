@@ -103,3 +103,14 @@ void* _glfwPlatformGetProcAddress(const char* procname)
     return (void*) wglGetProcAddress(procname);
 }
 
+
+//========================================================================
+// Copies the specified OpenGL state categories from src to dst
+//========================================================================
+
+void _glfwPlatformCopyGLState(_GLFWwindow* src, _GLFWwindow* dst, unsigned long mask)
+{
+    if (!wglCopyContext(src->WGL.context, dst->WGL.context, mask))
+        _glfwSetError(GLFW_PLATFORM_ERROR, "Win32/WGL: Failed to copy OpenGL context attributes");
+}
+

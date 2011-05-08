@@ -583,6 +583,7 @@ GLFWAPI void  glfwSwapInterval(int interval);
 GLFWAPI int   glfwExtensionSupported(const char* extension);
 GLFWAPI void* glfwGetProcAddress(const char* procname);
 GLFWAPI void  glfwGetGLVersion(int* major, int* minor, int* rev);
+GLFWAPI void  glfwCopyGLState(GLFWwindow src, GLFWwindow dst, unsigned long mask);
 
 /* Enable/disable functions */
 GLFWAPI void glfwEnable(GLFWwindow window, int token);

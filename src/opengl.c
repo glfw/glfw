@@ -587,3 +587,25 @@ GLFWAPI void glfwGetGLVersion(int* major, int* minor, int* rev)
         *rev = window->glRevision;
 }
 
+
+//========================================================================
+// Copies the specified OpenGL state categories from src to dst
+//========================================================================
+
+GLFWAPI void glfwCopyGLState(GLFWwindow hsrc, GLFWwindow hdst, unsigned long mask)
+{
+    _GLFWwindow* src;
+    _GLFWwindow* dst;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    src = (_GLFWwindow*) hsrc;
+    dst = (_GLFWwindow*) hdst;
+
+    _glfwPlatformCopyGLState(src, dst, mask);
+}
+

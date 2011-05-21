@@ -409,10 +409,11 @@ extern "C" {
 #define GLFW_FSAA_SAMPLES         0x00020012
 #define GLFW_OPENGL_VERSION_MAJOR 0x00020013
 #define GLFW_OPENGL_VERSION_MINOR 0x00020014
-#define GLFW_OPENGL_FORWARD_COMPAT 0x00020015
-#define GLFW_OPENGL_DEBUG_CONTEXT 0x00020016
-#define GLFW_OPENGL_PROFILE       0x00020017
-#define GLFW_OPENGL_ROBUSTNESS    0x00020018
+#define GLFW_OPENGL_REVISION      0x00020015
+#define GLFW_OPENGL_FORWARD_COMPAT 0x00020016
+#define GLFW_OPENGL_DEBUG_CONTEXT 0x00020017
+#define GLFW_OPENGL_PROFILE       0x00020018
+#define GLFW_OPENGL_ROBUSTNESS    0x00020019
 
 /* GLFW_OPENGL_ROBUSTNESS mode tokens */
 #define GLFW_OPENGL_NO_ROBUSTNESS         0x00000000
@@ -582,7 +583,6 @@ GLFWAPI void  glfwSwapBuffers(void);
 GLFWAPI void  glfwSwapInterval(int interval);
 GLFWAPI int   glfwExtensionSupported(const char* extension);
 GLFWAPI void* glfwGetProcAddress(const char* procname);
-GLFWAPI void  glfwGetGLVersion(int* major, int* minor, int* rev);
 GLFWAPI void  glfwCopyGLState(GLFWwindow src, GLFWwindow dst, unsigned long mask);
 
 /* Enable/disable functions */

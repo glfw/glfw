@@ -276,6 +276,7 @@ version of GLFW.</p>
   <li>Added <code>glfwCopyGLState</code> function for copying OpenGL state categories between contexts</li>
   <li>Added <code>GLFW_OPENGL_ES2_PROFILE</code> profile for creating OpenGL ES 2.0 contexts using the <code>GLX_EXT_create_context_es2_profile</code> and <code>WGL_EXT_create_context_es2_profile</code> extensions</li>
   <li>Added <code>GLFW_OPENGL_ROBUSTNESS</code> window hint and associated strategy tokens for <code>GL_ARB_robustness</code> support</li>
+  <li>Added <code>GLFW_OPENGL_REVISION</code> window parameter to make up for removal of <code>glfwGetGLVersion</code></li>
   <li>Added <code>windows</code> simple multi-window test program</li>
   <li>Added <code>sharing</code> simple OpenGL object sharing test program</li>
   <li>Added a parameter to <code>glfwOpenWindow</code> for specifying a context the new window's context will share objects with</li>
@@ -295,6 +296,7 @@ version of GLFW.</p>
   <li>Removed deprecated Carbon port</li>
   <li>Removed <code>glfwSleep</code> function</li>
   <li>Removed <code>glfwGetNumberOfProcessors</code> function</li>
+  <li>Removed <code>glfwGetGLVersion</code> function</li>
   <li>Removed <code>GLFW_OPENED</code> window parameter</li>
   <li>Removed nonsensical key actions for Unicode character input</li>
   <li>Removed <code>GLFWCALL</code> and <code>GLFWAPIENTRY</code> macros for stdcall calling convention</li>

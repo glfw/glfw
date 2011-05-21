@@ -777,6 +777,8 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window->glMajor;
         case GLFW_OPENGL_VERSION_MINOR:
             return window->glMinor;
+        case GLFW_OPENGL_REVISION:
+            return window->glRevision;
         case GLFW_OPENGL_FORWARD_COMPAT:
             return window->glForward;
         case GLFW_OPENGL_DEBUG_CONTEXT:

@@ -557,38 +557,6 @@ GLFWAPI void* glfwGetProcAddress(const char* procname)
 
 
 //========================================================================
-// Returns the OpenGL version
-//========================================================================
-
-GLFWAPI void glfwGetGLVersion(int* major, int* minor, int* rev)
-{
-    _GLFWwindow* window;
-
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    window = _glfwLibrary.currentWindow;
-    if (!window)
-    {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
-        return;
-    }
-
-    if (major != NULL)
-        *major = window->glMajor;
-
-    if (minor != NULL)
-        *minor = window->glMinor;
-
-    if (rev != NULL)
-        *rev = window->glRevision;
-}
-
-
-//========================================================================
 // Copies the specified OpenGL state categories from src to dst
 //========================================================================
 

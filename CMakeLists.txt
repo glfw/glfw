@@ -15,19 +15,6 @@ include(CheckSymbolExists)
 
 find_package(OpenGL REQUIRED)
 
-set(common_SOURCES 
-    ${GLFW_SOURCE_DIR}/src/enable.c 
-    ${GLFW_SOURCE_DIR}/src/error.c
-    ${GLFW_SOURCE_DIR}/src/fullscreen.c
-    ${GLFW_SOURCE_DIR}/src/gamma.c
-    ${GLFW_SOURCE_DIR}/src/init.c 
-    ${GLFW_SOURCE_DIR}/src/input.c 
-    ${GLFW_SOURCE_DIR}/src/joystick.c 
-    ${GLFW_SOURCE_DIR}/src/opengl.c 
-    ${GLFW_SOURCE_DIR}/src/time.c
-    ${GLFW_SOURCE_DIR}/src/window.c
-)
-
 #--------------------------------------------------------------------
 # Set up GLFW for Win32 and WGL on Windows
 #--------------------------------------------------------------------
@@ -41,9 +28,6 @@ if (WIN32)
     set(CMAKE_REQUIRED_LIBRARIES ${OPENGL_gl_LIBRARY})
     list(APPEND GLFW_INCLUDE_DIR ${OPENGL_INCLUDE_DIR})
     list(APPEND GLFW_LIBRARIES ${OPENGL_gl_LIBRARY})
-
-    # Select platform specific code
-    add_subdirectory(src/win32)
 endif (WIN32)
 
 #--------------------------------------------------------------------
@@ -105,9 +89,6 @@ if (UNIX AND NOT APPLE AND NOT CYGWIN)
     if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         set(_GLFW_USE_LINUX_JOYSTICKS 1)
     endif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-
-    # Select platform specific code
-    add_subdirectory(src/x11)
 endif(UNIX AND NOT APPLE AND NOT CYGWIN)
 
 #--------------------------------------------------------------------
@@ -135,14 +116,12 @@ if (UNIX AND APPLE)
     find_library(COCOA_FRAMEWORK Cocoa)
     list(APPEND GLFW_LIBRARIES ${COCOA_FRAMEWORK})
     list(APPEND GLFW_LIBRARIES ${OPENGL_gl_LIBRARY})
-
-    # Select platform specific code
-    add_subdirectory(src/cocoa)
 endif(UNIX AND APPLE)
 
 #--------------------------------------------------------------------
-# Add example and test programs
+# Add subdirectories
 #--------------------------------------------------------------------
+add_subdirectory(src)
 add_subdirectory(examples)
 add_subdirectory(tests)
 

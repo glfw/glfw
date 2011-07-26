@@ -22,16 +22,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${GLFW_BINARY_DIR}/src
                     ${GLFW_INCLUDE_DIR})
 
-set(common_SOURCES enable.c 
-                   error.c
-                   fullscreen.c
-                   gamma.c
-                   init.c 
-                   input.c 
-                   joystick.c 
-                   opengl.c 
-                   time.c
-                   window.c)
+set(common_SOURCES enable.c error.c fullscreen.c gamma.c init.c input.c
+                   joystick.c opengl.c time.c window.c)
 
 if(_GLFW_COCOA_NSGL)
     set(libglfw_SOURCES ${common_SOURCES} cocoa_enable.m cocoa_fullscreen.m

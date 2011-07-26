@@ -147,6 +147,10 @@ extern "C" {
 
 /* -------------------- END SYSTEM/COMPILER SPECIFIC --------------------- */
 
+/* Include the declaration of the size_t type used below.
+ */
+#include <stddef.h>
+
 /* Include standard OpenGL headers: GLFW uses GL_FALSE/GL_TRUE, and it is
  * convenient for the user to only have to include <GL/glfw.h>. This also
  * solves the problem with Windows <GL/gl.h> and <GL/glu.h> needing some

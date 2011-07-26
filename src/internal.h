@@ -58,11 +58,18 @@
 
 #include "config.h"
 
-#include "../../include/GL/glfw3.h"
-#include "../../include/GL/glext.h"
+#include "../include/GL/glfw3.h"
+#include "../include/GL/glext.h"
 
-#include "platform.h"
-
+#if defined(_GLFW_COCOA_NSGL)
+#include "cocoa_platform.h"
+#elif defined(_GLFW_WIN32_WGL)
+#include "win32_platform.h"
+#elif defined(_GLFW_X11_GLX)
+#include "x11_platform.h"
+#else
+#error "No supported platform selected"
+#endif
 
 typedef struct _GLFWhints _GLFWhints;
 typedef struct _GLFWwndconfig _GLFWwndconfig;

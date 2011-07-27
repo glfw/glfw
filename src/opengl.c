@@ -354,9 +354,36 @@ GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
 {
     parseGLVersion(&window->glMajor, &window->glMinor, &window->glRevision);
 
-    // As these are hard constraints when non-zero, we can simply copy them
-    window->glProfile = wndconfig->glProfile;
-    window->glForward = wndconfig->glForward;
+    // Read back forward-compatibility flag
+    {
+      window->glForward = GL_FALSE;
+
+      if (window->glMajor >= 3)
+      {
+          GLint flags;
+          glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+
+          if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
+              window->glForward = GL_TRUE;
+      }
+    }
+
+    // Read back OpenGL context profile
+    {
+      window->glProfile = 0;
+
+      if (window->glMajor > 3 || (window->glMajor == 3 && window->glMinor >= 2))
+      {
+          GLint mask;
+          glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
+
+          if (mask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)
+              window->glProfile = GLFW_OPENGL_COMPAT_PROFILE;
+          else if (mask & GL_CONTEXT_CORE_PROFILE_BIT)
+              window->glProfile = GLFW_OPENGL_CORE_PROFILE;
+      }
+    }
+
     window->glRobustness = wndconfig->glRobustness;
 
     if (window->glMajor < wndconfig->glMajor ||

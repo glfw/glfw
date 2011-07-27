@@ -155,11 +155,14 @@ install(FILES COPYING.txt readme.html
 
 #--------------------------------------------------------------------
 # Uninstall operation
+# Don't generate this target if a higher-level project already has
 #--------------------------------------------------------------------
-configure_file(${GLFW_SOURCE_DIR}/cmake_uninstall.cmake.in
-               ${GLFW_BINARY_DIR}/cmake_uninstall.cmake IMMEDIATE @ONLY)
+if(NOT TARGET uninstall)
+    configure_file(${GLFW_SOURCE_DIR}/cmake_uninstall.cmake.in
+                   ${GLFW_BINARY_DIR}/cmake_uninstall.cmake IMMEDIATE @ONLY)
 
-add_custom_target(uninstall
-                  ${CMAKE_COMMAND} -P
-                  ${GLFW_BINARY_DIR}/cmake_uninstall.cmake)
+    add_custom_target(uninstall
+                      ${CMAKE_COMMAND} -P
+                      ${GLFW_BINARY_DIR}/cmake_uninstall.cmake)
+endif()
 

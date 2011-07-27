@@ -476,14 +476,37 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
                             const _GLFWwndconfig *wndconfig,
                             const _GLFWfbconfig *fbconfig)
 {
-    // Fail if OpenGL 3.0 or above was requested
-    if (wndconfig->glMajor > 2)
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+    // Fail if OpenGL 3.3 or above was requested
+    if( wndconfig->glMajor > 3 || wndconfig->glMajor == 3 && wndconfig->glMinor > 2 )
     {
         _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                      "Cocoa/NSOpenGL: Mac OS X does not support OpenGL "
-                      "version 3.0 or above");
+                      "Cocoa/NSOpenGL: The targeted version of Mac OS X does "
+                      "not support OpenGL version 3.3 or above");
         return GL_FALSE;
     }
+
+    if( wndconfig->glProfile )
+    {
+        // Fail if a profile other than core was explicitly selected
+        if( wndconfig->glProfile != GLFW_OPENGL_CORE_PROFILE )
+        {
+            _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                          "Cocoa/NSOpenGL: The targeted version of Mac OS X "
+                          "only supports the OpenGL core profile");
+            return GL_FALSE;
+        }
+    }
+#else
+    // Fail if OpenGL 3.0 or above was requested
+    if( wndconfig->glMajor > 2 )
+    {
+        _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                      "Cocoa/NSOpenGL: The targeted version of Mac OS X does "
+                      "not support OpenGL version 3.0 or above");
+        return GL_FALSE;
+    }
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
     // Fail if a robustness strategy was requested
     if (wndconfig->glRobustness)
@@ -591,7 +614,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 
     unsigned int attribute_count = 0;
 
-#define ADD_ATTR(x) attributes[attribute_count++] = x
+#define ADD_ATTR(x) { attributes[attribute_count++] = x; }
 #define ADD_ATTR2(x, y) { ADD_ATTR(x); ADD_ATTR(y); }
 
     // Arbitrary array size here
@@ -606,6 +629,11 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         ADD_ATTR2(NSOpenGLPFAScreenMask,
                   CGDisplayIDToOpenGLDisplayMask(CGMainDisplayID()));
     }
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+    if( wndconfig->glMajor > 2 )
+        ADD_ATTR2( NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core );
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
     ADD_ATTR2(NSOpenGLPFAColorSize, colorBits);
 
@@ -847,10 +875,9 @@ void _glfwPlatformRefreshWindowParams(void)
                        forVirtualScreen:0];
     window->samples = value;
 
-    // These are forced to false as long as Mac OS X lacks support for OpenGL 3.0+
-    window->glForward = GL_FALSE;
+    // These this is forced to false as long as Mac OS X lacks support for
+    // requesting debug contexts
     window->glDebug = GL_FALSE;
-    window->glProfile = 0;
 }
 
 //========================================================================

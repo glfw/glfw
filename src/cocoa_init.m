@@ -201,6 +201,15 @@ int _glfwPlatformInit(void)
     // Implicitly create shared NSApplication instance
     [GLFWApplication sharedApplication];
 
+    _glfwLibrary.NS.OpenGLFramework =
+        CFBundleGetBundleWithIdentifier( CFSTR( "com.apple.opengl" ) );
+    if (_glfwLibrary.NS.OpenGLFramework == NULL)
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "glfwInit: Failed to locate OpenGL framework");
+        return GL_FALSE;
+    }
+
     NSString* resourcePath = [[NSBundle mainBundle] resourcePath];
 
     if (access([resourcePath cStringUsingEncoding:NSUTF8StringEncoding], R_OK) == 0)

@@ -36,6 +36,19 @@
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
+// Make the OpenGL context associated with the specified window current
+//========================================================================
+
+void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
+{
+    if (window)
+        wglMakeCurrent(window->WGL.DC, window->WGL.context);
+    else
+        wglMakeCurrent(NULL, NULL);
+}
+
+
+//========================================================================
 // Swap buffers (double-buffering)
 //========================================================================
 
@@ -108,7 +121,7 @@ void* _glfwPlatformGetProcAddress(const char* procname)
 // Copies the specified OpenGL state categories from src to dst
 //========================================================================
 
-void _glfwPlatformCopyGLState(_GLFWwindow* src, _GLFWwindow* dst, unsigned long mask)
+void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long mask)
 {
     if (!wglCopyContext(src->WGL.context, dst->WGL.context, mask))
         _glfwSetError(GLFW_PLATFORM_ERROR, "Win32/WGL: Failed to copy OpenGL context attributes");

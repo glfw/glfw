@@ -675,7 +675,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
                                                  withOptions:nil];
     }
 
-    glfwMakeWindowCurrent(window);
+    glfwMakeContextCurrent(window);
 
     NSPoint point = [[NSCursor currentCursor] hotSpot];
     window->mousePosX = point.x;
@@ -684,18 +684,6 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     window->windowNoResize = wndconfig->windowNoResize;
 
     return GL_TRUE;
-}
-
-//========================================================================
-// Make the OpenGL context associated with the specified window current
-//========================================================================
-
-void _glfwPlatformMakeWindowCurrent(_GLFWwindow* window)
-{
-    if (window)
-        [window->NSGL.context makeCurrentContext];
-    else
-        [NSOpenGLContext clearCurrentContext];
 }
 
 

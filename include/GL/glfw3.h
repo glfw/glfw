@@ -537,9 +537,7 @@ GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
 /* Window handling */
 GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode, const char* title, GLFWwindow share);
 GLFWAPI void glfwOpenWindowHint(int target, int hint);
-GLFWAPI void glfwMakeWindowCurrent(GLFWwindow window);
 GLFWAPI int  glfwIsWindow(GLFWwindow window);
-GLFWAPI GLFWwindow glfwGetCurrentWindow(void);
 GLFWAPI void glfwCloseWindow(GLFWwindow window);
 GLFWAPI void glfwSetWindowTitle(GLFWwindow, const char* title);
 GLFWAPI void glfwGetWindowSize(GLFWwindow, int* width, int* height);
@@ -583,11 +581,13 @@ GLFWAPI double glfwGetTime(void);
 GLFWAPI void   glfwSetTime(double time);
 
 /* OpenGL support */
+GLFWAPI void glfwMakeContextCurrent(GLFWwindow window);
+GLFWAPI GLFWwindow glfwGetCurrentContext(void);
 GLFWAPI void  glfwSwapBuffers(void);
 GLFWAPI void  glfwSwapInterval(int interval);
 GLFWAPI int   glfwExtensionSupported(const char* extension);
 GLFWAPI void* glfwGetProcAddress(const char* procname);
-GLFWAPI void  glfwCopyGLState(GLFWwindow src, GLFWwindow dst, unsigned long mask);
+GLFWAPI void  glfwCopyContext(GLFWwindow src, GLFWwindow dst, unsigned long mask);
 
 /* Enable/disable functions */
 GLFWAPI void glfwEnable(GLFWwindow window, int token);

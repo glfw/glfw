@@ -1342,7 +1342,7 @@ static int createWindow(_GLFWwindow* window,
     if (!createContext(window, wndconfig, pixelFormat))
         return GL_FALSE;
 
-    glfwMakeWindowCurrent(window);
+    glfwMakeContextCurrent(window);
 
     initWGLExtensions(window);
 
@@ -1365,7 +1365,7 @@ static void destroyWindow(_GLFWwindow* window)
     // This is duplicated from glfwCloseWindow
     // TODO: Stop duplicating code
     if (window == _glfwLibrary.currentWindow)
-        glfwMakeWindowCurrent(NULL);
+        glfwMakeContextCurrent(NULL);
 
     // This is duplicated from glfwCloseWindow
     // TODO: Stop duplicating code
@@ -1518,19 +1518,6 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     SetFocus(window->Win32.handle);
 
     return GL_TRUE;
-}
-
-
-//========================================================================
-// Make the OpenGL context associated with the specified window current
-//========================================================================
-
-void _glfwPlatformMakeWindowCurrent(_GLFWwindow* window)
-{
-    if (window)
-        wglMakeCurrent(window->WGL.DC, window->WGL.context);
-    else
-        wglMakeCurrent(NULL, NULL);
 }
 
 

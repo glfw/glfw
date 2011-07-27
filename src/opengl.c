@@ -424,6 +424,44 @@ int _glfwStringInExtensionString(const char* string,
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
+// Make the OpenGL context associated with the specified window current
+//========================================================================
+
+GLFWAPI void glfwMakeContextCurrent(GLFWwindow handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    if (_glfwLibrary.currentWindow == window)
+        return;
+
+    _glfwPlatformMakeContextCurrent(window);
+    _glfwLibrary.currentWindow = window;
+}
+
+
+//========================================================================
+// Returns the window whose OpenGL context is current
+//========================================================================
+
+GLFWAPI GLFWwindow glfwGetCurrentContext(void)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return GL_FALSE;
+    }
+
+    return _glfwLibrary.currentWindow;
+}
+
+
+//========================================================================
 // Swap buffers (double-buffering)
 //========================================================================
 
@@ -560,7 +598,7 @@ GLFWAPI void* glfwGetProcAddress(const char* procname)
 // Copies the specified OpenGL state categories from src to dst
 //========================================================================
 
-GLFWAPI void glfwCopyGLState(GLFWwindow hsrc, GLFWwindow hdst, unsigned long mask)
+GLFWAPI void glfwCopyContext(GLFWwindow hsrc, GLFWwindow hdst, unsigned long mask)
 {
     _GLFWwindow* src;
     _GLFWwindow* dst;
@@ -580,6 +618,6 @@ GLFWAPI void glfwCopyGLState(GLFWwindow hsrc, GLFWwindow hdst, unsigned long mas
         return;
     }
 
-    _glfwPlatformCopyGLState(src, dst, mask);
+    _glfwPlatformCopyContext(src, dst, mask);
 }
 

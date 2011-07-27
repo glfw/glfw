@@ -1449,23 +1449,6 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 
 
 //========================================================================
-// Make the OpenGL context associated with the specified window current
-//========================================================================
-
-void _glfwPlatformMakeWindowCurrent(_GLFWwindow* window)
-{
-    if (window)
-    {
-        glXMakeCurrent(_glfwLibrary.X11.display,
-                       window->X11.handle,
-                       window->GLX.context);
-    }
-    else
-        glXMakeCurrent(_glfwLibrary.X11.display, None, NULL);
-}
-
-
-//========================================================================
 // Properly kill the window/video display
 //========================================================================
 

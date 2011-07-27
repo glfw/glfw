@@ -73,7 +73,7 @@ int main(void)
     {
         for (i = 0;  i < 4;  i++)
         {
-            glfwMakeWindowCurrent(windows[i]);
+            glfwMakeContextCurrent(windows[i]);
             glClear(GL_COLOR_BUFFER_BIT);
             glfwSwapBuffers();
         }

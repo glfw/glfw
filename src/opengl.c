@@ -424,6 +424,44 @@ int _glfwStringInExtensionString(const char* string,
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
+// Make the OpenGL context associated with the specified window current
+//========================================================================
+
+GLFWAPI void glfwMakeContextCurrent(GLFWwindow handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    if (_glfwLibrary.currentWindow == window)
+        return;
+
+    _glfwPlatformMakeContextCurrent(window);
+    _glfwLibrary.currentWindow = window;
+}
+
+
+//========================================================================
+// Returns the window whose OpenGL context is current
+//========================================================================
+
+GLFWAPI GLFWwindow glfwGetCurrentContext(void)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return GL_FALSE;
+    }
+
+    return _glfwLibrary.currentWindow;
+}
+
+
+//========================================================================
 // Swap buffers (double-buffering)
 //========================================================================
 
@@ -557,12 +595,13 @@ GLFWAPI void* glfwGetProcAddress(const char* procname)
 
 
 //========================================================================
-// Returns the OpenGL version
+// Copies the specified OpenGL state categories from src to dst
 //========================================================================
 
-GLFWAPI void glfwGetGLVersion(int* major, int* minor, int* rev)
+GLFWAPI void glfwCopyContext(GLFWwindow hsrc, GLFWwindow hdst, unsigned long mask)
 {
-    _GLFWwindow* window;
+    _GLFWwindow* src;
+    _GLFWwindow* dst;
 
     if (!_glfwInitialized)
     {
@@ -570,20 +609,15 @@ GLFWAPI void glfwGetGLVersion(int* major, int* minor, int* rev)
         return;
     }
 
-    window = _glfwLibrary.currentWindow;
-    if (!window)
+    src = (_GLFWwindow*) hsrc;
+    dst = (_GLFWwindow*) hdst;
+
+    if (_glfwLibrary.currentWindow == dst)
     {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
+        _glfwSetError(GLFW_INVALID_VALUE, "Cannot copy OpenGL state to a current context");
         return;
     }
 
-    if (major != NULL)
-        *major = window->glMajor;
-
-    if (minor != NULL)
-        *minor = window->glMinor;
-
-    if (rev != NULL)
-        *rev = window->glRevision;
+    _glfwPlatformCopyContext(src, dst, mask);
 }
 

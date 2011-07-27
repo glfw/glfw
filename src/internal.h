@@ -58,11 +58,18 @@
 
 #include "config.h"
 
-#include "../../include/GL/glfw3.h"
-#include "../../include/GL/glext.h"
+#include "../include/GL/glfw3.h"
+#include "../include/GL/glext.h"
 
-#include "platform.h"
-
+#if defined(_GLFW_COCOA_NSGL)
+#include "cocoa_platform.h"
+#elif defined(_GLFW_WIN32_WGL)
+#include "win32_platform.h"
+#elif defined(_GLFW_X11_GLX)
+#include "x11_platform.h"
+#else
+#error "No supported platform selected"
+#endif
 
 typedef struct _GLFWhints _GLFWhints;
 typedef struct _GLFWwndconfig _GLFWwndconfig;
@@ -289,7 +296,6 @@ void _glfwPlatformSetTime(double time);
 
 // Window management
 int  _glfwPlatformOpenWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWfbconfig* fbconfig);
-void _glfwPlatformMakeWindowCurrent(_GLFWwindow* window);
 void _glfwPlatformCloseWindow(_GLFWwindow* window);
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title);
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height);
@@ -305,11 +311,13 @@ void _glfwPlatformPollEvents(void);
 void _glfwPlatformWaitEvents(void);
 
 // OpenGL context management
+void _glfwPlatformMakeContextCurrent(_GLFWwindow* window);
 void _glfwPlatformSwapBuffers(void);
 void _glfwPlatformSwapInterval(int interval);
 void _glfwPlatformRefreshWindowParams(void);
 int  _glfwPlatformExtensionSupported(const char* extension);
 void* _glfwPlatformGetProcAddress(const char* procname);
+void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long mask);
 
 
 //========================================================================

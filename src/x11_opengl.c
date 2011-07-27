@@ -57,6 +57,23 @@ void (*glXGetProcAddressEXT(const GLubyte* procName))();
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
+// Make the OpenGL context associated with the specified window current
+//========================================================================
+
+void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
+{
+    if (window)
+    {
+        glXMakeCurrent(_glfwLibrary.X11.display,
+                       window->X11.handle,
+                       window->GLX.context);
+    }
+    else
+        glXMakeCurrent(_glfwLibrary.X11.display, None, NULL);
+}
+
+
+//========================================================================
 // Swap OpenGL buffers
 //========================================================================
 
@@ -114,5 +131,18 @@ int _glfwPlatformExtensionSupported(const char* extension)
 void* _glfwPlatformGetProcAddress(const char* procname)
 {
     return (void*) _glfw_glXGetProcAddress((const GLubyte*) procname);
+}
+
+
+//========================================================================
+// Copies the specified OpenGL state categories from src to dst
+//========================================================================
+
+void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long mask)
+{
+    glXCopyContext(_glfwLibrary.X11.display,
+                   src->GLX.context,
+                   dst->GLX.context,
+                   mask);
 }
 

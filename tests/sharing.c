@@ -80,7 +80,7 @@ static GLuint create_texture(void)
 static void draw_quad(GLuint texture)
 {
     int width, height;
-    glfwGetWindowSize(glfwGetCurrentWindow(), &width, &height);
+    glfwGetWindowSize(glfwGetCurrentContext(), &width, &height);
 
     glViewport(0, 0, width, height);
 
@@ -148,11 +148,11 @@ int main(int argc, char** argv)
 
     while (glfwIsWindow(windows[0]) && glfwIsWindow(windows[1]))
     {
-        glfwMakeWindowCurrent(windows[0]);
+        glfwMakeContextCurrent(windows[0]);
         draw_quad(texture);
         glfwSwapBuffers();
 
-        glfwMakeWindowCurrent(windows[1]);
+        glfwMakeContextCurrent(windows[1]);
         draw_quad(texture);
         glfwSwapBuffers();
 

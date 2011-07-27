@@ -35,6 +35,19 @@
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
+// Make the OpenGL context associated with the specified window current
+//========================================================================
+
+void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
+{
+    if (window)
+        [window->NSGL.context makeCurrentContext];
+    else
+        [NSOpenGLContext clearCurrentContext];
+}
+
+
+//========================================================================
 // Swap buffers
 //========================================================================
 
@@ -84,5 +97,14 @@ void* _glfwPlatformGetProcAddress(const char* procname)
     CFRelease(symbolName);
 
     return symbol;
+}
+
+//========================================================================
+// Copies the specified OpenGL state categories from src to dst
+//========================================================================
+
+void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long mask)
+{
+    [dst->NSGL.context copyAttributesFromContext:src->NSGL.context withMask:mask];
 }
 

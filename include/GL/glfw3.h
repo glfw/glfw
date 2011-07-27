@@ -147,6 +147,10 @@ extern "C" {
 
 /* -------------------- END SYSTEM/COMPILER SPECIFIC --------------------- */
 
+/* Include the declaration of the size_t type used below.
+ */
+#include <stddef.h>
+
 /* Include standard OpenGL headers: GLFW uses GL_FALSE/GL_TRUE, and it is
  * convenient for the user to only have to include <GL/glfw.h>. This also
  * solves the problem with Windows <GL/gl.h> and <GL/glu.h> needing some
@@ -409,10 +413,11 @@ extern "C" {
 #define GLFW_FSAA_SAMPLES         0x00020012
 #define GLFW_OPENGL_VERSION_MAJOR 0x00020013
 #define GLFW_OPENGL_VERSION_MINOR 0x00020014
-#define GLFW_OPENGL_FORWARD_COMPAT 0x00020015
-#define GLFW_OPENGL_DEBUG_CONTEXT 0x00020016
-#define GLFW_OPENGL_PROFILE       0x00020017
-#define GLFW_OPENGL_ROBUSTNESS    0x00020018
+#define GLFW_OPENGL_REVISION      0x00020015
+#define GLFW_OPENGL_FORWARD_COMPAT 0x00020016
+#define GLFW_OPENGL_DEBUG_CONTEXT 0x00020017
+#define GLFW_OPENGL_PROFILE       0x00020018
+#define GLFW_OPENGL_ROBUSTNESS    0x00020019
 
 /* GLFW_OPENGL_ROBUSTNESS mode tokens */
 #define GLFW_OPENGL_NO_ROBUSTNESS         0x00000000
@@ -532,9 +537,7 @@ GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
 /* Window handling */
 GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode, const char* title, GLFWwindow share);
 GLFWAPI void glfwOpenWindowHint(int target, int hint);
-GLFWAPI void glfwMakeWindowCurrent(GLFWwindow window);
 GLFWAPI int  glfwIsWindow(GLFWwindow window);
-GLFWAPI GLFWwindow glfwGetCurrentWindow(void);
 GLFWAPI void glfwCloseWindow(GLFWwindow window);
 GLFWAPI void glfwSetWindowTitle(GLFWwindow, const char* title);
 GLFWAPI void glfwGetWindowSize(GLFWwindow, int* width, int* height);
@@ -578,11 +581,13 @@ GLFWAPI double glfwGetTime(void);
 GLFWAPI void   glfwSetTime(double time);
 
 /* OpenGL support */
+GLFWAPI void glfwMakeContextCurrent(GLFWwindow window);
+GLFWAPI GLFWwindow glfwGetCurrentContext(void);
 GLFWAPI void  glfwSwapBuffers(void);
 GLFWAPI void  glfwSwapInterval(int interval);
 GLFWAPI int   glfwExtensionSupported(const char* extension);
 GLFWAPI void* glfwGetProcAddress(const char* procname);
-GLFWAPI void  glfwGetGLVersion(int* major, int* minor, int* rev);
+GLFWAPI void  glfwCopyContext(GLFWwindow src, GLFWwindow dst, unsigned long mask);
 
 /* Enable/disable functions */
 GLFWAPI void glfwEnable(GLFWwindow window, int token);

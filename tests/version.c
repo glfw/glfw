@@ -229,7 +229,9 @@ int main(int argc, char** argv)
 
     printf("OpenGL context version string: \"%s\"\n", glGetString(GL_VERSION));
 
-    glfwGetGLVersion(&major, &minor, &revision);
+    major = glfwGetWindowParam(window, GLFW_OPENGL_VERSION_MAJOR);
+    minor = glfwGetWindowParam(window, GLFW_OPENGL_VERSION_MINOR);
+    revision = glfwGetWindowParam(window, GLFW_OPENGL_REVISION);
 
     printf("OpenGL context version parsed by GLFW: %u.%u.%u\n", major, minor, revision);
 

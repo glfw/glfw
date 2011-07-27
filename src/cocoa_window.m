@@ -363,7 +363,11 @@ static int convertMacKeyCode(unsigned int macKeyCode)
     }
 
     if (_glfwLibrary.mousePosCallback)
-        _glfwLibrary.mousePosCallback(window, window->mousePosX, window->mousePosY);
+    {
+        _glfwLibrary.mousePosCallback(window,
+                                      window->mousePosX,
+                                      window->mousePosY);
+    }
 }
 
 - (void)rightMouseDown:(NSEvent *)event
@@ -475,14 +479,18 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     // Fail if OpenGL 3.0 or above was requested
     if (wndconfig->glMajor > 2)
     {
-        _glfwSetError(GLFW_VERSION_UNAVAILABLE, "Cocoa/NSOpenGL: Mac OS X does not support OpenGL version 3.0 or above");
+        _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                      "Cocoa/NSOpenGL: Mac OS X does not support OpenGL "
+                      "version 3.0 or above");
         return GL_FALSE;
     }
 
     // Fail if a robustness strategy was requested
     if (wndconfig->glRobustness)
     {
-        _glfwSetError(GLFW_VERSION_UNAVAILABLE, "Cocoa/NSOpenGL: Mac OS X does not support OpenGL robustness strategies");
+        _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                      "Cocoa/NSOpenGL: Mac OS X does not support OpenGL "
+                      "robustness strategies");
         return GL_FALSE;
     }
 
@@ -493,7 +501,9 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         _glfwLibrary.NS.delegate = [[GLFWApplicationDelegate alloc] init];
         if (_glfwLibrary.NS.delegate == nil)
         {
-            _glfwSetError(GLFW_PLATFORM_ERROR, "Cocoa/NSOpenGL: Failed to create application delegate");
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "Cocoa/NSOpenGL: Failed to create application "
+                          "delegate");
             return GL_FALSE;
         }
 
@@ -503,7 +513,8 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     window->NS.delegate = [[GLFWWindowDelegate alloc] initWithGlfwWindow:window];
     if (window->NS.delegate == nil)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR, "Cocoa/NSOpenGL: Failed to create window delegate");
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "Cocoa/NSOpenGL: Failed to create window delegate");
         return GL_FALSE;
     }
 
@@ -634,7 +645,8 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
     if (window->NSGL.pixelFormat == nil)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR, "Cocoa/NSOpenGL: Failed to create pixel format");
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "Cocoa/NSOpenGL: Failed to create pixel format");
         return GL_FALSE;
     }
 
@@ -648,7 +660,8 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
                                    shareContext:share];
     if (window->NSGL.context == nil)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR, "Cocoa/NSOpenGL: Failed to create OpenGL context");
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "Cocoa/NSOpenGL: Failed to create OpenGL context");
         return GL_FALSE;
     }
 
@@ -662,7 +675,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
                                                  withOptions:nil];
     }
 
-    glfwMakeWindowCurrent(window);
+    glfwMakeContextCurrent(window);
 
     NSPoint point = [[NSCursor currentCursor] hotSpot];
     window->mousePosX = point.x;
@@ -671,18 +684,6 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     window->windowNoResize = wndconfig->windowNoResize;
 
     return GL_TRUE;
-}
-
-//========================================================================
-// Make the OpenGL context associated with the specified window current
-//========================================================================
-
-void _glfwPlatformMakeWindowCurrent(_GLFWwindow* window)
-{
-    if (window)
-        [window->NSGL.context makeCurrentContext];
-    else
-        [NSOpenGLContext clearCurrentContext];
 }
 
 

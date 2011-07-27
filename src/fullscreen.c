@@ -138,7 +138,8 @@ GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode)
 
     if (mode == NULL)
     {
-        _glfwSetError(GLFW_INVALID_VALUE, "glfwGetDesktopMode: Parameter 'mode' cannot be NULL");
+        _glfwSetError(GLFW_INVALID_VALUE,
+                      "glfwGetDesktopMode: Parameter 'mode' cannot be NULL");
         return;
     }
 

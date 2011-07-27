@@ -289,7 +289,8 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
 
     if (mode != GLFW_WINDOWED && mode != GLFW_FULLSCREEN)
     {
-        _glfwSetError(GLFW_INVALID_ENUM, "glfwOpenWindow: Invalid enum for 'mode' parameter");
+        _glfwSetError(GLFW_INVALID_ENUM,
+                      "glfwOpenWindow: Invalid enum for 'mode' parameter");
         return GL_FALSE;
     }
 
@@ -314,7 +315,8 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     window = (_GLFWwindow*) _glfwMalloc(sizeof(_GLFWwindow));
     if (!window)
     {
-        _glfwSetError(GLFW_OUT_OF_MEMORY, "glfwOpenWindow: Failed to allocate window structure");
+        _glfwSetError(GLFW_OUT_OF_MEMORY,
+                      "glfwOpenWindow: Failed to allocate window structure");
         return NULL;
     }
 
@@ -750,7 +752,9 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
         case GLFW_OPENGL_ROBUSTNESS:
             return window->glRobustness;
         default:
-            _glfwSetError(GLFW_INVALID_ENUM, "glfwGetWindowParam: Invalid enum value for 'param' parameter");
+            _glfwSetError(GLFW_INVALID_ENUM,
+                          "glfwGetWindowParam: Invalid enum value for 'param' "
+                          "parameter");
             return 0;
     }
 }

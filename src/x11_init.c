@@ -401,7 +401,8 @@ static GLboolean initDisplay(void)
                              &_glfwLibrary.X11.RandR.majorVersion,
                              &_glfwLibrary.X11.RandR.minorVersion))
         {
-            _glfwSetError(GLFW_PLATFORM_ERROR, "X11/GLX: Failed to query RandR version");
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "X11/GLX: Failed to query RandR version");
             return GL_FALSE;
         }
     }
@@ -420,7 +421,8 @@ static GLboolean initDisplay(void)
                          &_glfwLibrary.X11.glxMajor,
                          &_glfwLibrary.X11.glxMinor))
     {
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "X11/GLX: Failed to query GLX version");
+        _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
+                      "X11/GLX: Failed to query GLX version");
         return GL_FALSE;
     }
 
@@ -475,7 +477,8 @@ static void initGammaRamp(void)
             // This is probably Nvidia RandR with broken gamma support
             // Flag it as useless and try Xf86VidMode below, if available
             _glfwLibrary.X11.RandR.gammaBroken = GL_TRUE;
-            fprintf(stderr, "Ignoring broken nVidia implementation of RandR 1.2+ gamma\n");
+            fprintf(stderr,
+                    "Ignoring broken nVidia implementation of RandR 1.2+ gamma\n");
         }
 
         XRRFreeScreenResources(rr);
@@ -515,14 +518,17 @@ static Cursor createNULLCursor(void)
 
     // TODO: Add error checks
 
-    cursormask = XCreatePixmap(_glfwLibrary.X11.display, _glfwLibrary.X11.root, 1, 1, 1);
+    cursormask = XCreatePixmap(_glfwLibrary.X11.display,
+                               _glfwLibrary.X11.root,
+                               1, 1, 1);
     xgc.function = GXclear;
     gc = XCreateGC(_glfwLibrary.X11.display, cursormask, GCFunction, &xgc);
     XFillRectangle(_glfwLibrary.X11.display, cursormask, gc, 0, 0, 1, 1);
     col.pixel = 0;
     col.red = 0;
     col.flags = 4;
-    cursor = XCreatePixmapCursor(_glfwLibrary.X11.display, cursormask, cursormask,
+    cursor = XCreatePixmapCursor(_glfwLibrary.X11.display,
+                                 cursormask, cursormask,
                                  &col, &col, 0, 0);
     XFreePixmap(_glfwLibrary.X11.display, cursormask);
     XFreeGC(_glfwLibrary.X11.display, gc);

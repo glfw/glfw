@@ -289,7 +289,8 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
 
     if (mode != GLFW_WINDOWED && mode != GLFW_FULLSCREEN)
     {
-        _glfwSetError(GLFW_INVALID_ENUM, "glfwOpenWindow: Invalid enum for 'mode' parameter");
+        _glfwSetError(GLFW_INVALID_ENUM,
+                      "glfwOpenWindow: Invalid enum for 'mode' parameter");
         return GL_FALSE;
     }
 
@@ -314,7 +315,8 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     window = (_GLFWwindow*) _glfwMalloc(sizeof(_GLFWwindow));
     if (!window)
     {
-        _glfwSetError(GLFW_OUT_OF_MEMORY, "glfwOpenWindow: Failed to allocate window structure");
+        _glfwSetError(GLFW_OUT_OF_MEMORY,
+                      "glfwOpenWindow: Failed to allocate window structure");
         return NULL;
     }
 
@@ -336,7 +338,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     }
 
     // Cache the actual (as opposed to desired) window parameters
-    glfwMakeWindowCurrent(window);
+    glfwMakeContextCurrent(window);
     _glfwPlatformRefreshWindowParams();
 
     if (!_glfwIsValidContext(window, &wndconfig))
@@ -356,28 +358,6 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     _glfwPlatformSwapBuffers();
 
     return window;
-}
-
-
-//========================================================================
-// Make the OpenGL context associated with the specified window current
-//========================================================================
-
-GLFWAPI void glfwMakeWindowCurrent(GLFWwindow handle)
-{
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    if (_glfwLibrary.currentWindow == window)
-        return;
-
-    _glfwPlatformMakeWindowCurrent(window);
-    _glfwLibrary.currentWindow = window;
 }
 
 
@@ -406,22 +386,6 @@ GLFWAPI int glfwIsWindow(GLFWwindow handle)
     }
 
     return GL_FALSE;
-}
-
-
-//========================================================================
-// Returns GL_TRUE if the specified window handle is an actual window
-//========================================================================
-
-GLFWAPI GLFWwindow glfwGetCurrentWindow(void)
-{
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return GL_FALSE;
-    }
-
-    return _glfwLibrary.currentWindow;
 }
 
 
@@ -532,7 +496,7 @@ GLFWAPI void glfwCloseWindow(GLFWwindow handle)
 
     // Clear the current context if this window's context is current
     if (window == _glfwLibrary.currentWindow)
-        glfwMakeWindowCurrent(NULL);
+        glfwMakeContextCurrent(NULL);
 
     // Clear the active window pointer if this is the active window
     if (window == _glfwLibrary.activeWindow)
@@ -788,7 +752,9 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
         case GLFW_OPENGL_ROBUSTNESS:
             return window->glRobustness;
         default:
-            _glfwSetError(GLFW_INVALID_ENUM, "glfwGetWindowParam: Invalid enum value for 'param' parameter");
+            _glfwSetError(GLFW_INVALID_ENUM,
+                          "glfwGetWindowParam: Invalid enum value for 'param' "
+                          "parameter");
             return 0;
     }
 }

@@ -75,7 +75,7 @@ extern "C" {
  #else
   #define APIENTRY
  #endif
- #define GL_APIENTRY_DEFINED
+ #define GLFW_APIENTRY_DEFINED
 #endif /* APIENTRY */
 
 
@@ -96,7 +96,7 @@ extern "C" {
   /* Others (e.g. MinGW, Cygwin) */
   #define WINGDIAPI extern
  #endif
- #define GL_WINGDIAPI_DEFINED
+ #define GLFW_WINGDIAPI_DEFINED
 #endif /* WINGDIAPI */
 
 /* Some <GL/glu.h> files also need CALLBACK defined */
@@ -112,7 +112,7 @@ extern "C" {
   /* Other Windows compilers */
   #define CALLBACK __stdcall
  #endif
- #define GLU_CALLBACK_DEFINED
+ #define GLFW_CALLBACK_DEFINED
 #endif /* CALLBACK */
 
 /* Microsoft Visual C++, Borland C++ and Pelles C <GL*glu.h> needs wchar_t */
@@ -146,6 +146,10 @@ extern "C" {
 #endif
 
 /* -------------------- END SYSTEM/COMPILER SPECIFIC --------------------- */
+
+/* Include the declaration of the size_t type used below.
+ */
+#include <stddef.h>
 
 /* Include standard OpenGL headers: GLFW uses GL_FALSE/GL_TRUE, and it is
  * convenient for the user to only have to include <GL/glfw.h>. This also
@@ -533,9 +537,7 @@ GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
 /* Window handling */
 GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode, const char* title, GLFWwindow share);
 GLFWAPI void glfwOpenWindowHint(int target, int hint);
-GLFWAPI void glfwMakeWindowCurrent(GLFWwindow window);
 GLFWAPI int  glfwIsWindow(GLFWwindow window);
-GLFWAPI GLFWwindow glfwGetCurrentWindow(void);
 GLFWAPI void glfwCloseWindow(GLFWwindow window);
 GLFWAPI void glfwSetWindowTitle(GLFWwindow, const char* title);
 GLFWAPI void glfwGetWindowSize(GLFWwindow, int* width, int* height);
@@ -579,15 +581,41 @@ GLFWAPI double glfwGetTime(void);
 GLFWAPI void   glfwSetTime(double time);
 
 /* OpenGL support */
+GLFWAPI void glfwMakeContextCurrent(GLFWwindow window);
+GLFWAPI GLFWwindow glfwGetCurrentContext(void);
 GLFWAPI void  glfwSwapBuffers(void);
 GLFWAPI void  glfwSwapInterval(int interval);
 GLFWAPI int   glfwExtensionSupported(const char* extension);
 GLFWAPI void* glfwGetProcAddress(const char* procname);
-GLFWAPI void  glfwCopyGLState(GLFWwindow src, GLFWwindow dst, unsigned long mask);
+GLFWAPI void  glfwCopyContext(GLFWwindow src, GLFWwindow dst, unsigned long mask);
 
 /* Enable/disable functions */
 GLFWAPI void glfwEnable(GLFWwindow window, int token);
 GLFWAPI void glfwDisable(GLFWwindow window, int token);
+
+
+/*************************************************************************
+ * Global definition cleanup
+ *************************************************************************/
+
+/* ------------------- BEGIN SYSTEM/COMPILER SPECIFIC -------------------- */
+
+#ifdef GLFW_APIENTRY_DEFINED
+ #undef APIENTRY
+ #undef GLFW_APIENTRY_DEFINED
+#endif
+
+#ifdef GLFW_WINGDIAPI_DEFINED
+ #undef WINGDIAPI
+ #undef GLFW_WINGDIAPI_DEFINED
+#endif
+
+#ifdef GLFW_CALLBACK_DEFINED
+ #undef CALLBACK
+ #undef GLFW_CALLBACK_DEFINED
+#endif
+
+/* -------------------- END SYSTEM/COMPILER SPECIFIC --------------------- */
 
 
 #ifdef __cplusplus

@@ -265,6 +265,9 @@ void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
     // Return desktop mode parameters
     mode->width  = dm.dmPelsWidth;
     mode->height = dm.dmPelsHeight;
-    _glfwSplitBPP(dm.dmBitsPerPel, &mode->redBits, &mode->greenBits, &mode->blueBits);
+    _glfwSplitBPP(dm.dmBitsPerPel,
+                  &mode->redBits,
+                  &mode->greenBits,
+                  &mode->blueBits);
 }
 

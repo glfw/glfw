@@ -66,14 +66,14 @@ int main(void)
 
         glfwSetWindowPos(windows[i], 100 + (i & 1) * 300, 100 + (i >> 1) * 300);
 
-        glClearColor(i & 1, i >> 1, 0.0, 0.0);
+        glClearColor((GLclampf) (i & 1), (GLclampf) (i >> 1), 0.0, 0.0);
     }
 
     while (running)
     {
         for (i = 0;  i < 4;  i++)
         {
-            glfwMakeWindowCurrent(windows[i]);
+            glfwMakeContextCurrent(windows[i]);
             glClear(GL_COLOR_BUFFER_BIT);
             glfwSwapBuffers();
         }

@@ -1342,7 +1342,7 @@ static int createWindow(_GLFWwindow* window,
     if (!createContext(window, wndconfig, pixelFormat))
         return GL_FALSE;
 
-    glfwMakeWindowCurrent(window);
+    glfwMakeContextCurrent(window);
 
     initWGLExtensions(window);
 
@@ -1365,7 +1365,7 @@ static void destroyWindow(_GLFWwindow* window)
     // This is duplicated from glfwCloseWindow
     // TODO: Stop duplicating code
     if (window == _glfwLibrary.currentWindow)
-        glfwMakeWindowCurrent(NULL);
+        glfwMakeContextCurrent(NULL);
 
     // This is duplicated from glfwCloseWindow
     // TODO: Stop duplicating code
@@ -1522,19 +1522,6 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 
 
 //========================================================================
-// Make the OpenGL context associated with the specified window current
-//========================================================================
-
-void _glfwPlatformMakeWindowCurrent(_GLFWwindow* window)
-{
-    if (window)
-        wglMakeCurrent(window->WGL.DC, window->WGL.context);
-    else
-        wglMakeCurrent(NULL, NULL);
-}
-
-
-//========================================================================
 // Properly kill the window / video display
 //========================================================================
 
@@ -1569,7 +1556,8 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    int bpp, newMode = 0, refresh;
+    //int bpp, refresh;
+    int newMode = 0;
     GLboolean sizeChanged = GL_FALSE;
 
     if (window->mode == GLFW_FULLSCREEN)
@@ -1660,7 +1648,7 @@ void _glfwPlatformRefreshWindowParams(void)
 {
     PIXELFORMATDESCRIPTOR pfd;
     DEVMODE dm;
-    int pixelFormat, mode;
+    int pixelFormat;
 
     _GLFWwindow* window = _glfwLibrary.currentWindow;
 

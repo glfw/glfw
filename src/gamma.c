@@ -57,7 +57,7 @@ GLFWAPI void glfwSetGammaFormula(float gamma, float blacklevel, float gain)
         float value = (float) i / ((float) (size - 1));
 
         // Apply gamma
-        value = pow(value, 1.f / gamma) * 65535.f + 0.5f;
+        value = (float) pow(value, 1.f / gamma) * 65535.f + 0.5f;
 
         // Apply gain
         value = gain * (value - 32767.5f) + 32767.5f;

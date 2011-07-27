@@ -34,17 +34,22 @@
 * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 * DAMAGE.
 */
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "getopt.h"
 
 
+/* 2011-07-27 Camilla Berglund <elmindreda@elmindreda.org>
+ * 
+ * Added _CRT_SECURE_NO_WARNINGS macro.
+ */
 /* 2009-10-12 Camilla Berglund <elmindreda@elmindreda.org>
  *
  * Removed unused global static variable 'ID'.
  */
-
 
 char* optarg = NULL;
 int optind = 0;

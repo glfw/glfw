@@ -31,6 +31,8 @@
 //
 //========================================================================
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <GL/glfw3.h>
 
 #include <stdio.h>

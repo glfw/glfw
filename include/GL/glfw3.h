@@ -75,7 +75,7 @@ extern "C" {
  #else
   #define APIENTRY
  #endif
- #define GL_APIENTRY_DEFINED
+ #define GLFW_APIENTRY_DEFINED
 #endif /* APIENTRY */
 
 
@@ -96,7 +96,7 @@ extern "C" {
   /* Others (e.g. MinGW, Cygwin) */
   #define WINGDIAPI extern
  #endif
- #define GL_WINGDIAPI_DEFINED
+ #define GLFW_WINGDIAPI_DEFINED
 #endif /* WINGDIAPI */
 
 /* Some <GL/glu.h> files also need CALLBACK defined */
@@ -112,7 +112,7 @@ extern "C" {
   /* Other Windows compilers */
   #define CALLBACK __stdcall
  #endif
- #define GLU_CALLBACK_DEFINED
+ #define GLFW_CALLBACK_DEFINED
 #endif /* CALLBACK */
 
 /* Microsoft Visual C++, Borland C++ and Pelles C <GL*glu.h> needs wchar_t */
@@ -592,6 +592,30 @@ GLFWAPI void  glfwCopyContext(GLFWwindow src, GLFWwindow dst, unsigned long mask
 /* Enable/disable functions */
 GLFWAPI void glfwEnable(GLFWwindow window, int token);
 GLFWAPI void glfwDisable(GLFWwindow window, int token);
+
+
+/*************************************************************************
+ * Global definition cleanup
+ *************************************************************************/
+
+/* ------------------- BEGIN SYSTEM/COMPILER SPECIFIC -------------------- */
+
+#ifdef GLFW_APIENTRY_DEFINED
+ #undef APIENTRY
+ #undef GLFW_APIENTRY_DEFINED
+#endif
+
+#ifdef GLFW_WINGDIAPI_DEFINED
+ #undef WINGDIAPI
+ #undef GLFW_WINGDIAPI_DEFINED
+#endif
+
+#ifdef GLFW_CALLBACK_DEFINED
+ #undef CALLBACK
+ #undef GLFW_CALLBACK_DEFINED
+#endif
+
+/* -------------------- END SYSTEM/COMPILER SPECIFIC --------------------- */
 
 
 #ifdef __cplusplus

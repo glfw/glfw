@@ -1556,7 +1556,8 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    int bpp, newMode = 0, refresh;
+    //int bpp, refresh;
+    int newMode = 0;
     GLboolean sizeChanged = GL_FALSE;
 
     if (window->mode == GLFW_FULLSCREEN)
@@ -1647,7 +1648,7 @@ void _glfwPlatformRefreshWindowParams(void)
 {
     PIXELFORMATDESCRIPTOR pfd;
     DEVMODE dm;
-    int pixelFormat, mode;
+    int pixelFormat;
 
     _GLFWwindow* window = _glfwLibrary.currentWindow;
 

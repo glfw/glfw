@@ -478,7 +478,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 {
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     // Fail if OpenGL 3.3 or above was requested
-    if( wndconfig->glMajor > 3 || wndconfig->glMajor == 3 && wndconfig->glMinor > 2 )
+    if (wndconfig->glMajor > 3 || wndconfig->glMajor == 3 && wndconfig->glMinor > 2)
     {
         _glfwSetError(GLFW_VERSION_UNAVAILABLE,
                       "Cocoa/NSOpenGL: The targeted version of Mac OS X does "
@@ -486,10 +486,10 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    if( wndconfig->glProfile )
+    if (wndconfig->glProfile)
     {
         // Fail if a profile other than core was explicitly selected
-        if( wndconfig->glProfile != GLFW_OPENGL_CORE_PROFILE )
+        if (wndconfig->glProfile != GLFW_OPENGL_CORE_PROFILE)
         {
             _glfwSetError(GLFW_VERSION_UNAVAILABLE,
                           "Cocoa/NSOpenGL: The targeted version of Mac OS X "
@@ -499,7 +499,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     }
 #else
     // Fail if OpenGL 3.0 or above was requested
-    if( wndconfig->glMajor > 2 )
+    if (wndconfig->glMajor > 2)
     {
         _glfwSetError(GLFW_VERSION_UNAVAILABLE,
                       "Cocoa/NSOpenGL: The targeted version of Mac OS X does "
@@ -631,8 +631,8 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     }
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if( wndconfig->glMajor > 2 )
-        ADD_ATTR2( NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core );
+    if (wndconfig->glMajor > 2)
+        ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
     ADD_ATTR2(NSOpenGLPFAColorSize, colorBits);

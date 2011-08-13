@@ -477,8 +477,9 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
                             const _GLFWfbconfig *fbconfig)
 {
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    // Fail if OpenGL 3.3 or above was requested
-    if (wndconfig->glMajor > 3 || wndconfig->glMajor == 3 && wndconfig->glMinor > 2)
+    // Fail if any OpenGL version above 2.1 other than 3.2 was requested
+    if (wndconfig->glMajor > 3 ||
+        (wndconfig->glMajor == 3 && wndconfig->glMinor != 2))
     {
         _glfwSetError(GLFW_VERSION_UNAVAILABLE,
                       "Cocoa/NSOpenGL: The targeted version of Mac OS X does "

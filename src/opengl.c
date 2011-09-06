@@ -416,8 +416,9 @@ GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
             // configuration in order to work
 
             _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "glfwOpenWindow: Entry point retrieval is broken; see "
-                          "the build documentation for your platform");
+                          "glfwOpenWindow: Entry point retrieval is broken "
+                          "because GLFW was incorrectly compiled; "
+                          "see the build documentation for your platform");
             return GL_FALSE;
         }
     }
@@ -657,7 +658,7 @@ GLFWAPI void glfwCopyContext(GLFWwindow hsrc, GLFWwindow hdst, unsigned long mas
     if (_glfwLibrary.currentWindow == dst)
     {
         _glfwSetError(GLFW_INVALID_VALUE,
-                      "Cannot copy OpenGL state to a current context");
+                      "glfwCopyContext: Cannot copy OpenGL state to a current context");
         return;
     }
 

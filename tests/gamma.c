@@ -130,21 +130,18 @@ int main(int argc, char** argv)
     glfwSetKeyCallback(key_callback);
     glfwSetWindowSizeCallback(size_callback);
 
-    glEnable(GL_SCISSOR_TEST);
+    glMatrixMode(GL_PROJECTION);
+    glOrtho(-1.f, 1.f, -1.f, 1.f, -1.f, 1.f);
+    glMatrixMode(GL_MODELVIEW);
+
+    glClearColor(0.5f, 0.5f, 0.5f, 0);
 
     while (glfwIsWindow(window))
     {
-        int width, height;
-
-        glfwGetWindowSize(window, &width, &height);
-
-        glScissor(0, 0, width, height);
-        glClearColor(0.5f, 0.5f, 0.5f, 0);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glScissor(0, 0, 640, 480);
-        glClearColor(0.8f, 0.2f, 0.4f, 0);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glColor3f(0.8f, 0.2f, 0.4f);
+        glRectf(-0.5f, -0.5f, 0.5f, 0.5f);
 
         glfwSwapBuffers();
         glfwPollEvents();

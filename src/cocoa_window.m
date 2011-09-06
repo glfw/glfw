@@ -483,7 +483,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     {
         _glfwSetError(GLFW_VERSION_UNAVAILABLE,
                       "Cocoa/NSOpenGL: The targeted version of Mac OS X does "
-                      "not support OpenGL version 3.3 or above");
+                      "not support any OpenGL version above 2.1 except 3.2");
         return GL_FALSE;
     }
 

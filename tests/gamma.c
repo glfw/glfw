@@ -35,9 +35,7 @@
 
 #include "getopt.h"
 
-static GLfloat ggamma = 1.0f;
-static GLfloat ggain = 1.0f;
-static GLfloat gblacklevel = 0.0f;
+static GLfloat gamma = 1.0f;
 
 static void usage(void)
 {
@@ -55,36 +53,15 @@ static void key_callback(GLFWwindow window, int key, int action)
             glfwCloseWindow(window);
             break;
         case GLFW_KEY_Q:
-            ggamma += 0.1f;
-            printf("Gamma: %f\n", ggamma);
-            glfwSetGammaFormula( ggamma, gblacklevel, ggain );
+            gamma += 0.1f;
+            printf("Gamma: %f\n", gamma);
+            glfwSetGamma(gamma);
             break;
         case GLFW_KEY_W:
-            ggamma -= 0.1f;
-            printf("Gamma: %f\n", ggamma);
-            glfwSetGammaFormula( ggamma, gblacklevel, ggain );
+            gamma -= 0.1f;
+            printf("Gamma: %f\n", gamma);
+            glfwSetGamma(gamma);
             break;
-        case GLFW_KEY_A:
-            ggain += 0.1f;
-            printf("Gain: %f\n", ggain);
-            glfwSetGammaFormula( ggamma, gblacklevel, ggain );
-            break;
-        case GLFW_KEY_S:
-            ggain -= 0.1f;
-            printf("Gain: %f\n", ggain);
-            glfwSetGammaFormula( ggamma, gblacklevel, ggain );
-            break;
-        case GLFW_KEY_Z:
-            gblacklevel += 0.1f;
-            printf("Black Level: %f\n", gblacklevel);
-            glfwSetGammaFormula( ggamma, gblacklevel, ggain );
-            break;
-        case GLFW_KEY_X:
-            gblacklevel -= 0.1f;
-            printf("Black Level: %f\n", gblacklevel);
-            glfwSetGammaFormula( ggamma, gblacklevel, ggain );
-            break;
-
     }
 }
 
@@ -145,8 +122,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    printf("Gamma: %f\nGain: %f\nBlack Level: %f\n",
-           ggamma, ggain, gblacklevel);
+    printf("Gamma: %f\n", gamma);
 
     glfwSwapInterval(1);
     glfwSetKeyCallback(key_callback);

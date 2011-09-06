@@ -535,7 +535,7 @@ GLFWAPI int  glfwGetVideoModes(GLFWvidmode* list, int maxcount);
 GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode);
 
 /* Gamma ramp functions */
-GLFWAPI void glfwSetGammaFormula(float gamma, float blacklevel, float gain);
+GLFWAPI void glfwSetGamma(float gamma);
 GLFWAPI void glfwGetGammaRamp(GLFWgammaramp* ramp);
 GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
 

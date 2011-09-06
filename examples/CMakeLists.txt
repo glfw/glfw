@@ -3,7 +3,9 @@
 # the main CMakeLists.txt 
 link_libraries(libglfwStatic ${GLFW_LIBRARIES} ${OPENGL_glu_LIBRARY})
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include ${OPENGL_INCLUDE_DIR})
+include_directories(${GLFW_SOURCE_DIR}/include
+                    ${GLFW_SOURCE_DIR}/support
+                    ${OPENGL_INCLUDE_DIR})
 
 if(APPLE)
   # Set fancy names for bundles

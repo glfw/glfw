@@ -1502,7 +1502,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 
         // Technically, it may be possible to keep the old window around if
         // we're just creating an OpenGL 3.0+ context with the same pixel
-        // format, but it's not worth the potential compatibility problems
+        // format, but it's not worth the added code complexity
 
         destroyWindow(window);
 

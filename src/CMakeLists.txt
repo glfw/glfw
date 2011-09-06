@@ -17,11 +17,9 @@ if(UNIX)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libglfw.pc DESTINATION lib/pkgconfig)
 endif(UNIX)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} 
-                    ${GLFW_SOURCE_DIR}/src
+include_directories(${GLFW_SOURCE_DIR}/src
                     ${GLFW_BINARY_DIR}/src
-                    ${GLFW_INCLUDE_DIR}
-                    ${GLFW_SOURCE_DIR}/support)
+                    ${GLFW_INCLUDE_DIR})
 
 set(common_SOURCES enable.c error.c fullscreen.c gamma.c init.c input.c
                    joystick.c opengl.c time.c window.c)

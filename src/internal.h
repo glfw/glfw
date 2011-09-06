@@ -59,7 +59,7 @@
 #include "config.h"
 
 #include "../include/GL/glfw3.h"
-#include "../include/GL/glext.h"
+#include "../support/GL/glext.h"
 
 #if defined(_GLFW_COCOA_NSGL)
 #include "cocoa_platform.h"

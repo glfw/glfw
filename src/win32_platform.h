@@ -43,7 +43,7 @@
 #include <windows.h>
 #include <mmsystem.h>
 
-#include "../include/GL/wglext.h"
+#include "../support/GL/wglext.h"
 
 
 //========================================================================

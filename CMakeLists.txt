@@ -10,6 +10,9 @@ set(GLFW_VERSION_EXTRA "")
 set(GLFW_VERSION "${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}")
 set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA}")
 
+option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
+option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
+
 include(CheckFunctionExists)
 include(CheckSymbolExists)
 
@@ -122,8 +125,14 @@ endif(UNIX AND APPLE)
 # Add subdirectories
 #--------------------------------------------------------------------
 add_subdirectory(src)
-add_subdirectory(examples)
-add_subdirectory(tests)
+
+if (GLFW_BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif(GLFW_BUILD_EXAMPLES)
+
+if (GLFW_BUILD_TESTS)
+    add_subdirectory(tests)
+endif(GLFW_BUILD_TESTS)
 
 #--------------------------------------------------------------------
 # Create shared configuration header

@@ -411,14 +411,8 @@ GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
         window->GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
         if (!window->GetStringi)
         {
-            // This is a very common problem among people who compile GLFW
-            // on X11/GLX using custom build systems, as it needs explicit
-            // configuration in order to work
-
             _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "glfwOpenWindow: Entry point retrieval is broken "
-                          "because GLFW was incorrectly compiled; "
-                          "see the build documentation for your platform");
+                          "glfwOpenWindow: Entry point retrieval is broken");
             return GL_FALSE;
         }
     }

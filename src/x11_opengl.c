@@ -38,7 +38,7 @@ void (*glXGetProcAddressEXT(const GLubyte* procName))();
 // We support four different ways for getting addresses for GL/GLX
 // extension functions: glXGetProcAddress, glXGetProcAddressARB,
 // glXGetProcAddressEXT, and dlsym
-#if   defined(_GLFW_HAS_GLXGETPROCADDRESSARB)
+#if defined(_GLFW_HAS_GLXGETPROCADDRESSARB)
  #define _glfw_glXGetProcAddress(x) glXGetProcAddressARB(x)
 #elif defined(_GLFW_HAS_GLXGETPROCADDRESS)
  #define _glfw_glXGetProcAddress(x) glXGetProcAddress(x)
@@ -48,7 +48,7 @@ void (*glXGetProcAddressEXT(const GLubyte* procName))();
  #define _glfw_glXGetProcAddress(x) dlsym(_glfwLibrary.X11.libGL, x)
  #define _GLFW_DLOPEN_LIBGL
 #else
-#define _glfw_glXGetProcAddress(x) NULL
+ #error "No OpenGL entry point retrieval mechanism was enabled"
 #endif
 
 

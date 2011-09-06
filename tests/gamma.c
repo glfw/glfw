@@ -52,11 +52,13 @@ static void key_callback(GLFWwindow window, int key, int action)
         case GLFW_KEY_ESCAPE:
             glfwCloseWindow(window);
             break;
+        case GLFW_KEY_KP_ADD:
         case GLFW_KEY_Q:
             gamma += 0.1f;
             printf("Gamma: %f\n", gamma);
             glfwSetGamma(gamma);
             break;
+        case GLFW_KEY_KP_SUBTRACT:
         case GLFW_KEY_W:
             gamma -= 0.1f;
             printf("Gamma: %f\n", gamma);

@@ -43,7 +43,7 @@
 
 GLFWAPI void glfwSetGamma(float gamma)
 {
-    int i, size = 256;
+    int i, size = GLFW_GAMMA_RAMP_SIZE;
     GLFWgammaramp ramp;
 
     if (!_glfwInitialized)

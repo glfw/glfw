@@ -924,26 +924,6 @@ void _glfwPlatformWaitEvents( void )
 }
 
 //========================================================================
-// Hide mouse cursor (lock it)
-//========================================================================
-
-void _glfwPlatformHideMouseCursor(_GLFWwindow* window)
-{
-    [NSCursor hide];
-    CGAssociateMouseAndMouseCursorPosition(false);
-}
-
-//========================================================================
-// Show mouse cursor (unlock it)
-//========================================================================
-
-void _glfwPlatformShowMouseCursor(_GLFWwindow* window)
-{
-    [NSCursor unhide];
-    CGAssociateMouseAndMouseCursorPosition(true);
-}
-
-//========================================================================
 // Set physical mouse cursor position
 //========================================================================
 
@@ -973,5 +953,26 @@ void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y)
                                       mainScreenHeight - globalPoint.y -
                                           mainScreenOrigin.y);
     CGDisplayMoveCursorToPoint(CGMainDisplayID(), targetPoint);
+}
+
+//========================================================================
+// Set physical mouse cursor mode
+//========================================================================
+
+void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
+{
+    switch (mode)
+    {
+        case GLFW_CURSOR_NORMAL:
+            [NSCursor unhide];
+            CGAssociateMouseAndMouseCursorPosition(true);
+            break;
+        case GLFW_CURSOR_HIDDEN:
+            break;
+        case GLFW_CURSOR_CAPTURED:
+            [NSCursor hide];
+            CGAssociateMouseAndMouseCursorPosition(false);
+            break;
+    }
 }
 

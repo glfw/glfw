@@ -80,15 +80,23 @@ static void key_callback(GLFWwindow window, int key, int action)
     }
 }
 
-static int open_window(int width, int height, int mode)
+static GLboolean open_window(int width, int height, int mode)
 {
-    double base = glfwGetTime();
+    double base;
+
+    if (!glfwInit())
+    {
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        return GL_FALSE;
+    }
+
+    base = glfwGetTime();
 
     window_handle = glfwOpenWindow(width, height, mode, "Window Re-opener", NULL);
     if (!window_handle)
     {
         fprintf(stderr, "Failed to open %s mode GLFW window: %s\n", get_mode_name(mode), glfwErrorString(glfwGetError()));
-        return 0;
+        return GL_FALSE;
     }
 
     glfwSetWindowSizeCallback(window_size_callback);
@@ -100,7 +108,7 @@ static int open_window(int width, int height, int mode)
            get_mode_name(mode),
            glfwGetTime() - base);
 
-    return 1;
+    return GL_TRUE;
 }
 
 static void close_window(void)
@@ -111,25 +119,18 @@ static void close_window(void)
     window_handle = NULL;
 
     printf("Closing window took %0.3f seconds\n", glfwGetTime() - base);
+
+    glfwTerminate();
 }
 
 int main(int argc, char** argv)
 {
     int count = 0;
 
-    if (!glfwInit())
-    {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-        exit(EXIT_FAILURE);
-    }
-
     for (;;)
     {
         if (!open_window(640, 480, (count & 1) ? GLFW_FULLSCREEN : GLFW_WINDOWED))
-        {
-            glfwTerminate();
             exit(EXIT_FAILURE);
-        }
 
         glMatrixMode(GL_PROJECTION);
         glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);
@@ -153,13 +154,9 @@ int main(int argc, char** argv)
             glfwPollEvents();
 
             if (closed)
-                close_window();
-
-            if (!glfwIsWindow(window_handle))
             {
+                close_window();
                 printf("User closed window\n");
-
-                glfwTerminate();
                 exit(EXIT_SUCCESS);
             }
         }

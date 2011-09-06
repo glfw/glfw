@@ -101,14 +101,14 @@ typedef struct _GLFWcontextGLX
     PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC CreateContextWithConfigSGIX;
     PFNGLXGETVISUALFROMFBCONFIGSGIXPROC   GetVisualFromFBConfigSGIX;
     PFNGLXCREATECONTEXTATTRIBSARBPROC     CreateContextAttribsARB;
-    GLboolean   has_GLX_SGIX_fbconfig;
-    GLboolean   has_GLX_SGI_swap_control;
-    GLboolean   has_GLX_EXT_swap_control;
-    GLboolean   has_GLX_ARB_multisample;
-    GLboolean   has_GLX_ARB_create_context;
-    GLboolean   has_GLX_ARB_create_context_profile;
-    GLboolean   has_GLX_ARB_create_context_robustness;
-    GLboolean   has_GLX_EXT_create_context_es2_profile;
+    GLboolean   SGIX_fbconfig;
+    GLboolean   SGI_swap_control;
+    GLboolean   EXT_swap_control;
+    GLboolean   ARB_multisample;
+    GLboolean   ARB_create_context;
+    GLboolean   ARB_create_context_profile;
+    GLboolean   ARB_create_context_robustness;
+    GLboolean   EXT_create_context_es2_profile;
 
 } _GLFWcontextGLX;
 

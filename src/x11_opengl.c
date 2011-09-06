@@ -92,13 +92,13 @@ void _glfwPlatformSwapInterval(int interval)
 {
     _GLFWwindow* window = _glfwLibrary.currentWindow;
 
-    if (window->GLX.has_GLX_EXT_swap_control)
+    if (window->GLX.EXT_swap_control)
     {
         window->GLX.SwapIntervalEXT(_glfwLibrary.X11.display,
                                     window->X11.handle,
                                     interval);
     }
-    else if (window->GLX.has_GLX_SGI_swap_control)
+    else if (window->GLX.SGI_swap_control)
         window->GLX.SwapIntervalSGI(interval);
 }
 

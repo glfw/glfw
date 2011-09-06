@@ -68,7 +68,7 @@ void _glfwPlatformSwapInterval(int interval)
 {
     _GLFWwindow* window = _glfwLibrary.currentWindow;
 
-    if (window->WGL.has_WGL_EXT_swap_control)
+    if (window->WGL.EXT_swap_control)
         window->WGL.SwapIntervalEXT(interval);
 }
 

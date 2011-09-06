@@ -249,7 +249,7 @@ static int getFBConfigAttrib(_GLFWwindow* window, GLXFBConfig fbconfig, int attr
 {
     int value;
 
-    if (window->GLX.has_GLX_SGIX_fbconfig)
+    if (window->GLX.SGIX_fbconfig)
     {
         window->GLX.GetFBConfigAttribSGIX(_glfwLibrary.X11.display,
                                           fbconfig, attrib, &value);
@@ -275,7 +275,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
 
     if (_glfwLibrary.X11.glxMajor == 1 && _glfwLibrary.X11.glxMinor < 3)
     {
-        if (!window->GLX.has_GLX_SGIX_fbconfig)
+        if (!window->GLX.SGIX_fbconfig)
         {
             _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
                           "X11/GLX: GLXFBConfig support not found");
@@ -283,7 +283,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         }
     }
 
-    if (window->GLX.has_GLX_SGIX_fbconfig)
+    if (window->GLX.SGIX_fbconfig)
     {
         fbconfigs = window->GLX.ChooseFBConfigSGIX(_glfwLibrary.X11.display,
                                                    _glfwLibrary.X11.screen,
@@ -356,7 +356,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         result[*found].auxBuffers = getFBConfigAttrib(window, fbconfigs[i], GLX_AUX_BUFFERS);
         result[*found].stereo = getFBConfigAttrib(window, fbconfigs[i], GLX_STEREO);
 
-        if (window->GLX.has_GLX_ARB_multisample)
+        if (window->GLX.ARB_multisample)
             result[*found].samples = getFBConfigAttrib(window, fbconfigs[i], GLX_SAMPLES);
         else
             result[*found].samples = 0;
@@ -399,7 +399,7 @@ static int createContext(_GLFWwindow* window,
         setGLXattrib(attribs, index, GLX_FBCONFIG_ID, (int) fbconfigID);
         setGLXattrib(attribs, index, None, None);
 
-        if (window->GLX.has_GLX_SGIX_fbconfig)
+        if (window->GLX.SGIX_fbconfig)
         {
             fbconfig = window->GLX.ChooseFBConfigSGIX(_glfwLibrary.X11.display,
                                                       _glfwLibrary.X11.screen,
@@ -423,7 +423,7 @@ static int createContext(_GLFWwindow* window,
     }
 
     // Retrieve the corresponding visual
-    if (window->GLX.has_GLX_SGIX_fbconfig)
+    if (window->GLX.SGIX_fbconfig)
     {
         window->GLX.visual = window->GLX.GetVisualFromFBConfigSGIX(_glfwLibrary.X11.display,
                                                                    *fbconfig);
@@ -443,7 +443,7 @@ static int createContext(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    if (window->GLX.has_GLX_ARB_create_context)
+    if (window->GLX.ARB_create_context)
     {
         index = 0;
 
@@ -475,7 +475,7 @@ static int createContext(_GLFWwindow* window,
         {
             int flags = 0;
 
-            if (!window->GLX.has_GLX_ARB_create_context_profile)
+            if (!window->GLX.ARB_create_context_profile)
             {
                 _glfwSetError(GLFW_VERSION_UNAVAILABLE,
                               "X11/GLX: An OpenGL profile requested but "
@@ -484,7 +484,7 @@ static int createContext(_GLFWwindow* window,
             }
 
             if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE &&
-                !window->GLX.has_GLX_EXT_create_context_es2_profile)
+                !window->GLX.EXT_create_context_es2_profile)
             {
                 _glfwSetError(GLFW_VERSION_UNAVAILABLE,
                               "X11/GLX: OpenGL ES 2.x profile requested but "
@@ -506,7 +506,7 @@ static int createContext(_GLFWwindow* window,
         {
             int strategy;
 
-            if (!window->GLX.has_GLX_ARB_create_context_robustness)
+            if (!window->GLX.ARB_create_context_robustness)
             {
                 _glfwSetError(GLFW_VERSION_UNAVAILABLE,
                               "X11/GLX: An OpenGL robustness strategy was "
@@ -546,7 +546,7 @@ static int createContext(_GLFWwindow* window,
     }
     else
     {
-        if (window->GLX.has_GLX_SGIX_fbconfig)
+        if (window->GLX.SGIX_fbconfig)
         {
             window->GLX.context =
                 window->GLX.CreateContextWithConfigSGIX(_glfwLibrary.X11.display,
@@ -596,10 +596,10 @@ static void initGLXExtensions(_GLFWwindow* window)
             _glfwPlatformGetProcAddress("glXSwapIntervalEXT");
 
         if (window->GLX.SwapIntervalEXT)
-            window->GLX.has_GLX_EXT_swap_control = GL_TRUE;
+            window->GLX.EXT_swap_control = GL_TRUE;
     }
 
-    if (!window->GLX.has_GLX_EXT_swap_control)
+    if (!window->GLX.EXT_swap_control)
     {
         if (_glfwPlatformExtensionSupported("GLX_SGI_swap_control"))
         {
@@ -607,7 +607,7 @@ static void initGLXExtensions(_GLFWwindow* window)
                 _glfwPlatformGetProcAddress("glXSwapIntervalSGI");
 
             if (window->GLX.SwapIntervalSGI)
-                window->GLX.has_GLX_SGI_swap_control = GL_TRUE;
+                window->GLX.SGI_swap_control = GL_TRUE;
         }
     }
 
@@ -627,12 +627,12 @@ static void initGLXExtensions(_GLFWwindow* window)
             window->GLX.CreateContextWithConfigSGIX &&
             window->GLX.GetVisualFromFBConfigSGIX)
         {
-            window->GLX.has_GLX_SGIX_fbconfig = GL_TRUE;
+            window->GLX.SGIX_fbconfig = GL_TRUE;
         }
     }
 
     if (_glfwPlatformExtensionSupported("GLX_ARB_multisample"))
-        window->GLX.has_GLX_ARB_multisample = GL_TRUE;
+        window->GLX.ARB_multisample = GL_TRUE;
 
     if (_glfwPlatformExtensionSupported("GLX_ARB_create_context"))
     {
@@ -640,26 +640,26 @@ static void initGLXExtensions(_GLFWwindow* window)
             _glfwPlatformGetProcAddress("glXCreateContextAttribsARB");
 
         if (window->GLX.CreateContextAttribsARB)
-            window->GLX.has_GLX_ARB_create_context = GL_TRUE;
+            window->GLX.ARB_create_context = GL_TRUE;
     }
 
-    if (window->GLX.has_GLX_ARB_create_context)
+    if (window->GLX.ARB_create_context)
     {
         if (_glfwPlatformExtensionSupported("GLX_ARB_create_context_profile"))
-            window->GLX.has_GLX_ARB_create_context_profile = GL_TRUE;
+            window->GLX.ARB_create_context_profile = GL_TRUE;
     }
 
-    if (window->GLX.has_GLX_ARB_create_context &&
-        window->GLX.has_GLX_ARB_create_context_profile)
+    if (window->GLX.ARB_create_context &&
+        window->GLX.ARB_create_context_profile)
     {
         if (_glfwPlatformExtensionSupported("GLX_EXT_create_context_es2_profile"))
-            window->GLX.has_GLX_EXT_create_context_es2_profile = GL_TRUE;
+            window->GLX.EXT_create_context_es2_profile = GL_TRUE;
     }
 
-    if (window->GLX.has_GLX_ARB_create_context)
+    if (window->GLX.ARB_create_context)
     {
         if (_glfwPlatformExtensionSupported("GLX_ARB_create_context_robustness"))
-            window->GLX.has_GLX_ARB_create_context_robustness = GL_TRUE;
+            window->GLX.ARB_create_context_robustness = GL_TRUE;
     }
 }
 
@@ -1673,7 +1673,7 @@ void _glfwPlatformRefreshWindowParams(void)
 
     int attribs[] = { GLX_FBCONFIG_ID, window->GLX.fbconfigID, None };
 
-    if (window->GLX.has_GLX_SGIX_fbconfig)
+    if (window->GLX.SGIX_fbconfig)
     {
         fbconfig = window->GLX.ChooseFBConfigSGIX(_glfwLibrary.X11.display,
                                                   _glfwLibrary.X11.screen,
@@ -1718,7 +1718,7 @@ void _glfwPlatformRefreshWindowParams(void)
     window->stereo = getFBConfigAttrib(window, *fbconfig, GLX_STEREO) ? GL_TRUE : GL_FALSE;
 
     // Get FSAA buffer sample count
-    if (window->GLX.has_GLX_ARB_multisample)
+    if (window->GLX.ARB_multisample)
         window->samples = getFBConfigAttrib(window, *fbconfig, GLX_SAMPLES);
     else
         window->samples = 0;

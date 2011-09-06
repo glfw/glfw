@@ -766,8 +766,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             {
                 // The window was deactivated (or iconified, see above)
 
-                if (window == _glfwLibrary.cursorLockWindow)
-                    _glfwPlatformShowMouseCursor(window);
+                if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+                    showMouseCursor(window);
 
                 if (window->mode == GLFW_FULLSCREEN)
                 {
@@ -789,8 +789,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             {
                 // The window was activated
 
-                if (window == _glfwLibrary.cursorLockWindow)
-                    _glfwPlatformHideMouseCursor(window);
+                if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+                    captureMouseCursor(window);
 
                 if (window->mode == GLFW_FULLSCREEN)
                 {
@@ -962,8 +962,11 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (newMouseX != window->Win32.oldMouseX ||
                 newMouseY != window->Win32.oldMouseY)
             {
-                if (window == _glfwLibrary.cursorLockWindow)
+                if (window->cursorMode == GLFW_CURSOR_CAPTURED)
                 {
+                    if (_glfwLibrary.activeWindow != window)
+                        return 0;
+
                     window->mousePosX += newMouseX -
                                          window->Win32.oldMouseX;
                     window->mousePosY += newMouseY -
@@ -977,7 +980,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
                 window->Win32.oldMouseX = newMouseX;
                 window->Win32.oldMouseY = newMouseY;
-                window->Win32.mouseMoved = GL_TRUE;
+                window->Win32.cursorCentered = GL_FALSE;
 
                 if (_glfwLibrary.mousePosCallback)
                 {
@@ -1009,8 +1012,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             window->width  = LOWORD(lParam);
             window->height = HIWORD(lParam);
 
-            // If the mouse is locked, update the clipping rect
-            if (window == _glfwLibrary.cursorLockWindow)
+            // If window is in cursor capture mode, update clipping rect
+            if (window->cursorMode == GLFW_CURSOR_CAPTURED)
             {
                 RECT ClipWindowRect;
                 if (GetWindowRect(window->Win32.handle, &ClipWindowRect))
@@ -1032,8 +1035,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             window->positionX = LOWORD(lParam);
             window->positionY = HIWORD(lParam);
 
-            // If the mouse is locked, update the clipping rect
-            if (window == _glfwLibrary.cursorLockWindow)
+            // If window is in cursor capture mode, update clipping rect
+            if (window->cursorMode == GLFW_CURSOR_CAPTURED)
             {
                 RECT ClipWindowRect;
                 if (GetWindowRect(window->Win32.handle, &ClipWindowRect))
@@ -1755,7 +1758,7 @@ void _glfwPlatformPollEvents(void)
     MSG msg;
     _GLFWwindow* window;
 
-    window = _glfwLibrary.cursorLockWindow;
+    window = _glfwLibrary.activeWindow;
     if (window)
     {
         window->Win32.mouseMoved = GL_FALSE;
@@ -1815,13 +1818,18 @@ void _glfwPlatformPollEvents(void)
             _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, GLFW_RELEASE);
     }
 
-    // Did we have mouse movement in locked cursor mode?
-    window = _glfwLibrary.cursorLockWindow;
-    if (window && window->Win32.mouseMoved)
+    // Did the cursor move in an active window that has captured the cursor
+    window = _glfwLibrary.activeWindow;
+    if (window)
     {
-        _glfwPlatformSetMouseCursorPos(window,
-                                       window->width / 2,
-                                       window->height / 2);
+        if (window->cursorMode == GLFW_CURSOR_CAPTURED &&
+            !window->Win32.cursorCentered)
+        {
+            _glfwPlatformSetMouseCursorPos(window,
+                                           window->width / 2,
+                                           window->height / 2);
+            window->Win32.cursorCentered = GL_TRUE;
+        }
     }
 }
 

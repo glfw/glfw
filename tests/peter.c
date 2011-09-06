@@ -35,19 +35,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static GLboolean cursor_enabled = GL_TRUE;
+static GLboolean cursor_captured = GL_FALSE;
 static GLFWwindow window_handle = NULL;
 
 static GLboolean open_window(void);
 
 static void toggle_mouse_cursor(GLFWwindow window)
 {
-    if (cursor_enabled)
-        glfwDisable(window, GLFW_MOUSE_CURSOR);
+    if (cursor_captured)
+        glfwSetCursorMode(window, GLFW_CURSOR_NORMAL);
     else
-        glfwEnable(window, GLFW_MOUSE_CURSOR);
+        glfwSetCursorMode(window, GLFW_CURSOR_CAPTURED);
 
-    cursor_enabled = !cursor_enabled;
+    cursor_captured = !cursor_captured;
 }
 
 static void mouse_position_callback(GLFWwindow window, int x, int y)

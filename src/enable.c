@@ -32,58 +32,6 @@
 
 
 //========================================================================
-// Enable and disable locked cursor mode
-//========================================================================
-
-static void enableMouseCursor(_GLFWwindow* window)
-{
-    int centerPosX, centerPosY;
-
-    if (_glfwLibrary.cursorLockWindow != window)
-        return;
-
-    _glfwPlatformShowMouseCursor(window);
-
-    centerPosX = window->width / 2;
-    centerPosY = window->height / 2;
-
-    if (centerPosX != window->mousePosX || centerPosY != window->mousePosY)
-    {
-        _glfwPlatformSetMouseCursorPos(window, centerPosX, centerPosY);
-
-        window->mousePosX = centerPosX;
-        window->mousePosY = centerPosY;
-
-        if (_glfwLibrary.mousePosCallback)
-        {
-            _glfwLibrary.mousePosCallback(window,
-                                          window->mousePosX,
-                                          window->mousePosY);
-        }
-    }
-
-    // From now on the mouse is unlocked
-    _glfwLibrary.cursorLockWindow = NULL;
-}
-
-static void disableMouseCursor(_GLFWwindow* window)
-{
-    if (_glfwLibrary.cursorLockWindow)
-        return;
-
-    _glfwPlatformHideMouseCursor(window);
-
-    // Move cursor to the middle of the window
-    _glfwPlatformSetMouseCursorPos(window,
-                                   window->width / 2,
-                                   window->height / 2);
-
-    // From now on the mouse is locked
-    _glfwLibrary.cursorLockWindow = window;
-}
-
-
-//========================================================================
 // Enable and disable sticky keys mode
 //========================================================================
 
@@ -191,9 +139,6 @@ GLFWAPI void glfwEnable(GLFWwindow window, int token)
 
     switch (token)
     {
-        case GLFW_MOUSE_CURSOR:
-            enableMouseCursor(window);
-            break;
         case GLFW_STICKY_KEYS:
             enableStickyKeys(window);
             break;
@@ -226,9 +171,6 @@ GLFWAPI void glfwDisable(GLFWwindow window, int token)
 
     switch (token)
     {
-        case GLFW_MOUSE_CURSOR:
-            disableMouseCursor(window);
-            break;
         case GLFW_STICKY_KEYS:
             disableStickyKeys(window);
             break;

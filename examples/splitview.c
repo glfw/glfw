@@ -465,7 +465,7 @@ int main(void)
     glfwEnable(window, GLFW_STICKY_KEYS);
 
     // Enable mouse cursor (only needed for fullscreen mode)
-    glfwEnable(window, GLFW_MOUSE_CURSOR);
+    glfwSetCursorMode(window, GLFW_CURSOR_NORMAL);
 
     // Set callback functions
     glfwSetWindowSizeCallback(windowSizeFun);

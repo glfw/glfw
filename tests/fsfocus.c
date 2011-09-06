@@ -91,7 +91,7 @@ int main(void)
     }
 
     glfwSwapInterval(1);
-    glfwEnable(window, GLFW_MOUSE_CURSOR);
+    glfwSetCursorMode(window, GLFW_CURSOR_NORMAL);
 
     glfwSetWindowFocusCallback(window_focus_callback);
     glfwSetKeyCallback(window_key_callback);

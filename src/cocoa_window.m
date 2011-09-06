@@ -348,7 +348,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
 - (void)mouseMoved:(NSEvent *)event
 {
-    if (window == _glfwLibrary.cursorLockWindow)
+    if (window->cursorMode == GLFW_CURSOR_CAPTURED)
     {
         window->mousePosX += [event deltaX];
         window->mousePosY += [event deltaY];

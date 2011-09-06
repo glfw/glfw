@@ -829,6 +829,69 @@ static GLboolean createWindow(_GLFWwindow* window,
 
 
 //========================================================================
+// Hide mouse cursor
+//========================================================================
+
+static void hideMouseCursor(_GLFWwindow* window)
+{
+    if (!window->X11.cursorHidden)
+    {
+        XDefineCursor(_glfwLibrary.X11.display,
+                      window->X11.handle,
+                      _glfwLibrary.X11.cursor);
+        window->X11.cursorHidden = GL_TRUE;
+    }
+}
+
+
+//========================================================================
+// Capture mouse cursor
+//========================================================================
+
+static void captureMouseCursor(_GLFWwindow* window)
+{
+    hideMouseCursor(window);
+
+    if (!window->X11.cursorGrabbed)
+    {
+        if (XGrabPointer(_glfwLibrary.X11.display, window->X11.handle, True,
+                         ButtonPressMask | ButtonReleaseMask |
+                         PointerMotionMask, GrabModeAsync, GrabModeAsync,
+                         window->X11.handle, None, CurrentTime) ==
+            GrabSuccess)
+        {
+            window->X11.cursorGrabbed = GL_TRUE;
+            window->X11.cursorCentered = GL_FALSE;
+        }
+    }
+}
+
+
+//========================================================================
+// Show mouse cursor
+//========================================================================
+
+static void showMouseCursor(_GLFWwindow* window)
+{
+    // Un-grab cursor (only in windowed mode: in fullscreen mode we still
+    // want the mouse grabbed in order to confine the cursor to the window
+    // area)
+    if (window->X11.cursorGrabbed)
+    {
+        XUngrabPointer(_glfwLibrary.X11.display, CurrentTime);
+        window->X11.cursorGrabbed = GL_FALSE;
+    }
+
+    // Show cursor
+    if (window->X11.cursorHidden)
+    {
+        XUndefineCursor(_glfwLibrary.X11.display, window->X11.handle);
+        window->X11.cursorHidden = GL_FALSE;
+    }
+}
+
+
+//========================================================================
 // Enter fullscreen mode
 //========================================================================
 
@@ -916,9 +979,6 @@ static void enterFullscreenMode(_GLFWwindow* window)
                       window->width, window->height);
     }
 
-    if (_glfwLibrary.cursorLockWindow == window)
-        _glfwPlatformHideMouseCursor(window);
-
     // HACK: Try to get window inside viewport (for virtual displays) by moving
     // the mouse cursor to the upper left corner (and then to the center)
     // This hack should be harmless on saner systems as well
@@ -973,9 +1033,6 @@ static void leaveFullscreenMode(_GLFWwindow* window)
                    SubstructureNotifyMask | SubstructureRedirectMask,
                    &event);
     }
-
-    if (_glfwLibrary.cursorLockWindow == window)
-        _glfwPlatformShowMouseCursor(window);
 }
 
 
@@ -1149,15 +1206,15 @@ static void processSingleEvent(void)
             {
                 // The mouse cursor was moved and we didn't do it
 
-                if (_glfwLibrary.cursorLockWindow == window)
+                if (window->cursorMode == GLFW_CURSOR_CAPTURED)
                 {
-                    if (window->X11.pointerHidden)
-                    {
-                        window->mousePosX += event.xmotion.x -
-                                             window->X11.cursorPosX;
-                        window->mousePosY += event.xmotion.y -
-                                             window->X11.cursorPosY;
-                    }
+                    if (_glfwLibrary.activeWindow != window)
+                        break;
+
+                    window->mousePosX += event.xmotion.x -
+                                         window->X11.cursorPosX;
+                    window->mousePosY += event.xmotion.y -
+                                         window->X11.cursorPosY;
                 }
                 else
                 {
@@ -1167,7 +1224,7 @@ static void processSingleEvent(void)
 
                 window->X11.cursorPosX = event.xmotion.x;
                 window->X11.cursorPosY = event.xmotion.y;
-                window->X11.mouseMoved = GL_TRUE;
+                window->X11.cursorCentered = GL_FALSE;
 
                 if (_glfwLibrary.mousePosCallback)
                 {
@@ -1176,6 +1233,7 @@ static void processSingleEvent(void)
                                                   window->mousePosY);
                 }
             }
+
             break;
         }
 
@@ -1296,8 +1354,8 @@ static void processSingleEvent(void)
 
             _glfwInputWindowFocus(window, GL_TRUE);
 
-            if (_glfwLibrary.cursorLockWindow == window)
-                _glfwPlatformHideMouseCursor(window);
+            if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+                captureMouseCursor(window);
 
             break;
         }
@@ -1314,8 +1372,8 @@ static void processSingleEvent(void)
 
             _glfwInputWindowFocus(window, GL_FALSE);
 
-            if (_glfwLibrary.cursorLockWindow == window)
-                _glfwPlatformShowMouseCursor(window);
+            if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+                showMouseCursor(window);
 
             break;
         }
@@ -1704,24 +1762,21 @@ void _glfwPlatformPollEvents(void)
 {
     _GLFWwindow* window;
 
-    // Flag that the cursor has not moved
-    window = _glfwLibrary.cursorLockWindow;
-    if (window)
-        window->X11.mouseMoved = GL_FALSE;
-
     // Process all pending events
     while (XPending(_glfwLibrary.X11.display))
         processSingleEvent();
 
-    // Did we get mouse movement in fully enabled hidden cursor mode?
-    window = _glfwLibrary.cursorLockWindow;
+    // Did the cursor move in an active window that has captured the cursor
+    window = _glfwLibrary.activeWindow;
     if (window)
     {
-        if (window->X11.mouseMoved && window->X11.pointerHidden)
+        if (window->cursorMode == GLFW_CURSOR_CAPTURED &&
+            !window->X11.cursorCentered)
         {
             _glfwPlatformSetMouseCursorPos(window,
                                            window->width / 2,
                                            window->height / 2);
+            window->X11.cursorCentered = GL_TRUE;
         }
     }
 }
@@ -1744,60 +1799,6 @@ void _glfwPlatformWaitEvents(void)
 
 
 //========================================================================
-// Hide mouse cursor (lock it)
-//========================================================================
-
-void _glfwPlatformHideMouseCursor(_GLFWwindow* window)
-{
-    // Hide cursor
-    if (!window->X11.pointerHidden)
-    {
-        XDefineCursor(_glfwLibrary.X11.display,
-                      window->X11.handle,
-                      _glfwLibrary.X11.cursor);
-        window->X11.pointerHidden = GL_TRUE;
-    }
-
-    // Grab cursor to user window
-    if (!window->X11.pointerGrabbed)
-    {
-        if (XGrabPointer(_glfwLibrary.X11.display, window->X11.handle, True,
-                         ButtonPressMask | ButtonReleaseMask |
-                         PointerMotionMask, GrabModeAsync, GrabModeAsync,
-                         window->X11.handle, None, CurrentTime) ==
-            GrabSuccess)
-        {
-            window->X11.pointerGrabbed = GL_TRUE;
-        }
-    }
-}
-
-
-//========================================================================
-// Show mouse cursor (unlock it)
-//========================================================================
-
-void _glfwPlatformShowMouseCursor(_GLFWwindow* window)
-{
-    // Un-grab cursor (only in windowed mode: in fullscreen mode we still
-    // want the mouse grabbed in order to confine the cursor to the window
-    // area)
-    if (window->X11.pointerGrabbed)
-    {
-        XUngrabPointer(_glfwLibrary.X11.display, CurrentTime);
-        window->X11.pointerGrabbed = GL_FALSE;
-    }
-
-    // Show cursor
-    if (window->X11.pointerHidden)
-    {
-        XUndefineCursor(_glfwLibrary.X11.display, window->X11.handle);
-        window->X11.pointerHidden = GL_FALSE;
-    }
-}
-
-
-//========================================================================
 // Set physical mouse cursor position
 //========================================================================
 
@@ -1808,5 +1809,26 @@ void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y)
     window->X11.cursorPosY = y;
 
     XWarpPointer(_glfwLibrary.X11.display, None, window->X11.handle, 0,0,0,0, x, y);
+}
+
+
+//========================================================================
+// Set physical mouse cursor mode
+//========================================================================
+
+void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
+{
+    switch (mode)
+    {
+        case GLFW_CURSOR_NORMAL:
+            showMouseCursor(window);
+            break;
+        case GLFW_CURSOR_HIDDEN:
+            hideMouseCursor(window);
+            break;
+        case GLFW_CURSOR_CAPTURED:
+            captureMouseCursor(window);
+            break;
+    }
 }
 

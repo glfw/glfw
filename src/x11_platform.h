@@ -131,9 +131,9 @@ typedef struct _GLFWwindowX11
     GLboolean     hasEWMH;          // True if window manager supports EWMH
     GLboolean     overrideRedirect; // True if window is OverrideRedirect
     GLboolean     keyboardGrabbed;  // True if keyboard is currently grabbed
-    GLboolean     pointerGrabbed;   // True if pointer is currently grabbed
-    GLboolean     pointerHidden;    // True if pointer is currently hidden
-    GLboolean     mouseMoved;
+    GLboolean     cursorGrabbed;    // True if cursor is currently grabbed
+    GLboolean     cursorHidden;     // True if cursor is currently hidden
+    GLboolean     cursorCentered;   // True if cursor was moved since last poll
     int           cursorPosX, cursorPosY;
 
 } _GLFWwindowX11;

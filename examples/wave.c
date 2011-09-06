@@ -309,13 +309,13 @@ void mouse_button_callback(GLFWwindow window, int button, int action)
 
     if (action == GLFW_PRESS)
     {
-        glfwDisable(window, GLFW_MOUSE_CURSOR);
+        glfwSetCursorMode(window, GLFW_CURSOR_CAPTURED);
         locked = GL_TRUE;
     }
     else
     {
         locked = GL_FALSE;
-        glfwEnable(window, GLFW_MOUSE_CURSOR);
+        glfwSetCursorMode(window, GLFW_CURSOR_NORMAL);
     }
 }
 

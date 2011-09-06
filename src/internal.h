@@ -181,6 +181,7 @@ struct _GLFWwindow
     GLboolean keyRepeat;
     GLboolean sysKeysDisabled; // system keys disabled flag
     int       mousePosX, mousePosY;
+    int       cursorMode;
     int       scrollX, scrollY;
     char      mouseButton[GLFW_MOUSE_BUTTON_LAST + 1];
     char      key[GLFW_KEY_LAST + 1];
@@ -224,7 +225,6 @@ struct _GLFWlibrary
     _GLFWwindow*  windowListHead;
     _GLFWwindow*  currentWindow;
     _GLFWwindow*  activeWindow;
-    _GLFWwindow*  cursorLockWindow;
 
     GLFWerrorfun         errorCallback;
     GLFWwindowsizefun    windowSizeCallback;
@@ -302,9 +302,8 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height);
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y);
 void _glfwPlatformIconifyWindow(_GLFWwindow* window);
 void _glfwPlatformRestoreWindow(_GLFWwindow* window);
-void _glfwPlatformHideMouseCursor(_GLFWwindow* window);
-void _glfwPlatformShowMouseCursor(_GLFWwindow* window);
 void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y);
+void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
 
 // Event management
 void _glfwPlatformPollEvents(void);

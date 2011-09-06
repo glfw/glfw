@@ -326,9 +326,10 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     _glfwLibrary.windowListHead = window;
 
     // Remember window settings
-    window->width  = width;
-    window->height = height;
-    window->mode   = mode;
+    window->width      = width;
+    window->height     = height;
+    window->mode       = mode;
+    window->cursorMode = GLFW_CURSOR_NORMAL;
 
     // Open the actual window and create its context
     if (!_glfwPlatformOpenWindow(window, &wndconfig, &fbconfig))
@@ -348,9 +349,9 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     }
 
     // The GLFW specification states that fullscreen windows have the cursor
-    // locked by default
+    // captured by default
     if (mode == GLFW_FULLSCREEN)
-        glfwDisable(window, GLFW_MOUSE_CURSOR);
+        glfwSetCursorMode(window, GLFW_CURSOR_CAPTURED);
 
     // Clearing the front buffer to black to avoid garbage pixels left over
     // from previous uses of our bit of VRAM
@@ -489,10 +490,6 @@ GLFWAPI void glfwCloseWindow(GLFWwindow handle)
     // Allow closing of NULL (to match the behavior of free)
     if (window == NULL)
         return;
-
-    // Show mouse pointer again (if hidden)
-    if (window == _glfwLibrary.cursorLockWindow)
-        glfwEnable(window, GLFW_MOUSE_CURSOR);
 
     // Clear the current context if this window's context is current
     if (window == _glfwLibrary.currentWindow)

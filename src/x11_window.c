@@ -599,16 +599,13 @@ static void initGLXExtensions(_GLFWwindow* window)
             window->GLX.EXT_swap_control = GL_TRUE;
     }
 
-    if (!window->GLX.EXT_swap_control)
+    if (_glfwPlatformExtensionSupported("GLX_SGI_swap_control"))
     {
-        if (_glfwPlatformExtensionSupported("GLX_SGI_swap_control"))
-        {
-            window->GLX.SwapIntervalSGI = (PFNGLXSWAPINTERVALSGIPROC)
-                _glfwPlatformGetProcAddress("glXSwapIntervalSGI");
+        window->GLX.SwapIntervalSGI = (PFNGLXSWAPINTERVALSGIPROC)
+            _glfwPlatformGetProcAddress("glXSwapIntervalSGI");
 
-            if (window->GLX.SwapIntervalSGI)
-                window->GLX.SGI_swap_control = GL_TRUE;
-        }
+        if (window->GLX.SwapIntervalSGI)
+            window->GLX.SGI_swap_control = GL_TRUE;
     }
 
     if (_glfwPlatformExtensionSupported("GLX_SGIX_fbconfig"))
@@ -643,24 +640,14 @@ static void initGLXExtensions(_GLFWwindow* window)
             window->GLX.ARB_create_context = GL_TRUE;
     }
 
-    if (window->GLX.ARB_create_context)
-    {
-        if (_glfwPlatformExtensionSupported("GLX_ARB_create_context_profile"))
-            window->GLX.ARB_create_context_profile = GL_TRUE;
-    }
+    if (_glfwPlatformExtensionSupported("GLX_ARB_create_context_robustness"))
+        window->GLX.ARB_create_context_robustness = GL_TRUE;
 
-    if (window->GLX.ARB_create_context &&
-        window->GLX.ARB_create_context_profile)
-    {
-        if (_glfwPlatformExtensionSupported("GLX_EXT_create_context_es2_profile"))
-            window->GLX.EXT_create_context_es2_profile = GL_TRUE;
-    }
+    if (_glfwPlatformExtensionSupported("GLX_ARB_create_context_profile"))
+        window->GLX.ARB_create_context_profile = GL_TRUE;
 
-    if (window->GLX.ARB_create_context)
-    {
-        if (_glfwPlatformExtensionSupported("GLX_ARB_create_context_robustness"))
-            window->GLX.ARB_create_context_robustness = GL_TRUE;
-    }
+    if (_glfwPlatformExtensionSupported("GLX_EXT_create_context_es2_profile"))
+        window->GLX.EXT_create_context_es2_profile = GL_TRUE;
 }
 
 

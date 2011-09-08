@@ -372,10 +372,9 @@ int main(void)
 
     while (glfwIsWindow(window) == GL_TRUE)
     {
-        glfwWaitEvents();
         glClear(GL_COLOR_BUFFER_BIT);
         glfwSwapBuffers();
-        glfwPollEvents();
+        glfwWaitEvents();
     }
 
     glfwTerminate();

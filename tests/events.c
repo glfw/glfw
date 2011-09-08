@@ -336,7 +336,7 @@ int main(void)
     if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     printf("Library initialized\n");
@@ -358,7 +358,7 @@ int main(void)
         glfwTerminate();
 
         fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     printf("Window opened\n");
@@ -378,6 +378,6 @@ int main(void)
     }
 
     glfwTerminate();
-    exit(0);
+    exit(EXIT_SUCCESS);
 }
 

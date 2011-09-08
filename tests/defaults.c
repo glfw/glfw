@@ -72,7 +72,7 @@ int main(void)
     if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Defaults", NULL);
@@ -81,7 +81,7 @@ int main(void)
         glfwTerminate();
 
         fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     glfwGetWindowSize(window, &width, &height);
@@ -99,6 +99,6 @@ int main(void)
     window = NULL;
 
     glfwTerminate();
-    exit(0);
+    exit(EXIT_SUCCESS);
 }
 

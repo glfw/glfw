@@ -43,6 +43,18 @@
 
 void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 {
+    uint32_t sampleCount;
+    int i;
+    CGGammaValue red[GLFW_GAMMA_RAMP_SIZE];
+    CGGammaValue green[GLFW_GAMMA_RAMP_SIZE];
+    CGGammaValue blue[GLFW_GAMMA_RAMP_SIZE];
+    CGGetDisplayTransferByTable(0, GLFW_GAMMA_RAMP_SIZE, red, green, blue, &sampleCount);
+    for (i = 0; i < GLFW_GAMMA_RAMP_SIZE; i++)
+    {
+        _glfwLibrary.currentRamp.red[i] = red[i] * 65535;
+        _glfwLibrary.currentRamp.green[i] = green[i] * 65535;
+        _glfwLibrary.currentRamp.blue[i] = blue[i] * 65535;
+    }
 }
 
 
@@ -52,5 +64,16 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 
 void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
 {
+    int i;
+    CGGammaValue red[GLFW_GAMMA_RAMP_SIZE];
+    CGGammaValue green[GLFW_GAMMA_RAMP_SIZE];
+    CGGammaValue blue[GLFW_GAMMA_RAMP_SIZE];
+    for (i = 0; i < GLFW_GAMMA_RAMP_SIZE; i++)
+    {
+        red[i] = ((float)_glfwLibrary.currentRamp.red[i]) / 65535.0f;
+        blue[i] = ((float)_glfwLibrary.currentRamp.green[i]) / 65535.0f;
+        green[i] = ((float)_glfwLibrary.currentRamp.blue[i]) / 65535.0f;
+    }
+    CGSetDisplayTransferByTable(0, GLFW_GAMMA_RAMP_SIZE, red, green, blue);
 }
 

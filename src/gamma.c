@@ -62,20 +62,34 @@ GLFWAPI void glfwSetGamma(float gamma)
     for (i = 0;  i < size;  i++)
     {
         float value = (float) i / ((float) (size - 1));
-
+        int diffRed, diffGreen, diffBlue, newRed, newGreen, newBlue, pow1;
+        
+        // Reference our gamma 1.0f
+        pow1 = value * 65535.f + 0.5;
+        
         // Apply gamma
         value = (float) pow(value, 1.f / gamma) * 65535.f + 0.5f;
-
+        
         // Clamp values
         if (value < 0.f)
             value = 0.f;
         else if (value > 65535.f)
             value = 65535.f;
-
-        // Set the gamma ramp values
-        ramp.red[i]   = (unsigned short) value;
-        ramp.green[i] = (unsigned short) value;
-        ramp.blue[i]  = (unsigned short) value;
+        
+        // Use original gamma as reference
+        diffRed   = _glfwLibrary.originalRamp.red[i] - pow1;
+        diffGreen = _glfwLibrary.originalRamp.green[i] - pow1;
+        diffBlue  = _glfwLibrary.originalRamp.blue[i] - pow1;
+        
+        // Calculate new values
+        newRed    = diffRed + (unsigned short) value;
+        newGreen  = diffGreen + (unsigned short) value;
+        newBlue   = diffBlue + (unsigned short) value;
+        
+        // Set the gamma ramp values (whilst clamping)
+        ramp.red[i]   = newRed > 65535 ? 65535 : newRed < 0 ? 0 : newRed;
+        ramp.green[i] = newGreen > 65535 ? 65535 : newGreen < 0 ? 0 : newGreen;
+        ramp.blue[i]  = newBlue > 65535 ? 65535 : newBlue < 0 ? 0 : newBlue;
     }
 
     glfwSetGammaRamp(&ramp);

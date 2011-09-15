@@ -174,13 +174,13 @@ int main(int argc, char** argv)
     argc -= optind;
     argv += optind;
 
+    glfwSetErrorCallback(error_callback);
+
     if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
-
-    glfwSetErrorCallback(error_callback);
 
     if (major != 1 || minor != 0)
     {

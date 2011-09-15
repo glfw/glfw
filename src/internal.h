@@ -226,7 +226,6 @@ struct _GLFWlibrary
     _GLFWwindow*  currentWindow;
     _GLFWwindow*  activeWindow;
 
-    GLFWerrorfun         errorCallback;
     GLFWwindowsizefun    windowSizeCallback;
     GLFWwindowclosefun   windowCloseCallback;
     GLFWwindowrefreshfun windowRefreshCallback;

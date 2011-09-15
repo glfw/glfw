@@ -35,10 +35,13 @@
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// The current error value
+// The current error value and callback
+// These are not in _glfwLibrary since they need to be initialized and
+// accessible before glfwInit
 //========================================================================
 
 static int _glfwError = GLFW_NO_ERROR;
+static GLFWerrorfun _glfwErrorCallback = NULL;
 
 
 //========================================================================
@@ -48,18 +51,12 @@ static int _glfwError = GLFW_NO_ERROR;
 
 void _glfwSetError(int error, const char* description)
 {
-    if (!_glfwInitialized)
-    {
-        _glfwError = error;
-        return;
-    }
-
-    if (_glfwLibrary.errorCallback)
+    if (_glfwErrorCallback)
     {
         if (!description)
             description = glfwErrorString(error);
 
-        _glfwLibrary.errorCallback(error, description);
+        _glfwErrorCallback(error, description);
     }
     else
         _glfwError = error;
@@ -110,9 +107,9 @@ GLFWAPI const char* glfwErrorString(int error)
             return "The requested OpenGL version is unavailable";
         case GLFW_PLATFORM_ERROR:
             return "A platform-specific error occurred";
-        default:
-            return "ERROR: UNKNOWN ERROR TOKEN PASSED TO glfwErrorString";
     }
+
+    return "ERROR: UNKNOWN ERROR TOKEN PASSED TO glfwErrorString";
 }
 
 
@@ -122,12 +119,6 @@ GLFWAPI const char* glfwErrorString(int error)
 
 GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun)
 {
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    _glfwLibrary.errorCallback = cbfun;
+    _glfwErrorCallback = cbfun;
 }
 

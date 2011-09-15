@@ -4,8 +4,12 @@ CMakeCache.txt
 Makefile
 cmake_uninstall.cmake
 src/config.h
+src/libglfw.pc
 src/x11/libglfw.pc
 src/win32/libglfw.pc
 src/cocoa/libglfw.pc
 *.so
 *.a
+.DS_Store
+*.dylib
+*.app

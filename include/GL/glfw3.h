@@ -158,16 +158,24 @@ extern "C" {
  * (which is not a nice solution for portable programs).
  */
 #if defined(__APPLE_CC__)
- #define GL_GLEXT_LEGACY
- #include <OpenGL/gl.h>
- #ifndef GLFW_NO_GLU
-  #include <OpenGL/glu.h>
- #endif
+  #if defined(GLFW_INCLUDE_GL3)
+    #include <OpenGL/gl3.h>
+  #else
+    #define GL_GLEXT_LEGACY
+    #include <OpenGL/gl.h>
+  #endif
+  #ifndef GLFW_NO_GLU
+    #include <OpenGL/glu.h>
+  #endif
 #else
- #include <GL/gl.h>
- #ifndef GLFW_NO_GLU
-  #include <GL/glu.h>
- #endif
+  #if defined(GLFW_INCLUDE_GL3)
+    #include <GL3/gl3.h>
+  #else
+    #include <GL/gl.h>
+  #endif
+  #ifndef GLFW_NO_GLU
+    #include <GL/glu.h>
+  #endif
 #endif
 
 

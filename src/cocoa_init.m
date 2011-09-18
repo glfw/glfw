@@ -225,6 +225,8 @@ int _glfwPlatformInit(void)
     _glfwLibrary.NS.desktopMode =
 	    (NSDictionary*) CGDisplayCurrentMode(CGMainDisplayID());
 
+    _glfwInitJoysticks();
+
     return GL_TRUE;
 }
 
@@ -242,6 +244,8 @@ int _glfwPlatformTerminate(void)
 
     [_glfwLibrary.NS.autoreleasePool release];
     _glfwLibrary.NS.autoreleasePool = nil;
+
+    _glfwTerminateJoysticks();
 
     return GL_TRUE;
 }

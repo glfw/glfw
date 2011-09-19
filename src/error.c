@@ -107,6 +107,8 @@ GLFWAPI const char* glfwErrorString(int error)
             return "The requested OpenGL version is unavailable";
         case GLFW_PLATFORM_ERROR:
             return "A platform-specific error occurred";
+        case GLFW_WINDOW_NOT_ACTIVE:
+            return "The specified window is not active";
     }
 
     return "ERROR: UNKNOWN ERROR TOKEN PASSED TO glfwErrorString";

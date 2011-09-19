@@ -3,46 +3,45 @@
 // The program lists all available fullscreen video modes.
 //========================================================================
 
-#include <stdio.h>
 #include <GL/glfw3.h>
 
-// Maximum number of modes that we want to list
-#define MAX_NUM_MODES 400
+#include <stdio.h>
+#include <stdlib.h>
 
-
-//========================================================================
-// main()
-//========================================================================
-
-int main( void )
+static void print_mode(GLFWvidmode* mode)
 {
-    GLFWvidmode dtmode, modes[ MAX_NUM_MODES ];
-    int     modecount, i;
+    printf("%i x %i x %i (%i %i %i)\n",
+           mode->width, mode->height,
+           mode->redBits + mode->greenBits + mode->blueBits,
+           mode->redBits, mode->greenBits, mode->blueBits);
+}
 
-    // Initialize GLFW
-    if( !glfwInit() )
+int main(void)
+{
+    GLFWvidmode dtmode, modes[400];
+    int modecount, i;
+
+    if (!glfwInit())
     {
-        return 0;
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     // Show desktop video mode
-    glfwGetDesktopMode( &dtmode );
-    printf( "Desktop mode: %d x %d x %d\n\n",
-            dtmode.width, dtmode.height, dtmode.redBits +
-            dtmode.greenBits + dtmode.blueBits );
+    glfwGetDesktopMode(&dtmode);
+    printf("Desktop mode: ");
+    print_mode(&dtmode);
 
     // List available video modes
-    modecount = glfwGetVideoModes( modes, MAX_NUM_MODES );
-    printf( "Available modes:\n" );
-    for( i = 0; i < modecount; i ++ )
+    modecount = glfwGetVideoModes(modes, sizeof(modes) / sizeof(GLFWvidmode));
+    printf("Available modes:\n");
+    for (i = 0;  i < modecount;  i++)
     {
-        printf( "%3d: %d x %d x %d\n", i,
-                modes[i].width, modes[i].height, modes[i].redBits +
-                modes[i].greenBits + modes[i].blueBits );
+        printf("%3i: ", i);
+        print_mode(modes + i);
     }
 
-    // Terminate GLFW
     glfwTerminate();
-
-    return 0;
+    exit(EXIT_SUCCESS);
 }
+

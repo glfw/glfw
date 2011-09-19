@@ -31,9 +31,9 @@
 #ifndef _platform_h_
 #define _platform_h_
 
-#include <sys/time.h>
 #include <unistd.h>
 #include <signal.h>
+#include <stdint.h>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
@@ -220,8 +220,9 @@ typedef struct _GLFWlibraryX11
 
     // Timer data
     struct {
+        GLboolean   monotonic;
         double      resolution;
-        long long   t0;
+        uint64_t    t0;
     } timer;
 
 #if defined(_GLFW_DLOPEN_LIBGL)

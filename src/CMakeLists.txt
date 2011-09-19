@@ -12,6 +12,12 @@ if(CYGWIN)
 endif(CYGWIN)
 
 if(UNIX)
+    if(_GLFW_HAS_XRANDR)
+        set(GLFW_PKGLIBS "${GLFW_PKGLIBS} xrandr")
+    endif(_GLFW_HAS_XRANDR)
+    if(_GLFW_HAS_XF86VIDMODE)
+        set(GLFW_PKGLIBS "${GLFW_PKGLIBS} xxf86vm")
+    endif(_GLFW_HAS_XF86VIDMODE)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libglfw.pc.cmake 
                    ${CMAKE_CURRENT_BINARY_DIR}/libglfw.pc @ONLY)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libglfw.pc DESTINATION lib/pkgconfig)

@@ -37,7 +37,7 @@
 //========================================================================
 // The current error value and callback
 // These are not in _glfwLibrary since they need to be initialized and
-// accessible before glfwInit
+// accessible before glfwInit so it can report errors
 //========================================================================
 
 static int _glfwError = GLFW_NO_ERROR;

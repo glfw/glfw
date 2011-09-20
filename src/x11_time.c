@@ -78,7 +78,7 @@ void _glfwInitTimer(void)
         _glfwLibrary.X11.timer.resolution = 1e-6;
     }
 
-    _glfwLibrary.X11.timer.t0 = getRawTime();
+    _glfwLibrary.X11.timer.base = getRawTime();
 }
 
 
@@ -92,7 +92,7 @@ void _glfwInitTimer(void)
 
 double _glfwPlatformGetTime(void)
 {
-    return (double) (getRawTime() - _glfwLibrary.X11.timer.t0) *
+    return (double) (getRawTime() - _glfwLibrary.X11.timer.base) *
         _glfwLibrary.X11.timer.resolution;
 }
 
@@ -101,9 +101,9 @@ double _glfwPlatformGetTime(void)
 // Set timer value in seconds
 //========================================================================
 
-void _glfwPlatformSetTime(double t)
+void _glfwPlatformSetTime(double time)
 {
-    _glfwLibrary.X11.timer.t0 = getRawTime() -
-        (uint64_t) (t / _glfwLibrary.X11.timer.resolution);
+    _glfwLibrary.X11.timer.base = getRawTime() -
+        (uint64_t) (time / _glfwLibrary.X11.timer.resolution);
 }
 

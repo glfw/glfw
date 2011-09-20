@@ -136,9 +136,6 @@ int main(int argc, char** argv)
         glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);
         glMatrixMode(GL_MODELVIEW);
 
-        glClearColor(0.f, 0.f, 0.f, 0.f);
-        glColor3f(1.f, 1.f, 1.f);
-
         glfwSetTime(0.0);
 
         while (glfwGetTime() < 5.0)

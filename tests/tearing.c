@@ -62,9 +62,6 @@ int main(void)
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSwapInterval(1);
 
-    glClearColor(0.f, 0.f, 0.f, 0.f);
-    glColor3f(1.f, 1.f, 1.f);
-
     glMatrixMode(GL_PROJECTION);
     glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);
     glMatrixMode(GL_MODELVIEW);

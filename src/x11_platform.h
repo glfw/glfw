@@ -193,7 +193,7 @@ typedef struct _GLFWlibraryX11
     } Xkb;
 
     // Key code LUT (mapping X11 key codes to GLFW key codes)
-    int         keyCodeLUT[256];
+    int             keyCodeLUT[256];
 
     // Screensaver data
     struct {
@@ -222,7 +222,7 @@ typedef struct _GLFWlibraryX11
     struct {
         GLboolean   monotonic;
         double      resolution;
-        uint64_t    t0;
+        uint64_t    base;
     } timer;
 
 #if defined(_GLFW_DLOPEN_LIBGL)

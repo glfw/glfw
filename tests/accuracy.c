@@ -78,16 +78,9 @@ int main(void)
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSwapInterval(1);
 
-    glClearColor(0, 0, 0, 0);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
     while (glfwIsWindow(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
-
-        glColor3f(1.f, 1.f, 1.f);
 
         glBegin(GL_LINES);
         glVertex2f(0.f, (GLfloat) window_height - cursor_y);

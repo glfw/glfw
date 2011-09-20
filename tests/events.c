@@ -180,9 +180,9 @@ static const char* get_action_name(int action)
     switch (action)
     {
         case GLFW_PRESS:
-            return "was pressed";
+            return "pressed";
         case GLFW_RELEASE:
-            return "was released";
+            return "released";
     }
 
     return "caused unknown action";

@@ -48,6 +48,10 @@ GLFWAPI void glfwSetClipboardData(void *data, size_t size, int format)
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
+
+    if (format == GLFW_CLIPBOARD_FORMAT_NONE)
+        return;
+
     _glfwPlatformSetClipboardData(data, size, format);
 }
 
@@ -61,8 +65,11 @@ GLFWAPI size_t glfwGetClipboardData(void *data, size_t size, int format)
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-	return 0;
+        return 0;
     }
+
+    if (format == GLFW_CLIPBOARD_FORMAT_NONE)
+        return 0;
 
     return _glfwPlatformGetClipboardData(data, size, format);
 }

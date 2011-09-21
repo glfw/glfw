@@ -89,6 +89,8 @@
 #define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryX11 X11
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextGLX GLX
 
+// Number of string atoms that will be checked
+#define _GLFW_STRING_ATOMS_COUNT 4
 
 //========================================================================
 // GLFW platform specific types
@@ -224,6 +226,13 @@ typedef struct _GLFWlibraryX11
         double      resolution;
         uint64_t    t0;
     } timer;
+
+    // Selection data
+    struct {
+	Atom stringatoms[_GLFW_STRING_ATOMS_COUNT];
+        Atom request;
+        int converted;
+    } selection;
 
 #if defined(_GLFW_DLOPEN_LIBGL)
     void*           libGL;  // dlopen handle for libGL.so

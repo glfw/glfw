@@ -5,6 +5,7 @@ include_directories(${GLFW_SOURCE_DIR}/include
                     ${GLFW_SOURCE_DIR}/support
                     ${OPENGL_INCLUDE_DIR})
 
+add_executable(clipboard clipboard.c)
 add_executable(defaults defaults.c)
 add_executable(events events.c)
 add_executable(fsaa fsaa.c getopt.c)
@@ -32,8 +33,8 @@ else()
 endif(APPLE)
 
 set(WINDOWS_BINARIES accuracy sharing tearing windows)
-set(CONSOLE_BINARIES defaults events fsaa fsfocus gamma iconify joysticks
-                     listmodes peter reopen version)
+set(CONSOLE_BINARIES clipboard defaults events fsaa fsfocus gamma iconify
+                     joysticks listmodes peter reopen version)
 
 if(MSVC)
   # Tell MSVC to use main instead of WinMain for Windows subsystem executables

@@ -1381,6 +1381,19 @@ static void processSingleEvent(void)
             break;
         }
 
+        case SelectionNotify:
+        {
+            // Selection notification triggered by the XConvertSelection
+
+            // Check if the notification property matches the request
+            if (event.xselection.property != _glfwLibrary.X11.selection.request)
+                _glfwLibrary.X11.selection.converted = 2;
+            else // It was successful
+                _glfwLibrary.X11.selection.converted = 1;
+
+            break;
+        }
+
         // Was the window destroyed?
         case DestroyNotify:
             return;

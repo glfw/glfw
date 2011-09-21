@@ -446,6 +446,14 @@ static GLboolean initDisplay(void)
     // the keyboard mapping.
     updateKeyCodeLUT();
 
+    // Find or create selection atoms
+    _glfwLibrary.X11.selection.stringatoms[0] =
+        XInternAtom(_glfwLibrary.X11.display, "UTF8_STRING", False);
+    _glfwLibrary.X11.selection.stringatoms[1] =
+        XInternAtom(_glfwLibrary.X11.display, "COMPOUND_STRING", False);
+    _glfwLibrary.X11.selection.stringatoms[2] = XA_STRING;
+    _glfwLibrary.X11.selection.stringatoms[3] = 0;
+
     return GL_TRUE;
 }
 

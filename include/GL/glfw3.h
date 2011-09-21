@@ -469,6 +469,10 @@ extern "C" {
 /* Gamma ramps */
 #define GLFW_GAMMA_RAMP_SIZE      256
 
+/* Clipboard formats */
+#define GLFW_CLIPBOARD_FORMAT_NONE   0
+#define GLFW_CLIPBOARD_FORMAT_STRING 1
+
 /*************************************************************************
  * Typedefs
  *************************************************************************/
@@ -590,6 +594,10 @@ GLFWAPI void glfwSetScrollCallback(GLFWscrollfun cbfun);
 GLFWAPI int glfwGetJoystickParam(int joy, int param);
 GLFWAPI int glfwGetJoystickPos(int joy, float* pos, int numaxes);
 GLFWAPI int glfwGetJoystickButtons(int joy, unsigned char* buttons, int numbuttons);
+
+/* Clipboard */
+GLFWAPI void glfwSetClipboardData(void *data, size_t size, int format);
+GLFWAPI size_t glfwGetClipboardData(void *data, size_t size, int format);
 
 /* Time */
 GLFWAPI double glfwGetTime(void);

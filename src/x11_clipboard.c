@@ -27,6 +27,8 @@
 //
 //========================================================================
 
+// TODO: Incremental support? Overkill perhaps.
+
 #include "internal.h"
 
 #include <stdio.h>
@@ -45,14 +47,53 @@
 static Atom *getInternalFormat(int fmt)
 {
     // Get the necessary atoms
-    
     switch (fmt)
     {
         case GLFW_CLIPBOARD_FORMAT_STRING:
-            return _glfwLibrary.X11.selection.stringatoms;
+            return _glfwLibrary.X11.selection.atoms.string;
         default:
             return 0;
     }
+}
+
+//========================================================================
+// X11 selection request event
+//========================================================================
+
+Atom _glfwSelectionRequest(XSelectionRequestEvent *request)
+{
+    Atom *atoms = _glfwLibrary.X11.selection.atoms.string;
+    if (request->target == XA_STRING)
+    {
+        // TODO: ISO Latin-1 specific characters don't get converted
+        // (yet). For cleanliness, would we need something like iconv?
+        XChangeProperty(_glfwLibrary.X11.display,
+            request->requestor,
+            request->target,
+            request->target,
+            8,
+            PropModeReplace,
+            (unsigned char *)_glfwLibrary.X11.selection.clipboard.string,
+            8);
+    }
+    else if (request->target == atoms[_GLFW_STRING_ATOM_COMPOUND] ||
+             request->target == atoms[_GLFW_STRING_ATOM_UTF8])
+    {
+        XChangeProperty(_glfwLibrary.X11.display,
+            request->requestor,
+            request->target,
+            request->target,
+            8,
+            PropModeReplace,
+            (unsigned char *)_glfwLibrary.X11.selection.clipboard.string,
+            _glfwLibrary.X11.selection.clipboard.stringlen);
+    }
+    else
+    {
+        // TODO: Should we set an error? Probably not.
+        return None;
+    }
+    return request->target;
 }
 
 //========================================================================
@@ -61,12 +102,46 @@ static Atom *getInternalFormat(int fmt)
 
 void _glfwPlatformSetClipboardData(void *data, size_t size, int format)
 {
+    switch (format)
+    {
+        case GLFW_CLIPBOARD_FORMAT_STRING:
+        {
+            // Allocate memory to keep track of the clipboard
+            char *cb = malloc(size+1);
 
+            // Copy the clipboard data
+            memcpy(cb, data, size);
+
+            // Set the string length
+            _glfwLibrary.X11.selection.clipboard.stringlen = size;
+
+            // Check if existing clipboard memory needs to be freed
+            if (_glfwLibrary.X11.selection.clipboard.string)
+                free(_glfwLibrary.X11.selection.clipboard.string);
+
+            // Now set the clipboard (awaiting the event SelectionRequest)
+            _glfwLibrary.X11.selection.clipboard.string = cb;
+            break;
+        }
+
+        default:
+            _glfwSetError(GLFW_CLIPBOARD_FORMAT_UNAVAILABLE,
+                          "X11/GLX: Unavailable clipboard format");
+            return;
+    }
+
+    // Set the selection owner to our active window
+    XSetSelectionOwner(_glfwLibrary.X11.display, XA_PRIMARY,
+        _glfwLibrary.activeWindow->X11.handle, CurrentTime);
+    XSetSelectionOwner(_glfwLibrary.X11.display,
+        _glfwLibrary.X11.selection.atoms.clipboard
+        [_GLFW_CLIPBOARD_ATOM_CLIPBOARD],
+        _glfwLibrary.activeWindow->X11.handle, CurrentTime);
+    XFlush(_glfwLibrary.X11.display);
 }
 
 //========================================================================
 // Return the current clipboard contents
-// TODO: Incremental support? Overkill perhaps.
 //========================================================================
 
 size_t _glfwPlatformGetClipboardData(void *data, size_t size, int format)
@@ -74,46 +149,60 @@ size_t _glfwPlatformGetClipboardData(void *data, size_t size, int format)
     size_t len, rembytes, dummy;
     unsigned char *d;
     int fmt;
-    Window window;
-    Atom *xfmt, type;
+    Atom type;
 
-    // Try different formats that relate to the GLFW format with preference
-    // for better formats first
-    for (xfmt = getInternalFormat(format); *xfmt; xfmt++)
+    // Try different clipboards and formats that relate to the GLFW
+    // format with preference for more appropriate formats first
+    Atom *xcbrd = _glfwLibrary.X11.selection.atoms.clipboard;
+    Atom *xcbrdend = _glfwLibrary.X11.selection.atoms.clipboard +
+        _GLFW_CLIPBOARD_ATOM_COUNT;
+    Atom *xfmt = getInternalFormat(format);
+    Atom *xfmtend = xfmt + _GLFW_STRING_ATOM_COUNT;
+
+    // Get the currently active window
+    Window window = _glfwLibrary.activeWindow->X11.handle;
+
+    for (; xcbrd != xcbrdend; xcbrd++)
     {
-        // Specify the format we would like.
-        _glfwLibrary.X11.selection.request = *xfmt;
-
-        // Convert the selection into a format we would like.
-        window = _glfwLibrary.activeWindow->X11.handle;
-        XConvertSelection(_glfwLibrary.X11.display, XA_PRIMARY,
-            *xfmt, None, window,
-            CurrentTime);
-        XFlush(_glfwLibrary.X11.display);
-
-        // Process pending events until we get a SelectionNotify.
-        while (!_glfwLibrary.X11.selection.converted)
-            _glfwPlatformWaitEvents();
-
-        // If there is no owner to the selection/wrong request, bail out.
-        if (_glfwLibrary.X11.selection.converted == 2)
+        for (; xfmt != xfmtend; xfmt++)
         {
-            _glfwLibrary.X11.selection.converted = 0;
-            _glfwSetError(GLFW_CLIPBOARD_FORMAT_UNAVAILABLE,
-                          "X11/GLX: Unavailable clipboard format");
-            return 0;
+            // Specify the format we would like.
+            _glfwLibrary.X11.selection.request = *xfmt;
+
+            // Convert the selection into a format we would like.
+            XConvertSelection(_glfwLibrary.X11.display, *xcbrd,
+                *xfmt, None, window, CurrentTime);
+            XFlush(_glfwLibrary.X11.display);
+
+            // Process pending events until we get a SelectionNotify.
+            while (!_glfwLibrary.X11.selection.converted)
+                _glfwPlatformWaitEvents();
+
+            // Successful?
+            if (_glfwLibrary.X11.selection.converted == 1)
+                break;
         }
-        else // Right format, stop checking
+
+        // Successful?
+        if (_glfwLibrary.X11.selection.converted == 1)
         {
             _glfwLibrary.X11.selection.converted = 0;
             break;
         }
     }
 
+    // Unsuccessful conversion, bail with no clipboard data
+    if (_glfwLibrary.X11.selection.converted)
+    {
+        _glfwSetError(GLFW_CLIPBOARD_FORMAT_UNAVAILABLE,
+                      "X11/GLX: Unavailable clipboard format");
+        return 0;
+    }
+
     // Reset for the next selection
     _glfwLibrary.X11.selection.converted = 0;
 
-    // Check the length of data to receive
+    // Check the length of data to receive (rembytes)
     XGetWindowProperty(_glfwLibrary.X11.display,
                        window,
                        *xfmt,

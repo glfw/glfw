@@ -1396,7 +1396,10 @@ static void processSingleEvent(void)
 
         case SelectionRequest:
         {
+            // Selection request triggered by someone wanting data from the
+            // X11 clipboard
             XSelectionRequestEvent *request = &event.xselectionrequest;
+
             // Construct the response
             XEvent response;
             response.xselection.property = _glfwSelectionRequest(request);
@@ -1406,8 +1409,10 @@ static void processSingleEvent(void)
             response.xselection.selection = request->selection;
             response.xselection.target = request->target;
             response.xselection.time = request->time;
+
             // Send off the event
             XSendEvent(_glfwLibrary.X11.display, request->requestor, 0, 0, &response);
+
             break;
         }
 

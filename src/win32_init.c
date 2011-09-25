@@ -163,6 +163,7 @@ int _glfwPlatformInit(void)
     // Save the original gamma ramp
     _glfwLibrary.originalRampSize = 256;
     _glfwPlatformGetGammaRamp(&_glfwLibrary.originalRamp);
+    _glfwLibrary.currentRamp = _glfwLibrary.originalRamp;
 
     _glfwInitTimer();
 

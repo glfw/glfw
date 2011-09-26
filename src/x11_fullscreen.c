@@ -334,7 +334,8 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
     vislist = XGetVisualInfo(_glfwLibrary.X11.display, 0, &dummy, &viscount);
     if (vislist == NULL)
     {
-        // TODO: Figure out which error this is
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "X11/GLX: Failed to retrieve the available visuals");
         return 0;
     }
 

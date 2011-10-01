@@ -318,6 +318,10 @@ typedef struct _GLFWlibraryWin32
 // Time
 void _glfwInitTimer(void);
 
+// Display support
+void _glfwInitDisplays(void);
+void _glfwTerminateDisplays(void);
+
 // Fullscreen support
 void _glfwSetVideoMode(int* width, int* height,
                        int* bpp, int* refreshRate,

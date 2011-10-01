@@ -41,7 +41,7 @@ elseif(_GLFW_WIN32_WGL)
     set(libglfw_SOURCES ${common_SOURCES} win32_enable.c win32_fullscreen.c
                         win32_gamma.c win32_init.c win32_joystick.c
                         win32_opengl.c win32_time.c win32_window.c
-                        win32_dllmain.c)
+                        win32_dllmain.c win32_display.c)
 elseif(_GLFW_X11_GLX)
     set(libglfw_SOURCES ${common_SOURCES} x11_display.c x11_enable.c
                         x11_fullscreen.c x11_gamma.c x11_init.c x11_joystick.c

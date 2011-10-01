@@ -37,7 +37,7 @@
 // Lexical comparison function for GLFW video modes, used by qsort
 //========================================================================
 
-static int compareVideoModes(const void* firstPtr, const void* secondPtr)
+int _glfwCompareVideoModes(const void* firstPtr, const void* secondPtr)
 {
     int firstBPP, secondBPP, firstSize, secondSize;
     GLFWvidmode* first = (GLFWvidmode*) firstPtr;
@@ -118,7 +118,7 @@ GLFWAPI int glfwGetVideoModes(GLFWdisplay display, GLFWvidmode* list, int maxcou
 
     count = _glfwPlatformGetVideoModes(list, maxcount);
     if (count > 0)
-        qsort(list, count, sizeof(GLFWvidmode), compareVideoModes);
+        qsort(list, count, sizeof(GLFWvidmode), _glfwCompareVideoModes);
 
     return count;
 }

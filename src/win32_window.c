@@ -1763,7 +1763,7 @@ void _glfwPlatformPollEvents(void)
     window = _glfwLibrary.activeWindow;
     if (window)
     {
-        window->Win32.mouseMoved = GL_FALSE;
+        window->Win32.cursorCentered = GL_TRUE;
         window->Win32.oldMouseX = window->width / 2;
         window->Win32.oldMouseY = window->height / 2;
     }

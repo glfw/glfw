@@ -191,6 +191,8 @@ GLFWAPI void glfwGetScrollOffset(GLFWwindow handle, int* xoffset, int* yoffset)
 
 GLFWAPI void glfwSetCursorMode(GLFWwindow handle, int mode)
 {
+    int centerPosX;
+    int centerPosY;
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
     if (!_glfwInitialized)
@@ -210,8 +212,8 @@ GLFWAPI void glfwSetCursorMode(GLFWwindow handle, int mode)
     if (window->cursorMode == mode)
         return;
 
-    int centerPosX = window->width / 2;
-    int centerPosY = window->height / 2;
+    centerPosX = window->width / 2;
+    centerPosY = window->height / 2;
 
     if (mode == GLFW_CURSOR_CAPTURED)
     {

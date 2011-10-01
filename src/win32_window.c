@@ -33,6 +33,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void showMouseCursor(_GLFWwindow* window);
+void captureMouseCursor(_GLFWwindow* window);
 
 //========================================================================
 // Convert BPP to RGB bits based on "best guess"
@@ -1850,18 +1852,11 @@ void _glfwPlatformWaitEvents(void)
 // Hide mouse cursor (lock it)
 //========================================================================
 
-void _glfwPlatformHideMouseCursor(_GLFWwindow* window)
+void hideMouseCursor(_GLFWwindow* window)
 {
-    RECT ClipWindowRect;
-
     ShowCursor(FALSE);
 
-    // Clip cursor to the window
-    if (GetWindowRect(window->Win32.handle, &ClipWindowRect))
-        ClipCursor(&ClipWindowRect);
-
-    // Capture cursor to user window
-    SetCapture(window->Win32.handle);
+    captureMouseCursor(window);
 }
 
 
@@ -1869,7 +1864,7 @@ void _glfwPlatformHideMouseCursor(_GLFWwindow* window)
 // Show mouse cursor (unlock it)
 //========================================================================
 
-void _glfwPlatformShowMouseCursor(_GLFWwindow* window)
+void showMouseCursor(_GLFWwindow* window)
 {
     // Un-capture cursor
     ReleaseCapture();
@@ -1878,6 +1873,22 @@ void _glfwPlatformShowMouseCursor(_GLFWwindow* window)
     ClipCursor(NULL);
 
     ShowCursor(TRUE);
+}
+
+//========================================================================
+// Capture mouse cursor
+//========================================================================
+
+static void captureMouseCursor(_GLFWwindow* window)
+{
+    RECT ClipWindowRect;
+
+    // Clip cursor to the window
+    if (GetWindowRect(window->Win32.handle, &ClipWindowRect))
+        ClipCursor(&ClipWindowRect);
+
+    // Capture cursor to user window
+    SetCapture(window->Win32.handle);
 }
 
 
@@ -1896,4 +1907,25 @@ void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y)
 
     SetCursorPos(pos.x, pos.y);
 }
+
+//========================================================================
+// Set physical mouse cursor mode
+//========================================================================
+
+void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
+{
+    switch (mode)
+    {
+        case GLFW_CURSOR_NORMAL:
+            showMouseCursor(window);
+            break;
+        case GLFW_CURSOR_HIDDEN:
+            hideMouseCursor(window);
+            break;
+        case GLFW_CURSOR_CAPTURED:
+            captureMouseCursor(window);
+            break;
+    }
+}
+
 

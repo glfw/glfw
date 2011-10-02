@@ -51,6 +51,8 @@ _GLFWdisplay** _glfwCreateDisplay(_GLFWdisplay** current, XRROutputInfo* outputI
 
     (*current)->screenXPosition = crtcInfo->x;
     (*current)->screenYPosition = crtcInfo->y;
+
+    (*current)->X11.output = outputInfo;
     return &((*current)->next);
 }
 
@@ -59,6 +61,8 @@ _GLFWdisplay* _glfwDestroyDisplay(_GLFWdisplay* display)
     _GLFWdisplay* result;
 
     result = display->next;
+
+    XRRFreeOutputInfo(display->X11.output);    
 
     _glfwFree(display);
 
@@ -105,10 +109,9 @@ void _glfwInitDisplays(void)
 
                 curDisplay = _glfwCreateDisplay(curDisplay, outputInfo, crtcInfo);
 
+                // Freeing of the outputInfo is done in _glfwDestroyDisplay
                 XRRFreeCrtcInfo(crtcInfo);
             }
-
-            XRRFreeOutputInfo(outputInfo);
         }
     }
 }

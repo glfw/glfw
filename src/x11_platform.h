@@ -88,6 +88,7 @@
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowX11 X11
 #define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryX11 X11
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextGLX GLX
+#define _GLFW_PLATFORM_DISPLAY_STATE _GLFWdisplayX11 X11
 
 
 //========================================================================
@@ -242,6 +243,15 @@ GLFWGLOBAL struct {
     float*        Axis;
     unsigned char* Button;
 } _glfwJoy[GLFW_JOYSTICK_LAST + 1];
+
+
+//------------------------------------------------------------------------
+// Platform-specific window structure
+//------------------------------------------------------------------------
+typedef struct _GLFWdisplayX11
+{
+   XRROutputInfo* output; 
+} _GLFWdisplayX11;
 
 
 //========================================================================

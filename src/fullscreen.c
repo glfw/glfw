@@ -110,13 +110,19 @@ GLFWAPI int glfwGetVideoModes(GLFWdisplay display, GLFWvidmode* list, int maxcou
         return 0;
     }
 
+    if (display == GLFW_DISPLAY_INVALID_HANDLE)
+    {
+        _glfwSetError(GLFW_INVALID_VALUE, "Display handle is invalid.");
+        return 0;
+    }
+
     if (maxcount <= 0 || list == NULL)
     {
         // TODO: Figure out if this is an error
         return 0;
     }
 
-    count = _glfwPlatformGetVideoModes(list, maxcount);
+    count = _glfwPlatformGetVideoModes(display, list, maxcount);
     if (count > 0)
         qsort(list, count, sizeof(GLFWvidmode), _glfwCompareVideoModes);
 

@@ -57,6 +57,8 @@ _GLFWdisplay** _glfwCreateDisplay(_GLFWdisplay** current, DISPLAY_DEVICE* adapte
 
     (*current)->screenXPosition = setting->dmPosition.x;
     (*current)->screenYPosition = setting->dmPosition.y;
+
+    memcpy((*current)->Win32.DeviceName, adapter->DeviceName, 32);
     return &((*current)->next);
 }
 

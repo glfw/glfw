@@ -232,6 +232,9 @@ struct _GLFWdisplay
     // logical orientation of the screen on the desktop
     int       screenXPosition;
     int       screenYPosition;
+
+    // These are defined in the current port's platform.h
+    _GLFW_PLATFORM_DISPLAY_STATE;
 };
 
 //------------------------------------------------------------------------
@@ -298,7 +301,7 @@ void _glfwPlatformEnableSystemKeys(_GLFWwindow* window);
 void _glfwPlatformDisableSystemKeys(_GLFWwindow* window);
 
 // Fullscreen
-int  _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount);
+int  _glfwPlatformGetVideoModes(GLFWdisplay display, GLFWvidmode* list, int maxcount);
 void _glfwPlatformGetDesktopMode(GLFWvidmode* mode);
 
 // Gamma ramp

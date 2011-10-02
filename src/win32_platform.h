@@ -202,6 +202,7 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowWin32 Win32
 #define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryWin32 Win32
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextWGL WGL
+#define _GLFW_PLATFORM_DISPLAY_STATE _GLFWdisplayWin32 Win32
 
 
 //========================================================================
@@ -310,6 +311,13 @@ typedef struct _GLFWlibraryWin32
 
 } _GLFWlibraryWin32;
 
+//------------------------------------------------------------------------
+// Platform-specific display structure
+//------------------------------------------------------------------------
+typedef struct _GLFWdisplayWin32
+{
+    char DeviceName[32];
+} _GLFWdisplayWin32;
 
 //========================================================================
 // Prototypes for platform specific internal functions

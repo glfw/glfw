@@ -52,7 +52,7 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current, DISPLAY_DEVICE* adapte
 
     DeleteDC(dc);
 
-    (*monitor)->deviceName = _glfwMalloc(strlen(monitor->DeviceName) + 1);
+    (*current)->deviceName = _glfwMalloc(strlen(monitor->DeviceName) + 1);
     memcpy((*current)->deviceName, monitor->DeviceName, strlen(monitor->DeviceName) + 1);
     (*current)->deviceName[strlen(monitor->DeviceName)] = '\0';
 

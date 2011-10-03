@@ -47,7 +47,7 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current, XRROutputInfo* outputI
     (*current)->physicalWidth  = outputInfo->mm_width;
     (*current)->physicalHeight = outputInfo->mm_height;
 
-    (*monitor)->deviceName = _glfwMalloc(strlen(outputInfo->name) + 1);
+    (*current)->deviceName = _glfwMalloc(strlen(outputInfo->name) + 1);
     memcpy((*current)->deviceName, outputInfo->name, strlen(outputInfo->name) + 1);
     (*current)->deviceName[strlen(outputInfo->name)] = '\0';
 

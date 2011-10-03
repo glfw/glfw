@@ -225,7 +225,7 @@ struct _GLFWmonitor
 
     void*     userPointer;
 
-    char      deviceName[GLFW_MONITOR_PARAM_S_NAME_LEN+1];
+    char*     deviceName;
     // physical dimensions in millimeters.
     int       physicalWidth;
     int       physicalHeight;

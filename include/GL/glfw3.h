@@ -548,7 +548,6 @@ GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
 #define GLFW_MONITOR_PARAM_I_PHYS_HEIGHT     2
 #define GLFW_MONITOR_PARAM_I_SCREEN_X_POS    3
 #define GLFW_MONITOR_PARAM_I_SCREEN_Y_POS    4
-#define GLFW_MONITOR_PARAM_S_NAME_LEN        30
 
 /* Monitor types */
 typedef struct _GLFWmonitor* GLFWmonitor;

@@ -47,8 +47,9 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current, XRROutputInfo* outputI
     (*current)->physicalWidth  = outputInfo->mm_width;
     (*current)->physicalHeight = outputInfo->mm_height;
 
-    memcpy((*current)->deviceName, outputInfo->name, GLFW_MONITOR_PARAM_S_NAME_LEN+1);
-    (*current)->deviceName[GLFW_MONITOR_PARAM_S_NAME_LEN] = '\0';
+    (*monitor)->deviceName = _glfwMalloc(strlen(outputInfo->name) + 1);
+    memcpy((*current)->deviceName, outputInfo->name, strlen(outputInfo->name) + 1);
+    (*current)->deviceName[strlen(outputInfo->name)] = '\0';
 
     (*current)->screenXPosition = crtcInfo->x;
     (*current)->screenYPosition = crtcInfo->y;
@@ -68,6 +69,7 @@ _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
     XRRFreeOutputInfo(monitor->X11.output);    
 #endif /*_GLFW_HAS_XRANDR*/
 
+    _glfwFree(monitor->deviceName);
     _glfwFree(monitor);
 
     return result;

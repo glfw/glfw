@@ -52,8 +52,9 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current, DISPLAY_DEVICE* adapte
 
     DeleteDC(dc);
 
-    memcpy((*current)->deviceName, monitor->DeviceName, GLFW_MONITOR_PARAM_S_NAME_LEN+1);
-    (*current)->deviceName[GLFW_MONITOR_PARAM_S_NAME_LEN] = '\0';
+    (*monitor)->deviceName = _glfwMalloc(strlen(monitor->DeviceName) + 1);
+    memcpy((*current)->deviceName, monitor->DeviceName, strlen(monitor->DeviceName) + 1);
+    (*current)->deviceName[strlen(monitor->DeviceName)] = '\0';
 
     (*current)->screenXPosition = setting->dmPosition.x;
     (*current)->screenYPosition = setting->dmPosition.y;
@@ -68,6 +69,7 @@ _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
 
     result = monitor->next;
 
+    _glfwFree(monitor->deviceName);
     _glfwFree(monitor);
 
     return result;

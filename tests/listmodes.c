@@ -18,7 +18,7 @@ static void print_mode(GLFWvidmode* mode)
 
 int main(void)
 {
-    GLFWdisplay displayHandle;
+    GLFWmonitor monitorHandle;
     GLFWvidmode dtmode, modes[400];
     int modecount, i;
 
@@ -33,21 +33,21 @@ int main(void)
     printf("Desktop mode: ");
     print_mode(&dtmode);
 
-    displayHandle = GLFW_DISPLAY_INVALID_HANDLE;
+    monitorHandle = GLFW_MONITOR_INVALID_HANDLE;
 
-    while( GLFW_DISPLAY_INVALID_HANDLE != ( displayHandle = glfwGetNextDisplay( displayHandle )))
+    while( GLFW_MONITOR_INVALID_HANDLE != ( monitorHandle = glfwGetNextMonitor( monitorHandle )))
     {
-        printf( "Display name: %s\n"
+        printf( "Monitor name: %s\n"
                 "Physical dimensions: %dmm x %dmm\n"
                 "Logical position: (%d,%d)\n",
-                glfwGetDisplayStringParam( displayHandle, GLFW_DISPLAY_PARAM_S_NAME ),
-                glfwGetDisplayIntegerParam( displayHandle, GLFW_DISPLAY_PARAM_I_PHYS_WIDTH ),
-                glfwGetDisplayIntegerParam( displayHandle, GLFW_DISPLAY_PARAM_I_PHYS_HEIGHT ),
-                glfwGetDisplayIntegerParam( displayHandle, GLFW_DISPLAY_PARAM_I_SCREEN_X_POS ),
-                glfwGetDisplayIntegerParam( displayHandle, GLFW_DISPLAY_PARAM_I_SCREEN_Y_POS )
+                glfwGetMonitorStringParam( monitorHandle, GLFW_MONITOR_PARAM_S_NAME ),
+                glfwGetMonitorIntegerParam( monitorHandle, GLFW_MONITOR_PARAM_I_PHYS_WIDTH ),
+                glfwGetMonitorIntegerParam( monitorHandle, GLFW_MONITOR_PARAM_I_PHYS_HEIGHT ),
+                glfwGetMonitorIntegerParam( monitorHandle, GLFW_MONITOR_PARAM_I_SCREEN_X_POS ),
+                glfwGetMonitorIntegerParam( monitorHandle, GLFW_MONITOR_PARAM_I_SCREEN_Y_POS )
         );
         // List available video modes
-        modecount = glfwGetVideoModes(displayHandle, modes, sizeof(modes) / sizeof(GLFWvidmode));
+        modecount = glfwGetVideoModes(monitorHandle, modes, sizeof(modes) / sizeof(GLFWvidmode));
         printf( "Available modes:\n" );
         for( i = 0; i < modecount; i ++ )
         {

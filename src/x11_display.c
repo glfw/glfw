@@ -38,16 +38,16 @@
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-_GLFWdisplay** _glfwCreateDisplay(_GLFWdisplay** current, XRROutputInfo* outputInfo, XRRCrtcInfo* crtcInfo)
+_GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current, XRROutputInfo* outputInfo, XRRCrtcInfo* crtcInfo)
 {
-    *current = _glfwMalloc(sizeof(_GLFWdisplay));
-    memset(*current, 0, sizeof(_GLFWdisplay));
+    *current = _glfwMalloc(sizeof(_GLFWmonitor));
+    memset(*current, 0, sizeof(_GLFWmonitor));
 
     (*current)->physicalWidth  = outputInfo->mm_width;
     (*current)->physicalHeight = outputInfo->mm_height;
 
-    memcpy((*current)->deviceName, outputInfo->name, GLFW_DISPLAY_PARAM_S_NAME_LEN+1);
-    (*current)->deviceName[GLFW_DISPLAY_PARAM_S_NAME_LEN] = '\0';
+    memcpy((*current)->deviceName, outputInfo->name, GLFW_MONITOR_PARAM_S_NAME_LEN+1);
+    (*current)->deviceName[GLFW_MONITOR_PARAM_S_NAME_LEN] = '\0';
 
     (*current)->screenXPosition = crtcInfo->x;
     (*current)->screenYPosition = crtcInfo->y;
@@ -56,28 +56,28 @@ _GLFWdisplay** _glfwCreateDisplay(_GLFWdisplay** current, XRROutputInfo* outputI
     return &((*current)->next);
 }
 
-_GLFWdisplay* _glfwDestroyDisplay(_GLFWdisplay* display)
+_GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
 {
-    _GLFWdisplay* result;
+    _GLFWmonitor* result;
 
-    result = display->next;
+    result = monitor->next;
 
-    XRRFreeOutputInfo(display->X11.output);    
+    XRRFreeOutputInfo(monitor->X11.output);    
 
-    _glfwFree(display);
+    _glfwFree(monitor);
 
     return result;
 }
 
-void _glfwInitDisplays(void)
+void _glfwInitMonitors(void)
 {
     if(_glfwLibrary.X11.RandR.available == GL_TRUE)
     {
         XRRScreenResources* resources;
         int outputIDX;
-        _GLFWdisplay** curDisplay;
+        _GLFWmonitor** curMonitor;
 
-        curDisplay = &_glfwLibrary.displayListHead;
+        curMonitor = &_glfwLibrary.monitorListHead;
 
         resources = XRRGetScreenResources(_glfwLibrary.X11.display,
                                           _glfwLibrary.X11.root);
@@ -107,18 +107,18 @@ void _glfwInitDisplays(void)
                     }
                 }
 
-                curDisplay = _glfwCreateDisplay(curDisplay, outputInfo, crtcInfo);
+                curMonitor = _glfwCreateMonitor(curMonitor, outputInfo, crtcInfo);
 
-                // Freeing of the outputInfo is done in _glfwDestroyDisplay
+                // Freeing of the outputInfo is done in _glfwDestroyMonitor
                 XRRFreeCrtcInfo(crtcInfo);
             }
         }
     }
 }
 
-void _glfwTerminateDisplays(void)
+void _glfwTerminateMonitors(void)
 {
-    while(_glfwLibrary.displayListHead)
-        _glfwLibrary.displayListHead = _glfwDestroyDisplay(_glfwLibrary.displayListHead);
+    while(_glfwLibrary.monitorListHead)
+        _glfwLibrary.monitorListHead = _glfwDestroyMonitor(_glfwLibrary.monitorListHead);
 }
 

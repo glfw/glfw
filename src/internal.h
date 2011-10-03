@@ -76,7 +76,7 @@ typedef struct _GLFWwndconfig _GLFWwndconfig;
 typedef struct _GLFWfbconfig _GLFWfbconfig;
 typedef struct _GLFWwindow _GLFWwindow;
 typedef struct _GLFWlibrary _GLFWlibrary;
-typedef struct _GLFWdisplay _GLFWdisplay;
+typedef struct _GLFWmonitor _GLFWmonitor;
 
 
 //------------------------------------------------------------------------
@@ -219,13 +219,13 @@ struct _GLFWwindow
 //------------------------------------------------------------------------
 // Display structure
 //------------------------------------------------------------------------
-struct _GLFWdisplay
+struct _GLFWmonitor
 {
-    struct _GLFWdisplay* next;
+    struct _GLFWmonitor* next;
 
     void*     userPointer;
 
-    char      deviceName[GLFW_DISPLAY_PARAM_S_NAME_LEN+1];
+    char      deviceName[GLFW_MONITOR_PARAM_S_NAME_LEN+1];
     // physical dimensions in millimeters.
     int       physicalWidth;
     int       physicalHeight;
@@ -234,7 +234,7 @@ struct _GLFWdisplay
     int       screenYPosition;
 
     // These are defined in the current port's platform.h
-    _GLFW_PLATFORM_DISPLAY_STATE;
+    _GLFW_PLATFORM_MONITOR_STATE;
 };
 
 //------------------------------------------------------------------------
@@ -248,7 +248,7 @@ struct _GLFWlibrary
     _GLFWwindow*  currentWindow;
     _GLFWwindow*  activeWindow;
     _GLFWwindow*  cursorLockWindow;
-    _GLFWdisplay* displayListHead;
+    _GLFWmonitor* monitorListHead;
 
     GLFWwindowsizefun    windowSizeCallback;
     GLFWwindowclosefun   windowCloseCallback;
@@ -301,7 +301,7 @@ void _glfwPlatformEnableSystemKeys(_GLFWwindow* window);
 void _glfwPlatformDisableSystemKeys(_GLFWwindow* window);
 
 // Fullscreen
-int  _glfwPlatformGetVideoModes(GLFWdisplay display, GLFWvidmode* list, int maxcount);
+int  _glfwPlatformGetVideoModes(GLFWmonitor monitor, GLFWvidmode* list, int maxcount);
 void _glfwPlatformGetDesktopMode(GLFWvidmode* mode);
 
 // Gamma ramp

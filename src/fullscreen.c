@@ -100,7 +100,7 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 // Get a list of available video modes
 //========================================================================
 
-GLFWAPI int glfwGetVideoModes(GLFWdisplay display, GLFWvidmode* list, int maxcount)
+GLFWAPI int glfwGetVideoModes(GLFWmonitor monitor, GLFWvidmode* list, int maxcount)
 {
     int count;
 
@@ -110,9 +110,9 @@ GLFWAPI int glfwGetVideoModes(GLFWdisplay display, GLFWvidmode* list, int maxcou
         return 0;
     }
 
-    if (display == GLFW_DISPLAY_INVALID_HANDLE)
+    if (monitor == GLFW_MONITOR_INVALID_HANDLE)
     {
-        _glfwSetError(GLFW_INVALID_VALUE, "Display handle is invalid.");
+        _glfwSetError(GLFW_INVALID_VALUE, "Monitor handle is invalid.");
         return 0;
     }
 
@@ -122,7 +122,7 @@ GLFWAPI int glfwGetVideoModes(GLFWdisplay display, GLFWvidmode* list, int maxcou
         return 0;
     }
 
-    count = _glfwPlatformGetVideoModes(display, list, maxcount);
+    count = _glfwPlatformGetVideoModes(monitor, list, maxcount);
     if (count > 0)
         qsort(list, count, sizeof(GLFWvidmode), _glfwCompareVideoModes);
 

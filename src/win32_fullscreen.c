@@ -182,7 +182,7 @@ void _glfwRestoreVideoMode(void)
 // Get a list of available video modes
 //========================================================================
 
-int  _glfwPlatformGetVideoModes(GLFWdisplay display, GLFWvidmode* list, int maxcount)
+int  _glfwPlatformGetVideoModes(GLFWmonitor monitor, GLFWvidmode* list, int maxcount)
 {
     DEVMODE deviceMode;
     DWORD deviceModeNum;
@@ -197,7 +197,7 @@ int  _glfwPlatformGetVideoModes(GLFWdisplay display, GLFWvidmode* list, int maxc
     vidModes = NULL;
     vidModesCount = 0;
 
-    while (EnumDisplaySettings(display->Win32.DeviceName, deviceModeNum, &deviceMode) && (!list || (vidModesCount < maxcount)))
+    while (EnumDisplaySettings(monitor->Win32.DeviceName, deviceModeNum, &deviceMode) && (!list || (vidModesCount < maxcount)))
     {
         deviceModeNum++;
 

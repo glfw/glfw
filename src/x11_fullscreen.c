@@ -344,7 +344,7 @@ int _glfwCompareResolution(const void* left, const void* right)
 // List available video modes
 //========================================================================
 
-int _glfwPlatformGetVideoModes(GLFWdisplay display, GLFWvidmode* list, int maxcount)
+int _glfwPlatformGetVideoModes(GLFWmonitor monitor, GLFWvidmode* list, int maxcount)
 {
     int count, k, l, r, g, b, rgba, gl;
     int depth, screen;
@@ -416,13 +416,13 @@ int _glfwPlatformGetVideoModes(GLFWdisplay display, GLFWvidmode* list, int maxco
         unsigned int a;
         resource = XRRGetScreenResources(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
 
-        resarray = (struct _glfwResolution*) _glfwMalloc(sizeof(struct _glfwResolution) * display->X11.output->nmode);
+        resarray = (struct _glfwResolution*) _glfwMalloc(sizeof(struct _glfwResolution) * monitor->X11.output->nmode);
 
-        for (k = 0; k < display->X11.output->nmode; k++)
+        for (k = 0; k < monitor->X11.output->nmode; k++)
         {
             for (a = 0; a < resource->nmode; a++)
             {
-                if (resource->modes[a].id != display->X11.output->modes[k])
+                if (resource->modes[a].id != monitor->X11.output->modes[k])
                 {
                     continue;
                 }

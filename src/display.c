@@ -32,21 +32,21 @@
 
 
 //========================================================================
-// Get a list of connected displays
+// Get a list of connected monitors
 //========================================================================
 
-GLFWAPI GLFWdisplay glfwGetNextDisplay(GLFWdisplay iterator)
+GLFWAPI GLFWmonitor glfwGetNextMonitor(GLFWmonitor iterator)
 {
-    GLFWdisplay result = GLFW_DISPLAY_INVALID_HANDLE;
+    GLFWmonitor result = GLFW_MONITOR_INVALID_HANDLE;
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return result;
     }
 
-    if (iterator == GLFW_DISPLAY_INVALID_HANDLE)
+    if (iterator == GLFW_MONITOR_INVALID_HANDLE)
     {
-        result = _glfwLibrary.displayListHead;
+        result = _glfwLibrary.monitorListHead;
     }
     else
     {
@@ -55,7 +55,7 @@ GLFWAPI GLFWdisplay glfwGetNextDisplay(GLFWdisplay iterator)
     return result;
 }
 
-GLFWAPI int glfwGetDisplayIntegerParam(GLFWdisplay display, int param)
+GLFWAPI int glfwGetMonitorIntegerParam(GLFWmonitor monitor, int param)
 {
     if (!_glfwInitialized)
     {
@@ -63,29 +63,29 @@ GLFWAPI int glfwGetDisplayIntegerParam(GLFWdisplay display, int param)
         return 0;
     }
 
-    if (display == GLFW_DISPLAY_INVALID_HANDLE)
+    if (monitor == GLFW_MONITOR_INVALID_HANDLE)
     {
-        _glfwSetError(GLFW_INVALID_VALUE, "Display handle is invalid.");
+        _glfwSetError(GLFW_INVALID_VALUE, "Monitor handle is invalid.");
         return 0;
     }
 
     switch(param)
     {
-        case GLFW_DISPLAY_PARAM_I_PHYS_WIDTH:
-            return display->physicalWidth;
-        case GLFW_DISPLAY_PARAM_I_PHYS_HEIGHT:
-            return display->physicalHeight;
-        case GLFW_DISPLAY_PARAM_I_SCREEN_X_POS:
-            return display->screenXPosition;
-        case GLFW_DISPLAY_PARAM_I_SCREEN_Y_POS:
-            return display->screenYPosition;
+        case GLFW_MONITOR_PARAM_I_PHYS_WIDTH:
+            return monitor->physicalWidth;
+        case GLFW_MONITOR_PARAM_I_PHYS_HEIGHT:
+            return monitor->physicalHeight;
+        case GLFW_MONITOR_PARAM_I_SCREEN_X_POS:
+            return monitor->screenXPosition;
+        case GLFW_MONITOR_PARAM_I_SCREEN_Y_POS:
+            return monitor->screenYPosition;
         default:
-            _glfwSetError(GLFW_INVALID_ENUM, "Param represents not a valid integer display attribute.");
+            _glfwSetError(GLFW_INVALID_ENUM, "Param represents not a valid integer monitor attribute.");
             return 0;
     }
 }
 
-GLFWAPI const char* glfwGetDisplayStringParam(GLFWdisplay display, int param)
+GLFWAPI const char* glfwGetMonitorStringParam(GLFWmonitor monitor, int param)
 {
     if (!_glfwInitialized)
     {
@@ -93,18 +93,18 @@ GLFWAPI const char* glfwGetDisplayStringParam(GLFWdisplay display, int param)
         return NULL;
     }
 
-    if (display == GLFW_DISPLAY_INVALID_HANDLE)
+    if (monitor == GLFW_MONITOR_INVALID_HANDLE)
     {
-        _glfwSetError(GLFW_INVALID_VALUE, "display handle is invalid.");
+        _glfwSetError(GLFW_INVALID_VALUE, "monitor handle is invalid.");
         return NULL;
     }
 
     switch(param)
     {
-        case GLFW_DISPLAY_PARAM_S_NAME:
-            return display->deviceName;
+        case GLFW_MONITOR_PARAM_S_NAME:
+            return monitor->deviceName;
         default:
-            _glfwSetError(GLFW_INVALID_ENUM, "Param represents not a valid string display attribute.");
+            _glfwSetError(GLFW_INVALID_ENUM, "Param represents not a valid string monitor attribute.");
             return NULL;
     }
 }

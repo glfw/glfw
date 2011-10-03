@@ -38,12 +38,12 @@
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-_GLFWdisplay** _glfwCreateDisplay(_GLFWdisplay** current, DISPLAY_DEVICE* adapter, DISPLAY_DEVICE* monitor, DEVMODE* setting)
+_GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current, DISPLAY_DEVICE* adapter, DISPLAY_DEVICE* monitor, DEVMODE* setting)
 {
     HDC dc = NULL;
 
-    *current = _glfwMalloc(sizeof(_GLFWdisplay));
-    memset(*current, 0, sizeof(_GLFWdisplay));
+    *current = _glfwMalloc(sizeof(_GLFWmonitor));
+    memset(*current, 0, sizeof(_GLFWmonitor));
 
     dc = CreateDC("DISPLAY", monitor->DeviceString, NULL, NULL);
 
@@ -52,8 +52,8 @@ _GLFWdisplay** _glfwCreateDisplay(_GLFWdisplay** current, DISPLAY_DEVICE* adapte
 
     DeleteDC(dc);
 
-    memcpy((*current)->deviceName, monitor->DeviceName, GLFW_DISPLAY_PARAM_S_NAME_LEN+1);
-    (*current)->deviceName[GLFW_DISPLAY_PARAM_S_NAME_LEN] = '\0';
+    memcpy((*current)->deviceName, monitor->DeviceName, GLFW_MONITOR_PARAM_S_NAME_LEN+1);
+    (*current)->deviceName[GLFW_MONITOR_PARAM_S_NAME_LEN] = '\0';
 
     (*current)->screenXPosition = setting->dmPosition.x;
     (*current)->screenYPosition = setting->dmPosition.y;
@@ -62,20 +62,20 @@ _GLFWdisplay** _glfwCreateDisplay(_GLFWdisplay** current, DISPLAY_DEVICE* adapte
     return &((*current)->next);
 }
 
-_GLFWdisplay* _glfwDestroyDisplay(_GLFWdisplay* display)
+_GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
 {
-    _GLFWdisplay* result;
+    _GLFWmonitor* result;
 
-    result = display->next;
+    result = monitor->next;
 
-    _glfwFree(display);
+    _glfwFree(monitor);
 
     return result;
 }
 
-void _glfwInitDisplays(void)
+void _glfwInitMonitors(void)
 {
-    _GLFWdisplay** curDisplay;
+    _GLFWmonitor** curMonitor;
 
     DISPLAY_DEVICE adapter;
     DWORD adapterNum;
@@ -85,7 +85,7 @@ void _glfwInitDisplays(void)
     DEVMODE setting;
     DWORD settingNum;
 
-    curDisplay = &_glfwLibrary.displayListHead;
+    curMonitor = &_glfwLibrary.monitorListHead;
 
     adapter.cb = sizeof(DISPLAY_DEVICE);
     adapterNum = 0;
@@ -105,13 +105,13 @@ void _glfwInitDisplays(void)
 
         EnumDisplayDevices(adapter.DeviceName, 0, &monitor, 0);
 
-        curDisplay = _glfwCreateDisplay(curDisplay, &adapter, &monitor, &setting);
+        curMonitor = _glfwCreateMonitor(curMonitor, &adapter, &monitor, &setting);
     }
 }
 
-void _glfwTerminateDisplays(void)
+void _glfwTerminateMonitors(void)
 {
-    while(_glfwLibrary.displayListHead)
-        _glfwLibrary.displayListHead = _glfwDestroyDisplay(_glfwLibrary.displayListHead);
+    while(_glfwLibrary.monitorListHead)
+        _glfwLibrary.monitorListHead = _glfwDestroyMonitor(_glfwLibrary.monitorListHead);
 }
 

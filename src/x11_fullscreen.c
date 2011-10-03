@@ -353,11 +353,6 @@ int _glfwPlatformGetVideoModes(GLFWmonitor monitor, GLFWvidmode* list, int maxco
     int viscount, rgbcount, rescount;
     int* rgbarray;
     struct _glfwResolution* resarray;
-#if defined(_GLFW_HAS_XRANDR)
-    XRRScreenConfiguration* sc;
-    XRRScreenSize* sizelist;
-    int sizecount;
-#endif /*_GLFW_HAS_XRANDR*/
 #if defined(_GLFW_HAS_XF86VIDMODE)
     XF86VidModeModeInfo** modelist;
     int modecount, width, height;

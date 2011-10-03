@@ -38,6 +38,7 @@
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
+#if defined (_GLFW_HAS_XRANDR)
 _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current, XRROutputInfo* outputInfo, XRRCrtcInfo* crtcInfo)
 {
     *current = _glfwMalloc(sizeof(_GLFWmonitor));
@@ -55,6 +56,7 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current, XRROutputInfo* outputI
     (*current)->X11.output = outputInfo;
     return &((*current)->next);
 }
+#endif /*_GLFW_HAS_XRANDR*/
 
 _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
 {
@@ -62,7 +64,9 @@ _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
 
     result = monitor->next;
 
+#if defined (_GLFW_HAS_XRANDR)
     XRRFreeOutputInfo(monitor->X11.output);    
+#endif /*_GLFW_HAS_XRANDR*/
 
     _glfwFree(monitor);
 
@@ -71,8 +75,11 @@ _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
 
 void _glfwInitMonitors(void)
 {
+    _glfwLibrary.monitorListHead = NULL;
+
     if(_glfwLibrary.X11.RandR.available == GL_TRUE)
     {
+#if defined (_GLFW_HAS_XRANDR)
         XRRScreenResources* resources;
         int outputIDX;
         _GLFWmonitor** curMonitor;
@@ -113,6 +120,7 @@ void _glfwInitMonitors(void)
                 XRRFreeCrtcInfo(crtcInfo);
             }
         }
+#endif /*_GLFW_HAS_XRANDR*/
     }
 }
 

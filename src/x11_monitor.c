@@ -38,6 +38,7 @@
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
+#if defined (_GLFW_HAS_XRANDR)
 _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
                                   XRROutputInfo* outputInfo,
                                   XRRCrtcInfo* crtcInfo)
@@ -58,6 +59,7 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
     (*current)->X11.output = outputInfo;
     return &((*current)->next);
 }
+#endif /*_GLFW_HAS_XRANDR*/
 
 _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
 {

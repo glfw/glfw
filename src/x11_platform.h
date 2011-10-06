@@ -251,9 +251,11 @@ GLFWGLOBAL struct {
 typedef struct _GLFWmonitorX11
 {
 #if defined(_GLFW_HAS_XRANDR)
-   XRROutputInfo* output; 
-#endif /*_GLFW_HAS_XRANDR*/
+   XRROutputInfo* output;
+#else
     int dummy;
+#endif /*_GLFW_HAS_XRANDR*/
+
 } _GLFWmonitorX11;
 
 

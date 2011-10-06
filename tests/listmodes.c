@@ -18,7 +18,7 @@ static void print_mode(GLFWvidmode* mode)
 
 int main(void)
 {
-    GLFWmonitor monitorHandle;
+    GLFWmonitor monitor;
     GLFWvidmode dtmode, modes[400];
     int modecount, i;
 
@@ -33,29 +33,30 @@ int main(void)
     printf("Desktop mode: ");
     print_mode(&dtmode);
 
-    monitorHandle = GLFW_MONITOR_INVALID_HANDLE;
+    monitor = NULL;
 
-    while( GLFW_MONITOR_INVALID_HANDLE != ( monitorHandle = glfwGetNextMonitor( monitorHandle )))
+    while ((monitor = glfwGetNextMonitor(monitor)))
     {
-        printf( "Monitor name: %s\n"
-                "Physical dimensions: %dmm x %dmm\n"
-                "Logical position: (%d,%d)\n",
-                glfwGetMonitorStringParam( monitorHandle, GLFW_MONITOR_PARAM_S_NAME ),
-                glfwGetMonitorIntegerParam( monitorHandle, GLFW_MONITOR_PARAM_I_PHYS_WIDTH ),
-                glfwGetMonitorIntegerParam( monitorHandle, GLFW_MONITOR_PARAM_I_PHYS_HEIGHT ),
-                glfwGetMonitorIntegerParam( monitorHandle, GLFW_MONITOR_PARAM_I_SCREEN_X_POS ),
-                glfwGetMonitorIntegerParam( monitorHandle, GLFW_MONITOR_PARAM_I_SCREEN_Y_POS )
-        );
+        printf("Monitor name: %s\n"
+               "Physical dimensions: %dmm x %dmm\n"
+               "Logical position: (%d,%d)\n",
+               glfwGetMonitorString(monitor, GLFW_MONITOR_NAME),
+               glfwGetMonitorParam(monitor, GLFW_MONITOR_PHYSICAL_WIDTH),
+               glfwGetMonitorParam(monitor, GLFW_MONITOR_PHYSICAL_HEIGHT),
+               glfwGetMonitorParam(monitor, GLFW_MONITOR_SCREEN_POS_X),
+               glfwGetMonitorParam(monitor, GLFW_MONITOR_SCREEN_POS_Y));
+
         // List available video modes
-        modecount = glfwGetVideoModes(monitorHandle, modes, sizeof(modes) / sizeof(GLFWvidmode));
-        printf( "Available modes:\n" );
-        for( i = 0; i < modecount; i ++ )
+        modecount = glfwGetVideoModes(monitor, modes, sizeof(modes) / sizeof(GLFWvidmode));
+        printf("Available modes:\n");
+
+        for (i = 0;  i < modecount;  i++)
         {
             printf("%3i: ", i);
             print_mode(modes + i);
         }
     }
-    glfwTerminate();
+
     exit(EXIT_SUCCESS);
 }
 

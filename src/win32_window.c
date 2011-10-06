@@ -33,9 +33,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void showMouseCursor(_GLFWwindow* window);
-void captureMouseCursor(_GLFWwindow* window);
-
 //========================================================================
 // Convert BPP to RGB bits based on "best guess"
 //========================================================================
@@ -145,6 +142,48 @@ static void setForegroundWindow(HWND hWnd)
     // foreground process, we are probably allowed to do this)
     SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, (LPVOID) 0,
                          SPIF_SENDCHANGE);
+}
+
+
+//========================================================================
+// Hide mouse cursor (lock it)
+//========================================================================
+
+static void hideMouseCursor(_GLFWwindow* window)
+{
+    ShowCursor(FALSE);
+}
+
+
+//========================================================================
+// Show mouse cursor (unlock it)
+//========================================================================
+
+static void showMouseCursor(_GLFWwindow* window)
+{
+    // Un-capture cursor
+    ReleaseCapture();
+
+    // Release the cursor from the window
+    ClipCursor(NULL);
+
+    ShowCursor(TRUE);
+}
+
+//========================================================================
+// Capture mouse cursor
+//========================================================================
+
+static void captureMouseCursor(_GLFWwindow* window)
+{
+    RECT ClipWindowRect;
+
+    // Clip cursor to the window
+    if (GetWindowRect(window->Win32.handle, &ClipWindowRect))
+        ClipCursor(&ClipWindowRect);
+
+    // Capture cursor to user window
+    SetCapture(window->Win32.handle);
 }
 
 
@@ -1845,50 +1884,6 @@ void _glfwPlatformWaitEvents(void)
     WaitMessage();
 
     _glfwPlatformPollEvents();
-}
-
-
-//========================================================================
-// Hide mouse cursor (lock it)
-//========================================================================
-
-void hideMouseCursor(_GLFWwindow* window)
-{
-    ShowCursor(FALSE);
-
-    captureMouseCursor(window);
-}
-
-
-//========================================================================
-// Show mouse cursor (unlock it)
-//========================================================================
-
-void showMouseCursor(_GLFWwindow* window)
-{
-    // Un-capture cursor
-    ReleaseCapture();
-
-    // Release the cursor from the window
-    ClipCursor(NULL);
-
-    ShowCursor(TRUE);
-}
-
-//========================================================================
-// Capture mouse cursor
-//========================================================================
-
-static void captureMouseCursor(_GLFWwindow* window)
-{
-    RECT ClipWindowRect;
-
-    // Clip cursor to the window
-    if (GetWindowRect(window->Win32.handle, &ClipWindowRect))
-        ClipCursor(&ClipWindowRect);
-
-    // Capture cursor to user window
-    SetCapture(window->Win32.handle);
 }
 
 

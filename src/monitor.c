@@ -31,81 +31,102 @@
 #include "internal.h"
 
 
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW public API                       //////
+//////////////////////////////////////////////////////////////////////////
+
 //========================================================================
-// Get a list of connected monitors
+// Iterate through connected monitors
 //========================================================================
 
-GLFWAPI GLFWmonitor glfwGetNextMonitor(GLFWmonitor iterator)
+GLFWAPI GLFWmonitor glfwGetNextMonitor(GLFWmonitor handle)
 {
-    GLFWmonitor result = GLFW_MONITOR_INVALID_HANDLE;
+    _GLFWmonitor* iterator = (_GLFWmonitor*) handle;
+    _GLFWmonitor* result = NULL;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return result;
     }
 
-    if (iterator == GLFW_MONITOR_INVALID_HANDLE)
-    {
+    if (iterator == NULL)
         result = _glfwLibrary.monitorListHead;
-    }
     else
-    {
         result = iterator->next;
-    }
+
     return result;
 }
 
-GLFWAPI int glfwGetMonitorIntegerParam(GLFWmonitor monitor, int param)
+
+//========================================================================
+// Get monitor parameter
+//========================================================================
+
+GLFWAPI int glfwGetMonitorParam(GLFWmonitor handle, int param)
 {
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return 0;
     }
 
-    if (monitor == GLFW_MONITOR_INVALID_HANDLE)
+    if (monitor == NULL)
     {
-        _glfwSetError(GLFW_INVALID_VALUE, "Monitor handle is invalid.");
+        _glfwSetError(GLFW_INVALID_VALUE,
+                      "glfwGetMonitorParam: Invalid monitor handle");
         return 0;
     }
 
-    switch(param)
+    switch (param)
     {
-        case GLFW_MONITOR_PARAM_I_PHYS_WIDTH:
+        case GLFW_MONITOR_PHYSICAL_WIDTH:
             return monitor->physicalWidth;
-        case GLFW_MONITOR_PARAM_I_PHYS_HEIGHT:
+        case GLFW_MONITOR_PHYSICAL_HEIGHT:
             return monitor->physicalHeight;
-        case GLFW_MONITOR_PARAM_I_SCREEN_X_POS:
-            return monitor->screenXPosition;
-        case GLFW_MONITOR_PARAM_I_SCREEN_Y_POS:
-            return monitor->screenYPosition;
-        default:
-            _glfwSetError(GLFW_INVALID_ENUM, "Param represents not a valid integer monitor attribute.");
-            return 0;
+        case GLFW_MONITOR_SCREEN_POS_X:
+            return monitor->screenX;
+        case GLFW_MONITOR_SCREEN_POS_Y:
+            return monitor->screenY;
     }
+
+    _glfwSetError(GLFW_INVALID_ENUM,
+                  "glfwGetMonitorParam: Invalid enum value for 'param' parameter");
+    return 0;
 }
 
-GLFWAPI const char* glfwGetMonitorStringParam(GLFWmonitor monitor, int param)
+
+//========================================================================
+// Get monitor string
+//========================================================================
+
+GLFWAPI const char* glfwGetMonitorString(GLFWmonitor handle, int param)
 {
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return NULL;
     }
 
-    if (monitor == GLFW_MONITOR_INVALID_HANDLE)
+    if (monitor == NULL)
     {
-        _glfwSetError(GLFW_INVALID_VALUE, "monitor handle is invalid.");
+        _glfwSetError(GLFW_INVALID_VALUE,
+                      "glfwGetMonitorString: Invalid monitor handle");
         return NULL;
     }
 
-    switch(param)
+    switch (param)
     {
-        case GLFW_MONITOR_PARAM_S_NAME:
-            return monitor->deviceName;
-        default:
-            _glfwSetError(GLFW_INVALID_ENUM, "Param represents not a valid string monitor attribute.");
-            return NULL;
+        case GLFW_MONITOR_NAME:
+            return monitor->name;
     }
+
+    _glfwSetError(GLFW_INVALID_ENUM,
+                  "glfwGetMonitorString: Invalid enum value for 'param' parameter");
+    return NULL;
 }
 

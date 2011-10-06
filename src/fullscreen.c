@@ -100,9 +100,10 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 // Get a list of available video modes
 //========================================================================
 
-GLFWAPI int glfwGetVideoModes(GLFWmonitor monitor, GLFWvidmode* list, int maxcount)
+GLFWAPI int glfwGetVideoModes(GLFWmonitor handle, GLFWvidmode* list, int maxcount)
 {
     int count;
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
 
     if (!_glfwInitialized)
     {
@@ -110,9 +111,10 @@ GLFWAPI int glfwGetVideoModes(GLFWmonitor monitor, GLFWvidmode* list, int maxcou
         return 0;
     }
 
-    if (monitor == GLFW_MONITOR_INVALID_HANDLE)
+    if (monitor == NULL)
     {
-        _glfwSetError(GLFW_INVALID_VALUE, "Monitor handle is invalid.");
+        _glfwSetError(GLFW_INVALID_VALUE,
+                      "glfwGetVideoModes: Invalid monitor handle");
         return 0;
     }
 

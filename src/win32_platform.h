@@ -316,7 +316,8 @@ typedef struct _GLFWlibraryWin32
 //------------------------------------------------------------------------
 typedef struct _GLFWmonitorWin32
 {
-    char DeviceName[32];
+    char name[32];
+
 } _GLFWmonitorWin32;
 
 //========================================================================

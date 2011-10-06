@@ -1,4 +1,8 @@
 
+if(WIN32)
+    add_definitions(-DWINVER=0x0501)
+endif(WIN32)
+
 if(CYGWIN)
 
     # These lines are intended to remove the --export-all-symbols

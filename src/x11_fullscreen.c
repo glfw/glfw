@@ -344,7 +344,7 @@ int _glfwCompareResolution(const void* left, const void* right)
 // List available video modes
 //========================================================================
 
-int _glfwPlatformGetVideoModes(GLFWmonitor monitor, GLFWvidmode* list, int maxcount)
+int _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, GLFWvidmode* list, int maxcount)
 {
     int count, k, l, r, g, b, rgba, gl;
     int depth, screen;

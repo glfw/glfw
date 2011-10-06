@@ -469,9 +469,21 @@ extern "C" {
 /* Gamma ramps */
 #define GLFW_GAMMA_RAMP_SIZE      256
 
+/* Monitor constants */
+#define GLFW_MONITOR_CONNECTED               0
+#define GLFW_MONITOR_DISCONNECTED            1
+#define GLFW_MONITOR_NAME                    0
+#define GLFW_MONITOR_PHYSICAL_WIDTH          1
+#define GLFW_MONITOR_PHYSICAL_HEIGHT         2
+#define GLFW_MONITOR_SCREEN_POS_X            3
+#define GLFW_MONITOR_SCREEN_POS_Y            4
+
 /*************************************************************************
  * Typedefs
  *************************************************************************/
+
+/* Monitor handle type */
+typedef void* GLFWmonitor;
 
 /* Window handle type */
 typedef void* GLFWwindow;
@@ -490,6 +502,7 @@ typedef void (* GLFWkeyfun)(GLFWwindow,int,int);
 typedef void (* GLFWcharfun)(GLFWwindow,int);
 typedef void* (* GLFWmallocfun)(size_t);
 typedef void (* GLFWfreefun)(void*);
+typedef void (* GLFWmonitordevicefun)(GLFWmonitor,int);
 
 /* The video mode structure used by glfwGetVideoModes */
 typedef struct
@@ -539,32 +552,17 @@ GLFWAPI int glfwGetError(void);
 GLFWAPI const char* glfwErrorString(int error);
 GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
 
-/* Monitor constants */
-#define GLFW_MONITOR_INVALID_HANDLE          (NULL)
-#define GLFW_MONITOR_CONNECTED               0
-#define GLFW_MONITOR_DISCONNECTED            1
-#define GLFW_MONITOR_PARAM_S_NAME            0
-#define GLFW_MONITOR_PARAM_I_PHYS_WIDTH      1
-#define GLFW_MONITOR_PARAM_I_PHYS_HEIGHT     2
-#define GLFW_MONITOR_PARAM_I_SCREEN_X_POS    3
-#define GLFW_MONITOR_PARAM_I_SCREEN_Y_POS    4
-
-/* Monitor types */
-typedef struct _GLFWmonitor* GLFWmonitor;
-typedef void (* GLFWmonitordevicefun)(GLFWmonitor,int); /* connect / disconnect */
-
 /* Monitor callback registration */
 GLFWAPI void glfwSetMonitorDeviceCallback(GLFWmonitordevicefun cbfun);
 
 /* Monitor attributes */
-GLFWAPI void        glfwSetMonitorUserPointer(GLFWmonitor monitor, void* pointer);
-GLFWAPI void*       glfwGetMonitorUserPointer(GLFWmonitor monitor);
-GLFWAPI int         glfwGetMonitorIntegerParam(GLFWmonitor monitor, int param);
-GLFWAPI const char* glfwGetMonitorStringParam(GLFWmonitor monitor, int param);
+GLFWAPI void glfwSetMonitorUserPointer(GLFWmonitor monitor, void* pointer);
+GLFWAPI void* glfwGetMonitorUserPointer(GLFWmonitor monitor);
+GLFWAPI int glfwGetMonitorParam(GLFWmonitor monitor, int param);
+GLFWAPI const char* glfwGetMonitorString(GLFWmonitor monitor, int param);
 
 /* Monitor discovery */
 GLFWAPI GLFWmonitor glfwGetNextMonitor(GLFWmonitor iterator);
-
 
 /* Video mode functions */
 GLFWAPI int  glfwGetVideoModes(GLFWmonitor monitor, GLFWvidmode* list, int maxcount);

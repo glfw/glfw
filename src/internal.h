@@ -225,13 +225,13 @@ struct _GLFWmonitor
 
     void*     userPointer;
 
-    char*     deviceName;
+    char*     name;
     // physical dimensions in millimeters.
     int       physicalWidth;
     int       physicalHeight;
     // logical orientation of the screen on the desktop
-    int       screenXPosition;
-    int       screenYPosition;
+    int       screenX;
+    int       screenY;
 
     // These are defined in the current port's platform.h
     _GLFW_PLATFORM_MONITOR_STATE;
@@ -301,7 +301,7 @@ void _glfwPlatformEnableSystemKeys(_GLFWwindow* window);
 void _glfwPlatformDisableSystemKeys(_GLFWwindow* window);
 
 // Fullscreen
-int  _glfwPlatformGetVideoModes(GLFWmonitor monitor, GLFWvidmode* list, int maxcount);
+int  _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, GLFWvidmode* list, int maxcount);
 void _glfwPlatformGetDesktopMode(GLFWvidmode* mode);
 
 // Gamma ramp

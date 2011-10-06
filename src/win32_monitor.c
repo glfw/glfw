@@ -33,12 +33,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+// The MinGW package for Debian lacks this
+#ifndef EDS_ROTATEDMODE
+#define EDS_ROTATEDMODE 0x00000004
+#endif
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-_GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current, DISPLAY_DEVICE* adapter, DISPLAY_DEVICE* monitor, DEVMODE* setting)
+_GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
+                                  DISPLAY_DEVICE* adapter,
+                                  DISPLAY_DEVICE* monitor,
+                                  DEVMODE* setting)
 {
     HDC dc = NULL;
 
@@ -52,14 +60,14 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current, DISPLAY_DEVICE* adapte
 
     DeleteDC(dc);
 
-    (*current)->deviceName = _glfwMalloc(strlen(monitor->DeviceName) + 1);
-    memcpy((*current)->deviceName, monitor->DeviceName, strlen(monitor->DeviceName) + 1);
-    (*current)->deviceName[strlen(monitor->DeviceName)] = '\0';
+    (*current)->name = _glfwMalloc(strlen(monitor->DeviceName) + 1);
+    memcpy((*current)->name, monitor->DeviceName, strlen(monitor->DeviceName) + 1);
+    (*current)->name[strlen(monitor->DeviceName)] = '\0';
 
-    (*current)->screenXPosition = setting->dmPosition.x;
-    (*current)->screenYPosition = setting->dmPosition.y;
+    (*current)->screenX = setting->dmPosition.x;
+    (*current)->screenY = setting->dmPosition.y;
 
-    memcpy((*current)->Win32.DeviceName, adapter->DeviceName, 32);
+    memcpy((*current)->Win32.name, adapter->DeviceName, 32);
     return &((*current)->next);
 }
 
@@ -69,7 +77,7 @@ _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
 
     result = monitor->next;
 
-    _glfwFree(monitor->deviceName);
+    _glfwFree(monitor->name);
     _glfwFree(monitor);
 
     return result;
@@ -96,14 +104,15 @@ void _glfwInitMonitors(void)
     setting.dmSize = sizeof(DEVMODE);
     settingNum = 0;
 
-    while(EnumDisplayDevices(NULL, adapterNum++, &adapter, 0))
+    while (EnumDisplayDevices(NULL, adapterNum++, &adapter, 0))
     {
-        if(adapter.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER)
-        {
+        if (adapter.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER)
             continue;
-        }
 
-        EnumDisplaySettingsEx(adapter.DeviceName, ENUM_CURRENT_SETTINGS, &setting, EDS_ROTATEDMODE);
+        EnumDisplaySettingsEx(adapter.DeviceName,
+                              ENUM_CURRENT_SETTINGS,
+                              &setting,
+                              EDS_ROTATEDMODE);
 
         EnumDisplayDevices(adapter.DeviceName, 0, &monitor, 0);
 
@@ -113,7 +122,7 @@ void _glfwInitMonitors(void)
 
 void _glfwTerminateMonitors(void)
 {
-    while(_glfwLibrary.monitorListHead)
+    while (_glfwLibrary.monitorListHead)
         _glfwLibrary.monitorListHead = _glfwDestroyMonitor(_glfwLibrary.monitorListHead);
 }
 

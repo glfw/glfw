@@ -182,7 +182,7 @@ void _glfwRestoreVideoMode(void)
 // Get a list of available video modes
 //========================================================================
 
-int  _glfwPlatformGetVideoModes(GLFWmonitor monitor, GLFWvidmode* list, int maxcount)
+int  _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, GLFWvidmode* list, int maxcount)
 {
     DEVMODE deviceMode;
     DWORD deviceModeNum;
@@ -197,14 +197,18 @@ int  _glfwPlatformGetVideoModes(GLFWmonitor monitor, GLFWvidmode* list, int maxc
     vidModes = NULL;
     vidModesCount = 0;
 
-    while (EnumDisplaySettings(monitor->Win32.DeviceName, deviceModeNum, &deviceMode) && (!list || (vidModesCount < maxcount)))
+    for (;;)
     {
+        if (!EnumDisplaySettings(monitor->Win32.name, deviceModeNum, &deviceMode))
+           break;
+
+        if (vidModesCount >= maxcount)
+            break;
+
         deviceModeNum++;
 
         if (deviceMode.dmBitsPerPel < 15)
-        {
             continue;
-        }
 
         vidMode.height = deviceMode.dmPelsHeight;
         vidMode.width  = deviceMode.dmPelsWidth;
@@ -216,9 +220,7 @@ int  _glfwPlatformGetVideoModes(GLFWmonitor monitor, GLFWvidmode* list, int maxc
 
         // skip duplicates.
         if (vidModes && bsearch(&vidMode, vidModes, vidModesCount, sizeof(GLFWvidmode), _glfwCompareVideoModes))
-        {
             continue;
-        }
 
         vidModes = realloc(vidModes, sizeof(GLFWvidmode) * ++vidModesCount);
         memcpy(vidModes + (vidModesCount - 1), &vidMode, sizeof(GLFWvidmode));
@@ -227,9 +229,7 @@ int  _glfwPlatformGetVideoModes(GLFWmonitor monitor, GLFWvidmode* list, int maxc
     }
 
     if (list && maxcount)
-    {
         memcpy(list, vidModes, sizeof(GLFWvidmode) * min(vidModesCount, maxcount));
-    }
 
     free(vidModes);
 

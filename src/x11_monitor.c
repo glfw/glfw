@@ -38,8 +38,9 @@
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-#if defined (_GLFW_HAS_XRANDR)
-_GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current, XRROutputInfo* outputInfo, XRRCrtcInfo* crtcInfo)
+_GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
+                                  XRROutputInfo* outputInfo,
+                                  XRRCrtcInfo* crtcInfo)
 {
     *current = _glfwMalloc(sizeof(_GLFWmonitor));
     memset(*current, 0, sizeof(_GLFWmonitor));
@@ -47,17 +48,16 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current, XRROutputInfo* outputI
     (*current)->physicalWidth  = outputInfo->mm_width;
     (*current)->physicalHeight = outputInfo->mm_height;
 
-    (*current)->deviceName = _glfwMalloc(strlen(outputInfo->name) + 1);
-    memcpy((*current)->deviceName, outputInfo->name, strlen(outputInfo->name) + 1);
-    (*current)->deviceName[strlen(outputInfo->name)] = '\0';
+    (*current)->name = _glfwMalloc(strlen(outputInfo->name) + 1);
+    memcpy((*current)->name, outputInfo->name, strlen(outputInfo->name) + 1);
+    (*current)->name[strlen(outputInfo->name)] = '\0';
 
-    (*current)->screenXPosition = crtcInfo->x;
-    (*current)->screenYPosition = crtcInfo->y;
+    (*current)->screenX = crtcInfo->x;
+    (*current)->screenY = crtcInfo->y;
 
     (*current)->X11.output = outputInfo;
     return &((*current)->next);
 }
-#endif /*_GLFW_HAS_XRANDR*/
 
 _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
 {
@@ -66,10 +66,10 @@ _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
     result = monitor->next;
 
 #if defined (_GLFW_HAS_XRANDR)
-    XRRFreeOutputInfo(monitor->X11.output);    
+    XRRFreeOutputInfo(monitor->X11.output);
 #endif /*_GLFW_HAS_XRANDR*/
 
-    _glfwFree(monitor->deviceName);
+    _glfwFree(monitor->name);
     _glfwFree(monitor);
 
     return result;
@@ -79,7 +79,7 @@ void _glfwInitMonitors(void)
 {
     _glfwLibrary.monitorListHead = NULL;
 
-    if(_glfwLibrary.X11.RandR.available == GL_TRUE)
+    if (_glfwLibrary.X11.RandR.available)
     {
 #if defined (_GLFW_HAS_XRANDR)
         XRRScreenResources* resources;
@@ -91,7 +91,7 @@ void _glfwInitMonitors(void)
         resources = XRRGetScreenResources(_glfwLibrary.X11.display,
                                           _glfwLibrary.X11.root);
 
-        for(outputIDX = 0; outputIDX < resources->noutput; outputIDX++)
+        for (outputIDX = 0; outputIDX < resources->noutput; outputIDX++)
         {
             // physical device
             XRROutputInfo* outputInfo = NULL;
@@ -103,11 +103,11 @@ void _glfwInitMonitors(void)
                                           resources,
                                           resources->outputs[outputIDX]);
 
-            if(outputInfo->connection == RR_Connected)
+            if (outputInfo->connection == RR_Connected)
             {
-                for(crtcIDX = 0; crtcIDX < outputInfo->ncrtc; crtcIDX++)
+                for (crtcIDX = 0; crtcIDX < outputInfo->ncrtc; crtcIDX++)
                 {
-                    if(outputInfo->crtc == outputInfo->crtcs[crtcIDX])
+                    if (outputInfo->crtc == outputInfo->crtcs[crtcIDX])
                     {
                         crtcInfo = XRRGetCrtcInfo(_glfwLibrary.X11.display,
                                                   resources,
@@ -128,7 +128,7 @@ void _glfwInitMonitors(void)
 
 void _glfwTerminateMonitors(void)
 {
-    while(_glfwLibrary.monitorListHead)
+    while (_glfwLibrary.monitorListHead)
         _glfwLibrary.monitorListHead = _glfwDestroyMonitor(_glfwLibrary.monitorListHead);
 }
 

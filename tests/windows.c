@@ -66,7 +66,10 @@ int main(void)
 
         glfwSetWindowPos(windows[i], 100 + (i & 1) * 300, 100 + (i >> 1) * 300);
 
-        glClearColor((GLclampf) (i & 1), (GLclampf) (i >> 1), 0.0, 0.0);
+        glClearColor((GLclampf) (i & 1),
+                     (GLclampf) (i >> 1),
+                     i ? 0.0 : 1.0,
+                     0.0);
     }
 
     while (running)

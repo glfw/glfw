@@ -470,13 +470,13 @@ extern "C" {
 #define GLFW_GAMMA_RAMP_SIZE      256
 
 /* Monitor constants */
-#define GLFW_MONITOR_CONNECTED               0
-#define GLFW_MONITOR_DISCONNECTED            1
-#define GLFW_MONITOR_NAME                    0
-#define GLFW_MONITOR_PHYSICAL_WIDTH          1
-#define GLFW_MONITOR_PHYSICAL_HEIGHT         2
-#define GLFW_MONITOR_SCREEN_POS_X            3
-#define GLFW_MONITOR_SCREEN_POS_Y            4
+#define GLFW_MONITOR_NAME            0x00060000
+#define GLFW_MONITOR_PHYSICAL_WIDTH  0x00060001
+#define GLFW_MONITOR_PHYSICAL_HEIGHT 0x00060002
+#define GLFW_MONITOR_SCREEN_POS_X    0x00060003
+#define GLFW_MONITOR_SCREEN_POS_Y    0x00060004
+#define GLFW_MONITOR_CONNECTED       0x00061000
+#define GLFW_MONITOR_DISCONNECTED    0x00061001
 
 /*************************************************************************
  * Typedefs

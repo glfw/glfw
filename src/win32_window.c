@@ -473,6 +473,50 @@ static GLboolean createContext(_GLFWwindow* window,
 
 
 //========================================================================
+// Hide mouse cursor
+//========================================================================
+
+static void hideMouseCursor(_GLFWwindow* window)
+{
+}
+
+
+//========================================================================
+// Capture mouse cursor
+//========================================================================
+
+static void captureMouseCursor(_GLFWwindow* window)
+{
+    RECT ClipWindowRect;
+
+    ShowCursor(FALSE);
+
+    // Clip cursor to the window
+    if (GetWindowRect(window->Win32.handle, &ClipWindowRect))
+        ClipCursor(&ClipWindowRect);
+
+    // Capture cursor to user window
+    SetCapture(window->Win32.handle);
+}
+
+
+//========================================================================
+// Show mouse cursor
+//========================================================================
+
+static void showMouseCursor(_GLFWwindow* window)
+{
+    // Un-capture cursor
+    ReleaseCapture();
+
+    // Release the cursor from the window
+    ClipCursor(NULL);
+
+    ShowCursor(TRUE);
+}
+
+
+//========================================================================
 // Translates a Windows key to the corresponding GLFW key
 //========================================================================
 
@@ -1761,7 +1805,7 @@ void _glfwPlatformPollEvents(void)
     window = _glfwLibrary.activeWindow;
     if (window)
     {
-        window->Win32.mouseMoved = GL_FALSE;
+        window->Win32.cursorCentered = GL_FALSE;
         window->Win32.oldMouseX = window->width / 2;
         window->Win32.oldMouseY = window->height / 2;
     }
@@ -1847,41 +1891,6 @@ void _glfwPlatformWaitEvents(void)
 
 
 //========================================================================
-// Hide mouse cursor (lock it)
-//========================================================================
-
-void _glfwPlatformHideMouseCursor(_GLFWwindow* window)
-{
-    RECT ClipWindowRect;
-
-    ShowCursor(FALSE);
-
-    // Clip cursor to the window
-    if (GetWindowRect(window->Win32.handle, &ClipWindowRect))
-        ClipCursor(&ClipWindowRect);
-
-    // Capture cursor to user window
-    SetCapture(window->Win32.handle);
-}
-
-
-//========================================================================
-// Show mouse cursor (unlock it)
-//========================================================================
-
-void _glfwPlatformShowMouseCursor(_GLFWwindow* window)
-{
-    // Un-capture cursor
-    ReleaseCapture();
-
-    // Release the cursor from the window
-    ClipCursor(NULL);
-
-    ShowCursor(TRUE);
-}
-
-
-//========================================================================
 // Set physical mouse cursor position
 //========================================================================
 
@@ -1895,5 +1904,26 @@ void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y)
     ClientToScreen(window->Win32.handle, &pos);
 
     SetCursorPos(pos.x, pos.y);
+}
+
+
+//========================================================================
+// Set physical mouse cursor mode
+//========================================================================
+
+void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
+{
+    switch (mode)
+    {
+        case GLFW_CURSOR_NORMAL:
+            showMouseCursor(window);
+            break;
+        case GLFW_CURSOR_HIDDEN:
+            hideMouseCursor(window);
+            break;
+        case GLFW_CURSOR_CAPTURED:
+            captureMouseCursor(window);
+            break;
+    }
 }
 

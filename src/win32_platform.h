@@ -254,7 +254,7 @@ typedef struct _GLFWwindowWin32
 
     // Various platform specific internal variables
     int       desiredRefreshRate; // Desired vertical monitor refresh rate
-    GLboolean mouseMoved;
+    GLboolean cursorCentered;
     int       oldMouseX, oldMouseY;
 } _GLFWwindowWin32;
 

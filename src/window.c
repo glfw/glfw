@@ -817,6 +817,7 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindowsizefun cbfun)
     }
 }
 
+
 //========================================================================
 // Set callback function for window close events
 //========================================================================

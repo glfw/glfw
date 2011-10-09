@@ -264,6 +264,7 @@ struct _GLFWlibrary
     GLFWscrollfun        scrollCallback;
     GLFWkeyfun           keyCallback;
     GLFWcharfun          charCallback;
+    GLFWmonitordevicefun monitorCallback;
 
     GLFWthreadmodel      threading;
     GLFWallocator        allocator;

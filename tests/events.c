@@ -216,6 +216,19 @@ static const char* get_character_string(int character)
     return result;
 }
 
+static const char* get_monitor_event_name(int event)
+{
+    switch (event)
+    {
+        case GLFW_MONITOR_CONNECTED:
+            return "connected";
+        case GLFW_MONITOR_DISCONNECTED:
+            return "disconnected";
+    }
+
+    return NULL;
+}
+
 static void window_size_callback(GLFWwindow window, int width, int height)
 {
     printf("%08x at %0.3f: Window size: %i %i\n",
@@ -330,6 +343,16 @@ static void char_callback(GLFWwindow window, int character)
            get_character_string(character));
 }
 
+void monitor_callback(GLFWmonitor monitor, int event)
+{
+    printf("%08x at %0.3f: Monitor %s %s",
+           counter++,
+           glfwGetTime(),
+           glfwGetMonitorString(monitor, GLFW_MONITOR_NAME),
+           get_monitor_event_name(event));
+
+}
+
 int main(void)
 {
     GLFWwindow window;
@@ -354,6 +377,7 @@ int main(void)
     glfwSetScrollCallback(scroll_callback);
     glfwSetKeyCallback(key_callback);
     glfwSetCharCallback(char_callback);
+    glfwSetMonitorDeviceCallback(monitor_callback);
 
     window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Event Linter", NULL);
     if (!window)

@@ -1349,9 +1349,7 @@ static void processSingleEvent(void)
                 return;
             }
 
-            if (_glfwLibrary.windowRefreshCallback)
-                _glfwLibrary.windowRefreshCallback(window);
-
+            _glfwInputWindowDamage(window);
             break;
         }
 

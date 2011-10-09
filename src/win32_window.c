@@ -1069,9 +1069,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         // Was the window contents damaged?
         case WM_PAINT:
         {
-            if (_glfwLibrary.windowRefreshCallback)
-                _glfwLibrary.windowRefreshCallback(window);
-
+            _glfwInputWindowDamage(window);
             break;
         }
 

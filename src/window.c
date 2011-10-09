@@ -195,6 +195,17 @@ void _glfwInputWindowIconify(_GLFWwindow* window, int iconified)
 }
 
 
+//========================================================================
+// Register window damage events
+//========================================================================
+
+void _glfwInputWindowDamage(_GLFWwindow* window)
+{
+    if (_glfwLibrary.windowRefreshCallback)
+        _glfwLibrary.windowRefreshCallback(window);
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////

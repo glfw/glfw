@@ -852,15 +852,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             }
 
             _glfwInputWindowFocus(window, active);
-
-            if (iconified != window->iconified)
-            {
-                window->iconified = iconified;
-
-                if (_glfwLibrary.windowIconifyCallback)
-                    _glfwLibrary.windowIconifyCallback(window, window->iconified);
-            }
-
+            _glfwInputWindowIconify(window, iconified);
             return 0;
         }
 
@@ -1006,32 +998,27 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (newMouseX != window->Win32.oldMouseX ||
                 newMouseY != window->Win32.oldMouseY)
             {
+                int x, y;
+
                 if (window->cursorMode == GLFW_CURSOR_CAPTURED)
                 {
                     if (_glfwLibrary.activeWindow != window)
                         return 0;
 
-                    window->mousePosX += newMouseX -
-                                         window->Win32.oldMouseX;
-                    window->mousePosY += newMouseY -
-                                         window->Win32.oldMouseY;
+                    x += newMouseX - window->Win32.oldMouseX;
+                    y += newMouseY - window->Win32.oldMouseY;
                 }
                 else
                 {
-                    window->mousePosX = newMouseX;
-                    window->mousePosY = newMouseY;
+                    x = newMouseX;
+                    x = newMouseY;
                 }
 
                 window->Win32.oldMouseX = newMouseX;
                 window->Win32.oldMouseY = newMouseY;
                 window->Win32.cursorCentered = GL_FALSE;
 
-                if (_glfwLibrary.mousePosCallback)
-                {
-                    _glfwLibrary.mousePosCallback(window,
-                                                  window->mousePosX,
-                                                  window->mousePosY);
-                }
+                _glfwInputCursorMotion(window, x, y);
             }
 
             return 0;
@@ -1053,9 +1040,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_SIZE:
         {
-            window->width  = LOWORD(lParam);
-            window->height = HIWORD(lParam);
-
             // If window is in cursor capture mode, update clipping rect
             if (window->cursorMode == GLFW_CURSOR_CAPTURED)
             {
@@ -1064,21 +1048,12 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     ClipCursor(&ClipWindowRect);
             }
 
-            if (_glfwLibrary.windowSizeCallback)
-            {
-                _glfwLibrary.windowSizeCallback(window,
-                                                window->width,
-                                                window->height);
-            }
-
+            _glfwInputWindowSize(window, LOWORD(lParam), HIWORD(lParam));
             return 0;
         }
 
         case WM_MOVE:
         {
-            window->positionX = LOWORD(lParam);
-            window->positionY = HIWORD(lParam);
-
             // If window is in cursor capture mode, update clipping rect
             if (window->cursorMode == GLFW_CURSOR_CAPTURED)
             {
@@ -1086,6 +1061,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 if (GetWindowRect(window->Win32.handle, &ClipWindowRect))
                     ClipCursor(&ClipWindowRect);
             }
+
+            _glfwInputWindowPos(window, LOWORD(lParam), HIWORD(lParam));
             return 0;
         }
 

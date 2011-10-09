@@ -183,6 +183,28 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action)
 
 
 //========================================================================
+// Register cursor moves
+//========================================================================
+
+void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y)
+{
+    if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+    {
+        window->mousePosX += x;
+        window->mousePosY += y;
+    }
+    else
+    {
+        window->mousePosX = x;
+        window->mousePosY = y;
+    }
+
+    if (_glfwLibrary.mousePosCallback)
+        _glfwLibrary.mousePosCallback(window, x, y);
+}
+
+
+//========================================================================
 // Register window focus events
 //========================================================================
 
@@ -224,6 +246,53 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated)
                 _glfwLibrary.windowFocusCallback(window, activated);
         }
     }
+}
+
+
+//========================================================================
+// Register window position events
+//========================================================================
+
+void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
+{
+    if (window->positionX == x && window->positionY == y)
+        return;
+
+    window->positionX = x;
+    window->positionY = y;
+}
+
+
+//========================================================================
+// Register window size events
+//========================================================================
+
+void _glfwInputWindowSize(_GLFWwindow* window, int width, int height)
+{
+    if (window->width == width && window->height == height)
+        return;
+
+    window->width = width;
+    window->height = height;
+
+    if (_glfwLibrary.windowSizeCallback)
+        _glfwLibrary.windowSizeCallback(window, width, height);
+}
+
+
+//========================================================================
+// Register window size events
+//========================================================================
+
+void _glfwInputWindowIconify(_GLFWwindow* window, int iconified)
+{
+    if (window->iconified == iconified)
+        return;
+
+    window->iconified = iconified;
+
+    if (_glfwLibrary.windowIconifyCallback)
+        _glfwLibrary.windowIconifyCallback(window, iconified);
 }
 
 

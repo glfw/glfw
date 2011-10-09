@@ -67,11 +67,8 @@
 
     NSRect contentRect =
         [window->NS.window contentRectForFrameRect:[window->NS.window frame]];
-    window->width = contentRect.size.width;
-    window->height = contentRect.size.height;
 
-    if (_glfwLibrary.windowSizeCallback)
-        _glfwLibrary.windowSizeCallback(window, window->width, window->height);
+    _glfwInputWindowSize(window, contentRect.size.width, contentRect.size.height);
 }
 
 - (void)windowDidMove:(NSNotification *)notification
@@ -87,24 +84,17 @@
                                       mainScreenHeight - contentRect.origin.y -
                                           mainScreenOrigin.y - window->height);
 
-    window->positionX = flippedPos.x;
-    window->positionY = flippedPos.y;
+    _glfwInputWindowPos(window, flippedPos.x, flippedPos.y);
 }
 
 - (void)windowDidMiniaturize:(NSNotification *)notification
 {
-    window->iconified = GL_TRUE;
-
-    if (_glfwLibrary.windowIconifyCallback)
-        _glfwLibrary.windowIconifyCallback(window, window->iconified);
+    _glfwInputWindowIconify(window, GL_TRUE);
 }
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification
 {
-    window->iconified = GL_FALSE;
-
-    if (_glfwLibrary.windowIconifyCallback)
-        _glfwLibrary.windowIconifyCallback(window, window->iconified);
+    _glfwInputWindowIconify(window, GL_FALSE);
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
@@ -349,24 +339,15 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 - (void)mouseMoved:(NSEvent *)event
 {
     if (window->cursorMode == GLFW_CURSOR_CAPTURED)
-    {
-        window->mousePosX += [event deltaX];
-        window->mousePosY += [event deltaY];
-    }
+        _glfwInputCursorMotion(window, [event deltaX], [event deltaY]);
     else
     {
         NSPoint p = [event locationInWindow];
 
         // Cocoa coordinate system has origin at lower left
-        window->mousePosX = p.x;
-        window->mousePosY = [[window->NS.window contentView] bounds].size.height - p.y;
-    }
+        p.y = [[window->NS.window contentView] bounds].size.height - p.y;
 
-    if (_glfwLibrary.mousePosCallback)
-    {
-        _glfwLibrary.mousePosCallback(window,
-                                      window->mousePosX,
-                                      window->mousePosY);
+        _glfwInputCursorMotion(window, p.x, p.y);
     }
 }
 

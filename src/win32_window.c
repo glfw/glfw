@@ -1005,13 +1005,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     if (_glfwLibrary.activeWindow != window)
                         return 0;
 
-                    x += newMouseX - window->Win32.oldMouseX;
-                    y += newMouseY - window->Win32.oldMouseY;
+                    x = newMouseX - window->Win32.oldMouseX;
+                    y = newMouseY - window->Win32.oldMouseY;
                 }
                 else
                 {
                     x = newMouseX;
-                    x = newMouseY;
+                    y = newMouseY;
                 }
 
                 window->Win32.oldMouseX = newMouseX;

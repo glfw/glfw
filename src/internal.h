@@ -184,7 +184,7 @@ struct _GLFWwindow
     GLboolean stickyMouseButtons;
     GLboolean keyRepeat;
     GLboolean sysKeysDisabled; // system keys disabled flag
-    int       mousePosX, mousePosY;
+    int       cursorPosX, cursorPosY;
     int       cursorMode;
     int       scrollX, scrollY;
     char      mouseButton[GLFW_MOUSE_BUTTON_LAST + 1];

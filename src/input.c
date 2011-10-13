@@ -125,20 +125,22 @@ void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y)
         if (!x && !y)
             return;
 
-        window->mousePosX += x;
-        window->mousePosY += y;
+        window->cursorPosX += x;
+        window->cursorPosY += y;
     }
     else
     {
-        if (window->mousePosX == x && window->mousePosY == y)
+        if (window->cursorPosX == x && window->cursorPosY == y)
             return;
 
-        window->mousePosX = x;
-        window->mousePosY = y;
+        window->cursorPosX = x;
+        window->cursorPosY = y;
     }
 
     if (_glfwLibrary.mousePosCallback)
-        _glfwLibrary.mousePosCallback(window, window->mousePosX, window->mousePosY);
+        _glfwLibrary.mousePosCallback(window,
+                                      window->cursorPosX,
+                                      window->cursorPosY);
 }
 
 
@@ -229,10 +231,10 @@ GLFWAPI void glfwGetMousePos(GLFWwindow handle, int* xpos, int* ypos)
 
     // Return mouse position
     if (xpos != NULL)
-        *xpos = window->mousePosX;
+        *xpos = window->cursorPosX;
 
     if (ypos != NULL)
-        *ypos = window->mousePosY;
+        *ypos = window->cursorPosY;
 }
 
 
@@ -258,12 +260,12 @@ GLFWAPI void glfwSetMousePos(GLFWwindow handle, int xpos, int ypos)
     }
 
     // Don't do anything if the mouse position did not change
-    if (xpos == window->mousePosX && ypos == window->mousePosY)
+    if (xpos == window->cursorPosX && ypos == window->cursorPosY)
         return;
 
     // Set GLFW mouse position
-    window->mousePosX = xpos;
-    window->mousePosY = ypos;
+    window->cursorPosX = xpos;
+    window->cursorPosY = ypos;
 
     // Do not move physical cursor in locked cursor mode
     if (window->cursorMode == GLFW_CURSOR_CAPTURED)
@@ -331,8 +333,8 @@ GLFWAPI void glfwSetCursorMode(GLFWwindow handle, int mode)
     {
         _glfwPlatformSetMouseCursorPos(window, centerPosX, centerPosY);
         _glfwInputCursorMotion(window,
-                               centerPosX - window->mousePosX,
-                               centerPosY - window->mousePosY);
+                               centerPosX - window->cursorPosX,
+                               centerPosY - window->cursorPosY);
     }
 
     _glfwPlatformSetCursorMode(window, mode);
@@ -411,7 +413,7 @@ GLFWAPI void glfwSetMousePosCallback(GLFWmouseposfun cbfun)
         _GLFWwindow* window;
 
         for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
-            cbfun(window, window->mousePosX, window->mousePosY);
+            cbfun(window, window->cursorPosX, window->cursorPosY);
     }
 }
 

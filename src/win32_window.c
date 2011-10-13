@@ -1371,8 +1371,8 @@ static int createWindow(_GLFWwindow* window,
     // Initialize mouse position data
     GetCursorPos(&pos);
     ScreenToClient(window->Win32.handle, &pos);
-    window->Win32.oldMouseX = window->mousePosX = pos.x;
-    window->Win32.oldMouseY = window->mousePosY = pos.y;
+    window->Win32.oldMouseX = window->cursorPosX = pos.x;
+    window->Win32.oldMouseY = window->cursorPosY = pos.y;
 
     return GL_TRUE;
 }
@@ -1786,8 +1786,8 @@ void _glfwPlatformPollEvents(void)
     }
     else
     {
-        //window->Win32.oldMouseX = window->mousePosX;
-        //window->Win32.oldMouseY = window->mousePosY;
+        //window->Win32.oldMouseX = window->cursorPosX;
+        //window->Win32.oldMouseY = window->cursorPosY;
     }
 
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))

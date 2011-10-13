@@ -1457,8 +1457,8 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 
         // TODO: Probably check for some corner cases here.
 
-        window->mousePosX = windowX;
-        window->mousePosY = windowY;
+        window->cursorPosX = windowX;
+        window->cursorPosY = windowY;
     }
 
     return GL_TRUE;

@@ -688,8 +688,8 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     glfwMakeContextCurrent(window);
 
     NSPoint point = [[NSCursor currentCursor] hotSpot];
-    window->mousePosX = point.x;
-    window->mousePosY = point.y;
+    window->cursorPosX = point.x;
+    window->cursorPosY = point.y;
 
     window->windowNoResize = wndconfig->windowNoResize;
 

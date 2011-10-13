@@ -154,9 +154,6 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated)
 
 void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
 {
-    if (window->positionX == x && window->positionY == y)
-        return;
-
     window->positionX = x;
     window->positionY = y;
 }

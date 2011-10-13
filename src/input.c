@@ -122,17 +122,23 @@ void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y)
 {
     if (window->cursorMode == GLFW_CURSOR_CAPTURED)
     {
+        if (!x && !y)
+            return;
+
         window->mousePosX += x;
         window->mousePosY += y;
     }
     else
     {
+        if (window->mousePosX == x && window->mousePosY == y)
+            return;
+
         window->mousePosX = x;
         window->mousePosY = y;
     }
 
     if (_glfwLibrary.mousePosCallback)
-        _glfwLibrary.mousePosCallback(window, x, y);
+        _glfwLibrary.mousePosCallback(window, window->mousePosX, window->mousePosY);
 }
 
 
@@ -296,6 +302,7 @@ GLFWAPI void glfwGetScrollOffset(GLFWwindow handle, int* xoffset, int* yoffset)
 
 GLFWAPI void glfwSetCursorMode(GLFWwindow handle, int mode)
 {
+    int centerPosX, centerPosY;
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
     if (!_glfwInitialized)
@@ -315,29 +322,17 @@ GLFWAPI void glfwSetCursorMode(GLFWwindow handle, int mode)
     if (window->cursorMode == mode)
         return;
 
-    int centerPosX = window->width / 2;
-    int centerPosY = window->height / 2;
+    centerPosX = window->width / 2;
+    centerPosY = window->height / 2;
 
     if (mode == GLFW_CURSOR_CAPTURED)
-    {
         _glfwPlatformSetMouseCursorPos(window, centerPosX, centerPosY);
-    }
     else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
     {
-        if (centerPosX != window->mousePosX || centerPosY != window->mousePosY)
-        {
-            _glfwPlatformSetMouseCursorPos(window, centerPosX, centerPosY);
-
-            window->mousePosX = centerPosX;
-            window->mousePosY = centerPosY;
-
-            if (_glfwLibrary.mousePosCallback)
-            {
-                _glfwLibrary.mousePosCallback(window,
-                                              window->mousePosX,
-                                              window->mousePosY);
-            }
-        }
+        _glfwPlatformSetMouseCursorPos(window, centerPosX, centerPosY);
+        _glfwInputCursorMotion(window,
+                               centerPosX - window->mousePosX,
+                               centerPosY - window->mousePosY);
     }
 
     _glfwPlatformSetCursorMode(window, mode);

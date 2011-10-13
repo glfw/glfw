@@ -1207,7 +1207,7 @@ static void processSingleEvent(void)
                 else
                 {
                     x = event.xmotion.x;
-                    x = event.xmotion.y;
+                    y = event.xmotion.y;
                 }
 
                 window->X11.cursorPosX = event.xmotion.x;

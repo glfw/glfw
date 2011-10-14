@@ -42,6 +42,7 @@
 
 #include <windows.h>
 #include <mmsystem.h>
+#include <Dbt.h>
 
 // This path may need to be changed if you build GLFW using your own setup
 // We ship and use our own copy of wglext.h since GLFW uses fairly new
@@ -332,6 +333,7 @@ void _glfwInitTimer(void);
 
 // Monitor support
 void _glfwInitMonitors(void);
+void _glfwRefreshMonitors(void);
 void _glfwTerminateMonitors(void);
 
 // Fullscreen support

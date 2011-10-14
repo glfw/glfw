@@ -30,7 +30,6 @@
 
 #include "internal.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 
 
@@ -1102,6 +1101,16 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         {
             // TODO: Do stuff here.
 
+            break;
+        }
+
+        case WM_DEVICECHANGE:
+        {
+            if (DBT_DEVNODES_CHANGED == wParam)
+            {
+                _glfwRefreshMonitors();
+                return TRUE;
+            }
             break;
         }
     }

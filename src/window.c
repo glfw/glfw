@@ -468,6 +468,7 @@ GLFWAPI void glfwOpenWindowHint(int target, int hint)
             _glfwLibrary.hints.glRobustness = hint;
             break;
         default:
+            _glfwSetError(GLFW_INVALID_ENUM, NULL);
             break;
     }
 }
@@ -748,12 +749,10 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window->glProfile;
         case GLFW_OPENGL_ROBUSTNESS:
             return window->glRobustness;
-        default:
-            _glfwSetError(GLFW_INVALID_ENUM,
-                          "glfwGetWindowParam: Invalid enum value for 'param' "
-                          "parameter");
-            return 0;
     }
+
+    _glfwSetError(GLFW_INVALID_ENUM, NULL);
+    return 0;
 }
 
 
@@ -817,6 +816,7 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindowsizefun cbfun)
             cbfun(window, window->width, window->height);
     }
 }
+
 
 //========================================================================
 // Set callback function for window close events

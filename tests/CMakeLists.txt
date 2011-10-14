@@ -16,12 +16,12 @@ add_executable(events events.c)
 add_executable(fsaa fsaa.c getopt.c)
 add_executable(fsfocus fsfocus.c)
 add_executable(gamma gamma.c getopt.c)
+add_executable(glfwinfo glfwinfo.c getopt.c)
 add_executable(iconify iconify.c getopt.c)
 add_executable(joysticks joysticks.c)
 add_executable(listmodes listmodes.c)
 add_executable(peter peter.c)
 add_executable(reopen reopen.c)
-add_executable(version version.c getopt.c)
 
 if(APPLE)
   # Set fancy names for bundles
@@ -38,8 +38,8 @@ else()
 endif(APPLE)
 
 set(WINDOWS_BINARIES accuracy sharing tearing windows)
-set(CONSOLE_BINARIES defaults events fsaa fsfocus gamma iconify joysticks
-                     listmodes peter reopen version)
+set(CONSOLE_BINARIES defaults events fsaa fsfocus gamma glfwinfo iconify
+                     joysticks listmodes peter reopen)
 
 if(MSVC)
   # Tell MSVC to use main instead of WinMain for Windows subsystem executables

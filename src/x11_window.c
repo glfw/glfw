@@ -206,6 +206,7 @@ static GLboolean hasEWMH(_GLFWwindow* window)
     return GL_TRUE;
 }
 
+
 //========================================================================
 // Translates an X Window key to internal coding
 //========================================================================
@@ -973,6 +974,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
     XWarpPointer(_glfwLibrary.X11.display, None, window->X11.handle, 0,0,0,0,
                  window->width / 2, window->height / 2);
 }
+
 
 //========================================================================
 // Leave fullscreen mode

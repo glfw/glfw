@@ -345,6 +345,7 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
     return GL_TRUE;
 }
 
+
 //========================================================================
 // Checks whether the specified context fulfils the requirements
 // It blames glfwOpenWindow because that's the only caller

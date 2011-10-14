@@ -53,7 +53,7 @@ GLFWAPI int glfwGetKey(GLFWwindow handle, int key)
     if (key < 0 || key > GLFW_KEY_LAST)
     {
         // TODO: Decide whether key is a value or enum
-        _glfwSetError(GLFW_INVALID_VALUE,
+        _glfwSetError(GLFW_INVALID_ENUM,
                       "glfwGetKey: The specified key is invalid");
         return GLFW_RELEASE;
     }

@@ -1,35 +1,58 @@
 
-link_libraries(libglfwStatic ${GLFW_LIBRARIES} ${OPENGL_glu_LIBRARY})
+set(STATIC_DEPS libglfwStatic ${GLFW_LIBRARIES} ${OPENGL_glu_LIBRARY})
+set(SHARED_DEPS libglfwShared ${GLFW_LIBRARIES} ${OPENGL_glu_LIBRARY})
 
 include_directories(${GLFW_SOURCE_DIR}/include
                     ${GLFW_SOURCE_DIR}/support
                     ${OPENGL_INCLUDE_DIR})
 
 add_executable(defaults defaults.c)
-add_executable(events events.c)
-add_executable(fsaa fsaa.c getopt.c)
-add_executable(fsfocus fsfocus.c)
-add_executable(gamma gamma.c getopt.c)
-add_executable(glfwinfo glfwinfo.c getopt.c)
-add_executable(iconify iconify.c getopt.c)
-add_executable(joysticks joysticks.c)
-add_executable(listmodes listmodes.c)
-add_executable(peter peter.c)
-add_executable(reopen reopen.c)
+target_link_libraries(defaults ${STATIC_DEPS})
 
-if(APPLE)
-  # Set fancy names for bundles
-  add_executable(Accuracy MACOSX_BUNDLE accuracy.c)
-  add_executable(Sharing MACOSX_BUNDLE sharing.c)
-  add_executable(Tearing MACOSX_BUNDLE tearing.c)
-  add_executable(Windows MACOSX_BUNDLE windows.c)
-else()
-  # Set boring names for executables
-  add_executable(accuracy WIN32 accuracy.c)
-  add_executable(sharing WIN32 sharing.c)
-  add_executable(tearing WIN32 tearing.c)
-  add_executable(windows WIN32 windows.c)
-endif(APPLE)
+add_executable(dynamic dynamic.c)
+target_link_libraries(dynamic ${SHARED_DEPS})
+
+add_executable(events events.c)
+target_link_libraries(events ${STATIC_DEPS})
+
+add_executable(fsaa fsaa.c getopt.c)
+target_link_libraries(fsaa ${STATIC_DEPS})
+
+add_executable(fsfocus fsfocus.c)
+target_link_libraries(fsfocus ${STATIC_DEPS})
+
+add_executable(gamma gamma.c getopt.c)
+target_link_libraries(gamma ${STATIC_DEPS})
+
+add_executable(glfwinfo glfwinfo.c getopt.c)
+target_link_libraries(glfwinfo ${STATIC_DEPS})
+
+add_executable(iconify iconify.c getopt.c)
+target_link_libraries(iconify ${STATIC_DEPS})
+
+add_executable(joysticks joysticks.c)
+target_link_libraries(joysticks ${STATIC_DEPS})
+
+add_executable(listmodes listmodes.c)
+target_link_libraries(listmodes ${STATIC_DEPS})
+
+add_executable(peter peter.c)
+target_link_libraries(peter ${STATIC_DEPS})
+
+add_executable(reopen reopen.c)
+target_link_libraries(reopen ${STATIC_DEPS})
+
+add_executable(accuracy WIN32 MACOSX_BUNDLE accuracy.c)
+target_link_libraries(accuracy ${STATIC_DEPS})
+
+add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c)
+target_link_libraries(sharing ${STATIC_DEPS})
+
+add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c)
+target_link_libraries(tearing ${STATIC_DEPS})
+
+add_executable(windows WIN32 MACOSX_BUNDLE windows.c)
+target_link_libraries(windows ${STATIC_DEPS})
 
 set(WINDOWS_BINARIES accuracy sharing tearing windows)
 set(CONSOLE_BINARIES defaults events fsaa fsfocus gamma glfwinfo iconify

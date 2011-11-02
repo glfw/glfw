@@ -36,7 +36,7 @@ endif (WIN32)
 #--------------------------------------------------------------------
 # Set up GLFW for Xlib and GLX on Unix-like systems with X Windows
 #--------------------------------------------------------------------
-if (UNIX AND NOT APPLE AND NOT CYGWIN)
+if (UNIX AND NOT APPLE)
     message(STATUS "Building GLFW for X11 and GLX on a Unix-like system")
 
     # Define the platform identifier
@@ -92,7 +92,7 @@ if (UNIX AND NOT APPLE AND NOT CYGWIN)
     if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         set(_GLFW_USE_LINUX_JOYSTICKS 1)
     endif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-endif(UNIX AND NOT APPLE AND NOT CYGWIN)
+endif(UNIX AND NOT APPLE)
 
 #--------------------------------------------------------------------
 # Set up GLFW for Cocoa and NSOpenGL on Mac OS X

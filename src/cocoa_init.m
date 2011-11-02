@@ -109,7 +109,7 @@ static NSString* findAppName(void)
     char** progname = _NSGetProgname();
     if (progname && *progname)
     {
-        // TODO: UTF8?
+        // TODO: UTF-8?
         return [NSString stringWithUTF8String:*progname];
     }
 
@@ -202,7 +202,7 @@ int _glfwPlatformInit(void)
     [GLFWApplication sharedApplication];
 
     _glfwLibrary.NS.OpenGLFramework =
-        CFBundleGetBundleWithIdentifier( CFSTR( "com.apple.opengl" ) );
+        CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
     if (_glfwLibrary.NS.OpenGLFramework == NULL)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
@@ -229,7 +229,7 @@ int _glfwPlatformInit(void)
     _glfwLibrary.originalRampSize = CGDisplayGammaTableCapacity(CGMainDisplayID());
     _glfwPlatformGetGammaRamp(&_glfwLibrary.originalRamp);
     _glfwLibrary.currentRamp = _glfwLibrary.originalRamp;
-    
+
     return GL_TRUE;
 }
 
@@ -240,10 +240,10 @@ int _glfwPlatformInit(void)
 int _glfwPlatformTerminate(void)
 {
     // TODO: Probably other cleanup
-    
+
     // Restore the original gamma ramp
     _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
-    
+
     [NSApp setDelegate:nil];
     [_glfwLibrary.NS.delegate release];
     _glfwLibrary.NS.delegate = nil;

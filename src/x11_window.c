@@ -1700,7 +1700,7 @@ void _glfwPlatformRefreshWindowParams(void)
                                &dotclock, &modeline);
         pixels_per_second = 1000.0f * (float) dotclock;
         pixels_per_frame  = (float) modeline.htotal * modeline.vtotal;
-        window->refreshRate = (int)(pixels_per_second/pixels_per_frame+0.5);
+        window->refreshRate = (int) (pixels_per_second / pixels_per_frame + 0.5);
 #endif /*_GLFW_HAS_XF86VIDMODE*/
     }
     else

@@ -568,7 +568,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         styleMask = NSTitledWindowMask | NSClosableWindowMask |
                     NSMiniaturizableWindowMask;
 
-        if (!wndconfig->windowNoResize)
+        if (wndconfig->resizable)
             styleMask |= NSResizableWindowMask;
     }
     else
@@ -691,7 +691,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     window->cursorPosX = point.x;
     window->cursorPosY = point.y;
 
-    window->windowNoResize = wndconfig->windowNoResize;
+    window->resizable = wndconfig->resizable;
 
     return GL_TRUE;
 }

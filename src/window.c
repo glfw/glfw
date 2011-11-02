@@ -100,6 +100,9 @@ void _glfwSetDefaultWindowHints(void)
     // The default minimum OpenGL version is 1.0
     _glfwLibrary.hints.glMajor = 1;
     _glfwLibrary.hints.glMinor = 0;
+
+    // The default is to allow window resizing
+    _glfwLibrary.hints.resizable = GL_TRUE;
 }
 
 
@@ -247,7 +250,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     wndconfig.mode           = mode;
     wndconfig.title          = title;
     wndconfig.refreshRate    = Max(_glfwLibrary.hints.refreshRate, 0);
-    wndconfig.windowNoResize = _glfwLibrary.hints.windowNoResize ? GL_TRUE : GL_FALSE;
+    wndconfig.resizable      = _glfwLibrary.hints.resizable ? GL_TRUE : GL_FALSE;
     wndconfig.glMajor        = _glfwLibrary.hints.glMajor;
     wndconfig.glMinor        = _glfwLibrary.hints.glMinor;
     wndconfig.glForward      = _glfwLibrary.hints.glForward ? GL_TRUE : GL_FALSE;
@@ -419,8 +422,8 @@ GLFWAPI void glfwOpenWindowHint(int target, int hint)
         case GLFW_STEREO:
             _glfwLibrary.hints.stereo = hint;
             break;
-        case GLFW_WINDOW_NO_RESIZE:
-            _glfwLibrary.hints.windowNoResize = hint;
+        case GLFW_WINDOW_RESIZABLE:
+            _glfwLibrary.hints.resizable = hint;
             break;
         case GLFW_FSAA_SAMPLES:
             _glfwLibrary.hints.samples = hint;
@@ -707,8 +710,8 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window->stereo;
         case GLFW_REFRESH_RATE:
             return window->refreshRate;
-        case GLFW_WINDOW_NO_RESIZE:
-            return window->windowNoResize;
+        case GLFW_WINDOW_RESIZABLE:
+            return window->resizable;
         case GLFW_FSAA_SAMPLES:
             return window->samples;
         case GLFW_OPENGL_VERSION_MAJOR:

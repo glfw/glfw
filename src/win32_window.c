@@ -1309,7 +1309,7 @@ static int createWindow(_GLFWwindow* window,
     {
         dwStyle |= WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
 
-        if (!wndconfig->windowNoResize)
+        if (wndconfig->resizable)
         {
             dwStyle |= (WS_MAXIMIZEBOX | WS_SIZEBOX);
             dwExStyle |= WS_EX_WINDOWEDGE;

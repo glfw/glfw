@@ -103,7 +103,7 @@ struct _GLFWhints
     int         accumAlphaBits;
     int         auxBuffers;
     GLboolean   stereo;
-    GLboolean   windowNoResize;
+    GLboolean   resizable;
     int         samples;
     int         glMajor;
     int         glMinor;
@@ -125,7 +125,7 @@ struct _GLFWwndconfig
     int           mode;
     const char*   title;
     int           refreshRate;
-    GLboolean     windowNoResize;
+    GLboolean     resizable;
     int           glMajor;
     int           glMinor;
     GLboolean     glForward;
@@ -175,7 +175,7 @@ struct _GLFWwindow
     int       width, height;
     int       positionX, positionY;
     int       mode;            // GLFW_WINDOW or GLFW_FULLSCREEN
-    GLboolean windowNoResize;  // resize- and maximize gadgets disabled flag
+    GLboolean resizable;       // GL_TRUE if user may resize this window
     int       refreshRate;     // monitor refresh rate
     void*     userPointer;
 

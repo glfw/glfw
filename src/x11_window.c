@@ -794,7 +794,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 
         hints->flags = 0;
 
-        if (wndconfig->windowNoResize)
+        if (!wndconfig->resizable)
         {
             hints->flags |= (PMinSize | PMaxSize);
             hints->min_width  = hints->max_width  = window->width;
@@ -1391,8 +1391,8 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 {
     _GLFWfbconfig closest;
 
-    window->refreshRate    = wndconfig->refreshRate;
-    window->windowNoResize = wndconfig->windowNoResize;
+    window->refreshRate = wndconfig->refreshRate;
+    window->resizable   = wndconfig->resizable;
 
     initGLXExtensions(window);
 
@@ -1533,7 +1533,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
                                         &width, &height, &rate);
     }
 
-    if (window->windowNoResize)
+    if (!window->resizable)
     {
         // Update window size restrictions to match new window size
 

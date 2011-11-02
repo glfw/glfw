@@ -44,6 +44,13 @@ int main(void)
     int major, minor, rev;
     glfwGetVersion(&major, &minor, &rev);
 
+    printf("GLFW header version: %i.%i.%i\n",
+           GLFW_VERSION_MAJOR,
+           GLFW_VERSION_MINOR,
+           GLFW_VERSION_REVISION);
+    printf("GLFW library version: %i.%i.%i\n", major, minor, rev);
+    printf("GLFW library version string: %s\n", glfwGetVersionString());
+
     if (major != GLFW_VERSION_MAJOR ||
         minor != GLFW_VERSION_MINOR ||
         rev != GLFW_VERSION_REVISION)
@@ -51,9 +58,6 @@ int main(void)
         fprintf(stderr, "GLFW library version mismatch\n");
         exit(EXIT_FAILURE);
     }
-
-    printf("GLFW version: %i.%i.%i\n", major, minor, rev);
-    printf("GLFW version string: %s\n", glfwGetVersionString());
 
     if (!glfwInit())
     {

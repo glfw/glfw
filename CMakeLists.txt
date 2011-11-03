@@ -89,6 +89,11 @@ if (UNIX AND NOT APPLE)
            NOT _GLFW_HAS_GLXGETPROCADDRESSARB AND
            NOT _GLFW_HAS_GLXGETPROCADDRESSEXT)
 
+    find_library(LIBRT rt)
+    if (LIBRT)
+        list(APPEND GLFW_LIBRARIES ${LIBRT})
+    endif(LIBRT)
+
     if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         set(_GLFW_USE_LINUX_JOYSTICKS 1)
     endif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")

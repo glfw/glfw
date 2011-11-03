@@ -52,7 +52,7 @@ if (UNIX AND NOT APPLE)
     include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/CheckX11Extensions.cmake)
     
     # Check for XRandR (modern resolution switching extension)
-    CHECK_X11_XRANDR()
+    check_x11_xrandr()
     if (X11_XRANDR_FOUND)
         set(_GLFW_HAS_XRANDR 1) 
         list(APPEND GLFW_INCLUDE_DIR ${X11_XRANDR_INCLUDE_DIR})
@@ -60,7 +60,7 @@ if (UNIX AND NOT APPLE)
     endif(X11_XRANDR_FOUND)
 
     # Check for Xf86VidMode (fallback legacy resolution switching extension)
-    CHECK_X11_XF86VIDMODE()
+    check_x11_xf86vidmode()
     if (X11_XF86VIDMODE_FOUND)
         set(_GLFW_HAS_XF86VIDMODE 1)
         list(APPEND GLFW_INCLUDE_DIR ${X11_XF86VIDMODE_INCLUDE_DIR})
@@ -68,17 +68,17 @@ if (UNIX AND NOT APPLE)
     endif(X11_XF86VIDMODE_FOUND) 
 
     # Check for Xkb (X keyboard extension)
-    CHECK_FUNCTION_EXISTS(XkbQueryExtension _GLFW_HAS_XKB)
+    check_function_exists(XkbQueryExtension _GLFW_HAS_XKB)
 
     # Check for glXGetProcAddress
-    CHECK_FUNCTION_EXISTS(glXGetProcAddress _GLFW_HAS_GLXGETPROCADDRESS)
+    check_function_exists(glXGetProcAddress _GLFW_HAS_GLXGETPROCADDRESS)
 
     if (NOT _GLFW_HAS_GLXGETPROCADDRESS)
-        CHECK_FUNCTION_EXISTS(glXGetProcAddressARB _GLFW_HAS_GLXGETPROCADDRESSARB)
+        check_function_exists(glXGetProcAddressARB _GLFW_HAS_GLXGETPROCADDRESSARB)
     endif (NOT _GLFW_HAS_GLXGETPROCADDRESS)
 
     if (NOT _GLFW_HAS_GLXGETPROCADDRESS AND NOT _GLFW_HAS_GLXGETPROCADDRESSARB)
-        CHECK_FUNCTION_EXISTS(glXGetProcAddressEXT _GLFW_HAS_GLXGETPROCADDRESSEXT)
+        check_function_exists(glXGetProcAddressEXT _GLFW_HAS_GLXGETPROCADDRESSEXT)
     endif (NOT _GLFW_HAS_GLXGETPROCADDRESS AND NOT _GLFW_HAS_GLXGETPROCADDRESSARB)
 
     if (NOT _GLFW_HAS_GLXGETPROCADDRESS AND

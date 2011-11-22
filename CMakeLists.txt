@@ -36,7 +36,7 @@ endif (WIN32)
 #--------------------------------------------------------------------
 # Set up GLFW for Xlib and GLX on Unix-like systems with X Windows
 #--------------------------------------------------------------------
-if (UNIX AND NOT APPLE AND NOT CYGWIN)
+if (UNIX AND NOT APPLE)
     message(STATUS "Building GLFW for X11 and GLX on a Unix-like system")
 
     # Define the platform identifier
@@ -52,7 +52,7 @@ if (UNIX AND NOT APPLE AND NOT CYGWIN)
     include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/CheckX11Extensions.cmake)
     
     # Check for XRandR (modern resolution switching extension)
-    CHECK_X11_XRANDR()
+    check_x11_xrandr()
     if (X11_XRANDR_FOUND)
         set(_GLFW_HAS_XRANDR 1) 
         list(APPEND GLFW_INCLUDE_DIR ${X11_XRANDR_INCLUDE_DIR})
@@ -60,7 +60,7 @@ if (UNIX AND NOT APPLE AND NOT CYGWIN)
     endif(X11_XRANDR_FOUND)
 
     # Check for Xf86VidMode (fallback legacy resolution switching extension)
-    CHECK_X11_XF86VIDMODE()
+    check_x11_xf86vidmode()
     if (X11_XF86VIDMODE_FOUND)
         set(_GLFW_HAS_XF86VIDMODE 1)
         list(APPEND GLFW_INCLUDE_DIR ${X11_XF86VIDMODE_INCLUDE_DIR})
@@ -68,17 +68,17 @@ if (UNIX AND NOT APPLE AND NOT CYGWIN)
     endif(X11_XF86VIDMODE_FOUND) 
 
     # Check for Xkb (X keyboard extension)
-    CHECK_FUNCTION_EXISTS(XkbQueryExtension _GLFW_HAS_XKB)
+    check_function_exists(XkbQueryExtension _GLFW_HAS_XKB)
 
     # Check for glXGetProcAddress
-    CHECK_FUNCTION_EXISTS(glXGetProcAddress _GLFW_HAS_GLXGETPROCADDRESS)
+    check_function_exists(glXGetProcAddress _GLFW_HAS_GLXGETPROCADDRESS)
 
     if (NOT _GLFW_HAS_GLXGETPROCADDRESS)
-        CHECK_FUNCTION_EXISTS(glXGetProcAddressARB _GLFW_HAS_GLXGETPROCADDRESSARB)
+        check_function_exists(glXGetProcAddressARB _GLFW_HAS_GLXGETPROCADDRESSARB)
     endif (NOT _GLFW_HAS_GLXGETPROCADDRESS)
 
     if (NOT _GLFW_HAS_GLXGETPROCADDRESS AND NOT _GLFW_HAS_GLXGETPROCADDRESSARB)
-        CHECK_FUNCTION_EXISTS(glXGetProcAddressEXT _GLFW_HAS_GLXGETPROCADDRESSEXT)
+        check_function_exists(glXGetProcAddressEXT _GLFW_HAS_GLXGETPROCADDRESSEXT)
     endif (NOT _GLFW_HAS_GLXGETPROCADDRESS AND NOT _GLFW_HAS_GLXGETPROCADDRESSARB)
 
     if (NOT _GLFW_HAS_GLXGETPROCADDRESS AND
@@ -89,10 +89,15 @@ if (UNIX AND NOT APPLE AND NOT CYGWIN)
            NOT _GLFW_HAS_GLXGETPROCADDRESSARB AND
            NOT _GLFW_HAS_GLXGETPROCADDRESSEXT)
 
+    find_library(LIBRT rt)
+    if (LIBRT)
+        list(APPEND GLFW_LIBRARIES ${LIBRT})
+    endif(LIBRT)
+
     if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         set(_GLFW_USE_LINUX_JOYSTICKS 1)
     endif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-endif(UNIX AND NOT APPLE AND NOT CYGWIN)
+endif(UNIX AND NOT APPLE)
 
 #--------------------------------------------------------------------
 # Set up GLFW for Cocoa and NSOpenGL on Mac OS X

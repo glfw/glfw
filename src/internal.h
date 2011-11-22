@@ -104,7 +104,7 @@ struct _GLFWhints
     int         accumAlphaBits;
     int         auxBuffers;
     GLboolean   stereo;
-    GLboolean   windowNoResize;
+    GLboolean   resizable;
     int         samples;
     int         glMajor;
     int         glMinor;
@@ -126,7 +126,7 @@ struct _GLFWwndconfig
     int           mode;
     const char*   title;
     int           refreshRate;
-    GLboolean     windowNoResize;
+    GLboolean     resizable;
     int           glMajor;
     int           glMinor;
     GLboolean     glForward;
@@ -176,7 +176,7 @@ struct _GLFWwindow
     int       width, height;
     int       positionX, positionY;
     int       mode;            // GLFW_WINDOW or GLFW_FULLSCREEN
-    GLboolean windowNoResize;  // resize- and maximize gadgets disabled flag
+    GLboolean resizable;       // GL_TRUE if user may resize this window
     int       refreshRate;     // monitor refresh rate
     void*     userPointer;
 
@@ -185,7 +185,7 @@ struct _GLFWwindow
     GLboolean stickyMouseButtons;
     GLboolean keyRepeat;
     GLboolean sysKeysDisabled; // system keys disabled flag
-    int       mousePosX, mousePosY;
+    int       cursorPosX, cursorPosY;
     int       cursorMode;
     int       scrollX, scrollY;
     char      mouseButton[GLFW_MOUSE_BUTTON_LAST + 1];
@@ -365,12 +365,19 @@ void _glfwSetError(int error, const char* description);
 // Window management (window.c)
 void _glfwSetDefaultWindowHints(void);
 
-// Input handling (window.c)
+// WIndow event notification
+void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated);
+void _glfwInputWindowPos(_GLFWwindow* window, int x, int y);
+void _glfwInputWindowSize(_GLFWwindow* window, int width, int height);
+void _glfwInputWindowIconify(_GLFWwindow* window, int iconified);
+void _glfwInputWindowDamage(_GLFWwindow* window);
+
+// Input event notification
 void _glfwInputKey(_GLFWwindow* window, int key, int action);
 void _glfwInputChar(_GLFWwindow* window, int character);
 void _glfwInputScroll(_GLFWwindow* window, int x, int y);
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action);
-void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated);
+void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y);
 
 // OpenGL context helpers (opengl.c)
 int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);

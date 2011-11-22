@@ -3,18 +3,6 @@ if(WIN32)
     add_definitions(-DWINVER=0x0501)
 endif(WIN32)
 
-if(CYGWIN)
-
-    # These lines are intended to remove the --export-all-symbols
-    # flag added in the Modules/Platform/CYGWIN.cmake file of the
-    # CMake distribution.
-    # This is a HACK.  If you have trouble _linking_ the GLFW
-    # _shared_ library on Cygwin, try disabling this.
-    set(CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS "-shared")
-    set(CMAKE_SHARED_MODULE_CREATE_C_FLAGS ${CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS})
-
-endif(CYGWIN)
-
 if(UNIX)
     if(_GLFW_HAS_XRANDR)
         set(GLFW_PKGLIBS "${GLFW_PKGLIBS} xrandr")
@@ -70,13 +58,6 @@ if(WIN32)
                           IMPORT_PREFIX ""
                           IMPORT_SUFFIX "dll.lib")
 endif(WIN32)
-
-if(CYGWIN)
-    # Build for the regular Win32 environment (not Cygwin)
-    set_target_properties(libglfwStatic libglfwShared PROPERTIES
-                          COMPILE_FLAGS "-mwin32 -mno-cygwin"
-                          LINK_FLAGS "-mwin32 -mno-cygwin")
-endif(CYGWIN)
 
 if(APPLE)
     # Append -fno-common to the compile flags to work around a bug in the Apple GCC

@@ -39,16 +39,6 @@ extern "C" {
  * Global definitions
  *************************************************************************/
 
-/* We need a NULL pointer from time to time */
-#ifndef NULL
- #ifdef __cplusplus
-  #define NULL 0
- #else
-  #define NULL ((void*) 0)
- #endif
-#endif /* NULL */
-
-
 /* ------------------- BEGIN SYSTEM/COMPILER SPECIFIC -------------------- */
 
 /* Please report any probles that you find with your compiler, which may

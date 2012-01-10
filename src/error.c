@@ -117,6 +117,7 @@ GLFWAPI const char* glfwErrorString(int error)
 
 //========================================================================
 // Sets the callback function for GLFW errors
+// This function may be called without GLFW having been initialized
 //========================================================================
 
 GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun)

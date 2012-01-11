@@ -38,3 +38,5 @@ tests/sharing
 tests/tearing
 tests/version
 tests/windows
+tests/dynamic
+tests/glfwinfo

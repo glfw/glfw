@@ -366,7 +366,7 @@ static void updateKeyCodeLUT(void)
 
 static GLboolean initDisplay(void)
 {
-    _glfwLibrary.X11.display = XOpenDisplay(0);
+    _glfwLibrary.X11.display = XOpenDisplay(NULL);
     if (!_glfwLibrary.X11.display)
     {
         _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "X11/GLX: Failed to open X display");

@@ -50,8 +50,6 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
     CGGammaValue blue[GLFW_GAMMA_RAMP_SIZE];
 
     // For now, don't support anything that is not GLFW_GAMMA_RAMP_SIZE
-    // i.e. 256. I don't think anyone would want to change the gamma on
-    // Mac anyway...
     if (_glfwLibrary.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
         return;
 
@@ -80,8 +78,6 @@ void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
     CGGammaValue blue[GLFW_GAMMA_RAMP_SIZE];
 
     // For now, don't support anything that is not GLFW_GAMMA_RAMP_SIZE
-    // i.e. 256. I don't think anyone would want to change the gamma on
-    // Mac anyway...
     if (_glfwLibrary.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
         return;
 

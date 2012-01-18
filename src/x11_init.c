@@ -630,6 +630,9 @@ const char* _glfwPlatformGetVersionString(void)
 #if !defined(_GLFW_HAS_XRANDR) && !defined(_GLFW_HAS_XF86VIDMODE)
         " no-mode-switching-support"
 #endif
+#if defined(_GLFW_HAS_XKB)
+        " Xkb"
+#endif
 #if defined(_GLFW_HAS_GLXGETPROCADDRESS)
         " glXGetProcAddress"
 #elif defined(_GLFW_HAS_GLXGETPROCADDRESSARB)
@@ -640,9 +643,6 @@ const char* _glfwPlatformGetVersionString(void)
         " dlsym(libGL)"
 #else
         " no-extension-support"
-#endif
-#if defined(_GLFW_HAS_XKB)
-        " Xkb"
 #endif
 #if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
         " clock_gettime"

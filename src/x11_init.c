@@ -641,6 +641,9 @@ const char* _glfwPlatformGetVersionString(void)
 #else
         " no-extension-support"
 #endif
+#if defined(_GLFW_HAS_XKB)
+        " Xkb"
+#endif
 #if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
         " clock_gettime"
 #endif

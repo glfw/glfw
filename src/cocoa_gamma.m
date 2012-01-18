@@ -48,13 +48,13 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
     CGGammaValue red[GLFW_GAMMA_RAMP_SIZE];
     CGGammaValue green[GLFW_GAMMA_RAMP_SIZE];
     CGGammaValue blue[GLFW_GAMMA_RAMP_SIZE];
-    
+
     // For now, don't support anything that is not GLFW_GAMMA_RAMP_SIZE
     // i.e. 256. I don't think anyone would want to change the gamma on
     // Mac anyway...
     if (_glfwLibrary.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
         return;
-    
+
     CGGetDisplayTransferByTable(CGMainDisplayID(), GLFW_GAMMA_RAMP_SIZE, red, green, blue,
                                 &sampleCount);
 
@@ -78,13 +78,13 @@ void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
     CGGammaValue red[GLFW_GAMMA_RAMP_SIZE];
     CGGammaValue green[GLFW_GAMMA_RAMP_SIZE];
     CGGammaValue blue[GLFW_GAMMA_RAMP_SIZE];
-    
+
     // For now, don't support anything that is not GLFW_GAMMA_RAMP_SIZE
     // i.e. 256. I don't think anyone would want to change the gamma on
     // Mac anyway...
     if (_glfwLibrary.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
         return;
-    
+
     // Convert to float & take the difference of the original gamma and
     // the linear function.
     for (i = 0; i < size; i++)
@@ -93,6 +93,7 @@ void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
         green[i] = ramp->green[i] / 65535.f;
         blue[i] = ramp->blue[i] / 65535.f;
     }
+
     CGSetDisplayTransferByTable(CGMainDisplayID(), GLFW_GAMMA_RAMP_SIZE, red, green, blue);
 }
 

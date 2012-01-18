@@ -205,7 +205,7 @@ int _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = "GLFW " _GLFW_VERSION_FULL
+    const char* version = _GLFW_VERSION_FULL
 #if defined(__MINGW32__)
         " MinGW"
 #elif defined(__CYGWIN__)

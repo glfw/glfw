@@ -65,7 +65,6 @@ extern "C" {
  #else
   #define APIENTRY
  #endif
- #define GLFW_APIENTRY_DEFINED
 #endif /* APIENTRY */
 
 
@@ -604,11 +603,6 @@ GLFWAPI void glfwDisable(GLFWwindow window, int token);
  *************************************************************************/
 
 /* ------------------- BEGIN SYSTEM/COMPILER SPECIFIC -------------------- */
-
-#ifdef GLFW_APIENTRY_DEFINED
- #undef APIENTRY
- #undef GLFW_APIENTRY_DEFINED
-#endif
 
 #ifdef GLFW_WINGDIAPI_DEFINED
  #undef WINGDIAPI

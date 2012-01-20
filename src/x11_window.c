@@ -1736,6 +1736,11 @@ void _glfwPlatformPollEvents(void)
                                            window->width / 2,
                                            window->height / 2);
             window->X11.cursorCentered = GL_TRUE;
+
+            // NOTE: This is a temporary fix.  It works as long as you use
+            //       offsets accumulated over the course of a frame, instead of
+            //       performing the necessary actions per callback call.
+            XFlush( _glfwLibrary.X11.display );
         }
     }
 }

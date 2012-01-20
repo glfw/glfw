@@ -314,6 +314,7 @@ version of GLFW.</p>
   <li>[X11] Added support for the <code>GLX_EXT_swap_control</code> extension as an alternative to <code>GLX_SGI_swap_control</code></li>
   <li>[X11] Added the POSIX <code>CLOCK_MONOTONIC</code> time source as the preferred method</li>
   <li>[X11] Bugfix: Calling <code>glXCreateContextAttribsARB</code> with an unavailable OpenGL version caused the application to terminate with a <code>BadMatch</code> Xlib error</li>
+  <li>[X11] Bugfix: A synchronization point necessary for jitter-free locked cursor mode was incorrectly removed</li>
   <li>[Win32] Removed explicit support for versions of Windows older than Windows XP</li>
   <li>[Win32] Bugfix: Window activation and iconification did not work as expected</li>
   <li>[Win32] Bugfix: Software rasterizer pixel formats were not discarded by the WGL_ARB_pixel_format code path</li>

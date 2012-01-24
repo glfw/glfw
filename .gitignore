@@ -22,13 +22,18 @@ Makefile
 *.resource.txt
 *.so
 src/config.h
+src/libglfw.a
+src/libglfw.pc
+src/libglfw.so
 *.swp
 tests/accuracy
 tests/defaults
+tests/dynamic
 tests/events
 tests/fsaa
 tests/fsfocus
 tests/gamma
+tests/glfwinfo
 tests/iconify
 tests/joysticks
 tests/listmodes
@@ -38,5 +43,3 @@ tests/sharing
 tests/tearing
 tests/version
 tests/windows
-tests/dynamic
-tests/glfwinfo

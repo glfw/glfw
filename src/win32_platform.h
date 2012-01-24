@@ -40,6 +40,11 @@
  #define WIN32_LEAN_AND_MEAN
 #endif
 
+// This is a workaround for the fact that glfw3.h needs to export APIENTRY (to
+// correctly declare a GL_ARB_debug_output callback, for example) but windows.h
+// thinks it is the only one that gets to do so
+#undef APIENTRY
+
 #include <windows.h>
 #include <mmsystem.h>
 #include <Dbt.h>

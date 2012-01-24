@@ -39,16 +39,6 @@ extern "C" {
  * Global definitions
  *************************************************************************/
 
-/* We need a NULL pointer from time to time */
-#ifndef NULL
- #ifdef __cplusplus
-  #define NULL 0
- #else
-  #define NULL ((void*) 0)
- #endif
-#endif /* NULL */
-
-
 /* ------------------- BEGIN SYSTEM/COMPILER SPECIFIC -------------------- */
 
 /* Please report any probles that you find with your compiler, which may
@@ -75,7 +65,6 @@ extern "C" {
  #else
   #define APIENTRY
  #endif
- #define GLFW_APIENTRY_DEFINED
 #endif /* APIENTRY */
 
 
@@ -639,11 +628,6 @@ GLFWAPI void glfwDisable(GLFWwindow window, int token);
  *************************************************************************/
 
 /* ------------------- BEGIN SYSTEM/COMPILER SPECIFIC -------------------- */
-
-#ifdef GLFW_APIENTRY_DEFINED
- #undef APIENTRY
- #undef GLFW_APIENTRY_DEFINED
-#endif
 
 #ifdef GLFW_WINGDIAPI_DEFINED
  #undef WINGDIAPI

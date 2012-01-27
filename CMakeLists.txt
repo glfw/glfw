@@ -28,7 +28,6 @@ if (WIN32)
     set(_GLFW_WIN32_WGL 1)
 
     # Set up library and include paths
-    set(CMAKE_REQUIRED_LIBRARIES ${OPENGL_gl_LIBRARY})
     list(APPEND GLFW_INCLUDE_DIR ${OPENGL_INCLUDE_DIR})
     list(APPEND GLFW_LIBRARIES ${OPENGL_gl_LIBRARY})
 endif (WIN32)

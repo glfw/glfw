@@ -56,7 +56,7 @@ if (UNIX AND NOT APPLE)
     include(CheckSymbolExists)
 
     include(${GLFW_SOURCE_DIR}/CMake/CheckX11Extensions.cmake)
-    set(CMAKE_REQUIRED_LIBRARIES ${X11_X11_LIB} ${OPENGL_gl_LIBRARY})
+    set(CMAKE_REQUIRED_LIBRARIES ${GLFW_LIBRARIES})
     
     # Check for XRandR (modern resolution switching extension)
     check_x11_xrandr()

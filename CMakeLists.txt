@@ -43,18 +43,21 @@ if (UNIX AND NOT APPLE)
     set(_GLFW_X11_GLX 1)
 
     # Set up library and include paths
-    set(CMAKE_REQUIRED_LIBRARIES ${X11_X11_LIB} ${OPENGL_gl_LIBRARY})
-    list(APPEND GLFW_INCLUDE_DIR ${X11_X11_INCLUDE_PATH})
-    list(APPEND GLFW_LIBRARIES ${X11_X11_LIB})
-    list(APPEND GLFW_INCLUDE_DIR ${OPENGL_INCLUDE_DIR})
-    list(APPEND GLFW_LIBRARIES ${OPENGL_gl_LIBRARY})
+    list(APPEND GLFW_INCLUDE_DIR ${X11_X11_INCLUDE_PATH} ${OPENGL_INCLUDE_DIR})
+    list(APPEND GLFW_LIBRARIES ${X11_X11_LIB} ${OPENGL_gl_LIBRARY})
 
     find_library(MATH_LIBRARY m)
     if (MATH_LIBRARY)
-      list(APPEND GLFW_LIBRARIES ${MATH_LIBRARY})
+        list(APPEND GLFW_LIBRARIES ${MATH_LIBRARY})
     endif(MATH_LIBRARY)
 
-    include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/CheckX11Extensions.cmake)
+    find_library(RT_LIBRARY rt)
+    if (RT_LIBRARY)
+        list(APPEND GLFW_LIBRARIES ${RT_LIBRARY})
+    endif(RT_LIBRARY)
+
+    include(${GLFW_SOURCE_DIR}/CMake/CheckX11Extensions.cmake)
+    set(CMAKE_REQUIRED_LIBRARIES ${X11_X11_LIB} ${OPENGL_gl_LIBRARY})
     
     # Check for XRandR (modern resolution switching extension)
     check_x11_xrandr()
@@ -93,11 +96,6 @@ if (UNIX AND NOT APPLE)
     endif (NOT _GLFW_HAS_GLXGETPROCADDRESS AND
            NOT _GLFW_HAS_GLXGETPROCADDRESSARB AND
            NOT _GLFW_HAS_GLXGETPROCADDRESSEXT)
-
-    find_library(LIBRT rt)
-    if (LIBRT)
-        list(APPEND GLFW_LIBRARIES ${LIBRT})
-    endif(LIBRT)
 
     if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         set(_GLFW_USE_LINUX_JOYSTICKS 1)
@@ -165,11 +163,11 @@ install(FILES COPYING.txt readme.html
 #--------------------------------------------------------------------
 # -- Documentation generation 
 #--------------------------------------------------------------------
-#include("${CMAKE_CURRENT_SOURCE_DIR}/documentation.cmake")
-#configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in"
-#               "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
+#include("${GLFW_SOURCE_DIR}/documentation.cmake")
+#configure_file("${GLFW_SOURCE_DIR}/Doxyfile.in"
+#               "${GLFW_BINARY_DIR}/Doxyfile"
 #               IMMEDIATE @ONLY)
-#add_doxygen_target("${CMAKE_CURRENT_BINARY_DIR}/Doxyfile")
+#add_doxygen_target("${GLFW_BINARY_DIR}/Doxyfile")
 #add_subdirectory(docs)
 
 #--------------------------------------------------------------------

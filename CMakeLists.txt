@@ -13,9 +13,6 @@ set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 
-include(CheckFunctionExists)
-include(CheckSymbolExists)
-
 find_package(OpenGL REQUIRED)
 
 #--------------------------------------------------------------------
@@ -54,6 +51,9 @@ if (UNIX AND NOT APPLE)
     if (RT_LIBRARY)
         list(APPEND GLFW_LIBRARIES ${RT_LIBRARY})
     endif(RT_LIBRARY)
+
+    include(CheckFunctionExists)
+    include(CheckSymbolExists)
 
     include(${GLFW_SOURCE_DIR}/CMake/CheckX11Extensions.cmake)
     set(CMAKE_REQUIRED_LIBRARIES ${X11_X11_LIB} ${OPENGL_gl_LIBRARY})

@@ -112,12 +112,12 @@ if (UNIX AND APPLE)
 
     option(GLFW_BUILD_UNIVERSAL "Build the GLFW library and examples as Universal Binaries" FALSE)
 
-    # Universal build, decent set of warning flags...
+    # Universal build
     if (GLFW_BUILD_UNIVERSAL)
         message(STATUS "Building GLFW as Universal Binaries")
         set(CMAKE_OSX_ARCHITECTURES ppc;i386;ppc64;x86_64)
         set(CMAKE_OSX_SYSROOT /Developer/SDKs/MacOSX10.5.sdk)
-        set(CMAKE_C_FLAGS "-mmacosx-version-min=10.5 -Wall -Wextra -Wno-unused-parameter -Werror") 
+        set(CMAKE_C_FLAGS "-mmacosx-version-min=10.5") 
     else(GLFW_BUILD_UNIVERSAL)
         message(STATUS "Building GLFW only for the native architecture")
     endif(GLFW_BUILD_UNIVERSAL)

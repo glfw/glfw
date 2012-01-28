@@ -138,9 +138,11 @@ void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y)
     }
 
     if (_glfwLibrary.mousePosCallback)
+    {
         _glfwLibrary.mousePosCallback(window,
                                       window->cursorPosX,
                                       window->cursorPosY);
+    }
 }
 
 

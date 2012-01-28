@@ -49,6 +49,11 @@ if (UNIX AND NOT APPLE)
     list(APPEND GLFW_INCLUDE_DIR ${OPENGL_INCLUDE_DIR})
     list(APPEND GLFW_LIBRARIES ${OPENGL_gl_LIBRARY})
 
+    find_library(MATH_LIBRARY m)
+    if (MATH_LIBRARY)
+      list(APPEND GLFW_LIBRARIES ${MATH_LIBRARY})
+    endif(MATH_LIBRARY)
+
     include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/CheckX11Extensions.cmake)
     
     # Check for XRandR (modern resolution switching extension)

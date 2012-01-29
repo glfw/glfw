@@ -522,7 +522,7 @@ int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
         else
             pos[i] = (2.0f * (axes->value - axes->minReport) / readScale) - 1.0f;
 
-        printf("%ld, %ld, %ld\n", axes->value, axes->minReport, axes->maxReport);
+        //printf("%ld, %ld, %ld\n", axes->value, axes->minReport, axes->maxReport);
 
         if (i & 1)
             pos[i] = -pos[i];

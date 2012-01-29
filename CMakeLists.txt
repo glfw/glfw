@@ -124,8 +124,12 @@ if (UNIX AND APPLE)
     
     # Set up library and include paths
     find_library(COCOA_FRAMEWORK Cocoa)
+    find_library(IOKIT_FRAMEWORK IOKit)
+    find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
     list(APPEND GLFW_LIBRARIES ${COCOA_FRAMEWORK})
     list(APPEND GLFW_LIBRARIES ${OPENGL_gl_LIBRARY})
+    list(APPEND GLFW_LIBRARIES ${IOKIT_FRAMEWORK})
+    list(APPEND GLFW_LIBRARIES ${CORE_FOUNDATION_FRAMEWORK})
 endif(UNIX AND APPLE)
 
 #--------------------------------------------------------------------

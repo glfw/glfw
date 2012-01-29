@@ -208,14 +208,16 @@ static long getElementValue(_glfwJoystick* joystick, _glfwJoystickElement* eleme
 
     if (joystick && element && joystick->interface)
     {
-        result = (*(joystick->interface))->getElementValue(joystick->interface, element->cookie, &hidEvent);
+        result = (*(joystick->interface))->getElementValue(joystick->interface,
+                                                           element->cookie,
+                                                           &hidEvent);
         if (kIOReturnSuccess == result)
         {
             /* record min and max for auto calibration */
             if (hidEvent.value < element->minReport)
-             element->minReport = hidEvent.value;
+                element->minReport = hidEvent.value;
             if (hidEvent.value > element->maxReport)
-             element->maxReport = hidEvent.value;
+                element->maxReport = hidEvent.value;
         }
     }
 
@@ -331,8 +333,10 @@ void _glfwInitJoysticks(void)
     if (kIOReturnSuccess != result || !hidMatchDictionary)
         return;
 
-    result = IOServiceGetMatchingServices(masterPort, hidMatchDictionary, &objectIterator);
-    if (kIOReturnSuccess != result)
+    result = IOServiceGetMatchingServices(masterPort,
+                                          hidMatchDictionary,
+                                          &objectIterator);
+    if (result != kIOReturnSuccess)
         return;
 
     if (!objectIterator) /* there are no joysticks */

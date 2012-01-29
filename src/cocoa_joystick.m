@@ -32,7 +32,6 @@
 
 #include <unistd.h>
 #include <ctype.h>
-#include <sysexits.h>
 #include <mach/mach.h>
 #include <mach/mach_error.h>
 #include <CoreFoundation/CoreFoundation.h>
@@ -387,7 +386,7 @@ void _glfwInitJoysticks(void)
                                                    &score);
 
         if (kIOReturnSuccess != result)
-            exit(EXIT_SUCCESS);
+            return;
 
         plugInResult = (*ppPlugInInterface)->QueryInterface(
                             ppPlugInInterface,
@@ -395,7 +394,7 @@ void _glfwInitJoysticks(void)
                             (void *) &(joystick->Interface));
 
         if (plugInResult != S_OK)
-            exit(EXIT_FAILURE);
+            return;
 
         (*ppPlugInInterface)->Release(ppPlugInInterface);
 

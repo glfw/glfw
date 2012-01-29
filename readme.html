@@ -309,6 +309,7 @@ version of GLFW.</p>
   <li>Bugfix: The OpenGL profile and forward-compatibility window parameters were not saved after context creation</li>
   <li>Bugfix: The FSAA test did not check for the availability of <code>GL_ARB_multisample</code></li>
   <li>[Cocoa] Added support for OpenGL 3.2 core profile in 10.7 Lion and above</li>
+  <li>[Cocoa] Added support for joysticks</li>
   <li>[Cocoa] Bugfix: The loop condition for saving video modes used the wrong index variable</li>
   <li>[Cocoa] Bugfix: The OpenGL framework was not retrieved, making glfwGetProcAddress crash</li>
   <li>[X11] Added support for the <code>GLX_EXT_swap_control</code> extension as an alternative to <code>GLX_SGI_swap_control</code></li>
@@ -889,6 +890,9 @@ their skills.  Special thanks go out to:</p>
   <li>Julian Squires, for submitting a patch for a bug in the key repeat logic on X11</li>
 
   <li>Johannes Stein, for maintaining the Pascal bindings</li>
+
+  <li>Sergey Tikhomirov, for the initial implementation of joystick support on
+  Mac OS X</li>
 
   <li>Samuli Tuomola, for support, bug reports and testing</li>
 

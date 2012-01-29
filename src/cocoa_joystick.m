@@ -466,7 +466,7 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
     if (!_glfwJoysticks[joy].present)
     {
         // TODO: Figure out if this is an error
-        return 0;
+        return GL_FALSE;
     }
 
     switch (param)
@@ -484,7 +484,7 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
             break;
     }
 
-    return 0;
+    return GL_FALSE;
 }
 
 

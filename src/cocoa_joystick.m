@@ -29,11 +29,12 @@
 
 #include "internal.h"
 
-
 #include <unistd.h>
 #include <ctype.h>
+
 #include <mach/mach.h>
 #include <mach/mach_error.h>
+
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/IOCFPlugIn.h>

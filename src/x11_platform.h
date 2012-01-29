@@ -91,6 +91,7 @@
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowX11 X11
 #define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryX11 X11
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextGLX GLX
+#define _GLFW_PLATFORM_MONITOR_STATE _GLFWmonitorX11 X11
 
 
 //========================================================================
@@ -247,6 +248,20 @@ GLFWGLOBAL struct {
 } _glfwJoy[GLFW_JOYSTICK_LAST + 1];
 
 
+//------------------------------------------------------------------------
+// Platform-specific window structure
+//------------------------------------------------------------------------
+typedef struct _GLFWmonitorX11
+{
+#if defined(_GLFW_HAS_XRANDR)
+   XRROutputInfo* output;
+#else
+    int dummy;
+#endif /*_GLFW_HAS_XRANDR*/
+
+} _GLFWmonitorX11;
+
+
 //========================================================================
 // Prototypes for platform specific internal functions
 //========================================================================
@@ -263,6 +278,10 @@ void _glfwRestoreVideoMode(int screen);
 // Joystick input
 void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
+
+// Monitors
+void _glfwInitMonitors(void);
+void _glfwTerminateMonitors(void);
 
 // Unicode support
 long _glfwKeySym2Unicode(KeySym keysym);

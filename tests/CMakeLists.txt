@@ -2,6 +2,12 @@
 set(STATIC_DEPS libglfwStatic ${GLFW_LIBRARIES} ${OPENGL_glu_LIBRARY})
 set(SHARED_DEPS libglfwShared ${GLFW_LIBRARIES} ${OPENGL_glu_LIBRARY})
 
+if (UNIX AND NOT APPLE AND NOT CYGWIN)
+    find_library(MATH_LIBRARY m)
+    find_library(REALTIME_LIBRARY rt)
+    link_libraries(${MATH_LIBRARY} ${REALTIME_LIBRARY})
+endif (UNIX AND NOT APPLE AND NOT CYGWIN)
+
 include_directories(${GLFW_SOURCE_DIR}/include
                     ${GLFW_SOURCE_DIR}/support
                     ${OPENGL_INCLUDE_DIR})

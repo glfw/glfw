@@ -80,6 +80,7 @@ typedef struct _GLFWwndconfig _GLFWwndconfig;
 typedef struct _GLFWfbconfig _GLFWfbconfig;
 typedef struct _GLFWwindow _GLFWwindow;
 typedef struct _GLFWlibrary _GLFWlibrary;
+typedef struct _GLFWmonitor _GLFWmonitor;
 
 
 //------------------------------------------------------------------------
@@ -220,6 +221,27 @@ struct _GLFWwindow
 
 
 //------------------------------------------------------------------------
+// Display structure
+//------------------------------------------------------------------------
+struct _GLFWmonitor
+{
+    struct _GLFWmonitor* next;
+
+    void*     userPointer;
+
+    char*     name;
+    // physical dimensions in millimeters.
+    int       physicalWidth;
+    int       physicalHeight;
+    // logical orientation of the screen on the desktop
+    int       screenX;
+    int       screenY;
+
+    // These are defined in the current port's platform.h
+    _GLFW_PLATFORM_MONITOR_STATE;
+};
+
+//------------------------------------------------------------------------
 // Library global data
 //------------------------------------------------------------------------
 struct _GLFWlibrary
@@ -229,6 +251,8 @@ struct _GLFWlibrary
     _GLFWwindow*  windowListHead;
     _GLFWwindow*  currentWindow;
     _GLFWwindow*  activeWindow;
+    _GLFWwindow*  cursorLockWindow;
+    _GLFWmonitor* monitorListHead;
 
     GLFWwindowsizefun    windowSizeCallback;
     GLFWwindowclosefun   windowCloseCallback;
@@ -240,6 +264,7 @@ struct _GLFWlibrary
     GLFWscrollfun        scrollCallback;
     GLFWkeyfun           keyCallback;
     GLFWcharfun          charCallback;
+    GLFWmonitordevicefun monitorCallback;
 
     GLFWthreadmodel      threading;
     GLFWallocator        allocator;
@@ -281,7 +306,7 @@ void _glfwPlatformEnableSystemKeys(_GLFWwindow* window);
 void _glfwPlatformDisableSystemKeys(_GLFWwindow* window);
 
 // Fullscreen
-int  _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount);
+int  _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, GLFWvidmode* list, int maxcount);
 void _glfwPlatformGetDesktopMode(GLFWvidmode* mode);
 
 // Gamma ramp
@@ -332,6 +357,7 @@ void _glfwFree(void* ptr);
 
 // Fullscren management (fullscreen.c)
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
+int _glfwCompareVideoModes(const void* firstPtr, const void* secondPtr);
 
 // Error handling (error.c)
 void _glfwSetError(int error, const char* description);

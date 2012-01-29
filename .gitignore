@@ -1,7 +1,7 @@
+*.a
+CMakeCache.txt
 CMakeFiles
 cmake_install.cmake
-CMakeCache.txt
-Makefile
 cmake_uninstall.cmake
 .DS_Store
 src/config.h
@@ -9,6 +9,9 @@ src/libglfw.pc
 src/libglfw.so
 src/libglfw.a
 src/libglfw.dylib
+src/libglfw.lib
+src/libglfwdll.lib
+src/libglfw.dll
 examples/boing
 examples/gears
 examples/heightmap
@@ -32,6 +35,7 @@ tests/peter
 tests/reopen
 tests/sharing
 tests/tearing
+tests/version
 tests/windows
 tests/*.app
 tests/*.exe

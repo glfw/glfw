@@ -37,7 +37,7 @@
 // Lexical comparison function for GLFW video modes, used by qsort
 //========================================================================
 
-static int compareVideoModes(const void* firstPtr, const void* secondPtr)
+int _glfwCompareVideoModes(const void* firstPtr, const void* secondPtr)
 {
     int firstBPP, secondBPP, firstSize, secondSize;
     GLFWvidmode* first = (GLFWvidmode*) firstPtr;
@@ -100,13 +100,21 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 // Get a list of available video modes
 //========================================================================
 
-GLFWAPI int glfwGetVideoModes(GLFWvidmode* list, int maxcount)
+GLFWAPI int glfwGetVideoModes(GLFWmonitor handle, GLFWvidmode* list, int maxcount)
 {
     int count;
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
 
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return 0;
+    }
+
+    if (monitor == NULL)
+    {
+        _glfwSetError(GLFW_INVALID_VALUE,
+                      "glfwGetVideoModes: Invalid monitor handle");
         return 0;
     }
 
@@ -125,9 +133,9 @@ GLFWAPI int glfwGetVideoModes(GLFWvidmode* list, int maxcount)
         return 0;
     }
 
-    count = _glfwPlatformGetVideoModes(list, maxcount);
+    count = _glfwPlatformGetVideoModes(monitor, list, maxcount);
     if (count > 0)
-        qsort(list, count, sizeof(GLFWvidmode), compareVideoModes);
+        qsort(list, count, sizeof(GLFWvidmode), _glfwCompareVideoModes);
 
     return count;
 }

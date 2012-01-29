@@ -18,6 +18,7 @@ static void print_mode(GLFWvidmode* mode)
 
 int main(void)
 {
+    GLFWmonitor monitor;
     GLFWvidmode dtmode, modes[400];
     int modecount, i;
 
@@ -32,16 +33,30 @@ int main(void)
     printf("Desktop mode: ");
     print_mode(&dtmode);
 
-    // List available video modes
-    modecount = glfwGetVideoModes(modes, sizeof(modes) / sizeof(GLFWvidmode));
-    printf("Available modes:\n");
-    for (i = 0;  i < modecount;  i++)
+    monitor = NULL;
+
+    while ((monitor = glfwGetNextMonitor(monitor)))
     {
-        printf("%3i: ", i);
-        print_mode(modes + i);
+        printf("Monitor name: %s\n"
+               "Physical dimensions: %dmm x %dmm\n"
+               "Logical position: (%d,%d)\n",
+               glfwGetMonitorString(monitor, GLFW_MONITOR_NAME),
+               glfwGetMonitorParam(monitor, GLFW_MONITOR_PHYSICAL_WIDTH),
+               glfwGetMonitorParam(monitor, GLFW_MONITOR_PHYSICAL_HEIGHT),
+               glfwGetMonitorParam(monitor, GLFW_MONITOR_SCREEN_POS_X),
+               glfwGetMonitorParam(monitor, GLFW_MONITOR_SCREEN_POS_Y));
+
+        // List available video modes
+        modecount = glfwGetVideoModes(monitor, modes, sizeof(modes) / sizeof(GLFWvidmode));
+        printf("Available modes:\n");
+
+        for (i = 0;  i < modecount;  i++)
+        {
+            printf("%3i: ", i);
+            print_mode(modes + i);
+        }
     }
 
-    glfwTerminate();
     exit(EXIT_SUCCESS);
 }
 

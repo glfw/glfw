@@ -1,4 +1,8 @@
 
+if(WIN32)
+    add_definitions(-DWINVER=0x0501)
+endif(WIN32)
+
 if(UNIX)
     if(_GLFW_HAS_XRANDR)
         set(GLFW_PKGLIBS "${GLFW_PKGLIBS} xrandr")
@@ -15,7 +19,7 @@ include_directories(${GLFW_SOURCE_DIR}/src
                     ${GLFW_BINARY_DIR}/src
                     ${GLFW_INCLUDE_DIR})
 
-set(common_SOURCES enable.c error.c fullscreen.c gamma.c init.c input.c
+set(common_SOURCES monitor.c enable.c error.c fullscreen.c gamma.c init.c input.c
                    joystick.c opengl.c time.c window.c)
 
 if(_GLFW_COCOA_NSGL)
@@ -29,10 +33,10 @@ elseif(_GLFW_WIN32_WGL)
     set(libglfw_SOURCES ${common_SOURCES} win32_enable.c win32_fullscreen.c
                         win32_gamma.c win32_init.c win32_joystick.c
                         win32_opengl.c win32_time.c win32_window.c
-                        win32_dllmain.c)
+                        win32_dllmain.c win32_monitor.c)
 elseif(_GLFW_X11_GLX)
-    set(libglfw_SOURCES ${common_SOURCES} x11_enable.c x11_fullscreen.c
-                        x11_gamma.c x11_init.c x11_joystick.c
+    set(libglfw_SOURCES ${common_SOURCES} x11_monitor.c x11_enable.c
+                        x11_fullscreen.c x11_gamma.c x11_init.c x11_joystick.c
                         x11_keysym2unicode.c x11_opengl.c x11_time.c
                         x11_window.c)
 else()

@@ -47,6 +47,7 @@
 
 #include <windows.h>
 #include <mmsystem.h>
+#include <Dbt.h>
 
 // This path may need to be changed if you build GLFW using your own setup
 // We ship and use our own copy of wglext.h since GLFW uses fairly new
@@ -210,6 +211,7 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowWin32 Win32
 #define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryWin32 Win32
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextWGL WGL
+#define _GLFW_PLATFORM_MONITOR_STATE _GLFWmonitorWin32 Win32
 
 
 //========================================================================
@@ -318,6 +320,14 @@ typedef struct _GLFWlibraryWin32
 
 } _GLFWlibraryWin32;
 
+//------------------------------------------------------------------------
+// Platform-specific monitor structure
+//------------------------------------------------------------------------
+typedef struct _GLFWmonitorWin32
+{
+    char name[32];
+
+} _GLFWmonitorWin32;
 
 //========================================================================
 // Prototypes for platform specific internal functions
@@ -325,6 +335,11 @@ typedef struct _GLFWlibraryWin32
 
 // Time
 void _glfwInitTimer(void);
+
+// Monitor support
+void _glfwInitMonitors(void);
+void _glfwRefreshMonitors(void);
+void _glfwTerminateMonitors(void);
 
 // Fullscreen support
 void _glfwSetVideoMode(int* width, int* height,

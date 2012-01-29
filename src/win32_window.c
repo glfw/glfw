@@ -30,7 +30,6 @@
 
 #include "internal.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 
 
@@ -1079,6 +1078,16 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             break;
         }
+
+        case WM_DEVICECHANGE:
+        {
+            if (DBT_DEVNODES_CHANGED == wParam)
+            {
+                _glfwRefreshMonitors();
+                return TRUE;
+            }
+            break;
+        }
     }
 
     // Pass all unhandled messages to DefWindowProc
@@ -1780,7 +1789,7 @@ void _glfwPlatformPollEvents(void)
     window = _glfwLibrary.activeWindow;
     if (window)
     {
-        window->Win32.cursorCentered = GL_FALSE;
+        window->Win32.cursorCentered = GL_TRUE;
         window->Win32.oldMouseX = window->width / 2;
         window->Win32.oldMouseY = window->height / 2;
     }
@@ -1901,4 +1910,5 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
             break;
     }
 }
+
 

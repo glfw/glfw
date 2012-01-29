@@ -316,11 +316,26 @@ struct _glfwResolution
     int height;
 };
 
+int _glfwCompareResolution(const void* left, const void* right)
+{
+    int result = 0;
+    const struct _glfwResolution* leftResolution = left;
+    const struct _glfwResolution* rightResolution = right;
+
+    result = leftResolution->height - rightResolution->height;
+    if (result == 0)
+    {
+       result = leftResolution->width - rightResolution->width;
+    }
+
+    return result;
+}
+
 //========================================================================
 // List available video modes
 //========================================================================
 
-int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
+int _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, GLFWvidmode* list, int maxcount)
 {
     int count, k, l, r, g, b, rgba, gl;
     int depth, screen;
@@ -380,23 +395,37 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
     if (_glfwLibrary.X11.RandR.available)
     {
 #if defined(_GLFW_HAS_XRANDR)
-        XRRScreenConfiguration* sc;
-        XRRScreenSize* sizelist;
-        int sizecount;
+        XRRScreenResources* resource;
+        unsigned int a;
+        resource = XRRGetScreenResources(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
 
-        sc = XRRGetScreenInfo(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
-        sizelist = XRRConfigSizes(sc, &sizecount);
+        resarray = (struct _glfwResolution*) _glfwMalloc(sizeof(struct _glfwResolution) * monitor->X11.output->nmode);
 
-        resarray = (struct _glfwResolution*) _glfwMalloc(sizeof(struct _glfwResolution) * sizecount);
-
-        for (k = 0;  k < sizecount;  k++)
+        for (k = 0; k < monitor->X11.output->nmode; k++)
         {
-            resarray[rescount].width = sizelist[k].width;
-            resarray[rescount].height = sizelist[k].height;
-            rescount++;
+            for (a = 0; a < resource->nmode; a++)
+            {
+                if (resource->modes[a].id != monitor->X11.output->modes[k])
+                {
+                    continue;
+                }
+
+                struct _glfwResolution res = {
+                    resource->modes[a].width,
+                    resource->modes[a].height
+                };
+
+                if (!bsearch(&res, resarray, rescount, sizeof(struct _glfwResolution), _glfwCompareResolution))
+                {
+                    resarray[rescount].width  = resource->modes[a].width;
+                    resarray[rescount].height = resource->modes[a].height;
+                    rescount++;
+                    qsort(resarray, rescount, sizeof(struct _glfwResolution), _glfwCompareResolution);
+                }
+            }
         }
 
-        XRRFreeScreenConfigInfo(sc);
+        XRRFreeScreenResources(resource);
 #endif /*_GLFW_HAS_XRANDR*/
     }
     else if (_glfwLibrary.X11.VidMode.available)

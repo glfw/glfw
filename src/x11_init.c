@@ -578,6 +578,8 @@ int _glfwPlatformInit(void)
 
     _glfwInitJoysticks();
 
+    _glfwInitMonitors();
+
     // Start the timer
     _glfwInitTimer();
 
@@ -598,6 +600,8 @@ int _glfwPlatformTerminate(void)
     }
 
     terminateDisplay();
+
+    _glfwTerminateMonitors();
 
     _glfwTerminateJoysticks();
 

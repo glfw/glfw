@@ -458,9 +458,21 @@ extern "C" {
 /* Gamma ramps */
 #define GLFW_GAMMA_RAMP_SIZE      256
 
+/* Monitor constants */
+#define GLFW_MONITOR_NAME            0x00060000
+#define GLFW_MONITOR_PHYSICAL_WIDTH  0x00060001
+#define GLFW_MONITOR_PHYSICAL_HEIGHT 0x00060002
+#define GLFW_MONITOR_SCREEN_POS_X    0x00060003
+#define GLFW_MONITOR_SCREEN_POS_Y    0x00060004
+#define GLFW_MONITOR_CONNECTED       0x00061000
+#define GLFW_MONITOR_DISCONNECTED    0x00061001
+
 /*************************************************************************
  * Typedefs
  *************************************************************************/
+
+/* Monitor handle type */
+typedef void* GLFWmonitor;
 
 /* Window handle type */
 typedef void* GLFWwindow;
@@ -479,6 +491,7 @@ typedef void (* GLFWkeyfun)(GLFWwindow,int,int);
 typedef void (* GLFWcharfun)(GLFWwindow,int);
 typedef void* (* GLFWmallocfun)(size_t);
 typedef void (* GLFWfreefun)(void*);
+typedef void (* GLFWmonitordevicefun)(GLFWmonitor,int);
 
 /* The video mode structure used by glfwGetVideoModes */
 typedef struct
@@ -528,8 +541,20 @@ GLFWAPI int glfwGetError(void);
 GLFWAPI const char* glfwErrorString(int error);
 GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
 
+/* Monitor callback registration */
+GLFWAPI void glfwSetMonitorDeviceCallback(GLFWmonitordevicefun cbfun);
+
+/* Monitor attributes */
+GLFWAPI void glfwSetMonitorUserPointer(GLFWmonitor monitor, void* pointer);
+GLFWAPI void* glfwGetMonitorUserPointer(GLFWmonitor monitor);
+GLFWAPI int glfwGetMonitorParam(GLFWmonitor monitor, int param);
+GLFWAPI const char* glfwGetMonitorString(GLFWmonitor monitor, int param);
+
+/* Monitor discovery */
+GLFWAPI GLFWmonitor glfwGetNextMonitor(GLFWmonitor iterator);
+
 /* Video mode functions */
-GLFWAPI int  glfwGetVideoModes(GLFWvidmode* list, int maxcount);
+GLFWAPI int  glfwGetVideoModes(GLFWmonitor monitor, GLFWvidmode* list, int maxcount);
 GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode);
 
 /* Gamma ramp functions */

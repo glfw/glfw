@@ -83,7 +83,7 @@ typedef struct
 
 } _glfwJoystick;
 
-_glfwJoystick _glfwJoysticks[GLFW_JOYSTICK_LAST + 1];
+static _glfwJoystick _glfwJoysticks[GLFW_JOYSTICK_LAST + 1];
 
 
 void GetElementsCFArrayHandler(const void* value, void* parameter);

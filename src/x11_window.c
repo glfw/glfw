@@ -1190,10 +1190,10 @@ static void processSingleEvent(void)
                 fprintf(stderr, "Cannot find GLFW window structure for EnterNotify event\n");
                 return;
             }
-            if(window->cursorMode == GLFW_CURSOR_HIDDEN)
-            {
+
+            if (window->cursorMode == GLFW_CURSOR_HIDDEN)
                 hideMouseCursor(window);
-            }
+
             _glfwInputCursorEnter(window);
             break;
         }
@@ -1207,7 +1207,9 @@ static void processSingleEvent(void)
                 fprintf(stderr, "Cannot find GLFW window structure for LeaveNotify event\n");
                 return;
             }
+
             showMouseCursor(window);
+
             _glfwInputCursorLeave(window);
             break;
         }

@@ -83,29 +83,21 @@ _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
     return result;
 }
 
-// todo: This is ugly. The platform should only allocate a list of the current devices.
-// The platform independent code should be in charge of the handling for the initial
-// setup, refreshing and freeing the list.
-void _glfwInitMonitors(void)
+_GLFWmonitor* _glfwCreateMonitors(void)
 {
-    _GLFWmonitor** curMonitor;
-
     DISPLAY_DEVICE adapter;
     DWORD adapterNum;
-
     DISPLAY_DEVICE monitor;
-
     DEVMODE setting;
-    DWORD settingNum;
-
-    curMonitor = &_glfwLibrary.monitorListHead;
+    _GLFWmonitor* monitorList;
+    _GLFWmonitor** curMonitor;
 
     adapter.cb = sizeof(DISPLAY_DEVICE);
     adapterNum = 0;
-
     monitor.cb = sizeof(DISPLAY_DEVICE);
     setting.dmSize = sizeof(DEVMODE);
-    settingNum = 0;
+    monitorList = NULL;
+    curMonitor = &monitorList;
 
     while (EnumDisplayDevices(NULL, adapterNum++, &adapter, 0))
     {
@@ -121,36 +113,16 @@ void _glfwInitMonitors(void)
 
         curMonitor = _glfwCreateMonitor(curMonitor, &adapter, &monitor, &setting);
     }
+
+    return monitorList;
 }
 
 void _glfwRefreshMonitors(void)
 {
-    DISPLAY_DEVICE adapter;
-    DWORD adapterNum = 0;
-
-    DISPLAY_DEVICE monitor;
-
-    DEVMODE setting;
-
-    _GLFWmonitor* newMonitorList = NULL;
-    _GLFWmonitor** curMonitor = &newMonitorList;
-
     _GLFWmonitor* curNewMonitor;
     _GLFWmonitor* curOldMonitor;
 
-    while (EnumDisplayDevices(NULL, adapterNum++, &adapter, 0))
-    {
-        if (adapter.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER || !(adapter.StateFlags & DISPLAY_DEVICE_ACTIVE))
-            continue;
-
-        EnumDisplaySettingsEx(adapter.DeviceName, ENUM_CURRENT_SETTINGS, &setting, EDS_ROTATEDMODE);
-
-        EnumDisplayDevices(adapter.DeviceName, 0, &monitor, 0);
-
-        curMonitor = _glfwCreateMonitor(curMonitor, &adapter, &monitor, &setting);
-    }
-
-    curNewMonitor = newMonitorList;
+    curNewMonitor = _glfwCreateMonitors();
     curOldMonitor = _glfwLibrary.monitorListHead;
 
     while (_glfwLibrary.monitorCallback && (curNewMonitor || curOldMonitor))

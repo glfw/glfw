@@ -146,6 +146,15 @@ GLFWAPI void glfwSetMonitorDeviceCallback(GLFWmonitordevicefun cbfun)
 }
 
 //========================================================================
+// Initialize the monitor list.
+//========================================================================
+
+void _glfwInitMonitors(void)
+{
+    _glfwLibrary.monitorListHead = _glfwCreateMonitors();
+}
+
+//========================================================================
 // Delete the monitor list.
 //========================================================================
 

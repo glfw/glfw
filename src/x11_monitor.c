@@ -77,9 +77,11 @@ _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
     return result;
 }
 
-void _glfwInitMonitors(void)
+_GLFWmonitor* _glfwCreateMonitors(void)
 {
-    _glfwLibrary.monitorListHead = NULL;
+    _GLFWmonitor* monitorList;
+
+    monitorList = NULL;
 
     if (_glfwLibrary.X11.RandR.available)
     {
@@ -88,7 +90,7 @@ void _glfwInitMonitors(void)
         int outputIDX;
         _GLFWmonitor** curMonitor;
 
-        curMonitor = &_glfwLibrary.monitorListHead;
+        curMonitor = &monitorList;
 
         resources = XRRGetScreenResources(_glfwLibrary.X11.display,
                                           _glfwLibrary.X11.root);
@@ -126,5 +128,7 @@ void _glfwInitMonitors(void)
         }
 #endif /*_GLFW_HAS_XRANDR*/
     }
+
+    return monitorList;
 }
 

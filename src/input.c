@@ -147,24 +147,13 @@ void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y)
 
 
 //========================================================================
-// Register cursor enter events
+// Register cursor enter/leave events
 //========================================================================
 
-void _glfwInputCursorEnter(_GLFWwindow* window)
+void _glfwInputCursorEnter(_GLFWwindow* window, int entered)
 {
     if (_glfwLibrary.cursorEnterCallback)
-        _glfwLibrary.cursorEnterCallback(window);
-}
-
-
-//========================================================================
-// Register cursor leave events
-//========================================================================
-
-void _glfwInputCursorLeave(_GLFWwindow* window)
-{
-    if (_glfwLibrary.cursorLeaveCallback)
-        _glfwLibrary.cursorLeaveCallback(window);
+        _glfwLibrary.cursorEnterCallback(window, entered);
 }
 
 
@@ -443,7 +432,7 @@ GLFWAPI void glfwSetMousePosCallback(GLFWmouseposfun cbfun)
 
 
 //========================================================================
-// Set callback function for cursor enter events
+// Set callback function for cursor enter/leave events
 //========================================================================
 
 GLFWAPI void glfwSetCursorEnterCallback(GLFWcursorenterfun cbfun)
@@ -455,22 +444,6 @@ GLFWAPI void glfwSetCursorEnterCallback(GLFWcursorenterfun cbfun)
     }
 
     _glfwLibrary.cursorEnterCallback = cbfun;
-}
-
-
-//========================================================================
-// Set callback function for cursor enter events
-//========================================================================
-
-GLFWAPI void glfwSetCursorLeaveCallback(GLFWcursorleavefun cbfun)
-{
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    _glfwLibrary.cursorLeaveCallback = cbfun;
 }
 
 

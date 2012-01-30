@@ -1194,7 +1194,7 @@ static void processSingleEvent(void)
             if (window->cursorMode == GLFW_CURSOR_HIDDEN)
                 hideMouseCursor(window);
 
-            _glfwInputCursorEnter(window);
+            _glfwInputCursorEnter(window, GL_TRUE);
             break;
         }
 
@@ -1211,7 +1211,7 @@ static void processSingleEvent(void)
             if (window->cursorMode == GLFW_CURSOR_HIDDEN)
                 showMouseCursor(window);
 
-            _glfwInputCursorLeave(window);
+            _glfwInputCursorEnter(window, GL_FALSE);
             break;
         }
 

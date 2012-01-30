@@ -238,7 +238,6 @@ struct _GLFWlibrary
     GLFWmousebuttonfun   mouseButtonCallback;
     GLFWmouseposfun      mousePosCallback;
     GLFWcursorenterfun   cursorEnterCallback;
-    GLFWcursorleavefun   cursorLeaveCallback;
     GLFWscrollfun        scrollCallback;
     GLFWkeyfun           keyCallback;
     GLFWcharfun          charCallback;
@@ -354,8 +353,7 @@ void _glfwInputChar(_GLFWwindow* window, int character);
 void _glfwInputScroll(_GLFWwindow* window, int x, int y);
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action);
 void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y);
-void _glfwInputCursorEnter(_GLFWwindow* window);
-void _glfwInputCursorLeave(_GLFWwindow* window);
+void _glfwInputCursorEnter(_GLFWwindow* window, int entered);
 
 // OpenGL context helpers (opengl.c)
 int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);

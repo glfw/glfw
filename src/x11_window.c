@@ -1208,7 +1208,8 @@ static void processSingleEvent(void)
                 return;
             }
 
-            showMouseCursor(window);
+            if (window->cursorMode == GLFW_CURSOR_HIDDEN)
+                showMouseCursor(window);
 
             _glfwInputCursorLeave(window);
             break;

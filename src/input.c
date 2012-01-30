@@ -436,3 +436,35 @@ GLFWAPI void glfwSetScrollCallback(GLFWscrollfun cbfun)
     _glfwLibrary.scrollCallback = cbfun;
 }
 
+
+//========================================================================
+// Set callback function for cursor enter events
+//========================================================================
+
+GLFWAPI void glfwSetCursorEnterCallback(GLFWcursorenterfun cbfun)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    _glfwLibrary.cursorEnterCallback = cbfun;
+}
+
+
+//========================================================================
+// Set callback function for cursor enter events
+//========================================================================
+
+GLFWAPI void glfwSetCursorLeaveCallback(GLFWcursorleavefun cbfun)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    _glfwLibrary.cursorLeaveCallback = cbfun;
+}
+

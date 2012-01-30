@@ -205,6 +205,25 @@ void _glfwInputWindowDamage(_GLFWwindow* window)
         _glfwLibrary.windowRefreshCallback(window);
 }
 
+//========================================================================
+// Register cursor enter events
+//========================================================================
+
+void _glfwInputCursorEnter(_GLFWwindow* window)
+{
+    if (_glfwLibrary.cursorEnterCallback)
+        _glfwLibrary.cursorEnterCallback(window);
+}
+
+//========================================================================
+// Register cursor leave events
+//========================================================================
+
+void _glfwInputCursorLeave(_GLFWwindow* window)
+{
+    if (_glfwLibrary.cursorLeaveCallback)
+        _glfwLibrary.cursorLeaveCallback(window);
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////

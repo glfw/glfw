@@ -388,6 +388,7 @@ GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig);
 
 // Monitor management (monitor.c)
 void _glfwInitMonitors(void);
+void _glfwRefreshMonitors(void);
 void _glfwTerminateMonitors(void);
 
 #endif // _internal_h_

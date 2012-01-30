@@ -145,3 +145,13 @@ GLFWAPI void glfwSetMonitorDeviceCallback(GLFWmonitordevicefun cbfun)
     _glfwLibrary.monitorCallback= cbfun;
 }
 
+//========================================================================
+// Delete the monitor list.
+//========================================================================
+
+void _glfwTerminateMonitors(void)
+{
+    while (_glfwLibrary.monitorListHead)
+        _glfwLibrary.monitorListHead = _glfwDestroyMonitor(_glfwLibrary.monitorListHead);
+}
+

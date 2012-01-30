@@ -281,7 +281,6 @@ void _glfwTerminateJoysticks(void);
 
 // Monitors
 void _glfwInitMonitors(void);
-void _glfwTerminateMonitors(void);
 
 // Unicode support
 long _glfwKeySym2Unicode(KeySym keysym);

@@ -339,7 +339,6 @@ void _glfwInitTimer(void);
 // Monitor support
 void _glfwInitMonitors(void);
 void _glfwRefreshMonitors(void);
-void _glfwTerminateMonitors(void);
 
 // Fullscreen support
 void _glfwSetVideoMode(int* width, int* height,

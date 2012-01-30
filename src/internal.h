@@ -387,5 +387,10 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
 GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig);
 GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig);
 
+// Monitor management (monitor.c)
+void _glfwTerminateMonitors(void);
+
+// platform specific (*_monitor.c)
+_GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor);
 
 #endif // _internal_h_

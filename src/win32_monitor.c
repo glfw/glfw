@@ -223,9 +223,3 @@ void _glfwRefreshMonitors(void)
     _glfwLibrary.monitorListHead = newMonitorList;
 }
 
-void _glfwTerminateMonitors(void)
-{
-    while (_glfwLibrary.monitorListHead)
-        _glfwLibrary.monitorListHead = _glfwDestroyMonitor(_glfwLibrary.monitorListHead);
-}
-

@@ -274,6 +274,16 @@ static void mouse_position_callback(GLFWwindow window, int x, int y)
     printf("%08x at %0.3f: Mouse position: %i %i\n", counter++, glfwGetTime(), x, y);
 }
 
+static void cursor_enter_callback(GLFWwindow window)
+{
+    printf("%08x at %0.3f: Cursor entered window\n", counter++, glfwGetTime());
+}
+
+static void cursor_leave_callback(GLFWwindow window)
+{
+    printf("%08x at %0.3f: Cursor left window\n", counter++, glfwGetTime());
+}
+
 static void scroll_callback(GLFWwindow window, int x, int y)
 {
     printf("%08x at %0.3f: Scroll: %i %i\n", counter++, glfwGetTime(), x, y);
@@ -351,6 +361,8 @@ int main(void)
     glfwSetWindowIconifyCallback(window_iconify_callback);
     glfwSetMouseButtonCallback(mouse_button_callback);
     glfwSetMousePosCallback(mouse_position_callback);
+    glfwSetCursorEnterCallback(cursor_enter_callback);
+    glfwSetCursorLeaveCallback(cursor_leave_callback);
     glfwSetScrollCallback(scroll_callback);
     glfwSetKeyCallback(key_callback);
     glfwSetCharCallback(char_callback);

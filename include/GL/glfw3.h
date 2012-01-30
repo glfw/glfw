@@ -575,9 +575,9 @@ GLFWAPI void glfwSetKeyCallback(GLFWkeyfun cbfun);
 GLFWAPI void glfwSetCharCallback(GLFWcharfun cbfun);
 GLFWAPI void glfwSetMouseButtonCallback(GLFWmousebuttonfun cbfun);
 GLFWAPI void glfwSetMousePosCallback(GLFWmouseposfun cbfun);
-GLFWAPI void glfwSetScrollCallback(GLFWscrollfun cbfun);
 GLFWAPI void glfwSetCursorEnterCallback(GLFWcursorenterfun cbfun);
 GLFWAPI void glfwSetCursorLeaveCallback(GLFWcursorleavefun cbfun);
+GLFWAPI void glfwSetScrollCallback(GLFWscrollfun cbfun);
 
 /* Joystick input */
 GLFWAPI int glfwGetJoystickParam(int joy, int param);

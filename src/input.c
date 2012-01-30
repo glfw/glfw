@@ -146,6 +146,28 @@ void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y)
 }
 
 
+//========================================================================
+// Register cursor enter events
+//========================================================================
+
+void _glfwInputCursorEnter(_GLFWwindow* window)
+{
+    if (_glfwLibrary.cursorEnterCallback)
+        _glfwLibrary.cursorEnterCallback(window);
+}
+
+
+//========================================================================
+// Register cursor leave events
+//========================================================================
+
+void _glfwInputCursorLeave(_GLFWwindow* window)
+{
+    if (_glfwLibrary.cursorLeaveCallback)
+        _glfwLibrary.cursorLeaveCallback(window);
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
@@ -421,23 +443,6 @@ GLFWAPI void glfwSetMousePosCallback(GLFWmouseposfun cbfun)
 
 
 //========================================================================
-// Set callback function for scroll events
-//========================================================================
-
-GLFWAPI void glfwSetScrollCallback(GLFWscrollfun cbfun)
-{
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    // Set callback function
-    _glfwLibrary.scrollCallback = cbfun;
-}
-
-
-//========================================================================
 // Set callback function for cursor enter events
 //========================================================================
 
@@ -466,5 +471,22 @@ GLFWAPI void glfwSetCursorLeaveCallback(GLFWcursorleavefun cbfun)
     }
 
     _glfwLibrary.cursorLeaveCallback = cbfun;
+}
+
+
+//========================================================================
+// Set callback function for scroll events
+//========================================================================
+
+GLFWAPI void glfwSetScrollCallback(GLFWscrollfun cbfun)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    // Set callback function
+    _glfwLibrary.scrollCallback = cbfun;
 }
 

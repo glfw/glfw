@@ -237,11 +237,11 @@ struct _GLFWlibrary
     GLFWwindowiconifyfun windowIconifyCallback;
     GLFWmousebuttonfun   mouseButtonCallback;
     GLFWmouseposfun      mousePosCallback;
+    GLFWcursorenterfun   cursorEnterCallback;
+    GLFWcursorleavefun   cursorLeaveCallback;
     GLFWscrollfun        scrollCallback;
     GLFWkeyfun           keyCallback;
     GLFWcharfun          charCallback;
-    GLFWcursorenterfun   cursorEnterCallback;
-    GLFWcursorleavefun   cursorLeaveCallback;
 
     GLFWthreadmodel      threading;
     GLFWallocator        allocator;

@@ -339,14 +339,14 @@ void _glfwSetError(int error, const char* description);
 // Window management (window.c)
 void _glfwSetDefaultWindowHints(void);
 
-// WIndow event notification
+// Window event notification (window.c)
 void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated);
 void _glfwInputWindowPos(_GLFWwindow* window, int x, int y);
 void _glfwInputWindowSize(_GLFWwindow* window, int width, int height);
 void _glfwInputWindowIconify(_GLFWwindow* window, int iconified);
 void _glfwInputWindowDamage(_GLFWwindow* window);
 
-// Input event notification
+// Input event notification (input.c)
 void _glfwInputKey(_GLFWwindow* window, int key, int action);
 void _glfwInputChar(_GLFWwindow* window, int character);
 void _glfwInputScroll(_GLFWwindow* window, int x, int y);

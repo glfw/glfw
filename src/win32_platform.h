@@ -47,7 +47,7 @@
 
 #include <windows.h>
 #include <mmsystem.h>
-#include <Dbt.h>
+#include <dbt.h>
 
 // This path may need to be changed if you build GLFW using your own setup
 // We ship and use our own copy of wglext.h since GLFW uses fairly new

@@ -38,6 +38,11 @@
 #define EDS_ROTATEDMODE 0x00000004
 #endif
 
+// The MinGW upstream lacks this
+#ifndef DISPLAY_DEVICE_ACTIVE
+#define DISPLAY_DEVICE_ACTIVE 0x00000001
+#endif
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////

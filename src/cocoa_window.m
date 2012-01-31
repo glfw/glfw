@@ -443,20 +443,68 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
 @end
 
-
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW platform API                      //////
-//////////////////////////////////////////////////////////////////////////
-
 //========================================================================
-// Here is where the window is created, and the OpenGL rendering context is
-// created
+// Create the Cocoa window
 //========================================================================
 
-int _glfwPlatformOpenWindow(_GLFWwindow* window,
-                            const _GLFWwndconfig *wndconfig,
-                            const _GLFWfbconfig *fbconfig)
+static GLboolean createWindow(_GLFWwindow* window,
+                              const _GLFWwndconfig* wndconfig)
 {
+    unsigned int styleMask = 0;
+
+    if (wndconfig->mode == GLFW_WINDOWED)
+    {
+        styleMask = NSTitledWindowMask | NSClosableWindowMask |
+                    NSMiniaturizableWindowMask;
+
+        if (wndconfig->resizable)
+            styleMask |= NSResizableWindowMask;
+    }
+    else
+        styleMask = NSBorderlessWindowMask;
+
+    window->NS.window = [[NSWindow alloc]
+        initWithContentRect:NSMakeRect(0, 0, window->width, window->height)
+                  styleMask:styleMask
+                    backing:NSBackingStoreBuffered
+                      defer:NO];
+
+    if (window->NS.window == nil)
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "Cocoa/NSOpenGL: Failed to create window");
+        return GL_FALSE;
+    }
+
+    [window->NS.window setTitle:[NSString stringWithCString:wndconfig->title
+                                                   encoding:NSISOLatin1StringEncoding]];
+
+    [window->NS.window setContentView:[[GLFWContentView alloc]
+                   initWithGlfwWindow:window]];
+    [window->NS.window setDelegate:window->NS.delegate];
+    [window->NS.window setAcceptsMouseMovedEvents:YES];
+    [window->NS.window center];
+
+    return GL_TRUE;
+}
+
+//========================================================================
+// Create the OpenGL context
+//========================================================================
+
+static GLboolean createContext(_GLFWwindow* window,
+                               const _GLFWwndconfig* wndconfig,
+                               const _GLFWfbconfig* fbconfig)
+{
+    unsigned int attributeCount = 0;
+
+    // Mac OS X needs non-zero color size, so set resonable values
+    int colorBits = fbconfig->redBits + fbconfig->greenBits + fbconfig->blueBits;
+    if (colorBits == 0)
+        colorBits = 24;
+    else if (colorBits < 15)
+        colorBits = 15;
+
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     // Fail if any OpenGL version above 2.1 other than 3.2 was requested
     if (wndconfig->glMajor > 3 ||
@@ -499,104 +547,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    // We can only have one application delegate, but we only allocate it the
-    // first time we create a window to keep all window code in this file
-    if (_glfwLibrary.NS.delegate == nil)
-    {
-        _glfwLibrary.NS.delegate = [[GLFWApplicationDelegate alloc] init];
-        if (_glfwLibrary.NS.delegate == nil)
-        {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "Cocoa/NSOpenGL: Failed to create application "
-                          "delegate");
-            return GL_FALSE;
-        }
-
-        [NSApp setDelegate:_glfwLibrary.NS.delegate];
-    }
-
-    window->NS.delegate = [[GLFWWindowDelegate alloc] initWithGlfwWindow:window];
-    if (window->NS.delegate == nil)
-    {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Cocoa/NSOpenGL: Failed to create window delegate");
-        return GL_FALSE;
-    }
-
-    // Mac OS X needs non-zero color size, so set resonable values
-    int colorBits = fbconfig->redBits + fbconfig->greenBits + fbconfig->blueBits;
-    if (colorBits == 0)
-        colorBits = 24;
-    else if (colorBits < 15)
-        colorBits = 15;
-
-    // Ignored hints:
-    // OpenGLMajor, OpenGLMinor, OpenGLForward:
-    //     pending Mac OS X support for OpenGL 3.x
-    // OpenGLDebug
-    //     pending it meaning anything on Mac OS X
-
-    // Don't use accumulation buffer support; it's not accelerated
-    // Aux buffers probably aren't accelerated either
-
-    CFDictionaryRef fullscreenMode = NULL;
-    if (wndconfig->mode == GLFW_FULLSCREEN)
-    {
-        // I think it's safe to pass 0 to the refresh rate for this function
-        // rather than conditionalizing the code to call the version which
-        // doesn't specify refresh...
-        fullscreenMode =
-            CGDisplayBestModeForParametersAndRefreshRateWithProperty(
-                CGMainDisplayID(),
-                colorBits + fbconfig->alphaBits,
-                window->width, window->height,
-                wndconfig->refreshRate,
-                // Controversial, see macosx_fullscreen.m for discussion
-                kCGDisplayModeIsSafeForHardware,
-                NULL);
-
-        window->width =
-            [[(id)fullscreenMode objectForKey:(id)kCGDisplayWidth] intValue];
-        window->height =
-            [[(id)fullscreenMode objectForKey:(id)kCGDisplayHeight] intValue];
-    }
-
-    unsigned int styleMask = 0;
-
-    if (wndconfig->mode == GLFW_WINDOWED)
-    {
-        styleMask = NSTitledWindowMask | NSClosableWindowMask |
-                    NSMiniaturizableWindowMask;
-
-        if (wndconfig->resizable)
-            styleMask |= NSResizableWindowMask;
-    }
-    else
-        styleMask = NSBorderlessWindowMask;
-
-    window->NS.window = [[NSWindow alloc]
-        initWithContentRect:NSMakeRect(0, 0, window->width, window->height)
-                  styleMask:styleMask
-                    backing:NSBackingStoreBuffered
-                      defer:NO];
-
-    [window->NS.window setTitle:[NSString stringWithCString:wndconfig->title
-                                                   encoding:NSISOLatin1StringEncoding]];
-
-    [window->NS.window setContentView:[[GLFWContentView alloc] initWithGlfwWindow:window]];
-    [window->NS.window setDelegate:window->NS.delegate];
-    [window->NS.window setAcceptsMouseMovedEvents:YES];
-    [window->NS.window center];
-
-    if (wndconfig->mode == GLFW_FULLSCREEN)
-    {
-        CGCaptureAllDisplays();
-        CGDisplaySwitchToMode(CGMainDisplayID(), fullscreenMode);
-    }
-
-    unsigned int attribute_count = 0;
-
-#define ADD_ATTR(x) { attributes[attribute_count++] = x; }
+#define ADD_ATTR(x) { attributes[attributeCount++] = x; }
 #define ADD_ATTR2(x, y) { ADD_ATTR(x); ADD_ATTR(y); }
 
     // Arbitrary array size here
@@ -675,8 +626,99 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         return GL_FALSE;
     }
 
+    return GL_TRUE;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Here is where the window is created, and the OpenGL rendering context is
+// created
+//========================================================================
+
+int _glfwPlatformOpenWindow(_GLFWwindow* window,
+                            const _GLFWwndconfig *wndconfig,
+                            const _GLFWfbconfig *fbconfig)
+{
+    // We can only have one application delegate, but we only allocate it the
+    // first time we create a window to keep all window code in this file
+    if (_glfwLibrary.NS.delegate == nil)
+    {
+        _glfwLibrary.NS.delegate = [[GLFWApplicationDelegate alloc] init];
+        if (_glfwLibrary.NS.delegate == nil)
+        {
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "Cocoa/NSOpenGL: Failed to create application "
+                          "delegate");
+            return GL_FALSE;
+        }
+
+        [NSApp setDelegate:_glfwLibrary.NS.delegate];
+    }
+
+    window->NS.delegate = [[GLFWWindowDelegate alloc] initWithGlfwWindow:window];
+    if (window->NS.delegate == nil)
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "Cocoa/NSOpenGL: Failed to create window delegate");
+        return GL_FALSE;
+    }
+
+    // Mac OS X needs non-zero color size, so set resonable values
+    int colorBits = fbconfig->redBits + fbconfig->greenBits + fbconfig->blueBits;
+    if (colorBits == 0)
+        colorBits = 24;
+    else if (colorBits < 15)
+        colorBits = 15;
+
+    // Ignored hints:
+    // OpenGLMajor, OpenGLMinor, OpenGLForward:
+    //     pending Mac OS X support for OpenGL 3.x
+    // OpenGLDebug
+    //     pending it meaning anything on Mac OS X
+
+    // Don't use accumulation buffer support; it's not accelerated
+    // Aux buffers probably aren't accelerated either
+
+    CFDictionaryRef fullscreenMode = NULL;
+    if (wndconfig->mode == GLFW_FULLSCREEN)
+    {
+        // I think it's safe to pass 0 to the refresh rate for this function
+        // rather than conditionalizing the code to call the version which
+        // doesn't specify refresh...
+        fullscreenMode =
+            CGDisplayBestModeForParametersAndRefreshRateWithProperty(
+                CGMainDisplayID(),
+                colorBits + fbconfig->alphaBits,
+                window->width, window->height,
+                wndconfig->refreshRate,
+                // Controversial, see macosx_fullscreen.m for discussion
+                kCGDisplayModeIsSafeForHardware,
+                NULL);
+
+        window->width =
+            [[(id)fullscreenMode objectForKey:(id)kCGDisplayWidth] intValue];
+        window->height =
+            [[(id)fullscreenMode objectForKey:(id)kCGDisplayHeight] intValue];
+    }
+
+    if (!createWindow(window, wndconfig))
+        return GL_FALSE;
+
+    if (!createContext(window, wndconfig, fbconfig))
+        return GL_FALSE;
+
     [window->NS.window makeKeyAndOrderFront:nil];
     [window->NSGL.context setView:[window->NS.window contentView]];
+
+    if (wndconfig->mode == GLFW_FULLSCREEN)
+    {
+        CGCaptureAllDisplays();
+        CGDisplaySwitchToMode(CGMainDisplayID(), fullscreenMode);
+    }
 
     if (wndconfig->mode == GLFW_FULLSCREEN)
     {

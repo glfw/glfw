@@ -141,6 +141,7 @@ typedef struct _GLFWwindowX11
     Colormap      colormap;          // Window colormap
     Window        handle;            // Window handle
     Atom          wmDeleteWindow;    // WM_DELETE_WINDOW atom
+    Atom          wmName;            // _NET_WM_NAME atom
     Atom          wmPing;            // _NET_WM_PING atom
     Atom          wmState;           // _NET_WM_STATE atom
     Atom          wmStateFullscreen; // _NET_WM_STATE_FULLSCREEN atom

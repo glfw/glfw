@@ -195,6 +195,9 @@ static GLboolean hasEWMH(_GLFWwindow* window)
     window->X11.wmStateFullscreen =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_FULLSCREEN");
 
+    window->X11.wmName =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_NAME");
+
     window->X11.wmPing =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_PING");
 
@@ -1513,11 +1516,14 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     XStoreName(_glfwLibrary.X11.display, window->X11.handle, title);
     XSetIconName(_glfwLibrary.X11.display, window->X11.handle, title);
     
-    XChangeProperty(_glfwLibrary.X11.display,  window->X11.handle,
-            XInternAtom(_glfwLibrary.X11.display, "_NET_WM_NAME", False),
+    if(window->X11.wmName != None)
+    {
+        XChangeProperty(_glfwLibrary.X11.display,  window->X11.handle,
+            window->X11.wmName,
             XInternAtom(_glfwLibrary.X11.display, "UTF8_STRING", False),
             8, PropModeReplace, (unsigned char *) title,
             strlen(title));
+    }
 }
 
 

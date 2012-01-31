@@ -589,7 +589,7 @@ static GLboolean createContext(_GLFWwindow* window,
         ADD_ATTR2(NSOpenGLPFAAuxBuffers, fbconfig->auxBuffers);
 
     if (fbconfig->stereo)
-        ADD_ATTR(NSOpenGLPFAStereo );
+        ADD_ATTR(NSOpenGLPFAStereo);
 
     if (fbconfig->samples > 0)
     {
@@ -607,7 +607,7 @@ static GLboolean createContext(_GLFWwindow* window,
     if (window->NSGL.pixelFormat == nil)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Cocoa/NSOpenGL: Failed to create pixel format");
+                      "Cocoa/NSOpenGL: Failed to create OpenGL pixel format");
         return GL_FALSE;
     }
 
@@ -640,8 +640,8 @@ static GLboolean createContext(_GLFWwindow* window,
 //========================================================================
 
 int _glfwPlatformOpenWindow(_GLFWwindow* window,
-                            const _GLFWwndconfig *wndconfig,
-                            const _GLFWfbconfig *fbconfig)
+                            const _GLFWwndconfig* wndconfig,
+                            const _GLFWfbconfig* fbconfig)
 {
     // We can only have one application delegate, but we only allocate it the
     // first time we create a window to keep all window code in this file
@@ -673,12 +673,6 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         colorBits = 24;
     else if (colorBits < 15)
         colorBits = 15;
-
-    // Ignored hints:
-    // OpenGLMajor, OpenGLMinor, OpenGLForward:
-    //     pending Mac OS X support for OpenGL 3.x
-    // OpenGLDebug
-    //     pending it meaning anything on Mac OS X
 
     // Don't use accumulation buffer support; it's not accelerated
     // Aux buffers probably aren't accelerated either
@@ -718,11 +712,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     {
         CGCaptureAllDisplays();
         CGDisplaySwitchToMode(CGMainDisplayID(), fullscreenMode);
-    }
 
-    if (wndconfig->mode == GLFW_FULLSCREEN)
-    {
-        // TODO: Make this work on pre-Leopard systems
         [[window->NS.window contentView] enterFullScreenMode:[NSScreen mainScreen]
                                                  withOptions:nil];
     }

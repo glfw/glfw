@@ -1512,6 +1512,12 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     // Set window & icon title
     XStoreName(_glfwLibrary.X11.display, window->X11.handle, title);
     XSetIconName(_glfwLibrary.X11.display, window->X11.handle, title);
+    
+    XChangeProperty(_glfwLibrary.X11.display,  window->X11.handle,
+            XInternAtom(_glfwLibrary.X11.display, "_NET_WM_NAME", False),
+            XInternAtom(_glfwLibrary.X11.display, "UTF8_STRING", False),
+            8, PropModeReplace, (unsigned char *) title,
+            strlen(title));
 }
 
 

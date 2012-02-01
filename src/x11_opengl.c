@@ -31,8 +31,7 @@
 #include "internal.h"
 
 
-void (*glXGetProcAddress(const GLubyte* procName))();
-void (*glXGetProcAddressARB(const GLubyte* procName))();
+// This is the only glXGetProcAddress variant not declared by glxext.h
 void (*glXGetProcAddressEXT(const GLubyte* procName))();
 
 

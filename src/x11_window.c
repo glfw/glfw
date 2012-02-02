@@ -1512,9 +1512,21 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
-    // Set window & icon title
-    XStoreName(_glfwLibrary.X11.display, window->X11.handle, title);
-    XSetIconName(_glfwLibrary.X11.display, window->X11.handle, title);
+#if defined(X_HAVE_UTF8_STRING)
+    Xutf8SetWMProperties(_glfwLibrary.X11.display,
+                         window->X11.handle,
+                         title, title,
+                         NULL, 0,
+                         NULL, NULL, NULL);
+#else
+    // This may be a slightly better fallback than using XStoreName and
+    // XSetIconName, which always store their arguments using STRING
+    XmbSetWMProperties(_glfwLibrary.X11.display,
+                       window->X11.handle,
+                       title, title,
+                       NULL, 0,
+                       NULL, NULL, NULL);
+#endif
 
     if (window->X11.wmName != None)
     {

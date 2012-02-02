@@ -51,10 +51,13 @@ target_link_libraries(sharing ${STATIC_DEPS})
 add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c)
 target_link_libraries(tearing ${STATIC_DEPS})
 
+add_executable(title WIN32 MACOSX_BUNDLE title.c)
+target_link_libraries(title ${STATIC_DEPS})
+
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c)
 target_link_libraries(windows ${STATIC_DEPS})
 
-set(WINDOWS_BINARIES accuracy sharing tearing windows)
+set(WINDOWS_BINARIES accuracy sharing tearing title windows)
 set(CONSOLE_BINARIES defaults events fsaa fsfocus gamma glfwinfo iconify
                      joysticks listmodes peter reopen)
 

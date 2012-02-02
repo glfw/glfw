@@ -166,12 +166,9 @@ install(FILES COPYING.txt readme.html
 #--------------------------------------------------------------------
 # -- Documentation generation 
 #--------------------------------------------------------------------
-#include("${GLFW_SOURCE_DIR}/documentation.cmake")
-#configure_file("${GLFW_SOURCE_DIR}/Doxyfile.in"
-#               "${GLFW_BINARY_DIR}/Doxyfile"
-#               IMMEDIATE @ONLY)
-#add_doxygen_target("${GLFW_BINARY_DIR}/Doxyfile")
-#add_subdirectory(docs)
+configure_file("${GLFW_SOURCE_DIR}/docs/Doxyfile.in"
+               "${GLFW_BINARY_DIR}/docs/Doxyfile"
+               @ONLY)
 
 #--------------------------------------------------------------------
 # Uninstall operation

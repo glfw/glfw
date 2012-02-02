@@ -451,9 +451,12 @@ SORT_GROUP_NAMES       = NO
 
 SORT_BY_SCOPE_NAME     = NO
 
-# If the STRICT_PROTO_MATCHING option is enabled and doxygen fails to do proper type resolution of all parameters of a function it will reject a
-# match between the prototype and the implementation of a member function even if there is only one candidate or it is obvious which candidate to choose by doing a simple string match. By disabling STRICT_PROTO_MATCHING doxygen
-# will still accept a match between prototype and implementation in such cases.
+# If the STRICT_PROTO_MATCHING option is enabled and doxygen fails to do proper
+# type resolution of all parameters of a function it will reject a match between
+# the prototype and the implementation of a member function even if there is
+# only one candidate or it is obvious which candidate to choose by doing
+# a simple string match. By disabling STRICT_PROTO_MATCHING doxygen will still
+# accept a match between prototype and implementation in such cases.
 
 STRICT_PROTO_MATCHING  = NO
 
@@ -1039,9 +1042,10 @@ ECLIPSE_DOC_ID         = org.doxygen.Project
 
 DISABLE_INDEX          = NO
 
-# This tag can be used to set the number of enum values (range [0,1..20])
-# that doxygen will group on one line in the generated HTML documentation.
-# Note that a value of 0 will completely suppress the enum values from appearing in the overview section.
+# This tag can be used to set the number of enum values (range [0,1..20]) that
+# doxygen will group on one line in the generated HTML documentation.  Note that
+# a value of 0 will completely suppress the enum values from appearing in the
+# overview section.
 
 ENUM_VALUES_PER_LINE   = 4
 
@@ -1100,7 +1104,8 @@ USE_MATHJAX            = NO
 # HTML output directory using the MATHJAX_RELPATH option. The destination
 # directory should contain the MathJax.js script. For instance, if the mathjax
 # directory is located at the same level as the HTML output directory, then
-# MATHJAX_RELPATH should be ../mathjax. The default value points to the mathjax.org site, so you can quickly see the result without installing
+# MATHJAX_RELPATH should be ../mathjax. The default value points to the
+# mathjax.org site, so you can quickly see the result without installing
 # MathJax, but it is strongly recommended to install a local copy of MathJax
 # before deployment.
 
@@ -1418,7 +1423,8 @@ PREDEFINED             =
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then
 # this tag can be used to specify a list of macro names that should be expanded.
 # The macro definition that is found in the sources will be used.
-# Use the PREDEFINED tag if you want to use a different macro definition that overrules the definition found in the source code.
+# Use the PREDEFINED tag if you want to use a different macro definition that
+# overrules the definition found in the source code.
 
 EXPAND_AS_DEFINED      =
 

@@ -157,7 +157,7 @@ static void setKeyRepeat(_GLFWwindow* window, int enabled)
 
 void _glfwInputKey(_GLFWwindow* window, int key, int action)
 {
-    GLboolean keyrepeat = GL_FALSE;
+    GLboolean repeated = GL_FALSE;
 
     if (key < 0 || key > GLFW_KEY_LAST)
         return;
@@ -171,12 +171,12 @@ void _glfwInputKey(_GLFWwindow* window, int key, int action)
         window->key[key] = GLFW_STICK;
     else
     {
-        keyrepeat = (window->key[key] == GLFW_PRESS) && (action == GLFW_PRESS);
+        repeated = (window->key[key] == GLFW_PRESS) && (action == GLFW_PRESS);
         window->key[key] = (char) action;
     }
 
     // Call user callback function
-    if (_glfwLibrary.keyCallback && (window->keyRepeat || !keyrepeat))
+    if (_glfwLibrary.keyCallback && (window->keyRepeat || !repeated))
         _glfwLibrary.keyCallback(window, key, action);
 }
 

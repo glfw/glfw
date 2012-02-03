@@ -183,7 +183,7 @@ struct _GLFWwindow
     GLboolean stickyKeys;
     GLboolean stickyMouseButtons;
     GLboolean keyRepeat;
-    GLboolean sysKeysDisabled; // system keys disabled flag
+    GLboolean systemKeys;      // system keys enabled flag
     int       cursorPosX, cursorPosY;
     int       cursorMode;
     int       scrollX, scrollY;
@@ -276,7 +276,7 @@ int _glfwPlatformInit(void);
 int _glfwPlatformTerminate(void);
 const char* _glfwPlatformGetVersionString(void);
 
-// Enable/Disable
+// Input
 void _glfwPlatformEnableSystemKeys(_GLFWwindow* window);
 void _glfwPlatformDisableSystemKeys(_GLFWwindow* window);
 

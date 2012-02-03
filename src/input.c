@@ -31,6 +31,122 @@
 #include "internal.h"
 
 
+//========================================================================
+// Sets the cursor mode for the specified window
+//========================================================================
+
+static void setCursorMode(_GLFWwindow* window, int mode)
+{
+    int centerPosX, centerPosY;
+
+    if (mode != GLFW_CURSOR_NORMAL &&
+        mode != GLFW_CURSOR_HIDDEN &&
+        mode != GLFW_CURSOR_CAPTURED)
+    {
+        _glfwSetError(GLFW_INVALID_ENUM, NULL);
+        return;
+    }
+
+    if (window->cursorMode == mode)
+        return;
+
+    centerPosX = window->width / 2;
+    centerPosY = window->height / 2;
+
+    if (mode == GLFW_CURSOR_CAPTURED)
+        _glfwPlatformSetMouseCursorPos(window, centerPosX, centerPosY);
+    else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+    {
+        _glfwPlatformSetMouseCursorPos(window, centerPosX, centerPosY);
+        _glfwInputCursorMotion(window,
+                               centerPosX - window->cursorPosX,
+                               centerPosY - window->cursorPosY);
+    }
+
+    _glfwPlatformSetCursorMode(window, mode);
+
+    window->cursorMode = mode;
+}
+
+
+//========================================================================
+// Set sticky keys mode for the specified window
+//========================================================================
+
+static void setStickyKeys(_GLFWwindow* window, int enabled)
+{
+    if (window->stickyKeys == enabled)
+        return;
+
+    if (!enabled)
+    {
+        int i;
+
+        // Release all sticky keys
+        for (i = 0;  i <= GLFW_KEY_LAST;  i++)
+        {
+            if (window->key[i] == GLFW_STICK)
+                window->key[i] = GLFW_RELEASE;
+        }
+    }
+
+    window->stickyKeys = enabled;
+}
+
+
+//========================================================================
+// Set sticky mouse buttons mode for the specified window
+//========================================================================
+
+static void setStickyMouseButtons(_GLFWwindow* window, int enabled)
+{
+    if (window->stickyMouseButtons == enabled)
+        return;
+
+    if (!enabled)
+    {
+        int i;
+
+        // Release all sticky mouse buttons
+        for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
+        {
+            if (window->mouseButton[i] == GLFW_STICK)
+                window->mouseButton[i] = GLFW_RELEASE;
+        }
+    }
+
+    window->stickyMouseButtons = enabled;
+}
+
+
+//========================================================================
+// Set system keys for the specified window
+//========================================================================
+
+static void setSystemKeys(_GLFWwindow* window, int enabled)
+{
+    if (window->systemKeys == enabled)
+        return;
+
+    if (enabled)
+        _glfwPlatformEnableSystemKeys(window);
+    else
+        _glfwPlatformDisableSystemKeys(window);
+
+    window->systemKeys = enabled;
+}
+
+
+//========================================================================
+// Set key repeat for the specified window
+//========================================================================
+
+static void setKeyRepeat(_GLFWwindow* window, int enabled)
+{
+    window->keyRepeat = enabled;
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -279,6 +395,77 @@ GLFWAPI void glfwSetMousePos(GLFWwindow handle, int xpos, int ypos)
 
 
 //========================================================================
+// Returns the specified input mode of the specified window
+//========================================================================
+
+GLFWAPI int glfwGetInputMode(GLFWwindow handle, int mode)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return 0;
+    }
+
+    switch (mode)
+    {
+        case GLFW_CURSOR_MODE:
+            return window->cursorMode;
+        case GLFW_STICKY_KEYS:
+            return window->stickyKeys;
+        case GLFW_STICKY_MOUSE_BUTTONS:
+            return window->stickyMouseButtons;
+        case GLFW_SYSTEM_KEYS:
+            return window->systemKeys;
+        case GLFW_KEY_REPEAT:
+            return window->keyRepeat;
+        default:
+            _glfwSetError(GLFW_INVALID_ENUM, NULL);
+            return 0;
+    }
+}
+
+
+//========================================================================
+// Sets the specified input mode of the specified window
+//========================================================================
+
+GLFWAPI void glfwSetInputMode(GLFWwindow handle, int mode, int value)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    switch (mode)
+    {
+        case GLFW_CURSOR_MODE:
+            setCursorMode(window, value);
+            break;
+        case GLFW_STICKY_KEYS:
+            setStickyKeys(window, value ? GL_TRUE : GL_FALSE);
+            break;
+        case GLFW_STICKY_MOUSE_BUTTONS:
+            setStickyMouseButtons(window, value ? GL_TRUE : GL_FALSE);
+            break;
+        case GLFW_SYSTEM_KEYS:
+            setSystemKeys(window, value ? GL_TRUE : GL_FALSE);
+            break;
+        case GLFW_KEY_REPEAT:
+            setKeyRepeat(window, value ? GL_TRUE : GL_FALSE);
+            break;
+        default:
+            _glfwSetError(GLFW_INVALID_ENUM, NULL);
+            break;
+    }
+}
+
+
+//========================================================================
 // Returns the scroll offset for the specified window
 //========================================================================
 
@@ -297,51 +484,6 @@ GLFWAPI void glfwGetScrollOffset(GLFWwindow handle, int* xoffset, int* yoffset)
 
     if (yoffset)
       *yoffset = window->scrollY;
-}
-
-
-//========================================================================
-// Sets the cursor mode for the specified window
-//========================================================================
-
-GLFWAPI void glfwSetCursorMode(GLFWwindow handle, int mode)
-{
-    int centerPosX, centerPosY;
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    if (mode != GLFW_CURSOR_NORMAL &&
-        mode != GLFW_CURSOR_HIDDEN &&
-        mode != GLFW_CURSOR_CAPTURED)
-    {
-        _glfwSetError(GLFW_INVALID_ENUM, NULL);
-        return;
-    }
-
-    if (window->cursorMode == mode)
-        return;
-
-    centerPosX = window->width / 2;
-    centerPosY = window->height / 2;
-
-    if (mode == GLFW_CURSOR_CAPTURED)
-        _glfwPlatformSetMouseCursorPos(window, centerPosX, centerPosY);
-    else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
-    {
-        _glfwPlatformSetMouseCursorPos(window, centerPosX, centerPosY);
-        _glfwInputCursorMotion(window,
-                               centerPosX - window->cursorPosX,
-                               centerPosY - window->cursorPosY);
-    }
-
-    _glfwPlatformSetCursorMode(window, mode);
-
-    window->cursorMode = mode;
 }
 
 

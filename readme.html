@@ -274,7 +274,6 @@ version of GLFW.</p>
   <li>Added <code>glfwGetCurrentContext</code> function for retrieving the window whose OpenGL context is current</li>
   <li>Added <code>glfwInitWithModels</code> function and <code>GLFWallocator</code> and <code>GLFWthreadmodel</code> types for pluggable memory allocation and threading models</li>
   <li>Added <code>glfwCopyContext</code> function for copying OpenGL state categories between contexts</li>
-  <li>Added <code>glfwSetCursorMode</code> function for controlling per-window cursor mode, replacing <code>GLFW_MOUSE_CURSOR</code></li>
   <li>Added <code>GLFW_OPENGL_ES2_PROFILE</code> profile for creating OpenGL ES 2.0 contexts using the <code>GLX_EXT_create_context_es2_profile</code> and <code>WGL_EXT_create_context_es2_profile</code> extensions</li>
   <li>Added <code>GLFW_OPENGL_ROBUSTNESS</code> window hint and associated strategy tokens for <code>GL_ARB_robustness</code> support</li>
   <li>Added <code>GLFW_OPENGL_REVISION</code> window parameter to make up for removal of <code>glfwGetGLVersion</code></li>
@@ -293,6 +292,7 @@ version of GLFW.</p>
   <li>Replaced ad hoc build system with CMake</li>
   <li>Replaced layout-dependent key codes with single, platform-independent set based on US layout</li>
   <li>Replaced mouse wheel interface with two-dimensional scrolling interface</li>
+  <li>Replaced <code>glfwEnable</code> and <code>glfwDisable</code> with <code>glfwGetInputMode</code> and <code>glfwSetInputMode</code></li>
   <li>Made Unicode character input unaffected by <code>GLFW_KEY_REPEAT</code></li>
   <li>Removed event auto-polling and the <code>GLFW_AUTO_POLL_EVENTS</code> window enable</li>
   <li>Removed the Win32 port .def files</li>

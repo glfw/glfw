@@ -309,6 +309,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     window->height     = height;
     window->mode       = mode;
     window->cursorMode = GLFW_CURSOR_NORMAL;
+    window->systemKeys = GL_TRUE;
 
     // Open the actual window and create its context
     if (!_glfwPlatformOpenWindow(window, &wndconfig, &fbconfig))
@@ -330,7 +331,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     // The GLFW specification states that fullscreen windows have the cursor
     // captured by default
     if (mode == GLFW_FULLSCREEN)
-        glfwSetCursorMode(window, GLFW_CURSOR_CAPTURED);
+        glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_CAPTURED);
 
     // Clearing the front buffer to black to avoid garbage pixels left over
     // from previous uses of our bit of VRAM

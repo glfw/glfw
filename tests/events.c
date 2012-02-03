@@ -298,10 +298,7 @@ static void key_callback(GLFWwindow window, int key, int action)
         case GLFW_KEY_R:
         {
             keyrepeat = !keyrepeat;
-            if (keyrepeat)
-                glfwEnable(window, GLFW_KEY_REPEAT);
-            else
-                glfwDisable(window, GLFW_KEY_REPEAT);
+            glfwSetInputMode(window, GLFW_KEY_REPEAT, keyrepeat);
 
             printf("(( key repeat %s ))\n", keyrepeat ? "enabled" : "disabled");
             break;
@@ -310,10 +307,7 @@ static void key_callback(GLFWwindow window, int key, int action)
         case GLFW_KEY_S:
         {
             systemkeys = !systemkeys;
-            if (systemkeys)
-                glfwEnable(window, GLFW_SYSTEM_KEYS);
-            else
-                glfwDisable(window, GLFW_SYSTEM_KEYS);
+            glfwSetInputMode(window, GLFW_SYSTEM_KEYS, systemkeys);
 
             printf("(( system keys %s ))\n", systemkeys ? "enabled" : "disabled");
             break;

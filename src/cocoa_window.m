@@ -476,9 +476,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    [window->NS.window setTitle:[NSString stringWithCString:wndconfig->title
-                                                   encoding:NSISOLatin1StringEncoding]];
-
+    [window->NS.window setTitle:[NSString stringWithUTF8String:wndconfig->title]];
     [window->NS.window setContentView:[[GLFWContentView alloc]
                    initWithGlfwWindow:window]];
     [window->NS.window setDelegate:window->NS.delegate];
@@ -769,8 +767,7 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)
 {
-    [window->NS.window setTitle:[NSString stringWithCString:title
-                       encoding:NSISOLatin1StringEncoding]];
+    [window->NS.window setTitle:[NSString stringWithUTF8String:title]];
 }
 
 //========================================================================

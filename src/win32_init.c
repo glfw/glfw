@@ -47,7 +47,7 @@ static GLboolean initLibraries(void)
 #ifndef _GLFW_NO_DLOAD_GDI32
     // gdi32.dll (OpenGL pixel format functions & SwapBuffers)
 
-    _glfwLibrary.Win32.gdi.instance = LoadLibrary("gdi32.dll");
+    _glfwLibrary.Win32.gdi.instance = LoadLibrary(L"gdi32.dll");
     if (!_glfwLibrary.Win32.gdi.instance)
         return GL_FALSE;
 
@@ -81,12 +81,12 @@ static GLboolean initLibraries(void)
 #ifndef _GLFW_NO_DLOAD_WINMM
     // winmm.dll (for joystick and timer support)
 
-    _glfwLibrary.Win32.winmm.instance = LoadLibrary("winmm.dll");
+    _glfwLibrary.Win32.winmm.instance = LoadLibrary(L"winmm.dll");
     if (!_glfwLibrary.Win32.winmm.instance)
         return GL_FALSE;
 
-    _glfwLibrary.Win32.winmm.joyGetDevCapsA = (JOYGETDEVCAPSA_T)
-        GetProcAddress(_glfwLibrary.Win32.winmm.instance, "joyGetDevCapsA");
+    _glfwLibrary.Win32.winmm.joyGetDevCaps = (JOYGETDEVCAPS_T)
+        GetProcAddress(_glfwLibrary.Win32.winmm.instance, "joyGetDevCapsW");
     _glfwLibrary.Win32.winmm.joyGetPos = (JOYGETPOS_T)
         GetProcAddress(_glfwLibrary.Win32.winmm.instance, "joyGetPos");
     _glfwLibrary.Win32.winmm.joyGetPosEx = (JOYGETPOSEX_T)
@@ -94,7 +94,7 @@ static GLboolean initLibraries(void)
     _glfwLibrary.Win32.winmm.timeGetTime = (TIMEGETTIME_T)
         GetProcAddress(_glfwLibrary.Win32.winmm.instance, "timeGetTime");
 
-    if (!_glfwLibrary.Win32.winmm.joyGetDevCapsA ||
+    if (!_glfwLibrary.Win32.winmm.joyGetDevCaps ||
         !_glfwLibrary.Win32.winmm.joyGetPos ||
         !_glfwLibrary.Win32.winmm.joyGetPosEx ||
         !_glfwLibrary.Win32.winmm.timeGetTime)

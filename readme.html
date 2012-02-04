@@ -285,6 +285,7 @@ version of GLFW.</p>
   <li>Added initial window title parameter to <code>glfwOpenWindow</code></li>
   <li>Added <code>glfwSetGamma</code>, <code>glfwSetGammaRamp</code> and <code>glfwGetGammaRamp</code> functions and <code>GLFWgammaramp</code> type for monitor gamma ramp control</li>
   <li>Changed buffer bit depth parameters of <code>glfwOpenWindow</code> to window hints</li>
+  <li>Changed <code>glfwOpenWindow</code> and <code>glfwSetWindowTitle</code> to use UTF-8 encoded strings</li>
   <li>Renamed <code>glfw.h</code> to <code>glfw3.h</code> to avoid conflicts with 2.x series</li>
   <li>Renamed <code>GLFW_WINDOW</code> token to <code>GLFW_WINDOWED</code></li>
   <li>Renamed <code>GLFW_WINDOW_NO_RESIZE</code> to <code>GLFW_WINDOW_RESIZABLE</code></li>
@@ -315,8 +316,11 @@ version of GLFW.</p>
   <li>[X11] Added support for the <code>GLX_EXT_swap_control</code> extension as an alternative to <code>GLX_SGI_swap_control</code></li>
   <li>[X11] Added the POSIX <code>CLOCK_MONOTONIC</code> time source as the preferred method</li>
   <li>[X11] Added dependency on libm, where present</li>
+  <li>[X11] Added support for the <code>_NET_WM_NAME</code> and <code>_NET_WM_ICON_NAME</code> EWMH window properties</li>
+  <li>[X11] Bugfix: Some window properties required by the ICCCM were not set</li>
   <li>[X11] Bugfix: Calling <code>glXCreateContextAttribsARB</code> with an unavailable OpenGL version caused the application to terminate with a <code>BadMatch</code> Xlib error</li>
   <li>[X11] Bugfix: A synchronization point necessary for jitter-free locked cursor mode was incorrectly removed</li>
+  <li>[Win32] Changed port to use Unicode mode only</li>
   <li>[Win32] Removed explicit support for versions of Windows older than Windows XP</li>
   <li>[Win32] Bugfix: Window activation and iconification did not work as expected</li>
   <li>[Win32] Bugfix: Software rasterizer pixel formats were not discarded by the WGL_ARB_pixel_format code path</li>
@@ -861,6 +865,8 @@ their skills.  Special thanks go out to:</p>
   language</li>
 
   <li>Tristam MacDonald, for his bug reports and feedback on the Cocoa port</li>
+
+  <li>Hans 'Hanmac' Mackowiak, for adding UTF-8 window title support on X11</li>
 
   <li>David Medlock, for doing the initial Lua port</li>
 

@@ -67,25 +67,12 @@ void _glfwFree(void* ptr)
 // Initialize various GLFW state
 //========================================================================
 
-GLFWAPI int glfwInit(void)
-{
-    return glfwInitWithModels(NULL, NULL);
-}
-
-
-//========================================================================
-// Initialize various GLFW state using custom model interfaces
-//========================================================================
-
-GLFWAPI int glfwInitWithModels(GLFWthreadmodel* threading, GLFWallocator* allocator)
+GLFWAPI int glfwInit(GLFWallocator* allocator)
 {
     if (_glfwInitialized)
         return GL_TRUE;
 
     memset(&_glfwLibrary, 0, sizeof(_glfwLibrary));
-
-    if (threading)
-        _glfwLibrary.threading = *threading;
 
     if (allocator)
     {

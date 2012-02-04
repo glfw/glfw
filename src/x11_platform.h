@@ -46,13 +46,6 @@
 // extensions and not all operating systems come with an up-to-date version
 #include "../support/GL/glxext.h"
 
-
-// We need declarations for GLX version 1.3 or above even if the server doesn't
-// support version 1.3
-#ifndef GLX_VERSION_1_3
- #error "GLX header version 1.3 or above is required"
-#endif
-
 // With XFree86, we can use the XF86VidMode extension
 #if defined(_GLFW_HAS_XF86VIDMODE)
  #include <X11/extensions/xf86vmode.h>

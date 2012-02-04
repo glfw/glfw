@@ -379,7 +379,7 @@ int main(int argc, char* argv[])
     GLFWwindow window;
     double t, dt_total, t_old;
 
-    if (!glfwInit())
+    if (!glfwInit(NULL))
     {
         fprintf(stderr, "GLFW initialization failed\n");
         exit(EXIT_FAILURE);

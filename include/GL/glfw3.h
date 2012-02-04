@@ -506,20 +506,13 @@ typedef struct
     GLFWfreefun free;
 } GLFWallocator;
 
-/* Custom threading model interface */
-typedef struct
-{
-    int dummy;
-} GLFWthreadmodel;
-
 
 /*************************************************************************
  * Prototypes
  *************************************************************************/
 
 /* Initialization, termination and version querying */
-GLFWAPI int  glfwInit(void);
-GLFWAPI int  glfwInitWithModels(GLFWthreadmodel* threading, GLFWallocator* allocator);
+GLFWAPI int  glfwInit(GLFWallocator* allocator);
 GLFWAPI void glfwTerminate(void);
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
 GLFWAPI const char* glfwGetVersionString(void);

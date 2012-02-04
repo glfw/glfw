@@ -241,7 +241,6 @@ struct _GLFWlibrary
     GLFWkeyfun           keyCallback;
     GLFWcharfun          charCallback;
 
-    GLFWthreadmodel      threading;
     GLFWallocator        allocator;
 
     GLFWgammaramp currentRamp;

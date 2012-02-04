@@ -15,7 +15,7 @@ int main(void)
     GLFWwindow window;
 
     // Initialise GLFW
-    if (!glfwInit())
+    if (!glfwInit(NULL))
     {
         fprintf(stderr, "Failed to initialize GLFW\n");
         exit(EXIT_FAILURE);

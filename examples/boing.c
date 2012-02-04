@@ -569,7 +569,7 @@ int main( void )
    GLFWwindow window;
 
    /* Init GLFW */
-   if( !glfwInit() )
+   if( !glfwInit(NULL) )
    {
       fprintf( stderr, "Failed to initialize GLFW\n" );
       exit( EXIT_FAILURE );

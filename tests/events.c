@@ -330,7 +330,7 @@ int main(void)
 
     setlocale(LC_ALL, "");
 
-    if (!glfwInit())
+    if (!glfwInit(NULL))
     {
         fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);

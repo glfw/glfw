@@ -4,6 +4,7 @@ CMakeCache.txt
 Makefile
 cmake_uninstall.cmake
 .DS_Store
+docs/Doxyfile
 src/config.h
 src/libglfw.pc
 src/libglfw.so
@@ -32,6 +33,7 @@ tests/peter
 tests/reopen
 tests/sharing
 tests/tearing
+tests/title
 tests/windows
 tests/*.app
 tests/*.exe

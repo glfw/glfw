@@ -21,7 +21,7 @@ int main(void)
     GLFWvidmode dtmode, modes[400];
     int modecount, i;
 
-    if (!glfwInit())
+    if (!glfwInit(NULL))
     {
         fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);

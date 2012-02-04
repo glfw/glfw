@@ -569,7 +569,7 @@ int main( void )
    GLFWwindow window;
 
    /* Init GLFW */
-   if( !glfwInit() )
+   if( !glfwInit(NULL) )
    {
       fprintf( stderr, "Failed to initialize GLFW\n" );
       exit( EXIT_FAILURE );
@@ -586,7 +586,7 @@ int main( void )
    }
 
    glfwSetWindowSizeCallback( reshape );
-   glfwEnable( window, GLFW_STICKY_KEYS );
+   glfwSetInputMode( window, GLFW_STICKY_KEYS, GL_TRUE );
    glfwSwapInterval( 1 );
    glfwSetTime( 0.0 );
 

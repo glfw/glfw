@@ -267,6 +267,77 @@ void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y)
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
+// Returns the specified input mode of the specified window
+//========================================================================
+
+GLFWAPI int glfwGetInputMode(GLFWwindow handle, int mode)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return 0;
+    }
+
+    switch (mode)
+    {
+        case GLFW_CURSOR_MODE:
+            return window->cursorMode;
+        case GLFW_STICKY_KEYS:
+            return window->stickyKeys;
+        case GLFW_STICKY_MOUSE_BUTTONS:
+            return window->stickyMouseButtons;
+        case GLFW_SYSTEM_KEYS:
+            return window->systemKeys;
+        case GLFW_KEY_REPEAT:
+            return window->keyRepeat;
+        default:
+            _glfwSetError(GLFW_INVALID_ENUM, NULL);
+            return 0;
+    }
+}
+
+
+//========================================================================
+// Sets the specified input mode of the specified window
+//========================================================================
+
+GLFWAPI void glfwSetInputMode(GLFWwindow handle, int mode, int value)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    switch (mode)
+    {
+        case GLFW_CURSOR_MODE:
+            setCursorMode(window, value);
+            break;
+        case GLFW_STICKY_KEYS:
+            setStickyKeys(window, value ? GL_TRUE : GL_FALSE);
+            break;
+        case GLFW_STICKY_MOUSE_BUTTONS:
+            setStickyMouseButtons(window, value ? GL_TRUE : GL_FALSE);
+            break;
+        case GLFW_SYSTEM_KEYS:
+            setSystemKeys(window, value ? GL_TRUE : GL_FALSE);
+            break;
+        case GLFW_KEY_REPEAT:
+            setKeyRepeat(window, value ? GL_TRUE : GL_FALSE);
+            break;
+        default:
+            _glfwSetError(GLFW_INVALID_ENUM, NULL);
+            break;
+    }
+}
+
+
+//========================================================================
 // Returns the state of the specified key for the specified window
 //========================================================================
 
@@ -391,77 +462,6 @@ GLFWAPI void glfwSetMousePos(GLFWwindow handle, int xpos, int ypos)
 
     // Update physical cursor position
     _glfwPlatformSetMouseCursorPos(window, xpos, ypos);
-}
-
-
-//========================================================================
-// Returns the specified input mode of the specified window
-//========================================================================
-
-GLFWAPI int glfwGetInputMode(GLFWwindow handle, int mode)
-{
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return 0;
-    }
-
-    switch (mode)
-    {
-        case GLFW_CURSOR_MODE:
-            return window->cursorMode;
-        case GLFW_STICKY_KEYS:
-            return window->stickyKeys;
-        case GLFW_STICKY_MOUSE_BUTTONS:
-            return window->stickyMouseButtons;
-        case GLFW_SYSTEM_KEYS:
-            return window->systemKeys;
-        case GLFW_KEY_REPEAT:
-            return window->keyRepeat;
-        default:
-            _glfwSetError(GLFW_INVALID_ENUM, NULL);
-            return 0;
-    }
-}
-
-
-//========================================================================
-// Sets the specified input mode of the specified window
-//========================================================================
-
-GLFWAPI void glfwSetInputMode(GLFWwindow handle, int mode, int value)
-{
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    switch (mode)
-    {
-        case GLFW_CURSOR_MODE:
-            setCursorMode(window, value);
-            break;
-        case GLFW_STICKY_KEYS:
-            setStickyKeys(window, value ? GL_TRUE : GL_FALSE);
-            break;
-        case GLFW_STICKY_MOUSE_BUTTONS:
-            setStickyMouseButtons(window, value ? GL_TRUE : GL_FALSE);
-            break;
-        case GLFW_SYSTEM_KEYS:
-            setSystemKeys(window, value ? GL_TRUE : GL_FALSE);
-            break;
-        case GLFW_KEY_REPEAT:
-            setKeyRepeat(window, value ? GL_TRUE : GL_FALSE);
-            break;
-        default:
-            _glfwSetError(GLFW_INVALID_ENUM, NULL);
-            break;
-    }
 }
 
 

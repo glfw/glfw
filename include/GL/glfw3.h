@@ -564,12 +564,12 @@ GLFWAPI void glfwPollEvents(void);
 GLFWAPI void glfwWaitEvents(void);
 
 /* Input handling */
+GLFWAPI int  glfwGetInputMode(GLFWwindow window, int mode);
+GLFWAPI void glfwSetInputMode(GLFWwindow window, int mode, int value);
 GLFWAPI int  glfwGetKey(GLFWwindow window, int key);
 GLFWAPI int  glfwGetMouseButton(GLFWwindow window, int button);
 GLFWAPI void glfwGetMousePos(GLFWwindow window, int* xpos, int* ypos);
 GLFWAPI void glfwSetMousePos(GLFWwindow window, int xpos, int ypos);
-GLFWAPI int  glfwGetInputMode(GLFWwindow window, int mode);
-GLFWAPI void glfwSetInputMode(GLFWwindow window, int mode, int value);
 GLFWAPI void glfwGetScrollOffset(GLFWwindow window, int* xoffset, int* yoffset);
 GLFWAPI void glfwSetKeyCallback(GLFWkeyfun cbfun);
 GLFWAPI void glfwSetCharCallback(GLFWcharfun cbfun);

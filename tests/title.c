@@ -1,5 +1,5 @@
 //========================================================================
-// Vsync enabling test
+// UTF-8 window title test
 // Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
@@ -23,8 +23,7 @@
 //
 //========================================================================
 //
-// This test renders a high contrast, horizontally moving bar, allowing for
-// visual verification of whether the set swap interval is indeed obeyed
+// This test sets a UTF-8 window title
 //
 //========================================================================
 
@@ -32,7 +31,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
 static void window_size_callback(GLFWwindow window, int width, int height)
 {
@@ -41,7 +39,6 @@ static void window_size_callback(GLFWwindow window, int width, int height)
 
 int main(void)
 {
-    float position;
     GLFWwindow window;
 
     if (!glfwInit(NULL))
@@ -50,34 +47,24 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Tearing Detector", NULL);
+    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "English 日本語 русский язык 官話", NULL);
     if (!window)
     {
-        glfwTerminate();
-
         fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
 
-    glfwSetWindowSizeCallback(window_size_callback);
     glfwSwapInterval(1);
 
-    glMatrixMode(GL_PROJECTION);
-    glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);
-    glMatrixMode(GL_MODELVIEW);
+    glfwSetWindowSizeCallback(window_size_callback);
 
     while (glfwIsWindow(window) == GL_TRUE)
     {
         glClear(GL_COLOR_BUFFER_BIT);
-
-        position = cosf(glfwGetTime() * 4.f) * 0.75f;
-        glRectf(position - 0.25f, -1.f, position + 0.25f, 1.f);
-
         glfwSwapBuffers();
-        glfwPollEvents();
+        glfwWaitEvents();
     }
 
-    glfwTerminate();
     exit(EXIT_SUCCESS);
 }
 

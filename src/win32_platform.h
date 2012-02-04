@@ -45,6 +45,8 @@
 // thinks it is the only one that gets to do so
 #undef APIENTRY
 
+#define UNICODE
+
 #include <windows.h>
 #include <mmsystem.h>
 #include <Dbt.h>
@@ -163,7 +165,7 @@ typedef BOOL (WINAPI * SETDEVICEGAMMARAMP_T) (HDC,PVOID);
 
 // winmm.dll function pointer typedefs
 #ifndef _GLFW_NO_DLOAD_WINMM
-typedef MMRESULT (WINAPI * JOYGETDEVCAPSA_T) (UINT,LPJOYCAPSA,UINT);
+typedef MMRESULT (WINAPI * JOYGETDEVCAPS_T) (UINT,LPJOYCAPS,UINT);
 typedef MMRESULT (WINAPI * JOYGETPOS_T) (UINT,LPJOYINFO);
 typedef MMRESULT (WINAPI * JOYGETPOSEX_T) (UINT,LPJOYINFOEX);
 typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
@@ -191,12 +193,12 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 
 // winmm.dll shortcuts
 #ifndef _GLFW_NO_DLOAD_WINMM
-#define _glfw_joyGetDevCaps _glfwLibrary.Win32.winmm.joyGetDevCapsA
+#define _glfw_joyGetDevCaps _glfwLibrary.Win32.winmm.joyGetDevCaps
 #define _glfw_joyGetPos     _glfwLibrary.Win32.winmm.joyGetPos
 #define _glfw_joyGetPosEx   _glfwLibrary.Win32.winmm.joyGetPosEx
 #define _glfw_timeGetTime   _glfwLibrary.Win32.winmm.timeGetTime
 #else
-#define _glfw_joyGetDevCaps joyGetDevCapsA
+#define _glfw_joyGetDevCaps joyGetDevCaps
 #define _glfw_joyGetPos     joyGetPos
 #define _glfw_joyGetPosEx   joyGetPosEx
 #define _glfw_timeGetTime   timeGetTime
@@ -205,7 +207,7 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 
 // We use versioned window class names in order not to cause conflicts
 // between applications using different versions of GLFW
-#define _GLFW_WNDCLASSNAME "GLFW30"
+#define _GLFW_WNDCLASSNAME L"GLFW30"
 
 
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowWin32 Win32
@@ -311,7 +313,7 @@ typedef struct _GLFWlibraryWin32
     // winmm.dll
     struct {
         HINSTANCE             instance;
-        JOYGETDEVCAPSA_T      joyGetDevCapsA;
+        JOYGETDEVCAPS_T       joyGetDevCaps;
         JOYGETPOS_T           joyGetPos;
         JOYGETPOSEX_T         joyGetPosEx;
         TIMEGETTIME_T         timeGetTime;

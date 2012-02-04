@@ -46,13 +46,6 @@
 // extensions and not all operating systems come with an up-to-date version
 #include "../support/GL/glxext.h"
 
-
-// We need declarations for GLX version 1.3 or above even if the server doesn't
-// support version 1.3
-#ifndef GLX_VERSION_1_3
- #error "GLX header version 1.3 or above is required"
-#endif
-
 // With XFree86, we can use the XF86VidMode extension
 #if defined(_GLFW_HAS_XF86VIDMODE)
  #include <X11/extensions/xf86vmode.h>
@@ -142,6 +135,8 @@ typedef struct _GLFWwindowX11
     Colormap      colormap;          // Window colormap
     Window        handle;            // Window handle
     Atom          wmDeleteWindow;    // WM_DELETE_WINDOW atom
+    Atom          wmName;            // _NET_WM_NAME atom
+    Atom          wmIconName;        // _NET_WM_ICON_NAME atom
     Atom          wmPing;            // _NET_WM_PING atom
     Atom          wmState;           // _NET_WM_STATE atom
     Atom          wmStateFullscreen; // _NET_WM_STATE_FULLSCREEN atom

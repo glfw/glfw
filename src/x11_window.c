@@ -195,6 +195,12 @@ static GLboolean hasEWMH(_GLFWwindow* window)
     window->X11.wmStateFullscreen =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_FULLSCREEN");
 
+    window->X11.wmName =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_NAME");
+
+    window->X11.wmIconName =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_ICON_NAME");
+
     window->X11.wmPing =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_PING");
 
@@ -1509,9 +1515,39 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
-    // Set window & icon title
-    XStoreName(_glfwLibrary.X11.display, window->X11.handle, title);
-    XSetIconName(_glfwLibrary.X11.display, window->X11.handle, title);
+    Atom type = XInternAtom(_glfwLibrary.X11.display, "UTF8_STRING", False);
+
+#if defined(X_HAVE_UTF8_STRING)
+    Xutf8SetWMProperties(_glfwLibrary.X11.display,
+                         window->X11.handle,
+                         title, title,
+                         NULL, 0,
+                         NULL, NULL, NULL);
+#else
+    // This may be a slightly better fallback than using XStoreName and
+    // XSetIconName, which always store their arguments using STRING
+    XmbSetWMProperties(_glfwLibrary.X11.display,
+                       window->X11.handle,
+                       title, title,
+                       NULL, 0,
+                       NULL, NULL, NULL);
+#endif
+
+    if (window->X11.wmName != None)
+    {
+        XChangeProperty(_glfwLibrary.X11.display,  window->X11.handle,
+                        window->X11.wmName, type, 8,
+                        PropModeReplace,
+                        (unsigned char*) title, strlen(title));
+    }
+
+    if (window->X11.wmIconName != None)
+    {
+        XChangeProperty(_glfwLibrary.X11.display,  window->X11.handle,
+                        window->X11.wmIconName, type, 8,
+                        PropModeReplace,
+                        (unsigned char*) title, strlen(title));
+    }
 }
 
 

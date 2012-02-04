@@ -309,13 +309,13 @@ void mouse_button_callback(GLFWwindow window, int button, int action)
 
     if (action == GLFW_PRESS)
     {
-        glfwSetCursorMode(window, GLFW_CURSOR_CAPTURED);
+        glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_CAPTURED);
         locked = GL_TRUE;
     }
     else
     {
         locked = GL_FALSE;
-        glfwSetCursorMode(window, GLFW_CURSOR_NORMAL);
+        glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_NORMAL);
     }
 }
 
@@ -379,7 +379,7 @@ int main(int argc, char* argv[])
     GLFWwindow window;
     double t, dt_total, t_old;
 
-    if (!glfwInit())
+    if (!glfwInit(NULL))
     {
         fprintf(stderr, "GLFW initialization failed\n");
         exit(EXIT_FAILURE);
@@ -396,7 +396,7 @@ int main(int argc, char* argv[])
 
     // Keyboard handler
     glfwSetKeyCallback(key_callback);
-    glfwEnable(window, GLFW_KEY_REPEAT);
+    glfwSetInputMode(window, GLFW_KEY_REPEAT, GL_TRUE);
 
     // Window resize handler
     glfwSetWindowSizeCallback(window_resize_callback);

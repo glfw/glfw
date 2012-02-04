@@ -34,6 +34,31 @@
 
 
 //========================================================================
+// Convert the specified UTF-8 string to a wide string
+//========================================================================
+
+static WCHAR* createWideStringFromUTF8(const char* source)
+{
+    WCHAR* target;
+    int length;
+
+    length = MultiByteToWideChar(CP_UTF8, 0, source, -1, NULL, 0);
+    if (!length)
+        return NULL;
+
+    target = (WCHAR*) _glfwMalloc(sizeof(WCHAR) * (length + 1));
+
+    if (!MultiByteToWideChar(CP_UTF8, 0, source, -1, target, length + 1))
+    {
+        _glfwFree(target);
+        return NULL;
+    }
+
+    return target;
+}
+
+
+//========================================================================
 // Convert BPP to RGB bits based on "best guess"
 //========================================================================
 
@@ -1229,7 +1254,7 @@ static ATOM registerWindowClass(void)
     wc.lpszClassName = _GLFW_WNDCLASSNAME;            // Set class name
 
     // Load user-provided icon if available
-    wc.hIcon = LoadIcon(_glfwLibrary.Win32.instance, "GLFW_ICON");
+    wc.hIcon = LoadIcon(_glfwLibrary.Win32.instance, L"GLFW_ICON");
     if (!wc.hIcon)
     {
         // Load default icon
@@ -1289,9 +1314,10 @@ static int createWindow(_GLFWwindow* window,
                         const _GLFWfbconfig* fbconfig)
 {
     DWORD dwStyle, dwExStyle;
-    int pixelFormat, fullWidth, fullHeight;
+    int length, pixelFormat, fullWidth, fullHeight;
     RECT wa;
     POINT pos;
+    WCHAR* wideTitle;
 
     // Set common window styles
     dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE;
@@ -1340,9 +1366,17 @@ static int createWindow(_GLFWwindow* window,
     else
         SystemParametersInfo(SPI_GETWORKAREA, 0, &wa, 0);
 
+    wideTitle = createWideStringFromUTF8(wndconfig->title);
+    if (!wideTitle)
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "glfwOpenWindow: Failed to convert title to wide string");
+        return;
+    }
+
     window->Win32.handle = CreateWindowEx(window->Win32.dwExStyle,
                                           _GLFW_WNDCLASSNAME,
-                                          wndconfig->title,
+                                          wideTitle,
                                           window->Win32.dwStyle,
                                           wa.left, wa.top,       // Window position
                                           fullWidth,             // Decorated window width
@@ -1357,6 +1391,8 @@ static int createWindow(_GLFWwindow* window,
         _glfwSetError(GLFW_PLATFORM_ERROR, "Win32/WGL: Failed to create window");
         return GL_FALSE;
     }
+
+    _glfwFree(wideTitle);
 
     window->WGL.DC = GetDC(window->Win32.handle);
     if (!window->WGL.DC)
@@ -1577,7 +1613,17 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
-    SetWindowText(window->Win32.handle, title);
+    WCHAR* wideTitle = createWideStringFromUTF8(title);
+    if (!wideTitle)
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "glfwSetWindowTitle: Failed to convert title to wide string");
+        return;
+    }
+
+    SetWindowText(window->Win32.handle, wideTitle);
+
+    _glfwFree(wideTitle);
 }
 
 

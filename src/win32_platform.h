@@ -45,7 +45,13 @@
 // thinks it is the only one that gets to do so
 #undef APIENTRY
 
-#define UNICODE
+// GLFW on Windows is Unicode only and does not work in MBCS mode
+#ifndef UNICODE
+ #define UNICODE
+#endif
+
+// GLFW requires Windows XP
+#define WINVER 0x0501
 
 #include <windows.h>
 #include <mmsystem.h>

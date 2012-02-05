@@ -49,7 +49,7 @@
 
 #include <windows.h>
 #include <mmsystem.h>
-#include <Dbt.h>
+#include <dbt.h>
 
 // This path may need to be changed if you build GLFW using your own setup
 // We ship and use our own copy of wglext.h since GLFW uses fairly new
@@ -339,9 +339,8 @@ typedef struct _GLFWmonitorWin32
 void _glfwInitTimer(void);
 
 // Monitor support
-void _glfwInitMonitors(void);
-void _glfwRefreshMonitors(void);
-void _glfwTerminateMonitors(void);
+_GLFWmonitor* _glfwCreateMonitors(void);
+_GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor);
 
 // Fullscreen support
 void _glfwSetVideoMode(int* width, int* height,

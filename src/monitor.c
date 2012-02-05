@@ -145,3 +145,106 @@ GLFWAPI void glfwSetMonitorDeviceCallback(GLFWmonitordevicefun cbfun)
     _glfwLibrary.monitorCallback= cbfun;
 }
 
+//========================================================================
+// Initialize the monitor list.
+//========================================================================
+
+void _glfwInitMonitors(void)
+{
+    _glfwLibrary.monitorListHead = _glfwCreateMonitors();
+}
+
+//========================================================================
+// Refresh monitor list and notify callback.
+//========================================================================
+
+void _glfwRefreshMonitors(void)
+{
+    _GLFWmonitor* newMonitorList;
+    _GLFWmonitor* curNewMonitor;
+    _GLFWmonitor* curOldMonitor;
+
+    newMonitorList = _glfwCreateMonitors();
+    curNewMonitor = newMonitorList;
+    curOldMonitor = _glfwLibrary.monitorListHead;
+
+    while (_glfwLibrary.monitorCallback && (curNewMonitor || curOldMonitor))
+    {
+        _GLFWmonitor* lookAheadOldMonitor;
+        _GLFWmonitor* lookAheadNewMonitor;
+
+        if (curOldMonitor && curNewMonitor && !strcmp(curOldMonitor->name, curOldMonitor->name))
+        {
+            curNewMonitor = curNewMonitor->next;
+            curOldMonitor = curOldMonitor->next;
+            continue;
+        }
+
+        if (curNewMonitor && !curOldMonitor)
+        {
+            _glfwLibrary.monitorCallback(curNewMonitor, GLFW_MONITOR_CONNECTED);
+            curNewMonitor = curNewMonitor->next;
+            continue;
+        }
+
+        if (!curNewMonitor && curOldMonitor)
+        {
+            _glfwLibrary.monitorCallback(curOldMonitor, GLFW_MONITOR_DISCONNECTED);
+            curOldMonitor = curOldMonitor->next;
+            continue;
+        }
+
+        lookAheadOldMonitor = curOldMonitor->next;
+        lookAheadNewMonitor = curNewMonitor->next;
+
+        while (lookAheadOldMonitor && !strcmp(curNewMonitor->name, lookAheadOldMonitor->name))
+            lookAheadOldMonitor = lookAheadOldMonitor->next;
+
+        while (lookAheadNewMonitor && !strcmp(curOldMonitor->name, lookAheadNewMonitor->name))
+            lookAheadNewMonitor = lookAheadNewMonitor->next;
+
+        if (!lookAheadOldMonitor)
+        {
+            // nothing found in the old monitor list, that matches the current new monitor.
+            _glfwLibrary.monitorCallback(curNewMonitor, GLFW_MONITOR_CONNECTED);
+            curNewMonitor = curNewMonitor->next;
+        }
+        else
+        {
+            while (strcmp(curOldMonitor->name, lookAheadOldMonitor->name))
+            {
+                _glfwLibrary.monitorCallback(curOldMonitor, GLFW_MONITOR_DISCONNECTED);
+                curOldMonitor = curOldMonitor->next;
+            }
+        }
+
+        if (!lookAheadNewMonitor)
+        {
+            // nothing found in the new monitor list, that matches the current old monitor.
+            _glfwLibrary.monitorCallback(curOldMonitor, GLFW_MONITOR_DISCONNECTED);
+            curOldMonitor = curOldMonitor->next;
+        }
+        else
+        {
+            while (strcmp(curNewMonitor->name, lookAheadNewMonitor->name))
+            {
+                _glfwLibrary.monitorCallback(curNewMonitor, GLFW_MONITOR_CONNECTED);
+                curNewMonitor = curNewMonitor->next;
+            }
+        }
+    }
+
+    _glfwTerminateMonitors();
+    _glfwLibrary.monitorListHead = newMonitorList;
+}
+
+//========================================================================
+// Delete the monitor list.
+//========================================================================
+
+void _glfwTerminateMonitors(void)
+{
+    while (_glfwLibrary.monitorListHead)
+        _glfwLibrary.monitorListHead = _glfwDestroyMonitor(_glfwLibrary.monitorListHead);
+}
+

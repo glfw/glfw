@@ -65,6 +65,13 @@
 // extensions and not all operating systems come with an up-to-date version
 #include "../support/GL/glext.h"
 
+typedef struct _GLFWhints _GLFWhints;
+typedef struct _GLFWwndconfig _GLFWwndconfig;
+typedef struct _GLFWfbconfig _GLFWfbconfig;
+typedef struct _GLFWwindow _GLFWwindow;
+typedef struct _GLFWlibrary _GLFWlibrary;
+typedef struct _GLFWmonitor _GLFWmonitor;
+
 #if defined(_GLFW_COCOA_NSGL)
 #include "cocoa_platform.h"
 #elif defined(_GLFW_WIN32_WGL)
@@ -74,14 +81,6 @@
 #else
 #error "No supported platform selected"
 #endif
-
-typedef struct _GLFWhints _GLFWhints;
-typedef struct _GLFWwndconfig _GLFWwndconfig;
-typedef struct _GLFWfbconfig _GLFWfbconfig;
-typedef struct _GLFWwindow _GLFWwindow;
-typedef struct _GLFWlibrary _GLFWlibrary;
-typedef struct _GLFWmonitor _GLFWmonitor;
-
 
 //------------------------------------------------------------------------
 // Window hints, set by glfwOpenWindowHint and consumed by glfwOpenWindow
@@ -386,5 +385,9 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
 GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig);
 GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig);
 
+// Monitor management (monitor.c)
+void _glfwInitMonitors(void);
+void _glfwRefreshMonitors(void);
+void _glfwTerminateMonitors(void);
 
 #endif // _internal_h_

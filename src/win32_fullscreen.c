@@ -229,7 +229,7 @@ int  _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, GLFWvidmode* list, int ma
     }
 
     if (list && maxcount)
-        memcpy(list, vidModes, sizeof(GLFWvidmode) * min(vidModesCount, maxcount));
+        memcpy(list, vidModes, sizeof(GLFWvidmode) * ((vidModesCount < maxcount) ? vidModesCount : maxcount));
 
     free(vidModes);
 

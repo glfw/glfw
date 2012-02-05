@@ -38,6 +38,11 @@
 #define EDS_ROTATEDMODE 0x00000004
 #endif
 
+// The MinGW upstream lacks this
+#ifndef DISPLAY_DEVICE_ACTIVE
+#define DISPLAY_DEVICE_ACTIVE 0x00000001
+#endif
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -83,29 +88,21 @@ _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
     return result;
 }
 
-// todo: This is ugly. The platform should only allocate a list of the current devices.
-// The platform independent code should be in charge of the handling for the initial
-// setup, refreshing and freeing the list.
-void _glfwInitMonitors(void)
+_GLFWmonitor* _glfwCreateMonitors(void)
 {
-    _GLFWmonitor** curMonitor;
-
     DISPLAY_DEVICE adapter;
     DWORD adapterNum;
-
     DISPLAY_DEVICE monitor;
-
     DEVMODE setting;
-    DWORD settingNum;
-
-    curMonitor = &_glfwLibrary.monitorListHead;
+    _GLFWmonitor* monitorList;
+    _GLFWmonitor** curMonitor;
 
     adapter.cb = sizeof(DISPLAY_DEVICE);
     adapterNum = 0;
-
     monitor.cb = sizeof(DISPLAY_DEVICE);
     setting.dmSize = sizeof(DEVMODE);
-    settingNum = 0;
+    monitorList = NULL;
+    curMonitor = &monitorList;
 
     while (EnumDisplayDevices(NULL, adapterNum++, &adapter, 0))
     {
@@ -121,111 +118,7 @@ void _glfwInitMonitors(void)
 
         curMonitor = _glfwCreateMonitor(curMonitor, &adapter, &monitor, &setting);
     }
-}
 
-void _glfwRefreshMonitors(void)
-{
-    DISPLAY_DEVICE adapter;
-    DWORD adapterNum = 0;
-
-    DISPLAY_DEVICE monitor;
-
-    DEVMODE setting;
-
-    _GLFWmonitor* newMonitorList = NULL;
-    _GLFWmonitor** curMonitor = &newMonitorList;
-
-    _GLFWmonitor* curNewMonitor;
-    _GLFWmonitor* curOldMonitor;
-
-    while (EnumDisplayDevices(NULL, adapterNum++, &adapter, 0))
-    {
-        if (adapter.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER || !(adapter.StateFlags & DISPLAY_DEVICE_ACTIVE))
-            continue;
-
-        EnumDisplaySettingsEx(adapter.DeviceName, ENUM_CURRENT_SETTINGS, &setting, EDS_ROTATEDMODE);
-
-        EnumDisplayDevices(adapter.DeviceName, 0, &monitor, 0);
-
-        curMonitor = _glfwCreateMonitor(curMonitor, &adapter, &monitor, &setting);
-    }
-
-    curNewMonitor = newMonitorList;
-    curOldMonitor = _glfwLibrary.monitorListHead;
-
-    while (_glfwLibrary.monitorCallback && (curNewMonitor || curOldMonitor))
-    {
-        _GLFWmonitor* lookAheadOldMonitor;
-        _GLFWmonitor* lookAheadNewMonitor;
-
-        if (curOldMonitor && curNewMonitor && !strcmp(curOldMonitor->name, curOldMonitor->name))
-        {
-            curNewMonitor = curNewMonitor->next;
-            curOldMonitor = curOldMonitor->next;
-            continue;
-        }
-
-        if (curNewMonitor && !curOldMonitor)
-        {
-            _glfwLibrary.monitorCallback(curNewMonitor, GLFW_MONITOR_CONNECTED);
-            curNewMonitor = curNewMonitor->next;
-            continue;
-        }
-
-        if (!curNewMonitor && curOldMonitor)
-        {
-            _glfwLibrary.monitorCallback(curOldMonitor, GLFW_MONITOR_DISCONNECTED);
-            curOldMonitor = curOldMonitor->next;
-            continue;
-        }
-
-        lookAheadOldMonitor = curOldMonitor->next;
-        lookAheadNewMonitor = curNewMonitor->next;
-
-        while (lookAheadOldMonitor && !strcmp(curNewMonitor->name, lookAheadOldMonitor->name))
-            lookAheadOldMonitor = lookAheadOldMonitor->next;
-
-        while (lookAheadNewMonitor && !strcmp(curOldMonitor->name, lookAheadNewMonitor->name))
-            lookAheadNewMonitor = lookAheadNewMonitor->next;
-
-        if (!lookAheadOldMonitor)
-        {
-            // nothing found in the old monitor list, that matches the current new monitor.
-            _glfwLibrary.monitorCallback(curNewMonitor, GLFW_MONITOR_CONNECTED);
-            curNewMonitor = curNewMonitor->next;
-        }
-        else
-        {
-            while (strcmp(curOldMonitor->name, lookAheadOldMonitor->name))
-            {
-                _glfwLibrary.monitorCallback(curOldMonitor, GLFW_MONITOR_DISCONNECTED);
-                curOldMonitor = curOldMonitor->next;
-            }
-        }
-
-        if (!lookAheadNewMonitor)
-        {
-            // nothing found in the new monitor list, that matches the current old monitor.
-            _glfwLibrary.monitorCallback(curOldMonitor, GLFW_MONITOR_DISCONNECTED);
-            curOldMonitor = curOldMonitor->next;
-        }
-        else
-        {
-            while (strcmp(curNewMonitor->name, lookAheadNewMonitor->name))
-            {
-                _glfwLibrary.monitorCallback(curNewMonitor, GLFW_MONITOR_CONNECTED);
-                curNewMonitor = curNewMonitor->next;
-            }
-        }
-    }
-
-    _glfwTerminateMonitors();
-    _glfwLibrary.monitorListHead = newMonitorList;
-}
-
-void _glfwTerminateMonitors(void)
-{
-    while (_glfwLibrary.monitorListHead)
-        _glfwLibrary.monitorListHead = _glfwDestroyMonitor(_glfwLibrary.monitorListHead);
+    return monitorList;
 }
 

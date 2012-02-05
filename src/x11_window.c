@@ -1372,6 +1372,7 @@ static void processSingleEvent(void)
                 {
                     // Show XRandR that we really care
                     XRRUpdateConfiguration(&event);
+                    _glfwRefreshMonitors();
                     break;
                 }
             }
@@ -1429,18 +1430,18 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     if (!createWindow(window, wndconfig))
         return GL_FALSE;
 
-    if (wndconfig->mode == GLFW_FULLSCREEN)
-    {
 #if defined(_GLFW_HAS_XRANDR)
-        // Request screen change notifications
-        if (_glfwLibrary.X11.RandR.available)
-        {
-            XRRSelectInput(_glfwLibrary.X11.display,
-                           window->X11.handle,
-                           RRScreenChangeNotifyMask);
-        }
+    // Request screen change notifications
+    if (_glfwLibrary.X11.RandR.available)
+    {
+        XRRSelectInput(_glfwLibrary.X11.display,
+                       window->X11.handle,
+                       RRScreenChangeNotifyMask);
+    }
 #endif /*_GLFW_HAS_XRANDR*/
 
+    if (wndconfig->mode == GLFW_FULLSCREEN)
+    {
         enterFullscreenMode(window);
     }
 

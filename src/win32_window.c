@@ -35,31 +35,6 @@
 
 
 //========================================================================
-// Convert the specified UTF-8 string to a wide string
-//========================================================================
-
-static WCHAR* createWideStringFromUTF8(const char* source)
-{
-    WCHAR* target;
-    int length;
-
-    length = MultiByteToWideChar(CP_UTF8, 0, source, -1, NULL, 0);
-    if (!length)
-        return NULL;
-
-    target = (WCHAR*) _glfwMalloc(sizeof(WCHAR) * (length + 1));
-
-    if (!MultiByteToWideChar(CP_UTF8, 0, source, -1, target, length + 1))
-    {
-        _glfwFree(target);
-        return NULL;
-    }
-
-    return target;
-}
-
-
-//========================================================================
 // Convert BPP to RGB bits based on "best guess"
 //========================================================================
 
@@ -1357,7 +1332,7 @@ static int createWindow(_GLFWwindow* window,
     else
         SystemParametersInfo(SPI_GETWORKAREA, 0, &wa, 0);
 
-    wideTitle = createWideStringFromUTF8(wndconfig->title);
+    wideTitle = _glfwCreateWideStringFromUTF8(wndconfig->title);
     if (!wideTitle)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
@@ -1604,7 +1579,7 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
-    WCHAR* wideTitle = createWideStringFromUTF8(title);
+    WCHAR* wideTitle = _glfwCreateWideStringFromUTF8(title);
     if (!wideTitle)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,

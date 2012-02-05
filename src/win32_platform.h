@@ -325,6 +325,10 @@ typedef struct _GLFWlibraryWin32
 // Prototypes for platform specific internal functions
 //========================================================================
 
+// Wide strings
+WCHAR* _glfwCreateWideStringFromUTF8(const char* source);
+char* _glfwCreateUTF8FromWideString(const WCHAR* source);
+
 // Time
 void _glfwInitTimer(void);
 

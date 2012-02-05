@@ -132,6 +132,60 @@ static void freeLibraries(void)
 
 
 //////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Returns a wide string version of the specified UTF-8 string
+//========================================================================
+
+WCHAR* _glfwCreateWideStringFromUTF8(const char* source)
+{
+    WCHAR* target;
+    int length;
+
+    length = MultiByteToWideChar(CP_UTF8, 0, source, -1, NULL, 0);
+    if (!length)
+        return NULL;
+
+    target = (WCHAR*) _glfwMalloc(sizeof(WCHAR) * (length + 1));
+
+    if (!MultiByteToWideChar(CP_UTF8, 0, source, -1, target, length + 1))
+    {
+        _glfwFree(target);
+        return NULL;
+    }
+
+    return target;
+}
+
+
+//========================================================================
+// Returns a UTF-8 string version of the specified wide string
+//========================================================================
+
+char* _glfwCreateUTF8FromWideString(const WCHAR* source)
+{
+    char* target;
+    int length;
+
+    length = WideCharToMultiByte(CP_UTF8, 0, source, -1, NULL, 0, NULL, NULL);
+    if (!length)
+        return NULL;
+
+    target = (char*) _glfwMalloc(length + 1);
+
+    if (!WideCharToMultiByte(CP_UTF8, 0, source, -1, target, length + 1, NULL, NULL))
+    {
+        _glfwFree(target);
+        return NULL;
+    }
+
+    return target;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 

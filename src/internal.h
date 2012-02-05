@@ -37,9 +37,9 @@
 //========================================================================
 
 #if defined(_init_c_)
-#define GLFWGLOBAL
+ #define GLFWGLOBAL
 #else
-#define GLFWGLOBAL extern
+ #define GLFWGLOBAL extern
 #endif
 
 
@@ -66,13 +66,13 @@
 #include "../support/GL/glext.h"
 
 #if defined(_GLFW_COCOA_NSGL)
-#include "cocoa_platform.h"
+ #include "cocoa_platform.h"
 #elif defined(_GLFW_WIN32_WGL)
-#include "win32_platform.h"
+ #include "win32_platform.h"
 #elif defined(_GLFW_X11_GLX)
-#include "x11_platform.h"
+ #include "x11_platform.h"
 #else
-#error "No supported platform selected"
+ #error "No supported platform selected"
 #endif
 
 typedef struct _GLFWhints _GLFWhints;

@@ -323,7 +323,7 @@ int main(int argc, char *argv[])
 {
     GLFWwindow window;
 
-    if( !glfwInit(NULL) )
+    if( !glfwInit() )
     {
         fprintf( stderr, "Failed to initialize GLFW\n" );
         exit( EXIT_FAILURE );

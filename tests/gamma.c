@@ -35,11 +35,20 @@
 
 #include "getopt.h"
 
+#define STEP_SIZE 0.1f
+
 static GLfloat gamma = 1.0f;
 
 static void usage(void)
 {
-    printf("Usage: gammatest [-h] [-f]\n");
+    printf("Usage: gamma [-h] [-f]\n");
+}
+
+static void set_gamma(float value)
+{
+    gamma = value;
+    printf("Gamma: %f\n", gamma);
+    glfwSetGamma(gamma);
 }
 
 static void key_callback(GLFWwindow window, int key, int action)
@@ -50,20 +59,26 @@ static void key_callback(GLFWwindow window, int key, int action)
     switch (key)
     {
         case GLFW_KEY_ESCAPE:
+        {
             glfwCloseWindow(window);
             break;
+        }
+
         case GLFW_KEY_KP_ADD:
         case GLFW_KEY_Q:
-            gamma += 0.1f;
-            printf("Gamma: %f\n", gamma);
-            glfwSetGamma(gamma);
+        {
+            set_gamma(gamma + STEP_SIZE);
             break;
+        }
+
         case GLFW_KEY_KP_SUBTRACT:
         case GLFW_KEY_W:
-            gamma -= 0.1f;
-            printf("Gamma: %f\n", gamma);
-            glfwSetGamma(gamma);
+        {
+            if (gamma - STEP_SIZE > 0.f)
+                set_gamma(gamma - STEP_SIZE);
+
             break;
+        }
     }
 }
 
@@ -96,7 +111,7 @@ int main(int argc, char** argv)
         }
     }
 
-    if (!glfwInit(NULL))
+    if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
@@ -124,7 +139,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    printf("Gamma: %f\n", gamma);
+    set_gamma(1.f);
 
     glfwSwapInterval(1);
     glfwSetKeyCallback(key_callback);

@@ -37,9 +37,9 @@
 //========================================================================
 
 #if defined(_init_c_)
-#define GLFWGLOBAL
+ #define GLFWGLOBAL
 #else
-#define GLFWGLOBAL extern
+ #define GLFWGLOBAL extern
 #endif
 
 
@@ -66,13 +66,13 @@
 #include "../support/GL/glext.h"
 
 #if defined(_GLFW_COCOA_NSGL)
-#include "cocoa_platform.h"
+ #include "cocoa_platform.h"
 #elif defined(_GLFW_WIN32_WGL)
-#include "win32_platform.h"
+ #include "win32_platform.h"
 #elif defined(_GLFW_X11_GLX)
-#include "x11_platform.h"
+ #include "x11_platform.h"
 #else
-#error "No supported platform selected"
+ #error "No supported platform selected"
 #endif
 
 typedef struct _GLFWhints _GLFWhints;
@@ -241,8 +241,6 @@ struct _GLFWlibrary
     GLFWkeyfun           keyCallback;
     GLFWcharfun          charCallback;
 
-    GLFWallocator        allocator;
-
     GLFWgammaramp currentRamp;
     GLFWgammaramp originalRamp;
     int           originalRampSize;
@@ -324,10 +322,6 @@ void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long 
 //========================================================================
 // Prototypes for platform independent internal functions
 //========================================================================
-
-// Memory management (init.c)
-void* _glfwMalloc(size_t size);
-void _glfwFree(void* ptr);
 
 // Fullscren management (fullscreen.c)
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);

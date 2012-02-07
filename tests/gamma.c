@@ -124,6 +124,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
+    glfwSetGamma(gamma);
     printf("Gamma: %f\n", gamma);
 
     glfwSwapInterval(1);

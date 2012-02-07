@@ -291,7 +291,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
         height = 480;
     }
 
-    window = (_GLFWwindow*) _glfwMalloc(sizeof(_GLFWwindow));
+    window = (_GLFWwindow*) malloc(sizeof(_GLFWwindow));
     if (!window)
     {
         _glfwSetError(GLFW_OUT_OF_MEMORY,
@@ -492,7 +492,7 @@ GLFWAPI void glfwCloseWindow(GLFWwindow handle)
         *prev = window->next;
     }
 
-    _glfwFree(window);
+    free(window);
 }
 
 

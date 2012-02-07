@@ -573,7 +573,7 @@ int main(int argc, char** argv)
         }
     }
 
-    if (!glfwInit(NULL))
+    if (!glfwInit())
     {
         fprintf(stderr, "ERROR: Unable to initialize GLFW\n");
         usage();

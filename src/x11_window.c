@@ -316,7 +316,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         }
     }
 
-    result = (_GLFWfbconfig*) _glfwMalloc(sizeof(_GLFWfbconfig) * count);
+    result = (_GLFWfbconfig*) malloc(sizeof(_GLFWfbconfig) * count);
     if (!result)
     {
         _glfwSetError(GLFW_OUT_OF_MEMORY,
@@ -1415,12 +1415,12 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         result = _glfwChooseFBConfig(fbconfig, fbconfigs, fbcount);
         if (!result)
         {
-            _glfwFree(fbconfigs);
+            free(fbconfigs);
             return GL_FALSE;
         }
 
         closest = *result;
-        _glfwFree(fbconfigs);
+        free(fbconfigs);
     }
 
     if (!createContext(window, wndconfig, (GLXFBConfigID) closest.platformID))

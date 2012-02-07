@@ -478,8 +478,6 @@ typedef void (* GLFWmouseposfun)(GLFWwindow,int,int);
 typedef void (* GLFWscrollfun)(GLFWwindow,int,int);
 typedef void (* GLFWkeyfun)(GLFWwindow,int,int);
 typedef void (* GLFWcharfun)(GLFWwindow,int);
-typedef void* (* GLFWmallocfun)(size_t);
-typedef void (* GLFWfreefun)(void*);
 
 /* The video mode structure used by glfwGetVideoModes */
 typedef struct
@@ -499,20 +497,13 @@ typedef struct
     unsigned short blue[GLFW_GAMMA_RAMP_SIZE];
 } GLFWgammaramp;
 
-/* Custom memory allocator interface */
-typedef struct
-{
-    GLFWmallocfun malloc;
-    GLFWfreefun free;
-} GLFWallocator;
-
 
 /*************************************************************************
  * Prototypes
  *************************************************************************/
 
 /* Initialization, termination and version querying */
-GLFWAPI int  glfwInit(GLFWallocator* allocator);
+GLFWAPI int  glfwInit(void);
 GLFWAPI void glfwTerminate(void);
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
 GLFWAPI const char* glfwGetVersionString(void);

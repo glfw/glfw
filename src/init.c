@@ -36,30 +36,6 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-//========================================================================
-// Allocate memory using the allocator
-//========================================================================
-
-void* _glfwMalloc(size_t size)
-{
-    return _glfwLibrary.allocator.malloc(size);
-}
-
-
-//========================================================================
-// Free memory using the allocator
-//========================================================================
-
-void _glfwFree(void* ptr)
-{
-    _glfwLibrary.allocator.free(ptr);
-}
-
-
-//////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
 
@@ -67,30 +43,12 @@ void _glfwFree(void* ptr)
 // Initialize various GLFW state
 //========================================================================
 
-GLFWAPI int glfwInit(GLFWallocator* allocator)
+GLFWAPI int glfwInit(void)
 {
     if (_glfwInitialized)
         return GL_TRUE;
 
     memset(&_glfwLibrary, 0, sizeof(_glfwLibrary));
-
-    if (allocator)
-    {
-        // Verify that the specified model is complete
-        if (!allocator->malloc || !allocator->free)
-        {
-            _glfwSetError(GLFW_INVALID_VALUE, NULL);
-            return GL_FALSE;
-        }
-
-        _glfwLibrary.allocator = *allocator;
-    }
-    else
-    {
-        // Use the libc malloc and free
-        _glfwLibrary.allocator.malloc = malloc;
-        _glfwLibrary.allocator.free = free;
-    }
 
     // Not all window hints have zero as their default value, so this
     // needs to be here despite the memset above

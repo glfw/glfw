@@ -47,11 +47,11 @@ static WCHAR* createWideStringFromUTF8(const char* source)
     if (!length)
         return NULL;
 
-    target = (WCHAR*) _glfwMalloc(sizeof(WCHAR) * (length + 1));
+    target = (WCHAR*) malloc(sizeof(WCHAR) * (length + 1));
 
     if (!MultiByteToWideChar(CP_UTF8, 0, source, -1, target, length + 1))
     {
-        _glfwFree(target);
+        free(target);
         return NULL;
     }
 
@@ -220,7 +220,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         return NULL;
     }
 
-    result = (_GLFWfbconfig*) _glfwMalloc(sizeof(_GLFWfbconfig) * count);
+    result = (_GLFWfbconfig*) malloc(sizeof(_GLFWfbconfig) * count);
     if (!result)
     {
         _glfwSetError(GLFW_OUT_OF_MEMORY,
@@ -1282,13 +1282,13 @@ static int choosePixelFormat(_GLFWwindow* window, const _GLFWfbconfig* fbconfig)
     closest = _glfwChooseFBConfig(fbconfig, fbconfigs, fbcount);
     if (!closest)
     {
-        _glfwFree(fbconfigs);
+        free(fbconfigs);
         return 0;
     }
 
     pixelFormat = (int) closest->platformID;
 
-    _glfwFree(fbconfigs);
+    free(fbconfigs);
     fbconfigs = NULL;
     closest = NULL;
 
@@ -1383,7 +1383,7 @@ static int createWindow(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    _glfwFree(wideTitle);
+    free(wideTitle);
 
     window->WGL.DC = GetDC(window->Win32.handle);
     if (!window->WGL.DC)
@@ -1614,7 +1614,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 
     SetWindowText(window->Win32.handle, wideTitle);
 
-    _glfwFree(wideTitle);
+    free(wideTitle);
 }
 
 

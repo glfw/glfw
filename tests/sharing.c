@@ -115,7 +115,7 @@ int main(int argc, char** argv)
     GLuint texture;
     int x, y;
 
-    if (!glfwInit(NULL))
+    if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);

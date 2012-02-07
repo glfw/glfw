@@ -1337,7 +1337,7 @@ static int createWindow(_GLFWwindow* window,
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
                       "glfwOpenWindow: Failed to convert title to wide string");
-        return;
+        return GL_FALSE;
     }
 
     window->Win32.handle = CreateWindowEx(window->Win32.dwExStyle,

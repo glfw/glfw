@@ -42,6 +42,7 @@
 
 static GLboolean keyrepeat  = 0;
 static GLboolean systemkeys = 1;
+static GLboolean closeable = 1;
 static unsigned int counter = 0;
 
 static const char* get_key_name(int key)
@@ -230,7 +231,7 @@ static void window_size_callback(GLFWwindow window, int width, int height)
 static int window_close_callback(GLFWwindow window)
 {
     printf("%08x at %0.3f: Window close\n", counter++, glfwGetTime());
-    return 1;
+    return closeable;
 }
 
 static void window_refresh_callback(GLFWwindow window)
@@ -310,6 +311,14 @@ static void key_callback(GLFWwindow window, int key, int action)
             glfwSetInputMode(window, GLFW_SYSTEM_KEYS, systemkeys);
 
             printf("(( system keys %s ))\n", systemkeys ? "enabled" : "disabled");
+            break;
+        }
+
+        case GLFW_KEY_C:
+        {
+            closeable = !closeable;
+
+            printf("(( closing %s ))\n", closeable ? "enabled" : "disabled");
             break;
         }
     }

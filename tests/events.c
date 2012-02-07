@@ -40,9 +40,9 @@
 #include <ctype.h>
 #include <locale.h>
 
-static GLboolean keyrepeat  = 0;
-static GLboolean systemkeys = 1;
-static GLboolean closeable = 1;
+static GLboolean keyrepeat  = GL_FALSE;
+static GLboolean systemkeys = GL_TRUE;
+static GLboolean closeable = GL_TRUE;
 static unsigned int counter = 0;
 
 static const char* get_key_name(int key)

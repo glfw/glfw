@@ -1280,7 +1280,7 @@ static int createWindow(_GLFWwindow* window,
                         const _GLFWfbconfig* fbconfig)
 {
     DWORD dwStyle, dwExStyle;
-    int length, pixelFormat, fullWidth, fullHeight;
+    int pixelFormat, fullWidth, fullHeight;
     RECT wa;
     POINT pos;
     WCHAR* wideTitle;

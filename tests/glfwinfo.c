@@ -51,7 +51,7 @@
 
 static void usage(void)
 {
-    printf("Usage: version [-h] [-m MAJOR] [-n MINOR] [-d] [-l] [-f] [-p PROFILE] [-r STRATEGY]\n");
+    printf("Usage: glfwinfo [-h] [-m MAJOR] [-n MINOR] [-d] [-l] [-f] [-p PROFILE] [-r STRATEGY]\n");
     printf("available profiles: " PROFILE_NAME_CORE " " PROFILE_NAME_COMPAT " " PROFILE_NAME_ES2 "\n");
     printf("available strategies: " STRATEGY_NAME_NONE " " STRATEGY_NAME_LOSE "\n");
 }

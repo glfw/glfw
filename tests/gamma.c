@@ -41,7 +41,7 @@ static GLfloat gamma = 1.0f;
 
 static void usage(void)
 {
-    printf("Usage: gammatest [-h] [-f]\n");
+    printf("Usage: gamma [-h] [-f]\n");
 }
 
 static void set_gamma(float value)

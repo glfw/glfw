@@ -895,7 +895,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (_glfwLibrary.charCallback)
                 translateChar(window, (DWORD) wParam, (DWORD) lParam);
 
-            return 0;
+            break;
         }
 
         case WM_KEYUP:
@@ -910,7 +910,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             else
                 _glfwInputKey(window, translateKey(wParam, lParam), GLFW_RELEASE);
 
-            return 0;
+            break;
         }
 
         case WM_LBUTTONDOWN:

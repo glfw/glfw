@@ -351,10 +351,8 @@ GLFWAPI int glfwGetKey(GLFWwindow handle, int key)
         return GLFW_RELEASE;
     }
 
-    // Is it a valid key?
     if (key < 0 || key > GLFW_KEY_LAST)
     {
-        // TODO: Decide whether key is a value or enum
         _glfwSetError(GLFW_INVALID_ENUM,
                       "glfwGetKey: The specified key is invalid");
         return GLFW_RELEASE;
@@ -385,7 +383,6 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow handle, int button)
         return GLFW_RELEASE;
     }
 
-    // Is it a valid mouse button?
     if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST)
     {
         _glfwSetError(GLFW_INVALID_ENUM,
@@ -418,7 +415,6 @@ GLFWAPI void glfwGetMousePos(GLFWwindow handle, int* xpos, int* ypos)
         return;
     }
 
-    // Return mouse position
     if (xpos != NULL)
         *xpos = window->cursorPosX;
 
@@ -547,7 +543,6 @@ GLFWAPI void glfwSetMousePosCallback(GLFWmouseposfun cbfun)
         return;
     }
 
-    // Set callback function
     _glfwLibrary.mousePosCallback = cbfun;
 
     // Call the callback function to let the application know the current
@@ -574,7 +569,6 @@ GLFWAPI void glfwSetScrollCallback(GLFWscrollfun cbfun)
         return;
     }
 
-    // Set callback function
     _glfwLibrary.scrollCallback = cbfun;
 }
 

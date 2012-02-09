@@ -85,7 +85,8 @@ typedef struct _GLFWwindowNS
 typedef struct _GLFWlibraryNS
 {
     struct {
-        double t0;
+        double base;
+        double resolution;
     } timer;
 
     // dlopen handle for dynamically loading OpenGL extension entry points
@@ -100,6 +101,9 @@ typedef struct _GLFWlibraryNS
 //========================================================================
 // Prototypes for platform specific internal functions
 //========================================================================
+
+// Time
+void _glfwInitTimer(void);
 
 // Joystick input
 void _glfwInitJoysticks(void);

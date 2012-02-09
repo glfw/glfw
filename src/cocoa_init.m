@@ -230,6 +230,8 @@ int _glfwPlatformInit(void)
     _glfwPlatformGetGammaRamp(&_glfwLibrary.originalRamp);
     _glfwLibrary.currentRamp = _glfwLibrary.originalRamp;
 
+    _glfwInitTimer();
+
     _glfwInitJoysticks();
 
     return GL_TRUE;

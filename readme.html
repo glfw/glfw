@@ -313,6 +313,7 @@ version of GLFW.</p>
   <li>[Cocoa] Replaced <code>NSDate</code> time source with <code>mach_absolute_time</code></li>
   <li>[Cocoa] Bugfix: The loop condition for saving video modes used the wrong index variable</li>
   <li>[Cocoa] Bugfix: The OpenGL framework was not retrieved, making glfwGetProcAddress crash</li>
+  <li>[Cocoa] Bugfix: <code>glfwInit</code> changed the current directory for unbundled executables</li>
   <li>[X11] Added support for the <code>GLX_EXT_swap_control</code> extension as an alternative to <code>GLX_SGI_swap_control</code></li>
   <li>[X11] Added the POSIX <code>CLOCK_MONOTONIC</code> time source as the preferred method</li>
   <li>[X11] Added dependency on libm, where present</li>

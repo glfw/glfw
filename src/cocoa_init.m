@@ -73,6 +73,18 @@ NSString* GLFWNameKeys[] =
 
 
 //========================================================================
+// Change to our application bundle's resources directory, if present
+//========================================================================
+static void changeToResourcesDirectory(void)
+{
+    char* resourcePath = [[[NSBundle mainBundle] resourcePath] UTF8String];
+
+    if (access(resourcePath, R_OK) == 0)
+        chdir(resourcePath);
+}
+
+
+//========================================================================
 // Try to figure out what the calling application is called
 //========================================================================
 static NSString* findAppName(void)
@@ -87,24 +99,18 @@ static NSString* findAppName(void)
             [name isKindOfClass:[NSString class]] &&
             ![@"" isEqualToString:name])
         {
+            _glfwLibrary.NS.bundled = GL_TRUE;
             return name;
         }
     }
 
     // If we get here, we're unbundled
-    if (!_glfwLibrary.NS.unbundled)
-    {
-        // Could do this only if we discover we're unbundled, but it should
-        // do no harm...
-        ProcessSerialNumber psn = { 0, kCurrentProcess };
-        TransformProcessType(&psn, kProcessTransformToForegroundApplication);
+    ProcessSerialNumber psn = { 0, kCurrentProcess };
+    TransformProcessType(&psn, kProcessTransformToForegroundApplication);
 
-        // Having the app in front of the terminal window is also generally
-        // handy.  There is an NSApplication API to do this, but...
-        SetFrontProcess(&psn);
-
-        _glfwLibrary.NS.unbundled = GL_TRUE;
-    }
+    // Having the app in front of the terminal window is also generally
+    // handy.  There is an NSApplication API to do this, but...
+    SetFrontProcess(&psn);
 
     char** progname = _NSGetProgname();
     if (progname && *progname)
@@ -210,15 +216,15 @@ int _glfwPlatformInit(void)
         return GL_FALSE;
     }
 
-    NSString* resourcePath = [[NSBundle mainBundle] resourcePath];
-
-    if (access([resourcePath cStringUsingEncoding:NSUTF8StringEncoding], R_OK) == 0)
-        chdir([resourcePath cStringUsingEncoding:NSUTF8StringEncoding]);
-
-    // Setting up menu bar must go exactly here else weirdness ensues
+    // Setting up the menu bar must go between sharedApplication
+    // above and finishLaunching below, in order to properly emulate the
+    // behavior of NSApplicationMain
     setUpMenuBar();
 
     [NSApp finishLaunching];
+
+    if (_glfwLibrary.NS.bundled)
+        changeToResourcesDirectory();
 
     _glfwPlatformSetTime(0.0);
 

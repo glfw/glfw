@@ -69,7 +69,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Tearing Detector", NULL);
+    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "", NULL);
     if (!window)
     {
         glfwTerminate();
@@ -78,9 +78,10 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
+    set_swap_interval(1);
+
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSetKeyCallback(key_callback);
-    set_swap_interval(1);
 
     glMatrixMode(GL_PROJECTION);
     glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);

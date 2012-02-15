@@ -226,8 +226,6 @@ int _glfwPlatformInit(void)
     if (_glfwLibrary.NS.bundled)
         changeToResourcesDirectory();
 
-    _glfwPlatformSetTime(0.0);
-
     _glfwLibrary.NS.desktopMode =
 	    (NSDictionary*) CGDisplayCurrentMode(CGMainDisplayID());
 

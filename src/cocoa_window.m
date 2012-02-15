@@ -500,7 +500,6 @@ static NSString* findAppName(void)
             [name isKindOfClass:[NSString class]] &&
             ![@"" isEqualToString:name])
         {
-            _glfwLibrary.NS.bundled = GL_TRUE;
             return name;
         }
     }

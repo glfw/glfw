@@ -35,23 +35,28 @@
 //========================================================================
 static void changeToResourcesDirectory(void)
 {
+    char resourcesPath[MAXPATHLEN];
+
     CFBundleRef bundle = CFBundleGetMainBundle();
     if (!bundle)
         return;
 
     CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(bundle);
-    char resourcesPath[MAXPATHLEN];
 
-    CFStringRef name = CFURLCopyLastPathComponent(resourcesURL);
-    if (CFStringCompare(CFSTR("Resources"), name, 0) != kCFCompareEqualTo)
+    CFStringRef last = CFURLCopyLastPathComponent(resourcesURL);
+    if (CFStringCompare(CFSTR("Resources"), last, 0) != kCFCompareEqualTo)
+    {
+        CFRelease(last);
+        CFRelease(resourcesURL);
         return;
+    }
 
-    CFRelease(name);
+    CFRelease(last);
 
     if (!CFURLGetFileSystemRepresentation(resourcesURL,
-                                          TRUE,
+                                          true,
                                           (UInt8*) resourcesPath,
-                                          MAXPATHLEN));
+                                          MAXPATHLEN))
     {
         CFRelease(resourcesURL);
         return;
@@ -82,8 +87,7 @@ int _glfwPlatformInit(void)
         return GL_FALSE;
     }
 
-    if (_glfwLibrary.NS.bundled)
-        changeToResourcesDirectory();
+    changeToResourcesDirectory();
 
     _glfwLibrary.NS.desktopMode =
 	    (NSDictionary*) CGDisplayCurrentMode(CGMainDisplayID());

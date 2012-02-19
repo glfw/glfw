@@ -447,6 +447,21 @@ static GLboolean initDisplay(void)
     // the keyboard mapping.
     updateKeyCodeLUT();
 
+    // Find or create clipboard atoms
+    _glfwLibrary.X11.selection.atoms.clipboard[_GLFW_CLIPBOARD_ATOM_PRIMARY] =
+        XA_PRIMARY;
+    _glfwLibrary.X11.selection.atoms.clipboard[_GLFW_CLIPBOARD_ATOM_CLIPBOARD] =
+        XInternAtom(_glfwLibrary.X11.display, "CLIPBOARD", False);
+    _glfwLibrary.X11.selection.atoms.clipboard[_GLFW_CLIPBOARD_ATOM_SECONDARY] =
+        XA_SECONDARY;
+
+    // Find or create selection atoms
+    _glfwLibrary.X11.selection.atoms.string[_GLFW_STRING_ATOM_UTF8] =
+        XInternAtom(_glfwLibrary.X11.display, "UTF8_STRING", False);
+    _glfwLibrary.X11.selection.atoms.string[_GLFW_STRING_ATOM_COMPOUND] =
+        XInternAtom(_glfwLibrary.X11.display, "COMPOUND_STRING", False);
+    _glfwLibrary.X11.selection.atoms.string[_GLFW_STRING_ATOM_STRING] = XA_STRING;
+
     return GL_TRUE;
 }
 
@@ -609,6 +624,10 @@ int _glfwPlatformTerminate(void)
         _glfwLibrary.X11.libGL = NULL;
     }
 #endif
+
+    // Free clipboard memory
+    if (_glfwLibrary.X11.selection.clipboard.string)
+        free(_glfwLibrary.X11.selection.clipboard.string);
 
     return GL_TRUE;
 }

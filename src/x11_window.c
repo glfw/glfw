@@ -41,8 +41,8 @@
 #define _NET_WM_STATE_TOGGLE        2
 
 // Additional mouse button names for XButtonEvent
-#define Button6			6
-#define Button7			7
+#define Button6            6
+#define Button7            7
 
 //========================================================================
 // Error handler for BadMatch errors when requesting context with
@@ -1356,6 +1356,41 @@ static void processSingleEvent(void)
             }
 
             _glfwInputWindowDamage(window);
+            break;
+        }
+
+        case SelectionNotify:
+        {
+            // Selection notification triggered by the XConvertSelection
+
+            // Check if the notification property matches the request
+            if (event.xselection.property != _glfwLibrary.X11.selection.request)
+                _glfwLibrary.X11.selection.converted = 2;
+            else // It was successful
+                _glfwLibrary.X11.selection.converted = 1;
+
+            break;
+        }
+
+        case SelectionRequest:
+        {
+            // Selection request triggered by someone wanting data from the
+            // X11 clipboard
+            XSelectionRequestEvent *request = &event.xselectionrequest;
+
+            // Construct the response
+            XEvent response;
+            response.xselection.property = _glfwSelectionRequest(request);
+            response.xselection.type = SelectionNotify;
+            response.xselection.display = request->display;
+            response.xselection.requestor = request->requestor;
+            response.xselection.selection = request->selection;
+            response.xselection.target = request->target;
+            response.xselection.time = request->time;
+
+            // Send off the event
+            XSendEvent(_glfwLibrary.X11.display, request->requestor, 0, 0, &response);
+
             break;
         }
 

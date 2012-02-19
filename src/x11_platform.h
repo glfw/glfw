@@ -85,6 +85,17 @@
 #define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryX11 X11
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextGLX GLX
 
+// Clipboard atoms
+#define _GLFW_CLIPBOARD_ATOM_PRIMARY 0
+#define _GLFW_CLIPBOARD_ATOM_CLIPBOARD 1
+#define _GLFW_CLIPBOARD_ATOM_SECONDARY 2
+#define _GLFW_CLIPBOARD_ATOM_COUNT 3
+
+// String atoms
+#define _GLFW_STRING_ATOM_UTF8 0
+#define _GLFW_STRING_ATOM_COMPOUND 1
+#define _GLFW_STRING_ATOM_STRING 2
+#define _GLFW_STRING_ATOM_COUNT 3
 
 //========================================================================
 // GLFW platform specific types
@@ -223,6 +234,20 @@ typedef struct _GLFWlibraryX11
         uint64_t    base;
     } timer;
 
+    // Selection data
+    struct {
+	struct {
+		Atom clipboard[_GLFW_CLIPBOARD_ATOM_COUNT];
+		Atom string[_GLFW_STRING_ATOM_COUNT];
+	} atoms;
+	struct {
+		size_t stringlen;
+		char *string;
+	} clipboard;
+	Atom request;
+        int converted;
+    } selection;
+
 #if defined(_GLFW_DLOPEN_LIBGL)
     void*           libGL;  // dlopen handle for libGL.so
 #endif
@@ -262,5 +287,7 @@ void _glfwTerminateJoysticks(void);
 // Unicode support
 long _glfwKeySym2Unicode(KeySym keysym);
 
+// Clipboard handling
+Atom _glfwSelectionRequest(XSelectionRequestEvent *request);
 
 #endif // _platform_h_

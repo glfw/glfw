@@ -5,6 +5,8 @@ set(SHARED_DEPS libglfwShared ${GLFW_LIBRARIES} ${OPENGL_glu_LIBRARY})
 include_directories(${GLFW_SOURCE_DIR}/include
                     ${GLFW_SOURCE_DIR}/support
                     ${OPENGL_INCLUDE_DIR})
+add_executable(clipboard clipboard.c)
+target_link_libraries(clipboard ${STATIC_DEPS})
 
 add_executable(defaults defaults.c)
 target_link_libraries(defaults ${STATIC_DEPS})

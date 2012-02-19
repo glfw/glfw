@@ -32,6 +32,8 @@
 #include <limits.h>
 #include <string.h>
 
+#include <ApplicationServices/ApplicationServices.h>
+
 
 //************************************************************************
 //****                  GLFW internal functions                       ****

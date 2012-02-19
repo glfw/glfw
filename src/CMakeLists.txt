@@ -19,9 +19,9 @@ set(common_SOURCES error.c fullscreen.c gamma.c init.c input.c
                    joystick.c opengl.c time.c window.c)
 
 if(_GLFW_COCOA_NSGL)
-    set(libglfw_SOURCES ${common_SOURCES} cocoa_fullscreen.m cocoa_gamma.m
+    set(libglfw_SOURCES ${common_SOURCES} cocoa_fullscreen.m cocoa_gamma.c
                         cocoa_init.m cocoa_input.m cocoa_joystick.m
-                        cocoa_opengl.m cocoa_time.m cocoa_window.m)
+                        cocoa_opengl.m cocoa_time.c cocoa_window.m)
 
     # For some reason, CMake doesn't know about .m
     set_source_files_properties(${libglfw_SOURCES} PROPERTIES LANGUAGE C)

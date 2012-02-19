@@ -37,22 +37,32 @@
 
 static GLboolean cursor_captured = GL_FALSE;
 static GLFWwindow window_handle = NULL;
+static int cursor_x;
+static int cursor_y;
 
 static GLboolean open_window(void);
 
 static void toggle_mouse_cursor(GLFWwindow window)
 {
     if (cursor_captured)
+    {
+        printf("Released cursor\n");
         glfwSetCursorMode(window, GLFW_CURSOR_NORMAL);
+    }
     else
+    {
+        printf("Captured cursor\n");
         glfwSetCursorMode(window, GLFW_CURSOR_CAPTURED);
+    }
 
     cursor_captured = !cursor_captured;
 }
 
 static void mouse_position_callback(GLFWwindow window, int x, int y)
 {
-    printf("Mouse moved to: %i %i\n", x, y);
+    printf("Mouse moved to: %i %i (%i %i)\n", x, y, x - cursor_x, y - cursor_y);
+    cursor_x = x;
+    cursor_y = y;
 }
 
 static void key_callback(GLFWwindow window, int key, int action)
@@ -87,14 +97,12 @@ static void window_size_callback(GLFWwindow window, int width, int height)
 
 static GLboolean open_window(void)
 {
-    int x, y;
-
     window_handle = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Peter Detector", NULL);
     if (!window_handle)
         return GL_FALSE;
 
-    glfwGetMousePos(window_handle, &x, &y);
-    printf("Mouse position: %i %i\n", x, y);
+    glfwGetMousePos(window_handle, &cursor_x, &cursor_y);
+    printf("Mouse position: %i %i\n", cursor_x, cursor_y);
 
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSetMousePosCallback(mouse_position_callback);

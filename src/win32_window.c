@@ -473,6 +473,50 @@ static GLboolean createContext(_GLFWwindow* window,
 
 
 //========================================================================
+// Hide mouse cursor
+//========================================================================
+
+static void hideMouseCursor(_GLFWwindow* window)
+{
+}
+
+
+//========================================================================
+// Capture mouse cursor
+//========================================================================
+
+static void captureMouseCursor(_GLFWwindow* window)
+{
+    RECT ClipWindowRect;
+
+    ShowCursor(FALSE);
+
+    // Clip cursor to the window
+    if (GetWindowRect(window->Win32.handle, &ClipWindowRect))
+        ClipCursor(&ClipWindowRect);
+
+    // Capture cursor to user window
+    SetCapture(window->Win32.handle);
+}
+
+
+//========================================================================
+// Show mouse cursor
+//========================================================================
+
+static void showMouseCursor(_GLFWwindow* window)
+{
+    // Un-capture cursor
+    ReleaseCapture();
+
+    // Release the cursor from the window
+    ClipCursor(NULL);
+
+    ShowCursor(TRUE);
+}
+
+
+//========================================================================
 // Translates a Windows key to the corresponding GLFW key
 //========================================================================
 
@@ -808,15 +852,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             }
 
             _glfwInputWindowFocus(window, active);
-
-            if (iconified != window->iconified)
-            {
-                window->iconified = iconified;
-
-                if (_glfwLibrary.windowIconifyCallback)
-                    _glfwLibrary.windowIconifyCallback(window, window->iconified);
-            }
-
+            _glfwInputWindowIconify(window, iconified);
             return 0;
         }
 
@@ -962,32 +998,27 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (newMouseX != window->Win32.oldMouseX ||
                 newMouseY != window->Win32.oldMouseY)
             {
+                int x, y;
+
                 if (window->cursorMode == GLFW_CURSOR_CAPTURED)
                 {
                     if (_glfwLibrary.activeWindow != window)
                         return 0;
 
-                    window->mousePosX += newMouseX -
-                                         window->Win32.oldMouseX;
-                    window->mousePosY += newMouseY -
-                                         window->Win32.oldMouseY;
+                    x = newMouseX - window->Win32.oldMouseX;
+                    y = newMouseY - window->Win32.oldMouseY;
                 }
                 else
                 {
-                    window->mousePosX = newMouseX;
-                    window->mousePosY = newMouseY;
+                    x = newMouseX;
+                    y = newMouseY;
                 }
 
                 window->Win32.oldMouseX = newMouseX;
                 window->Win32.oldMouseY = newMouseY;
                 window->Win32.cursorCentered = GL_FALSE;
 
-                if (_glfwLibrary.mousePosCallback)
-                {
-                    _glfwLibrary.mousePosCallback(window,
-                                                  window->mousePosX,
-                                                  window->mousePosY);
-                }
+                _glfwInputCursorMotion(window, x, y);
             }
 
             return 0;
@@ -1009,9 +1040,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_SIZE:
         {
-            window->width  = LOWORD(lParam);
-            window->height = HIWORD(lParam);
-
             // If window is in cursor capture mode, update clipping rect
             if (window->cursorMode == GLFW_CURSOR_CAPTURED)
             {
@@ -1020,21 +1048,12 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     ClipCursor(&ClipWindowRect);
             }
 
-            if (_glfwLibrary.windowSizeCallback)
-            {
-                _glfwLibrary.windowSizeCallback(window,
-                                                window->width,
-                                                window->height);
-            }
-
+            _glfwInputWindowSize(window, LOWORD(lParam), HIWORD(lParam));
             return 0;
         }
 
         case WM_MOVE:
         {
-            window->positionX = LOWORD(lParam);
-            window->positionY = HIWORD(lParam);
-
             // If window is in cursor capture mode, update clipping rect
             if (window->cursorMode == GLFW_CURSOR_CAPTURED)
             {
@@ -1042,15 +1061,15 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 if (GetWindowRect(window->Win32.handle, &ClipWindowRect))
                     ClipCursor(&ClipWindowRect);
             }
+
+            _glfwInputWindowPos(window, LOWORD(lParam), HIWORD(lParam));
             return 0;
         }
 
         // Was the window contents damaged?
         case WM_PAINT:
         {
-            if (_glfwLibrary.windowRefreshCallback)
-                _glfwLibrary.windowRefreshCallback(window);
-
+            _glfwInputWindowDamage(window);
             break;
         }
 
@@ -1352,8 +1371,8 @@ static int createWindow(_GLFWwindow* window,
     // Initialize mouse position data
     GetCursorPos(&pos);
     ScreenToClient(window->Win32.handle, &pos);
-    window->Win32.oldMouseX = window->mousePosX = pos.x;
-    window->Win32.oldMouseY = window->mousePosY = pos.y;
+    window->Win32.oldMouseX = window->cursorPosX = pos.x;
+    window->Win32.oldMouseY = window->cursorPosY = pos.y;
 
     return GL_TRUE;
 }
@@ -1761,14 +1780,14 @@ void _glfwPlatformPollEvents(void)
     window = _glfwLibrary.activeWindow;
     if (window)
     {
-        window->Win32.mouseMoved = GL_FALSE;
+        window->Win32.cursorCentered = GL_FALSE;
         window->Win32.oldMouseX = window->width / 2;
         window->Win32.oldMouseY = window->height / 2;
     }
     else
     {
-        //window->Win32.oldMouseX = window->mousePosX;
-        //window->Win32.oldMouseY = window->mousePosY;
+        //window->Win32.oldMouseX = window->cursorPosX;
+        //window->Win32.oldMouseY = window->cursorPosY;
     }
 
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -1847,41 +1866,6 @@ void _glfwPlatformWaitEvents(void)
 
 
 //========================================================================
-// Hide mouse cursor (lock it)
-//========================================================================
-
-void _glfwPlatformHideMouseCursor(_GLFWwindow* window)
-{
-    RECT ClipWindowRect;
-
-    ShowCursor(FALSE);
-
-    // Clip cursor to the window
-    if (GetWindowRect(window->Win32.handle, &ClipWindowRect))
-        ClipCursor(&ClipWindowRect);
-
-    // Capture cursor to user window
-    SetCapture(window->Win32.handle);
-}
-
-
-//========================================================================
-// Show mouse cursor (unlock it)
-//========================================================================
-
-void _glfwPlatformShowMouseCursor(_GLFWwindow* window)
-{
-    // Un-capture cursor
-    ReleaseCapture();
-
-    // Release the cursor from the window
-    ClipCursor(NULL);
-
-    ShowCursor(TRUE);
-}
-
-
-//========================================================================
 // Set physical mouse cursor position
 //========================================================================
 
@@ -1895,5 +1879,26 @@ void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y)
     ClientToScreen(window->Win32.handle, &pos);
 
     SetCursorPos(pos.x, pos.y);
+}
+
+
+//========================================================================
+// Set physical mouse cursor mode
+//========================================================================
+
+void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
+{
+    switch (mode)
+    {
+        case GLFW_CURSOR_NORMAL:
+            showMouseCursor(window);
+            break;
+        case GLFW_CURSOR_HIDDEN:
+            hideMouseCursor(window);
+            break;
+        case GLFW_CURSOR_CAPTURED:
+            captureMouseCursor(window);
+            break;
+    }
 }
 

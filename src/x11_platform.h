@@ -41,6 +41,9 @@
 #define GLX_GLXEXT_LEGACY
 #include <GL/glx.h>
 
+// This path may need to be changed if you build GLFW using your own setup
+// We ship and use our own copy of glxext.h since GLFW uses fairly new
+// extensions and not all operating systems come with an up-to-date version
 #include "../support/GL/glxext.h"
 
 
@@ -204,7 +207,7 @@ typedef struct _GLFWlibraryX11
     } Xkb;
 
     // Key code LUT (mapping X11 key codes to GLFW key codes)
-    int         keyCodeLUT[256];
+    int             keyCodeLUT[256];
 
     // Screensaver data
     struct {
@@ -233,7 +236,7 @@ typedef struct _GLFWlibraryX11
     struct {
         GLboolean   monotonic;
         double      resolution;
-        uint64_t    t0;
+        uint64_t    base;
     } timer;
 
     // Selection data

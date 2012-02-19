@@ -206,6 +206,7 @@ static GLboolean hasEWMH(_GLFWwindow* window)
     return GL_TRUE;
 }
 
+
 //========================================================================
 // Translates an X Window key to internal coding
 //========================================================================
@@ -974,6 +975,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
                  window->width / 2, window->height / 2);
 }
 
+
 //========================================================================
 // Leave fullscreen mode
 //========================================================================
@@ -1192,33 +1194,27 @@ static void processSingleEvent(void)
                 event.xmotion.y != window->X11.cursorPosY)
             {
                 // The mouse cursor was moved and we didn't do it
+                int x, y;
 
                 if (window->cursorMode == GLFW_CURSOR_CAPTURED)
                 {
                     if (_glfwLibrary.activeWindow != window)
                         break;
 
-                    window->mousePosX += event.xmotion.x -
-                                         window->X11.cursorPosX;
-                    window->mousePosY += event.xmotion.y -
-                                         window->X11.cursorPosY;
+                    x = event.xmotion.x - window->X11.cursorPosX;
+                    y = event.xmotion.y - window->X11.cursorPosY;
                 }
                 else
                 {
-                    window->mousePosX = event.xmotion.x;
-                    window->mousePosY = event.xmotion.y;
+                    x = event.xmotion.x;
+                    y = event.xmotion.y;
                 }
 
                 window->X11.cursorPosX = event.xmotion.x;
                 window->X11.cursorPosY = event.xmotion.y;
                 window->X11.cursorCentered = GL_FALSE;
 
-                if (_glfwLibrary.mousePosCallback)
-                {
-                    _glfwLibrary.mousePosCallback(window,
-                                                  window->mousePosX,
-                                                  window->mousePosY);
-                }
+                _glfwInputCursorMotion(window, x, y);
             }
 
             break;
@@ -1234,27 +1230,13 @@ static void processSingleEvent(void)
                 return;
             }
 
-            if (event.xconfigure.width != window->width ||
-                event.xconfigure.height != window->height)
-            {
-                // The window was resized
+            _glfwInputWindowSize(window,
+                                 event.xconfigure.width,
+                                 event.xconfigure.height);
 
-                window->width = event.xconfigure.width;
-                window->height = event.xconfigure.height;
-                if (_glfwLibrary.windowSizeCallback)
-                {
-                    _glfwLibrary.windowSizeCallback(window,
-                                                    window->width,
-                                                    window->height);
-                }
-            }
-
-            if (event.xconfigure.x != window->positionX ||
-                event.xconfigure.y != window->positionY)
-            {
-                window->positionX = event.xconfigure.x;
-                window->positionY = event.xconfigure.y;
-            }
+            _glfwInputWindowPos(window,
+                                event.xconfigure.x,
+                                event.xconfigure.y);
 
             break;
         }
@@ -1303,11 +1285,7 @@ static void processSingleEvent(void)
                 return;
             }
 
-            window->iconified = GL_FALSE;
-
-            if (_glfwLibrary.windowIconifyCallback)
-                _glfwLibrary.windowIconifyCallback(window, window->iconified);
-
+            _glfwInputWindowIconify(window, GL_FALSE);
             break;
         }
 
@@ -1321,11 +1299,7 @@ static void processSingleEvent(void)
                 return;
             }
 
-            window->iconified = GL_TRUE;
-
-            if (_glfwLibrary.windowIconifyCallback)
-                _glfwLibrary.windowIconifyCallback(window, window->iconified);
-
+            _glfwInputWindowIconify(window, GL_TRUE);
             break;
         }
 
@@ -1375,9 +1349,7 @@ static void processSingleEvent(void)
                 return;
             }
 
-            if (_glfwLibrary.windowRefreshCallback)
-                _glfwLibrary.windowRefreshCallback(window);
-
+            _glfwInputWindowDamage(window);
             break;
         }
 
@@ -1520,8 +1492,8 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 
         // TODO: Probably check for some corner cases here.
 
-        window->mousePosX = windowX;
-        window->mousePosY = windowY;
+        window->cursorPosX = windowX;
+        window->cursorPosY = windowY;
     }
 
     return GL_TRUE;

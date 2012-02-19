@@ -152,6 +152,7 @@ GLFWAPI void glfwEnable(GLFWwindow window, int token)
             enableKeyRepeat(window);
             break;
         default:
+            _glfwSetError(GLFW_INVALID_ENUM, NULL);
             break;
     }
 }
@@ -184,6 +185,7 @@ GLFWAPI void glfwDisable(GLFWwindow window, int token)
             disableKeyRepeat(window);
             break;
         default:
+            _glfwSetError(GLFW_INVALID_ENUM, NULL);
             break;
     }
 }

@@ -62,7 +62,7 @@ static void window_size_callback(GLFWwindow window, int width, int height)
 static int window_close_callback(GLFWwindow window)
 {
     printf("Close callback triggered\n");
-    window_handle = NULL;
+    closed = GL_TRUE;
     return 0;
 }
 
@@ -135,9 +135,6 @@ int main(int argc, char** argv)
         glMatrixMode(GL_PROJECTION);
         glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);
         glMatrixMode(GL_MODELVIEW);
-
-        glClearColor(0.f, 0.f, 0.f, 0.f);
-        glColor3f(1.f, 1.f, 1.f);
 
         glfwSetTime(0.0);
 

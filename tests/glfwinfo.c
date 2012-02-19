@@ -32,21 +32,28 @@
 #include <GL/glfw3.h>
 #include <GL/glext.h>
 
-#ifdef _MSC_VER
-#define strcasecmp(x, y) _stricmp(x, y)
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "getopt.h"
 
+#ifdef _MSC_VER
+#define strcasecmp(x, y) _stricmp(x, y)
+#endif
+
+#define PROFILE_NAME_CORE   "core"
+#define PROFILE_NAME_COMPAT "compat"
+#define PROFILE_NAME_ES2    "es2"
+
+#define STRATEGY_NAME_NONE "none"
+#define STRATEGY_NAME_LOSE "lose"
+
 static void usage(void)
 {
     printf("Usage: version [-h] [-m MAJOR] [-n MINOR] [-d] [-l] [-f] [-p PROFILE] [-r STRATEGY]\n");
-    printf("available profiles: core compat es2\n");
-    printf("available strategies: none lose\n");
+    printf("available profiles: " PROFILE_NAME_CORE " " PROFILE_NAME_COMPAT " " PROFILE_NAME_ES2 "\n");
+    printf("available strategies: " STRATEGY_NAME_NONE " " STRATEGY_NAME_LOSE "\n");
 }
 
 static void error_callback(int error, const char* description)
@@ -57,11 +64,11 @@ static void error_callback(int error, const char* description)
 static const char* get_glfw_profile_name(int profile)
 {
     if (profile == GLFW_OPENGL_COMPAT_PROFILE)
-        return "compatibility";
+        return PROFILE_NAME_COMPAT;
     else if (profile == GLFW_OPENGL_CORE_PROFILE)
-        return "core";
+        return PROFILE_NAME_CORE;
     else if (profile == GLFW_OPENGL_ES2_PROFILE)
-        return "es2";
+        return PROFILE_NAME_ES2;
 
     return "unknown";
 }
@@ -69,9 +76,9 @@ static const char* get_glfw_profile_name(int profile)
 static const char* get_profile_name(GLint mask)
 {
     if (mask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)
-        return "compatibility";
+        return PROFILE_NAME_COMPAT;
     if (mask & GL_CONTEXT_CORE_PROFILE_BIT)
-        return "core";
+        return PROFILE_NAME_CORE;
 
     return "unknown";
 }
@@ -142,11 +149,11 @@ int main(int argc, char** argv)
                 minor = atoi(optarg);
                 break;
             case 'p':
-                if (strcasecmp(optarg, "core") == 0)
+                if (strcasecmp(optarg, PROFILE_NAME_CORE) == 0)
                     profile = GLFW_OPENGL_CORE_PROFILE;
-                else if (strcasecmp(optarg, "compat") == 0)
+                else if (strcasecmp(optarg, PROFILE_NAME_COMPAT) == 0)
                     profile = GLFW_OPENGL_COMPAT_PROFILE;
-                else if (strcasecmp(optarg, "es2") == 0)
+                else if (strcasecmp(optarg, PROFILE_NAME_ES2) == 0)
                     profile = GLFW_OPENGL_ES2_PROFILE;
                 else
                 {
@@ -155,9 +162,9 @@ int main(int argc, char** argv)
                 }
                 break;
             case 'r':
-                if (strcasecmp(optarg, "none") == 0)
+                if (strcasecmp(optarg, STRATEGY_NAME_NONE) == 0)
                     strategy = GLFW_OPENGL_NO_RESET_NOTIFICATION;
-                else if (strcasecmp(optarg, "lose") == 0)
+                else if (strcasecmp(optarg, STRATEGY_NAME_LOSE) == 0)
                     strategy = GLFW_OPENGL_LOSE_CONTEXT_ON_RESET;
                 else
                 {
@@ -221,7 +228,9 @@ int main(int argc, char** argv)
     if (major != GLFW_VERSION_MAJOR ||
         minor != GLFW_VERSION_MINOR ||
         revision != GLFW_VERSION_REVISION)
+    {
         printf("*** WARNING: GLFW version mismatch! ***\n");
+    }
 
     printf("GLFW library version string: \"%s\"\n", glfwGetVersionString());
 
@@ -266,7 +275,7 @@ int main(int argc, char** argv)
     if (major > 1)
     {
         printf("OpenGL context shading language version: \"%s\"\n",
-            glGetString(GL_SHADING_LANGUAGE_VERSION));
+               glGetString(GL_SHADING_LANGUAGE_VERSION));
     }
 
     // Report OpenGL extensions

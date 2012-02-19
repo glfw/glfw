@@ -104,85 +104,6 @@ void _glfwSetDefaultWindowHints(void)
 
 
 //========================================================================
-// Register keyboard activity
-//========================================================================
-
-void _glfwInputKey(_GLFWwindow* window, int key, int action)
-{
-    GLboolean keyrepeat = GL_FALSE;
-
-    if (key < 0 || key > GLFW_KEY_LAST)
-        return;
-
-    // Are we trying to release an already released key?
-    if (action == GLFW_RELEASE && window->key[key] != GLFW_PRESS)
-        return;
-
-    // Register key action
-    if(action == GLFW_RELEASE && window->stickyKeys)
-        window->key[key] = GLFW_STICK;
-    else
-    {
-        keyrepeat = (window->key[key] == GLFW_PRESS) && (action == GLFW_PRESS);
-        window->key[key] = (char) action;
-    }
-
-    // Call user callback function
-    if (_glfwLibrary.keyCallback && (window->keyRepeat || !keyrepeat))
-        _glfwLibrary.keyCallback(window, key, action);
-}
-
-
-//========================================================================
-// Register (keyboard) character activity
-//========================================================================
-
-void _glfwInputChar(_GLFWwindow* window, int character)
-{
-    // Valid Unicode (ISO 10646) character?
-    if (!((character >= 32 && character <= 126) || character >= 160))
-        return;
-
-    if (_glfwLibrary.charCallback)
-        _glfwLibrary.charCallback(window, character);
-}
-
-
-//========================================================================
-// Register scroll events
-//========================================================================
-
-void _glfwInputScroll(_GLFWwindow* window, int xoffset, int yoffset)
-{
-    window->scrollX += xoffset;
-    window->scrollY += yoffset;
-
-    if (_glfwLibrary.scrollCallback)
-        _glfwLibrary.scrollCallback(window, xoffset, yoffset);
-}
-
-
-//========================================================================
-// Register mouse button clicks
-//========================================================================
-
-void _glfwInputMouseClick(_GLFWwindow* window, int button, int action)
-{
-    if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST)
-        return;
-
-    // Register mouse button action
-    if (action == GLFW_RELEASE && window->stickyMouseButtons)
-        window->mouseButton[button] = GLFW_STICK;
-    else
-        window->mouseButton[button] = (char) action;
-
-    if (_glfwLibrary.mouseButtonCallback)
-        _glfwLibrary.mouseButtonCallback(window, button, action);
-}
-
-
-//========================================================================
 // Register window focus events
 //========================================================================
 
@@ -224,6 +145,61 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated)
                 _glfwLibrary.windowFocusCallback(window, activated);
         }
     }
+}
+
+
+//========================================================================
+// Register window position events
+//========================================================================
+
+void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
+{
+    window->positionX = x;
+    window->positionY = y;
+}
+
+
+//========================================================================
+// Register window size events
+//========================================================================
+
+void _glfwInputWindowSize(_GLFWwindow* window, int width, int height)
+{
+    if (window->width == width && window->height == height)
+        return;
+
+    window->width = width;
+    window->height = height;
+
+    if (_glfwLibrary.windowSizeCallback)
+        _glfwLibrary.windowSizeCallback(window, width, height);
+}
+
+
+//========================================================================
+// Register window size events
+//========================================================================
+
+void _glfwInputWindowIconify(_GLFWwindow* window, int iconified)
+{
+    if (window->iconified == iconified)
+        return;
+
+    window->iconified = iconified;
+
+    if (_glfwLibrary.windowIconifyCallback)
+        _glfwLibrary.windowIconifyCallback(window, iconified);
+}
+
+
+//========================================================================
+// Register window damage events
+//========================================================================
+
+void _glfwInputWindowDamage(_GLFWwindow* window)
+{
+    if (_glfwLibrary.windowRefreshCallback)
+        _glfwLibrary.windowRefreshCallback(window);
 }
 
 
@@ -468,6 +444,7 @@ GLFWAPI void glfwOpenWindowHint(int target, int hint)
             _glfwLibrary.hints.glRobustness = hint;
             break;
         default:
+            _glfwSetError(GLFW_INVALID_ENUM, NULL);
             break;
     }
 }
@@ -748,12 +725,10 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window->glProfile;
         case GLFW_OPENGL_ROBUSTNESS:
             return window->glRobustness;
-        default:
-            _glfwSetError(GLFW_INVALID_ENUM,
-                          "glfwGetWindowParam: Invalid enum value for 'param' "
-                          "parameter");
-            return 0;
     }
+
+    _glfwSetError(GLFW_INVALID_ENUM, NULL);
+    return 0;
 }
 
 
@@ -817,6 +792,7 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindowsizefun cbfun)
             cbfun(window, window->width, window->height);
     }
 }
+
 
 //========================================================================
 // Set callback function for window close events

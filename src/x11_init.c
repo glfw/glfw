@@ -32,6 +32,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 //========================================================================
@@ -516,6 +517,7 @@ static void initGammaRamp(void)
 
     // Save the original gamma ramp
     _glfwPlatformGetGammaRamp(&_glfwLibrary.originalRamp);
+    _glfwLibrary.currentRamp = _glfwLibrary.originalRamp;
 }
 
 

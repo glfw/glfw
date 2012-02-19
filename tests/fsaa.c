@@ -132,8 +132,6 @@ int main(int argc, char** argv)
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glColor3f(1.f, 1.f, 1.f);
-
         glLoadIdentity();
         glTranslatef(0.25f, 0.25f, 0.f);
         glRotatef(time, 0.f, 0.f, 1.f);

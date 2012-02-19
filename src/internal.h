@@ -59,6 +59,10 @@
 #include "config.h"
 
 #include "../include/GL/glfw3.h"
+
+// This path may need to be changed if you build GLFW using your own setup
+// We ship and use our own copy of glext.h since GLFW uses fairly new
+// extensions and not all operating systems come with an up-to-date version
 #include "../support/GL/glext.h"
 
 #if defined(_GLFW_COCOA_NSGL)
@@ -180,7 +184,7 @@ struct _GLFWwindow
     GLboolean stickyMouseButtons;
     GLboolean keyRepeat;
     GLboolean sysKeysDisabled; // system keys disabled flag
-    int       mousePosX, mousePosY;
+    int       cursorPosX, cursorPosY;
     int       cursorMode;
     int       scrollX, scrollY;
     char      mouseButton[GLFW_MOUSE_BUTTON_LAST + 1];
@@ -339,12 +343,19 @@ void _glfwSetError(int error, const char* description);
 // Window management (window.c)
 void _glfwSetDefaultWindowHints(void);
 
-// Input handling (window.c)
+// WIndow event notification
+void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated);
+void _glfwInputWindowPos(_GLFWwindow* window, int x, int y);
+void _glfwInputWindowSize(_GLFWwindow* window, int width, int height);
+void _glfwInputWindowIconify(_GLFWwindow* window, int iconified);
+void _glfwInputWindowDamage(_GLFWwindow* window);
+
+// Input event notification
 void _glfwInputKey(_GLFWwindow* window, int key, int action);
 void _glfwInputChar(_GLFWwindow* window, int character);
 void _glfwInputScroll(_GLFWwindow* window, int x, int y);
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action);
-void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated);
+void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y);
 
 // OpenGL context helpers (opengl.c)
 int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);

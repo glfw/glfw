@@ -339,7 +339,7 @@ int main(int argc, char *argv[])
         exit( EXIT_FAILURE );
     }
 
-    glfwEnable( window, GLFW_KEY_REPEAT );
+    glfwSetInputMode( window, GLFW_KEY_REPEAT, GL_TRUE );
     glfwSwapInterval( 1 );
 
     // Parse command-line options

@@ -37,9 +37,9 @@
 //========================================================================
 
 #if defined(_init_c_)
-#define GLFWGLOBAL
+ #define GLFWGLOBAL
 #else
-#define GLFWGLOBAL extern
+ #define GLFWGLOBAL extern
 #endif
 
 
@@ -66,13 +66,13 @@
 #include "../support/GL/glext.h"
 
 #if defined(_GLFW_COCOA_NSGL)
-#include "cocoa_platform.h"
+ #include "cocoa_platform.h"
 #elif defined(_GLFW_WIN32_WGL)
-#include "win32_platform.h"
+ #include "win32_platform.h"
 #elif defined(_GLFW_X11_GLX)
-#include "x11_platform.h"
+ #include "x11_platform.h"
 #else
-#error "No supported platform selected"
+ #error "No supported platform selected"
 #endif
 
 typedef struct _GLFWhints _GLFWhints;
@@ -103,7 +103,7 @@ struct _GLFWhints
     int         accumAlphaBits;
     int         auxBuffers;
     GLboolean   stereo;
-    GLboolean   windowNoResize;
+    GLboolean   resizable;
     int         samples;
     int         glMajor;
     int         glMinor;
@@ -125,7 +125,7 @@ struct _GLFWwndconfig
     int           mode;
     const char*   title;
     int           refreshRate;
-    GLboolean     windowNoResize;
+    GLboolean     resizable;
     int           glMajor;
     int           glMinor;
     GLboolean     glForward;
@@ -175,7 +175,7 @@ struct _GLFWwindow
     int       width, height;
     int       positionX, positionY;
     int       mode;            // GLFW_WINDOW or GLFW_FULLSCREEN
-    GLboolean windowNoResize;  // resize- and maximize gadgets disabled flag
+    GLboolean resizable;       // GL_TRUE if user may resize this window
     int       refreshRate;     // monitor refresh rate
     void*     userPointer;
 
@@ -183,7 +183,7 @@ struct _GLFWwindow
     GLboolean stickyKeys;
     GLboolean stickyMouseButtons;
     GLboolean keyRepeat;
-    GLboolean sysKeysDisabled; // system keys disabled flag
+    GLboolean systemKeys;      // system keys enabled flag
     int       cursorPosX, cursorPosY;
     int       cursorMode;
     int       scrollX, scrollY;
@@ -241,9 +241,6 @@ struct _GLFWlibrary
     GLFWkeyfun           keyCallback;
     GLFWcharfun          charCallback;
 
-    GLFWthreadmodel      threading;
-    GLFWallocator        allocator;
-
     GLFWgammaramp currentRamp;
     GLFWgammaramp originalRamp;
     int           originalRampSize;
@@ -276,7 +273,7 @@ int _glfwPlatformInit(void);
 int _glfwPlatformTerminate(void);
 const char* _glfwPlatformGetVersionString(void);
 
-// Enable/Disable
+// Input
 void _glfwPlatformEnableSystemKeys(_GLFWwindow* window);
 void _glfwPlatformDisableSystemKeys(_GLFWwindow* window);
 
@@ -330,10 +327,6 @@ void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long 
 // Prototypes for platform independent internal functions
 //========================================================================
 
-// Memory management (init.c)
-void* _glfwMalloc(size_t size);
-void _glfwFree(void* ptr);
-
 // Fullscren management (fullscreen.c)
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 
@@ -343,14 +336,14 @@ void _glfwSetError(int error, const char* description);
 // Window management (window.c)
 void _glfwSetDefaultWindowHints(void);
 
-// WIndow event notification
+// Window event notification (window.c)
 void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated);
 void _glfwInputWindowPos(_GLFWwindow* window, int x, int y);
 void _glfwInputWindowSize(_GLFWwindow* window, int width, int height);
 void _glfwInputWindowIconify(_GLFWwindow* window, int iconified);
 void _glfwInputWindowDamage(_GLFWwindow* window);
 
-// Input event notification
+// Input event notification (input.c)
 void _glfwInputKey(_GLFWwindow* window, int key, int action);
 void _glfwInputChar(_GLFWwindow* window, int character);
 void _glfwInputScroll(_GLFWwindow* window, int x, int y);

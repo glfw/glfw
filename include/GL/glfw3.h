@@ -39,16 +39,6 @@ extern "C" {
  * Global definitions
  *************************************************************************/
 
-/* We need a NULL pointer from time to time */
-#ifndef NULL
- #ifdef __cplusplus
-  #define NULL 0
- #else
-  #define NULL ((void*) 0)
- #endif
-#endif /* NULL */
-
-
 /* ------------------- BEGIN SYSTEM/COMPILER SPECIFIC -------------------- */
 
 /* Please report any probles that you find with your compiler, which may
@@ -75,7 +65,6 @@ extern "C" {
  #else
   #define APIENTRY
  #endif
- #define GLFW_APIENTRY_DEFINED
 #endif /* APIENTRY */
 
 
@@ -418,7 +407,7 @@ extern "C" {
 #define GLFW_ACCUM_ALPHA_BITS     0x0002100A
 #define GLFW_AUX_BUFFERS          0x0002100B
 #define GLFW_STEREO               0x0002100C
-#define GLFW_WINDOW_NO_RESIZE     0x0002100D
+#define GLFW_WINDOW_RESIZABLE     0x0002100D
 #define GLFW_FSAA_SAMPLES         0x0002100E
 #define GLFW_OPENGL_VERSION_MAJOR 0x0002100F
 #define GLFW_OPENGL_VERSION_MINOR 0x00021010
@@ -438,13 +427,14 @@ extern "C" {
 #define GLFW_OPENGL_COMPAT_PROFILE 0x00000002
 #define GLFW_OPENGL_ES2_PROFILE   0x00000004
 
-/* glfwEnable/glfwDisable tokens */
+/* glfwGetInputMode/glfwSetInputMode tokens */
+#define GLFW_CURSOR_MODE          0x00030001
 #define GLFW_STICKY_KEYS          0x00030002
 #define GLFW_STICKY_MOUSE_BUTTONS 0x00030003
 #define GLFW_SYSTEM_KEYS          0x00030004
 #define GLFW_KEY_REPEAT           0x00030005
 
-/* glfwSetCursorMode tokens */
+/* GLFW_CURSOR_MODE values */
 #define GLFW_CURSOR_NORMAL       0x00040001
 #define GLFW_CURSOR_HIDDEN       0x00040002
 #define GLFW_CURSOR_CAPTURED     0x00040003
@@ -494,8 +484,6 @@ typedef void (* GLFWmouseposfun)(GLFWwindow,int,int);
 typedef void (* GLFWscrollfun)(GLFWwindow,int,int);
 typedef void (* GLFWkeyfun)(GLFWwindow,int,int);
 typedef void (* GLFWcharfun)(GLFWwindow,int);
-typedef void* (* GLFWmallocfun)(size_t);
-typedef void (* GLFWfreefun)(void*);
 
 /* The video mode structure used by glfwGetVideoModes */
 typedef struct
@@ -515,19 +503,6 @@ typedef struct
     unsigned short blue[GLFW_GAMMA_RAMP_SIZE];
 } GLFWgammaramp;
 
-/* Custom memory allocator interface */
-typedef struct
-{
-    GLFWmallocfun malloc;
-    GLFWfreefun free;
-} GLFWallocator;
-
-/* Custom threading model interface */
-typedef struct
-{
-    int dummy;
-} GLFWthreadmodel;
-
 
 /*************************************************************************
  * Prototypes
@@ -535,7 +510,6 @@ typedef struct
 
 /* Initialization, termination and version querying */
 GLFWAPI int  glfwInit(void);
-GLFWAPI int  glfwInitWithModels(GLFWthreadmodel* threading, GLFWallocator* allocator);
 GLFWAPI void glfwTerminate(void);
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
 GLFWAPI const char* glfwGetVersionString(void);
@@ -580,11 +554,12 @@ GLFWAPI void glfwPollEvents(void);
 GLFWAPI void glfwWaitEvents(void);
 
 /* Input handling */
+GLFWAPI int  glfwGetInputMode(GLFWwindow window, int mode);
+GLFWAPI void glfwSetInputMode(GLFWwindow window, int mode, int value);
 GLFWAPI int  glfwGetKey(GLFWwindow window, int key);
 GLFWAPI int  glfwGetMouseButton(GLFWwindow window, int button);
 GLFWAPI void glfwGetMousePos(GLFWwindow window, int* xpos, int* ypos);
 GLFWAPI void glfwSetMousePos(GLFWwindow window, int xpos, int ypos);
-GLFWAPI void glfwSetCursorMode(GLFWwindow window, int mode);
 GLFWAPI void glfwGetScrollOffset(GLFWwindow window, int* xoffset, int* yoffset);
 GLFWAPI void glfwSetKeyCallback(GLFWkeyfun cbfun);
 GLFWAPI void glfwSetCharCallback(GLFWcharfun cbfun);
@@ -614,21 +589,12 @@ GLFWAPI int   glfwExtensionSupported(const char* extension);
 GLFWAPI void* glfwGetProcAddress(const char* procname);
 GLFWAPI void  glfwCopyContext(GLFWwindow src, GLFWwindow dst, unsigned long mask);
 
-/* Enable/disable functions */
-GLFWAPI void glfwEnable(GLFWwindow window, int token);
-GLFWAPI void glfwDisable(GLFWwindow window, int token);
-
 
 /*************************************************************************
  * Global definition cleanup
  *************************************************************************/
 
 /* ------------------- BEGIN SYSTEM/COMPILER SPECIFIC -------------------- */
-
-#ifdef GLFW_APIENTRY_DEFINED
- #undef APIENTRY
- #undef GLFW_APIENTRY_DEFINED
-#endif
 
 #ifdef GLFW_WINGDIAPI_DEFINED
  #undef WINGDIAPI

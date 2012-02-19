@@ -1,5 +1,5 @@
 //========================================================================
-// Vsync enabling test
+// Dynamic linking test
 // Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
@@ -23,76 +23,63 @@
 //
 //========================================================================
 //
-// This test renders a high contrast, horizontally moving bar, allowing for
-// visual verification of whether the set swap interval is indeed obeyed
+// This test came about as the result of bug #3060461
 //
 //========================================================================
 
+#define GLFW_DLL
 #include <GL/glfw3.h>
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-
-static int swap_interval;
-
-static void set_swap_interval(int value)
-{
-    char title[256];
-
-    swap_interval = value;
-    glfwSwapInterval(swap_interval);
-
-    sprintf(title, "Tearing detector (interval %i)", swap_interval);
-    glfwSetWindowTitle(glfwGetCurrentContext(), title);
-}
 
 static void window_size_callback(GLFWwindow window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 
-static void key_callback(GLFWwindow window, int key, int action)
-{
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
-        set_swap_interval(!swap_interval);
-}
-
 int main(void)
 {
-    float position;
     GLFWwindow window;
+    int major, minor, rev;
+    glfwGetVersion(&major, &minor, &rev);
 
-    if (!glfwInit())
+    printf("GLFW header version: %i.%i.%i\n",
+           GLFW_VERSION_MAJOR,
+           GLFW_VERSION_MINOR,
+           GLFW_VERSION_REVISION);
+    printf("GLFW library version: %i.%i.%i\n", major, minor, rev);
+    printf("GLFW library version string: %s\n", glfwGetVersionString());
+
+    if (major != GLFW_VERSION_MAJOR ||
+        minor != GLFW_VERSION_MINOR ||
+        rev != GLFW_VERSION_REVISION)
     {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        fprintf(stderr, "GLFW library version mismatch\n");
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "", NULL);
+    if (!glfwInit())
+    {
+        fprintf(stderr, "Failed to initialize GLFW\n");
+        exit(EXIT_FAILURE);
+    }
+
+    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Dynamic Linking Test", NULL);
     if (!window)
     {
         glfwTerminate();
 
-        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+        fprintf(stderr, "Failed to open GLFW window\n");
         exit(EXIT_FAILURE);
     }
 
-    set_swap_interval(1);
-
     glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetKeyCallback(key_callback);
+    glfwSwapInterval(1);
 
-    glMatrixMode(GL_PROJECTION);
-    glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);
-    glMatrixMode(GL_MODELVIEW);
-
-    while (glfwIsWindow(window) == GL_TRUE)
+    while (glfwIsWindow(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
-
-        position = cosf(glfwGetTime() * 4.f) * 0.75f;
-        glRectf(position - 0.25f, -1.f, position + 0.25f, 1.f);
 
         glfwSwapBuffers();
         glfwPollEvents();

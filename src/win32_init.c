@@ -47,7 +47,7 @@ static GLboolean initLibraries(void)
 #ifndef _GLFW_NO_DLOAD_GDI32
     // gdi32.dll (OpenGL pixel format functions & SwapBuffers)
 
-    _glfwLibrary.Win32.gdi.instance = LoadLibrary("gdi32.dll");
+    _glfwLibrary.Win32.gdi.instance = LoadLibrary(L"gdi32.dll");
     if (!_glfwLibrary.Win32.gdi.instance)
         return GL_FALSE;
 
@@ -81,12 +81,12 @@ static GLboolean initLibraries(void)
 #ifndef _GLFW_NO_DLOAD_WINMM
     // winmm.dll (for joystick and timer support)
 
-    _glfwLibrary.Win32.winmm.instance = LoadLibrary("winmm.dll");
+    _glfwLibrary.Win32.winmm.instance = LoadLibrary(L"winmm.dll");
     if (!_glfwLibrary.Win32.winmm.instance)
         return GL_FALSE;
 
-    _glfwLibrary.Win32.winmm.joyGetDevCapsA = (JOYGETDEVCAPSA_T)
-        GetProcAddress(_glfwLibrary.Win32.winmm.instance, "joyGetDevCapsA");
+    _glfwLibrary.Win32.winmm.joyGetDevCaps = (JOYGETDEVCAPS_T)
+        GetProcAddress(_glfwLibrary.Win32.winmm.instance, "joyGetDevCapsW");
     _glfwLibrary.Win32.winmm.joyGetPos = (JOYGETPOS_T)
         GetProcAddress(_glfwLibrary.Win32.winmm.instance, "joyGetPos");
     _glfwLibrary.Win32.winmm.joyGetPosEx = (JOYGETPOSEX_T)
@@ -94,7 +94,7 @@ static GLboolean initLibraries(void)
     _glfwLibrary.Win32.winmm.timeGetTime = (TIMEGETTIME_T)
         GetProcAddress(_glfwLibrary.Win32.winmm.instance, "timeGetTime");
 
-    if (!_glfwLibrary.Win32.winmm.joyGetDevCapsA ||
+    if (!_glfwLibrary.Win32.winmm.joyGetDevCaps ||
         !_glfwLibrary.Win32.winmm.joyGetPos ||
         !_glfwLibrary.Win32.winmm.joyGetPosEx ||
         !_glfwLibrary.Win32.winmm.timeGetTime)
@@ -128,6 +128,60 @@ static void freeLibraries(void)
         _glfwLibrary.Win32.winmm.instance = NULL;
     }
 #endif // _GLFW_NO_DLOAD_WINMM
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Returns a wide string version of the specified UTF-8 string
+//========================================================================
+
+WCHAR* _glfwCreateWideStringFromUTF8(const char* source)
+{
+    WCHAR* target;
+    int length;
+
+    length = MultiByteToWideChar(CP_UTF8, 0, source, -1, NULL, 0);
+    if (!length)
+        return NULL;
+
+    target = (WCHAR*) malloc(sizeof(WCHAR) * (length + 1));
+
+    if (!MultiByteToWideChar(CP_UTF8, 0, source, -1, target, length + 1))
+    {
+        free(target);
+        return NULL;
+    }
+
+    return target;
+}
+
+
+//========================================================================
+// Returns a UTF-8 string version of the specified wide string
+//========================================================================
+
+char* _glfwCreateUTF8FromWideString(const WCHAR* source)
+{
+    char* target;
+    int length;
+
+    length = WideCharToMultiByte(CP_UTF8, 0, source, -1, NULL, 0, NULL, NULL);
+    if (!length)
+        return NULL;
+
+    target = (char*) malloc(length + 1);
+
+    if (!WideCharToMultiByte(CP_UTF8, 0, source, -1, target, length + 1, NULL, NULL))
+    {
+        free(target);
+        return NULL;
+    }
+
+    return target;
 }
 
 
@@ -205,7 +259,7 @@ int _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = "GLFW " _GLFW_VERSION_FULL
+    const char* version = _GLFW_VERSION_FULL
 #if defined(__MINGW32__)
         " MinGW"
 #elif defined(__CYGWIN__)

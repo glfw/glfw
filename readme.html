@@ -272,25 +272,27 @@ version of GLFW.</p>
   <li>Added <code>glfwSetWindowFocusCallback</code> function and <code>GLFWwindowfocusfun</code> type for receiving window focus events</li>
   <li>Added <code>glfwSetWindowIconifyCallback</code> function and <code>GLFWwindowiconifyfun</code> type for receiving window iconification events</li>
   <li>Added <code>glfwGetCurrentContext</code> function for retrieving the window whose OpenGL context is current</li>
-  <li>Added <code>glfwInitWithModels</code> function and <code>GLFWallocator</code> and <code>GLFWthreadmodel</code> types for pluggable memory allocation and threading models</li>
   <li>Added <code>glfwCopyContext</code> function for copying OpenGL state categories between contexts</li>
-  <li>Added <code>glfwSetCursorMode</code> function for controlling per-window cursor mode, replacing <code>GLFW_MOUSE_CURSOR</code></li>
   <li>Added <code>GLFW_OPENGL_ES2_PROFILE</code> profile for creating OpenGL ES 2.0 contexts using the <code>GLX_EXT_create_context_es2_profile</code> and <code>WGL_EXT_create_context_es2_profile</code> extensions</li>
   <li>Added <code>GLFW_OPENGL_ROBUSTNESS</code> window hint and associated strategy tokens for <code>GL_ARB_robustness</code> support</li>
   <li>Added <code>GLFW_OPENGL_REVISION</code> window parameter to make up for removal of <code>glfwGetGLVersion</code></li>
   <li>Added <code>GLFW_INCLUDE_GL3</code> macro for telling the GLFW header to include <code>gl3.h</code> header instead of <code>gl.h</code></li>
   <li>Added <code>windows</code> simple multi-window test program</li>
   <li>Added <code>sharing</code> simple OpenGL object sharing test program</li>
+  <li>Added <code>dynamic</code> simple dynamic linking test program</li>
   <li>Added a parameter to <code>glfwOpenWindow</code> for specifying a context the new window's context will share objects with</li>
   <li>Added initial window title parameter to <code>glfwOpenWindow</code></li>
   <li>Added <code>glfwSetGamma</code>, <code>glfwSetGammaRamp</code> and <code>glfwGetGammaRamp</code> functions and <code>GLFWgammaramp</code> type for monitor gamma ramp control</li>
   <li>Changed buffer bit depth parameters of <code>glfwOpenWindow</code> to window hints</li>
+  <li>Changed <code>glfwOpenWindow</code> and <code>glfwSetWindowTitle</code> to use UTF-8 encoded strings</li>
   <li>Renamed <code>glfw.h</code> to <code>glfw3.h</code> to avoid conflicts with 2.x series</li>
   <li>Renamed <code>GLFW_WINDOW</code> token to <code>GLFW_WINDOWED</code></li>
+  <li>Renamed <code>GLFW_WINDOW_NO_RESIZE</code> to <code>GLFW_WINDOW_RESIZABLE</code></li>
   <li>Renamed <code>version</code> test to <code>glfwinfo</code></li>
   <li>Replaced ad hoc build system with CMake</li>
   <li>Replaced layout-dependent key codes with single, platform-independent set based on US layout</li>
   <li>Replaced mouse wheel interface with two-dimensional scrolling interface</li>
+  <li>Replaced <code>glfwEnable</code> and <code>glfwDisable</code> with <code>glfwGetInputMode</code> and <code>glfwSetInputMode</code></li>
   <li>Made Unicode character input unaffected by <code>GLFW_KEY_REPEAT</code></li>
   <li>Removed event auto-polling and the <code>GLFW_AUTO_POLL_EVENTS</code> window enable</li>
   <li>Removed the Win32 port .def files</li>
@@ -307,15 +309,24 @@ version of GLFW.</p>
   <li>Bugfix: The OpenGL profile and forward-compatibility window parameters were not saved after context creation</li>
   <li>Bugfix: The FSAA test did not check for the availability of <code>GL_ARB_multisample</code></li>
   <li>[Cocoa] Added support for OpenGL 3.2 core profile in 10.7 Lion and above</li>
+  <li>[Cocoa] Added support for joysticks</li>
+  <li>[Cocoa] Replaced <code>NSDate</code> time source with <code>mach_absolute_time</code></li>
   <li>[Cocoa] Bugfix: The loop condition for saving video modes used the wrong index variable</li>
   <li>[Cocoa] Bugfix: The OpenGL framework was not retrieved, making glfwGetProcAddress crash</li>
+  <li>[Cocoa] Bugfix: <code>glfwInit</code> changed the current directory for unbundled executables</li>
   <li>[X11] Added support for the <code>GLX_EXT_swap_control</code> extension as an alternative to <code>GLX_SGI_swap_control</code></li>
   <li>[X11] Added the POSIX <code>CLOCK_MONOTONIC</code> time source as the preferred method</li>
+  <li>[X11] Added dependency on libm, where present</li>
+  <li>[X11] Added support for the <code>_NET_WM_NAME</code> and <code>_NET_WM_ICON_NAME</code> EWMH window properties</li>
+  <li>[X11] Bugfix: Some window properties required by the ICCCM were not set</li>
   <li>[X11] Bugfix: Calling <code>glXCreateContextAttribsARB</code> with an unavailable OpenGL version caused the application to terminate with a <code>BadMatch</code> Xlib error</li>
+  <li>[X11] Bugfix: A synchronization point necessary for jitter-free locked cursor mode was incorrectly removed</li>
+  <li>[Win32] Changed port to use Unicode mode only</li>
   <li>[Win32] Removed explicit support for versions of Windows older than Windows XP</li>
   <li>[Win32] Bugfix: Window activation and iconification did not work as expected</li>
   <li>[Win32] Bugfix: Software rasterizer pixel formats were not discarded by the WGL_ARB_pixel_format code path</li>
   <li>[Win32] Bugfix: The array for WGL context attributes was too small and could overflow</li>
+  <li>[Win32] Bugfix: Alt+F4 hot key was not translated into <code>WM_CLOSE</code></li>
 </ul>
 
 <h3>v2.7</h3>
@@ -857,6 +868,8 @@ their skills.  Special thanks go out to:</p>
 
   <li>Tristam MacDonald, for his bug reports and feedback on the Cocoa port</li>
 
+  <li>Hans 'Hanmac' Mackowiak, for adding UTF-8 window title support on X11</li>
+
   <li>David Medlock, for doing the initial Lua port</li>
 
   <li>Kenneth Miller, for his many and detailed bug reports on Win32</li>
@@ -885,6 +898,9 @@ their skills.  Special thanks go out to:</p>
   <li>Julian Squires, for submitting a patch for a bug in the key repeat logic on X11</li>
 
   <li>Johannes Stein, for maintaining the Pascal bindings</li>
+
+  <li>Sergey Tikhomirov, for the initial implementation of joystick support on
+  Mac OS X</li>
 
   <li>Samuli Tuomola, for support, bug reports and testing</li>
 

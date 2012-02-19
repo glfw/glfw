@@ -100,6 +100,9 @@ void _glfwSetDefaultWindowHints(void)
     // The default minimum OpenGL version is 1.0
     _glfwLibrary.hints.glMajor = 1;
     _glfwLibrary.hints.glMinor = 0;
+
+    // The default is to allow window resizing
+    _glfwLibrary.hints.resizable = GL_TRUE;
 }
 
 
@@ -247,7 +250,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     wndconfig.mode           = mode;
     wndconfig.title          = title;
     wndconfig.refreshRate    = Max(_glfwLibrary.hints.refreshRate, 0);
-    wndconfig.windowNoResize = _glfwLibrary.hints.windowNoResize ? GL_TRUE : GL_FALSE;
+    wndconfig.resizable      = _glfwLibrary.hints.resizable ? GL_TRUE : GL_FALSE;
     wndconfig.glMajor        = _glfwLibrary.hints.glMajor;
     wndconfig.glMinor        = _glfwLibrary.hints.glMinor;
     wndconfig.glForward      = _glfwLibrary.hints.glForward ? GL_TRUE : GL_FALSE;
@@ -288,7 +291,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
         height = 480;
     }
 
-    window = (_GLFWwindow*) _glfwMalloc(sizeof(_GLFWwindow));
+    window = (_GLFWwindow*) malloc(sizeof(_GLFWwindow));
     if (!window)
     {
         _glfwSetError(GLFW_OUT_OF_MEMORY,
@@ -306,6 +309,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     window->height     = height;
     window->mode       = mode;
     window->cursorMode = GLFW_CURSOR_NORMAL;
+    window->systemKeys = GL_TRUE;
 
     // Open the actual window and create its context
     if (!_glfwPlatformOpenWindow(window, &wndconfig, &fbconfig))
@@ -327,7 +331,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     // The GLFW specification states that fullscreen windows have the cursor
     // captured by default
     if (mode == GLFW_FULLSCREEN)
-        glfwSetCursorMode(window, GLFW_CURSOR_CAPTURED);
+        glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_CAPTURED);
 
     // Clearing the front buffer to black to avoid garbage pixels left over
     // from previous uses of our bit of VRAM
@@ -419,8 +423,8 @@ GLFWAPI void glfwOpenWindowHint(int target, int hint)
         case GLFW_STEREO:
             _glfwLibrary.hints.stereo = hint;
             break;
-        case GLFW_WINDOW_NO_RESIZE:
-            _glfwLibrary.hints.windowNoResize = hint;
+        case GLFW_WINDOW_RESIZABLE:
+            _glfwLibrary.hints.resizable = hint;
             break;
         case GLFW_FSAA_SAMPLES:
             _glfwLibrary.hints.samples = hint;
@@ -488,7 +492,7 @@ GLFWAPI void glfwCloseWindow(GLFWwindow handle)
         *prev = window->next;
     }
 
-    _glfwFree(window);
+    free(window);
 }
 
 
@@ -651,7 +655,6 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow handle)
     if (!window->iconified)
         return;
 
-    // Restore iconified window
     _glfwPlatformRestoreWindow(window);
 
     if (window->mode == GLFW_FULLSCREEN)
@@ -707,8 +710,8 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window->stereo;
         case GLFW_REFRESH_RATE:
             return window->refreshRate;
-        case GLFW_WINDOW_NO_RESIZE:
-            return window->windowNoResize;
+        case GLFW_WINDOW_RESIZABLE:
+            return window->resizable;
         case GLFW_FSAA_SAMPLES:
             return window->samples;
         case GLFW_OPENGL_VERSION_MAJOR:

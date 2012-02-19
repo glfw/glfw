@@ -195,6 +195,12 @@ static GLboolean hasEWMH(_GLFWwindow* window)
     window->X11.wmStateFullscreen =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_FULLSCREEN");
 
+    window->X11.wmName =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_NAME");
+
+    window->X11.wmIconName =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_ICON_NAME");
+
     window->X11.wmPing =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_PING");
 
@@ -310,7 +316,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         }
     }
 
-    result = (_GLFWfbconfig*) _glfwMalloc(sizeof(_GLFWfbconfig) * count);
+    result = (_GLFWfbconfig*) malloc(sizeof(_GLFWfbconfig) * count);
     if (!result)
     {
         _glfwSetError(GLFW_OUT_OF_MEMORY,
@@ -794,7 +800,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 
         hints->flags = 0;
 
-        if (wndconfig->windowNoResize)
+        if (!wndconfig->resizable)
         {
             hints->flags |= (PMinSize | PMaxSize);
             hints->min_width  = hints->max_width  = window->width;
@@ -1426,8 +1432,8 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 {
     _GLFWfbconfig closest;
 
-    window->refreshRate    = wndconfig->refreshRate;
-    window->windowNoResize = wndconfig->windowNoResize;
+    window->refreshRate = wndconfig->refreshRate;
+    window->resizable   = wndconfig->resizable;
 
     initGLXExtensions(window);
 
@@ -1444,12 +1450,12 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
         result = _glfwChooseFBConfig(fbconfig, fbconfigs, fbcount);
         if (!result)
         {
-            _glfwFree(fbconfigs);
+            free(fbconfigs);
             return GL_FALSE;
         }
 
         closest = *result;
-        _glfwFree(fbconfigs);
+        free(fbconfigs);
     }
 
     if (!createContext(window, wndconfig, (GLXFBConfigID) closest.platformID))
@@ -1544,9 +1550,39 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
-    // Set window & icon title
-    XStoreName(_glfwLibrary.X11.display, window->X11.handle, title);
-    XSetIconName(_glfwLibrary.X11.display, window->X11.handle, title);
+    Atom type = XInternAtom(_glfwLibrary.X11.display, "UTF8_STRING", False);
+
+#if defined(X_HAVE_UTF8_STRING)
+    Xutf8SetWMProperties(_glfwLibrary.X11.display,
+                         window->X11.handle,
+                         title, title,
+                         NULL, 0,
+                         NULL, NULL, NULL);
+#else
+    // This may be a slightly better fallback than using XStoreName and
+    // XSetIconName, which always store their arguments using STRING
+    XmbSetWMProperties(_glfwLibrary.X11.display,
+                       window->X11.handle,
+                       title, title,
+                       NULL, 0,
+                       NULL, NULL, NULL);
+#endif
+
+    if (window->X11.wmName != None)
+    {
+        XChangeProperty(_glfwLibrary.X11.display,  window->X11.handle,
+                        window->X11.wmName, type, 8,
+                        PropModeReplace,
+                        (unsigned char*) title, strlen(title));
+    }
+
+    if (window->X11.wmIconName != None)
+    {
+        XChangeProperty(_glfwLibrary.X11.display,  window->X11.handle,
+                        window->X11.wmIconName, type, 8,
+                        PropModeReplace,
+                        (unsigned char*) title, strlen(title));
+    }
 }
 
 
@@ -1568,7 +1604,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
                                         &width, &height, &rate);
     }
 
-    if (window->windowNoResize)
+    if (!window->resizable)
     {
         // Update window size restrictions to match new window size
 
@@ -1735,7 +1771,7 @@ void _glfwPlatformRefreshWindowParams(void)
                                &dotclock, &modeline);
         pixels_per_second = 1000.0f * (float) dotclock;
         pixels_per_frame  = (float) modeline.htotal * modeline.vtotal;
-        window->refreshRate = (int)(pixels_per_second/pixels_per_frame+0.5);
+        window->refreshRate = (int) (pixels_per_second / pixels_per_frame + 0.5);
 #endif /*_GLFW_HAS_XF86VIDMODE*/
     }
     else
@@ -1771,6 +1807,11 @@ void _glfwPlatformPollEvents(void)
                                            window->width / 2,
                                            window->height / 2);
             window->X11.cursorCentered = GL_TRUE;
+
+            // NOTE: This is a temporary fix.  It works as long as you use
+            //       offsets accumulated over the course of a frame, instead of
+            //       performing the necessary actions per callback call.
+            XFlush( _glfwLibrary.X11.display );
         }
     }
 }

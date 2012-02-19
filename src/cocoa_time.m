@@ -29,6 +29,36 @@
 
 #include "internal.h"
 
+#include <mach/mach_time.h>
+
+
+//========================================================================
+// Return raw time
+//========================================================================
+
+static uint64_t getRawTime(void)
+{
+    return mach_absolute_time();
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Initialise timer
+//========================================================================
+
+void _glfwInitTimer(void)
+{
+    mach_timebase_info_data_t info;
+    mach_timebase_info(&info);
+
+    _glfwLibrary.NS.timer.resolution = (double) info.numer / (info.denom * 1.0e9);
+    _glfwLibrary.NS.timer.base = getRawTime();
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -40,8 +70,8 @@
 
 double _glfwPlatformGetTime(void)
 {
-    return [NSDate timeIntervalSinceReferenceDate] -
-           _glfwLibrary.NS.timer.t0;
+    return (double) (getRawTime() - _glfwLibrary.NS.timer.base) *
+        _glfwLibrary.NS.timer.resolution;
 }
 
 //========================================================================
@@ -50,7 +80,7 @@ double _glfwPlatformGetTime(void)
 
 void _glfwPlatformSetTime(double time)
 {
-    _glfwLibrary.NS.timer.t0 =
-        [NSDate timeIntervalSinceReferenceDate] - time;
+    _glfwLibrary.NS.timer.base = getRawTime() -
+        (uint64_t) (time / _glfwLibrary.NS.timer.resolution);
 }
 

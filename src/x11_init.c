@@ -366,7 +366,7 @@ static void updateKeyCodeLUT(void)
 
 static GLboolean initDisplay(void)
 {
-    _glfwLibrary.X11.display = XOpenDisplay(0);
+    _glfwLibrary.X11.display = XOpenDisplay(NULL);
     if (!_glfwLibrary.X11.display)
     {
         _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "X11/GLX: Failed to open X display");
@@ -639,7 +639,7 @@ int _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = "GLFW " _GLFW_VERSION_FULL
+    const char* version = _GLFW_VERSION_FULL
 #if defined(_GLFW_HAS_XRANDR)
         " XRandR"
 #endif
@@ -648,6 +648,9 @@ const char* _glfwPlatformGetVersionString(void)
 #endif
 #if !defined(_GLFW_HAS_XRANDR) && !defined(_GLFW_HAS_XF86VIDMODE)
         " no-mode-switching-support"
+#endif
+#if defined(_GLFW_HAS_XKB)
+        " Xkb"
 #endif
 #if defined(_GLFW_HAS_GLXGETPROCADDRESS)
         " glXGetProcAddress"

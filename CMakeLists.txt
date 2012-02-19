@@ -38,6 +38,8 @@ if (UNIX AND NOT APPLE)
     # Define the platform identifier
     set(_GLFW_X11_GLX 1)
 
+    find_package(X11 REQUIRED)
+
     # Set up library and include paths
     list(APPEND GLFW_INCLUDE_DIR ${X11_X11_INCLUDE_PATH} ${OPENGL_INCLUDE_DIR})
     list(APPEND GLFW_LIBRARIES ${X11_X11_LIB} ${OPENGL_gl_LIBRARY})
@@ -55,27 +57,26 @@ if (UNIX AND NOT APPLE)
     include(CheckFunctionExists)
     include(CheckSymbolExists)
 
-    include(${GLFW_SOURCE_DIR}/CMake/CheckX11Extensions.cmake)
     set(CMAKE_REQUIRED_LIBRARIES ${GLFW_LIBRARIES})
     
     # Check for XRandR (modern resolution switching extension)
-    check_x11_xrandr()
-    if (X11_XRANDR_FOUND)
+    if (X11_Xrandr_FOUND)
         set(_GLFW_HAS_XRANDR 1) 
-        list(APPEND GLFW_INCLUDE_DIR ${X11_XRANDR_INCLUDE_DIR})
-        list(APPEND GLFW_LIBRARIES ${X11_XRANDR_LIBRARIES})
-    endif(X11_XRANDR_FOUND)
+        list(APPEND GLFW_INCLUDE_DIR ${X11_Xrandr_INCLUDE_PATH})
+        list(APPEND GLFW_LIBRARIES ${X11_Xrandr_LIB})
+    endif()
 
     # Check for Xf86VidMode (fallback legacy resolution switching extension)
-    check_x11_xf86vidmode()
-    if (X11_XF86VIDMODE_FOUND)
+    if (X11_xf86vmode_FOUND)
         set(_GLFW_HAS_XF86VIDMODE 1)
-        list(APPEND GLFW_INCLUDE_DIR ${X11_XF86VIDMODE_INCLUDE_DIR})
-        list(APPEND GLFW_LIBRARIES ${X11_XF86VIDMODE_LIBRARIES})
-    endif(X11_XF86VIDMODE_FOUND) 
+        list(APPEND GLFW_INCLUDE_DIR ${X11_xf86vmode_INCLUDE_PATH})
+    endif() 
 
     # Check for Xkb (X keyboard extension)
-    check_function_exists(XkbQueryExtension _GLFW_HAS_XKB)
+    if (X11_Xkb_FOUND)
+        set(_GLFW_HAS_XKB 1)
+        list(APPEND GLFW_INCLUDE_DIR ${X11_Xkb_INCLUDE_PATH})
+    endif() 
 
     # Check for glXGetProcAddress
     check_function_exists(glXGetProcAddress _GLFW_HAS_GLXGETPROCADDRESS)

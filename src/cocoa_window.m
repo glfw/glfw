@@ -595,7 +595,7 @@ static void setUpMenuBar(void)
 //========================================================================
 // Initialize the Cocoa Application Kit
 //========================================================================
-static GLboolean initializeCocoa(void)
+static GLboolean initializeAppKit(void)
 {
     if (NSApp)
         return GL_TRUE;
@@ -813,7 +813,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
                             const _GLFWwndconfig* wndconfig,
                             const _GLFWfbconfig* fbconfig)
 {
-    if (!initializeCocoa())
+    if (!initializeAppKit())
         return GL_FALSE;
 
     // We can only have one application delegate, but we only allocate it the

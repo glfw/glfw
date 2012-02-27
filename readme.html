@@ -315,6 +315,7 @@ version of GLFW.</p>
   <li>[Cocoa] Bugfix: The loop condition for saving video modes used the wrong index variable</li>
   <li>[Cocoa] Bugfix: The OpenGL framework was not retrieved, making glfwGetProcAddress crash</li>
   <li>[Cocoa] Bugfix: <code>glfwInit</code> changed the current directory for unbundled executables</li>
+  <li>[Cocoa] Bugfix: The <code>GLFW_WINDOW_NO_RESIZE</code> window parameter was always zero</li>
   <li>[X11] Added support for the <code>GLX_EXT_swap_control</code> extension as an alternative to <code>GLX_SGI_swap_control</code></li>
   <li>[X11] Added the POSIX <code>CLOCK_MONOTONIC</code> time source as the preferred method</li>
   <li>[X11] Added dependency on libm, where present</li>
@@ -328,6 +329,7 @@ version of GLFW.</p>
   <li>[Win32] Bugfix: Software rasterizer pixel formats were not discarded by the WGL_ARB_pixel_format code path</li>
   <li>[Win32] Bugfix: The array for WGL context attributes was too small and could overflow</li>
   <li>[Win32] Bugfix: Alt+F4 hot key was not translated into <code>WM_CLOSE</code></li>
+  <li>[Win32] Bugfix: The <code>GLFW_WINDOW_NO_RESIZE</code> window parameter was always zero</li>
 </ul>
 
 <h3>v2.7</h3>

@@ -61,9 +61,9 @@ set(WINDOWS_BINARIES accuracy sharing tearing title windows)
 set(CONSOLE_BINARIES defaults events fsaa fsfocus gamma glfwinfo iconify
                      joysticks listmodes peter reopen)
 
-if(MSVC)
+if (MSVC)
   # Tell MSVC to use main instead of WinMain for Windows subsystem executables
   set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
                         LINK_FLAGS "/ENTRY:mainCRTStartup")
-endif(MSVC)
+endif()
 

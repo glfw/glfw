@@ -1,15 +1,15 @@
 
 if(UNIX)
-    if(_GLFW_HAS_XRANDR)
+    if (_GLFW_HAS_XRANDR)
         set(GLFW_PKGLIBS "${GLFW_PKGLIBS} xrandr")
-    endif(_GLFW_HAS_XRANDR)
-    if(_GLFW_HAS_XF86VIDMODE)
+    endif()
+    if (_GLFW_HAS_XF86VIDMODE)
         set(GLFW_PKGLIBS "${GLFW_PKGLIBS} xxf86vm")
-    endif(_GLFW_HAS_XF86VIDMODE)
+    endif()
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libglfw.pc.cmake 
                    ${CMAKE_CURRENT_BINARY_DIR}/libglfw.pc @ONLY)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libglfw.pc DESTINATION lib/pkgconfig)
-endif(UNIX)
+endif()
 
 include_directories(${GLFW_SOURCE_DIR}/src
                     ${GLFW_BINARY_DIR}/src
@@ -37,7 +37,7 @@ elseif(_GLFW_X11_GLX)
                         x11_window.c)
 else()
     message(FATAL_ERROR "No supported platform was selected")
-endif(_GLFW_COCOA_NSGL)
+endif()
 
 add_library(libglfwStatic STATIC ${libglfw_SOURCES})
 add_library(libglfwShared SHARED ${libglfw_SOURCES}) 
@@ -54,16 +54,16 @@ if(WIN32)
                           PREFIX ""
                           IMPORT_PREFIX ""
                           IMPORT_SUFFIX "dll.lib")
-endif(WIN32)
+endif()
 
 if(APPLE)
     # Append -fno-common to the compile flags to work around a bug in the Apple GCC
     get_target_property(CFLAGS libglfwShared COMPILE_FLAGS)
-    if(NOT CFLAGS)
+    if (NOT CFLAGS)
         set(CFLAGS "")
-    endif(NOT CFLAGS)
+    endif()
     set_target_properties(libglfwShared PROPERTIES COMPILE_FLAGS "${CFLAGS} -fno-common")
-endif(APPLE)
+endif()
 
 install(TARGETS libglfwStatic libglfwShared DESTINATION lib)
 

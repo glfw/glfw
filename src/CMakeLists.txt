@@ -47,9 +47,10 @@ set_target_properties(libglfwStatic libglfwShared PROPERTIES
                       OUTPUT_NAME glfw)
 
 if(WIN32)
+    target_link_libraries(libglfwShared winmm)
     # The GLFW DLL needs a special compile-time macro and import library name
     set_target_properties(libglfwShared PROPERTIES 
-                          DEFINE_SYMBOL GLFW_BUILD_DLL
+                          COMPILE_DEFINITIONS "GLFW_BUILD_DLL;_GLFW_NO_DLOAD_GDI32;_GLFW_NO_DLOAD_WINMM"
                           PREFIX ""
                           IMPORT_PREFIX ""
                           IMPORT_SUFFIX "dll.lib")

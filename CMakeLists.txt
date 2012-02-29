@@ -160,7 +160,7 @@ install(DIRECTORY include/GL DESTINATION include
 install(FILES COPYING.txt readme.html 
         DESTINATION share/doc/glfw-${GLFW_VERSION_FULL}/)
 
-# The respective port's CMakeLists.txt file installs the library
+# The src directory's CMakeLists.txt file installs the library
 
 #--------------------------------------------------------------------
 # -- Documentation generation 

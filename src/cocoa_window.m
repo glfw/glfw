@@ -675,14 +675,23 @@ static GLboolean createContext(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    if (wndconfig->glProfile)
+    if (wndconfig->glMajor > 2)
     {
-        // Fail if a profile other than core was explicitly selected
+        if (!wndconfig->glForward)
+        {
+            _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                          "Cocoa/NSOpenGL: The targeted version of Mac OS X "
+                          "only supports OpenGL 3.2 contexts if they are "
+                          "forward-compatible");
+            return GL_FALSE;
+        }
+
         if (wndconfig->glProfile != GLFW_OPENGL_CORE_PROFILE)
         {
             _glfwSetError(GLFW_VERSION_UNAVAILABLE,
                           "Cocoa/NSOpenGL: The targeted version of Mac OS X "
-                          "only supports the OpenGL core profile");
+                          "only supports OpenGL 3.2 contexts if they use the "
+                          "core profile");
             return GL_FALSE;
         }
     }

@@ -78,6 +78,8 @@ static void changeToResourcesDirectory(void)
 
 int _glfwPlatformInit(void)
 {
+    _glfwLibrary.NS.autoreleasePool = [[NSAutoreleasePool alloc] init];
+
     _glfwLibrary.NS.OpenGLFramework =
         CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
     if (_glfwLibrary.NS.OpenGLFramework == NULL)

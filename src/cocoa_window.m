@@ -600,8 +600,6 @@ static GLboolean initializeAppKit(void)
     if (NSApp)
         return GL_TRUE;
 
-    _glfwLibrary.NS.autoreleasePool = [[NSAutoreleasePool alloc] init];
-
     // Implicitly create shared NSApplication instance
     [GLFWApplication sharedApplication];
 

@@ -116,11 +116,7 @@ int _glfwPlatformTerminate(void)
     // Restore the original gamma ramp
     _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
 
-    if (_glfwLibrary.NS.desktopMode)
-    {
-        CFRelease(_glfwLibrary.NS.desktopMode);
-        _glfwLibrary.NS.desktopMode = NULL;
-    }
+    CGDisplayModeRelease(_glfwLibrary.NS.desktopMode);
 
     [NSApp setDelegate:nil];
     [_glfwLibrary.NS.delegate release];

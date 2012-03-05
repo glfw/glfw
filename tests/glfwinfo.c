@@ -263,7 +263,7 @@ int main(int argc, char** argv)
     if (major > 3 || (major == 3 && minor >= 2))
     {
         glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
-        printf("OpenGL profile mask: 0x%08x (%s)\n", mask, get_profile_name(mask));
+        printf("OpenGL profile mask: %s (0x%08x)\n", get_profile_name(mask), mask);
 
         printf("OpenGL profile parsed by GLFW: %s\n",
                get_glfw_profile_name(glfwGetWindowParam(window, GLFW_OPENGL_PROFILE)));

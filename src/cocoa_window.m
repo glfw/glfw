@@ -469,13 +469,6 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 @end
 
 
-// Prior to Snow Leopard, we need to use this oddly-named semi-private API
-// to get the application menu working properly.  Need to be careful in
-// case it goes away in a future OS update.
-@interface NSApplication (NSAppleMenu)
-- (void)setAppleMenu:(NSMenu*)m;
-@end
-
 //========================================================================
 // Try to figure out what the calling application is called
 //========================================================================
@@ -584,11 +577,9 @@ static void setUpMenuBar(void)
                           action:@selector(arrangeInFront:)
                    keyEquivalent:@""];
 
-    // At least guard the call to private API to avoid an exception if it
-    // goes away.  Hopefully that means the worst we'll break in future is to
-    // look ugly...
-    if ([NSApp respondsToSelector:@selector(setAppleMenu:)])
-        [NSApp setAppleMenu:appMenu];
+    // Prior to Snow Leopard, we need to use this oddly-named semi-private API
+    // to get the application menu working properly.
+    [NSApp performSelector:NSSelectorFromString(@"setAppleMenu:") withObject:appMenu];
 }
 
 

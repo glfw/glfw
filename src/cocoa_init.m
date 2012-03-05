@@ -91,8 +91,7 @@ int _glfwPlatformInit(void)
 
     changeToResourcesDirectory();
 
-    _glfwLibrary.NS.desktopMode =
-	    (NSDictionary*) CGDisplayCurrentMode(CGMainDisplayID());
+    _glfwLibrary.NS.desktopMode = CGDisplayCopyDisplayMode(CGMainDisplayID());
 
     // Save the original gamma ramp
     _glfwLibrary.originalRampSize = CGDisplayGammaTableCapacity(CGMainDisplayID());
@@ -116,6 +115,12 @@ int _glfwPlatformTerminate(void)
 
     // Restore the original gamma ramp
     _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
+
+    if (_glfwLibrary.NS.desktopMode)
+    {
+        CFRelease(_glfwLibrary.NS.desktopMode);
+        _glfwLibrary.NS.desktopMode = NULL;
+    }
 
     [NSApp setDelegate:nil];
     [_glfwLibrary.NS.delegate release];

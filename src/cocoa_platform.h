@@ -37,6 +37,7 @@
 #if defined(__OBJC__)
 #import <Cocoa/Cocoa.h>
 #else
+#include <ApplicationServices/ApplicationServices.h>
 typedef void* id;
 #endif
 
@@ -90,10 +91,10 @@ typedef struct _GLFWlibraryNS
     } timer;
 
     // dlopen handle for dynamically loading OpenGL extension entry points
-    void*       OpenGLFramework;
-    id          desktopMode;
-    id          delegate;
-    id          autoreleasePool;
+    void*            OpenGLFramework;
+    CGDisplayModeRef desktopMode;
+    id               delegate;
+    id               autoreleasePool;
 } _GLFWlibraryNS;
 
 

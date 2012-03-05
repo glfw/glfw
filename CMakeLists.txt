@@ -1,7 +1,6 @@
 project(GLFW C)
 
-cmake_minimum_required(VERSION 2.4)
-cmake_policy(VERSION 2.4)
+cmake_minimum_required(VERSION 2.8)
 
 set(GLFW_VERSION_MAJOR "3")
 set(GLFW_VERSION_MINOR "0")
@@ -27,7 +26,7 @@ if (WIN32)
     # Set up library and include paths
     list(APPEND GLFW_INCLUDE_DIR ${OPENGL_INCLUDE_DIR})
     list(APPEND GLFW_LIBRARIES ${OPENGL_gl_LIBRARY})
-endif (WIN32)
+endif()
 
 #--------------------------------------------------------------------
 # Set up GLFW for Xlib and GLX on Unix-like systems with X Windows
@@ -47,12 +46,12 @@ if (UNIX AND NOT APPLE)
     find_library(MATH_LIBRARY m)
     if (MATH_LIBRARY)
         list(APPEND GLFW_LIBRARIES ${MATH_LIBRARY})
-    endif(MATH_LIBRARY)
+    endif()
 
     find_library(RT_LIBRARY rt)
     if (RT_LIBRARY)
         list(APPEND GLFW_LIBRARIES ${RT_LIBRARY})
-    endif(RT_LIBRARY)
+    endif()
 
     include(CheckFunctionExists)
     include(CheckSymbolExists)
@@ -83,24 +82,22 @@ if (UNIX AND NOT APPLE)
 
     if (NOT _GLFW_HAS_GLXGETPROCADDRESS)
         check_function_exists(glXGetProcAddressARB _GLFW_HAS_GLXGETPROCADDRESSARB)
-    endif (NOT _GLFW_HAS_GLXGETPROCADDRESS)
+    endif()
 
     if (NOT _GLFW_HAS_GLXGETPROCADDRESS AND NOT _GLFW_HAS_GLXGETPROCADDRESSARB)
         check_function_exists(glXGetProcAddressEXT _GLFW_HAS_GLXGETPROCADDRESSEXT)
-    endif (NOT _GLFW_HAS_GLXGETPROCADDRESS AND NOT _GLFW_HAS_GLXGETPROCADDRESSARB)
+    endif()
 
     if (NOT _GLFW_HAS_GLXGETPROCADDRESS AND
         NOT _GLFW_HAS_GLXGETPROCADDRESSARB AND
         NOT _GLFW_HAS_GLXGETPROCADDRESSEXT)
         message(WARNING "No glXGetProcAddressXXX variant found")
-    endif (NOT _GLFW_HAS_GLXGETPROCADDRESS AND
-           NOT _GLFW_HAS_GLXGETPROCADDRESSARB AND
-           NOT _GLFW_HAS_GLXGETPROCADDRESSEXT)
+    endif()
 
     if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         set(_GLFW_USE_LINUX_JOYSTICKS 1)
-    endif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-endif(UNIX AND NOT APPLE)
+    endif()
+endif()
 
 #--------------------------------------------------------------------
 # Set up GLFW for Cocoa and NSOpenGL on Mac OS X
@@ -121,7 +118,7 @@ if (UNIX AND APPLE)
         set(CMAKE_C_FLAGS "-mmacosx-version-min=10.5") 
     else(GLFW_BUILD_UNIVERSAL)
         message(STATUS "Building GLFW only for the native architecture")
-    endif(GLFW_BUILD_UNIVERSAL)
+    endif()
     
     # Set up library and include paths
     find_library(COCOA_FRAMEWORK Cocoa)
@@ -131,7 +128,7 @@ if (UNIX AND APPLE)
     list(APPEND GLFW_LIBRARIES ${OPENGL_gl_LIBRARY})
     list(APPEND GLFW_LIBRARIES ${IOKIT_FRAMEWORK})
     list(APPEND GLFW_LIBRARIES ${CORE_FOUNDATION_FRAMEWORK})
-endif(UNIX AND APPLE)
+endif()
 
 #--------------------------------------------------------------------
 # Add subdirectories
@@ -140,11 +137,11 @@ add_subdirectory(src)
 
 if (GLFW_BUILD_EXAMPLES)
     add_subdirectory(examples)
-endif(GLFW_BUILD_EXAMPLES)
+endif()
 
 if (GLFW_BUILD_TESTS)
     add_subdirectory(tests)
-endif(GLFW_BUILD_TESTS)
+endif()
 
 #--------------------------------------------------------------------
 # Create shared configuration header
@@ -162,7 +159,7 @@ install(DIRECTORY include/GL DESTINATION include
 install(FILES COPYING.txt readme.html 
         DESTINATION share/doc/glfw-${GLFW_VERSION_FULL}/)
 
-# The respective port's CMakeLists.txt file installs the library
+# The src directory's CMakeLists.txt file installs the library
 
 #--------------------------------------------------------------------
 # -- Documentation generation 
@@ -175,7 +172,7 @@ configure_file("${GLFW_SOURCE_DIR}/docs/Doxyfile.in"
 # Uninstall operation
 # Don't generate this target if a higher-level project already has
 #--------------------------------------------------------------------
-if(NOT TARGET uninstall)
+if (NOT TARGET uninstall)
     configure_file(${GLFW_SOURCE_DIR}/cmake_uninstall.cmake.in
                    ${GLFW_BINARY_DIR}/cmake_uninstall.cmake IMMEDIATE @ONLY)
 

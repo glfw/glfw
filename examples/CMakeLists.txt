@@ -7,14 +7,14 @@ include_directories(${GLFW_SOURCE_DIR}/include
                     ${GLFW_SOURCE_DIR}/support
                     ${OPENGL_INCLUDE_DIR})
 
-if(APPLE)
+if (APPLE)
   # Set fancy names for bundles
   add_executable(Boing MACOSX_BUNDLE boing.c)
   add_executable(Gears MACOSX_BUNDLE gears.c)
   add_executable("Split View" MACOSX_BUNDLE splitview.c)
   add_executable(Triangle MACOSX_BUNDLE triangle.c)
   add_executable(Wave MACOSX_BUNDLE wave.c)
-else(APPLE)
+else()
   # Set boring names for executables
   add_executable(boing WIN32 boing.c)
   add_executable(gears WIN32 gears.c)
@@ -22,13 +22,13 @@ else(APPLE)
   add_executable(splitview WIN32 splitview.c)
   add_executable(triangle WIN32 triangle.c)
   add_executable(wave WIN32 wave.c)
-endif(APPLE)
+endif()
 
 set(WINDOWS_BINARIES boing gears heightmap splitview triangle wave)
 
-if(MSVC)
+if (MSVC)
   # Tell MSVC to use main instead of WinMain for Windows subsystem executables
   set_target_properties(${WINDOWS_BINARIES} PROPERTIES
                         LINK_FLAGS "/ENTRY:mainCRTStartup")
-endif(MSVC)
+endif()
 

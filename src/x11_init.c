@@ -79,7 +79,11 @@ static int keyCodeToGLFWKeyCode(int keyCode)
     // Note: This way we always force "NumLock = ON", which is intentional
     // since the returned key code should correspond to a physical
     // location.
+#if defined(_GLFW_HAS_XKB)
+    keySym = XkbKeycodeToKeysym(_glfwLibrary.X11.display, keyCode, 1, 0);
+#else
     keySym = XKeycodeToKeysym(_glfwLibrary.X11.display, keyCode, 1);
+#endif
     switch (keySym)
     {
         case XK_KP_0:           return GLFW_KEY_KP_0;
@@ -102,7 +106,12 @@ static int keyCodeToGLFWKeyCode(int keyCode)
     // Now try pimary keysym for function keys (non-printable keys). These
     // should not be layout dependent (i.e. US layout and international
     // layouts should give the same result).
+#if defined(_GLFW_HAS_XKB)
+    keySym = XkbKeycodeToKeysym(_glfwLibrary.X11.display, keyCode, 0, 0);
+#else
     keySym = XKeycodeToKeysym(_glfwLibrary.X11.display, keyCode, 0);
+#endif
+
     switch (keySym)
     {
         case XK_Escape:         return GLFW_KEY_ESCAPE;

@@ -523,7 +523,7 @@ static NSString* findAppName(void)
 // localize(d|able), etc.  Loading a nib would save us this horror, but that
 // doesn't seem like a good thing to require of GLFW's clients.
 //========================================================================
-static void setUpMenuBar(void)
+static void createMenuBar(void)
 {
     NSString* appName = findAppName();
 
@@ -597,7 +597,7 @@ static GLboolean initializeAppKit(void)
     // Setting up the menu bar must go between sharedApplication
     // above and finishLaunching below, in order to properly emulate the
     // behavior of NSApplicationMain
-    setUpMenuBar();
+    createMenuBar();
 
     [NSApp finishLaunching];
 

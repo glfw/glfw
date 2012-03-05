@@ -67,14 +67,14 @@ set(CONSOLE_BINARIES defaults events fsaa fsfocus gamma glfwinfo iconify
                      joysticks listmodes peter reopen)
 
 if (MSVC)
-  # Tell MSVC to use main instead of WinMain for Windows subsystem executables
-  set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
-                        LINK_FLAGS "/ENTRY:mainCRTStartup")
+    # Tell MSVC to use main instead of WinMain for Windows subsystem executables
+    set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
+                          LINK_FLAGS "/ENTRY:mainCRTStartup")
 endif()
 
 if (APPLE)
-  set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
-                        MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}
-                        MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION_FULL})
+    set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
+                          MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}
+                          MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION_FULL})
 endif()
 

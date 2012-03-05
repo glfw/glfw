@@ -579,7 +579,7 @@ static void createMenuBar(void)
 
     // Prior to Snow Leopard, we need to use this oddly-named semi-private API
     // to get the application menu working properly.
-    [NSApp performSelector:NSSelectorFromString(@"setAppleMenu:") withObject:appMenu];
+    [NSApp performSelector:@selector(setAppleMenu:) withObject:appMenu];
 }
 
 

@@ -29,6 +29,9 @@
 
 #include "internal.h"
 
+#include <stdlib.h>
+#include <limits.h>
+
 
 //========================================================================
 // Check whether the display mode should be included in enumeration
@@ -88,6 +91,100 @@ static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode)
 
     CFRelease(format);
     return result;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Change the current video mode
+//========================================================================
+
+GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp, int* refreshRate)
+{
+    CGDisplayModeRef bestMode = NULL;
+    CFArrayRef modes;
+    CFIndex count, i;
+    unsigned int leastSizeDiff = UINT_MAX;
+    double leastRateDiff = DBL_MAX;
+
+    modes = CGDisplayCopyAllDisplayModes(CGMainDisplayID(), NULL);
+    count = CFArrayGetCount(modes);
+
+    for (i = 0;  i < count;  i++)
+    {
+        CGDisplayModeRef mode = (CGDisplayModeRef) CFArrayGetValueAtIndex(modes, i);
+        if (!modeIsGood(mode))
+            continue;
+
+        int modeBPP;
+
+        // Identify display mode pixel encoding
+        {
+            CFStringRef format = CGDisplayModeCopyPixelEncoding(mode);
+
+            if (CFStringCompare(format, CFSTR(IO16BitDirectPixels), 0) == 0)
+                modeBPP = 16;
+            else
+                modeBPP = 32;
+
+            CFRelease(format);
+        }
+
+        int modeWidth = (int) CGDisplayModeGetWidth(mode);
+        int modeHeight = (int) CGDisplayModeGetHeight(mode);
+
+        unsigned int sizeDiff = (abs(modeBPP - *bpp) << 25) |
+                                ((modeWidth - *width) * (modeWidth - *width) +
+                                 (modeHeight - *height) * (modeHeight - *height));
+
+        double rateDiff;
+
+        if (*refreshRate > 0)
+            rateDiff = fabs(CGDisplayModeGetRefreshRate(mode) - *refreshRate);
+        else
+        {
+            // If no refresh rate was specified, then they're all the same
+            rateDiff = 0;
+        }
+
+        if ((sizeDiff < leastSizeDiff) ||
+            (sizeDiff == leastSizeDiff && (rateDiff < leastRateDiff)))
+        {
+            bestMode = mode;
+
+            leastSizeDiff = sizeDiff;
+            leastRateDiff = rateDiff;
+        }
+    }
+
+    if (!bestMode)
+    {
+        CFRelease(modes);
+        return GL_FALSE;
+    }
+
+    CGDisplayCapture(CGMainDisplayID());
+    CGDisplaySetDisplayMode(CGMainDisplayID(), bestMode, NULL);
+
+    CFRelease(modes);
+    return GL_TRUE;
+}
+
+
+//========================================================================
+// Restore the previously saved (original) video mode
+//========================================================================
+
+void _glfwRestoreVideoMode(void)
+{
+    CGDisplaySetDisplayMode(CGMainDisplayID(),
+                            _glfwLibrary.NS.desktopMode,
+                            NULL);
+
+    CGDisplayRelease(CGMainDisplayID());
 }
 
 

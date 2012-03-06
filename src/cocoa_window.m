@@ -850,28 +850,6 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     // Don't use accumulation buffer support; it's not accelerated
     // Aux buffers probably aren't accelerated either
 
-    CFDictionaryRef fullscreenMode = NULL;
-    if (wndconfig->mode == GLFW_FULLSCREEN)
-    {
-        // I think it's safe to pass 0 to the refresh rate for this function
-        // rather than conditionalizing the code to call the version which
-        // doesn't specify refresh...
-        fullscreenMode =
-            CGDisplayBestModeForParametersAndRefreshRateWithProperty(
-                CGMainDisplayID(),
-                colorBits + fbconfig->alphaBits,
-                window->width, window->height,
-                wndconfig->refreshRate,
-                // Controversial, see macosx_fullscreen.m for discussion
-                kCGDisplayModeIsSafeForHardware,
-                NULL);
-
-        window->width =
-            [[(id)fullscreenMode objectForKey:(id)kCGDisplayWidth] intValue];
-        window->height =
-            [[(id)fullscreenMode objectForKey:(id)kCGDisplayHeight] intValue];
-    }
-
     if (!createWindow(window, wndconfig))
         return GL_FALSE;
 
@@ -883,8 +861,15 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 
     if (wndconfig->mode == GLFW_FULLSCREEN)
     {
-        CGCaptureAllDisplays();
-        CGDisplaySwitchToMode(CGMainDisplayID(), fullscreenMode);
+        int bpp = colorBits + fbconfig->alphaBits;
+
+        if (!_glfwSetVideoMode(&window->width,
+                               &window->height,
+                               &bpp,
+                               &window->refreshRate))
+        {
+            return GL_FALSE;
+        }
 
         [[window->NS.window contentView] enterFullScreenMode:[NSScreen mainScreen]
                                                  withOptions:nil];
@@ -914,9 +899,7 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
     {
         [[window->NS.window contentView] exitFullScreenModeWithOptions:nil];
 
-        CGDisplaySwitchToMode(CGMainDisplayID(),
-                              (CFDictionaryRef) _glfwLibrary.NS.desktopMode);
-        CGReleaseAllDisplays();
+        _glfwRestoreVideoMode();
     }
 
     [window->NSGL.pixelFormat release];

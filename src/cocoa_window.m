@@ -112,6 +112,7 @@
 
 @end
 
+
 //========================================================================
 // Delegate for application related notifications
 //========================================================================
@@ -132,6 +133,7 @@
 }
 
 @end
+
 
 //========================================================================
 // Keyboard symbol translation table
@@ -270,6 +272,7 @@ static const unsigned int MAC_TO_GLFW_KEYCODE_MAPPING[128] =
     /* 7f */ -1,
 };
 
+
 //========================================================================
 // Converts a Mac OS X keycode to a GLFW keycode
 //========================================================================
@@ -284,6 +287,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
     // function should still get 'q' though.
     return MAC_TO_GLFW_KEYCODE_MAPPING[macKeyCode];
 }
+
 
 //========================================================================
 // Content view class for the GLFW window
@@ -446,6 +450,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
 @end
 
+
 //========================================================================
 // GLFW application class
 //========================================================================
@@ -516,6 +521,7 @@ static NSString* findAppName(void)
     return @"GLFW Application";
 }
 
+
 //========================================================================
 // Set up the menu bar (manually)
 // This is nasty, nasty stuff -- calls to undocumented semi-private APIs that
@@ -523,6 +529,7 @@ static NSString* findAppName(void)
 // localize(d|able), etc.  Loading a nib would save us this horror, but that
 // doesn't seem like a good thing to require of GLFW's clients.
 //========================================================================
+
 static void createMenuBar(void)
 {
     NSString* appName = findAppName();
@@ -586,6 +593,7 @@ static void createMenuBar(void)
 //========================================================================
 // Initialize the Cocoa Application Kit
 //========================================================================
+
 static GLboolean initializeAppKit(void)
 {
     if (NSApp)
@@ -603,6 +611,7 @@ static GLboolean initializeAppKit(void)
 
     return GL_TRUE;
 }
+
 
 //========================================================================
 // Create the Cocoa window
@@ -646,6 +655,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 
     return GL_TRUE;
 }
+
 
 //========================================================================
 // Create the OpenGL context
@@ -919,6 +929,7 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
     // TODO: Probably more cleanup
 }
 
+
 //========================================================================
 // Set the window title
 //========================================================================
@@ -928,6 +939,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)
     [window->NS.window setTitle:[NSString stringWithUTF8String:title]];
 }
 
+
 //========================================================================
 // Set the window size
 //========================================================================
@@ -936,6 +948,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     [window->NS.window setContentSize:NSMakeSize(width, height)];
 }
+
 
 //========================================================================
 // Set the window position
@@ -957,6 +970,7 @@ void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
                         display:YES];
 }
 
+
 //========================================================================
 // Iconify the window
 //========================================================================
@@ -966,6 +980,7 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window)
     [window->NS.window miniaturize:nil];
 }
 
+
 //========================================================================
 // Restore (un-iconify) the window
 //========================================================================
@@ -974,6 +989,7 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
     [window->NS.window deminiaturize:nil];
 }
+
 
 //========================================================================
 // Write back window parameters into GLFW window structure
@@ -1049,6 +1065,7 @@ void _glfwPlatformRefreshWindowParams(void)
     window->glDebug = GL_FALSE;
 }
 
+
 //========================================================================
 // Poll for new window and input events
 //========================================================================
@@ -1073,6 +1090,7 @@ void _glfwPlatformPollEvents(void)
     _glfwLibrary.NS.autoreleasePool = [[NSAutoreleasePool alloc] init];
 }
 
+
 //========================================================================
 // Wait for new window and input events
 //========================================================================
@@ -1090,6 +1108,7 @@ void _glfwPlatformWaitEvents( void )
 
     _glfwPlatformPollEvents();
 }
+
 
 //========================================================================
 // Set physical mouse cursor position
@@ -1122,6 +1141,7 @@ void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y)
                                           mainScreenOrigin.y);
     CGDisplayMoveCursorToPoint(CGMainDisplayID(), targetPoint);
 }
+
 
 //========================================================================
 // Set physical mouse cursor mode

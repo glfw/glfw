@@ -74,6 +74,7 @@ double _glfwPlatformGetTime(void)
         _glfwLibrary.NS.timer.resolution;
 }
 
+
 //========================================================================
 // Set timer value in seconds
 //========================================================================

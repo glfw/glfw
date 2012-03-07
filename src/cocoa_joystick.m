@@ -579,4 +579,3 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
     return numbuttons;
 }
 
-

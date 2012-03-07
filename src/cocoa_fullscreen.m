@@ -64,6 +64,7 @@ static GLboolean modeIsGood(CGDisplayModeRef mode)
     return GL_TRUE;
 }
 
+
 //========================================================================
 // Convert Core Graphics display mode to GLFW video mode
 //========================================================================
@@ -216,6 +217,7 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
     CFRelease(modes);
     return stored;
 }
+
 
 //========================================================================
 // Get the desktop video mode

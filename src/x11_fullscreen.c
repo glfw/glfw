@@ -372,6 +372,8 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
         }
     }
 
+    XFree(vislist);
+
     rescount = 0;
     resarray = NULL;
 
@@ -456,8 +458,6 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
             count++;
         }
     }
-
-    XFree(vislist);
 
     free(resarray);
     free(rgbarray);

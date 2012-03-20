@@ -734,7 +734,6 @@ static GLboolean createContext(_GLFWwindow* window,
 
     if (wndconfig->mode == GLFW_FULLSCREEN)
     {
-        ADD_ATTR(NSOpenGLPFAFullScreen);
         ADD_ATTR(NSOpenGLPFANoRecovery);
         ADD_ATTR2(NSOpenGLPFAScreenMask,
                   CGDisplayIDToOpenGLDisplayMask(CGMainDisplayID()));

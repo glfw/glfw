@@ -102,6 +102,13 @@ int _glfwPlatformInit(void)
 
     _glfwInitJoysticks();
 
+    _glfwLibrary.NS.eventSource = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
+    if (!_glfwLibrary.NS.eventSource)
+        return GL_FALSE;
+
+    CGEventSourceSetLocalEventsSuppressionInterval(_glfwLibrary.NS.eventSource,
+                                                   0.0);
+
     return GL_TRUE;
 }
 
@@ -112,6 +119,12 @@ int _glfwPlatformInit(void)
 int _glfwPlatformTerminate(void)
 {
     // TODO: Probably other cleanup
+
+    if (_glfwLibrary.NS.eventSource)
+    {
+        CFRelease(_glfwLibrary.NS.eventSource);
+        _glfwLibrary.NS.eventSource = NULL;
+    }
 
     // Restore the original gamma ramp
     _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);

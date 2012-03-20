@@ -33,6 +33,7 @@
 //========================================================================
 // Change to our application bundle's resources directory, if present
 //========================================================================
+
 static void changeToResourcesDirectory(void)
 {
     char resourcesPath[MAXPATHLEN];
@@ -111,6 +112,7 @@ int _glfwPlatformInit(void)
 
     return GL_TRUE;
 }
+
 
 //========================================================================
 // Close window, if open, and shut down GLFW

@@ -36,6 +36,9 @@ target_link_libraries(joysticks ${STATIC_DEPS})
 add_executable(listmodes listmodes.c)
 target_link_libraries(listmodes ${STATIC_DEPS})
 
+add_executable(modes modes.c getopt.c)
+target_link_libraries(modes ${STATIC_DEPS})
+
 add_executable(peter peter.c)
 target_link_libraries(peter ${STATIC_DEPS})
 
@@ -64,7 +67,7 @@ set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 
 set(WINDOWS_BINARIES accuracy sharing tearing title windows)
 set(CONSOLE_BINARIES defaults events fsaa fsfocus gamma glfwinfo iconify
-                     joysticks listmodes peter reopen)
+                     joysticks listmodes modes peter reopen)
 
 if (MSVC)
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables

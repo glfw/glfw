@@ -152,7 +152,7 @@ static void addJoystickElement(_glfwJoystick* joystick, CFTypeRef refElement)
             long number;
             CFTypeRef refType;
 
-            _glfwJoystickElement* element = (_glfwJoystickElement*) _glfwMalloc(sizeof(_glfwJoystickElement));
+            _glfwJoystickElement* element = (_glfwJoystickElement*) malloc(sizeof(_glfwJoystickElement));
 
             CFArrayAppendValue(elementsArray, element);
 
@@ -232,33 +232,35 @@ static long getElementValue(_glfwJoystick* joystick, _glfwJoystickElement* eleme
 
 static void removeJoystick(_glfwJoystick* joystick)
 {
+    int i;
+
     if (joystick->present)
     {
         joystick->present = GL_FALSE;
 
-        for (int i = 0;  i < joystick->numAxes;  i++)
+        for (i = 0;  i < joystick->numAxes;  i++)
         {
             _glfwJoystickElement* axes =
                 (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick->axes, i);
-            _glfwFree(axes);
+            free(axes);
         }
         CFArrayRemoveAllValues(joystick->axes);
         joystick->numAxes = 0;
 
-        for (int i = 0;  i < joystick->numButtons;  i++)
+        for (i = 0;  i < joystick->numButtons;  i++)
         {
             _glfwJoystickElement* button =
                 (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick->buttons, i);
-            _glfwFree(button);
+            free(button);
         }
         CFArrayRemoveAllValues(joystick->buttons);
         joystick->numButtons = 0;
 
-        for (int i = 0;  i < joystick->numHats;  i++)
+        for (i = 0;  i < joystick->numHats;  i++)
         {
             _glfwJoystickElement* hat =
                 (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick->hats, i);
-            _glfwFree(hat);
+            free(hat);
         }
         CFArrayRemoveAllValues(joystick->hats);
         joystick->hats = 0;
@@ -287,23 +289,26 @@ static void removalCallback(void* target, IOReturn result, void* refcon, void* s
 
 static void pollJoystickEvents(void)
 {
-    for (int i = 0;  i < GLFW_JOYSTICK_LAST + 1;  i++)
+    int i;
+    CFIndex j;
+
+    for (i = 0;  i < GLFW_JOYSTICK_LAST + 1;  i++)
     {
         _glfwJoystick* joystick = &_glfwJoysticks[i];
 
         if (joystick->present)
         {
-            for (CFIndex i = 0;  i < joystick->numButtons;  i++)
+            for (j = 0;  j < joystick->numButtons;  j++)
             {
                 _glfwJoystickElement* button =
-                    (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick->buttons, i);
+                    (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick->buttons, j);
                 button->value = getElementValue(joystick, button);
             }
 
-            for (CFIndex i = 0;  i < joystick->numAxes;  i++)
+            for (j = 0;  j < joystick->numAxes;  j++)
             {
                 _glfwJoystickElement* axes =
-                    (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick->axes, i);
+                    (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick->axes, j);
                 axes->value = getElementValue(joystick, axes);
             }
         }
@@ -449,7 +454,9 @@ void _glfwInitJoysticks(void)
 
 void _glfwTerminateJoysticks(void)
 {
-    for (int i = 0;  i < GLFW_JOYSTICK_LAST + 1;  i++)
+    int i;
+
+    for (i = 0;  i < GLFW_JOYSTICK_LAST + 1;  i++)
     {
         _glfwJoystick* joystick = &_glfwJoysticks[i];
         removeJoystick(joystick);
@@ -498,6 +505,8 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
 
 int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
 {
+    int i;
+
     if (joy < GLFW_JOYSTICK_1 || joy > GLFW_JOYSTICK_LAST)
         return 0;
 
@@ -514,7 +523,7 @@ int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
     // Update joystick state
     pollJoystickEvents();
 
-    for (int i = 0;  i < numaxes;  i++)
+    for (i = 0;  i < numaxes;  i++)
     {
         _glfwJoystickElement* axes =
             (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick.axes, i);
@@ -543,6 +552,8 @@ int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
 int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
                                     int numbuttons)
 {
+    int i;
+
     if (joy < GLFW_JOYSTICK_1 || joy > GLFW_JOYSTICK_LAST)
         return 0;
 
@@ -559,7 +570,7 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
     // Update joystick state
     pollJoystickEvents();
 
-    for (int i = 0;  i < numbuttons;  i++)
+    for (i = 0;  i < numbuttons;  i++)
     {
         _glfwJoystickElement* button = (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick.buttons, i);
         buttons[i] = button->value ? GLFW_PRESS : GLFW_RELEASE;
@@ -567,5 +578,4 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
 
     return numbuttons;
 }
-
 

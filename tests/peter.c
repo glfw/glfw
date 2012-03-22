@@ -35,7 +35,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static GLboolean cursor_captured = GL_FALSE;
 static GLFWwindow window_handle = NULL;
 static int cursor_x;
 static int cursor_y;
@@ -44,18 +43,16 @@ static GLboolean open_window(void);
 
 static void toggle_mouse_cursor(GLFWwindow window)
 {
-    if (cursor_captured)
+    if (glfwGetInputMode(window, GLFW_CURSOR_MODE) == GLFW_CURSOR_CAPTURED)
     {
         printf("Released cursor\n");
-        glfwSetCursorMode(window, GLFW_CURSOR_NORMAL);
+        glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_NORMAL);
     }
     else
     {
         printf("Captured cursor\n");
-        glfwSetCursorMode(window, GLFW_CURSOR_CAPTURED);
+        glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_CAPTURED);
     }
-
-    cursor_captured = !cursor_captured;
 }
 
 static void mouse_position_callback(GLFWwindow window, int x, int y)

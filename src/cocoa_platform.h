@@ -37,6 +37,7 @@
 #if defined(__OBJC__)
 #import <Cocoa/Cocoa.h>
 #else
+#include <ApplicationServices/ApplicationServices.h>
 typedef void* id;
 #endif
 
@@ -85,15 +86,16 @@ typedef struct _GLFWwindowNS
 typedef struct _GLFWlibraryNS
 {
     struct {
-        double t0;
+        double base;
+        double resolution;
     } timer;
 
     // dlopen handle for dynamically loading OpenGL extension entry points
-    void*       OpenGLFramework;
-    GLboolean   unbundled;
-    id          desktopMode;
-    id          delegate;
-    id          autoreleasePool;
+    void*            OpenGLFramework;
+    CGDisplayModeRef desktopMode;
+    CGEventSourceRef eventSource;
+    id               delegate;
+    id               autoreleasePool;
 } _GLFWlibraryNS;
 
 
@@ -101,9 +103,15 @@ typedef struct _GLFWlibraryNS
 // Prototypes for platform specific internal functions
 //========================================================================
 
+// Time
+void _glfwInitTimer(void);
+
 // Joystick input
 void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
+// Fullscreen
+GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp, int* refreshRate);
+void _glfwRestoreVideoMode(void);
 
 #endif // _platform_h_

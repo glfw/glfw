@@ -1,5 +1,5 @@
 
-if(UNIX)
+if (UNIX)
     if (_GLFW_HAS_XRANDR)
         set(GLFW_PKGLIBS "${GLFW_PKGLIBS} xrandr")
     endif()
@@ -18,19 +18,19 @@ include_directories(${GLFW_SOURCE_DIR}/src
 set(common_SOURCES error.c fullscreen.c gamma.c init.c input.c
                    joystick.c opengl.c time.c window.c)
 
-if(_GLFW_COCOA_NSGL)
+if (_GLFW_COCOA_NSGL)
     set(libglfw_SOURCES ${common_SOURCES} cocoa_fullscreen.m cocoa_gamma.c
                         cocoa_init.m cocoa_input.m cocoa_joystick.m
                         cocoa_opengl.m cocoa_time.c cocoa_window.m)
 
     # For some reason, CMake doesn't know about .m
     set_source_files_properties(${libglfw_SOURCES} PROPERTIES LANGUAGE C)
-elseif(_GLFW_WIN32_WGL)
+elseif (_GLFW_WIN32_WGL)
     set(libglfw_SOURCES ${common_SOURCES} win32_fullscreen.c win32_gamma.c
                         win32_init.c win32_input.c win32_joystick.c
                         win32_opengl.c win32_time.c win32_window.c
                         win32_dllmain.c)
-elseif(_GLFW_X11_GLX)
+elseif (_GLFW_X11_GLX)
     set(libglfw_SOURCES ${common_SOURCES} x11_fullscreen.c x11_gamma.c
                         x11_init.c x11_input.c x11_joystick.c
                         x11_keysym2unicode.c x11_opengl.c x11_time.c
@@ -46,7 +46,7 @@ set_target_properties(libglfwStatic libglfwShared PROPERTIES
                       CLEAN_DIRECT_OUTPUT 1
                       OUTPUT_NAME glfw)
 
-if(WIN32)
+if (WIN32)
     target_link_libraries(libglfwShared winmm)
     # The GLFW DLL needs a special compile-time macro and import library name
     set_target_properties(libglfwShared PROPERTIES 
@@ -56,7 +56,7 @@ if(WIN32)
                           IMPORT_SUFFIX "dll.lib")
 endif()
 
-if(APPLE)
+if (APPLE)
     # Append -fno-common to the compile flags to work around a bug in the Apple GCC
     get_target_property(CFLAGS libglfwShared COMPILE_FLAGS)
     if (NOT CFLAGS)

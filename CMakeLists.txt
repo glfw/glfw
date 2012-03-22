@@ -14,6 +14,10 @@ option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 
 find_package(OpenGL REQUIRED)
 
+if (CMAKE_COMPILER_IS_GNUCC)
+  add_definitions(-Wall)
+endif()
+
 #--------------------------------------------------------------------
 # Set up GLFW for Win32 and WGL on Windows
 #--------------------------------------------------------------------

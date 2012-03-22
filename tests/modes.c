@@ -165,8 +165,6 @@ static void test_modes(GLFWvidmode* modes, int count)
         glfwCloseWindow(window);
         glfwPollEvents();
         window = NULL;
-
-        sleep(5);
     }
 }
 

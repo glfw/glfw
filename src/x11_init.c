@@ -470,8 +470,8 @@ static void initGammaRamp(void)
     // RandR gamma support is only available with version 1.2 and above
     if (_glfwLibrary.X11.RandR.available &&
         (_glfwLibrary.X11.RandR.majorVersion > 1 ||
-         _glfwLibrary.X11.RandR.majorVersion == 1 &&
-         _glfwLibrary.X11.RandR.minorVersion >= 2))
+         (_glfwLibrary.X11.RandR.majorVersion == 1 &&
+          _glfwLibrary.X11.RandR.minorVersion >= 2)))
     {
         // FIXME: Assumes that all monitors have the same size gamma tables
         // This is reasonable as I suspect the that if they did differ, it

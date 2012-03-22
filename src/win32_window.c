@@ -1021,6 +1021,26 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 _glfwInputCursorMotion(window, x, y);
             }
 
+            if (!window->Win32.cursorInside)
+            {
+                TRACKMOUSEEVENT tme;
+                ZeroMemory(&tme, sizeof(tme));
+                tme.cbSize = sizeof(tme);
+                tme.dwFlags = TME_LEAVE;
+                tme.hwndTrack = window->Win32.handle;
+                TrackMouseEvent(&tme);
+
+                window->Win32.cursorInside = GL_TRUE;
+                _glfwInputCursorEnter(window, GL_TRUE);
+            }
+
+            return 0;
+        }
+
+        case WM_MOUSELEAVE:
+        {
+            window->Win32.cursorInside = GL_FALSE;
+            _glfwInputCursorEnter(window, GL_FALSE);
             return 0;
         }
 

@@ -200,7 +200,7 @@ int _glfwPlatformInit(void)
     // as possible in the hope of still being the foreground process)
     SystemParametersInfo(SPI_GETFOREGROUNDLOCKTIMEOUT, 0,
                          &_glfwLibrary.Win32.foregroundLockTimeout, 0);
-    SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, (LPVOID) 0,
+    SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, UIntToPtr(0),
                          SPIF_SENDCHANGE);
 
     if (!initLibraries())
@@ -246,7 +246,7 @@ int _glfwPlatformTerminate(void)
 
     // Restore previous FOREGROUNDLOCKTIMEOUT system setting
     SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0,
-                         (LPVOID) _glfwLibrary.Win32.foregroundLockTimeout,
+                         UIntToPtr(_glfwLibrary.Win32.foregroundLockTimeout),
                          SPIF_SENDCHANGE);
 
     return GL_TRUE;

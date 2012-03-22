@@ -67,6 +67,12 @@ extern "C" {
  #endif
 #endif /* APIENTRY */
 
+/* TEMPORARY MinGW-w64 hacks.
+ */
+#if __MINGW64__
+ #define WINAPI
+#include <stddef.h>
+#endif
 
 /* The following three defines are here solely to make some Windows-based
  * <GL/gl.h> files happy. Theoretically we could include <windows.h>, but

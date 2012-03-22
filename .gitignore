@@ -10,6 +10,9 @@ src/libglfw.pc
 src/libglfw.so
 src/libglfw.a
 src/libglfw.dylib
+src/glfw.lib
+src/glfw.dll
+src/glfwdll.lib
 examples/boing
 examples/gears
 examples/heightmap

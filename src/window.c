@@ -291,7 +291,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
         height = 480;
     }
 
-    window = (_GLFWwindow*) _glfwMalloc(sizeof(_GLFWwindow));
+    window = (_GLFWwindow*) malloc(sizeof(_GLFWwindow));
     if (!window)
     {
         _glfwSetError(GLFW_OUT_OF_MEMORY,
@@ -309,6 +309,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     window->height     = height;
     window->mode       = mode;
     window->cursorMode = GLFW_CURSOR_NORMAL;
+    window->systemKeys = GL_TRUE;
 
     // Open the actual window and create its context
     if (!_glfwPlatformOpenWindow(window, &wndconfig, &fbconfig))
@@ -330,7 +331,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     // The GLFW specification states that fullscreen windows have the cursor
     // captured by default
     if (mode == GLFW_FULLSCREEN)
-        glfwSetCursorMode(window, GLFW_CURSOR_CAPTURED);
+        glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_CAPTURED);
 
     // Clearing the front buffer to black to avoid garbage pixels left over
     // from previous uses of our bit of VRAM
@@ -491,7 +492,7 @@ GLFWAPI void glfwCloseWindow(GLFWwindow handle)
         *prev = window->next;
     }
 
-    _glfwFree(window);
+    free(window);
 }
 
 
@@ -654,7 +655,6 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow handle)
     if (!window->iconified)
         return;
 
-    // Restore iconified window
     _glfwPlatformRestoreWindow(window);
 
     if (window->mode == GLFW_FULLSCREEN)

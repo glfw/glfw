@@ -195,7 +195,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         return NULL;
     }
 
-    result = (_GLFWfbconfig*) _glfwMalloc(sizeof(_GLFWfbconfig) * count);
+    result = (_GLFWfbconfig*) malloc(sizeof(_GLFWfbconfig) * count);
     if (!result)
     {
         _glfwSetError(GLFW_OUT_OF_MEMORY,
@@ -895,7 +895,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (_glfwLibrary.charCallback)
                 translateChar(window, (DWORD) wParam, (DWORD) lParam);
 
-            return 0;
+            break;
         }
 
         case WM_KEYUP:
@@ -910,7 +910,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             else
                 _glfwInputKey(window, translateKey(wParam, lParam), GLFW_RELEASE);
 
-            return 0;
+            break;
         }
 
         case WM_LBUTTONDOWN:
@@ -1021,6 +1021,26 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 _glfwInputCursorMotion(window, x, y);
             }
 
+            if (!window->Win32.cursorInside)
+            {
+                TRACKMOUSEEVENT tme;
+                ZeroMemory(&tme, sizeof(tme));
+                tme.cbSize = sizeof(tme);
+                tme.dwFlags = TME_LEAVE;
+                tme.hwndTrack = window->Win32.handle;
+                TrackMouseEvent(&tme);
+
+                window->Win32.cursorInside = GL_TRUE;
+                _glfwInputCursorEnter(window, GL_TRUE);
+            }
+
+            return 0;
+        }
+
+        case WM_MOUSELEAVE:
+        {
+            window->Win32.cursorInside = GL_FALSE;
+            _glfwInputCursorEnter(window, GL_FALSE);
             return 0;
         }
 
@@ -1220,7 +1240,7 @@ static ATOM registerWindowClass(void)
     wc.lpszClassName = _GLFW_WNDCLASSNAME;            // Set class name
 
     // Load user-provided icon if available
-    wc.hIcon = LoadIcon(_glfwLibrary.Win32.instance, "GLFW_ICON");
+    wc.hIcon = LoadIcon(_glfwLibrary.Win32.instance, L"GLFW_ICON");
     if (!wc.hIcon)
     {
         // Load default icon
@@ -1257,13 +1277,13 @@ static int choosePixelFormat(_GLFWwindow* window, const _GLFWfbconfig* fbconfig)
     closest = _glfwChooseFBConfig(fbconfig, fbconfigs, fbcount);
     if (!closest)
     {
-        _glfwFree(fbconfigs);
+        free(fbconfigs);
         return 0;
     }
 
     pixelFormat = (int) closest->platformID;
 
-    _glfwFree(fbconfigs);
+    free(fbconfigs);
     fbconfigs = NULL;
     closest = NULL;
 
@@ -1283,6 +1303,7 @@ static int createWindow(_GLFWwindow* window,
     int pixelFormat, fullWidth, fullHeight;
     RECT wa;
     POINT pos;
+    WCHAR* wideTitle;
 
     // Set common window styles
     dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE;
@@ -1331,9 +1352,17 @@ static int createWindow(_GLFWwindow* window,
     else
         SystemParametersInfo(SPI_GETWORKAREA, 0, &wa, 0);
 
+    wideTitle = _glfwCreateWideStringFromUTF8(wndconfig->title);
+    if (!wideTitle)
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "glfwOpenWindow: Failed to convert title to wide string");
+        return GL_FALSE;
+    }
+
     window->Win32.handle = CreateWindowEx(window->Win32.dwExStyle,
                                           _GLFW_WNDCLASSNAME,
-                                          wndconfig->title,
+                                          wideTitle,
                                           window->Win32.dwStyle,
                                           wa.left, wa.top,       // Window position
                                           fullWidth,             // Decorated window width
@@ -1348,6 +1377,8 @@ static int createWindow(_GLFWwindow* window,
         _glfwSetError(GLFW_PLATFORM_ERROR, "Win32/WGL: Failed to create window");
         return GL_FALSE;
     }
+
+    free(wideTitle);
 
     window->WGL.DC = GetDC(window->Win32.handle);
     if (!window->WGL.DC)
@@ -1430,6 +1461,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     GLboolean recreateContext = GL_FALSE;
 
     window->Win32.desiredRefreshRate = wndconfig->refreshRate;
+    window->resizable = wndconfig->resizable;
 
     if (!_glfwLibrary.Win32.classAtom)
     {
@@ -1568,7 +1600,17 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
-    SetWindowText(window->Win32.handle, title);
+    WCHAR* wideTitle = _glfwCreateWideStringFromUTF8(title);
+    if (!wideTitle)
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "glfwSetWindowTitle: Failed to convert title to wide string");
+        return;
+    }
+
+    SetWindowText(window->Win32.handle, wideTitle);
+
+    free(wideTitle);
 }
 
 

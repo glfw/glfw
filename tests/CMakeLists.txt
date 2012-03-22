@@ -36,6 +36,9 @@ target_link_libraries(joysticks ${STATIC_DEPS})
 add_executable(listmodes listmodes.c)
 target_link_libraries(listmodes ${STATIC_DEPS})
 
+add_executable(modes modes.c getopt.c)
+target_link_libraries(modes ${STATIC_DEPS})
+
 add_executable(peter peter.c)
 target_link_libraries(peter ${STATIC_DEPS})
 
@@ -44,23 +47,37 @@ target_link_libraries(reopen ${STATIC_DEPS})
 
 add_executable(accuracy WIN32 MACOSX_BUNDLE accuracy.c)
 target_link_libraries(accuracy ${STATIC_DEPS})
+set_target_properties(accuracy PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Accuracy")
 
 add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c)
 target_link_libraries(sharing ${STATIC_DEPS})
+set_target_properties(sharing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Sharing")
 
 add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c)
 target_link_libraries(tearing ${STATIC_DEPS})
+set_target_properties(tearing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Tearing")
+
+add_executable(title WIN32 MACOSX_BUNDLE title.c)
+target_link_libraries(title ${STATIC_DEPS})
+set_target_properties(title PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Title")
 
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c)
 target_link_libraries(windows ${STATIC_DEPS})
+set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 
-set(WINDOWS_BINARIES accuracy sharing tearing windows)
+set(WINDOWS_BINARIES accuracy sharing tearing title windows)
 set(CONSOLE_BINARIES defaults events fsaa fsfocus gamma glfwinfo iconify
-                     joysticks listmodes peter reopen)
+                     joysticks listmodes modes peter reopen)
 
-if(MSVC)
-  # Tell MSVC to use main instead of WinMain for Windows subsystem executables
-  set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
-                        LINK_FLAGS "/ENTRY:mainCRTStartup")
-endif(MSVC)
+if (MSVC)
+    # Tell MSVC to use main instead of WinMain for Windows subsystem executables
+    set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
+                          LINK_FLAGS "/ENTRY:mainCRTStartup")
+endif()
+
+if (APPLE)
+    set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
+                          MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}
+                          MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION_FULL})
+endif()
 

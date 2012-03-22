@@ -45,6 +45,14 @@
 // thinks it is the only one that gets to do so
 #undef APIENTRY
 
+// GLFW on Windows is Unicode only and does not work in MBCS mode
+#ifndef UNICODE
+ #define UNICODE
+#endif
+
+// GLFW requires Windows XP
+#define WINVER 0x0501
+
 #include <windows.h>
 #include <mmsystem.h>
 
@@ -61,10 +69,10 @@
 // Some old versions of w32api (used by MinGW and Cygwin) define
 // WH_KEYBOARD_LL without typedef:ing KBDLLHOOKSTRUCT (!)
 #if defined(__MINGW32__) || defined(__CYGWIN__)
-#include <w32api.h>
-#if defined(WH_KEYBOARD_LL) && (__W32API_MAJOR_VERSION == 1) && (__W32API_MINOR_VERSION <= 2)
-#undef WH_KEYBOARD_LL
-#endif
+ #include <w32api.h>
+ #if defined(WH_KEYBOARD_LL) && (__W32API_MAJOR_VERSION == 1) && (__W32API_MINOR_VERSION <= 2)
+  #undef WH_KEYBOARD_LL
+ #endif
 #endif
 
 //------------------------------------------------------------------------
@@ -84,64 +92,64 @@ typedef struct tagKBDLLHOOKSTRUCT {
 #endif // WH_KEYBOARD_LL
 
 #ifndef LLKHF_ALTDOWN
-#define LLKHF_ALTDOWN  0x00000020
+ #define LLKHF_ALTDOWN  0x00000020
 #endif
 
 #ifndef SPI_SETSCREENSAVERRUNNING
-#define SPI_SETSCREENSAVERRUNNING 97
+ #define SPI_SETSCREENSAVERRUNNING 97
 #endif
 #ifndef SPI_GETANIMATION
-#define SPI_GETANIMATION 72
+ #define SPI_GETANIMATION 72
 #endif
 #ifndef SPI_SETANIMATION
-#define SPI_SETANIMATION 73
+ #define SPI_SETANIMATION 73
 #endif
 #ifndef SPI_GETFOREGROUNDLOCKTIMEOUT
-#define SPI_GETFOREGROUNDLOCKTIMEOUT 0x2000
+ #define SPI_GETFOREGROUNDLOCKTIMEOUT 0x2000
 #endif
 #ifndef SPI_SETFOREGROUNDLOCKTIMEOUT
-#define SPI_SETFOREGROUNDLOCKTIMEOUT 0x2001
+ #define SPI_SETFOREGROUNDLOCKTIMEOUT 0x2001
 #endif
 
 #ifndef CDS_FULLSCREEN
-#define CDS_FULLSCREEN 4
+ #define CDS_FULLSCREEN 4
 #endif
 
 #ifndef PFD_GENERIC_ACCELERATED
-#define PFD_GENERIC_ACCELERATED 0x00001000
+ #define PFD_GENERIC_ACCELERATED 0x00001000
 #endif
 #ifndef PFD_DEPTH_DONTCARE
-#define PFD_DEPTH_DONTCARE 0x20000000
+ #define PFD_DEPTH_DONTCARE 0x20000000
 #endif
 
 #ifndef ENUM_CURRENT_SETTINGS
-#define ENUM_CURRENT_SETTINGS -1
+ #define ENUM_CURRENT_SETTINGS -1
 #endif
 #ifndef ENUM_REGISTRY_SETTINGS
-#define ENUM_REGISTRY_SETTINGS -2
+ #define ENUM_REGISTRY_SETTINGS -2
 #endif
 
 #ifndef WM_MOUSEWHEEL
-#define WM_MOUSEWHEEL 0x020A
+ #define WM_MOUSEWHEEL 0x020A
 #endif
 #ifndef WHEEL_DELTA
-#define WHEEL_DELTA 120
+ #define WHEEL_DELTA 120
 #endif
 #ifndef WM_MOUSEHWHEEL
-#define WM_MOUSEHWHEEL 0x020E
+ #define WM_MOUSEHWHEEL 0x020E
 #endif
 
 #ifndef WM_XBUTTONDOWN
-#define WM_XBUTTONDOWN 0x020B
+ #define WM_XBUTTONDOWN 0x020B
 #endif
 #ifndef WM_XBUTTONUP
-#define WM_XBUTTONUP 0x020C
+ #define WM_XBUTTONUP 0x020C
 #endif
 #ifndef XBUTTON1
-#define XBUTTON1 1
+ #define XBUTTON1 1
 #endif
 #ifndef XBUTTON2
-#define XBUTTON2 2
+ #define XBUTTON2 2
 #endif
 
 
@@ -162,7 +170,7 @@ typedef BOOL (WINAPI * SETDEVICEGAMMARAMP_T) (HDC,PVOID);
 
 // winmm.dll function pointer typedefs
 #ifndef _GLFW_NO_DLOAD_WINMM
-typedef MMRESULT (WINAPI * JOYGETDEVCAPSA_T) (UINT,LPJOYCAPSA,UINT);
+typedef MMRESULT (WINAPI * JOYGETDEVCAPS_T) (UINT,LPJOYCAPS,UINT);
 typedef MMRESULT (WINAPI * JOYGETPOS_T) (UINT,LPJOYINFO);
 typedef MMRESULT (WINAPI * JOYGETPOSEX_T) (UINT,LPJOYINFOEX);
 typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
@@ -171,40 +179,40 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 
 // gdi32.dll shortcuts
 #ifndef _GLFW_NO_DLOAD_GDI32
-#define _glfw_ChoosePixelFormat   _glfwLibrary.Win32.gdi.ChoosePixelFormat
-#define _glfw_DescribePixelFormat _glfwLibrary.Win32.gdi.DescribePixelFormat
-#define _glfw_GetPixelFormat      _glfwLibrary.Win32.gdi.GetPixelFormat
-#define _glfw_SetPixelFormat      _glfwLibrary.Win32.gdi.SetPixelFormat
-#define _glfw_SwapBuffers         _glfwLibrary.Win32.gdi.SwapBuffers
-#define _glfw_GetDeviceGammaRamp  _glfwLibrary.Win32.gdi.GetDeviceGammaRamp
-#define _glfw_SetDeviceGammaRamp  _glfwLibrary.Win32.gdi.SetDeviceGammaRamp
+ #define _glfw_ChoosePixelFormat   _glfwLibrary.Win32.gdi.ChoosePixelFormat
+ #define _glfw_DescribePixelFormat _glfwLibrary.Win32.gdi.DescribePixelFormat
+ #define _glfw_GetPixelFormat      _glfwLibrary.Win32.gdi.GetPixelFormat
+ #define _glfw_SetPixelFormat      _glfwLibrary.Win32.gdi.SetPixelFormat
+ #define _glfw_SwapBuffers         _glfwLibrary.Win32.gdi.SwapBuffers
+ #define _glfw_GetDeviceGammaRamp  _glfwLibrary.Win32.gdi.GetDeviceGammaRamp
+ #define _glfw_SetDeviceGammaRamp  _glfwLibrary.Win32.gdi.SetDeviceGammaRamp
 #else
-#define _glfw_ChoosePixelFormat   ChoosePixelFormat
-#define _glfw_DescribePixelFormat DescribePixelFormat
-#define _glfw_GetPixelFormat      GetPixelFormat
-#define _glfw_SetPixelFormat      SetPixelFormat
-#define _glfw_SwapBuffers         SwapBuffers
-#define _glfw_GetDeviceGammaRamp  GetDeviceGammaRamp
-#define _glfw_SetDeviceGammaRamp  SetDeviceGammaRamp
+ #define _glfw_ChoosePixelFormat   ChoosePixelFormat
+ #define _glfw_DescribePixelFormat DescribePixelFormat
+ #define _glfw_GetPixelFormat      GetPixelFormat
+ #define _glfw_SetPixelFormat      SetPixelFormat
+ #define _glfw_SwapBuffers         SwapBuffers
+ #define _glfw_GetDeviceGammaRamp  GetDeviceGammaRamp
+ #define _glfw_SetDeviceGammaRamp  SetDeviceGammaRamp
 #endif // _GLFW_NO_DLOAD_GDI32
 
 // winmm.dll shortcuts
 #ifndef _GLFW_NO_DLOAD_WINMM
-#define _glfw_joyGetDevCaps _glfwLibrary.Win32.winmm.joyGetDevCapsA
-#define _glfw_joyGetPos     _glfwLibrary.Win32.winmm.joyGetPos
-#define _glfw_joyGetPosEx   _glfwLibrary.Win32.winmm.joyGetPosEx
-#define _glfw_timeGetTime   _glfwLibrary.Win32.winmm.timeGetTime
+ #define _glfw_joyGetDevCaps _glfwLibrary.Win32.winmm.joyGetDevCaps
+ #define _glfw_joyGetPos     _glfwLibrary.Win32.winmm.joyGetPos
+ #define _glfw_joyGetPosEx   _glfwLibrary.Win32.winmm.joyGetPosEx
+ #define _glfw_timeGetTime   _glfwLibrary.Win32.winmm.timeGetTime
 #else
-#define _glfw_joyGetDevCaps joyGetDevCapsA
-#define _glfw_joyGetPos     joyGetPos
-#define _glfw_joyGetPosEx   joyGetPosEx
-#define _glfw_timeGetTime   timeGetTime
+ #define _glfw_joyGetDevCaps joyGetDevCaps
+ #define _glfw_joyGetPos     joyGetPos
+ #define _glfw_joyGetPosEx   joyGetPosEx
+ #define _glfw_timeGetTime   timeGetTime
 #endif // _GLFW_NO_DLOAD_WINMM
 
 
 // We use versioned window class names in order not to cause conflicts
 // between applications using different versions of GLFW
-#define _GLFW_WNDCLASSNAME "GLFW30"
+#define _GLFW_WNDCLASSNAME L"GLFW30"
 
 
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowWin32 Win32
@@ -260,6 +268,7 @@ typedef struct _GLFWwindowWin32
     // Various platform specific internal variables
     int       desiredRefreshRate; // Desired vertical monitor refresh rate
     GLboolean cursorCentered;
+    GLboolean cursorInside;
     int       oldMouseX, oldMouseY;
 } _GLFWwindowWin32;
 
@@ -309,7 +318,7 @@ typedef struct _GLFWlibraryWin32
     // winmm.dll
     struct {
         HINSTANCE             instance;
-        JOYGETDEVCAPSA_T      joyGetDevCapsA;
+        JOYGETDEVCAPS_T       joyGetDevCaps;
         JOYGETPOS_T           joyGetPos;
         JOYGETPOSEX_T         joyGetPosEx;
         TIMEGETTIME_T         timeGetTime;
@@ -322,6 +331,10 @@ typedef struct _GLFWlibraryWin32
 //========================================================================
 // Prototypes for platform specific internal functions
 //========================================================================
+
+// Wide strings
+WCHAR* _glfwCreateWideStringFromUTF8(const char* source);
+char* _glfwCreateUTF8FromWideString(const WCHAR* source);
 
 // Time
 void _glfwInitTimer(void);

@@ -66,7 +66,6 @@ if (_GLFW_X11_GLX)
     set(GLFW_PKGLIBS "gl x11")
 
     include(CheckFunctionExists)
-    include(CheckSymbolExists)
 
     # Check for XRandR (modern resolution switching extension)
     if (X11_Xrandr_FOUND)

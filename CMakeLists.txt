@@ -120,7 +120,7 @@ if (UNIX AND APPLE)
     # Define the platform identifier
     set(_GLFW_COCOA_NSGL 1)
 
-    option(GLFW_BUILD_UNIVERSAL "Build the GLFW library and examples as Universal Binaries" FALSE)
+    option(GLFW_BUILD_UNIVERSAL "Build GLFW as a Universal Binary" OFF)
 
     # Universal build
     if (GLFW_BUILD_UNIVERSAL)
@@ -136,10 +136,10 @@ if (UNIX AND APPLE)
     find_library(COCOA_FRAMEWORK Cocoa)
     find_library(IOKIT_FRAMEWORK IOKit)
     find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
-    list(APPEND GLFW_LIBRARIES ${COCOA_FRAMEWORK})
-    list(APPEND GLFW_LIBRARIES ${OPENGL_gl_LIBRARY})
-    list(APPEND GLFW_LIBRARIES ${IOKIT_FRAMEWORK})
-    list(APPEND GLFW_LIBRARIES ${CORE_FOUNDATION_FRAMEWORK})
+    list(APPEND GLFW_LIBRARIES ${COCOA_FRAMEWORK}
+                               ${OPENGL_gl_LIBRARY}
+                               ${IOKIT_FRAMEWORK}
+                               ${CORE_FOUNDATION_FRAMEWORK})
 endif()
 
 #--------------------------------------------------------------------

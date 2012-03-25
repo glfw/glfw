@@ -14,6 +14,9 @@ option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 
 find_package(OpenGL REQUIRED)
 
+#--------------------------------------------------------------------
+# Enable all warnings on GCC, regardless of OS
+#--------------------------------------------------------------------
 if (CMAKE_COMPILER_IS_GNUCC)
   add_definitions(-Wall)
 endif()

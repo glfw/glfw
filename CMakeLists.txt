@@ -32,11 +32,11 @@ if (WIN32)
     set(_GLFW_WIN32_WGL 1)
 
     # Set up library and include paths
-    list(APPEND GLFW_INCLUDE_DIR ${OPENGL_INCLUDE_DIR})
-    list(APPEND GLFW_LIBRARIES ${OPENGL_gl_LIBRARY})
+    list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
+    list(APPEND glfw_LIBRARIES ${OPENGL_gl_LIBRARY})
 
     if (BUILD_SHARED_LIBS)
-        list(APPEND GLFW_LIBRARIES winmm)
+        list(APPEND glfw_LIBRARIES winmm)
     endif()
 endif()
 
@@ -52,8 +52,8 @@ if (UNIX AND NOT APPLE)
     find_package(X11 REQUIRED)
 
     # Set up library and include paths
-    list(APPEND GLFW_INCLUDE_DIR ${X11_X11_INCLUDE_PATH} ${OPENGL_INCLUDE_DIR})
-    list(APPEND GLFW_LIBRARIES ${X11_X11_LIB} ${OPENGL_gl_LIBRARY})
+    list(APPEND glfw_INCLUDE_DIRS ${X11_X11_INCLUDE_PATH} ${OPENGL_INCLUDE_DIR})
+    list(APPEND glfw_LIBRARIES ${X11_X11_LIB} ${OPENGL_gl_LIBRARY})
 
     set(GLFW_PKGLIBS "gl x11")
 
@@ -61,27 +61,27 @@ if (UNIX AND NOT APPLE)
     include(CheckSymbolExists)
 
     # This is needed by the GLX function checks below
-    set(CMAKE_REQUIRED_LIBRARIES ${GLFW_LIBRARIES})
+    set(CMAKE_REQUIRED_LIBRARIES ${glfw_LIBRARIES})
     
     # Check for XRandR (modern resolution switching extension)
     if (X11_Xrandr_FOUND)
         set(_GLFW_HAS_XRANDR 1) 
-        list(APPEND GLFW_INCLUDE_DIR ${X11_Xrandr_INCLUDE_PATH})
-        list(APPEND GLFW_LIBRARIES ${X11_Xrandr_LIB})
+        list(APPEND glfw_INCLUDE_DIRS ${X11_Xrandr_INCLUDE_PATH})
+        list(APPEND glfw_LIBRARIES ${X11_Xrandr_LIB})
         set(GLFW_PKGLIBS "${GLFW_PKGLIBS} xrandr")
     endif()
 
     # Check for Xf86VidMode (fallback legacy resolution switching extension)
     if (X11_xf86vmode_FOUND)
         set(_GLFW_HAS_XF86VIDMODE 1)
-        list(APPEND GLFW_INCLUDE_DIR ${X11_xf86vmode_INCLUDE_PATH})
+        list(APPEND glfw_INCLUDE_DIRS ${X11_xf86vmode_INCLUDE_PATH})
     
         # NOTE: This is a workaround for CMake bug 0006976 (missing
         # X11_xf86vmode_LIB variable)
         if (X11_xf86vmode_LIB)
-            list(APPEND GLFW_LIBRARIES ${X11_xf86vmode_LIB})
+            list(APPEND glfw_LIBRARIES ${X11_xf86vmode_LIB})
         else()
-            list(APPEND GLFW_LIBRARIES Xxf86vm)
+            list(APPEND glfw_LIBRARIES Xxf86vm)
         endif()
 
         set(GLFW_PKGLIBS "${GLFW_PKGLIBS} xxf86vm")
@@ -90,20 +90,20 @@ if (UNIX AND NOT APPLE)
     # Check for Xkb (X keyboard extension)
     if (X11_Xkb_FOUND)
         set(_GLFW_HAS_XKB 1)
-        list(APPEND GLFW_INCLUDE_DIR ${X11_Xkb_INCLUDE_PATH})
+        list(APPEND glfw_INCLUDE_DIR ${X11_Xkb_INCLUDE_PATH})
     endif() 
 
     find_library(RT_LIBRARY rt)
     mark_as_advanced(RT_LIBRARY)
     if (RT_LIBRARY)
-        list(APPEND GLFW_LIBRARIES ${RT_LIBRARY})
+        list(APPEND glfw_LIBRARIES ${RT_LIBRARY})
         set(GLFW_PKGLIBS "${GLFW_PKGLIBS} rt")
     endif()
 
     find_library(MATH_LIBRARY m)
     mark_as_advanced(MATH_LIBRARY)
     if (MATH_LIBRARY)
-        list(APPEND GLFW_LIBRARIES ${MATH_LIBRARY})
+        list(APPEND glfw_LIBRARIES ${MATH_LIBRARY})
         set(GLFW_PKGLIBS "${GLFW_PKGLIBS} m")
     endif()
 
@@ -153,7 +153,7 @@ if (UNIX AND APPLE)
     find_library(COCOA_FRAMEWORK Cocoa)
     find_library(IOKIT_FRAMEWORK IOKit)
     find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
-    list(APPEND GLFW_LIBRARIES ${COCOA_FRAMEWORK}
+    list(APPEND glfw_LIBRARIES ${COCOA_FRAMEWORK}
                                ${OPENGL_gl_LIBRARY}
                                ${IOKIT_FRAMEWORK}
                                ${CORE_FOUNDATION_FRAMEWORK})

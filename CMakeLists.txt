@@ -184,6 +184,11 @@ if (_GLFW_COCOA_NSGL)
 endif()
 
 #--------------------------------------------------------------------
+# Export GLFW library dependencies
+#--------------------------------------------------------------------
+set(GLFW_LIBRARIES ${glfw_LIBRARIES} CACHE STRING "Dependencies of GLFW")
+
+#--------------------------------------------------------------------
 # Add subdirectories
 #--------------------------------------------------------------------
 add_subdirectory(src)

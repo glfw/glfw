@@ -68,9 +68,6 @@ if (_GLFW_X11_GLX)
     include(CheckFunctionExists)
     include(CheckSymbolExists)
 
-    # This is needed by the GLX function checks below
-    set(CMAKE_REQUIRED_LIBRARIES ${glfw_LIBRARIES})
-    
     # Check for XRandR (modern resolution switching extension)
     if (X11_Xrandr_FOUND)
         set(_GLFW_HAS_XRANDR 1) 
@@ -115,6 +112,8 @@ if (_GLFW_X11_GLX)
         set(GLFW_PKGLIBS "${GLFW_PKGLIBS} m")
     endif()
 
+    set(CMAKE_REQUIRED_LIBRARIES ${OPENGL_gl_LIBRARY})
+
     check_function_exists(glXGetProcAddress _GLFW_HAS_GLXGETPROCADDRESS)
 
     if (NOT _GLFW_HAS_GLXGETPROCADDRESS)
@@ -129,6 +128,26 @@ if (_GLFW_X11_GLX)
         NOT _GLFW_HAS_GLXGETPROCADDRESSARB AND
         NOT _GLFW_HAS_GLXGETPROCADDRESSEXT)
         message(WARNING "No glXGetProcAddressXXX variant found")
+
+        # Check for dlopen support as a fallback
+
+        find_library(DL_LIBRARY dl)
+        if (DL_LIBRARY)
+            set(CMAKE_REQUIRED_LIBRARIES ${DL_LIBRARY})
+        else()
+            set(CMAKE_REQUIRED_LIBRARIES "")
+        endif()
+
+        check_function_exists(dlopen _GLFW_HAS_DLOPEN)
+
+        if (NOT _GLFW_HAS_DLOPEN)
+            message(FATAL_ERROR "No entry point retrieval mechanism found")
+        endif()
+
+        if (DL_LIBRARY)
+            list(APPEND glfw_LIBRARIES ${DL_LIBRARY})
+            set(GLFW_PKGLIBS "${GLFW_PKGLIBS} dl")
+        endif()
     endif()
 
     if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")

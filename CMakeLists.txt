@@ -55,15 +55,7 @@ if (UNIX AND NOT APPLE)
     list(APPEND GLFW_INCLUDE_DIR ${X11_X11_INCLUDE_PATH} ${OPENGL_INCLUDE_DIR})
     list(APPEND GLFW_LIBRARIES ${X11_X11_LIB} ${OPENGL_gl_LIBRARY})
 
-    find_library(MATH_LIBRARY m)
-    if (MATH_LIBRARY)
-        list(APPEND GLFW_LIBRARIES ${MATH_LIBRARY})
-    endif()
-
-    find_library(RT_LIBRARY rt)
-    if (RT_LIBRARY)
-        list(APPEND GLFW_LIBRARIES ${RT_LIBRARY})
-    endif()
+    set(GLFW_PKGLIBS "gl x11")
 
     include(CheckFunctionExists)
     include(CheckSymbolExists)
@@ -76,6 +68,7 @@ if (UNIX AND NOT APPLE)
         set(_GLFW_HAS_XRANDR 1) 
         list(APPEND GLFW_INCLUDE_DIR ${X11_Xrandr_INCLUDE_PATH})
         list(APPEND GLFW_LIBRARIES ${X11_Xrandr_LIB})
+        set(GLFW_PKGLIBS "${GLFW_PKGLIBS} xrandr")
     endif()
 
     # Check for Xf86VidMode (fallback legacy resolution switching extension)
@@ -90,6 +83,8 @@ if (UNIX AND NOT APPLE)
         else()
             list(APPEND GLFW_LIBRARIES Xxf86vm)
         endif()
+
+        set(GLFW_PKGLIBS "${GLFW_PKGLIBS} xxf86vm")
     endif() 
 
     # Check for Xkb (X keyboard extension)
@@ -97,6 +92,18 @@ if (UNIX AND NOT APPLE)
         set(_GLFW_HAS_XKB 1)
         list(APPEND GLFW_INCLUDE_DIR ${X11_Xkb_INCLUDE_PATH})
     endif() 
+
+    find_library(RT_LIBRARY rt)
+    if (RT_LIBRARY)
+        list(APPEND GLFW_LIBRARIES ${RT_LIBRARY})
+        set(GLFW_PKGLIBS "${GLFW_PKGLIBS} rt")
+    endif()
+
+    find_library(MATH_LIBRARY m)
+    if (MATH_LIBRARY)
+        list(APPEND GLFW_LIBRARIES ${MATH_LIBRARY})
+        set(GLFW_PKGLIBS "${GLFW_PKGLIBS} m")
+    endif()
 
     check_function_exists(glXGetProcAddress _GLFW_HAS_GLXGETPROCADDRESS)
 

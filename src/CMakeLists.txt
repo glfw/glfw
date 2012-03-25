@@ -39,31 +39,32 @@ else()
     message(FATAL_ERROR "No supported platform was selected")
 endif()
 
-add_library(libglfwStatic STATIC ${libglfw_SOURCES})
-add_library(libglfwShared SHARED ${libglfw_SOURCES}) 
-target_link_libraries(libglfwShared  ${GLFW_LIBRARIES})
-set_target_properties(libglfwStatic libglfwShared PROPERTIES 
-                      CLEAN_DIRECT_OUTPUT 1
-                      OUTPUT_NAME glfw)
+add_library(glfw ${libglfw_SOURCES})
 
-if (WIN32)
-    target_link_libraries(libglfwShared winmm)
-    # The GLFW DLL needs a special compile-time macro and import library name
-    set_target_properties(libglfwShared PROPERTIES 
-                          COMPILE_DEFINITIONS "GLFW_BUILD_DLL;_GLFW_NO_DLOAD_GDI32;_GLFW_NO_DLOAD_WINMM"
-                          PREFIX ""
-                          IMPORT_PREFIX ""
-                          IMPORT_SUFFIX "dll.lib")
-endif()
+if (BUILD_SHARED_LIBS)
 
-if (APPLE)
-    # Append -fno-common to the compile flags to work around a bug in the Apple GCC
-    get_target_property(CFLAGS libglfwShared COMPILE_FLAGS)
-    if (NOT CFLAGS)
-        set(CFLAGS "")
+    if (WIN32)
+        # The GLFW DLL needs a special compile-time macro and import library name
+        set_target_properties(glfw PROPERTIES 
+                              COMPILE_DEFINITIONS "GLFW_BUILD_DLL;_GLFW_NO_DLOAD_GDI32;_GLFW_NO_DLOAD_WINMM"
+                              PREFIX ""
+                              IMPORT_PREFIX ""
+                              IMPORT_SUFFIX "dll.lib")
     endif()
-    set_target_properties(libglfwShared PROPERTIES COMPILE_FLAGS "${CFLAGS} -fno-common")
+
+    if (APPLE)
+        # Append -fno-common to the compile flags to work around a bug in the Apple GCC
+        get_target_property(CFLAGS glfw COMPILE_FLAGS)
+        if (NOT CFLAGS)
+            set(CFLAGS "")
+        endif()
+        set_target_properties(glfw PROPERTIES COMPILE_FLAGS "${CFLAGS} -fno-common")
+    endif()
+
+    target_link_libraries(glfw ${GLFW_LIBRARIES})
+    target_link_libraries(glfw LINK_INTERFACE_LIBRARIES)
+
 endif()
 
-install(TARGETS libglfwStatic libglfwShared DESTINATION lib)
+install(TARGETS glfw DESTINATION lib)
 

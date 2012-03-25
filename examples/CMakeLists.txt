@@ -1,7 +1,11 @@
-# This line is used to link with static libraries 
-# Note that the library list should be updated to be obtained from 
-# the main CMakeLists.txt 
-link_libraries(libglfwStatic ${GLFW_LIBRARIES} ${OPENGL_glu_LIBRARY})
+
+link_libraries(glfw ${OPENGL_glu_LIBRARY})
+
+if (BUILD_SHARED_LIBS)
+  add_definitions(-DGLFW_DLL)
+else()
+  link_libraries(${GLFW_LIBRARIES})
+endif()
 
 include_directories(${GLFW_SOURCE_DIR}/include
                     ${GLFW_SOURCE_DIR}/support

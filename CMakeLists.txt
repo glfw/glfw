@@ -11,6 +11,7 @@ set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA
 
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 find_package(OpenGL REQUIRED)
 
@@ -33,6 +34,10 @@ if (WIN32)
     # Set up library and include paths
     list(APPEND GLFW_INCLUDE_DIR ${OPENGL_INCLUDE_DIR})
     list(APPEND GLFW_LIBRARIES ${OPENGL_gl_LIBRARY})
+
+    if (BUILD_SHARED_LIBS)
+        list(APPEND GLFW_LIBRARIES winmm)
+    endif()
 endif()
 
 #--------------------------------------------------------------------

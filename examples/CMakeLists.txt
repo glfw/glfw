@@ -2,9 +2,9 @@
 link_libraries(glfw ${OPENGL_glu_LIBRARY})
 
 if (BUILD_SHARED_LIBS)
-  add_definitions(-DGLFW_DLL)
+    add_definitions(-DGLFW_DLL)
 else()
-  link_libraries(${GLFW_LIBRARIES})
+    link_libraries(${GLFW_LIBRARIES})
 endif()
 
 include_directories(${GLFW_SOURCE_DIR}/include

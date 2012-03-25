@@ -19,7 +19,7 @@ find_package(OpenGL REQUIRED)
 # Enable all warnings on GCC, regardless of OS
 #--------------------------------------------------------------------
 if (CMAKE_COMPILER_IS_GNUCC)
-  add_definitions(-Wall)
+    add_definitions(-Wall)
 endif()
 
 #--------------------------------------------------------------------

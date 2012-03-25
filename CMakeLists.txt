@@ -131,6 +131,7 @@ if (_GLFW_X11_GLX)
         # Check for dlopen support as a fallback
 
         find_library(DL_LIBRARY dl)
+        mark_as_advanced(DL_LIBRARY)
         if (DL_LIBRARY)
             set(CMAKE_REQUIRED_LIBRARIES ${DL_LIBRARY})
         else()

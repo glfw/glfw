@@ -68,6 +68,7 @@ if (UNIX AND NOT APPLE)
     include(CheckFunctionExists)
     include(CheckSymbolExists)
 
+    # This is needed by the GLX function checks below
     set(CMAKE_REQUIRED_LIBRARIES ${GLFW_LIBRARIES})
     
     # Check for XRandR (modern resolution switching extension)
@@ -97,7 +98,6 @@ if (UNIX AND NOT APPLE)
         list(APPEND GLFW_INCLUDE_DIR ${X11_Xkb_INCLUDE_PATH})
     endif() 
 
-    # Check for glXGetProcAddress
     check_function_exists(glXGetProcAddress _GLFW_HAS_GLXGETPROCADDRESS)
 
     if (NOT _GLFW_HAS_GLXGETPROCADDRESS)

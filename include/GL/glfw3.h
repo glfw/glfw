@@ -119,7 +119,7 @@ extern "C" {
 
 /* ---------------- GLFW related system specific defines ----------------- */
 
-#if defined(_WIN32) && defined(GLFW_BUILD_DLL)
+#if defined(_WIN32) && defined(_GLFW_BUILD_DLL)
 
  /* We are building a Win32 DLL */
  #define GLFWAPI __declspec(dllexport)

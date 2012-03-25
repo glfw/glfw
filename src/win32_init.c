@@ -271,7 +271,7 @@ const char* _glfwPlatformGetVersionString(void)
 #else
         " (unknown compiler)"
 #endif
-#if defined(GLFW_BUILD_DLL)
+#if defined(_GLFW_BUILD_DLL)
         " DLL"
 #endif
 #if !defined(_GLFW_NO_DLOAD_GDI32)

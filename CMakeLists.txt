@@ -177,7 +177,7 @@ install(DIRECTORY include/GL DESTINATION include
         FILES_MATCHING PATTERN glfw3.h)
 
 install(FILES COPYING.txt readme.html 
-        DESTINATION share/doc/glfw-${GLFW_VERSION_FULL}/)
+        DESTINATION share/doc/glfw-${GLFW_VERSION_FULL})
 
 # The src directory's CMakeLists.txt file installs the library
 

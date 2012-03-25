@@ -35,30 +35,6 @@
 
 
 //========================================================================
-// Convert BPP to RGB bits based on "best guess"
-//========================================================================
-
-static void bpp2rgb(int bpp, int* r, int* g, int* b)
-{
-    int delta;
-
-    // We assume that by 32 they really meant 24
-    if (bpp == 32)
-        bpp = 24;
-
-    // Convert "bits per pixel" to red, green & blue sizes
-
-    *r = *g = *b = bpp / 3;
-    delta = bpp - (*r * 3);
-    if (delta >= 1)
-        *g = *g + 1;
-
-    if (delta == 2)
-        *r = *r + 1;
-}
-
-
-//========================================================================
 // Enable/disable minimize/restore animations
 //========================================================================
 
@@ -1600,29 +1576,10 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    //int bpp, refresh;
-    int newMode = 0;
     GLboolean sizeChanged = GL_FALSE;
 
     if (window->mode == GLFW_FULLSCREEN)
     {
-        // Get some info about the current mode
-
-        DEVMODE dm;
-
-        dm.dmSize = sizeof(DEVMODE);
-        //if (EnumDisplaySettings(NULL, window->Win32.modeID, &dm))
-        //{
-            // We need to keep BPP the same for the OpenGL context to keep working
-            //bpp = dm.dmBitsPerPel;
-
-            // Get closest match for target video mode
-            //refresh = window->Win32.desiredRefreshRate;
-            //newMode = _glfwGetClosestVideoModeBPP(&width, &height, &bpp, &refresh);
-        //}
-        //else
-            //newMode = window->Win32.modeID;
-
         if (width > window->width || height > window->height)
         {
             // The new video mode is larger than the current one, so we resize
@@ -1634,8 +1591,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
             sizeChanged = GL_TRUE;
         }
 
-        //if (newMode != window->Win32.modeID)
-            //_glfwSetVideoModeMODE(newMode);
+        // TODO: Change video mode
     }
     else
     {

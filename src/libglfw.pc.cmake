@@ -7,6 +7,7 @@ Name: GLFW
 Description: A portable library for OpenGL, window and input
 Version: 3.0.0
 URL: http://www.glfw.org/
-Requires.private: @GLFW_PKGLIBS@
-Libs: -L${libdir} -lglfw 
+Requires.private: @GLFW_PKG_DEPS@
+Libs: -L${libdir} -lglfw
+Libs.private: @GLFW_PKG_LIBS@
 Cflags: -I${includedir}

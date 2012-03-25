@@ -63,7 +63,8 @@ if (_GLFW_X11_GLX)
     list(APPEND glfw_INCLUDE_DIRS ${X11_X11_INCLUDE_PATH} ${OPENGL_INCLUDE_DIR})
     list(APPEND glfw_LIBRARIES ${X11_X11_LIB} ${OPENGL_gl_LIBRARY})
 
-    set(GLFW_PKGLIBS "gl x11")
+    set(GLFW_PKG_DEPS "gl x11")
+    set(GLFW_PKG_LIBS "")
 
     include(CheckFunctionExists)
 
@@ -72,7 +73,7 @@ if (_GLFW_X11_GLX)
         set(_GLFW_HAS_XRANDR 1) 
         list(APPEND glfw_INCLUDE_DIRS ${X11_Xrandr_INCLUDE_PATH})
         list(APPEND glfw_LIBRARIES ${X11_Xrandr_LIB})
-        set(GLFW_PKGLIBS "${GLFW_PKGLIBS} xrandr")
+        set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xrandr")
     endif()
 
     # Check for Xf86VidMode (fallback legacy resolution switching extension)
@@ -88,7 +89,7 @@ if (_GLFW_X11_GLX)
             list(APPEND glfw_LIBRARIES Xxf86vm)
         endif()
 
-        set(GLFW_PKGLIBS "${GLFW_PKGLIBS} xxf86vm")
+        set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xxf86vm")
     endif() 
 
     # Check for Xkb (X keyboard extension)
@@ -101,14 +102,14 @@ if (_GLFW_X11_GLX)
     mark_as_advanced(RT_LIBRARY)
     if (RT_LIBRARY)
         list(APPEND glfw_LIBRARIES ${RT_LIBRARY})
-        set(GLFW_PKGLIBS "${GLFW_PKGLIBS} rt")
+        set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lrt")
     endif()
 
     find_library(MATH_LIBRARY m)
     mark_as_advanced(MATH_LIBRARY)
     if (MATH_LIBRARY)
         list(APPEND glfw_LIBRARIES ${MATH_LIBRARY})
-        set(GLFW_PKGLIBS "${GLFW_PKGLIBS} m")
+        set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lm")
     endif()
 
     set(CMAKE_REQUIRED_LIBRARIES ${OPENGL_gl_LIBRARY})
@@ -146,7 +147,7 @@ if (_GLFW_X11_GLX)
 
         if (DL_LIBRARY)
             list(APPEND glfw_LIBRARIES ${DL_LIBRARY})
-            set(GLFW_PKGLIBS "${GLFW_PKGLIBS} dl")
+            set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -ldl")
         endif()
     endif()
 

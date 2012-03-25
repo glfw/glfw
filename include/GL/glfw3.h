@@ -119,6 +119,10 @@ extern "C" {
 
 /* ---------------- GLFW related system specific defines ----------------- */
 
+#if defined(GLFW_DLL) && defined(_GLFW_BUILD_DLL)
+ #error "You must not have both GLFW_DLL and _GLFW_BUILD_DLL defined"
+#endif
+
 #if defined(_WIN32) && defined(_GLFW_BUILD_DLL)
 
  /* We are building a Win32 DLL */

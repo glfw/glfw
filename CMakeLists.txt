@@ -73,6 +73,14 @@ if (UNIX AND NOT APPLE)
     if (X11_xf86vmode_FOUND)
         set(_GLFW_HAS_XF86VIDMODE 1)
         list(APPEND GLFW_INCLUDE_DIR ${X11_xf86vmode_INCLUDE_PATH})
+    
+        # NOTE: This is a workaround for CMake bug 0006976 (missing
+        # X11_xf86vmode_LIB variable)
+        if (X11_xf86vmode_LIB)
+            list(APPEND GLFW_LIBRARIES ${X11_xf86vmode_LIB})
+        else()
+            list(APPEND GLFW_LIBRARIES Xxf86vm)
+        endif()
     endif() 
 
     # Check for Xkb (X keyboard extension)

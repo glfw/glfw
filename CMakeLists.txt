@@ -23,13 +23,25 @@ if (CMAKE_COMPILER_IS_GNUCC)
 endif()
 
 #--------------------------------------------------------------------
-# Set up GLFW for Win32 and WGL on Windows
+# Detect and select target platform
 #--------------------------------------------------------------------
 if (WIN32)
-    message(STATUS "Building GLFW for WGL on a Win32 system") 
-
-    # Define the platform identifier
     set(_GLFW_WIN32_WGL 1)
+    message(STATUS "Building GLFW for WGL on a Win32 system") 
+elseif (UNIX AND APPLE)
+    set(_GLFW_COCOA_NSGL 1)
+    message(STATUS "Building GLFW for X11 and GLX on a Unix-like system")
+elseif (UNIX AND NOT APPLE)
+    set(_GLFW_X11_GLX 1)
+    message(STATUS "Building GLFW for Cocoa and NSOpenGL on Mac OS X")
+else()
+    message(FATAL_ERROR "No supported platform was detected")
+endif()
+
+#--------------------------------------------------------------------
+# Set up GLFW for Win32 and WGL on Windows
+#--------------------------------------------------------------------
+if (_GLFW_WIN32_WGL)
 
     # Set up library and include paths
     list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
@@ -43,11 +55,7 @@ endif()
 #--------------------------------------------------------------------
 # Set up GLFW for Xlib and GLX on Unix-like systems with X Windows
 #--------------------------------------------------------------------
-if (UNIX AND NOT APPLE)
-    message(STATUS "Building GLFW for X11 and GLX on a Unix-like system")
-
-    # Define the platform identifier
-    set(_GLFW_X11_GLX 1)
+if (_GLFW_X11_GLX)
 
     find_package(X11 REQUIRED)
 
@@ -131,12 +139,8 @@ endif()
 #--------------------------------------------------------------------
 # Set up GLFW for Cocoa and NSOpenGL on Mac OS X
 #--------------------------------------------------------------------
-if (UNIX AND APPLE)
-    message(STATUS "Building GLFW for Cocoa and NSOpenGL on Mac OS X")
+if (_GLFW_COCOA_NSGL)
         
-    # Define the platform identifier
-    set(_GLFW_COCOA_NSGL 1)
-
     option(GLFW_BUILD_UNIVERSAL "Build GLFW as a Universal Binary" OFF)
 
     # Universal build

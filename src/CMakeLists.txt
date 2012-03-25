@@ -1,5 +1,5 @@
 
-if (UNIX)
+if (_GLFW_X11_GLX)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libglfw.pc.cmake 
                    ${CMAKE_CURRENT_BINARY_DIR}/libglfw.pc @ONLY)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libglfw.pc
@@ -30,24 +30,20 @@ elseif (_GLFW_X11_GLX)
                      x11_init.c x11_input.c x11_joystick.c
                      x11_keysym2unicode.c x11_opengl.c x11_time.c
                      x11_window.c)
-else()
-    message(FATAL_ERROR "No supported platform was selected")
 endif()
 
 add_library(glfw ${glfw_SOURCES})
 
 if (BUILD_SHARED_LIBS)
 
-    if (WIN32)
+    if (_GLFW_WIN32_WGL)
         # The GLFW DLL needs a special compile-time macro and import library name
         set_target_properties(glfw PROPERTIES 
                               COMPILE_DEFINITIONS "GLFW_BUILD_DLL;_GLFW_NO_DLOAD_GDI32;_GLFW_NO_DLOAD_WINMM"
                               PREFIX ""
                               IMPORT_PREFIX ""
                               IMPORT_SUFFIX "dll.lib")
-    endif()
-
-    if (APPLE)
+    elseif (_GLFW_COCOA_NSGL)
         # Append -fno-common to the compile flags to work around a bug in the Apple GCC
         get_target_property(glfw_CFLAGS glfw COMPILE_FLAGS)
         if (NOT glfw_CFLAGS)
@@ -59,7 +55,6 @@ if (BUILD_SHARED_LIBS)
 
     target_link_libraries(glfw ${glfw_LIBRARIES})
     target_link_libraries(glfw LINK_INTERFACE_LIBRARIES)
-
 endif()
 
 install(TARGETS glfw DESTINATION lib)

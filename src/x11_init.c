@@ -79,7 +79,11 @@ static int keyCodeToGLFWKeyCode(int keyCode)
     // Note: This way we always force "NumLock = ON", which is intentional
     // since the returned key code should correspond to a physical
     // location.
+#if defined(_GLFW_HAS_XKB)
+    keySym = XkbKeycodeToKeysym(_glfwLibrary.X11.display, keyCode, 1, 0);
+#else
     keySym = XKeycodeToKeysym(_glfwLibrary.X11.display, keyCode, 1);
+#endif
     switch (keySym)
     {
         case XK_KP_0:           return GLFW_KEY_KP_0;
@@ -102,7 +106,12 @@ static int keyCodeToGLFWKeyCode(int keyCode)
     // Now try pimary keysym for function keys (non-printable keys). These
     // should not be layout dependent (i.e. US layout and international
     // layouts should give the same result).
+#if defined(_GLFW_HAS_XKB)
+    keySym = XkbKeycodeToKeysym(_glfwLibrary.X11.display, keyCode, 0, 0);
+#else
     keySym = XKeycodeToKeysym(_glfwLibrary.X11.display, keyCode, 0);
+#endif
+
     switch (keySym)
     {
         case XK_Escape:         return GLFW_KEY_ESCAPE;
@@ -476,8 +485,8 @@ static void initGammaRamp(void)
     // RandR gamma support is only available with version 1.2 and above
     if (_glfwLibrary.X11.RandR.available &&
         (_glfwLibrary.X11.RandR.majorVersion > 1 ||
-         _glfwLibrary.X11.RandR.majorVersion == 1 &&
-         _glfwLibrary.X11.RandR.minorVersion >= 2))
+         (_glfwLibrary.X11.RandR.majorVersion == 1 &&
+          _glfwLibrary.X11.RandR.minorVersion >= 2)))
     {
         // FIXME: Assumes that all monitors have the same size gamma tables
         // This is reasonable as I suspect the that if they did differ, it

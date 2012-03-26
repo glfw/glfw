@@ -67,6 +67,12 @@ extern "C" {
  #endif
 #endif /* APIENTRY */
 
+/* TEMPORARY MinGW-w64 hacks.
+ */
+#if __MINGW64__
+ #define WINAPI
+#include <stddef.h>
+#endif
 
 /* The following three defines are here solely to make some Windows-based
  * <GL/gl.h> files happy. Theoretically we could include <windows.h>, but
@@ -113,7 +119,11 @@ extern "C" {
 
 /* ---------------- GLFW related system specific defines ----------------- */
 
-#if defined(_WIN32) && defined(GLFW_BUILD_DLL)
+#if defined(GLFW_DLL) && defined(_GLFW_BUILD_DLL)
+ #error "You must not have both GLFW_DLL and _GLFW_BUILD_DLL defined"
+#endif
+
+#if defined(_WIN32) && defined(_GLFW_BUILD_DLL)
 
  /* We are building a Win32 DLL */
  #define GLFWAPI __declspec(dllexport)
@@ -135,10 +145,6 @@ extern "C" {
 #endif
 
 /* -------------------- END SYSTEM/COMPILER SPECIFIC --------------------- */
-
-/* Include the declaration of the size_t type used below.
- */
-#include <stddef.h>
 
 /* Include standard OpenGL headers: GLFW uses GL_FALSE/GL_TRUE, and it is
  * convenient for the user to only have to include <GL/glfw.h>. This also

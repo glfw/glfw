@@ -323,7 +323,7 @@ struct _glfwResolution
 int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
 {
     int count, k, l, r, g, b, rgba, gl;
-    int depth, screen;
+    int depth, screen = DefaultScreen(_glfwLibrary.X11.display);
     XVisualInfo* vislist;
     XVisualInfo dummy;
     int viscount, rgbcount, rescount;
@@ -371,6 +371,8 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
             }
         }
     }
+
+    XFree(vislist);
 
     rescount = 0;
     resarray = NULL;
@@ -456,8 +458,6 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
             count++;
         }
     }
-
-    XFree(vislist);
 
     free(resarray);
     free(rgbarray);

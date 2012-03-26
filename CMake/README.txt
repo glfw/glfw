@@ -1,10 +1,19 @@
-This folder contains a collection of toolchains definition in order to 
-support cross compilation. The naming scheme is the following:
+This directory contains a collection of toolchain definitions for cross
+compilation, currently limited to compiling Win32 binaries on Linux.
+
+The toolchain file naming scheme is as follows:
+
   host-system-compiler.cmake
 
-to use this at the time you run the initial cmake command use the 
-following parameter 
-   -DCMAKE_TOOLCHAIN_FILE=./toolchains/XXX-XXX-XXX.cmake
- which maps to file in this folder. 
+To use these files you add a special parameter when configuring the source tree:
 
-For more details see: http://www.paraview.org/Wiki/CMake_Cross_Compiling 
+  cmake -DCMAKE_TOOLCHAIN_FILE=<toolchain-file> .
+
+For example, to use the Debian GNU/Linux MinGW package, run CMake like this:
+
+  cmake -DCMAKE_TOOLCHAIN_FILE=CMake/linux-i586-mingw32msvc.cmake .
+
+For more details see this article:
+
+  http://www.paraview.org/Wiki/CMake_Cross_Compiling 
+

@@ -279,7 +279,7 @@ version of GLFW.</p>
   <li>Added <code>GLFW_INCLUDE_GL3</code> macro for telling the GLFW header to include <code>gl3.h</code> header instead of <code>gl.h</code></li>
   <li>Added <code>windows</code> simple multi-window test program</li>
   <li>Added <code>sharing</code> simple OpenGL object sharing test program</li>
-  <li>Added <code>dynamic</code> simple dynamic linking test program</li>
+  <li>Added <code>modes</code> video mode enumeration and setting test program</li>
   <li>Added a parameter to <code>glfwOpenWindow</code> for specifying a context the new window's context will share objects with</li>
   <li>Added initial window title parameter to <code>glfwOpenWindow</code></li>
   <li>Added <code>glfwSetGamma</code>, <code>glfwSetGammaRamp</code> and <code>glfwGetGammaRamp</code> functions and <code>GLFWgammaramp</code> type for monitor gamma ramp control</li>
@@ -288,6 +288,7 @@ version of GLFW.</p>
   <li>Renamed <code>glfw.h</code> to <code>glfw3.h</code> to avoid conflicts with 2.x series</li>
   <li>Renamed <code>GLFW_WINDOW</code> token to <code>GLFW_WINDOWED</code></li>
   <li>Renamed <code>GLFW_WINDOW_NO_RESIZE</code> to <code>GLFW_WINDOW_RESIZABLE</code></li>
+  <li>Renamed <code>GLFW_BUILD_DLL</code> to <code>_GLFW_BUILD_DLL</code></li>
   <li>Renamed <code>version</code> test to <code>glfwinfo</code></li>
   <li>Replaced ad hoc build system with CMake</li>
   <li>Replaced layout-dependent key codes with single, platform-independent set based on US layout</li>
@@ -312,9 +313,13 @@ version of GLFW.</p>
   <li>[Cocoa] Added support for joysticks</li>
   <li>[Cocoa] Postponed menu creation to first window creation</li>
   <li>[Cocoa] Replaced <code>NSDate</code> time source with <code>mach_absolute_time</code></li>
+  <li>[Cocoa] Replaced all deprecated CoreGraphics calls with non-deprecated counterparts</li>
+  <li>[Cocoa] Bugfix: The <code>NSOpenGLPFAFullScreen</code> pixel format attribute caused creation to fail on some machines</li>
+  <li>[Cocoa] Bugfix: <code>glfwOpenWindow</code> did not properly enforce the forward-compatible and context profile hints</li>
   <li>[Cocoa] Bugfix: The loop condition for saving video modes used the wrong index variable</li>
   <li>[Cocoa] Bugfix: The OpenGL framework was not retrieved, making glfwGetProcAddress crash</li>
   <li>[Cocoa] Bugfix: <code>glfwInit</code> changed the current directory for unbundled executables</li>
+  <li>[Cocoa] Bugfix: The <code>GLFW_WINDOW_NO_RESIZE</code> window parameter was always zero</li>
   <li>[X11] Added support for the <code>GLX_EXT_swap_control</code> extension as an alternative to <code>GLX_SGI_swap_control</code></li>
   <li>[X11] Added the POSIX <code>CLOCK_MONOTONIC</code> time source as the preferred method</li>
   <li>[X11] Added dependency on libm, where present</li>
@@ -328,6 +333,7 @@ version of GLFW.</p>
   <li>[Win32] Bugfix: Software rasterizer pixel formats were not discarded by the WGL_ARB_pixel_format code path</li>
   <li>[Win32] Bugfix: The array for WGL context attributes was too small and could overflow</li>
   <li>[Win32] Bugfix: Alt+F4 hot key was not translated into <code>WM_CLOSE</code></li>
+  <li>[Win32] Bugfix: The <code>GLFW_WINDOW_NO_RESIZE</code> window parameter was always zero</li>
 </ul>
 
 <h3>v2.7</h3>
@@ -817,6 +823,8 @@ their skills.  Special thanks go out to:</p>
 
 <ul>
 
+  <li>artblanc, for a patch replacing a deprecated Core Graphics call</li>
+
   <li>Bobyshev Alexander and Martins Mozeiko, for the original proposal of
   an FSAA hint and their work on the Win32 implementation of FSAA</li>
 
@@ -869,7 +877,8 @@ their skills.  Special thanks go out to:</p>
 
   <li>Tristam MacDonald, for his bug reports and feedback on the Cocoa port</li>
 
-  <li>Hans 'Hanmac' Mackowiak, for adding UTF-8 window title support on X11</li>
+  <li>Hans 'Hanmac' Mackowiak, for adding UTF-8 window title support on X11 and
+  a fix for the Xkb support</li>
 
   <li>David Medlock, for doing the initial Lua port</li>
 

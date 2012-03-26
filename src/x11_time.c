@@ -30,6 +30,7 @@
 
 #include "internal.h"
 
+#include <sys/time.h>
 #include <time.h>
 
 
@@ -39,7 +40,7 @@
 
 static uint64_t getRawTime(void)
 {
-#if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
+#if defined(CLOCK_MONOTONIC)
     if (_glfwLibrary.X11.timer.monotonic)
     {
         struct timespec ts;
@@ -64,7 +65,7 @@ static uint64_t getRawTime(void)
 
 void _glfwInitTimer(void)
 {
-#if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
+#if defined(CLOCK_MONOTONIC)
     struct timespec ts;
 
     if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0)

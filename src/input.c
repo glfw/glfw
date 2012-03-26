@@ -167,7 +167,7 @@ void _glfwInputKey(_GLFWwindow* window, int key, int action)
         return;
 
     // Register key action
-    if(action == GLFW_RELEASE && window->stickyKeys)
+    if (action == GLFW_RELEASE && window->stickyKeys)
         window->key[key] = GLFW_STICK;
     else
     {

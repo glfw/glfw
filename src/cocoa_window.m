@@ -112,6 +112,7 @@
 
 @end
 
+
 //========================================================================
 // Delegate for application related notifications
 //========================================================================
@@ -133,142 +134,6 @@
 
 @end
 
-//========================================================================
-// Keyboard symbol translation table
-//========================================================================
-
-// TODO: Need to find mappings for F13-F15, volume down/up/mute, and eject.
-static const unsigned int MAC_TO_GLFW_KEYCODE_MAPPING[128] =
-{
-    /* 00 */ GLFW_KEY_A,
-    /* 01 */ GLFW_KEY_S,
-    /* 02 */ GLFW_KEY_D,
-    /* 03 */ GLFW_KEY_F,
-    /* 04 */ GLFW_KEY_H,
-    /* 05 */ GLFW_KEY_G,
-    /* 06 */ GLFW_KEY_Z,
-    /* 07 */ GLFW_KEY_X,
-    /* 08 */ GLFW_KEY_C,
-    /* 09 */ GLFW_KEY_V,
-    /* 0a */ GLFW_KEY_GRAVE_ACCENT,
-    /* 0b */ GLFW_KEY_B,
-    /* 0c */ GLFW_KEY_Q,
-    /* 0d */ GLFW_KEY_W,
-    /* 0e */ GLFW_KEY_E,
-    /* 0f */ GLFW_KEY_R,
-    /* 10 */ GLFW_KEY_Y,
-    /* 11 */ GLFW_KEY_T,
-    /* 12 */ GLFW_KEY_1,
-    /* 13 */ GLFW_KEY_2,
-    /* 14 */ GLFW_KEY_3,
-    /* 15 */ GLFW_KEY_4,
-    /* 16 */ GLFW_KEY_6,
-    /* 17 */ GLFW_KEY_5,
-    /* 18 */ GLFW_KEY_EQUAL,
-    /* 19 */ GLFW_KEY_9,
-    /* 1a */ GLFW_KEY_7,
-    /* 1b */ GLFW_KEY_MINUS,
-    /* 1c */ GLFW_KEY_8,
-    /* 1d */ GLFW_KEY_0,
-    /* 1e */ GLFW_KEY_RIGHT_BRACKET,
-    /* 1f */ GLFW_KEY_O,
-    /* 20 */ GLFW_KEY_U,
-    /* 21 */ GLFW_KEY_LEFT_BRACKET,
-    /* 22 */ GLFW_KEY_I,
-    /* 23 */ GLFW_KEY_P,
-    /* 24 */ GLFW_KEY_ENTER,
-    /* 25 */ GLFW_KEY_L,
-    /* 26 */ GLFW_KEY_J,
-    /* 27 */ GLFW_KEY_APOSTROPHE,
-    /* 28 */ GLFW_KEY_K,
-    /* 29 */ GLFW_KEY_SEMICOLON,
-    /* 2a */ GLFW_KEY_BACKSLASH,
-    /* 2b */ GLFW_KEY_COMMA,
-    /* 2c */ GLFW_KEY_SLASH,
-    /* 2d */ GLFW_KEY_N,
-    /* 2e */ GLFW_KEY_M,
-    /* 2f */ GLFW_KEY_PERIOD,
-    /* 30 */ GLFW_KEY_TAB,
-    /* 31 */ GLFW_KEY_SPACE,
-    /* 32 */ GLFW_KEY_WORLD_1,
-    /* 33 */ GLFW_KEY_BACKSPACE,
-    /* 34 */ -1,
-    /* 35 */ GLFW_KEY_ESCAPE,
-    /* 36 */ GLFW_KEY_RIGHT_SUPER,
-    /* 37 */ GLFW_KEY_LEFT_SUPER,
-    /* 38 */ GLFW_KEY_LEFT_SHIFT,
-    /* 39 */ GLFW_KEY_CAPS_LOCK,
-    /* 3a */ GLFW_KEY_LEFT_ALT,
-    /* 3b */ GLFW_KEY_LEFT_CONTROL,
-    /* 3c */ GLFW_KEY_RIGHT_SHIFT,
-    /* 3d */ GLFW_KEY_RIGHT_ALT,
-    /* 3e */ GLFW_KEY_RIGHT_CONTROL,
-    /* 3f */ -1, /* Function */
-    /* 40 */ GLFW_KEY_F17,
-    /* 41 */ GLFW_KEY_KP_DECIMAL,
-    /* 42 */ -1,
-    /* 43 */ GLFW_KEY_KP_MULTIPLY,
-    /* 44 */ -1,
-    /* 45 */ GLFW_KEY_KP_ADD,
-    /* 46 */ -1,
-    /* 47 */ GLFW_KEY_NUM_LOCK, /* Really KeypadClear... */
-    /* 48 */ -1, /* VolumeUp */
-    /* 49 */ -1, /* VolumeDown */
-    /* 4a */ -1, /* Mute */
-    /* 4b */ GLFW_KEY_KP_DIVIDE,
-    /* 4c */ GLFW_KEY_KP_ENTER,
-    /* 4d */ -1,
-    /* 4e */ GLFW_KEY_KP_SUBTRACT,
-    /* 4f */ GLFW_KEY_F18,
-    /* 50 */ GLFW_KEY_F19,
-    /* 51 */ GLFW_KEY_KP_EQUAL,
-    /* 52 */ GLFW_KEY_KP_0,
-    /* 53 */ GLFW_KEY_KP_1,
-    /* 54 */ GLFW_KEY_KP_2,
-    /* 55 */ GLFW_KEY_KP_3,
-    /* 56 */ GLFW_KEY_KP_4,
-    /* 57 */ GLFW_KEY_KP_5,
-    /* 58 */ GLFW_KEY_KP_6,
-    /* 59 */ GLFW_KEY_KP_7,
-    /* 5a */ GLFW_KEY_F20,
-    /* 5b */ GLFW_KEY_KP_8,
-    /* 5c */ GLFW_KEY_KP_9,
-    /* 5d */ -1,
-    /* 5e */ -1,
-    /* 5f */ -1,
-    /* 60 */ GLFW_KEY_F5,
-    /* 61 */ GLFW_KEY_F6,
-    /* 62 */ GLFW_KEY_F7,
-    /* 63 */ GLFW_KEY_F3,
-    /* 64 */ GLFW_KEY_F8,
-    /* 65 */ GLFW_KEY_F9,
-    /* 66 */ -1,
-    /* 67 */ GLFW_KEY_F11,
-    /* 68 */ -1,
-    /* 69 */ GLFW_KEY_F13,
-    /* 6a */ GLFW_KEY_F16,
-    /* 6b */ GLFW_KEY_F14,
-    /* 6c */ -1,
-    /* 6d */ GLFW_KEY_F10,
-    /* 6e */ -1,
-    /* 6f */ GLFW_KEY_F12,
-    /* 70 */ -1,
-    /* 71 */ GLFW_KEY_F15,
-    /* 72 */ GLFW_KEY_INSERT, /* Really Help... */
-    /* 73 */ GLFW_KEY_HOME,
-    /* 74 */ GLFW_KEY_PAGE_UP,
-    /* 75 */ GLFW_KEY_DELETE,
-    /* 76 */ GLFW_KEY_F4,
-    /* 77 */ GLFW_KEY_END,
-    /* 78 */ GLFW_KEY_F2,
-    /* 79 */ GLFW_KEY_PAGE_DOWN,
-    /* 7a */ GLFW_KEY_F1,
-    /* 7b */ GLFW_KEY_LEFT,
-    /* 7c */ GLFW_KEY_RIGHT,
-    /* 7d */ GLFW_KEY_DOWN,
-    /* 7e */ GLFW_KEY_UP,
-    /* 7f */ -1,
-};
 
 //========================================================================
 // Converts a Mac OS X keycode to a GLFW keycode
@@ -276,14 +141,149 @@ static const unsigned int MAC_TO_GLFW_KEYCODE_MAPPING[128] =
 
 static int convertMacKeyCode(unsigned int macKeyCode)
 {
+    // Keyboard symbol translation table
+    // TODO: Need to find mappings for F13-F15, volume down/up/mute, and eject.
+    static const unsigned int table[128] =
+    {
+        /* 00 */ GLFW_KEY_A,
+        /* 01 */ GLFW_KEY_S,
+        /* 02 */ GLFW_KEY_D,
+        /* 03 */ GLFW_KEY_F,
+        /* 04 */ GLFW_KEY_H,
+        /* 05 */ GLFW_KEY_G,
+        /* 06 */ GLFW_KEY_Z,
+        /* 07 */ GLFW_KEY_X,
+        /* 08 */ GLFW_KEY_C,
+        /* 09 */ GLFW_KEY_V,
+        /* 0a */ GLFW_KEY_GRAVE_ACCENT,
+        /* 0b */ GLFW_KEY_B,
+        /* 0c */ GLFW_KEY_Q,
+        /* 0d */ GLFW_KEY_W,
+        /* 0e */ GLFW_KEY_E,
+        /* 0f */ GLFW_KEY_R,
+        /* 10 */ GLFW_KEY_Y,
+        /* 11 */ GLFW_KEY_T,
+        /* 12 */ GLFW_KEY_1,
+        /* 13 */ GLFW_KEY_2,
+        /* 14 */ GLFW_KEY_3,
+        /* 15 */ GLFW_KEY_4,
+        /* 16 */ GLFW_KEY_6,
+        /* 17 */ GLFW_KEY_5,
+        /* 18 */ GLFW_KEY_EQUAL,
+        /* 19 */ GLFW_KEY_9,
+        /* 1a */ GLFW_KEY_7,
+        /* 1b */ GLFW_KEY_MINUS,
+        /* 1c */ GLFW_KEY_8,
+        /* 1d */ GLFW_KEY_0,
+        /* 1e */ GLFW_KEY_RIGHT_BRACKET,
+        /* 1f */ GLFW_KEY_O,
+        /* 20 */ GLFW_KEY_U,
+        /* 21 */ GLFW_KEY_LEFT_BRACKET,
+        /* 22 */ GLFW_KEY_I,
+        /* 23 */ GLFW_KEY_P,
+        /* 24 */ GLFW_KEY_ENTER,
+        /* 25 */ GLFW_KEY_L,
+        /* 26 */ GLFW_KEY_J,
+        /* 27 */ GLFW_KEY_APOSTROPHE,
+        /* 28 */ GLFW_KEY_K,
+        /* 29 */ GLFW_KEY_SEMICOLON,
+        /* 2a */ GLFW_KEY_BACKSLASH,
+        /* 2b */ GLFW_KEY_COMMA,
+        /* 2c */ GLFW_KEY_SLASH,
+        /* 2d */ GLFW_KEY_N,
+        /* 2e */ GLFW_KEY_M,
+        /* 2f */ GLFW_KEY_PERIOD,
+        /* 30 */ GLFW_KEY_TAB,
+        /* 31 */ GLFW_KEY_SPACE,
+        /* 32 */ GLFW_KEY_WORLD_1,
+        /* 33 */ GLFW_KEY_BACKSPACE,
+        /* 34 */ -1,
+        /* 35 */ GLFW_KEY_ESCAPE,
+        /* 36 */ GLFW_KEY_RIGHT_SUPER,
+        /* 37 */ GLFW_KEY_LEFT_SUPER,
+        /* 38 */ GLFW_KEY_LEFT_SHIFT,
+        /* 39 */ GLFW_KEY_CAPS_LOCK,
+        /* 3a */ GLFW_KEY_LEFT_ALT,
+        /* 3b */ GLFW_KEY_LEFT_CONTROL,
+        /* 3c */ GLFW_KEY_RIGHT_SHIFT,
+        /* 3d */ GLFW_KEY_RIGHT_ALT,
+        /* 3e */ GLFW_KEY_RIGHT_CONTROL,
+        /* 3f */ -1, /* Function */
+        /* 40 */ GLFW_KEY_F17,
+        /* 41 */ GLFW_KEY_KP_DECIMAL,
+        /* 42 */ -1,
+        /* 43 */ GLFW_KEY_KP_MULTIPLY,
+        /* 44 */ -1,
+        /* 45 */ GLFW_KEY_KP_ADD,
+        /* 46 */ -1,
+        /* 47 */ GLFW_KEY_NUM_LOCK, /* Really KeypadClear... */
+        /* 48 */ -1, /* VolumeUp */
+        /* 49 */ -1, /* VolumeDown */
+        /* 4a */ -1, /* Mute */
+        /* 4b */ GLFW_KEY_KP_DIVIDE,
+        /* 4c */ GLFW_KEY_KP_ENTER,
+        /* 4d */ -1,
+        /* 4e */ GLFW_KEY_KP_SUBTRACT,
+        /* 4f */ GLFW_KEY_F18,
+        /* 50 */ GLFW_KEY_F19,
+        /* 51 */ GLFW_KEY_KP_EQUAL,
+        /* 52 */ GLFW_KEY_KP_0,
+        /* 53 */ GLFW_KEY_KP_1,
+        /* 54 */ GLFW_KEY_KP_2,
+        /* 55 */ GLFW_KEY_KP_3,
+        /* 56 */ GLFW_KEY_KP_4,
+        /* 57 */ GLFW_KEY_KP_5,
+        /* 58 */ GLFW_KEY_KP_6,
+        /* 59 */ GLFW_KEY_KP_7,
+        /* 5a */ GLFW_KEY_F20,
+        /* 5b */ GLFW_KEY_KP_8,
+        /* 5c */ GLFW_KEY_KP_9,
+        /* 5d */ -1,
+        /* 5e */ -1,
+        /* 5f */ -1,
+        /* 60 */ GLFW_KEY_F5,
+        /* 61 */ GLFW_KEY_F6,
+        /* 62 */ GLFW_KEY_F7,
+        /* 63 */ GLFW_KEY_F3,
+        /* 64 */ GLFW_KEY_F8,
+        /* 65 */ GLFW_KEY_F9,
+        /* 66 */ -1,
+        /* 67 */ GLFW_KEY_F11,
+        /* 68 */ -1,
+        /* 69 */ GLFW_KEY_F13,
+        /* 6a */ GLFW_KEY_F16,
+        /* 6b */ GLFW_KEY_F14,
+        /* 6c */ -1,
+        /* 6d */ GLFW_KEY_F10,
+        /* 6e */ -1,
+        /* 6f */ GLFW_KEY_F12,
+        /* 70 */ -1,
+        /* 71 */ GLFW_KEY_F15,
+        /* 72 */ GLFW_KEY_INSERT, /* Really Help... */
+        /* 73 */ GLFW_KEY_HOME,
+        /* 74 */ GLFW_KEY_PAGE_UP,
+        /* 75 */ GLFW_KEY_DELETE,
+        /* 76 */ GLFW_KEY_F4,
+        /* 77 */ GLFW_KEY_END,
+        /* 78 */ GLFW_KEY_F2,
+        /* 79 */ GLFW_KEY_PAGE_DOWN,
+        /* 7a */ GLFW_KEY_F1,
+        /* 7b */ GLFW_KEY_LEFT,
+        /* 7c */ GLFW_KEY_RIGHT,
+        /* 7d */ GLFW_KEY_DOWN,
+        /* 7e */ GLFW_KEY_UP,
+        /* 7f */ -1,
+    };
+
     if (macKeyCode >= 128)
         return -1;
 
     // This treats keycodes as *positional*; that is, we'll return 'a'
     // for the key left of 's', even on an AZERTY keyboard.  The charInput
     // function should still get 'q' though.
-    return MAC_TO_GLFW_KEYCODE_MAPPING[macKeyCode];
+    return table[macKeyCode];
 }
+
 
 //========================================================================
 // Content view class for the GLFW window
@@ -388,11 +388,11 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 {
     NSUInteger i, length;
     NSString* characters;
-    int code = convertMacKeyCode([event keyCode]);
+    int key = convertMacKeyCode([event keyCode]);
 
-    if (code != -1)
+    if (key != -1)
     {
-        _glfwInputKey(window, code, GLFW_PRESS);
+        _glfwInputKey(window, key, GLFW_PRESS);
 
         if ([event modifierFlags] & NSCommandKeyMask)
         {
@@ -412,7 +412,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
 - (void)flagsChanged:(NSEvent *)event
 {
-    int mode;
+    int mode, key;
     unsigned int newModifierFlags =
         [event modifierFlags] | NSDeviceIndependentModifierFlagsMask;
 
@@ -422,14 +422,17 @@ static int convertMacKeyCode(unsigned int macKeyCode)
         mode = GLFW_RELEASE;
 
     window->NS.modifierFlags = newModifierFlags;
-    _glfwInputKey(window, MAC_TO_GLFW_KEYCODE_MAPPING[[event keyCode]], mode);
+
+    key = convertMacKeyCode([event keyCode]);
+    if (key != -1)
+      _glfwInputKey(window, key, mode);
 }
 
 - (void)keyUp:(NSEvent *)event
 {
-    int code = convertMacKeyCode([event keyCode]);
-    if (code != -1)
-        _glfwInputKey(window, code, GLFW_RELEASE);
+    int key = convertMacKeyCode([event keyCode]);
+    if (key != -1)
+        _glfwInputKey(window, key, GLFW_RELEASE);
 }
 
 - (void)scrollWheel:(NSEvent *)event
@@ -445,6 +448,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 }
 
 @end
+
 
 //========================================================================
 // GLFW application class
@@ -468,13 +472,6 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
 @end
 
-
-// Prior to Snow Leopard, we need to use this oddly-named semi-private API
-// to get the application menu working properly.  Need to be careful in
-// case it goes away in a future OS update.
-@interface NSApplication (NSAppleMenu)
-- (void)setAppleMenu:(NSMenu*)m;
-@end
 
 //========================================================================
 // Try to figure out what the calling application is called
@@ -523,6 +520,7 @@ static NSString* findAppName(void)
     return @"GLFW Application";
 }
 
+
 //========================================================================
 // Set up the menu bar (manually)
 // This is nasty, nasty stuff -- calls to undocumented semi-private APIs that
@@ -530,7 +528,8 @@ static NSString* findAppName(void)
 // localize(d|able), etc.  Loading a nib would save us this horror, but that
 // doesn't seem like a good thing to require of GLFW's clients.
 //========================================================================
-static void setUpMenuBar(void)
+
+static void createMenuBar(void)
 {
     NSString* appName = findAppName();
 
@@ -584,23 +583,20 @@ static void setUpMenuBar(void)
                           action:@selector(arrangeInFront:)
                    keyEquivalent:@""];
 
-    // At least guard the call to private API to avoid an exception if it
-    // goes away.  Hopefully that means the worst we'll break in future is to
-    // look ugly...
-    if ([NSApp respondsToSelector:@selector(setAppleMenu:)])
-        [NSApp setAppleMenu:appMenu];
+    // Prior to Snow Leopard, we need to use this oddly-named semi-private API
+    // to get the application menu working properly.
+    [NSApp performSelector:@selector(setAppleMenu:) withObject:appMenu];
 }
 
 
 //========================================================================
 // Initialize the Cocoa Application Kit
 //========================================================================
-static GLboolean initializeCocoa(void)
+
+static GLboolean initializeAppKit(void)
 {
     if (NSApp)
         return GL_TRUE;
-
-    _glfwLibrary.NS.autoreleasePool = [[NSAutoreleasePool alloc] init];
 
     // Implicitly create shared NSApplication instance
     [GLFWApplication sharedApplication];
@@ -608,12 +604,13 @@ static GLboolean initializeCocoa(void)
     // Setting up the menu bar must go between sharedApplication
     // above and finishLaunching below, in order to properly emulate the
     // behavior of NSApplicationMain
-    setUpMenuBar();
+    createMenuBar();
 
     [NSApp finishLaunching];
 
     return GL_TRUE;
 }
+
 
 //========================================================================
 // Create the Cocoa window
@@ -658,6 +655,7 @@ static GLboolean createWindow(_GLFWwindow* window,
     return GL_TRUE;
 }
 
+
 //========================================================================
 // Create the OpenGL context
 //========================================================================
@@ -686,14 +684,23 @@ static GLboolean createContext(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    if (wndconfig->glProfile)
+    if (wndconfig->glMajor > 2)
     {
-        // Fail if a profile other than core was explicitly selected
+        if (!wndconfig->glForward)
+        {
+            _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                          "Cocoa/NSOpenGL: The targeted version of Mac OS X "
+                          "only supports OpenGL 3.2 contexts if they are "
+                          "forward-compatible");
+            return GL_FALSE;
+        }
+
         if (wndconfig->glProfile != GLFW_OPENGL_CORE_PROFILE)
         {
             _glfwSetError(GLFW_VERSION_UNAVAILABLE,
                           "Cocoa/NSOpenGL: The targeted version of Mac OS X "
-                          "only supports the OpenGL core profile");
+                          "only supports OpenGL 3.2 contexts if they use the "
+                          "core profile");
             return GL_FALSE;
         }
     }
@@ -721,13 +728,12 @@ static GLboolean createContext(_GLFWwindow* window,
 #define ADD_ATTR2(x, y) { ADD_ATTR(x); ADD_ATTR(y); }
 
     // Arbitrary array size here
-    NSOpenGLPixelFormatAttribute attributes[24];
+    NSOpenGLPixelFormatAttribute attributes[40];
 
     ADD_ATTR(NSOpenGLPFADoubleBuffer);
 
     if (wndconfig->mode == GLFW_FULLSCREEN)
     {
-        ADD_ATTR(NSOpenGLPFAFullScreen);
         ADD_ATTR(NSOpenGLPFANoRecovery);
         ADD_ATTR2(NSOpenGLPFAScreenMask,
                   CGDisplayIDToOpenGLDisplayMask(CGMainDisplayID()));
@@ -813,8 +819,10 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
                             const _GLFWwndconfig* wndconfig,
                             const _GLFWfbconfig* fbconfig)
 {
-    if (!initializeCocoa())
+    if (!initializeAppKit())
         return GL_FALSE;
+
+    window->resizable = wndconfig->resizable;
 
     // We can only have one application delegate, but we only allocate it the
     // first time we create a window to keep all window code in this file
@@ -850,28 +858,6 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     // Don't use accumulation buffer support; it's not accelerated
     // Aux buffers probably aren't accelerated either
 
-    CFDictionaryRef fullscreenMode = NULL;
-    if (wndconfig->mode == GLFW_FULLSCREEN)
-    {
-        // I think it's safe to pass 0 to the refresh rate for this function
-        // rather than conditionalizing the code to call the version which
-        // doesn't specify refresh...
-        fullscreenMode =
-            CGDisplayBestModeForParametersAndRefreshRateWithProperty(
-                CGMainDisplayID(),
-                colorBits + fbconfig->alphaBits,
-                window->width, window->height,
-                wndconfig->refreshRate,
-                // Controversial, see macosx_fullscreen.m for discussion
-                kCGDisplayModeIsSafeForHardware,
-                NULL);
-
-        window->width =
-            [[(id)fullscreenMode objectForKey:(id)kCGDisplayWidth] intValue];
-        window->height =
-            [[(id)fullscreenMode objectForKey:(id)kCGDisplayHeight] intValue];
-    }
-
     if (!createWindow(window, wndconfig))
         return GL_FALSE;
 
@@ -883,8 +869,15 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 
     if (wndconfig->mode == GLFW_FULLSCREEN)
     {
-        CGCaptureAllDisplays();
-        CGDisplaySwitchToMode(CGMainDisplayID(), fullscreenMode);
+        int bpp = colorBits + fbconfig->alphaBits;
+
+        if (!_glfwSetVideoMode(&window->width,
+                               &window->height,
+                               &bpp,
+                               &window->refreshRate))
+        {
+            return GL_FALSE;
+        }
 
         [[window->NS.window contentView] enterFullScreenMode:[NSScreen mainScreen]
                                                  withOptions:nil];
@@ -914,9 +907,7 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
     {
         [[window->NS.window contentView] exitFullScreenModeWithOptions:nil];
 
-        CGDisplaySwitchToMode(CGMainDisplayID(),
-                              (CFDictionaryRef) _glfwLibrary.NS.desktopMode);
-        CGReleaseAllDisplays();
+        _glfwRestoreVideoMode();
     }
 
     [window->NSGL.pixelFormat release];
@@ -936,6 +927,7 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
     // TODO: Probably more cleanup
 }
 
+
 //========================================================================
 // Set the window title
 //========================================================================
@@ -945,6 +937,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)
     [window->NS.window setTitle:[NSString stringWithUTF8String:title]];
 }
 
+
 //========================================================================
 // Set the window size
 //========================================================================
@@ -953,6 +946,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     [window->NS.window setContentSize:NSMakeSize(width, height)];
 }
+
 
 //========================================================================
 // Set the window position
@@ -974,6 +968,7 @@ void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
                         display:YES];
 }
 
+
 //========================================================================
 // Iconify the window
 //========================================================================
@@ -983,6 +978,7 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window)
     [window->NS.window miniaturize:nil];
 }
 
+
 //========================================================================
 // Restore (un-iconify) the window
 //========================================================================
@@ -991,6 +987,7 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
     [window->NS.window deminiaturize:nil];
 }
+
 
 //========================================================================
 // Write back window parameters into GLFW window structure
@@ -1066,6 +1063,7 @@ void _glfwPlatformRefreshWindowParams(void)
     window->glDebug = GL_FALSE;
 }
 
+
 //========================================================================
 // Poll for new window and input events
 //========================================================================
@@ -1090,6 +1088,7 @@ void _glfwPlatformPollEvents(void)
     _glfwLibrary.NS.autoreleasePool = [[NSAutoreleasePool alloc] init];
 }
 
+
 //========================================================================
 // Wait for new window and input events
 //========================================================================
@@ -1108,6 +1107,7 @@ void _glfwPlatformWaitEvents( void )
     _glfwPlatformPollEvents();
 }
 
+
 //========================================================================
 // Set physical mouse cursor position
 //========================================================================
@@ -1125,11 +1125,6 @@ void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y)
     // calculating the maximum y coordinate of all screens, since Cocoa's
     // "global coordinates" are upside down from CG's...
 
-    // Without this (once per app run, but it's convenient to do it here)
-    // events will be suppressed for a default of 0.25 seconds after we
-    // move the cursor.
-    CGSetLocalEventsSuppressionInterval(0.0);
-
     NSPoint localPoint = NSMakePoint(x, y);
     NSPoint globalPoint = [window->NS.window convertBaseToScreen:localPoint];
     CGPoint mainScreenOrigin = CGDisplayBounds(CGMainDisplayID()).origin;
@@ -1139,6 +1134,7 @@ void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y)
                                           mainScreenOrigin.y);
     CGDisplayMoveCursorToPoint(CGMainDisplayID(), targetPoint);
 }
+
 
 //========================================================================
 // Set physical mouse cursor mode

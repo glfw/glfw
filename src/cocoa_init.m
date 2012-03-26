@@ -33,6 +33,7 @@
 //========================================================================
 // Change to our application bundle's resources directory, if present
 //========================================================================
+
 static void changeToResourcesDirectory(void)
 {
     char resourcesPath[MAXPATHLEN];
@@ -78,6 +79,8 @@ static void changeToResourcesDirectory(void)
 
 int _glfwPlatformInit(void)
 {
+    _glfwLibrary.NS.autoreleasePool = [[NSAutoreleasePool alloc] init];
+
     _glfwLibrary.NS.OpenGLFramework =
         CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
     if (_glfwLibrary.NS.OpenGLFramework == NULL)
@@ -89,8 +92,7 @@ int _glfwPlatformInit(void)
 
     changeToResourcesDirectory();
 
-    _glfwLibrary.NS.desktopMode =
-	    (NSDictionary*) CGDisplayCurrentMode(CGMainDisplayID());
+    _glfwLibrary.NS.desktopMode = CGDisplayCopyDisplayMode(CGMainDisplayID());
 
     // Save the original gamma ramp
     _glfwLibrary.originalRampSize = CGDisplayGammaTableCapacity(CGMainDisplayID());
@@ -101,8 +103,16 @@ int _glfwPlatformInit(void)
 
     _glfwInitJoysticks();
 
+    _glfwLibrary.NS.eventSource = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
+    if (!_glfwLibrary.NS.eventSource)
+        return GL_FALSE;
+
+    CGEventSourceSetLocalEventsSuppressionInterval(_glfwLibrary.NS.eventSource,
+                                                   0.0);
+
     return GL_TRUE;
 }
+
 
 //========================================================================
 // Close window, if open, and shut down GLFW
@@ -112,8 +122,16 @@ int _glfwPlatformTerminate(void)
 {
     // TODO: Probably other cleanup
 
+    if (_glfwLibrary.NS.eventSource)
+    {
+        CFRelease(_glfwLibrary.NS.eventSource);
+        _glfwLibrary.NS.eventSource = NULL;
+    }
+
     // Restore the original gamma ramp
     _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
+
+    CGDisplayModeRelease(_glfwLibrary.NS.desktopMode);
 
     [NSApp setDelegate:nil];
     [_glfwLibrary.NS.delegate release];

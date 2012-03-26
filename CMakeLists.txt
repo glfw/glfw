@@ -181,6 +181,9 @@ if (_GLFW_COCOA_NSGL)
                                ${OPENGL_gl_LIBRARY}
                                ${IOKIT_FRAMEWORK}
                                ${CORE_FOUNDATION_FRAMEWORK})
+
+    set(GLFW_PKG_DEPS "")
+    set(GLFW_PKG_LIBS "-framework Cocoa -framework OpenGL -framework IOKit -framework CoreFoundation")
 endif()
 
 #--------------------------------------------------------------------
@@ -223,7 +226,7 @@ install(FILES COPYING.txt readme.html
 #--------------------------------------------------------------------
 # Create and install pkg-config file on supported platforms
 #--------------------------------------------------------------------
-if (_GLFW_X11_GLX)
+if (_GLFW_X11_GLX OR _GLFW_COCOA_NSGL)
     configure_file(${GLFW_SOURCE_DIR}/src/libglfw.pc.in 
                    ${GLFW_BINARY_DIR}/src/libglfw.pc @ONLY)
 

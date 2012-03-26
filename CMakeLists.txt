@@ -11,73 +11,109 @@ set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA
 
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 find_package(OpenGL REQUIRED)
 
 #--------------------------------------------------------------------
-# Set up GLFW for Win32 and WGL on Windows
+# Enable all warnings on GCC, regardless of OS
+#--------------------------------------------------------------------
+if (CMAKE_COMPILER_IS_GNUCC)
+    add_definitions(-Wall)
+endif()
+
+#--------------------------------------------------------------------
+# Detect and select target platform
 #--------------------------------------------------------------------
 if (WIN32)
-    message(STATUS "Building GLFW for WGL on a Win32 system") 
-
-    # Define the platform identifier
     set(_GLFW_WIN32_WGL 1)
+    message(STATUS "Building GLFW for WGL on a Win32 system") 
+elseif (UNIX AND APPLE)
+    set(_GLFW_COCOA_NSGL 1)
+    message(STATUS "Building GLFW for Cocoa and NSOpenGL on Mac OS X")
+elseif (UNIX AND NOT APPLE)
+    set(_GLFW_X11_GLX 1)
+    message(STATUS "Building GLFW for X11 and GLX on a Unix-like system")
+else()
+    message(FATAL_ERROR "No supported platform was detected")
+endif()
+
+#--------------------------------------------------------------------
+# Set up GLFW for Win32 and WGL on Windows
+#--------------------------------------------------------------------
+if (_GLFW_WIN32_WGL)
 
     # Set up library and include paths
-    list(APPEND GLFW_INCLUDE_DIR ${OPENGL_INCLUDE_DIR})
-    list(APPEND GLFW_LIBRARIES ${OPENGL_gl_LIBRARY})
+    list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
+    list(APPEND glfw_LIBRARIES ${OPENGL_gl_LIBRARY})
+
+    if (BUILD_SHARED_LIBS)
+        list(APPEND glfw_LIBRARIES winmm)
+    endif()
 endif()
 
 #--------------------------------------------------------------------
 # Set up GLFW for Xlib and GLX on Unix-like systems with X Windows
 #--------------------------------------------------------------------
-if (UNIX AND NOT APPLE)
-    message(STATUS "Building GLFW for X11 and GLX on a Unix-like system")
-
-    # Define the platform identifier
-    set(_GLFW_X11_GLX 1)
+if (_GLFW_X11_GLX)
 
     find_package(X11 REQUIRED)
 
     # Set up library and include paths
-    list(APPEND GLFW_INCLUDE_DIR ${X11_X11_INCLUDE_PATH} ${OPENGL_INCLUDE_DIR})
-    list(APPEND GLFW_LIBRARIES ${X11_X11_LIB} ${OPENGL_gl_LIBRARY})
+    list(APPEND glfw_INCLUDE_DIRS ${X11_X11_INCLUDE_PATH} ${OPENGL_INCLUDE_DIR})
+    list(APPEND glfw_LIBRARIES ${X11_X11_LIB} ${OPENGL_gl_LIBRARY})
 
-    find_library(MATH_LIBRARY m)
-    if (MATH_LIBRARY)
-        list(APPEND GLFW_LIBRARIES ${MATH_LIBRARY})
-    endif()
-
-    find_library(RT_LIBRARY rt)
-    if (RT_LIBRARY)
-        list(APPEND GLFW_LIBRARIES ${RT_LIBRARY})
-    endif()
+    set(GLFW_PKG_DEPS "gl x11")
+    set(GLFW_PKG_LIBS "")
 
     include(CheckFunctionExists)
-    include(CheckSymbolExists)
 
-    set(CMAKE_REQUIRED_LIBRARIES ${GLFW_LIBRARIES})
-    
     # Check for XRandR (modern resolution switching extension)
     if (X11_Xrandr_FOUND)
         set(_GLFW_HAS_XRANDR 1) 
-        list(APPEND GLFW_INCLUDE_DIR ${X11_Xrandr_INCLUDE_PATH})
-        list(APPEND GLFW_LIBRARIES ${X11_Xrandr_LIB})
+        list(APPEND glfw_INCLUDE_DIRS ${X11_Xrandr_INCLUDE_PATH})
+        list(APPEND glfw_LIBRARIES ${X11_Xrandr_LIB})
+        set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xrandr")
     endif()
 
     # Check for Xf86VidMode (fallback legacy resolution switching extension)
     if (X11_xf86vmode_FOUND)
         set(_GLFW_HAS_XF86VIDMODE 1)
-        list(APPEND GLFW_INCLUDE_DIR ${X11_xf86vmode_INCLUDE_PATH})
+        list(APPEND glfw_INCLUDE_DIRS ${X11_xf86vmode_INCLUDE_PATH})
+    
+        # NOTE: This is a workaround for CMake bug 0006976 (missing
+        # X11_xf86vmode_LIB variable)
+        if (X11_xf86vmode_LIB)
+            list(APPEND glfw_LIBRARIES ${X11_xf86vmode_LIB})
+        else()
+            list(APPEND glfw_LIBRARIES Xxf86vm)
+        endif()
+
+        set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xxf86vm")
     endif() 
 
     # Check for Xkb (X keyboard extension)
     if (X11_Xkb_FOUND)
         set(_GLFW_HAS_XKB 1)
-        list(APPEND GLFW_INCLUDE_DIR ${X11_Xkb_INCLUDE_PATH})
+        list(APPEND glfw_INCLUDE_DIR ${X11_Xkb_INCLUDE_PATH})
     endif() 
 
-    # Check for glXGetProcAddress
+    find_library(RT_LIBRARY rt)
+    mark_as_advanced(RT_LIBRARY)
+    if (RT_LIBRARY)
+        list(APPEND glfw_LIBRARIES ${RT_LIBRARY})
+        set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lrt")
+    endif()
+
+    find_library(MATH_LIBRARY m)
+    mark_as_advanced(MATH_LIBRARY)
+    if (MATH_LIBRARY)
+        list(APPEND glfw_LIBRARIES ${MATH_LIBRARY})
+        set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lm")
+    endif()
+
+    set(CMAKE_REQUIRED_LIBRARIES ${OPENGL_gl_LIBRARY})
+
     check_function_exists(glXGetProcAddress _GLFW_HAS_GLXGETPROCADDRESS)
 
     if (NOT _GLFW_HAS_GLXGETPROCADDRESS)
@@ -92,6 +128,27 @@ if (UNIX AND NOT APPLE)
         NOT _GLFW_HAS_GLXGETPROCADDRESSARB AND
         NOT _GLFW_HAS_GLXGETPROCADDRESSEXT)
         message(WARNING "No glXGetProcAddressXXX variant found")
+
+        # Check for dlopen support as a fallback
+
+        find_library(DL_LIBRARY dl)
+        mark_as_advanced(DL_LIBRARY)
+        if (DL_LIBRARY)
+            set(CMAKE_REQUIRED_LIBRARIES ${DL_LIBRARY})
+        else()
+            set(CMAKE_REQUIRED_LIBRARIES "")
+        endif()
+
+        check_function_exists(dlopen _GLFW_HAS_DLOPEN)
+
+        if (NOT _GLFW_HAS_DLOPEN)
+            message(FATAL_ERROR "No entry point retrieval mechanism found")
+        endif()
+
+        if (DL_LIBRARY)
+            list(APPEND glfw_LIBRARIES ${DL_LIBRARY})
+            set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -ldl")
+        endif()
     endif()
 
     if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
@@ -102,13 +159,9 @@ endif()
 #--------------------------------------------------------------------
 # Set up GLFW for Cocoa and NSOpenGL on Mac OS X
 #--------------------------------------------------------------------
-if (UNIX AND APPLE)
-    message(STATUS "Building GLFW for Cocoa and NSOpenGL on Mac OS X")
+if (_GLFW_COCOA_NSGL)
         
-    # Define the platform identifier
-    set(_GLFW_COCOA_NSGL 1)
-
-    option(GLFW_BUILD_UNIVERSAL "Build the GLFW library and examples as Universal Binaries" FALSE)
+    option(GLFW_BUILD_UNIVERSAL "Build GLFW as a Universal Binary" OFF)
 
     # Universal build
     if (GLFW_BUILD_UNIVERSAL)
@@ -124,11 +177,19 @@ if (UNIX AND APPLE)
     find_library(COCOA_FRAMEWORK Cocoa)
     find_library(IOKIT_FRAMEWORK IOKit)
     find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
-    list(APPEND GLFW_LIBRARIES ${COCOA_FRAMEWORK})
-    list(APPEND GLFW_LIBRARIES ${OPENGL_gl_LIBRARY})
-    list(APPEND GLFW_LIBRARIES ${IOKIT_FRAMEWORK})
-    list(APPEND GLFW_LIBRARIES ${CORE_FOUNDATION_FRAMEWORK})
+    list(APPEND glfw_LIBRARIES ${COCOA_FRAMEWORK}
+                               ${OPENGL_gl_LIBRARY}
+                               ${IOKIT_FRAMEWORK}
+                               ${CORE_FOUNDATION_FRAMEWORK})
+
+    set(GLFW_PKG_DEPS "")
+    set(GLFW_PKG_LIBS "-framework Cocoa -framework OpenGL -framework IOKit -framework CoreFoundation")
 endif()
+
+#--------------------------------------------------------------------
+# Export GLFW library dependencies
+#--------------------------------------------------------------------
+set(GLFW_LIBRARIES ${glfw_LIBRARIES} CACHE STRING "Dependencies of GLFW")
 
 #--------------------------------------------------------------------
 # Add subdirectories
@@ -144,29 +205,34 @@ if (GLFW_BUILD_TESTS)
 endif()
 
 #--------------------------------------------------------------------
-# Create shared configuration header
+# Create generated files
 #--------------------------------------------------------------------
+configure_file(${GLFW_SOURCE_DIR}/docs/Doxyfile.in
+               ${GLFW_BINARY_DIR}/docs/Doxyfile @ONLY)
+
 configure_file(${GLFW_SOURCE_DIR}/src/config.h.in 
                ${GLFW_BINARY_DIR}/src/config.h @ONLY)
 
 #--------------------------------------------------------------------
-# Install standard files 
+# Install header and documentation
+# The src directory's CMakeLists.txt file installs the library
 #--------------------------------------------------------------------
-
 install(DIRECTORY include/GL DESTINATION include 
         FILES_MATCHING PATTERN glfw3.h)
 
 install(FILES COPYING.txt readme.html 
-        DESTINATION share/doc/glfw-${GLFW_VERSION_FULL}/)
-
-# The src directory's CMakeLists.txt file installs the library
+        DESTINATION share/doc/glfw-${GLFW_VERSION_FULL})
 
 #--------------------------------------------------------------------
-# -- Documentation generation 
+# Create and install pkg-config file on supported platforms
 #--------------------------------------------------------------------
-configure_file("${GLFW_SOURCE_DIR}/docs/Doxyfile.in"
-               "${GLFW_BINARY_DIR}/docs/Doxyfile"
-               @ONLY)
+if (_GLFW_X11_GLX OR _GLFW_COCOA_NSGL)
+    configure_file(${GLFW_SOURCE_DIR}/src/libglfw.pc.in 
+                   ${GLFW_BINARY_DIR}/src/libglfw.pc @ONLY)
+
+    install(FILES ${GLFW_BINARY_DIR}/src/libglfw.pc
+            DESTINATION lib/pkgconfig)
+endif()
 
 #--------------------------------------------------------------------
 # Uninstall operation

@@ -30,6 +30,7 @@
 
 #include "internal.h"
 
+#include <sys/time.h>
 #include <time.h>
 
 

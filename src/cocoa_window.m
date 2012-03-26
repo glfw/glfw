@@ -728,7 +728,7 @@ static GLboolean createContext(_GLFWwindow* window,
 #define ADD_ATTR2(x, y) { ADD_ATTR(x); ADD_ATTR(y); }
 
     // Arbitrary array size here
-    NSOpenGLPixelFormatAttribute attributes[24];
+    NSOpenGLPixelFormatAttribute attributes[40];
 
     ADD_ATTR(NSOpenGLPFADoubleBuffer);
 

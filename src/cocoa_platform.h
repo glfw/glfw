@@ -74,6 +74,7 @@ typedef struct _GLFWwindowNS
 {
     id           object;
     id	         delegate;
+    id           view;
     unsigned int modifierFlags;
     double       fracScrollX;
     double       fracScrollY;

@@ -687,9 +687,10 @@ static GLboolean createWindow(_GLFWwindow* window,
         return GL_FALSE;
     }
 
+    window->NS.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
+
     [window->NS.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
-    [window->NS.object setContentView:[[GLFWContentView alloc]
-                   initWithGlfwWindow:window]];
+    [window->NS.object setContentView:window->NS.view];
     [window->NS.object setDelegate:window->NS.delegate];
     [window->NS.object setAcceptsMouseMovedEvents:YES];
     [window->NS.object center];
@@ -962,6 +963,9 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
     [window->NS.object setDelegate:nil];
     [window->NS.delegate release];
     window->NS.delegate = nil;
+
+    [window->NS.view release];
+    window->NS.view = nil;
 
     [window->NS.object close];
     window->NS.object = nil;

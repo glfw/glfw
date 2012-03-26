@@ -154,6 +154,12 @@ if (_GLFW_X11_GLX)
     if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         set(_GLFW_USE_LINUX_JOYSTICKS 1)
     endif()
+
+    configure_file(${GLFW_SOURCE_DIR}/src/libglfw.pc.in 
+                   ${GLFW_BINARY_DIR}/src/libglfw.pc @ONLY)
+
+    install(FILES ${GLFW_BINARY_DIR}/src/libglfw.pc
+            DESTINATION lib/pkgconfig)
 endif()
 
 #--------------------------------------------------------------------

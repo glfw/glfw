@@ -1,6 +1,6 @@
 
 if (_GLFW_X11_GLX)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libglfw.pc.cmake 
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libglfw.pc.in 
                    ${CMAKE_CURRENT_BINARY_DIR}/libglfw.pc @ONLY)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libglfw.pc
             DESTINATION lib/pkgconfig)

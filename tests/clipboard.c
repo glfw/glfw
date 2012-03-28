@@ -39,15 +39,14 @@ static void usage(void)
     printf("Usage: clipboard [-h]\n");
 }
 
+static GLboolean control_is_down(void)
+{
+    return glfwGetKey(GLFW_KEY_LEFT_CONTROL) ||
+           glfwGetKey(GLFW_KEY_RIGHT_CONTROL);
+}
+
 static void key_callback(GLFWwindow window, int key, int action)
 {
-    static int control = GL_FALSE;
-    if (key == GLFW_KEY_LEFT_CONTROL)
-    {
-        control = (action == GLFW_PRESS);
-        return;
-    }
-
     if (action != GLFW_PRESS)
         return;
 
@@ -57,7 +56,7 @@ static void key_callback(GLFWwindow window, int key, int action)
             glfwCloseWindow(window);
             break;
         case GLFW_KEY_V:
-            if (control)
+            if (control_is_down())
             {
                 char buffer[4096];
                 size_t size;
@@ -71,7 +70,7 @@ static void key_callback(GLFWwindow window, int key, int action)
             }
             break;
         case GLFW_KEY_C:
-            if (control)
+            if (control_is_down())
             {
                 glfwSetClipboardData("Hello GLFW World!", sizeof("Hello GLFW World!"),
                                      GLFW_CLIPBOARD_FORMAT_STRING);

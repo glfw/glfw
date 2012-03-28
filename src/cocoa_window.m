@@ -292,6 +292,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 @interface GLFWContentView : NSView
 {
     _GLFWwindow* window;
+    NSTrackingArea* trackingArea;
 }
 
 - (id)initWithGlfwWindow:(_GLFWwindow *)initWindow;
@@ -304,9 +305,20 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 {
     self = [super init];
     if (self != nil)
+    {
         window = initWindow;
+        trackingArea = nil;
+
+        [self updateTrackingAreas];
+    }
 
     return self;
+}
+
+-(void)dealloc
+{
+    [trackingArea release];
+    [super dealloc];
 }
 
 - (BOOL)isOpaque
@@ -382,6 +394,36 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 - (void)otherMouseUp:(NSEvent *)event
 {
     _glfwInputMouseClick(window, [event buttonNumber], GLFW_RELEASE);
+}
+
+- (void)mouseExited:(NSEvent *)event
+{
+    _glfwInputCursorEnter(window, GL_FALSE);
+}
+
+- (void)mouseEntered:(NSEvent *)event
+{
+    _glfwInputCursorEnter(window, GL_TRUE);
+}
+
+- (void)updateTrackingAreas
+{
+    if (trackingArea != nil)
+    {
+        [self removeTrackingArea:trackingArea];
+        [trackingArea release];
+    }
+
+    NSTrackingAreaOptions options = NSTrackingMouseEnteredAndExited |
+                                    NSTrackingActiveAlways |
+                                    NSTrackingInVisibleRect;
+
+    trackingArea = [[NSTrackingArea alloc] initWithRect:[self bounds]
+                                                options:options
+                                                  owner:self
+                                               userInfo:nil];
+
+    [self addTrackingArea:trackingArea];
 }
 
 - (void)keyDown:(NSEvent *)event

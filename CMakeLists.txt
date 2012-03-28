@@ -181,6 +181,9 @@ if (_GLFW_COCOA_NSGL)
                                ${OPENGL_gl_LIBRARY}
                                ${IOKIT_FRAMEWORK}
                                ${CORE_FOUNDATION_FRAMEWORK})
+
+    set(GLFW_PKG_DEPS "")
+    set(GLFW_PKG_LIBS "-framework Cocoa -framework OpenGL -framework IOKit -framework CoreFoundation")
 endif()
 
 #--------------------------------------------------------------------
@@ -202,29 +205,34 @@ if (GLFW_BUILD_TESTS)
 endif()
 
 #--------------------------------------------------------------------
-# Create shared configuration header
+# Create generated files
 #--------------------------------------------------------------------
+configure_file(${GLFW_SOURCE_DIR}/docs/Doxyfile.in
+               ${GLFW_BINARY_DIR}/docs/Doxyfile @ONLY)
+
 configure_file(${GLFW_SOURCE_DIR}/src/config.h.in 
                ${GLFW_BINARY_DIR}/src/config.h @ONLY)
 
 #--------------------------------------------------------------------
-# Install standard files 
+# Install header and documentation
+# The src directory's CMakeLists.txt file installs the library
 #--------------------------------------------------------------------
-
 install(DIRECTORY include/GL DESTINATION include 
         FILES_MATCHING PATTERN glfw3.h)
 
 install(FILES COPYING.txt readme.html 
         DESTINATION share/doc/glfw-${GLFW_VERSION_FULL})
 
-# The src directory's CMakeLists.txt file installs the library
+#--------------------------------------------------------------------
+# Create and install pkg-config file on supported platforms
+#--------------------------------------------------------------------
+if (_GLFW_X11_GLX OR _GLFW_COCOA_NSGL)
+    configure_file(${GLFW_SOURCE_DIR}/src/libglfw.pc.in 
+                   ${GLFW_BINARY_DIR}/src/libglfw.pc @ONLY)
 
-#--------------------------------------------------------------------
-# -- Documentation generation 
-#--------------------------------------------------------------------
-configure_file("${GLFW_SOURCE_DIR}/docs/Doxyfile.in"
-               "${GLFW_BINARY_DIR}/docs/Doxyfile"
-               @ONLY)
+    install(FILES ${GLFW_BINARY_DIR}/src/libglfw.pc
+            DESTINATION lib/pkgconfig)
+endif()
 
 #--------------------------------------------------------------------
 # Uninstall operation

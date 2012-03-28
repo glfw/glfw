@@ -487,6 +487,7 @@ typedef void (* GLFWwindowfocusfun)(GLFWwindow,int);
 typedef void (* GLFWwindowiconifyfun)(GLFWwindow,int);
 typedef void (* GLFWmousebuttonfun)(GLFWwindow,int,int);
 typedef void (* GLFWmouseposfun)(GLFWwindow,int,int);
+typedef void (* GLFWcursorenterfun)(GLFWwindow,int);
 typedef void (* GLFWscrollfun)(GLFWwindow,int,int);
 typedef void (* GLFWkeyfun)(GLFWwindow,int,int);
 typedef void (* GLFWcharfun)(GLFWwindow,int);
@@ -571,6 +572,7 @@ GLFWAPI void glfwSetKeyCallback(GLFWkeyfun cbfun);
 GLFWAPI void glfwSetCharCallback(GLFWcharfun cbfun);
 GLFWAPI void glfwSetMouseButtonCallback(GLFWmousebuttonfun cbfun);
 GLFWAPI void glfwSetMousePosCallback(GLFWmouseposfun cbfun);
+GLFWAPI void glfwSetCursorEnterCallback(GLFWcursorenterfun cbfun);
 GLFWAPI void glfwSetScrollCallback(GLFWscrollfun cbfun);
 
 /* Joystick input */

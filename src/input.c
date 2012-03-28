@@ -262,6 +262,17 @@ void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y)
 }
 
 
+//========================================================================
+// Register cursor enter/leave events
+//========================================================================
+
+void _glfwInputCursorEnter(_GLFWwindow* window, int entered)
+{
+    if (_glfwLibrary.cursorEnterCallback)
+        _glfwLibrary.cursorEnterCallback(window, entered);
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
@@ -554,6 +565,22 @@ GLFWAPI void glfwSetMousePosCallback(GLFWmouseposfun cbfun)
         for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
             cbfun(window, window->cursorPosX, window->cursorPosY);
     }
+}
+
+
+//========================================================================
+// Set callback function for cursor enter/leave events
+//========================================================================
+
+GLFWAPI void glfwSetCursorEnterCallback(GLFWcursorenterfun cbfun)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    _glfwLibrary.cursorEnterCallback = cbfun;
 }
 
 

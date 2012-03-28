@@ -236,15 +236,15 @@ typedef struct _GLFWlibraryX11
 
     // Selection data
     struct {
-	struct {
-		Atom clipboard[_GLFW_CLIPBOARD_ATOM_COUNT];
-		Atom string[_GLFW_STRING_ATOM_COUNT];
-	} atoms;
-	struct {
-		size_t stringlen;
-		char *string;
-	} clipboard;
-	Atom request;
+        struct {
+            Atom clipboard[_GLFW_CLIPBOARD_ATOM_COUNT];
+            Atom string[_GLFW_STRING_ATOM_COUNT];
+        } atoms;
+        struct {
+            size_t stringlen;
+            char *string;
+        } clipboard;
+        Atom request;
         int converted;
     } selection;
 

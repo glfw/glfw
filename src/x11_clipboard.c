@@ -36,18 +36,15 @@
 #include <string.h>
 #include <stdlib.h>
 
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW platform API                      //////
-//////////////////////////////////////////////////////////////////////////
 
 //========================================================================
 // Get the corresponding X11 format for a given GLFW format.
 //========================================================================
 
-static Atom *getInternalFormat(int fmt)
+static Atom* getInternalFormat(int format)
 {
     // Get the necessary atoms
-    switch (fmt)
+    switch (format)
     {
         case GLFW_CLIPBOARD_FORMAT_STRING:
             return _glfwLibrary.X11.selection.atoms.string;
@@ -56,13 +53,18 @@ static Atom *getInternalFormat(int fmt)
     }
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
 //========================================================================
 // X11 selection request event
 //========================================================================
 
-Atom _glfwSelectionRequest(XSelectionRequestEvent *request)
+Atom _glfwSelectionRequest(XSelectionRequestEvent* request)
 {
-    Atom *atoms = _glfwLibrary.X11.selection.atoms.string;
+    Atom* atoms = _glfwLibrary.X11.selection.atoms.string;
     if (request->target == XA_STRING)
     {
         // TODO: ISO Latin-1 specific characters don't get converted
@@ -73,7 +75,7 @@ Atom _glfwSelectionRequest(XSelectionRequestEvent *request)
             request->target,
             8,
             PropModeReplace,
-            (unsigned char *)_glfwLibrary.X11.selection.clipboard.string,
+            (unsigned char*) _glfwLibrary.X11.selection.clipboard.string,
             8);
     }
     else if (request->target == atoms[_GLFW_STRING_ATOM_COMPOUND] ||
@@ -85,7 +87,7 @@ Atom _glfwSelectionRequest(XSelectionRequestEvent *request)
             request->target,
             8,
             PropModeReplace,
-            (unsigned char *)_glfwLibrary.X11.selection.clipboard.string,
+            (unsigned char*) _glfwLibrary.X11.selection.clipboard.string,
             _glfwLibrary.X11.selection.clipboard.stringlen);
     }
     else
@@ -93,8 +95,14 @@ Atom _glfwSelectionRequest(XSelectionRequestEvent *request)
         // TODO: Should we set an error? Probably not.
         return None;
     }
+
     return request->target;
 }
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 //========================================================================
 // Set the clipboard contents
@@ -132,13 +140,14 @@ void _glfwPlatformSetClipboardData(void *data, size_t size, int format)
 
     // Set the selection owner to our active window
     XSetSelectionOwner(_glfwLibrary.X11.display, XA_PRIMARY,
-        _glfwLibrary.activeWindow->X11.handle, CurrentTime);
+                       _glfwLibrary.activeWindow->X11.handle, CurrentTime);
     XSetSelectionOwner(_glfwLibrary.X11.display,
-        _glfwLibrary.X11.selection.atoms.clipboard
-        [_GLFW_CLIPBOARD_ATOM_CLIPBOARD],
-        _glfwLibrary.activeWindow->X11.handle, CurrentTime);
+                       _glfwLibrary.X11.selection.atoms.clipboard
+                       [_GLFW_CLIPBOARD_ATOM_CLIPBOARD],
+                       _glfwLibrary.activeWindow->X11.handle, CurrentTime);
     XFlush(_glfwLibrary.X11.display);
 }
+
 
 //========================================================================
 // Return the current clipboard contents
@@ -155,16 +164,16 @@ size_t _glfwPlatformGetClipboardData(void *data, size_t size, int format)
     // format with preference for more appropriate formats first
     Atom *xcbrd = _glfwLibrary.X11.selection.atoms.clipboard;
     Atom *xcbrdend = _glfwLibrary.X11.selection.atoms.clipboard +
-        _GLFW_CLIPBOARD_ATOM_COUNT;
+                     _GLFW_CLIPBOARD_ATOM_COUNT;
     Atom *xfmt = getInternalFormat(format);
     Atom *xfmtend = xfmt + _GLFW_STRING_ATOM_COUNT;
 
     // Get the currently active window
     Window window = _glfwLibrary.activeWindow->X11.handle;
 
-    for (; xcbrd != xcbrdend; xcbrd++)
+    for ( ;  xcbrd != xcbrdend;  xcbrd++)
     {
-        for (; xfmt != xfmtend; xfmt++)
+        for ( ;  xfmt != xfmtend;  xfmt++)
         {
             // Specify the format we would like.
             _glfwLibrary.X11.selection.request = *xfmt;
@@ -218,21 +227,23 @@ size_t _glfwPlatformGetClipboardData(void *data, size_t size, int format)
     if (rembytes > 0)
     {
         int result = XGetWindowProperty(_glfwLibrary.X11.display, window,
-                                    *xfmt, 0, rembytes, 0,
-                                    AnyPropertyType, &type, &fmt,
-                                    &len, &dummy, &d);
+                                        *xfmt, 0, rembytes, 0,
+                                        AnyPropertyType, &type, &fmt,
+                                        &len, &dummy, &d);
         if (result == Success)
         {
             size_t s = size - 1 > rembytes ? rembytes : size - 1;
+
             // Copy the data out.
             memcpy(data, d, s);
+
             // Null-terminate strings.
             if (format == GLFW_CLIPBOARD_FORMAT_STRING)
-            {
                 ((char *)data)[s] = '\0';
-            }
+
             // Free the data allocated using X11.
             XFree(d);
+
             // Return the actual number of bytes.
             return rembytes;
         }
@@ -243,6 +254,7 @@ size_t _glfwPlatformGetClipboardData(void *data, size_t size, int format)
             return 0;
         }
     }
+
     return 0;
 }
 

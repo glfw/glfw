@@ -76,3 +76,4 @@ GLFWAPI size_t glfwGetClipboardData(void *data, size_t size, int format)
 
     return _glfwPlatformGetClipboardData(data, size, format);
 }
+

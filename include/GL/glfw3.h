@@ -482,7 +482,7 @@ typedef void (* GLFWwindowiconifyfun)(GLFWwindow,int);
 typedef void (* GLFWmousebuttonfun)(GLFWwindow,int,int);
 typedef void (* GLFWmouseposfun)(GLFWwindow,int,int);
 typedef void (* GLFWcursorenterfun)(GLFWwindow,int);
-typedef void (* GLFWscrollfun)(GLFWwindow,int,int);
+typedef void (* GLFWscrollfun)(GLFWwindow,double,double);
 typedef void (* GLFWkeyfun)(GLFWwindow,int,int);
 typedef void (* GLFWcharfun)(GLFWwindow,int);
 
@@ -561,7 +561,7 @@ GLFWAPI int  glfwGetKey(GLFWwindow window, int key);
 GLFWAPI int  glfwGetMouseButton(GLFWwindow window, int button);
 GLFWAPI void glfwGetMousePos(GLFWwindow window, int* xpos, int* ypos);
 GLFWAPI void glfwSetMousePos(GLFWwindow window, int xpos, int ypos);
-GLFWAPI void glfwGetScrollOffset(GLFWwindow window, int* xoffset, int* yoffset);
+GLFWAPI void glfwGetScrollOffset(GLFWwindow window, double* xoffset, double* yoffset);
 GLFWAPI void glfwSetKeyCallback(GLFWkeyfun cbfun);
 GLFWAPI void glfwSetCharCallback(GLFWcharfun cbfun);
 GLFWAPI void glfwSetMouseButtonCallback(GLFWmousebuttonfun cbfun);

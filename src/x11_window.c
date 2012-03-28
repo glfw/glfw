@@ -1144,14 +1144,14 @@ static void processSingleEvent(void)
             // XFree86 3.3.2 and later translates mouse wheel up/down into
             // mouse button 4 & 5 presses
             else if (event.xbutton.button == Button4)
-                _glfwInputScroll(window, 0, 1);
+                _glfwInputScroll(window, 0.0, 1.0);
             else if (event.xbutton.button == Button5)
-                _glfwInputScroll(window, 0, -1);
+                _glfwInputScroll(window, 0.0, -1.0);
 
             else if (event.xbutton.button == Button6)
-                _glfwInputScroll(window, -1, 0);
+                _glfwInputScroll(window, -1.0, 0.0);
             else if (event.xbutton.button == Button7)
-                _glfwInputScroll(window, 1, 0);
+                _glfwInputScroll(window, 1.0, 0.0);
 
             break;
         }

@@ -479,14 +479,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
 - (void)scrollWheel:(NSEvent *)event
 {
-    double deltaX = window->NS.fracScrollX + [event deltaX];
-    double deltaY = window->NS.fracScrollY + [event deltaY];
-
-    if ((int) deltaX || (int) deltaY)
-        _glfwInputScroll(window, (int) deltaX, (int) deltaY);
-
-    window->NS.fracScrollX = (int) (deltaX - floor(deltaX));
-    window->NS.fracScrollY = (int) (deltaY - floor(deltaY));
+    _glfwInputScroll(window, [event deltaX], [event deltaY]);
 }
 
 @end

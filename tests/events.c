@@ -283,9 +283,9 @@ static void cursor_enter_callback(GLFWwindow window, int entered)
            entered ? "entered" : "left");
 }
 
-static void scroll_callback(GLFWwindow window, int x, int y)
+static void scroll_callback(GLFWwindow window, double x, double y)
 {
-    printf("%08x at %0.3f: Scroll: %i %i\n", counter++, glfwGetTime(), x, y);
+    printf("%08x at %0.3f: Scroll: %0.3f %0.3f\n", counter++, glfwGetTime(), x, y);
 }
 
 static void key_callback(GLFWwindow window, int key, int action)

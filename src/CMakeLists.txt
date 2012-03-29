@@ -34,7 +34,6 @@ if (BUILD_SHARED_LIBS)
     if (_GLFW_WIN32_WGL)
         # The GLFW DLL needs a special compile-time macro and import library name
         set_target_properties(glfw PROPERTIES 
-                              COMPILE_DEFINITIONS "_GLFW_BUILD_DLL;_GLFW_NO_DLOAD_GDI32;_GLFW_NO_DLOAD_WINMM"
                               PREFIX ""
                               IMPORT_PREFIX ""
                               IMPORT_SUFFIX "dll.lib")

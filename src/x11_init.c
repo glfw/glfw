@@ -680,6 +680,9 @@ const char* _glfwPlatformGetVersionString(void)
 #else
         " no-joystick-support"
 #endif
+#if defined(_GLFW_BUILD_DLL)
+        " shared"
+#endif
         ;
 
     return version;

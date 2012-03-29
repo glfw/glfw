@@ -42,6 +42,14 @@
 // Define this to 1 if building GLFW for Cocoa/NSOpenGL
 #cmakedefine _GLFW_COCOA_NSGL
 
+// Define this to 1 if building as a shared library / dynamic library / DLL
+#cmakedefine _GLFW_BUILD_DLL       1
+
+// Define this to 1 to disable dynamic loading of gdi32
+#cmakedefine _GLFW_NO_DLOAD_GDI32  1
+// Define this to 1 to disable dynamic loading of winmm
+#cmakedefine _GLFW_NO_DLOAD_WINMM  1
+
 // Define this to 1 if XRandR is available
 #cmakedefine _GLFW_HAS_XRANDR      1
 // Define this to 1 if Xf86VidMode is available

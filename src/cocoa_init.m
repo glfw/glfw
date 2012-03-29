@@ -152,7 +152,11 @@ int _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = _GLFW_VERSION_FULL " Cocoa";
+    const char* version = _GLFW_VERSION_FULL
+#if defined(_GLFW_BUILD_DLL)
+        " dynamic"
+#endif
+        ;
 
     return version;
 }

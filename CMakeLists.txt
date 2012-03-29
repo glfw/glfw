@@ -23,6 +23,13 @@ if (CMAKE_COMPILER_IS_GNUCC)
 endif()
 
 #--------------------------------------------------------------------
+# Export shared library / dynamic library / DLL build option
+#--------------------------------------------------------------------
+if (BUILD_SHARED_LIBS)
+    set(_GLFW_BUILD_DLL 1)
+endif()
+
+#--------------------------------------------------------------------
 # Detect and select target platform
 #--------------------------------------------------------------------
 if (WIN32)
@@ -46,6 +53,9 @@ if (_GLFW_WIN32_WGL)
     # Set up library and include paths
     list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
     list(APPEND glfw_LIBRARIES ${OPENGL_gl_LIBRARY})
+
+    set(_GLFW_NO_DLOAD_GDI32 ${BUILD_SHARED_LIBS})
+    set(_GLFW_NO_DLOAD_WINMM ${BUILD_SHARED_LIBS})
 
     if (BUILD_SHARED_LIBS)
         list(APPEND glfw_LIBRARIES winmm)

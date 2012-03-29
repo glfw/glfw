@@ -57,7 +57,7 @@
 
 // GLFW requires Windows XP
 #ifndef WINVER
-#define WINVER 0x0501
+ #define WINVER 0x0501
 #endif
 
 #include <windows.h>

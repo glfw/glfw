@@ -60,12 +60,13 @@ static void key_callback(GLFWwindow window, int key, int action)
             {
                 char buffer[4096];
                 size_t size;
+
                 printf("Paste test.\n");
+
                 size = glfwGetClipboardData(buffer, sizeof(buffer), GLFW_CLIPBOARD_FORMAT_STRING);
                 if (size >= sizeof(buffer))
-                {
                     printf("Buffer wasn't big enough to hold clipboard data.\n");
-                }
+
                 printf("[%lu]: %s\n", (unsigned long) size, buffer);
             }
             break;

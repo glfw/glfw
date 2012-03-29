@@ -72,11 +72,10 @@ typedef struct _GLFWcontextNSGL
 //------------------------------------------------------------------------
 typedef struct _GLFWwindowNS
 {
-    id           window;
+    id           object;
     id	         delegate;
+    id           view;
     unsigned int modifierFlags;
-    double       fracScrollX;
-    double       fracScrollY;
 } _GLFWwindowNS;
 
 

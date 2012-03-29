@@ -336,7 +336,12 @@ void _glfwInitJoysticks(void)
     result = IOMasterPort(bootstrap_port, &masterPort);
     hidMatchDictionary = IOServiceMatching(kIOHIDDeviceKey);
     if (kIOReturnSuccess != result || !hidMatchDictionary)
+    {
+        if (hidMatchDictionary)
+            CFRelease(hidMatchDictionary);
+        
         return;
+    }
 
     result = IOServiceGetMatchingServices(masterPort,
                                           hidMatchDictionary,
@@ -370,19 +375,27 @@ void _glfwInitJoysticks(void)
         /* Check device type */
         refCF = CFDictionaryGetValue(hidProperties, CFSTR(kIOHIDPrimaryUsagePageKey));
         if (refCF)
+        {
             CFNumberGetValue(refCF, kCFNumberLongType, &usagePage);
+            if (usagePage != kHIDPage_GenericDesktop)
+            {
+                /* We are not interested in this device */
+                continue;
+            }
+        }
 
         refCF = CFDictionaryGetValue(hidProperties, CFSTR(kIOHIDPrimaryUsageKey));
         if (refCF)
-            CFNumberGetValue(refCF, kCFNumberLongType, &usage);
-
-        if ((usagePage != kHIDPage_GenericDesktop) ||
-            (usage != kHIDUsage_GD_Joystick &&
-             usage != kHIDUsage_GD_GamePad &&
-             usage != kHIDUsage_GD_MultiAxisController))
         {
-            /* We don't interested in this device */
-            continue;
+            CFNumberGetValue(refCF, kCFNumberLongType, &usage);
+            
+            if ((usage != kHIDUsage_GD_Joystick &&
+                 usage != kHIDUsage_GD_GamePad &&
+                 usage != kHIDUsage_GD_MultiAxisController))
+            {
+                /* We are not interested in this device */
+                continue;
+            }
         }
 
         _glfwJoystick* joystick = &_glfwJoysticks[deviceCounter];

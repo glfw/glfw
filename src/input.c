@@ -200,7 +200,7 @@ void _glfwInputChar(_GLFWwindow* window, int character)
 // Register scroll events
 //========================================================================
 
-void _glfwInputScroll(_GLFWwindow* window, int xoffset, int yoffset)
+void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset)
 {
     window->scrollX += xoffset;
     window->scrollY += yoffset;
@@ -476,7 +476,7 @@ GLFWAPI void glfwSetMousePos(GLFWwindow handle, int xpos, int ypos)
 // Returns the scroll offset for the specified window
 //========================================================================
 
-GLFWAPI void glfwGetScrollOffset(GLFWwindow handle, int* xoffset, int* yoffset)
+GLFWAPI void glfwGetScrollOffset(GLFWwindow handle, double* xoffset, double* yoffset)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 

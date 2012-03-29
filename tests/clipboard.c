@@ -55,6 +55,7 @@ static void key_callback(GLFWwindow window, int key, int action)
         case GLFW_KEY_ESCAPE:
             glfwCloseWindow(window);
             break;
+
         case GLFW_KEY_V:
             if (control_is_down(window))
             {
@@ -70,6 +71,7 @@ static void key_callback(GLFWwindow window, int key, int action)
                 printf("[%lu]: %s\n", (unsigned long) size, buffer);
             }
             break;
+
         case GLFW_KEY_C:
             if (control_is_down(window))
             {

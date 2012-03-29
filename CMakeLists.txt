@@ -54,6 +54,9 @@ if (_GLFW_WIN32_WGL)
     list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
     list(APPEND glfw_LIBRARIES ${OPENGL_gl_LIBRARY})
 
+    set(_GLFW_NO_DLOAD_GDI32 ${BUILD_SHARED_LIBS})
+    set(_GLFW_NO_DLOAD_WINMM ${BUILD_SHARED_LIBS})
+
     if (BUILD_SHARED_LIBS)
         list(APPEND glfw_LIBRARIES winmm)
     endif()

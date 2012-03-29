@@ -23,6 +23,13 @@ if (CMAKE_COMPILER_IS_GNUCC)
 endif()
 
 #--------------------------------------------------------------------
+# Export shared library / dynamic library / DLL build option
+#--------------------------------------------------------------------
+if (BUILD_SHARED_LIBS)
+    set(_GLFW_BUILD_DLL 1)
+endif()
+
+#--------------------------------------------------------------------
 # Detect and select target platform
 #--------------------------------------------------------------------
 if (WIN32)

@@ -44,40 +44,6 @@
 
 static GLboolean initLibraries(void)
 {
-#ifndef _GLFW_NO_DLOAD_GDI32
-    // gdi32.dll (OpenGL pixel format functions & SwapBuffers)
-
-    _glfwLibrary.Win32.gdi.instance = LoadLibrary(L"gdi32.dll");
-    if (!_glfwLibrary.Win32.gdi.instance)
-        return GL_FALSE;
-
-    _glfwLibrary.Win32.gdi.ChoosePixelFormat = (CHOOSEPIXELFORMAT_T)
-        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "ChoosePixelFormat");
-    _glfwLibrary.Win32.gdi.DescribePixelFormat = (DESCRIBEPIXELFORMAT_T)
-        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "DescribePixelFormat");
-    _glfwLibrary.Win32.gdi.GetPixelFormat = (GETPIXELFORMAT_T)
-        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "GetPixelFormat");
-    _glfwLibrary.Win32.gdi.SetPixelFormat = (SETPIXELFORMAT_T)
-        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "SetPixelFormat");
-    _glfwLibrary.Win32.gdi.SwapBuffers = (SWAPBUFFERS_T)
-        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "SwapBuffers");
-    _glfwLibrary.Win32.gdi.GetDeviceGammaRamp  = (GETDEVICEGAMMARAMP_T)
-        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "GetDeviceGammaRamp");
-    _glfwLibrary.Win32.gdi.SetDeviceGammaRamp  = (SETDEVICEGAMMARAMP_T)
-        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "SetDeviceGammaRamp");
-
-    if (!_glfwLibrary.Win32.gdi.ChoosePixelFormat ||
-        !_glfwLibrary.Win32.gdi.DescribePixelFormat ||
-        !_glfwLibrary.Win32.gdi.GetPixelFormat ||
-        !_glfwLibrary.Win32.gdi.SetPixelFormat ||
-        !_glfwLibrary.Win32.gdi.SwapBuffers ||
-        !_glfwLibrary.Win32.gdi.GetDeviceGammaRamp ||
-        !_glfwLibrary.Win32.gdi.SetDeviceGammaRamp)
-    {
-        return GL_FALSE;
-    }
-#endif // _GLFW_NO_DLOAD_GDI32
-
 #ifndef _GLFW_NO_DLOAD_WINMM
     // winmm.dll (for joystick and timer support)
 
@@ -113,14 +79,6 @@ static GLboolean initLibraries(void)
 
 static void freeLibraries(void)
 {
-#ifndef _GLFW_NO_DLOAD_GDI32
-    if (_glfwLibrary.Win32.gdi.instance != NULL)
-    {
-        FreeLibrary(_glfwLibrary.Win32.gdi.instance);
-        _glfwLibrary.Win32.gdi.instance = NULL;
-    }
-#endif // _GLFW_NO_DLOAD_GDI32
-
 #ifndef _GLFW_NO_DLOAD_WINMM
     if (_glfwLibrary.Win32.winmm.instance != NULL)
     {
@@ -273,9 +231,6 @@ const char* _glfwPlatformGetVersionString(void)
 #endif
 #if defined(_GLFW_BUILD_DLL)
         " DLL"
-#endif
-#if !defined(_GLFW_NO_DLOAD_GDI32)
-        " load(gdi32)"
 #endif
 #if !defined(_GLFW_NO_DLOAD_WINMM)
         " load(winmm)"

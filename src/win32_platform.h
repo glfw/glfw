@@ -82,17 +82,6 @@
 // DLLs that are loaded at glfwInit()
 //========================================================================
 
-// gdi32.dll function pointer typedefs
-#ifndef _GLFW_NO_DLOAD_GDI32
-typedef int  (WINAPI * CHOOSEPIXELFORMAT_T) (HDC,CONST PIXELFORMATDESCRIPTOR*);
-typedef int  (WINAPI * DESCRIBEPIXELFORMAT_T) (HDC,int,UINT,LPPIXELFORMATDESCRIPTOR);
-typedef int  (WINAPI * GETPIXELFORMAT_T) (HDC);
-typedef BOOL (WINAPI * SETPIXELFORMAT_T) (HDC,int,const PIXELFORMATDESCRIPTOR*);
-typedef BOOL (WINAPI * SWAPBUFFERS_T) (HDC);
-typedef BOOL (WINAPI * GETDEVICEGAMMARAMP_T) (HDC,PVOID);
-typedef BOOL (WINAPI * SETDEVICEGAMMARAMP_T) (HDC,PVOID);
-#endif // _GLFW_NO_DLOAD_GDI32
-
 // winmm.dll function pointer typedefs
 #ifndef _GLFW_NO_DLOAD_WINMM
 typedef MMRESULT (WINAPI * JOYGETDEVCAPS_T) (UINT,LPJOYCAPS,UINT);
@@ -101,25 +90,6 @@ typedef MMRESULT (WINAPI * JOYGETPOSEX_T) (UINT,LPJOYINFOEX);
 typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 #endif // _GLFW_NO_DLOAD_WINMM
 
-
-// gdi32.dll shortcuts
-#ifndef _GLFW_NO_DLOAD_GDI32
- #define _glfw_ChoosePixelFormat   _glfwLibrary.Win32.gdi.ChoosePixelFormat
- #define _glfw_DescribePixelFormat _glfwLibrary.Win32.gdi.DescribePixelFormat
- #define _glfw_GetPixelFormat      _glfwLibrary.Win32.gdi.GetPixelFormat
- #define _glfw_SetPixelFormat      _glfwLibrary.Win32.gdi.SetPixelFormat
- #define _glfw_SwapBuffers         _glfwLibrary.Win32.gdi.SwapBuffers
- #define _glfw_GetDeviceGammaRamp  _glfwLibrary.Win32.gdi.GetDeviceGammaRamp
- #define _glfw_SetDeviceGammaRamp  _glfwLibrary.Win32.gdi.SetDeviceGammaRamp
-#else
- #define _glfw_ChoosePixelFormat   ChoosePixelFormat
- #define _glfw_DescribePixelFormat DescribePixelFormat
- #define _glfw_GetPixelFormat      GetPixelFormat
- #define _glfw_SetPixelFormat      SetPixelFormat
- #define _glfw_SwapBuffers         SwapBuffers
- #define _glfw_GetDeviceGammaRamp  GetDeviceGammaRamp
- #define _glfw_SetDeviceGammaRamp  SetDeviceGammaRamp
-#endif // _GLFW_NO_DLOAD_GDI32
 
 // winmm.dll shortcuts
 #ifndef _GLFW_NO_DLOAD_WINMM
@@ -224,20 +194,6 @@ typedef struct _GLFWlibraryWin32
         unsigned int          t0_32;
         __int64               t0_64;
     } timer;
-
-#ifndef _GLFW_NO_DLOAD_GDI32
-    // gdi32.dll
-    struct {
-        HINSTANCE             instance;
-        CHOOSEPIXELFORMAT_T   ChoosePixelFormat;
-        DESCRIBEPIXELFORMAT_T DescribePixelFormat;
-        GETPIXELFORMAT_T      GetPixelFormat;
-        SETPIXELFORMAT_T      SetPixelFormat;
-        SWAPBUFFERS_T         SwapBuffers;
-        GETDEVICEGAMMARAMP_T  GetDeviceGammaRamp;
-        SETDEVICEGAMMARAMP_T  SetDeviceGammaRamp;
-    } gdi;
-#endif // _GLFW_NO_DLOAD_GDI32
 
 #ifndef _GLFW_NO_DLOAD_WINMM
     // winmm.dll

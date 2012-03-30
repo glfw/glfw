@@ -56,7 +56,7 @@ void _glfwPlatformSwapBuffers(void)
 {
     _GLFWwindow* window = _glfwLibrary.currentWindow;
 
-    _glfw_SwapBuffers(window->WGL.DC);
+    SwapBuffers(window->WGL.DC);
 }
 
 

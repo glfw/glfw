@@ -159,10 +159,10 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         count = getPixelFormatAttrib(window, 1, WGL_NUMBER_PIXEL_FORMATS_ARB);
     else
     {
-        count = _glfw_DescribePixelFormat(window->WGL.DC,
-                                          1,
-                                          sizeof(PIXELFORMATDESCRIPTOR),
-                                          NULL);
+        count = DescribePixelFormat(window->WGL.DC,
+                                    1,
+                                    sizeof(PIXELFORMATDESCRIPTOR),
+                                    NULL);
     }
 
     if (!count)
@@ -243,10 +243,10 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         {
             // Get pixel format attributes through old-fashioned PFDs
 
-            if (!_glfw_DescribePixelFormat(window->WGL.DC,
-                                           i,
-                                           sizeof(PIXELFORMATDESCRIPTOR),
-                                           &pfd))
+            if (!DescribePixelFormat(window->WGL.DC,
+                                     i,
+                                     sizeof(PIXELFORMATDESCRIPTOR),
+                                     &pfd))
             {
                 continue;
             }
@@ -311,14 +311,14 @@ static GLboolean createContext(_GLFWwindow* window,
     if (wndconfig->share)
         share = wndconfig->share->WGL.context;
 
-    if (!_glfw_DescribePixelFormat(window->WGL.DC, pixelFormat, sizeof(pfd), &pfd))
+    if (!DescribePixelFormat(window->WGL.DC, pixelFormat, sizeof(pfd), &pfd))
     {
         _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
                       "Win32/WGL: Failed to retrieve PFD for selected pixel format");
         return GL_FALSE;
     }
 
-    if (!_glfw_SetPixelFormat(window->WGL.DC, pixelFormat, &pfd))
+    if (!SetPixelFormat(window->WGL.DC, pixelFormat, &pfd))
     {
         _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
                       "Win32/WGL: Failed to set selected pixel format");
@@ -1673,7 +1673,7 @@ void _glfwPlatformRefreshWindowParams(void)
     _GLFWwindow* window = _glfwLibrary.currentWindow;
 
     // Obtain a detailed description of current pixel format
-    pixelFormat = _glfw_GetPixelFormat(window->WGL.DC);
+    pixelFormat = GetPixelFormat(window->WGL.DC);
 
     if (window->WGL.ARB_pixel_format)
     {
@@ -1727,8 +1727,8 @@ void _glfwPlatformRefreshWindowParams(void)
     }
     else
     {
-        _glfw_DescribePixelFormat(window->WGL.DC, pixelFormat,
-                                  sizeof(PIXELFORMATDESCRIPTOR), &pfd);
+        DescribePixelFormat(window->WGL.DC, pixelFormat,
+                            sizeof(PIXELFORMATDESCRIPTOR), &pfd);
 
         // Is current OpenGL context accelerated?
         window->accelerated = (pfd.dwFlags & PFD_GENERIC_ACCELERATED) ||

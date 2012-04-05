@@ -261,10 +261,8 @@ static void updateKeyCodeLUT(void)
     int keyCode;
 
     // Clear the LUT
-    for (keyCode = 0; keyCode < 256; ++keyCode)
-    {
+    for (keyCode = 0;  keyCode < 256;  keyCode++)
         _glfwLibrary.X11.keyCodeLUT[keyCode] = -1;
-    }
 
 #if defined(_GLFW_HAS_XKB)
     // If the Xkb extension is available, use it to determine physical key
@@ -272,7 +270,7 @@ static void updateKeyCodeLUT(void)
     if (_glfwLibrary.X11.Xkb.available)
     {
         int i, keyCodeGLFW;
-        char name[XkbKeyNameLength+1];
+        char name[XkbKeyNameLength + 1];
         XkbDescPtr descr;
 
         // Get keyboard description
@@ -284,10 +282,9 @@ static void updateKeyCodeLUT(void)
         for (keyCode = descr->min_key_code; keyCode <= descr->max_key_code; ++keyCode)
         {
             // Get the key name
-            for (i = 0; i < XkbKeyNameLength; ++i)
-            {
+            for (i = 0;  i < XkbKeyNameLength;  i++)
                 name[i] = descr->names->keys[keyCode].name[i];
-            }
+
             name[XkbKeyNameLength] = 0;
 
             // Map the key name to a GLFW key code. Note: We only map printable
@@ -346,9 +343,7 @@ static void updateKeyCodeLUT(void)
 
             // Update the key code LUT
             if ((keyCode >= 0) && (keyCode < 256))
-            {
                 _glfwLibrary.X11.keyCodeLUT[keyCode] = keyCodeGLFW;
-            }
         }
 
         // Free the keyboard description
@@ -358,7 +353,7 @@ static void updateKeyCodeLUT(void)
 
     // Translate the un-translated key codes using traditional X11 KeySym
     // lookups
-    for (keyCode = 0; keyCode < 256; ++keyCode)
+    for (keyCode = 0;  keyCode < 256;  keyCode++)
     {
         if (_glfwLibrary.X11.keyCodeLUT[keyCode] < 0)
         {

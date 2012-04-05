@@ -908,8 +908,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
         _glfwLibrary.X11.saver.changed = GL_TRUE;
     }
 
-    _glfwSetVideoMode(_glfwLibrary.X11.screen,
-                      &window->width, &window->height,
+    _glfwSetVideoMode(&window->width, &window->height,
                       &window->refreshRate);
 
     if (window->X11.hasEWMH &&
@@ -989,7 +988,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
 
 static void leaveFullscreenMode(_GLFWwindow* window)
 {
-    _glfwRestoreVideoMode(_glfwLibrary.X11.screen);
+    _glfwRestoreVideoMode();
 
     // Did we change the screen saver setting?
     if (_glfwLibrary.X11.saver.changed)
@@ -1600,8 +1599,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     if (window->mode == GLFW_FULLSCREEN)
     {
         // Get the closest matching video mode for the specified window size
-        mode = _glfwGetClosestVideoMode(_glfwLibrary.X11.screen,
-                                        &width, &height, &rate);
+        mode = _glfwGetClosestVideoMode(&width, &height, &rate);
     }
 
     if (!window->resizable)
@@ -1628,7 +1626,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     if (window->mode == GLFW_FULLSCREEN)
     {
         // Change video mode, keeping current refresh rate
-        _glfwSetVideoModeMODE(_glfwLibrary.X11.screen, mode, window->refreshRate);
+        _glfwSetVideoModeMODE(mode, window->refreshRate);
     }
 
     // Set window size (if not already changed)

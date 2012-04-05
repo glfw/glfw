@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 
 //========================================================================
@@ -370,6 +371,152 @@ static void updateKeyCodeLUT(void)
 
 
 //========================================================================
+// Retrieve a single window property of the specified type
+// Inspired by fghGetWindowProperty from freeglut
+//========================================================================
+
+static unsigned long getWindowProperty(Window window,
+                                       Atom property,
+                                       Atom type,
+                                       unsigned char** value)
+{
+    Atom actualType;
+    int actualFormat;
+    unsigned long itemCount, bytesAfter;
+
+    XGetWindowProperty(_glfwLibrary.X11.display,
+                       window,
+                       property,
+                       0,
+                       LONG_MAX,
+                       False,
+                       type,
+                       &actualType,
+                       &actualFormat,
+                       &itemCount,
+                       &bytesAfter,
+                       value);
+
+    if (actualType != type)
+        return 0;
+
+    return itemCount;
+}
+
+
+//========================================================================
+// Check whether the specified atom is supported
+//========================================================================
+
+static Atom getSupportedAtom(Atom* supportedAtoms,
+                             unsigned long atomCount,
+                             const char* atomName)
+{
+    Atom atom = XInternAtom(_glfwLibrary.X11.display, atomName, True);
+    if (atom != None)
+    {
+        unsigned long i;
+
+        for (i = 0;  i < atomCount;  i++)
+        {
+            if (supportedAtoms[i] == atom)
+                return atom;
+        }
+    }
+
+    return None;
+}
+
+
+//========================================================================
+// Check whether the running window manager is EWMH-compliant
+//========================================================================
+
+static void initEWMH(void)
+{
+    Window* windowFromRoot = NULL;
+    Window* windowFromChild = NULL;
+
+    // First we need a couple of atoms, which should already be there
+    Atom supportingWmCheck =
+        XInternAtom(_glfwLibrary.X11.display, "_NET_SUPPORTING_WM_CHECK", True);
+    Atom wmSupported =
+        XInternAtom(_glfwLibrary.X11.display, "_NET_SUPPORTED", True);
+    if (supportingWmCheck == None || wmSupported == None)
+        return;
+
+    // Then we look for the _NET_SUPPORTING_WM_CHECK property of the root window
+    if (getWindowProperty(_glfwLibrary.X11.root,
+                          supportingWmCheck,
+                          XA_WINDOW,
+                          (unsigned char**) &windowFromRoot) != 1)
+    {
+        XFree(windowFromRoot);
+        return;
+    }
+
+    // It should be the ID of a child window (of the root)
+    // Then we look for the same property on the child window
+    if (getWindowProperty(*windowFromRoot,
+                          supportingWmCheck,
+                          XA_WINDOW,
+                          (unsigned char**) &windowFromChild) != 1)
+    {
+        XFree(windowFromRoot);
+        XFree(windowFromChild);
+        return;
+    }
+
+    // It should be the ID of that same child window
+    if (*windowFromRoot != *windowFromChild)
+    {
+        XFree(windowFromRoot);
+        XFree(windowFromChild);
+        return;
+    }
+
+    XFree(windowFromRoot);
+    XFree(windowFromChild);
+
+    // We are now fairly sure that an EWMH-compliant window manager is running
+
+    Atom* supportedAtoms;
+    unsigned long atomCount;
+
+    // Now we need to check the _NET_SUPPORTED property of the root window
+    // It should be a list of supported WM protocol and state atoms
+    atomCount = getWindowProperty(_glfwLibrary.X11.root,
+                                  wmSupported,
+                                  XA_ATOM,
+                                  (unsigned char**) &supportedAtoms);
+
+    // See which of the atoms we support that are supported by the WM
+
+    _glfwLibrary.X11.wmState =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE");
+
+    _glfwLibrary.X11.wmStateFullscreen =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_FULLSCREEN");
+
+    _glfwLibrary.X11.wmName =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_NAME");
+
+    _glfwLibrary.X11.wmIconName =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_ICON_NAME");
+
+    _glfwLibrary.X11.wmPing =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_PING");
+
+    _glfwLibrary.X11.wmActiveWindow =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_ACTIVE_WINDOW");
+
+    XFree(supportedAtoms);
+
+    _glfwLibrary.X11.hasEWMH = GL_TRUE;
+}
+
+
+//========================================================================
 // Initialize X11 display and look for supported X11 extensions
 //========================================================================
 
@@ -579,6 +726,8 @@ int _glfwPlatformInit(void)
         return GL_FALSE;
 
     initGammaRamp();
+
+    initEWMH();
 
     _glfwLibrary.X11.cursor = createNULLCursor();
 

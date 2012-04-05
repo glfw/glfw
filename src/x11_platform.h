@@ -133,16 +133,8 @@ typedef struct _GLFWwindowX11
     // Platform specific window resources
     Colormap      colormap;          // Window colormap
     Window        handle;            // Window handle
-    Atom          wmDeleteWindow;    // WM_DELETE_WINDOW atom
-    Atom          wmName;            // _NET_WM_NAME atom
-    Atom          wmIconName;        // _NET_WM_ICON_NAME atom
-    Atom          wmPing;            // _NET_WM_PING atom
-    Atom          wmState;           // _NET_WM_STATE atom
-    Atom          wmStateFullscreen; // _NET_WM_STATE_FULLSCREEN atom
-    Atom          wmActiveWindow;    // _NET_ACTIVE_WINDOW atom
 
     // Various platform specific internal variables
-    GLboolean     hasEWMH;          // True if window manager supports EWMH
     GLboolean     overrideRedirect; // True if window is OverrideRedirect
     GLboolean     keyboardGrabbed;  // True if keyboard is currently grabbed
     GLboolean     cursorGrabbed;    // True if cursor is currently grabbed
@@ -162,6 +154,17 @@ typedef struct _GLFWlibraryX11
     int             screen;
     Window          root;
     Cursor          cursor;   // Invisible cursor for hidden cursor
+
+    Atom            wmDeleteWindow;    // WM_DELETE_WINDOW atom
+    Atom            wmName;            // _NET_WM_NAME atom
+    Atom            wmIconName;        // _NET_WM_ICON_NAME atom
+    Atom            wmPing;            // _NET_WM_PING atom
+    Atom            wmState;           // _NET_WM_STATE atom
+    Atom            wmStateFullscreen; // _NET_WM_STATE_FULLSCREEN atom
+    Atom            wmActiveWindow;    // _NET_ACTIVE_WINDOW atom
+
+    // True if window manager supports EWMH
+    GLboolean       hasEWMH;
 
     // Server-side GLX version
     int             glxMajor, glxMinor;

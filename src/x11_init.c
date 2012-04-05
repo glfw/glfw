@@ -53,7 +53,6 @@ static void initLibraries(void)
         NULL
     };
 
-    _glfwLibrary.X11.libGL = NULL;
     for (i = 0;  libGL_names[i] != NULL;  i++)
     {
         _glfwLibrary.X11.libGL = dlopen(libGL_names[i], RTLD_LAZY | RTLD_GLOBAL);

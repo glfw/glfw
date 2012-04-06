@@ -1292,11 +1292,18 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 
         fbconfigs = getFBConfigs(window, &fbcount);
         if (!fbconfigs)
+        {
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "X11/GLX: No usable GLXFBConfigs found");
             return GL_FALSE;
+        }
 
         result = _glfwChooseFBConfig(fbconfig, fbconfigs, fbcount);
         if (!result)
         {
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "X11/GLX: No GLXFBConfig matched the criteria");
+
             free(fbconfigs);
             return GL_FALSE;
         }

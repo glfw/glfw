@@ -277,6 +277,8 @@ const char* _glfwPlatformGetVersionString(void);
 // Input
 void _glfwPlatformEnableSystemKeys(_GLFWwindow* window);
 void _glfwPlatformDisableSystemKeys(_GLFWwindow* window);
+void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y);
+void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
 
 // Fullscreen
 int  _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount);
@@ -303,8 +305,6 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height);
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y);
 void _glfwPlatformIconifyWindow(_GLFWwindow* window);
 void _glfwPlatformRestoreWindow(_GLFWwindow* window);
-void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y);
-void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
 
 // Event management
 void _glfwPlatformPollEvents(void);

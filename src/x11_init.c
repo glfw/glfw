@@ -632,8 +632,8 @@ int _glfwPlatformTerminate(void)
 #endif
 
     // Free clipboard memory
-    if (_glfwLibrary.X11.selection.clipboard.string)
-        free(_glfwLibrary.X11.selection.clipboard.string);
+    if (_glfwLibrary.X11.selection.string)
+        free(_glfwLibrary.X11.selection.string);
 
     return GL_TRUE;
 }

@@ -232,10 +232,8 @@ typedef struct _GLFWlibraryX11
     struct {
         Atom atom;
         Atom formats[_GLFW_CLIPBOARD_FORMAT_COUNT];
-        struct {
-            size_t stringlen;
-            char *string;
-        } clipboard;
+        size_t stringLength;
+        char* string;
         Atom request;
         int converted;
     } selection;

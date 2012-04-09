@@ -48,7 +48,7 @@
 Atom _glfwSelectionRequest(XSelectionRequestEvent* request)
 {
     Atom* formats = _glfwLibrary.X11.selection.formats;
-    char* target = _glfwLibrary.X11.selection.clipboard.string;
+    char* target = _glfwLibrary.X11.selection.string;
 
     if (request->target == XA_STRING)
     {
@@ -73,7 +73,7 @@ Atom _glfwSelectionRequest(XSelectionRequestEvent* request)
                         8,
                         PropModeReplace,
                         (unsigned char*) target,
-                        _glfwLibrary.X11.selection.clipboard.stringlen);
+                        _glfwLibrary.X11.selection.stringLength);
     }
     else
     {
@@ -106,14 +106,14 @@ void _glfwPlatformSetClipboardData(void* data, size_t size, int format)
             memcpy(cb, data, size);
 
             // Set the string length
-            _glfwLibrary.X11.selection.clipboard.stringlen = size;
+            _glfwLibrary.X11.selection.stringLength = size;
 
             // Check if existing clipboard memory needs to be freed
-            if (_glfwLibrary.X11.selection.clipboard.string)
-                free(_glfwLibrary.X11.selection.clipboard.string);
+            if (_glfwLibrary.X11.selection.string)
+                free(_glfwLibrary.X11.selection.string);
 
             // Now set the clipboard (awaiting the event SelectionRequest)
-            _glfwLibrary.X11.selection.clipboard.string = cb;
+            _glfwLibrary.X11.selection.string = cb;
             break;
         }
 

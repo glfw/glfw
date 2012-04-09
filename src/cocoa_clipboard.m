@@ -45,6 +45,7 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
 }
 
+
 //========================================================================
 // Return the current clipboard contents
 //========================================================================

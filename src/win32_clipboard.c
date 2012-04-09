@@ -41,7 +41,7 @@
 // Set the clipboard contents
 //========================================================================
 
-void _glfwPlatformSetClipboardData(void *data, size_t size, int format)
+void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
 }
 
@@ -49,7 +49,7 @@ void _glfwPlatformSetClipboardData(void *data, size_t size, int format)
 // Return the current clipboard contents
 //========================================================================
 
-size_t _glfwPlatformGetClipboardData(void *data, size_t size, int format)
+size_t _glfwPlatformGetClipboardString(_GLFWwindow* window, char* string, size_t size)
 {
 	return 0;
 }

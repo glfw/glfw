@@ -47,31 +47,33 @@
 
 Atom _glfwSelectionRequest(XSelectionRequestEvent* request)
 {
-    Atom* atoms = _glfwLibrary.X11.selection.atoms.string;
+    Atom* formats = _glfwLibrary.X11.selection.atoms.string;
+    char* target = _glfwLibrary.X11.selection.clipboard.string;
+
     if (request->target == XA_STRING)
     {
         // TODO: ISO Latin-1 specific characters don't get converted
         // (yet). For cleanliness, would we need something like iconv?
         XChangeProperty(_glfwLibrary.X11.display,
-            request->requestor,
-            request->target,
-            request->target,
-            8,
-            PropModeReplace,
-            (unsigned char*) _glfwLibrary.X11.selection.clipboard.string,
-            8);
+                        request->requestor,
+                        request->target,
+                        request->target,
+                        8,
+                        PropModeReplace,
+                        (unsigned char*) target,
+                        8);
     }
-    else if (request->target == atoms[_GLFW_STRING_ATOM_COMPOUND] ||
-             request->target == atoms[_GLFW_STRING_ATOM_UTF8])
+    else if (request->target == formats[_GLFW_STRING_ATOM_COMPOUND] ||
+             request->target == formats[_GLFW_STRING_ATOM_UTF8])
     {
         XChangeProperty(_glfwLibrary.X11.display,
-            request->requestor,
-            request->target,
-            request->target,
-            8,
-            PropModeReplace,
-            (unsigned char*) _glfwLibrary.X11.selection.clipboard.string,
-            _glfwLibrary.X11.selection.clipboard.stringlen);
+                        request->requestor,
+                        request->target,
+                        request->target,
+                        8,
+                        PropModeReplace,
+                        (unsigned char*) target,
+                        _glfwLibrary.X11.selection.clipboard.stringlen);
     }
     else
     {
@@ -91,14 +93,14 @@ Atom _glfwSelectionRequest(XSelectionRequestEvent* request)
 // Set the clipboard contents
 //========================================================================
 
-void _glfwPlatformSetClipboardData(void *data, size_t size, int format)
+void _glfwPlatformSetClipboardData(void* data, size_t size, int format)
 {
     switch (format)
     {
         case GLFW_CLIPBOARD_FORMAT_STRING:
         {
             // Allocate memory to keep track of the clipboard
-            char *cb = malloc(size+1);
+            char* cb = malloc(size + 1);
 
             // Copy the clipboard data
             memcpy(cb, data, size);
@@ -135,10 +137,10 @@ void _glfwPlatformSetClipboardData(void *data, size_t size, int format)
 // Return the current clipboard contents
 //========================================================================
 
-size_t _glfwPlatformGetClipboardData(void *data, size_t size, int format)
+size_t _glfwPlatformGetClipboardData(void* data, size_t size, int format)
 {
     size_t len, rembytes, dummy;
-    unsigned char *d;
+    unsigned char* d;
     int fmt;
     Atom type;
 
@@ -158,7 +160,7 @@ size_t _glfwPlatformGetClipboardData(void *data, size_t size, int format)
         // Convert the selection into a format we would like.
         XConvertSelection(_glfwLibrary.X11.display,
                           _glfwLibrary.X11.selection.atom,
-            *xfmt, None, window, CurrentTime);
+                          *xfmt, None, window, CurrentTime);
         XFlush(_glfwLibrary.X11.display);
 
         // Process pending events until we get a SelectionNotify.
@@ -200,20 +202,31 @@ size_t _glfwPlatformGetClipboardData(void *data, size_t size, int format)
     // The number of bytes remaining (which is all of them)
     if (rembytes > 0)
     {
-        int result = XGetWindowProperty(_glfwLibrary.X11.display, window,
-                                        *xfmt, 0, rembytes, 0,
-                                        AnyPropertyType, &type, &fmt,
-                                        &len, &dummy, &d);
+        int result = XGetWindowProperty(_glfwLibrary.X11.display,
+                                        window,
+                                        *xfmt,
+                                        0, rembytes,
+                                        0,
+                                        AnyPropertyType,
+                                        &type,
+                                        &fmt,
+                                        &len, &dummy,
+                                        &d);
         if (result == Success)
         {
-            size_t s = size - 1 > rembytes ? rembytes : size - 1;
+            size_t s;
+
+            if (rembytes < size - 1)
+                s = rembytes;
+            else
+                s = size - 1;
 
             // Copy the data out.
             memcpy(data, d, s);
 
             // Null-terminate strings.
             if (format == GLFW_CLIPBOARD_FORMAT_STRING)
-                ((char *)data)[s] = '\0';
+                ((char*) data)[s] = '\0';
 
             // Free the data allocated using X11.
             XFree(d);

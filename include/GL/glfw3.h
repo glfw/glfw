@@ -461,14 +461,10 @@ extern "C" {
 #define GLFW_VERSION_UNAVAILABLE  0x00070007
 #define GLFW_PLATFORM_ERROR       0x00070008
 #define GLFW_WINDOW_NOT_ACTIVE    0x00070009
-#define GLFW_CLIPBOARD_FORMAT_UNAVAILABLE 0x00070010
+#define GLFW_FORMAT_UNAVAILABLE   0x0007000A
 
 /* Gamma ramps */
 #define GLFW_GAMMA_RAMP_SIZE      256
-
-/* Clipboard formats */
-#define GLFW_CLIPBOARD_FORMAT_NONE   0
-#define GLFW_CLIPBOARD_FORMAT_STRING 1
 
 /*************************************************************************
  * Typedefs
@@ -580,8 +576,8 @@ GLFWAPI int glfwGetJoystickPos(int joy, float* pos, int numaxes);
 GLFWAPI int glfwGetJoystickButtons(int joy, unsigned char* buttons, int numbuttons);
 
 /* Clipboard */
-GLFWAPI void glfwSetClipboardData(void* data, size_t size, int format);
-GLFWAPI size_t glfwGetClipboardData(void* data, size_t size, int format);
+GLFWAPI void glfwSetClipboardString(const char* data);
+GLFWAPI size_t glfwGetClipboardString(char* data, size_t size);
 
 /* Time */
 GLFWAPI double glfwGetTime(void);

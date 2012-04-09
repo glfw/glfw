@@ -93,35 +93,25 @@ Atom _glfwSelectionRequest(XSelectionRequestEvent* request)
 // Set the clipboard contents
 //========================================================================
 
-void _glfwPlatformSetClipboardData(void* data, size_t size, int format)
+void _glfwPlatformSetClipboardString(const char* string)
 {
-    switch (format)
-    {
-        case GLFW_CLIPBOARD_FORMAT_STRING:
-        {
-            // Allocate memory to keep track of the clipboard
-            char* cb = malloc(size + 1);
+    size_t size = strlen(string) + 1;
 
-            // Copy the clipboard data
-            memcpy(cb, data, size);
+    // Allocate memory to keep track of the clipboard
+    char* cb = malloc(size);
 
-            // Set the string length
-            _glfwLibrary.X11.selection.stringLength = size;
+    // Copy the clipboard data
+    memcpy(cb, string, size);
 
-            // Check if existing clipboard memory needs to be freed
-            if (_glfwLibrary.X11.selection.string)
-                free(_glfwLibrary.X11.selection.string);
+    // Set the string length
+    _glfwLibrary.X11.selection.stringLength = size;
 
-            // Now set the clipboard (awaiting the event SelectionRequest)
-            _glfwLibrary.X11.selection.string = cb;
-            break;
-        }
+    // Check if existing clipboard memory needs to be freed
+    if (_glfwLibrary.X11.selection.string)
+        free(_glfwLibrary.X11.selection.string);
 
-        default:
-            _glfwSetError(GLFW_CLIPBOARD_FORMAT_UNAVAILABLE,
-                          "X11/GLX: Unavailable clipboard format");
-            return;
-    }
+    // Now set the clipboard (awaiting the event SelectionRequest)
+    _glfwLibrary.X11.selection.string = cb;
 
     // Set the selection owner to our active window
     XSetSelectionOwner(_glfwLibrary.X11.display, XA_PRIMARY,
@@ -137,7 +127,7 @@ void _glfwPlatformSetClipboardData(void* data, size_t size, int format)
 // Return the current clipboard contents
 //========================================================================
 
-size_t _glfwPlatformGetClipboardData(void* data, size_t size, int format)
+size_t _glfwPlatformGetClipboardString(char* data, size_t size)
 {
     size_t len, rembytes, dummy;
     unsigned char* d;
@@ -176,8 +166,8 @@ size_t _glfwPlatformGetClipboardData(void* data, size_t size, int format)
     // Unsuccessful conversion, bail with no clipboard data
     if (_glfwLibrary.X11.selection.converted)
     {
-        _glfwSetError(GLFW_CLIPBOARD_FORMAT_UNAVAILABLE,
-                      "X11/GLX: Unavailable clipboard format");
+        _glfwSetError(GLFW_FORMAT_UNAVAILABLE,
+                      "X11/GLX: Failed to convert selection to string");
         return 0;
     }
 
@@ -222,8 +212,7 @@ size_t _glfwPlatformGetClipboardData(void* data, size_t size, int format)
             memcpy(data, d, s);
 
             // Null-terminate strings.
-            if (format == GLFW_CLIPBOARD_FORMAT_STRING)
-                ((char*) data)[s] = '\0';
+            ((char*) data)[s] = '\0';
 
             // Free the data allocated using X11.
             XFree(d);

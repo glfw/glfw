@@ -41,7 +41,7 @@
 // Set the clipboard contents
 //========================================================================
 
-GLFWAPI void glfwSetClipboardData(void* data, size_t size, int format)
+GLFWAPI void glfwSetClipboardString(const char* string)
 {
     if (!_glfwInitialized)
     {
@@ -49,10 +49,7 @@ GLFWAPI void glfwSetClipboardData(void* data, size_t size, int format)
         return;
     }
 
-    if (format == GLFW_CLIPBOARD_FORMAT_NONE)
-        return;
-
-    _glfwPlatformSetClipboardData(data, size, format);
+    _glfwPlatformSetClipboardString(string);
 }
 
 
@@ -60,7 +57,7 @@ GLFWAPI void glfwSetClipboardData(void* data, size_t size, int format)
 // Return the current clipboard contents
 //========================================================================
 
-GLFWAPI size_t glfwGetClipboardData(void* data, size_t size, int format)
+GLFWAPI size_t glfwGetClipboardString(char* string, size_t size)
 {
     if (!_glfwInitialized)
     {
@@ -68,12 +65,9 @@ GLFWAPI size_t glfwGetClipboardData(void* data, size_t size, int format)
         return 0;
     }
 
-    if (format == GLFW_CLIPBOARD_FORMAT_NONE)
+    if (!string || !size)
         return 0;
 
-    if (!data || !size)
-        return 0;
-
-    return _glfwPlatformGetClipboardData(data, size, format);
+    return _glfwPlatformGetClipboardString(string, size);
 }
 

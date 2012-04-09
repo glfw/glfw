@@ -289,8 +289,8 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp);
 void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp);
 
 // Clipboard
-void _glfwPlatformSetClipboardData(void *data, size_t size, int format);
-size_t _glfwPlatformGetClipboardData(void *data, size_t size, int format);
+void _glfwPlatformSetClipboardString(const char* string);
+size_t _glfwPlatformGetClipboardString(char *data, size_t size);
 
 // Joystick
 int _glfwPlatformGetJoystickParam(int joy, int param);

@@ -31,6 +31,7 @@
 
 #include <limits.h>
 #include <string.h>
+#include <stdlib.h>
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -43,6 +44,49 @@
 
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
+    WCHAR* wideString;
+    HANDLE stringHandle;
+    size_t wideSize;
+
+    wideString = _glfwCreateWideStringFromUTF8(string);
+    if (!wideString)
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                        "Win32/WGL: Failed to convert clipboard string to "
+                        "wide string");
+        return;
+    }
+
+    wideSize = (wcslen(wideString) + 1) * sizeof(WCHAR);
+
+    stringHandle = GlobalAlloc(GMEM_MOVEABLE, wideSize);
+    if (!stringHandle)
+    {
+        free(wideString);
+
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "Win32/WGL: Failed to allocate global handle for clipboard");
+        return;
+    }
+
+    memcpy(GlobalLock(stringHandle), wideString, wideSize);
+    GlobalUnlock(stringHandle);
+
+    if (!OpenClipboard(window->Win32.handle))
+    {
+        GlobalFree(stringHandle);
+        free(wideString);
+
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "Win32/WGL: Failed to open clipboard");
+        return;
+    }
+
+    EmptyClipboard();
+    SetClipboardData(CF_UNICODETEXT, stringHandle);
+    CloseClipboard();
+
+    free(wideString);
 }
 
 //========================================================================
@@ -51,6 +95,54 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 
 size_t _glfwPlatformGetClipboardString(_GLFWwindow* window, char* string, size_t size)
 {
-	return 0;
+    HANDLE stringHandle;
+    char* utf8String;
+    size_t utf8Size;
+
+    if (!IsClipboardFormatAvailable(CF_UNICODETEXT))
+    {
+        _glfwSetError(GLFW_FORMAT_UNAVAILABLE, NULL);
+        return 0;
+    }
+
+    if (!OpenClipboard(window->Win32.handle))
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "Win32/WGL: Failed to open clipboard");
+        return 0;
+    }
+
+    stringHandle = GetClipboardData(CF_UNICODETEXT);
+    if (!stringHandle)
+    {
+        CloseClipboard();
+
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "Win32/WGL: Failed to retrieve clipboard data");
+        return 0;
+    }
+
+    utf8String = _glfwCreateUTF8FromWideString(GlobalLock(stringHandle));
+    GlobalUnlock(stringHandle);
+    CloseClipboard();
+
+    if (!utf8String)
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "Win32/WGL: Failed to convert wide string to UTF-8");
+        return 0;
+    }
+
+    utf8Size = strlen(utf8String) + 1;
+    if (utf8Size > size)
+    {
+        memcpy(string, utf8String, size);
+        string[size - 1] = '\0';
+    }
+    else
+        memcpy(string, utf8String, utf8Size);
+
+    free(utf8String);
+	return utf8Size;
 }
 

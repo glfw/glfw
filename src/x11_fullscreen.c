@@ -42,7 +42,7 @@
 // Finds the video mode closest in size to the specified desired size
 //========================================================================
 
-int _glfwGetClosestVideoMode(int screen, int* width, int* height, int* rate)
+int _glfwGetClosestVideoMode(int* width, int* height, int* rate)
 {
     int i, match, bestmatch;
 
@@ -55,8 +55,7 @@ int _glfwGetClosestVideoMode(int screen, int* width, int* height, int* rate)
         XRRScreenConfiguration* sc;
         XRRScreenSize* sizelist;
 
-        sc = XRRGetScreenInfo(_glfwLibrary.X11.display,
-                              RootWindow(_glfwLibrary.X11.display, screen));
+        sc = XRRGetScreenInfo(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
 
         sizelist = XRRConfigSizes(sc, &sizecount);
 
@@ -116,7 +115,8 @@ int _glfwGetClosestVideoMode(int screen, int* width, int* height, int* rate)
         int bestmode, modecount;
 
         // Get a list of all available display modes
-        XF86VidModeGetAllModeLines(_glfwLibrary.X11.display, screen,
+        XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,
+                                   _glfwLibrary.X11.screen,
                                    &modecount, &modelist);
 
         // Find the best matching mode
@@ -150,8 +150,8 @@ int _glfwGetClosestVideoMode(int screen, int* width, int* height, int* rate)
     }
 
     // Default: Simply use the screen resolution
-    *width = DisplayWidth(_glfwLibrary.X11.display, screen);
-    *height = DisplayHeight(_glfwLibrary.X11.display, screen);
+    *width = DisplayWidth(_glfwLibrary.X11.display, _glfwLibrary.X11.screen);
+    *height = DisplayHeight(_glfwLibrary.X11.display, _glfwLibrary.X11.screen);
 
     return 0;
 }
@@ -161,7 +161,7 @@ int _glfwGetClosestVideoMode(int screen, int* width, int* height, int* rate)
 // Change the current video mode
 //========================================================================
 
-void _glfwSetVideoModeMODE(int screen, int mode, int rate)
+void _glfwSetVideoModeMODE(int mode, int rate)
 {
     if (_glfwLibrary.X11.RandR.available)
     {
@@ -169,15 +169,17 @@ void _glfwSetVideoModeMODE(int screen, int mode, int rate)
         XRRScreenConfiguration* sc;
         Window root;
 
-        root = RootWindow(_glfwLibrary.X11.display, screen);
+        root = _glfwLibrary.X11.root;
         sc   = XRRGetScreenInfo(_glfwLibrary.X11.display, root);
 
         // Remember old size and flag that we have changed the mode
         if (!_glfwLibrary.X11.FS.modeChanged)
         {
             _glfwLibrary.X11.FS.oldSizeID = XRRConfigCurrentConfiguration(sc, &_glfwLibrary.X11.FS.oldRotation);
-            _glfwLibrary.X11.FS.oldWidth  = DisplayWidth(_glfwLibrary.X11.display, screen);
-            _glfwLibrary.X11.FS.oldHeight = DisplayHeight(_glfwLibrary.X11.display, screen);
+            _glfwLibrary.X11.FS.oldWidth  = DisplayWidth(_glfwLibrary.X11.display,
+                                                         _glfwLibrary.X11.screen);
+            _glfwLibrary.X11.FS.oldHeight = DisplayHeight(_glfwLibrary.X11.display,
+                                                          _glfwLibrary.X11.screen);
 
             _glfwLibrary.X11.FS.modeChanged = GL_TRUE;
         }
@@ -214,21 +216,32 @@ void _glfwSetVideoModeMODE(int screen, int mode, int rate)
         int modecount;
 
         // Get a list of all available display modes
-        XF86VidModeGetAllModeLines(_glfwLibrary.X11.display, screen,
+        XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,
+                                   _glfwLibrary.X11.screen,
                                    &modecount, &modelist);
 
         // Unlock mode switch if necessary
         if (_glfwLibrary.X11.FS.modeChanged)
-            XF86VidModeLockModeSwitch(_glfwLibrary.X11.display, screen, 0);
+        {
+            XF86VidModeLockModeSwitch(_glfwLibrary.X11.display,
+                                      _glfwLibrary.X11.screen,
+                                      0);
+        }
 
         // Change the video mode to the desired mode
-        XF86VidModeSwitchToMode(_glfwLibrary.X11.display, screen, modelist[mode]);
+        XF86VidModeSwitchToMode(_glfwLibrary.X11.display,
+                                _glfwLibrary.X11.screen,
+                                modelist[mode]);
 
         // Set viewport to upper left corner (where our window will be)
-        XF86VidModeSetViewPort(_glfwLibrary.X11.display, screen, 0, 0);
+        XF86VidModeSetViewPort(_glfwLibrary.X11.display,
+                               _glfwLibrary.X11.screen,
+                               0, 0);
 
         // Lock mode switch
-        XF86VidModeLockModeSwitch(_glfwLibrary.X11.display, screen, 1);
+        XF86VidModeLockModeSwitch(_glfwLibrary.X11.display,
+                                  _glfwLibrary.X11.screen,
+                                  1);
 
         // Remember old mode and flag that we have changed the mode
         if (!_glfwLibrary.X11.FS.modeChanged)
@@ -247,15 +260,15 @@ void _glfwSetVideoModeMODE(int screen, int mode, int rate)
 // Change the current video mode
 //========================================================================
 
-void _glfwSetVideoMode(int screen, int* width, int* height, int* rate)
+void _glfwSetVideoMode(int* width, int* height, int* rate)
 {
     int bestmode;
 
     // Find a best match mode
-    bestmode = _glfwGetClosestVideoMode(screen, width, height, rate);
+    bestmode = _glfwGetClosestVideoMode(width, height, rate);
 
     // Change mode
-    _glfwSetVideoModeMODE(screen, bestmode, *rate);
+    _glfwSetVideoModeMODE(bestmode, *rate);
 }
 
 
@@ -263,7 +276,7 @@ void _glfwSetVideoMode(int screen, int* width, int* height, int* rate)
 // Restore the previously saved (original) video mode
 //========================================================================
 
-void _glfwRestoreVideoMode(int screen)
+void _glfwRestoreVideoMode(void)
 {
     if (_glfwLibrary.X11.FS.modeChanged)
     {
@@ -292,11 +305,13 @@ void _glfwRestoreVideoMode(int screen)
         {
 #if defined(_GLFW_HAS_XF86VIDMODE)
             // Unlock mode switch
-            XF86VidModeLockModeSwitch(_glfwLibrary.X11.display, screen, 0);
+            XF86VidModeLockModeSwitch(_glfwLibrary.X11.display,
+                                      _glfwLibrary.X11.screen,
+                                      0);
 
             // Change the video mode back to the old mode
             XF86VidModeSwitchToMode(_glfwLibrary.X11.display,
-                                    screen,
+                                    _glfwLibrary.X11.screen,
                                     &_glfwLibrary.X11.FS.oldMode);
 #endif /*_GLFW_HAS_XF86VIDMODE*/
         }
@@ -323,7 +338,7 @@ struct _glfwResolution
 int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
 {
     int count, k, l, r, g, b, rgba, gl;
-    int depth, screen = DefaultScreen(_glfwLibrary.X11.display);
+    int depth;
     XVisualInfo* vislist;
     XVisualInfo dummy;
     int viscount, rgbcount, rescount;
@@ -407,7 +422,9 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
         XF86VidModeModeInfo** modelist;
         int modecount, width, height;
 
-        XF86VidModeGetAllModeLines(_glfwLibrary.X11.display, screen, &modecount, &modelist);
+        XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,
+                                   _glfwLibrary.X11.screen,
+                                   &modecount, &modelist);
 
         resarray = (struct _glfwResolution*) malloc(sizeof(struct _glfwResolution) * modecount);
 
@@ -440,8 +457,10 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
         rescount = 1;
         resarray = (struct _glfwResolution*) malloc(sizeof(struct _glfwResolution) * rescount);
 
-        resarray[0].width = DisplayWidth(_glfwLibrary.X11.display, screen);
-        resarray[0].height = DisplayHeight(_glfwLibrary.X11.display, screen);
+        resarray[0].width = DisplayWidth(_glfwLibrary.X11.display,
+                                         _glfwLibrary.X11.screen);
+        resarray[0].height = DisplayHeight(_glfwLibrary.X11.display,
+                                           _glfwLibrary.X11.screen);
     }
 
     // Build permutations of colors and resolutions

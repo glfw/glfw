@@ -91,6 +91,8 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
     // Get joystick capabilities
     _glfw_joyGetDevCaps(joy - GLFW_JOYSTICK_1, &jc, sizeof(JOYCAPS));
 
+    const int hats = (jc.wCaps & JOYCAPS_HASPOV) && (jc.wCaps & JOYCAPS_POV4DIR) ? 1 : 0;
+
     switch (param)
     {
         case GLFW_AXES:
@@ -98,8 +100,8 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
             return jc.wNumAxes;
 
         case GLFW_BUTTONS:
-            // Return number of joystick axes
-            return jc.wNumButtons;
+            // Return number of joystick buttons
+            return jc.wNumButtons + hats * 4;
 
         default:
             break;
@@ -174,7 +176,7 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
 
     // Get joystick state
     ji.dwSize = sizeof(JOYINFOEX);
-    ji.dwFlags = JOY_RETURNBUTTONS;
+    ji.dwFlags = JOY_RETURNBUTTONS | JOY_RETURNPOV;
     _glfw_joyGetPosEx(joy - GLFW_JOYSTICK_1, &ji);
 
     // Get states of all requested buttons
@@ -184,6 +186,24 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
             (ji.dwButtons & (1UL << button) ? GLFW_PRESS : GLFW_RELEASE);
     }
 
+    // Virtual buttons - Inject data from hats
+    // Each hat is exposed as 4 buttons which exposes 8 directions with concurrent button presses
+    // (Note: This API only exposes one hat)
+
+    const int hats = (jc.wCaps & JOYCAPS_HASPOV) && (jc.wCaps & JOYCAPS_POV4DIR) ? 1 : 0;
+    const int directions[9] = { 1, 3, 2, 6, 4, 12, 8, 9, 0 }; // Bit fields of button presses for each direction, including nil
+
+    if (hats > 0)
+    {
+        int j;
+        int value = ji.dwPOV / 100 / 45;
+        if (value < 0 || value > 8) value = 8;
+
+        for (j = 0; j < 4 && button < numbuttons; j++)
+        {
+            buttons[button++] = directions[value] & (1 << j) ? GLFW_PRESS : GLFW_RELEASE;
+        }
+    }
+
     return button;
 }
-

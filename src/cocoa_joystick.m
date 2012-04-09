@@ -311,6 +311,13 @@ static void pollJoystickEvents(void)
                     (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick->axes, j);
                 axes->value = getElementValue(joystick, axes);
             }
+
+            for (j = 0;  j < joystick->numHats;  j++)
+            {
+                _glfwJoystickElement* hat =
+                    (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick->hats, j);
+                hat->value = getElementValue(joystick, hat);
+            }
         }
     }
 }
@@ -502,7 +509,7 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
             return (int) CFArrayGetCount(_glfwJoysticks[joy].axes);
 
         case GLFW_BUTTONS:
-            return (int) CFArrayGetCount(_glfwJoysticks[joy].buttons);
+            return (int) CFArrayGetCount(_glfwJoysticks[joy].buttons) + ((int) CFArrayGetCount(_glfwJoysticks[joy].hats)) * 4;
 
         default:
             break;
@@ -565,7 +572,7 @@ int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
 int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
                                     int numbuttons)
 {
-    int i;
+    int button;
 
     if (joy < GLFW_JOYSTICK_1 || joy > GLFW_JOYSTICK_LAST)
         return 0;
@@ -578,17 +585,31 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
         return 0;
     }
 
-    numbuttons = numbuttons < joystick.numButtons ? numbuttons : joystick.numButtons;
-
     // Update joystick state
     pollJoystickEvents();
 
-    for (i = 0;  i < numbuttons;  i++)
+    for (button = 0;  button < numbuttons && button < joystick.numButtons;  button++)
     {
-        _glfwJoystickElement* button = (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick.buttons, i);
-        buttons[i] = button->value ? GLFW_PRESS : GLFW_RELEASE;
+        _glfwJoystickElement* element = (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick.buttons, button);
+        buttons[button] = element->value ? GLFW_PRESS : GLFW_RELEASE;
     }
 
-    return numbuttons;
-}
+    // Virtual buttons - Inject data from hats
+    // Each hat is exposed as 4 buttons which exposes 8 directions with concurrent button presses
 
+    const int directions[9] = { 1, 3, 2, 6, 4, 12, 8, 9, 0 }; // Bit fields of button presses for each direction, including nil
+
+    for (int i = 0;  i < joystick.numHats;  i++)
+    {
+        _glfwJoystickElement* hat = (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick.hats, i);
+        int value = hat->value;
+        if (value < 0 || value > 8) value = 8;
+
+        for (int j = 0; j < 4 && button < numbuttons; j++)
+        {
+            buttons[button++] = directions[value] & (1 << j) ? GLFW_PRESS : GLFW_RELEASE;
+        }
+    }
+
+    return button;
+}

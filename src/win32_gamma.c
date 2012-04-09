@@ -42,7 +42,7 @@
 
 void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 {
-    _glfw_GetDeviceGammaRamp(GetDC(GetDesktopWindow()), (WORD*) ramp);
+    GetDeviceGammaRamp(GetDC(GetDesktopWindow()), (WORD*) ramp);
 }
 
 
@@ -52,6 +52,6 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 
 void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
 {
-    _glfw_SetDeviceGammaRamp(GetDC(GetDesktopWindow()), (WORD*) ramp);
+    SetDeviceGammaRamp(GetDC(GetDesktopWindow()), (WORD*) ramp);
 }
 

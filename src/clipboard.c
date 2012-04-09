@@ -41,7 +41,7 @@
 // Set the clipboard contents
 //========================================================================
 
-GLFWAPI void glfwSetClipboardData(void *data, size_t size, int format)
+GLFWAPI void glfwSetClipboardData(void* data, size_t size, int format)
 {
     if (!_glfwInitialized)
     {
@@ -60,7 +60,7 @@ GLFWAPI void glfwSetClipboardData(void *data, size_t size, int format)
 // Return the current clipboard contents
 //========================================================================
 
-GLFWAPI size_t glfwGetClipboardData(void *data, size_t size, int format)
+GLFWAPI size_t glfwGetClipboardData(void* data, size_t size, int format)
 {
     if (!_glfwInitialized)
     {

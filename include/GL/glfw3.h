@@ -576,8 +576,8 @@ GLFWAPI int glfwGetJoystickPos(int joy, float* pos, int numaxes);
 GLFWAPI int glfwGetJoystickButtons(int joy, unsigned char* buttons, int numbuttons);
 
 /* Clipboard */
-GLFWAPI void glfwSetClipboardString(GLFWwindow window, const char* data);
-GLFWAPI size_t glfwGetClipboardString(GLFWwindow window, char* data, size_t size);
+GLFWAPI void glfwSetClipboardString(GLFWwindow window, const char* string);
+GLFWAPI size_t glfwGetClipboardString(GLFWwindow window, char* string, size_t size);
 
 /* Time */
 GLFWAPI double glfwGetTime(void);

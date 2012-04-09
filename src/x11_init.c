@@ -461,11 +461,12 @@ static GLboolean initDisplay(void)
         XInternAtom(_glfwLibrary.X11.display, "CLIPBOARD", False);
 
     // Find or create selection atoms
-    _glfwLibrary.X11.selection.atoms.string[_GLFW_STRING_ATOM_UTF8] =
+    _glfwLibrary.X11.selection.formats[_GLFW_CLIPBOARD_FORMAT_UTF8] =
         XInternAtom(_glfwLibrary.X11.display, "UTF8_STRING", False);
-    _glfwLibrary.X11.selection.atoms.string[_GLFW_STRING_ATOM_COMPOUND] =
+    _glfwLibrary.X11.selection.formats[_GLFW_CLIPBOARD_FORMAT_COMPOUND] =
         XInternAtom(_glfwLibrary.X11.display, "COMPOUND_STRING", False);
-    _glfwLibrary.X11.selection.atoms.string[_GLFW_STRING_ATOM_STRING] = XA_STRING;
+    _glfwLibrary.X11.selection.formats[_GLFW_CLIPBOARD_FORMAT_STRING] =
+        XA_STRING;
 
     return GL_TRUE;
 }

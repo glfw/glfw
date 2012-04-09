@@ -85,11 +85,11 @@
 #define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryX11 X11
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextGLX GLX
 
-// String atoms
-#define _GLFW_STRING_ATOM_UTF8 0
-#define _GLFW_STRING_ATOM_COMPOUND 1
-#define _GLFW_STRING_ATOM_STRING 2
-#define _GLFW_STRING_ATOM_COUNT 3
+// Clipboard format atom indices
+#define _GLFW_CLIPBOARD_FORMAT_UTF8     0
+#define _GLFW_CLIPBOARD_FORMAT_COMPOUND 1
+#define _GLFW_CLIPBOARD_FORMAT_STRING   2
+#define _GLFW_CLIPBOARD_FORMAT_COUNT    3
 
 //========================================================================
 // GLFW platform specific types
@@ -231,9 +231,7 @@ typedef struct _GLFWlibraryX11
     // Selection data
     struct {
         Atom atom;
-        struct {
-            Atom string[_GLFW_STRING_ATOM_COUNT];
-        } atoms;
+        Atom formats[_GLFW_CLIPBOARD_FORMAT_COUNT];
         struct {
             size_t stringlen;
             char *string;

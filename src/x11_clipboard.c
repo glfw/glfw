@@ -47,7 +47,7 @@
 
 Atom _glfwSelectionRequest(XSelectionRequestEvent* request)
 {
-    Atom* formats = _glfwLibrary.X11.selection.atoms.string;
+    Atom* formats = _glfwLibrary.X11.selection.formats;
     char* target = _glfwLibrary.X11.selection.clipboard.string;
 
     if (request->target == XA_STRING)
@@ -63,8 +63,8 @@ Atom _glfwSelectionRequest(XSelectionRequestEvent* request)
                         (unsigned char*) target,
                         8);
     }
-    else if (request->target == formats[_GLFW_STRING_ATOM_COMPOUND] ||
-             request->target == formats[_GLFW_STRING_ATOM_UTF8])
+    else if (request->target == formats[_GLFW_CLIPBOARD_FORMAT_COMPOUND] ||
+             request->target == formats[_GLFW_CLIPBOARD_FORMAT_UTF8])
     {
         XChangeProperty(_glfwLibrary.X11.display,
                         request->requestor,
@@ -147,11 +147,11 @@ size_t _glfwPlatformGetClipboardData(void* data, size_t size, int format)
     // Get the currently active window
     Window window = _glfwLibrary.activeWindow->X11.handle;
 
-    for (i = 0;  i < _GLFW_STRING_ATOM_COUNT;  i++)
+    for (i = 0;  i < _GLFW_CLIPBOARD_FORMAT_COUNT;  i++)
     {
         // Specify the format we would like.
         _glfwLibrary.X11.selection.request =
-            _glfwLibrary.X11.selection.atoms.strings[i];
+            _glfwLibrary.X11.selection.formats[i];
 
         // Convert the selection into a format we would like.
         XConvertSelection(_glfwLibrary.X11.display,

@@ -88,6 +88,11 @@ static void size_callback(GLFWwindow window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s in %s\n", glfwErrorString(error), description);
+}
+
 int main(int argc, char** argv)
 {
     int ch;
@@ -106,6 +111,8 @@ int main(int argc, char** argv)
                 exit(EXIT_FAILURE);
         }
     }
+
+    glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
     {

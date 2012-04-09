@@ -93,7 +93,7 @@ Atom _glfwSelectionRequest(XSelectionRequestEvent* request)
 // Set the clipboard contents
 //========================================================================
 
-void _glfwPlatformSetClipboardString(const char* string)
+void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
     size_t size = strlen(string) + 1;
 
@@ -115,10 +115,10 @@ void _glfwPlatformSetClipboardString(const char* string)
 
     // Set the selection owner to our active window
     XSetSelectionOwner(_glfwLibrary.X11.display, XA_PRIMARY,
-                       _glfwLibrary.activeWindow->X11.handle, CurrentTime);
+                       window->X11.handle, CurrentTime);
     XSetSelectionOwner(_glfwLibrary.X11.display,
                        _glfwLibrary.X11.selection.atom,
-                       _glfwLibrary.activeWindow->X11.handle, CurrentTime);
+                       window->X11.handle, CurrentTime);
     XFlush(_glfwLibrary.X11.display);
 }
 
@@ -127,15 +127,12 @@ void _glfwPlatformSetClipboardString(const char* string)
 // Return the current clipboard contents
 //========================================================================
 
-size_t _glfwPlatformGetClipboardString(char* data, size_t size)
+size_t _glfwPlatformGetClipboardString(_GLFWwindow* window, char* data, size_t size)
 {
     size_t len, rembytes, dummy;
     unsigned char* d;
     int i, fmt;
     Atom type;
-
-    // Get the currently active window
-    Window window = _glfwLibrary.activeWindow->X11.handle;
 
     for (i = 0;  i < _GLFW_CLIPBOARD_FORMAT_COUNT;  i++)
     {
@@ -147,7 +144,7 @@ size_t _glfwPlatformGetClipboardString(char* data, size_t size)
         XConvertSelection(_glfwLibrary.X11.display,
                           _glfwLibrary.X11.selection.atom,
                           _glfwLibrary.X11.selection.request,
-                          None, window, CurrentTime);
+                          None, window->X11.handle, CurrentTime);
         XFlush(_glfwLibrary.X11.display);
 
         // Process pending events until we get a SelectionNotify.
@@ -176,7 +173,7 @@ size_t _glfwPlatformGetClipboardString(char* data, size_t size)
 
     // Check the length of data to receive (rembytes)
     XGetWindowProperty(_glfwLibrary.X11.display,
-                       window,
+                       window->X11.handle,
                        _glfwLibrary.X11.selection.request,
                        0, 0,
                        0,
@@ -190,7 +187,7 @@ size_t _glfwPlatformGetClipboardString(char* data, size_t size)
     if (rembytes > 0)
     {
         int result = XGetWindowProperty(_glfwLibrary.X11.display,
-                                        window,
+                                        window->X11.handle,
                                         _glfwLibrary.X11.selection.request,
                                         0, rembytes,
                                         0,

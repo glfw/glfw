@@ -41,15 +41,17 @@
 // Set the clipboard contents
 //========================================================================
 
-GLFWAPI void glfwSetClipboardString(const char* string)
+GLFWAPI void glfwSetClipboardString(GLFWwindow handle, const char* string)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
-    _glfwPlatformSetClipboardString(string);
+    _glfwPlatformSetClipboardString(window, string);
 }
 
 
@@ -57,8 +59,10 @@ GLFWAPI void glfwSetClipboardString(const char* string)
 // Return the current clipboard contents
 //========================================================================
 
-GLFWAPI size_t glfwGetClipboardString(char* string, size_t size)
+GLFWAPI size_t glfwGetClipboardString(GLFWwindow handle, char* string, size_t size)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
@@ -68,6 +72,6 @@ GLFWAPI size_t glfwGetClipboardString(char* string, size_t size)
     if (!string || !size)
         return 0;
 
-    return _glfwPlatformGetClipboardString(string, size);
+    return _glfwPlatformGetClipboardString(window, string, size);
 }
 

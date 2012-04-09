@@ -64,7 +64,7 @@ static void key_callback(GLFWwindow window, int key, int action)
 
                 printf("Paste test.\n");
 
-                size = glfwGetClipboardString(buffer, sizeof(buffer));
+                size = glfwGetClipboardString(window, buffer, sizeof(buffer));
                 if (size >= sizeof(buffer))
                     printf("Buffer wasn't big enough to hold clipboard data.\n");
 
@@ -76,7 +76,7 @@ static void key_callback(GLFWwindow window, int key, int action)
             if (control_is_down(window))
             {
                 const char* string = "Hello GLFW World!";
-                glfwSetClipboardString(string);
+                glfwSetClipboardString(window, string);
                 printf("Setting clipboard to: %s\n", string);
             }
             break;

@@ -85,12 +85,6 @@
 #define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryX11 X11
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextGLX GLX
 
-// Clipboard atoms
-#define _GLFW_CLIPBOARD_ATOM_PRIMARY 0
-#define _GLFW_CLIPBOARD_ATOM_CLIPBOARD 1
-#define _GLFW_CLIPBOARD_ATOM_SECONDARY 2
-#define _GLFW_CLIPBOARD_ATOM_COUNT 3
-
 // String atoms
 #define _GLFW_STRING_ATOM_UTF8 0
 #define _GLFW_STRING_ATOM_COMPOUND 1
@@ -236,8 +230,8 @@ typedef struct _GLFWlibraryX11
 
     // Selection data
     struct {
+        Atom atom;
         struct {
-            Atom clipboard[_GLFW_CLIPBOARD_ATOM_COUNT];
             Atom string[_GLFW_STRING_ATOM_COUNT];
         } atoms;
         struct {

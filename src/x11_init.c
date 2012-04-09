@@ -456,13 +456,9 @@ static GLboolean initDisplay(void)
     // the keyboard mapping.
     updateKeyCodeLUT();
 
-    // Find or create clipboard atoms
-    _glfwLibrary.X11.selection.atoms.clipboard[_GLFW_CLIPBOARD_ATOM_PRIMARY] =
-        XA_PRIMARY;
-    _glfwLibrary.X11.selection.atoms.clipboard[_GLFW_CLIPBOARD_ATOM_CLIPBOARD] =
+    // Find or create clipboard atom
+    _glfwLibrary.X11.selection.atom =
         XInternAtom(_glfwLibrary.X11.display, "CLIPBOARD", False);
-    _glfwLibrary.X11.selection.atoms.clipboard[_GLFW_CLIPBOARD_ATOM_SECONDARY] =
-        XA_SECONDARY;
 
     // Find or create selection atoms
     _glfwLibrary.X11.selection.atoms.string[_GLFW_STRING_ATOM_UTF8] =

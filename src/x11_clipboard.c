@@ -135,11 +135,10 @@ size_t _glfwPlatformGetClipboardString(_GLFWwindow* window, char* data, size_t s
                           _glfwLibrary.X11.selection.atom,
                           _glfwLibrary.X11.selection.request,
                           None, window->X11.handle, CurrentTime);
-        XFlush(_glfwLibrary.X11.display);
 
-        // Process pending events until we get a SelectionNotify.
-        while (!_glfwLibrary.X11.selection.converted)
-            _glfwPlatformWaitEvents();
+        // Process the resulting SelectionNotify event
+        XSync(_glfwLibrary.X11.display, False);
+        _glfwProcessPendingEvents();
 
         // Successful?
         if (_glfwLibrary.X11.selection.converted == 1)

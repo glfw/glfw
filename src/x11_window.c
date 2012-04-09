@@ -1300,6 +1300,23 @@ static void processSingleEvent(void)
 
 
 //////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Processes all pending events
+//========================================================================
+
+void _glfwProcessPendingEvents(void)
+{
+    int i, count = XPending(_glfwLibrary.X11.display);
+
+    for (i = 0;  i < count;  i++)
+        processSingleEvent();
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
@@ -1369,7 +1386,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     }
 
     // Process the window map event and any other that may have arrived
-    _glfwPlatformPollEvents();
+    _glfwProcessPendingEvents();
 
     // Retrieve and set initial cursor position
     {

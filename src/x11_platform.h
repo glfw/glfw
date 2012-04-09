@@ -283,4 +283,7 @@ long _glfwKeySym2Unicode(KeySym keysym);
 // Clipboard handling
 Atom _glfwSelectionRequest(XSelectionRequestEvent *request);
 
+// Event processing
+void _glfwProcessPendingEvents(void);
+
 #endif // _platform_h_

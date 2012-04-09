@@ -97,21 +97,11 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
     size_t size = strlen(string) + 1;
 
-    // Allocate memory to keep track of the clipboard
-    char* cb = malloc(size);
-
-    // Copy the clipboard data
-    memcpy(cb, string, size);
-
-    // Set the string length
+    // Store the new string in preparation for a request event
+    free(_glfwLibrary.X11.selection.string);
+    _glfwLibrary.X11.selection.string = malloc(size);
     _glfwLibrary.X11.selection.stringLength = size;
-
-    // Check if existing clipboard memory needs to be freed
-    if (_glfwLibrary.X11.selection.string)
-        free(_glfwLibrary.X11.selection.string);
-
-    // Now set the clipboard (awaiting the event SelectionRequest)
-    _glfwLibrary.X11.selection.string = cb;
+    memcpy(_glfwLibrary.X11.selection.string, string, size);
 
     // Set the selection owner to our active window
     XSetSelectionOwner(_glfwLibrary.X11.display, XA_PRIMARY,

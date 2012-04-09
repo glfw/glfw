@@ -271,6 +271,7 @@ version of GLFW.</p>
   <li>Added <code>glfwGetWindowPos</code> function for querying the position of the specified window</li>
   <li>Added <code>glfwSetWindowFocusCallback</code> function and <code>GLFWwindowfocusfun</code> type for receiving window focus events</li>
   <li>Added <code>glfwSetWindowIconifyCallback</code> function and <code>GLFWwindowiconifyfun</code> type for receiving window iconification events</li>
+  <li>Added <code>glfwGetClipboardString</code> and <code>glfwSetClipboardString</code> functions for interacting with the system clipboard</li>
   <li>Added <code>glfwGetCurrentContext</code> function for retrieving the window whose OpenGL context is current</li>
   <li>Added <code>glfwCopyContext</code> function for copying OpenGL state categories between contexts</li>
   <li>Added <code>GLFW_OPENGL_ES2_PROFILE</code> profile for creating OpenGL ES 2.0 contexts using the <code>GLX_EXT_create_context_es2_profile</code> and <code>WGL_EXT_create_context_es2_profile</code> extensions</li>
@@ -844,7 +845,7 @@ their skills.  Special thanks go out to:</p>
   adding logic for the <code>GLFW_ICON</code> resource</li>
 
   <li>Ralph Eastwood, for the initial design and implementation of the gamma
-  correction API</li>
+  correction and clipboard APIs</li>
 
   <li>GeO4d, for the implementation of cursor enter/leave notifications on
   Win32.</li>

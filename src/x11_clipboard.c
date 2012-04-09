@@ -37,23 +37,6 @@
 #include <stdlib.h>
 
 
-//========================================================================
-// Get the corresponding X11 format for a given GLFW format.
-//========================================================================
-
-static Atom* getInternalFormat(int format)
-{
-    // Get the necessary atoms
-    switch (format)
-    {
-        case GLFW_CLIPBOARD_FORMAT_STRING:
-            return _glfwLibrary.X11.selection.atoms.string;
-        default:
-            return 0;
-    }
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -161,7 +144,7 @@ size_t _glfwPlatformGetClipboardData(void *data, size_t size, int format)
 
     // Try different clipboards and formats that relate to the GLFW
     // format with preference for more appropriate formats first
-    Atom *xfmt = getInternalFormat(format);
+    Atom *xfmt = _glfwLibrary.X11.selection.atoms.string;
     Atom *xfmtend = xfmt + _GLFW_STRING_ATOM_COUNT;
 
     // Get the currently active window

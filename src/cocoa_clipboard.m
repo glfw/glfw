@@ -52,6 +52,6 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 
 size_t _glfwPlatformGetClipboardString(_GLFWwindow* window, char* string, size_t size)
 {
-	return 0;
+    return 0;
 }
 

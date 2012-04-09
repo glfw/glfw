@@ -141,26 +141,23 @@ size_t _glfwPlatformGetClipboardData(void* data, size_t size, int format)
 {
     size_t len, rembytes, dummy;
     unsigned char* d;
-    int fmt;
+    int i, fmt;
     Atom type;
-
-    // Try different clipboards and formats that relate to the GLFW
-    // format with preference for more appropriate formats first
-    Atom *xfmt = _glfwLibrary.X11.selection.atoms.string;
-    Atom *xfmtend = xfmt + _GLFW_STRING_ATOM_COUNT;
 
     // Get the currently active window
     Window window = _glfwLibrary.activeWindow->X11.handle;
 
-    for ( ;  xfmt != xfmtend;  xfmt++)
+    for (i = 0;  i < _GLFW_STRING_ATOM_COUNT;  i++)
     {
         // Specify the format we would like.
-        _glfwLibrary.X11.selection.request = *xfmt;
+        _glfwLibrary.X11.selection.request =
+            _glfwLibrary.X11.selection.atoms.strings[i];
 
         // Convert the selection into a format we would like.
         XConvertSelection(_glfwLibrary.X11.display,
                           _glfwLibrary.X11.selection.atom,
-                          *xfmt, None, window, CurrentTime);
+                          _glfwLibrary.X11.selection.request,
+                          None, window, CurrentTime);
         XFlush(_glfwLibrary.X11.display);
 
         // Process pending events until we get a SelectionNotify.
@@ -190,7 +187,7 @@ size_t _glfwPlatformGetClipboardData(void* data, size_t size, int format)
     // Check the length of data to receive (rembytes)
     XGetWindowProperty(_glfwLibrary.X11.display,
                        window,
-                       *xfmt,
+                       _glfwLibrary.X11.selection.request,
                        0, 0,
                        0,
                        AnyPropertyType,
@@ -204,7 +201,7 @@ size_t _glfwPlatformGetClipboardData(void* data, size_t size, int format)
     {
         int result = XGetWindowProperty(_glfwLibrary.X11.display,
                                         window,
-                                        *xfmt,
+                                        _glfwLibrary.X11.selection.request,
                                         0, rembytes,
                                         0,
                                         AnyPropertyType,

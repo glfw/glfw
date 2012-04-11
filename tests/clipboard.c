@@ -59,16 +59,15 @@ static void key_callback(GLFWwindow window, int key, int action)
         case GLFW_KEY_V:
             if (control_is_down(window))
             {
-                char buffer[4096];
-                size_t size;
+                const char* string;
 
                 printf("Paste test.\n");
 
-                size = glfwGetClipboardString(window, buffer, sizeof(buffer));
-                if (size >= sizeof(buffer))
-                    printf("Buffer wasn't big enough to hold clipboard data.\n");
+                string = glfwGetClipboardString(window);
+                if (!string)
+                    printf("Failed to retrieve clipboard string\n");
 
-                printf("[%lu]: %s\n", (unsigned long) size, buffer);
+                printf("%s\n", string);
             }
             break;
 

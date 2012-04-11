@@ -581,7 +581,7 @@ GLFWAPI int glfwGetJoystickButtons(int joy, unsigned char* buttons, int numbutto
 
 /* Clipboard */
 GLFWAPI void glfwSetClipboardString(GLFWwindow window, const char* string);
-GLFWAPI size_t glfwGetClipboardString(GLFWwindow window, char* string, size_t size);
+GLFWAPI const char* glfwGetClipboardString(GLFWwindow window);
 
 /* Time */
 GLFWAPI double glfwGetTime(void);

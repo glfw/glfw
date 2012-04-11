@@ -59,19 +59,16 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow handle, const char* string)
 // Return the current clipboard contents
 //========================================================================
 
-GLFWAPI size_t glfwGetClipboardString(GLFWwindow handle, char* string, size_t size)
+GLFWAPI const char* glfwGetClipboardString(GLFWwindow handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return 0;
+        return NULL;
     }
 
-    if (!string || !size)
-        return 0;
-
-    return _glfwPlatformGetClipboardString(window, string, size);
+    return _glfwPlatformGetClipboardString(window);
 }
 

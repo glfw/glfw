@@ -56,7 +56,7 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 // Return the current clipboard contents
 //========================================================================
 
-size_t _glfwPlatformGetClipboardString(_GLFWwindow* window, char* string, size_t size)
+const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {
     const char* source;
     size_t targetSize;
@@ -65,7 +65,7 @@ size_t _glfwPlatformGetClipboardString(_GLFWwindow* window, char* string, size_t
     if (![[pasteboard types] containsObject:NSStringPboardType])
     {
         _glfwSetError(GLFW_FORMAT_UNAVAILABLE, NULL);
-        return 0;
+        return NULL;
     }
 
     NSString* object = [pasteboard stringForType:NSStringPboardType];
@@ -73,15 +73,12 @@ size_t _glfwPlatformGetClipboardString(_GLFWwindow* window, char* string, size_t
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
                       "Cocoa/NSGL: Failed to retrieve object from pasteboard");
-        return 0;
+        return NULL;
     }
 
-    source = [object UTF8String];
-    targetSize = strlen(source) + 1;
-    if (targetSize > size)
-        targetSize = size;
+    free(_glfwLibrary.NS.clipboardString);
+    _glfwLibrary.NS.clipboardString = strdup([object UTF8String]);
 
-    strlcpy(string, source, targetSize);
-    return 0;
+    return _glfwLibrary.NS.clipboardString;
 }
 

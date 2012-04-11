@@ -94,23 +94,21 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 // Return the current clipboard contents
 //========================================================================
 
-size_t _glfwPlatformGetClipboardString(_GLFWwindow* window, char* string, size_t size)
+const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {
     HANDLE stringHandle;
-    char* utf8String;
-    size_t utf8Size;
 
     if (!IsClipboardFormatAvailable(CF_UNICODETEXT))
     {
         _glfwSetError(GLFW_FORMAT_UNAVAILABLE, NULL);
-        return 0;
+        return NULL;
     }
 
     if (!OpenClipboard(window->Win32.handle))
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
                       "Win32/WGL: Failed to open clipboard");
-        return 0;
+        return NULL;
     }
 
     stringHandle = GetClipboardData(CF_UNICODETEXT);
@@ -120,30 +118,23 @@ size_t _glfwPlatformGetClipboardString(_GLFWwindow* window, char* string, size_t
 
         _glfwSetError(GLFW_PLATFORM_ERROR,
                       "Win32/WGL: Failed to retrieve clipboard data");
-        return 0;
+        return NULL;
     }
 
-    utf8String = _glfwCreateUTF8FromWideString(GlobalLock(stringHandle));
+    free(_glfwLibrary.Win32.clipboardString);
+    _glfwLibrary.Win32.clipboardString =
+        _glfwCreateUTF8FromWideString(GlobalLock(stringHandle));
+
     GlobalUnlock(stringHandle);
     CloseClipboard();
 
-    if (!utf8String)
+    if (!_glfwLibrary.Win32.clipboardString)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
                       "Win32/WGL: Failed to convert wide string to UTF-8");
-        return 0;
+        return NULL;
     }
 
-    utf8Size = strlen(utf8String) + 1;
-    if (utf8Size > size)
-    {
-        memcpy(string, utf8String, size);
-        string[size - 1] = '\0';
-    }
-    else
-        memcpy(string, utf8String, utf8Size);
-
-    free(utf8String);
-	return utf8Size;
+    return _glfwLibrary.Win32.clipboardString;
 }
 

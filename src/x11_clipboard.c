@@ -152,10 +152,9 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 // Return the current clipboard contents
 //========================================================================
 
-size_t _glfwPlatformGetClipboardString(_GLFWwindow* window, char* string, size_t size)
+const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {
     int i;
-    size_t sourceSize, targetSize;
 
     _glfwLibrary.X11.selection.status = _GLFW_CONVERSION_INACTIVE;
 
@@ -184,18 +183,9 @@ size_t _glfwPlatformGetClipboardString(_GLFWwindow* window, char* string, size_t
     {
         _glfwSetError(GLFW_FORMAT_UNAVAILABLE,
                       "X11/GLX: Failed to convert selection to string");
-        return 0;
+        return NULL;
     }
 
-    sourceSize = strlen(_glfwLibrary.X11.selection.string) + 1;
-
-    targetSize = sourceSize;
-    if (targetSize > size)
-        targetSize = size;
-
-    memcpy(string, _glfwLibrary.X11.selection.string, targetSize);
-    string[targetSize - 1] = '\0';
-
-    return sourceSize;
+    return _glfwLibrary.X11.selection.string;
 }
 

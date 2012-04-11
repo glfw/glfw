@@ -74,9 +74,9 @@ in the following sections.</p>
 <h3>4.1 Include the GLFW header file</h3>
 
 <p>In the files of your program where you use OpenGL or GLFW, you should
-include the <code>GL/glfw.h</code> header file, i.e.:</p>
+include the <code>GL/glfw3.h</code> header file, i.e.:</p>
 
-<blockquote><code>#include &lt;GL/glfw.h&gt;</code></blockquote>
+<blockquote><code>#include &lt;GL/glfw3.h&gt;</code></blockquote>
 
 <p>This defines all the constants, types and function prototypes of the GLFW
 API.  It also includes the <code>gl.h</code> and </code>GL/glu.h</code> header
@@ -100,7 +100,7 @@ it.  This way, the namespace won't be cluttered by the entire Windows API.</p>
   <li>Do <em>not</em> include <code>windows.h</code> unless you actually need
       direct access to the Windows API</li>
   <li>If you <em>do</em> need to include <code>windows.h</code>, do it
-      <em>before</em> including <code>GL/glfw.h</code> and the GLFW header will
+      <em>before</em> including <code>GL/glfw3.h</code> and the GLFW header will
       detect this.</p>
 </ul>
 

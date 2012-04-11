@@ -288,6 +288,10 @@ void _glfwPlatformGetDesktopMode(GLFWvidmode* mode);
 void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp);
 void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp);
 
+// Clipboard
+void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string);
+size_t _glfwPlatformGetClipboardString(_GLFWwindow* window, char *data, size_t size);
+
 // Joystick
 int _glfwPlatformGetJoystickParam(int joy, int param);
 int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes);

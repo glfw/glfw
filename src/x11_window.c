@@ -40,8 +40,8 @@
 #define _NET_WM_STATE_TOGGLE        2
 
 // Additional mouse button names for XButtonEvent
-#define Button6			6
-#define Button7			7
+#define Button6            6
+#define Button7            7
 
 //========================================================================
 // Error handler for BadMatch errors when requesting context with
@@ -1241,6 +1241,52 @@ static void processSingleEvent(void)
             break;
         }
 
+        case SelectionClear:
+        {
+            // The ownership of the selection was lost
+
+            free(_glfwLibrary.X11.selection.string);
+            _glfwLibrary.X11.selection.string = NULL;
+            break;
+        }
+
+        case SelectionNotify:
+        {
+            // The selection conversion status is available
+
+            XSelectionEvent* request = &event.xselection;
+
+            if (_glfwReadSelection(request))
+                _glfwLibrary.X11.selection.status = _GLFW_CONVERSION_SUCCEEDED;
+            else
+                _glfwLibrary.X11.selection.status = _GLFW_CONVERSION_FAILED;
+
+            break;
+        }
+
+        case SelectionRequest:
+        {
+            // The contents of the selection was requested
+
+            XSelectionRequestEvent* request = &event.xselectionrequest;
+
+            XEvent response;
+            memset(&response, 0, sizeof(response));
+
+            response.xselection.property = _glfwWriteSelection(request);
+            response.xselection.type = SelectionNotify;
+            response.xselection.display = request->display;
+            response.xselection.requestor = request->requestor;
+            response.xselection.selection = request->selection;
+            response.xselection.target = request->target;
+            response.xselection.time = request->time;
+
+            XSendEvent(_glfwLibrary.X11.display,
+                       request->requestor,
+                       False, 0, &response);
+            break;
+        }
+
         // Was the window destroyed?
         case DestroyNotify:
             return;
@@ -1261,6 +1307,23 @@ static void processSingleEvent(void)
             break;
         }
     }
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Processes all pending events
+//========================================================================
+
+void _glfwProcessPendingEvents(void)
+{
+    int i, count = XPending(_glfwLibrary.X11.display);
+
+    for (i = 0;  i < count;  i++)
+        processSingleEvent();
 }
 
 
@@ -1334,7 +1397,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     }
 
     // Process the window map event and any other that may have arrived
-    _glfwPlatformPollEvents();
+    _glfwProcessPendingEvents();
 
     // Retrieve and set initial cursor position
     {

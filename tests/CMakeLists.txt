@@ -11,6 +11,8 @@ endif()
 include_directories(${GLFW_SOURCE_DIR}/include
                     ${GLFW_SOURCE_DIR}/support
                     ${OPENGL_INCLUDE_DIR})
+add_executable(clipboard clipboard.c)
+target_link_libraries(clipboard ${STATIC_DEPS})
 
 add_executable(defaults defaults.c)
 add_executable(events events.c)

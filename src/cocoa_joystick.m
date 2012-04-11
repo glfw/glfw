@@ -572,7 +572,7 @@ int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
 int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
                                     int numbuttons)
 {
-    int button;
+    int i, j, button;
 
     if (joy < GLFW_JOYSTICK_1 || joy > GLFW_JOYSTICK_LAST)
         return 0;
@@ -599,13 +599,13 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
 
     const int directions[9] = { 1, 3, 2, 6, 4, 12, 8, 9, 0 }; // Bit fields of button presses for each direction, including nil
 
-    for (int i = 0;  i < joystick.numHats;  i++)
+    for (i = 0;  i < joystick.numHats;  i++)
     {
         _glfwJoystickElement* hat = (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick.hats, i);
         int value = hat->value;
         if (value < 0 || value > 8) value = 8;
 
-        for (int j = 0; j < 4 && button < numbuttons; j++)
+        for (j = 0; j < 4 && button < numbuttons; j++)
         {
             buttons[button++] = directions[value] & (1 << j) ? GLFW_PRESS : GLFW_RELEASE;
         }

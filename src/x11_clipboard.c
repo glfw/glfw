@@ -108,7 +108,7 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
     {
         if (request->target == _glfwLibrary.X11.selection.formats[i])
         {
-            // The requested format is one we support
+            // The requested target is one we support
 
             XChangeProperty(_glfwLibrary.X11.display,
                             request->requestor,

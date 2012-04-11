@@ -1241,28 +1241,39 @@ static void processSingleEvent(void)
             break;
         }
 
+        case SelectionClear:
+        {
+            // The ownership of the selection was lost
+
+            free(_glfwLibrary.X11.selection.string);
+            _glfwLibrary.X11.selection.string = NULL;
+            break;
+        }
+
         case SelectionNotify:
         {
-            // Selection notification triggered by the XConvertSelection
+            // The selection conversion status is available
 
-            // Check if the notification property matches the request
-            if (event.xselection.property != _glfwLibrary.X11.selection.request)
-                _glfwLibrary.X11.selection.converted = 2;
-            else // It was successful
-                _glfwLibrary.X11.selection.converted = 1;
+            XSelectionEvent* request = &event.xselection;
+
+            if (_glfwReadSelection(request))
+                _glfwLibrary.X11.selection.status = _GLFW_CONVERSION_SUCCEEDED;
+            else
+                _glfwLibrary.X11.selection.status = _GLFW_CONVERSION_FAILED;
 
             break;
         }
 
         case SelectionRequest:
         {
-            // Selection request triggered by someone wanting data from the
-            // X11 clipboard
-            XSelectionRequestEvent *request = &event.xselectionrequest;
+            // The contents of the selection was requested
 
-            // Construct the response
+            XSelectionRequestEvent* request = &event.xselectionrequest;
+
             XEvent response;
-            response.xselection.property = _glfwSelectionRequest(request);
+            memset(&response, 0, sizeof(response));
+
+            response.xselection.property = _glfwWriteSelection(request);
             response.xselection.type = SelectionNotify;
             response.xselection.display = request->display;
             response.xselection.requestor = request->requestor;
@@ -1270,9 +1281,9 @@ static void processSingleEvent(void)
             response.xselection.target = request->target;
             response.xselection.time = request->time;
 
-            // Send off the event
-            XSendEvent(_glfwLibrary.X11.display, request->requestor, 0, 0, &response);
-
+            XSendEvent(_glfwLibrary.X11.display,
+                       request->requestor,
+                       False, 0, &response);
             break;
         }
 

@@ -61,13 +61,11 @@ static void key_callback(GLFWwindow window, int key, int action)
             {
                 const char* string;
 
-                printf("Paste test.\n");
-
                 string = glfwGetClipboardString(window);
-                if (!string)
-                    printf("Failed to retrieve clipboard string\n");
-
-                printf("%s\n", string);
+                if (string)
+                    printf("Clipboard contains \"%s\"\n", string);
+                else
+                    printf("Clipboard does not contain a string\n");
             }
             break;
 
@@ -76,7 +74,7 @@ static void key_callback(GLFWwindow window, int key, int action)
             {
                 const char* string = "Hello GLFW World!";
                 glfwSetClipboardString(window, string);
-                printf("Setting clipboard to: %s\n", string);
+                printf("Setting clipboard to \"%s\"\n", string);
             }
             break;
     }
@@ -89,7 +87,7 @@ static void size_callback(GLFWwindow window, int width, int height)
 
 static void error_callback(int error, const char* description)
 {
-    fprintf(stderr, "Error: %s in %s\n", glfwErrorString(error), description);
+    fprintf(stderr, "Error in %s\n", description);
 }
 
 int main(int argc, char** argv)
@@ -115,7 +113,7 @@ int main(int argc, char** argv)
 
     if (!glfwInit())
     {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        fprintf(stderr, "Failed to initialize GLFW\n");
         exit(EXIT_FAILURE);
     }
 
@@ -124,7 +122,7 @@ int main(int argc, char** argv)
     {
         glfwTerminate();
 
-        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+        fprintf(stderr, "Failed to open GLFW window\n");
         exit(EXIT_FAILURE);
     }
 
@@ -146,7 +144,7 @@ int main(int argc, char** argv)
         glRectf(-0.5f, -0.5f, 0.5f, 0.5f);
 
         glfwSwapBuffers();
-        glfwPollEvents();
+        glfwWaitEvents();
     }
 
     glfwTerminate();

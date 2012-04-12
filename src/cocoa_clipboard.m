@@ -58,8 +58,6 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {
-    const char* source;
-    size_t targetSize;
     NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
 
     if (![[pasteboard types] containsObject:NSStringPboardType])

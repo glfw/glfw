@@ -173,10 +173,6 @@ extern "C" {
   #endif
 #endif
 
-/* This is needed for the declaration of size_t.
- */
-#include <stddef.h>
-
 
 /*************************************************************************
  * GLFW version

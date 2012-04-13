@@ -11,9 +11,8 @@ endif()
 include_directories(${GLFW_SOURCE_DIR}/include
                     ${GLFW_SOURCE_DIR}/support
                     ${OPENGL_INCLUDE_DIR})
-add_executable(clipboard clipboard.c)
-target_link_libraries(clipboard ${STATIC_DEPS})
 
+add_executable(clipboard clipboard.c getopt.c)
 add_executable(defaults defaults.c)
 add_executable(events events.c)
 add_executable(fsaa fsaa.c getopt.c)
@@ -43,8 +42,8 @@ add_executable(windows WIN32 MACOSX_BUNDLE windows.c)
 set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 
 set(WINDOWS_BINARIES accuracy sharing tearing title windows)
-set(CONSOLE_BINARIES defaults events fsaa fsfocus gamma glfwinfo iconify
-                     joysticks listmodes modes peter reopen)
+set(CONSOLE_BINARIES clipboard defaults events fsaa fsfocus gamma glfwinfo
+                     iconify joysticks listmodes modes peter reopen)
 
 if (MSVC)
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables

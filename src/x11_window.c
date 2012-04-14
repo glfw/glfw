@@ -1287,7 +1287,6 @@ static void processSingleEvent(void)
             break;
         }
 
-        // Was the window destroyed?
         case DestroyNotify:
             return;
 

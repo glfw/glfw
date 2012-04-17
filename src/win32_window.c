@@ -522,6 +522,55 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             return 0;
         }
 
+        case WM_TOUCH:
+        {
+            TOUCHINPUT* inputs;
+            UINT count = LOWORD(wParam);
+
+            inputs = (TOUCHINPUT*) malloc(sizeof(TOUCHINPUT) * count);
+
+            if (GetTouchInputInfo((HTOUCHINPUT) lParam,
+                                  count, inputs, sizeof(TOUCHINPUT)))
+            {
+                int i, width, height;
+
+                _glfwPlatformGetWindowSize(window, &width, &height);
+
+                for (i = 0;  i < count;  i++)
+                {
+                    POINT pos;
+
+                    // Discard any points that lie outside of the client area
+
+                    pos.x = TOUCH_COORD_TO_PIXEL(inputs[i].x);
+                    pos.y = TOUCH_COORD_TO_PIXEL(inputs[i].y);
+                    ScreenToClient(window->win32.handle, &pos);
+
+                    if (pos.x < 0 || pos.x >= width ||
+                        pos.y < 0 || pos.y >= height)
+                    {
+                        continue;
+                    }
+
+                    if (inputs[i].dwFlags & TOUCHEVENTF_DOWN)
+                        _glfwInputTouch(window, (int) inputs[i].dwID, GLFW_PRESS);
+                    else if (inputs[i].dwFlags & TOUCHEVENTF_UP)
+                        _glfwInputTouch(window, (int) inputs[i].dwID, GLFW_RELEASE);
+                    else if (inputs[i].dwFlags & TOUCHEVENTF_MOVE)
+                    {
+                        _glfwInputTouchPos(window, (int) inputs[i].dwID,
+                                           inputs[i].x / 100.0,
+                                           inputs[i].y / 100.0);
+                    }
+                }
+
+                CloseTouchInputHandle((HTOUCHINPUT) lParam);
+            }
+
+            free(inputs);
+            break;
+        }
+
         case WM_PAINT:
         {
             _glfwInputWindowDamage(window);
@@ -1042,6 +1091,14 @@ void _glfwPlatformPostEmptyEvent(void)
 {
     _GLFWwindow* window = _glfw.windowListHead;
     PostMessage(window->win32.handle, WM_NULL, 0, 0);
+}
+
+void _glfwPlatformSetTouchInput(_GLFWwindow* window, int enabled)
+{
+    if (enabled)
+        RegisterTouchWindow(window->win32.handle, 0);
+    else
+        UnregisterTouchWindow(window->win32.handle);
 }
 
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)

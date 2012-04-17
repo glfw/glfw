@@ -143,6 +143,7 @@ skills.
  - Cameron King
  - Peter Knut
  - Eric Larson
+ - Quinten Lansu
  - Robin Leffmann
  - Glenn Lewis
  - Shane Liesegang

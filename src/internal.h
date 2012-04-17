@@ -244,6 +244,7 @@ struct _GLFWwindow
     GLboolean           stickyKeys;
     GLboolean           stickyMouseButtons;
     double              cursorPosX, cursorPosY;
+    GLboolean           touchInput;
     int                 cursorMode;
     char                mouseButtons[GLFW_MOUSE_BUTTON_LAST + 1];
     char                keys[GLFW_KEY_LAST + 1];
@@ -278,6 +279,8 @@ struct _GLFWwindow
         GLFWcharfun             character;
         GLFWcharmodsfun         charmods;
         GLFWdropfun             drop;
+        GLFWtouchfun            touch;
+        GLFWtouchposfun         touchPos;
     } callbacks;
 
     // This is defined in the window API's platform.h
@@ -394,6 +397,14 @@ void _glfwPlatformTerminate(void);
  *  @note The returned string must not change for the duration of the program.
  */
 const char* _glfwPlatformGetVersionString(void);
+
+/*! @brief Sets whether touch input is enabled for the specified window.
+ *  @param[in] window The window whose touch input status to change.
+ *  @param[in] enabled @c GL_TRUE to enable touch input, or @c GL_FALSE to
+ *  disable it.
+ *  @ingroup platform
+ */
+void _glfwPlatformSetTouchInput(_GLFWwindow* window, int enabled);
 
 /*! @copydoc glfwGetCursorPos
  *  @ingroup platform
@@ -752,6 +763,23 @@ void _glfwInputCursorMotion(_GLFWwindow* window, double x, double y);
  *  @ingroup event
  */
 void _glfwInputCursorEnter(_GLFWwindow* window, int entered);
+
+/*! @brief Notifies shared code of a touch start/end event.
+ *  @param[in] window The window that received the event.
+ *  @param[in] touch The touch that started or ended.
+ *  @param[in] action One of @c GLFW_PRESS or @c GLFW_RELEASE.
+ *  @ingroup event
+ */
+void _glfwInputTouch(_GLFWwindow* window, int touch, int action);
+
+/*! @brief Notifies shared code of a touch movement event.
+ *  @param[in] window The window that received the event.
+ *  @param[in] touch The touch that moved.
+ *  @param[in] xpos The new x-coordinate of the touch.
+ *  @param[in] ypos The new y-coordinate of the touch.
+ *  @ingroup event
+ */
+void _glfwInputTouchPos(_GLFWwindow* window, int touch, double xpos, double ypos);
 
 /*! @ingroup event
  */

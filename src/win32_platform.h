@@ -99,6 +99,34 @@ typedef struct tagCHANGEFILTERSTRUCT
 #endif
 #endif /*Windows 7*/
 
+#if WINVER < 0x0601
+
+#define WM_TOUCH 0x0240
+
+DECLARE_HANDLE(HTOUCHINPUT);
+
+typedef struct tagTOUCHINPUT
+{
+    LONG x;
+    LONG y;
+    HANDLE hSource;
+    DWORD dwID;
+    DWORD dwFlags;
+    DWORD dwMask;
+    DWORD dwTime;
+    ULONG_PTR dwExtraInfo;
+    DWORD cxContact;
+    DWORD cyContext;
+} TOUCHINPUT, *PTOUCHINPUT;
+
+#define TOUCH_COORD_TO_PIXEL(x) ((x) / 100)
+
+#define TOUCHEVENTF_MOVE    0x0001
+#define TOUCHEVENTF_DOWN    0x0002
+#define TOUCHEVENTF_UP      0x0004
+
+#endif /*WINVER < 0x0601*/
+
 // winmm.dll function pointer typedefs
 typedef MMRESULT (WINAPI * JOYGETDEVCAPS_T)(UINT,LPJOYCAPS,UINT);
 typedef MMRESULT (WINAPI * JOYGETPOS_T)(UINT,LPJOYINFO);
@@ -112,8 +140,16 @@ typedef DWORD (WINAPI * TIMEGETTIME_T)(void);
 // user32.dll function pointer typedefs
 typedef BOOL (WINAPI * SETPROCESSDPIAWARE_T)(void);
 typedef BOOL (WINAPI * CHANGEWINDOWMESSAGEFILTEREX_T)(HWND,UINT,DWORD,PCHANGEFILTERSTRUCT);
+typedef BOOL (WINAPI * GETTOUCHINPUTINFO_T)(HTOUCHINPUT,UINT,PTOUCHINPUT,int);
+typedef BOOL (WINAPI * CLOSETOUCHINPUTHANDLE_T)(HTOUCHINPUT);
+typedef BOOL (WINAPI * REGISTERTOUCHWINDOW_T)(HWND,LONG);
+typedef BOOL (WINAPI * UNREGISTERTOUCHWINDOW_T)(HWND);
 #define _glfw_SetProcessDPIAware _glfw.win32.user32.SetProcessDPIAware
 #define _glfw_ChangeWindowMessageFilterEx _glfw.win32.user32.ChangeWindowMessageFilterEx
+#define _glfw_GetTouchInputInfo     _glfw.win32.user32.GetTouchInputInfo
+#define _glfw_CloseTouchInputHandle _glfw.win32.user32.CloseTouchInputHandle
+#define _glfw_RegisterTouchWindow   _glfw.win32.user32.RegisterTouchWindow
+#define _glfw_UnregisterTouchWindow _glfw.win32.user32.UnregisterTouchWindow
 
 // dwmapi.dll function pointer typedefs
 typedef HRESULT (WINAPI * DWMISCOMPOSITIONENABLED_T)(BOOL*);
@@ -186,7 +222,15 @@ typedef struct _GLFWlibraryWin32
         HINSTANCE       instance;
         SETPROCESSDPIAWARE_T SetProcessDPIAware;
         CHANGEWINDOWMESSAGEFILTEREX_T ChangeWindowMessageFilterEx;
+        GETTOUCHINPUTINFO_T     GetTouchInputInfo;
+        CLOSETOUCHINPUTHANDLE_T CloseTouchInputHandle;
+        REGISTERTOUCHWINDOW_T   RegisterTouchWindow;
+        UNREGISTERTOUCHWINDOW_T UnregisterTouchWindow;
     } user32;
+
+    struct {
+        GLFWbool        available;
+    } touch;
 
     // dwmapi.dll
     struct {

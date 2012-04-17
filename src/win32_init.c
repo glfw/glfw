@@ -96,6 +96,22 @@ static GLboolean initLibraries(void)
             GetProcAddress(_glfw.win32.user32.instance, "SetProcessDPIAware");
         _glfw.win32.user32.ChangeWindowMessageFilterEx = (CHANGEWINDOWMESSAGEFILTEREX_T)
             GetProcAddress(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
+        _glfw.win32.user32.GetTouchInputInfo = (GETTOUCHINPUTINFO_T)
+            GetProcAddress(_glfw.win32.user32.instance, "GetTouchInputInfo");
+        _glfw.win32.user32.CloseTouchInputHandle = (CLOSETOUCHINPUTHANDLE_T)
+            GetProcAddress(_glfw.win32.user32.instance, "CloseTouchInputHandle");
+        _glfw.win32.user32.RegisterTouchWindow = (REGISTERTOUCHWINDOW_T)
+            GetProcAddress(_glfw.win32.user32.instance, "RegisterTouchWindow");
+        _glfw.win32.user32.UnregisterTouchWindow = (UNREGISTERTOUCHWINDOW_T)
+            GetProcAddress(_glfw.win32.user32.instance, "UnregisterTouchWindow");
+    }
+
+    if (_glfw.win32.user32.GetTouchInputInfo &&
+        _glfw.win32.user32.CloseTouchInputHandle &&
+        _glfw.win32.user32.RegisterTouchWindow &&
+        _glfw.win32.user32.UnregisterTouchWindow)
+    {
+        _glfw.win32.touch.available = GL_TRUE;
     }
 
     _glfw.win32.dwmapi.instance = LoadLibraryW(L"dwmapi.dll");

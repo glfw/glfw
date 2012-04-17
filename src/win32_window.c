@@ -527,10 +527,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             TOUCHINPUT* inputs;
             UINT count = LOWORD(wParam);
 
+            if (!_glfw.win32.touch.available)
+                return 0;
+
             inputs = (TOUCHINPUT*) malloc(sizeof(TOUCHINPUT) * count);
 
-            if (GetTouchInputInfo((HTOUCHINPUT) lParam,
-                                  count, inputs, sizeof(TOUCHINPUT)))
+            if (_glfw_GetTouchInputInfo((HTOUCHINPUT) lParam,
+                                        count, inputs, sizeof(TOUCHINPUT)))
             {
                 int i, width, height;
 
@@ -564,7 +567,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     }
                 }
 
-                CloseTouchInputHandle((HTOUCHINPUT) lParam);
+                _glfw_CloseTouchInputHandle((HTOUCHINPUT) lParam);
             }
 
             free(inputs);
@@ -1095,10 +1098,13 @@ void _glfwPlatformPostEmptyEvent(void)
 
 void _glfwPlatformSetTouchInput(_GLFWwindow* window, int enabled)
 {
+    if (!_glfw.win32.touch.available)
+        return;
+
     if (enabled)
-        RegisterTouchWindow(window->win32.handle, 0);
+        _glfw_RegisterTouchWindow(window->win32.handle, 0);
     else
-        UnregisterTouchWindow(window->win32.handle);
+        _glfw_UnregisterTouchWindow(window->win32.handle);
 }
 
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)

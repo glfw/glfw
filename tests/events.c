@@ -49,6 +49,7 @@ typedef struct
     GLFWwindow* window;
     int number;
     int closeable;
+    int touch;
 } Slot;
 
 static void usage(void)
@@ -371,6 +372,15 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
     switch (key)
     {
+        case GLFW_KEY_T:
+        {
+            slot->touch = !slot->touch;
+            glfwSetInputMode(window, GLFW_TOUCH, slot->touch);
+
+            printf("(( touch %s ))\n", slot->touch ? "enabled" : "disabled");
+            break;
+        }
+
         case GLFW_KEY_C:
         {
             slot->closeable = !slot->closeable;
@@ -517,6 +527,7 @@ int main(int argc, char** argv)
         char title[128];
 
         slots[i].closeable = GL_TRUE;
+        slots[i].touch = GL_FALSE;
         slots[i].number = i + 1;
 
         sprintf(title, "Event Linter (Window %i)", slots[i].number);

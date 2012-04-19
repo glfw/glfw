@@ -3,7 +3,7 @@ link_libraries(glfw ${OPENGL_glu_LIBRARY})
 
 if (BUILD_SHARED_LIBS)
     add_definitions(-DGLFW_DLL)
-    link_libraries(${OPENGL_gl_LIBRARY})
+    link_libraries(${OPENGL_gl_LIBRARY} ${MATH_LIBRARY})
 else()
     link_libraries(${glfw_LIBRARIES})
 endif()

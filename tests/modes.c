@@ -153,7 +153,7 @@ static void test_modes(GLFWvidmode* modes, int count)
 
         glfwGetWindowSize(window, &width, &height);
 
-        if (width != modes[i].width || height != height)
+        if (width != modes[i].width || height != modes[i].height)
         {
             printf("*** Size mismatch: %ix%i instead of %ix%i\n",
                    width, height,

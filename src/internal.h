@@ -51,6 +51,17 @@
 #define GLFW_STICK 2
 
 
+//========================================================================
+// Internal type declarations
+//========================================================================
+
+typedef struct _GLFWhints       _GLFWhints;
+typedef struct _GLFWwndconfig   _GLFWwndconfig;
+typedef struct _GLFWfbconfig    _GLFWfbconfig;
+typedef struct _GLFWwindow      _GLFWwindow;
+typedef struct _GLFWlibrary     _GLFWlibrary;
+
+
 //------------------------------------------------------------------------
 // Platform specific definitions goes in platform.h (which also includes
 // glfw.h)
@@ -74,12 +85,6 @@
 #else
  #error "No supported platform selected"
 #endif
-
-typedef struct _GLFWhints _GLFWhints;
-typedef struct _GLFWwndconfig _GLFWwndconfig;
-typedef struct _GLFWfbconfig _GLFWfbconfig;
-typedef struct _GLFWwindow _GLFWwindow;
-typedef struct _GLFWlibrary _GLFWlibrary;
 
 
 //------------------------------------------------------------------------

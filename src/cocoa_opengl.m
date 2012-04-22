@@ -94,7 +94,7 @@ void* _glfwPlatformGetProcAddress(const char* procname)
                                                        procname,
                                                        kCFStringEncodingASCII);
 
-    void* symbol = CFBundleGetFunctionPointerForName(_glfwLibrary.NS.OpenGLFramework,
+    void* symbol = CFBundleGetFunctionPointerForName(_glfwLibrary.NSGL.framework,
                                                      symbolName);
 
     CFRelease(symbolName);

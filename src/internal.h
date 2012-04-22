@@ -247,7 +247,8 @@ struct _GLFWlibrary
     int           originalRampSize;
 
     // This is defined in the current port's platform.h
-    _GLFW_PLATFORM_LIBRARY_STATE;
+    _GLFW_PLATFORM_LIBRARY_WINDOW_STATE;
+    _GLFW_PLATFORM_LIBRARY_OPENGL_STATE;
 };
 
 

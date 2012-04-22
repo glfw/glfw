@@ -43,8 +43,9 @@ typedef void* id;
 
 
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowNS NS
-#define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryNS NS
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextNSGL NSGL
+#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS NS
+#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryNSGL NSGL
 
 
 //========================================================================
@@ -80,7 +81,7 @@ typedef struct _GLFWwindowNS
 
 
 //------------------------------------------------------------------------
-// Platform-specific library global data
+// Platform-specific library global data for Cocoa
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryNS
 {
@@ -89,8 +90,6 @@ typedef struct _GLFWlibraryNS
         double resolution;
     } timer;
 
-    // dlopen handle for dynamically loading OpenGL extension entry points
-    void*            OpenGLFramework;
     CGDisplayModeRef desktopMode;
     CGEventSourceRef eventSource;
     id               delegate;
@@ -98,6 +97,16 @@ typedef struct _GLFWlibraryNS
 
     char*            clipboardString;
 } _GLFWlibraryNS;
+
+
+//------------------------------------------------------------------------
+// Platform-specific library global data for NSGL
+//------------------------------------------------------------------------
+typedef struct _GLFWlibraryNSGL
+{
+    // dlopen handle for dynamically loading OpenGL extension entry points
+    void*            framework;
+} _GLFWlibraryNSGL;
 
 
 //========================================================================

@@ -55,8 +55,8 @@ static void initLibraries(void)
 
     for (i = 0;  libGL_names[i] != NULL;  i++)
     {
-        _glfwLibrary.X11.libGL = dlopen(libGL_names[i], RTLD_LAZY | RTLD_GLOBAL);
-        if (_glfwLibrary.X11.libGL)
+        _glfwLibrary.GLX.libGL = dlopen(libGL_names[i], RTLD_LAZY | RTLD_GLOBAL);
+        if (_glfwLibrary.GLX.libGL)
             break;
     }
 #endif
@@ -569,8 +569,8 @@ static GLboolean initDisplay(void)
     }
 
     if (!glXQueryVersion(_glfwLibrary.X11.display,
-                         &_glfwLibrary.X11.glxMajor,
-                         &_glfwLibrary.X11.glxMinor))
+                         &_glfwLibrary.GLX.majorVersion,
+                         &_glfwLibrary.GLX.minorVersion))
     {
         _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
                       "X11/GLX: Failed to query GLX version");
@@ -775,10 +775,10 @@ int _glfwPlatformTerminate(void)
 
     // Unload libGL.so if necessary
 #ifdef _GLFW_DLOPEN_LIBGL
-    if (_glfwLibrary.X11.libGL != NULL)
+    if (_glfwLibrary.GLX.libGL != NULL)
     {
-        dlclose(_glfwLibrary.X11.libGL);
-        _glfwLibrary.X11.libGL = NULL;
+        dlclose(_glfwLibrary.GLX.libGL);
+        _glfwLibrary.GLX.libGL = NULL;
     }
 #endif
 

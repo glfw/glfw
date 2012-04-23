@@ -530,6 +530,74 @@ static int createContext(_GLFWwindow* window,
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
+// Initialize GLX
+//========================================================================
+
+int _glfwInitOpenGL(void)
+{
+#ifdef _GLFW_DLOPEN_LIBGL
+    int i;
+    char* libGL_names[ ] =
+    {
+        "libGL.so",
+        "libGL.so.1",
+        "/usr/lib/libGL.so",
+        "/usr/lib/libGL.so.1",
+        NULL
+    };
+
+    for (i = 0;  libGL_names[i] != NULL;  i++)
+    {
+        _glfwLibrary.GLX.libGL = dlopen(libGL_names[i], RTLD_LAZY | RTLD_GLOBAL);
+        if (_glfwLibrary.GLX.libGL)
+            break;
+    }
+
+    if (!_glfwLibrary.GLX.libGL)
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR, "X11/GLX: Failed to find libGL");
+        return GL_FALSE;
+    }
+#endif
+
+    // Check if GLX is supported on this display
+    if (!glXQueryExtension(_glfwLibrary.X11.display, NULL, NULL))
+    {
+        _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "X11/GLX: GLX supported not found");
+        return GL_FALSE;
+    }
+
+    if (!glXQueryVersion(_glfwLibrary.X11.display,
+                         &_glfwLibrary.GLX.majorVersion,
+                         &_glfwLibrary.GLX.minorVersion))
+    {
+        _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
+                      "X11/GLX: Failed to query GLX version");
+        return GL_FALSE;
+    }
+
+    return GL_TRUE;
+}
+
+
+//========================================================================
+// Terminate GLX
+//========================================================================
+
+void _glfwTerminateOpenGL(void)
+{
+    // Unload libGL.so if necessary
+#ifdef _GLFW_DLOPEN_LIBGL
+    if (_glfwLibrary.GLX.libGL != NULL)
+    {
+        dlclose(_glfwLibrary.GLX.libGL);
+        _glfwLibrary.GLX.libGL = NULL;
+    }
+#endif
+}
+
+
+//========================================================================
 // Prepare for creation of the OpenGL context
 //========================================================================
 

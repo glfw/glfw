@@ -116,23 +116,6 @@ typedef struct _GLFWcontextGLX
     GLXContext    context;           // OpenGL rendering context
     XVisualInfo*  visual;            // Visual for selected GLXFBConfig
 
-    // GLX extensions
-    PFNGLXSWAPINTERVALSGIPROC             SwapIntervalSGI;
-    PFNGLXSWAPINTERVALEXTPROC             SwapIntervalEXT;
-    PFNGLXGETFBCONFIGATTRIBSGIXPROC       GetFBConfigAttribSGIX;
-    PFNGLXCHOOSEFBCONFIGSGIXPROC          ChooseFBConfigSGIX;
-    PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC CreateContextWithConfigSGIX;
-    PFNGLXGETVISUALFROMFBCONFIGSGIXPROC   GetVisualFromFBConfigSGIX;
-    PFNGLXCREATECONTEXTATTRIBSARBPROC     CreateContextAttribsARB;
-    GLboolean   SGIX_fbconfig;
-    GLboolean   SGI_swap_control;
-    GLboolean   EXT_swap_control;
-    GLboolean   ARB_multisample;
-    GLboolean   ARB_create_context;
-    GLboolean   ARB_create_context_profile;
-    GLboolean   ARB_create_context_robustness;
-    GLboolean   EXT_create_context_es2_profile;
-
 } _GLFWcontextGLX;
 
 
@@ -255,6 +238,23 @@ typedef struct _GLFWlibraryGLX
 {
     // Server-side GLX version
     int             majorVersion, minorVersion;
+
+    // GLX extensions
+    PFNGLXSWAPINTERVALSGIPROC             SwapIntervalSGI;
+    PFNGLXSWAPINTERVALEXTPROC             SwapIntervalEXT;
+    PFNGLXGETFBCONFIGATTRIBSGIXPROC       GetFBConfigAttribSGIX;
+    PFNGLXCHOOSEFBCONFIGSGIXPROC          ChooseFBConfigSGIX;
+    PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC CreateContextWithConfigSGIX;
+    PFNGLXGETVISUALFROMFBCONFIGSGIXPROC   GetVisualFromFBConfigSGIX;
+    PFNGLXCREATECONTEXTATTRIBSARBPROC     CreateContextAttribsARB;
+    GLboolean   SGIX_fbconfig;
+    GLboolean   SGI_swap_control;
+    GLboolean   EXT_swap_control;
+    GLboolean   ARB_multisample;
+    GLboolean   ARB_create_context;
+    GLboolean   ARB_create_context_profile;
+    GLboolean   ARB_create_context_robustness;
+    GLboolean   EXT_create_context_es2_profile;
 
 #if defined(_GLFW_DLOPEN_LIBGL)
     void*           libGL;  // dlopen handle for libGL.so

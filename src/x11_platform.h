@@ -289,6 +289,7 @@ int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWwndconfig* wndconfig,
                        const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContext(_GLFWwindow* window);
+XVisualInfo* _glfwGetContextVisual(_GLFWwindow* window);
 
 // Fullscreen support
 int  _glfwGetClosestVideoMode(int* width, int* height, int* rate);

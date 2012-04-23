@@ -97,13 +97,14 @@ static GLboolean createWindow(_GLFWwindow* window,
     XEvent event;
     unsigned long wamask;
     XSetWindowAttributes wa;
+    XVisualInfo* visual = _glfwGetContextVisual(window);
 
     // Every window needs a colormap
     // Create one based on the visual used by the current context
 
     window->X11.colormap = XCreateColormap(_glfwLibrary.X11.display,
                                            _glfwLibrary.X11.root,
-                                           window->GLX.visual->visual,
+                                           visual->visual,
                                            AllocNone);
 
     // Create the actual window
@@ -133,9 +134,9 @@ static GLboolean createWindow(_GLFWwindow* window,
             0, 0,                            // Upper left corner of this window on root
             window->width, window->height,
             0,                               // Border width
-            window->GLX.visual->depth,          // Color depth
+            visual->depth,                   // Color depth
             InputOutput,
-            window->GLX.visual->visual,
+            visual->visual,
             wamask,
             &wa
         );
@@ -978,12 +979,6 @@ void _glfwPlatformCloseWindow(_GLFWwindow* window)
         leaveFullscreenMode(window);
 
     _glfwDestroyContext(window);
-
-    if (window->GLX.visual)
-    {
-        XFree(window->GLX.visual);
-        window->GLX.visual = NULL;
-    }
 
     if (window->X11.handle)
     {

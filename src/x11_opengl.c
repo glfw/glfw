@@ -637,6 +637,12 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 void _glfwDestroyContext(_GLFWwindow* window)
 {
+    if (window->GLX.visual)
+    {
+        XFree(window->GLX.visual);
+        window->GLX.visual = NULL;
+    }
+
     if (window->GLX.context)
     {
         // Release and destroy the context
@@ -644,6 +650,16 @@ void _glfwDestroyContext(_GLFWwindow* window)
         glXDestroyContext(_glfwLibrary.X11.display, window->GLX.context);
         window->GLX.context = NULL;
     }
+}
+
+
+//========================================================================
+// Return the X visual associated with the specified context
+//========================================================================
+
+XVisualInfo* _glfwGetContextVisual(_GLFWwindow* window)
+{
+    return window->GLX.visual;
 }
 
 

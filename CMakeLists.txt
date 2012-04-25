@@ -12,8 +12,14 @@ set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(GLFW_USE_EGL "Build for EGL and OpenGL ES platform (Currently only X11)" OFF)
 
-find_package(OpenGL REQUIRED)
+if (GLFW_USE_EGL)
+    SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMake/modules)
+    find_package(EGL REQUIRED)
+else()
+    find_package(OpenGL REQUIRED)
+endif()
 
 #--------------------------------------------------------------------
 # Enable all warnings on GCC, regardless of OS
@@ -39,8 +45,14 @@ elseif (UNIX AND APPLE)
     set(_GLFW_COCOA_NSGL 1)
     message(STATUS "Building GLFW for Cocoa and NSOpenGL on Mac OS X")
 elseif (UNIX AND NOT APPLE)
-    set(_GLFW_X11_GLX 1)
-    message(STATUS "Building GLFW for X11 and GLX on a Unix-like system")
+    set(_GLFW_X11 1)
+    if (GLFW_USE_EGL)
+        set(_GLFW_X11_EGL 1)
+        message(STATUS "Building GLFW for X11 and EGL on a Unix-like system")
+    else()
+        set(_GLFW_X11_GLX 1)
+        message(STATUS "Building GLFW for X11 and GLX on a Unix-like system")
+    endif()
 else()
     message(FATAL_ERROR "No supported platform was detected")
 endif()
@@ -62,20 +74,18 @@ if (_GLFW_WIN32_WGL)
 endif()
 
 #--------------------------------------------------------------------
-# Set up GLFW for Xlib and GLX on Unix-like systems with X Windows
+# Set up GLFW for Xlib and GLX or EGL on Unix-like systems with X Windows
 #--------------------------------------------------------------------
-if (_GLFW_X11_GLX)
+if (_GLFW_X11)
 
     find_package(X11 REQUIRED)
 
-    # Set up library and include paths
-    list(APPEND glfw_INCLUDE_DIRS ${X11_X11_INCLUDE_PATH} ${OPENGL_INCLUDE_DIR})
-    list(APPEND glfw_LIBRARIES ${X11_X11_LIB} ${OPENGL_gl_LIBRARY})
-
-    set(GLFW_PKG_DEPS "gl x11")
     set(GLFW_PKG_LIBS "")
+    set(GLFW_PKG_DEPS "x11")
 
-    include(CheckFunctionExists)
+    # Set up library and include paths
+    list(APPEND glfw_INCLUDE_DIRS ${X11_X11_INCLUDE_PATH})
+    list(APPEND glfw_LIBRARIES ${X11_X11_LIB})
 
     # Check for XRandR (modern resolution switching extension)
     if (X11_Xrandr_FOUND)
@@ -121,6 +131,25 @@ if (_GLFW_X11_GLX)
         set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lm")
     endif()
 
+    if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+        set(_GLFW_USE_LINUX_JOYSTICKS 1)
+    endif()
+
+endif()
+
+#--------------------------------------------------------------------
+# GLX Context
+#--------------------------------------------------------------------
+if (_GLFW_X11_GLX)
+
+    # Set up library and include paths
+    list(APPEND glfw_INCLUDE_DIRS${OPENGL_INCLUDE_DIR})
+    list(APPEND glfw_LIBRARIES ${OPENGL_gl_LIBRARY})
+
+    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} gl")
+
+    include(CheckFunctionExists)
+
     set(CMAKE_REQUIRED_LIBRARIES ${OPENGL_gl_LIBRARY})
 
     check_function_exists(glXGetProcAddress _GLFW_HAS_GLXGETPROCADDRESS)
@@ -160,9 +189,50 @@ if (_GLFW_X11_GLX)
         endif()
     endif()
 
-    if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-        set(_GLFW_USE_LINUX_JOYSTICKS 1)
+endif()
+
+#--------------------------------------------------------------------
+# EGL Context
+#--------------------------------------------------------------------
+if (_GLFW_X11_EGL)
+
+    # Set up library and include paths
+    list(APPEND glfw_INCLUDE_DIRS${EGL_INCLUDE_DIR})
+    list(APPEND glfw_LIBRARIES ${EGL_LIBRARY})
+
+    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} egl")
+
+    include(CheckFunctionExists)
+
+    set(CMAKE_REQUIRED_LIBRARIES ${EGL_LIBRARY})
+
+    check_function_exists(eglGetProcAddress _GLFW_HAS_EGLGETPROCADDRESS)
+
+    if (NOT _GLFW_HAS_EGLGETPROCADDRESS)
+        message(WARNING "No eglGetProcAddress found")
+
+        # Check for dlopen support as a fallback
+
+        find_library(DL_LIBRARY dl)
+        mark_as_advanced(DL_LIBRARY)
+        if (DL_LIBRARY)
+            set(CMAKE_REQUIRED_LIBRARIES ${DL_LIBRARY})
+        else()
+            set(CMAKE_REQUIRED_LIBRARIES "")
+        endif()
+
+        check_function_exists(dlopen _GLFW_HAS_DLOPEN)
+
+        if (NOT _GLFW_HAS_DLOPEN)
+            message(FATAL_ERROR "No entry point retrieval mechanism found")
+        endif()
+
+        if (DL_LIBRARY)
+            list(APPEND glfw_LIBRARIES ${DL_LIBRARY})
+            set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -ldl")
+        endif()
     endif()
+
 endif()
 
 #--------------------------------------------------------------------

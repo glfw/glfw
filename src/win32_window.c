@@ -618,14 +618,18 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
                     if (inputs[i].dwFlags & TOUCHEVENTF_DOWN)
                         _glfwInputTouch(window, (int) inputs[i].dwID, GLFW_PRESS);
-                    else if (inputs[i].dwFlags & TOUCHEVENTF_UP)
-                        _glfwInputTouch(window, (int) inputs[i].dwID, GLFW_RELEASE);
-                    else if (inputs[i].dwFlags & TOUCHEVENTF_MOVE)
+
+                    if (inputs[i].dwFlags & TOUCHEVENTF_DOWN ||
+                        inputs[i].dwFlags & TOUCHEVENTF_UP ||
+                        inputs[i].dwFlags & TOUCHEVENTF_MOVE)
                     {
                         _glfwInputTouchPos(window, (int) inputs[i].dwID,
                                            inputs[i].x / 100.0 - xpos,
                                            inputs[i].y / 100.0 - ypos);
                     }
+
+                    if (inputs[i].dwFlags & TOUCHEVENTF_UP)
+                        _glfwInputTouch(window, (int) inputs[i].dwID, GLFW_RELEASE);
                 }
 
                 _glfw_CloseTouchInputHandle((HTOUCHINPUT) lParam);

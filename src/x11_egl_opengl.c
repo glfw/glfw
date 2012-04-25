@@ -40,7 +40,7 @@
 // Returns the specified attribute of the specified EGLConfig
 //========================================================================
 
-static int getFBConfigAttrib(_GLFWwindow* window, EGLConfig fbconfig, int attrib)
+static int getFBConfigAttrib(EGLConfig fbconfig, int attrib)
 {
     int value;
     eglGetConfigAttrib(_glfwLibrary.EGL.display, fbconfig, attrib, &value);
@@ -80,37 +80,36 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
 
     for (i = 0;  i < count;  i++)
     {
-        if (!getFBConfigAttrib(window, fbconfigs[i], EGL_NATIVE_VISUAL_ID))
+        if (!getFBConfigAttrib(fbconfigs[i], EGL_NATIVE_VISUAL_ID))
         {
             // Only consider EGLConfigs with associated visuals
             continue;
         }
 
-        if (!(getFBConfigAttrib(window,
-                                fbconfigs[i],
+        if (!(getFBConfigAttrib(fbconfigs[i],
                                 EGL_COLOR_BUFFER_TYPE) & EGL_RGB_BUFFER))
         {
             // Only consider RGB(A) EGLConfigs
             continue;
         }
 
-        if (!(getFBConfigAttrib(window, fbconfigs[i], EGL_RENDERABLE_TYPE) & EGL_WINDOW_BIT))
+        if (!(getFBConfigAttrib(fbconfigs[i], EGL_RENDERABLE_TYPE) & EGL_WINDOW_BIT))
         {
             // Only consider window EGLConfigs
             continue;
         }
 
-        result[*found].redBits = getFBConfigAttrib(window, fbconfigs[i], EGL_RED_SIZE);
-        result[*found].greenBits = getFBConfigAttrib(window, fbconfigs[i], EGL_GREEN_SIZE);
-        result[*found].blueBits = getFBConfigAttrib(window, fbconfigs[i], EGL_BLUE_SIZE);
+        result[*found].redBits = getFBConfigAttrib(fbconfigs[i], EGL_RED_SIZE);
+        result[*found].greenBits = getFBConfigAttrib(fbconfigs[i], EGL_GREEN_SIZE);
+        result[*found].blueBits = getFBConfigAttrib(fbconfigs[i], EGL_BLUE_SIZE);
 
-        result[*found].alphaBits = getFBConfigAttrib(window, fbconfigs[i], EGL_ALPHA_SIZE);
-        result[*found].depthBits = getFBConfigAttrib(window, fbconfigs[i], EGL_DEPTH_SIZE);
-        result[*found].stencilBits = getFBConfigAttrib(window, fbconfigs[i], EGL_STENCIL_SIZE);
+        result[*found].alphaBits = getFBConfigAttrib(fbconfigs[i], EGL_ALPHA_SIZE);
+        result[*found].depthBits = getFBConfigAttrib(fbconfigs[i], EGL_DEPTH_SIZE);
+        result[*found].stencilBits = getFBConfigAttrib(fbconfigs[i], EGL_STENCIL_SIZE);
 
-        result[*found].samples = getFBConfigAttrib(window, fbconfigs[i], EGL_SAMPLES);
+        result[*found].samples = getFBConfigAttrib(fbconfigs[i], EGL_SAMPLES);
 
-        result[*found].platformID = (GLFWintptr) getFBConfigAttrib(window, fbconfigs[i], EGL_CONFIG_ID);
+        result[*found].platformID = (GLFWintptr) getFBConfigAttrib(fbconfigs[i], EGL_CONFIG_ID);
 
         (*found)++;
     }
@@ -148,16 +147,16 @@ static void refreshContextParams(_GLFWwindow* window, EGLint fbconfigID)
     // true sounds better than false, so we hardcode true here
     window->accelerated = GL_TRUE;
 
-    window->redBits = getFBConfigAttrib(window, *fbconfig, EGL_RED_SIZE);
-    window->greenBits = getFBConfigAttrib(window, *fbconfig, EGL_GREEN_SIZE);
-    window->blueBits = getFBConfigAttrib(window, *fbconfig, EGL_BLUE_SIZE);
+    window->redBits = getFBConfigAttrib(*fbconfig, EGL_RED_SIZE);
+    window->greenBits = getFBConfigAttrib(*fbconfig, EGL_GREEN_SIZE);
+    window->blueBits = getFBConfigAttrib(*fbconfig, EGL_BLUE_SIZE);
 
-    window->alphaBits = getFBConfigAttrib(window, *fbconfig, EGL_ALPHA_SIZE);
-    window->depthBits = getFBConfigAttrib(window, *fbconfig, EGL_DEPTH_SIZE);
-    window->stencilBits = getFBConfigAttrib(window, *fbconfig, EGL_STENCIL_SIZE);
+    window->alphaBits = getFBConfigAttrib(*fbconfig, EGL_ALPHA_SIZE);
+    window->depthBits = getFBConfigAttrib(*fbconfig, EGL_DEPTH_SIZE);
+    window->stencilBits = getFBConfigAttrib(*fbconfig, EGL_STENCIL_SIZE);
 
     // Get FSAA buffer sample count
-    window->samples = getFBConfigAttrib(window, *fbconfig, EGL_SAMPLES);
+    window->samples = getFBConfigAttrib(*fbconfig, EGL_SAMPLES);
 }
 
 
@@ -173,8 +172,9 @@ static int createContext(_GLFWwindow* window,
                          const _GLFWwndconfig* wndconfig,
                          EGLint fbconfigID)
 {
-    int attribs[40];
-    EGLint dummy, index, vid;
+    int attribs[40], visMask;
+    EGLint dummy, index, vid = 0;
+    EGLint red_size, green_size, blue_size, alpha_size;
     EGLConfig fbconfig[_GLFW_EGL_CONFIG_IN];
     EGLContext share = NULL;
     XVisualInfo visTemplate;
@@ -187,7 +187,7 @@ static int createContext(_GLFWwindow* window,
         index = 0;
 
         setEGLattrib(attribs, index, EGL_CONFIG_ID, fbconfigID);
-        setEGLattrib(attribs, index, None, None);
+        setEGLattrib(attribs, index, EGL_NONE, EGL_NONE);
 
         eglChooseConfig(_glfwLibrary.EGL.display,
                 attribs,
@@ -204,21 +204,47 @@ static int createContext(_GLFWwindow* window,
     }
 
     // Retrieve the corresponding visual
-    if (!eglGetConfigAttrib(_glfwLibrary.EGL.display, *fbconfig, EGL_NATIVE_VISUAL_ID, &vid)) {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                "X11/EGL: Failed to retrieve visual for EGLConfig");
-        return GL_FALSE;
+    // NOTE: This is the only non-portable code in this file.
+    // Maybe it would not hurt too much to add #ifdefs for different platforms?
+    eglGetConfigAttrib(_glfwLibrary.EGL.display, *fbconfig, EGL_NATIVE_VISUAL_ID, &vid);
+
+    // Init visual template
+    visTemplate.screen = _glfwLibrary.X11.screen;
+    visMask = VisualScreenMask;
+
+    if (vid != 0)
+    {
+        // The X window visual must match the EGL config
+        visTemplate.visualid = vid;
+        visMask |= VisualIDMask;
+    }
+    else
+    {
+        // some EGL drivers don't implement the EGL_NATIVE_VISUAL_ID
+        // attribute, so attempt to find the closest match.
+
+        eglGetConfigAttrib(_glfwLibrary.EGL.display, *fbconfig,
+                EGL_RED_SIZE, &red_size);
+        eglGetConfigAttrib (_glfwLibrary.EGL.display, *fbconfig,
+                EGL_GREEN_SIZE, &green_size);
+        eglGetConfigAttrib (_glfwLibrary.EGL.display, *fbconfig,
+                EGL_BLUE_SIZE, &blue_size);
+        eglGetConfigAttrib (_glfwLibrary.EGL.display, *fbconfig,
+                EGL_ALPHA_SIZE, &alpha_size);
+
+        visTemplate.depth = red_size + green_size + blue_size + alpha_size;
+        visMask |= VisualDepthMask;
     }
 
-    // The X window visual must match the EGL config
-    visTemplate.visualid = vid;
-    window->EGL.visual = XGetVisualInfo(_glfwLibrary.X11.display, VisualIDMask, &visTemplate, &dummy);
+    // Get X Visual
+    window->EGL.visual = XGetVisualInfo(_glfwLibrary.X11.display, visMask, &visTemplate, &dummy);
     if (window->EGL.visual == NULL) {
         _glfwSetError(GLFW_PLATFORM_ERROR,
                       "X11/GLX: Failed to retrieve visual for EGLConfig");
         return GL_FALSE;
     }
 
+    index = 0;
     if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE)
     {
         setEGLattrib(attribs, index, EGL_CONTEXT_CLIENT_VERSION, 2);
@@ -241,6 +267,9 @@ static int createContext(_GLFWwindow* window,
                       "X11/EGL: Failed to create OpenGL(|ES) context");
         return GL_FALSE;
     }
+
+    // store configuraion
+    window->EGL.config = *fbconfig;
 
     refreshContextParams(window, fbconfigID);
 
@@ -372,11 +401,18 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 void _glfwDestroyContext(_GLFWwindow* window)
 {
+    if (window->EGL.surface)
+    {
+        // Release and destroy the surface
+        eglDestroySurface(_glfwLibrary.EGL.display, window->EGL.surface);
+        window->EGL.surface = EGL_NO_SURFACE;
+    }
+
     if (window->EGL.context)
     {
         // Release and destroy the context
-        eglMakeCurrent(_glfwLibrary.EGL.display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-        window->EGL.context = NULL;
+        eglDestroyContext(_glfwLibrary.EGL.display, window->EGL.context);
+        window->EGL.context = EGL_NO_CONTEXT;
     }
 }
 
@@ -389,6 +425,16 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 {
     if (window)
     {
+        if (window->EGL.surface == EGL_NO_SURFACE)
+        {
+            window->EGL.surface = eglCreateWindowSurface(_glfwLibrary.EGL.display,
+                    window->EGL.config, (EGLNativeWindowType)window->X11.handle, NULL);
+            if (window->EGL.surface == EGL_NO_SURFACE)
+            {
+                _glfwSetError(GLFW_PLATFORM_ERROR,
+                        "X11/EGL: Failed to create window surface");
+            }
+        }
         eglMakeCurrent(_glfwLibrary.EGL.display,
                        window->EGL.surface,
                        window->EGL.surface,

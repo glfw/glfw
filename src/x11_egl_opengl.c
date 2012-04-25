@@ -401,6 +401,12 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 void _glfwDestroyContext(_GLFWwindow* window)
 {
+    if (window->EGL.visual)
+    {
+       XFree(window->EGL.visual);
+       window->EGL.visual = NULL;
+    }
+
     if (window->EGL.surface)
     {
         // Release and destroy the surface
@@ -416,6 +422,14 @@ void _glfwDestroyContext(_GLFWwindow* window)
     }
 }
 
+//========================================================================
+// Return the X visual associated with the specified context
+//========================================================================
+
+XVisualInfo* _glfwGetContextVisual(_GLFWwindow* window)
+{
+    return window->EGL.visual;
+}
 
 //========================================================================
 // Make the OpenGL context associated with the specified window current

@@ -357,6 +357,8 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
     rgbarray = (int*) malloc(sizeof(int) * viscount);
     rgbcount = 0;
 
+    // Temporary solution
+#if !defined(_GLFW_X11_EGL)
     // Build RGB array
     for (k = 0;  k < viscount;  k++)
     {
@@ -386,6 +388,7 @@ int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
             }
         }
     }
+#endif
 
     XFree(vislist);
 

@@ -37,6 +37,8 @@
 
 // Define this to 1 if building GLFW for X11/GLX
 #cmakedefine _GLFW_X11_GLX
+// Define this to 1 if building GLFW for X11/EGL
+#cmakedefine _GLFW_X11_EGL
 // Define this to 1 if building GLFW for Win32/WGL
 #cmakedefine _GLFW_WIN32_WGL
 // Define this to 1 if building GLFW for Cocoa/NSOpenGL
@@ -62,6 +64,9 @@
 #cmakedefine _GLFW_HAS_GLXGETPROCADDRESSARB
 // Define this to 1 if glXGetProcAddressEXT is available
 #cmakedefine _GLFW_HAS_GLXGETPROCADDRESSEXT
+
+// Define this to 1 if eglGetProcAddress is available
+#cmakedefine _GLFW_HAS_EGLGETPROCADDRESS 1
 
 // Define this to 1 if the Linux joystick API is available
 #cmakedefine _GLFW_USE_LINUX_JOYSTICKS

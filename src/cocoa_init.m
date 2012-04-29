@@ -81,9 +81,9 @@ int _glfwPlatformInit(void)
 {
     _glfwLibrary.NS.autoreleasePool = [[NSAutoreleasePool alloc] init];
 
-    _glfwLibrary.NS.OpenGLFramework =
+    _glfwLibrary.NSGL.framework =
         CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
-    if (_glfwLibrary.NS.OpenGLFramework == NULL)
+    if (_glfwLibrary.NSGL.framework == NULL)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
                       "glfwInit: Failed to locate OpenGL framework");

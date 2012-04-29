@@ -517,8 +517,7 @@ GLFWAPI void glfwSwapBuffers(void)
         return;
     }
 
-    if (_glfwLibrary.currentWindow)
-        _glfwPlatformSwapBuffers();
+    _glfwPlatformSwapBuffers();
 }
 
 

@@ -75,15 +75,16 @@
 #elif defined(_GLFW_HAS_GLXGETPROCADDRESSEXT)
  #define _glfw_glXGetProcAddress(x) glXGetProcAddressEXT(x)
 #elif defined(_GLFW_HAS_DLOPEN)
- #define _glfw_glXGetProcAddress(x) dlsym(_glfwLibrary.X11.libGL, x)
+ #define _glfw_glXGetProcAddress(x) dlsym(_glfwLibrary.GLX.libGL, x)
  #define _GLFW_DLOPEN_LIBGL
 #else
  #error "No OpenGL entry point retrieval mechanism was enabled"
 #endif
 
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowX11 X11
-#define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryX11 X11
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextGLX GLX
+#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 X11
+#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryGLX GLX
 
 // Clipboard format atom indices
 #define _GLFW_CLIPBOARD_FORMAT_UTF8     0
@@ -157,7 +158,7 @@ typedef struct _GLFWwindowX11
 
 
 //------------------------------------------------------------------------
-// Platform-specific library global data
+// Platform-specific library global data for X11
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryX11
 {
@@ -176,9 +177,6 @@ typedef struct _GLFWlibraryX11
 
     // True if window manager supports EWMH
     GLboolean       hasEWMH;
-
-    // Server-side GLX version
-    int             glxMajor, glxMinor;
 
     struct {
         GLboolean   available;
@@ -248,10 +246,21 @@ typedef struct _GLFWlibraryX11
         int status;
     } selection;
 
+} _GLFWlibraryX11;
+
+
+//------------------------------------------------------------------------
+// Platform-specific library global data for GLX
+//------------------------------------------------------------------------
+typedef struct _GLFWlibraryGLX
+{
+    // Server-side GLX version
+    int             majorVersion, minorVersion;
+
 #if defined(_GLFW_DLOPEN_LIBGL)
     void*           libGL;  // dlopen handle for libGL.so
 #endif
-} _GLFWlibraryX11;
+} _GLFWlibraryGLX;
 
 
 //------------------------------------------------------------------------

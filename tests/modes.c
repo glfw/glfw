@@ -49,12 +49,18 @@ static void usage(void)
     printf("       modes -h\n");
 }
 
-static void print_mode(GLFWvidmode* mode)
+static const char* format_mode(GLFWvidmode* mode)
 {
-    printf("%i x %i x %i (%i %i %i)",
-           mode->width, mode->height,
-           mode->redBits + mode->greenBits + mode->blueBits,
-           mode->redBits, mode->greenBits, mode->blueBits);
+    static char buffer[512];
+
+    snprintf(buffer, sizeof(buffer),
+             "%i x %i x %i (%i %i %i)",
+             mode->width, mode->height,
+             mode->redBits + mode->greenBits + mode->blueBits,
+             mode->redBits, mode->greenBits, mode->blueBits);
+
+    buffer[sizeof(buffer) - 1] = '\0';
+    return buffer;
 }
 
 static void error_callback(int error, const char* description)
@@ -109,16 +115,13 @@ static void list_modes(void)
     GLFWvidmode* modes = get_video_modes(&count);
 
     glfwGetDesktopMode(&desktop_mode);
-    printf("Desktop mode: ");
-    print_mode(&desktop_mode);
-    putchar('\n');
+    printf("Desktop mode: %s\n", format_mode(&desktop_mode));
 
     printf("Available modes:\n");
 
     for (i = 0;  i < count;  i++)
     {
-        printf("%3u: ", (unsigned int) i);
-        print_mode(modes + i);
+        printf("%3u: %s", (unsigned int) i, format_mode(modes + i));
 
         if (memcmp(&desktop_mode, modes + i, sizeof(GLFWvidmode)) == 0)
             printf(" (desktop mode)");
@@ -147,18 +150,16 @@ static void test_modes(void)
         glfwOpenWindowHint(GLFW_GREEN_BITS, mode->greenBits);
         glfwOpenWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 
-        printf("Opening ");
-        print_mode(mode);
-        printf(" window\n");
+        printf("Testing mode %u: %s", (unsigned int) i, format_mode(mode));
 
         window = glfwOpenWindow(mode->width, mode->height,
                                 GLFW_FULLSCREEN, "Video Mode Test",
                                 NULL);
         if (!window)
         {
-            printf("Failed to enter mode %u: ", (unsigned int) i);
-            print_mode(mode);
-            putchar('\n');
+            printf("Failed to enter mode %u: %s\n",
+                   (unsigned int) i,
+                   format_mode(mode));
             continue;
         }
 

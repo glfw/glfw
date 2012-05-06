@@ -103,21 +103,23 @@ static void test_modes(GLFWvidmode* modes, int count)
 
     for (i = 0;  i < count;  i++)
     {
-        glfwOpenWindowHint(GLFW_RED_BITS, modes[i].redBits);
-        glfwOpenWindowHint(GLFW_GREEN_BITS, modes[i].greenBits);
-        glfwOpenWindowHint(GLFW_BLUE_BITS, modes[i].blueBits);
+        GLFWvidmode* mode = modes + i;
+
+        glfwOpenWindowHint(GLFW_RED_BITS, mode->redBits);
+        glfwOpenWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+        glfwOpenWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 
         printf("Opening ");
-        print_mode(modes + i);
+        print_mode(mode);
         printf(" window\n");
 
-        window = glfwOpenWindow(modes[i].width, modes[i].height,
+        window = glfwOpenWindow(mode->width, mode->height,
                                 GLFW_FULLSCREEN, "Video Mode Test",
                                 NULL);
         if (!window)
         {
             printf("Failed to enter mode %i: ", i);
-            print_mode(modes + i);
+            print_mode(mode);
             putchar('\n');
             continue;
         }
@@ -138,26 +140,26 @@ static void test_modes(GLFWvidmode* modes, int count)
             }
         }
 
-        if (glfwGetWindowParam(window, GLFW_RED_BITS) != modes[i].redBits ||
-            glfwGetWindowParam(window, GLFW_GREEN_BITS) != modes[i].greenBits ||
-            glfwGetWindowParam(window, GLFW_BLUE_BITS) != modes[i].blueBits)
+        if (glfwGetWindowParam(window, GLFW_RED_BITS) != mode->redBits ||
+            glfwGetWindowParam(window, GLFW_GREEN_BITS) != mode->greenBits ||
+            glfwGetWindowParam(window, GLFW_BLUE_BITS) != mode->blueBits)
         {
             printf("*** Color bit mismatch: (%i %i %i) instead of (%i %i %i)\n",
                    glfwGetWindowParam(window, GLFW_RED_BITS),
                    glfwGetWindowParam(window, GLFW_GREEN_BITS),
                    glfwGetWindowParam(window, GLFW_BLUE_BITS),
-                   modes[i].redBits,
-                   modes[i].greenBits,
-                   modes[i].blueBits);
+                   mode->redBits,
+                   mode->greenBits,
+                   mode->blueBits);
         }
 
         glfwGetWindowSize(window, &width, &height);
 
-        if (width != modes[i].width || height != modes[i].height)
+        if (width != mode->width || height != mode->height)
         {
             printf("*** Size mismatch: %ix%i instead of %ix%i\n",
                    width, height,
-                   modes[i].width, modes[i].height);
+                   mode->width, mode->height);
         }
 
         printf("Closing window\n");

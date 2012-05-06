@@ -74,6 +74,15 @@ static int window_close_callback(GLFWwindow dummy)
     return GL_TRUE;
 }
 
+static void key_callback(GLFWwindow dummy, int key, int action)
+{
+    if (key == GLFW_KEY_ESCAPE)
+    {
+        glfwCloseWindow(window);
+        window = NULL;
+    }
+}
+
 static void list_modes(GLFWvidmode* modes, int count)
 {
     int i;
@@ -100,6 +109,7 @@ static void test_modes(GLFWvidmode* modes, int count)
 
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSetWindowCloseCallback(window_close_callback);
+    glfwSetKeyCallback(key_callback);
 
     for (i = 0;  i < count;  i++)
     {

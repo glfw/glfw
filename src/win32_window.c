@@ -298,6 +298,12 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         (*found)++;
     }
 
+    if (*found == 0)
+    {
+        free(fbconfigs);
+        return NULL;
+    }
+
     return fbconfigs;
 }
 

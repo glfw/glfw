@@ -38,15 +38,13 @@ static GLFWwindow window = NULL;
 
 enum Mode
 {
-    NO_MODE,
     LIST_MODE,
     TEST_MODE
 };
 
 static void usage(void)
 {
-    printf("Usage: modes -l\n");
-    printf("       modes -t\n");
+    printf("Usage: modes [-t]\n");
     printf("       modes -h\n");
 }
 
@@ -170,19 +168,16 @@ static void test_modes(GLFWvidmode* modes, int count)
 
 int main(int argc, char** argv)
 {
-    int ch, found, count = 0, mode = NO_MODE;
+    int ch, found, count = 0, mode = LIST_MODE;
     GLFWvidmode* modes = NULL;
 
-    while ((ch = getopt(argc, argv, "lth")) != -1)
+    while ((ch = getopt(argc, argv, "th")) != -1)
     {
         switch (ch)
         {
             case 'h':
                 usage();
                 exit(EXIT_SUCCESS);
-            case 'l':
-                mode = LIST_MODE;
-                break;
             case 't':
                 mode = TEST_MODE;
                 break;

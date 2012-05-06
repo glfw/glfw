@@ -21,7 +21,6 @@ add_executable(gamma gamma.c getopt.c)
 add_executable(glfwinfo glfwinfo.c getopt.c)
 add_executable(iconify iconify.c getopt.c)
 add_executable(joysticks joysticks.c)
-add_executable(listmodes listmodes.c)
 add_executable(modes modes.c getopt.c)
 add_executable(peter peter.c)
 add_executable(reopen reopen.c)
@@ -43,7 +42,7 @@ set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 
 set(WINDOWS_BINARIES accuracy sharing tearing title windows)
 set(CONSOLE_BINARIES clipboard defaults events fsaa fsfocus gamma glfwinfo
-                     iconify joysticks listmodes modes peter reopen)
+                     iconify joysticks modes peter reopen)
 
 if (MSVC)
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables

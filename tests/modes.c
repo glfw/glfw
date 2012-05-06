@@ -30,6 +30,7 @@
 #include <GL/glfw3.h>
 
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 
 #include "getopt.h"
@@ -118,6 +119,10 @@ static void list_modes(void)
     {
         printf("%3u: ", (unsigned int) i);
         print_mode(modes + i);
+
+        if (memcmp(&desktop_mode, modes + i, sizeof(GLFWvidmode)) == 0)
+            printf(" (desktop mode)");
+
         putchar('\n');
     }
 

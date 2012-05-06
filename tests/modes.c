@@ -84,6 +84,8 @@ static void list_modes(GLFWvidmode* modes, int count)
     print_mode(&mode);
     putchar('\n');
 
+    printf("Available modes:\n");
+
     for (i = 0;  i < count;  i++)
     {
         printf("%3i: ", i);

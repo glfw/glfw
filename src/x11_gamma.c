@@ -31,7 +31,6 @@
 
 #include <limits.h>
 #include <string.h>
-#include <stdio.h>
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -65,8 +64,6 @@ void _glfwInitGammaRamp(void)
             // This is probably Nvidia RandR with broken gamma support
             // Flag it as useless and try Xf86VidMode below, if available
             _glfwLibrary.X11.RandR.gammaBroken = GL_TRUE;
-            fprintf(stderr,
-                    "Ignoring broken nVidia implementation of RandR 1.2+ gamma\n");
         }
 
         XRRFreeScreenResources(rr);
@@ -84,12 +81,12 @@ void _glfwInitGammaRamp(void)
     }
 #endif /*_GLFW_HAS_XF86VIDMODE*/
 
-    if (!_glfwLibrary.originalRampSize)
-        fprintf(stderr, "No supported gamma ramp API found\n");
-
-    // Save the original gamma ramp
-    _glfwPlatformGetGammaRamp(&_glfwLibrary.originalRamp);
-    _glfwLibrary.currentRamp = _glfwLibrary.originalRamp;
+    if (_glfwLibrary.originalRampSize)
+    {
+        // Save the original gamma ramp
+        _glfwPlatformGetGammaRamp(&_glfwLibrary.originalRamp);
+        _glfwLibrary.currentRamp = _glfwLibrary.originalRamp;
+    }
 }
 
 

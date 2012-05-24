@@ -283,6 +283,9 @@ GLFWGLOBAL struct {
 // Time
 void _glfwInitTimer(void);
 
+// Gamma
+void _glfwInitGammaRamp(void);
+
 // Fullscreen support
 int  _glfwGetClosestVideoMode(int* width, int* height, int* rate);
 void _glfwSetVideoModeMODE(int mode, int rate);

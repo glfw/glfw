@@ -245,6 +245,7 @@ struct _GLFWlibrary
     GLFWgammaramp currentRamp;
     GLFWgammaramp originalRamp;
     int           originalRampSize;
+    GLboolean     rampChanged;
 
     // This is defined in the current port's platform.h
     _GLFW_PLATFORM_LIBRARY_WINDOW_STATE;

@@ -221,8 +221,6 @@ const char* _glfwPlatformGetVersionString(void)
     const char* version = _GLFW_VERSION_FULL
 #if defined(__MINGW32__)
         " MinGW"
-#elif defined(__CYGWIN__)
-        " Cygwin"
 #elif defined(_MSC_VER)
         " Visual C++ "
 #elif defined(__BORLANDC__)

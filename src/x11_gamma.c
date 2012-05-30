@@ -90,6 +90,17 @@ void _glfwInitGammaRamp(void)
 }
 
 
+//========================================================================
+// Restore original gamma ramp if necessary
+//========================================================================
+
+void _glfwTerminateGammaRamp(void)
+{
+    if (_glfwLibrary.originalRampSize && _glfwLibrary.rampChanged)
+        _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////

@@ -659,9 +659,6 @@ static Cursor createNULLCursor(void)
 
 static void terminateDisplay(void)
 {
-    if (_glfwLibrary.originalRampSize && _glfwLibrary.rampChanged)
-        _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
-
     if (_glfwLibrary.X11.display)
     {
         XCloseDisplay(_glfwLibrary.X11.display);
@@ -712,6 +709,8 @@ int _glfwPlatformTerminate(void)
         XFreeCursor(_glfwLibrary.X11.display, _glfwLibrary.X11.cursor);
         _glfwLibrary.X11.cursor = (Cursor) 0;
     }
+
+    _glfwTerminateGammaRamp();
 
     terminateDisplay();
 

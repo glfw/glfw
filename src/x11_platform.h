@@ -285,6 +285,7 @@ void _glfwInitTimer(void);
 
 // Gamma
 void _glfwInitGammaRamp(void);
+void _glfwTerminateGammaRamp(void);
 
 // Fullscreen support
 int  _glfwGetClosestVideoMode(int* width, int* height, int* rate);

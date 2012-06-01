@@ -111,6 +111,10 @@ void _glfwTerminateGammaRamp(void)
 
 void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 {
+    // For now, don't support anything that is not GLFW_GAMMA_RAMP_SIZE
+    if (_glfwLibrary.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
+            return;
+
     if (_glfwLibrary.X11.RandR.available &&
         !_glfwLibrary.X11.RandR.gammaBroken)
     {
@@ -153,6 +157,10 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 
 void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
 {
+    // For now, don't support anything that is not GLFW_GAMMA_RAMP_SIZE
+    if (_glfwLibrary.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
+            return;
+
     if (_glfwLibrary.X11.RandR.available &&
         !_glfwLibrary.X11.RandR.gammaBroken)
     {

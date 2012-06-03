@@ -36,33 +36,6 @@
 
 
 //========================================================================
-// Dynamically load libraries
-//========================================================================
-
-static void initLibraries(void)
-{
-#ifdef _GLFW_DLOPEN_LIBGL
-    int i;
-    char* libGL_names[ ] =
-    {
-        "libGL.so",
-        "libGL.so.1",
-        "/usr/lib/libGL.so",
-        "/usr/lib/libGL.so.1",
-        NULL
-    };
-
-    for (i = 0;  libGL_names[i] != NULL;  i++)
-    {
-        _glfwLibrary.GLX.libGL = dlopen(libGL_names[i], RTLD_LAZY | RTLD_GLOBAL);
-        if (_glfwLibrary.GLX.libGL)
-            break;
-    }
-#endif
-}
-
-
-//========================================================================
 // Translate an X11 key code to a GLFW key code.
 //========================================================================
 
@@ -560,22 +533,6 @@ static GLboolean initDisplay(void)
     _glfwLibrary.X11.RandR.available = GL_FALSE;
 #endif /*_GLFW_HAS_XRANDR*/
 
-    // Check if GLX is supported on this display
-    if (!glXQueryExtension(_glfwLibrary.X11.display, NULL, NULL))
-    {
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "X11/GLX: GLX supported not found");
-        return GL_FALSE;
-    }
-
-    if (!glXQueryVersion(_glfwLibrary.X11.display,
-                         &_glfwLibrary.GLX.majorVersion,
-                         &_glfwLibrary.GLX.minorVersion))
-    {
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
-                      "X11/GLX: Failed to query GLX version");
-        return GL_FALSE;
-    }
-
     // Check if Xkb is supported on this display
 #if defined(_GLFW_HAS_XKB)
     _glfwLibrary.X11.Xkb.majorVersion = 1;
@@ -682,12 +639,12 @@ int _glfwPlatformInit(void)
 
     _glfwInitGammaRamp();
 
+    if (!_glfwInitOpenGL())
+        return GL_FALSE;
+
     initEWMH();
 
     _glfwLibrary.X11.cursor = createNULLCursor();
-
-    // Try to load libGL.so if necessary
-    initLibraries();
 
     _glfwInitJoysticks();
 
@@ -716,14 +673,7 @@ int _glfwPlatformTerminate(void)
 
     _glfwTerminateJoysticks();
 
-    // Unload libGL.so if necessary
-#ifdef _GLFW_DLOPEN_LIBGL
-    if (_glfwLibrary.GLX.libGL != NULL)
-    {
-        dlclose(_glfwLibrary.GLX.libGL);
-        _glfwLibrary.GLX.libGL = NULL;
-    }
-#endif
+    _glfwTerminateOpenGL();
 
     // Free clipboard memory
     if (_glfwLibrary.X11.selection.string)

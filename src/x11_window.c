@@ -146,7 +146,11 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
     vendor = glXGetClientString(_glfwLibrary.X11.display, GLX_VENDOR);
 
     if (strcmp(vendor, "Chromium") == 0)
-      trustWindowBit = GL_FALSE;
+    {
+        // This is a (hopefully temporary) workaround for Chromium (VirtualBox
+        // GL) not setting the window bit on any GLXFBConfigs
+        trustWindowBit = GL_FALSE;
+    }
 
     if (window->GLX.SGIX_fbconfig)
     {

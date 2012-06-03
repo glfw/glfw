@@ -128,6 +128,8 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
 
     for (i = 0;  i < count;  i++)
     {
+        _GLFWfbconfig* f = result + *found;
+
         if (!getFBConfigAttrib(window, fbconfigs[i], GLX_DOUBLEBUFFER) ||
             !getFBConfigAttrib(window, fbconfigs[i], GLX_VISUAL_ID))
         {
@@ -152,28 +154,28 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
             }
         }
 
-        result[*found].redBits = getFBConfigAttrib(window, fbconfigs[i], GLX_RED_SIZE);
-        result[*found].greenBits = getFBConfigAttrib(window, fbconfigs[i], GLX_GREEN_SIZE);
-        result[*found].blueBits = getFBConfigAttrib(window, fbconfigs[i], GLX_BLUE_SIZE);
+        f->redBits = getFBConfigAttrib(window, fbconfigs[i], GLX_RED_SIZE);
+        f->greenBits = getFBConfigAttrib(window, fbconfigs[i], GLX_GREEN_SIZE);
+        f->blueBits = getFBConfigAttrib(window, fbconfigs[i], GLX_BLUE_SIZE);
 
-        result[*found].alphaBits = getFBConfigAttrib(window, fbconfigs[i], GLX_ALPHA_SIZE);
-        result[*found].depthBits = getFBConfigAttrib(window, fbconfigs[i], GLX_DEPTH_SIZE);
-        result[*found].stencilBits = getFBConfigAttrib(window, fbconfigs[i], GLX_STENCIL_SIZE);
+        f->alphaBits = getFBConfigAttrib(window, fbconfigs[i], GLX_ALPHA_SIZE);
+        f->depthBits = getFBConfigAttrib(window, fbconfigs[i], GLX_DEPTH_SIZE);
+        f->stencilBits = getFBConfigAttrib(window, fbconfigs[i], GLX_STENCIL_SIZE);
 
-        result[*found].accumRedBits = getFBConfigAttrib(window, fbconfigs[i], GLX_ACCUM_RED_SIZE);
-        result[*found].accumGreenBits = getFBConfigAttrib(window, fbconfigs[i], GLX_ACCUM_GREEN_SIZE);
-        result[*found].accumBlueBits = getFBConfigAttrib(window, fbconfigs[i], GLX_ACCUM_BLUE_SIZE);
-        result[*found].accumAlphaBits = getFBConfigAttrib(window, fbconfigs[i], GLX_ACCUM_ALPHA_SIZE);
+        f->accumRedBits = getFBConfigAttrib(window, fbconfigs[i], GLX_ACCUM_RED_SIZE);
+        f->accumGreenBits = getFBConfigAttrib(window, fbconfigs[i], GLX_ACCUM_GREEN_SIZE);
+        f->accumBlueBits = getFBConfigAttrib(window, fbconfigs[i], GLX_ACCUM_BLUE_SIZE);
+        f->accumAlphaBits = getFBConfigAttrib(window, fbconfigs[i], GLX_ACCUM_ALPHA_SIZE);
 
-        result[*found].auxBuffers = getFBConfigAttrib(window, fbconfigs[i], GLX_AUX_BUFFERS);
-        result[*found].stereo = getFBConfigAttrib(window, fbconfigs[i], GLX_STEREO);
+        f->auxBuffers = getFBConfigAttrib(window, fbconfigs[i], GLX_AUX_BUFFERS);
+        f->stereo = getFBConfigAttrib(window, fbconfigs[i], GLX_STEREO);
 
         if (_glfwLibrary.GLX.ARB_multisample)
-            result[*found].samples = getFBConfigAttrib(window, fbconfigs[i], GLX_SAMPLES);
+            f->samples = getFBConfigAttrib(window, fbconfigs[i], GLX_SAMPLES);
         else
-            result[*found].samples = 0;
+            f->samples = 0;
 
-        result[*found].platformID = (GLFWintptr) getFBConfigAttrib(window, fbconfigs[i], GLX_FBCONFIG_ID);
+        f->platformID = (GLFWintptr) getFBConfigAttrib(window, fbconfigs[i], GLX_FBCONFIG_ID);
 
         (*found)++;
     }

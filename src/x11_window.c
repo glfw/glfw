@@ -128,6 +128,8 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
     GLXFBConfig* fbconfigs;
     _GLFWfbconfig* result;
     int i, count = 0;
+    const char* vendor;
+    GLboolean trustWindowBit = GL_TRUE;
 
     *found = 0;
 
@@ -140,6 +142,11 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
             return NULL;
         }
     }
+
+    vendor = glXGetClientString(_glfwLibrary.X11.display, GLX_VENDOR);
+
+    if (strcmp(vendor, "Chromium") == 0)
+      trustWindowBit = GL_FALSE;
 
     if (window->GLX.SGIX_fbconfig)
     {
@@ -192,10 +199,15 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
             continue;
         }
 
-        if (!(getFBConfigAttrib(window, fbconfigs[i], GLX_DRAWABLE_TYPE) & GLX_WINDOW_BIT))
+        if (!(getFBConfigAttrib(window,
+                                fbconfigs[i],
+                                GLX_DRAWABLE_TYPE) & GLX_WINDOW_BIT))
         {
-            // Only consider window GLXFBConfigs
-            continue;
+            if (trustWindowBit)
+            {
+                // Only consider window GLXFBConfigs
+                continue;
+            }
         }
 
         result[*found].redBits = getFBConfigAttrib(window, fbconfigs[i], GLX_RED_SIZE);

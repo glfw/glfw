@@ -88,14 +88,14 @@ int _glfwPlatformExtensionSupported(const char* extension)
 // Get the function pointer to an OpenGL function
 //========================================================================
 
-void* _glfwPlatformGetProcAddress(const char* procname)
+GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 {
     CFStringRef symbolName = CFStringCreateWithCString(kCFAllocatorDefault,
                                                        procname,
                                                        kCFStringEncodingASCII);
 
-    void* symbol = CFBundleGetFunctionPointerForName(_glfwLibrary.NSGL.framework,
-                                                     symbolName);
+    GLFWglproc symbol = CFBundleGetFunctionPointerForName(_glfwLibrary.NSGL.framework,
+                                                          symbolName);
 
     CFRelease(symbolName);
 

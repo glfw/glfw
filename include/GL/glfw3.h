@@ -470,6 +470,9 @@ extern "C" {
  * Typedefs
  *************************************************************************/
 
+/* OpenGL function pointer type */
+typedef void (*GLFWglproc)(void);
+
 /* Window handle type */
 typedef void* GLFWwindow;
 
@@ -589,7 +592,7 @@ GLFWAPI GLFWwindow glfwGetCurrentContext(void);
 GLFWAPI void  glfwSwapBuffers(void);
 GLFWAPI void  glfwSwapInterval(int interval);
 GLFWAPI int   glfwExtensionSupported(const char* extension);
-GLFWAPI void* glfwGetProcAddress(const char* procname);
+GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);
 GLFWAPI void  glfwCopyContext(GLFWwindow src, GLFWwindow dst, unsigned long mask);
 
 

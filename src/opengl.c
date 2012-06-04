@@ -613,7 +613,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 // This function can be used to get access to extended OpenGL functions.
 //========================================================================
 
-GLFWAPI void* glfwGetProcAddress(const char* procname)
+GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname)
 {
     if (!_glfwInitialized)
     {

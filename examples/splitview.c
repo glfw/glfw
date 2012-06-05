@@ -10,7 +10,9 @@
 //  because I am not a friend of orthogonal projections)
 //========================================================================
 
+#define GLFW_INCLUDE_GLU
 #include <GL/glfw3.h>
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>

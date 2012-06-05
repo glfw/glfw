@@ -29,6 +29,7 @@
 //
 //========================================================================
 
+#define GLFW_INCLUDE_GLU
 #include <GL/glfw3.h>
 
 #include <stdio.h>

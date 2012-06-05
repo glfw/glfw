@@ -146,11 +146,7 @@ extern "C" {
 
 /* -------------------- END SYSTEM/COMPILER SPECIFIC --------------------- */
 
-/* Include standard OpenGL headers: GLFW uses GL_FALSE/GL_TRUE, and it is
- * convenient for the user to only have to include <GL/glfw.h>. This also
- * solves the problem with Windows <GL/gl.h> and <GL/glu.h> needing some
- * special defines which normally requires the user to include <windows.h>
- * (which is not a nice solution for portable programs).
+/* Include the chosen OpenGL header and, optionally, the GLU header.
  */
 #if defined(__APPLE_CC__)
   #if defined(GLFW_INCLUDE_GL3)
@@ -159,7 +155,7 @@ extern "C" {
     #define GL_GLEXT_LEGACY
     #include <OpenGL/gl.h>
   #endif
-  #ifndef GLFW_NO_GLU
+  #if defined(GLFW_INCLUDE_GLU)
     #include <OpenGL/glu.h>
   #endif
 #else
@@ -168,7 +164,7 @@ extern "C" {
   #else
     #include <GL/gl.h>
   #endif
-  #ifndef GLFW_NO_GLU
+  #if defined(GLFW_INCLUDE_GLU)
     #include <GL/glu.h>
   #endif
 #endif

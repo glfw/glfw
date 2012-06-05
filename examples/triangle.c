@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define GLFW_INCLUDE_GLU
 #include <GL/glfw3.h>
 
 int main(void)

@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
+#define GLFW_INCLUDE_GLU
 #include <GL/glfw3.h>
 
 #ifndef M_PI

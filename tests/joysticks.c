@@ -1,142 +1,216 @@
-/*========================================================================
- * This is a small test application for GLFW.
- * joystick input test.
- *========================================================================*/
+//========================================================================
+// Joystick input test
+// Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would
+//    be appreciated but is not required.
+//
+// 2. Altered source versions must be plainly marked as such, and must not
+//    be misrepresented as being the original software.
+//
+// 3. This notice may not be removed or altered from any source
+//    distribution.
+//
+//========================================================================
+//
+// This test displays the state of every button and axis of every connected
+// joystick and/or gamepad
+//
+//========================================================================
 
 #include <GL/glfw3.h>
 
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
-#include <math.h>
 
-#define MAX_AXES     10
-#define MAX_BUTTONS  30
-
-struct JoystickState
+typedef struct Joystick
 {
-    int present;
-    int num_axes;
-    int num_buttons;
-    float axes[MAX_AXES];
-    unsigned char buttons[MAX_BUTTONS];
-};
+    GLboolean present;
+    float* axes;
+    unsigned char* buttons;
+    int axis_count;
+    int button_count;
+} Joystick;
 
-static struct JoystickState states[GLFW_JOYSTICK_LAST + 1];
+static Joystick joysticks[GLFW_JOYSTICK_LAST - GLFW_JOYSTICK_1 + 1];
 
-int running;
-int keyrepeat  = 0;
-int systemkeys = 1;
+static int joystick_count = 0;
 
-
-/*========================================================================
- * Retrieve joystick states
- *========================================================================*/
-static void updateJoysticksState(void)
+static void window_size_callback(GLFWwindow window, int width, int height)
 {
-    int joy;
+    glViewport(0, 0, width, height);
+}
 
-    for (joy = GLFW_JOYSTICK_1;  joy < GLFW_JOYSTICK_LAST + 1;  joy++)
+static void draw_joystick(Joystick* j, int x, int y, int width, int height)
+{
+    int i;
+    int axis_width, axis_height;
+    int button_width, button_height;
+
+    axis_width = width / j->axis_count;
+    axis_height = 3 * height / 4;
+
+    button_width = width / j->button_count;
+    button_height = height / 4;
+
+    for (i = 0;  i < j->axis_count;  i++)
     {
-        printf("Updating information for joystick %d\n", joy);
-        states[joy].present = glfwGetJoystickParam(joy, GLFW_PRESENT);
-        if (states[joy].present == GL_TRUE)
+        float value = j->axes[i] / 2.f + 0.5f;
+
+        glColor3f(0.3f, 0.3f, 0.3f);
+        glRecti(x + i * axis_width,
+                y,
+                x + (i + 1) * axis_width,
+                y + axis_height);
+
+        glColor3f(1.f, 1.f, 1.f);
+        glRecti(x + i * axis_width,
+                y + (int) (value * (axis_height - 5)),
+                x + (i + 1) * axis_width,
+                y + 5 + (int) (value * (axis_height - 5)));
+    }
+
+    for (i = 0;  i < j->button_count;  i++)
+    {
+        if (j->buttons[i])
+            glColor3f(1.f, 1.f, 1.f);
+        else
+            glColor3f(0.3f, 0.3f, 0.3f);
+
+        glRecti(x + i * button_width,
+                y + axis_height,
+                x + (i + 1) * button_width,
+                y + axis_height + button_height);
+    }
+}
+
+static void draw_joysticks(void)
+{
+    int i, width, height;
+
+    glfwGetWindowSize(glfwGetCurrentContext(), &width, &height);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.f, width, height, 0.f, 1.f, -1.f);
+    glMatrixMode(GL_MODELVIEW);
+
+    for (i = 0;  i < sizeof(joysticks) / sizeof(Joystick);  i++)
+    {
+        Joystick* j = joysticks + i;
+
+        if (j->present)
         {
-            states[joy].num_axes = glfwGetJoystickPos(joy, states[joy].axes, MAX_AXES);
-            states[joy].num_buttons = glfwGetJoystickButtons(joy, states[joy].buttons, MAX_BUTTONS);
+            draw_joystick(j,
+                          0, i * height / joystick_count,
+                          width, height / joystick_count);
         }
     }
 }
 
-/*========================================================================
- * Print out the state of all joysticks on the standard output
- *========================================================================*/
-static void displayJoysticksState(void)
+static void refresh_joysticks(void)
 {
-    int joy;
     int i;
 
-    for (joy = GLFW_JOYSTICK_1;  joy < GLFW_JOYSTICK_LAST + 1;  joy++)
+    for (i = 0;  i < sizeof(joysticks) / sizeof(Joystick);  i++)
     {
-        printf("Joystick %d: %s\n", joy, (states[joy].present == GL_TRUE ? "present" : "not connected"));
+        Joystick* j = joysticks + i;
 
-        if (states[joy].present == GL_TRUE)
+        if (glfwGetJoystickParam(GLFW_JOYSTICK_1 + i, GLFW_PRESENT))
         {
-            if (states[joy].num_axes > 0)
+            int axis_count, button_count;
+
+            axis_count = glfwGetJoystickParam(GLFW_JOYSTICK_1 + i, GLFW_AXES);
+            if (axis_count != j->axis_count)
             {
-                printf("  axes: %.3f", states[joy].axes[0]);
-                for (i = 1;  i < states[joy].num_axes;  i++)
-                    printf(", %.3f", states[joy].axes[i]);
-
-                printf("\n");
+                j->axis_count = axis_count;
+                j->axes = realloc(j->axes, j->axis_count * sizeof(float));
             }
-            else
-                printf("  axes: none\n");
 
-            if (states[joy].num_buttons > 0)
+            glfwGetJoystickPos(GLFW_JOYSTICK_1 + i, j->axes, j->axis_count);
+
+            button_count = glfwGetJoystickParam(GLFW_JOYSTICK_1 + i, GLFW_BUTTONS);
+            if (button_count != j->button_count)
             {
-                printf("  buttons: 00 => %c", ((states[joy].buttons[0] == GLFW_PRESS) ? 'P' : 'R'));
-
-                for (i = 1;  i < states[joy].num_buttons;  i++)
-                    printf(", %02d => %c", i, ((states[joy].buttons[i] == GLFW_PRESS) ? 'P' : 'R'));
-
-                printf("\n");
+                j->button_count = button_count;
+                j->buttons = realloc(j->buttons, j->button_count);
             }
-            else
-                printf("  buttons: none\n");
+
+            glfwGetJoystickButtons(GLFW_JOYSTICK_1 + i, j->buttons, j->button_count);
+
+            if (!j->present)
+            {
+                printf("Found joystick %i with %i axes, %i buttons\n",
+                       i + 1, j->axis_count, j->button_count);
+
+                joystick_count++;
+            }
+
+            j->present = GL_TRUE;
+        }
+        else
+        {
+            if (j->present)
+            {
+                free(j->axes);
+                free(j->buttons);
+                memset(j, 0, sizeof(Joystick));
+
+                printf("Lost joystick %i\n", i + 1);
+
+                joystick_count--;
+            }
         }
     }
 }
 
 int main(void)
 {
-    double start;
-    double t;
-    double update;
+    GLFWwindow window;
 
-    /* Initialise GLFW */
+    memset(joysticks, 0, sizeof(joysticks));
+
     if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
 
-    printf("The program will work for 20 seconds and display every seconds the state of the joysticks\n");
-    printf("Your computer is going to be very slow as the program is doing an active loop .....\n");
-
-    start = glfwGetTime();
-    update = start;
-
-    /* print the initial state of all joysticks */
-    updateJoysticksState();
-    printf("\n");
-    displayJoysticksState();
-
-    running = GL_TRUE;
-
-    /* Main loop */
-    while (running)
+    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Joystick Test", NULL);
+    if (!window)
     {
-        /* Get time */
-        t = glfwGetTime();
+        glfwTerminate();
 
-        /* Display the state of all connected joysticks every secons */
-        if ((t - update) > 1.0)
-        {
-            update = t;
-            printf("\n");
-            updateJoysticksState();
-            printf("\n");
-            displayJoysticksState();
-        }
-
-        /* Check if the window was closed */
-        if ((t - start) > 20.0)
-            running = GL_FALSE;
+        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
-    /* Close OpenGL window and terminate GLFW */
-    glfwTerminate();
+    glfwSetWindowSizeCallback(window_size_callback);
+    glfwSwapInterval(1);
 
-    return 0;
+    while (glfwIsWindow(window))
+    {
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        refresh_joysticks();
+        draw_joysticks();
+
+        glfwSwapBuffers();
+        glfwPollEvents();
+    }
+
+    glfwTerminate();
+    exit(EXIT_SUCCESS);
 }
 

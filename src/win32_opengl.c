@@ -113,7 +113,7 @@ int _glfwPlatformExtensionSupported(const char* extension)
 
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 {
-    return wglGetProcAddress(procname);
+    return (GLFWglproc) wglGetProcAddress(procname);
 }
 
 

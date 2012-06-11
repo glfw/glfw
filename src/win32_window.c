@@ -1047,6 +1047,11 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOVE:
         {
+            RECT rect;
+
+            GetClientRect(window->Win32.handle, &rect);
+            AdjustWindowRectEx(&rect, window->Win32.dwStyle, FALSE, window->Win32.dwExStyle);
+
             // If window is in cursor capture mode, update clipping rect
             if (window->cursorMode == GLFW_CURSOR_CAPTURED)
             {
@@ -1055,7 +1060,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     ClipCursor(&ClipWindowRect);
             }
 
-            _glfwInputWindowPos(window, LOWORD(lParam), HIWORD(lParam));
+            _glfwInputWindowPos(window,
+                                LOWORD(lParam) - rect.left,
+                                HIWORD(lParam) - rect.top);
             return 0;
         }
 
@@ -1632,7 +1639,13 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
 {
-    SetWindowPos(window->Win32.handle, HWND_TOP, x, y, 0, 0,
+    RECT rect;
+
+    GetClientRect(window->Win32.handle, &rect);
+    AdjustWindowRectEx(&rect, window->Win32.dwStyle, FALSE, window->Win32.dwExStyle);
+
+    SetWindowPos(window->Win32.handle, HWND_TOP,
+                 x + rect.left, y + rect.top, 0, 0,
                  SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
 }
 

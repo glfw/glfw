@@ -32,8 +32,6 @@
 #include <stddef.h>
 #include "getopt.h"
 
-
-#define GLFW_NO_GLU 1
 #include <GL/glfw3.h>
 #include <GL/glext.h>
 

@@ -1047,11 +1047,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOVE:
         {
-            RECT rect;
-
-            GetClientRect(window->Win32.handle, &rect);
-            AdjustWindowRectEx(&rect, window->Win32.dwStyle, FALSE, window->Win32.dwExStyle);
-
             // If window is in cursor capture mode, update clipping rect
             if (window->cursorMode == GLFW_CURSOR_CAPTURED)
             {
@@ -1060,9 +1055,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     ClipCursor(&ClipWindowRect);
             }
 
-            _glfwInputWindowPos(window,
-                                LOWORD(lParam) - rect.left,
-                                HIWORD(lParam) - rect.top);
+            _glfwInputWindowPos(window, LOWORD(lParam), HIWORD(lParam));
             return 0;
         }
 

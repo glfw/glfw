@@ -35,37 +35,33 @@
 // Sets the cursor mode for the specified window
 //========================================================================
 
-static void setCursorMode(_GLFWwindow* window, int mode)
+static void setCursorMode(_GLFWwindow* window, int newMode)
 {
-    int centerPosX, centerPosY;
+    int oldMode, centerPosX, centerPosY;
 
-    if (mode != GLFW_CURSOR_NORMAL &&
-        mode != GLFW_CURSOR_HIDDEN &&
-        mode != GLFW_CURSOR_CAPTURED)
+    if (newMode != GLFW_CURSOR_NORMAL &&
+        newMode != GLFW_CURSOR_HIDDEN &&
+        newMode != GLFW_CURSOR_CAPTURED)
     {
         _glfwSetError(GLFW_INVALID_ENUM, NULL);
         return;
     }
 
-    if (window->cursorMode == mode)
+    oldMode = window->cursorMode;
+    if (oldMode == newMode)
         return;
 
     centerPosX = window->width / 2;
     centerPosY = window->height / 2;
 
-    if (mode == GLFW_CURSOR_CAPTURED)
+    if (oldMode == GLFW_CURSOR_CAPTURED || newMode == GLFW_CURSOR_CAPTURED)
         _glfwPlatformSetMouseCursorPos(window, centerPosX, centerPosY);
-    else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
-    {
-        _glfwPlatformSetMouseCursorPos(window, centerPosX, centerPosY);
-        _glfwInputCursorMotion(window,
-                               centerPosX - window->cursorPosX,
-                               centerPosY - window->cursorPosY);
-    }
 
-    _glfwPlatformSetCursorMode(window, mode);
+    _glfwPlatformSetCursorMode(window, newMode);
+    window->cursorMode = newMode;
 
-    window->cursorMode = mode;
+    if (oldMode == GLFW_CURSOR_CAPTURED)
+        _glfwInputCursorMotion(window, window->cursorPosX, window->cursorPosY);
 }
 
 

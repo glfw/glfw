@@ -39,7 +39,7 @@ int main(void)
     do
     {
         double t = glfwGetTime();
-        glfwGetMousePos(window, &x, NULL);
+        glfwGetCursorPos(window, &x, NULL);
 
         // Get window size (may be different than the requested size)
         glfwGetWindowSize(window, &width, &height);

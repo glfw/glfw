@@ -241,7 +241,7 @@ struct _GLFWlibrary
     GLFWwindowfocusfun   windowFocusCallback;
     GLFWwindowiconifyfun windowIconifyCallback;
     GLFWmousebuttonfun   mouseButtonCallback;
-    GLFWmouseposfun      mousePosCallback;
+    GLFWcursorposfun     cursorPosCallback;
     GLFWcursorenterfun   cursorEnterCallback;
     GLFWscrollfun        scrollCallback;
     GLFWkeyfun           keyCallback;
@@ -284,7 +284,7 @@ const char* _glfwPlatformGetVersionString(void);
 // Input
 void _glfwPlatformEnableSystemKeys(_GLFWwindow* window);
 void _glfwPlatformDisableSystemKeys(_GLFWwindow* window);
-void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y);
+void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y);
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
 
 // Fullscreen

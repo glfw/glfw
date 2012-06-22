@@ -1,5 +1,5 @@
 //========================================================================
-// Mouse cursor bug test
+// Cursor input bug test
 // Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
@@ -41,7 +41,7 @@ static int cursor_y;
 
 static GLboolean open_window(void);
 
-static void toggle_mouse_cursor(GLFWwindow window)
+static void toggle_cursor(GLFWwindow window)
 {
     if (glfwGetInputMode(window, GLFW_CURSOR_MODE) == GLFW_CURSOR_CAPTURED)
     {
@@ -55,9 +55,9 @@ static void toggle_mouse_cursor(GLFWwindow window)
     }
 }
 
-static void mouse_position_callback(GLFWwindow window, int x, int y)
+static void cursor_position_callback(GLFWwindow window, int x, int y)
 {
-    printf("Mouse moved to: %i %i (%i %i)\n", x, y, x - cursor_x, y - cursor_y);
+    printf("Cursor moved to: %i %i (%i %i)\n", x, y, x - cursor_x, y - cursor_y);
     cursor_x = x;
     cursor_y = y;
 }
@@ -69,7 +69,7 @@ static void key_callback(GLFWwindow window, int key, int action)
         case GLFW_KEY_SPACE:
         {
             if (action == GLFW_PRESS)
-                toggle_mouse_cursor(window);
+                toggle_cursor(window);
 
             break;
         }
@@ -98,11 +98,11 @@ static GLboolean open_window(void)
     if (!window_handle)
         return GL_FALSE;
 
-    glfwGetMousePos(window_handle, &cursor_x, &cursor_y);
-    printf("Mouse position: %i %i\n", cursor_x, cursor_y);
+    glfwGetCursorPos(window_handle, &cursor_x, &cursor_y);
+    printf("Cursor position: %i %i\n", cursor_x, cursor_y);
 
     glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetMousePosCallback(mouse_position_callback);
+    glfwSetCursorPosCallback(cursor_position_callback);
     glfwSetKeyCallback(key_callback);
     glfwSwapInterval(1);
 

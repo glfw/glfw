@@ -449,7 +449,7 @@ static GLboolean createContext(_GLFWwindow* window,
 // Hide mouse cursor
 //========================================================================
 
-static void hideMouseCursor(_GLFWwindow* window)
+static void hideCursor(_GLFWwindow* window)
 {
 }
 
@@ -458,7 +458,7 @@ static void hideMouseCursor(_GLFWwindow* window)
 // Capture mouse cursor
 //========================================================================
 
-static void captureMouseCursor(_GLFWwindow* window)
+static void captureCursor(_GLFWwindow* window)
 {
     RECT ClipWindowRect;
 
@@ -477,7 +477,7 @@ static void captureMouseCursor(_GLFWwindow* window)
 // Show mouse cursor
 //========================================================================
 
-static void showMouseCursor(_GLFWwindow* window)
+static void showCursor(_GLFWwindow* window)
 {
     // Un-capture cursor
     ReleaseCapture();
@@ -784,7 +784,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 // The window was deactivated (or iconified, see above)
 
                 if (window->cursorMode == GLFW_CURSOR_CAPTURED)
-                    showMouseCursor(window);
+                    showCursor(window);
 
                 if (window->mode == GLFW_FULLSCREEN)
                 {
@@ -807,7 +807,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 // The window was activated
 
                 if (window->cursorMode == GLFW_CURSOR_CAPTURED)
-                    captureMouseCursor(window);
+                    captureCursor(window);
 
                 if (window->mode == GLFW_FULLSCREEN)
                 {
@@ -962,14 +962,14 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOUSEMOVE:
         {
-            int newMouseX, newMouseY;
+            int newCursorX, newCursorY;
 
-            // Get signed (!) mouse position
-            newMouseX = (int)((short)LOWORD(lParam));
-            newMouseY = (int)((short)HIWORD(lParam));
+            // Get signed (!) cursor position
+            newCursorX = (int)((short)LOWORD(lParam));
+            newCursorY = (int)((short)HIWORD(lParam));
 
-            if (newMouseX != window->Win32.oldMouseX ||
-                newMouseY != window->Win32.oldMouseY)
+            if (newCursorX != window->Win32.oldCursorX ||
+                newCursorY != window->Win32.oldCursorY)
             {
                 int x, y;
 
@@ -978,17 +978,17 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     if (_glfwLibrary.activeWindow != window)
                         return 0;
 
-                    x = newMouseX - window->Win32.oldMouseX;
-                    y = newMouseY - window->Win32.oldMouseY;
+                    x = newCursorX - window->Win32.oldCursorX;
+                    y = newCursorY - window->Win32.oldCursorY;
                 }
                 else
                 {
-                    x = newMouseX;
-                    y = newMouseY;
+                    x = newCursorX;
+                    y = newCursorY;
                 }
 
-                window->Win32.oldMouseX = newMouseX;
-                window->Win32.oldMouseY = newMouseY;
+                window->Win32.oldCursorX = newCursorX;
+                window->Win32.oldCursorY = newCursorY;
                 window->Win32.cursorCentered = GL_FALSE;
 
                 _glfwInputCursorMotion(window, x, y);
@@ -1372,11 +1372,11 @@ static int createWindow(_GLFWwindow* window,
 
     initWGLExtensions(window);
 
-    // Initialize mouse position data
+    // Initialize cursor position data
     GetCursorPos(&pos);
     ScreenToClient(window->Win32.handle, &pos);
-    window->Win32.oldMouseX = window->cursorPosX = pos.x;
-    window->Win32.oldMouseY = window->cursorPosY = pos.y;
+    window->Win32.oldCursorX = window->cursorPosX = pos.x;
+    window->Win32.oldCursorY = window->cursorPosY = pos.y;
 
     return GL_TRUE;
 }
@@ -1782,13 +1782,13 @@ void _glfwPlatformPollEvents(void)
     if (window)
     {
         window->Win32.cursorCentered = GL_FALSE;
-        window->Win32.oldMouseX = window->width / 2;
-        window->Win32.oldMouseY = window->height / 2;
+        window->Win32.oldCursorX = window->width / 2;
+        window->Win32.oldCursorY = window->height / 2;
     }
     else
     {
-        //window->Win32.oldMouseX = window->cursorPosX;
-        //window->Win32.oldMouseY = window->cursorPosY;
+        //window->Win32.oldCursorX = window->cursorPosX;
+        //window->Win32.oldCursorY = window->cursorPosY;
     }
 
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -1845,9 +1845,9 @@ void _glfwPlatformPollEvents(void)
         if (window->cursorMode == GLFW_CURSOR_CAPTURED &&
             !window->Win32.cursorCentered)
         {
-            _glfwPlatformSetMouseCursorPos(window,
-                                           window->width / 2,
-                                           window->height / 2);
+            _glfwPlatformSetCursorPos(window,
+                                      window->width / 2,
+                                      window->height / 2);
             window->Win32.cursorCentered = GL_TRUE;
         }
     }
@@ -1867,10 +1867,10 @@ void _glfwPlatformWaitEvents(void)
 
 
 //========================================================================
-// Set physical mouse cursor position
+// Set physical cursor position
 //========================================================================
 
-void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y)
+void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
 {
     POINT pos;
 
@@ -1892,13 +1892,13 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
     switch (mode)
     {
         case GLFW_CURSOR_NORMAL:
-            showMouseCursor(window);
+            showCursor(window);
             break;
         case GLFW_CURSOR_HIDDEN:
-            hideMouseCursor(window);
+            hideCursor(window);
             break;
         case GLFW_CURSOR_CAPTURED:
-            captureMouseCursor(window);
+            captureCursor(window);
             break;
     }
 }

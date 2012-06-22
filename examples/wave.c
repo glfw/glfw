@@ -323,10 +323,10 @@ void mouse_button_callback(GLFWwindow window, int button, int action)
 
 
 //========================================================================
-// Callback function for mouse motion events
+// Callback function for cursor motion events
 //========================================================================
 
-void mouse_position_callback(GLFWwindow window, int x, int y)
+void cursor_position_callback(GLFWwindow window, int x, int y)
 {
     if (locked)
     {
@@ -403,7 +403,7 @@ int main(int argc, char* argv[])
     // Window resize handler
     glfwSetWindowSizeCallback(window_resize_callback);
     glfwSetMouseButtonCallback(mouse_button_callback);
-    glfwSetMousePosCallback(mouse_position_callback);
+    glfwSetCursorPosCallback(cursor_position_callback);
     glfwSetScrollCallback(scroll_callback);
 
     // Initialize OpenGL

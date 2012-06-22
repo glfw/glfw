@@ -50,7 +50,7 @@ static void window_size_callback(GLFWwindow window, int width, int height)
     gluOrtho2D(0.f, window_width, 0.f, window_height);
 }
 
-static void mouse_position_callback(GLFWwindow window, int x, int y)
+static void cursor_position_callback(GLFWwindow window, int x, int y)
 {
     cursor_x = x;
     cursor_y = y;
@@ -75,7 +75,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glfwSetMousePosCallback(mouse_position_callback);
+    glfwSetCursorPosCallback(cursor_position_callback);
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSwapInterval(1);
 

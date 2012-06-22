@@ -1152,12 +1152,12 @@ void _glfwPlatformWaitEvents( void )
 
 
 //========================================================================
-// Set physical mouse cursor position
+// Set physical cursor position
 //========================================================================
 
-void _glfwPlatformSetMouseCursorPos(_GLFWwindow* window, int x, int y)
+void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
 {
-    // The library seems to assume that after calling this the mouse won't move,
+    // The library seems to assume that after calling this the cursor won't move,
     // but obviously it will, and escape the app's window, and activate other apps,
     // and other badness in pain.  I think the API's just silly, but maybe I'm
     // misunderstanding it...

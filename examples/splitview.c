@@ -379,7 +379,7 @@ static void windowRefreshFun(GLFWwindow window)
 // Mouse position callback function
 //========================================================================
 
-static void mousePosFun(GLFWwindow window, int x, int y)
+static void cursorPosFun(GLFWwindow window, int x, int y)
 {
     // Depending on which view was selected, rotate around different axes
     switch (active_view)
@@ -404,7 +404,7 @@ static void mousePosFun(GLFWwindow window, int x, int y)
             break;
     }
 
-    // Remember mouse position
+    // Remember cursor position
     xpos = x;
     ypos = y;
 }
@@ -472,7 +472,7 @@ int main(void)
     // Set callback functions
     glfwSetWindowSizeCallback(windowSizeFun);
     glfwSetWindowRefreshCallback(windowRefreshFun);
-    glfwSetMousePosCallback(mousePosFun);
+    glfwSetCursorPosCallback(cursorPosFun);
     glfwSetMouseButtonCallback(mouseButtonFun);
 
     // Main loop

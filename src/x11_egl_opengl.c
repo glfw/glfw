@@ -52,7 +52,7 @@ static int getFBConfigAttrib(EGLConfig fbconfig, int attrib)
 // Return a list of available and usable framebuffer configs
 //========================================================================
 
-static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
+static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, unsigned int* found)
 {
     EGLConfig fbconfigs[_GLFW_EGL_CONFIG_IN];
     _GLFWfbconfig* result;
@@ -103,6 +103,13 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
             !(getFBConfigAttrib(fbconfigs[i], EGL_RENDERABLE_TYPE) & EGL_OPENGL_ES2_BIT))
         {
             // Only consider OpenGL ES context
+            continue;
+        }
+
+        if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE &&
+                !(getFBConfigAttrib(fbconfigs[i], EGL_RENDERABLE_TYPE) & EGL_OPENGL_ES2_BIT))
+        {
+            // User requested only OpenGL ES 2.0 context
             continue;
         }
 
@@ -376,7 +383,7 @@ int _glfwCreateContext(_GLFWwindow* window,
         _GLFWfbconfig* fbconfigs;
         const _GLFWfbconfig* result;
 
-        fbconfigs = getFBConfigs(window, &fbcount);
+        fbconfigs = getFBConfigs(window, wndconfig, &fbcount);
         if (!fbconfigs)
         {
             _glfwSetError(GLFW_PLATFORM_ERROR,

@@ -93,9 +93,16 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
             continue;
         }
 
-        if (!(getFBConfigAttrib(fbconfigs[i], EGL_RENDERABLE_TYPE) & EGL_WINDOW_BIT))
+        if (!(getFBConfigAttrib(fbconfigs[i], EGL_SURFACE_TYPE) & EGL_WINDOW_BIT))
         {
             // Only consider window EGLConfigs
+            continue;
+        }
+
+        if (!(getFBConfigAttrib(fbconfigs[i], EGL_RENDERABLE_TYPE) & EGL_OPENGL_ES_BIT) &&
+            !(getFBConfigAttrib(fbconfigs[i], EGL_RENDERABLE_TYPE) & EGL_OPENGL_ES2_BIT))
+        {
+            // Only consider OpenGL ES context
             continue;
         }
 

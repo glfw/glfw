@@ -357,12 +357,13 @@ static int convertMacKeyCode(unsigned int macKeyCode)
         _glfwInputCursorMotion(window, [event deltaX], [event deltaY]);
     else
     {
-        NSPoint p = [event locationInWindow];
+        const NSPoint p = [event locationInWindow];
 
         // Cocoa coordinate system has origin at lower left
-        p.y = [[window->NS.object contentView] bounds].size.height - p.y;
+        const int x = lround(floor(p.x));
+        const int y = window->height - lround(ceil(p.y));
 
-        _glfwInputCursorMotion(window, p.x, p.y);
+        _glfwInputCursorMotion(window, x, y);
     }
 }
 
@@ -1168,7 +1169,7 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
     // calculating the maximum y coordinate of all screens, since Cocoa's
     // "global coordinates" are upside down from CG's...
 
-    NSPoint localPoint = NSMakePoint(x, window->height - y);
+    NSPoint localPoint = NSMakePoint(x, window->height - y - 1);
     NSPoint globalPoint = [window->NS.object convertBaseToScreen:localPoint];
     CGPoint mainScreenOrigin = CGDisplayBounds(CGMainDisplayID()).origin;
     double mainScreenHeight = CGDisplayBounds(CGMainDisplayID()).size.height;

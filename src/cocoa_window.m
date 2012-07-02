@@ -693,6 +693,9 @@ static GLboolean createWindow(_GLFWwindow* window,
     [window->NS.object setAcceptsMouseMovedEvents:YES];
     [window->NS.object center];
 
+    if ([window->NS.object respondsToSelector:@selector(setRestorable)])
+        [window->NS.object setRestorable:NO];
+
     return GL_TRUE;
 }
 

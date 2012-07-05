@@ -1,5 +1,5 @@
 //========================================================================
-// Gamma correction test program
+// Clipboard test program
 // Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
@@ -23,8 +23,7 @@
 //
 //========================================================================
 //
-// This program is used to test the gamma correction functionality for
-// both fullscreen and windowed mode windows
+// This program is used to test the clipboard functionality.
 //
 //========================================================================
 
@@ -35,20 +34,15 @@
 
 #include "getopt.h"
 
-#define STEP_SIZE 0.1f
-
-static GLfloat gamma = 1.0f;
-
 static void usage(void)
 {
-    printf("Usage: gamma [-h] [-f]\n");
+    printf("Usage: clipboard [-h]\n");
 }
 
-static void set_gamma(float value)
+static GLboolean control_is_down(GLFWwindow window)
 {
-    gamma = value;
-    printf("Gamma: %f\n", gamma);
-    glfwSetGamma(gamma);
+    return glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) ||
+           glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL);
 }
 
 static void key_callback(GLFWwindow window, int key, int action)
@@ -59,26 +53,30 @@ static void key_callback(GLFWwindow window, int key, int action)
     switch (key)
     {
         case GLFW_KEY_ESCAPE:
-        {
             glfwCloseWindow(window);
             break;
-        }
 
-        case GLFW_KEY_KP_ADD:
-        case GLFW_KEY_Q:
-        {
-            set_gamma(gamma + STEP_SIZE);
+        case GLFW_KEY_V:
+            if (control_is_down(window))
+            {
+                const char* string;
+
+                string = glfwGetClipboardString(window);
+                if (string)
+                    printf("Clipboard contains \"%s\"\n", string);
+                else
+                    printf("Clipboard does not contain a string\n");
+            }
             break;
-        }
 
-        case GLFW_KEY_KP_SUBTRACT:
-        case GLFW_KEY_W:
-        {
-            if (gamma - STEP_SIZE > 0.f)
-                set_gamma(gamma - STEP_SIZE);
-
+        case GLFW_KEY_C:
+            if (control_is_down(window))
+            {
+                const char* string = "Hello GLFW World!";
+                glfwSetClipboardString(window, string);
+                printf("Setting clipboard to \"%s\"\n", string);
+            }
             break;
-        }
     }
 }
 
@@ -87,13 +85,17 @@ static void size_callback(GLFWwindow window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error in %s\n", description);
+}
+
 int main(int argc, char** argv)
 {
-    int width, height, ch;
-    int mode = GLFW_WINDOWED;
+    int ch;
     GLFWwindow window;
 
-    while ((ch = getopt(argc, argv, "fh")) != -1)
+    while ((ch = getopt(argc, argv, "h")) != -1)
     {
         switch (ch)
         {
@@ -101,45 +103,28 @@ int main(int argc, char** argv)
                 usage();
                 exit(EXIT_SUCCESS);
 
-            case 'f':
-                mode = GLFW_FULLSCREEN;
-                break;
-
             default:
                 usage();
                 exit(EXIT_FAILURE);
         }
     }
 
+    glfwSetErrorCallback(error_callback);
+
     if (!glfwInit())
     {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        fprintf(stderr, "Failed to initialize GLFW\n");
         exit(EXIT_FAILURE);
     }
 
-    if (mode == GLFW_FULLSCREEN)
-    {
-        GLFWvidmode mode;
-        glfwGetDesktopMode(&mode);
-        width = mode.width;
-        height = mode.height;
-    }
-    else
-    {
-        width = 0;
-        height = 0;
-    }
-
-    window = glfwOpenWindow(width, height, mode, "Gamma Test", NULL);
+    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Clipboard Test", NULL);
     if (!window)
     {
         glfwTerminate();
 
-        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+        fprintf(stderr, "Failed to open GLFW window\n");
         exit(EXIT_FAILURE);
     }
-
-    set_gamma(1.f);
 
     glfwSwapInterval(1);
     glfwSetKeyCallback(key_callback);
@@ -159,7 +144,7 @@ int main(int argc, char** argv)
         glRectf(-0.5f, -0.5f, 0.5f, 0.5f);
 
         glfwSwapBuffers();
-        glfwPollEvents();
+        glfwWaitEvents();
     }
 
     glfwTerminate();

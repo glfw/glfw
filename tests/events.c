@@ -40,8 +40,9 @@
 #include <ctype.h>
 #include <locale.h>
 
-static GLboolean keyrepeat  = 0;
-static GLboolean systemkeys = 1;
+static GLboolean keyrepeat  = GL_FALSE;
+static GLboolean systemkeys = GL_TRUE;
+static GLboolean closeable = GL_TRUE;
 static unsigned int counter = 0;
 
 static const char* get_key_name(int key)
@@ -243,7 +244,7 @@ static void window_size_callback(GLFWwindow window, int width, int height)
 static int window_close_callback(GLFWwindow window)
 {
     printf("%08x at %0.3f: Window close\n", counter++, glfwGetTime());
-    return 1;
+    return closeable;
 }
 
 static void window_refresh_callback(GLFWwindow window)
@@ -282,14 +283,22 @@ static void mouse_button_callback(GLFWwindow window, int button, int action)
         printf(" was %s\n", get_action_name(action));
 }
 
-static void mouse_position_callback(GLFWwindow window, int x, int y)
+static void cursor_position_callback(GLFWwindow window, int x, int y)
 {
-    printf("%08x at %0.3f: Mouse position: %i %i\n", counter++, glfwGetTime(), x, y);
+    printf("%08x at %0.3f: Cursor position: %i %i\n", counter++, glfwGetTime(), x, y);
 }
 
-static void scroll_callback(GLFWwindow window, int x, int y)
+static void cursor_enter_callback(GLFWwindow window, int entered)
 {
-    printf("%08x at %0.3f: Scroll: %i %i\n", counter++, glfwGetTime(), x, y);
+    printf("%08x at %0.3f: Cursor %s window\n",
+           counter++,
+           glfwGetTime(),
+           entered ? "entered" : "left");
+}
+
+static void scroll_callback(GLFWwindow window, double x, double y)
+{
+    printf("%08x at %0.3f: Scroll: %0.3f %0.3f\n", counter++, glfwGetTime(), x, y);
 }
 
 static void key_callback(GLFWwindow window, int key, int action)
@@ -325,6 +334,14 @@ static void key_callback(GLFWwindow window, int key, int action)
             printf("(( system keys %s ))\n", systemkeys ? "enabled" : "disabled");
             break;
         }
+
+        case GLFW_KEY_C:
+        {
+            closeable = !closeable;
+
+            printf("(( closing %s ))\n", closeable ? "enabled" : "disabled");
+            break;
+        }
     }
 }
 
@@ -353,7 +370,7 @@ int main(void)
 
     setlocale(LC_ALL, "");
 
-    if (!glfwInit(NULL))
+    if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
@@ -367,7 +384,8 @@ int main(void)
     glfwSetWindowFocusCallback(window_focus_callback);
     glfwSetWindowIconifyCallback(window_iconify_callback);
     glfwSetMouseButtonCallback(mouse_button_callback);
-    glfwSetMousePosCallback(mouse_position_callback);
+    glfwSetCursorPosCallback(cursor_position_callback);
+    glfwSetCursorEnterCallback(cursor_enter_callback);
     glfwSetScrollCallback(scroll_callback);
     glfwSetKeyCallback(key_callback);
     glfwSetCharCallback(char_callback);

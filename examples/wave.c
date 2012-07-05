@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
+#define GLFW_INCLUDE_GLU
 #include <GL/glfw3.h>
 
 #ifndef M_PI
@@ -321,10 +323,10 @@ void mouse_button_callback(GLFWwindow window, int button, int action)
 
 
 //========================================================================
-// Callback function for mouse motion events
+// Callback function for cursor motion events
 //========================================================================
 
-void mouse_position_callback(GLFWwindow window, int x, int y)
+void cursor_position_callback(GLFWwindow window, int x, int y)
 {
     if (locked)
     {
@@ -341,9 +343,9 @@ void mouse_position_callback(GLFWwindow window, int x, int y)
 // Callback function for scroll events
 //========================================================================
 
-void scroll_callback(GLFWwindow window, int x, int y)
+void scroll_callback(GLFWwindow window, double x, double y)
 {
-    zoom += y / 4.f;
+    zoom += (float) y / 4.f;
     if (zoom < 0)
         zoom = 0;
 }
@@ -379,7 +381,7 @@ int main(int argc, char* argv[])
     GLFWwindow window;
     double t, dt_total, t_old;
 
-    if (!glfwInit(NULL))
+    if (!glfwInit())
     {
         fprintf(stderr, "GLFW initialization failed\n");
         exit(EXIT_FAILURE);
@@ -401,7 +403,7 @@ int main(int argc, char* argv[])
     // Window resize handler
     glfwSetWindowSizeCallback(window_resize_callback);
     glfwSetMouseButtonCallback(mouse_button_callback);
-    glfwSetMousePosCallback(mouse_position_callback);
+    glfwSetCursorPosCallback(cursor_position_callback);
     glfwSetScrollCallback(scroll_callback);
 
     // Initialize OpenGL

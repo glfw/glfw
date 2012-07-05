@@ -62,6 +62,8 @@ static void key_callback(GLFWwindow window, int key, int action)
 
 static void size_callback(GLFWwindow window, int width, int height)
 {
+    printf("%0.2f Size %ix%i\n", glfwGetTime(), width, height);
+
     glViewport(0, 0, width, height);
 }
 
@@ -90,7 +92,7 @@ int main(int argc, char** argv)
         }
     }
 
-    if (!glfwInit(NULL))
+    if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);

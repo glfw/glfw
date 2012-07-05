@@ -33,8 +33,13 @@
 
 
 // We don't need all the fancy stuff
-#define NOMINMAX
-#define VC_EXTRALEAN
+#ifndef NOMINMAX
+ #define NOMINMAX
+#endif
+
+#ifndef VC_EXTRALEAN
+ #define VC_EXTRALEAN
+#endif
 
 #ifndef WIN32_LEAN_AND_MEAN
  #define WIN32_LEAN_AND_MEAN
@@ -45,7 +50,15 @@
 // thinks it is the only one that gets to do so
 #undef APIENTRY
 
-#define UNICODE
+// GLFW on Windows is Unicode only and does not work in MBCS mode
+#ifndef UNICODE
+ #define UNICODE
+#endif
+
+// GLFW requires Windows XP
+#ifndef WINVER
+ #define WINVER 0x0501
+#endif
 
 #include <windows.h>
 #include <mmsystem.h>
@@ -61,107 +74,14 @@
 // Hack: Define things that some windows.h variants don't
 //========================================================================
 
-// Some old versions of w32api (used by MinGW and Cygwin) define
-// WH_KEYBOARD_LL without typedef:ing KBDLLHOOKSTRUCT (!)
-#if defined(__MINGW32__) || defined(__CYGWIN__)
-#include <w32api.h>
-#if defined(WH_KEYBOARD_LL) && (__W32API_MAJOR_VERSION == 1) && (__W32API_MINOR_VERSION <= 2)
-#undef WH_KEYBOARD_LL
-#endif
-#endif
-
-//------------------------------------------------------------------------
-// ** NOTE **  If this gives you compiler errors and you are using MinGW
-// (or Dev-C++), update to w32api version 1.3 or later:
-// http://sourceforge.net/project/showfiles.php?group_id=2435
-//------------------------------------------------------------------------
-#ifndef WH_KEYBOARD_LL
-#define WH_KEYBOARD_LL 13
-typedef struct tagKBDLLHOOKSTRUCT {
-  DWORD   vkCode;
-  DWORD   scanCode;
-  DWORD   flags;
-  DWORD   time;
-  DWORD   dwExtraInfo;
-} KBDLLHOOKSTRUCT, FAR *LPKBDLLHOOKSTRUCT, *PKBDLLHOOKSTRUCT;
-#endif // WH_KEYBOARD_LL
-
-#ifndef LLKHF_ALTDOWN
-#define LLKHF_ALTDOWN  0x00000020
-#endif
-
-#ifndef SPI_SETSCREENSAVERRUNNING
-#define SPI_SETSCREENSAVERRUNNING 97
-#endif
-#ifndef SPI_GETANIMATION
-#define SPI_GETANIMATION 72
-#endif
-#ifndef SPI_SETANIMATION
-#define SPI_SETANIMATION 73
-#endif
-#ifndef SPI_GETFOREGROUNDLOCKTIMEOUT
-#define SPI_GETFOREGROUNDLOCKTIMEOUT 0x2000
-#endif
-#ifndef SPI_SETFOREGROUNDLOCKTIMEOUT
-#define SPI_SETFOREGROUNDLOCKTIMEOUT 0x2001
-#endif
-
-#ifndef CDS_FULLSCREEN
-#define CDS_FULLSCREEN 4
-#endif
-
-#ifndef PFD_GENERIC_ACCELERATED
-#define PFD_GENERIC_ACCELERATED 0x00001000
-#endif
-#ifndef PFD_DEPTH_DONTCARE
-#define PFD_DEPTH_DONTCARE 0x20000000
-#endif
-
-#ifndef ENUM_CURRENT_SETTINGS
-#define ENUM_CURRENT_SETTINGS -1
-#endif
-#ifndef ENUM_REGISTRY_SETTINGS
-#define ENUM_REGISTRY_SETTINGS -2
-#endif
-
-#ifndef WM_MOUSEWHEEL
-#define WM_MOUSEWHEEL 0x020A
-#endif
-#ifndef WHEEL_DELTA
-#define WHEEL_DELTA 120
-#endif
 #ifndef WM_MOUSEHWHEEL
-#define WM_MOUSEHWHEEL 0x020E
-#endif
-
-#ifndef WM_XBUTTONDOWN
-#define WM_XBUTTONDOWN 0x020B
-#endif
-#ifndef WM_XBUTTONUP
-#define WM_XBUTTONUP 0x020C
-#endif
-#ifndef XBUTTON1
-#define XBUTTON1 1
-#endif
-#ifndef XBUTTON2
-#define XBUTTON2 2
+ #define WM_MOUSEHWHEEL 0x020E
 #endif
 
 
 //========================================================================
 // DLLs that are loaded at glfwInit()
 //========================================================================
-
-// gdi32.dll function pointer typedefs
-#ifndef _GLFW_NO_DLOAD_GDI32
-typedef int  (WINAPI * CHOOSEPIXELFORMAT_T) (HDC,CONST PIXELFORMATDESCRIPTOR*);
-typedef int  (WINAPI * DESCRIBEPIXELFORMAT_T) (HDC,int,UINT,LPPIXELFORMATDESCRIPTOR);
-typedef int  (WINAPI * GETPIXELFORMAT_T) (HDC);
-typedef BOOL (WINAPI * SETPIXELFORMAT_T) (HDC,int,const PIXELFORMATDESCRIPTOR*);
-typedef BOOL (WINAPI * SWAPBUFFERS_T) (HDC);
-typedef BOOL (WINAPI * GETDEVICEGAMMARAMP_T) (HDC,PVOID);
-typedef BOOL (WINAPI * SETDEVICEGAMMARAMP_T) (HDC,PVOID);
-#endif // _GLFW_NO_DLOAD_GDI32
 
 // winmm.dll function pointer typedefs
 #ifndef _GLFW_NO_DLOAD_WINMM
@@ -172,36 +92,17 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 #endif // _GLFW_NO_DLOAD_WINMM
 
 
-// gdi32.dll shortcuts
-#ifndef _GLFW_NO_DLOAD_GDI32
-#define _glfw_ChoosePixelFormat   _glfwLibrary.Win32.gdi.ChoosePixelFormat
-#define _glfw_DescribePixelFormat _glfwLibrary.Win32.gdi.DescribePixelFormat
-#define _glfw_GetPixelFormat      _glfwLibrary.Win32.gdi.GetPixelFormat
-#define _glfw_SetPixelFormat      _glfwLibrary.Win32.gdi.SetPixelFormat
-#define _glfw_SwapBuffers         _glfwLibrary.Win32.gdi.SwapBuffers
-#define _glfw_GetDeviceGammaRamp  _glfwLibrary.Win32.gdi.GetDeviceGammaRamp
-#define _glfw_SetDeviceGammaRamp  _glfwLibrary.Win32.gdi.SetDeviceGammaRamp
-#else
-#define _glfw_ChoosePixelFormat   ChoosePixelFormat
-#define _glfw_DescribePixelFormat DescribePixelFormat
-#define _glfw_GetPixelFormat      GetPixelFormat
-#define _glfw_SetPixelFormat      SetPixelFormat
-#define _glfw_SwapBuffers         SwapBuffers
-#define _glfw_GetDeviceGammaRamp  GetDeviceGammaRamp
-#define _glfw_SetDeviceGammaRamp  SetDeviceGammaRamp
-#endif // _GLFW_NO_DLOAD_GDI32
-
 // winmm.dll shortcuts
 #ifndef _GLFW_NO_DLOAD_WINMM
-#define _glfw_joyGetDevCaps _glfwLibrary.Win32.winmm.joyGetDevCaps
-#define _glfw_joyGetPos     _glfwLibrary.Win32.winmm.joyGetPos
-#define _glfw_joyGetPosEx   _glfwLibrary.Win32.winmm.joyGetPosEx
-#define _glfw_timeGetTime   _glfwLibrary.Win32.winmm.timeGetTime
+ #define _glfw_joyGetDevCaps _glfwLibrary.Win32.winmm.joyGetDevCaps
+ #define _glfw_joyGetPos     _glfwLibrary.Win32.winmm.joyGetPos
+ #define _glfw_joyGetPosEx   _glfwLibrary.Win32.winmm.joyGetPosEx
+ #define _glfw_timeGetTime   _glfwLibrary.Win32.winmm.timeGetTime
 #else
-#define _glfw_joyGetDevCaps joyGetDevCaps
-#define _glfw_joyGetPos     joyGetPos
-#define _glfw_joyGetPosEx   joyGetPosEx
-#define _glfw_timeGetTime   timeGetTime
+ #define _glfw_joyGetDevCaps joyGetDevCaps
+ #define _glfw_joyGetPos     joyGetPos
+ #define _glfw_joyGetPosEx   joyGetPosEx
+ #define _glfw_timeGetTime   timeGetTime
 #endif // _GLFW_NO_DLOAD_WINMM
 
 
@@ -211,9 +112,12 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 
 
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowWin32 Win32
-#define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryWin32 Win32
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextWGL WGL
+
 #define _GLFW_PLATFORM_MONITOR_STATE _GLFWmonitorWin32 Win32
+
+#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 Win32
+#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryWGL WGL
 
 
 //========================================================================
@@ -264,12 +168,13 @@ typedef struct _GLFWwindowWin32
     // Various platform specific internal variables
     int       desiredRefreshRate; // Desired vertical monitor refresh rate
     GLboolean cursorCentered;
-    int       oldMouseX, oldMouseY;
+    GLboolean cursorInside;
+    int       oldCursorX, oldCursorY;
 } _GLFWwindowWin32;
 
 
 //------------------------------------------------------------------------
-// Platform-specific library global data
+// Platform-specific library global data for Win32
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryWin32
 {
@@ -277,6 +182,7 @@ typedef struct _GLFWlibraryWin32
     ATOM                      classAtom;    // Window class atom
     HHOOK                     keyboardHook; // Keyboard hook handle
     DWORD                     foregroundLockTimeout;
+    char*                     clipboardString;
 
     // Default monitor
     struct {
@@ -294,20 +200,6 @@ typedef struct _GLFWlibraryWin32
         unsigned int          t0_32;
         __int64               t0_64;
     } timer;
-
-#ifndef _GLFW_NO_DLOAD_GDI32
-    // gdi32.dll
-    struct {
-        HINSTANCE             instance;
-        CHOOSEPIXELFORMAT_T   ChoosePixelFormat;
-        DESCRIBEPIXELFORMAT_T DescribePixelFormat;
-        GETPIXELFORMAT_T      GetPixelFormat;
-        SETPIXELFORMAT_T      SetPixelFormat;
-        SWAPBUFFERS_T         SwapBuffers;
-        GETDEVICEGAMMARAMP_T  GetDeviceGammaRamp;
-        SETDEVICEGAMMARAMP_T  SetDeviceGammaRamp;
-    } gdi;
-#endif // _GLFW_NO_DLOAD_GDI32
 
 #ifndef _GLFW_NO_DLOAD_WINMM
     // winmm.dll
@@ -331,9 +223,23 @@ typedef struct _GLFWmonitorWin32
 
 } _GLFWmonitorWin32;
 
+//------------------------------------------------------------------------
+// Platform-specific library global data for WGL
+//------------------------------------------------------------------------
+typedef struct _GLFWlibraryWGL
+{
+    int dummy;
+
+} _GLFWlibraryWGL;
+
+
 //========================================================================
 // Prototypes for platform specific internal functions
 //========================================================================
+
+// Wide strings
+WCHAR* _glfwCreateWideStringFromUTF8(const char* source);
+char* _glfwCreateUTF8FromWideString(const WCHAR* source);
 
 // Time
 void _glfwInitTimer(void);

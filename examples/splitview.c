@@ -10,7 +10,9 @@
 //  because I am not a friend of orthogonal projections)
 //========================================================================
 
+#define GLFW_INCLUDE_GLU
 #include <GL/glfw3.h>
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -377,7 +379,7 @@ static void windowRefreshFun(GLFWwindow window)
 // Mouse position callback function
 //========================================================================
 
-static void mousePosFun(GLFWwindow window, int x, int y)
+static void cursorPosFun(GLFWwindow window, int x, int y)
 {
     // Depending on which view was selected, rotate around different axes
     switch (active_view)
@@ -402,7 +404,7 @@ static void mousePosFun(GLFWwindow window, int x, int y)
             break;
     }
 
-    // Remember mouse position
+    // Remember cursor position
     xpos = x;
     ypos = y;
 }
@@ -442,7 +444,7 @@ int main(void)
     GLFWwindow window;
 
     // Initialise GLFW
-    if (!glfwInit(NULL))
+    if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW\n");
         exit(EXIT_FAILURE);
@@ -470,7 +472,7 @@ int main(void)
     // Set callback functions
     glfwSetWindowSizeCallback(windowSizeFun);
     glfwSetWindowRefreshCallback(windowRefreshFun);
-    glfwSetMousePosCallback(mousePosFun);
+    glfwSetCursorPosCallback(cursorPosFun);
     glfwSetMouseButtonCallback(mouseButtonFun);
 
     // Main loop

@@ -44,40 +44,6 @@
 
 static GLboolean initLibraries(void)
 {
-#ifndef _GLFW_NO_DLOAD_GDI32
-    // gdi32.dll (OpenGL pixel format functions & SwapBuffers)
-
-    _glfwLibrary.Win32.gdi.instance = LoadLibrary(L"gdi32.dll");
-    if (!_glfwLibrary.Win32.gdi.instance)
-        return GL_FALSE;
-
-    _glfwLibrary.Win32.gdi.ChoosePixelFormat = (CHOOSEPIXELFORMAT_T)
-        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "ChoosePixelFormat");
-    _glfwLibrary.Win32.gdi.DescribePixelFormat = (DESCRIBEPIXELFORMAT_T)
-        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "DescribePixelFormat");
-    _glfwLibrary.Win32.gdi.GetPixelFormat = (GETPIXELFORMAT_T)
-        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "GetPixelFormat");
-    _glfwLibrary.Win32.gdi.SetPixelFormat = (SETPIXELFORMAT_T)
-        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "SetPixelFormat");
-    _glfwLibrary.Win32.gdi.SwapBuffers = (SWAPBUFFERS_T)
-        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "SwapBuffers");
-    _glfwLibrary.Win32.gdi.GetDeviceGammaRamp  = (GETDEVICEGAMMARAMP_T)
-        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "GetDeviceGammaRamp");
-    _glfwLibrary.Win32.gdi.SetDeviceGammaRamp  = (SETDEVICEGAMMARAMP_T)
-        GetProcAddress(_glfwLibrary.Win32.gdi.instance, "SetDeviceGammaRamp");
-
-    if (!_glfwLibrary.Win32.gdi.ChoosePixelFormat ||
-        !_glfwLibrary.Win32.gdi.DescribePixelFormat ||
-        !_glfwLibrary.Win32.gdi.GetPixelFormat ||
-        !_glfwLibrary.Win32.gdi.SetPixelFormat ||
-        !_glfwLibrary.Win32.gdi.SwapBuffers ||
-        !_glfwLibrary.Win32.gdi.GetDeviceGammaRamp ||
-        !_glfwLibrary.Win32.gdi.SetDeviceGammaRamp)
-    {
-        return GL_FALSE;
-    }
-#endif // _GLFW_NO_DLOAD_GDI32
-
 #ifndef _GLFW_NO_DLOAD_WINMM
     // winmm.dll (for joystick and timer support)
 
@@ -113,14 +79,6 @@ static GLboolean initLibraries(void)
 
 static void freeLibraries(void)
 {
-#ifndef _GLFW_NO_DLOAD_GDI32
-    if (_glfwLibrary.Win32.gdi.instance != NULL)
-    {
-        FreeLibrary(_glfwLibrary.Win32.gdi.instance);
-        _glfwLibrary.Win32.gdi.instance = NULL;
-    }
-#endif // _GLFW_NO_DLOAD_GDI32
-
 #ifndef _GLFW_NO_DLOAD_WINMM
     if (_glfwLibrary.Win32.winmm.instance != NULL)
     {
@@ -128,6 +86,60 @@ static void freeLibraries(void)
         _glfwLibrary.Win32.winmm.instance = NULL;
     }
 #endif // _GLFW_NO_DLOAD_WINMM
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Returns a wide string version of the specified UTF-8 string
+//========================================================================
+
+WCHAR* _glfwCreateWideStringFromUTF8(const char* source)
+{
+    WCHAR* target;
+    int length;
+
+    length = MultiByteToWideChar(CP_UTF8, 0, source, -1, NULL, 0);
+    if (!length)
+        return NULL;
+
+    target = (WCHAR*) malloc(sizeof(WCHAR) * (length + 1));
+
+    if (!MultiByteToWideChar(CP_UTF8, 0, source, -1, target, length + 1))
+    {
+        free(target);
+        return NULL;
+    }
+
+    return target;
+}
+
+
+//========================================================================
+// Returns a UTF-8 string version of the specified wide string
+//========================================================================
+
+char* _glfwCreateUTF8FromWideString(const WCHAR* source)
+{
+    char* target;
+    int length;
+
+    length = WideCharToMultiByte(CP_UTF8, 0, source, -1, NULL, 0, NULL, NULL);
+    if (!length)
+        return NULL;
+
+    target = (char*) malloc(length + 1);
+
+    if (!WideCharToMultiByte(CP_UTF8, 0, source, -1, target, length + 1, NULL, NULL))
+    {
+        free(target);
+        return NULL;
+    }
+
+    return target;
 }
 
 
@@ -146,7 +158,7 @@ int _glfwPlatformInit(void)
     // as possible in the hope of still being the foreground process)
     SystemParametersInfo(SPI_GETFOREGROUNDLOCKTIMEOUT, 0,
                          &_glfwLibrary.Win32.foregroundLockTimeout, 0);
-    SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, (LPVOID) 0,
+    SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, UIntToPtr(0),
                          SPIF_SENDCHANGE);
 
     if (!initLibraries())
@@ -180,7 +192,8 @@ int _glfwPlatformInit(void)
 int _glfwPlatformTerminate(void)
 {
     // Restore the original gamma ramp
-    _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
+    if (_glfwLibrary.rampChanged)
+        _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
 
     _glfwTerminateMonitors();
 
@@ -196,7 +209,7 @@ int _glfwPlatformTerminate(void)
 
     // Restore previous FOREGROUNDLOCKTIMEOUT system setting
     SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0,
-                         (LPVOID) _glfwLibrary.Win32.foregroundLockTimeout,
+                         UIntToPtr(_glfwLibrary.Win32.foregroundLockTimeout),
                          SPIF_SENDCHANGE);
 
     return GL_TRUE;
@@ -212,8 +225,6 @@ const char* _glfwPlatformGetVersionString(void)
     const char* version = _GLFW_VERSION_FULL
 #if defined(__MINGW32__)
         " MinGW"
-#elif defined(__CYGWIN__)
-        " Cygwin"
 #elif defined(_MSC_VER)
         " Visual C++ "
 #elif defined(__BORLANDC__)
@@ -221,11 +232,8 @@ const char* _glfwPlatformGetVersionString(void)
 #else
         " (unknown compiler)"
 #endif
-#if defined(GLFW_BUILD_DLL)
+#if defined(_GLFW_BUILD_DLL)
         " DLL"
-#endif
-#if !defined(_GLFW_NO_DLOAD_GDI32)
-        " load(gdi32)"
 #endif
 #if !defined(_GLFW_NO_DLOAD_WINMM)
         " load(winmm)"

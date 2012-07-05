@@ -30,6 +30,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
+#define GLFW_INCLUDE_GLU
 #include <GL/glfw3.h>
 
 
@@ -569,7 +571,7 @@ int main( void )
    GLFWwindow window;
 
    /* Init GLFW */
-   if( !glfwInit(NULL) )
+   if( !glfwInit() )
    {
       fprintf( stderr, "Failed to initialize GLFW\n" );
       exit( EXIT_FAILURE );

@@ -152,7 +152,7 @@ static void addJoystickElement(_glfwJoystick* joystick, CFTypeRef refElement)
             long number;
             CFTypeRef refType;
 
-            _glfwJoystickElement* element = (_glfwJoystickElement*) _glfwMalloc(sizeof(_glfwJoystickElement));
+            _glfwJoystickElement* element = (_glfwJoystickElement*) malloc(sizeof(_glfwJoystickElement));
 
             CFArrayAppendValue(elementsArray, element);
 
@@ -242,7 +242,7 @@ static void removeJoystick(_glfwJoystick* joystick)
         {
             _glfwJoystickElement* axes =
                 (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick->axes, i);
-            _glfwFree(axes);
+            free(axes);
         }
         CFArrayRemoveAllValues(joystick->axes);
         joystick->numAxes = 0;
@@ -251,7 +251,7 @@ static void removeJoystick(_glfwJoystick* joystick)
         {
             _glfwJoystickElement* button =
                 (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick->buttons, i);
-            _glfwFree(button);
+            free(button);
         }
         CFArrayRemoveAllValues(joystick->buttons);
         joystick->numButtons = 0;
@@ -260,7 +260,7 @@ static void removeJoystick(_glfwJoystick* joystick)
         {
             _glfwJoystickElement* hat =
                 (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick->hats, i);
-            _glfwFree(hat);
+            free(hat);
         }
         CFArrayRemoveAllValues(joystick->hats);
         joystick->hats = 0;
@@ -311,6 +311,13 @@ static void pollJoystickEvents(void)
                     (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick->axes, j);
                 axes->value = getElementValue(joystick, axes);
             }
+
+            for (j = 0;  j < joystick->numHats;  j++)
+            {
+                _glfwJoystickElement* hat =
+                    (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick->hats, j);
+                hat->value = getElementValue(joystick, hat);
+            }
         }
     }
 }
@@ -336,7 +343,12 @@ void _glfwInitJoysticks(void)
     result = IOMasterPort(bootstrap_port, &masterPort);
     hidMatchDictionary = IOServiceMatching(kIOHIDDeviceKey);
     if (kIOReturnSuccess != result || !hidMatchDictionary)
+    {
+        if (hidMatchDictionary)
+            CFRelease(hidMatchDictionary);
+        
         return;
+    }
 
     result = IOServiceGetMatchingServices(masterPort,
                                           hidMatchDictionary,
@@ -370,19 +382,27 @@ void _glfwInitJoysticks(void)
         /* Check device type */
         refCF = CFDictionaryGetValue(hidProperties, CFSTR(kIOHIDPrimaryUsagePageKey));
         if (refCF)
+        {
             CFNumberGetValue(refCF, kCFNumberLongType, &usagePage);
+            if (usagePage != kHIDPage_GenericDesktop)
+            {
+                /* We are not interested in this device */
+                continue;
+            }
+        }
 
         refCF = CFDictionaryGetValue(hidProperties, CFSTR(kIOHIDPrimaryUsageKey));
         if (refCF)
-            CFNumberGetValue(refCF, kCFNumberLongType, &usage);
-
-        if ((usagePage != kHIDPage_GenericDesktop) ||
-            (usage != kHIDUsage_GD_Joystick &&
-             usage != kHIDUsage_GD_GamePad &&
-             usage != kHIDUsage_GD_MultiAxisController))
         {
-            /* We don't interested in this device */
-            continue;
+            CFNumberGetValue(refCF, kCFNumberLongType, &usage);
+            
+            if ((usage != kHIDUsage_GD_Joystick &&
+                 usage != kHIDUsage_GD_GamePad &&
+                 usage != kHIDUsage_GD_MultiAxisController))
+            {
+                /* We are not interested in this device */
+                continue;
+            }
         }
 
         _glfwJoystick* joystick = &_glfwJoysticks[deviceCounter];
@@ -489,7 +509,7 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
             return (int) CFArrayGetCount(_glfwJoysticks[joy].axes);
 
         case GLFW_BUTTONS:
-            return (int) CFArrayGetCount(_glfwJoysticks[joy].buttons);
+            return (int) CFArrayGetCount(_glfwJoysticks[joy].buttons) + ((int) CFArrayGetCount(_glfwJoysticks[joy].hats)) * 4;
 
         default:
             break;
@@ -552,7 +572,7 @@ int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
 int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
                                     int numbuttons)
 {
-    int i;
+    int i, j, button;
 
     if (joy < GLFW_JOYSTICK_1 || joy > GLFW_JOYSTICK_LAST)
         return 0;
@@ -565,18 +585,31 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
         return 0;
     }
 
-    numbuttons = numbuttons < joystick.numButtons ? numbuttons : joystick.numButtons;
-
     // Update joystick state
     pollJoystickEvents();
 
-    for (i = 0;  i < numbuttons;  i++)
+    for (button = 0;  button < numbuttons && button < joystick.numButtons;  button++)
     {
-        _glfwJoystickElement* button = (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick.buttons, i);
-        buttons[i] = button->value ? GLFW_PRESS : GLFW_RELEASE;
+        _glfwJoystickElement* element = (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick.buttons, button);
+        buttons[button] = element->value ? GLFW_PRESS : GLFW_RELEASE;
     }
 
-    return numbuttons;
+    // Virtual buttons - Inject data from hats
+    // Each hat is exposed as 4 buttons which exposes 8 directions with concurrent button presses
+
+    const int directions[9] = { 1, 3, 2, 6, 4, 12, 8, 9, 0 }; // Bit fields of button presses for each direction, including nil
+
+    for (i = 0;  i < joystick.numHats;  i++)
+    {
+        _glfwJoystickElement* hat = (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick.hats, i);
+        int value = hat->value;
+        if (value < 0 || value > 8) value = 8;
+
+        for (j = 0; j < 4 && button < numbuttons; j++)
+        {
+            buttons[button++] = directions[value] & (1 << j) ? GLFW_PRESS : GLFW_RELEASE;
+        }
+    }
+
+    return button;
 }
-
-

@@ -29,6 +29,7 @@
 //
 //========================================================================
 
+#define GLFW_INCLUDE_GLU
 #include <GL/glfw3.h>
 #include <GL/glext.h>
 
@@ -81,7 +82,7 @@ int main(int argc, char** argv)
         }
     }
 
-    if (!glfwInit(NULL))
+    if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);

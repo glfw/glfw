@@ -84,7 +84,7 @@ static GLboolean open_window(int width, int height, int mode)
 {
     double base;
 
-    if (!glfwInit(NULL))
+    if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         return GL_FALSE;

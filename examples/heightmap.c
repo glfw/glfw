@@ -32,8 +32,6 @@
 #include <stddef.h>
 #include "getopt.h"
 
-
-#define GLFW_NO_GLU 1
 #include <GL/glfw3.h>
 #include <GL/glext.h>
 
@@ -84,7 +82,7 @@ static PFNGLVERTEXATTRIBPOINTERPROC     pglVertexAttribPointer = NULL;
 #define RESOLVE_GL_FCN(type, var, name) \
     if (status == GL_TRUE) \
     {\
-        var = glfwGetProcAddress((name));\
+        var = (type) glfwGetProcAddress((name));\
         if ((var) == NULL)\
         {\
             status = GL_FALSE;\
@@ -95,31 +93,31 @@ static PFNGLVERTEXATTRIBPOINTERPROC     pglVertexAttribPointer = NULL;
 static GLboolean init_opengl(void)
 {
     GLboolean status = GL_TRUE;
-    RESOLVE_GL_FCN(PFN_glCreateShader, pglCreateShader, "glCreateShader");
-    RESOLVE_GL_FCN(PFN_glShaderSource, pglShaderSource, "glShaderSource");
-    RESOLVE_GL_FCN(PFN_glCompileShader, pglCompileShader, "glCompileShader");
-    RESOLVE_GL_FCN(PFN_glGetShaderiv, pglGetShaderiv, "glGetShaderiv");
-    RESOLVE_GL_FCN(PFN_glGetShaderInfoLog, pglGetShaderInfoLog, "glGetShaderInfoLog");
-    RESOLVE_GL_FCN(PFN_glDeleteShader, pglDeleteShader, "glDeleteShader");
-    RESOLVE_GL_FCN(PFN_glCreateProgram, pglCreateProgram, "glCreateProgram");
-    RESOLVE_GL_FCN(PFN_glAttachShader, pglAttachShader, "glAttachShader");
-    RESOLVE_GL_FCN(PFN_glLinkProgram, pglLinkProgram, "glLinkProgram");
-    RESOLVE_GL_FCN(PFN_glUseProgram, pglUseProgram, "glUseProgram");
-    RESOLVE_GL_FCN(PFN_glGetProgramiv, pglGetProgramiv, "glGetProgramiv");
-    RESOLVE_GL_FCN(PFN_glGetProgramInfoLog, pglGetProgramInfoLog, "glGetProgramInfoLog");
-    RESOLVE_GL_FCN(PFN_glDeleteProgram, pglDeleteProgram, "glDeleteProgram");
-    RESOLVE_GL_FCN(PFN_glGetUniformLocation, pglGetUniformLocation, "glGetUniformLocation");
-    RESOLVE_GL_FCN(PFN_glUniformMatrix4fv, pglUniformMatrix4fv, "glUniformMatrix4fv");
-    RESOLVE_GL_FCN(PFN_glGetAttribLocation, pglGetAttribLocation, "glGetAttribLocation");
-    RESOLVE_GL_FCN(PFN_glGenVertexArrays, pglGenVertexArrays, "glGenVertexArrays");
-    RESOLVE_GL_FCN(PFN_glDeleteVertexArrays, pglDeleteVertexArrays, "glDeleteVertexArrays");
-    RESOLVE_GL_FCN(PFN_glBindVertexArray, pglBindVertexArray, "glBindVertexArray");
-    RESOLVE_GL_FCN(PFN_glGenBuffers, pglGenBuffers, "glGenBuffers");
-    RESOLVE_GL_FCN(PFN_glBindBuffer, pglBindBuffer, "glBindBuffer");
-    RESOLVE_GL_FCN(PFN_glBufferData, pglBufferData, "glBufferData");
-    RESOLVE_GL_FCN(PFN_glBufferSubData, pglBufferSubData, "glBufferSubData");
-    RESOLVE_GL_FCN(PFN_glEnableVertexAttribArray, pglEnableVertexAttribArray, "glEnableVertexAttribArray");
-    RESOLVE_GL_FCN(PFN_glVertexAttribPointer, pglVertexAttribPointer, "glVertexAttribPointer");
+    RESOLVE_GL_FCN(PFNGLCREATESHADERPROC, pglCreateShader, "glCreateShader");
+    RESOLVE_GL_FCN(PFNGLSHADERSOURCEPROC, pglShaderSource, "glShaderSource");
+    RESOLVE_GL_FCN(PFNGLCOMPILESHADERPROC, pglCompileShader, "glCompileShader");
+    RESOLVE_GL_FCN(PFNGLGETSHADERIVPROC, pglGetShaderiv, "glGetShaderiv");
+    RESOLVE_GL_FCN(PFNGLGETSHADERINFOLOGPROC, pglGetShaderInfoLog, "glGetShaderInfoLog");
+    RESOLVE_GL_FCN(PFNGLDELETESHADERPROC, pglDeleteShader, "glDeleteShader");
+    RESOLVE_GL_FCN(PFNGLCREATEPROGRAMPROC, pglCreateProgram, "glCreateProgram");
+    RESOLVE_GL_FCN(PFNGLATTACHSHADERPROC, pglAttachShader, "glAttachShader");
+    RESOLVE_GL_FCN(PFNGLLINKPROGRAMPROC, pglLinkProgram, "glLinkProgram");
+    RESOLVE_GL_FCN(PFNGLUSEPROGRAMPROC, pglUseProgram, "glUseProgram");
+    RESOLVE_GL_FCN(PFNGLGETPROGRAMIVPROC, pglGetProgramiv, "glGetProgramiv");
+    RESOLVE_GL_FCN(PFNGLGETPROGRAMINFOLOGPROC, pglGetProgramInfoLog, "glGetProgramInfoLog");
+    RESOLVE_GL_FCN(PFNGLDELETEPROGRAMPROC, pglDeleteProgram, "glDeleteProgram");
+    RESOLVE_GL_FCN(PFNGLGETUNIFORMLOCATIONPROC, pglGetUniformLocation, "glGetUniformLocation");
+    RESOLVE_GL_FCN(PFNGLUNIFORMMATRIX4FVPROC, pglUniformMatrix4fv, "glUniformMatrix4fv");
+    RESOLVE_GL_FCN(PFNGLGETATTRIBLOCATIONPROC, pglGetAttribLocation, "glGetAttribLocation");
+    RESOLVE_GL_FCN(PFNGLGENVERTEXARRAYSPROC, pglGenVertexArrays, "glGenVertexArrays");
+    RESOLVE_GL_FCN(PFNGLDELETEVERTEXARRAYSPROC, pglDeleteVertexArrays, "glDeleteVertexArrays");
+    RESOLVE_GL_FCN(PFNGLBINDVERTEXARRAYPROC, pglBindVertexArray, "glBindVertexArray");
+    RESOLVE_GL_FCN(PFNGLGENBUFFERSPROC, pglGenBuffers, "glGenBuffers");
+    RESOLVE_GL_FCN(PFNGLBINDBUFFERPROC, pglBindBuffer, "glBindBuffer");
+    RESOLVE_GL_FCN(PFNGLBUFFERDATAPROC, pglBufferData, "glBufferData");
+    RESOLVE_GL_FCN(PFNGLBUFFERSUBDATAPROC, pglBufferSubData, "glBufferSubData");
+    RESOLVE_GL_FCN(PFNGLENABLEVERTEXATTRIBARRAYPROC, pglEnableVertexAttribArray, "glEnableVertexAttribArray");
+    RESOLVE_GL_FCN(PFNGLVERTEXATTRIBPOINTERPROC, pglVertexAttribPointer, "glVertexAttribPointer");
     return status;
 }
 /**********************************************************************
@@ -573,7 +571,7 @@ int main(int argc, char** argv)
         }
     }
 
-    if (!glfwInit(NULL))
+    if (!glfwInit())
     {
         fprintf(stderr, "ERROR: Unable to initialize GLFW\n");
         usage();

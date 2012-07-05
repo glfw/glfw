@@ -56,7 +56,7 @@ void _glfwPlatformSwapBuffers(void)
 {
     _GLFWwindow* window = _glfwLibrary.currentWindow;
 
-    _glfw_SwapBuffers(window->WGL.DC);
+    SwapBuffers(window->WGL.DC);
 }
 
 
@@ -111,9 +111,9 @@ int _glfwPlatformExtensionSupported(const char* extension)
 // Get the function pointer to an OpenGL function
 //========================================================================
 
-void* _glfwPlatformGetProcAddress(const char* procname)
+GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 {
-    return (void*) wglGetProcAddress(procname);
+    return (GLFWglproc) wglGetProcAddress(procname);
 }
 
 

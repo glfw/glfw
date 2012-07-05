@@ -37,13 +37,15 @@
 #if defined(__OBJC__)
 #import <Cocoa/Cocoa.h>
 #else
+#include <ApplicationServices/ApplicationServices.h>
 typedef void* id;
 #endif
 
 
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowNS NS
-#define _GLFW_PLATFORM_LIBRARY_STATE _GLFWlibraryNS NS
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextNSGL NSGL
+#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS NS
+#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryNSGL NSGL
 
 
 //========================================================================
@@ -71,39 +73,55 @@ typedef struct _GLFWcontextNSGL
 //------------------------------------------------------------------------
 typedef struct _GLFWwindowNS
 {
-    id           window;
+    id           object;
     id	         delegate;
+    id           view;
     unsigned int modifierFlags;
-    double       fracScrollX;
-    double       fracScrollY;
 } _GLFWwindowNS;
 
 
 //------------------------------------------------------------------------
-// Platform-specific library global data
+// Platform-specific library global data for Cocoa
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryNS
 {
     struct {
-        double t0;
+        double base;
+        double resolution;
     } timer;
 
-    // dlopen handle for dynamically loading OpenGL extension entry points
-    void*       OpenGLFramework;
-    GLboolean   unbundled;
-    id          desktopMode;
-    id          delegate;
-    id          autoreleasePool;
+    CGDisplayModeRef desktopMode;
+    CGEventSourceRef eventSource;
+    id               delegate;
+    id               autoreleasePool;
+
+    char*            clipboardString;
 } _GLFWlibraryNS;
+
+
+//------------------------------------------------------------------------
+// Platform-specific library global data for NSGL
+//------------------------------------------------------------------------
+typedef struct _GLFWlibraryNSGL
+{
+    // dlopen handle for dynamically loading OpenGL extension entry points
+    void*            framework;
+} _GLFWlibraryNSGL;
 
 
 //========================================================================
 // Prototypes for platform specific internal functions
 //========================================================================
 
+// Time
+void _glfwInitTimer(void);
+
 // Joystick input
 void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
+// Fullscreen
+GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp, int* refreshRate);
+void _glfwRestoreVideoMode(void);
 
 #endif // _platform_h_

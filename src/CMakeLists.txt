@@ -1,72 +1,57 @@
 
-if(WIN32)
-    add_definitions(-DWINVER=0x0501)
-endif(WIN32)
-
-if(UNIX)
-    if(_GLFW_HAS_XRANDR)
-        set(GLFW_PKGLIBS "${GLFW_PKGLIBS} xrandr")
-    endif(_GLFW_HAS_XRANDR)
-    if(_GLFW_HAS_XF86VIDMODE)
-        set(GLFW_PKGLIBS "${GLFW_PKGLIBS} xxf86vm")
-    endif(_GLFW_HAS_XF86VIDMODE)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libglfw.pc.cmake 
-                   ${CMAKE_CURRENT_BINARY_DIR}/libglfw.pc @ONLY)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libglfw.pc DESTINATION lib/pkgconfig)
-endif(UNIX)
-
 include_directories(${GLFW_SOURCE_DIR}/src
                     ${GLFW_BINARY_DIR}/src
-                    ${GLFW_INCLUDE_DIR})
+                    ${glfw_INCLUDE_DIRS})
 
-set(common_SOURCES error.c fullscreen.c gamma.c init.c input.c
+set(common_HEADERS ${GLFW_SOURCE_DIR}/include/GL/glfw3.h internal.h)
+set(common_SOURCES clipboard.c error.c fullscreen.c gamma.c init.c input.c
                    joystick.c monitor.c opengl.c time.c window.c)
 
-if(_GLFW_COCOA_NSGL)
-    set(libglfw_SOURCES ${common_SOURCES} cocoa_fullscreen.m cocoa_gamma.m
-                        cocoa_init.m cocoa_input.m cocoa_joystick.m
-                        cocoa_opengl.m cocoa_time.m cocoa_window.m)
+if (_GLFW_COCOA_NSGL)
+    set(glfw_HEADERS ${common_HEADERS} cocoa_platform.h)
+    set(glfw_SOURCES ${common_SOURCES} cocoa_clipboard.m cocoa_fullscreen.m
+                     cocoa_gamma.c cocoa_init.m cocoa_input.m cocoa_joystick.m
+                     cocoa_opengl.m cocoa_time.c cocoa_window.m)
 
     # For some reason, CMake doesn't know about .m
-    set_source_files_properties(${libglfw_SOURCES} PROPERTIES LANGUAGE C)
-elseif(_GLFW_WIN32_WGL)
-    set(libglfw_SOURCES ${common_SOURCES} win32_fullscreen.c win32_gamma.c
-                        win32_init.c win32_input.c win32_joystick.c
-                        win32_opengl.c win32_time.c win32_window.c
-                        win32_dllmain.c win32_monitor.c)
-elseif(_GLFW_X11_GLX)
-    set(libglfw_SOURCES ${common_SOURCES} x11_fullscreen.c x11_gamma.c
-                        x11_init.c x11_input.c x11_joystick.c
-                        x11_keysym2unicode.c x11_monitor.c x11_opengl.c
-                        x11_time.c x11_window.c)
-else()
-    message(FATAL_ERROR "No supported platform was selected")
-endif(_GLFW_COCOA_NSGL)
+    set_source_files_properties(${glfw_SOURCES} PROPERTIES LANGUAGE C)
+elseif (_GLFW_WIN32_WGL)
+    set(glfw_HEADERS ${common_HEADERS} win32_platform.h)
+    set(glfw_SOURCES ${common_SOURCES} win32_clipboard.c win32_dllmain.c
+                     win32_fullscreen.c win32_gamma.c win32_init.c win32_input.c
+                     win32_joystick.c win32_monitor.c win32_opengl.c
+                     win32_time.c win32_window.c)
+elseif (_GLFW_X11_GLX)
+    set(glfw_HEADERS ${common_HEADERS} x11_platform.h)
+    set(glfw_SOURCES ${common_SOURCES} x11_clipboard.c x11_fullscreen.c
+                     x11_gamma.c x11_init.c x11_input.c x11_joystick.c
+                     x11_keysym2unicode.c x11_monitor.c x11_opengl.c x11_time.c
+                     x11_window.c)
+endif()
 
-add_library(libglfwStatic STATIC ${libglfw_SOURCES})
-add_library(libglfwShared SHARED ${libglfw_SOURCES}) 
-target_link_libraries(libglfwShared  ${GLFW_LIBRARIES})
-set_target_properties(libglfwStatic libglfwShared PROPERTIES 
-                      CLEAN_DIRECT_OUTPUT 1
-                      OUTPUT_NAME glfw)
+add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
 
-if(WIN32)
-    # The GLFW DLL needs a special compile-time macro and import library name
-    set_target_properties(libglfwShared PROPERTIES 
-                          DEFINE_SYMBOL GLFW_BUILD_DLL
-                          PREFIX ""
-                          IMPORT_PREFIX ""
-                          IMPORT_SUFFIX "dll.lib")
-endif(WIN32)
+if (BUILD_SHARED_LIBS)
 
-if(APPLE)
-    # Append -fno-common to the compile flags to work around a bug in the Apple GCC
-    get_target_property(CFLAGS libglfwShared COMPILE_FLAGS)
-    if(NOT CFLAGS)
-        set(CFLAGS "")
-    endif(NOT CFLAGS)
-    set_target_properties(libglfwShared PROPERTIES COMPILE_FLAGS "${CFLAGS} -fno-common")
-endif(APPLE)
+    if (_GLFW_WIN32_WGL)
+        # The GLFW DLL needs a special compile-time macro and import library name
+        set_target_properties(glfw PROPERTIES 
+                              PREFIX ""
+                              IMPORT_PREFIX ""
+                              IMPORT_SUFFIX "dll.lib")
+    elseif (_GLFW_COCOA_NSGL)
+        # Append -fno-common to the compile flags to work around a bug in the Apple GCC
+        get_target_property(glfw_CFLAGS glfw COMPILE_FLAGS)
+        if (NOT glfw_CFLAGS)
+            set(glfw_CFLAGS "")
+        endif()
+        set_target_properties(glfw PROPERTIES
+                              COMPILE_FLAGS "${glfw_CFLAGS} -fno-common")
+    endif()
 
-install(TARGETS libglfwStatic libglfwShared DESTINATION lib)
+    target_link_libraries(glfw ${glfw_LIBRARIES})
+    target_link_libraries(glfw LINK_INTERFACE_LIBRARIES)
+endif()
+
+install(TARGETS glfw DESTINATION lib)
 

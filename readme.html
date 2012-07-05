@@ -20,7 +20,8 @@
  <li><a href="#credits">Acknowledgements</a></li>
 </ol>
 
-<a name="intro">
+
+<a name="intro"></a>
 <h2>1. Introduction</h2>
 
 <p>Welcome to version 3.0 of the GLFW library.  GLFW is a free, open source,
@@ -34,19 +35,22 @@ settle.</p>
 <p><strong>Note</strong> that the threading and image loading APIs from the 2.x
 series have been removed.</p>
 
-<a name="compiling">
+
+<a name="compiling"></a>
 <h2>2. Compiling GLFW and the example programs</h2>
 
 <p>To compile GLFW and the accompanying example programs, you will need the
 <a href="http://www.cmake.org/">CMake</a> build system.</p>
 
-<a name="installing">
+
+<a name="installing"></a>
 <h2>3. Installing GLFW</h2>
 
 <p>A rudimentary installation target is provided for all supported platforms
 via the CMake build system.</p>
 
-<a name="using">
+
+<a name="using"></a>
 <h2>4. Using GLFW</h2>
 
 <p>There are two aspects to using GLFW:</p>
@@ -66,12 +70,13 @@ GLFW API.</p>
 A few rules for successfully designing GLFW-based programs are presented
 in the following sections.</p>
 
+
 <h3>4.1 Include the GLFW header file</h3>
 
 <p>In the files of your program where you use OpenGL or GLFW, you should
-include the <code>GL/glfw.h</code> header file, i.e.:</p>
+include the <code>GL/glfw3.h</code> header file, i.e.:</p>
 
-<blockquote><code>#include &lt;GL/glfw.h&gt;</code></blockquote>
+<blockquote><code>#include &lt;GL/glfw3.h&gt;</code></blockquote>
 
 <p>This defines all the constants, types and function prototypes of the GLFW
 API.  It also includes the <code>gl.h</code> and </code>GL/glu.h</code> header
@@ -95,7 +100,7 @@ it.  This way, the namespace won't be cluttered by the entire Windows API.</p>
   <li>Do <em>not</em> include <code>windows.h</code> unless you actually need
       direct access to the Windows API</li>
   <li>If you <em>do</em> need to include <code>windows.h</code>, do it
-      <em>before</em> including <code>GL/glfw.h</code> and the GLFW header will
+      <em>before</em> including <code>GL/glfw3.h</code> and the GLFW header will
       detect this.</p>
 </ul>
 
@@ -106,8 +111,8 @@ disable any <code>gl.h</code> that the GLFW header includes and GLEW will work
 as expected.</p>
 
 
-
 <h3>4.2 Link with the right libraries</h3>
+
 
 <h4>4.2.1 Windows static library</h4>
 
@@ -219,7 +224,6 @@ by compile.sh at compile time.</p>
 <code>-lGLU</code> to your link flags.</p>
 
 
-
 <h4>4.2.5 Mac OS X static library</h4>
 
 <p>When compiling and linking a program under Mac OS X that uses GLFW, you
@@ -256,8 +260,10 @@ that even though your machine may have Unix-style OpenGL libraries, they are for
 use with the X Window System, and will <em>not</em> work with the Mac OS X native
 version of GLFW.</p>
 
-<a name="changelog">
+
+<a name="changelog"></a>
 <h2>5. Version history</h2>
+
 
 <h3>v3.0</h3>
 <ul>
@@ -271,8 +277,8 @@ version of GLFW.</p>
   <li>Added <code>glfwGetWindowPos</code> function for querying the position of the specified window</li>
   <li>Added <code>glfwSetWindowFocusCallback</code> function and <code>GLFWwindowfocusfun</code> type for receiving window focus events</li>
   <li>Added <code>glfwSetWindowIconifyCallback</code> function and <code>GLFWwindowiconifyfun</code> type for receiving window iconification events</li>
+  <li>Added <code>glfwGetClipboardString</code> and <code>glfwSetClipboardString</code> functions for interacting with the system clipboard</li>
   <li>Added <code>glfwGetCurrentContext</code> function for retrieving the window whose OpenGL context is current</li>
-  <li>Added <code>GLFWallocator</code> type and <code>glfwInit</code> parameter for pluggable memory allocator</li>
   <li>Added <code>glfwCopyContext</code> function for copying OpenGL state categories between contexts</li>
   <li>Added <code>GLFW_OPENGL_ES2_PROFILE</code> profile for creating OpenGL ES 2.0 contexts using the <code>GLX_EXT_create_context_es2_profile</code> and <code>WGL_EXT_create_context_es2_profile</code> extensions</li>
   <li>Added <code>GLFW_OPENGL_ROBUSTNESS</code> window hint and associated strategy tokens for <code>GL_ARB_robustness</code> support</li>
@@ -280,20 +286,25 @@ version of GLFW.</p>
   <li>Added <code>GLFW_INCLUDE_GL3</code> macro for telling the GLFW header to include <code>gl3.h</code> header instead of <code>gl.h</code></li>
   <li>Added <code>windows</code> simple multi-window test program</li>
   <li>Added <code>sharing</code> simple OpenGL object sharing test program</li>
-  <li>Added <code>dynamic</code> simple dynamic linking test program</li>
+  <li>Added <code>modes</code> video mode enumeration and setting test program</li>
   <li>Added a parameter to <code>glfwOpenWindow</code> for specifying a context the new window's context will share objects with</li>
   <li>Added initial window title parameter to <code>glfwOpenWindow</code></li>
   <li>Added <code>glfwSetGamma</code>, <code>glfwSetGammaRamp</code> and <code>glfwGetGammaRamp</code> functions and <code>GLFWgammaramp</code> type for monitor gamma ramp control</li>
   <li>Changed buffer bit depth parameters of <code>glfwOpenWindow</code> to window hints</li>
   <li>Changed <code>glfwOpenWindow</code> and <code>glfwSetWindowTitle</code> to use UTF-8 encoded strings</li>
+  <li>Changed <code>glfwGetProcAddress</code> to return a (generic) function pointer</li>
   <li>Renamed <code>glfw.h</code> to <code>glfw3.h</code> to avoid conflicts with 2.x series</li>
   <li>Renamed <code>GLFW_WINDOW</code> token to <code>GLFW_WINDOWED</code></li>
   <li>Renamed <code>GLFW_WINDOW_NO_RESIZE</code> to <code>GLFW_WINDOW_RESIZABLE</code></li>
+  <li>Renamed <code>GLFW_BUILD_DLL</code> to <code>_GLFW_BUILD_DLL</code></li>
   <li>Renamed <code>version</code> test to <code>glfwinfo</code></li>
+  <li>Renamed <code>GLFW_NO_GLU</code> to <code>GLFW_INCLUDE_GLU</code> and made it disabled by default</li>
+  <li>Renamed mouse position functions to cursor position equivalents</li>
   <li>Replaced ad hoc build system with CMake</li>
   <li>Replaced layout-dependent key codes with single, platform-independent set based on US layout</li>
-  <li>Replaced mouse wheel interface with two-dimensional scrolling interface</li>
+  <li>Replaced mouse wheel interface with two-dimensional, floating point scrolling interface</li>
   <li>Replaced <code>glfwEnable</code> and <code>glfwDisable</code> with <code>glfwGetInputMode</code> and <code>glfwSetInputMode</code></li>
+  <li>Replaced <code>joystick</code> test with graphical version</li>
   <li>Made Unicode character input unaffected by <code>GLFW_KEY_REPEAT</code></li>
   <li>Removed event auto-polling and the <code>GLFW_AUTO_POLL_EVENTS</code> window enable</li>
   <li>Removed the Win32 port .def files</li>
@@ -309,10 +320,21 @@ version of GLFW.</p>
   <li>Bugfix: The default OpenGL version in the <code>glfwinfo</code> test was set to 1.1</li>
   <li>Bugfix: The OpenGL profile and forward-compatibility window parameters were not saved after context creation</li>
   <li>Bugfix: The FSAA test did not check for the availability of <code>GL_ARB_multisample</code></li>
+  <li>Bugfix: Cursor centering upon leaving captured cursor mode was reported before the mode was changed to non-captured</li>
   <li>[Cocoa] Added support for OpenGL 3.2 core profile in 10.7 Lion and above</li>
   <li>[Cocoa] Added support for joysticks</li>
+  <li>[Cocoa] Postponed menu creation to first window creation</li>
+  <li>[Cocoa] Replaced <code>NSDate</code> time source with <code>mach_absolute_time</code></li>
+  <li>[Cocoa] Replaced all deprecated CoreGraphics calls with non-deprecated counterparts</li>
+  <li>[Cocoa] Bugfix: The <code>NSOpenGLPFAFullScreen</code> pixel format attribute caused creation to fail on some machines</li>
+  <li>[Cocoa] Bugfix: <code>glfwOpenWindow</code> did not properly enforce the forward-compatible and context profile hints</li>
   <li>[Cocoa] Bugfix: The loop condition for saving video modes used the wrong index variable</li>
   <li>[Cocoa] Bugfix: The OpenGL framework was not retrieved, making glfwGetProcAddress crash</li>
+  <li>[Cocoa] Bugfix: <code>glfwInit</code> changed the current directory for unbundled executables</li>
+  <li>[Cocoa] Bugfix: The <code>GLFW_WINDOW_NO_RESIZE</code> window parameter was always zero</li>
+  <li>[Cocoa] Bugfix: The cursor position incorrectly rounded during conversion</li>
+  <li>[Cocoa] Bugfix: Cursor positioning led to nonsensical results for fullscreen windows</li>
+  <li>[Cocoa] Bugfix: The GLFW window was flagged as restorable</li>
   <li>[X11] Added support for the <code>GLX_EXT_swap_control</code> extension as an alternative to <code>GLX_SGI_swap_control</code></li>
   <li>[X11] Added the POSIX <code>CLOCK_MONOTONIC</code> time source as the preferred method</li>
   <li>[X11] Added dependency on libm, where present</li>
@@ -325,6 +347,9 @@ version of GLFW.</p>
   <li>[Win32] Bugfix: Window activation and iconification did not work as expected</li>
   <li>[Win32] Bugfix: Software rasterizer pixel formats were not discarded by the WGL_ARB_pixel_format code path</li>
   <li>[Win32] Bugfix: The array for WGL context attributes was too small and could overflow</li>
+  <li>[Win32] Bugfix: Alt+F4 hot key was not translated into <code>WM_CLOSE</code></li>
+  <li>[Win32] Bugfix: The <code>GLFW_WINDOW_NO_RESIZE</code> window parameter was always zero</li>
+  <li>[Win32] Bugfix: A test was missing for whether all available pixel formats had been disqualified</li>
 </ul>
 
 <h3>v2.7</h3>
@@ -759,7 +784,7 @@ version of GLFW.</p>
 </ul>
 
 
-<a name="structure">
+<a name="structure"></a>
 <h2>6. Directory structure of the GLFW distribution</h2>
 
 <p>Here is an overview of the directory structure of the GLFW distribution:
@@ -782,7 +807,7 @@ version of GLFW.</p>
 </table>
 
 
-<a name="contact">
+<a name="contact"></a>
 <h2>7. Contacting the project</h2>
 
 <p>The official website for GLFW is <a href="http://www.glfw.org/">glfw.org</a>.
@@ -806,7 +831,7 @@ GLFW or porting it to your favorite platform, we have a
 or you could join us on <code>#glfw</code>.
 
 
-<a name="credits">
+<a name="credits"></a>
 <h2>8. Acknowledgements</h2>
 
 <p>GLFW exists because people around the world donated their time and lent
@@ -814,11 +839,15 @@ their skills.  Special thanks go out to:</p>
 
 <ul>
 
+  <li>artblanc, for a patch replacing a deprecated Core Graphics call</li>
+
   <li>Bobyshev Alexander and Martins Mozeiko, for the original proposal of
   an FSAA hint and their work on the Win32 implementation of FSAA</li>
 
   <li>Keith Bauer, for his invaluable help with porting and maintaining GLFW on
   Mac OS X, and for his many ideas</li>
+
+  <li>Lambert Clara, for a bug fix for the modes test</li>
 
   <li>Jarrod Davis, for the Delphi port of GLFW</li>
 
@@ -833,7 +862,10 @@ their skills.  Special thanks go out to:</p>
   adding logic for the <code>GLFW_ICON</code> resource</li>
 
   <li>Ralph Eastwood, for the initial design and implementation of the gamma
-  correction API</li>
+  correction and clipboard APIs</li>
+
+  <li>GeO4d, for the implementation of cursor enter/leave notifications on
+  Win32.</li>
 
   <li>Gerald Franz, who made GLFW compile under IRIX, and supplied patches
   for the X11 keyboard translation routine</li>
@@ -864,9 +896,14 @@ their skills.  Special thanks go out to:</p>
   <li>Glenn Lewis, for helping out with support for the D programming
   language</li>
 
+  <li>Shane Liesegang, for providing a bug fix relating to Cocoa window
+  restoration</li>
+
   <li>Tristam MacDonald, for his bug reports and feedback on the Cocoa port</li>
 
-  <li>Hans 'Hanmac' Mackowiak, for adding UTF-8 window title support on X11</li>
+  <li>Hans 'Hanmac' Mackowiak, for the initial implementation of cursor
+  enter/leave callbacks on X11, adding UTF-8 window title support on X11 and
+  a fix for the Xkb support</li>
 
   <li>David Medlock, for doing the initial Lua port</li>
 
@@ -889,7 +926,7 @@ their skills.  Special thanks go out to:</p>
 
   <li>Steve Sexton, for reporting an input bug in the Carbon port</li>
 
-  <li>Dmitri Shuralyov, for support, bug reports and testing</li>
+  <li>Dmitri Shuralyov, for support, bug reports, bug fixes and testing</li>
 
   <li>Daniel Skorupski, for reporting a bug in the Win32 DEF file</li>
 

@@ -31,7 +31,7 @@
 #include "internal.h"
 
 
-#if defined(GLFW_BUILD_DLL)
+#if defined(_GLFW_BUILD_DLL)
 
 //========================================================================
 // GLFW DLL entry point
@@ -45,5 +45,5 @@ BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
     return TRUE;
 }
 
-#endif // GLFW_BUILD_DLL
+#endif // _GLFW_BUILD_DLL
 

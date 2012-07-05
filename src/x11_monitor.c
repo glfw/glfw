@@ -43,13 +43,13 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
                                   XRROutputInfo* outputInfo,
                                   XRRCrtcInfo* crtcInfo)
 {
-    *current = _glfwMalloc(sizeof(_GLFWmonitor));
+    *current = malloc(sizeof(_GLFWmonitor));
     memset(*current, 0, sizeof(_GLFWmonitor));
 
     (*current)->physicalWidth  = outputInfo->mm_width;
     (*current)->physicalHeight = outputInfo->mm_height;
 
-    (*current)->name = _glfwMalloc(strlen(outputInfo->name) + 1);
+    (*current)->name = malloc(strlen(outputInfo->name) + 1);
     memcpy((*current)->name, outputInfo->name, strlen(outputInfo->name) + 1);
     (*current)->name[strlen(outputInfo->name)] = '\0';
 
@@ -71,8 +71,8 @@ _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
     XRRFreeOutputInfo(monitor->X11.output);
 #endif /*_GLFW_HAS_XRANDR*/
 
-    _glfwFree(monitor->name);
-    _glfwFree(monitor);
+    free(monitor->name);
+    free(monitor);
 
     return result;
 }

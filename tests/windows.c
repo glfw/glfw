@@ -46,7 +46,7 @@ int main(void)
     GLboolean running = GL_TRUE;
     GLFWwindow windows[4];
 
-    if (!glfwInit(NULL))
+    if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW: %s\n",
                 glfwErrorString(glfwGetError()));

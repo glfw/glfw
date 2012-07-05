@@ -1,10 +1,10 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    Cocoa/NSOpenGL
-// API Version: 3.0
+// Platform:    Any
+// API version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -29,28 +29,46 @@
 
 #include "internal.h"
 
+#include <math.h>
+#include <string.h>
+
 
 //////////////////////////////////////////////////////////////////////////
-//////                       GLFW platform API                      //////
+//////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Return timer value in seconds
+// Set the clipboard contents
 //========================================================================
 
-double _glfwPlatformGetTime(void)
+GLFWAPI void glfwSetClipboardString(GLFWwindow handle, const char* string)
 {
-    return [NSDate timeIntervalSinceReferenceDate] -
-           _glfwLibrary.NS.timer.t0;
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    _glfwPlatformSetClipboardString(window, string);
 }
 
+
 //========================================================================
-// Set timer value in seconds
+// Return the current clipboard contents
 //========================================================================
 
-void _glfwPlatformSetTime(double time)
+GLFWAPI const char* glfwGetClipboardString(GLFWwindow handle)
 {
-    _glfwLibrary.NS.timer.t0 =
-        [NSDate timeIntervalSinceReferenceDate] - time;
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return NULL;
+    }
+
+    return _glfwPlatformGetClipboardString(window);
 }
 

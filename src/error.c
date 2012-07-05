@@ -109,6 +109,8 @@ GLFWAPI const char* glfwErrorString(int error)
             return "A platform-specific error occurred";
         case GLFW_WINDOW_NOT_ACTIVE:
             return "The specified window is not active";
+        case GLFW_FORMAT_UNAVAILABLE:
+            return "The requested format is unavailable";
     }
 
     return "ERROR: UNKNOWN ERROR TOKEN PASSED TO glfwErrorString";

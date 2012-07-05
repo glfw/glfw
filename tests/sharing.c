@@ -27,6 +27,7 @@
 //
 //========================================================================
 
+#define GLFW_INCLUDE_GLU
 #include <GL/glfw3.h>
 
 #include <stdio.h>
@@ -92,8 +93,6 @@ static void draw_quad(GLuint texture)
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-    glColor3f(0.6f, 0.f, 0.6f);
-
     glBegin(GL_QUADS);
 
     glTexCoord2f(0.f, 0.f);
@@ -117,7 +116,7 @@ int main(int argc, char** argv)
     GLuint texture;
     int x, y;
 
-    if (!glfwInit(NULL))
+    if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
@@ -141,6 +140,11 @@ int main(int argc, char** argv)
         fprintf(stderr, "Failed to open second GLFW window: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
+
+    // Set drawing color for the first context and copy it to the second
+    glfwMakeContextCurrent(windows[0]);
+    glColor3f(0.6f, 0.f, 0.6f);
+    glfwCopyContext(windows[0], windows[1], GL_CURRENT_BIT);
 
     // Put the second window to the right of the first one
     glfwGetWindowPos(windows[0], &x, &y);

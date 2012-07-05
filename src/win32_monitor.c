@@ -55,7 +55,7 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
 {
     HDC dc = NULL;
 
-    *current = _glfwMalloc(sizeof(_GLFWmonitor));
+    *current = malloc(sizeof(_GLFWmonitor));
     memset(*current, 0, sizeof(_GLFWmonitor));
 
     dc = CreateDC("DISPLAY", monitor->DeviceString, NULL, NULL);
@@ -65,7 +65,7 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
 
     DeleteDC(dc);
 
-    (*current)->name = _glfwMalloc(strlen(monitor->DeviceName) + 1);
+    (*current)->name = malloc(strlen(monitor->DeviceName) + 1);
     memcpy((*current)->name, monitor->DeviceName, strlen(monitor->DeviceName) + 1);
     (*current)->name[strlen(monitor->DeviceName)] = '\0';
 
@@ -82,8 +82,8 @@ _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
 
     result = monitor->next;
 
-    _glfwFree(monitor->name);
-    _glfwFree(monitor);
+    free(monitor->name);
+    free(monitor);
 
     return result;
 }

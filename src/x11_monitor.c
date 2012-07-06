@@ -53,9 +53,7 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
     (*current)->physicalWidth  = outputInfo->mm_width;
     (*current)->physicalHeight = outputInfo->mm_height;
 
-    (*current)->name = malloc(strlen(outputInfo->name) + 1);
-    memcpy((*current)->name, outputInfo->name, strlen(outputInfo->name) + 1);
-    (*current)->name[strlen(outputInfo->name)] = '\0';
+    (*current)->name = strdup(outputInfo->name);
 
     (*current)->screenX = crtcInfo->x;
     (*current)->screenY = crtcInfo->y;

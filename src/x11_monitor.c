@@ -91,48 +91,45 @@ _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
 
 _GLFWmonitor* _glfwCreateMonitors(void)
 {
-    _GLFWmonitor* monitorList;
-
-    monitorList = NULL;
+    _GLFWmonitor* monitorList = NULL;
 
     if (_glfwLibrary.X11.RandR.available)
     {
 #if defined (_GLFW_HAS_XRANDR)
+        int oi;
         XRRScreenResources* resources;
-        int outputIDX;
-        _GLFWmonitor** curMonitor;
-
-        curMonitor = &monitorList;
+        _GLFWmonitor** monitor = &monitorList;
 
         resources = XRRGetScreenResources(_glfwLibrary.X11.display,
                                           _glfwLibrary.X11.root);
 
-        for (outputIDX = 0; outputIDX < resources->noutput; outputIDX++)
+        for (oi = 0;  oi < resources->noutput;  oi++)
         {
             // physical device
             XRROutputInfo* outputInfo = NULL;
             // logical surface
             XRRCrtcInfo* crtcInfo = NULL;
-            int crtcIDX;
 
             outputInfo = XRRGetOutputInfo(_glfwLibrary.X11.display,
                                           resources,
-                                          resources->outputs[outputIDX]);
+                                          resources->outputs[oi]);
 
             if (outputInfo->connection == RR_Connected)
             {
-                for (crtcIDX = 0; crtcIDX < outputInfo->ncrtc; crtcIDX++)
+                int ci;
+
+                for (ci = 0;  ci < outputInfo->ncrtc;  ci++)
                 {
-                    if (outputInfo->crtc == outputInfo->crtcs[crtcIDX])
+                    if (outputInfo->crtc == outputInfo->crtcs[ci])
                     {
                         crtcInfo = XRRGetCrtcInfo(_glfwLibrary.X11.display,
                                                   resources,
-                                                  outputInfo->crtcs[crtcIDX]);
+                                                  outputInfo->crtcs[ci]);
                         break;
                     }
                 }
 
-                curMonitor = _glfwCreateMonitor(curMonitor, outputInfo, crtcInfo);
+                monitor = _glfwCreateMonitor(monitor, outputInfo, crtcInfo);
 
                 // Freeing of the outputInfo is done in _glfwDestroyMonitor
                 XRRFreeCrtcInfo(crtcInfo);

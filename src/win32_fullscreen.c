@@ -199,7 +199,15 @@ int  _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, GLFWvidmode* list, int ma
 
     for (;;)
     {
-        if (!EnumDisplaySettings(monitor->Win32.name, deviceModeNum, &deviceMode))
+        BOOL result;
+        WCHAR* wideName = _glfwCreateWideStringFromUTF8(monitor->Win32.name);
+        if (!wideName)
+            break;
+
+        result = EnumDisplaySettings(wideName, deviceModeNum, &deviceMode);
+        free(wideName);
+
+        if (!result)
            break;
 
         if (vidModesCount >= maxcount)

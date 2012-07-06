@@ -58,21 +58,20 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
     *current = malloc(sizeof(_GLFWmonitor));
     memset(*current, 0, sizeof(_GLFWmonitor));
 
-    dc = CreateDC("DISPLAY", monitor->DeviceString, NULL, NULL);
+    dc = CreateDC(L"DISPLAY", monitor->DeviceString, NULL, NULL);
 
     (*current)->physicalWidth  = GetDeviceCaps(dc, HORZSIZE);
     (*current)->physicalHeight = GetDeviceCaps(dc, VERTSIZE);
 
     DeleteDC(dc);
 
-    (*current)->name = malloc(strlen(monitor->DeviceName) + 1);
-    memcpy((*current)->name, monitor->DeviceName, strlen(monitor->DeviceName) + 1);
-    (*current)->name[strlen(monitor->DeviceName)] = '\0';
+    (*current)->name = _glfwCreateUTF8FromWideString(monitor->DeviceName);
 
     (*current)->screenX = setting->dmPosition.x;
     (*current)->screenY = setting->dmPosition.y;
 
-    memcpy((*current)->Win32.name, adapter->DeviceName, 32);
+    (*current)->Win32.name = _glfwCreateUTF8FromWideString(adapter->DeviceName);
+
     return &((*current)->next);
 }
 
@@ -82,6 +81,7 @@ _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
 
     result = monitor->next;
 
+    free(monitor->Win32.name);
     free(monitor->name);
     free(monitor);
 

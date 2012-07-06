@@ -219,7 +219,7 @@ typedef struct _GLFWlibraryWin32
 //------------------------------------------------------------------------
 typedef struct _GLFWmonitorWin32
 {
-    char name[32];
+    char* name;
 
 } _GLFWmonitorWin32;
 

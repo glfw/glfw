@@ -132,6 +132,7 @@ GLFWAPI const char* glfwGetMonitorString(GLFWmonitor handle, int param)
     return NULL;
 }
 
+
 //========================================================================
 // Set a callback function for monitor events
 //========================================================================
@@ -147,6 +148,7 @@ GLFWAPI void glfwSetMonitorDeviceCallback(GLFWmonitordevicefun cbfun)
     _glfwLibrary.monitorCallback= cbfun;
 }
 
+
 //========================================================================
 // Initialize the monitor list.
 //========================================================================
@@ -155,6 +157,7 @@ void _glfwInitMonitors(void)
 {
     _glfwLibrary.monitorListHead = _glfwCreateMonitors();
 }
+
 
 //========================================================================
 // Refresh monitor list and notify callback.
@@ -239,6 +242,7 @@ void _glfwRefreshMonitors(void)
     _glfwTerminateMonitors();
     _glfwLibrary.monitorListHead = newMonitorList;
 }
+
 
 //========================================================================
 // Delete the monitor list.

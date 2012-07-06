@@ -38,6 +38,10 @@
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
+//========================================================================
+// Create a monitor struct from the specified information
+//========================================================================
+
 #if defined (_GLFW_HAS_XRANDR)
 _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
                                   XRROutputInfo* outputInfo,
@@ -61,6 +65,11 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
 }
 #endif /*_GLFW_HAS_XRANDR*/
 
+
+//========================================================================
+// Destroy a monitor struct
+//========================================================================
+
 _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
 {
     _GLFWmonitor* result;
@@ -76,6 +85,11 @@ _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
 
     return result;
 }
+
+
+//========================================================================
+// Return a list of available monitors
+//========================================================================
 
 _GLFWmonitor* _glfwCreateMonitors(void)
 {

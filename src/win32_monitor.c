@@ -48,6 +48,10 @@
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
+//========================================================================
+// Create a monitor struct from the specified information
+//========================================================================
+
 _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
                                   DISPLAY_DEVICE* adapter,
                                   DISPLAY_DEVICE* monitor,
@@ -75,6 +79,11 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
     return &((*current)->next);
 }
 
+
+//========================================================================
+// Destroy a monitor struct
+//========================================================================
+
 _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
 {
     _GLFWmonitor* result;
@@ -87,6 +96,11 @@ _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
 
     return result;
 }
+
+
+//========================================================================
+// Return a list of available monitors
+//========================================================================
 
 _GLFWmonitor* _glfwCreateMonitors(void)
 {

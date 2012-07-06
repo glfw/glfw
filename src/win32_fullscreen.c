@@ -184,64 +184,50 @@ void _glfwRestoreVideoMode(void)
 
 int  _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, GLFWvidmode* list, int maxcount)
 {
-    DEVMODE deviceMode;
-    DWORD deviceModeNum;
+    DWORD deviceModeIndex = 0;
+    int modeCount = 0;
 
-    GLFWvidmode* vidModes;
-    int vidModesCount;
-    GLFWvidmode vidMode;
-
-    deviceMode.dmSize = sizeof(DEVMODE);
-    deviceModeNum  = 0;
-
-    vidModes = NULL;
-    vidModesCount = 0;
+    WCHAR* deviceName = _glfwCreateWideStringFromUTF8(monitor->Win32.name);
+    if (!deviceName)
+        return 0;
 
     for (;;)
     {
-        BOOL result;
-        WCHAR* wideName = _glfwCreateWideStringFromUTF8(monitor->Win32.name);
-        if (!wideName)
-            break;
+        GLFWvidmode mode;
+        DEVMODE deviceMode;
 
-        result = EnumDisplaySettings(wideName, deviceModeNum, &deviceMode);
-        free(wideName);
+        ZeroMemory(&deviceMode, sizeof(DEVMODE));
+        deviceMode.dmSize = sizeof(DEVMODE);
 
-        if (!result)
+        if (!EnumDisplaySettings(deviceName, deviceModeIndex, &deviceMode))
            break;
 
-        if (vidModesCount >= maxcount)
-            break;
-
-        deviceModeNum++;
-
+        deviceModeIndex++;
         if (deviceMode.dmBitsPerPel < 15)
             continue;
 
-        vidMode.height = deviceMode.dmPelsHeight;
-        vidMode.width  = deviceMode.dmPelsWidth;
-        // Convert to RGB, and back to bpp ("mask out" alpha bits etc)
+        mode.height = deviceMode.dmPelsHeight;
+        mode.width  = deviceMode.dmPelsWidth;
         _glfwSplitBPP(deviceMode.dmBitsPerPel,
-                      &vidMode.redBits,
-                      &vidMode.greenBits,
-                      &vidMode.blueBits);
+                      &mode.redBits,
+                      &mode.greenBits,
+                      &mode.blueBits);
 
-        // skip duplicates.
-        if (vidModes && bsearch(&vidMode, vidModes, vidModesCount, sizeof(GLFWvidmode), _glfwCompareVideoModes))
+        // Skip duplicate modes
+        if (bsearch(&mode, list, modeCount, sizeof(GLFWvidmode), _glfwCompareVideoModes))
             continue;
 
-        vidModes = realloc(vidModes, sizeof(GLFWvidmode) * ++vidModesCount);
-        memcpy(vidModes + (vidModesCount - 1), &vidMode, sizeof(GLFWvidmode));
+        list[modeCount] = mode;
+        modeCount++;
 
-        qsort(vidModes, vidModesCount, sizeof(GLFWvidmode), _glfwCompareVideoModes);
+        qsort(list, modeCount, sizeof(GLFWvidmode), _glfwCompareVideoModes);
+
+        if (modeCount >= maxcount)
+            break;
     }
 
-    if (list && maxcount)
-        memcpy(list, vidModes, sizeof(GLFWvidmode) * ((vidModesCount < maxcount) ? vidModesCount : maxcount));
-
-    free(vidModes);
-
-    return vidModesCount;
+    free(deviceName);
+    return modeCount;
 }
 
 

@@ -118,7 +118,10 @@ static void list_modes(GLFWmonitor monitor)
 
     GLFWvidmode* modes = get_video_modes(monitor, &count);
 
-    printf("Monitor %s:\n", glfwGetMonitorString(monitor, GLFW_MONITOR_NAME));
+    printf("Monitor %s (%ix%i mm):\n",
+           glfwGetMonitorString(monitor, GLFW_MONITOR_NAME),
+           glfwGetMonitorParam(monitor, GLFW_MONITOR_PHYSICAL_WIDTH),
+           glfwGetMonitorParam(monitor, GLFW_MONITOR_PHYSICAL_HEIGHT));
 
     for (i = 0;  i < count;  i++)
     {

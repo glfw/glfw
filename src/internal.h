@@ -60,6 +60,7 @@ typedef struct _GLFWwndconfig   _GLFWwndconfig;
 typedef struct _GLFWfbconfig    _GLFWfbconfig;
 typedef struct _GLFWwindow      _GLFWwindow;
 typedef struct _GLFWlibrary     _GLFWlibrary;
+typedef struct _GLFWmonitor     _GLFWmonitor;
 
 
 //------------------------------------------------------------------------
@@ -75,13 +76,6 @@ typedef struct _GLFWlibrary     _GLFWlibrary;
 // We ship and use our own copy of glext.h since GLFW uses fairly new
 // extensions and not all operating systems come with an up-to-date version
 #include "../support/GL/glext.h"
-
-typedef struct _GLFWhints _GLFWhints;
-typedef struct _GLFWwndconfig _GLFWwndconfig;
-typedef struct _GLFWfbconfig _GLFWfbconfig;
-typedef struct _GLFWwindow _GLFWwindow;
-typedef struct _GLFWlibrary _GLFWlibrary;
-typedef struct _GLFWmonitor _GLFWmonitor;
 
 #if defined(_GLFW_COCOA_NSGL)
  #include "cocoa_platform.h"

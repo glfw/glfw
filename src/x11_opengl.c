@@ -544,6 +544,15 @@ int _glfwInitOpenGL(void)
             _glfwLibrary.GLX.SGI_swap_control = GL_TRUE;
     }
 
+    if (_glfwPlatformExtensionSupported("GLX_MESA_swap_control"))
+    {
+        window->GLX.SwapIntervalMESA = (PFNGLXSWAPINTERVALMESAPROC)
+            _glfwPlatformGetProcAddress("glXSwapIntervalMESA");
+
+        if (window->GLX.SwapIntervalMESA)
+            window->GLX.MESA_swap_control = GL_TRUE;
+    }
+
     if (_glfwPlatformExtensionSupported("GLX_SGIX_fbconfig"))
     {
         _glfwLibrary.GLX.GetFBConfigAttribSGIX = (PFNGLXGETFBCONFIGATTRIBSGIXPROC)
@@ -722,8 +731,13 @@ void _glfwPlatformSwapInterval(int interval)
                                          window->X11.handle,
                                          interval);
     }
-    else if (_glfwLibrary.GLX.SGI_swap_control)
-        _glfwLibrary.GLX.SwapIntervalSGI(interval);
+    else if (window->GLX.MESA_swap_control)
+        window->GLX.SwapIntervalMESA(interval);
+    else if (window->GLX.SGI_swap_control)
+    {
+        if (interval > 0)
+            window->GLX.SwapIntervalSGI(interval);
+    }
 }
 
 

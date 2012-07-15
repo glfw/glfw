@@ -97,6 +97,10 @@
 #define _GLFW_CONVERSION_SUCCEEDED      1
 #define _GLFW_CONVERSION_FAILED         2
 
+#ifndef GLX_MESA_swap_control
+typedef int (*PFNGLXSWAPINTERVALMESAPROC)(int);
+#endif
+
 
 //========================================================================
 // GLFW platform specific types
@@ -242,6 +246,7 @@ typedef struct _GLFWlibraryGLX
     // GLX extensions
     PFNGLXSWAPINTERVALSGIPROC             SwapIntervalSGI;
     PFNGLXSWAPINTERVALEXTPROC             SwapIntervalEXT;
+    PFNGLXSWAPINTERVALMESAPROC            SwapIntervalMESA;
     PFNGLXGETFBCONFIGATTRIBSGIXPROC       GetFBConfigAttribSGIX;
     PFNGLXCHOOSEFBCONFIGSGIXPROC          ChooseFBConfigSGIX;
     PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC CreateContextWithConfigSGIX;
@@ -250,6 +255,7 @@ typedef struct _GLFWlibraryGLX
     GLboolean   SGIX_fbconfig;
     GLboolean   SGI_swap_control;
     GLboolean   EXT_swap_control;
+    GLboolean   MESA_swap_control;
     GLboolean   ARB_multisample;
     GLboolean   ARB_create_context;
     GLboolean   ARB_create_context_profile;

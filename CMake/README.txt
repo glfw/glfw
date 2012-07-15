@@ -11,7 +11,7 @@ To use these files you add a special parameter when configuring the source tree:
 
 For example, to use the Debian GNU/Linux MinGW package, run CMake like this:
 
-  cmake -DCMAKE_TOOLCHAIN_FILE=CMake/linux-i586-mingw32msvc.cmake .
+  cmake -DCMAKE_TOOLCHAIN_FILE=CMake/i586-mingw32msvc.cmake .
 
 For more details see this article:
 

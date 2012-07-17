@@ -84,7 +84,7 @@ static void parseGLVersion(int* major, int* minor, int* rev)
 
     // Find version from OpenGL string
     for (; version &&
-           !sscanf(version, "%d.%d.%d", &_major, &_minor, &_rev);
+           !sscanf((char*)version, "%d.%d.%d", &_major, &_minor, &_rev);
            ++version);
 
     // Store result

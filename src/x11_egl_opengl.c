@@ -519,9 +519,9 @@ int _glfwPlatformExtensionSupported(const char* extension)
 // Get the function pointer to an OpenGL function
 //========================================================================
 
-void* _glfwPlatformGetProcAddress(const char* procname)
+GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 {
-    return (void*) _glfw_eglGetProcAddress(procname);
+    return _glfw_eglGetProcAddress(procname);
 }
 
 

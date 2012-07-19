@@ -531,6 +531,7 @@ GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 
 void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long mask)
 {
-    // AFAIK, EGL doesn't have this
+    _glfwSetError(GLFW_PLATFORM_ERROR,
+                  "X11/EGL: Context copying not supported by EGL");
 }
 

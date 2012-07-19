@@ -15,7 +15,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(GLFW_USE_EGL "Build for EGL and OpenGL ES platform (Currently only X11)" OFF)
 
 if (GLFW_USE_EGL)
-    SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMake/modules)
+    set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMake/modules)
     find_package(EGL REQUIRED)
 else()
     find_package(OpenGL REQUIRED)
@@ -200,7 +200,7 @@ endif()
 if (_GLFW_X11_EGL)
 
     # Set up library and include paths
-    list(APPEND glfw_INCLUDE_DIRS${EGL_INCLUDE_DIR})
+    list(APPEND glfw_INCLUDE_DIRS ${EGL_INCLUDE_DIR})
     list(APPEND glfw_LIBRARIES ${EGL_LIBRARY})
 
     set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} egl")

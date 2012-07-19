@@ -36,6 +36,7 @@
 // Max number of EGL configuration we handle
 #define _GLFW_EGL_CONFIG_IN 15
 
+
 //========================================================================
 // Returns the specified attribute of the specified EGLConfig
 //========================================================================
@@ -52,7 +53,9 @@ static int getFBConfigAttrib(EGLConfig fbconfig, int attrib)
 // Return a list of available and usable framebuffer configs
 //========================================================================
 
-static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, unsigned int* found)
+static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window,
+                                   const _GLFWwndconfig* wndconfig,
+                                   unsigned int* found)
 {
     EGLConfig fbconfigs[_GLFW_EGL_CONFIG_IN];
     _GLFWfbconfig* result;
@@ -60,9 +63,8 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, const _GLFWwndconfig* wn
 
     *found = 0;
 
-
     eglGetConfigs(_glfwLibrary.EGL.display, fbconfigs,
-            _GLFW_EGL_CONFIG_IN, &count);
+                  _GLFW_EGL_CONFIG_IN, &count);
     if (!count)
     {
         _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
@@ -131,6 +133,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, const _GLFWwndconfig* wn
     return result;
 }
 
+
 //========================================================================
 // Read back framebuffer parameters from the context
 //========================================================================
@@ -143,10 +146,11 @@ static void refreshContextParams(_GLFWwindow* window, EGLint fbconfigID)
     int attribs[] = { EGL_CONFIG_ID, fbconfigID, None };
 
     eglChooseConfig(_glfwLibrary.EGL.display,
-            attribs,
-            fbconfig,
-            _GLFW_EGL_CONFIG_IN,
-            &dummy);
+                    attribs,
+                    fbconfig,
+                    _GLFW_EGL_CONFIG_IN,
+                    &dummy);
+
     if (!dummy)
     {
         // This should never ever happen
@@ -169,7 +173,6 @@ static void refreshContextParams(_GLFWwindow* window, EGLint fbconfigID)
     window->depthBits = getFBConfigAttrib(*fbconfig, EGL_DEPTH_SIZE);
     window->stencilBits = getFBConfigAttrib(*fbconfig, EGL_STENCIL_SIZE);
 
-    // Get FSAA buffer sample count
     window->samples = getFBConfigAttrib(*fbconfig, EGL_SAMPLES);
 }
 
@@ -204,10 +207,10 @@ static int createContext(_GLFWwindow* window,
         setEGLattrib(attribs, index, EGL_NONE, EGL_NONE);
 
         eglChooseConfig(_glfwLibrary.EGL.display,
-                attribs,
-                fbconfig,
-                _GLFW_EGL_CONFIG_IN,
-                &dummy);
+                        attribs,
+                        fbconfig,
+                        _GLFW_EGL_CONFIG_IN,
+                        &dummy);
 
         if (!dummy)
         {
@@ -238,21 +241,23 @@ static int createContext(_GLFWwindow* window,
         // attribute, so attempt to find the closest match.
 
         eglGetConfigAttrib(_glfwLibrary.EGL.display, *fbconfig,
-                EGL_RED_SIZE, &red_size);
-        eglGetConfigAttrib (_glfwLibrary.EGL.display, *fbconfig,
-                EGL_GREEN_SIZE, &green_size);
-        eglGetConfigAttrib (_glfwLibrary.EGL.display, *fbconfig,
-                EGL_BLUE_SIZE, &blue_size);
-        eglGetConfigAttrib (_glfwLibrary.EGL.display, *fbconfig,
-                EGL_ALPHA_SIZE, &alpha_size);
+                           EGL_RED_SIZE, &red_size);
+        eglGetConfigAttrib(_glfwLibrary.EGL.display, *fbconfig,
+                           EGL_GREEN_SIZE, &green_size);
+        eglGetConfigAttrib(_glfwLibrary.EGL.display, *fbconfig,
+                           EGL_BLUE_SIZE, &blue_size);
+        eglGetConfigAttrib(_glfwLibrary.EGL.display, *fbconfig,
+                           EGL_ALPHA_SIZE, &alpha_size);
 
         visTemplate.depth = red_size + green_size + blue_size + alpha_size;
         visMask |= VisualDepthMask;
     }
 
-    // Get X Visual
-    window->EGL.visual = XGetVisualInfo(_glfwLibrary.X11.display, visMask, &visTemplate, &dummy);
-    if (window->EGL.visual == NULL) {
+    window->EGL.visual = XGetVisualInfo(_glfwLibrary.X11.display,
+                                        visMask, &visTemplate, &dummy);
+
+    if (window->EGL.visual == NULL)
+    {
         _glfwSetError(GLFW_PLATFORM_ERROR,
                       "X11/GLX: Failed to retrieve visual for EGLConfig");
         return GL_FALSE;
@@ -272,7 +277,9 @@ static int createContext(_GLFWwindow* window,
 
     eglBindAPI(EGL_OPENGL_ES_API);
 
-    window->EGL.context = eglCreateContext(_glfwLibrary.EGL.display, *fbconfig, share, attribs);
+    window->EGL.context = eglCreateContext(_glfwLibrary.EGL.display,
+                                           *fbconfig, share, attribs);
+
     if (window->EGL.context == EGL_NO_CONTEXT)
     {
         // TODO: Handle all the various error codes here
@@ -282,7 +289,6 @@ static int createContext(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    // store configuraion
     window->EGL.config = *fbconfig;
 
     refreshContextParams(window, fbconfigID);
@@ -328,7 +334,7 @@ int _glfwInitOpenGL(void)
     }
 #endif
 
-    _glfwLibrary.EGL.display = eglGetDisplay((EGLNativeDisplayType)_glfwLibrary.X11.display);
+    _glfwLibrary.EGL.display = eglGetDisplay((EGLNativeDisplayType) _glfwLibrary.X11.display);
     if (_glfwLibrary.EGL.display == EGL_NO_DISPLAY)
     {
         _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
@@ -337,8 +343,8 @@ int _glfwInitOpenGL(void)
     }
 
     if (!eglInitialize(_glfwLibrary.EGL.display,
-                &_glfwLibrary.EGL.majorVersion,
-                &_glfwLibrary.EGL.minorVersion))
+                       &_glfwLibrary.EGL.majorVersion,
+                       &_glfwLibrary.EGL.minorVersion))
     {
         _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
                       "X11/EGL: Failed to initialize EGL");
@@ -423,18 +429,17 @@ void _glfwDestroyContext(_GLFWwindow* window)
 
     if (window->EGL.surface)
     {
-        // Release and destroy the surface
         eglDestroySurface(_glfwLibrary.EGL.display, window->EGL.surface);
         window->EGL.surface = EGL_NO_SURFACE;
     }
 
     if (window->EGL.context)
     {
-        // Release and destroy the context
         eglDestroyContext(_glfwLibrary.EGL.display, window->EGL.context);
         window->EGL.context = EGL_NO_CONTEXT;
     }
 }
+
 
 //========================================================================
 // Return the X visual associated with the specified context
@@ -444,6 +449,7 @@ XVisualInfo* _glfwGetContextVisual(_GLFWwindow* window)
 {
     return window->EGL.visual;
 }
+
 
 //========================================================================
 // Make the OpenGL context associated with the specified window current
@@ -456,20 +462,26 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
         if (window->EGL.surface == EGL_NO_SURFACE)
         {
             window->EGL.surface = eglCreateWindowSurface(_glfwLibrary.EGL.display,
-                    window->EGL.config, (EGLNativeWindowType)window->X11.handle, NULL);
+                                                         window->EGL.config,
+                                                         (EGLNativeWindowType) window->X11.handle,
+                                                         NULL);
             if (window->EGL.surface == EGL_NO_SURFACE)
             {
                 _glfwSetError(GLFW_PLATFORM_ERROR,
                         "X11/EGL: Failed to create window surface");
             }
         }
+
         eglMakeCurrent(_glfwLibrary.EGL.display,
                        window->EGL.surface,
                        window->EGL.surface,
                        window->EGL.context);
     }
     else
-        eglMakeCurrent(_glfwLibrary.EGL.display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+    {
+        eglMakeCurrent(_glfwLibrary.EGL.display,
+                       EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+    }
 }
 
 
@@ -507,7 +519,7 @@ int _glfwPlatformExtensionSupported(const char* extension)
                                 EGL_EXTENSIONS);
     if (extensions != NULL)
     {
-        if (_glfwStringInExtensionString(extension, (unsigned char*)extensions))
+        if (_glfwStringInExtensionString(extension, (unsigned char*) extensions))
             return GL_TRUE;
     }
 

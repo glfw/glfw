@@ -52,6 +52,9 @@
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextEGL EGL
 #define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryEGL EGL
 
+#define _GLFW_EGL_NATIVE_WINDOW ((EGLNativeWindowType) window->X11.handle)
+#define _GLFW_EGL_NATIVE_DISPLAY ((EGLNativeDisplayType) _glfwLibrary.X11.display)
+
 
 //========================================================================
 // GLFW platform specific types

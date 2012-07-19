@@ -334,7 +334,7 @@ int _glfwInitOpenGL(void)
     }
 #endif
 
-    _glfwLibrary.EGL.display = eglGetDisplay((EGLNativeDisplayType) _glfwLibrary.X11.display);
+    _glfwLibrary.EGL.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
     if (_glfwLibrary.EGL.display == EGL_NO_DISPLAY)
     {
         _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
@@ -463,7 +463,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
         {
             window->EGL.surface = eglCreateWindowSurface(_glfwLibrary.EGL.display,
                                                          window->EGL.config,
-                                                         (EGLNativeWindowType) window->X11.handle,
+                                                         _GLFW_EGL_NATIVE_WINDOW,
                                                          NULL);
             if (window->EGL.surface == EGL_NO_SURFACE)
             {

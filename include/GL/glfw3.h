@@ -161,6 +161,8 @@ extern "C" {
 #else
   #if defined(GLFW_INCLUDE_GL3)
     #include <GL3/gl3.h>
+  #elif defined(GLFW_INCLUDE_ES2)
+    #include <GLES2/gl2.h>
   #else
     #include <GL/gl.h>
   #endif

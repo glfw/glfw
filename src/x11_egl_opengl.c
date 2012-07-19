@@ -190,7 +190,7 @@ static int createContext(_GLFWwindow* window,
                          EGLint fbconfigID)
 {
     int attribs[40], visMask;
-    EGLint dummy, index, vid = 0;
+    EGLint dummy, index, visualID = 0;
     EGLint red_size, green_size, blue_size, alpha_size;
     EGLConfig fbconfig[_GLFW_EGL_CONFIG_IN];
     EGLContext share = NULL;
@@ -223,16 +223,16 @@ static int createContext(_GLFWwindow* window,
     // Retrieve the corresponding visual
     // NOTE: This is the only non-portable code in this file.
     // Maybe it would not hurt too much to add #ifdefs for different platforms?
-    eglGetConfigAttrib(_glfwLibrary.EGL.display, *fbconfig, EGL_NATIVE_VISUAL_ID, &vid);
+    eglGetConfigAttrib(_glfwLibrary.EGL.display, *fbconfig, EGL_NATIVE_VISUAL_ID, &visualID);
 
     // Init visual template
     visTemplate.screen = _glfwLibrary.X11.screen;
     visMask = VisualScreenMask;
 
-    if (vid != 0)
+    if (visualID)
     {
         // The X window visual must match the EGL config
-        visTemplate.visualid = vid;
+        visTemplate.visualid = visualID;
         visMask |= VisualIDMask;
     }
     else
@@ -285,7 +285,7 @@ static int createContext(_GLFWwindow* window,
         // TODO: Handle all the various error codes here
 
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "X11/EGL: Failed to create OpenGL(|ES) context");
+                      "X11/EGL: Failed to create OpenGL ES context");
         return GL_FALSE;
     }
 
@@ -361,7 +361,6 @@ int _glfwInitOpenGL(void)
 
 void _glfwTerminateOpenGL(void)
 {
-    // Unload libEGL.so if necessary
 #ifdef _GLFW_DLOPEN_LIBEGL
     if (_glfwLibrary.EGL.libEGL != NULL)
     {
@@ -369,6 +368,7 @@ void _glfwTerminateOpenGL(void)
         _glfwLibrary.EGL.libEGL = NULL;
     }
 #endif
+
     eglTerminate(_glfwLibrary.EGL.display);
 }
 
@@ -468,7 +468,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
             if (window->EGL.surface == EGL_NO_SURFACE)
             {
                 _glfwSetError(GLFW_PLATFORM_ERROR,
-                        "X11/EGL: Failed to create window surface");
+                              "X11/EGL: Failed to create window surface");
             }
         }
 

@@ -309,7 +309,7 @@ static int createContext(_GLFWwindow* window,
 
 int _glfwInitOpenGL(void)
 {
-#ifdef _GLFW_DLOPEN_LIBGL
+#ifdef _GLFW_DLOPEN_LIBEGL
     int i;
     char* libEGL_names[ ] =
     {
@@ -362,7 +362,7 @@ int _glfwInitOpenGL(void)
 void _glfwTerminateOpenGL(void)
 {
     // Unload libEGL.so if necessary
-#ifdef _GLFW_DLOPEN_LIBGL
+#ifdef _GLFW_DLOPEN_LIBEGL
     if (_glfwLibrary.EGL.libEGL != NULL)
     {
         dlclose(_glfwLibrary.EGL.libEGL);

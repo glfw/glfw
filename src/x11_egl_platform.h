@@ -1,6 +1,6 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    X11/GLX
+// Platform:    X11/EGL
 // API version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
@@ -37,14 +37,10 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
+#include <X11/Xutil.h>
 
-#define GLX_GLXEXT_LEGACY
-#include <GL/glx.h>
-
-// This path may need to be changed if you build GLFW using your own setup
-// We ship and use our own copy of glxext.h since GLFW uses fairly new
-// extensions and not all operating systems come with an up-to-date version
-#include "../support/GL/glxext.h"
+// Include EGL
+#include <EGL/egl.h>
 
 // With XFree86, we can use the XF86VidMode extension
 #if defined(_GLFW_HAS_XF86VIDMODE)
@@ -65,27 +61,21 @@
  #include <X11/XKBlib.h>
 #endif
 
-// We support four different ways for getting addresses for GL/GLX
-// extension functions: glXGetProcAddress, glXGetProcAddressARB,
-// glXGetProcAddressEXT, and dlsym
-#if defined(_GLFW_HAS_GLXGETPROCADDRESSARB)
- #define _glfw_glXGetProcAddress(x) glXGetProcAddressARB(x)
-#elif defined(_GLFW_HAS_GLXGETPROCADDRESS)
- #define _glfw_glXGetProcAddress(x) glXGetProcAddress(x)
-#elif defined(_GLFW_HAS_GLXGETPROCADDRESSEXT)
- #define _glfw_glXGetProcAddress(x) glXGetProcAddressEXT(x)
+// We support two different ways for getting addresses for EGL
+// extension functions: eglGetProcAddress and dlsym
+#if defined(_GLFW_HAS_EGLGETPROCADDRESS)
+ #define _glfw_eglGetProcAddress(x) eglGetProcAddress(x)
 #elif defined(_GLFW_HAS_DLOPEN)
- #define _glfw_glXGetProcAddress(x) dlsym(_glfwLibrary.GLX.libGL, x)
- #define _GLFW_DLOPEN_LIBGL
+ #define _glfw_eglGetProcAddress(x) dlsym(_glfwLibrary.EGL.libEGL, x)
+ #define _GLFW_DLOPEN_LIBEGL
 #else
  #error "No OpenGL entry point retrieval mechanism was enabled"
 #endif
 
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowX11 X11
-#define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextGLX GLX
+#define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextEGL EGL
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 X11
-#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryGLX GLX
-#define _GLFW_CTX GLX
+#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryEGL EGL
 
 // Clipboard format atom indices
 #define _GLFW_CLIPBOARD_FORMAT_UTF8     0
@@ -97,10 +87,6 @@
 #define _GLFW_CONVERSION_INACTIVE       0
 #define _GLFW_CONVERSION_SUCCEEDED      1
 #define _GLFW_CONVERSION_FAILED         2
-
-#ifndef GLX_MESA_swap_control
-typedef int (*PFNGLXSWAPINTERVALMESAPROC)(int);
-#endif
 
 
 //========================================================================
@@ -116,12 +102,13 @@ typedef intptr_t GLFWintptr;
 //------------------------------------------------------------------------
 // Platform-specific OpenGL context structure
 //------------------------------------------------------------------------
-typedef struct _GLFWcontextGLX
+typedef struct _GLFWcontextEGL
 {
-    GLXContext    context;           // OpenGL rendering context
-    XVisualInfo*  visual;            // Visual for selected GLXFBConfig
-
-} _GLFWcontextGLX;
+   EGLConfig      config;
+   EGLContext     context;
+   EGLSurface     surface;
+   XVisualInfo*   visual;
+} _GLFWcontextEGL;
 
 
 //------------------------------------------------------------------------
@@ -142,7 +129,6 @@ typedef struct _GLFWwindowX11
     int           cursorPosX, cursorPosY;
 
 } _GLFWwindowX11;
-
 
 //------------------------------------------------------------------------
 // Platform-specific library global data for X11
@@ -235,39 +221,18 @@ typedef struct _GLFWlibraryX11
 
 } _GLFWlibraryX11;
 
-
 //------------------------------------------------------------------------
-// Platform-specific library global data for GLX
+// Platform-specific library global data for EGL
 //------------------------------------------------------------------------
-typedef struct _GLFWlibraryGLX
+typedef struct _GLFWlibraryEGL
 {
-    // Server-side GLX version
-    int             majorVersion, minorVersion;
+    EGLDisplay      display;
+    EGLint          majorVersion, minorVersion;
 
-    // GLX extensions
-    PFNGLXSWAPINTERVALSGIPROC             SwapIntervalSGI;
-    PFNGLXSWAPINTERVALEXTPROC             SwapIntervalEXT;
-    PFNGLXSWAPINTERVALMESAPROC            SwapIntervalMESA;
-    PFNGLXGETFBCONFIGATTRIBSGIXPROC       GetFBConfigAttribSGIX;
-    PFNGLXCHOOSEFBCONFIGSGIXPROC          ChooseFBConfigSGIX;
-    PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC CreateContextWithConfigSGIX;
-    PFNGLXGETVISUALFROMFBCONFIGSGIXPROC   GetVisualFromFBConfigSGIX;
-    PFNGLXCREATECONTEXTATTRIBSARBPROC     CreateContextAttribsARB;
-    GLboolean   SGIX_fbconfig;
-    GLboolean   SGI_swap_control;
-    GLboolean   EXT_swap_control;
-    GLboolean   MESA_swap_control;
-    GLboolean   ARB_multisample;
-    GLboolean   ARB_create_context;
-    GLboolean   ARB_create_context_profile;
-    GLboolean   ARB_create_context_robustness;
-    GLboolean   EXT_create_context_es2_profile;
-
-#if defined(_GLFW_DLOPEN_LIBGL)
-    void*           libGL;  // dlopen handle for libGL.so
+#if defined(_GLFW_DLOPEN_LIBEGL)
+    void*           libEGL;  // dlopen handle for libEGL.so
 #endif
-} _GLFWlibraryGLX;
-
+} _GLFWlibraryEGL;
 
 //------------------------------------------------------------------------
 // Joystick information & state
@@ -289,11 +254,7 @@ GLFWGLOBAL struct {
 // Time
 void _glfwInitTimer(void);
 
-// Gamma
-void _glfwInitGammaRamp(void);
-void _glfwTerminateGammaRamp(void);
-
-// OpenGL support
+// OpenGL(|ES) support
 int _glfwInitOpenGL(void);
 void _glfwTerminateOpenGL(void);
 int _glfwCreateContext(_GLFWwindow* window,

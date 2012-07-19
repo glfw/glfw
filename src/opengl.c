@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include <limits.h>
+#include <stdio.h>
 
 
 //========================================================================
@@ -42,12 +43,15 @@ static void parseGLVersion(int* major, int* minor, int* rev)
 {
     GLuint _major, _minor = 0, _rev = 0;
     const GLubyte* version;
-    const GLubyte* ptr;
-    const char* glesPrefix = "OpenGL ES ";
 
     version = glGetString(GL_VERSION);
     if (!version)
         return;
+
+#if 0
+    // Old version detection code. This doesn't work very well
+    const GLubyte* ptr;
+    const char* glesPrefix = "OpenGL ES ";
 
     if (strncmp((const char*) version, glesPrefix, strlen(glesPrefix)) == 0)
     {
@@ -76,6 +80,12 @@ static void parseGLVersion(int* major, int* minor, int* rev)
                 _rev = 10 * _rev + (*ptr - '0');
         }
     }
+#endif
+
+    // Find version from OpenGL string
+    for (; version &&
+           !sscanf((char*)version, "%d.%d.%d", &_major, &_minor, &_rev);
+           ++version);
 
     // Store result
     *major = _major;

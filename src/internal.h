@@ -82,6 +82,8 @@ typedef struct _GLFWlibrary     _GLFWlibrary;
  #include "win32_platform.h"
 #elif defined(_GLFW_X11_GLX)
  #include "x11_platform.h"
+#elif defined(_GLFW_X11_EGL)
+ #include "x11_egl_platform.h"
 #else
  #error "No supported platform selected"
 #endif

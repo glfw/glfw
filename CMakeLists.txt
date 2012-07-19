@@ -193,7 +193,7 @@ if (_GLFW_COCOA_NSGL)
         set(CMAKE_OSX_ARCHITECTURES ppc;i386;ppc64;x86_64)
         set(CMAKE_OSX_SYSROOT /Developer/SDKs/MacOSX10.5.sdk)
         set(CMAKE_C_FLAGS "-mmacosx-version-min=10.5") 
-    else(GLFW_BUILD_UNIVERSAL)
+    else()
         message(STATUS "Building GLFW only for the native architecture")
     endif()
     

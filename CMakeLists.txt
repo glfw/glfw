@@ -15,8 +15,6 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 find_package(OpenGL REQUIRED)
 
-option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON)
-
 #--------------------------------------------------------------------
 # Enable all warnings on GCC, regardless of OS
 #--------------------------------------------------------------------
@@ -56,16 +54,20 @@ if (_GLFW_WIN32_WGL)
     list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
     list(APPEND glfw_LIBRARIES ${OPENGL_gl_LIBRARY})
 
-    if (NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
-        foreach(flag_var CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
-            if(${flag_var} MATCHES "/MD")
-                string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
-            endif(${flag_var} MATCHES "/MD")
-            if(${flag_var} MATCHES "/MDd")
-                string(REGEX REPLACE "/MDd" "/MTd" ${flag_var} "${${flag_var}}")
-            endif(${flag_var} MATCHES "/MDd")
-        endforeach(flag_var)
-    endif(NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
+    if (MSVC)
+        option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON)
+
+        if (NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
+            foreach (flag CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
+                if (${flag} MATCHES "/MD")
+                    string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
+                endif()
+                if (${flag} MATCHES "/MDd")
+                    string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
+                endif()
+            endforeach()
+        endif()
+    endif()
 
     set(_GLFW_NO_DLOAD_WINMM ${BUILD_SHARED_LIBS})
 

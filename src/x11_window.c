@@ -1,6 +1,6 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    X11/GLX
+// Platform:    X11
 // API version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
@@ -146,7 +146,7 @@ static GLboolean createWindow(_GLFWwindow* window,
             // TODO: Handle all the various error codes here
 
             _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "X11/GLX: Failed to create window");
+                          "X11: Failed to create window");
             return GL_FALSE;
         }
     }
@@ -205,7 +205,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         if (!hints)
         {
             _glfwSetError(GLFW_OUT_OF_MEMORY,
-                          "X11/GLX: Failed to allocate WM hints");
+                          "X11: Failed to allocate WM hints");
             return GL_FALSE;
         }
 
@@ -222,7 +222,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         if (!hints)
         {
             _glfwSetError(GLFW_OUT_OF_MEMORY,
-                          "X11/GLX: Failed to allocate size hints");
+                          "X11: Failed to allocate size hints");
             return GL_FALSE;
         }
 

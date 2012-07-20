@@ -1,6 +1,6 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    X11/GLX
+// Platform:    X11
 // API version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
@@ -115,7 +115,7 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
     if (_glfwLibrary.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "X11/GLX: Failed to get gamma ramp due to size "
+                      "X11: Failed to get gamma ramp due to size "
                       "incompatibility");
         return;
     }
@@ -166,7 +166,7 @@ void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
     if (_glfwLibrary.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "X11/GLX: Failed to set gamma ramp due to size "
+                      "X11: Failed to set gamma ramp due to size "
                       "incompatibility");
         return;
     }

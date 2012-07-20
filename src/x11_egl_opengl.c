@@ -154,7 +154,7 @@ static void refreshContextParams(_GLFWwindow* window, EGLint fbconfigID)
     EGLint count;
     EGLConfig fbconfig;
 
-    int attribs[] = { EGL_CONFIG_ID, fbconfigID, None };
+    int attribs[] = { EGL_CONFIG_ID, fbconfigID, EGL_NONE, EGL_NONE };
 
     eglChooseConfig(_glfwLibrary.EGL.display, attribs, &fbconfig, 1, &count);
     if (!count)

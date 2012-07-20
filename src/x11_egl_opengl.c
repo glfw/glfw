@@ -90,6 +90,8 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window,
 
     for (i = 0;  i < count;  i++)
     {
+        _GLFWfbconfig* f = result + *found;
+
         if (!getFBConfigAttrib(fbconfigs[i], EGL_NATIVE_VISUAL_ID))
         {
             // Only consider EGLConfigs with associated visuals
@@ -117,23 +119,23 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window,
         }
 
         if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE &&
-                !(getFBConfigAttrib(fbconfigs[i], EGL_RENDERABLE_TYPE) & EGL_OPENGL_ES2_BIT))
+            !(getFBConfigAttrib(fbconfigs[i], EGL_RENDERABLE_TYPE) & EGL_OPENGL_ES2_BIT))
         {
             // User requested only OpenGL ES 2.0 context
             continue;
         }
 
-        result[*found].redBits = getFBConfigAttrib(fbconfigs[i], EGL_RED_SIZE);
-        result[*found].greenBits = getFBConfigAttrib(fbconfigs[i], EGL_GREEN_SIZE);
-        result[*found].blueBits = getFBConfigAttrib(fbconfigs[i], EGL_BLUE_SIZE);
+        f->redBits = getFBConfigAttrib(fbconfigs[i], EGL_RED_SIZE);
+        f->greenBits = getFBConfigAttrib(fbconfigs[i], EGL_GREEN_SIZE);
+        f->blueBits = getFBConfigAttrib(fbconfigs[i], EGL_BLUE_SIZE);
 
-        result[*found].alphaBits = getFBConfigAttrib(fbconfigs[i], EGL_ALPHA_SIZE);
-        result[*found].depthBits = getFBConfigAttrib(fbconfigs[i], EGL_DEPTH_SIZE);
-        result[*found].stencilBits = getFBConfigAttrib(fbconfigs[i], EGL_STENCIL_SIZE);
+        f->alphaBits = getFBConfigAttrib(fbconfigs[i], EGL_ALPHA_SIZE);
+        f->depthBits = getFBConfigAttrib(fbconfigs[i], EGL_DEPTH_SIZE);
+        f->stencilBits = getFBConfigAttrib(fbconfigs[i], EGL_STENCIL_SIZE);
 
-        result[*found].samples = getFBConfigAttrib(fbconfigs[i], EGL_SAMPLES);
+        f->samples = getFBConfigAttrib(fbconfigs[i], EGL_SAMPLES);
 
-        result[*found].platformID = (GLFWintptr) getFBConfigAttrib(fbconfigs[i], EGL_CONFIG_ID);
+        f->platformID = (GLFWintptr) getFBConfigAttrib(fbconfigs[i], EGL_CONFIG_ID);
 
         (*found)++;
     }

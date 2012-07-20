@@ -498,8 +498,7 @@ int _glfwPlatformExtensionSupported(const char* extension)
     const char* extensions;
 
     // Get list of GLX extensions
-    extensions = eglQueryString(_glfwLibrary.EGL.display,
-                                EGL_EXTENSIONS);
+    extensions = eglQueryString(_glfwLibrary.EGL.display, EGL_EXTENSIONS);
     if (extensions != NULL)
     {
         if (_glfwStringInExtensionString(extension, (unsigned char*) extensions))

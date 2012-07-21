@@ -71,6 +71,11 @@ typedef struct _GLFWlibrary     _GLFWlibrary;
 
 #include "../include/GL/glfw3.h"
 
+// This path may need to be changed if you build GLFW using your own setup
+// We ship and use our own copy of glext.h since GLFW uses fairly new
+// extensions and not all operating systems come with an up-to-date version
+#include "../support/GL/glext.h"
+
 #if defined(_GLFW_COCOA_NSGL)
  #include "cocoa_platform.h"
 #elif defined(_GLFW_WIN32_WGL)

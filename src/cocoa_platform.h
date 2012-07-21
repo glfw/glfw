@@ -41,11 +41,6 @@
 typedef void* id;
 #endif
 
-// This path may need to be changed if you build GLFW using your own setup
-// We ship and use our own copy of glext.h since GLFW uses fairly new
-// extensions and not all operating systems come with an up-to-date version
-#include "../support/GL/glext.h"
-
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowNS NS
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextNSGL NSGL
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS NS

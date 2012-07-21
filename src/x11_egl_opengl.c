@@ -248,7 +248,7 @@ static int createContext(_GLFWwindow* window,
     if (window->EGL.visual == NULL)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "X11/GLX: Failed to retrieve visual for EGLConfig");
+                      "X11/EGL: Failed to retrieve visual for EGLConfig");
         return GL_FALSE;
     }
 
@@ -551,7 +551,6 @@ int _glfwPlatformExtensionSupported(const char* extension)
 {
     const char* extensions;
 
-    // Get list of GLX extensions
     extensions = eglQueryString(_glfwLibrary.EGL.display, EGL_EXTENSIONS);
     if (extensions != NULL)
     {

@@ -336,6 +336,21 @@ static GLboolean createContext(_GLFWwindow* window,
             attribs[i++] = wndconfig->glMinor;
         }
 
+        if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
+        {
+            if (!window->WGL.ARB_create_context_profile ||
+                !window->WGL.EXT_create_context_es2_profile)
+            {
+                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                            "Win32/WGL: OpenGL ES 2.x requested but "
+                            "WGL_EXT_create_context_es2_profile is unavailable");
+                return GL_FALSE;
+            }
+
+            attribs[i++] = WGL_CONTEXT_PROFILE_MASK_ARB;
+            attribs[i++] = WGL_CONTEXT_ES2_PROFILE_BIT_EXT;
+        }
+
         if (wndconfig->glForward || wndconfig->glDebug || wndconfig->glRobustness)
         {
             int flags = 0;
@@ -365,21 +380,10 @@ static GLboolean createContext(_GLFWwindow* window,
                 return GL_FALSE;
             }
 
-            if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE &&
-                !window->WGL.EXT_create_context_es2_profile)
-            {
-                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                              "Win32/WGL: OpenGL ES 2.x profile requested but "
-                              "WGL_EXT_create_context_es2_profile is unavailable");
-                return GL_FALSE;
-            }
-
             if (wndconfig->glProfile == GLFW_OPENGL_CORE_PROFILE)
                 flags = WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
             else if (wndconfig->glProfile == GLFW_OPENGL_COMPAT_PROFILE)
                 flags = WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
-            else if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE)
-                flags = WGL_CONTEXT_ES2_PROFILE_BIT_EXT;
 
             attribs[i++] = WGL_CONTEXT_PROFILE_MASK_ARB;
             attribs[i++] = flags;

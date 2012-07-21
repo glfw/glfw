@@ -42,17 +42,20 @@
 #define strcasecmp(x, y) _stricmp(x, y)
 #endif
 
+#define API_OPENGL          "gl"
+#define API_OPENGL_ES       "es"
+
 #define PROFILE_NAME_CORE   "core"
 #define PROFILE_NAME_COMPAT "compat"
-#define PROFILE_NAME_ES2    "es2"
 
 #define STRATEGY_NAME_NONE "none"
 #define STRATEGY_NAME_LOSE "lose"
 
 static void usage(void)
 {
-    printf("Usage: glfwinfo [-h] [-m MAJOR] [-n MINOR] [-d] [-l] [-f] [-p PROFILE] [-r STRATEGY]\n");
-    printf("available profiles: " PROFILE_NAME_CORE " " PROFILE_NAME_COMPAT " " PROFILE_NAME_ES2 "\n");
+    printf("Usage: glfwinfo [-h] [-a API] [-m MAJOR] [-n MINOR] [-d] [-l] [-f] [-p PROFILE] [-r STRATEGY]\n");
+    printf("available APIs: " API_OPENGL " " API_OPENGL_ES "\n");
+    printf("available profiles: " PROFILE_NAME_CORE " " PROFILE_NAME_COMPAT "\n");
     printf("available strategies: " STRATEGY_NAME_NONE " " STRATEGY_NAME_LOSE "\n");
 }
 
@@ -61,14 +64,22 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s in %s\n", glfwErrorString(error), description);
 }
 
+static const char* get_client_api_name(int api)
+{
+    if (api == GLFW_OPENGL_API)
+        return "OpenGL";
+    else if (api == GLFW_OPENGL_ES_API)
+        return "OpenGL ES";
+
+    return "Unknown API";
+}
+
 static const char* get_glfw_profile_name(int profile)
 {
     if (profile == GLFW_OPENGL_COMPAT_PROFILE)
-        return PROFILE_NAME_COMPAT;
+        return "compatibility";
     else if (profile == GLFW_OPENGL_CORE_PROFILE)
-        return PROFILE_NAME_CORE;
-    else if (profile == GLFW_OPENGL_ES2_PROFILE)
-        return PROFILE_NAME_ES2;
+        return "core";
 
     return "unknown";
 }
@@ -76,22 +87,22 @@ static const char* get_glfw_profile_name(int profile)
 static const char* get_profile_name(GLint mask)
 {
     if (mask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)
-        return PROFILE_NAME_COMPAT;
+        return "compatibility";
     if (mask & GL_CONTEXT_CORE_PROFILE_BIT)
-        return PROFILE_NAME_CORE;
+        return "core";
 
     return "unknown";
 }
 
-static void list_extensions(int major, int minor)
+static void list_extensions(int api, int major, int minor)
 {
     int i;
     GLint count;
     const GLubyte* extensions;
 
-    printf("OpenGL context supported extensions:\n");
+    printf("%s context supported extensions:\n", get_client_api_name(api));
 
-    if (major > 2)
+    if (api == GLFW_OPENGL_API && major > 2)
     {
         PFNGLGETSTRINGIPROC glGetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
         if (!glGetStringi)
@@ -121,15 +132,25 @@ static void list_extensions(int major, int minor)
 
 int main(int argc, char** argv)
 {
-    int ch, profile = 0, strategy = 0, major = 1, minor = 0, revision;
+    int ch, api = 0, profile = 0, strategy = 0, major = 1, minor = 0, revision;
     GLboolean debug = GL_FALSE, forward = GL_FALSE, list = GL_FALSE;
     GLint flags, mask;
     GLFWwindow window;
 
-    while ((ch = getopt(argc, argv, "dfhlm:n:p:r:")) != -1)
+    while ((ch = getopt(argc, argv, "a:dfhlm:n:p:r:")) != -1)
     {
         switch (ch)
         {
+            case 'a':
+                if (strcasecmp(optarg, API_OPENGL) == 0)
+                    api = GLFW_OPENGL_API;
+                else if (strcasecmp(optarg, API_OPENGL_ES) == 0)
+                    api = GLFW_OPENGL_ES_API;
+                else
+                {
+                    usage();
+                    exit(EXIT_FAILURE);
+                }
             case 'd':
                 debug = GL_TRUE;
                 break;
@@ -153,8 +174,6 @@ int main(int argc, char** argv)
                     profile = GLFW_OPENGL_CORE_PROFILE;
                 else if (strcasecmp(optarg, PROFILE_NAME_COMPAT) == 0)
                     profile = GLFW_OPENGL_COMPAT_PROFILE;
-                else if (strcasecmp(optarg, PROFILE_NAME_ES2) == 0)
-                    profile = GLFW_OPENGL_ES2_PROFILE;
                 else
                 {
                     usage();
@@ -195,6 +214,9 @@ int main(int argc, char** argv)
         glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, minor);
     }
 
+    if (api != 0)
+        glfwOpenWindowHint(GLFW_CLIENT_API, api);
+
     if (debug)
         glfwOpenWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
@@ -234,53 +256,70 @@ int main(int argc, char** argv)
 
     printf("GLFW library version string: \"%s\"\n", glfwGetVersionString());
 
-    // Report OpenGL version
+    // Report client API version
 
-    printf("OpenGL context version string: \"%s\"\n", glGetString(GL_VERSION));
-
+    api = glfwGetWindowParam(window, GLFW_CLIENT_API);
     major = glfwGetWindowParam(window, GLFW_OPENGL_VERSION_MAJOR);
     minor = glfwGetWindowParam(window, GLFW_OPENGL_VERSION_MINOR);
     revision = glfwGetWindowParam(window, GLFW_OPENGL_REVISION);
 
-    printf("OpenGL context version parsed by GLFW: %u.%u.%u\n", major, minor, revision);
+    printf("%s context version string: \"%s\"\n",
+           get_client_api_name(api),
+           glGetString(GL_VERSION));
 
-    // Report OpenGL context properties
+    printf("%s context version parsed by GLFW: %u.%u.%u\n",
+           get_client_api_name(api),
+           major, minor, revision);
 
-    if (major >= 3)
+    // Report client API context properties
+
+    if (api == GLFW_OPENGL_API)
     {
-        glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-        printf("OpenGL context flags:");
+        if (major >= 3)
+        {
+            glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+            printf("%s context flags:", get_client_api_name(api));
 
-        if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
-            puts(" forward-compatible");
-        else
-            puts(" none");
+            if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
+                puts(" forward-compatible");
+            else
+                puts(" none");
 
-        printf("OpenGL forward-compatible flag parsed by GLFW: %s\n",
-               glfwGetWindowParam(window, GLFW_OPENGL_FORWARD_COMPAT) ? "true" : "false");
+            printf("%s forward-compatible flag parsed by GLFW: %s\n",
+                   get_client_api_name(api),
+                   glfwGetWindowParam(window, GLFW_OPENGL_FORWARD_COMPAT) ? "true" : "false");
+        }
+
+        if (major > 3 || (major == 3 && minor >= 2))
+        {
+            glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
+            printf("%s profile mask: %s (0x%08x)\n",
+                   get_client_api_name(api),
+                   get_profile_name(mask), mask);
+
+            printf("%s profile parsed by GLFW: %s\n",
+                   get_client_api_name(api),
+                   get_glfw_profile_name(glfwGetWindowParam(window, GLFW_OPENGL_PROFILE)));
+        }
     }
 
-    if (major > 3 || (major == 3 && minor >= 2))
-    {
-        glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
-        printf("OpenGL profile mask: %s (0x%08x)\n", get_profile_name(mask), mask);
-
-        printf("OpenGL profile parsed by GLFW: %s\n",
-               get_glfw_profile_name(glfwGetWindowParam(window, GLFW_OPENGL_PROFILE)));
-    }
-
-    printf("OpenGL context renderer string: \"%s\"\n", glGetString(GL_RENDERER));
-    printf("OpenGL context vendor string: \"%s\"\n", glGetString(GL_VENDOR));
+    printf("%s context renderer string: \"%s\"\n",
+           get_client_api_name(api),
+           glGetString(GL_RENDERER));
+    printf("%s context vendor string: \"%s\"\n",
+           get_client_api_name(api),
+           glGetString(GL_VENDOR));
 
     if (major > 1)
     {
-        printf("OpenGL context shading language version: \"%s\"\n",
+        printf("%s context shading language version: \"%s\"\n",
+               get_client_api_name(api),
                glGetString(GL_SHADING_LANGUAGE_VERSION));
     }
 
-    // Report OpenGL extensions
+    // Report client API extensions
     if (list)
-        list_extensions(major, minor);
+        list_extensions(api, major, minor);
 
     glfwTerminate();
     exit(EXIT_SUCCESS);

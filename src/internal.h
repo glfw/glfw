@@ -110,6 +110,7 @@ struct _GLFWhints
     GLboolean   stereo;
     GLboolean   resizable;
     int         samples;
+    int         clientAPI;
     int         glMajor;
     int         glMinor;
     GLboolean   glForward;
@@ -131,6 +132,7 @@ struct _GLFWwndconfig
     const char*   title;
     int           refreshRate;
     GLboolean     resizable;
+    int           clientAPI;
     int           glMajor;
     int           glMinor;
     GLboolean     glForward;
@@ -212,6 +214,7 @@ struct _GLFWwindow
 
     // OpenGL extensions and context attributes
     GLboolean accelerated;     // GL_TRUE if OpenGL context is "accelerated"
+    int       clientAPI;
     int       glMajor, glMinor, glRevision;
     GLboolean glForward, glDebug;
     int       glProfile;

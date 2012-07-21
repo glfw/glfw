@@ -110,18 +110,23 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window,
             continue;
         }
 
-        if (!(getConfigAttrib(configs[i], EGL_RENDERABLE_TYPE) & EGL_OPENGL_ES_BIT) &&
-            !(getConfigAttrib(configs[i], EGL_RENDERABLE_TYPE) & EGL_OPENGL_ES2_BIT))
+        if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
         {
-            // Only consider OpenGL ES context
-            continue;
+            if (wndconfig->glMajor == 1)
+            {
+                if (!(getConfigAttrib(configs[i], EGL_RENDERABLE_TYPE) & EGL_OPENGL_ES_BIT))
+                    continue;
+            }
+            else
+            {
+                if (!(getConfigAttrib(configs[i], EGL_RENDERABLE_TYPE) & EGL_OPENGL_ES2_BIT))
+                    continue;
+            }
         }
-
-        if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE &&
-            !(getConfigAttrib(configs[i], EGL_RENDERABLE_TYPE) & EGL_OPENGL_ES2_BIT))
+        else if (wndconfig->clientAPI == GLFW_OPENGL_API)
         {
-            // User requested only OpenGL ES 2.0 context
-            continue;
+            if (!(getConfigAttrib(configs[i], EGL_RENDERABLE_TYPE) & EGL_OPENGL_BIT))
+                continue;
         }
 
         f->redBits = getConfigAttrib(configs[i], EGL_RED_SIZE);
@@ -248,18 +253,16 @@ static int createContext(_GLFWwindow* window,
     }
 
     index = 0;
-    if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE)
+
+    if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
     {
-        setEGLattrib(attribs, index, EGL_CONTEXT_CLIENT_VERSION, 2);
+        eglBindAPI(EGL_OPENGL_ES_API);
+        setEGLattrib(attribs, index, EGL_CONTEXT_CLIENT_VERSION, wndconfig->glMajor);
     }
     else
-    {
-        setEGLattrib(attribs, index, EGL_CONTEXT_CLIENT_VERSION, 1);
-    }
+        eglBindAPI(EGL_OPENGL_API);
 
     setEGLattrib(attribs, index, EGL_NONE, EGL_NONE);
-
-    eglBindAPI(EGL_OPENGL_ES_API);
 
     window->EGL.context = eglCreateContext(_glfwLibrary.EGL.display,
                                            config, share, attribs);

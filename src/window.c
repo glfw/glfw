@@ -97,7 +97,8 @@ void _glfwSetDefaultWindowHints(void)
 {
     memset(&_glfwLibrary.hints, 0, sizeof(_glfwLibrary.hints));
 
-    // The default minimum OpenGL version is 1.0
+    // The default is OpenGL with minimum version 1.0
+    _glfwLibrary.hints.clientAPI = GLFW_OPENGL_API;
     _glfwLibrary.hints.glMajor = 1;
     _glfwLibrary.hints.glMinor = 0;
 
@@ -251,6 +252,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     wndconfig.title          = title;
     wndconfig.refreshRate    = Max(_glfwLibrary.hints.refreshRate, 0);
     wndconfig.resizable      = _glfwLibrary.hints.resizable ? GL_TRUE : GL_FALSE;
+    wndconfig.clientAPI      = _glfwLibrary.hints.clientAPI;
     wndconfig.glMajor        = _glfwLibrary.hints.glMajor;
     wndconfig.glMinor        = _glfwLibrary.hints.glMinor;
     wndconfig.glForward      = _glfwLibrary.hints.glForward ? GL_TRUE : GL_FALSE;
@@ -428,6 +430,9 @@ GLFWAPI void glfwOpenWindowHint(int target, int hint)
             break;
         case GLFW_FSAA_SAMPLES:
             _glfwLibrary.hints.samples = hint;
+            break;
+        case GLFW_CLIENT_API:
+            _glfwLibrary.hints.clientAPI = hint;
             break;
         case GLFW_OPENGL_VERSION_MAJOR:
             _glfwLibrary.hints.glMajor = hint;
@@ -714,6 +719,8 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window->resizable;
         case GLFW_FSAA_SAMPLES:
             return window->samples;
+        case GLFW_CLIENT_API:
+            return window->clientAPI;
         case GLFW_OPENGL_VERSION_MAJOR:
             return window->glMajor;
         case GLFW_OPENGL_VERSION_MINOR:

@@ -260,7 +260,55 @@ static int createContext(_GLFWwindow* window,
         setEGLattrib(attribs, index, EGL_CONTEXT_CLIENT_VERSION, wndconfig->glMajor);
     }
     else
+    {
         eglBindAPI(EGL_OPENGL_API);
+
+        if (_glfwLibrary.EGL.KHR_create_context)
+        {
+            setEGLattrib(attribs, index, EGL_CONTEXT_MAJOR_VERSION_KHR, wndconfig->glMajor);
+            setEGLattrib(attribs, index, EGL_CONTEXT_MINOR_VERSION_KHR, wndconfig->glMinor);
+
+            if (wndconfig->glForward || wndconfig->glDebug || wndconfig->glRobustness)
+            {
+                int flags = 0;
+
+                if (wndconfig->glForward)
+                    flags |= EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR;
+
+                if (wndconfig->glDebug)
+                    flags |= EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR;
+
+                if (wndconfig->glRobustness)
+                    flags |= EGL_CONTEXT_OPENGL_ROBUST_ACCESS_BIT_KHR;
+
+                setEGLattrib(attribs, index, EGL_CONTEXT_FLAGS_KHR, flags);
+            }
+
+            if (wndconfig->glProfile)
+            {
+                int flags = 0;
+
+                if (wndconfig->glProfile == GLFW_OPENGL_CORE_PROFILE)
+                    flags = EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR;
+                else if (wndconfig->glProfile == GLFW_OPENGL_COMPAT_PROFILE)
+                    flags = EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR;
+
+                setEGLattrib(attribs, index, EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR, flags);
+            }
+
+            if (wndconfig->glRobustness)
+            {
+                int strategy;
+
+                if (wndconfig->glRobustness == GLFW_OPENGL_NO_RESET_NOTIFICATION)
+                    strategy = EGL_NO_RESET_NOTIFICATION_KHR;
+                else if (wndconfig->glRobustness == GLFW_OPENGL_LOSE_CONTEXT_ON_RESET)
+                    strategy = EGL_LOSE_CONTEXT_ON_RESET_KHR;
+
+                setEGLattrib(attribs, index, EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY_KHR, strategy);
+            }
+        }
+    }
 
     setEGLattrib(attribs, index, EGL_NONE, EGL_NONE);
 
@@ -336,6 +384,9 @@ int _glfwInitOpenGL(void)
                       "X11/EGL: Failed to initialize EGL");
         return GL_FALSE;
     }
+
+    if (_glfwPlatformExtensionSupported("EGL_KHR_create_context"))
+        _glfwLibrary.EGL.KHR_create_context = GL_TRUE;
 
     return GL_TRUE;
 }

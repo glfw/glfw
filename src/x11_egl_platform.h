@@ -85,6 +85,8 @@ typedef struct _GLFWlibraryEGL
     EGLDisplay      display;
     EGLint          majorVersion, minorVersion;
 
+    GLboolean       KHR_create_context;
+
 #if defined(_GLFW_DLOPEN_LIBEGL)
     void*           libEGL;  // dlopen handle for libEGL.so
 #endif

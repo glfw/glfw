@@ -33,6 +33,11 @@
 
 #include <EGL/egl.h>
 
+// This path may need to be changed if you build GLFW using your own setup
+// We ship and use our own copy of eglext.h since GLFW uses fairly new
+// extensions and not all operating systems come with an up-to-date version
+#include "../support/GL/eglext.h"
+
 // Do we have support for dlopen/dlsym?
 #if defined(_GLFW_HAS_DLOPEN)
  #include <dlfcn.h>

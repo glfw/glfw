@@ -176,8 +176,10 @@ static void refreshContextParams(_GLFWwindow* window)
 //========================================================================
 
 #define setEGLattrib(attribs, index, attribName, attribValue) \
+{ \
     attribs[index++] = attribName; \
-    attribs[index++] = attribValue;
+    attribs[index++] = attribValue; \
+}
 
 static int createContext(_GLFWwindow* window,
                          const _GLFWwndconfig* wndconfig,
@@ -253,9 +255,23 @@ static int createContext(_GLFWwindow* window,
     }
 
     if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
-        eglBindAPI(EGL_OPENGL_ES_API);
+    {
+        if (!eglBindAPI(EGL_OPENGL_ES_API))
+        {
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "X11/EGL: OpenGL ES is not supported");
+            return GL_FALSE;
+        }
+    }
     else
-        eglBindAPI(EGL_OPENGL_API);
+    {
+        if (!eglBindAPI(EGL_OPENGL_API))
+        {
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "X11/EGL: OpenGL is not supported");
+            return GL_FALSE;
+        }
+    }
 
     index = 0;
 
@@ -320,7 +336,7 @@ static int createContext(_GLFWwindow* window,
         // TODO: Handle all the various error codes here
 
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "X11/EGL: Failed to create OpenGL ES context");
+                      "X11/EGL: Failed to create context");
         return GL_FALSE;
     }
 

@@ -421,7 +421,7 @@ extern "C" {
 #define GLFW_OPENGL_PROFILE       0x00021014
 #define GLFW_OPENGL_ROBUSTNESS    0x00021015
 
-/* GLFW_OPENGL_API mode tokens */
+/* GLFW_CLIENT_API tokens */
 #define GLFW_OPENGL_API           0x00000001
 #define GLFW_OPENGL_ES_API        0x00000002
 

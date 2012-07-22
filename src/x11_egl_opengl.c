@@ -185,7 +185,7 @@ static int createContext(_GLFWwindow* window,
 {
     int attribs[40], visMask;
     EGLint count, index, visualID = 0;
-    EGLint red_size, green_size, blue_size, alpha_size;
+    EGLint redBits, greenBits, blueBits, alphaBits;
     EGLConfig config;
     EGLContext share = NULL;
     XVisualInfo visTemplate;
@@ -230,15 +230,15 @@ static int createContext(_GLFWwindow* window,
         // attribute, so attempt to find the closest match.
 
         eglGetConfigAttrib(_glfwLibrary.EGL.display, config,
-                           EGL_RED_SIZE, &red_size);
+                           EGL_RED_SIZE, &redBits);
         eglGetConfigAttrib(_glfwLibrary.EGL.display, config,
-                           EGL_GREEN_SIZE, &green_size);
+                           EGL_GREEN_SIZE, &greenBits);
         eglGetConfigAttrib(_glfwLibrary.EGL.display, config,
-                           EGL_BLUE_SIZE, &blue_size);
+                           EGL_BLUE_SIZE, &blueBits);
         eglGetConfigAttrib(_glfwLibrary.EGL.display, config,
-                           EGL_ALPHA_SIZE, &alpha_size);
+                           EGL_ALPHA_SIZE, &alphaBits);
 
-        visTemplate.depth = red_size + green_size + blue_size + alpha_size;
+        visTemplate.depth = redBits + greenBits + blueBits + alphaBits;
         visMask |= VisualDepthMask;
     }
 

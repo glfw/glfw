@@ -41,7 +41,7 @@
 // Returns the X11 handle of the specified window
 //========================================================================
 
-GLFWAPI id glfwGetCocoaWindow(GLFWwindow window)
+GLFWAPI id glfwGetCocoaWindow(GLFWwindow handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -59,7 +59,7 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow window)
 // Return the GLX context of the specified window
 //========================================================================
 
-GLFWAPI id glfwGetNSGLContext(GLFWwindow window)
+GLFWAPI id glfwGetNSGLContext(GLFWwindow handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 

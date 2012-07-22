@@ -315,7 +315,7 @@ configure_file(${GLFW_SOURCE_DIR}/src/config.h.in
 # The src directory's CMakeLists.txt file installs the library
 #--------------------------------------------------------------------
 install(DIRECTORY include/GL DESTINATION include 
-        FILES_MATCHING PATTERN glfw3.h)
+        FILES_MATCHING PATTERN glfw3.h PATTERN glfw3native.h)
 
 install(FILES COPYING.txt readme.html 
         DESTINATION share/doc/glfw-${GLFW_VERSION_FULL})

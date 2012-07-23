@@ -39,58 +39,39 @@
 // Parses the client API version string and extracts the version number
 //========================================================================
 
-static void parseGLVersion(int* major, int* minor, int* rev)
+static GLboolean parseGLVersion(int* major, int* minor, int* rev)
 {
     GLuint _major, _minor = 0, _rev = 0;
-    const GLubyte* version;
+    const char* version;
 
-    version = glGetString(GL_VERSION);
+    version = (const char*) glGetString(GL_VERSION);
     if (!version)
-        return;
-
-#if 0
-    // Old version detection code. This doesn't work very well
-    const GLubyte* ptr;
-    const char* glesPrefix = "OpenGL ES ";
-
-    if (strncmp((const char*) version, glesPrefix, strlen(glesPrefix)) == 0)
     {
-        // The version string on OpenGL ES has a prefix before the version
-        // number, so we skip past it and then continue as normal
-
-        version += strlen(glesPrefix);
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "X11/EGL: No version string available");
+        return GL_FALSE;
     }
 
-    // Parse version from string
-
-    ptr = version;
-    for (_major = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
-        _major = 10 * _major + (*ptr - '0');
-
-    if (*ptr == '.')
+    for (;;)
     {
-        ptr++;
-        for (_minor = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
-            _minor = 10 * _minor + (*ptr - '0');
-
-        if (*ptr == '.')
+        if (*version != '\0')
         {
-            ptr++;
-            for (_rev = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
-                _rev = 10 * _rev + (*ptr - '0');
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "X11/EGL: No version found in version string");
+            return GL_FALSE;
         }
+
+        if (sscanf(version, "%d.%d.%d", &_major, &_minor, &_rev))
+            break;
+
+        version++;
     }
-#endif
 
-    // Find version from OpenGL string
-    for (; version &&
-           !sscanf((char*)version, "%d.%d.%d", &_major, &_minor, &_rev);
-           ++version);
-
-    // Store result
     *major = _major;
     *minor = _minor;
     *rev = _rev;
+
+    return GL_TRUE;
 }
 
 
@@ -402,7 +383,8 @@ GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
 {
     window->clientAPI = wndconfig->clientAPI;
 
-    parseGLVersion(&window->glMajor, &window->glMinor, &window->glRevision);
+    if (!parseGLVersion(&window->glMajor, &window->glMinor, &window->glRevision))
+        return GL_FALSE;
 
     // Read back forward-compatibility flag
     {

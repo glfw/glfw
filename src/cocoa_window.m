@@ -1170,7 +1170,7 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
 {
     if (window->mode == GLFW_FULLSCREEN)
     {
-        NSPoint globalPoint = NSMakePoint(x, y);
+        CGPoint globalPoint = CGMakePoint(x, y);
         CGDisplayMoveCursorToPoint(CGMainDisplayID(), globalPoint);
     }
     else

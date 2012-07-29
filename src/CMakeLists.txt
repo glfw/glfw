@@ -30,6 +30,7 @@ elseif (_GLFW_X11_GLX)
 endif()
 
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
+set_target_properties(glfw PROPERTIES OUTPUT_NAME "glfw3")
 
 if (BUILD_SHARED_LIBS)
 

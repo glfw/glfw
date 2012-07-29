@@ -8,6 +8,6 @@ Description: A portable library for OpenGL, window and input
 Version: @GLFW_VERSION_FULL@
 URL: http://www.glfw.org/
 Requires.private: @GLFW_PKG_DEPS@
-Libs: -L${libdir} -lglfw
+Libs: -L${libdir} -lglfw3
 Libs.private: @GLFW_PKG_LIBS@
 Cflags: -I${includedir}

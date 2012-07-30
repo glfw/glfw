@@ -216,6 +216,16 @@ endif()
 set(GLFW_LIBRARIES ${glfw_LIBRARIES} CACHE STRING "Dependencies of GLFW")
 
 #--------------------------------------------------------------------
+# Choose library output name
+#--------------------------------------------------------------------
+if (BUILD_SHARED_LIBS AND UNIX)
+    # On Unix-like systems, shared libraries can use the soname system.
+    set(GLFW_LIB_NAME glfw)
+else()
+    set(GLFW_LIB_NAME glfw3)
+endif()
+
+#--------------------------------------------------------------------
 # Add subdirectories
 #--------------------------------------------------------------------
 add_subdirectory(src)
@@ -251,10 +261,10 @@ install(FILES COPYING.txt readme.html
 # Create and install pkg-config file on supported platforms
 #--------------------------------------------------------------------
 if (_GLFW_X11_GLX OR _GLFW_COCOA_NSGL)
-    configure_file(${GLFW_SOURCE_DIR}/src/libglfw.pc.in 
-                   ${GLFW_BINARY_DIR}/src/libglfw.pc @ONLY)
+    configure_file(${GLFW_SOURCE_DIR}/src/libglfw3.pc.in
+                   ${GLFW_BINARY_DIR}/src/libglfw3.pc @ONLY)
 
-    install(FILES ${GLFW_BINARY_DIR}/src/libglfw.pc
+    install(FILES ${GLFW_BINARY_DIR}/src/libglfw3.pc
             DESTINATION lib/pkgconfig)
 endif()
 

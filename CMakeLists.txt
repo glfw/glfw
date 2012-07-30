@@ -216,6 +216,16 @@ endif()
 set(GLFW_LIBRARIES ${glfw_LIBRARIES} CACHE STRING "Dependencies of GLFW")
 
 #--------------------------------------------------------------------
+# Choose library output name
+#--------------------------------------------------------------------
+if (BUILD_SHARED_LIBS AND UNIX)
+    # On Unix-like systems, shared libraries can use the soname system.
+    set(GLFW_LIB_NAME glfw)
+else()
+    set(GLFW_LIB_NAME glfw3)
+endif()
+
+#--------------------------------------------------------------------
 # Add subdirectories
 #--------------------------------------------------------------------
 add_subdirectory(src)

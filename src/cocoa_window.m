@@ -1104,10 +1104,6 @@ void _glfwPlatformRefreshWindowParams(void)
                            forAttribute:NSOpenGLPFASamples
                        forVirtualScreen:0];
     window->samples = value;
-
-    // These this is forced to false as long as Mac OS X lacks support for
-    // requesting debug contexts
-    window->glDebug = GL_FALSE;
 }
 
 

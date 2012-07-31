@@ -252,12 +252,18 @@ int main(int argc, char** argv)
         printf("OpenGL context flags (0x%08x):", flags);
 
         if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
-            puts(" forward-compatible");
-        else
-            puts(" none");
+            printf(" forward-compatible");
+        if (flags & 0)
+            printf(" debug");
+        putchar('\n');
 
-        printf("OpenGL forward-compatible flag parsed by GLFW: %s\n",
-               glfwGetWindowParam(window, GLFW_OPENGL_FORWARD_COMPAT) ? "true" : "false");
+        printf("OpenGL flags parsed by GLFW:");
+
+        if (glfwGetWindowParam(window, GLFW_OPENGL_FORWARD_COMPAT))
+            printf(" forward-compatible");
+        if (glfwGetWindowParam(window, GLFW_OPENGL_DEBUG_CONTEXT))
+            printf(" debug");
+        putchar('\n');
     }
 
     if (major > 3 || (major == 3 && minor >= 2))

@@ -998,14 +998,19 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
             recreateContext = GL_TRUE;
     }
 
-    if (wndconfig->glForward || wndconfig->glDebug)
+    if (wndconfig->glDebug)
+    {
+        if (window->WGL.ARB_create_context)
+            recreateContext = GL_TRUE;
+    }
+
+    if (wndconfig->glForward)
     {
         if (!window->WGL.ARB_create_context)
         {
             _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                          "Win32/WGL: A forward compatible or debug OpenGL "
-                          "context requested but WGL_ARB_create_context is "
-                          "unavailable");
+                          "Win32/WGL: A forward compatible OpenGL context "
+                          "requested but WGL_ARB_create_context is unavailable");
             return GL_FALSE;
         }
 

@@ -360,7 +360,7 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
 
         if (wndconfig->glForward)
         {
-            // OpenGL ES does not support Forward-compatibility
+            // OpenGL ES does not support forward-compatibility
             _glfwSetError(GLFW_INVALID_VALUE,
                           "glfwOpenWindow: Forward compatibility is not "
                           "supported by OpenGL ES");

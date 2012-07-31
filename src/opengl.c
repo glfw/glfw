@@ -41,8 +41,15 @@
 
 static GLboolean parseGLVersion(int* major, int* minor, int* rev)
 {
-    GLuint _major, _minor = 0, _rev = 0;
+    int i, _major, _minor = 0, _rev = 0;
     const char* version;
+    const char* prefixes[] =
+    {
+      "OpenGL ES-CM ",
+      "OpenGL ES-CL ",
+      "OpenGL ES ",
+      NULL
+    };
 
     version = (const char*) glGetString(GL_VERSION);
     if (!version)
@@ -52,19 +59,22 @@ static GLboolean parseGLVersion(int* major, int* minor, int* rev)
         return GL_FALSE;
     }
 
-    for (;;)
+    for (i = 0;  prefixes[i];  i++)
     {
-        if (*version != '\0')
-        {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "X11/EGL: No version found in version string");
-            return GL_FALSE;
-        }
+      const size_t length = strlen(prefixes[i]);
 
-        if (sscanf(version, "%d.%d.%d", &_major, &_minor, &_rev))
-            break;
+      if (strncmp(version, prefixes[i], length) == 0)
+      {
+        version += length;
+        break;
+      }
+    }
 
-        version++;
+    if (!sscanf(version, "%d.%d.%d", &_major, &_minor, &_rev))
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "X11/EGL: No version found in version string");
+        return GL_FALSE;
     }
 
     *major = _major;

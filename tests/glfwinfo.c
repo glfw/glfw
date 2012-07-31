@@ -74,16 +74,6 @@ static const char* get_client_api_name(int api)
     return "Unknown API";
 }
 
-static const char* get_glfw_profile_name(int profile)
-{
-    if (profile == GLFW_OPENGL_COMPAT_PROFILE)
-        return "compatibility";
-    else if (profile == GLFW_OPENGL_CORE_PROFILE)
-        return "core";
-
-    return "unknown";
-}
-
 static const char* get_profile_name(GLint mask)
 {
     if (mask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)
@@ -278,28 +268,38 @@ int main(int argc, char** argv)
         if (major >= 3)
         {
             glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-            printf("%s context flags:", get_client_api_name(api));
+            printf("%s context flags (0x%08x):", get_client_api_name(api), flags);
 
             if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
-                puts(" forward-compatible");
-            else
-                puts(" none");
+                printf(" forward-compatible");
+            if (flags & 0)
+                printf(" debug");
+            putchar('\n');
 
-            printf("%s forward-compatible flag parsed by GLFW: %s\n",
-                   get_client_api_name(api),
-                   glfwGetWindowParam(window, GLFW_OPENGL_FORWARD_COMPAT) ? "true" : "false");
+            printf("%s flags parsed by GLFW:", get_client_api_name(api));
+
+            if (glfwGetWindowParam(window, GLFW_OPENGL_FORWARD_COMPAT))
+                printf(" forward-compatible");
+            if (glfwGetWindowParam(window, GLFW_OPENGL_DEBUG_CONTEXT))
+                printf(" debug");
+            putchar('\n');
         }
 
         if (major > 3 || (major == 3 && minor >= 2))
         {
             glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
-            printf("%s profile mask: %s (0x%08x)\n",
+            printf("%s profile mask (0x%08x): %s\n",
                    get_client_api_name(api),
-                   get_profile_name(mask), mask);
+                   mask,
+                   get_profile_name(mask));
 
-            printf("%s profile parsed by GLFW: %s\n",
-                   get_client_api_name(api),
-                   get_glfw_profile_name(glfwGetWindowParam(window, GLFW_OPENGL_PROFILE)));
+            printf("%s profile parsed by GLFW:\n", get_client_api_name(api));
+
+            if (glfwGetWindowParam(window, GLFW_OPENGL_FORWARD_COMPAT))
+                printf(" forward-compatible");
+            if (glfwGetWindowParam(window, GLFW_OPENGL_DEBUG_CONTEXT))
+                printf(" debug");
+            putchar('\n');
         }
     }
 

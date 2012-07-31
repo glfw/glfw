@@ -407,6 +407,8 @@ GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
 
           if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
               window->glForward = GL_TRUE;
+          if (flags & 0)
+              window->glDebug = GL_TRUE;
       }
     }
 

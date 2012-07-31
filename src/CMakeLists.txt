@@ -36,8 +36,14 @@ elseif (_GLFW_X11_EGL)
 endif()
 
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
+set_target_properties(glfw PROPERTIES OUTPUT_NAME "${GLFW_LIB_NAME}")
 
 if (BUILD_SHARED_LIBS)
+    # Include version information in the output
+    set_target_properties(glfw PROPERTIES VERSION ${GLFW_VERSION})
+    if (UNIX)
+        set_target_properties(glfw PROPERTIES SOVERSION ${GLFW_VERSION_MAJOR})
+    endif()
 
     if (_GLFW_WIN32_WGL)
         # The GLFW DLL needs a special compile-time macro and import library name

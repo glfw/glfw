@@ -45,10 +45,10 @@ static GLboolean parseGLVersion(int* major, int* minor, int* rev)
     const char* version;
     const char* prefixes[] =
     {
-      "OpenGL ES-CM ",
-      "OpenGL ES-CL ",
-      "OpenGL ES ",
-      NULL
+        "OpenGL ES-CM ",
+        "OpenGL ES-CL ",
+        "OpenGL ES ",
+        NULL
     };
 
     version = (const char*) glGetString(GL_VERSION);
@@ -61,13 +61,13 @@ static GLboolean parseGLVersion(int* major, int* minor, int* rev)
 
     for (i = 0;  prefixes[i];  i++)
     {
-      const size_t length = strlen(prefixes[i]);
+        const size_t length = strlen(prefixes[i]);
 
-      if (strncmp(version, prefixes[i], length) == 0)
-      {
-        version += length;
-        break;
-      }
+        if (strncmp(version, prefixes[i], length) == 0)
+        {
+            version += length;
+            break;
+        }
     }
 
     if (!sscanf(version, "%d.%d.%d", &_major, &_minor, &_rev))

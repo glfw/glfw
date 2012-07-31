@@ -31,6 +31,588 @@
 #include "internal.h"
 
 
+//========================================================================
+// Initialize WGL-specific extensions
+// This function is called once before initial context creation, i.e. before
+// any WGL extensions could be present.  This is done in order to have both
+// extension variable clearing and loading in the same place, hopefully
+// decreasing the possibility of forgetting to add one without the other.
+//========================================================================
+
+static void initWGLExtensions(_GLFWwindow* window)
+{
+    // This needs to include every function pointer loaded below
+    window->WGL.SwapIntervalEXT = NULL;
+    window->WGL.GetPixelFormatAttribivARB = NULL;
+    window->WGL.GetExtensionsStringARB = NULL;
+    window->WGL.GetExtensionsStringEXT = NULL;
+    window->WGL.CreateContextAttribsARB = NULL;
+
+    // This needs to include every extension used below except for
+    // WGL_ARB_extensions_string and WGL_EXT_extensions_string
+    window->WGL.ARB_multisample = GL_FALSE;
+    window->WGL.ARB_create_context = GL_FALSE;
+    window->WGL.ARB_create_context_profile = GL_FALSE;
+    window->WGL.EXT_create_context_es2_profile = GL_FALSE;
+    window->WGL.ARB_create_context_robustness = GL_FALSE;
+    window->WGL.EXT_swap_control = GL_FALSE;
+    window->WGL.ARB_pixel_format = GL_FALSE;
+
+    window->WGL.GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)
+        wglGetProcAddress("wglGetExtensionsStringEXT");
+    if (!window->WGL.GetExtensionsStringEXT)
+    {
+        window->WGL.GetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)
+            wglGetProcAddress("wglGetExtensionsStringARB");
+        if (!window->WGL.GetExtensionsStringARB)
+            return;
+    }
+
+    if (_glfwPlatformExtensionSupported("WGL_ARB_multisample"))
+        window->WGL.ARB_multisample = GL_TRUE;
+
+    if (_glfwPlatformExtensionSupported("WGL_ARB_create_context"))
+    {
+        window->WGL.CreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)
+            wglGetProcAddress("wglCreateContextAttribsARB");
+
+        if (window->WGL.CreateContextAttribsARB)
+            window->WGL.ARB_create_context = GL_TRUE;
+    }
+
+    if (window->WGL.ARB_create_context)
+    {
+        if (_glfwPlatformExtensionSupported("WGL_ARB_create_context_profile"))
+            window->WGL.ARB_create_context_profile = GL_TRUE;
+    }
+
+    if (window->WGL.ARB_create_context &&
+        window->WGL.ARB_create_context_profile)
+    {
+        if (_glfwPlatformExtensionSupported("WGL_EXT_create_context_es2_profile"))
+            window->WGL.EXT_create_context_es2_profile = GL_TRUE;
+    }
+
+    if (window->WGL.ARB_create_context)
+    {
+        if (_glfwPlatformExtensionSupported("WGL_ARB_create_context_robustness"))
+            window->WGL.ARB_create_context_robustness = GL_TRUE;
+    }
+
+    if (_glfwPlatformExtensionSupported("WGL_EXT_swap_control"))
+    {
+        window->WGL.SwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)
+            wglGetProcAddress("wglSwapIntervalEXT");
+
+        if (window->WGL.SwapIntervalEXT)
+            window->WGL.EXT_swap_control = GL_TRUE;
+    }
+
+    if (_glfwPlatformExtensionSupported("WGL_ARB_pixel_format"))
+    {
+        window->WGL.GetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)
+            wglGetProcAddress("wglGetPixelFormatAttribivARB");
+
+        if (window->WGL.GetPixelFormatAttribivARB)
+            window->WGL.ARB_pixel_format = GL_TRUE;
+    }
+}
+
+
+//========================================================================
+// Returns the specified attribute of the specified pixel format
+// NOTE: Do not call this unless we have found WGL_ARB_pixel_format
+//========================================================================
+
+static int getPixelFormatAttrib(_GLFWwindow* window, int pixelFormat, int attrib)
+{
+    int value = 0;
+
+    if (!window->WGL.GetPixelFormatAttribivARB(window->WGL.DC,
+                                               pixelFormat,
+                                               0, 1, &attrib, &value))
+    {
+        // NOTE: We should probably handle this error somehow
+        return 0;
+    }
+
+    return value;
+}
+
+
+//========================================================================
+// Return a list of available and usable framebuffer configs
+//========================================================================
+
+static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
+{
+    _GLFWfbconfig* fbconfigs;
+    PIXELFORMATDESCRIPTOR pfd;
+    int i, available;
+
+    *found = 0;
+
+    if (window->WGL.ARB_pixel_format)
+    {
+        available = getPixelFormatAttrib(window,
+                                         1,
+                                         WGL_NUMBER_PIXEL_FORMATS_ARB);
+    }
+    else
+    {
+        available = DescribePixelFormat(window->WGL.DC,
+                                        1,
+                                        sizeof(PIXELFORMATDESCRIPTOR),
+                                        NULL);
+    }
+
+    if (!available)
+    {
+        _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "Win32/WGL: No pixel formats found");
+        return NULL;
+    }
+
+    fbconfigs = (_GLFWfbconfig*) malloc(sizeof(_GLFWfbconfig) * available);
+    if (!fbconfigs)
+    {
+        _glfwSetError(GLFW_OUT_OF_MEMORY,
+                      "Win32/WGL: Failed to allocate _GLFWfbconfig array");
+        return NULL;
+    }
+
+    for (i = 1;  i <= available;  i++)
+    {
+        _GLFWfbconfig* f = fbconfigs + *found;
+
+        if (window->WGL.ARB_pixel_format)
+        {
+            // Get pixel format attributes through WGL_ARB_pixel_format
+            if (!getPixelFormatAttrib(window, i, WGL_SUPPORT_OPENGL_ARB) ||
+                !getPixelFormatAttrib(window, i, WGL_DRAW_TO_WINDOW_ARB) ||
+                !getPixelFormatAttrib(window, i, WGL_DOUBLE_BUFFER_ARB))
+            {
+                continue;
+            }
+
+            if (getPixelFormatAttrib(window, i, WGL_PIXEL_TYPE_ARB) !=
+                WGL_TYPE_RGBA_ARB)
+            {
+                continue;
+            }
+
+            if (getPixelFormatAttrib(window, i, WGL_ACCELERATION_ARB) ==
+                 WGL_NO_ACCELERATION_ARB)
+            {
+                continue;
+            }
+
+            f->redBits = getPixelFormatAttrib(window, i, WGL_RED_BITS_ARB);
+            f->greenBits = getPixelFormatAttrib(window, i, WGL_GREEN_BITS_ARB);
+            f->blueBits = getPixelFormatAttrib(window, i, WGL_BLUE_BITS_ARB);
+            f->alphaBits = getPixelFormatAttrib(window, i, WGL_ALPHA_BITS_ARB);
+
+            f->depthBits = getPixelFormatAttrib(window, i, WGL_DEPTH_BITS_ARB);
+            f->stencilBits = getPixelFormatAttrib(window, i, WGL_STENCIL_BITS_ARB);
+
+            f->accumRedBits = getPixelFormatAttrib(window, i, WGL_ACCUM_RED_BITS_ARB);
+            f->accumGreenBits = getPixelFormatAttrib(window, i, WGL_ACCUM_GREEN_BITS_ARB);
+            f->accumBlueBits = getPixelFormatAttrib(window, i, WGL_ACCUM_BLUE_BITS_ARB);
+            f->accumAlphaBits = getPixelFormatAttrib(window, i, WGL_ACCUM_ALPHA_BITS_ARB);
+
+            f->auxBuffers = getPixelFormatAttrib(window, i, WGL_AUX_BUFFERS_ARB);
+            f->stereo = getPixelFormatAttrib(window, i, WGL_STEREO_ARB);
+
+            if (window->WGL.ARB_multisample)
+                f->samples = getPixelFormatAttrib(window, i, WGL_SAMPLES_ARB);
+            else
+                f->samples = 0;
+        }
+        else
+        {
+            // Get pixel format attributes through old-fashioned PFDs
+
+            if (!DescribePixelFormat(window->WGL.DC,
+                                     i,
+                                     sizeof(PIXELFORMATDESCRIPTOR),
+                                     &pfd))
+            {
+                continue;
+            }
+
+            if (!(pfd.dwFlags & PFD_DRAW_TO_WINDOW) ||
+                !(pfd.dwFlags & PFD_SUPPORT_OPENGL) ||
+                !(pfd.dwFlags & PFD_DOUBLEBUFFER))
+            {
+                continue;
+            }
+
+            if (!(pfd.dwFlags & PFD_GENERIC_ACCELERATED) &&
+                (pfd.dwFlags & PFD_GENERIC_FORMAT))
+            {
+                continue;
+            }
+
+            if (pfd.iPixelType != PFD_TYPE_RGBA)
+                continue;
+
+            f->redBits = pfd.cRedBits;
+            f->greenBits = pfd.cGreenBits;
+            f->blueBits = pfd.cBlueBits;
+            f->alphaBits = pfd.cAlphaBits;
+
+            f->depthBits = pfd.cDepthBits;
+            f->stencilBits = pfd.cStencilBits;
+
+            f->accumRedBits = pfd.cAccumRedBits;
+            f->accumGreenBits = pfd.cAccumGreenBits;
+            f->accumBlueBits = pfd.cAccumBlueBits;
+            f->accumAlphaBits = pfd.cAccumAlphaBits;
+
+            f->auxBuffers = pfd.cAuxBuffers;
+            f->stereo = (pfd.dwFlags & PFD_STEREO) ? GL_TRUE : GL_FALSE;
+
+            // PFD pixel formats do not support FSAA
+            f->samples = 0;
+        }
+
+        f->platformID = i;
+
+        (*found)++;
+    }
+
+    if (*found == 0)
+    {
+        free(fbconfigs);
+        return NULL;
+    }
+
+    return fbconfigs;
+}
+
+
+//========================================================================
+// Read back framebuffer parameters from the context
+//========================================================================
+
+static void refreshContextParams(_GLFWwindow* window, int pixelFormat)
+{
+    PIXELFORMATDESCRIPTOR pfd;
+
+    if (window->WGL.ARB_pixel_format)
+    {
+        if (getPixelFormatAttrib(window, pixelFormat, WGL_ACCELERATION_ARB) !=
+            WGL_NO_ACCELERATION_ARB)
+        {
+            window->accelerated = GL_TRUE;
+        }
+        else
+            window->accelerated = GL_FALSE;
+
+        window->redBits =
+            getPixelFormatAttrib(window, pixelFormat, WGL_RED_BITS_ARB);
+        window->greenBits =
+            getPixelFormatAttrib(window, pixelFormat, WGL_GREEN_BITS_ARB);
+        window->blueBits =
+            getPixelFormatAttrib(window, pixelFormat, WGL_BLUE_BITS_ARB);
+
+        window->alphaBits =
+            getPixelFormatAttrib(window, pixelFormat, WGL_ALPHA_BITS_ARB);
+        window->depthBits =
+            getPixelFormatAttrib(window, pixelFormat, WGL_DEPTH_BITS_ARB);
+        window->stencilBits =
+            getPixelFormatAttrib(window, pixelFormat, WGL_STENCIL_BITS_ARB);
+
+        window->accumRedBits =
+            getPixelFormatAttrib(window, pixelFormat, WGL_ACCUM_RED_BITS_ARB);
+        window->accumGreenBits =
+            getPixelFormatAttrib(window, pixelFormat, WGL_ACCUM_GREEN_BITS_ARB);
+        window->accumBlueBits =
+            getPixelFormatAttrib(window, pixelFormat, WGL_ACCUM_BLUE_BITS_ARB);
+        window->accumAlphaBits =
+            getPixelFormatAttrib(window, pixelFormat, WGL_ACCUM_ALPHA_BITS_ARB);
+
+        window->auxBuffers =
+            getPixelFormatAttrib(window, pixelFormat, WGL_AUX_BUFFERS_ARB);
+        window->stereo =
+            getPixelFormatAttrib(window, pixelFormat, WGL_STEREO_ARB) ? GL_TRUE : GL_FALSE;
+
+        if (window->WGL.ARB_multisample)
+        {
+            window->samples = getPixelFormatAttrib(window, pixelFormat, WGL_SAMPLES_ARB);
+
+            // We force 1 to zero here because all the other APIs say zero when
+            // they really mean 1
+            if (window->samples == 1)
+                window->samples = 0;
+        }
+        else
+            window->samples = 0;
+    }
+    else
+    {
+        DescribePixelFormat(window->WGL.DC, pixelFormat,
+                            sizeof(PIXELFORMATDESCRIPTOR), &pfd);
+
+        // Is current OpenGL context accelerated?
+        window->accelerated = (pfd.dwFlags & PFD_GENERIC_ACCELERATED) ||
+                              !(pfd.dwFlags & PFD_GENERIC_FORMAT) ? 1 : 0;
+
+        // "Standard" window parameters
+        window->redBits        = pfd.cRedBits;
+        window->greenBits      = pfd.cGreenBits;
+        window->blueBits       = pfd.cBlueBits;
+        window->alphaBits      = pfd.cAlphaBits;
+        window->depthBits      = pfd.cDepthBits;
+        window->stencilBits    = pfd.cStencilBits;
+        window->accumRedBits   = pfd.cAccumRedBits;
+        window->accumGreenBits = pfd.cAccumGreenBits;
+        window->accumBlueBits  = pfd.cAccumBlueBits;
+        window->accumAlphaBits = pfd.cAccumAlphaBits;
+        window->auxBuffers     = pfd.cAuxBuffers;
+        window->stereo         = (pfd.dwFlags & PFD_STEREO) ? GL_TRUE : GL_FALSE;
+
+        // If we don't have WGL_ARB_pixel_format then we can't have created a
+        // multisampling context, so it's safe to hardcode zero here
+        window->samples = 0;
+    }
+}
+
+
+//========================================================================
+// Creates an OpenGL context on the specified device context
+//========================================================================
+
+static GLboolean createContext(_GLFWwindow* window,
+                               const _GLFWwndconfig* wndconfig,
+                               int pixelFormat)
+{
+    PIXELFORMATDESCRIPTOR pfd;
+    int i = 0, attribs[40];
+    HGLRC share = NULL;
+
+    if (wndconfig->share)
+        share = wndconfig->share->WGL.context;
+
+    if (!DescribePixelFormat(window->WGL.DC, pixelFormat, sizeof(pfd), &pfd))
+    {
+        _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
+                      "Win32/WGL: Failed to retrieve PFD for selected pixel format");
+        return GL_FALSE;
+    }
+
+    if (!SetPixelFormat(window->WGL.DC, pixelFormat, &pfd))
+    {
+        _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
+                      "Win32/WGL: Failed to set selected pixel format");
+        return GL_FALSE;
+    }
+
+    if (window->WGL.ARB_create_context)
+    {
+        // Use the newer wglCreateContextAttribsARB creation method
+
+        if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
+        {
+            // Request an explicitly versioned context
+
+            attribs[i++] = WGL_CONTEXT_MAJOR_VERSION_ARB;
+            attribs[i++] = wndconfig->glMajor;
+            attribs[i++] = WGL_CONTEXT_MINOR_VERSION_ARB;
+            attribs[i++] = wndconfig->glMinor;
+        }
+
+        if (wndconfig->glForward || wndconfig->glDebug || wndconfig->glRobustness)
+        {
+            int flags = 0;
+
+            if (wndconfig->glForward)
+                flags |= WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
+
+            if (wndconfig->glDebug)
+                flags |= WGL_CONTEXT_DEBUG_BIT_ARB;
+
+            if (wndconfig->glRobustness)
+                flags |= WGL_CONTEXT_ROBUST_ACCESS_BIT_ARB;
+
+            attribs[i++] = WGL_CONTEXT_FLAGS_ARB;
+            attribs[i++] = flags;
+        }
+
+        if (wndconfig->glProfile)
+        {
+            int flags = 0;
+
+            if (!window->WGL.ARB_create_context_profile)
+            {
+                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                              "Win32/WGL: OpenGL profile requested but "
+                              "WGL_ARB_create_context_profile is unavailable");
+                return GL_FALSE;
+            }
+
+            if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE &&
+                !window->WGL.EXT_create_context_es2_profile)
+            {
+                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                              "Win32/WGL: OpenGL ES 2.x profile requested but "
+                              "WGL_EXT_create_context_es2_profile is unavailable");
+                return GL_FALSE;
+            }
+
+            if (wndconfig->glProfile == GLFW_OPENGL_CORE_PROFILE)
+                flags = WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
+            else if (wndconfig->glProfile == GLFW_OPENGL_COMPAT_PROFILE)
+                flags = WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
+            else if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE)
+                flags = WGL_CONTEXT_ES2_PROFILE_BIT_EXT;
+
+            attribs[i++] = WGL_CONTEXT_PROFILE_MASK_ARB;
+            attribs[i++] = flags;
+        }
+
+        if (wndconfig->glRobustness)
+        {
+            int strategy;
+
+            if (!window->WGL.ARB_create_context_robustness)
+            {
+                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                              "Win32/WGL: An OpenGL robustness strategy was "
+                              "requested but WGL_ARB_create_context_robustness "
+                              "is unavailable");
+                return GL_FALSE;
+            }
+
+            if (wndconfig->glRobustness == GLFW_OPENGL_NO_RESET_NOTIFICATION)
+                strategy = WGL_NO_RESET_NOTIFICATION_ARB;
+            else if (wndconfig->glRobustness == GLFW_OPENGL_LOSE_CONTEXT_ON_RESET)
+                strategy = WGL_LOSE_CONTEXT_ON_RESET_ARB;
+
+            attribs[i++] = WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB;
+            attribs[i++] = strategy;
+        }
+
+        attribs[i++] = 0;
+
+        window->WGL.context = window->WGL.CreateContextAttribsARB(window->WGL.DC,
+                                                                  share,
+                                                                  attribs);
+        if (!window->WGL.context)
+        {
+            _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                          "Win32/WGL: Failed to create OpenGL context");
+            return GL_FALSE;
+        }
+    }
+    else
+    {
+        window->WGL.context = wglCreateContext(window->WGL.DC);
+        if (!window->WGL.context)
+        {
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "Win32/WGL: Failed to create OpenGL context");
+            return GL_FALSE;
+        }
+
+        if (share)
+        {
+            if (!wglShareLists(share, window->WGL.context))
+            {
+                _glfwSetError(GLFW_PLATFORM_ERROR,
+                              "Win32/WGL: Failed to enable sharing with "
+                              "specified OpenGL context");
+                return GL_FALSE;
+            }
+        }
+    }
+
+    glfwMakeContextCurrent(window);
+    initWGLExtensions(window);
+    refreshContextParams(window, pixelFormat);
+
+    return GL_TRUE;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Prepare for creation of the OpenGL context
+//========================================================================
+
+int _glfwCreateContext(_GLFWwindow* window,
+                       const _GLFWwndconfig* wndconfig,
+                       const _GLFWfbconfig* fbconfig)
+{
+    _GLFWfbconfig closest;
+
+    window->WGL.DC = GetDC(window->Win32.handle);
+    if (!window->WGL.DC)
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR,
+                      "Win32/WGL: Failed to retrieve DC for window");
+        return GL_FALSE;
+    }
+
+    // Choose the best available fbconfig
+    {
+        unsigned int fbcount;
+        _GLFWfbconfig* fbconfigs;
+        const _GLFWfbconfig* result;
+
+        fbconfigs = getFBConfigs(window, &fbcount);
+        if (!fbconfigs)
+        {
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "Win32/WGL: No usable pixel formats found");
+            return GL_FALSE;
+        }
+
+        result = _glfwChooseFBConfig(fbconfig, fbconfigs, fbcount);
+        if (!result)
+        {
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "Win32/WGL: No pixel format matched the criteria");
+
+            free(fbconfigs);
+            return GL_FALSE;
+        }
+
+        closest = *result;
+        free(fbconfigs);
+    }
+
+    return createContext(window, wndconfig, (int) closest.platformID);
+}
+
+
+//========================================================================
+// Destroy the OpenGL context
+//========================================================================
+
+void _glfwDestroyContext(_GLFWwindow* window)
+{
+    // This is duplicated from glfwCloseWindow
+    // TODO: Stop duplicating code
+    if (window == _glfwLibrary.currentWindow)
+        glfwMakeContextCurrent(NULL);
+
+    if (window->WGL.context)
+    {
+        wglDeleteContext(window->WGL.context);
+        window->WGL.context = NULL;
+    }
+
+    if (window->WGL.DC)
+    {
+        ReleaseDC(window->Win32.handle, window->WGL.DC);
+        window->WGL.DC = NULL;
+    }
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////

@@ -257,7 +257,7 @@ int main(int argc, char** argv)
             printf(" debug");
         putchar('\n');
 
-        printf("OpenGL flags parsed by GLFW:");
+        printf("OpenGL context flags parsed by GLFW:");
 
         if (glfwGetWindowParam(window, GLFW_OPENGL_FORWARD_COMPAT))
             printf(" forward-compatible");
@@ -271,7 +271,7 @@ int main(int argc, char** argv)
         glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
         printf("OpenGL profile mask (0x%08x): %s\n", mask, get_profile_name(mask));
 
-        printf("OpenGL profile parsed by GLFW: %s\n",
+        printf("OpenGL profile mask parsed by GLFW: %s\n",
                get_glfw_profile_name(glfwGetWindowParam(window, GLFW_OPENGL_PROFILE)));
     }
 

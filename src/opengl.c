@@ -347,12 +347,13 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
 
 
 //========================================================================
-// Checks whether the specified context fulfils the requirements
-// It blames glfwOpenWindow because that's the only caller
+// Reads back context properties
 //========================================================================
 
-GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
+void _glfwRefreshContextParams(void)
 {
+    _GLFWwindow* window = _glfwLibrary.currentWindow;
+
     parseGLVersion(&window->glMajor, &window->glMinor, &window->glRevision);
 
     // Read back forward-compatibility flag
@@ -387,8 +388,36 @@ GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
       }
     }
 
-    window->glRobustness = wndconfig->glRobustness;
+    glGetIntegerv(GL_RED_BITS, &window->redBits);
+    glGetIntegerv(GL_GREEN_BITS, &window->greenBits);
+    glGetIntegerv(GL_BLUE_BITS, &window->blueBits);
 
+    glGetIntegerv(GL_ALPHA_BITS, &window->alphaBits);
+    glGetIntegerv(GL_DEPTH_BITS, &window->depthBits);
+    glGetIntegerv(GL_STENCIL_BITS, &window->stencilBits);
+
+    glGetIntegerv(GL_ACCUM_RED_BITS, &window->accumRedBits);
+    glGetIntegerv(GL_ACCUM_GREEN_BITS, &window->accumGreenBits);
+    glGetIntegerv(GL_ACCUM_BLUE_BITS, &window->accumBlueBits);
+    glGetIntegerv(GL_ACCUM_ALPHA_BITS, &window->accumAlphaBits);
+
+    glGetIntegerv(GL_AUX_BUFFERS, &window->auxBuffers);
+    glGetBooleanv(GL_STEREO, &window->stereo);
+
+    if (_glfwPlatformExtensionSupported("GL_ARB_multisample"))
+        glGetIntegerv(GL_SAMPLES_ARB, &window->samples);
+    else
+        window->samples = 0;
+}
+
+
+//========================================================================
+// Checks whether the specified context fulfils the requirements
+// It blames glfwOpenWindow because that's the only caller
+//========================================================================
+
+GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
+{
     if (window->glMajor < wndconfig->glMajor ||
         (window->glMajor == wndconfig->glMajor &&
          window->glMinor < wndconfig->glMinor))

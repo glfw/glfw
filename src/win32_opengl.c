@@ -291,82 +291,6 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
 
 
 //========================================================================
-// Read back framebuffer parameters from the context
-//========================================================================
-
-static void refreshContextParams(_GLFWwindow* window, int pixelFormat)
-{
-    PIXELFORMATDESCRIPTOR pfd;
-
-    if (window->WGL.ARB_pixel_format)
-    {
-        window->redBits =
-            getPixelFormatAttrib(window, pixelFormat, WGL_RED_BITS_ARB);
-        window->greenBits =
-            getPixelFormatAttrib(window, pixelFormat, WGL_GREEN_BITS_ARB);
-        window->blueBits =
-            getPixelFormatAttrib(window, pixelFormat, WGL_BLUE_BITS_ARB);
-
-        window->alphaBits =
-            getPixelFormatAttrib(window, pixelFormat, WGL_ALPHA_BITS_ARB);
-        window->depthBits =
-            getPixelFormatAttrib(window, pixelFormat, WGL_DEPTH_BITS_ARB);
-        window->stencilBits =
-            getPixelFormatAttrib(window, pixelFormat, WGL_STENCIL_BITS_ARB);
-
-        window->accumRedBits =
-            getPixelFormatAttrib(window, pixelFormat, WGL_ACCUM_RED_BITS_ARB);
-        window->accumGreenBits =
-            getPixelFormatAttrib(window, pixelFormat, WGL_ACCUM_GREEN_BITS_ARB);
-        window->accumBlueBits =
-            getPixelFormatAttrib(window, pixelFormat, WGL_ACCUM_BLUE_BITS_ARB);
-        window->accumAlphaBits =
-            getPixelFormatAttrib(window, pixelFormat, WGL_ACCUM_ALPHA_BITS_ARB);
-
-        window->auxBuffers =
-            getPixelFormatAttrib(window, pixelFormat, WGL_AUX_BUFFERS_ARB);
-        window->stereo =
-            getPixelFormatAttrib(window, pixelFormat, WGL_STEREO_ARB) ? GL_TRUE : GL_FALSE;
-
-        if (window->WGL.ARB_multisample)
-        {
-            window->samples = getPixelFormatAttrib(window, pixelFormat, WGL_SAMPLES_ARB);
-
-            // We force 1 to zero here because all the other APIs say zero when
-            // they really mean 1
-            if (window->samples == 1)
-                window->samples = 0;
-        }
-        else
-            window->samples = 0;
-    }
-    else
-    {
-        DescribePixelFormat(window->WGL.DC, pixelFormat,
-                            sizeof(PIXELFORMATDESCRIPTOR), &pfd);
-
-        // "Standard" window parameters
-        window->redBits        = pfd.cRedBits;
-        window->greenBits      = pfd.cGreenBits;
-        window->blueBits       = pfd.cBlueBits;
-        window->alphaBits      = pfd.cAlphaBits;
-        window->depthBits      = pfd.cDepthBits;
-        window->stencilBits    = pfd.cStencilBits;
-        window->accumRedBits   = pfd.cAccumRedBits;
-        window->accumGreenBits = pfd.cAccumGreenBits;
-        window->accumBlueBits  = pfd.cAccumBlueBits;
-        window->accumAlphaBits = pfd.cAccumAlphaBits;
-        window->auxBuffers     = pfd.cAuxBuffers;
-        window->stereo         = (pfd.dwFlags & PFD_STEREO) ? GL_TRUE : GL_FALSE;
-
-        // If we don't have WGL_ARB_pixel_format then we can't have created a
-        // multisampling context, so it's safe to hardcode zero here
-        window->samples = 0;
-    }
-}
-
-
-//========================================================================
 // Creates an OpenGL context on the specified device context
 //========================================================================
 
@@ -516,7 +440,6 @@ static GLboolean createContext(_GLFWwindow* window,
 
     glfwMakeContextCurrent(window);
     initWGLExtensions(window);
-    refreshContextParams(window, pixelFormat);
 
     return GL_TRUE;
 }

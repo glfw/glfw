@@ -196,19 +196,19 @@ struct _GLFWwindow
     char      key[GLFW_KEY_LAST + 1];
 
     // Framebuffer attributes
-    int       redBits;
-    int       greenBits;
-    int       blueBits;
-    int       alphaBits;
-    int       depthBits;
-    int       stencilBits;
-    int       accumRedBits;
-    int       accumGreenBits;
-    int       accumBlueBits;
-    int       accumAlphaBits;
-    int       auxBuffers;
+    GLint     redBits;
+    GLint     greenBits;
+    GLint     blueBits;
+    GLint     alphaBits;
+    GLint     depthBits;
+    GLint     stencilBits;
+    GLint     accumRedBits;
+    GLint     accumGreenBits;
+    GLint     accumBlueBits;
+    GLint     accumAlphaBits;
+    GLint     auxBuffers;
     GLboolean stereo;
-    int       samples;
+    GLint     samples;
 
     // OpenGL extensions and context attributes
     int       glMajor, glMinor, glRevision;
@@ -363,6 +363,7 @@ int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);
 const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
                                          const _GLFWfbconfig* alternatives,
                                          unsigned int count);
+void _glfwRefreshContextParams(void);
 GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig);
 GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig);
 

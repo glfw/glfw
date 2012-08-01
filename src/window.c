@@ -320,6 +320,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
 
     // Cache the actual (as opposed to desired) window parameters
     glfwMakeContextCurrent(window);
+    _glfwRefreshContextParams();
     _glfwPlatformRefreshWindowParams();
 
     if (!_glfwIsValidContext(window, &wndconfig))

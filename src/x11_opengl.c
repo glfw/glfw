@@ -233,10 +233,6 @@ static void refreshContextParams(_GLFWwindow* window, GLXFBConfigID fbconfigID)
         abort();
     }
 
-    // There is no clear definition of an "accelerated" context on X11/GLX, and
-    // true sounds better than false, so we hardcode true here
-    window->accelerated = GL_TRUE;
-
     window->redBits = getFBConfigAttrib(window, *fbconfig, GLX_RED_SIZE);
     window->greenBits = getFBConfigAttrib(window, *fbconfig, GLX_GREEN_SIZE);
     window->blueBits = getFBConfigAttrib(window, *fbconfig, GLX_BLUE_SIZE);

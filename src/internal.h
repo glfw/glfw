@@ -211,7 +211,6 @@ struct _GLFWwindow
     int       samples;
 
     // OpenGL extensions and context attributes
-    GLboolean accelerated;     // GL_TRUE if OpenGL context is "accelerated"
     int       glMajor, glMinor, glRevision;
     GLboolean glForward, glDebug;
     int       glProfile;

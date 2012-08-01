@@ -682,8 +682,6 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window == _glfwLibrary.activeWindow;
         case GLFW_ICONIFIED:
             return window->iconified;
-        case GLFW_ACCELERATED:
-            return window->accelerated;
         case GLFW_RED_BITS:
             return window->redBits;
         case GLFW_GREEN_BITS:

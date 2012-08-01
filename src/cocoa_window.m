@@ -1048,11 +1048,6 @@ void _glfwPlatformRefreshWindowParams(void)
     // Since GLFW doesn't understand screens, we use virtual screen zero
 
     [window->NSGL.pixelFormat getValues:&value
-                           forAttribute:NSOpenGLPFAAccelerated
-                       forVirtualScreen:0];
-    window->accelerated = value;
-
-    [window->NSGL.pixelFormat getValues:&value
                            forAttribute:NSOpenGLPFAAlphaSize
                        forVirtualScreen:0];
     window->alphaBits = value;

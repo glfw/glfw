@@ -300,14 +300,6 @@ static void refreshContextParams(_GLFWwindow* window, int pixelFormat)
 
     if (window->WGL.ARB_pixel_format)
     {
-        if (getPixelFormatAttrib(window, pixelFormat, WGL_ACCELERATION_ARB) !=
-            WGL_NO_ACCELERATION_ARB)
-        {
-            window->accelerated = GL_TRUE;
-        }
-        else
-            window->accelerated = GL_FALSE;
-
         window->redBits =
             getPixelFormatAttrib(window, pixelFormat, WGL_RED_BITS_ARB);
         window->greenBits =
@@ -352,10 +344,6 @@ static void refreshContextParams(_GLFWwindow* window, int pixelFormat)
     {
         DescribePixelFormat(window->WGL.DC, pixelFormat,
                             sizeof(PIXELFORMATDESCRIPTOR), &pfd);
-
-        // Is current OpenGL context accelerated?
-        window->accelerated = (pfd.dwFlags & PFD_GENERIC_ACCELERATED) ||
-                              !(pfd.dwFlags & PFD_GENERIC_FORMAT) ? 1 : 0;
 
         // "Standard" window parameters
         window->redBits        = pfd.cRedBits;

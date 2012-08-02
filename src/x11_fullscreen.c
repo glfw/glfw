@@ -35,6 +35,104 @@
 #include <string.h>
 
 
+//------------------------------------------------------------------------
+// Display resolution
+//------------------------------------------------------------------------
+
+typedef struct
+{
+    int width;
+    int height;
+} _GLFWvidsize;
+
+
+//========================================================================
+// List available resolutions
+//========================================================================
+
+static _GLFWvidsize* getResolutions(int* found)
+{
+    int i, j;
+    _GLFWvidsize* result = NULL;
+
+    *found = 0;
+
+    // Build array of available resolutions
+
+    if (_glfwLibrary.X11.RandR.available)
+    {
+#if defined(_GLFW_HAS_XRANDR)
+        XRRScreenConfiguration* sc;
+        XRRScreenSize* sizes;
+
+        sc = XRRGetScreenInfo(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
+        sizes = XRRConfigSizes(sc, found);
+
+        result = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize) * *found);
+
+        for (i = 0;  i < *found;  i++)
+        {
+            result[i].width  = sizes[i].width;
+            result[i].height = sizes[i].height;
+        }
+
+        XRRFreeScreenConfigInfo(sc);
+#endif /*_GLFW_HAS_XRANDR*/
+    }
+    else if (_glfwLibrary.X11.VidMode.available)
+    {
+#if defined(_GLFW_HAS_XF86VIDMODE)
+        XF86VidModeModeInfo** modes;
+        int modeCount;
+
+        XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,
+                                   _glfwLibrary.X11.screen,
+                                   &modeCount, &modes);
+
+        result = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize) * modeCount);
+
+        for (i = 0;  i < modeCount;  i++)
+        {
+            _GLFWvidsize size;
+            size.width  = modes[i]->hdisplay;
+            size.height = modes[i]->vdisplay;
+
+            for (j = 0;  j < *found;  j++)
+            {
+                if (memcmp(result + j, &size, sizeof(_GLFWvidsize)) == 0)
+                    break;
+            }
+
+            if (j < *found)
+            {
+                // This size is a duplicate, so skip it
+                continue;
+            }
+
+            result[*found] = size;
+            (*found)++;
+        }
+
+        XFree(modes);
+#endif /*_GLFW_HAS_XF86VIDMODE*/
+    }
+
+    if (result == NULL)
+    {
+        *found = 1;
+        result = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize));
+
+        result[0].width = DisplayWidth(_glfwLibrary.X11.display,
+                                       _glfwLibrary.X11.screen);
+        result[0].height = DisplayHeight(_glfwLibrary.X11.display,
+                                         _glfwLibrary.X11.screen);
+    }
+
+    return result;
+}
+
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -326,12 +424,6 @@ void _glfwRestoreVideoMode(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-typedef struct
-{
-    int width;
-    int height;
-} _GLFWvidsize;
-
 
 //========================================================================
 // List available video modes
@@ -394,81 +486,9 @@ GLFWvidmode* _glfwPlatformGetVideoModes(int* found)
 
     XFree(visuals);
 
-    sizeCount = 0;
-    sizes = NULL;
-
-    // Build array of available resolutions
-
-    if (_glfwLibrary.X11.RandR.available)
-    {
-#if defined(_GLFW_HAS_XRANDR)
-        XRRScreenConfiguration* sc;
-        XRRScreenSize* rrSizes;
-
-        sc = XRRGetScreenInfo(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
-        rrSizes = XRRConfigSizes(sc, &sizeCount);
-
-        sizes = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize) * sizeCount);
-
-        for (i = 0;  i < sizeCount;  i++)
-        {
-            sizes[i].width  = rrSizes[i].width;
-            sizes[i].height = rrSizes[i].height;
-        }
-
-        XRRFreeScreenConfigInfo(sc);
-#endif /*_GLFW_HAS_XRANDR*/
-    }
-    else if (_glfwLibrary.X11.VidMode.available)
-    {
-#if defined(_GLFW_HAS_XF86VIDMODE)
-        XF86VidModeModeInfo** modes;
-        int modeCount;
-
-        XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,
-                                   _glfwLibrary.X11.screen,
-                                   &modeCount, &modes);
-
-        sizes = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize) * modeCount);
-
-        for (i = 0;  i < modeCount;  i++)
-        {
-            _GLFWvidsize size;
-            size.width  = modes[i]->hdisplay;
-            size.height = modes[i]->vdisplay;
-
-            for (j = 0;  j < sizeCount;  j++)
-            {
-                if (memcmp(sizes + j, &size, sizeof(_GLFWvidsize)) == 0)
-                    break;
-            }
-
-            if (j < sizeCount)
-            {
-                // This size is a duplicate, so skip it
-                continue;
-            }
-
-            sizes[sizeCount] = size;
-            sizeCount++;
-        }
-
-        XFree(modes);
-#endif /*_GLFW_HAS_XF86VIDMODE*/
-    }
-
-    if (!sizeCount)
-    {
-        sizeCount = 1;
-        sizes = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize));
-
-        sizes[0].width = DisplayWidth(_glfwLibrary.X11.display,
-                                      _glfwLibrary.X11.screen);
-        sizes[0].height = DisplayHeight(_glfwLibrary.X11.display,
-                                        _glfwLibrary.X11.screen);
-    }
-
     // Build all permutations of channel depths and resolutions
+
+    sizes = getResolutions(&sizeCount);
 
     result = (GLFWvidmode*) malloc(sizeof(GLFWvidmode) * rgbCount * sizeCount);
     *found = 0;

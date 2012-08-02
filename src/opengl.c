@@ -30,6 +30,7 @@
 
 #include "internal.h"
 
+#include <stdio.h>
 #include <string.h>
 #include <limits.h>
 
@@ -40,47 +41,38 @@
 
 static GLboolean parseGLVersion(int* major, int* minor, int* rev)
 {
-    GLuint _major, _minor = 0, _rev = 0;
-    const GLubyte* version;
-    const GLubyte* ptr;
-    const char* glesPrefix = "OpenGL ES ";
+    int i, _major, _minor = 0, _rev = 0;
+    const char* version;
+    const char* prefixes[] =
+    {
+        "OpenGL ES ",
+        NULL
+    };
 
-    version = glGetString(GL_VERSION);
+    version = (const char*) glGetString(GL_VERSION);
     if (!version)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR, "Failed to retrieve version string");
-        return;
+        return GL_FALSE;
     }
 
-    if (strncmp((const char*) version, glesPrefix, strlen(glesPrefix)) == 0)
+    for (i = 0;  prefixes[i];  i++)
     {
-        // The version string on OpenGL ES has a prefix before the version
-        // number, so we skip past it and then continue as normal
+        const size_t length = strlen(prefixes[i]);
 
-        version += strlen(glesPrefix);
-    }
-
-    // Parse version from string
-
-    ptr = version;
-    for (_major = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
-        _major = 10 * _major + (*ptr - '0');
-
-    if (*ptr == '.')
-    {
-        ptr++;
-        for (_minor = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
-            _minor = 10 * _minor + (*ptr - '0');
-
-        if (*ptr == '.')
+        if (strncmp(version, prefixes[i], length) == 0)
         {
-            ptr++;
-            for (_rev = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
-                _rev = 10 * _rev + (*ptr - '0');
+            version += length;
+            break;
         }
     }
 
-    // Store result
+    if (!sscanf(version, "%d.%d.%d", &_major, &_minor, &_rev))
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR, "No version found in version string");
+        return GL_FALSE;
+    }
+
     *major = _major;
     *minor = _minor;
     *rev = _rev;

@@ -92,7 +92,7 @@ static void key_callback(GLFWwindow dummy, int key, int action)
 
 static void list_modes(void)
 {
-    size_t count, i;
+    int count, i;
     GLFWvidmode desktop_mode;
     GLFWvidmode* modes = glfwGetVideoModes(&count);
 
@@ -114,8 +114,7 @@ static void list_modes(void)
 
 static void test_modes(void)
 {
-    int width, height;
-    size_t i, count;
+    int i, count, width, height;
     GLFWvidmode* modes = glfwGetVideoModes(&count);
 
     glfwSetWindowSizeCallback(window_size_callback);

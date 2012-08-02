@@ -445,7 +445,7 @@ int _glfwInitOpenGL(void)
     // Check if GLX is supported on this display
     if (!glXQueryExtension(_glfwLibrary.X11.display, NULL, NULL))
     {
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "X11/GLX: GLX supported not found");
+        _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "X11/GLX: GLX support not found");
         return GL_FALSE;
     }
 

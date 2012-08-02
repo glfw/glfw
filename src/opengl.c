@@ -589,8 +589,6 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 {
     const GLubyte* extensions;
     _GLFWwindow* window;
-    GLint count;
-    int i;
 
     if (!_glfwInitialized)
     {
@@ -624,6 +622,9 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
     }
     else
     {
+        int i;
+        GLint count;
+
         // Check if extension is in the modern OpenGL extensions string list
 
         glGetIntegerv(GL_NUM_EXTENSIONS, &count);

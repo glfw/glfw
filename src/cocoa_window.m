@@ -1049,68 +1049,6 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 
 void _glfwPlatformRefreshWindowParams(void)
 {
-    GLint value;
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
-
-    // Since GLFW doesn't understand screens, we use virtual screen zero
-
-    [window->NSGL.pixelFormat getValues:&value
-                           forAttribute:NSOpenGLPFAAccelerated
-                       forVirtualScreen:0];
-    window->accelerated = value;
-
-    [window->NSGL.pixelFormat getValues:&value
-                           forAttribute:NSOpenGLPFAAlphaSize
-                       forVirtualScreen:0];
-    window->alphaBits = value;
-
-    [window->NSGL.pixelFormat getValues:&value
-                           forAttribute:NSOpenGLPFAColorSize
-                       forVirtualScreen:0];
-
-    // It seems that the color size includes the size of the alpha channel so
-    // we subtract it before splitting
-    _glfwSplitBPP(value - window->alphaBits,
-                  &window->redBits,
-                  &window->greenBits,
-                  &window->blueBits);
-
-    [window->NSGL.pixelFormat getValues:&value
-                           forAttribute:NSOpenGLPFADepthSize
-                       forVirtualScreen:0];
-    window->depthBits = value;
-
-    [window->NSGL.pixelFormat getValues:&value
-                           forAttribute:NSOpenGLPFAStencilSize
-                       forVirtualScreen:0];
-    window->stencilBits = value;
-
-    [window->NSGL.pixelFormat getValues:&value
-                           forAttribute:NSOpenGLPFAAccumSize
-                       forVirtualScreen:0];
-
-    _glfwSplitBPP(value,
-                  &window->accumRedBits,
-                  &window->accumGreenBits,
-                  &window->accumBlueBits);
-
-    // TODO: Figure out what to set this value to
-    window->accumAlphaBits = 0;
-
-    [window->NSGL.pixelFormat getValues:&value
-                           forAttribute:NSOpenGLPFAAuxBuffers
-                       forVirtualScreen:0];
-    window->auxBuffers = value;
-
-    [window->NSGL.pixelFormat getValues:&value
-                           forAttribute:NSOpenGLPFAStereo
-                       forVirtualScreen:0];
-    window->stereo = value;
-
-    [window->NSGL.pixelFormat getValues:&value
-                           forAttribute:NSOpenGLPFASamples
-                       forVirtualScreen:0];
-    window->samples = value;
 }
 
 

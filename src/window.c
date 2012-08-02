@@ -322,6 +322,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
 
     // Cache the actual (as opposed to desired) window parameters
     glfwMakeContextCurrent(window);
+    _glfwRefreshContextParams();
     _glfwPlatformRefreshWindowParams();
 
     if (!_glfwIsValidContext(window, &wndconfig))
@@ -687,8 +688,6 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window == _glfwLibrary.activeWindow;
         case GLFW_ICONIFIED:
             return window->iconified;
-        case GLFW_ACCELERATED:
-            return window->accelerated;
         case GLFW_RED_BITS:
             return window->redBits;
         case GLFW_GREEN_BITS:

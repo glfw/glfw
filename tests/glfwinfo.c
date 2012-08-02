@@ -276,7 +276,7 @@ int main(int argc, char** argv)
                 printf(" debug");
             putchar('\n');
 
-            printf("%s flags parsed by GLFW:", get_client_api_name(api));
+            printf("%s context flags parsed by GLFW:", get_client_api_name(api));
 
             if (glfwGetWindowParam(window, GLFW_OPENGL_FORWARD_COMPAT))
                 printf(" forward-compatible");
@@ -293,13 +293,7 @@ int main(int argc, char** argv)
                    mask,
                    get_profile_name(mask));
 
-            printf("%s profile parsed by GLFW:\n", get_client_api_name(api));
-
-            if (glfwGetWindowParam(window, GLFW_OPENGL_FORWARD_COMPAT))
-                printf(" forward-compatible");
-            if (glfwGetWindowParam(window, GLFW_OPENGL_DEBUG_CONTEXT))
-                printf(" debug");
-            putchar('\n');
+            printf("%s profile mask parsed by GLFW:\n", get_client_api_name(api));
         }
     }
 

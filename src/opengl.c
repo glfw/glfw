@@ -39,9 +39,9 @@
 // Parses the client API version string and extracts the version number
 //========================================================================
 
-static GLboolean parseGLVersion(int* major, int* minor, int* rev)
+static GLboolean parseGLVersion(int* api, int* major, int* minor, int* rev)
 {
-    int i, _major, _minor = 0, _rev = 0;
+    int i, _api = GLFW_OPENGL_API, _major, _minor = 0, _rev = 0;
     const char* version;
     const char* prefixes[] =
     {
@@ -54,8 +54,7 @@ static GLboolean parseGLVersion(int* major, int* minor, int* rev)
     version = (const char*) glGetString(GL_VERSION);
     if (!version)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "X11/EGL: No version string available");
+        _glfwSetError(GLFW_PLATFORM_ERROR, "Failed to retrieve version string");
         return GL_FALSE;
     }
 
@@ -66,17 +65,18 @@ static GLboolean parseGLVersion(int* major, int* minor, int* rev)
         if (strncmp(version, prefixes[i], length) == 0)
         {
             version += length;
+            _api = GLFW_OPENGL_ES_API;
             break;
         }
     }
 
     if (!sscanf(version, "%d.%d.%d", &_major, &_minor, &_rev))
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "X11/EGL: No version found in version string");
+        _glfwSetError(GLFW_PLATFORM_ERROR, "No version found in version string");
         return GL_FALSE;
     }
 
+    *api = _api;
     *major = _major;
     *minor = _minor;
     *rev = _rev;
@@ -385,22 +385,26 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
 
 
 //========================================================================
-// Checks whether the specified context fulfils the requirements
-// It blames glfwOpenWindow because that's the only caller
+// Reads back context properties
 //========================================================================
 
-GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
+void _glfwRefreshContextParams(void)
 {
-    window->clientAPI = wndconfig->clientAPI;
+    _GLFWwindow* window = _glfwLibrary.currentWindow;
 
-    if (!parseGLVersion(&window->glMajor, &window->glMinor, &window->glRevision))
-        return GL_FALSE;
+    if (!parseGLVersion(&window->clientAPI,
+                        &window->glMajor,
+                        &window->glMinor,
+                        &window->glRevision))
+    {
+        return;
+    }
 
     // Read back forward-compatibility flag
     {
       window->glForward = GL_FALSE;
 
-      if (window->glMajor >= 3)
+      if (window->clientAPI == GLFW_OPENGL_API && window->glMajor >= 3)
       {
           GLint flags;
           glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
@@ -428,8 +432,36 @@ GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
       }
     }
 
-    window->glRobustness = wndconfig->glRobustness;
+    glGetIntegerv(GL_RED_BITS, &window->redBits);
+    glGetIntegerv(GL_GREEN_BITS, &window->greenBits);
+    glGetIntegerv(GL_BLUE_BITS, &window->blueBits);
 
+    glGetIntegerv(GL_ALPHA_BITS, &window->alphaBits);
+    glGetIntegerv(GL_DEPTH_BITS, &window->depthBits);
+    glGetIntegerv(GL_STENCIL_BITS, &window->stencilBits);
+
+    glGetIntegerv(GL_ACCUM_RED_BITS, &window->accumRedBits);
+    glGetIntegerv(GL_ACCUM_GREEN_BITS, &window->accumGreenBits);
+    glGetIntegerv(GL_ACCUM_BLUE_BITS, &window->accumBlueBits);
+    glGetIntegerv(GL_ACCUM_ALPHA_BITS, &window->accumAlphaBits);
+
+    glGetIntegerv(GL_AUX_BUFFERS, &window->auxBuffers);
+    glGetBooleanv(GL_STEREO, &window->stereo);
+
+    if (_glfwPlatformExtensionSupported("GL_ARB_multisample"))
+        glGetIntegerv(GL_SAMPLES_ARB, &window->samples);
+    else
+        window->samples = 0;
+}
+
+
+//========================================================================
+// Checks whether the specified context fulfils the requirements
+// It blames glfwOpenWindow because that's the only caller
+//========================================================================
+
+GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
+{
     if (window->glMajor < wndconfig->glMajor ||
         (window->glMajor == wndconfig->glMajor &&
          window->glMinor < wndconfig->glMinor))

@@ -198,72 +198,6 @@ static int errorHandler(Display *display, XErrorEvent* event)
 
 
 //========================================================================
-// Read back framebuffer parameters from the context
-//========================================================================
-
-static void refreshContextParams(_GLFWwindow* window, GLXFBConfigID fbconfigID)
-{
-    int dummy;
-    GLXFBConfig* fbconfig;
-
-    int attribs[] = { GLX_FBCONFIG_ID, fbconfigID, None };
-
-    if (_glfwLibrary.GLX.SGIX_fbconfig)
-    {
-        fbconfig = _glfwLibrary.GLX.ChooseFBConfigSGIX(_glfwLibrary.X11.display,
-                                                       _glfwLibrary.X11.screen,
-                                                       attribs,
-                                                       &dummy);
-    }
-    else
-    {
-        fbconfig = glXChooseFBConfig(_glfwLibrary.X11.display,
-                                     _glfwLibrary.X11.screen,
-                                     attribs,
-                                     &dummy);
-    }
-
-    if (fbconfig == NULL)
-    {
-        // This should never ever happen
-        // TODO: Flag this as an error and propagate up
-        _glfwSetError(GLFW_PLATFORM_ERROR, "X11/GLX: Cannot find known "
-                                           "GLXFBConfig by ID. This cannot "
-                                           "happen. Have a nice day.\n");
-        abort();
-    }
-
-    // There is no clear definition of an "accelerated" context on X11/GLX, and
-    // true sounds better than false, so we hardcode true here
-    window->accelerated = GL_TRUE;
-
-    window->redBits = getFBConfigAttrib(window, *fbconfig, GLX_RED_SIZE);
-    window->greenBits = getFBConfigAttrib(window, *fbconfig, GLX_GREEN_SIZE);
-    window->blueBits = getFBConfigAttrib(window, *fbconfig, GLX_BLUE_SIZE);
-
-    window->alphaBits = getFBConfigAttrib(window, *fbconfig, GLX_ALPHA_SIZE);
-    window->depthBits = getFBConfigAttrib(window, *fbconfig, GLX_DEPTH_SIZE);
-    window->stencilBits = getFBConfigAttrib(window, *fbconfig, GLX_STENCIL_SIZE);
-
-    window->accumRedBits = getFBConfigAttrib(window, *fbconfig, GLX_ACCUM_RED_SIZE);
-    window->accumGreenBits = getFBConfigAttrib(window, *fbconfig, GLX_ACCUM_GREEN_SIZE);
-    window->accumBlueBits = getFBConfigAttrib(window, *fbconfig, GLX_ACCUM_BLUE_SIZE);
-    window->accumAlphaBits = getFBConfigAttrib(window, *fbconfig, GLX_ACCUM_ALPHA_SIZE);
-
-    window->auxBuffers = getFBConfigAttrib(window, *fbconfig, GLX_AUX_BUFFERS);
-    window->stereo = getFBConfigAttrib(window, *fbconfig, GLX_STEREO) ? GL_TRUE : GL_FALSE;
-
-    // Get FSAA buffer sample count
-    if (_glfwLibrary.GLX.ARB_multisample)
-        window->samples = getFBConfigAttrib(window, *fbconfig, GLX_SAMPLES);
-    else
-        window->samples = 0;
-
-    XFree(fbconfig);
-}
-
-
-//========================================================================
 // Create the actual OpenGL context
 //========================================================================
 
@@ -471,8 +405,6 @@ static int createContext(_GLFWwindow* window,
                       "X11/GLX: Failed to create OpenGL context");
         return GL_FALSE;
     }
-
-    refreshContextParams(window, fbconfigID);
 
     return GL_TRUE;
 }

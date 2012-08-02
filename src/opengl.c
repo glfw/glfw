@@ -551,7 +551,7 @@ GLFWAPI void glfwSwapBuffers(void)
 
     if (!_glfwLibrary.currentWindow)
     {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
+        _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
         return;
     }
 
@@ -573,7 +573,7 @@ GLFWAPI void glfwSwapInterval(int interval)
 
     if (!_glfwLibrary.currentWindow)
     {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
+        _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
         return;
     }
 
@@ -599,7 +599,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
     window = _glfwLibrary.currentWindow;
     if (!window)
     {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
+        _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
         return GL_FALSE;
     }
 
@@ -659,7 +659,7 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname)
 
     if (!_glfwLibrary.currentWindow)
     {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
+        _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
         return NULL;
     }
 

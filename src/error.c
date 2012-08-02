@@ -115,8 +115,8 @@ GLFWAPI const char* glfwErrorString(int error)
             return "No error";
         case GLFW_NOT_INITIALIZED:
             return "The GLFW library is not initialized";
-        case GLFW_NO_CURRENT_WINDOW:
-            return "There is no current GLFW window";
+        case GLFW_NO_CURRENT_CONTEXT:
+            return "There is no current OpenGL context";
         case GLFW_INVALID_ENUM:
             return "Invalid argument for enum parameter";
         case GLFW_INVALID_VALUE:

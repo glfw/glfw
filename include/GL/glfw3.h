@@ -448,7 +448,7 @@ extern "C" {
 /* glfwGetError/glfwErrorString tokens */
 #define GLFW_NO_ERROR             0
 #define GLFW_NOT_INITIALIZED      0x00070001
-#define GLFW_NO_CURRENT_WINDOW    0x00070002
+#define GLFW_NO_CURRENT_CONTEXT   0x00070002
 #define GLFW_INVALID_ENUM         0x00070003
 #define GLFW_INVALID_VALUE        0x00070004
 #define GLFW_OUT_OF_MEMORY        0x00070005

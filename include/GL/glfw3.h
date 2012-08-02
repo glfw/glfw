@@ -71,7 +71,6 @@ extern "C" {
  */
 #if __MINGW64__
  #define WINAPI
-#include <stddef.h>
 #endif
 
 /* The following three defines are here solely to make some Windows-based
@@ -110,11 +109,10 @@ extern "C" {
  #define GLFW_CALLBACK_DEFINED
 #endif /* CALLBACK */
 
-/* Microsoft Visual C++, Borland C++ and Pelles C <GL*glu.h> needs wchar_t */
-#if defined(_WIN32) && (defined(_MSC_VER) || defined(__BORLANDC__) || defined(__POCC__)) && !defined(_WCHAR_T_DEFINED)
- typedef unsigned short wchar_t;
- #define _WCHAR_T_DEFINED
-#endif /* _WCHAR_T_DEFINED */
+/* Most <GL/glu.h> variants on Windows need wchar_t */
+#if defined(_WIN32)
+ #include <stddef.h>
+#endif
 
 
 /* ---------------- GLFW related system specific defines ----------------- */

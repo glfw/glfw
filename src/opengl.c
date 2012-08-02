@@ -589,7 +589,6 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 {
     const GLubyte* extensions;
     _GLFWwindow* window;
-    GLubyte* where;
     GLint count;
     int i;
 
@@ -606,10 +605,11 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
         return GL_FALSE;
     }
 
-    // Extension names should not have spaces
-    where = (GLubyte*) strchr(extension, ' ');
-    if (where || *extension == '\0')
+    if (extension == NULL || *extension == '\0')
+    {
+        _glfwSetError(GLFW_INVALID_VALUE, NULL);
         return GL_FALSE;
+    }
 
     if (window->glMajor < 3)
     {

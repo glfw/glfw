@@ -29,6 +29,9 @@
 
 #include "internal.h"
 
+#include <stdio.h>
+#include <stdarg.h>
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -49,11 +52,30 @@ static GLFWerrorfun _glfwErrorCallback = NULL;
 // This function may be called without GLFW having been initialized
 //========================================================================
 
-void _glfwSetError(int error, const char* description)
+void _glfwSetError(int error, const char* format, ...)
 {
     if (_glfwErrorCallback)
     {
-        if (!description)
+        char buffer[16384];
+        const char* description;
+
+        // We would use vasprintf here if msvcrt supported it
+
+        if (format)
+        {
+            int count;
+            va_list vl;
+
+            va_start(vl, format);
+            count = vsnprintf(buffer, sizeof(buffer), format, vl);
+            va_end(vl);
+
+            if (count < 0)
+                buffer[sizeof(buffer) - 1] = '\0';
+
+            description = buffer;
+        }
+        else
             description = glfwErrorString(error);
 
         _glfwErrorCallback(error, description);

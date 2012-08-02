@@ -338,7 +338,7 @@ void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long 
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 
 // Error handling (error.c)
-void _glfwSetError(int error, const char* description);
+void _glfwSetError(int error, const char* format, ...);
 
 // Window management (window.c)
 void _glfwSetDefaultWindowHints(void);

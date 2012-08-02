@@ -38,7 +38,7 @@
 // Parses the OpenGL version string and extracts the version number
 //========================================================================
 
-static void parseGLVersion(int* major, int* minor, int* rev)
+static GLboolean parseGLVersion(int* major, int* minor, int* rev)
 {
     GLuint _major, _minor = 0, _rev = 0;
     const GLubyte* version;
@@ -47,7 +47,10 @@ static void parseGLVersion(int* major, int* minor, int* rev)
 
     version = glGetString(GL_VERSION);
     if (!version)
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR, "Failed to retrieve version string");
         return;
+    }
 
     if (strncmp((const char*) version, glesPrefix, strlen(glesPrefix)) == 0)
     {
@@ -81,6 +84,8 @@ static void parseGLVersion(int* major, int* minor, int* rev)
     *major = _major;
     *minor = _minor;
     *rev = _rev;
+
+    return GL_TRUE;
 }
 
 
@@ -348,13 +353,34 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
 
 //========================================================================
 // Reads back context properties
+// It blames glfwOpenWindow because that's the only caller
 //========================================================================
 
-void _glfwRefreshContextParams(void)
+GLboolean _glfwRefreshContextParams(void)
 {
     _GLFWwindow* window = _glfwLibrary.currentWindow;
 
-    parseGLVersion(&window->glMajor, &window->glMinor, &window->glRevision);
+    if (!parseGLVersion(&window->glMajor,
+                        &window->glMinor,
+                        &window->glRevision))
+    {
+        return GL_FALSE;
+    }
+
+    if (window->glMajor > 2)
+    {
+        // OpenGL 3.0+ uses a different function for extension string retrieval
+        // We cache it here instead of in glfwExtensionSupported mostly to alert
+        // users as early as possible that their build may be broken
+
+        window->GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
+        if (!window->GetStringi)
+        {
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "glfwOpenWindow: Entry point retrieval is broken");
+            return GL_FALSE;
+        }
+    }
 
     // Read back forward-compatibility flag
     {
@@ -408,16 +434,20 @@ void _glfwRefreshContextParams(void)
         glGetIntegerv(GL_SAMPLES_ARB, &window->samples);
     else
         window->samples = 0;
+
+    return GL_TRUE;
 }
 
 
 //========================================================================
-// Checks whether the specified context fulfils the requirements
+// Checks whether the current context fulfils the specified requirements
 // It blames glfwOpenWindow because that's the only caller
 //========================================================================
 
-GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
+GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig)
 {
+    _GLFWwindow* window = _glfwLibrary.currentWindow;
+
     if (window->glMajor < wndconfig->glMajor ||
         (window->glMajor == wndconfig->glMajor &&
          window->glMinor < wndconfig->glMinor))
@@ -432,21 +462,6 @@ GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
         _glfwSetError(GLFW_VERSION_UNAVAILABLE,
                       "glfwOpenWindow: The requested OpenGL version is not available");
         return GL_FALSE;
-    }
-
-    if (window->glMajor > 2)
-    {
-        // OpenGL 3.0+ uses a different function for extension string retrieval
-        // We cache it here instead of in glfwExtensionSupported mostly to alert
-        // users as early as possible that their build may be broken
-
-        window->GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
-        if (!window->GetStringi)
-        {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "glfwOpenWindow: Entry point retrieval is broken");
-            return GL_FALSE;
-        }
     }
 
     return GL_TRUE;

@@ -363,9 +363,9 @@ int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);
 const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
                                          const _GLFWfbconfig* alternatives,
                                          unsigned int count);
-void _glfwRefreshContextParams(void);
+GLboolean _glfwRefreshContextParams(void);
 GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig);
-GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig);
+GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig);
 
 
 #endif // _internal_h_

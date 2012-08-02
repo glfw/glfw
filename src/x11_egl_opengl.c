@@ -150,28 +150,6 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window,
 
 
 //========================================================================
-// Read back framebuffer parameters from the context
-//========================================================================
-
-static void refreshContextParams(_GLFWwindow* window)
-{
-    // There is no clear definition of an "accelerated" context on X11/EGL, and
-    // true sounds better than false, so we hardcode true here
-    window->accelerated = GL_TRUE;
-
-    window->redBits = getConfigAttrib(window->EGL.config, EGL_RED_SIZE);
-    window->greenBits = getConfigAttrib(window->EGL.config, EGL_GREEN_SIZE);
-    window->blueBits = getConfigAttrib(window->EGL.config, EGL_BLUE_SIZE);
-
-    window->alphaBits = getConfigAttrib(window->EGL.config, EGL_ALPHA_SIZE);
-    window->depthBits = getConfigAttrib(window->EGL.config, EGL_DEPTH_SIZE);
-    window->stencilBits = getConfigAttrib(window->EGL.config, EGL_STENCIL_SIZE);
-
-    window->samples = getConfigAttrib(window->EGL.config, EGL_SAMPLES);
-}
-
-
-//========================================================================
 // Create the actual OpenGL(|ES) context
 //========================================================================
 
@@ -341,7 +319,6 @@ static int createContext(_GLFWwindow* window,
     }
 
     window->EGL.config = config;
-    refreshContextParams(window);
 
     return GL_TRUE;
 }

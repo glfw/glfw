@@ -404,7 +404,7 @@ void _glfwRefreshContextParams(void)
     glGetIntegerv(GL_AUX_BUFFERS, &window->auxBuffers);
     glGetBooleanv(GL_STEREO, &window->stereo);
 
-    if (_glfwPlatformExtensionSupported("GL_ARB_multisample"))
+    if (glfwExtensionSupported("GL_ARB_multisample"))
         glGetIntegerv(GL_SAMPLES_ARB, &window->samples);
     else
         window->samples = 0;

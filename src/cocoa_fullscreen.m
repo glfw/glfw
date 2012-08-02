@@ -207,6 +207,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(int* found)
     count = CFArrayGetCount(modes);
 
     result = (GLFWvidmode*) malloc(sizeof(GLFWvidmode) * count);
+    *found = 0;
 
     for (i = 0;  i < count;  i++)
     {

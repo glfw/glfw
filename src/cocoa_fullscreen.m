@@ -215,7 +215,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(int* found)
         mode = (CGDisplayModeRef) CFArrayGetValueAtIndex(modes, i);
         if (modeIsGood(mode))
         {
-            result[*found] vidmodeFromCGDisplayMode(mode);
+            result[*found] = vidmodeFromCGDisplayMode(mode);
             (*found)++;
         }
     }

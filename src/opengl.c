@@ -639,11 +639,8 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
         }
     }
 
-    // Additional platform specific extension checking (e.g. WGL)
-    if (_glfwPlatformExtensionSupported(extension))
-        return GL_TRUE;
-
-    return GL_FALSE;
+    // Check if extension is in the platform-specific string
+    return _glfwPlatformExtensionSupported(extension);
 }
 
 

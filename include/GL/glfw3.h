@@ -520,7 +520,7 @@ GLFWAPI const char* glfwErrorString(int error);
 GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
 
 /* Video mode functions */
-GLFWAPI int  glfwGetVideoModes(GLFWvidmode* list, int maxcount);
+GLFWAPI GLFWvidmode* glfwGetVideoModes(int* count);
 GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode);
 
 /* Gamma ramp functions */

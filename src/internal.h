@@ -251,6 +251,8 @@ struct _GLFWlibrary
     int           originalRampSize;
     GLboolean     rampChanged;
 
+    GLFWvidmode*  modes;
+
     // This is defined in the current port's platform.h
     _GLFW_PLATFORM_LIBRARY_WINDOW_STATE;
     _GLFW_PLATFORM_LIBRARY_OPENGL_STATE;
@@ -287,7 +289,7 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y);
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
 
 // Fullscreen
-int  _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount);
+GLFWvidmode* _glfwPlatformGetVideoModes(int* count);
 void _glfwPlatformGetDesktopMode(GLFWvidmode* mode);
 
 // Gamma ramp
@@ -335,6 +337,7 @@ void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long 
 //========================================================================
 
 // Fullscren management (fullscreen.c)
+int _glfwCompareVideoModes(const GLFWvidmode* first, const GLFWvidmode* second);
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 
 // Error handling (error.c)

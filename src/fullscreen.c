@@ -69,6 +69,16 @@ static int compareVideoModes(const void* firstPtr, const void* secondPtr)
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
+// Lexical comparison of GLFW video modes
+//========================================================================
+
+int _glfwCompareVideoModes(const GLFWvidmode* first, const GLFWvidmode* second)
+{
+    return compareVideoModes(first, second);
+}
+
+
+//========================================================================
 // Convert BPP to RGB bits based on "best guess"
 //========================================================================
 
@@ -100,36 +110,27 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 // Get a list of available video modes
 //========================================================================
 
-GLFWAPI int glfwGetVideoModes(GLFWvidmode* list, int maxcount)
+GLFWAPI GLFWvidmode* glfwGetVideoModes(int* count)
 {
-    int count;
-
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return 0;
+        return NULL;
     }
 
-    if (maxcount <= 0)
+    if (count == NULL)
     {
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwGetVideoModes: Parameter 'maxcount' must be "
-                      "greater than zero");
-        return 0;
+        _glfwSetError(GLFW_INVALID_VALUE, NULL);
+        return NULL;
     }
 
-    if (list == NULL)
-    {
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwGetVideoModes: Parameter 'list' cannot be NULL");
-        return 0;
-    }
+    free(_glfwLibrary.modes);
 
-    count = _glfwPlatformGetVideoModes(list, maxcount);
-    if (count > 0)
-        qsort(list, count, sizeof(GLFWvidmode), compareVideoModes);
+    _glfwLibrary.modes = _glfwPlatformGetVideoModes(count);
+    if (_glfwLibrary.modes)
+        qsort(_glfwLibrary.modes, *count, sizeof(GLFWvidmode), compareVideoModes);
 
-    return count;
+    return _glfwLibrary.modes;
 }
 
 

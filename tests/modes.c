@@ -90,29 +90,11 @@ static void key_callback(GLFWwindow dummy, int key, int action)
     }
 }
 
-static GLFWvidmode* get_video_modes(size_t* found)
-{
-    size_t count = 0;
-    GLFWvidmode* modes = NULL;
-
-    for (;;)
-    {
-        count += 256;
-        modes = realloc(modes, sizeof(GLFWvidmode) * count);
-
-        *found = glfwGetVideoModes(modes, count);
-        if (*found < count)
-            break;
-    }
-
-    return modes;
-}
-
 static void list_modes(void)
 {
     size_t count, i;
     GLFWvidmode desktop_mode;
-    GLFWvidmode* modes = get_video_modes(&count);
+    GLFWvidmode* modes = glfwGetVideoModes(&count);
 
     glfwGetDesktopMode(&desktop_mode);
     printf("Desktop mode: %s\n", format_mode(&desktop_mode));
@@ -128,15 +110,13 @@ static void list_modes(void)
 
         putchar('\n');
     }
-
-    free(modes);
 }
 
 static void test_modes(void)
 {
     int width, height;
     size_t i, count;
-    GLFWvidmode* modes = get_video_modes(&count);
+    GLFWvidmode* modes = glfwGetVideoModes(&count);
 
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSetWindowCloseCallback(window_close_callback);
@@ -207,8 +187,6 @@ static void test_modes(void)
         glfwPollEvents();
         window = NULL;
     }
-
-    free(modes);
 }
 
 int main(int argc, char** argv)

@@ -84,6 +84,9 @@ GLFWAPI void glfwTerminate(void)
     if (!_glfwPlatformTerminate())
         return;
 
+    if (_glfwLibrary.modes)
+        free(_glfwLibrary.modes);
+
     _glfwInitialized = GL_FALSE;
 }
 

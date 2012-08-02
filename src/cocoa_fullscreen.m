@@ -197,25 +197,31 @@ void _glfwRestoreVideoMode(void)
 // Get a list of available video modes
 //========================================================================
 
-int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
+GLFWvidmode* _glfwPlatformGetVideoModes(int* found)
 {
-    CGDisplayModeRef mode;
     CFArrayRef modes;
     CFIndex count, i;
-    int stored = 0;
+    GLFWvidmode* result;
 
     modes = CGDisplayCopyAllDisplayModes(CGMainDisplayID(), NULL);
     count = CFArrayGetCount(modes);
 
-    for (i = 0;  i < count && stored < maxcount;  i++)
+    result = (GLFWvidmode*) malloc(sizeof(GLFWvidmode) * count);
+
+    for (i = 0;  i < count;  i++)
     {
+        CGDisplayModeRef mode;
+
         mode = (CGDisplayModeRef) CFArrayGetValueAtIndex(modes, i);
         if (modeIsGood(mode))
-            list[stored++] = vidmodeFromCGDisplayMode(mode);
+        {
+            result[*found] vidmodeFromCGDisplayMode(mode);
+            (*found)++;
+        }
     }
 
     CFRelease(modes);
-    return stored;
+    return result;
 }
 
 

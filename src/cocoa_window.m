@@ -1041,7 +1041,7 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 // Write back window parameters into GLFW window structure
 //========================================================================
 
-void _glfwPlatformRefreshWindowParams(void)
+void _glfwPlatformRefreshWindowParams(_GLFWwindow* window)
 {
 }
 

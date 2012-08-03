@@ -1137,10 +1137,8 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 // Read back framebuffer parameters from the context
 //========================================================================
 
-void _glfwPlatformRefreshWindowParams(void)
+void _glfwPlatformRefreshWindowParams(_GLFWwindow* window)
 {
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
-
     // Retrieve refresh rate if possible
     if (_glfwLibrary.X11.RandR.available)
     {

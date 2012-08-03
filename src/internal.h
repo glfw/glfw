@@ -326,7 +326,7 @@ void _glfwPlatformWaitEvents(void);
 void _glfwPlatformMakeContextCurrent(_GLFWwindow* window);
 void _glfwPlatformSwapBuffers(void);
 void _glfwPlatformSwapInterval(int interval);
-void _glfwPlatformRefreshWindowParams(void);
+void _glfwPlatformRefreshWindowParams(_GLFWwindow* window);
 int  _glfwPlatformExtensionSupported(const char* extension);
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname);
 void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long mask);

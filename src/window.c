@@ -318,17 +318,18 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
         return GL_FALSE;
     }
 
-    // Cache the actual (as opposed to desired) window parameters
-    _glfwPlatformRefreshWindowParams();
+    // Cache the actual (as opposed to requested) window parameters
+    _glfwPlatformRefreshWindowParams(window);
 
+    // Cache the actual (as opposed to requested) context parameters
     glfwMakeContextCurrent(window);
-
     if (!_glfwRefreshContextParams())
     {
         glfwCloseWindow(window);
         return GL_FALSE;
     }
 
+    // Verify the context against the requested parameters
     if (!_glfwIsValidContext(&wndconfig))
     {
         glfwCloseWindow(window);
@@ -573,7 +574,7 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow handle, int width, int height)
     {
         // Refresh window parameters (may have changed due to changed video
         // modes)
-        _glfwPlatformRefreshWindowParams();
+        _glfwPlatformRefreshWindowParams(window);
     }
 }
 
@@ -665,7 +666,7 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow handle)
     _glfwPlatformRestoreWindow(window);
 
     if (window->mode == GLFW_FULLSCREEN)
-        _glfwPlatformRefreshWindowParams();
+        _glfwPlatformRefreshWindowParams(window);
 }
 
 

@@ -1198,10 +1198,9 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 // Write back window parameters into GLFW window structure
 //========================================================================
 
-void _glfwPlatformRefreshWindowParams(void)
+void _glfwPlatformRefreshWindowParams(_GLFWwindow* window)
 {
     DEVMODE dm;
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
 
     ZeroMemory(&dm, sizeof(DEVMODE));
     dm.dmSize = sizeof(DEVMODE);

@@ -268,7 +268,7 @@ void reshape( GLFWwindow window, int width, int height )
 
 
 /* close callback */
-int window_close_callback(GLFWwindow window)
+static int window_close_callback(GLFWwindow window)
 {
     running = 0;
     return GL_TRUE;

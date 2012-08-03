@@ -43,7 +43,6 @@
 void init( void );
 void display( void );
 void reshape( GLFWwindow window, int w, int h );
-int window_close_callback(GLFWwindow window);
 void DrawBoingBall( void );
 void BounceBall( double dt );
 void DrawBoingBallBand( GLfloat long_lo, GLfloat long_hi );
@@ -250,7 +249,7 @@ void reshape( GLFWwindow window, int w, int h )
 /*****************************************************************************
  * Window close callback
  *****************************************************************************/
-int window_close_callback(GLFWwindow window)
+static int window_close_callback(GLFWwindow window)
 {
     running = GL_FALSE;
     return GL_TRUE;

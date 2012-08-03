@@ -42,7 +42,6 @@ typedef struct
 
 static Param parameters[] =
 {
-    { GLFW_ACCELERATED, "accelerated" },
     { GLFW_RED_BITS, "red bits" },
     { GLFW_GREEN_BITS, "green bits" },
     { GLFW_BLUE_BITS, "blue bits" },

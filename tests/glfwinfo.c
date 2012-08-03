@@ -249,23 +249,29 @@ int main(int argc, char** argv)
     if (major >= 3)
     {
         glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-        printf("OpenGL context flags:");
+        printf("OpenGL context flags (0x%08x):", flags);
 
         if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
-            puts(" forward-compatible");
-        else
-            puts(" none");
+            printf(" forward-compatible");
+        if (flags & 0)
+            printf(" debug");
+        putchar('\n');
 
-        printf("OpenGL forward-compatible flag parsed by GLFW: %s\n",
-               glfwGetWindowParam(window, GLFW_OPENGL_FORWARD_COMPAT) ? "true" : "false");
+        printf("OpenGL context flags parsed by GLFW:");
+
+        if (glfwGetWindowParam(window, GLFW_OPENGL_FORWARD_COMPAT))
+            printf(" forward-compatible");
+        if (glfwGetWindowParam(window, GLFW_OPENGL_DEBUG_CONTEXT))
+            printf(" debug");
+        putchar('\n');
     }
 
     if (major > 3 || (major == 3 && minor >= 2))
     {
         glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
-        printf("OpenGL profile mask: %s (0x%08x)\n", get_profile_name(mask), mask);
+        printf("OpenGL profile mask (0x%08x): %s\n", mask, get_profile_name(mask));
 
-        printf("OpenGL profile parsed by GLFW: %s\n",
+        printf("OpenGL profile mask parsed by GLFW: %s\n",
                get_glfw_profile_name(glfwGetWindowParam(window, GLFW_OPENGL_PROFILE)));
     }
 

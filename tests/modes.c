@@ -90,33 +90,14 @@ static void key_callback(GLFWwindow dummy, int key, int action)
     }
 }
 
-static GLFWvidmode* get_video_modes(GLFWmonitor monitor, size_t* found)
-{
-    size_t count = 0;
-    GLFWvidmode* modes = NULL;
-
-    for (;;)
-    {
-        count += 256;
-        modes = realloc(modes, sizeof(GLFWvidmode) * count);
-
-        *found = glfwGetVideoModes(monitor, modes, count);
-        if (*found < count)
-            break;
-    }
-
-    return modes;
-}
-
 static void list_modes(GLFWmonitor monitor)
 {
-    size_t count, i;
+    int count, i;
     GLFWvidmode desktop_mode;
+    GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
 
     glfwGetDesktopMode(&desktop_mode);
     printf("Desktop mode: %s\n", format_mode(&desktop_mode));
-
-    GLFWvidmode* modes = get_video_modes(monitor, &count);
 
     printf("Monitor %s (%ix%i mm):\n",
            glfwGetMonitorString(monitor, GLFW_MONITOR_NAME),
@@ -132,15 +113,12 @@ static void list_modes(GLFWmonitor monitor)
 
         putchar('\n');
     }
-
-    free(modes);
 }
 
 static void test_modes(GLFWmonitor monitor)
 {
-    int width, height;
-    size_t i, count;
-    GLFWvidmode* modes = get_video_modes(monitor, &count);
+    int i, count, width, height;
+    GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
 
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSetWindowCloseCallback(window_close_callback);
@@ -214,8 +192,6 @@ static void test_modes(GLFWmonitor monitor)
         glfwPollEvents();
         window = NULL;
     }
-
-    free(modes);
 }
 
 int main(int argc, char** argv)

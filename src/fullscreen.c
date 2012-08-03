@@ -37,7 +37,7 @@
 // Lexical comparison function for GLFW video modes, used by qsort
 //========================================================================
 
-int _glfwCompareVideoModes(const void* firstPtr, const void* secondPtr)
+int compareVideoModes(const void* firstPtr, const void* secondPtr)
 {
     int firstBPP, secondBPP, firstSize, secondSize;
     GLFWvidmode* first = (GLFWvidmode*) firstPtr;
@@ -67,6 +67,16 @@ int _glfwCompareVideoModes(const void* firstPtr, const void* secondPtr)
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Lexical comparison of GLFW video modes
+//========================================================================
+
+int _glfwCompareVideoModes(const GLFWvidmode* first, const GLFWvidmode* second)
+{
+    return compareVideoModes(first, second);
+}
+
 
 //========================================================================
 // Convert BPP to RGB bits based on "best guess"
@@ -100,15 +110,14 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 // Get a list of available video modes
 //========================================================================
 
-GLFWAPI int glfwGetVideoModes(GLFWmonitor handle, GLFWvidmode* list, int maxcount)
+GLFWAPI GLFWvidmode* glfwGetVideoModes(GLFWmonitor handle, int* count)
 {
-    int count;
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
 
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return 0;
+        return NULL;
     }
 
     if (monitor == NULL)
@@ -118,26 +127,19 @@ GLFWAPI int glfwGetVideoModes(GLFWmonitor handle, GLFWvidmode* list, int maxcoun
         return 0;
     }
 
-    if (maxcount <= 0)
+    if (count == NULL)
     {
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwGetVideoModes: Parameter 'maxcount' must be "
-                      "greater than zero");
-        return 0;
+        _glfwSetError(GLFW_INVALID_VALUE, NULL);
+        return NULL;
     }
 
-    if (list == NULL)
-    {
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwGetVideoModes: Parameter 'list' cannot be NULL");
-        return 0;
-    }
+    free(monitor->modes);
 
-    count = _glfwPlatformGetVideoModes(monitor, list, maxcount);
-    if (count > 0)
-        qsort(list, count, sizeof(GLFWvidmode), _glfwCompareVideoModes);
+    monitor->modes = _glfwPlatformGetVideoModes(monitor, count);
+    if (monitor->modes)
+        qsort(monitor->modes, *count, sizeof(GLFWvidmode), compareVideoModes);
 
-    return count;
+    return monitor->modes;
 }
 
 

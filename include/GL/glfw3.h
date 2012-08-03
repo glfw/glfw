@@ -71,7 +71,6 @@ extern "C" {
  */
 #if __MINGW64__
  #define WINAPI
-#include <stddef.h>
 #endif
 
 /* The following three defines are here solely to make some Windows-based
@@ -110,11 +109,10 @@ extern "C" {
  #define GLFW_CALLBACK_DEFINED
 #endif /* CALLBACK */
 
-/* Microsoft Visual C++, Borland C++ and Pelles C <GL*glu.h> needs wchar_t */
-#if defined(_WIN32) && (defined(_MSC_VER) || defined(__BORLANDC__) || defined(__POCC__)) && !defined(_WCHAR_T_DEFINED)
- typedef unsigned short wchar_t;
- #define _WCHAR_T_DEFINED
-#endif /* _WCHAR_T_DEFINED */
+/* Most <GL/glu.h> variants on Windows need wchar_t */
+#if defined(_WIN32)
+ #include <stddef.h>
+#endif
 
 
 /* ---------------- GLFW related system specific defines ----------------- */
@@ -390,7 +388,6 @@ extern "C" {
 /* glfwGetWindowParam tokens */
 #define GLFW_ACTIVE               0x00020001
 #define GLFW_ICONIFIED            0x00020002
-#define GLFW_ACCELERATED          0x00020003
 #define GLFW_OPENGL_REVISION      0x00020004
 
 /* The following constants are used for both glfwGetWindowParam
@@ -449,7 +446,7 @@ extern "C" {
 /* glfwGetError/glfwErrorString tokens */
 #define GLFW_NO_ERROR             0
 #define GLFW_NOT_INITIALIZED      0x00070001
-#define GLFW_NO_CURRENT_WINDOW    0x00070002
+#define GLFW_NO_CURRENT_CONTEXT   0x00070002
 #define GLFW_INVALID_ENUM         0x00070003
 #define GLFW_INVALID_VALUE        0x00070004
 #define GLFW_OUT_OF_MEMORY        0x00070005
@@ -546,7 +543,7 @@ GLFWAPI const char* glfwGetMonitorString(GLFWmonitor monitor, int param);
 GLFWAPI GLFWmonitor glfwGetNextMonitor(GLFWmonitor iterator);
 
 /* Video mode functions */
-GLFWAPI int  glfwGetVideoModes(GLFWmonitor monitor, GLFWvidmode* list, int maxcount);
+GLFWAPI GLFWvidmode* glfwGetVideoModes(GLFWmonitor monitor, int* count);
 GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode);
 
 /* Gamma ramp functions */

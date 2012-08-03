@@ -30,6 +30,7 @@
 
 #include "internal.h"
 
+#include <stdio.h>
 #include <string.h>
 #include <limits.h>
 
@@ -38,49 +39,45 @@
 // Parses the OpenGL version string and extracts the version number
 //========================================================================
 
-static void parseGLVersion(int* major, int* minor, int* rev)
+static GLboolean parseGLVersion(int* major, int* minor, int* rev)
 {
-    GLuint _major, _minor = 0, _rev = 0;
-    const GLubyte* version;
-    const GLubyte* ptr;
-    const char* glesPrefix = "OpenGL ES ";
-
-    version = glGetString(GL_VERSION);
-    if (!version)
-        return;
-
-    if (strncmp((const char*) version, glesPrefix, strlen(glesPrefix)) == 0)
+    int i, _major, _minor = 0, _rev = 0;
+    const char* version;
+    const char* prefixes[] =
     {
-        // The version string on OpenGL ES has a prefix before the version
-        // number, so we skip past it and then continue as normal
+        "OpenGL ES ",
+        NULL
+    };
 
-        version += strlen(glesPrefix);
+    version = (const char*) glGetString(GL_VERSION);
+    if (!version)
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR, "Failed to retrieve version string");
+        return GL_FALSE;
     }
 
-    // Parse version from string
-
-    ptr = version;
-    for (_major = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
-        _major = 10 * _major + (*ptr - '0');
-
-    if (*ptr == '.')
+    for (i = 0;  prefixes[i];  i++)
     {
-        ptr++;
-        for (_minor = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
-            _minor = 10 * _minor + (*ptr - '0');
+        const size_t length = strlen(prefixes[i]);
 
-        if (*ptr == '.')
+        if (strncmp(version, prefixes[i], length) == 0)
         {
-            ptr++;
-            for (_rev = 0;  *ptr >= '0' && *ptr <= '9';  ptr++)
-                _rev = 10 * _rev + (*ptr - '0');
+            version += length;
+            break;
         }
     }
 
-    // Store result
+    if (!sscanf(version, "%d.%d.%d", &_major, &_minor, &_rev))
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR, "No version found in version string");
+        return GL_FALSE;
+    }
+
     *major = _major;
     *minor = _minor;
     *rev = _rev;
+
+    return GL_TRUE;
 }
 
 
@@ -347,13 +344,35 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
 
 
 //========================================================================
-// Checks whether the specified context fulfils the requirements
+// Reads back context properties
 // It blames glfwOpenWindow because that's the only caller
 //========================================================================
 
-GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
+GLboolean _glfwRefreshContextParams(void)
 {
-    parseGLVersion(&window->glMajor, &window->glMinor, &window->glRevision);
+    _GLFWwindow* window = _glfwLibrary.currentWindow;
+
+    if (!parseGLVersion(&window->glMajor,
+                        &window->glMinor,
+                        &window->glRevision))
+    {
+        return GL_FALSE;
+    }
+
+    if (window->glMajor > 2)
+    {
+        // OpenGL 3.0+ uses a different function for extension string retrieval
+        // We cache it here instead of in glfwExtensionSupported mostly to alert
+        // users as early as possible that their build may be broken
+
+        window->GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
+        if (!window->GetStringi)
+        {
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "glfwOpenWindow: Entry point retrieval is broken");
+            return GL_FALSE;
+        }
+    }
 
     // Read back forward-compatibility flag
     {
@@ -366,6 +385,8 @@ GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
 
           if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
               window->glForward = GL_TRUE;
+          if (flags & 0)
+              window->glDebug = GL_TRUE;
       }
     }
 
@@ -385,7 +406,39 @@ GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
       }
     }
 
-    window->glRobustness = wndconfig->glRobustness;
+    glGetIntegerv(GL_RED_BITS, &window->redBits);
+    glGetIntegerv(GL_GREEN_BITS, &window->greenBits);
+    glGetIntegerv(GL_BLUE_BITS, &window->blueBits);
+
+    glGetIntegerv(GL_ALPHA_BITS, &window->alphaBits);
+    glGetIntegerv(GL_DEPTH_BITS, &window->depthBits);
+    glGetIntegerv(GL_STENCIL_BITS, &window->stencilBits);
+
+    glGetIntegerv(GL_ACCUM_RED_BITS, &window->accumRedBits);
+    glGetIntegerv(GL_ACCUM_GREEN_BITS, &window->accumGreenBits);
+    glGetIntegerv(GL_ACCUM_BLUE_BITS, &window->accumBlueBits);
+    glGetIntegerv(GL_ACCUM_ALPHA_BITS, &window->accumAlphaBits);
+
+    glGetIntegerv(GL_AUX_BUFFERS, &window->auxBuffers);
+    glGetBooleanv(GL_STEREO, &window->stereo);
+
+    if (glfwExtensionSupported("GL_ARB_multisample"))
+        glGetIntegerv(GL_SAMPLES_ARB, &window->samples);
+    else
+        window->samples = 0;
+
+    return GL_TRUE;
+}
+
+
+//========================================================================
+// Checks whether the current context fulfils the specified requirements
+// It blames glfwOpenWindow because that's the only caller
+//========================================================================
+
+GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig)
+{
+    _GLFWwindow* window = _glfwLibrary.currentWindow;
 
     if (window->glMajor < wndconfig->glMajor ||
         (window->glMajor == wndconfig->glMajor &&
@@ -401,21 +454,6 @@ GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
         _glfwSetError(GLFW_VERSION_UNAVAILABLE,
                       "glfwOpenWindow: The requested OpenGL version is not available");
         return GL_FALSE;
-    }
-
-    if (window->glMajor > 2)
-    {
-        // OpenGL 3.0+ uses a different function for extension string retrieval
-        // We cache it here instead of in glfwExtensionSupported mostly to alert
-        // users as early as possible that their build may be broken
-
-        window->GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
-        if (!window->GetStringi)
-        {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "glfwOpenWindow: Entry point retrieval is broken");
-            return GL_FALSE;
-        }
     }
 
     return GL_TRUE;
@@ -513,7 +551,7 @@ GLFWAPI void glfwSwapBuffers(void)
 
     if (!_glfwLibrary.currentWindow)
     {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
+        _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
         return;
     }
 
@@ -535,7 +573,7 @@ GLFWAPI void glfwSwapInterval(int interval)
 
     if (!_glfwLibrary.currentWindow)
     {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
+        _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
         return;
     }
 
@@ -551,9 +589,6 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 {
     const GLubyte* extensions;
     _GLFWwindow* window;
-    GLubyte* where;
-    GLint count;
-    int i;
 
     if (!_glfwInitialized)
     {
@@ -564,14 +599,15 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
     window = _glfwLibrary.currentWindow;
     if (!window)
     {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
+        _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
         return GL_FALSE;
     }
 
-    // Extension names should not have spaces
-    where = (GLubyte*) strchr(extension, ' ');
-    if (where || *extension == '\0')
+    if (extension == NULL || *extension == '\0')
+    {
+        _glfwSetError(GLFW_INVALID_VALUE, NULL);
         return GL_FALSE;
+    }
 
     if (window->glMajor < 3)
     {
@@ -586,6 +622,9 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
     }
     else
     {
+        int i;
+        GLint count;
+
         // Check if extension is in the modern OpenGL extensions string list
 
         glGetIntegerv(GL_NUM_EXTENSIONS, &count);
@@ -600,11 +639,8 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
         }
     }
 
-    // Additional platform specific extension checking (e.g. WGL)
-    if (_glfwPlatformExtensionSupported(extension))
-        return GL_TRUE;
-
-    return GL_FALSE;
+    // Check if extension is in the platform-specific string
+    return _glfwPlatformExtensionSupported(extension);
 }
 
 
@@ -623,7 +659,7 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname)
 
     if (!_glfwLibrary.currentWindow)
     {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
+        _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
         return NULL;
     }
 

@@ -182,52 +182,87 @@ void _glfwRestoreVideoMode(void)
 // Get a list of available video modes
 //========================================================================
 
-int  _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, GLFWvidmode* list, int maxcount)
+GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 {
-    DWORD deviceModeIndex = 0;
-    int modeCount = 0;
+    int deviceModeIndex = 0, count = 0;
+    GLFWvidmode* result = NULL;
+    WCHAR* deviceName;
 
-    WCHAR* deviceName = _glfwCreateWideStringFromUTF8(monitor->Win32.name);
+    deviceName = _glfwCreateWideStringFromUTF8(monitor->Win32.name);
     if (!deviceName)
-        return 0;
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR, "Win32: Failed to convert device name");
+        return NULL;
+    }
+
+    *found = 0;
 
     for (;;)
     {
+        int i;
         GLFWvidmode mode;
-        DEVMODE deviceMode;
+        DEVMODE dm;
 
-        ZeroMemory(&deviceMode, sizeof(DEVMODE));
-        deviceMode.dmSize = sizeof(DEVMODE);
+        ZeroMemory(&dm, sizeof(DEVMODE));
+        dm.dmSize = sizeof(DEVMODE);
 
-        if (!EnumDisplaySettings(deviceName, deviceModeIndex, &deviceMode))
-           break;
+        if (!EnumDisplaySettings(deviceName, deviceModeIndex, &dm))
+            break;
 
         deviceModeIndex++;
-        if (deviceMode.dmBitsPerPel < 15)
+
+        if (dm.dmBitsPerPel < 15)
+        {
+            // Skip modes with less than 15 BPP
             continue;
+        }
 
-        mode.height = deviceMode.dmPelsHeight;
-        mode.width  = deviceMode.dmPelsWidth;
-        _glfwSplitBPP(deviceMode.dmBitsPerPel,
-                      &mode.redBits,
-                      &mode.greenBits,
-                      &mode.blueBits);
+        mode.width = dm.dmPelsWidth;
+        mode.height = dm.dmPelsHeight;
+        _glfwSplitBPP(dm.dmBitsPerPel,
+                        &mode.redBits,
+                        &mode.greenBits,
+                        &mode.blueBits);
 
-        // Skip duplicate modes
-        if (bsearch(&mode, list, modeCount, sizeof(GLFWvidmode), _glfwCompareVideoModes))
+        for (i = 0;  i < *found;  i++)
+        {
+            if (_glfwCompareVideoModes(result + i, &mode) == 0)
+                break;
+        }
+
+        if (i < *found)
+        {
+            // This is a duplicate, so skip it
             continue;
+        }
 
-        list[modeCount] = mode;
-        modeCount++;
+        if (*found == count)
+        {
+            void* larger;
 
-        qsort(list, modeCount, sizeof(GLFWvidmode), _glfwCompareVideoModes);
+            if (count)
+                count *= 2;
+            else
+                count = 128;
 
-        if (modeCount >= maxcount)
-            break;
+            larger = realloc(result, count * sizeof(GLFWvidmode));
+            if (!larger)
+            {
+                free(result);
+
+                _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+                return NULL;
+            }
+
+            result = (GLFWvidmode*) larger;
+        }
+
+        result[*found] = mode;
+        (*found)++;
     }
 
     free(deviceName);
-    return modeCount;
+    return result;
 }
 
 

@@ -248,6 +248,12 @@ void _glfwInitTimer(void);
 _GLFWmonitor* _glfwCreateMonitors(void);
 _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor);
 
+// OpenGL support
+int _glfwCreateContext(_GLFWwindow* window,
+                       const _GLFWwndconfig* wndconfig,
+                       const _GLFWfbconfig* fbconfig);
+void _glfwDestroyContext(_GLFWwindow* window);
+
 // Fullscreen support
 void _glfwSetVideoMode(int* width, int* height,
                        int* bpp, int* refreshRate,

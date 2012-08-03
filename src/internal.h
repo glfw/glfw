@@ -197,22 +197,21 @@ struct _GLFWwindow
     char      key[GLFW_KEY_LAST + 1];
 
     // Framebuffer attributes
-    int       redBits;
-    int       greenBits;
-    int       blueBits;
-    int       alphaBits;
-    int       depthBits;
-    int       stencilBits;
-    int       accumRedBits;
-    int       accumGreenBits;
-    int       accumBlueBits;
-    int       accumAlphaBits;
-    int       auxBuffers;
+    GLint     redBits;
+    GLint     greenBits;
+    GLint     blueBits;
+    GLint     alphaBits;
+    GLint     depthBits;
+    GLint     stencilBits;
+    GLint     accumRedBits;
+    GLint     accumGreenBits;
+    GLint     accumBlueBits;
+    GLint     accumAlphaBits;
+    GLint     auxBuffers;
     GLboolean stereo;
-    int       samples;
+    GLint     samples;
 
     // OpenGL extensions and context attributes
-    GLboolean accelerated;     // GL_TRUE if OpenGL context is "accelerated"
     int       glMajor, glMinor, glRevision;
     GLboolean glForward, glDebug;
     int       glProfile;
@@ -241,6 +240,8 @@ struct _GLFWmonitor
     // logical orientation of the screen on the desktop
     int       screenX;
     int       screenY;
+
+    GLFWvidmode*  modes;
 
     // These are defined in the current port's platform.h
     _GLFW_PLATFORM_MONITOR_STATE;
@@ -313,7 +314,7 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y);
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
 
 // Fullscreen
-int  _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, GLFWvidmode* list, int maxcount);
+GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count);
 void _glfwPlatformGetDesktopMode(GLFWvidmode* mode);
 
 // Gamma ramp
@@ -361,11 +362,11 @@ void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long 
 //========================================================================
 
 // Fullscren management (fullscreen.c)
+int _glfwCompareVideoModes(const GLFWvidmode* first, const GLFWvidmode* second);
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
-int _glfwCompareVideoModes(const void* firstPtr, const void* secondPtr);
 
 // Error handling (error.c)
-void _glfwSetError(int error, const char* description);
+void _glfwSetError(int error, const char* format, ...);
 
 // Window management (window.c)
 void _glfwSetDefaultWindowHints(void);
@@ -390,8 +391,9 @@ int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);
 const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
                                          const _GLFWfbconfig* alternatives,
                                          unsigned int count);
+GLboolean _glfwRefreshContextParams(void);
 GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig);
-GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig);
+GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig);
 
 // Monitor management (monitor.c)
 void _glfwInitMonitors(void);

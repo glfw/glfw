@@ -287,12 +287,14 @@ version of GLFW.</p>
   <li>Added <code>windows</code> simple multi-window test program</li>
   <li>Added <code>sharing</code> simple OpenGL object sharing test program</li>
   <li>Added <code>modes</code> video mode enumeration and setting test program</li>
+  <li>Added <code>glfw3native.h</code> header and platform-specific functions for explicit access to native display, window and context handles</li>
   <li>Added a parameter to <code>glfwOpenWindow</code> for specifying a context the new window's context will share objects with</li>
   <li>Added initial window title parameter to <code>glfwOpenWindow</code></li>
   <li>Added <code>glfwSetGamma</code>, <code>glfwSetGammaRamp</code> and <code>glfwGetGammaRamp</code> functions and <code>GLFWgammaramp</code> type for monitor gamma ramp control</li>
   <li>Changed buffer bit depth parameters of <code>glfwOpenWindow</code> to window hints</li>
   <li>Changed <code>glfwOpenWindow</code> and <code>glfwSetWindowTitle</code> to use UTF-8 encoded strings</li>
   <li>Changed <code>glfwGetProcAddress</code> to return a (generic) function pointer</li>
+  <li>Changed <code>glfwGetVideoModes</code> to return a dynamic, unlimited number of video modes</li>
   <li>Renamed <code>glfw.h</code> to <code>glfw3.h</code> to avoid conflicts with 2.x series</li>
   <li>Renamed <code>GLFW_WINDOW</code> token to <code>GLFW_WINDOWED</code></li>
   <li>Renamed <code>GLFW_WINDOW_NO_RESIZE</code> to <code>GLFW_WINDOW_RESIZABLE</code></li>
@@ -317,6 +319,7 @@ version of GLFW.</p>
   <li>Removed <code>GLFW_OPENED</code> window parameter</li>
   <li>Removed nonsensical key actions for Unicode character input</li>
   <li>Removed <code>GLFWCALL</code> and <code>GLFWAPIENTRY</code> macros for stdcall calling convention</li>
+  <li>Removed <code>GLFW_ACCELERATED</code> window parameter</li>
   <li>Bugfix: The default OpenGL version in the <code>glfwinfo</code> test was set to 1.1</li>
   <li>Bugfix: The OpenGL profile and forward-compatibility window parameters were not saved after context creation</li>
   <li>Bugfix: The FSAA test did not check for the availability of <code>GL_ARB_multisample</code></li>
@@ -847,6 +850,9 @@ their skills.  Special thanks go out to:</p>
   <li>Keith Bauer, for his invaluable help with porting and maintaining GLFW on
   Mac OS X, and for his many ideas</li>
 
+  <li>John Bartholomew, for adding proper version number and soname to the
+  shared library build</li>
+
   <li>Lambert Clara, for a bug fix for the modes test</li>
 
   <li>Jarrod Davis, for the Delphi port of GLFW</li>
@@ -916,6 +922,9 @@ their skills.  Special thanks go out to:</p>
   href="http://nehe.gamedev.net/">NeHe Productions</a>.
   Much of the Windows code of GLFW was originally based on Jeff's
   code</li>
+
+  <li>Arturo J. Pérez, for a bug fix for cursor tracking on Mac OS X 10.6 Snow
+  Leopard</li>
 
   <li>Douglas C. Schmidt and Irfan Pyarali, for their excellent article
   <a href="http://www.cs.wustl.edu/~schmidt/win32-cv-1.html">Strategies for Implementing POSIX Condition Variables on Win32</a></li>

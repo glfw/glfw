@@ -78,6 +78,7 @@ _GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
     XRRFreeOutputInfo(monitor->X11.output);
 #endif /*_GLFW_HAS_XRANDR*/
 
+    free(monitor->modes);
     free(monitor->name);
     free(monitor);
 

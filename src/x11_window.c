@@ -1140,20 +1140,14 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 
 void _glfwPlatformRefreshWindowParams(void)
 {
-#if defined(_GLFW_HAS_XRANDR)
-    XRRScreenConfiguration* sc;
-#endif /*_GLFW_HAS_XRANDR*/
-#if defined(_GLFW_HAS_XF86VIDMODE)
-    XF86VidModeModeLine modeline;
-    int dotclock;
-    float pixels_per_second, pixels_per_frame;
-#endif /*_GLFW_HAS_XF86VIDMODE*/
     _GLFWwindow* window = _glfwLibrary.currentWindow;
 
     // Retrieve refresh rate if possible
     if (_glfwLibrary.X11.RandR.available)
     {
 #if defined(_GLFW_HAS_XRANDR)
+        XRRScreenConfiguration* sc;
+
         sc = XRRGetScreenInfo(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
         window->refreshRate = XRRConfigCurrentRate(sc);
         XRRFreeScreenConfigInfo(sc);
@@ -1162,6 +1156,10 @@ void _glfwPlatformRefreshWindowParams(void)
     else if (_glfwLibrary.X11.VidMode.available)
     {
 #if defined(_GLFW_HAS_XF86VIDMODE)
+        XF86VidModeModeLine modeline;
+        int dotclock;
+        float pixels_per_second, pixels_per_frame;
+
         // Use the XF86VidMode extension to get current video mode
         XF86VidModeGetModeLine(_glfwLibrary.X11.display,
                                _glfwLibrary.X11.screen,

@@ -32,6 +32,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static GLboolean running = GL_TRUE;
+
+static int window_close_callback(GLFWwindow window)
+{
+    running = GL_FALSE;
+    return GL_TRUE;
+}
+
 static const char* titles[] =
 {
     "Foo",
@@ -43,7 +51,6 @@ static const char* titles[] =
 int main(void)
 {
     int i;
-    GLboolean running = GL_TRUE;
     GLFWwindow windows[4];
 
     if (!glfwInit())
@@ -52,6 +59,8 @@ int main(void)
                 glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
+
+    glfwSetWindowCloseCallback(window_close_callback);
 
     for (i = 0;  i < 4;  i++)
     {
@@ -82,12 +91,6 @@ int main(void)
         }
 
         glfwPollEvents();
-
-        for (i = 0;  i < 4;  i++)
-        {
-            if (!glfwIsWindow(windows[i]))
-                running = GL_FALSE;
-        }
     }
 
     glfwTerminate();

@@ -44,7 +44,6 @@ typedef struct Joystick
 } Joystick;
 
 static Joystick joysticks[GLFW_JOYSTICK_LAST - GLFW_JOYSTICK_1 + 1];
-
 static int joystick_count = 0;
 
 static void window_size_callback(GLFWwindow window, int width, int height)
@@ -199,7 +198,7 @@ int main(void)
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSwapInterval(1);
 
-    while (glfwIsWindow(window))
+    while (glfwGetCurrentContext())
     {
         glClear(GL_COLOR_BUFFER_BIT);
 

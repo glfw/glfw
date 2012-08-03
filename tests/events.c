@@ -385,7 +385,7 @@ int main(void)
 
     printf("Main loop starting\n");
 
-    while (glfwIsWindow(window) == GL_TRUE)
+    while (glfwGetCurrentContext())
         glfwWaitEvents();
 
     glfwTerminate();

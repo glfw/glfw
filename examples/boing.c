@@ -43,6 +43,7 @@
 void init( void );
 void display( void );
 void reshape( GLFWwindow window, int w, int h );
+int window_close_callback(GLFWwindow window);
 void DrawBoingBall( void );
 void BounceBall( double dt );
 void DrawBoingBallBand( GLfloat long_lo, GLfloat long_hi );
@@ -89,6 +90,7 @@ DRAW_BALL_ENUM drawBallHow;
 double  t;
 double  t_old = 0.f;
 double  dt;
+static GLboolean running = GL_TRUE;
 
 /* Random number generator */
 #ifndef RAND_MAX
@@ -242,6 +244,16 @@ void reshape( GLFWwindow window, int w, int h )
    gluLookAt( 0.0, 0.0, VIEW_SCENE_DIST,/* eye */
               0.0, 0.0, 0.0,            /* center of vision */
               0.0, -1.0, 0.0 );         /* up vector */
+}
+
+
+/*****************************************************************************
+ * Window close callback
+ *****************************************************************************/
+int window_close_callback(GLFWwindow window)
+{
+    running = GL_FALSE;
+    return GL_TRUE;
 }
 
 
@@ -567,7 +579,6 @@ void DrawGrid( void )
 
 int main( void )
 {
-   int running;
    GLFWwindow window;
 
    /* Init GLFW */
@@ -587,6 +598,7 @@ int main( void )
        exit( EXIT_FAILURE );
    }
 
+   glfwSetWindowCloseCallback( window_close_callback );
    glfwSetWindowSizeCallback( reshape );
    glfwSetInputMode( window, GLFW_STICKY_KEYS, GL_TRUE );
    glfwSwapInterval( 1 );
@@ -610,7 +622,8 @@ int main( void )
        glfwPollEvents();
 
        /* Check if we are still running */
-       running = glfwIsWindow(window) && !glfwGetKey( window, GLFW_KEY_ESCAPE );
+       if (glfwGetKey( window, GLFW_KEY_ESCAPE ))
+           running = GL_FALSE;
    }
    while( running );
 

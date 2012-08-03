@@ -68,6 +68,7 @@ static void window_key_callback(GLFWwindow window, int key, int action)
 static int window_close_callback(GLFWwindow window)
 {
     printf("%0.3f: User closed window\n", glfwGetTime());
+    running = GL_FALSE;
     return GL_TRUE;
 }
 
@@ -97,7 +98,7 @@ int main(void)
     glfwSetKeyCallback(window_key_callback);
     glfwSetWindowCloseCallback(window_close_callback);
 
-    while (running && glfwIsWindow(window) == GL_TRUE)
+    while (running)
     {
         glClear(GL_COLOR_BUFFER_BIT);
         glfwSwapBuffers();

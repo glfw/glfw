@@ -126,7 +126,7 @@ int main(int argc, char** argv)
 
     glEnable(GL_SCISSOR_TEST);
 
-    while (glfwIsWindow(window))
+    while (glfwGetCurrentContext())
     {
         int width, height;
 

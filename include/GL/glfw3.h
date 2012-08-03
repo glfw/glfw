@@ -529,7 +529,6 @@ GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
 /* Window handling */
 GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode, const char* title, GLFWwindow share);
 GLFWAPI void glfwOpenWindowHint(int target, int hint);
-GLFWAPI int  glfwIsWindow(GLFWwindow window);
 GLFWAPI void glfwCloseWindow(GLFWwindow window);
 GLFWAPI void glfwSetWindowTitle(GLFWwindow, const char* title);
 GLFWAPI void glfwGetWindowSize(GLFWwindow, int* width, int* height);

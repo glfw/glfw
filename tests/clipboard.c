@@ -136,7 +136,7 @@ int main(int argc, char** argv)
 
     glClearColor(0.5f, 0.5f, 0.5f, 0);
 
-    while (glfwIsWindow(window))
+    while (glfwGetCurrentContext())
     {
         glClear(GL_COLOR_BUFFER_BIT);
 

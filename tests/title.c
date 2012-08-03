@@ -58,7 +58,7 @@ int main(void)
 
     glfwSetWindowSizeCallback(window_size_callback);
 
-    while (glfwIsWindow(window) == GL_TRUE)
+    while (glfwGetCurrentContext())
     {
         glClear(GL_COLOR_BUFFER_BIT);
         glfwSwapBuffers();

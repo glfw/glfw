@@ -267,6 +267,14 @@ void reshape( GLFWwindow window, int width, int height )
 }
 
 
+/* close callback */
+int window_close_callback(GLFWwindow window)
+{
+    running = 0;
+    return GL_TRUE;
+}
+
+
 /* program & OpenGL initialization */
 static void init(int argc, char *argv[])
 {
@@ -346,6 +354,7 @@ int main(int argc, char *argv[])
     init(argc, argv);
 
     // Set callback functions
+    glfwSetWindowCloseCallback(window_close_callback);
     glfwSetWindowSizeCallback( reshape );
     glfwSetKeyCallback( key );
 
@@ -361,12 +370,6 @@ int main(int argc, char *argv[])
         // Swap buffers
         glfwSwapBuffers();
         glfwPollEvents();
-
-        // Was the window closed?
-        if( !glfwIsWindow( window ) )
-        {
-            running = 0;
-        }
     }
 
     // Terminate GLFW

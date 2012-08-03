@@ -36,10 +36,28 @@
 #define WIDTH  400
 #define HEIGHT 400
 
+static GLFWwindow windows[2];
+
 static void key_callback(GLFWwindow window, int key, int action)
 {
     if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
         glfwCloseWindow(window);
+}
+
+static int window_close_callback(GLFWwindow window)
+{
+    int i;
+
+    for (i = 0;  i < 2;  i++)
+    {
+        if (windows[i] == window)
+        {
+            windows[i] = NULL;
+            break;
+        }
+    }
+
+    return GL_TRUE;
 }
 
 static GLFWwindow open_window(const char* title, GLFWwindow share)
@@ -50,6 +68,7 @@ static GLFWwindow open_window(const char* title, GLFWwindow share)
     if (!window)
         return NULL;
 
+    glfwSetWindowCloseCallback(window_close_callback);
     glfwSetKeyCallback(key_callback);
     glfwSwapInterval(1);
 
@@ -112,7 +131,6 @@ static void draw_quad(GLuint texture)
 
 int main(int argc, char** argv)
 {
-    GLFWwindow windows[2];
     GLuint texture;
     int x, y;
 
@@ -150,7 +168,7 @@ int main(int argc, char** argv)
     glfwGetWindowPos(windows[0], &x, &y);
     glfwSetWindowPos(windows[1], x + WIDTH + 50, y);
 
-    while (glfwIsWindow(windows[0]) && glfwIsWindow(windows[1]))
+    while (windows[0] && windows[1])
     {
         glfwMakeContextCurrent(windows[0]);
         draw_quad(texture);

@@ -373,6 +373,17 @@ void window_resize_callback(GLFWwindow window, int width, int height)
 
 
 //========================================================================
+// Callback function for window close events
+//========================================================================
+
+static int window_close_callback(GLFWwindow window)
+{
+    running = GL_FALSE;
+    return GL_TRUE;
+}
+
+
+//========================================================================
 // main
 //========================================================================
 
@@ -401,6 +412,7 @@ int main(int argc, char* argv[])
     glfwSetInputMode(window, GLFW_KEY_REPEAT, GL_TRUE);
 
     // Window resize handler
+    glfwSetWindowCloseCallback(window_close_callback);
     glfwSetWindowSizeCallback(window_resize_callback);
     glfwSetMouseButtonCallback(mouse_button_callback);
     glfwSetCursorPosCallback(cursor_position_callback);
@@ -441,9 +453,6 @@ int main(int argc, char* argv[])
         draw_scene();
 
         glfwPollEvents();
-
-        // Still running?
-        running = running && glfwIsWindow(window);
     }
 
     exit(EXIT_SUCCESS);

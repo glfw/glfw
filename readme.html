@@ -287,20 +287,20 @@ version of GLFW.</p>
   <li>Added <code>sharing</code> simple OpenGL object sharing test program</li>
   <li>Added <code>modes</code> video mode enumeration and setting test program</li>
   <li>Added <code>glfw3native.h</code> header and platform-specific functions for explicit access to native display, window and context handles</li>
-  <li>Added a parameter to <code>glfwOpenWindow</code> for specifying a context the new window's context will share objects with</li>
-  <li>Added initial window title parameter to <code>glfwOpenWindow</code></li>
   <li>Added <code>glfwSetGamma</code>, <code>glfwSetGammaRamp</code> and <code>glfwGetGammaRamp</code> functions and <code>GLFWgammaramp</code> type for monitor gamma ramp control</li>
   <li>Changed buffer bit depth parameters of <code>glfwOpenWindow</code> to window hints</li>
   <li>Changed <code>glfwOpenWindow</code> and <code>glfwSetWindowTitle</code> to use UTF-8 encoded strings</li>
   <li>Changed <code>glfwGetProcAddress</code> to return a (generic) function pointer</li>
   <li>Changed <code>glfwGetVideoModes</code> to return a dynamic, unlimited number of video modes</li>
   <li>Renamed <code>glfw.h</code> to <code>glfw3.h</code> to avoid conflicts with 2.x series</li>
+  <li>Renamed <code>glfwOpenWindowHint</code> to <code>glfwWindowHint</code></li>
   <li>Renamed <code>GLFW_WINDOW</code> token to <code>GLFW_WINDOWED</code></li>
   <li>Renamed <code>GLFW_WINDOW_NO_RESIZE</code> to <code>GLFW_WINDOW_RESIZABLE</code></li>
   <li>Renamed <code>GLFW_BUILD_DLL</code> to <code>_GLFW_BUILD_DLL</code></li>
   <li>Renamed <code>version</code> test to <code>glfwinfo</code></li>
   <li>Renamed <code>GLFW_NO_GLU</code> to <code>GLFW_INCLUDE_GLU</code> and made it disabled by default</li>
   <li>Renamed mouse position functions to cursor position equivalents</li>
+  <li>Replaced <code>glfwOpenWindow</code> and <code>glfwCloseWindow</code> with <code>glfwCreateWindow</code> and <code>glfwDestroyWindow</code></li>
   <li>Replaced ad hoc build system with CMake</li>
   <li>Replaced layout-dependent key codes with single, platform-independent set based on US layout</li>
   <li>Replaced mouse wheel interface with two-dimensional, floating point scrolling interface</li>

@@ -88,10 +88,10 @@ typedef struct _GLFWlibrary     _GLFWlibrary;
 
 
 //------------------------------------------------------------------------
-// Window hints, set by glfwOpenWindowHint and consumed by glfwOpenWindow
+// Window hints, set by glfwWindowHint and consumed by glfwCreateWindow
 // A bucket of semi-random stuff lumped together for historical reasons
 // This is used only by the platform independent code and only to store
-// parameters passed to us by glfwOpenWindowHint
+// parameters passed to us by glfwWindowHint
 //------------------------------------------------------------------------
 struct _GLFWhints
 {
@@ -310,8 +310,8 @@ double _glfwPlatformGetTime(void);
 void _glfwPlatformSetTime(double time);
 
 // Window management
-int  _glfwPlatformOpenWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWfbconfig* fbconfig);
-void _glfwPlatformCloseWindow(_GLFWwindow* window);
+int  _glfwPlatformCreateWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWfbconfig* fbconfig);
+void _glfwPlatformDestroyWindow(_GLFWwindow* window);
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title);
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height);
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y);

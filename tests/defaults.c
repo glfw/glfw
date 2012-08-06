@@ -74,7 +74,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Defaults", NULL);
+    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Defaults", NULL);
     if (!window)
     {
         glfwTerminate();
@@ -94,7 +94,7 @@ int main(void)
                glfwGetWindowParam(window, parameters[i].param));
     }
 
-    glfwCloseWindow(window);
+    glfwDestroyWindow(window);
     window = NULL;
 
     glfwTerminate();

@@ -85,7 +85,7 @@ static void key_callback(GLFWwindow dummy, int key, int action)
 {
     if (key == GLFW_KEY_ESCAPE)
     {
-        glfwCloseWindow(window);
+        glfwDestroyWindow(window);
         window = NULL;
     }
 }
@@ -125,15 +125,15 @@ static void test_modes(void)
     {
         GLFWvidmode* mode = modes + i;
 
-        glfwOpenWindowHint(GLFW_RED_BITS, mode->redBits);
-        glfwOpenWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-        glfwOpenWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+        glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+        glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+        glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 
         printf("Testing mode %u: %s", (unsigned int) i, format_mode(mode));
 
-        window = glfwOpenWindow(mode->width, mode->height,
-                                GLFW_FULLSCREEN, "Video Mode Test",
-                                NULL);
+        window = glfwCreateWindow(mode->width, mode->height,
+                                  GLFW_FULLSCREEN, "Video Mode Test",
+                                  NULL);
         if (!window)
         {
             printf("Failed to enter mode %u: %s\n",
@@ -182,7 +182,7 @@ static void test_modes(void)
 
         printf("Closing window\n");
 
-        glfwCloseWindow(window);
+        glfwDestroyWindow(window);
         glfwPollEvents();
         window = NULL;
     }

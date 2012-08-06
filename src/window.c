@@ -60,7 +60,7 @@ static void closeFlaggedWindows(void)
         if (window->closeRequested)
         {
             _GLFWwindow* next = window->next;
-            glfwCloseWindow(window);
+            glfwDestroyWindow(window);
             window = next;
         }
         else
@@ -214,9 +214,9 @@ void _glfwInputWindowDamage(_GLFWwindow* window)
 // Create the GLFW window and its associated context
 //========================================================================
 
-GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
-                                  int mode, const char* title,
-                                  GLFWwindow share)
+GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
+                                    int mode, const char* title,
+                                    GLFWwindow share)
 {
     _GLFWfbconfig fbconfig;
     _GLFWwndconfig wndconfig;
@@ -269,7 +269,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     if (mode != GLFW_WINDOWED && mode != GLFW_FULLSCREEN)
     {
         _glfwSetError(GLFW_INVALID_ENUM,
-                      "glfwOpenWindow: Invalid enum for 'mode' parameter");
+                      "glfwCreateWindow: Invalid enum for 'mode' parameter");
         return GL_FALSE;
     }
 
@@ -295,7 +295,7 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     if (!window)
     {
         _glfwSetError(GLFW_OUT_OF_MEMORY,
-                      "glfwOpenWindow: Failed to allocate window structure");
+                      "glfwCreateWindow: Failed to allocate window structure");
         return NULL;
     }
 
@@ -312,9 +312,9 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     window->systemKeys = GL_TRUE;
 
     // Open the actual window and create its context
-    if (!_glfwPlatformOpenWindow(window, &wndconfig, &fbconfig))
+    if (!_glfwPlatformCreateWindow(window, &wndconfig, &fbconfig))
     {
-        glfwCloseWindow(window);
+        glfwDestroyWindow(window);
         return GL_FALSE;
     }
 
@@ -325,14 +325,14 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
     glfwMakeContextCurrent(window);
     if (!_glfwRefreshContextParams())
     {
-        glfwCloseWindow(window);
+        glfwDestroyWindow(window);
         return GL_FALSE;
     }
 
     // Verify the context against the requested parameters
     if (!_glfwIsValidContext(&wndconfig))
     {
-        glfwCloseWindow(window);
+        glfwDestroyWindow(window);
         return GL_FALSE;
     }
 
@@ -351,10 +351,10 @@ GLFWAPI GLFWwindow glfwOpenWindow(int width, int height,
 
 
 //========================================================================
-// Set hints for opening the window
+// Set hints for creating the window
 //========================================================================
 
-GLFWAPI void glfwOpenWindowHint(int target, int hint)
+GLFWAPI void glfwWindowHint(int target, int hint)
 {
     if (!_glfwInitialized)
     {
@@ -438,7 +438,7 @@ GLFWAPI void glfwOpenWindowHint(int target, int hint)
 // Properly kill the window / video display
 //========================================================================
 
-GLFWAPI void glfwCloseWindow(GLFWwindow handle)
+GLFWAPI void glfwDestroyWindow(GLFWwindow handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -460,7 +460,7 @@ GLFWAPI void glfwCloseWindow(GLFWwindow handle)
     if (window == _glfwLibrary.activeWindow)
         _glfwLibrary.activeWindow = NULL;
 
-    _glfwPlatformCloseWindow(window);
+    _glfwPlatformDestroyWindow(window);
 
     // Unlink window from global linked list
     {

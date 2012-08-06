@@ -64,7 +64,7 @@ int main(void)
 
     for (i = 0;  i < 4;  i++)
     {
-        windows[i] = glfwOpenWindow(200, 200, GLFW_WINDOWED, titles[i], NULL);
+        windows[i] = glfwCreateWindow(200, 200, GLFW_WINDOWED, titles[i], NULL);
         if (!windows[i])
         {
             fprintf(stderr, "Failed to open GLFW window: %s\n",

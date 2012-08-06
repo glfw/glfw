@@ -367,7 +367,7 @@ int main(void)
     glfwSetKeyCallback(key_callback);
     glfwSetCharCallback(char_callback);
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Event Linter", NULL);
+    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Event Linter", NULL);
     if (!window)
     {
         glfwTerminate();

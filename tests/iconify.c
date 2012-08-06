@@ -55,7 +55,7 @@ static void key_callback(GLFWwindow window, int key, int action)
             glfwIconifyWindow(window);
             break;
         case GLFW_KEY_ESCAPE:
-            glfwCloseWindow(window);
+            glfwDestroyWindow(window);
             break;
     }
 }
@@ -111,7 +111,7 @@ int main(int argc, char** argv)
         height = 0;
     }
 
-    window = glfwOpenWindow(width, height, mode, "Iconify", NULL);
+    window = glfwCreateWindow(width, height, mode, "Iconify", NULL);
     if (!window)
     {
         glfwTerminate();

@@ -886,7 +886,7 @@ static int createWindow(_GLFWwindow* window,
     if (!wideTitle)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "glfwOpenWindow: Failed to convert title to wide string");
+                      "glfwCreateWindow: Failed to convert title to wide string");
         return GL_FALSE;
     }
 
@@ -931,7 +931,7 @@ static void destroyWindow(_GLFWwindow* window)
 {
     _glfwDestroyContext(window);
 
-    // This is duplicated from glfwCloseWindow
+    // This is duplicated from glfwDestroyWindow
     // TODO: Stop duplicating code
     if (window == _glfwLibrary.activeWindow)
         _glfwLibrary.activeWindow = NULL;
@@ -953,9 +953,9 @@ static void destroyWindow(_GLFWwindow* window)
 // created
 //========================================================================
 
-int _glfwPlatformOpenWindow(_GLFWwindow* window,
-                            const _GLFWwndconfig* wndconfig,
-                            const _GLFWfbconfig* fbconfig)
+int _glfwPlatformCreateWindow(_GLFWwindow* window,
+                              const _GLFWwndconfig* wndconfig,
+                              const _GLFWfbconfig* fbconfig)
 {
     GLboolean recreateContext = GL_FALSE;
 
@@ -1083,7 +1083,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 // Properly kill the window / video display
 //========================================================================
 
-void _glfwPlatformCloseWindow(_GLFWwindow* window)
+void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     destroyWindow(window);
 

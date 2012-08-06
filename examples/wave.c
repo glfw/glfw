@@ -398,7 +398,7 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(640, 480, GLFW_WINDOWED, "Wave Simulation", NULL);
+    window = glfwCreateWindow(640, 480, GLFW_WINDOWED, "Wave Simulation", NULL);
     if (!window)
     {
         fprintf(stderr, "Could not open window\n");

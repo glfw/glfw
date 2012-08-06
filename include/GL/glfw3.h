@@ -381,7 +381,7 @@ extern "C" {
  * Other definitions
  *************************************************************************/
 
-/* glfwOpenWindow modes */
+/* glfwCreateWindow modes */
 #define GLFW_WINDOWED             0x00010001
 #define GLFW_FULLSCREEN           0x00010002
 
@@ -391,7 +391,7 @@ extern "C" {
 #define GLFW_OPENGL_REVISION      0x00020004
 
 /* The following constants are used for both glfwGetWindowParam
- * and glfwOpenWindowHint
+ * and glfwWindowHint
  */
 #define GLFW_RED_BITS             0x00021000
 #define GLFW_GREEN_BITS           0x00021001
@@ -527,9 +527,9 @@ GLFWAPI void glfwGetGammaRamp(GLFWgammaramp* ramp);
 GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
 
 /* Window handling */
-GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode, const char* title, GLFWwindow share);
-GLFWAPI void glfwOpenWindowHint(int target, int hint);
-GLFWAPI void glfwCloseWindow(GLFWwindow window);
+GLFWAPI GLFWwindow glfwCreateWindow(int width, int height, int mode, const char* title, GLFWwindow share);
+GLFWAPI void glfwWindowHint(int target, int hint);
+GLFWAPI void glfwDestroyWindow(GLFWwindow window);
 GLFWAPI void glfwSetWindowTitle(GLFWwindow, const char* title);
 GLFWAPI void glfwGetWindowSize(GLFWwindow, int* width, int* height);
 GLFWAPI void glfwSetWindowSize(GLFWwindow, int width, int height);

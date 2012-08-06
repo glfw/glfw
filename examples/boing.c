@@ -587,9 +587,9 @@ int main( void )
       exit( EXIT_FAILURE );
    }
 
-   glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
+   glfwWindowHint(GLFW_DEPTH_BITS, 16);
 
-   window = glfwOpenWindow( 400, 400, GLFW_WINDOWED, "Boing (classic Amiga demo)", NULL );
+   window = glfwCreateWindow( 400, 400, GLFW_WINDOWED, "Boing (classic Amiga demo)", NULL );
    if (!window)
    {
        fprintf( stderr, "Failed to open GLFW window\n" );

@@ -53,7 +53,7 @@ static void key_callback(GLFWwindow window, int key, int action)
     switch (key)
     {
         case GLFW_KEY_ESCAPE:
-            glfwCloseWindow(window);
+            glfwDestroyWindow(window);
             break;
 
         case GLFW_KEY_V:
@@ -117,7 +117,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Clipboard Test", NULL);
+    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Clipboard Test", NULL);
     if (!window)
     {
         glfwTerminate();

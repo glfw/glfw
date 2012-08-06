@@ -41,7 +41,7 @@ static GLFWwindow windows[2];
 static void key_callback(GLFWwindow window, int key, int action)
 {
     if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
-        glfwCloseWindow(window);
+        glfwDestroyWindow(window);
 }
 
 static int window_close_callback(GLFWwindow window)
@@ -64,7 +64,7 @@ static GLFWwindow open_window(const char* title, GLFWwindow share)
 {
     GLFWwindow window;
 
-    window = glfwOpenWindow(WIDTH, HEIGHT, GLFW_WINDOWED, title, share);
+    window = glfwCreateWindow(WIDTH, HEIGHT, GLFW_WINDOWED, title, share);
     if (!window)
         return NULL;
 

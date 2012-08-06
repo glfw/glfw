@@ -60,7 +60,7 @@ static void key_callback(GLFWwindow window, int key, int action)
     {
         case GLFW_KEY_ESCAPE:
         {
-            glfwCloseWindow(window);
+            glfwDestroyWindow(window);
             break;
         }
 
@@ -130,7 +130,7 @@ int main(int argc, char** argv)
         height = 0;
     }
 
-    window = glfwOpenWindow(width, height, mode, "Gamma Test", NULL);
+    window = glfwCreateWindow(width, height, mode, "Gamma Test", NULL);
     if (!window)
     {
         glfwTerminate();

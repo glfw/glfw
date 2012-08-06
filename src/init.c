@@ -79,7 +79,7 @@ GLFWAPI void glfwTerminate(void)
 
     // Close all remaining windows
     while (_glfwLibrary.windowListHead)
-        glfwCloseWindow(_glfwLibrary.windowListHead);
+        glfwDestroyWindow(_glfwLibrary.windowListHead);
 
     if (!_glfwPlatformTerminate())
         return;

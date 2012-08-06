@@ -914,9 +914,9 @@ void _glfwProcessPendingEvents(void)
 // the OpenGL rendering context is created
 //========================================================================
 
-int _glfwPlatformOpenWindow(_GLFWwindow* window,
-                            const _GLFWwndconfig* wndconfig,
-                            const _GLFWfbconfig* fbconfig)
+int _glfwPlatformCreateWindow(_GLFWwindow* window,
+                              const _GLFWwndconfig* wndconfig,
+                              const _GLFWfbconfig* fbconfig)
 {
     window->refreshRate = wndconfig->refreshRate;
     window->resizable   = wndconfig->resizable;
@@ -973,7 +973,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 // Properly kill the window/video display
 //========================================================================
 
-void _glfwPlatformCloseWindow(_GLFWwindow* window)
+void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     if (window->mode == GLFW_FULLSCREEN)
         leaveFullscreenMode(window);

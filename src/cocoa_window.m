@@ -860,9 +860,9 @@ static GLboolean createContext(_GLFWwindow* window,
 // created
 //========================================================================
 
-int _glfwPlatformOpenWindow(_GLFWwindow* window,
-                            const _GLFWwndconfig* wndconfig,
-                            const _GLFWfbconfig* fbconfig)
+int _glfwPlatformCreateWindow(_GLFWwindow* window,
+                              const _GLFWwndconfig* wndconfig,
+                              const _GLFWfbconfig* fbconfig)
 {
     if (!initializeAppKit())
         return GL_FALSE;
@@ -944,7 +944,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 // Properly kill the window / video display
 //========================================================================
 
-void _glfwPlatformCloseWindow(_GLFWwindow* window)
+void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     [window->NS.object orderOut:nil];
 

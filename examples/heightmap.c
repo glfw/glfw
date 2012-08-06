@@ -581,13 +581,13 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    glfwOpenWindowHint(GLFW_WINDOW_RESIZABLE, GL_FALSE);
-    glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3);
-    glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 2);
-    glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwOpenWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
+    glfwWindowHint(GLFW_WINDOW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_OPENGL_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
 
-    window = glfwOpenWindow(800, 600, GLFW_WINDOWED, "GLFW OpenGL3 Heightmap demo", NULL);
+    window = glfwCreateWindow(800, 600, GLFW_WINDOWED, "GLFW OpenGL3 Heightmap demo", NULL);
     if (! window )
     {
         fprintf(stderr, "ERROR: Unable to create the OpenGL context and associated window\n");

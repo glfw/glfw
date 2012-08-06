@@ -92,7 +92,7 @@ static GLboolean open_window(int width, int height, int mode)
 
     base = glfwGetTime();
 
-    window_handle = glfwOpenWindow(width, height, mode, "Window Re-opener", NULL);
+    window_handle = glfwCreateWindow(width, height, mode, "Window Re-opener", NULL);
     if (!window_handle)
     {
         fprintf(stderr, "Failed to open %s mode GLFW window: %s\n", get_mode_name(mode), glfwErrorString(glfwGetError()));
@@ -115,7 +115,7 @@ static void close_window(void)
 {
     double base = glfwGetTime();
 
-    glfwCloseWindow(window_handle);
+    glfwDestroyWindow(window_handle);
     window_handle = NULL;
 
     printf("Closing window took %0.3f seconds\n", glfwGetTime() - base);

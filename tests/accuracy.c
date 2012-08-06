@@ -87,7 +87,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(window_width, window_height, GLFW_WINDOWED, "", NULL);
+    window = glfwCreateWindow(window_width, window_height, GLFW_WINDOWED, "", NULL);
     if (!window)
     {
         glfwTerminate();

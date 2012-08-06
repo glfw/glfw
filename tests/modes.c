@@ -148,7 +148,7 @@ static void test_modes(void)
         while (glfwGetTime() < 5.0)
         {
             glClear(GL_COLOR_BUFFER_BIT);
-            glfwSwapBuffers();
+            glfwSwapBuffers(window);
             glfwPollEvents();
 
             if (!window)

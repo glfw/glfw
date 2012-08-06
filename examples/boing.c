@@ -617,7 +617,7 @@ int main( void )
        display();
 
        /* Swap buffers */
-       glfwSwapBuffers();
+       glfwSwapBuffers(window);
        glfwPollEvents();
 
        /* Check if we are still running */

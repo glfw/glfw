@@ -205,7 +205,7 @@ int main(void)
         refresh_joysticks();
         draw_joysticks();
 
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
     }
 

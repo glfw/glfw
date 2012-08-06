@@ -541,21 +541,17 @@ GLFWAPI GLFWwindow glfwGetCurrentContext(void)
 // Swap buffers (double-buffering)
 //========================================================================
 
-GLFWAPI void glfwSwapBuffers(void)
+GLFWAPI void glfwSwapBuffers(GLFWwindow handle)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
-    if (!_glfwLibrary.currentWindow)
-    {
-        _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
-        return;
-    }
-
-    _glfwPlatformSwapBuffers();
+    _glfwPlatformSwapBuffers(window);
 }
 
 

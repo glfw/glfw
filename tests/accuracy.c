@@ -113,7 +113,7 @@ int main(void)
         glVertex2f((GLfloat) cursor_x, (GLfloat) window_height);
         glEnd();
 
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
     }
 

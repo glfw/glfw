@@ -344,7 +344,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     // Clearing the front buffer to black to avoid garbage pixels left over
     // from previous uses of our bit of VRAM
     glClear(GL_COLOR_BUFFER_BIT);
-    _glfwPlatformSwapBuffers();
+    _glfwPlatformSwapBuffers(window);
 
     return window;
 }

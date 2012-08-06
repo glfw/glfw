@@ -145,7 +145,7 @@ void init_grid(void)
 // Draw scene
 //========================================================================
 
-void draw_scene(void)
+void draw_scene(GLFWwindow window)
 {
     // Clear the color and depth buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -162,7 +162,7 @@ void draw_scene(void)
 
     glDrawElements(GL_QUADS, 4 * QUADNUM, GL_UNSIGNED_INT, quad);
 
-    glfwSwapBuffers();
+    glfwSwapBuffers(window);
 }
 
 
@@ -450,7 +450,7 @@ int main(int argc, char* argv[])
         adjust_grid();
 
         // Draw wave grid to OpenGL display
-        draw_scene();
+        draw_scene(window);
 
         glfwPollEvents();
     }

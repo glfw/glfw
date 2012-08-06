@@ -51,10 +51,8 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 // Swap buffers
 //========================================================================
 
-void _glfwPlatformSwapBuffers(void)
+void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 {
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
-
     // ARP appears to be unnecessary, but this is future-proof
     [window->NSGL.context flushBuffer];
 }

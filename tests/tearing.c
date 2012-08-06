@@ -97,7 +97,7 @@ int main(void)
         position = cosf(glfwGetTime() * 4.f) * 0.75f;
         glRectf(position - 0.25f, -1.f, position + 0.25f, 1.f);
 
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
     }
 

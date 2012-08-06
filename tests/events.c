@@ -239,7 +239,7 @@ static void window_refresh_callback(GLFWwindow window)
     printf("%08x at %0.3f: Window refresh\n", counter++, glfwGetTime());
 
     glClear(GL_COLOR_BUFFER_BIT);
-    glfwSwapBuffers();
+    glfwSwapBuffers(window);
 }
 
 static void window_focus_callback(GLFWwindow window, int activated)

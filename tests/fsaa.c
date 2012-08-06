@@ -147,7 +147,7 @@ int main(int argc, char** argv)
         glEnable(GL_MULTISAMPLE_ARB);
         glRectf(-0.15f, -0.15f, 0.15f, 0.15f);
 
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
     }
 

@@ -61,7 +61,7 @@ int main(void)
     while (glfwGetCurrentContext())
     {
         glClear(GL_COLOR_BUFFER_BIT);
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwWaitEvents();
     }
 

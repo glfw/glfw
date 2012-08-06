@@ -172,11 +172,12 @@ int main(int argc, char** argv)
     {
         glfwMakeContextCurrent(windows[0]);
         draw_quad(texture);
-        glfwSwapBuffers();
 
         glfwMakeContextCurrent(windows[1]);
         draw_quad(texture);
-        glfwSwapBuffers();
+
+        glfwSwapBuffers(windows[0]);
+        glfwSwapBuffers(windows[1]);
 
         glfwWaitEvents();
     }

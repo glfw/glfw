@@ -89,7 +89,7 @@ int main(void)
         glEnd();
 
         // Swap buffers
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE))

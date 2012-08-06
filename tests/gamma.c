@@ -158,7 +158,7 @@ int main(int argc, char** argv)
         glColor3f(0.8f, 0.2f, 0.4f);
         glRectf(-0.5f, -0.5f, 0.5f, 0.5f);
 
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
     }
 

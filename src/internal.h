@@ -324,7 +324,7 @@ void _glfwPlatformWaitEvents(void);
 
 // OpenGL context management
 void _glfwPlatformMakeContextCurrent(_GLFWwindow* window);
-void _glfwPlatformSwapBuffers(void);
+void _glfwPlatformSwapBuffers(_GLFWwindow* window);
 void _glfwPlatformSwapInterval(int interval);
 void _glfwPlatformRefreshWindowParams(_GLFWwindow* window);
 int  _glfwPlatformExtensionSupported(const char* extension);

@@ -500,7 +500,7 @@ int main(void)
             drawAllViews();
 
             // Swap buffers
-            glfwSwapBuffers();
+            glfwSwapBuffers(window);
 
             do_redraw = 0;
         }

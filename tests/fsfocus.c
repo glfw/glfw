@@ -101,7 +101,7 @@ int main(void)
     while (running)
     {
         glClear(GL_COLOR_BUFFER_BIT);
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwWaitEvents();
     }
 

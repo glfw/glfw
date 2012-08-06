@@ -663,7 +663,7 @@ int main(int argc, char** argv)
         glDrawElements(GL_LINES, 2* MAP_NUM_LINES , GL_UNSIGNED_INT, 0);
 
         /* display and process events through callbacks */
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
         /* Check the frame rate and update the heightmap if needed */
         dt = glfwGetTime();

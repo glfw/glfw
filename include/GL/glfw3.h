@@ -581,7 +581,7 @@ GLFWAPI void   glfwSetTime(double time);
 /* OpenGL support */
 GLFWAPI void glfwMakeContextCurrent(GLFWwindow window);
 GLFWAPI GLFWwindow glfwGetCurrentContext(void);
-GLFWAPI void  glfwSwapBuffers(void);
+GLFWAPI void  glfwSwapBuffers(GLFWwindow window);
 GLFWAPI void  glfwSwapInterval(int interval);
 GLFWAPI int   glfwExtensionSupported(const char* extension);
 GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);

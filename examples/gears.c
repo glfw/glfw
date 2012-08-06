@@ -368,7 +368,7 @@ int main(int argc, char *argv[])
         animate();
 
         // Swap buffers
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
     }
 

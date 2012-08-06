@@ -147,7 +147,7 @@ int main(int argc, char** argv)
             glRectf(-0.5f, -0.5f, 1.f, 1.f);
             glPopMatrix();
 
-            glfwSwapBuffers();
+            glfwSwapBuffers(window_handle);
             glfwPollEvents();
 
             if (closed)

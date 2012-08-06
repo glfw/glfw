@@ -87,7 +87,7 @@ int main(void)
         {
             glfwMakeContextCurrent(windows[i]);
             glClear(GL_COLOR_BUFFER_BIT);
-            glfwSwapBuffers();
+            glfwSwapBuffers(windows[i]);
         }
 
         glfwPollEvents();

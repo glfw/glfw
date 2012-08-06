@@ -545,10 +545,8 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 // Swap buffers (double-buffering)
 //========================================================================
 
-void _glfwPlatformSwapBuffers(void)
+void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 {
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
-
     SwapBuffers(window->WGL.DC);
 }
 

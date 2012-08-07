@@ -330,12 +330,18 @@ static void init(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
     GLFWwindow window;
+    int width, height;
 
     if( !glfwInit() )
     {
         fprintf( stderr, "Failed to initialize GLFW\n" );
         exit( EXIT_FAILURE );
     }
+
+    // Set callback functions
+    glfwSetWindowCloseCallback(window_close_callback);
+    glfwSetWindowSizeCallback( reshape );
+    glfwSetKeyCallback( key );
 
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
 
@@ -347,16 +353,14 @@ int main(int argc, char *argv[])
         exit( EXIT_FAILURE );
     }
 
+    glfwGetWindowSize(window, &width, &height);
+    reshape(window, width, height);
+
     glfwSetInputMode( window, GLFW_KEY_REPEAT, GL_TRUE );
     glfwSwapInterval( 1 );
 
     // Parse command-line options
     init(argc, argv);
-
-    // Set callback functions
-    glfwSetWindowCloseCallback(window_close_callback);
-    glfwSetWindowSizeCallback( reshape );
-    glfwSetKeyCallback( key );
 
     // Main loop
     while( running )

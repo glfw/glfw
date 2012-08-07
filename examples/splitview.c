@@ -456,6 +456,7 @@ static int windowCloseFun(GLFWwindow window)
 int main(void)
 {
     GLFWwindow window;
+    int width, height;
 
     // Initialise GLFW
     if (!glfwInit())
@@ -463,6 +464,13 @@ int main(void)
         fprintf(stderr, "Failed to initialize GLFW\n");
         exit(EXIT_FAILURE);
     }
+
+    // Set callback functions
+    glfwSetWindowCloseCallback(windowCloseFun);
+    glfwSetWindowSizeCallback(windowSizeFun);
+    glfwSetWindowRefreshCallback(windowRefreshFun);
+    glfwSetCursorPosCallback(cursorPosFun);
+    glfwSetMouseButtonCallback(mouseButtonFun);
 
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
 
@@ -474,6 +482,9 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
+    glfwGetWindowSize(window, &width, &height);
+    windowSizeFun(window, width, height);
+
     // Enable vsync
     glfwSwapInterval(1);
 
@@ -482,13 +493,6 @@ int main(void)
 
     // Enable mouse cursor (only needed for fullscreen mode)
     glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_NORMAL);
-
-    // Set callback functions
-    glfwSetWindowCloseCallback(windowCloseFun);
-    glfwSetWindowSizeCallback(windowSizeFun);
-    glfwSetWindowRefreshCallback(windowRefreshFun);
-    glfwSetCursorPosCallback(cursorPosFun);
-    glfwSetMouseButtonCallback(mouseButtonFun);
 
     // Main loop
     do

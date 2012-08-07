@@ -80,12 +80,17 @@ static void key_callback(GLFWwindow window, int key, int action)
 int main(void)
 {
     GLFWwindow window;
+    int width, height;
 
     if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
+
+    glfwSetCursorPosCallback(cursor_position_callback);
+    glfwSetWindowSizeCallback(window_size_callback);
+    glfwSetKeyCallback(key_callback);
 
     window = glfwCreateWindow(window_width, window_height, GLFW_WINDOWED, "", NULL);
     if (!window)
@@ -96,11 +101,10 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    set_swap_interval(window, swap_interval);
+    glfwGetWindowSize(window, &width, &height);
+    window_size_callback(window, width, height);
 
-    glfwSetCursorPosCallback(cursor_position_callback);
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetKeyCallback(key_callback);
+    set_swap_interval(window, swap_interval);
 
     while (glfwGetCurrentContext())
     {

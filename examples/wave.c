@@ -355,7 +355,7 @@ void scroll_callback(GLFWwindow window, double x, double y)
 // Callback function for window resize events
 //========================================================================
 
-void window_resize_callback(GLFWwindow window, int width, int height)
+void window_size_callback(GLFWwindow window, int width, int height)
 {
     float ratio = 1.f;
 
@@ -391,12 +391,20 @@ int main(int argc, char* argv[])
 {
     GLFWwindow window;
     double t, dt_total, t_old;
+    int width, height;
 
     if (!glfwInit())
     {
         fprintf(stderr, "GLFW initialization failed\n");
         exit(EXIT_FAILURE);
     }
+
+    glfwSetKeyCallback(key_callback);
+    glfwSetWindowCloseCallback(window_close_callback);
+    glfwSetWindowSizeCallback(window_size_callback);
+    glfwSetMouseButtonCallback(mouse_button_callback);
+    glfwSetCursorPosCallback(cursor_position_callback);
+    glfwSetScrollCallback(scroll_callback);
 
     window = glfwCreateWindow(640, 480, GLFW_WINDOWED, "Wave Simulation", NULL);
     if (!window)
@@ -405,18 +413,12 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 
+    glfwGetWindowSize(window, &width, &height);
+    window_size_callback(window, width, height);
+
     glfwSwapInterval(1);
 
-    // Keyboard handler
-    glfwSetKeyCallback(key_callback);
     glfwSetInputMode(window, GLFW_KEY_REPEAT, GL_TRUE);
-
-    // Window resize handler
-    glfwSetWindowCloseCallback(window_close_callback);
-    glfwSetWindowSizeCallback(window_resize_callback);
-    glfwSetMouseButtonCallback(mouse_button_callback);
-    glfwSetCursorPosCallback(cursor_position_callback);
-    glfwSetScrollCallback(scroll_callback);
 
     // Initialize OpenGL
     init_opengl();

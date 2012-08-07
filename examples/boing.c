@@ -579,6 +579,7 @@ void DrawGrid( void )
 int main( void )
 {
    GLFWwindow window;
+   int width, height;
 
    /* Init GLFW */
    if( !glfwInit() )
@@ -586,6 +587,9 @@ int main( void )
       fprintf( stderr, "Failed to initialize GLFW\n" );
       exit( EXIT_FAILURE );
    }
+
+   glfwSetWindowCloseCallback( window_close_callback );
+   glfwSetWindowSizeCallback( reshape );
 
    glfwWindowHint(GLFW_DEPTH_BITS, 16);
 
@@ -597,8 +601,9 @@ int main( void )
        exit( EXIT_FAILURE );
    }
 
-   glfwSetWindowCloseCallback( window_close_callback );
-   glfwSetWindowSizeCallback( reshape );
+   glfwGetWindowSize(window, &width, &height);
+   reshape(window, width, height);
+
    glfwSetInputMode( window, GLFW_STICKY_KEYS, GL_TRUE );
    glfwSwapInterval( 1 );
    glfwSetTime( 0.0 );

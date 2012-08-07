@@ -762,16 +762,6 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindowsizefun cbfun)
     }
 
     _glfwLibrary.windowSizeCallback = cbfun;
-
-    // Call the callback function to let the application know the current
-    // window size
-    if (cbfun)
-    {
-        _GLFWwindow* window;
-
-        for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
-            cbfun(window, window->width, window->height);
-    }
 }
 
 

@@ -44,16 +44,6 @@
 #define Button7            7
 
 //========================================================================
-// Checks whether the event is a MapNotify for the specified window
-//========================================================================
-
-static Bool isMapNotify(Display* d, XEvent* e, char* arg)
-{
-    return (e->type == MapNotify) && (e->xmap.window == (Window)arg);
-}
-
-
-//========================================================================
 // Translates an X Window key to internal coding
 //========================================================================
 
@@ -94,7 +84,6 @@ static int translateChar(XKeyEvent* event)
 static GLboolean createWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig)
 {
-    XEvent event;
     unsigned long wamask;
     XSetWindowAttributes wa;
     XVisualInfo* visual = _glfwGetContextVisual(window);
@@ -243,8 +232,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 
     // Make sure the window is mapped before proceeding
     XMapWindow(_glfwLibrary.X11.display, window->X11.handle);
-    XPeekIfEvent(_glfwLibrary.X11.display, &event, isMapNotify,
-                 (char*) window->X11.handle);
+    XFlush(_glfwLibrary.X11.display);
 
     return GL_TRUE;
 }
@@ -887,24 +875,6 @@ static void processSingleEvent(void)
     }
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-//========================================================================
-// Processes all pending events
-//========================================================================
-
-void _glfwProcessPendingEvents(void)
-{
-    int i, count = XPending(_glfwLibrary.X11.display);
-
-    for (i = 0;  i < count;  i++)
-        processSingleEvent();
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -941,9 +911,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
         enterFullscreenMode(window);
     }
-
-    // Process the window map event and any other that may have arrived
-    _glfwProcessPendingEvents();
 
     // Retrieve and set initial cursor position
     {

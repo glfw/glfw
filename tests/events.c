@@ -40,10 +40,16 @@
 #include <ctype.h>
 #include <locale.h>
 
+// These must match the input mode defaults
 static GLboolean keyrepeat  = GL_FALSE;
 static GLboolean systemkeys = GL_TRUE;
 static GLboolean closeable = GL_TRUE;
+
+// Event index
 static unsigned int counter = 0;
+
+// Should we keep running?
+static GLboolean running = GL_TRUE;
 
 static const char* get_key_name(int key)
 {
@@ -231,6 +237,10 @@ static void window_size_callback(GLFWwindow window, int width, int height)
 static int window_close_callback(GLFWwindow window)
 {
     printf("%08x at %0.3f: Window close\n", counter++, glfwGetTime());
+
+    if (closeable)
+      running = GL_FALSE;
+
     return closeable;
 }
 
@@ -389,7 +399,7 @@ int main(void)
 
     printf("Main loop starting\n");
 
-    while (glfwGetCurrentContext())
+    while (running)
         glfwWaitEvents();
 
     glfwTerminate();

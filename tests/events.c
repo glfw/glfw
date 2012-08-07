@@ -344,6 +344,7 @@ static void char_callback(GLFWwindow window, int character)
 int main(void)
 {
     GLFWwindow window;
+    int width, height;
 
     setlocale(LC_ALL, "");
 
@@ -379,6 +380,9 @@ int main(void)
     printf("Window opened\n");
 
     glfwSwapInterval(1);
+
+    glfwGetWindowSize(window, &width, &height);
+    printf("Window size should be %ix%i\n", width, height);
 
     printf("Key repeat should be %s\n", keyrepeat ? "enabled" : "disabled");
     printf("System keys should be %s\n", systemkeys ? "enabled" : "disabled");

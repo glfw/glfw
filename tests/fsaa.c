@@ -127,7 +127,7 @@ int main(int argc, char** argv)
     gluOrtho2D(0.f, 1.f, 0.f, 0.5f);
     glMatrixMode(GL_MODELVIEW);
 
-    while (glfwGetCurrentContext())
+    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
         GLfloat time = (GLfloat) glfwGetTime();
 

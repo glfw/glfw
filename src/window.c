@@ -45,31 +45,6 @@ static int Max(int a, int b)
 
 
 //========================================================================
-// Close all GLFW windows with the closed flag set
-//========================================================================
-
-static void closeFlaggedWindows(void)
-{
-    _GLFWwindow* window;
-
-    for (window = _glfwLibrary.windowListHead;  window; )
-    {
-        if (window->closeRequested && _glfwLibrary.windowCloseCallback)
-            window->closeRequested = _glfwLibrary.windowCloseCallback(window);
-
-        if (window->closeRequested)
-        {
-            _GLFWwindow* next = window->next;
-            glfwDestroyWindow(window);
-            window = next;
-        }
-        else
-            window = window->next;
-    }
-}
-
-
-//========================================================================
 // Clear scroll offsets for all windows
 //========================================================================
 
@@ -203,6 +178,19 @@ void _glfwInputWindowDamage(_GLFWwindow* window)
 {
     if (_glfwLibrary.windowRefreshCallback)
         _glfwLibrary.windowRefreshCallback(window);
+}
+
+
+//========================================================================
+// Register window close request events
+//========================================================================
+
+void _glfwInputWindowCloseRequest(_GLFWwindow* window)
+{
+    if (_glfwLibrary.windowCloseCallback)
+        window->closeRequested = _glfwLibrary.windowCloseCallback(window);
+    else
+        window->closeRequested = GL_TRUE;
 }
 
 
@@ -662,6 +650,8 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window == _glfwLibrary.activeWindow;
         case GLFW_ICONIFIED:
             return window->iconified;
+        case GLFW_CLOSE_REQUESTED:
+            return window->closeRequested;
         case GLFW_REFRESH_RATE:
             return window->refreshRate;
         case GLFW_WINDOW_RESIZABLE:
@@ -818,8 +808,6 @@ GLFWAPI void glfwPollEvents(void)
     clearScrollOffsets();
 
     _glfwPlatformPollEvents();
-
-    closeFlaggedWindows();
 }
 
 
@@ -838,7 +826,5 @@ GLFWAPI void glfwWaitEvents(void)
     clearScrollOffsets();
 
     _glfwPlatformWaitEvents();
-
-    closeFlaggedWindows();
 }
 

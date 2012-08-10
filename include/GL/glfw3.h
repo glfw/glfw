@@ -388,6 +388,7 @@ extern "C" {
 /* glfwGetWindowParam tokens */
 #define GLFW_ACTIVE               0x00020001
 #define GLFW_ICONIFIED            0x00020002
+#define GLFW_CLOSE_REQUESTED      0x00020003
 #define GLFW_OPENGL_REVISION      0x00020004
 
 /* glfwWindowHint tokens */

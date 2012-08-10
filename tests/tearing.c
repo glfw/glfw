@@ -90,7 +90,7 @@ int main(void)
     glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);
     glMatrixMode(GL_MODELVIEW);
 
-    while (glfwGetCurrentContext())
+    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 

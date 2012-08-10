@@ -127,7 +127,7 @@ int main(void)
 
     glClearColor(0.f, 0.f, 0.f, 0.f);
 
-    while (glfwGetCurrentContext())
+    while (!glfwGetWindowParam(window_handle, GLFW_CLOSE_REQUESTED))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 

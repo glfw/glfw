@@ -48,9 +48,6 @@ static GLboolean closeable = GL_TRUE;
 // Event index
 static unsigned int counter = 0;
 
-// Should we keep running?
-static GLboolean running = GL_TRUE;
-
 static const char* get_key_name(int key)
 {
     switch (key)
@@ -238,9 +235,6 @@ static int window_close_callback(GLFWwindow window)
 {
     printf("%08x at %0.3f: Window close\n", counter++, glfwGetTime());
 
-    if (closeable)
-      running = GL_FALSE;
-
     return closeable;
 }
 
@@ -399,7 +393,7 @@ int main(void)
 
     printf("Main loop starting\n");
 
-    while (running)
+    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
         glfwWaitEvents();
 
     glfwTerminate();

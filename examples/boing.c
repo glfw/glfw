@@ -89,7 +89,6 @@ DRAW_BALL_ENUM drawBallHow;
 double  t;
 double  t_old = 0.f;
 double  dt;
-static GLboolean running = GL_TRUE;
 
 /* Random number generator */
 #ifndef RAND_MAX
@@ -243,16 +242,6 @@ void reshape( GLFWwindow window, int w, int h )
    gluLookAt( 0.0, 0.0, VIEW_SCENE_DIST,/* eye */
               0.0, 0.0, 0.0,            /* center of vision */
               0.0, -1.0, 0.0 );         /* up vector */
-}
-
-
-/*****************************************************************************
- * Window close callback
- *****************************************************************************/
-static int window_close_callback(GLFWwindow window)
-{
-    running = GL_FALSE;
-    return GL_TRUE;
 }
 
 
@@ -588,7 +577,6 @@ int main( void )
       exit( EXIT_FAILURE );
    }
 
-   glfwSetWindowCloseCallback( window_close_callback );
    glfwSetWindowSizeCallback( reshape );
 
    glfwWindowHint(GLFW_DEPTH_BITS, 16);
@@ -611,7 +599,7 @@ int main( void )
    init();
 
    /* Main loop */
-   do
+   for (;;)
    {
        /* Timing */
        t = glfwGetTime();
@@ -627,9 +615,10 @@ int main( void )
 
        /* Check if we are still running */
        if (glfwGetKey( window, GLFW_KEY_ESCAPE ))
-           running = GL_FALSE;
+           break;
+       if (glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
+           break;
    }
-   while( running );
 
    glfwTerminate();
    exit( EXIT_SUCCESS );

@@ -59,8 +59,7 @@
 
 - (BOOL)windowShouldClose:(id)sender
 {
-    window->closeRequested = GL_TRUE;
-
+    _glfwInputWindowCloseRequest(window);
     return NO;
 }
 
@@ -127,7 +126,7 @@
     _GLFWwindow* window;
 
     for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
-        window->closeRequested = GL_TRUE;
+        _glfwInputWindowCloseRequest(window);
 
     return NSTerminateCancel;
 }

@@ -42,9 +42,6 @@ static int rot_x = 0, rot_y = 0, rot_z = 0;
 // Do redraw?
 static int do_redraw = 1;
 
-// Keep running?
-static GLboolean running = GL_TRUE;
-
 
 //========================================================================
 // Draw a solid torus (use a display list for the model)
@@ -439,17 +436,6 @@ static void mouseButtonFun(GLFWwindow window, int button, int action)
 
 
 //========================================================================
-// Window close callback function
-//========================================================================
-
-static int windowCloseFun(GLFWwindow window)
-{
-    running = GL_FALSE;
-    return GL_TRUE;
-}
-
-
-//========================================================================
 // main
 //========================================================================
 
@@ -466,7 +452,6 @@ int main(void)
     }
 
     // Set callback functions
-    glfwSetWindowCloseCallback(windowCloseFun);
     glfwSetWindowSizeCallback(windowSizeFun);
     glfwSetWindowRefreshCallback(windowRefreshFun);
     glfwSetCursorPosCallback(cursorPosFun);
@@ -495,7 +480,7 @@ int main(void)
     glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_NORMAL);
 
     // Main loop
-    do
+    for (;;)
     {
         // Only redraw if we need to
         if (do_redraw)
@@ -512,11 +497,12 @@ int main(void)
         // Wait for new events
         glfwWaitEvents();
 
+        // Check if the ESC key was pressed or the window should be closed
         if (glfwGetKey(window, GLFW_KEY_ESCAPE))
-            running = GL_FALSE;
-
-    } // Check if the ESC key was pressed or the window was closed
-    while (running);
+            break;
+        if (glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
+            break;
+    }
 
     // Close OpenGL window and terminate GLFW
     glfwTerminate();

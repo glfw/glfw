@@ -337,6 +337,7 @@ void _glfwInputWindowPos(_GLFWwindow* window, int x, int y);
 void _glfwInputWindowSize(_GLFWwindow* window, int width, int height);
 void _glfwInputWindowIconify(_GLFWwindow* window, int iconified);
 void _glfwInputWindowDamage(_GLFWwindow* window);
+void _glfwInputWindowCloseRequest(_GLFWwindow* window);
 
 // Input event notification (input.c)
 void _glfwInputKey(_GLFWwindow* window, int key, int action);

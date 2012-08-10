@@ -198,7 +198,7 @@ int main(void)
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSwapInterval(1);
 
-    while (glfwGetCurrentContext())
+    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 

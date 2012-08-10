@@ -711,7 +711,7 @@ static void processSingleEvent(void)
                 // The window manager was asked to close the window, for example by
                 // the user pressing a 'close' window decoration button
 
-                window->closeRequested = GL_TRUE;
+                _glfwInputWindowCloseRequest(window);
             }
             else if (_glfwLibrary.X11.wmPing != None &&
                      (Atom) event.xclient.data.l[0] == _glfwLibrary.X11.wmPing)

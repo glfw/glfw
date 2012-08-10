@@ -10,14 +10,6 @@
 #define GLFW_INCLUDE_GLU
 #include <GL/glfw3.h>
 
-static GLboolean running = GL_TRUE;
-
-static int window_close_callback(GLFWwindow window)
-{
-    running = GL_FALSE;
-    return GL_TRUE;
-}
-
 int main(void)
 {
     int width, height, x;
@@ -44,9 +36,7 @@ int main(void)
     // Enable vertical sync (on cards that support it)
     glfwSwapInterval(1);
 
-    glfwSetWindowCloseCallback(window_close_callback);
-
-    do
+    for (;;)
     {
         double t = glfwGetTime();
         glfwGetCursorPos(window, &x, NULL);
@@ -92,11 +82,12 @@ int main(void)
         glfwSwapBuffers(window);
         glfwPollEvents();
 
+        // Check if the ESC key was pressed or the window should be closed
         if (glfwGetKey(window, GLFW_KEY_ESCAPE))
-            running = GL_FALSE;
-
-    } // Check if the ESC key was pressed or the window was closed
-    while (running);
+            break;
+        if (glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
+            break;
+    }
 
     // Close OpenGL window and terminate GLFW
     glfwTerminate();

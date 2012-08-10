@@ -353,11 +353,13 @@ int main(int argc, char *argv[])
         exit( EXIT_FAILURE );
     }
 
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval( 1 );
+
     glfwGetWindowSize(window, &width, &height);
     reshape(window, width, height);
 
     glfwSetInputMode( window, GLFW_KEY_REPEAT, GL_TRUE );
-    glfwSwapInterval( 1 );
 
     // Parse command-line options
     init(argc, argv);

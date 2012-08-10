@@ -107,6 +107,9 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
+
     if (!glfwExtensionSupported("GL_ARB_multisample"))
     {
         glfwTerminate();
@@ -114,8 +117,6 @@ int main(int argc, char** argv)
         fprintf(stderr, "Context reports GL_ARB_multisample is not supported\n");
         exit(EXIT_FAILURE);
     }
-
-    glfwSwapInterval(1);
 
     glGetIntegerv(GL_SAMPLES_ARB, &samples);
     if (samples)

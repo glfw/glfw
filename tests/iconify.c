@@ -120,7 +120,9 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
+    glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+
     glfwSetKeyCallback(key_callback);
     glfwSetWindowSizeCallback(size_callback);
 

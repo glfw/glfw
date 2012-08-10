@@ -99,10 +99,12 @@ static GLboolean open_window(int width, int height, int mode)
         return GL_FALSE;
     }
 
+    glfwMakeContextCurrent(window_handle);
+    glfwSwapInterval(1);
+
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSetWindowCloseCallback(window_close_callback);
     glfwSetKeyCallback(key_callback);
-    glfwSwapInterval(1);
 
     printf("Opening %s mode window took %0.3f seconds\n",
            get_mode_name(mode),

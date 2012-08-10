@@ -98,13 +98,15 @@ static GLboolean open_window(void)
     if (!window_handle)
         return GL_FALSE;
 
+    glfwMakeContextCurrent(window_handle);
+    glfwSwapInterval(1);
+
     glfwGetCursorPos(window_handle, &cursor_x, &cursor_y);
     printf("Cursor position: %i %i\n", cursor_x, cursor_y);
 
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSetCursorPosCallback(cursor_position_callback);
     glfwSetKeyCallback(key_callback);
-    glfwSwapInterval(1);
 
     return GL_TRUE;
 }

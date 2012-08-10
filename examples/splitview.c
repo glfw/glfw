@@ -467,11 +467,12 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
+    // Enable vsync
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
+
     glfwGetWindowSize(window, &width, &height);
     windowSizeFun(window, width, height);
-
-    // Enable vsync
-    glfwSwapInterval(1);
 
     // Enable sticky keys
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);

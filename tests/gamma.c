@@ -141,7 +141,9 @@ int main(int argc, char** argv)
 
     set_gamma(1.f);
 
+    glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+
     glfwSetKeyCallback(key_callback);
     glfwSetWindowSizeCallback(size_callback);
 

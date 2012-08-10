@@ -383,6 +383,7 @@ int main(void)
 
     printf("Window opened\n");
 
+    glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
     glfwGetWindowSize(window, &width, &height);

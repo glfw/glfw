@@ -214,6 +214,8 @@ int main(int argc, char** argv)
     if (!window)
         exit(EXIT_FAILURE);
 
+    glfwMakeContextCurrent(window);
+
     // Report GLFW version
 
     glfwGetVersion(&major, &minor, &revision);

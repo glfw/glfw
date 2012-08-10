@@ -196,6 +196,8 @@ int main(void)
     }
 
     glfwSetWindowSizeCallback(window_size_callback);
+
+    glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
     while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))

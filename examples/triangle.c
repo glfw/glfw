@@ -30,11 +30,12 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
+    // Enable vertical sync (on cards that support it)
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
+
     // Ensure we can capture the escape key being pressed below
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-
-    // Enable vertical sync (on cards that support it)
-    glfwSwapInterval(1);
 
     for (;;)
     {

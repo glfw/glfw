@@ -101,6 +101,8 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
+    glfwMakeContextCurrent(window);
+
     glfwGetWindowSize(window, &width, &height);
     window_size_callback(window, width, height);
 

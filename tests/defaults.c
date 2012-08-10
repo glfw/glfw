@@ -95,6 +95,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
+    glfwMakeContextCurrent(window);
     glfwGetWindowSize(window, &width, &height);
 
     printf("window size: %ix%i\n", width, height);

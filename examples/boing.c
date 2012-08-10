@@ -589,11 +589,13 @@ int main( void )
        exit( EXIT_FAILURE );
    }
 
+   glfwMakeContextCurrent(window);
+   glfwSwapInterval( 1 );
+
    glfwGetWindowSize(window, &width, &height);
    reshape(window, width, height);
 
    glfwSetInputMode( window, GLFW_STICKY_KEYS, GL_TRUE );
-   glfwSwapInterval( 1 );
    glfwSetTime( 0.0 );
 
    init();

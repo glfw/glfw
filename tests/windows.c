@@ -64,12 +64,13 @@ int main(void)
             exit(EXIT_FAILURE);
         }
 
-        glfwSetWindowPos(windows[i], 100 + (i & 1) * 300, 100 + (i >> 1) * 300);
-
+        glfwMakeContextCurrent(windows[i]);
         glClearColor((GLclampf) (i & 1),
                      (GLclampf) (i >> 1),
                      i ? 0.0 : 1.0,
                      0.0);
+
+        glfwSetWindowPos(windows[i], 100 + (i & 1) * 300, 100 + (i >> 1) * 300);
     }
 
     while (running)

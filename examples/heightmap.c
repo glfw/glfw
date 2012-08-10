@@ -597,10 +597,12 @@ int main(int argc, char** argv)
         free(fragment_shader_src);
         exit(EXIT_FAILURE);
     }
+
+    /* Register events callback */
     glfwSetWindowCloseCallback(window_close_callback);
     glfwSetKeyCallback(key_callback);
-    /* Register events callback */
 
+    glfwMakeContextCurrent(window);
     if (GL_TRUE != init_opengl())
     {
         fprintf(stderr, "ERROR: unable to resolve OpenGL function pointers\n");

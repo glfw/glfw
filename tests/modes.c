@@ -143,8 +143,10 @@ static void test_modes(void)
             continue;
         }
 
-        glfwSetTime(0.0);
+        glfwMakeContextCurrent(window);
         glfwSwapInterval(1);
+
+        glfwSetTime(0.0);
 
         while (glfwGetTime() < 5.0)
         {

@@ -209,6 +209,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     _GLFWfbconfig fbconfig;
     _GLFWwndconfig wndconfig;
     _GLFWwindow* window;
+    _GLFWwindow* previous;
 
     if (!_glfwInitialized)
     {
@@ -253,6 +254,9 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     // Check the OpenGL bits of the window config
     if (!_glfwIsValidContextConfig(&wndconfig))
         return GL_FALSE;
+
+    // Save the currently current context so it can be restored later
+    previous = glfwGetCurrentContext();
 
     if (mode != GLFW_WINDOWED && mode != GLFW_FULLSCREEN)
     {
@@ -303,6 +307,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     if (!_glfwPlatformCreateWindow(window, &wndconfig, &fbconfig))
     {
         glfwDestroyWindow(window);
+        glfwMakeContextCurrent(previous);
         return GL_FALSE;
     }
 
@@ -314,6 +319,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     if (!_glfwRefreshContextParams())
     {
         glfwDestroyWindow(window);
+        glfwMakeContextCurrent(previous);
         return GL_FALSE;
     }
 
@@ -321,8 +327,12 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     if (!_glfwIsValidContext(&wndconfig))
     {
         glfwDestroyWindow(window);
+        glfwMakeContextCurrent(previous);
         return GL_FALSE;
     }
+
+    // Restore the previously current context (or NULL)
+    glfwMakeContextCurrent(previous);
 
     // The GLFW specification states that fullscreen windows have the cursor
     // captured by default

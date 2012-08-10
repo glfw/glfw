@@ -413,10 +413,11 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
+
     glfwGetWindowSize(window, &width, &height);
     window_size_callback(window, width, height);
-
-    glfwSwapInterval(1);
 
     glfwSetInputMode(window, GLFW_KEY_REPEAT, GL_TRUE);
 

@@ -91,7 +91,9 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
+    glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+
     glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_NORMAL);
 
     glfwSetWindowFocusCallback(window_focus_callback);

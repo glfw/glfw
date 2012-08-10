@@ -390,9 +390,7 @@ extern "C" {
 #define GLFW_ICONIFIED            0x00020002
 #define GLFW_OPENGL_REVISION      0x00020004
 
-/* The following constants are used for both glfwGetWindowParam
- * and glfwWindowHint
- */
+/* glfwWindowHint tokens */
 #define GLFW_RED_BITS             0x00021000
 #define GLFW_GREEN_BITS           0x00021001
 #define GLFW_BLUE_BITS            0x00021002
@@ -408,6 +406,10 @@ extern "C" {
 #define GLFW_STEREO               0x0002100C
 #define GLFW_WINDOW_RESIZABLE     0x0002100D
 #define GLFW_FSAA_SAMPLES         0x0002100E
+
+/* The following constants are used with both glfwGetWindowParam
+ * and glfwWindowHint
+ */
 #define GLFW_OPENGL_VERSION_MAJOR 0x0002100F
 #define GLFW_OPENGL_VERSION_MINOR 0x00021010
 #define GLFW_OPENGL_FORWARD_COMPAT 0x00021011

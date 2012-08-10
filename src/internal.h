@@ -195,21 +195,6 @@ struct _GLFWwindow
     char      mouseButton[GLFW_MOUSE_BUTTON_LAST + 1];
     char      key[GLFW_KEY_LAST + 1];
 
-    // Framebuffer attributes
-    GLint     redBits;
-    GLint     greenBits;
-    GLint     blueBits;
-    GLint     alphaBits;
-    GLint     depthBits;
-    GLint     stencilBits;
-    GLint     accumRedBits;
-    GLint     accumGreenBits;
-    GLint     accumBlueBits;
-    GLint     accumAlphaBits;
-    GLint     auxBuffers;
-    GLboolean stereo;
-    GLint     samples;
-
     // OpenGL extensions and context attributes
     int       glMajor, glMinor, glRevision;
     GLboolean glForward, glDebug;

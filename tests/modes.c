@@ -114,7 +114,7 @@ static void list_modes(void)
 
 static void test_modes(void)
 {
-    int i, count, width, height;
+    int i, count;
     GLFWvidmode* modes = glfwGetVideoModes(&count);
 
     glfwSetWindowSizeCallback(window_size_callback);
@@ -124,6 +124,7 @@ static void test_modes(void)
     for (i = 0;  i < count;  i++)
     {
         GLFWvidmode* mode = modes + i;
+        GLFWvidmode current;
 
         glfwWindowHint(GLFW_RED_BITS, mode->redBits);
         glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
@@ -158,25 +159,25 @@ static void test_modes(void)
             }
         }
 
-        if (glfwGetWindowParam(window, GLFW_RED_BITS) != mode->redBits ||
-            glfwGetWindowParam(window, GLFW_GREEN_BITS) != mode->greenBits ||
-            glfwGetWindowParam(window, GLFW_BLUE_BITS) != mode->blueBits)
+        glGetIntegerv(GL_RED_BITS, &current.redBits);
+        glGetIntegerv(GL_GREEN_BITS, &current.greenBits);
+        glGetIntegerv(GL_BLUE_BITS, &current.blueBits);
+
+        glfwGetWindowSize(window, &current.width, &current.height);
+
+        if (current.redBits != mode->redBits ||
+            current.greenBits != mode->greenBits ||
+            current.blueBits != mode->blueBits)
         {
             printf("*** Color bit mismatch: (%i %i %i) instead of (%i %i %i)\n",
-                   glfwGetWindowParam(window, GLFW_RED_BITS),
-                   glfwGetWindowParam(window, GLFW_GREEN_BITS),
-                   glfwGetWindowParam(window, GLFW_BLUE_BITS),
-                   mode->redBits,
-                   mode->greenBits,
-                   mode->blueBits);
+                   current.redBits, current.greenBits, current.blueBits,
+                   mode->redBits, mode->greenBits, mode->blueBits);
         }
 
-        glfwGetWindowSize(window, &width, &height);
-
-        if (width != mode->width || height != mode->height)
+        if (current.width != mode->width || current.height != mode->height)
         {
             printf("*** Size mismatch: %ix%i instead of %ix%i\n",
-                   width, height,
+                   current.width, current.height,
                    mode->width, mode->height);
         }
 

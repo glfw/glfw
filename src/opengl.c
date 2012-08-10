@@ -406,27 +406,6 @@ GLboolean _glfwRefreshContextParams(void)
       }
     }
 
-    glGetIntegerv(GL_RED_BITS, &window->redBits);
-    glGetIntegerv(GL_GREEN_BITS, &window->greenBits);
-    glGetIntegerv(GL_BLUE_BITS, &window->blueBits);
-
-    glGetIntegerv(GL_ALPHA_BITS, &window->alphaBits);
-    glGetIntegerv(GL_DEPTH_BITS, &window->depthBits);
-    glGetIntegerv(GL_STENCIL_BITS, &window->stencilBits);
-
-    glGetIntegerv(GL_ACCUM_RED_BITS, &window->accumRedBits);
-    glGetIntegerv(GL_ACCUM_GREEN_BITS, &window->accumGreenBits);
-    glGetIntegerv(GL_ACCUM_BLUE_BITS, &window->accumBlueBits);
-    glGetIntegerv(GL_ACCUM_ALPHA_BITS, &window->accumAlphaBits);
-
-    glGetIntegerv(GL_AUX_BUFFERS, &window->auxBuffers);
-    glGetBooleanv(GL_STEREO, &window->stereo);
-
-    if (glfwExtensionSupported("GL_ARB_multisample"))
-        glGetIntegerv(GL_SAMPLES_ARB, &window->samples);
-    else
-        window->samples = 0;
-
     return GL_TRUE;
 }
 

@@ -662,36 +662,10 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window == _glfwLibrary.activeWindow;
         case GLFW_ICONIFIED:
             return window->iconified;
-        case GLFW_RED_BITS:
-            return window->redBits;
-        case GLFW_GREEN_BITS:
-            return window->greenBits;
-        case GLFW_BLUE_BITS:
-            return window->blueBits;
-        case GLFW_ALPHA_BITS:
-            return window->alphaBits;
-        case GLFW_DEPTH_BITS:
-            return window->depthBits;
-        case GLFW_STENCIL_BITS:
-            return window->stencilBits;
-        case GLFW_ACCUM_RED_BITS:
-            return window->accumRedBits;
-        case GLFW_ACCUM_GREEN_BITS:
-            return window->accumGreenBits;
-        case GLFW_ACCUM_BLUE_BITS:
-            return window->accumBlueBits;
-        case GLFW_ACCUM_ALPHA_BITS:
-            return window->accumAlphaBits;
-        case GLFW_AUX_BUFFERS:
-            return window->auxBuffers;
-        case GLFW_STEREO:
-            return window->stereo;
         case GLFW_REFRESH_RATE:
             return window->refreshRate;
         case GLFW_WINDOW_RESIZABLE:
             return window->resizable;
-        case GLFW_FSAA_SAMPLES:
-            return window->samples;
         case GLFW_OPENGL_VERSION_MAJOR:
             return window->glMajor;
         case GLFW_OPENGL_VERSION_MINOR:

@@ -117,7 +117,7 @@ int main(int argc, char** argv)
 
     glfwSwapInterval(1);
 
-    samples = glfwGetWindowParam(window, GLFW_FSAA_SAMPLES);
+    glGetIntegerv(GL_SAMPLES_ARB, &samples);
     if (samples)
         printf("Context reports FSAA is available with %i samples\n", samples);
     else

@@ -529,8 +529,8 @@ GLFWAPI void glfwGetGammaRamp(GLFWgammaramp* ramp);
 GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
 
 /* Window handling */
-GLFWAPI GLFWwindow glfwCreateWindow(int width, int height, int mode, const char* title, GLFWwindow share);
 GLFWAPI void glfwWindowHint(int target, int hint);
+GLFWAPI GLFWwindow glfwCreateWindow(int width, int height, int mode, const char* title, GLFWwindow share);
 GLFWAPI void glfwDestroyWindow(GLFWwindow window);
 GLFWAPI void glfwSetWindowTitle(GLFWwindow, const char* title);
 GLFWAPI void glfwGetWindowSize(GLFWwindow, int* width, int* height);

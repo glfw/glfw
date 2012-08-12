@@ -30,25 +30,22 @@
 //========================================================================
 
 #include <GL/glfw3.h>
+#include <GL/glext.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef GL_ARB_multisample
- #define GL_SAMPLES_ARB 0x80A9
-#endif
-
 typedef struct
 {
     int param;
-    char* ext;
-    char* name;
+    const char* ext;
+    const char* name;
 } ParamGL;
 
 typedef struct
 {
     int param;
-    char* name;
+    const char* name;
 } ParamGLFW;
 
 static ParamGL gl_params[] =

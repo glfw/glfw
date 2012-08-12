@@ -83,7 +83,7 @@ void _glfwInitJoysticks(void)
 {
 #ifdef _GLFW_USE_LINUX_JOYSTICKS
     int  k, n, fd, joy_count;
-    char* joy_base_name;
+    const char* joy_base_name;
     char joy_dev_name[20];
     int  driver_version = 0x000800;
     char ret_data;

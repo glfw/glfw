@@ -468,7 +468,7 @@ static _GLFWwindow* findWindow(Window handle)
 // Get and process next X event (called by _glfwPlatformPollEvents)
 //========================================================================
 
-static void processSingleEvent(XEvent *event)
+static void processEvent(XEvent *event)
 {
     _GLFWwindow* window;
 
@@ -1144,9 +1144,12 @@ void _glfwPlatformRefreshWindowParams(_GLFWwindow* window)
 void _glfwPlatformPollEvents(void)
 {
     XEvent event;
-    while(XCheckMaskEvent(_glfwLibrary.X11.display, ~0, &event) ||
-        XCheckTypedEvent(_glfwLibrary.X11.display, ClientMessage, &event))
-        processSingleEvent(&event);
+
+    while (XCheckMaskEvent(_glfwLibrary.X11.display, ~0, &event) ||
+           XCheckTypedEvent(_glfwLibrary.X11.display, ClientMessage, &event))
+    {
+        processEvent(&event);
+    }
 
 #if 0
     // Did the cursor move in an active window that has captured the cursor

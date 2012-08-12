@@ -927,8 +927,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                                                  withOptions:nil];
     }
 
-    glfwMakeContextCurrent(window);
-
     NSPoint point = [[NSCursor currentCursor] hotSpot];
     window->cursorPosX = point.x;
     window->cursorPosY = point.y;

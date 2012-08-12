@@ -866,8 +866,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (!initializeAppKit())
         return GL_FALSE;
 
-    window->resizable = wndconfig->resizable;
-
     // We can only have one application delegate, but we only allocate it the
     // first time we create a window to keep all window code in this file
     if (_glfwLibrary.NS.delegate == nil)
@@ -930,8 +928,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     NSPoint point = [[NSCursor currentCursor] hotSpot];
     window->cursorPosX = point.x;
     window->cursorPosY = point.y;
-
-    window->resizable = wndconfig->resizable;
 
     return GL_TRUE;
 }

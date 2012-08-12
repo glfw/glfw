@@ -30,13 +30,10 @@
 //========================================================================
 
 #include <GL/glfw3.h>
+#include <GL/glext.h>
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#ifndef GL_ARB_multisample
- #define GL_SAMPLES_ARB 0x80A9
-#endif
 
 typedef struct
 {

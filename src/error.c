@@ -59,8 +59,6 @@ void _glfwSetError(int error, const char* format, ...)
         char buffer[16384];
         const char* description;
 
-        // We would use vasprintf here if msvcrt supported it
-
         if (format)
         {
             int count;

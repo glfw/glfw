@@ -38,14 +38,14 @@
 typedef struct
 {
     int param;
-    char* ext;
-    char* name;
+    const char* ext;
+    const char* name;
 } ParamGL;
 
 typedef struct
 {
     int param;
-    char* name;
+    const char* name;
 } ParamGLFW;
 
 static ParamGL gl_params[] =

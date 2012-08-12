@@ -48,7 +48,7 @@ extern int optind;
 extern int opterr;
 extern int optopt;
 
-int getopt(int argc, char** argv, char* optstr);
+int getopt(int argc, char** argv, const char* optstr);
 
 
 #ifdef __cplusplus

@@ -442,7 +442,6 @@ static void mouseButtonFun(GLFWwindow window, int button, int action)
 int main(void)
 {
     GLFWwindow window;
-    int width, height;
 
     // Initialise GLFW
     if (!glfwInit())

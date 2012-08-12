@@ -37,7 +37,7 @@
 
 #define STEP_SIZE 0.1f
 
-static GLfloat gamma = 1.0f;
+static GLfloat gamma_value = 1.0f;
 
 static void usage(void)
 {
@@ -46,9 +46,9 @@ static void usage(void)
 
 static void set_gamma(float value)
 {
-    gamma = value;
-    printf("Gamma: %f\n", gamma);
-    glfwSetGamma(gamma);
+    gamma_value = value;
+    printf("Gamma: %f\n", gamma_value);
+    glfwSetGamma(gamma_value);
 }
 
 static void key_callback(GLFWwindow window, int key, int action)
@@ -67,15 +67,15 @@ static void key_callback(GLFWwindow window, int key, int action)
         case GLFW_KEY_KP_ADD:
         case GLFW_KEY_Q:
         {
-            set_gamma(gamma + STEP_SIZE);
+            set_gamma(gamma_value + STEP_SIZE);
             break;
         }
 
         case GLFW_KEY_KP_SUBTRACT:
         case GLFW_KEY_W:
         {
-            if (gamma - STEP_SIZE > 0.f)
-                set_gamma(gamma - STEP_SIZE);
+            if (gamma_value - STEP_SIZE > 0.f)
+                set_gamma(gamma_value - STEP_SIZE);
 
             break;
         }
@@ -119,10 +119,10 @@ int main(int argc, char** argv)
 
     if (mode == GLFW_FULLSCREEN)
     {
-        GLFWvidmode mode;
-        glfwGetDesktopMode(&mode);
-        width = mode.width;
-        height = mode.height;
+        GLFWvidmode desktop_mode;
+        glfwGetDesktopMode(&desktop_mode);
+        width = desktop_mode.width;
+        height = desktop_mode.height;
     }
     else
     {

@@ -36,7 +36,7 @@
 
 #include "tinycthread.h"
 
-static GLboolean running = GL_TRUE;
+static volatile GLboolean running = GL_TRUE;
 
 static int thread_start(void* data)
 {

@@ -14,6 +14,8 @@ include_directories(${GLFW_SOURCE_DIR}/include
 
 set(GETOPT ${GLFW_SOURCE_DIR}/support/getopt.h
            ${GLFW_SOURCE_DIR}/support/getopt.c)
+set(TINYCTHREAD ${GLFW_SOURCE_DIR}/support/tinycthread.h
+                ${GLFW_SOURCE_DIR}/support/tinycthread.c) 
 
 add_executable(clipboard clipboard.c ${GETOPT})
 add_executable(defaults defaults.c)
@@ -27,6 +29,7 @@ add_executable(joysticks joysticks.c)
 add_executable(modes modes.c ${GETOPT})
 add_executable(peter peter.c)
 add_executable(reopen reopen.c)
+add_executable(threads threads.c ${TINYCTHREAD})
 
 add_executable(accuracy WIN32 MACOSX_BUNDLE accuracy.c)
 set_target_properties(accuracy PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Accuracy")
@@ -45,7 +48,7 @@ set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 
 set(WINDOWS_BINARIES accuracy sharing tearing title windows)
 set(CONSOLE_BINARIES clipboard defaults events fsaa fsfocus gamma glfwinfo
-                     iconify joysticks modes peter reopen)
+                     iconify joysticks modes peter reopen threads)
 
 if (MSVC)
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables

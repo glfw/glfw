@@ -1,5 +1,5 @@
-/*
-Copyright (c) 2011 Marcus Geelnard
+/* -*- mode: c; tab-width: 2; indent-tabs-mode: nil; -*-
+Copyright (c) 2012 Marcus Geelnard
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages

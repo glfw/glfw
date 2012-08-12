@@ -1,5 +1,5 @@
-/*
-Copyright (c) 2011 Marcus Geelnard
+/* -*- mode: c; tab-width: 2; indent-tabs-mode: nil; -*-
+Copyright (c) 2012 Marcus Geelnard
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -32,7 +32,7 @@ freely, subject to the following restrictions:
 * TinyCThread is a minimal, portable implementation of basic threading
 * classes for C.
 *
-* They closely mimic the functionality and naming of the C1X standard, and
+* They closely mimic the functionality and naming of the C11 standard, and
 * should be easily replaceable with the corresponding standard variants.
 *
 * @section port_sec Portability
@@ -101,8 +101,7 @@ freely, subject to the following restrictions:
 * @hideinitializer
 */
 
-/* FIXME: Check for a PROPER value of __STDC_VERSION__ to know if we have C1X or
-   not (the spec is still draft)... */
+/* FIXME: Check for a PROPER value of __STDC_VERSION__ to know if we have C11 or */
 #if !(defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201102L)) && !defined(_Thread_local)
  #if defined(__GNUC__) || defined(__INTEL_COMPILER) || defined(__SUNPRO_CC) || defined(__IBMCPP__)
   #define _Thread_local __thread
@@ -402,3 +401,4 @@ enum
 int xtime_get(xtime *xt, int base);
 
 #endif /* _TINYTHREAD_H_ */
+

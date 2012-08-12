@@ -67,8 +67,8 @@ int main(void)
         glfwMakeContextCurrent(windows[i]);
         glClearColor((GLclampf) (i & 1),
                      (GLclampf) (i >> 1),
-                     i ? 0.0 : 1.0,
-                     0.0);
+                     i ? 0.f : 1.f,
+                     0.f);
 
         glfwSetWindowPos(windows[i], 100 + (i & 1) * 300, 100 + (i >> 1) * 300);
     }

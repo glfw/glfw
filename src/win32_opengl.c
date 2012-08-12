@@ -30,6 +30,8 @@
 
 #include "internal.h"
 
+#include <stdlib.h>
+
 
 //========================================================================
 // The per-thread current context/window pointer

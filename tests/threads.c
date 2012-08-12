@@ -77,19 +77,17 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    if (thrd_create(&thread, thread_start, window) == thrd_success)
-    {
-        while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
-            glfwWaitEvents();
-
-        running = GL_FALSE;
-        thrd_join(thread, &result);
-    }
-    else
+    if (thrd_create(&thread, thread_start, window) != thrd_success)
     {
         fprintf(stderr, "Failed to create secondary thread\n");
         exit(EXIT_FAILURE);
     }
+
+    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
+        glfwWaitEvents();
+
+    running = GL_FALSE;
+    thrd_join(thread, &result);
 
     exit(EXIT_SUCCESS);
 }

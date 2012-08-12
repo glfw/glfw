@@ -467,7 +467,7 @@ static _GLFWwindow* findWindow(Window handle)
 
 
 //========================================================================
-// Get and process next X event (called by _glfwPlatformPollEvents)
+// Process the specified X event
 //========================================================================
 
 static void processEvent(XEvent *event)
@@ -1176,23 +1176,24 @@ void _glfwPlatformPollEvents(void)
     }
 }
 
+
 //========================================================================
 // Wait for new window and input events
 //========================================================================
 
 void _glfwPlatformWaitEvents(void)
 {
-    fd_set set;
     int fd;
+    fd_set fds;
 
     fd = ConnectionNumber(_glfwLibrary.X11.display);
 
-    FD_ZERO(&set);
-    FD_SET(fd, &set);
+    FD_ZERO(&fds);
+    FD_SET(fd, &fds);
 
     XFlush(_glfwLibrary.X11.display);
 
-    if(select(fd+1, &set, NULL, NULL, NULL) > 0)
+    if (select(fd + 1, &fds, NULL, NULL, NULL) > 0)
         _glfwPlatformPollEvents();
 }
 

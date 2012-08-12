@@ -68,7 +68,7 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void window_size_callback(GLFWwindow window, int width, int height)
+static void window_size_callback(GLFWwindow in_window, int width, int height)
 {
     printf("Window resized to %ix%i\n", width, height);
 

@@ -100,10 +100,10 @@ int main(int argc, char** argv)
 
     if (mode == GLFW_FULLSCREEN)
     {
-        GLFWvidmode mode;
-        glfwGetDesktopMode(&mode);
-        width = mode.width;
-        height = mode.height;
+        GLFWvidmode desktop_mode;
+        glfwGetDesktopMode(&desktop_mode);
+        width = desktop_mode.width;
+        height = desktop_mode.height;
     }
     else
     {
@@ -130,8 +130,6 @@ int main(int argc, char** argv)
 
     while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
-        int width, height;
-
         if (iconified != glfwGetWindowParam(window, GLFW_ICONIFIED) ||
             active != glfwGetWindowParam(window, GLFW_ACTIVE))
         {

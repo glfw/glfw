@@ -330,7 +330,7 @@ void DrawBoingBall( void )
 /*****************************************************************************
  * Bounce the ball.
  *****************************************************************************/
-void BounceBall( double dt )
+void BounceBall( double delta_t )
 {
    GLfloat sign;
    GLfloat deg;
@@ -358,8 +358,8 @@ void BounceBall( double dt )
    }
 
    /* Update ball position */
-   ball_x += ball_x_inc * ((float)dt*ANIMATION_SPEED);
-   ball_y += ball_y_inc * ((float)dt*ANIMATION_SPEED);
+   ball_x += ball_x_inc * ((float)delta_t*ANIMATION_SPEED);
+   ball_y += ball_y_inc * ((float)delta_t*ANIMATION_SPEED);
 
   /*
    * Simulate the effects of gravity on Y movement.

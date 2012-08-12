@@ -53,11 +53,11 @@ static const char* format_mode(GLFWvidmode* mode)
 {
     static char buffer[512];
 
-    snprintf(buffer, sizeof(buffer),
-             "%i x %i x %i (%i %i %i)",
-             mode->width, mode->height,
-             mode->redBits + mode->greenBits + mode->blueBits,
-             mode->redBits, mode->greenBits, mode->blueBits);
+    sprintf(buffer,
+            "%i x %i x %i (%i %i %i)",
+            mode->width, mode->height,
+            mode->redBits + mode->greenBits + mode->blueBits,
+            mode->redBits, mode->greenBits, mode->blueBits);
 
     buffer[sizeof(buffer) - 1] = '\0';
     return buffer;

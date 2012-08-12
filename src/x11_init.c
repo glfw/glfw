@@ -634,6 +634,8 @@ static void terminateDisplay(void)
 
 int _glfwPlatformInit(void)
 {
+    XInitThreads();
+
     if (!initDisplay())
         return GL_FALSE;
 

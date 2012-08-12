@@ -1151,8 +1151,9 @@ void _glfwPlatformPollEvents(void)
         processEvent(&event);
     }
 
-#if 0
-    // Did the cursor move in an active window that has captured the cursor
+    // Check whether the cursor has moved inside an active window that has
+    // captured the cursor (because then it needs to be re-centered)
+
     _GLFWwindow* window;
     window = _glfwLibrary.activeWindow;
     if (window)
@@ -1171,7 +1172,6 @@ void _glfwPlatformPollEvents(void)
             XFlush( _glfwLibrary.X11.display );
         }
     }
-#endif
 }
 
 #include <sys/select.h>

@@ -80,7 +80,7 @@ int main(void)
     if (thrd_create(&thread, thread_start, window) == thrd_success)
     {
         while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
-            glfwPollEvents();
+            glfwWaitEvents();
 
         running = GL_FALSE;
         thrd_join(thread, &result);

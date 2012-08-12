@@ -30,6 +30,8 @@
 
 #include "internal.h"
 
+#include <sys/select.h>
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -1173,8 +1175,6 @@ void _glfwPlatformPollEvents(void)
         }
     }
 }
-
-#include <sys/select.h>
 
 //========================================================================
 // Wait for new window and input events

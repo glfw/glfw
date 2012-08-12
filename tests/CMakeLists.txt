@@ -31,6 +31,10 @@ add_executable(peter peter.c)
 add_executable(reopen reopen.c)
 add_executable(threads threads.c ${TINYCTHREAD})
 
+if (BUILD_SHARED_LIBS)
+    target_link_libraries(threads ${CMAKE_THREAD_LIBS_INIT})
+endif()
+
 add_executable(accuracy WIN32 MACOSX_BUNDLE accuracy.c)
 set_target_properties(accuracy PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Accuracy")
 

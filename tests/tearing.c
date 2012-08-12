@@ -43,9 +43,7 @@ static void set_swap_interval(GLFWwindow window, int interval)
     swap_interval = interval;
     glfwSwapInterval(swap_interval);
 
-    sprintf(title,
-            "Tearing detector (interval %i)",
-            swap_interval);
+    sprintf(title, "Tearing detector (interval %i)", swap_interval);
 
     glfwSetWindowTitle(window, title);
 }

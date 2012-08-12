@@ -300,6 +300,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     window->width      = width;
     window->height     = height;
     window->mode       = mode;
+    window->resizable  = wndconfig.resizable;
     window->cursorMode = GLFW_CURSOR_NORMAL;
     window->systemKeys = GL_TRUE;
 

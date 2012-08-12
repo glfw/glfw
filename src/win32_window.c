@@ -959,7 +959,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     GLboolean recreateContext = GL_FALSE;
 
     window->Win32.desiredRefreshRate = wndconfig->refreshRate;
-    window->resizable = wndconfig->resizable;
 
     if (!_glfwLibrary.Win32.classAtom)
     {

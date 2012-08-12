@@ -889,7 +889,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWfbconfig* fbconfig)
 {
     window->refreshRate = wndconfig->refreshRate;
-    window->resizable   = wndconfig->resizable;
 
     if (!_glfwCreateContext(window, wndconfig, fbconfig))
         return GL_FALSE;

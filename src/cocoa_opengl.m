@@ -30,6 +30,13 @@
 #include "internal.h"
 
 
+//========================================================================
+// The per-thread current context/window pointer
+// TODO: Implement pthreads TLS
+//========================================================================
+_GLFWwindow* _glfwCurrentWindow = NULL;
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -44,6 +51,18 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
         [window->NSGL.context makeCurrentContext];
     else
         [NSOpenGLContext clearCurrentContext];
+
+    _glfwCurrentWindow = window;
+}
+
+
+//========================================================================
+// Return the window object whose context is current
+//========================================================================
+
+_GLFWwindow* _glfwPlatformGetCurrentContext(void)
+{
+    return _glfwCurrentWindow;
 }
 
 
@@ -64,7 +83,7 @@ void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 
 void _glfwPlatformSwapInterval(int interval)
 {
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
+    _GLFWwindow* window = _glfwCurrentWindow;
 
     GLint sync = interval;
     [window->NSGL.context setValues:&sync forParameter:NSOpenGLCPSwapInterval];

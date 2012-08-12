@@ -216,7 +216,6 @@ struct _GLFWlibrary
     _GLFWhints    hints;
 
     _GLFWwindow*  windowListHead;
-    _GLFWwindow*  currentWindow;
     _GLFWwindow*  activeWindow;
 
     GLFWwindowsizefun    windowSizeCallback;
@@ -309,6 +308,7 @@ void _glfwPlatformWaitEvents(void);
 
 // OpenGL context management
 void _glfwPlatformMakeContextCurrent(_GLFWwindow* window);
+_GLFWwindow* _glfwPlatformGetCurrentContext(void);
 void _glfwPlatformSwapBuffers(_GLFWwindow* window);
 void _glfwPlatformSwapInterval(int interval);
 void _glfwPlatformRefreshWindowParams(_GLFWwindow* window);

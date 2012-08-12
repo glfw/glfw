@@ -37,6 +37,11 @@
 // This is the only glXGetProcAddress variant not declared by glxext.h
 void (*glXGetProcAddressEXT(const GLubyte* procName))();
 
+//========================================================================
+// The per-thread current context/window pointer
+//========================================================================
+__thread _GLFWwindow* _glfwCurrentWindow = NULL;
+
 
 //========================================================================
 // Returns the specified attribute of the specified GLXFBConfig
@@ -621,6 +626,10 @@ XVisualInfo* _glfwGetContextVisual(_GLFWwindow* window)
 }
 
 
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
+
 //========================================================================
 // Make the OpenGL context associated with the specified window current
 //========================================================================
@@ -635,6 +644,18 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     }
     else
         glXMakeCurrent(_glfwLibrary.X11.display, None, NULL);
+
+    _glfwCurrentWindow = window;
+}
+
+
+//========================================================================
+// Return the window object whose context is current
+//========================================================================
+
+_GLFWwindow* _glfwPlatformGetCurrentContext(void)
+{
+    return _glfwCurrentWindow;
 }
 
 
@@ -654,7 +675,7 @@ void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 
 void _glfwPlatformSwapInterval(int interval)
 {
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
+    _GLFWwindow* window = _glfwCurrentWindow;
 
     if (_glfwLibrary.GLX.EXT_swap_control)
     {

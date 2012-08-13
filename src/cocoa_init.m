@@ -103,6 +103,9 @@ int _glfwPlatformInit(void)
 
     _glfwInitJoysticks();
 
+    if (!_glfwInitOpenGL())
+        return GL_FALSE;
+
     _glfwLibrary.NS.eventSource = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
     if (!_glfwLibrary.NS.eventSource)
         return GL_FALSE;
@@ -142,6 +145,8 @@ int _glfwPlatformTerminate(void)
     _glfwLibrary.NS.autoreleasePool = nil;
 
     _glfwTerminateJoysticks();
+
+    _glfwTerminateOpenGL();
 
     return GL_TRUE;
 }

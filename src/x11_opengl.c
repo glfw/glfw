@@ -37,10 +37,21 @@
 // This is the only glXGetProcAddress variant not declared by glxext.h
 void (*glXGetProcAddressEXT(const GLubyte* procName))();
 
+
+//========================================================================
+// Thread local storage attribute macro
+//========================================================================
+#if defined(__GNUC__)
+ #define _GLFW_TLS __thread
+#else
+ #define _GLFW_TLS
+#endif
+
+
 //========================================================================
 // The per-thread current context/window pointer
 //========================================================================
-__thread _GLFWwindow* _glfwCurrentWindow = NULL;
+static _GLFW_TLS _GLFWwindow* _glfwCurrentWindow = NULL;
 
 
 //========================================================================

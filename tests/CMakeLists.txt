@@ -29,11 +29,6 @@ add_executable(joysticks joysticks.c)
 add_executable(modes modes.c ${GETOPT})
 add_executable(peter peter.c)
 add_executable(reopen reopen.c)
-add_executable(threads threads.c ${TINYCTHREAD})
-
-if (BUILD_SHARED_LIBS)
-    target_link_libraries(threads ${CMAKE_THREAD_LIBS_INIT})
-endif()
 
 add_executable(accuracy WIN32 MACOSX_BUNDLE accuracy.c)
 set_target_properties(accuracy PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Accuracy")
@@ -44,15 +39,22 @@ set_target_properties(sharing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Sharing")
 add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c)
 set_target_properties(tearing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Tearing")
 
+add_executable(threads WIN32 MACOSX_BUNDLE threads.c ${TINYCTHREAD})
+set_target_properties(threads PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Threads")
+
 add_executable(title WIN32 MACOSX_BUNDLE title.c)
 set_target_properties(title PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Title")
 
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c)
 set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 
-set(WINDOWS_BINARIES accuracy sharing tearing title windows)
+if (BUILD_SHARED_LIBS)
+    target_link_libraries(threads ${CMAKE_THREAD_LIBS_INIT})
+endif()
+
+set(WINDOWS_BINARIES accuracy sharing tearing threads title windows)
 set(CONSOLE_BINARIES clipboard defaults events fsaa fsfocus gamma glfwinfo
-                     iconify joysticks modes peter reopen threads)
+                     iconify joysticks modes peter reopen)
 
 if (MSVC)
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables

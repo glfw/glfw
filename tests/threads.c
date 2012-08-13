@@ -33,25 +33,36 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <assert.h>
 
 #include "tinycthread.h"
+
+typedef struct
+{
+    GLFWwindow window;
+    const char* title;
+    float r, g, b;
+    thrd_t ID;
+} Thread;
 
 static volatile GLboolean running = GL_TRUE;
 
 static int thread_start(void* data)
 {
-    GLFWwindow window = (GLFWwindow) data;
+    const Thread* thread = (const Thread*) data;
 
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(thread->window);
+    assert(glfwGetCurrentContext() == thread->window);
+
     glfwSwapInterval(1);
 
     while (running)
     {
-        const float red = (float) sin(glfwGetTime()) / 2.f + 0.5f;
+        const float v = (float) fabs(sin(glfwGetTime() * 2.f));
+        glClearColor(thread->r * v, thread->g * v, thread->b * v, 0.f);
 
-        glClearColor(red, 0.f, 0.f, 0.f);
         glClear(GL_COLOR_BUFFER_BIT);
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(thread->window);
     }
 
     glfwMakeContextCurrent(NULL);
@@ -60,34 +71,60 @@ static int thread_start(void* data)
 
 int main(void)
 {
-    int result;
-    GLFWwindow window;
-    thrd_t thread;
+    int i, result;
+    Thread threads[] =
+    {
+        { NULL, "Red", 1.f, 0.f, 0.f, 0 },
+        { NULL, "Green", 0.f, 1.f, 0.f, 0 },
+        { NULL, "Blue", 0.f, 0.f, 1.f, 0 }
+    };
+    const int count = sizeof(threads) / sizeof(Thread);
 
     if (!glfwInit())
     {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        fprintf(stderr, "Failed to initialize GLFW: %s\n",
+                glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
 
-    window = glfwCreateWindow(640, 480, GLFW_WINDOWED, "Multithreading", NULL);
-    if (!window)
+    for (i = 0;  i < count;  i++)
     {
-        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
-        exit(EXIT_FAILURE);
+        threads[i].window = glfwCreateWindow(200, 200,
+                                             GLFW_WINDOWED,
+                                             threads[i].title,
+                                             NULL);
+        if (!threads[i].window)
+        {
+            fprintf(stderr, "Failed to open GLFW window: %s\n",
+                    glfwErrorString(glfwGetError()));
+            exit(EXIT_FAILURE);
+        }
+
+        glfwSetWindowPos(threads[i].window, 200 + 250 * i, 200);
+
+        if (thrd_create(&threads[i].ID, thread_start, threads + i) !=
+            thrd_success)
+        {
+            fprintf(stderr, "Failed to create secondary thread\n");
+            exit(EXIT_FAILURE);
+        }
     }
 
-    if (thrd_create(&thread, thread_start, window) != thrd_success)
+    while (running)
     {
-        fprintf(stderr, "Failed to create secondary thread\n");
-        exit(EXIT_FAILURE);
-    }
+        assert(glfwGetCurrentContext() == NULL);
 
-    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
         glfwWaitEvents();
 
-    running = GL_FALSE;
-    thrd_join(thread, &result);
+        for (i = 0;  i < count;  i++)
+        {
+            if (glfwGetWindowParam(threads[i].window, GLFW_CLOSE_REQUESTED))
+                running = GL_FALSE;
+        }
+    }
+
+    for (i = 0;  i < count;  i++)
+        thrd_join(threads[i].ID, &result);
 
     exit(EXIT_SUCCESS);
 }

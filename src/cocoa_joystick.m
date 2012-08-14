@@ -86,7 +86,7 @@ typedef struct
 static _glfwJoystick _glfwJoysticks[GLFW_JOYSTICK_LAST + 1];
 
 
-void GetElementsCFArrayHandler(const void* value, void* parameter);
+void getElementsCFArrayHandler(const void* value, void* parameter);
 
 
 //========================================================================
@@ -112,7 +112,7 @@ static void addJoystickElement(_glfwJoystick* joystick, CFTypeRef refElement)
         (elementType == kIOHIDElementTypeInput_Button) ||
         (elementType == kIOHIDElementTypeInput_Misc))
     {
-        switch (usagePage) /* only interested in kHIDPage_GenericDesktop and kHIDPage_Button */
+        switch (usagePage)
         {
             case kHIDPage_GenericDesktop:
             {
@@ -175,10 +175,10 @@ static void addJoystickElement(_glfwJoystick* joystick, CFTypeRef refElement)
         if (refElementTop)
         {
             CFTypeID type = CFGetTypeID (refElementTop);
-            if (type == CFArrayGetTypeID()) /* if element is an array */
+            if (type == CFArrayGetTypeID())
             {
                 CFRange range = {0, CFArrayGetCount (refElementTop)};
-                CFArrayApplyFunction(refElementTop, range, GetElementsCFArrayHandler, joystick);
+                CFArrayApplyFunction(refElementTop, range, getElementsCFArrayHandler, joystick);
             }
         }
     }
@@ -189,7 +189,7 @@ static void addJoystickElement(_glfwJoystick* joystick, CFTypeRef refElement)
 // Adds an element to the specified joystick
 //========================================================================
 
-void GetElementsCFArrayHandler(const void* value, void* parameter)
+static void getElementsCFArrayHandler(const void* value, void* parameter)
 {
     if (CFGetTypeID(value) == CFDictionaryGetTypeID())
         addJoystickElement((_glfwJoystick*) parameter, (CFTypeRef) value);
@@ -340,13 +340,15 @@ void _glfwInitJoysticks(void)
     CFMutableDictionaryRef hidMatchDictionary = NULL;
     io_object_t ioHIDDeviceObject = 0;
 
+    memset(&_glfwJoysticks, 0, sizeof(_glfwJoysticks));
+
     result = IOMasterPort(bootstrap_port, &masterPort);
     hidMatchDictionary = IOServiceMatching(kIOHIDDeviceKey);
     if (kIOReturnSuccess != result || !hidMatchDictionary)
     {
         if (hidMatchDictionary)
             CFRelease(hidMatchDictionary);
-        
+
         return;
     }
 
@@ -356,8 +358,11 @@ void _glfwInitJoysticks(void)
     if (result != kIOReturnSuccess)
         return;
 
-    if (!objectIterator) /* there are no joysticks */
+    if (!objectIterator)
+    {
+        // There are no joysticks
         return;
+    }
 
     while ((ioHIDDeviceObject = IOIteratorNext(objectIterator)))
     {
@@ -395,7 +400,7 @@ void _glfwInitJoysticks(void)
         if (refCF)
         {
             CFNumberGetValue(refCF, kCFNumberLongType, &usage);
-            
+
             if ((usage != kHIDUsage_GD_Joystick &&
                  usage != kHIDUsage_GD_GamePad &&
                  usage != kHIDUsage_GD_MultiAxisController))
@@ -459,7 +464,7 @@ void _glfwInitJoysticks(void)
             CFRange range = { 0, CFArrayGetCount(refTopElement) };
             CFArrayApplyFunction(refTopElement,
                                  range,
-                                 GetElementsCFArrayHandler,
+                                 getElementsCFArrayHandler,
                                  (void*) joystick);
         }
 
@@ -509,7 +514,8 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
             return (int) CFArrayGetCount(_glfwJoysticks[joy].axes);
 
         case GLFW_BUTTONS:
-            return (int) CFArrayGetCount(_glfwJoysticks[joy].buttons) + ((int) CFArrayGetCount(_glfwJoysticks[joy].hats)) * 4;
+            return (int) CFArrayGetCount(_glfwJoysticks[joy].buttons) +
+                   (int) CFArrayGetCount(_glfwJoysticks[joy].hats) * 4;
 
         default:
             break;
@@ -597,19 +603,28 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
     // Virtual buttons - Inject data from hats
     // Each hat is exposed as 4 buttons which exposes 8 directions with concurrent button presses
 
-    const int directions[9] = { 1, 3, 2, 6, 4, 12, 8, 9, 0 }; // Bit fields of button presses for each direction, including nil
+    // Bit fields of button presses for each direction, including nil
+    const int directions[9] = { 1, 3, 2, 6, 4, 12, 8, 9, 0 };
 
     for (i = 0;  i < joystick.numHats;  i++)
     {
         _glfwJoystickElement* hat = (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick.hats, i);
-        int value = hat->value;
-        if (value < 0 || value > 8) value = 8;
 
-        for (j = 0; j < 4 && button < numbuttons; j++)
+        const int value = hat->value;
+        if (value < 0 || value > 8)
+            value = 8;
+
+        for (j = 0;  j < 4 && button < numbuttons;  j++)
         {
-            buttons[button++] = directions[value] & (1 << j) ? GLFW_PRESS : GLFW_RELEASE;
+            if (directions[value] & (1 << j))
+                buttons[button = GLFW_PRESS;
+            else
+                buttons[button = GLFW_RELEASE;
+
+            button++;
         }
     }
 
     return button;
 }
+

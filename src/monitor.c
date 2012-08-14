@@ -44,12 +44,12 @@
 GLFWAPI GLFWmonitor glfwGetNextMonitor(GLFWmonitor handle)
 {
     _GLFWmonitor* iterator = (_GLFWmonitor*) handle;
-    _GLFWmonitor* result = NULL;
+    _GLFWmonitor* result;
 
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return result;
+        return NULL;
     }
 
     if (iterator == NULL)

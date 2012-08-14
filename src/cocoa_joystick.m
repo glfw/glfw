@@ -340,6 +340,8 @@ void _glfwInitJoysticks(void)
     CFMutableDictionaryRef hidMatchDictionary = NULL;
     io_object_t ioHIDDeviceObject = 0;
 
+    memset(&_glfwJoysticks, 0, sizeof(_glfwJoysticks));
+
     result = IOMasterPort(bootstrap_port, &masterPort);
     hidMatchDictionary = IOServiceMatching(kIOHIDDeviceKey);
     if (kIOReturnSuccess != result || !hidMatchDictionary)

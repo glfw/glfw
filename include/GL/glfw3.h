@@ -497,7 +497,7 @@ typedef void (* GLFWcursorenterfun)(GLFWwindow,int);
 typedef void (* GLFWscrollfun)(GLFWwindow,double,double);
 typedef void (* GLFWkeyfun)(GLFWwindow,int,int);
 typedef void (* GLFWcharfun)(GLFWwindow,int);
-typedef void (* GLFWmonitordevicefun)(GLFWmonitor,int);
+typedef void (* GLFWmonitorfun)(GLFWmonitor,int);
 
 /* The video mode structure used by glfwGetVideoModes */
 typedef struct
@@ -534,7 +534,7 @@ GLFWAPI const char* glfwErrorString(int error);
 GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
 
 /* Monitor callback registration */
-GLFWAPI void glfwSetMonitorDeviceCallback(GLFWmonitordevicefun cbfun);
+GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun);
 
 /* Monitor attributes */
 GLFWAPI void glfwSetMonitorUserPointer(GLFWmonitor monitor, void* pointer);

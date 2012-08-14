@@ -394,7 +394,7 @@ int main(void)
     glfwSetScrollCallback(scroll_callback);
     glfwSetKeyCallback(key_callback);
     glfwSetCharCallback(char_callback);
-    glfwSetMonitorDeviceCallback(monitor_callback);
+    glfwSetMonitorCallback(monitor_callback);
 
     window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Event Linter", NULL);
     if (!window)

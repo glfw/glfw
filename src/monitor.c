@@ -137,7 +137,7 @@ GLFWAPI const char* glfwGetMonitorString(GLFWmonitor handle, int param)
 // Set a callback function for monitor events
 //========================================================================
 
-GLFWAPI void glfwSetMonitorDeviceCallback(GLFWmonitordevicefun cbfun)
+GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 {
     if (!_glfwInitialized)
     {

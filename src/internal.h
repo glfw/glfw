@@ -256,7 +256,7 @@ struct _GLFWlibrary
     GLFWscrollfun        scrollCallback;
     GLFWkeyfun           keyCallback;
     GLFWcharfun          charCallback;
-    GLFWmonitordevicefun monitorCallback;
+    GLFWmonitorfun       monitorCallback;
 
     GLFWgammaramp currentRamp;
     GLFWgammaramp originalRamp;

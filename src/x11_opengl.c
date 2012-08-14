@@ -642,10 +642,9 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 // Swap OpenGL buffers
 //========================================================================
 
-void _glfwPlatformSwapBuffers(void)
+void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 {
-    glXSwapBuffers(_glfwLibrary.X11.display,
-                   _glfwLibrary.currentWindow->X11.handle);
+    glXSwapBuffers(_glfwLibrary.X11.display, window->X11.handle);
 }
 
 

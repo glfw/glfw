@@ -1,4 +1,3 @@
-
 include_directories(${GLFW_SOURCE_DIR}/src
                     ${GLFW_BINARY_DIR}/src
                     ${glfw_INCLUDE_DIRS})
@@ -59,5 +58,5 @@ if (BUILD_SHARED_LIBS)
     target_link_libraries(glfw LINK_INTERFACE_LIBRARIES)
 endif()
 
-install(TARGETS glfw DESTINATION lib)
+install(TARGETS glfw DESTINATION lib${LIB_SUFFIX} )
 

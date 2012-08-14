@@ -30,6 +30,9 @@
 
 #include "internal.h"
 
+#include <stdlib.h>
+#include <malloc.h>
+
 
 //========================================================================
 // Initialize WGL-specific extensions
@@ -505,7 +508,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 void _glfwDestroyContext(_GLFWwindow* window)
 {
-    // This is duplicated from glfwCloseWindow
+    // This is duplicated from glfwDestroyWindow
     // TODO: Stop duplicating code
     if (window == _glfwLibrary.currentWindow)
         glfwMakeContextCurrent(NULL);
@@ -545,10 +548,8 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 // Swap buffers (double-buffering)
 //========================================================================
 
-void _glfwPlatformSwapBuffers(void)
+void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 {
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
-
     SwapBuffers(window->WGL.DC);
 }
 

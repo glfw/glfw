@@ -810,7 +810,7 @@ int main( void )
     }
 
     // Open OpenGL window
-    if( !glfwOpenWindow( WIDTH, HEIGHT, 0,0,0,0, 16,0, GLFW_FULLSCREEN ) )
+    if( !glfwCreateWindow( WIDTH, HEIGHT, 0,0,0,0, 16,0, GLFW_FULLSCREEN ) )
     {
         fprintf( stderr, "Failed to open GLFW window\n" );
         glfwTerminate();

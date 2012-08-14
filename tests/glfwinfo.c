@@ -191,28 +191,30 @@ int main(int argc, char** argv)
 
     if (major != 1 || minor != 0)
     {
-        glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, major);
-        glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, minor);
+        glfwWindowHint(GLFW_OPENGL_VERSION_MAJOR, major);
+        glfwWindowHint(GLFW_OPENGL_VERSION_MINOR, minor);
     }
 
     if (debug)
-        glfwOpenWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
     if (forward)
-        glfwOpenWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     if (profile != 0)
-        glfwOpenWindowHint(GLFW_OPENGL_PROFILE, profile);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, profile);
 
     if (strategy)
-        glfwOpenWindowHint(GLFW_OPENGL_ROBUSTNESS, strategy);
+        glfwWindowHint(GLFW_OPENGL_ROBUSTNESS, strategy);
 
     // We assume here that we stand a better chance of success by leaving all
     // possible details of pixel format selection to GLFW
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Version", NULL);
+    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Version", NULL);
     if (!window)
         exit(EXIT_FAILURE);
+
+    glfwMakeContextCurrent(window);
 
     // Report GLFW version
 

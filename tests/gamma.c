@@ -37,7 +37,7 @@
 
 #define STEP_SIZE 0.1f
 
-static GLfloat gamma = 1.0f;
+static GLfloat gamma_value = 1.0f;
 
 static void usage(void)
 {
@@ -46,9 +46,9 @@ static void usage(void)
 
 static void set_gamma(float value)
 {
-    gamma = value;
-    printf("Gamma: %f\n", gamma);
-    glfwSetGamma(gamma);
+    gamma_value = value;
+    printf("Gamma: %f\n", gamma_value);
+    glfwSetGamma(gamma_value);
 }
 
 static void key_callback(GLFWwindow window, int key, int action)
@@ -60,22 +60,22 @@ static void key_callback(GLFWwindow window, int key, int action)
     {
         case GLFW_KEY_ESCAPE:
         {
-            glfwCloseWindow(window);
+            glfwDestroyWindow(window);
             break;
         }
 
         case GLFW_KEY_KP_ADD:
         case GLFW_KEY_Q:
         {
-            set_gamma(gamma + STEP_SIZE);
+            set_gamma(gamma_value + STEP_SIZE);
             break;
         }
 
         case GLFW_KEY_KP_SUBTRACT:
         case GLFW_KEY_W:
         {
-            if (gamma - STEP_SIZE > 0.f)
-                set_gamma(gamma - STEP_SIZE);
+            if (gamma_value - STEP_SIZE > 0.f)
+                set_gamma(gamma_value - STEP_SIZE);
 
             break;
         }
@@ -119,10 +119,10 @@ int main(int argc, char** argv)
 
     if (mode == GLFW_FULLSCREEN)
     {
-        GLFWvidmode mode;
-        glfwGetDesktopMode(&mode);
-        width = mode.width;
-        height = mode.height;
+        GLFWvidmode desktop_mode;
+        glfwGetDesktopMode(&desktop_mode);
+        width = desktop_mode.width;
+        height = desktop_mode.height;
     }
     else
     {
@@ -130,7 +130,7 @@ int main(int argc, char** argv)
         height = 0;
     }
 
-    window = glfwOpenWindow(width, height, mode, "Gamma Test", NULL);
+    window = glfwCreateWindow(width, height, mode, "Gamma Test", NULL);
     if (!window)
     {
         glfwTerminate();
@@ -141,7 +141,9 @@ int main(int argc, char** argv)
 
     set_gamma(1.f);
 
+    glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+
     glfwSetKeyCallback(key_callback);
     glfwSetWindowSizeCallback(size_callback);
 
@@ -151,14 +153,14 @@ int main(int argc, char** argv)
 
     glClearColor(0.5f, 0.5f, 0.5f, 0);
 
-    while (glfwIsWindow(window))
+    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
         glColor3f(0.8f, 0.2f, 0.4f);
         glRectf(-0.5f, -0.5f, 0.5f, 0.5f);
 
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
     }
 

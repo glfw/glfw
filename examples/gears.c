@@ -267,6 +267,14 @@ void reshape( GLFWwindow window, int width, int height )
 }
 
 
+/* close callback */
+static int window_close_callback(GLFWwindow window)
+{
+    running = 0;
+    return GL_TRUE;
+}
+
+
 /* program & OpenGL initialization */
 static void init(int argc, char *argv[])
 {
@@ -322,6 +330,7 @@ static void init(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
     GLFWwindow window;
+    int width, height;
 
     if( !glfwInit() )
     {
@@ -329,9 +338,14 @@ int main(int argc, char *argv[])
         exit( EXIT_FAILURE );
     }
 
-    glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
+    // Set callback functions
+    glfwSetWindowCloseCallback(window_close_callback);
+    glfwSetWindowSizeCallback( reshape );
+    glfwSetKeyCallback( key );
 
-    window = glfwOpenWindow( 300, 300, GLFW_WINDOWED, "Gears", NULL );
+    glfwWindowHint(GLFW_DEPTH_BITS, 16);
+
+    window = glfwCreateWindow( 300, 300, GLFW_WINDOWED, "Gears", NULL );
     if (!window)
     {
         fprintf( stderr, "Failed to open GLFW window\n" );
@@ -339,15 +353,16 @@ int main(int argc, char *argv[])
         exit( EXIT_FAILURE );
     }
 
-    glfwSetInputMode( window, GLFW_KEY_REPEAT, GL_TRUE );
+    glfwMakeContextCurrent(window);
     glfwSwapInterval( 1 );
+
+    glfwGetWindowSize(window, &width, &height);
+    reshape(window, width, height);
+
+    glfwSetInputMode( window, GLFW_KEY_REPEAT, GL_TRUE );
 
     // Parse command-line options
     init(argc, argv);
-
-    // Set callback functions
-    glfwSetWindowSizeCallback( reshape );
-    glfwSetKeyCallback( key );
 
     // Main loop
     while( running )
@@ -359,14 +374,8 @@ int main(int argc, char *argv[])
         animate();
 
         // Swap buffers
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
-
-        // Was the window closed?
-        if( !glfwIsWindow( window ) )
-        {
-            running = 0;
-        }
     }
 
     // Terminate GLFW

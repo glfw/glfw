@@ -41,7 +41,10 @@
 #include <string.h>
 #include "getopt.h"
 
-
+/* 2012-08-12 Lambert Clara <lambert.clara@yahoo.fr>
+ * 
+ * Constify third argument of getopt.
+ */
 /* 2011-07-27 Camilla Berglund <elmindreda@elmindreda.org>
  * 
  * Added _CRT_SECURE_NO_WARNINGS macro.
@@ -102,7 +105,7 @@ static int permute_argv_once()
 }
 
 
-int getopt(int argc, char** argv, char* optstr)
+int getopt(int argc, char** argv, const char* optstr)
 {
 	int c = 0;
 

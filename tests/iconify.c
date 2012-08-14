@@ -55,7 +55,7 @@ static void key_callback(GLFWwindow window, int key, int action)
             glfwIconifyWindow(window);
             break;
         case GLFW_KEY_ESCAPE:
-            glfwCloseWindow(window);
+            glfwDestroyWindow(window);
             break;
     }
 }
@@ -100,10 +100,10 @@ int main(int argc, char** argv)
 
     if (mode == GLFW_FULLSCREEN)
     {
-        GLFWvidmode mode;
-        glfwGetDesktopMode(&mode);
-        width = mode.width;
-        height = mode.height;
+        GLFWvidmode desktop_mode;
+        glfwGetDesktopMode(&desktop_mode);
+        width = desktop_mode.width;
+        height = desktop_mode.height;
     }
     else
     {
@@ -111,7 +111,7 @@ int main(int argc, char** argv)
         height = 0;
     }
 
-    window = glfwOpenWindow(width, height, mode, "Iconify", NULL);
+    window = glfwCreateWindow(width, height, mode, "Iconify", NULL);
     if (!window)
     {
         glfwTerminate();
@@ -120,16 +120,16 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
+    glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+
     glfwSetKeyCallback(key_callback);
     glfwSetWindowSizeCallback(size_callback);
 
     glEnable(GL_SCISSOR_TEST);
 
-    while (glfwIsWindow(window))
+    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
-        int width, height;
-
         if (iconified != glfwGetWindowParam(window, GLFW_ICONIFIED) ||
             active != glfwGetWindowParam(window, GLFW_ACTIVE))
         {
@@ -152,7 +152,7 @@ int main(int argc, char** argv)
         glClearColor(1, 1, 1, 0);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
     }
 

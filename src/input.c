@@ -551,16 +551,6 @@ GLFWAPI void glfwSetCursorPosCallback(GLFWcursorposfun cbfun)
     }
 
     _glfwLibrary.cursorPosCallback = cbfun;
-
-    // Call the callback function to let the application know the current
-    // cursor position
-    if (cbfun)
-    {
-        _GLFWwindow* window;
-
-        for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
-            cbfun(window, window->cursorPosX, window->cursorPosY);
-    }
 }
 
 

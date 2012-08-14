@@ -89,10 +89,10 @@ typedef struct _GLFWmonitor     _GLFWmonitor;
 
 
 //------------------------------------------------------------------------
-// Window hints, set by glfwOpenWindowHint and consumed by glfwOpenWindow
+// Window hints, set by glfwWindowHint and consumed by glfwCreateWindow
 // A bucket of semi-random stuff lumped together for historical reasons
 // This is used only by the platform independent code and only to store
-// parameters passed to us by glfwOpenWindowHint
+// parameters passed to us by glfwWindowHint
 //------------------------------------------------------------------------
 struct _GLFWhints
 {
@@ -195,21 +195,6 @@ struct _GLFWwindow
     double    scrollX, scrollY;
     char      mouseButton[GLFW_MOUSE_BUTTON_LAST + 1];
     char      key[GLFW_KEY_LAST + 1];
-
-    // Framebuffer attributes
-    GLint     redBits;
-    GLint     greenBits;
-    GLint     blueBits;
-    GLint     alphaBits;
-    GLint     depthBits;
-    GLint     stencilBits;
-    GLint     accumRedBits;
-    GLint     accumGreenBits;
-    GLint     accumBlueBits;
-    GLint     accumAlphaBits;
-    GLint     auxBuffers;
-    GLboolean stereo;
-    GLint     samples;
 
     // OpenGL extensions and context attributes
     int       glMajor, glMinor, glRevision;
@@ -335,8 +320,8 @@ double _glfwPlatformGetTime(void);
 void _glfwPlatformSetTime(double time);
 
 // Window management
-int  _glfwPlatformOpenWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWfbconfig* fbconfig);
-void _glfwPlatformCloseWindow(_GLFWwindow* window);
+int  _glfwPlatformCreateWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWfbconfig* fbconfig);
+void _glfwPlatformDestroyWindow(_GLFWwindow* window);
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title);
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height);
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y);
@@ -349,9 +334,9 @@ void _glfwPlatformWaitEvents(void);
 
 // OpenGL context management
 void _glfwPlatformMakeContextCurrent(_GLFWwindow* window);
-void _glfwPlatformSwapBuffers(void);
+void _glfwPlatformSwapBuffers(_GLFWwindow* window);
 void _glfwPlatformSwapInterval(int interval);
-void _glfwPlatformRefreshWindowParams(void);
+void _glfwPlatformRefreshWindowParams(_GLFWwindow* window);
 int  _glfwPlatformExtensionSupported(const char* extension);
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname);
 void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long mask);
@@ -377,6 +362,7 @@ void _glfwInputWindowPos(_GLFWwindow* window, int x, int y);
 void _glfwInputWindowSize(_GLFWwindow* window, int width, int height);
 void _glfwInputWindowIconify(_GLFWwindow* window, int iconified);
 void _glfwInputWindowDamage(_GLFWwindow* window);
+void _glfwInputWindowCloseRequest(_GLFWwindow* window);
 
 // Input event notification (input.c)
 void _glfwInputKey(_GLFWwindow* window, int key, int action);

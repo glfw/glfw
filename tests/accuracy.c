@@ -37,6 +37,19 @@
 
 static int cursor_x = 0, cursor_y = 0;
 static int window_width = 640, window_height = 480;
+static int swap_interval = 1;
+
+static void set_swap_interval(GLFWwindow window, int interval)
+{
+    char title[256];
+
+    swap_interval = interval;
+    glfwSwapInterval(swap_interval);
+
+    sprintf(title, "Cursor Inaccuracy Detector (interval %i)", swap_interval);
+
+    glfwSetWindowTitle(window, title);
+}
 
 static void window_size_callback(GLFWwindow window, int width, int height)
 {
@@ -56,9 +69,16 @@ static void cursor_position_callback(GLFWwindow window, int x, int y)
     cursor_y = y;
 }
 
+static void key_callback(GLFWwindow window, int key, int action)
+{
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+        set_swap_interval(window, 1 - swap_interval);
+}
+
 int main(void)
 {
     GLFWwindow window;
+    int width, height;
 
     if (!glfwInit())
     {
@@ -66,7 +86,11 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(window_width, window_height, GLFW_WINDOWED, "Cursor Inaccuracy Detector", NULL);
+    glfwSetCursorPosCallback(cursor_position_callback);
+    glfwSetWindowSizeCallback(window_size_callback);
+    glfwSetKeyCallback(key_callback);
+
+    window = glfwCreateWindow(window_width, window_height, GLFW_WINDOWED, "", NULL);
     if (!window)
     {
         glfwTerminate();
@@ -75,11 +99,14 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glfwSetCursorPosCallback(cursor_position_callback);
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSwapInterval(1);
+    glfwMakeContextCurrent(window);
 
-    while (glfwIsWindow(window))
+    glfwGetWindowSize(window, &width, &height);
+    window_size_callback(window, width, height);
+
+    set_swap_interval(window, swap_interval);
+
+    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -90,7 +117,7 @@ int main(void)
         glVertex2f((GLfloat) cursor_x, (GLfloat) window_height);
         glEnd();
 
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
     }
 

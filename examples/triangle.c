@@ -23,20 +23,21 @@ int main(void)
     }
 
     // Open a window and create its OpenGL context
-    window = glfwOpenWindow(640, 480, GLFW_WINDOWED, "Spinning Triangle", NULL);
+    window = glfwCreateWindow(640, 480, GLFW_WINDOWED, "Spinning Triangle", NULL);
     if (!window)
     {
         fprintf(stderr, "Failed to open GLFW window\n");
         exit(EXIT_FAILURE);
     }
 
+    // Enable vertical sync (on cards that support it)
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
+
     // Ensure we can capture the escape key being pressed below
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
-    // Enable vertical sync (on cards that support it)
-    glfwSwapInterval(1);
-
-    do
+    for (;;)
     {
         double t = glfwGetTime();
         glfwGetCursorPos(window, &x, NULL);
@@ -79,12 +80,15 @@ int main(void)
         glEnd();
 
         // Swap buffers
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
 
-    } // Check if the ESC key was pressed or the window was closed
-    while (glfwIsWindow(window) &&
-           glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS);
+        // Check if the ESC key was pressed or the window should be closed
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE))
+            break;
+        if (glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
+            break;
+    }
 
     // Close OpenGL window and terminate GLFW
     glfwTerminate();

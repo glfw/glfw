@@ -381,18 +381,17 @@ extern "C" {
  * Other definitions
  *************************************************************************/
 
-/* glfwOpenWindow modes */
+/* glfwCreateWindow modes */
 #define GLFW_WINDOWED             0x00010001
 #define GLFW_FULLSCREEN           0x00010002
 
 /* glfwGetWindowParam tokens */
 #define GLFW_ACTIVE               0x00020001
 #define GLFW_ICONIFIED            0x00020002
+#define GLFW_CLOSE_REQUESTED      0x00020003
 #define GLFW_OPENGL_REVISION      0x00020004
 
-/* The following constants are used for both glfwGetWindowParam
- * and glfwOpenWindowHint
- */
+/* glfwWindowHint tokens */
 #define GLFW_RED_BITS             0x00021000
 #define GLFW_GREEN_BITS           0x00021001
 #define GLFW_BLUE_BITS            0x00021002
@@ -408,6 +407,10 @@ extern "C" {
 #define GLFW_STEREO               0x0002100C
 #define GLFW_WINDOW_RESIZABLE     0x0002100D
 #define GLFW_FSAA_SAMPLES         0x0002100E
+
+/* The following constants are used with both glfwGetWindowParam
+ * and glfwWindowHint
+ */
 #define GLFW_OPENGL_VERSION_MAJOR 0x0002100F
 #define GLFW_OPENGL_VERSION_MINOR 0x00021010
 #define GLFW_OPENGL_FORWARD_COMPAT 0x00021011
@@ -552,10 +555,9 @@ GLFWAPI void glfwGetGammaRamp(GLFWgammaramp* ramp);
 GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
 
 /* Window handling */
-GLFWAPI GLFWwindow glfwOpenWindow(int width, int height, int mode, const char* title, GLFWwindow share);
-GLFWAPI void glfwOpenWindowHint(int target, int hint);
-GLFWAPI int  glfwIsWindow(GLFWwindow window);
-GLFWAPI void glfwCloseWindow(GLFWwindow window);
+GLFWAPI void glfwWindowHint(int target, int hint);
+GLFWAPI GLFWwindow glfwCreateWindow(int width, int height, int mode, const char* title, GLFWwindow share);
+GLFWAPI void glfwDestroyWindow(GLFWwindow window);
 GLFWAPI void glfwSetWindowTitle(GLFWwindow, const char* title);
 GLFWAPI void glfwGetWindowSize(GLFWwindow, int* width, int* height);
 GLFWAPI void glfwSetWindowSize(GLFWwindow, int width, int height);
@@ -607,7 +609,7 @@ GLFWAPI void   glfwSetTime(double time);
 /* OpenGL support */
 GLFWAPI void glfwMakeContextCurrent(GLFWwindow window);
 GLFWAPI GLFWwindow glfwGetCurrentContext(void);
-GLFWAPI void  glfwSwapBuffers(void);
+GLFWAPI void  glfwSwapBuffers(GLFWwindow window);
 GLFWAPI void  glfwSwapInterval(int interval);
 GLFWAPI int   glfwExtensionSupported(const char* extension);
 GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);

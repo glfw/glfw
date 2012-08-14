@@ -330,7 +330,7 @@ void DrawBoingBall( void )
 /*****************************************************************************
  * Bounce the ball.
  *****************************************************************************/
-void BounceBall( double dt )
+void BounceBall( double delta_t )
 {
    GLfloat sign;
    GLfloat deg;
@@ -358,8 +358,8 @@ void BounceBall( double dt )
    }
 
    /* Update ball position */
-   ball_x += ball_x_inc * ((float)dt*ANIMATION_SPEED);
-   ball_y += ball_y_inc * ((float)dt*ANIMATION_SPEED);
+   ball_x += ball_x_inc * ((float)delta_t*ANIMATION_SPEED);
+   ball_y += ball_y_inc * ((float)delta_t*ANIMATION_SPEED);
 
   /*
    * Simulate the effects of gravity on Y movement.
@@ -567,8 +567,8 @@ void DrawGrid( void )
 
 int main( void )
 {
-   int running;
    GLFWwindow window;
+   int width, height;
 
    /* Init GLFW */
    if( !glfwInit() )
@@ -577,9 +577,11 @@ int main( void )
       exit( EXIT_FAILURE );
    }
 
-   glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
+   glfwSetWindowSizeCallback( reshape );
 
-   window = glfwOpenWindow( 400, 400, GLFW_WINDOWED, "Boing (classic Amiga demo)", NULL );
+   glfwWindowHint(GLFW_DEPTH_BITS, 16);
+
+   window = glfwCreateWindow( 400, 400, GLFW_WINDOWED, "Boing (classic Amiga demo)", NULL );
    if (!window)
    {
        fprintf( stderr, "Failed to open GLFW window\n" );
@@ -587,15 +589,19 @@ int main( void )
        exit( EXIT_FAILURE );
    }
 
-   glfwSetWindowSizeCallback( reshape );
-   glfwSetInputMode( window, GLFW_STICKY_KEYS, GL_TRUE );
+   glfwMakeContextCurrent(window);
    glfwSwapInterval( 1 );
+
+   glfwGetWindowSize(window, &width, &height);
+   reshape(window, width, height);
+
+   glfwSetInputMode( window, GLFW_STICKY_KEYS, GL_TRUE );
    glfwSetTime( 0.0 );
 
    init();
 
    /* Main loop */
-   do
+   for (;;)
    {
        /* Timing */
        t = glfwGetTime();
@@ -606,13 +612,15 @@ int main( void )
        display();
 
        /* Swap buffers */
-       glfwSwapBuffers();
+       glfwSwapBuffers(window);
        glfwPollEvents();
 
        /* Check if we are still running */
-       running = glfwIsWindow(window) && !glfwGetKey( window, GLFW_KEY_ESCAPE );
+       if (glfwGetKey( window, GLFW_KEY_ESCAPE ))
+           break;
+       if (glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
+           break;
    }
-   while( running );
 
    glfwTerminate();
    exit( EXIT_SUCCESS );

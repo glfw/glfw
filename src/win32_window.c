@@ -31,6 +31,7 @@
 #include "internal.h"
 
 #include <stdlib.h>
+#include <malloc.h>
 
 
 //========================================================================
@@ -531,8 +532,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_CLOSE:
         {
-            // Flag this window for closing (handled in glfwPollEvents)
-            window->closeRequested = GL_TRUE;
+            _glfwInputWindowCloseRequest(window);
             return 0;
         }
 
@@ -895,7 +895,7 @@ static int createWindow(_GLFWwindow* window,
     if (!wideTitle)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "glfwOpenWindow: Failed to convert title to wide string");
+                      "glfwCreateWindow: Failed to convert title to wide string");
         return GL_FALSE;
     }
 
@@ -940,7 +940,7 @@ static void destroyWindow(_GLFWwindow* window)
 {
     _glfwDestroyContext(window);
 
-    // This is duplicated from glfwCloseWindow
+    // This is duplicated from glfwDestroyWindow
     // TODO: Stop duplicating code
     if (window == _glfwLibrary.activeWindow)
         _glfwLibrary.activeWindow = NULL;
@@ -962,14 +962,13 @@ static void destroyWindow(_GLFWwindow* window)
 // created
 //========================================================================
 
-int _glfwPlatformOpenWindow(_GLFWwindow* window,
-                            const _GLFWwndconfig* wndconfig,
-                            const _GLFWfbconfig* fbconfig)
+int _glfwPlatformCreateWindow(_GLFWwindow* window,
+                              const _GLFWwndconfig* wndconfig,
+                              const _GLFWfbconfig* fbconfig)
 {
     GLboolean recreateContext = GL_FALSE;
 
     window->Win32.desiredRefreshRate = wndconfig->refreshRate;
-    window->resizable = wndconfig->resizable;
 
     if (!_glfwLibrary.Win32.classAtom)
     {
@@ -1092,7 +1091,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 // Properly kill the window / video display
 //========================================================================
 
-void _glfwPlatformCloseWindow(_GLFWwindow* window)
+void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     destroyWindow(window);
 
@@ -1207,10 +1206,9 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 // Write back window parameters into GLFW window structure
 //========================================================================
 
-void _glfwPlatformRefreshWindowParams(void)
+void _glfwPlatformRefreshWindowParams(_GLFWwindow* window)
 {
     DEVMODE dm;
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
 
     ZeroMemory(&dm, sizeof(DEVMODE));
     dm.dmSize = sizeof(DEVMODE);
@@ -1259,7 +1257,7 @@ void _glfwPlatformPollEvents(void)
                 window = _glfwLibrary.windowListHead;
                 while (window)
                 {
-                    window->closeRequested = GL_TRUE;
+                    _glfwInputWindowCloseRequest(window);
                     window = window->next;
                 }
 

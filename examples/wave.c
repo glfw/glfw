@@ -145,7 +145,7 @@ void init_grid(void)
 // Draw scene
 //========================================================================
 
-void draw_scene(void)
+void draw_scene(GLFWwindow window)
 {
     // Clear the color and depth buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -162,7 +162,7 @@ void draw_scene(void)
 
     glDrawElements(GL_QUADS, 4 * QUADNUM, GL_UNSIGNED_INT, quad);
 
-    glfwSwapBuffers();
+    glfwSwapBuffers(window);
 }
 
 
@@ -355,7 +355,7 @@ void scroll_callback(GLFWwindow window, double x, double y)
 // Callback function for window resize events
 //========================================================================
 
-void window_resize_callback(GLFWwindow window, int width, int height)
+void window_size_callback(GLFWwindow window, int width, int height)
 {
     float ratio = 1.f;
 
@@ -373,6 +373,17 @@ void window_resize_callback(GLFWwindow window, int width, int height)
 
 
 //========================================================================
+// Callback function for window close events
+//========================================================================
+
+static int window_close_callback(GLFWwindow window)
+{
+    running = GL_FALSE;
+    return GL_TRUE;
+}
+
+
+//========================================================================
 // main
 //========================================================================
 
@@ -380,6 +391,7 @@ int main(int argc, char* argv[])
 {
     GLFWwindow window;
     double t, dt_total, t_old;
+    int width, height;
 
     if (!glfwInit())
     {
@@ -387,24 +399,27 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(640, 480, GLFW_WINDOWED, "Wave Simulation", NULL);
+    glfwSetKeyCallback(key_callback);
+    glfwSetWindowCloseCallback(window_close_callback);
+    glfwSetWindowSizeCallback(window_size_callback);
+    glfwSetMouseButtonCallback(mouse_button_callback);
+    glfwSetCursorPosCallback(cursor_position_callback);
+    glfwSetScrollCallback(scroll_callback);
+
+    window = glfwCreateWindow(640, 480, GLFW_WINDOWED, "Wave Simulation", NULL);
     if (!window)
     {
         fprintf(stderr, "Could not open window\n");
         exit(EXIT_FAILURE);
     }
 
+    glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    // Keyboard handler
-    glfwSetKeyCallback(key_callback);
-    glfwSetInputMode(window, GLFW_KEY_REPEAT, GL_TRUE);
+    glfwGetWindowSize(window, &width, &height);
+    window_size_callback(window, width, height);
 
-    // Window resize handler
-    glfwSetWindowSizeCallback(window_resize_callback);
-    glfwSetMouseButtonCallback(mouse_button_callback);
-    glfwSetCursorPosCallback(cursor_position_callback);
-    glfwSetScrollCallback(scroll_callback);
+    glfwSetInputMode(window, GLFW_KEY_REPEAT, GL_TRUE);
 
     // Initialize OpenGL
     init_opengl();
@@ -438,12 +453,9 @@ int main(int argc, char* argv[])
         adjust_grid();
 
         // Draw wave grid to OpenGL display
-        draw_scene();
+        draw_scene(window);
 
         glfwPollEvents();
-
-        // Still running?
-        running = running && glfwIsWindow(window);
     }
 
     exit(EXIT_SUCCESS);

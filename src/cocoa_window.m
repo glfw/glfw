@@ -59,8 +59,7 @@
 
 - (BOOL)windowShouldClose:(id)sender
 {
-    window->closeRequested = GL_TRUE;
-
+    _glfwInputWindowCloseRequest(window);
     return NO;
 }
 
@@ -127,7 +126,7 @@
     _GLFWwindow* window;
 
     for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
-        window->closeRequested = GL_TRUE;
+        _glfwInputWindowCloseRequest(window);
 
     return NSTerminateCancel;
 }
@@ -860,14 +859,12 @@ static GLboolean createContext(_GLFWwindow* window,
 // created
 //========================================================================
 
-int _glfwPlatformOpenWindow(_GLFWwindow* window,
-                            const _GLFWwndconfig* wndconfig,
-                            const _GLFWfbconfig* fbconfig)
+int _glfwPlatformCreateWindow(_GLFWwindow* window,
+                              const _GLFWwndconfig* wndconfig,
+                              const _GLFWfbconfig* fbconfig)
 {
     if (!initializeAppKit())
         return GL_FALSE;
-
-    window->resizable = wndconfig->resizable;
 
     // We can only have one application delegate, but we only allocate it the
     // first time we create a window to keep all window code in this file
@@ -928,13 +925,9 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
                                                  withOptions:nil];
     }
 
-    glfwMakeContextCurrent(window);
-
     NSPoint point = [[NSCursor currentCursor] hotSpot];
     window->cursorPosX = point.x;
     window->cursorPosY = point.y;
-
-    window->resizable = wndconfig->resizable;
 
     return GL_TRUE;
 }
@@ -944,7 +937,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 // Properly kill the window / video display
 //========================================================================
 
-void _glfwPlatformCloseWindow(_GLFWwindow* window)
+void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     [window->NS.object orderOut:nil];
 
@@ -1041,7 +1034,7 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 // Write back window parameters into GLFW window structure
 //========================================================================
 
-void _glfwPlatformRefreshWindowParams(void)
+void _glfwPlatformRefreshWindowParams(_GLFWwindow* window)
 {
 }
 

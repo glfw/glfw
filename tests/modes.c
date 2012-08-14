@@ -53,11 +53,11 @@ static const char* format_mode(GLFWvidmode* mode)
 {
     static char buffer[512];
 
-    snprintf(buffer, sizeof(buffer),
-             "%i x %i x %i (%i %i %i)",
-             mode->width, mode->height,
-             mode->redBits + mode->greenBits + mode->blueBits,
-             mode->redBits, mode->greenBits, mode->blueBits);
+    sprintf(buffer,
+            "%i x %i x %i (%i %i %i)",
+            mode->width, mode->height,
+            mode->redBits + mode->greenBits + mode->blueBits,
+            mode->redBits, mode->greenBits, mode->blueBits);
 
     buffer[sizeof(buffer) - 1] = '\0';
     return buffer;
@@ -68,7 +68,7 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void window_size_callback(GLFWwindow window, int width, int height)
+static void window_size_callback(GLFWwindow in_window, int width, int height)
 {
     printf("Window resized to %ix%i\n", width, height);
 
@@ -85,7 +85,7 @@ static void key_callback(GLFWwindow dummy, int key, int action)
 {
     if (key == GLFW_KEY_ESCAPE)
     {
-        glfwCloseWindow(window);
+        glfwDestroyWindow(window);
         window = NULL;
     }
 }
@@ -117,7 +117,7 @@ static void list_modes(GLFWmonitor monitor)
 
 static void test_modes(GLFWmonitor monitor)
 {
-    int i, count, width, height;
+    int i, count;
     GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
 
     glfwSetWindowSizeCallback(window_size_callback);
@@ -127,19 +127,20 @@ static void test_modes(GLFWmonitor monitor)
     for (i = 0;  i < count;  i++)
     {
         GLFWvidmode* mode = modes + i;
+        GLFWvidmode current;
 
-        glfwOpenWindowHint(GLFW_RED_BITS, mode->redBits);
-        glfwOpenWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-        glfwOpenWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+        glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+        glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+        glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 
         printf("Testing mode %u on monitor %s: %s\n",
                (unsigned int) i,
                glfwGetMonitorString(monitor, GLFW_MONITOR_NAME),
                format_mode(mode));
 
-        window = glfwOpenWindow(mode->width, mode->height,
-                                GLFW_FULLSCREEN, "Video Mode Test",
-                                NULL);
+        window = glfwCreateWindow(mode->width, mode->height,
+                                  GLFW_FULLSCREEN, "Video Mode Test",
+                                  NULL);
         if (!window)
         {
             printf("Failed to enter mode %u: %s\n",
@@ -148,13 +149,15 @@ static void test_modes(GLFWmonitor monitor)
             continue;
         }
 
-        glfwSetTime(0.0);
+        glfwMakeContextCurrent(window);
         glfwSwapInterval(1);
+
+        glfwSetTime(0.0);
 
         while (glfwGetTime() < 5.0)
         {
             glClear(GL_COLOR_BUFFER_BIT);
-            glfwSwapBuffers();
+            glfwSwapBuffers(window);
             glfwPollEvents();
 
             if (!window)
@@ -164,31 +167,31 @@ static void test_modes(GLFWmonitor monitor)
             }
         }
 
-        if (glfwGetWindowParam(window, GLFW_RED_BITS) != mode->redBits ||
-            glfwGetWindowParam(window, GLFW_GREEN_BITS) != mode->greenBits ||
-            glfwGetWindowParam(window, GLFW_BLUE_BITS) != mode->blueBits)
+        glGetIntegerv(GL_RED_BITS, &current.redBits);
+        glGetIntegerv(GL_GREEN_BITS, &current.greenBits);
+        glGetIntegerv(GL_BLUE_BITS, &current.blueBits);
+
+        glfwGetWindowSize(window, &current.width, &current.height);
+
+        if (current.redBits != mode->redBits ||
+            current.greenBits != mode->greenBits ||
+            current.blueBits != mode->blueBits)
         {
             printf("*** Color bit mismatch: (%i %i %i) instead of (%i %i %i)\n",
-                   glfwGetWindowParam(window, GLFW_RED_BITS),
-                   glfwGetWindowParam(window, GLFW_GREEN_BITS),
-                   glfwGetWindowParam(window, GLFW_BLUE_BITS),
-                   mode->redBits,
-                   mode->greenBits,
-                   mode->blueBits);
+                   current.redBits, current.greenBits, current.blueBits,
+                   mode->redBits, mode->greenBits, mode->blueBits);
         }
 
-        glfwGetWindowSize(window, &width, &height);
-
-        if (width != mode->width || height != mode->height)
+        if (current.width != mode->width || current.height != mode->height)
         {
             printf("*** Size mismatch: %ix%i instead of %ix%i\n",
-                   width, height,
+                   current.width, current.height,
                    mode->width, mode->height);
         }
 
         printf("Closing window\n");
 
-        glfwCloseWindow(window);
+        glfwDestroyWindow(window);
         glfwPollEvents();
         window = NULL;
     }

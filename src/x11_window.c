@@ -44,16 +44,6 @@
 #define Button7            7
 
 //========================================================================
-// Checks whether the event is a MapNotify for the specified window
-//========================================================================
-
-static Bool isMapNotify(Display* d, XEvent* e, char* arg)
-{
-    return (e->type == MapNotify) && (e->xmap.window == (Window)arg);
-}
-
-
-//========================================================================
 // Translates an X Window key to internal coding
 //========================================================================
 
@@ -94,7 +84,6 @@ static int translateChar(XKeyEvent* event)
 static GLboolean createWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig)
 {
-    XEvent event;
     unsigned long wamask;
     XSetWindowAttributes wa;
     XVisualInfo* visual = _glfwGetContextVisual(window);
@@ -243,8 +232,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 
     // Make sure the window is mapped before proceeding
     XMapWindow(_glfwLibrary.X11.display, window->X11.handle);
-    XPeekIfEvent(_glfwLibrary.X11.display, &event, isMapNotify,
-                 (char*) window->X11.handle);
+    XFlush(_glfwLibrary.X11.display);
 
     return GL_TRUE;
 }
@@ -723,7 +711,7 @@ static void processSingleEvent(void)
                 // The window manager was asked to close the window, for example by
                 // the user pressing a 'close' window decoration button
 
-                window->closeRequested = GL_TRUE;
+                _glfwInputWindowCloseRequest(window);
             }
             else if (_glfwLibrary.X11.wmPing != None &&
                      (Atom) event.xclient.data.l[0] == _glfwLibrary.X11.wmPing)
@@ -888,24 +876,6 @@ static void processSingleEvent(void)
     }
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-//========================================================================
-// Processes all pending events
-//========================================================================
-
-void _glfwProcessPendingEvents(void)
-{
-    int i, count = XPending(_glfwLibrary.X11.display);
-
-    for (i = 0;  i < count;  i++)
-        processSingleEvent();
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -915,12 +885,11 @@ void _glfwProcessPendingEvents(void)
 // the OpenGL rendering context is created
 //========================================================================
 
-int _glfwPlatformOpenWindow(_GLFWwindow* window,
-                            const _GLFWwndconfig* wndconfig,
-                            const _GLFWfbconfig* fbconfig)
+int _glfwPlatformCreateWindow(_GLFWwindow* window,
+                              const _GLFWwndconfig* wndconfig,
+                              const _GLFWfbconfig* fbconfig)
 {
     window->refreshRate = wndconfig->refreshRate;
-    window->resizable   = wndconfig->resizable;
 
     if (!_glfwCreateContext(window, wndconfig, fbconfig))
         return GL_FALSE;
@@ -942,9 +911,6 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     {
         enterFullscreenMode(window);
     }
-
-    // Process the window map event and any other that may have arrived
-    _glfwProcessPendingEvents();
 
     // Retrieve and set initial cursor position
     {
@@ -974,7 +940,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 // Properly kill the window/video display
 //========================================================================
 
-void _glfwPlatformCloseWindow(_GLFWwindow* window)
+void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     if (window->mode == GLFW_FULLSCREEN)
         leaveFullscreenMode(window);
@@ -1138,10 +1104,8 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 // Read back framebuffer parameters from the context
 //========================================================================
 
-void _glfwPlatformRefreshWindowParams(void)
+void _glfwPlatformRefreshWindowParams(_GLFWwindow* window)
 {
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
-
     // Retrieve refresh rate if possible
     if (_glfwLibrary.X11.RandR.available)
     {

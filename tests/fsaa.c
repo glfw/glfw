@@ -96,9 +96,9 @@ int main(int argc, char** argv)
     glfwSetKeyCallback(key_callback);
     glfwSetWindowSizeCallback(window_size_callback);
 
-    glfwOpenWindowHint(GLFW_FSAA_SAMPLES, samples);
+    glfwWindowHint(GLFW_FSAA_SAMPLES, samples);
 
-    window = glfwOpenWindow(800, 400, GLFW_WINDOWED, "Aliasing Detector", NULL);
+    window = glfwCreateWindow(800, 400, GLFW_WINDOWED, "Aliasing Detector", NULL);
     if (!window)
     {
         glfwTerminate();
@@ -106,6 +106,9 @@ int main(int argc, char** argv)
         fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
+
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
 
     if (!glfwExtensionSupported("GL_ARB_multisample"))
     {
@@ -115,9 +118,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    glfwSwapInterval(1);
-
-    samples = glfwGetWindowParam(window, GLFW_FSAA_SAMPLES);
+    glGetIntegerv(GL_SAMPLES_ARB, &samples);
     if (samples)
         printf("Context reports FSAA is available with %i samples\n", samples);
     else
@@ -127,7 +128,7 @@ int main(int argc, char** argv)
     gluOrtho2D(0.f, 1.f, 0.f, 0.5f);
     glMatrixMode(GL_MODELVIEW);
 
-    while (glfwIsWindow(window))
+    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
         GLfloat time = (GLfloat) glfwGetTime();
 
@@ -147,7 +148,7 @@ int main(int argc, char** argv)
         glEnable(GL_MULTISAMPLE_ARB);
         glRectf(-0.15f, -0.15f, 0.15f, 0.15f);
 
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
     }
 

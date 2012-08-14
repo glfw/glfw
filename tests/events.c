@@ -40,9 +40,12 @@
 #include <ctype.h>
 #include <locale.h>
 
+// These must match the input mode defaults
 static GLboolean keyrepeat  = GL_FALSE;
 static GLboolean systemkeys = GL_TRUE;
 static GLboolean closeable = GL_TRUE;
+
+// Event index
 static unsigned int counter = 0;
 
 static const char* get_key_name(int key)
@@ -244,6 +247,7 @@ static void window_size_callback(GLFWwindow window, int width, int height)
 static int window_close_callback(GLFWwindow window)
 {
     printf("%08x at %0.3f: Window close\n", counter++, glfwGetTime());
+
     return closeable;
 }
 
@@ -252,7 +256,7 @@ static void window_refresh_callback(GLFWwindow window)
     printf("%08x at %0.3f: Window refresh\n", counter++, glfwGetTime());
 
     glClear(GL_COLOR_BUFFER_BIT);
-    glfwSwapBuffers();
+    glfwSwapBuffers(window);
 }
 
 static void window_focus_callback(GLFWwindow window, int activated)
@@ -367,6 +371,7 @@ void monitor_callback(GLFWmonitor monitor, int event)
 int main(void)
 {
     GLFWwindow window;
+    int width, height;
 
     setlocale(LC_ALL, "");
 
@@ -391,7 +396,7 @@ int main(void)
     glfwSetCharCallback(char_callback);
     glfwSetMonitorDeviceCallback(monitor_callback);
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Event Linter", NULL);
+    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Event Linter", NULL);
     if (!window)
     {
         glfwTerminate();
@@ -402,14 +407,18 @@ int main(void)
 
     printf("Window opened\n");
 
+    glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+
+    glfwGetWindowSize(window, &width, &height);
+    printf("Window size should be %ix%i\n", width, height);
 
     printf("Key repeat should be %s\n", keyrepeat ? "enabled" : "disabled");
     printf("System keys should be %s\n", systemkeys ? "enabled" : "disabled");
 
     printf("Main loop starting\n");
 
-    while (glfwIsWindow(window) == GL_TRUE)
+    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
         glfwWaitEvents();
 
     glfwTerminate();

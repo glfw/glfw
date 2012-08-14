@@ -12,16 +12,19 @@ include_directories(${GLFW_SOURCE_DIR}/include
                     ${GLFW_SOURCE_DIR}/support
                     ${OPENGL_INCLUDE_DIR})
 
-add_executable(clipboard clipboard.c getopt.c)
+set(GETOPT ${GLFW_SOURCE_DIR}/support/getopt.h
+           ${GLFW_SOURCE_DIR}/support/getopt.c)
+
+add_executable(clipboard clipboard.c ${GETOPT})
 add_executable(defaults defaults.c)
 add_executable(events events.c)
-add_executable(fsaa fsaa.c getopt.c)
+add_executable(fsaa fsaa.c ${GETOPT})
 add_executable(fsfocus fsfocus.c)
-add_executable(gamma gamma.c getopt.c)
-add_executable(glfwinfo glfwinfo.c getopt.c)
-add_executable(iconify iconify.c getopt.c)
+add_executable(gamma gamma.c ${GETOPT})
+add_executable(glfwinfo glfwinfo.c ${GETOPT})
+add_executable(iconify iconify.c ${GETOPT})
 add_executable(joysticks joysticks.c)
-add_executable(modes modes.c getopt.c)
+add_executable(modes modes.c ${GETOPT})
 add_executable(peter peter.c)
 add_executable(reopen reopen.c)
 

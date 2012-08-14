@@ -47,21 +47,22 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "English 日本語 русский язык 官話", NULL);
+    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "English 日本語 русский язык 官話", NULL);
     if (!window)
     {
         fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
 
+    glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
     glfwSetWindowSizeCallback(window_size_callback);
 
-    while (glfwIsWindow(window) == GL_TRUE)
+    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
         glClear(GL_COLOR_BUFFER_BIT);
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwWaitEvents();
     }
 

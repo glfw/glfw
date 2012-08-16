@@ -34,18 +34,14 @@
 #include <string.h>
 
 
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW platform API                      //////
-//////////////////////////////////////////////////////////////////////////
-
 //========================================================================
 // Create a monitor struct from the specified information
 //========================================================================
 
 #if defined (_GLFW_HAS_XRANDR)
-_GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
-                                  XRROutputInfo* outputInfo,
-                                  XRRCrtcInfo* crtcInfo)
+static _GLFWmonitor** createMonitor(_GLFWmonitor** current,
+                                    XRROutputInfo* outputInfo,
+                                    XRRCrtcInfo* crtcInfo)
 {
     *current = malloc(sizeof(_GLFWmonitor));
     memset(*current, 0, sizeof(_GLFWmonitor));
@@ -63,6 +59,10 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
 }
 #endif /*_GLFW_HAS_XRANDR*/
 
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 //========================================================================
 // Destroy a monitor struct
@@ -130,7 +130,7 @@ _GLFWmonitor* _glfwCreateMonitors(void)
                     }
                 }
 
-                monitor = _glfwCreateMonitor(monitor, outputInfo, crtcInfo);
+                monitor = createMonitor(monitor, outputInfo, crtcInfo);
 
                 // Freeing of the outputInfo is done in _glfwDestroyMonitor
                 XRRFreeCrtcInfo(crtcInfo);

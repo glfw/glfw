@@ -5,6 +5,7 @@
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2012 Torsten Walluhn <tw@mad-cad.net>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -86,7 +87,7 @@ typedef struct
 static _glfwJoystick _glfwJoysticks[GLFW_JOYSTICK_LAST + 1];
 
 
-void getElementsCFArrayHandler(const void* value, void* parameter);
+static void getElementsCFArrayHandler(const void* value, void* parameter);
 
 
 //========================================================================
@@ -610,16 +611,16 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
     {
         _glfwJoystickElement* hat = (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick.hats, i);
 
-        const int value = hat->value;
+        int value = hat->value;
         if (value < 0 || value > 8)
             value = 8;
 
         for (j = 0;  j < 4 && button < numbuttons;  j++)
         {
             if (directions[value] & (1 << j))
-                buttons[button = GLFW_PRESS;
+                buttons[button] = GLFW_PRESS;
             else
-                buttons[button = GLFW_RELEASE;
+                buttons[button] = GLFW_RELEASE;
 
             button++;
         }

@@ -410,7 +410,7 @@ GLFWAPI void glfwWindowHint(int target, int hint)
         case GLFW_STEREO:
             _glfwLibrary.hints.stereo = hint;
             break;
-        case GLFW_WINDOW_RESIZABLE:
+        case GLFW_RESIZABLE:
             _glfwLibrary.hints.resizable = hint;
             break;
         case GLFW_FSAA_SAMPLES:
@@ -705,7 +705,7 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window->closeRequested;
         case GLFW_REFRESH_RATE:
             return window->refreshRate;
-        case GLFW_WINDOW_RESIZABLE:
+        case GLFW_RESIZABLE:
             return window->resizable;
         case GLFW_OPENGL_VERSION_MAJOR:
             return window->glMajor;

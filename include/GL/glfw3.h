@@ -540,6 +540,8 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow, int* xpos, int* ypos);
 GLFWAPI void glfwSetWindowPos(GLFWwindow, int xpos, int ypos);
 GLFWAPI void glfwIconifyWindow(GLFWwindow window);
 GLFWAPI void glfwRestoreWindow(GLFWwindow window);
+GLFWAPI void glfwShowWindow(GLFWwindow window);
+GLFWAPI void glfwHideWindow(GLFWwindow window);
 GLFWAPI int  glfwGetWindowParam(GLFWwindow window, int param);
 GLFWAPI void glfwSetWindowUserPointer(GLFWwindow window, void* pointer);
 GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow window);

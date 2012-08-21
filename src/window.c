@@ -318,6 +318,8 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
         return GL_FALSE;
     }
 
+    glfwShowWindow(window, 1); // TODO: consider if this is necessary!
+
     // Cache the actual (as opposed to requested) window parameters
     _glfwPlatformRefreshWindowParams(window);
 
@@ -620,6 +622,38 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow handle)
         return;
 
     _glfwPlatformIconifyWindow(window);
+}
+
+
+//========================================================================
+// Window show
+//========================================================================
+
+GLFWAPI void glfwShowWindow(GLFWwindow window)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    _glfwPlatformShowWindow((_GLFWwindow*)window);
+}
+
+
+//========================================================================
+// Window hide
+//========================================================================
+
+GLFWAPI void glfwHideWindow(GLFWwindow window)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    _glfwPlatformHideWindow((_GLFWwindow*)window);
 }
 
 

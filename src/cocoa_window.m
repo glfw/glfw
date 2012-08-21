@@ -906,7 +906,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (!createContext(window, wndconfig, fbconfig))
         return GL_FALSE;
 
-    [window->NS.object makeKeyAndOrderFront:nil];
     [window->NSGL.context setView:[window->NS.object contentView]];
 
     if (wndconfig->mode == GLFW_FULLSCREEN)
@@ -1029,6 +1028,25 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
     [window->NS.object deminiaturize:nil];
 }
 
+
+//========================================================================
+// Show window
+//========================================================================
+
+void _glfwPlatformShowWindow(_GLFWwindow* window)
+{
+    [window->NS.object makeKeyAndOrderFront:nil];
+}
+
+
+//========================================================================
+// Hide window
+//========================================================================
+
+void _glfwPlatformHideWindow(_GLFWwindow* window)
+{
+    [window->NS.object orderOut:nil];
+}
 
 //========================================================================
 // Write back window parameters into GLFW window structure

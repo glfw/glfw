@@ -302,6 +302,8 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height);
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y);
 void _glfwPlatformIconifyWindow(_GLFWwindow* window);
 void _glfwPlatformRestoreWindow(_GLFWwindow* window);
+void _glfwPlatformShowWindow(_GLFWwindow* window);
+void _glfwPlatformHideWindow(_GLFWwindow* window);
 
 // Event management
 void _glfwPlatformPollEvents(void);

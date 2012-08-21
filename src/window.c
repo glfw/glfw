@@ -318,7 +318,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
         return GL_FALSE;
     }
 
-    glfwShowWindow(window, 1); // TODO: consider if this is necessary!
+    glfwShowWindow(window);
 
     // Cache the actual (as opposed to requested) window parameters
     _glfwPlatformRefreshWindowParams(window);

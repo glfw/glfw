@@ -144,7 +144,10 @@
     _GLFWwindow* window;
 
     for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
-        _glfwInputWindowVisibility(window, GL_TRUE);
+    {
+        if ([window->NS.object isVisible])
+            _glfwInputWindowVisibility(window, GL_TRUE);
+    }
 }
 
 @end
@@ -1052,6 +1055,7 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
     [window->NS.object makeKeyAndOrderFront:nil];
+    _glfwInputWindowVisibility(window, GL_TRUE);
 }
 
 
@@ -1062,6 +1066,7 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     [window->NS.object orderOut:nil];
+    _glfwInputWindowVisibility(window, GL_FALSE);
 }
 
 //========================================================================

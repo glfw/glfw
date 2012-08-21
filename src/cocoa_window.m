@@ -131,6 +131,22 @@
     return NSTerminateCancel;
 }
 
+- (void)applicationDidHide:(NSNotification *)notification
+{
+    _GLFWwindow* window;
+
+    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+        _glfwInputWindowVisibility(window, GL_FALSE);
+}
+
+- (void)applicationDidUnhide:(NSNotification *)notification
+{
+    _GLFWwindow* window;
+
+    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+        _glfwInputWindowVisibility(window, GL_TRUE);
+}
+
 @end
 
 

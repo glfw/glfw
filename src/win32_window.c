@@ -418,6 +418,12 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             return 0;
         }
 
+        case WM_SHOWWINDOW:
+        {
+            _glfwInputWindowVisibility(window, wParam ? GL_TRUE : GL_FALSE);
+            break;
+        }
+
         case WM_SYSCOMMAND:
         {
             switch (wParam & 0xfff0)

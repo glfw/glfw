@@ -736,6 +736,7 @@ static void processSingleEvent(void)
                 return;
             }
 
+            _glfwInputWindowVisibility(window, GL_TRUE);
             _glfwInputWindowIconify(window, GL_FALSE);
             break;
         }
@@ -750,6 +751,7 @@ static void processSingleEvent(void)
                 return;
             }
 
+            _glfwInputWindowVisibility(window, GL_FALSE);
             _glfwInputWindowIconify(window, GL_TRUE);
             break;
         }

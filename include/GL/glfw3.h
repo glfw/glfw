@@ -417,6 +417,7 @@ extern "C" {
 #define GLFW_OPENGL_PROFILE       0x00022004
 #define GLFW_OPENGL_ROBUSTNESS    0x00022005
 #define GLFW_RESIZABLE            0x00022006
+#define GLFW_VISIBLE              0x00022007
 
 /* GLFW_OPENGL_ROBUSTNESS mode tokens */
 #define GLFW_OPENGL_NO_ROBUSTNESS         0x00000000

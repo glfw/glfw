@@ -82,8 +82,9 @@ void _glfwSetDefaultWindowHints(void)
     _glfwLibrary.hints.glMajor = 1;
     _glfwLibrary.hints.glMinor = 0;
 
-    // The default is to allow window resizing
+    // The default is to show the window and allow window resizing
     _glfwLibrary.hints.resizable = GL_TRUE;
+    _glfwLibrary.hints.visible   = GL_TRUE;
 }
 
 
@@ -177,6 +178,16 @@ void _glfwInputWindowIconify(_GLFWwindow* window, int iconified)
 
 
 //========================================================================
+// Register window visibility events
+//========================================================================
+
+void _glfwInputWindowVisibility(_GLFWwindow* window, int visible)
+{
+    window->visible = visible;
+}
+
+
+//========================================================================
 // Register window damage events
 //========================================================================
 
@@ -246,6 +257,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     wndconfig.title          = title;
     wndconfig.refreshRate    = Max(_glfwLibrary.hints.refreshRate, 0);
     wndconfig.resizable      = _glfwLibrary.hints.resizable ? GL_TRUE : GL_FALSE;
+    wndconfig.visible        = _glfwLibrary.hints.visible ? GL_TRUE : GL_FALSE;
     wndconfig.glMajor        = _glfwLibrary.hints.glMajor;
     wndconfig.glMinor        = _glfwLibrary.hints.glMinor;
     wndconfig.glForward      = _glfwLibrary.hints.glForward ? GL_TRUE : GL_FALSE;
@@ -318,8 +330,6 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
         return GL_FALSE;
     }
 
-    glfwShowWindow(window);
-
     // Cache the actual (as opposed to requested) window parameters
     _glfwPlatformRefreshWindowParams(window);
 
@@ -352,6 +362,9 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     // from previous uses of our bit of VRAM
     glClear(GL_COLOR_BUFFER_BIT);
     _glfwPlatformSwapBuffers(window);
+
+    if (wndconfig.visible)
+        glfwShowWindow(window);
 
     return window;
 }
@@ -412,6 +425,9 @@ GLFWAPI void glfwWindowHint(int target, int hint)
             break;
         case GLFW_RESIZABLE:
             _glfwLibrary.hints.resizable = hint;
+            break;
+        case GLFW_VISIBLE:
+            _glfwLibrary.hints.visible = hint;
             break;
         case GLFW_FSAA_SAMPLES:
             _glfwLibrary.hints.samples = hint;

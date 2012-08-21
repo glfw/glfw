@@ -109,6 +109,7 @@ struct _GLFWhints
     int         auxBuffers;
     GLboolean   stereo;
     GLboolean   resizable;
+    GLboolean   visible;
     int         samples;
     int         glMajor;
     int         glMinor;
@@ -131,6 +132,7 @@ struct _GLFWwndconfig
     const char*   title;
     int           refreshRate;
     GLboolean     resizable;
+    GLboolean     visible;
     int           glMajor;
     int           glMinor;
     GLboolean     glForward;
@@ -181,6 +183,7 @@ struct _GLFWwindow
     int       positionX, positionY;
     int       mode;            // GLFW_WINDOW or GLFW_FULLSCREEN
     GLboolean resizable;       // GL_TRUE if user may resize this window
+    GLboolean visible;         // GL_TRUE if this window is visible
     int       refreshRate;     // monitor refresh rate
     void*     userPointer;
 
@@ -338,6 +341,7 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated);
 void _glfwInputWindowPos(_GLFWwindow* window, int x, int y);
 void _glfwInputWindowSize(_GLFWwindow* window, int width, int height);
 void _glfwInputWindowIconify(_GLFWwindow* window, int iconified);
+void _glfwInputWindowVisibility(_GLFWwindow* window, int visible);
 void _glfwInputWindowDamage(_GLFWwindow* window);
 void _glfwInputWindowCloseRequest(_GLFWwindow* window);
 

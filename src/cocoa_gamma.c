@@ -40,7 +40,7 @@
 //************************************************************************
 
 //========================================================================
-// Save the original gamma ramp so that we can restore it later
+// Save the original gamma ramp so that it can be restored later
 //========================================================================
 
 void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)

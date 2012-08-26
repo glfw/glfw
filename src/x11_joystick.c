@@ -30,45 +30,126 @@
 
 #include "internal.h"
 
-
-//========================================================================
-// Note: Only Linux joystick input is supported at the moment. Other
-// systems will behave as if there are no joysticks connected.
-//========================================================================
-
-
 #ifdef _GLFW_USE_LINUX_JOYSTICKS
+#include <linux/joystick.h>
 
-//------------------------------------------------------------------------
-// Here are the Linux joystick driver v1.x interface definitions that we
-// use (we do not want to rely on <linux/joystick.h>):
-//------------------------------------------------------------------------
-
-#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
-#include <errno.h>
+
 #include <stdio.h>
 #include <stdlib.h>
-
-// Joystick event types
-#define JS_EVENT_BUTTON     0x01    /* button pressed/released */
-#define JS_EVENT_AXIS       0x02    /* joystick moved */
-#define JS_EVENT_INIT       0x80    /* initial state of device */
-
-// Joystick event structure
-struct js_event {
-    unsigned int  time;    /* (u32) event timestamp in milliseconds */
-    signed short  value;   /* (s16) value */
-    unsigned char type;    /* (u8)  event type */
-    unsigned char number;  /* (u8)  axis/button number */
-};
-
-// Joystick IOCTL commands
-#define JSIOCGVERSION  _IOR('j', 0x01, int)   /* get driver version (u32) */
-#define JSIOCGAXES     _IOR('j', 0x11, char)  /* get number of axes (u8) */
-#define JSIOCGBUTTONS  _IOR('j', 0x12, char)  /* get number of buttons (u8) */
-
 #endif // _GLFW_USE_LINUX_JOYSTICKS
+
+
+//========================================================================
+// Attempt to open the specified joystick device
+//========================================================================
+
+static int openJoystickDevice(int joy, const char* path)
+{
+#ifdef _GLFW_USE_LINUX_JOYSTICKS
+    char numAxes, numButtons;
+    int fd, version;
+
+    fd = open(path, O_NONBLOCK);
+    if (fd == -1)
+        return GL_FALSE;
+
+    _glfwLibrary.X11.joystick[joy].fd = fd;
+
+    // Verify that the joystick driver version is at least 1.0
+    ioctl(fd, JSIOCGVERSION, &version);
+    if (version < 0x010000)
+    {
+        // It's an old 0.x interface (we don't support it)
+        close(fd);
+        return GL_FALSE;
+    }
+
+    ioctl(fd, JSIOCGAXES, &numAxes);
+    _glfwLibrary.X11.joystick[joy].numAxes = (int) numAxes;
+
+    ioctl(fd, JSIOCGBUTTONS, &numButtons);
+    _glfwLibrary.X11.joystick[joy].numButtons = (int) numButtons;
+
+    _glfwLibrary.X11.joystick[joy].axis =
+        (float*) malloc(sizeof(float) * numAxes);
+    if (_glfwLibrary.X11.joystick[joy].axis == NULL)
+    {
+        close(fd);
+
+        _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+        return GL_FALSE;
+    }
+
+    _glfwLibrary.X11.joystick[joy].button =
+        (unsigned char*) malloc(sizeof(char) * numButtons);
+    if (_glfwLibrary.X11.joystick[joy].button == NULL)
+    {
+        free(_glfwLibrary.X11.joystick[joy].axis);
+        close(fd);
+
+        _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+        return GL_FALSE;
+    }
+
+    _glfwLibrary.X11.joystick[joy].present = GL_TRUE;
+#endif // _GLFW_USE_LINUX_JOYSTICKS
+
+    return GL_TRUE;
+}
+
+
+//========================================================================
+// Polls for and processes events for all present joysticks
+//========================================================================
+
+static void pollJoystickEvents(void)
+{
+#ifdef _GLFW_USE_LINUX_JOYSTICKS
+    int i;
+    struct js_event e;
+
+    for (i = 0;  i <= GLFW_JOYSTICK_LAST;  i++)
+    {
+        if (!_glfwLibrary.X11.joystick[i].present)
+            continue;
+
+        // Read all queued events (non-blocking)
+        while (read(_glfwLibrary.X11.joystick[i].fd, &e, sizeof(e)) > 0)
+        {
+            // We don't care if it's an init event or not
+            e.type &= ~JS_EVENT_INIT;
+
+            switch (e.type)
+            {
+                case JS_EVENT_AXIS:
+                    _glfwLibrary.X11.joystick[i].axis[e.number] =
+                        (float) e.value / 32767.0f;
+
+                    // We need to change the sign for the Y axes, so that
+                    // positive = up/forward, according to the GLFW spec.
+                    if (e.number & 1)
+                    {
+                        _glfwLibrary.X11.joystick[i].axis[e.number] =
+                            -_glfwLibrary.X11.joystick[i].axis[e.number];
+                    }
+
+                    break;
+
+                case JS_EVENT_BUTTON:
+                    _glfwLibrary.X11.joystick[i].button[e.number] =
+                        e.value ? GLFW_PRESS : GLFW_RELEASE;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+#endif // _GLFW_USE_LINUX_JOYSTICKS
+}
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -82,97 +163,24 @@ struct js_event {
 void _glfwInitJoysticks(void)
 {
 #ifdef _GLFW_USE_LINUX_JOYSTICKS
-    int  k, n, fd, joy_count;
-    const char* joy_base_name;
-    char joy_dev_name[20];
-    int  driver_version = 0x000800;
-    char ret_data;
-#endif // _GLFW_USE_LINUX_JOYSTICKS
-    int  i;
-
-    // Start by saying that there are no sticks
-    for (i = 0;  i <= GLFW_JOYSTICK_LAST;  i++)
-        _glfwJoy[i].Present = GL_FALSE;
-
-#ifdef _GLFW_USE_LINUX_JOYSTICKS
-
-    // Try to open joysticks (nonblocking)
-    joy_count = 0;
-    for (k = 0;  k <= 1 && joy_count <= GLFW_JOYSTICK_LAST;  k++)
+    int i, j, joy = 0;
+    char path[20];
+    const char* bases[] =
     {
-        // Pick joystick base name
-        switch (k)
+        "/dev/input/js",
+        "/dev/js"
+    };
+
+    for (i = 0;  i < sizeof(bases) / sizeof(bases[0]);  i++)
+    {
+        for (j = 0;  j < 50;  j++)
         {
-            case 0:
-                // USB joysticks
-                joy_base_name = "/dev/input/js";
+            if (joy > GLFW_JOYSTICK_LAST)
                 break;
-            case 1:
-                // "Legacy" joysticks
-                joy_base_name = "/dev/js";
-                break;
-            default:
-                // This should never happen
-                continue;
-        }
 
-        // Try to open a few of these sticks
-        for (i = 0;  i <= 50 && joy_count <= GLFW_JOYSTICK_LAST;  i++)
-        {
-            sprintf(joy_dev_name, "%s%d", joy_base_name, i);
-            fd = open(joy_dev_name, O_NONBLOCK);
-            if (fd != -1)
-            {
-                // Remember fd
-                _glfwJoy[joy_count].fd = fd;
-
-                // Check that the joystick driver version is 1.0+
-                ioctl(fd, JSIOCGVERSION, &driver_version);
-                if (driver_version < 0x010000)
-                {
-                    // It's an old 0.x interface (we don't support it)
-                    close(fd);
-                    continue;
-                }
-
-                // Get number of joystick axes
-                ioctl(fd, JSIOCGAXES, &ret_data);
-                _glfwJoy[joy_count].NumAxes = (int) ret_data;
-
-                // Get number of joystick buttons
-                ioctl(fd, JSIOCGBUTTONS, &ret_data);
-                _glfwJoy[joy_count].NumButtons = (int) ret_data;
-
-                // Allocate memory for joystick state
-                _glfwJoy[joy_count].Axis =
-                    (float*) malloc(sizeof(float) *
-                                     _glfwJoy[joy_count].NumAxes);
-                if (_glfwJoy[joy_count].Axis == NULL)
-                {
-                    close(fd);
-                    continue;
-                }
-                _glfwJoy[joy_count].Button =
-                    (unsigned char*) malloc(sizeof(char) *
-                                     _glfwJoy[joy_count].NumButtons);
-                if (_glfwJoy[joy_count].Button == NULL)
-                {
-                    free(_glfwJoy[joy_count].Axis);
-                    close(fd);
-                    continue;
-                }
-
-                // Clear joystick state
-                for (n = 0;  n < _glfwJoy[joy_count].NumAxes;  n++)
-                    _glfwJoy[joy_count].Axis[n] = 0.0f;
-
-                for (n = 0;  n < _glfwJoy[joy_count].NumButtons;  n++)
-                    _glfwJoy[joy_count].Button[n] = GLFW_RELEASE;
-
-                // The joystick is supported and connected
-                _glfwJoy[joy_count].Present = GL_TRUE;
-                joy_count++;
-            }
+            sprintf(path, "%s%i", bases[i], j);
+            if (openJoystickDevice(joy, path))
+                joy++;
         }
     }
 #endif // _GLFW_USE_LINUX_JOYSTICKS
@@ -185,72 +193,18 @@ void _glfwInitJoysticks(void)
 
 void _glfwTerminateJoysticks(void)
 {
-
 #ifdef _GLFW_USE_LINUX_JOYSTICKS
-
     int i;
 
-    // Close any opened joysticks
     for (i = 0;  i <= GLFW_JOYSTICK_LAST;  i++)
     {
-        if (_glfwJoy[i].Present)
+        if (_glfwLibrary.X11.joystick[i].present)
         {
-            close(_glfwJoy[i].fd);
-            free(_glfwJoy[i].Axis);
-            free(_glfwJoy[i].Button);
+            close(_glfwLibrary.X11.joystick[i].fd);
+            free(_glfwLibrary.X11.joystick[i].axis);
+            free(_glfwLibrary.X11.joystick[i].button);
 
-            _glfwJoy[i].Present = GL_FALSE;
-        }
-    }
-
-#endif // _GLFW_USE_LINUX_JOYSTICKS
-
-}
-
-
-//========================================================================
-// Empty joystick event queue
-//========================================================================
-
-static void pollJoystickEvents(void)
-{
-#ifdef _GLFW_USE_LINUX_JOYSTICKS
-
-    struct js_event e;
-    int i;
-
-    // Get joystick events for all GLFW joysticks
-    for (i = 0;  i <= GLFW_JOYSTICK_LAST;  i++)
-    {
-        // Is the stick present?
-        if (_glfwJoy[i].Present)
-        {
-            // Read all queued events (non-blocking)
-            while (read(_glfwJoy[i].fd, &e, sizeof(struct js_event)) > 0)
-            {
-                // We don't care if it's an init event or not
-                e.type &= ~JS_EVENT_INIT;
-
-                // Check event type
-                switch (e.type)
-                {
-                    case JS_EVENT_AXIS:
-                        _glfwJoy[i].Axis[e.number] = (float) e.value / 32767.0f;
-                        // We need to change the sign for the Y axes, so that
-                        // positive = up/forward, according to the GLFW spec.
-                        if (e.number & 1)
-                            _glfwJoy[i].Axis[e.number] = -_glfwJoy[i].Axis[e.number];
-                        break;
-
-                    case JS_EVENT_BUTTON:
-                        _glfwJoy[i].Button[e.number] =
-                            e.value ? GLFW_PRESS : GLFW_RELEASE;
-                        break;
-
-                    default:
-                        break;
-                }
-            }
+            _glfwLibrary.X11.joystick[i].present = GL_FALSE;
         }
     }
 #endif // _GLFW_USE_LINUX_JOYSTICKS
@@ -267,11 +221,8 @@ static void pollJoystickEvents(void)
 
 int _glfwPlatformGetJoystickParam(int joy, int param)
 {
-    if (!_glfwJoy[joy].Present)
-    {
-        // TODO: Figure out if this is an error
+    if (!_glfwLibrary.X11.joystick[joy].present)
         return 0;
-    }
 
     switch (param)
     {
@@ -279,13 +230,13 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
             return GL_TRUE;
 
         case GLFW_AXES:
-            return _glfwJoy[joy].NumAxes;
+            return _glfwLibrary.X11.joystick[joy].numAxes;
 
         case GLFW_BUTTONS:
-            return _glfwJoy[joy].NumButtons;
+            return _glfwLibrary.X11.joystick[joy].numButtons;
 
         default:
-            break;
+            _glfwSetError(GLFW_INVALID_ENUM, NULL);
     }
 
     return 0;
@@ -296,28 +247,22 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
 // Get joystick axis positions
 //========================================================================
 
-int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
+int _glfwPlatformGetJoystickPos(int joy, float* pos, int numAxes)
 {
     int i;
 
-    if (!_glfwJoy[joy].Present)
-    {
-        // TODO: Figure out if this is an error
+    if (!_glfwLibrary.X11.joystick[joy].present)
         return 0;
-    }
 
-    // Update joystick state
     pollJoystickEvents();
 
-    // Does the joystick support less axes than requested?
-    if (_glfwJoy[joy].NumAxes < numaxes)
-        numaxes = _glfwJoy[joy].NumAxes;
+    if (_glfwLibrary.X11.joystick[joy].numAxes < numAxes)
+        numAxes = _glfwLibrary.X11.joystick[joy].numAxes;
 
-    // Copy axis positions from internal state
-    for (i = 0;  i < numaxes;  i++)
-        pos[i] = _glfwJoy[joy].Axis[i];
+    for (i = 0;  i < numAxes;  i++)
+        pos[i] = _glfwLibrary.X11.joystick[joy].axis[i];
 
-    return numaxes;
+    return numAxes;
 }
 
 
@@ -326,27 +271,21 @@ int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
 //========================================================================
 
 int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
-                                    int numbuttons)
+                                    int numButtons)
 {
     int i;
 
-    if (!_glfwJoy[joy].Present)
-    {
-        // TODO: Figure out if this is an error
+    if (!_glfwLibrary.X11.joystick[joy].present)
         return 0;
-    }
 
-    // Update joystick state
     pollJoystickEvents();
 
-    // Does the joystick support less buttons than requested?
-    if (_glfwJoy[joy].NumButtons < numbuttons)
-        numbuttons = _glfwJoy[joy].NumButtons;
+    if (_glfwLibrary.X11.joystick[joy].numButtons < numButtons)
+        numButtons = _glfwLibrary.X11.joystick[joy].numButtons;
 
-    // Copy button states from internal state
-    for (i = 0;  i < numbuttons;  i++)
-        buttons[i] = _glfwJoy[joy].Button[i];
+    for (i = 0;  i < numButtons;  i++)
+        buttons[i] = _glfwLibrary.X11.joystick[joy].button[i];
 
-    return numbuttons;
+    return numButtons;
 }
 

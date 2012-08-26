@@ -277,9 +277,6 @@ static int convertMacKeyCode(unsigned int macKeyCode)
     if (macKeyCode >= 128)
         return -1;
 
-    // This treats keycodes as *positional*; that is, we'll return 'a'
-    // for the key left of 's', even on an AZERTY keyboard.  The charInput
-    // function should still get 'q' though.
     return table[macKeyCode];
 }
 
@@ -541,7 +538,7 @@ static NSString* findAppName(void)
         }
     }
 
-    // If we get here, we're unbundled
+    // If we get here, the application is unbundled
     ProcessSerialNumber psn = { 0, kCurrentProcess };
     TransformProcessType(&psn, kProcessTransformToForegroundApplication);
 
@@ -551,10 +548,7 @@ static NSString* findAppName(void)
 
     char** progname = _NSGetProgname();
     if (progname && *progname)
-    {
-        // TODO: UTF-8?
         return [NSString stringWithUTF8String:*progname];
-    }
 
     // Really shouldn't get here
     return @"GLFW Application";
@@ -866,8 +860,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (!initializeAppKit())
         return GL_FALSE;
 
-    // We can only have one application delegate, but we only allocate it the
-    // first time we create a window to keep all window code in this file
+    // There can only be one application delegate, but we allocate it the
+    // first time a window is created to keep all window code in this file
     if (_glfwLibrary.NS.delegate == nil)
     {
         _glfwLibrary.NS.delegate = [[GLFWApplicationDelegate alloc] init];

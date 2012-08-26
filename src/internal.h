@@ -31,17 +31,6 @@
 #ifndef _internal_h_
 #define _internal_h_
 
-//========================================================================
-// GLFWGLOBAL is a macro that places all global variables in the init.c
-// module (all other modules reference global variables as 'extern')
-//========================================================================
-
-#if defined(_init_c_)
- #define GLFWGLOBAL
-#else
- #define GLFWGLOBAL extern
-#endif
-
 
 //========================================================================
 // Input handling definitions
@@ -243,18 +232,12 @@ struct _GLFWlibrary
 };
 
 
-//========================================================================
-// System independent global variables (GLFW internals)
-//========================================================================
-
-// Flag indicating if GLFW has been initialized
-#if defined(_init_c_)
-GLboolean _glfwInitialized = GL_FALSE;
-#else
-GLFWGLOBAL GLboolean _glfwInitialized;
-#endif
-
-GLFWGLOBAL _GLFWlibrary _glfwLibrary;
+//------------------------------------------------------------------------
+// Global state shared between compilation units of GLFW
+// These are exported from and documented in init.c
+//------------------------------------------------------------------------
+extern GLboolean _glfwInitialized;
+extern _GLFWlibrary _glfwLibrary;
 
 
 //========================================================================
@@ -325,7 +308,7 @@ void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long 
 int _glfwCompareVideoModes(const GLFWvidmode* first, const GLFWvidmode* second);
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 
-// Error handling (error.c)
+// Error handling (init.c)
 void _glfwSetError(int error, const char* format, ...);
 
 // Window management (window.c)

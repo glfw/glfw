@@ -236,7 +236,7 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
             return _glfwLibrary.X11.joystick[joy].numButtons;
 
         default:
-            break;
+            _glfwSetError(GLFW_INVALID_ENUM, NULL);
     }
 
     return 0;

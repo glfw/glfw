@@ -31,17 +31,6 @@
 #ifndef _internal_h_
 #define _internal_h_
 
-//========================================================================
-// GLFWGLOBAL is a macro that places all global variables in the init.c
-// module (all other modules reference global variables as 'extern')
-//========================================================================
-
-#if defined(_init_c_)
- #define GLFWGLOBAL
-#else
- #define GLFWGLOBAL extern
-#endif
-
 
 //========================================================================
 // Input handling definitions
@@ -245,17 +234,15 @@ struct _GLFWlibrary
 
 
 //========================================================================
-// System independent global variables (GLFW internals)
+// Platform independent global state shared between compilation units
+// These are exported from init.c
 //========================================================================
 
 // Flag indicating if GLFW has been initialized
-#if defined(_init_c_)
-GLboolean _glfwInitialized = GL_FALSE;
-#else
-GLFWGLOBAL GLboolean _glfwInitialized;
-#endif
+extern GLboolean _glfwInitialized;
 
-GLFWGLOBAL _GLFWlibrary _glfwLibrary;
+// All global data protected by _glfwInitialized
+extern _GLFWlibrary _glfwLibrary;
 
 
 //========================================================================

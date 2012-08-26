@@ -28,11 +28,27 @@
 //
 //========================================================================
 
-#define _init_c_
 #include "internal.h"
 
 #include <string.h>
 #include <stdlib.h>
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Platform independent global state shared between compilation units
+//========================================================================
+
+// Flag indicating whether GLFW has been initialized
+GLboolean _glfwInitialized = GL_FALSE;
+
+// All global data protected by _glfwInitialized
+// This data should only be touched after a call to glfwInit that has
+// not been followed by a call to glfwTerminate
+_GLFWlibrary _glfwLibrary;
 
 
 //////////////////////////////////////////////////////////////////////////

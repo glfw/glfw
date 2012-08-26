@@ -46,7 +46,6 @@
 //------------------------------------------------------------------------
 // Joystick element information
 //------------------------------------------------------------------------
-
 typedef struct
 {
     IOHIDElementCookie cookie;
@@ -65,7 +64,6 @@ typedef struct
 //------------------------------------------------------------------------
 // Joystick information & state
 //------------------------------------------------------------------------
-
 typedef struct
 {
     int present;
@@ -213,7 +211,7 @@ static long getElementValue(_glfwJoystick* joystick, _glfwJoystickElement* eleme
                                                            &hidEvent);
         if (kIOReturnSuccess == result)
         {
-            /* record min and max for auto calibration */
+            // Record min and max for auto calibration
             if (hidEvent.value < element->minReport)
                 element->minReport = hidEvent.value;
             if (hidEvent.value > element->maxReport)
@@ -221,7 +219,7 @@ static long getElementValue(_glfwJoystick* joystick, _glfwJoystickElement* eleme
         }
     }
 
-    /* auto user scale */
+    // Auto user scale
     return (long) hidEvent.value;
 }
 
@@ -384,14 +382,14 @@ void _glfwInitJoysticks(void)
         if (result != kIOReturnSuccess)
             continue;
 
-        /* Check device type */
+        // Check device type
         refCF = CFDictionaryGetValue(hidProperties, CFSTR(kIOHIDPrimaryUsagePageKey));
         if (refCF)
         {
             CFNumberGetValue(refCF, kCFNumberLongType, &usagePage);
             if (usagePage != kHIDPage_GenericDesktop)
             {
-                /* We are not interested in this device */
+                // This device is not relevant to GLFW
                 continue;
             }
         }
@@ -405,7 +403,7 @@ void _glfwInitJoysticks(void)
                  usage != kHIDUsage_GD_GamePad &&
                  usage != kHIDUsage_GD_MultiAxisController))
             {
-                /* We are not interested in this device */
+                // This device is not relevant to GLFW
                 continue;
             }
         }
@@ -439,7 +437,7 @@ void _glfwInitJoysticks(void)
                                                      joystick,
                                                      joystick);
 
-        /* Get product string */
+        // Get product string
         refCF = CFDictionaryGetValue(hidProperties, CFSTR(kIOHIDProductKey));
         if (refCF)
         {
@@ -560,8 +558,6 @@ int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
             pos[i] = axes->value;
         else
             pos[i] = (2.0f * (axes->value - axes->minReport) / readScale) - 1.0f;
-
-        //printf("%ld, %ld, %ld\n", axes->value, axes->minReport, axes->maxReport);
 
         if (i & 1)
             pos[i] = -pos[i];

@@ -87,7 +87,7 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 {
     int delta;
 
-    // We assume that by 32 they really meant 24
+    // We assume that by 32 the user really meant 24
     if (bpp == 32)
         bpp = 24;
 

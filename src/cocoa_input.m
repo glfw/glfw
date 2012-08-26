@@ -40,13 +40,14 @@
 
 void _glfwPlatformEnableSystemKeys(_GLFWwindow* window)
 {
-    // This is checked in macosx_window.m; we take no action here
+    // This is checked in cocoa_window.m; no action needed here
 }
 
 void _glfwPlatformDisableSystemKeys(_GLFWwindow* window)
 {
-    // This is checked in macosx_window.m; we take no action here
-    // I don't think it's really possible to disable stuff like Exposé
+    // This is checked in cocoa_window.m; no action needed here
+
+    // Note that it may not be possible to disable things like Exposé
     // except in full-screen mode.
 }
 

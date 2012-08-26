@@ -42,20 +42,21 @@
 #include <GL/glx.h>
 
 // This path may need to be changed if you build GLFW using your own setup
-// We ship and use our own copy of glxext.h since GLFW uses fairly new
+// GLFW comes with its own copy of glxext.h since it uses some fairly new
 // extensions and not all operating systems come with an up-to-date version
 #include "../support/GL/glxext.h"
 
-// With XFree86, we can use the XF86VidMode extension
+// The XF86VidMode extension provides mode setting and gamma control
 #if defined(_GLFW_HAS_XF86VIDMODE)
  #include <X11/extensions/xf86vmode.h>
 #endif
 
+// The XRandR extension provides mode setting and gamma control
 #if defined(_GLFW_HAS_XRANDR)
  #include <X11/extensions/Xrandr.h>
 #endif
 
-// Do we have support for dlopen/dlsym?
+// dlopen is used as a fallback function retrieval mechanism
 #if defined(_GLFW_HAS_DLOPEN)
  #include <dlfcn.h>
 #endif
@@ -65,7 +66,7 @@
  #include <X11/XKBlib.h>
 #endif
 
-// We support four different ways for getting addresses for GL/GLX
+// GLFW supports four different ways for getting addresses for GL/GLX
 // extension functions: glXGetProcAddress, glXGetProcAddressARB,
 // glXGetProcAddressEXT, and dlsym
 #if defined(_GLFW_HAS_GLXGETPROCADDRESSARB)

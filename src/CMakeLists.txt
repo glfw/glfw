@@ -3,7 +3,7 @@ include_directories(${GLFW_SOURCE_DIR}/src
                     ${glfw_INCLUDE_DIRS})
 
 set(common_HEADERS ${GLFW_SOURCE_DIR}/include/GL/glfw3.h internal.h)
-set(common_SOURCES clipboard.c error.c fullscreen.c gamma.c init.c input.c
+set(common_SOURCES clipboard.c fullscreen.c gamma.c init.c input.c
                    joystick.c opengl.c time.c window.c)
 
 if (_GLFW_COCOA_NSGL)

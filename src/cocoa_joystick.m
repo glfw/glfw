@@ -283,7 +283,7 @@ static void removalCallback(void* target, IOReturn result, void* refcon, void* s
 
 
 //========================================================================
-// Polls for joystick events and updates GFLW state
+// Polls for joystick events and updates GLFW state
 //========================================================================
 
 static void pollJoystickEvents(void)

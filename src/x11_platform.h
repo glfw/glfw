@@ -233,6 +233,15 @@ typedef struct _GLFWlibraryX11
         int status;
     } selection;
 
+    struct {
+        int             present;
+        int             fd;
+        int             numAxes;
+        int             numButtons;
+        float*          axis;
+        unsigned char*  button;
+    } joystick[GLFW_JOYSTICK_LAST + 1];
+
 } _GLFWlibraryX11;
 
 
@@ -267,19 +276,6 @@ typedef struct _GLFWlibraryGLX
     void*           libGL;  // dlopen handle for libGL.so
 #endif
 } _GLFWlibraryGLX;
-
-
-//------------------------------------------------------------------------
-// Joystick information & state
-//------------------------------------------------------------------------
-GLFWGLOBAL struct {
-    int           Present;
-    int           fd;
-    int           NumAxes;
-    int           NumButtons;
-    float*        Axis;
-    unsigned char* Button;
-} _glfwJoy[GLFW_JOYSTICK_LAST + 1];
 
 
 //========================================================================

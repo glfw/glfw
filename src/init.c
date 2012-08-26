@@ -36,40 +36,43 @@
 #include <stdarg.h>
 
 
+//------------------------------------------------------------------------
+// Flag indicating whether GLFW has been successfully initialized
+//------------------------------------------------------------------------
+GLboolean _glfwInitialized = GL_FALSE;
+
+
+//------------------------------------------------------------------------
+// All shared and API-specific global data protected by _glfwInitialized
+// This should only be touched after a call to glfwInit that has not been
+// followed by a call to glfwTerminate
+//------------------------------------------------------------------------
+_GLFWlibrary _glfwLibrary;
+
+
+//------------------------------------------------------------------------
+// The current GLFW error code
+// This is outside of _glfwLibrary so it can be initialized and usable
+// before glfwInit is called, which lets that function report errors
+// TODO: Make this thread-local
+//------------------------------------------------------------------------
+static int _glfwError = GLFW_NO_ERROR;
+
+
+//------------------------------------------------------------------------
+// The current error callback
+// This is outside of _glfwLibrary so it can be initialized and usable
+// before glfwInit is called, which lets that function report errors
+//------------------------------------------------------------------------
+static GLFWerrorfun _glfwErrorCallback = NULL;
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Platform independent global state shared between compilation units
-//========================================================================
-
-// Flag indicating whether GLFW has been initialized
-GLboolean _glfwInitialized = GL_FALSE;
-
-// All global data protected by _glfwInitialized
-// This data should only be touched after a call to glfwInit that has
-// not been followed by a call to glfwTerminate
-_GLFWlibrary _glfwLibrary;
-
-
-//========================================================================
-// Platform independent global error state
-// These are not in _glfwLibrary because they need to be initialized and
-// usable before glfwInit so it can report errors to the user
-//========================================================================
-
-// The current error code
-// TODO: Make thread-local
-static int _glfwError = GLFW_NO_ERROR;
-
-// The current error callback
-static GLFWerrorfun _glfwErrorCallback = NULL;
-
-
-//========================================================================
 // Sets the current error value
-// This function may be called without GLFW having been initialized
 //========================================================================
 
 void _glfwSetError(int error, const char* format, ...)
@@ -160,6 +163,7 @@ GLFWAPI void glfwTerminate(void)
 
 //========================================================================
 // Get GLFW version
+// This function may be called without GLFW having been initialized
 //========================================================================
 
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)
@@ -177,6 +181,7 @@ GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)
 
 //========================================================================
 // Get the GLFW version string
+// This function may be called without GLFW having been initialized
 //========================================================================
 
 GLFWAPI const char* glfwGetVersionString(void)

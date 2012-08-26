@@ -233,15 +233,11 @@ struct _GLFWlibrary
 };
 
 
-//========================================================================
-// Platform independent global state shared between compilation units
-// These are exported from init.c
-//========================================================================
-
-// Flag indicating if GLFW has been initialized
+//------------------------------------------------------------------------
+// Global state shared between compilation units of GLFW
+// These are exported from and documented in init.c
+//------------------------------------------------------------------------
 extern GLboolean _glfwInitialized;
-
-// All global data protected by _glfwInitialized
 extern _GLFWlibrary _glfwLibrary;
 
 
@@ -312,7 +308,7 @@ void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long 
 int _glfwCompareVideoModes(const GLFWvidmode* first, const GLFWvidmode* second);
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 
-// Error handling (error.c)
+// Error handling (init.c)
 void _glfwSetError(int error, const char* format, ...);
 
 // Window management (window.c)

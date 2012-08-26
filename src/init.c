@@ -66,8 +66,7 @@ GLFWAPI int glfwInit(void)
 
     memset(&_glfwLibrary, 0, sizeof(_glfwLibrary));
 
-    // Not all window hints have zero as their default value, so this
-    // needs to be here despite the memset above
+    // Not all window hints have zero as their default value
     _glfwSetDefaultWindowHints();
 
     if (!_glfwPlatformInit())

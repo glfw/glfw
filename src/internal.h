@@ -242,38 +242,41 @@ extern _GLFWlibrary _glfwLibrary;
 
 
 //========================================================================
-// Prototypes for platform specific implementation functions
+// Prototypes for the platform API
+// This is the interface exposed by the platform-specific code for each
+// platform and is called by the shared code of the public API
+// It mirrors the public API except it uses objects instead of handles
 //========================================================================
 
-// Init/terminate
+// Platform init and version
 int _glfwPlatformInit(void);
 int _glfwPlatformTerminate(void);
 const char* _glfwPlatformGetVersionString(void);
 
-// Input
+// Input mode support
 void _glfwPlatformEnableSystemKeys(_GLFWwindow* window);
 void _glfwPlatformDisableSystemKeys(_GLFWwindow* window);
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y);
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
 
-// Fullscreen
+// Video mode support
 GLFWvidmode* _glfwPlatformGetVideoModes(int* count);
 void _glfwPlatformGetDesktopMode(GLFWvidmode* mode);
 
-// Gamma ramp
+// Gamma ramp support
 void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp);
 void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp);
 
-// Clipboard
+// Clipboard support
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string);
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window);
 
-// Joystick
+// Joystick input
 int _glfwPlatformGetJoystickParam(int joy, int param);
 int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes);
 int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons, int numbuttons);
 
-// Time
+// Time input
 double _glfwPlatformGetTime(void);
 void _glfwPlatformSetTime(double time);
 
@@ -286,7 +289,7 @@ void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y);
 void _glfwPlatformIconifyWindow(_GLFWwindow* window);
 void _glfwPlatformRestoreWindow(_GLFWwindow* window);
 
-// Event management
+// Event processing
 void _glfwPlatformPollEvents(void);
 void _glfwPlatformWaitEvents(void);
 
@@ -301,18 +304,11 @@ void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long 
 
 
 //========================================================================
-// Prototypes for platform independent internal functions
+// Prototypes for the event API
+// This is used by the platform-specific code to notify the shared code of
+// events that can be translated into state changes and/or callback calls,
+// instead of directly calling callbacks or modifying shared state
 //========================================================================
-
-// Fullscren management (fullscreen.c)
-int _glfwCompareVideoModes(const GLFWvidmode* first, const GLFWvidmode* second);
-void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
-
-// Error handling (init.c)
-void _glfwSetError(int error, const char* format, ...);
-
-// Window management (window.c)
-void _glfwSetDefaultWindowHints(void);
 
 // Window event notification (window.c)
 void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated);
@@ -329,6 +325,24 @@ void _glfwInputScroll(_GLFWwindow* window, double x, double y);
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action);
 void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y);
 void _glfwInputCursorEnter(_GLFWwindow* window, int entered);
+
+
+//========================================================================
+// Prototypes for internal utility functions
+// These functions are shared code and may be used by any part of GLFW
+// Each platform may add its own utility functions, but those may only be
+// called by the platform-specific code
+//========================================================================
+
+// Fullscren management (fullscreen.c)
+int _glfwCompareVideoModes(const GLFWvidmode* first, const GLFWvidmode* second);
+void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
+
+// Error handling (init.c)
+void _glfwSetError(int error, const char* format, ...);
+
+// Window management (window.c)
+void _glfwSetDefaultWindowHints(void);
 
 // OpenGL context helpers (opengl.c)
 int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);

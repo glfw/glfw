@@ -730,7 +730,7 @@ static ATOM registerWindowClass(void)
     if (!classAtom)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Win32/WGL: Failed to register window class");
+                      "Win32: Failed to register window class");
         return 0;
     }
 
@@ -803,7 +803,7 @@ static int createWindow(_GLFWwindow* window,
     if (!wideTitle)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "glfwCreateWindow: Failed to convert title to wide string");
+                      "Win32: Failed to convert title to wide string");
         return GL_FALSE;
     }
 
@@ -821,7 +821,7 @@ static int createWindow(_GLFWwindow* window,
 
     if (!window->Win32.handle)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR, "Win32/WGL: Failed to create window");
+        _glfwSetError(GLFW_PLATFORM_ERROR, "Win32: Failed to create window");
         return GL_FALSE;
     }
 
@@ -925,8 +925,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         if (!window->WGL.ARB_create_context)
         {
             _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                          "Win32/WGL: A forward compatible OpenGL context "
-                          "requested but WGL_ARB_create_context is unavailable");
+                          "WGL: A forward compatible OpenGL context requested "
+                          "but WGL_ARB_create_context is unavailable");
             return GL_FALSE;
         }
 
@@ -938,7 +938,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         if (!window->WGL.ARB_create_context_profile)
         {
             _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                          "Win32/WGL: OpenGL profile requested but "
+                          "WGL: OpenGL profile requested but "
                           "WGL_ARB_create_context_profile is unavailable");
             return GL_FALSE;
         }
@@ -1021,7 +1021,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     if (!wideTitle)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "glfwSetWindowTitle: Failed to convert title to wide string");
+                      "Win32: Failed to convert title to wide string");
         return;
     }
 

@@ -1,6 +1,6 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    Cocoa/NSOpenGL
+// Platform:    Cocoa
 // API version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
@@ -70,7 +70,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     if (!object)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Cocoa/NSGL: Failed to retrieve object from pasteboard");
+                      "Cocoa: Failed to retrieve object from pasteboard");
         return NULL;
     }
 

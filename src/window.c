@@ -279,7 +279,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     if (mode != GLFW_WINDOWED && mode != GLFW_FULLSCREEN)
     {
         _glfwSetError(GLFW_INVALID_ENUM,
-                      "glfwCreateWindow: Invalid enum for 'mode' parameter");
+                      "glfwCreateWindow: Invalid window mode");
         return GL_FALSE;
     }
 
@@ -304,8 +304,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     window = (_GLFWwindow*) malloc(sizeof(_GLFWwindow));
     if (!window)
     {
-        _glfwSetError(GLFW_OUT_OF_MEMORY,
-                      "glfwCreateWindow: Failed to allocate window structure");
+        _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
         return NULL;
     }
 

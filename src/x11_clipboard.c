@@ -1,6 +1,6 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    X11/GLX
+// Platform:    X11
 // API version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
@@ -182,7 +182,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     if (_glfwLibrary.X11.selection.status == _GLFW_CONVERSION_FAILED)
     {
         _glfwSetError(GLFW_FORMAT_UNAVAILABLE,
-                      "X11/GLX: Failed to convert selection to string");
+                      "X11: Failed to convert selection to string");
         return NULL;
     }
 

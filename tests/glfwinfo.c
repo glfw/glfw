@@ -207,6 +207,8 @@ int main(int argc, char** argv)
     if (strategy)
         glfwWindowHint(GLFW_OPENGL_ROBUSTNESS, strategy);
 
+    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+
     // We assume here that we stand a better chance of success by leaving all
     // possible details of pixel format selection to GLFW
 

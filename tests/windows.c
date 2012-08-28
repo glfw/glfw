@@ -55,8 +55,6 @@ int main(void)
 
     for (i = 0;  i < 4;  i++)
     {
-        glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-
         windows[i] = glfwCreateWindow(200, 200, GLFW_WINDOWED, titles[i], NULL);
         if (!windows[i])
         {
@@ -73,7 +71,6 @@ int main(void)
                      0.f);
 
         glfwSetWindowPos(windows[i], 100 + (i & 1) * 300, 100 + (i >> 1) * 300);
-        glfwShowWindow(windows[i]);
     }
 
     while (running)

@@ -477,10 +477,7 @@ static void processSingleEvent(void)
             // A keyboard key was pressed
             window = findWindow(event.xkey.window);
             if (window == NULL)
-            {
-                fprintf(stderr, "Cannot find GLFW window structure for KeyPress event\n");
                 return;
-            }
 
             // Translate and report key press
             _glfwInputKey(window, translateKey(event.xkey.keycode), GLFW_PRESS);
@@ -496,10 +493,7 @@ static void processSingleEvent(void)
             // A keyboard key was released
             window = findWindow(event.xkey.window);
             if (window == NULL)
-            {
-                fprintf(stderr, "Cannot find GLFW window structure for KeyRelease event\n");
                 return;
-            }
 
             // Do not report key releases for key repeats. For key repeats we
             // will get KeyRelease/KeyPress pairs with similar or identical
@@ -538,10 +532,7 @@ static void processSingleEvent(void)
             // A mouse button was pressed or a scrolling event occurred
             window = findWindow(event.xbutton.window);
             if (window == NULL)
-            {
-                fprintf(stderr, "Cannot find GLFW window structure for ButtonPress event\n");
                 return;
-            }
 
             if (event.xbutton.button == Button1)
                 _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS);
@@ -570,10 +561,7 @@ static void processSingleEvent(void)
             // A mouse button was released
             window = findWindow(event.xbutton.window);
             if (window == NULL)
-            {
-                fprintf(stderr, "Cannot find GLFW window structure for ButtonRelease event\n");
                 return;
-            }
 
             if (event.xbutton.button == Button1)
             {
@@ -601,10 +589,7 @@ static void processSingleEvent(void)
             // The cursor entered the window
             window = findWindow(event.xcrossing.window);
             if (window == NULL)
-            {
-                fprintf(stderr, "Cannot find GLFW window structure for EnterNotify event\n");
                 return;
-            }
 
             if (window->cursorMode == GLFW_CURSOR_HIDDEN)
                 hideCursor(window);
@@ -618,10 +603,7 @@ static void processSingleEvent(void)
             // The cursor left the window
             window = findWindow(event.xcrossing.window);
             if (window == NULL)
-            {
-                fprintf(stderr, "Cannot find GLFW window structure for LeaveNotify event\n");
                 return;
-            }
 
             if (window->cursorMode == GLFW_CURSOR_HIDDEN)
                 showCursor(window);
@@ -635,10 +617,7 @@ static void processSingleEvent(void)
             // The cursor was moved
             window = findWindow(event.xmotion.window);
             if (window == NULL)
-            {
-                fprintf(stderr, "Cannot find GLFW window structure for MotionNotify event\n");
                 return;
-            }
 
             if (event.xmotion.x != window->X11.cursorPosX ||
                 event.xmotion.y != window->X11.cursorPosY)
@@ -676,10 +655,7 @@ static void processSingleEvent(void)
             // The window configuration changed somehow
             window = findWindow(event.xconfigure.window);
             if (window == NULL)
-            {
-                fprintf(stderr, "Cannot find GLFW window structure for ConfigureNotify event\n");
                 return;
-            }
 
             _glfwInputWindowSize(window,
                                  event.xconfigure.width,
@@ -697,10 +673,7 @@ static void processSingleEvent(void)
             // Custom client message, probably from the window manager
             window = findWindow(event.xclient.window);
             if (window == NULL)
-            {
-                fprintf(stderr, "Cannot find GLFW window structure for ClientMessage event\n");
                 return;
-            }
 
             if ((Atom) event.xclient.data.l[0] == _glfwLibrary.X11.wmDeleteWindow)
             {
@@ -731,10 +704,7 @@ static void processSingleEvent(void)
             // The window was mapped
             window = findWindow(event.xmap.window);
             if (window == NULL)
-            {
-                fprintf(stderr, "Cannot find GLFW window structure for MapNotify event\n");
                 return;
-            }
 
             _glfwInputWindowIconify(window, GL_FALSE);
             break;
@@ -745,10 +715,7 @@ static void processSingleEvent(void)
             // The window was unmapped
             window = findWindow(event.xmap.window);
             if (window == NULL)
-            {
-                fprintf(stderr, "Cannot find GLFW window structure for UnmapNotify event\n");
                 return;
-            }
 
             _glfwInputWindowIconify(window, GL_TRUE);
             break;
@@ -759,10 +726,7 @@ static void processSingleEvent(void)
             // The window gained focus
             window = findWindow(event.xfocus.window);
             if (window == NULL)
-            {
-                fprintf(stderr, "Cannot find GLFW window structure for FocusIn event\n");
                 return;
-            }
 
             _glfwInputWindowFocus(window, GL_TRUE);
 
@@ -777,10 +741,7 @@ static void processSingleEvent(void)
             // The window lost focus
             window = findWindow(event.xfocus.window);
             if (window == NULL)
-            {
-                fprintf(stderr, "Cannot find GLFW window structure for FocusOut event\n");
                 return;
-            }
 
             _glfwInputWindowFocus(window, GL_FALSE);
 
@@ -795,10 +756,7 @@ static void processSingleEvent(void)
             // The window's contents was damaged
             window = findWindow(event.xexpose.window);
             if (window == NULL)
-            {
-                fprintf(stderr, "Cannot find GLFW window structure for Expose event\n");
                 return;
-            }
 
             _glfwInputWindowDamage(window);
             break;

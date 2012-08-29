@@ -6,6 +6,7 @@
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2012 Torsten Walluhn <tw@mad-cad.net>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -32,7 +33,11 @@
 
 #include <string.h>
 #include <stdlib.h>
+#ifdef __APPLE__
+#include <sys/malloc.h>
+#else
 #include <malloc.h>
+#endif
 
 
 //========================================================================
@@ -79,6 +84,12 @@ void _glfwSetDefaultWindowHints(void)
 
     // The default is to allow window resizing
     _glfwLibrary.hints.resizable = GL_TRUE;
+
+    // The default is 24 bits of depth, 8 bits of color
+    _glfwLibrary.hints.depthBits = 24;
+    _glfwLibrary.hints.redBits   = 8;
+    _glfwLibrary.hints.greenBits = 8;
+    _glfwLibrary.hints.blueBits  = 8;
 }
 
 
@@ -262,7 +273,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     if (mode != GLFW_WINDOWED && mode != GLFW_FULLSCREEN)
     {
         _glfwSetError(GLFW_INVALID_ENUM,
-                      "glfwCreateWindow: Invalid enum for 'mode' parameter");
+                      "glfwCreateWindow: Invalid window mode");
         return GL_FALSE;
     }
 
@@ -287,8 +298,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     window = (_GLFWwindow*) malloc(sizeof(_GLFWwindow));
     if (!window)
     {
-        _glfwSetError(GLFW_OUT_OF_MEMORY,
-                      "glfwCreateWindow: Failed to allocate window structure");
+        _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
         return NULL;
     }
 

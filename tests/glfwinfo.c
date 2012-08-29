@@ -181,6 +181,28 @@ int main(int argc, char** argv)
     argc -= optind;
     argv += optind;
 
+    // Report GLFW version
+
+    glfwGetVersion(&major, &minor, &revision);
+
+    printf("GLFW header version: %u.%u.%u\n",
+           GLFW_VERSION_MAJOR,
+           GLFW_VERSION_MINOR,
+           GLFW_VERSION_REVISION);
+
+    printf("GLFW library version: %u.%u.%u\n", major, minor, revision);
+
+    if (major != GLFW_VERSION_MAJOR ||
+        minor != GLFW_VERSION_MINOR ||
+        revision != GLFW_VERSION_REVISION)
+    {
+        printf("*** WARNING: GLFW version mismatch! ***\n");
+    }
+
+    printf("GLFW library version string: \"%s\"\n", glfwGetVersionString());
+
+    // Initialize GLFW and create window
+
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
@@ -215,26 +237,6 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
 
     glfwMakeContextCurrent(window);
-
-    // Report GLFW version
-
-    glfwGetVersion(&major, &minor, &revision);
-
-    printf("GLFW header version: %u.%u.%u\n",
-           GLFW_VERSION_MAJOR,
-           GLFW_VERSION_MINOR,
-           GLFW_VERSION_REVISION);
-
-    printf("GLFW library version: %u.%u.%u\n", major, minor, revision);
-
-    if (major != GLFW_VERSION_MAJOR ||
-        minor != GLFW_VERSION_MINOR ||
-        revision != GLFW_VERSION_REVISION)
-    {
-        printf("*** WARNING: GLFW version mismatch! ***\n");
-    }
-
-    printf("GLFW library version string: \"%s\"\n", glfwGetVersionString());
 
     // Report OpenGL version
 

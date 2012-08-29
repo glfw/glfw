@@ -67,12 +67,6 @@ extern "C" {
  #endif
 #endif /* APIENTRY */
 
-/* TEMPORARY MinGW-w64 hacks.
- */
-#if __MINGW64__
- #define WINAPI
-#endif
-
 /* The following three defines are here solely to make some Windows-based
  * <GL/gl.h> files happy. Theoretically we could include <windows.h>, but
  * it has the major drawback of severely polluting our namespace.
@@ -595,7 +589,7 @@ GLFWAPI void glfwSetScrollCallback(GLFWscrollfun cbfun);
 
 /* Joystick input */
 GLFWAPI int glfwGetJoystickParam(int joy, int param);
-GLFWAPI int glfwGetJoystickPos(int joy, float* pos, int numaxes);
+GLFWAPI int glfwGetJoystickAxes(int joy, float* axes, int numaxes);
 GLFWAPI int glfwGetJoystickButtons(int joy, unsigned char* buttons, int numbuttons);
 
 /* Clipboard */

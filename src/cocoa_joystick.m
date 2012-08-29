@@ -1,10 +1,11 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    Cocoa/NSOpenGL
+// Platform:    Cocoa
 // API Version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2012 Torsten Walluhn <tw@mad-cad.net>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -46,7 +47,6 @@
 //------------------------------------------------------------------------
 // Joystick element information
 //------------------------------------------------------------------------
-
 typedef struct
 {
     IOHIDElementCookie cookie;
@@ -65,7 +65,6 @@ typedef struct
 //------------------------------------------------------------------------
 // Joystick information & state
 //------------------------------------------------------------------------
-
 typedef struct
 {
     int present;
@@ -86,7 +85,7 @@ typedef struct
 static _glfwJoystick _glfwJoysticks[GLFW_JOYSTICK_LAST + 1];
 
 
-void getElementsCFArrayHandler(const void* value, void* parameter);
+static void getElementsCFArrayHandler(const void* value, void* parameter);
 
 
 //========================================================================
@@ -213,7 +212,7 @@ static long getElementValue(_glfwJoystick* joystick, _glfwJoystickElement* eleme
                                                            &hidEvent);
         if (kIOReturnSuccess == result)
         {
-            /* record min and max for auto calibration */
+            // Record min and max for auto calibration
             if (hidEvent.value < element->minReport)
                 element->minReport = hidEvent.value;
             if (hidEvent.value > element->maxReport)
@@ -221,7 +220,7 @@ static long getElementValue(_glfwJoystick* joystick, _glfwJoystickElement* eleme
         }
     }
 
-    /* auto user scale */
+    // Auto user scale
     return (long) hidEvent.value;
 }
 
@@ -284,7 +283,7 @@ static void removalCallback(void* target, IOReturn result, void* refcon, void* s
 
 
 //========================================================================
-// Polls for joystick events and updates GFLW state
+// Polls for joystick events and updates GLFW state
 //========================================================================
 
 static void pollJoystickEvents(void)
@@ -384,14 +383,14 @@ void _glfwInitJoysticks(void)
         if (result != kIOReturnSuccess)
             continue;
 
-        /* Check device type */
+        // Check device type
         refCF = CFDictionaryGetValue(hidProperties, CFSTR(kIOHIDPrimaryUsagePageKey));
         if (refCF)
         {
             CFNumberGetValue(refCF, kCFNumberLongType, &usagePage);
             if (usagePage != kHIDPage_GenericDesktop)
             {
-                /* We are not interested in this device */
+                // This device is not relevant to GLFW
                 continue;
             }
         }
@@ -405,7 +404,7 @@ void _glfwInitJoysticks(void)
                  usage != kHIDUsage_GD_GamePad &&
                  usage != kHIDUsage_GD_MultiAxisController))
             {
-                /* We are not interested in this device */
+                // This device is not relevant to GLFW
                 continue;
             }
         }
@@ -439,7 +438,7 @@ void _glfwInitJoysticks(void)
                                                      joystick,
                                                      joystick);
 
-        /* Get product string */
+        // Get product string
         refCF = CFDictionaryGetValue(hidProperties, CFSTR(kIOHIDProductKey));
         if (refCF)
         {
@@ -529,7 +528,7 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
 // Get joystick axis positions
 //========================================================================
 
-int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
+int _glfwPlatformGetJoystickAxes(int joy, float* axes, int numaxes)
 {
     int i;
 
@@ -557,14 +556,12 @@ int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
         long readScale = axes->maxReport - axes->minReport;
 
         if (readScale == 0)
-            pos[i] = axes->value;
+            axes[i] = axes->value;
         else
-            pos[i] = (2.0f * (axes->value - axes->minReport) / readScale) - 1.0f;
-
-        //printf("%ld, %ld, %ld\n", axes->value, axes->minReport, axes->maxReport);
+            axes[i] = (2.0f * (axes->value - axes->minReport) / readScale) - 1.0f;
 
         if (i & 1)
-            pos[i] = -pos[i];
+            axes[i] = -axes[i];
     }
 
     return numaxes;
@@ -610,16 +607,16 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
     {
         _glfwJoystickElement* hat = (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick.hats, i);
 
-        const int value = hat->value;
+        int value = hat->value;
         if (value < 0 || value > 8)
             value = 8;
 
         for (j = 0;  j < 4 && button < numbuttons;  j++)
         {
             if (directions[value] & (1 << j))
-                buttons[button = GLFW_PRESS;
+                buttons[button] = GLFW_PRESS;
             else
-                buttons[button = GLFW_RELEASE;
+                buttons[button] = GLFW_RELEASE;
 
             button++;
         }

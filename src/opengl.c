@@ -509,7 +509,7 @@ GLFWAPI GLFWwindow glfwGetCurrentContext(void)
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return GL_FALSE;
+        return NULL;
     }
 
     return _glfwLibrary.currentWindow;

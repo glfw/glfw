@@ -260,7 +260,7 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
 // Get joystick axis positions
 //========================================================================
 
-int _glfwPlatformGetJoystickPos(int joy, float* pos, int numAxes)
+int _glfwPlatformGetJoystickAxes(int joy, float* axes, int numAxes)
 {
     int i;
 
@@ -273,7 +273,7 @@ int _glfwPlatformGetJoystickPos(int joy, float* pos, int numAxes)
         numAxes = _glfwLibrary.X11.joystick[joy].numAxes;
 
     for (i = 0;  i < numAxes;  i++)
-        pos[i] = _glfwLibrary.X11.joystick[joy].axis[i];
+        axes[i] = _glfwLibrary.X11.joystick[joy].axis[i];
 
     return numAxes;
 }

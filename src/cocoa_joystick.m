@@ -528,7 +528,7 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
 // Get joystick axis positions
 //========================================================================
 
-int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
+int _glfwPlatformGetJoystickAxes(int joy, float* axes, int numaxes)
 {
     int i;
 
@@ -556,12 +556,12 @@ int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
         long readScale = axes->maxReport - axes->minReport;
 
         if (readScale == 0)
-            pos[i] = axes->value;
+            axes[i] = axes->value;
         else
-            pos[i] = (2.0f * (axes->value - axes->minReport) / readScale) - 1.0f;
+            axes[i] = (2.0f * (axes->value - axes->minReport) / readScale) - 1.0f;
 
         if (i & 1)
-            pos[i] = -pos[i];
+            axes[i] = -axes[i];
     }
 
     return numaxes;

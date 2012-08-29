@@ -61,7 +61,7 @@ GLFWAPI int glfwGetJoystickParam(int joy, int param)
 // Get joystick axis positions
 //========================================================================
 
-GLFWAPI int glfwGetJoystickPos(int joy, float* pos, int numaxes)
+GLFWAPI int glfwGetJoystickAxes(int joy, float* axes, int numaxes)
 {
     int i;
 
@@ -77,7 +77,7 @@ GLFWAPI int glfwGetJoystickPos(int joy, float* pos, int numaxes)
         return 0;
     }
 
-    if (pos == NULL || numaxes < 0)
+    if (axes == NULL || numaxes < 0)
     {
         _glfwSetError(GLFW_INVALID_VALUE, NULL);
         return 0;
@@ -85,9 +85,9 @@ GLFWAPI int glfwGetJoystickPos(int joy, float* pos, int numaxes)
 
     // Clear positions
     for (i = 0;  i < numaxes;  i++)
-        pos[i] = 0.0f;
+        axes[i] = 0.0f;
 
-    return _glfwPlatformGetJoystickPos(joy, pos, numaxes);
+    return _glfwPlatformGetJoystickAxes(joy, axes, numaxes);
 }
 
 

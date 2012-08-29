@@ -479,12 +479,8 @@ static void processSingleEvent(void)
             if (window == NULL)
                 return;
 
-            // Translate and report key press
             _glfwInputKey(window, translateKey(event.xkey.keycode), GLFW_PRESS);
-
-            // Translate and report character input
             _glfwInputChar(window, translateChar(&event.xkey));
-
             break;
         }
 
@@ -521,9 +517,7 @@ static void processSingleEvent(void)
                 }
             }
 
-            // Translate and report key release
             _glfwInputKey(window, translateKey(event.xkey.keycode), GLFW_RELEASE);
-
             break;
         }
 

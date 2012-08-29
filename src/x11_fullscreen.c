@@ -514,40 +514,18 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 
 
 //========================================================================
-// Get the desktop video mode
+// Get the current video mode for the specified monitor
 //========================================================================
 
-void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
+void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
-    int bpp;
+    _glfwSplitBPP(DefaultDepth(_glfwLibrary.X11.display,
+                               _glfwLibrary.X11.screen),
+                  &mode->redBits, &mode->greenBits, &mode->blueBits);
 
-    // Get and split display depth
-    bpp = DefaultDepth(_glfwLibrary.X11.display, _glfwLibrary.X11.screen);
-    _glfwSplitBPP(bpp, &mode->redBits, &mode->greenBits, &mode->blueBits);
-
-    if (_glfwLibrary.X11.FS.modeChanged)
-    {
-        if (_glfwLibrary.X11.RandR.available)
-        {
-#if defined(_GLFW_HAS_XRANDR)
-            mode->width  = _glfwLibrary.X11.FS.oldWidth;
-            mode->height = _glfwLibrary.X11.FS.oldHeight;
-#endif /*_GLFW_HAS_XRANDR*/
-        }
-        else if (_glfwLibrary.X11.VidMode.available)
-        {
-#if defined(_GLFW_HAS_XF86VIDMODE)
-            mode->width  = _glfwLibrary.X11.FS.oldMode.hdisplay;
-            mode->height = _glfwLibrary.X11.FS.oldMode.vdisplay;
-#endif /*_GLFW_HAS_XF86VIDMODE*/
-        }
-    }
-    else
-    {
-        mode->width = DisplayWidth(_glfwLibrary.X11.display,
-                                   _glfwLibrary.X11.screen);
-        mode->height = DisplayHeight(_glfwLibrary.X11.display,
-                                     _glfwLibrary.X11.screen);
-    }
+    mode->width = DisplayWidth(_glfwLibrary.X11.display,
+                               _glfwLibrary.X11.screen);
+    mode->height = DisplayHeight(_glfwLibrary.X11.display,
+                                 _glfwLibrary.X11.screen);
 }
 

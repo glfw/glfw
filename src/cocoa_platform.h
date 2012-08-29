@@ -90,7 +90,7 @@ typedef struct _GLFWlibraryNS
         double resolution;
     } timer;
 
-    CGDisplayModeRef desktopMode;
+    CGDisplayModeRef previousMode;
     CGEventSourceRef eventSource;
     id               delegate;
     id               autoreleasePool;

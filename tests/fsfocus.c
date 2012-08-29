@@ -24,7 +24,7 @@
 //========================================================================
 //
 // This test is used to test window activation and iconfication for
-// fullscreen windows with a video mode differing from the desktop mode
+// fullscreen windows with a video mode differing from the current mode
 //
 //========================================================================
 

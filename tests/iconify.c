@@ -100,10 +100,10 @@ int main(int argc, char** argv)
 
     if (mode == GLFW_FULLSCREEN)
     {
-        GLFWvidmode desktop_mode;
-        glfwGetDesktopMode(&desktop_mode);
-        width = desktop_mode.width;
-        height = desktop_mode.height;
+        GLFWvidmode current_mode;
+        glfwGetVideoMode(glfwGetNextMonitor(NULL), &current_mode);
+        width = current_mode.width;
+        height = current_mode.height;
     }
     else
     {

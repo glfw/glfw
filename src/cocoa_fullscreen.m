@@ -167,6 +167,8 @@ GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp, int* refreshRate)
         return GL_FALSE;
     }
 
+    _glfwLibrary.NS.previousMode = CGDisplayCopyDisplayMode(CGMainDisplayID());
+
     CGDisplayCapture(CGMainDisplayID());
     CGDisplaySetDisplayMode(CGMainDisplayID(), bestMode, NULL);
 
@@ -182,7 +184,7 @@ GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp, int* refreshRate)
 void _glfwRestoreVideoMode(void)
 {
     CGDisplaySetDisplayMode(CGMainDisplayID(),
-                            _glfwLibrary.NS.desktopMode,
+                            _glfwLibrary.NS.previousMode,
                             NULL);
 
     CGDisplayRelease(CGMainDisplayID());
@@ -227,11 +229,15 @@ GLFWvidmode* _glfwPlatformGetVideoModes(int* found)
 
 
 //========================================================================
-// Get the desktop video mode
+// Get the current video mode for the specified monitor
 //========================================================================
 
-void _glfwPlatformGetDesktopMode(GLFWvidmode *mode)
+void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode *mode)
 {
-    *mode = vidmodeFromCGDisplayMode(_glfwLibrary.NS.desktopMode);
+    CGDisplayModeRef displayMode;
+
+    displayMode = CGDisplayCopyDisplayMode(CGMainDisplayID());
+    *mode = vidmodeFromCGDisplayMode(displayMode);
+    CGDisplayModeRelease(displayMode);
 }
 

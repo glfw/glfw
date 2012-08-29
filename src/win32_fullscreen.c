@@ -268,18 +268,26 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 
 
 //========================================================================
-// Get the desktop video mode
+// Get the current video mode for the specified monitor
 //========================================================================
 
-void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
+void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
     DEVMODE dm;
+    WCHAR* deviceName;
 
-    // Get desktop display mode
+    deviceName = _glfwCreateWideStringFromUTF8(monitor->Win32.name);
+    if (!deviceName)
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR, "Win32: Failed to convert device name");
+        return;
+    }
+
+    ZeroMemory(&dm, sizeof(DEVMODE));
     dm.dmSize = sizeof(DEVMODE);
-    EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &dm);
 
-    // Return desktop mode parameters
+    EnumDisplaySettings(deviceName, ENUM_REGISTRY_SETTINGS, &dm);
+
     mode->width  = dm.dmPelsWidth;
     mode->height = dm.dmPelsHeight;
     _glfwSplitBPP(dm.dmBitsPerPel,

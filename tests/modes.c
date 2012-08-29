@@ -93,11 +93,11 @@ static void key_callback(GLFWwindow dummy, int key, int action)
 static void list_modes(GLFWmonitor monitor)
 {
     int count, i;
-    GLFWvidmode desktop_mode;
+    GLFWvidmode mode;
     GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
 
-    glfwGetDesktopMode(&desktop_mode);
-    printf("Desktop mode: %s\n", format_mode(&desktop_mode));
+    glfwGetVideoMode(monitor, &mode);
+    printf("Current mode: %s\n", format_mode(&mode));
 
     printf("Monitor %s (%ix%i mm):\n",
            glfwGetMonitorString(monitor, GLFW_MONITOR_NAME),
@@ -108,8 +108,8 @@ static void list_modes(GLFWmonitor monitor)
     {
         printf("%3u: %s", (unsigned int) i, format_mode(modes + i));
 
-        if (memcmp(&desktop_mode, modes + i, sizeof(GLFWvidmode)) == 0)
-            printf(" (desktop mode)");
+        if (memcmp(&mode, modes + i, sizeof(GLFWvidmode)) == 0)
+            printf(" (current mode)");
 
         putchar('\n');
     }

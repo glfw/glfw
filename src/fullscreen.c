@@ -150,11 +150,13 @@ GLFWAPI GLFWvidmode* glfwGetVideoModes(GLFWmonitor handle, int* count)
 
 
 //========================================================================
-// Get the desktop video mode
+// Get the current video mode for the specified monitor
 //========================================================================
 
-GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode)
+GLFWAPI void glfwGetVideoMode(GLFWmonitor handle, GLFWvidmode* mode)
 {
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
@@ -163,11 +165,10 @@ GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode)
 
     if (mode == NULL)
     {
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwGetDesktopMode: Parameter 'mode' cannot be NULL");
+        _glfwSetError(GLFW_INVALID_VALUE, NULL);
         return;
     }
 
-    _glfwPlatformGetDesktopMode(mode);
+    _glfwPlatformGetVideoMode(monitor, mode);
 }
 

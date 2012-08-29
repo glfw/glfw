@@ -286,7 +286,7 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
 
 // Video mode support
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count);
-void _glfwPlatformGetDesktopMode(GLFWvidmode* mode);
+void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode);
 
 // Gamma ramp support
 void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp);

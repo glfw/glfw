@@ -539,7 +539,7 @@ GLFWAPI GLFWmonitor glfwGetNextMonitor(GLFWmonitor iterator);
 
 /* Video mode functions */
 GLFWAPI GLFWvidmode* glfwGetVideoModes(GLFWmonitor monitor, int* count);
-GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode);
+GLFWAPI void glfwGetVideoMode(GLFWmonitor monitor, GLFWvidmode* mode);
 
 /* Gamma ramp functions */
 GLFWAPI void glfwSetGamma(float gamma);

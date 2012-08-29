@@ -469,11 +469,11 @@ extern "C" {
  * Typedefs
  *************************************************************************/
 
-/* Monitor handle type */
-typedef void* GLFWmonitor;
-
 /* OpenGL function pointer type */
 typedef void (*GLFWglproc)(void);
+
+/* Monitor handle type */
+typedef void* GLFWmonitor;
 
 /* Window handle type */
 typedef void* GLFWwindow;
@@ -527,14 +527,12 @@ GLFWAPI int glfwGetError(void);
 GLFWAPI const char* glfwErrorString(int error);
 GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
 
-/* Monitor callback registration */
-GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun);
-
-/* Monitor attributes */
+/* Monitor functions */
+GLFWAPI int  glfwGetMonitorParam(GLFWmonitor monitor, int param);
+GLFWAPI const char* glfwGetMonitorString(GLFWmonitor monitor, int param);
 GLFWAPI void glfwSetMonitorUserPointer(GLFWmonitor monitor, void* pointer);
 GLFWAPI void* glfwGetMonitorUserPointer(GLFWmonitor monitor);
-GLFWAPI int glfwGetMonitorParam(GLFWmonitor monitor, int param);
-GLFWAPI const char* glfwGetMonitorString(GLFWmonitor monitor, int param);
+GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun);
 
 /* Monitor discovery */
 GLFWAPI GLFWmonitor glfwGetNextMonitor(GLFWmonitor iterator);

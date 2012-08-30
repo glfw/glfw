@@ -119,12 +119,41 @@ static void list_extensions(int major, int minor)
     putchar('\n');
 }
 
+static GLboolean valid_version(void)
+{
+    int major, minor, revision;
+
+    glfwGetVersion(&major, &minor, &revision);
+
+    printf("GLFW header version: %u.%u.%u\n",
+           GLFW_VERSION_MAJOR,
+           GLFW_VERSION_MINOR,
+           GLFW_VERSION_REVISION);
+
+    printf("GLFW library version: %u.%u.%u\n", major, minor, revision);
+
+    if (major != GLFW_VERSION_MAJOR)
+    {
+        printf("*** ERROR: GLFW major version mismatch! ***\n");
+        return GL_FALSE;
+    }
+
+    if (minor != GLFW_VERSION_MINOR || revision != GLFW_VERSION_REVISION)
+        printf("*** WARNING: GLFW version mismatch! ***\n");
+
+    printf("GLFW library version string: \"%s\"\n", glfwGetVersionString());
+    return GL_TRUE;
+}
+
 int main(int argc, char** argv)
 {
     int ch, profile = 0, strategy = 0, major = 1, minor = 0, revision;
     GLboolean debug = GL_FALSE, forward = GL_FALSE, list = GL_FALSE;
     GLint flags, mask;
     GLFWwindow window;
+
+    if (!valid_version())
+        exit(EXIT_FAILURE);
 
     while ((ch = getopt(argc, argv, "dfhlm:n:p:r:")) != -1)
     {
@@ -180,26 +209,6 @@ int main(int argc, char** argv)
 
     argc -= optind;
     argv += optind;
-
-    // Report GLFW version
-
-    glfwGetVersion(&major, &minor, &revision);
-
-    printf("GLFW header version: %u.%u.%u\n",
-           GLFW_VERSION_MAJOR,
-           GLFW_VERSION_MINOR,
-           GLFW_VERSION_REVISION);
-
-    printf("GLFW library version: %u.%u.%u\n", major, minor, revision);
-
-    if (major != GLFW_VERSION_MAJOR ||
-        minor != GLFW_VERSION_MINOR ||
-        revision != GLFW_VERSION_REVISION)
-    {
-        printf("*** WARNING: GLFW version mismatch! ***\n");
-    }
-
-    printf("GLFW library version string: \"%s\"\n", glfwGetVersionString());
 
     // Initialize GLFW and create window
 

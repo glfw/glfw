@@ -478,8 +478,8 @@ static void processEvent(XEvent *event)
             if (window == NULL)
                 return;
 
-            _glfwInputKey(window, translateKey(event.xkey.keycode), GLFW_PRESS);
-            _glfwInputChar(window, translateChar(&event.xkey));
+            _glfwInputKey(window, translateKey(event->xkey.keycode), GLFW_PRESS);
+            _glfwInputChar(window, translateChar(&event->xkey));
             break;
         }
 
@@ -516,7 +516,7 @@ static void processEvent(XEvent *event)
                 }
             }
 
-            _glfwInputKey(window, translateKey(event.xkey.keycode), GLFW_RELEASE);
+            _glfwInputKey(window, translateKey(event->xkey.keycode), GLFW_RELEASE);
             break;
         }
 

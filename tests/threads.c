@@ -42,12 +42,12 @@ typedef struct
     GLFWwindow window;
     const char* title;
     float r, g, b;
-    thrd_t ID;
+    thrd_t id;
 } Thread;
 
 static volatile GLboolean running = GL_TRUE;
 
-static int thread_start(void* data)
+static int thread_main(void* data)
 {
     const Thread* thread = (const Thread*) data;
 
@@ -102,7 +102,7 @@ int main(void)
 
         glfwSetWindowPos(threads[i].window, 200 + 250 * i, 200);
 
-        if (thrd_create(&threads[i].ID, thread_start, threads + i) !=
+        if (thrd_create(&threads[i].id, thread_main, threads + i) !=
             thrd_success)
         {
             fprintf(stderr, "Failed to create secondary thread\n");
@@ -124,7 +124,7 @@ int main(void)
     }
 
     for (i = 0;  i < count;  i++)
-        thrd_join(threads[i].ID, &result);
+        thrd_join(threads[i].id, &result);
 
     exit(EXIT_SUCCESS);
 }

@@ -288,6 +288,9 @@ int main(int argc, char** argv)
                get_glfw_profile_name(glfwGetWindowParam(window, GLFW_OPENGL_PROFILE)));
     }
 
+    printf("OpenGL context debug flag saved by GLFW: %s\n",
+           glfwGetWindowParam(window, GLFW_OPENGL_DEBUG_CONTEXT) ? "true" : "false");
+
     printf("OpenGL context renderer string: \"%s\"\n", glGetString(GL_RENDERER));
     printf("OpenGL context vendor string: \"%s\"\n", glGetString(GL_VENDOR));
 

@@ -753,7 +753,7 @@ static int createWindow(_GLFWwindow* window,
     WCHAR* wideTitle;
 
     // Set common window styles
-    dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE;
+    dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
     dwExStyle = WS_EX_APPWINDOW;
 
     // Set window style, depending on fullscreen mode

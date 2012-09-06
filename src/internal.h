@@ -276,7 +276,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window);
 
 // Joystick input
 int _glfwPlatformGetJoystickParam(int joy, int param);
-int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes);
+int _glfwPlatformGetJoystickAxes(int joy, float* axes, int numaxes);
 int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons, int numbuttons);
 
 // Time input

@@ -528,11 +528,11 @@ GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
 GLFWAPI void glfwWindowHint(int target, int hint);
 GLFWAPI GLFWwindow glfwCreateWindow(int width, int height, int mode, const char* title, GLFWwindow share);
 GLFWAPI void glfwDestroyWindow(GLFWwindow window);
-GLFWAPI void glfwSetWindowTitle(GLFWwindow, const char* title);
-GLFWAPI void glfwGetWindowSize(GLFWwindow, int* width, int* height);
-GLFWAPI void glfwSetWindowSize(GLFWwindow, int width, int height);
-GLFWAPI void glfwGetWindowPos(GLFWwindow, int* xpos, int* ypos);
-GLFWAPI void glfwSetWindowPos(GLFWwindow, int xpos, int ypos);
+GLFWAPI void glfwSetWindowTitle(GLFWwindow window, const char* title);
+GLFWAPI void glfwGetWindowSize(GLFWwindow window, int* width, int* height);
+GLFWAPI void glfwSetWindowSize(GLFWwindow window, int width, int height);
+GLFWAPI void glfwGetWindowPos(GLFWwindow window, int* xpos, int* ypos);
+GLFWAPI void glfwSetWindowPos(GLFWwindow window, int xpos, int ypos);
 GLFWAPI void glfwIconifyWindow(GLFWwindow window);
 GLFWAPI void glfwRestoreWindow(GLFWwindow window);
 GLFWAPI void glfwShowWindow(GLFWwindow window);
@@ -567,7 +567,7 @@ GLFWAPI void glfwSetScrollCallback(GLFWscrollfun cbfun);
 
 /* Joystick input */
 GLFWAPI int glfwGetJoystickParam(int joy, int param);
-GLFWAPI int glfwGetJoystickPos(int joy, float* pos, int numaxes);
+GLFWAPI int glfwGetJoystickAxes(int joy, float* axes, int numaxes);
 GLFWAPI int glfwGetJoystickButtons(int joy, unsigned char* buttons, int numbuttons);
 
 /* Clipboard */

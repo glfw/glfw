@@ -36,6 +36,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -109,6 +110,7 @@ static void pollJoystickEvents(void)
 {
 #ifdef _GLFW_USE_LINUX_JOYSTICKS
     int i;
+    ssize_t result;
     struct js_event e;
 
     for (i = 0;  i <= GLFW_JOYSTICK_LAST;  i++)
@@ -117,8 +119,17 @@ static void pollJoystickEvents(void)
             continue;
 
         // Read all queued events (non-blocking)
-        while (read(_glfwLibrary.X11.joystick[i].fd, &e, sizeof(e)) > 0)
+        for (;;)
         {
+            errno = 0;
+            result = read(_glfwLibrary.X11.joystick[i].fd, &e, sizeof(e));
+
+            if (errno == ENODEV)
+                _glfwLibrary.X11.joystick[i].present = GL_FALSE;
+
+            if (result < sizeof(e))
+                break;
+
             // We don't care if it's an init event or not
             e.type &= ~JS_EVENT_INIT;
 
@@ -221,6 +232,8 @@ void _glfwTerminateJoysticks(void)
 
 int _glfwPlatformGetJoystickParam(int joy, int param)
 {
+    pollJoystickEvents();
+
     if (!_glfwLibrary.X11.joystick[joy].present)
         return 0;
 
@@ -247,20 +260,20 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
 // Get joystick axis positions
 //========================================================================
 
-int _glfwPlatformGetJoystickPos(int joy, float* pos, int numAxes)
+int _glfwPlatformGetJoystickAxes(int joy, float* axes, int numAxes)
 {
     int i;
 
+    pollJoystickEvents();
+
     if (!_glfwLibrary.X11.joystick[joy].present)
         return 0;
-
-    pollJoystickEvents();
 
     if (_glfwLibrary.X11.joystick[joy].numAxes < numAxes)
         numAxes = _glfwLibrary.X11.joystick[joy].numAxes;
 
     for (i = 0;  i < numAxes;  i++)
-        pos[i] = _glfwLibrary.X11.joystick[joy].axis[i];
+        axes[i] = _glfwLibrary.X11.joystick[joy].axis[i];
 
     return numAxes;
 }
@@ -275,10 +288,10 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
 {
     int i;
 
+    pollJoystickEvents();
+
     if (!_glfwLibrary.X11.joystick[joy].present)
         return 0;
-
-    pollJoystickEvents();
 
     if (_glfwLibrary.X11.joystick[joy].numButtons < numButtons)
         numButtons = _glfwLibrary.X11.joystick[joy].numButtons;

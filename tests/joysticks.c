@@ -137,7 +137,7 @@ static void refresh_joysticks(void)
                 j->axes = realloc(j->axes, j->axis_count * sizeof(float));
             }
 
-            glfwGetJoystickPos(GLFW_JOYSTICK_1 + i, j->axes, j->axis_count);
+            glfwGetJoystickAxes(GLFW_JOYSTICK_1 + i, j->axes, j->axis_count);
 
             button_count = glfwGetJoystickParam(GLFW_JOYSTICK_1 + i, GLFW_BUTTONS);
             if (button_count != j->button_count)

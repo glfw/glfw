@@ -211,3 +211,14 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
 
     return button;
 }
+
+
+//========================================================================
+// Get joystick name
+//========================================================================
+
+const char* _glfwPlatformGetJoystickName(int joy)
+{
+    return "";
+}
+

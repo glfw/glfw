@@ -443,9 +443,9 @@ void _glfwInitJoysticks(void)
         if (refCF)
         {
             CFStringGetCString(refCF,
-                               (char*) &(joystick->product),
-                               256,
-                               CFStringGetSystemEncoding());
+                               joystick->product,
+                               sizeof(joystick->product),
+                               kCFStringEncodingUTF8);
         }
 
         joystick->numAxes = 0;
@@ -623,5 +623,15 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
     }
 
     return button;
+}
+
+
+//========================================================================
+// Get joystick name
+//========================================================================
+
+const char* _glfwPlatformGetJoystickName(int joy)
+{
+    return _glfwJoysticks[joy].product;
 }
 

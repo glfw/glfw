@@ -37,6 +37,7 @@
 typedef struct Joystick
 {
     GLboolean present;
+    char* name;
     float* axes;
     unsigned char* buttons;
     int axis_count;
@@ -130,6 +131,9 @@ static void refresh_joysticks(void)
         {
             int axis_count, button_count;
 
+            free(j->name);
+            j->name = strdup(glfwGetJoystickName(GLFW_JOYSTICK_1 + i));
+
             axis_count = glfwGetJoystickParam(GLFW_JOYSTICK_1 + i, GLFW_AXES);
             if (axis_count != j->axis_count)
             {
@@ -150,8 +154,8 @@ static void refresh_joysticks(void)
 
             if (!j->present)
             {
-                printf("Found joystick %i with %i axes, %i buttons\n",
-                       i + 1, j->axis_count, j->button_count);
+                printf("Found joystick %i named \'%s\' with %i axes, %i buttons\n",
+                       i + 1, j->name, j->axis_count, j->button_count);
 
                 joystick_count++;
             }
@@ -162,11 +166,12 @@ static void refresh_joysticks(void)
         {
             if (j->present)
             {
+                printf("Lost joystick %i named \'%s\'\n", i + 1, j->name);
+
+                free(j->name);
                 free(j->axes);
                 free(j->buttons);
                 memset(j, 0, sizeof(Joystick));
-
-                printf("Lost joystick %i\n", i + 1);
 
                 joystick_count--;
             }

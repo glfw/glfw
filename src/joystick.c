@@ -126,3 +126,25 @@ GLFWAPI int glfwGetJoystickButtons(int joy,
     return _glfwPlatformGetJoystickButtons(joy, buttons, numbuttons);
 }
 
+
+//========================================================================
+// Get joystick name
+//========================================================================
+
+GLFWAPI const char* glfwGetJoystickName(int joy)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return 0;
+    }
+
+    if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
+    {
+        _glfwSetError(GLFW_INVALID_ENUM, NULL);
+        return 0;
+    }
+
+    return _glfwPlatformGetJoystickName(joy);
+}
+

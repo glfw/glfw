@@ -566,6 +566,7 @@ GLFWAPI void glfwSetScrollCallback(GLFWscrollfun cbfun);
 GLFWAPI int glfwGetJoystickParam(int joy, int param);
 GLFWAPI int glfwGetJoystickAxes(int joy, float* axes, int numaxes);
 GLFWAPI int glfwGetJoystickButtons(int joy, unsigned char* buttons, int numbuttons);
+GLFWAPI const char* glfwGetJoystickName(int joy);
 
 /* Clipboard */
 GLFWAPI void glfwSetClipboardString(GLFWwindow window, const char* string);

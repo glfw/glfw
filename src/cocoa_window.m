@@ -1093,7 +1093,7 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
         CGPoint mainScreenOrigin = CGDisplayBounds(CGMainDisplayID()).origin;
         double mainScreenHeight = CGDisplayBounds(CGMainDisplayID()).size.height;
         CGPoint targetPoint = CGPointMake(globalPoint.x - mainScreenOrigin.x,
-                                        mainScreenHeight - globalPoint.y -
+                                          mainScreenHeight - globalPoint.y -
                                             mainScreenOrigin.y);
         CGDisplayMoveCursorToPoint(CGMainDisplayID(), targetPoint);
     }

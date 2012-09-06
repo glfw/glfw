@@ -1,6 +1,6 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    Win32/WGL
+// Platform:    Win32
 // API version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
@@ -116,7 +116,7 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
 // Get joystick axis positions
 //========================================================================
 
-int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
+int _glfwPlatformGetJoystickAxes(int joy, float* axes, int numaxes)
 {
     JOYCAPS jc;
     JOYINFOEX ji;
@@ -137,22 +137,22 @@ int _glfwPlatformGetJoystickPos(int joy, float* pos, int numaxes)
     // Get position values for all axes
     axis = 0;
     if (axis < numaxes)
-        pos[axis++] = calcJoystickPos(ji.dwXpos, jc.wXmin, jc.wXmax);
+        axes[axis++] = calcJoystickPos(ji.dwXpos, jc.wXmin, jc.wXmax);
 
     if (axis < numaxes)
-        pos[axis++] = -calcJoystickPos(ji.dwYpos, jc.wYmin, jc.wYmax);
+        axes[axis++] = -calcJoystickPos(ji.dwYpos, jc.wYmin, jc.wYmax);
 
     if (axis < numaxes && jc.wCaps & JOYCAPS_HASZ)
-        pos[axis++] = calcJoystickPos(ji.dwZpos, jc.wZmin, jc.wZmax);
+        axes[axis++] = calcJoystickPos(ji.dwZpos, jc.wZmin, jc.wZmax);
 
     if (axis < numaxes && jc.wCaps & JOYCAPS_HASR)
-        pos[axis++] = calcJoystickPos(ji.dwRpos, jc.wRmin, jc.wRmax);
+        axes[axis++] = calcJoystickPos(ji.dwRpos, jc.wRmin, jc.wRmax);
 
     if (axis < numaxes && jc.wCaps & JOYCAPS_HASU)
-        pos[axis++] = calcJoystickPos(ji.dwUpos, jc.wUmin, jc.wUmax);
+        axes[axis++] = calcJoystickPos(ji.dwUpos, jc.wUmin, jc.wUmax);
 
     if (axis < numaxes && jc.wCaps & JOYCAPS_HASV)
-        pos[axis++] = -calcJoystickPos(ji.dwVpos, jc.wVmin, jc.wVmax);
+        axes[axis++] = -calcJoystickPos(ji.dwVpos, jc.wVmin, jc.wVmax);
 
     return axis;
 }

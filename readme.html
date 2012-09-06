@@ -300,6 +300,7 @@ version of GLFW.</p>
   <li>Renamed <code>GLFW_BUILD_DLL</code> to <code>_GLFW_BUILD_DLL</code></li>
   <li>Renamed <code>version</code> test to <code>glfwinfo</code></li>
   <li>Renamed <code>GLFW_NO_GLU</code> to <code>GLFW_INCLUDE_GLU</code> and made it disabled by default</li>
+  <li>Renamed <code>glfwGetJoystickPos</code> to <code>glfwGetJoystickAxes</code> to match <code>glfwGetJoystickButtons</code></li>
   <li>Renamed mouse position functions to cursor position equivalents</li>
   <li>Replaced <code>glfwOpenWindow</code> and <code>glfwCloseWindow</code> with <code>glfwCreateWindow</code> and <code>glfwDestroyWindow</code></li>
   <li>Replaced ad hoc build system with CMake</li>
@@ -949,6 +950,8 @@ their skills.  Special thanks go out to:</p>
   Mac OS X</li>
 
   <li>Samuli Tuomola, for support, bug reports and testing</li>
+
+  <li>Torsten Walluhn, for fixing various compilation issues on OS X</li>
 
   <li>Frank Wille, for helping with the AmigaOS port and making GLFW
   compile under IRIX 5.3</li>

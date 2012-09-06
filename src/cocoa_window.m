@@ -674,8 +674,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 
     if (window->NS.object == nil)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Cocoa/NSOpenGL: Failed to create window");
+        _glfwSetError(GLFW_PLATFORM_ERROR, "Cocoa: Failed to create window");
         return GL_FALSE;
     }
 
@@ -717,8 +716,8 @@ static GLboolean createContext(_GLFWwindow* window,
         (wndconfig->glMajor == 3 && wndconfig->glMinor != 2))
     {
         _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                      "Cocoa/NSOpenGL: The targeted version of Mac OS X does "
-                      "not support any OpenGL version above 2.1 except 3.2");
+                      "NSOpenGL: The targeted version of Mac OS X does not "
+                      "support any OpenGL version above 2.1 except 3.2");
         return GL_FALSE;
     }
 
@@ -727,8 +726,8 @@ static GLboolean createContext(_GLFWwindow* window,
         if (!wndconfig->glForward)
         {
             _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                          "Cocoa/NSOpenGL: The targeted version of Mac OS X "
-                          "only supports OpenGL 3.2 contexts if they are "
+                          "NSOpenGL: The targeted version of Mac OS X only "
+                          "supports OpenGL 3.2 contexts if they are "
                           "forward-compatible");
             return GL_FALSE;
         }
@@ -736,8 +735,8 @@ static GLboolean createContext(_GLFWwindow* window,
         if (wndconfig->glProfile != GLFW_OPENGL_CORE_PROFILE)
         {
             _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                          "Cocoa/NSOpenGL: The targeted version of Mac OS X "
-                          "only supports OpenGL 3.2 contexts if they use the "
+                          "NSOpenGL: The targeted version of Mac OS X only "
+                          "supports OpenGL 3.2 contexts if they use the "
                           "core profile");
             return GL_FALSE;
         }
@@ -747,8 +746,8 @@ static GLboolean createContext(_GLFWwindow* window,
     if (wndconfig->glMajor > 2)
     {
         _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                      "Cocoa/NSOpenGL: The targeted version of Mac OS X does "
-                      "not support OpenGL version 3.0 or above");
+                      "NSOpenGL: The targeted version of Mac OS X does not "
+                      "support OpenGL version 3.0 or above");
         return GL_FALSE;
     }
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
@@ -757,8 +756,8 @@ static GLboolean createContext(_GLFWwindow* window,
     if (wndconfig->glRobustness)
     {
         _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                      "Cocoa/NSOpenGL: Mac OS X does not support OpenGL "
-                      "robustness strategies");
+                      "NSOpenGL: Mac OS X does not support OpenGL robustness "
+                      "strategies");
         return GL_FALSE;
     }
 
@@ -821,7 +820,7 @@ static GLboolean createContext(_GLFWwindow* window,
     if (window->NSGL.pixelFormat == nil)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Cocoa/NSOpenGL: Failed to create OpenGL pixel format");
+                      "NSOpenGL: Failed to create OpenGL pixel format");
         return GL_FALSE;
     }
 
@@ -836,7 +835,7 @@ static GLboolean createContext(_GLFWwindow* window,
     if (window->NSGL.context == nil)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Cocoa/NSOpenGL: Failed to create OpenGL context");
+                      "NSOpenGL: Failed to create OpenGL context");
         return GL_FALSE;
     }
 
@@ -868,8 +867,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         if (_glfwLibrary.NS.delegate == nil)
         {
             _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "Cocoa/NSOpenGL: Failed to create application "
-                          "delegate");
+                          "Cocoa: Failed to create application delegate");
             return GL_FALSE;
         }
 
@@ -880,7 +878,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (window->NS.delegate == nil)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Cocoa/NSOpenGL: Failed to create window delegate");
+                      "Cocoa: Failed to create window delegate");
         return GL_FALSE;
     }
 

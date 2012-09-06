@@ -1,6 +1,6 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    X11/GLX
+// Platform:    X11
 // API version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
@@ -442,7 +442,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(int* found)
     if (visuals == NULL)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "X11/GLX: Failed to retrieve the available visuals");
+                      "X11: Failed to retrieve the available visuals");
         return 0;
     }
 

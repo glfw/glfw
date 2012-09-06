@@ -53,7 +53,7 @@ static int openJoystickDevice(int joy, const char* path)
     char numAxes, numButtons;
     int fd, version;
 
-    fd = open(path, O_NONBLOCK);
+    fd = open(path, O_RDONLY | O_NONBLOCK);
     if (fd == -1)
         return GL_FALSE;
 
@@ -127,7 +127,7 @@ static void pollJoystickEvents(void)
             if (errno == ENODEV)
                 _glfwLibrary.X11.joystick[i].present = GL_FALSE;
 
-            if (result < sizeof(e))
+            if (result == -1)
                 break;
 
             // We don't care if it's an init event or not

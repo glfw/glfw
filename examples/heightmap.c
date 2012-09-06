@@ -581,13 +581,13 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    glfwOpenWindowHint(GLFW_WINDOW_RESIZABLE, GL_FALSE);
-    glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3);
-    glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 2);
-    glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwOpenWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
+    glfwWindowHint(GLFW_WINDOW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_OPENGL_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
 
-    window = glfwOpenWindow(800, 600, GLFW_WINDOWED, "GLFW OpenGL3 Heightmap demo", NULL);
+    window = glfwCreateWindow(800, 600, GLFW_WINDOWED, "GLFW OpenGL3 Heightmap demo", NULL);
     if (! window )
     {
         fprintf(stderr, "ERROR: Unable to create the OpenGL context and associated window\n");
@@ -597,10 +597,12 @@ int main(int argc, char** argv)
         free(fragment_shader_src);
         exit(EXIT_FAILURE);
     }
+
+    /* Register events callback */
     glfwSetWindowCloseCallback(window_close_callback);
     glfwSetKeyCallback(key_callback);
-    /* Register events callback */
 
+    glfwMakeContextCurrent(window);
     if (GL_TRUE != init_opengl())
     {
         fprintf(stderr, "ERROR: unable to resolve OpenGL function pointers\n");
@@ -663,7 +665,7 @@ int main(int argc, char** argv)
         glDrawElements(GL_LINES, 2* MAP_NUM_LINES , GL_UNSIGNED_INT, 0);
 
         /* display and process events through callbacks */
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
         /* Check the frame rate and update the heightmap if needed */
         dt = glfwGetTime();

@@ -31,6 +31,7 @@
 #include "internal.h"
 
 #include <stdlib.h>
+#include <malloc.h>
 
 #ifdef __BORLANDC__
 // With the Borland C++ compiler, we want to disable FPU exceptions

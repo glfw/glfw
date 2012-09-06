@@ -44,7 +44,6 @@ typedef struct Joystick
 } Joystick;
 
 static Joystick joysticks[GLFW_JOYSTICK_LAST - GLFW_JOYSTICK_1 + 1];
-
 static int joystick_count = 0;
 
 static void window_size_callback(GLFWwindow window, int width, int height)
@@ -138,7 +137,7 @@ static void refresh_joysticks(void)
                 j->axes = realloc(j->axes, j->axis_count * sizeof(float));
             }
 
-            glfwGetJoystickPos(GLFW_JOYSTICK_1 + i, j->axes, j->axis_count);
+            glfwGetJoystickAxes(GLFW_JOYSTICK_1 + i, j->axes, j->axis_count);
 
             button_count = glfwGetJoystickParam(GLFW_JOYSTICK_1 + i, GLFW_BUTTONS);
             if (button_count != j->button_count)
@@ -187,7 +186,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Joystick Test", NULL);
+    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Joystick Test", NULL);
     if (!window)
     {
         glfwTerminate();
@@ -197,16 +196,18 @@ int main(void)
     }
 
     glfwSetWindowSizeCallback(window_size_callback);
+
+    glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    while (glfwIsWindow(window))
+    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
         refresh_joysticks();
         draw_joysticks();
 
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
     }
 

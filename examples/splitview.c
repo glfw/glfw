@@ -450,10 +450,16 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glfwOpenWindowHint(GLFW_DEPTH_BITS, 16);
+    // Set callback functions
+    glfwSetWindowSizeCallback(windowSizeFun);
+    glfwSetWindowRefreshCallback(windowRefreshFun);
+    glfwSetCursorPosCallback(cursorPosFun);
+    glfwSetMouseButtonCallback(mouseButtonFun);
+
+    glfwWindowHint(GLFW_DEPTH_BITS, 16);
 
     // Open OpenGL window
-    window = glfwOpenWindow(500, 500, GLFW_WINDOWED, "Split view demo", NULL);
+    window = glfwCreateWindow(500, 500, GLFW_WINDOWED, "Split view demo", NULL);
     if (!window)
     {
         fprintf(stderr, "Failed to open GLFW window\n");
@@ -461,7 +467,11 @@ int main(void)
     }
 
     // Enable vsync
+    glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+
+    glfwGetWindowSize(window, &width, &height);
+    windowSizeFun(window, width, height);
 
     // Enable sticky keys
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
@@ -469,14 +479,8 @@ int main(void)
     // Enable mouse cursor (only needed for fullscreen mode)
     glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_NORMAL);
 
-    // Set callback functions
-    glfwSetWindowSizeCallback(windowSizeFun);
-    glfwSetWindowRefreshCallback(windowRefreshFun);
-    glfwSetCursorPosCallback(cursorPosFun);
-    glfwSetMouseButtonCallback(mouseButtonFun);
-
     // Main loop
-    do
+    for (;;)
     {
         // Only redraw if we need to
         if (do_redraw)
@@ -485,7 +489,7 @@ int main(void)
             drawAllViews();
 
             // Swap buffers
-            glfwSwapBuffers();
+            glfwSwapBuffers(window);
 
             do_redraw = 0;
         }
@@ -493,9 +497,12 @@ int main(void)
         // Wait for new events
         glfwWaitEvents();
 
-    } // Check if the ESC key was pressed or the window was closed
-    while (glfwIsWindow(window) &&
-           glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS);
+        // Check if the ESC key was pressed or the window should be closed
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE))
+            break;
+        if (glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
+            break;
+    }
 
     // Close OpenGL window and terminate GLFW
     glfwTerminate();

@@ -59,8 +59,7 @@
 
 - (BOOL)windowShouldClose:(id)sender
 {
-    window->closeRequested = GL_TRUE;
-
+    _glfwInputWindowCloseRequest(window);
     return NO;
 }
 
@@ -127,7 +126,7 @@
     _GLFWwindow* window;
 
     for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
-        window->closeRequested = GL_TRUE;
+        _glfwInputWindowCloseRequest(window);
 
     return NSTerminateCancel;
 }
@@ -278,9 +277,6 @@ static int convertMacKeyCode(unsigned int macKeyCode)
     if (macKeyCode >= 128)
         return -1;
 
-    // This treats keycodes as *positional*; that is, we'll return 'a'
-    // for the key left of 's', even on an AZERTY keyboard.  The charInput
-    // function should still get 'q' though.
     return table[macKeyCode];
 }
 
@@ -425,6 +421,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
                                                userInfo:nil];
 
     [self addTrackingArea:trackingArea];
+	[super updateTrackingAreas];
 }
 
 - (void)keyDown:(NSEvent *)event
@@ -541,7 +538,7 @@ static NSString* findAppName(void)
         }
     }
 
-    // If we get here, we're unbundled
+    // If we get here, the application is unbundled
     ProcessSerialNumber psn = { 0, kCurrentProcess };
     TransformProcessType(&psn, kProcessTransformToForegroundApplication);
 
@@ -551,10 +548,7 @@ static NSString* findAppName(void)
 
     char** progname = _NSGetProgname();
     if (progname && *progname)
-    {
-        // TODO: UTF-8?
         return [NSString stringWithUTF8String:*progname];
-    }
 
     // Really shouldn't get here
     return @"GLFW Application";
@@ -680,8 +674,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 
     if (window->NS.object == nil)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Cocoa/NSOpenGL: Failed to create window");
+        _glfwSetError(GLFW_PLATFORM_ERROR, "Cocoa: Failed to create window");
         return GL_FALSE;
     }
 
@@ -730,8 +723,8 @@ static GLboolean createContext(_GLFWwindow* window,
         (wndconfig->glMajor == 3 && wndconfig->glMinor != 2))
     {
         _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                      "Cocoa/NSOpenGL: The targeted version of Mac OS X does "
-                      "not support any OpenGL version above 2.1 except 3.2");
+                      "NSOpenGL: The targeted version of Mac OS X does not "
+                      "support any OpenGL version above 2.1 except 3.2");
         return GL_FALSE;
     }
 
@@ -740,8 +733,8 @@ static GLboolean createContext(_GLFWwindow* window,
         if (!wndconfig->glForward)
         {
             _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                          "Cocoa/NSOpenGL: The targeted version of Mac OS X "
-                          "only supports OpenGL 3.2 contexts if they are "
+                          "NSOpenGL: The targeted version of Mac OS X only "
+                          "supports OpenGL 3.2 contexts if they are "
                           "forward-compatible");
             return GL_FALSE;
         }
@@ -749,8 +742,8 @@ static GLboolean createContext(_GLFWwindow* window,
         if (wndconfig->glProfile != GLFW_OPENGL_CORE_PROFILE)
         {
             _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                          "Cocoa/NSOpenGL: The targeted version of Mac OS X "
-                          "only supports OpenGL 3.2 contexts if they use the "
+                          "NSOpenGL: The targeted version of Mac OS X only "
+                          "supports OpenGL 3.2 contexts if they use the "
                           "core profile");
             return GL_FALSE;
         }
@@ -760,8 +753,8 @@ static GLboolean createContext(_GLFWwindow* window,
     if (wndconfig->glMajor > 2)
     {
         _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                      "Cocoa/NSOpenGL: The targeted version of Mac OS X does "
-                      "not support OpenGL version 3.0 or above");
+                      "NSOpenGL: The targeted version of Mac OS X does not "
+                      "support OpenGL version 3.0 or above");
         return GL_FALSE;
     }
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
@@ -770,8 +763,8 @@ static GLboolean createContext(_GLFWwindow* window,
     if (wndconfig->glRobustness)
     {
         _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                      "Cocoa/NSOpenGL: Mac OS X does not support OpenGL "
-                      "robustness strategies");
+                      "NSOpenGL: Mac OS X does not support OpenGL robustness "
+                      "strategies");
         return GL_FALSE;
     }
 
@@ -834,7 +827,7 @@ static GLboolean createContext(_GLFWwindow* window,
     if (window->NSGL.pixelFormat == nil)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Cocoa/NSOpenGL: Failed to create OpenGL pixel format");
+                      "NSOpenGL: Failed to create OpenGL pixel format");
         return GL_FALSE;
     }
 
@@ -849,7 +842,7 @@ static GLboolean createContext(_GLFWwindow* window,
     if (window->NSGL.context == nil)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Cocoa/NSOpenGL: Failed to create OpenGL context");
+                      "NSOpenGL: Failed to create OpenGL context");
         return GL_FALSE;
     }
 
@@ -866,25 +859,22 @@ static GLboolean createContext(_GLFWwindow* window,
 // created
 //========================================================================
 
-int _glfwPlatformOpenWindow(_GLFWwindow* window,
-                            const _GLFWwndconfig* wndconfig,
-                            const _GLFWfbconfig* fbconfig)
+int _glfwPlatformCreateWindow(_GLFWwindow* window,
+                              const _GLFWwndconfig* wndconfig,
+                              const _GLFWfbconfig* fbconfig)
 {
     if (!initializeAppKit())
         return GL_FALSE;
 
-    window->resizable = wndconfig->resizable;
-
-    // We can only have one application delegate, but we only allocate it the
-    // first time we create a window to keep all window code in this file
+    // There can only be one application delegate, but we allocate it the
+    // first time a window is created to keep all window code in this file
     if (_glfwLibrary.NS.delegate == nil)
     {
         _glfwLibrary.NS.delegate = [[GLFWApplicationDelegate alloc] init];
         if (_glfwLibrary.NS.delegate == nil)
         {
             _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "Cocoa/NSOpenGL: Failed to create application "
-                          "delegate");
+                          "Cocoa: Failed to create application delegate");
             return GL_FALSE;
         }
 
@@ -895,7 +885,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
     if (window->NS.delegate == nil)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Cocoa/NSOpenGL: Failed to create window delegate");
+                      "Cocoa: Failed to create window delegate");
         return GL_FALSE;
     }
 
@@ -934,13 +924,9 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
                                                  withOptions:nil];
     }
 
-    glfwMakeContextCurrent(window);
-
     NSPoint point = [[NSCursor currentCursor] hotSpot];
     window->cursorPosX = point.x;
     window->cursorPosY = point.y;
-
-    window->resizable = wndconfig->resizable;
 
     return GL_TRUE;
 }
@@ -950,7 +936,7 @@ int _glfwPlatformOpenWindow(_GLFWwindow* window,
 // Properly kill the window / video display
 //========================================================================
 
-void _glfwPlatformCloseWindow(_GLFWwindow* window)
+void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     [window->NS.object orderOut:nil];
 
@@ -1047,7 +1033,7 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 // Write back window parameters into GLFW window structure
 //========================================================================
 
-void _glfwPlatformRefreshWindowParams(void)
+void _glfwPlatformRefreshWindowParams(_GLFWwindow* window)
 {
 }
 

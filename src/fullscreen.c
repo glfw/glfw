@@ -6,6 +6,7 @@
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2012 Torsten Walluhn <tw@mad-cad.net>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -31,6 +32,11 @@
 #include "internal.h"
 
 #include <stdlib.h>
+#ifdef __APPLE__
+#include <sys/malloc.h>
+#else
+#include <malloc.h>
+#endif
 
 
 //========================================================================
@@ -69,6 +75,16 @@ static int compareVideoModes(const void* firstPtr, const void* secondPtr)
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
+// Lexical comparison of GLFW video modes
+//========================================================================
+
+int _glfwCompareVideoModes(const GLFWvidmode* first, const GLFWvidmode* second)
+{
+    return compareVideoModes(first, second);
+}
+
+
+//========================================================================
 // Convert BPP to RGB bits based on "best guess"
 //========================================================================
 
@@ -76,7 +92,7 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 {
     int delta;
 
-    // We assume that by 32 they really meant 24
+    // We assume that by 32 the user really meant 24
     if (bpp == 32)
         bpp = 24;
 
@@ -100,36 +116,27 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 // Get a list of available video modes
 //========================================================================
 
-GLFWAPI int glfwGetVideoModes(GLFWvidmode* list, int maxcount)
+GLFWAPI GLFWvidmode* glfwGetVideoModes(int* count)
 {
-    int count;
-
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return 0;
+        return NULL;
     }
 
-    if (maxcount <= 0)
+    if (count == NULL)
     {
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwGetVideoModes: Parameter 'maxcount' must be "
-                      "greater than zero");
-        return 0;
+        _glfwSetError(GLFW_INVALID_VALUE, NULL);
+        return NULL;
     }
 
-    if (list == NULL)
-    {
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwGetVideoModes: Parameter 'list' cannot be NULL");
-        return 0;
-    }
+    free(_glfwLibrary.modes);
 
-    count = _glfwPlatformGetVideoModes(list, maxcount);
-    if (count > 0)
-        qsort(list, count, sizeof(GLFWvidmode), compareVideoModes);
+    _glfwLibrary.modes = _glfwPlatformGetVideoModes(count);
+    if (_glfwLibrary.modes)
+        qsort(_glfwLibrary.modes, *count, sizeof(GLFWvidmode), compareVideoModes);
 
-    return count;
+    return _glfwLibrary.modes;
 }
 
 

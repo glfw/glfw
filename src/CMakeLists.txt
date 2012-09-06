@@ -1,10 +1,9 @@
-
 include_directories(${GLFW_SOURCE_DIR}/src
                     ${GLFW_BINARY_DIR}/src
                     ${glfw_INCLUDE_DIRS})
 
 set(common_HEADERS ${GLFW_SOURCE_DIR}/include/GL/glfw3.h internal.h)
-set(common_SOURCES clipboard.c error.c fullscreen.c gamma.c init.c input.c
+set(common_SOURCES clipboard.c fullscreen.c gamma.c init.c input.c
                    joystick.c opengl.c time.c window.c)
 
 if (_GLFW_COCOA_NSGL)
@@ -47,10 +46,13 @@ if (BUILD_SHARED_LIBS)
 
     if (_GLFW_WIN32_WGL)
         # The GLFW DLL needs a special compile-time macro and import library name
-        set_target_properties(glfw PROPERTIES 
-                              PREFIX ""
-                              IMPORT_PREFIX ""
-                              IMPORT_SUFFIX "dll.lib")
+        set_target_properties(glfw PROPERTIES PREFIX "" IMPORT_PREFIX "")
+
+        if (MINGW)
+            set_target_properties(glfw PROPERTIES IMPORT_SUFFIX "dll.a")
+        else()
+            set_target_properties(glfw PROPERTIES IMPORT_SUFFIX "dll.lib")
+        endif()
     elseif (_GLFW_COCOA_NSGL)
         # Append -fno-common to the compile flags to work around a bug in the Apple GCC
         get_target_property(glfw_CFLAGS glfw COMPILE_FLAGS)
@@ -65,5 +67,5 @@ if (BUILD_SHARED_LIBS)
     target_link_libraries(glfw LINK_INTERFACE_LIBRARIES)
 endif()
 
-install(TARGETS glfw DESTINATION lib)
+install(TARGETS glfw DESTINATION lib${LIB_SUFFIX} )
 

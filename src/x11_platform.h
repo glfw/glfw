@@ -43,6 +43,7 @@
  #include <X11/extensions/xf86vmode.h>
 #endif
 
+// The XRandR extension provides mode setting and gamma control
 #if defined(_GLFW_HAS_XRANDR)
  #include <X11/extensions/Xrandr.h>
 #endif
@@ -192,20 +193,16 @@ typedef struct _GLFWlibraryX11
         int status;
     } selection;
 
+    struct {
+        int             present;
+        int             fd;
+        int             numAxes;
+        int             numButtons;
+        float*          axis;
+        unsigned char*  button;
+    } joystick[GLFW_JOYSTICK_LAST + 1];
+
 } _GLFWlibraryX11;
-
-
-//------------------------------------------------------------------------
-// Joystick information & state
-//------------------------------------------------------------------------
-GLFWGLOBAL struct {
-    int           Present;
-    int           fd;
-    int           NumAxes;
-    int           NumButtons;
-    float*        Axis;
-    unsigned char* Button;
-} _glfwJoy[GLFW_JOYSTICK_LAST + 1];
 
 
 //========================================================================

@@ -78,7 +78,7 @@ static void key_callback(GLFWwindow window, int key, int action)
         {
             if (action == GLFW_PRESS)
             {
-                glfwCloseWindow(window);
+                glfwDestroyWindow(window);
                 open_window();
             }
 
@@ -94,9 +94,12 @@ static void window_size_callback(GLFWwindow window, int width, int height)
 
 static GLboolean open_window(void)
 {
-    window_handle = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Peter Detector", NULL);
+    window_handle = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Peter Detector", NULL);
     if (!window_handle)
         return GL_FALSE;
+
+    glfwMakeContextCurrent(window_handle);
+    glfwSwapInterval(1);
 
     glfwGetCursorPos(window_handle, &cursor_x, &cursor_y);
     printf("Cursor position: %i %i\n", cursor_x, cursor_y);
@@ -104,7 +107,6 @@ static GLboolean open_window(void)
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSetCursorPosCallback(cursor_position_callback);
     glfwSetKeyCallback(key_callback);
-    glfwSwapInterval(1);
 
     return GL_TRUE;
 }
@@ -127,11 +129,11 @@ int main(void)
 
     glClearColor(0.f, 0.f, 0.f, 0.f);
 
-    while (glfwIsWindow(window_handle))
+    while (!glfwGetWindowParam(window_handle, GLFW_CLOSE_REQUESTED))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glfwSwapBuffers();
+        glfwSwapBuffers(window_handle);
         glfwWaitEvents();
     }
 

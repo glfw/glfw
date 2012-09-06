@@ -36,15 +36,16 @@
 
 static int swap_interval;
 
-static void set_swap_interval(int value)
+static void set_swap_interval(GLFWwindow window, int interval)
 {
     char title[256];
 
-    swap_interval = value;
+    swap_interval = interval;
     glfwSwapInterval(swap_interval);
 
     sprintf(title, "Tearing detector (interval %i)", swap_interval);
-    glfwSetWindowTitle(glfwGetCurrentContext(), title);
+
+    glfwSetWindowTitle(window, title);
 }
 
 static void window_size_callback(GLFWwindow window, int width, int height)
@@ -55,7 +56,7 @@ static void window_size_callback(GLFWwindow window, int width, int height)
 static void key_callback(GLFWwindow window, int key, int action)
 {
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
-        set_swap_interval(!swap_interval);
+        set_swap_interval(window, 1 - swap_interval);
 }
 
 int main(void)
@@ -69,7 +70,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "", NULL);
+    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "", NULL);
     if (!window)
     {
         glfwTerminate();
@@ -78,7 +79,8 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    set_swap_interval(1);
+    glfwMakeContextCurrent(window);
+    set_swap_interval(window, swap_interval);
 
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSetKeyCallback(key_callback);
@@ -87,14 +89,14 @@ int main(void)
     glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);
     glMatrixMode(GL_MODELVIEW);
 
-    while (glfwIsWindow(window) == GL_TRUE)
+    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
         position = cosf(glfwGetTime() * 4.f) * 0.75f;
         glRectf(position - 0.25f, -1.f, position + 0.25f, 1.f);
 
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwPollEvents();
     }
 

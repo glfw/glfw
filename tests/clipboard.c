@@ -53,7 +53,7 @@ static void key_callback(GLFWwindow window, int key, int action)
     switch (key)
     {
         case GLFW_KEY_ESCAPE:
-            glfwCloseWindow(window);
+            glfwDestroyWindow(window);
             break;
 
         case GLFW_KEY_V:
@@ -117,7 +117,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Clipboard Test", NULL);
+    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Clipboard Test", NULL);
     if (!window)
     {
         glfwTerminate();
@@ -126,7 +126,9 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
+    glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+
     glfwSetKeyCallback(key_callback);
     glfwSetWindowSizeCallback(size_callback);
 
@@ -136,14 +138,14 @@ int main(int argc, char** argv)
 
     glClearColor(0.5f, 0.5f, 0.5f, 0);
 
-    while (glfwIsWindow(window))
+    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
         glColor3f(0.8f, 0.2f, 0.4f);
         glRectf(-0.5f, -0.5f, 0.5f, 0.5f);
 
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwWaitEvents();
     }
 

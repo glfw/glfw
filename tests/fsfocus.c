@@ -68,6 +68,7 @@ static void window_key_callback(GLFWwindow window, int key, int action)
 static int window_close_callback(GLFWwindow window)
 {
     printf("%0.3f: User closed window\n", glfwGetTime());
+    running = GL_FALSE;
     return GL_TRUE;
 }
 
@@ -81,7 +82,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwOpenWindow(640, 480, GLFW_FULLSCREEN, "Fullscreen focus", NULL);
+    window = glfwCreateWindow(640, 480, GLFW_FULLSCREEN, "Fullscreen focus", NULL);
     if (!window)
     {
         glfwTerminate();
@@ -90,17 +91,19 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
+    glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+
     glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_NORMAL);
 
     glfwSetWindowFocusCallback(window_focus_callback);
     glfwSetKeyCallback(window_key_callback);
     glfwSetWindowCloseCallback(window_close_callback);
 
-    while (running && glfwIsWindow(window) == GL_TRUE)
+    while (running)
     {
         glClear(GL_COLOR_BUFFER_BIT);
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
         glfwWaitEvents();
     }
 

@@ -28,11 +28,82 @@
 //
 //========================================================================
 
-#define _init_c_
 #include "internal.h"
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
+
+
+//------------------------------------------------------------------------
+// Flag indicating whether GLFW has been successfully initialized
+//------------------------------------------------------------------------
+GLboolean _glfwInitialized = GL_FALSE;
+
+
+//------------------------------------------------------------------------
+// All shared and API-specific global data protected by _glfwInitialized
+// This should only be touched after a call to glfwInit that has not been
+// followed by a call to glfwTerminate
+//------------------------------------------------------------------------
+_GLFWlibrary _glfwLibrary;
+
+
+//------------------------------------------------------------------------
+// The current GLFW error code
+// This is outside of _glfwLibrary so it can be initialized and usable
+// before glfwInit is called, which lets that function report errors
+// TODO: Make this thread-local
+//------------------------------------------------------------------------
+static int _glfwError = GLFW_NO_ERROR;
+
+
+//------------------------------------------------------------------------
+// The current error callback
+// This is outside of _glfwLibrary so it can be initialized and usable
+// before glfwInit is called, which lets that function report errors
+//------------------------------------------------------------------------
+static GLFWerrorfun _glfwErrorCallback = NULL;
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Sets the current error value
+//========================================================================
+
+void _glfwSetError(int error, const char* format, ...)
+{
+    if (_glfwErrorCallback)
+    {
+        char buffer[16384];
+        const char* description;
+
+        if (format)
+        {
+            int count;
+            va_list vl;
+
+            va_start(vl, format);
+            count = vsnprintf(buffer, sizeof(buffer), format, vl);
+            va_end(vl);
+
+            if (count < 0)
+                buffer[sizeof(buffer) - 1] = '\0';
+
+            description = buffer;
+        }
+        else
+            description = glfwErrorString(error);
+
+        _glfwErrorCallback(error, description);
+    }
+    else
+        _glfwError = error;
+}
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -50,8 +121,7 @@ GLFWAPI int glfwInit(void)
 
     memset(&_glfwLibrary, 0, sizeof(_glfwLibrary));
 
-    // Not all window hints have zero as their default value, so this
-    // needs to be here despite the memset above
+    // Not all window hints have zero as their default value
     _glfwSetDefaultWindowHints();
 
     if (!_glfwPlatformInit())
@@ -79,10 +149,13 @@ GLFWAPI void glfwTerminate(void)
 
     // Close all remaining windows
     while (_glfwLibrary.windowListHead)
-        glfwCloseWindow(_glfwLibrary.windowListHead);
+        glfwDestroyWindow(_glfwLibrary.windowListHead);
 
     if (!_glfwPlatformTerminate())
         return;
+
+    if (_glfwLibrary.modes)
+        free(_glfwLibrary.modes);
 
     _glfwInitialized = GL_FALSE;
 }
@@ -90,6 +163,7 @@ GLFWAPI void glfwTerminate(void)
 
 //========================================================================
 // Get GLFW version
+// This function may be called without GLFW having been initialized
 //========================================================================
 
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)
@@ -107,10 +181,72 @@ GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)
 
 //========================================================================
 // Get the GLFW version string
+// This function may be called without GLFW having been initialized
 //========================================================================
 
 GLFWAPI const char* glfwGetVersionString(void)
 {
     return _glfwPlatformGetVersionString();
+}
+
+
+//========================================================================
+// Returns the current error value
+// This function may be called without GLFW having been initialized
+//========================================================================
+
+GLFWAPI int glfwGetError(void)
+{
+    int error = _glfwError;
+    _glfwError = GLFW_NO_ERROR;
+    return error;
+}
+
+
+//========================================================================
+// Returns a string representation of the specified error value
+// This function may be called without GLFW having been initialized
+//========================================================================
+
+GLFWAPI const char* glfwErrorString(int error)
+{
+    switch (error)
+    {
+        case GLFW_NO_ERROR:
+            return "No error";
+        case GLFW_NOT_INITIALIZED:
+            return "The GLFW library is not initialized";
+        case GLFW_NO_CURRENT_CONTEXT:
+            return "There is no current OpenGL context";
+        case GLFW_INVALID_ENUM:
+            return "Invalid argument for enum parameter";
+        case GLFW_INVALID_VALUE:
+            return "Invalid value for parameter";
+        case GLFW_OUT_OF_MEMORY:
+            return "Out of memory";
+        case GLFW_OPENGL_UNAVAILABLE:
+            return "OpenGL is not available on this machine";
+        case GLFW_VERSION_UNAVAILABLE:
+            return "The requested OpenGL version is unavailable";
+        case GLFW_PLATFORM_ERROR:
+            return "A platform-specific error occurred";
+        case GLFW_WINDOW_NOT_ACTIVE:
+            return "The specified window is not active";
+        case GLFW_FORMAT_UNAVAILABLE:
+            return "The requested format is unavailable";
+    }
+
+    return "ERROR: UNKNOWN ERROR TOKEN PASSED TO glfwErrorString";
+}
+
+
+//========================================================================
+// Sets the callback function for GLFW errors
+// This function may be called without GLFW having been initialized
+//========================================================================
+
+GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun)
+{
+    _glfwErrorCallback = cbfun;
 }
 

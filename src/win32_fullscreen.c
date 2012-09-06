@@ -1,6 +1,6 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    Win32/WGL
+// Platform:    Win32
 // API version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
@@ -32,6 +32,7 @@
 
 #include <stdlib.h>
 #include <limits.h>
+#include <malloc.h>
 
 
 //========================================================================
@@ -182,71 +183,78 @@ void _glfwRestoreVideoMode(void)
 // Get a list of available video modes
 //========================================================================
 
-int _glfwPlatformGetVideoModes(GLFWvidmode* list, int maxcount)
+GLFWvidmode* _glfwPlatformGetVideoModes(int* found)
 {
-    int count, success, mode, i, j;
-    int m1, m2, bpp, r, g, b;
-    DEVMODE dm;
+    int dmIndex = 0, count = 0;
+    GLFWvidmode* result = NULL;
 
-    // Loop through all video modes and extract all the UNIQUE modes
-    count = 0;
-    mode  = 0;
+    *found = 0;
 
-    do
+    for (;;)
     {
-        // Get video mode properties
+        int i;
+        GLFWvidmode mode;
+        DEVMODE dm;
+
+        ZeroMemory(&dm, sizeof(DEVMODE));
         dm.dmSize = sizeof(DEVMODE);
-        success = EnumDisplaySettings(NULL, mode, &dm);
 
-        // Is it a valid mode? (only list depths >= 15 bpp)
-        if (success && dm.dmBitsPerPel >= 15)
+        if (!EnumDisplaySettings(NULL, dmIndex, &dm))
+            break;
+
+        dmIndex++;
+
+        if (dm.dmBitsPerPel < 15)
         {
-            // Convert to RGB, and back to bpp ("mask out" alpha bits etc)
-            _glfwSplitBPP(dm.dmBitsPerPel, &r, &g, &b);
-            bpp = r + g + b;
-
-            // Mode "code" for this mode
-            m1 = (bpp << 25) | (dm.dmPelsWidth * dm.dmPelsHeight);
-
-            // Insert mode in list (sorted), and avoid duplicates
-            for (i = 0;  i < count;  i++)
-            {
-                // Mode "code" for already listed mode
-                bpp = list[i].redBits + list[i].greenBits + list[i].blueBits;
-                m2 = (bpp << 25) | (list[i].width * list[i].height);
-                if (m1 <= m2)
-                    break;
-            }
-
-            // New entry at the end of the list?
-            if (i >= count)
-            {
-                list[count].width     = dm.dmPelsWidth;
-                list[count].height    = dm.dmPelsHeight;
-                list[count].redBits   = r;
-                list[count].greenBits = g;
-                list[count].blueBits  = b;
-                count ++;
-            }
-            // Insert new entry in the list?
-            else if (m1 < m2)
-            {
-                for (j = count;  j > i;  j--)
-                    list[j] = list[j - 1];
-
-                list[i].width     = dm.dmPelsWidth;
-                list[i].height    = dm.dmPelsHeight;
-                list[i].redBits   = r;
-                list[i].greenBits = g;
-                list[i].blueBits  = b;
-                count++;
-            }
+            // Skip modes with less than 15 BPP
+            continue;
         }
-        mode++;
-    }
-    while (success && (count < maxcount));
 
-    return count;
+        mode.width = dm.dmPelsWidth;
+        mode.height = dm.dmPelsHeight;
+        _glfwSplitBPP(dm.dmBitsPerPel,
+                        &mode.redBits,
+                        &mode.greenBits,
+                        &mode.blueBits);
+
+        for (i = 0;  i < *found;  i++)
+        {
+            if (_glfwCompareVideoModes(result + i, &mode) == 0)
+                break;
+        }
+
+        if (i < *found)
+        {
+            // This is a duplicate, so skip it
+            continue;
+        }
+
+        if (*found == count)
+        {
+            void* larger;
+
+            if (count)
+                count *= 2;
+            else
+                count = 128;
+
+            larger = realloc(result, count * sizeof(GLFWvidmode));
+            if (!larger)
+            {
+                free(result);
+
+                _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+                return NULL;
+            }
+
+            result = (GLFWvidmode*) larger;
+        }
+
+        result[*found] = mode;
+        (*found)++;
+    }
+
+    return result;
 }
 
 

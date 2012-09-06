@@ -8,6 +8,7 @@ set(GLFW_VERSION_PATCH "0")
 set(GLFW_VERSION_EXTRA "")
 set(GLFW_VERSION "${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}")
 set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA}")
+set(LIB_SUFFIX "" CACHE STRING "Takes an empty string or 64. Directory where lib will be installed: lib or lib64")
 
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
@@ -334,11 +335,11 @@ install(FILES COPYING.txt readme.html
 # Create and install pkg-config file on supported platforms
 #--------------------------------------------------------------------
 if (_GLFW_X11_GLX OR _GLFW_COCOA_NSGL)
-    configure_file(${GLFW_SOURCE_DIR}/src/libglfw3.pc.in
-                   ${GLFW_BINARY_DIR}/src/libglfw3.pc @ONLY)
+    configure_file(${GLFW_SOURCE_DIR}/src/glfw3.pc.in
+                   ${GLFW_BINARY_DIR}/src/glfw3.pc @ONLY)
 
-    install(FILES ${GLFW_BINARY_DIR}/src/libglfw3.pc
-            DESTINATION lib/pkgconfig)
+    install(FILES ${GLFW_BINARY_DIR}/src/glfw3.pc
+            DESTINATION lib${LIB_SUFFIX}/pkgconfig)
 endif()
 
 #--------------------------------------------------------------------

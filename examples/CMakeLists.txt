@@ -12,6 +12,9 @@ include_directories(${GLFW_SOURCE_DIR}/include
                     ${GLFW_SOURCE_DIR}/support
                     ${OPENGL_INCLUDE_DIR})
 
+set(GETOPT ${GLFW_SOURCE_DIR}/support/getopt.h
+           ${GLFW_SOURCE_DIR}/support/getopt.c)
+
 if (APPLE)
     # Set fancy names for bundles
     add_executable(Boing MACOSX_BUNDLE boing.c)
@@ -29,7 +32,7 @@ else()
     # Set boring names for executables
     add_executable(boing WIN32 boing.c)
     add_executable(gears WIN32 gears.c)
-    add_executable(heightmap WIN32 heightmap.c getopt.c)
+    add_executable(heightmap WIN32 heightmap.c ${GETOPT})
     add_executable(splitview WIN32 splitview.c)
     add_executable(triangle WIN32 triangle.c)
     add_executable(wave WIN32 wave.c)

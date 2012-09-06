@@ -78,7 +78,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         if (!_glfwLibrary.GLX.SGIX_fbconfig)
         {
             _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
-                          "X11/GLX: GLXFBConfig support not found");
+                          "GLX: GLXFBConfig support not found");
             return NULL;
         }
     }
@@ -101,7 +101,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         if (!count)
         {
             _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
-                          "X11/GLX: No GLXFBConfigs returned");
+                          "GLX: No GLXFBConfigs returned");
             return NULL;
         }
     }
@@ -113,7 +113,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         if (!count)
         {
             _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
-                          "X11/GLX: No GLXFBConfigs returned");
+                          "GLX: No GLXFBConfigs returned");
             return NULL;
         }
     }
@@ -121,8 +121,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
     result = (_GLFWfbconfig*) malloc(sizeof(_GLFWfbconfig) * count);
     if (!result)
     {
-        _glfwSetError(GLFW_OUT_OF_MEMORY,
-                      "X11/GLX: Failed to allocate _GLFWfbconfig array");
+        _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
         return NULL;
     }
 
@@ -242,7 +241,7 @@ static int createContext(_GLFWwindow* window,
         if (fbconfig == NULL)
         {
             _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "X11/GLX: Failed to retrieve the selected GLXFBConfig");
+                          "GLX: Failed to retrieve the selected GLXFBConfig");
             return GL_FALSE;
         }
     }
@@ -264,7 +263,7 @@ static int createContext(_GLFWwindow* window,
         XFree(fbconfig);
 
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "X11/GLX: Failed to retrieve visual for GLXFBConfig");
+                      "GLX: Failed to retrieve visual for GLXFBConfig");
         return GL_FALSE;
     }
 
@@ -319,7 +318,7 @@ static int createContext(_GLFWwindow* window,
             if (!_glfwLibrary.GLX.ARB_create_context_profile)
             {
                 _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                              "X11/GLX: An OpenGL profile requested but "
+                              "GLX: An OpenGL profile requested but "
                               "GLX_ARB_create_context_profile is unavailable");
                 return GL_FALSE;
             }
@@ -339,7 +338,7 @@ static int createContext(_GLFWwindow* window,
             if (!_glfwLibrary.GLX.ARB_create_context_robustness)
             {
                 _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                              "X11/GLX: An OpenGL robustness strategy was "
+                              "GLX: An OpenGL robustness strategy was "
                               "requested but GLX_ARB_create_context_robustness "
                               "is unavailable");
                 return GL_FALSE;
@@ -402,7 +401,7 @@ static int createContext(_GLFWwindow* window,
         // TODO: Handle all the various error codes here
 
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "X11/GLX: Failed to create OpenGL context");
+                      "GLX: Failed to create OpenGL context");
         return GL_FALSE;
     }
 
@@ -442,7 +441,7 @@ int _glfwInitOpenGL(void)
 
     if (!_glfwLibrary.GLX.libGL)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR, "X11/GLX: Failed to find libGL");
+        _glfwSetError(GLFW_PLATFORM_ERROR, "GLX: Failed to find libGL");
         return GL_FALSE;
     }
 #endif
@@ -450,7 +449,7 @@ int _glfwInitOpenGL(void)
     // Check if GLX is supported on this display
     if (!glXQueryExtension(_glfwLibrary.X11.display, NULL, NULL))
     {
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "X11/GLX: GLX supported not found");
+        _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "GLX: GLX support not found");
         return GL_FALSE;
     }
 
@@ -459,7 +458,7 @@ int _glfwInitOpenGL(void)
                          &_glfwLibrary.GLX.minorVersion))
     {
         _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
-                      "X11/GLX: Failed to query GLX version");
+                      "GLX: Failed to query GLX version");
         return GL_FALSE;
     }
 
@@ -570,17 +569,13 @@ int _glfwCreateContext(_GLFWwindow* window,
 
         fbconfigs = getFBConfigs(window, &fbcount);
         if (!fbconfigs)
-        {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "X11/GLX: No usable GLXFBConfigs found");
             return GL_FALSE;
-        }
 
         result = _glfwChooseFBConfig(fbconfig, fbconfigs, fbcount);
         if (!result)
         {
             _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "X11/GLX: No GLXFBConfig matched the criteria");
+                          "GLX: No GLXFBConfig matched the criteria");
 
             free(fbconfigs);
             return GL_FALSE;
@@ -647,10 +642,9 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 // Swap OpenGL buffers
 //========================================================================
 
-void _glfwPlatformSwapBuffers(void)
+void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 {
-    glXSwapBuffers(_glfwLibrary.X11.display,
-                   _glfwLibrary.currentWindow->X11.handle);
+    glXSwapBuffers(_glfwLibrary.X11.display, window->X11.handle);
 }
 
 

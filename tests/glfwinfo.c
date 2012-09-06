@@ -120,12 +120,41 @@ static void list_extensions(int api, int major, int minor)
     putchar('\n');
 }
 
+static GLboolean valid_version(void)
+{
+    int major, minor, revision;
+
+    glfwGetVersion(&major, &minor, &revision);
+
+    printf("GLFW header version: %u.%u.%u\n",
+           GLFW_VERSION_MAJOR,
+           GLFW_VERSION_MINOR,
+           GLFW_VERSION_REVISION);
+
+    printf("GLFW library version: %u.%u.%u\n", major, minor, revision);
+
+    if (major != GLFW_VERSION_MAJOR)
+    {
+        printf("*** ERROR: GLFW major version mismatch! ***\n");
+        return GL_FALSE;
+    }
+
+    if (minor != GLFW_VERSION_MINOR || revision != GLFW_VERSION_REVISION)
+        printf("*** WARNING: GLFW version mismatch! ***\n");
+
+    printf("GLFW library version string: \"%s\"\n", glfwGetVersionString());
+    return GL_TRUE;
+}
+
 int main(int argc, char** argv)
 {
     int ch, api = 0, profile = 0, strategy = 0, major = 1, minor = 0, revision;
     GLboolean debug = GL_FALSE, forward = GL_FALSE, list = GL_FALSE;
     GLint flags, mask;
     GLFWwindow window;
+
+    if (!valid_version())
+        exit(EXIT_FAILURE);
 
     while ((ch = getopt(argc, argv, "a:dfhlm:n:p:r:")) != -1)
     {
@@ -190,6 +219,8 @@ int main(int argc, char** argv)
     argc -= optind;
     argv += optind;
 
+    // Initialize GLFW and create window
+
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
@@ -200,51 +231,33 @@ int main(int argc, char** argv)
 
     if (major != 1 || minor != 0)
     {
-        glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, major);
-        glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, minor);
+        glfwWindowHint(GLFW_OPENGL_VERSION_MAJOR, major);
+        glfwWindowHint(GLFW_OPENGL_VERSION_MINOR, minor);
     }
 
     if (api != 0)
-        glfwOpenWindowHint(GLFW_CLIENT_API, api);
+        glfwWindowHint(GLFW_CLIENT_API, api);
 
     if (debug)
-        glfwOpenWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
     if (forward)
-        glfwOpenWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     if (profile != 0)
-        glfwOpenWindowHint(GLFW_OPENGL_PROFILE, profile);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, profile);
 
     if (strategy)
-        glfwOpenWindowHint(GLFW_OPENGL_ROBUSTNESS, strategy);
+        glfwWindowHint(GLFW_OPENGL_ROBUSTNESS, strategy);
 
     // We assume here that we stand a better chance of success by leaving all
     // possible details of pixel format selection to GLFW
 
-    window = glfwOpenWindow(0, 0, GLFW_WINDOWED, "Version", NULL);
+    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Version", NULL);
     if (!window)
         exit(EXIT_FAILURE);
 
-    // Report GLFW version
-
-    glfwGetVersion(&major, &minor, &revision);
-
-    printf("GLFW header version: %u.%u.%u\n",
-           GLFW_VERSION_MAJOR,
-           GLFW_VERSION_MINOR,
-           GLFW_VERSION_REVISION);
-
-    printf("GLFW library version: %u.%u.%u\n", major, minor, revision);
-
-    if (major != GLFW_VERSION_MAJOR ||
-        minor != GLFW_VERSION_MINOR ||
-        revision != GLFW_VERSION_REVISION)
-    {
-        printf("*** WARNING: GLFW version mismatch! ***\n");
-    }
-
-    printf("GLFW library version string: \"%s\"\n", glfwGetVersionString());
+    glfwMakeContextCurrent(window);
 
     // Report client API version
 

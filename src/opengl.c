@@ -30,6 +30,7 @@
 
 #include "internal.h"
 
+#include <stdio.h>
 #include <string.h>
 #include <limits.h>
 #include <stdio.h>
@@ -323,8 +324,8 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
         {
             // Forward-compatible contexts are only defined for OpenGL version 3.0 and above
             _glfwSetError(GLFW_INVALID_VALUE,
-                          "glfwOpenWindow: Forward compatibility only exist for "
-                          "OpenGL version 3.0 and above");
+                          "glfwOpenWindow: Forward compatibility only exist "
+                          "for OpenGL version 3.0 and above");
             return GL_FALSE;
         }
     }
@@ -386,9 +387,10 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
 
 //========================================================================
 // Reads back context properties
+// It blames glfwCreateWindow because that's the only caller
 //========================================================================
 
-void _glfwRefreshContextParams(void)
+GLboolean _glfwRefreshContextParams(void)
 {
     _GLFWwindow* window = _glfwLibrary.currentWindow;
 
@@ -397,7 +399,22 @@ void _glfwRefreshContextParams(void)
                         &window->glMinor,
                         &window->glRevision))
     {
-        return;
+        return GL_FALSE;
+    }
+
+    if (window->glMajor > 2)
+    {
+        // OpenGL 3.0+ uses a different function for extension string retrieval
+        // We cache it here instead of in glfwExtensionSupported mostly to alert
+        // users as early as possible that their build may be broken
+
+        window->GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
+        if (!window->GetStringi)
+        {
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "glfwCreateWindow: Entry point retrieval is broken");
+            return GL_FALSE;
+        }
     }
 
     // Read back forward-compatibility flag
@@ -432,36 +449,19 @@ void _glfwRefreshContextParams(void)
       }
     }
 
-    glGetIntegerv(GL_RED_BITS, &window->redBits);
-    glGetIntegerv(GL_GREEN_BITS, &window->greenBits);
-    glGetIntegerv(GL_BLUE_BITS, &window->blueBits);
-
-    glGetIntegerv(GL_ALPHA_BITS, &window->alphaBits);
-    glGetIntegerv(GL_DEPTH_BITS, &window->depthBits);
-    glGetIntegerv(GL_STENCIL_BITS, &window->stencilBits);
-
-    glGetIntegerv(GL_ACCUM_RED_BITS, &window->accumRedBits);
-    glGetIntegerv(GL_ACCUM_GREEN_BITS, &window->accumGreenBits);
-    glGetIntegerv(GL_ACCUM_BLUE_BITS, &window->accumBlueBits);
-    glGetIntegerv(GL_ACCUM_ALPHA_BITS, &window->accumAlphaBits);
-
-    glGetIntegerv(GL_AUX_BUFFERS, &window->auxBuffers);
-    glGetBooleanv(GL_STEREO, &window->stereo);
-
-    if (_glfwPlatformExtensionSupported("GL_ARB_multisample"))
-        glGetIntegerv(GL_SAMPLES_ARB, &window->samples);
-    else
-        window->samples = 0;
+    return GL_TRUE;
 }
 
 
 //========================================================================
-// Checks whether the specified context fulfils the requirements
-// It blames glfwOpenWindow because that's the only caller
+// Checks whether the current context fulfils the specified requirements
+// It blames glfwCreateWindow because that's the only caller
 //========================================================================
 
-GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
+GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig)
 {
+    _GLFWwindow* window = _glfwLibrary.currentWindow;
+
     if (window->glMajor < wndconfig->glMajor ||
         (window->glMajor == wndconfig->glMajor &&
          window->glMinor < wndconfig->glMinor))
@@ -474,23 +474,8 @@ GLboolean _glfwIsValidContext(_GLFWwindow* window, _GLFWwndconfig* wndconfig)
         // {GLX|WGL}_ARB_create_context extension and fail here
 
         _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                      "glfwOpenWindow: The requested OpenGL version is not available");
+                      "glfwCreateWindow: The requested OpenGL version is not available");
         return GL_FALSE;
-    }
-
-    if (window->glMajor > 2)
-    {
-        // OpenGL 3.0+ uses a different function for extension string retrieval
-        // We cache it here instead of in glfwExtensionSupported mostly to alert
-        // users as early as possible that their build may be broken
-
-        window->GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
-        if (!window->GetStringi)
-        {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "glfwOpenWindow: Entry point retrieval is broken");
-            return GL_FALSE;
-        }
     }
 
     return GL_TRUE;
@@ -567,7 +552,7 @@ GLFWAPI GLFWwindow glfwGetCurrentContext(void)
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return GL_FALSE;
+        return NULL;
     }
 
     return _glfwLibrary.currentWindow;
@@ -578,21 +563,17 @@ GLFWAPI GLFWwindow glfwGetCurrentContext(void)
 // Swap buffers (double-buffering)
 //========================================================================
 
-GLFWAPI void glfwSwapBuffers(void)
+GLFWAPI void glfwSwapBuffers(GLFWwindow handle)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
-    if (!_glfwLibrary.currentWindow)
-    {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
-        return;
-    }
-
-    _glfwPlatformSwapBuffers();
+    _glfwPlatformSwapBuffers(window);
 }
 
 
@@ -610,7 +591,7 @@ GLFWAPI void glfwSwapInterval(int interval)
 
     if (!_glfwLibrary.currentWindow)
     {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
+        _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
         return;
     }
 
@@ -626,9 +607,6 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 {
     const GLubyte* extensions;
     _GLFWwindow* window;
-    GLubyte* where;
-    GLint count;
-    int i;
 
     if (!_glfwInitialized)
     {
@@ -639,14 +617,15 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
     window = _glfwLibrary.currentWindow;
     if (!window)
     {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
+        _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
         return GL_FALSE;
     }
 
-    // Extension names should not have spaces
-    where = (GLubyte*) strchr(extension, ' ');
-    if (where || *extension == '\0')
+    if (extension == NULL || *extension == '\0')
+    {
+        _glfwSetError(GLFW_INVALID_VALUE, NULL);
         return GL_FALSE;
+    }
 
     if (window->glMajor < 3)
     {
@@ -661,6 +640,9 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
     }
     else
     {
+        int i;
+        GLint count;
+
         // Check if extension is in the modern OpenGL extensions string list
 
         glGetIntegerv(GL_NUM_EXTENSIONS, &count);
@@ -675,11 +657,8 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
         }
     }
 
-    // Additional platform specific extension checking (e.g. WGL)
-    if (_glfwPlatformExtensionSupported(extension))
-        return GL_TRUE;
-
-    return GL_FALSE;
+    // Check if extension is in the platform-specific string
+    return _glfwPlatformExtensionSupported(extension);
 }
 
 
@@ -698,7 +677,7 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname)
 
     if (!_glfwLibrary.currentWindow)
     {
-        _glfwSetError(GLFW_NO_CURRENT_WINDOW, NULL);
+        _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
         return NULL;
     }
 

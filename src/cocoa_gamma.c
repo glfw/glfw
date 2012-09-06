@@ -1,6 +1,6 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    Cocoa/NSOpenGL
+// Platform:    Cocoa
 // API version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
@@ -40,7 +40,7 @@
 //************************************************************************
 
 //========================================================================
-// Save the original gamma ramp so that we can restore it later
+// Save the original gamma ramp so that it can be restored later
 //========================================================================
 
 void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)

@@ -178,7 +178,7 @@ int _glfwInitJoysticks(void)
     int i, joy = 0;
     regex_t regex;
     DIR* dir;
-    const char* directories[] =
+    const char* dirs[] =
     {
         "/dev/input",
         "/dev"
@@ -190,11 +190,11 @@ int _glfwInitJoysticks(void)
         return GL_FALSE;
     }
 
-    for (i = 0;  i < sizeof(directories) / sizeof(directories[0]);  i++)
+    for (i = 0;  i < sizeof(dirs) / sizeof(dirs[0]);  i++)
     {
         struct dirent* entry;
 
-        dir = opendir(directories[i]);
+        dir = opendir(dirs[i]);
         if (!dir)
             continue;
 
@@ -206,7 +206,7 @@ int _glfwInitJoysticks(void)
             if (regexec(&regex, entry->d_name, 1, &match, 0) != 0)
                 continue;
 
-            snprintf(path, sizeof(path), "%s/%s", directories[i], entry->d_name);
+            snprintf(path, sizeof(path), "%s/%s", dirs[i], entry->d_name);
             if (openJoystickDevice(joy, path))
                 joy++;
         }

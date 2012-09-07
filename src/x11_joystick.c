@@ -37,7 +37,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
-
+#include <regex.h>
+#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #endif // _GLFW_USE_LINUX_JOYSTICKS
@@ -171,30 +172,52 @@ static void pollJoystickEvents(void)
 // Initialize joystick interface
 //========================================================================
 
-void _glfwInitJoysticks(void)
+int _glfwInitJoysticks(void)
 {
 #ifdef _GLFW_USE_LINUX_JOYSTICKS
-    int i, j, joy = 0;
-    char path[20];
-    const char* bases[] =
+    int i, joy = 0;
+    regex_t regex;
+    DIR* dir;
+    const char* directories[] =
     {
-        "/dev/input/js",
-        "/dev/js"
+        "/dev/input",
+        "/dev"
     };
 
-    for (i = 0;  i < sizeof(bases) / sizeof(bases[0]);  i++)
+    if (regcomp(&regex, "^js[0-9]\\+$", 0) != 0)
     {
-        for (j = 0;  j < 50;  j++)
-        {
-            if (joy > GLFW_JOYSTICK_LAST)
-                break;
+        _glfwSetError(GLFW_PLATFORM_ERROR, "X11: Failed to compile regex");
+        return GL_FALSE;
+    }
 
-            sprintf(path, "%s%i", bases[i], j);
+    for (i = 0;  i < sizeof(directories) / sizeof(directories[0]);  i++)
+    {
+        struct dirent* entry;
+
+        dir = opendir(directories[i]);
+        if (!dir)
+            continue;
+
+        while ((entry = readdir(dir)))
+        {
+            char path[20];
+            regmatch_t match;
+
+            if (regexec(&regex, entry->d_name, 1, &match, 0) != 0)
+                continue;
+
+            snprintf(path, sizeof(path), "%s/%s", directories[i], entry->d_name);
             if (openJoystickDevice(joy, path))
                 joy++;
         }
+
+        closedir(dir);
     }
+
+    regfree(&regex);
 #endif // _GLFW_USE_LINUX_JOYSTICKS
+
+    return GL_TRUE;
 }
 
 

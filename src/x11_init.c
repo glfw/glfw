@@ -648,7 +648,8 @@ int _glfwPlatformInit(void)
 
     _glfwLibrary.X11.cursor = createNULLCursor();
 
-    _glfwInitJoysticks();
+    if (!_glfwInitJoysticks())
+        return GL_FALSE;
 
     // Start the timer
     _glfwInitTimer();

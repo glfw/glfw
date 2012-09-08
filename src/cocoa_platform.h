@@ -124,4 +124,8 @@ void _glfwTerminateJoysticks(void);
 GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp, int* refreshRate);
 void _glfwRestoreVideoMode(void);
 
+// OpenGL support
+int _glfwInitOpenGL(void);
+void _glfwTerminateOpenGL(void);
+
 #endif // _platform_h_

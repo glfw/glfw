@@ -634,6 +634,8 @@ static void terminateDisplay(void)
 
 int _glfwPlatformInit(void)
 {
+    XInitThreads();
+
     if (!initDisplay())
         return GL_FALSE;
 
@@ -646,7 +648,8 @@ int _glfwPlatformInit(void)
 
     _glfwLibrary.X11.cursor = createNULLCursor();
 
-    _glfwInitJoysticks();
+    if (!_glfwInitJoysticks())
+        return GL_FALSE;
 
     // Start the timer
     _glfwInitTimer();

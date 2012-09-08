@@ -14,6 +14,8 @@ include_directories(${GLFW_SOURCE_DIR}/include
 
 set(GETOPT ${GLFW_SOURCE_DIR}/support/getopt.h
            ${GLFW_SOURCE_DIR}/support/getopt.c)
+set(TINYCTHREAD ${GLFW_SOURCE_DIR}/support/tinycthread.h
+                ${GLFW_SOURCE_DIR}/support/tinycthread.c) 
 
 add_executable(clipboard clipboard.c ${GETOPT})
 add_executable(defaults defaults.c)
@@ -37,13 +39,20 @@ set_target_properties(sharing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Sharing")
 add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c)
 set_target_properties(tearing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Tearing")
 
+add_executable(threads WIN32 MACOSX_BUNDLE threads.c ${TINYCTHREAD})
+set_target_properties(threads PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Threads")
+
 add_executable(title WIN32 MACOSX_BUNDLE title.c)
 set_target_properties(title PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Title")
 
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c)
 set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 
-set(WINDOWS_BINARIES accuracy sharing tearing title windows)
+if (BUILD_SHARED_LIBS)
+    target_link_libraries(threads ${CMAKE_THREAD_LIBS_INIT})
+endif()
+
+set(WINDOWS_BINARIES accuracy sharing tearing threads title windows)
 set(CONSOLE_BINARIES clipboard defaults events fsaa fsfocus gamma glfwinfo
                      iconify joysticks modes peter reopen)
 

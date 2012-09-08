@@ -705,7 +705,7 @@ static GLboolean createWindow(_GLFWwindow* window,
     [window->NS.object setAcceptsMouseMovedEvents:YES];
     [window->NS.object center];
 
-    if ([window->NS.object respondsToSelector:@selector(setRestorable)])
+    if ([window->NS.object respondsToSelector:@selector(setRestorable:)])
         [window->NS.object setRestorable:NO];
 
     return GL_TRUE;
@@ -1132,7 +1132,7 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
         CGPoint mainScreenOrigin = CGDisplayBounds(CGMainDisplayID()).origin;
         double mainScreenHeight = CGDisplayBounds(CGMainDisplayID()).size.height;
         CGPoint targetPoint = CGPointMake(globalPoint.x - mainScreenOrigin.x,
-                                        mainScreenHeight - globalPoint.y -
+                                          mainScreenHeight - globalPoint.y -
                                             mainScreenOrigin.y);
         CGDisplayMoveCursorToPoint(CGMainDisplayID(), targetPoint);
     }

@@ -481,8 +481,9 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow handle)
         return;
 
     // Clear the current context if this window's context is current
-    if (window == _glfwLibrary.currentWindow)
-        glfwMakeContextCurrent(NULL);
+    // TODO: Re-examine this in light of multithreading
+    if (window == _glfwPlatformGetCurrentContext())
+        _glfwPlatformMakeContextCurrent(NULL);
 
     // Clear the active window pointer if this is the active window
     if (window == _glfwLibrary.activeWindow)

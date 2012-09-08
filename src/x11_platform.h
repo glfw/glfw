@@ -305,7 +305,7 @@ void _glfwSetVideoMode(int* width, int* height, int* rate);
 void _glfwRestoreVideoMode(void);
 
 // Joystick input
-void _glfwInitJoysticks(void);
+int  _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
 // Unicode support

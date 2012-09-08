@@ -16,6 +16,12 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 find_package(OpenGL REQUIRED)
 
+set(CMAKE_THREAD_PREFER_PTHREADS YES)
+find_package(Threads)
+if (CMAKE_THREAD_LIBS_INIT)
+    list(APPEND glfw_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
+endif()
+
 #--------------------------------------------------------------------
 # Enable all warnings on GCC, regardless of OS
 #--------------------------------------------------------------------

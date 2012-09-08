@@ -349,6 +349,7 @@ version of GLFW.</p>
   <li>[X11] Bugfix: Some window properties required by the ICCCM were not set</li>
   <li>[X11] Bugfix: Calling <code>glXCreateContextAttribsARB</code> with an unavailable OpenGL version caused the application to terminate with a <code>BadMatch</code> Xlib error</li>
   <li>[X11] Bugfix: A synchronization point necessary for jitter-free locked cursor mode was incorrectly removed</li>
+  <li>[X11] Bugfix: The window size hints were not updated when calling <code>glfwSetWindowSize</code> on a non-resizable window</li>
   <li>[Win32] Changed port to use Unicode mode only</li>
   <li>[Win32] Removed explicit support for versions of Windows older than Windows XP</li>
   <li>[Win32] Bugfix: Window activation and iconification did not work as expected</li>

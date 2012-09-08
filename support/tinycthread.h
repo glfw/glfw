@@ -57,6 +57,22 @@ freely, subject to the following restrictions:
   #define _TTHREAD_PLATFORM_DEFINED_
 #endif
 
+/* Activate some POSIX functionality (e.g. clock_gettime and recursive mutexes) */
+#if defined(_TTHREAD_POSIX_)
+  #undef _FEATURES_H
+  #if !defined(_GNU_SOURCE)
+    #define _GNU_SOURCE
+  #endif
+  #if !defined(_POSIX_C_SOURCE) || ((_POSIX_C_SOURCE - 0) < 199309L)
+    #undef _POSIX_C_SOURCE
+    #define _POSIX_C_SOURCE 199309L
+  #endif
+  #if !defined(_XOPEN_SOURCE) || ((_XOPEN_SOURCE - 0) < 500)
+    #undef _XOPEN_SOURCE
+    #define _XOPEN_SOURCE 500
+  #endif
+#endif
+
 /* Generic includes */
 #include <time.h>
 
@@ -75,10 +91,42 @@ freely, subject to the following restrictions:
   #endif
 #endif
 
+/* Workaround for missing TIME_UTC: If time.h doesn't provide TIME_UTC,
+   it's quite likely that libc does not support it either. Hence, fall back to
+   the only other supported time specifier: CLOCK_REALTIME (and if that fails,
+   we're probably emulating clock_gettime anyway, so anything goes). */
+#ifndef TIME_UTC
+  #ifdef CLOCK_REALTIME
+    #define TIME_UTC CLOCK_REALTIME
+  #else
+    #define TIME_UTC 0
+  #endif
+#endif
+
+/* Workaround for missing clock_gettime (most Windows compilers, afaik) */
+#if defined(_TTHREAD_WIN32_)
+#define _TTHREAD_EMULATE_CLOCK_GETTIME_
+/* Emulate struct timespec */
+struct _ttherad_timespec {
+  time_t tv_sec;
+  long   tv_nsec;
+};
+#define timespec _ttherad_timespec
+
+/* Emulate clockid_t */
+typedef int _tthread_clockid_t;
+#define clockid_t _tthread_clockid_t
+
+/* Emulate clock_gettime */
+int _tthread_clock_gettime(clockid_t clk_id, struct timespec *ts);
+#define clock_gettime _tthread_clock_gettime
+#endif
+
+
 /** TinyCThread version (major number). */
 #define TINYCTHREAD_VERSION_MAJOR 1
 /** TinyCThread version (minor number). */
-#define TINYCTHREAD_VERSION_MINOR 0
+#define TINYCTHREAD_VERSION_MINOR 1
 /** TinyCThread version (full version). */
 #define TINYCTHREAD_VERSION (TINYCTHREAD_VERSION_MAJOR * 100 + TINYCTHREAD_VERSION_MINOR)
 
@@ -101,7 +149,7 @@ freely, subject to the following restrictions:
 * @hideinitializer
 */
 
-/* FIXME: Check for a PROPER value of __STDC_VERSION__ to know if we have C11 or */
+/* FIXME: Check for a PROPER value of __STDC_VERSION__ to know if we have C11 */
 #if !(defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201102L)) && !defined(_Thread_local)
  #if defined(__GNUC__) || defined(__INTEL_COMPILER) || defined(__SUNPRO_CC) || defined(__IBMCPP__)
   #define _Thread_local __thread
@@ -125,12 +173,6 @@ freely, subject to the following restrictions:
 #define mtx_timed     2
 #define mtx_try       4
 #define mtx_recursive 8
-
-/** Time specification */
-typedef struct {
-  time_t sec;   /**< Seconds */
-  long nsec;    /**< Nanoseconds */
-} xtime;
 
 /* Mutex */
 #if defined(_TTHREAD_WIN32_)
@@ -174,7 +216,7 @@ int mtx_lock(mtx_t *mtx);
 
 /** NOT YET IMPLEMENTED.
 */
-int mtx_timedlock(mtx_t *mtx, const xtime *xt);
+int mtx_timedlock(mtx_t *mtx, const struct timespec *ts);
 
 /** Try to lock the given mutex.
 * The specified mutex shall support either test and return or timeout. If the
@@ -260,7 +302,7 @@ int cnd_wait(cnd_t *cond, mtx_t *mtx);
 * specified in the call was reached without acquiring the requested resource, or
 * @ref thrd_error if the request could not be honored.
 */
-int cnd_timedwait(cnd_t *cond, mtx_t *mtx, const xtime *xt);
+int cnd_timedwait(cnd_t *cond, mtx_t *mtx, const struct timespec *ts);
 
 /* Thread */
 #if defined(_TTHREAD_WIN32_)
@@ -326,11 +368,16 @@ void thrd_exit(int res);
 int thrd_join(thrd_t thr, int *res);
 
 /** Put the calling thread to sleep.
-* Suspend execution of the calling thread until after the time specified by the
-* xtime object.
-* @param xt A point in time at which the thread will resume (absolute time).
+* Suspend execution of the calling thread.
+* @param time_point A point in time at which the thread will resume (absolute time).
+* @param remaining If non-NULL, this parameter will hold the remaining time until
+*                  time_point upon return. This will typically be zero, but if
+*                  the thread was woken up by a signal that is not ignored before
+*                  time_point was reached @c remaining will hold a positive
+*                  time.
+* @return 0 (zero) on successful sleep, or -1 if an interrupt occurred.
 */
-void thrd_sleep(const xtime *xt);
+int thrd_sleep(const struct timespec *time_point, struct timespec *remaining);
 
 /** Yield execution to another thread.
 * Permit other threads to run, even if the current thread would ordinarily
@@ -385,20 +432,6 @@ void *tss_get(tss_t key);
 */
 int tss_set(tss_t key, void *val);
 
-/* Timing */
-enum
-{
-  TIME_UTC = 1
-};
-
-/** Get the current time.
-* Set the xtime object to hold the current time based on the given time base.
-* @param xt Will be filled out with the current time.
-* @param base Time base (must be @c TIME_UTC).
-* @return The non-zero value @c base if the function is successful, otherwise
-* it returns zero.
-*/
-int xtime_get(xtime *xt, int base);
 
 #endif /* _TINYTHREAD_H_ */
 

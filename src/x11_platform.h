@@ -54,8 +54,10 @@
 #endif
 
 #if defined(_GLFW_X11_GLX)
+ #define _GLFW_X11_CONTEXT_VISUAL window->GLX.visual
  #include "x11_glx_platform.h"
 #elif defined(_GLFW_X11_EGL)
+ #define _GLFW_X11_CONTEXT_VISUAL window->EGL.visual
  #define _GLFW_EGL_NATIVE_WINDOW  window->X11.handle
  #define _GLFW_EGL_NATIVE_DISPLAY _glfwLibrary.X11.display
  #include "x11_egl_platform.h"
@@ -225,7 +227,6 @@ int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWwndconfig* wndconfig,
                        const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContext(_GLFWwindow* window);
-XVisualInfo* _glfwGetContextVisual(_GLFWwindow* window);
 
 // Fullscreen support
 int  _glfwGetClosestVideoMode(int* width, int* height, int* rate);

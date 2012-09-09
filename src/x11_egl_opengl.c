@@ -163,12 +163,10 @@ static int createContext(_GLFWwindow* window,
                          const _GLFWwndconfig* wndconfig,
                          EGLint fbconfigID)
 {
-    int attribs[40], visMask;
-    EGLint count, index, visualID = 0;
-    EGLint redBits, greenBits, blueBits, alphaBits;
+    int attribs[40];
+    EGLint count, index;
     EGLConfig config;
     EGLContext share = NULL;
-    XVisualInfo visTemplate;
 
     if (wndconfig->share)
         share = wndconfig->share->EGL.context;
@@ -192,45 +190,53 @@ static int createContext(_GLFWwindow* window,
     // Retrieve the corresponding visual
     // NOTE: This is the only non-portable code in this file.
     // Maybe it would not hurt too much to add #ifdefs for different platforms?
-    eglGetConfigAttrib(_glfwLibrary.EGL.display, config, EGL_NATIVE_VISUAL_ID, &visualID);
-
-    // Init visual template
-    visTemplate.screen = _glfwLibrary.X11.screen;
-    visMask = VisualScreenMask;
-
-    if (visualID)
+#if defined(_GLFW_X11_EGL)
     {
-        // The X window visual must match the EGL config
-        visTemplate.visualid = visualID;
-        visMask |= VisualIDMask;
+        int mask;
+        EGLint redBits, greenBits, blueBits, alphaBits, visualID = 0;
+        XVisualInfo info;
+
+        eglGetConfigAttrib(_glfwLibrary.EGL.display, config,
+                           EGL_NATIVE_VISUAL_ID, &visualID);
+
+        info.screen = _glfwLibrary.X11.screen;
+        mask = VisualScreenMask;
+
+        if (visualID)
+        {
+            // The X window visual must match the EGL config
+            info.visualid = visualID;
+            mask |= VisualIDMask;
+        }
+        else
+        {
+            // some EGL drivers don't implement the EGL_NATIVE_VISUAL_ID
+            // attribute, so attempt to find the closest match.
+
+            eglGetConfigAttrib(_glfwLibrary.EGL.display, config,
+                               EGL_RED_SIZE, &redBits);
+            eglGetConfigAttrib(_glfwLibrary.EGL.display, config,
+                               EGL_GREEN_SIZE, &greenBits);
+            eglGetConfigAttrib(_glfwLibrary.EGL.display, config,
+                               EGL_BLUE_SIZE, &blueBits);
+            eglGetConfigAttrib(_glfwLibrary.EGL.display, config,
+                               EGL_ALPHA_SIZE, &alphaBits);
+
+            info.depth = redBits + greenBits + blueBits + alphaBits;
+            mask |= VisualDepthMask;
+        }
+
+        window->EGL.visual = XGetVisualInfo(_glfwLibrary.X11.display,
+                                            mask, &info, &count);
+
+        if (window->EGL.visual == NULL)
+        {
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "EGL: Failed to retrieve visual for EGLConfig");
+            return GL_FALSE;
+        }
     }
-    else
-    {
-        // some EGL drivers don't implement the EGL_NATIVE_VISUAL_ID
-        // attribute, so attempt to find the closest match.
-
-        eglGetConfigAttrib(_glfwLibrary.EGL.display, config,
-                           EGL_RED_SIZE, &redBits);
-        eglGetConfigAttrib(_glfwLibrary.EGL.display, config,
-                           EGL_GREEN_SIZE, &greenBits);
-        eglGetConfigAttrib(_glfwLibrary.EGL.display, config,
-                           EGL_BLUE_SIZE, &blueBits);
-        eglGetConfigAttrib(_glfwLibrary.EGL.display, config,
-                           EGL_ALPHA_SIZE, &alphaBits);
-
-        visTemplate.depth = redBits + greenBits + blueBits + alphaBits;
-        visMask |= VisualDepthMask;
-    }
-
-    window->EGL.visual = XGetVisualInfo(_glfwLibrary.X11.display,
-                                        visMask, &visTemplate, &count);
-
-    if (window->EGL.visual == NULL)
-    {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "EGL: Failed to retrieve visual for EGLConfig");
-        return GL_FALSE;
-    }
+#endif
 
     if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
     {
@@ -468,16 +474,6 @@ void _glfwDestroyContext(_GLFWwindow* window)
         eglDestroyContext(_glfwLibrary.EGL.display, window->EGL.context);
         window->EGL.context = EGL_NO_CONTEXT;
     }
-}
-
-
-//========================================================================
-// Return the X visual associated with the specified context
-//========================================================================
-
-XVisualInfo* _glfwGetContextVisual(_GLFWwindow* window)
-{
-    return window->EGL.visual;
 }
 
 

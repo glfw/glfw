@@ -83,7 +83,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 {
     unsigned long wamask;
     XSetWindowAttributes wa;
-    XVisualInfo* visual = _glfwGetContextVisual(window);
+    XVisualInfo* visual = _GLFW_X11_CONTEXT_VISUAL;
 
     // Every window needs a colormap
     // Create one based on the visual used by the current context

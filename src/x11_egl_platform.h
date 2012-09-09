@@ -70,7 +70,10 @@ typedef struct _GLFWcontextEGL
    EGLConfig      config;
    EGLContext     context;
    EGLSurface     surface;
+
+#if defined(_GLFW_X11_EGL)
    XVisualInfo*   visual;
+#endif
 } _GLFWcontextEGL;
 
 

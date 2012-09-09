@@ -104,14 +104,16 @@ freely, subject to the following restrictions:
 #endif
 
 /* Workaround for missing clock_gettime (most Windows compilers, afaik) */
-#if defined(_TTHREAD_WIN32_)
+#if defined(_TTHREAD_WIN32_) || defined(__APPLE_CC__)
 #define _TTHREAD_EMULATE_CLOCK_GETTIME_
 /* Emulate struct timespec */
+#if defined(_TTHREAD_WIN32_)
 struct _ttherad_timespec {
   time_t tv_sec;
   long   tv_nsec;
 };
 #define timespec _ttherad_timespec
+#endif
 
 /* Emulate clockid_t */
 typedef int _tthread_clockid_t;

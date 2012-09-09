@@ -317,6 +317,9 @@ int main(int argc, char** argv)
            get_client_api_name(api),
            glGetString(GL_VENDOR));
 
+    printf("OpenGL context debug flag saved by GLFW: %s\n",
+           glfwGetWindowParam(window, GLFW_OPENGL_DEBUG_CONTEXT) ? "true" : "false");
+
     if (major > 1)
     {
         printf("%s context shading language version: \"%s\"\n",

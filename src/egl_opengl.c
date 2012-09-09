@@ -35,6 +35,24 @@
 
 
 //========================================================================
+// Thread local storage attribute macro
+//========================================================================
+#if defined(_MSC_VER)
+ #define _GLFW_TLS __declspec(thread)
+#elif defined(__GNUC__)
+ #define _GLFW_TLS __thread
+#else
+ #define _GLFW_TLS
+#endif
+
+
+//========================================================================
+// The per-thread current context/window pointer
+//========================================================================
+static _GLFW_TLS _GLFWwindow* _glfwCurrentWindow = NULL;
+
+
+//========================================================================
 // Returns the specified attribute of the specified EGLConfig
 //========================================================================
 
@@ -508,6 +526,18 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
         eglMakeCurrent(_glfwLibrary.EGL.display,
                        EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     }
+
+    _glfwCurrentWindow = window;
+}
+
+
+//========================================================================
+// Return the window object whose context is current
+//========================================================================
+
+_GLFWwindow* _glfwPlatformGetCurrentContext(void)
+{
+    return _glfwCurrentWindow;
 }
 
 

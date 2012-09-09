@@ -30,6 +30,8 @@
 
 #include "internal.h"
 
+#include <sys/select.h>
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -460,34 +462,31 @@ static _GLFWwindow* findWindow(Window handle)
 
 
 //========================================================================
-// Get and process next X event (called by _glfwPlatformPollEvents)
+// Process the specified X event
 //========================================================================
 
-static void processSingleEvent(void)
+static void processEvent(XEvent *event)
 {
     _GLFWwindow* window;
 
-    XEvent event;
-    XNextEvent(_glfwLibrary.X11.display, &event);
-
-    switch (event.type)
+    switch (event->type)
     {
         case KeyPress:
         {
             // A keyboard key was pressed
-            window = findWindow(event.xkey.window);
+            window = findWindow(event->xkey.window);
             if (window == NULL)
                 return;
 
-            _glfwInputKey(window, translateKey(event.xkey.keycode), GLFW_PRESS);
-            _glfwInputChar(window, translateChar(&event.xkey));
+            _glfwInputKey(window, translateKey(event->xkey.keycode), GLFW_PRESS);
+            _glfwInputChar(window, translateChar(&event->xkey));
             break;
         }
 
         case KeyRelease:
         {
             // A keyboard key was released
-            window = findWindow(event.xkey.window);
+            window = findWindow(event->xkey.window);
             if (window == NULL)
                 return;
 
@@ -501,15 +500,15 @@ static void processSingleEvent(void)
                 XPeekEvent(_glfwLibrary.X11.display, &nextEvent);
 
                 if (nextEvent.type == KeyPress &&
-                    nextEvent.xkey.window == event.xkey.window &&
-                    nextEvent.xkey.keycode == event.xkey.keycode)
+                    nextEvent.xkey.window == event->xkey.window &&
+                    nextEvent.xkey.keycode == event->xkey.keycode)
                 {
                     // This last check is a hack to work around key repeats
                     // leaking through due to some sort of time drift
                     // Toshiyuki Takahashi can press a button 16 times per
                     // second so it's fairly safe to assume that no human is
                     // pressing the key 50 times per second (value is ms)
-                    if ((nextEvent.xkey.time - event.xkey.time) < 20)
+                    if ((nextEvent.xkey.time - event->xkey.time) < 20)
                     {
                         // Do not report anything for this event
                         break;
@@ -517,34 +516,34 @@ static void processSingleEvent(void)
                 }
             }
 
-            _glfwInputKey(window, translateKey(event.xkey.keycode), GLFW_RELEASE);
+            _glfwInputKey(window, translateKey(event->xkey.keycode), GLFW_RELEASE);
             break;
         }
 
         case ButtonPress:
         {
             // A mouse button was pressed or a scrolling event occurred
-            window = findWindow(event.xbutton.window);
+            window = findWindow(event->xbutton.window);
             if (window == NULL)
                 return;
 
-            if (event.xbutton.button == Button1)
+            if (event->xbutton.button == Button1)
                 _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS);
-            else if (event.xbutton.button == Button2)
+            else if (event->xbutton.button == Button2)
                 _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_MIDDLE, GLFW_PRESS);
-            else if (event.xbutton.button == Button3)
+            else if (event->xbutton.button == Button3)
                 _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_RIGHT, GLFW_PRESS);
 
             // XFree86 3.3.2 and later translates mouse wheel up/down into
             // mouse button 4 & 5 presses
-            else if (event.xbutton.button == Button4)
+            else if (event->xbutton.button == Button4)
                 _glfwInputScroll(window, 0.0, 1.0);
-            else if (event.xbutton.button == Button5)
+            else if (event->xbutton.button == Button5)
                 _glfwInputScroll(window, 0.0, -1.0);
 
-            else if (event.xbutton.button == Button6)
+            else if (event->xbutton.button == Button6)
                 _glfwInputScroll(window, -1.0, 0.0);
-            else if (event.xbutton.button == Button7)
+            else if (event->xbutton.button == Button7)
                 _glfwInputScroll(window, 1.0, 0.0);
 
             break;
@@ -553,23 +552,23 @@ static void processSingleEvent(void)
         case ButtonRelease:
         {
             // A mouse button was released
-            window = findWindow(event.xbutton.window);
+            window = findWindow(event->xbutton.window);
             if (window == NULL)
                 return;
 
-            if (event.xbutton.button == Button1)
+            if (event->xbutton.button == Button1)
             {
                 _glfwInputMouseClick(window,
                                      GLFW_MOUSE_BUTTON_LEFT,
                                      GLFW_RELEASE);
             }
-            else if (event.xbutton.button == Button2)
+            else if (event->xbutton.button == Button2)
             {
                 _glfwInputMouseClick(window,
                                      GLFW_MOUSE_BUTTON_MIDDLE,
                                      GLFW_RELEASE);
             }
-            else if (event.xbutton.button == Button3)
+            else if (event->xbutton.button == Button3)
             {
                 _glfwInputMouseClick(window,
                                      GLFW_MOUSE_BUTTON_RIGHT,
@@ -581,7 +580,7 @@ static void processSingleEvent(void)
         case EnterNotify:
         {
             // The cursor entered the window
-            window = findWindow(event.xcrossing.window);
+            window = findWindow(event->xcrossing.window);
             if (window == NULL)
                 return;
 
@@ -595,7 +594,7 @@ static void processSingleEvent(void)
         case LeaveNotify:
         {
             // The cursor left the window
-            window = findWindow(event.xcrossing.window);
+            window = findWindow(event->xcrossing.window);
             if (window == NULL)
                 return;
 
@@ -609,12 +608,12 @@ static void processSingleEvent(void)
         case MotionNotify:
         {
             // The cursor was moved
-            window = findWindow(event.xmotion.window);
+            window = findWindow(event->xmotion.window);
             if (window == NULL)
                 return;
 
-            if (event.xmotion.x != window->X11.cursorPosX ||
-                event.xmotion.y != window->X11.cursorPosY)
+            if (event->xmotion.x != window->X11.cursorPosX ||
+                event->xmotion.y != window->X11.cursorPosY)
             {
                 // The cursor was moved by something other than GLFW
 
@@ -625,17 +624,17 @@ static void processSingleEvent(void)
                     if (_glfwLibrary.activeWindow != window)
                         break;
 
-                    x = event.xmotion.x - window->X11.cursorPosX;
-                    y = event.xmotion.y - window->X11.cursorPosY;
+                    x = event->xmotion.x - window->X11.cursorPosX;
+                    y = event->xmotion.y - window->X11.cursorPosY;
                 }
                 else
                 {
-                    x = event.xmotion.x;
-                    y = event.xmotion.y;
+                    x = event->xmotion.x;
+                    y = event->xmotion.y;
                 }
 
-                window->X11.cursorPosX = event.xmotion.x;
-                window->X11.cursorPosY = event.xmotion.y;
+                window->X11.cursorPosX = event->xmotion.x;
+                window->X11.cursorPosY = event->xmotion.y;
                 window->X11.cursorCentered = GL_FALSE;
 
                 _glfwInputCursorMotion(window, x, y);
@@ -647,17 +646,17 @@ static void processSingleEvent(void)
         case ConfigureNotify:
         {
             // The window configuration changed somehow
-            window = findWindow(event.xconfigure.window);
+            window = findWindow(event->xconfigure.window);
             if (window == NULL)
                 return;
 
             _glfwInputWindowSize(window,
-                                 event.xconfigure.width,
-                                 event.xconfigure.height);
+                                 event->xconfigure.width,
+                                 event->xconfigure.height);
 
             _glfwInputWindowPos(window,
-                                event.xconfigure.x,
-                                event.xconfigure.y);
+                                event->xconfigure.x,
+                                event->xconfigure.y);
 
             break;
         }
@@ -665,11 +664,11 @@ static void processSingleEvent(void)
         case ClientMessage:
         {
             // Custom client message, probably from the window manager
-            window = findWindow(event.xclient.window);
+            window = findWindow(event->xclient.window);
             if (window == NULL)
                 return;
 
-            if ((Atom) event.xclient.data.l[0] == _glfwLibrary.X11.wmDeleteWindow)
+            if ((Atom) event->xclient.data.l[0] == _glfwLibrary.X11.wmDeleteWindow)
             {
                 // The window manager was asked to close the window, for example by
                 // the user pressing a 'close' window decoration button
@@ -677,17 +676,17 @@ static void processSingleEvent(void)
                 _glfwInputWindowCloseRequest(window);
             }
             else if (_glfwLibrary.X11.wmPing != None &&
-                     (Atom) event.xclient.data.l[0] == _glfwLibrary.X11.wmPing)
+                     (Atom) event->xclient.data.l[0] == _glfwLibrary.X11.wmPing)
             {
                 // The window manager is pinging the application to ensure it's
                 // still responding to events
 
-                event.xclient.window = _glfwLibrary.X11.root;
+                event->xclient.window = _glfwLibrary.X11.root;
                 XSendEvent(_glfwLibrary.X11.display,
-                           event.xclient.window,
+                           event->xclient.window,
                            False,
                            SubstructureNotifyMask | SubstructureRedirectMask,
-                           &event);
+                           event);
             }
 
             break;
@@ -696,7 +695,7 @@ static void processSingleEvent(void)
         case MapNotify:
         {
             // The window was mapped
-            window = findWindow(event.xmap.window);
+            window = findWindow(event->xmap.window);
             if (window == NULL)
                 return;
 
@@ -707,7 +706,7 @@ static void processSingleEvent(void)
         case UnmapNotify:
         {
             // The window was unmapped
-            window = findWindow(event.xmap.window);
+            window = findWindow(event->xmap.window);
             if (window == NULL)
                 return;
 
@@ -718,7 +717,7 @@ static void processSingleEvent(void)
         case FocusIn:
         {
             // The window gained focus
-            window = findWindow(event.xfocus.window);
+            window = findWindow(event->xfocus.window);
             if (window == NULL)
                 return;
 
@@ -733,7 +732,7 @@ static void processSingleEvent(void)
         case FocusOut:
         {
             // The window lost focus
-            window = findWindow(event.xfocus.window);
+            window = findWindow(event->xfocus.window);
             if (window == NULL)
                 return;
 
@@ -748,7 +747,7 @@ static void processSingleEvent(void)
         case Expose:
         {
             // The window's contents was damaged
-            window = findWindow(event.xexpose.window);
+            window = findWindow(event->xexpose.window);
             if (window == NULL)
                 return;
 
@@ -769,7 +768,7 @@ static void processSingleEvent(void)
         {
             // The selection conversion status is available
 
-            XSelectionEvent* request = &event.xselection;
+            XSelectionEvent* request = &event->xselection;
 
             if (_glfwReadSelection(request))
                 _glfwLibrary.X11.selection.status = _GLFW_CONVERSION_SUCCEEDED;
@@ -783,7 +782,7 @@ static void processSingleEvent(void)
         {
             // The contents of the selection was requested
 
-            XSelectionRequestEvent* request = &event.xselectionrequest;
+            XSelectionRequestEvent* request = &event->xselectionrequest;
 
             XEvent response;
             memset(&response, 0, sizeof(response));
@@ -808,11 +807,11 @@ static void processSingleEvent(void)
         default:
         {
 #if defined(_GLFW_HAS_XRANDR)
-            switch (event.type - _glfwLibrary.X11.RandR.eventBase)
+            switch (event->type - _glfwLibrary.X11.RandR.eventBase)
             {
                 case RRScreenChangeNotify:
                 {
-                    XRRUpdateConfiguration(&event);
+                    XRRUpdateConfiguration(event);
                     break;
                 }
             }
@@ -957,7 +956,6 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     int mode = 0, rate, sizeChanged = GL_FALSE;
-    XSizeHints* sizehints;
 
     rate = window->refreshRate;
 
@@ -971,14 +969,14 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     {
         // Update window size restrictions to match new window size
 
-        sizehints = XAllocSizeHints();
-        sizehints->flags = 0;
+        XSizeHints* hints = XAllocSizeHints();
 
-        sizehints->min_width  = sizehints->max_width  = width;
-        sizehints->min_height = sizehints->max_height = height;
+        hints->flags |= (PMinSize | PMaxSize);
+        hints->min_width  = hints->max_width  = width;
+        hints->min_height = hints->max_height = height;
 
-        XSetWMNormalHints(_glfwLibrary.X11.display, window->X11.handle, sizehints);
-        XFree(sizehints);
+        XSetWMNormalHints(_glfwLibrary.X11.display, window->X11.handle, hints);
+        XFree(hints);
     }
 
     // Change window size before changing fullscreen mode?
@@ -1093,13 +1091,18 @@ void _glfwPlatformRefreshWindowParams(_GLFWwindow* window)
 
 void _glfwPlatformPollEvents(void)
 {
+    XEvent event;
+
+    while (XCheckMaskEvent(_glfwLibrary.X11.display, ~0, &event) ||
+           XCheckTypedEvent(_glfwLibrary.X11.display, ClientMessage, &event))
+    {
+        processEvent(&event);
+    }
+
+    // Check whether the cursor has moved inside an active window that has
+    // captured the cursor (because then it needs to be re-centered)
+
     _GLFWwindow* window;
-
-    // Process all pending events
-    while (XPending(_glfwLibrary.X11.display))
-        processSingleEvent();
-
-    // Did the cursor move in an active window that has captured the cursor
     window = _glfwLibrary.activeWindow;
     if (window)
     {
@@ -1126,13 +1129,18 @@ void _glfwPlatformPollEvents(void)
 
 void _glfwPlatformWaitEvents(void)
 {
-    XEvent event;
+    int fd;
+    fd_set fds;
 
-    // Block waiting for an event to arrive
-    XNextEvent(_glfwLibrary.X11.display, &event);
-    XPutBackEvent(_glfwLibrary.X11.display, &event);
+    fd = ConnectionNumber(_glfwLibrary.X11.display);
 
-    _glfwPlatformPollEvents();
+    FD_ZERO(&fds);
+    FD_SET(fd, &fds);
+
+    XFlush(_glfwLibrary.X11.display);
+
+    if (select(fd + 1, &fds, NULL, NULL, NULL) > 0)
+        _glfwPlatformPollEvents();
 }
 
 

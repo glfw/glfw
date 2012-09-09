@@ -35,6 +35,24 @@
 
 
 //========================================================================
+// Thread local storage attribute macro
+//========================================================================
+#if defined(_MSC_VER)
+ #define _GLFW_TLS __declspec(thread)
+#elif defined(__GNUC__)
+ #define _GLFW_TLS __thread
+#else
+ #define _GLFW_TLS
+#endif
+
+
+//========================================================================
+// The per-thread current context/window pointer
+//========================================================================
+static _GLFW_TLS _GLFWwindow* _glfwCurrentWindow = NULL;
+
+
+//========================================================================
 // Initialize WGL-specific extensions
 // This function is called once before initial context creation, i.e. before
 // any WGL extensions could be present.  This is done in order to have both
@@ -447,7 +465,7 @@ static GLboolean createContext(_GLFWwindow* window,
         }
     }
 
-    glfwMakeContextCurrent(window);
+    _glfwPlatformMakeContextCurrent(window);
     initWGLExtensions(window);
 
     return GL_TRUE;
@@ -512,8 +530,8 @@ void _glfwDestroyContext(_GLFWwindow* window)
 {
     // This is duplicated from glfwDestroyWindow
     // TODO: Stop duplicating code
-    if (window == _glfwLibrary.currentWindow)
-        glfwMakeContextCurrent(NULL);
+    if (window == _glfwCurrentWindow)
+        _glfwPlatformMakeContextCurrent(NULL);
 
     if (window->WGL.context)
     {
@@ -543,6 +561,18 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
         wglMakeCurrent(window->WGL.DC, window->WGL.context);
     else
         wglMakeCurrent(NULL, NULL);
+
+    _glfwCurrentWindow = window;
+}
+
+
+//========================================================================
+// Return the window object whose context is current
+//========================================================================
+
+_GLFWwindow* _glfwPlatformGetCurrentContext(void)
+{
+    return _glfwCurrentWindow;
 }
 
 
@@ -562,7 +592,7 @@ void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 
 void _glfwPlatformSwapInterval(int interval)
 {
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
+    _GLFWwindow* window = _glfwCurrentWindow;
 
     if (window->WGL.EXT_swap_control)
         window->WGL.SwapIntervalEXT(interval);
@@ -577,7 +607,7 @@ int _glfwPlatformExtensionSupported(const char* extension)
 {
     const GLubyte* extensions;
 
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
+    _GLFWwindow* window = _glfwCurrentWindow;
 
     if (window->WGL.GetExtensionsStringEXT != NULL)
     {

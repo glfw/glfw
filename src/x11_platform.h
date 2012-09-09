@@ -55,12 +55,12 @@
 
 #if defined(_GLFW_X11_GLX)
  #define _GLFW_X11_CONTEXT_VISUAL window->GLX.visual
- #include "x11_glx_platform.h"
+ #include "glx_platform.h"
 #elif defined(_GLFW_X11_EGL)
  #define _GLFW_X11_CONTEXT_VISUAL window->EGL.visual
  #define _GLFW_EGL_NATIVE_WINDOW  window->X11.handle
  #define _GLFW_EGL_NATIVE_DISPLAY _glfwLibrary.X11.display
- #include "x11_egl_platform.h"
+ #include "egl_platform.h"
 #endif
 
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowX11 X11

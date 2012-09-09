@@ -56,6 +56,8 @@
 #if defined(_GLFW_X11_GLX)
  #include "x11_glx_platform.h"
 #elif defined(_GLFW_X11_EGL)
+ #define _GLFW_EGL_NATIVE_WINDOW  window->X11.handle
+ #define _GLFW_EGL_NATIVE_DISPLAY _glfwLibrary.X11.display
  #include "x11_egl_platform.h"
 #endif
 

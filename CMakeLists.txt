@@ -12,6 +12,7 @@ set(LIB_SUFFIX "" CACHE STRING "Takes an empty string or 64. Directory where lib
 
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
+option(GLFW_NATIVE_API "Build the GLFW native API" OFF)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 find_package(OpenGL REQUIRED)
@@ -259,7 +260,12 @@ configure_file(${GLFW_SOURCE_DIR}/src/config.h.in
 # The src directory's CMakeLists.txt file installs the library
 #--------------------------------------------------------------------
 install(DIRECTORY include/GL DESTINATION include 
-        FILES_MATCHING PATTERN glfw3.h PATTERN glfw3native.h)
+        FILES_MATCHING PATTERN glfw3.h)
+
+if (GLFW_NATIVE_API)
+    install(DIRECTORY include/GL DESTINATION include 
+            FILES_MATCHING PATTERN glfw3native.h)
+endif()
 
 install(FILES COPYING.txt readme.html 
         DESTINATION share/doc/glfw-${GLFW_VERSION_FULL})

@@ -366,7 +366,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     glClear(GL_COLOR_BUFFER_BIT);
     _glfwPlatformSwapBuffers(window);
 
-    if (wndconfig.visible)
+    if (wndconfig.visible || mode == GLFW_FULLSCREEN)
         glfwShowWindow(window);
 
     return window;
@@ -649,15 +649,20 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow handle)
 // Window show
 //========================================================================
 
-GLFWAPI void glfwShowWindow(GLFWwindow window)
+GLFWAPI void glfwShowWindow(GLFWwindow handle)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
-    _glfwPlatformShowWindow((_GLFWwindow*)window);
+    if (window->mode == GLFW_FULLSCREEN)
+        return;
+
+    _glfwPlatformShowWindow(window);
 }
 
 
@@ -665,15 +670,20 @@ GLFWAPI void glfwShowWindow(GLFWwindow window)
 // Window hide
 //========================================================================
 
-GLFWAPI void glfwHideWindow(GLFWwindow window)
+GLFWAPI void glfwHideWindow(GLFWwindow handle)
 {
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
-    _glfwPlatformHideWindow((_GLFWwindow*)window);
+    if (window->mode == GLFW_FULLSCREEN)
+        return;
+
+    _glfwPlatformHideWindow(window);
 }
 
 

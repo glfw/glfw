@@ -646,6 +646,30 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow handle)
 
 
 //========================================================================
+// Window un-iconification
+//========================================================================
+
+GLFWAPI void glfwRestoreWindow(GLFWwindow handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    if (!window->iconified)
+        return;
+
+    _glfwPlatformRestoreWindow(window);
+
+    if (window->mode == GLFW_FULLSCREEN)
+        _glfwPlatformRefreshWindowParams(window);
+}
+
+
+//========================================================================
 // Window show
 //========================================================================
 
@@ -684,30 +708,6 @@ GLFWAPI void glfwHideWindow(GLFWwindow handle)
         return;
 
     _glfwPlatformHideWindow(window);
-}
-
-
-//========================================================================
-// Window un-iconification
-//========================================================================
-
-GLFWAPI void glfwRestoreWindow(GLFWwindow handle)
-{
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    if (!window->iconified)
-        return;
-
-    _glfwPlatformRestoreWindow(window);
-
-    if (window->mode == GLFW_FULLSCREEN)
-        _glfwPlatformRefreshWindowParams(window);
 }
 
 

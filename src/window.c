@@ -877,7 +877,7 @@ GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindowiconifyfun cbfun)
 
 
 //========================================================================
-// Poll for new window and input events and close any flagged windows
+// Poll for new window and input events
 //========================================================================
 
 GLFWAPI void glfwPollEvents(void)

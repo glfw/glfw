@@ -651,8 +651,6 @@ int _glfwPlatformInit(void)
     if (!_glfwInitJoysticks())
         return GL_FALSE;
 
-    _glfwInitMonitors();
-
     // Start the timer
     _glfwInitTimer();
 
@@ -675,8 +673,6 @@ int _glfwPlatformTerminate(void)
     _glfwTerminateGammaRamp();
 
     terminateDisplay();
-
-    _glfwTerminateMonitors();
 
     _glfwTerminateJoysticks();
 

@@ -34,111 +34,83 @@
 #include <string.h>
 
 
-//========================================================================
-// Create a monitor struct from the specified information
-//========================================================================
-
-#if defined (_GLFW_HAS_XRANDR)
-static _GLFWmonitor** createMonitor(_GLFWmonitor** current,
-                                    XRROutputInfo* outputInfo,
-                                    XRRCrtcInfo* crtcInfo)
-{
-    *current = malloc(sizeof(_GLFWmonitor));
-    memset(*current, 0, sizeof(_GLFWmonitor));
-
-    (*current)->physicalWidth  = outputInfo->mm_width;
-    (*current)->physicalHeight = outputInfo->mm_height;
-
-    (*current)->name = strdup(outputInfo->name);
-
-    (*current)->screenX = crtcInfo->x;
-    (*current)->screenY = crtcInfo->y;
-
-    (*current)->X11.output = outputInfo;
-    return &((*current)->next);
-}
-#endif /*_GLFW_HAS_XRANDR*/
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
-
-//========================================================================
-// Destroy a monitor struct
-//========================================================================
-
-_GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
-{
-    _GLFWmonitor* result;
-
-    result = monitor->next;
-
-#if defined (_GLFW_HAS_XRANDR)
-    XRRFreeOutputInfo(monitor->X11.output);
-#endif /*_GLFW_HAS_XRANDR*/
-
-    free(monitor->modes);
-    free(monitor->name);
-    free(monitor);
-
-    return result;
-}
 
 
 //========================================================================
 // Return a list of available monitors
 //========================================================================
 
-_GLFWmonitor* _glfwCreateMonitors(void)
+_GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
-    _GLFWmonitor* monitorList = NULL;
+    int found = 0;
+    _GLFWmonitor** monitors = NULL;
 
     if (_glfwLibrary.X11.RandR.available)
     {
 #if defined (_GLFW_HAS_XRANDR)
-        int oi;
-        XRRScreenResources* resources;
-        _GLFWmonitor** monitor = &monitorList;
+        int i;
+        XRRScreenResources* sr;
 
-        resources = XRRGetScreenResources(_glfwLibrary.X11.display,
-                                          _glfwLibrary.X11.root);
+        sr = XRRGetScreenResources(_glfwLibrary.X11.display,
+                                   _glfwLibrary.X11.root);
 
-        for (oi = 0;  oi < resources->noutput;  oi++)
+        monitors = (_GLFWmonitor**) calloc(sr->noutput, sizeof(_GLFWmonitor*));
+        if (!monitors)
         {
-            // physical device
-            XRROutputInfo* outputInfo = NULL;
-            // logical surface
-            XRRCrtcInfo* crtcInfo = NULL;
+            _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+            return NULL;
+        }
 
-            outputInfo = XRRGetOutputInfo(_glfwLibrary.X11.display,
-                                          resources,
-                                          resources->outputs[oi]);
+        for (i = 0;  i < sr->noutput;  i++)
+        {
+            XRROutputInfo* oi;
+            XRRCrtcInfo* ci;
 
-            if (outputInfo->connection == RR_Connected)
+            oi = XRRGetOutputInfo(_glfwLibrary.X11.display, sr, sr->outputs[i]);
+            if (oi->connection != RR_Connected)
             {
-                int ci;
-
-                for (ci = 0;  ci < outputInfo->ncrtc;  ci++)
-                {
-                    if (outputInfo->crtc == outputInfo->crtcs[ci])
-                    {
-                        crtcInfo = XRRGetCrtcInfo(_glfwLibrary.X11.display,
-                                                  resources,
-                                                  outputInfo->crtcs[ci]);
-                        break;
-                    }
-                }
-
-                monitor = createMonitor(monitor, outputInfo, crtcInfo);
-
-                // Freeing of the outputInfo is done in _glfwDestroyMonitor
-                XRRFreeCrtcInfo(crtcInfo);
+                XRRFreeOutputInfo(oi);
+                continue;
             }
+
+            ci = XRRGetCrtcInfo(_glfwLibrary.X11.display, sr, oi->crtc);
+
+            monitors[found] = _glfwCreateMonitor(oi->name,
+                                                 oi->mm_width, oi->mm_height,
+                                                 ci->x, ci->y);
+
+            XRRFreeCrtcInfo(ci);
+
+            if (!monitors[found])
+            {
+                // TODO: wat
+                return NULL;
+            }
+
+            // This is retained until the monitor object is destroyed
+            monitors[found]->X11.output = oi;
+
+            found++;
         }
 #endif /*_GLFW_HAS_XRANDR*/
     }
 
-    return monitorList;
+    *count = found;
+    return monitors;
+}
+
+
+//========================================================================
+// Destroy a monitor struct
+//========================================================================
+
+void _glfwPlatformDestroyMonitor(_GLFWmonitor* monitor)
+{
+#if defined (_GLFW_HAS_XRANDR)
+    XRRFreeOutputInfo(monitor->X11.output);
+#endif /*_GLFW_HAS_XRANDR*/
 }
 

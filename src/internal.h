@@ -206,8 +206,6 @@ struct _GLFWwindow
 //------------------------------------------------------------------------
 struct _GLFWmonitor
 {
-    struct _GLFWmonitor* next;
-
     void*     userPointer;
 
     char*     name;
@@ -234,7 +232,9 @@ struct _GLFWlibrary
     _GLFWwindow*  windowListHead;
     _GLFWwindow*  activeWindow;
     _GLFWwindow*  cursorLockWindow;
-    _GLFWmonitor* monitorListHead;
+
+    _GLFWmonitor** monitors;
+    int            monitorCount;
 
     GLFWwindowsizefun    windowSizeCallback;
     GLFWwindowclosefun   windowCloseCallback;
@@ -285,6 +285,10 @@ void _glfwPlatformEnableSystemKeys(_GLFWwindow* window);
 void _glfwPlatformDisableSystemKeys(_GLFWwindow* window);
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y);
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
+
+// Monitor support
+_GLFWmonitor** _glfwPlatformGetMonitors(int* count);
+void _glfwPlatformDestroyMonitor(_GLFWmonitor* monitor);
 
 // Video mode support
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count);
@@ -357,6 +361,9 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action);
 void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y);
 void _glfwInputCursorEnter(_GLFWwindow* window, int entered);
 
+// Monitor event notification (monitor.c)
+void _glfwInputMonitorChange(void);
+
 
 //========================================================================
 // Prototypes for internal utility functions
@@ -385,8 +392,10 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig);
 GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig);
 
 // Monitor management (monitor.c)
-void _glfwInitMonitors(void);
-void _glfwRefreshMonitors(void);
-void _glfwTerminateMonitors(void);
+_GLFWmonitor* _glfwCreateMonitor(const char* name,
+                                 int physicalWidth, int physicalHeight,
+                                 int screenX, int screenY);
+void _glfwDestroyMonitor(_GLFWmonitor* monitor);
+void _glfwDestroyMonitors(void);
 
 #endif // _internal_h_

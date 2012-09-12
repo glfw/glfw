@@ -199,8 +199,8 @@ static void test_modes(GLFWmonitor monitor)
 
 int main(int argc, char** argv)
 {
-    int ch, mode = LIST_MODE;
-    GLFWmonitor monitor = NULL;
+    int ch, i, count, mode = LIST_MODE;
+    GLFWmonitor* monitors;
 
     while ((ch = getopt(argc, argv, "th")) != -1)
     {
@@ -226,12 +226,14 @@ int main(int argc, char** argv)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    while ((monitor = glfwGetNextMonitor(monitor)))
+    monitors = glfwGetMonitors(&count);
+
+    for (i = 0;  i < count;  i++)
     {
         if (mode == LIST_MODE)
-            list_modes(monitor);
+            list_modes(monitors[i]);
         else if (mode == TEST_MODE)
-            test_modes(monitor);
+            test_modes(monitors[i]);
     }
 
     exit(EXIT_SUCCESS);

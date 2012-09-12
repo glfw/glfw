@@ -120,7 +120,7 @@ int main(int argc, char** argv)
     if (mode == GLFW_FULLSCREEN)
     {
         GLFWvidmode mode;
-        glfwGetVideoMode(glfwGetNextMonitor(NULL), &mode);
+        glfwGetVideoMode(glfwGetPrimaryMonitor(), &mode);
         width = mode.width;
         height = mode.height;
     }

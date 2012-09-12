@@ -529,14 +529,13 @@ GLFWAPI const char* glfwErrorString(int error);
 GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
 
 /* Monitor functions */
+GLFWAPI GLFWmonitor* glfwGetMonitors(int* count);
+GLFWAPI GLFWmonitor glfwGetPrimaryMonitor(void);
 GLFWAPI int  glfwGetMonitorParam(GLFWmonitor monitor, int param);
 GLFWAPI const char* glfwGetMonitorString(GLFWmonitor monitor, int param);
 GLFWAPI void glfwSetMonitorUserPointer(GLFWmonitor monitor, void* pointer);
 GLFWAPI void* glfwGetMonitorUserPointer(GLFWmonitor monitor);
 GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun);
-
-/* Monitor discovery */
-GLFWAPI GLFWmonitor glfwGetNextMonitor(GLFWmonitor iterator);
 
 /* Video mode functions */
 GLFWAPI GLFWvidmode* glfwGetVideoModes(GLFWmonitor monitor, int* count);

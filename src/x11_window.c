@@ -810,7 +810,7 @@ static void processEvent(XEvent *event)
                 case RRScreenChangeNotify:
                 {
                     XRRUpdateConfiguration(event);
-                    _glfwRefreshMonitors();
+                    _glfwInputMonitorChange();
                     break;
                 }
             }

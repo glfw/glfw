@@ -32,6 +32,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
 
 // The MinGW package for Debian lacks this
 #ifndef EDS_ROTATEDMODE
@@ -49,34 +50,102 @@
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Create a monitor struct from the specified information
+// Return a list of available monitors
 //========================================================================
 
-_GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
-                                  DISPLAY_DEVICE* adapter,
-                                  DISPLAY_DEVICE* monitor,
-                                  DEVMODE* setting)
+_GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
-    HDC dc = NULL;
+    int size = 0, found = 0;
+    _GLFWmonitor** monitors = NULL;
+    DWORD adapterIndex = 0;
 
-    *current = malloc(sizeof(_GLFWmonitor));
-    memset(*current, 0, sizeof(_GLFWmonitor));
+    for (;;)
+    {
+        DISPLAY_DEVICE adapter;
+        DWORD monitorIndex = 0;
 
-    dc = CreateDC(L"DISPLAY", monitor->DeviceString, NULL, NULL);
+        ZeroMemory(&adapter, sizeof(DISPLAY_DEVICE));
+        adapter.cb = sizeof(DISPLAY_DEVICE);
 
-    (*current)->physicalWidth  = GetDeviceCaps(dc, HORZSIZE);
-    (*current)->physicalHeight = GetDeviceCaps(dc, VERTSIZE);
+        if (!EnumDisplayDevices(NULL, adapterIndex, &adapter, 0))
+            break;
 
-    DeleteDC(dc);
+        adapterIndex++;
 
-    (*current)->name = _glfwCreateUTF8FromWideString(monitor->DeviceName);
+        if ((adapter.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER) ||
+            !(adapter.StateFlags & DISPLAY_DEVICE_ACTIVE))
+        {
+            continue;
+        }
 
-    (*current)->screenX = setting->dmPosition.x;
-    (*current)->screenY = setting->dmPosition.y;
+        for (;;)
+        {
+            DISPLAY_DEVICE monitor;
+            DEVMODE settings;
+            const char* name;
+            HDC dc;
 
-    (*current)->Win32.name = _glfwCreateUTF8FromWideString(adapter->DeviceName);
+            ZeroMemory(&monitor, sizeof(DISPLAY_DEVICE));
+            monitor.cb = sizeof(DISPLAY_DEVICE);
 
-    return &((*current)->next);
+            if (!EnumDisplayDevices(adapter.DeviceName, monitorIndex, &monitor, 0))
+                break;
+
+            ZeroMemory(&settings, sizeof(DEVMODE));
+            settings.dmSize = sizeof(DEVMODE);
+
+            EnumDisplaySettingsEx(adapter.DeviceName,
+                                  ENUM_CURRENT_SETTINGS,
+                                  &settings,
+                                  EDS_ROTATEDMODE);
+
+            name = _glfwCreateUTF8FromWideString(monitor.DeviceName);
+            if (!name)
+            {
+                // TODO: wat
+                return NULL;
+            }
+
+            dc = CreateDC(L"DISPLAY", monitor.DeviceString, NULL, NULL);
+            if (!dc)
+            {
+                // TODO: wat
+                return NULL;
+            }
+
+            if (found == size)
+            {
+                if (size)
+                    size *= 2;
+                else
+                    size = 4;
+
+                monitors = (_GLFWmonitor**) realloc(monitors, sizeof(_GLFWmonitor*) * size);
+            }
+
+            monitors[found] = _glfwCreateMonitor(name,
+                                                 GetDeviceCaps(dc, HORZSIZE),
+                                                 GetDeviceCaps(dc, VERTSIZE),
+                                                 settings.dmPosition.x,
+                                                 settings.dmPosition.y);
+
+            DeleteDC(dc);
+
+            if (!monitors[found])
+            {
+                // TODO: wat
+                return NULL;
+            }
+
+            monitors[found]->Win32.name = wcsdup(monitor.DeviceName);
+
+            found++;
+            monitorIndex++;
+        }
+    }
+
+    *count = found;
+    return monitors;
 }
 
 
@@ -84,55 +153,8 @@ _GLFWmonitor** _glfwCreateMonitor(_GLFWmonitor** current,
 // Destroy a monitor struct
 //========================================================================
 
-_GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor)
+void _glfwPlatformDestroyMonitor(_GLFWmonitor* monitor)
 {
-    _GLFWmonitor* result;
-
-    result = monitor->next;
-
     free(monitor->Win32.name);
-    free(monitor->name);
-    free(monitor);
-
-    return result;
-}
-
-
-//========================================================================
-// Return a list of available monitors
-//========================================================================
-
-_GLFWmonitor* _glfwCreateMonitors(void)
-{
-    DISPLAY_DEVICE adapter;
-    DWORD adapterNum;
-    DISPLAY_DEVICE monitor;
-    DEVMODE setting;
-    _GLFWmonitor* monitorList;
-    _GLFWmonitor** curMonitor;
-
-    adapter.cb = sizeof(DISPLAY_DEVICE);
-    adapterNum = 0;
-    monitor.cb = sizeof(DISPLAY_DEVICE);
-    setting.dmSize = sizeof(DEVMODE);
-    monitorList = NULL;
-    curMonitor = &monitorList;
-
-    while (EnumDisplayDevices(NULL, adapterNum++, &adapter, 0))
-    {
-        if (adapter.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER || !(adapter.StateFlags & DISPLAY_DEVICE_ACTIVE))
-            continue;
-
-        EnumDisplaySettingsEx(adapter.DeviceName,
-                              ENUM_CURRENT_SETTINGS,
-                              &setting,
-                              EDS_ROTATEDMODE);
-
-        EnumDisplayDevices(adapter.DeviceName, 0, &monitor, 0);
-
-        curMonitor = _glfwCreateMonitor(curMonitor, &adapter, &monitor, &setting);
-    }
-
-    return monitorList;
 }
 

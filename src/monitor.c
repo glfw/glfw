@@ -31,6 +31,7 @@
 #include "internal.h"
 
 #include <string.h>
+#include <stdlib.h>
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -38,108 +39,115 @@
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Initialize the monitor list
+// Create a monitor struct from the specified information
 //========================================================================
 
-void _glfwInitMonitors(void)
+_GLFWmonitor* _glfwCreateMonitor(const char* name,
+                                 int physicalWidth, int physicalHeight,
+                                 int screenX, int screenY)
 {
-    _glfwLibrary.monitorListHead = _glfwCreateMonitors();
+    _GLFWmonitor* monitor = (_GLFWmonitor*) calloc(1, sizeof(_GLFWmonitor));
+    if (!monitor)
+    {
+        _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+        return NULL;
+    }
+
+    monitor->name = strdup(name);
+    monitor->physicalWidth = physicalWidth;
+    monitor->physicalHeight = physicalHeight;
+    monitor->screenX = screenX;
+    monitor->screenY = screenY;
+
+    return monitor;
 }
 
 
 //========================================================================
-// Refresh monitor list and notify callback
+// Destroy the specified monitor
 //========================================================================
 
-void _glfwRefreshMonitors(void)
+void _glfwDestroyMonitor(_GLFWmonitor* monitor)
 {
-    _GLFWmonitor* newMonitorList;
-    _GLFWmonitor* curNewMonitor;
-    _GLFWmonitor* curOldMonitor;
+    if (monitor == NULL)
+        return;
 
-    newMonitorList = _glfwCreateMonitors();
-    curNewMonitor = newMonitorList;
-    curOldMonitor = _glfwLibrary.monitorListHead;
+    _glfwPlatformDestroyMonitor(monitor);
 
-    while (_glfwLibrary.monitorCallback && (curNewMonitor || curOldMonitor))
+    free(monitor->modes);
+    free(monitor->name);
+    free(monitor);
+}
+
+
+//========================================================================
+// Enumerate monitors and notify user of changes
+//========================================================================
+
+void _glfwInputMonitorChange(void)
+{
+    int i, j, monitorCount;
+    _GLFWmonitor** monitors;
+
+    monitors = _glfwPlatformGetMonitors(&monitorCount);
+
+    for (i = 0;  i < monitorCount;  i++)
     {
-        _GLFWmonitor* lookAheadOldMonitor;
-        _GLFWmonitor* lookAheadNewMonitor;
-
-        if (curOldMonitor && curNewMonitor && !strcmp(curOldMonitor->name, curOldMonitor->name))
+        for (j = 0;  j < _glfwLibrary.monitorCount;  j++)
         {
-            curNewMonitor = curNewMonitor->next;
-            curOldMonitor = curOldMonitor->next;
-            continue;
-        }
+            if (_glfwLibrary.monitors[j] == NULL)
+                continue;
 
-        if (curNewMonitor && !curOldMonitor)
-        {
-            _glfwLibrary.monitorCallback(curNewMonitor, GLFW_MONITOR_CONNECTED);
-            curNewMonitor = curNewMonitor->next;
-            continue;
-        }
-
-        if (!curNewMonitor && curOldMonitor)
-        {
-            _glfwLibrary.monitorCallback(curOldMonitor, GLFW_MONITOR_DISCONNECTED);
-            curOldMonitor = curOldMonitor->next;
-            continue;
-        }
-
-        lookAheadOldMonitor = curOldMonitor->next;
-        lookAheadNewMonitor = curNewMonitor->next;
-
-        while (lookAheadOldMonitor && !strcmp(curNewMonitor->name, lookAheadOldMonitor->name))
-            lookAheadOldMonitor = lookAheadOldMonitor->next;
-
-        while (lookAheadNewMonitor && !strcmp(curOldMonitor->name, lookAheadNewMonitor->name))
-            lookAheadNewMonitor = lookAheadNewMonitor->next;
-
-        if (!lookAheadOldMonitor)
-        {
-            // nothing found in the old monitor list, that matches the current new monitor.
-            _glfwLibrary.monitorCallback(curNewMonitor, GLFW_MONITOR_CONNECTED);
-            curNewMonitor = curNewMonitor->next;
-        }
-        else
-        {
-            while (strcmp(curOldMonitor->name, lookAheadOldMonitor->name))
+            if (strcmp(monitors[i]->name, _glfwLibrary.monitors[j]->name) == 0)
             {
-                _glfwLibrary.monitorCallback(curOldMonitor, GLFW_MONITOR_DISCONNECTED);
-                curOldMonitor = curOldMonitor->next;
+                // This monitor was connected before, so re-use the existing
+                // monitor object to preserve its address and user pointer
+
+                _glfwDestroyMonitor(monitors[i]);
+                monitors[i] = _glfwLibrary.monitors[j];
+                _glfwLibrary.monitors[j] = NULL;
+                break;
             }
         }
 
-        if (!lookAheadNewMonitor)
+        if (j == _glfwLibrary.monitorCount)
         {
-            // nothing found in the new monitor list, that matches the current old monitor.
-            _glfwLibrary.monitorCallback(curOldMonitor, GLFW_MONITOR_DISCONNECTED);
-            curOldMonitor = curOldMonitor->next;
-        }
-        else
-        {
-            while (strcmp(curNewMonitor->name, lookAheadNewMonitor->name))
-            {
-                _glfwLibrary.monitorCallback(curNewMonitor, GLFW_MONITOR_CONNECTED);
-                curNewMonitor = curNewMonitor->next;
-            }
+            // This monitor was not connected before
+            _glfwLibrary.monitorCallback(monitors[i], GLFW_MONITOR_CONNECTED);
         }
     }
 
-    _glfwTerminateMonitors();
-    _glfwLibrary.monitorListHead = newMonitorList;
+    for (i = 0;  i < _glfwLibrary.monitorCount;  i++)
+    {
+        if (_glfwLibrary.monitors[i] == NULL)
+            continue;
+
+        // This monitor is no longer connected
+        _glfwLibrary.monitorCallback(_glfwLibrary.monitors[i],
+                                     GLFW_MONITOR_DISCONNECTED);
+    }
+
+    _glfwDestroyMonitors();
+
+    _glfwLibrary.monitors = monitors;
+    _glfwLibrary.monitorCount = monitorCount;
 }
 
 
 //========================================================================
-// Delete the monitor list
+// Destroy all monitors
 //========================================================================
 
-void _glfwTerminateMonitors(void)
+void _glfwDestroyMonitors(void)
 {
-    while (_glfwLibrary.monitorListHead)
-        _glfwLibrary.monitorListHead = _glfwDestroyMonitor(_glfwLibrary.monitorListHead);
+    int i;
+
+    for (i = 0;  i < _glfwLibrary.monitorCount;  i++)
+        _glfwDestroyMonitor(_glfwLibrary.monitors[i]);
+
+    free(_glfwLibrary.monitors);
+    _glfwLibrary.monitors = NULL;
+    _glfwLibrary.monitorCount = 0;
 }
 
 
@@ -148,26 +156,41 @@ void _glfwTerminateMonitors(void)
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Iterate through connected monitors
+// Return the currently connected monitors
 //========================================================================
 
-GLFWAPI GLFWmonitor glfwGetNextMonitor(GLFWmonitor handle)
+GLFWAPI GLFWmonitor* glfwGetMonitors(int* count)
 {
-    _GLFWmonitor* iterator = (_GLFWmonitor*) handle;
-    _GLFWmonitor* result;
-
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return NULL;
     }
 
-    if (iterator == NULL)
-        result = _glfwLibrary.monitorListHead;
-    else
-        result = iterator->next;
+    if (count == NULL)
+    {
+        _glfwSetError(GLFW_INVALID_VALUE, NULL);
+        return NULL;
+    }
 
-    return result;
+    *count = _glfwLibrary.monitorCount;
+    return (GLFWmonitor*) _glfwLibrary.monitors;
+}
+
+
+//========================================================================
+// Get the primary monitor
+//========================================================================
+
+GLFWAPI GLFWmonitor glfwGetPrimaryMonitor(void)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return NULL;
+    }
+
+    return _glfwLibrary.monitors[0];
 }
 
 

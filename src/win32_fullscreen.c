@@ -185,16 +185,8 @@ void _glfwRestoreVideoMode(void)
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 {
-    int deviceModeIndex = 0, count = 0;
+    int modeIndex = 0, count = 0;
     GLFWvidmode* result = NULL;
-    WCHAR* deviceName;
-
-    deviceName = _glfwCreateWideStringFromUTF8(monitor->Win32.name);
-    if (!deviceName)
-    {
-        _glfwSetError(GLFW_PLATFORM_ERROR, "Win32: Failed to convert device name");
-        return NULL;
-    }
 
     *found = 0;
 
@@ -207,10 +199,10 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         ZeroMemory(&dm, sizeof(DEVMODE));
         dm.dmSize = sizeof(DEVMODE);
 
-        if (!EnumDisplaySettings(deviceName, deviceModeIndex, &dm))
+        if (!EnumDisplaySettings(monitor->Win32.name, modeIndex, &dm))
             break;
 
-        deviceModeIndex++;
+        modeIndex++;
 
         if (dm.dmBitsPerPel < 15)
         {
@@ -262,7 +254,6 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         (*found)++;
     }
 
-    free(deviceName);
     return result;
 }
 
@@ -274,19 +265,11 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
     DEVMODE dm;
-    WCHAR* deviceName;
-
-    deviceName = _glfwCreateWideStringFromUTF8(monitor->Win32.name);
-    if (!deviceName)
-    {
-        _glfwSetError(GLFW_PLATFORM_ERROR, "Win32: Failed to convert device name");
-        return;
-    }
 
     ZeroMemory(&dm, sizeof(DEVMODE));
     dm.dmSize = sizeof(DEVMODE);
 
-    EnumDisplaySettings(deviceName, ENUM_REGISTRY_SETTINGS, &dm);
+    EnumDisplaySettings(monitor->Win32.name, ENUM_REGISTRY_SETTINGS, &dm);
 
     mode->width  = dm.dmPelsWidth;
     mode->height = dm.dmPelsHeight;

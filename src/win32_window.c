@@ -670,7 +670,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         {
             if (DBT_DEVNODES_CHANGED == wParam)
             {
-                _glfwRefreshMonitors();
+                _glfwInputMonitorChange();
                 return TRUE;
             }
             break;

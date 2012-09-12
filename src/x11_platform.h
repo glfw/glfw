@@ -325,10 +325,6 @@ void _glfwRestoreVideoMode(void);
 int  _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
-// Monitors
-_GLFWmonitor* _glfwCreateMonitors(void);
-_GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor);
-
 // Unicode support
 long _glfwKeySym2Unicode(KeySym keysym);
 

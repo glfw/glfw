@@ -219,7 +219,7 @@ typedef struct _GLFWlibraryWin32
 //------------------------------------------------------------------------
 typedef struct _GLFWmonitorWin32
 {
-    char* name;
+    WCHAR* name;
 
 } _GLFWmonitorWin32;
 
@@ -243,10 +243,6 @@ char* _glfwCreateUTF8FromWideString(const WCHAR* source);
 
 // Time
 void _glfwInitTimer(void);
-
-// Monitor support
-_GLFWmonitor* _glfwCreateMonitors(void);
-_GLFWmonitor* _glfwDestroyMonitor(_GLFWmonitor* monitor);
 
 // OpenGL support
 int _glfwCreateContext(_GLFWwindow* window,

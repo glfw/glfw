@@ -178,8 +178,6 @@ int _glfwPlatformInit(void)
     _glfwPlatformGetGammaRamp(&_glfwLibrary.originalRamp);
     _glfwLibrary.currentRamp = _glfwLibrary.originalRamp;
 
-    _glfwInitMonitors();
-
     _glfwInitTimer();
 
     return GL_TRUE;
@@ -195,8 +193,6 @@ int _glfwPlatformTerminate(void)
     // Restore the original gamma ramp
     if (_glfwLibrary.rampChanged)
         _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
-
-    _glfwTerminateMonitors();
 
     if (_glfwLibrary.Win32.classAtom)
     {

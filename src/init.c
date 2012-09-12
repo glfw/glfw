@@ -130,6 +130,13 @@ GLFWAPI int glfwInit(void)
         return GL_FALSE;
     }
 
+    _glfwLibrary.monitors = _glfwPlatformGetMonitors(&_glfwLibrary.monitorCount);
+    if (!_glfwLibrary.monitors)
+    {
+        _glfwPlatformTerminate();
+        return GL_FALSE;
+    }
+
     atexit(glfwTerminate);
 
     _glfwInitialized = GL_TRUE;
@@ -150,6 +157,8 @@ GLFWAPI void glfwTerminate(void)
     // Close all remaining windows
     while (_glfwLibrary.windowListHead)
         glfwDestroyWindow(_glfwLibrary.windowListHead);
+
+    _glfwDestroyMonitors();
 
     if (!_glfwPlatformTerminate())
         return;

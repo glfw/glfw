@@ -41,7 +41,7 @@
 // Lexical comparison function for GLFW video modes, used by qsort
 //========================================================================
 
-int compareVideoModes(const void* firstPtr, const void* secondPtr)
+static int compareVideoModes(const void* firstPtr, const void* secondPtr)
 {
     int firstBPP, secondBPP, firstSize, secondSize;
     GLFWvidmode* first = (GLFWvidmode*) firstPtr;

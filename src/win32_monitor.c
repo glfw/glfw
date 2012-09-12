@@ -255,13 +255,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         monitor.cb = sizeof(DISPLAY_DEVICE);
 
         EnumDisplayDevices(adapter.DeviceName, 0, &monitor, 0);
-
         dc = CreateDC(L"DISPLAY", monitor.DeviceString, NULL, NULL);
-        if (!dc)
-        {
-            // TODO: wat
-            return NULL;
-        }
 
         monitors[found] = _glfwCreateMonitor(name,
                                              GetDeviceCaps(dc, HORZSIZE),

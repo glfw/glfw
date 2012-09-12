@@ -17,7 +17,10 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 find_package(OpenGL REQUIRED)
 
-set(CMAKE_THREAD_PREFER_PTHREADS YES)
+if (NOT WIN32)
+    set(CMAKE_THREAD_PREFER_PTHREADS YES)
+endif()
+
 find_package(Threads)
 if (CMAKE_THREAD_LIBS_INIT)
     list(APPEND glfw_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})

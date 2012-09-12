@@ -1,3 +1,4 @@
+
 include_directories(${GLFW_SOURCE_DIR}/src
                     ${GLFW_BINARY_DIR}/src
                     ${glfw_INCLUDE_DIRS})
@@ -36,6 +37,10 @@ elseif (_GLFW_X11_GLX)
     if (GLFW_NATIVE_API)
         list(APPEND glfw_SOURCES x11_native.c)
     endif()
+endif()
+
+if (MSVC)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})

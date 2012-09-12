@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #if defined(_MSC_VER)
  #include <malloc.h>
+ #define strdup _strdup
 #endif
 
 

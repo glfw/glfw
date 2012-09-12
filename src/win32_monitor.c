@@ -271,7 +271,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             return NULL;
         }
 
-        monitors[found]->Win32.name = wcsdup(adapter.DeviceName);
+        monitors[found]->Win32.name = _wcsdup(adapter.DeviceName);
         found++;
     }
 

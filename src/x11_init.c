@@ -672,11 +672,11 @@ int _glfwPlatformTerminate(void)
 
     _glfwTerminateGammaRamp();
 
-    terminateDisplay();
-
     _glfwTerminateJoysticks();
 
     _glfwTerminateOpenGL();
+
+    terminateDisplay();
 
     // Free clipboard memory
     if (_glfwLibrary.X11.selection.string)

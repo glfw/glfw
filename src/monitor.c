@@ -32,7 +32,7 @@
 
 #include <string.h>
 #include <stdlib.h>
-#if _WIN32
+#if defined(_MSC_VER)
  #include <malloc.h>
 #endif
 

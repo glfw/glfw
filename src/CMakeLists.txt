@@ -22,7 +22,7 @@ elseif (_GLFW_WIN32_WGL)
     set(glfw_HEADERS ${common_HEADERS} win32_platform.h)
     set(glfw_SOURCES ${common_SOURCES} win32_clipboard.c win32_fullscreen.c
                      win32_gamma.c win32_init.c win32_input.c win32_joystick.c
-                     win32_opengl.c win32_time.c win32_window.c win32_dllmain.c)
+                     win32_opengl.c win32_time.c win32_window.c)
 
     if (GLFW_NATIVE_API)
         list(APPEND glfw_SOURCES win32_native.c)

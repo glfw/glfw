@@ -32,6 +32,40 @@
 
 #include <string.h>
 #include <stdlib.h>
+#if _WIN32
+ #include <malloc.h>
+#endif
+
+
+//========================================================================
+// Lexical comparison function for GLFW video modes, used by qsort
+//========================================================================
+
+int compareVideoModes(const void* firstPtr, const void* secondPtr)
+{
+    int firstBPP, secondBPP, firstSize, secondSize;
+    GLFWvidmode* first = (GLFWvidmode*) firstPtr;
+    GLFWvidmode* second = (GLFWvidmode*) secondPtr;
+
+    // First sort on color bits per pixel
+
+    firstBPP = first->redBits +
+               first->greenBits +
+               first->blueBits;
+    secondBPP = second->redBits +
+                second->greenBits +
+                second->blueBits;
+
+    if (firstBPP != secondBPP)
+        return firstBPP - secondBPP;
+
+    // Then sort on screen area, in pixels
+
+    firstSize = first->width * first->height;
+    secondSize = second->width * second->height;
+
+    return firstSize - secondSize;
+}
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -148,6 +182,40 @@ void _glfwDestroyMonitors(void)
     free(_glfwLibrary.monitors);
     _glfwLibrary.monitors = NULL;
     _glfwLibrary.monitorCount = 0;
+}
+
+
+//========================================================================
+// Lexical comparison of GLFW video modes
+//========================================================================
+
+int _glfwCompareVideoModes(const GLFWvidmode* first, const GLFWvidmode* second)
+{
+    return compareVideoModes(first, second);
+}
+
+
+//========================================================================
+// Convert BPP to RGB bits based on "best guess"
+//========================================================================
+
+void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
+{
+    int delta;
+
+    // We assume that by 32 the user really meant 24
+    if (bpp == 32)
+        bpp = 24;
+
+    // Convert "bits per pixel" to red, green & blue sizes
+
+    *red = *green = *blue = bpp / 3;
+    delta = bpp - (*red * 3);
+    if (delta >= 1)
+        *green = *green + 1;
+
+    if (delta == 2)
+        *red = *red + 1;
 }
 
 
@@ -279,5 +347,66 @@ GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun)
     }
 
     _glfwLibrary.monitorCallback= cbfun;
+}
+
+
+//========================================================================
+// Get a list of available video modes
+//========================================================================
+
+GLFWAPI GLFWvidmode* glfwGetVideoModes(GLFWmonitor handle, int* count)
+{
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return NULL;
+    }
+
+    if (monitor == NULL)
+    {
+        _glfwSetError(GLFW_INVALID_VALUE,
+                      "glfwGetVideoModes: Invalid monitor handle");
+        return 0;
+    }
+
+    if (count == NULL)
+    {
+        _glfwSetError(GLFW_INVALID_VALUE, NULL);
+        return NULL;
+    }
+
+    free(monitor->modes);
+
+    monitor->modes = _glfwPlatformGetVideoModes(monitor, count);
+    if (monitor->modes)
+        qsort(monitor->modes, *count, sizeof(GLFWvidmode), compareVideoModes);
+
+    return monitor->modes;
+}
+
+
+//========================================================================
+// Get the current video mode for the specified monitor
+//========================================================================
+
+GLFWAPI void glfwGetVideoMode(GLFWmonitor handle, GLFWvidmode* mode)
+{
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    if (mode == NULL)
+    {
+        _glfwSetError(GLFW_INVALID_VALUE, NULL);
+        return;
+    }
+
+    _glfwPlatformGetVideoMode(monitor, mode);
 }
 

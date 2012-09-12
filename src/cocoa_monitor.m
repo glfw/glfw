@@ -30,6 +30,167 @@
 
 #include "internal.h"
 
+#include <stdlib.h>
+#include <limits.h>
+
+
+//========================================================================
+// Check whether the display mode should be included in enumeration
+//========================================================================
+
+static GLboolean modeIsGood(CGDisplayModeRef mode)
+{
+    uint32_t flags = CGDisplayModeGetIOFlags(mode);
+    if (!(flags & kDisplayModeValidFlag) || !(flags & kDisplayModeSafeFlag))
+        return GL_FALSE;
+
+    if (flags & kDisplayModeInterlacedFlag)
+        return GL_FALSE;
+
+    if (flags & kDisplayModeTelevisionFlag)
+        return GL_FALSE;
+
+    if (flags & kDisplayModeStretchedFlag)
+        return GL_FALSE;
+
+    CFStringRef format = CGDisplayModeCopyPixelEncoding(mode);
+    if (CFStringCompare(format, CFSTR(IO16BitDirectPixels), 0) &&
+        CFStringCompare(format, CFSTR(IO32BitDirectPixels), 0))
+    {
+        CFRelease(format);
+        return GL_FALSE;
+    }
+
+    CFRelease(format);
+    return GL_TRUE;
+}
+
+
+//========================================================================
+// Convert Core Graphics display mode to GLFW video mode
+//========================================================================
+
+static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode)
+{
+    GLFWvidmode result;
+    result.width = CGDisplayModeGetWidth(mode);
+    result.height = CGDisplayModeGetHeight(mode);
+
+    CFStringRef format = CGDisplayModeCopyPixelEncoding(mode);
+
+    if (CFStringCompare(format, CFSTR(IO16BitDirectPixels), 0) == 0)
+    {
+        result.redBits = 5;
+        result.greenBits = 5;
+        result.blueBits = 5;
+    }
+    else
+    {
+        result.redBits = 8;
+        result.greenBits = 8;
+        result.blueBits = 8;
+    }
+
+    CFRelease(format);
+    return result;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Change the current video mode
+//========================================================================
+
+GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp, int* refreshRate)
+{
+    CGDisplayModeRef bestMode = NULL;
+    CFArrayRef modes;
+    CFIndex count, i;
+    unsigned int leastSizeDiff = UINT_MAX;
+    double leastRateDiff = DBL_MAX;
+
+    modes = CGDisplayCopyAllDisplayModes(CGMainDisplayID(), NULL);
+    count = CFArrayGetCount(modes);
+
+    for (i = 0;  i < count;  i++)
+    {
+        CGDisplayModeRef mode = (CGDisplayModeRef) CFArrayGetValueAtIndex(modes, i);
+        if (!modeIsGood(mode))
+            continue;
+
+        int modeBPP;
+
+        // Identify display mode pixel encoding
+        {
+            CFStringRef format = CGDisplayModeCopyPixelEncoding(mode);
+
+            if (CFStringCompare(format, CFSTR(IO16BitDirectPixels), 0) == 0)
+                modeBPP = 16;
+            else
+                modeBPP = 32;
+
+            CFRelease(format);
+        }
+
+        int modeWidth = (int) CGDisplayModeGetWidth(mode);
+        int modeHeight = (int) CGDisplayModeGetHeight(mode);
+
+        unsigned int sizeDiff = (abs(modeBPP - *bpp) << 25) |
+                                ((modeWidth - *width) * (modeWidth - *width) +
+                                 (modeHeight - *height) * (modeHeight - *height));
+
+        double rateDiff;
+
+        if (*refreshRate > 0)
+            rateDiff = fabs(CGDisplayModeGetRefreshRate(mode) - *refreshRate);
+        else
+        {
+            // If no refresh rate was specified, then they're all the same
+            rateDiff = 0;
+        }
+
+        if ((sizeDiff < leastSizeDiff) ||
+            (sizeDiff == leastSizeDiff && (rateDiff < leastRateDiff)))
+        {
+            bestMode = mode;
+
+            leastSizeDiff = sizeDiff;
+            leastRateDiff = rateDiff;
+        }
+    }
+
+    if (!bestMode)
+    {
+        CFRelease(modes);
+        return GL_FALSE;
+    }
+
+    _glfwLibrary.NS.previousMode = CGDisplayCopyDisplayMode(CGMainDisplayID());
+
+    CGDisplayCapture(CGMainDisplayID());
+    CGDisplaySetDisplayMode(CGMainDisplayID(), bestMode, NULL);
+
+    CFRelease(modes);
+    return GL_TRUE;
+}
+
+
+//========================================================================
+// Restore the previously saved (original) video mode
+//========================================================================
+
+void _glfwRestoreVideoMode(void)
+{
+    CGDisplaySetDisplayMode(CGMainDisplayID(),
+                            _glfwLibrary.NS.previousMode,
+                            NULL);
+
+    CGDisplayRelease(CGMainDisplayID());
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -52,5 +213,52 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
 void _glfwPlatformDestroyMonitor(_GLFWmonitor* monitor)
 {
+}
+
+
+//========================================================================
+// Get a list of available video modes
+//========================================================================
+
+GLFWvidmode* _glfwPlatformGetVideoModes(int* found)
+{
+    CFArrayRef modes;
+    CFIndex count, i;
+    GLFWvidmode* result;
+
+    modes = CGDisplayCopyAllDisplayModes(CGMainDisplayID(), NULL);
+    count = CFArrayGetCount(modes);
+
+    result = (GLFWvidmode*) malloc(sizeof(GLFWvidmode) * count);
+    *found = 0;
+
+    for (i = 0;  i < count;  i++)
+    {
+        CGDisplayModeRef mode;
+
+        mode = (CGDisplayModeRef) CFArrayGetValueAtIndex(modes, i);
+        if (modeIsGood(mode))
+        {
+            result[*found] = vidmodeFromCGDisplayMode(mode);
+            (*found)++;
+        }
+    }
+
+    CFRelease(modes);
+    return result;
+}
+
+
+//========================================================================
+// Get the current video mode for the specified monitor
+//========================================================================
+
+void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode *mode)
+{
+    CGDisplayModeRef displayMode;
+
+    displayMode = CGDisplayCopyDisplayMode(CGMainDisplayID());
+    *mode = vidmodeFromCGDisplayMode(displayMode);
+    CGDisplayModeRelease(displayMode);
 }
 

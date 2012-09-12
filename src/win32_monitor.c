@@ -324,9 +324,9 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         mode.width = dm.dmPelsWidth;
         mode.height = dm.dmPelsHeight;
         _glfwSplitBPP(dm.dmBitsPerPel,
-                        &mode.redBits,
-                        &mode.greenBits,
-                        &mode.blueBits);
+                      &mode.redBits,
+                      &mode.greenBits,
+                      &mode.blueBits);
 
         for (i = 0;  i < *found;  i++)
         {

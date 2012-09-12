@@ -124,6 +124,11 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                     size = 4;
 
                 monitors = (_GLFWmonitor**) realloc(monitors, sizeof(_GLFWmonitor*) * size);
+                if (!monitors)
+                {
+                    // TODO: wat
+                    return NULL;
+                }
             }
 
             monitors[found] = _glfwCreateMonitor(name,

@@ -58,6 +58,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
     for (;;)
     {
+        // Enumerate display adapters
+
         DISPLAY_DEVICE adapter;
         DWORD monitorIndex = 0;
 
@@ -77,6 +79,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
         for (;;)
         {
+            // Enumerate monitors for the display adapter
+
             DISPLAY_DEVICE monitor;
             DEVMODE settings;
             const char* name;

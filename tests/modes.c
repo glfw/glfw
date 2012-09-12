@@ -97,12 +97,14 @@ static void list_modes(GLFWmonitor monitor)
     GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
 
     glfwGetVideoMode(monitor, &mode);
-    printf("Current mode: %s\n", format_mode(&mode));
 
-    printf("Monitor %s (%ix%i mm):\n",
-           glfwGetMonitorString(monitor, GLFW_MONITOR_NAME),
+    printf("Name: %s\n", glfwGetMonitorString(monitor, GLFW_MONITOR_NAME));
+    printf("Current mode: %s\n", format_mode(&mode));
+    printf("Physical size: %i x %i\n",
            glfwGetMonitorParam(monitor, GLFW_MONITOR_PHYSICAL_WIDTH),
            glfwGetMonitorParam(monitor, GLFW_MONITOR_PHYSICAL_HEIGHT));
+
+    printf("Modes:\n");
 
     for (i = 0;  i < count;  i++)
     {

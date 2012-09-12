@@ -184,7 +184,7 @@ if (_GLFW_X11_GLX)
     endif()
 
     if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-        set(_GLFW_USE_LINUX_JOYSTICKS 1)
+        set(_GLFW_HAS_LINUX_JOYSTICKS 1)
     endif()
 endif()
 

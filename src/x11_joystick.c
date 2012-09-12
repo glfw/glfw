@@ -30,7 +30,7 @@
 
 #include "internal.h"
 
-#ifdef _GLFW_USE_LINUX_JOYSTICKS
+#ifdef _GLFW_HAS_LINUX_JOYSTICKS
 #include <linux/joystick.h>
 
 #include <sys/types.h>
@@ -41,7 +41,7 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
-#endif // _GLFW_USE_LINUX_JOYSTICKS
+#endif // _GLFW_HAS_LINUX_JOYSTICKS
 
 
 //========================================================================
@@ -50,7 +50,7 @@
 
 static int openJoystickDevice(int joy, const char* path)
 {
-#ifdef _GLFW_USE_LINUX_JOYSTICKS
+#ifdef _GLFW_HAS_LINUX_JOYSTICKS
     char numAxes, numButtons;
     int fd, version;
 
@@ -97,7 +97,7 @@ static int openJoystickDevice(int joy, const char* path)
     }
 
     _glfwLibrary.X11.joystick[joy].present = GL_TRUE;
-#endif // _GLFW_USE_LINUX_JOYSTICKS
+#endif // _GLFW_HAS_LINUX_JOYSTICKS
 
     return GL_TRUE;
 }
@@ -109,7 +109,7 @@ static int openJoystickDevice(int joy, const char* path)
 
 static void pollJoystickEvents(void)
 {
-#ifdef _GLFW_USE_LINUX_JOYSTICKS
+#ifdef _GLFW_HAS_LINUX_JOYSTICKS
     int i;
     ssize_t result;
     struct js_event e;
@@ -160,7 +160,7 @@ static void pollJoystickEvents(void)
             }
         }
     }
-#endif // _GLFW_USE_LINUX_JOYSTICKS
+#endif // _GLFW_HAS_LINUX_JOYSTICKS
 }
 
 
@@ -174,7 +174,7 @@ static void pollJoystickEvents(void)
 
 int _glfwInitJoysticks(void)
 {
-#ifdef _GLFW_USE_LINUX_JOYSTICKS
+#ifdef _GLFW_HAS_LINUX_JOYSTICKS
     int i, joy = 0;
     regex_t regex;
     DIR* dir;
@@ -215,7 +215,7 @@ int _glfwInitJoysticks(void)
     }
 
     regfree(&regex);
-#endif // _GLFW_USE_LINUX_JOYSTICKS
+#endif // _GLFW_HAS_LINUX_JOYSTICKS
 
     return GL_TRUE;
 }
@@ -227,7 +227,7 @@ int _glfwInitJoysticks(void)
 
 void _glfwTerminateJoysticks(void)
 {
-#ifdef _GLFW_USE_LINUX_JOYSTICKS
+#ifdef _GLFW_HAS_LINUX_JOYSTICKS
     int i;
 
     for (i = 0;  i <= GLFW_JOYSTICK_LAST;  i++)
@@ -241,7 +241,7 @@ void _glfwTerminateJoysticks(void)
             _glfwLibrary.X11.joystick[i].present = GL_FALSE;
         }
     }
-#endif // _GLFW_USE_LINUX_JOYSTICKS
+#endif // _GLFW_HAS_LINUX_JOYSTICKS
 }
 
 

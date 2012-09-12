@@ -42,6 +42,7 @@ typedef void* id;
 #endif
 
 
+#define _GLFW_PLATFORM_MONITOR_STATE _GLFWmonitorNS NS
 #define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowNS NS
 #define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextNSGL NSGL
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS NS
@@ -97,6 +98,16 @@ typedef struct _GLFWlibraryNS
 
     char*            clipboardString;
 } _GLFWlibraryNS;
+
+
+//------------------------------------------------------------------------
+// Platform-specific monitor structure
+//------------------------------------------------------------------------
+typedef struct _GLFWmonitorNS
+{
+    int dummy;
+
+} _GLFWmonitorNS;
 
 
 //------------------------------------------------------------------------

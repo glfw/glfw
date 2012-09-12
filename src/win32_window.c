@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include <windowsx.h>
 
 //========================================================================
 // Hide mouse cursor
@@ -559,8 +560,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             int newCursorX, newCursorY;
 
             // Get signed (!) cursor position
-            newCursorX = (int)((short)LOWORD(lParam));
-            newCursorY = (int)((short)HIWORD(lParam));
+            newCursorX = GET_X_LPARAM(lParam);
+            newCursorY = GET_Y_LPARAM(lParam);
 
             if (newCursorX != window->Win32.oldCursorX ||
                 newCursorY != window->Win32.oldCursorY)

@@ -399,18 +399,19 @@ extern "C" {
 #define GLFW_ACCUM_ALPHA_BITS     0x0002100A
 #define GLFW_AUX_BUFFERS          0x0002100B
 #define GLFW_STEREO               0x0002100C
-#define GLFW_WINDOW_RESIZABLE     0x0002100D
 #define GLFW_FSAA_SAMPLES         0x0002100E
 
 /* The following constants are used with both glfwGetWindowParam
  * and glfwWindowHint
  */
-#define GLFW_OPENGL_VERSION_MAJOR 0x0002100F
-#define GLFW_OPENGL_VERSION_MINOR 0x00021010
-#define GLFW_OPENGL_FORWARD_COMPAT 0x00021011
-#define GLFW_OPENGL_DEBUG_CONTEXT 0x00021012
-#define GLFW_OPENGL_PROFILE       0x00021013
-#define GLFW_OPENGL_ROBUSTNESS    0x00021014
+#define GLFW_OPENGL_VERSION_MAJOR 0x00022000
+#define GLFW_OPENGL_VERSION_MINOR 0x00022001
+#define GLFW_OPENGL_FORWARD_COMPAT 0x00022002
+#define GLFW_OPENGL_DEBUG_CONTEXT 0x00022003
+#define GLFW_OPENGL_PROFILE       0x00022004
+#define GLFW_OPENGL_ROBUSTNESS    0x00022005
+#define GLFW_RESIZABLE            0x00022006
+#define GLFW_VISIBLE              0x00022007
 
 /* GLFW_OPENGL_ROBUSTNESS mode tokens */
 #define GLFW_OPENGL_NO_ROBUSTNESS         0x00000000
@@ -550,13 +551,15 @@ GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
 GLFWAPI void glfwWindowHint(int target, int hint);
 GLFWAPI GLFWwindow glfwCreateWindow(int width, int height, int mode, const char* title, GLFWwindow share);
 GLFWAPI void glfwDestroyWindow(GLFWwindow window);
-GLFWAPI void glfwSetWindowTitle(GLFWwindow, const char* title);
-GLFWAPI void glfwGetWindowSize(GLFWwindow, int* width, int* height);
-GLFWAPI void glfwSetWindowSize(GLFWwindow, int width, int height);
-GLFWAPI void glfwGetWindowPos(GLFWwindow, int* xpos, int* ypos);
-GLFWAPI void glfwSetWindowPos(GLFWwindow, int xpos, int ypos);
+GLFWAPI void glfwSetWindowTitle(GLFWwindow window, const char* title);
+GLFWAPI void glfwGetWindowSize(GLFWwindow window, int* width, int* height);
+GLFWAPI void glfwSetWindowSize(GLFWwindow window, int width, int height);
+GLFWAPI void glfwGetWindowPos(GLFWwindow window, int* xpos, int* ypos);
+GLFWAPI void glfwSetWindowPos(GLFWwindow window, int xpos, int ypos);
 GLFWAPI void glfwIconifyWindow(GLFWwindow window);
 GLFWAPI void glfwRestoreWindow(GLFWwindow window);
+GLFWAPI void glfwShowWindow(GLFWwindow window);
+GLFWAPI void glfwHideWindow(GLFWwindow window);
 GLFWAPI int  glfwGetWindowParam(GLFWwindow window, int param);
 GLFWAPI void glfwSetWindowUserPointer(GLFWwindow window, void* pointer);
 GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow window);

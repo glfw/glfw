@@ -39,6 +39,22 @@ void (*glXGetProcAddressEXT(const GLubyte* procName))();
 
 
 //========================================================================
+// Thread local storage attribute macro
+//========================================================================
+#if defined(__GNUC__)
+ #define _GLFW_TLS __thread
+#else
+ #define _GLFW_TLS
+#endif
+
+
+//========================================================================
+// The per-thread current context/window pointer
+//========================================================================
+static _GLFW_TLS _GLFWwindow* _glfwCurrentWindow = NULL;
+
+
+//========================================================================
 // Returns the specified attribute of the specified GLXFBConfig
 // NOTE: Do not call this unless we have found GLX 1.3+ or GLX_SGIX_fbconfig
 //========================================================================
@@ -616,6 +632,10 @@ XVisualInfo* _glfwGetContextVisual(_GLFWwindow* window)
 }
 
 
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
+
 //========================================================================
 // Make the OpenGL context associated with the specified window current
 //========================================================================
@@ -630,6 +650,18 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     }
     else
         glXMakeCurrent(_glfwLibrary.X11.display, None, NULL);
+
+    _glfwCurrentWindow = window;
+}
+
+
+//========================================================================
+// Return the window object whose context is current
+//========================================================================
+
+_GLFWwindow* _glfwPlatformGetCurrentContext(void)
+{
+    return _glfwCurrentWindow;
 }
 
 
@@ -649,7 +681,7 @@ void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 
 void _glfwPlatformSwapInterval(int interval)
 {
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
+    _GLFWwindow* window = _glfwCurrentWindow;
 
     if (_glfwLibrary.GLX.EXT_swap_control)
     {

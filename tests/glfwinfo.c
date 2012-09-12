@@ -238,6 +238,8 @@ int main(int argc, char** argv)
     if (strategy)
         glfwWindowHint(GLFW_OPENGL_ROBUSTNESS, strategy);
 
+    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+
     // We assume here that we stand a better chance of success by leaving all
     // possible details of pixel format selection to GLFW
 
@@ -287,6 +289,9 @@ int main(int argc, char** argv)
         printf("OpenGL profile mask parsed by GLFW: %s\n",
                get_glfw_profile_name(glfwGetWindowParam(window, GLFW_OPENGL_PROFILE)));
     }
+
+    printf("OpenGL context debug flag saved by GLFW: %s\n",
+           glfwGetWindowParam(window, GLFW_OPENGL_DEBUG_CONTEXT) ? "true" : "false");
 
     printf("OpenGL context renderer string: \"%s\"\n", glGetString(GL_RENDERER));
     printf("OpenGL context vendor string: \"%s\"\n", glGetString(GL_VENDOR));

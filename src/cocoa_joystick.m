@@ -550,15 +550,15 @@ int _glfwPlatformGetJoystickAxes(int joy, float* axes, int numaxes)
 
     for (i = 0;  i < numaxes;  i++)
     {
-        _glfwJoystickElement* axes =
+        _glfwJoystickElement* elements =
             (_glfwJoystickElement*) CFArrayGetValueAtIndex(joystick.axes, i);
 
-        long readScale = axes->maxReport - axes->minReport;
+        long readScale = elements->maxReport - elements->minReport;
 
         if (readScale == 0)
-            axes[i] = axes->value;
+            axes[i] = elements->value;
         else
-            axes[i] = (2.0f * (axes->value - axes->minReport) / readScale) - 1.0f;
+            axes[i] = (2.0f * (elements->value - elements->minReport) / readScale) - 1.0f;
 
         if (i & 1)
             axes[i] = -axes[i];

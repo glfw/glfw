@@ -350,7 +350,7 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
 
 GLboolean _glfwRefreshContextParams(void)
 {
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
+    _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
     if (!parseGLVersion(&window->glMajor,
                         &window->glMinor,
@@ -417,7 +417,7 @@ GLboolean _glfwRefreshContextParams(void)
 
 GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig)
 {
-    _GLFWwindow* window = _glfwLibrary.currentWindow;
+    _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
     if (window->glMajor < wndconfig->glMajor ||
         (window->glMajor == wndconfig->glMajor &&
@@ -492,16 +492,15 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow handle)
         return;
     }
 
-    if (_glfwLibrary.currentWindow == window)
+    if (_glfwPlatformGetCurrentContext() == window)
         return;
 
     _glfwPlatformMakeContextCurrent(window);
-    _glfwLibrary.currentWindow = window;
 }
 
 
 //========================================================================
-// Returns the window whose OpenGL context is current
+// Return the window object whose context is current
 //========================================================================
 
 GLFWAPI GLFWwindow glfwGetCurrentContext(void)
@@ -512,7 +511,7 @@ GLFWAPI GLFWwindow glfwGetCurrentContext(void)
         return NULL;
     }
 
-    return _glfwLibrary.currentWindow;
+    return _glfwPlatformGetCurrentContext();
 }
 
 
@@ -546,7 +545,7 @@ GLFWAPI void glfwSwapInterval(int interval)
         return;
     }
 
-    if (!_glfwLibrary.currentWindow)
+    if (!_glfwPlatformGetCurrentContext())
     {
         _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
         return;
@@ -571,7 +570,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
         return GL_FALSE;
     }
 
-    window = _glfwLibrary.currentWindow;
+    window = _glfwPlatformGetCurrentContext();
     if (!window)
     {
         _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
@@ -632,7 +631,7 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname)
         return NULL;
     }
 
-    if (!_glfwLibrary.currentWindow)
+    if (!_glfwPlatformGetCurrentContext())
     {
         _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
         return NULL;
@@ -660,7 +659,7 @@ GLFWAPI void glfwCopyContext(GLFWwindow hsrc, GLFWwindow hdst, unsigned long mas
     src = (_GLFWwindow*) hsrc;
     dst = (_GLFWwindow*) hdst;
 
-    if (_glfwLibrary.currentWindow == dst)
+    if (_glfwPlatformGetCurrentContext() == dst)
     {
         _glfwSetError(GLFW_INVALID_VALUE,
                       "glfwCopyContext: Cannot copy OpenGL state to a current context");

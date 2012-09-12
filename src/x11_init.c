@@ -634,6 +634,8 @@ static void terminateDisplay(void)
 
 int _glfwPlatformInit(void)
 {
+    XInitThreads();
+
     if (!initDisplay())
         return GL_FALSE;
 
@@ -646,7 +648,8 @@ int _glfwPlatformInit(void)
 
     _glfwLibrary.X11.cursor = createNULLCursor();
 
-    _glfwInitJoysticks();
+    if (!_glfwInitJoysticks())
+        return GL_FALSE;
 
     _glfwInitMonitors();
 
@@ -720,7 +723,7 @@ const char* _glfwPlatformGetVersionString(void)
 #if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
         " clock_gettime"
 #endif
-#if defined(_GLFW_USE_LINUX_JOYSTICKS)
+#if defined(_GLFW_HAS_LINUX_JOYSTICKS)
         " Linux-joystick-API"
 #else
         " no-joystick-support"

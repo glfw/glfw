@@ -131,6 +131,25 @@
     return NSTerminateCancel;
 }
 
+- (void)applicationDidHide:(NSNotification *)notification
+{
+    _GLFWwindow* window;
+
+    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+        _glfwInputWindowVisibility(window, GL_FALSE);
+}
+
+- (void)applicationDidUnhide:(NSNotification *)notification
+{
+    _GLFWwindow* window;
+
+    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+    {
+        if ([window->NS.object isVisible])
+            _glfwInputWindowVisibility(window, GL_TRUE);
+    }
+}
+
 @end
 
 
@@ -686,7 +705,7 @@ static GLboolean createWindow(_GLFWwindow* window,
     [window->NS.object setAcceptsMouseMovedEvents:YES];
     [window->NS.object center];
 
-    if ([window->NS.object respondsToSelector:@selector(setRestorable)])
+    if ([window->NS.object respondsToSelector:@selector(setRestorable:)])
         [window->NS.object setRestorable:NO];
 
     return GL_TRUE;
@@ -898,7 +917,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (!createContext(window, wndconfig, fbconfig))
         return GL_FALSE;
 
-    [window->NS.object makeKeyAndOrderFront:nil];
     [window->NSGL.context setView:[window->NS.object contentView]];
 
     if (wndconfig->mode == GLFW_FULLSCREEN)
@@ -1023,6 +1041,27 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 
 
 //========================================================================
+// Show window
+//========================================================================
+
+void _glfwPlatformShowWindow(_GLFWwindow* window)
+{
+    [window->NS.object makeKeyAndOrderFront:nil];
+    _glfwInputWindowVisibility(window, GL_TRUE);
+}
+
+
+//========================================================================
+// Hide window
+//========================================================================
+
+void _glfwPlatformHideWindow(_GLFWwindow* window)
+{
+    [window->NS.object orderOut:nil];
+    _glfwInputWindowVisibility(window, GL_FALSE);
+}
+
+//========================================================================
 // Write back window parameters into GLFW window structure
 //========================================================================
 
@@ -1093,7 +1132,7 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
         CGPoint mainScreenOrigin = CGDisplayBounds(CGMainDisplayID()).origin;
         double mainScreenHeight = CGDisplayBounds(CGMainDisplayID()).size.height;
         CGPoint targetPoint = CGPointMake(globalPoint.x - mainScreenOrigin.x,
-                                        mainScreenHeight - globalPoint.y -
+                                          mainScreenHeight - globalPoint.y -
                                             mainScreenOrigin.y);
         CGDisplayMoveCursorToPoint(CGMainDisplayID(), targetPoint);
     }

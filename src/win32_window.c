@@ -33,95 +33,6 @@
 #include <stdlib.h>
 #include <malloc.h>
 
-
-//========================================================================
-// Enable/disable minimize/restore animations
-//========================================================================
-
-static int setMinMaxAnimations(int enable)
-{
-    ANIMATIONINFO AI;
-    int old_enable;
-
-    // Get old animation setting
-    AI.cbSize = sizeof(ANIMATIONINFO);
-    SystemParametersInfo(SPI_GETANIMATION, AI.cbSize, &AI, 0);
-    old_enable = AI.iMinAnimate;
-
-    // If requested, change setting
-    if (old_enable != enable)
-    {
-        AI.iMinAnimate = enable;
-        SystemParametersInfo(SPI_SETANIMATION, AI.cbSize, &AI,
-                             SPIF_SENDCHANGE);
-    }
-
-    return old_enable;
-}
-
-
-//========================================================================
-// Focus the window and bring it to the top of the stack
-// Due to some nastiness with how XP handles SetForegroundWindow we have
-// to go through some really bizarre measures to achieve this
-//========================================================================
-
-static void setForegroundWindow(HWND hWnd)
-{
-    int try_count = 0;
-    int old_animate;
-
-    // Try the standard approach first...
-    BringWindowToTop(hWnd);
-    SetForegroundWindow(hWnd);
-
-    // If it worked, return now
-    if (hWnd == GetForegroundWindow())
-    {
-        // Try to modify the system settings (since this is the foreground
-        // process, we are allowed to do this)
-        SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, (LPVOID) 0,
-                             SPIF_SENDCHANGE);
-        return;
-    }
-
-    // For other Windows versions than 95 & NT4.0, the standard approach
-    // may not work, so if we failed we have to "trick" Windows into
-    // making our window the foureground window: Iconify and restore
-    // again. It is ugly, but it seems to work (we turn off those annoying
-    // zoom animations to make it look a bit better at least).
-
-    // Turn off minimize/restore animations
-    old_animate = setMinMaxAnimations(0);
-
-    // We try this a few times, just to be on the safe side of things...
-    do
-    {
-        // Iconify & restore
-        ShowWindow(hWnd, SW_HIDE);
-        ShowWindow(hWnd, SW_SHOWMINIMIZED);
-        ShowWindow(hWnd, SW_SHOWNORMAL);
-
-        // Try to get focus
-        BringWindowToTop(hWnd);
-        SetForegroundWindow(hWnd);
-
-        // We do not want to keep going on forever, so we keep track of
-        // how many times we tried
-        try_count++;
-    }
-    while (hWnd != GetForegroundWindow() && try_count <= 3);
-
-    // Restore the system minimize/restore animation setting
-    setMinMaxAnimations(old_animate);
-
-    // Try to modify the system settings (since this is now hopefully the
-    // foreground process, we are probably allowed to do this)
-    SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, (LPVOID) 0,
-                         SPIF_SENDCHANGE);
-}
-
-
 //========================================================================
 // Hide mouse cursor
 //========================================================================
@@ -506,6 +417,12 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             return 0;
         }
 
+        case WM_SHOWWINDOW:
+        {
+            _glfwInputWindowVisibility(window, wParam ? GL_TRUE : GL_FALSE);
+            break;
+        }
+
         case WM_SYSCOMMAND:
         {
             switch (wParam & 0xfff0)
@@ -845,7 +762,7 @@ static int createWindow(_GLFWwindow* window,
     WCHAR* wideTitle;
 
     // Set common window styles
-    dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE;
+    dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
     dwExStyle = WS_EX_APPWINDOW;
 
     // Set window style, depending on fullscreen mode
@@ -1080,9 +997,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                      SWP_NOMOVE | SWP_NOSIZE);
     }
 
-    setForegroundWindow(window->Win32.handle);
-    SetFocus(window->Win32.handle);
-
     return GL_TRUE;
 }
 
@@ -1201,6 +1115,28 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
     ShowWindow(window->Win32.handle, SW_RESTORE);
 }
 
+
+//========================================================================
+// Show or hide window
+//========================================================================
+
+void _glfwPlatformShowWindow(_GLFWwindow* window)
+{
+    ShowWindow(window->Win32.handle, SW_SHOWNORMAL);
+    BringWindowToTop(window->Win32.handle);
+    SetForegroundWindow(window->Win32.handle);
+    SetFocus(window->Win32.handle);
+}
+
+
+//========================================================================
+// Show or hide window
+//========================================================================
+
+void _glfwPlatformHideWindow(_GLFWwindow* window)
+{
+    ShowWindow(window->Win32.handle, SW_HIDE);
+}
 
 //========================================================================
 // Write back window parameters into GLFW window structure

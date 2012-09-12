@@ -45,13 +45,13 @@ void _glfwInitTimer(void)
 
     if (QueryPerformanceFrequency((LARGE_INTEGER*) &freq))
     {
-        _glfwLibrary.Win32.timer.hasPerformanceCounter = GL_TRUE;
+        _glfwLibrary.Win32.timer.hasPC = GL_TRUE;
         _glfwLibrary.Win32.timer.resolution = 1.0 / (double) freq;
         QueryPerformanceCounter((LARGE_INTEGER*) &_glfwLibrary.Win32.timer.t0_64);
     }
     else
     {
-        _glfwLibrary.Win32.timer.hasPerformanceCounter = GL_FALSE;
+        _glfwLibrary.Win32.timer.hasPC = GL_FALSE;
         _glfwLibrary.Win32.timer.resolution = 0.001; // winmm resolution is 1 ms
         _glfwLibrary.Win32.timer.t0_32 = _glfw_timeGetTime();
     }
@@ -71,7 +71,7 @@ double _glfwPlatformGetTime(void)
     double t;
     __int64 t_64;
 
-    if (_glfwLibrary.Win32.timer.hasPerformanceCounter)
+    if (_glfwLibrary.Win32.timer.hasPC)
     {
         QueryPerformanceCounter((LARGE_INTEGER*) &t_64);
         t =  (double)(t_64 - _glfwLibrary.Win32.timer.t0_64);
@@ -91,7 +91,7 @@ void _glfwPlatformSetTime(double t)
 {
     __int64 t_64;
 
-    if (_glfwLibrary.Win32.timer.hasPerformanceCounter)
+    if (_glfwLibrary.Win32.timer.hasPC)
     {
         QueryPerformanceCounter((LARGE_INTEGER*) &t_64);
         _glfwLibrary.Win32.timer.t0_64 = t_64 - (__int64) (t / _glfwLibrary.Win32.timer.resolution);

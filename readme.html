@@ -283,9 +283,11 @@ version of GLFW.</p>
   <li>Added <code>GLFW_OPENGL_ROBUSTNESS</code> window hint and associated strategy tokens for <code>GL_ARB_robustness</code> support</li>
   <li>Added <code>GLFW_OPENGL_REVISION</code> window parameter to make up for removal of <code>glfwGetGLVersion</code></li>
   <li>Added <code>GLFW_INCLUDE_GL3</code> macro for telling the GLFW header to include <code>gl3.h</code> header instead of <code>gl.h</code></li>
+  <li>Added <code>GLFW_VISIBLE</code> window hint and parameter for controlling and polling window visibility</li>
   <li>Added <code>windows</code> simple multi-window test program</li>
   <li>Added <code>sharing</code> simple OpenGL object sharing test program</li>
   <li>Added <code>modes</code> video mode enumeration and setting test program</li>
+  <li>Added <code>threads</code> simple multi-threaded rendering test program</li>
   <li>Added <code>glfw3native.h</code> header and platform-specific functions for explicit access to native display, window and context handles</li>
   <li>Added <code>glfwSetGamma</code>, <code>glfwSetGammaRamp</code> and <code>glfwGetGammaRamp</code> functions and <code>GLFWgammaramp</code> type for monitor gamma ramp control</li>
   <li>Added window parameter to <code>glfwSwapBuffers</code></li>
@@ -296,7 +298,7 @@ version of GLFW.</p>
   <li>Renamed <code>glfw.h</code> to <code>glfw3.h</code> to avoid conflicts with 2.x series</li>
   <li>Renamed <code>glfwOpenWindowHint</code> to <code>glfwWindowHint</code></li>
   <li>Renamed <code>GLFW_WINDOW</code> token to <code>GLFW_WINDOWED</code></li>
-  <li>Renamed <code>GLFW_WINDOW_NO_RESIZE</code> to <code>GLFW_WINDOW_RESIZABLE</code></li>
+  <li>Renamed <code>GLFW_WINDOW_NO_RESIZE</code> to <code>GLFW_RESIZABLE</code></li>
   <li>Renamed <code>GLFW_BUILD_DLL</code> to <code>_GLFW_BUILD_DLL</code></li>
   <li>Renamed <code>version</code> test to <code>glfwinfo</code></li>
   <li>Renamed <code>GLFW_NO_GLU</code> to <code>GLFW_INCLUDE_GLU</code> and made it disabled by default</li>
@@ -349,6 +351,7 @@ version of GLFW.</p>
   <li>[X11] Bugfix: Some window properties required by the ICCCM were not set</li>
   <li>[X11] Bugfix: Calling <code>glXCreateContextAttribsARB</code> with an unavailable OpenGL version caused the application to terminate with a <code>BadMatch</code> Xlib error</li>
   <li>[X11] Bugfix: A synchronization point necessary for jitter-free locked cursor mode was incorrectly removed</li>
+  <li>[X11] Bugfix: The window size hints were not updated when calling <code>glfwSetWindowSize</code> on a non-resizable window</li>
   <li>[Win32] Changed port to use Unicode mode only</li>
   <li>[Win32] Removed explicit support for versions of Windows older than Windows XP</li>
   <li>[Win32] Bugfix: Window activation and iconification did not work as expected</li>
@@ -907,7 +910,7 @@ their skills.  Special thanks go out to:</p>
   language</li>
 
   <li>Shane Liesegang, for providing a bug fix relating to Cocoa window
-  restoration</li>
+  restoration and reporting a bug on 32-bit Cocoa builds</li>
 
   <li>Tristam MacDonald, for his bug reports and feedback on the Cocoa port</li>
 
@@ -927,8 +930,14 @@ their skills.  Special thanks go out to:</p>
   Much of the Windows code of GLFW was originally based on Jeff's
   code</li>
 
+  <li>Julian Møller, for reporting a bug in the Cocoa joystick code</li>
+
   <li>Arturo J. Pérez, for a bug fix for cursor tracking on Mac OS X 10.6 Snow
   Leopard</li>
+
+  <li>Riku Salminen, for the initial implementation of
+  <code>glfwShowWindow</code> and <code>glfwHideWindow</code>, and for making
+  the X11 event processing able to support multi-threaded rendering</li>
 
   <li>Douglas C. Schmidt and Irfan Pyarali, for their excellent article
   <a href="http://www.cs.wustl.edu/~schmidt/win32-cv-1.html">Strategies for Implementing POSIX Condition Variables on Win32</a></li>

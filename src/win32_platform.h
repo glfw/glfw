@@ -214,6 +214,7 @@ typedef struct _GLFWlibraryWin32
 
 } _GLFWlibraryWin32;
 
+
 //------------------------------------------------------------------------
 // Platform-specific monitor structure
 //------------------------------------------------------------------------
@@ -222,6 +223,7 @@ typedef struct _GLFWmonitorWin32
     WCHAR* name;
 
 } _GLFWmonitorWin32;
+
 
 //------------------------------------------------------------------------
 // Platform-specific library global data for WGL

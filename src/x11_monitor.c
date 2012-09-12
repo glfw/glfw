@@ -92,7 +92,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
             // This is retained until the monitor object is destroyed
             monitors[found]->X11.output = oi;
-
             found++;
         }
 #endif /*_GLFW_HAS_XRANDR*/

@@ -32,16 +32,13 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <wchar.h>
 
-// The MinGW package for Debian lacks this
+// These constants are missing on MinGW
 #ifndef EDS_ROTATEDMODE
-#define EDS_ROTATEDMODE 0x00000004
+ #define EDS_ROTATEDMODE 0x00000004
 #endif
-
-// The MinGW upstream lacks this
 #ifndef DISPLAY_DEVICE_ACTIVE
-#define DISPLAY_DEVICE_ACTIVE 0x00000001
+ #define DISPLAY_DEVICE_ACTIVE 0x00000001
 #endif
 
 
@@ -91,6 +88,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             if (!EnumDisplayDevices(adapter.DeviceName, monitorIndex, &monitor, 0))
                 break;
 
+            monitorIndex++;
+
             ZeroMemory(&settings, sizeof(DEVMODE));
             settings.dmSize = sizeof(DEVMODE);
 
@@ -138,9 +137,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             }
 
             monitors[found]->Win32.name = wcsdup(monitor.DeviceName);
-
             found++;
-            monitorIndex++;
         }
     }
 

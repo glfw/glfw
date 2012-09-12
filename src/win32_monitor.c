@@ -202,8 +202,10 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     {
         // Enumerate display adapters
 
-        DISPLAY_DEVICE adapter;
-        DWORD monitorIndex = 0;
+        DISPLAY_DEVICE adapter, monitor;
+        DEVMODE settings;
+        const char* name;
+        HDC dc;
 
         ZeroMemory(&adapter, sizeof(DISPLAY_DEVICE));
         adapter.cb = sizeof(DISPLAY_DEVICE);
@@ -219,77 +221,64 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             continue;
         }
 
-        for (;;)
+        ZeroMemory(&settings, sizeof(DEVMODE));
+        settings.dmSize = sizeof(DEVMODE);
+
+        EnumDisplaySettingsEx(adapter.DeviceName,
+                              ENUM_CURRENT_SETTINGS,
+                              &settings,
+                              EDS_ROTATEDMODE);
+
+        name = _glfwCreateUTF8FromWideString(adapter.DeviceName);
+        if (!name)
         {
-            // Enumerate monitors for the display adapter
-
-            DISPLAY_DEVICE monitor;
-            DEVMODE settings;
-            const char* name;
-            HDC dc;
-
-            ZeroMemory(&monitor, sizeof(DISPLAY_DEVICE));
-            monitor.cb = sizeof(DISPLAY_DEVICE);
-
-            if (!EnumDisplayDevices(adapter.DeviceName, monitorIndex, &monitor, 0))
-                break;
-
-            monitorIndex++;
-
-            ZeroMemory(&settings, sizeof(DEVMODE));
-            settings.dmSize = sizeof(DEVMODE);
-
-            EnumDisplaySettingsEx(adapter.DeviceName,
-                                  ENUM_CURRENT_SETTINGS,
-                                  &settings,
-                                  EDS_ROTATEDMODE);
-
-            name = _glfwCreateUTF8FromWideString(monitor.DeviceName);
-            if (!name)
-            {
-                // TODO: wat
-                return NULL;
-            }
-
-            dc = CreateDC(L"DISPLAY", monitor.DeviceString, NULL, NULL);
-            if (!dc)
-            {
-                // TODO: wat
-                return NULL;
-            }
-
-            if (found == size)
-            {
-                if (size)
-                    size *= 2;
-                else
-                    size = 4;
-
-                monitors = (_GLFWmonitor**) realloc(monitors, sizeof(_GLFWmonitor*) * size);
-                if (!monitors)
-                {
-                    // TODO: wat
-                    return NULL;
-                }
-            }
-
-            monitors[found] = _glfwCreateMonitor(name,
-                                                 GetDeviceCaps(dc, HORZSIZE),
-                                                 GetDeviceCaps(dc, VERTSIZE),
-                                                 settings.dmPosition.x,
-                                                 settings.dmPosition.y);
-
-            DeleteDC(dc);
-
-            if (!monitors[found])
-            {
-                // TODO: wat
-                return NULL;
-            }
-
-            monitors[found]->Win32.name = wcsdup(monitor.DeviceName);
-            found++;
+            // TODO: wat
+            return NULL;
         }
+
+        if (found == size)
+        {
+            if (size)
+                size *= 2;
+            else
+                size = 4;
+
+            monitors = (_GLFWmonitor**) realloc(monitors, sizeof(_GLFWmonitor*) * size);
+            if (!monitors)
+            {
+                // TODO: wat
+                return NULL;
+            }
+        }
+
+        ZeroMemory(&monitor, sizeof(DISPLAY_DEVICE));
+        monitor.cb = sizeof(DISPLAY_DEVICE);
+
+        EnumDisplayDevices(adapter.DeviceName, 0, &monitor, 0);
+
+        dc = CreateDC(L"DISPLAY", monitor.DeviceString, NULL, NULL);
+        if (!dc)
+        {
+            // TODO: wat
+            return NULL;
+        }
+
+        monitors[found] = _glfwCreateMonitor(name,
+                                             GetDeviceCaps(dc, HORZSIZE),
+                                             GetDeviceCaps(dc, VERTSIZE),
+                                             settings.dmPosition.x,
+                                             settings.dmPosition.y);
+
+        DeleteDC(dc);
+
+        if (!monitors[found])
+        {
+            // TODO: wat
+            return NULL;
+        }
+
+        monitors[found]->Win32.name = wcsdup(adapter.DeviceName);
+        found++;
     }
 
     *count = found;

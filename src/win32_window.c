@@ -1130,6 +1130,7 @@ void _glfwPlatformHideWindow(_GLFWwindow* window)
     ShowWindow(window->Win32.handle, SW_HIDE);
 }
 
+
 //========================================================================
 // Write back window parameters into GLFW window structure
 //========================================================================

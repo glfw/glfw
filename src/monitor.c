@@ -78,6 +78,7 @@ static int compareVideoModes(const void* firstPtr, const void* secondPtr)
 //========================================================================
 
 _GLFWmonitor* _glfwCreateMonitor(const char* name,
+                                 GLboolean primary,
                                  int physicalWidth, int physicalHeight,
                                  int screenX, int screenY)
 {
@@ -89,6 +90,7 @@ _GLFWmonitor* _glfwCreateMonitor(const char* name,
     }
 
     monitor->name = strdup(name);
+    monitor->primary = primary;
     monitor->physicalWidth = physicalWidth;
     monitor->physicalHeight = physicalHeight;
     monitor->screenX = screenX;
@@ -253,13 +255,31 @@ GLFWAPI GLFWmonitor* glfwGetMonitors(int* count)
 
 GLFWAPI GLFWmonitor glfwGetPrimaryMonitor(void)
 {
+    int i;
+    GLFWmonitor handle = NULL;
+
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
         return NULL;
     }
 
-    return _glfwLibrary.monitors[0];
+    for (i = 0;  i < _glfwLibrary.monitorCount;  i++)
+    {
+        if (_glfwLibrary.monitors[i]->primary)
+        {
+            handle = _glfwLibrary.monitors[i];
+            break;
+        }
+    }
+
+    if (!handle)
+    {
+        _glfwSetError(GLFW_PLATFORM_ERROR, NULL);
+        return NULL;
+    }
+
+    return handle;
 }
 
 

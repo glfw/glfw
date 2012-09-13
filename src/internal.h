@@ -209,6 +209,9 @@ struct _GLFWmonitor
     void*     userPointer;
 
     char*     name;
+
+    GLboolean primary;
+
     // physical dimensions in millimeters.
     int       physicalWidth;
     int       physicalHeight;
@@ -393,6 +396,7 @@ GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig);
 
 // Monitor management (monitor.c)
 _GLFWmonitor* _glfwCreateMonitor(const char* name,
+                                 GLboolean primary,
                                  int physicalWidth, int physicalHeight,
                                  int screenX, int screenY);
 void _glfwDestroyMonitor(_GLFWmonitor* monitor);

@@ -465,6 +465,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             ci = XRRGetCrtcInfo(_glfwLibrary.X11.display, sr, oi->crtc);
 
             monitors[found] = _glfwCreateMonitor(oi->name,
+                                                 i == 0,
                                                  oi->mm_width, oi->mm_height,
                                                  ci->x, ci->y);
 

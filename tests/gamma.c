@@ -37,6 +37,7 @@
 
 #define STEP_SIZE 0.1f
 
+static GLboolean closed = GL_FALSE;
 static GLfloat gamma_value = 1.0f;
 
 static void usage(void)
@@ -51,6 +52,12 @@ static void set_gamma(float value)
     glfwSetGamma(gamma_value);
 }
 
+static int window_close_callback(GLFWwindow window)
+{
+    closed = GL_TRUE;
+    return GL_FALSE;
+}
+
 static void key_callback(GLFWwindow window, int key, int action)
 {
     if (action != GLFW_PRESS)
@@ -60,7 +67,7 @@ static void key_callback(GLFWwindow window, int key, int action)
     {
         case GLFW_KEY_ESCAPE:
         {
-            glfwDestroyWindow(window);
+            closed = GL_TRUE;
             break;
         }
 
@@ -145,6 +152,7 @@ int main(int argc, char** argv)
     glfwSwapInterval(1);
 
     glfwSetKeyCallback(key_callback);
+    glfwSetWindowCloseCallback(window_close_callback);
     glfwSetWindowSizeCallback(size_callback);
 
     glMatrixMode(GL_PROJECTION);
@@ -153,7 +161,7 @@ int main(int argc, char** argv)
 
     glClearColor(0.5f, 0.5f, 0.5f, 0);
 
-    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
+    while (!closed)
     {
         glClear(GL_COLOR_BUFFER_BIT);
 

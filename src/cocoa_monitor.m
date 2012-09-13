@@ -33,6 +33,41 @@
 #include <stdlib.h>
 #include <limits.h>
 
+#include <IOKit/graphics/IOGraphicsLib.h>
+
+
+//========================================================================
+// Get the name of the specified display
+//========================================================================
+
+const char* getDisplayName(CGDirectDisplayID displayID)
+{
+    char* name;
+    CFDictionaryRef info, names;
+    CFStringRef value;
+    CFIndex size;
+
+    info = IODisplayCreateInfoDictionary(CGDisplayIOServicePort(displayID),
+                                         kIODisplayOnlyPreferredName);
+    names = CFDictionaryGetValue(info, CFSTR(kDisplayProductName));
+
+    if (!CFDictionaryGetValueIfPresent(names, CFSTR("en_US"),
+                                       (const void**) &value))
+    {
+        CFRelease(info);
+        return strdup("Unknown");
+    }
+
+    size = CFStringGetMaximumSizeForEncoding(CFStringGetLength(value),
+                                             kCFStringEncodingUTF8);
+    name = (char*) malloc(size + 1);
+    CFStringGetCString(value, name, size, kCFStringEncodingUTF8);
+
+    CFRelease(info);
+
+    return name;
+}
+
 
 //========================================================================
 // Check whether the display mode should be included in enumeration
@@ -202,8 +237,46 @@ void _glfwRestoreVideoMode(void)
 
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
+    uint32_t i, found = 0, monitorCount;
+    _GLFWmonitor** monitors;
+    CGDirectDisplayID* displays;
+
     *count = 0;
-    return NULL;
+
+    CGGetActiveDisplayList(0, NULL, &monitorCount);
+
+    displays = (CGDirectDisplayID*) calloc(monitorCount, sizeof(CGDirectDisplayID));
+    if (!displays)
+    {
+        _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+        return NULL;
+    }
+
+    monitors = (_GLFWmonitor**) calloc(monitorCount, sizeof(_GLFWmonitor*));
+    if (!monitors)
+    {
+        _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+        return NULL;
+    }
+
+    for (i = 0;  i < monitorCount;  i++)
+    {
+        const CGSize size = CGDisplayScreenSize(displays[i]);
+        const CGRect bounds = CGDisplayBounds(displays[i]);
+        const char* name = getDisplayName(displays[i]);
+
+        monitors[found] = _glfwCreateMonitor(name,
+                                             size.width, size.height,
+                                             bounds.origin.x, bounds.origin.y);
+
+        monitors[found]->NS.displayID = displays[i];
+        found++;
+    }
+
+    free(displays);
+
+    *count = monitorCount;
+    return monitors;
 }
 
 
@@ -220,13 +293,13 @@ void _glfwPlatformDestroyMonitor(_GLFWmonitor* monitor)
 // Get a list of available video modes
 //========================================================================
 
-GLFWvidmode* _glfwPlatformGetVideoModes(int* found)
+GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 {
     CFArrayRef modes;
     CFIndex count, i;
     GLFWvidmode* result;
 
-    modes = CGDisplayCopyAllDisplayModes(CGMainDisplayID(), NULL);
+    modes = CGDisplayCopyAllDisplayModes(monitor->NS.displayID, NULL);
     count = CFArrayGetCount(modes);
 
     result = (GLFWvidmode*) malloc(sizeof(GLFWvidmode) * count);
@@ -257,7 +330,7 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode *mode)
 {
     CGDisplayModeRef displayMode;
 
-    displayMode = CGDisplayCopyDisplayMode(CGMainDisplayID());
+    displayMode = CGDisplayCopyDisplayMode(monitor->NS.displayID);
     *mode = vidmodeFromCGDisplayMode(displayMode);
     CGDisplayModeRelease(displayMode);
 }

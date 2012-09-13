@@ -105,7 +105,7 @@ typedef struct _GLFWlibraryNS
 //------------------------------------------------------------------------
 typedef struct _GLFWmonitorNS
 {
-    int dummy;
+    CGDirectDisplayID displayID;
 
 } _GLFWmonitorNS;
 

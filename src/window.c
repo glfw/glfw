@@ -100,39 +100,39 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated)
 {
     if (activated)
     {
-        if (_glfwLibrary.activeWindow != window)
-        {
-            _glfwLibrary.activeWindow = window;
+        if (_glfwLibrary.activeWindow == window)
+            return;
 
-            if (_glfwLibrary.windowFocusCallback)
-                _glfwLibrary.windowFocusCallback(window, activated);
-        }
+        _glfwLibrary.activeWindow = window;
+
+        if (_glfwLibrary.windowFocusCallback)
+            _glfwLibrary.windowFocusCallback(window, activated);
     }
     else
     {
-        if (_glfwLibrary.activeWindow == window)
+        int i;
+
+        if (_glfwLibrary.activeWindow != window)
+            return;
+
+        // Release all pressed keyboard keys
+        for (i = 0;  i <= GLFW_KEY_LAST;  i++)
         {
-            int i;
-
-            // Release all pressed keyboard keys
-            for (i = 0;  i <= GLFW_KEY_LAST;  i++)
-            {
-                if (window->key[i] == GLFW_PRESS)
-                    _glfwInputKey(window, i, GLFW_RELEASE);
-            }
-
-            // Release all pressed mouse buttons
-            for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
-            {
-                if (window->mouseButton[i] == GLFW_PRESS)
-                    _glfwInputMouseClick(window, i, GLFW_RELEASE);
-            }
-
-            _glfwLibrary.activeWindow = NULL;
-
-            if (_glfwLibrary.windowFocusCallback)
-                _glfwLibrary.windowFocusCallback(window, activated);
+            if (window->key[i] == GLFW_PRESS)
+                _glfwInputKey(window, i, GLFW_RELEASE);
         }
+
+        // Release all pressed mouse buttons
+        for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
+        {
+            if (window->mouseButton[i] == GLFW_PRESS)
+                _glfwInputMouseClick(window, i, GLFW_RELEASE);
+        }
+
+        _glfwLibrary.activeWindow = NULL;
+
+        if (_glfwLibrary.windowFocusCallback)
+            _glfwLibrary.windowFocusCallback(window, activated);
     }
 }
 

@@ -306,37 +306,6 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
 
 
 //========================================================================
-// Translates a Windows key to Unicode
-//========================================================================
-
-static void translateChar(_GLFWwindow* window, DWORD wParam, DWORD lParam)
-{
-    BYTE keyboard_state[256];
-    WCHAR unicode_buf[10];
-    UINT scan_code;
-    int i, num_chars;
-
-    GetKeyboardState(keyboard_state);
-
-    // Derive scan code from lParam and action
-    scan_code = (lParam & 0x01ff0000) >> 16;
-
-    num_chars = ToUnicode(
-        wParam,          // virtual-key code
-        scan_code,       // scan code
-        keyboard_state,  // key-state array
-        unicode_buf,     // buffer for translated key
-        10,              // size of translated key buffer
-        0                // active-menu flag
-    );
-
-    // Report characters
-    for (i = 0;  i < num_chars;  i++)
-        _glfwInputChar(window, (int) unicode_buf[i]);
-}
-
-
-//========================================================================
 // Window callback function (handles window events)
 //========================================================================
 
@@ -459,11 +428,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_SYSKEYDOWN:
         {
             _glfwInputKey(window, translateKey(wParam, lParam), GLFW_PRESS);
-
-            if (_glfwLibrary.charCallback)
-                translateChar(window, (DWORD) wParam, (DWORD) lParam);
-
             break;
+        }
+
+        case WM_CHAR:
+        {
+            _glfwInputChar(window, wParam);
+            return 0;
         }
 
         case WM_KEYUP:
@@ -1177,27 +1148,21 @@ void _glfwPlatformPollEvents(void)
 
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
     {
-        switch (msg.message)
+        if (msg.message == WM_QUIT)
         {
-            case WM_QUIT:
+            // Treat WM_QUIT as a close on all windows
+
+            window = _glfwLibrary.windowListHead;
+            while (window)
             {
-                // Treat WM_QUIT as a close on all windows
-
-                window = _glfwLibrary.windowListHead;
-                while (window)
-                {
-                    _glfwInputWindowCloseRequest(window);
-                    window = window->next;
-                }
-
-                break;
+                _glfwInputWindowCloseRequest(window);
+                window = window->next;
             }
-
-            default:
-            {
-                DispatchMessage(&msg);
-                break;
-            }
+        }
+        else
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
         }
     }
 

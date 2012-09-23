@@ -37,27 +37,18 @@
 #define HEIGHT 400
 
 static GLFWwindow windows[2];
+static GLboolean closed = GL_FALSE;
 
 static void key_callback(GLFWwindow window, int key, int action)
 {
     if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
-        glfwDestroyWindow(window);
+        closed = GL_TRUE;
 }
 
 static int window_close_callback(GLFWwindow window)
 {
-    int i;
-
-    for (i = 0;  i < 2;  i++)
-    {
-        if (windows[i] == window)
-        {
-            windows[i] = NULL;
-            break;
-        }
-    }
-
-    return GL_TRUE;
+    closed = GL_TRUE;
+    return GL_FALSE;
 }
 
 static GLFWwindow open_window(const char* title, GLFWwindow share)
@@ -170,7 +161,7 @@ int main(int argc, char** argv)
     glfwGetWindowPos(windows[0], &x, &y);
     glfwSetWindowPos(windows[1], x + WIDTH + 50, y);
 
-    while (windows[0] && windows[1])
+    while (!closed)
     {
         glfwMakeContextCurrent(windows[0]);
         draw_quad(texture);

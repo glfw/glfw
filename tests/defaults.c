@@ -83,6 +83,8 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
+    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+
     window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Defaults", NULL);
     if (!window)
     {

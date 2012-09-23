@@ -33,7 +33,7 @@
 
 #include <string.h>
 #include <stdlib.h>
-#if _WIN32
+#if defined(_MSC_VER)
  #include <malloc.h>
 #endif
 
@@ -81,8 +81,9 @@ void _glfwSetDefaultWindowHints(void)
     _glfwLibrary.hints.glMajor = 1;
     _glfwLibrary.hints.glMinor = 0;
 
-    // The default is to allow window resizing
+    // The default is to show the window and allow window resizing
     _glfwLibrary.hints.resizable = GL_TRUE;
+    _glfwLibrary.hints.visible   = GL_TRUE;
 
     // The default is 24 bits of depth, 8 bits of color
     _glfwLibrary.hints.depthBits = 24;
@@ -182,6 +183,16 @@ void _glfwInputWindowIconify(_GLFWwindow* window, int iconified)
 
 
 //========================================================================
+// Register window visibility events
+//========================================================================
+
+void _glfwInputWindowVisibility(_GLFWwindow* window, int visible)
+{
+    window->visible = visible;
+}
+
+
+//========================================================================
 // Register window damage events
 //========================================================================
 
@@ -251,6 +262,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     wndconfig.title          = title;
     wndconfig.refreshRate    = Max(_glfwLibrary.hints.refreshRate, 0);
     wndconfig.resizable      = _glfwLibrary.hints.resizable ? GL_TRUE : GL_FALSE;
+    wndconfig.visible        = _glfwLibrary.hints.visible ? GL_TRUE : GL_FALSE;
     wndconfig.clientAPI      = _glfwLibrary.hints.clientAPI;
     wndconfig.glMajor        = _glfwLibrary.hints.glMajor;
     wndconfig.glMinor        = _glfwLibrary.hints.glMinor;
@@ -326,8 +338,9 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     // Cache the actual (as opposed to requested) window parameters
     _glfwPlatformRefreshWindowParams(window);
 
-    // Cache the actual (as opposed to requested) context parameters
     glfwMakeContextCurrent(window);
+
+    // Cache the actual (as opposed to requested) context parameters
     if (!_glfwRefreshContextParams())
     {
         glfwDestroyWindow(window);
@@ -343,6 +356,11 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
         return GL_FALSE;
     }
 
+    // Clearing the front buffer to black to avoid garbage pixels left over
+    // from previous uses of our bit of VRAM
+    glClear(GL_COLOR_BUFFER_BIT);
+    _glfwPlatformSwapBuffers(window);
+
     // Restore the previously current context (or NULL)
     glfwMakeContextCurrent(previous);
 
@@ -351,10 +369,8 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     if (mode == GLFW_FULLSCREEN)
         glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_CAPTURED);
 
-    // Clearing the front buffer to black to avoid garbage pixels left over
-    // from previous uses of our bit of VRAM
-    glClear(GL_COLOR_BUFFER_BIT);
-    _glfwPlatformSwapBuffers(window);
+    if (mode == GLFW_WINDOWED && wndconfig.visible)
+        glfwShowWindow(window);
 
     return window;
 }
@@ -413,8 +429,11 @@ GLFWAPI void glfwWindowHint(int target, int hint)
         case GLFW_STEREO:
             _glfwLibrary.hints.stereo = hint;
             break;
-        case GLFW_WINDOW_RESIZABLE:
+        case GLFW_RESIZABLE:
             _glfwLibrary.hints.resizable = hint;
+            break;
+        case GLFW_VISIBLE:
+            _glfwLibrary.hints.visible = hint;
             break;
         case GLFW_FSAA_SAMPLES:
             _glfwLibrary.hints.samples = hint;
@@ -657,6 +676,48 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow handle)
 
 
 //========================================================================
+// Window show
+//========================================================================
+
+GLFWAPI void glfwShowWindow(GLFWwindow handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    if (window->mode == GLFW_FULLSCREEN)
+        return;
+
+    _glfwPlatformShowWindow(window);
+}
+
+
+//========================================================================
+// Window hide
+//========================================================================
+
+GLFWAPI void glfwHideWindow(GLFWwindow handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    if (window->mode == GLFW_FULLSCREEN)
+        return;
+
+    _glfwPlatformHideWindow(window);
+}
+
+
+//========================================================================
 // Get window parameter
 //========================================================================
 
@@ -680,8 +741,10 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window->closeRequested;
         case GLFW_REFRESH_RATE:
             return window->refreshRate;
-        case GLFW_WINDOW_RESIZABLE:
+        case GLFW_RESIZABLE:
             return window->resizable;
+        case GLFW_VISIBLE:
+            return window->visible;
         case GLFW_CLIENT_API:
             return window->clientAPI;
         case GLFW_OPENGL_VERSION_MAJOR:
@@ -822,7 +885,7 @@ GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindowiconifyfun cbfun)
 
 
 //========================================================================
-// Poll for new window and input events and close any flagged windows
+// Poll for new window and input events
 //========================================================================
 
 GLFWAPI void glfwPollEvents(void)

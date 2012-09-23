@@ -672,11 +672,11 @@ int _glfwPlatformTerminate(void)
 
     _glfwTerminateGammaRamp();
 
-    terminateDisplay();
-
     _glfwTerminateJoysticks();
 
     _glfwTerminateOpenGL();
+
+    terminateDisplay();
 
     // Free clipboard memory
     if (_glfwLibrary.X11.selection.string)
@@ -728,7 +728,7 @@ const char* _glfwPlatformGetVersionString(void)
 #if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
         " clock_gettime"
 #endif
-#if defined(_GLFW_USE_LINUX_JOYSTICKS)
+#if defined(_GLFW_HAS_LINUX_JOYSTICKS)
         " Linux-joystick-API"
 #else
         " no-joystick-support"

@@ -401,19 +401,20 @@ extern "C" {
 #define GLFW_ACCUM_ALPHA_BITS     0x0002100A
 #define GLFW_AUX_BUFFERS          0x0002100B
 #define GLFW_STEREO               0x0002100C
-#define GLFW_WINDOW_RESIZABLE     0x0002100D
 #define GLFW_FSAA_SAMPLES         0x0002100E
 
 /* The following constants are used with both glfwGetWindowParam
  * and glfwWindowHint
  */
-#define GLFW_CLIENT_API           0x0002100F
-#define GLFW_OPENGL_VERSION_MAJOR 0x00021010
-#define GLFW_OPENGL_VERSION_MINOR 0x00021011
-#define GLFW_OPENGL_FORWARD_COMPAT 0x00021012
-#define GLFW_OPENGL_DEBUG_CONTEXT 0x00021013
-#define GLFW_OPENGL_PROFILE       0x00021014
-#define GLFW_OPENGL_ROBUSTNESS    0x00021015
+#define GLFW_CLIENT_API           0x00022000
+#define GLFW_OPENGL_VERSION_MAJOR 0x00022001
+#define GLFW_OPENGL_VERSION_MINOR 0x00022002
+#define GLFW_OPENGL_FORWARD_COMPAT 0x00022003
+#define GLFW_OPENGL_DEBUG_CONTEXT 0x00022004
+#define GLFW_OPENGL_PROFILE       0x00022005
+#define GLFW_OPENGL_ROBUSTNESS    0x00022006
+#define GLFW_RESIZABLE            0x00022007
+#define GLFW_VISIBLE              0x00022008
 
 /* GLFW_CLIENT_API tokens */
 #define GLFW_OPENGL_API           0x00000001
@@ -540,6 +541,8 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow window, int* xpos, int* ypos);
 GLFWAPI void glfwSetWindowPos(GLFWwindow window, int xpos, int ypos);
 GLFWAPI void glfwIconifyWindow(GLFWwindow window);
 GLFWAPI void glfwRestoreWindow(GLFWwindow window);
+GLFWAPI void glfwShowWindow(GLFWwindow window);
+GLFWAPI void glfwHideWindow(GLFWwindow window);
 GLFWAPI int  glfwGetWindowParam(GLFWwindow window, int param);
 GLFWAPI void glfwSetWindowUserPointer(GLFWwindow window, void* pointer);
 GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow window);

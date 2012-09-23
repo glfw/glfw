@@ -284,6 +284,7 @@ version of GLFW.</p>
   <li>Added <code>GLFW_OPENGL_REVISION</code> window parameter to make up for removal of <code>glfwGetGLVersion</code></li>
   <li>Added <code>GLFW_INCLUDE_GL3</code> macro for telling the GLFW header to include <code>gl3.h</code> header instead of <code>gl.h</code></li>
   <li>Added <code>GLFW_INCLUDE_ES2</code> macro for telling the GLFW header to include the OpenGL ES 2.0 header instead of <code>gl.h</code></li>
+  <li>Added <code>GLFW_VISIBLE</code> window hint and parameter for controlling and polling window visibility</li>
   <li>Added <code>windows</code> simple multi-window test program</li>
   <li>Added <code>sharing</code> simple OpenGL object sharing test program</li>
   <li>Added <code>modes</code> video mode enumeration and setting test program</li>
@@ -298,7 +299,7 @@ version of GLFW.</p>
   <li>Renamed <code>glfw.h</code> to <code>glfw3.h</code> to avoid conflicts with 2.x series</li>
   <li>Renamed <code>glfwOpenWindowHint</code> to <code>glfwWindowHint</code></li>
   <li>Renamed <code>GLFW_WINDOW</code> token to <code>GLFW_WINDOWED</code></li>
-  <li>Renamed <code>GLFW_WINDOW_NO_RESIZE</code> to <code>GLFW_WINDOW_RESIZABLE</code></li>
+  <li>Renamed <code>GLFW_WINDOW_NO_RESIZE</code> to <code>GLFW_RESIZABLE</code></li>
   <li>Renamed <code>GLFW_BUILD_DLL</code> to <code>_GLFW_BUILD_DLL</code></li>
   <li>Renamed <code>version</code> test to <code>glfwinfo</code></li>
   <li>Renamed <code>GLFW_NO_GLU</code> to <code>GLFW_INCLUDE_GLU</code> and made it disabled by default</li>
@@ -931,8 +932,9 @@ their skills.  Special thanks go out to:</p>
   <li>Arturo J. Pérez, for a bug fix for cursor tracking on Mac OS X 10.6 Snow
   Leopard</li>
 
-  <li>Riku Salminen, for making the X11 event processing able to support
-  multi-threaded rendering</li>
+  <li>Riku Salminen, for the initial implementation of
+  <code>glfwShowWindow</code> and <code>glfwHideWindow</code>, and for making
+  the X11 event processing able to support multi-threaded rendering</li>
 
   <li>Douglas C. Schmidt and Irfan Pyarali, for their excellent article
   <a href="http://www.cs.wustl.edu/~schmidt/win32-cv-1.html">Strategies for Implementing POSIX Condition Variables on Win32</a></li>

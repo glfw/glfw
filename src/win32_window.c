@@ -965,6 +965,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (window->mode == GLFW_FULLSCREEN)
     {
         // Place the window above all topmost windows
+        _glfwPlatformShowWindow(window);
         SetWindowPos(window->Win32.handle, HWND_TOPMOST, 0,0,0,0,
                      SWP_NOMOVE | SWP_NOSIZE);
     }

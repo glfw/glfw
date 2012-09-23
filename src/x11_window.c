@@ -853,6 +853,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (wndconfig->mode == GLFW_FULLSCREEN)
     {
+        _glfwPlatformShowWindow(window);
         enterFullscreenMode(window);
     }
 

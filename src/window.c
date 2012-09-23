@@ -367,7 +367,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     if (mode == GLFW_FULLSCREEN)
         glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_CAPTURED);
 
-    if (mode == GLFW_FULLSCREEN || wndconfig.visible)
+    if (mode == GLFW_WINDOWED && wndconfig.visible)
         glfwShowWindow(window);
 
     return window;

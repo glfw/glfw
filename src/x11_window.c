@@ -228,10 +228,6 @@ static GLboolean createWindow(_GLFWwindow* window,
 
     _glfwPlatformSetWindowTitle(window, wndconfig->title);
 
-    // Make sure the window is mapped before proceeding
-    XMapWindow(_glfwLibrary.X11.display, window->X11.handle);
-    XFlush(_glfwLibrary.X11.display);
-
     return GL_TRUE;
 }
 
@@ -699,6 +695,7 @@ static void processEvent(XEvent *event)
             if (window == NULL)
                 return;
 
+            _glfwInputWindowVisibility(window, GL_TRUE);
             _glfwInputWindowIconify(window, GL_FALSE);
             break;
         }
@@ -710,6 +707,7 @@ static void processEvent(XEvent *event)
             if (window == NULL)
                 return;
 
+            _glfwInputWindowVisibility(window, GL_FALSE);
             _glfwInputWindowIconify(window, GL_TRUE);
             break;
         }
@@ -854,6 +852,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         }
 #endif /*_GLFW_HAS_XRANDR*/
 
+        _glfwPlatformShowWindow(window);
         enterFullscreenMode(window);
     }
 
@@ -956,7 +955,6 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     int mode = 0, rate, sizeChanged = GL_FALSE;
-    XSizeHints* sizehints;
 
     rate = window->refreshRate;
 
@@ -970,14 +968,14 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     {
         // Update window size restrictions to match new window size
 
-        sizehints = XAllocSizeHints();
-        sizehints->flags = 0;
+        XSizeHints* hints = XAllocSizeHints();
 
-        sizehints->min_width  = sizehints->max_width  = width;
-        sizehints->min_height = sizehints->max_height = height;
+        hints->flags |= (PMinSize | PMaxSize);
+        hints->min_width  = hints->max_width  = width;
+        hints->min_height = hints->max_height = height;
 
-        XSetWMNormalHints(_glfwLibrary.X11.display, window->X11.handle, sizehints);
-        XFree(sizehints);
+        XSetWMNormalHints(_glfwLibrary.X11.display, window->X11.handle, hints);
+        XFree(hints);
     }
 
     // Change window size before changing fullscreen mode?
@@ -1042,6 +1040,28 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
     }
 
     XMapWindow(_glfwLibrary.X11.display, window->X11.handle);
+}
+
+
+//========================================================================
+// Show window
+//========================================================================
+
+void _glfwPlatformShowWindow(_GLFWwindow* window)
+{
+    XMapRaised(_glfwLibrary.X11.display, window->X11.handle);
+    XFlush(_glfwLibrary.X11.display);
+}
+
+
+//========================================================================
+// Hide window
+//========================================================================
+
+void _glfwPlatformHideWindow(_GLFWwindow* window)
+{
+    XUnmapWindow(_glfwLibrary.X11.display, window->X11.handle);
+    XFlush(_glfwLibrary.X11.display);
 }
 
 

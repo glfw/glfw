@@ -30,18 +30,19 @@
 
 #include "internal.h"
 
-#ifdef _GLFW_USE_LINUX_JOYSTICKS
+#ifdef _GLFW_HAS_LINUX_JOYSTICKS
 #include <linux/joystick.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
-
+#include <regex.h>
+#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif // _GLFW_USE_LINUX_JOYSTICKS
+#endif // _GLFW_HAS_LINUX_JOYSTICKS
 
 
 //========================================================================
@@ -50,7 +51,7 @@
 
 static int openJoystickDevice(int joy, const char* path)
 {
-#ifdef _GLFW_USE_LINUX_JOYSTICKS
+#ifdef _GLFW_HAS_LINUX_JOYSTICKS
     char numAxes, numButtons;
     char name[256];
     int fd, version;
@@ -103,7 +104,7 @@ static int openJoystickDevice(int joy, const char* path)
     }
 
     _glfwLibrary.X11.joystick[joy].present = GL_TRUE;
-#endif // _GLFW_USE_LINUX_JOYSTICKS
+#endif // _GLFW_HAS_LINUX_JOYSTICKS
 
     return GL_TRUE;
 }
@@ -115,7 +116,7 @@ static int openJoystickDevice(int joy, const char* path)
 
 static void pollJoystickEvents(void)
 {
-#ifdef _GLFW_USE_LINUX_JOYSTICKS
+#ifdef _GLFW_HAS_LINUX_JOYSTICKS
     int i;
     ssize_t result;
     struct js_event e;
@@ -166,7 +167,7 @@ static void pollJoystickEvents(void)
             }
         }
     }
-#endif // _GLFW_USE_LINUX_JOYSTICKS
+#endif // _GLFW_HAS_LINUX_JOYSTICKS
 }
 
 
@@ -178,30 +179,52 @@ static void pollJoystickEvents(void)
 // Initialize joystick interface
 //========================================================================
 
-void _glfwInitJoysticks(void)
+int _glfwInitJoysticks(void)
 {
-#ifdef _GLFW_USE_LINUX_JOYSTICKS
-    int i, j, joy = 0;
-    char path[20];
-    const char* bases[] =
+#ifdef _GLFW_HAS_LINUX_JOYSTICKS
+    int i, joy = 0;
+    regex_t regex;
+    DIR* dir;
+    const char* dirs[] =
     {
-        "/dev/input/js",
-        "/dev/js"
+        "/dev/input",
+        "/dev"
     };
 
-    for (i = 0;  i < sizeof(bases) / sizeof(bases[0]);  i++)
+    if (regcomp(&regex, "^js[0-9]\\+$", 0) != 0)
     {
-        for (j = 0;  j < 50;  j++)
-        {
-            if (joy > GLFW_JOYSTICK_LAST)
-                break;
+        _glfwSetError(GLFW_PLATFORM_ERROR, "X11: Failed to compile regex");
+        return GL_FALSE;
+    }
 
-            sprintf(path, "%s%i", bases[i], j);
+    for (i = 0;  i < sizeof(dirs) / sizeof(dirs[0]);  i++)
+    {
+        struct dirent* entry;
+
+        dir = opendir(dirs[i]);
+        if (!dir)
+            continue;
+
+        while ((entry = readdir(dir)))
+        {
+            char path[20];
+            regmatch_t match;
+
+            if (regexec(&regex, entry->d_name, 1, &match, 0) != 0)
+                continue;
+
+            snprintf(path, sizeof(path), "%s/%s", dirs[i], entry->d_name);
             if (openJoystickDevice(joy, path))
                 joy++;
         }
+
+        closedir(dir);
     }
-#endif // _GLFW_USE_LINUX_JOYSTICKS
+
+    regfree(&regex);
+#endif // _GLFW_HAS_LINUX_JOYSTICKS
+
+    return GL_TRUE;
 }
 
 
@@ -211,7 +234,7 @@ void _glfwInitJoysticks(void)
 
 void _glfwTerminateJoysticks(void)
 {
-#ifdef _GLFW_USE_LINUX_JOYSTICKS
+#ifdef _GLFW_HAS_LINUX_JOYSTICKS
     int i;
 
     for (i = 0;  i <= GLFW_JOYSTICK_LAST;  i++)
@@ -226,7 +249,7 @@ void _glfwTerminateJoysticks(void)
             _glfwLibrary.X11.joystick[i].present = GL_FALSE;
         }
     }
-#endif // _GLFW_USE_LINUX_JOYSTICKS
+#endif // _GLFW_HAS_LINUX_JOYSTICKS
 }
 
 

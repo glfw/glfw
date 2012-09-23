@@ -131,6 +131,25 @@
     return NSTerminateCancel;
 }
 
+- (void)applicationDidHide:(NSNotification *)notification
+{
+    _GLFWwindow* window;
+
+    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+        _glfwInputWindowVisibility(window, GL_FALSE);
+}
+
+- (void)applicationDidUnhide:(NSNotification *)notification
+{
+    _GLFWwindow* window;
+
+    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+    {
+        if ([window->NS.object isVisible])
+            _glfwInputWindowVisibility(window, GL_TRUE);
+    }
+}
+
 @end
 
 
@@ -898,7 +917,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (!createContext(window, wndconfig, fbconfig))
         return GL_FALSE;
 
-    [window->NS.object makeKeyAndOrderFront:nil];
     [window->NSGL.context setView:[window->NS.object contentView]];
 
     if (wndconfig->mode == GLFW_FULLSCREEN)
@@ -913,6 +931,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             return GL_FALSE;
         }
 
+        _glfwPlatformShowWindow(window);
         [[window->NS.object contentView] enterFullScreenMode:[NSScreen mainScreen]
                                                  withOptions:nil];
     }
@@ -1021,6 +1040,27 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
     [window->NS.object deminiaturize:nil];
 }
 
+
+//========================================================================
+// Show window
+//========================================================================
+
+void _glfwPlatformShowWindow(_GLFWwindow* window)
+{
+    [window->NS.object makeKeyAndOrderFront:nil];
+    _glfwInputWindowVisibility(window, GL_TRUE);
+}
+
+
+//========================================================================
+// Hide window
+//========================================================================
+
+void _glfwPlatformHideWindow(_GLFWwindow* window)
+{
+    [window->NS.object orderOut:nil];
+    _glfwInputWindowVisibility(window, GL_FALSE);
+}
 
 //========================================================================
 // Write back window parameters into GLFW window structure

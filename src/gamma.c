@@ -61,18 +61,15 @@ GLFWAPI void glfwSetGamma(float gamma)
 
     for (i = 0;  i < size;  i++)
     {
-        float value = (float) i / ((float) (size - 1));
+        float value;
 
-        // Apply gamma
+        // Calculate intensity
+        value = (float) i / (float) (size - 1);
+        // Apply gamma curve
         value = (float) pow(value, 1.f / gamma) * 65535.f + 0.5f;
+        // Clamp to value range
+        value = (float) fmax(fmin(value, 65535.f), 0.f);
 
-        // Clamp values
-        if (value < 0.f)
-            value = 0.f;
-        else if (value > 65535.f)
-            value = 65535.f;
-
-        // Set the gamma ramp values
         ramp.red[i]   = (unsigned short) value;
         ramp.green[i] = (unsigned short) value;
         ramp.blue[i]  = (unsigned short) value;

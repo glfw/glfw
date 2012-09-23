@@ -336,8 +336,9 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     // Cache the actual (as opposed to requested) window parameters
     _glfwPlatformRefreshWindowParams(window);
 
-    // Cache the actual (as opposed to requested) context parameters
     glfwMakeContextCurrent(window);
+
+    // Cache the actual (as opposed to requested) context parameters
     if (!_glfwRefreshContextParams())
     {
         glfwDestroyWindow(window);
@@ -353,6 +354,11 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
         return GL_FALSE;
     }
 
+    // Clearing the front buffer to black to avoid garbage pixels left over
+    // from previous uses of our bit of VRAM
+    glClear(GL_COLOR_BUFFER_BIT);
+    _glfwPlatformSwapBuffers(window);
+
     // Restore the previously current context (or NULL)
     glfwMakeContextCurrent(previous);
 
@@ -361,12 +367,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     if (mode == GLFW_FULLSCREEN)
         glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_CAPTURED);
 
-    // Clearing the front buffer to black to avoid garbage pixels left over
-    // from previous uses of our bit of VRAM
-    glClear(GL_COLOR_BUFFER_BIT);
-    _glfwPlatformSwapBuffers(window);
-
-    if (wndconfig.visible || mode == GLFW_FULLSCREEN)
+    if (mode == GLFW_FULLSCREEN || wndconfig.visible)
         glfwShowWindow(window);
 
     return window;

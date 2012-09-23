@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static GLboolean reopen = GL_FALSE;
 static GLFWwindow window_handle = NULL;
 static int cursor_x;
 static int cursor_y;
@@ -77,10 +78,7 @@ static void key_callback(GLFWwindow window, int key, int action)
         case GLFW_KEY_R:
         {
             if (action == GLFW_PRESS)
-            {
-                glfwDestroyWindow(window);
-                open_window();
-            }
+                reopen = GL_TRUE;
 
             break;
         }
@@ -121,8 +119,6 @@ int main(void)
 
     if (!open_window())
     {
-        glfwTerminate();
-
         fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
@@ -135,6 +131,18 @@ int main(void)
 
         glfwSwapBuffers(window_handle);
         glfwWaitEvents();
+
+        if (reopen)
+        {
+            glfwDestroyWindow(window_handle);
+            if (!open_window())
+            {
+                fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+                exit(EXIT_FAILURE);
+            }
+
+            reopen = GL_FALSE;
+        }
     }
 
     glfwTerminate();

@@ -852,6 +852,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         }
 #endif /*_GLFW_HAS_XRANDR*/
 
+        _glfwPlatformShowWindow(window);
         enterFullscreenMode(window);
     }
 

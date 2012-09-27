@@ -141,7 +141,7 @@ extern "C" {
 /* Include the chosen OpenGL header and, optionally, the GLU header.
  */
 #if defined(__APPLE_CC__)
-  #if defined(GLFW_INCLUDE_GL3)
+  #if defined(GLFW_INCLUDE_GLCOREARB)
     #include <OpenGL/gl3.h>
   #else
     #define GL_GLEXT_LEGACY
@@ -151,8 +151,8 @@ extern "C" {
     #include <OpenGL/glu.h>
   #endif
 #else
-  #if defined(GLFW_INCLUDE_GL3)
-    #include <GL3/gl3.h>
+  #if defined(GLFW_INCLUDE_GLCOREARB)
+    #include <GL/glcorearb.h>
   #else
     #include <GL/gl.h>
   #endif

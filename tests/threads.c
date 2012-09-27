@@ -28,14 +28,14 @@
 //
 //========================================================================
 
+#include "tinycthread.h"
+
 #include <GL/glfw3.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
-
-#include "tinycthread.h"
 
 typedef struct
 {

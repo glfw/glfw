@@ -375,10 +375,6 @@ extern "C" {
  * Other definitions
  *************************************************************************/
 
-/* glfwCreateWindow modes */
-#define GLFW_WINDOWED             0x00010001
-#define GLFW_FULLSCREEN           0x00010002
-
 /* glfwGetWindowParam tokens */
 #define GLFW_ACTIVE               0x00020001
 #define GLFW_ICONIFIED            0x00020002
@@ -548,7 +544,7 @@ GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
 
 /* Window handling */
 GLFWAPI void glfwWindowHint(int target, int hint);
-GLFWAPI GLFWwindow glfwCreateWindow(int width, int height, int mode, const char* title, GLFWwindow share);
+GLFWAPI GLFWwindow glfwCreateWindow(int width, int height, const char* title, GLFWmonitor monitor, GLFWwindow share);
 GLFWAPI void glfwDestroyWindow(GLFWwindow window);
 GLFWAPI void glfwSetWindowTitle(GLFWwindow window, const char* title);
 GLFWAPI void glfwGetWindowSize(GLFWwindow window, int* width, int* height);

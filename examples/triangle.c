@@ -23,7 +23,7 @@ int main(void)
     }
 
     // Open a window and create its OpenGL context
-    window = glfwCreateWindow(640, 480, GLFW_WINDOWED, "Spinning Triangle", NULL);
+    window = glfwCreateWindow(640, 480, "Spinning Triangle", NULL, NULL);
     if (!window)
     {
         fprintf(stderr, "Failed to open GLFW window\n");

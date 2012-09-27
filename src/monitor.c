@@ -156,12 +156,20 @@ void _glfwInputMonitorChange(void)
 
     for (i = 0;  i < _glfwLibrary.monitorCount;  i++)
     {
+        _GLFWwindow* window;
+
         if (_glfwLibrary.monitors[i] == NULL)
             continue;
 
         // This monitor is no longer connected
         _glfwLibrary.monitorCallback(_glfwLibrary.monitors[i],
                                      GLFW_MONITOR_DISCONNECTED);
+
+        for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+        {
+            if (window->monitor == _glfwLibrary.monitors[i])
+                window->monitor = NULL;
+        }
     }
 
     _glfwDestroyMonitors();

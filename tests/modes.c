@@ -144,7 +144,8 @@ static void test_modes(GLFWmonitor monitor)
                format_mode(mode));
 
         window_handle = glfwCreateWindow(mode->width, mode->height,
-                                         GLFW_FULLSCREEN, "Video Mode Test",
+                                         "Video Mode Test",
+                                         glfwGetPrimaryMonitor(),
                                          NULL);
         if (!window_handle)
         {

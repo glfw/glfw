@@ -186,7 +186,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Joystick Test", NULL);
+    window = glfwCreateWindow(0, 0, "Joystick Test", NULL, NULL);
     if (!window)
     {
         glfwTerminate();

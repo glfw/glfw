@@ -47,7 +47,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "English 日本語 русский язык 官話", NULL);
+    window = glfwCreateWindow(0, 0, "English 日本語 русский язык 官話", NULL, NULL);
     if (!window)
     {
         fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));

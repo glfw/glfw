@@ -459,7 +459,7 @@ int main(void)
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
 
     // Open OpenGL window
-    window = glfwCreateWindow(500, 500, GLFW_WINDOWED, "Split view demo", NULL);
+    window = glfwCreateWindow(500, 500, "Split view demo", NULL, NULL);
     if (!window)
     {
         fprintf(stderr, "Failed to open GLFW window\n");

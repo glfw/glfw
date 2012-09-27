@@ -90,9 +90,8 @@ int main(void)
     for (i = 0;  i < count;  i++)
     {
         threads[i].window = glfwCreateWindow(200, 200,
-                                             GLFW_WINDOWED,
                                              threads[i].title,
-                                             NULL);
+                                             NULL, NULL);
         if (!threads[i].window)
         {
             fprintf(stderr, "Failed to open GLFW window: %s\n",

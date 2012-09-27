@@ -129,6 +129,7 @@ struct _GLFWwndconfig
     GLboolean     glDebug;
     int           glProfile;
     int           glRobustness;
+    _GLFWmonitor* monitor;
     _GLFWwindow*  share;
 };
 
@@ -176,6 +177,7 @@ struct _GLFWwindow
     GLboolean visible;         // GL_TRUE if this window is visible
     int       refreshRate;     // monitor refresh rate
     void*     userPointer;
+    _GLFWmonitor* monitor;
 
     // Window input state
     GLboolean stickyKeys;

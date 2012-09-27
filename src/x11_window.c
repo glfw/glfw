@@ -107,7 +107,7 @@ static GLboolean createWindow(_GLFWwindow* window,
             ExposureMask | FocusChangeMask | VisibilityChangeMask |
             EnterWindowMask | LeaveWindowMask;
 
-        if (wndconfig->mode == GLFW_WINDOWED)
+        if (!wndconfig->monitor)
         {
             // The /only/ reason for setting the background pixel here is that
             // otherwise our window won't get any decorations on systems using
@@ -138,7 +138,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         }
     }
 
-    if (window->mode == GLFW_FULLSCREEN && !_glfwLibrary.X11.hasEWMH)
+    if (window->monitor && !_glfwLibrary.X11.hasEWMH)
     {
         // This is the butcher's way of removing window decorations
         // Setting the override-redirect attribute on a window makes the window
@@ -851,7 +851,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     }
 #endif /*_GLFW_HAS_XRANDR*/
 
-    if (wndconfig->mode == GLFW_FULLSCREEN)
+    if (wndconfig->monitor)
     {
         _glfwPlatformShowWindow(window);
         enterFullscreenMode(window);
@@ -887,7 +887,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
-    if (window->mode == GLFW_FULLSCREEN)
+    if (window->monitor)
         leaveFullscreenMode(window);
 
     _glfwDestroyContext(window);
@@ -959,7 +959,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
     rate = window->refreshRate;
 
-    if (window->mode == GLFW_FULLSCREEN)
+    if (window->monitor)
     {
         // Get the closest matching video mode for the specified window size
         mode = _glfwGetClosestVideoMode(&width, &height, &rate);
@@ -979,15 +979,17 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
         XFree(hints);
     }
 
-    // Change window size before changing fullscreen mode?
-    if (window->mode == GLFW_FULLSCREEN && (width > window->width))
+    if (window->monitor)
     {
-        XResizeWindow(_glfwLibrary.X11.display, window->X11.handle, width, height);
-        sizeChanged = GL_TRUE;
-    }
+        // Change window size before changing fullscreen mode?
+        if (width > window->width)
+        {
+            XResizeWindow(_glfwLibrary.X11.display,
+                          window->X11.handle,
+                          width, height);
+            sizeChanged = GL_TRUE;
+        }
 
-    if (window->mode == GLFW_FULLSCREEN)
-    {
         // Change video mode, keeping current refresh rate
         _glfwSetVideoModeMODE(mode, window->refreshRate);
     }

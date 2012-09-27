@@ -97,7 +97,7 @@ static void size_callback(GLFWwindow window, int width, int height)
 int main(int argc, char** argv)
 {
     int width, height, ch;
-    int mode = GLFW_WINDOWED;
+    GLFWmonitor monitor = NULL;
     GLFWwindow window;
 
     while ((ch = getopt(argc, argv, "fh")) != -1)
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
                 exit(EXIT_SUCCESS);
 
             case 'f':
-                mode = GLFW_FULLSCREEN;
+                monitor = glfwGetPrimaryMonitor();
                 break;
 
             default:
@@ -124,10 +124,10 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    if (mode == GLFW_FULLSCREEN)
+    if (monitor)
     {
         GLFWvidmode mode;
-        glfwGetVideoMode(glfwGetPrimaryMonitor(), &mode);
+        glfwGetVideoMode(monitor, &mode);
         width = mode.width;
         height = mode.height;
     }
@@ -137,7 +137,7 @@ int main(int argc, char** argv)
         height = 0;
     }
 
-    window = glfwCreateWindow(width, height, mode, "Gamma Test", NULL);
+    window = glfwCreateWindow(width, height, "Gamma Test", monitor, NULL);
     if (!window)
     {
         glfwTerminate();

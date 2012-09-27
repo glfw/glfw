@@ -224,7 +224,8 @@ void _glfwInputWindowCloseRequest(_GLFWwindow* window)
 //========================================================================
 
 GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
-                                    int mode, const char* title,
+                                    const char* title,
+                                    GLFWmonitor monitor,
                                     GLFWwindow share)
 {
     _GLFWfbconfig fbconfig;
@@ -257,7 +258,6 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     fbconfig.samples        = Max(_glfwLibrary.hints.samples, 0);
 
     // Set up desired window config
-    wndconfig.mode           = mode;
     wndconfig.title          = title;
     wndconfig.refreshRate    = Max(_glfwLibrary.hints.refreshRate, 0);
     wndconfig.resizable      = _glfwLibrary.hints.resizable ? GL_TRUE : GL_FALSE;
@@ -268,6 +268,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     wndconfig.glDebug        = _glfwLibrary.hints.glDebug ? GL_TRUE : GL_FALSE;
     wndconfig.glProfile      = _glfwLibrary.hints.glProfile;
     wndconfig.glRobustness   = _glfwLibrary.hints.glRobustness ? GL_TRUE : GL_FALSE;
+    wndconfig.monitor        = (_GLFWmonitor*) monitor;
     wndconfig.share          = share;
 
     // Reset to default values for the next call
@@ -279,13 +280,6 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
 
     // Save the currently current context so it can be restored later
     previous = glfwGetCurrentContext();
-
-    if (mode != GLFW_WINDOWED && mode != GLFW_FULLSCREEN)
-    {
-        _glfwSetError(GLFW_INVALID_ENUM,
-                      "glfwCreateWindow: Invalid window mode");
-        return GL_FALSE;
-    }
 
     // Check width & height
     if (width > 0 && height <= 0)
@@ -320,10 +314,10 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     // Remember window settings
     window->width      = width;
     window->height     = height;
-    window->mode       = mode;
     window->resizable  = wndconfig.resizable;
     window->cursorMode = GLFW_CURSOR_NORMAL;
     window->systemKeys = GL_TRUE;
+    window->monitor    = (_GLFWmonitor*) monitor;
 
     // Open the actual window and create its context
     if (!_glfwPlatformCreateWindow(window, &wndconfig, &fbconfig))
@@ -364,10 +358,10 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
 
     // The GLFW specification states that fullscreen windows have the cursor
     // captured by default
-    if (mode == GLFW_FULLSCREEN)
+    if (wndconfig.monitor)
         glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_CAPTURED);
 
-    if (mode == GLFW_WINDOWED && wndconfig.visible)
+    if (wndconfig.monitor == NULL && wndconfig.visible)
         glfwShowWindow(window);
 
     return window;
@@ -570,7 +564,7 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow handle, int width, int height)
 
     _glfwPlatformSetWindowSize(window, width, height);
 
-    if (window->mode == GLFW_FULLSCREEN)
+    if (window->monitor)
     {
         // Refresh window parameters (may have changed due to changed video
         // modes)
@@ -615,7 +609,7 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow handle, int xpos, int ypos)
         return;
     }
 
-    if (window->mode == GLFW_FULLSCREEN || window->iconified)
+    if (window->monitor || window->iconified)
     {
         // TODO: Figure out if this is an error
         return;
@@ -665,7 +659,7 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow handle)
 
     _glfwPlatformRestoreWindow(window);
 
-    if (window->mode == GLFW_FULLSCREEN)
+    if (window->monitor)
         _glfwPlatformRefreshWindowParams(window);
 }
 
@@ -684,7 +678,7 @@ GLFWAPI void glfwShowWindow(GLFWwindow handle)
         return;
     }
 
-    if (window->mode == GLFW_FULLSCREEN)
+    if (window->monitor)
         return;
 
     _glfwPlatformShowWindow(window);
@@ -705,7 +699,7 @@ GLFWAPI void glfwHideWindow(GLFWwindow handle)
         return;
     }
 
-    if (window->mode == GLFW_FULLSCREEN)
+    if (window->monitor)
         return;
 
     _glfwPlatformHideWindow(window);

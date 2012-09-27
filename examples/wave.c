@@ -406,7 +406,7 @@ int main(int argc, char* argv[])
     glfwSetCursorPosCallback(cursor_position_callback);
     glfwSetScrollCallback(scroll_callback);
 
-    window = glfwCreateWindow(640, 480, GLFW_WINDOWED, "Wave Simulation", NULL);
+    window = glfwCreateWindow(640, 480, "Wave Simulation", NULL, NULL);
     if (!window)
     {
         fprintf(stderr, "Could not open window\n");

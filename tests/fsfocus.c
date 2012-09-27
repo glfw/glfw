@@ -82,7 +82,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwCreateWindow(640, 480, GLFW_FULLSCREEN, "Fullscreen focus", NULL);
+    window = glfwCreateWindow(640, 480, "Fullscreen focus", glfwGetPrimaryMonitor(), NULL);
     if (!window)
     {
         glfwTerminate();

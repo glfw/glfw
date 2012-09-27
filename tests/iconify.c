@@ -78,8 +78,8 @@ static void window_size_callback(GLFWwindow window, int width, int height)
 int main(int argc, char** argv)
 {
     int width, height, ch;
-    int mode = GLFW_WINDOWED;
     GLboolean active = -1, iconified = -1;
+    GLFWmonitor monitor = NULL;
     GLFWwindow window;
 
     while ((ch = getopt(argc, argv, "fh")) != -1)
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
                 exit(EXIT_SUCCESS);
 
             case 'f':
-                mode = GLFW_FULLSCREEN;
+                monitor = glfwGetPrimaryMonitor();
                 break;
 
             default:
@@ -106,12 +106,12 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    if (mode == GLFW_FULLSCREEN)
+    if (monitor)
     {
-        GLFWvidmode current_mode;
-        glfwGetVideoMode(glfwGetPrimaryMonitor(), &current_mode);
-        width = current_mode.width;
-        height = current_mode.height;
+        GLFWvidmode mode;
+        glfwGetVideoMode(monitor, &mode);
+        width = mode.width;
+        height = mode.height;
     }
     else
     {
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
         height = 0;
     }
 
-    window = glfwCreateWindow(width, height, mode, "Iconify", NULL);
+    window = glfwCreateWindow(width, height, "Iconify", monitor, NULL);
     if (!window)
     {
         glfwTerminate();

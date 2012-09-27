@@ -55,7 +55,7 @@ static GLFWwindow open_window(const char* title, GLFWwindow share)
 {
     GLFWwindow window;
 
-    window = glfwCreateWindow(WIDTH, HEIGHT, GLFW_WINDOWED, title, share);
+    window = glfwCreateWindow(WIDTH, HEIGHT, title, NULL, share);
     if (!window)
         return NULL;
 

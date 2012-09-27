@@ -98,7 +98,7 @@ int main(int argc, char** argv)
 
     glfwWindowHint(GLFW_FSAA_SAMPLES, samples);
 
-    window = glfwCreateWindow(800, 400, GLFW_WINDOWED, "Aliasing Detector", NULL);
+    window = glfwCreateWindow(800, 400, "Aliasing Detector", NULL, NULL);
     if (!window)
     {
         glfwTerminate();

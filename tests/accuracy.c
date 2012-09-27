@@ -90,7 +90,7 @@ int main(void)
     glfwSetWindowSizeCallback(window_size_callback);
     glfwSetKeyCallback(key_callback);
 
-    window = glfwCreateWindow(window_width, window_height, GLFW_WINDOWED, "", NULL);
+    window = glfwCreateWindow(window_width, window_height, "", NULL, NULL);
     if (!window)
     {
         glfwTerminate();

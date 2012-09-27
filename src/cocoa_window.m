@@ -674,7 +674,9 @@ static GLboolean createWindow(_GLFWwindow* window,
 {
     unsigned int styleMask = 0;
 
-    if (wndconfig->mode == GLFW_WINDOWED)
+    if (wndconfig->monitor)
+        styleMask = NSBorderlessWindowMask;
+    else
     {
         styleMask = NSTitledWindowMask | NSClosableWindowMask |
                     NSMiniaturizableWindowMask;
@@ -682,8 +684,6 @@ static GLboolean createWindow(_GLFWwindow* window,
         if (wndconfig->resizable)
             styleMask |= NSResizableWindowMask;
     }
-    else
-        styleMask = NSBorderlessWindowMask;
 
     window->NS.object = [[NSWindow alloc]
         initWithContentRect:NSMakeRect(0, 0, window->width, window->height)
@@ -788,7 +788,7 @@ static GLboolean createContext(_GLFWwindow* window,
 
     ADD_ATTR(NSOpenGLPFADoubleBuffer);
 
-    if (wndconfig->mode == GLFW_FULLSCREEN)
+    if (wndconfig->monitor)
     {
         ADD_ATTR(NSOpenGLPFANoRecovery);
         ADD_ATTR2(NSOpenGLPFAScreenMask,
@@ -919,7 +919,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     [window->NSGL.context setView:[window->NS.object contentView]];
 
-    if (wndconfig->mode == GLFW_FULLSCREEN)
+    if (wndconfig->monitor)
     {
         int bpp = colorBits + fbconfig->alphaBits;
 
@@ -952,7 +952,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     [window->NS.object orderOut:nil];
 
-    if (window->mode == GLFW_FULLSCREEN)
+    if (window->monitor)
     {
         [[window->NS.object contentView] exitFullScreenModeWithOptions:nil];
 
@@ -1121,7 +1121,7 @@ void _glfwPlatformWaitEvents( void )
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
 {
-    if (window->mode == GLFW_FULLSCREEN)
+    if (window->monitor)
     {
         CGPoint globalPoint = CGPointMake(x, y);
         CGDisplayMoveCursorToPoint(CGMainDisplayID(), globalPoint);

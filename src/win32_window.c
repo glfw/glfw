@@ -344,7 +344,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 if (window->cursorMode == GLFW_CURSOR_CAPTURED)
                     showCursor(window);
 
-                if (window->mode == GLFW_FULLSCREEN)
+                if (window->monitor)
                 {
                     if (!iconified)
                     {
@@ -367,7 +367,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 if (window->cursorMode == GLFW_CURSOR_CAPTURED)
                     captureCursor(window);
 
-                if (window->mode == GLFW_FULLSCREEN)
+                if (window->monitor)
                 {
                     if (!_glfwLibrary.Win32.monitor.modeChanged)
                     {
@@ -400,7 +400,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 case SC_SCREENSAVE:
                 case SC_MONITORPOWER:
                 {
-                    if (window->mode == GLFW_FULLSCREEN)
+                    if (window->monitor)
                     {
                         // We are running in fullscreen mode, so disallow
                         // screen saver and screen blanking
@@ -738,7 +738,7 @@ static int createWindow(_GLFWwindow* window,
     dwExStyle = WS_EX_APPWINDOW;
 
     // Set window style, depending on fullscreen mode
-    if (window->mode == GLFW_FULLSCREEN)
+    if (window->monitor)
     {
         dwStyle |= WS_POPUP;
 
@@ -775,7 +775,7 @@ static int createWindow(_GLFWwindow* window,
     // Adjust window position to working area (e.g. if the task bar is at
     // the top of the display). Fullscreen windows are always opened in
     // the upper left corner regardless of the desktop working area.
-    if (window->mode == GLFW_FULLSCREEN)
+    if (window->monitor)
         wa.left = wa.top = 0;
     else
         SystemParametersInfo(SPI_GETWORKAREA, 0, &wa, 0);
@@ -866,7 +866,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             return GL_FALSE;
     }
 
-    if (window->mode == GLFW_FULLSCREEN)
+    if (window->monitor)
     {
         int bpp = fbconfig->redBits + fbconfig->greenBits + fbconfig->blueBits;
         if (bpp < 15 || bpp >= 24)
@@ -962,7 +962,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             return GL_FALSE;
     }
 
-    if (window->mode == GLFW_FULLSCREEN)
+    if (window->monitor)
     {
         // Place the window above all topmost windows
         _glfwPlatformShowWindow(window);
@@ -982,7 +982,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     destroyWindow(window);
 
-    if (window->mode == GLFW_FULLSCREEN)
+    if (window->monitor)
     {
         if (_glfwLibrary.Win32.monitor.modeChanged)
         {
@@ -1021,7 +1021,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     GLboolean sizeChanged = GL_FALSE;
 
-    if (window->mode == GLFW_FULLSCREEN)
+    if (window->monitor)
     {
         if (width > window->width || height > window->height)
         {

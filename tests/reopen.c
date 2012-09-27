@@ -41,19 +41,6 @@
 static GLFWwindow window_handle = NULL;
 static GLboolean closed = GL_FALSE;
 
-static const char* get_mode_name(int mode)
-{
-    switch (mode)
-    {
-        case GLFW_WINDOWED:
-            return "windowed";
-        case GLFW_FULLSCREEN:
-            return "fullscreen";
-        default:
-            return "unknown";
-    }
-}
-
 static void window_size_callback(GLFWwindow window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -80,22 +67,18 @@ static void key_callback(GLFWwindow window, int key, int action)
     }
 }
 
-static GLboolean open_window(int width, int height, int mode)
+static GLboolean open_window(int width, int height, GLFWmonitor monitor)
 {
     double base;
 
-    if (!glfwInit())
-    {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-        return GL_FALSE;
-    }
-
     base = glfwGetTime();
 
-    window_handle = glfwCreateWindow(width, height, mode, "Window Re-opener", NULL);
+    window_handle = glfwCreateWindow(width, height, "Window Re-opener", monitor, NULL);
     if (!window_handle)
     {
-        fprintf(stderr, "Failed to open %s mode GLFW window: %s\n", get_mode_name(mode), glfwErrorString(glfwGetError()));
+        fprintf(stderr, "Failed to open %s mode GLFW window: %s\n",
+                monitor ? "fullscreen" : "windowed",
+                glfwErrorString(glfwGetError()));
         return GL_FALSE;
     }
 
@@ -107,7 +90,7 @@ static GLboolean open_window(int width, int height, int mode)
     glfwSetKeyCallback(key_callback);
 
     printf("Opening %s mode window took %0.3f seconds\n",
-           get_mode_name(mode),
+           monitor ? "fullscreen" : "windowed",
            glfwGetTime() - base);
 
     return GL_TRUE;
@@ -121,17 +104,26 @@ static void close_window(void)
     window_handle = NULL;
 
     printf("Closing window took %0.3f seconds\n", glfwGetTime() - base);
-
-    glfwTerminate();
 }
 
 int main(int argc, char** argv)
 {
     int count = 0;
 
+    if (!glfwInit())
+    {
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        return GL_FALSE;
+    }
+
     for (;;)
     {
-        if (!open_window(640, 480, (count & 1) ? GLFW_FULLSCREEN : GLFW_WINDOWED))
+        GLFWmonitor monitor = NULL;
+
+        if (count & 1)
+            monitor = glfwGetPrimaryMonitor();
+
+        if (!open_window(640, 480, monitor))
             exit(EXIT_FAILURE);
 
         glMatrixMode(GL_PROJECTION);

@@ -3,6 +3,10 @@ include_directories(${GLFW_SOURCE_DIR}/src
                     ${GLFW_BINARY_DIR}/src
                     ${glfw_INCLUDE_DIRS})
 
+if (MSVC)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
+
 set(common_HEADERS ${GLFW_SOURCE_DIR}/include/GL/glfw3.h internal.h)
 set(common_SOURCES clipboard.c gamma.c init.c input.c joystick.c monitor.c
                    opengl.c time.c window.c)

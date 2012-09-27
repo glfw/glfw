@@ -269,7 +269,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     wndconfig.glProfile      = _glfwLibrary.hints.glProfile;
     wndconfig.glRobustness   = _glfwLibrary.hints.glRobustness ? GL_TRUE : GL_FALSE;
     wndconfig.monitor        = (_GLFWmonitor*) monitor;
-    wndconfig.share          = share;
+    wndconfig.share          = (_GLFWwindow*) share;
 
     // Reset to default values for the next call
     _glfwSetDefaultWindowHints();

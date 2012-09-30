@@ -745,6 +745,8 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window->resizable;
         case GLFW_VISIBLE:
             return window->visible;
+        case GLFW_CLIENT_API:
+            return window->clientAPI;
         case GLFW_OPENGL_VERSION_MAJOR:
             return window->glMajor;
         case GLFW_OPENGL_VERSION_MINOR:

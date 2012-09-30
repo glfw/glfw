@@ -118,7 +118,6 @@ struct _GLFWhints
 //------------------------------------------------------------------------
 struct _GLFWwndconfig
 {
-    int           mode;
     const char*   title;
     int           refreshRate;
     GLboolean     resizable;

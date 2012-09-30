@@ -61,7 +61,7 @@ static void usage(void)
 
 static void error_callback(int error, const char* description)
 {
-    fprintf(stderr, "Error: %s in %s\n", glfwErrorString(error), description);
+    fprintf(stderr, "Error: %s\n", description);
 }
 
 static const char* get_client_api_name(int api)

@@ -100,6 +100,7 @@ struct _GLFWhints
     GLboolean   resizable;
     GLboolean   visible;
     int         samples;
+    int         clientAPI;
     int         glMajor;
     int         glMinor;
     GLboolean   glForward;
@@ -122,6 +123,7 @@ struct _GLFWwndconfig
     int           refreshRate;
     GLboolean     resizable;
     GLboolean     visible;
+    int           clientAPI;
     int           glMajor;
     int           glMinor;
     GLboolean     glForward;
@@ -188,6 +190,7 @@ struct _GLFWwindow
     char      key[GLFW_KEY_LAST + 1];
 
     // OpenGL extensions and context attributes
+    int       clientAPI;
     int       glMajor, glMinor, glRevision;
     GLboolean glForward, glDebug;
     int       glProfile;

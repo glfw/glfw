@@ -560,6 +560,7 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow window);
 GLFWAPI void glfwShowWindow(GLFWwindow window);
 GLFWAPI void glfwHideWindow(GLFWwindow window);
 GLFWAPI int  glfwGetWindowParam(GLFWwindow window, int param);
+GLFWAPI GLFWmonitor glfwGetWindowMonitor(GLFWwindow window);
 GLFWAPI void glfwSetWindowUserPointer(GLFWwindow window, void* pointer);
 GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow window);
 GLFWAPI void glfwSetWindowSizeCallback(GLFWwindowsizefun cbfun);

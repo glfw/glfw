@@ -764,6 +764,24 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
 
 
 //========================================================================
+// Get window monitor
+//========================================================================
+
+GLFWAPI GLFWmonitor glfwGetWindowMonitor(GLFWwindow handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return NULL;
+    }
+
+    return (GLFWmonitor) window->monitor;
+}
+
+
+//========================================================================
 // Set the user pointer for the specified window
 //========================================================================
 

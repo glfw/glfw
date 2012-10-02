@@ -308,14 +308,12 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
         height = 480;
     }
 
-    window = (_GLFWwindow*) malloc(sizeof(_GLFWwindow));
+    window = (_GLFWwindow*) calloc(1, sizeof(_GLFWwindow));
     if (!window)
     {
         _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
         return NULL;
     }
-
-    memset(window, 0, sizeof(_GLFWwindow));
 
     window->next = _glfwLibrary.windowListHead;
     _glfwLibrary.windowListHead = window;

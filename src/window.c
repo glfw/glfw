@@ -76,7 +76,8 @@ void _glfwSetDefaultWindowHints(void)
 {
     memset(&_glfwLibrary.hints, 0, sizeof(_glfwLibrary.hints));
 
-    // The default minimum OpenGL version is 1.0
+    // The default is OpenGL with minimum version 1.0
+    _glfwLibrary.hints.clientAPI = GLFW_OPENGL_API;
     _glfwLibrary.hints.glMajor = 1;
     _glfwLibrary.hints.glMinor = 0;
 
@@ -84,11 +85,12 @@ void _glfwSetDefaultWindowHints(void)
     _glfwLibrary.hints.resizable = GL_TRUE;
     _glfwLibrary.hints.visible   = GL_TRUE;
 
-    // The default is 24 bits of depth, 8 bits of color
-    _glfwLibrary.hints.depthBits = 24;
-    _glfwLibrary.hints.redBits   = 8;
-    _glfwLibrary.hints.greenBits = 8;
-    _glfwLibrary.hints.blueBits  = 8;
+    // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil
+    _glfwLibrary.hints.redBits     = 8;
+    _glfwLibrary.hints.greenBits   = 8;
+    _glfwLibrary.hints.blueBits    = 8;
+    _glfwLibrary.hints.depthBits   = 24;
+    _glfwLibrary.hints.stencilBits = 8;
 }
 
 
@@ -262,6 +264,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     wndconfig.refreshRate    = Max(_glfwLibrary.hints.refreshRate, 0);
     wndconfig.resizable      = _glfwLibrary.hints.resizable ? GL_TRUE : GL_FALSE;
     wndconfig.visible        = _glfwLibrary.hints.visible ? GL_TRUE : GL_FALSE;
+    wndconfig.clientAPI      = _glfwLibrary.hints.clientAPI;
     wndconfig.glMajor        = _glfwLibrary.hints.glMajor;
     wndconfig.glMinor        = _glfwLibrary.hints.glMinor;
     wndconfig.glForward      = _glfwLibrary.hints.glForward ? GL_TRUE : GL_FALSE;
@@ -429,6 +432,9 @@ GLFWAPI void glfwWindowHint(int target, int hint)
             break;
         case GLFW_FSAA_SAMPLES:
             _glfwLibrary.hints.samples = hint;
+            break;
+        case GLFW_CLIENT_API:
+            _glfwLibrary.hints.clientAPI = hint;
             break;
         case GLFW_OPENGL_VERSION_MAJOR:
             _glfwLibrary.hints.glMajor = hint;
@@ -734,6 +740,8 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window->resizable;
         case GLFW_VISIBLE:
             return window->visible;
+        case GLFW_CLIENT_API:
+            return window->clientAPI;
         case GLFW_OPENGL_VERSION_MAJOR:
             return window->glMajor;
         case GLFW_OPENGL_VERSION_MINOR:

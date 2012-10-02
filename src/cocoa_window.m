@@ -729,6 +729,13 @@ static GLboolean createContext(_GLFWwindow* window,
     else if (colorBits < 15)
         colorBits = 15;
 
+    if (wndconfig->clientAPI != GLFW_OPENGL_ES_API)
+    {
+        _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                      "Cocoa/NSOpenGL: NSOpenGL does not support OpenGL ES");
+        return GL_FALSE;
+    }
+
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     // Fail if any OpenGL version above 2.1 other than 3.2 was requested
     if (wndconfig->glMajor > 3 ||

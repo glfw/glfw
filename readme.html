@@ -267,6 +267,11 @@ version of GLFW.</p>
 
 <h3>v3.0</h3>
 <ul>
+  <li>Added <code>GLFWmonitor</code> monitor handle type and updated monitor-related functions to take a monitor handle</li>
+  <li>Added <code>glfwGetMonitors</code> and <code>glfwGetPrimaryMonitor</code> for enumerating available monitors</li>
+  <li>Added <code>glfwGetMonitorParam</code> and <code>glfwGetMonitorString</code> for retrieving monitor properties</li>
+  <li>Added <code>glfwSetMonitorUserPointer</code> and <code>glfwGetMonitorUserPointer</code> for per-monitor user pointers</li>
+  <li>Added <code>glfwSetMonitorCallback</code> and <code>GLFWmonitorfun</code> for notification of changes in the set of available monitors</li>
   <li>Added <code>GLFWwindow</code> window handle type and updated window-related functions and callbacks to take a window handle</li>
   <li>Added <code>glfwMakeContextCurrent</code> function for making the context of the specified window current</li>
   <li>Added <code>glfwGetError</code> and <code>glfwErrorString</code> error reporting functions and a number of error tokens</li>
@@ -274,6 +279,7 @@ version of GLFW.</p>
   <li>Added <code>glfwSetWindowUserPointer</code> and <code>glfwGetWindowUserPointer</code> functions for per-window user pointers</li>
   <li>Added <code>glfwGetVersionString</code> function for determining which code paths were enabled at compile time</li>
   <li>Added <code>glfwGetWindowPos</code> function for querying the position of the specified window</li>
+  <li>Added <code>glfwGetWindowMonitor</code> for querying the monitor, if any, of the specified window</li>
   <li>Added <code>glfwSetWindowFocusCallback</code> function and <code>GLFWwindowfocusfun</code> type for receiving window focus events</li>
   <li>Added <code>glfwSetWindowIconifyCallback</code> function and <code>GLFWwindowiconifyfun</code> type for receiving window iconification events</li>
   <li>Added <code>glfwGetClipboardString</code> and <code>glfwSetClipboardString</code> functions for interacting with the system clipboard</li>
@@ -294,7 +300,7 @@ version of GLFW.</p>
   <li>Changed buffer bit depth parameters of <code>glfwOpenWindow</code> to window hints</li>
   <li>Changed <code>glfwOpenWindow</code> and <code>glfwSetWindowTitle</code> to use UTF-8 encoded strings</li>
   <li>Changed <code>glfwGetProcAddress</code> to return a (generic) function pointer</li>
-  <li>Changed <code>glfwGetVideoModes</code> to return a dynamic, unlimited number of video modes</li>
+  <li>Changed <code>glfwGetVideoModes</code> to return a dynamic, unlimited number of video modes for the specified monitor</li>
   <li>Renamed <code>glfw.h</code> to <code>glfw3.h</code> to avoid conflicts with 2.x series</li>
   <li>Renamed <code>glfwOpenWindowHint</code> to <code>glfwWindowHint</code></li>
   <li>Renamed <code>GLFW_WINDOW_NO_RESIZE</code> to <code>GLFW_RESIZABLE</code></li>

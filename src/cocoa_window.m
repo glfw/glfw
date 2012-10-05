@@ -1107,7 +1107,7 @@ void _glfwPlatformPollEvents(void)
 // Wait for new window and input events
 //========================================================================
 
-void _glfwPlatformWaitEvents( void )
+void _glfwPlatformWaitEvents(void)
 {
     // I wanted to pass NO to dequeue:, and rely on PollEvents to
     // dequeue and send.  For reasons not at all clear to me, passing

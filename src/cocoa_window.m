@@ -654,9 +654,9 @@ static GLboolean initializeAppKit(void)
     // Implicitly create shared NSApplication instance
     [GLFWApplication sharedApplication];
 
-    // Setting up the menu bar must go between sharedApplication
-    // above and finishLaunching below, in order to properly emulate the
-    // behavior of NSApplicationMain
+    // Menu bar setup must go between sharedApplication above and
+    // finishLaunching below, in order to properly emulate the behavior
+    // of NSApplicationMain
     createMenuBar();
 
     [NSApp finishLaunching];

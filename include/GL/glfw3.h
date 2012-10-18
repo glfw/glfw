@@ -458,7 +458,6 @@ extern "C" {
 #define GLFW_GAMMA_RAMP_SIZE      256
 
 /* Monitor constants */
-#define GLFW_MONITOR_NAME            0x00060000
 #define GLFW_MONITOR_PHYSICAL_WIDTH  0x00060001
 #define GLFW_MONITOR_PHYSICAL_HEIGHT 0x00060002
 #define GLFW_MONITOR_SCREEN_POS_X    0x00060003
@@ -532,7 +531,7 @@ GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
 GLFWAPI GLFWmonitor* glfwGetMonitors(int* count);
 GLFWAPI GLFWmonitor glfwGetPrimaryMonitor(void);
 GLFWAPI int  glfwGetMonitorParam(GLFWmonitor monitor, int param);
-GLFWAPI const char* glfwGetMonitorString(GLFWmonitor monitor, int param);
+GLFWAPI const char* glfwGetMonitorName(GLFWmonitor monitor);
 GLFWAPI void glfwSetMonitorUserPointer(GLFWmonitor monitor, void* pointer);
 GLFWAPI void* glfwGetMonitorUserPointer(GLFWmonitor monitor);
 GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun);

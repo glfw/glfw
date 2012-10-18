@@ -334,7 +334,7 @@ GLFWAPI int glfwGetMonitorParam(GLFWmonitor handle, int param)
 // Get monitor string
 //========================================================================
 
-GLFWAPI const char* glfwGetMonitorString(GLFWmonitor handle, int param)
+GLFWAPI const char* glfwGetMonitorName(GLFWmonitor handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
 
@@ -351,15 +351,7 @@ GLFWAPI const char* glfwGetMonitorString(GLFWmonitor handle, int param)
         return NULL;
     }
 
-    switch (param)
-    {
-        case GLFW_MONITOR_NAME:
-            return monitor->name;
-    }
-
-    _glfwSetError(GLFW_INVALID_ENUM,
-                  "glfwGetMonitorString: Invalid enum value for 'param' parameter");
-    return NULL;
+    return monitor->name;
 }
 
 

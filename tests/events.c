@@ -366,7 +366,7 @@ void monitor_callback(GLFWmonitor monitor, int event)
     printf("%08x at %0.3f: Monitor %s %s\n",
            counter++,
            glfwGetTime(),
-           glfwGetMonitorString(monitor, GLFW_MONITOR_NAME),
+           glfwGetMonitorName(monitor),
            get_monitor_event_name(event));
 
 }

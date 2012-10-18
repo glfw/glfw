@@ -411,7 +411,7 @@ static GLboolean createContext(_GLFWwindow* window,
 
         if (wndconfig->glRobustness)
         {
-            int strategy;
+            int strategy = 0;
 
             if (!window->WGL.ARB_create_context_robustness)
             {

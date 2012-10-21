@@ -1084,19 +1084,17 @@ void _glfwPlatformRefreshWindowParams(_GLFWwindow* window)
 
 void _glfwPlatformPollEvents(void)
 {
-    NSEvent* event;
-
-    do
+    for (;;)
     {
-        event = [NSApp nextEventMatchingMask:NSAnyEventMask
-                                   untilDate:[NSDate distantPast]
-                                      inMode:NSDefaultRunLoopMode
-                                     dequeue:YES];
+        NSEvent* event = [NSApp nextEventMatchingMask:NSAnyEventMask
+                                            untilDate:[NSDate distantPast]
+                                               inMode:NSDefaultRunLoopMode
+                                              dequeue:YES];
+        if (event == nil)
+            break;
 
-        if (event)
-            [NSApp sendEvent:event];
+        [NSApp sendEvent:event];
     }
-    while (event);
 
     [_glfwLibrary.NS.autoreleasePool drain];
     _glfwLibrary.NS.autoreleasePool = [[NSAutoreleasePool alloc] init];

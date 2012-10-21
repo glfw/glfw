@@ -107,43 +107,6 @@ static _GLFWvidsize* getResolutions(_GLFWmonitor* monitor, int* found)
         XRRFreeScreenResources(sr);
 #endif /*_GLFW_HAS_XRANDR*/
     }
-    else if (_glfwLibrary.X11.VidMode.available)
-    {
-#if defined(_GLFW_HAS_XF86VIDMODE)
-        XF86VidModeModeInfo** modes;
-        int i, j, modeCount;
-
-        XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,
-                                   _glfwLibrary.X11.screen,
-                                   &modeCount, &modes);
-
-        result = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize) * modeCount);
-
-        for (i = 0;  i < modeCount;  i++)
-        {
-            _GLFWvidsize size;
-            size.width  = modes[i]->hdisplay;
-            size.height = modes[i]->vdisplay;
-
-            for (j = 0;  j < *found;  j++)
-            {
-                if (memcmp(result + j, &size, sizeof(_GLFWvidsize)) == 0)
-                    break;
-            }
-
-            if (j < *found)
-            {
-                // This size is a duplicate, so skip it
-                continue;
-            }
-
-            result[*found] = size;
-            (*found)++;
-        }
-
-        XFree(modes);
-#endif /*_GLFW_HAS_XF86VIDMODE*/
-    }
 
     if (result == NULL)
     {
@@ -235,46 +198,6 @@ int _glfwGetClosestVideoMode(int* width, int* height, int* rate)
             return bestsize;
 #endif /*_GLFW_HAS_XRANDR*/
     }
-    else if (_glfwLibrary.X11.VidMode.available)
-    {
-#if defined(_GLFW_HAS_XF86VIDMODE)
-        XF86VidModeModeInfo** modelist;
-        int bestmode, modecount;
-
-        // Get a list of all available display modes
-        XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,
-                                   _glfwLibrary.X11.screen,
-                                   &modecount, &modelist);
-
-        // Find the best matching mode
-        bestmode  = -1;
-        bestmatch = INT_MAX;
-        for (i = 0;  i < modecount;  i++)
-        {
-            match = (*width - modelist[i]->hdisplay) *
-                    (*width - modelist[i]->hdisplay) +
-                    (*height - modelist[i]->vdisplay) *
-                    (*height - modelist[i]->vdisplay);
-            if (match < bestmatch)
-            {
-                bestmatch = match;
-                bestmode  = i;
-            }
-        }
-
-        if (bestmode != -1)
-        {
-            // Report width & height of best matching mode
-            *width = modelist[bestmode]->hdisplay;
-            *height = modelist[bestmode]->vdisplay;
-        }
-
-        XFree(modelist);
-
-        if (bestmode != -1)
-            return bestmode;
-#endif /*_GLFW_HAS_XF86VIDMODE*/
-    }
 
     // Default: Simply use the screen resolution
     *width = DisplayWidth(_glfwLibrary.X11.display, _glfwLibrary.X11.screen);
@@ -336,50 +259,6 @@ void _glfwSetVideoModeMODE(int mode, int rate)
         XRRFreeScreenConfigInfo(sc);
 #endif /*_GLFW_HAS_XRANDR*/
     }
-    else if (_glfwLibrary.X11.VidMode.available)
-    {
-#if defined(_GLFW_HAS_XF86VIDMODE)
-        XF86VidModeModeInfo **modelist;
-        int modecount;
-
-        // Get a list of all available display modes
-        XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,
-                                   _glfwLibrary.X11.screen,
-                                   &modecount, &modelist);
-
-        // Unlock mode switch if necessary
-        if (_glfwLibrary.X11.FS.modeChanged)
-        {
-            XF86VidModeLockModeSwitch(_glfwLibrary.X11.display,
-                                      _glfwLibrary.X11.screen,
-                                      0);
-        }
-
-        // Change the video mode to the desired mode
-        XF86VidModeSwitchToMode(_glfwLibrary.X11.display,
-                                _glfwLibrary.X11.screen,
-                                modelist[mode]);
-
-        // Set viewport to upper left corner (where our window will be)
-        XF86VidModeSetViewPort(_glfwLibrary.X11.display,
-                               _glfwLibrary.X11.screen,
-                               0, 0);
-
-        // Lock mode switch
-        XF86VidModeLockModeSwitch(_glfwLibrary.X11.display,
-                                  _glfwLibrary.X11.screen,
-                                  1);
-
-        // Remember old mode and flag that we have changed the mode
-        if (!_glfwLibrary.X11.FS.modeChanged)
-        {
-            _glfwLibrary.X11.FS.oldMode = *modelist[0];
-            _glfwLibrary.X11.FS.modeChanged = GL_TRUE;
-        }
-
-        XFree(modelist);
-#endif /*_GLFW_HAS_XF86VIDMODE*/
-    }
 }
 
 
@@ -427,20 +306,6 @@ void _glfwRestoreVideoMode(void)
                 XRRFreeScreenConfigInfo(sc);
             }
 #endif /*_GLFW_HAS_XRANDR*/
-        }
-        else if (_glfwLibrary.X11.VidMode.available)
-        {
-#if defined(_GLFW_HAS_XF86VIDMODE)
-            // Unlock mode switch
-            XF86VidModeLockModeSwitch(_glfwLibrary.X11.display,
-                                      _glfwLibrary.X11.screen,
-                                      0);
-
-            // Change the video mode back to the old mode
-            XF86VidModeSwitchToMode(_glfwLibrary.X11.display,
-                                    _glfwLibrary.X11.screen,
-                                    &_glfwLibrary.X11.FS.oldMode);
-#endif /*_GLFW_HAS_XF86VIDMODE*/
         }
 
         _glfwLibrary.X11.FS.modeChanged = GL_FALSE;

@@ -1101,22 +1101,6 @@ void _glfwPlatformRefreshWindowParams(_GLFWwindow* window)
         XRRFreeScreenConfigInfo(sc);
 #endif /*_GLFW_HAS_XRANDR*/
     }
-    else if (_glfwLibrary.X11.VidMode.available)
-    {
-#if defined(_GLFW_HAS_XF86VIDMODE)
-        XF86VidModeModeLine modeline;
-        int dotclock;
-        float pixels_per_second, pixels_per_frame;
-
-        // Use the XF86VidMode extension to get current video mode
-        XF86VidModeGetModeLine(_glfwLibrary.X11.display,
-                               _glfwLibrary.X11.screen,
-                               &dotclock, &modeline);
-        pixels_per_second = 1000.0f * (float) dotclock;
-        pixels_per_frame  = (float) modeline.htotal * modeline.vtotal;
-        window->refreshRate = (int) (pixels_per_second / pixels_per_frame + 0.5);
-#endif /*_GLFW_HAS_XF86VIDMODE*/
-    }
     else
     {
         // Zero means unknown according to the GLFW spec

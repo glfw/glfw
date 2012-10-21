@@ -95,6 +95,12 @@ int main(int argc, char** argv)
     GLFWmonitor monitor = NULL;
     GLFWwindow window;
 
+    if (!glfwInit())
+    {
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
+    }
+
     while ((ch = getopt(argc, argv, "fh")) != -1)
     {
         switch (ch)
@@ -111,12 +117,6 @@ int main(int argc, char** argv)
                 usage();
                 exit(EXIT_FAILURE);
         }
-    }
-
-    if (!glfwInit())
-    {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-        exit(EXIT_FAILURE);
     }
 
     if (monitor)

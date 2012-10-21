@@ -52,7 +52,6 @@ typedef struct
 
 static _GLFWvidsize* getResolutions(_GLFWmonitor* monitor, int* found)
 {
-    int i, j;
     _GLFWvidsize* result = NULL;
 
     *found = 0;
@@ -62,28 +61,57 @@ static _GLFWvidsize* getResolutions(_GLFWmonitor* monitor, int* found)
     if (_glfwLibrary.X11.RandR.available)
     {
 #if defined(_GLFW_HAS_XRANDR)
-        XRRScreenConfiguration* sc;
-        XRRScreenSize* sizes;
+        XRRScreenResources* sr;
+        int i, j, count = monitor->X11.output->nmode;
 
-        sc = XRRGetScreenInfo(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
-        sizes = XRRConfigSizes(sc, found);
+        sr = XRRGetScreenResources(_glfwLibrary.X11.display,
+                                   _glfwLibrary.X11.root);
 
-        result = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize) * *found);
+        result = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize) * count);
 
-        for (i = 0;  i < *found;  i++)
+        for (i = 0;  i < count;  i++)
         {
-            result[i].width  = sizes[i].width;
-            result[i].height = sizes[i].height;
+            _GLFWvidsize size;
+
+            for (j = 0;  j < sr->nmode;  j++)
+            {
+                if (sr->modes[j].id == monitor->X11.output->modes[i])
+                    break;
+            }
+
+            if (j == sr->nmode)
+                continue;
+
+            size.width  = sr->modes[j].width;
+            size.height = sr->modes[j].height;
+
+            for (j = 0;  j < *found;  j++)
+            {
+                if (result[j].width == size.width &&
+                    result[j].height == size.height)
+                {
+                    break;
+                }
+            }
+
+            if (j < *found)
+            {
+                // This is a duplicate, so skip it
+                continue;
+            }
+
+            result[*found] = size;
+            (*found)++;
         }
 
-        XRRFreeScreenConfigInfo(sc);
+        XRRFreeScreenResources(sr);
 #endif /*_GLFW_HAS_XRANDR*/
     }
     else if (_glfwLibrary.X11.VidMode.available)
     {
 #if defined(_GLFW_HAS_XF86VIDMODE)
         XF86VidModeModeInfo** modes;
-        int modeCount;
+        int i, j, modeCount;
 
         XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,
                                    _glfwLibrary.X11.screen,

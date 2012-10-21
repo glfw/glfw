@@ -404,9 +404,12 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
 void _glfwPlatformDestroyMonitor(_GLFWmonitor* monitor)
 {
+    if (_glfwLibrary.X11.RandR.available)
+    {
 #if defined (_GLFW_HAS_XRANDR)
-    XRRFreeOutputInfo(monitor->X11.output);
+        XRRFreeOutputInfo(monitor->X11.output);
 #endif /*_GLFW_HAS_XRANDR*/
+    }
 }
 
 

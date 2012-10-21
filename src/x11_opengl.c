@@ -619,8 +619,6 @@ void _glfwDestroyContext(_GLFWwindow* window)
 
     if (window->GLX.context)
     {
-        // Release and destroy the context
-        glXMakeCurrent(_glfwLibrary.X11.display, None, NULL);
         glXDestroyContext(_glfwLibrary.X11.display, window->GLX.context);
         window->GLX.context = NULL;
     }

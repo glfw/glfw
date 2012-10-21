@@ -483,8 +483,8 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow handle)
     if (window == NULL)
         return;
 
-    // Clear the current context if this window's context is current
-    // TODO: Re-examine this in light of multithreading
+    // The window's context must not be current on another thread when the
+    // window is destroyed
     if (window == _glfwPlatformGetCurrentContext())
         _glfwPlatformMakeContextCurrent(NULL);
 

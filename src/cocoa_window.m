@@ -969,9 +969,6 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     [window->NSGL.pixelFormat release];
     window->NSGL.pixelFormat = nil;
 
-    if ([NSOpenGLContext currentContext] == window->NSGL.context)
-        [NSOpenGLContext clearCurrentContext];
-
     [window->NSGL.context release];
     window->NSGL.context = nil;
 

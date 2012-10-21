@@ -612,13 +612,49 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
+    if (_glfwLibrary.X11.RandR.available)
+    {
+#if defined (_GLFW_HAS_XRANDR)
+        XRRScreenResources* sr;
+        XRRCrtcInfo* ci;
+
+        sr = XRRGetScreenResources(_glfwLibrary.X11.display,
+                                   _glfwLibrary.X11.root);
+        if (!sr)
+        {
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "X11: Failed to retrieve RandR screen resources");
+            return;
+        }
+
+        ci = XRRGetCrtcInfo(_glfwLibrary.X11.display,
+                            sr, monitor->X11.output->crtc);
+        if (!ci)
+        {
+            XRRFreeScreenResources(sr);
+
+            _glfwSetError(GLFW_PLATFORM_ERROR,
+                          "X11: Failed to retrieve RandR crtc info");
+            return;
+        }
+
+        mode->width = ci->width;
+        mode->height = ci->height;
+
+        XRRFreeCrtcInfo(ci);
+        XRRFreeScreenResources(sr);
+#endif /*_GLFW_HAS_XRANDR*/
+    }
+    else
+    {
+        mode->width = DisplayWidth(_glfwLibrary.X11.display,
+                                _glfwLibrary.X11.screen);
+        mode->height = DisplayHeight(_glfwLibrary.X11.display,
+                                    _glfwLibrary.X11.screen);
+    }
+
     _glfwSplitBPP(DefaultDepth(_glfwLibrary.X11.display,
                                _glfwLibrary.X11.screen),
                   &mode->redBits, &mode->greenBits, &mode->blueBits);
-
-    mode->width = DisplayWidth(_glfwLibrary.X11.display,
-                               _glfwLibrary.X11.screen);
-    mode->height = DisplayHeight(_glfwLibrary.X11.display,
-                                 _glfwLibrary.X11.screen);
 }
 

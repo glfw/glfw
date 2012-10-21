@@ -98,8 +98,6 @@ static GLboolean createWindow(_GLFWwindow* window,
 
     // Create the actual window
     {
-        int screenX, screenY;
-
         wamask = CWBorderPixel | CWColormap | CWEventMask;
 
         wa.colormap = window->X11.colormap;
@@ -109,12 +107,7 @@ static GLboolean createWindow(_GLFWwindow* window,
                         ExposureMask | FocusChangeMask | VisibilityChangeMask |
                         EnterWindowMask | LeaveWindowMask;
 
-        if (wndconfig->monitor)
-        {
-            screenX = wndconfig->monitor->screenX;
-            screenY = wndconfig->monitor->screenY;
-        }
-        else
+        if (wndconfig->monitor == NULL)
         {
             // The /only/ reason for setting the background pixel here is that
             // otherwise our window won't get any decorations on systems using
@@ -122,14 +115,11 @@ static GLboolean createWindow(_GLFWwindow* window,
             wa.background_pixel = BlackPixel(_glfwLibrary.X11.display,
                                              _glfwLibrary.X11.screen);
             wamask |= CWBackPixel;
-
-            screenX = 0;
-            screenY = 0;
         }
 
         window->X11.handle = XCreateWindow(_glfwLibrary.X11.display,
                                            _glfwLibrary.X11.root,
-                                           screenX, screenY,
+                                           0, 0,
                                            window->width, window->height,
                                            0,              // Border width
                                            visual->depth,  // Color depth
@@ -224,6 +214,13 @@ static GLboolean createWindow(_GLFWwindow* window,
         }
 
         hints->flags = 0;
+
+        if (wndconfig->monitor)
+        {
+            hints->flags |= PPosition;
+            hints->x = wndconfig->monitor->screenX;
+            hints->y = wndconfig->monitor->screenY;
+        }
 
         if (!wndconfig->resizable)
         {

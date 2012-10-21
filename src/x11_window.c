@@ -105,9 +105,9 @@ static GLboolean createWindow(_GLFWwindow* window,
         wa.colormap = window->X11.colormap;
         wa.border_pixel = 0;
         wa.event_mask = StructureNotifyMask | KeyPressMask | KeyReleaseMask |
-            PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
-            ExposureMask | FocusChangeMask | VisibilityChangeMask |
-            EnterWindowMask | LeaveWindowMask;
+                        PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
+                        ExposureMask | FocusChangeMask | VisibilityChangeMask |
+                        EnterWindowMask | LeaveWindowMask;
 
         if (wndconfig->monitor)
         {

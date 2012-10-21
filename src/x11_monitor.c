@@ -446,6 +446,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         monitors = (_GLFWmonitor**) calloc(sr->noutput, sizeof(_GLFWmonitor*));
         if (!monitors)
         {
+            XRRFreeScreenResources(sr);
+
             _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
             return NULL;
         }

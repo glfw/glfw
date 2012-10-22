@@ -220,8 +220,8 @@ struct _GLFWmonitor
     int       physicalWidth;
     int       physicalHeight;
     // logical orientation of the screen on the desktop
-    int       screenX;
-    int       screenY;
+    int       positionX;
+    int       positionY;
 
     GLFWvidmode*  modes;
 
@@ -401,7 +401,7 @@ GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig);
 _GLFWmonitor* _glfwCreateMonitor(const char* name,
                                  GLboolean primary,
                                  int physicalWidth, int physicalHeight,
-                                 int screenX, int screenY);
+                                 int x, int y);
 void _glfwDestroyMonitor(_GLFWmonitor* monitor);
 void _glfwDestroyMonitors(void);
 

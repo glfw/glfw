@@ -728,7 +728,7 @@ static int createWindow(_GLFWwindow* window,
                         const _GLFWfbconfig* fbconfig)
 {
     DWORD dwStyle, dwExStyle;
-    int screenX, screenY, fullWidth, fullHeight;
+    int positionX, positionY, fullWidth, fullHeight;
     POINT pos;
     WCHAR* wideTitle;
 
@@ -775,8 +775,8 @@ static int createWindow(_GLFWwindow* window,
     {
         // Fullscreen windows are always opened in the upper left corner
         // regardless of the desktop working area
-        screenX = wndconfig->monitor->screenX;
-        screenY = wndconfig->monitor->screenY;
+        positionX = wndconfig->monitor->positionX;
+        positionY = wndconfig->monitor->positionY;
     }
     else
     {
@@ -784,8 +784,8 @@ static int createWindow(_GLFWwindow* window,
         SystemParametersInfo(SPI_GETWORKAREA, 0, &wa, 0);
 
         // Adjust window position to working area
-        screenX = wa.left;
-        screenY = wa.top;
+        positionX = wa.left;
+        positionY = wa.top;
     }
 
     wideTitle = _glfwCreateWideStringFromUTF8(wndconfig->title);
@@ -800,7 +800,7 @@ static int createWindow(_GLFWwindow* window,
                                           _GLFW_WNDCLASSNAME,
                                           wideTitle,
                                           window->Win32.dwStyle,
-                                          screenX, screenY,
+                                          positionX, positionY,
                                           fullWidth,             // Decorated window width
                                           fullHeight,            // Decorated window height
                                           NULL,                  // No parent window

@@ -218,8 +218,8 @@ static GLboolean createWindow(_GLFWwindow* window,
         if (wndconfig->monitor)
         {
             hints->flags |= PPosition;
-            hints->x = wndconfig->monitor->screenX;
-            hints->y = wndconfig->monitor->screenY;
+            hints->x = wndconfig->monitor->positionX;
+            hints->y = wndconfig->monitor->positionY;
         }
 
         if (!wndconfig->resizable)

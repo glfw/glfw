@@ -80,7 +80,7 @@ static int compareVideoModes(const void* firstPtr, const void* secondPtr)
 _GLFWmonitor* _glfwCreateMonitor(const char* name,
                                  GLboolean primary,
                                  int physicalWidth, int physicalHeight,
-                                 int screenX, int screenY)
+                                 int x, int y)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) calloc(1, sizeof(_GLFWmonitor));
     if (!monitor)
@@ -93,8 +93,8 @@ _GLFWmonitor* _glfwCreateMonitor(const char* name,
     monitor->primary = primary;
     monitor->physicalWidth = physicalWidth;
     monitor->physicalHeight = physicalHeight;
-    monitor->screenX = screenX;
-    monitor->screenY = screenY;
+    monitor->positionX = x;
+    monitor->positionY = y;
 
     return monitor;
 }
@@ -318,10 +318,10 @@ GLFWAPI int glfwGetMonitorParam(GLFWmonitor handle, int param)
             return monitor->physicalWidth;
         case GLFW_MONITOR_PHYSICAL_HEIGHT:
             return monitor->physicalHeight;
-        case GLFW_MONITOR_SCREEN_POS_X:
-            return monitor->screenX;
-        case GLFW_MONITOR_SCREEN_POS_Y:
-            return monitor->screenY;
+        case GLFW_MONITOR_POS_X:
+            return monitor->positionX;
+        case GLFW_MONITOR_POS_Y:
+            return monitor->positionY;
     }
 
     _glfwSetError(GLFW_INVALID_ENUM,

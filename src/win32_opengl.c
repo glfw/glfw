@@ -528,11 +528,6 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 void _glfwDestroyContext(_GLFWwindow* window)
 {
-    // This is duplicated from glfwDestroyWindow
-    // TODO: Stop duplicating code
-    if (window == _glfwCurrentWindow)
-        _glfwPlatformMakeContextCurrent(NULL);
-
     if (window->WGL.context)
     {
         wglDeleteContext(window->WGL.context);

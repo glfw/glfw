@@ -74,11 +74,21 @@ static const char* get_client_api_name(int api)
     return "Unknown API";
 }
 
-static const char* get_profile_name(GLint mask)
+static const char* get_profile_name_gl(GLint mask)
 {
     if (mask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)
         return "compatibility";
     if (mask & GL_CONTEXT_CORE_PROFILE_BIT)
+        return "core";
+
+    return "unknown";
+}
+
+static const char* get_profile_name_glfw(int profile)
+{
+    if (profile == GLFW_OPENGL_COMPAT_PROFILE)
+        return "compatibility";
+    if (profile == GLFW_OPENGL_CORE_PROFILE)
         return "core";
 
     return "unknown";
@@ -302,13 +312,17 @@ int main(int argc, char** argv)
 
         if (major > 3 || (major == 3 && minor >= 2))
         {
+            int profile = glfwGetWindowParam(window, GLFW_OPENGL_PROFILE);
+
             glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
             printf("%s profile mask (0x%08x): %s\n",
                    get_client_api_name(api),
                    mask,
-                   get_profile_name(mask));
+                   get_profile_name_gl(mask));
 
-            printf("%s profile mask parsed by GLFW:\n", get_client_api_name(api));
+            printf("%s profile mask parsed by GLFW: %s\n",
+                   get_client_api_name(api),
+                   get_profile_name_glfw(profile));
         }
     }
 

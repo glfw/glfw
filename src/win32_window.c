@@ -964,8 +964,16 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         // we're just creating an OpenGL 3.0+ context with the same pixel
         // format, but it's not worth the added code complexity
 
+        // First we clear the current context (the one we just created)
+        // This is usually done by glfwDestroyWindow, but as we're not doing
+        // full window destruction, it's duplicated here
+        _glfwPlatformMakeContextCurrent(NULL);
+
+        // Next destroy the Win32 window and WGL context (without resetting or
+        // destroying the GLFW window object)
         destroyWindow(window);
 
+        // ...and then create them again, this time with better APIs
         if (!createWindow(window, wndconfig, fbconfig))
             return GL_FALSE;
     }

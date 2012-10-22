@@ -121,9 +121,6 @@ GLFWAPI int glfwInit(void)
 
     memset(&_glfwLibrary, 0, sizeof(_glfwLibrary));
 
-    // Not all window hints have zero as their default value
-    _glfwSetDefaultWindowHints();
-
     if (!_glfwPlatformInit())
     {
         _glfwPlatformTerminate();
@@ -133,6 +130,9 @@ GLFWAPI int glfwInit(void)
     atexit(glfwTerminate);
 
     _glfwInitialized = GL_TRUE;
+
+    // Not all window hints have zero as their default value
+    glfwDefaultWindowHints();
 
     return GL_TRUE;
 }

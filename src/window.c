@@ -69,32 +69,6 @@ static void clearScrollOffsets(void)
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Reset all window hints to their default values
-//========================================================================
-
-void _glfwSetDefaultWindowHints(void)
-{
-    memset(&_glfwLibrary.hints, 0, sizeof(_glfwLibrary.hints));
-
-    // The default is OpenGL with minimum version 1.0
-    _glfwLibrary.hints.clientAPI = GLFW_OPENGL_API;
-    _glfwLibrary.hints.glMajor = 1;
-    _glfwLibrary.hints.glMinor = 0;
-
-    // The default is to show the window and allow window resizing
-    _glfwLibrary.hints.resizable = GL_TRUE;
-    _glfwLibrary.hints.visible   = GL_TRUE;
-
-    // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil
-    _glfwLibrary.hints.redBits     = 8;
-    _glfwLibrary.hints.greenBits   = 8;
-    _glfwLibrary.hints.blueBits    = 8;
-    _glfwLibrary.hints.depthBits   = 24;
-    _glfwLibrary.hints.stencilBits = 8;
-}
-
-
-//========================================================================
 // Register window focus events
 //========================================================================
 
@@ -273,9 +247,6 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     wndconfig.glRobustness   = _glfwLibrary.hints.glRobustness ? GL_TRUE : GL_FALSE;
     wndconfig.share          = (_GLFWwindow*) share;
 
-    // Reset to default values for the next call
-    _glfwSetDefaultWindowHints();
-
     // Check the OpenGL bits of the window config
     if (!_glfwIsValidContextConfig(&wndconfig))
         return GL_FALSE;
@@ -372,6 +343,38 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
         glfwShowWindow(window);
 
     return window;
+}
+
+
+//========================================================================
+// Reset all window hints to their default values
+//========================================================================
+
+void glfwDefaultWindowHints(void)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    memset(&_glfwLibrary.hints, 0, sizeof(_glfwLibrary.hints));
+
+    // The default is OpenGL with minimum version 1.0
+    _glfwLibrary.hints.clientAPI = GLFW_OPENGL_API;
+    _glfwLibrary.hints.glMajor = 1;
+    _glfwLibrary.hints.glMinor = 0;
+
+    // The default is to show the window and allow window resizing
+    _glfwLibrary.hints.resizable = GL_TRUE;
+    _glfwLibrary.hints.visible   = GL_TRUE;
+
+    // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil
+    _glfwLibrary.hints.redBits     = 8;
+    _glfwLibrary.hints.greenBits   = 8;
+    _glfwLibrary.hints.blueBits    = 8;
+    _glfwLibrary.hints.depthBits   = 24;
+    _glfwLibrary.hints.stencilBits = 8;
 }
 
 

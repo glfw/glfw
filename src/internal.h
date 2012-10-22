@@ -350,9 +350,6 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 // Error handling (init.c)
 void _glfwSetError(int error, const char* format, ...);
 
-// Window management (window.c)
-void _glfwSetDefaultWindowHints(void);
-
 // OpenGL context helpers (opengl.c)
 int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);
 const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,

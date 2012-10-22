@@ -463,6 +463,8 @@ int main(void)
     if (!window)
     {
         fprintf(stderr, "Failed to open GLFW window\n");
+
+        glfwTerminate();
         exit(EXIT_FAILURE);
     }
 

@@ -51,6 +51,8 @@ int main(void)
     if (!window)
     {
         fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+
+        glfwTerminate();
         exit(EXIT_FAILURE);
     }
 
@@ -66,6 +68,7 @@ int main(void)
         glfwWaitEvents();
     }
 
+    glfwTerminate();
     exit(EXIT_SUCCESS);
 }
 

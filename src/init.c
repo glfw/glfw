@@ -127,8 +127,6 @@ GLFWAPI int glfwInit(void)
         return GL_FALSE;
     }
 
-    atexit(glfwTerminate);
-
     _glfwInitialized = GL_TRUE;
 
     // Not all window hints have zero as their default value

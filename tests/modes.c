@@ -157,6 +157,8 @@ static void test_modes(void)
             if (!window_handle)
             {
                 printf("User terminated program\n");
+
+                glfwTerminate();
                 exit(EXIT_SUCCESS);
             }
         }
@@ -224,6 +226,7 @@ int main(int argc, char** argv)
     else if (mode == TEST_MODE)
         test_modes();
 
+    glfwTerminate();
     exit(EXIT_SUCCESS);
 }
 

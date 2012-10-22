@@ -120,6 +120,8 @@ int main(void)
     if (!open_window())
     {
         fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+
+        glfwTerminate();
         exit(EXIT_FAILURE);
     }
 
@@ -138,6 +140,8 @@ int main(void)
             if (!open_window())
             {
                 fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+
+                glfwTerminate();
                 exit(EXIT_FAILURE);
             }
 

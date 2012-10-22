@@ -132,7 +132,10 @@ int main(int argc, char** argv)
     for (;;)
     {
         if (!open_window(640, 480, (count & 1) ? GLFW_FULLSCREEN : GLFW_WINDOWED))
+        {
+            glfwTerminate();
             exit(EXIT_FAILURE);
+        }
 
         glMatrixMode(GL_PROJECTION);
         glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);
@@ -156,6 +159,8 @@ int main(int argc, char** argv)
             {
                 close_window();
                 printf("User closed window\n");
+
+                glfwTerminate();
                 exit(EXIT_SUCCESS);
             }
         }

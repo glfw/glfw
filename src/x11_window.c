@@ -1013,16 +1013,6 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
 
 //========================================================================
-// Set the window position.
-//========================================================================
-
-void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
-{
-    XMoveWindow(_glfwLibrary.X11.display, window->X11.handle, x, y);
-}
-
-
-//========================================================================
 // Window iconification
 //========================================================================
 

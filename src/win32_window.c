@@ -1059,23 +1059,6 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
 
 //========================================================================
-// Set the window position
-//========================================================================
-
-void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
-{
-    RECT rect;
-
-    GetClientRect(window->Win32.handle, &rect);
-    AdjustWindowRectEx(&rect, window->Win32.dwStyle, FALSE, window->Win32.dwExStyle);
-
-    SetWindowPos(window->Win32.handle, HWND_TOP,
-                 x + rect.left, y + rect.top, 0, 0,
-                 SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
-}
-
-
-//========================================================================
 // Window iconification
 //========================================================================
 

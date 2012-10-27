@@ -599,52 +599,6 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow handle, int width, int height)
 
 
 //========================================================================
-// Get the window position
-//========================================================================
-
-GLFWAPI void glfwGetWindowPos(GLFWwindow handle, int* xpos, int* ypos)
-{
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    if (xpos != NULL)
-        *xpos = window->positionX;
-
-    if (ypos != NULL)
-        *ypos = window->positionY;
-}
-
-
-//========================================================================
-// Set the window position
-//========================================================================
-
-GLFWAPI void glfwSetWindowPos(GLFWwindow handle, int xpos, int ypos)
-{
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    if (window->mode == GLFW_FULLSCREEN || window->iconified)
-    {
-        // TODO: Figure out if this is an error
-        return;
-    }
-
-    _glfwPlatformSetWindowPos(window, xpos, ypos);
-}
-
-
-//========================================================================
 // Window iconification
 //========================================================================
 

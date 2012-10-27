@@ -1007,27 +1007,6 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
 
 //========================================================================
-// Set the window position
-//========================================================================
-
-void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
-{
-    NSRect contentRect =
-        [window->NS.object contentRectForFrameRect:[window->NS.object frame]];
-
-    // We assume here that the client code wants to position the window within the
-    // screen the window currently occupies
-    NSRect screenRect = [[window->NS.object screen] visibleFrame];
-    contentRect.origin = NSMakePoint(screenRect.origin.x + x,
-                                     screenRect.origin.y + screenRect.size.height -
-                                         y - contentRect.size.height);
-
-    [window->NS.object setFrame:[window->NS.object frameRectForContentRect:contentRect]
-                        display:YES];
-}
-
-
-//========================================================================
 // Iconify the window
 //========================================================================
 

@@ -413,6 +413,8 @@ extern "C" {
 #define GLFW_OPENGL_ROBUSTNESS    0x00022006
 #define GLFW_RESIZABLE            0x00022007
 #define GLFW_VISIBLE              0x00022008
+#define GLFW_POSITION_X           0x00022009
+#define GLFW_POSITION_Y           0x0002200A
 
 /* GLFW_CLIENT_API tokens */
 #define GLFW_OPENGL_API           0x00000001

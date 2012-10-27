@@ -141,6 +141,12 @@ typedef struct _GLFWwindowX11
     GLboolean     cursorCentered;   // True if cursor was moved since last poll
     int           cursorPosX, cursorPosY;
 
+    // Window position hint (commited the first time the window is shown)
+    GLboolean     windowPosSet;     // False until the window position has
+                                    // been set
+    int           positionX;        // The window position to be set the
+    int           positionY;        // first time the window is shown
+
 } _GLFWwindowX11;
 
 

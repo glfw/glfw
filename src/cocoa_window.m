@@ -686,7 +686,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         styleMask = NSBorderlessWindowMask;
 
     window->NS.object = [[NSWindow alloc]
-        initWithContentRect:NSMakeRect(0, 0, window->width, window->height)
+        initWithContentRect:NSMakeRect(wndconfig->positionX, wndconfig->positionY, window->width, window->height)
                   styleMask:styleMask
                     backing:NSBackingStoreBuffered
                       defer:NO];

@@ -772,7 +772,11 @@ static int createWindow(_GLFWwindow* window,
     if (window->mode == GLFW_FULLSCREEN)
         wa.left = wa.top = 0;
     else
+    {
         SystemParametersInfo(SPI_GETWORKAREA, 0, &wa, 0);
+        wa.left += wndconfig->positionX;
+        wa.top += wndconfig->positionY;
+    }
 
     wideTitle = _glfwCreateWideStringFromUTF8(wndconfig->title);
     if (!wideTitle)

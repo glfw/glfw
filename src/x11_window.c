@@ -119,7 +119,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 
         window->X11.handle = XCreateWindow(_glfwLibrary.X11.display,
                                            _glfwLibrary.X11.root,
-                                           0, 0,           // Position
+                                           wndconfig->positionX, wndconfig->positionY,
                                            window->width, window->height,
                                            0,              // Border width
                                            visual->depth,  // Color depth
@@ -136,6 +136,12 @@ static GLboolean createWindow(_GLFWwindow* window,
             _glfwSetError(GLFW_PLATFORM_ERROR, "X11: Failed to create window");
             return GL_FALSE;
         }
+
+        // Request a window position to be set once the window is shown
+        // (see _glfwPlatformShowWindow)
+        window->X11.windowPosSet = GL_FALSE;
+        window->X11.positionX = wndconfig->positionX;
+        window->X11.positionY = wndconfig->positionY;
     }
 
     if (window->mode == GLFW_FULLSCREEN && !_glfwLibrary.X11.hasEWMH)
@@ -1060,6 +1066,15 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
     XMapRaised(_glfwLibrary.X11.display, window->X11.handle);
     XFlush(_glfwLibrary.X11.display);
+
+    // Set the window position the first time the window is shown
+    // Note: XMoveWindow has no effect before the window has been mapped.
+    if (!window->X11.windowPosSet)
+    {
+        XMoveWindow(_glfwLibrary.X11.display, window->X11.handle,
+                    window->X11.positionX, window->X11.positionY);
+        window->X11.windowPosSet = GL_TRUE;
+    }
 }
 
 

@@ -107,6 +107,8 @@ struct _GLFWhints
     GLboolean   glDebug;
     int         glProfile;
     int         glRobustness;
+    int         positionX;
+    int         positionY;
 };
 
 
@@ -123,6 +125,8 @@ struct _GLFWwndconfig
     int           refreshRate;
     GLboolean     resizable;
     GLboolean     visible;
+    int           positionX;
+    int           positionY;
     int           clientAPI;
     int           glMajor;
     int           glMinor;

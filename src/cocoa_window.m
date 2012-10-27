@@ -455,8 +455,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
         if ([event modifierFlags] & NSCommandKeyMask)
         {
-            if (window->systemKeys)
-                [super keyDown:event];
+            [super keyDown:event];
         }
         else
         {

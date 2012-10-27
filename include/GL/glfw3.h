@@ -434,8 +434,7 @@ extern "C" {
 #define GLFW_CURSOR_MODE          0x00030001
 #define GLFW_STICKY_KEYS          0x00030002
 #define GLFW_STICKY_MOUSE_BUTTONS 0x00030003
-#define GLFW_SYSTEM_KEYS          0x00030004
-#define GLFW_KEY_REPEAT           0x00030005
+#define GLFW_KEY_REPEAT           0x00030004
 
 /* GLFW_CURSOR_MODE values */
 #define GLFW_CURSOR_NORMAL       0x00040001

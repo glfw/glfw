@@ -135,7 +135,6 @@ typedef struct _GLFWwindowX11
 
     // Various platform specific internal variables
     GLboolean     overrideRedirect; // True if window is OverrideRedirect
-    GLboolean     keyboardGrabbed;  // True if keyboard is currently grabbed
     GLboolean     cursorGrabbed;    // True if cursor is currently grabbed
     GLboolean     cursorHidden;     // True if cursor is currently hidden
     GLboolean     cursorCentered;   // True if cursor was moved since last poll

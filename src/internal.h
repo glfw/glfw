@@ -186,7 +186,6 @@ struct _GLFWwindow
     GLboolean stickyKeys;
     GLboolean stickyMouseButtons;
     GLboolean keyRepeat;
-    GLboolean systemKeys;      // system keys enabled flag
     int       cursorPosX, cursorPosY;
     int       cursorMode;
     double    scrollX, scrollY;

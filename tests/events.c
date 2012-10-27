@@ -42,7 +42,6 @@
 
 // These must match the input mode defaults
 static GLboolean keyrepeat  = GL_FALSE;
-static GLboolean systemkeys = GL_TRUE;
 static GLboolean closeable = GL_TRUE;
 
 // Event index
@@ -320,15 +319,6 @@ static void key_callback(GLFWwindow window, int key, int action)
             break;
         }
 
-        case GLFW_KEY_S:
-        {
-            systemkeys = !systemkeys;
-            glfwSetInputMode(window, GLFW_SYSTEM_KEYS, systemkeys);
-
-            printf("(( system keys %s ))\n", systemkeys ? "enabled" : "disabled");
-            break;
-        }
-
         case GLFW_KEY_C:
         {
             closeable = !closeable;
@@ -393,7 +383,6 @@ int main(void)
     printf("Window size should be %ix%i\n", width, height);
 
     printf("Key repeat should be %s\n", keyrepeat ? "enabled" : "disabled");
-    printf("System keys should be %s\n", systemkeys ? "enabled" : "disabled");
 
     printf("Main loop starting\n");
 

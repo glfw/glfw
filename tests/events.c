@@ -363,18 +363,6 @@ int main(void)
 
     printf("Library initialized\n");
 
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetWindowCloseCallback(window_close_callback);
-    glfwSetWindowRefreshCallback(window_refresh_callback);
-    glfwSetWindowFocusCallback(window_focus_callback);
-    glfwSetWindowIconifyCallback(window_iconify_callback);
-    glfwSetMouseButtonCallback(mouse_button_callback);
-    glfwSetCursorPosCallback(cursor_position_callback);
-    glfwSetCursorEnterCallback(cursor_enter_callback);
-    glfwSetScrollCallback(scroll_callback);
-    glfwSetKeyCallback(key_callback);
-    glfwSetCharCallback(char_callback);
-
     window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Event Linter", NULL);
     if (!window)
     {
@@ -385,6 +373,18 @@ int main(void)
     }
 
     printf("Window opened\n");
+
+    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetWindowCloseCallback(window, window_close_callback);
+    glfwSetWindowRefreshCallback(window, window_refresh_callback);
+    glfwSetWindowFocusCallback(window, window_focus_callback);
+    glfwSetWindowIconifyCallback(window, window_iconify_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetCursorEnterCallback(window, cursor_enter_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetCharCallback(window, char_callback);
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);

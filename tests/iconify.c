@@ -144,11 +144,11 @@ int main(int argc, char** argv)
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    glfwSetKeyCallback(key_callback);
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetWindowCloseCallback(window_close_callback);
-    glfwSetWindowFocusCallback(window_focus_callback);
-    glfwSetWindowIconifyCallback(window_iconify_callback);
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetWindowCloseCallback(window, window_close_callback);
+    glfwSetWindowFocusCallback(window, window_focus_callback);
+    glfwSetWindowIconifyCallback(window, window_iconify_callback);
 
     printf("Window is %s and %s\n",
            glfwGetWindowParam(window, GLFW_ICONIFIED) ? "iconified" : "restored",

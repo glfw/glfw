@@ -197,6 +197,18 @@ struct _GLFWwindow
     int       glRobustness;
     PFNGLGETSTRINGIPROC GetStringi;
 
+    GLFWwindowsizefun    windowSizeCallback;
+    GLFWwindowclosefun   windowCloseCallback;
+    GLFWwindowrefreshfun windowRefreshCallback;
+    GLFWwindowfocusfun   windowFocusCallback;
+    GLFWwindowiconifyfun windowIconifyCallback;
+    GLFWmousebuttonfun   mouseButtonCallback;
+    GLFWcursorposfun     cursorPosCallback;
+    GLFWcursorenterfun   cursorEnterCallback;
+    GLFWscrollfun        scrollCallback;
+    GLFWkeyfun           keyCallback;
+    GLFWcharfun          charCallback;
+
     // These are defined in the current port's platform.h
     _GLFW_PLATFORM_WINDOW_STATE;
     _GLFW_PLATFORM_CONTEXT_STATE;
@@ -212,18 +224,6 @@ struct _GLFWlibrary
 
     _GLFWwindow*  windowListHead;
     _GLFWwindow*  activeWindow;
-
-    GLFWwindowsizefun    windowSizeCallback;
-    GLFWwindowclosefun   windowCloseCallback;
-    GLFWwindowrefreshfun windowRefreshCallback;
-    GLFWwindowfocusfun   windowFocusCallback;
-    GLFWwindowiconifyfun windowIconifyCallback;
-    GLFWmousebuttonfun   mouseButtonCallback;
-    GLFWcursorposfun     cursorPosCallback;
-    GLFWcursorenterfun   cursorEnterCallback;
-    GLFWscrollfun        scrollCallback;
-    GLFWkeyfun           keyCallback;
-    GLFWcharfun          charCallback;
 
     GLFWgammaramp currentRamp;
     GLFWgammaramp originalRamp;

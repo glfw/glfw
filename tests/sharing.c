@@ -62,8 +62,8 @@ static GLFWwindow open_window(const char* title, GLFWwindow share)
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    glfwSetWindowCloseCallback(window_close_callback);
-    glfwSetKeyCallback(key_callback);
+    glfwSetWindowCloseCallback(window, window_close_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     return window;
 }

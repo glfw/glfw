@@ -59,7 +59,7 @@ int main(void)
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    glfwSetWindowSizeCallback(window_size_callback);
+    glfwSetWindowSizeCallback(window, window_size_callback);
 
     while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {

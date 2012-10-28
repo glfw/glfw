@@ -601,8 +601,8 @@ int main(int argc, char** argv)
     }
 
     /* Register events callback */
-    glfwSetWindowCloseCallback(window_close_callback);
-    glfwSetKeyCallback(key_callback);
+    glfwSetWindowCloseCallback(window, window_close_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     glfwMakeContextCurrent(window);
     if (GL_TRUE != init_opengl())

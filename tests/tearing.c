@@ -82,8 +82,8 @@ int main(void)
     glfwMakeContextCurrent(window);
     set_swap_interval(window, swap_interval);
 
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetKeyCallback(key_callback);
+    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     glMatrixMode(GL_PROJECTION);
     glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);

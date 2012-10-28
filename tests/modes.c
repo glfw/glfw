@@ -117,10 +117,6 @@ static void test_modes(void)
     int i, count;
     GLFWvidmode* modes = glfwGetVideoModes(&count);
 
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetWindowCloseCallback(window_close_callback);
-    glfwSetKeyCallback(key_callback);
-
     for (i = 0;  i < count;  i++)
     {
         GLFWvidmode* mode = modes + i;
@@ -142,6 +138,10 @@ static void test_modes(void)
                    format_mode(mode));
             continue;
         }
+
+        glfwSetWindowSizeCallback(window_handle, window_size_callback);
+        glfwSetWindowCloseCallback(window_handle, window_close_callback);
+        glfwSetKeyCallback(window_handle, key_callback);
 
         glfwMakeContextCurrent(window_handle);
         glfwSwapInterval(1);

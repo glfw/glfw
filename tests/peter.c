@@ -102,9 +102,9 @@ static GLboolean open_window(void)
     glfwGetCursorPos(window_handle, &cursor_x, &cursor_y);
     printf("Cursor position: %i %i\n", cursor_x, cursor_y);
 
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetCursorPosCallback(cursor_position_callback);
-    glfwSetKeyCallback(key_callback);
+    glfwSetWindowSizeCallback(window_handle, window_size_callback);
+    glfwSetCursorPosCallback(window_handle, cursor_position_callback);
+    glfwSetKeyCallback(window_handle, key_callback);
 
     return GL_TRUE;
 }

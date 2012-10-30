@@ -43,7 +43,7 @@ static GLboolean getClosestVideoMode(int* width, int* height,
                                      int* bpp, int* refreshRate,
                                      GLboolean exactBPP)
 {
-    int mode, bestWidth, bestHeight, bestBPP, bestRate;
+    int mode, bestWidth = 0, bestHeight = 0, bestBPP = 0, bestRate = 0;
     unsigned int sizeDiff, rateDiff, leastSizeDiff, leastRateDiff;
     GLboolean foundMode = GL_FALSE;
     DEVMODE dm;

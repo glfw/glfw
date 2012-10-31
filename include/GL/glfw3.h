@@ -546,6 +546,7 @@ GLFWAPI void glfwGetGammaRamp(GLFWgammaramp* ramp);
 GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
 
 /* Window handling */
+GLFWAPI void glfwDefaultWindowHints(void);
 GLFWAPI void glfwWindowHint(int target, int hint);
 GLFWAPI GLFWwindow glfwCreateWindow(int width, int height, const char* title, GLFWmonitor monitor, GLFWwindow share);
 GLFWAPI void glfwDestroyWindow(GLFWwindow window);
@@ -562,11 +563,11 @@ GLFWAPI int  glfwGetWindowParam(GLFWwindow window, int param);
 GLFWAPI GLFWmonitor glfwGetWindowMonitor(GLFWwindow window);
 GLFWAPI void glfwSetWindowUserPointer(GLFWwindow window, void* pointer);
 GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow window);
-GLFWAPI void glfwSetWindowSizeCallback(GLFWwindowsizefun cbfun);
-GLFWAPI void glfwSetWindowCloseCallback(GLFWwindowclosefun cbfun);
-GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindowrefreshfun cbfun);
-GLFWAPI void glfwSetWindowFocusCallback(GLFWwindowfocusfun cbfun);
-GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindowiconifyfun cbfun);
+GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfun);
+GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cbfun);
+GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfun cbfun);
+GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow window, GLFWwindowfocusfun cbfun);
+GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow window, GLFWwindowiconifyfun cbfun);
 
 /* Event handling */
 GLFWAPI void glfwPollEvents(void);
@@ -580,12 +581,12 @@ GLFWAPI int  glfwGetMouseButton(GLFWwindow window, int button);
 GLFWAPI void glfwGetCursorPos(GLFWwindow window, int* xpos, int* ypos);
 GLFWAPI void glfwSetCursorPos(GLFWwindow window, int xpos, int ypos);
 GLFWAPI void glfwGetScrollOffset(GLFWwindow window, double* xoffset, double* yoffset);
-GLFWAPI void glfwSetKeyCallback(GLFWkeyfun cbfun);
-GLFWAPI void glfwSetCharCallback(GLFWcharfun cbfun);
-GLFWAPI void glfwSetMouseButtonCallback(GLFWmousebuttonfun cbfun);
-GLFWAPI void glfwSetCursorPosCallback(GLFWcursorposfun cbfun);
-GLFWAPI void glfwSetCursorEnterCallback(GLFWcursorenterfun cbfun);
-GLFWAPI void glfwSetScrollCallback(GLFWscrollfun cbfun);
+GLFWAPI void glfwSetKeyCallback(GLFWwindow window, GLFWkeyfun cbfun);
+GLFWAPI void glfwSetCharCallback(GLFWwindow window, GLFWcharfun cbfun);
+GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow window, GLFWmousebuttonfun cbfun);
+GLFWAPI void glfwSetCursorPosCallback(GLFWwindow window, GLFWcursorposfun cbfun);
+GLFWAPI void glfwSetCursorEnterCallback(GLFWwindow window, GLFWcursorenterfun cbfun);
+GLFWAPI void glfwSetScrollCallback(GLFWwindow window, GLFWscrollfun cbfun);
 
 /* Joystick input */
 GLFWAPI int glfwGetJoystickParam(int joy, int param);

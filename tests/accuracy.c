@@ -86,10 +86,6 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glfwSetCursorPosCallback(cursor_position_callback);
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetKeyCallback(key_callback);
-
     window = glfwCreateWindow(window_width, window_height, "", NULL, NULL);
     if (!window)
     {
@@ -98,6 +94,10 @@ int main(void)
         fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
+
+    glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     glfwMakeContextCurrent(window);
 

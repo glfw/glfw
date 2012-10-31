@@ -51,13 +51,15 @@ int main(void)
     if (!window)
     {
         fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+
+        glfwTerminate();
         exit(EXIT_FAILURE);
     }
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    glfwSetWindowSizeCallback(window_size_callback);
+    glfwSetWindowSizeCallback(window, window_size_callback);
 
     while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
@@ -66,6 +68,7 @@ int main(void)
         glfwWaitEvents();
     }
 
+    glfwTerminate();
     exit(EXIT_SUCCESS);
 }
 

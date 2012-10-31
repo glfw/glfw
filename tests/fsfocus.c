@@ -96,9 +96,9 @@ int main(void)
 
     glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_NORMAL);
 
-    glfwSetWindowFocusCallback(window_focus_callback);
-    glfwSetKeyCallback(window_key_callback);
-    glfwSetWindowCloseCallback(window_close_callback);
+    glfwSetWindowFocusCallback(window, window_focus_callback);
+    glfwSetKeyCallback(window, window_key_callback);
+    glfwSetWindowCloseCallback(window, window_close_callback);
 
     while (running)
     {

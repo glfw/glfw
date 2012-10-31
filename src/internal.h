@@ -173,7 +173,7 @@ struct _GLFWwindow
     GLboolean closeRequested;  // GL_TRUE if this window should be closed
     int       width, height;
     int       positionX, positionY;
-    int       mode;            // GLFW_WINDOW or GLFW_FULLSCREEN
+    int       mode;            // GLFW_WINDOWED or GLFW_FULLSCREEN
     GLboolean resizable;       // GL_TRUE if user may resize this window
     GLboolean visible;         // GL_TRUE if this window is visible
     int       refreshRate;     // monitor refresh rate
@@ -198,6 +198,18 @@ struct _GLFWwindow
     int       glProfile;
     int       glRobustness;
     PFNGLGETSTRINGIPROC GetStringi;
+
+    GLFWwindowsizefun    windowSizeCallback;
+    GLFWwindowclosefun   windowCloseCallback;
+    GLFWwindowrefreshfun windowRefreshCallback;
+    GLFWwindowfocusfun   windowFocusCallback;
+    GLFWwindowiconifyfun windowIconifyCallback;
+    GLFWmousebuttonfun   mouseButtonCallback;
+    GLFWcursorposfun     cursorPosCallback;
+    GLFWcursorenterfun   cursorEnterCallback;
+    GLFWscrollfun        scrollCallback;
+    GLFWkeyfun           keyCallback;
+    GLFWcharfun          charCallback;
 
     // These are defined in the current port's platform.h
     _GLFW_PLATFORM_WINDOW_STATE;
@@ -241,19 +253,7 @@ struct _GLFWlibrary
 
     _GLFWmonitor** monitors;
     int            monitorCount;
-
-    GLFWwindowsizefun    windowSizeCallback;
-    GLFWwindowclosefun   windowCloseCallback;
-    GLFWwindowrefreshfun windowRefreshCallback;
-    GLFWwindowfocusfun   windowFocusCallback;
-    GLFWwindowiconifyfun windowIconifyCallback;
-    GLFWmousebuttonfun   mouseButtonCallback;
-    GLFWcursorposfun     cursorPosCallback;
-    GLFWcursorenterfun   cursorEnterCallback;
-    GLFWscrollfun        scrollCallback;
-    GLFWkeyfun           keyCallback;
-    GLFWcharfun          charCallback;
-    GLFWmonitorfun       monitorCallback;
+    GLFWmonitorfun monitorCallback;
 
     GLFWgammaramp currentRamp;
     GLFWgammaramp originalRamp;
@@ -384,9 +384,6 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 
 // Error handling (init.c)
 void _glfwSetError(int error, const char* format, ...);
-
-// Window management (window.c)
-void _glfwSetDefaultWindowHints(void);
 
 // OpenGL context helpers (opengl.c)
 int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);

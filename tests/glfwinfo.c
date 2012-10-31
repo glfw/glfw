@@ -106,7 +106,10 @@ static void list_extensions(int api, int major, int minor)
     {
         PFNGLGETSTRINGIPROC glGetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
         if (!glGetStringi)
+        {
+            glfwTerminate();
             exit(EXIT_FAILURE);
+        }
 
         glGetIntegerv(GL_NUM_EXTENSIONS, &count);
 
@@ -267,7 +270,10 @@ int main(int argc, char** argv)
 
     window = glfwCreateWindow(0, 0, "Version", NULL, NULL);
     if (!window)
+    {
+        glfwTerminate();
         exit(EXIT_FAILURE);
+    }
 
     glfwMakeContextCurrent(window);
 

@@ -719,7 +719,7 @@ const char* _glfwPlatformGetVersionString(void)
 #if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
         " clock_gettime"
 #endif
-#if defined(_GLFW_HAS_LINUX_JOYSTICKS)
+#if defined(__linux__)
         " Linux-joystick-API"
 #else
         " no-joystick-support"

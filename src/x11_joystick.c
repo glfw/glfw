@@ -340,6 +340,9 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
 
 const char* _glfwPlatformGetJoystickName(int joy)
 {
+    if (!_glfwLibrary.X11.joystick[joy].present)
+        return NULL;
+
     return _glfwLibrary.X11.joystick[joy].name;
 }
 

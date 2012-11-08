@@ -220,19 +220,6 @@ static const char* get_character_string(int character)
     return result;
 }
 
-static const char* get_monitor_event_name(int event)
-{
-    switch (event)
-    {
-        case GLFW_MONITOR_CONNECTED:
-            return "connected";
-        case GLFW_MONITOR_DISCONNECTED:
-            return "disconnected";
-    }
-
-    return NULL;
-}
-
 static void window_size_callback(GLFWwindow window, int width, int height)
 {
     printf("%08x at %0.3f: Window size: %i %i\n",
@@ -363,12 +350,28 @@ static void char_callback(GLFWwindow window, int character)
 
 void monitor_callback(GLFWmonitor monitor, int event)
 {
-    printf("%08x at %0.3f: Monitor %s %s\n",
-           counter++,
-           glfwGetTime(),
-           glfwGetMonitorName(monitor),
-           get_monitor_event_name(event));
+    if (event == GLFW_MONITOR_CONNECTED)
+    {
+        GLFWvidmode mode;
+        glfwGetVideoMode(monitor, &mode);
 
+        printf("%08x at %0.3f: Monitor %s (%ix%i at %ix%i, %ix%i mm) was connected\n",
+               counter++,
+               glfwGetTime(),
+               glfwGetMonitorName(monitor),
+               mode.width, mode.height,
+               glfwGetMonitorParam(monitor, GLFW_MONITOR_POS_X),
+               glfwGetMonitorParam(monitor, GLFW_MONITOR_POS_Y),
+               glfwGetMonitorParam(monitor, GLFW_MONITOR_PHYSICAL_WIDTH),
+               glfwGetMonitorParam(monitor, GLFW_MONITOR_PHYSICAL_HEIGHT));
+    }
+    else
+    {
+        printf("%08x at %0.3f: Monitor %s was disconnected\n",
+               counter++,
+               glfwGetTime(),
+               glfwGetMonitorName(monitor));
+    }
 }
 
 int main(void)

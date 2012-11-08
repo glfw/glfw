@@ -225,6 +225,17 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
 
 const char* _glfwPlatformGetJoystickName(int joy)
 {
-    return "";
+    JOYCAPS jc;
+    const int i = joy - GLFW_JOYSTICK_1;
+
+    if (!isJoystickPresent(joy))
+        return NULL;
+
+    _glfw_joyGetDevCaps(i, &jc, sizeof(JOYCAPS));
+
+    free(_glfwLibrary.Win32.joyNames[i]);
+    _glfwLibrary.Win32.joyNames[i] = _glfwCreateUTF8FromWideString(jc.szPname);
+
+    return _glfwLibrary.Win32.joyNames[i];
 }
 

@@ -62,8 +62,8 @@ static GLFWwindow open_window(const char* title, GLFWwindow share)
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    glfwSetWindowCloseCallback(window_close_callback);
-    glfwSetKeyCallback(key_callback);
+    glfwSetWindowCloseCallback(window, window_close_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     return window;
 }
@@ -137,6 +137,8 @@ int main(int argc, char** argv)
     if (!windows[0])
     {
         fprintf(stderr, "Failed to open first GLFW window: %s\n", glfwErrorString(glfwGetError()));
+
+        glfwTerminate();
         exit(EXIT_FAILURE);
     }
 
@@ -149,6 +151,8 @@ int main(int argc, char** argv)
     if (!windows[1])
     {
         fprintf(stderr, "Failed to open second GLFW window: %s\n", glfwErrorString(glfwGetError()));
+
+        glfwTerminate();
         exit(EXIT_FAILURE);
     }
 

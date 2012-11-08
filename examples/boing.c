@@ -577,8 +577,6 @@ int main( void )
       exit( EXIT_FAILURE );
    }
 
-   glfwSetWindowSizeCallback( reshape );
-
    glfwWindowHint(GLFW_DEPTH_BITS, 16);
 
    window = glfwCreateWindow( 400, 400, GLFW_WINDOWED, "Boing (classic Amiga demo)", NULL );
@@ -588,6 +586,8 @@ int main( void )
        glfwTerminate();
        exit( EXIT_FAILURE );
    }
+
+   glfwSetWindowSizeCallback(window, reshape);
 
    glfwMakeContextCurrent(window);
    glfwSwapInterval( 1 );

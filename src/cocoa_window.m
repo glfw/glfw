@@ -654,9 +654,9 @@ static GLboolean initializeAppKit(void)
     // Implicitly create shared NSApplication instance
     [GLFWApplication sharedApplication];
 
-    // Setting up the menu bar must go between sharedApplication
-    // above and finishLaunching below, in order to properly emulate the
-    // behavior of NSApplicationMain
+    // Menu bar setup must go between sharedApplication above and
+    // finishLaunching below, in order to properly emulate the behavior
+    // of NSApplicationMain
     createMenuBar();
 
     [NSApp finishLaunching];
@@ -728,6 +728,13 @@ static GLboolean createContext(_GLFWwindow* window,
         colorBits = 24;
     else if (colorBits < 15)
         colorBits = 15;
+
+    if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
+    {
+        _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                      "Cocoa/NSOpenGL: NSOpenGL does not support OpenGL ES");
+        return GL_FALSE;
+    }
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     // Fail if any OpenGL version above 2.1 other than 3.2 was requested
@@ -962,7 +969,6 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     [window->NSGL.pixelFormat release];
     window->NSGL.pixelFormat = nil;
 
-    [NSOpenGLContext clearCurrentContext];
     [window->NSGL.context release];
     window->NSGL.context = nil;
 

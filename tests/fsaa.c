@@ -93,9 +93,6 @@ int main(int argc, char** argv)
     else
         printf("Requesting that FSAA not be available\n");
 
-    glfwSetKeyCallback(key_callback);
-    glfwSetWindowSizeCallback(window_size_callback);
-
     glfwWindowHint(GLFW_FSAA_SAMPLES, samples);
 
     window = glfwCreateWindow(800, 400, GLFW_WINDOWED, "Aliasing Detector", NULL);
@@ -106,6 +103,9 @@ int main(int argc, char** argv)
         fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
+
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetWindowSizeCallback(window, window_size_callback);
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);

@@ -100,6 +100,7 @@ struct _GLFWhints
     GLboolean   resizable;
     GLboolean   visible;
     int         samples;
+    int         clientAPI;
     int         glMajor;
     int         glMinor;
     GLboolean   glForward;
@@ -122,6 +123,7 @@ struct _GLFWwndconfig
     int           refreshRate;
     GLboolean     resizable;
     GLboolean     visible;
+    int           clientAPI;
     int           glMajor;
     int           glMinor;
     GLboolean     glForward;
@@ -170,7 +172,7 @@ struct _GLFWwindow
     GLboolean closeRequested;  // GL_TRUE if this window should be closed
     int       width, height;
     int       positionX, positionY;
-    int       mode;            // GLFW_WINDOW or GLFW_FULLSCREEN
+    int       mode;            // GLFW_WINDOWED or GLFW_FULLSCREEN
     GLboolean resizable;       // GL_TRUE if user may resize this window
     GLboolean visible;         // GL_TRUE if this window is visible
     int       refreshRate;     // monitor refresh rate
@@ -188,11 +190,24 @@ struct _GLFWwindow
     char      key[GLFW_KEY_LAST + 1];
 
     // OpenGL extensions and context attributes
+    int       clientAPI;
     int       glMajor, glMinor, glRevision;
     GLboolean glForward, glDebug;
     int       glProfile;
     int       glRobustness;
     PFNGLGETSTRINGIPROC GetStringi;
+
+    GLFWwindowsizefun    windowSizeCallback;
+    GLFWwindowclosefun   windowCloseCallback;
+    GLFWwindowrefreshfun windowRefreshCallback;
+    GLFWwindowfocusfun   windowFocusCallback;
+    GLFWwindowiconifyfun windowIconifyCallback;
+    GLFWmousebuttonfun   mouseButtonCallback;
+    GLFWcursorposfun     cursorPosCallback;
+    GLFWcursorenterfun   cursorEnterCallback;
+    GLFWscrollfun        scrollCallback;
+    GLFWkeyfun           keyCallback;
+    GLFWcharfun          charCallback;
 
     // These are defined in the current port's platform.h
     _GLFW_PLATFORM_WINDOW_STATE;
@@ -209,18 +224,6 @@ struct _GLFWlibrary
 
     _GLFWwindow*  windowListHead;
     _GLFWwindow*  activeWindow;
-
-    GLFWwindowsizefun    windowSizeCallback;
-    GLFWwindowclosefun   windowCloseCallback;
-    GLFWwindowrefreshfun windowRefreshCallback;
-    GLFWwindowfocusfun   windowFocusCallback;
-    GLFWwindowiconifyfun windowIconifyCallback;
-    GLFWmousebuttonfun   mouseButtonCallback;
-    GLFWcursorposfun     cursorPosCallback;
-    GLFWcursorenterfun   cursorEnterCallback;
-    GLFWscrollfun        scrollCallback;
-    GLFWkeyfun           keyCallback;
-    GLFWcharfun          charCallback;
 
     GLFWgammaramp currentRamp;
     GLFWgammaramp originalRamp;
@@ -347,9 +350,6 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 
 // Error handling (init.c)
 void _glfwSetError(int error, const char* format, ...);
-
-// Window management (window.c)
-void _glfwSetDefaultWindowHints(void);
 
 // OpenGL context helpers (opengl.c)
 int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);

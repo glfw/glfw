@@ -36,15 +36,17 @@
 
 
 //========================================================================
-// Parses the OpenGL version string and extracts the version number
+// Parses the client API version string and extracts the version number
 //========================================================================
 
-static GLboolean parseGLVersion(int* major, int* minor, int* rev)
+static GLboolean parseGLVersion(int* api, int* major, int* minor, int* rev)
 {
-    int i, _major, _minor = 0, _rev = 0;
+    int i, _api = GLFW_OPENGL_API, _major, _minor = 0, _rev = 0;
     const char* version;
     const char* prefixes[] =
     {
+        "OpenGL ES-CM ",
+        "OpenGL ES-CL ",
         "OpenGL ES ",
         NULL
     };
@@ -63,6 +65,7 @@ static GLboolean parseGLVersion(int* major, int* minor, int* rev)
         if (strncmp(version, prefixes[i], length) == 0)
         {
             version += length;
+            _api = GLFW_OPENGL_ES_API;
             break;
         }
     }
@@ -73,6 +76,7 @@ static GLboolean parseGLVersion(int* major, int* minor, int* rev)
         return GL_FALSE;
     }
 
+    *api = _api;
     *major = _major;
     *minor = _minor;
     *rev = _rev;
@@ -249,83 +253,119 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
 
 GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
 {
-    if (wndconfig->glMajor < 1 || wndconfig->glMinor < 0)
+    if (wndconfig->clientAPI != GLFW_OPENGL_API &&
+        wndconfig->clientAPI != GLFW_OPENGL_ES_API)
     {
-        // OpenGL 1.0 is the smallest valid version
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwCreateWindow: Invalid OpenGL version requested");
+        _glfwSetError(GLFW_INVALID_ENUM,
+                      "glfwCreateWindow: Invalid client API requested");
         return GL_FALSE;
-    }
-    if (wndconfig->glMajor == 1 && wndconfig->glMinor > 5)
-    {
-        // OpenGL 1.x series ended with version 1.5
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwCreateWindow: Invalid OpenGL version requested");
-        return GL_FALSE;
-    }
-    else if (wndconfig->glMajor == 2 && wndconfig->glMinor > 1)
-    {
-        // OpenGL 2.x series ended with version 2.1
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwCreateWindow: Invalid OpenGL version requested");
-        return GL_FALSE;
-    }
-    else if (wndconfig->glMajor == 3 && wndconfig->glMinor > 3)
-    {
-        // OpenGL 3.x series ended with version 3.3
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwCreateWindow: Invalid OpenGL version requested");
-        return GL_FALSE;
-    }
-    else
-    {
-        // For now, let everything else through
     }
 
-    if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE)
+    if (wndconfig->clientAPI == GLFW_OPENGL_API)
     {
-        if (wndconfig->glMajor != 2 || wndconfig->glMinor < 0)
+        if (wndconfig->glMajor < 1 || wndconfig->glMinor < 0)
         {
-            // The OpenGL ES 2.0 profile is currently only defined for version
-            // 2.0 (see {WGL|GLX}_EXT_create_context_es2_profile), but for
-            // compatibility with future updates to OpenGL ES, we allow
-            // everything 2.x and let the driver report invalid 2.x versions
-
+            // OpenGL 1.0 is the smallest valid version
             _glfwSetError(GLFW_INVALID_VALUE,
-                          "glfwCreateWindow: Invalid OpenGL ES 2.x version requested");
+                          "glfwCreateWindow: Invalid OpenGL version requested");
             return GL_FALSE;
         }
-    }
-    else if (wndconfig->glProfile)
-    {
-        if (wndconfig->glProfile != GLFW_OPENGL_CORE_PROFILE &&
-            wndconfig->glProfile != GLFW_OPENGL_COMPAT_PROFILE)
+        if (wndconfig->glMajor == 1 && wndconfig->glMinor > 5)
         {
-            _glfwSetError(GLFW_INVALID_ENUM,
-                          "glfwCreateWindow: Invalid OpenGL profile requested");
-            return GL_FALSE;
-        }
-
-        if (wndconfig->glMajor < 3 ||
-            (wndconfig->glMajor == 3 && wndconfig->glMinor < 2))
-        {
-            // Desktop OpenGL context profiles are only defined for version 3.2
-            // and above
-
+            // OpenGL 1.x series ended with version 1.5
             _glfwSetError(GLFW_INVALID_VALUE,
-                          "glfwCreateWindow: Context profiles only exist for "
-                          "OpenGL version 3.2 and above");
+                          "glfwCreateWindow: Invalid OpenGL version requested");
+            return GL_FALSE;
+        }
+        else if (wndconfig->glMajor == 2 && wndconfig->glMinor > 1)
+        {
+            // OpenGL 2.x series ended with version 2.1
+            _glfwSetError(GLFW_INVALID_VALUE,
+                          "glfwCreateWindow: Invalid OpenGL version requested");
+            return GL_FALSE;
+        }
+        else if (wndconfig->glMajor == 3 && wndconfig->glMinor > 3)
+        {
+            // OpenGL 3.x series ended with version 3.3
+            _glfwSetError(GLFW_INVALID_VALUE,
+                          "glfwCreateWindow: Invalid OpenGL version requested");
+            return GL_FALSE;
+        }
+        else
+        {
+            // For now, let everything else through
+        }
+
+        if (wndconfig->glProfile)
+        {
+            if (wndconfig->glProfile != GLFW_OPENGL_CORE_PROFILE &&
+                wndconfig->glProfile != GLFW_OPENGL_COMPAT_PROFILE)
+            {
+                _glfwSetError(GLFW_INVALID_ENUM,
+                              "glfwCreateWindow: Invalid OpenGL profile requested");
+                return GL_FALSE;
+            }
+
+            if (wndconfig->glMajor < 3 ||
+                (wndconfig->glMajor == 3 && wndconfig->glMinor < 2))
+            {
+                // Desktop OpenGL context profiles are only defined for version 3.2
+                // and above
+
+                _glfwSetError(GLFW_INVALID_VALUE,
+                              "glfwCreateWindow: Context profiles only exist for "
+                              "OpenGL version 3.2 and above");
+                return GL_FALSE;
+            }
+        }
+
+        if (wndconfig->glForward && wndconfig->glMajor < 3)
+        {
+            // Forward-compatible contexts are only defined for OpenGL version 3.0 and above
+            _glfwSetError(GLFW_INVALID_VALUE,
+                          "glfwCreateWindow: Forward compatibility only exist "
+                          "for OpenGL version 3.0 and above");
             return GL_FALSE;
         }
     }
-
-    if (wndconfig->glForward && wndconfig->glMajor < 3)
+    else if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
     {
-        // Forward-compatible contexts are only defined for OpenGL version 3.0 and above
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwCreateWindow: Forward compatibility only exist for "
-                      "OpenGL version 3.0 and above");
-        return GL_FALSE;
+        if (wndconfig->glMajor < 1 || wndconfig->glMinor < 0)
+        {
+            // OpenGL ES 1.0 is the smallest valid version
+            _glfwSetError(GLFW_INVALID_VALUE,
+                          "glfwCreateWindow: Invalid OpenGL ES version requested");
+            return GL_FALSE;
+        }
+        if (wndconfig->glMajor == 1 && wndconfig->glMinor > 1)
+        {
+            // OpenGL ES 1.x series ended with version 1.1
+            _glfwSetError(GLFW_INVALID_VALUE,
+                          "glfwCreateWindow: Invalid OpenGL ES version requested");
+            return GL_FALSE;
+        }
+        else
+        {
+            // For now, let everything else through
+        }
+
+        if (wndconfig->glProfile)
+        {
+            // OpenGL ES does not support profiles
+            _glfwSetError(GLFW_INVALID_VALUE,
+                          "glfwCreateWindow: Context profiles are not supported "
+                          "by OpenGL ES");
+            return GL_FALSE;
+        }
+
+        if (wndconfig->glForward)
+        {
+            // OpenGL ES does not support forward-compatibility
+            _glfwSetError(GLFW_INVALID_VALUE,
+                          "glfwCreateWindow: Forward compatibility is not "
+                          "supported by OpenGL ES");
+            return GL_FALSE;
+        }
     }
 
     if (wndconfig->glRobustness)
@@ -334,7 +374,8 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
             wndconfig->glRobustness != GLFW_OPENGL_LOSE_CONTEXT_ON_RESET)
         {
             _glfwSetError(GLFW_INVALID_VALUE,
-                          "glfwCreateWindow: Invalid OpenGL robustness mode requested");
+                          "glfwCreateWindow: Invalid OpenGL robustness mode "
+                          "requested");
             return GL_FALSE;
         }
     }
@@ -352,7 +393,8 @@ GLboolean _glfwRefreshContextParams(void)
 {
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
-    if (!parseGLVersion(&window->glMajor,
+    if (!parseGLVersion(&window->clientAPI,
+                        &window->glMajor,
                         &window->glMinor,
                         &window->glRevision))
     {
@@ -378,7 +420,7 @@ GLboolean _glfwRefreshContextParams(void)
     {
       window->glForward = GL_FALSE;
 
-      if (window->glMajor >= 3)
+      if (window->clientAPI == GLFW_OPENGL_API && window->glMajor >= 3)
       {
           GLint flags;
           glGetIntegerv(GL_CONTEXT_FLAGS, &flags);

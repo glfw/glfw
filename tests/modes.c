@@ -117,10 +117,6 @@ static void test_modes(void)
     int i, count;
     GLFWvidmode* modes = glfwGetVideoModes(&count);
 
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetWindowCloseCallback(window_close_callback);
-    glfwSetKeyCallback(key_callback);
-
     for (i = 0;  i < count;  i++)
     {
         GLFWvidmode* mode = modes + i;
@@ -143,6 +139,10 @@ static void test_modes(void)
             continue;
         }
 
+        glfwSetWindowSizeCallback(window_handle, window_size_callback);
+        glfwSetWindowCloseCallback(window_handle, window_close_callback);
+        glfwSetKeyCallback(window_handle, key_callback);
+
         glfwMakeContextCurrent(window_handle);
         glfwSwapInterval(1);
 
@@ -157,6 +157,8 @@ static void test_modes(void)
             if (!window_handle)
             {
                 printf("User terminated program\n");
+
+                glfwTerminate();
                 exit(EXIT_SUCCESS);
             }
         }
@@ -224,6 +226,7 @@ int main(int argc, char** argv)
     else if (mode == TEST_MODE)
         test_modes();
 
+    glfwTerminate();
     exit(EXIT_SUCCESS);
 }
 

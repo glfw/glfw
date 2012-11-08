@@ -295,6 +295,22 @@ static int createContext(_GLFWwindow* window,
             setGLXattrib(attribs, index, GLX_CONTEXT_MINOR_VERSION_ARB, wndconfig->glMinor);
         }
 
+        if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
+        {
+            if (!_glfwLibrary.GLX.ARB_create_context_profile ||
+                !_glfwLibrary.GLX.EXT_create_context_es2_profile)
+            {
+                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                              "GLX: OpenGL ES 2.x requested but "
+                              "GLX_EXT_create_context_es2_profile is unavailable");
+                return GL_FALSE;
+            }
+
+            setGLXattrib(attribs, index,
+                         GLX_CONTEXT_PROFILE_MASK_ARB,
+                         GLX_CONTEXT_ES2_PROFILE_BIT_EXT);
+        }
+
         if (wndconfig->glForward || wndconfig->glDebug || wndconfig->glRobustness)
         {
             int flags = 0;
@@ -323,21 +339,10 @@ static int createContext(_GLFWwindow* window,
                 return GL_FALSE;
             }
 
-            if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE &&
-                !_glfwLibrary.GLX.EXT_create_context_es2_profile)
-            {
-                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                              "GLX: OpenGL ES 2.x profile requested but "
-                              "GLX_EXT_create_context_es2_profile is unavailable");
-                return GL_FALSE;
-            }
-
             if (wndconfig->glProfile == GLFW_OPENGL_CORE_PROFILE)
                 flags = GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
             else if (wndconfig->glProfile == GLFW_OPENGL_COMPAT_PROFILE)
                 flags = GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
-            else if (wndconfig->glProfile == GLFW_OPENGL_ES2_PROFILE)
-                flags = GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
 
             setGLXattrib(attribs, index, GLX_CONTEXT_PROFILE_MASK_ARB, flags);
         }
@@ -614,8 +619,6 @@ void _glfwDestroyContext(_GLFWwindow* window)
 
     if (window->GLX.context)
     {
-        // Release and destroy the context
-        glXMakeCurrent(_glfwLibrary.X11.display, None, NULL);
         glXDestroyContext(_glfwLibrary.X11.display, window->GLX.context);
         window->GLX.context = NULL;
     }

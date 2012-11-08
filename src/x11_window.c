@@ -238,6 +238,15 @@ static GLboolean createWindow(_GLFWwindow* window,
 
 static void hideCursor(_GLFWwindow* window)
 {
+    // Un-grab cursor (in windowed mode only; in fullscreen mode we still
+    // want the cursor grabbed in order to confine the cursor to the window
+    // area)
+    if (window->X11.cursorGrabbed && window->mode == GLFW_WINDOWED)
+    {
+        XUngrabPointer(_glfwLibrary.X11.display, CurrentTime);
+        window->X11.cursorGrabbed = GL_FALSE;
+    }
+
     if (!window->X11.cursorHidden)
     {
         XDefineCursor(_glfwLibrary.X11.display,
@@ -280,7 +289,7 @@ static void showCursor(_GLFWwindow* window)
     // Un-grab cursor (in windowed mode only; in fullscreen mode we still
     // want the cursor grabbed in order to confine the cursor to the window
     // area)
-    if (window->X11.cursorGrabbed)
+    if (window->X11.cursorGrabbed && window->mode == GLFW_WINDOWED)
     {
         XUngrabPointer(_glfwLibrary.X11.display, CurrentTime);
         window->X11.cursorGrabbed = GL_FALSE;

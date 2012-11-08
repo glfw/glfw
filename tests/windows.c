@@ -60,6 +60,7 @@ int main(void)
         {
             fprintf(stderr, "Failed to open GLFW window: %s\n",
                     glfwErrorString(glfwGetError()));
+
             glfwTerminate();
             exit(EXIT_FAILURE);
         }

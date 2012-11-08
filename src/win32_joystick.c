@@ -199,13 +199,19 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
 
     if (hats > 0)
     {
-        int j;
-        int value = ji.dwPOV / 100 / 45;
-        if (value < 0 || value > 8) value = 8;
+        int j, value = ji.dwPOV / 100 / 45;
+
+        if (value < 0 || value > 8)
+            value = 8;
 
         for (j = 0; j < 4 && button < numbuttons; j++)
         {
-            buttons[button++] = directions[value] & (1 << j) ? GLFW_PRESS : GLFW_RELEASE;
+            if (directions[value] & (1 << j))
+                buttons[button] = GLFW_PRESS;
+            else
+                buttons[button] = GLFW_RELEASE;
+
+            button++;
         }
     }
 

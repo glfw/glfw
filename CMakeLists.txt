@@ -182,10 +182,6 @@ if (_GLFW_X11_GLX)
             set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -ldl")
         endif()
     endif()
-
-    if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-        set(_GLFW_HAS_LINUX_JOYSTICKS 1)
-    endif()
 endif()
 
 #--------------------------------------------------------------------

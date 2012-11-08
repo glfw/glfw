@@ -40,6 +40,7 @@
 
 static void hideCursor(_GLFWwindow* window)
 {
+    UNREFERENCED_PARAMETER(window);
 }
 
 
@@ -68,6 +69,8 @@ static void captureCursor(_GLFWwindow* window)
 
 static void showCursor(_GLFWwindow* window)
 {
+    UNREFERENCED_PARAMETER(window);
+
     // Un-capture cursor
     ReleaseCapture();
 

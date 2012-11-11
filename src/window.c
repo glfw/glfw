@@ -238,6 +238,8 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     wndconfig.refreshRate    = Max(_glfwLibrary.hints.refreshRate, 0);
     wndconfig.resizable      = _glfwLibrary.hints.resizable ? GL_TRUE : GL_FALSE;
     wndconfig.visible        = _glfwLibrary.hints.visible ? GL_TRUE : GL_FALSE;
+    wndconfig.positionX      = _glfwLibrary.hints.positionX;
+    wndconfig.positionY      = _glfwLibrary.hints.positionY;
     wndconfig.clientAPI      = _glfwLibrary.hints.clientAPI;
     wndconfig.glMajor        = _glfwLibrary.hints.glMajor;
     wndconfig.glMinor        = _glfwLibrary.hints.glMinor;
@@ -295,7 +297,6 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     window->mode       = mode;
     window->resizable  = wndconfig.resizable;
     window->cursorMode = GLFW_CURSOR_NORMAL;
-    window->systemKeys = GL_TRUE;
 
     // Open the actual window and create its context
     if (!_glfwPlatformCreateWindow(window, &wndconfig, &fbconfig))
@@ -369,6 +370,10 @@ void glfwDefaultWindowHints(void)
     _glfwLibrary.hints.resizable = GL_TRUE;
     _glfwLibrary.hints.visible   = GL_TRUE;
 
+    // The default window position is the upper left corner of the screen
+    _glfwLibrary.hints.positionX = 0;
+    _glfwLibrary.hints.positionY = 0;
+
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil
     _glfwLibrary.hints.redBits     = 8;
     _glfwLibrary.hints.greenBits   = 8;
@@ -436,6 +441,12 @@ GLFWAPI void glfwWindowHint(int target, int hint)
             break;
         case GLFW_VISIBLE:
             _glfwLibrary.hints.visible = hint;
+            break;
+        case GLFW_POSITION_X:
+            _glfwLibrary.hints.positionX = hint;
+            break;
+        case GLFW_POSITION_Y:
+            _glfwLibrary.hints.positionY = hint;
             break;
         case GLFW_FSAA_SAMPLES:
             _glfwLibrary.hints.samples = hint;
@@ -587,52 +598,6 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow handle, int width, int height)
 
 
 //========================================================================
-// Get the window position
-//========================================================================
-
-GLFWAPI void glfwGetWindowPos(GLFWwindow handle, int* xpos, int* ypos)
-{
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    if (xpos != NULL)
-        *xpos = window->positionX;
-
-    if (ypos != NULL)
-        *ypos = window->positionY;
-}
-
-
-//========================================================================
-// Set the window position
-//========================================================================
-
-GLFWAPI void glfwSetWindowPos(GLFWwindow handle, int xpos, int ypos)
-{
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    if (window->mode == GLFW_FULLSCREEN || window->iconified)
-    {
-        // TODO: Figure out if this is an error
-        return;
-    }
-
-    _glfwPlatformSetWindowPos(window, xpos, ypos);
-}
-
-
-//========================================================================
 // Window iconification
 //========================================================================
 
@@ -747,6 +712,10 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window->resizable;
         case GLFW_VISIBLE:
             return window->visible;
+        case GLFW_POSITION_X:
+            return window->positionX;
+        case GLFW_POSITION_Y:
+            return window->positionY;
         case GLFW_CLIENT_API:
             return window->clientAPI;
         case GLFW_OPENGL_VERSION_MAJOR:

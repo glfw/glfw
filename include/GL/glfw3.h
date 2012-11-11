@@ -413,6 +413,8 @@ extern "C" {
 #define GLFW_OPENGL_ROBUSTNESS    0x00022006
 #define GLFW_RESIZABLE            0x00022007
 #define GLFW_VISIBLE              0x00022008
+#define GLFW_POSITION_X           0x00022009
+#define GLFW_POSITION_Y           0x0002200A
 
 /* GLFW_CLIENT_API tokens */
 #define GLFW_OPENGL_API           0x00000001
@@ -432,8 +434,7 @@ extern "C" {
 #define GLFW_CURSOR_MODE          0x00030001
 #define GLFW_STICKY_KEYS          0x00030002
 #define GLFW_STICKY_MOUSE_BUTTONS 0x00030003
-#define GLFW_SYSTEM_KEYS          0x00030004
-#define GLFW_KEY_REPEAT           0x00030005
+#define GLFW_KEY_REPEAT           0x00030004
 
 /* GLFW_CURSOR_MODE values */
 #define GLFW_CURSOR_NORMAL       0x00040001
@@ -536,8 +537,6 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow window);
 GLFWAPI void glfwSetWindowTitle(GLFWwindow window, const char* title);
 GLFWAPI void glfwGetWindowSize(GLFWwindow window, int* width, int* height);
 GLFWAPI void glfwSetWindowSize(GLFWwindow window, int width, int height);
-GLFWAPI void glfwGetWindowPos(GLFWwindow window, int* xpos, int* ypos);
-GLFWAPI void glfwSetWindowPos(GLFWwindow window, int xpos, int ypos);
 GLFWAPI void glfwIconifyWindow(GLFWwindow window);
 GLFWAPI void glfwRestoreWindow(GLFWwindow window);
 GLFWAPI void glfwShowWindow(GLFWwindow window);

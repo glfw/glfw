@@ -772,7 +772,11 @@ static int createWindow(_GLFWwindow* window,
     if (window->mode == GLFW_FULLSCREEN)
         wa.left = wa.top = 0;
     else
+    {
         SystemParametersInfo(SPI_GETWORKAREA, 0, &wa, 0);
+        wa.left += wndconfig->positionX;
+        wa.top += wndconfig->positionY;
+    }
 
     wideTitle = _glfwCreateWideStringFromUTF8(wndconfig->title);
     if (!wideTitle)
@@ -1051,23 +1055,6 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
         SetWindowPos(window->Win32.handle, HWND_TOP, 0, 0, width, height,
                      SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
     }
-}
-
-
-//========================================================================
-// Set the window position
-//========================================================================
-
-void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
-{
-    RECT rect;
-
-    GetClientRect(window->Win32.handle, &rect);
-    AdjustWindowRectEx(&rect, window->Win32.dwStyle, FALSE, window->Win32.dwExStyle);
-
-    SetWindowPos(window->Win32.handle, HWND_TOP,
-                 x + rect.left, y + rect.top, 0, 0,
-                 SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
 }
 
 

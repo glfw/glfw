@@ -116,24 +116,6 @@ static void setStickyMouseButtons(_GLFWwindow* window, int enabled)
 
 
 //========================================================================
-// Set system keys for the specified window
-//========================================================================
-
-static void setSystemKeys(_GLFWwindow* window, int enabled)
-{
-    if (window->systemKeys == enabled)
-        return;
-
-    if (enabled)
-        _glfwPlatformEnableSystemKeys(window);
-    else
-        _glfwPlatformDisableSystemKeys(window);
-
-    window->systemKeys = enabled;
-}
-
-
-//========================================================================
 // Set key repeat for the specified window
 //========================================================================
 
@@ -295,8 +277,6 @@ GLFWAPI int glfwGetInputMode(GLFWwindow handle, int mode)
             return window->stickyKeys;
         case GLFW_STICKY_MOUSE_BUTTONS:
             return window->stickyMouseButtons;
-        case GLFW_SYSTEM_KEYS:
-            return window->systemKeys;
         case GLFW_KEY_REPEAT:
             return window->keyRepeat;
         default:
@@ -330,9 +310,6 @@ GLFWAPI void glfwSetInputMode(GLFWwindow handle, int mode, int value)
             break;
         case GLFW_STICKY_MOUSE_BUTTONS:
             setStickyMouseButtons(window, value ? GL_TRUE : GL_FALSE);
-            break;
-        case GLFW_SYSTEM_KEYS:
-            setSystemKeys(window, value ? GL_TRUE : GL_FALSE);
             break;
         case GLFW_KEY_REPEAT:
             setKeyRepeat(window, value ? GL_TRUE : GL_FALSE);

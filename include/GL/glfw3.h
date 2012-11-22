@@ -1063,12 +1063,10 @@ GLFWAPI void glfwWindowHint(int target, int hint);
 
 /*! @brief Creates a window and its associated context.
  *
- *  @param[in] width The desired width, in pixels, of the window.  If @p width
- *  is zero, it will be set to 4/3 times @p height.  If both are zero, it  will
- *  be set to 640.
- *  @param[in] height The desired height, in pixels, of the window.  If @p
- *  height is zero, it will be set to 3/4 times @p width.  If both are zero, it
- *  will be set to 480.
+ *  @param[in] width The desired width, in pixels, of the window.  This must be
+ *  greater than zero.
+ *  @param[in] height The desired height, in pixels, of the window.  This must
+ *  be greater than zero.
  *  @param[in] mode One of @ref GLFW_WINDOWED or @ref GLFW_FULLSCREEN.
  *  @param[in] title The initial, UTF-8 encoded window title.
  *  @param[in] share The window whose context to share resources with, or @c

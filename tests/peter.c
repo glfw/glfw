@@ -92,7 +92,7 @@ static void window_size_callback(GLFWwindow window, int width, int height)
 
 static GLboolean open_window(void)
 {
-    window_handle = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Peter Detector", NULL);
+    window_handle = glfwCreateWindow(640, 480, GLFW_WINDOWED, "Peter Detector", NULL);
     if (!window_handle)
         return GL_FALSE;
 

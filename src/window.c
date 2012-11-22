@@ -263,22 +263,11 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
         return GL_FALSE;
     }
 
-    // Check width & height
-    if (width > 0 && height <= 0)
+    if (width <= 0 || height <= 0)
     {
-        // Set the window aspect ratio to 4:3
-        height = (width * 3) / 4;
-    }
-    else if (width <= 0 && height > 0)
-    {
-        // Set the window aspect ratio to 4:3
-        width = (height * 4) / 3;
-    }
-    else if (width <= 0 && height <= 0)
-    {
-        // Default window size
-        width  = 640;
-        height = 480;
+        _glfwSetError(GLFW_INVALID_VALUE,
+                      "glfwCreateWindow: Invalid window size");
+        return GL_FALSE;
     }
 
     window = (_GLFWwindow*) calloc(1, sizeof(_GLFWwindow));

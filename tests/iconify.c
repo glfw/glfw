@@ -128,8 +128,8 @@ int main(int argc, char** argv)
     }
     else
     {
-        width = 0;
-        height = 0;
+        width = 640;
+        height = 480;
     }
 
     window = glfwCreateWindow(width, height, mode, "Iconify", NULL);

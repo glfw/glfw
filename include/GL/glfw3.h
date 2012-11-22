@@ -76,7 +76,7 @@ extern "C" {
 
 /* ------------------- BEGIN SYSTEM/COMPILER SPECIFIC -------------------- */
 
-/* Please report any probles that you find with your compiler, which may
+/* Please report any problems that you find with your compiler, which may
  * be solved in this section! There are several compilers that I have not
  * been able to test this file with yet.
  *
@@ -736,7 +736,7 @@ typedef void (* GLFWwindowrefreshfun)(GLFWwindow);
  */
 typedef void (* GLFWwindowfocusfun)(GLFWwindow,int);
 
-/*! @brief The function signature for window iconfiy/restore callbacks.
+/*! @brief The function signature for window iconify/restore callbacks.
  *  @param[in] window The window that was iconified or restored.
  *  @param[in] iconified @c GL_TRUE if the window was iconified, or @c GL_FALSE
  *  if it was restored.

@@ -605,11 +605,6 @@ extern "C" {
  *  @ingroup input
  */
 #define GLFW_STICKY_MOUSE_BUTTONS 0x00030003
-/*! @brief Whether to allow key repeat for the @link GLFWkeyfun key callback
- *  @endlink.
- *  @ingroup input
- */
-#define GLFW_KEY_REPEAT           0x00030004
 /*! @} */
 
 /*! @name Cursor modes
@@ -1272,7 +1267,6 @@ GLFWAPI void glfwWaitEvents(void);
  *  @arg @ref GLFW_CURSOR_MODE Sets the cursor mode.
  *  @arg @ref GLFW_STICKY_KEYS Sets whether sticky keys are enabled.
  *  @arg @ref GLFW_STICKY_MOUSE_BUTTONS Sets whether sticky mouse buttons are enabled.
- *  @arg @ref GLFW_KEY_REPEAT Sets whether key repeat is enabled.
  *  @ingroup input
  *
  *  @sa glfwSetInputMode
@@ -1284,7 +1278,6 @@ GLFWAPI int glfwGetInputMode(GLFWwindow window, int mode);
  *  @arg @ref GLFW_CURSOR_MODE Sets the cursor mode.
  *  @arg @ref GLFW_STICKY_KEYS Sets whether sticky keys are enabled.
  *  @arg @ref GLFW_STICKY_MOUSE_BUTTONS Sets whether sticky mouse buttons are enabled.
- *  @arg @ref GLFW_KEY_REPEAT Sets whether key repeat is enabled.
  *  @ingroup input
  *
  *  @sa glfwGetInputMode

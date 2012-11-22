@@ -115,16 +115,6 @@ static void setStickyMouseButtons(_GLFWwindow* window, int enabled)
 }
 
 
-//========================================================================
-// Set key repeat for the specified window
-//========================================================================
-
-static void setKeyRepeat(_GLFWwindow* window, int enabled)
-{
-    window->keyRepeat = enabled;
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -154,7 +144,7 @@ void _glfwInputKey(_GLFWwindow* window, int key, int action)
     }
 
     // Call user callback function
-    if (window->keyCallback && (window->keyRepeat || !repeated))
+    if (window->keyCallback && !repeated)
         window->keyCallback(window, key, action);
 }
 
@@ -277,8 +267,6 @@ GLFWAPI int glfwGetInputMode(GLFWwindow handle, int mode)
             return window->stickyKeys;
         case GLFW_STICKY_MOUSE_BUTTONS:
             return window->stickyMouseButtons;
-        case GLFW_KEY_REPEAT:
-            return window->keyRepeat;
         default:
             _glfwSetError(GLFW_INVALID_ENUM, NULL);
             return 0;
@@ -310,9 +298,6 @@ GLFWAPI void glfwSetInputMode(GLFWwindow handle, int mode, int value)
             break;
         case GLFW_STICKY_MOUSE_BUTTONS:
             setStickyMouseButtons(window, value ? GL_TRUE : GL_FALSE);
-            break;
-        case GLFW_KEY_REPEAT:
-            setKeyRepeat(window, value ? GL_TRUE : GL_FALSE);
             break;
         default:
             _glfwSetError(GLFW_INVALID_ENUM, NULL);

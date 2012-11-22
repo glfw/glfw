@@ -185,7 +185,6 @@ struct _GLFWwindow
     // Window input state
     GLboolean stickyKeys;
     GLboolean stickyMouseButtons;
-    GLboolean keyRepeat;
     int       cursorPosX, cursorPosY;
     int       cursorMode;
     double    scrollX, scrollY;

@@ -1548,13 +1548,6 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
  */
 GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);
 
-/*! @brief Copies the desired parts of the state of one window's context to another.
- *  @ingroup opengl
- *
- *  @remarks This function may be called from secondary threads.
- */
-GLFWAPI void glfwCopyContext(GLFWwindow src, GLFWwindow dst, unsigned long mask);
-
 
 /*************************************************************************
  * Global definition cleanup

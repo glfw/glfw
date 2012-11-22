@@ -158,10 +158,13 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    // Set drawing color for the first context and copy it to the second
+    // Set drawing color for both contexts
     glfwMakeContextCurrent(windows[0]);
     glColor3f(0.6f, 0.f, 0.6f);
-    glfwCopyContext(windows[0], windows[1], GL_CURRENT_BIT);
+    glfwMakeContextCurrent(windows[1]);
+    glColor3f(0.6f, 0.6f, 0.f);
+
+    glfwMakeContextCurrent(windows[0]);
 
     while (!closed)
     {

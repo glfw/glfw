@@ -228,8 +228,6 @@ GLFWAPI const char* glfwErrorString(int error)
             return "The requested OpenGL version is unavailable";
         case GLFW_PLATFORM_ERROR:
             return "A platform-specific error occurred";
-        case GLFW_WINDOW_NOT_FOCUSED:
-            return "The specified window is not focused";
         case GLFW_FORMAT_UNAVAILABLE:
             return "The requested format is unavailable";
     }

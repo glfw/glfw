@@ -674,12 +674,9 @@ extern "C" {
  *  more specific categories.
  */
 #define GLFW_PLATFORM_ERROR       0x00070008
-/*! @brief The specified window needed to be focused for the call to succeed.
- */
-#define GLFW_WINDOW_NOT_FOCUSED   0x00070009
 /*! @brief The clipboard did not contain data in the requested format.
  */
-#define GLFW_FORMAT_UNAVAILABLE   0x0007000A
+#define GLFW_FORMAT_UNAVAILABLE   0x00070009
 /*! @} */
 
 /*! @brief The number of entries in the gamma ramp.

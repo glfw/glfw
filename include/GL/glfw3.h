@@ -832,6 +832,8 @@ typedef struct
  *  @remarks Additional calls to this function after successful initialization
  *  but before termination will succeed but will do nothing.
  *
+ *  @note This function may only be called from the main thread.
+ *
  *  @note This function may take several seconds to complete on some systems,
  *  while on other systems it may take only a fraction of a second to complete.
  *
@@ -847,6 +849,8 @@ GLFWAPI int glfwInit(void);
  *  @ingroup init
  *
  *  @remarks This function may be called before @ref glfwInit.
+ *
+ *  @note This function may only be called from the main thread.
  *
  *  @note This function closes all GLFW windows.
  *
@@ -971,6 +975,8 @@ GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
  *
  *  @ingroup window
  *
+ *  @note This function may only be called from the main thread.
+ *
  *  @sa glfwWindowHint
  */
 GLFWAPI void glfwDefaultWindowHints(void);
@@ -1049,6 +1055,8 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  @arg @ref GLFW_OPENGL_FORWARD_COMPAT
  *  @arg @ref GLFW_OPENGL_PROFILE
  *
+ *  @note This function may only be called from the main thread.
+ *
  *  @sa glfwDefaultWindowHints
  */
 GLFWAPI void glfwWindowHint(int target, int hint);
@@ -1092,6 +1100,8 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  bundle.  For more information on bundles, see the Bundle Programming Guide
  *  provided by Apple.
  *
+ *  @note This function may only be called from the main thread.
+ *
  *  @sa glfwDestroyWindow
  */
 GLFWAPI GLFWwindow glfwCreateWindow(int width, int height, int mode, const char* title, GLFWwindow share);
@@ -1099,6 +1109,8 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height, int mode, const char*
 /*! @brief Destroys the specified window and its context.
  *  @param[in] window The window to destroy.
  *  @ingroup window
+ *
+ *  @note This function may only be called from the main thread.
  *
  *  @note If the window's context is current on the main thread, it is
  *  detached before being destroyed.
@@ -1113,6 +1125,8 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow window);
  *  @param[in] window The window whose title to change.
  *  @param[in] title The UTF-8 encoded window title.
  *  @ingroup window
+ *
+ *  @note This function may only be called from the main thread.
  */
 GLFWAPI void glfwSetWindowTitle(GLFWwindow window, const char* title);
 
@@ -1132,6 +1146,8 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow window, int* width, int* height);
  *  @param[in] height The desired height of the specified window.
  *  @ingroup window
  *
+ *  @note This function may only be called from the main thread.
+ *
  *  @note The window manager may put limits on what window sizes are allowed.
  *
  *  @note For fullscreen windows, this function selects and switches to the
@@ -1148,6 +1164,8 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow window, int width, int height);
  *
  *  @remarks If the window is already iconified, this function does nothing.
  *
+ *  @note This function may only be called from the main thread.
+ *
  *  @sa glfwRestoreWindow
  */
 GLFWAPI void glfwIconifyWindow(GLFWwindow window);
@@ -1157,6 +1175,8 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow window);
  *  @ingroup window
  *
  *  @remarks If the window is already restored, this function does nothing.
+ *
+ *  @note This function may only be called from the main thread.
  *
  *  @sa glfwIconifyWindow
  */
@@ -1168,6 +1188,8 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow window);
  *
  *  @remarks If the window is already visible, this function does nothing.
  *
+ *  @note This function may only be called from the main thread.
+ *
  *  @sa glfwHideWindow
  */
 GLFWAPI void glfwShowWindow(GLFWwindow window);
@@ -1177,6 +1199,8 @@ GLFWAPI void glfwShowWindow(GLFWwindow window);
  *  @ingroup window
  *
  *  @remarks If the window is already hidden, this function does nothing.
+ *
+ *  @note This function may only be called from the main thread.
  *
  *  @sa glfwShowWindow
  */
@@ -1247,12 +1271,16 @@ GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow window, GLFWwindowiconifyfu
 /*! @brief Processes all pending events.
  *  @ingroup window
  *
+ *  @note This function may only be called from the main thread.
+ *
  *  @sa glfwWaitEvents
  */
 GLFWAPI void glfwPollEvents(void);
 
 /*! @brief Waits until events are pending and processes them.
  *  @ingroup window
+ *
+ *  @note This function may only be called from the main thread.
  *
  *  @sa glfwPollEvents
  */

@@ -248,12 +248,12 @@ static void window_refresh_callback(GLFWwindow window)
     }
 }
 
-static void window_focus_callback(GLFWwindow window, int activated)
+static void window_focus_callback(GLFWwindow window, int focused)
 {
     printf("%08x at %0.3f: Window %s\n",
            counter++,
            glfwGetTime(),
-           activated ? "activated" : "deactivated");
+           focused ? "focused" : "defocused");
 }
 
 static void window_iconify_callback(GLFWwindow window, int iconified)

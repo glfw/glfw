@@ -72,21 +72,21 @@ static void clearScrollOffsets(void)
 // Register window focus events
 //========================================================================
 
-void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated)
+void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused)
 {
-    if (activated)
+    if (focused)
     {
-        if (_glfwLibrary.activeWindow != window)
+        if (_glfwLibrary.focusedWindow != window)
         {
-            _glfwLibrary.activeWindow = window;
+            _glfwLibrary.focusedWindow = window;
 
             if (window->windowFocusCallback)
-                window->windowFocusCallback(window, activated);
+                window->windowFocusCallback(window, focused);
         }
     }
     else
     {
-        if (_glfwLibrary.activeWindow == window)
+        if (_glfwLibrary.focusedWindow == window)
         {
             int i;
 
@@ -104,10 +104,10 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated)
                     _glfwInputMouseClick(window, i, GLFW_RELEASE);
             }
 
-            _glfwLibrary.activeWindow = NULL;
+            _glfwLibrary.focusedWindow = NULL;
 
             if (window->windowFocusCallback)
-                window->windowFocusCallback(window, activated);
+                window->windowFocusCallback(window, focused);
         }
     }
 }
@@ -502,9 +502,9 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow handle)
     if (window == _glfwPlatformGetCurrentContext())
         _glfwPlatformMakeContextCurrent(NULL);
 
-    // Clear the active window pointer if this is the active window
-    if (window == _glfwLibrary.activeWindow)
-        _glfwLibrary.activeWindow = NULL;
+    // Clear the focused window pointer if this is the focused window
+    if (window == _glfwLibrary.focusedWindow)
+        _glfwLibrary.focusedWindow = NULL;
 
     _glfwPlatformDestroyWindow(window);
 
@@ -700,8 +700,8 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
 
     switch (param)
     {
-        case GLFW_ACTIVE:
-            return window == _glfwLibrary.activeWindow;
+        case GLFW_FOCUSED:
+            return window == _glfwLibrary.focusedWindow;
         case GLFW_ICONIFIED:
             return window->iconified;
         case GLFW_CLOSE_REQUESTED:

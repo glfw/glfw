@@ -226,7 +226,7 @@ struct _GLFWlibrary
     _GLFWhints    hints;
 
     _GLFWwindow*  windowListHead;
-    _GLFWwindow*  activeWindow;
+    _GLFWwindow*  focusedWindow;
 
     GLFWgammaramp currentRamp;
     GLFWgammaramp originalRamp;
@@ -321,7 +321,7 @@ void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long 
 //========================================================================
 
 // Window event notification (window.c)
-void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated);
+void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused);
 void _glfwInputWindowPos(_GLFWwindow* window, int x, int y);
 void _glfwInputWindowSize(_GLFWwindow* window, int width, int height);
 void _glfwInputWindowIconify(_GLFWwindow* window, int iconified);

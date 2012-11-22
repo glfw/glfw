@@ -462,9 +462,9 @@ extern "C" {
  *  @ingroup window
  *  @{ */
 
-/*! @brief @c GL_TRUE if the window is active, or @c GL_FALSE otherwise.
+/*! @brief @c GL_TRUE if the window has focus, or @c GL_FALSE otherwise.
  */
-#define GLFW_ACTIVE               0x00020001
+#define GLFW_FOCUSED              0x00020001
 /*! @brief @c GL_TRUE if the window is iconified, or @c GL_FALSE otherwise.
  */
 #define GLFW_ICONIFIED            0x00020002
@@ -679,9 +679,9 @@ extern "C" {
  *  more specific categories.
  */
 #define GLFW_PLATFORM_ERROR       0x00070008
-/*! @brief The specified window needed to be active for the call to succeed.
+/*! @brief The specified window needed to be focused for the call to succeed.
  */
-#define GLFW_WINDOW_NOT_ACTIVE    0x00070009
+#define GLFW_WINDOW_NOT_FOCUSED   0x00070009
 /*! @brief The clipboard did not contain data in the requested format.
  */
 #define GLFW_FORMAT_UNAVAILABLE   0x0007000A
@@ -1332,7 +1332,7 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow window, int* xpos, int* ypos);
  *  client area, or @c NULL.
  *  @ingroup input
  *
- *  @note The specified window must be active.
+ *  @note The specified window must be focused.
  *
  *  @sa glfwGetCursorPos
  */

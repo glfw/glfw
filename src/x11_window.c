@@ -632,7 +632,7 @@ static void processEvent(XEvent *event)
 
                 if (window->cursorMode == GLFW_CURSOR_CAPTURED)
                 {
-                    if (_glfwLibrary.activeWindow != window)
+                    if (_glfwLibrary.focusedWindow != window)
                         break;
 
                     x = event->xmotion.x - window->X11.cursorPosX;
@@ -1134,11 +1134,11 @@ void _glfwPlatformPollEvents(void)
         processEvent(&event);
     }
 
-    // Check whether the cursor has moved inside an active window that has
+    // Check whether the cursor has moved inside an focused window that has
     // captured the cursor (because then it needs to be re-centered)
 
     _GLFWwindow* window;
-    window = _glfwLibrary.activeWindow;
+    window = _glfwLibrary.focusedWindow;
     if (window)
     {
         if (window->cursorMode == GLFW_CURSOR_CAPTURED &&

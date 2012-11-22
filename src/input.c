@@ -422,9 +422,9 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow handle, int xpos, int ypos)
         return;
     }
 
-    if (_glfwLibrary.activeWindow != window)
+    if (_glfwLibrary.focusedWindow != window)
     {
-        _glfwSetError(GLFW_WINDOW_NOT_ACTIVE, NULL);
+        _glfwSetError(GLFW_WINDOW_NOT_FOCUSED, NULL);
         return;
     }
 

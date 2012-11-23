@@ -189,7 +189,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
 
     if (!available)
     {
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "WGL: No pixel formats found");
+        _glfwSetError(GLFW_API_UNAVAILABLE, "WGL: No pixel formats found");
         return NULL;
     }
 

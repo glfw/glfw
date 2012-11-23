@@ -666,7 +666,7 @@ extern "C" {
 /*! @brief GLFW could not find support for the requested client API on the
  *  system.
  */
-#define GLFW_OPENGL_UNAVAILABLE   0x00070006
+#define GLFW_API_UNAVAILABLE      0x00070006
 /*! @brief The requested OpenGL or GLES version is not available.
  */
 #define GLFW_VERSION_UNAVAILABLE  0x00070007

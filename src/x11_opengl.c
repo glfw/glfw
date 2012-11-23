@@ -93,7 +93,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
     {
         if (!_glfwLibrary.GLX.SGIX_fbconfig)
         {
-            _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
+            _glfwSetError(GLFW_API_UNAVAILABLE,
                           "GLX: GLXFBConfig support not found");
             return NULL;
         }
@@ -116,7 +116,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
                                                         &count);
         if (!count)
         {
-            _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
+            _glfwSetError(GLFW_API_UNAVAILABLE,
                           "GLX: No GLXFBConfigs returned");
             return NULL;
         }
@@ -128,7 +128,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
                                     &count);
         if (!count)
         {
-            _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
+            _glfwSetError(GLFW_API_UNAVAILABLE,
                           "GLX: No GLXFBConfigs returned");
             return NULL;
         }
@@ -465,7 +465,7 @@ int _glfwInitOpenGL(void)
     // Check if GLX is supported on this display
     if (!glXQueryExtension(_glfwLibrary.X11.display, NULL, NULL))
     {
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "GLX: GLX support not found");
+        _glfwSetError(GLFW_API_UNAVAILABLE, "GLX: GLX support not found");
         return GL_FALSE;
     }
 
@@ -473,8 +473,7 @@ int _glfwInitOpenGL(void)
                          &_glfwLibrary.GLX.majorVersion,
                          &_glfwLibrary.GLX.minorVersion))
     {
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
-                      "GLX: Failed to query GLX version");
+        _glfwSetError(GLFW_API_UNAVAILABLE, "GLX: Failed to query GLX version");
         return GL_FALSE;
     }
 

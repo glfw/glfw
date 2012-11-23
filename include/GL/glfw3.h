@@ -930,11 +930,15 @@ GLFWAPI const char* glfwErrorString(int error);
  */
 GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
 
-/*! @ingroup monitor
+/*! @brief This function will be replaced when the @c multi-monitor branch is
+ *  merged.
+ *  @ingroup monitor
  */
 GLFWAPI GLFWvidmode* glfwGetVideoModes(int* count);
 
-/*! @ingroup monitor
+/*! @brief This function will be replaced when the @c multi-monitor branch is
+ *  merged.
+ *  @ingroup monitor
  */
 GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode);
 
@@ -1002,14 +1006,13 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  buffers.
  *
  *  The @ref GLFW_STEREO hint specifies whether to use stereoscopic rendering.
- *  This is a hard constraint.
  *
  *  The @ref GLFW_FSAA_SAMPLES hint specifies the desired number of samples to
  *  use for multisampling.
  *
  *  The @ref GLFW_CLIENT_API hint specifies which client API to create the
  *  context for.  Possible values are @ref GLFW_OPENGL_API and @ref
- *  GLFW_OPENGL_ES_API.  This is a hard constraint.
+ *  GLFW_OPENGL_ES_API.
  *
  *  The @ref GLFW_OPENGL_VERSION_MAJOR and @ref GLFW_OPENGL_VERSION_MINOR hints
  *  specify the OpenGL version that the created context must be compatible with.
@@ -1022,15 +1025,14 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  available.
  *
  *  The @ref GLFW_OPENGL_FORWARD_COMPAT hint specifies whether the OpenGL
- *  context should be forward-compatible.  This is a hard constraint.
+ *  context should be forward-compatible.
  *
  *  The @ref GLFW_OPENGL_DEBUG_CONTEXT hint specifies whether to create a debug
  *  OpenGL context.
  *
  *  The @ref GLFW_OPENGL_PROFILE hint specifies which OpenGL profile to create
  *  the context for.  Possible values are @ref GLFW_OPENGL_NO_PROFILE, @ref
- *  GLFW_OPENGL_CORE_PROFILE and @ref GLFW_OPENGL_COMPAT_PROFILE.  This is
- *  a hard constraint.
+ *  GLFW_OPENGL_CORE_PROFILE and @ref GLFW_OPENGL_COMPAT_PROFILE.
  *
  *  The @ref GLFW_OPENGL_ROBUSTNESS hint specifies the robustness strategy to be
  *  used by the OpenGL context.
@@ -1186,7 +1188,8 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow window);
  *  @param[in] window The window to make visible.
  *  @ingroup window
  *
- *  @remarks If the window is already visible, this function does nothing.
+ *  @remarks If the window is already visible or is in fullscreen mode, this
+ *  function does nothing.
  *
  *  @note This function may only be called from the main thread.
  *
@@ -1198,7 +1201,8 @@ GLFWAPI void glfwShowWindow(GLFWwindow window);
  *  @param[in] window The window to hide.
  *  @ingroup window
  *
- *  @remarks If the window is already hidden, this function does nothing.
+ *  @remarks If the window is already hidden or is in fullscreen mode, this
+ *  function does nothing.
  *
  *  @note This function may only be called from the main thread.
  *
@@ -1207,7 +1211,49 @@ GLFWAPI void glfwShowWindow(GLFWwindow window);
 GLFWAPI void glfwHideWindow(GLFWwindow window);
 
 /*! @brief Returns a property of the specified window.
+ *  @param[in] window The window to query.
+ *  @param[in] param The property whose value to return.
  *  @ingroup window
+ *
+ *  The @ref GLFW_FOCUSED property indicates whether the window is focused.
+ *
+ *  The @ref GLFW_ICONIFIED property indicates whether the window is iconified.
+ *
+ *  The @ref GLFW_VISIBLE property indicates whether the window is visible.
+ *
+ *  The @ref GLFW_RESIZABLE property indicates whether the window is resizable
+ *  by the user.
+ *
+ *  The @ref GLFW_CLOSE_REQUESTED property indicates whether the window has been
+ *  requested by the user to close.
+ *
+ *  The @ref GLFW_REFRESH_RATE property will be replaced when the @c
+ *  multi-monitor branch is merged.
+ *
+ *  The @ref GLFW_POSITION_X and @ref GLFW_POSITION_Y properties indicate the
+ *  screen position, in pixels, of the upper-left corner of the window's client
+ *  area.
+ *
+ *  The @ref GLFW_CLIENT_API property indicates the client API provided by the
+ *  window's context.
+ *
+ *  The @ref GLFW_OPENGL_VERSION_MAJOR, @ref GLFW_OPENGL_VERSION_MINOR and @ref
+ *  GLFW_OPENGL_REVISION properties indicate the API version of the window's
+ *  context.
+ *
+ *  The @ref GLFW_OPENGL_FORWARD_COMPAT property indicates whether an OpenGL
+ *  context is forward-compatible.
+ *
+ *  The @ref GLFW_OPENGL_DEBUG_CONTEXT property indicates whether the
+ *  corresponding window hint was used when the window was created.
+ *
+ *  The @ref GLFW_OPENGL_PROFILE property indicates the profile used by the
+ *  OpenGL context, or @ref GLFW_OPENGL_NO_PROFILE if the context is for another
+ *  client API than OpenGL.
+ *
+ *  The @ref GLFW_OPENGL_ROBUSTNESS property indicates the robustness strategy
+ *  used by the OpenGL context, or @ref GLFW_OPENGL_NO_ROBUSTNESS if robustness
+ *  is not used.
  */
 GLFWAPI int glfwGetWindowParam(GLFWwindow window, int param);
 

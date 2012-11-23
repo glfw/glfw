@@ -103,8 +103,8 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
 
     if (strcmp(vendor, "Chromium") == 0)
     {
-        // This is a (hopefully temporary) workaround for Chromium (VirtualBox
-        // GL) not setting the window bit on any GLXFBConfigs
+        // HACK: This is a (hopefully temporary) workaround for Chromium
+        // (VirtualBox GL) not setting the window bit on any GLXFBConfigs
         trustWindowBit = GL_FALSE;
     }
 

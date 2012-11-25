@@ -690,8 +690,11 @@ static GLboolean createWindow(_GLFWwindow* window,
             styleMask |= NSResizableWindowMask;
     }
 
+    NSRect contentRect = NSMakeRect(wndconfig->positionX, wndconfig->positionY,
+                                    wndconfig->width, wndconfig->height);
+
     window->ns.object = [[NSWindow alloc]
-        initWithContentRect:NSMakeRect(wndconfig->positionX, wndconfig->positionY, window->width, window->height)
+        initWithContentRect:contentRect
                   styleMask:styleMask
                     backing:NSBackingStoreBuffered
                       defer:NO];
@@ -773,7 +776,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     {
         int bpp = colorBits + fbconfig->alphaBits;
 
-        if (!_glfwSetVideoMode(window->monitor, &window->width, &window->height, &bpp))
+        if (!_glfwSetVideoMode(window->monitor, &window->videoMode.width, &window->videoMode.height, &bpp))
             return GL_FALSE;
 
         _glfwPlatformShowWindow(window);
@@ -817,6 +820,17 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)
 {
     [window->ns.object setTitle:[NSString stringWithUTF8String:title]];
+}
+
+void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
+{
+    NSRect contentRect =
+        [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
+
+    if (width)
+        *width = contentRect.size.width;
+    if (height)
+        *height = contentRect.size.height;
 }
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)

@@ -37,7 +37,7 @@
 
 static void setCursorMode(_GLFWwindow* window, int newMode)
 {
-    int oldMode, centerPosX, centerPosY;
+    int width, height, oldMode, centerPosX, centerPosY;
 
     if (newMode != GLFW_CURSOR_NORMAL &&
         newMode != GLFW_CURSOR_HIDDEN &&
@@ -51,8 +51,10 @@ static void setCursorMode(_GLFWwindow* window, int newMode)
     if (oldMode == newMode)
         return;
 
-    centerPosX = window->width / 2;
-    centerPosY = window->height / 2;
+    _glfwPlatformGetWindowSize(window, &width, &height);
+
+    centerPosX = width / 2;
+    centerPosY = height / 2;
 
     if (oldMode == GLFW_CURSOR_CAPTURED || newMode == GLFW_CURSOR_CAPTURED)
         _glfwPlatformSetCursorPos(window, centerPosX, centerPosY);

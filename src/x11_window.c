@@ -121,7 +121,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         window->x11.handle = XCreateWindow(_glfw.x11.display,
                                            _glfw.x11.root,
                                            wndconfig->positionX, wndconfig->positionY,
-                                           window->width, window->height,
+                                           wndconfig->width, wndconfig->height,
                                            0,              // Border width
                                            visual->depth,  // Color depth
                                            InputOutput,
@@ -227,8 +227,8 @@ static GLboolean createWindow(_GLFWwindow* window,
         if (!wndconfig->resizable)
         {
             hints->flags |= (PMinSize | PMaxSize);
-            hints->min_width  = hints->max_width  = window->width;
-            hints->min_height = hints->max_height = window->height;
+            hints->min_width  = hints->max_width  = wndconfig->width;
+            hints->min_height = hints->max_height = wndconfig->height;
         }
 
         XSetWMNormalHints(_glfw.x11.display, window->x11.handle, hints);
@@ -392,12 +392,15 @@ static void enterFullscreenMode(_GLFWwindow* window)
         // In override-redirect mode we have divorced ourselves from the
         // window manager, so we need to do everything manually
 
+        GLFWvidmode mode;
+        _glfwPlatformGetVideoMode(window->monitor, &mode);
+
         XRaiseWindow(_glfw.x11.display, window->x11.handle);
         XSetInputFocus(_glfw.x11.display, window->x11.handle,
                        RevertToParent, CurrentTime);
         XMoveWindow(_glfw.x11.display, window->x11.handle, 0, 0);
         XResizeWindow(_glfw.x11.display, window->x11.handle,
-                      window->width, window->height);
+                      mode.width, mode.height);
     }
 }
 
@@ -893,10 +896,19 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     }
 }
 
+void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
+{
+    XWindowAttributes attribs;
+    XGetWindowAttributes(_glfw.x11.display, window->x11.handle, &attribs);
+
+    if (width)
+        *width = attribs.width;
+    if (height)
+        *height = attribs.height;
+}
+
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    GLboolean sizeChanged = GL_FALSE;
-
     if (!window->resizable)
     {
         // Update window size restrictions to match new window size
@@ -913,18 +925,17 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
     if (window->monitor)
     {
-        // Change window size before changing fullscreen mode?
-        if (width > window->width)
+        if (window->x11.overrideRedirect)
         {
-            XResizeWindow(_glfw.x11.display, window->x11.handle, width, height);
-            sizeChanged = GL_TRUE;
+            GLFWvidmode mode;
+            _glfwPlatformGetVideoMode(window->monitor, &mode);
+            XResizeWindow(_glfw.x11.display, window->x11.handle,
+                          window->videoMode.width, window->videoMode.height);
         }
 
         _glfwSetVideoMode(window->monitor, &window->videoMode);
     }
-
-    // Set window size (if not already changed)
-    if (!sizeChanged)
+    else
         XResizeWindow(_glfw.x11.display, window->x11.handle, width, height);
 }
 
@@ -993,9 +1004,9 @@ void _glfwPlatformPollEvents(void)
         if (window->cursorMode == GLFW_CURSOR_CAPTURED &&
             !window->x11.cursorCentered)
         {
-            _glfwPlatformSetCursorPos(window,
-                                      window->width / 2,
-                                      window->height / 2);
+            int width, height;
+            _glfwPlatformGetWindowSize(window, &width, &height);
+            _glfwPlatformSetCursorPos(window, width / 2, height / 2);
             window->x11.cursorCentered = GL_TRUE;
 
             // NOTE: This is a temporary fix.  It works as long as you use

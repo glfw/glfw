@@ -122,12 +122,6 @@ void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
 
 void _glfwInputWindowSize(_GLFWwindow* window, int width, int height)
 {
-    if (window->width == width && window->height == height)
-        return;
-
-    window->width = width;
-    window->height = height;
-
     if (window->callbacks.size)
         window->callbacks.size((GLFWwindow*) window, width, height);
 }
@@ -206,6 +200,8 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     fbconfig.sRGB           = _glfw.hints.sRGB ? GL_TRUE : GL_FALSE;
 
     // Set up desired window config
+    wndconfig.width         = width;
+    wndconfig.height        = height;
     wndconfig.title         = title;
     wndconfig.resizable     = _glfw.hints.resizable ? GL_TRUE : GL_FALSE;
     wndconfig.visible       = _glfw.hints.visible ? GL_TRUE : GL_FALSE;
@@ -247,8 +243,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
         window->videoMode.blueBits  = fbconfig.blueBits;
     }
 
-    window->width      = width;
-    window->height     = height;
     window->monitor    = wndconfig.monitor;
     window->resizable  = wndconfig.resizable;
     window->cursorMode = GLFW_CURSOR_NORMAL;
@@ -487,11 +481,7 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow* handle, int* width, int* height)
         return;
     }
 
-    if (width != NULL)
-        *width = window->width;
-
-    if (height != NULL)
-        *height = window->height;
+    _glfwPlatformGetWindowSize(window, width, height);
 }
 
 GLFWAPI void glfwSetWindowSize(GLFWwindow* handle, int width, int height)
@@ -509,10 +499,6 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* handle, int width, int height)
         // TODO: Figure out if this is an error
         return;
     }
-
-    // Don't do anything if the window size did not change
-    if (width == window->width && height == window->height)
-        return;
 
     if (window->monitor)
     {

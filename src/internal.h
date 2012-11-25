@@ -157,6 +157,8 @@ struct _GLFWhints
  */
 struct _GLFWwndconfig
 {
+    int           width;
+    int           height;
     const char*   title;
     GLboolean     resizable;
     GLboolean     visible;
@@ -205,7 +207,6 @@ struct _GLFWwindow
     struct _GLFWwindow* next;
 
     // Window settings and state
-    int                 width, height;
     int                 positionX, positionY;
     GLboolean           iconified;
     GLboolean           resizable;
@@ -459,6 +460,10 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window);
 /*! @ingroup platform
  */
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title);
+
+/*! @ingroup platform
+ */
+void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height);
 
 /*! @ingroup platform
  */

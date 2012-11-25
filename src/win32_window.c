@@ -738,7 +738,9 @@ static int createWindow(_GLFWwindow* window,
     }
 
     // Adjust window size for frame and title bar
-    getFullWindowSize(window, window->width, window->height, &fullWidth, &fullHeight);
+    getFullWindowSize(window,
+                      wndconfig->width, wndconfig->height,
+                      &fullWidth, &fullHeight);
 
     if (window->monitor)
     {
@@ -915,13 +917,27 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     free(wideTitle);
 }
 
+void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
+{
+    RECT area;
+    GetClientRect(window->win32.handle, &area);
+
+    if (width)
+        *width = area.right;
+    if (height)
+        *height = area.bottom;
+}
+
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     GLboolean sizeChanged = GL_FALSE;
 
     if (window->monitor)
     {
-        if (width > window->width || height > window->height)
+        GLFWvidmode mode;
+        _glfwPlatformGetVideoMode(window->monitor, &mode);
+
+        if (width > mode.width || height > mode.height)
         {
             // The new video mode is larger than the current one, so we resize
             // the window before switch modes to avoid exposing whatever is
@@ -980,9 +996,11 @@ void _glfwPlatformPollEvents(void)
     window = _glfw.focusedWindow;
     if (window)
     {
+        int width, height;
+        _glfwPlatformGetWindowSize(window, &width, &height);
         window->win32.cursorCentered = GL_FALSE;
-        window->win32.oldCursorX = window->width / 2;
-        window->win32.oldCursorY = window->height / 2;
+        window->win32.oldCursorX = width / 2;
+        window->win32.oldCursorY = height / 2;
     }
     else
     {
@@ -1038,9 +1056,9 @@ void _glfwPlatformPollEvents(void)
         if (window->cursorMode == GLFW_CURSOR_CAPTURED &&
             !window->win32.cursorCentered)
         {
-            _glfwPlatformSetCursorPos(window,
-                                      window->width / 2,
-                                      window->height / 2);
+            int width, height;
+            _glfwPlatformGetWindowSize(window, &width, &height);
+            _glfwPlatformSetCursorPos(window, width / 2, height / 2);
             window->win32.cursorCentered = GL_TRUE;
         }
     }

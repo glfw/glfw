@@ -19,9 +19,6 @@ if (_GLFW_COCOA)
     if (GLFW_NATIVE_API)
         list(APPEND glfw_SOURCES cocoa_native.m)
     endif()
-
-    # For some reason, CMake doesn't know about .m
-    set_source_files_properties(${glfw_SOURCES} PROPERTIES LANGUAGE C)
 elseif (_GLFW_WIN32)
     set(glfw_HEADERS ${common_HEADERS} win32_platform.h)
     set(glfw_SOURCES ${common_SOURCES} win32_clipboard.c win32_fullscreen.c
@@ -47,13 +44,18 @@ if (_GLFW_EGL)
     list(APPEND glfw_SOURCES ${common_SOURCES} egl_opengl.c)
 elseif (_GLFW_NSGL)
     list(APPEND glfw_HEADERS ${common_HEADERS} nsgl_platform.h)
-    list(APPEND glfw_SOURCES ${common_SOURCES} nsgl_opengl.c)
+    list(APPEND glfw_SOURCES ${common_SOURCES} nsgl_opengl.m)
 elseif (_GLFW_WGL)
     list(APPEND glfw_HEADERS ${common_HEADERS} wgl_platform.h)
     list(APPEND glfw_SOURCES ${common_SOURCES} wgl_opengl.c)
 elseif (_GLFW_X11)
     list(APPEND glfw_HEADERS ${common_HEADERS} glx_platform.h)
     list(APPEND glfw_SOURCES ${common_SOURCES} glx_opengl.c)
+endif()
+
+if (_GLFW_NSGL)
+    # For some reason, CMake doesn't know about .m
+    set_source_files_properties(${glfw_SOURCES} PROPERTIES LANGUAGE C)
 endif()
 
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})

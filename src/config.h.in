@@ -35,14 +35,21 @@
 // it.  Instead, you should modify the config.h.in file.
 //========================================================================
 
-// Define this to 1 if building GLFW for X11/GLX
-#cmakedefine _GLFW_X11_GLX
-// Define this to 1 if building GLFW for X11/EGL
-#cmakedefine _GLFW_X11_EGL
-// Define this to 1 if building GLFW for Win32/WGL
-#cmakedefine _GLFW_WIN32_WGL
-// Define this to 1 if building GLFW for Cocoa/NSOpenGL
-#cmakedefine _GLFW_COCOA_NSGL
+// Define this to 1 if building GLFW for X11
+#cmakedefine _GLFW_X11
+// Define this to 1 if building GLFW for Win32
+#cmakedefine _GLFW_WIN32
+// Define this to 1 if building GLFW for Cocoa
+#cmakedefine _GLFW_COCOA
+
+// Define this to 1 if building GLFW for EGL
+#cmakedefine _GLFW_EGL
+// Define this to 1 if building GLFW for GLX
+#cmakedefine _GLFW_GLX
+// Define this to 1 if building GLFW for WGL
+#cmakedefine _GLFW_WGL
+// Define this to 1 if building GLFW for NSGL
+#cmakedefine _GLFW_NSGL
 
 // Define this to 1 if building as a shared library / dynamic library / DLL
 #cmakedefine _GLFW_BUILD_DLL

@@ -53,10 +53,10 @@
  #include <X11/XKBlib.h>
 #endif
 
-#if defined(_GLFW_X11_GLX)
+#if defined(_GLFW_GLX)
  #define _GLFW_X11_CONTEXT_VISUAL window->GLX.visual
  #include "glx_platform.h"
-#elif defined(_GLFW_X11_EGL)
+#elif defined(_GLFW_EGL)
  #define _GLFW_X11_CONTEXT_VISUAL window->EGL.visual
  #define _GLFW_EGL_NATIVE_WINDOW  window->X11.handle
  #define _GLFW_EGL_NATIVE_DISPLAY _glfwLibrary.X11.display

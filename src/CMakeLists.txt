@@ -10,11 +10,11 @@ set(common_HEADERS ${GLFW_SOURCE_DIR}/include/GL/glfw3.h internal.h)
 set(common_SOURCES clipboard.c fullscreen.c gamma.c init.c input.c
                    joystick.c opengl.c time.c window.c)
 
-if (_GLFW_COCOA_NSGL)
+if (_GLFW_COCOA)
     set(glfw_HEADERS ${common_HEADERS} cocoa_platform.h)
     set(glfw_SOURCES ${common_SOURCES} cocoa_clipboard.m cocoa_fullscreen.m
-                     cocoa_gamma.c cocoa_init.m cocoa_joystick.m
-                     cocoa_opengl.m cocoa_time.c cocoa_window.m)
+                     cocoa_gamma.c cocoa_init.m cocoa_joystick.m cocoa_time.c
+                     cocoa_window.m)
 
     if (GLFW_NATIVE_API)
         list(APPEND glfw_SOURCES cocoa_native.m)
@@ -22,30 +22,38 @@ if (_GLFW_COCOA_NSGL)
 
     # For some reason, CMake doesn't know about .m
     set_source_files_properties(${glfw_SOURCES} PROPERTIES LANGUAGE C)
-elseif (_GLFW_WIN32_WGL)
+elseif (_GLFW_WIN32)
     set(glfw_HEADERS ${common_HEADERS} win32_platform.h)
-    set(glfw_SOURCES ${common_SOURCES} wgl_opengl.c win32_clipboard.c
-                     win32_fullscreen.c win32_gamma.c win32_init.c
-                     win32_joystick.c win32_time.c win32_window.c)
+    set(glfw_SOURCES ${common_SOURCES} win32_clipboard.c win32_fullscreen.c
+                     win32_gamma.c win32_init.c win32_joystick.c win32_time.c
+                     win32_window.c)
 
     if (GLFW_NATIVE_API)
         list(APPEND glfw_SOURCES win32_native.c)
     endif()
-elseif (_GLFW_X11_GLX)
+elseif (_GLFW_X11)
     set(glfw_HEADERS ${common_HEADERS} x11_platform.h)
-    set(glfw_SOURCES ${common_SOURCES} glx_opengl.c x11_clipboard.c
-                     x11_fullscreen.c x11_gamma.c x11_init.c x11_joystick.c
-                     x11_keysym2unicode.c x11_time.c x11_window.c)
+    set(glfw_SOURCES ${common_SOURCES} x11_clipboard.c x11_fullscreen.c
+                     x11_gamma.c x11_init.c x11_joystick.c x11_keysym2unicode.c
+                     x11_time.c x11_window.c)
 
     if (GLFW_NATIVE_API)
         list(APPEND glfw_SOURCES x11_native.c)
     endif()
-elseif (_GLFW_X11_EGL)
-    set(glfw_HEADERS ${common_HEADERS} x11_platform.h egl_platform.h)
-    set(glfw_SOURCES ${common_SOURCES} egl_opengl.c x11_clipboard.c
-                     x11_fullscreen.c x11_gamma.c x11_init.c
-                     x11_joystick.c x11_keysym2unicode.c x11_time.c
-                     x11_window.c)
+endif()
+
+if (_GLFW_EGL)
+    list(APPEND glfw_HEADERS ${common_HEADERS} egl_platform.h)
+    list(APPEND glfw_SOURCES ${common_SOURCES} egl_opengl.c)
+elseif (_GLFW_NSGL)
+    list(APPEND glfw_HEADERS ${common_HEADERS} nsgl_platform.h)
+    list(APPEND glfw_SOURCES ${common_SOURCES} nsgl_opengl.c)
+elseif (_GLFW_WGL)
+    list(APPEND glfw_HEADERS ${common_HEADERS} wgl_platform.h)
+    list(APPEND glfw_SOURCES ${common_SOURCES} wgl_opengl.c)
+elseif (_GLFW_X11)
+    list(APPEND glfw_HEADERS ${common_HEADERS} glx_platform.h)
+    list(APPEND glfw_SOURCES ${common_SOURCES} glx_opengl.c)
 endif()
 
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
@@ -58,7 +66,7 @@ if (BUILD_SHARED_LIBS)
         set_target_properties(glfw PROPERTIES SOVERSION ${GLFW_VERSION_MAJOR})
     endif()
 
-    if (_GLFW_WIN32_WGL)
+    if (_GLFW_WIN32)
         # The GLFW DLL needs a special compile-time macro and import library name
         set_target_properties(glfw PROPERTIES PREFIX "" IMPORT_PREFIX "")
 
@@ -67,7 +75,7 @@ if (BUILD_SHARED_LIBS)
         else()
             set_target_properties(glfw PROPERTIES IMPORT_SUFFIX "dll.lib")
         endif()
-    elseif (_GLFW_COCOA_NSGL)
+    elseif (_GLFW_COCOA)
         # Append -fno-common to the compile flags to work around a bug in the Apple GCC
         get_target_property(glfw_CFLAGS glfw COMPILE_FLAGS)
         if (NOT glfw_CFLAGS)

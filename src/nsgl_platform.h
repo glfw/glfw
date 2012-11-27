@@ -1,6 +1,6 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    Cocoa
+// Platform:    NSOpenGL
 // API Version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
@@ -27,25 +27,12 @@
 //
 //========================================================================
 
-#ifndef _cocoa_platform_h_
-#define _cocoa_platform_h_
+#ifndef _nsgl_platform_h_
+#define _nsgl_platform_h_
 
 
-#include <stdint.h>
-
-#if defined(__OBJC__)
-#import <Cocoa/Cocoa.h>
-#else
-#include <ApplicationServices/ApplicationServices.h>
-typedef void* id;
-#endif
-
-#if defined(_GLFW_NSGL)
- #include "nsgl_platform.h"
-#endif
-
-#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  NS
-#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS NS
+#define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextNSGL NSGL
+#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryNSGL NSGL
 
 
 //========================================================================
@@ -53,59 +40,23 @@ typedef void* id;
 //========================================================================
 
 //------------------------------------------------------------------------
-// Pointer length integer
+// Platform-specific OpenGL context structure
 //------------------------------------------------------------------------
-typedef intptr_t GLFWintptr;
-
-
-//------------------------------------------------------------------------
-// Platform-specific window structure
-//------------------------------------------------------------------------
-typedef struct _GLFWwindowNS
+typedef struct _GLFWcontextNSGL
 {
-    id           object;
-    id	         delegate;
-    id           view;
-    unsigned int modifierFlags;
-} _GLFWwindowNS;
+    id           pixelFormat;
+    id	         context;
+} _GLFWcontextNSGL;
 
 
 //------------------------------------------------------------------------
-// Platform-specific library global data for Cocoa
+// Platform-specific library global data for NSGL
 //------------------------------------------------------------------------
-typedef struct _GLFWlibraryNS
+typedef struct _GLFWlibraryNSGL
 {
-    struct {
-        double base;
-        double resolution;
-    } timer;
-
-    CGDisplayModeRef desktopMode;
-    CGEventSourceRef eventSource;
-    id               delegate;
-    id               autoreleasePool;
-
-    char*            clipboardString;
-} _GLFWlibraryNS;
+    // dlopen handle for dynamically loading OpenGL extension entry points
+    void*            framework;
+} _GLFWlibraryNSGL;
 
 
-//========================================================================
-// Prototypes for platform specific internal functions
-//========================================================================
-
-// Time
-void _glfwInitTimer(void);
-
-// Joystick input
-void _glfwInitJoysticks(void);
-void _glfwTerminateJoysticks(void);
-
-// Fullscreen
-GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp, int* refreshRate);
-void _glfwRestoreVideoMode(void);
-
-// OpenGL support
-int _glfwInitOpenGL(void);
-void _glfwTerminateOpenGL(void);
-
-#endif // _cocoa_platform_h_
+#endif // _nsgl_platform_h_

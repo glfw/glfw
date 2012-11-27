@@ -19,6 +19,10 @@ option(GLFW_USE_EGL "Build for EGL and OpenGL ES platform (Currently only X11)" 
 if (GLFW_USE_EGL)
     set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMake/modules)
     find_package(EGL REQUIRED)
+
+    set(GLFW_BUILD_EXAMPLES OFF)
+    set(GLFW_BUILD_TESTS OFF)
+    message(STATUS "NOTE: Examples and tests are disabled for EGL")
 else()
     find_package(OpenGL REQUIRED)
 endif()
@@ -47,25 +51,39 @@ if (BUILD_SHARED_LIBS)
 endif()
 
 #--------------------------------------------------------------------
-# Detect and select target platform
+# Detect and select target APIs
 #--------------------------------------------------------------------
 if (WIN32)
-    set(_GLFW_WIN32_WGL 1)
-    message(STATUS "Building GLFW for WGL on a Win32 system") 
-elseif (UNIX AND APPLE)
-    set(_GLFW_COCOA_NSGL 1)
-    message(STATUS "Building GLFW for Cocoa and NSOpenGL on Mac OS X")
-elseif (UNIX AND NOT APPLE)
-    set(_GLFW_X11 1)
+    set(_GLFW_WIN32 1)
+    message(STATUS "Using Win32 for window creation") 
+
     if (GLFW_USE_EGL)
-        set(_GLFW_X11_EGL 1)
-        set(GLFW_BUILD_EXAMPLES 0)
-        set(GLFW_BUILD_TESTS 0)
-        message(STATUS "Building GLFW for X11 and EGL on a Unix-like system")
-        message(STATUS "NOTE: Examples and tests are disabled for EGL")
+        set(_GLFW_EGL 1)
+        message(STATUS "Using EGL for context creation")
     else()
-        set(_GLFW_X11_GLX 1)
-        message(STATUS "Building GLFW for X11 and GLX on a Unix-like system")
+        set(_GLFW_WGL 1)
+        message(STATUS "Using WGL for context creation")
+    endif()
+elseif (APPLE)
+    set(_GLFW_COCOA 1)
+    message(STATUS "Using Cocoa for window creation")
+
+    if (GLFW_USE_EGL)
+        message(FATAL_ERROR "EGL not supported on Mac OS X")
+    else()
+        set(_GLFW_NSGL 1)
+        message(STATUS "Using NSGL for context creation")
+    endif()
+elseif (UNIX)
+    set(_GLFW_X11 1)
+    message(STATUS "Using X11 for window creation") 
+
+    if (GLFW_USE_EGL)
+        set(_GLFW_EGL 1)
+        message(STATUS "Using EGL for context creation")
+    else()
+        set(_GLFW_GLX 1)
+        message(STATUS "Using GLX for context creation")
     endif()
 else()
     message(FATAL_ERROR "No supported platform was detected")
@@ -74,7 +92,7 @@ endif()
 #--------------------------------------------------------------------
 # Set up GLFW for Win32 and WGL on Windows
 #--------------------------------------------------------------------
-if (_GLFW_WIN32_WGL)
+if (_GLFW_WIN32)
 
     # Set up library and include paths
     list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
@@ -160,16 +178,12 @@ if (_GLFW_X11)
         set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lm")
     endif()
 
-    if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-        set(_GLFW_USE_LINUX_JOYSTICKS 1)
-    endif()
-
 endif()
 
 #--------------------------------------------------------------------
 # GLX Context
 #--------------------------------------------------------------------
-if (_GLFW_X11_GLX)
+if (_GLFW_GLX)
 
     # Set up library and include paths
     list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
@@ -223,42 +237,44 @@ endif()
 #--------------------------------------------------------------------
 # EGL Context
 #--------------------------------------------------------------------
-if (_GLFW_X11_EGL)
+if (_GLFW_EGL)
 
     # Set up library and include paths
     list(APPEND glfw_INCLUDE_DIRS ${EGL_INCLUDE_DIR})
     list(APPEND glfw_LIBRARIES ${EGL_LIBRARY})
 
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} egl")
-
-    include(CheckFunctionExists)
-
     set(CMAKE_REQUIRED_LIBRARIES ${EGL_LIBRARY})
 
-    check_function_exists(eglGetProcAddress _GLFW_HAS_EGLGETPROCADDRESS)
+    if (_GLFW_X11)
+        set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} egl")
 
-    if (NOT _GLFW_HAS_EGLGETPROCADDRESS)
-        message(WARNING "No eglGetProcAddress found")
+        include(CheckFunctionExists)
 
-        # Check for dlopen support as a fallback
+        check_function_exists(eglGetProcAddress _GLFW_HAS_EGLGETPROCADDRESS)
 
-        find_library(DL_LIBRARY dl)
-        mark_as_advanced(DL_LIBRARY)
-        if (DL_LIBRARY)
-            set(CMAKE_REQUIRED_LIBRARIES ${DL_LIBRARY})
-        else()
-            set(CMAKE_REQUIRED_LIBRARIES "")
-        endif()
+        if (NOT _GLFW_HAS_EGLGETPROCADDRESS)
+            message(WARNING "No eglGetProcAddress found")
 
-        check_function_exists(dlopen _GLFW_HAS_DLOPEN)
+            # Check for dlopen support as a fallback
 
-        if (NOT _GLFW_HAS_DLOPEN)
-            message(FATAL_ERROR "No entry point retrieval mechanism found")
-        endif()
+            find_library(DL_LIBRARY dl)
+            mark_as_advanced(DL_LIBRARY)
+            if (DL_LIBRARY)
+                set(CMAKE_REQUIRED_LIBRARIES ${DL_LIBRARY})
+            else()
+                set(CMAKE_REQUIRED_LIBRARIES "")
+            endif()
 
-        if (DL_LIBRARY)
-            list(APPEND glfw_LIBRARIES ${DL_LIBRARY})
-            set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -ldl")
+            check_function_exists(dlopen _GLFW_HAS_DLOPEN)
+
+            if (NOT _GLFW_HAS_DLOPEN)
+                message(FATAL_ERROR "No entry point retrieval mechanism found")
+            endif()
+
+            if (DL_LIBRARY)
+                list(APPEND glfw_LIBRARIES ${DL_LIBRARY})
+                set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -ldl")
+            endif()
         endif()
     endif()
 
@@ -267,7 +283,7 @@ endif()
 #--------------------------------------------------------------------
 # Set up GLFW for Cocoa and NSOpenGL on Mac OS X
 #--------------------------------------------------------------------
-if (_GLFW_COCOA_NSGL)
+if (_GLFW_COCOA AND _GLFW_NSGL)
         
     option(GLFW_BUILD_UNIVERSAL "Build GLFW as a Universal Binary" OFF)
 
@@ -349,7 +365,7 @@ install(FILES COPYING.txt readme.html
 #--------------------------------------------------------------------
 # Create and install pkg-config file on supported platforms
 #--------------------------------------------------------------------
-if (_GLFW_X11_GLX OR _GLFW_COCOA_NSGL)
+if (UNIX)
     configure_file(${GLFW_SOURCE_DIR}/src/glfw3.pc.in
                    ${GLFW_BINARY_DIR}/src/glfw3.pc @ONLY)
 

@@ -208,7 +208,7 @@ static int createContext(_GLFWwindow* window,
     // Retrieve the corresponding visual
     // NOTE: This is the only non-portable code in this file.
     // Maybe it would not hurt too much to add #ifdefs for different platforms?
-#if defined(_GLFW_X11_EGL)
+#if defined(_GLFW_X11)
     {
         int mask;
         EGLint redBits, greenBits, blueBits, alphaBits, visualID = 0;

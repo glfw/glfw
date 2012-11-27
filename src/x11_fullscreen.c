@@ -449,7 +449,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(int* found)
     rgbs = (int*) malloc(sizeof(int) * visualCount);
     rgbCount = 0;
 
-#if !defined(_GLFW_X11_EGL)
+#if defined(_GLFW_GLX)
     for (i = 0;  i < visualCount;  i++)
     {
         int gl, rgba, rgb, r, g, b;

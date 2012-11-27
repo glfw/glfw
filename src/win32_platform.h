@@ -105,9 +105,9 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 #define _GLFW_WNDCLASSNAME L"GLFW30"
 
 
-#if defined(_GLFW_WIN32_WGL)
+#if defined(_GLFW_WGL)
  #include "wgl_platform.h"
-#elif defined(_GLFW_WIN32_EGL)
+#elif defined(_GLFW_EGL)
  #define _GLFW_EGL_NATIVE_WINDOW  window->Win32.handle
  #define _GLFW_EGL_NATIVE_DISPLAY NULL
  #include "egl_platform.h"

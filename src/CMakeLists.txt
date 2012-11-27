@@ -7,8 +7,8 @@ if (MSVC)
 endif()
 
 set(common_HEADERS ${GLFW_SOURCE_DIR}/include/GL/glfw3.h internal.h)
-set(common_SOURCES clipboard.c fullscreen.c gamma.c init.c input.c
-                   joystick.c opengl.c time.c window.c)
+set(common_SOURCES clipboard.c context.c fullscreen.c gamma.c init.c input.c
+                   joystick.c time.c window.c)
 
 if (_GLFW_COCOA)
     set(glfw_HEADERS ${common_HEADERS} cocoa_platform.h)
@@ -41,16 +41,16 @@ endif()
 
 if (_GLFW_EGL)
     list(APPEND glfw_HEADERS ${common_HEADERS} egl_platform.h)
-    list(APPEND glfw_SOURCES ${common_SOURCES} egl_opengl.c)
+    list(APPEND glfw_SOURCES ${common_SOURCES} egl_context.c)
 elseif (_GLFW_NSGL)
     list(APPEND glfw_HEADERS ${common_HEADERS} nsgl_platform.h)
-    list(APPEND glfw_SOURCES ${common_SOURCES} nsgl_opengl.m)
+    list(APPEND glfw_SOURCES ${common_SOURCES} nsgl_context.m)
 elseif (_GLFW_WGL)
     list(APPEND glfw_HEADERS ${common_HEADERS} wgl_platform.h)
-    list(APPEND glfw_SOURCES ${common_SOURCES} wgl_opengl.c)
+    list(APPEND glfw_SOURCES ${common_SOURCES} wgl_context.c)
 elseif (_GLFW_X11)
     list(APPEND glfw_HEADERS ${common_HEADERS} glx_platform.h)
-    list(APPEND glfw_SOURCES ${common_SOURCES} glx_opengl.c)
+    list(APPEND glfw_SOURCES ${common_SOURCES} glx_context.c)
 endif()
 
 if (_GLFW_NSGL)

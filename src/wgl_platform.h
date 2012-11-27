@@ -1,6 +1,6 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    EGL
+// Platform:    WGL
 // API version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
@@ -28,34 +28,17 @@
 //
 //========================================================================
 
-#ifndef _egl_platform_h_
-#define _egl_platform_h_
-
-#include <EGL/egl.h>
+#ifndef _wgl_platform_h_
+#define _wgl_platform_h_
 
 // This path may need to be changed if you build GLFW using your own setup
-// We ship and use our own copy of eglext.h since GLFW uses fairly new
+// We ship and use our own copy of wglext.h since GLFW uses fairly new
 // extensions and not all operating systems come with an up-to-date version
-#include "../support/GL/eglext.h"
+#include "../support/GL/wglext.h"
 
-// Do we have support for dlopen/dlsym?
-#if defined(_GLFW_HAS_DLOPEN)
- #include <dlfcn.h>
-#endif
 
-// We support two different ways for getting addresses for EGL
-// extension functions: eglGetProcAddress and dlsym
-#if defined(_GLFW_HAS_EGLGETPROCADDRESS)
- #define _glfw_eglGetProcAddress(x) eglGetProcAddress(x)
-#elif defined(_GLFW_HAS_DLOPEN)
- #define _glfw_eglGetProcAddress(x) dlsym(_glfwLibrary.EGL.libEGL, x)
- #define _GLFW_DLOPEN_LIBEGL
-#else
- #error "No OpenGL entry point retrieval mechanism was enabled"
-#endif
-
-#define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextEGL EGL
-#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryEGL EGL
+#define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextWGL WGL
+#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryWGL WGL
 
 
 //========================================================================
@@ -65,32 +48,36 @@
 //------------------------------------------------------------------------
 // Platform-specific OpenGL context structure
 //------------------------------------------------------------------------
-typedef struct _GLFWcontextEGL
+typedef struct _GLFWcontextWGL
 {
-   EGLConfig      config;
-   EGLContext     context;
-   EGLSurface     surface;
+    // Platform specific window resources
+    HDC       DC;              // Private GDI device context
+    HGLRC     context;         // Permanent rendering context
 
-#if defined(_GLFW_X11_EGL)
-   XVisualInfo*   visual;
-#endif
-} _GLFWcontextEGL;
+    // Platform specific extensions (context specific)
+    PFNWGLSWAPINTERVALEXTPROC           SwapIntervalEXT;
+    PFNWGLGETPIXELFORMATATTRIBIVARBPROC GetPixelFormatAttribivARB;
+    PFNWGLGETEXTENSIONSSTRINGEXTPROC    GetExtensionsStringEXT;
+    PFNWGLGETEXTENSIONSSTRINGARBPROC    GetExtensionsStringARB;
+    PFNWGLCREATECONTEXTATTRIBSARBPROC   CreateContextAttribsARB;
+    GLboolean                           EXT_swap_control;
+    GLboolean                           ARB_multisample;
+    GLboolean                           ARB_pixel_format;
+    GLboolean                           ARB_create_context;
+    GLboolean                           ARB_create_context_profile;
+    GLboolean                           EXT_create_context_es2_profile;
+    GLboolean                           ARB_create_context_robustness;
+} _GLFWcontextWGL;
 
 
 //------------------------------------------------------------------------
-// Platform-specific library global data for EGL
+// Platform-specific library global data for WGL
 //------------------------------------------------------------------------
-typedef struct _GLFWlibraryEGL
+typedef struct _GLFWlibraryWGL
 {
-    EGLDisplay      display;
-    EGLint          majorVersion, minorVersion;
+    int dummy;
 
-    GLboolean       KHR_create_context;
-
-#if defined(_GLFW_DLOPEN_LIBEGL)
-    void*           libEGL;  // dlopen handle for libEGL.so
-#endif
-} _GLFWlibraryEGL;
+} _GLFWlibraryWGL;
 
 
-#endif // _egl_platform_h_
+#endif // _wgl_platform_h_

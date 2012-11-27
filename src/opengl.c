@@ -682,32 +682,3 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname)
     return _glfwPlatformGetProcAddress(procname);
 }
 
-
-//========================================================================
-// Copies the specified OpenGL state categories from src to dst
-//========================================================================
-
-GLFWAPI void glfwCopyContext(GLFWwindow hsrc, GLFWwindow hdst, unsigned long mask)
-{
-    _GLFWwindow* src;
-    _GLFWwindow* dst;
-
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    src = (_GLFWwindow*) hsrc;
-    dst = (_GLFWwindow*) hdst;
-
-    if (_glfwPlatformGetCurrentContext() == dst)
-    {
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwCopyContext: Cannot copy OpenGL state to a current context");
-        return;
-    }
-
-    _glfwPlatformCopyContext(src, dst, mask);
-}
-

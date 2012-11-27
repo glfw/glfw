@@ -180,7 +180,6 @@ typedef struct _GLFWlibraryWin32
 {
     HINSTANCE                 instance;     // Instance of the application
     ATOM                      classAtom;    // Window class atom
-    HHOOK                     keyboardHook; // Keyboard hook handle
     DWORD                     foregroundLockTimeout;
     char*                     clipboardString;
 

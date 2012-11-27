@@ -455,8 +455,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
         if ([event modifierFlags] & NSCommandKeyMask)
         {
-            if (window->systemKeys)
-                [super keyDown:event];
+            [super keyDown:event];
         }
         else
         {
@@ -686,7 +685,7 @@ static GLboolean createWindow(_GLFWwindow* window,
     }
 
     window->NS.object = [[NSWindow alloc]
-        initWithContentRect:NSMakeRect(0, 0, window->width, window->height)
+        initWithContentRect:NSMakeRect(wndconfig->positionX, wndconfig->positionY, window->width, window->height)
                   styleMask:styleMask
                     backing:NSBackingStoreBuffered
                       defer:NO];
@@ -1003,27 +1002,6 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     [window->NS.object setContentSize:NSMakeSize(width, height)];
-}
-
-
-//========================================================================
-// Set the window position
-//========================================================================
-
-void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
-{
-    NSRect contentRect =
-        [window->NS.object contentRectForFrameRect:[window->NS.object frame]];
-
-    // We assume here that the client code wants to position the window within the
-    // screen the window currently occupies
-    NSRect screenRect = [[window->NS.object screen] visibleFrame];
-    contentRect.origin = NSMakePoint(screenRect.origin.x + x,
-                                     screenRect.origin.y + screenRect.size.height -
-                                         y - contentRect.size.height);
-
-    [window->NS.object setFrame:[window->NS.object frameRectForContentRect:contentRect]
-                        display:YES];
 }
 
 

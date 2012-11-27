@@ -359,8 +359,6 @@ int main(int argc, char *argv[])
     glfwGetWindowSize(window, &width, &height);
     reshape(window, width, height);
 
-    glfwSetInputMode( window, GLFW_KEY_REPEAT, GL_TRUE );
-
     // Parse command-line options
     init(argc, argv);
 

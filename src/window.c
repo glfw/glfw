@@ -72,43 +72,43 @@ static void clearScrollOffsets(void)
 // Register window focus events
 //========================================================================
 
-void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean activated)
+void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused)
 {
-    if (activated)
+    if (focused)
     {
-        if (_glfwLibrary.activeWindow == window)
-            return;
+        if (_glfwLibrary.focusedWindow != window)
+        {
+            _glfwLibrary.focusedWindow = window;
 
-        _glfwLibrary.activeWindow = window;
-
-        if (window->windowFocusCallback)
-            window->windowFocusCallback(window, activated);
+            if (window->windowFocusCallback)
+                window->windowFocusCallback(window, focused);
+        }
     }
     else
     {
-        int i;
-
-        if (_glfwLibrary.activeWindow != window)
-            return;
-
-        // Release all pressed keyboard keys
-        for (i = 0;  i <= GLFW_KEY_LAST;  i++)
+        if (_glfwLibrary.focusedWindow == window)
         {
-            if (window->key[i] == GLFW_PRESS)
-                _glfwInputKey(window, i, GLFW_RELEASE);
+            int i;
+
+            // Release all pressed keyboard keys
+            for (i = 0;  i <= GLFW_KEY_LAST;  i++)
+            {
+                if (window->key[i] == GLFW_PRESS)
+                    _glfwInputKey(window, i, GLFW_RELEASE);
+            }
+
+            // Release all pressed mouse buttons
+            for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
+            {
+                if (window->mouseButton[i] == GLFW_PRESS)
+                    _glfwInputMouseClick(window, i, GLFW_RELEASE);
+            }
+
+            _glfwLibrary.focusedWindow = NULL;
+
+            if (window->windowFocusCallback)
+                window->windowFocusCallback(window, focused);
         }
-
-        // Release all pressed mouse buttons
-        for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
-        {
-            if (window->mouseButton[i] == GLFW_PRESS)
-                _glfwInputMouseClick(window, i, GLFW_RELEASE);
-        }
-
-        _glfwLibrary.activeWindow = NULL;
-
-        if (window->windowFocusCallback)
-            window->windowFocusCallback(window, activated);
     }
 }
 
@@ -238,6 +238,8 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     wndconfig.refreshRate    = Max(_glfwLibrary.hints.refreshRate, 0);
     wndconfig.resizable      = _glfwLibrary.hints.resizable ? GL_TRUE : GL_FALSE;
     wndconfig.visible        = _glfwLibrary.hints.visible ? GL_TRUE : GL_FALSE;
+    wndconfig.positionX      = _glfwLibrary.hints.positionX;
+    wndconfig.positionY      = _glfwLibrary.hints.positionY;
     wndconfig.clientAPI      = _glfwLibrary.hints.clientAPI;
     wndconfig.glMajor        = _glfwLibrary.hints.glMajor;
     wndconfig.glMinor        = _glfwLibrary.hints.glMinor;
@@ -255,22 +257,11 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     // Save the currently current context so it can be restored later
     previous = glfwGetCurrentContext();
 
-    // Check width & height
-    if (width > 0 && height <= 0)
+    if (width <= 0 || height <= 0)
     {
-        // Set the window aspect ratio to 4:3
-        height = (width * 3) / 4;
-    }
-    else if (width <= 0 && height > 0)
-    {
-        // Set the window aspect ratio to 4:3
-        width = (height * 4) / 3;
-    }
-    else if (width <= 0 && height <= 0)
-    {
-        // Default window size
-        width  = 640;
-        height = 480;
+        _glfwSetError(GLFW_INVALID_VALUE,
+                      "glfwCreateWindow: Invalid window size");
+        return GL_FALSE;
     }
 
     window = (_GLFWwindow*) calloc(1, sizeof(_GLFWwindow));
@@ -288,7 +279,6 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     window->height     = height;
     window->resizable  = wndconfig.resizable;
     window->cursorMode = GLFW_CURSOR_NORMAL;
-    window->systemKeys = GL_TRUE;
     window->monitor    = (_GLFWmonitor*) monitor;
 
     // Open the actual window and create its context
@@ -363,6 +353,10 @@ void glfwDefaultWindowHints(void)
     _glfwLibrary.hints.resizable = GL_TRUE;
     _glfwLibrary.hints.visible   = GL_TRUE;
 
+    // The default window position is the upper left corner of the screen
+    _glfwLibrary.hints.positionX = 0;
+    _glfwLibrary.hints.positionY = 0;
+
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil
     _glfwLibrary.hints.redBits     = 8;
     _glfwLibrary.hints.greenBits   = 8;
@@ -431,6 +425,12 @@ GLFWAPI void glfwWindowHint(int target, int hint)
         case GLFW_VISIBLE:
             _glfwLibrary.hints.visible = hint;
             break;
+        case GLFW_POSITION_X:
+            _glfwLibrary.hints.positionX = hint;
+            break;
+        case GLFW_POSITION_Y:
+            _glfwLibrary.hints.positionY = hint;
+            break;
         case GLFW_FSAA_SAMPLES:
             _glfwLibrary.hints.samples = hint;
             break;
@@ -485,9 +485,9 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow handle)
     if (window == _glfwPlatformGetCurrentContext())
         _glfwPlatformMakeContextCurrent(NULL);
 
-    // Clear the active window pointer if this is the active window
-    if (window == _glfwLibrary.activeWindow)
-        _glfwLibrary.activeWindow = NULL;
+    // Clear the focused window pointer if this is the focused window
+    if (window == _glfwLibrary.focusedWindow)
+        _glfwLibrary.focusedWindow = NULL;
 
     _glfwPlatformDestroyWindow(window);
 
@@ -577,52 +577,6 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow handle, int width, int height)
         // modes)
         _glfwPlatformRefreshWindowParams(window);
     }
-}
-
-
-//========================================================================
-// Get the window position
-//========================================================================
-
-GLFWAPI void glfwGetWindowPos(GLFWwindow handle, int* xpos, int* ypos)
-{
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    if (xpos != NULL)
-        *xpos = window->positionX;
-
-    if (ypos != NULL)
-        *ypos = window->positionY;
-}
-
-
-//========================================================================
-// Set the window position
-//========================================================================
-
-GLFWAPI void glfwSetWindowPos(GLFWwindow handle, int xpos, int ypos)
-{
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    if (window->monitor || window->iconified)
-    {
-        // TODO: Figure out if this is an error
-        return;
-    }
-
-    _glfwPlatformSetWindowPos(window, xpos, ypos);
 }
 
 
@@ -729,8 +683,8 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
 
     switch (param)
     {
-        case GLFW_ACTIVE:
-            return window == _glfwLibrary.activeWindow;
+        case GLFW_FOCUSED:
+            return window == _glfwLibrary.focusedWindow;
         case GLFW_ICONIFIED:
             return window->iconified;
         case GLFW_CLOSE_REQUESTED:
@@ -741,6 +695,10 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window->resizable;
         case GLFW_VISIBLE:
             return window->visible;
+        case GLFW_POSITION_X:
+            return window->positionX;
+        case GLFW_POSITION_Y:
+            return window->positionY;
         case GLFW_CLIENT_API:
             return window->clientAPI;
         case GLFW_OPENGL_VERSION_MAJOR:

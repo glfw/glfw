@@ -327,22 +327,22 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_ACTIVATE:
         {
-            // Window was (de)activated and/or (de)iconified
+            // Window was (de)focused and/or (de)iconified
 
-            BOOL active = LOWORD(wParam) != WA_INACTIVE;
+            BOOL focused = LOWORD(wParam) != WA_INACTIVE;
             BOOL iconified = HIWORD(wParam) ? TRUE : FALSE;
 
-            if (active && iconified)
+            if (focused && iconified)
             {
                 // This is a workaround for window iconification using the
-                // taskbar leading to windows being told they're active and
-                // iconified and then never told they're deactivated
-                active = FALSE;
+                // taskbar leading to windows being told they're focused and
+                // iconified and then never told they're defocused
+                focused = FALSE;
             }
 
-            if (!active && _glfwLibrary.activeWindow == window)
+            if (!focused && _glfwLibrary.focusedWindow == window)
             {
-                // The window was deactivated (or iconified, see above)
+                // The window was defocused (or iconified, see above)
 
                 if (window->cursorMode == GLFW_CURSOR_CAPTURED)
                     showCursor(window);
@@ -363,9 +363,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     }
                 }
             }
-            else if (active && _glfwLibrary.activeWindow != window)
+            else if (focused && _glfwLibrary.focusedWindow != window)
             {
-                // The window was activated
+                // The window was focused
 
                 if (window->cursorMode == GLFW_CURSOR_CAPTURED)
                     captureCursor(window);
@@ -385,7 +385,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 }
             }
 
-            _glfwInputWindowFocus(window, active);
+            _glfwInputWindowFocus(window, focused);
             _glfwInputWindowIconify(window, iconified);
             return 0;
         }
@@ -543,7 +543,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
                 if (window->cursorMode == GLFW_CURSOR_CAPTURED)
                 {
-                    if (_glfwLibrary.activeWindow != window)
+                    if (_glfwLibrary.focusedWindow != window)
                         return 0;
 
                     x = newCursorX - window->Win32.oldCursorX;
@@ -787,8 +787,8 @@ static int createWindow(_GLFWwindow* window,
         SystemParametersInfo(SPI_GETWORKAREA, 0, &wa, 0);
 
         // Adjust window position to working area
-        positionX = wa.left;
-        positionY = wa.top;
+        positionX = wndconfig->positionX + wa.left;
+        positionY = wndconfig->positionY + wa.top;
     }
 
     wideTitle = _glfwCreateWideStringFromUTF8(wndconfig->title);
@@ -842,8 +842,8 @@ static void destroyWindow(_GLFWwindow* window)
 
     // This is duplicated from glfwDestroyWindow
     // TODO: Stop duplicating code
-    if (window == _glfwLibrary.activeWindow)
-        _glfwLibrary.activeWindow = NULL;
+    if (window == _glfwLibrary.focusedWindow)
+        _glfwLibrary.focusedWindow = NULL;
 
     if (window->Win32.handle)
     {
@@ -1072,23 +1072,6 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
 
 //========================================================================
-// Set the window position
-//========================================================================
-
-void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
-{
-    RECT rect;
-
-    GetClientRect(window->Win32.handle, &rect);
-    AdjustWindowRectEx(&rect, window->Win32.dwStyle, FALSE, window->Win32.dwExStyle);
-
-    SetWindowPos(window->Win32.handle, HWND_TOP,
-                 x + rect.left, y + rect.top, 0, 0,
-                 SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
-}
-
-
-//========================================================================
 // Window iconification
 //========================================================================
 
@@ -1162,7 +1145,7 @@ void _glfwPlatformPollEvents(void)
     MSG msg;
     _GLFWwindow* window;
 
-    window = _glfwLibrary.activeWindow;
+    window = _glfwLibrary.focusedWindow;
     if (window)
     {
         window->Win32.cursorCentered = GL_FALSE;
@@ -1198,7 +1181,7 @@ void _glfwPlatformPollEvents(void)
     // LSHIFT/RSHIFT fixup (keys tend to "stick" without this fix)
     // This is the only async event handling in GLFW, but it solves some
     // nasty problems.
-    window = _glfwLibrary.activeWindow;
+    window = _glfwLibrary.focusedWindow;
     if (window)
     {
         int lshift_down, rshift_down;
@@ -1216,8 +1199,8 @@ void _glfwPlatformPollEvents(void)
             _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, GLFW_RELEASE);
     }
 
-    // Did the cursor move in an active window that has captured the cursor
-    window = _glfwLibrary.activeWindow;
+    // Did the cursor move in an focused window that has captured the cursor
+    window = _glfwLibrary.focusedWindow;
     if (window)
     {
         if (window->cursorMode == GLFW_CURSOR_CAPTURED &&

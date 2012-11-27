@@ -85,7 +85,7 @@ int main(void)
 
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
-    window = glfwCreateWindow(0, 0, "Defaults", NULL, NULL);
+    window = glfwCreateWindow(640, 480, "Defaults", NULL, NULL);
     if (!window)
     {
         glfwTerminate();

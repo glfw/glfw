@@ -70,7 +70,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwCreateWindow(0, 0, "", NULL, NULL);
+    window = glfwCreateWindow(640, 480, "", NULL, NULL);
     if (!window)
     {
         fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));

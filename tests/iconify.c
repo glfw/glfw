@@ -75,11 +75,11 @@ static void window_size_callback(GLFWwindow window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-static void window_focus_callback(GLFWwindow window, int activated)
+static void window_focus_callback(GLFWwindow window, int focused)
 {
     printf("%0.2f Window %s\n",
            glfwGetTime(),
-           activated ? "activated" : "deactivated");
+           focused ? "focused" : "defocused");
 }
 
 static void window_iconify_callback(GLFWwindow window, int iconified)
@@ -128,8 +128,8 @@ int main(int argc, char** argv)
     }
     else
     {
-        width = 0;
-        height = 0;
+        width = 640;
+        height = 480;
     }
 
     window = glfwCreateWindow(width, height, "Iconify", monitor, NULL);
@@ -152,7 +152,7 @@ int main(int argc, char** argv)
 
     printf("Window is %s and %s\n",
            glfwGetWindowParam(window, GLFW_ICONIFIED) ? "iconified" : "restored",
-           glfwGetWindowParam(window, GLFW_ACTIVE) ? "active" : "inactive");
+           glfwGetWindowParam(window, GLFW_FOCUSED) ? "focused" : "defocused");
 
     glEnable(GL_SCISSOR_TEST);
 

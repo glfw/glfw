@@ -285,7 +285,6 @@ version of GLFW.</p>
   <li>Added <code>glfwSetWindowIconifyCallback</code> function and <code>GLFWwindowiconifyfun</code> type for receiving window iconification events</li>
   <li>Added <code>glfwGetClipboardString</code> and <code>glfwSetClipboardString</code> functions for interacting with the system clipboard</li>
   <li>Added <code>glfwGetCurrentContext</code> function for retrieving the window whose OpenGL context is current</li>
-  <li>Added <code>glfwCopyContext</code> function for copying OpenGL state categories between contexts</li>
   <li>Added <code>GLFW_CLIENT_API</code>, <code>GLFW_OPENGL_API</code> and <code>GLFW_OPENGL_ES_API</code> for selecting client API</li>
   <li>Added <code>GLFW_OPENGL_ROBUSTNESS</code> window hint and associated strategy tokens for <code>GL_ARB_robustness</code> support</li>
   <li>Added <code>GLFW_OPENGL_REVISION</code> window parameter to make up for removal of <code>glfwGetGLVersion</code></li>
@@ -304,6 +303,7 @@ version of GLFW.</p>
   <li>Changed <code>glfwGetVideoModes</code> to return a dynamic, unlimited number of video modes for the specified monitor</li>
   <li>Renamed <code>glfw.h</code> to <code>glfw3.h</code> to avoid conflicts with 2.x series</li>
   <li>Renamed <code>glfwOpenWindowHint</code> to <code>glfwWindowHint</code></li>
+  <li>Renamed <code>GLFW_ACTIVE</code> to <code>GLFW_FOCUSED</code></li>
   <li>Renamed <code>GLFW_WINDOW_NO_RESIZE</code> to <code>GLFW_RESIZABLE</code></li>
   <li>Renamed <code>GLFW_BUILD_DLL</code> to <code>_GLFW_BUILD_DLL</code></li>
   <li>Renamed <code>version</code> test to <code>glfwinfo</code></li>
@@ -318,7 +318,7 @@ version of GLFW.</p>
   <li>Replaced <code>glfwEnable</code> and <code>glfwDisable</code> with <code>glfwGetInputMode</code> and <code>glfwSetInputMode</code></li>
   <li>Replaced <code>joystick</code> test with graphical version</li>
   <li>Replaced automatic closing of windows with <code>GLFW_CLOSE_REQUESTED</code> window parameter</li>
-  <li>Made Unicode character input unaffected by <code>GLFW_KEY_REPEAT</code></li>
+  <li>Removed the <code>GLFW_KEY_REPEAT</code> input option</li>
   <li>Removed event auto-polling and the <code>GLFW_AUTO_POLL_EVENTS</code> window enable</li>
   <li>Removed the Win32 port .def files</li>
   <li>Removed the entire threading API</li>
@@ -944,8 +944,9 @@ their skills.  Special thanks go out to:</p>
   Leopard</li>
 
   <li>Riku Salminen, for the initial implementation of
-  <code>glfwShowWindow</code> and <code>glfwHideWindow</code>, and for making
-  the X11 event processing able to support multi-threaded rendering</li>
+  <code>glfwShowWindow</code> and <code>glfwHideWindow</code>, for the idea of
+  <code>glfwDefaultWindowHints</code> and for making the X11 event processing
+  able to support multi-threaded rendering</li>
 
   <li>Douglas C. Schmidt and Irfan Pyarali, for their excellent article
   <a href="http://www.cs.wustl.edu/~schmidt/win32-cv-1.html">Strategies for Implementing POSIX Condition Variables on Win32</a></li>

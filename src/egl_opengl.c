@@ -589,14 +589,3 @@ GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
     return _glfw_eglGetProcAddress(procname);
 }
 
-
-//========================================================================
-// Copies the specified OpenGL state categories from src to dst
-//========================================================================
-
-void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long mask)
-{
-    _glfwSetError(GLFW_PLATFORM_ERROR,
-                  "EGL: Context copying not supported by EGL");
-}
-

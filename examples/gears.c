@@ -338,11 +338,6 @@ int main(int argc, char *argv[])
         exit( EXIT_FAILURE );
     }
 
-    // Set callback functions
-    glfwSetWindowCloseCallback(window_close_callback);
-    glfwSetWindowSizeCallback( reshape );
-    glfwSetKeyCallback( key );
-
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
 
     window = glfwCreateWindow( 300, 300, GLFW_WINDOWED, "Gears", NULL );
@@ -353,13 +348,16 @@ int main(int argc, char *argv[])
         exit( EXIT_FAILURE );
     }
 
+    // Set callback functions
+    glfwSetWindowCloseCallback(window, window_close_callback);
+    glfwSetWindowSizeCallback(window, reshape);
+    glfwSetKeyCallback(window, key);
+
     glfwMakeContextCurrent(window);
     glfwSwapInterval( 1 );
 
     glfwGetWindowSize(window, &width, &height);
     reshape(window, width, height);
-
-    glfwSetInputMode( window, GLFW_KEY_REPEAT, GL_TRUE );
 
     // Parse command-line options
     init(argc, argv);

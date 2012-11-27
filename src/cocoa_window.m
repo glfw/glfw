@@ -455,8 +455,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
         if ([event modifierFlags] & NSCommandKeyMask)
         {
-            if (window->systemKeys)
-                [super keyDown:event];
+            [super keyDown:event];
         }
         else
         {
@@ -654,9 +653,9 @@ static GLboolean initializeAppKit(void)
     // Implicitly create shared NSApplication instance
     [GLFWApplication sharedApplication];
 
-    // Setting up the menu bar must go between sharedApplication
-    // above and finishLaunching below, in order to properly emulate the
-    // behavior of NSApplicationMain
+    // Menu bar setup must go between sharedApplication above and
+    // finishLaunching below, in order to properly emulate the behavior
+    // of NSApplicationMain
     createMenuBar();
 
     [NSApp finishLaunching];
@@ -686,7 +685,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         styleMask = NSBorderlessWindowMask;
 
     window->NS.object = [[NSWindow alloc]
-        initWithContentRect:NSMakeRect(0, 0, window->width, window->height)
+        initWithContentRect:NSMakeRect(wndconfig->positionX, wndconfig->positionY, window->width, window->height)
                   styleMask:styleMask
                     backing:NSBackingStoreBuffered
                       defer:NO];
@@ -729,7 +728,7 @@ static GLboolean createContext(_GLFWwindow* window,
     else if (colorBits < 15)
         colorBits = 15;
 
-    if (wndconfig->clientAPI != GLFW_OPENGL_ES_API)
+    if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
     {
         _glfwSetError(GLFW_VERSION_UNAVAILABLE,
                       "Cocoa/NSOpenGL: NSOpenGL does not support OpenGL ES");
@@ -969,7 +968,6 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     [window->NSGL.pixelFormat release];
     window->NSGL.pixelFormat = nil;
 
-    [NSOpenGLContext clearCurrentContext];
     [window->NSGL.context release];
     window->NSGL.context = nil;
 
@@ -1004,27 +1002,6 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     [window->NS.object setContentSize:NSMakeSize(width, height)];
-}
-
-
-//========================================================================
-// Set the window position
-//========================================================================
-
-void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
-{
-    NSRect contentRect =
-        [window->NS.object contentRectForFrameRect:[window->NS.object frame]];
-
-    // We assume here that the client code wants to position the window within the
-    // screen the window currently occupies
-    NSRect screenRect = [[window->NS.object screen] visibleFrame];
-    contentRect.origin = NSMakePoint(screenRect.origin.x + x,
-                                     screenRect.origin.y + screenRect.size.height -
-                                         y - contentRect.size.height);
-
-    [window->NS.object setFrame:[window->NS.object frameRectForContentRect:contentRect]
-                        display:YES];
 }
 
 

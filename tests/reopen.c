@@ -102,9 +102,9 @@ static GLboolean open_window(int width, int height, int mode)
     glfwMakeContextCurrent(window_handle);
     glfwSwapInterval(1);
 
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetWindowCloseCallback(window_close_callback);
-    glfwSetKeyCallback(key_callback);
+    glfwSetWindowSizeCallback(window_handle, window_size_callback);
+    glfwSetWindowCloseCallback(window_handle, window_close_callback);
+    glfwSetKeyCallback(window_handle, key_callback);
 
     printf("Opening %s mode window took %0.3f seconds\n",
            get_mode_name(mode),
@@ -132,7 +132,10 @@ int main(int argc, char** argv)
     for (;;)
     {
         if (!open_window(640, 480, (count & 1) ? GLFW_FULLSCREEN : GLFW_WINDOWED))
+        {
+            glfwTerminate();
             exit(EXIT_FAILURE);
+        }
 
         glMatrixMode(GL_PROJECTION);
         glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);
@@ -156,6 +159,8 @@ int main(int argc, char** argv)
             {
                 close_window();
                 printf("User closed window\n");
+
+                glfwTerminate();
                 exit(EXIT_SUCCESS);
             }
         }

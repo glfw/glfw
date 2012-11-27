@@ -218,10 +218,6 @@ if (_GLFW_X11_GLX)
         endif()
     endif()
 
-    if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-        set(_GLFW_HAS_LINUX_JOYSTICKS 1)
-    endif()
-
 endif()
 
 #--------------------------------------------------------------------
@@ -264,10 +260,6 @@ if (_GLFW_X11_EGL)
             list(APPEND glfw_LIBRARIES ${DL_LIBRARY})
             set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -ldl")
         endif()
-    endif()
-
-    if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-        set(_GLFW_HAS_LINUX_JOYSTICKS 1)
     endif()
 
 endif()

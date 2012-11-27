@@ -23,7 +23,7 @@
 //
 //========================================================================
 //
-// This test is used to test window activation and iconfication for
+// This test is used to test window focusing and iconfication for
 // fullscreen windows with a video mode differing from the desktop mode
 //
 //========================================================================
@@ -35,11 +35,11 @@
 
 static GLboolean running = GL_TRUE;
 
-static void window_focus_callback(GLFWwindow window, int activated)
+static void window_focus_callback(GLFWwindow window, int focused)
 {
     printf("%0.3f: Window %s\n",
            glfwGetTime(),
-           activated ? "activated" : "deactivated");
+           focused ? "focused" : "defocused");
 }
 
 static void window_key_callback(GLFWwindow window, int key, int action)
@@ -96,9 +96,9 @@ int main(void)
 
     glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_NORMAL);
 
-    glfwSetWindowFocusCallback(window_focus_callback);
-    glfwSetKeyCallback(window_key_callback);
-    glfwSetWindowCloseCallback(window_close_callback);
+    glfwSetWindowFocusCallback(window, window_focus_callback);
+    glfwSetKeyCallback(window, window_key_callback);
+    glfwSetWindowCloseCallback(window, window_close_callback);
 
     while (running)
     {

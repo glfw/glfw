@@ -55,11 +55,14 @@ int main(void)
 
     for (i = 0;  i < 4;  i++)
     {
+        glfwWindowHint(GLFW_POSITION_X, 100 + (i & 1) * 300);
+        glfwWindowHint(GLFW_POSITION_Y, 100 + (i >> 1) * 300);
         windows[i] = glfwCreateWindow(200, 200, GLFW_WINDOWED, titles[i], NULL);
         if (!windows[i])
         {
             fprintf(stderr, "Failed to open GLFW window: %s\n",
                     glfwErrorString(glfwGetError()));
+
             glfwTerminate();
             exit(EXIT_FAILURE);
         }
@@ -69,8 +72,6 @@ int main(void)
                      (GLclampf) (i >> 1),
                      i ? 0.f : 1.f,
                      0.f);
-
-        glfwSetWindowPos(windows[i], 100 + (i & 1) * 300, 100 + (i >> 1) * 300);
     }
 
     while (running)

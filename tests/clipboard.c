@@ -125,7 +125,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Clipboard Test", NULL);
+    window = glfwCreateWindow(200, 200, GLFW_WINDOWED, "Clipboard Test", NULL);
     if (!window)
     {
         glfwTerminate();
@@ -137,9 +137,9 @@ int main(int argc, char** argv)
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    glfwSetKeyCallback(key_callback);
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetWindowCloseCallback(window_close_callback);
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetWindowCloseCallback(window, window_close_callback);
 
     glMatrixMode(GL_PROJECTION);
     glOrtho(-1.f, 1.f, -1.f, 1.f, -1.f, 1.f);

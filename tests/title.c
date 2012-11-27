@@ -47,17 +47,19 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "English 日本語 русский язык 官話", NULL);
+    window = glfwCreateWindow(400, 400, GLFW_WINDOWED, "English 日本語 русский язык 官話", NULL);
     if (!window)
     {
         fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+
+        glfwTerminate();
         exit(EXIT_FAILURE);
     }
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    glfwSetWindowSizeCallback(window_size_callback);
+    glfwSetWindowSizeCallback(window, window_size_callback);
 
     while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
@@ -66,6 +68,7 @@ int main(void)
         glfwWaitEvents();
     }
 
+    glfwTerminate();
     exit(EXIT_SUCCESS);
 }
 

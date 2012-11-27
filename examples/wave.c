@@ -399,13 +399,6 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 
-    glfwSetKeyCallback(key_callback);
-    glfwSetWindowCloseCallback(window_close_callback);
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetMouseButtonCallback(mouse_button_callback);
-    glfwSetCursorPosCallback(cursor_position_callback);
-    glfwSetScrollCallback(scroll_callback);
-
     window = glfwCreateWindow(640, 480, GLFW_WINDOWED, "Wave Simulation", NULL);
     if (!window)
     {
@@ -413,13 +406,18 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetWindowCloseCallback(window, window_close_callback);
+    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
     glfwGetWindowSize(window, &width, &height);
     window_size_callback(window, width, height);
-
-    glfwSetInputMode(window, GLFW_KEY_REPEAT, GL_TRUE);
 
     // Initialize OpenGL
     init_opengl();

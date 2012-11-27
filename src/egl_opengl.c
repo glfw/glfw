@@ -92,7 +92,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window,
     {
         free(configs);
 
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
+        _glfwSetError(GLFW_API_UNAVAILABLE,
                       "EGL: No EGLConfigs returned");
         return NULL;
     }
@@ -388,7 +388,7 @@ int _glfwInitOpenGL(void)
     _glfwLibrary.EGL.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
     if (_glfwLibrary.EGL.display == EGL_NO_DISPLAY)
     {
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
+        _glfwSetError(GLFW_API_UNAVAILABLE,
                       "EGL: Failed to get EGL display");
         return GL_FALSE;
     }
@@ -397,7 +397,7 @@ int _glfwInitOpenGL(void)
                        &_glfwLibrary.EGL.majorVersion,
                        &_glfwLibrary.EGL.minorVersion))
     {
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
+        _glfwSetError(GLFW_API_UNAVAILABLE,
                       "EGL: Failed to initialize EGL");
         return GL_FALSE;
     }

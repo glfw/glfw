@@ -119,7 +119,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 
         window->X11.handle = XCreateWindow(_glfwLibrary.X11.display,
                                            _glfwLibrary.X11.root,
-                                           0, 0,           // Position
+                                           wndconfig->positionX, wndconfig->positionY,
                                            window->width, window->height,
                                            0,              // Border width
                                            visual->depth,  // Color depth
@@ -136,6 +136,12 @@ static GLboolean createWindow(_GLFWwindow* window,
             _glfwSetError(GLFW_PLATFORM_ERROR, "X11: Failed to create window");
             return GL_FALSE;
         }
+
+        // Request a window position to be set once the window is shown
+        // (see _glfwPlatformShowWindow)
+        window->X11.windowPosSet = GL_FALSE;
+        window->X11.positionX = wndconfig->positionX;
+        window->X11.positionY = wndconfig->positionY;
     }
 
     if (window->mode == GLFW_FULLSCREEN && !_glfwLibrary.X11.hasEWMH)
@@ -238,6 +244,15 @@ static GLboolean createWindow(_GLFWwindow* window,
 
 static void hideCursor(_GLFWwindow* window)
 {
+    // Un-grab cursor (in windowed mode only; in fullscreen mode we still
+    // want the cursor grabbed in order to confine the cursor to the window
+    // area)
+    if (window->X11.cursorGrabbed && window->mode == GLFW_WINDOWED)
+    {
+        XUngrabPointer(_glfwLibrary.X11.display, CurrentTime);
+        window->X11.cursorGrabbed = GL_FALSE;
+    }
+
     if (!window->X11.cursorHidden)
     {
         XDefineCursor(_glfwLibrary.X11.display,
@@ -280,7 +295,7 @@ static void showCursor(_GLFWwindow* window)
     // Un-grab cursor (in windowed mode only; in fullscreen mode we still
     // want the cursor grabbed in order to confine the cursor to the window
     // area)
-    if (window->X11.cursorGrabbed)
+    if (window->X11.cursorGrabbed && window->mode == GLFW_WINDOWED)
     {
         XUngrabPointer(_glfwLibrary.X11.display, CurrentTime);
         window->X11.cursorGrabbed = GL_FALSE;
@@ -617,7 +632,7 @@ static void processEvent(XEvent *event)
 
                 if (window->cursorMode == GLFW_CURSOR_CAPTURED)
                 {
-                    if (_glfwLibrary.activeWindow != window)
+                    if (_glfwLibrary.focusedWindow != window)
                         break;
 
                     x = event->xmotion.x - window->X11.cursorPosX;
@@ -998,16 +1013,6 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
 
 //========================================================================
-// Set the window position.
-//========================================================================
-
-void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
-{
-    XMoveWindow(_glfwLibrary.X11.display, window->X11.handle, x, y);
-}
-
-
-//========================================================================
 // Window iconification
 //========================================================================
 
@@ -1051,6 +1056,15 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
     XMapRaised(_glfwLibrary.X11.display, window->X11.handle);
     XFlush(_glfwLibrary.X11.display);
+
+    // Set the window position the first time the window is shown
+    // Note: XMoveWindow has no effect before the window has been mapped.
+    if (!window->X11.windowPosSet)
+    {
+        XMoveWindow(_glfwLibrary.X11.display, window->X11.handle,
+                    window->X11.positionX, window->X11.positionY);
+        window->X11.windowPosSet = GL_TRUE;
+    }
 }
 
 
@@ -1120,11 +1134,11 @@ void _glfwPlatformPollEvents(void)
         processEvent(&event);
     }
 
-    // Check whether the cursor has moved inside an active window that has
+    // Check whether the cursor has moved inside an focused window that has
     // captured the cursor (because then it needs to be re-centered)
 
     _GLFWwindow* window;
-    window = _glfwLibrary.activeWindow;
+    window = _glfwLibrary.focusedWindow;
     if (window)
     {
         if (window->cursorMode == GLFW_CURSOR_CAPTURED &&

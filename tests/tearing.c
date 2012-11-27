@@ -70,20 +70,20 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "", NULL);
+    window = glfwCreateWindow(640, 480, GLFW_WINDOWED, "", NULL);
     if (!window)
     {
-        glfwTerminate();
-
         fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+
+        glfwTerminate();
         exit(EXIT_FAILURE);
     }
 
     glfwMakeContextCurrent(window);
     set_swap_interval(window, swap_interval);
 
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetKeyCallback(key_callback);
+    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     glMatrixMode(GL_PROJECTION);
     glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);

@@ -450,12 +450,6 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    // Set callback functions
-    glfwSetWindowSizeCallback(windowSizeFun);
-    glfwSetWindowRefreshCallback(windowRefreshFun);
-    glfwSetCursorPosCallback(cursorPosFun);
-    glfwSetMouseButtonCallback(mouseButtonFun);
-
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
 
     // Open OpenGL window
@@ -463,8 +457,16 @@ int main(void)
     if (!window)
     {
         fprintf(stderr, "Failed to open GLFW window\n");
+
+        glfwTerminate();
         exit(EXIT_FAILURE);
     }
+
+    // Set callback functions
+    glfwSetWindowSizeCallback(window, windowSizeFun);
+    glfwSetWindowRefreshCallback(window, windowRefreshFun);
+    glfwSetCursorPosCallback(window, cursorPosFun);
+    glfwSetMouseButtonCallback(window, mouseButtonFun);
 
     // Enable vsync
     glfwMakeContextCurrent(window);

@@ -41,8 +41,6 @@
 #include <locale.h>
 
 // These must match the input mode defaults
-static GLboolean keyrepeat  = GL_FALSE;
-static GLboolean systemkeys = GL_TRUE;
 static GLboolean closeable = GL_TRUE;
 
 // Event index
@@ -249,12 +247,12 @@ static void window_refresh_callback(GLFWwindow window)
     }
 }
 
-static void window_focus_callback(GLFWwindow window, int activated)
+static void window_focus_callback(GLFWwindow window, int focused)
 {
     printf("%08x at %0.3f: Window %s\n",
            counter++,
            glfwGetTime(),
-           activated ? "activated" : "deactivated");
+           focused ? "focused" : "defocused");
 }
 
 static void window_iconify_callback(GLFWwindow window, int iconified)
@@ -311,24 +309,6 @@ static void key_callback(GLFWwindow window, int key, int action)
 
     switch (key)
     {
-        case GLFW_KEY_R:
-        {
-            keyrepeat = !keyrepeat;
-            glfwSetInputMode(window, GLFW_KEY_REPEAT, keyrepeat);
-
-            printf("(( key repeat %s ))\n", keyrepeat ? "enabled" : "disabled");
-            break;
-        }
-
-        case GLFW_KEY_S:
-        {
-            systemkeys = !systemkeys;
-            glfwSetInputMode(window, GLFW_SYSTEM_KEYS, systemkeys);
-
-            printf("(( system keys %s ))\n", systemkeys ? "enabled" : "disabled");
-            break;
-        }
-
         case GLFW_KEY_C:
         {
             closeable = !closeable;
@@ -363,19 +343,7 @@ int main(void)
 
     printf("Library initialized\n");
 
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetWindowCloseCallback(window_close_callback);
-    glfwSetWindowRefreshCallback(window_refresh_callback);
-    glfwSetWindowFocusCallback(window_focus_callback);
-    glfwSetWindowIconifyCallback(window_iconify_callback);
-    glfwSetMouseButtonCallback(mouse_button_callback);
-    glfwSetCursorPosCallback(cursor_position_callback);
-    glfwSetCursorEnterCallback(cursor_enter_callback);
-    glfwSetScrollCallback(scroll_callback);
-    glfwSetKeyCallback(key_callback);
-    glfwSetCharCallback(char_callback);
-
-    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Event Linter", NULL);
+    window = glfwCreateWindow(640, 480, GLFW_WINDOWED, "Event Linter", NULL);
     if (!window)
     {
         glfwTerminate();
@@ -386,14 +354,23 @@ int main(void)
 
     printf("Window opened\n");
 
+    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetWindowCloseCallback(window, window_close_callback);
+    glfwSetWindowRefreshCallback(window, window_refresh_callback);
+    glfwSetWindowFocusCallback(window, window_focus_callback);
+    glfwSetWindowIconifyCallback(window, window_iconify_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetCursorEnterCallback(window, cursor_enter_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetCharCallback(window, char_callback);
+
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
     glfwGetWindowSize(window, &width, &height);
     printf("Window size should be %ix%i\n", width, height);
-
-    printf("Key repeat should be %s\n", keyrepeat ? "enabled" : "disabled");
-    printf("System keys should be %s\n", systemkeys ? "enabled" : "disabled");
 
     printf("Main loop starting\n");
 

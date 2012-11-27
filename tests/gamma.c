@@ -133,8 +133,8 @@ int main(int argc, char** argv)
     }
     else
     {
-        width = 0;
-        height = 0;
+        width = 200;
+        height = 200;
     }
 
     window = glfwCreateWindow(width, height, mode, "Gamma Test", NULL);
@@ -151,9 +151,9 @@ int main(int argc, char** argv)
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    glfwSetKeyCallback(key_callback);
-    glfwSetWindowCloseCallback(window_close_callback);
-    glfwSetWindowSizeCallback(size_callback);
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetWindowCloseCallback(window, window_close_callback);
+    glfwSetWindowSizeCallback(window, size_callback);
 
     glMatrixMode(GL_PROJECTION);
     glOrtho(-1.f, 1.f, -1.f, 1.f, -1.f, 1.f);

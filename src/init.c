@@ -121,18 +121,16 @@ GLFWAPI int glfwInit(void)
 
     memset(&_glfwLibrary, 0, sizeof(_glfwLibrary));
 
-    // Not all window hints have zero as their default value
-    _glfwSetDefaultWindowHints();
-
     if (!_glfwPlatformInit())
     {
         _glfwPlatformTerminate();
         return GL_FALSE;
     }
 
-    atexit(glfwTerminate);
-
     _glfwInitialized = GL_TRUE;
+
+    // Not all window hints have zero as their default value
+    glfwDefaultWindowHints();
 
     return GL_TRUE;
 }
@@ -217,21 +215,19 @@ GLFWAPI const char* glfwErrorString(int error)
         case GLFW_NOT_INITIALIZED:
             return "The GLFW library is not initialized";
         case GLFW_NO_CURRENT_CONTEXT:
-            return "There is no current OpenGL context";
+            return "There is no current context";
         case GLFW_INVALID_ENUM:
             return "Invalid argument for enum parameter";
         case GLFW_INVALID_VALUE:
             return "Invalid value for parameter";
         case GLFW_OUT_OF_MEMORY:
             return "Out of memory";
-        case GLFW_OPENGL_UNAVAILABLE:
-            return "OpenGL is not available on this machine";
+        case GLFW_API_UNAVAILABLE:
+            return "The requested client API is unavailable";
         case GLFW_VERSION_UNAVAILABLE:
-            return "The requested OpenGL version is unavailable";
+            return "The requested client API version is unavailable";
         case GLFW_PLATFORM_ERROR:
             return "A platform-specific error occurred";
-        case GLFW_WINDOW_NOT_ACTIVE:
-            return "The specified window is not active";
         case GLFW_FORMAT_UNAVAILABLE:
             return "The requested format is unavailable";
     }

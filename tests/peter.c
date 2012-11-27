@@ -92,7 +92,7 @@ static void window_size_callback(GLFWwindow window, int width, int height)
 
 static GLboolean open_window(void)
 {
-    window_handle = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Peter Detector", NULL);
+    window_handle = glfwCreateWindow(640, 480, GLFW_WINDOWED, "Peter Detector", NULL);
     if (!window_handle)
         return GL_FALSE;
 
@@ -102,9 +102,9 @@ static GLboolean open_window(void)
     glfwGetCursorPos(window_handle, &cursor_x, &cursor_y);
     printf("Cursor position: %i %i\n", cursor_x, cursor_y);
 
-    glfwSetWindowSizeCallback(window_size_callback);
-    glfwSetCursorPosCallback(cursor_position_callback);
-    glfwSetKeyCallback(key_callback);
+    glfwSetWindowSizeCallback(window_handle, window_size_callback);
+    glfwSetCursorPosCallback(window_handle, cursor_position_callback);
+    glfwSetKeyCallback(window_handle, key_callback);
 
     return GL_TRUE;
 }
@@ -120,6 +120,8 @@ int main(void)
     if (!open_window())
     {
         fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+
+        glfwTerminate();
         exit(EXIT_FAILURE);
     }
 
@@ -138,6 +140,8 @@ int main(void)
             if (!open_window())
             {
                 fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+
+                glfwTerminate();
                 exit(EXIT_FAILURE);
             }
 

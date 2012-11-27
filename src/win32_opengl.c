@@ -189,7 +189,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
 
     if (!available)
     {
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "WGL: No pixel formats found");
+        _glfwSetError(GLFW_API_UNAVAILABLE, "WGL: No pixel formats found");
         return NULL;
     }
 
@@ -411,7 +411,7 @@ static GLboolean createContext(_GLFWwindow* window,
 
         if (wndconfig->glRobustness)
         {
-            int strategy;
+            int strategy = 0;
 
             if (!window->WGL.ARB_create_context_robustness)
             {
@@ -528,11 +528,6 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 void _glfwDestroyContext(_GLFWwindow* window)
 {
-    // This is duplicated from glfwDestroyWindow
-    // TODO: Stop duplicating code
-    if (window == _glfwCurrentWindow)
-        _glfwPlatformMakeContextCurrent(NULL);
-
     if (window->WGL.context)
     {
         wglDeleteContext(window->WGL.context);
@@ -640,19 +635,5 @@ int _glfwPlatformExtensionSupported(const char* extension)
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 {
     return (GLFWglproc) wglGetProcAddress(procname);
-}
-
-
-//========================================================================
-// Copies the specified OpenGL state categories from src to dst
-//========================================================================
-
-void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long mask)
-{
-    if (!wglCopyContext(src->WGL.context, dst->WGL.context, mask))
-    {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "WGL: Failed to copy OpenGL context attributes");
-    }
 }
 

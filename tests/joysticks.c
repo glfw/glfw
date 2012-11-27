@@ -186,7 +186,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Joystick Test", NULL);
+    window = glfwCreateWindow(640, 480, GLFW_WINDOWED, "Joystick Test", NULL);
     if (!window)
     {
         glfwTerminate();
@@ -195,7 +195,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glfwSetWindowSizeCallback(window_size_callback);
+    glfwSetWindowSizeCallback(window, window_size_callback);
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);

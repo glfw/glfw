@@ -113,7 +113,7 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
  #include "egl_platform.h"
 #endif
 
-#define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowWin32 Win32
+#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWin32  Win32
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 Win32
 
 

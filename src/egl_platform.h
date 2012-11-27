@@ -54,7 +54,7 @@
  #error "No OpenGL entry point retrieval mechanism was enabled"
 #endif
 
-#define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextEGL EGL
+#define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextEGL EGL
 #define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryEGL EGL
 
 

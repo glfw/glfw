@@ -526,7 +526,7 @@ extern "C" {
 /*! @brief The @link clients client API @endlink to create a context for.
  */
 #define GLFW_CLIENT_API           0x00022000
-#define GLFW_OPENGL_VERSION_MAJOR 0x00022001
+#define GLFW_CLIENT_VERSION_MAJOR 0x00022001
 #define GLFW_OPENGL_VERSION_MINOR 0x00022002
 #define GLFW_OPENGL_FORWARD_COMPAT 0x00022003
 #define GLFW_OPENGL_DEBUG_CONTEXT 0x00022004

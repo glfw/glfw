@@ -37,7 +37,7 @@
 #include "../support/GL/wglext.h"
 
 
-#define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextWGL WGL
+#define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextWGL WGL
 #define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryWGL WGL
 
 

@@ -63,7 +63,7 @@
  #include "egl_platform.h"
 #endif
 
-#define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowX11 X11
+#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  X11
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 X11
 
 // Clipboard format atom indices

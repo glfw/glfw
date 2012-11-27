@@ -172,7 +172,7 @@ endif()
 if (_GLFW_X11_GLX)
 
     # Set up library and include paths
-    list(APPEND glfw_INCLUDE_DIRS${OPENGL_INCLUDE_DIR})
+    list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
     list(APPEND glfw_LIBRARIES ${OPENGL_gl_LIBRARY})
 
     set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} gl")

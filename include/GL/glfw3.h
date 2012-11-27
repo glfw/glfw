@@ -56,6 +56,8 @@ extern "C" {
  */
 /*! @defgroup input Input handling
  */
+/*! @defgroup monitor Monitor handling
+ */
 /*! @defgroup opengl OpenGL support
  */
 /*! @defgroup time Time input
@@ -65,8 +67,6 @@ extern "C" {
  *  The primary purpose of GLFW is to provide a simple interface to OpenGL
  *  context creation and window management.  GLFW supports multiple windows,
  *  which can be either a normal desktop window or a fullscreen window.
- */
-/*! @defgroup monitor Monitor handling
  */
 
 
@@ -795,6 +795,12 @@ typedef void (* GLFWkeyfun)(GLFWwindow,int,int);
  *  @ingroup input
  */
 typedef void (* GLFWcharfun)(GLFWwindow,int);
+
+/*! @brief The function signature for monitor configuration callbacks.
+ *  @param[in] monitor The monitor that was connected or disconnected.
+ *  @param[in] event @ref GLFW_MONITOR_CONNECTED or @ref
+ *  GLFW_MONITOR_DISCONNECTED.
+ */
 typedef void (* GLFWmonitorfun)(GLFWmonitor,int);
 
 /* @brief Video mode type.
@@ -934,40 +940,66 @@ GLFWAPI const char* glfwErrorString(int error);
  */
 GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
 
-/*! @ingroup monitor
+/*! @brief Returns the currently connected monitors.
+ *  @param[out] count The size of the returned array.
+ *  @return An array of monitor handles.
+ *  @ingroup monitor
  */
 GLFWAPI GLFWmonitor* glfwGetMonitors(int* count);
 
-/*! @ingroup monitor
+/*! @brief Returns the primary monitor.
+ *  @return The primary monitor.
+ *  @ingroup monitor
  */
 GLFWAPI GLFWmonitor glfwGetPrimaryMonitor(void);
 
-/*! @ingroup monitor
+/*! @brief Returns a property of the specified monitor.
+ *  @ingroup monitor
  */
 GLFWAPI int  glfwGetMonitorParam(GLFWmonitor monitor, int param);
 
-/*! @ingroup monitor
+/*! @brief Returns the name of the specified monitor.
+ *  @param[in] monitor The monitor to query.
+ *  @return The UTF-8 encoded name of the monitor.
+ *  @ingroup monitor
  */
 GLFWAPI const char* glfwGetMonitorName(GLFWmonitor monitor);
 
-/*! @ingroup monitor
+/*! @brief Sets the user pointer of the specified monitor.
+ *  @param[in] monitor The monitor whose pointer to set.
+ *  @param[in] pointer The new value.
+ *  @ingroup monitor
+ *
+ *  @see glfwGetMonitorUserPointer
  */
 GLFWAPI void glfwSetMonitorUserPointer(GLFWmonitor monitor, void* pointer);
 
-/*! @ingroup monitor
+/*! @brief Returns the user pointer of the specified monitor.
+ *  @param[in] monitor The monitor whose pointer to return.
+ *  @ingroup monitor
+ *
+ *  @sa glfwSetMonitorUserPointer
  */
 GLFWAPI void* glfwGetMonitorUserPointer(GLFWmonitor monitor);
 
-/*! @ingroup monitor
+/*! @brief Sets the monitor configuration callback.
+ *  @param[in] cbfun The new callback, or @c NULL to remove the currently set.
+ *  @ingroup monitor
  */
 GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun);
 
 /*! @brief Returns the available video modes for the specified monitor.
+ *  @param[in] monitor The monitor to query.
+ *  @param[out] count The number of video modes in the returned array.
+ *  @return An array of video modes.
  *  @ingroup monitor
  */
 GLFWAPI GLFWvidmode* glfwGetVideoModes(GLFWmonitor monitor, int* count);
 
-/*! @ingroup monitor
+/*! @brief Returns the current mode of the specified monitor.
+ *  @param[in] monitor The monitor to query.
+ *  @param[out] mode The current mode of the monitor.
+ *  @ingroup monitor
  */
 GLFWAPI void glfwGetVideoMode(GLFWmonitor monitor, GLFWvidmode* mode);
 
@@ -1240,7 +1272,10 @@ GLFWAPI void glfwShowWindow(GLFWwindow window);
  */
 GLFWAPI void glfwHideWindow(GLFWwindow window);
 
-/*! @ingroup window
+/*! @brief Returns the monitor that the window uses for fullscreen mode
+ *  @param[in] window The window to query.
+ *  @return The monitor, or @c NULL if the window is in windowed mode.
+ *  @ingroup window
  */
 GLFWAPI GLFWmonitor glfwGetWindowMonitor(GLFWwindow window);
 

@@ -199,6 +199,7 @@ struct _GLFWwindow
     int       glRobustness;
     PFNGLGETSTRINGIPROC GetStringi;
 
+    GLFWwindowposfun     windowPosCallback;
     GLFWwindowsizefun    windowSizeCallback;
     GLFWwindowclosefun   windowCloseCallback;
     GLFWwindowrefreshfun windowRefreshCallback;

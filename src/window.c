@@ -119,8 +119,14 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused)
 
 void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
 {
+    if (window->positionX == x && window->positionY == y)
+        return;
+
     window->positionX = x;
     window->positionY = y;
+
+    if (window->windowPosCallback)
+        window->windowPosCallback(window, x, y);
 }
 
 
@@ -761,6 +767,24 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow handle)
     }
 
     return window->userPointer;
+}
+
+
+//========================================================================
+// Set callback function for window position changes
+//========================================================================
+
+GLFWAPI void glfwSetWindowPosCallback(GLFWwindow handle, GLFWwindowposfun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    window->windowPosCallback = cbfun;
 }
 
 

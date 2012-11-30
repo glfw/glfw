@@ -706,6 +706,16 @@ typedef void* GLFWwindow;
  */
 typedef void (* GLFWerrorfun)(int,const char*);
 
+/*! @brief The function signature for window position callbacks.
+ *  @param[in] window The window that the user moved.
+ *  @param[in] x The new x-coordinate, in pixels, of the upper-left corner of
+ *  the client area of the window.
+ *  @param[in] y The new y-coordinate, in pixels, of the upper-left corner of
+ *  the client area of the window.
+ *  @ingroup window
+ */
+typedef void (* GLFWwindowposfun)(GLFWwindow,int,int);
+
 /*! @brief The function signature for window resize callbacks.
  *  @param[in] window The window that the user resized.
  *  @param[in] width The new width, in pixels, of the window.
@@ -1273,6 +1283,14 @@ GLFWAPI void glfwSetWindowUserPointer(GLFWwindow window, void* pointer);
  *  @sa glfwSetWindowUserPointer
  */
 GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow window);
+
+/*! @brief Sets the position callback for the specified window.
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  callback.
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowPosCallback(GLFWwindow window, GLFWwindowposfun cbfun);
 
 /*! @brief Sets the size callback for the specified window.
  *  @param[in] window The window whose callback to set.

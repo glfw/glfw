@@ -218,6 +218,15 @@ static const char* get_character_string(int character)
     return result;
 }
 
+static void window_pos_callback(GLFWwindow window, int x, int y)
+{
+    printf("%08x at %0.3f: Window position: %i %i\n",
+           counter++,
+           glfwGetTime(),
+           x,
+           y);
+}
+
 static void window_size_callback(GLFWwindow window, int width, int height)
 {
     printf("%08x at %0.3f: Window size: %i %i\n",
@@ -354,6 +363,7 @@ int main(void)
 
     printf("Window opened\n");
 
+    glfwSetWindowPosCallback(window, window_pos_callback);
     glfwSetWindowSizeCallback(window, window_size_callback);
     glfwSetWindowCloseCallback(window, window_close_callback);
     glfwSetWindowRefreshCallback(window, window_refresh_callback);

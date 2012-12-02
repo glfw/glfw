@@ -53,7 +53,7 @@ elseif (_GLFW_X11)
     list(APPEND glfw_SOURCES ${common_SOURCES} glx_context.c)
 endif()
 
-if (_GLFW_NSGL)
+if (APPLE)
     # For some reason, CMake doesn't know about .m
     set_source_files_properties(${glfw_SOURCES} PROPERTIES LANGUAGE C)
 endif()
@@ -68,7 +68,7 @@ if (BUILD_SHARED_LIBS)
         set_target_properties(glfw PROPERTIES SOVERSION ${GLFW_VERSION_MAJOR})
     endif()
 
-    if (_GLFW_WIN32)
+    if (WIN32)
         # The GLFW DLL needs a special compile-time macro and import library name
         set_target_properties(glfw PROPERTIES PREFIX "" IMPORT_PREFIX "")
 
@@ -77,7 +77,7 @@ if (BUILD_SHARED_LIBS)
         else()
             set_target_properties(glfw PROPERTIES IMPORT_SUFFIX "dll.lib")
         endif()
-    elseif (_GLFW_COCOA)
+    elseif (APPLE)
         # Append -fno-common to the compile flags to work around a bug in
         # Apple's GCC
         get_target_property(glfw_CFLAGS glfw COMPILE_FLAGS)

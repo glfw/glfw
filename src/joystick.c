@@ -136,13 +136,13 @@ GLFWAPI const char* glfwGetJoystickName(int joy)
     if (!_glfwInitialized)
     {
         _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-        return 0;
+        return NULL;
     }
 
     if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
     {
         _glfwSetError(GLFW_INVALID_ENUM, NULL);
-        return 0;
+        return NULL;
     }
 
     return _glfwPlatformGetJoystickName(joy);

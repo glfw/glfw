@@ -1534,6 +1534,13 @@ GLFWAPI int glfwGetJoystickAxes(int joy, float* axes, int numaxes);
  *  @ingroup input
  */
 GLFWAPI int glfwGetJoystickButtons(int joy, unsigned char* buttons, int numbuttons);
+
+/*! @brief Returns the name of the specified joystick.
+ *  @param[in] joy The joystick to query.
+ *  @return The UTF-8 encoded name of the joystick, or @c NULL if the joystick
+ *  is not present.
+ *  @ingroup input
+ */
 GLFWAPI const char* glfwGetJoystickName(int joy);
 
 /*! @brief Sets the clipboard to the specified string.

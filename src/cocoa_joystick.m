@@ -68,7 +68,7 @@ typedef struct
 typedef struct
 {
     int present;
-    char product[256];
+    char name[256];
 
     IOHIDDeviceInterface** interface;
 
@@ -443,8 +443,8 @@ void _glfwInitJoysticks(void)
         if (refCF)
         {
             CFStringGetCString(refCF,
-                               joystick->product,
-                               sizeof(joystick->product),
+                               joystick->name,
+                               sizeof(joystick->name),
                                kCFStringEncodingUTF8);
         }
 
@@ -632,6 +632,6 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
 
 const char* _glfwPlatformGetJoystickName(int joy)
 {
-    return _glfwJoysticks[joy].product;
+    return _glfwJoysticks[joy].name;
 }
 

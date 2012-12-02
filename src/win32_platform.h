@@ -183,6 +183,8 @@ typedef struct _GLFWlibraryWin32
     } winmm;
 #endif // _GLFW_NO_DLOAD_WINMM
 
+    char*                     joyNames[GLFW_JOYSTICK_LAST + 1];
+
 } _GLFWlibraryWin32;
 
 

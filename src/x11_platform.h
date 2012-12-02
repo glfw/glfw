@@ -209,6 +209,7 @@ typedef struct _GLFWlibraryX11
         int             numButtons;
         float*          axis;
         unsigned char*  button;
+        char*           name;
     } joystick[GLFW_JOYSTICK_LAST + 1];
 
 } _GLFWlibraryX11;

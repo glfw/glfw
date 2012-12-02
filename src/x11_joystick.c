@@ -41,6 +41,7 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #endif // __linux__
 
 
@@ -52,6 +53,7 @@ static int openJoystickDevice(int joy, const char* path)
 {
 #ifdef __linux__
     char numAxes, numButtons;
+    char name[256];
     int fd, version;
 
     fd = open(path, O_RDONLY | O_NONBLOCK);
@@ -68,6 +70,11 @@ static int openJoystickDevice(int joy, const char* path)
         close(fd);
         return GL_FALSE;
     }
+
+    if (ioctl(fd, JSIOCGNAME(sizeof(name)), name) < 0)
+        strncpy(name, "Unknown", sizeof(name));
+
+    _glfwLibrary.X11.joystick[joy].name = strdup(name);
 
     ioctl(fd, JSIOCGAXES, &numAxes);
     _glfwLibrary.X11.joystick[joy].numAxes = (int) numAxes;
@@ -237,6 +244,7 @@ void _glfwTerminateJoysticks(void)
             close(_glfwLibrary.X11.joystick[i].fd);
             free(_glfwLibrary.X11.joystick[i].axis);
             free(_glfwLibrary.X11.joystick[i].button);
+            free(_glfwLibrary.X11.joystick[i].name);
 
             _glfwLibrary.X11.joystick[i].present = GL_FALSE;
         }
@@ -323,5 +331,18 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
         buttons[i] = _glfwLibrary.X11.joystick[joy].button[i];
 
     return numButtons;
+}
+
+
+//========================================================================
+// Get joystick name
+//========================================================================
+
+const char* _glfwPlatformGetJoystickName(int joy)
+{
+    if (!_glfwLibrary.X11.joystick[joy].present)
+        return NULL;
+
+    return _glfwLibrary.X11.joystick[joy].name;
 }
 

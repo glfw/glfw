@@ -199,15 +199,43 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
 
     if (hats > 0)
     {
-        int j;
-        int value = ji.dwPOV / 100 / 45;
-        if (value < 0 || value > 8) value = 8;
+        int j, value = ji.dwPOV / 100 / 45;
+
+        if (value < 0 || value > 8)
+            value = 8;
 
         for (j = 0; j < 4 && button < numbuttons; j++)
         {
-            buttons[button++] = directions[value] & (1 << j) ? GLFW_PRESS : GLFW_RELEASE;
+            if (directions[value] & (1 << j))
+                buttons[button] = GLFW_PRESS;
+            else
+                buttons[button] = GLFW_RELEASE;
+
+            button++;
         }
     }
 
     return button;
 }
+
+
+//========================================================================
+// Get joystick name
+//========================================================================
+
+const char* _glfwPlatformGetJoystickName(int joy)
+{
+    JOYCAPS jc;
+    const int i = joy - GLFW_JOYSTICK_1;
+
+    if (!isJoystickPresent(joy))
+        return NULL;
+
+    _glfw_joyGetDevCaps(i, &jc, sizeof(JOYCAPS));
+
+    free(_glfwLibrary.Win32.joyNames[i]);
+    _glfwLibrary.Win32.joyNames[i] = _glfwCreateUTF8FromWideString(jc.szPname);
+
+    return _glfwLibrary.Win32.joyNames[i];
+}
+

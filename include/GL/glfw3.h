@@ -1000,7 +1000,7 @@ GLFWAPI GLFWmonitor glfwGetPrimaryMonitor(void);
 /*! @brief Returns a property of the specified monitor.
  *  @ingroup monitor
  */
-GLFWAPI int  glfwGetMonitorParam(GLFWmonitor monitor, int param);
+GLFWAPI int glfwGetMonitorParam(GLFWmonitor monitor, int param);
 
 /*! @brief Returns the name of the specified monitor.
  *  @param[in] monitor The monitor to query.

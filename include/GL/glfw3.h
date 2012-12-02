@@ -518,6 +518,10 @@ extern "C" {
 /*! @brief The number of samples used for default framebuffer multisampling.
  */
 #define GLFW_FSAA_SAMPLES         0x0002100E
+/*! @brief @c GL_TRUE if the framebuffer should be sRGB capable, or @c GL_FALSE
+ *  otherwise.
+ */
+#define GLFW_SRGB_CAPABLE         0x0002100F
 
 /*! @brief The @link clients client API @endlink to create a context for.
  */
@@ -1019,6 +1023,9 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *
  *  The @ref GLFW_FSAA_SAMPLES hint specifies the desired number of samples to
  *  use for multisampling.
+ *
+ *  The @ref GLFW_SRGB_CAPABLE hint specifies whether the framebuffer should be
+ *  sRGB capable.
  *
  *  The @ref GLFW_CLIENT_API hint specifies which client API to create the
  *  context for.  Possible values are @ref GLFW_OPENGL_API and @ref

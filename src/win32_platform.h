@@ -144,6 +144,7 @@ typedef struct _GLFWcontextWGL
     GLboolean                           EXT_swap_control;
     GLboolean                           ARB_multisample;
     GLboolean                           ARB_pixel_format;
+    GLboolean                           ARB_framebuffer_sRGB;
     GLboolean                           ARB_create_context;
     GLboolean                           ARB_create_context_profile;
     GLboolean                           EXT_create_context_es2_profile;

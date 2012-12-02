@@ -72,6 +72,7 @@ static void initWGLExtensions(_GLFWwindow* window)
     // This needs to include every extension used below except for
     // WGL_ARB_extensions_string and WGL_EXT_extensions_string
     window->WGL.ARB_multisample = GL_FALSE;
+    window->WGL.ARB_framebuffer_sRGB = GL_FALSE;
     window->WGL.ARB_create_context = GL_FALSE;
     window->WGL.ARB_create_context_profile = GL_FALSE;
     window->WGL.EXT_create_context_es2_profile = GL_FALSE;
@@ -91,6 +92,9 @@ static void initWGLExtensions(_GLFWwindow* window)
 
     if (_glfwPlatformExtensionSupported("WGL_ARB_multisample"))
         window->WGL.ARB_multisample = GL_TRUE;
+
+    if (_glfwPlatformExtensionSupported("WGL_ARB_framebuffer_sRGB"))
+        window->WGL.ARB_framebuffer_sRGB = GL_TRUE;
 
     if (_glfwPlatformExtensionSupported("WGL_ARB_create_context"))
     {
@@ -246,6 +250,11 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
                 f->samples = getPixelFormatAttrib(window, i, WGL_SAMPLES_ARB);
             else
                 f->samples = 0;
+
+            if (window->WGL.ARB_framebuffer_sRGB)
+                f->sRGB = getPixelFormatAttrib(window, i, WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB);
+            else
+                f->sRGB = GL_FALSE;
         }
         else
         {
@@ -293,6 +302,9 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
 
             // PFD pixel formats do not support FSAA
             f->samples = 0;
+
+            // PFD pixel formats do not support sRGB
+            f->sRGB = GL_FALSE;
         }
 
         f->platformID = i;

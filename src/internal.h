@@ -100,6 +100,7 @@ struct _GLFWhints
     GLboolean   resizable;
     GLboolean   visible;
     int         samples;
+    GLboolean   sRGB;
     int         clientAPI;
     int         glMajor;
     int         glMinor;
@@ -160,6 +161,7 @@ struct _GLFWfbconfig
     int         auxBuffers;
     GLboolean   stereo;
     int         samples;
+    GLboolean   sRGB;
     GLFWintptr  platformID;
 };
 

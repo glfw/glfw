@@ -78,7 +78,8 @@ if (BUILD_SHARED_LIBS)
             set_target_properties(glfw PROPERTIES IMPORT_SUFFIX "dll.lib")
         endif()
     elseif (_GLFW_COCOA)
-        # Append -fno-common to the compile flags to work around a bug in the Apple GCC
+        # Append -fno-common to the compile flags to work around a bug in
+        # Apple's GCC
         get_target_property(glfw_CFLAGS glfw COMPILE_FLAGS)
         if (NOT glfw_CFLAGS)
             set(glfw_CFLAGS "")

@@ -157,6 +157,10 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window,
 
         f->samples = getConfigAttrib(configs[i], EGL_SAMPLES);
 
+        // NOTE: There does not appear to be any way to request sRGB
+        // framebuffers for OpenGL or GLES contexts; only for OpenVG ones
+        f->sRGB = GL_FALSE;
+
         f->platformID = (GLFWintptr) getConfigAttrib(configs[i], EGL_CONFIG_ID);
 
         (*found)++;

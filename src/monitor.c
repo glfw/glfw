@@ -238,7 +238,7 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 // Return the currently connected monitors
 //========================================================================
 
-GLFWAPI GLFWmonitor* glfwGetMonitors(int* count)
+GLFWAPI const GLFWmonitor* glfwGetMonitors(int* count)
 {
     if (!_glfwInitialized)
     {
@@ -375,7 +375,7 @@ GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 // Get a list of available video modes
 //========================================================================
 
-GLFWAPI GLFWvidmode* glfwGetVideoModes(GLFWmonitor handle, int* count)
+GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor handle, int* count)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
 

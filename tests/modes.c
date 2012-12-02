@@ -49,7 +49,7 @@ static void usage(void)
     printf("       modes -h\n");
 }
 
-static const char* format_mode(GLFWvidmode* mode)
+static const char* format_mode(const GLFWvidmode* mode)
 {
     static char buffer[512];
 
@@ -94,7 +94,7 @@ static void list_modes(GLFWmonitor monitor)
 {
     int count, widthMM, heightMM, dpi, i;
     GLFWvidmode mode;
-    GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
+    const GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
 
     glfwGetVideoMode(monitor, &mode);
 
@@ -125,11 +125,11 @@ static void list_modes(GLFWmonitor monitor)
 static void test_modes(GLFWmonitor monitor)
 {
     int i, count;
-    GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
+    const GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
 
     for (i = 0;  i < count;  i++)
     {
-        GLFWvidmode* mode = modes + i;
+        const GLFWvidmode* mode = modes + i;
         GLFWvidmode current;
 
         glfwWindowHint(GLFW_RED_BITS, mode->redBits);
@@ -210,7 +210,7 @@ static void test_modes(GLFWmonitor monitor)
 int main(int argc, char** argv)
 {
     int ch, i, count, mode = LIST_MODE;
-    GLFWmonitor* monitors;
+    const GLFWmonitor* monitors;
 
     while ((ch = getopt(argc, argv, "th")) != -1)
     {

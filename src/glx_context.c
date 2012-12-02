@@ -190,6 +190,11 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         else
             f->samples = 0;
 
+        if (_glfwLibrary.GLX.ARB_framebuffer_sRGB)
+            f->sRGB = getFBConfigAttrib(window, fbconfigs[i], GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB);
+        else
+            f->sRGB = GL_FALSE;
+
         f->platformID = (GLFWintptr) getFBConfigAttrib(window, fbconfigs[i], GLX_FBCONFIG_ID);
 
         (*found)++;
@@ -527,6 +532,9 @@ int _glfwInitOpenGL(void)
     if (_glfwPlatformExtensionSupported("GLX_ARB_multisample"))
         _glfwLibrary.GLX.ARB_multisample = GL_TRUE;
 
+    if (_glfwPlatformExtensionSupported("GLX_ARB_framebuffer_sRGB"))
+        _glfwLibrary.GLX.ARB_framebuffer_sRGB = GL_TRUE;
+
     if (_glfwPlatformExtensionSupported("GLX_ARB_create_context"))
     {
         _glfwLibrary.GLX.CreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC)
@@ -621,16 +629,6 @@ void _glfwDestroyContext(_GLFWwindow* window)
         glXDestroyContext(_glfwLibrary.X11.display, window->GLX.context);
         window->GLX.context = NULL;
     }
-}
-
-
-//========================================================================
-// Return the X visual associated with the specified context
-//========================================================================
-
-XVisualInfo* _glfwGetContextVisual(_GLFWwindow* window)
-{
-    return window->GLX.visual;
 }
 
 

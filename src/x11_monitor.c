@@ -434,11 +434,10 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         return 0;
     }
 
-    // Build array of available RGB channel depths
-
     rgbs = (int*) malloc(sizeof(int) * visualCount);
     rgbCount = 0;
 
+#if defined(_GLFW_GLX)
     for (i = 0;  i < visualCount;  i++)
     {
         int gl, rgba, rgb, r, g, b;
@@ -473,6 +472,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
     }
 
     XFree(visuals);
+#endif
 
     // Build all permutations of channel depths and resolutions
 

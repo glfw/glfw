@@ -232,6 +232,11 @@ int _glfwPlatformTerminate(void)
 const char* _glfwPlatformGetVersionString(void)
 {
     const char* version = _GLFW_VERSION_FULL
+#if defined(_GLFW_WGL)
+        " WGL"
+#elif defined(_GLFW_EGL)
+        " EGL"
+#endif
 #if defined(__MINGW32__)
         " MinGW"
 #elif defined(_MSC_VER)

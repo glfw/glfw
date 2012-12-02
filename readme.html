@@ -279,17 +279,21 @@ version of GLFW.</p>
   <li>Added <code>glfwSetErrorCallback</code> function and <code>GLFWerrorfun</code> type for receiving more specific and/or nested errors</li>
   <li>Added <code>glfwSetWindowUserPointer</code> and <code>glfwGetWindowUserPointer</code> functions for per-window user pointers</li>
   <li>Added <code>glfwGetVersionString</code> function for determining which code paths were enabled at compile time</li>
-  <li>Added <code>glfwGetWindowPos</code> function for querying the position of the specified window</li>
   <li>Added <code>glfwGetWindowMonitor</code> for querying the monitor, if any, of the specified window</li>
+  <li>Added <code>glfwSetWindowPosCallback</code> function and <code>GLFWwindowposfun</code> type for reciving window position events</li>
   <li>Added <code>glfwSetWindowFocusCallback</code> function and <code>GLFWwindowfocusfun</code> type for receiving window focus events</li>
   <li>Added <code>glfwSetWindowIconifyCallback</code> function and <code>GLFWwindowiconifyfun</code> type for receiving window iconification events</li>
   <li>Added <code>glfwGetClipboardString</code> and <code>glfwSetClipboardString</code> functions for interacting with the system clipboard</li>
+  <li>Added <code>glfwGetJoystickName</code> for retrieving the name of a joystick</li>
   <li>Added <code>glfwGetCurrentContext</code> function for retrieving the window whose OpenGL context is current</li>
+  <li>Added <code>GLFW_SRGB_CAPABLE</code> for requesting sRGB capable framebuffers</li>
   <li>Added <code>GLFW_CLIENT_API</code>, <code>GLFW_OPENGL_API</code> and <code>GLFW_OPENGL_ES_API</code> for selecting client API</li>
   <li>Added <code>GLFW_OPENGL_ROBUSTNESS</code> window hint and associated strategy tokens for <code>GL_ARB_robustness</code> support</li>
   <li>Added <code>GLFW_OPENGL_REVISION</code> window parameter to make up for removal of <code>glfwGetGLVersion</code></li>
   <li>Added <code>GLFW_INCLUDE_GLCOREARB</code> macro for including <code>glcorearb.h</code> instead of <code>gl.h</code></li>
+  <li>Added <code>GLFW_INCLUDE_ES2</code> macro for telling the GLFW header to include the OpenGL ES 2.0 header instead of <code>gl.h</code></li>
   <li>Added <code>GLFW_VISIBLE</code> window hint and parameter for controlling and polling window visibility</li>
+  <li>Added <code>GLFW_POSITION_X</code> and <code>GLFW_POSITION_Y</code> window hints and parameter for controlling and polling window position</li>
   <li>Added <code>windows</code> simple multi-window test program</li>
   <li>Added <code>sharing</code> simple OpenGL object sharing test program</li>
   <li>Added <code>modes</code> video mode enumeration and setting test program</li>

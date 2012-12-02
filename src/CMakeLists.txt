@@ -8,43 +8,55 @@ if (MSVC)
 endif()
 
 set(common_HEADERS ${GLFW_SOURCE_DIR}/include/GL/glfw3.h internal.h)
-set(common_SOURCES clipboard.c gamma.c init.c input.c joystick.c monitor.c
-                   opengl.c time.c window.c)
+set(common_SOURCES clipboard.c context.c gamma.c init.c input.c joystick.c
+                   monitor.c time.c window.c)
 
-if (_GLFW_COCOA_NSGL)
+if (_GLFW_COCOA)
     set(glfw_HEADERS ${common_HEADERS} cocoa_platform.h)
     set(glfw_SOURCES ${common_SOURCES} cocoa_clipboard.m cocoa_gamma.c
-                     cocoa_init.m cocoa_joystick.m cocoa_monitor.m
-                     cocoa_opengl.m cocoa_time.c cocoa_window.m)
+                     cocoa_init.m cocoa_joystick.m cocoa_monitor.m cocoa_time.c
+                     cocoa_window.m)
 
     if (GLFW_NATIVE_API)
         list(APPEND glfw_SOURCES cocoa_native.m)
     endif()
-
-    # For some reason, CMake doesn't know about .m
-    set_source_files_properties(${glfw_SOURCES} PROPERTIES LANGUAGE C)
-elseif (_GLFW_WIN32_WGL)
+elseif (_GLFW_WIN32)
     set(glfw_HEADERS ${common_HEADERS} win32_platform.h)
     set(glfw_SOURCES ${common_SOURCES} win32_clipboard.c win32_gamma.c
-                     win32_init.c win32_joystick.c win32_monitor.c
-                     win32_opengl.c win32_time.c win32_window.c)
+                     win32_init.c win32_joystick.c win32_monitor.c win32_time.c
+                     win32_window.c)
 
     if (GLFW_NATIVE_API)
         list(APPEND glfw_SOURCES win32_native.c)
     endif()
-elseif (_GLFW_X11_GLX)
+elseif (_GLFW_X11)
     set(glfw_HEADERS ${common_HEADERS} x11_platform.h)
     set(glfw_SOURCES ${common_SOURCES} x11_clipboard.c x11_gamma.c x11_init.c
                      x11_joystick.c x11_keysym2unicode.c x11_monitor.c
-                     x11_opengl.c x11_time.c x11_window.c)
+                     x11_time.c x11_window.c)
 
     if (GLFW_NATIVE_API)
         list(APPEND glfw_SOURCES x11_native.c)
     endif()
 endif()
 
-if (MSVC)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+if (_GLFW_EGL)
+    list(APPEND glfw_HEADERS ${common_HEADERS} egl_platform.h)
+    list(APPEND glfw_SOURCES ${common_SOURCES} egl_context.c)
+elseif (_GLFW_NSGL)
+    list(APPEND glfw_HEADERS ${common_HEADERS} nsgl_platform.h)
+    list(APPEND glfw_SOURCES ${common_SOURCES} nsgl_context.m)
+elseif (_GLFW_WGL)
+    list(APPEND glfw_HEADERS ${common_HEADERS} wgl_platform.h)
+    list(APPEND glfw_SOURCES ${common_SOURCES} wgl_context.c)
+elseif (_GLFW_X11)
+    list(APPEND glfw_HEADERS ${common_HEADERS} glx_platform.h)
+    list(APPEND glfw_SOURCES ${common_SOURCES} glx_context.c)
+endif()
+
+if (APPLE)
+    # For some reason, CMake doesn't know about .m
+    set_source_files_properties(${glfw_SOURCES} PROPERTIES LANGUAGE C)
 endif()
 
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
@@ -57,7 +69,7 @@ if (BUILD_SHARED_LIBS)
         set_target_properties(glfw PROPERTIES SOVERSION ${GLFW_VERSION_MAJOR})
     endif()
 
-    if (_GLFW_WIN32_WGL)
+    if (WIN32)
         # The GLFW DLL needs a special compile-time macro and import library name
         set_target_properties(glfw PROPERTIES PREFIX "" IMPORT_PREFIX "")
 
@@ -66,8 +78,9 @@ if (BUILD_SHARED_LIBS)
         else()
             set_target_properties(glfw PROPERTIES IMPORT_SUFFIX "dll.lib")
         endif()
-    elseif (_GLFW_COCOA_NSGL)
-        # Append -fno-common to the compile flags to work around a bug in the Apple GCC
+    elseif (APPLE)
+        # Append -fno-common to the compile flags to work around a bug in
+        # Apple's GCC
         get_target_property(glfw_CFLAGS glfw COMPILE_FLAGS)
         if (NOT glfw_CFLAGS)
             set(glfw_CFLAGS "")

@@ -835,6 +835,9 @@ static GLboolean createContext(_GLFWwindow* window,
         ADD_ATTR2(NSOpenGLPFASamples, fbconfig->samples);
     }
 
+    // NOTE: All NSOpenGLPixelFormats on the relevant cards support sRGB
+    // frambuffer, so there's no need (and no way) to request it
+
     ADD_ATTR(0);
 
 #undef ADD_ATTR

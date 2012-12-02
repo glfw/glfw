@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
+#include <stdio.h>
 
 
 //========================================================================
@@ -217,6 +218,12 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
                 extraDiff += (desired->samples - current->samples) *
                              (desired->samples - current->samples);
             }
+
+            if (desired->sRGB)
+            {
+                if (!current->sRGB)
+                    extraDiff++;
+            }
         }
 
         // Figure out if the current one is better than the best one found so far
@@ -247,8 +254,8 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
 
 
 //========================================================================
-// Checks whether the OpenGL part of the window config is sane
-// It blames glfwCreateWindow because that's the only caller
+// Checks whether the client API part of the window config is sane
+// It blames glfwOpenWindow because that's the only caller
 //========================================================================
 
 GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
@@ -482,7 +489,7 @@ GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig)
 
 
 //========================================================================
-// Check if a string can be found in an OpenGL extension string
+// Check if a string can be found in a client API extension string
 //========================================================================
 
 int _glfwStringInExtensionString(const char* string,
@@ -521,7 +528,7 @@ int _glfwStringInExtensionString(const char* string,
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Make the OpenGL context associated with the specified window current
+// Make the context associated with the specified window current
 //========================================================================
 
 GLFWAPI void glfwMakeContextCurrent(GLFWwindow handle)
@@ -542,7 +549,7 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow handle)
 
 
 //========================================================================
-// Return the window object whose context is current
+// Returns the window whose context is current
 //========================================================================
 
 GLFWAPI GLFWwindow glfwGetCurrentContext(void)
@@ -598,7 +605,7 @@ GLFWAPI void glfwSwapInterval(int interval)
 
 
 //========================================================================
-// Check if an OpenGL extension is available at runtime
+// Check if a client API extension is available at runtime
 //========================================================================
 
 GLFWAPI int glfwExtensionSupported(const char* extension)
@@ -661,8 +668,8 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 
 
 //========================================================================
-// Get the function pointer to an OpenGL function.
-// This function can be used to get access to extended OpenGL functions.
+// Get the function pointer to a client API function
+// This can be used to get access to client API extension functions
 //========================================================================
 
 GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname)

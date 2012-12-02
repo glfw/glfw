@@ -14,7 +14,10 @@ option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(GLFW_NATIVE_API "Build the GLFW native API" OFF)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
-option(GLFW_USE_EGL "Build for EGL and OpenGL ES platform (Currently only X11)" OFF)
+
+if (NOT APPLE)
+    option(GLFW_USE_EGL "Use EGL for context creation" OFF)
+endif()
 
 if (GLFW_USE_EGL)
     set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMake/modules)

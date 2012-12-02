@@ -72,7 +72,7 @@ typedef struct _GLFWlibrary     _GLFWlibrary;
 #elif defined(_GLFW_X11)
  #include "x11_platform.h"
 #else
- #error "No supported platform selected"
+ #error "No supported window creation API selected"
 #endif
 
 

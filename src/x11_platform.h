@@ -61,6 +61,8 @@
  #define _GLFW_EGL_NATIVE_WINDOW  window->X11.handle
  #define _GLFW_EGL_NATIVE_DISPLAY _glfwLibrary.X11.display
  #include "egl_platform.h"
+#else
+ #error "No supported context creation API selected"
 #endif
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  X11

@@ -42,6 +42,8 @@ typedef void* id;
 
 #if defined(_GLFW_NSGL)
  #include "nsgl_platform.h"
+#else
+ #error "No supported context creation API selected"
 #endif
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  NS

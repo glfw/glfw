@@ -111,6 +111,8 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
  #define _GLFW_EGL_NATIVE_WINDOW  window->Win32.handle
  #define _GLFW_EGL_NATIVE_DISPLAY NULL
  #include "egl_platform.h"
+#else
+ #error "No supported context creation API selected"
 #endif
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWin32  Win32

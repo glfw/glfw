@@ -1540,6 +1540,9 @@ GLFWAPI int glfwGetJoystickButtons(int joy, unsigned char* buttons, int numbutto
  *  @return The UTF-8 encoded name of the joystick, or @c NULL if the joystick
  *  is not present.
  *  @ingroup input
+ *
+ *  @note The returned string is valid only until the next call to @ref
+ *  glfwGetJoystickName.
  */
 GLFWAPI const char* glfwGetJoystickName(int joy);
 

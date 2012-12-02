@@ -989,7 +989,7 @@ GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
  *  @return An array of monitor handles.
  *  @ingroup monitor
  */
-GLFWAPI GLFWmonitor* glfwGetMonitors(int* count);
+GLFWAPI const GLFWmonitor* glfwGetMonitors(int* count);
 
 /*! @brief Returns the primary monitor.
  *  @return The primary monitor.
@@ -1038,7 +1038,7 @@ GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun);
  *  @return An array of video modes.
  *  @ingroup monitor
  */
-GLFWAPI GLFWvidmode* glfwGetVideoModes(GLFWmonitor monitor, int* count);
+GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor monitor, int* count);
 
 /*! @brief Returns the current mode of the specified monitor.
  *  @param[in] monitor The monitor to query.

@@ -522,6 +522,10 @@ extern "C" {
 /*! @brief The number of samples used for default framebuffer multisampling.
  */
 #define GLFW_FSAA_SAMPLES         0x0002100E
+/*! @brief @c GL_TRUE if the framebuffer should be sRGB capable, or @c GL_FALSE
+ *  otherwise.
+ */
+#define GLFW_SRGB_CAPABLE         0x0002100F
 
 /*! @brief The @link clients client API @endlink to create a context for.
  */
@@ -709,6 +713,16 @@ typedef void* GLFWwindow;
  *  @ingroup error
  */
 typedef void (* GLFWerrorfun)(int,const char*);
+
+/*! @brief The function signature for window position callbacks.
+ *  @param[in] window The window that the user moved.
+ *  @param[in] x The new x-coordinate, in pixels, of the upper-left corner of
+ *  the client area of the window.
+ *  @param[in] y The new y-coordinate, in pixels, of the upper-left corner of
+ *  the client area of the window.
+ *  @ingroup window
+ */
+typedef void (* GLFWwindowposfun)(GLFWwindow,int,int);
 
 /*! @brief The function signature for window resize callbacks.
  *  @param[in] window The window that the user resized.
@@ -948,7 +962,7 @@ GLFWAPI void glfwGetDesktopMode(GLFWvidmode* mode);
 
 /*! @brief Sets the system gamma ramp to one generated from the specified
  *  exponent.
- *  @param[in] The desired exponent.
+ *  @param[in] gamma The desired exponent.
  *  @ingroup gamma
  */
 GLFWAPI void glfwSetGamma(float gamma);
@@ -1014,6 +1028,9 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  The @ref GLFW_FSAA_SAMPLES hint specifies the desired number of samples to
  *  use for multisampling.
  *
+ *  The @ref GLFW_SRGB_CAPABLE hint specifies whether the framebuffer should be
+ *  sRGB capable.
+ *
  *  The @ref GLFW_CLIENT_API hint specifies which client API to create the
  *  context for.  Possible values are @ref GLFW_OPENGL_API and @ref
  *  GLFW_OPENGL_ES_API.
@@ -1042,7 +1059,8 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  used by the OpenGL context.
  *
  *  The @ref GLFW_RESIZABLE hint specifies whether the window will be resizable
- *  by the user.  This hint is ignored for fullscreen windows.
+ *  by the user.  The window will still be resizable using the @ref
+ *  glfwSetWindowSize function.  This hint is ignored for fullscreen windows.
  *
  *  The @ref GLFW_VISIBLE hint specifies whether the window will be initially
  *  visible.  This hint is ignored for fullscreen windows.
@@ -1053,7 +1071,9 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  Some window hints are hard constraints.  These must match the available
  *  capabilities @em exactly for window and context creation to succeed.  Hints
  *  that are not hard constraints are matched as closely as possible, but the
- *  resulting window and context may differ from what these hints requested.
+ *  resulting window and context may differ from what these hints requested.  To
+ *  find out the actual properties of the created window and context, use the
+ *  @ref glfwGetWindowParam function.
  *
  *  The following window hints are hard constraints:
  *  @arg @ref GLFW_STEREO
@@ -1278,11 +1298,21 @@ GLFWAPI void glfwSetWindowUserPointer(GLFWwindow window, void* pointer);
  */
 GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow window);
 
+/*! @brief Sets the position callback for the specified window.
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  callback.
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowPosCallback(GLFWwindow window, GLFWwindowposfun cbfun);
+
 /*! @brief Sets the size callback for the specified window.
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
  *  callback.
  *  @ingroup window
+ *
+ *  This callback is called when the window is resized.
  */
 GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfun);
 
@@ -1291,6 +1321,14 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfu
  *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
  *  callback.
  *  @ingroup window
+ *
+ *  This callback is called when the user attempts to close the window, i.e.
+ *  clicks the window's close widget or, on Mac OS X, selects @b Quit from the
+ *  application menu.  Calling @ref glfwDestroyWindow does not cause this
+ *  callback to be called.
+ *
+ *  The return value of the close callback becomes the new value of the @ref
+ *  GLFW_CLOSE_REQUESTED window parameter.
  */
 GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cbfun);
 
@@ -1299,6 +1337,13 @@ GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cb
  *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
  *  callback.
  *  @ingroup window
+ *
+ *  This callback is called when the client area of the window needs to be
+ *  redrawn, for example if the window has been exposed after having been
+ *  covered by another window.
+ *
+ *  @note On compositing window systems such as Mac OS X, where the window
+ *  contents are saved off-screen, this callback may never be called.
  */
 GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfun cbfun);
 
@@ -1307,6 +1352,8 @@ GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfu
  *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
  *  callback.
  *  @ingroup window
+ *
+ *  This callback is called when the window gains or loses focus.
  */
 GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow window, GLFWwindowfocusfun cbfun);
 
@@ -1315,6 +1362,8 @@ GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow window, GLFWwindowfocusfun cb
  *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
  *  callback.
  *  @ingroup window
+ *
+ *  This callback is called when the window is iconified or restored.
  */
 GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow window, GLFWwindowiconifyfun cbfun);
 
@@ -1413,7 +1462,7 @@ GLFWAPI void glfwGetScrollOffset(GLFWwindow window, double* xoffset, double* yof
  *  set callback.
  *  @ingroup input
  *
- *  @note The key callback deals with physical keys, with @link keys tokens
+ *  @remarks The key callback deals with physical keys, with @link keys tokens
  *  @endlink named after their use on the standard US keyboard layout.  If you
  *  want to input text, use the Unicode character callback instead.
  */
@@ -1424,8 +1473,8 @@ GLFWAPI void glfwSetKeyCallback(GLFWwindow window, GLFWkeyfun cbfun);
  *  the currently set callback.
  *  @ingroup input
  *
- *  @note The Unicode character callback is for text input.  If you want to know
- *  whether a specific key was pressed or released, use the key callback.
+ *  @remarks The Unicode character callback is for text input.  If you want to
+ *  know whether a specific key was pressed or released, use the key callback.
  */
 GLFWAPI void glfwSetCharCallback(GLFWwindow window, GLFWcharfun cbfun);
 
@@ -1440,6 +1489,9 @@ GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow window, GLFWmousebuttonfun cb
  *  @param[in] cbfun The new cursor position callback, or @c NULL to remove the
  *  currently set callback.
  *  @ingroup input
+ *
+ *  @remarks The position is relative to the upper-left corner of the client
+ *  area of the window.
  */
 GLFWAPI void glfwSetCursorPosCallback(GLFWwindow window, GLFWcursorposfun cbfun);
 
@@ -1492,6 +1544,8 @@ GLFWAPI int glfwGetJoystickButtons(int joy, unsigned char* buttons, int numbutto
  *  @param[in] string A UTF-8 encoded string.
  *  @ingroup clipboard
  *
+ *  @note This function may only be called from the main thread.
+ *
  *  @sa glfwGetClipboardString
  */
 GLFWAPI void glfwSetClipboardString(GLFWwindow window, const char* string);
@@ -1501,6 +1555,8 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow window, const char* string);
  *  @return The contents of the clipboard as a UTF-8 encoded string, or @c NULL
  *  if that format was unavailable.
  *  @ingroup clipboard
+ *
+ *  @note This function may only be called from the main thread.
  *
  *  @note The returned string is valid only until the next call to @ref
  *  glfwGetClipboardString or @ref glfwSetClipboardString.

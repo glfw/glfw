@@ -119,8 +119,14 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused)
 
 void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
 {
+    if (window->positionX == x && window->positionY == y)
+        return;
+
     window->positionX = x;
     window->positionY = y;
+
+    if (window->windowPosCallback)
+        window->windowPosCallback(window, x, y);
 }
 
 
@@ -231,6 +237,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     fbconfig.auxBuffers     = Max(_glfwLibrary.hints.auxBuffers, 0);
     fbconfig.stereo         = _glfwLibrary.hints.stereo ? GL_TRUE : GL_FALSE;
     fbconfig.samples        = Max(_glfwLibrary.hints.samples, 0);
+    fbconfig.sRGB           = _glfwLibrary.hints.sRGB ? GL_TRUE : GL_FALSE;
 
     // Set up desired window config
     wndconfig.mode           = mode;
@@ -439,6 +446,9 @@ GLFWAPI void glfwWindowHint(int target, int hint)
             break;
         case GLFW_FSAA_SAMPLES:
             _glfwLibrary.hints.samples = hint;
+            break;
+        case GLFW_SRGB_CAPABLE:
+            _glfwLibrary.hints.sRGB = hint;
             break;
         case GLFW_CLIENT_API:
             _glfwLibrary.hints.clientAPI = hint;
@@ -761,6 +771,24 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow handle)
     }
 
     return window->userPointer;
+}
+
+
+//========================================================================
+// Set callback function for window position changes
+//========================================================================
+
+GLFWAPI void glfwSetWindowPosCallback(GLFWwindow handle, GLFWwindowposfun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    window->windowPosCallback = cbfun;
 }
 
 

@@ -190,6 +190,11 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
         else
             f->samples = 0;
 
+        if (_glfwLibrary.GLX.ARB_framebuffer_sRGB)
+            f->sRGB = getFBConfigAttrib(window, fbconfigs[i], GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB);
+        else
+            f->sRGB = GL_FALSE;
+
         f->platformID = (GLFWintptr) getFBConfigAttrib(window, fbconfigs[i], GLX_FBCONFIG_ID);
 
         (*found)++;
@@ -526,6 +531,9 @@ int _glfwInitOpenGL(void)
 
     if (_glfwPlatformExtensionSupported("GLX_ARB_multisample"))
         _glfwLibrary.GLX.ARB_multisample = GL_TRUE;
+
+    if (_glfwPlatformExtensionSupported("GLX_ARB_framebuffer_sRGB"))
+        _glfwLibrary.GLX.ARB_framebuffer_sRGB = GL_TRUE;
 
     if (_glfwPlatformExtensionSupported("GLX_ARB_create_context"))
     {

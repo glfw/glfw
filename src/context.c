@@ -218,6 +218,12 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
                 extraDiff += (desired->samples - current->samples) *
                              (desired->samples - current->samples);
             }
+
+            if (desired->sRGB)
+            {
+                if (!current->sRGB)
+                    extraDiff++;
+            }
         }
 
         // Figure out if the current one is better than the best one found so far

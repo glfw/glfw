@@ -94,11 +94,11 @@ static void draw_joystick(Joystick* j, int x, int y, int width, int height)
     }
 }
 
-static void draw_joysticks(void)
+static void draw_joysticks(GLFWwindow window)
 {
     int i, width, height;
 
-    glfwGetWindowSize(glfwGetCurrentContext(), &width, &height);
+    glfwGetWindowSize(window, &width, &height);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -205,7 +205,7 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         refresh_joysticks();
-        draw_joysticks();
+        draw_joysticks(window);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

@@ -135,11 +135,16 @@ typedef struct _GLFWwindowX11
 
     // Various platform specific internal variables
     GLboolean     overrideRedirect; // True if window is OverrideRedirect
-    GLboolean     keyboardGrabbed;  // True if keyboard is currently grabbed
     GLboolean     cursorGrabbed;    // True if cursor is currently grabbed
     GLboolean     cursorHidden;     // True if cursor is currently hidden
     GLboolean     cursorCentered;   // True if cursor was moved since last poll
     int           cursorPosX, cursorPosY;
+
+    // Window position hint (commited the first time the window is shown)
+    GLboolean     windowPosSet;     // False until the window position has
+                                    // been set
+    int           positionX;        // The window position to be set the
+    int           positionY;        // first time the window is shown
 
 } _GLFWwindowX11;
 
@@ -268,6 +273,7 @@ typedef struct _GLFWlibraryGLX
     GLboolean   EXT_swap_control;
     GLboolean   MESA_swap_control;
     GLboolean   ARB_multisample;
+    GLboolean   ARB_framebuffer_sRGB;
     GLboolean   ARB_create_context;
     GLboolean   ARB_create_context_profile;
     GLboolean   ARB_create_context_robustness;

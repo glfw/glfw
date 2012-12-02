@@ -93,7 +93,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
     {
         if (!_glfwLibrary.GLX.SGIX_fbconfig)
         {
-            _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
+            _glfwSetError(GLFW_API_UNAVAILABLE,
                           "GLX: GLXFBConfig support not found");
             return NULL;
         }
@@ -103,8 +103,8 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
 
     if (strcmp(vendor, "Chromium") == 0)
     {
-        // This is a (hopefully temporary) workaround for Chromium (VirtualBox
-        // GL) not setting the window bit on any GLXFBConfigs
+        // HACK: This is a (hopefully temporary) workaround for Chromium
+        // (VirtualBox GL) not setting the window bit on any GLXFBConfigs
         trustWindowBit = GL_FALSE;
     }
 
@@ -116,7 +116,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
                                                         &count);
         if (!count)
         {
-            _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
+            _glfwSetError(GLFW_API_UNAVAILABLE,
                           "GLX: No GLXFBConfigs returned");
             return NULL;
         }
@@ -128,7 +128,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
                                     &count);
         if (!count)
         {
-            _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
+            _glfwSetError(GLFW_API_UNAVAILABLE,
                           "GLX: No GLXFBConfigs returned");
             return NULL;
         }
@@ -189,6 +189,11 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
             f->samples = getFBConfigAttrib(window, fbconfigs[i], GLX_SAMPLES);
         else
             f->samples = 0;
+
+        if (_glfwLibrary.GLX.ARB_framebuffer_sRGB)
+            f->sRGB = getFBConfigAttrib(window, fbconfigs[i], GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB);
+        else
+            f->sRGB = GL_FALSE;
 
         f->platformID = (GLFWintptr) getFBConfigAttrib(window, fbconfigs[i], GLX_FBCONFIG_ID);
 
@@ -465,7 +470,7 @@ int _glfwInitOpenGL(void)
     // Check if GLX is supported on this display
     if (!glXQueryExtension(_glfwLibrary.X11.display, NULL, NULL))
     {
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE, "GLX: GLX support not found");
+        _glfwSetError(GLFW_API_UNAVAILABLE, "GLX: GLX support not found");
         return GL_FALSE;
     }
 
@@ -473,8 +478,7 @@ int _glfwInitOpenGL(void)
                          &_glfwLibrary.GLX.majorVersion,
                          &_glfwLibrary.GLX.minorVersion))
     {
-        _glfwSetError(GLFW_OPENGL_UNAVAILABLE,
-                      "GLX: Failed to query GLX version");
+        _glfwSetError(GLFW_API_UNAVAILABLE, "GLX: Failed to query GLX version");
         return GL_FALSE;
     }
 
@@ -527,6 +531,9 @@ int _glfwInitOpenGL(void)
 
     if (_glfwPlatformExtensionSupported("GLX_ARB_multisample"))
         _glfwLibrary.GLX.ARB_multisample = GL_TRUE;
+
+    if (_glfwPlatformExtensionSupported("GLX_ARB_framebuffer_sRGB"))
+        _glfwLibrary.GLX.ARB_framebuffer_sRGB = GL_TRUE;
 
     if (_glfwPlatformExtensionSupported("GLX_ARB_create_context"))
     {
@@ -730,18 +737,5 @@ int _glfwPlatformExtensionSupported(const char* extension)
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 {
     return _glfw_glXGetProcAddress((const GLubyte*) procname);
-}
-
-
-//========================================================================
-// Copies the specified OpenGL state categories from src to dst
-//========================================================================
-
-void _glfwPlatformCopyContext(_GLFWwindow* src, _GLFWwindow* dst, unsigned long mask)
-{
-    glXCopyContext(_glfwLibrary.X11.display,
-                   src->GLX.context,
-                   dst->GLX.context,
-                   mask);
 }
 

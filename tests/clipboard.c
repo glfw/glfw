@@ -125,7 +125,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Clipboard Test", NULL);
+    window = glfwCreateWindow(200, 200, GLFW_WINDOWED, "Clipboard Test", NULL);
     if (!window)
     {
         glfwTerminate();

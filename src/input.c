@@ -115,34 +115,6 @@ static void setStickyMouseButtons(_GLFWwindow* window, int enabled)
 }
 
 
-//========================================================================
-// Set system keys for the specified window
-//========================================================================
-
-static void setSystemKeys(_GLFWwindow* window, int enabled)
-{
-    if (window->systemKeys == enabled)
-        return;
-
-    if (enabled)
-        _glfwPlatformEnableSystemKeys(window);
-    else
-        _glfwPlatformDisableSystemKeys(window);
-
-    window->systemKeys = enabled;
-}
-
-
-//========================================================================
-// Set key repeat for the specified window
-//========================================================================
-
-static void setKeyRepeat(_GLFWwindow* window, int enabled)
-{
-    window->keyRepeat = enabled;
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -172,7 +144,7 @@ void _glfwInputKey(_GLFWwindow* window, int key, int action)
     }
 
     // Call user callback function
-    if (window->keyCallback && (window->keyRepeat || !repeated))
+    if (window->keyCallback && !repeated)
         window->keyCallback(window, key, action);
 }
 
@@ -295,10 +267,6 @@ GLFWAPI int glfwGetInputMode(GLFWwindow handle, int mode)
             return window->stickyKeys;
         case GLFW_STICKY_MOUSE_BUTTONS:
             return window->stickyMouseButtons;
-        case GLFW_SYSTEM_KEYS:
-            return window->systemKeys;
-        case GLFW_KEY_REPEAT:
-            return window->keyRepeat;
         default:
             _glfwSetError(GLFW_INVALID_ENUM, NULL);
             return 0;
@@ -330,12 +298,6 @@ GLFWAPI void glfwSetInputMode(GLFWwindow handle, int mode, int value)
             break;
         case GLFW_STICKY_MOUSE_BUTTONS:
             setStickyMouseButtons(window, value ? GL_TRUE : GL_FALSE);
-            break;
-        case GLFW_SYSTEM_KEYS:
-            setSystemKeys(window, value ? GL_TRUE : GL_FALSE);
-            break;
-        case GLFW_KEY_REPEAT:
-            setKeyRepeat(window, value ? GL_TRUE : GL_FALSE);
             break;
         default:
             _glfwSetError(GLFW_INVALID_ENUM, NULL);
@@ -445,11 +407,8 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow handle, int xpos, int ypos)
         return;
     }
 
-    if (_glfwLibrary.activeWindow != window)
-    {
-        _glfwSetError(GLFW_WINDOW_NOT_ACTIVE, NULL);
+    if (_glfwLibrary.focusedWindow != window)
         return;
-    }
 
     // Don't do anything if the cursor position did not change
     if (xpos == window->cursorPosX && ypos == window->cursorPosY)

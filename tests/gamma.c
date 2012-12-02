@@ -133,8 +133,8 @@ int main(int argc, char** argv)
     }
     else
     {
-        width = 0;
-        height = 0;
+        width = 200;
+        height = 200;
     }
 
     window = glfwCreateWindow(width, height, mode, "Gamma Test", NULL);

@@ -419,8 +419,6 @@ int main(int argc, char* argv[])
     glfwGetWindowSize(window, &width, &height);
     window_size_callback(window, width, height);
 
-    glfwSetInputMode(window, GLFW_KEY_REPEAT, GL_TRUE);
-
     // Initialize OpenGL
     init_opengl();
 

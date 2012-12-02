@@ -1,6 +1,6 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    Win32/WGL
+// Platform:    Win32
 // API version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
@@ -28,8 +28,8 @@
 //
 //========================================================================
 
-#ifndef _platform_h_
-#define _platform_h_
+#ifndef _win32_platform_h_
+#define _win32_platform_h_
 
 
 // We don't need all the fancy stuff
@@ -62,11 +62,6 @@
 
 #include <windows.h>
 #include <mmsystem.h>
-
-// This path may need to be changed if you build GLFW using your own setup
-// We ship and use our own copy of wglext.h since GLFW uses fairly new
-// extensions and not all operating systems come with an up-to-date version
-#include "../support/GL/wglext.h"
 
 
 //========================================================================
@@ -110,10 +105,18 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 #define _GLFW_WNDCLASSNAME L"GLFW30"
 
 
-#define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowWin32 Win32
-#define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextWGL WGL
+#if defined(_GLFW_WGL)
+ #include "wgl_platform.h"
+#elif defined(_GLFW_EGL)
+ #define _GLFW_EGL_NATIVE_WINDOW  window->Win32.handle
+ #define _GLFW_EGL_NATIVE_DISPLAY NULL
+ #include "egl_platform.h"
+#else
+ #error "No supported context creation API selected"
+#endif
+
+#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWin32  Win32
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 Win32
-#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryWGL WGL
 
 
 //========================================================================
@@ -124,32 +127,6 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 // Pointer length integer
 //------------------------------------------------------------------------
 typedef INT_PTR GLFWintptr;
-
-
-//------------------------------------------------------------------------
-// Platform-specific OpenGL context structure
-//------------------------------------------------------------------------
-typedef struct _GLFWcontextWGL
-{
-    // Platform specific window resources
-    HDC       DC;              // Private GDI device context
-    HGLRC     context;         // Permanent rendering context
-
-    // Platform specific extensions (context specific)
-    PFNWGLSWAPINTERVALEXTPROC           SwapIntervalEXT;
-    PFNWGLGETPIXELFORMATATTRIBIVARBPROC GetPixelFormatAttribivARB;
-    PFNWGLGETEXTENSIONSSTRINGEXTPROC    GetExtensionsStringEXT;
-    PFNWGLGETEXTENSIONSSTRINGARBPROC    GetExtensionsStringARB;
-    PFNWGLCREATECONTEXTATTRIBSARBPROC   CreateContextAttribsARB;
-    GLboolean                           EXT_swap_control;
-    GLboolean                           ARB_multisample;
-    GLboolean                           ARB_pixel_format;
-    GLboolean                           ARB_framebuffer_sRGB;
-    GLboolean                           ARB_create_context;
-    GLboolean                           ARB_create_context_profile;
-    GLboolean                           EXT_create_context_es2_profile;
-    GLboolean                           ARB_create_context_robustness;
-} _GLFWcontextWGL;
 
 
 //------------------------------------------------------------------------
@@ -213,16 +190,6 @@ typedef struct _GLFWlibraryWin32
 } _GLFWlibraryWin32;
 
 
-//------------------------------------------------------------------------
-// Platform-specific library global data for WGL
-//------------------------------------------------------------------------
-typedef struct _GLFWlibraryWGL
-{
-    int dummy;
-
-} _GLFWlibraryWGL;
-
-
 //========================================================================
 // Prototypes for platform specific internal functions
 //========================================================================
@@ -247,4 +214,4 @@ void _glfwSetVideoMode(int* width, int* height,
 void _glfwRestoreVideoMode(void);
 
 
-#endif // _platform_h_
+#endif // _win32_platform_h_

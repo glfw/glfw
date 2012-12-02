@@ -65,14 +65,14 @@ typedef struct _GLFWlibrary     _GLFWlibrary;
 // extensions and not all operating systems come with an up-to-date version
 #include "../support/GL/glext.h"
 
-#if defined(_GLFW_COCOA_NSGL)
+#if defined(_GLFW_COCOA)
  #include "cocoa_platform.h"
-#elif defined(_GLFW_WIN32_WGL)
+#elif defined(_GLFW_WIN32)
  #include "win32_platform.h"
-#elif defined(_GLFW_X11_GLX)
+#elif defined(_GLFW_X11)
  #include "x11_platform.h"
 #else
- #error "No supported platform selected"
+ #error "No supported window creation API selected"
 #endif
 
 

@@ -1,6 +1,6 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    X11/GLX
+// Platform:    X11
 // API version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
@@ -38,15 +38,7 @@
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
 
-#define GLX_GLXEXT_LEGACY
-#include <GL/glx.h>
-
-// This path may need to be changed if you build GLFW using your own setup
-// GLFW comes with its own copy of glxext.h since it uses some fairly new
-// extensions and not all operating systems come with an up-to-date version
-#include "../support/GL/glxext.h"
-
-// The XF86VidMode extension provides mode setting and gamma control
+// With XFree86, we can use the XF86VidMode extension
 #if defined(_GLFW_HAS_XF86VIDMODE)
  #include <X11/extensions/xf86vmode.h>
 #endif
@@ -56,36 +48,25 @@
  #include <X11/extensions/Xrandr.h>
 #endif
 
-// dlopen is used as a fallback function retrieval mechanism
-#if defined(_GLFW_HAS_DLOPEN)
- #include <dlfcn.h>
-#endif
-
 // The Xkb extension provides improved keyboard support
 #if defined(_GLFW_HAS_XKB)
  #include <X11/XKBlib.h>
 #endif
 
-// GLFW supports four different ways for getting addresses for GL/GLX
-// extension functions: glXGetProcAddress, glXGetProcAddressARB,
-// glXGetProcAddressEXT, and dlsym
-#if defined(_GLFW_HAS_GLXGETPROCADDRESSARB)
- #define _glfw_glXGetProcAddress(x) glXGetProcAddressARB(x)
-#elif defined(_GLFW_HAS_GLXGETPROCADDRESS)
- #define _glfw_glXGetProcAddress(x) glXGetProcAddress(x)
-#elif defined(_GLFW_HAS_GLXGETPROCADDRESSEXT)
- #define _glfw_glXGetProcAddress(x) glXGetProcAddressEXT(x)
-#elif defined(_GLFW_HAS_DLOPEN)
- #define _glfw_glXGetProcAddress(x) dlsym(_glfwLibrary.GLX.libGL, x)
- #define _GLFW_DLOPEN_LIBGL
+#if defined(_GLFW_GLX)
+ #define _GLFW_X11_CONTEXT_VISUAL window->GLX.visual
+ #include "glx_platform.h"
+#elif defined(_GLFW_EGL)
+ #define _GLFW_X11_CONTEXT_VISUAL window->EGL.visual
+ #define _GLFW_EGL_NATIVE_WINDOW  window->X11.handle
+ #define _GLFW_EGL_NATIVE_DISPLAY _glfwLibrary.X11.display
+ #include "egl_platform.h"
 #else
- #error "No OpenGL entry point retrieval mechanism was enabled"
+ #error "No supported context creation API selected"
 #endif
 
-#define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowX11 X11
-#define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextGLX GLX
+#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  X11
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 X11
-#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryGLX GLX
 
 // Clipboard format atom indices
 #define _GLFW_CLIPBOARD_FORMAT_UTF8     0
@@ -98,10 +79,6 @@
 #define _GLFW_CONVERSION_SUCCEEDED      1
 #define _GLFW_CONVERSION_FAILED         2
 
-#ifndef GLX_MESA_swap_control
-typedef int (*PFNGLXSWAPINTERVALMESAPROC)(int);
-#endif
-
 
 //========================================================================
 // GLFW platform specific types
@@ -111,17 +88,6 @@ typedef int (*PFNGLXSWAPINTERVALMESAPROC)(int);
 // Pointer length integer
 //------------------------------------------------------------------------
 typedef intptr_t GLFWintptr;
-
-
-//------------------------------------------------------------------------
-// Platform-specific OpenGL context structure
-//------------------------------------------------------------------------
-typedef struct _GLFWcontextGLX
-{
-    GLXContext    context;           // OpenGL rendering context
-    XVisualInfo*  visual;            // Visual for selected GLXFBConfig
-
-} _GLFWcontextGLX;
 
 
 //------------------------------------------------------------------------
@@ -251,40 +217,6 @@ typedef struct _GLFWlibraryX11
 } _GLFWlibraryX11;
 
 
-//------------------------------------------------------------------------
-// Platform-specific library global data for GLX
-//------------------------------------------------------------------------
-typedef struct _GLFWlibraryGLX
-{
-    // Server-side GLX version
-    int             majorVersion, minorVersion;
-
-    // GLX extensions
-    PFNGLXSWAPINTERVALSGIPROC             SwapIntervalSGI;
-    PFNGLXSWAPINTERVALEXTPROC             SwapIntervalEXT;
-    PFNGLXSWAPINTERVALMESAPROC            SwapIntervalMESA;
-    PFNGLXGETFBCONFIGATTRIBSGIXPROC       GetFBConfigAttribSGIX;
-    PFNGLXCHOOSEFBCONFIGSGIXPROC          ChooseFBConfigSGIX;
-    PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC CreateContextWithConfigSGIX;
-    PFNGLXGETVISUALFROMFBCONFIGSGIXPROC   GetVisualFromFBConfigSGIX;
-    PFNGLXCREATECONTEXTATTRIBSARBPROC     CreateContextAttribsARB;
-    GLboolean   SGIX_fbconfig;
-    GLboolean   SGI_swap_control;
-    GLboolean   EXT_swap_control;
-    GLboolean   MESA_swap_control;
-    GLboolean   ARB_multisample;
-    GLboolean   ARB_framebuffer_sRGB;
-    GLboolean   ARB_create_context;
-    GLboolean   ARB_create_context_profile;
-    GLboolean   ARB_create_context_robustness;
-    GLboolean   EXT_create_context_es2_profile;
-
-#if defined(_GLFW_DLOPEN_LIBGL)
-    void*           libGL;  // dlopen handle for libGL.so
-#endif
-} _GLFWlibraryGLX;
-
-
 //========================================================================
 // Prototypes for platform specific internal functions
 //========================================================================
@@ -303,7 +235,6 @@ int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWwndconfig* wndconfig,
                        const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContext(_GLFWwindow* window);
-XVisualInfo* _glfwGetContextVisual(_GLFWwindow* window);
 
 // Fullscreen support
 int  _glfwGetClosestVideoMode(int* width, int* height, int* rate);

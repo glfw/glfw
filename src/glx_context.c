@@ -632,16 +632,6 @@ void _glfwDestroyContext(_GLFWwindow* window)
 }
 
 
-//========================================================================
-// Return the X visual associated with the specified context
-//========================================================================
-
-XVisualInfo* _glfwGetContextVisual(_GLFWwindow* window)
-{
-    return window->GLX.visual;
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////

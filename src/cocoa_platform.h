@@ -1,6 +1,6 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    Cocoa/NSOpenGL
+// Platform:    Cocoa
 // API Version: 3.0
 // WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
@@ -27,12 +27,11 @@
 //
 //========================================================================
 
-#ifndef _platform_h_
-#define _platform_h_
+#ifndef _cocoa_platform_h_
+#define _cocoa_platform_h_
 
 
 #include <stdint.h>
-
 
 #if defined(__OBJC__)
 #import <Cocoa/Cocoa.h>
@@ -41,11 +40,14 @@
 typedef void* id;
 #endif
 
+#if defined(_GLFW_NSGL)
+ #include "nsgl_platform.h"
+#else
+ #error "No supported context creation API selected"
+#endif
 
-#define _GLFW_PLATFORM_WINDOW_STATE  _GLFWwindowNS NS
-#define _GLFW_PLATFORM_CONTEXT_STATE _GLFWcontextNSGL NSGL
+#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  NS
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS NS
-#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryNSGL NSGL
 
 
 //========================================================================
@@ -56,16 +58,6 @@ typedef void* id;
 // Pointer length integer
 //------------------------------------------------------------------------
 typedef intptr_t GLFWintptr;
-
-
-//------------------------------------------------------------------------
-// Platform-specific OpenGL context structure
-//------------------------------------------------------------------------
-typedef struct _GLFWcontextNSGL
-{
-    id           pixelFormat;
-    id	         context;
-} _GLFWcontextNSGL;
 
 
 //------------------------------------------------------------------------
@@ -99,16 +91,6 @@ typedef struct _GLFWlibraryNS
 } _GLFWlibraryNS;
 
 
-//------------------------------------------------------------------------
-// Platform-specific library global data for NSGL
-//------------------------------------------------------------------------
-typedef struct _GLFWlibraryNSGL
-{
-    // dlopen handle for dynamically loading OpenGL extension entry points
-    void*            framework;
-} _GLFWlibraryNSGL;
-
-
 //========================================================================
 // Prototypes for platform specific internal functions
 //========================================================================
@@ -128,4 +110,4 @@ void _glfwRestoreVideoMode(void);
 int _glfwInitOpenGL(void);
 void _glfwTerminateOpenGL(void);
 
-#endif // _platform_h_
+#endif // _cocoa_platform_h_

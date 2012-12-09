@@ -65,7 +65,7 @@ static void cursor_position_callback(GLFWwindow* window, double x, double y)
     cursor_y = y;
 }
 
-static void key_callback(GLFWwindow* window, int key, int action)
+static void key_callback(GLFWwindow* window, int key, int action, int mods)
 {
     switch (key)
     {

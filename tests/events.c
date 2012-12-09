@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 #include <locale.h>
 
 // These must match the input mode defaults
@@ -206,6 +207,22 @@ static const char* get_button_name(int button)
     return NULL;
 }
 
+static const char* get_mods_name(int mods)
+{
+    static char name[512];
+
+    name[0] = '\0';
+
+    if (mods & GLFW_MOD_SHIFT)
+        strcat(name, " shift");
+    if (mods & GLFW_MOD_CTRL)
+        strcat(name, " control");
+    if (mods & GLFW_MOD_ALT)
+        strcat(name, " alt");
+
+    return name;
+}
+
 static const char* get_character_string(int character)
 {
     // This assumes UTF-8, which is stupid
@@ -278,16 +295,19 @@ static void window_iconify_callback(GLFWwindow* window, int iconified)
            iconified ? "iconified" : "restored");
 }
 
-static void mouse_button_callback(GLFWwindow* window, int button, int action)
+static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
     const char* name = get_button_name(button);
 
     printf("%08x at %0.3f: Mouse button %i", counter++, glfwGetTime(), button);
 
     if (name)
-        printf(" (%s) was %s\n", name, get_action_name(action));
-    else
-        printf(" was %s\n", get_action_name(action));
+        printf(" (%s)", name);
+
+    if (mods)
+        printf(" (with%s)", get_mods_name(mods));
+
+    printf(" was %s\n", get_action_name(action));
 }
 
 static void cursor_position_callback(GLFWwindow* window, double x, double y)
@@ -308,16 +328,19 @@ static void scroll_callback(GLFWwindow* window, double x, double y)
     printf("%08x at %0.3f: Scroll: %0.3f %0.3f\n", counter++, glfwGetTime(), x, y);
 }
 
-static void key_callback(GLFWwindow* window, int key, int action)
+static void key_callback(GLFWwindow* window, int key, int action, int mods)
 {
     const char* name = get_key_name(key);
 
     printf("%08x at %0.3f: Key 0x%04x", counter++, glfwGetTime(), key);
 
     if (name)
-        printf(" (%s) was %s\n", name, get_action_name(action));
-    else
-        printf(" was %s\n", get_action_name(action));
+        printf(" (%s)", name);
+
+    if (mods)
+        printf(" (with%s)", get_mods_name(mods));
+
+    printf(" was %s\n", get_action_name(action));
 
     if (action != GLFW_PRESS)
         return;

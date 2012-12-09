@@ -591,9 +591,10 @@ void _glfwInputWindowCloseRequest(_GLFWwindow* window);
  *  @param[in] window The window that received the event.
  *  @param[in] key The key that was pressed or released.
  *  @param[in] action @ref GLFW_PRESS or @ref GLFW_RELEASE.
+ *  @param[in] mods The modifiers pressed when the event was generated.
  *  @ingroup event
  */
-void _glfwInputKey(_GLFWwindow* window, int key, int action);
+void _glfwInputKey(_GLFWwindow* window, int key, int action, int mods);
 
 /*! @brief Notifies shared code of a Unicode character input event.
  *  @param[in] window The window that received the event.
@@ -616,7 +617,7 @@ void _glfwInputScroll(_GLFWwindow* window, double x, double y);
  *  @param[in] action @ref GLFW_PRESS or @ref GLFW_RELEASE.
  *  @ingroup event
  */
-void _glfwInputMouseClick(_GLFWwindow* window, int button, int action);
+void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods);
 
 /*! @brief Notifies shared code of a cursor motion event.
  *  @param[in] window The window that received the event.

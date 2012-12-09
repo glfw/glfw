@@ -122,7 +122,7 @@ static void setStickyMouseButtons(_GLFWwindow* window, int enabled)
 //////                         GLFW event API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-void _glfwInputKey(_GLFWwindow* window, int key, int action)
+void _glfwInputKey(_GLFWwindow* window, int key, int action, int mods)
 {
     GLboolean repeated = GL_FALSE;
 
@@ -141,7 +141,7 @@ void _glfwInputKey(_GLFWwindow* window, int key, int action)
         action = GLFW_REPEAT;
 
     if (window->callbacks.key)
-        window->callbacks.key((GLFWwindow*) window, key, action);
+        window->callbacks.key((GLFWwindow*) window, key, action, mods);
 }
 
 void _glfwInputChar(_GLFWwindow* window, unsigned int character)
@@ -162,7 +162,7 @@ void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset)
         window->callbacks.scroll((GLFWwindow*) window, xoffset, yoffset);
 }
 
-void _glfwInputMouseClick(_GLFWwindow* window, int button, int action)
+void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
 {
     if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST)
         return;
@@ -174,7 +174,7 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action)
         window->mouseButton[button] = (char) action;
 
     if (window->callbacks.mouseButton)
-        window->callbacks.mouseButton((GLFWwindow*) window, button, action);
+        window->callbacks.mouseButton((GLFWwindow*) window, button, action, mods);
 }
 
 void _glfwInputCursorMotion(_GLFWwindow* window, double x, double y)

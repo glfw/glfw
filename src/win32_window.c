@@ -104,6 +104,38 @@ static void showCursor(_GLFWwindow* window)
     }
 }
 
+// Retrieves and translates modifier keys
+//
+static int getKeyMods(void)
+{
+    int mods = 0;
+
+    if (GetKeyState(VK_SHIFT) & (1 << 31))
+        mods |= GLFW_MOD_SHIFT;
+    if (GetKeyState(VK_CONTROL) & (1 << 31))
+        mods |= GLFW_MOD_CTRL;
+    if (GetKeyState(VK_MENU) & (1 << 31))
+        mods |= GLFW_MOD_ALT;
+
+    return mods;
+}
+
+// Retrieves and translates modifier keys
+//
+static int getAsyncKeyMods(void)
+{
+    int mods = 0;
+
+    if (GetAsyncKeyState(VK_SHIFT) & (1 << 31))
+        mods |= GLFW_MOD_SHIFT;
+    if (GetAsyncKeyState(VK_CONTROL) & (1 << 31))
+        mods |= GLFW_MOD_CTRL;
+    if (GetAsyncKeyState(VK_MENU) & (1 << 31))
+        mods |= GLFW_MOD_ALT;
+
+    return mods;
+}
+
 // Translates a Windows key to the corresponding GLFW key
 //
 static int translateKey(WPARAM wParam, LPARAM lParam)
@@ -433,7 +465,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_KEYDOWN:
         case WM_SYSKEYDOWN:
         {
-            _glfwInputKey(window, translateKey(wParam, lParam), GLFW_PRESS);
+            _glfwInputKey(window, translateKey(wParam, lParam), GLFW_PRESS, getKeyMods());
             break;
         }
 
@@ -461,20 +493,22 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_KEYUP:
         case WM_SYSKEYUP:
         {
+            const int mods = getKeyMods();
+
             if (wParam == VK_SHIFT)
             {
                 // Special trick: release both shift keys on SHIFT up event
-                _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, GLFW_RELEASE);
-                _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, GLFW_RELEASE);
+                _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, GLFW_RELEASE, mods);
+                _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, GLFW_RELEASE, mods);
             }
             else if (wParam == VK_SNAPSHOT)
             {
                 // Key down is not reported for the print screen key
-                _glfwInputKey(window, GLFW_KEY_PRINT_SCREEN, GLFW_PRESS);
-                _glfwInputKey(window, GLFW_KEY_PRINT_SCREEN, GLFW_RELEASE);
+                _glfwInputKey(window, GLFW_KEY_PRINT_SCREEN, GLFW_PRESS, mods);
+                _glfwInputKey(window, GLFW_KEY_PRINT_SCREEN, GLFW_RELEASE, mods);
             }
             else
-                _glfwInputKey(window, translateKey(wParam, lParam), GLFW_RELEASE);
+                _glfwInputKey(window, translateKey(wParam, lParam), GLFW_RELEASE, getKeyMods());
 
             break;
         }
@@ -484,20 +518,22 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_MBUTTONDOWN:
         case WM_XBUTTONDOWN:
         {
+            const int mods = getKeyMods();
+
             SetCapture(hWnd);
 
             if (uMsg == WM_LBUTTONDOWN)
-                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS);
+                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS, mods);
             else if (uMsg == WM_RBUTTONDOWN)
-                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_RIGHT, GLFW_PRESS);
+                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_RIGHT, GLFW_PRESS, mods);
             else if (uMsg == WM_MBUTTONDOWN)
-                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_MIDDLE, GLFW_PRESS);
+                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_MIDDLE, GLFW_PRESS, mods);
             else
             {
                 if (HIWORD(wParam) == XBUTTON1)
-                    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_4, GLFW_PRESS);
+                    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_4, GLFW_PRESS, mods);
                 else if (HIWORD(wParam) == XBUTTON2)
-                    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_5, GLFW_PRESS);
+                    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_5, GLFW_PRESS, mods);
 
                 return TRUE;
             }
@@ -510,20 +546,22 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_MBUTTONUP:
         case WM_XBUTTONUP:
         {
+            const int mods = getKeyMods();
+
             ReleaseCapture();
 
             if (uMsg == WM_LBUTTONUP)
-                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE);
+                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE, mods);
             else if (uMsg == WM_RBUTTONUP)
-                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_RIGHT, GLFW_RELEASE);
+                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_RIGHT, GLFW_RELEASE, mods);
             else if (uMsg == WM_MBUTTONUP)
-                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_MIDDLE, GLFW_RELEASE);
+                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_MIDDLE, GLFW_RELEASE, mods);
             else
             {
                 if (HIWORD(wParam) == XBUTTON1)
-                    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_4, GLFW_RELEASE);
+                    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_4, GLFW_RELEASE, mods);
                 else if (HIWORD(wParam) == XBUTTON2)
-                    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_5, GLFW_RELEASE);
+                    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_5, GLFW_RELEASE, mods);
 
                 return TRUE;
             }
@@ -1017,19 +1055,19 @@ void _glfwPlatformPollEvents(void)
         // This is the only async event handling in GLFW, but it solves some
         // nasty problems
         {
-            int lshiftDown, rshiftDown;
+            const int mods = getAsyncKeyMods();
 
             // Get current state of left and right shift keys
-            lshiftDown = (GetAsyncKeyState(VK_LSHIFT) >> 15) & 1;
-            rshiftDown = (GetAsyncKeyState(VK_RSHIFT) >> 15) & 1;
+            const int lshiftDown = (GetAsyncKeyState(VK_LSHIFT) >> 15) & 1;
+            const int rshiftDown = (GetAsyncKeyState(VK_RSHIFT) >> 15) & 1;
 
             // See if this differs from our belief of what has happened
             // (we only have to check for lost key up events)
             if (!lshiftDown && window->key[GLFW_KEY_LEFT_SHIFT] == 1)
-                _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, GLFW_RELEASE);
+                _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, GLFW_RELEASE, mods);
 
             if (!rshiftDown && window->key[GLFW_KEY_RIGHT_SHIFT] == 1)
-                _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, GLFW_RELEASE);
+                _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, GLFW_RELEASE, mods);
         }
 
         // Did the cursor move in an focused window that has captured the cursor

@@ -64,7 +64,7 @@ static void window_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-static void key_callback(GLFWwindow* window, int key, int action)
+static void key_callback(GLFWwindow* window, int key, int action, int mods)
 {
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
         set_swap_interval(window, 1 - swap_interval);

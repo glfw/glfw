@@ -477,7 +477,7 @@ static void update_mesh(void)
  * GLFW callback functions
  *********************************************************************/
 
-static void key_callback(GLFWwindow* window, int key, int action)
+static void key_callback(GLFWwindow* window, int key, int action, int mods)
 {
     switch(key)
     {

@@ -309,6 +309,7 @@ GLFW.
  * Added `GLFW_VISIBLE` window hint and parameter for controlling and polling
    window visibility
  * Added `GLFW_REPEAT` key action for repeated keys
+ * Added key modifier parameter to key and mouse button callbacks
  * Added `windows` simple multi-window test program
  * Added `sharing` simple OpenGL object sharing test program
  * Added `modes` video mode enumeration and setting test program

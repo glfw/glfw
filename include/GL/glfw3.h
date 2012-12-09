@@ -407,6 +407,21 @@ extern "C" {
 
 /*! @} */
 
+/*! @name keys Modifier key flags
+ *  @{ */
+
+/*! @ingroup input
+ */
+#define GLFW_MOD_SHIFT           0x0001
+/*! @ingroup input
+ */
+#define GLFW_MOD_CTRL            0x0002
+/*! @ingroup input
+ */
+#define GLFW_MOD_ALT             0x0004
+
+/*! @} */
+
 /*! @defgroup buttons Mouse buttons
  *  @ingroup input
  *  @{ */
@@ -669,12 +684,13 @@ typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
  *  @param[in] button The [mouse button](@ref buttons) that was pressed or
  *  released.
  *  @param[in] action One of `GLFW_PRESS` or `GLFW_RELEASE`.
+ *  @param[in] mods Bit field describing which modifier keys were held down.
  *
  *  @sa glfwSetMouseButtonCallback
  *
  *  @ingroup input
  */
-typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int);
+typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int,int);
 
 /*! @brief The function signature for cursor position callbacks.
  *
@@ -725,12 +741,13 @@ typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
  *  @param[in] window The window that received the event.
  *  @param[in] key The [keyboard key](@ref keys) that was pressed or released.
  *  @param[in] action @ref GLFW_PRESS, @ref GLFW_RELEASE or @ref GLFW_REPEAT.
+ *  @param[in] mods Bit field describing which modifier keys were held down.
  *
  *  @sa glfwSetKeyCallback
  *
  *  @ingroup input
  */
-typedef void (* GLFWkeyfun)(GLFWwindow*,int,int);
+typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int);
 
 /*! @brief The function signature for Unicode character callbacks.
  *

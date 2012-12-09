@@ -48,17 +48,17 @@ static void window_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-static void key_callback(GLFWwindow* window, int key, int action)
+static void key_callback(GLFWwindow* window, int key, int action, int mods)
 {
-  if (action != GLFW_PRESS)
-    return;
+    if (action != GLFW_PRESS)
+        return;
 
-  switch (key)
-  {
-    case GLFW_KEY_SPACE:
-      glfwSetTime(0.0);
-      break;
-  }
+    switch (key)
+    {
+        case GLFW_KEY_SPACE:
+            glfwSetTime(0.0);
+            break;
+    }
 }
 
 static void usage(void)

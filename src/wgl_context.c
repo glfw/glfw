@@ -434,9 +434,9 @@ static GLboolean createContext(_GLFWwindow* window,
                 return GL_FALSE;
             }
 
-            if (wndconfig->glRobustness == GLFW_OPENGL_NO_RESET_NOTIFICATION)
+            if (wndconfig->glRobustness == GLFW_NO_RESET_NOTIFICATION)
                 strategy = WGL_NO_RESET_NOTIFICATION_ARB;
-            else if (wndconfig->glRobustness == GLFW_OPENGL_LOSE_CONTEXT_ON_RESET)
+            else if (wndconfig->glRobustness == GLFW_LOSE_CONTEXT_ON_RESET)
                 strategy = WGL_LOSE_CONTEXT_ON_RESET_ARB;
 
             attribs[i++] = WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB;

@@ -214,9 +214,9 @@ int main(int argc, char** argv)
                 break;
             case 'r':
                 if (strcasecmp(optarg, STRATEGY_NAME_NONE) == 0)
-                    strategy = GLFW_OPENGL_NO_RESET_NOTIFICATION;
+                    strategy = GLFW_NO_RESET_NOTIFICATION;
                 else if (strcasecmp(optarg, STRATEGY_NAME_LOSE) == 0)
-                    strategy = GLFW_OPENGL_LOSE_CONTEXT_ON_RESET;
+                    strategy = GLFW_LOSE_CONTEXT_ON_RESET;
                 else
                 {
                     usage();
@@ -244,8 +244,8 @@ int main(int argc, char** argv)
 
     if (major != 1 || minor != 0)
     {
-        glfwWindowHint(GLFW_OPENGL_VERSION_MAJOR, major);
-        glfwWindowHint(GLFW_OPENGL_VERSION_MINOR, minor);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
     }
 
     if (api != 0)
@@ -261,7 +261,7 @@ int main(int argc, char** argv)
         glfwWindowHint(GLFW_OPENGL_PROFILE, profile);
 
     if (strategy)
-        glfwWindowHint(GLFW_OPENGL_ROBUSTNESS, strategy);
+        glfwWindowHint(GLFW_CONTEXT_ROBUSTNESS, strategy);
 
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
@@ -280,9 +280,9 @@ int main(int argc, char** argv)
     // Report client API version
 
     api = glfwGetWindowParam(window, GLFW_CLIENT_API);
-    major = glfwGetWindowParam(window, GLFW_OPENGL_VERSION_MAJOR);
-    minor = glfwGetWindowParam(window, GLFW_OPENGL_VERSION_MINOR);
-    revision = glfwGetWindowParam(window, GLFW_OPENGL_REVISION);
+    major = glfwGetWindowParam(window, GLFW_CONTEXT_VERSION_MAJOR);
+    minor = glfwGetWindowParam(window, GLFW_CONTEXT_VERSION_MINOR);
+    revision = glfwGetWindowParam(window, GLFW_CONTEXT_REVISION);
 
     printf("%s context version string: \"%s\"\n",
            get_client_api_name(api),

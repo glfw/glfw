@@ -377,8 +377,8 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
 
     if (wndconfig->glRobustness)
     {
-        if (wndconfig->glRobustness != GLFW_OPENGL_NO_RESET_NOTIFICATION &&
-            wndconfig->glRobustness != GLFW_OPENGL_LOSE_CONTEXT_ON_RESET)
+        if (wndconfig->glRobustness != GLFW_NO_RESET_NOTIFICATION &&
+            wndconfig->glRobustness != GLFW_LOSE_CONTEXT_ON_RESET)
         {
             _glfwSetError(GLFW_INVALID_VALUE,
                           "glfwCreateWindow: Invalid OpenGL robustness mode "

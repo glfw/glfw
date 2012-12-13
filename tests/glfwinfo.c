@@ -77,9 +77,9 @@ static const char* get_client_api_name(int api)
 static const char* get_profile_name_gl(GLint mask)
 {
     if (mask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)
-        return "compatibility";
+        return PROFILE_NAME_COMPAT;
     if (mask & GL_CONTEXT_CORE_PROFILE_BIT)
-        return "core";
+        return PROFILE_NAME_CORE;
 
     return "unknown";
 }
@@ -87,9 +87,9 @@ static const char* get_profile_name_gl(GLint mask)
 static const char* get_profile_name_glfw(int profile)
 {
     if (profile == GLFW_OPENGL_COMPAT_PROFILE)
-        return "compatibility";
+        return PROFILE_NAME_COMPAT;
     if (profile == GLFW_OPENGL_CORE_PROFILE)
-        return "core";
+        return PROFILE_NAME_CORE;
 
     return "unknown";
 }

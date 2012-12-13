@@ -303,7 +303,7 @@ int main(int argc, char** argv)
 
             if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
                 printf(" forward-compatible");
-            if (flags & 0)
+            if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
                 printf(" debug");
             putchar('\n');
 
@@ -338,9 +338,6 @@ int main(int argc, char** argv)
     printf("%s context vendor string: \"%s\"\n",
            get_client_api_name(api),
            glGetString(GL_VENDOR));
-
-    printf("OpenGL context debug flag saved by GLFW: %s\n",
-           glfwGetWindowParam(window, GLFW_OPENGL_DEBUG_CONTEXT) ? "true" : "false");
 
     if (major > 1)
     {

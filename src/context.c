@@ -412,6 +412,7 @@ GLboolean _glfwRefreshContextParams(void)
     // Read back forward-compatibility flag
     {
         window->glForward = GL_FALSE;
+        window->glDebug = GL_FALSE;
 
         if (window->clientAPI == GLFW_OPENGL_API && window->glMajor >= 3)
         {
@@ -420,8 +421,16 @@ GLboolean _glfwRefreshContextParams(void)
 
             if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
                 window->glForward = GL_TRUE;
-            if (flags & 0)
+            if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
                 window->glDebug = GL_TRUE;
+
+            if (glfwExtensionSupported("GL_ARB_debug_output"))
+            {
+                // HACK: This is a workaround for older drivers (pre KHR_debug)
+                // not setting the debug bit in the context flags for debug
+                // contexts
+                window->glDebug = GL_TRUE;
+            }
         }
     }
 

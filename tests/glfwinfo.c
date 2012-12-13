@@ -94,6 +94,26 @@ static const char* get_profile_name_glfw(int profile)
     return "unknown";
 }
 
+static const char* get_strategy_name_gl(GLint strategy)
+{
+    if (strategy == GL_LOSE_CONTEXT_ON_RESET_ARB)
+        return STRATEGY_NAME_LOSE;
+    if (strategy == GL_NO_RESET_NOTIFICATION_ARB)
+        return STRATEGY_NAME_NONE;
+
+    return "unknown";
+}
+
+static const char* get_strategy_name_glfw(int strategy)
+{
+    if (strategy == GLFW_LOSE_CONTEXT_ON_RESET)
+        return STRATEGY_NAME_LOSE;
+    if (strategy == GLFW_NO_RESET_NOTIFICATION)
+        return STRATEGY_NAME_NONE;
+
+    return "unknown";
+}
+
 static void list_extensions(int api, int major, int minor)
 {
     int i;
@@ -305,6 +325,8 @@ int main(int argc, char** argv)
                 printf(" forward-compatible");
             if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
                 printf(" debug");
+            if (flags & GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB)
+                printf(" robustness");
             putchar('\n');
 
             printf("%s context flags parsed by GLFW:", get_client_api_name(api));
@@ -313,6 +335,8 @@ int main(int argc, char** argv)
                 printf(" forward-compatible");
             if (glfwGetWindowParam(window, GLFW_OPENGL_DEBUG_CONTEXT))
                 printf(" debug");
+            if (glfwGetWindowParam(window, GLFW_CONTEXT_ROBUSTNESS) != GLFW_NO_ROBUSTNESS)
+                printf(" robustness");
             putchar('\n');
         }
 
@@ -329,6 +353,24 @@ int main(int argc, char** argv)
             printf("%s profile mask parsed by GLFW: %s\n",
                    get_client_api_name(api),
                    get_profile_name_glfw(profile));
+        }
+
+        if (glfwExtensionSupported("GL_ARB_robustness"))
+        {
+            int robustness;
+            GLint strategy;
+            glGetIntegerv(GL_RESET_NOTIFICATION_STRATEGY_ARB, &strategy);
+
+            printf("%s robustness strategy (0x%08x): %s\n",
+                   get_client_api_name(api),
+                   strategy,
+                   get_strategy_name_gl(strategy));
+
+            robustness = glfwGetWindowParam(window, GLFW_CONTEXT_ROBUSTNESS);
+
+            printf("%s robustness strategy parsed by GLFW: %s\n",
+                   get_client_api_name(api),
+                   get_strategy_name_glfw(robustness));
         }
     }
 

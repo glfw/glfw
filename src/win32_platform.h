@@ -104,6 +104,10 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 // between applications using different versions of GLFW
 #define _GLFW_WNDCLASSNAME L"GLFW30"
 
+#define _GLFW_RECREATION_NOT_NEEDED 0
+#define _GLFW_RECREATION_REQUIRED   1
+#define _GLFW_RECREATION_IMPOSSIBLE 2
+
 
 #if defined(_GLFW_WGL)
  #include "wgl_platform.h"
@@ -206,6 +210,9 @@ int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWwndconfig* wndconfig,
                        const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContext(_GLFWwindow* window);
+int _glfwAnalyzeContext(const _GLFWwindow* window,
+                        const _GLFWwndconfig* wndconfig,
+                        const _GLFWfbconfig* fbconfig);
 
 // Fullscreen support
 void _glfwSetVideoMode(int* width, int* height,

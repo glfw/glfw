@@ -500,6 +500,22 @@ void _glfwDestroyContext(_GLFWwindow* window)
 
 
 //========================================================================
+// Analyzes the specified context for possible recreation
+//========================================================================
+
+int _glfwAnalyzeContext(const _GLFWwindow* window,
+                        const _GLFWwndconfig* wndconfig,
+                        const _GLFWfbconfig* fbconfig)
+{
+#if _GLFW_WIN32
+    return _GLFW_RECREATION_NOT_NEEDED;
+#else
+    return 0;
+#endif
+}
+
+
+//========================================================================
 // Make the OpenGL context associated with the specified window current
 //========================================================================
 

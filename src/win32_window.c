@@ -853,7 +853,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    GLboolean recreateContext = GL_FALSE;
+    int status;
 
     window->Win32.desiredRefreshRate = wndconfig->refreshRate;
 
@@ -887,57 +887,12 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (!createWindow(window, wndconfig, fbconfig))
         return GL_FALSE;
 
-    if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
-    {
-        if (window->WGL.ARB_create_context)
-            recreateContext = GL_TRUE;
-    }
+    status = _glfwAnalyzeContext(window, wndconfig, fbconfig);
 
-    if (wndconfig->glDebug)
-    {
-        if (window->WGL.ARB_create_context)
-            recreateContext = GL_TRUE;
-    }
+    if (status == _GLFW_RECREATION_IMPOSSIBLE)
+        return GL_FALSE;
 
-    if (wndconfig->glForward)
-    {
-        if (!window->WGL.ARB_create_context)
-        {
-            _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                          "WGL: A forward compatible OpenGL context requested "
-                          "but WGL_ARB_create_context is unavailable");
-            return GL_FALSE;
-        }
-
-        recreateContext = GL_TRUE;
-    }
-
-    if (wndconfig->glProfile)
-    {
-        if (!window->WGL.ARB_create_context_profile)
-        {
-            _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                          "WGL: OpenGL profile requested but "
-                          "WGL_ARB_create_context_profile is unavailable");
-            return GL_FALSE;
-        }
-
-        recreateContext = GL_TRUE;
-    }
-
-    if (fbconfig->samples > 0)
-    {
-        // We want FSAA, but can we get it?
-        // FSAA is not a hard constraint, so otherwise we just don't care
-
-        if (window->WGL.ARB_multisample && window->WGL.ARB_pixel_format)
-        {
-            // We appear to have both the FSAA extension and the means to ask for it
-            recreateContext = GL_TRUE;
-        }
-    }
-
-    if (recreateContext)
+    if (status == _GLFW_RECREATION_REQUIRED)
     {
         // Some window hints require us to re-create the context using WGL
         // extensions retrieved through the current context, as we cannot check

@@ -510,7 +510,8 @@ extern "C" {
 /*! @brief @c GL_TRUE for stereo rendering, or @c GL_FALSE otherwise.
  */
 #define GLFW_STEREO               0x0002100C
-/*! @brief The number of samples used for default framebuffer multisampling.
+/*! @brief The number of samples used for default framebuffer multisampling, or
+ *  zero to disable multisampling.
  */
 #define GLFW_FSAA_SAMPLES         0x0002100E
 /*! @brief @c GL_TRUE if the framebuffer should be sRGB capable, or @c GL_FALSE
@@ -1133,10 +1134,12 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  available.
  *
  *  The @ref GLFW_OPENGL_FORWARD_COMPAT hint specifies whether the OpenGL
- *  context should be forward-compatible.
+ *  context should be forward-compatible, i.e. one where all functionality
+ *  deprecated in the requested version of OpenGL is removed.
  *
  *  The @ref GLFW_OPENGL_DEBUG_CONTEXT hint specifies whether to create a debug
- *  OpenGL context.
+ *  OpenGL context, which may have additional error and performance issue
+ *  reporting functionality.
  *
  *  The @ref GLFW_OPENGL_PROFILE hint specifies which OpenGL profile to create
  *  the context for.  Possible values are @ref GLFW_OPENGL_NO_PROFILE, @ref

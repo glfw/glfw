@@ -409,22 +409,20 @@ GLboolean _glfwRefreshContextParams(void)
         }
     }
 
-    // Read back forward-compatibility flag
+    if (window->clientAPI == GLFW_OPENGL_API)
     {
-        window->glForward = GL_FALSE;
-        window->glDebug = GL_FALSE;
-
-        if (window->clientAPI == GLFW_OPENGL_API && window->glMajor >= 3)
+        // Read back context flags (OpenGL 3.0 and above)
+        if (window->glMajor >= 3)
         {
             GLint flags;
             glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
 
             if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
                 window->glForward = GL_TRUE;
+
             if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
                 window->glDebug = GL_TRUE;
-
-            if (glfwExtensionSupported("GL_ARB_debug_output"))
+            else if (glfwExtensionSupported("GL_ARB_debug_output"))
             {
                 // HACK: This is a workaround for older drivers (pre KHR_debug)
                 // not setting the debug bit in the context flags for debug
@@ -432,13 +430,10 @@ GLboolean _glfwRefreshContextParams(void)
                 window->glDebug = GL_TRUE;
             }
         }
-    }
 
-    // Read back OpenGL context profile
-    {
-        window->glProfile = GLFW_OPENGL_NO_PROFILE;
-
-        if (window->glMajor > 3 || (window->glMajor == 3 && window->glMinor >= 2))
+        // Read back OpenGL context profile (OpenGL 3.2 and above)
+        if (window->glMajor > 3 ||
+            (window->glMajor == 3 && window->glMinor >= 2))
         {
             GLint mask;
             glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
@@ -447,6 +442,38 @@ GLboolean _glfwRefreshContextParams(void)
                 window->glProfile = GLFW_OPENGL_COMPAT_PROFILE;
             else if (mask & GL_CONTEXT_CORE_PROFILE_BIT)
                 window->glProfile = GLFW_OPENGL_CORE_PROFILE;
+        }
+
+        // Read back robustness strategy
+        if (glfwExtensionSupported("GL_ARB_robustness"))
+        {
+            // NOTE: We avoid using the context flags for detection, as they are
+            // only present from 3.0 while the extension applies from 1.1
+
+            GLint strategy;
+            glGetIntegerv(GL_RESET_NOTIFICATION_STRATEGY_ARB, &strategy);
+
+            if (strategy == GL_LOSE_CONTEXT_ON_RESET_ARB)
+                window->glRobustness = GLFW_LOSE_CONTEXT_ON_RESET;
+            else if (strategy == GL_NO_RESET_NOTIFICATION_ARB)
+                window->glRobustness = GLFW_NO_RESET_NOTIFICATION;
+        }
+    }
+    else
+    {
+        // Read back robustness strategy
+        if (glfwExtensionSupported("GL_EXT_robustness"))
+        {
+            // NOTE: The values of these constants match those of the OpenGL ARB
+            // one, so we can reuse them here
+
+            GLint strategy;
+            glGetIntegerv(GL_RESET_NOTIFICATION_STRATEGY_ARB, &strategy);
+
+            if (strategy == GL_LOSE_CONTEXT_ON_RESET_ARB)
+                window->glRobustness = GLFW_LOSE_CONTEXT_ON_RESET;
+            else if (strategy == GL_NO_RESET_NOTIFICATION_ARB)
+                window->glRobustness = GLFW_NO_RESET_NOTIFICATION;
         }
     }
 

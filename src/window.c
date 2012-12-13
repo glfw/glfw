@@ -265,15 +265,13 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
 
     if (mode != GLFW_WINDOWED && mode != GLFW_FULLSCREEN)
     {
-        _glfwSetError(GLFW_INVALID_ENUM,
-                      "glfwCreateWindow: Invalid window mode");
+        _glfwSetError(GLFW_INVALID_ENUM, "Invalid window mode");
         return GL_FALSE;
     }
 
     if (width <= 0 || height <= 0)
     {
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwCreateWindow: Invalid window size");
+        _glfwSetError(GLFW_INVALID_VALUE, "Invalid window size");
         return GL_FALSE;
     }
 

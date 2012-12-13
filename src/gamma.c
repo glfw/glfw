@@ -55,7 +55,7 @@ GLFWAPI void glfwSetGamma(float gamma)
     if (gamma <= 0.f)
     {
         _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwSetGamma: Gamma value must be greater than zero");
+                      "Gamma value must be greater than zero");
         return;
     }
 

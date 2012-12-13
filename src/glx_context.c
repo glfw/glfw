@@ -294,7 +294,9 @@ static int createContext(_GLFWwindow* window,
 
         if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
         {
-            // Request an explicitly versioned context
+            // NOTE: Only request an explicitly versioned context when
+            // necessary, as explicitly requesting version 1.0 does not always
+            // return the highest available version
 
             setGLXattrib(attribs, index, GLX_CONTEXT_MAJOR_VERSION_ARB, wndconfig->glMajor);
             setGLXattrib(attribs, index, GLX_CONTEXT_MINOR_VERSION_ARB, wndconfig->glMinor);

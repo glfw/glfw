@@ -51,7 +51,7 @@ int _glfwInitOpenGL(void)
     if (pthread_key_create(&_glfwCurrentTLS, NULL) != 0)
     {
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Cocoa/NSGL: Failed to create context TLS");
+                      "NSOpenGL: Failed to create context TLS");
         return GL_FALSE;
     }
 

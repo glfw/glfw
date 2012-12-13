@@ -85,8 +85,7 @@ int _glfwPlatformInit(void)
         CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
     if (_glfwLibrary.NSGL.framework == NULL)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "glfwInit: Failed to locate OpenGL framework");
+        _glfwSetError(GLFW_PLATFORM_ERROR, "Failed to locate OpenGL framework");
         return GL_FALSE;
     }
 

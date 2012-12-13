@@ -285,9 +285,6 @@ int main(int argc, char** argv)
 
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
-    // We assume here that we stand a better chance of success by leaving all
-    // possible details of pixel format selection to GLFW
-
     window = glfwCreateWindow(200, 200, GLFW_WINDOWED, "Version", NULL);
     if (!window)
     {

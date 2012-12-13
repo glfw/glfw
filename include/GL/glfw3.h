@@ -48,6 +48,8 @@ extern "C" {
 
 /*! @defgroup clipboard Clipboard support
  */
+/*! @defgroup context Context handling
+ */
 /*! @defgroup error Error handling
  */
 /*! @defgroup gamma Gamma ramp support
@@ -56,15 +58,14 @@ extern "C" {
  */
 /*! @defgroup input Input handling
  */
-/*! @defgroup opengl OpenGL support
- */
 /*! @defgroup time Time input
  */
 /*! @defgroup window Window handling
  *
- *  The primary purpose of GLFW is to provide a simple interface to OpenGL
- *  context creation and window management.  GLFW supports multiple windows,
- *  which can be either a normal desktop window or a fullscreen window.
+ *  The primary purpose of GLFW is to provide a simple interface to window
+ *  management and OpenGL and OpenGL ES context creation.  GLFW supports
+ *  multiple windows, which can be either a normal desktop window or
+ *  a fullscreen window.
  */
 /*! @defgroup monitor Monitor handling
  */
@@ -173,7 +174,7 @@ extern "C" {
 
 /* -------------------- END SYSTEM/COMPILER SPECIFIC --------------------- */
 
-/* Include the chosen OpenGL header and, optionally, the GLU header.
+/* Include the chosen client API headers.
  */
 #if defined(__APPLE_CC__)
   #if defined(GLFW_INCLUDE_GLCOREARB)
@@ -476,9 +477,9 @@ extern "C" {
  *  otherwise.
  */
 #define GLFW_CLOSE_REQUESTED      0x00020003
-/*! @brief The OpenGL API version revision.
+/*! @brief The client API version revision.
  */
-#define GLFW_OPENGL_REVISION      0x00020004
+#define GLFW_CONTEXT_REVISION      0x00020004
 
 /*! @brief The bit depth of the red component of the color buffer.
  */
@@ -531,12 +532,12 @@ extern "C" {
 /*! @brief The @link clients client API @endlink to create a context for.
  */
 #define GLFW_CLIENT_API           0x00022000
-#define GLFW_OPENGL_VERSION_MAJOR 0x00022001
-#define GLFW_OPENGL_VERSION_MINOR 0x00022002
-#define GLFW_OPENGL_FORWARD_COMPAT 0x00022003
-#define GLFW_OPENGL_DEBUG_CONTEXT 0x00022004
-#define GLFW_OPENGL_PROFILE       0x00022005
-#define GLFW_OPENGL_ROBUSTNESS    0x00022006
+#define GLFW_CONTEXT_VERSION_MAJOR 0x00022001
+#define GLFW_CONTEXT_VERSION_MINOR 0x00022002
+#define GLFW_CONTEXT_ROBUSTNESS   0x00022003
+#define GLFW_OPENGL_FORWARD_COMPAT 0x00022004
+#define GLFW_OPENGL_DEBUG_CONTEXT 0x00022005
+#define GLFW_OPENGL_PROFILE       0x00022006
 /*! @brief @c GL_TRUE if the window is resizable, or @c GL_FALSE otherwise.
  */
 #define GLFW_RESIZABLE            0x00022007
@@ -557,45 +558,45 @@ extern "C" {
 /*! @name Client APIs
  *  @{ */
 /*! @brief The OpenGL API.
- *  @ingroup opengl
+ *  @ingroup context
  */
 #define GLFW_OPENGL_API           0x00000001
 /*! @brief The OpenGL ES API.
- *  @ingroup opengl
+ *  @ingroup context
  */
 #define GLFW_OPENGL_ES_API        0x00000002
 /*! @} */
 
-/*! @name OpenGL robustness strategies
+/*! @name Context robustness strategies
  *  @{ */
 /*! @brief No robustness strategy is used.
  *
  *  This is the default.
- *  @ingroup opengl
+ *  @ingroup context
  */
-#define GLFW_OPENGL_NO_ROBUSTNESS         0x00000000
+#define GLFW_NO_ROBUSTNESS         0x00000000
 /*! @brief 
- *  @ingroup opengl
+ *  @ingroup context
  */
-#define GLFW_OPENGL_NO_RESET_NOTIFICATION 0x00000001
+#define GLFW_NO_RESET_NOTIFICATION 0x00000001
 /*! @brief 
- *  @ingroup opengl
+ *  @ingroup context
  */
-#define GLFW_OPENGL_LOSE_CONTEXT_ON_RESET 0x00000002
+#define GLFW_LOSE_CONTEXT_ON_RESET 0x00000002
 /*! @} */
 
 /*! @name OpenGL profiles
  *  @{ */
 /*! @brief No OpenGL profile.
- *  @ingroup opengl
+ *  @ingroup context
  */
 #define GLFW_OPENGL_NO_PROFILE    0x00000000
 /*! @brief The OpenGL core profile.
- *  @ingroup opengl
+ *  @ingroup context
  */
 #define GLFW_OPENGL_CORE_PROFILE  0x00000001
 /*! @brief The OpenGL compatibility profile.
- *  @ingroup opengl
+ *  @ingroup context
  */
 #define GLFW_OPENGL_COMPAT_PROFILE 0x00000002
 /*! @} */
@@ -676,7 +677,7 @@ extern "C" {
  *  system.
  */
 #define GLFW_API_UNAVAILABLE      0x00070006
-/*! @brief The requested OpenGL or GLES version is not available.
+/*! @brief The requested client API version is not available.
  */
 #define GLFW_VERSION_UNAVAILABLE  0x00070007
 /*! @brief A platform-specific error occurred that does not match any of the
@@ -698,8 +699,8 @@ extern "C" {
  * Typedefs
  *************************************************************************/
 
-/*! @brief OpenGL function pointer type.
- *  @ingroup opengl
+/*! @brief Client API function pointer type.
+ *  @ingroup context
  */
 typedef void (*GLFWglproc)(void);
 
@@ -991,8 +992,8 @@ GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
  *
  *  The @ref GLFW_CLIENT_API hint is set to @ref GLFW_OPENGL_API.
  *
- *  The @ref GLFW_OPENGL_VERSION_MAJOR and @ref GLFW_OPENGL_VERSION_MINOR hints
- *  are set to 1 and 0, respectively.
+ *  The @ref GLFW_CONTEXT_VERSION_MAJOR and @ref GLFW_CONTEXT_VERSION_MINOR
+ *  hints are set to 1 and 0, respectively.
  *
  *  All other hints are set to 0.
  *
@@ -1036,15 +1037,18 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  context for.  Possible values are @ref GLFW_OPENGL_API and @ref
  *  GLFW_OPENGL_ES_API.
  *
- *  The @ref GLFW_OPENGL_VERSION_MAJOR and @ref GLFW_OPENGL_VERSION_MINOR hints
- *  specify the OpenGL version that the created context must be compatible with.
+ *  The @ref GLFW_CONTEXT_VERSION_MAJOR and @ref GLFW_CONTEXT_VERSION_MINOR
+ *  hints specify the client API version that the created context must be
+ *  compatible with.
  *
- *  These hints are @em not hard constraints, as they don't have to match
- *  exactly, but @ref glfwCreateWindow will still fail if the resulting OpenGL
- *  version is less than the one requested with hints.  It is therefore
- *  perfectly safe to use the default of version 1.0 for legacy code and you
- *  will still get backwards-compatible contexts of version 3.0 and above when
- *  available.
+ *  For OpenGL, these hints are @em not hard constraints, as they don't have to
+ *  match exactly, but @ref glfwCreateWindow will still fail if the resulting
+ *  OpenGL version is less than the one requested.  It is therefore perfectly
+ *  safe to use the default of version 1.0 for legacy code and you will still
+ *  get backwards-compatible contexts of version 3.0 and above when available.
+ *
+ *  For OpenGL ES, these hints are hard constraints, as there is no backward
+ *  compatibility between OpenGL ES versions.
  *
  *  The @ref GLFW_OPENGL_FORWARD_COMPAT hint specifies whether the OpenGL
  *  context should be forward-compatible, i.e. one where all functionality
@@ -1058,8 +1062,8 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  the context for.  Possible values are @ref GLFW_OPENGL_NO_PROFILE, @ref
  *  GLFW_OPENGL_CORE_PROFILE and @ref GLFW_OPENGL_COMPAT_PROFILE.
  *
- *  The @ref GLFW_OPENGL_ROBUSTNESS hint specifies the robustness strategy to be
- *  used by the OpenGL context.
+ *  The @ref GLFW_CONTEXT_ROBUSTNESS hint specifies the robustness strategy to
+ *  be used by the context.
  *
  *  The @ref GLFW_RESIZABLE hint specifies whether the window will be resizable
  *  by the user.  The window will still be resizable using the @ref
@@ -1264,9 +1268,9 @@ GLFWAPI void glfwHideWindow(GLFWwindow window);
  *  The @ref GLFW_CLIENT_API property indicates the client API provided by the
  *  window's context.
  *
- *  The @ref GLFW_OPENGL_VERSION_MAJOR, @ref GLFW_OPENGL_VERSION_MINOR and @ref
- *  GLFW_OPENGL_REVISION properties indicate the API version of the window's
- *  context.
+ *  The @ref GLFW_CONTEXT_VERSION_MAJOR, @ref GLFW_CONTEXT_VERSION_MINOR and
+ *  @ref GLFW_CONTEXT_REVISION properties indicate the client API version of the
+ *  window's context.
  *
  *  The @ref GLFW_OPENGL_FORWARD_COMPAT property indicates whether an OpenGL
  *  context is forward-compatible.
@@ -1278,9 +1282,8 @@ GLFWAPI void glfwHideWindow(GLFWwindow window);
  *  OpenGL context, or @ref GLFW_OPENGL_NO_PROFILE if the context is for another
  *  client API than OpenGL.
  *
- *  The @ref GLFW_OPENGL_ROBUSTNESS property indicates the robustness strategy
- *  used by the OpenGL context, or @ref GLFW_OPENGL_NO_ROBUSTNESS if robustness
- *  is not used.
+ *  The @ref GLFW_CONTEXT_ROBUSTNESS property indicates the robustness strategy
+ *  used by the context, or @ref GLFW_NO_ROBUSTNESS if robustness is not used.
  */
 GLFWAPI int glfwGetWindowParam(GLFWwindow window, int param);
 
@@ -1603,7 +1606,7 @@ GLFWAPI void glfwSetTime(double time);
 /*! @brief Makes the context of the specified window current for this thread.
  *  @param[in] window The window whose context to make current, or @c NULL to
  *  detach the current context.
- *  @ingroup opengl
+ *  @ingroup context
  *
  *  @remarks This function may be called from secondary threads.
  *
@@ -1616,7 +1619,7 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow window);
 /*! @brief Returns the window whose context is current on this thread.
  *  @return The window whose context is current, or @c NULL if no window's
  *  context is current.
- *  @ingroup opengl
+ *  @ingroup context
  *
  *  @remarks This function may be called from secondary threads.
  *
@@ -1626,7 +1629,7 @@ GLFWAPI GLFWwindow glfwGetCurrentContext(void);
 
 /*! @brief Swaps the front and back buffers of the specified window.
  *  @param[in] The window whose buffers to swap.
- *  @ingroup opengl
+ *  @ingroup context
  *
  *  @remarks This function may be called from secondary threads.
  *
@@ -1637,7 +1640,7 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow window);
 /*! @brief Sets the swap interval for the current context.
  *  @param[in] interval The minimum number of video frame periods to wait for
  *  until the buffers are swapped by @ref glfwSwapBuffers.
- *  @ingroup opengl
+ *  @ingroup context
  *
  *  @remarks This function may be called from secondary threads.
  *
@@ -1648,7 +1651,7 @@ GLFWAPI void glfwSwapInterval(int interval);
 /*! @brief Checks whether the specified extension is available.
  *  @param[in] extension The ASCII encoded name of the extension.
  *  @return @c GL_TRUE if the extension is available, or @c FALSE otherwise.
- *  @ingroup opengl
+ *  @ingroup context
  *
  *  @remarks This function may be called from secondary threads.
  *
@@ -1662,7 +1665,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
  *  @param[in] procname The ASCII encoded name of the function.
  *  @return The address of the function, or @c NULL if the function is
  *  unavailable.
- *  @ingroup opengl
+ *  @ingroup context
  *
  *  @remarks This function may be called from secondary threads.
  */

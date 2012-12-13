@@ -64,8 +64,8 @@ static ParamGL gl_params[] =
 static ParamGLFW glfw_params[] =
 {
     { GLFW_REFRESH_RATE, "refresh rate" },
-    { GLFW_OPENGL_VERSION_MAJOR, "OpenGL major" },
-    { GLFW_OPENGL_VERSION_MINOR, "OpenGL minor" },
+    { GLFW_CONTEXT_VERSION_MAJOR, "Context version major" },
+    { GLFW_CONTEXT_VERSION_MINOR, "Context version minor" },
     { GLFW_OPENGL_FORWARD_COMPAT, "OpenGL forward compatible" },
     { GLFW_OPENGL_DEBUG_CONTEXT, "OpenGL debug context" },
     { GLFW_OPENGL_PROFILE, "OpenGL profile" },

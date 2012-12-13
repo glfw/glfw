@@ -318,9 +318,9 @@ static int createContext(_GLFWwindow* window,
         {
             int strategy;
 
-            if (wndconfig->glRobustness == GLFW_OPENGL_NO_RESET_NOTIFICATION)
+            if (wndconfig->glRobustness == GLFW_NO_RESET_NOTIFICATION)
                 strategy = EGL_NO_RESET_NOTIFICATION_KHR;
-            else if (wndconfig->glRobustness == GLFW_OPENGL_LOSE_CONTEXT_ON_RESET)
+            else if (wndconfig->glRobustness == GLFW_LOSE_CONTEXT_ON_RESET)
                 strategy = EGL_LOSE_CONTEXT_ON_RESET_KHR;
 
             setEGLattrib(attribs, index, EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY_KHR, strategy);

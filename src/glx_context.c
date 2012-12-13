@@ -365,9 +365,9 @@ static int createContext(_GLFWwindow* window,
                 return GL_FALSE;
             }
 
-            if (wndconfig->glRobustness == GLFW_OPENGL_NO_RESET_NOTIFICATION)
+            if (wndconfig->glRobustness == GLFW_NO_RESET_NOTIFICATION)
                 strategy = GLX_NO_RESET_NOTIFICATION_ARB;
-            else if (wndconfig->glRobustness == GLFW_OPENGL_LOSE_CONTEXT_ON_RESET)
+            else if (wndconfig->glRobustness == GLFW_LOSE_CONTEXT_ON_RESET)
                 strategy = GLX_LOSE_CONTEXT_ON_RESET_ARB;
 
             setGLXattrib(attribs,

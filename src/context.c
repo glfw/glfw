@@ -270,32 +270,19 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
 
     if (wndconfig->clientAPI == GLFW_OPENGL_API)
     {
-        if (wndconfig->glMajor < 1 || wndconfig->glMinor < 0)
+        if (wndconfig->glMajor < 1 || wndconfig->glMinor < 0 ||
+            (wndconfig->glMajor == 1 && wndconfig->glMinor > 5) ||
+            (wndconfig->glMajor == 2 && wndconfig->glMinor > 1) ||
+            (wndconfig->glMajor == 3 && wndconfig->glMinor > 3))
         {
             // OpenGL 1.0 is the smallest valid version
-            _glfwSetError(GLFW_INVALID_VALUE,
-                          "glfwCreateWindow: Invalid OpenGL version requested");
-            return GL_FALSE;
-        }
-        if (wndconfig->glMajor == 1 && wndconfig->glMinor > 5)
-        {
             // OpenGL 1.x series ended with version 1.5
-            _glfwSetError(GLFW_INVALID_VALUE,
-                          "glfwCreateWindow: Invalid OpenGL version requested");
-            return GL_FALSE;
-        }
-        else if (wndconfig->glMajor == 2 && wndconfig->glMinor > 1)
-        {
             // OpenGL 2.x series ended with version 2.1
-            _glfwSetError(GLFW_INVALID_VALUE,
-                          "glfwCreateWindow: Invalid OpenGL version requested");
-            return GL_FALSE;
-        }
-        else if (wndconfig->glMajor == 3 && wndconfig->glMinor > 3)
-        {
             // OpenGL 3.x series ended with version 3.3
+
             _glfwSetError(GLFW_INVALID_VALUE,
-                          "glfwCreateWindow: Invalid OpenGL version requested");
+                          "glfwCreateWindow: Invalid OpenGL version %i.%i requested",
+                          wndconfig->glMajor, wndconfig->glMinor);
             return GL_FALSE;
         }
         else
@@ -337,18 +324,17 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
     }
     else if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
     {
-        if (wndconfig->glMajor < 1 || wndconfig->glMinor < 0)
+        if (wndconfig->glMajor < 1 || wndconfig->glMinor < 0 ||
+            (wndconfig->glMajor == 1 && wndconfig->glMinor > 1) ||
+            (wndconfig->glMajor == 2 && wndconfig->glMinor > 0))
         {
             // OpenGL ES 1.0 is the smallest valid version
-            _glfwSetError(GLFW_INVALID_VALUE,
-                          "glfwCreateWindow: Invalid OpenGL ES version requested");
-            return GL_FALSE;
-        }
-        if (wndconfig->glMajor == 1 && wndconfig->glMinor > 1)
-        {
             // OpenGL ES 1.x series ended with version 1.1
+            // OpenGL ES 2.x series ended with version 2.0
+
             _glfwSetError(GLFW_INVALID_VALUE,
-                          "glfwCreateWindow: Invalid OpenGL ES version requested");
+                          "glfwCreateWindow: Invalid OpenGL ES version %i.%i requested",
+                          wndconfig->glMajor, wndconfig->glMinor);
             return GL_FALSE;
         }
         else

@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 /*
-** Copyright (c) 2007-2010 The Khronos Group Inc.
+** Copyright (c) 2007-2012 The Khronos Group Inc.
 ** 
 ** Permission is hereby granted, free of charge, to any person obtaining a
 ** copy of this software and/or associated documentation files (the
@@ -48,9 +48,9 @@ extern "C" {
 /*************************************************************/
 
 /* Header file version number, required by OpenGL ABI for Linux */
-/* glxext.h last updated 2010/08/06 */
+/* glxext.h last updated 2012/02/29 */
 /* Current version at http://www.opengl.org/registry/ */
-#define GLX_GLXEXT_VERSION 32
+#define GLX_GLXEXT_VERSION 33
 
 #ifndef GLX_VERSION_1_3
 #define GLX_WINDOW_BIT                     0x00000001
@@ -438,6 +438,14 @@ extern "C" {
 
 #ifndef GLX_EXT_create_context_es2_profile
 #define GLX_CONTEXT_ES2_PROFILE_BIT_EXT    0x00000004
+#endif
+
+#ifndef GLX_EXT_swap_control_tear
+#define GLX_LATE_SWAPS_TEAR_EXT            0x20F3
+#endif
+
+#ifndef GLX_EXT_buffer_age
+#define GLX_BACK_BUFFER_AGE_EXT            0x20F4
 #endif
 
 
@@ -964,9 +972,9 @@ typedef void ( * PFNGLXRELEASEVIDEOCAPTUREDEVICENVPROC) (Display *dpy, GLXVideoC
 #ifndef GLX_EXT_swap_control
 #define GLX_EXT_swap_control 1
 #ifdef GLX_GLXEXT_PROTOTYPES
-extern int glXSwapIntervalEXT (Display *dpy, GLXDrawable drawable, int interval);
+extern void glXSwapIntervalEXT (Display *dpy, GLXDrawable drawable, int interval);
 #endif /* GLX_GLXEXT_PROTOTYPES */
-typedef int ( * PFNGLXSWAPINTERVALEXTPROC) (Display *dpy, GLXDrawable drawable, int interval);
+typedef void ( * PFNGLXSWAPINTERVALEXTPROC) (Display *dpy, GLXDrawable drawable, int interval);
 #endif
 
 #ifndef GLX_NV_copy_image
@@ -983,6 +991,14 @@ typedef void ( * PFNGLXCOPYIMAGESUBDATANVPROC) (Display *dpy, GLXContext srcCtx,
 
 #ifndef GLX_NV_multisample_coverage
 #define GLX_NV_multisample_coverage 1
+#endif
+
+#ifndef GLX_EXT_swap_control_tear
+#define GLX_EXT_swap_control_tear 1
+#endif
+
+#ifndef GLX_EXT_buffer_age
+#define GLX_EXT_buffer_age 1
 #endif
 
 

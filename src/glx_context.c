@@ -306,7 +306,7 @@ static int createContext(_GLFWwindow* window,
                 !_glfwLibrary.GLX.EXT_create_context_es2_profile)
             {
                 _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                              "GLX: OpenGL ES 2.x requested but "
+                              "GLX: OpenGL ES requested but "
                               "GLX_EXT_create_context_es2_profile is unavailable");
                 return GL_FALSE;
             }

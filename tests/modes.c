@@ -104,8 +104,8 @@ static void list_modes(GLFWmonitor monitor)
            glfwGetMonitorParam(monitor, GLFW_MONITOR_POS_X),
            glfwGetMonitorParam(monitor, GLFW_MONITOR_POS_Y));
 
-    widthMM = glfwGetMonitorParam(monitor, GLFW_MONITOR_PHYSICAL_WIDTH);
-    heightMM = glfwGetMonitorParam(monitor, GLFW_MONITOR_PHYSICAL_HEIGHT);
+    widthMM = glfwGetMonitorParam(monitor, GLFW_MONITOR_WIDTH_MM);
+    heightMM = glfwGetMonitorParam(monitor, GLFW_MONITOR_HEIGHT_MM);
     dpi = (int) ((float) mode.width * 25.4f / (float) widthMM);
     printf("Physical size: %i x %i mm (%i dpi)\n", widthMM, heightMM, dpi);
 

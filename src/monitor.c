@@ -150,7 +150,7 @@ void _glfwInputMonitorChange(void)
         if (j == _glfwLibrary.monitorCount)
         {
             // This monitor was not connected before
-            _glfwLibrary.monitorCallback(monitors[i], GLFW_MONITOR_CONNECTED);
+            _glfwLibrary.monitorCallback(monitors[i], GLFW_CONNECTED);
         }
     }
 
@@ -162,8 +162,7 @@ void _glfwInputMonitorChange(void)
             continue;
 
         // This monitor is no longer connected
-        _glfwLibrary.monitorCallback(_glfwLibrary.monitors[i],
-                                     GLFW_MONITOR_DISCONNECTED);
+        _glfwLibrary.monitorCallback(_glfwLibrary.monitors[i], GLFW_DISCONNECTED);
 
         for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
         {
@@ -314,9 +313,9 @@ GLFWAPI int glfwGetMonitorParam(GLFWmonitor handle, int param)
 
     switch (param)
     {
-        case GLFW_MONITOR_PHYSICAL_WIDTH:
+        case GLFW_MONITOR_WIDTH_MM:
             return monitor->physicalWidth;
-        case GLFW_MONITOR_PHYSICAL_HEIGHT:
+        case GLFW_MONITOR_HEIGHT_MM:
             return monitor->physicalHeight;
         case GLFW_MONITOR_POS_X:
             return monitor->positionX;

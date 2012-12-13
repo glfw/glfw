@@ -689,21 +689,21 @@ extern "C" {
 /*! @brief The physical width, in mm, of the monitor.
  *  @ingroup monitor
  */
-#define GLFW_MONITOR_PHYSICAL_WIDTH  0x00060001
+#define GLFW_MONITOR_WIDTH_MM         0x00060001
 /*! @brief The physical height, in mm, of the monitor.
  *  @ingroup monitor
  */
-#define GLFW_MONITOR_PHYSICAL_HEIGHT 0x00060002
+#define GLFW_MONITOR_HEIGHT_MM        0x00060002
 /*! @brief The x-coordinate of the upper-left corner of the monitor on the
  *  virtual desktop.
  *  @ingroup monitor
  */
-#define GLFW_MONITOR_POS_X           0x00060003
+#define GLFW_MONITOR_POS_X            0x00060003
 /*! @brief The y-coordinate of the upper-left corner of the monitor on the
  *  virtual desktop.
  *  @ingroup monitor
  */
-#define GLFW_MONITOR_POS_Y           0x00060004
+#define GLFW_MONITOR_POS_Y            0x00060004
 /* @} */
 
 /*! @name Monitor events
@@ -711,11 +711,11 @@ extern "C" {
 /*! @brief The monitor was connected.
  *  @ingroup monitor
  */
-#define GLFW_MONITOR_CONNECTED       0x00061000
+#define GLFW_CONNECTED                0x00061000
 /*! @brief The monitor was disconnected.
  *  @ingroup monitor
  */
-#define GLFW_MONITOR_DISCONNECTED    0x00061001
+#define GLFW_DISCONNECTED             0x00061001
 /* @} */
 
 /*************************************************************************

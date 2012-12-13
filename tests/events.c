@@ -339,7 +339,7 @@ static void char_callback(GLFWwindow window, int character)
 
 void monitor_callback(GLFWmonitor monitor, int event)
 {
-    if (event == GLFW_MONITOR_CONNECTED)
+    if (event == GLFW_CONNECTED)
     {
         GLFWvidmode mode;
         glfwGetVideoMode(monitor, &mode);
@@ -351,8 +351,8 @@ void monitor_callback(GLFWmonitor monitor, int event)
                mode.width, mode.height,
                glfwGetMonitorParam(monitor, GLFW_MONITOR_POS_X),
                glfwGetMonitorParam(monitor, GLFW_MONITOR_POS_Y),
-               glfwGetMonitorParam(monitor, GLFW_MONITOR_PHYSICAL_WIDTH),
-               glfwGetMonitorParam(monitor, GLFW_MONITOR_PHYSICAL_HEIGHT));
+               glfwGetMonitorParam(monitor, GLFW_MONITOR_WIDTH_MM),
+               glfwGetMonitorParam(monitor, GLFW_MONITOR_HEIGHT_MM));
     }
     else
     {

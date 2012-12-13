@@ -411,34 +411,34 @@ GLboolean _glfwRefreshContextParams(void)
 
     // Read back forward-compatibility flag
     {
-      window->glForward = GL_FALSE;
+        window->glForward = GL_FALSE;
 
-      if (window->clientAPI == GLFW_OPENGL_API && window->glMajor >= 3)
-      {
-          GLint flags;
-          glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+        if (window->clientAPI == GLFW_OPENGL_API && window->glMajor >= 3)
+        {
+            GLint flags;
+            glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
 
-          if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
-              window->glForward = GL_TRUE;
-          if (flags & 0)
-              window->glDebug = GL_TRUE;
-      }
+            if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
+                window->glForward = GL_TRUE;
+            if (flags & 0)
+                window->glDebug = GL_TRUE;
+        }
     }
 
     // Read back OpenGL context profile
     {
-      window->glProfile = 0;
+        window->glProfile = GLFW_OPENGL_NO_PROFILE;
 
-      if (window->glMajor > 3 || (window->glMajor == 3 && window->glMinor >= 2))
-      {
-          GLint mask;
-          glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
+        if (window->glMajor > 3 || (window->glMajor == 3 && window->glMinor >= 2))
+        {
+            GLint mask;
+            glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
 
-          if (mask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)
-              window->glProfile = GLFW_OPENGL_COMPAT_PROFILE;
-          else if (mask & GL_CONTEXT_CORE_PROFILE_BIT)
-              window->glProfile = GLFW_OPENGL_CORE_PROFILE;
-      }
+            if (mask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)
+                window->glProfile = GLFW_OPENGL_COMPAT_PROFILE;
+            else if (mask & GL_CONTEXT_CORE_PROFILE_BIT)
+                window->glProfile = GLFW_OPENGL_CORE_PROFILE;
+        }
     }
 
     return GL_TRUE;

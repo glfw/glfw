@@ -175,7 +175,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window,
 // Create the actual OpenGL(|ES) context
 //========================================================================
 
-#define setEGLattrib(attribs, index, attribName, attribValue) \
+#define setEGLattrib(attribName, attribValue) \
 { \
     attribs[index++] = attribName; \
     attribs[index++] = attribValue; \
@@ -186,7 +186,7 @@ static int createContext(_GLFWwindow* window,
                          EGLint fbconfigID)
 {
     int attribs[40];
-    EGLint count, index;
+    EGLint count;
     EGLConfig config;
     EGLContext share = NULL;
 
@@ -195,10 +195,10 @@ static int createContext(_GLFWwindow* window,
 
     // Retrieve the previously selected EGLConfig
     {
-        index = 0;
+        int index = 0;
 
-        setEGLattrib(attribs, index, EGL_CONFIG_ID, fbconfigID);
-        setEGLattrib(attribs, index, EGL_NONE, EGL_NONE);
+        setEGLattrib(EGL_CONFIG_ID, fbconfigID);
+        setEGLattrib(EGL_NONE, EGL_NONE);
 
         eglChooseConfig(_glfwLibrary.EGL.display, attribs, &config, 1, &count);
         if (!count)
@@ -209,10 +209,8 @@ static int createContext(_GLFWwindow* window,
         }
     }
 
-    // Retrieve the corresponding visual
-    // NOTE: This is the only non-portable code in this file.
-    // Maybe it would not hurt too much to add #ifdefs for different platforms?
 #if defined(_GLFW_X11)
+    // Retrieve the visual corresponding to the chosen EGL config
     {
         int mask;
         EGLint redBits, greenBits, blueBits, alphaBits, visualID = 0;
@@ -264,8 +262,7 @@ static int createContext(_GLFWwindow* window,
     {
         if (!eglBindAPI(EGL_OPENGL_ES_API))
         {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "EGL: OpenGL ES is not supported");
+            _glfwSetError(GLFW_PLATFORM_ERROR, "EGL: OpenGL ES is not supported");
             return GL_FALSE;
         }
     }
@@ -273,66 +270,65 @@ static int createContext(_GLFWwindow* window,
     {
         if (!eglBindAPI(EGL_OPENGL_API))
         {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "EGL: OpenGL is not supported");
+            _glfwSetError(GLFW_PLATFORM_ERROR, "EGL: OpenGL is not supported");
             return GL_FALSE;
         }
     }
 
-    index = 0;
-
     if (_glfwLibrary.EGL.KHR_create_context)
     {
-        setEGLattrib(attribs, index, EGL_CONTEXT_MAJOR_VERSION_KHR, wndconfig->glMajor);
-        setEGLattrib(attribs, index, EGL_CONTEXT_MINOR_VERSION_KHR, wndconfig->glMinor);
+        int index = 0, mask = 0, flags = 0, strategy = 0;
 
-        if (wndconfig->glForward || wndconfig->glDebug || wndconfig->glRobustness)
+        if (wndconfig->clientAPI == GLFW_OPENGL_API)
         {
-            int flags = 0;
+            if (wndconfig->glProfile == GLFW_OPENGL_CORE_PROFILE)
+                mask |= EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR;
+            else if (wndconfig->glProfile == GLFW_OPENGL_COMPAT_PROFILE)
+                mask |= EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR;
 
             if (wndconfig->glForward)
                 flags |= EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR;
 
             if (wndconfig->glDebug)
                 flags |= EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR;
-
-            if (wndconfig->glRobustness)
-                flags |= EGL_CONTEXT_OPENGL_ROBUST_ACCESS_BIT_KHR;
-
-            setEGLattrib(attribs, index, EGL_CONTEXT_FLAGS_KHR, flags);
         }
 
-        if (wndconfig->glProfile)
+        if (wndconfig->glRobustness != GLFW_NO_ROBUSTNESS)
         {
-            int flags = 0;
-
-            if (wndconfig->glProfile == GLFW_OPENGL_CORE_PROFILE)
-                flags = EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR;
-            else if (wndconfig->glProfile == GLFW_OPENGL_COMPAT_PROFILE)
-                flags = EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR;
-
-            setEGLattrib(attribs, index, EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR, flags);
-        }
-
-        if (wndconfig->glRobustness)
-        {
-            int strategy;
-
             if (wndconfig->glRobustness == GLFW_NO_RESET_NOTIFICATION)
                 strategy = EGL_NO_RESET_NOTIFICATION_KHR;
             else if (wndconfig->glRobustness == GLFW_LOSE_CONTEXT_ON_RESET)
                 strategy = EGL_LOSE_CONTEXT_ON_RESET_KHR;
 
-            setEGLattrib(attribs, index, EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY_KHR, strategy);
+            flags |= EGL_CONTEXT_OPENGL_ROBUST_ACCESS_BIT_KHR;
         }
+
+        if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
+        {
+            setEGLattrib(EGL_CONTEXT_MAJOR_VERSION_KHR, wndconfig->glMajor);
+            setEGLattrib(EGL_CONTEXT_MINOR_VERSION_KHR, wndconfig->glMinor);
+        }
+
+        if (mask)
+            setEGLattrib(EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR, mask);
+
+        if (flags)
+            setEGLattrib(EGL_CONTEXT_FLAGS_KHR, flags);
+
+        if (strategy)
+            setEGLattrib(EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY_KHR, strategy);
+
+        setEGLattrib(EGL_NONE, EGL_NONE);
     }
     else
     {
-        if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
-            setEGLattrib(attribs, index, EGL_CONTEXT_CLIENT_VERSION, wndconfig->glMajor);
-    }
+        int index = 0;
 
-    setEGLattrib(attribs, index, EGL_NONE, EGL_NONE);
+        if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
+            setEGLattrib(EGL_CONTEXT_CLIENT_VERSION, wndconfig->glMajor);
+
+        setEGLattrib(EGL_NONE, EGL_NONE);
+    }
 
     window->EGL.context = eglCreateContext(_glfwLibrary.EGL.display,
                                            config, share, attribs);
@@ -341,8 +337,7 @@ static int createContext(_GLFWwindow* window,
     {
         // TODO: Handle all the various error codes here
 
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "EGL: Failed to create context");
+        _glfwSetError(GLFW_PLATFORM_ERROR, "EGL: Failed to create context");
         return GL_FALSE;
     }
 

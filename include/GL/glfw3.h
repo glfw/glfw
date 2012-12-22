@@ -456,10 +456,12 @@ extern "C" {
 
 /*! @brief A regular, overlapped window.
  *  @ingroup window
+ *  @see glfwCreateWindow
  */
 #define GLFW_WINDOWED             0x00010001
 /*! @brief A fullscreen window that may changed the monitor's resolution.
  *  @ingroup window
+ *  @see glfwCreateWindow
  */
 #define GLFW_FULLSCREEN           0x00010002
 
@@ -468,88 +470,124 @@ extern "C" {
  *  @{ */
 
 /*! @brief @c GL_TRUE if the window has focus, or @c GL_FALSE otherwise.
+ *  @see glfwGetWindowParam
  */
 #define GLFW_FOCUSED              0x00020001
 /*! @brief @c GL_TRUE if the window is iconified, or @c GL_FALSE otherwise.
+ *  @see glfwGetWindowParam
  */
 #define GLFW_ICONIFIED            0x00020002
 /*! @brief @c GL_TRUE if the window has been requested to close, or @c GL_FALSE
  *  otherwise.
+ *  @see glfwGetWindowParam
  */
 #define GLFW_CLOSE_REQUESTED      0x00020003
 /*! @brief The client API version revision.
+ *  @see glfwGetWindowParam
  */
 #define GLFW_CONTEXT_REVISION      0x00020004
 
 /*! @brief The bit depth of the red component of the color buffer.
+ *  @see glfwWindowHint
  */
 #define GLFW_RED_BITS             0x00021000
 /*! @brief The bit depth of the green component of the color buffer.
+ *  @see glfwWindowHint
  */
 #define GLFW_GREEN_BITS           0x00021001
 /*! @brief The bit depth of the blue component of the color buffer.
+ *  @see glfwWindowHint
  */
 #define GLFW_BLUE_BITS            0x00021002
 /*! @brief The bit depth of the alpha component of the color buffer.
+ *  @see glfwWindowHint
  */
 #define GLFW_ALPHA_BITS           0x00021003
 /*! @brief The bit depth of the depth buffer of the default framebuffer.
+ *  @see glfwWindowHint
  */
 #define GLFW_DEPTH_BITS           0x00021004
 /*! @brief The bit depth of the stencil buffer of the default framebuffer.
+ *  @see glfwWindowHint
  */
 #define GLFW_STENCIL_BITS         0x00021005
 /*! @brief The monitor refresh rate.
+ *  @see glfwWindowHint glfwGetWindowParam
  */
 #define GLFW_REFRESH_RATE         0x00021006
 /*! @brief The bit depth of the red component of the accumulation buffer.
+ *  @see glfwWindowHint
  */
 #define GLFW_ACCUM_RED_BITS       0x00021007
 /*! @brief The bit depth of the red component of the accumulation buffer.
+ *  @see glfwWindowHint
  */
 #define GLFW_ACCUM_GREEN_BITS     0x00021008
 /*! @brief The bit depth of the red component of the accumulation buffer.
+ *  @see glfwWindowHint
  */
 #define GLFW_ACCUM_BLUE_BITS      0x00021009
 /*! @brief The bit depth of the red component of the accumulation buffer.
+ *  @see glfwWindowHint
  */
 #define GLFW_ACCUM_ALPHA_BITS     0x0002100A
 /*! @brief The number of auxiliary buffers.
+ *  @see glfwWindowHint
  */
 #define GLFW_AUX_BUFFERS          0x0002100B
 /*! @brief @c GL_TRUE for stereo rendering, or @c GL_FALSE otherwise.
+ *  @see glfwWindowHint
  */
 #define GLFW_STEREO               0x0002100C
 /*! @brief The number of samples used for default framebuffer multisampling, or
  *  zero to disable multisampling.
+ *  @see glfwWindowHint
  */
 #define GLFW_FSAA_SAMPLES         0x0002100E
 /*! @brief @c GL_TRUE if the framebuffer should be sRGB capable, or @c GL_FALSE
  *  otherwise.
+ *  @see glfwWindowHint
  */
 #define GLFW_SRGB_CAPABLE         0x0002100F
 
 /*! @brief The @link clients client API @endlink to create a context for.
+ *  @see glfwWindowHint glfwGetWindowParam
  */
 #define GLFW_CLIENT_API           0x00022000
+/*! @see glfwWindowHint glfwGetWindowParam
+ */
 #define GLFW_CONTEXT_VERSION_MAJOR 0x00022001
+/*! @see glfwWindowHint glfwGetWindowParam
+ */
 #define GLFW_CONTEXT_VERSION_MINOR 0x00022002
+/*! @see glfwWindowHint glfwGetWindowParam
+ */
 #define GLFW_CONTEXT_ROBUSTNESS   0x00022003
+/*! @see glfwWindowHint glfwGetWindowParam
+ */
 #define GLFW_OPENGL_FORWARD_COMPAT 0x00022004
+/*! @see glfwWindowHint glfwGetWindowParam
+ */
 #define GLFW_OPENGL_DEBUG_CONTEXT 0x00022005
+/*! @see glfwWindowHint glfwGetWindowParam
+ */
 #define GLFW_OPENGL_PROFILE       0x00022006
 /*! @brief @c GL_TRUE if the window is resizable, or @c GL_FALSE otherwise.
+ *  @see glfwWindowHint glfwGetWindowParam
  */
 #define GLFW_RESIZABLE            0x00022007
 /*! @brief @c GL_TRUE if the window is visible, or @c GL_FALSE otherwise.
+ *  @see glfwWindowHint glfwGetWindowParam
  */
 #define GLFW_VISIBLE              0x00022008
 /*! @brief The x-coordinate, in pixels, of the upper-left corner of the
  *  client area of the window.
+ *  @see glfwWindowHint glfwGetWindowParam
  */
 #define GLFW_POSITION_X           0x00022009
 /*! @brief The y-coordinate, in pixels, of the upper-left corner of the
  *  client area of the window.
+ *  @see glfwWindowHint glfwGetWindowParam
  */
 #define GLFW_POSITION_Y           0x0002200A
 

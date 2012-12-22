@@ -731,7 +731,7 @@ static GLboolean createContext(_GLFWwindow* window,
     if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
     {
         _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                      "Cocoa/NSOpenGL: NSOpenGL does not support OpenGL ES");
+                      "NSOpenGL: This API does not support OpenGL ES");
         return GL_FALSE;
     }
 

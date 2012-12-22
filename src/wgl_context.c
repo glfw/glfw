@@ -329,12 +329,16 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
 // Creates an OpenGL context on the specified device context
 //========================================================================
 
+#define setWGLattrib(attribName, attribValue) \
+    attribs[index++] = attribName; \
+    attribs[index++] = attribValue;
+
 static GLboolean createContext(_GLFWwindow* window,
                                const _GLFWwndconfig* wndconfig,
                                int pixelFormat)
 {
+    int attribs[40];
     PIXELFORMATDESCRIPTOR pfd;
-    int i = 0, attribs[40];
     HGLRC share = NULL;
 
     if (wndconfig->share)
@@ -356,94 +360,56 @@ static GLboolean createContext(_GLFWwindow* window,
 
     if (window->WGL.ARB_create_context)
     {
-        // Use the newer wglCreateContextAttribsARB creation method
+        int index = 0, mask = 0, flags = 0, strategy = 0;
 
-        if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
+        if (wndconfig->clientAPI == GLFW_OPENGL_API)
         {
-            // Request an explicitly versioned context
-
-            attribs[i++] = WGL_CONTEXT_MAJOR_VERSION_ARB;
-            attribs[i++] = wndconfig->glMajor;
-            attribs[i++] = WGL_CONTEXT_MINOR_VERSION_ARB;
-            attribs[i++] = wndconfig->glMinor;
-        }
-
-        if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
-        {
-            if (!window->WGL.ARB_create_context_profile ||
-                !window->WGL.EXT_create_context_es2_profile)
-            {
-                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                            "Win32/WGL: OpenGL ES 2.x requested but "
-                            "WGL_EXT_create_context_es2_profile is unavailable");
-                return GL_FALSE;
-            }
-
-            attribs[i++] = WGL_CONTEXT_PROFILE_MASK_ARB;
-            attribs[i++] = WGL_CONTEXT_ES2_PROFILE_BIT_EXT;
-        }
-
-        if (wndconfig->glForward || wndconfig->glDebug || wndconfig->glRobustness)
-        {
-            int flags = 0;
-
             if (wndconfig->glForward)
                 flags |= WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
 
             if (wndconfig->glDebug)
                 flags |= WGL_CONTEXT_DEBUG_BIT_ARB;
 
-            if (wndconfig->glRobustness)
-                flags |= WGL_CONTEXT_ROBUST_ACCESS_BIT_ARB;
-
-            attribs[i++] = WGL_CONTEXT_FLAGS_ARB;
-            attribs[i++] = flags;
-        }
-
-        if (wndconfig->glProfile)
-        {
-            int flags = 0;
-
-            if (!window->WGL.ARB_create_context_profile)
+            if (wndconfig->glProfile)
             {
-                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                              "WGL: OpenGL profile requested but "
-                              "WGL_ARB_create_context_profile is unavailable");
-                return GL_FALSE;
+                if (wndconfig->glProfile == GLFW_OPENGL_CORE_PROFILE)
+                    mask |= WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
+                else if (wndconfig->glProfile == GLFW_OPENGL_COMPAT_PROFILE)
+                    mask |= WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
             }
-
-            if (wndconfig->glProfile == GLFW_OPENGL_CORE_PROFILE)
-                flags = WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
-            else if (wndconfig->glProfile == GLFW_OPENGL_COMPAT_PROFILE)
-                flags = WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
-
-            attribs[i++] = WGL_CONTEXT_PROFILE_MASK_ARB;
-            attribs[i++] = flags;
         }
+        else
+            mask |= WGL_CONTEXT_ES2_PROFILE_BIT_EXT;
 
         if (wndconfig->glRobustness)
         {
-            int strategy = 0;
-
-            if (!window->WGL.ARB_create_context_robustness)
+            if (window->WGL.ARB_create_context_robustness)
             {
-                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                              "WGL: An OpenGL robustness strategy was "
-                              "requested but WGL_ARB_create_context_robustness "
-                              "is unavailable");
-                return GL_FALSE;
+                if (wndconfig->glRobustness == GLFW_NO_RESET_NOTIFICATION)
+                    strategy = WGL_NO_RESET_NOTIFICATION_ARB;
+                else if (wndconfig->glRobustness == GLFW_LOSE_CONTEXT_ON_RESET)
+                    strategy = WGL_LOSE_CONTEXT_ON_RESET_ARB;
+
+                flags |= WGL_CONTEXT_ROBUST_ACCESS_BIT_ARB;
             }
-
-            if (wndconfig->glRobustness == GLFW_NO_RESET_NOTIFICATION)
-                strategy = WGL_NO_RESET_NOTIFICATION_ARB;
-            else if (wndconfig->glRobustness == GLFW_LOSE_CONTEXT_ON_RESET)
-                strategy = WGL_LOSE_CONTEXT_ON_RESET_ARB;
-
-            attribs[i++] = WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB;
-            attribs[i++] = strategy;
         }
 
-        attribs[i++] = 0;
+        if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
+        {
+            setWGLattrib(WGL_CONTEXT_MAJOR_VERSION_ARB, wndconfig->glMajor);
+            setWGLattrib(WGL_CONTEXT_MINOR_VERSION_ARB, wndconfig->glMinor);
+        }
+
+        if (flags)
+            setWGLattrib(WGL_CONTEXT_FLAGS_ARB, flags);
+
+        if (mask)
+            setWGLattrib(WGL_CONTEXT_PROFILE_MASK_ARB, mask);
+
+        if (strategy)
+            setWGLattrib(WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB, strategy);
+
+        setWGLattrib(0, 0);
 
         window->WGL.context = window->WGL.CreateContextAttribsARB(window->WGL.DC,
                                                                   share,
@@ -482,6 +448,8 @@ static GLboolean createContext(_GLFWwindow* window,
 
     return GL_TRUE;
 }
+
+#undef setWGLattrib
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -551,6 +519,91 @@ void _glfwDestroyContext(_GLFWwindow* window)
         ReleaseDC(window->Win32.handle, window->WGL.DC);
         window->WGL.DC = NULL;
     }
+}
+
+
+//========================================================================
+// Analyzes the specified context for possible recreation
+//========================================================================
+
+int _glfwAnalyzeContext(const _GLFWwindow* window,
+                        const _GLFWwndconfig* wndconfig,
+                        const _GLFWfbconfig* fbconfig)
+{
+    GLboolean required = GL_FALSE;
+
+    if (wndconfig->clientAPI == GLFW_OPENGL_API)
+    {
+        if (wndconfig->glForward)
+        {
+            if (!window->WGL.ARB_create_context)
+            {
+                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                              "WGL: A forward compatible OpenGL context "
+                              "requested but WGL_ARB_create_context is "
+                              "unavailable");
+                return _GLFW_RECREATION_IMPOSSIBLE;
+            }
+
+            required = GL_TRUE;
+        }
+
+        if (wndconfig->glProfile)
+        {
+            if (!window->WGL.ARB_create_context_profile)
+            {
+                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                              "WGL: OpenGL profile requested but "
+                              "WGL_ARB_create_context_profile is unavailable");
+                return _GLFW_RECREATION_IMPOSSIBLE;
+            }
+
+            required = GL_TRUE;
+        }
+    }
+    else
+    {
+        if (!window->WGL.ARB_create_context ||
+            !window->WGL.ARB_create_context_profile ||
+            !window->WGL.EXT_create_context_es2_profile)
+        {
+            _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                          "WGL: OpenGL ES requested but "
+                          "WGL_ARB_create_context_es2_profile is unavailable");
+            return _GLFW_RECREATION_IMPOSSIBLE;
+        }
+
+        required = GL_TRUE;
+    }
+
+    if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
+    {
+        if (window->WGL.ARB_create_context)
+            required = GL_TRUE;
+    }
+
+    if (wndconfig->glDebug)
+    {
+        if (window->WGL.ARB_create_context)
+            required = GL_TRUE;
+    }
+
+    if (fbconfig->samples > 0)
+    {
+        // We want FSAA, but can we get it?
+        // FSAA is not a hard constraint, so otherwise we just don't care
+
+        if (window->WGL.ARB_multisample && window->WGL.ARB_pixel_format)
+        {
+            // We appear to have both the extension and the means to ask for it
+            required = GL_TRUE;
+        }
+    }
+
+    if (required)
+        return _GLFW_RECREATION_REQUIRED;
+
+    return _GLFW_RECREATION_NOT_NEEDED;
 }
 
 

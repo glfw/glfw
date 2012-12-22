@@ -253,7 +253,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     wndconfig.glForward      = _glfwLibrary.hints.glForward ? GL_TRUE : GL_FALSE;
     wndconfig.glDebug        = _glfwLibrary.hints.glDebug ? GL_TRUE : GL_FALSE;
     wndconfig.glProfile      = _glfwLibrary.hints.glProfile;
-    wndconfig.glRobustness   = _glfwLibrary.hints.glRobustness ? GL_TRUE : GL_FALSE;
+    wndconfig.glRobustness   = _glfwLibrary.hints.glRobustness;
     wndconfig.monitor        = (_GLFWmonitor*) monitor;
     wndconfig.share          = (_GLFWwindow*) share;
 
@@ -266,8 +266,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
 
     if (width <= 0 || height <= 0)
     {
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwCreateWindow: Invalid window size");
+        _glfwSetError(GLFW_INVALID_VALUE, "Invalid window size");
         return GL_FALSE;
     }
 

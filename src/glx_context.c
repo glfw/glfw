@@ -221,7 +221,7 @@ static int errorHandler(Display *display, XErrorEvent* event)
 // Create the actual OpenGL context
 //========================================================================
 
-#define setGLXattrib(attribs, index, attribName, attribValue) \
+#define setGLXattrib(attribName, attribValue) \
     attribs[index++] = attribName; \
     attribs[index++] = attribValue;
 
@@ -230,7 +230,6 @@ static int createContext(_GLFWwindow* window,
                          GLXFBConfigID fbconfigID)
 {
     int attribs[40];
-    int dummy, index;
     GLXFBConfig* fbconfig;
     GLXContext share = NULL;
 
@@ -239,17 +238,18 @@ static int createContext(_GLFWwindow* window,
 
     // Retrieve the previously selected GLXFBConfig
     {
-        index = 0;
+        int dummy, index = 0;
 
-        setGLXattrib(attribs, index, GLX_FBCONFIG_ID, (int) fbconfigID);
-        setGLXattrib(attribs, index, None, None);
+        setGLXattrib(GLX_FBCONFIG_ID, (int) fbconfigID);
+        setGLXattrib(None, None);
 
         if (_glfwLibrary.GLX.SGIX_fbconfig)
         {
-            fbconfig = _glfwLibrary.GLX.ChooseFBConfigSGIX(_glfwLibrary.X11.display,
-                                                           _glfwLibrary.X11.screen,
-                                                           attribs,
-                                                           &dummy);
+            fbconfig =
+                _glfwLibrary.GLX.ChooseFBConfigSGIX(_glfwLibrary.X11.display,
+                                                    _glfwLibrary.X11.screen,
+                                                    attribs,
+                                                    &dummy);
         }
         else
         {
@@ -270,8 +270,9 @@ static int createContext(_GLFWwindow* window,
     // Retrieve the corresponding visual
     if (_glfwLibrary.GLX.SGIX_fbconfig)
     {
-        window->GLX.visual = _glfwLibrary.GLX.GetVisualFromFBConfigSGIX(_glfwLibrary.X11.display,
-                                                                        *fbconfig);
+        window->GLX.visual =
+            _glfwLibrary.GLX.GetVisualFromFBConfigSGIX(_glfwLibrary.X11.display,
+                                                       *fbconfig);
     }
     else
     {
@@ -288,95 +289,98 @@ static int createContext(_GLFWwindow* window,
         return GL_FALSE;
     }
 
+    if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
+    {
+        if (!_glfwLibrary.GLX.ARB_create_context ||
+            !_glfwLibrary.GLX.ARB_create_context_profile ||
+            !_glfwLibrary.GLX.EXT_create_context_es2_profile)
+        {
+            _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                          "GLX: OpenGL ES requested but "
+                          "GLX_EXT_create_context_es2_profile is unavailable");
+            return GL_FALSE;
+        }
+    }
+
+    if (wndconfig->glForward)
+    {
+        if (!_glfwLibrary.GLX.ARB_create_context)
+        {
+            _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                          "GLX: Forward compatibility requested but "
+                          "GLX_ARB_create_context_profile is unavailable");
+            return GL_FALSE;
+        }
+    }
+
+    if (wndconfig->glProfile)
+    {
+        if (!_glfwLibrary.GLX.ARB_create_context ||
+            !_glfwLibrary.GLX.ARB_create_context_profile)
+        {
+            _glfwSetError(GLFW_VERSION_UNAVAILABLE,
+                          "GLX: An OpenGL profile requested but "
+                          "GLX_ARB_create_context_profile is unavailable");
+            return GL_FALSE;
+        }
+    }
+
     if (_glfwLibrary.GLX.ARB_create_context)
     {
-        index = 0;
+        int index = 0, mask = 0, flags = 0, strategy = 0;
 
-        if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
+        if (wndconfig->clientAPI == GLFW_OPENGL_API)
         {
-            // Request an explicitly versioned context
-
-            setGLXattrib(attribs, index, GLX_CONTEXT_MAJOR_VERSION_ARB, wndconfig->glMajor);
-            setGLXattrib(attribs, index, GLX_CONTEXT_MINOR_VERSION_ARB, wndconfig->glMinor);
-        }
-
-        if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
-        {
-            if (!_glfwLibrary.GLX.ARB_create_context_profile ||
-                !_glfwLibrary.GLX.EXT_create_context_es2_profile)
-            {
-                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                              "GLX: OpenGL ES 2.x requested but "
-                              "GLX_EXT_create_context_es2_profile is unavailable");
-                return GL_FALSE;
-            }
-
-            setGLXattrib(attribs, index,
-                         GLX_CONTEXT_PROFILE_MASK_ARB,
-                         GLX_CONTEXT_ES2_PROFILE_BIT_EXT);
-        }
-
-        if (wndconfig->glForward || wndconfig->glDebug || wndconfig->glRobustness)
-        {
-            int flags = 0;
-
             if (wndconfig->glForward)
                 flags |= GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
 
             if (wndconfig->glDebug)
                 flags |= GLX_CONTEXT_DEBUG_BIT_ARB;
 
-            if (wndconfig->glRobustness)
+            if (wndconfig->glProfile)
+            {
+                if (wndconfig->glProfile == GLFW_OPENGL_CORE_PROFILE)
+                    mask |= GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
+                else if (wndconfig->glProfile == GLFW_OPENGL_COMPAT_PROFILE)
+                    mask |= GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
+            }
+        }
+        else
+            mask |= GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
+
+        if (wndconfig->glRobustness != GLFW_NO_ROBUSTNESS)
+        {
+            if (_glfwLibrary.GLX.ARB_create_context_robustness)
+            {
+                if (wndconfig->glRobustness == GLFW_NO_RESET_NOTIFICATION)
+                    strategy = GLX_NO_RESET_NOTIFICATION_ARB;
+                else if (wndconfig->glRobustness == GLFW_LOSE_CONTEXT_ON_RESET)
+                    strategy = GLX_LOSE_CONTEXT_ON_RESET_ARB;
+
                 flags |= GLX_CONTEXT_ROBUST_ACCESS_BIT_ARB;
-
-            setGLXattrib(attribs, index, GLX_CONTEXT_FLAGS_ARB, flags);
-        }
-
-        if (wndconfig->glProfile)
-        {
-            int flags = 0;
-
-            if (!_glfwLibrary.GLX.ARB_create_context_profile)
-            {
-                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                              "GLX: An OpenGL profile requested but "
-                              "GLX_ARB_create_context_profile is unavailable");
-                return GL_FALSE;
             }
-
-            if (wndconfig->glProfile == GLFW_OPENGL_CORE_PROFILE)
-                flags = GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
-            else if (wndconfig->glProfile == GLFW_OPENGL_COMPAT_PROFILE)
-                flags = GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
-
-            setGLXattrib(attribs, index, GLX_CONTEXT_PROFILE_MASK_ARB, flags);
         }
 
-        if (wndconfig->glRobustness)
+        if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
         {
-            int strategy;
+            // NOTE: Only request an explicitly versioned context when
+            // necessary, as explicitly requesting version 1.0 does not always
+            // return the highest available version
 
-            if (!_glfwLibrary.GLX.ARB_create_context_robustness)
-            {
-                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                              "GLX: An OpenGL robustness strategy was "
-                              "requested but GLX_ARB_create_context_robustness "
-                              "is unavailable");
-                return GL_FALSE;
-            }
-
-            if (wndconfig->glRobustness == GLFW_NO_RESET_NOTIFICATION)
-                strategy = GLX_NO_RESET_NOTIFICATION_ARB;
-            else if (wndconfig->glRobustness == GLFW_LOSE_CONTEXT_ON_RESET)
-                strategy = GLX_LOSE_CONTEXT_ON_RESET_ARB;
-
-            setGLXattrib(attribs,
-                         index,
-                         GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
-                         strategy);
+            setGLXattrib(GLX_CONTEXT_MAJOR_VERSION_ARB, wndconfig->glMajor);
+            setGLXattrib(GLX_CONTEXT_MINOR_VERSION_ARB, wndconfig->glMinor);
         }
 
-        setGLXattrib(attribs, index, None, None);
+        if (mask)
+            setGLXattrib(GLX_CONTEXT_PROFILE_MASK_ARB, mask);
+
+        if (flags)
+            setGLXattrib(GLX_CONTEXT_FLAGS_ARB, flags);
+
+        if (strategy)
+            setGLXattrib(GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB, strategy);
+
+        setGLXattrib(None, None);
 
         // This is the only place we set an Xlib error handler, and we only do
         // it because glXCreateContextAttribsARB generates a BadMatch error if
@@ -422,7 +426,7 @@ static int createContext(_GLFWwindow* window,
         // TODO: Handle all the various error codes here
 
         _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "GLX: Failed to create OpenGL context");
+                      "GLX: Failed to create context");
         return GL_FALSE;
     }
 

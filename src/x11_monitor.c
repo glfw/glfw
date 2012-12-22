@@ -331,10 +331,14 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     {
 #if defined (_GLFW_HAS_XRANDR)
         int i;
+        RROutput primary;
         XRRScreenResources* sr;
 
         sr = XRRGetScreenResources(_glfwLibrary.X11.display,
                                    _glfwLibrary.X11.root);
+
+        primary = XRRGetOutputPrimary(_glfwLibrary.X11.display,
+                                      _glfwLibrary.X11.root);
 
         monitors = (_GLFWmonitor**) calloc(sr->noutput, sizeof(_GLFWmonitor*));
         if (!monitors)
@@ -374,7 +378,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             ci = XRRGetCrtcInfo(_glfwLibrary.X11.display, sr, oi->crtc);
 
             monitors[found] = _glfwCreateMonitor(oi->name,
-                                                 i == 0,
+                                                 sr->outputs[i] == primary,
                                                  physicalWidth, physicalHeight,
                                                  ci->x, ci->y);
 

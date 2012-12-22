@@ -1033,6 +1033,8 @@ GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
  *  The @ref GLFW_CONTEXT_VERSION_MAJOR and @ref GLFW_CONTEXT_VERSION_MINOR
  *  hints are set to 1 and 0, respectively.
  *
+ *  The @ref GLFW_CONTEXT_ROBUSTNESS hint is set to @ref GLFW_NO_ROBUSTNESS.
+ *
  *  All other hints are set to 0.
  *
  *  @ingroup window
@@ -1053,8 +1055,10 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  specify the desired bit depths of the various components of the default
  *  framebuffer.
  *
- *  The @ref GLFW_REFRESH_RATE hint specifies the desired monitor refresh rate
- *  for fullscreen windows.
+ *  The @ref GLFW_REFRESH_RATE hint specifies the desired monitor refresh rate,
+ *  in Hz, of the video mode for a fullscreen window, or zero to let the system
+ *  choose a suitable refresh rate.  If a windowed mode window is created, this
+ *  hint is ignored.
  *
  *  The @ref GLFW_ACCUM_RED_BITS, @ref GLFW_ACCUM_GREEN_BITS, @ref
  *  GLFW_ACCUM_BLUE_BITS and @ref GLFW_ACCUM_ALPHA_BITS hints specify the
@@ -1088,17 +1092,23 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  For OpenGL ES, these hints are hard constraints, as there is no backward
  *  compatibility between OpenGL ES versions.
  *
- *  The @ref GLFW_OPENGL_FORWARD_COMPAT hint specifies whether the OpenGL
- *  context should be forward-compatible, i.e. one where all functionality
- *  deprecated in the requested version of OpenGL is removed.
+ *  If an OpenGL context is requested, the @ref GLFW_OPENGL_FORWARD_COMPAT hint
+ *  specifies whether the OpenGL context should be forward-compatible, i.e. one
+ *  where all functionality deprecated in the requested version of OpenGL is
+ *  removed.  This may only be used if the requested OpenGL version is 3.0 or
+ *  above.  If another client API is requested, this hint is ignored.
  *
- *  The @ref GLFW_OPENGL_DEBUG_CONTEXT hint specifies whether to create a debug
- *  OpenGL context, which may have additional error and performance issue
- *  reporting functionality.
+ *  If an OpenGL context is requested, the @ref GLFW_OPENGL_DEBUG_CONTEXT hint
+ *  specifies whether to create a debug OpenGL context, which may have
+ *  additional error and performance issue reporting functionality.  If another
+ *  client API is requested, this hint is ignored.
  *
- *  The @ref GLFW_OPENGL_PROFILE hint specifies which OpenGL profile to create
- *  the context for.  Possible values are @ref GLFW_OPENGL_NO_PROFILE, @ref
- *  GLFW_OPENGL_CORE_PROFILE and @ref GLFW_OPENGL_COMPAT_PROFILE.
+ *  If an OpenGL context is requested, the @ref GLFW_OPENGL_PROFILE hint
+ *  specifies which OpenGL profile to create the context for.  Possible values
+ *  are @ref GLFW_OPENGL_NO_PROFILE, @ref GLFW_OPENGL_CORE_PROFILE and @ref
+ *  GLFW_OPENGL_COMPAT_PROFILE.  This may only be used if the requested OpenGL
+ *  version is 3.2 or above.  If another client API is requested, this hint
+ *  is ignored.
  *
  *  The @ref GLFW_CONTEXT_ROBUSTNESS hint specifies the robustness strategy to
  *  be used by the context.
@@ -1120,9 +1130,12 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  find out the actual properties of the created window and context, use the
  *  @ref glfwGetWindowParam function.
  *
- *  The following window hints are hard constraints:
+ *  The following hints are hard constraints:
  *  @arg @ref GLFW_STEREO
  *  @arg @ref GLFW_CLIENT_API
+ *
+ *  The following additional hints are hard constraints if requesting an OpenGL
+ *  context:
  *  @arg @ref GLFW_OPENGL_FORWARD_COMPAT
  *  @arg @ref GLFW_OPENGL_PROFILE
  *

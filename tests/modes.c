@@ -98,7 +98,9 @@ static void list_modes(GLFWmonitor monitor)
 
     glfwGetVideoMode(monitor, &mode);
 
-    printf("Name: %s\n", glfwGetMonitorName(monitor));
+    printf("Name: %s (%s)\n",
+           glfwGetMonitorName(monitor),
+           glfwGetPrimaryMonitor() == monitor ? "primary" : "secondary");
     printf("Current mode: %s\n", format_mode(&mode));
     printf("Virtual position: %i %i\n",
            glfwGetMonitorParam(monitor, GLFW_MONITOR_POS_X),

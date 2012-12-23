@@ -1050,6 +1050,31 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  @param[in] target The new value of the window hint.
  *  @ingroup window
  *
+ *  This function sets hints for the next call to @ref glfwCreateWindow.  The
+ *  hints, once set, retain their values until changed by a call to @ref
+ *  glfwWindowHint or @ref glfwDefaultWindowHints, or until the library is
+ *  terminated with @ref glfwTerminate.
+ *
+ *  Some window hints are hard constraints.  These must match the available
+ *  capabilities @em exactly for window and context creation to succeed.  Hints
+ *  that are not hard constraints are matched as closely as possible, but the
+ *  resulting window and context may differ from what these hints requested.  To
+ *  find out the actual properties of the created window and context, use the
+ *  @ref glfwGetWindowParam function.
+ *
+ *  The following hints are hard constraints:
+ *  @arg @ref GLFW_STEREO
+ *  @arg @ref GLFW_CLIENT_API
+ *
+ *  The following additional hints are hard constraints if requesting an OpenGL
+ *  context:
+ *  @arg @ref GLFW_OPENGL_FORWARD_COMPAT
+ *  @arg @ref GLFW_OPENGL_PROFILE
+ *
+ *  Hints that do not apply to a given type of window or context are ignored.
+ *
+ *  @par Framebuffer hints
+ *
  *  The @ref GLFW_RED_BITS, @ref GLFW_GREEN_BITS, @ref GLFW_BLUE_BITS, @ref
  *  GLFW_ALPHA_BITS, @ref GLFW_DEPTH_BITS and @ref GLFW_STENCIL_BITS hints
  *  specify the desired bit depths of the various components of the default
@@ -1074,6 +1099,8 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *
  *  The @ref GLFW_SRGB_CAPABLE hint specifies whether the framebuffer should be
  *  sRGB capable.
+ *
+ *  @par Context hints
  *
  *  The @ref GLFW_CLIENT_API hint specifies which client API to create the
  *  context for.  Possible values are @ref GLFW_OPENGL_API and @ref
@@ -1113,6 +1140,8 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  The @ref GLFW_CONTEXT_ROBUSTNESS hint specifies the robustness strategy to
  *  be used by the context.
  *
+ *  @par Window hints
+ *
  *  The @ref GLFW_RESIZABLE hint specifies whether the window will be resizable
  *  by the user.  The window will still be resizable using the @ref
  *  glfwSetWindowSize function.  This hint is ignored for fullscreen windows.
@@ -1122,22 +1151,6 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *
  *  The @ref GLFW_POSITION_X and @ref GLFW_POSITION_Y hints specify the initial
  *  position of the window.  These hints are ignored for fullscreen windows.
- *
- *  Some window hints are hard constraints.  These must match the available
- *  capabilities @em exactly for window and context creation to succeed.  Hints
- *  that are not hard constraints are matched as closely as possible, but the
- *  resulting window and context may differ from what these hints requested.  To
- *  find out the actual properties of the created window and context, use the
- *  @ref glfwGetWindowParam function.
- *
- *  The following hints are hard constraints:
- *  @arg @ref GLFW_STEREO
- *  @arg @ref GLFW_CLIENT_API
- *
- *  The following additional hints are hard constraints if requesting an OpenGL
- *  context:
- *  @arg @ref GLFW_OPENGL_FORWARD_COMPAT
- *  @arg @ref GLFW_OPENGL_PROFILE
  *
  *  @note This function may only be called from the main thread.
  *

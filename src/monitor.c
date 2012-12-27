@@ -366,7 +366,7 @@ GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun)
         return;
     }
 
-    _glfwLibrary.monitorCallback= cbfun;
+    _glfwLibrary.monitorCallback = cbfun;
 }
 
 

@@ -399,10 +399,16 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor handle, int* count)
 
     free(monitor->modes);
 
-    monitor->modes = _glfwPlatformGetVideoModes(monitor, count);
+    monitor->modes = _glfwPlatformGetVideoModes(monitor, &monitor->modeCount);
     if (monitor->modes)
-        qsort(monitor->modes, *count, sizeof(GLFWvidmode), compareVideoModes);
+    {
+        qsort(monitor->modes,
+              monitor->modeCount,
+              sizeof(GLFWvidmode),
+              compareVideoModes);
+    }
 
+    *count = monitor->modeCount;
     return monitor->modes;
 }
 

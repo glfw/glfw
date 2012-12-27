@@ -241,6 +241,7 @@ struct _GLFWmonitor
     int       positionY;
 
     GLFWvidmode*  modes;
+    int           modeCount;
 
     // These are defined in the current port's platform.h
     _GLFW_PLATFORM_MONITOR_STATE;

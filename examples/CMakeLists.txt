@@ -9,8 +9,12 @@ else()
 endif()
 
 include_directories(${GLFW_SOURCE_DIR}/include
-                    ${GLFW_SOURCE_DIR}/support
-                    ${OPENGL_INCLUDE_DIR})
+                    ${GLFW_SOURCE_DIR}/support)
+
+if (NOT APPLE)
+    # HACK: This is NOTFOUND on OS X 10.8
+    include_directories(${OPENGL_INCLUDE_DIR})
+endif()
 
 set(GETOPT ${GLFW_SOURCE_DIR}/support/getopt.h
            ${GLFW_SOURCE_DIR}/support/getopt.c)

@@ -489,6 +489,20 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow handle)
     if (window == NULL)
         return;
 
+    // Clear all callbacks to avoid exposing a half torn-down window object
+    window->windowPosCallback = NULL;
+    window->windowSizeCallback = NULL;
+    window->windowCloseCallback = NULL;
+    window->windowRefreshCallback = NULL;
+    window->windowFocusCallback = NULL;
+    window->windowIconifyCallback = NULL;
+    window->mouseButtonCallback = NULL;
+    window->cursorPosCallback = NULL;
+    window->cursorEnterCallback = NULL;
+    window->scrollCallback = NULL;
+    window->keyCallback = NULL;
+    window->charCallback = NULL;
+
     // The window's context must not be current on another thread when the
     // window is destroyed
     if (window == _glfwPlatformGetCurrentContext())

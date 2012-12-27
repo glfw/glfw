@@ -35,95 +35,6 @@
 #include <string.h>
 
 
-//------------------------------------------------------------------------
-// Display resolution
-//------------------------------------------------------------------------
-
-typedef struct
-{
-    int width;
-    int height;
-} _GLFWvidsize;
-
-
-//========================================================================
-// List available resolutions
-//========================================================================
-
-static _GLFWvidsize* getResolutions(_GLFWmonitor* monitor, int* found)
-{
-    _GLFWvidsize* result = NULL;
-
-    *found = 0;
-
-    // Build array of available resolutions
-
-    if (_glfwLibrary.X11.RandR.available)
-    {
-#if defined(_GLFW_HAS_XRANDR)
-        XRRScreenResources* sr;
-        int i, j, count = monitor->X11.output->nmode;
-
-        sr = XRRGetScreenResources(_glfwLibrary.X11.display,
-                                   _glfwLibrary.X11.root);
-
-        result = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize) * count);
-
-        for (i = 0;  i < count;  i++)
-        {
-            _GLFWvidsize size;
-
-            for (j = 0;  j < sr->nmode;  j++)
-            {
-                if (sr->modes[j].id == monitor->X11.output->modes[i])
-                    break;
-            }
-
-            if (j == sr->nmode)
-                continue;
-
-            size.width  = sr->modes[j].width;
-            size.height = sr->modes[j].height;
-
-            for (j = 0;  j < *found;  j++)
-            {
-                if (result[j].width == size.width &&
-                    result[j].height == size.height)
-                {
-                    break;
-                }
-            }
-
-            if (j < *found)
-            {
-                // This is a duplicate, so skip it
-                continue;
-            }
-
-            result[*found] = size;
-            (*found)++;
-        }
-
-        XRRFreeScreenResources(sr);
-#endif /*_GLFW_HAS_XRANDR*/
-    }
-
-    if (result == NULL)
-    {
-        *found = 1;
-        result = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize));
-
-        result[0].width = DisplayWidth(_glfwLibrary.X11.display,
-                                       _glfwLibrary.X11.screen);
-        result[0].height = DisplayHeight(_glfwLibrary.X11.display,
-                                         _glfwLibrary.X11.screen);
-    }
-
-    return result;
-}
-
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -423,84 +334,83 @@ void _glfwPlatformDestroyMonitor(_GLFWmonitor* monitor)
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 {
-    XVisualInfo* visuals;
-    XVisualInfo dummy;
-    int i, j, visualCount, sizeCount, rgbCount;
-    int* rgbs;
-    _GLFWvidsize* sizes;
     GLFWvidmode* result;
+    int depth, r, g, b;
 
-    visuals = XGetVisualInfo(_glfwLibrary.X11.display, 0, &dummy, &visualCount);
-    if (visuals == NULL)
-    {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "X11: Failed to retrieve the available visuals");
-        return 0;
-    }
+    depth = DefaultDepth(_glfwLibrary.X11.display, _glfwLibrary.X11.screen);
+    _glfwSplitBPP(depth, &r, &g, &b);
 
-    rgbs = (int*) malloc(sizeof(int) * visualCount);
-    rgbCount = 0;
-
-#if defined(_GLFW_GLX)
-    for (i = 0;  i < visualCount;  i++)
-    {
-        int gl, rgba, rgb, r, g, b;
-
-        glXGetConfig(_glfwLibrary.X11.display, &visuals[i], GLX_USE_GL, &gl);
-        glXGetConfig(_glfwLibrary.X11.display, &visuals[i], GLX_RGBA, &rgba);
-
-        if (!gl || !rgba)
-        {
-            // The visual lacks OpenGL or true color, so skip it
-            continue;
-        }
-
-        // Convert to RGB channel depths and encode
-        _glfwSplitBPP(visuals[i].depth, &r, &g, &b);
-        rgb = (r << 16) | (g << 8) | b;
-
-        for (j = 0;  j < rgbCount;  j++)
-        {
-            if (rgbs[j] == rgb)
-                break;
-        }
-
-        if (j < rgbCount)
-        {
-            // This channel depth is a duplicate, so skip it
-            continue;
-        }
-
-        rgbs[rgbCount] = rgb;
-        rgbCount++;
-    }
-
-    XFree(visuals);
-#endif
-
-    // Build all permutations of channel depths and resolutions
-
-    sizes = getResolutions(monitor, &sizeCount);
-
-    result = (GLFWvidmode*) malloc(sizeof(GLFWvidmode) * rgbCount * sizeCount);
     *found = 0;
 
-    for (i = 0;  i < rgbCount;  i++)
-    {
-        for (j = 0;  j < sizeCount;  j++)
-        {
-            result[*found].width     = sizes[j].width;
-            result[*found].height    = sizes[j].height;
-            result[*found].redBits   = (rgbs[i] >> 16) & 255;
-            result[*found].greenBits = (rgbs[i] >> 8) & 255;
-            result[*found].blueBits  = rgbs[i] & 255;
+    // Build array of available resolutions
 
+    if (_glfwLibrary.X11.RandR.available)
+    {
+#if defined(_GLFW_HAS_XRANDR)
+        XRRScreenResources* sr;
+        int i, j, count = monitor->X11.output->nmode;
+
+        sr = XRRGetScreenResources(_glfwLibrary.X11.display,
+                                   _glfwLibrary.X11.root);
+
+        result = (GLFWvidmode*) malloc(sizeof(GLFWvidmode) * count);
+
+        for (i = 0;  i < count;  i++)
+        {
+            GLFWvidmode mode;
+
+            for (j = 0;  j < sr->nmode;  j++)
+            {
+                if (sr->modes[j].id == monitor->X11.output->modes[i])
+                    break;
+            }
+
+            if (j == sr->nmode)
+                continue;
+
+            mode.width  = sr->modes[j].width;
+            mode.height = sr->modes[j].height;
+
+            for (j = 0;  j < *found;  j++)
+            {
+                if (result[j].width == mode.width &&
+                    result[j].height == mode.height)
+                {
+                    break;
+                }
+            }
+
+            if (j < *found)
+            {
+                // This is a duplicate, so skip it
+                continue;
+            }
+
+            mode.redBits = r;
+            mode.greenBits = g;
+            mode.blueBits = b;
+
+            result[*found] = mode;
             (*found)++;
         }
+
+        XRRFreeScreenResources(sr);
+#endif /*_GLFW_HAS_XRANDR*/
     }
 
-    free(sizes);
-    free(rgbs);
+    if (result == NULL)
+    {
+        *found = 1;
+        result = (GLFWvidmode*) malloc(sizeof(GLFWvidmode));
+
+        result[0].width = DisplayWidth(_glfwLibrary.X11.display,
+                                       _glfwLibrary.X11.screen);
+        result[0].height = DisplayHeight(_glfwLibrary.X11.display,
+                                         _glfwLibrary.X11.screen);
+        result[0].redBits = r;
+        result[0].greenBits = g;
+        result[0].blueBits = b;
+    }
 
     return result;
 }

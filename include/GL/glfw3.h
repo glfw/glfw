@@ -1212,6 +1212,10 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height, int mode, const char*
  *  @note If the window's context is current on the main thread, it is
  *  detached before being destroyed.
  *
+ *  @note On calling this function, no further callbacks will be called for
+ *  the specified window, even if their associated events occur during window
+ *  destruction.
+ *
  *  @warning The window's context must not be current on any other thread.
  *
  *  @sa glfwCreateWindow

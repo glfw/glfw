@@ -354,6 +354,11 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
                                    _glfwLibrary.X11.root);
 
         result = (GLFWvidmode*) malloc(sizeof(GLFWvidmode) * count);
+        if (!result)
+        {
+            _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+            return NULL;
+        }
 
         for (i = 0;  i < count;  i++)
         {
@@ -401,7 +406,13 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
     if (result == NULL)
     {
         *found = 1;
+
         result = (GLFWvidmode*) malloc(sizeof(GLFWvidmode));
+        if (!result)
+        {
+            _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+            return NULL;
+        }
 
         result[0].width = DisplayWidth(_glfwLibrary.X11.display,
                                        _glfwLibrary.X11.screen);

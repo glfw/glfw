@@ -90,6 +90,8 @@ typedef struct _GLFWlibraryGLX
 {
     // Server-side GLX version
     int             majorVersion, minorVersion;
+    int             eventBase;
+    int             errorBase;
 
     // GLX extensions
     PFNGLXSWAPINTERVALSGIPROC             SwapIntervalSGI;

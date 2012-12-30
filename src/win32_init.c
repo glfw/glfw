@@ -200,7 +200,7 @@ int _glfwPlatformInit(void)
 // Close window and shut down library
 //========================================================================
 
-int _glfwPlatformTerminate(void)
+void _glfwPlatformTerminate(void)
 {
     // Restore the original gamma ramp
     if (_glfwLibrary.rampChanged)
@@ -220,8 +220,6 @@ int _glfwPlatformTerminate(void)
     SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0,
                          UIntToPtr(_glfwLibrary.Win32.foregroundLockTimeout),
                          SPIF_SENDCHANGE);
-
-    return GL_TRUE;
 }
 
 

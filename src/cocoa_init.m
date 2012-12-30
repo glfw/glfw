@@ -120,7 +120,7 @@ int _glfwPlatformInit(void)
 // Close window, if open, and shut down GLFW
 //========================================================================
 
-int _glfwPlatformTerminate(void)
+void _glfwPlatformTerminate(void)
 {
     // TODO: Probably other cleanup
 
@@ -146,8 +146,6 @@ int _glfwPlatformTerminate(void)
     _glfwTerminateJoysticks();
 
     _glfwTerminateOpenGL();
-
-    return GL_TRUE;
 }
 
 

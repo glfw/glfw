@@ -149,8 +149,7 @@ GLFWAPI void glfwTerminate(void)
     while (_glfwLibrary.windowListHead)
         glfwDestroyWindow(_glfwLibrary.windowListHead);
 
-    if (!_glfwPlatformTerminate())
-        return;
+    _glfwPlatformTerminate();
 
     if (_glfwLibrary.modes)
         free(_glfwLibrary.modes);

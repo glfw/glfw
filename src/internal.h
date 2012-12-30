@@ -58,6 +58,10 @@ typedef struct _GLFWlibrary     _GLFWlibrary;
 
 #include "config.h"
 
+// Disable the inclusion of the platform glext.h by gl.h to allow proper
+// inclusion of our own, newer glext.h below
+#define GL_GLEXT_LEGACY
+
 #include "../include/GL/glfw3.h"
 
 // This path may need to be changed if you build GLFW using your own setup

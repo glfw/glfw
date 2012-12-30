@@ -39,6 +39,11 @@
 static GLFWwindow windows[2];
 static GLboolean closed = GL_FALSE;
 
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s\n", description);
+}
+
 static void key_callback(GLFWwindow window, int key, int action)
 {
     if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
@@ -128,17 +133,14 @@ int main(int argc, char** argv)
 {
     GLuint texture;
 
+    glfwSetErrorCallback(error_callback);
+
     if (!glfwInit())
-    {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
-    }
 
     windows[0] = open_window("First", NULL, 0, 0);
     if (!windows[0])
     {
-        fprintf(stderr, "Failed to open first GLFW window: %s\n", glfwErrorString(glfwGetError()));
-
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
@@ -152,8 +154,6 @@ int main(int argc, char** argv)
     windows[1] = open_window("Second", windows[0], WIDTH + 50, 0);
     if (!windows[1])
     {
-        fprintf(stderr, "Failed to open second GLFW window: %s\n", glfwErrorString(glfwGetError()));
-
         glfwTerminate();
         exit(EXIT_FAILURE);
     }

@@ -662,7 +662,7 @@ int _glfwPlatformInit(void)
 // Close window and shut down library
 //========================================================================
 
-int _glfwPlatformTerminate(void)
+void _glfwPlatformTerminate(void)
 {
     if (_glfwLibrary.X11.cursor)
     {
@@ -681,8 +681,6 @@ int _glfwPlatformTerminate(void)
     // Free clipboard memory
     if (_glfwLibrary.X11.selection.string)
         free(_glfwLibrary.X11.selection.string);
-
-    return GL_TRUE;
 }
 
 

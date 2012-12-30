@@ -257,10 +257,7 @@ int main(int argc, char** argv)
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
-    {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
-    }
 
     if (major != 1 || minor != 0)
     {

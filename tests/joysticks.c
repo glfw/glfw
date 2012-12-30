@@ -47,6 +47,11 @@ typedef struct Joystick
 static Joystick joysticks[GLFW_JOYSTICK_LAST - GLFW_JOYSTICK_1 + 1];
 static int joystick_count = 0;
 
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s\n", description);
+}
+
 static void window_size_callback(GLFWwindow window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -185,18 +190,15 @@ int main(void)
 
     memset(joysticks, 0, sizeof(joysticks));
 
+    glfwSetErrorCallback(error_callback);
+
     if (!glfwInit())
-    {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
-    }
 
     window = glfwCreateWindow(640, 480, "Joystick Test", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
-
-        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
 

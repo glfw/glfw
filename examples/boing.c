@@ -572,17 +572,13 @@ int main( void )
 
    /* Init GLFW */
    if( !glfwInit() )
-   {
-      fprintf( stderr, "Failed to initialize GLFW\n" );
       exit( EXIT_FAILURE );
-   }
 
    glfwWindowHint(GLFW_DEPTH_BITS, 16);
 
    window = glfwCreateWindow( 400, 400, "Boing (classic Amiga demo)", NULL, NULL );
    if (!window)
    {
-       fprintf( stderr, "Failed to open GLFW window\n" );
        glfwTerminate();
        exit( EXIT_FAILURE );
    }

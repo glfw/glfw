@@ -47,6 +47,11 @@ typedef struct
 
 static volatile GLboolean running = GL_TRUE;
 
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s\n", description);
+}
+
 static int thread_main(void* data)
 {
     const Thread* thread = (const Thread*) data;
@@ -80,12 +85,10 @@ int main(void)
     };
     const int count = sizeof(threads) / sizeof(Thread);
 
+    glfwSetErrorCallback(error_callback);
+
     if (!glfwInit())
-    {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n",
-                glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
-    }
 
     for (i = 0;  i < count;  i++)
     {
@@ -96,8 +99,7 @@ int main(void)
                                              NULL, NULL);
         if (!threads[i].window)
         {
-            fprintf(stderr, "Failed to open GLFW window: %s\n",
-                    glfwErrorString(glfwGetError()));
+            glfwTerminate();
             exit(EXIT_FAILURE);
         }
 
@@ -105,6 +107,8 @@ int main(void)
             thrd_success)
         {
             fprintf(stderr, "Failed to create secondary thread\n");
+
+            glfwTerminate();
             exit(EXIT_FAILURE);
         }
     }

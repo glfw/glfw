@@ -289,12 +289,10 @@ extern _GLFWlibrary _glfwLibrary;
 
 // Platform init and version
 int _glfwPlatformInit(void);
-int _glfwPlatformTerminate(void);
+void _glfwPlatformTerminate(void);
 const char* _glfwPlatformGetVersionString(void);
 
 // Input mode support
-void _glfwPlatformEnableSystemKeys(_GLFWwindow* window);
-void _glfwPlatformDisableSystemKeys(_GLFWwindow* window);
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y);
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
 

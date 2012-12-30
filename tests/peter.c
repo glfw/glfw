@@ -56,6 +56,11 @@ static void toggle_cursor(GLFWwindow window)
     }
 }
 
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s\n", description);
+}
+
 static void cursor_position_callback(GLFWwindow window, int x, int y)
 {
     printf("Cursor moved to: %i %i (%i %i)\n", x, y, x - cursor_x, y - cursor_y);
@@ -111,16 +116,13 @@ static GLboolean open_window(void)
 
 int main(void)
 {
+    glfwSetErrorCallback(error_callback);
+
     if (!glfwInit())
-    {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
-    }
 
     if (!open_window())
     {
-        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
-
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
@@ -139,8 +141,6 @@ int main(void)
             glfwDestroyWindow(window_handle);
             if (!open_window())
             {
-                fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
-
                 glfwTerminate();
                 exit(EXIT_FAILURE);
             }

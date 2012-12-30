@@ -41,6 +41,11 @@
 static GLFWwindow window_handle = NULL;
 static GLboolean closed = GL_FALSE;
 
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s\n", description);
+}
+
 static void window_size_callback(GLFWwindow window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -71,16 +76,14 @@ static GLboolean open_window(int width, int height, GLFWmonitor monitor)
 {
     double base;
 
+    if (!glfwInit())
+        return GL_FALSE;
+
     base = glfwGetTime();
 
     window_handle = glfwCreateWindow(width, height, "Window Re-opener", monitor, NULL);
     if (!window_handle)
-    {
-        fprintf(stderr, "Failed to open %s mode GLFW window: %s\n",
-                monitor ? "fullscreen" : "windowed",
-                glfwErrorString(glfwGetError()));
         return GL_FALSE;
-    }
 
     glfwMakeContextCurrent(window_handle);
     glfwSwapInterval(1);
@@ -110,11 +113,7 @@ int main(int argc, char** argv)
 {
     int count = 0;
 
-    if (!glfwInit())
-    {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-        return GL_FALSE;
-    }
+    glfwSetErrorCallback(error_callback);
 
     for (;;)
     {

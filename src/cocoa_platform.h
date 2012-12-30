@@ -120,5 +120,9 @@ void _glfwRestoreVideoMode(void);
 // OpenGL support
 int _glfwInitOpenGL(void);
 void _glfwTerminateOpenGL(void);
+int _glfwCreateContext(_GLFWwindow* window,
+                       const _GLFWwndconfig* wndconfig,
+                       const _GLFWfbconfig* fbconfig);
+void _glfwDestroyContext(_GLFWwindow* window);
 
 #endif // _cocoa_platform_h_

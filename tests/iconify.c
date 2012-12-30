@@ -42,6 +42,11 @@ static void usage(void)
     printf("Usage: iconify [-h] [-f]\n");
 }
 
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s\n", description);
+}
+
 static int window_close_callback(GLFWwindow window)
 {
     closed = GL_TRUE;
@@ -95,12 +100,6 @@ int main(int argc, char** argv)
     GLFWmonitor monitor = NULL;
     GLFWwindow window;
 
-    if (!glfwInit())
-    {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-        exit(EXIT_FAILURE);
-    }
-
     while ((ch = getopt(argc, argv, "fh")) != -1)
     {
         switch (ch)
@@ -119,6 +118,11 @@ int main(int argc, char** argv)
         }
     }
 
+    glfwSetErrorCallback(error_callback);
+
+    if (!glfwInit())
+        exit(EXIT_FAILURE);
+
     if (monitor)
     {
         GLFWvidmode mode;
@@ -136,8 +140,6 @@ int main(int argc, char** argv)
     if (!window)
     {
         glfwTerminate();
-
-        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
 

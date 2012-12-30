@@ -985,25 +985,6 @@ GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
  */
 GLFWAPI const char* glfwGetVersionString(void);
 
-/*! @brief Retrieves the latest error.
- *  @return The latest @link errors error code @endlink.
- *  @ingroup error
- *
- *  @remarks This function may be called before @ref glfwInit.
- */
-GLFWAPI int glfwGetError(void);
-
-/*! @brief Retrieves a generic, human readable description of the specified error.
- *  @param[in] error The @link errors error code @endlink to be described.
- *  @return A UTF-8 encoded string describing the error.
- *  @ingroup error
- *
- *  @remarks This function may be called before @ref glfwInit.
- *
- *  @remarks This function may be called from secondary threads.
- */
-GLFWAPI const char* glfwErrorString(int error);
-
 /*! @brief Sets the error callback.
  *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
  *  callback.
@@ -1297,6 +1278,10 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height, const char* title, GL
  *
  *  @note If the window's context is current on the main thread, it is
  *  detached before being destroyed.
+ *
+ *  @note On calling this function, no further callbacks will be called for
+ *  the specified window, even if their associated events occur during window
+ *  destruction.
  *
  *  @warning The window's context must not be current on any other thread.
  *

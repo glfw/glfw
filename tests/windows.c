@@ -40,18 +40,21 @@ static const char* titles[] =
     "Quux"
 };
 
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s\n", description);
+}
+
 int main(void)
 {
     int i;
     GLboolean running = GL_TRUE;
     GLFWwindow windows[4];
 
+    glfwSetErrorCallback(error_callback);
+
     if (!glfwInit())
-    {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n",
-                glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
-    }
 
     for (i = 0;  i < 4;  i++)
     {
@@ -60,9 +63,6 @@ int main(void)
         windows[i] = glfwCreateWindow(200, 200, titles[i], NULL, NULL);
         if (!windows[i])
         {
-            fprintf(stderr, "Failed to open GLFW window: %s\n",
-                    glfwErrorString(glfwGetError()));
-
             glfwTerminate();
             exit(EXIT_FAILURE);
         }

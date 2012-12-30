@@ -72,16 +72,20 @@ static ParamGLFW glfw_params[] =
     { 0, NULL }
 };
 
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s\n", description);
+}
+
 int main(void)
 {
     int i, width, height;
     GLFWwindow window;
 
+    glfwSetErrorCallback(error_callback);
+
     if (!glfwInit())
-    {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
-    }
 
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
@@ -89,8 +93,6 @@ int main(void)
     if (!window)
     {
         glfwTerminate();
-
-        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
 

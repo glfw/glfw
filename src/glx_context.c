@@ -38,6 +38,11 @@
 void (*glXGetProcAddressEXT(const GLubyte* procName))();
 
 
+#ifndef GLXBadProfileARB
+ #define GLXBadProfileARB 13
+#endif
+
+
 //========================================================================
 // Thread local storage attribute macro
 //========================================================================
@@ -46,6 +51,12 @@ void (*glXGetProcAddressEXT(const GLubyte* procName))();
 #else
  #define _GLFW_TLS
 #endif
+
+
+//========================================================================
+// The X error code as provided to the X error handler
+//========================================================================
+static unsigned long _glfwErrorCode = Success;
 
 
 //========================================================================
@@ -207,18 +218,48 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
 
 
 //========================================================================
-// Error handler for BadMatch errors when requesting context with
-// unavailable OpenGL versions using the GLX_ARB_create_context extension
+// Error handler used when creating a context with the GLX_ARB_create_context
+// extension set
 //========================================================================
 
 static int errorHandler(Display *display, XErrorEvent* event)
 {
+    _glfwErrorCode = event->error_code;
     return 0;
 }
 
 
 //========================================================================
-// Create the actual OpenGL context
+// Create the OpenGL context using legacy API
+//========================================================================
+
+static void createLegacyContext(_GLFWwindow* window,
+                                const _GLFWwndconfig* wndconfig,
+                                GLXFBConfig fbconfig,
+                                GLXContext share)
+{
+    if (_glfwLibrary.GLX.SGIX_fbconfig)
+    {
+        window->GLX.context =
+            _glfwLibrary.GLX.CreateContextWithConfigSGIX(_glfwLibrary.X11.display,
+                                                         fbconfig,
+                                                         GLX_RGBA_TYPE,
+                                                         share,
+                                                         True);
+    }
+    else
+    {
+        window->GLX.context = glXCreateNewContext(_glfwLibrary.X11.display,
+                                                  fbconfig,
+                                                  GLX_RGBA_TYPE,
+                                                  share,
+                                                  True);
+    }
+}
+
+
+//========================================================================
+// Create the OpenGL context
 //========================================================================
 
 #define setGLXattrib(attribName, attribValue) \
@@ -386,6 +427,7 @@ static int createContext(_GLFWwindow* window,
         // it because glXCreateContextAttribsARB generates a BadMatch error if
         // the requested OpenGL version is unavailable (instead of a civilized
         // response like returning NULL)
+        _glfwErrorCode = Success;
         XSetErrorHandler(errorHandler);
 
         window->GLX.context =
@@ -397,36 +439,29 @@ static int createContext(_GLFWwindow* window,
 
         // We are done, so unset the error handler again (see above)
         XSetErrorHandler(NULL);
+
+        if (window->GLX.context == NULL)
+        {
+            // HACK: This is a fallback for the broken Mesa implementation of
+            // GLX_ARB_create_context_profile, which fails default 1.0 context
+            // creation with a GLXBadProfileARB error in violation of the spec
+            if (_glfwErrorCode == _glfwLibrary.GLX.errorBase + GLXBadProfileARB &&
+                wndconfig->clientAPI == GLFW_OPENGL_API &&
+                wndconfig->glProfile == GLFW_OPENGL_NO_PROFILE &&
+                wndconfig->glForward == GL_FALSE)
+            {
+                createLegacyContext(window, wndconfig, *fbconfig, share);
+            }
+        }
     }
     else
-    {
-        if (_glfwLibrary.GLX.SGIX_fbconfig)
-        {
-            window->GLX.context =
-                _glfwLibrary.GLX.CreateContextWithConfigSGIX(_glfwLibrary.X11.display,
-                                                             *fbconfig,
-                                                             GLX_RGBA_TYPE,
-                                                             share,
-                                                             True);
-        }
-        else
-        {
-            window->GLX.context = glXCreateNewContext(_glfwLibrary.X11.display,
-                                                      *fbconfig,
-                                                      GLX_RGBA_TYPE,
-                                                      share,
-                                                      True);
-        }
-    }
+        createLegacyContext(window, wndconfig, *fbconfig, share);
 
     XFree(fbconfig);
 
     if (window->GLX.context == NULL)
     {
-        // TODO: Handle all the various error codes here
-
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "GLX: Failed to create context");
+        _glfwSetError(GLFW_PLATFORM_ERROR, "GLX: Failed to create context");
         return GL_FALSE;
     }
 
@@ -472,7 +507,9 @@ int _glfwInitOpenGL(void)
 #endif
 
     // Check if GLX is supported on this display
-    if (!glXQueryExtension(_glfwLibrary.X11.display, NULL, NULL))
+    if (!glXQueryExtension(_glfwLibrary.X11.display,
+                           &_glfwLibrary.GLX.errorBase,
+                           &_glfwLibrary.GLX.eventBase))
     {
         _glfwSetError(GLFW_API_UNAVAILABLE, "GLX: GLX support not found");
         return GL_FALSE;

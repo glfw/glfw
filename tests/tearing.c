@@ -48,6 +48,11 @@ static void set_swap_interval(GLFWwindow window, int interval)
     glfwSetWindowTitle(window, title);
 }
 
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s\n", description);
+}
+
 static void window_size_callback(GLFWwindow window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -64,17 +69,14 @@ int main(void)
     float position;
     GLFWwindow window;
 
+    glfwSetErrorCallback(error_callback);
+
     if (!glfwInit())
-    {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
-    }
 
     window = glfwCreateWindow(640, 480, GLFW_WINDOWED, "", NULL);
     if (!window)
     {
-        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
-
         glfwTerminate();
         exit(EXIT_FAILURE);
     }

@@ -47,6 +47,11 @@ static GLboolean control_is_down(GLFWwindow window)
            glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL);
 }
 
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s\n", description);
+}
+
 static int window_close_callback(GLFWwindow window)
 {
     closed = GL_TRUE;
@@ -91,11 +96,6 @@ static void key_callback(GLFWwindow window, int key, int action)
 static void window_size_callback(GLFWwindow window, int width, int height)
 {
     glViewport(0, 0, width, height);
-}
-
-static void error_callback(int error, const char* description)
-{
-    fprintf(stderr, "Error in %s\n", description);
 }
 
 int main(int argc, char** argv)

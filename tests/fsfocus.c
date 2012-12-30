@@ -35,6 +35,11 @@
 
 static GLboolean running = GL_TRUE;
 
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s\n", description);
+}
+
 static void window_focus_callback(GLFWwindow window, int focused)
 {
     printf("%0.3f: Window %s\n",
@@ -76,18 +81,15 @@ int main(void)
 {
     GLFWwindow window;
 
+    glfwSetErrorCallback(error_callback);
+
     if (!glfwInit())
-    {
-        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
-    }
 
     window = glfwCreateWindow(640, 480, GLFW_FULLSCREEN, "Fullscreen focus", NULL);
     if (!window)
     {
         glfwTerminate();
-
-        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
         exit(EXIT_FAILURE);
     }
 

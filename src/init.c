@@ -51,20 +51,45 @@ _GLFWlibrary _glfwLibrary;
 
 
 //------------------------------------------------------------------------
-// The current GLFW error code
-// This is outside of _glfwLibrary so it can be initialized and usable
-// before glfwInit is called, which lets that function report errors
-// TODO: Make this thread-local
-//------------------------------------------------------------------------
-static int _glfwError = GLFW_NO_ERROR;
-
-
-//------------------------------------------------------------------------
 // The current error callback
 // This is outside of _glfwLibrary so it can be initialized and usable
 // before glfwInit is called, which lets that function report errors
 //------------------------------------------------------------------------
 static GLFWerrorfun _glfwErrorCallback = NULL;
+
+
+//========================================================================
+// Returns a generic string representation of the specified error
+//========================================================================
+
+static const char* getErrorString(int error)
+{
+    switch (error)
+    {
+        case GLFW_NO_ERROR:
+            return "No error";
+        case GLFW_NOT_INITIALIZED:
+            return "The GLFW library is not initialized";
+        case GLFW_NO_CURRENT_CONTEXT:
+            return "There is no current context";
+        case GLFW_INVALID_ENUM:
+            return "Invalid argument for enum parameter";
+        case GLFW_INVALID_VALUE:
+            return "Invalid value for parameter";
+        case GLFW_OUT_OF_MEMORY:
+            return "Out of memory";
+        case GLFW_API_UNAVAILABLE:
+            return "The requested client API is unavailable";
+        case GLFW_VERSION_UNAVAILABLE:
+            return "The requested client API version is unavailable";
+        case GLFW_PLATFORM_ERROR:
+            return "A platform-specific error occurred";
+        case GLFW_FORMAT_UNAVAILABLE:
+            return "The requested format is unavailable";
+    }
+
+    return "ERROR: UNKNOWN ERROR TOKEN PASSED TO glfwErrorString";
+}
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -97,12 +122,10 @@ void _glfwSetError(int error, const char* format, ...)
             description = buffer;
         }
         else
-            description = glfwErrorString(error);
+            description = getErrorString(error);
 
         _glfwErrorCallback(error, description);
     }
-    else
-        _glfwError = error;
 }
 
 
@@ -184,54 +207,6 @@ GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)
 GLFWAPI const char* glfwGetVersionString(void)
 {
     return _glfwPlatformGetVersionString();
-}
-
-
-//========================================================================
-// Returns the current error value
-// This function may be called without GLFW having been initialized
-//========================================================================
-
-GLFWAPI int glfwGetError(void)
-{
-    int error = _glfwError;
-    _glfwError = GLFW_NO_ERROR;
-    return error;
-}
-
-
-//========================================================================
-// Returns a string representation of the specified error value
-// This function may be called without GLFW having been initialized
-//========================================================================
-
-GLFWAPI const char* glfwErrorString(int error)
-{
-    switch (error)
-    {
-        case GLFW_NO_ERROR:
-            return "No error";
-        case GLFW_NOT_INITIALIZED:
-            return "The GLFW library is not initialized";
-        case GLFW_NO_CURRENT_CONTEXT:
-            return "There is no current context";
-        case GLFW_INVALID_ENUM:
-            return "Invalid argument for enum parameter";
-        case GLFW_INVALID_VALUE:
-            return "Invalid value for parameter";
-        case GLFW_OUT_OF_MEMORY:
-            return "Out of memory";
-        case GLFW_API_UNAVAILABLE:
-            return "The requested client API is unavailable";
-        case GLFW_VERSION_UNAVAILABLE:
-            return "The requested client API version is unavailable";
-        case GLFW_PLATFORM_ERROR:
-            return "A platform-specific error occurred";
-        case GLFW_FORMAT_UNAVAILABLE:
-            return "The requested format is unavailable";
-    }
-
-    return "ERROR: UNKNOWN ERROR TOKEN PASSED TO glfwErrorString";
 }
 
 

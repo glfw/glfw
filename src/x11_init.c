@@ -491,7 +491,7 @@ static GLboolean initDisplay(void)
     _glfwLibrary.X11.display = XOpenDisplay(NULL);
     if (!_glfwLibrary.X11.display)
     {
-        _glfwSetError(GLFW_API_UNAVAILABLE, "X11: Failed to open X display");
+        _glfwInputError(GLFW_API_UNAVAILABLE, "X11: Failed to open X display");
         return GL_FALSE;
     }
 
@@ -524,8 +524,8 @@ static GLboolean initDisplay(void)
                              &_glfwLibrary.X11.RandR.majorVersion,
                              &_glfwLibrary.X11.RandR.minorVersion))
         {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "X11: Failed to query RandR version");
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Failed to query RandR version");
             return GL_FALSE;
         }
     }

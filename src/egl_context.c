@@ -83,7 +83,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window,
     configs = (EGLConfig*) malloc(sizeof(EGLConfig) * count);
     if (!configs)
     {
-        _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
         return NULL;
     }
 
@@ -92,8 +92,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window,
     {
         free(configs);
 
-        _glfwSetError(GLFW_API_UNAVAILABLE,
-                      "EGL: No EGLConfigs returned");
+        _glfwInputError(GLFW_API_UNAVAILABLE, "EGL: No EGLConfigs returned");
         return NULL;
     }
 
@@ -102,7 +101,7 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window,
     {
         free(configs);
 
-        _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
         return NULL;
     }
 
@@ -203,8 +202,8 @@ static int createContext(_GLFWwindow* window,
         eglChooseConfig(_glfwLibrary.EGL.display, attribs, &config, 1, &count);
         if (!count)
         {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "EGL: Failed to retrieve the selected EGLConfig");
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "EGL: Failed to retrieve the selected EGLConfig");
             return GL_FALSE;
         }
     }
@@ -251,8 +250,8 @@ static int createContext(_GLFWwindow* window,
 
         if (window->EGL.visual == NULL)
         {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "EGL: Failed to retrieve visual for EGLConfig");
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "EGL: Failed to retrieve visual for EGLConfig");
             return GL_FALSE;
         }
     }
@@ -262,7 +261,8 @@ static int createContext(_GLFWwindow* window,
     {
         if (!eglBindAPI(EGL_OPENGL_ES_API))
         {
-            _glfwSetError(GLFW_PLATFORM_ERROR, "EGL: OpenGL ES is not supported");
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "EGL: OpenGL ES is not supported");
             return GL_FALSE;
         }
     }
@@ -270,7 +270,7 @@ static int createContext(_GLFWwindow* window,
     {
         if (!eglBindAPI(EGL_OPENGL_API))
         {
-            _glfwSetError(GLFW_PLATFORM_ERROR, "EGL: OpenGL is not supported");
+            _glfwInputError(GLFW_PLATFORM_ERROR, "EGL: OpenGL is not supported");
             return GL_FALSE;
         }
     }
@@ -337,7 +337,7 @@ static int createContext(_GLFWwindow* window,
     {
         // TODO: Handle all the various error codes here
 
-        _glfwSetError(GLFW_PLATFORM_ERROR, "EGL: Failed to create context");
+        _glfwInputError(GLFW_PLATFORM_ERROR, "EGL: Failed to create context");
         return GL_FALSE;
     }
 
@@ -379,7 +379,7 @@ int _glfwInitOpenGL(void)
 
     if (!_glfwLibrary.EGL.libEGL)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR, "EGL: Failed to find libEGL");
+        _glfwInputError(GLFW_PLATFORM_ERROR, "EGL: Failed to find libEGL");
         return GL_FALSE;
     }
 #endif
@@ -387,8 +387,7 @@ int _glfwInitOpenGL(void)
     _glfwLibrary.EGL.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
     if (_glfwLibrary.EGL.display == EGL_NO_DISPLAY)
     {
-        _glfwSetError(GLFW_API_UNAVAILABLE,
-                      "EGL: Failed to get EGL display");
+        _glfwInputError(GLFW_API_UNAVAILABLE, "EGL: Failed to get EGL display");
         return GL_FALSE;
     }
 
@@ -396,8 +395,7 @@ int _glfwInitOpenGL(void)
                        &_glfwLibrary.EGL.majorVersion,
                        &_glfwLibrary.EGL.minorVersion))
     {
-        _glfwSetError(GLFW_API_UNAVAILABLE,
-                      "EGL: Failed to initialize EGL");
+        _glfwInputError(GLFW_API_UNAVAILABLE, "EGL: Failed to initialize EGL");
         return GL_FALSE;
     }
 
@@ -445,16 +443,16 @@ int _glfwCreateContext(_GLFWwindow* window,
         fbconfigs = getFBConfigs(window, wndconfig, &fbcount);
         if (!fbconfigs)
         {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "EGL: No usable EGLFBConfigs found");
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "EGL: No usable EGLFBConfigs found");
             return GL_FALSE;
         }
 
         result = _glfwChooseFBConfig(fbconfig, fbconfigs, fbcount);
         if (!result)
         {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "EGL: No EGLFBConfig matched the criteria");
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "EGL: No EGLFBConfig matched the criteria");
 
             free(fbconfigs);
             return GL_FALSE;
@@ -526,8 +524,8 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
                                                          NULL);
             if (window->EGL.surface == EGL_NO_SURFACE)
             {
-                _glfwSetError(GLFW_PLATFORM_ERROR,
-                              "EGL: Failed to create window surface");
+                _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "EGL: Failed to create window surface");
             }
         }
 

@@ -43,13 +43,13 @@ GLFWAPI int glfwGetJoystickParam(int joy, int param)
 {
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return 0;
     }
 
     if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
     {
-        _glfwSetError(GLFW_INVALID_ENUM, NULL);
+        _glfwInputError(GLFW_INVALID_ENUM, NULL);
         return 0;
     }
 
@@ -67,19 +67,19 @@ GLFWAPI int glfwGetJoystickAxes(int joy, float* axes, int numaxes)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return 0;
     }
 
     if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
     {
-        _glfwSetError(GLFW_INVALID_ENUM, NULL);
+        _glfwInputError(GLFW_INVALID_ENUM, NULL);
         return 0;
     }
 
     if (axes == NULL || numaxes < 0)
     {
-        _glfwSetError(GLFW_INVALID_VALUE, NULL);
+        _glfwInputError(GLFW_INVALID_VALUE, NULL);
         return 0;
     }
 
@@ -103,19 +103,19 @@ GLFWAPI int glfwGetJoystickButtons(int joy,
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return 0;
     }
 
     if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
     {
-        _glfwSetError(GLFW_INVALID_ENUM, NULL);
+        _glfwInputError(GLFW_INVALID_ENUM, NULL);
         return 0;
     }
 
     if (buttons == NULL || numbuttons < 0)
     {
-        _glfwSetError(GLFW_INVALID_VALUE, NULL);
+        _glfwInputError(GLFW_INVALID_VALUE, NULL);
         return 0;
     }
 
@@ -135,13 +135,13 @@ GLFWAPI const char* glfwGetJoystickName(int joy)
 {
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return NULL;
     }
 
     if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
     {
-        _glfwSetError(GLFW_INVALID_ENUM, NULL);
+        _glfwInputError(GLFW_INVALID_ENUM, NULL);
         return NULL;
     }
 

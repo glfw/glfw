@@ -243,7 +243,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(int* found)
             {
                 free(result);
 
-                _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+                _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
                 return NULL;
             }
 

@@ -692,7 +692,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 
     if (window->NS.object == nil)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR, "Cocoa: Failed to create window");
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Cocoa: Failed to create window");
         return GL_FALSE;
     }
 
@@ -734,8 +734,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         _glfwLibrary.NS.delegate = [[GLFWApplicationDelegate alloc] init];
         if (_glfwLibrary.NS.delegate == nil)
         {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "Cocoa: Failed to create application delegate");
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Cocoa: Failed to create application delegate");
             return GL_FALSE;
         }
 
@@ -745,8 +745,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     window->NS.delegate = [[GLFWWindowDelegate alloc] initWithGlfwWindow:window];
     if (window->NS.delegate == nil)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Cocoa: Failed to create window delegate");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to create window delegate");
         return GL_FALSE;
     }
 

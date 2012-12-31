@@ -114,9 +114,9 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
     // For now, don't support anything that is not GLFW_GAMMA_RAMP_SIZE
     if (_glfwLibrary.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "X11: Failed to get gamma ramp due to size "
-                      "incompatibility");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "X11: Failed to get gamma ramp due to size "
+                        "incompatibility");
         return;
     }
 
@@ -165,9 +165,9 @@ void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
     // For now, don't support anything that is not GLFW_GAMMA_RAMP_SIZE
     if (_glfwLibrary.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "X11: Failed to set gamma ramp due to size "
-                      "incompatibility");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "X11: Failed to set gamma ramp due to size "
+                        "incompatibility");
         return;
     }
 

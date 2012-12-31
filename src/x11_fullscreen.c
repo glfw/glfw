@@ -441,8 +441,8 @@ GLFWvidmode* _glfwPlatformGetVideoModes(int* found)
     visuals = XGetVisualInfo(_glfwLibrary.X11.display, 0, &dummy, &visualCount);
     if (visuals == NULL)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "X11: Failed to retrieve the available visuals");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "X11: Failed to retrieve the available visuals");
         return 0;
     }
 

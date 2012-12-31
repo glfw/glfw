@@ -341,6 +341,9 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action);
 void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y);
 void _glfwInputCursorEnter(_GLFWwindow* window, int entered);
 
+// Error event notification (init.c)
+void _glfwInputError(int error, const char* format, ...);
+
 
 //========================================================================
 // Prototypes for internal utility functions
@@ -352,9 +355,6 @@ void _glfwInputCursorEnter(_GLFWwindow* window, int entered);
 // Fullscren management (fullscreen.c)
 int _glfwCompareVideoModes(const GLFWvidmode* first, const GLFWvidmode* second);
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
-
-// Error handling (init.c)
-void _glfwSetError(int error, const char* format, ...);
 
 // OpenGL context helpers (opengl.c)
 int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);

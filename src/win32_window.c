@@ -704,8 +704,8 @@ static ATOM registerWindowClass(void)
     classAtom = RegisterClass(&wc);
     if (!classAtom)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Win32: Failed to register window class");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to register window class");
         return 0;
     }
 
@@ -781,8 +781,8 @@ static int createWindow(_GLFWwindow* window,
     wideTitle = _glfwCreateWideStringFromUTF8(wndconfig->title);
     if (!wideTitle)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Win32: Failed to convert title to wide string");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to convert title to wide string");
         return GL_FALSE;
     }
 
@@ -800,7 +800,7 @@ static int createWindow(_GLFWwindow* window,
 
     if (!window->Win32.handle)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR, "Win32: Failed to create window");
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to create window");
         return GL_FALSE;
     }
 
@@ -963,8 +963,8 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     WCHAR* wideTitle = _glfwCreateWideStringFromUTF8(title);
     if (!wideTitle)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Win32: Failed to convert title to wide string");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to convert title to wide string");
         return;
     }
 

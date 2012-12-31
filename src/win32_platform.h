@@ -146,7 +146,6 @@ typedef struct _GLFWwindowWin32
     DWORD     dwExStyle;       // --"--
 
     // Various platform specific internal variables
-    int       desiredRefreshRate; // Desired vertical monitor refresh rate
     GLboolean cursorCentered;
     GLboolean cursorInside;
     int       oldCursorX, oldCursorY;
@@ -169,7 +168,6 @@ typedef struct _GLFWlibraryWin32
         int                   width;
         int                   height;
         int                   bitsPerPixel;
-        int                   refreshRate;
     } monitor;
 
     // Timer data
@@ -227,9 +225,7 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
                         const _GLFWfbconfig* fbconfig);
 
 // Fullscreen support
-void _glfwSetVideoMode(int* width, int* height,
-                       int* bpp, int* refreshRate,
-                       GLboolean exactBPP);
+void _glfwSetVideoMode(int* width, int* height, int* bpp, GLboolean exactBPP);
 void _glfwRestoreVideoMode(void);
 
 

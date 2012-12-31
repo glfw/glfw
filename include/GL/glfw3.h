@@ -500,44 +500,40 @@ extern "C" {
  *  @see glfwWindowHint
  */
 #define GLFW_STENCIL_BITS         0x00021005
-/*! @brief The monitor refresh rate.
- *  @see glfwWindowHint glfwGetWindowParam
- */
-#define GLFW_REFRESH_RATE         0x00021006
 /*! @brief The bit depth of the red component of the accumulation buffer.
  *  @see glfwWindowHint
  */
-#define GLFW_ACCUM_RED_BITS       0x00021007
+#define GLFW_ACCUM_RED_BITS       0x00021006
 /*! @brief The bit depth of the red component of the accumulation buffer.
  *  @see glfwWindowHint
  */
-#define GLFW_ACCUM_GREEN_BITS     0x00021008
+#define GLFW_ACCUM_GREEN_BITS     0x00021007
 /*! @brief The bit depth of the red component of the accumulation buffer.
  *  @see glfwWindowHint
  */
-#define GLFW_ACCUM_BLUE_BITS      0x00021009
+#define GLFW_ACCUM_BLUE_BITS      0x00021008
 /*! @brief The bit depth of the red component of the accumulation buffer.
  *  @see glfwWindowHint
  */
-#define GLFW_ACCUM_ALPHA_BITS     0x0002100A
+#define GLFW_ACCUM_ALPHA_BITS     0x00021009
 /*! @brief The number of auxiliary buffers.
  *  @see glfwWindowHint
  */
-#define GLFW_AUX_BUFFERS          0x0002100B
+#define GLFW_AUX_BUFFERS          0x0002100A
 /*! @brief @c GL_TRUE for stereo rendering, or @c GL_FALSE otherwise.
  *  @see glfwWindowHint
  */
-#define GLFW_STEREO               0x0002100C
+#define GLFW_STEREO               0x0002100B
 /*! @brief The number of samples used for default framebuffer multisampling, or
  *  zero to disable multisampling.
  *  @see glfwWindowHint
  */
-#define GLFW_FSAA_SAMPLES         0x0002100E
+#define GLFW_FSAA_SAMPLES         0x0002100C
 /*! @brief @c GL_TRUE if the framebuffer should be sRGB capable, or @c GL_FALSE
  *  otherwise.
  *  @see glfwWindowHint
  */
-#define GLFW_SRGB_CAPABLE         0x0002100F
+#define GLFW_SRGB_CAPABLE         0x0002100D
 
 /*! @brief The @link clients client API @endlink to create a context for.
  *  @see glfwWindowHint glfwGetWindowParam
@@ -1146,11 +1142,6 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  specify the desired bit depths of the various components of the default
  *  framebuffer.
  *
- *  The @ref GLFW_REFRESH_RATE hint specifies the desired monitor refresh rate,
- *  in Hz, of the video mode for a fullscreen window, or zero to let the system
- *  choose a suitable refresh rate.  If a windowed mode window is created, this
- *  hint is ignored.
- *
  *  The @ref GLFW_ACCUM_RED_BITS, @ref GLFW_ACCUM_GREEN_BITS, @ref
  *  GLFW_ACCUM_BLUE_BITS and @ref GLFW_ACCUM_ALPHA_BITS hints specify the
  *  desired bit depths of the various components of the accumulation buffer.
@@ -1399,9 +1390,6 @@ GLFWAPI GLFWmonitor glfwGetWindowMonitor(GLFWwindow window);
  *
  *  The @ref GLFW_CLOSE_REQUESTED property indicates whether the window has been
  *  requested by the user to close.
- *
- *  The @ref GLFW_REFRESH_RATE property will be replaced when the @c
- *  multi-monitor branch is merged.
  *
  *  The @ref GLFW_POSITION_X and @ref GLFW_POSITION_Y properties indicate the
  *  screen position, in pixels, of the upper-left corner of the window's client

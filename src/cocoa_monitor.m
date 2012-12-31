@@ -139,13 +139,12 @@ static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode)
 // Change the current video mode
 //========================================================================
 
-GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp, int* refreshRate)
+GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp)
 {
     CGDisplayModeRef bestMode = NULL;
     CFArrayRef modes;
     CFIndex count, i;
     unsigned int leastSizeDiff = UINT_MAX;
-    double leastRateDiff = DBL_MAX;
 
     modes = CGDisplayCopyAllDisplayModes(CGMainDisplayID(), NULL);
     count = CFArrayGetCount(modes);
@@ -177,23 +176,11 @@ GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp, int* refreshRate)
                                 ((modeWidth - *width) * (modeWidth - *width) +
                                  (modeHeight - *height) * (modeHeight - *height));
 
-        double rateDiff;
-
-        if (*refreshRate > 0)
-            rateDiff = fabs(CGDisplayModeGetRefreshRate(mode) - *refreshRate);
-        else
-        {
-            // If no refresh rate was specified, then they're all the same
-            rateDiff = 0;
-        }
-
-        if ((sizeDiff < leastSizeDiff) ||
-            (sizeDiff == leastSizeDiff && (rateDiff < leastRateDiff)))
+        if (sizeDiff < leastSizeDiff)
         {
             bestMode = mode;
 
             leastSizeDiff = sizeDiff;
-            leastRateDiff = rateDiff;
         }
     }
 

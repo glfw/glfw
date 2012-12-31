@@ -339,8 +339,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
         _glfwLibrary.X11.saver.changed = GL_TRUE;
     }
 
-    _glfwSetVideoMode(&window->width, &window->height,
-                      &window->refreshRate);
+    _glfwSetVideoMode(&window->width, &window->height);
 
     if (_glfwLibrary.X11.hasEWMH &&
         _glfwLibrary.X11.wmState != None &&
@@ -855,8 +854,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    window->refreshRate = wndconfig->refreshRate;
-
     if (!_glfwCreateContext(window, wndconfig, fbconfig))
         return GL_FALSE;
 
@@ -977,14 +974,12 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    int mode = 0, rate, sizeChanged = GL_FALSE;
-
-    rate = window->refreshRate;
+    int mode = 0, sizeChanged = GL_FALSE;
 
     if (window->monitor)
     {
         // Get the closest matching video mode for the specified window size
-        mode = _glfwGetClosestVideoMode(&width, &height, &rate);
+        mode = _glfwGetClosestVideoMode(&width, &height);
     }
 
     if (!window->resizable)
@@ -1012,8 +1007,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
             sizeChanged = GL_TRUE;
         }
 
-        // Change video mode, keeping current refresh rate
-        _glfwSetVideoModeMODE(mode, window->refreshRate);
+        _glfwSetVideoModeMODE(mode);
     }
 
     // Set window size (if not already changed)
@@ -1086,31 +1080,6 @@ void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     XUnmapWindow(_glfwLibrary.X11.display, window->X11.handle);
     XFlush(_glfwLibrary.X11.display);
-}
-
-
-//========================================================================
-// Read back framebuffer parameters from the context
-//========================================================================
-
-void _glfwPlatformRefreshWindowParams(_GLFWwindow* window)
-{
-    // Retrieve refresh rate if possible
-    if (_glfwLibrary.X11.RandR.available)
-    {
-#if defined(_GLFW_HAS_XRANDR)
-        XRRScreenConfiguration* sc;
-
-        sc = XRRGetScreenInfo(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
-        window->refreshRate = XRRConfigCurrentRate(sc);
-        XRRFreeScreenConfigInfo(sc);
-#endif /*_GLFW_HAS_XRANDR*/
-    }
-    else
-    {
-        // Zero means unknown according to the GLFW spec
-        window->refreshRate = 0;
-    }
 }
 
 

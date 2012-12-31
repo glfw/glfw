@@ -91,7 +91,6 @@ struct _GLFWhints
     int         alphaBits;
     int         depthBits;
     int         stencilBits;
-    int         refreshRate;
     int         accumRedBits;
     int         accumGreenBits;
     int         accumBlueBits;
@@ -123,7 +122,6 @@ struct _GLFWhints
 struct _GLFWwndconfig
 {
     const char*   title;
-    int           refreshRate;
     GLboolean     resizable;
     GLboolean     visible;
     int           positionX;
@@ -182,7 +180,6 @@ struct _GLFWwindow
     int       mode;            // GLFW_WINDOWED or GLFW_FULLSCREEN
     GLboolean resizable;       // GL_TRUE if user may resize this window
     GLboolean visible;         // GL_TRUE if this window is visible
-    int       refreshRate;     // monitor refresh rate
     void*     userPointer;
     _GLFWmonitor* monitor;
 
@@ -341,7 +338,6 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window);
 _GLFWwindow* _glfwPlatformGetCurrentContext(void);
 void _glfwPlatformSwapBuffers(_GLFWwindow* window);
 void _glfwPlatformSwapInterval(int interval);
-void _glfwPlatformRefreshWindowParams(_GLFWwindow* window);
 int  _glfwPlatformExtensionSupported(const char* extension);
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname);
 

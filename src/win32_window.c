@@ -377,7 +377,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                         _glfwSetVideoMode(&_glfwLibrary.Win32.monitor.width,
                                           &_glfwLibrary.Win32.monitor.height,
                                           &_glfwLibrary.Win32.monitor.bitsPerPixel,
-                                          &_glfwLibrary.Win32.monitor.refreshRate,
                                           GL_TRUE);
 
                         _glfwLibrary.Win32.monitor.modeChanged = GL_TRUE;
@@ -868,8 +867,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 {
     int status;
 
-    window->Win32.desiredRefreshRate = wndconfig->refreshRate;
-
     if (!_glfwLibrary.Win32.classAtom)
     {
         _glfwLibrary.Win32.classAtom = registerWindowClass();
@@ -885,13 +882,11 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
         _glfwLibrary.Win32.monitor.width = window->width;
         _glfwLibrary.Win32.monitor.height = window->height;
-        _glfwLibrary.Win32.monitor.refreshRate = wndconfig->refreshRate;
         _glfwLibrary.Win32.monitor.bitsPerPixel = bpp;
 
         _glfwSetVideoMode(&_glfwLibrary.Win32.monitor.width,
                           &_glfwLibrary.Win32.monitor.height,
                           &_glfwLibrary.Win32.monitor.bitsPerPixel,
-                          &_glfwLibrary.Win32.monitor.refreshRate,
                           GL_FALSE);
 
         _glfwLibrary.Win32.monitor.modeChanged = GL_TRUE;
@@ -1066,28 +1061,6 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     ShowWindow(window->Win32.handle, SW_HIDE);
-}
-
-
-//========================================================================
-// Write back window parameters into GLFW window structure
-//========================================================================
-
-void _glfwPlatformRefreshWindowParams(_GLFWwindow* window)
-{
-    DEVMODE dm;
-
-    ZeroMemory(&dm, sizeof(DEVMODE));
-    dm.dmSize = sizeof(DEVMODE);
-
-    if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dm))
-    {
-        window->refreshRate = dm.dmDisplayFrequency;
-        if (window->refreshRate <= 1)
-            window->refreshRate = 0;
-    }
-    else
-        window->refreshRate = 0;
 }
 
 

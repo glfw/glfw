@@ -43,7 +43,7 @@
 // Finds the video mode closest in size to the specified desired size
 //========================================================================
 
-int _glfwGetClosestVideoMode(int* width, int* height, int* rate)
+int _glfwGetClosestVideoMode(int* width, int* height)
 {
     int i, match, bestmatch;
 
@@ -51,8 +51,6 @@ int _glfwGetClosestVideoMode(int* width, int* height, int* rate)
     {
 #if defined(_GLFW_HAS_XRANDR)
         int sizecount, bestsize;
-        int ratecount, bestrate;
-        short* ratelist;
         XRRScreenConfiguration* sc;
         XRRScreenSize* sizelist;
 
@@ -81,26 +79,6 @@ int _glfwGetClosestVideoMode(int* width, int* height, int* rate)
             // Report width & height of best matching mode
             *width = sizelist[bestsize].width;
             *height = sizelist[bestsize].height;
-
-            if (*rate > 0)
-            {
-                ratelist = XRRConfigRates(sc, bestsize, &ratecount);
-
-                bestrate = -1;
-                bestmatch = INT_MAX;
-                for (i = 0;  i < ratecount;  i++)
-                {
-                    match = abs(ratelist[i] - *rate);
-                    if (match < bestmatch)
-                    {
-                        bestmatch = match;
-                        bestrate = ratelist[i];
-                    }
-                }
-
-                if (bestrate != -1)
-                    *rate = bestrate;
-            }
         }
 
         XRRFreeScreenConfigInfo(sc);
@@ -122,7 +100,7 @@ int _glfwGetClosestVideoMode(int* width, int* height, int* rate)
 // Change the current video mode
 //========================================================================
 
-void _glfwSetVideoModeMODE(int mode, int rate)
+void _glfwSetVideoModeMODE(int mode)
 {
     if (_glfwLibrary.X11.RandR.available)
     {
@@ -145,27 +123,12 @@ void _glfwSetVideoModeMODE(int mode, int rate)
             _glfwLibrary.X11.FS.modeChanged = GL_TRUE;
         }
 
-        if (rate > 0)
-        {
-            // Set desired configuration
-            XRRSetScreenConfigAndRate(_glfwLibrary.X11.display,
-                                      sc,
-                                      root,
-                                      mode,
-                                      RR_Rotate_0,
-                                      (short) rate,
-                                      CurrentTime);
-        }
-        else
-        {
-            // Set desired configuration
-            XRRSetScreenConfig(_glfwLibrary.X11.display,
-                               sc,
-                               root,
-                               mode,
-                               RR_Rotate_0,
-                               CurrentTime);
-        }
+        XRRSetScreenConfig(_glfwLibrary.X11.display,
+                           sc,
+                           root,
+                           mode,
+                           RR_Rotate_0,
+                           CurrentTime);
 
         XRRFreeScreenConfigInfo(sc);
 #endif /*_GLFW_HAS_XRANDR*/
@@ -177,15 +140,15 @@ void _glfwSetVideoModeMODE(int mode, int rate)
 // Change the current video mode
 //========================================================================
 
-void _glfwSetVideoMode(int* width, int* height, int* rate)
+void _glfwSetVideoMode(int* width, int* height)
 {
     int bestmode;
 
     // Find a best match mode
-    bestmode = _glfwGetClosestVideoMode(width, height, rate);
+    bestmode = _glfwGetClosestVideoMode(width, height);
 
     // Change mode
-    _glfwSetVideoModeMODE(bestmode, *rate);
+    _glfwSetVideoModeMODE(bestmode);
 }
 
 

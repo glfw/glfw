@@ -772,13 +772,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     {
         int bpp = colorBits + fbconfig->alphaBits;
 
-        if (!_glfwSetVideoMode(&window->width,
-                               &window->height,
-                               &bpp,
-                               &window->refreshRate))
-        {
+        if (!_glfwSetVideoMode(&window->width, &window->height, &bpp))
             return GL_FALSE;
-        }
 
         _glfwPlatformShowWindow(window);
         [[window->NS.object contentView] enterFullScreenMode:[NSScreen mainScreen]
@@ -883,14 +878,6 @@ void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     [window->NS.object orderOut:nil];
     _glfwInputWindowVisibility(window, GL_FALSE);
-}
-
-//========================================================================
-// Write back window parameters into GLFW window structure
-//========================================================================
-
-void _glfwPlatformRefreshWindowParams(_GLFWwindow* window)
-{
 }
 
 

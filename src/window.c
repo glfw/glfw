@@ -241,21 +241,20 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     fbconfig.sRGB           = _glfwLibrary.hints.sRGB ? GL_TRUE : GL_FALSE;
 
     // Set up desired window config
-    wndconfig.title          = title;
-    wndconfig.refreshRate    = Max(_glfwLibrary.hints.refreshRate, 0);
-    wndconfig.resizable      = _glfwLibrary.hints.resizable ? GL_TRUE : GL_FALSE;
-    wndconfig.visible        = _glfwLibrary.hints.visible ? GL_TRUE : GL_FALSE;
-    wndconfig.positionX      = _glfwLibrary.hints.positionX;
-    wndconfig.positionY      = _glfwLibrary.hints.positionY;
-    wndconfig.clientAPI      = _glfwLibrary.hints.clientAPI;
-    wndconfig.glMajor        = _glfwLibrary.hints.glMajor;
-    wndconfig.glMinor        = _glfwLibrary.hints.glMinor;
-    wndconfig.glForward      = _glfwLibrary.hints.glForward ? GL_TRUE : GL_FALSE;
-    wndconfig.glDebug        = _glfwLibrary.hints.glDebug ? GL_TRUE : GL_FALSE;
-    wndconfig.glProfile      = _glfwLibrary.hints.glProfile;
-    wndconfig.glRobustness   = _glfwLibrary.hints.glRobustness;
-    wndconfig.monitor        = (_GLFWmonitor*) monitor;
-    wndconfig.share          = (_GLFWwindow*) share;
+    wndconfig.title         = title;
+    wndconfig.resizable     = _glfwLibrary.hints.resizable ? GL_TRUE : GL_FALSE;
+    wndconfig.visible       = _glfwLibrary.hints.visible ? GL_TRUE : GL_FALSE;
+    wndconfig.positionX     = _glfwLibrary.hints.positionX;
+    wndconfig.positionY     = _glfwLibrary.hints.positionY;
+    wndconfig.clientAPI     = _glfwLibrary.hints.clientAPI;
+    wndconfig.glMajor       = _glfwLibrary.hints.glMajor;
+    wndconfig.glMinor       = _glfwLibrary.hints.glMinor;
+    wndconfig.glForward     = _glfwLibrary.hints.glForward ? GL_TRUE : GL_FALSE;
+    wndconfig.glDebug       = _glfwLibrary.hints.glDebug ? GL_TRUE : GL_FALSE;
+    wndconfig.glProfile     = _glfwLibrary.hints.glProfile;
+    wndconfig.glRobustness  = _glfwLibrary.hints.glRobustness;
+    wndconfig.monitor       = (_GLFWmonitor*) monitor;
+    wndconfig.share         = (_GLFWwindow*) share;
 
     // Check the OpenGL bits of the window config
     if (!_glfwIsValidContextConfig(&wndconfig))
@@ -294,9 +293,6 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
         glfwMakeContextCurrent(previous);
         return GL_FALSE;
     }
-
-    // Cache the actual (as opposed to requested) window parameters
-    _glfwPlatformRefreshWindowParams(window);
 
     glfwMakeContextCurrent(window);
 
@@ -403,9 +399,6 @@ GLFWAPI void glfwWindowHint(int target, int hint)
             break;
         case GLFW_STENCIL_BITS:
             _glfwLibrary.hints.stencilBits = hint;
-            break;
-        case GLFW_REFRESH_RATE:
-            _glfwLibrary.hints.refreshRate = hint;
             break;
         case GLFW_ACCUM_RED_BITS:
             _glfwLibrary.hints.accumRedBits = hint;
@@ -593,13 +586,6 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow handle, int width, int height)
         return;
 
     _glfwPlatformSetWindowSize(window, width, height);
-
-    if (window->monitor)
-    {
-        // Refresh window parameters (may have changed due to changed video
-        // modes)
-        _glfwPlatformRefreshWindowParams(window);
-    }
 }
 
 
@@ -642,9 +628,6 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow handle)
         return;
 
     _glfwPlatformRestoreWindow(window);
-
-    if (window->monitor)
-        _glfwPlatformRefreshWindowParams(window);
 }
 
 
@@ -712,8 +695,6 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window->iconified;
         case GLFW_CLOSE_REQUESTED:
             return window->closeRequested;
-        case GLFW_REFRESH_RATE:
-            return window->refreshRate;
         case GLFW_RESIZABLE:
             return window->resizable;
         case GLFW_VISIBLE:

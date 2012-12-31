@@ -32,6 +32,8 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
+
 #if defined(_MSC_VER)
  #include <malloc.h>
  #define strdup _strdup
@@ -192,6 +194,45 @@ void _glfwDestroyMonitors(void)
     free(_glfwLibrary.monitors);
     _glfwLibrary.monitors = NULL;
     _glfwLibrary.monitorCount = 0;
+}
+
+
+//========================================================================
+// Returns the video mode closest to the desired one
+//========================================================================
+
+const GLFWvidmode* _glfwChooseVideoMode(const GLFWvidmode* desired,
+                                        const GLFWvidmode* alternatives,
+                                        unsigned int count)
+{
+    unsigned int i;
+    unsigned int sizeDiff, leastSizeDiff = UINT_MAX;
+    unsigned int colorDiff, leastColorDiff = UINT_MAX;
+    const GLFWvidmode* current;
+    const GLFWvidmode* closest = NULL;
+
+    for (i = 0;  i < count;  i++)
+    {
+        current = alternatives + i;
+
+        colorDiff = abs((current->redBits + current->greenBits + current->blueBits) -
+                        (desired->redBits + desired->greenBits + desired->blueBits));
+
+        sizeDiff = abs((current->width - desired->width) *
+                       (current->width - desired->width) +
+                       (current->height - desired->height) *
+                       (current->height - desired->height));
+
+        if ((colorDiff < leastColorDiff) ||
+            (colorDiff == leastColorDiff && sizeDiff < leastSizeDiff))
+        {
+            closest = current;
+            leastSizeDiff = sizeDiff;
+            leastColorDiff = colorDiff;
+        }
+    }
+
+    return closest;
 }
 
 

@@ -378,6 +378,9 @@ void _glfwInputMonitorChange(void);
 //========================================================================
 
 // Fullscren management (fullscreen.c)
+const GLFWvidmode* _glfwChooseVideoMode(const GLFWvidmode* desired,
+                                        const GLFWvidmode* alternatives,
+                                        unsigned int count);
 int _glfwCompareVideoModes(const GLFWvidmode* first, const GLFWvidmode* second);
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 

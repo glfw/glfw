@@ -55,7 +55,8 @@ static GLboolean parseGLVersion(int* api, int* major, int* minor, int* rev)
     version = (const char*) glGetString(GL_VERSION);
     if (!version)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR, "Failed to retrieve version string");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Failed to retrieve context version string");
         return GL_FALSE;
     }
 
@@ -73,7 +74,8 @@ static GLboolean parseGLVersion(int* api, int* major, int* minor, int* rev)
 
     if (!sscanf(version, "%d.%d.%d", &_major, &_minor, &_rev))
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR, "No version found in version string");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "No version found in context version string");
         return GL_FALSE;
     }
 
@@ -262,7 +264,7 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
     if (wndconfig->clientAPI != GLFW_OPENGL_API &&
         wndconfig->clientAPI != GLFW_OPENGL_ES_API)
     {
-        _glfwSetError(GLFW_INVALID_ENUM, "Invalid client API requested");
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid client API requested");
         return GL_FALSE;
     }
 
@@ -278,9 +280,9 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
             // OpenGL 2.x series ended with version 2.1
             // OpenGL 3.x series ended with version 3.3
 
-            _glfwSetError(GLFW_INVALID_VALUE,
-                          "Invalid OpenGL version %i.%i requested",
-                          wndconfig->glMajor, wndconfig->glMinor);
+            _glfwInputError(GLFW_INVALID_VALUE,
+                            "Invalid OpenGL version %i.%i requested",
+                            wndconfig->glMajor, wndconfig->glMinor);
             return GL_FALSE;
         }
         else
@@ -293,8 +295,8 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
             if (wndconfig->glProfile != GLFW_OPENGL_CORE_PROFILE &&
                 wndconfig->glProfile != GLFW_OPENGL_COMPAT_PROFILE)
             {
-                _glfwSetError(GLFW_INVALID_ENUM,
-                              "Invalid OpenGL profile requested");
+                _glfwInputError(GLFW_INVALID_ENUM,
+                                "Invalid OpenGL profile requested");
                 return GL_FALSE;
             }
 
@@ -304,9 +306,9 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
                 // Desktop OpenGL context profiles are only defined for version 3.2
                 // and above
 
-                _glfwSetError(GLFW_INVALID_VALUE,
-                              "Context profiles only exist for "
-                              "OpenGL version 3.2 and above");
+                _glfwInputError(GLFW_INVALID_VALUE,
+                                "Context profiles only exist for "
+                                "OpenGL version 3.2 and above");
                 return GL_FALSE;
             }
         }
@@ -314,9 +316,9 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
         if (wndconfig->glForward && wndconfig->glMajor < 3)
         {
             // Forward-compatible contexts are only defined for OpenGL version 3.0 and above
-            _glfwSetError(GLFW_INVALID_VALUE,
-                          "Forward compatibility only exist for OpenGL "
-                          "version 3.0 and above");
+            _glfwInputError(GLFW_INVALID_VALUE,
+                            "Forward compatibility only exist for OpenGL "
+                            "version 3.0 and above");
             return GL_FALSE;
         }
     }
@@ -330,9 +332,9 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
             // OpenGL ES 1.x series ended with version 1.1
             // OpenGL ES 2.x series ended with version 2.0
 
-            _glfwSetError(GLFW_INVALID_VALUE,
-                          "Invalid OpenGL ES version %i.%i requested",
-                          wndconfig->glMajor, wndconfig->glMinor);
+            _glfwInputError(GLFW_INVALID_VALUE,
+                            "Invalid OpenGL ES version %i.%i requested",
+                            wndconfig->glMajor, wndconfig->glMinor);
             return GL_FALSE;
         }
         else
@@ -343,16 +345,16 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
         if (wndconfig->glProfile)
         {
             // OpenGL ES does not support profiles
-            _glfwSetError(GLFW_INVALID_VALUE,
-                          "Context profiles are not supported by OpenGL ES");
+            _glfwInputError(GLFW_INVALID_VALUE,
+                            "Context profiles are not supported by OpenGL ES");
             return GL_FALSE;
         }
 
         if (wndconfig->glForward)
         {
             // OpenGL ES does not support forward-compatibility
-            _glfwSetError(GLFW_INVALID_VALUE,
-                          "Forward compatibility is not supported by OpenGL ES");
+            _glfwInputError(GLFW_INVALID_VALUE,
+                            "Forward compatibility is not supported by OpenGL ES");
             return GL_FALSE;
         }
     }
@@ -362,8 +364,8 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
         if (wndconfig->glRobustness != GLFW_NO_RESET_NOTIFICATION &&
             wndconfig->glRobustness != GLFW_LOSE_CONTEXT_ON_RESET)
         {
-            _glfwSetError(GLFW_INVALID_VALUE,
-                          "Invalid OpenGL robustness mode requested");
+            _glfwInputError(GLFW_INVALID_VALUE,
+                            "Invalid context robustness mode requested");
             return GL_FALSE;
         }
     }
@@ -397,8 +399,8 @@ GLboolean _glfwRefreshContextParams(void)
         window->GetStringi = (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
         if (!window->GetStringi)
         {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "Entry point retrieval is broken");
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Entry point retrieval is broken");
             return GL_FALSE;
         }
     }
@@ -494,7 +496,7 @@ GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig)
         // For API consistency, we emulate the behavior of the
         // {GLX|WGL}_ARB_create_context extension and fail here
 
-        _glfwSetError(GLFW_VERSION_UNAVAILABLE, NULL);
+        _glfwInputError(GLFW_VERSION_UNAVAILABLE, NULL);
         return GL_FALSE;
     }
 
@@ -551,7 +553,7 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow handle)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
@@ -570,7 +572,7 @@ GLFWAPI GLFWwindow glfwGetCurrentContext(void)
 {
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return NULL;
     }
 
@@ -588,7 +590,7 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow handle)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
@@ -604,13 +606,13 @@ GLFWAPI void glfwSwapInterval(int interval)
 {
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
     if (!_glfwPlatformGetCurrentContext())
     {
-        _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
+        _glfwInputError(GLFW_NO_CURRENT_CONTEXT, NULL);
         return;
     }
 
@@ -629,20 +631,20 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return GL_FALSE;
     }
 
     window = _glfwPlatformGetCurrentContext();
     if (!window)
     {
-        _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
+        _glfwInputError(GLFW_NO_CURRENT_CONTEXT, NULL);
         return GL_FALSE;
     }
 
     if (extension == NULL || *extension == '\0')
     {
-        _glfwSetError(GLFW_INVALID_VALUE, NULL);
+        _glfwInputError(GLFW_INVALID_VALUE, NULL);
         return GL_FALSE;
     }
 
@@ -690,13 +692,13 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname)
 {
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return NULL;
     }
 
     if (!_glfwPlatformGetCurrentContext())
     {
-        _glfwSetError(GLFW_NO_CURRENT_CONTEXT, NULL);
+        _glfwInputError(GLFW_NO_CURRENT_CONTEXT, NULL);
         return NULL;
     }
 

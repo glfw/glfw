@@ -207,7 +207,7 @@ int main(void)
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
+    while (!glfwGetWindowParam(window, GLFW_SHOULD_CLOSE))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 

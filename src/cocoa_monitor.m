@@ -235,14 +235,14 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     displays = (CGDirectDisplayID*) calloc(monitorCount, sizeof(CGDirectDisplayID));
     if (!displays)
     {
-        _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
         return NULL;
     }
 
     monitors = (_GLFWmonitor**) calloc(monitorCount, sizeof(_GLFWmonitor*));
     if (!monitors)
     {
-        _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
         return NULL;
     }
 

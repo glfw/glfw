@@ -59,6 +59,10 @@ typedef struct _GLFWmonitor     _GLFWmonitor;
 
 #include "config.h"
 
+// Disable the inclusion of the platform glext.h by gl.h to allow proper
+// inclusion of our own, newer glext.h below
+#define GL_GLEXT_LEGACY
+
 #include "../include/GL/glfw3.h"
 
 // This path may need to be changed if you build GLFW using your own setup
@@ -368,6 +372,9 @@ void _glfwInputCursorEnter(_GLFWwindow* window, int entered);
 // Monitor event notification (monitor.c)
 void _glfwInputMonitorChange(void);
 
+// Error event notification (init.c)
+void _glfwInputError(int error, const char* format, ...);
+
 
 //========================================================================
 // Prototypes for internal utility functions
@@ -382,9 +389,6 @@ const GLFWvidmode* _glfwChooseVideoMode(const GLFWvidmode* desired,
                                         unsigned int count);
 int _glfwCompareVideoModes(const GLFWvidmode* first, const GLFWvidmode* second);
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
-
-// Error handling (init.c)
-void _glfwSetError(int error, const char* format, ...);
 
 // OpenGL context helpers (opengl.c)
 int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);

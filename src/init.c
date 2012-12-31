@@ -97,10 +97,10 @@ static const char* getErrorString(int error)
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Sets the current error value
+// Register error
 //========================================================================
 
-void _glfwSetError(int error, const char* format, ...)
+void _glfwInputError(int error, const char* format, ...)
 {
     if (_glfwErrorCallback)
     {

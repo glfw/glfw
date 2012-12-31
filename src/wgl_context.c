@@ -193,14 +193,14 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
 
     if (!available)
     {
-        _glfwSetError(GLFW_API_UNAVAILABLE, "WGL: No pixel formats found");
+        _glfwInputError(GLFW_API_UNAVAILABLE, "WGL: No pixel formats found");
         return NULL;
     }
 
     fbconfigs = (_GLFWfbconfig*) malloc(sizeof(_GLFWfbconfig) * available);
     if (!fbconfigs)
     {
-        _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
         return NULL;
     }
 
@@ -314,8 +314,8 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window, unsigned int* found)
 
     if (*found == 0)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Win32/WGL: No usable pixel formats found");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32/WGL: No usable pixel formats found");
 
         free(fbconfigs);
         return NULL;
@@ -346,15 +346,16 @@ static GLboolean createContext(_GLFWwindow* window,
 
     if (!DescribePixelFormat(window->WGL.DC, pixelFormat, sizeof(pfd), &pfd))
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Win32: Failed to retrieve PFD for selected pixel format");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to retrieve PFD for selected pixel "
+                        "format");
         return GL_FALSE;
     }
 
     if (!SetPixelFormat(window->WGL.DC, pixelFormat, &pfd))
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Win32: Failed to set selected pixel format");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to set selected pixel format");
         return GL_FALSE;
     }
 
@@ -416,8 +417,8 @@ static GLboolean createContext(_GLFWwindow* window,
                                                                   attribs);
         if (!window->WGL.context)
         {
-            _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                          "WGL: Failed to create OpenGL context");
+            _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+                            "WGL: Failed to create OpenGL context");
             return GL_FALSE;
         }
     }
@@ -426,8 +427,8 @@ static GLboolean createContext(_GLFWwindow* window,
         window->WGL.context = wglCreateContext(window->WGL.DC);
         if (!window->WGL.context)
         {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "WGL: Failed to create OpenGL context");
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "WGL: Failed to create OpenGL context");
             return GL_FALSE;
         }
 
@@ -435,9 +436,9 @@ static GLboolean createContext(_GLFWwindow* window,
         {
             if (!wglShareLists(share, window->WGL.context))
             {
-                _glfwSetError(GLFW_PLATFORM_ERROR,
-                              "WGL: Failed to enable sharing with specified "
-                              "OpenGL context");
+                _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "WGL: Failed to enable sharing with specified "
+                                "OpenGL context");
                 return GL_FALSE;
             }
         }
@@ -469,8 +470,8 @@ int _glfwCreateContext(_GLFWwindow* window,
     window->WGL.DC = GetDC(window->Win32.handle);
     if (!window->WGL.DC)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "Win32: Failed to retrieve DC for window");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to retrieve DC for window");
         return GL_FALSE;
     }
 
@@ -487,8 +488,8 @@ int _glfwCreateContext(_GLFWwindow* window,
         result = _glfwChooseFBConfig(fbconfig, fbconfigs, fbcount);
         if (!result)
         {
-            _glfwSetError(GLFW_FORMAT_UNAVAILABLE,
-                          "Win32/WGL: No pixel format matched the criteria");
+            _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
+                            "Win32/WGL: No pixel format matched the criteria");
 
             free(fbconfigs);
             return GL_FALSE;
@@ -538,10 +539,10 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
         {
             if (!window->WGL.ARB_create_context)
             {
-                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                              "WGL: A forward compatible OpenGL context "
-                              "requested but WGL_ARB_create_context is "
-                              "unavailable");
+                _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+                                "WGL: A forward compatible OpenGL context "
+                                "requested but WGL_ARB_create_context is "
+                                "unavailable");
                 return _GLFW_RECREATION_IMPOSSIBLE;
             }
 
@@ -552,9 +553,9 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
         {
             if (!window->WGL.ARB_create_context_profile)
             {
-                _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                              "WGL: OpenGL profile requested but "
-                              "WGL_ARB_create_context_profile is unavailable");
+                _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+                                "WGL: OpenGL profile requested but "
+                                "WGL_ARB_create_context_profile is unavailable");
                 return _GLFW_RECREATION_IMPOSSIBLE;
             }
 
@@ -567,9 +568,9 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
             !window->WGL.ARB_create_context_profile ||
             !window->WGL.EXT_create_context_es2_profile)
         {
-            _glfwSetError(GLFW_VERSION_UNAVAILABLE,
-                          "WGL: OpenGL ES requested but "
-                          "WGL_ARB_create_context_es2_profile is unavailable");
+            _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+                            "WGL: OpenGL ES requested but "
+                            "WGL_ARB_create_context_es2_profile is unavailable");
             return _GLFW_RECREATION_IMPOSSIBLE;
         }
 

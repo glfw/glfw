@@ -47,7 +47,7 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow handle)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return NULL;
     }
 
@@ -65,7 +65,7 @@ GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow handle)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return NULL;
     }
 

@@ -133,7 +133,7 @@ static GLboolean createWindow(_GLFWwindow* window,
             // TODO: Handle all the various error codes here and translate them
             // to GLFW errors
 
-            _glfwSetError(GLFW_PLATFORM_ERROR, "X11: Failed to create window");
+            _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Failed to create window");
             return GL_FALSE;
         }
 
@@ -197,8 +197,8 @@ static GLboolean createWindow(_GLFWwindow* window,
         XWMHints* hints = XAllocWMHints();
         if (!hints)
         {
-            _glfwSetError(GLFW_OUT_OF_MEMORY,
-                          "X11: Failed to allocate WM hints");
+            _glfwInputError(GLFW_OUT_OF_MEMORY,
+                            "X11: Failed to allocate WM hints");
             return GL_FALSE;
         }
 
@@ -214,8 +214,8 @@ static GLboolean createWindow(_GLFWwindow* window,
         XSizeHints* hints = XAllocSizeHints();
         if (!hints)
         {
-            _glfwSetError(GLFW_OUT_OF_MEMORY,
-                          "X11: Failed to allocate size hints");
+            _glfwInputError(GLFW_OUT_OF_MEMORY,
+                            "X11: Failed to allocate size hints");
             return GL_FALSE;
         }
 

@@ -90,7 +90,7 @@ int main(void)
         // Check if the ESC key was pressed or the window should be closed
         if (glfwGetKey(window, GLFW_KEY_ESCAPE))
             break;
-        if (glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
+        if (glfwGetWindowParam(window, GLFW_SHOULD_CLOSE))
             break;
     }
 

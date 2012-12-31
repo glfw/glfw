@@ -88,7 +88,7 @@ static int openJoystickDevice(int joy, const char* path)
     {
         close(fd);
 
-        _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
         return GL_FALSE;
     }
 
@@ -99,7 +99,7 @@ static int openJoystickDevice(int joy, const char* path)
         free(_glfwLibrary.X11.joystick[joy].axis);
         close(fd);
 
-        _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
         return GL_FALSE;
     }
 
@@ -193,7 +193,7 @@ int _glfwInitJoysticks(void)
 
     if (regcomp(&regex, "^js[0-9]\\+$", 0) != 0)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR, "X11: Failed to compile regex");
+        _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Failed to compile regex");
         return GL_FALSE;
     }
 
@@ -280,7 +280,7 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
             return _glfwLibrary.X11.joystick[joy].numButtons;
 
         default:
-            _glfwSetError(GLFW_INVALID_ENUM, NULL);
+            _glfwInputError(GLFW_INVALID_ENUM, NULL);
     }
 
     return 0;

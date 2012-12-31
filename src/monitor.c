@@ -87,7 +87,7 @@ _GLFWmonitor* _glfwCreateMonitor(const char* name,
     _GLFWmonitor* monitor = (_GLFWmonitor*) calloc(1, sizeof(_GLFWmonitor));
     if (!monitor)
     {
-        _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
         return NULL;
     }
 
@@ -284,13 +284,13 @@ GLFWAPI const GLFWmonitor* glfwGetMonitors(int* count)
 {
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return NULL;
     }
 
     if (count == NULL)
     {
-        _glfwSetError(GLFW_INVALID_VALUE, NULL);
+        _glfwInputError(GLFW_INVALID_VALUE, NULL);
         return NULL;
     }
 
@@ -310,7 +310,7 @@ GLFWAPI GLFWmonitor glfwGetPrimaryMonitor(void)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return NULL;
     }
 
@@ -325,7 +325,7 @@ GLFWAPI GLFWmonitor glfwGetPrimaryMonitor(void)
 
     if (!handle)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR, NULL);
+        _glfwInputError(GLFW_PLATFORM_ERROR, NULL);
         return NULL;
     }
 
@@ -343,14 +343,14 @@ GLFWAPI int glfwGetMonitorParam(GLFWmonitor handle, int param)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return 0;
     }
 
     if (monitor == NULL)
     {
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwGetMonitorParam: Invalid monitor handle");
+        _glfwInputError(GLFW_INVALID_VALUE,
+                        "glfwGetMonitorParam: Invalid monitor handle");
         return 0;
     }
 
@@ -366,8 +366,8 @@ GLFWAPI int glfwGetMonitorParam(GLFWmonitor handle, int param)
             return monitor->positionY;
     }
 
-    _glfwSetError(GLFW_INVALID_ENUM,
-                  "glfwGetMonitorParam: Invalid enum value for 'param' parameter");
+    _glfwInputError(GLFW_INVALID_ENUM,
+                    "glfwGetMonitorParam: Invalid enum value for 'param' parameter");
     return 0;
 }
 
@@ -382,14 +382,14 @@ GLFWAPI const char* glfwGetMonitorName(GLFWmonitor handle)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return NULL;
     }
 
     if (monitor == NULL)
     {
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwGetMonitorString: Invalid monitor handle");
+        _glfwInputError(GLFW_INVALID_VALUE,
+                        "glfwGetMonitorString: Invalid monitor handle");
         return NULL;
     }
 
@@ -405,7 +405,7 @@ GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 {
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
@@ -423,20 +423,20 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor handle, int* count)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return NULL;
     }
 
     if (monitor == NULL)
     {
-        _glfwSetError(GLFW_INVALID_VALUE,
-                      "glfwGetVideoModes: Invalid monitor handle");
+        _glfwInputError(GLFW_INVALID_VALUE,
+                        "glfwGetVideoModes: Invalid monitor handle");
         return 0;
     }
 
     if (count == NULL)
     {
-        _glfwSetError(GLFW_INVALID_VALUE, NULL);
+        _glfwInputError(GLFW_INVALID_VALUE, NULL);
         return NULL;
     }
 
@@ -466,13 +466,13 @@ GLFWAPI void glfwGetVideoMode(GLFWmonitor handle, GLFWvidmode* mode)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
     if (mode == NULL)
     {
-        _glfwSetError(GLFW_INVALID_VALUE, NULL);
+        _glfwInputError(GLFW_INVALID_VALUE, NULL);
         return;
     }
 

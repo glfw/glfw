@@ -614,7 +614,7 @@ int main( void )
        /* Check if we are still running */
        if (glfwGetKey( window, GLFW_KEY_ESCAPE ))
            break;
-       if (glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
+       if (glfwGetWindowParam(window, GLFW_SHOULD_CLOSE))
            break;
    }
 

@@ -219,7 +219,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         {
             XRRFreeScreenResources(sr);
 
-            _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+            _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
             return NULL;
         }
 
@@ -319,7 +319,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         result = (GLFWvidmode*) malloc(sizeof(GLFWvidmode) * count);
         if (!result)
         {
-            _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+            _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
             return NULL;
         }
 
@@ -373,7 +373,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         result = (GLFWvidmode*) malloc(sizeof(GLFWvidmode));
         if (!result)
         {
-            _glfwSetError(GLFW_OUT_OF_MEMORY, NULL);
+            _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
             return NULL;
         }
 
@@ -406,8 +406,8 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
                                    _glfwLibrary.X11.root);
         if (!sr)
         {
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "X11: Failed to retrieve RandR screen resources");
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Failed to retrieve RandR screen resources");
             return;
         }
 
@@ -417,8 +417,8 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
         {
             XRRFreeScreenResources(sr);
 
-            _glfwSetError(GLFW_PLATFORM_ERROR,
-                          "X11: Failed to retrieve RandR crtc info");
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Failed to retrieve RandR crtc info");
             return;
         }
 

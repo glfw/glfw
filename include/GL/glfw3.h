@@ -470,11 +470,11 @@ extern "C" {
  *  otherwise.
  *  @see glfwGetWindowParam
  */
-#define GLFW_CLOSE_REQUESTED      0x00020003
+#define GLFW_SHOULD_CLOSE         0x00020003
 /*! @brief The client API version revision.
  *  @see glfwGetWindowParam
  */
-#define GLFW_CONTEXT_REVISION      0x00020004
+#define GLFW_CONTEXT_REVISION     0x00020004
 
 /*! @brief The bit depth of the red component of the color buffer.
  *  @see glfwWindowHint
@@ -528,7 +528,7 @@ extern "C" {
  *  zero to disable multisampling.
  *  @see glfwWindowHint
  */
-#define GLFW_FSAA_SAMPLES         0x0002100C
+#define GLFW_SAMPLES              0x0002100C
 /*! @brief @c GL_TRUE if the framebuffer should be sRGB capable, or @c GL_FALSE
  *  otherwise.
  *  @see glfwWindowHint
@@ -1151,8 +1151,8 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *
  *  The @ref GLFW_STEREO hint specifies whether to use stereoscopic rendering.
  *
- *  The @ref GLFW_FSAA_SAMPLES hint specifies the desired number of samples to
- *  use for multisampling.
+ *  The @ref GLFW_SAMPLES hint specifies the desired number of samples to use
+ *  for multisampling.
  *
  *  The @ref GLFW_SRGB_CAPABLE hint specifies whether the framebuffer should be
  *  sRGB capable.
@@ -1388,7 +1388,7 @@ GLFWAPI GLFWmonitor glfwGetWindowMonitor(GLFWwindow window);
  *  The @ref GLFW_RESIZABLE property indicates whether the window is resizable
  *  by the user.
  *
- *  The @ref GLFW_CLOSE_REQUESTED property indicates whether the window has been
+ *  The @ref GLFW_SHOULD_CLOSE property indicates whether the window has been
  *  requested by the user to close.
  *
  *  The @ref GLFW_POSITION_X and @ref GLFW_POSITION_Y properties indicate the
@@ -1464,7 +1464,7 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfu
  *  callback to be called.
  *
  *  The return value of the close callback becomes the new value of the @ref
- *  GLFW_CLOSE_REQUESTED window parameter.
+ *  GLFW_SHOULD_CLOSE window parameter.
  */
 GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cbfun);
 

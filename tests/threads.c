@@ -121,7 +121,7 @@ int main(void)
 
         for (i = 0;  i < count;  i++)
         {
-            if (glfwGetWindowParam(threads[i].window, GLFW_CLOSE_REQUESTED))
+            if (glfwGetWindowParam(threads[i].window, GLFW_SHOULD_CLOSE))
                 running = GL_FALSE;
         }
     }

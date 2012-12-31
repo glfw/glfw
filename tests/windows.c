@@ -82,7 +82,7 @@ int main(void)
             glClear(GL_COLOR_BUFFER_BIT);
             glfwSwapBuffers(windows[i]);
 
-            if (glfwGetWindowParam(windows[i], GLFW_CLOSE_REQUESTED))
+            if (glfwGetWindowParam(windows[i], GLFW_SHOULD_CLOSE))
                 running = GL_FALSE;
         }
 

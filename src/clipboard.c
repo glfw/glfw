@@ -47,7 +47,7 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow handle, const char* string)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
@@ -65,7 +65,7 @@ GLFWAPI const char* glfwGetClipboardString(GLFWwindow handle)
 
     if (!_glfwInitialized)
     {
-        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return NULL;
     }
 

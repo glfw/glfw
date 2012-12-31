@@ -108,7 +108,7 @@ int main(void)
 
     set_swap_interval(window, swap_interval);
 
-    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
+    while (!glfwGetWindowParam(window, GLFW_SHOULD_CLOSE))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 

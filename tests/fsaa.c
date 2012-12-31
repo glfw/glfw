@@ -97,7 +97,7 @@ int main(int argc, char** argv)
     else
         printf("Requesting that FSAA not be available\n");
 
-    glfwWindowHint(GLFW_FSAA_SAMPLES, samples);
+    glfwWindowHint(GLFW_SAMPLES, samples);
 
     window = glfwCreateWindow(800, 400, "Aliasing Detector", NULL, NULL);
     if (!window)
@@ -128,7 +128,7 @@ int main(int argc, char** argv)
     gluOrtho2D(0.f, 1.f, 0.f, 0.5f);
     glMatrixMode(GL_MODELVIEW);
 
-    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
+    while (!glfwGetWindowParam(window, GLFW_SHOULD_CLOSE))
     {
         GLfloat time = (GLfloat) glfwGetTime();
 

@@ -301,6 +301,7 @@ version of GLFW.</p>
   <li>Renamed <code>glfw.h</code> to <code>glfw3.h</code> to avoid conflicts with 2.x series</li>
   <li>Renamed <code>glfwOpenWindowHint</code> to <code>glfwWindowHint</code></li>
   <li>Renamed <code>GLFW_ACTIVE</code> to <code>GLFW_FOCUSED</code></li>
+  <li>Renamed <code>GLFW_FSAA_SAMPLES</code> to <code>GLFW_SAMPLES</code></li>
   <li>Renamed <code>GLFW_WINDOW</code> token to <code>GLFW_WINDOWED</code></li>
   <li>Renamed <code>GLFW_WINDOW_NO_RESIZE</code> to <code>GLFW_RESIZABLE</code></li>
   <li>Renamed <code>GLFW_BUILD_DLL</code> to <code>_GLFW_BUILD_DLL</code></li>
@@ -314,7 +315,7 @@ version of GLFW.</p>
   <li>Replaced mouse wheel interface with two-dimensional, floating point scrolling interface</li>
   <li>Replaced <code>glfwEnable</code> and <code>glfwDisable</code> with <code>glfwGetInputMode</code> and <code>glfwSetInputMode</code></li>
   <li>Replaced <code>joystick</code> test with graphical version</li>
-  <li>Replaced automatic closing of windows with <code>GLFW_CLOSE_REQUESTED</code> window parameter</li>
+  <li>Replaced automatic closing of windows with <code>GLFW_SHOULD_CLOSE</code> window parameter</li>
   <li>Removed the <code>GLFW_KEY_REPEAT</code> input option</li>
   <li>Removed event auto-polling and the <code>GLFW_AUTO_POLL_EVENTS</code> window enable</li>
   <li>Removed the Win32 port .def files</li>

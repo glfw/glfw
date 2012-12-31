@@ -386,7 +386,7 @@ int main(void)
 
     printf("Main loop starting\n");
 
-    while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
+    while (!glfwGetWindowParam(window, GLFW_SHOULD_CLOSE))
         glfwWaitEvents();
 
     glfwTerminate();

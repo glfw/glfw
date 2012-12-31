@@ -442,7 +442,7 @@ GLFWAPI void glfwWindowHint(int target, int hint)
         case GLFW_POSITION_Y:
             _glfwLibrary.hints.positionY = hint;
             break;
-        case GLFW_FSAA_SAMPLES:
+        case GLFW_SAMPLES:
             _glfwLibrary.hints.samples = hint;
             break;
         case GLFW_SRGB_CAPABLE:
@@ -715,7 +715,7 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
             return window == _glfwLibrary.focusedWindow;
         case GLFW_ICONIFIED:
             return window->iconified;
-        case GLFW_CLOSE_REQUESTED:
+        case GLFW_SHOULD_CLOSE:
             return window->closeRequested;
         case GLFW_REFRESH_RATE:
             return window->refreshRate;

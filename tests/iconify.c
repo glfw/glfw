@@ -100,6 +100,11 @@ int main(int argc, char** argv)
     GLFWmonitor monitor = NULL;
     GLFWwindow window;
 
+    glfwSetErrorCallback(error_callback);
+
+    if (!glfwInit())
+        exit(EXIT_FAILURE);
+
     while ((ch = getopt(argc, argv, "fh")) != -1)
     {
         switch (ch)
@@ -117,11 +122,6 @@ int main(int argc, char** argv)
                 exit(EXIT_FAILURE);
         }
     }
-
-    glfwSetErrorCallback(error_callback);
-
-    if (!glfwInit())
-        exit(EXIT_FAILURE);
 
     if (monitor)
     {

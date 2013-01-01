@@ -1024,23 +1024,6 @@ GLFWAPI int glfwGetMonitorParam(GLFWmonitor monitor, int param);
  */
 GLFWAPI const char* glfwGetMonitorName(GLFWmonitor monitor);
 
-/*! @brief Sets the user pointer of the specified monitor.
- *  @param[in] monitor The monitor whose pointer to set.
- *  @param[in] pointer The new value.
- *  @ingroup monitor
- *
- *  @see glfwGetMonitorUserPointer
- */
-GLFWAPI void glfwSetMonitorUserPointer(GLFWmonitor monitor, void* pointer);
-
-/*! @brief Returns the user pointer of the specified monitor.
- *  @param[in] monitor The monitor whose pointer to return.
- *  @ingroup monitor
- *
- *  @sa glfwSetMonitorUserPointer
- */
-GLFWAPI void* glfwGetMonitorUserPointer(GLFWmonitor monitor);
-
 /*! @brief Sets the monitor configuration callback.
  *  @param[in] cbfun The new callback, or @c NULL to remove the currently set.
  *  @ingroup monitor

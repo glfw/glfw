@@ -227,8 +227,6 @@ struct _GLFWwindow
 //------------------------------------------------------------------------
 struct _GLFWmonitor
 {
-    void*     userPointer;
-
     char*     name;
 
     GLboolean primary;

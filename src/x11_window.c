@@ -337,7 +337,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
         _glfw.x11.saver.changed = GL_TRUE;
     }
 
-    _glfwSetVideoMode(&window->width, &window->height);
+    _glfwSetVideoMode(window->monitor, &window->width, &window->height);
 
     if (_glfw.x11.hasEWMH &&
         _glfw.x11.wmState != None &&
@@ -416,7 +416,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
 
 static void leaveFullscreenMode(_GLFWwindow* window)
 {
-    _glfwRestoreVideoMode();
+    _glfwRestoreVideoMode(window->monitor);
 
     if (_glfw.x11.saver.changed)
     {
@@ -977,7 +977,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     if (window->monitor)
     {
         // Get the closest matching video mode for the specified window size
-        mode = _glfwGetClosestVideoMode(&width, &height);
+        mode = _glfwGetClosestVideoMode(window->monitor, &width, &height);
     }
 
     if (!window->resizable)
@@ -1003,7 +1003,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
             sizeChanged = GL_TRUE;
         }
 
-        _glfwSetVideoModeMODE(mode);
+        _glfwSetVideoModeMODE(window->monitor, mode);
     }
 
     // Set window size (if not already changed)

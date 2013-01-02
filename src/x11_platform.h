@@ -173,20 +173,6 @@ typedef struct _GLFWlibraryX11
         int         exposure;
     } saver;
 
-    // Fullscreen data
-    struct {
-        GLboolean   modeChanged;
-#if defined(_GLFW_HAS_XRANDR)
-        SizeID      oldSizeID;
-        int         oldWidth;
-        int         oldHeight;
-        Rotation    oldRotation;
-#endif /*_GLFW_HAS_XRANDR*/
-#if defined(_GLFW_HAS_XF86VIDMODE)
-        XF86VidModeModeInfo oldMode;
-#endif /*_GLFW_HAS_XF86VIDMODE*/
-    } fs;
-
     // Timer data
     struct {
         GLboolean   monotonic;
@@ -223,10 +209,14 @@ typedef struct _GLFWlibraryX11
 //------------------------------------------------------------------------
 typedef struct _GLFWmonitorX11
 {
+    GLboolean       modeChanged;
+
 #if defined(_GLFW_HAS_XRANDR)
     XRROutputInfo*  output;
-#else
-    int             dummy;
+    SizeID          oldSizeID;
+    int             oldWidth;
+    int             oldHeight;
+    Rotation        oldRotation;
 #endif /*_GLFW_HAS_XRANDR*/
 
 } _GLFWmonitorX11;
@@ -252,10 +242,10 @@ int _glfwCreateContext(_GLFWwindow* window,
 void _glfwDestroyContext(_GLFWwindow* window);
 
 // Fullscreen support
-int  _glfwGetClosestVideoMode(int* width, int* height);
-void _glfwSetVideoModeMODE(int mode);
-void _glfwSetVideoMode(int* width, int* height);
-void _glfwRestoreVideoMode(void);
+int  _glfwGetClosestVideoMode(_GLFWmonitor* monitor, int* width, int* height);
+void _glfwSetVideoModeMODE(_GLFWmonitor* monitor, int mode);
+void _glfwSetVideoMode(_GLFWmonitor* monitor, int* width, int* height);
+void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
 // Joystick input
 int  _glfwInitJoysticks(void);

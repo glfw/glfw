@@ -284,7 +284,16 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     window->height     = height;
     window->resizable  = wndconfig.resizable;
     window->cursorMode = GLFW_CURSOR_NORMAL;
-    window->monitor    = (_GLFWmonitor*) monitor;
+
+    window->monitor = wndconfig.monitor;
+    if (window->monitor)
+    {
+        window->videoMode.width     = width;
+        window->videoMode.height    = height;
+        window->videoMode.redBits   = fbconfig.redBits;
+        window->videoMode.greenBits = fbconfig.greenBits;
+        window->videoMode.blueBits  = fbconfig.blueBits;
+    }
 
     // Open the actual window and create its context
     if (!_glfwPlatformCreateWindow(window, &wndconfig, &fbconfig))

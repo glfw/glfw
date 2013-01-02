@@ -43,7 +43,7 @@
 // Finds the video mode closest in size to the specified desired size
 //========================================================================
 
-int _glfwGetClosestVideoMode(int* width, int* height)
+int _glfwGetClosestVideoMode(_GLFWmonitor* monitor, int* width, int* height)
 {
     int i, match, bestmatch;
 
@@ -100,7 +100,7 @@ int _glfwGetClosestVideoMode(int* width, int* height)
 // Change the current video mode
 //========================================================================
 
-void _glfwSetVideoModeMODE(int mode)
+void _glfwSetVideoModeMODE(_GLFWmonitor* monitor, int mode)
 {
     if (_glfw.x11.randr.available)
     {
@@ -112,15 +112,15 @@ void _glfwSetVideoModeMODE(int mode)
         sc   = XRRGetScreenInfo(_glfw.x11.display, root);
 
         // Remember old size and flag that we have changed the mode
-        if (!_glfw.x11.fs.modeChanged)
+        if (!monitor->x11.modeChanged)
         {
-            _glfw.x11.fs.oldSizeID = XRRConfigCurrentConfiguration(sc, &_glfw.x11.fs.oldRotation);
-            _glfw.x11.fs.oldWidth  = DisplayWidth(_glfw.x11.display,
+            monitor->x11.oldSizeID = XRRConfigCurrentConfiguration(sc, &monitor->x11.oldRotation);
+            monitor->x11.oldWidth  = DisplayWidth(_glfw.x11.display,
                                                   _glfw.x11.screen);
-            _glfw.x11.fs.oldHeight = DisplayHeight(_glfw.x11.display,
+            monitor->x11.oldHeight = DisplayHeight(_glfw.x11.display,
                                                    _glfw.x11.screen);
 
-            _glfw.x11.fs.modeChanged = GL_TRUE;
+            monitor->x11.modeChanged = GL_TRUE;
         }
 
         XRRSetScreenConfig(_glfw.x11.display,
@@ -140,15 +140,15 @@ void _glfwSetVideoModeMODE(int mode)
 // Change the current video mode
 //========================================================================
 
-void _glfwSetVideoMode(int* width, int* height)
+void _glfwSetVideoMode(_GLFWmonitor* monitor, int* width, int* height)
 {
     int bestmode;
 
     // Find a best match mode
-    bestmode = _glfwGetClosestVideoMode(width, height);
+    bestmode = _glfwGetClosestVideoMode(monitor, width, height);
 
     // Change mode
-    _glfwSetVideoModeMODE(bestmode);
+    _glfwSetVideoModeMODE(monitor, bestmode);
 }
 
 
@@ -156,33 +156,30 @@ void _glfwSetVideoMode(int* width, int* height)
 // Restore the previously saved (original) video mode
 //========================================================================
 
-void _glfwRestoreVideoMode(void)
+void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 {
-    if (_glfw.x11.fs.modeChanged)
+    if (!monitor->x11.modeChanged)
+        return;
+
+    if (_glfw.x11.randr.available)
     {
-        if (_glfw.x11.randr.available)
-        {
 #if defined(_GLFW_HAS_XRANDR)
-            XRRScreenConfiguration* sc;
+        XRRScreenConfiguration* sc;
 
-            if (_glfw.x11.randr.available)
-            {
-                sc = XRRGetScreenInfo(_glfw.x11.display, _glfw.x11.root);
+        sc = XRRGetScreenInfo(_glfw.x11.display, _glfw.x11.root);
 
-                XRRSetScreenConfig(_glfw.x11.display,
-                                   sc,
-                                   _glfw.x11.root,
-                                   _glfw.x11.fs.oldSizeID,
-                                   _glfw.x11.fs.oldRotation,
-                                   CurrentTime);
+        XRRSetScreenConfig(_glfw.x11.display,
+                           sc,
+                           _glfw.x11.root,
+                           monitor->x11.oldSizeID,
+                           monitor->x11.oldRotation,
+                           CurrentTime);
 
-                XRRFreeScreenConfigInfo(sc);
-            }
+        XRRFreeScreenConfigInfo(sc);
 #endif /*_GLFW_HAS_XRANDR*/
-        }
-
-        _glfw.x11.fs.modeChanged = GL_FALSE;
     }
+
+    monitor->x11.modeChanged = GL_FALSE;
 }
 
 

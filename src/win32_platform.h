@@ -162,14 +162,6 @@ typedef struct _GLFWlibraryWin32
     DWORD               foregroundLockTimeout;
     char*               clipboardString;
 
-    // Default monitor
-    struct {
-        GLboolean       modeChanged;
-        int             width;
-        int             height;
-        int             bitsPerPixel;
-    } monitor;
-
     // Timer data
     struct {
         GLboolean       hasPC;
@@ -231,8 +223,8 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
                         const _GLFWfbconfig* fbconfig);
 
 // Fullscreen support
-void _glfwSetVideoMode(int* width, int* height, int* bpp, GLboolean exactBPP);
-void _glfwRestoreVideoMode(void);
+int _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* mode);
+void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
 
 #endif // _win32_platform_h_

@@ -356,11 +356,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                         _glfwPlatformIconifyWindow(window);
                     }
 
-                    if (_glfw.win32.monitor.modeChanged)
-                    {
-                        _glfwRestoreVideoMode();
-                        _glfw.win32.monitor.modeChanged = GL_FALSE;
-                    }
+                    _glfwRestoreVideoMode(window->monitor);
                 }
             }
             else if (focused && _glfw.focusedWindow != window)
@@ -371,17 +367,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     captureCursor(window);
 
                 if (window->monitor)
-                {
-                    if (!_glfw.win32.monitor.modeChanged)
-                    {
-                        _glfwSetVideoMode(&_glfw.win32.monitor.width,
-                                          &_glfw.win32.monitor.height,
-                                          &_glfw.win32.monitor.bitsPerPixel,
-                                          GL_TRUE);
-
-                        _glfw.win32.monitor.modeChanged = GL_TRUE;
-                    }
-                }
+                    _glfwSetVideoMode(window->monitor, &window->videoMode);
             }
 
             _glfwInputWindowFocus(window, focused);
@@ -876,20 +862,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (window->monitor)
     {
-        int bpp = fbconfig->redBits + fbconfig->greenBits + fbconfig->blueBits;
-        if (bpp < 15 || bpp >= 24)
-            bpp = 32;
-
-        _glfw.win32.monitor.width = window->width;
-        _glfw.win32.monitor.height = window->height;
-        _glfw.win32.monitor.bitsPerPixel = bpp;
-
-        _glfwSetVideoMode(&_glfw.win32.monitor.width,
-                          &_glfw.win32.monitor.height,
-                          &_glfw.win32.monitor.bitsPerPixel,
-                          GL_FALSE);
-
-        _glfw.win32.monitor.modeChanged = GL_TRUE;
+        if (!_glfwSetVideoMode(window->monitor, &window->videoMode))
+            return GL_FALSE;
     }
 
     if (!createWindow(window, wndconfig, fbconfig))
@@ -952,13 +926,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     destroyWindow(window);
 
     if (window->monitor)
-    {
-        if (_glfw.win32.monitor.modeChanged)
-        {
-            _glfwRestoreVideoMode();
-            _glfw.win32.monitor.modeChanged = GL_FALSE;
-        }
-    }
+        _glfwRestoreVideoMode(window->monitor);
 }
 
 

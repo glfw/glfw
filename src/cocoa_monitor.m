@@ -139,7 +139,7 @@ static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode)
 // Change the current video mode
 //========================================================================
 
-GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp)
+GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, int* width, int* height, int* bpp)
 {
     CGDisplayModeRef bestMode = NULL;
     CFArrayRef modes;
@@ -190,7 +190,7 @@ GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp)
         return GL_FALSE;
     }
 
-    _glfw.ns.previousMode = CGDisplayCopyDisplayMode(CGMainDisplayID());
+    monitor->ns.previousMode = CGDisplayCopyDisplayMode(CGMainDisplayID());
 
     CGDisplayCapture(CGMainDisplayID());
     CGDisplaySetDisplayMode(CGMainDisplayID(), bestMode, NULL);
@@ -204,9 +204,9 @@ GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp)
 // Restore the previously saved (original) video mode
 //========================================================================
 
-void _glfwRestoreVideoMode(void)
+void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 {
-    CGDisplaySetDisplayMode(CGMainDisplayID(), _glfw.ns.previousMode, NULL);
+    CGDisplaySetDisplayMode(CGMainDisplayID(), monitor->ns.previousMode, NULL);
     CGDisplayRelease(CGMainDisplayID());
 }
 
@@ -235,6 +235,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
         return NULL;
     }
+
+    CGGetActiveDisplayList(monitorCount, displays, &monitorCount);
 
     monitors = (_GLFWmonitor**) calloc(monitorCount, sizeof(_GLFWmonitor*));
     if (!monitors)

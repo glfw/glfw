@@ -209,6 +209,7 @@ struct _GLFWwindow
     GLboolean           visible;
     GLboolean           closeRequested;
     void*               userPointer;
+    GLFWvidmode         videoMode;
     _GLFWmonitor*       monitor;
 
     // Window input state
@@ -639,9 +640,8 @@ void _glfwInputError(int error, const char* format, ...);
 
 /*! @ingroup utility
  */
-const GLFWvidmode* _glfwChooseVideoMode(const GLFWvidmode* desired,
-                                        const GLFWvidmode* alternatives,
-                                        unsigned int count);
+const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
+                                        const GLFWvidmode* desired);
 
 /*! @brief Performs lexical comparison between two @ref GLFWvidmode structures.
  *  @ingroup utility

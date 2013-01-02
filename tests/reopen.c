@@ -76,9 +76,6 @@ static GLboolean open_window(int width, int height, GLFWmonitor monitor)
 {
     double base;
 
-    if (!glfwInit())
-        return GL_FALSE;
-
     base = glfwGetTime();
 
     window_handle = glfwCreateWindow(width, height, "Window Re-opener", monitor, NULL);
@@ -114,6 +111,9 @@ int main(int argc, char** argv)
     int count = 0;
 
     glfwSetErrorCallback(error_callback);
+
+    if (!glfwInit())
+        exit(EXIT_FAILURE);
 
     for (;;)
     {
@@ -161,5 +161,7 @@ int main(int argc, char** argv)
 
         count++;
     }
+
+    glfwTerminate();
 }
 

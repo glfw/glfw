@@ -772,7 +772,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     {
         int bpp = colorBits + fbconfig->alphaBits;
 
-        if (!_glfwSetVideoMode(&window->width, &window->height, &bpp))
+        if (!_glfwSetVideoMode(window->monitor, &window->width, &window->height, &bpp))
             return GL_FALSE;
 
         _glfwPlatformShowWindow(window);
@@ -800,7 +800,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     {
         [[window->ns.object contentView] exitFullScreenModeWithOptions:nil];
 
-        _glfwRestoreVideoMode();
+        _glfwRestoreVideoMode(window->monitor);
     }
 
     _glfwDestroyContext(window);

@@ -83,7 +83,6 @@ typedef struct _GLFWlibraryNS
         double      resolution;
     } timer;
 
-    CGDisplayModeRef previousMode;
     CGEventSourceRef eventSource;
     id              delegate;
     id              autoreleasePool;
@@ -98,6 +97,7 @@ typedef struct _GLFWlibraryNS
 typedef struct _GLFWmonitorNS
 {
     CGDirectDisplayID displayID;
+    CGDisplayModeRef previousMode;
 
 } _GLFWmonitorNS;
 
@@ -114,8 +114,8 @@ void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
 // Fullscreen
-GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp);
-void _glfwRestoreVideoMode(void);
+GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, int* width, int* height, int* bpp);
+void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
 // OpenGL support
 int _glfwInitOpenGL(void);

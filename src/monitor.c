@@ -71,6 +71,28 @@ static int compareVideoModes(const void* firstPtr, const void* secondPtr)
 }
 
 
+//========================================================================
+// Retrieves the available modes for the specified monitor
+//========================================================================
+
+static int refreshVideoModes(_GLFWmonitor* monitor)
+{
+    int modeCount;
+
+    GLFWvidmode* modes = _glfwPlatformGetVideoModes(monitor, &modeCount);
+    if (!modes)
+        return GL_FALSE;
+
+    qsort(modes, modeCount, sizeof(GLFWvidmode), compareVideoModes);
+
+    free(monitor->modes);
+    monitor->modes = modes;
+    monitor->modeCount = modeCount;
+
+    return GL_TRUE;
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -203,9 +225,8 @@ void _glfwDestroyMonitors(void)
 // Returns the video mode closest to the desired one
 //========================================================================
 
-const GLFWvidmode* _glfwChooseVideoMode(const GLFWvidmode* desired,
-                                        const GLFWvidmode* alternatives,
-                                        unsigned int count)
+const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
+                                        const GLFWvidmode* desired)
 {
     unsigned int i;
     unsigned int sizeDiff, leastSizeDiff = UINT_MAX;
@@ -213,9 +234,12 @@ const GLFWvidmode* _glfwChooseVideoMode(const GLFWvidmode* desired,
     const GLFWvidmode* current;
     const GLFWvidmode* closest = NULL;
 
-    for (i = 0;  i < count;  i++)
+    if (!refreshVideoModes(monitor))
+        return NULL;
+
+    for (i = 0;  i < monitor->modeCount;  i++)
     {
-        current = alternatives + i;
+        current = monitor->modes + i;
 
         colorDiff = abs((current->redBits + current->greenBits + current->blueBits) -
                         (desired->redBits + desired->greenBits + desired->blueBits));
@@ -440,16 +464,8 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor handle, int* count)
         return NULL;
     }
 
-    free(monitor->modes);
-
-    monitor->modes = _glfwPlatformGetVideoModes(monitor, &monitor->modeCount);
-    if (monitor->modes)
-    {
-        qsort(monitor->modes,
-              monitor->modeCount,
-              sizeof(GLFWvidmode),
-              compareVideoModes);
-    }
+    if (!refreshVideoModes(monitor))
+        return GL_FALSE;
 
     *count = monitor->modeCount;
     return monitor->modes;

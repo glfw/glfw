@@ -44,60 +44,6 @@
 #endif
 
 
-//========================================================================
-// Return closest video mode by dimensions and bits per pixel
-//========================================================================
-
-static GLboolean getClosestVideoMode(int* width, int* height,
-                                     int* bpp, GLboolean exactBPP)
-{
-    int mode, bestWidth = 0, bestHeight = 0, bestBPP = 0;
-    unsigned int sizeDiff, leastSizeDiff;
-    GLboolean foundMode = GL_FALSE;
-    DEVMODE dm;
-
-    leastSizeDiff = UINT_MAX;
-
-    for (mode = 0;  ;  mode++)
-    {
-        dm.dmSize = sizeof(DEVMODE);
-        if (!EnumDisplaySettings(NULL, mode, &dm))
-            break;
-
-        if (exactBPP && dm.dmBitsPerPel != *bpp)
-            continue;
-
-        sizeDiff = (abs(dm.dmBitsPerPel - *bpp) << 25) |
-                   ((dm.dmPelsWidth - *width) *
-                    (dm.dmPelsWidth - *width) +
-                    (dm.dmPelsHeight - *height) *
-                    (dm.dmPelsHeight - *height));
-
-        // We match BPP first, then screen area
-
-        if ((sizeDiff < leastSizeDiff) || (sizeDiff == leastSizeDiff))
-        {
-            bestWidth  = dm.dmPelsWidth;
-            bestHeight = dm.dmPelsHeight;
-            bestBPP    = dm.dmBitsPerPel;
-
-            leastSizeDiff = sizeDiff;
-
-            foundMode = GL_TRUE;
-        }
-    }
-
-    if (!foundMode)
-        return GL_FALSE;
-
-    *width  = bestWidth;
-    *height = bestHeight;
-    *bpp    = bestBPP;
-
-    return GL_TRUE;
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -106,41 +52,38 @@ static GLboolean getClosestVideoMode(int* width, int* height,
 // Change the current video mode
 //========================================================================
 
-void _glfwSetVideoMode(int* width, int* height,
-                       int* bpp, GLboolean exactBPP)
+int _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* mode)
 {
+    GLFWvidmode current;
+    const GLFWvidmode* best;
+
+    best = _glfwChooseVideoMode(monitor, mode);
+
+    _glfwPlatformGetVideoMode(monitor, &current);
+    if (_glfwCompareVideoModes(&current, best) == 0)
+        return GL_TRUE;
+
     DEVMODE dm;
-    int closestWidth, closestHeight, closestBPP;
+    dm.dmSize = sizeof(DEVMODE);
+    dm.dmFields     = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
+    dm.dmPelsWidth  = best->width;
+    dm.dmPelsHeight = best->height;
+    dm.dmBitsPerPel = best->redBits + best->greenBits + best->blueBits;
 
-    closestWidth  = *width;
-    closestHeight = *height;
-    closestBPP    = *bpp;
+    if (dm.dmBitsPerPel < 15 || dm.dmBitsPerPel >= 24)
+        dm.dmBitsPerPel = 32;
 
-    if (getClosestVideoMode(&closestWidth, &closestHeight,
-                            &closestBPP, exactBPP))
+    if (ChangeDisplaySettingsEx(monitor->win32.name,
+                                &dm,
+                                NULL,
+                                CDS_FULLSCREEN,
+                                NULL) != DISP_CHANGE_SUCCESSFUL)
     {
-        dm.dmSize = sizeof(DEVMODE);
-        dm.dmFields     = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
-        dm.dmPelsWidth  = closestWidth;
-        dm.dmPelsHeight = closestHeight;
-        dm.dmBitsPerPel = closestBPP;
-
-        if (ChangeDisplaySettings(&dm, CDS_FULLSCREEN) == DISP_CHANGE_SUCCESSFUL)
-        {
-            *width  = closestWidth;
-            *height = closestHeight;
-            *bpp    = closestBPP;
-        }
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to set video mode");
+        return GL_FALSE;
     }
-    else
-    {
-        dm.dmSize = sizeof(DEVMODE);
-        EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &dm);
 
-        *width  = dm.dmPelsWidth;
-        *height = dm.dmPelsHeight;
-        *bpp    = dm.dmBitsPerPel;
-    }
+    return GL_TRUE;
 }
 
 
@@ -148,9 +91,10 @@ void _glfwSetVideoMode(int* width, int* height,
 // Restore the previously saved (original) video mode
 //========================================================================
 
-void _glfwRestoreVideoMode(void)
+void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 {
-    ChangeDisplaySettings(NULL, CDS_FULLSCREEN);
+    ChangeDisplaySettingsEx(monitor->win32.name,
+                            NULL, NULL, CDS_FULLSCREEN, NULL);
 }
 
 
@@ -174,7 +118,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
         DISPLAY_DEVICE adapter, monitor;
         DEVMODE settings;
-        const char* name;
+        char* name;
         HDC dc;
 
         ZeroMemory(&adapter, sizeof(DISPLAY_DEVICE));
@@ -235,6 +179,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                                              settings.dmPosition.x,
                                              settings.dmPosition.y);
 
+        free(name);
         DeleteDC(dc);
 
         if (!monitors[found])
@@ -352,7 +297,7 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
     ZeroMemory(&dm, sizeof(DEVMODE));
     dm.dmSize = sizeof(DEVMODE);
 
-    EnumDisplaySettings(monitor->win32.name, ENUM_REGISTRY_SETTINGS, &dm);
+    EnumDisplaySettings(monitor->win32.name, ENUM_CURRENT_SETTINGS, &dm);
 
     mode->width  = dm.dmPelsWidth;
     mode->height = dm.dmPelsHeight;

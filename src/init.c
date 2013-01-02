@@ -37,16 +37,10 @@
 
 
 //------------------------------------------------------------------------
-// Flag indicating whether GLFW has been successfully initialized
+// Global state shared between compilation units of GLFW
+// These are documented in internal.h
 //------------------------------------------------------------------------
 GLboolean _glfwInitialized = GL_FALSE;
-
-
-//------------------------------------------------------------------------
-// All shared and API-specific global data protected by _glfwInitialized
-// This should only be touched after a call to glfwInit that has not been
-// followed by a call to glfwTerminate
-//------------------------------------------------------------------------
 _GLFWlibrary _glfw;
 
 

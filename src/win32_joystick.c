@@ -72,6 +72,32 @@ static float calcJoystickPos(DWORD pos, DWORD min, DWORD max)
 
 
 //////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Initialize joystick interface
+//========================================================================
+
+void _glfwInitJoysticks(void)
+{
+}
+
+
+//========================================================================
+// Close all opened joystick handles
+//========================================================================
+
+void _glfwTerminateJoysticks(void)
+{
+    int i;
+
+    for (i = 0;  i < GLFW_JOYSTICK_LAST;  i++)
+        free(_glfw.win32.joystick[i].name);
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
@@ -235,9 +261,9 @@ const char* _glfwPlatformGetJoystickName(int joy)
 
     _glfw_joyGetDevCaps(i, &jc, sizeof(JOYCAPS));
 
-    free(_glfw.win32.joyNames[i]);
-    _glfw.win32.joyNames[i] = _glfwCreateUTF8FromWideString(jc.szPname);
+    free(_glfw.win32.joystick[i].name);
+    _glfw.win32.joystick[i].name = _glfwCreateUTF8FromWideString(jc.szPname);
 
-    return _glfw.win32.joyNames[i];
+    return _glfw.win32.joystick[i].name;
 }
 

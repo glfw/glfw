@@ -189,7 +189,9 @@ typedef struct _GLFWlibraryWin32
     } winmm;
 #endif // _GLFW_NO_DLOAD_WINMM
 
-    char*                     joyNames[GLFW_JOYSTICK_LAST + 1];
+    struct {
+        char*           name;
+    } joystick[GLFW_JOYSTICK_LAST + 1];
 
 } _GLFWlibraryWin32;
 
@@ -214,6 +216,10 @@ char* _glfwCreateUTF8FromWideString(const WCHAR* source);
 
 // Time
 void _glfwInitTimer(void);
+
+// Joystick input
+void _glfwInitJoysticks(void);
+void _glfwTerminateJoysticks(void);
 
 // OpenGL support
 int _glfwCreateContext(_GLFWwindow* window,

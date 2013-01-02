@@ -192,6 +192,8 @@ int _glfwPlatformInit(void)
 
     _glfwInitTimer();
 
+    _glfwInitJoysticks();
+
     return GL_TRUE;
 }
 
@@ -212,7 +214,7 @@ void _glfwPlatformTerminate(void)
         _glfw.win32.classAtom = 0;
     }
 
-    // TODO: Remove keyboard hook
+    _glfwTerminateJoysticks();
 
     freeLibraries();
 

@@ -66,10 +66,10 @@ typedef intptr_t GLFWintptr;
 //------------------------------------------------------------------------
 typedef struct _GLFWwindowNS
 {
-    id           object;
-    id	         delegate;
-    id           view;
-    unsigned int modifierFlags;
+    id              object;
+    id	            delegate;
+    id              view;
+    unsigned int    modifierFlags;
 } _GLFWwindowNS;
 
 
@@ -79,16 +79,16 @@ typedef struct _GLFWwindowNS
 typedef struct _GLFWlibraryNS
 {
     struct {
-        double base;
-        double resolution;
+        double      base;
+        double      resolution;
     } timer;
 
     CGDisplayModeRef previousMode;
     CGEventSourceRef eventSource;
-    id               delegate;
-    id               autoreleasePool;
+    id              delegate;
+    id              autoreleasePool;
 
-    char*            clipboardString;
+    char*           clipboardString;
 } _GLFWlibraryNS;
 
 

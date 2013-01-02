@@ -77,8 +77,8 @@ typedef int (*PFNGLXSWAPINTERVALMESAPROC)(int);
 //------------------------------------------------------------------------
 typedef struct _GLFWcontextGLX
 {
-    GLXContext    context;           // OpenGL rendering context
-    XVisualInfo*  visual;            // Visual for selected GLXFBConfig
+    GLXContext      context; // OpenGL rendering context
+    XVisualInfo*    visual;  // Visual for selected GLXFBConfig
 
 } _GLFWcontextGLX;
 
@@ -102,16 +102,16 @@ typedef struct _GLFWlibraryGLX
     PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC CreateContextWithConfigSGIX;
     PFNGLXGETVISUALFROMFBCONFIGSGIXPROC   GetVisualFromFBConfigSGIX;
     PFNGLXCREATECONTEXTATTRIBSARBPROC     CreateContextAttribsARB;
-    GLboolean   SGIX_fbconfig;
-    GLboolean   SGI_swap_control;
-    GLboolean   EXT_swap_control;
-    GLboolean   MESA_swap_control;
-    GLboolean   ARB_multisample;
-    GLboolean   ARB_framebuffer_sRGB;
-    GLboolean   ARB_create_context;
-    GLboolean   ARB_create_context_profile;
-    GLboolean   ARB_create_context_robustness;
-    GLboolean   EXT_create_context_es2_profile;
+    GLboolean       SGIX_fbconfig;
+    GLboolean       SGI_swap_control;
+    GLboolean       EXT_swap_control;
+    GLboolean       MESA_swap_control;
+    GLboolean       ARB_multisample;
+    GLboolean       ARB_framebuffer_sRGB;
+    GLboolean       ARB_create_context;
+    GLboolean       ARB_create_context_profile;
+    GLboolean       ARB_create_context_robustness;
+    GLboolean       EXT_create_context_es2_profile;
 
 #if defined(_GLFW_DLOPEN_LIBGL)
     void*           libGL;  // dlopen handle for libGL.so

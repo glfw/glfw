@@ -97,21 +97,21 @@ typedef intptr_t GLFWintptr;
 typedef struct _GLFWwindowX11
 {
     // Platform specific window resources
-    Colormap      colormap;          // Window colormap
-    Window        handle;            // Window handle
+    Colormap        colormap;          // Window colormap
+    Window          handle;            // Window handle
 
     // Various platform specific internal variables
-    GLboolean     overrideRedirect; // True if window is OverrideRedirect
-    GLboolean     cursorGrabbed;    // True if cursor is currently grabbed
-    GLboolean     cursorHidden;     // True if cursor is currently hidden
-    GLboolean     cursorCentered;   // True if cursor was moved since last poll
-    int           cursorPosX, cursorPosY;
+    GLboolean       overrideRedirect; // True if window is OverrideRedirect
+    GLboolean       cursorGrabbed;    // True if cursor is currently grabbed
+    GLboolean       cursorHidden;     // True if cursor is currently hidden
+    GLboolean       cursorCentered;   // True if cursor was moved since last poll
+    int             cursorPosX, cursorPosY;
 
     // Window position hint (commited the first time the window is shown)
-    GLboolean     windowPosSet;     // False until the window position has
-                                    // been set
-    int           positionX;        // The window position to be set the
-    int           positionY;        // first time the window is shown
+    GLboolean       windowPosSet;     // False until the window position has
+                                      // been set
+    int             positionX;        // The window position to be set the
+    int             positionY;        // first time the window is shown
 
 } _GLFWwindowX11;
 
@@ -196,23 +196,23 @@ typedef struct _GLFWlibraryX11
 
     // Selection data
     struct {
-        Atom atom;
-        Atom formats[_GLFW_CLIPBOARD_FORMAT_COUNT];
-        char* string;
-        Atom target;
-        Atom targets;
-        Atom property;
-        int status;
+        Atom        atom;
+        Atom        formats[_GLFW_CLIPBOARD_FORMAT_COUNT];
+        char*       string;
+        Atom        target;
+        Atom        targets;
+        Atom        property;
+        int         status;
     } selection;
 
     struct {
-        int             present;
-        int             fd;
-        int             numAxes;
-        int             numButtons;
-        float*          axis;
-        unsigned char*  button;
-        char*           name;
+        int         present;
+        int         fd;
+        int         numAxes;
+        int         numButtons;
+        float*      axis;
+        unsigned char* button;
+        char*       name;
     } joystick[GLFW_JOYSTICK_LAST + 1];
 
 } _GLFWlibraryX11;
@@ -224,9 +224,9 @@ typedef struct _GLFWlibraryX11
 typedef struct _GLFWmonitorX11
 {
 #if defined(_GLFW_HAS_XRANDR)
-    XRROutputInfo* output;
+    XRROutputInfo*  output;
 #else
-    int dummy;
+    int             dummy;
 #endif /*_GLFW_HAS_XRANDR*/
 
 } _GLFWmonitorX11;

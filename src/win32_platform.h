@@ -141,14 +141,14 @@ typedef INT_PTR GLFWintptr;
 typedef struct _GLFWwindowWin32
 {
     // Platform specific window resources
-    HWND      handle;          // Window handle
-    DWORD     dwStyle;         // Window styles used for window creation
-    DWORD     dwExStyle;       // --"--
+    HWND                handle;    // Window handle
+    DWORD               dwStyle;   // Window styles used for window creation
+    DWORD               dwExStyle; // --"--
 
     // Various platform specific internal variables
-    GLboolean cursorCentered;
-    GLboolean cursorInside;
-    int       oldCursorX, oldCursorY;
+    GLboolean           cursorCentered;
+    GLboolean           cursorInside;
+    int                 oldCursorX, oldCursorY;
 } _GLFWwindowWin32;
 
 
@@ -157,35 +157,35 @@ typedef struct _GLFWwindowWin32
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryWin32
 {
-    HINSTANCE                 instance;     // Instance of the application
-    ATOM                      classAtom;    // Window class atom
-    DWORD                     foregroundLockTimeout;
-    char*                     clipboardString;
+    HINSTANCE           instance;
+    ATOM                classAtom;
+    DWORD               foregroundLockTimeout;
+    char*               clipboardString;
 
     // Default monitor
     struct {
-        GLboolean             modeChanged;
-        int                   width;
-        int                   height;
-        int                   bitsPerPixel;
+        GLboolean       modeChanged;
+        int             width;
+        int             height;
+        int             bitsPerPixel;
     } monitor;
 
     // Timer data
     struct {
-        GLboolean             hasPC;
-        double                resolution;
-        unsigned int          t0_32;
-        __int64               t0_64;
+        GLboolean       hasPC;
+        double          resolution;
+        unsigned int    t0_32;
+        __int64         t0_64;
     } timer;
 
 #ifndef _GLFW_NO_DLOAD_WINMM
     // winmm.dll
     struct {
-        HINSTANCE             instance;
-        JOYGETDEVCAPS_T       joyGetDevCaps;
-        JOYGETPOS_T           joyGetPos;
-        JOYGETPOSEX_T         joyGetPosEx;
-        TIMEGETTIME_T         timeGetTime;
+        HINSTANCE       instance;
+        JOYGETDEVCAPS_T joyGetDevCaps;
+        JOYGETPOS_T     joyGetPos;
+        JOYGETPOSEX_T   joyGetPosEx;
+        TIMEGETTIME_T   timeGetTime;
     } winmm;
 #endif // _GLFW_NO_DLOAD_WINMM
 
@@ -201,7 +201,7 @@ typedef struct _GLFWlibraryWin32
 //------------------------------------------------------------------------
 typedef struct _GLFWmonitorWin32
 {
-    WCHAR* name;
+    WCHAR*              name;
 
 } _GLFWmonitorWin32;
 

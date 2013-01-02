@@ -202,30 +202,30 @@ struct _GLFWwindow
     struct _GLFWwindow* next;
 
     // Window settings and state
-    GLboolean iconified;       // GL_TRUE if this window is iconified
-    GLboolean closeRequested;  // GL_TRUE if this window should be closed
-    int       width, height;
-    int       positionX, positionY;
-    GLboolean resizable;       // GL_TRUE if user may resize this window
-    GLboolean visible;         // GL_TRUE if this window is visible
-    void*     userPointer;
-    _GLFWmonitor* monitor;
+    int                 width, height;
+    int                 positionX, positionY;
+    GLboolean           iconified;
+    GLboolean           resizable;
+    GLboolean           visible;
+    GLboolean           closeRequested;
+    void*               userPointer;
+    _GLFWmonitor*       monitor;
 
     // Window input state
-    GLboolean stickyKeys;
-    GLboolean stickyMouseButtons;
-    int       cursorPosX, cursorPosY;
-    int       cursorMode;
-    double    scrollX, scrollY;
-    char      mouseButton[GLFW_MOUSE_BUTTON_LAST + 1];
-    char      key[GLFW_KEY_LAST + 1];
+    GLboolean           stickyKeys;
+    GLboolean           stickyMouseButtons;
+    int                 cursorPosX, cursorPosY;
+    int                 cursorMode;
+    double              scrollX, scrollY;
+    char                mouseButton[GLFW_MOUSE_BUTTON_LAST + 1];
+    char                key[GLFW_KEY_LAST + 1];
 
     // OpenGL extensions and context attributes
-    int       clientAPI;
-    int       glMajor, glMinor, glRevision;
-    GLboolean glForward, glDebug;
-    int       glProfile;
-    int       glRobustness;
+    int                 clientAPI;
+    int                 glMajor, glMinor, glRevision;
+    GLboolean           glForward, glDebug;
+    int                 glProfile;
+    int                 glRobustness;
     PFNGLGETSTRINGIPROC GetStringi;
 
     GLFWwindowposfun     windowPosCallback;
@@ -252,19 +252,17 @@ struct _GLFWwindow
  */
 struct _GLFWmonitor
 {
-    char*     name;
+    char*           name;
 
-    GLboolean primary;
+    GLboolean       primary;
 
-    // physical dimensions in millimeters.
-    int       physicalWidth;
-    int       physicalHeight;
-    // logical orientation of the screen on the desktop
-    int       positionX;
-    int       positionY;
+    // Physical dimensions in millimeters.
+    int             widthMM, heightMM;
+    // Logical orientation of the screen on the desktop
+    int             positionX, positionY;
 
-    GLFWvidmode*  modes;
-    int           modeCount;
+    GLFWvidmode*    modes;
+    int             modeCount;
 
     // This is defined in the window API's platform.h
     _GLFW_PLATFORM_MONITOR_STATE;
@@ -275,19 +273,19 @@ struct _GLFWmonitor
  */
 struct _GLFWlibrary
 {
-    _GLFWhints    hints;
+    _GLFWhints      hints;
 
-    _GLFWwindow*  windowListHead;
-    _GLFWwindow*  focusedWindow;
+    _GLFWwindow*    windowListHead;
+    _GLFWwindow*    focusedWindow;
 
-    _GLFWmonitor** monitors;
-    int            monitorCount;
-    GLFWmonitorfun monitorCallback;
+    _GLFWmonitor**  monitors;
+    int             monitorCount;
+    GLFWmonitorfun  monitorCallback;
 
-    GLFWgammaramp currentRamp;
-    GLFWgammaramp originalRamp;
-    int           originalRampSize;
-    GLboolean     rampChanged;
+    GLFWgammaramp   currentRamp;
+    GLFWgammaramp   originalRamp;
+    int             originalRampSize;
+    GLboolean       rampChanged;
 
     // This is defined in the window API's platform.h
     _GLFW_PLATFORM_LIBRARY_WINDOW_STATE;
@@ -706,7 +704,7 @@ GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig);
  */
 _GLFWmonitor* _glfwCreateMonitor(const char* name,
                                  GLboolean primary,
-                                 int physicalWidth, int physicalHeight,
+                                 int widthMM, int heightMM,
                                  int x, int y);
 
 /*! @ingroup utility

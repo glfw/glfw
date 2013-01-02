@@ -224,7 +224,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         {
             XRROutputInfo* oi;
             XRRCrtcInfo* ci;
-            int physicalWidth, physicalHeight;
+            int widthMM, heightMM;
 
             oi = XRRGetOutputInfo(_glfw.x11.display, sr, sr->outputs[i]);
             if (oi->connection != RR_Connected)
@@ -235,22 +235,20 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
             if (oi->mm_width && oi->mm_height)
             {
-                physicalWidth = oi->mm_width;
-                physicalHeight = oi->mm_height;
+                widthMM = oi->mm_width;
+                heightMM = oi->mm_height;
             }
             else
             {
-                physicalWidth = DisplayWidthMM(_glfw.x11.display,
-                                               _glfw.x11.screen);
-                physicalHeight = DisplayHeightMM(_glfw.x11.display,
-                                                 _glfw.x11.screen);
+                widthMM = DisplayWidthMM(_glfw.x11.display, _glfw.x11.screen);
+                heightMM = DisplayHeightMM(_glfw.x11.display, _glfw.x11.screen);
             }
 
             ci = XRRGetCrtcInfo(_glfw.x11.display, sr, oi->crtc);
 
             monitors[found] = _glfwCreateMonitor(oi->name,
                                                  sr->outputs[i] == primary,
-                                                 physicalWidth, physicalHeight,
+                                                 widthMM, heightMM,
                                                  ci->x, ci->y);
 
             XRRFreeCrtcInfo(ci);

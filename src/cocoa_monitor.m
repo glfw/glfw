@@ -190,7 +190,7 @@ GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp)
         return GL_FALSE;
     }
 
-    _glfwLibrary.NS.previousMode = CGDisplayCopyDisplayMode(CGMainDisplayID());
+    _glfw.ns.previousMode = CGDisplayCopyDisplayMode(CGMainDisplayID());
 
     CGDisplayCapture(CGMainDisplayID());
     CGDisplaySetDisplayMode(CGMainDisplayID(), bestMode, NULL);
@@ -206,10 +206,7 @@ GLboolean _glfwSetVideoMode(int* width, int* height, int* bpp)
 
 void _glfwRestoreVideoMode(void)
 {
-    CGDisplaySetDisplayMode(CGMainDisplayID(),
-                            _glfwLibrary.NS.previousMode,
-                            NULL);
-
+    CGDisplaySetDisplayMode(CGMainDisplayID(), _glfw.ns.previousMode, NULL);
     CGDisplayRelease(CGMainDisplayID());
 }
 
@@ -256,7 +253,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                                              size.width, size.height,
                                              bounds.origin.x, bounds.origin.y);
 
-        monitors[found]->NS.displayID = displays[i];
+        monitors[found]->ns.displayID = displays[i];
         found++;
     }
 
@@ -286,7 +283,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
     CFIndex count, i;
     GLFWvidmode* result;
 
-    modes = CGDisplayCopyAllDisplayModes(monitor->NS.displayID, NULL);
+    modes = CGDisplayCopyAllDisplayModes(monitor->ns.displayID, NULL);
     count = CFArrayGetCount(modes);
 
     result = (GLFWvidmode*) malloc(sizeof(GLFWvidmode) * count);
@@ -317,7 +314,7 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode *mode)
 {
     CGDisplayModeRef displayMode;
 
-    displayMode = CGDisplayCopyDisplayMode(monitor->NS.displayID);
+    displayMode = CGDisplayCopyDisplayMode(monitor->ns.displayID);
     *mode = vidmodeFromCGDisplayMode(displayMode);
     CGDisplayModeRelease(displayMode);
 }

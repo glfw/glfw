@@ -243,7 +243,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             return NULL;
         }
 
-        monitors[found]->Win32.name = _wcsdup(adapter.DeviceName);
+        monitors[found]->win32.name = _wcsdup(adapter.DeviceName);
         found++;
     }
 
@@ -258,7 +258,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
 void _glfwPlatformDestroyMonitor(_GLFWmonitor* monitor)
 {
-    free(monitor->Win32.name);
+    free(monitor->win32.name);
 }
 
 
@@ -282,7 +282,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         ZeroMemory(&dm, sizeof(DEVMODE));
         dm.dmSize = sizeof(DEVMODE);
 
-        if (!EnumDisplaySettings(monitor->Win32.name, modeIndex, &dm))
+        if (!EnumDisplaySettings(monitor->win32.name, modeIndex, &dm))
             break;
 
         modeIndex++;
@@ -352,7 +352,7 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
     ZeroMemory(&dm, sizeof(DEVMODE));
     dm.dmSize = sizeof(DEVMODE);
 
-    EnumDisplaySettings(monitor->Win32.name, ENUM_REGISTRY_SETTINGS, &dm);
+    EnumDisplaySettings(monitor->win32.name, ENUM_REGISTRY_SETTINGS, &dm);
 
     mode->width  = dm.dmPelsWidth;
     mode->height = dm.dmPelsHeight;

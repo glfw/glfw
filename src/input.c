@@ -406,7 +406,7 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow handle, int xpos, int ypos)
         return;
     }
 
-    if (_glfwLibrary.focusedWindow != window)
+    if (_glfw.focusedWindow != window)
         return;
 
     // Don't do anything if the cursor position did not change

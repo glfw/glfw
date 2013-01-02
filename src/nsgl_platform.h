@@ -31,8 +31,8 @@
 #define _nsgl_platform_h_
 
 
-#define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextNSGL NSGL
-#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryNSGL NSGL
+#define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextNSGL nsgl
+#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryNSGL nsgl
 
 
 //========================================================================

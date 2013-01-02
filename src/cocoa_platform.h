@@ -46,9 +46,9 @@ typedef void* id;
  #error "No supported context creation API selected"
 #endif
 
-#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  NS
-#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS NS
-#define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorNS NS
+#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  ns
+#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS ns
+#define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorNS ns
 
 
 //========================================================================

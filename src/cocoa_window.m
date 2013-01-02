@@ -65,20 +65,20 @@
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-    [window->NSGL.context update];
+    [window->nsgl.context update];
 
     NSRect contentRect =
-        [window->NS.object contentRectForFrameRect:[window->NS.object frame]];
+        [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
 
     _glfwInputWindowSize(window, contentRect.size.width, contentRect.size.height);
 }
 
 - (void)windowDidMove:(NSNotification *)notification
 {
-    [window->NSGL.context update];
+    [window->nsgl.context update];
 
     NSRect contentRect =
-        [window->NS.object contentRectForFrameRect:[window->NS.object frame]];
+        [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
 
     CGPoint mainScreenOrigin = CGDisplayBounds(CGMainDisplayID()).origin;
     double mainScreenHeight = CGDisplayBounds(CGMainDisplayID()).size.height;
@@ -125,7 +125,7 @@
 {
     _GLFWwindow* window;
 
-    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+    for (window = _glfw.windowListHead;  window;  window = window->next)
         _glfwInputWindowCloseRequest(window);
 
     return NSTerminateCancel;
@@ -135,7 +135,7 @@
 {
     _GLFWwindow* window;
 
-    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+    for (window = _glfw.windowListHead;  window;  window = window->next)
         _glfwInputWindowVisibility(window, GL_FALSE);
 }
 
@@ -143,9 +143,9 @@
 {
     _GLFWwindow* window;
 
-    for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+    for (window = _glfw.windowListHead;  window;  window = window->next)
     {
-        if ([window->NS.object isVisible])
+        if ([window->ns.object isVisible])
             _glfwInputWindowVisibility(window, GL_TRUE);
     }
 }
@@ -474,12 +474,12 @@ static int convertMacKeyCode(unsigned int macKeyCode)
     unsigned int newModifierFlags =
         [event modifierFlags] | NSDeviceIndependentModifierFlagsMask;
 
-    if (newModifierFlags > window->NS.modifierFlags)
+    if (newModifierFlags > window->ns.modifierFlags)
         mode = GLFW_PRESS;
     else
         mode = GLFW_RELEASE;
 
-    window->NS.modifierFlags = newModifierFlags;
+    window->ns.modifierFlags = newModifierFlags;
 
     key = convertMacKeyCode([event keyCode]);
     if (key != -1)
@@ -684,28 +684,28 @@ static GLboolean createWindow(_GLFWwindow* window,
             styleMask |= NSResizableWindowMask;
     }
 
-    window->NS.object = [[NSWindow alloc]
+    window->ns.object = [[NSWindow alloc]
         initWithContentRect:NSMakeRect(wndconfig->positionX, wndconfig->positionY, window->width, window->height)
                   styleMask:styleMask
                     backing:NSBackingStoreBuffered
                       defer:NO];
 
-    if (window->NS.object == nil)
+    if (window->ns.object == nil)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Cocoa: Failed to create window");
         return GL_FALSE;
     }
 
-    window->NS.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
+    window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
 
-    [window->NS.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
-    [window->NS.object setContentView:window->NS.view];
-    [window->NS.object setDelegate:window->NS.delegate];
-    [window->NS.object setAcceptsMouseMovedEvents:YES];
-    [window->NS.object center];
+    [window->ns.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
+    [window->ns.object setContentView:window->ns.view];
+    [window->ns.object setDelegate:window->ns.delegate];
+    [window->ns.object setAcceptsMouseMovedEvents:YES];
+    [window->ns.object center];
 
-    if ([window->NS.object respondsToSelector:@selector(setRestorable:)])
-        [window->NS.object setRestorable:NO];
+    if ([window->ns.object respondsToSelector:@selector(setRestorable:)])
+        [window->ns.object setRestorable:NO];
 
     return GL_TRUE;
 }
@@ -729,21 +729,21 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     // There can only be one application delegate, but we allocate it the
     // first time a window is created to keep all window code in this file
-    if (_glfwLibrary.NS.delegate == nil)
+    if (_glfw.ns.delegate == nil)
     {
-        _glfwLibrary.NS.delegate = [[GLFWApplicationDelegate alloc] init];
-        if (_glfwLibrary.NS.delegate == nil)
+        _glfw.ns.delegate = [[GLFWApplicationDelegate alloc] init];
+        if (_glfw.ns.delegate == nil)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Cocoa: Failed to create application delegate");
             return GL_FALSE;
         }
 
-        [NSApp setDelegate:_glfwLibrary.NS.delegate];
+        [NSApp setDelegate:_glfw.ns.delegate];
     }
 
-    window->NS.delegate = [[GLFWWindowDelegate alloc] initWithGlfwWindow:window];
-    if (window->NS.delegate == nil)
+    window->ns.delegate = [[GLFWWindowDelegate alloc] initWithGlfwWindow:window];
+    if (window->ns.delegate == nil)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Cocoa: Failed to create window delegate");
@@ -766,7 +766,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (!_glfwCreateContext(window, wndconfig, fbconfig))
         return GL_FALSE;
 
-    [window->NSGL.context setView:[window->NS.object contentView]];
+    [window->nsgl.context setView:[window->ns.object contentView]];
 
     if (wndconfig->monitor)
     {
@@ -776,7 +776,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             return GL_FALSE;
 
         _glfwPlatformShowWindow(window);
-        [[window->NS.object contentView] enterFullScreenMode:[NSScreen mainScreen]
+        [[window->ns.object contentView] enterFullScreenMode:[NSScreen mainScreen]
                                                  withOptions:nil];
     }
 
@@ -794,26 +794,26 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
-    [window->NS.object orderOut:nil];
+    [window->ns.object orderOut:nil];
 
     if (window->monitor)
     {
-        [[window->NS.object contentView] exitFullScreenModeWithOptions:nil];
+        [[window->ns.object contentView] exitFullScreenModeWithOptions:nil];
 
         _glfwRestoreVideoMode();
     }
 
     _glfwDestroyContext(window);
 
-    [window->NS.object setDelegate:nil];
-    [window->NS.delegate release];
-    window->NS.delegate = nil;
+    [window->ns.object setDelegate:nil];
+    [window->ns.delegate release];
+    window->ns.delegate = nil;
 
-    [window->NS.view release];
-    window->NS.view = nil;
+    [window->ns.view release];
+    window->ns.view = nil;
 
-    [window->NS.object close];
-    window->NS.object = nil;
+    [window->ns.object close];
+    window->ns.object = nil;
 
     // TODO: Probably more cleanup
 }
@@ -825,7 +825,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)
 {
-    [window->NS.object setTitle:[NSString stringWithUTF8String:title]];
+    [window->ns.object setTitle:[NSString stringWithUTF8String:title]];
 }
 
 
@@ -835,7 +835,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    [window->NS.object setContentSize:NSMakeSize(width, height)];
+    [window->ns.object setContentSize:NSMakeSize(width, height)];
 }
 
 
@@ -845,7 +845,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
-    [window->NS.object miniaturize:nil];
+    [window->ns.object miniaturize:nil];
 }
 
 
@@ -855,7 +855,7 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
-    [window->NS.object deminiaturize:nil];
+    [window->ns.object deminiaturize:nil];
 }
 
 
@@ -865,7 +865,7 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
-    [window->NS.object makeKeyAndOrderFront:nil];
+    [window->ns.object makeKeyAndOrderFront:nil];
     _glfwInputWindowVisibility(window, GL_TRUE);
 }
 
@@ -876,7 +876,7 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
-    [window->NS.object orderOut:nil];
+    [window->ns.object orderOut:nil];
     _glfwInputWindowVisibility(window, GL_FALSE);
 }
 
@@ -899,8 +899,8 @@ void _glfwPlatformPollEvents(void)
         [NSApp sendEvent:event];
     }
 
-    [_glfwLibrary.NS.autoreleasePool drain];
-    _glfwLibrary.NS.autoreleasePool = [[NSAutoreleasePool alloc] init];
+    [_glfw.ns.autoreleasePool drain];
+    _glfw.ns.autoreleasePool = [[NSAutoreleasePool alloc] init];
 }
 
 
@@ -937,7 +937,7 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
     else
     {
         NSPoint localPoint = NSMakePoint(x, window->height - y - 1);
-        NSPoint globalPoint = [window->NS.object convertBaseToScreen:localPoint];
+        NSPoint globalPoint = [window->ns.object convertBaseToScreen:localPoint];
         CGPoint mainScreenOrigin = CGDisplayBounds(CGMainDisplayID()).origin;
         double mainScreenHeight = CGDisplayBounds(CGMainDisplayID()).size.height;
         CGPoint targetPoint = CGPointMake(globalPoint.x - mainScreenOrigin.x,

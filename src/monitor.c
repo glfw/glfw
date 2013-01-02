@@ -132,12 +132,12 @@ void _glfwInputMonitorChange(void)
 
     for (i = 0;  i < monitorCount;  i++)
     {
-        for (j = 0;  j < _glfwLibrary.monitorCount;  j++)
+        for (j = 0;  j < _glfw.monitorCount;  j++)
         {
-            if (_glfwLibrary.monitors[j] == NULL)
+            if (_glfw.monitors[j] == NULL)
                 continue;
 
-            if (strcmp(monitors[i]->name, _glfwLibrary.monitors[j]->name) == 0)
+            if (strcmp(monitors[i]->name, _glfw.monitors[j]->name) == 0)
             {
                 // This monitor was connected before, so re-use the existing
                 // monitor object to preserve its address and user pointer
@@ -145,40 +145,40 @@ void _glfwInputMonitorChange(void)
                 // TODO: Transfer monitor properties
 
                 _glfwDestroyMonitor(monitors[i]);
-                monitors[i] = _glfwLibrary.monitors[j];
-                _glfwLibrary.monitors[j] = NULL;
+                monitors[i] = _glfw.monitors[j];
+                _glfw.monitors[j] = NULL;
                 break;
             }
         }
 
-        if (j == _glfwLibrary.monitorCount)
+        if (j == _glfw.monitorCount)
         {
             // This monitor was not connected before
-            _glfwLibrary.monitorCallback(monitors[i], GLFW_CONNECTED);
+            _glfw.monitorCallback(monitors[i], GLFW_CONNECTED);
         }
     }
 
-    for (i = 0;  i < _glfwLibrary.monitorCount;  i++)
+    for (i = 0;  i < _glfw.monitorCount;  i++)
     {
         _GLFWwindow* window;
 
-        if (_glfwLibrary.monitors[i] == NULL)
+        if (_glfw.monitors[i] == NULL)
             continue;
 
         // This monitor is no longer connected
-        _glfwLibrary.monitorCallback(_glfwLibrary.monitors[i], GLFW_DISCONNECTED);
+        _glfw.monitorCallback(_glfw.monitors[i], GLFW_DISCONNECTED);
 
-        for (window = _glfwLibrary.windowListHead;  window;  window = window->next)
+        for (window = _glfw.windowListHead;  window;  window = window->next)
         {
-            if (window->monitor == _glfwLibrary.monitors[i])
+            if (window->monitor == _glfw.monitors[i])
                 window->monitor = NULL;
         }
     }
 
     _glfwDestroyMonitors();
 
-    _glfwLibrary.monitors = monitors;
-    _glfwLibrary.monitorCount = monitorCount;
+    _glfw.monitors = monitors;
+    _glfw.monitorCount = monitorCount;
 }
 
 
@@ -190,12 +190,12 @@ void _glfwDestroyMonitors(void)
 {
     int i;
 
-    for (i = 0;  i < _glfwLibrary.monitorCount;  i++)
-        _glfwDestroyMonitor(_glfwLibrary.monitors[i]);
+    for (i = 0;  i < _glfw.monitorCount;  i++)
+        _glfwDestroyMonitor(_glfw.monitors[i]);
 
-    free(_glfwLibrary.monitors);
-    _glfwLibrary.monitors = NULL;
-    _glfwLibrary.monitorCount = 0;
+    free(_glfw.monitors);
+    _glfw.monitors = NULL;
+    _glfw.monitorCount = 0;
 }
 
 
@@ -294,8 +294,8 @@ GLFWAPI const GLFWmonitor* glfwGetMonitors(int* count)
         return NULL;
     }
 
-    *count = _glfwLibrary.monitorCount;
-    return (GLFWmonitor*) _glfwLibrary.monitors;
+    *count = _glfw.monitorCount;
+    return (GLFWmonitor*) _glfw.monitors;
 }
 
 
@@ -314,11 +314,11 @@ GLFWAPI GLFWmonitor glfwGetPrimaryMonitor(void)
         return NULL;
     }
 
-    for (i = 0;  i < _glfwLibrary.monitorCount;  i++)
+    for (i = 0;  i < _glfw.monitorCount;  i++)
     {
-        if (_glfwLibrary.monitors[i]->primary)
+        if (_glfw.monitors[i]->primary)
         {
-            handle = _glfwLibrary.monitors[i];
+            handle = _glfw.monitors[i];
             break;
         }
     }
@@ -409,7 +409,7 @@ GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun)
         return;
     }
 
-    _glfwLibrary.monitorCallback = cbfun;
+    _glfw.monitorCallback = cbfun;
 }
 
 

@@ -89,10 +89,10 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 
 // winmm.dll shortcuts
 #ifndef _GLFW_NO_DLOAD_WINMM
- #define _glfw_joyGetDevCaps _glfwLibrary.Win32.winmm.joyGetDevCaps
- #define _glfw_joyGetPos     _glfwLibrary.Win32.winmm.joyGetPos
- #define _glfw_joyGetPosEx   _glfwLibrary.Win32.winmm.joyGetPosEx
- #define _glfw_timeGetTime   _glfwLibrary.Win32.winmm.timeGetTime
+ #define _glfw_joyGetDevCaps _glfw.win32.winmm.joyGetDevCaps
+ #define _glfw_joyGetPos     _glfw.win32.winmm.joyGetPos
+ #define _glfw_joyGetPosEx   _glfw.win32.winmm.joyGetPosEx
+ #define _glfw_timeGetTime   _glfw.win32.winmm.timeGetTime
 #else
  #define _glfw_joyGetDevCaps joyGetDevCaps
  #define _glfw_joyGetPos     joyGetPos
@@ -113,16 +113,16 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 #if defined(_GLFW_WGL)
  #include "wgl_platform.h"
 #elif defined(_GLFW_EGL)
- #define _GLFW_EGL_NATIVE_WINDOW  window->Win32.handle
+ #define _GLFW_EGL_NATIVE_WINDOW  window->win32.handle
  #define _GLFW_EGL_NATIVE_DISPLAY NULL
  #include "egl_platform.h"
 #else
  #error "No supported context creation API selected"
 #endif
 
-#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWin32  Win32
-#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 Win32
-#define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWin32 Win32
+#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWin32  win32
+#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 win32
+#define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWin32 win32
 
 
 //========================================================================

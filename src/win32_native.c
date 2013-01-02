@@ -1,4 +1,4 @@
-//========================================================================
+_glfw
 // GLFW - An OpenGL library
 // Platform:    Win32/WGL
 // API version: 3.0
@@ -51,7 +51,7 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow handle)
         return NULL;
     }
 
-    return window->Win32.handle;
+    return window->win32.handle;
 }
 
 

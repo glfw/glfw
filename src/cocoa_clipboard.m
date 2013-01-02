@@ -74,9 +74,9 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
         return NULL;
     }
 
-    free(_glfwLibrary.NS.clipboardString);
-    _glfwLibrary.NS.clipboardString = strdup([object UTF8String]);
+    free(_glfw.ns.clipboardString);
+    _glfw.ns.clipboardString = strdup([object UTF8String]);
 
-    return _glfwLibrary.NS.clipboardString;
+    return _glfw.ns.clipboardString;
 }
 

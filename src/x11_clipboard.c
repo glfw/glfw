@@ -53,7 +53,7 @@ GLboolean _glfwReadSelection(XSelectionEvent* request)
     if (request->property == None)
         return GL_FALSE;
 
-    XGetWindowProperty(_glfwLibrary.X11.display,
+    XGetWindowProperty(_glfw.x11.display,
                        request->requestor,
                        request->property,
                        0, LONG_MAX,
@@ -68,8 +68,8 @@ GLboolean _glfwReadSelection(XSelectionEvent* request)
     if (actualType == None)
         return GL_FALSE;
 
-    free(_glfwLibrary.X11.selection.string);
-    _glfwLibrary.X11.selection.string = strdup(data);
+    free(_glfw.x11.selection.string);
+    _glfw.x11.selection.string = strdup(data);
 
     XFree(data);
     return GL_TRUE;
@@ -86,19 +86,19 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
     Atom property = request->property;
 
     if (property == None)
-        property = _glfwLibrary.X11.selection.property;
+        property = _glfw.x11.selection.property;
 
-    if (request->target == _glfwLibrary.X11.selection.targets)
+    if (request->target == _glfw.x11.selection.targets)
     {
         // The list of supported targets was requested
 
-        XChangeProperty(_glfwLibrary.X11.display,
+        XChangeProperty(_glfw.x11.display,
                         request->requestor,
                         property,
                         XA_ATOM,
                         32,
                         PropModeReplace,
-                        (unsigned char*) _glfwLibrary.X11.selection.formats,
+                        (unsigned char*) _glfw.x11.selection.formats,
                         _GLFW_CLIPBOARD_FORMAT_COUNT);
 
         return property;
@@ -106,18 +106,18 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
 
     for (i = 0;  i < _GLFW_CLIPBOARD_FORMAT_COUNT;  i++)
     {
-        if (request->target == _glfwLibrary.X11.selection.formats[i])
+        if (request->target == _glfw.x11.selection.formats[i])
         {
             // The requested target is one we support
 
-            XChangeProperty(_glfwLibrary.X11.display,
+            XChangeProperty(_glfw.x11.display,
                             request->requestor,
                             property,
                             request->target,
                             8,
                             PropModeReplace,
-                            (unsigned char*) _glfwLibrary.X11.selection.string,
-                            strlen(_glfwLibrary.X11.selection.string));
+                            (unsigned char*) _glfw.x11.selection.string,
+                            strlen(_glfw.x11.selection.string));
 
             return property;
         }
@@ -138,13 +138,13 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
     // Store the new string in preparation for a selection request event
-    free(_glfwLibrary.X11.selection.string);
-    _glfwLibrary.X11.selection.string = strdup(string);
+    free(_glfw.x11.selection.string);
+    _glfw.x11.selection.string = strdup(string);
 
     // Set the specified window as owner of the selection
-    XSetSelectionOwner(_glfwLibrary.X11.display,
-                       _glfwLibrary.X11.selection.atom,
-                       window->X11.handle, CurrentTime);
+    XSetSelectionOwner(_glfw.x11.display,
+                       _glfw.x11.selection.atom,
+                       window->x11.handle, CurrentTime);
 }
 
 
@@ -156,36 +156,35 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {
     int i;
 
-    _glfwLibrary.X11.selection.status = _GLFW_CONVERSION_INACTIVE;
+    _glfw.x11.selection.status = _GLFW_CONVERSION_INACTIVE;
 
     for (i = 0;  i < _GLFW_CLIPBOARD_FORMAT_COUNT;  i++)
     {
         // Request conversion to the selected format
-        _glfwLibrary.X11.selection.target =
-            _glfwLibrary.X11.selection.formats[i];
+        _glfw.x11.selection.target = _glfw.x11.selection.formats[i];
 
-        XConvertSelection(_glfwLibrary.X11.display,
-                          _glfwLibrary.X11.selection.atom,
-                          _glfwLibrary.X11.selection.target,
-                          _glfwLibrary.X11.selection.property,
-                          window->X11.handle, CurrentTime);
+        XConvertSelection(_glfw.x11.display,
+                          _glfw.x11.selection.atom,
+                          _glfw.x11.selection.target,
+                          _glfw.x11.selection.property,
+                          window->x11.handle, CurrentTime);
 
         // Process the resulting SelectionNotify event
-        XSync(_glfwLibrary.X11.display, False);
-        while (_glfwLibrary.X11.selection.status == _GLFW_CONVERSION_INACTIVE)
+        XSync(_glfw.x11.display, False);
+        while (_glfw.x11.selection.status == _GLFW_CONVERSION_INACTIVE)
             _glfwPlatformWaitEvents();
 
-        if (_glfwLibrary.X11.selection.status == _GLFW_CONVERSION_SUCCEEDED)
+        if (_glfw.x11.selection.status == _GLFW_CONVERSION_SUCCEEDED)
             break;
     }
 
-    if (_glfwLibrary.X11.selection.status == _GLFW_CONVERSION_FAILED)
+    if (_glfw.x11.selection.status == _GLFW_CONVERSION_FAILED)
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "X11: Failed to convert selection to string");
         return NULL;
     }
 
-    return _glfwLibrary.X11.selection.string;
+    return _glfw.x11.selection.string;
 }
 

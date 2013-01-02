@@ -54,14 +54,14 @@
 #elif defined(_GLFW_HAS_GLXGETPROCADDRESSEXT)
  #define _glfw_glXGetProcAddress(x) glXGetProcAddressEXT(x)
 #elif defined(_GLFW_HAS_DLOPEN)
- #define _glfw_glXGetProcAddress(x) dlsym(_glfwLibrary.GLX.libGL, x)
+ #define _glfw_glXGetProcAddress(x) dlsym(_glfw.glx.libGL, x)
  #define _GLFW_DLOPEN_LIBGL
 #else
  #error "No OpenGL entry point retrieval mechanism was enabled"
 #endif
 
-#define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextGLX GLX
-#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryGLX GLX
+#define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextGLX glx
+#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryGLX glx
 
 #ifndef GLX_MESA_swap_control
 typedef int (*PFNGLXSWAPINTERVALMESAPROC)(int);
@@ -89,7 +89,7 @@ typedef struct _GLFWcontextGLX
 typedef struct _GLFWlibraryGLX
 {
     // Server-side GLX version
-    int             majorVersion, minorVersion;
+    int             versionMajor, versionMinor;
     int             eventBase;
     int             errorBase;
 

@@ -201,9 +201,9 @@ int _glfwCreateContext(_GLFWwindow* window,
 #undef ADD_ATTR
 #undef ADD_ATTR2
 
-    window->NSGL.pixelFormat =
+    window->nsgl.pixelFormat =
         [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
-    if (window->NSGL.pixelFormat == nil)
+    if (window->nsgl.pixelFormat == nil)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "NSOpenGL: Failed to create OpenGL pixel format");
@@ -213,12 +213,12 @@ int _glfwCreateContext(_GLFWwindow* window,
     NSOpenGLContext* share = NULL;
 
     if (wndconfig->share)
-        share = wndconfig->share->NSGL.context;
+        share = wndconfig->share->nsgl.context;
 
-    window->NSGL.context =
-        [[NSOpenGLContext alloc] initWithFormat:window->NSGL.pixelFormat
+    window->nsgl.context =
+        [[NSOpenGLContext alloc] initWithFormat:window->nsgl.pixelFormat
                                    shareContext:share];
-    if (window->NSGL.context == nil)
+    if (window->nsgl.context == nil)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "NSOpenGL: Failed to create OpenGL context");
@@ -235,11 +235,11 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 void _glfwDestroyContext(_GLFWwindow* window)
 {
-    [window->NSGL.pixelFormat release];
-    window->NSGL.pixelFormat = nil;
+    [window->nsgl.pixelFormat release];
+    window->nsgl.pixelFormat = nil;
 
-    [window->NSGL.context release];
-    window->NSGL.context = nil;
+    [window->nsgl.context release];
+    window->nsgl.context = nil;
 }
 
 
@@ -254,7 +254,7 @@ void _glfwDestroyContext(_GLFWwindow* window)
 void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 {
     if (window)
-        [window->NSGL.context makeCurrentContext];
+        [window->nsgl.context makeCurrentContext];
     else
         [NSOpenGLContext clearCurrentContext];
 
@@ -279,7 +279,7 @@ _GLFWwindow* _glfwPlatformGetCurrentContext(void)
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 {
     // ARP appears to be unnecessary, but this is future-proof
-    [window->NSGL.context flushBuffer];
+    [window->nsgl.context flushBuffer];
 }
 
 
@@ -292,7 +292,7 @@ void _glfwPlatformSwapInterval(int interval)
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
     GLint sync = interval;
-    [window->NSGL.context setValues:&sync forParameter:NSOpenGLCPSwapInterval];
+    [window->nsgl.context setValues:&sync forParameter:NSOpenGLCPSwapInterval];
 }
 
 
@@ -317,7 +317,7 @@ GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
                                                        procname,
                                                        kCFStringEncodingASCII);
 
-    GLFWglproc symbol = CFBundleGetFunctionPointerForName(_glfwLibrary.NSGL.framework,
+    GLFWglproc symbol = CFBundleGetFunctionPointerForName(_glfw.nsgl.framework,
                                                           symbolName);
 
     CFRelease(symbolName);

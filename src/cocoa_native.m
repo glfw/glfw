@@ -51,7 +51,7 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow handle)
         return 0;
     }
 
-    return window->NS.object;
+    return window->ns.object;
 }
 
 
@@ -69,6 +69,6 @@ GLFWAPI id glfwGetNSGLContext(GLFWwindow handle)
         return NULL;
     }
 
-    return window->NSGL.context;
+    return window->nsgl.context;
 }
 

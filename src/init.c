@@ -47,13 +47,13 @@ GLboolean _glfwInitialized = GL_FALSE;
 // This should only be touched after a call to glfwInit that has not been
 // followed by a call to glfwTerminate
 //------------------------------------------------------------------------
-_GLFWlibrary _glfwLibrary;
+_GLFWlibrary _glfw;
 
 
 //------------------------------------------------------------------------
 // The current error callback
-// This is outside of _glfwLibrary so it can be initialized and usable
-// before glfwInit is called, which lets that function report errors
+// This is outside of _glfw so it can be initialized and usable before
+// glfwInit is called, which lets that function report errors
 //------------------------------------------------------------------------
 static GLFWerrorfun _glfwErrorCallback = NULL;
 
@@ -142,7 +142,7 @@ GLFWAPI int glfwInit(void)
     if (_glfwInitialized)
         return GL_TRUE;
 
-    memset(&_glfwLibrary, 0, sizeof(_glfwLibrary));
+    memset(&_glfw, 0, sizeof(_glfw));
 
     if (!_glfwPlatformInit())
     {
@@ -150,8 +150,8 @@ GLFWAPI int glfwInit(void)
         return GL_FALSE;
     }
 
-    _glfwLibrary.monitors = _glfwPlatformGetMonitors(&_glfwLibrary.monitorCount);
-    if (!_glfwLibrary.monitors)
+    _glfw.monitors = _glfwPlatformGetMonitors(&_glfw.monitorCount);
+    if (!_glfw.monitors)
     {
         _glfwPlatformTerminate();
         return GL_FALSE;
@@ -176,8 +176,8 @@ GLFWAPI void glfwTerminate(void)
         return;
 
     // Close all remaining windows
-    while (_glfwLibrary.windowListHead)
-        glfwDestroyWindow(_glfwLibrary.windowListHead);
+    while (_glfw.windowListHead)
+        glfwDestroyWindow(_glfw.windowListHead);
 
     _glfwDestroyMonitors();
 

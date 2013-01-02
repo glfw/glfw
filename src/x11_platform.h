@@ -54,20 +54,20 @@
 #endif
 
 #if defined(_GLFW_GLX)
- #define _GLFW_X11_CONTEXT_VISUAL window->GLX.visual
+ #define _GLFW_X11_CONTEXT_VISUAL window->glx.visual
  #include "glx_platform.h"
 #elif defined(_GLFW_EGL)
- #define _GLFW_X11_CONTEXT_VISUAL window->EGL.visual
- #define _GLFW_EGL_NATIVE_WINDOW  window->X11.handle
- #define _GLFW_EGL_NATIVE_DISPLAY _glfwLibrary.X11.display
+ #define _GLFW_X11_CONTEXT_VISUAL window->egl.visual
+ #define _GLFW_EGL_NATIVE_WINDOW  window->x11.handle
+ #define _GLFW_EGL_NATIVE_DISPLAY _glfw.x11.display
  #include "egl_platform.h"
 #else
  #error "No supported context creation API selected"
 #endif
 
-#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  X11
-#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 X11
-#define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorX11 X11
+#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  x11
+#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11
+#define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorX11 x11
 
 // Clipboard format atom indices
 #define _GLFW_CLIPBOARD_FORMAT_UTF8     0
@@ -141,25 +141,25 @@ typedef struct _GLFWlibraryX11
         GLboolean   available;
         int         eventBase;
         int         errorBase;
-    } VidMode;
+    } vidmode;
 
     struct {
         GLboolean   available;
         int         eventBase;
         int         errorBase;
-        int         majorVersion;
-        int         minorVersion;
+        int         versionMajor;
+        int         versionMinor;
         GLboolean   gammaBroken;
-    } RandR;
+    } randr;
 
     struct {
         GLboolean   available;
         int         majorOpcode;
         int         eventBase;
         int         errorBase;
-        int         majorVersion;
-        int         minorVersion;
-    } Xkb;
+        int         versionMajor;
+        int         versionMinor;
+    } xkb;
 
     // Key code LUT (mapping X11 key codes to GLFW key codes)
     int             keyCodeLUT[256];
@@ -185,7 +185,7 @@ typedef struct _GLFWlibraryX11
 #if defined(_GLFW_HAS_XF86VIDMODE)
         XF86VidModeModeInfo oldMode;
 #endif /*_GLFW_HAS_XF86VIDMODE*/
-    } FS;
+    } fs;
 
     // Timer data
     struct {

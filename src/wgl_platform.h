@@ -37,8 +37,8 @@
 #include "../support/GL/wglext.h"
 
 
-#define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextWGL WGL
-#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryWGL WGL
+#define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextWGL wgl
+#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryWGL wgl
 
 
 //========================================================================
@@ -51,7 +51,7 @@
 typedef struct _GLFWcontextWGL
 {
     // Platform specific window resources
-    HDC       DC;              // Private GDI device context
+    HDC       dc;              // Private GDI device context
     HGLRC     context;         // Permanent rendering context
 
     // Platform specific extensions (context specific)

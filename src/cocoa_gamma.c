@@ -52,7 +52,7 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
     CGGammaValue blue[GLFW_GAMMA_RAMP_SIZE];
 
     // For now, don't support anything that is not GLFW_GAMMA_RAMP_SIZE
-    if (_glfwLibrary.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
+    if (_glfw.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
         return;
 
     CGGetDisplayTransferByTable(CGMainDisplayID(), GLFW_GAMMA_RAMP_SIZE, red, green, blue,
@@ -80,7 +80,7 @@ void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
     CGGammaValue blue[GLFW_GAMMA_RAMP_SIZE];
 
     // For now, don't support anything that is not GLFW_GAMMA_RAMP_SIZE
-    if (_glfwLibrary.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
+    if (_glfw.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
         return;
 
     // Convert to float & take the difference of the original gamma and

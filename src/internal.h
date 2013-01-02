@@ -275,7 +275,7 @@ struct _GLFWlibrary
 // These are exported from and documented in init.c
 //------------------------------------------------------------------------
 extern GLboolean _glfwInitialized;
-extern _GLFWlibrary _glfwLibrary;
+extern _GLFWlibrary _glfw;
 
 
 //========================================================================

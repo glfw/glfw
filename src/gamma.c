@@ -95,7 +95,7 @@ GLFWAPI void glfwGetGammaRamp(GLFWgammaramp* ramp)
         return;
     }
 
-    *ramp = _glfwLibrary.currentRamp;
+    *ramp = _glfw.currentRamp;
 }
 
 
@@ -112,7 +112,7 @@ GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp)
     }
 
     _glfwPlatformSetGammaRamp(ramp);
-    _glfwLibrary.currentRamp = *ramp;
-    _glfwLibrary.rampChanged = GL_TRUE;
+    _glfw.currentRamp = *ramp;
+    _glfw.rampChanged = GL_TRUE;
 }
 

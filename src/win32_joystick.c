@@ -235,9 +235,9 @@ const char* _glfwPlatformGetJoystickName(int joy)
 
     _glfw_joyGetDevCaps(i, &jc, sizeof(JOYCAPS));
 
-    free(_glfwLibrary.Win32.joyNames[i]);
-    _glfwLibrary.Win32.joyNames[i] = _glfwCreateUTF8FromWideString(jc.szPname);
+    free(_glfw.win32.joyNames[i]);
+    _glfw.win32.joyNames[i] = _glfwCreateUTF8FromWideString(jc.szPname);
 
-    return _glfwLibrary.Win32.joyNames[i];
+    return _glfw.win32.joyNames[i];
 }
 

@@ -79,11 +79,11 @@ static void changeToResourcesDirectory(void)
 
 int _glfwPlatformInit(void)
 {
-    _glfwLibrary.NS.autoreleasePool = [[NSAutoreleasePool alloc] init];
+    _glfw.ns.autoreleasePool = [[NSAutoreleasePool alloc] init];
 
-    _glfwLibrary.NSGL.framework =
+    _glfw.nsgl.framework =
         CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
-    if (_glfwLibrary.NSGL.framework == NULL)
+    if (_glfw.nsgl.framework == NULL)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "NSGL: Failed to locate OpenGL framework");
@@ -93,9 +93,9 @@ int _glfwPlatformInit(void)
     changeToResourcesDirectory();
 
     // Save the original gamma ramp
-    _glfwLibrary.originalRampSize = CGDisplayGammaTableCapacity(CGMainDisplayID());
-    _glfwPlatformGetGammaRamp(&_glfwLibrary.originalRamp);
-    _glfwLibrary.currentRamp = _glfwLibrary.originalRamp;
+    _glfw.originalRampSize = CGDisplayGammaTableCapacity(CGMainDisplayID());
+    _glfwPlatformGetGammaRamp(&_glfw.originalRamp);
+    _glfw.currentRamp = _glfw.originalRamp;
 
     _glfwInitTimer();
 
@@ -104,12 +104,11 @@ int _glfwPlatformInit(void)
     if (!_glfwInitOpenGL())
         return GL_FALSE;
 
-    _glfwLibrary.NS.eventSource = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
-    if (!_glfwLibrary.NS.eventSource)
+    _glfw.ns.eventSource = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
+    if (!_glfw.ns.eventSource)
         return GL_FALSE;
 
-    CGEventSourceSetLocalEventsSuppressionInterval(_glfwLibrary.NS.eventSource,
-                                                   0.0);
+    CGEventSourceSetLocalEventsSuppressionInterval(_glfw.ns.eventSource, 0.0);
 
     return GL_TRUE;
 }
@@ -123,22 +122,22 @@ void _glfwPlatformTerminate(void)
 {
     // TODO: Probably other cleanup
 
-    if (_glfwLibrary.NS.eventSource)
+    if (_glfw.ns.eventSource)
     {
-        CFRelease(_glfwLibrary.NS.eventSource);
-        _glfwLibrary.NS.eventSource = NULL;
+        CFRelease(_glfw.ns.eventSource);
+        _glfw.ns.eventSource = NULL;
     }
 
     // Restore the original gamma ramp
-    if (_glfwLibrary.rampChanged)
-        _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
+    if (_glfw.rampChanged)
+        _glfwPlatformSetGammaRamp(&_glfw.originalRamp);
 
     [NSApp setDelegate:nil];
-    [_glfwLibrary.NS.delegate release];
-    _glfwLibrary.NS.delegate = nil;
+    [_glfw.ns.delegate release];
+    _glfw.ns.delegate = nil;
 
-    [_glfwLibrary.NS.autoreleasePool release];
-    _glfwLibrary.NS.autoreleasePool = nil;
+    [_glfw.ns.autoreleasePool release];
+    _glfw.ns.autoreleasePool = nil;
 
     _glfwTerminateJoysticks();
 

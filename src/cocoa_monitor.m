@@ -146,7 +146,7 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, int* width, int* height, int*
     CFIndex count, i;
     unsigned int leastSizeDiff = UINT_MAX;
 
-    modes = CGDisplayCopyAllDisplayModes(CGMainDisplayID(), NULL);
+    modes = CGDisplayCopyAllDisplayModes(monitor->ns.displayID, NULL);
     count = CFArrayGetCount(modes);
 
     for (i = 0;  i < count;  i++)
@@ -190,10 +190,10 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, int* width, int* height, int*
         return GL_FALSE;
     }
 
-    monitor->ns.previousMode = CGDisplayCopyDisplayMode(CGMainDisplayID());
+    monitor->ns.previousMode = CGDisplayCopyDisplayMode(monitor->ns.displayID);
 
-    CGDisplayCapture(CGMainDisplayID());
-    CGDisplaySetDisplayMode(CGMainDisplayID(), bestMode, NULL);
+    CGDisplayCapture(monitor->ns.displayID);
+    CGDisplaySetDisplayMode(monitor->ns.displayID, bestMode, NULL);
 
     CFRelease(modes);
     return GL_TRUE;
@@ -206,8 +206,8 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, int* width, int* height, int*
 
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 {
-    CGDisplaySetDisplayMode(CGMainDisplayID(), monitor->ns.previousMode, NULL);
-    CGDisplayRelease(CGMainDisplayID());
+    CGDisplaySetDisplayMode(monitor->ns.displayID, monitor->ns.previousMode, NULL);
+    CGDisplayRelease(monitor->ns.displayID);
 }
 
 

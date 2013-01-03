@@ -152,7 +152,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     ADD_ATTR(NSOpenGLPFADoubleBuffer);
 
-    if (wndconfig->mode == GLFW_FULLSCREEN)
+    if (wndconfig->monitor)
     {
         ADD_ATTR(NSOpenGLPFANoRecovery);
         ADD_ATTR2(NSOpenGLPFAScreenMask,

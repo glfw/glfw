@@ -858,16 +858,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (!createWindow(window, wndconfig))
         return GL_FALSE;
 
-#if defined(_GLFW_HAS_XRANDR)
-    // Request screen change notifications
-    if (_glfw.x11.randr.available)
-    {
-        XRRSelectInput(_glfw.x11.display,
-                       window->x11.handle,
-                       RRScreenChangeNotifyMask);
-    }
-#endif /*_GLFW_HAS_XRANDR*/
-
     if (wndconfig->monitor)
     {
         _glfwPlatformShowWindow(window);

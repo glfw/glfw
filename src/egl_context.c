@@ -361,7 +361,7 @@ static int createContext(_GLFWwindow* window,
 
 int _glfwInitOpenGL(void)
 {
-#ifdef _GLFW_DLOPEN_LIBEGL
+#if defined(_GLFW_DLOPEN_LIBEGL)
     int i;
     char* libEGL_names[ ] =
     {
@@ -414,7 +414,7 @@ int _glfwInitOpenGL(void)
 
 void _glfwTerminateOpenGL(void)
 {
-#ifdef _GLFW_DLOPEN_LIBEGL
+#if defined(_GLFW_DLOPEN_LIBEGL)
     if (_glfw.egl.libEGL != NULL)
     {
         dlclose(_glfw.egl.libEGL);
@@ -474,7 +474,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 void _glfwDestroyContext(_GLFWwindow* window)
 {
-#if _GLFW_X11
+#if defined(_GLFW_X11)
     if (window->egl.visual)
     {
        XFree(window->egl.visual);

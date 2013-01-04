@@ -124,7 +124,9 @@ typedef struct _GLFWlibraryX11
     Display*        display;
     int             screen;
     Window          root;
-    Cursor          cursor;   // Invisible cursor for hidden cursor
+
+    // Invisible cursor for hidden cursor mode
+    Cursor          cursor;
 
     Atom            wmDeleteWindow;    // WM_DELETE_WINDOW atom
     Atom            wmName;            // _NET_WM_NAME atom
@@ -161,10 +163,9 @@ typedef struct _GLFWlibraryX11
         int         versionMinor;
     } xkb;
 
-    // Key code LUT (mapping X11 key codes to GLFW key codes)
+    // LUT for mapping X11 key codes to GLFW key codes
     int             keyCodeLUT[256];
 
-    // Screensaver data
     struct {
         GLboolean   changed;
         int         timeout;
@@ -173,14 +174,12 @@ typedef struct _GLFWlibraryX11
         int         exposure;
     } saver;
 
-    // Timer data
     struct {
         GLboolean   monotonic;
         double      resolution;
         uint64_t    base;
     } timer;
 
-    // Selection data
     struct {
         Atom        atom;
         Atom        formats[_GLFW_CLIPBOARD_FORMAT_COUNT];

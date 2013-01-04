@@ -221,8 +221,11 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
         return NULL;
     }
 
-    // We need to copy these values before doing anything that can fail, as the
-    // window hints should be cleared after each call even if it fails
+    if (width <= 0 || height <= 0)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid window size");
+        return GL_FALSE;
+    }
 
     // Set up desired framebuffer config
     fbconfig.redBits        = Max(_glfw.hints.redBits, 0);
@@ -260,15 +263,6 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     if (!_glfwIsValidContextConfig(&wndconfig))
         return GL_FALSE;
 
-    // Save the currently current context so it can be restored later
-    previous = glfwGetCurrentContext();
-
-    if (width <= 0 || height <= 0)
-    {
-        _glfwInputError(GLFW_INVALID_VALUE, "Invalid window size");
-        return GL_FALSE;
-    }
-
     window = (_GLFWwindow*) calloc(1, sizeof(_GLFWwindow));
     if (!window)
     {
@@ -294,6 +288,9 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
         window->videoMode.greenBits = fbconfig.greenBits;
         window->videoMode.blueBits  = fbconfig.blueBits;
     }
+
+    // Save the currently current context so it can be restored later
+    previous = glfwGetCurrentContext();
 
     // Open the actual window and create its context
     if (!_glfwPlatformCreateWindow(window, &wndconfig, &fbconfig))

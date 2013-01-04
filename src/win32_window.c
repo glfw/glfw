@@ -715,46 +715,28 @@ static int createWindow(_GLFWwindow* window,
                         const _GLFWwndconfig* wndconfig,
                         const _GLFWfbconfig* fbconfig)
 {
-    DWORD dwStyle, dwExStyle;
     int positionX, positionY, fullWidth, fullHeight;
     POINT pos;
     WCHAR* wideTitle;
 
-    // Set common window styles
-    dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
-    dwExStyle = WS_EX_APPWINDOW;
+    // Set window styles common to all window modes
+    window->win32.dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+    window->win32.dwExStyle = WS_EX_APPWINDOW;
 
-    // Set window style, depending on fullscreen mode
+    // Add mode-dependent window styles
     if (window->monitor)
-    {
-        dwStyle |= WS_POPUP;
-
-        // Here's a trick for helping us getting window focus
-        // (SetForegroundWindow doesn't work properly under
-        // Win98/ME/2K/.NET/+)
-        /*
-        if (_glfw.Sys.WinVer != _GLFW_WIN_95 &&
-            _glfw.Sys.WinVer != _GLFW_WIN_NT4 &&
-            _glfw.Sys.WinVer != _GLFW_WIN_XP)
-        {
-            dwStyle |= WS_MINIMIZE;
-        }
-        */
-    }
+        window->win32.dwStyle |= WS_POPUP;
     else
     {
-        dwStyle |= WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+        window->win32.dwStyle |= WS_OVERLAPPED | WS_CAPTION |
+                                 WS_SYSMENU | WS_MINIMIZEBOX;
 
         if (wndconfig->resizable)
         {
-            dwStyle |= (WS_MAXIMIZEBOX | WS_SIZEBOX);
-            dwExStyle |= WS_EX_WINDOWEDGE;
+            window->win32.dwStyle |= WS_MAXIMIZEBOX | WS_SIZEBOX;
+            window->win32.dwExStyle |= WS_EX_WINDOWEDGE;
         }
     }
-
-    // Remember window styles (used by getFullWindowSize)
-    window->win32.dwStyle   = dwStyle;
-    window->win32.dwExStyle = dwExStyle;
 
     // Adjust window size for frame and title bar
     getFullWindowSize(window, window->width, window->height, &fullWidth, &fullHeight);

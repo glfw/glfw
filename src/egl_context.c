@@ -359,31 +359,6 @@ static int createContext(_GLFWwindow* window,
 
 int _glfwInitOpenGL(void)
 {
-#ifdef _GLFW_DLOPEN_LIBEGL
-    int i;
-    char* libEGL_names[ ] =
-    {
-        "libEGL.so",
-        "libEGL.so.1",
-        "/usr/lib/libEGL.so",
-        "/usr/lib/libEGL.so.1",
-        NULL
-    };
-
-    for (i = 0;  libEGL_names[i] != NULL;  i++)
-    {
-        _glfw.egl.libEGL = dlopen(libEGL_names[i], RTLD_LAZY | RTLD_GLOBAL);
-        if (_glfw.egl.libEGL)
-            break;
-    }
-
-    if (!_glfw.egl.libEGL)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "EGL: Failed to find libEGL");
-        return GL_FALSE;
-    }
-#endif
-
     _glfw.egl.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
     if (_glfw.egl.display == EGL_NO_DISPLAY)
     {
@@ -412,14 +387,6 @@ int _glfwInitOpenGL(void)
 
 void _glfwTerminateOpenGL(void)
 {
-#ifdef _GLFW_DLOPEN_LIBEGL
-    if (_glfw.egl.libEGL != NULL)
-    {
-        dlclose(_glfw.egl.libEGL);
-        _glfw.egl.libEGL = NULL;
-    }
-#endif
-
     eglTerminate(_glfw.egl.display);
 }
 
@@ -599,6 +566,6 @@ int _glfwPlatformExtensionSupported(const char* extension)
 
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 {
-    return _glfw_eglGetProcAddress(procname);
+    return eglGetProcAddress(procname);
 }
 

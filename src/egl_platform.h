@@ -43,17 +43,6 @@
  #include <dlfcn.h>
 #endif
 
-// We support two different ways for getting addresses for EGL
-// extension functions: eglGetProcAddress and dlsym
-#if defined(_GLFW_HAS_EGLGETPROCADDRESS)
- #define _glfw_eglGetProcAddress(x) eglGetProcAddress(x)
-#elif defined(_GLFW_HAS_DLOPEN)
- #define _glfw_eglGetProcAddress(x) dlsym(_glfw.egl.libEGL, x)
- #define _GLFW_DLOPEN_LIBEGL
-#else
- #error "No OpenGL entry point retrieval mechanism was enabled"
-#endif
-
 #define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextEGL egl
 #define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryEGL egl
 
@@ -87,9 +76,6 @@ typedef struct _GLFWlibraryEGL
 
     GLboolean       KHR_create_context;
 
-#if defined(_GLFW_DLOPEN_LIBEGL)
-    void*           libEGL;  // dlopen handle for libEGL.so
-#endif
 } _GLFWlibraryEGL;
 
 

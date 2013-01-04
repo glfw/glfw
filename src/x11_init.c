@@ -708,12 +708,8 @@ const char* _glfwPlatformGetVersionString(void)
         " glXGetProcAddressARB"
 #elif defined(_GLFW_HAS_GLXGETPROCADDRESSEXT)
         " glXGetProcAddressEXT"
-#elif defined(_GLFW_HAS_EGLGETPROCADDRESS)
-        " eglGetProcAddress"
 #elif defined(_GLFW_DLOPEN_LIBGL)
         " dlsym(libGL)"
-#elif defined(_GLFW_DLOPEN_LIBEGL)
-        " dlsym(libEGL)"
 #else
         " no-extension-support"
 #endif

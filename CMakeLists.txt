@@ -241,35 +241,6 @@ if (_GLFW_EGL)
 
     if (_GLFW_X11)
         set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} egl")
-
-        include(CheckFunctionExists)
-
-        check_function_exists(eglGetProcAddress _GLFW_HAS_EGLGETPROCADDRESS)
-
-        if (NOT _GLFW_HAS_EGLGETPROCADDRESS)
-            message(WARNING "No eglGetProcAddress found")
-
-            # Check for dlopen support as a fallback
-
-            find_library(DL_LIBRARY dl)
-            mark_as_advanced(DL_LIBRARY)
-            if (DL_LIBRARY)
-                set(CMAKE_REQUIRED_LIBRARIES ${DL_LIBRARY})
-            else()
-                set(CMAKE_REQUIRED_LIBRARIES "")
-            endif()
-
-            check_function_exists(dlopen _GLFW_HAS_DLOPEN)
-
-            if (NOT _GLFW_HAS_DLOPEN)
-                message(FATAL_ERROR "No entry point retrieval mechanism found")
-            endif()
-
-            if (DL_LIBRARY)
-                list(APPEND glfw_LIBRARIES ${DL_LIBRARY})
-                set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -ldl")
-            endif()
-        endif()
     endif()
 
 endif()

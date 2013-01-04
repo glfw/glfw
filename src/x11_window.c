@@ -400,13 +400,6 @@ static void enterFullscreenMode(_GLFWwindow* window)
         XResizeWindow(_glfw.x11.display, window->x11.handle,
                       window->width, window->height);
     }
-
-    // HACK: Try to get window inside viewport (for virtual displays) by moving
-    // the cursor to the upper left corner (and then to the center)
-    // This hack should be harmless on saner systems as well
-    XWarpPointer(_glfw.x11.display, None, window->x11.handle, 0,0,0,0, 0,0);
-    XWarpPointer(_glfw.x11.display, None, window->x11.handle, 0,0,0,0,
-                 window->width / 2, window->height / 2);
 }
 
 

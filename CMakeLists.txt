@@ -270,6 +270,8 @@ if (_GLFW_EGL)
                 set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -ldl")
             endif()
         endif()
+    elseif (_GLFW_WIN32)
+        set(_GLFW_HAS_EGLGETPROCADDRESS 1)
     endif()
 
 endif()

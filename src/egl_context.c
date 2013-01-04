@@ -109,11 +109,13 @@ static _GLFWfbconfig* getFBConfigs(_GLFWwindow* window,
     {
         _GLFWfbconfig* f = result + *found;
 
+#if defined(_GLFW_X11)
         if (!getConfigAttrib(configs[i], EGL_NATIVE_VISUAL_ID))
         {
             // Only consider EGLConfigs with associated visuals
             continue;
         }
+#endif // _GLFW_X11
 
         if (!(getConfigAttrib(configs[i], EGL_COLOR_BUFFER_TYPE) & EGL_RGB_BUFFER))
         {
@@ -255,7 +257,7 @@ static int createContext(_GLFWwindow* window,
             return GL_FALSE;
         }
     }
-#endif
+#endif // _GLFW_X11
 
     if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
     {
@@ -472,11 +474,13 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 void _glfwDestroyContext(_GLFWwindow* window)
 {
+#if _GLFW_X11
     if (window->egl.visual)
     {
        XFree(window->egl.visual);
        window->egl.visual = NULL;
     }
+#endif // _GLFW_X11
 
     if (window->egl.surface)
     {
@@ -500,7 +504,7 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
                         const _GLFWwndconfig* wndconfig,
                         const _GLFWfbconfig* fbconfig)
 {
-#if _GLFW_WIN32
+#if defined(_GLFW_WIN32)
     return _GLFW_RECREATION_NOT_NEEDED;
 #else
     return 0;

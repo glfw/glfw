@@ -109,9 +109,9 @@ static GLboolean createWindow(_GLFWwindow* window,
 
         if (wndconfig->monitor == NULL)
         {
-            // The /only/ reason for setting the background pixel here is that
-            // otherwise our window won't get any decorations on systems using
-            // certain versions of Compiz on Intel hardware
+            // HACK: This is a workaround for windows without a background pixel
+            // not getting any decorations on certain older versions of Compiz
+            // running on Intel hardware
             wa.background_pixel = BlackPixel(_glfw.x11.display,
                                              _glfw.x11.screen);
             wamask |= CWBackPixel;

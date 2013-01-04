@@ -395,7 +395,7 @@ static Atom getSupportedAtom(Atom* supportedAtoms,
 // Check whether the running window manager is EWMH-compliant
 //========================================================================
 
-static void initEWMH(void)
+static void detectEWMH(void)
 {
     Window* windowFromRoot = NULL;
     Window* windowFromChild = NULL;
@@ -549,6 +549,9 @@ static GLboolean initDisplay(void)
     // the keyboard mapping.
     updateKeyCodeLUT();
 
+    // Detect whether an EWMH-conformant window manager is running
+    detectEWMH();
+
     // Find or create selection property atom
     _glfw.x11.selection.property =
         XInternAtom(_glfw.x11.display, "GLFW_SELECTION", False);
@@ -638,14 +641,11 @@ int _glfwPlatformInit(void)
     if (!_glfwInitOpenGL())
         return GL_FALSE;
 
-    initEWMH();
-
     _glfw.x11.cursor = createNULLCursor();
 
     if (!_glfwInitJoysticks())
         return GL_FALSE;
 
-    // Start the timer
     _glfwInitTimer();
 
     return GL_TRUE;
@@ -672,7 +672,6 @@ void _glfwPlatformTerminate(void)
 
     terminateDisplay();
 
-    // Free clipboard memory
     if (_glfw.x11.selection.string)
         free(_glfw.x11.selection.string);
 }

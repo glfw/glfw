@@ -93,10 +93,8 @@ static void key_callback(GLFWwindow* window, int key, int action)
 static void list_modes(GLFWmonitor* monitor)
 {
     int count, widthMM, heightMM, dpi, i;
-    GLFWvidmode mode;
+    GLFWvidmode mode = glfwGetVideoMode(monitor);
     const GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
-
-    glfwGetVideoMode(monitor, &mode);
 
     printf("Name: %s (%s)\n",
            glfwGetMonitorName(monitor),

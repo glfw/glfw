@@ -125,8 +125,7 @@ int main(int argc, char** argv)
 
     if (monitor)
     {
-        GLFWvidmode mode;
-        glfwGetVideoMode(monitor, &mode);
+        GLFWvidmode mode = glfwGetVideoMode(monitor);
         width = mode.width;
         height = mode.height;
     }

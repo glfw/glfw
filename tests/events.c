@@ -346,8 +346,7 @@ void monitor_callback(GLFWmonitor* monitor, int event)
 {
     if (event == GLFW_CONNECTED)
     {
-        GLFWvidmode mode;
-        glfwGetVideoMode(monitor, &mode);
+        GLFWvidmode mode = glfwGetVideoMode(monitor);
 
         printf("%08x at %0.3f: Monitor %s (%ix%i at %ix%i, %ix%i mm) was connected\n",
                counter++,

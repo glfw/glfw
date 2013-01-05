@@ -476,22 +476,18 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)
 // Get the current video mode for the specified monitor
 //========================================================================
 
-GLFWAPI void glfwGetVideoMode(GLFWmonitor* handle, GLFWvidmode* mode)
+GLFWAPI GLFWvidmode glfwGetVideoMode(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    GLFWvidmode mode = { 0, 0, 0, 0, 0 };
 
     if (!_glfwInitialized)
     {
         _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
+        return mode;
     }
 
-    if (mode == NULL)
-    {
-        _glfwInputError(GLFW_INVALID_VALUE, NULL);
-        return;
-    }
-
-    _glfwPlatformGetVideoMode(monitor, mode);
+    _glfwPlatformGetVideoMode(monitor, &mode);
+    return mode;
 }
 

@@ -1043,7 +1043,7 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count);
  *  @param[out] mode The current mode of the monitor.
  *  @ingroup monitor
  */
-GLFWAPI void glfwGetVideoMode(GLFWmonitor* monitor, GLFWvidmode* mode);
+GLFWAPI GLFWvidmode glfwGetVideoMode(GLFWmonitor* monitor);
 
 /*! @brief Sets the system gamma ramp to one generated from the specified
  *  exponent.

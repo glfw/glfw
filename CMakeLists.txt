@@ -30,7 +30,6 @@ else()
     find_package(OpenGL REQUIRED)
 endif()
 
-set(CMAKE_THREAD_PREFER_PTHREAD OFF)
 find_package(Threads REQUIRED)
 
 #--------------------------------------------------------------------

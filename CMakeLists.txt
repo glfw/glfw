@@ -242,7 +242,7 @@ if (_GLFW_EGL)
 
     set(CMAKE_REQUIRED_LIBRARIES ${EGL_LIBRARY})
 
-    if (_GLFW_X11)
+    if (UNIX)
         set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} egl")
     endif()
 

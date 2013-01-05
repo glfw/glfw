@@ -30,6 +30,9 @@ else()
     find_package(OpenGL REQUIRED)
 endif()
 
+set(CMAKE_THREAD_PREFER_PTHREAD OFF)
+find_package(Threads REQUIRED)
+
 #--------------------------------------------------------------------
 # Enable all warnings on GCC, regardless of OS
 #--------------------------------------------------------------------

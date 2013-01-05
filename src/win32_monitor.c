@@ -56,6 +56,7 @@ int _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* mode)
 {
     GLFWvidmode current;
     const GLFWvidmode* best;
+    DEVMODE dm;
 
     best = _glfwChooseVideoMode(monitor, mode);
 
@@ -63,7 +64,6 @@ int _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* mode)
     if (_glfwCompareVideoModes(&current, best) == 0)
         return GL_TRUE;
 
-    DEVMODE dm;
     dm.dmSize = sizeof(DEVMODE);
     dm.dmFields     = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
     dm.dmPelsWidth  = best->width;
@@ -120,6 +120,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         DEVMODE settings;
         char* name;
         HDC dc;
+        GLboolean primary;
 
         ZeroMemory(&adapter, sizeof(DISPLAY_DEVICE));
         adapter.cb = sizeof(DISPLAY_DEVICE);
@@ -171,7 +172,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         EnumDisplayDevices(adapter.DeviceName, 0, &monitor, 0);
         dc = CreateDC(L"DISPLAY", monitor.DeviceString, NULL, NULL);
 
-        const GLboolean primary = adapter.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE;
+        primary = adapter.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE;
 
         monitors[found] = _glfwCreateMonitor(name, primary,
                                              GetDeviceCaps(dc, HORZSIZE),

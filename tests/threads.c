@@ -39,7 +39,7 @@
 
 typedef struct
 {
-    GLFWwindow window;
+    GLFWwindow* window;
     const char* title;
     float r, g, b;
     thrd_t id;

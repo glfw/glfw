@@ -79,7 +79,7 @@ static void error_callback(int error, const char* description)
 int main(void)
 {
     int i, width, height;
-    GLFWwindow window;
+    GLFWwindow* window;
 
     glfwSetErrorCallback(error_callback);
 

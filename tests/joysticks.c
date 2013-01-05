@@ -52,7 +52,7 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void window_size_callback(GLFWwindow window, int width, int height)
+static void window_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
@@ -100,7 +100,7 @@ static void draw_joystick(Joystick* j, int x, int y, int width, int height)
     }
 }
 
-static void draw_joysticks(GLFWwindow window)
+static void draw_joysticks(GLFWwindow* window)
 {
     int i, width, height;
 
@@ -186,7 +186,7 @@ static void refresh_joysticks(void)
 
 int main(void)
 {
-    GLFWwindow window;
+    GLFWwindow* window;
 
     memset(joysticks, 0, sizeof(joysticks));
 

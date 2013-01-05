@@ -36,7 +36,7 @@
 #define WIDTH  400
 #define HEIGHT 400
 
-static GLFWwindow windows[2];
+static GLFWwindow* windows[2];
 static GLboolean closed = GL_FALSE;
 
 static void error_callback(int error, const char* description)
@@ -44,21 +44,21 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void key_callback(GLFWwindow window, int key, int action)
+static void key_callback(GLFWwindow* window, int key, int action)
 {
     if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
         closed = GL_TRUE;
 }
 
-static int window_close_callback(GLFWwindow window)
+static int window_close_callback(GLFWwindow* window)
 {
     closed = GL_TRUE;
     return GL_FALSE;
 }
 
-static GLFWwindow open_window(const char* title, GLFWwindow share, int posX, int posY)
+static GLFWwindow* open_window(const char* title, GLFWwindow* share, int posX, int posY)
 {
-    GLFWwindow window;
+    GLFWwindow* window;
 
     glfwWindowHint(GLFW_POSITION_X, posX);
     glfwWindowHint(GLFW_POSITION_Y, posY);

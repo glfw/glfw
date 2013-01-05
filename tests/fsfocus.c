@@ -40,14 +40,14 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void window_focus_callback(GLFWwindow window, int focused)
+static void window_focus_callback(GLFWwindow* window, int focused)
 {
     printf("%0.3f: Window %s\n",
            glfwGetTime(),
            focused ? "focused" : "defocused");
 }
 
-static void window_key_callback(GLFWwindow window, int key, int action)
+static void window_key_callback(GLFWwindow* window, int key, int action)
 {
     if (action != GLFW_PRESS)
         return;
@@ -70,7 +70,7 @@ static void window_key_callback(GLFWwindow window, int key, int action)
     }
 }
 
-static int window_close_callback(GLFWwindow window)
+static int window_close_callback(GLFWwindow* window)
 {
     printf("%0.3f: User closed window\n", glfwGetTime());
     running = GL_FALSE;
@@ -79,7 +79,7 @@ static int window_close_callback(GLFWwindow window)
 
 int main(void)
 {
-    GLFWwindow window;
+    GLFWwindow* window;
 
     glfwSetErrorCallback(error_callback);
 

@@ -145,7 +145,7 @@ void init_grid(void)
 // Draw scene
 //========================================================================
 
-void draw_scene(GLFWwindow window)
+void draw_scene(GLFWwindow* window)
 {
     // Clear the color and depth buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -271,7 +271,7 @@ static void error_callback(int error, const char* description)
 // Handle key strokes
 //========================================================================
 
-void key_callback(GLFWwindow window, int key, int action)
+void key_callback(GLFWwindow* window, int key, int action)
 {
     if (action != GLFW_PRESS)
         return;
@@ -314,7 +314,7 @@ void key_callback(GLFWwindow window, int key, int action)
 // Callback function for mouse button events
 //========================================================================
 
-void mouse_button_callback(GLFWwindow window, int button, int action)
+void mouse_button_callback(GLFWwindow* window, int button, int action)
 {
     if (button != GLFW_MOUSE_BUTTON_LEFT)
         return;
@@ -336,7 +336,7 @@ void mouse_button_callback(GLFWwindow window, int button, int action)
 // Callback function for cursor motion events
 //========================================================================
 
-void cursor_position_callback(GLFWwindow window, int x, int y)
+void cursor_position_callback(GLFWwindow* window, int x, int y)
 {
     if (locked)
     {
@@ -353,7 +353,7 @@ void cursor_position_callback(GLFWwindow window, int x, int y)
 // Callback function for scroll events
 //========================================================================
 
-void scroll_callback(GLFWwindow window, double x, double y)
+void scroll_callback(GLFWwindow* window, double x, double y)
 {
     zoom += (float) y / 4.f;
     if (zoom < 0)
@@ -365,7 +365,7 @@ void scroll_callback(GLFWwindow window, double x, double y)
 // Callback function for window resize events
 //========================================================================
 
-void window_size_callback(GLFWwindow window, int width, int height)
+void window_size_callback(GLFWwindow* window, int width, int height)
 {
     float ratio = 1.f;
 
@@ -386,7 +386,7 @@ void window_size_callback(GLFWwindow window, int width, int height)
 // Callback function for window close events
 //========================================================================
 
-static int window_close_callback(GLFWwindow window)
+static int window_close_callback(GLFWwindow* window)
 {
     running = GL_FALSE;
     return GL_TRUE;
@@ -399,7 +399,7 @@ static int window_close_callback(GLFWwindow window)
 
 int main(int argc, char* argv[])
 {
-    GLFWwindow window;
+    GLFWwindow* window;
     double t, dt_total, t_old;
     int width, height;
 

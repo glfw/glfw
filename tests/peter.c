@@ -36,13 +36,13 @@
 #include <stdlib.h>
 
 static GLboolean reopen = GL_FALSE;
-static GLFWwindow window_handle = NULL;
+static GLFWwindow* window_handle = NULL;
 static int cursor_x;
 static int cursor_y;
 
 static GLboolean open_window(void);
 
-static void toggle_cursor(GLFWwindow window)
+static void toggle_cursor(GLFWwindow* window)
 {
     if (glfwGetInputMode(window, GLFW_CURSOR_MODE) == GLFW_CURSOR_CAPTURED)
     {
@@ -61,14 +61,14 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void cursor_position_callback(GLFWwindow window, int x, int y)
+static void cursor_position_callback(GLFWwindow* window, int x, int y)
 {
     printf("Cursor moved to: %i %i (%i %i)\n", x, y, x - cursor_x, y - cursor_y);
     cursor_x = x;
     cursor_y = y;
 }
 
-static void key_callback(GLFWwindow window, int key, int action)
+static void key_callback(GLFWwindow* window, int key, int action)
 {
     switch (key)
     {
@@ -90,7 +90,7 @@ static void key_callback(GLFWwindow window, int key, int action)
     }
 }
 
-static void window_size_callback(GLFWwindow window, int width, int height)
+static void window_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }

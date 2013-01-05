@@ -81,7 +81,7 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused)
             _glfw.focusedWindow = window;
 
             if (window->windowFocusCallback)
-                window->windowFocusCallback(window, focused);
+                window->windowFocusCallback((GLFWwindow*) window, focused);
         }
     }
     else
@@ -107,7 +107,7 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused)
             _glfw.focusedWindow = NULL;
 
             if (window->windowFocusCallback)
-                window->windowFocusCallback(window, focused);
+                window->windowFocusCallback((GLFWwindow*) window, focused);
         }
     }
 }
@@ -126,7 +126,7 @@ void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
     window->positionY = y;
 
     if (window->windowPosCallback)
-        window->windowPosCallback(window, x, y);
+        window->windowPosCallback((GLFWwindow*) window, x, y);
 }
 
 
@@ -143,7 +143,7 @@ void _glfwInputWindowSize(_GLFWwindow* window, int width, int height)
     window->height = height;
 
     if (window->windowSizeCallback)
-        window->windowSizeCallback(window, width, height);
+        window->windowSizeCallback((GLFWwindow*) window, width, height);
 }
 
 
@@ -159,7 +159,7 @@ void _glfwInputWindowIconify(_GLFWwindow* window, int iconified)
     window->iconified = iconified;
 
     if (window->windowIconifyCallback)
-        window->windowIconifyCallback(window, iconified);
+        window->windowIconifyCallback((GLFWwindow*) window, iconified);
 }
 
 
@@ -180,7 +180,7 @@ void _glfwInputWindowVisibility(_GLFWwindow* window, int visible)
 void _glfwInputWindowDamage(_GLFWwindow* window)
 {
     if (window->windowRefreshCallback)
-        window->windowRefreshCallback(window);
+        window->windowRefreshCallback((GLFWwindow*) window);
 }
 
 
@@ -191,7 +191,7 @@ void _glfwInputWindowDamage(_GLFWwindow* window)
 void _glfwInputWindowCloseRequest(_GLFWwindow* window)
 {
     if (window->windowCloseCallback)
-        window->closeRequested = window->windowCloseCallback(window);
+        window->closeRequested = window->windowCloseCallback((GLFWwindow*) window);
     else
         window->closeRequested = GL_TRUE;
 }
@@ -205,10 +205,10 @@ void _glfwInputWindowCloseRequest(_GLFWwindow* window)
 // Create the GLFW window and its associated context
 //========================================================================
 
-GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
-                                    const char* title,
-                                    GLFWmonitor monitor,
-                                    GLFWwindow share)
+GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
+                                     const char* title,
+                                     GLFWmonitor* monitor,
+                                     GLFWwindow* share)
 {
     _GLFWfbconfig fbconfig;
     _GLFWwndconfig wndconfig;
@@ -290,31 +290,31 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     }
 
     // Save the currently current context so it can be restored later
-    previous = glfwGetCurrentContext();
+    previous = (_GLFWwindow*) glfwGetCurrentContext();
 
     // Open the actual window and create its context
     if (!_glfwPlatformCreateWindow(window, &wndconfig, &fbconfig))
     {
-        glfwDestroyWindow(window);
-        glfwMakeContextCurrent(previous);
+        glfwDestroyWindow((GLFWwindow*) window);
+        glfwMakeContextCurrent((GLFWwindow*) previous);
         return GL_FALSE;
     }
 
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent((GLFWwindow*) window);
 
     // Cache the actual (as opposed to requested) context parameters
     if (!_glfwRefreshContextParams())
     {
-        glfwDestroyWindow(window);
-        glfwMakeContextCurrent(previous);
+        glfwDestroyWindow((GLFWwindow*) window);
+        glfwMakeContextCurrent((GLFWwindow*) previous);
         return GL_FALSE;
     }
 
     // Verify the context against the requested parameters
     if (!_glfwIsValidContext(&wndconfig))
     {
-        glfwDestroyWindow(window);
-        glfwMakeContextCurrent(previous);
+        glfwDestroyWindow((GLFWwindow*) window);
+        glfwMakeContextCurrent((GLFWwindow*) previous);
         return GL_FALSE;
     }
 
@@ -324,17 +324,17 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height,
     _glfwPlatformSwapBuffers(window);
 
     // Restore the previously current context (or NULL)
-    glfwMakeContextCurrent(previous);
+    glfwMakeContextCurrent((GLFWwindow*) previous);
 
     // The GLFW specification states that fullscreen windows have the cursor
     // captured by default
     if (wndconfig.monitor)
-        glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_CAPTURED);
+        glfwSetInputMode((GLFWwindow*) window, GLFW_CURSOR_MODE, GLFW_CURSOR_CAPTURED);
 
     if (wndconfig.monitor == NULL && wndconfig.visible)
-        glfwShowWindow(window);
+        glfwShowWindow((GLFWwindow*) window);
 
-    return window;
+    return (GLFWwindow*) window;
 }
 
 
@@ -474,7 +474,7 @@ GLFWAPI void glfwWindowHint(int target, int hint)
 // Properly kill the window / video display
 //========================================================================
 
-GLFWAPI void glfwDestroyWindow(GLFWwindow handle)
+GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -531,7 +531,7 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow handle)
 // Set the window title
 //========================================================================
 
-GLFWAPI void glfwSetWindowTitle(GLFWwindow handle, const char* title)
+GLFWAPI void glfwSetWindowTitle(GLFWwindow* handle, const char* title)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -549,7 +549,7 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow handle, const char* title)
 // Get the window size
 //========================================================================
 
-GLFWAPI void glfwGetWindowSize(GLFWwindow handle, int* width, int* height)
+GLFWAPI void glfwGetWindowSize(GLFWwindow* handle, int* width, int* height)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -571,7 +571,7 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow handle, int* width, int* height)
 // Set the window size
 //========================================================================
 
-GLFWAPI void glfwSetWindowSize(GLFWwindow handle, int width, int height)
+GLFWAPI void glfwSetWindowSize(GLFWwindow* handle, int width, int height)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -599,7 +599,7 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow handle, int width, int height)
 // Window iconification
 //========================================================================
 
-GLFWAPI void glfwIconifyWindow(GLFWwindow handle)
+GLFWAPI void glfwIconifyWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -620,7 +620,7 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow handle)
 // Window un-iconification
 //========================================================================
 
-GLFWAPI void glfwRestoreWindow(GLFWwindow handle)
+GLFWAPI void glfwRestoreWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -641,7 +641,7 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow handle)
 // Window show
 //========================================================================
 
-GLFWAPI void glfwShowWindow(GLFWwindow handle)
+GLFWAPI void glfwShowWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -662,7 +662,7 @@ GLFWAPI void glfwShowWindow(GLFWwindow handle)
 // Window hide
 //========================================================================
 
-GLFWAPI void glfwHideWindow(GLFWwindow handle)
+GLFWAPI void glfwHideWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -683,7 +683,7 @@ GLFWAPI void glfwHideWindow(GLFWwindow handle)
 // Get window parameter
 //========================================================================
 
-GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
+GLFWAPI int glfwGetWindowParam(GLFWwindow* handle, int param)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -736,7 +736,7 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow handle, int param)
 // Get window monitor
 //========================================================================
 
-GLFWAPI GLFWmonitor glfwGetWindowMonitor(GLFWwindow handle)
+GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -746,7 +746,7 @@ GLFWAPI GLFWmonitor glfwGetWindowMonitor(GLFWwindow handle)
         return NULL;
     }
 
-    return (GLFWmonitor) window->monitor;
+    return (GLFWmonitor*) window->monitor;
 }
 
 
@@ -754,7 +754,7 @@ GLFWAPI GLFWmonitor glfwGetWindowMonitor(GLFWwindow handle)
 // Set the user pointer for the specified window
 //========================================================================
 
-GLFWAPI void glfwSetWindowUserPointer(GLFWwindow handle, void* pointer)
+GLFWAPI void glfwSetWindowUserPointer(GLFWwindow* handle, void* pointer)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -772,7 +772,7 @@ GLFWAPI void glfwSetWindowUserPointer(GLFWwindow handle, void* pointer)
 // Get the user pointer for the specified window
 //========================================================================
 
-GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow handle)
+GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -790,7 +790,7 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow handle)
 // Set callback function for window position changes
 //========================================================================
 
-GLFWAPI void glfwSetWindowPosCallback(GLFWwindow handle, GLFWwindowposfun cbfun)
+GLFWAPI void glfwSetWindowPosCallback(GLFWwindow* handle, GLFWwindowposfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -808,7 +808,7 @@ GLFWAPI void glfwSetWindowPosCallback(GLFWwindow handle, GLFWwindowposfun cbfun)
 // Set callback function for window size changes
 //========================================================================
 
-GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow handle, GLFWwindowsizefun cbfun)
+GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow* handle, GLFWwindowsizefun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -826,7 +826,7 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow handle, GLFWwindowsizefun cbfu
 // Set callback function for window close events
 //========================================================================
 
-GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow handle, GLFWwindowclosefun cbfun)
+GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow* handle, GLFWwindowclosefun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -844,7 +844,7 @@ GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow handle, GLFWwindowclosefun cb
 // Set callback function for window refresh events
 //========================================================================
 
-GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow handle, GLFWwindowrefreshfun cbfun)
+GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow* handle, GLFWwindowrefreshfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -862,7 +862,7 @@ GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow handle, GLFWwindowrefreshfu
 // Set callback function for window focus events
 //========================================================================
 
-GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow handle, GLFWwindowfocusfun cbfun)
+GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow* handle, GLFWwindowfocusfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -880,7 +880,7 @@ GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow handle, GLFWwindowfocusfun cb
 // Set callback function for window iconification events
 //========================================================================
 
-GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow handle, GLFWwindowiconifyfun cbfun)
+GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow* handle, GLFWwindowiconifyfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 

@@ -484,7 +484,7 @@ static void update_mesh(void)
 static GLboolean running = GL_TRUE;
 
 /* GLFW Window management functions */
-static int window_close_callback(GLFWwindow window)
+static int window_close_callback(GLFWwindow* window)
 {
     running = GL_FALSE;
 
@@ -493,7 +493,7 @@ static int window_close_callback(GLFWwindow window)
     return 0;
 }
 
-static void key_callback(GLFWwindow window, int key, int action)
+static void key_callback(GLFWwindow* window, int key, int action)
 {
     switch(key)
     {
@@ -513,7 +513,7 @@ static void usage(void)
 
 int main(int argc, char** argv)
 {
-    GLFWwindow window;
+    GLFWwindow* window;
     int ch, iter;
     double dt;
     double last_update_time;

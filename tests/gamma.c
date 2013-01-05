@@ -57,13 +57,13 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static int window_close_callback(GLFWwindow window)
+static int window_close_callback(GLFWwindow* window)
 {
     closed = GL_TRUE;
     return GL_FALSE;
 }
 
-static void key_callback(GLFWwindow window, int key, int action)
+static void key_callback(GLFWwindow* window, int key, int action)
 {
     if (action != GLFW_PRESS)
         return;
@@ -94,7 +94,7 @@ static void key_callback(GLFWwindow window, int key, int action)
     }
 }
 
-static void size_callback(GLFWwindow window, int width, int height)
+static void size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
@@ -102,8 +102,8 @@ static void size_callback(GLFWwindow window, int width, int height)
 int main(int argc, char** argv)
 {
     int width, height, ch;
-    GLFWmonitor monitor = NULL;
-    GLFWwindow window;
+    GLFWmonitor* monitor = NULL;
+    GLFWwindow* window;
 
     while ((ch = getopt(argc, argv, "fh")) != -1)
     {

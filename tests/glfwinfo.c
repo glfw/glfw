@@ -184,7 +184,7 @@ int main(int argc, char** argv)
     int ch, api = 0, profile = 0, strategy = 0, major = 1, minor = 0, revision;
     GLboolean debug = GL_FALSE, forward = GL_FALSE, list = GL_FALSE;
     GLint flags, mask;
-    GLFWwindow window;
+    GLFWwindow* window;
 
     if (!valid_version())
         exit(EXIT_FAILURE);

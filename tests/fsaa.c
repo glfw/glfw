@@ -43,12 +43,12 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void window_size_callback(GLFWwindow window, int width, int height)
+static void window_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 
-static void key_callback(GLFWwindow window, int key, int action)
+static void key_callback(GLFWwindow* window, int key, int action)
 {
   if (action != GLFW_PRESS)
     return;
@@ -69,7 +69,7 @@ static void usage(void)
 int main(int argc, char** argv)
 {
     int ch, samples = 4;
-    GLFWwindow window;
+    GLFWwindow* window;
 
     while ((ch = getopt(argc, argv, "hs:")) != -1)
     {

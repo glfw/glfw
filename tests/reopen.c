@@ -38,7 +38,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static GLFWwindow window_handle = NULL;
+static GLFWwindow* window_handle = NULL;
 static GLboolean closed = GL_FALSE;
 
 static void error_callback(int error, const char* description)
@@ -46,19 +46,19 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void window_size_callback(GLFWwindow window, int width, int height)
+static void window_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 
-static int window_close_callback(GLFWwindow window)
+static int window_close_callback(GLFWwindow* window)
 {
     printf("Close callback triggered\n");
     closed = GL_TRUE;
     return 0;
 }
 
-static void key_callback(GLFWwindow window, int key, int action)
+static void key_callback(GLFWwindow* window, int key, int action)
 {
     if (action != GLFW_PRESS)
         return;
@@ -72,7 +72,7 @@ static void key_callback(GLFWwindow window, int key, int action)
     }
 }
 
-static GLboolean open_window(int width, int height, GLFWmonitor monitor)
+static GLboolean open_window(int width, int height, GLFWmonitor* monitor)
 {
     double base;
 
@@ -117,7 +117,7 @@ int main(int argc, char** argv)
 
     for (;;)
     {
-        GLFWmonitor monitor = NULL;
+        GLFWmonitor* monitor = NULL;
 
         if (count & 1)
             monitor = glfwGetPrimaryMonitor();

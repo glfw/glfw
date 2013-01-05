@@ -39,7 +39,7 @@ static int cursor_x = 0, cursor_y = 0;
 static int window_width = 640, window_height = 480;
 static int swap_interval = 1;
 
-static void set_swap_interval(GLFWwindow window, int interval)
+static void set_swap_interval(GLFWwindow* window, int interval)
 {
     char title[256];
 
@@ -56,7 +56,7 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void window_size_callback(GLFWwindow window, int width, int height)
+static void window_size_callback(GLFWwindow* window, int width, int height)
 {
     window_width = width;
     window_height = height;
@@ -68,13 +68,13 @@ static void window_size_callback(GLFWwindow window, int width, int height)
     gluOrtho2D(0.f, window_width, 0.f, window_height);
 }
 
-static void cursor_position_callback(GLFWwindow window, int x, int y)
+static void cursor_position_callback(GLFWwindow* window, int x, int y)
 {
     cursor_x = x;
     cursor_y = y;
 }
 
-static void key_callback(GLFWwindow window, int key, int action)
+static void key_callback(GLFWwindow* window, int key, int action)
 {
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
         set_swap_interval(window, 1 - swap_interval);
@@ -82,7 +82,7 @@ static void key_callback(GLFWwindow window, int key, int action)
 
 int main(void)
 {
-    GLFWwindow window;
+    GLFWwindow* window;
     int width, height;
 
     glfwSetErrorCallback(error_callback);

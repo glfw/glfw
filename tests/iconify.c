@@ -47,13 +47,13 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static int window_close_callback(GLFWwindow window)
+static int window_close_callback(GLFWwindow* window)
 {
     closed = GL_TRUE;
     return GL_FALSE;
 }
 
-static void key_callback(GLFWwindow window, int key, int action)
+static void key_callback(GLFWwindow* window, int key, int action)
 {
     printf("%0.2f Key %s\n",
            glfwGetTime(),
@@ -73,21 +73,21 @@ static void key_callback(GLFWwindow window, int key, int action)
     }
 }
 
-static void window_size_callback(GLFWwindow window, int width, int height)
+static void window_size_callback(GLFWwindow* window, int width, int height)
 {
     printf("%0.2f Window resized to %ix%i\n", glfwGetTime(), width, height);
 
     glViewport(0, 0, width, height);
 }
 
-static void window_focus_callback(GLFWwindow window, int focused)
+static void window_focus_callback(GLFWwindow* window, int focused)
 {
     printf("%0.2f Window %s\n",
            glfwGetTime(),
            focused ? "focused" : "defocused");
 }
 
-static void window_iconify_callback(GLFWwindow window, int iconified)
+static void window_iconify_callback(GLFWwindow* window, int iconified)
 {
     printf("%0.2f Window %s\n",
            glfwGetTime(),
@@ -97,8 +97,8 @@ static void window_iconify_callback(GLFWwindow window, int iconified)
 int main(int argc, char** argv)
 {
     int width, height, ch;
-    GLFWmonitor monitor = NULL;
-    GLFWwindow window;
+    GLFWmonitor* monitor = NULL;
+    GLFWwindow* window;
 
     glfwSetErrorCallback(error_callback);
 

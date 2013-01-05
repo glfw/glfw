@@ -763,12 +763,12 @@ typedef void (*GLFWglproc)(void);
 /*! @brief Monitor handle type.
  *  @ingroup monitor
  */
-typedef void* GLFWmonitor;
+typedef struct GLFWmonitor GLFWmonitor;
 
 /*! @brief Window handle type.
  *  @ingroup window
  */
-typedef void* GLFWwindow;
+typedef struct GLFWwindow GLFWwindow;
 
 /*! @brief The function signature for error callbacks.
  *  @param[in] error An @link errors error code @endlink.
@@ -785,7 +785,7 @@ typedef void (* GLFWerrorfun)(int,const char*);
  *  the client area of the window.
  *  @ingroup window
  */
-typedef void (* GLFWwindowposfun)(GLFWwindow,int,int);
+typedef void (* GLFWwindowposfun)(GLFWwindow*,int,int);
 
 /*! @brief The function signature for window resize callbacks.
  *  @param[in] window The window that the user resized.
@@ -793,7 +793,7 @@ typedef void (* GLFWwindowposfun)(GLFWwindow,int,int);
  *  @param[in] height The new height, in pixels, of the window.
  *  @ingroup window
  */
-typedef void (* GLFWwindowsizefun)(GLFWwindow,int,int);
+typedef void (* GLFWwindowsizefun)(GLFWwindow*,int,int);
 
 /*! @brief The function signature for window close callbacks.
  *  @param[in] window The window that the user attempted to close.
@@ -801,13 +801,13 @@ typedef void (* GLFWwindowsizefun)(GLFWwindow,int,int);
  *  ignore the attempt.
  *  @ingroup window
  */
-typedef int (* GLFWwindowclosefun)(GLFWwindow);
+typedef int (* GLFWwindowclosefun)(GLFWwindow*);
 
 /*! @brief The function signature for window content refresh callbacks.
  *  @param[in] window The window whose content needs to be refreshed.
  *  @ingroup window
  */
-typedef void (* GLFWwindowrefreshfun)(GLFWwindow);
+typedef void (* GLFWwindowrefreshfun)(GLFWwindow*);
 
 /*! @brief The function signature for window focus/defocus callbacks.
  *  @param[in] window The window that was focused or defocused.
@@ -815,7 +815,7 @@ typedef void (* GLFWwindowrefreshfun)(GLFWwindow);
  *  it was defocused.
  *  @ingroup window
  */
-typedef void (* GLFWwindowfocusfun)(GLFWwindow,int);
+typedef void (* GLFWwindowfocusfun)(GLFWwindow*,int);
 
 /*! @brief The function signature for window iconify/restore callbacks.
  *  @param[in] window The window that was iconified or restored.
@@ -823,7 +823,7 @@ typedef void (* GLFWwindowfocusfun)(GLFWwindow,int);
  *  if it was restored.
  *  @ingroup window
  */
-typedef void (* GLFWwindowiconifyfun)(GLFWwindow,int);
+typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
 
 /*! @brief The function signature for mouse button callbacks.
  *  @param[in] window The window that received the event.
@@ -832,7 +832,7 @@ typedef void (* GLFWwindowiconifyfun)(GLFWwindow,int);
  *  @param[in] action @ref GLFW_PRESS or @ref GLFW_RELEASE.
  *  @ingroup input
  */
-typedef void (* GLFWmousebuttonfun)(GLFWwindow,int,int);
+typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int);
 
 /*! @brief The function signature for cursor position callbacks.
  *  @param[in] window The window that received the event.
@@ -840,7 +840,7 @@ typedef void (* GLFWmousebuttonfun)(GLFWwindow,int,int);
  *  @param[in] y The new y-coordinate of the cursor.
  *  @ingroup input
  */
-typedef void (* GLFWcursorposfun)(GLFWwindow,int,int);
+typedef void (* GLFWcursorposfun)(GLFWwindow*,int,int);
 
 /*! @brief The function signature for cursor enter/exit callbacks.
  *  @param[in] window The window that received the event.
@@ -848,7 +848,7 @@ typedef void (* GLFWcursorposfun)(GLFWwindow,int,int);
  *  area, or @c GL_FALSE if it left it.
  *  @ingroup input
  */
-typedef void (* GLFWcursorenterfun)(GLFWwindow,int);
+typedef void (* GLFWcursorenterfun)(GLFWwindow*,int);
 
 /*! @brief The function signature for scroll callbacks.
  *  @param[in] window The window that received the event.
@@ -856,7 +856,7 @@ typedef void (* GLFWcursorenterfun)(GLFWwindow,int);
  *  @param[in] y The scroll offset along the y-axis.
  *  @ingroup input
  */
-typedef void (* GLFWscrollfun)(GLFWwindow,double,double);
+typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
 
 /*! @brief The function signature for keyboard key callbacks.
  *  @param[in] window The window that received the event.
@@ -865,21 +865,21 @@ typedef void (* GLFWscrollfun)(GLFWwindow,double,double);
  *  @param[in] action @ref GLFW_PRESS or @ref GLFW_RELEASE.
  *  @ingroup input
  */
-typedef void (* GLFWkeyfun)(GLFWwindow,int,int);
+typedef void (* GLFWkeyfun)(GLFWwindow*,int,int);
 
 /*! @brief The function signature for Unicode character callbacks.
  *  @param[in] window The window that received the event.
  *  @param[in] character The Unicode code point of the character.
  *  @ingroup input
  */
-typedef void (* GLFWcharfun)(GLFWwindow,int);
+typedef void (* GLFWcharfun)(GLFWwindow*,int);
 
 /*! @brief The function signature for monitor configuration callbacks.
  *  @param[in] monitor The monitor that was connected or disconnected.
  *  @param[in] event @ref GLFW_MONITOR_CONNECTED or @ref
  *  GLFW_MONITOR_DISCONNECTED.
  */
-typedef void (* GLFWmonitorfun)(GLFWmonitor,int);
+typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
 
 /* @brief Video mode type.
  * @ingroup monitor
@@ -1004,25 +1004,25 @@ GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
  *  @return An array of monitor handles.
  *  @ingroup monitor
  */
-GLFWAPI const GLFWmonitor* glfwGetMonitors(int* count);
+GLFWAPI GLFWmonitor** glfwGetMonitors(int* count);
 
 /*! @brief Returns the primary monitor.
  *  @return The primary monitor.
  *  @ingroup monitor
  */
-GLFWAPI GLFWmonitor glfwGetPrimaryMonitor(void);
+GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void);
 
 /*! @brief Returns a property of the specified monitor.
  *  @ingroup monitor
  */
-GLFWAPI int glfwGetMonitorParam(GLFWmonitor monitor, int param);
+GLFWAPI int glfwGetMonitorParam(GLFWmonitor* monitor, int param);
 
 /*! @brief Returns the name of the specified monitor.
  *  @param[in] monitor The monitor to query.
  *  @return The UTF-8 encoded name of the monitor.
  *  @ingroup monitor
  */
-GLFWAPI const char* glfwGetMonitorName(GLFWmonitor monitor);
+GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* monitor);
 
 /*! @brief Sets the monitor configuration callback.
  *  @param[in] cbfun The new callback, or @c NULL to remove the currently set.
@@ -1036,14 +1036,14 @@ GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun);
  *  @return An array of video modes.
  *  @ingroup monitor
  */
-GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor monitor, int* count);
+GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count);
 
 /*! @brief Returns the current mode of the specified monitor.
  *  @param[in] monitor The monitor to query.
  *  @param[out] mode The current mode of the monitor.
  *  @ingroup monitor
  */
-GLFWAPI void glfwGetVideoMode(GLFWmonitor monitor, GLFWvidmode* mode);
+GLFWAPI void glfwGetVideoMode(GLFWmonitor* monitor, GLFWvidmode* mode);
 
 /*! @brief Sets the system gamma ramp to one generated from the specified
  *  exponent.
@@ -1242,7 +1242,7 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *
  *  @sa glfwDestroyWindow
  */
-GLFWAPI GLFWwindow glfwCreateWindow(int width, int height, const char* title, GLFWmonitor monitor, GLFWwindow share);
+GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share);
 
 /*! @brief Destroys the specified window and its context.
  *  @param[in] window The window to destroy.
@@ -1261,7 +1261,7 @@ GLFWAPI GLFWwindow glfwCreateWindow(int width, int height, const char* title, GL
  *
  *  @sa glfwCreateWindow
  */
-GLFWAPI void glfwDestroyWindow(GLFWwindow window);
+GLFWAPI void glfwDestroyWindow(GLFWwindow* window);
 
 /*! @brief Sets the title of the specified window.
  *  @param[in] window The window whose title to change.
@@ -1270,7 +1270,7 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow window);
  *
  *  @note This function may only be called from the main thread.
  */
-GLFWAPI void glfwSetWindowTitle(GLFWwindow window, const char* title);
+GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
 
 /*! @brief Retrieves the size of the client area of the specified window.
  *  @param[in] window The window whose size to retrieve.
@@ -1280,7 +1280,7 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow window, const char* title);
  *
  *  @sa glfwSetWindowSize
  */
-GLFWAPI void glfwGetWindowSize(GLFWwindow window, int* width, int* height);
+GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
 
 /*! @brief Sets the size of the client area of the specified window.
  *  @param[in] window The window to resize.
@@ -1298,7 +1298,7 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow window, int* width, int* height);
  *
  *  @sa glfwGetWindowSize
  */
-GLFWAPI void glfwSetWindowSize(GLFWwindow window, int width, int height);
+GLFWAPI void glfwSetWindowSize(GLFWwindow* window, int width, int height);
 
 /*! @brief Iconifies the specified window.
  *  @param[in] window The window to iconify.
@@ -1310,7 +1310,7 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow window, int width, int height);
  *
  *  @sa glfwRestoreWindow
  */
-GLFWAPI void glfwIconifyWindow(GLFWwindow window);
+GLFWAPI void glfwIconifyWindow(GLFWwindow* window);
 
 /*! @brief Restores the specified window.
  *  @param[in] window The window to restore.
@@ -1322,7 +1322,7 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow window);
  *
  *  @sa glfwIconifyWindow
  */
-GLFWAPI void glfwRestoreWindow(GLFWwindow window);
+GLFWAPI void glfwRestoreWindow(GLFWwindow* window);
 
 /*! @brief Makes the specified window visible.
  *  @param[in] window The window to make visible.
@@ -1335,7 +1335,7 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow window);
  *
  *  @sa glfwHideWindow
  */
-GLFWAPI void glfwShowWindow(GLFWwindow window);
+GLFWAPI void glfwShowWindow(GLFWwindow* window);
 
 /*! @brief Hides the specified window.
  *  @param[in] window The window to hide.
@@ -1348,14 +1348,14 @@ GLFWAPI void glfwShowWindow(GLFWwindow window);
  *
  *  @sa glfwShowWindow
  */
-GLFWAPI void glfwHideWindow(GLFWwindow window);
+GLFWAPI void glfwHideWindow(GLFWwindow* window);
 
 /*! @brief Returns the monitor that the window uses for fullscreen mode
  *  @param[in] window The window to query.
  *  @return The monitor, or @c NULL if the window is in windowed mode.
  *  @ingroup window
  */
-GLFWAPI GLFWmonitor glfwGetWindowMonitor(GLFWwindow window);
+GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
 
 /*! @brief Returns a property of the specified window.
  *  @param[in] window The window to query.
@@ -1398,7 +1398,7 @@ GLFWAPI GLFWmonitor glfwGetWindowMonitor(GLFWwindow window);
  *  The @ref GLFW_CONTEXT_ROBUSTNESS property indicates the robustness strategy
  *  used by the context, or @ref GLFW_NO_ROBUSTNESS if robustness is not used.
  */
-GLFWAPI int glfwGetWindowParam(GLFWwindow window, int param);
+GLFWAPI int glfwGetWindowParam(GLFWwindow* window, int param);
 
 /*! @brief Sets the user pointer of the specified window.
  *  @param[in] window The window whose pointer to set.
@@ -1407,7 +1407,7 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow window, int param);
  *
  *  @sa glfwGetWindowUserPointer
  */
-GLFWAPI void glfwSetWindowUserPointer(GLFWwindow window, void* pointer);
+GLFWAPI void glfwSetWindowUserPointer(GLFWwindow* window, void* pointer);
 
 /*! @brief Returns the user pointer of the specified window.
  *  @param[in] window The window whose pointer to return.
@@ -1415,7 +1415,7 @@ GLFWAPI void glfwSetWindowUserPointer(GLFWwindow window, void* pointer);
  *
  *  @sa glfwSetWindowUserPointer
  */
-GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow window);
+GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
 
 /*! @brief Sets the position callback for the specified window.
  *  @param[in] window The window whose callback to set.
@@ -1423,7 +1423,7 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow window);
  *  callback.
  *  @ingroup window
  */
-GLFWAPI void glfwSetWindowPosCallback(GLFWwindow window, GLFWwindowposfun cbfun);
+GLFWAPI void glfwSetWindowPosCallback(GLFWwindow* window, GLFWwindowposfun cbfun);
 
 /*! @brief Sets the size callback for the specified window.
  *  @param[in] window The window whose callback to set.
@@ -1433,7 +1433,7 @@ GLFWAPI void glfwSetWindowPosCallback(GLFWwindow window, GLFWwindowposfun cbfun)
  *
  *  This callback is called when the window is resized.
  */
-GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfun);
+GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwindowsizefun cbfun);
 
 /*! @brief Sets the close callback for the specified window.
  *  @param[in] window The window whose callback to set.
@@ -1449,7 +1449,7 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfu
  *  The return value of the close callback becomes the new value of the @ref
  *  GLFW_SHOULD_CLOSE window parameter.
  */
-GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cbfun);
+GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow* window, GLFWwindowclosefun cbfun);
 
 /*! @brief Sets the refresh callback for the specified window.
  *  @param[in] window The window whose callback to set.
@@ -1464,7 +1464,7 @@ GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cb
  *  @note On compositing window systems such as Mac OS X, where the window
  *  contents are saved off-screen, this callback may never be called.
  */
-GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfun cbfun);
+GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow* window, GLFWwindowrefreshfun cbfun);
 
 /*! @brief Sets the focus callback for the specified window.
  *  @param[in] window The window whose callback to set.
@@ -1474,7 +1474,7 @@ GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfu
  *
  *  This callback is called when the window gains or loses focus.
  */
-GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow window, GLFWwindowfocusfun cbfun);
+GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwindowfocusfun cbfun);
 
 /*! @brief Sets the iconify callback for the specified window.
  *  @param[in] window The window whose callback to set.
@@ -1484,7 +1484,7 @@ GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow window, GLFWwindowfocusfun cb
  *
  *  This callback is called when the window is iconified or restored.
  */
-GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow window, GLFWwindowiconifyfun cbfun);
+GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow* window, GLFWwindowiconifyfun cbfun);
 
 /*! @brief Processes all pending events.
  *  @ingroup window
@@ -1514,7 +1514,7 @@ GLFWAPI void glfwWaitEvents(void);
  *
  *  @sa glfwSetInputMode
  */
-GLFWAPI int glfwGetInputMode(GLFWwindow window, int mode);
+GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
 
 /*! @brief Sets an input option for the specified window.
  *  @param[in] mode One of the following:
@@ -1525,7 +1525,7 @@ GLFWAPI int glfwGetInputMode(GLFWwindow window, int mode);
  *
  *  @sa glfwGetInputMode
  */
-GLFWAPI void glfwSetInputMode(GLFWwindow window, int mode, int value);
+GLFWAPI void glfwSetInputMode(GLFWwindow* window, int mode, int value);
 
 /*! @brief Returns the last reported state of a keyboard key for the specified
  *  window.
@@ -1534,7 +1534,7 @@ GLFWAPI void glfwSetInputMode(GLFWwindow window, int mode, int value);
  *  @return @ref GLFW_PRESS or @ref GLFW_RELEASE.
  *  @ingroup input
  */
-GLFWAPI int glfwGetKey(GLFWwindow window, int key);
+GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
 
 /*! @brief Returns the last reported state of a mouse button for the specified
  *  window.
@@ -1543,7 +1543,7 @@ GLFWAPI int glfwGetKey(GLFWwindow window, int key);
  *  @return @ref GLFW_PRESS or @ref GLFW_RELEASE.
  *  @ingroup input
  */
-GLFWAPI int glfwGetMouseButton(GLFWwindow window, int button);
+GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
 
 /*! @brief Retrieves the last reported cursor position, relative to the client
  *  area of the window.
@@ -1556,7 +1556,7 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow window, int button);
  *
  *  @sa glfwSetCursorPos
  */
-GLFWAPI void glfwGetCursorPos(GLFWwindow window, int* xpos, int* ypos);
+GLFWAPI void glfwGetCursorPos(GLFWwindow* window, int* xpos, int* ypos);
 
 /*! @brief Sets the position of the cursor, relative to the client area of the window.
  *  @param[in] window The desired window.
@@ -1570,11 +1570,11 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow window, int* xpos, int* ypos);
  *
  *  @sa glfwGetCursorPos
  */
-GLFWAPI void glfwSetCursorPos(GLFWwindow window, int xpos, int ypos);
+GLFWAPI void glfwSetCursorPos(GLFWwindow* window, int xpos, int ypos);
 
 /*! @ingroup input
  */
-GLFWAPI void glfwGetScrollOffset(GLFWwindow window, double* xoffset, double* yoffset);
+GLFWAPI void glfwGetScrollOffset(GLFWwindow* window, double* xoffset, double* yoffset);
 
 /*! @brief Sets the key callback.
  *  @param[in] cbfun The new key callback, or @c NULL to remove the currently
@@ -1585,7 +1585,7 @@ GLFWAPI void glfwGetScrollOffset(GLFWwindow window, double* xoffset, double* yof
  *  @endlink named after their use on the standard US keyboard layout.  If you
  *  want to input text, use the Unicode character callback instead.
  */
-GLFWAPI void glfwSetKeyCallback(GLFWwindow window, GLFWkeyfun cbfun);
+GLFWAPI void glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
 
 /*! @brief Sets the Unicode character callback.
  *  @param[in] cbfun The new Unicode character callback, or @c NULL to remove
@@ -1595,14 +1595,14 @@ GLFWAPI void glfwSetKeyCallback(GLFWwindow window, GLFWkeyfun cbfun);
  *  @remarks The Unicode character callback is for text input.  If you want to
  *  know whether a specific key was pressed or released, use the key callback.
  */
-GLFWAPI void glfwSetCharCallback(GLFWwindow window, GLFWcharfun cbfun);
+GLFWAPI void glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
 
 /*! @brief Sets the mouse button callback.
  *  @param[in] cbfun The new mouse button callback, or @c NULL to remove the
  *  currently set callback.
  *  @ingroup input
  */
-GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow window, GLFWmousebuttonfun cbfun);
+GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmousebuttonfun cbfun);
 
 /*! @brief Sets the cursor position callback.
  *  @param[in] cbfun The new cursor position callback, or @c NULL to remove the
@@ -1612,14 +1612,14 @@ GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow window, GLFWmousebuttonfun cb
  *  @remarks The position is relative to the upper-left corner of the client
  *  area of the window.
  */
-GLFWAPI void glfwSetCursorPosCallback(GLFWwindow window, GLFWcursorposfun cbfun);
+GLFWAPI void glfwSetCursorPosCallback(GLFWwindow* window, GLFWcursorposfun cbfun);
 
 /*! @brief Sets the cursor enter/exit callback.
  *  @param[in] cbfun The new cursor enter/exit callback, or @c NULL to remove
  *  the currently set callback.
  *  @ingroup input
  */
-GLFWAPI void glfwSetCursorEnterCallback(GLFWwindow window, GLFWcursorenterfun cbfun);
+GLFWAPI void glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcursorenterfun cbfun);
 
 /*! @brief Sets the scroll callback.
  *  @param[in] cbfun The new scroll callback, or @c NULL to remove the currently
@@ -1629,7 +1629,7 @@ GLFWAPI void glfwSetCursorEnterCallback(GLFWwindow window, GLFWcursorenterfun cb
  *  @note This receives all scrolling input, like that from a mouse wheel or
  *  a touchpad scrolling area.
  */
-GLFWAPI void glfwSetScrollCallback(GLFWwindow window, GLFWscrollfun cbfun);
+GLFWAPI void glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun cbfun);
 
 /*! @brief Returns a property of the specified joystick.
  *  @param[in] joy The joystick to query.
@@ -1678,7 +1678,7 @@ GLFWAPI const char* glfwGetJoystickName(int joy);
  *
  *  @sa glfwGetClipboardString
  */
-GLFWAPI void glfwSetClipboardString(GLFWwindow window, const char* string);
+GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
 
 /*! @brief Retrieves the contents of the clipboard as a string.
  *  @param[in] window The window that will request the clipboard contents.
@@ -1693,7 +1693,7 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow window, const char* string);
  *
  *  @sa glfwSetClipboardString
  */
-GLFWAPI const char* glfwGetClipboardString(GLFWwindow window);
+GLFWAPI const char* glfwGetClipboardString(GLFWwindow* window);
 
 /*! @brief Retrieves the current value of the GLFW timer.
  *  @return The current value, in seconds.
@@ -1727,7 +1727,7 @@ GLFWAPI void glfwSetTime(double time);
  *
  *  @sa glfwGetCurrentContext
  */
-GLFWAPI void glfwMakeContextCurrent(GLFWwindow window);
+GLFWAPI void glfwMakeContextCurrent(GLFWwindow* window);
 
 /*! @brief Returns the window whose context is current on this thread.
  *  @return The window whose context is current, or @c NULL if no window's
@@ -1738,7 +1738,7 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow window);
  *
  *  @sa glfwMakeContextCurrent
  */
-GLFWAPI GLFWwindow glfwGetCurrentContext(void);
+GLFWAPI GLFWwindow* glfwGetCurrentContext(void);
 
 /*! @brief Swaps the front and back buffers of the specified window.
  *  @param[in] The window whose buffers to swap.
@@ -1748,7 +1748,7 @@ GLFWAPI GLFWwindow glfwGetCurrentContext(void);
  *
  *  @sa glfwSwapInterval
  */
-GLFWAPI void glfwSwapBuffers(GLFWwindow window);
+GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
 
 /*! @brief Sets the swap interval for the current context.
  *  @param[in] interval The minimum number of video frame periods to wait for

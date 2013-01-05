@@ -41,7 +41,7 @@ static void usage(void)
     printf("Usage: clipboard [-h]\n");
 }
 
-static GLboolean control_is_down(GLFWwindow window)
+static GLboolean control_is_down(GLFWwindow* window)
 {
     return glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) ||
            glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL);
@@ -52,13 +52,13 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static int window_close_callback(GLFWwindow window)
+static int window_close_callback(GLFWwindow* window)
 {
     closed = GL_TRUE;
     return GL_FALSE;
 }
 
-static void key_callback(GLFWwindow window, int key, int action)
+static void key_callback(GLFWwindow* window, int key, int action)
 {
     if (action != GLFW_PRESS)
         return;
@@ -93,7 +93,7 @@ static void key_callback(GLFWwindow window, int key, int action)
     }
 }
 
-static void window_size_callback(GLFWwindow window, int width, int height)
+static void window_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
@@ -101,7 +101,7 @@ static void window_size_callback(GLFWwindow window, int width, int height)
 int main(int argc, char** argv)
 {
     int ch;
-    GLFWwindow window;
+    GLFWwindow* window;
 
     while ((ch = getopt(argc, argv, "h")) != -1)
     {

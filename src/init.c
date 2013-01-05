@@ -171,7 +171,7 @@ GLFWAPI void glfwTerminate(void)
 
     // Close all remaining windows
     while (_glfw.windowListHead)
-        glfwDestroyWindow(_glfw.windowListHead);
+        glfwDestroyWindow((GLFWwindow*) _glfw.windowListHead);
 
     _glfwDestroyMonitors();
 

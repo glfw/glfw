@@ -36,7 +36,7 @@
 
 static int swap_interval;
 
-static void set_swap_interval(GLFWwindow window, int interval)
+static void set_swap_interval(GLFWwindow* window, int interval)
 {
     char title[256];
 
@@ -53,12 +53,12 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void window_size_callback(GLFWwindow window, int width, int height)
+static void window_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 
-static void key_callback(GLFWwindow window, int key, int action)
+static void key_callback(GLFWwindow* window, int key, int action)
 {
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
         set_swap_interval(window, 1 - swap_interval);
@@ -67,7 +67,7 @@ static void key_callback(GLFWwindow window, int key, int action)
 int main(void)
 {
     float position;
-    GLFWwindow window;
+    GLFWwindow* window;
 
     glfwSetErrorCallback(error_callback);
 

@@ -547,7 +547,7 @@ int _glfwStringInExtensionString(const char* string,
 // Make the context associated with the specified window current
 //========================================================================
 
-GLFWAPI void glfwMakeContextCurrent(GLFWwindow handle)
+GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -568,7 +568,7 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow handle)
 // Returns the window whose context is current
 //========================================================================
 
-GLFWAPI GLFWwindow glfwGetCurrentContext(void)
+GLFWAPI GLFWwindow* glfwGetCurrentContext(void)
 {
     if (!_glfwInitialized)
     {
@@ -576,7 +576,7 @@ GLFWAPI GLFWwindow glfwGetCurrentContext(void)
         return NULL;
     }
 
-    return _glfwPlatformGetCurrentContext();
+    return (GLFWwindow*) _glfwPlatformGetCurrentContext();
 }
 
 
@@ -584,7 +584,7 @@ GLFWAPI GLFWwindow glfwGetCurrentContext(void)
 // Swap buffers (double-buffering)
 //========================================================================
 
-GLFWAPI void glfwSwapBuffers(GLFWwindow handle)
+GLFWAPI void glfwSwapBuffers(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 

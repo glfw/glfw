@@ -176,7 +176,7 @@ void _glfwInputMonitorChange(void)
         if (j == _glfw.monitorCount)
         {
             // This monitor was not connected before
-            _glfw.monitorCallback(monitors[i], GLFW_CONNECTED);
+            _glfw.monitorCallback((GLFWmonitor*) monitors[i], GLFW_CONNECTED);
         }
     }
 
@@ -188,7 +188,7 @@ void _glfwInputMonitorChange(void)
             continue;
 
         // This monitor is no longer connected
-        _glfw.monitorCallback(_glfw.monitors[i], GLFW_DISCONNECTED);
+        _glfw.monitorCallback((GLFWmonitor*) _glfw.monitors[i], GLFW_DISCONNECTED);
 
         for (window = _glfw.windowListHead;  window;  window = window->next)
         {
@@ -304,7 +304,7 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 // Return the currently connected monitors
 //========================================================================
 
-GLFWAPI const GLFWmonitor* glfwGetMonitors(int* count)
+GLFWAPI GLFWmonitor** glfwGetMonitors(int* count)
 {
     if (!_glfwInitialized)
     {
@@ -319,7 +319,7 @@ GLFWAPI const GLFWmonitor* glfwGetMonitors(int* count)
     }
 
     *count = _glfw.monitorCount;
-    return (GLFWmonitor*) _glfw.monitors;
+    return (GLFWmonitor**) _glfw.monitors;
 }
 
 
@@ -327,10 +327,10 @@ GLFWAPI const GLFWmonitor* glfwGetMonitors(int* count)
 // Get the primary monitor
 //========================================================================
 
-GLFWAPI GLFWmonitor glfwGetPrimaryMonitor(void)
+GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void)
 {
     int i;
-    GLFWmonitor handle = NULL;
+    _GLFWmonitor* primary = NULL;
 
     if (!_glfwInitialized)
     {
@@ -342,18 +342,18 @@ GLFWAPI GLFWmonitor glfwGetPrimaryMonitor(void)
     {
         if (_glfw.monitors[i]->primary)
         {
-            handle = _glfw.monitors[i];
+            primary = _glfw.monitors[i];
             break;
         }
     }
 
-    if (!handle)
+    if (!primary)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, NULL);
         return NULL;
     }
 
-    return handle;
+    return (GLFWmonitor*) primary;
 }
 
 
@@ -361,7 +361,7 @@ GLFWAPI GLFWmonitor glfwGetPrimaryMonitor(void)
 // Get monitor parameter
 //========================================================================
 
-GLFWAPI int glfwGetMonitorParam(GLFWmonitor handle, int param)
+GLFWAPI int glfwGetMonitorParam(GLFWmonitor* handle, int param)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
 
@@ -400,7 +400,7 @@ GLFWAPI int glfwGetMonitorParam(GLFWmonitor handle, int param)
 // Get monitor string
 //========================================================================
 
-GLFWAPI const char* glfwGetMonitorName(GLFWmonitor handle)
+GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
 
@@ -441,7 +441,7 @@ GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 // Get a list of available video modes
 //========================================================================
 
-GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor handle, int* count)
+GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
 
@@ -476,7 +476,7 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor handle, int* count)
 // Get the current video mode for the specified monitor
 //========================================================================
 
-GLFWAPI void glfwGetVideoMode(GLFWmonitor handle, GLFWvidmode* mode)
+GLFWAPI void glfwGetVideoMode(GLFWmonitor* handle, GLFWvidmode* mode)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
 

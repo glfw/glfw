@@ -223,7 +223,7 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void window_pos_callback(GLFWwindow window, int x, int y)
+static void window_pos_callback(GLFWwindow* window, int x, int y)
 {
     printf("%08x at %0.3f: Window position: %i %i\n",
            counter++,
@@ -232,7 +232,7 @@ static void window_pos_callback(GLFWwindow window, int x, int y)
            y);
 }
 
-static void window_size_callback(GLFWwindow window, int width, int height)
+static void window_size_callback(GLFWwindow* window, int width, int height)
 {
     printf("%08x at %0.3f: Window size: %i %i\n",
            counter++,
@@ -243,14 +243,14 @@ static void window_size_callback(GLFWwindow window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-static int window_close_callback(GLFWwindow window)
+static int window_close_callback(GLFWwindow* window)
 {
     printf("%08x at %0.3f: Window close\n", counter++, glfwGetTime());
 
     return closeable;
 }
 
-static void window_refresh_callback(GLFWwindow window)
+static void window_refresh_callback(GLFWwindow* window)
 {
     printf("%08x at %0.3f: Window refresh\n", counter++, glfwGetTime());
 
@@ -261,7 +261,7 @@ static void window_refresh_callback(GLFWwindow window)
     }
 }
 
-static void window_focus_callback(GLFWwindow window, int focused)
+static void window_focus_callback(GLFWwindow* window, int focused)
 {
     printf("%08x at %0.3f: Window %s\n",
            counter++,
@@ -269,7 +269,7 @@ static void window_focus_callback(GLFWwindow window, int focused)
            focused ? "focused" : "defocused");
 }
 
-static void window_iconify_callback(GLFWwindow window, int iconified)
+static void window_iconify_callback(GLFWwindow* window, int iconified)
 {
     printf("%08x at %0.3f: Window was %s\n",
            counter++,
@@ -277,7 +277,7 @@ static void window_iconify_callback(GLFWwindow window, int iconified)
            iconified ? "iconified" : "restored");
 }
 
-static void mouse_button_callback(GLFWwindow window, int button, int action)
+static void mouse_button_callback(GLFWwindow* window, int button, int action)
 {
     const char* name = get_button_name(button);
 
@@ -289,12 +289,12 @@ static void mouse_button_callback(GLFWwindow window, int button, int action)
         printf(" was %s\n", get_action_name(action));
 }
 
-static void cursor_position_callback(GLFWwindow window, int x, int y)
+static void cursor_position_callback(GLFWwindow* window, int x, int y)
 {
     printf("%08x at %0.3f: Cursor position: %i %i\n", counter++, glfwGetTime(), x, y);
 }
 
-static void cursor_enter_callback(GLFWwindow window, int entered)
+static void cursor_enter_callback(GLFWwindow* window, int entered)
 {
     printf("%08x at %0.3f: Cursor %s window\n",
            counter++,
@@ -302,12 +302,12 @@ static void cursor_enter_callback(GLFWwindow window, int entered)
            entered ? "entered" : "left");
 }
 
-static void scroll_callback(GLFWwindow window, double x, double y)
+static void scroll_callback(GLFWwindow* window, double x, double y)
 {
     printf("%08x at %0.3f: Scroll: %0.3f %0.3f\n", counter++, glfwGetTime(), x, y);
 }
 
-static void key_callback(GLFWwindow window, int key, int action)
+static void key_callback(GLFWwindow* window, int key, int action)
 {
     const char* name = get_key_name(key);
 
@@ -333,7 +333,7 @@ static void key_callback(GLFWwindow window, int key, int action)
     }
 }
 
-static void char_callback(GLFWwindow window, int character)
+static void char_callback(GLFWwindow* window, int character)
 {
     printf("%08x at %0.3f: Character 0x%04x (%s) input\n",
            counter++,
@@ -342,7 +342,7 @@ static void char_callback(GLFWwindow window, int character)
            get_character_string(character));
 }
 
-void monitor_callback(GLFWmonitor monitor, int event)
+void monitor_callback(GLFWmonitor* monitor, int event)
 {
     if (event == GLFW_CONNECTED)
     {
@@ -370,7 +370,7 @@ void monitor_callback(GLFWmonitor monitor, int event)
 
 int main(void)
 {
-    GLFWwindow window;
+    GLFWwindow* window;
     int width, height;
 
     setlocale(LC_ALL, "");

@@ -37,14 +37,14 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void window_size_callback(GLFWwindow window, int width, int height)
+static void window_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 
 int main(void)
 {
-    GLFWwindow window;
+    GLFWwindow* window;
 
     glfwSetErrorCallback(error_callback);
 

@@ -215,7 +215,7 @@ static void animate(void)
 
 
 /* change view angle, exit upon ESC */
-void key( GLFWwindow window, int k, int action )
+void key( GLFWwindow* window, int k, int action )
 {
   if( action != GLFW_PRESS ) return;
 
@@ -248,7 +248,7 @@ void key( GLFWwindow window, int k, int action )
 
 
 /* new window size */
-void reshape( GLFWwindow window, int width, int height )
+void reshape( GLFWwindow* window, int width, int height )
 {
   GLfloat h = (GLfloat) height / (GLfloat) width;
   GLfloat xmax, znear, zfar;
@@ -268,7 +268,7 @@ void reshape( GLFWwindow window, int width, int height )
 
 
 /* close callback */
-static int window_close_callback(GLFWwindow window)
+static int window_close_callback(GLFWwindow* window)
 {
     running = 0;
     return GL_TRUE;
@@ -329,7 +329,7 @@ static void init(int argc, char *argv[])
 /* program entry */
 int main(int argc, char *argv[])
 {
-    GLFWwindow window;
+    GLFWwindow* window;
     int width, height;
 
     if( !glfwInit() )

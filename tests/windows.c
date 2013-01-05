@@ -49,7 +49,7 @@ int main(void)
 {
     int i;
     GLboolean running = GL_TRUE;
-    GLFWwindow windows[4];
+    GLFWwindow* windows[4];
 
     glfwSetErrorCallback(error_callback);
 

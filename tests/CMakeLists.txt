@@ -24,7 +24,7 @@ endif()
 set(GETOPT ${GLFW_SOURCE_DIR}/support/getopt.h
            ${GLFW_SOURCE_DIR}/support/getopt.c)
 set(TINYCTHREAD ${GLFW_SOURCE_DIR}/support/tinycthread.h
-                ${GLFW_SOURCE_DIR}/support/tinycthread.c) 
+                ${GLFW_SOURCE_DIR}/support/tinycthread.c)
 
 add_executable(clipboard clipboard.c ${GETOPT})
 add_executable(defaults defaults.c)
@@ -57,9 +57,8 @@ set_target_properties(title PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Title")
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c)
 set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 
-if (BUILD_SHARED_LIBS)
-    target_link_libraries(threads ${thread_LIBRARIES})
-endif()
+target_link_libraries(threads ${thread_LIBRARIES})
+
 
 set(WINDOWS_BINARIES accuracy sharing tearing threads title windows)
 set(CONSOLE_BINARIES clipboard defaults events fsaa fsfocus gamma glfwinfo

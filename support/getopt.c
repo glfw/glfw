@@ -34,13 +34,19 @@
 * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 * DAMAGE.
 */
+#ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "getopt.h"
 
+/* 2013-01-06 Camilla Berglund <elmindreda@elmindreda.org>
+ * 
+ * Only define _CRT_SECURE_NO_WARNINGS if not already defined.
+ */
 /* 2012-08-12 Lambert Clara <lambert.clara@yahoo.fr>
  * 
  * Constify third argument of getopt.

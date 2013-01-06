@@ -11,6 +11,10 @@ endif()
 include_directories(${GLFW_SOURCE_DIR}/include
                     ${GLFW_SOURCE_DIR}/support)
 
+if (MSVC)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
+
 if (NOT APPLE)
     # HACK: This is NOTFOUND on OS X 10.8
     include_directories(${OPENGL_INCLUDE_DIR})

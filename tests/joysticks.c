@@ -34,6 +34,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef _MSC_VER
+#define strdup(x) _strdup(x)
+#endif
+
 typedef struct Joystick
 {
     GLboolean present;

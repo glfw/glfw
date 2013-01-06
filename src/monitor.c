@@ -228,7 +228,7 @@ void _glfwDestroyMonitors(void)
 const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
                                         const GLFWvidmode* desired)
 {
-    unsigned int i;
+    int i;
     unsigned int sizeDiff, leastSizeDiff = UINT_MAX;
     unsigned int colorDiff, leastColorDiff = UINT_MAX;
     const GLFWvidmode* current;

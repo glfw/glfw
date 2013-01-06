@@ -21,6 +21,11 @@ freely, subject to the following restrictions:
     distribution.
 */
 
+/* 2013-01-06 Camilla Berglund <elmindreda@elmindreda.org>
+ * 
+ * Added casts from time_t to DWORD to avoid warnings on VC++.
+ */
+
 #include "tinycthread.h"
 #include <stdlib.h>
 
@@ -291,8 +296,8 @@ int cnd_timedwait(cnd_t *cond, mtx_t *mtx, const struct timespec *ts)
   struct timespec now;
   if (clock_gettime(TIME_UTC, &now) == 0)
   {
-    DWORD delta = (ts->tv_sec - now.tv_sec) * 1000 +
-                  (ts->tv_nsec - now.tv_nsec + 500000) / 1000000;
+    DWORD delta = (DWORD) ((ts->tv_sec - now.tv_sec) * 1000 +
+                           (ts->tv_nsec - now.tv_nsec + 500000) / 1000000);
     return _cnd_timedwait_win32(cond, mtx, delta);
   }
   else
@@ -471,8 +476,8 @@ int thrd_sleep(const struct timespec *time_point, struct timespec *remaining)
 
 #if defined(_TTHREAD_WIN32_)
   /* Delta in milliseconds */
-  delta = (time_point->tv_sec - now.tv_sec) * 1000 +
-          (time_point->tv_nsec - now.tv_nsec + 500000) / 1000000;
+  delta = (DWORD) ((time_point->tv_sec - now.tv_sec) * 1000 +
+                   (time_point->tv_nsec - now.tv_nsec + 500000) / 1000000);
   if (delta > 0)
   {
     Sleep(delta);

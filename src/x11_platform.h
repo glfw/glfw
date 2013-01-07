@@ -49,9 +49,7 @@
 #endif
 
 // The Xkb extension provides improved keyboard support
-#if defined(_GLFW_HAS_XKB)
- #include <X11/XKBlib.h>
-#endif
+#include <X11/XKBlib.h>
 
 #if defined(_GLFW_GLX)
  #define _GLFW_X11_CONTEXT_VISUAL window->glx.visual
@@ -155,7 +153,6 @@ typedef struct _GLFWlibraryX11
     } randr;
 
     struct {
-        GLboolean   available;
         int         majorOpcode;
         int         eventBase;
         int         errorBase;

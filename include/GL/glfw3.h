@@ -760,12 +760,12 @@ extern "C" {
  */
 typedef void (*GLFWglproc)(void);
 
-/*! @brief Monitor handle type.
+/*! @brief Monitor object.
  *  @ingroup monitor
  */
 typedef struct GLFWmonitor GLFWmonitor;
 
-/*! @brief Window handle type.
+/*! @brief Window object.
  *  @ingroup window
  */
 typedef struct GLFWwindow GLFWwindow;
@@ -988,9 +988,9 @@ GLFWAPI const char* glfwGetVersionString(void);
  *
  *  @remarks This function may be called before @ref glfwInit.
  *
- *  @remarks The error callback is the preferred error retrieval mechanism, as
- *  it may be provided with a more specific error description than the generic
- *  one returned by @ref glfwErrorString.
+ *  @note The error callback is called by the thread where the error was
+ *  generated.  If you are using GLFW from multiple threads, your error callback
+ *  needs to be written accordingly.
  *
  *  @note Because the description string provided to the callback may have been
  *  generated specifically for that error, it is not guaranteed to be valid

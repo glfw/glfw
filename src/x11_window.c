@@ -481,7 +481,6 @@ static void processEvent(XEvent *event)
     {
         case KeyPress:
         {
-            // A keyboard key was pressed
             window = findWindow(event->xkey.window);
             if (window == NULL)
                 return;
@@ -493,7 +492,6 @@ static void processEvent(XEvent *event)
 
         case KeyRelease:
         {
-            // A keyboard key was released
             window = findWindow(event->xkey.window);
             if (window == NULL)
                 return;
@@ -504,7 +502,6 @@ static void processEvent(XEvent *event)
 
         case ButtonPress:
         {
-            // A mouse button was pressed or a scrolling event occurred
             window = findWindow(event->xbutton.window);
             if (window == NULL)
                 return;
@@ -516,13 +513,11 @@ static void processEvent(XEvent *event)
             else if (event->xbutton.button == Button3)
                 _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_RIGHT, GLFW_PRESS);
 
-            // XFree86 3.3.2 and later translates mouse wheel up/down into
-            // mouse button 4 & 5 presses
+            // Modern X provides scroll events as mouse button presses
             else if (event->xbutton.button == Button4)
                 _glfwInputScroll(window, 0.0, 1.0);
             else if (event->xbutton.button == Button5)
                 _glfwInputScroll(window, 0.0, -1.0);
-
             else if (event->xbutton.button == Button6)
                 _glfwInputScroll(window, -1.0, 0.0);
             else if (event->xbutton.button == Button7)
@@ -533,7 +528,6 @@ static void processEvent(XEvent *event)
 
         case ButtonRelease:
         {
-            // A mouse button was released
             window = findWindow(event->xbutton.window);
             if (window == NULL)
                 return;
@@ -561,7 +555,6 @@ static void processEvent(XEvent *event)
 
         case EnterNotify:
         {
-            // The cursor entered the window
             window = findWindow(event->xcrossing.window);
             if (window == NULL)
                 return;
@@ -575,7 +568,6 @@ static void processEvent(XEvent *event)
 
         case LeaveNotify:
         {
-            // The cursor left the window
             window = findWindow(event->xcrossing.window);
             if (window == NULL)
                 return;
@@ -589,7 +581,6 @@ static void processEvent(XEvent *event)
 
         case MotionNotify:
         {
-            // The cursor was moved
             window = findWindow(event->xmotion.window);
             if (window == NULL)
                 return;
@@ -627,7 +618,6 @@ static void processEvent(XEvent *event)
 
         case ConfigureNotify:
         {
-            // The window configuration changed somehow
             window = findWindow(event->xconfigure.window);
             if (window == NULL)
                 return;
@@ -676,7 +666,6 @@ static void processEvent(XEvent *event)
 
         case MapNotify:
         {
-            // The window was mapped
             window = findWindow(event->xmap.window);
             if (window == NULL)
                 return;
@@ -688,7 +677,6 @@ static void processEvent(XEvent *event)
 
         case UnmapNotify:
         {
-            // The window was unmapped
             window = findWindow(event->xmap.window);
             if (window == NULL)
                 return;
@@ -700,7 +688,6 @@ static void processEvent(XEvent *event)
 
         case FocusIn:
         {
-            // The window gained focus
             window = findWindow(event->xfocus.window);
             if (window == NULL)
                 return;
@@ -715,7 +702,6 @@ static void processEvent(XEvent *event)
 
         case FocusOut:
         {
-            // The window lost focus
             window = findWindow(event->xfocus.window);
             if (window == NULL)
                 return;
@@ -730,7 +716,6 @@ static void processEvent(XEvent *event)
 
         case Expose:
         {
-            // The window's contents was damaged
             window = findWindow(event->xexpose.window);
             if (window == NULL)
                 return;
@@ -741,7 +726,7 @@ static void processEvent(XEvent *event)
 
         case SelectionClear:
         {
-            // The ownership of the selection was lost
+            // The ownership of the clipboard selection was lost
 
             free(_glfw.x11.selection.string);
             _glfw.x11.selection.string = NULL;
@@ -750,7 +735,7 @@ static void processEvent(XEvent *event)
 
         case SelectionNotify:
         {
-            // The selection conversion status is available
+            // The clipboard selection conversion status is available
 
             XSelectionEvent* request = &event->xselection;
 
@@ -764,7 +749,7 @@ static void processEvent(XEvent *event)
 
         case SelectionRequest:
         {
-            // The contents of the selection was requested
+            // The contents of the clipboard selection was requested
 
             XSelectionRequestEvent* request = &event->xselectionrequest;
 

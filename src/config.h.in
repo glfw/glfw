@@ -57,11 +57,6 @@
 // Define this to 1 to disable dynamic loading of winmm
 #cmakedefine _GLFW_NO_DLOAD_WINMM
 
-// Define this to 1 if XRandR is available
-#cmakedefine _GLFW_HAS_XRANDR
-// Define this to 1 if Xf86VidMode is available
-#cmakedefine _GLFW_HAS_XF86VIDMODE
-
 // Define this to 1 if glXGetProcAddress is available
 #cmakedefine _GLFW_HAS_GLXGETPROCADDRESS
 // Define this to 1 if glXGetProcAddressARB is available

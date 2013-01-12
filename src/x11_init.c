@@ -483,17 +483,12 @@ static GLboolean initDisplay(void)
     _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
 
     // Check for XF86VidMode extension
-#ifdef _GLFW_HAS_XF86VIDMODE
     _glfw.x11.vidmode.available =
         XF86VidModeQueryExtension(_glfw.x11.display,
                                   &_glfw.x11.vidmode.eventBase,
                                   &_glfw.x11.vidmode.errorBase);
-#else
-    _glfw.x11.vidmode.available = GL_FALSE;
-#endif /*_GLFW_HAS_XF86VIDMODE*/
 
     // Check for RandR extension
-#ifdef _GLFW_HAS_XRANDR
     _glfw.x11.randr.available =
         XRRQueryExtension(_glfw.x11.display,
                           &_glfw.x11.randr.eventBase,
@@ -517,9 +512,6 @@ static GLboolean initDisplay(void)
             _glfw.x11.randr.available = GL_FALSE;
         }
     }
-#else
-    _glfw.x11.randr.available = GL_FALSE;
-#endif /*_GLFW_HAS_XRANDR*/
 
     // Check if Xkb is supported on this display
     _glfw.x11.xkb.versionMajor = 1;
@@ -680,15 +672,6 @@ const char* _glfwPlatformGetVersionString(void)
         " GLX"
 #elif defined(_GLFW_EGL)
         " EGL"
-#endif
-#if defined(_GLFW_HAS_XRANDR)
-        " XRandR"
-#endif
-#if defined(_GLFW_HAS_XF86VIDMODE)
-        " Xf86VidMode"
-#endif
-#if !defined(_GLFW_HAS_XRANDR) && !defined(_GLFW_HAS_XF86VIDMODE)
-        " no-mode-switching-support"
 #endif
 #if defined(_GLFW_HAS_GLXGETPROCADDRESS)
         " glXGetProcAddress"

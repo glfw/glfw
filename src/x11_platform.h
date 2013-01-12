@@ -38,15 +38,11 @@
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
 
-// With XFree86, we can use the XF86VidMode extension
-#if defined(_GLFW_HAS_XF86VIDMODE)
- #include <X11/extensions/xf86vmode.h>
-#endif
+// The Xf86VidMode extension provides fallback gamma control
+#include <X11/extensions/xf86vmode.h>
 
 // The XRandR extension provides mode setting and gamma control
-#if defined(_GLFW_HAS_XRANDR)
- #include <X11/extensions/Xrandr.h>
-#endif
+#include <X11/extensions/Xrandr.h>
 
 // The Xkb extension provides improved keyboard support
 #include <X11/XKBlib.h>
@@ -207,13 +203,11 @@ typedef struct _GLFWmonitorX11
 {
     GLboolean       modeChanged;
 
-#if defined(_GLFW_HAS_XRANDR)
     XRROutputInfo*  output;
     SizeID          oldSizeID;
     int             oldWidth;
     int             oldHeight;
     Rotation        oldRotation;
-#endif /*_GLFW_HAS_XRANDR*/
 
 } _GLFWmonitorX11;
 

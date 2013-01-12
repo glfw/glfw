@@ -43,7 +43,6 @@
 
 void _glfwInitGammaRamp(void)
 {
-#ifdef _GLFW_HAS_XRANDR
     // RandR gamma support is only available with version 1.2 and above
     if (_glfw.x11.randr.available &&
         (_glfw.x11.randr.versionMajor > 1 ||
@@ -68,9 +67,7 @@ void _glfwInitGammaRamp(void)
 
         XRRFreeScreenResources(rr);
     }
-#endif /*_GLFW_HAS_XRANDR*/
 
-#if defined(_GLFW_HAS_XF86VIDMODE)
     if (_glfw.x11.vidmode.available && !_glfw.originalRampSize)
     {
         // Get the gamma size using XF86VidMode
@@ -78,7 +75,6 @@ void _glfwInitGammaRamp(void)
                                     _glfw.x11.screen,
                                     &_glfw.originalRampSize);
     }
-#endif /*_GLFW_HAS_XF86VIDMODE*/
 
     if (_glfw.originalRampSize)
     {
@@ -121,7 +117,6 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 
     if (_glfw.x11.randr.available && !_glfw.x11.randr.gammaBroken)
     {
-#if defined (_GLFW_HAS_XRANDR)
         size_t size = GLFW_GAMMA_RAMP_SIZE * sizeof(unsigned short);
 
         XRRScreenResources* rr = XRRGetScreenResources(_glfw.x11.display,
@@ -138,18 +133,15 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 
         XRRFreeGamma(gamma);
         XRRFreeScreenResources(rr);
-#endif /*_GLFW_HAS_XRANDR*/
     }
     else if (_glfw.x11.vidmode.available)
     {
-#if defined (_GLFW_HAS_XF86VIDMODE)
         XF86VidModeGetGammaRamp(_glfw.x11.display,
                                 _glfw.x11.screen,
                                 GLFW_GAMMA_RAMP_SIZE,
                                 ramp->red,
                                 ramp->green,
                                 ramp->blue);
-#endif /*_GLFW_HAS_XF86VIDMODE*/
     }
 }
 
@@ -171,7 +163,6 @@ void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
 
     if (_glfw.x11.randr.available && !_glfw.x11.randr.gammaBroken)
     {
-#if defined (_GLFW_HAS_XRANDR)
         int i;
         size_t size = GLFW_GAMMA_RAMP_SIZE * sizeof(unsigned short);
 
@@ -192,18 +183,15 @@ void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
         }
 
         XRRFreeScreenResources(rr);
-#endif /*_GLFW_HAS_XRANDR*/
     }
     else if (_glfw.x11.vidmode.available)
     {
-#if defined (_GLFW_HAS_XF86VIDMODE)
         XF86VidModeSetGammaRamp(_glfw.x11.display,
                                 _glfw.x11.screen,
                                 GLFW_GAMMA_RAMP_SIZE,
                                 (unsigned short*) ramp->red,
                                 (unsigned short*) ramp->green,
                                 (unsigned short*) ramp->blue);
-#endif /*_GLFW_HAS_XF86VIDMODE*/
     }
 }
 

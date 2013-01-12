@@ -816,7 +816,6 @@ static void processEvent(XEvent *event)
 
         default:
         {
-#if defined(_GLFW_HAS_XRANDR)
             switch (event->type - _glfw.x11.randr.eventBase)
             {
                 case RRScreenChangeNotify:
@@ -826,7 +825,7 @@ static void processEvent(XEvent *event)
                     break;
                 }
             }
-#endif /*_GLFW_HAS_XRANDR*/
+
             break;
         }
     }

@@ -192,10 +192,11 @@ void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 // Return a list of available monitors
 //========================================================================
 
-_GLFWmonitor** _glfwPlatformGetMonitors(int* count)
+_GLFWmonitor** _glfwPlatformGetMonitors(int* found)
 {
-    int found = 0;
     _GLFWmonitor** monitors = NULL;
+
+    *found = 0;
 
     if (_glfw.x11.randr.available)
     {
@@ -221,7 +222,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         {
             XRROutputInfo* oi;
             XRRCrtcInfo* ci;
-            int widthMM, heightMM;
 
             oi = XRRGetOutputInfo(_glfw.x11.display, sr, sr->outputs[i]);
             if (oi->connection != RR_Connected)
@@ -230,40 +230,49 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                 continue;
             }
 
-            if (oi->mm_width && oi->mm_height)
-            {
-                widthMM = oi->mm_width;
-                heightMM = oi->mm_height;
-            }
-            else
-            {
-                widthMM = DisplayWidthMM(_glfw.x11.display, _glfw.x11.screen);
-                heightMM = DisplayHeightMM(_glfw.x11.display, _glfw.x11.screen);
-            }
-
             ci = XRRGetCrtcInfo(_glfw.x11.display, sr, oi->crtc);
 
-            monitors[found] = _glfwCreateMonitor(oi->name,
-                                                 sr->outputs[i] == primary,
-                                                 widthMM, heightMM,
-                                                 ci->x, ci->y);
+            monitors[*found] = _glfwCreateMonitor(oi->name,
+                                                  sr->outputs[i] == primary,
+                                                  oi->mm_width, oi->mm_height,
+                                                  ci->x, ci->y);
 
             XRRFreeCrtcInfo(ci);
 
-            if (!monitors[found])
+            if (!monitors[*found])
             {
                 // TODO: wat
                 return NULL;
             }
 
             // This is retained until the monitor object is destroyed
-            monitors[found]->x11.output = oi;
-            found++;
+            monitors[*found]->x11.output = oi;
+            (*found)++;
         }
 #endif /*_GLFW_HAS_XRANDR*/
     }
+    else
+    {
+        int widthMM, heightMM;
 
-    *count = found;
+        monitors = (_GLFWmonitor**) calloc(1, sizeof(_GLFWmonitor*));
+        if (!monitors)
+        {
+            _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
+            return NULL;
+        }
+
+        widthMM  = DisplayWidthMM(_glfw.x11.display, _glfw.x11.screen);
+        heightMM = DisplayHeightMM(_glfw.x11.display, _glfw.x11.screen);
+
+        monitors[0] = _glfwCreateMonitor("Display",
+                                         GL_TRUE,
+                                         widthMM, heightMM,
+                                         0, 0);
+
+        *found = 1;
+    }
+
     return monitors;
 }
 
@@ -356,8 +365,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         XRRFreeScreenResources(sr);
 #endif /*_GLFW_HAS_XRANDR*/
     }
-
-    if (result == NULL)
+    else
     {
         *found = 1;
 

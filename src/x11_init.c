@@ -492,7 +492,7 @@ static GLboolean initDisplay(void)
     _glfw.x11.vidmode.available = GL_FALSE;
 #endif /*_GLFW_HAS_XF86VIDMODE*/
 
-    // Check for XRandR extension
+    // Check for RandR extension
 #ifdef _GLFW_HAS_XRANDR
     _glfw.x11.randr.available =
         XRRQueryExtension(_glfw.x11.display,
@@ -508,6 +508,13 @@ static GLboolean initDisplay(void)
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "X11: Failed to query RandR version");
             return GL_FALSE;
+        }
+
+        // The GLFW RandR path requires at least version 1.3
+        if (_glfw.x11.randr.versionMajor == 1 &&
+            _glfw.x11.randr.versionMinor < 3)
+        {
+            _glfw.x11.randr.available = GL_FALSE;
         }
     }
 #else

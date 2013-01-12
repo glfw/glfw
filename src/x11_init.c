@@ -488,11 +488,17 @@ static GLboolean initDisplay(void)
         return GL_FALSE;
     }
 
-    XkbSetDetectableAutoRepeat(_glfw.x11.display, True, &supported);
+    if (!XkbSetDetectableAutoRepeat(_glfw.x11.display, True, &supported))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "X11: Failed to set detectable key repeat");
+        return GL_FALSE;
+    }
+
     if (!supported)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "X11: Detectable key repeat is not available");
+                        "X11: Detectable key repeat is not supported");
         return GL_FALSE;
     }
 

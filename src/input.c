@@ -120,23 +120,18 @@ void _glfwInputKey(_GLFWwindow* window, int key, int action)
     if (key < 0 || key > GLFW_KEY_LAST)
         return;
 
-    // Are we trying to release an already released key?
-    if (action == GLFW_RELEASE && window->key[key] != GLFW_PRESS)
-        return;
+    if (action == GLFW_PRESS && window->key[key] == GLFW_PRESS)
+        repeated = GL_TRUE;
 
-    // Register key action
     if (action == GLFW_RELEASE && window->stickyKeys)
         window->key[key] = _GLFW_STICK;
     else
-    {
-        if (action == GLFW_PRESS && window->key[key] == GLFW_PRESS)
-            repeated = GL_TRUE;
-
         window->key[key] = (char) action;
-    }
 
-    // Call user callback function
-    if (window->callbacks.key && !repeated)
+    if (repeated)
+        action = GLFW_REPEAT;
+
+    if (window->callbacks.key)
         window->callbacks.key((GLFWwindow*) window, key, action);
 }
 

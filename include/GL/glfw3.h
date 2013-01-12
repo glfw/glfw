@@ -242,6 +242,10 @@ extern "C" {
  *  @ingroup input
  */
 #define GLFW_PRESS                  1
+/*! @brief The key was held down until it repeated.
+ *  @ingroup input
+ */
+#define GLFW_REPEAT                 2
 /*! @} */
 
 /* Keyboard raw key codes.
@@ -676,7 +680,7 @@ typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
  *  @param[in] window The window that received the event.
  *  @param[in] key The @link keys keyboard key @endlink that was pressed or
  *  released.
- *  @param[in] action One of @c GLFW_PRESS or @c GLFW_RELEASE.
+ *  @param[in] action @ref GLFW_PRESS, @ref GLFW_RELEASE or @ref GLFW_REPEAT.
  *  @ingroup input
  *
  *  @sa glfwSetKeyCallback

@@ -107,7 +107,7 @@ typedef struct _GLFWmonitor     _GLFWmonitor;
 //========================================================================
 
 // Internal key state used for sticky keys
-#define _GLFW_STICK 2
+#define _GLFW_STICK 3
 
 
 //========================================================================

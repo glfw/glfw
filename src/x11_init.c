@@ -470,6 +470,8 @@ static void detectEWMH(void)
 
 static GLboolean initDisplay(void)
 {
+    Bool supported;
+
     _glfw.x11.display = XOpenDisplay(NULL);
     if (!_glfw.x11.display)
     {
@@ -525,6 +527,14 @@ static GLboolean initDisplay(void)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "X11: The keyboard extension is not available");
+        return GL_FALSE;
+    }
+
+    XkbSetDetectableAutoRepeat(_glfw.x11.display, True, &supported);
+    if (!supported)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "X11: Detectable key repeat is not available");
         return GL_FALSE;
     }
 

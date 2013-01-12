@@ -498,32 +498,6 @@ static void processEvent(XEvent *event)
             if (window == NULL)
                 return;
 
-            // Do not report key releases for key repeats. For key repeats we
-            // will get KeyRelease/KeyPress pairs with similar or identical
-            // time stamps. User selected key repeat filtering is handled in
-            // _glfwInputKey/_glfwInputChar.
-            if (XEventsQueued(_glfw.x11.display, QueuedAfterReading))
-            {
-                XEvent nextEvent;
-                XPeekEvent(_glfw.x11.display, &nextEvent);
-
-                if (nextEvent.type == KeyPress &&
-                    nextEvent.xkey.window == event->xkey.window &&
-                    nextEvent.xkey.keycode == event->xkey.keycode)
-                {
-                    // This last check is a hack to work around key repeats
-                    // leaking through due to some sort of time drift
-                    // Toshiyuki Takahashi can press a button 16 times per
-                    // second so it's fairly safe to assume that no human is
-                    // pressing the key 50 times per second (value is ms)
-                    if ((nextEvent.xkey.time - event->xkey.time) < 20)
-                    {
-                        // Do not report anything for this event
-                        break;
-                    }
-                }
-            }
-
             _glfwInputKey(window, translateKey(event->xkey.keycode), GLFW_RELEASE);
             break;
         }

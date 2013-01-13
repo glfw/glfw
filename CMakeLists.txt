@@ -132,7 +132,7 @@ if (_GLFW_X11)
 
     # Check for XRandR (modern resolution switching and gamma control)
     if (NOT X11_Xrandr_FOUND)
-        message(FATAL_ERROR "The RandR extension was not found")
+        message(FATAL_ERROR "The RandR library and headers were not found")
     endif()
 
     list(APPEND glfw_INCLUDE_DIRS ${X11_Xrandr_INCLUDE_PATH})
@@ -141,7 +141,7 @@ if (_GLFW_X11)
 
     # Check for Xf86VidMode (fallback gamma control)
     if (NOT X11_xf86vmode_FOUND)
-        message(FATAL_ERROR "The Xf86VidMode extension was not found")
+        message(FATAL_ERROR "The Xf86VidMode library and headers were not found")
     endif()
 
     list(APPEND glfw_INCLUDE_DIRS ${X11_xf86vmode_INCLUDE_PATH})
@@ -157,7 +157,7 @@ if (_GLFW_X11)
 
     # Check for Xkb (X keyboard extension)
     if (NOT X11_Xkb_FOUND)
-        message(FATAL_ERROR "The X keyboard extension was not found")
+        message(FATAL_ERROR "The X keyboard extension headers were not found")
     endif() 
 
     list(APPEND glfw_INCLUDE_DIR ${X11_Xkb_INCLUDE_PATH})

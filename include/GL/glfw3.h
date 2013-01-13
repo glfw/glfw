@@ -925,7 +925,7 @@ typedef struct
  *  @note This function may take several seconds to complete on some systems,
  *  while on other systems it may take only a fraction of a second to complete.
  *
- *  @note On Mac OS X, this function will change the current directory of the
+ *  @note <b>Mac OS X:</b> This function will change the current directory of the
  *  application to the @c Contents/Resources subdirectory of the application's
  *  bundle, if present.
  *
@@ -1227,16 +1227,16 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  @remarks In order to determine the actual properties of an opened window,
  *  use @ref glfwGetWindowParam and @ref glfwGetWindowSize.
  *
- *  @remarks On Microsoft Windows, if the executable has an icon resource named
- *  @c GLFW_ICON, it will be set as the icon for the window.  If no such icon is
+ *  @remarks <b>Windows:</b> If the executable has an icon resource named @c
+ *  GLFW_ICON, it will be set as the icon for the window.  If no such icon is
  *  present, the @c IDI_WINLOGO icon will be used instead.
  *
- *  @remarks On Mac OS X the GLFW window has no icon, but programs using GLFW
- *  will use the application bundle's icon.  Also, the first time a window is
- *  opened the menu bar is populated with common commands like Hide, Quit and
- *  About.  The (minimal) about dialog uses information from the application's
- *  bundle.  For more information on bundles, see the Bundle Programming Guide
- *  provided by Apple.
+ *  @remarks <b>Mac OS X:</b> The GLFW window has no icon, as it is not
+ *  a document window, but the dock icon will be the same as the application
+ *  bundle's icon.  Also, the first time a window is opened the menu bar is
+ *  populated with common commands like Hide, Quit and About.  The (minimal)
+ *  about dialog uses information from the application's bundle.  For more
+ *  information on bundles, see the Bundle Programming Guide provided by Apple.
  *
  *  @note This function may only be called from the main thread.
  *
@@ -1362,6 +1362,8 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  @param[in] param The property whose value to return.
  *  @ingroup window
  *
+ *  @par Window properties
+ *
  *  The @ref GLFW_FOCUSED property indicates whether the window is focused.
  *
  *  The @ref GLFW_ICONIFIED property indicates whether the window is iconified.
@@ -1377,6 +1379,8 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  The @ref GLFW_POSITION_X and @ref GLFW_POSITION_Y properties indicate the
  *  screen position, in pixels, of the upper-left corner of the window's client
  *  area.
+ *
+ *  @par Context properties
  *
  *  The @ref GLFW_CLIENT_API property indicates the client API provided by the
  *  window's context.
@@ -1442,12 +1446,14 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwindowsizefun cbf
  *  @ingroup window
  *
  *  This callback is called when the user attempts to close the window, i.e.
- *  clicks the window's close widget or, on Mac OS X, selects @b Quit from the
- *  application menu.  Calling @ref glfwDestroyWindow does not cause this
- *  callback to be called.
+ *  clicks the window's close widget.  Calling @ref glfwDestroyWindow does not
+ *  cause this callback to be called.
  *
  *  The return value of the close callback becomes the new value of the @ref
  *  GLFW_SHOULD_CLOSE window parameter.
+ *
+ *  @remarks <b>Mac OS X:</b> Selecting Quit from the application menu will
+ *  trigger the close callback for all windows.
  */
 GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow* window, GLFWwindowclosefun cbfun);
 
@@ -1461,8 +1467,9 @@ GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow* window, GLFWwindowclosefun c
  *  redrawn, for example if the window has been exposed after having been
  *  covered by another window.
  *
- *  @note On compositing window systems such as Mac OS X, where the window
- *  contents are saved off-screen, this callback may never be called.
+ *  @note On compositing window systems such as Aero, Compiz or Aqua, where the
+ *  window contents are saved off-screen, this callback may be called only very
+ *  infrequently or never at all.
  */
 GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow* window, GLFWwindowrefreshfun cbfun);
 

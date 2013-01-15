@@ -20,6 +20,19 @@ if (NOT APPLE)
 endif()
 
 if (GLFW_USE_EGL)
+    set(GLFW_CLIENT_LIBRARY "opengl" CACHE STRING
+        "The client library to use; one of: opengl, glesv1 or glesv2")
+
+    if (${GLFW_CLIENT_LIBRARY} STREQUAL "opengl")
+        set(_GLFW_USE_OPENGL 1)
+    elseif (${GLFW_CLIENT_LIBRARY} STREQUAL "glesv1")
+        set(_GLFW_USE_GLESV1 1)
+    elseif (${GLFW_CLIENT_LIBRARY} STREQUAL "glesv2")
+        set(_GLFW_USE_GLESV2 1)
+    else()
+        message(FATAL_ERROR "Unsupported client library")
+    endif()
+
     set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMake/modules)
     find_package(EGL REQUIRED)
 
@@ -27,7 +40,15 @@ if (GLFW_USE_EGL)
     set(GLFW_BUILD_TESTS OFF)
     message(STATUS "NOTE: Examples and tests are disabled for EGL")
 else()
+    set(_GLFW_USE_OPENGL 1)
+endif()
+
+if (_GLFW_USE_OPENGL)
     find_package(OpenGL REQUIRED)
+elseif (_GLFW_USE_GLESV1)
+    find_package(GLESv1 REQUIRED)
+elseif (_GLFW_USE_GLESV2)
+    find_package(GLESv2 REQUIRED)
 endif()
 
 find_package(Threads REQUIRED)
@@ -86,13 +107,9 @@ else()
 endif()
 
 #--------------------------------------------------------------------
-# Set up GLFW for Win32 and WGL on Windows
+# Set up GLFW for Win32
 #--------------------------------------------------------------------
 if (_GLFW_WIN32)
-
-    # Set up library and include paths
-    list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
-    list(APPEND glfw_LIBRARIES ${OPENGL_gl_LIBRARY})
 
     if (MSVC)
         option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON)
@@ -117,14 +134,21 @@ if (_GLFW_WIN32)
 endif()
 
 #--------------------------------------------------------------------
+# Set up GLFW for WGL
+#--------------------------------------------------------------------
+if (_GLFW_WGL)
+    list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
+    list(APPEND glfw_LIBRARIES ${OPENGL_gl_LIBRARY})
+endif()
+
+#--------------------------------------------------------------------
 # Set up GLFW for Xlib and GLX or EGL on Unix-like systems with X Windows
 #--------------------------------------------------------------------
 if (_GLFW_X11)
 
     find_package(X11 REQUIRED)
 
-    set(GLFW_PKG_LIBS "")
-    set(GLFW_PKG_DEPS "x11")
+    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} x11")
 
     # Set up library and include paths
     list(APPEND glfw_INCLUDE_DIRS ${X11_X11_INCLUDE_PATH})
@@ -183,7 +207,6 @@ endif()
 #--------------------------------------------------------------------
 if (_GLFW_GLX)
 
-    # Set up library and include paths
     list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
     list(APPEND glfw_LIBRARIES ${OPENGL_gl_LIBRARY})
 
@@ -233,11 +256,10 @@ if (_GLFW_GLX)
 endif()
 
 #--------------------------------------------------------------------
-# EGL Context
+# Use EGL for context creation
 #--------------------------------------------------------------------
 if (_GLFW_EGL)
 
-    # Set up library and include paths
     list(APPEND glfw_INCLUDE_DIRS ${EGL_INCLUDE_DIR})
     list(APPEND glfw_LIBRARIES ${EGL_LIBRARY})
 
@@ -247,10 +269,24 @@ if (_GLFW_EGL)
         set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} egl")
     endif()
 
+    if (_GLFW_USE_OPENGL)
+        list(APPEND glfw_LIBRARIES ${OPENGL_gl_LIBRARY})
+        list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
+        set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} gl")
+    elseif (_GLFW_USE_GLESV1)
+        list(APPEND glfw_LIBRARIES ${GLESv1_LIBRARY})
+        list(APPEND glfw_INCLUDE_DIRS ${GLESv1_INCLUDE_DIR})
+        set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} glesv1_cm")
+    elseif (_GLFW_USE_GLESV2)
+        list(APPEND glfw_LIBRARIES ${GLESv2_LIBRARY})
+        list(APPEND glfw_INCLUDE_DIRS ${GLESv2_INCLUDE_DIR})
+        set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} glesv2")
+    endif()
+
 endif()
 
 #--------------------------------------------------------------------
-# Set up GLFW for Cocoa and NSOpenGL on Mac OS X
+# Use Cocoa for window creation and NSOpenGL for context creation
 #--------------------------------------------------------------------
 if (_GLFW_COCOA AND _GLFW_NSGL)
         

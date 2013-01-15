@@ -390,6 +390,7 @@ GLboolean _glfwRefreshContextParams(void)
         return GL_FALSE;
     }
 
+#if defined(_GLFW_USE_OPENGL)
     if (window->glMajor > 2)
     {
         // OpenGL 3.0+ uses a different function for extension string retrieval
@@ -472,6 +473,7 @@ GLboolean _glfwRefreshContextParams(void)
                 window->glRobustness = GLFW_NO_RESET_NOTIFICATION;
         }
     }
+#endif // _GLFW_USE_OPENGL
 
     return GL_TRUE;
 }
@@ -659,6 +661,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
                 return GL_TRUE;
         }
     }
+#if defined(_GLFW_USE_OPENGL)
     else
     {
         int i;
@@ -677,6 +680,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
              }
         }
     }
+#endif // _GLFW_USE_OPENGL
 
     // Check if extension is in the platform-specific string
     return _glfwPlatformExtensionSupported(extension);

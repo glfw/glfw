@@ -81,16 +81,24 @@ typedef struct _GLFWmonitor     _GLFWmonitor;
 
 #include "config.h"
 
+#if defined(_GLFW_USE_GLESV1)
+ #define GLFW_INCLUDE_ES1
+#elif defined(_GLFW_USE_GLESV2)
+ #define GLFW_INCLUDE_ES2
+#endif
+
 // Disable the inclusion of the platform glext.h by gl.h to allow proper
 // inclusion of our own, newer glext.h below
 #define GL_GLEXT_LEGACY
 
 #include "../include/GL/glfw3.h"
 
-// This path may need to be changed if you build GLFW using your own setup
-// We ship and use our own copy of glext.h since GLFW uses fairly new
-// extensions and not all operating systems come with an up-to-date version
-#include "../support/GL/glext.h"
+#if defined(_GLFW_USE_OPENGL)
+ // This path may need to be changed if you build GLFW using your own setup
+ // GLFW comes with its own copy of glext.h since it uses fairly new extensions
+ // and not all development environments come with an up-to-date version
+ #include "../support/GL/glext.h"
+#endif
 
 #if defined(_GLFW_COCOA)
  #include "cocoa_platform.h"
@@ -227,7 +235,9 @@ struct _GLFWwindow
     GLboolean           glForward, glDebug;
     int                 glProfile;
     int                 glRobustness;
+#if defined(_GLFW_USE_OPENGL)
     PFNGLGETSTRINGIPROC GetStringi;
+#endif
 
     GLFWwindowposfun     windowPosCallback;
     GLFWwindowsizefun    windowSizeCallback;

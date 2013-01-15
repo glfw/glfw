@@ -32,6 +32,45 @@
 #define _internal_h_
 
 
+#include "config.h"
+
+#if defined(_GLFW_USE_GLESV1)
+ #define GLFW_INCLUDE_ES1
+#elif defined(_GLFW_USE_GLESV2)
+ #define GLFW_INCLUDE_ES2
+#endif
+
+// Disable the inclusion of the platform glext.h by gl.h to allow proper
+// inclusion of our own, newer glext.h below
+#define GL_GLEXT_LEGACY
+
+#include "../include/GL/glfw3.h"
+
+#if defined(_GLFW_USE_OPENGL)
+ // This path may need to be changed if you build GLFW using your own setup
+ // GLFW comes with its own copy of glext.h since it uses fairly new extensions
+ // and not all development environments come with an up-to-date version
+ #include "../support/GL/glext.h"
+#endif
+
+typedef struct _GLFWhints       _GLFWhints;
+typedef struct _GLFWwndconfig   _GLFWwndconfig;
+typedef struct _GLFWfbconfig    _GLFWfbconfig;
+typedef struct _GLFWwindow      _GLFWwindow;
+typedef struct _GLFWlibrary     _GLFWlibrary;
+typedef struct _GLFWmonitor     _GLFWmonitor;
+
+#if defined(_GLFW_COCOA)
+ #include "cocoa_platform.h"
+#elif defined(_GLFW_WIN32)
+ #include "win32_platform.h"
+#elif defined(_GLFW_X11)
+ #include "x11_platform.h"
+#else
+ #error "No supported window creation API selected"
+#endif
+
+
 //========================================================================
 // Doxygen group definitions
 //========================================================================
@@ -60,63 +99,15 @@
 
 
 //========================================================================
-// Input handling definitions
+// Helper macros
 //========================================================================
 
-// Internal key and button state/action definitions
+// Internal key state used for sticky keys
 #define GLFW_STICK 2
 
 
 //========================================================================
-// Internal type declarations
-//========================================================================
-
-typedef struct _GLFWhints       _GLFWhints;
-typedef struct _GLFWwndconfig   _GLFWwndconfig;
-typedef struct _GLFWfbconfig    _GLFWfbconfig;
-typedef struct _GLFWwindow      _GLFWwindow;
-typedef struct _GLFWlibrary     _GLFWlibrary;
-typedef struct _GLFWmonitor     _GLFWmonitor;
-
-
-#include "config.h"
-
-#if defined(_GLFW_USE_OPENGL)
- // This is the default for glfw3.h
-#elif defined(_GLFW_USE_GLESV1)
- #define GLFW_INCLUDE_ES1
-#elif defined(_GLFW_USE_GLESV2)
- #define GLFW_INCLUDE_ES2
-#else
- #error "No supported client library selected"
-#endif
-
-// Disable the inclusion of the platform glext.h by gl.h to allow proper
-// inclusion of our own, newer glext.h below
-#define GL_GLEXT_LEGACY
-
-#include "../include/GL/glfw3.h"
-
-#if defined(_GLFW_USE_OPENGL)
- // This path may need to be changed if you build GLFW using your own setup
- // GLFW comes with its own copy of glext.h since it uses fairly new extensions
- // and not all development environments come with an up-to-date version
- #include "../support/GL/glext.h"
-#endif
-
-#if defined(_GLFW_COCOA)
- #include "cocoa_platform.h"
-#elif defined(_GLFW_WIN32)
- #include "win32_platform.h"
-#elif defined(_GLFW_X11)
- #include "x11_platform.h"
-#else
- #error "No supported window creation API selected"
-#endif
-
-
-//========================================================================
-// Internal type definitions
+// Internal types
 //========================================================================
 
 /*! @brief Window, framebuffer and context hints.

@@ -235,18 +235,20 @@ struct _GLFWwindow
     PFNGLGETSTRINGIPROC GetStringi;
 #endif
 
-    GLFWwindowposfun     windowPosCallback;
-    GLFWwindowsizefun    windowSizeCallback;
-    GLFWwindowclosefun   windowCloseCallback;
-    GLFWwindowrefreshfun windowRefreshCallback;
-    GLFWwindowfocusfun   windowFocusCallback;
-    GLFWwindowiconifyfun windowIconifyCallback;
-    GLFWmousebuttonfun   mouseButtonCallback;
-    GLFWcursorposfun     cursorPosCallback;
-    GLFWcursorenterfun   cursorEnterCallback;
-    GLFWscrollfun        scrollCallback;
-    GLFWkeyfun           keyCallback;
-    GLFWcharfun          charCallback;
+    struct {
+        GLFWwindowposfun     pos;
+        GLFWwindowsizefun    size;
+        GLFWwindowclosefun   close;
+        GLFWwindowrefreshfun refresh;
+        GLFWwindowfocusfun   focus;
+        GLFWwindowiconifyfun iconify;
+        GLFWmousebuttonfun   mouseButton;
+        GLFWcursorposfun     cursorPos;
+        GLFWcursorenterfun   cursorEnter;
+        GLFWscrollfun        scroll;
+        GLFWkeyfun           key;
+        GLFWcharfun          character;
+    } callbacks;
 
     // This is defined in the window API's platform.h
     _GLFW_PLATFORM_WINDOW_STATE;

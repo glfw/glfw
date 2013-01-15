@@ -146,8 +146,8 @@ void _glfwInputKey(_GLFWwindow* window, int key, int action)
     }
 
     // Call user callback function
-    if (window->keyCallback && !repeated)
-        window->keyCallback((GLFWwindow*) window, key, action);
+    if (window->callbacks.key && !repeated)
+        window->callbacks.key((GLFWwindow*) window, key, action);
 }
 
 
@@ -161,8 +161,8 @@ void _glfwInputChar(_GLFWwindow* window, int character)
     if (!((character >= 32 && character <= 126) || character >= 160))
         return;
 
-    if (window->charCallback)
-        window->charCallback((GLFWwindow*) window, character);
+    if (window->callbacks.character)
+        window->callbacks.character((GLFWwindow*) window, character);
 }
 
 
@@ -175,8 +175,8 @@ void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset)
     window->scrollX += xoffset;
     window->scrollY += yoffset;
 
-    if (window->scrollCallback)
-        window->scrollCallback((GLFWwindow*) window, xoffset, yoffset);
+    if (window->callbacks.scroll)
+        window->callbacks.scroll((GLFWwindow*) window, xoffset, yoffset);
 }
 
 
@@ -195,8 +195,8 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action)
     else
         window->mouseButton[button] = (char) action;
 
-    if (window->mouseButtonCallback)
-        window->mouseButtonCallback((GLFWwindow*) window, button, action);
+    if (window->callbacks.mouseButton)
+        window->callbacks.mouseButton((GLFWwindow*) window, button, action);
 }
 
 
@@ -223,11 +223,11 @@ void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y)
         window->cursorPosY = y;
     }
 
-    if (window->cursorPosCallback)
+    if (window->callbacks.cursorPos)
     {
-        window->cursorPosCallback((GLFWwindow*) window,
-                                  window->cursorPosX,
-                                  window->cursorPosY);
+        window->callbacks.cursorPos((GLFWwindow*) window,
+                                    window->cursorPosX,
+                                    window->cursorPosY);
     }
 }
 
@@ -238,8 +238,8 @@ void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y)
 
 void _glfwInputCursorEnter(_GLFWwindow* window, int entered)
 {
-    if (window->cursorEnterCallback)
-        window->cursorEnterCallback((GLFWwindow*) window, entered);
+    if (window->callbacks.cursorEnter)
+        window->callbacks.cursorEnter((GLFWwindow*) window, entered);
 }
 
 
@@ -464,7 +464,7 @@ GLFWAPI void glfwSetKeyCallback(GLFWwindow* handle, GLFWkeyfun cbfun)
         return;
     }
 
-    window->keyCallback = cbfun;
+    window->callbacks.key = cbfun;
 }
 
 
@@ -482,7 +482,7 @@ GLFWAPI void glfwSetCharCallback(GLFWwindow* handle, GLFWcharfun cbfun)
         return;
     }
 
-    window->charCallback = cbfun;
+    window->callbacks.character = cbfun;
 }
 
 
@@ -500,7 +500,7 @@ GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow* handle, GLFWmousebuttonfun c
         return;
     }
 
-    window->mouseButtonCallback = cbfun;
+    window->callbacks.mouseButton = cbfun;
 }
 
 
@@ -518,7 +518,7 @@ GLFWAPI void glfwSetCursorPosCallback(GLFWwindow* handle, GLFWcursorposfun cbfun
         return;
     }
 
-    window->cursorPosCallback = cbfun;
+    window->callbacks.cursorPos = cbfun;
 }
 
 
@@ -536,7 +536,7 @@ GLFWAPI void glfwSetCursorEnterCallback(GLFWwindow* handle, GLFWcursorenterfun c
         return;
     }
 
-    window->cursorEnterCallback = cbfun;
+    window->callbacks.cursorEnter = cbfun;
 }
 
 
@@ -554,6 +554,6 @@ GLFWAPI void glfwSetScrollCallback(GLFWwindow* handle, GLFWscrollfun cbfun)
         return;
     }
 
-    window->scrollCallback = cbfun;
+    window->callbacks.scroll = cbfun;
 }
 

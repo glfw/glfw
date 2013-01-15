@@ -1141,4 +1141,24 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
     }
 }
 
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW native API                       //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Returns the Win32 handle of the specified window
+//========================================================================
+
+GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
+        return NULL;
+    }
+
+    return window->win32.handle;
+}
 

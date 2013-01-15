@@ -325,3 +325,25 @@ GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
     return symbol;
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW native API                       //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Return the NSGL context of the specified window
+//========================================================================
+
+GLFWAPI id glfwGetNSGLContext(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
+        return NULL;
+    }
+
+    return window->nsgl.context;
+}
+

@@ -434,3 +434,58 @@ GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
     return eglGetProcAddress(procname);
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW native API                       //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Return the EGL display
+//========================================================================
+
+GLFWAPI EGLDisplay glfwGetEGLDisplay(void)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
+        return NULL;
+    }
+
+    return _glfw.egl.display;
+}
+
+
+//========================================================================
+// Return the WGL context of the specified window
+//========================================================================
+
+GLFWAPI EGLContext glfwGetEGLContext(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
+        return 0;
+    }
+
+    return window->egl.context;
+}
+
+//========================================================================
+// Return the EGL surface of the specified window
+//========================================================================
+
+GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
+        return 0;
+    }
+
+    return window->egl.surface;
+}
+

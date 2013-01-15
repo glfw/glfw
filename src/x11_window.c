@@ -1111,3 +1111,41 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
     }
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW native API                       //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Return the X11 display
+//========================================================================
+
+GLFWAPI Display* glfwGetX11Display(void)
+{
+    if (!_glfwInitialized)
+    {
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
+        return NULL;
+    }
+
+    return _glfw.x11.display;
+}
+
+
+//========================================================================
+// Return the X11 handle of the specified window
+//========================================================================
+
+GLFWAPI Window glfwGetX11Window(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
+        return 0;
+    }
+
+    return window->x11.handle;
+}
+

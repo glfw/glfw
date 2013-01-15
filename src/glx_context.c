@@ -633,3 +633,25 @@ GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
     return _glfw_glXGetProcAddress((const GLubyte*) procname);
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW native API                       //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Return the GLX context of the specified window
+//========================================================================
+
+GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
+        return NULL;
+    }
+
+    return window->glx.context;
+}
+

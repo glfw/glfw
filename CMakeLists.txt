@@ -20,7 +20,7 @@ endif()
 
 if (GLFW_USE_EGL)
     set(GLFW_CLIENT_LIBRARY "opengl" CACHE STRING
-        "The client library to use; one of: opengl, glesv1 or glesv2")
+        "The client library to use; one of opengl, glesv1 or glesv2")
 
     if (${GLFW_CLIENT_LIBRARY} STREQUAL "opengl")
         set(_GLFW_USE_OPENGL 1)
@@ -67,7 +67,7 @@ if (BUILD_SHARED_LIBS)
 endif()
 
 #--------------------------------------------------------------------
-# Detect and select target APIs
+# Detect and select backend APIs
 #--------------------------------------------------------------------
 if (WIN32)
     set(_GLFW_WIN32 1)
@@ -83,13 +83,8 @@ if (WIN32)
 elseif (APPLE)
     set(_GLFW_COCOA 1)
     message(STATUS "Using Cocoa for window creation")
-
-    if (GLFW_USE_EGL)
-        message(FATAL_ERROR "EGL not supported on Mac OS X")
-    else()
-        set(_GLFW_NSGL 1)
-        message(STATUS "Using NSGL for context creation")
-    endif()
+    set(_GLFW_NSGL 1)
+    message(STATUS "Using NSGL for context creation")
 elseif (UNIX)
     set(_GLFW_X11 1)
     message(STATUS "Using X11 for window creation") 
@@ -106,7 +101,7 @@ else()
 endif()
 
 #--------------------------------------------------------------------
-# Set up GLFW for Win32
+# Use Win32 for window creation
 #--------------------------------------------------------------------
 if (_GLFW_WIN32)
 
@@ -133,7 +128,7 @@ if (_GLFW_WIN32)
 endif()
 
 #--------------------------------------------------------------------
-# Set up GLFW for WGL
+# Use WGL for context creation
 #--------------------------------------------------------------------
 if (_GLFW_WGL)
     list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
@@ -141,7 +136,7 @@ if (_GLFW_WGL)
 endif()
 
 #--------------------------------------------------------------------
-# Set up GLFW for Xlib and GLX or EGL on Unix-like systems with X Windows
+# Use X11 for window creation
 #--------------------------------------------------------------------
 if (_GLFW_X11)
 
@@ -202,7 +197,7 @@ if (_GLFW_X11)
 endif()
 
 #--------------------------------------------------------------------
-# GLX Context
+# Use GLX for context creation
 #--------------------------------------------------------------------
 if (_GLFW_GLX)
 

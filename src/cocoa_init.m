@@ -101,7 +101,7 @@ int _glfwPlatformInit(void)
 
     _glfwInitJoysticks();
 
-    if (!_glfwInitOpenGL())
+    if (!_glfwInitContextAPI())
         return GL_FALSE;
 
     _glfw.ns.eventSource = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
@@ -141,7 +141,7 @@ void _glfwPlatformTerminate(void)
 
     _glfwTerminateJoysticks();
 
-    _glfwTerminateOpenGL();
+    _glfwTerminateContextAPI();
 }
 
 

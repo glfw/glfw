@@ -61,7 +61,7 @@ static _GLFW_TLS _GLFWwindow* _glfwCurrentWindow = NULL;
 // Initialize EGL
 //========================================================================
 
-int _glfwInitOpenGL(void)
+int _glfwInitContextAPI(void)
 {
     _glfw.egl.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
     if (_glfw.egl.display == EGL_NO_DISPLAY)
@@ -89,7 +89,7 @@ int _glfwInitOpenGL(void)
 // Terminate EGL
 //========================================================================
 
-void _glfwTerminateOpenGL(void)
+void _glfwTerminateContextAPI(void)
 {
     eglTerminate(_glfw.egl.display);
 }

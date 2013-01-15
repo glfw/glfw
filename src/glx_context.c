@@ -113,7 +113,7 @@ static GLXContext createLegacyContext(_GLFWwindow* window,
 // Initialize GLX
 //========================================================================
 
-int _glfwInitOpenGL(void)
+int _glfwInitContextAPI(void)
 {
 #ifdef _GLFW_DLOPEN_LIBGL
     int i;
@@ -237,7 +237,7 @@ int _glfwInitOpenGL(void)
 // Terminate GLX
 //========================================================================
 
-void _glfwTerminateOpenGL(void)
+void _glfwTerminateContextAPI(void)
 {
     // Unload libGL.so if necessary
 #ifdef _GLFW_DLOPEN_LIBGL

@@ -632,7 +632,7 @@ int _glfwPlatformInit(void)
 
     _glfwInitGammaRamp();
 
-    if (!_glfwInitOpenGL())
+    if (!_glfwInitContextAPI())
         return GL_FALSE;
 
     _glfw.x11.cursor = createNULLCursor();
@@ -662,7 +662,7 @@ void _glfwPlatformTerminate(void)
 
     _glfwTerminateJoysticks();
 
-    _glfwTerminateOpenGL();
+    _glfwTerminateContextAPI();
 
     terminateDisplay();
 

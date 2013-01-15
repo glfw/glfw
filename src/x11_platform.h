@@ -28,8 +28,8 @@
 //
 //========================================================================
 
-#ifndef _platform_h_
-#define _platform_h_
+#ifndef _x11_platform_h_
+#define _x11_platform_h_
 
 #include <unistd.h>
 #include <signal.h>
@@ -251,4 +251,4 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request);
 // Event processing
 void _glfwProcessPendingEvents(void);
 
-#endif // _platform_h_
+#endif // _x11_platform_h_

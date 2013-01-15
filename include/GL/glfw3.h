@@ -27,8 +27,8 @@
  *
  *************************************************************************/
 
-#ifndef __glfw3_h__
-#define __glfw3_h__
+#ifndef _glfw3_h_
+#define _glfw3_h_
 
 #ifdef __cplusplus
 extern "C" {
@@ -1815,5 +1815,5 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);
 }
 #endif
 
-#endif /* __glfw3_h__ */
+#endif /* _glfw3_h_ */
 

@@ -28,8 +28,8 @@
 //
 //========================================================================
 
-#ifndef _x11_glx_platform_h_
-#define _x11_glx_platform_h_
+#ifndef _glx_platform_h_
+#define _glx_platform_h_
 
 #define GLX_GLXEXT_LEGACY
 #include <GL/glx.h>
@@ -119,4 +119,4 @@ typedef struct _GLFWlibraryGLX
 } _GLFWlibraryGLX;
 
 
-#endif // _x11_glx_platform_h_
+#endif // _glx_platform_h_

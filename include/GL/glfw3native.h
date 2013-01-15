@@ -27,8 +27,8 @@
  *
  *************************************************************************/
 
-#ifndef __glfw3_platform_h__
-#define __glfw3_platform_h__
+#ifndef _glfw3_native_h_
+#define _glfw3_native_h_
 
 #ifdef __cplusplus
 extern "C" {
@@ -136,5 +136,5 @@ GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow window);
 }
 #endif
 
-#endif /* __glfw3_platform_h__ */
+#endif /* _glfw3_native_h_ */
 

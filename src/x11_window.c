@@ -71,7 +71,7 @@ static int translateChar(XKeyEvent* event)
     // Get X11 keysym
     XLookupString(event, NULL, 0, &keysym, NULL);
 
-    // Convert to Unicode (see x11_keysym2unicode.c)
+    // Convert to Unicode (see x11_unicode.c)
     return (int) _glfwKeySym2Unicode(keysym);
 }
 

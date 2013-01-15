@@ -24,8 +24,8 @@ elseif (_GLFW_WIN32)
 elseif (_GLFW_X11)
     set(glfw_HEADERS ${common_HEADERS} x11_platform.h)
     set(glfw_SOURCES ${common_SOURCES} x11_clipboard.c x11_gamma.c x11_init.c
-                     x11_joystick.c x11_keysym2unicode.c x11_monitor.c
-                     x11_time.c x11_window.c)
+                     x11_joystick.c x11_monitor.c x11_time.c x11_window.c
+                     x11_unicode.c)
 endif()
 
 if (_GLFW_EGL)

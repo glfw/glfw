@@ -81,10 +81,14 @@ typedef struct _GLFWmonitor     _GLFWmonitor;
 
 #include "config.h"
 
-#if defined(_GLFW_USE_GLESV1)
+#if defined(_GLFW_USE_OPENGL)
+ // This is the default for glfw3.h
+#elif defined(_GLFW_USE_GLESV1)
  #define GLFW_INCLUDE_ES1
 #elif defined(_GLFW_USE_GLESV2)
  #define GLFW_INCLUDE_ES2
+#else
+ #error "No supported client library selected"
 #endif
 
 // Disable the inclusion of the platform glext.h by gl.h to allow proper

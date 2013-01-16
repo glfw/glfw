@@ -46,7 +46,7 @@ static pthread_key_t _glfwCurrentTLS;
 // Initialize OpenGL support
 //========================================================================
 
-int _glfwInitOpenGL(void)
+int _glfwInitContextAPI(void)
 {
     if (pthread_key_create(&_glfwCurrentTLS, NULL) != 0)
     {
@@ -63,7 +63,7 @@ int _glfwInitOpenGL(void)
 // Terminate OpenGL support
 //========================================================================
 
-void _glfwTerminateOpenGL(void)
+void _glfwTerminateContextAPI(void)
 {
     pthread_key_delete(_glfwCurrentTLS);
 }
@@ -323,5 +323,27 @@ GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
     CFRelease(symbolName);
 
     return symbol;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW native API                       //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Return the NSGL context of the specified window
+//========================================================================
+
+GLFWAPI id glfwGetNSGLContext(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
+        return NULL;
+    }
+
+    return window->nsgl.context;
 }
 

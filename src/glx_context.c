@@ -113,7 +113,7 @@ static GLXContext createLegacyContext(_GLFWwindow* window,
 // Initialize GLX
 //========================================================================
 
-int _glfwInitOpenGL(void)
+int _glfwInitContextAPI(void)
 {
 #ifdef _GLFW_DLOPEN_LIBGL
     int i;
@@ -237,7 +237,7 @@ int _glfwInitOpenGL(void)
 // Terminate GLX
 //========================================================================
 
-void _glfwTerminateOpenGL(void)
+void _glfwTerminateContextAPI(void)
 {
     // Unload libGL.so if necessary
 #ifdef _GLFW_DLOPEN_LIBGL
@@ -631,5 +631,27 @@ int _glfwPlatformExtensionSupported(const char* extension)
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 {
     return _glfw_glXGetProcAddress((const GLubyte*) procname);
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW native API                       //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Return the GLX context of the specified window
+//========================================================================
+
+GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
+        return NULL;
+    }
+
+    return window->glx.context;
 }
 

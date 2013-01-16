@@ -80,8 +80,8 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused)
         {
             _glfw.focusedWindow = window;
 
-            if (window->windowFocusCallback)
-                window->windowFocusCallback((GLFWwindow*) window, focused);
+            if (window->callbacks.focus)
+                window->callbacks.focus((GLFWwindow*) window, focused);
         }
     }
     else
@@ -106,8 +106,8 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused)
 
             _glfw.focusedWindow = NULL;
 
-            if (window->windowFocusCallback)
-                window->windowFocusCallback((GLFWwindow*) window, focused);
+            if (window->callbacks.focus)
+                window->callbacks.focus((GLFWwindow*) window, focused);
         }
     }
 }
@@ -125,8 +125,8 @@ void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
     window->positionX = x;
     window->positionY = y;
 
-    if (window->windowPosCallback)
-        window->windowPosCallback((GLFWwindow*) window, x, y);
+    if (window->callbacks.pos)
+        window->callbacks.pos((GLFWwindow*) window, x, y);
 }
 
 
@@ -142,8 +142,8 @@ void _glfwInputWindowSize(_GLFWwindow* window, int width, int height)
     window->width = width;
     window->height = height;
 
-    if (window->windowSizeCallback)
-        window->windowSizeCallback((GLFWwindow*) window, width, height);
+    if (window->callbacks.size)
+        window->callbacks.size((GLFWwindow*) window, width, height);
 }
 
 
@@ -158,8 +158,8 @@ void _glfwInputWindowIconify(_GLFWwindow* window, int iconified)
 
     window->iconified = iconified;
 
-    if (window->windowIconifyCallback)
-        window->windowIconifyCallback((GLFWwindow*) window, iconified);
+    if (window->callbacks.iconify)
+        window->callbacks.iconify((GLFWwindow*) window, iconified);
 }
 
 
@@ -179,8 +179,8 @@ void _glfwInputWindowVisibility(_GLFWwindow* window, int visible)
 
 void _glfwInputWindowDamage(_GLFWwindow* window)
 {
-    if (window->windowRefreshCallback)
-        window->windowRefreshCallback((GLFWwindow*) window);
+    if (window->callbacks.refresh)
+        window->callbacks.refresh((GLFWwindow*) window);
 }
 
 
@@ -190,8 +190,8 @@ void _glfwInputWindowDamage(_GLFWwindow* window)
 
 void _glfwInputWindowCloseRequest(_GLFWwindow* window)
 {
-    if (window->windowCloseCallback)
-        window->closeRequested = window->windowCloseCallback((GLFWwindow*) window);
+    if (window->callbacks.close)
+        window->closeRequested = window->callbacks.close((GLFWwindow*) window);
     else
         window->closeRequested = GL_TRUE;
 }
@@ -489,18 +489,7 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
         return;
 
     // Clear all callbacks to avoid exposing a half torn-down window object
-    window->windowPosCallback = NULL;
-    window->windowSizeCallback = NULL;
-    window->windowCloseCallback = NULL;
-    window->windowRefreshCallback = NULL;
-    window->windowFocusCallback = NULL;
-    window->windowIconifyCallback = NULL;
-    window->mouseButtonCallback = NULL;
-    window->cursorPosCallback = NULL;
-    window->cursorEnterCallback = NULL;
-    window->scrollCallback = NULL;
-    window->keyCallback = NULL;
-    window->charCallback = NULL;
+    memset(&window->callbacks, 0, sizeof(window->callbacks));
 
     // The window's context must not be current on another thread when the
     // window is destroyed
@@ -800,7 +789,7 @@ GLFWAPI void glfwSetWindowPosCallback(GLFWwindow* handle, GLFWwindowposfun cbfun
         return;
     }
 
-    window->windowPosCallback = cbfun;
+    window->callbacks.pos = cbfun;
 }
 
 
@@ -818,7 +807,7 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow* handle, GLFWwindowsizefun cbf
         return;
     }
 
-    window->windowSizeCallback = cbfun;
+    window->callbacks.size = cbfun;
 }
 
 
@@ -836,7 +825,7 @@ GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow* handle, GLFWwindowclosefun c
         return;
     }
 
-    window->windowCloseCallback = cbfun;
+    window->callbacks.close = cbfun;
 }
 
 
@@ -854,7 +843,7 @@ GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow* handle, GLFWwindowrefreshf
         return;
     }
 
-    window->windowRefreshCallback = cbfun;
+    window->callbacks.refresh = cbfun;
 }
 
 
@@ -872,7 +861,7 @@ GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow* handle, GLFWwindowfocusfun c
         return;
     }
 
-    window->windowFocusCallback = cbfun;
+    window->callbacks.focus = cbfun;
 }
 
 
@@ -890,7 +879,7 @@ GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow* handle, GLFWwindowiconifyf
         return;
     }
 
-    window->windowIconifyCallback = cbfun;
+    window->callbacks.iconify = cbfun;
 }
 
 

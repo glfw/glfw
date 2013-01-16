@@ -118,8 +118,8 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, int* width, int* height, int*
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
 // OpenGL support
-int _glfwInitOpenGL(void);
-void _glfwTerminateOpenGL(void);
+int _glfwInitContextAPI(void);
+void _glfwTerminateContextAPI(void);
 int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWwndconfig* wndconfig,
                        const _GLFWfbconfig* fbconfig);

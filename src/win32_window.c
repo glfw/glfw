@@ -579,7 +579,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_MOUSEHWHEEL:
         {
             // This message is only sent on Windows Vista and later
-
             _glfwInputScroll(window, (SHORT) HIWORD(wParam) / (double) WHEEL_DELTA, 0.0);
             return 0;
         }
@@ -1142,4 +1141,24 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
     }
 }
 
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW native API                       //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Returns the Win32 handle of the specified window
+//========================================================================
+
+GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
+        return NULL;
+    }
+
+    return window->win32.handle;
+}
 

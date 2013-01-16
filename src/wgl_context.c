@@ -293,6 +293,12 @@ int _glfwCreateContext(_GLFWwindow* window,
         pfd.cAuxBuffers = fbconfig->auxBuffers;
 
         pixelFormat = ChoosePixelFormat(window->wgl.dc, &pfd);
+        if (!pixelFormat)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "WGL: Failed to find a suitable pixel format");
+            return GL_FALSE;
+        }
     }
 
     if (!DescribePixelFormat(window->wgl.dc, pixelFormat, sizeof(pfd), &pfd))

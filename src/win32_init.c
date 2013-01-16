@@ -190,6 +190,9 @@ int _glfwPlatformInit(void)
     _glfwPlatformGetGammaRamp(&_glfw.originalRamp);
     _glfw.currentRamp = _glfw.originalRamp;
 
+    if (!_glfwInitOpenGL())
+        return GL_FALSE;
+
     _glfwInitTimer();
 
     _glfwInitJoysticks();
@@ -213,6 +216,8 @@ void _glfwPlatformTerminate(void)
         UnregisterClass(_GLFW_WNDCLASSNAME, _glfw.win32.instance);
         _glfw.win32.classAtom = 0;
     }
+
+    _glfwTerminateOpenGL();
 
     _glfwTerminateJoysticks();
 

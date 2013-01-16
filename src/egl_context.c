@@ -150,7 +150,7 @@ int _glfwCreateContext(_GLFWwindow* window,
         if (!count)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "EGL: Failed to retrieve the selected EGLConfig");
+                            "EGL: Failed to find a suitable EGLConfig");
             return GL_FALSE;
         }
     }

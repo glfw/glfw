@@ -131,7 +131,7 @@ int _glfwCreateContext(_GLFWwindow* window,
         if (fbconfig->blueBits)
             setEGLattrib(EGL_BLUE_SIZE, fbconfig->blueBits);
         if (fbconfig->alphaBits)
-            setEGLattrib(EGL_BLUE_SIZE, fbconfig->alphaBits);
+            setEGLattrib(EGL_ALPHA_SIZE, fbconfig->alphaBits);
 
         if (fbconfig->depthBits)
             setEGLattrib(EGL_DEPTH_SIZE, fbconfig->depthBits);

@@ -286,7 +286,7 @@ int _glfwCreateContext(_GLFWwindow* window,
         if (fbconfig->blueBits)
             setGLXattrib(GLX_BLUE_SIZE, fbconfig->blueBits);
         if (fbconfig->alphaBits)
-            setGLXattrib(GLX_BLUE_SIZE, fbconfig->alphaBits);
+            setGLXattrib(GLX_ALPHA_SIZE, fbconfig->alphaBits);
 
         if (fbconfig->depthBits)
             setGLXattrib(GLX_DEPTH_SIZE, fbconfig->depthBits);

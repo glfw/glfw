@@ -276,18 +276,20 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     // Remember window settings
     window->width      = width;
     window->height     = height;
-    window->resizable  = wndconfig.resizable;
     window->cursorMode = GLFW_CURSOR_NORMAL;
-
-    window->monitor = wndconfig.monitor;
-    if (window->monitor)
+    window->monitor    = wndconfig.monitor;
+    if (wndconfig.monitor)
     {
+        window->resizable = GL_TRUE;
+
         window->videoMode.width     = width;
         window->videoMode.height    = height;
         window->videoMode.redBits   = fbconfig.redBits;
         window->videoMode.greenBits = fbconfig.greenBits;
         window->videoMode.blueBits  = fbconfig.blueBits;
     }
+    else
+        window->resizable = wndconfig.resizable;
 
     // Save the currently current context so it can be restored later
     previous = (_GLFWwindow*) glfwGetCurrentContext();

@@ -160,9 +160,6 @@ void _glfwInputChar(_GLFWwindow* window, int character)
 
 void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset)
 {
-    window->scrollX += xoffset;
-    window->scrollY += yoffset;
-
     if (window->callbacks.scroll)
         window->callbacks.scroll((GLFWwindow*) window, xoffset, yoffset);
 }
@@ -368,23 +365,6 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, int xpos, int ypos)
 
     // Update physical cursor position
     _glfwPlatformSetCursorPos(window, xpos, ypos);
-}
-
-GLFWAPI void glfwGetScrollOffset(GLFWwindow* handle, double* xoffset, double* yoffset)
-{
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
-    if (xoffset)
-      *xoffset = window->scrollX;
-
-    if (yoffset)
-      *yoffset = window->scrollY;
 }
 
 GLFWAPI void glfwSetKeyCallback(GLFWwindow* handle, GLFWkeyfun cbfun)

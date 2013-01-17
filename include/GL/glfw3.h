@@ -1377,10 +1377,6 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, int* xpos, int* ypos);
  */
 GLFWAPI void glfwSetCursorPos(GLFWwindow* window, int xpos, int ypos);
 
-/*! @ingroup input
- */
-GLFWAPI void glfwGetScrollOffset(GLFWwindow* window, double* xoffset, double* yoffset);
-
 /*! @brief Sets the key callback.
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new key callback, or @c NULL to remove the currently

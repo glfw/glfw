@@ -48,22 +48,6 @@ static int Max(int a, int b)
 }
 
 
-//========================================================================
-// Clear scroll offsets for all windows
-//========================================================================
-
-static void clearScrollOffsets(void)
-{
-    _GLFWwindow* window;
-
-    for (window = _glfw.windowListHead;  window;  window = window->next)
-    {
-        window->scrollX = 0;
-        window->scrollY = 0;
-    }
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                         GLFW event API                       //////
 //////////////////////////////////////////////////////////////////////////
@@ -746,8 +730,6 @@ GLFWAPI void glfwPollEvents(void)
         return;
     }
 
-    clearScrollOffsets();
-
     _glfwPlatformPollEvents();
 }
 
@@ -758,8 +740,6 @@ GLFWAPI void glfwWaitEvents(void)
         _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
-
-    clearScrollOffsets();
 
     _glfwPlatformWaitEvents();
 }

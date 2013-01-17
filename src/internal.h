@@ -221,7 +221,6 @@ struct _GLFWwindow
     GLboolean           stickyMouseButtons;
     int                 cursorPosX, cursorPosY;
     int                 cursorMode;
-    double              scrollX, scrollY;
     char                mouseButton[GLFW_MOUSE_BUTTON_LAST + 1];
     char                key[GLFW_KEY_LAST + 1];
 

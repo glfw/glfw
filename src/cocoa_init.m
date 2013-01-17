@@ -97,7 +97,6 @@ int _glfwPlatformInit(void)
     // Save the original gamma ramp
     _glfw.originalRampSize = CGDisplayGammaTableCapacity(CGMainDisplayID());
     _glfwPlatformGetGammaRamp(&_glfw.originalRamp);
-    _glfw.currentRamp = _glfw.originalRamp;
 
     _glfwInitTimer();
 

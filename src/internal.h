@@ -290,7 +290,6 @@ struct _GLFWlibrary
     int             monitorCount;
     GLFWmonitorfun  monitorCallback;
 
-    GLFWgammaramp   currentRamp;
     GLFWgammaramp   originalRamp;
     int             originalRampSize;
     GLboolean       rampChanged;

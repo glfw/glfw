@@ -80,7 +80,6 @@ void _glfwInitGammaRamp(void)
     {
         // Save the original gamma ramp
         _glfwPlatformGetGammaRamp(&_glfw.originalRamp);
-        _glfw.currentRamp = _glfw.originalRamp;
     }
 }
 

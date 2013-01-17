@@ -182,7 +182,6 @@ int _glfwPlatformInit(void)
     // Save the original gamma ramp
     _glfw.originalRampSize = 256;
     _glfwPlatformGetGammaRamp(&_glfw.originalRamp);
-    _glfw.currentRamp = _glfw.originalRamp;
 
     if (!_glfwInitContextAPI())
         return GL_FALSE;

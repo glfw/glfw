@@ -323,9 +323,9 @@ GLFWAPI int glfwGetMonitorParam(GLFWmonitor* handle, int param)
             return monitor->widthMM;
         case GLFW_MONITOR_HEIGHT_MM:
             return monitor->heightMM;
-        case GLFW_MONITOR_POS_X:
+        case GLFW_POSITION_X:
             return monitor->positionX;
-        case GLFW_MONITOR_POS_Y:
+        case GLFW_POSITION_Y:
             return monitor->positionY;
     }
 

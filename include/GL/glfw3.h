@@ -541,8 +541,8 @@ extern "C" {
 
 #define GLFW_MONITOR_WIDTH_MM       0x00060001
 #define GLFW_MONITOR_HEIGHT_MM      0x00060002
-#define GLFW_MONITOR_POS_X          0x00060003
-#define GLFW_MONITOR_POS_Y          0x00060004
+/* reuse GLFW_POSITION_X */
+/* reuse GLFW_POSITION_Y */
 
 #define GLFW_CONNECTED              0x00061000
 #define GLFW_DISCONNECTED           0x00061001

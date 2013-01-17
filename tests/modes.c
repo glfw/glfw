@@ -101,8 +101,8 @@ static void list_modes(GLFWmonitor* monitor)
            glfwGetPrimaryMonitor() == monitor ? "primary" : "secondary");
     printf("Current mode: %s\n", format_mode(&mode));
     printf("Virtual position: %i %i\n",
-           glfwGetMonitorParam(monitor, GLFW_MONITOR_POS_X),
-           glfwGetMonitorParam(monitor, GLFW_MONITOR_POS_Y));
+           glfwGetMonitorParam(monitor, GLFW_POSITION_X),
+           glfwGetMonitorParam(monitor, GLFW_POSITION_Y));
 
     widthMM = glfwGetMonitorParam(monitor, GLFW_MONITOR_WIDTH_MM);
     heightMM = glfwGetMonitorParam(monitor, GLFW_MONITOR_HEIGHT_MM);

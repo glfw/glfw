@@ -351,8 +351,8 @@ void monitor_callback(GLFWmonitor* monitor, int event)
                glfwGetTime(),
                glfwGetMonitorName(monitor),
                mode.width, mode.height,
-               glfwGetMonitorParam(monitor, GLFW_MONITOR_POS_X),
-               glfwGetMonitorParam(monitor, GLFW_MONITOR_POS_Y),
+               glfwGetMonitorParam(monitor, GLFW_POSITION_X),
+               glfwGetMonitorParam(monitor, GLFW_POSITION_Y),
                glfwGetMonitorParam(monitor, GLFW_MONITOR_WIDTH_MM),
                glfwGetMonitorParam(monitor, GLFW_MONITOR_HEIGHT_MM));
     }

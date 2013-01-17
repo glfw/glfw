@@ -1102,6 +1102,8 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  glfwWindowHint or @ref glfwDefaultWindowHints, or until the library is
  *  terminated with @ref glfwTerminate.
  *
+ *  @par Hard and soft constraints
+ *
  *  Some window hints are hard constraints.  These must match the available
  *  capabilities @em exactly for window and context creation to succeed.  Hints
  *  that are not hard constraints are matched as closely as possible, but the

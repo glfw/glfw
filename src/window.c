@@ -191,9 +191,9 @@ void _glfwInputWindowDamage(_GLFWwindow* window)
 void _glfwInputWindowCloseRequest(_GLFWwindow* window)
 {
     if (window->callbacks.close)
-        window->closeRequested = window->callbacks.close((GLFWwindow*) window);
+        window->closed = window->callbacks.close((GLFWwindow*) window);
     else
-        window->closeRequested = GL_TRUE;
+        window->closed = GL_TRUE;
 }
 
 
@@ -691,7 +691,7 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow* handle, int param)
         case GLFW_ICONIFIED:
             return window->iconified;
         case GLFW_SHOULD_CLOSE:
-            return window->closeRequested;
+            return window->closed;
         case GLFW_RESIZABLE:
             return window->resizable;
         case GLFW_VISIBLE:

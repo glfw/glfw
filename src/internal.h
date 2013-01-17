@@ -210,7 +210,7 @@ struct _GLFWwindow
     GLboolean           iconified;
     GLboolean           resizable;
     GLboolean           visible;
-    GLboolean           closeRequested;
+    GLboolean           closed;
     void*               userPointer;
     GLFWvidmode         videoMode;
     _GLFWmonitor*       monitor;

@@ -150,6 +150,25 @@ static void initWGLExtensions(_GLFWwindow* window)
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
+// Initialize WGL
+//========================================================================
+
+int _glfwInitOpenGL(void)
+{
+    return GL_TRUE;
+}
+
+
+//========================================================================
+// Terminate WGL
+//========================================================================
+
+void _glfwTerminateOpenGL(void)
+{
+}
+
+
+//========================================================================
 // Prepare for creation of the OpenGL context
 //========================================================================
 
@@ -197,7 +216,7 @@ int _glfwCreateContext(_GLFWwindow* window,
         if (fbconfig->blueBits)
             setWGLattrib(WGL_BLUE_BITS_ARB, fbconfig->blueBits);
         if (fbconfig->alphaBits)
-            setWGLattrib(WGL_BLUE_BITS_ARB, fbconfig->alphaBits);
+            setWGLattrib(WGL_ALPHA_BITS_ARB, fbconfig->alphaBits);
 
         if (fbconfig->depthBits)
             setWGLattrib(WGL_DEPTH_BITS_ARB, fbconfig->depthBits);

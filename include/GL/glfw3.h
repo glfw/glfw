@@ -557,12 +557,12 @@ extern "C" {
  */
 typedef void (*GLFWglproc)(void);
 
-/*! @brief Monitor object.
+/*! @brief Opaque monitor object.
  *  @ingroup monitor
  */
 typedef struct GLFWmonitor GLFWmonitor;
 
-/*! @brief Window object.
+/*! @brief Opaque window object.
  *  @ingroup window
  */
 typedef struct GLFWwindow GLFWwindow;
@@ -571,6 +571,8 @@ typedef struct GLFWwindow GLFWwindow;
  *  @param[in] error An @link errors error code @endlink.
  *  @param[in] description A UTF-8 encoded string describing the error.
  *  @ingroup error
+ *
+ *  @sa glfwSetErrorCallback
  */
 typedef void (* GLFWerrorfun)(int,const char*);
 
@@ -581,6 +583,8 @@ typedef void (* GLFWerrorfun)(int,const char*);
  *  @param[in] y The new y-coordinate, in pixels, of the upper-left corner of
  *  the client area of the window.
  *  @ingroup window
+ *
+ *  @sa glfwSetWindowPosCallback
  */
 typedef void (* GLFWwindowposfun)(GLFWwindow*,int,int);
 
@@ -589,6 +593,8 @@ typedef void (* GLFWwindowposfun)(GLFWwindow*,int,int);
  *  @param[in] width The new width, in pixels, of the window.
  *  @param[in] height The new height, in pixels, of the window.
  *  @ingroup window
+ *
+ *  @sa glfwSetWindowSizeCallback
  */
 typedef void (* GLFWwindowsizefun)(GLFWwindow*,int,int);
 
@@ -597,12 +603,16 @@ typedef void (* GLFWwindowsizefun)(GLFWwindow*,int,int);
  *  @return @c GL_TRUE to allow the window to be closed, or @c GL_FALSE to
  *  ignore the attempt.
  *  @ingroup window
+ *
+ *  @sa glfwSetWindowCloseCallback
  */
 typedef int (* GLFWwindowclosefun)(GLFWwindow*);
 
 /*! @brief The function signature for window content refresh callbacks.
  *  @param[in] window The window whose content needs to be refreshed.
  *  @ingroup window
+ *
+ *  @sa glfwSetWindowRefreshCallback
  */
 typedef void (* GLFWwindowrefreshfun)(GLFWwindow*);
 
@@ -611,6 +621,8 @@ typedef void (* GLFWwindowrefreshfun)(GLFWwindow*);
  *  @param[in] focused @c GL_TRUE if the window was focused, or @c GL_FALSE if
  *  it was defocused.
  *  @ingroup window
+ *
+ *  @sa glfwSetWindowFocusCallback
  */
 typedef void (* GLFWwindowfocusfun)(GLFWwindow*,int);
 
@@ -619,6 +631,8 @@ typedef void (* GLFWwindowfocusfun)(GLFWwindow*,int);
  *  @param[in] iconified @c GL_TRUE if the window was iconified, or @c GL_FALSE
  *  if it was restored.
  *  @ingroup window
+ *
+ *  @sa glfwSetWindowIconifyCallback
  */
 typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
 
@@ -628,6 +642,8 @@ typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
  *  or released.
  *  @param[in] action One of @ref GLFW_PRESS or @ref GLFW_RELEASE.
  *  @ingroup input
+ *
+ *  @sa glfwSetMouseButtonCallback
  */
 typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int);
 
@@ -636,6 +652,8 @@ typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int);
  *  @param[in] x The new x-coordinate of the cursor.
  *  @param[in] y The new y-coordinate of the cursor.
  *  @ingroup input
+ *
+ *  @sa glfwSetCursorPosCallback
  */
 typedef void (* GLFWcursorposfun)(GLFWwindow*,int,int);
 
@@ -644,6 +662,8 @@ typedef void (* GLFWcursorposfun)(GLFWwindow*,int,int);
  *  @param[in] entered @c GL_TRUE if the cursor entered the window's client
  *  area, or @c GL_FALSE if it left it.
  *  @ingroup input
+ *
+ *  @sa glfwSetCursorEnterCallback
  */
 typedef void (* GLFWcursorenterfun)(GLFWwindow*,int);
 
@@ -652,6 +672,8 @@ typedef void (* GLFWcursorenterfun)(GLFWwindow*,int);
  *  @param[in] x The scroll offset along the x-axis.
  *  @param[in] y The scroll offset along the y-axis.
  *  @ingroup input
+ *
+ *  @sa glfwSetScrollCallback
  */
 typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
 
@@ -661,6 +683,8 @@ typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
  *  released.
  *  @param[in] action One of @ref GLFW_PRESS or @ref GLFW_RELEASE.
  *  @ingroup input
+ *
+ *  @sa glfwSetKeyCallback
  */
 typedef void (* GLFWkeyfun)(GLFWwindow*,int,int);
 
@@ -668,12 +692,17 @@ typedef void (* GLFWkeyfun)(GLFWwindow*,int,int);
  *  @param[in] window The window that received the event.
  *  @param[in] character The Unicode code point of the character.
  *  @ingroup input
+ *
+ *  @sa glfwSetCharCallback
  */
 typedef void (* GLFWcharfun)(GLFWwindow*,int);
 
 /*! @brief The function signature for monitor configuration callbacks.
  *  @param[in] monitor The monitor that was connected or disconnected.
  *  @param[in] event One of @ref GLFW_CONNECTED or @ref GLFW_DISCONNECTED.
+ *  @ingroup monitor
+ *
+ *  @sa glfwSetMonitorCallback
  */
 typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
 
@@ -799,17 +828,34 @@ GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
  *  @param[out] count The size of the returned array.
  *  @return An array of monitor handles.
  *  @ingroup monitor
+ *
+ *  @sa glfwGetPrimaryMonitor
  */
 GLFWAPI GLFWmonitor** glfwGetMonitors(int* count);
 
 /*! @brief Returns the primary monitor.
  *  @return The primary monitor.
  *  @ingroup monitor
+ *
+ *  @sa glfwGetMonitors
  */
 GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void);
 
 /*! @brief Returns a property of the specified monitor.
+ *  @param[in] monitor The monitor to query.
+ *  @param[in] param The property whose value to return.
+ *  @return The value of the property, or zero if an error occurred.
  *  @ingroup monitor
+ *
+ *  @par Monitor properties
+ *
+ *  The @ref GLFW_MONITOR_WIDTH_MM and @ref GLFW_MONITOR_HEIGHT_MM properties
+ *  indicate the physical with, in mm, of the monitor.
+ *
+ *  The @ref GLFW_POSITION_X and @ref GLFW_POSITION_Y properties indiciate the
+ *  position, in virtual screen coordinates, of the monitor's viewport.
+ *
+ *  @sa glfwGetVideoMode, glfwGetVideoModes, glfwGetMonitorName
  */
 GLFWAPI int glfwGetMonitorParam(GLFWmonitor* monitor, int param);
 
@@ -821,7 +867,8 @@ GLFWAPI int glfwGetMonitorParam(GLFWmonitor* monitor, int param);
 GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* monitor);
 
 /*! @brief Sets the monitor configuration callback.
- *  @param[in] cbfun The new callback, or @c NULL to remove the currently set.
+ *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  callback.
  *  @ingroup monitor
  */
 GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun);
@@ -831,6 +878,8 @@ GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun);
  *  @param[out] count The number of video modes in the returned array.
  *  @return An array of video modes.
  *  @ingroup monitor
+ *
+ *  @sa glfwGetVideoMode
  */
 GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count);
 
@@ -838,13 +887,17 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count);
  *  @param[in] monitor The monitor to query.
  *  @return The current mode of the monitor.
  *  @ingroup monitor
+ *
+ *  @sa glfwGetVideoModes
  */
 GLFWAPI GLFWvidmode glfwGetVideoMode(GLFWmonitor* monitor);
 
-/*! @brief Sets the system gamma ramp to one generated from the specified
- *  exponent.
+/*! @brief Sets the system gamma ramp for all connected monitors to one
+ *  generated from the specified exponent.
  *  @param[in] gamma The desired exponent.
  *  @ingroup gamma
+ *
+ *  @remarks This is a helper function layered on top of @ref glfwSetGammaRamp.
  */
 GLFWAPI void glfwSetGamma(float gamma);
 
@@ -854,7 +907,8 @@ GLFWAPI void glfwSetGamma(float gamma);
  */
 GLFWAPI void glfwGetGammaRamp(GLFWgammaramp* ramp);
 
-/*! @brief Sets the system gamma ramp to the one specified.
+/*! @brief Sets the system gamma ramp for all connected monitors to the one
+ *  specified.
  *  @param[in] ramp The gamma ramp to use.
  *  @ingroup gamma
  */
@@ -875,6 +929,8 @@ GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
  *  hints are set to 1 and 0, respectively.
  *
  *  The @ref GLFW_CONTEXT_ROBUSTNESS hint is set to @ref GLFW_NO_ROBUSTNESS.
+ *
+ *  The @ref GLFW_OPENGL_PROFILE hint is set to @ref GLFW_OPENGL_NO_PROFILE.
  *
  *  All other hints are set to 0.
  *
@@ -970,13 +1026,15 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *
  *  If an OpenGL context is requested, the @ref GLFW_OPENGL_PROFILE hint
  *  specifies which OpenGL profile to create the context for.  Possible values
- *  are @ref GLFW_OPENGL_NO_PROFILE, @ref GLFW_OPENGL_CORE_PROFILE and @ref
- *  GLFW_OPENGL_COMPAT_PROFILE.  This may only be used if the requested OpenGL
- *  version is 3.2 or above.  If another client API is requested, this hint
- *  is ignored.
+ *  are one of @ref GLFW_OPENGL_CORE_PROFILE or @ref GLFW_OPENGL_COMPAT_PROFILE,
+ *  or @ref GLFW_OPENGL_NO_PROFILE to not request a specific profile.  If
+ *  requesting an OpenGL version below 3.2, @ref GLFW_OPENGL_NO_PROFILE must be
+ *  used.  If another client API is requested, this hint is ignored.
  *
  *  The @ref GLFW_CONTEXT_ROBUSTNESS hint specifies the robustness strategy to
- *  be used by the context.
+ *  be used by the context.  This can be one of @ref GLFW_NO_RESET_NOTIFICATION
+ *  or @ref GLFW_LOSE_CONTEXT_ON_RESET, or @ref GLFW_NO_ROBUSTNESS to not
+ *  request a robustness strategy.
  *
  *  @par Window hints
  *
@@ -1158,6 +1216,7 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
 /*! @brief Returns a property of the specified window.
  *  @param[in] window The window to query.
  *  @param[in] param The property whose value to return.
+ *  @return The value of the property, or zero if an error occurred.
  *  @ingroup window
  *
  *  @par Window properties
@@ -1181,24 +1240,28 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  @par Context properties
  *
  *  The @ref GLFW_CLIENT_API property indicates the client API provided by the
- *  window's context.
+ *  window's context; either @ref GLFW_OPENGL_API or @ref GLFW_OPENGL_ES_API.
  *
  *  The @ref GLFW_CONTEXT_VERSION_MAJOR, @ref GLFW_CONTEXT_VERSION_MINOR and
  *  @ref GLFW_CONTEXT_REVISION properties indicate the client API version of the
  *  window's context.
  *
- *  The @ref GLFW_OPENGL_FORWARD_COMPAT property indicates whether an OpenGL
- *  context is forward-compatible.
+ *  The @ref GLFW_OPENGL_FORWARD_COMPAT property is @c GL_TRUE if the window's
+ *  context is an OpenGL forward-compatible one, or @c GL_FALSE otherwise.
  *
- *  The @ref GLFW_OPENGL_DEBUG_CONTEXT property indicates whether the
- *  corresponding window hint was used when the window was created.
+ *  The @ref GLFW_OPENGL_DEBUG_CONTEXT property is @c GL_TRUE if the window's
+ *  context is an OpenGL debug context, or @c GL_FALSE otherwise.
  *
- *  The @ref GLFW_OPENGL_PROFILE property indicates the profile used by the
- *  OpenGL context, or @ref GLFW_OPENGL_NO_PROFILE if the context is for another
- *  client API than OpenGL.
+ *  The @ref GLFW_OPENGL_PROFILE property indicates the OpenGL profile used by
+ *  the context.  This is @ref GLFW_OPENGL_CORE_PROFILE or @ref
+ *  GLFW_OPENGL_COMPAT_PROFILE if the context uses a known profile, or @ref
+ *  GLFW_OPENGL_NO_PROFILE if the OpenGL profile is unknown or the context is
+ *  for another client API.
  *
  *  The @ref GLFW_CONTEXT_ROBUSTNESS property indicates the robustness strategy
- *  used by the context, or @ref GLFW_NO_ROBUSTNESS if robustness is not used.
+ *  used by the context.  This is @ref GLFW_LOSE_CONTEXT_ON_RESET or @ref
+ *  GLFW_NO_RESET_NOTIFICATION if the window's context supports robustness, or
+ *  @ref GLFW_NO_ROBUSTNESS otherwise.
  */
 GLFWAPI int glfwGetWindowParam(GLFWwindow* window, int param);
 
@@ -1391,8 +1454,8 @@ GLFWAPI void glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
 
 /*! @brief Sets the Unicode character callback.
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new Unicode character callback, or @c NULL to remove
- *  the currently set callback.
+ *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  callback.
  *  @ingroup input
  *
  *  @remarks The Unicode character callback is for text input.  If you want to
@@ -1402,16 +1465,16 @@ GLFWAPI void glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
 
 /*! @brief Sets the mouse button callback.
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new mouse button callback, or @c NULL to remove the
- *  currently set callback.
+ *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  callback.
  *  @ingroup input
  */
 GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmousebuttonfun cbfun);
 
 /*! @brief Sets the cursor position callback.
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new cursor position callback, or @c NULL to remove the
- *  currently set callback.
+ *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  callback.
  *  @ingroup input
  *
  *  @remarks The position is relative to the upper-left corner of the client
@@ -1421,8 +1484,8 @@ GLFWAPI void glfwSetCursorPosCallback(GLFWwindow* window, GLFWcursorposfun cbfun
 
 /*! @brief Sets the cursor enter/exit callback.
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new cursor enter/exit callback, or @c NULL to remove
- *  the currently set callback.
+ *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  callback.
  *  @ingroup input
  */
 GLFWAPI void glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcursorenterfun cbfun);

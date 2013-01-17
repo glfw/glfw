@@ -471,8 +471,8 @@ extern "C" {
  *  @see glfwGetWindowParam
  */
 #define GLFW_SHOULD_CLOSE         0x00020003
-/*! @brief The client API version revision.
- *  @see glfwGetWindowParam
+/*! @brief The revision number of the context's API version.
+ *  @see glfwWindowHint glfwGetWindowParam
  */
 #define GLFW_CONTEXT_REVISION     0x00020004
 
@@ -535,14 +535,17 @@ extern "C" {
  */
 #define GLFW_SRGB_CAPABLE         0x0002100D
 
-/*! @brief The @link clients client API @endlink to create a context for.
+/*! @brief The client API used for the window's context; one of
+ *  @ref One of GLFW_OPENGL_API or @ref GLFW_OPENGL_ES_API.
  *  @see glfwWindowHint glfwGetWindowParam
  */
 #define GLFW_CLIENT_API           0x00022000
-/*! @see glfwWindowHint glfwGetWindowParam
+/*! @brief The major number of the context's API version.
+ *  @see glfwWindowHint glfwGetWindowParam
  */
 #define GLFW_CONTEXT_VERSION_MAJOR 0x00022001
-/*! @see glfwWindowHint glfwGetWindowParam
+/*! @brief The minor number of the context's API version.
+ *  @see glfwWindowHint glfwGetWindowParam
  */
 #define GLFW_CONTEXT_VERSION_MINOR 0x00022002
 /*! @see glfwWindowHint glfwGetWindowParam
@@ -829,7 +832,7 @@ typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
  *  @param[in] window The window that received the event.
  *  @param[in] button The @link buttons mouse button @endlink that was pressed
  *  or released.
- *  @param[in] action @ref GLFW_PRESS or @ref GLFW_RELEASE.
+ *  @param[in] action One of @ref GLFW_PRESS or @ref GLFW_RELEASE.
  *  @ingroup input
  */
 typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int);
@@ -862,7 +865,7 @@ typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
  *  @param[in] window The window that received the event.
  *  @param[in] key The @link keys keyboard key @endlink that was pressed or
  *  released.
- *  @param[in] action @ref GLFW_PRESS or @ref GLFW_RELEASE.
+ *  @param[in] action One of @ref GLFW_PRESS or @ref GLFW_RELEASE.
  *  @ingroup input
  */
 typedef void (* GLFWkeyfun)(GLFWwindow*,int,int);
@@ -876,8 +879,7 @@ typedef void (* GLFWcharfun)(GLFWwindow*,int);
 
 /*! @brief The function signature for monitor configuration callbacks.
  *  @param[in] monitor The monitor that was connected or disconnected.
- *  @param[in] event @ref GLFW_MONITOR_CONNECTED or @ref
- *  GLFW_MONITOR_DISCONNECTED.
+ *  @param[in] event One of @ref GLFW_CONNECTED or @ref GLFW_DISCONNECTED.
  */
 typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
 
@@ -1040,7 +1042,7 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count);
 
 /*! @brief Returns the current mode of the specified monitor.
  *  @param[in] monitor The monitor to query.
- *  @param[out] mode The current mode of the monitor.
+ *  @return The current mode of the monitor.
  *  @ingroup monitor
  */
 GLFWAPI GLFWvidmode glfwGetVideoMode(GLFWmonitor* monitor);
@@ -1092,7 +1094,7 @@ GLFWAPI void glfwDefaultWindowHints(void);
 
 /*! @brief Sets the specified window hint to the desired value.
  *  @param[in] target The window hint to set.
- *  @param[in] target The new value of the window hint.
+ *  @param[in] hint The new value of the window hint.
  *  @ingroup window
  *
  *  This function sets hints for the next call to @ref glfwCreateWindow.  The
@@ -1524,10 +1526,10 @@ GLFWAPI void glfwWaitEvents(void);
 GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
 
 /*! @brief Sets an input option for the specified window.
- *  @param[in] mode One of the following:
- *  @arg @ref GLFW_CURSOR_MODE Sets the cursor mode.
- *  @arg @ref GLFW_STICKY_KEYS Sets whether sticky keys are enabled.
- *  @arg @ref GLFW_STICKY_MOUSE_BUTTONS Sets whether sticky mouse buttons are enabled.
+ *  @param[in] window The window whose input mode to set.
+ *  @param[in] mode One of @ref GLFW_CURSOR_MODE, @ref GLFW_STICKY_KEYS or @ref
+ *  GLFW_STICKY_MOUSE_BUTTONS.
+ *  @param[in] value The new value of the specified input mode.
  *  @ingroup input
  *
  *  @sa glfwGetInputMode
@@ -1538,7 +1540,7 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* window, int mode, int value);
  *  window.
  *  @param[in] window The desired window.
  *  @param[in] key The desired @link keys keyboard key @endlink.
- *  @return @ref GLFW_PRESS or @ref GLFW_RELEASE.
+ *  @return One of @ref GLFW_PRESS or @ref GLFW_RELEASE.
  *  @ingroup input
  */
 GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
@@ -1546,8 +1548,8 @@ GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
 /*! @brief Returns the last reported state of a mouse button for the specified
  *  window.
  *  @param[in] window The desired window.
- *  @param[in] key The desired @link buttons mouse buttons @endlink.
- *  @return @ref GLFW_PRESS or @ref GLFW_RELEASE.
+ *  @param[in] button The desired @link buttons mouse buttons @endlink.
+ *  @return One of @ref GLFW_PRESS or @ref GLFW_RELEASE.
  *  @ingroup input
  */
 GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
@@ -1584,6 +1586,7 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, int xpos, int ypos);
 GLFWAPI void glfwGetScrollOffset(GLFWwindow* window, double* xoffset, double* yoffset);
 
 /*! @brief Sets the key callback.
+ *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new key callback, or @c NULL to remove the currently
  *  set callback.
  *  @ingroup input
@@ -1595,6 +1598,7 @@ GLFWAPI void glfwGetScrollOffset(GLFWwindow* window, double* xoffset, double* yo
 GLFWAPI void glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
 
 /*! @brief Sets the Unicode character callback.
+ *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new Unicode character callback, or @c NULL to remove
  *  the currently set callback.
  *  @ingroup input
@@ -1605,6 +1609,7 @@ GLFWAPI void glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
 GLFWAPI void glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
 
 /*! @brief Sets the mouse button callback.
+ *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new mouse button callback, or @c NULL to remove the
  *  currently set callback.
  *  @ingroup input
@@ -1612,6 +1617,7 @@ GLFWAPI void glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
 GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmousebuttonfun cbfun);
 
 /*! @brief Sets the cursor position callback.
+ *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new cursor position callback, or @c NULL to remove the
  *  currently set callback.
  *  @ingroup input
@@ -1622,6 +1628,7 @@ GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmousebuttonfun c
 GLFWAPI void glfwSetCursorPosCallback(GLFWwindow* window, GLFWcursorposfun cbfun);
 
 /*! @brief Sets the cursor enter/exit callback.
+ *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new cursor enter/exit callback, or @c NULL to remove
  *  the currently set callback.
  *  @ingroup input
@@ -1629,6 +1636,7 @@ GLFWAPI void glfwSetCursorPosCallback(GLFWwindow* window, GLFWcursorposfun cbfun
 GLFWAPI void glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcursorenterfun cbfun);
 
 /*! @brief Sets the scroll callback.
+ *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new scroll callback, or @c NULL to remove the currently
  *  set callback.
  *  @ingroup input
@@ -1748,7 +1756,7 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* window);
 GLFWAPI GLFWwindow* glfwGetCurrentContext(void);
 
 /*! @brief Swaps the front and back buffers of the specified window.
- *  @param[in] The window whose buffers to swap.
+ *  @param[in] window The window whose buffers to swap.
  *  @ingroup context
  *
  *  @remarks This function may be called from secondary threads.

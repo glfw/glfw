@@ -64,6 +64,9 @@
 // Define this to 1 if glXGetProcAddressEXT is available
 #cmakedefine _GLFW_HAS_GLXGETPROCADDRESSEXT
 
+// Define this to 1 if glfwInit should change the current directory
+#cmakedefine _GLFW_CD_RESOURCES
+
 // Define this to 1 if using OpenGL as the client library
 #cmakedefine _GLFW_USE_OPENGL
 // Define this to 1 if using OpenGL ES 1.1 as the client library

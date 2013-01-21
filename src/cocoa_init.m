@@ -34,6 +34,8 @@
 // Change to our application bundle's resources directory, if present
 //========================================================================
 
+#if defined(_GLFW_CD_RESOURCES)
+
 static void changeToResourcesDirectory(void)
 {
     char resourcesPath[MAXPATHLEN];
@@ -68,6 +70,8 @@ static void changeToResourcesDirectory(void)
     chdir(resourcesPath);
 }
 
+#endif /* _GLFW_CD_RESOURCES */
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -90,7 +94,9 @@ int _glfwPlatformInit(void)
         return GL_FALSE;
     }
 
+#if defined(_GLFW_CD_RESOURCES)
     changeToResourcesDirectory();
+#endif
 
     // Save the original gamma ramp
     _glfw.originalRampSize = CGDisplayGammaTableCapacity(CGMainDisplayID());

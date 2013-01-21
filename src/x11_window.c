@@ -164,11 +164,6 @@ static GLboolean createWindow(_GLFWwindow* window,
         window->x11.overrideRedirect = GL_TRUE;
     }
 
-    // Find or create the protocol atom for window close notifications
-    _glfw.x11.wmDeleteWindow = XInternAtom(_glfw.x11.display,
-                                           "WM_DELETE_WINDOW",
-                                           False);
-
     // Declare the WM protocols supported by GLFW
     {
         int count = 0;

@@ -484,6 +484,11 @@ static GLboolean initDisplay(void)
     _glfw.x11.screen = DefaultScreen(_glfw.x11.display);
     _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
 
+    // Find or create the protocol atom for window close notifications
+    _glfw.x11.wmDeleteWindow = XInternAtom(_glfw.x11.display,
+                                           "WM_DELETE_WINDOW",
+                                           False);
+
     // Check for XF86VidMode extension
     _glfw.x11.vidmode.available =
         XF86VidModeQueryExtension(_glfw.x11.display,

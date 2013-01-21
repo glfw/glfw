@@ -122,13 +122,14 @@ typedef struct _GLFWlibraryX11
     // Invisible cursor for hidden cursor mode
     Cursor          cursor;
 
-    Atom            wmDeleteWindow;    // WM_DELETE_WINDOW atom
-    Atom            wmName;            // _NET_WM_NAME atom
-    Atom            wmIconName;        // _NET_WM_ICON_NAME atom
-    Atom            wmPing;            // _NET_WM_PING atom
-    Atom            wmState;           // _NET_WM_STATE atom
-    Atom            wmStateFullscreen; // _NET_WM_STATE_FULLSCREEN atom
-    Atom            wmActiveWindow;    // _NET_ACTIVE_WINDOW atom
+    // Window manager atoms
+    Atom            WM_DELETE_WINDOW;
+    Atom            NET_WM_NAME;
+    Atom            NET_WM_ICON_NAME;
+    Atom            NET_WM_PING;
+    Atom            NET_WM_STATE;
+    Atom            NET_WM_STATE_FULLSCREEN;
+    Atom            NET_ACTIVE_WINDOW;
 
     // True if window manager supports EWMH
     GLboolean       hasEWMH;

@@ -171,14 +171,14 @@ static GLboolean createWindow(_GLFWwindow* window,
 
         // The WM_DELETE_WINDOW ICCCM protocol
         // Basic window close notification protocol
-        if (_glfw.x11.wmDeleteWindow != None)
-            protocols[count++] = _glfw.x11.wmDeleteWindow;
+        if (_glfw.x11.WM_DELETE_WINDOW != None)
+            protocols[count++] = _glfw.x11.WM_DELETE_WINDOW;
 
         // The _NET_WM_PING EWMH protocol
         // Tells the WM to ping the GLFW window and flag the application as
         // unresponsive if the WM doesn't get a reply within a few seconds
-        if (_glfw.x11.wmPing != None)
-            protocols[count++] = _glfw.x11.wmPing;
+        if (_glfw.x11.NET_WM_PING != None)
+            protocols[count++] = _glfw.x11.NET_WM_PING;
 
         if (count > 0)
         {
@@ -335,10 +335,10 @@ static void enterFullscreenMode(_GLFWwindow* window)
     _glfwSetVideoMode(window->monitor, &window->width, &window->height);
 
     if (_glfw.x11.hasEWMH &&
-        _glfw.x11.wmState != None &&
-        _glfw.x11.wmStateFullscreen != None)
+        _glfw.x11.NET_WM_STATE != None &&
+        _glfw.x11.NET_WM_STATE_FULLSCREEN != None)
     {
-        if (_glfw.x11.wmActiveWindow != None)
+        if (_glfw.x11.NET_ACTIVE_WINDOW != None)
         {
             // Ask the window manager to raise and focus the GLFW window
             // Only focused windows with the _NET_WM_STATE_FULLSCREEN state end
@@ -350,7 +350,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
             event.type = ClientMessage;
             event.xclient.window = window->x11.handle;
             event.xclient.format = 32; // Data is 32-bit longs
-            event.xclient.message_type = _glfw.x11.wmActiveWindow;
+            event.xclient.message_type = _glfw.x11.NET_ACTIVE_WINDOW;
             event.xclient.data.l[0] = 1; // Sender is a normal application
             event.xclient.data.l[1] = 0; // We don't really know the timestamp
 
@@ -371,9 +371,9 @@ static void enterFullscreenMode(_GLFWwindow* window)
         event.type = ClientMessage;
         event.xclient.window = window->x11.handle;
         event.xclient.format = 32; // Data is 32-bit longs
-        event.xclient.message_type = _glfw.x11.wmState;
+        event.xclient.message_type = _glfw.x11.NET_WM_STATE;
         event.xclient.data.l[0] = _NET_WM_STATE_ADD;
-        event.xclient.data.l[1] = _glfw.x11.wmStateFullscreen;
+        event.xclient.data.l[1] = _glfw.x11.NET_WM_STATE_FULLSCREEN;
         event.xclient.data.l[2] = 0; // No secondary property
         event.xclient.data.l[3] = 1; // Sender is a normal application
 
@@ -419,8 +419,8 @@ static void leaveFullscreenMode(_GLFWwindow* window)
     }
 
     if (_glfw.x11.hasEWMH &&
-        _glfw.x11.wmState != None &&
-        _glfw.x11.wmStateFullscreen != None)
+        _glfw.x11.NET_WM_STATE != None &&
+        _glfw.x11.NET_WM_STATE_FULLSCREEN != None)
     {
         // Ask the window manager to make the GLFW window a normal window
         // Normal windows usually have frames and other decorations
@@ -431,9 +431,9 @@ static void leaveFullscreenMode(_GLFWwindow* window)
         event.type = ClientMessage;
         event.xclient.window = window->x11.handle;
         event.xclient.format = 32; // Data is 32-bit longs
-        event.xclient.message_type = _glfw.x11.wmState;
+        event.xclient.message_type = _glfw.x11.NET_WM_STATE;
         event.xclient.data.l[0] = _NET_WM_STATE_REMOVE;
-        event.xclient.data.l[1] = _glfw.x11.wmStateFullscreen;
+        event.xclient.data.l[1] = _glfw.x11.NET_WM_STATE_FULLSCREEN;
         event.xclient.data.l[2] = 0; // No secondary property
         event.xclient.data.l[3] = 1; // Sender is a normal application
 
@@ -635,15 +635,15 @@ static void processEvent(XEvent *event)
             if (window == NULL)
                 return;
 
-            if ((Atom) event->xclient.data.l[0] == _glfw.x11.wmDeleteWindow)
+            if ((Atom) event->xclient.data.l[0] == _glfw.x11.WM_DELETE_WINDOW)
             {
                 // The window manager was asked to close the window, for example by
                 // the user pressing a 'close' window decoration button
 
                 _glfwInputWindowCloseRequest(window);
             }
-            else if (_glfw.x11.wmPing != None &&
-                     (Atom) event->xclient.data.l[0] == _glfw.x11.wmPing)
+            else if (_glfw.x11.NET_WM_PING != None &&
+                     (Atom) event->xclient.data.l[0] == _glfw.x11.NET_WM_PING)
             {
                 // The window manager is pinging the application to ensure it's
                 // still responding to events
@@ -884,18 +884,18 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
                        NULL, NULL, NULL);
 #endif
 
-    if (_glfw.x11.wmName != None)
+    if (_glfw.x11.NET_WM_NAME != None)
     {
         XChangeProperty(_glfw.x11.display,  window->x11.handle,
-                        _glfw.x11.wmName, type, 8,
+                        _glfw.x11.NET_WM_NAME, type, 8,
                         PropModeReplace,
                         (unsigned char*) title, strlen(title));
     }
 
-    if (_glfw.x11.wmIconName != None)
+    if (_glfw.x11.NET_WM_ICON_NAME != None)
     {
         XChangeProperty(_glfw.x11.display,  window->x11.handle,
-                        _glfw.x11.wmIconName, type, 8,
+                        _glfw.x11.NET_WM_ICON_NAME, type, 8,
                         PropModeReplace,
                         (unsigned char*) title, strlen(title));
     }

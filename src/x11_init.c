@@ -440,22 +440,22 @@ static void detectEWMH(void)
 
     // See which of the atoms we support that are supported by the WM
 
-    _glfw.x11.wmState =
+    _glfw.x11.NET_WM_STATE =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE");
 
-    _glfw.x11.wmStateFullscreen =
+    _glfw.x11.NET_WM_STATE_FULLSCREEN =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_FULLSCREEN");
 
-    _glfw.x11.wmName =
+    _glfw.x11.NET_WM_NAME =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_NAME");
 
-    _glfw.x11.wmIconName =
+    _glfw.x11.NET_WM_ICON_NAME =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_ICON_NAME");
 
-    _glfw.x11.wmPing =
+    _glfw.x11.NET_WM_PING =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_PING");
 
-    _glfw.x11.wmActiveWindow =
+    _glfw.x11.NET_ACTIVE_WINDOW =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_ACTIVE_WINDOW");
 
     XFree(supportedAtoms);
@@ -485,9 +485,9 @@ static GLboolean initDisplay(void)
     _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
 
     // Find or create the protocol atom for window close notifications
-    _glfw.x11.wmDeleteWindow = XInternAtom(_glfw.x11.display,
-                                           "WM_DELETE_WINDOW",
-                                           False);
+    _glfw.x11.WM_DELETE_WINDOW = XInternAtom(_glfw.x11.display,
+                                             "WM_DELETE_WINDOW",
+                                             False);
 
     // Check for XF86VidMode extension
     _glfw.x11.vidmode.available =

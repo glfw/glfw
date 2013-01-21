@@ -123,6 +123,7 @@ typedef struct _GLFWlibraryX11
     Cursor          cursor;
 
     // Window manager atoms
+    Atom            WM_STATE;
     Atom            WM_DELETE_WINDOW;
     Atom            NET_WM_NAME;
     Atom            NET_WM_ICON_NAME;
@@ -251,5 +252,11 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request);
 
 // Event processing
 void _glfwProcessPendingEvents(void);
+
+// Window support
+unsigned long _glfwGetWindowProperty(Window window,
+                                     Atom property,
+                                     Atom type,
+                                     unsigned char** value);
 
 #endif // _x11_platform_h_

@@ -319,40 +319,6 @@ static void updateKeyCodeLUT(void)
 
 
 //========================================================================
-// Retrieve a single window property of the specified type
-// Inspired by fghGetWindowProperty from freeglut
-//========================================================================
-
-static unsigned long getWindowProperty(Window window,
-                                       Atom property,
-                                       Atom type,
-                                       unsigned char** value)
-{
-    Atom actualType;
-    int actualFormat;
-    unsigned long itemCount, bytesAfter;
-
-    XGetWindowProperty(_glfw.x11.display,
-                       window,
-                       property,
-                       0,
-                       LONG_MAX,
-                       False,
-                       type,
-                       &actualType,
-                       &actualFormat,
-                       &itemCount,
-                       &bytesAfter,
-                       value);
-
-    if (actualType != type)
-        return 0;
-
-    return itemCount;
-}
-
-
-//========================================================================
 // Check whether the specified atom is supported
 //========================================================================
 
@@ -394,10 +360,10 @@ static void detectEWMH(void)
         return;
 
     // Then we look for the _NET_SUPPORTING_WM_CHECK property of the root window
-    if (getWindowProperty(_glfw.x11.root,
-                          supportingWmCheck,
-                          XA_WINDOW,
-                          (unsigned char**) &windowFromRoot) != 1)
+    if (_glfwGetWindowProperty(_glfw.x11.root,
+                               supportingWmCheck,
+                               XA_WINDOW,
+                               (unsigned char**) &windowFromRoot) != 1)
     {
         XFree(windowFromRoot);
         return;
@@ -405,10 +371,10 @@ static void detectEWMH(void)
 
     // It should be the ID of a child window (of the root)
     // Then we look for the same property on the child window
-    if (getWindowProperty(*windowFromRoot,
-                          supportingWmCheck,
-                          XA_WINDOW,
-                          (unsigned char**) &windowFromChild) != 1)
+    if (_glfwGetWindowProperty(*windowFromRoot,
+                               supportingWmCheck,
+                               XA_WINDOW,
+                               (unsigned char**) &windowFromChild) != 1)
     {
         XFree(windowFromRoot);
         XFree(windowFromChild);
@@ -433,10 +399,10 @@ static void detectEWMH(void)
 
     // Now we need to check the _NET_SUPPORTED property of the root window
     // It should be a list of supported WM protocol and state atoms
-    atomCount = getWindowProperty(_glfw.x11.root,
-                                  wmSupported,
-                                  XA_ATOM,
-                                  (unsigned char**) &supportedAtoms);
+    atomCount = _glfwGetWindowProperty(_glfw.x11.root,
+                                       wmSupported,
+                                       XA_ATOM,
+                                       (unsigned char**) &supportedAtoms);
 
     // See which of the atoms we support that are supported by the WM
 
@@ -484,7 +450,8 @@ static GLboolean initDisplay(void)
     _glfw.x11.screen = DefaultScreen(_glfw.x11.display);
     _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
 
-    // Find or create the protocol atom for window close notifications
+    // Find or create window manager atoms
+    _glfw.x11.WM_STATE = XInternAtom(_glfw.x11.display, "WM_STATE", False);
     _glfw.x11.WM_DELETE_WINDOW = XInternAtom(_glfw.x11.display,
                                              "WM_DELETE_WINDOW",
                                              False);

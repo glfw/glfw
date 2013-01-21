@@ -35,6 +35,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 // Action for EWMH client messages
 #define _NET_WM_STATE_REMOVE        0
@@ -105,7 +106,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         wa.event_mask = StructureNotifyMask | KeyPressMask | KeyReleaseMask |
                         PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
                         ExposureMask | FocusChangeMask | VisibilityChangeMask |
-                        EnterWindowMask | LeaveWindowMask;
+                        EnterWindowMask | LeaveWindowMask | PropertyChangeMask;
 
         if (wndconfig->monitor == NULL)
         {
@@ -666,7 +667,6 @@ static void processEvent(XEvent *event)
                 return;
 
             _glfwInputWindowVisibility(window, GL_TRUE);
-            _glfwInputWindowIconify(window, GL_FALSE);
             break;
         }
 
@@ -677,7 +677,6 @@ static void processEvent(XEvent *event)
                 return;
 
             _glfwInputWindowVisibility(window, GL_FALSE);
-            _glfwInputWindowIconify(window, GL_TRUE);
             break;
         }
 
@@ -716,6 +715,37 @@ static void processEvent(XEvent *event)
                 return;
 
             _glfwInputWindowDamage(window);
+            break;
+        }
+
+        case PropertyNotify:
+        {
+            window = findWindow(event->xproperty.window);
+            if (window == NULL)
+                return;
+
+            if (event->xproperty.atom == _glfw.x11.WM_STATE &&
+                event->xproperty.state == PropertyNewValue)
+            {
+                struct {
+                    CARD32 state;
+                    Window icon;
+                } *state = NULL;
+
+                if (_glfwGetWindowProperty(window->x11.handle,
+                                           _glfw.x11.WM_STATE,
+                                           _glfw.x11.WM_STATE,
+                                           (unsigned char**) &state) >= 2)
+                {
+                    if (state->state == IconicState)
+                        _glfwInputWindowIconify(window, GL_TRUE);
+                    else if (state->state == NormalState)
+                        _glfwInputWindowIconify(window, GL_FALSE);
+                }
+
+                XFree(state);
+            }
+
             break;
         }
 
@@ -784,6 +814,45 @@ static void processEvent(XEvent *event)
         }
     }
 }
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+//========================================================================
+// Retrieve a single window property of the specified type
+// Inspired by fghGetWindowProperty from freeglut
+//========================================================================
+
+unsigned long _glfwGetWindowProperty(Window window,
+                                     Atom property,
+                                     Atom type,
+                                     unsigned char** value)
+{
+    Atom actualType;
+    int actualFormat;
+    unsigned long itemCount, bytesAfter;
+
+    XGetWindowProperty(_glfw.x11.display,
+                       window,
+                       property,
+                       0,
+                       LONG_MAX,
+                       False,
+                       type,
+                       &actualType,
+                       &actualFormat,
+                       &itemCount,
+                       &bytesAfter,
+                       value);
+
+    if (actualType != type)
+        return 0;
+
+    return itemCount;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////

@@ -777,13 +777,13 @@ static int createWindow(_GLFWwindow* window,
                                           _glfw.win32.instance,
                                           window);  // Pass GLFW window to WM_CREATE
 
+    free(wideTitle);
+
     if (!window->win32.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to create window");
         return GL_FALSE;
     }
-
-    free(wideTitle);
 
     // Initialize cursor position data
     GetCursorPos(&pos);

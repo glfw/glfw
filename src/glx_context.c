@@ -542,10 +542,6 @@ void _glfwDestroyContext(_GLFWwindow* window)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Make the OpenGL context associated with the specified window current
-//========================================================================
-
 void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 {
     if (window)
@@ -560,30 +556,15 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     _glfwCurrentWindow = window;
 }
 
-
-//========================================================================
-// Return the window object whose context is current
-//========================================================================
-
 _GLFWwindow* _glfwPlatformGetCurrentContext(void)
 {
     return _glfwCurrentWindow;
 }
 
-
-//========================================================================
-// Swap OpenGL buffers
-//========================================================================
-
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 {
     glXSwapBuffers(_glfw.x11.display, window->x11.handle);
 }
-
-
-//========================================================================
-// Set double buffering swap interval
-//========================================================================
 
 void _glfwPlatformSwapInterval(int interval)
 {
@@ -604,11 +585,6 @@ void _glfwPlatformSwapInterval(int interval)
     }
 }
 
-
-//========================================================================
-// Check if an OpenGL extension is available at runtime
-//========================================================================
-
 int _glfwPlatformExtensionSupported(const char* extension)
 {
     const GLubyte* extensions;
@@ -625,11 +601,6 @@ int _glfwPlatformExtensionSupported(const char* extension)
     return GL_FALSE;
 }
 
-
-//========================================================================
-// Get the function pointer to an OpenGL function
-//========================================================================
-
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 {
     return _glfw_glXGetProcAddress((const GLubyte*) procname);
@@ -639,10 +610,6 @@ GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////
-
-//========================================================================
-// Return the GLX context of the specified window
-//========================================================================
 
 GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* handle)
 {

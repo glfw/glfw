@@ -65,12 +65,8 @@ static void clearScrollOffsets(void)
 
 
 //////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
+//////                         GLFW event API                       //////
 //////////////////////////////////////////////////////////////////////////
-
-//========================================================================
-// Register window focus events
-//========================================================================
 
 void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused)
 {
@@ -112,11 +108,6 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused)
     }
 }
 
-
-//========================================================================
-// Register window position events
-//========================================================================
-
 void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
 {
     if (window->positionX == x && window->positionY == y)
@@ -128,11 +119,6 @@ void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
     if (window->callbacks.pos)
         window->callbacks.pos((GLFWwindow*) window, x, y);
 }
-
-
-//========================================================================
-// Register window size events
-//========================================================================
 
 void _glfwInputWindowSize(_GLFWwindow* window, int width, int height)
 {
@@ -146,11 +132,6 @@ void _glfwInputWindowSize(_GLFWwindow* window, int width, int height)
         window->callbacks.size((GLFWwindow*) window, width, height);
 }
 
-
-//========================================================================
-// Register window size events
-//========================================================================
-
 void _glfwInputWindowIconify(_GLFWwindow* window, int iconified)
 {
     if (window->iconified == iconified)
@@ -162,31 +143,16 @@ void _glfwInputWindowIconify(_GLFWwindow* window, int iconified)
         window->callbacks.iconify((GLFWwindow*) window, iconified);
 }
 
-
-//========================================================================
-// Register window visibility events
-//========================================================================
-
 void _glfwInputWindowVisibility(_GLFWwindow* window, int visible)
 {
     window->visible = visible;
 }
-
-
-//========================================================================
-// Register window damage events
-//========================================================================
 
 void _glfwInputWindowDamage(_GLFWwindow* window)
 {
     if (window->callbacks.refresh)
         window->callbacks.refresh((GLFWwindow*) window);
 }
-
-
-//========================================================================
-// Register window close request events
-//========================================================================
 
 void _glfwInputWindowCloseRequest(_GLFWwindow* window)
 {
@@ -200,10 +166,6 @@ void _glfwInputWindowCloseRequest(_GLFWwindow* window)
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
-
-//========================================================================
-// Create the GLFW window and its associated context
-//========================================================================
 
 GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
                                      const char* title,
@@ -339,11 +301,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     return (GLFWwindow*) window;
 }
 
-
-//========================================================================
-// Reset all window hints to their default values
-//========================================================================
-
 void glfwDefaultWindowHints(void)
 {
     if (!_glfwInitialized)
@@ -374,11 +331,6 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.depthBits   = 24;
     _glfw.hints.stencilBits = 8;
 }
-
-
-//========================================================================
-// Set hints for creating the window
-//========================================================================
 
 GLFWAPI void glfwWindowHint(int target, int hint)
 {
@@ -471,11 +423,6 @@ GLFWAPI void glfwWindowHint(int target, int hint)
     }
 }
 
-
-//========================================================================
-// Properly kill the window / video display
-//========================================================================
-
 GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -517,11 +464,6 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
     free(window);
 }
 
-
-//========================================================================
-// Set the window title
-//========================================================================
-
 GLFWAPI void glfwSetWindowTitle(GLFWwindow* handle, const char* title)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -534,11 +476,6 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* handle, const char* title)
 
     _glfwPlatformSetWindowTitle(window, title);
 }
-
-
-//========================================================================
-// Get the window size
-//========================================================================
 
 GLFWAPI void glfwGetWindowSize(GLFWwindow* handle, int* width, int* height)
 {
@@ -556,11 +493,6 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow* handle, int* width, int* height)
     if (height != NULL)
         *height = window->height;
 }
-
-
-//========================================================================
-// Set the window size
-//========================================================================
 
 GLFWAPI void glfwSetWindowSize(GLFWwindow* handle, int width, int height)
 {
@@ -585,11 +517,6 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* handle, int width, int height)
     _glfwPlatformSetWindowSize(window, width, height);
 }
 
-
-//========================================================================
-// Window iconification
-//========================================================================
-
 GLFWAPI void glfwIconifyWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -605,11 +532,6 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow* handle)
 
     _glfwPlatformIconifyWindow(window);
 }
-
-
-//========================================================================
-// Window un-iconification
-//========================================================================
 
 GLFWAPI void glfwRestoreWindow(GLFWwindow* handle)
 {
@@ -627,11 +549,6 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow* handle)
     _glfwPlatformRestoreWindow(window);
 }
 
-
-//========================================================================
-// Window show
-//========================================================================
-
 GLFWAPI void glfwShowWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -648,11 +565,6 @@ GLFWAPI void glfwShowWindow(GLFWwindow* handle)
     _glfwPlatformShowWindow(window);
 }
 
-
-//========================================================================
-// Window hide
-//========================================================================
-
 GLFWAPI void glfwHideWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -668,11 +580,6 @@ GLFWAPI void glfwHideWindow(GLFWwindow* handle)
 
     _glfwPlatformHideWindow(window);
 }
-
-
-//========================================================================
-// Get window parameter
-//========================================================================
 
 GLFWAPI int glfwGetWindowParam(GLFWwindow* handle, int param)
 {
@@ -722,11 +629,6 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow* handle, int param)
     return 0;
 }
 
-
-//========================================================================
-// Get window monitor
-//========================================================================
-
 GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -739,11 +641,6 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* handle)
 
     return (GLFWmonitor*) window->monitor;
 }
-
-
-//========================================================================
-// Set the user pointer for the specified window
-//========================================================================
 
 GLFWAPI void glfwSetWindowUserPointer(GLFWwindow* handle, void* pointer)
 {
@@ -758,11 +655,6 @@ GLFWAPI void glfwSetWindowUserPointer(GLFWwindow* handle, void* pointer)
     window->userPointer = pointer;
 }
 
-
-//========================================================================
-// Get the user pointer for the specified window
-//========================================================================
-
 GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -775,11 +667,6 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* handle)
 
     return window->userPointer;
 }
-
-
-//========================================================================
-// Set callback function for window position changes
-//========================================================================
 
 GLFWAPI void glfwSetWindowPosCallback(GLFWwindow* handle, GLFWwindowposfun cbfun)
 {
@@ -794,11 +681,6 @@ GLFWAPI void glfwSetWindowPosCallback(GLFWwindow* handle, GLFWwindowposfun cbfun
     window->callbacks.pos = cbfun;
 }
 
-
-//========================================================================
-// Set callback function for window size changes
-//========================================================================
-
 GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow* handle, GLFWwindowsizefun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -811,11 +693,6 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow* handle, GLFWwindowsizefun cbf
 
     window->callbacks.size = cbfun;
 }
-
-
-//========================================================================
-// Set callback function for window close events
-//========================================================================
 
 GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow* handle, GLFWwindowclosefun cbfun)
 {
@@ -830,11 +707,6 @@ GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow* handle, GLFWwindowclosefun c
     window->callbacks.close = cbfun;
 }
 
-
-//========================================================================
-// Set callback function for window refresh events
-//========================================================================
-
 GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow* handle, GLFWwindowrefreshfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -847,11 +719,6 @@ GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow* handle, GLFWwindowrefreshf
 
     window->callbacks.refresh = cbfun;
 }
-
-
-//========================================================================
-// Set callback function for window focus events
-//========================================================================
 
 GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow* handle, GLFWwindowfocusfun cbfun)
 {
@@ -866,11 +733,6 @@ GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow* handle, GLFWwindowfocusfun c
     window->callbacks.focus = cbfun;
 }
 
-
-//========================================================================
-// Set callback function for window iconification events
-//========================================================================
-
 GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow* handle, GLFWwindowiconifyfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -884,11 +746,6 @@ GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow* handle, GLFWwindowiconifyf
     window->callbacks.iconify = cbfun;
 }
 
-
-//========================================================================
-// Poll for new window and input events
-//========================================================================
-
 GLFWAPI void glfwPollEvents(void)
 {
     if (!_glfwInitialized)
@@ -901,11 +758,6 @@ GLFWAPI void glfwPollEvents(void)
 
     _glfwPlatformPollEvents();
 }
-
-
-//========================================================================
-// Wait for new window and input events
-//========================================================================
 
 GLFWAPI void glfwWaitEvents(void)
 {

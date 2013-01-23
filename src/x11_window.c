@@ -858,11 +858,6 @@ unsigned long _glfwGetWindowProperty(Window window,
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Here is where the window is created, and
-// the OpenGL rendering context is created
-//========================================================================
-
 int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
                               const _GLFWfbconfig* fbconfig)
@@ -902,11 +897,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     return GL_TRUE;
 }
 
-
-//========================================================================
-// Properly kill the window/video display
-//========================================================================
-
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     if (window->monitor)
@@ -927,11 +917,6 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         window->x11.colormap = (Colormap) 0;
     }
 }
-
-
-//========================================================================
-// Set the window title
-//========================================================================
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
@@ -969,11 +954,6 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
                         (unsigned char*) title, strlen(title));
     }
 }
-
-
-//========================================================================
-// Set the window size
-//========================================================================
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
@@ -1016,11 +996,6 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
         XResizeWindow(_glfw.x11.display, window->x11.handle, width, height);
 }
 
-
-//========================================================================
-// Window iconification
-//========================================================================
-
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
     if (window->x11.overrideRedirect)
@@ -1033,11 +1008,6 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window)
     XIconifyWindow(_glfw.x11.display, window->x11.handle, _glfw.x11.screen);
 }
 
-
-//========================================================================
-// Window un-iconification
-//========================================================================
-
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
     if (window->x11.overrideRedirect)
@@ -1049,11 +1019,6 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 
     XMapWindow(_glfw.x11.display, window->x11.handle);
 }
-
-
-//========================================================================
-// Show window
-//========================================================================
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
@@ -1070,21 +1035,11 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     }
 }
 
-
-//========================================================================
-// Hide window
-//========================================================================
-
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     XUnmapWindow(_glfw.x11.display, window->x11.handle);
     XFlush(_glfw.x11.display);
 }
-
-
-//========================================================================
-// Poll for new window and input events
-//========================================================================
 
 void _glfwPlatformPollEvents(void)
 {
@@ -1119,11 +1074,6 @@ void _glfwPlatformPollEvents(void)
     }
 }
 
-
-//========================================================================
-// Wait for new window and input events
-//========================================================================
-
 void _glfwPlatformWaitEvents(void)
 {
     int fd;
@@ -1140,11 +1090,6 @@ void _glfwPlatformWaitEvents(void)
         _glfwPlatformPollEvents();
 }
 
-
-//========================================================================
-// Set physical cursor position
-//========================================================================
-
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
 {
     // Store the new position so it can be recognized later
@@ -1153,11 +1098,6 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
 
     XWarpPointer(_glfw.x11.display, None, window->x11.handle, 0,0,0,0, x, y);
 }
-
-
-//========================================================================
-// Set physical cursor mode
-//========================================================================
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
@@ -1180,10 +1120,6 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 //////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Return the X11 display
-//========================================================================
-
 GLFWAPI Display* glfwGetX11Display(void)
 {
     if (!_glfwInitialized)
@@ -1194,11 +1130,6 @@ GLFWAPI Display* glfwGetX11Display(void)
 
     return _glfw.x11.display;
 }
-
-
-//========================================================================
-// Return the X11 handle of the specified window
-//========================================================================
 
 GLFWAPI Window glfwGetX11Window(GLFWwindow* handle)
 {

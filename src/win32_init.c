@@ -160,10 +160,6 @@ char* _glfwCreateUTF8FromWideString(const WCHAR* source)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Initialize various GLFW state
-//========================================================================
-
 int _glfwPlatformInit(void)
 {
     // To make SetForegroundWindow work as we want, we need to fiddle
@@ -200,11 +196,6 @@ int _glfwPlatformInit(void)
     return GL_TRUE;
 }
 
-
-//========================================================================
-// Close window and shut down library
-//========================================================================
-
 void _glfwPlatformTerminate(void)
 {
     // Restore the original gamma ramp
@@ -228,11 +219,6 @@ void _glfwPlatformTerminate(void)
                          UIntToPtr(_glfw.win32.foregroundLockTimeout),
                          SPIF_SENDCHANGE);
 }
-
-
-//========================================================================
-// Get the GLFW version string
-//========================================================================
 
 const char* _glfwPlatformGetVersionString(void)
 {

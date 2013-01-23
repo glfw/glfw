@@ -77,10 +77,6 @@ static void changeToResourcesDirectory(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Initialize the GLFW library
-//========================================================================
-
 int _glfwPlatformInit(void)
 {
     _glfw.ns.autoreleasePool = [[NSAutoreleasePool alloc] init];
@@ -119,11 +115,6 @@ int _glfwPlatformInit(void)
     return GL_TRUE;
 }
 
-
-//========================================================================
-// Close window, if open, and shut down GLFW
-//========================================================================
-
 void _glfwPlatformTerminate(void)
 {
     // TODO: Probably other cleanup
@@ -149,11 +140,6 @@ void _glfwPlatformTerminate(void)
 
     _glfwTerminateContextAPI();
 }
-
-
-//========================================================================
-// Get the GLFW version string
-//========================================================================
 
 const char* _glfwPlatformGetVersionString(void)
 {

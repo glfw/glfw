@@ -823,11 +823,6 @@ static void destroyWindow(_GLFWwindow* window)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Here is where the window is created, and the OpenGL rendering context is
-// created
-//========================================================================
-
 int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
                               const _GLFWfbconfig* fbconfig)
@@ -897,11 +892,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     return GL_TRUE;
 }
 
-
-//========================================================================
-// Properly kill the window / video display
-//========================================================================
-
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     destroyWindow(window);
@@ -909,11 +899,6 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     if (window->monitor)
         _glfwRestoreVideoMode(window->monitor);
 }
-
-
-//========================================================================
-// Set the window title
-//========================================================================
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
@@ -929,11 +914,6 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 
     free(wideTitle);
 }
-
-
-//========================================================================
-// Set the window size.
-//========================================================================
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
@@ -969,30 +949,15 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     }
 }
 
-
-//========================================================================
-// Window iconification
-//========================================================================
-
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
     ShowWindow(window->win32.handle, SW_MINIMIZE);
 }
 
-
-//========================================================================
-// Window un-iconification
-//========================================================================
-
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
     ShowWindow(window->win32.handle, SW_RESTORE);
 }
-
-
-//========================================================================
-// Show or hide window
-//========================================================================
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
@@ -1002,20 +967,10 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     SetFocus(window->win32.handle);
 }
 
-
-//========================================================================
-// Show or hide window
-//========================================================================
-
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     ShowWindow(window->win32.handle, SW_HIDE);
 }
-
-
-//========================================================================
-// Poll for new window and input events
-//========================================================================
 
 void _glfwPlatformPollEvents(void)
 {
@@ -1091,22 +1046,12 @@ void _glfwPlatformPollEvents(void)
     }
 }
 
-
-//========================================================================
-// Wait for new window and input events
-//========================================================================
-
 void _glfwPlatformWaitEvents(void)
 {
     WaitMessage();
 
     _glfwPlatformPollEvents();
 }
-
-
-//========================================================================
-// Set physical cursor position
-//========================================================================
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
 {
@@ -1119,11 +1064,6 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
 
     SetCursorPos(pos.x, pos.y);
 }
-
-
-//========================================================================
-// Set physical mouse cursor mode
-//========================================================================
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
@@ -1144,10 +1084,6 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////
-
-//========================================================================
-// Returns the Win32 handle of the specified window
-//========================================================================
 
 GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
 {

@@ -62,10 +62,6 @@ void _glfwInitTimer(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Return timer value in seconds
-//========================================================================
-
 double _glfwPlatformGetTime(void)
 {
     double t;
@@ -81,11 +77,6 @@ double _glfwPlatformGetTime(void)
 
     return t * _glfw.win32.timer.resolution;
 }
-
-
-//========================================================================
-// Set timer value in seconds
-//========================================================================
 
 void _glfwPlatformSetTime(double t)
 {

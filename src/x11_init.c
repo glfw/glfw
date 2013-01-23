@@ -591,10 +591,6 @@ static void terminateDisplay(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Initialize various GLFW state
-//========================================================================
-
 int _glfwPlatformInit(void)
 {
     XInitThreads();
@@ -617,11 +613,6 @@ int _glfwPlatformInit(void)
     return GL_TRUE;
 }
 
-
-//========================================================================
-// Close window and shut down library
-//========================================================================
-
 void _glfwPlatformTerminate(void)
 {
     if (_glfw.x11.cursor)
@@ -641,11 +632,6 @@ void _glfwPlatformTerminate(void)
     if (_glfw.x11.selection.string)
         free(_glfw.x11.selection.string);
 }
-
-
-//========================================================================
-// Get the GLFW version string
-//========================================================================
 
 const char* _glfwPlatformGetVersionString(void)
 {

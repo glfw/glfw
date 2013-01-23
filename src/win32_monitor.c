@@ -102,10 +102,6 @@ void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Return a list of available monitors
-//========================================================================
-
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
     int size = 0, found = 0;
@@ -197,20 +193,10 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     return monitors;
 }
 
-
-//========================================================================
-// Destroy a monitor struct
-//========================================================================
-
 void _glfwPlatformDestroyMonitor(_GLFWmonitor* monitor)
 {
     free(monitor->win32.name);
 }
-
-
-//========================================================================
-// Get a list of available video modes
-//========================================================================
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 {
@@ -285,11 +271,6 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 
     return result;
 }
-
-
-//========================================================================
-// Get the current video mode for the specified monitor
-//========================================================================
 
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {

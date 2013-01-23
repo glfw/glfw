@@ -35,13 +35,9 @@
 #include <ApplicationServices/ApplicationServices.h>
 
 
-//************************************************************************
-//****                  GLFW internal functions                       ****
-//************************************************************************
-
-//========================================================================
-// Save the original gamma ramp so that it can be restored later
-//========================================================================
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 {
@@ -65,11 +61,6 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
         ramp->blue[i] = blue[i] * 65535;
     }
 }
-
-
-//========================================================================
-// Make the specified gamma ramp current
-//========================================================================
 
 void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
 {

@@ -100,10 +100,6 @@ void _glfwTerminateGammaRamp(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Retrieve the currently set gamma ramp
-//========================================================================
-
 void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 {
     // For now, don't support anything that is not GLFW_GAMMA_RAMP_SIZE
@@ -144,11 +140,6 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
                                 ramp->blue);
     }
 }
-
-
-//========================================================================
-// Push the specified gamma ramp to the monitor
-//========================================================================
 
 void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
 {

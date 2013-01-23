@@ -721,11 +721,6 @@ static GLboolean createWindow(_GLFWwindow* window,
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Here is where the window is created, and the OpenGL rendering context is
-// created
-//========================================================================
-
 int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
                               const _GLFWfbconfig* fbconfig)
@@ -793,11 +788,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     return GL_TRUE;
 }
 
-
-//========================================================================
-// Properly kill the window / video display
-//========================================================================
-
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     [window->ns.object orderOut:nil];
@@ -824,50 +814,25 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     // TODO: Probably more cleanup
 }
 
-
-//========================================================================
-// Set the window title
-//========================================================================
-
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)
 {
     [window->ns.object setTitle:[NSString stringWithUTF8String:title]];
 }
-
-
-//========================================================================
-// Set the window size
-//========================================================================
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     [window->ns.object setContentSize:NSMakeSize(width, height)];
 }
 
-
-//========================================================================
-// Iconify the window
-//========================================================================
-
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
     [window->ns.object miniaturize:nil];
 }
 
-
-//========================================================================
-// Restore (un-iconify) the window
-//========================================================================
-
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
     [window->ns.object deminiaturize:nil];
 }
-
-
-//========================================================================
-// Show window
-//========================================================================
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
@@ -875,21 +840,11 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     _glfwInputWindowVisibility(window, GL_TRUE);
 }
 
-
-//========================================================================
-// Hide window
-//========================================================================
-
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     [window->ns.object orderOut:nil];
     _glfwInputWindowVisibility(window, GL_FALSE);
 }
-
-
-//========================================================================
-// Poll for new window and input events
-//========================================================================
 
 void _glfwPlatformPollEvents(void)
 {
@@ -909,11 +864,6 @@ void _glfwPlatformPollEvents(void)
     _glfw.ns.autoreleasePool = [[NSAutoreleasePool alloc] init];
 }
 
-
-//========================================================================
-// Wait for new window and input events
-//========================================================================
-
 void _glfwPlatformWaitEvents(void)
 {
     // I wanted to pass NO to dequeue:, and rely on PollEvents to
@@ -927,11 +877,6 @@ void _glfwPlatformWaitEvents(void)
 
     _glfwPlatformPollEvents();
 }
-
-
-//========================================================================
-// Set physical cursor position
-//========================================================================
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
 {
@@ -952,11 +897,6 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
         CGDisplayMoveCursorToPoint(CGMainDisplayID(), targetPoint);
     }
 }
-
-
-//========================================================================
-// Set physical mouse cursor mode
-//========================================================================
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
@@ -979,10 +919,6 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////
-
-//========================================================================
-// Returns the Cocoa object of the specified window
-//========================================================================
 
 GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
 {

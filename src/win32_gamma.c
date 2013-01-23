@@ -36,19 +36,10 @@
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Retrieve the currently set gamma ramp
-//========================================================================
-
 void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
 {
     GetDeviceGammaRamp(GetDC(GetDesktopWindow()), (WORD*) ramp);
 }
-
-
-//========================================================================
-// Push the specified gamma ramp to the monitor
-//========================================================================
 
 void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
 {

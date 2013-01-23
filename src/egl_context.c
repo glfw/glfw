@@ -402,9 +402,9 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
 }
 
 
-//========================================================================
-// Make the OpenGL context associated with the specified window current
-//========================================================================
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 {
@@ -438,40 +438,20 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     _glfwCurrentWindow = window;
 }
 
-
-//========================================================================
-// Return the window object whose context is current
-//========================================================================
-
 _GLFWwindow* _glfwPlatformGetCurrentContext(void)
 {
     return _glfwCurrentWindow;
 }
-
-
-//========================================================================
-// Swap OpenGL buffers
-//========================================================================
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 {
     eglSwapBuffers(_glfw.egl.display, window->egl.surface);
 }
 
-
-//========================================================================
-// Set double buffering swap interval
-//========================================================================
-
 void _glfwPlatformSwapInterval(int interval)
 {
     eglSwapInterval(_glfw.egl.display, interval);
 }
-
-
-//========================================================================
-// Check if an OpenGL extension is available at runtime
-//========================================================================
 
 int _glfwPlatformExtensionSupported(const char* extension)
 {
@@ -487,11 +467,6 @@ int _glfwPlatformExtensionSupported(const char* extension)
     return GL_FALSE;
 }
 
-
-//========================================================================
-// Get the function pointer to an OpenGL function
-//========================================================================
-
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 {
     return eglGetProcAddress(procname);
@@ -501,10 +476,6 @@ GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////
-
-//========================================================================
-// Return the EGL display
-//========================================================================
 
 GLFWAPI EGLDisplay glfwGetEGLDisplay(void)
 {
@@ -516,11 +487,6 @@ GLFWAPI EGLDisplay glfwGetEGLDisplay(void)
 
     return _glfw.egl.display;
 }
-
-
-//========================================================================
-// Return the WGL context of the specified window
-//========================================================================
 
 GLFWAPI EGLContext glfwGetEGLContext(GLFWwindow* handle)
 {
@@ -534,10 +500,6 @@ GLFWAPI EGLContext glfwGetEGLContext(GLFWwindow* handle)
 
     return window->egl.context;
 }
-
-//========================================================================
-// Return the EGL surface of the specified window
-//========================================================================
 
 GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* handle)
 {

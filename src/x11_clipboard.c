@@ -131,10 +131,6 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Set the clipboard contents
-//========================================================================
-
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
     // Store the new string in preparation for a selection request event
@@ -146,11 +142,6 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
                        _glfw.x11.selection.atom,
                        window->x11.handle, CurrentTime);
 }
-
-
-//========================================================================
-// Return the current clipboard contents
-//========================================================================
 
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {

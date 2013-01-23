@@ -92,10 +92,6 @@ static GLboolean parseGLVersion(int* api, int* major, int* minor, int* rev)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Checks whether the client API part of the window config is sane
-//========================================================================
-
 GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
 {
     if (wndconfig->clientAPI != GLFW_OPENGL_API &&
@@ -210,11 +206,6 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
     return GL_TRUE;
 }
 
-
-//========================================================================
-// Reads back context properties
-//========================================================================
-
 GLboolean _glfwRefreshContextParams(void)
 {
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
@@ -315,11 +306,6 @@ GLboolean _glfwRefreshContextParams(void)
     return GL_TRUE;
 }
 
-
-//========================================================================
-// Checks whether the current context fulfils the specified requirements
-//========================================================================
-
 GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig)
 {
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
@@ -342,13 +328,7 @@ GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig)
     return GL_TRUE;
 }
 
-
-//========================================================================
-// Check if a string can be found in a client API extension string
-//========================================================================
-
-int _glfwStringInExtensionString(const char* string,
-                                 const GLubyte* extensions)
+int _glfwStringInExtensionString(const char* string, const GLubyte* extensions)
 {
     const GLubyte* start;
     GLubyte* where;
@@ -382,10 +362,6 @@ int _glfwStringInExtensionString(const char* string,
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Make the context associated with the specified window current
-//========================================================================
-
 GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -402,11 +378,6 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
     _glfwPlatformMakeContextCurrent(window);
 }
 
-
-//========================================================================
-// Returns the window whose context is current
-//========================================================================
-
 GLFWAPI GLFWwindow* glfwGetCurrentContext(void)
 {
     if (!_glfwInitialized)
@@ -417,11 +388,6 @@ GLFWAPI GLFWwindow* glfwGetCurrentContext(void)
 
     return (GLFWwindow*) _glfwPlatformGetCurrentContext();
 }
-
-
-//========================================================================
-// Swap buffers (double-buffering)
-//========================================================================
 
 GLFWAPI void glfwSwapBuffers(GLFWwindow* handle)
 {
@@ -435,11 +401,6 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow* handle)
 
     _glfwPlatformSwapBuffers(window);
 }
-
-
-//========================================================================
-// Set double buffering swap interval (0 = vsync off)
-//========================================================================
 
 GLFWAPI void glfwSwapInterval(int interval)
 {
@@ -457,11 +418,6 @@ GLFWAPI void glfwSwapInterval(int interval)
 
     _glfwPlatformSwapInterval(interval);
 }
-
-
-//========================================================================
-// Check if a client API extension is available at runtime
-//========================================================================
 
 GLFWAPI int glfwExtensionSupported(const char* extension)
 {
@@ -522,12 +478,6 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
     // Check if extension is in the platform-specific string
     return _glfwPlatformExtensionSupported(extension);
 }
-
-
-//========================================================================
-// Get the function pointer to a client API function
-// This can be used to get access to client API extension functions
-//========================================================================
 
 GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname)
 {

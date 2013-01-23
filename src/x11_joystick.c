@@ -255,10 +255,6 @@ void _glfwTerminateJoysticks(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Determine joystick capabilities
-//========================================================================
-
 int _glfwPlatformGetJoystickParam(int joy, int param)
 {
     pollJoystickEvents();
@@ -284,11 +280,6 @@ int _glfwPlatformGetJoystickParam(int joy, int param)
     return 0;
 }
 
-
-//========================================================================
-// Get joystick axis positions
-//========================================================================
-
 int _glfwPlatformGetJoystickAxes(int joy, float* axes, int numAxes)
 {
     int i;
@@ -306,11 +297,6 @@ int _glfwPlatformGetJoystickAxes(int joy, float* axes, int numAxes)
 
     return numAxes;
 }
-
-
-//========================================================================
-// Get joystick button states
-//========================================================================
 
 int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
                                     int numButtons)
@@ -330,11 +316,6 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
 
     return numButtons;
 }
-
-
-//========================================================================
-// Get joystick name
-//========================================================================
 
 const char* _glfwPlatformGetJoystickName(int joy)
 {

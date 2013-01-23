@@ -37,10 +37,6 @@
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Calculate a gamma ramp from the specified value and set it
-//========================================================================
-
 GLFWAPI void glfwSetGamma(float gamma)
 {
     int i, size = GLFW_GAMMA_RAMP_SIZE;
@@ -82,11 +78,6 @@ GLFWAPI void glfwSetGamma(float gamma)
     glfwSetGammaRamp(&ramp);
 }
 
-
-//========================================================================
-// Return the cached currently set gamma ramp
-//========================================================================
-
 GLFWAPI void glfwGetGammaRamp(GLFWgammaramp* ramp)
 {
     if (!_glfwInitialized)
@@ -97,11 +88,6 @@ GLFWAPI void glfwGetGammaRamp(GLFWgammaramp* ramp)
 
     *ramp = _glfw.currentRamp;
 }
-
-
-//========================================================================
-// Make the specified gamma ramp current
-//========================================================================
 
 GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp)
 {

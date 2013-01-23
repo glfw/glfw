@@ -37,10 +37,6 @@
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Set the clipboard contents
-//========================================================================
-
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
     NSArray* types = [NSArray arrayWithObjects:NSStringPboardType, nil];
@@ -50,11 +46,6 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
     [pasteboard setString:[NSString stringWithUTF8String:string]
                   forType:NSStringPboardType];
 }
-
-
-//========================================================================
-// Return the current clipboard contents
-//========================================================================
 
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {

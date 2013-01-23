@@ -87,12 +87,8 @@ static const char* getErrorString(int error)
 
 
 //////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
+//////                         GLFW event API                       //////
 //////////////////////////////////////////////////////////////////////////
-
-//========================================================================
-// Register error
-//========================================================================
 
 void _glfwInputError(int error, const char* format, ...)
 {
@@ -127,10 +123,6 @@ void _glfwInputError(int error, const char* format, ...)
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Initialize various GLFW state
-//========================================================================
-
 GLFWAPI int glfwInit(void)
 {
     if (_glfwInitialized)
@@ -160,11 +152,6 @@ GLFWAPI int glfwInit(void)
     return GL_TRUE;
 }
 
-
-//========================================================================
-// Close window and shut down library
-//========================================================================
-
 GLFWAPI void glfwTerminate(void)
 {
     if (!_glfwInitialized)
@@ -181,12 +168,6 @@ GLFWAPI void glfwTerminate(void)
     _glfwInitialized = GL_FALSE;
 }
 
-
-//========================================================================
-// Get GLFW version
-// This function may be called without GLFW having been initialized
-//========================================================================
-
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)
 {
     if (major != NULL)
@@ -199,22 +180,10 @@ GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)
         *rev = GLFW_VERSION_REVISION;
 }
 
-
-//========================================================================
-// Get the GLFW version string
-// This function may be called without GLFW having been initialized
-//========================================================================
-
 GLFWAPI const char* glfwGetVersionString(void)
 {
     return _glfwPlatformGetVersionString();
 }
-
-
-//========================================================================
-// Sets the callback function for GLFW errors
-// This function may be called without GLFW having been initialized
-//========================================================================
 
 GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun)
 {

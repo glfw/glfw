@@ -97,10 +97,6 @@ static int refreshVideoModes(_GLFWmonitor* monitor)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Create a monitor struct from the specified information
-//========================================================================
-
 _GLFWmonitor* _glfwCreateMonitor(const char* name,
                                  GLboolean primary,
                                  int widthMM, int heightMM,
@@ -123,11 +119,6 @@ _GLFWmonitor* _glfwCreateMonitor(const char* name,
     return monitor;
 }
 
-
-//========================================================================
-// Destroy the specified monitor
-//========================================================================
-
 void _glfwDestroyMonitor(_GLFWmonitor* monitor)
 {
     if (monitor == NULL)
@@ -139,11 +130,6 @@ void _glfwDestroyMonitor(_GLFWmonitor* monitor)
     free(monitor->name);
     free(monitor);
 }
-
-
-//========================================================================
-// Enumerate monitors and notify user of changes
-//========================================================================
 
 void _glfwInputMonitorChange(void)
 {
@@ -203,11 +189,6 @@ void _glfwInputMonitorChange(void)
     _glfw.monitorCount = monitorCount;
 }
 
-
-//========================================================================
-// Destroy all monitors
-//========================================================================
-
 void _glfwDestroyMonitors(void)
 {
     int i;
@@ -219,11 +200,6 @@ void _glfwDestroyMonitors(void)
     _glfw.monitors = NULL;
     _glfw.monitorCount = 0;
 }
-
-
-//========================================================================
-// Returns the video mode closest to the desired one
-//========================================================================
 
 const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
                                         const GLFWvidmode* desired)
@@ -261,20 +237,10 @@ const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
     return closest;
 }
 
-
-//========================================================================
-// Lexical comparison of GLFW video modes
-//========================================================================
-
 int _glfwCompareVideoModes(const GLFWvidmode* first, const GLFWvidmode* second)
 {
     return compareVideoModes(first, second);
 }
-
-
-//========================================================================
-// Convert BPP to RGB bits based on "best guess"
-//========================================================================
 
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 {
@@ -300,10 +266,6 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Return the currently connected monitors
-//========================================================================
-
 GLFWAPI GLFWmonitor** glfwGetMonitors(int* count)
 {
     if (!_glfwInitialized)
@@ -315,11 +277,6 @@ GLFWAPI GLFWmonitor** glfwGetMonitors(int* count)
     *count = _glfw.monitorCount;
     return (GLFWmonitor**) _glfw.monitors;
 }
-
-
-//========================================================================
-// Get the primary monitor
-//========================================================================
 
 GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void)
 {
@@ -350,11 +307,6 @@ GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void)
     return (GLFWmonitor*) primary;
 }
 
-
-//========================================================================
-// Get monitor parameter
-//========================================================================
-
 GLFWAPI int glfwGetMonitorParam(GLFWmonitor* handle, int param)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
@@ -382,11 +334,6 @@ GLFWAPI int glfwGetMonitorParam(GLFWmonitor* handle, int param)
     return 0;
 }
 
-
-//========================================================================
-// Get monitor string
-//========================================================================
-
 GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
@@ -400,11 +347,6 @@ GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* handle)
     return monitor->name;
 }
 
-
-//========================================================================
-// Set a callback function for monitor events
-//========================================================================
-
 GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 {
     if (!_glfwInitialized)
@@ -415,11 +357,6 @@ GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 
     _glfw.monitorCallback = cbfun;
 }
-
-
-//========================================================================
-// Get a list of available video modes
-//========================================================================
 
 GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)
 {
@@ -437,11 +374,6 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)
     *count = monitor->modeCount;
     return monitor->modes;
 }
-
-
-//========================================================================
-// Get the current video mode for the specified monitor
-//========================================================================
 
 GLFWAPI GLFWvidmode glfwGetVideoMode(GLFWmonitor* handle)
 {

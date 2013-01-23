@@ -39,10 +39,6 @@
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
-// Set the clipboard contents
-//========================================================================
-
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
     WCHAR* wideString;
@@ -88,11 +84,6 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 
     free(wideString);
 }
-
-
-//========================================================================
-// Return the current clipboard contents
-//========================================================================
 
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {

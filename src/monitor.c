@@ -94,42 +94,8 @@ static int refreshVideoModes(_GLFWmonitor* monitor)
 
 
 //////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
+//////                         GLFW event API                       //////
 //////////////////////////////////////////////////////////////////////////
-
-_GLFWmonitor* _glfwCreateMonitor(const char* name,
-                                 GLboolean primary,
-                                 int widthMM, int heightMM,
-                                 int x, int y)
-{
-    _GLFWmonitor* monitor = (_GLFWmonitor*) calloc(1, sizeof(_GLFWmonitor));
-    if (!monitor)
-    {
-        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
-        return NULL;
-    }
-
-    monitor->name = strdup(name);
-    monitor->primary = primary;
-    monitor->widthMM = widthMM;
-    monitor->heightMM = heightMM;
-    monitor->positionX = x;
-    monitor->positionY = y;
-
-    return monitor;
-}
-
-void _glfwDestroyMonitor(_GLFWmonitor* monitor)
-{
-    if (monitor == NULL)
-        return;
-
-    _glfwPlatformDestroyMonitor(monitor);
-
-    free(monitor->modes);
-    free(monitor->name);
-    free(monitor);
-}
 
 void _glfwInputMonitorChange(void)
 {
@@ -187,6 +153,45 @@ void _glfwInputMonitorChange(void)
 
     _glfw.monitors = monitors;
     _glfw.monitorCount = monitorCount;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+_GLFWmonitor* _glfwCreateMonitor(const char* name,
+                                 GLboolean primary,
+                                 int widthMM, int heightMM,
+                                 int x, int y)
+{
+    _GLFWmonitor* monitor = (_GLFWmonitor*) calloc(1, sizeof(_GLFWmonitor));
+    if (!monitor)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
+        return NULL;
+    }
+
+    monitor->name = strdup(name);
+    monitor->primary = primary;
+    monitor->widthMM = widthMM;
+    monitor->heightMM = heightMM;
+    monitor->positionX = x;
+    monitor->positionY = y;
+
+    return monitor;
+}
+
+void _glfwDestroyMonitor(_GLFWmonitor* monitor)
+{
+    if (monitor == NULL)
+        return;
+
+    _glfwPlatformDestroyMonitor(monitor);
+
+    free(monitor->modes);
+    free(monitor->name);
+    free(monitor);
 }
 
 void _glfwDestroyMonitors(void)

@@ -633,7 +633,7 @@ typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
  *  @param[in] window The window that received the event.
  *  @param[in] button The @link buttons mouse button @endlink that was pressed
  *  or released.
- *  @param[in] action One of @ref GLFW_PRESS or @ref GLFW_RELEASE.
+ *  @param[in] action One of @c GLFW_PRESS or @c GLFW_RELEASE.
  *  @ingroup input
  *
  *  @sa glfwSetMouseButtonCallback
@@ -674,7 +674,7 @@ typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
  *  @param[in] window The window that received the event.
  *  @param[in] key The @link keys keyboard key @endlink that was pressed or
  *  released.
- *  @param[in] action One of @ref GLFW_PRESS or @ref GLFW_RELEASE.
+ *  @param[in] action One of @c GLFW_PRESS or @c GLFW_RELEASE.
  *  @ingroup input
  *
  *  @sa glfwSetKeyCallback
@@ -692,7 +692,7 @@ typedef void (* GLFWcharfun)(GLFWwindow*,int);
 
 /*! @brief The function signature for monitor configuration callbacks.
  *  @param[in] monitor The monitor that was connected or disconnected.
- *  @param[in] event One of @ref GLFW_CONNECTED or @ref GLFW_DISCONNECTED.
+ *  @param[in] event One of @c GLFW_CONNECTED or @c GLFW_DISCONNECTED.
  *  @ingroup monitor
  *
  *  @sa glfwSetMonitorCallback
@@ -907,21 +907,21 @@ GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
 
 /*! @brief Resets all window hints to their default values
  *
- *  The @ref GLFW_RED_BITS, @ref GLFW_GREEN_BITS, @ref GLFW_BLUE_BITS, @ref
- *  GLFW_ALPHA_BITS and @ref GLFW_STENCIL_BITS hints are set to 8.
+ *  The @c GLFW_RED_BITS, @c GLFW_GREEN_BITS, @c GLFW_BLUE_BITS, @c
+ *  GLFW_ALPHA_BITS and @c GLFW_STENCIL_BITS hints are set to 8.
  *
- *  The @ref GLFW_DEPTH_BITS hint is set to 24.
+ *  The @c GLFW_DEPTH_BITS hint is set to 24.
  *
- *  The @ref GLFW_VISIBLE and @ref GLFW_RESIZABLE hints are set to 1.
+ *  The @c GLFW_VISIBLE and @c GLFW_RESIZABLE hints are set to 1.
  *
- *  The @ref GLFW_CLIENT_API hint is set to @ref GLFW_OPENGL_API.
+ *  The @c GLFW_CLIENT_API hint is set to @c GLFW_OPENGL_API.
  *
- *  The @ref GLFW_CONTEXT_VERSION_MAJOR and @ref GLFW_CONTEXT_VERSION_MINOR
+ *  The @c GLFW_CONTEXT_VERSION_MAJOR and @c GLFW_CONTEXT_VERSION_MINOR
  *  hints are set to 1 and 0, respectively.
  *
- *  The @ref GLFW_CONTEXT_ROBUSTNESS hint is set to @ref GLFW_NO_ROBUSTNESS.
+ *  The @c GLFW_CONTEXT_ROBUSTNESS hint is set to @c GLFW_NO_ROBUSTNESS.
  *
- *  The @ref GLFW_OPENGL_PROFILE hint is set to @ref GLFW_OPENGL_NO_PROFILE.
+ *  The @c GLFW_OPENGL_PROFILE hint is set to @c GLFW_OPENGL_NO_PROFILE.
  *
  *  All other hints are set to 0.
  *
@@ -953,47 +953,45 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  @ref glfwGetWindowParam function.
  *
  *  The following hints are hard constraints:
- *  @arg @ref GLFW_STEREO
- *  @arg @ref GLFW_CLIENT_API
+ *  @arg @c GLFW_STEREO
+ *  @arg @c GLFW_CLIENT_API
  *
  *  The following additional hints are hard constraints if requesting an OpenGL
  *  context:
- *  @arg @ref GLFW_OPENGL_FORWARD_COMPAT
- *  @arg @ref GLFW_OPENGL_PROFILE
+ *  @arg @c GLFW_OPENGL_FORWARD_COMPAT
+ *  @arg @c GLFW_OPENGL_PROFILE
  *
  *  Hints that do not apply to a given type of window or context are ignored.
  *
  *  @par Framebuffer hints
  *
- *  The @ref GLFW_RED_BITS, @ref GLFW_GREEN_BITS, @ref GLFW_BLUE_BITS, @ref
- *  GLFW_ALPHA_BITS, @ref GLFW_DEPTH_BITS and @ref GLFW_STENCIL_BITS hints
- *  specify the desired bit depths of the various components of the default
- *  framebuffer.
+ *  The @c GLFW_RED_BITS, @c GLFW_GREEN_BITS, @c GLFW_BLUE_BITS, @c
+ *  GLFW_ALPHA_BITS, @c GLFW_DEPTH_BITS and @c GLFW_STENCIL_BITS hints specify
+ *  the desired bit depths of the various components of the default framebuffer.
  *
- *  The @ref GLFW_ACCUM_RED_BITS, @ref GLFW_ACCUM_GREEN_BITS, @ref
- *  GLFW_ACCUM_BLUE_BITS and @ref GLFW_ACCUM_ALPHA_BITS hints specify the
- *  desired bit depths of the various components of the accumulation buffer.
+ *  The @c GLFW_ACCUM_RED_BITS, @c GLFW_ACCUM_GREEN_BITS, @c
+ *  GLFW_ACCUM_BLUE_BITS and @c GLFW_ACCUM_ALPHA_BITS hints specify the desired
+ *  bit depths of the various components of the accumulation buffer.
  *
- *  The @ref GLFW_AUX_BUFFERS hint specifies the desired number of auxiliary
+ *  The @c GLFW_AUX_BUFFERS hint specifies the desired number of auxiliary
  *  buffers.
  *
- *  The @ref GLFW_STEREO hint specifies whether to use stereoscopic rendering.
+ *  The @c GLFW_STEREO hint specifies whether to use stereoscopic rendering.
  *
- *  The @ref GLFW_SAMPLES hint specifies the desired number of samples to use
+ *  The @c GLFW_SAMPLES hint specifies the desired number of samples to use
  *  for multisampling.
  *
- *  The @ref GLFW_SRGB_CAPABLE hint specifies whether the framebuffer should be
+ *  The @c GLFW_SRGB_CAPABLE hint specifies whether the framebuffer should be
  *  sRGB capable.
  *
  *  @par Context hints
  *
- *  The @ref GLFW_CLIENT_API hint specifies which client API to create the
- *  context for.  Possible values are @ref GLFW_OPENGL_API and @ref
- *  GLFW_OPENGL_ES_API.
+ *  The @c GLFW_CLIENT_API hint specifies which client API to create the context
+ *  for.  Possible values are @c GLFW_OPENGL_API and @c GLFW_OPENGL_ES_API.
  *
- *  The @ref GLFW_CONTEXT_VERSION_MAJOR and @ref GLFW_CONTEXT_VERSION_MINOR
- *  hints specify the client API version that the created context must be
- *  compatible with.
+ *  The @c GLFW_CONTEXT_VERSION_MAJOR and @c GLFW_CONTEXT_VERSION_MINOR hints
+ *  specify the client API version that the created context must be compatible
+ *  with.
  *
  *  For OpenGL, these hints are @em not hard constraints, as they don't have to
  *  match exactly, but @ref glfwCreateWindow will still fail if the resulting
@@ -1004,36 +1002,36 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  For OpenGL ES, these hints are hard constraints, as there is no backward
  *  compatibility between OpenGL ES versions.
  *
- *  If an OpenGL context is requested, the @ref GLFW_OPENGL_FORWARD_COMPAT hint
+ *  If an OpenGL context is requested, the @c GLFW_OPENGL_FORWARD_COMPAT hint
  *  specifies whether the OpenGL context should be forward-compatible, i.e. one
  *  where all functionality deprecated in the requested version of OpenGL is
  *  removed.  This may only be used if the requested OpenGL version is 3.0 or
  *  above.  If another client API is requested, this hint is ignored.
  *
- *  If an OpenGL context is requested, the @ref GLFW_OPENGL_DEBUG_CONTEXT hint
+ *  If an OpenGL context is requested, the @c GLFW_OPENGL_DEBUG_CONTEXT hint
  *  specifies whether to create a debug OpenGL context, which may have
  *  additional error and performance issue reporting functionality.  If another
  *  client API is requested, this hint is ignored.
  *
- *  If an OpenGL context is requested, the @ref GLFW_OPENGL_PROFILE hint
+ *  If an OpenGL context is requested, the @c GLFW_OPENGL_PROFILE hint
  *  specifies which OpenGL profile to create the context for.  Possible values
- *  are one of @ref GLFW_OPENGL_CORE_PROFILE or @ref GLFW_OPENGL_COMPAT_PROFILE,
- *  or @ref GLFW_OPENGL_NO_PROFILE to not request a specific profile.  If
- *  requesting an OpenGL version below 3.2, @ref GLFW_OPENGL_NO_PROFILE must be
+ *  are one of @c GLFW_OPENGL_CORE_PROFILE or @c GLFW_OPENGL_COMPAT_PROFILE,
+ *  or @c GLFW_OPENGL_NO_PROFILE to not request a specific profile.  If
+ *  requesting an OpenGL version below 3.2, @c GLFW_OPENGL_NO_PROFILE must be
  *  used.  If another client API is requested, this hint is ignored.
  *
- *  The @ref GLFW_CONTEXT_ROBUSTNESS hint specifies the robustness strategy to
- *  be used by the context.  This can be one of @ref GLFW_NO_RESET_NOTIFICATION
- *  or @ref GLFW_LOSE_CONTEXT_ON_RESET, or @ref GLFW_NO_ROBUSTNESS to not
+ *  The @c GLFW_CONTEXT_ROBUSTNESS hint specifies the robustness strategy to
+ *  be used by the context.  This can be one of @c GLFW_NO_RESET_NOTIFICATION
+ *  or @c GLFW_LOSE_CONTEXT_ON_RESET, or @c GLFW_NO_ROBUSTNESS to not
  *  request a robustness strategy.
  *
  *  @par Window hints
  *
- *  The @ref GLFW_RESIZABLE hint specifies whether the window will be resizable
+ *  The @c GLFW_RESIZABLE hint specifies whether the window will be resizable
  *  by the user.  The window will still be resizable using the @ref
  *  glfwSetWindowSize function.  This hint is ignored for fullscreen windows.
  *
- *  The @ref GLFW_VISIBLE hint specifies whether the window will be initially
+ *  The @c GLFW_VISIBLE hint specifies whether the window will be initially
  *  visible.  This hint is ignored for fullscreen windows.
  *
  *  @note This function may only be called from the main thread.
@@ -1063,9 +1061,9 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  can use the newly created context, you need to make it current using @ref
  *  glfwMakeContextCurrent.
  *
- *  @remarks For fullscreen windows the initial cursor mode is @ref
+ *  @remarks For fullscreen windows the initial cursor mode is @c
  *  GLFW_CURSOR_CAPTURED and the screensaver is prohibited from starting.  For
- *  regular windows the initial cursor mode is @ref GLFW_CURSOR_NORMAL and the
+ *  regular windows the initial cursor mode is @c GLFW_CURSOR_NORMAL and the
  *  screensaver is allowed to start.
  *
  *  @remarks In order to determine the actual properties of an opened window,
@@ -1138,7 +1136,7 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
  *  the client area of the window.
  *
  *  @remarks  If you wish to set an initial window position you should create
- *  a hidden window (using @ref glfwWindowHint and @ref GLFW_VISIBLE), set its
+ *  a hidden window (using @ref glfwWindowHint and @c GLFW_VISIBLE), set its
  *  position and then show it.
  *
  *  @note It is very rarely a good idea to move an already visible window, as it
@@ -1251,43 +1249,43 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *
  *  @par Window properties
  *
- *  The @ref GLFW_FOCUSED property indicates whether the window is focused.
+ *  The @c GLFW_FOCUSED property indicates whether the window is focused.
  *
- *  The @ref GLFW_ICONIFIED property indicates whether the window is iconified.
+ *  The @c GLFW_ICONIFIED property indicates whether the window is iconified.
  *
- *  The @ref GLFW_VISIBLE property indicates whether the window is visible.
+ *  The @c GLFW_VISIBLE property indicates whether the window is visible.
  *
- *  The @ref GLFW_RESIZABLE property indicates whether the window is resizable
+ *  The @c GLFW_RESIZABLE property indicates whether the window is resizable
  *  by the user.
  *
- *  The @ref GLFW_SHOULD_CLOSE property indicates whether the window has been
+ *  The @c GLFW_SHOULD_CLOSE property indicates whether the window has been
  *  requested by the user to close.
  *
  *  @par Context properties
  *
- *  The @ref GLFW_CLIENT_API property indicates the client API provided by the
- *  window's context; either @ref GLFW_OPENGL_API or @ref GLFW_OPENGL_ES_API.
+ *  The @c GLFW_CLIENT_API property indicates the client API provided by the
+ *  window's context; either @c GLFW_OPENGL_API or @c GLFW_OPENGL_ES_API.
  *
- *  The @ref GLFW_CONTEXT_VERSION_MAJOR, @ref GLFW_CONTEXT_VERSION_MINOR and
- *  @ref GLFW_CONTEXT_REVISION properties indicate the client API version of the
+ *  The @c GLFW_CONTEXT_VERSION_MAJOR, @c GLFW_CONTEXT_VERSION_MINOR and @c
+ *  GLFW_CONTEXT_REVISION properties indicate the client API version of the
  *  window's context.
  *
- *  The @ref GLFW_OPENGL_FORWARD_COMPAT property is @c GL_TRUE if the window's
+ *  The @c GLFW_OPENGL_FORWARD_COMPAT property is @c GL_TRUE if the window's
  *  context is an OpenGL forward-compatible one, or @c GL_FALSE otherwise.
  *
- *  The @ref GLFW_OPENGL_DEBUG_CONTEXT property is @c GL_TRUE if the window's
+ *  The @c GLFW_OPENGL_DEBUG_CONTEXT property is @c GL_TRUE if the window's
  *  context is an OpenGL debug context, or @c GL_FALSE otherwise.
  *
- *  The @ref GLFW_OPENGL_PROFILE property indicates the OpenGL profile used by
- *  the context.  This is @ref GLFW_OPENGL_CORE_PROFILE or @ref
- *  GLFW_OPENGL_COMPAT_PROFILE if the context uses a known profile, or @ref
+ *  The @c GLFW_OPENGL_PROFILE property indicates the OpenGL profile used by the
+ *  context.  This is @c GLFW_OPENGL_CORE_PROFILE or @c
+ *  GLFW_OPENGL_COMPAT_PROFILE if the context uses a known profile, or @c
  *  GLFW_OPENGL_NO_PROFILE if the OpenGL profile is unknown or the context is
  *  for another client API.
  *
- *  The @ref GLFW_CONTEXT_ROBUSTNESS property indicates the robustness strategy
- *  used by the context.  This is @ref GLFW_LOSE_CONTEXT_ON_RESET or @ref
+ *  The @c GLFW_CONTEXT_ROBUSTNESS property indicates the robustness strategy
+ *  used by the context.  This is @c GLFW_LOSE_CONTEXT_ON_RESET or @c
  *  GLFW_NO_RESET_NOTIFICATION if the window's context supports robustness, or
- *  @ref GLFW_NO_ROBUSTNESS otherwise.
+ *  @c GLFW_NO_ROBUSTNESS otherwise.
  */
 GLFWAPI int glfwGetWindowParam(GLFWwindow* window, int param);
 
@@ -1336,7 +1334,7 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwindowsizefun cbf
  *  clicks the window's close widget.  Calling @ref glfwDestroyWindow does not
  *  cause this callback to be called.
  *
- *  The return value of the close callback becomes the new value of the @ref
+ *  The return value of the close callback becomes the new value of the @c
  *  GLFW_SHOULD_CLOSE window parameter.
  *
  *  @remarks <b>Mac OS X:</b> Selecting Quit from the application menu will
@@ -1401,9 +1399,9 @@ GLFWAPI void glfwWaitEvents(void);
 /*! @brief Returns the value of an input option for the specified window.
  *  @param[in] window The window to query.
  *  @param[in] mode One of the following:
- *  @arg @ref GLFW_CURSOR_MODE Sets the cursor mode.
- *  @arg @ref GLFW_STICKY_KEYS Sets whether sticky keys are enabled.
- *  @arg @ref GLFW_STICKY_MOUSE_BUTTONS Sets whether sticky mouse buttons are enabled.
+ *  @arg @c GLFW_CURSOR_MODE Sets the cursor mode.
+ *  @arg @c GLFW_STICKY_KEYS Sets whether sticky keys are enabled.
+ *  @arg @c GLFW_STICKY_MOUSE_BUTTONS Sets whether sticky mouse buttons are enabled.
  *  @ingroup input
  *
  *  @sa glfwSetInputMode
@@ -1412,7 +1410,7 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
 
 /*! @brief Sets an input option for the specified window.
  *  @param[in] window The window whose input mode to set.
- *  @param[in] mode One of @ref GLFW_CURSOR_MODE, @ref GLFW_STICKY_KEYS or @ref
+ *  @param[in] mode One of @c GLFW_CURSOR_MODE, @c GLFW_STICKY_KEYS or @c
  *  GLFW_STICKY_MOUSE_BUTTONS.
  *  @param[in] value The new value of the specified input mode.
  *  @ingroup input
@@ -1425,7 +1423,7 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* window, int mode, int value);
  *  window.
  *  @param[in] window The desired window.
  *  @param[in] key The desired @link keys keyboard key @endlink.
- *  @return One of @ref GLFW_PRESS or @ref GLFW_RELEASE.
+ *  @return One of @c GLFW_PRESS or @c GLFW_RELEASE.
  *  @ingroup input
  */
 GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
@@ -1434,7 +1432,7 @@ GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
  *  window.
  *  @param[in] window The desired window.
  *  @param[in] button The desired @link buttons mouse buttons @endlink.
- *  @return One of @ref GLFW_PRESS or @ref GLFW_RELEASE.
+ *  @return One of @c GLFW_PRESS or @c GLFW_RELEASE.
  *  @ingroup input
  */
 GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);

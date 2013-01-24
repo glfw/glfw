@@ -34,7 +34,7 @@
 // Change to our application bundle's resources directory, if present
 //========================================================================
 
-#if defined(_GLFW_CD_RESOURCES)
+#if defined(_GLFW_USE_CHDIR)
 
 static void changeToResourcesDirectory(void)
 {
@@ -70,7 +70,7 @@ static void changeToResourcesDirectory(void)
     chdir(resourcesPath);
 }
 
-#endif /* _GLFW_CD_RESOURCES */
+#endif /* _GLFW_USE_CHDIR */
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -94,7 +94,7 @@ int _glfwPlatformInit(void)
         return GL_FALSE;
     }
 
-#if defined(_GLFW_CD_RESOURCES)
+#if defined(_GLFW_USE_CHDIR)
     changeToResourcesDirectory();
 #endif
 

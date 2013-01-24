@@ -15,7 +15,8 @@ option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 if (APPLE)
-    option(GLFW_CD_RESOURCES "Make glfwInit chdir to Contents/Resources" ON)
+    option(GLFW_USE_CHDIR "Make glfwInit chdir to Contents/Resources" ON)
+    option(GLFW_USE_MENUBAR "Populate the menu bar on first window creation" ON)
 else()
     option(GLFW_USE_EGL "Use EGL for context creation" OFF)
 endif()
@@ -288,8 +289,12 @@ if (_GLFW_COCOA AND _GLFW_NSGL)
         
     option(GLFW_BUILD_UNIVERSAL "Build GLFW as a Universal Binary" OFF)
 
-    if (GLFW_CD_RESOURCES)
-        set(_GLFW_CD_RESOURCES 1)
+    if (GLFW_USE_MENUBAR)
+        set(_GLFW_USE_MENUBAR 1)
+    endif()
+
+    if (GLFW_USE_CHDIR)
+        set(_GLFW_USE_CHDIR 1)
     endif()
 
     # Universal build

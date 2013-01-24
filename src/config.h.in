@@ -65,7 +65,7 @@
 #cmakedefine _GLFW_HAS_GLXGETPROCADDRESSEXT
 
 // Define this to 1 if glfwInit should change the current directory
-#cmakedefine _GLFW_CD_RESOURCES
+#cmakedefine _GLFW_USE_CHDIR
 
 // Define this to 1 if using OpenGL as the client library
 #cmakedefine _GLFW_USE_OPENGL

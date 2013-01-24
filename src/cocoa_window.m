@@ -581,6 +581,8 @@ static NSString* findAppName(void)
 // doesn't seem like a good thing to require of GLFW's clients.
 //========================================================================
 
+#if defined(_GLFW_USE_MENUBAR)
+
 static void createMenuBar(void)
 {
     NSString* appName = findAppName();
@@ -640,6 +642,8 @@ static void createMenuBar(void)
     [NSApp performSelector:@selector(setAppleMenu:) withObject:appMenu];
 }
 
+#endif /* _GLFW_USE_MENUBAR */
+
 
 //========================================================================
 // Initialize the Cocoa Application Kit
@@ -653,10 +657,12 @@ static GLboolean initializeAppKit(void)
     // Implicitly create shared NSApplication instance
     [GLFWApplication sharedApplication];
 
+#if defined(_GLFW_USE_MENUBAR)
     // Menu bar setup must go between sharedApplication above and
     // finishLaunching below, in order to properly emulate the behavior
     // of NSApplicationMain
     createMenuBar();
+#endif
 
     [NSApp finishLaunching];
 

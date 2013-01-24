@@ -539,11 +539,6 @@ extern "C" {
 
 #define GLFW_GAMMA_RAMP_SIZE        256
 
-#define GLFW_MONITOR_WIDTH_MM       0x00060001
-#define GLFW_MONITOR_HEIGHT_MM      0x00060002
-/* reuse GLFW_POSITION_X */
-/* reuse GLFW_POSITION_Y */
-
 #define GLFW_CONNECTED              0x00061000
 #define GLFW_DISCONNECTED           0x00061001
 
@@ -841,23 +836,21 @@ GLFWAPI GLFWmonitor** glfwGetMonitors(int* count);
  */
 GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void);
 
-/*! @brief Returns a property of the specified monitor.
+/*! @brief Returns the position of the monitor's viewport on the virtual screen.
  *  @param[in] monitor The monitor to query.
- *  @param[in] param The property whose value to return.
- *  @return The value of the property, or zero if an error occurred.
+ *  @param[out] xpos The monitor x-coordinate.
+ *  @param[out] ypos The monitor y-coordinate.
  *  @ingroup monitor
- *
- *  @par Monitor properties
- *
- *  The @ref GLFW_MONITOR_WIDTH_MM and @ref GLFW_MONITOR_HEIGHT_MM properties
- *  indicate the physical with, in mm, of the monitor.
- *
- *  The @ref GLFW_POSITION_X and @ref GLFW_POSITION_Y properties indiciate the
- *  position, in virtual screen coordinates, of the monitor's viewport.
- *
- *  @sa glfwGetVideoMode, glfwGetVideoModes, glfwGetMonitorName
  */
-GLFWAPI int glfwGetMonitorParam(GLFWmonitor* monitor, int param);
+GLFWAPI void glfwGetMonitorPos(GLFWmonitor* monitor, int* xpos, int* ypos);
+
+/*! @brief Returns the physical size of the monitor.
+ *  @param[in] monitor The monitor to query.
+ *  @param[out] width The width, in mm, of the monitor's display
+ *  @param[out] height The height, in mm, of the monitor's display.
+ *  @ingroup monitor
+ */
+GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* monitor, int* width, int* height);
 
 /*! @brief Returns the name of the specified monitor.
  *  @param[in] monitor The monitor to query.

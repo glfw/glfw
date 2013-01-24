@@ -226,8 +226,8 @@ GLFW.
    handle
  * Added `glfwGetMonitors` and `glfwGetPrimaryMonitor` for enumerating available
    monitors
- * Added `glfwGetMonitorParam` and `glfwGetMonitorName` for retrieving monitor
-   properties
+ * Added `glfwGetMonitorPos`, `glfwGetMonitorPhysicalSize` and
+   `glfwGetMonitorName` for retrieving monitor properties
  * Added `glfwSetMonitorCallback` and `GLFWmonitorfun` for notification of
    changes in the set of available monitors
  * Added `GLFWwindow` and updated window-related functions and callbacks to take

@@ -344,17 +344,19 @@ void monitor_callback(GLFWmonitor* monitor, int event)
 {
     if (event == GLFW_CONNECTED)
     {
+        int x, y, widthMM, heightMM;
         GLFWvidmode mode = glfwGetVideoMode(monitor);
+
+        glfwGetMonitorPos(monitor, &x, &y);
+        glfwGetMonitorPhysicalSize(monitor, &widthMM, &heightMM);
 
         printf("%08x at %0.3f: Monitor %s (%ix%i at %ix%i, %ix%i mm) was connected\n",
                counter++,
                glfwGetTime(),
                glfwGetMonitorName(monitor),
                mode.width, mode.height,
-               glfwGetMonitorParam(monitor, GLFW_POSITION_X),
-               glfwGetMonitorParam(monitor, GLFW_POSITION_Y),
-               glfwGetMonitorParam(monitor, GLFW_MONITOR_WIDTH_MM),
-               glfwGetMonitorParam(monitor, GLFW_MONITOR_HEIGHT_MM));
+               x, y,
+               widthMM, heightMM);
     }
     else
     {

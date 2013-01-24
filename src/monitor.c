@@ -312,31 +312,36 @@ GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void)
     return (GLFWmonitor*) primary;
 }
 
-GLFWAPI int glfwGetMonitorParam(GLFWmonitor* handle, int param)
+GLFWAPI void glfwGetMonitorPos(GLFWmonitor* handle, int* xpos, int* ypos)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
 
     if (!_glfwInitialized)
     {
         _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return 0;
+        return;
     }
 
-    switch (param)
+    if (xpos)
+        *xpos = monitor->positionX;
+    if (ypos)
+        *ypos = monitor->positionY;
+}
+
+GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* handle, int* width, int* height)
+{
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+
+    if (!_glfwInitialized)
     {
-        case GLFW_MONITOR_WIDTH_MM:
-            return monitor->widthMM;
-        case GLFW_MONITOR_HEIGHT_MM:
-            return monitor->heightMM;
-        case GLFW_POSITION_X:
-            return monitor->positionX;
-        case GLFW_POSITION_Y:
-            return monitor->positionY;
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
+        return;
     }
 
-    _glfwInputError(GLFW_INVALID_ENUM,
-                    "glfwGetMonitorParam: Invalid enum value for 'param' parameter");
-    return 0;
+    if (width)
+        *width = monitor->widthMM;
+    if (height)
+        *height = monitor->heightMM;
 }
 
 GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* handle)

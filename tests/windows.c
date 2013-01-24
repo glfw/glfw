@@ -56,10 +56,10 @@ int main(void)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
+    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+
     for (i = 0;  i < 4;  i++)
     {
-        glfwWindowHint(GLFW_POSITION_X, 100 + (i & 1) * 300);
-        glfwWindowHint(GLFW_POSITION_Y, 100 + (i >> 1) * 300);
         windows[i] = glfwCreateWindow(200, 200, titles[i], NULL, NULL);
         if (!windows[i])
         {
@@ -72,6 +72,9 @@ int main(void)
                      (GLclampf) (i >> 1),
                      i ? 0.f : 1.f,
                      0.f);
+
+        glfwSetWindowPos(windows[i], 100 + (i & 1) * 300, 100 + (i >> 1) * 300);
+        glfwShowWindow(windows[i]);
     }
 
     while (running)

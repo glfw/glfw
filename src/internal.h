@@ -144,8 +144,6 @@ struct _GLFWhints
     GLboolean   glDebug;
     int         glProfile;
     int         glRobustness;
-    int         positionX;
-    int         positionY;
 };
 
 
@@ -162,8 +160,6 @@ struct _GLFWwndconfig
     const char*   title;
     GLboolean     resizable;
     GLboolean     visible;
-    int           positionX;
-    int           positionY;
     int           clientAPI;
     int           glMajor;
     int           glMinor;
@@ -207,7 +203,6 @@ struct _GLFWwindow
     struct _GLFWwindow* next;
 
     // Window settings and state
-    int                 positionX, positionY;
     GLboolean           iconified;
     GLboolean           resizable;
     GLboolean           visible;
@@ -458,6 +453,14 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window);
 /*! @ingroup platform
  */
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title);
+
+/*! @ingroup platform
+ */
+void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos);
+
+/*! @ingroup platform
+ */
+void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos);
 
 /*! @ingroup platform
  */

@@ -120,7 +120,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 
         window->x11.handle = XCreateWindow(_glfw.x11.display,
                                            _glfw.x11.root,
-                                           wndconfig->positionX, wndconfig->positionY,
+                                           0, 0,
                                            wndconfig->width, wndconfig->height,
                                            0,              // Border width
                                            visual->depth,  // Color depth
@@ -137,12 +137,6 @@ static GLboolean createWindow(_GLFWwindow* window,
             _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Failed to create window");
             return GL_FALSE;
         }
-
-        // Request a window position to be set once the window is shown
-        // (see _glfwPlatformShowWindow)
-        window->x11.windowPosSet = GL_FALSE;
-        window->x11.positionX = wndconfig->positionX;
-        window->x11.positionY = wndconfig->positionY;
     }
 
     if (window->monitor && !_glfw.x11.hasEWMH)
@@ -208,13 +202,6 @@ static GLboolean createWindow(_GLFWwindow* window,
     // Set ICCCM WM_NORMAL_HINTS property (even if no parts are set)
     {
         XSizeHints* hints = XAllocSizeHints();
-        if (!hints)
-        {
-            _glfwInputError(GLFW_OUT_OF_MEMORY,
-                            "X11: Failed to allocate size hints");
-            return GL_FALSE;
-        }
-
         hints->flags = 0;
 
         if (wndconfig->monitor)
@@ -896,6 +883,25 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     }
 }
 
+void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
+{
+    Window child;
+    int x, y;
+
+    XTranslateCoordinates(_glfw.x11.display, window->x11.handle, _glfw.x11.root,
+                          0, 0, &x, &y, &child);
+
+    if (xpos)
+        *xpos = x;
+    if (ypos)
+        *ypos = y;
+}
+
+void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
+{
+    XMoveWindow(_glfw.x11.display, window->x11.handle, xpos, ypos);
+}
+
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 {
     XWindowAttributes attribs;
@@ -967,15 +973,6 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
     XMapRaised(_glfw.x11.display, window->x11.handle);
     XFlush(_glfw.x11.display);
-
-    // Set the window position the first time the window is shown
-    // Note: XMoveWindow has no effect before the window has been mapped.
-    if (!window->x11.windowPosSet)
-    {
-        XMoveWindow(_glfw.x11.display, window->x11.handle,
-                    window->x11.positionX, window->x11.positionY);
-        window->x11.windowPosSet = GL_TRUE;
-    }
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)

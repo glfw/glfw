@@ -232,6 +232,7 @@ GLFW.
    changes in the set of available monitors
  * Added `GLFWwindow` and updated window-related functions and callbacks to take
    a window handle
+ * Added `glfwGetWindowPos` for retrieving the position of a window
  * Added `glfwDefaultWindowHints` for resetting all window hints to their
    default values
  * Added `glfwMakeContextCurrent` for making the context of the specified window
@@ -270,8 +271,6 @@ GLFW.
    `GLES2/gl2.h` instead of `GL/gl.h`
  * Added `GLFW_VISIBLE` window hint and parameter for controlling and polling
    window visibility
- * Added `GLFW_POSITION_X` and `GLFW_POSITION_Y` window hints and parameter for
-   controlling and polling window position
  * Added `windows` simple multi-window test program
  * Added `sharing` simple OpenGL object sharing test program
  * Added `modes` video mode enumeration and setting test program

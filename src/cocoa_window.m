@@ -67,26 +67,18 @@
 {
     [window->nsgl.context update];
 
-    NSRect contentRect =
-        [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
-
-    _glfwInputWindowSize(window, contentRect.size.width, contentRect.size.height);
+    int width, height;
+    _glfwPlatformGetWindowSize(window, &width, &height);
+    _glfwInputWindowSize(window, width, height);
 }
 
 - (void)windowDidMove:(NSNotification *)notification
 {
     [window->nsgl.context update];
 
-    NSRect contentRect =
-        [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
-
-    CGPoint mainScreenOrigin = CGDisplayBounds(CGMainDisplayID()).origin;
-    double mainScreenHeight = CGDisplayBounds(CGMainDisplayID()).size.height;
-    CGPoint flippedPos = CGPointMake(contentRect.origin.x - mainScreenOrigin.x,
-                                      mainScreenHeight - contentRect.origin.y -
-                                          mainScreenOrigin.y - window->height);
-
-    _glfwInputWindowPos(window, flippedPos.x, flippedPos.y);
+    int x, y;
+    _glfwPlatformGetWindowPos(window, &x, &y);
+    _glfwInputWindowPos(window, x, y);
 }
 
 - (void)windowDidMiniaturize:(NSNotification *)notification
@@ -690,11 +682,8 @@ static GLboolean createWindow(_GLFWwindow* window,
             styleMask |= NSResizableWindowMask;
     }
 
-    NSRect contentRect = NSMakeRect(wndconfig->positionX, wndconfig->positionY,
-                                    wndconfig->width, wndconfig->height);
-
     window->ns.object = [[NSWindow alloc]
-        initWithContentRect:contentRect
+        initWithContentRect:NSMakeRect(0, 0, wndconfig->width, wndconfig->height);
                   styleMask:styleMask
                     backing:NSBackingStoreBuffered
                       defer:NO];
@@ -822,9 +811,27 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)
     [window->ns.object setTitle:[NSString stringWithUTF8String:title]];
 }
 
+void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
+{
+    const NSRect contentRect =
+        [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
+
+    if (xpos)
+        *xpos = contentRect.origin.x;
+    if (ypos)
+        *ypos = contentRect.origin.y;
+}
+
+void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
+{
+    const NSRect frameRect =
+        [window->ns.object frameRectForContentRect:NSMakeRect(x, y, 0, 0)];
+    [window->ns.object setFrameOrigin:frameRect.origin];
+}
+
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 {
-    NSRect contentRect =
+    const NSRect contentRect =
         [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
 
     if (width)

@@ -487,8 +487,6 @@ extern "C" {
 #define GLFW_SHOULD_CLOSE           0x00020003
 #define GLFW_RESIZABLE              0x00022007
 #define GLFW_VISIBLE                0x00022008
-#define GLFW_POSITION_X             0x00022009
-#define GLFW_POSITION_Y             0x0002200A
 
 #define GLFW_CONTEXT_REVISION       0x00020004
 #define GLFW_RED_BITS               0x00021000
@@ -1038,9 +1036,6 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  The @ref GLFW_VISIBLE hint specifies whether the window will be initially
  *  visible.  This hint is ignored for fullscreen windows.
  *
- *  The @ref GLFW_POSITION_X and @ref GLFW_POSITION_Y hints specify the initial
- *  position of the window.  These hints are ignored for fullscreen windows.
- *
  *  @note This function may only be called from the main thread.
  *
  *  @sa glfwDefaultWindowHints
@@ -1120,6 +1115,48 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* window);
  *  @note This function may only be called from the main thread.
  */
 GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
+
+/*! @brief Retrieves the position of the client area of the specified window.
+ *  @param[in] window The window to query.
+ *  @param[out] xpos The x-coordinate of the upper-left corner of the client area.
+ *  @param[out] ypos The y-coordinate of the upper-left corner of the client area.
+ *  @ingroup window
+ *
+ *  @remarks Either or both coordinate parameters may be @c NULL.
+ *
+ *  @sa glfwSetWindowPos
+ */
+GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
+
+/*! @brief Sets the position of the client area of the specified window.
+ *  @param[in] window The window to query.
+ *  @param[in] xpos The x-coordinate of the upper-left corner of the client area.
+ *  @param[in] ypos The y-coordinate of the upper-left corner of the client area.
+ *  @ingroup window
+ *
+ *  @remarks The position is the screen coordinate of the upper-left corner of
+ *  the client area of the window.
+ *
+ *  @remarks  If you wish to set an initial window position you should create
+ *  a hidden window (using @ref glfwWindowHint and @ref GLFW_VISIBLE), set its
+ *  position and then show it.
+ *
+ *  @note It is very rarely a good idea to move an already visible window, as it
+ *  will confuse and annoy the user.
+ *
+ *  @note This function may only be called from the main thread.
+ *
+ *  @note The window manager may put limits on what positions are allowed.
+ *
+ *  @bug <b>X11:</b> Some window managers ignore the set position of hidden
+ *  (i.e. unmapped) windows, instead placing them where it thinks is
+ *  appropriate once they are shown.
+ *
+ *  @bug <b>Mac OS X:</b> The screen coordinate system is inverted.
+ *
+ *  @sa glfwGetWindowPos
+ */
+GLFWAPI void glfwSetWindowPos(GLFWwindow* window, int x, int y);
 
 /*! @brief Retrieves the size of the client area of the specified window.
  *  @param[in] window The window whose size to retrieve.
@@ -1225,10 +1262,6 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *
  *  The @ref GLFW_SHOULD_CLOSE property indicates whether the window has been
  *  requested by the user to close.
- *
- *  The @ref GLFW_POSITION_X and @ref GLFW_POSITION_Y properties indicate the
- *  screen position, in pixels, of the upper-left corner of the window's client
- *  area.
  *
  *  @par Context properties
  *

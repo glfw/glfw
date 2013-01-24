@@ -94,12 +94,6 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused)
 
 void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
 {
-    if (window->positionX == x && window->positionY == y)
-        return;
-
-    window->positionX = x;
-    window->positionY = y;
-
     if (window->callbacks.pos)
         window->callbacks.pos((GLFWwindow*) window, x, y);
 }
@@ -189,8 +183,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     wndconfig.title         = title;
     wndconfig.resizable     = _glfw.hints.resizable ? GL_TRUE : GL_FALSE;
     wndconfig.visible       = _glfw.hints.visible ? GL_TRUE : GL_FALSE;
-    wndconfig.positionX     = _glfw.hints.positionX;
-    wndconfig.positionY     = _glfw.hints.positionY;
     wndconfig.clientAPI     = _glfw.hints.clientAPI;
     wndconfig.glMajor       = _glfw.hints.glMajor;
     wndconfig.glMinor       = _glfw.hints.glMinor;
@@ -298,10 +290,6 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.resizable = GL_TRUE;
     _glfw.hints.visible   = GL_TRUE;
 
-    // The default window position is the upper left corner of the screen
-    _glfw.hints.positionX = 0;
-    _glfw.hints.positionY = 0;
-
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil
     _glfw.hints.redBits     = 8;
     _glfw.hints.greenBits   = 8;
@@ -361,12 +349,6 @@ GLFWAPI void glfwWindowHint(int target, int hint)
             break;
         case GLFW_VISIBLE:
             _glfw.hints.visible = hint;
-            break;
-        case GLFW_POSITION_X:
-            _glfw.hints.positionX = hint;
-            break;
-        case GLFW_POSITION_Y:
-            _glfw.hints.positionY = hint;
             break;
         case GLFW_SAMPLES:
             _glfw.hints.samples = hint;
@@ -453,6 +435,39 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* handle, const char* title)
     }
 
     _glfwPlatformSetWindowTitle(window, title);
+}
+
+GLFWAPI void glfwGetWindowPos(GLFWwindow* handle, int* xpos, int* ypos)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    _glfwPlatformGetWindowPos(window, xpos, ypos);
+}
+
+GLFWAPI void glfwSetWindowPos(GLFWwindow* handle, int xpos, int ypos)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (!_glfwInitialized)
+    {
+        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
+        return;
+    }
+
+    if (window->monitor)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE,
+                        "Fullscreen windows cannot be positioned");
+        return;
+    }
+
+    _glfwPlatformSetWindowPos(window, xpos, ypos);
 }
 
 GLFWAPI void glfwGetWindowSize(GLFWwindow* handle, int* width, int* height)
@@ -579,10 +594,6 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow* handle, int param)
             return window->resizable;
         case GLFW_VISIBLE:
             return window->visible;
-        case GLFW_POSITION_X:
-            return window->positionX;
-        case GLFW_POSITION_Y:
-            return window->positionY;
         case GLFW_CLIENT_API:
             return window->clientAPI;
         case GLFW_CONTEXT_VERSION_MAJOR:

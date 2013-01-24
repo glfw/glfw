@@ -90,10 +90,10 @@ int main(void)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
+    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+
     for (i = 0;  i < count;  i++)
     {
-        glfwWindowHint(GLFW_POSITION_X, 200 + 250 * i);
-        glfwWindowHint(GLFW_POSITION_Y, 200);
         threads[i].window = glfwCreateWindow(200, 200,
                                              threads[i].title,
                                              NULL, NULL);
@@ -102,6 +102,9 @@ int main(void)
             glfwTerminate();
             exit(EXIT_FAILURE);
         }
+
+        glfwSetWindowPos(threads[i].window, 200 + 250 * i, 200);
+        glfwShowWindow(threads[i].window);
 
         if (thrd_create(&threads[i].id, thread_main, threads + i) !=
             thrd_success)

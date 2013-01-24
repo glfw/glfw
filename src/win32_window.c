@@ -715,16 +715,22 @@ static int createWindow(_GLFWwindow* window,
                         const _GLFWfbconfig* fbconfig)
 {
     int positionX, positionY, fullWidth, fullHeight;
-    POINT pos;
+    POINT cursorPos;
     WCHAR* wideTitle;
 
-    // Set window styles common to all window modes
     window->win32.dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
     window->win32.dwExStyle = WS_EX_APPWINDOW;
 
-    // Add mode-dependent window styles
     if (window->monitor)
+    {
         window->win32.dwStyle |= WS_POPUP;
+
+        positionX = wndconfig->monitor->positionX;
+        positionY = wndconfig->monitor->positionY;
+
+        fullWidth  = wndconfig->width;
+        fullHeight = wndconfig->height;
+    }
     else
     {
         window->win32.dwStyle |= WS_OVERLAPPED | WS_CAPTION |
@@ -735,28 +741,13 @@ static int createWindow(_GLFWwindow* window,
             window->win32.dwStyle |= WS_MAXIMIZEBOX | WS_SIZEBOX;
             window->win32.dwExStyle |= WS_EX_WINDOWEDGE;
         }
-    }
 
-    // Adjust window size for frame and title bar
-    getFullWindowSize(window,
-                      wndconfig->width, wndconfig->height,
-                      &fullWidth, &fullHeight);
+        positionX = CW_USEDEFAULT;
+        positionY = CW_USEDEFAULT;
 
-    if (window->monitor)
-    {
-        // Fullscreen windows are always opened in the upper left corner
-        // regardless of the desktop working area
-        positionX = wndconfig->monitor->positionX;
-        positionY = wndconfig->monitor->positionY;
-    }
-    else
-    {
-        RECT wa;
-        SystemParametersInfo(SPI_GETWORKAREA, 0, &wa, 0);
-
-        // Adjust window position to working area
-        positionX = wndconfig->positionX + wa.left;
-        positionY = wndconfig->positionY + wa.top;
+        getFullWindowSize(window,
+                        wndconfig->width, wndconfig->height,
+                        &fullWidth, &fullHeight);
     }
 
     wideTitle = _glfwCreateWideStringFromUTF8(wndconfig->title);
@@ -772,10 +763,9 @@ static int createWindow(_GLFWwindow* window,
                                           wideTitle,
                                           window->win32.dwStyle,
                                           positionX, positionY,
-                                          fullWidth,             // Decorated window width
-                                          fullHeight,            // Decorated window height
-                                          NULL,                  // No parent window
-                                          NULL,                  // No menu
+                                          fullWidth, fullHeight,
+                                          NULL, // No parent window
+                                          NULL, // No window menu
                                           GetModuleHandle(NULL),
                                           window);  // Pass GLFW window to WM_CREATE
 
@@ -788,10 +778,10 @@ static int createWindow(_GLFWwindow* window,
     }
 
     // Initialize cursor position data
-    GetCursorPos(&pos);
-    ScreenToClient(window->win32.handle, &pos);
-    window->win32.oldCursorX = window->cursorPosX = pos.x;
-    window->win32.oldCursorY = window->cursorPosY = pos.y;
+    GetCursorPos(&cursorPos);
+    ScreenToClient(window->win32.handle, &cursorPos);
+    window->win32.oldCursorX = window->cursorPosX = cursorPos.x;
+    window->win32.oldCursorY = window->cursorPosY = cursorPos.y;
 
     if (!_glfwCreateContext(window, wndconfig, fbconfig))
         return GL_FALSE;
@@ -915,6 +905,26 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     SetWindowText(window->win32.handle, wideTitle);
 
     free(wideTitle);
+}
+
+void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
+{
+    POINT pos = { 0, 0 };
+    ClientToScreen(window->win32.handle, &pos);
+
+    if (xpos)
+        *xpos = pos.x;
+    if (ypos)
+        *ypos = pos.y;
+}
+
+void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
+{
+    RECT rect = { xpos, ypos, xpos, ypos };
+    AdjustWindowRectEx(&rect, window->win32.dwStyle,
+                       FALSE, window->win32.dwExStyle);
+    SetWindowPos(window->win32.handle, NULL, rect.left, rect.top, 0, 0,
+                 SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
 }
 
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)

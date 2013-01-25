@@ -312,12 +312,6 @@ GLFWAPI GLFWmonitor** glfwGetMonitors(int* count)
         return NULL;
     }
 
-    if (count == NULL)
-    {
-        _glfwInputError(GLFW_INVALID_VALUE, NULL);
-        return NULL;
-    }
-
     *count = _glfw.monitorCount;
     return (GLFWmonitor**) _glfw.monitors;
 }
@@ -371,13 +365,6 @@ GLFWAPI int glfwGetMonitorParam(GLFWmonitor* handle, int param)
         return 0;
     }
 
-    if (monitor == NULL)
-    {
-        _glfwInputError(GLFW_INVALID_VALUE,
-                        "glfwGetMonitorParam: Invalid monitor handle");
-        return 0;
-    }
-
     switch (param)
     {
         case GLFW_MONITOR_WIDTH_MM:
@@ -407,13 +394,6 @@ GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* handle)
     if (!_glfwInitialized)
     {
         _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return NULL;
-    }
-
-    if (monitor == NULL)
-    {
-        _glfwInputError(GLFW_INVALID_VALUE,
-                        "glfwGetMonitorString: Invalid monitor handle");
         return NULL;
     }
 
@@ -448,19 +428,6 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)
     if (!_glfwInitialized)
     {
         _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return NULL;
-    }
-
-    if (monitor == NULL)
-    {
-        _glfwInputError(GLFW_INVALID_VALUE,
-                        "glfwGetVideoModes: Invalid monitor handle");
-        return 0;
-    }
-
-    if (count == NULL)
-    {
-        _glfwInputError(GLFW_INVALID_VALUE, NULL);
         return NULL;
     }
 

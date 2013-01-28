@@ -1086,6 +1086,9 @@ void _glfwPlatformWaitEvents(void)
 
     XFlush(_glfw.x11.display);
 
+    // select(1) is used instead of an X function like XNextEvent, as the
+    // wait inside those are guarded by the mutex protecting the display
+    // struct, locking out other threads from using X (including GLX)
     if (select(fd + 1, &fds, NULL, NULL, NULL) > 0)
         _glfwPlatformPollEvents();
 }

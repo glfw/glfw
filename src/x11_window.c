@@ -471,16 +471,23 @@ static _GLFWwindow* findWindow(Window handle)
 
 static void processEvent(XEvent *event)
 {
-    _GLFWwindow* window;
+    _GLFWwindow* window = NULL;
+
+    if (event->type != GenericEvent)
+    {
+        window = findWindow(event->xany.window);
+        if (window == NULL)
+        {
+            // This is either an event for a destroyed GLFW window or an event
+            // of a type not currently supported by GLFW
+            return;
+        }
+    }
 
     switch (event->type)
     {
         case KeyPress:
         {
-            window = findWindow(event->xkey.window);
-            if (window == NULL)
-                return;
-
             _glfwInputKey(window, translateKey(event->xkey.keycode), GLFW_PRESS);
             _glfwInputChar(window, translateChar(&event->xkey));
             break;
@@ -488,20 +495,12 @@ static void processEvent(XEvent *event)
 
         case KeyRelease:
         {
-            window = findWindow(event->xkey.window);
-            if (window == NULL)
-                return;
-
             _glfwInputKey(window, translateKey(event->xkey.keycode), GLFW_RELEASE);
             break;
         }
 
         case ButtonPress:
         {
-            window = findWindow(event->xbutton.window);
-            if (window == NULL)
-                return;
-
             if (event->xbutton.button == Button1)
                 _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS);
             else if (event->xbutton.button == Button2)
@@ -524,10 +523,6 @@ static void processEvent(XEvent *event)
 
         case ButtonRelease:
         {
-            window = findWindow(event->xbutton.window);
-            if (window == NULL)
-                return;
-
             if (event->xbutton.button == Button1)
             {
                 _glfwInputMouseClick(window,
@@ -551,10 +546,6 @@ static void processEvent(XEvent *event)
 
         case EnterNotify:
         {
-            window = findWindow(event->xcrossing.window);
-            if (window == NULL)
-                return;
-
             if (window->cursorMode == GLFW_CURSOR_HIDDEN)
                 hideCursor(window);
 
@@ -564,10 +555,6 @@ static void processEvent(XEvent *event)
 
         case LeaveNotify:
         {
-            window = findWindow(event->xcrossing.window);
-            if (window == NULL)
-                return;
-
             if (window->cursorMode == GLFW_CURSOR_HIDDEN)
                 showCursor(window);
 
@@ -577,10 +564,6 @@ static void processEvent(XEvent *event)
 
         case MotionNotify:
         {
-            window = findWindow(event->xmotion.window);
-            if (window == NULL)
-                return;
-
             if (event->xmotion.x != window->x11.cursorPosX ||
                 event->xmotion.y != window->x11.cursorPosY)
             {
@@ -614,10 +597,6 @@ static void processEvent(XEvent *event)
 
         case ConfigureNotify:
         {
-            window = findWindow(event->xconfigure.window);
-            if (window == NULL)
-                return;
-
             _glfwInputWindowSize(window,
                                  event->xconfigure.width,
                                  event->xconfigure.height);
@@ -632,9 +611,6 @@ static void processEvent(XEvent *event)
         case ClientMessage:
         {
             // Custom client message, probably from the window manager
-            window = findWindow(event->xclient.window);
-            if (window == NULL)
-                return;
 
             if ((Atom) event->xclient.data.l[0] == _glfw.x11.WM_DELETE_WINDOW)
             {
@@ -662,30 +638,18 @@ static void processEvent(XEvent *event)
 
         case MapNotify:
         {
-            window = findWindow(event->xmap.window);
-            if (window == NULL)
-                return;
-
             _glfwInputWindowVisibility(window, GL_TRUE);
             break;
         }
 
         case UnmapNotify:
         {
-            window = findWindow(event->xmap.window);
-            if (window == NULL)
-                return;
-
             _glfwInputWindowVisibility(window, GL_FALSE);
             break;
         }
 
         case FocusIn:
         {
-            window = findWindow(event->xfocus.window);
-            if (window == NULL)
-                return;
-
             _glfwInputWindowFocus(window, GL_TRUE);
 
             if (window->cursorMode == GLFW_CURSOR_CAPTURED)
@@ -696,10 +660,6 @@ static void processEvent(XEvent *event)
 
         case FocusOut:
         {
-            window = findWindow(event->xfocus.window);
-            if (window == NULL)
-                return;
-
             _glfwInputWindowFocus(window, GL_FALSE);
 
             if (window->cursorMode == GLFW_CURSOR_CAPTURED)
@@ -710,20 +670,12 @@ static void processEvent(XEvent *event)
 
         case Expose:
         {
-            window = findWindow(event->xexpose.window);
-            if (window == NULL)
-                return;
-
             _glfwInputWindowDamage(window);
             break;
         }
 
         case PropertyNotify:
         {
-            window = findWindow(event->xproperty.window);
-            if (window == NULL)
-                return;
-
             if (event->xproperty.atom == _glfw.x11.WM_STATE &&
                 event->xproperty.state == PropertyNewValue)
             {

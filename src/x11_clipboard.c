@@ -88,7 +88,7 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
     if (property == None)
         property = _glfw.x11.selection.property;
 
-    if (request->target == _glfw.x11.selection.targets)
+    if (request->target == _glfw.x11.TARGETS)
     {
         // The list of supported targets was requested
 
@@ -139,7 +139,7 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 
     // Set the specified window as owner of the selection
     XSetSelectionOwner(_glfw.x11.display,
-                       _glfw.x11.selection.atom,
+                       _glfw.x11.CLIPBOARD,
                        window->x11.handle, CurrentTime);
 }
 
@@ -155,7 +155,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
         _glfw.x11.selection.target = _glfw.x11.selection.formats[i];
 
         XConvertSelection(_glfw.x11.display,
-                          _glfw.x11.selection.atom,
+                          _glfw.x11.CLIPBOARD,
                           _glfw.x11.selection.target,
                           _glfw.x11.selection.property,
                           window->x11.handle, CurrentTime);

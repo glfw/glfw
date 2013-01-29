@@ -518,25 +518,27 @@ static GLboolean initDisplay(void)
     // Detect whether an EWMH-conformant window manager is running
     detectEWMH();
 
+    // Find or create string format atoms
+    _glfw.x11.UTF8_STRING =
+        XInternAtom(_glfw.x11.display, "UTF8_STRING", False);
+    _glfw.x11.COMPOUND_STRING =
+        XInternAtom(_glfw.x11.display, "COMPOUND_STRING", False);
+
     // Find or create selection property atom
     _glfw.x11.selection.property =
         XInternAtom(_glfw.x11.display, "GLFW_SELECTION", False);
 
-    // Find or create clipboard atom
-    _glfw.x11.selection.atom =
-        XInternAtom(_glfw.x11.display, "CLIPBOARD", False);
+    // Find or create standard clipboard atoms
+    _glfw.x11.TARGETS = XInternAtom(_glfw.x11.display, "TARGETS", False);
+    _glfw.x11.CLIPBOARD = XInternAtom(_glfw.x11.display, "CLIPBOARD", False);
 
     // Find or create selection target atoms
     _glfw.x11.selection.formats[_GLFW_CLIPBOARD_FORMAT_UTF8] =
-        XInternAtom(_glfw.x11.display, "UTF8_STRING", False);
+        _glfw.x11.UTF8_STRING;
     _glfw.x11.selection.formats[_GLFW_CLIPBOARD_FORMAT_COMPOUND] =
-        XInternAtom(_glfw.x11.display, "COMPOUND_STRING", False);
+        _glfw.x11.COMPOUND_STRING;
     _glfw.x11.selection.formats[_GLFW_CLIPBOARD_FORMAT_STRING] =
         XA_STRING;
-
-    _glfw.x11.selection.targets = XInternAtom(_glfw.x11.display,
-                                              "TARGETS",
-                                              False);
 
     return GL_TRUE;
 }

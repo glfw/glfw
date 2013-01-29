@@ -132,6 +132,12 @@ typedef struct _GLFWlibraryX11
     Atom            NET_WM_STATE_FULLSCREEN;
     Atom            NET_ACTIVE_WINDOW;
 
+    // Selection atoms
+    Atom            TARGETS;
+    Atom            CLIPBOARD;
+    Atom            UTF8_STRING;
+    Atom            COMPOUND_STRING;
+
     // True if window manager supports EWMH
     GLboolean       hasEWMH;
 
@@ -176,11 +182,9 @@ typedef struct _GLFWlibraryX11
     } timer;
 
     struct {
-        Atom        atom;
         Atom        formats[_GLFW_CLIPBOARD_FORMAT_COUNT];
         char*       string;
         Atom        target;
-        Atom        targets;
         Atom        property;
         int         status;
     } selection;

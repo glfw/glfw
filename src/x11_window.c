@@ -872,8 +872,6 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
-    Atom type = XInternAtom(_glfw.x11.display, "UTF8_STRING", False);
-
 #if defined(X_HAVE_UTF8_STRING)
     Xutf8SetWMProperties(_glfw.x11.display,
                          window->x11.handle,
@@ -893,7 +891,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     if (_glfw.x11.NET_WM_NAME != None)
     {
         XChangeProperty(_glfw.x11.display,  window->x11.handle,
-                        _glfw.x11.NET_WM_NAME, type, 8,
+                        _glfw.x11.NET_WM_NAME, _glfw.x11.UTF8_STRING, 8,
                         PropModeReplace,
                         (unsigned char*) title, strlen(title));
     }
@@ -901,7 +899,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     if (_glfw.x11.NET_WM_ICON_NAME != None)
     {
         XChangeProperty(_glfw.x11.display,  window->x11.handle,
-                        _glfw.x11.NET_WM_ICON_NAME, type, 8,
+                        _glfw.x11.NET_WM_ICON_NAME, _glfw.x11.UTF8_STRING, 8,
                         PropModeReplace,
                         (unsigned char*) title, strlen(title));
     }

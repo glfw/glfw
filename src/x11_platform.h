@@ -63,16 +63,11 @@
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorX11 x11
 
-// Clipboard format atom indices
+// Clipboard format atom indices (in order of preference)
 #define _GLFW_CLIPBOARD_FORMAT_UTF8     0
 #define _GLFW_CLIPBOARD_FORMAT_COMPOUND 1
 #define _GLFW_CLIPBOARD_FORMAT_STRING   2
 #define _GLFW_CLIPBOARD_FORMAT_COUNT    3
-
-// Clipboard conversion status tokens
-#define _GLFW_CONVERSION_INACTIVE       0
-#define _GLFW_CONVERSION_SUCCEEDED      1
-#define _GLFW_CONVERSION_FAILED         2
 
 
 //========================================================================
@@ -184,9 +179,7 @@ typedef struct _GLFWlibraryX11
     struct {
         Atom        formats[_GLFW_CLIPBOARD_FORMAT_COUNT];
         char*       string;
-        Atom        target;
         Atom        property;
-        int         status;
     } selection;
 
     struct {
@@ -251,13 +244,13 @@ void _glfwTerminateJoysticks(void);
 long _glfwKeySym2Unicode(KeySym keysym);
 
 // Clipboard handling
-GLboolean _glfwReadSelection(XSelectionEvent* request);
 Atom _glfwWriteSelection(XSelectionRequestEvent* request);
 
 // Event processing
 void _glfwProcessPendingEvents(void);
 
 // Window support
+_GLFWwindow* _glfwFindWindowByHandle(Window handle);
 unsigned long _glfwGetWindowProperty(Window window,
                                      Atom property,
                                      Atom type,

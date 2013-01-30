@@ -451,7 +451,7 @@ static void leaveFullscreenMode(_GLFWwindow* window)
 // Return the GLFW window corresponding to the specified X11 window
 //========================================================================
 
-static _GLFWwindow* findWindow(Window handle)
+_GLFWwindow* _glfwFindWindowByHandle(Window handle)
 {
     _GLFWwindow* window;
 
@@ -475,7 +475,7 @@ static void processEvent(XEvent *event)
 
     if (event->type != GenericEvent)
     {
-        window = findWindow(event->xany.window);
+        window = _glfwFindWindowByHandle(event->xany.window);
         if (window == NULL)
         {
             // This is either an event for a destroyed GLFW window or an event
@@ -707,20 +707,6 @@ static void processEvent(XEvent *event)
 
             free(_glfw.x11.selection.string);
             _glfw.x11.selection.string = NULL;
-            break;
-        }
-
-        case SelectionNotify:
-        {
-            // The clipboard selection conversion status is available
-
-            XSelectionEvent* request = &event->xselection;
-
-            if (_glfwReadSelection(request))
-                _glfw.x11.selection.status = _GLFW_CONVERSION_SUCCEEDED;
-            else
-                _glfw.x11.selection.status = _GLFW_CONVERSION_FAILED;
-
             break;
         }
 
@@ -993,11 +979,11 @@ void _glfwPlatformHideWindow(_GLFWwindow* window)
 
 void _glfwPlatformPollEvents(void)
 {
-    XEvent event;
-
-    while (XCheckMaskEvent(_glfw.x11.display, ~0, &event) ||
-           XCheckTypedEvent(_glfw.x11.display, ClientMessage, &event))
+    int count = XPending(_glfw.x11.display);
+    while (count--)
     {
+        XEvent event;
+        XNextEvent(_glfw.x11.display, &event);
         processEvent(&event);
     }
 
@@ -1026,21 +1012,24 @@ void _glfwPlatformPollEvents(void)
 
 void _glfwPlatformWaitEvents(void)
 {
-    int fd;
-    fd_set fds;
+    if (!XPending(_glfw.x11.display))
+    {
+        int fd;
+        fd_set fds;
 
-    fd = ConnectionNumber(_glfw.x11.display);
+        fd = ConnectionNumber(_glfw.x11.display);
 
-    FD_ZERO(&fds);
-    FD_SET(fd, &fds);
+        FD_ZERO(&fds);
+        FD_SET(fd, &fds);
 
-    XFlush(_glfw.x11.display);
+        // select(1) is used instead of an X function like XNextEvent, as the
+        // wait inside those are guarded by the mutex protecting the display
+        // struct, locking out other threads from using X (including GLX)
+        if (select(fd + 1, &fds, NULL, NULL, NULL) < 0)
+            return;
+    }
 
-    // select(1) is used instead of an X function like XNextEvent, as the
-    // wait inside those are guarded by the mutex protecting the display
-    // struct, locking out other threads from using X (including GLX)
-    if (select(fd + 1, &fds, NULL, NULL, NULL) > 0)
-        _glfwPlatformPollEvents();
+    _glfwPlatformPollEvents();
 }
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)

@@ -140,13 +140,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                               &settings,
                               EDS_ROTATEDMODE);
 
-        name = _glfwCreateUTF8FromWideString(adapter.DeviceName);
-        if (!name)
-        {
-            // TODO: wat
-            return NULL;
-        }
-
         if (found == size)
         {
             if (size)
@@ -169,6 +162,13 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         dc = CreateDC(L"DISPLAY", monitor.DeviceString, NULL, NULL);
 
         primary = adapter.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE;
+
+        name = _glfwCreateUTF8FromWideString(monitor.DeviceString);
+        if (!name)
+        {
+            // TODO: wat
+            return NULL;
+        }
 
         monitors[found] = _glfwCreateMonitor(name, primary,
                                              GetDeviceCaps(dc, HORZSIZE),

@@ -200,13 +200,9 @@ typedef struct _GLFWlibraryX11
 //------------------------------------------------------------------------
 typedef struct _GLFWmonitorX11
 {
-    GLboolean       modeChanged;
-
-    XRROutputInfo*  output;
-    SizeID          oldSizeID;
-    int             oldWidth;
-    int             oldHeight;
-    Rotation        oldRotation;
+    RROutput        output;
+    RRCrtc          crtc;
+    RRMode          oldMode;
 
 } _GLFWmonitorX11;
 
@@ -231,9 +227,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 void _glfwDestroyContext(_GLFWwindow* window);
 
 // Fullscreen support
-int  _glfwGetClosestVideoMode(_GLFWmonitor* monitor, int* width, int* height);
-void _glfwSetVideoModeMODE(_GLFWmonitor* monitor, int mode);
-void _glfwSetVideoMode(_GLFWmonitor* monitor, int* width, int* height);
+void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* mode);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
 // Joystick input

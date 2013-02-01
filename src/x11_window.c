@@ -237,6 +237,9 @@ static GLboolean createWindow(_GLFWwindow* window,
 
     _glfwPlatformSetWindowTitle(window, wndconfig->title);
 
+    XRRSelectInput(_glfw.x11.display, window->x11.handle,
+                   RRScreenChangeNotifyMask);
+
     return GL_TRUE;
 }
 
@@ -333,7 +336,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
         _glfw.x11.saver.changed = GL_TRUE;
     }
 
-    _glfwSetVideoMode(window->monitor, &window->width, &window->height);
+    _glfwSetVideoMode(window->monitor, &window->videoMode);
 
     if (_glfw.x11.hasEWMH &&
         _glfw.x11.NET_WM_STATE != None &&
@@ -743,7 +746,6 @@ static void processEvent(XEvent *event)
                 case RRScreenChangeNotify:
                 {
                     XRRUpdateConfiguration(event);
-                    _glfwInputMonitorChange();
                     break;
                 }
             }
@@ -893,13 +895,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    int mode = 0, sizeChanged = GL_FALSE;
-
-    if (window->monitor)
-    {
-        // Get the closest matching video mode for the specified window size
-        mode = _glfwGetClosestVideoMode(window->monitor, &width, &height);
-    }
+    GLboolean sizeChanged = GL_FALSE;
 
     if (!window->resizable)
     {
@@ -924,7 +920,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
             sizeChanged = GL_TRUE;
         }
 
-        _glfwSetVideoModeMODE(window->monitor, mode);
+        _glfwSetVideoMode(window->monitor, &window->videoMode);
     }
 
     // Set window size (if not already changed)

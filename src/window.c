@@ -514,6 +514,12 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* handle, int width, int height)
     if (width == window->width && height == window->height)
         return;
 
+    if (window->monitor)
+    {
+        window->videoMode.width  = width;
+        window->videoMode.height = height;
+    }
+
     _glfwPlatformSetWindowSize(window, width, height);
 }
 

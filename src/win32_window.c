@@ -680,14 +680,14 @@ static ATOM registerWindowClass(void)
     wc.lpfnWndProc   = (WNDPROC) windowProc;          // Message handler
     wc.cbClsExtra    = 0;                             // No extra class data
     wc.cbWndExtra    = sizeof(void*) + sizeof(int);   // Make room for one pointer
-    wc.hInstance     = _glfw.win32.instance;          // Set instance
+    wc.hInstance     = GetModuleHandle(NULL);         // Set instance
     wc.hCursor       = LoadCursor(NULL, IDC_ARROW);   // Load arrow pointer
     wc.hbrBackground = NULL;                          // No background
     wc.lpszMenuName  = NULL;                          // No menu
     wc.lpszClassName = _GLFW_WNDCLASSNAME;            // Set class name
 
     // Load user-provided icon if available
-    wc.hIcon = LoadIcon(_glfw.win32.instance, L"GLFW_ICON");
+    wc.hIcon = LoadIcon(GetModuleHandle(NULL), L"GLFW_ICON");
     if (!wc.hIcon)
     {
         // Load default icon
@@ -774,7 +774,7 @@ static int createWindow(_GLFWwindow* window,
                                           fullHeight,            // Decorated window height
                                           NULL,                  // No parent window
                                           NULL,                  // No menu
-                                          _glfw.win32.instance,
+                                          GetModuleHandle(NULL),
                                           window);  // Pass GLFW window to WM_CREATE
 
     free(wideTitle);

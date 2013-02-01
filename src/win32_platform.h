@@ -157,7 +157,6 @@ typedef struct _GLFWwindowWin32
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryWin32
 {
-    HINSTANCE           instance;
     ATOM                classAtom;
     DWORD               foregroundLockTimeout;
     char*               clipboardString;

@@ -179,8 +179,6 @@ int _glfwPlatformInit(void)
     _control87(MCW_EM, MCW_EM);
 #endif
 
-    _glfw.win32.instance = GetModuleHandle(NULL);
-
     // Save the original gamma ramp
     _glfw.originalRampSize = 256;
     _glfwPlatformGetGammaRamp(&_glfw.originalRamp);
@@ -204,7 +202,7 @@ void _glfwPlatformTerminate(void)
 
     if (_glfw.win32.classAtom)
     {
-        UnregisterClass(_GLFW_WNDCLASSNAME, _glfw.win32.instance);
+        UnregisterClass(_GLFW_WNDCLASSNAME, GetModuleHandle(NULL));
         _glfw.win32.classAtom = 0;
     }
 

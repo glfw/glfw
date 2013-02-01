@@ -147,6 +147,12 @@ const char* _glfwPlatformGetVersionString(void)
 #if defined(_GLFW_BUILD_DLL)
         " dynamic"
 #endif
+#if defined(_GLFW_USE_CHDIR)
+        " chdir"
+#endif
+#if defined(_GLFW_USE_MENUBAR)
+        " menubar"
+#endif
         ;
 
     return version;

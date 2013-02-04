@@ -47,10 +47,8 @@
 #define Button7            7
 
 
-//========================================================================
 // Translates an X Window key to internal coding
-//========================================================================
-
+//
 static int translateKey(int keycode)
 {
     // Use the pre-filled LUT (see updateKeyCodeLUT() in x11_init.c)
@@ -60,11 +58,8 @@ static int translateKey(int keycode)
         return -1;
 }
 
-
-//========================================================================
 // Translates an X Window event to Unicode
-//========================================================================
-
+//
 static int translateChar(XKeyEvent* event)
 {
     KeySym keysym;
@@ -76,11 +71,8 @@ static int translateChar(XKeyEvent* event)
     return (int) _glfwKeySym2Unicode(keysym);
 }
 
-
-//========================================================================
 // Create the X11 window (and its colormap)
-//========================================================================
-
+//
 static GLboolean createWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig)
 {
@@ -230,11 +222,8 @@ static GLboolean createWindow(_GLFWwindow* window,
     return GL_TRUE;
 }
 
-
-//========================================================================
 // Hide cursor
-//========================================================================
-
+//
 static void hideCursor(_GLFWwindow* window)
 {
     // Un-grab cursor (in windowed mode only; in fullscreen mode we still
@@ -253,11 +242,8 @@ static void hideCursor(_GLFWwindow* window)
     }
 }
 
-
-//========================================================================
 // Capture cursor
-//========================================================================
-
+//
 static void captureCursor(_GLFWwindow* window)
 {
     hideCursor(window);
@@ -276,11 +262,8 @@ static void captureCursor(_GLFWwindow* window)
     }
 }
 
-
-//========================================================================
 // Show cursor
-//========================================================================
-
+//
 static void showCursor(_GLFWwindow* window)
 {
     // Un-grab cursor (in windowed mode only; in fullscreen mode we still
@@ -300,11 +283,8 @@ static void showCursor(_GLFWwindow* window)
     }
 }
 
-
-//========================================================================
 // Enter fullscreen mode
-//========================================================================
-
+//
 static void enterFullscreenMode(_GLFWwindow* window)
 {
     if (!_glfw.x11.saver.changed)
@@ -391,11 +371,8 @@ static void enterFullscreenMode(_GLFWwindow* window)
     }
 }
 
-
-//========================================================================
 // Leave fullscreen mode
-//========================================================================
-
+//
 static void leaveFullscreenMode(_GLFWwindow* window)
 {
     _glfwRestoreVideoMode(window->monitor);
@@ -439,11 +416,8 @@ static void leaveFullscreenMode(_GLFWwindow* window)
     }
 }
 
-
-//========================================================================
 // Return the GLFW window corresponding to the specified X11 window
-//========================================================================
-
+//
 _GLFWwindow* _glfwFindWindowByHandle(Window handle)
 {
     _GLFWwindow* window;
@@ -457,11 +431,8 @@ _GLFWwindow* _glfwFindWindowByHandle(Window handle)
     return NULL;
 }
 
-
-//========================================================================
 // Process the specified X event
-//========================================================================
-
+//
 static void processEvent(XEvent *event)
 {
     _GLFWwindow* window = NULL;
@@ -750,11 +721,9 @@ static void processEvent(XEvent *event)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
 // Retrieve a single window property of the specified type
 // Inspired by fghGetWindowProperty from freeglut
-//========================================================================
-
+//
 unsigned long _glfwGetWindowProperty(Window window,
                                      Atom property,
                                      Atom type,

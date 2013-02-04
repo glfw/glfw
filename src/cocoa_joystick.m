@@ -88,10 +88,8 @@ static _glfwJoystick _glfwJoysticks[GLFW_JOYSTICK_LAST + 1];
 static void getElementsCFArrayHandler(const void* value, void* parameter);
 
 
-//========================================================================
 // Adds an element to the specified joystick
-//========================================================================
-
+//
 static void addJoystickElement(_glfwJoystick* joystick, CFTypeRef refElement)
 {
     long elementType, usagePage, usage;
@@ -183,22 +181,16 @@ static void addJoystickElement(_glfwJoystick* joystick, CFTypeRef refElement)
     }
 }
 
-
-//========================================================================
 // Adds an element to the specified joystick
-//========================================================================
-
+//
 static void getElementsCFArrayHandler(const void* value, void* parameter)
 {
     if (CFGetTypeID(value) == CFDictionaryGetTypeID())
         addJoystickElement((_glfwJoystick*) parameter, (CFTypeRef) value);
 }
 
-
-//========================================================================
 // Returns the value of the specified element of the specified joystick
-//========================================================================
-
+//
 static long getElementValue(_glfwJoystick* joystick, _glfwJoystickElement* element)
 {
     IOReturn result = kIOReturnSuccess;
@@ -224,11 +216,8 @@ static long getElementValue(_glfwJoystick* joystick, _glfwJoystickElement* eleme
     return (long) hidEvent.value;
 }
 
-
-//========================================================================
 // Removes the specified joystick
-//========================================================================
-
+//
 static void removeJoystick(_glfwJoystick* joystick)
 {
     int i;
@@ -271,21 +260,15 @@ static void removeJoystick(_glfwJoystick* joystick)
     }
 }
 
-
-//========================================================================
 // Callback for user-initiated joystick removal
-//========================================================================
-
+//
 static void removalCallback(void* target, IOReturn result, void* refcon, void* sender)
 {
     removeJoystick((_glfwJoystick*) refcon);
 }
 
-
-//========================================================================
 // Polls for joystick events and updates GLFW state
-//========================================================================
-
+//
 static void pollJoystickEvents(void)
 {
     int i;
@@ -326,10 +309,8 @@ static void pollJoystickEvents(void)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
 // Initialize joystick interface
-//========================================================================
-
+//
 void _glfwInitJoysticks(void)
 {
     int deviceCounter = 0;
@@ -471,11 +452,8 @@ void _glfwInitJoysticks(void)
     }
 }
 
-
-//========================================================================
 // Close all opened joystick handles
-//========================================================================
-
+//
 void _glfwTerminateJoysticks(void)
 {
     int i;

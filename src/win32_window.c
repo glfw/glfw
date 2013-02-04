@@ -34,20 +34,15 @@
 #include <malloc.h>
 #include <windowsx.h>
 
-//========================================================================
 // Hide mouse cursor
-//========================================================================
-
+//
 static void hideCursor(_GLFWwindow* window)
 {
     UNREFERENCED_PARAMETER(window);
 }
 
-
-//========================================================================
 // Capture mouse cursor
-//========================================================================
-
+//
 static void captureCursor(_GLFWwindow* window)
 {
     RECT ClipWindowRect;
@@ -62,11 +57,8 @@ static void captureCursor(_GLFWwindow* window)
     SetCapture(window->win32.handle);
 }
 
-
-//========================================================================
 // Show mouse cursor
-//========================================================================
-
+//
 static void showCursor(_GLFWwindow* window)
 {
     UNREFERENCED_PARAMETER(window);
@@ -80,11 +72,8 @@ static void showCursor(_GLFWwindow* window)
     ShowCursor(TRUE);
 }
 
-
-//========================================================================
 // Translates a Windows key to the corresponding GLFW key
-//========================================================================
-
+//
 static int translateKey(WPARAM wParam, LPARAM lParam)
 {
     MSG next_msg;
@@ -306,11 +295,8 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
     return -1;
 }
 
-
-//========================================================================
 // Window callback function (handles window events)
-//========================================================================
-
+//
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                                    WPARAM wParam, LPARAM lParam)
 {
@@ -640,11 +626,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-
-//========================================================================
 // Translate client window size to full window size (including window borders)
-//========================================================================
-
+//
 static void getFullWindowSize(_GLFWwindow* window,
                               int clientWidth, int clientHeight,
                               int* fullWidth, int* fullHeight)
@@ -665,11 +648,8 @@ static void getFullWindowSize(_GLFWwindow* window,
     *fullHeight = rect.bottom - rect.top + 1;
 }
 
-
-//========================================================================
 // Registers the GLFW window class
-//========================================================================
-
+//
 static ATOM registerWindowClass(void)
 {
     WNDCLASS wc;
@@ -705,11 +685,8 @@ static ATOM registerWindowClass(void)
     return classAtom;
 }
 
-
-//========================================================================
 // Creates the GLFW window and rendering context
-//========================================================================
-
+//
 static int createWindow(_GLFWwindow* window,
                         const _GLFWwndconfig* wndconfig,
                         const _GLFWfbconfig* fbconfig)
@@ -789,11 +766,8 @@ static int createWindow(_GLFWwindow* window,
     return GL_TRUE;
 }
 
-
-//========================================================================
 // Destroys the GLFW window and rendering context
-//========================================================================
-
+//
 static void destroyWindow(_GLFWwindow* window)
 {
     _glfwDestroyContext(window);

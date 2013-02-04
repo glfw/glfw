@@ -35,10 +35,8 @@
 #include <limits.h>
 
 
-//========================================================================
 // Translate an X11 key code to a GLFW key code.
-//========================================================================
-
+//
 static int keyCodeToGLFWKeyCode(int keyCode)
 {
     int keySym;
@@ -214,11 +212,8 @@ static int keyCodeToGLFWKeyCode(int keyCode)
     return -1;
 }
 
-
-//========================================================================
 // Update the key code LUT
-//========================================================================
-
+//
 static void updateKeyCodeLUT(void)
 {
     int i, keyCode, keyCodeGLFW;
@@ -317,11 +312,8 @@ static void updateKeyCodeLUT(void)
     }
 }
 
-
-//========================================================================
 // Check whether the specified atom is supported
-//========================================================================
-
+//
 static Atom getSupportedAtom(Atom* supportedAtoms,
                              unsigned long atomCount,
                              const char* atomName)
@@ -341,11 +333,8 @@ static Atom getSupportedAtom(Atom* supportedAtoms,
     return None;
 }
 
-
-//========================================================================
 // Check whether the running window manager is EWMH-compliant
-//========================================================================
-
+//
 static void detectEWMH(void)
 {
     Window* windowFromRoot = NULL;
@@ -429,11 +418,8 @@ static void detectEWMH(void)
     _glfw.x11.hasEWMH = GL_TRUE;
 }
 
-
-//========================================================================
 // Initialize X11 display and look for supported X11 extensions
-//========================================================================
-
+//
 static GLboolean initDisplay(void)
 {
     Bool supported;
@@ -543,11 +529,8 @@ static GLboolean initDisplay(void)
     return GL_TRUE;
 }
 
-
-//========================================================================
 // Create a blank cursor (for locked mouse mode)
-//========================================================================
-
+//
 static Cursor createNULLCursor(void)
 {
     Pixmap cursormask;
@@ -574,11 +557,8 @@ static Cursor createNULLCursor(void)
     return cursor;
 }
 
-
-//========================================================================
 // Terminate X11 display
-//========================================================================
-
+//
 static void terminateDisplay(void)
 {
     if (_glfw.x11.display)

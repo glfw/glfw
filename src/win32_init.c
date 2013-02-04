@@ -39,22 +39,19 @@
 #endif // __BORLANDC__
 
 
-//========================================================================
-// GLFW DLL entry point
-//========================================================================
-
 #if defined(_GLFW_BUILD_DLL)
+
+// GLFW DLL entry point
+//
 BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
 {
     return TRUE;
 }
+
 #endif // _GLFW_BUILD_DLL
 
-
-//========================================================================
 // Load necessary libraries (DLLs)
-//========================================================================
-
+//
 static GLboolean initLibraries(void)
 {
 #ifndef _GLFW_NO_DLOAD_WINMM
@@ -85,11 +82,8 @@ static GLboolean initLibraries(void)
     return GL_TRUE;
 }
 
-
-//========================================================================
 // Unload used libraries (DLLs)
-//========================================================================
-
+//
 static void freeLibraries(void)
 {
 #ifndef _GLFW_NO_DLOAD_WINMM
@@ -106,10 +100,8 @@ static void freeLibraries(void)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
 // Returns a wide string version of the specified UTF-8 string
-//========================================================================
-
+//
 WCHAR* _glfwCreateWideStringFromUTF8(const char* source)
 {
     WCHAR* target;
@@ -130,11 +122,8 @@ WCHAR* _glfwCreateWideStringFromUTF8(const char* source)
     return target;
 }
 
-
-//========================================================================
 // Returns a UTF-8 string version of the specified wide string
-//========================================================================
-
+//
 char* _glfwCreateUTF8FromWideString(const WCHAR* source)
 {
     char* target;

@@ -45,10 +45,8 @@
 #endif // __linux__
 
 
-//========================================================================
 // Attempt to open the specified joystick device
-//========================================================================
-
+//
 static int openJoystickDevice(int joy, const char* path)
 {
 #ifdef __linux__
@@ -107,11 +105,8 @@ static int openJoystickDevice(int joy, const char* path)
     return GL_TRUE;
 }
 
-
-//========================================================================
 // Polls for and processes events for all present joysticks
-//========================================================================
-
+//
 static void pollJoystickEvents(void)
 {
 #ifdef __linux__
@@ -173,10 +168,8 @@ static void pollJoystickEvents(void)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
 // Initialize joystick interface
-//========================================================================
-
+//
 int _glfwInitJoysticks(void)
 {
 #ifdef __linux__
@@ -225,11 +218,8 @@ int _glfwInitJoysticks(void)
     return GL_TRUE;
 }
 
-
-//========================================================================
 // Close all opened joystick handles
-//========================================================================
-
+//
 void _glfwTerminateJoysticks(void)
 {
 #ifdef __linux__

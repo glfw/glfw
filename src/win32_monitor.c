@@ -48,10 +48,8 @@
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
 // Change the current video mode
-//========================================================================
-
+//
 int _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* mode)
 {
     GLFWvidmode current;
@@ -86,11 +84,8 @@ int _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* mode)
     return GL_TRUE;
 }
 
-
-//========================================================================
 // Restore the previously saved (original) video mode
-//========================================================================
-
+//
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 {
     ChangeDisplaySettingsEx(monitor->win32.name,

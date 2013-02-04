@@ -32,9 +32,8 @@
 #include <pthread.h>
 
 
-//========================================================================
 // The per-thread current context/window pointer
-//========================================================================
+//
 static pthread_key_t _glfwCurrentTLS;
 
 
@@ -42,10 +41,8 @@ static pthread_key_t _glfwCurrentTLS;
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
 // Initialize OpenGL support
-//========================================================================
-
+//
 int _glfwInitContextAPI(void)
 {
     if (pthread_key_create(&_glfwCurrentTLS, NULL) != 0)
@@ -58,21 +55,15 @@ int _glfwInitContextAPI(void)
     return GL_TRUE;
 }
 
-
-//========================================================================
 // Terminate OpenGL support
-//========================================================================
-
+//
 void _glfwTerminateContextAPI(void)
 {
     pthread_key_delete(_glfwCurrentTLS);
 }
 
-
-//========================================================================
 // Create the OpenGL context
-//========================================================================
-
+//
 int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWwndconfig* wndconfig,
                        const _GLFWfbconfig* fbconfig)
@@ -228,11 +219,8 @@ int _glfwCreateContext(_GLFWwindow* window,
     return GL_TRUE;
 }
 
-
-//========================================================================
 // Destroy the OpenGL context
-//========================================================================
-
+//
 void _glfwDestroyContext(_GLFWwindow* window)
 {
     [window->nsgl.pixelFormat release];

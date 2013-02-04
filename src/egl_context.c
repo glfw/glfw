@@ -35,9 +35,8 @@
 #include <assert.h>
 
 
-//========================================================================
 // Thread local storage attribute macro
-//========================================================================
+//
 #if defined(_MSC_VER)
  #define _GLFW_TLS __declspec(thread)
 #elif defined(__GNUC__)
@@ -47,16 +46,13 @@
 #endif
 
 
-//========================================================================
 // The per-thread current context/window pointer
-//========================================================================
+//
 static _GLFW_TLS _GLFWwindow* _glfwCurrentWindow = NULL;
 
 
-//========================================================================
 // Return a description of the specified EGL error
-//========================================================================
-
+//
 static const char* getErrorString(EGLint error)
 {
     switch (error)
@@ -109,10 +105,8 @@ static const char* getErrorString(EGLint error)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
 // Initialize EGL
-//========================================================================
-
+//
 int _glfwInitContextAPI(void)
 {
     _glfw.egl.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
@@ -140,20 +134,12 @@ int _glfwInitContextAPI(void)
     return GL_TRUE;
 }
 
-
-//========================================================================
 // Terminate EGL
-//========================================================================
-
+//
 void _glfwTerminateContextAPI(void)
 {
     eglTerminate(_glfw.egl.display);
 }
-
-
-//========================================================================
-// Prepare for creation of the OpenGL context
-//========================================================================
 
 #define setEGLattrib(attribName, attribValue) \
 { \
@@ -162,6 +148,8 @@ void _glfwTerminateContextAPI(void)
     assert(index < sizeof(attribs) / sizeof(attribs[0])); \
 }
 
+// Prepare for creation of the OpenGL context
+//
 int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWwndconfig* wndconfig,
                        const _GLFWfbconfig* fbconfig)
@@ -357,11 +345,8 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 #undef setEGLattrib
 
-
-//========================================================================
 // Destroy the OpenGL context
-//========================================================================
-
+//
 void _glfwDestroyContext(_GLFWwindow* window)
 {
 #if defined(_GLFW_X11)
@@ -385,11 +370,8 @@ void _glfwDestroyContext(_GLFWwindow* window)
     }
 }
 
-
-//========================================================================
 // Analyzes the specified context for possible recreation
-//========================================================================
-
+//
 int _glfwAnalyzeContext(const _GLFWwindow* window,
                         const _GLFWwndconfig* wndconfig,
                         const _GLFWfbconfig* fbconfig)

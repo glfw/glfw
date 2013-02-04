@@ -39,10 +39,8 @@
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
 // Set the specified property to the contents of the requested selection
-//========================================================================
-
+//
 Atom _glfwWriteSelection(XSelectionRequestEvent* request)
 {
     int i;

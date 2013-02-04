@@ -33,9 +33,9 @@
 #include <crt_externs.h>
 
 
-//========================================================================
+//------------------------------------------------------------------------
 // Delegate for window related notifications
-//========================================================================
+//------------------------------------------------------------------------
 
 @interface GLFWWindowDelegate : NSObject
 {
@@ -104,9 +104,9 @@
 @end
 
 
-//========================================================================
+//------------------------------------------------------------------------
 // Delegate for application related notifications
-//========================================================================
+//------------------------------------------------------------------------
 
 @interface GLFWApplicationDelegate : NSObject
 @end
@@ -144,11 +144,8 @@
 
 @end
 
-
-//========================================================================
 // Converts a Mac OS X keycode to a GLFW keycode
-//========================================================================
-
+//
 static int convertMacKeyCode(unsigned int macKeyCode)
 {
     // Keyboard symbol translation table
@@ -292,9 +289,9 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 }
 
 
-//========================================================================
+//------------------------------------------------------------------------
 // Content view class for the GLFW window
-//========================================================================
+//------------------------------------------------------------------------
 
 @interface GLFWContentView : NSView
 {
@@ -497,9 +494,9 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 @end
 
 
-//========================================================================
+//------------------------------------------------------------------------
 // GLFW application class
-//========================================================================
+//------------------------------------------------------------------------
 
 @interface GLFWApplication : NSApplication
 @end
@@ -519,11 +516,8 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
 @end
 
-
-//========================================================================
 // Try to figure out what the calling application is called
-//========================================================================
-
+//
 static NSString* findAppName(void)
 {
     unsigned int i;
@@ -564,17 +558,14 @@ static NSString* findAppName(void)
     return @"GLFW Application";
 }
 
+#if defined(_GLFW_USE_MENUBAR)
 
-//========================================================================
 // Set up the menu bar (manually)
 // This is nasty, nasty stuff -- calls to undocumented semi-private APIs that
 // could go away at any moment, lots of stuff that really should be
 // localize(d|able), etc.  Loading a nib would save us this horror, but that
 // doesn't seem like a good thing to require of GLFW's clients.
-//========================================================================
-
-#if defined(_GLFW_USE_MENUBAR)
-
+//
 static void createMenuBar(void)
 {
     NSString* appName = findAppName();
@@ -636,11 +627,8 @@ static void createMenuBar(void)
 
 #endif /* _GLFW_USE_MENUBAR */
 
-
-//========================================================================
 // Initialize the Cocoa Application Kit
-//========================================================================
-
+//
 static GLboolean initializeAppKit(void)
 {
     if (NSApp)
@@ -661,11 +649,8 @@ static GLboolean initializeAppKit(void)
     return GL_TRUE;
 }
 
-
-//========================================================================
 // Create the Cocoa window
-//========================================================================
-
+//
 static GLboolean createWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig)
 {

@@ -39,10 +39,8 @@
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
 // Set the current video mode for the specified monitor
-//========================================================================
-
+//
 void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* mode)
 {
     if (_glfw.x11.randr.available)
@@ -112,11 +110,8 @@ void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* mode)
     }
 }
 
-
-//========================================================================
 // Restore the saved (original) video mode for the specified monitor
-//========================================================================
-
+//
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 {
     if (_glfw.x11.randr.available)

@@ -36,10 +36,8 @@
 #include <IOKit/graphics/IOGraphicsLib.h>
 
 
-//========================================================================
 // Get the name of the specified display
-//========================================================================
-
+//
 const char* getDisplayName(CGDirectDisplayID displayID)
 {
     char* name;
@@ -68,11 +66,8 @@ const char* getDisplayName(CGDirectDisplayID displayID)
     return name;
 }
 
-
-//========================================================================
 // Check whether the display mode should be included in enumeration
-//========================================================================
-
+//
 static GLboolean modeIsGood(CGDisplayModeRef mode)
 {
     uint32_t flags = CGDisplayModeGetIOFlags(mode);
@@ -100,11 +95,8 @@ static GLboolean modeIsGood(CGDisplayModeRef mode)
     return GL_TRUE;
 }
 
-
-//========================================================================
 // Convert Core Graphics display mode to GLFW video mode
-//========================================================================
-
+//
 static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode)
 {
     GLFWvidmode result;
@@ -135,10 +127,8 @@ static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
 // Change the current video mode
-//========================================================================
-
+//
 GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, int* width, int* height, int* bpp)
 {
     CGDisplayModeRef bestMode = NULL;
@@ -199,11 +189,8 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, int* width, int* height, int*
     return GL_TRUE;
 }
 
-
-//========================================================================
 // Restore the previously saved (original) video mode
-//========================================================================
-
+//
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 {
     CGDisplaySetDisplayMode(monitor->ns.displayID, monitor->ns.previousMode, NULL);

@@ -31,10 +31,8 @@
 #include "internal.h"
 
 
-//========================================================================
 // Sets the cursor mode for the specified window
-//========================================================================
-
+//
 static void setCursorMode(_GLFWwindow* window, int newMode)
 {
     int width, height, oldMode, centerPosX, centerPosY;
@@ -66,11 +64,8 @@ static void setCursorMode(_GLFWwindow* window, int newMode)
         _glfwInputCursorMotion(window, window->cursorPosX, window->cursorPosY);
 }
 
-
-//========================================================================
 // Set sticky keys mode for the specified window
-//========================================================================
-
+//
 static void setStickyKeys(_GLFWwindow* window, int enabled)
 {
     if (window->stickyKeys == enabled)
@@ -91,11 +86,8 @@ static void setStickyKeys(_GLFWwindow* window, int enabled)
     window->stickyKeys = enabled;
 }
 
-
-//========================================================================
 // Set sticky mouse buttons mode for the specified window
-//========================================================================
-
+//
 static void setStickyMouseButtons(_GLFWwindow* window, int enabled)
 {
     if (window->stickyMouseButtons == enabled)

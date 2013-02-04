@@ -36,26 +36,22 @@
 #include <stdarg.h>
 
 
-//------------------------------------------------------------------------
 // Global state shared between compilation units of GLFW
 // These are documented in internal.h
-//------------------------------------------------------------------------
+//
 GLboolean _glfwInitialized = GL_FALSE;
 _GLFWlibrary _glfw;
 
 
-//------------------------------------------------------------------------
 // The current error callback
 // This is outside of _glfw so it can be initialized and usable before
 // glfwInit is called, which lets that function report errors
-//------------------------------------------------------------------------
+//
 static GLFWerrorfun _glfwErrorCallback = NULL;
 
 
-//========================================================================
 // Returns a generic string representation of the specified error
-//========================================================================
-
+//
 static const char* getErrorString(int error)
 {
     switch (error)

@@ -37,10 +37,8 @@
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
 // Detect gamma ramp support and save original gamma ramp, if available
-//========================================================================
-
+//
 void _glfwInitGammaRamp(void)
 {
     // RandR gamma support is only available with version 1.2 and above
@@ -83,11 +81,8 @@ void _glfwInitGammaRamp(void)
     }
 }
 
-
-//========================================================================
 // Restore original gamma ramp if necessary
-//========================================================================
-
+//
 void _glfwTerminateGammaRamp(void)
 {
     if (_glfw.originalRampSize && _glfw.rampChanged)

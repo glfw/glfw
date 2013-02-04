@@ -30,12 +30,11 @@
 #include "internal.h"
 #include <sys/param.h> // For MAXPATHLEN
 
-//========================================================================
-// Change to our application bundle's resources directory, if present
-//========================================================================
 
 #if defined(_GLFW_USE_CHDIR)
 
+// Change to our application bundle's resources directory, if present
+//
 static void changeToResourcesDirectory(void)
 {
     char resourcesPath[MAXPATHLEN];

@@ -35,9 +35,8 @@
 #include <assert.h>
 
 
-//========================================================================
 // Thread local storage attribute macro
-//========================================================================
+//
 #if defined(_MSC_VER)
  #define _GLFW_TLS __declspec(thread)
 #elif defined(__GNUC__)
@@ -47,20 +46,17 @@
 #endif
 
 
-//========================================================================
 // The per-thread current context/window pointer
-//========================================================================
+//
 static _GLFW_TLS _GLFWwindow* _glfwCurrentWindow = NULL;
 
 
-//========================================================================
 // Initialize WGL-specific extensions
 // This function is called once before initial context creation, i.e. before
 // any WGL extensions could be present.  This is done in order to have both
 // extension variable clearing and loading in the same place, hopefully
 // decreasing the possibility of forgetting to add one without the other.
-//========================================================================
-
+//
 static void initWGLExtensions(_GLFWwindow* window)
 {
     // This needs to include every function pointer loaded below
@@ -149,28 +145,18 @@ static void initWGLExtensions(_GLFWwindow* window)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
 // Initialize WGL
-//========================================================================
-
+//
 int _glfwInitContextAPI(void)
 {
     return GL_TRUE;
 }
 
-
-//========================================================================
 // Terminate WGL
-//========================================================================
-
+//
 void _glfwTerminateContextAPI(void)
 {
 }
-
-
-//========================================================================
-// Prepare for creation of the OpenGL context
-//========================================================================
 
 #define setWGLattrib(attribName, attribValue) \
 { \
@@ -179,6 +165,8 @@ void _glfwTerminateContextAPI(void)
     assert(index < sizeof(attribs) / sizeof(attribs[0])); \
 }
 
+// Prepare for creation of the OpenGL context
+//
 int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWwndconfig* wndconfig,
                        const _GLFWfbconfig* fbconfig)
@@ -417,11 +405,8 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 #undef setWGLattrib
 
-
-//========================================================================
 // Destroy the OpenGL context
-//========================================================================
-
+//
 void _glfwDestroyContext(_GLFWwindow* window)
 {
     if (window->wgl.context)
@@ -437,11 +422,8 @@ void _glfwDestroyContext(_GLFWwindow* window)
     }
 }
 
-
-//========================================================================
 // Analyzes the specified context for possible recreation
-//========================================================================
-
+//
 int _glfwAnalyzeContext(const _GLFWwindow* window,
                         const _GLFWwndconfig* wndconfig,
                         const _GLFWfbconfig* fbconfig)

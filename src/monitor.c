@@ -40,10 +40,8 @@
 #endif
 
 
-//========================================================================
 // Lexical comparison function for GLFW video modes, used by qsort
-//========================================================================
-
+//
 static int compareVideoModes(const void* firstPtr, const void* secondPtr)
 {
     int firstBPP, secondBPP, firstSize, secondSize;
@@ -70,11 +68,8 @@ static int compareVideoModes(const void* firstPtr, const void* secondPtr)
     return firstSize - secondSize;
 }
 
-
-//========================================================================
 // Retrieves the available modes for the specified monitor
-//========================================================================
-
+//
 static int refreshVideoModes(_GLFWmonitor* monitor)
 {
     int modeCount;

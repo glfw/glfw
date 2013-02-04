@@ -36,10 +36,8 @@
 #include <stdio.h>
 
 
-//========================================================================
 // Parses the client API version string and extracts the version number
-//========================================================================
-
+//
 static GLboolean parseGLVersion(int* api, int* major, int* minor, int* rev)
 {
     int i, _api = GLFW_OPENGL_API, _major, _minor = 0, _rev = 0;

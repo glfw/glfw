@@ -37,10 +37,8 @@
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
 // Return GL_TRUE if joystick is present, otherwise GL_FALSE
-//========================================================================
-
+//
 static GLboolean isJoystickPresent(int joy)
 {
     JOYINFO ji;
@@ -56,11 +54,8 @@ static GLboolean isJoystickPresent(int joy)
     return GL_TRUE;
 }
 
-
-//========================================================================
 // Calculate normalized joystick position
-//========================================================================
-
+//
 static float calcJoystickPos(DWORD pos, DWORD min, DWORD max)
 {
     float fpos = (float) pos;
@@ -75,19 +70,14 @@ static float calcJoystickPos(DWORD pos, DWORD min, DWORD max)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-//========================================================================
 // Initialize joystick interface
-//========================================================================
-
+//
 void _glfwInitJoysticks(void)
 {
 }
 
-
-//========================================================================
 // Close all opened joystick handles
-//========================================================================
-
+//
 void _glfwTerminateJoysticks(void)
 {
     int i;

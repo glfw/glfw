@@ -7,9 +7,9 @@ application development.  It provides a simple, platform-independent API for
 creating windows and contexts, reading input, handling events, etc.
 
 Version 3.0 brings a new API with many new features such as multiple windows
-and contexts, multi-monitor support, clipboard text support, an error
-description callback, gamma ramp control, layout-independent keyboard input and
-UTF-8 for all strings.
+and contexts, multi-monitor support, EGL and OpenGL ES support, clipboard text
+support, an error description callback, gamma ramp control, layout-independent
+keyboard input and UTF-8 for all strings.
 
 Certain features like the threading and image loading functions from GLFW 2.x
 have been [removed](http://wiki.glfw.org/wiki/Rationale_for_removing).
@@ -57,8 +57,9 @@ Visual C++ runtime library.
 
 #### EGL specific options
 
-`GLFW_USE_EGL` determines whether to use EGL as the context creation API.  Note
-that EGL is not yet provided on all supported platforms.
+`GLFW_USE_EGL` determines whether to use EGL instead of the platform-specific
+context creation API.  Note that EGL is not yet provided on all supported
+platforms.
 
 `GLFW_CLIENT_LIBRARY` determines which client API library to use.  If set to
 `opengl` the OpenGL library is used, if set to `glesv1` for the OpenGL ES 1.x
@@ -80,13 +81,8 @@ There are two aspects to using GLFW:
  * Using the GLFW API
  * Compiling and linking programs using the GLFW library
 
-The first point is covered in the reference manual and user guide, and we
-suggest that you read at least the user guide, since it's a good introduction to
-the GLFW API.
-
-Designing and compiling programs that use GLFW is not very difficult.
-A few rules for successfully designing GLFW-based programs are presented
-in the following sections.
+The first point is covered in the WIP
+[reference manual](http://www.glfw.org/TEMP/3.0/).
 
 
 ### Include the GLFW header file
@@ -123,14 +119,32 @@ If you are using an OpenGL extension loading library such as
 *before* the GLFW one.  The GLEW header defines macros that disable any OpenGL
 header that the GLFW header includes and GLEW will work as expected.
 
+#### GLFW header option macros
+
+These macros may be defined before the inclusion of the GLFW header.
+
+`GLFW_INCLUDE_GLCOREARB` makes the header include the modern `GL/glcorearb.h`
+header (`OpenGL/gl3.h` on Mac OS X) instead of the regular OpenGL header.
+
+`GLFW_INCLUDE_ES1` makes the header include the OpenGL ES 1.x `GLES/gl.h` header
+instead of the regular OpenGL header.
+
+`GLFW_INCLUDE_ES2` makes the header include the OpenGL ES 2.0 `GLES2/gl2.h`
+header instead of the regular OpenGL header.
+
+`GLFW_INCLUDE_GLU` makes the header include the GLU header.  This only makes
+sense if you are using OpenGL.
+
+`GLFW_DLL` is necessary when using the GLFW DLL on Windows.
+
 
 ### Link with the right libraries
 
 
 #### Windows static library
 
-If you link with the static version of GLFW, it is also necessary to link with
-some system libraries that GLFW uses.
+The static version of the GLFW library is named `glfw`.  When using this
+version, it is also necessary to link with some libraries that GLFW uses.
 
 When linking a program under Windows that uses the static version of GLFW, you
 must link with `opengl32`.  If you are using GLU, you must also link with
@@ -139,21 +153,21 @@ must link with `opengl32`.  If you are using GLU, you must also link with
 
 #### Windows DLL
 
-When compiling a program that uses the DLL version of GLFW, you need to define
-the `GLFW_DLL` macro *before* any inclusion of the GLFW header.  This can be
-done either with a compiler switch or by defining it in your source code.
+The link library for the GLFW DLL is named `glfwdll`.  When compiling a program
+that uses the DLL version of GLFW, you need to define the `GLFW_DLL` macro
+*before* any inclusion of the GLFW header.  This can be done either with
+a compiler switch or by defining it in your source code.
 
-When linking a program under Windows that uses the DLL version of GLFW,
-the only library you need to link with for GLFW to work is `glfwdll`.
-You will still have to link against `opengl32` if your program uses OpenGL, and
-`glu32` if it uses GLU.
+A program using the GLFW DLL does not need to link against any of its
+dependencies, but you still have to link against `opengl32` if your program uses
+OpenGL and `glu32` if it uses GLU.
 
 
 
 #### Unix library
 
-GLFW supports [pkg-config](http://www.freedesktop.org/wiki/Software/pkg-config/).
-A `glfw3.pc` file is generated when the library is built and installed along
+GLFW supports [pkg-config](http://www.freedesktop.org/wiki/Software/pkg-config/),
+and `glfw3.pc` file is generated when the library is built and installed along
 with it.  You can use it without installation using the `PKG_CONFIG_PATH`
 environment variable.  See the documentation for pkg-config for more details.
 
@@ -176,8 +190,8 @@ as dependencies.
 If you are building from the
 command-line, it is recommended that you use pkg-config
 
-GLFW supports [pkg-config](http://www.freedesktop.org/wiki/Software/pkg-config/).
-A `glfw3.pc` file is generated when the library is built and installed along
+GLFW supports [pkg-config](http://www.freedesktop.org/wiki/Software/pkg-config/),
+and `glfw3.pc` file is generated when the library is built and installed along
 with it.  You can use it without installation using the `PKG_CONFIG_PATH`
 environment variable.  See the documentation for pkg-config for more details.
 
@@ -187,7 +201,7 @@ if you have one of them installed, simply install pkg-config.  Once you have
 pkg-config available, the command-line for compiling and linking your
 program is:
 
-    cc `pkg-config --cflags glfw3` -o myprog myprog.c `pkg-config --libs glfw3`
+    cc `pkg-config --cflags glfw3` -o myprog myprog.c `pkg-config --static --libs glfw3`
 
 If you do not wish to use pkg-config, you need to add the required frameworks
 and libraries to your command-line using the `-l` and `-framework` switches,

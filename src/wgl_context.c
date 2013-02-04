@@ -153,7 +153,7 @@ static void initWGLExtensions(_GLFWwindow* window)
 // Initialize WGL
 //========================================================================
 
-int _glfwInitOpenGL(void)
+int _glfwInitContextAPI(void)
 {
     return GL_TRUE;
 }
@@ -163,7 +163,7 @@ int _glfwInitOpenGL(void)
 // Terminate WGL
 //========================================================================
 
-void _glfwTerminateOpenGL(void)
+void _glfwTerminateContextAPI(void)
 {
 }
 

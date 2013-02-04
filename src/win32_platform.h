@@ -213,8 +213,8 @@ void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
 // OpenGL support
-int _glfwInitOpenGL(void);
-void _glfwTerminateOpenGL(void);
+int _glfwInitContextAPI(void);
+void _glfwTerminateContextAPI(void);
 int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWwndconfig* wndconfig,
                        const _GLFWfbconfig* fbconfig);

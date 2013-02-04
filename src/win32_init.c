@@ -184,7 +184,7 @@ int _glfwPlatformInit(void)
     _glfwPlatformGetGammaRamp(&_glfw.originalRamp);
     _glfw.currentRamp = _glfw.originalRamp;
 
-    if (!_glfwInitOpenGL())
+    if (!_glfwInitContextAPI())
         return GL_FALSE;
 
     _glfwInitTimer();
@@ -206,7 +206,7 @@ void _glfwPlatformTerminate(void)
         _glfw.win32.classAtom = 0;
     }
 
-    _glfwTerminateOpenGL();
+    _glfwTerminateContextAPI();
 
     _glfwTerminateJoysticks();
 

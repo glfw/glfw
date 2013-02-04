@@ -23,7 +23,8 @@ To compile GLFW and the accompanying example programs, you will need the
 ### CMake options
 
 There are a number of CMake build options for GLFW, although not all are
-available on all supported platforms.
+available on all supported platforms.  Some of these are de facto standards
+among CMake users and so have no `GLFW_` prefix.
 
 #### Shared options
 

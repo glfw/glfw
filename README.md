@@ -144,7 +144,7 @@ sense if you are using OpenGL.
 
 #### Windows static library
 
-The static version of the GLFW library is named `glfw`.  When using this
+The static version of the GLFW library is named `glfw3`.  When using this
 version, it is also necessary to link with some libraries that GLFW uses.
 
 When linking a program under Windows that uses the static version of GLFW, you
@@ -154,7 +154,7 @@ must link with `opengl32`.  If you are using GLU, you must also link with
 
 #### Windows DLL
 
-The link library for the GLFW DLL is named `glfwdll`.  When compiling a program
+The link library for the GLFW DLL is named `glfw3dll`.  When compiling a program
 that uses the DLL version of GLFW, you need to define the `GLFW_DLL` macro
 *before* any inclusion of the GLFW header.  This can be done either with
 a compiler switch or by defining it in your source code.

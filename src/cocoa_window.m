@@ -361,11 +361,13 @@ static int convertMacKeyCode(unsigned int macKeyCode)
         _glfwInputCursorMotion(window, [event deltaX], [event deltaY]);
     else
     {
+        const NSRect contentRect =
+            [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
         const NSPoint p = [event locationInWindow];
 
         // Cocoa coordinate system has origin at lower left
         const int x = lround(floor(p.x));
-        const int y = window->height - lround(ceil(p.y));
+        const int y = contentRect.size.height - lround(ceil(p.y));
 
         _glfwInputCursorMotion(window, x, y);
     }
@@ -668,7 +670,7 @@ static GLboolean createWindow(_GLFWwindow* window,
     }
 
     window->ns.object = [[NSWindow alloc]
-        initWithContentRect:NSMakeRect(0, 0, wndconfig->width, wndconfig->height);
+        initWithContentRect:NSMakeRect(0, 0, wndconfig->width, wndconfig->height)
                   styleMask:styleMask
                     backing:NSBackingStoreBuffered
                       defer:NO];
@@ -893,7 +895,9 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
     }
     else
     {
-        NSPoint localPoint = NSMakePoint(x, window->height - y - 1);
+        const NSRect contentRect =
+            [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
+        NSPoint localPoint = NSMakePoint(x, contentRect.size.height - y - 1);
         NSPoint globalPoint = [window->ns.object convertBaseToScreen:localPoint];
         CGPoint mainScreenOrigin = CGDisplayBounds(CGMainDisplayID()).origin;
         double mainScreenHeight = CGDisplayBounds(CGMainDisplayID()).size.height;

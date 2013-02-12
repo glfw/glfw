@@ -49,7 +49,7 @@ static void set_gamma(float value)
 {
     gamma_value = value;
     printf("Gamma: %f\n", gamma_value);
-    glfwSetGamma(gamma_value);
+    glfwSetGamma(glfwGetPrimaryMonitor(), gamma_value);
 }
 
 static void error_callback(int error, const char* description)

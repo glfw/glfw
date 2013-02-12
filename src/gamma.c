@@ -37,7 +37,7 @@
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWAPI void glfwSetGamma(float gamma)
+GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
 {
     int i, size = GLFW_GAMMA_RAMP_SIZE;
     GLFWgammaramp ramp;
@@ -75,29 +75,38 @@ GLFWAPI void glfwSetGamma(float gamma)
         ramp.blue[i]  = (unsigned short) value;
     }
 
-    glfwSetGammaRamp(&ramp);
+    glfwSetGammaRamp(handle, &ramp);
 }
 
-GLFWAPI void glfwGetGammaRamp(GLFWgammaramp* ramp)
+GLFWAPI void glfwGetGammaRamp(GLFWmonitor* handle, GLFWgammaramp* ramp)
 {
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
-    _glfwPlatformGetGammaRamp(ramp);
+    _glfwPlatformGetGammaRamp(monitor, ramp);
 }
 
-GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp)
+GLFWAPI void glfwSetGammaRamp(GLFWmonitor* handle, const GLFWgammaramp* ramp)
 {
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+
     if (!_glfwInitialized)
     {
         _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return;
     }
 
-    _glfwPlatformSetGammaRamp(ramp);
-    _glfw.rampChanged = GL_TRUE;
+    if (!monitor->rampChanged)
+    {
+        _glfwPlatformGetGammaRamp(monitor, &monitor->originalRamp);
+        monitor->rampChanged = GL_TRUE;
+    }
+
+    _glfwPlatformSetGammaRamp(monitor, ramp);
 }
 

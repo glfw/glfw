@@ -603,8 +603,6 @@ void _glfwPlatformTerminate(void)
         _glfw.x11.cursor = (Cursor) 0;
     }
 
-    _glfwTerminateGammaRamp();
-
     _glfwTerminateJoysticks();
 
     _glfwTerminateContextAPI();

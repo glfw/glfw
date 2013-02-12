@@ -37,7 +37,7 @@
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-// Detect gamma ramp support and save original gamma ramp, if available
+// Detect gamma ramp support
 //
 void _glfwInitGammaRamp(void)
 {
@@ -54,9 +54,7 @@ void _glfwInitGammaRamp(void)
         XRRScreenResources* rr = XRRGetScreenResources(_glfw.x11.display,
                                                        _glfw.x11.root);
 
-        _glfw.originalRampSize = XRRGetCrtcGammaSize(_glfw.x11.display,
-                                                     rr->crtcs[0]);
-        if (_glfw.originalRampSize == 0)
+        if (XRRGetCrtcGammaSize(_glfw.x11.display, rr->crtcs[0]))
         {
             // This is probably older Nvidia RandR with broken gamma support
             // Flag it as useless and try Xf86VidMode below, if available
@@ -65,28 +63,6 @@ void _glfwInitGammaRamp(void)
 
         XRRFreeScreenResources(rr);
     }
-
-    if (_glfw.x11.vidmode.available && !_glfw.originalRampSize)
-    {
-        // Get the gamma size using XF86VidMode
-        XF86VidModeGetGammaRampSize(_glfw.x11.display,
-                                    _glfw.x11.screen,
-                                    &_glfw.originalRampSize);
-    }
-
-    if (_glfw.originalRampSize)
-    {
-        // Save the original gamma ramp
-        _glfwPlatformGetGammaRamp(&_glfw.originalRamp);
-    }
-}
-
-// Restore original gamma ramp if necessary
-//
-void _glfwTerminateGammaRamp(void)
-{
-    if (_glfw.originalRampSize && _glfw.rampChanged)
-        _glfwPlatformSetGammaRamp(&_glfw.originalRamp);
 }
 
 
@@ -94,83 +70,85 @@ void _glfwTerminateGammaRamp(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
+void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
-    // For now, don't support anything that is not GLFW_GAMMA_RAMP_SIZE
-    if (_glfw.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "X11: Failed to get gamma ramp due to size "
-                        "incompatibility");
-        return;
-    }
+    // TODO: Support ramp sizes other than 256
 
     if (_glfw.x11.randr.available && !_glfw.x11.randr.gammaBroken)
     {
+        XRRCrtcGamma* gamma;
         size_t size = GLFW_GAMMA_RAMP_SIZE * sizeof(unsigned short);
 
-        XRRScreenResources* rr = XRRGetScreenResources(_glfw.x11.display,
-                                                       _glfw.x11.root);
+        if (XRRGetCrtcGammaSize(_glfw.x11.display, monitor->x11.crtc) !=
+            GLFW_GAMMA_RAMP_SIZE)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Only gamma ramps of size 256 supported");
+            return;
+        }
 
-        XRRCrtcGamma* gamma = XRRGetCrtcGamma(_glfw.x11.display,
-                                              rr->crtcs[0]);
-
-        // TODO: Handle case of original ramp size having a size other than 256
+        gamma = XRRGetCrtcGamma(_glfw.x11.display, monitor->x11.crtc);
 
         memcpy(ramp->red, gamma->red, size);
         memcpy(ramp->green, gamma->green, size);
         memcpy(ramp->blue, gamma->blue, size);
 
         XRRFreeGamma(gamma);
-        XRRFreeScreenResources(rr);
     }
     else if (_glfw.x11.vidmode.available)
     {
+        int size;
+        XF86VidModeGetGammaRampSize(_glfw.x11.display, _glfw.x11.screen, &size);
+
+        if (size != GLFW_GAMMA_RAMP_SIZE)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Only gamma ramps of size 256 supported");
+            return;
+        }
+
         XF86VidModeGetGammaRamp(_glfw.x11.display,
                                 _glfw.x11.screen,
                                 GLFW_GAMMA_RAMP_SIZE,
-                                ramp->red,
-                                ramp->green,
-                                ramp->blue);
+                                ramp->red, ramp->green, ramp->blue);
     }
 }
 
-void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
+void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 {
-    // For now, don't support anything that is not GLFW_GAMMA_RAMP_SIZE
-    if (_glfw.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "X11: Failed to set gamma ramp due to size "
-                        "incompatibility");
-        return;
-    }
-
     if (_glfw.x11.randr.available && !_glfw.x11.randr.gammaBroken)
     {
-        int i;
         size_t size = GLFW_GAMMA_RAMP_SIZE * sizeof(unsigned short);
+        XRRCrtcGamma* gamma;
 
-        XRRScreenResources* rr = XRRGetScreenResources(_glfw.x11.display,
-                                                       _glfw.x11.root);
-
-        // Update gamma per monitor
-        for (i = 0;  i < rr->ncrtc;  i++)
+        if (XRRGetCrtcGammaSize(_glfw.x11.display, monitor->x11.crtc) !=
+            GLFW_GAMMA_RAMP_SIZE)
         {
-            XRRCrtcGamma* gamma = XRRAllocGamma(GLFW_GAMMA_RAMP_SIZE);
-
-            memcpy(gamma->red, ramp->red, size);
-            memcpy(gamma->green, ramp->green, size);
-            memcpy(gamma->blue, ramp->blue, size);
-
-            XRRSetCrtcGamma(_glfw.x11.display, rr->crtcs[i], gamma);
-            XRRFreeGamma(gamma);
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Only gamma ramps of size 256 supported");
+            return;
         }
 
-        XRRFreeScreenResources(rr);
+        gamma = XRRAllocGamma(GLFW_GAMMA_RAMP_SIZE);
+
+        memcpy(gamma->red, ramp->red, size);
+        memcpy(gamma->green, ramp->green, size);
+        memcpy(gamma->blue, ramp->blue, size);
+
+        XRRSetCrtcGamma(_glfw.x11.display, monitor->x11.crtc, gamma);
     }
     else if (_glfw.x11.vidmode.available)
     {
+        int size;
+        XF86VidModeGetGammaRampSize(_glfw.x11.display, _glfw.x11.screen, &size);
+
+        if (size != GLFW_GAMMA_RAMP_SIZE)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Only gamma ramps of size 256 supported");
+            return;
+        }
+
         XF86VidModeSetGammaRamp(_glfw.x11.display,
                                 _glfw.x11.screen,
                                 GLFW_GAMMA_RAMP_SIZE,

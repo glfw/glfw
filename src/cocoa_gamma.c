@@ -39,19 +39,27 @@
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
+void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
+    // TODO: Support ramp sizes other than 256
+
     uint32_t sampleCount;
     int i;
     CGGammaValue red[GLFW_GAMMA_RAMP_SIZE];
     CGGammaValue green[GLFW_GAMMA_RAMP_SIZE];
     CGGammaValue blue[GLFW_GAMMA_RAMP_SIZE];
 
-    // For now, don't support anything that is not GLFW_GAMMA_RAMP_SIZE
-    if (_glfw.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
+    if (CGDisplayGammaTableCapacity(monitor->ns.displayID) !=
+        GLFW_GAMMA_RAMP_SIZE)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Only gamma ramps of size 256 supported");
         return;
+    }
 
-    CGGetDisplayTransferByTable(CGMainDisplayID(), GLFW_GAMMA_RAMP_SIZE, red, green, blue,
+    CGGetDisplayTransferByTable(monitor->ns.displayID,
+                                GLFW_GAMMA_RAMP_SIZE,
+                                red, green, blue,
                                 &sampleCount);
 
     for (i = 0; i < GLFW_GAMMA_RAMP_SIZE; i++)
@@ -62,17 +70,23 @@ void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
     }
 }
 
-void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
+void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 {
+    // TODO: Support ramp sizes other than 256
+
     int i;
     int size = GLFW_GAMMA_RAMP_SIZE;
     CGGammaValue red[GLFW_GAMMA_RAMP_SIZE];
     CGGammaValue green[GLFW_GAMMA_RAMP_SIZE];
     CGGammaValue blue[GLFW_GAMMA_RAMP_SIZE];
 
-    // For now, don't support anything that is not GLFW_GAMMA_RAMP_SIZE
-    if (_glfw.originalRampSize != GLFW_GAMMA_RAMP_SIZE)
+    if (CGDisplayGammaTableCapacity(monitor->ns.displayID) !=
+        GLFW_GAMMA_RAMP_SIZE)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Only gamma ramps of size 256 supported");
         return;
+    }
 
     // Convert to float & take the difference of the original gamma and
     // the linear function.
@@ -83,6 +97,8 @@ void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
         blue[i] = ramp->blue[i] / 65535.f;
     }
 
-    CGSetDisplayTransferByTable(CGMainDisplayID(), GLFW_GAMMA_RAMP_SIZE, red, green, blue);
+    CGSetDisplayTransferByTable(monitor->ns.displayID,
+                                GLFW_GAMMA_RAMP_SIZE,
+                                red, green, blue);
 }
 

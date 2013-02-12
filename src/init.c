@@ -150,12 +150,21 @@ GLFWAPI int glfwInit(void)
 
 GLFWAPI void glfwTerminate(void)
 {
+    int i;
+
     if (!_glfwInitialized)
         return;
 
     // Close all remaining windows
     while (_glfw.windowListHead)
         glfwDestroyWindow((GLFWwindow*) _glfw.windowListHead);
+
+    for (i = 0;  i < _glfw.monitorCount;  i++)
+    {
+        _GLFWmonitor* monitor = _glfw.monitors[i];
+        if (monitor->rampChanged)
+            _glfwPlatformSetGammaRamp(monitor, &monitor->originalRamp);
+    }
 
     _glfwDestroyMonitors();
 

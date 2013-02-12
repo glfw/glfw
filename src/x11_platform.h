@@ -210,7 +210,6 @@ void _glfwInitTimer(void);
 
 // Gamma
 void _glfwInitGammaRamp(void);
-void _glfwTerminateGammaRamp(void);
 
 // OpenGL support
 int _glfwInitContextAPI(void);

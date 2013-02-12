@@ -93,10 +93,6 @@ int _glfwPlatformInit(void)
     changeToResourcesDirectory();
 #endif
 
-    // Save the original gamma ramp
-    _glfw.originalRampSize = CGDisplayGammaTableCapacity(CGMainDisplayID());
-    _glfwPlatformGetGammaRamp(&_glfw.originalRamp);
-
     _glfwInitTimer();
 
     _glfwInitJoysticks();
@@ -122,10 +118,6 @@ void _glfwPlatformTerminate(void)
         CFRelease(_glfw.ns.eventSource);
         _glfw.ns.eventSource = NULL;
     }
-
-    // Restore the original gamma ramp
-    if (_glfw.rampChanged)
-        _glfwPlatformSetGammaRamp(&_glfw.originalRamp);
 
     [NSApp setDelegate:nil];
     [_glfw.ns.delegate release];

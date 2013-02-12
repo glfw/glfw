@@ -267,6 +267,9 @@ struct _GLFWmonitor
     GLFWvidmode*    modes;
     int             modeCount;
 
+    GLFWgammaramp   originalRamp;
+    GLboolean       rampChanged;
+
     // This is defined in the window API's platform.h
     _GLFW_PLATFORM_MONITOR_STATE;
 };
@@ -284,10 +287,6 @@ struct _GLFWlibrary
     _GLFWmonitor**  monitors;
     int             monitorCount;
     GLFWmonitorfun  monitorCallback;
-
-    GLFWgammaramp   originalRamp;
-    int             originalRampSize;
-    GLboolean       rampChanged;
 
     // This is defined in the window API's platform.h
     _GLFW_PLATFORM_LIBRARY_WINDOW_STATE;
@@ -376,17 +375,19 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count);
  */
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode);
 
-/*! @brief Returns the current system gamma ramp.
+/*! @brief Retrieves the current gamma ramp for the specified monitor.
+ *  @param[in] monitor The monitor to query.
  *  @param[out] ramp The current system gamma ramp.
  *  @ingroup platform
  */
-void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp);
+void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
 
-/*! @brief Sets the system gamma ramp.
+/*! @brief Sets the gamma ramp for the specified monitor.
+ *  @param[in] monitor The monitor whose gamma ramp to set.
  *  @param[in] ramp The desired system gamma ramp.
  *  @ingroup platform
  */
-void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp);
+void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
 /*! @brief Sets the system clipboard to the specified string.
  *  @param[in] window The window who will own the system clipboard contents, on

@@ -883,27 +883,28 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count);
  */
 GLFWAPI GLFWvidmode glfwGetVideoMode(GLFWmonitor* monitor);
 
-/*! @brief Sets the system gamma ramp for all connected monitors to one
- *  generated from the specified exponent.
+/*! @brief Generates a gamma ramp and sets it for the specified monitor.
+ *  @param[in] monitor The monitor whose gamma ramp to set.
  *  @param[in] gamma The desired exponent.
  *  @ingroup gamma
  *
- *  @remarks This is a helper function layered on top of @ref glfwSetGammaRamp.
+ *  @remarks This is a helper function on top of @ref glfwSetGammaRamp.
  */
-GLFWAPI void glfwSetGamma(float gamma);
+GLFWAPI void glfwSetGamma(GLFWmonitor* monitor, float gamma);
 
-/*! @brief Retrieves the current system gamma ramp.
+/*! @brief Retrieves the current gamma ramp for the specified monitor.
+ *  @param[in] monitor The monitor to query.
  *  @param[out] ramp Where to store the gamma ramp.
  *  @ingroup gamma
  */
-GLFWAPI void glfwGetGammaRamp(GLFWgammaramp* ramp);
+GLFWAPI void glfwGetGammaRamp(GLFWmonitor* monitor, GLFWgammaramp* ramp);
 
-/*! @brief Sets the system gamma ramp for all connected monitors to the one
- *  specified.
+/*! @brief Sets the gamma ramp for the specified monitor.
+ *  @param[in] monitor The monitor whose gamma ramp to set.
  *  @param[in] ramp The gamma ramp to use.
  *  @ingroup gamma
  */
-GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp);
+GLFWAPI void glfwSetGammaRamp(GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
 /*! @brief Resets all window hints to their default values
  *

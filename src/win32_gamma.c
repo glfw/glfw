@@ -36,13 +36,31 @@
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-void _glfwPlatformGetGammaRamp(GLFWgammaramp* ramp)
+void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
-    GetDeviceGammaRamp(GetDC(GetDesktopWindow()), (WORD*) ramp);
+    HDC dc;
+    DISPLAY_DEVICE display;
+
+    ZeroMemory(&display, sizeof(DISPLAY_DEVICE));
+    display.cb = sizeof(DISPLAY_DEVICE);
+    EnumDisplayDevices(monitor->win32.name, 0, &display, 0);
+
+    dc = CreateDC(L"DISPLAY", display.DeviceString, NULL, NULL);
+    GetDeviceGammaRamp(dc, (WORD*) ramp);
+    DeleteDC(dc);
 }
 
-void _glfwPlatformSetGammaRamp(const GLFWgammaramp* ramp)
+void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 {
-    SetDeviceGammaRamp(GetDC(GetDesktopWindow()), (WORD*) ramp);
+    HDC dc;
+    DISPLAY_DEVICE display;
+
+    ZeroMemory(&display, sizeof(DISPLAY_DEVICE));
+    display.cb = sizeof(DISPLAY_DEVICE);
+    EnumDisplayDevices(monitor->win32.name, 0, &display, 0);
+
+    dc = CreateDC(L"DISPLAY", display.DeviceString, NULL, NULL);
+    SetDeviceGammaRamp(dc, (WORD*) ramp);
+    DeleteDC(dc);
 }
 

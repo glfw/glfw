@@ -571,9 +571,9 @@ typedef void (* GLFWerrorfun)(int,const char*);
 
 /*! @brief The function signature for window position callbacks.
  *  @param[in] window The window that the user moved.
- *  @param[in] x The new x-coordinate, in pixels, of the upper-left corner of
+ *  @param[in] xpos The new x-coordinate, in pixels, of the upper-left corner of
  *  the client area of the window.
- *  @param[in] y The new y-coordinate, in pixels, of the upper-left corner of
+ *  @param[in] ypos The new y-coordinate, in pixels, of the upper-left corner of
  *  the client area of the window.
  *  @ingroup window
  *
@@ -642,8 +642,8 @@ typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int);
 
 /*! @brief The function signature for cursor position callbacks.
  *  @param[in] window The window that received the event.
- *  @param[in] x The new x-coordinate of the cursor.
- *  @param[in] y The new y-coordinate of the cursor.
+ *  @param[in] xpos The new x-coordinate of the cursor.
+ *  @param[in] ypos The new y-coordinate of the cursor.
  *  @ingroup input
  *
  *  @sa glfwSetCursorPosCallback
@@ -662,8 +662,8 @@ typedef void (* GLFWcursorenterfun)(GLFWwindow*,int);
 
 /*! @brief The function signature for scroll callbacks.
  *  @param[in] window The window that received the event.
- *  @param[in] x The scroll offset along the x-axis.
- *  @param[in] y The scroll offset along the y-axis.
+ *  @param[in] xpos The scroll offset along the x-axis.
+ *  @param[in] ypos The scroll offset along the y-axis.
  *  @ingroup input
  *
  *  @sa glfwSetScrollCallback
@@ -1154,7 +1154,7 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
  *
  *  @sa glfwGetWindowPos
  */
-GLFWAPI void glfwSetWindowPos(GLFWwindow* window, int x, int y);
+GLFWAPI void glfwSetWindowPos(GLFWwindow* window, int xpos, int ypos);
 
 /*! @brief Retrieves the size of the client area of the specified window.
  *  @param[in] window The window whose size to retrieve.

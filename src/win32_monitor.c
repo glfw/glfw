@@ -107,7 +107,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     {
         // Enumerate display adapters
 
-        DISPLAY_DEVICE adapter, monitor;
+        DISPLAY_DEVICE adapter, display;
         DEVMODE settings;
         char* name;
         HDC dc;
@@ -150,15 +150,15 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             }
         }
 
-        ZeroMemory(&monitor, sizeof(DISPLAY_DEVICE));
-        monitor.cb = sizeof(DISPLAY_DEVICE);
+        ZeroMemory(&display, sizeof(DISPLAY_DEVICE));
+        display.cb = sizeof(DISPLAY_DEVICE);
 
-        EnumDisplayDevices(adapter.DeviceName, 0, &monitor, 0);
-        dc = CreateDC(L"DISPLAY", monitor.DeviceString, NULL, NULL);
+        EnumDisplayDevices(adapter.DeviceName, 0, &display, 0);
+        dc = CreateDC(L"DISPLAY", display.DeviceString, NULL, NULL);
 
         primary = adapter.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE;
 
-        name = _glfwCreateUTF8FromWideString(monitor.DeviceString);
+        name = _glfwCreateUTF8FromWideString(display.DeviceString);
         if (!name)
         {
             // TODO: wat

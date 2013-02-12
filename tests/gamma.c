@@ -170,7 +170,7 @@ int main(int argc, char** argv)
         glRectf(-0.5f, -0.5f, 0.5f, 0.5f);
 
         glfwSwapBuffers(window);
-        glfwPollEvents();
+        glfwWaitEvents();
     }
 
     glfwTerminate();

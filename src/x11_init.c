@@ -631,8 +631,6 @@ const char* _glfwPlatformGetVersionString(void)
         " glXGetProcAddressEXT"
 #elif defined(_GLFW_DLOPEN_LIBGL)
         " dlsym(libGL)"
-#else
-        " no-extension-support"
 #endif
 #if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
         " clock_gettime"

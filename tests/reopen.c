@@ -120,7 +120,11 @@ int main(int argc, char** argv)
         GLFWmonitor* monitor = NULL;
 
         if (count & 1)
-            monitor = glfwGetPrimaryMonitor();
+        {
+            int monitorCount;
+            GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);
+            monitor = monitors[rand() % monitorCount];
+        }
 
         if (!open_window(640, 480, monitor))
         {

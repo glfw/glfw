@@ -46,6 +46,11 @@ typedef void* id;
  #error "No supported context creation API selected"
 #endif
 
+#include <IOKit/IOKitLib.h>
+#include <IOKit/IOCFPlugIn.h>
+#include <IOKit/hid/IOHIDLib.h>
+#include <IOKit/hid/IOHIDKeys.h>
+
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  ns
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS ns
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorNS ns
@@ -74,6 +79,27 @@ typedef struct _GLFWwindowNS
 
 
 //------------------------------------------------------------------------
+// Joystick information & state
+//------------------------------------------------------------------------
+typedef struct
+{
+    int present;
+    char name[256];
+
+    IOHIDDeviceInterface** interface;
+
+    int numAxes;
+    int numButtons;
+    int numHats;
+
+    CFMutableArrayRef axes;
+    CFMutableArrayRef buttons;
+    CFMutableArrayRef hats;
+
+} _GLFWjoy;
+
+
+//------------------------------------------------------------------------
 // Platform-specific library global data for Cocoa
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryNS
@@ -88,6 +114,8 @@ typedef struct _GLFWlibraryNS
     id              autoreleasePool;
 
     char*           clipboardString;
+
+    _GLFWjoy        joysticks[GLFW_JOYSTICK_LAST + 1];
 } _GLFWlibraryNS;
 
 

@@ -142,6 +142,18 @@ sense if you are using OpenGL.
 ### Link with the right libraries
 
 
+#### Using GLFW from CMake
+
+The `GLFW_LIBRARIES` cache variable contains all link-time dependencies of GLFW
+as it is currently configured, so to link against GLFW simply do:
+
+    target_link_libraries(myapp glfw ${GLFW_LIBRARIES})
+
+Note that this does not include GLU, as GLFW does not use it.  If your
+application needs GLU, you can add it to the list of dependencies with the
+`OPENGL_glu_LIBRARY` cache variable.
+
+
 #### Windows static library
 
 The static version of the GLFW library is named `glfw3`.  When using this

@@ -14,6 +14,17 @@ option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
+option(GLFW_DOCUMENT_NATIVE "Include documentation of native access functions" OFF)
+option(GLFW_DOCUMENT_INTERNALS "Include documentation of internal functions" OFF)
+
+set(GLFW_DOC_HEADERS "${GLFW_SOURCE_DIR}/include/GL/glfw3.h")
+if (GLFW_DOCUMENT_NATIVE)
+    set(GLFW_DOC_HEADERS "${GLFW_DOC_HEADERS} ${GLFW_SOURCE_DIR}/include/GL/glfw3native.h")
+endif()
+if (GLFW_DOCUMENT_INTERNALS)
+    set(GLFW_DOC_HEADERS "${GLFW_DOC_HEADERS} ${GLFW_SOURCE_DIR}/src/internal.h")
+endif()
+
 if (APPLE)
     option(GLFW_USE_CHDIR "Make glfwInit chdir to Contents/Resources" ON)
     option(GLFW_USE_MENUBAR "Populate the menu bar on first window creation" ON)

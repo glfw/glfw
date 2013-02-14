@@ -39,11 +39,31 @@ extern "C" {
  * Doxygen documentation
  *************************************************************************/
 
-/*! @defgroup native Native API
+/*! @defgroup native Native access
  *
- *  By using the native API, you assert that you know what you are doing and how
- *  to fix problems caused by using it.  If you don't, you shouldn't be using
- *  it.
+ *  <strong>By using the native API, you assert that you know what you are
+ *  doing and how to fix problems caused by using it.  If you don't, you
+ *  shouldn't be using it.</strong>
+ *
+ *  Before the inclusion of @ref glfw3native.h, you must define exactly one
+ *  window API macro and exactly one context API macro.  Failure to do this
+ *  will cause a compile-time error.
+ *
+ *  The available window API macros are:
+ *  @arg @c GLFW_EXPOSE_NATIVE_WIN32
+ *  @arg @c GLFW_EXPOSE_NATIVE_COCOA
+ *  @arg @c GLFW_EXPOSE_NATIVE_X11
+ *
+ *  The available context API macros are:
+ *  @arg @c GLFW_EXPOSE_NATIVE_WGL
+ *  @arg @c GLFW_EXPOSE_NATIVE_NSGL
+ *  @arg @c GLFW_EXPOSE_NATIVE_GLX
+ *  @arg @c GLFW_EXPOSE_NATIVE_EGL
+ *
+ *  These macros select which of the native access functions are declared and
+ *  which platform-specific headers to include.  It is then up your (by
+ *  definition platform-specific) code to handle which of these should be
+ *  defined.
  */
 
 

@@ -783,10 +783,12 @@ GLFWAPI void glfwTerminate(void);
  */
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
 
-/*! @brief Returns the version string of the GLFW library.
+/*! @brief Returns a string describing the compile-time configuration.
  *
- *  The version string contains information about what compile-time options were
- *  enabled when the library was built.
+ *  The format of the string is as follows:
+ *  @arg The name of the window system API
+ *  @arg The name of the context creation API
+ *  @arg Any additional options or APIs
  *
  *  @return The GLFW version string.
  *  @ingroup init
@@ -1061,6 +1063,10 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  @remarks This function does not change which context is current.  Before you
  *  can use the newly created context, you need to make it current using @ref
  *  glfwMakeContextCurrent.
+ *
+ *  @remarks To create the window at a specific position, make it initially
+ *  invisible using the @c GLFW_VISIBLE window hint, set its position and then
+ *  show it.
  *
  *  @remarks For fullscreen windows the initial cursor mode is @c
  *  GLFW_CURSOR_CAPTURED and the screensaver is prohibited from starting.  For

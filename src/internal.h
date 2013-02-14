@@ -79,22 +79,22 @@ typedef struct _GLFWmonitor     _GLFWmonitor;
 // Doxygen group definitions
 //========================================================================
 
-/*! @defgroup platform Platform API
- *  @brief The API implemented by the platform-specific code.
+/*! @defgroup platform Platform interface
+ *  @brief The interface implemented by the platform-specific code.
  *
  *  The platform API is the interface exposed by the platform-specific code for
  *  each platform and is called by the shared code of the public API It mirrors
  *  the public API except it uses objects instead of handles.
  */
-/*! @defgroup event Event API
- *  @brief The API used by the platform-specific code to report events.
+/*! @defgroup event Event interface
+ *  @brief The interface used by the platform-specific code to report events.
  *
  *  The event API is used by the platform-specific code to notify the shared
  *  code of events that can be translated into state changes and/or callback
  *  calls.
  */
 /*! @defgroup utility Utility functions
- *  @brief Various utility functions.
+ *  @brief Various utility functions for internal use.
  *
  *  These functions are shared code and may be used by any part of GLFW
  *  Each platform may add its own utility functions, but those may only be
@@ -325,15 +325,8 @@ int _glfwPlatformInit(void);
  */
 void _glfwPlatformTerminate(void);
 
-/*! @brief Returns a string describing the compile-time configuration of the
- *  platform-specific part of the library.
- *  @return The version string.
+/*! @copydoc glfwGetVersionString
  *  @ingroup platform
- *
- *  The format of the string is as follows:
- *  @arg The name of the window system API used
- *  @arg The name of the context creation API used
- *  @arg Any additional options or APIs
  *
  *  @note The returned string must be available for the duration of the program.
  *
@@ -341,16 +334,10 @@ void _glfwPlatformTerminate(void);
  */
 const char* _glfwPlatformGetVersionString(void);
 
-/*! @brief Sets the position of the system cursor.
- *  @param[in] window The window whose client area the specified posiiton is
- *  relative to.
- *  @param[in] x The new x-coordinate of the cursor, relative to the left edge
- *  of the client area of the window.
- *  @param[in] y The new y-coordinate of the cursor, relative to the top edge
- *  of the client area of the window.
+/*! @copydoc glfwSetCursorPos
  *  @ingroup platform
  */
-void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y);
+void _glfwPlatformSetCursorPos(_GLFWwindow* window, int xpos, int ypos);
 
 /*! @brief Sets up the specified cursor mode for the specified window.
  *  @param[in] window The window whose cursor mode to change.
@@ -359,7 +346,8 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y);
  */
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
 
-/*! @ingroup platform
+/*! @copydoc glfwGetMonitors
+ *  @ingroup platform
  */
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count);
 
@@ -367,7 +355,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count);
  */
 void _glfwPlatformDestroyMonitor(_GLFWmonitor* monitor);
 
-/*! @ingroup platform
+/*! @copydoc glfwGetVideoModes
+ *  @ingroup platform
  */
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count);
 
@@ -375,33 +364,22 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count);
  */
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode);
 
-/*! @brief Retrieves the current gamma ramp for the specified monitor.
- *  @param[in] monitor The monitor to query.
- *  @param[out] ramp The current system gamma ramp.
+/*! @copydoc glfwGetGammaRamp
  *  @ingroup platform
  */
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
 
-/*! @brief Sets the gamma ramp for the specified monitor.
- *  @param[in] monitor The monitor whose gamma ramp to set.
- *  @param[in] ramp The desired system gamma ramp.
+/*! @copydoc glfwSetGammaRamp
  *  @ingroup platform
  */
 void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
-/*! @brief Sets the system clipboard to the specified string.
- *  @param[in] window The window who will own the system clipboard contents, on
- *  systems where this is necessary.
- *  @param[in] string The UTF-8 encoded string to use.
+/*! @copydoc glfwSetClipboardString
  *  @ingroup platform
  */
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string);
 
-/*! @brief Returns the string in the system clipboard.
- *  @param[in] window The window who will request the system clipboard contents,
- *  on systems where this is necessary.
- *  @return The UTF-8 encoded contents, or @c NULL if the system clipboard did
- *  not contain a string.
+/*! @copydoc glfwGetClipboardString
  *  @ingroup platform
  *
  *  @note The returned string must be valid until the next call to @ref
@@ -409,34 +387,32 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string);
  */
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window);
 
-/*! @brief Returns the value of the specified joystick property.
- *  @param[in] joy The joystick to use.
- *  @param[in] param The property whose value to return.
- *  @return The value of the specified property, or zero if an error occurred.
+/*! @copydoc glfwGetJoystickParam
  *  @ingroup platform
  */
 int _glfwPlatformGetJoystickParam(int joy, int param);
 
-/*! @ingroup platform
+/*! @copydoc glfwGetJoystickAxes
+ *  @ingroup platform
  */
 int _glfwPlatformGetJoystickAxes(int joy, float* axes, int numaxes);
 
-/*! @ingroup platform
+/*! @copydoc glfwGetJoystickButtons
+ *  @ingroup platform
  */
 int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons, int numbuttons);
 
-/*! @ingroup platform
+/*! @copydoc glfwGetJoystickName
+ *  @ingroup platform
  */
 const char* _glfwPlatformGetJoystickName(int joy);
 
-/*! @brief Returns the current value of the timer.
- *  @return The value, in seconds, of the timer.
+/*! @copydoc glfwGetTime
  *  @ingroup platform
  */
 double _glfwPlatformGetTime(void);
 
-/*! @brief Sets the value of the timer.
- *  @param[in] time The new value, in seconds, of the timer.
+/*! @copydoc glfwSetTime
  *  @ingroup platform
  */
 void _glfwPlatformSetTime(double time);
@@ -451,63 +427,78 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
  */
 void _glfwPlatformDestroyWindow(_GLFWwindow* window);
 
-/*! @ingroup platform
+/*! @copydoc glfwSetWindowTitle
+ *  @ingroup platform
  */
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title);
 
-/*! @ingroup platform
+/*! @copydoc glfwGetWindowPos
+ *  @ingroup platform
  */
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos);
 
-/*! @ingroup platform
+/*! @copydoc glfwSetWindowPos
+ *  @ingroup platform
  */
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos);
 
-/*! @ingroup platform
+/*! @copydoc glfwGetWindowSize
+ *  @ingroup platform
  */
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height);
 
-/*! @ingroup platform
+/*! @copydoc glfwSetWindowSize
+ *  @ingroup platform
  */
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height);
 
-/*! @ingroup platform
+/*! @copydoc glfwIconifyWindow
+ *  @ingroup platform
  */
 void _glfwPlatformIconifyWindow(_GLFWwindow* window);
 
-/*! @ingroup platform
+/*! @copydoc glfwRestoreWindow
+ *  @ingroup platform
  */
 void _glfwPlatformRestoreWindow(_GLFWwindow* window);
 
-/*! @ingroup platform
+/*! @copydoc glfwShowWindow
+ *  @ingroup platform
  */
 void _glfwPlatformShowWindow(_GLFWwindow* window);
 
-/*! @ingroup platform
+/*! @copydoc glfwHideWindow
+ *  @ingroup platform
  */
 void _glfwPlatformHideWindow(_GLFWwindow* window);
 
-/*! @ingroup platform
+/*! @copydoc glfwPollEvents
+ *  @ingroup platform
  */
 void _glfwPlatformPollEvents(void);
 
-/*! @ingroup platform
+/*! @copydoc glfwWaitEvents
+ *  @ingroup platform
  */
 void _glfwPlatformWaitEvents(void);
 
-/*! @ingroup platform
+/*! @copydoc glfwMakeContextCurrent
+ *  @ingroup platform
  */
 void _glfwPlatformMakeContextCurrent(_GLFWwindow* window);
 
-/*! @ingroup platform
+/*! @copydoc glfwGetCurrentContext
+ *  @ingroup platform
  */
 _GLFWwindow* _glfwPlatformGetCurrentContext(void);
 
-/*! @ingroup platform
+/*! @copydoc glfwSwapBuffers
+ *  @ingroup platform
  */
 void _glfwPlatformSwapBuffers(_GLFWwindow* window);
 
-/*! @ingroup platform
+/*! @copydoc glfwSwapInterval
+ *  @ingroup platform
  */
 void _glfwPlatformSwapInterval(int interval);
 
@@ -515,17 +506,7 @@ void _glfwPlatformSwapInterval(int interval);
  */
 int _glfwPlatformExtensionSupported(const char* extension);
 
-/*! @ingroup platform
- */
-GLFWglproc _glfwPlatformGetProcAddress(const char* procname);
-
-/*! @ingroup platform
- */
-int _glfwPlatformExtensionSupported(const char* extension);
-
-/*! @brief Returns the address of the specified client API function.
- *  @param[in] procname The name of the desired function.
- *  @return The address of the function, or @c NULL if it is not available.
+/*! @copydoc glfwGetProcAddress
  *  @ingroup platform
  */
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname);
@@ -545,11 +526,11 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused);
 
 /*! @brief Notifies shared code of a window movement event.
  *  @param[in] window The window that received the event.
- *  @param[in] x The new x-coordinate of the client area of the window.
- *  @param[in] x The new y-coordinate of the client area of the window.
+ *  @param[in] xpos The new x-coordinate of the client area of the window.
+ *  @param[in] ypos The new y-coordinate of the client area of the window.
  *  @ingroup event
  */
-void _glfwInputWindowPos(_GLFWwindow* window, int x, int y);
+void _glfwInputWindowPos(_GLFWwindow* window, int xpos, int ypos);
 
 /*! @brief Notifies shared code of a window resize event.
  *  @param[in] window The window that received the event.
@@ -669,7 +650,7 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 
 /*! @brief Searches an extension string for the specified extension.
  *  @param[in] string The extension string to search.
- *  @param[in] extension The extension to search for.
+ *  @param[in] extensions The extension to search for.
  *  @return @c GL_TRUE if the extension was found, or @c GL_FALSE otherwise.
  *  @ingroup utility
  */

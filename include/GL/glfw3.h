@@ -193,6 +193,8 @@ extern "C" {
     #include <GLES/gl.h>
   #elif defined(GLFW_INCLUDE_ES2)
     #include <GLES2/gl2.h>
+  #elif defined(GLFW_INCLUDE_ES3)
+    #include <GLES3/gl3.h>
   #else
     #include <GL/gl.h>
   #endif

@@ -133,6 +133,9 @@ instead of the regular OpenGL header.
 `GLFW_INCLUDE_ES2` makes the header include the OpenGL ES 2.0 `GLES2/gl2.h`
 header instead of the regular OpenGL header.
 
+`GLFW_INCLUDE_ES3` makes the header include the OpenGL ES 3.0 `GLES3/gl3.h`
+header instead of the regular OpenGL header.
+
 `GLFW_INCLUDE_GLU` makes the header include the GLU header.  This only makes
 sense if you are using OpenGL.
 

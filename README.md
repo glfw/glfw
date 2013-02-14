@@ -361,7 +361,7 @@ GLFW.
  * [Cocoa] Bugfix: The loop condition for saving video modes used the wrong
                    index variable
  * [Cocoa] Bugfix: The OpenGL framework was not retrieved, making
-                   glfwGetProcAddress crash
+                   `glfwGetProcAddress` crash
  * [Cocoa] Bugfix: `glfwInit` changed the current directory for unbundled
                    executables
  * [Cocoa] Bugfix: The `GLFW_WINDOW_NO_RESIZE` window parameter was always zero
@@ -390,7 +390,7 @@ GLFW.
            XP
  * [Win32] Bugfix: Window activation and iconification did not work as expected
  * [Win32] Bugfix: Software rasterizer pixel formats were not discarded by the
-                   WGL_ARB_pixel_format code path
+                   `WGL_ARB_pixel_format` code path
  * [Win32] Bugfix: The array for WGL context attributes was too small and could
                    overflow
  * [Win32] Bugfix: Alt+F4 hot key was not translated into `WM_CLOSE`

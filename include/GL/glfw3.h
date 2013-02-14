@@ -1099,6 +1099,8 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height, const char* title, G
  *
  *  @note This function may only be called from the main thread.
  *
+ *  @note This function may not be called from a callback.
+ *
  *  @note If the window's context is current on the main thread, it is
  *  detached before being destroyed.
  *
@@ -1390,6 +1392,8 @@ GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow* window, GLFWwindowiconifyf
  *
  *  @note This function may only be called from the main thread.
  *
+ *  @note This function may not be called from a callback.
+ *
  *  @sa glfwWaitEvents
  */
 GLFWAPI void glfwPollEvents(void);
@@ -1398,6 +1402,8 @@ GLFWAPI void glfwPollEvents(void);
  *  @ingroup window
  *
  *  @note This function may only be called from the main thread.
+ *
+ *  @note This function may not be called from a callback.
  *
  *  @sa glfwPollEvents
  */

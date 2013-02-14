@@ -200,7 +200,7 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = _GLFW_VERSION_FULL
+    const char* version = _GLFW_VERSION_FULL " Win32"
 #if defined(_GLFW_WGL)
         " WGL"
 #elif defined(_GLFW_EGL)
@@ -209,17 +209,15 @@ const char* _glfwPlatformGetVersionString(void)
 #if defined(__MINGW32__)
         " MinGW"
 #elif defined(_MSC_VER)
-        " Visual C++ "
+        " VisualC "
 #elif defined(__BORLANDC__)
-        " Borland C"
-#else
-        " (unknown compiler)"
+        " BorlandC"
+#endif
+#if !defined(_GLFW_NO_DLOAD_WINMM)
+        " LoadLibrary(winmm)"
 #endif
 #if defined(_GLFW_BUILD_DLL)
         " DLL"
-#endif
-#if !defined(_GLFW_NO_DLOAD_WINMM)
-        " load(winmm)"
 #endif
         ;
 

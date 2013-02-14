@@ -615,7 +615,7 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = _GLFW_VERSION_FULL
+    const char* version = _GLFW_VERSION_FULL " X11"
 #if defined(_GLFW_GLX)
         " GLX"
 #elif defined(_GLFW_EGL)
@@ -634,9 +634,7 @@ const char* _glfwPlatformGetVersionString(void)
         " clock_gettime"
 #endif
 #if defined(__linux__)
-        " Linux-joystick-API"
-#else
-        " no-joystick-support"
+        " /dev/js"
 #endif
 #if defined(_GLFW_BUILD_DLL)
         " shared"

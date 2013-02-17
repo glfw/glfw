@@ -173,11 +173,11 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* found)
             RROutput output;
 
             ci = XRRGetCrtcInfo(_glfw.x11.display, sr, sr->crtcs[i]);
-            output = ci->outputs[i];
+            output = ci->outputs[0];
 
             for (j = 0;  j < ci->noutput;  j++)
             {
-                if (ci->outputs[i] == primary)
+                if (ci->outputs[j] == primary)
                 {
                     output = primary;
                     break;

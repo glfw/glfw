@@ -43,3 +43,15 @@ tests/threads
 tests/title
 tests/version
 tests/windows
+
+# Windows/VS ignores
+*.dir
+*.vcxproj*
+*.sln
+_ReSharper*
+Win32
+examples/Debug
+tests/Debug
+src/Debug
+*.opensdf
+*.sdf

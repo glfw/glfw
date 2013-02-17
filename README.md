@@ -460,6 +460,7 @@ skills.
  * Ozzy at Orkysquad
  * Peoro
  * Arturo J. Pérez
+ * Ed Ropple
  * Riku Salminen
  * Sebastian Schuberth
  * Matt Sealey

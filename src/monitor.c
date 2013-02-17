@@ -156,7 +156,6 @@ void _glfwInputMonitorChange(void)
 //////////////////////////////////////////////////////////////////////////
 
 _GLFWmonitor* _glfwCreateMonitor(const char* name,
-                                 GLboolean primary,
                                  int widthMM, int heightMM,
                                  int x, int y)
 {
@@ -168,7 +167,6 @@ _GLFWmonitor* _glfwCreateMonitor(const char* name,
     }
 
     monitor->name = strdup(name);
-    monitor->primary = primary;
     monitor->widthMM = widthMM;
     monitor->heightMM = heightMM;
     monitor->positionX = x;
@@ -280,31 +278,13 @@ GLFWAPI GLFWmonitor** glfwGetMonitors(int* count)
 
 GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void)
 {
-    int i;
-    _GLFWmonitor* primary = NULL;
-
     if (!_glfwInitialized)
     {
         _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
         return NULL;
     }
 
-    for (i = 0;  i < _glfw.monitorCount;  i++)
-    {
-        if (_glfw.monitors[i]->primary)
-        {
-            primary = _glfw.monitors[i];
-            break;
-        }
-    }
-
-    if (!primary)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR, NULL);
-        return NULL;
-    }
-
-    return (GLFWmonitor*) primary;
+    return (GLFWmonitor*) _glfw.monitors[0];
 }
 
 GLFWAPI void glfwGetMonitorPos(GLFWmonitor* handle, int* xpos, int* ypos)

@@ -102,6 +102,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     int size = 0, found = 0;
     _GLFWmonitor** monitors = NULL;
     DWORD adapterIndex = 0;
+    int primaryIndex = 0;
 
     for (;;)
     {
@@ -111,7 +112,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         DEVMODE settings;
         char* name;
         HDC dc;
-        GLboolean primary;
 
         ZeroMemory(&adapter, sizeof(DISPLAY_DEVICE));
         adapter.cb = sizeof(DISPLAY_DEVICE);
@@ -156,7 +156,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         EnumDisplayDevices(adapter.DeviceName, 0, &display, 0);
         dc = CreateDC(L"DISPLAY", display.DeviceString, NULL, NULL);
 
-        primary = adapter.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE;
+        if (adapter.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE)
+            primaryIndex = found;
 
         name = _glfwCreateUTF8FromWideString(display.DeviceString);
         if (!name)
@@ -165,7 +166,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             return NULL;
         }
 
-        monitors[found] = _glfwCreateMonitor(name, primary,
+        monitors[found] = _glfwCreateMonitor(name,
                                              GetDeviceCaps(dc, HORZSIZE),
                                              GetDeviceCaps(dc, VERTSIZE),
                                              settings.dmPosition.x,
@@ -182,6 +183,13 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
         monitors[found]->win32.name = _wcsdup(adapter.DeviceName);
         found++;
+    }
+
+    if (primaryIndex > 0)
+    {
+        _GLFWmonitor* temp = monitors[0];
+        monitors[0] = monitors[primaryIndex];
+        monitors[primaryIndex] = temp;
     }
 
     *count = found;

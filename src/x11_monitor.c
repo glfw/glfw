@@ -193,7 +193,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* found)
             }
 
             monitors[*found] = _glfwCreateMonitor(oi->name,
-                                                  output == primary,
                                                   oi->mm_width, oi->mm_height,
                                                   ci->x, ci->y);
 
@@ -207,6 +206,17 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* found)
         }
 
         XRRFreeScreenResources(sr);
+
+        for (i = 0;  i < *found;  i++)
+        {
+            if (monitors[i]->x11.output == primary)
+            {
+                _GLFWmonitor* temp = monitors[0];
+                monitors[0] = monitors[i];
+                monitors[i] = temp;
+                break;
+            }
+        }
     }
     else
     {
@@ -222,11 +232,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* found)
         widthMM  = DisplayWidthMM(_glfw.x11.display, _glfw.x11.screen);
         heightMM = DisplayHeightMM(_glfw.x11.display, _glfw.x11.screen);
 
-        monitors[0] = _glfwCreateMonitor("Display",
-                                         GL_TRUE,
-                                         widthMM, heightMM,
-                                         0, 0);
-
+        monitors[0] = _glfwCreateMonitor("Display", widthMM, heightMM, 0, 0);
         *found = 1;
     }
 

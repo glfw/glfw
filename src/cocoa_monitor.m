@@ -244,6 +244,17 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
     free(displays);
 
+    for (i = 0;  i < monitorCount;  i++)
+    {
+        if (CGDisplayIsMain(monitors[i]->ns.displayID))
+        {
+            _GLFWmonitor* temp = monitors[0];
+            monitors[0] = monitors[i];
+            monitors[i] = temp;
+            break;
+        }
+    }
+
     *count = monitorCount;
     return monitors;
 }

@@ -257,8 +257,6 @@ struct _GLFWmonitor
 {
     char*           name;
 
-    GLboolean       primary;
-
     // Physical dimensions in millimeters.
     int             widthMM, heightMM;
     // Logical orientation of the screen on the desktop
@@ -686,7 +684,6 @@ GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig);
 /*! @ingroup utility
  */
 _GLFWmonitor* _glfwCreateMonitor(const char* name,
-                                 GLboolean primary,
                                  int widthMM, int heightMM,
                                  int x, int y);
 

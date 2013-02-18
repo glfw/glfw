@@ -234,7 +234,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         const CGRect bounds = CGDisplayBounds(displays[i]);
 
         monitors[found] = _glfwCreateMonitor(getDisplayName(displays[i]),
-                                             CGDisplayIsMain(displays[i]),
                                              size.width, size.height,
                                              bounds.origin.x, bounds.origin.y);
 

@@ -364,11 +364,7 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
+    _GLFW_REQUIRE_INIT();
 
     if (_glfwPlatformGetCurrentContext() == window)
         return;
@@ -378,35 +374,20 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
 
 GLFWAPI GLFWwindow* glfwGetCurrentContext(void)
 {
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return NULL;
-    }
-
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     return (GLFWwindow*) _glfwPlatformGetCurrentContext();
 }
 
 GLFWAPI void glfwSwapBuffers(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
+    _GLFW_REQUIRE_INIT();
     _glfwPlatformSwapBuffers(window);
 }
 
 GLFWAPI void glfwSwapInterval(int interval)
 {
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
+    _GLFW_REQUIRE_INIT();
 
     if (!_glfwPlatformGetCurrentContext())
     {
@@ -422,11 +403,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
     const GLubyte* extensions;
     _GLFWwindow* window;
 
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return GL_FALSE;
-    }
+    _GLFW_REQUIRE_INIT_OR_RETURN(GL_FALSE);
 
     window = _glfwPlatformGetCurrentContext();
     if (!window)
@@ -479,11 +456,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 
 GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname)
 {
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return NULL;
-    }
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (!_glfwPlatformGetCurrentContext())
     {

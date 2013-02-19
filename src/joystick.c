@@ -37,11 +37,7 @@
 
 GLFWAPI int glfwGetJoystickParam(int joy, int param)
 {
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return 0;
-    }
+    _GLFW_REQUIRE_INIT_OR_RETURN(0);
 
     if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
     {
@@ -56,11 +52,7 @@ GLFWAPI int glfwGetJoystickAxes(int joy, float* axes, int numaxes)
 {
     int i;
 
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return 0;
-    }
+    _GLFW_REQUIRE_INIT_OR_RETURN(0);
 
     if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
     {
@@ -87,11 +79,7 @@ GLFWAPI int glfwGetJoystickButtons(int joy,
 {
     int i;
 
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return 0;
-    }
+    _GLFW_REQUIRE_INIT_OR_RETURN(0);
 
     if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
     {
@@ -114,11 +102,7 @@ GLFWAPI int glfwGetJoystickButtons(int joy,
 
 GLFWAPI const char* glfwGetJoystickName(int joy)
 {
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return NULL;
-    }
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
     {

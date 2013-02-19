@@ -930,13 +930,7 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return 0;
-    }
-
+    _GLFW_REQUIRE_INIT_OR_RETURN(nil);
     return window->ns.object;
 }
 

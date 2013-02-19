@@ -266,24 +266,14 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 
 GLFWAPI GLFWmonitor** glfwGetMonitors(int* count)
 {
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return NULL;
-    }
-
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     *count = _glfw.monitorCount;
     return (GLFWmonitor**) _glfw.monitors;
 }
 
 GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void)
 {
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return NULL;
-    }
-
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     return (GLFWmonitor*) _glfw.monitors[0];
 }
 
@@ -291,11 +281,7 @@ GLFWAPI void glfwGetMonitorPos(GLFWmonitor* handle, int* xpos, int* ypos)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
 
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
+    _GLFW_REQUIRE_INIT();
 
     if (xpos)
         *xpos = monitor->positionX;
@@ -307,11 +293,7 @@ GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* handle, int* width, int* he
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
 
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
+    _GLFW_REQUIRE_INIT();
 
     if (width)
         *width = monitor->widthMM;
@@ -322,24 +304,13 @@ GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* handle, int* width, int* he
 GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return NULL;
-    }
-
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     return monitor->name;
 }
 
 GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 {
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
+    _GLFW_REQUIRE_INIT();
     _glfw.monitorCallback = cbfun;
 }
 
@@ -347,11 +318,7 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
 
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return NULL;
-    }
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (!refreshVideoModes(monitor))
         return GL_FALSE;
@@ -365,11 +332,7 @@ GLFWAPI GLFWvidmode glfwGetVideoMode(GLFWmonitor* handle)
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
     GLFWvidmode mode = { 0, 0, 0, 0, 0 };
 
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return mode;
-    }
+    _GLFW_REQUIRE_INIT_OR_RETURN(mode);
 
     _glfwPlatformGetVideoMode(monitor, &mode);
     return mode;

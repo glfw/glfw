@@ -292,13 +292,7 @@ GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 GLFWAPI id glfwGetNSGLContext(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return NULL;
-    }
-
+    _GLFW_REQUIRE_INIT_OR_RETURN(nil);
     return window->nsgl.context;
 }
 

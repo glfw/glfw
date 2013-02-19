@@ -208,11 +208,7 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* handle, int mode)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return 0;
-    }
+    _GLFW_REQUIRE_INIT_OR_RETURN(0);
 
     switch (mode)
     {
@@ -232,11 +228,7 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
+    _GLFW_REQUIRE_INIT();
 
     switch (mode)
     {
@@ -259,11 +251,7 @@ GLFWAPI int glfwGetKey(GLFWwindow* handle, int key)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return GLFW_RELEASE;
-    }
+    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_RELEASE);
 
     if (key < 0 || key > GLFW_KEY_LAST)
     {
@@ -285,11 +273,7 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* handle, int button)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return GLFW_RELEASE;
-    }
+    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_RELEASE);
 
     if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST)
     {
@@ -312,16 +296,12 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* handle, int* xpos, int* ypos)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
+    _GLFW_REQUIRE_INIT();
 
-    if (xpos != NULL)
+    if (xpos)
         *xpos = window->cursorPosX;
 
-    if (ypos != NULL)
+    if (ypos)
         *ypos = window->cursorPosY;
 }
 
@@ -329,11 +309,7 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, int xpos, int ypos)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
+    _GLFW_REQUIRE_INIT();
 
     if (_glfw.focusedWindow != window)
         return;
@@ -357,78 +333,42 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, int xpos, int ypos)
 GLFWAPI void glfwSetKeyCallback(GLFWwindow* handle, GLFWkeyfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
+    _GLFW_REQUIRE_INIT();
     window->callbacks.key = cbfun;
 }
 
 GLFWAPI void glfwSetCharCallback(GLFWwindow* handle, GLFWcharfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
+    _GLFW_REQUIRE_INIT();
     window->callbacks.character = cbfun;
 }
 
 GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow* handle, GLFWmousebuttonfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
+    _GLFW_REQUIRE_INIT();
     window->callbacks.mouseButton = cbfun;
 }
 
 GLFWAPI void glfwSetCursorPosCallback(GLFWwindow* handle, GLFWcursorposfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
+    _GLFW_REQUIRE_INIT();
     window->callbacks.cursorPos = cbfun;
 }
 
 GLFWAPI void glfwSetCursorEnterCallback(GLFWwindow* handle, GLFWcursorenterfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
+    _GLFW_REQUIRE_INIT();
     window->callbacks.cursorEnter = cbfun;
 }
 
 GLFWAPI void glfwSetScrollCallback(GLFWwindow* handle, GLFWscrollfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return;
-    }
-
+    _GLFW_REQUIRE_INIT();
     window->callbacks.scroll = cbfun;
 }
 

@@ -461,38 +461,21 @@ GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 
 GLFWAPI EGLDisplay glfwGetEGLDisplay(void)
 {
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return NULL;
-    }
-
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     return _glfw.egl.display;
 }
 
 GLFWAPI EGLContext glfwGetEGLContext(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return 0;
-    }
-
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     return window->egl.context;
 }
 
 GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-
-    if (!_glfwInitialized)
-    {
-        _glfwInputError(GLFW_NOT_INITIALIZED, NULL);
-        return 0;
-    }
-
+    _GLFW_REQUIRE_INIT_OR_RETURN(0);
     return window->egl.surface;
 }
 

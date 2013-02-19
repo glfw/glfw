@@ -45,11 +45,15 @@ static void usage(void)
     printf("Usage: gamma [-h] [-f]\n");
 }
 
-static void set_gamma(float value)
+static void set_gamma(GLFWwindow* window, float value)
 {
+    GLFWmonitor* monitor = glfwGetWindowMonitor(window);
+    if (!monitor)
+        monitor = glfwGetPrimaryMonitor();
+
     gamma_value = value;
     printf("Gamma: %f\n", gamma_value);
-    glfwSetGamma(glfwGetPrimaryMonitor(), gamma_value);
+    glfwSetGamma(monitor, gamma_value);
 }
 
 static void error_callback(int error, const char* description)
@@ -79,7 +83,7 @@ static void key_callback(GLFWwindow* window, int key, int action)
         case GLFW_KEY_KP_ADD:
         case GLFW_KEY_Q:
         {
-            set_gamma(gamma_value + STEP_SIZE);
+            set_gamma(window, gamma_value + STEP_SIZE);
             break;
         }
 
@@ -87,7 +91,7 @@ static void key_callback(GLFWwindow* window, int key, int action)
         case GLFW_KEY_W:
         {
             if (gamma_value - STEP_SIZE > 0.f)
-                set_gamma(gamma_value - STEP_SIZE);
+                set_gamma(window, gamma_value - STEP_SIZE);
 
             break;
         }
@@ -104,6 +108,11 @@ int main(int argc, char** argv)
     int width, height, ch;
     GLFWmonitor* monitor = NULL;
     GLFWwindow* window;
+
+    glfwSetErrorCallback(error_callback);
+
+    if (!glfwInit())
+        exit(EXIT_FAILURE);
 
     while ((ch = getopt(argc, argv, "fh")) != -1)
     {
@@ -122,11 +131,6 @@ int main(int argc, char** argv)
                 exit(EXIT_FAILURE);
         }
     }
-
-    glfwSetErrorCallback(error_callback);
-
-    if (!glfwInit())
-        exit(EXIT_FAILURE);
 
     if (monitor)
     {
@@ -147,7 +151,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    set_gamma(1.f);
+    set_gamma(window, 1.f);
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);

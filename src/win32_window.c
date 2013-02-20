@@ -34,6 +34,18 @@
 #include <malloc.h>
 #include <windowsx.h>
 
+
+// Updates the cursor clip rect
+//
+static void updateClipRect(_GLFWwindow* window)
+{
+    RECT clipRect;
+    GetClientRect(window->win32.handle, &clipRect);
+    ClientToScreen(window->win32.handle, (POINT*) &clipRect.left);
+    ClientToScreen(window->win32.handle, (POINT*) &clipRect.right);
+    ClipCursor(&clipRect);
+}
+
 // Hide mouse cursor
 //
 static void hideCursor(_GLFWwindow* window)
@@ -45,15 +57,8 @@ static void hideCursor(_GLFWwindow* window)
 //
 static void captureCursor(_GLFWwindow* window)
 {
-    RECT ClipWindowRect;
-
     ShowCursor(FALSE);
-
-    // Clip cursor to the window
-    if (GetWindowRect(window->win32.handle, &ClipWindowRect))
-        ClipCursor(&ClipWindowRect);
-
-    // Capture cursor to user window
+    updateClipRect(window);
     SetCapture(window->win32.handle);
 }
 
@@ -571,13 +576,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_SIZE:
         {
-            // If window is in cursor capture mode, update clipping rect
             if (window->cursorMode == GLFW_CURSOR_CAPTURED)
-            {
-                RECT ClipWindowRect;
-                if (GetWindowRect(window->win32.handle, &ClipWindowRect))
-                    ClipCursor(&ClipWindowRect);
-            }
+                updateClipRect(window);
 
             _glfwInputWindowSize(window, LOWORD(lParam), HIWORD(lParam));
             return 0;
@@ -585,13 +585,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOVE:
         {
-            // If window is in cursor capture mode, update clipping rect
             if (window->cursorMode == GLFW_CURSOR_CAPTURED)
-            {
-                RECT ClipWindowRect;
-                if (GetWindowRect(window->win32.handle, &ClipWindowRect))
-                    ClipCursor(&ClipWindowRect);
-            }
+                updateClipRect(window);
 
             _glfwInputWindowPos(window, LOWORD(lParam), HIWORD(lParam));
             return 0;

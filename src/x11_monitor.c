@@ -193,8 +193,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* found)
             }
 
             monitors[*found] = _glfwCreateMonitor(oi->name,
-                                                  oi->mm_width, oi->mm_height,
-                                                  ci->x, ci->y);
+                                                  oi->mm_width, oi->mm_height);
 
             monitors[*found]->x11.output = output;
             monitors[*found]->x11.crtc   = oi->crtc;
@@ -220,8 +219,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* found)
     }
     else
     {
-        int widthMM, heightMM;
-
         monitors = (_GLFWmonitor**) calloc(1, sizeof(_GLFWmonitor*));
         if (!monitors)
         {
@@ -229,14 +226,42 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* found)
             return NULL;
         }
 
-        widthMM  = DisplayWidthMM(_glfw.x11.display, _glfw.x11.screen);
-        heightMM = DisplayHeightMM(_glfw.x11.display, _glfw.x11.screen);
-
-        monitors[0] = _glfwCreateMonitor("Display", widthMM, heightMM, 0, 0);
+        monitors[0] = _glfwCreateMonitor("Display",
+                                         DisplayWidthMM(_glfw.x11.display,
+                                                        _glfw.x11.screen),
+                                         DisplayHeightMM(_glfw.x11.display,
+                                                         _glfw.x11.screen));
         *found = 1;
     }
 
     return monitors;
+}
+
+void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
+{
+    if (_glfw.x11.randr.available)
+    {
+        XRRScreenResources* sr;
+        XRRCrtcInfo* ci;
+
+        sr = XRRGetScreenResources(_glfw.x11.display, _glfw.x11.root);
+        ci = XRRGetCrtcInfo(_glfw.x11.display, sr, monitor->x11.crtc);
+
+        if (xpos)
+            *xpos = ci->x;
+        if (ypos)
+            *ypos = ci->y;
+
+        XRRFreeCrtcInfo(ci);
+        XRRFreeScreenResources(sr);
+    }
+    else
+    {
+        if (xpos)
+            *xpos = 0;
+        if (ypos)
+            *ypos = 0;
+    }
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)

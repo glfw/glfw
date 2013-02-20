@@ -231,11 +231,9 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     for (i = 0;  i < monitorCount;  i++)
     {
         const CGSize size = CGDisplayScreenSize(displays[i]);
-        const CGRect bounds = CGDisplayBounds(displays[i]);
 
         monitors[found] = _glfwCreateMonitor(getDisplayName(displays[i]),
-                                             size.width, size.height,
-                                             bounds.origin.x, bounds.origin.y);
+                                             size.width, size.height);
 
         monitors[found]->ns.displayID = displays[i];
         found++;
@@ -256,6 +254,16 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
     *count = monitorCount;
     return monitors;
+}
+
+void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
+{
+    const CGRect bounds = CGDisplayBounds(monitor->ns.displayID);
+
+    if (xpos)
+        *xpos = (int) bounds.origin.x;
+    if (ypos)
+        *ypos = (int) bounds.origin.y;
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)

@@ -273,8 +273,6 @@ struct _GLFWmonitor
 
     // Physical dimensions in millimeters.
     int             widthMM, heightMM;
-    // Logical orientation of the screen on the desktop
-    int             positionX, positionY;
 
     GLFWvidmode*    modes;
     int             modeCount;
@@ -362,6 +360,11 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
  *  @ingroup platform
  */
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count);
+
+/*! @copydoc glfwGetMonitorPos
+ *  @ingroup platform
+ */
+void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos);
 
 /*! @copydoc glfwGetVideoModes
  *  @ingroup platform
@@ -693,9 +696,7 @@ GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig);
 
 /*! @ingroup utility
  */
-_GLFWmonitor* _glfwCreateMonitor(const char* name,
-                                 int widthMM, int heightMM,
-                                 int x, int y);
+_GLFWmonitor* _glfwCreateMonitor(const char* name, int widthMM, int heightMM);
 
 /*! @ingroup utility
   */

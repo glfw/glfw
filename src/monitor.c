@@ -155,9 +155,7 @@ void _glfwInputMonitorChange(void)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-_GLFWmonitor* _glfwCreateMonitor(const char* name,
-                                 int widthMM, int heightMM,
-                                 int x, int y)
+_GLFWmonitor* _glfwCreateMonitor(const char* name, int widthMM, int heightMM)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) calloc(1, sizeof(_GLFWmonitor));
     if (!monitor)
@@ -169,8 +167,6 @@ _GLFWmonitor* _glfwCreateMonitor(const char* name,
     monitor->name = strdup(name);
     monitor->widthMM = widthMM;
     monitor->heightMM = heightMM;
-    monitor->positionX = x;
-    monitor->positionY = y;
 
     return monitor;
 }
@@ -281,10 +277,7 @@ GLFWAPI void glfwGetMonitorPos(GLFWmonitor* handle, int* xpos, int* ypos)
 
     _GLFW_REQUIRE_INIT();
 
-    if (xpos)
-        *xpos = monitor->positionX;
-    if (ypos)
-        *ypos = monitor->positionY;
+    _glfwPlatformGetMonitorPos(monitor, xpos, ypos);
 }
 
 GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* handle, int* width, int* height)

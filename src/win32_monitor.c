@@ -109,7 +109,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         // Enumerate display adapters
 
         DISPLAY_DEVICE adapter, display;
-        DEVMODE settings;
         char* name;
         HDC dc;
 
@@ -126,14 +125,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         {
             continue;
         }
-
-        ZeroMemory(&settings, sizeof(DEVMODE));
-        settings.dmSize = sizeof(DEVMODE);
-
-        EnumDisplaySettingsEx(adapter.DeviceName,
-                              ENUM_CURRENT_SETTINGS,
-                              &settings,
-                              EDS_ROTATEDMODE);
 
         if (found == size)
         {
@@ -168,9 +159,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
         monitors[found] = _glfwCreateMonitor(name,
                                              GetDeviceCaps(dc, HORZSIZE),
-                                             GetDeviceCaps(dc, VERTSIZE),
-                                             settings.dmPosition.x,
-                                             settings.dmPosition.y);
+                                             GetDeviceCaps(dc, VERTSIZE));
 
         free(name);
         DeleteDC(dc);
@@ -194,6 +183,23 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
     *count = found;
     return monitors;
+}
+
+void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
+{
+    DEVMODE settings;
+    ZeroMemory(&settings, sizeof(DEVMODE));
+    settings.dmSize = sizeof(DEVMODE);
+
+    EnumDisplaySettingsEx(monitor->win32.name,
+                          ENUM_CURRENT_SETTINGS,
+                          &settings,
+                          EDS_ROTATEDMODE);
+
+    if (xpos)
+        *xpos = settings.dmPosition.x;
+    if (ypos)
+        *ypos = settings.dmPosition.y;
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)

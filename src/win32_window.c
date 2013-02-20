@@ -691,7 +691,7 @@ static int createWindow(_GLFWwindow* window,
                         const _GLFWwndconfig* wndconfig,
                         const _GLFWfbconfig* fbconfig)
 {
-    int positionX, positionY, fullWidth, fullHeight;
+    int xpos, ypos, fullWidth, fullHeight;
     POINT cursorPos;
     WCHAR* wideTitle;
 
@@ -702,8 +702,7 @@ static int createWindow(_GLFWwindow* window,
     {
         window->win32.dwStyle |= WS_POPUP;
 
-        positionX = wndconfig->monitor->positionX;
-        positionY = wndconfig->monitor->positionY;
+        _glfwPlatformGetMonitorPos(wndconfig->monitor, &xpos, &ypos);
 
         fullWidth  = wndconfig->width;
         fullHeight = wndconfig->height;
@@ -719,8 +718,8 @@ static int createWindow(_GLFWwindow* window,
             window->win32.dwExStyle |= WS_EX_WINDOWEDGE;
         }
 
-        positionX = CW_USEDEFAULT;
-        positionY = CW_USEDEFAULT;
+        xpos = CW_USEDEFAULT;
+        ypos = CW_USEDEFAULT;
 
         getFullWindowSize(window,
                         wndconfig->width, wndconfig->height,
@@ -739,7 +738,7 @@ static int createWindow(_GLFWwindow* window,
                                           _GLFW_WNDCLASSNAME,
                                           wideTitle,
                                           window->win32.dwStyle,
-                                          positionX, positionY,
+                                          xpos, ypos,
                                           fullWidth, fullHeight,
                                           NULL, // No parent window
                                           NULL, // No window menu

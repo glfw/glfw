@@ -363,10 +363,6 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
  */
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count);
 
-/*! @ingroup platform
- */
-void _glfwPlatformDestroyMonitor(_GLFWmonitor* monitor);
-
 /*! @copydoc glfwGetVideoModes
  *  @ingroup platform
  */

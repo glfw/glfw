@@ -239,10 +239,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* found)
     return monitors;
 }
 
-void _glfwPlatformDestroyMonitor(_GLFWmonitor* monitor)
-{
-}
-
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 {
     GLFWvidmode* result;

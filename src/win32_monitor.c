@@ -181,7 +181,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             return NULL;
         }
 
-        monitors[found]->win32.name = _wcsdup(adapter.DeviceName);
+        wcscpy(monitors[found]->win32.name, adapter.DeviceName);
         found++;
     }
 
@@ -194,11 +194,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
     *count = found;
     return monitors;
-}
-
-void _glfwPlatformDestroyMonitor(_GLFWmonitor* monitor)
-{
-    free(monitor->win32.name);
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)

@@ -180,8 +180,6 @@ void _glfwDestroyMonitor(_GLFWmonitor* monitor)
     if (monitor == NULL)
         return;
 
-    _glfwPlatformDestroyMonitor(monitor);
-
     free(monitor->modes);
     free(monitor->name);
     free(monitor);

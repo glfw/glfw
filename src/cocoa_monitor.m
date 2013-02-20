@@ -258,10 +258,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     return monitors;
 }
 
-void _glfwPlatformDestroyMonitor(_GLFWmonitor* monitor)
-{
-}
-
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 {
     CFArrayRef modes;

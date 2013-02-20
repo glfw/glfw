@@ -192,7 +192,8 @@ typedef struct _GLFWlibraryWin32
 //------------------------------------------------------------------------
 typedef struct _GLFWmonitorWin32
 {
-    WCHAR*              name;
+    // This size matches the static size of DISPLAY_DEVICE.DeviceName
+    WCHAR               name[32];
 
 } _GLFWmonitorWin32;
 

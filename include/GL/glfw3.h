@@ -904,6 +904,9 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* monitor, float gamma);
  *  @param[in] monitor The monitor to query.
  *  @param[out] ramp Where to store the gamma ramp.
  *  @ingroup gamma
+ *
+ *  @bug This function does not yet support monitors whose original gamma ramp
+ *  has more or less than 256 entries.
  */
 GLFWAPI void glfwGetGammaRamp(GLFWmonitor* monitor, GLFWgammaramp* ramp);
 
@@ -911,6 +914,9 @@ GLFWAPI void glfwGetGammaRamp(GLFWmonitor* monitor, GLFWgammaramp* ramp);
  *  @param[in] monitor The monitor whose gamma ramp to set.
  *  @param[in] ramp The gamma ramp to use.
  *  @ingroup gamma
+ *
+ *  @bug This function does not yet support monitors whose original gamma ramp
+ *  has more or less than 256 entries.
  */
 GLFWAPI void glfwSetGammaRamp(GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
@@ -1207,6 +1213,9 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* window, int width, int height);
  *
  *  @note This function may only be called from the main thread.
  *
+ *  @bug <strong>Mac OS X:</strong> This function is not yet implemented for
+ *  fullscreen windows.
+ *
  *  @sa glfwRestoreWindow
  */
 GLFWAPI void glfwIconifyWindow(GLFWwindow* window);
@@ -1218,6 +1227,9 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow* window);
  *  @remarks If the window is already restored, this function does nothing.
  *
  *  @note This function may only be called from the main thread.
+ *
+ *  @bug <strong>Mac OS X:</strong> This function is not yet implemented for
+ *  fullscreen windows.
  *
  *  @sa glfwIconifyWindow
  */
@@ -1433,6 +1445,12 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  GLFW_STICKY_MOUSE_BUTTONS.
  *  @param[in] value The new value of the specified input mode.
  *  @ingroup input
+ *
+ *  @bug <strong>Windows:</strong> The @ref GLFW_CURSOR_HIDDEN value of @ref
+ *  GLFW_CURSOR_MODE is not yet implemented.
+ *
+ *  @bug <strong>Mac OS X:</strong> The @ref GLFW_CURSOR_HIDDEN value of @ref
+ *  GLFW_CURSOR_MODE is not yet implemented.
  *
  *  @sa glfwGetInputMode
  */

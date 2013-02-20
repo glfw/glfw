@@ -68,12 +68,8 @@ static void showCursor(_GLFWwindow* window)
 {
     UNREFERENCED_PARAMETER(window);
 
-    // Un-capture cursor
     ReleaseCapture();
-
-    // Release the cursor from the window
     ClipCursor(NULL);
-
     ShowCursor(TRUE);
 }
 
@@ -85,10 +81,9 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
     DWORD msg_time;
     DWORD scan_code;
 
-    // Check for numeric keypad keys.
-    // Note: This way we always force "NumLock = ON", which is intentional
-    // since the returned key code should correspond to a physical
-    // location.
+    // Check for numeric keypad keys
+    // NOTE: This way we always force "NumLock = ON", which is intentional since
+    // the returned key code should correspond to a physical location.
     int hiFlags = HIWORD(lParam);
     if (!(hiFlags & 0x100))
     {
@@ -506,11 +501,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOUSEMOVE:
         {
-            int newCursorX, newCursorY;
-
-            // Get signed (!) cursor position
-            newCursorX = GET_X_LPARAM(lParam);
-            newCursorY = GET_Y_LPARAM(lParam);
+            const int newCursorX = GET_X_LPARAM(lParam);
+            const int newCursorY = GET_Y_LPARAM(lParam);
 
             if (newCursorX != window->win32.oldCursorX ||
                 newCursorY != window->win32.oldCursorY)
@@ -592,17 +584,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             return 0;
         }
 
-        // Was the window contents damaged?
         case WM_PAINT:
         {
             _glfwInputWindowDamage(window);
-            break;
-        }
-
-        case WM_DISPLAYCHANGE:
-        {
-            // TODO: Do stuff here.
-
             break;
         }
 
@@ -617,7 +601,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         }
     }
 
-    // Pass all unhandled messages to DefWindowProc
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
@@ -627,20 +610,14 @@ static void getFullWindowSize(_GLFWwindow* window,
                               int clientWidth, int clientHeight,
                               int* fullWidth, int* fullHeight)
 {
-    RECT rect;
-
-    // Create a window rectangle
-    rect.left   = (long) 0;
-    rect.right  = (long) clientWidth - 1;
-    rect.top    = (long) 0;
-    rect.bottom = (long) clientHeight - 1;
+    RECT rect = { 0, 0, clientWidth, clientHeight };
 
     // Adjust according to window styles
     AdjustWindowRectEx(&rect, window->win32.dwStyle, FALSE, window->win32.dwExStyle);
 
     // Calculate width and height of full window
-    *fullWidth = rect.right - rect.left + 1;
-    *fullHeight = rect.bottom - rect.top + 1;
+    *fullWidth = rect.right - rect.left;
+    *fullHeight = rect.bottom - rect.top;
 }
 
 // Registers the GLFW window class
@@ -665,7 +642,7 @@ static ATOM registerWindowClass(void)
     wc.hIcon = LoadIcon(GetModuleHandle(NULL), L"GLFW_ICON");
     if (!wc.hIcon)
     {
-        // Load default icon
+        // User-provided icon not found; load default icon
         wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
     }
 
@@ -704,8 +681,7 @@ static int createWindow(_GLFWwindow* window,
     }
     else
     {
-        window->win32.dwStyle |= WS_OVERLAPPED | WS_CAPTION |
-                                 WS_SYSMENU | WS_MINIMIZEBOX;
+        window->win32.dwStyle |= WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
 
         if (wndconfig->resizable)
         {
@@ -738,7 +714,7 @@ static int createWindow(_GLFWwindow* window,
                                           NULL, // No parent window
                                           NULL, // No window menu
                                           GetModuleHandle(NULL),
-                                          window);  // Pass GLFW window to WM_CREATE
+                                          window); // Pass GLFW window to WM_CREATE
 
     free(wideTitle);
 
@@ -765,11 +741,6 @@ static int createWindow(_GLFWwindow* window,
 static void destroyWindow(_GLFWwindow* window)
 {
     _glfwDestroyContext(window);
-
-    // This is duplicated from glfwDestroyWindow
-    // TODO: Stop duplicating code
-    if (window == _glfw.focusedWindow)
-        _glfw.focusedWindow = NULL;
 
     if (window->win32.handle)
     {
@@ -980,11 +951,6 @@ void _glfwPlatformPollEvents(void)
         window->win32.oldCursorX = width / 2;
         window->win32.oldCursorY = height / 2;
     }
-    else
-    {
-        //window->win32.oldCursorX = window->cursorPosX;
-        //window->win32.oldCursorY = window->cursorPosY;
-    }
 
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
     {
@@ -1006,31 +972,29 @@ void _glfwPlatformPollEvents(void)
         }
     }
 
-    // LSHIFT/RSHIFT fixup (keys tend to "stick" without this fix)
-    // This is the only async event handling in GLFW, but it solves some
-    // nasty problems.
     window = _glfw.focusedWindow;
     if (window)
     {
-        int lshift_down, rshift_down;
+        // LSHIFT/RSHIFT fixup (keys tend to "stick" without this fix)
+        // This is the only async event handling in GLFW, but it solves some
+        // nasty problems
+        {
+            int lshift_down, rshift_down;
 
-        // Get current state of left and right shift keys
-        lshift_down = (GetAsyncKeyState(VK_LSHIFT) >> 15) & 1;
-        rshift_down = (GetAsyncKeyState(VK_RSHIFT) >> 15) & 1;
+            // Get current state of left and right shift keys
+            lshift_down = (GetAsyncKeyState(VK_LSHIFT) >> 15) & 1;
+            rshift_down = (GetAsyncKeyState(VK_RSHIFT) >> 15) & 1;
 
-        // See if this differs from our belief of what has happened
-        // (we only have to check for lost key up events)
-        if (!lshift_down && window->key[GLFW_KEY_LEFT_SHIFT] == 1)
-            _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, GLFW_RELEASE);
+            // See if this differs from our belief of what has happened
+            // (we only have to check for lost key up events)
+            if (!lshift_down && window->key[GLFW_KEY_LEFT_SHIFT] == 1)
+                _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, GLFW_RELEASE);
 
-        if (!rshift_down && window->key[GLFW_KEY_RIGHT_SHIFT] == 1)
-            _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, GLFW_RELEASE);
-    }
+            if (!rshift_down && window->key[GLFW_KEY_RIGHT_SHIFT] == 1)
+                _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, GLFW_RELEASE);
+        }
 
-    // Did the cursor move in an focused window that has captured the cursor
-    window = _glfw.focusedWindow;
-    if (window)
-    {
+        // Did the cursor move in an focused window that has captured the cursor
         if (window->cursorMode == GLFW_CURSOR_CAPTURED &&
             !window->win32.cursorCentered)
         {
@@ -1049,15 +1013,10 @@ void _glfwPlatformWaitEvents(void)
     _glfwPlatformPollEvents();
 }
 
-void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
+void _glfwPlatformSetCursorPos(_GLFWwindow* window, int xpos, int ypos)
 {
-    POINT pos;
-
-    // Convert client coordinates to screen coordinates
-    pos.x = x;
-    pos.y = y;
+    POINT pos = { xpos, ypos };
     ClientToScreen(window->win32.handle, &pos);
-
     SetCursorPos(pos.x, pos.y);
 }
 

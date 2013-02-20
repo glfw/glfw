@@ -427,10 +427,12 @@ skills.
 
  * Bobyshev Alexander
  * artblanc
+ * Matt Arsenault
  * Keith Bauer
  * John Bartholomew
  * blanco
  * Lambert Clara
+ * Noel Cower
  * Jarrod Davis
  * Olivier Delannoy
  * Paul R. Deppe
@@ -443,6 +445,7 @@ skills.
  * Sylvain Hellegouarch
  * heromyth
  * Toni Jovanoski
+ * Osman Keskin
  * Cameron King
  * Peter Knut
  * Robin Leffmann
@@ -453,13 +456,17 @@ skills.
  * Tristam MacDonald
  * Hans Mackowiak
  * David Medlock
+ * Jonathan Mercier
  * Marcel Metz
  * Kenneth Miller
  * Jeff Molofee
+ * Jon Morton
  * Julian Møller
  * Ozzy at Orkysquad
  * Peoro
+ * Braden Pellett
  * Arturo J. Pérez
+ * Jorge Rodriguez
  * Ed Ropple
  * Riku Salminen
  * Sebastian Schuberth
@@ -473,6 +480,8 @@ skills.
  * TTK-Bandit
  * Sergey Tikhomirov
  * Samuli Tuomola
+ * Jari Vetoniemi
+ * Simon Voordouw
  * Torsten Walluhn
  * Frank Wille
  * yuriks

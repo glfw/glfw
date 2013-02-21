@@ -92,6 +92,7 @@ static int keyCodeToGLFWKeyCode(int keyCode)
         case XK_Menu:           return GLFW_KEY_MENU;
         case XK_Num_Lock:       return GLFW_KEY_NUM_LOCK;
         case XK_Caps_Lock:      return GLFW_KEY_CAPS_LOCK;
+        case XK_Print:          return GLFW_KEY_PRINT_SCREEN;
         case XK_Scroll_Lock:    return GLFW_KEY_SCROLL_LOCK;
         case XK_Pause:          return GLFW_KEY_PAUSE;
         case XK_Delete:         return GLFW_KEY_DELETE;

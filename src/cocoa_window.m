@@ -257,7 +257,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
         /* 66 */ -1,
         /* 67 */ GLFW_KEY_F11,
         /* 68 */ -1,
-        /* 69 */ GLFW_KEY_F13,
+        /* 69 */ GLFW_KEY_PRINT_SCREEN,
         /* 6a */ GLFW_KEY_F16,
         /* 6b */ GLFW_KEY_F14,
         /* 6c */ -1,

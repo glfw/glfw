@@ -214,6 +214,7 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
         case VK_F24:           return GLFW_KEY_F24;
         case VK_NUMLOCK:       return GLFW_KEY_NUM_LOCK;
         case VK_CAPITAL:       return GLFW_KEY_CAPS_LOCK;
+        case VK_SNAPSHOT:      return GLFW_KEY_PRINT_SCREEN;
         case VK_SCROLL:        return GLFW_KEY_SCROLL_LOCK;
         case VK_PAUSE:         return GLFW_KEY_PAUSE;
         case VK_LWIN:          return GLFW_KEY_LEFT_SUPER;
@@ -413,11 +414,17 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_KEYUP:
         case WM_SYSKEYUP:
         {
-            // Special trick: release both shift keys on SHIFT up event
             if (wParam == VK_SHIFT)
             {
+                // Special trick: release both shift keys on SHIFT up event
                 _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, GLFW_RELEASE);
                 _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, GLFW_RELEASE);
+            }
+            else if (wParam == VK_SNAPSHOT)
+            {
+                // Key down is not reported for the print screen key
+                _glfwInputKey(window, GLFW_KEY_PRINT_SCREEN, GLFW_PRESS);
+                _glfwInputKey(window, GLFW_KEY_PRINT_SCREEN, GLFW_RELEASE);
             }
             else
                 _glfwInputKey(window, translateKey(wParam, lParam), GLFW_RELEASE);

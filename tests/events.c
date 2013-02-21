@@ -163,6 +163,7 @@ static const char* get_key_name(int key)
         case GLFW_KEY_KP_DECIMAL:   return "KEYPAD DECIMAL";
         case GLFW_KEY_KP_EQUAL:     return "KEYPAD EQUAL";
         case GLFW_KEY_KP_ENTER:     return "KEYPAD ENTER";
+        case GLFW_KEY_PRINT_SCREEN: return "PRINT SCREEN";
         case GLFW_KEY_NUM_LOCK:     return "NUM LOCK";
         case GLFW_KEY_CAPS_LOCK:    return "CAPS LOCK";
         case GLFW_KEY_SCROLL_LOCK:  return "SCROLL LOCK";

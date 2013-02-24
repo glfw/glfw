@@ -770,9 +770,11 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 
     if (window->monitor)
     {
-        [[window->ns.object contentView] exitFullScreenModeWithOptions:nil];
-
         _glfwRestoreVideoMode(window->monitor);
+
+        // Exit full screen after the video restore to avoid a nasty display
+        // flickering during the fade.
+        [[window->ns.object contentView] exitFullScreenModeWithOptions:nil];
     }
 
     _glfwDestroyContext(window);

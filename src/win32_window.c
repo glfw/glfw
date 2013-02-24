@@ -542,7 +542,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
                 for (i = 0;  i < count;  i++)
                 {
+                    int action;
                     POINT pos;
+
                     pos.x = TOUCH_COORD_TO_PIXEL(inputs[i].x) - xpos;
                     pos.y = TOUCH_COORD_TO_PIXEL(inputs[i].y) - ypos;
 
@@ -554,19 +556,16 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     }
 
                     if (inputs[i].dwFlags & TOUCHEVENTF_DOWN)
-                        _glfwInputTouch(window, (int) inputs[i].dwID, GLFW_PRESS);
+                        action = GLFW_PRESS;
+                    else if (inputs[i].dwFlags & TOUCHEVENTF_UP)
+                        action = GLFW_RELEASE;
+                    else
+                        action = GLFW_MOVE;
 
-                    if (inputs[i].dwFlags & TOUCHEVENTF_DOWN ||
-                        inputs[i].dwFlags & TOUCHEVENTF_UP ||
-                        inputs[i].dwFlags & TOUCHEVENTF_MOVE)
-                    {
-                        _glfwInputTouchPos(window, (int) inputs[i].dwID,
-                                           inputs[i].x / 100.0 - xpos,
-                                           inputs[i].y / 100.0 - ypos);
-                    }
-
-                    if (inputs[i].dwFlags & TOUCHEVENTF_UP)
-                        _glfwInputTouch(window, (int) inputs[i].dwID, GLFW_RELEASE);
+                    _glfwInputTouch(window,
+                                    (int) inputs[i].dwID, action,
+                                    inputs[i].x / 100.0 - xpos,
+                                    inputs[i].y / 100.0 - ypos);
                 }
 
                 _glfw_CloseTouchInputHandle((HTOUCHINPUT) lParam);

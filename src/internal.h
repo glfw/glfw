@@ -280,7 +280,6 @@ struct _GLFWwindow
         GLFWcharmodsfun         charmods;
         GLFWdropfun             drop;
         GLFWtouchfun            touch;
-        GLFWtouchposfun         touchPos;
     } callbacks;
 
     // This is defined in the window API's platform.h
@@ -767,19 +766,12 @@ void _glfwInputCursorEnter(_GLFWwindow* window, int entered);
 /*! @brief Notifies shared code of a touch start/end event.
  *  @param[in] window The window that received the event.
  *  @param[in] touch The touch that started or ended.
- *  @param[in] action One of @c GLFW_PRESS or @c GLFW_RELEASE.
- *  @ingroup event
- */
-void _glfwInputTouch(_GLFWwindow* window, int touch, int action);
-
-/*! @brief Notifies shared code of a touch movement event.
- *  @param[in] window The window that received the event.
- *  @param[in] touch The touch that moved.
+ *  @param[in] action One of @c GLFW_PRESS, @c GLFW_MOVE or @c GLFW_RELEASE.
  *  @param[in] xpos The new x-coordinate of the touch.
  *  @param[in] ypos The new y-coordinate of the touch.
  *  @ingroup event
  */
-void _glfwInputTouchPos(_GLFWwindow* window, int touch, double xpos, double ypos);
+void _glfwInputTouch(_GLFWwindow* window, int touch, int action, double xpos, double ypos);
 
 /*! @ingroup event
  */

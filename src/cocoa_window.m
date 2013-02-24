@@ -515,6 +515,8 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
 @end
 
+#if defined(_GLFW_USE_MENUBAR)
+
 // Try to figure out what the calling application is called
 //
 static NSString* findAppName(void)
@@ -556,8 +558,6 @@ static NSString* findAppName(void)
     // Really shouldn't get here
     return @"GLFW Application";
 }
-
-#if defined(_GLFW_USE_MENUBAR)
 
 // Set up the menu bar (manually)
 // This is nasty, nasty stuff -- calls to undocumented semi-private APIs that

@@ -122,14 +122,9 @@ static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode)
     return result;
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
-
 // Starts reservation for display fading
 //
-CGDisplayFadeReservationToken _glfwBeginFadeReservation(void)
+static CGDisplayFadeReservationToken beginFadeReservation(void)
 {
     CGDisplayFadeReservationToken token = kCGDisplayFadeReservationInvalidToken;
 
@@ -141,7 +136,7 @@ CGDisplayFadeReservationToken _glfwBeginFadeReservation(void)
 
 // Ends reservation for display fading
 //
-void _glfwEndFadeReservation(CGDisplayFadeReservationToken token)
+static void endFadeReservation(CGDisplayFadeReservationToken token)
 {
     if (token != kCGDisplayFadeReservationInvalidToken)
     {
@@ -149,6 +144,11 @@ void _glfwEndFadeReservation(CGDisplayFadeReservationToken token)
         CGReleaseDisplayFadeReservation(token);
     }
 }
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 // Change the current video mode
 //
@@ -205,12 +205,12 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, int* width, int* height, int*
 
     monitor->ns.previousMode = CGDisplayCopyDisplayMode(monitor->ns.displayID);
 
-    CGDisplayFadeReservationToken token = _glfwBeginFadeReservation();
+    CGDisplayFadeReservationToken token = beginFadeReservation();
 
     CGDisplayCapture(monitor->ns.displayID);
     CGDisplaySetDisplayMode(monitor->ns.displayID, bestMode, NULL);
 
-    _glfwEndFadeReservation(token);
+    endFadeReservation(token);
 
     CFRelease(modes);
     return GL_TRUE;
@@ -220,12 +220,12 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, int* width, int* height, int*
 //
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 {
-    CGDisplayFadeReservationToken token = _glfwBeginFadeReservation();
+    CGDisplayFadeReservationToken token = beginFadeReservation();
 
     CGDisplaySetDisplayMode(monitor->ns.displayID, monitor->ns.previousMode, NULL);
     CGDisplayRelease(monitor->ns.displayID);
 
-    _glfwEndFadeReservation(token);
+    endFadeReservation(token);
 }
 
 

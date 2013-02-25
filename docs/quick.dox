@@ -100,6 +100,18 @@ Once this function is called, no more events will be delivered for that window
 and its handle becomes invalid.
 
 
+@section quick_context_current Making the OpenGL context current
+
+Before you can use the OpenGL API, it must have a current OpenGL context.  You
+make a window's context current with @ref glfwMakeContextCurrent.  It will then
+remain as the current context until you make another context current or until
+the window owning it is destroyed.
+
+@code
+glfwMakeContextCurrent(window);
+@endcode
+
+
 @section quick_window_attribs Retrieving window attributes
 
 Each window provides a number of attributes that can be queried with @ref
@@ -179,6 +191,8 @@ int main(void)
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
+
+    glfwMakeContextCurrent(window);
 
     while (!glfwGetWindowParam(window, GLFW_SHOULD_CLOSE))
     {

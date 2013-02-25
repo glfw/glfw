@@ -334,9 +334,9 @@ static void key_callback(GLFWwindow* window, int key, int action)
     }
 }
 
-static void char_callback(GLFWwindow* window, int character)
+static void char_callback(GLFWwindow* window, unsigned int character)
 {
-    printf("%08x at %0.3f: Character 0x%04x (%s) input\n",
+    printf("%08x at %0.3f: Character 0x%08x (%s) input\n",
            counter++,
            glfwGetTime(),
            character,

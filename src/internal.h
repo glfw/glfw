@@ -591,7 +591,7 @@ void _glfwInputKey(_GLFWwindow* window, int key, int action);
  *  @param[in] character The Unicode code point of the input character.
  *  @ingroup event
  */
-void _glfwInputChar(_GLFWwindow* window, int character);
+void _glfwInputChar(_GLFWwindow* window, unsigned int character);
 
 /*! @brief Notifies shared code of a scroll event.
  *  @param[in] window The window that received the event.

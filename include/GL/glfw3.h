@@ -687,7 +687,7 @@ typedef void (* GLFWkeyfun)(GLFWwindow*,int,int);
  *
  *  @sa glfwSetCharCallback
  */
-typedef void (* GLFWcharfun)(GLFWwindow*,int);
+typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
 
 /*! @brief The function signature for monitor configuration callbacks.
  *  @param[in] monitor The monitor that was connected or disconnected.

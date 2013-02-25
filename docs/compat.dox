@@ -1,0 +1,127 @@
+/*!
+
+@page compat Standards conformance
+
+This chapter describes the various API extensions used by this version of GLFW.
+It lists what are essentially implementation details, but which are nonetheless
+vital knowledge for developers wishing to deploy their applications on machines
+with varied specifications.
+
+Note that the information in this appendix is not a part of the API
+specification but merely list some of the preconditions for certain parts of the
+API to function on a given machine.  As such, any part of it may change in
+future versions without this being considered a breaking API change.
+
+@section compat_wm ICCCM and EWMH conformance
+
+As GLFW uses Xlib, directly, without any intervening toolkit
+library, it has sole responsibility for interacting well with the many and
+varied window managers in use on Unix-like systems.  In order for applications
+and window managers to work well together, a number of standards and
+conventions have been developed that regulate behavior outside the scope of the
+X11 API; most importantly the
+<a href="http://www.tronche.com/gui/x/icccm/">Inter-Client Communication Conventions Manual</a>
+(ICCCM) and
+<a href="http://standards.freedesktop.org/wm-spec/wm-spec-latest.html">Extended Window Manager Hints</a>
+(EWMH) standards.
+
+GLFW uses the ICCCM @c WM_DELETE_WINDOW protocol to intercept the user
+attempting to close the GLFW window.  If the running window manager does not
+support this protocol, the close callback will never be called.
+
+GLFW uses the EWMH @c _NET_WM_PING protocol, allowing the window manager notify
+the user when the application has stopped responding, i.e. when it has ceased to
+process events.  If the running window manager does not support this protocol,
+the user will not be notified if the application locks up.
+
+GLFW uses the EWMH @c _NET_WM_STATE protocol to tell the window manager to make
+the GLFW window fullscreen.  If the running window manager does not support this
+protocol, fullscreen windows may not work properly.  GLFW has a fallback code
+path in case this protocol is unavailable, but every window manager behaves
+slightly differently in this regard.
+
+@section compat_glx GLX extensions
+
+The GLX API is the default API used to create OpenGL contexts on Unix-like
+systems using the X Window System.
+
+GLFW uses the @c GLXFBConfig API to enumerate and select framebuffer pixel
+formats.  This requires either GLX 1.3 or greater, or the @c GLX_SGIX_fbconfig
+extension.  Where both are available, the SGIX extension is preferred.  If
+neither is available, GLFW will be unable to create windows.
+
+GLFW uses the @c GLX_MESA_swap_control, @c GLX_EXT_swap_control and @c
+GLX_SGI_swap_control extensions to provide vertical retrace synchronization (or
+"vsync"), in that order of preference.  Where none of these extension are
+available, calling @ref glfwSwapInterval will have no effect.
+
+GLFW uses the @c GLX_ARB_multisample extension to create contexts with
+multisampling anti-aliasing.  Where this extension is unavailable, the @c
+GLFW_SAMPLES hint will have no effect.
+
+GLFW uses the @c GLX_ARB_create_context extension when available, even when
+creating OpenGL contexts of version 2.1 and below.  Where this extension is
+unavailable, the @c GLFW_CONTEXT_VERSION_MAJOR and @c GLFW_CONTEXT_VERSION_MINOR
+hints will only be partially supported, the @c GLFW_OPENGL_DEBUG_CONTEXT hint
+will have no effect, and setting the @c GLFW_OPENGL_PROFILE or @c
+GLFW_OPENGL_FORWARD_COMPAT hints to a non-zero value will cause @ref
+glfwCreateWindow to fail.
+
+GLFW uses the @c GLX_ARB_create_context_profile extension to provide support for
+context profiles.  Where this extension is unavailable, setting the @c
+GLFW_OPENGL_PROFILE hint to anything but zero, or setting @c GLFW_CLIENT_API to
+anything but @c GLFW_OPENGL_API will cause @ref glfwCreateWindow to fail.
+
+@section compat_wgl WGL extensions
+
+The WGL API is used to create OpenGL contexts on Microsoft Windows and other
+implementations of the Win32 API, such as Wine.
+
+GLFW uses either the @c WGL_EXT_extension_string or the @c
+WGL_ARB_extension_string extension to check for the presence of all other WGL
+extensions listed below.  If both are available, the EXT one is preferred.  If
+neither is available, no other extensions are used and many GLFW features
+related to context creation will have no effect or cause errors when used.
+
+GLFW uses the @c WGL_EXT_swap_control extension to provide vertical retrace
+synchronization (or "vsync").  Where this extension is unavailable, calling @ref
+glfwSwapInterval will have no effect.
+
+GLFW uses the @c WGL_ARB_pixel_format and @c WGL_ARB_multisample extensions to
+create contexts with multisampling anti-aliasing.  Where these extensions are
+unavailable, the @c GLFW_SAMPLES hint will have no effect.
+
+GLFW uses the @c WGL_ARB_create_context extension when available, even when
+creating OpenGL contexts of version 2.1 and below.  Where this extension is
+unavailable, the @c GLFW_CONTEXT_VERSION_MAJOR and @c GLFW_CONTEXT_VERSION_MINOR
+hints will only be partially supported, the @c GLFW_OPENGL_DEBUG_CONTEXT hint
+will have no effect, and setting the @c GLFW_OPENGL_PROFILE or @c
+GLFW_OPENGL_FORWARD_COMPAT hints to a non-zero value will cause @ref
+glfwCreateWindow to fail.
+
+GLFW uses the @c WGL_ARB_create_context_profile extension to provide support for
+context profiles.  Where this extension is unavailable, setting the @c
+GLFW_OPENGL_PROFILE hint to anything but zero will cause @ref glfwCreateWindow
+to fail.
+
+@section cmopat_osx OpenGL 3.2 on Mac OS X
+
+Support for OpenGL 3.0 and above was introduced with Mac OS X 10.7, and even
+then only forward-compatible OpenGL 3.2 core profile contexts are supported.
+There is also still no mechanism for requesting debug contexts.  Versions of
+Mac OS X earlier than 10.7 support at most OpenGL version 2.1.
+
+Because of this, on Mac OS X 10.7, the @c GLFW_CONTEXT_VERSION_MAJOR and
+@c GLFW_CONTEXT_VERSION_MINOR hints will fail if given a version above 3.2, the
+@c GLFW_OPENGL_FORWARD_COMPAT is required for creating OpenGL 3.2 contexts, the
+@c GLFW_OPENGL_DEBUG_CONTEXT hint is ignored and setting the @c
+GLFW_OPENGL_PROFILE hint to anything except @c GLFW_OPENGL_CORE_PROFILE will
+cause @ref glfwCreateWindow to fail.                      
+
+Also, on Mac OS X 10.6 and below, the @c GLFW_CONTEXT_VERSION_MAJOR and @c
+GLFW_CONTEXT_VERSION_MINOR hints will fail if given a version above 2.1, the @c
+GLFW_OPENGL_DEBUG_CONTEXT hint will have no effect, and setting the @c
+GLFW_OPENGL_PROFILE or @c GLFW_OPENGL_FORWARD_COMPAT hints to a non-zero value
+will cause @ref glfwCreateWindow to fail.
+
+*/

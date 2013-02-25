@@ -39,13 +39,6 @@ extern "C" {
  * Doxygen documentation
  *************************************************************************/
 
-/*! @mainpage notitle
- *
- *  @section intro Introduction
- *
- *  This is the reference documentation for the GLFW library.
- */
-
 /*! @defgroup clipboard Clipboard support
  */
 /*! @defgroup context Context handling
@@ -1409,6 +1402,7 @@ GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow* window, GLFWwindowiconifyf
  *  @ingroup window
  *
  *  @note This function may only be called from the main thread.
+ *  @note This function may not be called from a callback.
  *
  *  @note This function may not be called from a callback.
  *
@@ -1420,6 +1414,7 @@ GLFWAPI void glfwPollEvents(void);
  *  @ingroup window
  *
  *  @note This function may only be called from the main thread.
+ *  @note This function may not be called from a callback.
  *
  *  @note This function may not be called from a callback.
  *

@@ -1,0 +1,16 @@
+/*!
+
+@mainpage notitle
+
+@section main_intro Introduction
+
+GLFW is a free, Open Source, multi-platform library for opening a window,
+creating an OpenGL context and managing input.  It is easy to integrate into
+existing applications and does not lay claim to the main loop.
+
+@link quick Quick introduction @endlink is a short tutorial for people new to GLFW.
+
+@link moving Moving from GLFW 2 to 3 @endlink explains what has changed and how
+to update existing code to use the GLFW 3 API.
+
+*/

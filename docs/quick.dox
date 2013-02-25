@@ -1,0 +1,200 @@
+/*!
+
+@page quick Getting started
+
+@section quick_start Introduction
+
+In this guide you will learn how to write simple OpenGL applications using
+GLFW 3.  We start by initializing GLFW, then we create a window and read some
+user keyboard input.
+
+
+@section quick_include Including the GLFW header
+
+The first thing you have to do when using GLFW is including the GLFW header.
+
+@code
+#include <GL/glfw3.h>
+@endcode
+
+This header defines all the constants, types and function prototypes of the
+GLFW API.  It also includes the OpenGL header provided by your development
+environment and defines all the necessary constants and types for it to work on
+that particular platform.
+
+Starting with version 3.0, the GLU header @c glu.h is no longer included by
+default.  If you wish to include it, define @c GLFW_INCLUDE_GLU before the
+inclusion of the GLFW header.
+
+
+@section quick_init_term Initializing and terminating GLFW
+
+Before you can use most GLFW functions, the library must be initialized.  This
+is done with @ref glfwInit, which returns non-zero if successful, or zero if an
+error occurred.
+
+@code
+if (!glfwInit())
+{
+    exit(EXIT_FAILURE);
+}
+@endcode
+
+When you are done using GLFW, typically at the very end of the program, you need
+to call @ref glfwTerminate.
+
+@code
+glfwTerminate();
+@endcode
+
+This destroys any remaining windows and releases any other resources allocated by
+GLFW.  After this call, you must call @ref glfwInit again before using any GLFW
+functions that require it.
+
+
+@section quick_create_window Creating a window and context
+
+The window (and its context) is created with @ref glfwCreateWindow, which
+returns a handle to the created window.  For example, this creates an 640 by 480
+pixels windowed mode window:
+
+@code
+GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
+@endcode
+
+If window creation fails, @c NULL will be returned, so you need to check whether
+it did.
+
+@code
+if (!window)
+{
+    glfwTerminate();
+    exit(EXIT_FAILURE);
+}
+@endcode
+
+This handle is then passed to all window related functions, and is provided to
+you along with input events, so you know which window received the input.
+
+To create a fullscreen window, you need to specify which monitor the window
+should use.  In most cases, the user's primary monitor is a good choice.  You
+can get this with @ref glfwGetPrimaryMonitor.  To make the above window
+fullscreen, just pass along the monitor handle:
+
+@code
+GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", glfwGetPrimaryMonitor(), NULL);
+@endcode
+
+Fullscreen windows cover the entire screen, have no border or decorations, and
+change the monitor's resolution to the one most closely matching the requested
+window size.
+
+When you are done with the window, destroy it with the @ref glfwDestroyWindow
+function.
+
+@code
+glfwDestroyWindow(window);
+@endcode
+
+Once this function is called, no more events will be delivered for that window
+and its handle becomes invalid.
+
+
+@section quick_window_attribs Retrieving window attributes
+
+Each window provides a number of attributes that can be queried with @ref
+glfwGetWindowParam.  Some are related to the window itself and others to the
+OpenGL context.  For example, to find out if the user is attempting to close the
+window, either by pressing the close widget in the title bar or using a key
+combination like Alt+F4, check the @c GLFW_SHOULD_CLOSE attribute.
+
+@code
+while (!glfwGetWindowParam(window, GLFW_SHOULD_CLOSE))
+{
+    // Keep running
+}
+@endcode
+
+
+@section quick_swap_buffers Swapping buffers
+
+GLFW windows always use double-buffering.  That means that you have two
+rendering buffers; a front buffer and a back buffer.  The front buffer is the
+one being displayed and the back buffer the one you render to.
+
+When the entire frame has been rendered, it is time to swap the back and the
+front buffers in order to display the rendered frame, and begin rendering a new
+frame.  This is done with @ref glfwSwapBuffers.
+
+@code
+glfwSwapBuffers(window);
+@endcode
+
+
+@section quick_process_events Processing events
+
+GLFW needs to communicate regularly with the window system in order to receive
+events, like the ones controlling the attribute @c GLFW_SHOULD_CLOSE mentioned
+above.  Event processing must be done regularly and is normally done each frame
+before rendering but after buffer swap.
+
+There are two ways to process events.  @ref glfwPollEvents processes only those
+events that have already been received and then returns immediately.  This is
+the best choice when rendering continually, like most games do.
+
+@code
+glfwPollEvents();
+@endcode
+
+If instead you only need to update your rendering once you have received new
+input, @ref glfwWaitEvents is a better choice.  It will wait until at least one
+event has been received and then process all received events before returning.
+
+@code
+glfwWaitEvents();
+@endcode
+
+
+@section quick_example Putting it together: A minimal GLFW application
+
+Now that you know how to initialize GLFW, create a window and poll for
+keyboard input, it's possible to create a simple program.
+
+@code
+#include <GL/glfw3.h>
+#include <stdlib.h>
+
+int main(void)
+{
+    GLFWwindow* window;
+
+    if (!glfwInit())
+    {
+        exit(EXIT_FAILURE);
+    }
+
+    window = glfwCreateWindow(640, 480, "My Window", NULL, NULL);
+    if (!window)
+    {
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
+
+    while (!glfwGetWindowParam(window, GLFW_SHOULD_CLOSE))
+    {
+        glClear(GL_COLOR_BUFFER_BIT);
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    glfwDestroyWindow(window);
+
+    glfwTerminate();
+    exit(EXIT_SUCCESS);
+}
+@endcode
+
+This program creates a 640 by 480 pixels window and runs a loop clearing the
+screen and processing events until the user closes the window.
+
+*/

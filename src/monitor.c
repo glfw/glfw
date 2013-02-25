@@ -274,9 +274,7 @@ GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void)
 GLFWAPI void glfwGetMonitorPos(GLFWmonitor* handle, int* xpos, int* ypos)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-
     _GLFW_REQUIRE_INIT();
-
     _glfwPlatformGetMonitorPos(monitor, xpos, ypos);
 }
 

@@ -820,7 +820,7 @@ GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
 
 /*! @brief Returns the currently connected monitors.
  *  @param[out] count The size of the returned array.
- *  @return An array of monitor handles.
+ *  @return An array of monitor handles, or @c NULL if an error occurred.
  *  @ingroup monitor
  *
  *  @sa glfwGetPrimaryMonitor
@@ -828,7 +828,7 @@ GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
 GLFWAPI GLFWmonitor** glfwGetMonitors(int* count);
 
 /*! @brief Returns the primary monitor.
- *  @return The primary monitor.
+ *  @return The primary monitor, or @c NULL if an error occurred.
  *  @ingroup monitor
  *
  *  @sa glfwGetMonitors
@@ -853,7 +853,8 @@ GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* monitor, int* width, int* h
 
 /*! @brief Returns the name of the specified monitor.
  *  @param[in] monitor The monitor to query.
- *  @return The UTF-8 encoded name of the monitor.
+ *  @return The UTF-8 encoded name of the monitor, or @c NULL if an error
+ *  occurred.
  *  @ingroup monitor
  */
 GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* monitor);
@@ -868,7 +869,7 @@ GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun);
 /*! @brief Returns the available video modes for the specified monitor.
  *  @param[in] monitor The monitor to query.
  *  @param[out] count The number of video modes in the returned array.
- *  @return An array of video modes.
+ *  @return An array of video modes, or @c NULL if an error occurred.
  *  @ingroup monitor
  *
  *  @sa glfwGetVideoMode
@@ -877,7 +878,7 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count);
 
 /*! @brief Returns the current mode of the specified monitor.
  *  @param[in] monitor The monitor to query.
- *  @return The current mode of the monitor.
+ *  @return The current mode of the monitor, or all zeroes if an error occurred.
  *  @ingroup monitor
  *
  *  @sa glfwGetVideoModes
@@ -1570,7 +1571,8 @@ GLFWAPI int glfwGetJoystickParam(int joy, int param);
  *  @param[in] joy The joystick to query.
  *  @param[out] axes The array to hold the values.
  *  @param[in] numaxes The size of the provided array.
- *  @return The number of values written to @p axes.
+ *  @return The number of values written to @p axes, or zero if an error
+ *  occurred.
  *  @ingroup input
  */
 GLFWAPI int glfwGetJoystickAxes(int joy, float* axes, int numaxes);
@@ -1579,7 +1581,8 @@ GLFWAPI int glfwGetJoystickAxes(int joy, float* axes, int numaxes);
  *  @param[in] joy The joystick to query.
  *  @param[out] buttons The array to hold the values.
  *  @param[in] numbuttons The size of the provided array.
- *  @return The number of values written to @p buttons.
+ *  @return The number of values written to @p buttons, or zero if an error
+ *  occurred.
  *  @ingroup input
  */
 GLFWAPI int glfwGetJoystickButtons(int joy, unsigned char* buttons, int numbuttons);
@@ -1609,7 +1612,7 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
 /*! @brief Retrieves the contents of the clipboard as a string.
  *  @param[in] window The window that will request the clipboard contents.
  *  @return The contents of the clipboard as a UTF-8 encoded string, or @c NULL
- *  if that format was unavailable.
+ *  if an error occurred.
  *  @ingroup clipboard
  *
  *  @note This function may only be called from the main thread.
@@ -1622,7 +1625,7 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
 GLFWAPI const char* glfwGetClipboardString(GLFWwindow* window);
 
 /*! @brief Retrieves the current value of the GLFW timer.
- *  @return The current value, in seconds.
+ *  @return The current value, in seconds, or zero if an error occurred.
  *  @ingroup time
  *
  *  @remarks This function may be called from secondary threads.

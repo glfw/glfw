@@ -43,11 +43,10 @@ glfwGetPrimaryMonitor that provides something similar to the earlier behaviour.
 @section moving_window_close Window closing
 
 Window closing is now just an event like any other.  GLFW 3 windows won't
-disappear from underfoot even when no close callback is set.  You can query
-whether the user has requested that the window be closed using the @c
-GLFW_CLOSE_REQUESTED window parameter, or by setting a close callback.  The
-return value of the close callback becomes the new value of the window
-parameter.
+disappear from underfoot even when no close callback is set; instead the
+window's close flag is set.  You can query this flag using @ref
+glfwWindowShouldClose, or capture close events by setting a close callback.  The
+return value of the close callback then becomes the new value of the close flag.
 
 @section moving_context Explicit context management
 

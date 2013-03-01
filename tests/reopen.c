@@ -38,9 +38,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static GLFWwindow* window_handle = NULL;
-static GLboolean closed = GL_FALSE;
-
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
@@ -54,8 +51,7 @@ static void window_size_callback(GLFWwindow* window, int width, int height)
 static int window_close_callback(GLFWwindow* window)
 {
     printf("Close callback triggered\n");
-    closed = GL_TRUE;
-    return 0;
+    return GL_TRUE;
 }
 
 static void key_callback(GLFWwindow* window, int key, int action)
@@ -67,48 +63,47 @@ static void key_callback(GLFWwindow* window, int key, int action)
     {
         case GLFW_KEY_Q:
         case GLFW_KEY_ESCAPE:
-            closed = GL_TRUE;
+            glfwSetWindowShouldClose(window, GL_TRUE);
             break;
     }
 }
 
-static GLboolean open_window(int width, int height, GLFWmonitor* monitor)
+static GLFWwindow* open_window(int width, int height, GLFWmonitor* monitor)
 {
     double base;
+    GLFWwindow* window;
 
     base = glfwGetTime();
 
-    window_handle = glfwCreateWindow(width, height, "Window Re-opener", monitor, NULL);
-    if (!window_handle)
-        return GL_FALSE;
+    window = glfwCreateWindow(width, height, "Window Re-opener", monitor, NULL);
+    if (!window)
+        return NULL;
 
-    glfwMakeContextCurrent(window_handle);
+    glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    glfwSetWindowSizeCallback(window_handle, window_size_callback);
-    glfwSetWindowCloseCallback(window_handle, window_close_callback);
-    glfwSetKeyCallback(window_handle, key_callback);
+    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetWindowCloseCallback(window, window_close_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     printf("Opening %s mode window took %0.3f seconds\n",
            monitor ? "fullscreen" : "windowed",
            glfwGetTime() - base);
 
-    return GL_TRUE;
+    return window;
 }
 
-static void close_window(void)
+static void close_window(GLFWwindow* window)
 {
     double base = glfwGetTime();
-
-    glfwDestroyWindow(window_handle);
-    window_handle = NULL;
-
+    glfwDestroyWindow(window);
     printf("Closing window took %0.3f seconds\n", glfwGetTime() - base);
 }
 
 int main(int argc, char** argv)
 {
     int count = 0;
+    GLFWwindow* window;
 
     glfwSetErrorCallback(error_callback);
 
@@ -126,7 +121,8 @@ int main(int argc, char** argv)
             monitor = monitors[rand() % monitorCount];
         }
 
-        if (!open_window(640, 480, monitor))
+        window = open_window(640, 480, monitor);
+        if (!window)
         {
             glfwTerminate();
             exit(EXIT_FAILURE);
@@ -147,12 +143,12 @@ int main(int argc, char** argv)
             glRectf(-0.5f, -0.5f, 1.f, 1.f);
             glPopMatrix();
 
-            glfwSwapBuffers(window_handle);
+            glfwSwapBuffers(window);
             glfwPollEvents();
 
-            if (closed)
+            if (glfwWindowShouldClose(window))
             {
-                close_window();
+                close_window(window);
                 printf("User closed window\n");
 
                 glfwTerminate();
@@ -161,7 +157,7 @@ int main(int argc, char** argv)
         }
 
         printf("Closing window\n");
-        close_window();
+        close_window(window);
 
         count++;
     }

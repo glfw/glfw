@@ -163,20 +163,31 @@ glfwMakeContextCurrent(window);
 @endcode
 
 
-@section quick_window_params Retrieving window parameters
+@section quick_window_params Checking the window close flag
 
-Each window provides a number of parameters that can be queried with @ref
-glfwGetWindowParam.  Some are related to the window itself and others to the
-OpenGL context.  For example, to find out if the user is attempting to close the
-window, either by pressing the close widget in the title bar or using a key
-combination like Alt+F4, check the @c GLFW_SHOULD_CLOSE parameter.
+Each window has a flag indicating whether the window should be closed.  This can
+be checked with @ref glfwWindowShouldClose.  
+
+When the user attempts to close the window, either by pressing the close widget
+in the title bar or using a key combination like Alt+F4, this flag is set to 1.
+Note that <b>the window isn't actually closed</b>, so you are expected to
+monitor this flag and either destroy the window or give some kind of feedback to
+the user.
 
 @code
-while (!glfwGetWindowParam(window, GLFW_SHOULD_CLOSE))
+while (!glfwWindowShouldClose(window))
 {
     // Keep running
 }
 @endcode
+
+You can intercept the setting of the close flag by setting a close callback with
+@ref glfwSetWindowCloseCallback.  The return value of the close callback becomes
+the new value of the close flag.
+
+You can also set it yourself with @ref glfwSetWindowShouldClose.  This can be
+useful if you want to interpret other kinds of input as closing the window, like
+for example pressing the escape key.
 
 
 @section quick_render Rendering with OpenGL

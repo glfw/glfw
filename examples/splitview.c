@@ -434,6 +434,12 @@ static void mouseButtonFun(GLFWwindow* window, int button, int action)
     do_redraw = 1;
 }
 
+static void key_callback(GLFWwindow* window, int key, int action)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GL_TRUE);
+}
+
 
 //========================================================================
 // main
@@ -450,8 +456,6 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glfwWindowHint(GLFW_DEPTH_BITS, 16);
-
     // Open OpenGL window
     window = glfwCreateWindow(500, 500, "Split view demo", NULL, NULL);
     if (!window)
@@ -467,6 +471,7 @@ int main(void)
     glfwSetWindowRefreshCallback(window, windowRefreshFun);
     glfwSetCursorPosCallback(window, cursorPosFun);
     glfwSetMouseButtonCallback(window, mouseButtonFun);
+    glfwSetKeyCallback(window, key_callback);
 
     // Enable vsync
     glfwMakeContextCurrent(window);
@@ -474,12 +479,6 @@ int main(void)
 
     glfwGetWindowSize(window, &width, &height);
     windowSizeFun(window, width, height);
-
-    // Enable sticky keys
-    glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-
-    // Enable mouse cursor (only needed for fullscreen mode)
-    glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_NORMAL);
 
     // Main loop
     for (;;)
@@ -499,10 +498,8 @@ int main(void)
         // Wait for new events
         glfwWaitEvents();
 
-        // Check if the ESC key was pressed or the window should be closed
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE))
-            break;
-        if (glfwGetWindowParam(window, GLFW_SHOULD_CLOSE))
+        // Check if the window should be closed
+        if (glfwWindowShouldClose(window))
             break;
     }
 

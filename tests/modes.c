@@ -35,8 +35,6 @@
 
 #include "getopt.h"
 
-static GLFWwindow* window_handle = NULL;
-
 enum Mode
 {
     LIST_MODE,
@@ -75,19 +73,10 @@ static void window_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-static int window_close_callback(GLFWwindow* window)
-{
-    window_handle = NULL;
-    return GL_TRUE;
-}
-
 static void key_callback(GLFWwindow* window, int key, int action)
 {
     if (key == GLFW_KEY_ESCAPE)
-    {
-        glfwDestroyWindow(window);
-        window_handle = NULL;
-    }
+        glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
 static void list_modes(GLFWmonitor* monitor)
@@ -124,6 +113,7 @@ static void list_modes(GLFWmonitor* monitor)
 static void test_modes(GLFWmonitor* monitor)
 {
     int i, count;
+    GLFWwindow* window;
     const GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
 
     for (i = 0;  i < count;  i++)
@@ -140,11 +130,11 @@ static void test_modes(GLFWmonitor* monitor)
                glfwGetMonitorName(monitor),
                format_mode(mode));
 
-        window_handle = glfwCreateWindow(mode->width, mode->height,
-                                         "Video Mode Test",
-                                         glfwGetPrimaryMonitor(),
-                                         NULL);
-        if (!window_handle)
+        window = glfwCreateWindow(mode->width, mode->height,
+                                  "Video Mode Test",
+                                  glfwGetPrimaryMonitor(),
+                                  NULL);
+        if (!window)
         {
             printf("Failed to enter mode %u: %s\n",
                    (unsigned int) i,
@@ -152,11 +142,10 @@ static void test_modes(GLFWmonitor* monitor)
             continue;
         }
 
-        glfwSetWindowSizeCallback(window_handle, window_size_callback);
-        glfwSetWindowCloseCallback(window_handle, window_close_callback);
-        glfwSetKeyCallback(window_handle, key_callback);
+        glfwSetWindowSizeCallback(window, window_size_callback);
+        glfwSetKeyCallback(window, key_callback);
 
-        glfwMakeContextCurrent(window_handle);
+        glfwMakeContextCurrent(window);
         glfwSwapInterval(1);
 
         glfwSetTime(0.0);
@@ -164,10 +153,10 @@ static void test_modes(GLFWmonitor* monitor)
         while (glfwGetTime() < 5.0)
         {
             glClear(GL_COLOR_BUFFER_BIT);
-            glfwSwapBuffers(window_handle);
+            glfwSwapBuffers(window);
             glfwPollEvents();
 
-            if (!window_handle)
+            if (glfwWindowShouldClose(window))
             {
                 printf("User terminated program\n");
 
@@ -180,7 +169,7 @@ static void test_modes(GLFWmonitor* monitor)
         glGetIntegerv(GL_GREEN_BITS, &current.greenBits);
         glGetIntegerv(GL_BLUE_BITS, &current.blueBits);
 
-        glfwGetWindowSize(window_handle, &current.width, &current.height);
+        glfwGetWindowSize(window, &current.width, &current.height);
 
         if (current.redBits != mode->redBits ||
             current.greenBits != mode->greenBits ||
@@ -200,8 +189,9 @@ static void test_modes(GLFWmonitor* monitor)
 
         printf("Closing window\n");
 
-        glfwDestroyWindow(window_handle);
-        window_handle = NULL;
+        glfwDestroyWindow(window);
+        window = NULL;
+
         glfwPollEvents();
     }
 }

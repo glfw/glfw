@@ -406,6 +406,20 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
     free(window);
 }
 
+GLFWAPI int glfwWindowShouldClose(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN(0);
+    return window->closed;
+}
+
+GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* handle, int value)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT();
+    window->closed = value;
+}
+
 GLFWAPI void glfwSetWindowTitle(GLFWwindow* handle, const char* title)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -524,8 +538,6 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow* handle, int param)
             return window == _glfw.focusedWindow;
         case GLFW_ICONIFIED:
             return window->iconified;
-        case GLFW_SHOULD_CLOSE:
-            return window->closed;
         case GLFW_RESIZABLE:
             return window->resizable;
         case GLFW_VISIBLE:

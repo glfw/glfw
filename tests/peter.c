@@ -36,11 +36,8 @@
 #include <stdlib.h>
 
 static GLboolean reopen = GL_FALSE;
-static GLFWwindow* window_handle = NULL;
 static int cursor_x;
 static int cursor_y;
-
-static GLboolean open_window(void);
 
 static void toggle_cursor(GLFWwindow* window)
 {
@@ -95,33 +92,36 @@ static void window_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-static GLboolean open_window(void)
+static GLFWwindow* open_window(void)
 {
-    window_handle = glfwCreateWindow(640, 480, "Peter Detector", NULL, NULL);
-    if (!window_handle)
-        return GL_FALSE;
+    GLFWwindow* window = glfwCreateWindow(640, 480, "Peter Detector", NULL, NULL);
+    if (!window)
+        return NULL;
 
-    glfwMakeContextCurrent(window_handle);
+    glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    glfwGetCursorPos(window_handle, &cursor_x, &cursor_y);
+    glfwGetCursorPos(window, &cursor_x, &cursor_y);
     printf("Cursor position: %i %i\n", cursor_x, cursor_y);
 
-    glfwSetWindowSizeCallback(window_handle, window_size_callback);
-    glfwSetCursorPosCallback(window_handle, cursor_position_callback);
-    glfwSetKeyCallback(window_handle, key_callback);
+    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetKeyCallback(window, key_callback);
 
-    return GL_TRUE;
+    return window;
 }
 
 int main(void)
 {
+    GLFWwindow* window;
+
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    if (!open_window())
+    window = open_window();
+    if (!window)
     {
         glfwTerminate();
         exit(EXIT_FAILURE);
@@ -129,17 +129,18 @@ int main(void)
 
     glClearColor(0.f, 0.f, 0.f, 0.f);
 
-    while (!glfwGetWindowParam(window_handle, GLFW_SHOULD_CLOSE))
+    while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glfwSwapBuffers(window_handle);
+        glfwSwapBuffers(window);
         glfwWaitEvents();
 
         if (reopen)
         {
-            glfwDestroyWindow(window_handle);
-            if (!open_window())
+            glfwDestroyWindow(window);
+            window = open_window();
+            if (!window)
             {
                 glfwTerminate();
                 exit(EXIT_FAILURE);

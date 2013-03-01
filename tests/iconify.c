@@ -35,8 +35,6 @@
 
 #include "getopt.h"
 
-static GLboolean closed = GL_FALSE;
-
 static void usage(void)
 {
     printf("Usage: iconify [-h] [-f]\n");
@@ -45,12 +43,6 @@ static void usage(void)
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
-}
-
-static int window_close_callback(GLFWwindow* window)
-{
-    closed = GL_TRUE;
-    return GL_FALSE;
 }
 
 static void key_callback(GLFWwindow* window, int key, int action)
@@ -68,7 +60,7 @@ static void key_callback(GLFWwindow* window, int key, int action)
             glfwIconifyWindow(window);
             break;
         case GLFW_KEY_ESCAPE:
-            closed = GL_TRUE;
+            glfwSetWindowShouldClose(window, GL_TRUE);
             break;
     }
 }
@@ -147,7 +139,6 @@ int main(int argc, char** argv)
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetWindowSizeCallback(window, window_size_callback);
-    glfwSetWindowCloseCallback(window, window_close_callback);
     glfwSetWindowFocusCallback(window, window_focus_callback);
     glfwSetWindowIconifyCallback(window, window_iconify_callback);
 
@@ -157,7 +148,7 @@ int main(int argc, char** argv)
 
     glEnable(GL_SCISSOR_TEST);
 
-    while (!closed)
+    while (!glfwWindowShouldClose(window))
     {
         glfwGetWindowSize(window, &width, &height);
 

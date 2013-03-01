@@ -38,7 +38,6 @@
 #define OFFSET 50
 
 static GLFWwindow* windows[2];
-static GLboolean closed = GL_FALSE;
 
 static void error_callback(int error, const char* description)
 {
@@ -48,13 +47,7 @@ static void error_callback(int error, const char* description)
 static void key_callback(GLFWwindow* window, int key, int action)
 {
     if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
-        closed = GL_TRUE;
-}
-
-static int window_close_callback(GLFWwindow* window)
-{
-    closed = GL_TRUE;
-    return GL_FALSE;
+        glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
 static GLFWwindow* open_window(const char* title, GLFWwindow* share, int posX, int posY)
@@ -71,7 +64,6 @@ static GLFWwindow* open_window(const char* title, GLFWwindow* share, int posX, i
     glfwSetWindowPos(window, posX, posY);
     glfwShowWindow(window);
 
-    glfwSetWindowCloseCallback(window, window_close_callback);
     glfwSetKeyCallback(window, key_callback);
 
     return window;
@@ -172,7 +164,8 @@ int main(int argc, char** argv)
 
     glfwMakeContextCurrent(windows[0]);
 
-    while (!closed)
+    while (!glfwWindowShouldClose(windows[0]) &&
+           !glfwWindowShouldClose(windows[1]))
     {
         glfwMakeContextCurrent(windows[0]);
         draw_quad(texture);

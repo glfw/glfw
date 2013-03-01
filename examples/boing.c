@@ -43,6 +43,7 @@
 void init( void );
 void display( void );
 void reshape( GLFWwindow* window, int w, int h );
+void key_callback( GLFWwindow* window, int key, int action );
 void DrawBoingBall( void );
 void BounceBall( double dt );
 void DrawBoingBallBand( GLfloat long_lo, GLfloat long_hi );
@@ -244,6 +245,11 @@ void reshape( GLFWwindow* window, int w, int h )
               0.0, -1.0, 0.0 );         /* up vector */
 }
 
+void key_callback( GLFWwindow* window, int key, int action )
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GL_TRUE);
+}
 
 /*****************************************************************************
  * Draw the Boing ball.
@@ -584,6 +590,7 @@ int main( void )
    }
 
    glfwSetWindowSizeCallback(window, reshape);
+   glfwSetKeyCallback(window, key_callback);
 
    glfwMakeContextCurrent(window);
    glfwSwapInterval( 1 );
@@ -591,7 +598,6 @@ int main( void )
    glfwGetWindowSize(window, &width, &height);
    reshape(window, width, height);
 
-   glfwSetInputMode( window, GLFW_STICKY_KEYS, GL_TRUE );
    glfwSetTime( 0.0 );
 
    init();
@@ -612,9 +618,7 @@ int main( void )
        glfwPollEvents();
 
        /* Check if we are still running */
-       if (glfwGetKey( window, GLFW_KEY_ESCAPE ))
-           break;
-       if (glfwGetWindowParam(window, GLFW_SHOULD_CLOSE))
+       if (glfwWindowShouldClose(window))
            break;
    }
 

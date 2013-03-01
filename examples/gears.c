@@ -32,10 +32,6 @@
 #define M_PI 3.141592654
 #endif
 
-/* The program exits when this is zero.
- */
-static int running = 1;
-
 /* If non-zero, the program exits after that many seconds
  */
 static int autoexit = 0;
@@ -227,7 +223,7 @@ void key( GLFWwindow* window, int k, int action )
       view_rotz += 5.0;
     break;
   case GLFW_KEY_ESCAPE:
-    running = 0;
+    glfwSetWindowShouldClose(window, GL_TRUE);
     break;
   case GLFW_KEY_UP:
     view_rotx += 5.0;
@@ -264,14 +260,6 @@ void reshape( GLFWwindow* window, int width, int height )
   glMatrixMode( GL_MODELVIEW );
   glLoadIdentity();
   glTranslatef( 0.0, 0.0, -20.0 );
-}
-
-
-/* close callback */
-static int window_close_callback(GLFWwindow* window)
-{
-    running = 0;
-    return GL_TRUE;
 }
 
 
@@ -349,7 +337,6 @@ int main(int argc, char *argv[])
     }
 
     // Set callback functions
-    glfwSetWindowCloseCallback(window, window_close_callback);
     glfwSetWindowSizeCallback(window, reshape);
     glfwSetKeyCallback(window, key);
 
@@ -363,7 +350,7 @@ int main(int argc, char *argv[])
     init(argc, argv);
 
     // Main loop
-    while( running )
+    while( !glfwWindowShouldClose(window) )
     {
         // Draw gears
         draw();

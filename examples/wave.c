@@ -28,7 +28,6 @@
 GLfloat alpha = 210.f, beta = -70.f;
 GLfloat zoom = 2.f;
 
-GLboolean running = GL_TRUE;
 GLboolean locked = GL_FALSE;
 
 int cursorX;
@@ -279,7 +278,7 @@ void key_callback(GLFWwindow* window, int key, int action)
     switch (key)
     {
         case GLFW_KEY_ESCAPE:
-            running = 0;
+            glfwSetWindowShouldClose(window, GL_TRUE);
             break;
         case GLFW_KEY_SPACE:
             init_grid();
@@ -383,17 +382,6 @@ void window_size_callback(GLFWwindow* window, int width, int height)
 
 
 //========================================================================
-// Callback function for window close events
-//========================================================================
-
-static int window_close_callback(GLFWwindow* window)
-{
-    running = GL_FALSE;
-    return GL_TRUE;
-}
-
-
-//========================================================================
 // main
 //========================================================================
 
@@ -416,7 +404,6 @@ int main(int argc, char* argv[])
     }
 
     glfwSetKeyCallback(window, key_callback);
-    glfwSetWindowCloseCallback(window, window_close_callback);
     glfwSetWindowSizeCallback(window, window_size_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
@@ -439,7 +426,7 @@ int main(int argc, char* argv[])
     // Initialize timer
     t_old = glfwGetTime() - 0.01;
 
-    while (running)
+    while (!glfwWindowShouldClose(window))
     {
         t = glfwGetTime();
         dt_total = t - t_old;

@@ -34,8 +34,6 @@
 
 #include "getopt.h"
 
-static GLboolean closed = GL_FALSE;
-
 static void usage(void)
 {
     printf("Usage: clipboard [-h]\n");
@@ -52,12 +50,6 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static int window_close_callback(GLFWwindow* window)
-{
-    closed = GL_TRUE;
-    return GL_FALSE;
-}
-
 static void key_callback(GLFWwindow* window, int key, int action)
 {
     if (action != GLFW_PRESS)
@@ -66,7 +58,7 @@ static void key_callback(GLFWwindow* window, int key, int action)
     switch (key)
     {
         case GLFW_KEY_ESCAPE:
-            closed = GL_TRUE;
+            glfwSetWindowShouldClose(window, GL_TRUE);
             break;
 
         case GLFW_KEY_V:
@@ -139,7 +131,6 @@ int main(int argc, char** argv)
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetWindowSizeCallback(window, window_size_callback);
-    glfwSetWindowCloseCallback(window, window_close_callback);
 
     glMatrixMode(GL_PROJECTION);
     glOrtho(-1.f, 1.f, -1.f, 1.f, -1.f, 1.f);
@@ -147,7 +138,7 @@ int main(int argc, char** argv)
 
     glClearColor(0.5f, 0.5f, 0.5f, 0);
 
-    while (!closed)
+    while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 

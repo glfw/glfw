@@ -247,6 +247,8 @@ GLFW.
    changes in the set of available monitors
  * Added `GLFWwindow` and updated window-related functions and callbacks to take
    a window handle
+ * Added `glfwSetWindowShouldClose` and `glfwWindowShouldClose` for setting and
+   retrieving the window close flag
  * Added `glfwGetWindowPos` for retrieving the position of a window
  * Added `glfwDefaultWindowHints` for resetting all window hints to their
    default values
@@ -324,8 +326,7 @@ GLFW.
  * Replaced `glfwEnable` and `glfwDisable` with `glfwGetInputMode` and
    `glfwSetInputMode`
  * Replaced `joystick` test with graphical version
- * Replaced automatic closing of windows with `GLFW_SHOULD_CLOSE` window
-   parameter
+ * Replaced automatic closing of windows with the window close flag
  * Removed the `GLFW_KEY_REPEAT` input option
  * Removed event auto-polling and the `GLFW_AUTO_POLL_EVENTS` window enable
  * Removed the Win32 port .def files

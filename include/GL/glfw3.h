@@ -483,7 +483,6 @@ extern "C" {
 
 #define GLFW_FOCUSED                0x00020001
 #define GLFW_ICONIFIED              0x00020002
-#define GLFW_SHOULD_CLOSE           0x00020003
 #define GLFW_RESIZABLE              0x00022007
 #define GLFW_VISIBLE                0x00022008
 
@@ -595,8 +594,8 @@ typedef void (* GLFWwindowsizefun)(GLFWwindow*,int,int);
  *  @return One of @c GL_TRUE or @c GL_FALSE.
  *  @ingroup window
  *
- *  The return value of the close callback becomes the new value of the @c
- *  GLFW_SHOULD_CLOSE window parameter.
+ *  The return value of the close callback becomes the new value returned by
+ *  @ref glfwWindowShouldClose.
  *
  *  @sa glfwSetWindowCloseCallback
  */
@@ -1122,6 +1121,23 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height, const char* title, G
  */
 GLFWAPI void glfwDestroyWindow(GLFWwindow* window);
 
+/*! @brief Checks whether the specified window has been requested to close.
+ *  @param[in] window The window to query.
+ *  @return @c GL_TRUE if the window should close, or @c GL_FALSE otherwise.
+ *  @ingroup window
+ */
+GLFWAPI int glfwWindowShouldClose(GLFWwindow* window);
+
+/*! @brief Sets whether the specified window should close.
+ *  @param[in] window The window whose value to change.
+ *  @param[in] value The new value.
+ *  @ingroup window
+ *
+ *  @note Calling this from the close callback will have no effect, as whatever
+ *  value you set will be overwritten by the return value of the close callback.
+ */
+GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int value);
+
 /*! @brief Sets the title of the specified window.
  *  @param[in] window The window whose title to change.
  *  @param[in] title The UTF-8 encoded window title.
@@ -1281,9 +1297,6 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  The @c GLFW_RESIZABLE parameter indicates whether the window is resizable
  *  by the user.
  *
- *  The @c GLFW_SHOULD_CLOSE parameter indicates whether the window has been
- *  requested by the user to close.
- *
  *  @par Context parameters
  *
  *  The @c GLFW_CLIENT_API parameter indicates the client API provided by the
@@ -1357,9 +1370,8 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwindowsizefun cbf
  *  clicks the window's close widget.  Calling @ref glfwDestroyWindow does not
  *  cause this callback to be called.
  *
- *  The return value of the close callback becomes the new value of the @c
- *  GLFW_SHOULD_CLOSE window parameter, which you can query with @ref
- *  glfwGetWindowParam.
+ *  The return value of the close callback becomes the new value returned by
+ *  @ref glfwWindowShouldClose.
  *
  *  @remarks <b>Mac OS X:</b> Selecting Quit from the application menu will
  *  trigger the close callback for all windows.

@@ -52,7 +52,7 @@ int main(void)
 
     glfwMakeContextCurrent(window);
 
-    while (!glfwGetWindowParam(window, GLFW_SHOULD_CLOSE))
+    while (!glfwWindowShouldClose(window))
     {
         float ratio;
         int width, height;

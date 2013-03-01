@@ -33,8 +33,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static GLboolean running = GL_TRUE;
-
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
@@ -57,7 +55,7 @@ static void window_key_callback(GLFWwindow* window, int key, int action)
         case GLFW_KEY_ESCAPE:
         {
             printf("%0.3f: User pressed Escape\n", glfwGetTime());
-            running = GL_FALSE;
+            glfwSetWindowShouldClose(window, GL_TRUE);
             break;
         }
 
@@ -68,13 +66,6 @@ static void window_key_callback(GLFWwindow* window, int key, int action)
             break;
         }
     }
-}
-
-static int window_close_callback(GLFWwindow* window)
-{
-    printf("%0.3f: User closed window\n", glfwGetTime());
-    running = GL_FALSE;
-    return GL_TRUE;
 }
 
 int main(void)
@@ -100,9 +91,8 @@ int main(void)
 
     glfwSetWindowFocusCallback(window, window_focus_callback);
     glfwSetKeyCallback(window, window_key_callback);
-    glfwSetWindowCloseCallback(window, window_close_callback);
 
-    while (running)
+    while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
         glfwSwapBuffers(window);

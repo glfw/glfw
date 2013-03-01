@@ -477,27 +477,13 @@ static void update_mesh(void)
  * GLFW callback functions
  *********************************************************************/
 
-/* The program runs as long as this is GL_TRUE
- */
-static GLboolean running = GL_TRUE;
-
-/* GLFW Window management functions */
-static int window_close_callback(GLFWwindow* window)
-{
-    running = GL_FALSE;
-
-    /* Disallow window closing
-     * The window will be closed when the main loop terminates */
-    return 0;
-}
-
 static void key_callback(GLFWwindow* window, int key, int action)
 {
     switch(key)
     {
         case GLFW_KEY_ESCAPE:
             /* Exit program on Escape */
-            running = GL_FALSE;
+            glfwSetWindowShouldClose(window, GL_TRUE);
             break;
     }
 }
@@ -599,7 +585,6 @@ int main(int argc, char** argv)
     }
 
     /* Register events callback */
-    glfwSetWindowCloseCallback(window, window_close_callback);
     glfwSetKeyCallback(window, key_callback);
 
     glfwMakeContextCurrent(window);
@@ -661,7 +646,7 @@ int main(int argc, char** argv)
     iter = 0;
     dt = last_update_time = glfwGetTime();
 
-    while (running)
+    while (!glfwWindowShouldClose(window))
     {
         ++frame;
         /* render the next frame */

@@ -30,6 +30,9 @@
 
 #include "internal.h"
 
+// Internal key state used for sticky keys
+#define _GLFW_STICK 3
+
 
 // Sets the cursor mode for the specified window
 //

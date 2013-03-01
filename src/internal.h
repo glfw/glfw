@@ -106,9 +106,6 @@ typedef struct _GLFWmonitor     _GLFWmonitor;
 // Helper macros
 //========================================================================
 
-// Internal key state used for sticky keys
-#define _GLFW_STICK 3
-
 // Checks for whether the library has been intitalized
 #define _GLFW_REQUIRE_INIT()                         \
     if (!_glfwInitialized)                           \

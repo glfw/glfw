@@ -1568,7 +1568,7 @@ GLFWAPI void glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcursorenterfun c
  *  set callback.
  *  @ingroup input
  *
- *  @note This receives all scrolling input, like that from a mouse wheel or
+ *  @remarks This receives all scrolling input, like that from a mouse wheel or
  *  a touchpad scrolling area.
  */
 GLFWAPI void glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun cbfun);

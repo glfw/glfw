@@ -19,7 +19,7 @@ examples/boing
 examples/gears
 examples/heightmap
 examples/splitview
-examples/triangle
+examples/simple
 examples/wave
 src/config.h
 tests/*.app

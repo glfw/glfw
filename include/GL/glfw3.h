@@ -591,15 +591,11 @@ typedef void (* GLFWwindowsizefun)(GLFWwindow*,int,int);
 
 /*! @brief The function signature for window close callbacks.
  *  @param[in] window The window that the user attempted to close.
- *  @return One of @c GL_TRUE or @c GL_FALSE.
  *  @ingroup window
- *
- *  The return value of the close callback becomes the new value returned by
- *  @ref glfwWindowShouldClose.
  *
  *  @sa glfwSetWindowCloseCallback
  */
-typedef int (* GLFWwindowclosefun)(GLFWwindow*);
+typedef void (* GLFWwindowclosefun)(GLFWwindow*);
 
 /*! @brief The function signature for window content refresh callbacks.
  *  @param[in] window The window whose content needs to be refreshed.
@@ -1121,20 +1117,17 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height, const char* title, G
  */
 GLFWAPI void glfwDestroyWindow(GLFWwindow* window);
 
-/*! @brief Checks whether the specified window has been requested to close.
+/*! @brief Checks the close flag of the specified window.
  *  @param[in] window The window to query.
- *  @return @c GL_TRUE if the window should close, or @c GL_FALSE otherwise.
+ *  @return The value of the close flag.
  *  @ingroup window
  */
 GLFWAPI int glfwWindowShouldClose(GLFWwindow* window);
 
-/*! @brief Sets whether the specified window should close.
- *  @param[in] window The window whose value to change.
+/*! @brief Sets the close flag of the specified window.
+ *  @param[in] window The window whose flag to change.
  *  @param[in] value The new value.
  *  @ingroup window
- *
- *  @note Calling this from the close callback will have no effect, as whatever
- *  value you set will be overwritten by the return value of the close callback.
  */
 GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int value);
 
@@ -1367,11 +1360,11 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwindowsizefun cbf
  *  @ingroup window
  *
  *  This callback is called when the user attempts to close the window, i.e.
- *  clicks the window's close widget.  Calling @ref glfwDestroyWindow does not
- *  cause this callback to be called.
+ *  for example by clicking the window's close widget.  It is called immediately
+ *  after the window's close flag has been set.
  *
- *  The return value of the close callback becomes the new value returned by
- *  @ref glfwWindowShouldClose.
+ *  @remarks Calling @ref glfwDestroyWindow does not cause this callback to be
+ *  called.
  *
  *  @remarks <b>Mac OS X:</b> Selecting Quit from the application menu will
  *  trigger the close callback for all windows.

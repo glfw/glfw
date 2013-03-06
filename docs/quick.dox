@@ -181,9 +181,9 @@ while (!glfwWindowShouldClose(window))
 }
 @endcode
 
-You can intercept the setting of the close flag by setting a close callback with
-@ref glfwSetWindowCloseCallback.  The return value of the close callback becomes
-the new value of the close flag.
+You can be notified when user is attempting to close the window by setting
+a close callback with @ref glfwSetWindowCloseCallback.  The callback will be
+called immediately after the close flag has been set.
 
 You can also set it yourself with @ref glfwSetWindowShouldClose.  This can be
 useful if you want to interpret other kinds of input as closing the window, like

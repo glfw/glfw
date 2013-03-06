@@ -126,10 +126,10 @@ void _glfwInputWindowDamage(_GLFWwindow* window)
 
 void _glfwInputWindowCloseRequest(_GLFWwindow* window)
 {
+    window->closed = GL_TRUE;
+
     if (window->callbacks.close)
-        window->closed = window->callbacks.close((GLFWwindow*) window);
-    else
-        window->closed = GL_TRUE;
+        window->callbacks.close((GLFWwindow*) window);
 }
 
 

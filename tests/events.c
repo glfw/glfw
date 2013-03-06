@@ -244,11 +244,11 @@ static void window_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-static int window_close_callback(GLFWwindow* window)
+static void window_close_callback(GLFWwindow* window)
 {
     printf("%08x at %0.3f: Window close\n", counter++, glfwGetTime());
 
-    return closeable;
+    glfwSetWindowShouldClose(window, closeable);
 }
 
 static void window_refresh_callback(GLFWwindow* window)

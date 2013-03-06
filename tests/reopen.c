@@ -48,10 +48,9 @@ static void window_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-static int window_close_callback(GLFWwindow* window)
+static void window_close_callback(GLFWwindow* window)
 {
     printf("Close callback triggered\n");
-    return GL_TRUE;
 }
 
 static void key_callback(GLFWwindow* window, int key, int action)

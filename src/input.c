@@ -140,8 +140,10 @@ void _glfwInputKey(_GLFWwindow* window, int key, int action)
 
 void _glfwInputChar(_GLFWwindow* window, unsigned int character)
 {
-    // Valid Unicode (ISO 10646) character?
-    if (!((character >= 32 && character <= 126) || character >= 160))
+    if (character == -1)
+        return;
+
+    if (character < 32 || (character > 126 && character < 160))
         return;
 
     if (window->callbacks.character)

@@ -436,20 +436,14 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
 - (void)keyDown:(NSEvent *)event
 {
-    NSUInteger i, length;
-    NSString* characters;
-    const int key = convertMacKeyCode([event keyCode]);
-    if (key == -1)
-        return;
-
-    _glfwInputKey(window, key, GLFW_PRESS);
+    _glfwInputKey(window, convertMacKeyCode([event keyCode]), GLFW_PRESS);
 
     if ([event modifierFlags] & NSCommandKeyMask)
         [super keyDown:event];
     else
     {
-        characters = [event characters];
-        length = [characters length];
+        NSString* characters = [event characters];
+        NSUInteger i, length = [characters length];
 
         for (i = 0;  i < length;  i++)
             _glfwInputChar(window, [characters characterAtIndex:i]);
@@ -476,9 +470,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
 - (void)keyUp:(NSEvent *)event
 {
-    int key = convertMacKeyCode([event keyCode]);
-    if (key != -1)
-        _glfwInputKey(window, key, GLFW_RELEASE);
+    _glfwInputKey(window, convertMacKeyCode([event keyCode]), GLFW_RELEASE);
 }
 
 - (void)scrollWheel:(NSEvent *)event

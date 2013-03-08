@@ -95,7 +95,7 @@ int main(void)
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        position = cosf(glfwGetTime() * 4.f) * 0.75f;
+        position = cosf((float) glfwGetTime() * 4.f) * 0.75f;
         glRectf(position - 0.25f, -1.f, position + 0.25f, 1.f);
 
         glfwSwapBuffers(window);

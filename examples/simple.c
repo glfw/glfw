@@ -69,7 +69,7 @@ int main(void)
         glMatrixMode(GL_MODELVIEW);
 
         glLoadIdentity();
-        glRotatef(glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
+        glRotatef((float) glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
 
         glBegin(GL_TRIANGLES);
         glColor3f(1.f, 0.f, 0.f);

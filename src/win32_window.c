@@ -407,7 +407,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_CHAR:
         {
-            _glfwInputChar(window, wParam);
+            _glfwInputChar(window, (unsigned int) wParam);
             return 0;
         }
 

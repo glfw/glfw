@@ -100,6 +100,10 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
  #define _glfw_timeGetTime   timeGetTime
 #endif // _GLFW_NO_DLOAD_WINMM
 
+// user32.dll function pointer typedefs
+typedef BOOL (WINAPI * SETPROCESSDPIAWARE_T)(void);
+#define _glfw_SetProcessDPIAware _glfw.win32.user32.SetProcessDPIAware
+
 
 // We use versioned window class names in order not to cause conflicts
 // between applications using different versions of GLFW
@@ -179,6 +183,12 @@ typedef struct _GLFWlibraryWin32
         TIMEGETTIME_T   timeGetTime;
     } winmm;
 #endif // _GLFW_NO_DLOAD_WINMM
+
+    // user32.dll
+    struct {
+        HINSTANCE            instance;
+        SETPROCESSDPIAWARE_T SetProcessDPIAware;
+    } user32;
 
     struct {
         char*           name;

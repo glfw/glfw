@@ -81,23 +81,7 @@ static int openJoystickDevice(int joy, const char* path)
     _glfw.x11.joystick[joy].numButtons = (int) numButtons;
 
     _glfw.x11.joystick[joy].axis = (float*) malloc(sizeof(float) * numAxes);
-    if (_glfw.x11.joystick[joy].axis == NULL)
-    {
-        close(fd);
-
-        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
-        return GL_FALSE;
-    }
-
     _glfw.x11.joystick[joy].button = (unsigned char*) malloc(numButtons);
-    if (_glfw.x11.joystick[joy].button == NULL)
-    {
-        free(_glfw.x11.joystick[joy].axis);
-        close(fd);
-
-        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
-        return GL_FALSE;
-    }
 
     _glfw.x11.joystick[joy].present = GL_TRUE;
 #endif // __linux__

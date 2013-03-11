@@ -286,11 +286,6 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         oi = XRRGetOutputInfo(_glfw.x11.display, sr, monitor->x11.output);
 
         result = (GLFWvidmode*) malloc(sizeof(GLFWvidmode) * oi->nmode);
-        if (!result)
-        {
-            _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
-            return NULL;
-        }
 
         for (i = 0;  i < oi->nmode;  i++)
         {
@@ -339,11 +334,6 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         *found = 1;
 
         result = (GLFWvidmode*) malloc(sizeof(GLFWvidmode));
-        if (!result)
-        {
-            _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
-            return NULL;
-        }
 
         result[0].width = DisplayWidth(_glfw.x11.display, _glfw.x11.screen);
         result[0].height = DisplayHeight(_glfw.x11.display, _glfw.x11.screen);

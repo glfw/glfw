@@ -134,11 +134,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                 size = 4;
 
             monitors = (_GLFWmonitor**) realloc(monitors, sizeof(_GLFWmonitor*) * size);
-            if (!monitors)
-            {
-                // TODO: wat
-                return NULL;
-            }
         }
 
         ZeroMemory(&display, sizeof(DISPLAY_DEVICE));
@@ -250,23 +245,12 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 
         if (*found == count)
         {
-            void* larger;
-
             if (count)
                 count *= 2;
             else
                 count = 128;
 
-            larger = realloc(result, count * sizeof(GLFWvidmode));
-            if (!larger)
-            {
-                free(result);
-
-                _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
-                return NULL;
-            }
-
-            result = (GLFWvidmode*) larger;
+            result = (GLFWvidmode*) realloc(result, count * sizeof(GLFWvidmode));
         }
 
         result[*found] = mode;

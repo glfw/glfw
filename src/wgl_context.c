@@ -533,6 +533,13 @@ void _glfwPlatformSwapInterval(int interval)
 {
     _GLFWwindow* window = _glfwCurrentWindow;
 
+    if (_glfwIsCompositionEnabled())
+    {
+        // Don't enabled vsync when desktop compositing is enabled, as it leads
+        // to frame jitter
+        return;
+    }
+
     if (window->wgl.EXT_swap_control)
         window->wgl.SwapIntervalEXT(interval);
 }

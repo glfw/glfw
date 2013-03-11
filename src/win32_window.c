@@ -606,6 +606,20 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             }
             break;
         }
+
+        case WM_DWMCOMPOSITIONCHANGED:
+        {
+            if (_glfwIsCompositionEnabled())
+            {
+                _GLFWwindow* previous = _glfwPlatformGetCurrentContext();
+                _glfwPlatformMakeContextCurrent(window);
+                _glfwPlatformSwapInterval(0);
+                _glfwPlatformMakeContextCurrent(previous);
+            }
+
+            // TODO: Restore vsync if compositing was disabled
+            break;
+        }
     }
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);

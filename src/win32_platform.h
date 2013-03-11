@@ -72,6 +72,9 @@
 #ifndef WM_MOUSEHWHEEL
  #define WM_MOUSEHWHEEL 0x020E
 #endif
+#ifndef WM_DWMCOMPOSITIONCHANGED
+ #define WM_DWMCOMPOSITIONCHANGED 0x031E
+#endif
 
 
 //========================================================================
@@ -103,6 +106,10 @@ typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 // user32.dll function pointer typedefs
 typedef BOOL (WINAPI * SETPROCESSDPIAWARE_T)(void);
 #define _glfw_SetProcessDPIAware _glfw.win32.user32.SetProcessDPIAware
+
+// dwmapi.dll function pointer typedefs
+typedef HRESULT (WINAPI * DWMISCOMPOSITIONENABLED_T)(BOOL*);
+#define _glfw_DwmIsCompositionEnabled _glfw.win32.dwmapi.DwmIsCompositionEnabled
 
 
 // We use versioned window class names in order not to cause conflicts
@@ -186,9 +193,15 @@ typedef struct _GLFWlibraryWin32
 
     // user32.dll
     struct {
-        HINSTANCE            instance;
+        HINSTANCE       instance;
         SETPROCESSDPIAWARE_T SetProcessDPIAware;
     } user32;
+
+    // dwmapi.dll
+    struct {
+        HINSTANCE       instance;
+        DWMISCOMPOSITIONENABLED_T DwmIsCompositionEnabled;
+    } dwmapi;
 
     struct {
         char*           name;
@@ -211,6 +224,9 @@ typedef struct _GLFWmonitorWin32
 //========================================================================
 // Prototypes for platform specific internal functions
 //========================================================================
+
+// Desktop compositing
+BOOL _glfwIsCompositionEnabled(void);
 
 // Wide strings
 WCHAR* _glfwCreateWideStringFromUTF8(const char* source);

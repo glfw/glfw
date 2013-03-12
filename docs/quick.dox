@@ -2,12 +2,12 @@
 
 @page quick Getting started
 
-@section quick_start Introduction
+@tableofcontents
 
-In this guide you will learn how to write simple OpenGL applications using
-GLFW 3.  It will introduce you to a few of the most commonly used functions, but
-there are many others.  To see detailed documentation on any GLFW function, just
-click on its name.
+This guide will show how to write simple OpenGL applications using GLFW 3.  It
+will introduce a few of the most commonly used functions, but there are many
+others.  To see detailed documentation on any GLFW function, just click on its
+name.
 
 
 @section quick_include Including the GLFW header

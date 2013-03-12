@@ -2,6 +2,8 @@
 
 @page moving Moving from GLFW 2 to 3
 
+@tableofcontents
+
 This is a guide for people moving from GLFW 2 to 3.  It describes API *changes*,
 but does *not* include entirely new features unless they are required when
 moving an existing code base onto the new API.  One example of this is the new

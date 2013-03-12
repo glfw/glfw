@@ -2,6 +2,8 @@
 
 @page compat Standards conformance
 
+@tableofcontents
+
 This chapter describes the various API extensions used by this version of GLFW.
 It lists what are essentially implementation details, but which are nonetheless
 vital knowledge for developers wishing to deploy their applications on machines

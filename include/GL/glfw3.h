@@ -1448,9 +1448,6 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  @param[in] value The new value of the specified input mode.
  *  @ingroup input
  *
- *  @bug **Windows:** The @ref GLFW_CURSOR_HIDDEN value of @ref
- *  GLFW_CURSOR_MODE is not yet implemented.
- *
  *  @bug **Mac OS X:** The @ref GLFW_CURSOR_HIDDEN value of @ref
  *  GLFW_CURSOR_MODE is not yet implemented.
  *

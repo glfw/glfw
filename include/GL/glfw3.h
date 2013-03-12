@@ -727,6 +727,9 @@ typedef struct
  *  a program terminates GLFW should be terminated in order to free allocated
  *  resources, memory, etc.
  *
+ *  If this function fails, it calls @ref glfwTerminate before returning.  If it
+ *  succeeds, you should call @ref glfwTerminate before the program exits.
+ *
  *  @return `GL_TRUE` if successful, or `GL_FALSE` if an error occurred.
  *  @ingroup init
  *
@@ -752,13 +755,18 @@ GLFWAPI int glfwInit(void);
 /*! @brief Terminates the GLFW library.
  *  @ingroup init
  *
+ *  This function destroys all remaining windows, frees any allocated resources
+ *  and sets the library to an uninitialized state.  Once this is called, you
+ *  must again call @ref glfwInit successfully before you will be able to use
+ *  most GLFW functions.
+ *
+ *  If GLFW has been successfully initialized, this function should be called
+ *  before the program exits.  If @ref glfwInit fails, there is no need to call
+ *  this function, as it is called before @ref glfwInit returns failure.
+ *
  *  @remarks This function may be called before @ref glfwInit.
  *
  *  @note This function may only be called from the main thread.
- *
- *  @note This function closes all GLFW windows.
- *
- *  @note This function should be called before the program exits.
  *
  *  @warning No window's context may be current on another thread when this
  *  function is called.

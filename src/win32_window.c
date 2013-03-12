@@ -929,37 +929,23 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    GLboolean sizeChanged = GL_FALSE;
-
     if (window->monitor)
     {
         GLFWvidmode mode;
+        _glfwSetVideoMode(window->monitor, &window->videoMode);
         _glfwPlatformGetVideoMode(window->monitor, &mode);
 
-        if (width > mode.width || height > mode.height)
-        {
-            // The new video mode is larger than the current one, so we resize
-            // the window before switch modes to avoid exposing whatever is
-            // underneath
-
-            SetWindowPos(window->win32.handle, HWND_TOP, 0, 0, width, height,
-                         SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
-            sizeChanged = GL_TRUE;
-        }
-
-        // TODO: Change video mode
+        SetWindowPos(window->win32.handle, HWND_TOP,
+                     0, 0, mode.width, mode.height,
+                     SWP_NOMOVE);
     }
     else
     {
-        // If we are in windowed mode, adjust the window size to
-        // compensate for window decorations
-        getFullWindowSize(window, width, height, &width, &height);
-    }
+        int fullWidth, fullHeight;
+        getFullWindowSize(window, width, height, &fullWidth, &fullHeight);
 
-    // Set window size (if we haven't already)
-    if (!sizeChanged)
-    {
-        SetWindowPos(window->win32.handle, HWND_TOP, 0, 0, width, height,
+        SetWindowPos(window->win32.handle, HWND_TOP,
+                     0, 0, fullWidth, fullHeight,
                      SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
     }
 }

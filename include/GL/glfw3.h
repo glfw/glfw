@@ -1098,6 +1098,9 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *
  *  @note This function may only be called from the main thread.
  *
+ *  @bug **Mac OS X:** The primary monitor is always used for fullscreen
+ *  windows, regardless of which monitor was specified.
+ *
  *  @sa glfwDestroyWindow
  */
 GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share);

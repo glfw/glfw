@@ -733,6 +733,9 @@ typedef struct
  *  @remarks Additional calls to this function after successful initialization
  *  but before termination will succeed but will do nothing.
  *
+ *  @par New in GLFW 3
+ *  This function no longer registers @ref glfwTerminate with `atexit`.
+ *
  *  @note This function may only be called from the main thread.
  *
  *  @note This function may take several seconds to complete on some systems,
@@ -781,9 +784,9 @@ GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
 /*! @brief Returns a string describing the compile-time configuration.
  *
  *  The format of the string is as follows:
- *  @arg The name of the window system API
- *  @arg The name of the context creation API
- *  @arg Any additional options or APIs
+ *  * The name of the window system API
+ *  * The name of the context creation API
+ *  * Any additional options or APIs
  *
  *  @return The GLFW version string.
  *  @ingroup init
@@ -1038,6 +1041,10 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *
  *  The `GLFW_VISIBLE` hint specifies whether the window will be initially
  *  visible.  This hint is ignored for fullscreen windows.
+ *
+ *  @par New in GLFW 3
+ *  Hints are no longer reset to their default values on window creation.  To
+ *  set default hint values, use @ref glfwDefaultWindowHints.
  *
  *  @note This function may only be called from the main thread.
  *
@@ -1408,6 +1415,10 @@ GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow* window, GLFWwindowiconifyf
 /*! @brief Processes all pending events.
  *  @ingroup window
  *
+ *  @par New in GLFW 3
+ *  This function is no longer called by @ref glfwSwapBuffers.  You need to call
+ *  it or @ref glfwWaitEvents yourself.
+ *
  *  @note This function may only be called from the main thread.
  *  @note This function may not be called from a callback.
  *
@@ -1432,9 +1443,9 @@ GLFWAPI void glfwWaitEvents(void);
 /*! @brief Returns the value of an input option for the specified window.
  *  @param[in] window The window to query.
  *  @param[in] mode One of the following:
- *  @arg `GLFW_CURSOR_MODE` Sets the cursor mode.
- *  @arg `GLFW_STICKY_KEYS` Sets whether sticky keys are enabled.
- *  @arg `GLFW_STICKY_MOUSE_BUTTONS` Sets whether sticky mouse buttons are enabled.
+ *  * `GLFW_CURSOR_MODE` Sets the cursor mode.
+ *  * `GLFW_STICKY_KEYS` Sets whether sticky keys are enabled.
+ *  * `GLFW_STICKY_MOUSE_BUTTONS` Sets whether sticky mouse buttons are enabled.
  *  @ingroup input
  *
  *  @sa glfwSetInputMode
@@ -1677,6 +1688,10 @@ GLFWAPI GLFWwindow* glfwGetCurrentContext(void);
  *  @ingroup context
  *
  *  @remarks This function may be called from secondary threads.
+ *
+ *  @par New in GLFW 3
+ *  This function no longer calls @ref glfwPollEvents.  You need to call it or
+ *  @ref glfwWaitEvents yourself.
  *
  *  @sa glfwSwapInterval
  */

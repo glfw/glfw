@@ -1445,10 +1445,8 @@ GLFWAPI void glfwWaitEvents(void);
 
 /*! @brief Returns the value of an input option for the specified window.
  *  @param[in] window The window to query.
- *  @param[in] mode One of the following:
- *  * `GLFW_CURSOR_MODE` Sets the cursor mode.
- *  * `GLFW_STICKY_KEYS` Sets whether sticky keys are enabled.
- *  * `GLFW_STICKY_MOUSE_BUTTONS` Sets whether sticky mouse buttons are enabled.
+ *  @param[in] mode One of `GLFW_CURSOR_MODE`, `GLFW_STICKY_KEYS` or
+ *  `GLFW_STICKY_MOUSE_BUTTONS`.
  *  @ingroup input
  *
  *  @sa glfwSetInputMode
@@ -1461,6 +1459,26 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  `GLFW_STICKY_MOUSE_BUTTONS`.
  *  @param[in] value The new value of the specified input mode.
  *  @ingroup input
+ *
+ *  If `mode` is `GLFW_CURSOR_MODE`, the value must be one of the supported input
+ *  modes:
+ *  * `GLFW_CURSOR_NORMAL` makes the cursor visible and behaving normally.
+ *  * `GLFW_CURSOR_HIDDEN` makes the cursor invisible when it is over the client
+ *    area of the window.
+ *  * `GLFW_CURSOR_CAPTURED` makes the cursor invisible and unable to leave the
+ *    window but unconstrained in terms of position.
+ *
+ *  If `mode` is `GLFW_STICKY_KEYS`, the value must be either `GL_TRUE` to
+ *  enable sticky keys, or `GL_FALSE` to disable it.  If sticky keys are
+ *  enabled, a key press will ensure that @ref glfwGetKey returns @ref
+ *  GLFW_PRESS the next time it is called even if the key had been released
+ *  before the call.
+ *
+ *  If `mode` is `GLFW_STICKY_MOUSE_BUTTONS`, the value must be either `GL_TRUE`
+ *  to enable sticky mouse buttons, or `GL_FALSE` to disable it.  If sticky
+ *  mouse buttons are enabled, a mouse button press will ensure that @ref
+ *  glfwGetMouseButton returns @ref GLFW_PRESS the next time it is called even
+ *  if the mouse button had been released before the call.
  *
  *  @bug **Mac OS X:** The @ref GLFW_CURSOR_HIDDEN value of @ref
  *  GLFW_CURSOR_MODE is not yet implemented.

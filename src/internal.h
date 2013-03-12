@@ -322,7 +322,7 @@ extern _GLFWlibrary _glfw;
 //========================================================================
 
 /*! @brief Initializes the platform-specific part of the library.
- *  @return @c GL_TRUE if successful, or @c GL_FALSE if an error occurred.
+ *  @return `GL_TRUE` if successful, or `GL_FALSE` if an error occurred.
  *  @ingroup platform
  */
 int _glfwPlatformInit(void);
@@ -526,7 +526,7 @@ GLFWglproc _glfwPlatformGetProcAddress(const char* procname);
 
 /*! @brief Notifies shared code of a window focus event.
  *  @param[in] window The window that received the event.
- *  @param[in] focused @c GL_TRUE if the window received focus, or @c GL_FALSE
+ *  @param[in] focused `GL_TRUE` if the window received focus, or `GL_FALSE`
  *  if it lost focus.
  *  @ingroup event
  */
@@ -550,7 +550,7 @@ void _glfwInputWindowSize(_GLFWwindow* window, int width, int height);
 
 /*! @brief Notifies shared code of a window iconification event.
  *  @param[in] window The window that received the event.
- *  @param[in] iconified @c GL_TRUE if the window was iconified, or @c GL_FALSE
+ *  @param[in] iconified `GL_TRUE` if the window was iconified, or `GL_FALSE`
  *  if it was restored.
  *  @ingroup event
  */
@@ -558,7 +558,7 @@ void _glfwInputWindowIconify(_GLFWwindow* window, int iconified);
 
 /*! @brief Notifies shared code of a window show/hide event.
  *  @param[in] window The window that received the event.
- *  @param[in] visible @c GL_TRUE if the window was shown, or @c GL_FALSE if it
+ *  @param[in] visible `GL_TRUE` if the window was shown, or `GL_FALSE` if it
  *  was hidden.
  *  @ingroup event
  */
@@ -618,8 +618,8 @@ void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y);
 
 /*! @brief Notifies shared code of a cursor enter/leave event.
  *  @param[in] window The window that received the event.
- *  @param[in] entered @c GL_TRUE if the cursor entered the client area of the
- *  window, or @c GL_FALSE if it left it.
+ *  @param[in] entered `GL_TRUE` if the cursor entered the client area of the
+ *  window, or `GL_FALSE` if it left it.
  *  @ingroup event
  */
 void _glfwInputCursorEnter(_GLFWwindow* window, int entered);
@@ -630,7 +630,7 @@ void _glfwInputMonitorChange(void);
 
 /*! @brief Notifies shared code of an error.
  *  @param[in] error The error code most suitable for the error.
- *  @param[in] format The @c printf style format string of the error
+ *  @param[in] format The `printf` style format string of the error
  *  description.
  *  @ingroup event
  */
@@ -659,20 +659,20 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 /*! @brief Searches an extension string for the specified extension.
  *  @param[in] string The extension string to search.
  *  @param[in] extensions The extension to search for.
- *  @return @c GL_TRUE if the extension was found, or @c GL_FALSE otherwise.
+ *  @return `GL_TRUE` if the extension was found, or `GL_FALSE` otherwise.
  *  @ingroup utility
  */
 int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);
 
 /*! @brief Checks and reads back properties from the current context.
- *  @return @c GL_TRUE if successful, or @c GL_FALSE if the context is unusable.
+ *  @return `GL_TRUE` if successful, or `GL_FALSE` if the context is unusable.
  *  @ingroup utility
  */
 GLboolean _glfwRefreshContextParams(void);
 
 /*! @brief Checks whether the desired context properties are valid.
  *  @param[in] wndconfig The context properties to check.
- *  @return @c GL_TRUE if the context properties are valid, or @c GL_FALSE
+ *  @return `GL_TRUE` if the context properties are valid, or `GL_FALSE`
  *  otherwise.
  *  @ingroup utility
  *
@@ -685,8 +685,8 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig);
 /*! @brief Checks whether the current context fulfils the specified hard
  *  constraints.
  *  @param[in] wndconfig The desired context properties.
- *  @return @c GL_TRUE if the context fulfils the hard constraints, or @c
- *  GL_FALSE otherwise.
+ *  @return `GL_TRUE` if the context fulfils the hard constraints, or `GL_FALSE`
+ *  otherwise.
  *  @ingroup utility
  */
 GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig);

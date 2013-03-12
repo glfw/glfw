@@ -559,7 +559,7 @@ typedef struct GLFWmonitor GLFWmonitor;
 typedef struct GLFWwindow GLFWwindow;
 
 /*! @brief The function signature for error callbacks.
- *  @param[in] error An @link errors error code @endlink.
+ *  @param[in] error An [error code](@ref errors).
  *  @param[in] description A UTF-8 encoded string describing the error.
  *  @ingroup error
  *
@@ -607,7 +607,7 @@ typedef void (* GLFWwindowrefreshfun)(GLFWwindow*);
 
 /*! @brief The function signature for window focus/defocus callbacks.
  *  @param[in] window The window that was focused or defocused.
- *  @param[in] focused @c GL_TRUE if the window was focused, or @c GL_FALSE if
+ *  @param[in] focused `GL_TRUE` if the window was focused, or `GL_FALSE` if
  *  it was defocused.
  *  @ingroup window
  *
@@ -617,7 +617,7 @@ typedef void (* GLFWwindowfocusfun)(GLFWwindow*,int);
 
 /*! @brief The function signature for window iconify/restore callbacks.
  *  @param[in] window The window that was iconified or restored.
- *  @param[in] iconified @c GL_TRUE if the window was iconified, or @c GL_FALSE
+ *  @param[in] iconified `GL_TRUE` if the window was iconified, or `GL_FALSE`
  *  if it was restored.
  *  @ingroup window
  *
@@ -627,9 +627,9 @@ typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
 
 /*! @brief The function signature for mouse button callbacks.
  *  @param[in] window The window that received the event.
- *  @param[in] button The @link buttons mouse button @endlink that was pressed
- *  or released.
- *  @param[in] action One of @c GLFW_PRESS or @c GLFW_RELEASE.
+ *  @param[in] button The [mouse button](@ref buttons) that was pressed or
+ *  released.
+ *  @param[in] action One of `GLFW_PRESS` or `GLFW_RELEASE`.
  *  @ingroup input
  *
  *  @sa glfwSetMouseButtonCallback
@@ -648,8 +648,8 @@ typedef void (* GLFWcursorposfun)(GLFWwindow*,int,int);
 
 /*! @brief The function signature for cursor enter/exit callbacks.
  *  @param[in] window The window that received the event.
- *  @param[in] entered @c GL_TRUE if the cursor entered the window's client
- *  area, or @c GL_FALSE if it left it.
+ *  @param[in] entered `GL_TRUE` if the cursor entered the window's client
+ *  area, or `GL_FALSE` if it left it.
  *  @ingroup input
  *
  *  @sa glfwSetCursorEnterCallback
@@ -668,8 +668,7 @@ typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
 
 /*! @brief The function signature for keyboard key callbacks.
  *  @param[in] window The window that received the event.
- *  @param[in] key The @link keys keyboard key @endlink that was pressed or
- *  released.
+ *  @param[in] key The [keyboard key](@ref keys) that was pressed or released.
  *  @param[in] action @ref GLFW_PRESS, @ref GLFW_RELEASE or @ref GLFW_REPEAT.
  *  @ingroup input
  *
@@ -688,7 +687,7 @@ typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
 
 /*! @brief The function signature for monitor configuration callbacks.
  *  @param[in] monitor The monitor that was connected or disconnected.
- *  @param[in] event One of @c GLFW_CONNECTED or @c GLFW_DISCONNECTED.
+ *  @param[in] event One of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.
  *  @ingroup monitor
  *
  *  @sa glfwSetMonitorCallback
@@ -728,7 +727,7 @@ typedef struct
  *  a program terminates GLFW should be terminated in order to free allocated
  *  resources, memory, etc.
  *
- *  @return @c GL_TRUE if successful, or @c GL_FALSE if an error occurred.
+ *  @return `GL_TRUE` if successful, or `GL_FALSE` if an error occurred.
  *  @ingroup init
  *
  *  @remarks Additional calls to this function after successful initialization
@@ -739,8 +738,8 @@ typedef struct
  *  @note This function may take several seconds to complete on some systems,
  *  while on other systems it may take only a fraction of a second to complete.
  *
- *  @note <b>Mac OS X:</b> This function will change the current directory of the
- *  application to the @c Contents/Resources subdirectory of the application's
+ *  @note **Mac OS X:** This function will change the current directory of the
+ *  application to the `Contents/Resources` subdirectory of the application's
  *  bundle, if present.
  *
  *  @sa glfwTerminate
@@ -766,9 +765,9 @@ GLFWAPI int glfwInit(void);
 GLFWAPI void glfwTerminate(void);
 
 /*! @brief Retrieves the version of the GLFW library.
- *  @param[out] major Where to store the major version number, or @c NULL.
- *  @param[out] minor Where to store the minor version number, or @c NULL.
- *  @param[out] rev Where to store the revision number, or @c NULL.
+ *  @param[out] major Where to store the major version number, or `NULL`.
+ *  @param[out] minor Where to store the minor version number, or `NULL`.
+ *  @param[out] rev Where to store the revision number, or `NULL`.
  *  @ingroup init
  *
  *  @remarks This function may be called before @ref glfwInit.
@@ -798,7 +797,7 @@ GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
 GLFWAPI const char* glfwGetVersionString(void);
 
 /*! @brief Sets the error callback.
- *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *  @ingroup error
  *
@@ -817,7 +816,7 @@ GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
 
 /*! @brief Returns the currently connected monitors.
  *  @param[out] count The size of the returned array.
- *  @return An array of monitor handles, or @c NULL if an error occurred.
+ *  @return An array of monitor handles, or `NULL` if an error occurred.
  *  @ingroup monitor
  *
  *  @sa glfwGetPrimaryMonitor
@@ -825,7 +824,7 @@ GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
 GLFWAPI GLFWmonitor** glfwGetMonitors(int* count);
 
 /*! @brief Returns the primary monitor.
- *  @return The primary monitor, or @c NULL if an error occurred.
+ *  @return The primary monitor, or `NULL` if an error occurred.
  *  @ingroup monitor
  *
  *  @sa glfwGetMonitors
@@ -850,14 +849,14 @@ GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* monitor, int* width, int* h
 
 /*! @brief Returns the name of the specified monitor.
  *  @param[in] monitor The monitor to query.
- *  @return The UTF-8 encoded name of the monitor, or @c NULL if an error
+ *  @return The UTF-8 encoded name of the monitor, or `NULL` if an error
  *  occurred.
  *  @ingroup monitor
  */
 GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* monitor);
 
 /*! @brief Sets the monitor configuration callback.
- *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *  @ingroup monitor
  */
@@ -866,7 +865,7 @@ GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun);
 /*! @brief Returns the available video modes for the specified monitor.
  *  @param[in] monitor The monitor to query.
  *  @param[out] count The number of video modes in the returned array.
- *  @return An array of video modes, or @c NULL if an error occurred.
+ *  @return An array of video modes, or `NULL` if an error occurred.
  *  @ingroup monitor
  *
  *  @sa glfwGetVideoMode
@@ -913,21 +912,21 @@ GLFWAPI void glfwSetGammaRamp(GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
 /*! @brief Resets all window hints to their default values
  *
- *  The @c GLFW_RED_BITS, @c GLFW_GREEN_BITS, @c GLFW_BLUE_BITS, @c
- *  GLFW_ALPHA_BITS and @c GLFW_STENCIL_BITS hints are set to 8.
+ *  The `GLFW_RED_BITS`, `GLFW_GREEN_BITS`, `GLFW_BLUE_BITS`, `GLFW_ALPHA_BITS`
+ *  and `GLFW_STENCIL_BITS` hints are set to 8.
  *
- *  The @c GLFW_DEPTH_BITS hint is set to 24.
+ *  The `GLFW_DEPTH_BITS` hint is set to 24.
  *
- *  The @c GLFW_VISIBLE and @c GLFW_RESIZABLE hints are set to 1.
+ *  The `GLFW_VISIBLE` and `GLFW_RESIZABLE` hints are set to 1.
  *
- *  The @c GLFW_CLIENT_API hint is set to @c GLFW_OPENGL_API.
+ *  The `GLFW_CLIENT_API` hint is set to `GLFW_OPENGL_API`.
  *
- *  The @c GLFW_CONTEXT_VERSION_MAJOR and @c GLFW_CONTEXT_VERSION_MINOR
- *  hints are set to 1 and 0, respectively.
+ *  The `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` hints are
+ *  set to 1 and 0, respectively.
  *
- *  The @c GLFW_CONTEXT_ROBUSTNESS hint is set to @c GLFW_NO_ROBUSTNESS.
+ *  The `GLFW_CONTEXT_ROBUSTNESS` hint is set to `GLFW_NO_ROBUSTNESS`.
  *
- *  The @c GLFW_OPENGL_PROFILE hint is set to @c GLFW_OPENGL_NO_PROFILE.
+ *  The `GLFW_OPENGL_PROFILE` hint is set to `GLFW_OPENGL_NO_PROFILE`.
  *
  *  All other hints are set to 0.
  *
@@ -952,54 +951,54 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  @par Hard and soft constraints
  *
  *  Some window hints are hard constraints.  These must match the available
- *  capabilities @em exactly for window and context creation to succeed.  Hints
+ *  capabilities *exactly* for window and context creation to succeed.  Hints
  *  that are not hard constraints are matched as closely as possible, but the
  *  resulting window and context may differ from what these hints requested.  To
  *  find out the actual parameters of the created window and context, use the
  *  @ref glfwGetWindowParam function.
  *
  *  The following hints are hard constraints:
- *  @arg @c GLFW_STEREO
- *  @arg @c GLFW_CLIENT_API
+ *  * `GLFW_STEREO`
+ *  * `GLFW_CLIENT_API`
  *
  *  The following additional hints are hard constraints if requesting an OpenGL
  *  context:
- *  @arg @c GLFW_OPENGL_FORWARD_COMPAT
- *  @arg @c GLFW_OPENGL_PROFILE
+ *  * `GLFW_OPENGL_FORWARD_COMPAT`
+ *  * `GLFW_OPENGL_PROFILE`
  *
  *  Hints that do not apply to a given type of window or context are ignored.
  *
  *  @par Framebuffer hints
  *
- *  The @c GLFW_RED_BITS, @c GLFW_GREEN_BITS, @c GLFW_BLUE_BITS, @c
- *  GLFW_ALPHA_BITS, @c GLFW_DEPTH_BITS and @c GLFW_STENCIL_BITS hints specify
- *  the desired bit depths of the various components of the default framebuffer.
+ *  The `GLFW_RED_BITS`, `GLFW_GREEN_BITS`, `GLFW_BLUE_BITS`, `GLFW_ALPHA_BITS`,
+ *  `GLFW_DEPTH_BITS` and `GLFW_STENCIL_BITS` hints specify the desired bit
+ *  depths of the various components of the default framebuffer.
  *
- *  The @c GLFW_ACCUM_RED_BITS, @c GLFW_ACCUM_GREEN_BITS, @c
- *  GLFW_ACCUM_BLUE_BITS and @c GLFW_ACCUM_ALPHA_BITS hints specify the desired
- *  bit depths of the various components of the accumulation buffer.
+ *  The `GLFW_ACCUM_RED_BITS`, `GLFW_ACCUM_GREEN_BITS`, `GLFW_ACCUM_BLUE_BITS`
+ *  and `GLFW_ACCUM_ALPHA_BITS` hints specify the desired bit depths of the
+ *  various components of the accumulation buffer.
  *
- *  The @c GLFW_AUX_BUFFERS hint specifies the desired number of auxiliary
+ *  The `GLFW_AUX_BUFFERS` hint specifies the desired number of auxiliary
  *  buffers.
  *
- *  The @c GLFW_STEREO hint specifies whether to use stereoscopic rendering.
+ *  The `GLFW_STEREO` hint specifies whether to use stereoscopic rendering.
  *
- *  The @c GLFW_SAMPLES hint specifies the desired number of samples to use
- *  for multisampling.
+ *  The `GLFW_SAMPLES` hint specifies the desired number of samples to use for
+ *  multisampling.
  *
- *  The @c GLFW_SRGB_CAPABLE hint specifies whether the framebuffer should be
+ *  The `GLFW_SRGB_CAPABLE` hint specifies whether the framebuffer should be
  *  sRGB capable.
  *
  *  @par Context hints
  *
- *  The @c GLFW_CLIENT_API hint specifies which client API to create the context
- *  for.  Possible values are @c GLFW_OPENGL_API and @c GLFW_OPENGL_ES_API.
+ *  The `GLFW_CLIENT_API` hint specifies which client API to create the context
+ *  for.  Possible values are `GLFW_OPENGL_API` and `GLFW_OPENGL_ES_API`.
  *
- *  The @c GLFW_CONTEXT_VERSION_MAJOR and @c GLFW_CONTEXT_VERSION_MINOR hints
+ *  The `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` hints
  *  specify the client API version that the created context must be compatible
  *  with.
  *
- *  For OpenGL, these hints are @em not hard constraints, as they don't have to
+ *  For OpenGL, these hints are *not* hard constraints, as they don't have to
  *  match exactly, but @ref glfwCreateWindow will still fail if the resulting
  *  OpenGL version is less than the one requested.  It is therefore perfectly
  *  safe to use the default of version 1.0 for legacy code and you will still
@@ -1008,36 +1007,36 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  For OpenGL ES, these hints are hard constraints, as there is no backward
  *  compatibility between OpenGL ES versions.
  *
- *  If an OpenGL context is requested, the @c GLFW_OPENGL_FORWARD_COMPAT hint
+ *  If an OpenGL context is requested, the `GLFW_OPENGL_FORWARD_COMPAT` hint
  *  specifies whether the OpenGL context should be forward-compatible, i.e. one
  *  where all functionality deprecated in the requested version of OpenGL is
  *  removed.  This may only be used if the requested OpenGL version is 3.0 or
  *  above.  If another client API is requested, this hint is ignored.
  *
- *  If an OpenGL context is requested, the @c GLFW_OPENGL_DEBUG_CONTEXT hint
+ *  If an OpenGL context is requested, the `GLFW_OPENGL_DEBUG_CONTEXT` hint
  *  specifies whether to create a debug OpenGL context, which may have
  *  additional error and performance issue reporting functionality.  If another
  *  client API is requested, this hint is ignored.
  *
- *  If an OpenGL context is requested, the @c GLFW_OPENGL_PROFILE hint
- *  specifies which OpenGL profile to create the context for.  Possible values
- *  are one of @c GLFW_OPENGL_CORE_PROFILE or @c GLFW_OPENGL_COMPAT_PROFILE,
- *  or @c GLFW_OPENGL_NO_PROFILE to not request a specific profile.  If
- *  requesting an OpenGL version below 3.2, @c GLFW_OPENGL_NO_PROFILE must be
- *  used.  If another client API is requested, this hint is ignored.
+ *  If an OpenGL context is requested, the `GLFW_OPENGL_PROFILE` hint specifies
+ *  which OpenGL profile to create the context for.  Possible values are one of
+ *  `GLFW_OPENGL_CORE_PROFILE` or `GLFW_OPENGL_COMPAT_PROFILE`, or
+ *  `GLFW_OPENGL_NO_PROFILE` to not request a specific profile.  If requesting
+ *  an OpenGL version below 3.2, `GLFW_OPENGL_NO_PROFILE` must be used.  If
+ *  another client API is requested, this hint is ignored.
  *
- *  The @c GLFW_CONTEXT_ROBUSTNESS hint specifies the robustness strategy to
- *  be used by the context.  This can be one of @c GLFW_NO_RESET_NOTIFICATION
- *  or @c GLFW_LOSE_CONTEXT_ON_RESET, or @c GLFW_NO_ROBUSTNESS to not
- *  request a robustness strategy.
+ *  The `GLFW_CONTEXT_ROBUSTNESS` hint specifies the robustness strategy to be
+ *  used by the context.  This can be one of `GLFW_NO_RESET_NOTIFICATION` or
+ *  `GLFW_LOSE_CONTEXT_ON_RESET`, or `GLFW_NO_ROBUSTNESS` to not request
+ *  a robustness strategy.
  *
  *  @par Window hints
  *
- *  The @c GLFW_RESIZABLE hint specifies whether the window will be resizable
- *  by the user.  The window will still be resizable using the @ref
+ *  The `GLFW_RESIZABLE` hint specifies whether the window will be resizable by
+ *  the user.  The window will still be resizable using the @ref
  *  glfwSetWindowSize function.  This hint is ignored for fullscreen windows.
  *
- *  The @c GLFW_VISIBLE hint specifies whether the window will be initially
+ *  The `GLFW_VISIBLE` hint specifies whether the window will be initially
  *  visible.  This hint is ignored for fullscreen windows.
  *
  *  @note This function may only be called from the main thread.
@@ -1053,11 +1052,11 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  @param[in] height The desired height, in pixels, of the window.  This must
  *  be greater than zero.
  *  @param[in] title The initial, UTF-8 encoded window title.
- *  @param[in] monitor The monitor to use for fullscreen mode, or @c NULL to use
+ *  @param[in] monitor The monitor to use for fullscreen mode, or `NULL` to use
  *  windowed mode.
- *  @param[in] share The window whose context to share resources with, or @c
- *  NULL to not share resources.
- *  @return The handle of the created window, or @c NULL if an error occurred.
+ *  @param[in] share The window whose context to share resources with, or `NULL`
+ *  to not share resources.
+ *  @return The handle of the created window, or `NULL` if an error occurred.
  *  @ingroup window
  *
  *  @remarks Most of the options for how the window and its context should be
@@ -1068,27 +1067,27 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  glfwMakeContextCurrent.
  *
  *  @remarks To create the window at a specific position, make it initially
- *  invisible using the @c GLFW_VISIBLE window hint, set its position and then
+ *  invisible using the `GLFW_VISIBLE` window hint, set its position and then
  *  show it.
  *
- *  @remarks For fullscreen windows the initial cursor mode is @c
- *  GLFW_CURSOR_CAPTURED and the screensaver is prohibited from starting.  For
- *  regular windows the initial cursor mode is @c GLFW_CURSOR_NORMAL and the
+ *  @remarks For fullscreen windows the initial cursor mode is
+ *  `GLFW_CURSOR_CAPTURED` and the screensaver is prohibited from starting.  For
+ *  regular windows the initial cursor mode is `GLFW_CURSOR_NORMAL` and the
  *  screensaver is allowed to start.
  *
  *  @remarks In order to determine the actual parameters of an opened window,
  *  use @ref glfwGetWindowParam and @ref glfwGetWindowSize.
  *
- *  @remarks <b>Windows:</b> If the executable has an icon resource named @c
- *  GLFW_ICON, it will be set as the icon for the window.  If no such icon is
- *  present, the @c IDI_WINLOGO icon will be used instead.
+ *  @remarks **Windows:** If the executable has an icon resource named
+ *  `GLFW_ICON,` it will be set as the icon for the window.  If no such icon is
+ *  present, the `IDI_WINLOGO` icon will be used instead.
  *
- *  @remarks <b>Mac OS X:</b> The GLFW window has no icon, as it is not
- *  a document window, but the dock icon will be the same as the application
- *  bundle's icon.  Also, the first time a window is opened the menu bar is
- *  populated with common commands like Hide, Quit and About.  The (minimal)
- *  about dialog uses information from the application's bundle.  For more
- *  information on bundles, see the Bundle Programming Guide provided by Apple.
+ *  @remarks **Mac OS X:** The GLFW window has no icon, as it is not a document
+ *  window, but the dock icon will be the same as the application bundle's icon.
+ *  Also, the first time a window is opened the menu bar is populated with
+ *  common commands like Hide, Quit and About.  The (minimal) about dialog uses
+ *  information from the application's bundle.  For more information on bundles,
+ *  see the Bundle Programming Guide provided by Apple.
  *
  *  @note This function may only be called from the main thread.
  *
@@ -1146,7 +1145,7 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *  @param[out] ypos The y-coordinate of the upper-left corner of the client area.
  *  @ingroup window
  *
- *  @remarks Either or both coordinate parameters may be @c NULL.
+ *  @remarks Either or both coordinate parameters may be `NULL`.
  *
  *  @sa glfwSetWindowPos
  */
@@ -1162,7 +1161,7 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
  *  the client area of the window.
  *
  *  @remarks  If you wish to set an initial window position you should create
- *  a hidden window (using @ref glfwWindowHint and @c GLFW_VISIBLE), set its
+ *  a hidden window (using @ref glfwWindowHint and `GLFW_VISIBLE`), set its
  *  position and then show it.
  *
  *  @note It is very rarely a good idea to move an already visible window, as it
@@ -1172,11 +1171,11 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
  *
  *  @note The window manager may put limits on what positions are allowed.
  *
- *  @bug <b>X11:</b> Some window managers ignore the set position of hidden
- *  (i.e. unmapped) windows, instead placing them where it thinks is
- *  appropriate once they are shown.
+ *  @bug **X11:** Some window managers ignore the set position of hidden (i.e.
+ *  unmapped) windows, instead placing them where it thinks is appropriate once
+ *  they are shown.
  *
- *  @bug <b>Mac OS X:</b> The screen coordinate system is inverted.
+ *  @bug **Mac OS X:** The screen coordinate system is inverted.
  *
  *  @sa glfwGetWindowPos
  */
@@ -1218,7 +1217,7 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* window, int width, int height);
  *
  *  @note This function may only be called from the main thread.
  *
- *  @bug <strong>Mac OS X:</strong> This function is not yet implemented for
+ *  @bug **Mac OS X:** This function is not yet implemented for
  *  fullscreen windows.
  *
  *  @sa glfwRestoreWindow
@@ -1233,7 +1232,7 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow* window);
  *
  *  @note This function may only be called from the main thread.
  *
- *  @bug <strong>Mac OS X:</strong> This function is not yet implemented for
+ *  @bug **Mac OS X:** This function is not yet implemented for
  *  fullscreen windows.
  *
  *  @sa glfwIconifyWindow
@@ -1268,7 +1267,7 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
 
 /*! @brief Returns the monitor that the window uses for fullscreen mode
  *  @param[in] window The window to query.
- *  @return The monitor, or @c NULL if the window is in windowed mode.
+ *  @return The monitor, or `NULL` if the window is in windowed mode.
  *  @ingroup window
  */
 GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
@@ -1281,40 +1280,39 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *
  *  @par Window parameters
  *
- *  The @c GLFW_FOCUSED parameter indicates whether the window is focused.
+ *  The `GLFW_FOCUSED` parameter indicates whether the window is focused.
  *
- *  The @c GLFW_ICONIFIED parameter indicates whether the window is iconified.
+ *  The `GLFW_ICONIFIED` parameter indicates whether the window is iconified.
  *
- *  The @c GLFW_VISIBLE parameter indicates whether the window is visible.
+ *  The `GLFW_VISIBLE` parameter indicates whether the window is visible.
  *
- *  The @c GLFW_RESIZABLE parameter indicates whether the window is resizable
+ *  The `GLFW_RESIZABLE` parameter indicates whether the window is resizable
  *  by the user.
  *
  *  @par Context parameters
  *
- *  The @c GLFW_CLIENT_API parameter indicates the client API provided by the
- *  window's context; either @c GLFW_OPENGL_API or @c GLFW_OPENGL_ES_API.
+ *  The `GLFW_CLIENT_API` parameter indicates the client API provided by the
+ *  window's context; either `GLFW_OPENGL_API` or `GLFW_OPENGL_ES_API`.
  *
- *  The @c GLFW_CONTEXT_VERSION_MAJOR, @c GLFW_CONTEXT_VERSION_MINOR and @c
- *  GLFW_CONTEXT_REVISION parameters indicate the client API version of the
+ *  The `GLFW_CONTEXT_VERSION_MAJOR`, `GLFW_CONTEXT_VERSION_MINOR` and
+ *  `GLFW_CONTEXT_REVISION` parameters indicate the client API version of the
  *  window's context.
  *
- *  The @c GLFW_OPENGL_FORWARD_COMPAT parameter is @c GL_TRUE if the window's
- *  context is an OpenGL forward-compatible one, or @c GL_FALSE otherwise.
+ *  The `GLFW_OPENGL_FORWARD_COMPAT` parameter is `GL_TRUE` if the window's
+ *  context is an OpenGL forward-compatible one, or `GL_FALSE` otherwise.
  *
- *  The @c GLFW_OPENGL_DEBUG_CONTEXT parameter is @c GL_TRUE if the window's
- *  context is an OpenGL debug context, or @c GL_FALSE otherwise.
+ *  The `GLFW_OPENGL_DEBUG_CONTEXT` parameter is `GL_TRUE` if the window's
+ *  context is an OpenGL debug context, or `GL_FALSE` otherwise.
  *
- *  The @c GLFW_OPENGL_PROFILE parameter indicates the OpenGL profile used by the
- *  context.  This is @c GLFW_OPENGL_CORE_PROFILE or @c
- *  GLFW_OPENGL_COMPAT_PROFILE if the context uses a known profile, or @c
- *  GLFW_OPENGL_NO_PROFILE if the OpenGL profile is unknown or the context is
- *  for another client API.
+ *  The `GLFW_OPENGL_PROFILE` parameter indicates the OpenGL profile used by the
+ *  context.  This is `GLFW_OPENGL_CORE_PROFILE` or `GLFW_OPENGL_COMPAT_PROFILE`
+ *  if the context uses a known profile, or `GLFW_OPENGL_NO_PROFILE` if the
+ *  OpenGL profile is unknown or the context is for another client API.
  *
- *  The @c GLFW_CONTEXT_ROBUSTNESS parameter indicates the robustness strategy
- *  used by the context.  This is @c GLFW_LOSE_CONTEXT_ON_RESET or @c
- *  GLFW_NO_RESET_NOTIFICATION if the window's context supports robustness, or
- *  @c GLFW_NO_ROBUSTNESS otherwise.
+ *  The `GLFW_CONTEXT_ROBUSTNESS` parameter indicates the robustness strategy
+ *  used by the context.  This is `GLFW_LOSE_CONTEXT_ON_RESET` or
+ *  `GLFW_NO_RESET_NOTIFICATION` if the window's context supports robustness, or
+ *  `GLFW_NO_ROBUSTNESS` otherwise.
  */
 GLFWAPI int glfwGetWindowParam(GLFWwindow* window, int param);
 
@@ -1337,7 +1335,7 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
 
 /*! @brief Sets the position callback for the specified window.
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *  @ingroup window
  */
@@ -1345,7 +1343,7 @@ GLFWAPI void glfwSetWindowPosCallback(GLFWwindow* window, GLFWwindowposfun cbfun
 
 /*! @brief Sets the size callback for the specified window.
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *  @ingroup window
  *
@@ -1355,7 +1353,7 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwindowsizefun cbf
 
 /*! @brief Sets the close callback for the specified window.
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *  @ingroup window
  *
@@ -1366,14 +1364,14 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwindowsizefun cbf
  *  @remarks Calling @ref glfwDestroyWindow does not cause this callback to be
  *  called.
  *
- *  @remarks <b>Mac OS X:</b> Selecting Quit from the application menu will
+ *  @remarks **Mac OS X:** Selecting Quit from the application menu will
  *  trigger the close callback for all windows.
  */
 GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow* window, GLFWwindowclosefun cbfun);
 
 /*! @brief Sets the refresh callback for the specified window.
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *  @ingroup window
  *
@@ -1389,7 +1387,7 @@ GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow* window, GLFWwindowrefreshf
 
 /*! @brief Sets the focus callback for the specified window.
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *  @ingroup window
  *
@@ -1399,7 +1397,7 @@ GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwindowfocusfun c
 
 /*! @brief Sets the iconify callback for the specified window.
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *  @ingroup window
  *
@@ -1434,9 +1432,9 @@ GLFWAPI void glfwWaitEvents(void);
 /*! @brief Returns the value of an input option for the specified window.
  *  @param[in] window The window to query.
  *  @param[in] mode One of the following:
- *  @arg @c GLFW_CURSOR_MODE Sets the cursor mode.
- *  @arg @c GLFW_STICKY_KEYS Sets whether sticky keys are enabled.
- *  @arg @c GLFW_STICKY_MOUSE_BUTTONS Sets whether sticky mouse buttons are enabled.
+ *  @arg `GLFW_CURSOR_MODE` Sets the cursor mode.
+ *  @arg `GLFW_STICKY_KEYS` Sets whether sticky keys are enabled.
+ *  @arg `GLFW_STICKY_MOUSE_BUTTONS` Sets whether sticky mouse buttons are enabled.
  *  @ingroup input
  *
  *  @sa glfwSetInputMode
@@ -1445,15 +1443,15 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
 
 /*! @brief Sets an input option for the specified window.
  *  @param[in] window The window whose input mode to set.
- *  @param[in] mode One of @c GLFW_CURSOR_MODE, @c GLFW_STICKY_KEYS or @c
- *  GLFW_STICKY_MOUSE_BUTTONS.
+ *  @param[in] mode One of `GLFW_CURSOR_MODE`, `GLFW_STICKY_KEYS` or
+ *  `GLFW_STICKY_MOUSE_BUTTONS`.
  *  @param[in] value The new value of the specified input mode.
  *  @ingroup input
  *
- *  @bug <strong>Windows:</strong> The @ref GLFW_CURSOR_HIDDEN value of @ref
+ *  @bug **Windows:** The @ref GLFW_CURSOR_HIDDEN value of @ref
  *  GLFW_CURSOR_MODE is not yet implemented.
  *
- *  @bug <strong>Mac OS X:</strong> The @ref GLFW_CURSOR_HIDDEN value of @ref
+ *  @bug **Mac OS X:** The @ref GLFW_CURSOR_HIDDEN value of @ref
  *  GLFW_CURSOR_MODE is not yet implemented.
  *
  *  @sa glfwGetInputMode
@@ -1463,8 +1461,8 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* window, int mode, int value);
 /*! @brief Returns the last reported state of a keyboard key for the specified
  *  window.
  *  @param[in] window The desired window.
- *  @param[in] key The desired @link keys keyboard key @endlink.
- *  @return One of @c GLFW_PRESS or @c GLFW_RELEASE.
+ *  @param[in] key The desired [keyboard key](@ref keys).
+ *  @return One of `GLFW_PRESS` or `GLFW_RELEASE`.
  *  @ingroup input
  */
 GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
@@ -1472,8 +1470,8 @@ GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
 /*! @brief Returns the last reported state of a mouse button for the specified
  *  window.
  *  @param[in] window The desired window.
- *  @param[in] button The desired @link buttons mouse buttons @endlink.
- *  @return One of @c GLFW_PRESS or @c GLFW_RELEASE.
+ *  @param[in] button The desired [mouse button](@ref buttons).
+ *  @return One of `GLFW_PRESS` or `GLFW_RELEASE`.
  *  @ingroup input
  */
 GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
@@ -1482,9 +1480,9 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
  *  area of the window.
  *  @param[in] window The desired window.
  *  @param[out] xpos The cursor x-coordinate, relative to the left edge of the
- *  client area, or @c NULL.
+ *  client area, or `NULL`.
  *  @param[out] ypos The cursor y-coordinate, relative to the to top edge of the
- *  client area, or @c NULL.
+ *  client area, or `NULL`.
  *  @ingroup input
  *
  *  @sa glfwSetCursorPos
@@ -1494,9 +1492,9 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, int* xpos, int* ypos);
 /*! @brief Sets the position of the cursor, relative to the client area of the window.
  *  @param[in] window The desired window.
  *  @param[in] xpos The desired x-coordinate, relative to the left edge of the
- *  client area, or @c NULL.
+ *  client area, or `NULL`.
  *  @param[in] ypos The desired y-coordinate, relative to the top edge of the
- *  client area, or @c NULL.
+ *  client area, or `NULL`.
  *  @ingroup input
  *
  *  @note The specified window must be focused.
@@ -1507,19 +1505,19 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, int xpos, int ypos);
 
 /*! @brief Sets the key callback.
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new key callback, or @c NULL to remove the currently
+ *  @param[in] cbfun The new key callback, or `NULL` to remove the currently
  *  set callback.
  *  @ingroup input
  *
- *  @remarks The key callback deals with physical keys, with @link keys tokens
- *  @endlink named after their use on the standard US keyboard layout.  If you
+ *  @remarks The key callback deals with physical keys, with [key tokens](@ref
+ *  keys) named after their use on the standard US keyboard layout.  If you
  *  want to input text, use the Unicode character callback instead.
  */
 GLFWAPI void glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
 
 /*! @brief Sets the Unicode character callback.
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *  @ingroup input
  *
@@ -1530,7 +1528,7 @@ GLFWAPI void glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
 
 /*! @brief Sets the mouse button callback.
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *  @ingroup input
  */
@@ -1538,7 +1536,7 @@ GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmousebuttonfun c
 
 /*! @brief Sets the cursor position callback.
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *  @ingroup input
  *
@@ -1549,7 +1547,7 @@ GLFWAPI void glfwSetCursorPosCallback(GLFWwindow* window, GLFWcursorposfun cbfun
 
 /*! @brief Sets the cursor enter/exit callback.
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new callback, or @c NULL to remove the currently set
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *  @ingroup input
  */
@@ -1557,7 +1555,7 @@ GLFWAPI void glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcursorenterfun c
 
 /*! @brief Sets the scroll callback.
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new scroll callback, or @c NULL to remove the currently
+ *  @param[in] cbfun The new scroll callback, or `NULL` to remove the currently
  *  set callback.
  *  @ingroup input
  *
@@ -1579,7 +1577,7 @@ GLFWAPI int glfwGetJoystickParam(int joy, int param);
  *  @param[in] joy The joystick to query.
  *  @param[out] axes The array to hold the values.
  *  @param[in] numaxes The size of the provided array.
- *  @return The number of values written to @p axes, or zero if an error
+ *  @return The number of values written to `axes,` or zero if an error
  *  occurred.
  *  @ingroup input
  */
@@ -1589,7 +1587,7 @@ GLFWAPI int glfwGetJoystickAxes(int joy, float* axes, int numaxes);
  *  @param[in] joy The joystick to query.
  *  @param[out] buttons The array to hold the values.
  *  @param[in] numbuttons The size of the provided array.
- *  @return The number of values written to @p buttons, or zero if an error
+ *  @return The number of values written to `buttons,` or zero if an error
  *  occurred.
  *  @ingroup input
  */
@@ -1597,7 +1595,7 @@ GLFWAPI int glfwGetJoystickButtons(int joy, unsigned char* buttons, int numbutto
 
 /*! @brief Returns the name of the specified joystick.
  *  @param[in] joy The joystick to query.
- *  @return The UTF-8 encoded name of the joystick, or @c NULL if the joystick
+ *  @return The UTF-8 encoded name of the joystick, or `NULL` if the joystick
  *  is not present.
  *  @ingroup input
  *
@@ -1619,7 +1617,7 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
 
 /*! @brief Retrieves the contents of the clipboard as a string.
  *  @param[in] window The window that will request the clipboard contents.
- *  @return The contents of the clipboard as a UTF-8 encoded string, or @c NULL
+ *  @return The contents of the clipboard as a UTF-8 encoded string, or `NULL`
  *  if an error occurred.
  *  @ingroup clipboard
  *
@@ -1654,7 +1652,7 @@ GLFWAPI double glfwGetTime(void);
 GLFWAPI void glfwSetTime(double time);
 
 /*! @brief Makes the context of the specified window current for this thread.
- *  @param[in] window The window whose context to make current, or @c NULL to
+ *  @param[in] window The window whose context to make current, or `NULL` to
  *  detach the current context.
  *  @ingroup context
  *
@@ -1667,7 +1665,7 @@ GLFWAPI void glfwSetTime(double time);
 GLFWAPI void glfwMakeContextCurrent(GLFWwindow* window);
 
 /*! @brief Returns the window whose context is current on this thread.
- *  @return The window whose context is current, or @c NULL if no window's
+ *  @return The window whose context is current, or `NULL` if no window's
  *  context is current.
  *  @ingroup context
  *
@@ -1700,7 +1698,7 @@ GLFWAPI void glfwSwapInterval(int interval);
 
 /*! @brief Checks whether the specified extension is available.
  *  @param[in] extension The ASCII encoded name of the extension.
- *  @return @c GL_TRUE if the extension is available, or @c FALSE otherwise.
+ *  @return `GL_TRUE` if the extension is available, or `GL_FALSE` otherwise.
  *  @ingroup context
  *
  *  @remarks This function may be called from secondary threads.
@@ -1713,7 +1711,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
 /*! @brief Returns the address of the specified client API function for the
  *  current context.
  *  @param[in] procname The ASCII encoded name of the function.
- *  @return The address of the function, or @c NULL if the function is
+ *  @return The address of the function, or `NULL` if the function is
  *  unavailable.
  *  @ingroup context
  *

@@ -23,25 +23,25 @@ This defines all the constants, types and function prototypes of the GLFW API.
 It also includes the OpenGL header, and defines all the constants and types
 necessary for it to work on your platform.
 
-For example, under Windows you are normally required to include @c windows.h
-before including @c GL/gl.h.  This would make your source file tied to Windows
+For example, under Windows you are normally required to include `windows.h`
+before including `GL/gl.h`.  This would make your source file tied to Windows
 and pollute your code's namespace with the whole Win32 API.
 
-Instead, the GLFW header takes care of this for you, not by including @c
-windows.h, but rather by itself duplicating only the necessary parts of it.  It
-does this only where needed, so if @c windows.h @em is included, the GLFW header
+Instead, the GLFW header takes care of this for you, not by including
+`windows.h`, but rather by itself duplicating only the necessary parts of it.
+It does this only where needed, so if `windows.h` *is* included, the GLFW header
 does not try to redefine those symbols.
 
 In other words:
 
-@arg Do @em not include the OpenGL headers yourself, as GLFW does this for you
-@arg Do @em not include @c windows.h or other platform-specific headers unless
-     you plan on using those APIs directly
-@arg If you @em do need to include such headers, do it @em before including the
-     GLFW and it will detect this
+* Do *not* include the OpenGL headers yourself, as GLFW does this for you Do
+* *not* include `windows.h` or other platform-specific headers unless
+  you plan on using those APIs directly
+* If you *do* need to include such headers, do it *before* including the
+  GLFW and it will detect this
 
-Starting with version 3.0, the GLU header @c glu.h is no longer included by
-default.  If you wish to include it, define @c GLFW_INCLUDE_GLU before the
+Starting with version 3.0, the GLU header `glu.h` is no longer included by
+default.  If you wish to include it, define `GLFW_INCLUDE_GLU` before the
 inclusion of the GLFW header.
 
 @code
@@ -84,7 +84,7 @@ In case @ref glfwInit or any other GLFW function fails, an error is reported to
 the GLFW error callback.  You can receive these reports by setting the error
 callback.  The callback function itself should match the signature of @ref
 GLFWerrorfun.  Here is a simple error callback that just prints the error
-description to @c stderr.
+description to `stderr`.
 
 @code
 void error_callback(int error, const char* description)
@@ -113,7 +113,7 @@ pixels windowed mode window:
 GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
 @endcode
 
-If window creation fails, @c NULL will be returned, so you need to check whether
+If window creation fails, `NULL` will be returned, so you need to check whether
 it did.
 
 @code
@@ -170,9 +170,9 @@ be checked with @ref glfwWindowShouldClose.
 
 When the user attempts to close the window, either by pressing the close widget
 in the title bar or using a key combination like Alt+F4, this flag is set to 1.
-Note that <b>the window isn't actually closed</b>, so you are expected to
-monitor this flag and either destroy the window or give some kind of feedback to
-the user.
+Note that **the window isn't actually closed**, so you are expected to monitor
+this flag and either destroy the window or give some kind of feedback to the
+user.
 
 @code
 while (!glfwWindowShouldClose(window))
@@ -194,10 +194,10 @@ for example pressing the escape key.
 
 Once you have a current OpenGL context, you can use OpenGL normally.  In this
 tutorial, a multi-colored rotating triangle will be rendered.  The window size,
-needed here by @c glViewport and @c glOrtho, is retrieved using @ref
+needed here by `glViewport` and `glOrtho`, is retrieved using @ref
 glfwGetWindowSize.  However, if you only need it for updating the viewport when
 the window size changes, you can set a window size callback using @ref
-glfwSetWindowSizeCallback and call @c glViewport from there.
+glfwSetWindowSizeCallback and call `glViewport` from there.
 
 @code
 void window_size_callback(GLFWwindow* window, int width, int height)
@@ -211,7 +211,7 @@ void window_size_callback(GLFWwindow* window, int width, int height)
 
 For the triangle to rotate properly, a time source is needed.  GLFW provides
 @ref glfwGetTime, which returns the number of seconds since @ref glfwInit as
-a @c double.  The time source used is the most accurate on each platform and
+a `double`.  The time source used is the most accurate on each platform and
 generally has micro- or nanosecond resolution.
 
 @code

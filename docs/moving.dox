@@ -2,19 +2,19 @@
 
 @page moving Moving from GLFW 2 to 3
 
-This is a guide for people moving from GLFW 2 to 3.  It describes API @em
-changes, but does @em not include entirely new features unless they are required
-when moving an existing code base onto the new API.  One example of this is the
-new multi-monitor support, which you are now required to use to create
-fullscreen windows.
+This is a guide for people moving from GLFW 2 to 3.  It describes API *changes*,
+but does *not* include entirely new features unless they are required when
+moving an existing code base onto the new API.  One example of this is the new
+multi-monitor support, which you are now required to use to create fullscreen
+windows.
 
 @section moving_names Library and header names
 
-The GLFW 3 header is named @ref glfw3.h, to avoid collisions with the GLFW 2 @c
-glfw.h header, in case they are both installed.  Similarly, the GLFW 3 library
-is named @c glfw3, except when it's installed as a shared library on
-Unix-like systems, where it uses the
-<a href="https://en.wikipedia.org/wiki/soname">soname</a> @c libglfw.so.3 .
+The GLFW 3 header is named @ref glfw3.h, to avoid collisions with the GLFW 2
+`glfw.h` header, in case they are both installed.  Similarly, the GLFW 3 library
+is named `glfw3,` except when it's installed as a shared library on Unix-like
+systems, where it uses the [soname](https://en.wikipedia.org/wiki/soname)
+`libglfw.so.3`.
 
 @section moving_threads Removal of threading functions
 
@@ -31,11 +31,11 @@ The image and texture loading support has been removed.
 
 Because GLFW 3 supports multiple windows, window handle parameters have been
 added to all window-related functions and callbacks.  Window handles are of the
-@c GLFWwindow* type, i.e. a pointer to an opaque struct.
+`GLFWwindow*` type, i.e. a pointer to an opaque struct.
 
 @section moving_monitor Multi-monitor support
 
-GLFW 3 provides support for multiple monitors, adding the @c GLFWmonitor* handle
+GLFW 3 provides support for multiple monitors, adding the `GLFWmonitor*` handle
 type and a set of related functions.  To request a fullscreen mode window, you
 need to specify which monitor you wish the window to use.  There is @ref
 glfwGetPrimaryMonitor that provides something similar to the earlier behaviour.
@@ -62,12 +62,12 @@ a window but before calling any OpenGL functions.
 
 GLFW 3 uses the physical key locations named after the symbols they generate
 using the US keyboard layout, instead of layout-dependent characters like in
-GLFW 2.  This means that (for example) @c GLFW_KEY_BACKSLASH is always a single
+GLFW 2.  This means that (for example) `GLFW_KEY_BACKSLASH` is always a single
 key and is the same key in the same place regardless of what keyboard layouts
 the users of your program has.
 
 GLFW 3 has key tokens for all keys, so instead of trying to remember whether to
-check for @c 'a' or @c 'A', you now check for @c GLFW_KEY_A.
+check for `'a'` or `'A'`, you now check for `GLFW_KEY_A`.
 
 The key input facility was never meant for text input, although using it that
 way worked slightly better in GLFW 2.  If you were using it to input text, you
@@ -76,7 +76,7 @@ give you the characters being input, as opposed to the keys being pressed.
 
 @section moving_video_modes Video mode enumeration
 
-Video mode enumeration is now per-monitor.  The @c glfwGetDesktopMode function
+Video mode enumeration is now per-monitor.  The `glfwGetDesktopMode` function
 has been replaced by @ref glfwGetVideoMode, which returns the current mode of
 a monitor.  The @ref glfwGetVideoMode function now returns all available modes
 for a monitor instead of requiring you to guess how large an array you need.
@@ -84,7 +84,7 @@ for a monitor instead of requiring you to guess how large an array you need.
 @section moving_glu GLU header inclusion
 
 Unlike GLFW 2, GLFW 3 doesn't include the GLU header by default, but you can
-make it do so by defining @c GLFW_INCLUDE_GLU before including the GLFW
+make it do so by defining `GLFW_INCLUDE_GLU` before including the GLFW
 3 header.
 
 @section moving_cursor Cursor positioning
@@ -97,183 +97,43 @@ function fails silently.
 
 @subsection moving_renamed_functions Renamed functions
 
-<table>
-<tr>
-    <td>GLFW 2</td>
-    <td>GLFW 3</td>
-    <td>Notes</td>
-</tr>
-<tr>
-    <td>@c glfwOpenWindow</td>
-    <td>@ref glfwCreateWindow</td>
-    <td>All channel bit depths are now hints<br />The defaults are 24-bit color
-        and depth buffers<br />Accepts initial window title, optional monitor to go
-        fullscreen on and optional context to share objects with</td>
-</tr>
-<tr>
-    <td>@c glfwCloseWindow</td>
-    <td>@ref glfwDestroyWindow</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c glfwOpenWindowHint</td>
-    <td>@ref glfwWindowHint</td>
-    <td>Now also accepts @c GLFW_RED_BITS, @c GLFW_GREEN_BITS, @c
-        GLFW_BLUE_BITS, @c GLFW_ALPHA_BITS, @c GLFW_DEPTH_BITS and @c
-        GLFW_STENCIL_BITS</td>
-</tr>
-<tr>
-    <td>@c glfwEnable</td>
-    <td>@ref glfwSetInputMode</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c glfwDisable</td>
-    <td>@ref glfwSetInputMode</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c glfwGetMousePos</td>
-    <td>@ref glfwGetCursorPos</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c glfwSetMousePos</td>
-    <td>@ref glfwSetCursorPos</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c glfwSetMousePosCallback</td>
-    <td>@ref glfwSetCursorPosCallback</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c glfwSetMouseWheelCallback</td>
-    <td>@ref glfwSetScrollCallback</td>
-    <td>Accepts two-dimensional scroll offsets as doubles</td>
-</tr>
-<tr>
-    <td>@c glfwGetJoystickPos</td>
-    <td>@ref glfwGetJoystickAxes</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c glfwGetGLVersion</td>
-    <td>@ref glfwGetWindowParam</td>
-    <td>Use @c GLFW_OPENGL_VERSION_MAJOR, @c GLFW_OPENGL_VERSION_MINOR and @c
-        GLFW_OPENGL_REVISION</td>
-</tr>
-<tr>
-    <td>@c glfwGetDesktopMode</td>
-    <td>@ref glfwGetVideoMode</td>
-    <td>Returns the current mode of a monitor</td>
-</tr>
-</table>
+| GLFW 2                      | GLFW 3                        | Notes |
+| --------------------------- | ----------------------------- | ----- |
+| `glfwOpenWindow`            | @ref glfwCreateWindow         | All channel bit depths are now hints<br />Accepts initial window title, optional monitor to go fullscreen on and optional context to share objects with |
+| `glfwCloseWindow`           | @ref glfwDestroyWindow        |       |
+| `glfwOpenWindowHint`        | @ref glfwWindowHint           | Now accepts all `GLFW_*_BITS` tokens |
+| `glfwEnable`                | @ref glfwSetInputMode         |       |
+| `glfwDisable`               | @ref glfwSetInputMode         |       |
+| `glfwGetMousePos`           | @ref glfwGetCursorPos         |       |
+| `glfwSetMousePos`           | @ref glfwSetCursorPos         |       |
+| `glfwSetMousePosCallback`   | @ref glfwSetCursorPosCallback |       |
+| `glfwSetMouseWheelCallback` | @ref glfwSetScrollCallback    | Accepts two-dimensional scroll offsets as doubles |
+| `glfwGetJoystickPos`        | @ref glfwGetJoystickAxes      |       |
+| `glfwGetGLVersion`          | @ref glfwGetWindowParam       | Use `GLFW_OPENGL_VERSION_MAJOR`, `GLFW_OPENGL_VERSION_MINOR` and `GLFW_OPENGL_REVISION` |
+| `glfwGetDesktopMode`        | @ref glfwGetVideoMode         | Returns the current mode of a monitor |
 
 @subsection moving_renamed_tokens Renamed tokens
 
-<table>
-<tr>
-    <td>GLFW 2</td>
-    <td>GLFW 3</td>
-    <td>Notes</td>
-</tr>
-<tr>
-    <td>@c GLFW_OPENGL_VERSION_MAJOR</td>
-    <td>@c GLFW_CONTEXT_VERSION_MAJOR</td>
-    <td>Renamed as it applies to OpenGL ES as well</td>
-</tr>
-<tr>
-    <td>@c GLFW_OPENGL_VERSION_MINOR</td>
-    <td>@c GLFW_CONTEXT_VERSION_MINOR</td>
-    <td>Renamed as it applies to OpenGL ES as well</td>
-</tr>
-<tr>
-    <td>@c GLFW_FSAA_SAMPLES</td>
-    <td>@c GLFW_SAMPLES</td>
-    <td>Renamed to match the OpenGL API</td>
-</tr>
-<tr>
-    <td>@c GLFW_ACTIVE</td>
-    <td>@c GLFW_FOCUSED</td>
-    <td>Renamed to match the window focus callback</td>
-</tr>
-<tr>
-    <td>@c GLFW_WINDOW_NO_RESIZE</td>
-    <td>@c GLFW_RESIZABLE</td>
-    <td>The default has been inverted</td>
-</tr>
-<tr>
-    <td>@c GLFW_MOUSE_CURSOR</td>
-    <td>@c GLFW_CURSOR_MODE</td>
-    <td>Used with @c glfwSetInputMode<br />Accepts @c GLFW_CURSOR_NORMAL, @c
-        GLFW_CURSOR_HIDDEN and @c GLFW_CURSOR_CAPTURED</td>
-</tr>
-<tr>
-    <td>@c GLFW_KEY_ESC</td>
-    <td>@c GLFW_KEY_ESCAPE</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c GLFW_KEY_DEL</td>
-    <td>@c GLFW_KEY_DELETE</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c GLFW_KEY_PAGEUP</td>
-    <td>@c GLFW_KEY_PAGE_UP</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c GLFW_KEY_PAGEDOWN</td>
-    <td>@c GLFW_KEY_PAGE_DOWN</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c GLFW_KEY_KP_NUM_LOCK</td>
-    <td>@c GLFW_KEY_NUM_LOCK</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c GLFW_KEY_LCTRL</td>
-    <td>@c GLFW_KEY_LEFT_CONTROL</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c GLFW_KEY_LSHIFT</td>
-    <td>@c GLFW_KEY_LEFT_SHIFT</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c GLFW_KEY_LALT</td>
-    <td>@c GLFW_KEY_LEFT_ALT</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c GLFW_KEY_LSUPER</td>
-    <td>@c GLFW_KEY_LEFT_SUPER</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c GLFW_KEY_RCTRL</td>
-    <td>@c GLFW_KEY_RIGHT_CONTROL</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c GLFW_KEY_RSHIFT</td>
-    <td>@c GLFW_KEY_RIGHT_SHIFT</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c GLFW_KEY_RALT</td>
-    <td>@c GLFW_KEY_RIGHT_ALT</td>
-    <td></td>
-</tr>
-<tr>
-    <td>@c GLFW_KEY_RSUPER</td>
-    <td>@c GLFW_KEY_RIGHT_SUPER</td>
-    <td></td>
-</tr>
-</table>
+| GLFW 2                      | GLFW 3                       | Notes |
+| --------------------------- | ---------------------------- | ----- |
+| `GLFW_OPENGL_VERSION_MAJOR` | `GLFW_CONTEXT_VERSION_MAJOR` | Renamed as it applies to OpenGL ES as well |
+| `GLFW_OPENGL_VERSION_MINOR` | `GLFW_CONTEXT_VERSION_MINOR` | Renamed as it applies to OpenGL ES as well |
+| `GLFW_FSAA_SAMPLES`         | `GLFW_SAMPLES`               | Renamed to match the OpenGL API |
+| `GLFW_ACTIVE`               | `GLFW_FOCUSED`               | Renamed to match the window focus callback |
+| `GLFW_WINDOW_NO_RESIZE`     | `GLFW_RESIZABLE`             | The default has been inverted |
+| `GLFW_MOUSE_CURSOR`         | `GLFW_CURSOR_MODE`           | Used with @ref glfwSetInputMode |
+| `GLFW_KEY_ESC`              | `GLFW_KEY_ESCAPE`            |       |
+| `GLFW_KEY_DEL`              | `GLFW_KEY_DELETE`            |       |
+| `GLFW_KEY_PAGEUP`           | `GLFW_KEY_PAGE_UP`           |       |
+| `GLFW_KEY_PAGEDOWN`         | `GLFW_KEY_PAGE_DOWN`         |       |
+| `GLFW_KEY_KP_NUM_LOCK`      | `GLFW_KEY_NUM_LOCK`          |       |
+| `GLFW_KEY_LCTRL`            | `GLFW_KEY_LEFT_CONTROL`      |       |
+| `GLFW_KEY_LSHIFT`           | `GLFW_KEY_LEFT_SHIFT`        |       |
+| `GLFW_KEY_LALT`             | `GLFW_KEY_LEFT_ALT`          |       |
+| `GLFW_KEY_LSUPER`           | `GLFW_KEY_LEFT_SUPER`        |       |
+| `GLFW_KEY_RCTRL`            | `GLFW_KEY_RIGHT_CONTROL`     |       |
+| `GLFW_KEY_RSHIFT`           | `GLFW_KEY_RIGHT_SHIFT`       |       |
+| `GLFW_KEY_RALT`             | `GLFW_KEY_RIGHT_ALT`         |       |
+| `GLFW_KEY_RSUPER`           | `GLFW_KEY_RIGHT_SUPER`       |       |
 
 */

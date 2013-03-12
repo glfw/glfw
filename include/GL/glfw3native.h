@@ -41,24 +41,24 @@ extern "C" {
 
 /*! @defgroup native Native access
  *
- *  <strong>By using the native API, you assert that you know what you are
- *  doing and how to fix problems caused by using it.  If you don't, you
- *  shouldn't be using it.</strong>
+ *  **By using the native API, you assert that you know what you are doing and
+ *  how to fix problems caused by using it.  If you don't, you shouldn't be
+ *  using it.**
  *
  *  Before the inclusion of @ref glfw3native.h, you must define exactly one
  *  window API macro and exactly one context API macro.  Failure to do this
  *  will cause a compile-time error.
  *
  *  The available window API macros are:
- *  @arg @c GLFW_EXPOSE_NATIVE_WIN32
- *  @arg @c GLFW_EXPOSE_NATIVE_COCOA
- *  @arg @c GLFW_EXPOSE_NATIVE_X11
+ *  * `GLFW_EXPOSE_NATIVE_WIN32`
+ *  * `GLFW_EXPOSE_NATIVE_COCOA`
+ *  * `GLFW_EXPOSE_NATIVE_X11`
  *
  *  The available context API macros are:
- *  @arg @c GLFW_EXPOSE_NATIVE_WGL
- *  @arg @c GLFW_EXPOSE_NATIVE_NSGL
- *  @arg @c GLFW_EXPOSE_NATIVE_GLX
- *  @arg @c GLFW_EXPOSE_NATIVE_EGL
+ *  * `GLFW_EXPOSE_NATIVE_WGL`
+ *  * `GLFW_EXPOSE_NATIVE_NSGL`
+ *  * `GLFW_EXPOSE_NATIVE_GLX`
+ *  * `GLFW_EXPOSE_NATIVE_EGL`
  *
  *  These macros select which of the native access functions are declared and
  *  which platform-specific headers to include.  It is then up your (by
@@ -103,71 +103,71 @@ extern "C" {
  *************************************************************************/
 
 #if defined(GLFW_EXPOSE_NATIVE_WIN32)
-/*! @brief Returns the @c HWND of the specified window.
- *  @return The @c HWND of the specified window.
+/*! @brief Returns the `HWND` of the specified window.
+ *  @return The `HWND` of the specified window.
  *  @ingroup native
  */
 GLFWAPI HWND glfwGetWin32Window(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_WGL)
-/*! @brief Returns the @c HGLRC of the specified window.
- *  @return The @c HGLRC of the specified window.
+/*! @brief Returns the `HGLRC` of the specified window.
+ *  @return The `HGLRC` of the specified window.
  *  @ingroup native
  */
 GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_COCOA)
-/*! @brief Returns the @c NSWindow of the specified window.
- *  @return The @c NSWindow of the specified window.
+/*! @brief Returns the `NSWindow` of the specified window.
+ *  @return The `NSWindow` of the specified window.
  *  @ingroup native
  */
 GLFWAPI id glfwGetCocoaWindow(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_NSGL)
-/*! @brief Returns the @c NSOpenGLContext of the specified window.
- *  @return The @c NSOpenGLContext of the specified window.
+/*! @brief Returns the `NSOpenGLContext` of the specified window.
+ *  @return The `NSOpenGLContext` of the specified window.
  *  @ingroup native
  */
 GLFWAPI id glfwGetNSGLContext(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_X11)
-/*! @brief Returns the @c Display used by GLFW.
- *  @return The @c Display used by GLFW.
+/*! @brief Returns the `Display` used by GLFW.
+ *  @return The `Display` used by GLFW.
  *  @ingroup native
  */
 GLFWAPI Display* glfwGetX11Display(void);
-/*! @brief Returns the @c Window of the specified window.
- *  @return The @c Window of the specified window.
+/*! @brief Returns the `Window` of the specified window.
+ *  @return The `Window` of the specified window.
  *  @ingroup native
  */
 GLFWAPI Window glfwGetX11Window(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_GLX)
-/*! @brief Returns the @c GLXContext of the specified window.
- *  @return The @c GLXContext of the specified window.
+/*! @brief Returns the `GLXContext` of the specified window.
+ *  @return The `GLXContext` of the specified window.
  *  @ingroup native
  */
 GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_EGL)
-/*! @brief Returns the @c EGLDisplay used by GLFW.
- *  @return The @c EGLDisplay used by GLFW.
+/*! @brief Returns the `EGLDisplay` used by GLFW.
+ *  @return The `EGLDisplay` used by GLFW.
  *  @ingroup native
  */
 GLFWAPI EGLDisplay glfwGetEGLDisplay(void);
-/*! @brief Returns the @c EGLContext of the specified window.
- *  @return The @c EGLContext of the specified window.
+/*! @brief Returns the `EGLContext` of the specified window.
+ *  @return The `EGLContext` of the specified window.
  *  @ingroup native
  */
 GLFWAPI EGLContext glfwGetEGLContext(GLFWwindow* window);
-/*! @brief Returns the @c EGLSurface of the specified window.
- *  @return The @c EGLSurface of the specified window.
+/*! @brief Returns the `EGLSurface` of the specified window.
+ *  @return The `EGLSurface` of the specified window.
  *  @ingroup native
  */
 GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* window);

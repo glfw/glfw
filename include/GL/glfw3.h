@@ -172,7 +172,7 @@ extern "C" {
 #if defined(__APPLE_CC__)
   #if defined(GLFW_INCLUDE_GLCOREARB)
     #include <OpenGL/gl3.h>
-  #else
+  #elif !defined(GLFW_INCLUDE_NONE)
     #define GL_GLEXT_LEGACY
     #include <OpenGL/gl.h>
   #endif
@@ -188,7 +188,7 @@ extern "C" {
     #include <GLES2/gl2.h>
   #elif defined(GLFW_INCLUDE_ES3)
     #include <GLES3/gl3.h>
-  #else
+  #elif !defined(GLFW_INCLUDE_NONE)
     #include <GL/gl.h>
   #endif
   #if defined(GLFW_INCLUDE_GLU)

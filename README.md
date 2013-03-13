@@ -136,6 +136,8 @@ header instead of the regular OpenGL header.
 `GLFW_INCLUDE_ES3` makes the header include the OpenGL ES 3.0 `GLES3/gl3.h`
 header instead of the regular OpenGL header.
 
+`GLFW_INCLUDE_NONE` makes the header not include any client API header.
+
 `GLFW_INCLUDE_GLU` makes the header include the GLU header.  This only makes
 sense if you are using OpenGL.
 
@@ -286,6 +288,8 @@ GLFW.
    instead of `GL/gl.h`
  * Added `GLFW_INCLUDE_ES2` macro for telling the GLFW header to use
    `GLES2/gl2.h` instead of `GL/gl.h`
+ * Added `GLFW_INCLUDE_NONE` macro for telling the GLFW header to not include
+   any client API header
  * Added `GLFW_VISIBLE` window hint and parameter for controlling and polling
    window visibility
  * Added `GLFW_REPEAT` key action for repeated keys

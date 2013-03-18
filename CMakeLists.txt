@@ -14,11 +14,12 @@ option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
-option(GLFW_DOCUMENT_INTERNALS "Include documentation of internal functions" OFF)
+set(DOXYGEN_SKIP_DOT TRUE)
+find_package(Doxygen)
 
-set(GLFW_DOC_HEADERS "${GLFW_SOURCE_DIR}/include/GL/glfw3.h ${GLFW_SOURCE_DIR}/include/GL/glfw3native.h")
+option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 if (GLFW_DOCUMENT_INTERNALS)
-    set(GLFW_DOC_HEADERS "${GLFW_DOC_HEADERS} ${GLFW_SOURCE_DIR}/src/internal.h")
+    set(GLFW_DOC_HEADERS "${GLFW_SOURCE_DIR}/src/internal.h")
 endif()
 
 if (APPLE)
@@ -353,6 +354,10 @@ endif()
 
 if (GLFW_BUILD_TESTS)
     add_subdirectory(tests)
+endif()
+
+if (DOXYGEN_FOUND)
+    add_subdirectory(docs)
 endif()
 
 #--------------------------------------------------------------------

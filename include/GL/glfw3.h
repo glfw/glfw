@@ -446,9 +446,6 @@ extern "C" {
 /*! @defgroup errors Error codes
  *  @ingroup error
  *  @{ */
-/*! @brief No error has occurred.
- */
-#define GLFW_NO_ERROR               0
 /*! @brief GLFW has not been initialized.
  */
 #define GLFW_NOT_INITIALIZED        0x00070001

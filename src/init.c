@@ -56,8 +56,6 @@ static const char* getErrorString(int error)
 {
     switch (error)
     {
-        case GLFW_NO_ERROR:
-            return "No error";
         case GLFW_NOT_INITIALIZED:
             return "The GLFW library is not initialized";
         case GLFW_NO_CURRENT_CONTEXT:

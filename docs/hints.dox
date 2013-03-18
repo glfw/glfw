@@ -3,9 +3,10 @@
 @page hints Window hints
 
 These are all window hints.  Some relate to the window itself, others to its
-framebuffer or context.  They are set to their default values by @ref glfwInit,
-can be individually set with @ref glfwWindowHint and reset all at once to their
-defaults with @ref glfwDefaultWindowHints.
+framebuffer or context.  They are set to their default values each time the
+library is initialized with @ref glfwInit, can be individually set with @ref
+glfwWindowHint and reset all at once to their defaults with @ref
+glfwDefaultWindowHints.
 
 Note that hints need to be set *before* the creation of the window you wish to
 have the specified properties.

@@ -270,6 +270,7 @@ keyboard input, it's possible to create a simple program.
 
 This program creates a 640 by 480 pixels window and runs a loop clearing the
 screen, rendering a triangle and processing events until the user closes the
-window.
+window.  It can be found in the source distribution as `examples/simple.c`, and
+is by default compiled along with all other examples when you build GLFW.
 
 */

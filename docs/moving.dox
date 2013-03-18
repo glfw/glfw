@@ -4,63 +4,164 @@
 
 @tableofcontents
 
-This is a guide for people moving from GLFW 2 to 3.  It describes API *changes*,
-but does *not* include entirely new features unless they are required when
-moving an existing code base onto the new API.  One example of this is the new
-multi-monitor support, which you are now required to use to create fullscreen
-windows.
+This is a transition guide for moving from GLFW 2 to 3.  It describes what has
+changed or been removed, but does *not* include entirely new features unless
+they are required when moving an existing code base onto the new API.  For example,
+use of the new multi-monitor support is required to create fullscreen windows.
 
-@section moving_names Library and header names
 
-The GLFW 3 header is named @ref glfw3.h, to avoid collisions with the GLFW 2
-`glfw.h` header, in case they are both installed.  Similarly, the GLFW 3 library
-is named `glfw3,` except when it's installed as a shared library on Unix-like
-systems, where it uses the [soname](https://en.wikipedia.org/wiki/soname)
-`libglfw.so.3`.
+@section moving_removed Removed features
 
-@section moving_threads Removal of threading functions
+@subsection moving_threads Threading functions
 
-The threading functions have been removed.  However, GLFW 3 has better support
-for use from multiple threads than GLFW 2 had.  Contexts can be made current on
-and used from secondary threads, and the documentation explicitly states which
-functions may and may not be used from secondary threads.
+The threading functions have been removed, including the sleep function.  They
+were fairly primitive, under-used, poorly integrated and took time away from the
+focus of GLFW (i.e.  context, input and window).  There are better threading
+libraries available and native threading support is available in both C++11 and
+C11, both of which are gaining traction. 
 
-@section moving_image Removal of image and texture loading
+If you wish to use the C++11 or C11 facilities but your compiler doesn't yet
+support them, see the
+[TinyThread++](https://gitorious.org/tinythread/tinythreadpp) and
+[TinyCThread](https://gitorious.org/tinythread/tinycthread) projects created by
+the original author of GLFW.  These libraries implement a usable subset of the
+threading APIs in C++11 and C11, and in fact some GLFW 3 test programs use
+TinyCThread.
 
-The image and texture loading support has been removed.
+However, GLFW 3 has better support for *use from multiple threads* than GLFW
+2 had.  Contexts can be made current on and rendered with from secondary
+threads, and the documentation explicitly states which functions may or may not
+be used from secondary threads.
 
-@section moving_window_handles Window handles
+
+@subsection moving_image Image and texture loading
+
+The image and texture loading functions have been removed.  They only supported
+the Targa image format, making them mostly useful for beginner level examples.
+To become of sufficiently high quality to warrant keeping them in GLFW 3, they
+would need not only to support other formats, but also modern extensions to the
+OpenGL texturing facilities.  This would either add a number of external
+dependencies (libjpeg, libpng, etc.), or force GLFW to ship with inline versions
+of these libraries. 
+
+As there already are libraries doing this, it seems unnecessary both to
+duplicate this work and to tie this duplicate to GLFW.  Projects similar to
+GLFW, such as freeglut, could also gain from such a library.  Also, would be no
+platform-specific part of such a library, as both OpenGL and stdio are available
+wherever GLFW is.
+
+
+@subsection moving_char_up Character actions
+
+The action parameter of the [character callback](@ref GLFWcharfun) has been
+removed.  This was an artefact of the origin of GLFW, i.e. being developed in
+English by a Swede.  However, many keyboard layouts require more than one key to
+produce characters with diacritical marks. Even the Swedish keyboard layout
+requires this for uncommon cases like ü.
+
+Note that this is only the removal of the *action parameter* of the character
+callback, *not* the removal of the character callback itself. 
+
+
+@subsection moving_wheel Mouse wheel position
+
+Scroll events do not represent an absolute state.  Instead, it's an
+interpretation of a relative change in state, like character input.  So, like
+character input, there is no sane 'current state' to return.  The mouse wheel
+callback has been replaced by a [scroll callback](@ref GFLWscrollfun) that
+receives two-dimensional scroll offsets.
+
+
+@subsection moving_stdcall GLFWCALL macro
+
+The `GLFWCALL` macro, which made callback functions use
+[__stdcall](http://msdn.microsoft.com/en-us/library/zxk0tw93.aspx) on Windows,
+has been removed.  GLFW is written in C, not Pascal.  Removing this macro means
+there's one less thing for users of GLFW to remember, i.e. the requirement to
+mark all callback functions with `GLFWCALL`.  It also simplifies the creation of
+DLLs and DLL link libraries, as there's no need to explicitly disable `@n` entry
+point suffixes. 
+
+
+@subsection moving_mbcs Win32 MBCS support
+
+The Win32 port of GLFW 3 will not compile in
+[MBCS mode](http://msdn.microsoft.com/en-us/library/5z097dxa.aspx).
+Hoever, because the use of the Unicode version of the Win32 API doesn't affect
+the process as a whole, but only those windows created using it, it's perfectly
+possible to call MBCS functions from other parts of the same application.
+Therefore, even if an application using GLFW uses MBCS mode, there's no need for
+GLFW itself to support it.
+
+
+@subsection moving_windows Support for versions of Windows older than XP
+
+All explicit support for version of Windows older than XP has been removed.
+There is no code that actively prevents GLFW 3 from running on these earlier
+versions, but it uses Win32 functions that those versions lack.
+
+Windows XP was released in 2001, and by now (2013) it has not only
+replaced almost all earlier versions of Windows, but is itself rapidly being
+replaced by Windows 7 and 8.  The MSDN library doesn't even provide
+documentation for version older than Windows 2000, making it difficult to
+maintain compatibility with these versions even if it was deemed worth the
+effort.
+
+The Win32 API has also not stood still, and GLFW 3 uses many functions only
+present on Windows XP or later.  Even supporting an OS as new as XP (new
+from the perspective of GLFW 2, which still supports Windows 95) requires
+runtime checking for a number of functions that are present only on modern
+version of Windows.
+
+
+@subsection moving_syskeys Capture of system-wide hotkeys
+
+The ability to disable and capture system-wide hotkeys like Alt+Tab has been
+removed.  Modern applications, whether they're games, scientific visualisations
+or something else, are nowadays expected to be good desktop citizens and allow
+these hotkeys to function even when running in fullscreen mode.
+
+
+@section moving_changed Changes to existing features
+
+@subsection moving_window_handles Window handles
 
 Because GLFW 3 supports multiple windows, window handle parameters have been
-added to all window-related functions and callbacks.  Window handles are of the
-`GLFWwindow*` type, i.e. a pointer to an opaque struct.
+added to all window-related GLFW functions and callbacks.  Window handles are of
+the `GLFWwindow*` type, i.e. a pointer to an opaque struct.
 
-@section moving_monitor Multi-monitor support
+
+@subsection moving_monitor Multi-monitor support
 
 GLFW 3 provides support for multiple monitors, adding the `GLFWmonitor*` handle
 type and a set of related functions.  To request a fullscreen mode window, you
 need to specify which monitor you wish the window to use.  There is @ref
-glfwGetPrimaryMonitor that provides something similar to the earlier behaviour.
+glfwGetPrimaryMonitor that provides behaviour similar to that of GLFW 2.
 
-@section moving_window_close Window closing
+
+@subsection moving_window_close Window closing
 
 Window closing is now just an event like any other.  GLFW 3 windows won't
 disappear from underfoot even when no close callback is set; instead the
 window's close flag is set.  You can query this flag using @ref
 glfwWindowShouldClose, or capture close events by setting a close callback.  The
-return value of the close callback then becomes the new value of the close flag.
+close flag can be modified from any point in your program using @ref
+glfwSetWindowShouldClose.
 
-@section moving_context Explicit context management
+
+@subsection moving_context Explicit context management
 
 Each GLFW 3 window has its own OpenGL context and only you, the user, can know
 which context should be current on which thread at any given time.  Therefore,
-GLFW 3 makes no assumptions about when you want a certain context current,
+GLFW 3 makes no assumptions about when you want a certain context to be current,
 leaving that decision to you.
 
-This means that you need to call @ref glfwMakeContextCurrent after creating
-a window but before calling any OpenGL functions.
+This means, among other things, that you need to call @ref
+glfwMakeContextCurrent after creating a window before you can call any OpenGL
+functions.
 
-@section moving_keys Physical key input
+
+@subsection moving_keys Physical key input
 
 GLFW 3 uses the physical key locations named after the symbols they generate
 using the US keyboard layout, instead of layout-dependent characters like in
@@ -68,40 +169,53 @@ GLFW 2.  This means that (for example) `GLFW_KEY_BACKSLASH` is always a single
 key and is the same key in the same place regardless of what keyboard layouts
 the users of your program has.
 
-GLFW 3 has key tokens for all keys, so instead of trying to remember whether to
-check for `'a'` or `'A'`, you now check for `GLFW_KEY_A`.
-
 The key input facility was never meant for text input, although using it that
 way worked slightly better in GLFW 2.  If you were using it to input text, you
 should be using the character callback instead, on both GLFW 2 and 3.  This will
 give you the characters being input, as opposed to the keys being pressed.
 
-@section moving_video_modes Video mode enumeration
+GLFW 3 has key tokens for all keys on a standard keyboard, so instead of having
+to remember whether to check for `'a'` or `'A'`, you now check for `GLFW_KEY_A`.
+
+
+@subsection moving_video_modes Video mode enumeration
 
 Video mode enumeration is now per-monitor.  The `glfwGetDesktopMode` function
 has been replaced by @ref glfwGetVideoMode, which returns the current mode of
-a monitor.  The @ref glfwGetVideoMode function now returns all available modes
+a monitor.  The @ref glfwGetVideoModes function now returns all available modes
 for a monitor instead of requiring you to guess how large an array you need.
 
-@section moving_glu GLU header inclusion
+
+@subsection moving_glu GLU header inclusion
 
 Unlike GLFW 2, GLFW 3 doesn't include the GLU header by default, but you can
-make it do so by defining `GLFW_INCLUDE_GLU` before including the GLFW
+make it do so by defining `GLFW_INCLUDE_GLU` before the inclusion of the GLFW
 3 header.
 
-@section moving_cursor Cursor positioning
+
+@subsection moving_cursor Cursor positioning
 
 GLFW 3 only allows you to position the cursor within a window (using @ref
 glfwSetCursorPos) when that window is active.  Unless the window is active, the
 function fails silently.
 
-@section moving_renamed Symbol name changes
 
-@subsection moving_renamed_functions Renamed functions
+@section moving_renamed Name changes
+
+@subsection moving_renamed_files Library and header file
+
+The GLFW 3 header is named @ref glfw3.h, to avoid collisions with the GLFW 2
+`glfw.h` header, in case they are both installed.  Similarly, the GLFW 3 library
+is named `glfw3,` except when it's installed as a shared library on Unix-like
+systems, where it uses the [soname](https://en.wikipedia.org/wiki/soname)
+`libglfw.so.3`.
+
+
+@subsection moving_renamed_functions Functions
 
 | GLFW 2                      | GLFW 3                        | Notes |
 | --------------------------- | ----------------------------- | ----- |
-| `glfwOpenWindow`            | @ref glfwCreateWindow         | All channel bit depths are now hints<br />Accepts initial window title, optional monitor to go fullscreen on and optional context to share objects with |
+| `glfwOpenWindow`            | @ref glfwCreateWindow         | All channel bit depths are now hints
 | `glfwCloseWindow`           | @ref glfwDestroyWindow        |       |
 | `glfwOpenWindowHint`        | @ref glfwWindowHint           | Now accepts all `GLFW_*_BITS` tokens |
 | `glfwEnable`                | @ref glfwSetInputMode         |       |
@@ -114,7 +228,7 @@ function fails silently.
 | `glfwGetGLVersion`          | @ref glfwGetWindowParam       | Use `GLFW_OPENGL_VERSION_MAJOR`, `GLFW_OPENGL_VERSION_MINOR` and `GLFW_OPENGL_REVISION` |
 | `glfwGetDesktopMode`        | @ref glfwGetVideoMode         | Returns the current mode of a monitor |
 
-@subsection moving_renamed_tokens Renamed tokens
+@subsection moving_renamed_tokens Tokens
 
 | GLFW 2                      | GLFW 3                       | Notes |
 | --------------------------- | ---------------------------- | ----- |

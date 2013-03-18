@@ -68,7 +68,7 @@ callback, *not* the removal of the character callback itself.
 Scroll events do not represent an absolute state.  Instead, it's an
 interpretation of a relative change in state, like character input.  So, like
 character input, there is no sane 'current state' to return.  The mouse wheel
-callback has been replaced by a [scroll callback](@ref GFLWscrollfun) that
+callback has been replaced by a [scroll callback](@ref GLFWscrollfun) that
 receives two-dimensional scroll offsets.
 
 
@@ -127,8 +127,10 @@ these hotkeys to function even when running in fullscreen mode.
 @subsection moving_window_handles Window handles
 
 Because GLFW 3 supports multiple windows, window handle parameters have been
-added to all window-related GLFW functions and callbacks.  Window handles are of
-the `GLFWwindow*` type, i.e. a pointer to an opaque struct.
+added to all window-related GLFW functions and callbacks.  The handle of
+a newly created window is returned by @ref glfwCreateWindow (formerly
+`glfwOpenWindow`).  Window handles are of the `GLFWwindow*` type, i.e. a pointer
+to an opaque struct.
 
 
 @subsection moving_monitor Multi-monitor support
@@ -195,9 +197,17 @@ make it do so by defining `GLFW_INCLUDE_GLU` before the inclusion of the GLFW
 
 @subsection moving_cursor Cursor positioning
 
-GLFW 3 only allows you to position the cursor within a window (using @ref
-glfwSetCursorPos) when that window is active.  Unless the window is active, the
-function fails silently.
+GLFW 3 only allows you to position the cursor within a window using @ref
+glfwSetCursorPos (formerly `glfwSetMousePos`) when that window is active.
+Unless the window is active, the function fails silently.
+
+
+@subsection moving_hints Persistent window hints
+
+Window hints are no longer reset to their default values on window creation, but
+instead retain their values until modified by @ref glfwWindowHint (formerly
+`glfwOpenWindowHint`) or @ref glfwDefaultWindowHints, or until the library is
+terminated and re-initialized.
 
 
 @section moving_renamed Name changes

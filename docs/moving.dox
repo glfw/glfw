@@ -122,6 +122,13 @@ or something else, are nowadays expected to be good desktop citizens and allow
 these hotkeys to function even when running in fullscreen mode.
 
 
+@subsection moving_terminate Automatic termination
+
+@ref glfwTerminate is no longer registered with `atexit` at initialization.  To
+properly release all resources allocated by GLFW, you should therefore call @ref
+glfwTerminate yourself before exiting.
+
+
 @section moving_changed Changes to existing features
 
 @subsection moving_window_handles Window handles

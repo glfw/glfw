@@ -176,6 +176,9 @@ int _glfwCreateContext(_GLFWwindow* window,
 
             if (wndconfig->glMajor == 2)
                 setEGLattrib(EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT);
+
+            if (wndconfig->glMajor == 3)
+                setEGLattrib(EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR);
         }
 
         setEGLattrib(EGL_COLOR_BUFFER_TYPE, EGL_RGB_BUFFER);

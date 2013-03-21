@@ -162,9 +162,21 @@ int _glfwCreateContext(_GLFWwindow* window,
     if (wndconfig->share)
         share = wndconfig->share->egl.context;
 
-    // Retrieve the previously selected EGLConfig
+    // Find a suitable EGLConfig
     {
         int index = 0;
+
+        if (wndconfig->clientAPI == GLFW_OPENGL_API)
+            setEGLattrib(EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT);
+
+        if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
+        {
+            if (wndconfig->glMajor == 1)
+                setEGLattrib(EGL_RENDERABLE_TYPE, EGL_OPENGL_ES_BIT);
+
+            if (wndconfig->glMajor == 2)
+                setEGLattrib(EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT);
+        }
 
         setEGLattrib(EGL_COLOR_BUFFER_TYPE, EGL_RGB_BUFFER);
 

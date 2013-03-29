@@ -1,0 +1,160 @@
+/*! @page window Window handling
+ 
+@tableofcontents
+
+The primary purpose of GLFW is to provide a simple interface to window
+management and OpenGL and OpenGL ES context creation.  GLFW supports
+multiple windows, which can be either a normal desktop window or
+a fullscreen window.
+
+@section window_object Window objects
+
+Text here.
+
+
+@section window_hints Window hints
+
+There are a number of hints that can be set before the creation of a window.
+Some affect the window itself, others its framebuffer or context.  These hints
+are set to their default values each time the library is initialized with @ref
+glfwInit, can be individually set with @ref glfwWindowHint and reset all at once
+to their defaults with @ref glfwDefaultWindowHints.
+
+Note again that they need to be set *before* the creation of the window you wish
+to have the specified properties.
+
+
+@subsection window_hints_hard Hard and soft constraints
+
+Some window hints are hard constraints.  These must match the available
+capabilities *exactly* for window and context creation to succeed.  Hints
+that are not hard constraints are matched as closely as possible, but the
+resulting window and context may differ from what these hints requested.  To
+find out the actual parameters of the created window and context, use the
+@ref glfwGetWindowParam function.
+
+The following hints are hard constraints:
+- `GLFW_STEREO`
+- `GLFW_CLIENT_API`
+
+The following additional hints are hard constraints if requesting an OpenGL
+context:
+- `GLFW_OPENGL_FORWARD_COMPAT`
+- `GLFW_OPENGL_PROFILE`
+
+Hints that do not apply to a given type of window or context are ignored.
+
+
+@subsection window_hints_fb Framebuffer related hints
+
+The `GLFW_RED_BITS`, `GLFW_GREEN_BITS`, `GLFW_BLUE_BITS`, `GLFW_ALPHA_BITS`,
+`GLFW_DEPTH_BITS` and `GLFW_STENCIL_BITS` hints specify the desired bit
+depths of the various components of the default framebuffer.
+
+The `GLFW_ACCUM_RED_BITS`, `GLFW_ACCUM_GREEN_BITS`, `GLFW_ACCUM_BLUE_BITS`
+and `GLFW_ACCUM_ALPHA_BITS` hints specify the desired bit depths of the
+various components of the accumulation buffer.
+
+The `GLFW_AUX_BUFFERS` hint specifies the desired number of auxiliary
+buffers.
+
+The `GLFW_STEREO` hint specifies whether to use stereoscopic rendering.
+
+The `GLFW_SAMPLES` hint specifies the desired number of samples to use for
+multisampling.
+
+The `GLFW_SRGB_CAPABLE` hint specifies whether the framebuffer should be
+sRGB capable.
+
+
+@subsection window_hints_ctx Context related hints
+
+The `GLFW_CLIENT_API` hint specifies which client API to create the context
+for.  Possible values are `GLFW_OPENGL_API` and `GLFW_OPENGL_ES_API`.
+
+The `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` hints
+specify the client API version that the created context must be compatible
+with.
+
+For OpenGL, these hints are *not* hard constraints, as they don't have to
+match exactly, but @ref glfwCreateWindow will still fail if the resulting
+OpenGL version is less than the one requested.  It is therefore perfectly
+safe to use the default of version 1.0 for legacy code and you will still
+get backwards-compatible contexts of version 3.0 and above when available.
+
+For OpenGL ES, these hints are hard constraints, as there is no backward
+compatibility between OpenGL ES versions.
+
+If an OpenGL context is requested, the `GLFW_OPENGL_FORWARD_COMPAT` hint
+specifies whether the OpenGL context should be forward-compatible, i.e. one
+where all functionality deprecated in the requested version of OpenGL is
+removed.  This may only be used if the requested OpenGL version is 3.0 or
+above.  If another client API is requested, this hint is ignored.
+
+If an OpenGL context is requested, the `GLFW_OPENGL_DEBUG_CONTEXT` hint
+specifies whether to create a debug OpenGL context, which may have
+additional error and performance issue reporting functionality.  If another
+client API is requested, this hint is ignored.
+
+If an OpenGL context is requested, the `GLFW_OPENGL_PROFILE` hint specifies
+which OpenGL profile to create the context for.  Possible values are one of
+`GLFW_OPENGL_CORE_PROFILE` or `GLFW_OPENGL_COMPAT_PROFILE`, or
+`GLFW_OPENGL_NO_PROFILE` to not request a specific profile.  If requesting
+an OpenGL version below 3.2, `GLFW_OPENGL_NO_PROFILE` must be used.  If
+another client API is requested, this hint is ignored.
+
+The `GLFW_CONTEXT_ROBUSTNESS` hint specifies the robustness strategy to be
+used by the context.  This can be one of `GLFW_NO_RESET_NOTIFICATION` or
+`GLFW_LOSE_CONTEXT_ON_RESET`, or `GLFW_NO_ROBUSTNESS` to not request
+a robustness strategy.
+
+
+@subsection window_hints_wnd Window related hints
+
+The `GLFW_RESIZABLE` hint specifies whether the window will be resizable by
+the user.  The window will still be resizable using the @ref
+glfwSetWindowSize function.  This hint is ignored for fullscreen windows.
+
+The `GLFW_VISIBLE` hint specifies whether the window will be initially
+visible.  This hint is ignored for fullscreen windows.
+
+
+@subsection window_hints_values Supported and default values
+
+| Name                         | Default value            | Supported values        |
+| ---------------------------- | ------------------------ | ----------------------- |
+| `GLFW_RESIZABLE`             | `GL_TRUE`                | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_VISIBLE`               | `GL_TRUE`                | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_RED_BITS`              | 8                        | 0 to `INT_MAX`          |
+| `GLFW_GREEN_BITS`            | 8                        | 0 to `INT_MAX`          |
+| `GLFW_BLUE_BITS`             | 8                        | 0 to `INT_MAX`          |
+| `GLFW_ALPHA_BITS`            | 8                        | 0 to `INT_MAX`          |
+| `GLFW_DEPTH_BITS`            | 24                       | 0 to `INT_MAX`          |
+| `GLFW_STENCIL_BITS`          | 8                        | 0 to `INT_MAX`          |
+| `GLFW_ACCUM_RED_BITS`        | 0                        | 0 to `INT_MAX`          |
+| `GLFW_ACCUM_GREEN_BITS`      | 0                        | 0 to `INT_MAX`          |
+| `GLFW_ACCUM_BLUE_BITS`       | 0                        | 0 to `INT_MAX`          |
+| `GLFW_ACCUM_ALPHA_BITS`      | 0                        | 0 to `INT_MAX`          |
+| `GLFW_AUX_BUFFERS`           | 0                        | 0 to `INT_MAX`          |
+| `GLFW_SAMPLES`               | 0                        | 0 to `INT_MAX`          |
+| `GLFW_STEREO`                | `GL_FALSE`               | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_SRGB_CAPABLE`          | `GL_FALSE`               | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_CLIENT_API`            | `GLFW_OPENGL_API`        | `GLFW_OPENGL_API` or `GLFW_OPENGL_ES_API` |
+| `GLFW_CONTEXT_VERSION_MAJOR` | 1                        | Any valid major version number of the chosen client API |
+| `GLFW_CONTEXT_VERSION_MINOR` | 0                        | Any valid minor version number of the chosen client API |
+| `GLFW_CONTEXT_ROBUSTNESS`    | `GLFW_NO_ROBUSTNESS`     | `GLFW_NO_ROBUSTNESS`, `GLFW_NO_RESET_NOTIFICATION` or `GLFW_LOSE_CONTEXT_ON_RESET` |
+| `GLFW_OPENGL_FORWARD_COMPAT` | `GL_FALSE`               | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_OPENGL_DEBUG_CONTEXT`  | `GL_FALSE`               | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_OPENGL_PROFILE`        | `GLFW_OPENGL_NO_PROFILE` | `GLFW_OPENGL_NO_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE` |
+
+
+@section window_closing Window closing
+
+Text here.
+
+
+@section window_dims Window dimensions
+
+Text here.
+
+*/

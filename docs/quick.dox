@@ -9,6 +9,10 @@ will introduce a few of the most commonly used functions, but there are many
 others.  To see detailed documentation on any GLFW function, just click on its
 name.
 
+This guide assumes no experience with earlier versions of GLFW.  If you
+have used GLFW 2.x in the past, you should also read the
+[transition guide](@ref moving).
+
 
 @section quick_include Including the GLFW header
 

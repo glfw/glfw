@@ -467,7 +467,13 @@ static void processEvent(XEvent *event)
         case KeyPress:
         {
             _glfwInputKey(window, translateKey(event->xkey.keycode), GLFW_PRESS);
-            _glfwInputChar(window, translateChar(&event->xkey));
+
+            if (!(event->xkey.state & ControlMask) &&
+                !(event->xkey.state & Mod1Mask /*Alt*/))
+            {
+                _glfwInputChar(window, translateChar(&event->xkey));
+            }
+
             break;
         }
 

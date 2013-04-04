@@ -166,6 +166,11 @@ if (_GLFW_X11)
         message(FATAL_ERROR "The RandR library and headers were not found")
     endif()
 
+    if (X11_Xinput_FOUND)
+        list(APPEND glfw_INCLUDE_DIRS ${X11_Xinput_INCLUDE_PATH})
+        list(APPEND glfw_LIBRARIES ${X11_Xinput_LIB})
+    endif()
+
     list(APPEND glfw_INCLUDE_DIRS ${X11_Xrandr_INCLUDE_PATH})
     list(APPEND glfw_LIBRARIES ${X11_Xrandr_LIB})
     set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xrandr")

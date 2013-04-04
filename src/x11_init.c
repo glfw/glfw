@@ -474,6 +474,23 @@ static GLboolean initDisplay(void)
         }
     }
 
+    if (XQueryExtension(_glfw.x11.display,
+                        "XInputExtension",
+                        &_glfw.x11.xi2.majorOpcode,
+                        &_glfw.x11.xi2.eventBase,
+                        &_glfw.x11.xi2.errorBase))
+    {
+        _glfw.x11.xi2.versionMajor = 2;
+        _glfw.x11.xi2.versionMinor = 0;
+
+        if (XIQueryVersion(_glfw.x11.display,
+                           &_glfw.x11.xi2.versionMajor,
+                           &_glfw.x11.xi2.versionMinor) != BadRequest)
+        {
+            _glfw.x11.xi2.available = GL_TRUE;
+        }
+    }
+
     // Check if Xkb is supported on this display
     _glfw.x11.xkb.versionMajor = 1;
     _glfw.x11.xkb.versionMinor = 0;

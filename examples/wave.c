@@ -335,7 +335,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action)
 // Callback function for cursor motion events
 //========================================================================
 
-void cursor_position_callback(GLFWwindow* window, int x, int y)
+void cursor_position_callback(GLFWwindow* window, double x, double y)
 {
     if (locked)
     {

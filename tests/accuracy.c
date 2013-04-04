@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static int cursor_x = 0, cursor_y = 0;
+static double cursor_x = 0.0, cursor_y = 0.0;
 static int window_width = 640, window_height = 480;
 static int swap_interval = 1;
 
@@ -68,7 +68,7 @@ static void window_size_callback(GLFWwindow* window, int width, int height)
     gluOrtho2D(0.f, window_width, 0.f, window_height);
 }
 
-static void cursor_position_callback(GLFWwindow* window, int x, int y)
+static void cursor_position_callback(GLFWwindow* window, double x, double y)
 {
     cursor_x = x;
     cursor_y = y;

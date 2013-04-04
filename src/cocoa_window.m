@@ -365,11 +365,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
             [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
         const NSPoint p = [event locationInWindow];
 
-        // Cocoa coordinate system has origin at lower left
-        const int x = lround(floor(p.x));
-        const int y = contentRect.size.height - lround(ceil(p.y));
-
-        _glfwInputCursorMotion(window, x, y);
+        _glfwInputCursorMotion(window, p.x, contentRect.size.height - p.y);
     }
 }
 

@@ -1049,9 +1049,9 @@ void _glfwPlatformWaitEvents(void)
     _glfwPlatformPollEvents();
 }
 
-void _glfwPlatformSetCursorPos(_GLFWwindow* window, int xpos, int ypos)
+void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos)
 {
-    POINT pos = { xpos, ypos };
+    POINT pos = { (int) xpos, (int) ypos };
     ClientToScreen(window->win32.handle, &pos);
     SetCursorPos(pos.x, pos.y);
 }

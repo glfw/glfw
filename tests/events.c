@@ -290,9 +290,9 @@ static void mouse_button_callback(GLFWwindow* window, int button, int action)
         printf(" was %s\n", get_action_name(action));
 }
 
-static void cursor_position_callback(GLFWwindow* window, int x, int y)
+static void cursor_position_callback(GLFWwindow* window, double x, double y)
 {
-    printf("%08x at %0.3f: Cursor position: %i %i\n", counter++, glfwGetTime(), x, y);
+    printf("%08x at %0.3f: Cursor position: %f %f\n", counter++, glfwGetTime(), x, y);
 }
 
 static void cursor_enter_callback(GLFWwindow* window, int entered)

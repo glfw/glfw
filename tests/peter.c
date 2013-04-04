@@ -36,8 +36,8 @@
 #include <stdlib.h>
 
 static GLboolean reopen = GL_FALSE;
-static int cursor_x;
-static int cursor_y;
+static double cursor_x;
+static double cursor_y;
 
 static void toggle_cursor(GLFWwindow* window)
 {
@@ -58,9 +58,9 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void cursor_position_callback(GLFWwindow* window, int x, int y)
+static void cursor_position_callback(GLFWwindow* window, double x, double y)
 {
-    printf("Cursor moved to: %i %i (%i %i)\n", x, y, x - cursor_x, y - cursor_y);
+    printf("Cursor moved to: %f %f (%f %f)\n", x, y, x - cursor_x, y - cursor_y);
     cursor_x = x;
     cursor_y = y;
 }
@@ -102,7 +102,7 @@ static GLFWwindow* open_window(void)
     glfwSwapInterval(1);
 
     glfwGetCursorPos(window, &cursor_x, &cursor_y);
-    printf("Cursor position: %i %i\n", cursor_x, cursor_y);
+    printf("Cursor position: %f %f\n", cursor_x, cursor_y);
 
     glfwSetWindowSizeCallback(window, window_size_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);

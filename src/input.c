@@ -38,7 +38,8 @@
 //
 static void setCursorMode(_GLFWwindow* window, int newMode)
 {
-    int width, height, oldMode, centerPosX, centerPosY;
+    int width, height, oldMode;
+    double centerPosX, centerPosY;
 
     if (newMode != GLFW_CURSOR_NORMAL &&
         newMode != GLFW_CURSOR_HIDDEN &&
@@ -54,8 +55,8 @@ static void setCursorMode(_GLFWwindow* window, int newMode)
 
     _glfwPlatformGetWindowSize(window, &width, &height);
 
-    centerPosX = width / 2;
-    centerPosY = height / 2;
+    centerPosX = width / 2.0;
+    centerPosY = height / 2.0;
 
     if (oldMode == GLFW_CURSOR_CAPTURED || newMode == GLFW_CURSOR_CAPTURED)
         _glfwPlatformSetCursorPos(window, centerPosX, centerPosY);
@@ -171,11 +172,11 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action)
         window->callbacks.mouseButton((GLFWwindow*) window, button, action);
 }
 
-void _glfwInputCursorMotion(_GLFWwindow* window, int x, int y)
+void _glfwInputCursorMotion(_GLFWwindow* window, double x, double y)
 {
     if (window->cursorMode == GLFW_CURSOR_CAPTURED)
     {
-        if (!x && !y)
+        if (x == 0.0 && y == 0.0)
             return;
 
         window->cursorPosX += x;
@@ -297,7 +298,7 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* handle, int button)
     return (int) window->mouseButton[button];
 }
 
-GLFWAPI void glfwGetCursorPos(GLFWwindow* handle, int* xpos, int* ypos)
+GLFWAPI void glfwGetCursorPos(GLFWwindow* handle, double* xpos, double* ypos)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -310,7 +311,7 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* handle, int* xpos, int* ypos)
         *ypos = window->cursorPosY;
 }
 
-GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, int xpos, int ypos)
+GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, double xpos, double ypos)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 

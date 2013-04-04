@@ -27,7 +27,7 @@
 //========================================================================
 
 // Mouse position
-static int xpos = 0, ypos = 0;
+static double xpos = 0, ypos = 0;
 
 // Window size
 static int width, height;
@@ -379,24 +379,24 @@ static void windowRefreshFun(GLFWwindow* window)
 // Mouse position callback function
 //========================================================================
 
-static void cursorPosFun(GLFWwindow* window, int x, int y)
+static void cursorPosFun(GLFWwindow* window, double x, double y)
 {
     // Depending on which view was selected, rotate around different axes
     switch (active_view)
     {
         case 1:
-            rot_x += y - ypos;
-            rot_z += x - xpos;
+            rot_x += (int) y - ypos;
+            rot_z += (int) x - xpos;
             do_redraw = 1;
             break;
         case 3:
-            rot_x += y - ypos;
-            rot_y += x - xpos;
+            rot_x += (int) y - ypos;
+            rot_y += (int) x - xpos;
             do_redraw = 1;
             break;
         case 4:
-            rot_y += x - xpos;
-            rot_z += y - ypos;
+            rot_y += (int) x - xpos;
+            rot_z += (int) y - ypos;
             do_redraw = 1;
             break;
         default:

@@ -308,6 +308,7 @@ GLFW.
  * Changed `glfwGetProcAddress` to return a (generic) function pointer
  * Changed `glfwGetVideoModes` to return a dynamic, unlimited number of video
    modes for the specified monitor
+ * Changed cursor position to double-precision floating-point
  * Renamed `glfw.h` to `glfw3.h` to avoid conflicts with 2.x series
  * Renamed `glfwOpenWindowHint` to `glfwWindowHint`
  * Renamed `GLFW_ACTIVE` to `GLFW_FOCUSED`

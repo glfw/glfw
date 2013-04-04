@@ -1004,13 +1004,14 @@ void _glfwPlatformWaitEvents(void)
     _glfwPlatformPollEvents();
 }
 
-void _glfwPlatformSetCursorPos(_GLFWwindow* window, int x, int y)
+void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
     // Store the new position so it can be recognized later
     window->x11.cursorPosX = x;
     window->x11.cursorPosY = y;
 
-    XWarpPointer(_glfw.x11.display, None, window->x11.handle, 0,0,0,0, x, y);
+    XWarpPointer(_glfw.x11.display, None, window->x11.handle,
+                 0,0,0,0, (int) x, (int) y);
 }
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)

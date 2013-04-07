@@ -11,8 +11,12 @@ and contexts, multi-monitor support, EGL and OpenGL ES support, clipboard text
 support, an error description callback, gamma ramp control, layout-independent
 keyboard input and UTF-8 for all strings.
 
-Certain features like the threading and image loading functions from GLFW 2.x
-have been [removed](http://wiki.glfw.org/wiki/Rationale_for_removing).
+If you are new to GLFW, you may find the
+[introductory tutorial](http://www.glfw.org/docs/3.0/quick.html) for GLFW
+3 useful.  If
+you have used GLFW 2 in the past, there is a
+[transition guide](http://www.glfw.org/docs/3.0/moving.html) for moving to the
+GLFW 3 API.
 
 
 ## Compiling GLFW

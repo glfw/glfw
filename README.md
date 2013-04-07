@@ -490,6 +490,7 @@ skills.
  * Jari Vetoniemi
  * Simon Voordouw
  * Torsten Walluhn
+ * Jay Weisskopf
  * Frank Wille
  * yuriks
  * Santi Zupancic

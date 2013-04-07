@@ -803,10 +803,10 @@ GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
  *  enabled in a binary.
  *
  *  The format of the string is as follows:
- *  * The version of GLFW
- *  * The name of the window system API
- *  * The name of the context creation API
- *  * Any additional options or APIs
+ *  - The version of GLFW
+ *  - The name of the window system API
+ *  - The name of the context creation API
+ *  - Any additional options or APIs
  *
  *  For example, when compiling GLFW 3.0 with MinGW using the Win32 and WGL
  *  backends, the version string may look something like this:
@@ -1039,13 +1039,13 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  @ref glfwGetWindowParam function.
  *
  *  The following hints are hard constraints:
- *  * `GLFW_STEREO`
- *  * `GLFW_CLIENT_API`
+ *  - `GLFW_STEREO`
+ *  - `GLFW_CLIENT_API`
  *
  *  The following additional hints are hard constraints if requesting an OpenGL
  *  context:
- *  * `GLFW_OPENGL_FORWARD_COMPAT`
- *  * `GLFW_OPENGL_PROFILE`
+ *  - `GLFW_OPENGL_FORWARD_COMPAT`
+ *  - `GLFW_OPENGL_PROFILE`
  *
  *  Hints that do not apply to a given type of window or context are ignored.
  *
@@ -1647,10 +1647,10 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *
  *  If `mode` is `GLFW_CURSOR_MODE`, the value must be one of the supported input
  *  modes:
- *  * `GLFW_CURSOR_NORMAL` makes the cursor visible and behaving normally.
- *  * `GLFW_CURSOR_HIDDEN` makes the cursor invisible when it is over the client
+ *  - `GLFW_CURSOR_NORMAL` makes the cursor visible and behaving normally.
+ *  - `GLFW_CURSOR_HIDDEN` makes the cursor invisible when it is over the client
  *    area of the window.
- *  * `GLFW_CURSOR_CAPTURED` makes the cursor invisible and unable to leave the
+ *  - `GLFW_CURSOR_CAPTURED` makes the cursor invisible and unable to leave the
  *    window but unconstrained in terms of position.
  *
  *  If `mode` is `GLFW_STICKY_KEYS`, the value must be either `GL_TRUE` to

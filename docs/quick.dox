@@ -34,10 +34,10 @@ does not try to redefine those symbols.
 
 In other words:
 
-* Do *not* include the OpenGL headers yourself, as GLFW does this for you Do
-* *not* include `windows.h` or other platform-specific headers unless
+- Do *not* include the OpenGL headers yourself, as GLFW does this for you
+- Do *not* include `windows.h` or other platform-specific headers unless
   you plan on using those APIs directly
-* If you *do* need to include such headers, do it *before* including the
+- If you *do* need to include such headers, do it *before* including the
   GLFW and it will detect this
 
 Starting with version 3.0, the GLU header `glu.h` is no longer included by

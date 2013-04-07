@@ -63,6 +63,8 @@
 #cmakedefine _GLFW_HAS_GLXGETPROCADDRESSARB
 // Define this to 1 if glXGetProcAddressEXT is available
 #cmakedefine _GLFW_HAS_GLXGETPROCADDRESSEXT
+// Define this to 1 if dlopen is available
+#cmakedefine _GLFW_HAS_DLOPEN
 
 // Define this to 1 if glfwInit should change the current directory
 #cmakedefine _GLFW_USE_CHDIR

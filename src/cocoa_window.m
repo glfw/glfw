@@ -450,7 +450,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 {
     int mode, key;
     unsigned int newModifierFlags =
-        [event modifierFlags] | NSDeviceIndependentModifierFlagsMask;
+        [event modifierFlags] & NSDeviceIndependentModifierFlagsMask;
 
     if (newModifierFlags > window->ns.modifierFlags)
         mode = GLFW_PRESS;

@@ -145,8 +145,8 @@ struct _GLFWhints
     int         auxBuffers;
     GLboolean   stereo;
     GLboolean   resizable;
-    GLboolean   undecorated;
     GLboolean   visible;
+    GLboolean   decorated;
     int         samples;
     GLboolean   sRGB;
     int         clientAPI;
@@ -171,8 +171,8 @@ struct _GLFWwndconfig
     int           height;
     const char*   title;
     GLboolean     resizable;
-    GLboolean     undecorated;
     GLboolean     visible;
+    GLboolean     decorated;
     int           clientAPI;
     int           glMajor;
     int           glMinor;
@@ -218,7 +218,7 @@ struct _GLFWwindow
     // Window settings and state
     GLboolean           iconified;
     GLboolean           resizable;
-	 GLboolean           undecorated;
+    GLboolean           decorated;
     GLboolean           visible;
     GLboolean           closed;
     void*               userPointer;

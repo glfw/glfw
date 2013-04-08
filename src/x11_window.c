@@ -57,6 +57,7 @@ typedef struct
 
 #define MWM_HINTS_DECORATIONS (1L << 1)
 
+
 // Translates an X Window key to internal coding
 //
 static int translateKey(int keycode)
@@ -140,15 +141,18 @@ static GLboolean createWindow(_GLFWwindow* window,
             return GL_FALSE;
         }
 
-        if (wndconfig->undecorated) {
-            Atom motif_hints_atom = XInternAtom(_glfw.x11.display, "_MOTIF_WM_HINTS", False);
-            MotifWmHints motif_hints;
-            motif_hints.flags = MWM_HINTS_DECORATIONS;
-            motif_hints.decorations = 0;
+        if (!wndconfig->decorated)
+        {
+            MotifWmHints hints;
+            hints.flags = MWM_HINTS_DECORATIONS;
+            hints.decorations = 0;
+
             XChangeProperty(_glfw.x11.display, window->x11.handle,
-                motif_hints_atom, motif_hints_atom, 32,
-                PropModeReplace,
-                (unsigned char *)&motif_hints, sizeof(MotifWmHints) / sizeof(long));
+                            _glfw.x11.MOTIF_WM_HINTS,
+                            _glfw.x11.MOTIF_WM_HINTS, 32,
+                            PropModeReplace,
+                            (unsigned char*) &hints,
+                            sizeof(MotifWmHints) / sizeof(long));
         }
     }
 

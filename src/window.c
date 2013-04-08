@@ -176,8 +176,8 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     wndconfig.height        = height;
     wndconfig.title         = title;
     wndconfig.resizable     = _glfw.hints.resizable ? GL_TRUE : GL_FALSE;
-	 wndconfig.undecorated   = _glfw.hints.undecorated ? GL_TRUE : GL_FALSE;
     wndconfig.visible       = _glfw.hints.visible ? GL_TRUE : GL_FALSE;
+    wndconfig.decorated     = _glfw.hints.decorated ? GL_TRUE : GL_FALSE;
     wndconfig.clientAPI     = _glfw.hints.clientAPI;
     wndconfig.glMajor       = _glfw.hints.glMajor;
     wndconfig.glMinor       = _glfw.hints.glMinor;
@@ -216,7 +216,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
 
     window->monitor     = wndconfig.monitor;
     window->resizable   = wndconfig.resizable;
-	 window->undecorated = wndconfig.undecorated;
+    window->decorated   = wndconfig.decorated;
     window->cursorMode  = GLFW_CURSOR_NORMAL;
 
     // Save the currently current context so it can be restored later
@@ -278,10 +278,10 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.glMajor = 1;
     _glfw.hints.glMinor = 0;
 
-    // The default is to show the window and allow window resizing
+    // The default is a visible, resizable window with decorations
     _glfw.hints.resizable = GL_TRUE;
-    _glfw.hints.undecorated = GL_FALSE;
     _glfw.hints.visible   = GL_TRUE;
+    _glfw.hints.decorated = GL_TRUE;
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil
     _glfw.hints.redBits     = 8;
@@ -336,8 +336,8 @@ GLFWAPI void glfwWindowHint(int target, int hint)
         case GLFW_RESIZABLE:
             _glfw.hints.resizable = hint;
             break;
-        case GLFW_UNDECORATED:
-            _glfw.hints.undecorated = hint;
+        case GLFW_DECORATED:
+            _glfw.hints.decorated = hint;
             break;
         case GLFW_VISIBLE:
             _glfw.hints.visible = hint;
@@ -546,8 +546,8 @@ GLFWAPI int glfwGetWindowParam(GLFWwindow* handle, int param)
             return window->iconified;
         case GLFW_RESIZABLE:
             return window->resizable;
-        case GLFW_UNDECORATED:
-            return window->undecorated;
+        case GLFW_DECORATED:
+            return window->decorated;
         case GLFW_VISIBLE:
             return window->visible;
         case GLFW_CLIENT_API:

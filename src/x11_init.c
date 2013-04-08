@@ -442,6 +442,9 @@ static GLboolean initDisplay(void)
     _glfw.x11.WM_DELETE_WINDOW = XInternAtom(_glfw.x11.display,
                                              "WM_DELETE_WINDOW",
                                              False);
+    _glfw.x11.MOTIF_WM_HINTS = XInternAtom(_glfw.x11.display,
+                                           "_MOTIF_WM_HINTS",
+                                           False);
 
     // Check for XF86VidMode extension
     _glfw.x11.vidmode.available =

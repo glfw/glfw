@@ -731,17 +731,20 @@ static int createWindow(_GLFWwindow* window,
     }
     else
     {
-        window->win32.dwStyle |= WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
-
-        if (wndconfig->resizable)
+        if (wndconfig->decorated)
         {
-            window->win32.dwStyle |= WS_MAXIMIZEBOX | WS_SIZEBOX;
-            window->win32.dwExStyle |= WS_EX_WINDOWEDGE;
-        }
+            window->win32.dwStyle |= WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
 
-        if (wndconfig->undecorated) {
-           window->win32.dwStyle = WS_POPUP;
-           window->win32.dwExStyle = 0;
+            if (wndconfig->resizable)
+            {
+                window->win32.dwStyle |= WS_MAXIMIZEBOX | WS_SIZEBOX;
+                window->win32.dwExStyle |= WS_EX_WINDOWEDGE;
+            }
+        }
+        else
+        {
+            window->win32.dwStyle = WS_POPUP;
+            window->win32.dwExStyle = 0;
         }
 
         xpos = CW_USEDEFAULT;

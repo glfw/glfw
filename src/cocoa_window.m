@@ -482,6 +482,24 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
 
 //------------------------------------------------------------------------
+// GLFW window class
+//------------------------------------------------------------------------
+
+@interface GLFWWindow : NSWindow {}
+@end
+
+@implementation GLFWWindow
+
+- (BOOL)canBecomeKeyWindow
+{
+    // Required for NSBorderlessWindowMask windows
+    return YES;
+}
+
+@end
+
+
+//------------------------------------------------------------------------
 // GLFW application class
 //------------------------------------------------------------------------
 
@@ -636,14 +654,6 @@ static GLboolean initializeAppKit(void)
     return GL_TRUE;
 }
 
-@interface GLFWWindow : NSWindow {}
-@end
-@implementation GLFWWindow
-- (BOOL)canBecomeKeyWindow {
-    return YES; // Required for NSBorderlessWindowMask windows.
-}
-@end
-
 // Create the Cocoa window
 //
 static GLboolean createWindow(_GLFWwindow* window,
@@ -651,7 +661,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 {
     unsigned int styleMask = 0;
 
-    if (wndconfig->monitor || wndconfig->undecorated)
+    if (wndconfig->monitor || !wndconfig->decorated)
         styleMask = NSBorderlessWindowMask;
     else
     {

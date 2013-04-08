@@ -35,22 +35,6 @@
 #include <assert.h>
 
 
-// Thread local storage attribute macro
-//
-#if defined(_MSC_VER)
- #define _GLFW_TLS __declspec(thread)
-#elif defined(__GNUC__)
- #define _GLFW_TLS __thread
-#else
- #define _GLFW_TLS
-#endif
-
-
-// The per-thread current context/window pointer
-//
-static _GLFW_TLS _GLFWwindow* _glfwCurrentWindow = NULL;
-
-
 // Initialize WGL-specific extensions
 // This function is called once before initial context creation, i.e. before
 // any WGL extensions could be present.  This is done in order to have both
@@ -149,6 +133,16 @@ static void initWGLExtensions(_GLFWwindow* window)
 //
 int _glfwInitContextAPI(void)
 {
+    _glfw.wgl.tls = TlsAlloc();
+    if (_glfw.wgl.tls == TLS_OUT_OF_INDEXES)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "WGL: Failed to allocate TLS index");
+        return GL_FALSE;
+    }
+
+    _glfw.wgl.hasTLS = GL_TRUE;
+
     return GL_TRUE;
 }
 
@@ -156,6 +150,8 @@ int _glfwInitContextAPI(void)
 //
 void _glfwTerminateContextAPI(void)
 {
+    if (_glfw.wgl.hasTLS)
+        TlsFree(_glfw.wgl.tls);
 }
 
 #define setWGLattrib(attribName, attribValue) \
@@ -516,12 +512,12 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     else
         wglMakeCurrent(NULL, NULL);
 
-    _glfwCurrentWindow = window;
+    TlsSetValue(_glfw.wgl.tls, window);
 }
 
 _GLFWwindow* _glfwPlatformGetCurrentContext(void)
 {
-    return _glfwCurrentWindow;
+    return TlsGetValue(_glfw.wgl.tls);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)
@@ -531,7 +527,7 @@ void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 
 void _glfwPlatformSwapInterval(int interval)
 {
-    _GLFWwindow* window = _glfwCurrentWindow;
+    _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
     if (_glfwIsCompositionEnabled())
     {
@@ -548,7 +544,7 @@ int _glfwPlatformExtensionSupported(const char* extension)
 {
     const GLubyte* extensions;
 
-    _GLFWwindow* window = _glfwCurrentWindow;
+    _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
     if (window->wgl.GetExtensionsStringEXT != NULL)
     {

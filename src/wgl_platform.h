@@ -76,7 +76,8 @@ typedef struct _GLFWcontextWGL
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryWGL
 {
-    int dummy;
+    GLboolean   hasTLS;
+    DWORD       tls;
 
 } _GLFWlibraryWGL;
 

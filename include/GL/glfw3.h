@@ -1363,6 +1363,8 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  The `GLFW_RESIZABLE` parameter indicates whether the window is resizable
  *  by the user.
  *
+ *  The `GLFW_DECORATED` parameter indicates whether the window is decorated.
+ *
  *  @par Context parameters
  *
  *  The `GLFW_CLIENT_API` parameter indicates the client API provided by the

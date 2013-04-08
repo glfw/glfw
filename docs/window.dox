@@ -118,6 +118,10 @@ glfwSetWindowSize function.  This hint is ignored for fullscreen windows.
 The `GLFW_VISIBLE` hint specifies whether the window will be initially
 visible.  This hint is ignored for fullscreen windows.
 
+The `GLFW_DECORATED` hint specifies whether the window will have window
+decorations such as a border, a close widget, etc.  This hint is ignored for
+fullscreen windows.
+
 
 @subsection window_hints_values Supported and default values
 
@@ -125,6 +129,7 @@ visible.  This hint is ignored for fullscreen windows.
 | ---------------------------- | ------------------------ | ----------------------- |
 | `GLFW_RESIZABLE`             | `GL_TRUE`                | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_VISIBLE`               | `GL_TRUE`                | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_DECORATED`             | `GL_TRUE`                | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_RED_BITS`              | 8                        | 0 to `INT_MAX`          |
 | `GLFW_GREEN_BITS`            | 8                        | 0 to `INT_MAX`          |
 | `GLFW_BLUE_BITS`             | 8                        | 0 to `INT_MAX`          |

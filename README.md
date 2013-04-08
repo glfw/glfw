@@ -488,6 +488,7 @@ skills.
  * Bradley Smith
  * Julian Squires
  * Johannes Stein
+ * Nathan Sweet
  * TTK-Bandit
  * Sergey Tikhomirov
  * Samuli Tuomola

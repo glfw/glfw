@@ -908,6 +908,8 @@ GLFWAPI const char* glfwGetVersionString(void);
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *
+ *  @return The previously set callback, or `NULL` if an error occurred.
+ *
  *  @remarks This function may be called before @ref glfwInit.
  *
  *  @note The error callback is called by the thread where the error was
@@ -921,7 +923,7 @@ GLFWAPI const char* glfwGetVersionString(void);
  *
  *  @ingroup error
  */
-GLFWAPI void glfwSetErrorCallback(GLFWerrorfun cbfun);
+GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun);
 
 /*! @brief Returns the currently connected monitors.
  *
@@ -1005,12 +1007,13 @@ GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* monitor);
  *
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
+ *  @return The previously set callback, or `NULL` if an error occurred.
  *
  *  @bug This callback is not yet called on monitor configuration changes.
  *
  *  @ingroup monitor
  */
-GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun);
+GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun);
 
 /*! @brief Returns the available video modes for the specified monitor.
  *
@@ -1502,9 +1505,11 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *
+ *  @return The previously set callback, or `NULL` if an error occurred.
+ *
  *  @ingroup window
  */
-GLFWAPI void glfwSetWindowPosCallback(GLFWwindow* window, GLFWwindowposfun cbfun);
+GLFWAPI GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow* window, GLFWwindowposfun cbfun);
 
 /*! @brief Sets the size callback for the specified window.
  *
@@ -1516,9 +1521,11 @@ GLFWAPI void glfwSetWindowPosCallback(GLFWwindow* window, GLFWwindowposfun cbfun
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *
+ *  @return The previously set callback, or `NULL` if an error occurred.
+ *
  *  @ingroup window
  */
-GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwindowsizefun cbfun);
+GLFWAPI GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwindowsizefun cbfun);
 
 /*! @brief Sets the close callback for the specified window.
  *
@@ -1536,12 +1543,14 @@ GLFWAPI void glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwindowsizefun cbf
  *  @remarks Calling @ref glfwDestroyWindow does not cause this callback to be
  *  called.
  *
+ *  @return The previously set callback, or `NULL` if an error occurred.
+ *
  *  @remarks **Mac OS X:** Selecting Quit from the application menu will
  *  trigger the close callback for all windows.
  *
  *  @ingroup window
  */
-GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow* window, GLFWwindowclosefun cbfun);
+GLFWAPI GLFWwindowclosefun glfwSetWindowCloseCallback(GLFWwindow* window, GLFWwindowclosefun cbfun);
 
 /*! @brief Sets the refresh callback for the specified window.
  *
@@ -1556,10 +1565,15 @@ GLFWAPI void glfwSetWindowCloseCallback(GLFWwindow* window, GLFWwindowclosefun c
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
+ *  @return The previously set callback, or `NULL` if an error occurred.
+ *
+ *  @note On compositing window systems such as Aero, Compiz or Aqua, where the
+ *  window contents are saved off-screen, this callback may be called only very
+ *  infrequently or never at all.
  *
  *  @ingroup window
  */
-GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow* window, GLFWwindowrefreshfun cbfun);
+GLFWAPI GLFWwindowrefreshfun glfwSetWindowRefreshCallback(GLFWwindow* window, GLFWwindowrefreshfun cbfun);
 
 /*! @brief Sets the focus callback for the specified window.
  *
@@ -1570,9 +1584,11 @@ GLFWAPI void glfwSetWindowRefreshCallback(GLFWwindow* window, GLFWwindowrefreshf
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *
+ *  @return The previously set callback, or `NULL` if an error occurred.
+ *
  *  @ingroup window
  */
-GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwindowfocusfun cbfun);
+GLFWAPI GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwindowfocusfun cbfun);
 
 /*! @brief Sets the iconify callback for the specified window.
  *
@@ -1583,9 +1599,11 @@ GLFWAPI void glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwindowfocusfun c
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *
+ *  @return The previously set callback, or `NULL` if an error occurred.
+ *
  *  @ingroup window
  */
-GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow* window, GLFWwindowiconifyfun cbfun);
+GLFWAPI GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow* window, GLFWwindowiconifyfun cbfun);
 
 /*! @brief Processes all pending events.
  *
@@ -1786,9 +1804,11 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
  *  @param[in] cbfun The new key callback, or `NULL` to remove the currently
  *  set callback.
  *
+ *  @return The previously set callback, or `NULL` if an error occurred.
+ *
  *  @ingroup input
  */
-GLFWAPI void glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
+GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
 
 /*! @brief Sets the Unicode character callback.
  *
@@ -1803,9 +1823,11 @@ GLFWAPI void glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *
+ *  @return The previously set callback, or `NULL` if an error occurred.
+ *
  *  @ingroup input
  */
-GLFWAPI void glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
+GLFWAPI GLFWcharfun glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
 
 /*! @brief Sets the mouse button callback.
  *
@@ -1816,9 +1838,11 @@ GLFWAPI void glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *
+ *  @return The previously set callback, or `NULL` if an error occurred.
+ *
  *  @ingroup input
  */
-GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmousebuttonfun cbfun);
+GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmousebuttonfun cbfun);
 
 /*! @brief Sets the cursor position callback.
  *
@@ -1830,9 +1854,11 @@ GLFWAPI void glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmousebuttonfun c
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *
+ *  @return The previously set callback, or `NULL` if an error occurred.
+ *
  *  @ingroup input
  */
-GLFWAPI void glfwSetCursorPosCallback(GLFWwindow* window, GLFWcursorposfun cbfun);
+GLFWAPI GLFWcursorposfun glfwSetCursorPosCallback(GLFWwindow* window, GLFWcursorposfun cbfun);
 
 /*! @brief Sets the cursor enter/exit callback.
  *
@@ -1844,9 +1870,11 @@ GLFWAPI void glfwSetCursorPosCallback(GLFWwindow* window, GLFWcursorposfun cbfun
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *
+ *  @return The previously set callback, or `NULL` if an error occurred.
+ *
  *  @ingroup input
  */
-GLFWAPI void glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcursorenterfun cbfun);
+GLFWAPI GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcursorenterfun cbfun);
 
 /*! @brief Sets the scroll callback.
  *
@@ -1861,9 +1889,11 @@ GLFWAPI void glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcursorenterfun c
  *  @remarks This receives all scrolling input, like that from a mouse wheel or
  *  a touchpad scrolling area.
  *
+ *  @return The previously set callback, or `NULL` if an error occurred.
+ *
  *  @ingroup input
  */
-GLFWAPI void glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun cbfun);
+GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun cbfun);
 
 /*! @brief Returns a parameter of the specified joystick.
  *

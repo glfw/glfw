@@ -140,11 +140,6 @@ typedef HRESULT (WINAPI * DWMISCOMPOSITIONENABLED_T)(BOOL*);
 // GLFW platform specific types
 //========================================================================
 
-//------------------------------------------------------------------------
-// Pointer length integer
-//------------------------------------------------------------------------
-typedef INT_PTR GLFWintptr;
-
 
 //------------------------------------------------------------------------
 // Platform-specific window structure

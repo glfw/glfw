@@ -60,7 +60,7 @@ static void hideCursor(_GLFWwindow* window)
     {
         if (WindowFromPoint(pos) == window->win32.handle)
             SetCursor(NULL);
-    }
+}
 }
 
 // Capture mouse cursor
@@ -739,6 +739,11 @@ static int createWindow(_GLFWwindow* window,
             window->win32.dwExStyle |= WS_EX_WINDOWEDGE;
         }
 
+        if (wndconfig->undecorated) {
+           window->win32.dwStyle = WS_POPUP;
+           window->win32.dwExStyle = 0;
+        }
+
         xpos = CW_USEDEFAULT;
         ypos = CW_USEDEFAULT;
 
@@ -938,7 +943,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
         SetWindowPos(window->win32.handle, HWND_TOP,
                      0, 0, mode.width, mode.height,
                      SWP_NOMOVE);
-    }
+        }
     else
     {
         int fullWidth, fullHeight;

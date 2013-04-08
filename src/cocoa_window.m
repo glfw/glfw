@@ -636,6 +636,14 @@ static GLboolean initializeAppKit(void)
     return GL_TRUE;
 }
 
+@interface GLFWWindow : NSWindow {}
+@end
+@implementation GLFWWindow
+- (BOOL)canBecomeKeyWindow {
+    return YES; // Required for NSBorderlessWindowMask windows.
+}
+@end
+
 // Create the Cocoa window
 //
 static GLboolean createWindow(_GLFWwindow* window,
@@ -643,7 +651,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 {
     unsigned int styleMask = 0;
 
-    if (wndconfig->monitor)
+    if (wndconfig->monitor || wndconfig->undecorated)
         styleMask = NSBorderlessWindowMask;
     else
     {
@@ -654,7 +662,7 @@ static GLboolean createWindow(_GLFWwindow* window,
             styleMask |= NSResizableWindowMask;
     }
 
-    window->ns.object = [[NSWindow alloc]
+    window->ns.object = [[GLFWWindow alloc]
         initWithContentRect:NSMakeRect(0, 0, wndconfig->width, wndconfig->height)
                   styleMask:styleMask
                     backing:NSBackingStoreBuffered

@@ -46,6 +46,16 @@
 #define Button6            6
 #define Button7            7
 
+typedef struct
+{
+	unsigned long flags;
+	unsigned long functions;
+	unsigned long decorations;
+	long input_mode;
+	unsigned long status;
+} MotifWmHints;
+
+#define MWM_HINTS_DECORATIONS (1L << 1)
 
 // Translates an X Window key to internal coding
 //
@@ -128,6 +138,17 @@ static GLboolean createWindow(_GLFWwindow* window,
 
             _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Failed to create window");
             return GL_FALSE;
+        }
+
+        if (wndconfig->undecorated) {
+            Atom motif_hints_atom = XInternAtom(_glfw.x11.display, "_MOTIF_WM_HINTS", False);
+            MotifWmHints motif_hints;
+            motif_hints.flags = MWM_HINTS_DECORATIONS;
+            motif_hints.decorations = 0;
+            XChangeProperty(_glfw.x11.display, window->x11.handle,
+                motif_hints_atom, motif_hints_atom, 32,
+                PropModeReplace,
+                (unsigned char *)&motif_hints, sizeof(MotifWmHints) / sizeof(long));
         }
     }
 
@@ -471,7 +492,7 @@ static void processEvent(XEvent *event)
             if (!(event->xkey.state & ControlMask) &&
                 !(event->xkey.state & Mod1Mask /*Alt*/))
             {
-                _glfwInputChar(window, translateChar(&event->xkey));
+            _glfwInputChar(window, translateChar(&event->xkey));
             }
 
             break;

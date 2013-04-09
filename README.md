@@ -313,6 +313,7 @@ GLFW.
  * Changed `glfwGetVideoModes` to return a dynamic, unlimited number of video
    modes for the specified monitor
  * Changed cursor position to double-precision floating-point
+ * Changed default cursor mode for fullscreen to normal
  * Renamed `glfw.h` to `glfw3.h` to avoid conflicts with 2.x series
  * Renamed `glfwOpenWindowHint` to `glfwWindowHint`
  * Renamed `GLFW_ACTIVE` to `GLFW_FOCUSED`

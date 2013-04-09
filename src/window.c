@@ -256,11 +256,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     // Restore the previously current context (or NULL)
     glfwMakeContextCurrent((GLFWwindow*) previous);
 
-    // The GLFW specification states that fullscreen windows have the cursor
-    // captured by default
-    if (wndconfig.monitor)
-        glfwSetInputMode((GLFWwindow*) window, GLFW_CURSOR_MODE, GLFW_CURSOR_CAPTURED);
-
     if (wndconfig.monitor == NULL && wndconfig.visible)
         glfwShowWindow((GLFWwindow*) window);
 

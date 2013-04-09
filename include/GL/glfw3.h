@@ -1148,10 +1148,8 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  invisible using the `GLFW_VISIBLE` window hint, set its position and then
  *  show it.
  *
- *  @remarks For full screen windows the initial cursor mode is
- *  `GLFW_CURSOR_CAPTURED` and the screen saver is prohibited from starting.
- *  For regular windows the initial cursor mode is `GLFW_CURSOR_NORMAL` and the
- *  screen saver is allowed to start.
+ *  @remarks If a fullscreen window is active, the screensaver is prohibited
+ *  from starting.
  *
  *  @remarks **Windows:** If the executable has an icon resource named
  *  `GLFW_ICON,` it will be set as the icon for the window.  If no such icon is

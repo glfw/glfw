@@ -427,6 +427,21 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             return 0;
         }
 
+        case WM_UNICHAR:
+        {
+            // This message is not sent by Windows, but is sent by some
+            // third-party input method engines
+
+            if (wParam == UNICODE_NOCHAR)
+            {
+                // Returning TRUE here announces support for this message
+                return TRUE;
+            }
+
+            _glfwInputChar(window, (unsigned int) wParam);
+            return FALSE;
+        }
+
         case WM_KEYUP:
         case WM_SYSKEYUP:
         {

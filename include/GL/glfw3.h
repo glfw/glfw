@@ -1121,16 +1121,17 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *
  *  This function creates a window and its associated context.  Most of the
  *  options controlling how the window and its context should be created are
- *  specified via the @ref glfwWindowHint function.
+ *  specified through @ref glfwWindowHint.
  *
  *  Successful creation does not change which context is current.  Before you
  *  can use the newly created context, you need to make it current using @ref
  *  glfwMakeContextCurrent.
  *
  *  Note that the created window and context may differ from what you requested,
- *  as not all parameters and hints are hard constraints.  This includes the
- *  size of the window, especially for full screen windows.  To retrieve the
- *  actual properties of the window and context, use queries like @ref
+ *  as not all parameters and hints are
+ *  [hard constraints](@ref window_hints_hard).  This includes the size of the
+ *  window, especially for full screen windows.  To retrieve the actual
+ *  properties of the window and context, use queries like @ref
  *  glfwGetWindowParam and @ref glfwGetWindowSize.
  *
  *  @param[in] width The desired width, in screen coordinates, of the window.

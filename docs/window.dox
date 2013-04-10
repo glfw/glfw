@@ -65,7 +65,7 @@ buffers.
 The `GLFW_STEREO` hint specifies whether to use stereoscopic rendering.
 
 The `GLFW_SAMPLES` hint specifies the desired number of samples to use for
-multisampling.
+multisampling.  Zero disables multisampling.
 
 The `GLFW_SRGB_CAPABLE` hint specifies whether the framebuffer should be
 sRGB capable.
@@ -90,8 +90,7 @@ While there is no way to ask the driver for a context of the highest supported
 version, most drivers provide this when you ask GLFW for a version
 1.0 context.
 
-For OpenGL ES, these hints are hard constraints, as there is no backward
-compatibility between OpenGL ES versions.
+For OpenGL ES, these hints are hard constraints.
 
 If an OpenGL context is requested, the `GLFW_OPENGL_FORWARD_COMPAT` hint
 specifies whether the OpenGL context should be forward-compatible, i.e. one
@@ -119,9 +118,9 @@ a robustness strategy.
 
 @subsection window_hints_wnd Window related hints
 
-The `GLFW_RESIZABLE` hint specifies whether the window will be resizable by
-the user.  The window will still be resizable using the @ref
-glfwSetWindowSize function.  This hint is ignored for fullscreen windows.
+The `GLFW_RESIZABLE` hint specifies whether the window will be resizable *by the
+user*.  The window will still be resizable using the @ref glfwSetWindowSize
+function.  This hint is ignored for fullscreen windows.
 
 The `GLFW_VISIBLE` hint specifies whether the window will be initially
 visible.  This hint is ignored for fullscreen windows.

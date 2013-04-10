@@ -9,7 +9,11 @@ a fullscreen window.
 
 @section window_object Window objects
 
-Text here.
+The @ref GLFWwindow object encapsulates both a window and a context.  They are
+created with @ref glfwCreateWindow and destroyed with @ref glfwDestroyWindow (or
+@ref glfwTerminate, if any remain).  As the window and context are inseparably
+linked, the window handle (i.e. window object pointer) is used as a context
+handle as well, for example when calling @ref glfwMakeContextCurrent.
 
 
 @section window_hints Window hints
@@ -79,8 +83,12 @@ with.
 For OpenGL, these hints are *not* hard constraints, as they don't have to
 match exactly, but @ref glfwCreateWindow will still fail if the resulting
 OpenGL version is less than the one requested.  It is therefore perfectly
-safe to use the default of version 1.0 for legacy code and you will still
+safe to use the default of version 1.0 for legacy code and you may still
 get backwards-compatible contexts of version 3.0 and above when available.
+
+While there is no way to ask the driver for a context of the highest supported
+version, most drivers provide this when you ask GLFW for a version
+1.0 context.
 
 For OpenGL ES, these hints are hard constraints, as there is no backward
 compatibility between OpenGL ES versions.
@@ -120,7 +128,8 @@ visible.  This hint is ignored for fullscreen windows.
 
 The `GLFW_DECORATED` hint specifies whether the window will have window
 decorations such as a border, a close widget, etc.  This hint is ignored for
-fullscreen windows.
+fullscreen windows.  Note that even though a window may lack a close widget, it
+is usually still possible for the user to generate close events.
 
 
 @subsection window_hints_values Supported and default values
@@ -155,7 +164,14 @@ fullscreen windows.
 
 @section window_closing Window closing
 
-Text here.
+When the user attempts to close the window, for example by clicking the close
+widget or using a key chord like Alt+F4, the window's close flag is set and then
+its close callback is called.  The window is not actually destroyed and, unless
+you are monitoring the close flag, nothing further happens.
+
+If you do not want the close flag to be set, it can be cleared again from the
+close callback (or from any other point in your program) with @ref
+glfwSetWindowShouldClose.
 
 
 @section window_dims Window dimensions

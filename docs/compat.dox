@@ -37,8 +37,8 @@ process events.  If the running window manager does not support this protocol,
 the user will not be notified if the application locks up.
 
 GLFW uses the EWMH `_NET_WM_STATE` protocol to tell the window manager to make
-the GLFW window fullscreen.  If the running window manager does not support this
-protocol, fullscreen windows may not work properly.  GLFW has a fallback code
+the GLFW window full screen.  If the running window manager does not support this
+protocol, full screen windows may not work properly.  GLFW has a fallback code
 path in case this protocol is unavailable, but every window manager behaves
 slightly differently in this regard.
 
@@ -86,7 +86,7 @@ neither is available, no other extensions are used and many GLFW features
 related to context creation will have no effect or cause errors when used.
 
 GLFW uses the `WGL_EXT_swap_control` extension to provide vertical retrace
-synchronization (or "vsync").  Where this extension is unavailable, calling @ref
+synchronization (or 'vsync').  Where this extension is unavailable, calling @ref
 glfwSwapInterval will have no effect.
 
 GLFW uses the `WGL_ARB_pixel_format` and `WGL_ARB_multisample` extensions to

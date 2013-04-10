@@ -307,7 +307,7 @@ GLFW.
    `GLFWgammaramp` type for monitor gamma ramp control
  * Added window parameter to `glfwSwapBuffers`
  * Changed buffer bit depth parameters of `glfwOpenWindow` to window hints
- * Changed `glfwOpenWindow` and `glfwSetWindowTitle` to use UTF-8 encoded
+ * Changed `glfwCreateWindow` and `glfwSetWindowTitle` to use UTF-8 encoded
    strings
  * Changed `glfwGetProcAddress` to return a (generic) function pointer
  * Changed `glfwGetVideoModes` to return a dynamic, unlimited number of video
@@ -367,7 +367,7 @@ GLFW.
            counterparts
  * [Cocoa] Bugfix: The `NSOpenGLPFAFullScreen` pixel format attribute caused
                    creation to fail on some machines
- * [Cocoa] Bugfix: `glfwOpenWindow` did not properly enforce the
+ * [Cocoa] Bugfix: `glfwCreateWindow` did not properly enforce the
                    forward-compatible and context profile hints
  * [Cocoa] Bugfix: The loop condition for saving video modes used the wrong
                    index variable

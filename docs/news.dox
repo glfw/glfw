@@ -32,7 +32,7 @@ select which context is current on a given thread.
 GLFW now explicitly supports multiple monitors.  They can be enumerated with
 @ref glfwGetMonitors, queried with @ref glfwGetVideoModes, @ref
 glfwGetMonitorPos, @ref glfwGetMonitorName and @ref glfwGetMonitorPhysicalSize,
-and specified at window creation to make the newly created window fullscren on
+and specified at window creation to make the newly created window full screen on
 that specific monitor.
 
 
@@ -65,9 +65,9 @@ GLFW now supports the creation of OpenGL ES contexts, by setting the
 contexts are supported.  Note that GLFW *does not implement* OpenGL ES, so your
 driver must provide support in a way usable by GLFW.  Modern nVidia and Intel
 drivers support creation of OpenGL ES context using the GLX and WGL APIs, while
-AMD currently only provides an EGL implementation.
+AMD provides an EGL implementation instead.
 
-GLFW now has an (experimental) EGL context creation backend, which can be
+GLFW now has an (experimental) EGL context creation back end, which can be
 selected through CMake options.
 
 
@@ -118,7 +118,7 @@ to @ref glfwCreateWindow.
 
 Windows can now be hidden with @ref glfwHideWindow, shown using @ref
 glfwShowWindow and created initially hidden with the `GLFW_VISIBLE` window hint.
-This allows for offscreen rendering in a way compatible with most drivers, as
+This allows for off-screen rendering in a way compatible with most drivers, as
 well as moving a window to a specific position before showing it.
 
 */

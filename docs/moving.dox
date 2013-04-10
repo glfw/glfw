@@ -5,10 +5,10 @@
 @tableofcontents
 
 This is a transition guide for moving from GLFW 2 to 3.  It describes what has
-changed or been removed, but does *not* include entirely new features unless
-they are required when moving an existing code base onto the new API.  For example,
-use of the new multi-monitor functions are required to create fullscreen windows
-with GLFW 3.
+changed or been removed, but does *not* include
+[new features](@ref news) unless they are required when moving an existing code
+base onto the new API.  For example, use of the new multi-monitor functions are
+required to create full screen windows with GLFW 3.
 
 
 @section moving_removed Removed features
@@ -31,8 +31,9 @@ TinyCThread.
 
 However, GLFW 3 has better support for *use from multiple threads* than GLFW
 2 had.  Contexts can be made current on and rendered with from secondary
-threads, and the documentation explicitly states which functions may or may not
-be used from secondary threads.
+threads, and the documentation explicitly states which functions may be used
+from secondary threads and which may only be used from the main thread, i.e. the
+thread that calls main.
 
 
 @subsection moving_image Image and texture loading
@@ -92,8 +93,8 @@ The Win32 port of GLFW 3 will not compile in
 However, because the use of the Unicode version of the Win32 API doesn't affect
 the process as a whole, but only those windows created using it, it's perfectly
 possible to call MBCS functions from other parts of the same application.
-Therefore, even if an application using GLFW uses MBCS mode, there's no need for
-GLFW itself to support it.
+Therefore, even if an application using GLFW has MBCS mode code, there's no need
+for GLFW itself to support it.
 
 
 @subsection moving_windows Support for versions of Windows older than XP
@@ -121,7 +122,7 @@ version of Windows.
 The ability to disable and capture system-wide hotkeys like Alt+Tab has been
 removed.  Modern applications, whether they're games, scientific visualisations
 or something else, are nowadays expected to be good desktop citizens and allow
-these hotkeys to function even when running in fullscreen mode.
+these hotkeys to function even when running in full screen mode.
 
 
 @subsection moving_autopoll Automatic polling of events
@@ -159,7 +160,7 @@ to an opaque struct.
 @subsection moving_monitor Multi-monitor support
 
 GLFW 3 provides support for multiple monitors, adding the `GLFWmonitor*` handle
-type and a set of related functions.  To request a fullscreen mode window,
+type and a set of related functions.  To request a full screen mode window,
 instead of passing `GLFW_FULLSCREEN` you specify which monitor you wish the
 window to use.  There is @ref glfwGetPrimaryMonitor that provides behaviour
 similar to that of GLFW 2.
@@ -211,9 +212,9 @@ having to remember whether to check for `'a'` or `'A'`, you now check for
 
 Video mode enumeration is now per-monitor.  The @ref glfwGetVideoModes function
 now returns all available modes for a specific monitor instead of requiring you
-to guess how large an array you need.  The `glfwGetDesktopMode` function has
-been replaced by @ref glfwGetVideoMode, which returns the current mode of
-a monitor.
+to guess how large an array you need.  The `glfwGetDesktopMode` function, which
+had poorly defined behavior, has been replaced by @ref glfwGetVideoMode, which
+returns the current mode of a monitor.
 
 
 @subsection moving_cursor Cursor positioning

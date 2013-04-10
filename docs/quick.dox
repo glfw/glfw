@@ -110,8 +110,8 @@ glfwSetErrorCallback(error_callback);
 @section quick_create_window Creating a window and context
 
 The window (and its context) is created with @ref glfwCreateWindow, which
-returns a handle to the created window.  For example, this creates an 640 by 480
-pixels windowed mode window:
+returns a handle to the created window.  For example, this creates a 640 by 480
+windowed mode window:
 
 @code
 GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
@@ -131,16 +131,16 @@ if (!window)
 This handle is then passed to all window related functions, and is provided to
 you along with input events, so you know which window received the input.
 
-To create a fullscreen window, you need to specify which monitor the window
+To create a full screen window, you need to specify which monitor the window
 should use.  In most cases, the user's primary monitor is a good choice.  You
 can get this with @ref glfwGetPrimaryMonitor.  To make the above window
-fullscreen, just pass along the monitor handle:
+full screen, just pass along the monitor handle:
 
 @code
 GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", glfwGetPrimaryMonitor(), NULL);
 @endcode
 
-Fullscreen windows cover the entire screen, have no border or decorations, and
+Full screen windows cover the entire screen, have no border or decorations, and
 change the monitor's resolution to the one most closely matching the requested
 window size.
 
@@ -272,8 +272,8 @@ keyboard input, it's possible to create a simple program.
 
 @snippet simple.c code
 
-This program creates a 640 by 480 pixels window and runs a loop clearing the
-screen, rendering a triangle and processing events until the user closes the
+This program creates a 640 by 480 windowed mode window and runs a loop clearing
+the screen, rendering a triangle and processing events until the user closes the
 window.  It can be found in the source distribution as `examples/simple.c`, and
 is by default compiled along with all other examples when you build GLFW.
 

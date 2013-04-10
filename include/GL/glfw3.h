@@ -770,8 +770,8 @@ typedef struct
     int width;
     int height;
     int redBits;
-    int blueBits;
     int greenBits;
+    int blueBits;
 } GLFWvidmode;
 
 /*! @brief Gamma ramp.

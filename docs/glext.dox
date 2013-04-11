@@ -1,0 +1,115 @@
+/*!
+
+@page glext OpenGL extension handling
+
+One of the benefits of OpenGL is its extensibility.  Independent hardware
+vendors (IHVs) may include functionality in their OpenGL implementations that
+expand upon the OpenGL standard before that functionality is included in a new
+version of the OpenGL specification.
+
+An extension is defined by:
+
+- An extension name (e.g. `GL_ARB_debug_output`)
+- New OpenGL tokens (e.g. `GL_DEBUG_SEVERITY_HIGH_ARB`)
+- New OpenGL functions (e.g. `glGetDebugMessageLogARB`)
+
+Note the `ARB` affix, which stands for Architecture Review Board and is used
+for official extensions.  There are many different affixes, depending on who
+wrote the extension.  A list of extensions, together with their specifications,
+can be found at the
+[OpenGL Registry](http://www.opengl.org/registry/).
+
+To use a certain extension, you must first check whether the context exposes
+that extension and then, if it introduces new functions, retrieve the pointers
+to those functions.
+
+This can be done with GLFW, as will be described in this section, but usually
+you will instead want to use a dedicated extension loading library such as
+[GLEW](http://glew.sourceforge.net/).  This kind of library greatly reduces the
+amount of work necessary to use both OpenGL extensions and modern versions of
+the OpenGL API.  GLEW in particular has been extensively tested with and works
+well with GLFW.
+
+
+@section glext_header The glext.h header
+
+The `glext.h` header is a continually updated file that defines the interfaces
+for all OpenGL extensions.  The latest version of this can always be found at
+the [OpenGL Registry](http://www.opengl.org/registry/).  It it strongly
+recommended that you use your own copy, as the one shipped with your development
+environment may be several years out of date and may not include the extensions
+you wish to use.
+
+The header defines function pointer types for all functions of all extensions it
+supports.  These have names like `PFNGLGETDEBUGMESSAGELOGARB` (for
+`glGetDebugMessageLogARB`), i.e. the name is made uppercase, the `gl` prefix is
+removed and `PFN` and `PROC` are added to the ends.
+
+
+@section glext_string Checking for extensions
+
+A given machine may not actually support the extension (it may have older
+drivers or a graphics card that lacks the necessary hardware features), so it
+is necessary to check whether the context exposes the extension.  This is done
+with @ref glfwExtensionSupported.
+
+@code
+if (glfwExtensionSupported("GL_ARB_debug_output"))
+{
+    // The extension is exposed by the current context
+}
+@endcode
+
+The argument is a null terminated ASCII string with the extension name.  If the
+extension is exposed, @ref glfwExtensionSupported returns non-zero, otherwise it
+returns zero.
+
+
+@section glext_proc Fetching function pointers
+
+Many extensions, though not all, require the use of new OpenGL functions.
+These entry points are often not exposed by your link libraries, making
+it necessary to fetch them at run time.  With @ref glfwGetProcAddress you can
+retrieve the address of extension and non-extension OpenGL functions.
+
+@code
+PFNGLGETDEBUGMESSAGELOGARB pfnGetDebugMessageLog = glfwGetProcAddress("glGetDebugMessageLogARB");
+@endcode
+
+In general, you should avoid giving the function pointer variables the (exact)
+same name as the function, as this may confuse your linker.  Instead, you can
+use a different prefix, like above, or some other naming scheme.
+
+Now that all the pieces have been introduced, here is what they might look like
+when used together.
+
+@code
+#include "glext.h"
+
+#define glGetDebugMessageLogARB pfnGetDebugMessageLog
+PFNGLGETDEBUGMESSAGELOGARB pfnGetDebugMessageLog;
+
+// Flag indicating whether the extension is present
+int has_debug_output = 0;
+
+void load_extensions(void)
+{
+    if (glfwExtensionSupported("GL_ARB_debug_output"))
+    {
+        pfnGetDebugMessageLog = (PFNGLGETDEBUGMESSAGELOGARB) glfwGetProcAddress("glGetDebugMessageLogARB");
+        if (pfnGetDebugMessageLog)
+        {
+            // Both the extension name and the function pointer are present
+            has_debug_output = 1;
+        }
+    }
+}
+
+void some_function(void)
+{
+    // Now the extension function can be called as usual
+    glGetDebugMessageLogARB(...);
+}
+@endcode
+
+*/

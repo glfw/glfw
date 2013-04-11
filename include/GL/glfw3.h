@@ -2048,9 +2048,10 @@ GLFWAPI void glfwSwapInterval(int interval);
 
 /*! @brief Returns whether the specified extension is available.
  *
- *  This function returns whether the specified OpenGL or platform-specific
- *  context creation API extension is supported by the current context.  For
- *  example, on Windows both the OpenGL and WGL extension strings are checked.
+ *  This function returns whether the specified
+ *  [OpenGL or context creation API extension](@ref glext) is supported by the
+ *  current context.  For example, on Windows both the OpenGL and WGL extension
+ *  strings are checked.
  *
  *  @param[in] extension The ASCII encoded name of the extension.
  *  @return `GL_TRUE` if the extension is available, or `GL_FALSE` otherwise.
@@ -2069,8 +2070,9 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
 /*! @brief Returns the address of the specified function for the current
  *  context.
  *
- *  This function returns the address of the specified client API function, if
- *  it is supported by the current context.
+ *  This function returns the address of the specified
+ *  [client API or extension function](@ref glext), if it is supported by the
+ *  current context.
  *
  *  @param[in] procname The ASCII encoded name of the function.
  *  @return The address of the function, or `NULL` if the function is

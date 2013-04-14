@@ -54,20 +54,30 @@ static void hideCursor(_GLFWwindow* window)
 
     ReleaseCapture();
     ClipCursor(NULL);
-    ShowCursor(TRUE);
+
+    if (window->win32.cursorHidden)
+    {
+        ShowCursor(TRUE);
+        window->win32.cursorHidden = GL_FALSE;
+    }
 
     if (GetCursorPos(&pos))
     {
         if (WindowFromPoint(pos) == window->win32.handle)
             SetCursor(NULL);
-}
+    }
 }
 
 // Capture mouse cursor
 //
 static void captureCursor(_GLFWwindow* window)
 {
-    ShowCursor(FALSE);
+    if (!window->win32.cursorHidden)
+    {
+        ShowCursor(FALSE);
+        window->win32.cursorHidden = GL_TRUE;
+    }
+
     updateClipRect(window);
     SetCapture(window->win32.handle);
 }
@@ -80,7 +90,12 @@ static void showCursor(_GLFWwindow* window)
 
     ReleaseCapture();
     ClipCursor(NULL);
-    ShowCursor(TRUE);
+
+    if (window->win32.cursorHidden)
+    {
+        ShowCursor(TRUE);
+        window->win32.cursorHidden = GL_FALSE;
+    }
 
     if (GetCursorPos(&pos))
     {

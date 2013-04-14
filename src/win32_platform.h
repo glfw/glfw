@@ -154,6 +154,7 @@ typedef struct _GLFWwindowWin32
     // Various platform specific internal variables
     GLboolean           cursorCentered;
     GLboolean           cursorInside;
+    GLboolean           cursorHidden;
     int                 oldCursorX, oldCursorY;
 } _GLFWwindowWin32;
 

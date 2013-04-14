@@ -432,8 +432,6 @@ static GLboolean initDisplay(void)
         return GL_FALSE;
     }
 
-    // As the API currently doesn't understand multiple display devices, we hard-code
-    // this choice and hope for the best
     _glfw.x11.screen = DefaultScreen(_glfw.x11.display);
     _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
 

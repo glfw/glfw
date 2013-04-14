@@ -238,7 +238,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         XFree(hints);
     }
 
-    if (_glfw.x11.xi2.available)
+    if (_glfw.x11.xi.available)
     {
         // Select for XInput2 events
 
@@ -747,7 +747,7 @@ static void processEvent(XEvent *event)
 
         case GenericEvent:
         {
-            if (event->xcookie.extension == _glfw.x11.xi2.majorOpcode &&
+            if (event->xcookie.extension == _glfw.x11.xi.majorOpcode &&
                 XGetEventData(_glfw.x11.display, &event->xcookie))
             {
                 if (event->xcookie.evtype == XI_Motion)

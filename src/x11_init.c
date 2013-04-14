@@ -477,18 +477,18 @@ static GLboolean initDisplay(void)
 
     if (XQueryExtension(_glfw.x11.display,
                         "XInputExtension",
-                        &_glfw.x11.xi2.majorOpcode,
-                        &_glfw.x11.xi2.eventBase,
-                        &_glfw.x11.xi2.errorBase))
+                        &_glfw.x11.xi.majorOpcode,
+                        &_glfw.x11.xi.eventBase,
+                        &_glfw.x11.xi.errorBase))
     {
-        _glfw.x11.xi2.versionMajor = 2;
-        _glfw.x11.xi2.versionMinor = 0;
+        _glfw.x11.xi.versionMajor = 2;
+        _glfw.x11.xi.versionMinor = 0;
 
         if (XIQueryVersion(_glfw.x11.display,
-                           &_glfw.x11.xi2.versionMajor,
-                           &_glfw.x11.xi2.versionMinor) != BadRequest)
+                           &_glfw.x11.xi.versionMajor,
+                           &_glfw.x11.xi.versionMinor) != BadRequest)
         {
-            _glfw.x11.xi2.available = GL_TRUE;
+            _glfw.x11.xi.available = GL_TRUE;
         }
     }
 

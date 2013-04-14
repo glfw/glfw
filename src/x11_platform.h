@@ -159,7 +159,7 @@ typedef struct _GLFWlibraryX11
         int         errorBase;
         int         versionMajor;
         int         versionMinor;
-    } xi2;
+    } xi;
 
     // LUT for mapping X11 key codes to GLFW key codes
     int             keyCodeLUT[256];

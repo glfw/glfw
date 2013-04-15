@@ -154,6 +154,11 @@ static GLboolean createWindow(_GLFWwindow* window,
                             (unsigned char*) &hints,
                             sizeof(MotifWmHints) / sizeof(long));
         }
+
+        XSaveContext(_glfw.x11.display,
+                     window->x11.handle,
+                     _glfw.x11.context,
+                     (XPointer) window);
     }
 
     if (window->monitor && !_glfw.x11.hasEWMH)
@@ -461,13 +466,15 @@ _GLFWwindow* _glfwFindWindowByHandle(Window handle)
 {
     _GLFWwindow* window;
 
-    for (window = _glfw.windowListHead;  window;  window = window->next)
+    if (XFindContext(_glfw.x11.display,
+                     handle,
+                     _glfw.x11.context,
+                     (XPointer*) &window) != 0)
     {
-        if (window->x11.handle == handle)
-            return window;
+        return NULL;
     }
 
-    return NULL;
+    return window;
 }
 
 // Process the specified X event
@@ -897,6 +904,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 
     if (window->x11.handle)
     {
+        XDeleteContext(_glfw.x11.display, window->x11.handle, _glfw.x11.context);
         XUnmapWindow(_glfw.x11.display, window->x11.handle);
         XDestroyWindow(_glfw.x11.display, window->x11.handle);
         window->x11.handle = (Window) 0;

@@ -108,6 +108,7 @@ typedef struct _GLFWlibraryX11
 
     // Invisible cursor for hidden cursor mode
     Cursor          cursor;
+    XContext        context;
 
     // Window manager atoms
     Atom            WM_STATE;

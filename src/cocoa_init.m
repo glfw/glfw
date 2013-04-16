@@ -111,8 +111,6 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
-    // TODO: Probably other cleanup
-
     if (_glfw.ns.eventSource)
     {
         CFRelease(_glfw.ns.eventSource);

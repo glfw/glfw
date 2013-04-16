@@ -345,8 +345,6 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     if (window->egl.context == EGL_NO_CONTEXT)
     {
-        // TODO: Handle all the various error codes here
-
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "EGL: Failed to create context: %s",
                         getErrorString(eglGetError()));

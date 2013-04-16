@@ -444,10 +444,7 @@ void _glfwTerminateJoysticks(void)
 int _glfwPlatformGetJoystickParam(int joy, int param)
 {
     if (!_glfw.ns.joysticks[joy].present)
-    {
-        // TODO: Figure out if this is an error
         return GL_FALSE;
-    }
 
     switch (param)
     {
@@ -478,10 +475,7 @@ int _glfwPlatformGetJoystickAxes(int joy, float* axes, int numaxes)
     _GLFWjoy joystick = _glfw.ns.joysticks[joy];
 
     if (!joystick.present)
-    {
-        // TODO: Figure out if this is an error
         return 0;
-    }
 
     numaxes = numaxes < joystick.numAxes ? numaxes : joystick.numAxes;
 
@@ -518,10 +512,7 @@ int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons,
     _GLFWjoy joystick = _glfw.ns.joysticks[joy];
 
     if (!joystick.present)
-    {
-        // TODO: Figure out if this is an error
         return 0;
-    }
 
     // Update joystick state
     pollJoystickEvents();

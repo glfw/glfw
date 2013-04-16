@@ -794,8 +794,6 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 
     [window->ns.object close];
     window->ns.object = nil;
-
-    // TODO: Probably more cleanup
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)

@@ -671,11 +671,8 @@ static void getFullWindowSize(_GLFWwindow* window,
                               int* fullWidth, int* fullHeight)
 {
     RECT rect = { 0, 0, clientWidth, clientHeight };
-
-    // Adjust according to window styles
-    AdjustWindowRectEx(&rect, window->win32.dwStyle, FALSE, window->win32.dwExStyle);
-
-    // Calculate width and height of full window
+    AdjustWindowRectEx(&rect, window->win32.dwStyle,
+                       FALSE, window->win32.dwExStyle);
     *fullWidth = rect.right - rect.left;
     *fullHeight = rect.bottom - rect.top;
 }
@@ -688,21 +685,21 @@ static ATOM registerWindowClass(void)
     ATOM classAtom;
 
     // Set window class parameters
-    wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC; // Redraw on...
-    wc.lpfnWndProc   = (WNDPROC) windowProc;          // Message handler
-    wc.cbClsExtra    = 0;                             // No extra class data
-    wc.cbWndExtra    = sizeof(void*) + sizeof(int);   // Make room for one pointer
-    wc.hInstance     = GetModuleHandle(NULL);         // Set instance
-    wc.hCursor       = LoadCursor(NULL, IDC_ARROW);   // Load arrow pointer
-    wc.hbrBackground = NULL;                          // No background
-    wc.lpszMenuName  = NULL;                          // No menu
-    wc.lpszClassName = _GLFW_WNDCLASSNAME;            // Set class name
+    wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+    wc.lpfnWndProc   = (WNDPROC) windowProc;
+    wc.cbClsExtra    = 0;                           // No extra class data
+    wc.cbWndExtra    = sizeof(void*) + sizeof(int); // Make room for one pointer
+    wc.hInstance     = GetModuleHandle(NULL);
+    wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+    wc.hbrBackground = NULL;                        // No background
+    wc.lpszMenuName  = NULL;                        // No menu
+    wc.lpszClassName = _GLFW_WNDCLASSNAME;
 
     // Load user-provided icon if available
     wc.hIcon = LoadIcon(GetModuleHandle(NULL), L"GLFW_ICON");
     if (!wc.hIcon)
     {
-        // User-provided icon not found; load default icon
+        // No user-provided icon found, load default icon
         wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
     }
 
@@ -735,7 +732,6 @@ static int createWindow(_GLFWwindow* window,
         window->win32.dwStyle |= WS_POPUP;
 
         _glfwPlatformGetMonitorPos(wndconfig->monitor, &xpos, &ypos);
-
         fullWidth  = wndconfig->width;
         fullHeight = wndconfig->height;
     }
@@ -782,7 +778,7 @@ static int createWindow(_GLFWwindow* window,
                                           NULL, // No parent window
                                           NULL, // No window menu
                                           GetModuleHandle(NULL),
-                                          window); // Pass GLFW window to WM_CREATE
+                                          window); // Pass object to WM_CREATE
 
     free(wideTitle);
 

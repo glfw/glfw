@@ -481,77 +481,55 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         }
 
         case WM_LBUTTONDOWN:
-        {
-            SetCapture(hWnd);
-            _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS);
-            return 0;
-        }
-
         case WM_RBUTTONDOWN:
-        {
-            SetCapture(hWnd);
-            _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_RIGHT, GLFW_PRESS);
-            return 0;
-        }
-
         case WM_MBUTTONDOWN:
-        {
-            SetCapture(hWnd);
-            _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_MIDDLE, GLFW_PRESS);
-            return 0;
-        }
-
         case WM_XBUTTONDOWN:
         {
-            if (HIWORD(wParam) == XBUTTON1)
+            SetCapture(hWnd);
+
+            if (uMsg == WM_LBUTTONDOWN)
+                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS);
+            else if (uMsg == WM_RBUTTONDOWN)
+                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_RIGHT, GLFW_PRESS);
+            else if (uMsg == WM_MBUTTONDOWN)
+                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_MIDDLE, GLFW_PRESS);
+            else
             {
-                SetCapture(hWnd);
-                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_4, GLFW_PRESS);
-            }
-            else if (HIWORD(wParam) == XBUTTON2)
-            {
-                SetCapture(hWnd);
-                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_5, GLFW_PRESS);
+                if (HIWORD(wParam) == XBUTTON1)
+                    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_4, GLFW_PRESS);
+                else if (HIWORD(wParam) == XBUTTON2)
+                    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_5, GLFW_PRESS);
+
+                return TRUE;
             }
 
-            return 1;
+            return 0;
         }
 
         case WM_LBUTTONUP:
-        {
-            ReleaseCapture();
-            _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE);
-            return 0;
-        }
-
         case WM_RBUTTONUP:
-        {
-            ReleaseCapture();
-            _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_RIGHT, GLFW_RELEASE);
-            return 0;
-        }
-
         case WM_MBUTTONUP:
-        {
-            ReleaseCapture();
-            _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_MIDDLE, GLFW_RELEASE);
-            return 0;
-        }
-
         case WM_XBUTTONUP:
         {
-            if (HIWORD(wParam) == XBUTTON1)
+            ReleaseCapture();
+
+            if (uMsg == WM_LBUTTONUP)
+                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE);
+            else if (uMsg == WM_RBUTTONUP)
+                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_RIGHT, GLFW_RELEASE);
+            else if (uMsg == WM_MBUTTONUP)
+                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_MIDDLE, GLFW_RELEASE);
+            else
             {
-                ReleaseCapture();
-                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_4, GLFW_RELEASE);
-            }
-            else if (HIWORD(wParam) == XBUTTON2)
-            {
-                ReleaseCapture();
-                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_5, GLFW_RELEASE);
+                if (HIWORD(wParam) == XBUTTON1)
+                    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_4, GLFW_RELEASE);
+                else if (HIWORD(wParam) == XBUTTON2)
+                    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_5, GLFW_RELEASE);
+
+                return TRUE;
             }
 
-            return 1;
+            return 0;
         }
 
         case WM_MOUSEMOVE:

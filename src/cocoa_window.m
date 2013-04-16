@@ -54,7 +54,7 @@ static void resetMouseCursor(_GLFWwindow *window)
     {
         int width, height;
         _glfwPlatformGetWindowSize(window, &width, &height);
-        _glfwPlatformSetCursorPos(window, width / 2, height / 2);
+        _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
     }
 }
 

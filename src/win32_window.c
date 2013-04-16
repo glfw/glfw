@@ -362,7 +362,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             {
                 // The window was defocused (or iconified, see above)
 
-                if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+                if (window->cursorMode != GLFW_CURSOR_NORMAL)
                     showCursor(window);
 
                 if (window->monitor)
@@ -383,6 +383,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
                 if (window->cursorMode == GLFW_CURSOR_CAPTURED)
                     captureCursor(window);
+                else if (window->cursorMode == GLFW_CURSOR_HIDDEN)
+                    hideCursor(window);
 
                 if (window->monitor)
                     _glfwSetVideoMode(window->monitor, &window->videoMode);

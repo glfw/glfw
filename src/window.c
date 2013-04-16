@@ -68,6 +68,11 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused)
         {
             int i;
 
+            _glfw.focusedWindow = NULL;
+
+            if (window->callbacks.focus)
+                window->callbacks.focus((GLFWwindow*) window, focused);
+
             // Release all pressed keyboard keys
             for (i = 0;  i <= GLFW_KEY_LAST;  i++)
             {
@@ -81,11 +86,6 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused)
                 if (window->mouseButton[i] == GLFW_PRESS)
                     _glfwInputMouseClick(window, i, GLFW_RELEASE);
             }
-
-            _glfw.focusedWindow = NULL;
-
-            if (window->callbacks.focus)
-                window->callbacks.focus((GLFWwindow*) window, focused);
         }
     }
 }

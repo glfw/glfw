@@ -48,6 +48,16 @@
 
 @implementation GLFWWindowDelegate
 
+static void resetMouseCursor(_GLFWwindow *window)
+{
+    if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+    {
+        int width, height;
+        _glfwPlatformGetWindowSize(window, &width, &height);
+        _glfwPlatformSetCursorPos(window, width / 2, height / 2);
+    }
+}
+
 - (id)initWithGlfwWindow:(_GLFWwindow *)initWindow
 {
     self = [super init];
@@ -70,6 +80,8 @@
     int width, height;
     _glfwPlatformGetWindowSize(window, &width, &height);
     _glfwInputWindowSize(window, width, height);
+
+    resetMouseCursor(window);
 }
 
 - (void)windowDidMove:(NSNotification *)notification
@@ -79,6 +91,8 @@
     int x, y;
     _glfwPlatformGetWindowPos(window, &x, &y);
     _glfwInputWindowPos(window, x, y);
+
+    resetMouseCursor(window);
 }
 
 - (void)windowDidMiniaturize:(NSNotification *)notification
@@ -94,6 +108,8 @@
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
     _glfwInputWindowFocus(window, GL_TRUE);
+
+    resetMouseCursor(window);
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification

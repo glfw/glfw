@@ -147,7 +147,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     {
         ADD_ATTR(NSOpenGLPFANoRecovery);
         ADD_ATTR2(NSOpenGLPFAScreenMask,
-                  CGDisplayIDToOpenGLDisplayMask(CGMainDisplayID()));
+                  CGDisplayIDToOpenGLDisplayMask(wndconfig->monitor->ns.displayID));
     }
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070

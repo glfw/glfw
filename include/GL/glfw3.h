@@ -57,10 +57,9 @@ extern "C" {
  */
 /*! @defgroup window Window handling
  *
- *  The primary purpose of GLFW is to provide a simple interface to window
- *  management and OpenGL and OpenGL ES context creation.  GLFW supports
- *  multiple windows, which can be either a normal desktop window or
- *  a full screen window.
+ *  This is the reference documentation for the window handling API, including
+ *  creation, deletion and event polling.  For more information, see the
+ *  [article on window handling](@ref window).
  */
 
 
@@ -1007,6 +1006,8 @@ GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* monitor);
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *
+ *  @bug This callback is not yet called on monitor configuration changes.
+ *
  *  @ingroup monitor
  */
 GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun);
@@ -1014,14 +1015,16 @@ GLFWAPI void glfwSetMonitorCallback(GLFWmonitorfun cbfun);
 /*! @brief Returns the available video modes for the specified monitor.
  *
  *  This function returns an array of all video modes supported by the specified
- *  monitor.
+ *  monitor.  The returned array is sorted in ascending order, first by color
+ *  bit depth (the sum of all channel depths) and then by resolution area (the
+ *  product of width and height).
  *
  *  @param[in] monitor The monitor to query.
  *  @param[out] count The number of video modes in the returned array.
  *  @return An array of video modes, or `NULL` if an error occurred.
  *
  *  @note The returned array is valid only until this function is called again
- *  for this monitor.
+ *  for the specified monitor.
  *
  *  @sa glfwGetVideoMode
  *
@@ -1031,10 +1034,13 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count);
 
 /*! @brief Returns the current mode of the specified monitor.
  *
- *  This function returns the current video mode of the specified monitor.
+ *  This function returns the current video mode of the specified monitor.  If
+ *  you are using a full screen window, the return value will therefore depend
+ *  on whether it is focused.
  *
  *  @param[in] monitor The monitor to query.
- *  @return The current mode of the monitor, or all zeroes if an error occurred.
+ *  @return The current mode of the monitor, or a struct cleared to all zeroes
+ *  if an error occurred.
  *
  *  @sa glfwGetVideoModes
  *
@@ -1587,15 +1593,21 @@ GLFWAPI void glfwSetWindowIconifyCallback(GLFWwindow* window, GLFWwindowiconifyf
 /*! @brief Processes all pending events.
  *
  *  This function processes only those events that have already been received
- *  and then returns immediately.
+ *  and then returns immediately.  Processing events will cause the window and
+ *  input callbacks associated with those events to be called.
  *
  *  @par New in GLFW 3
  *  This function is no longer called by @ref glfwSwapBuffers.  You need to call
  *  it or @ref glfwWaitEvents yourself.
  *
+ *  @remarks This function is not required for joystick input to work.
+ *
  *  @note This function may only be called from the main thread.
  *
  *  @note This function may not be called from a callback.
+ *
+ *  @note On some platforms, certain callbacks may be called outside of a call
+ *  to one of the event processing functions.
  *
  *  @sa glfwWaitEvents
  *
@@ -1605,12 +1617,24 @@ GLFWAPI void glfwPollEvents(void);
 
 /*! @brief Waits until events are pending and processes them.
  *
- *  This function blocks until at least one event has been received and then
- *  processes all received events before returning.
+ *  This function puts the calling thread to sleep until at least one event has
+ *  been received.  Once one or more events have been recevied, it behaves as if
+ *  @ref glfwPollEvents was called, i.e. the events are processed and the
+ *  function then returns immediately.  Processing events will cause the window
+ *  and input callbacks associated with those events to be called.
+ *
+ *  Since not all events are associated with callbacks, this function may return
+ *  without a callback having been called even if you are monitoring all
+ *  callbacks.
+ *
+ *  @remarks This function is not required for joystick input to work.
  *
  *  @note This function may only be called from the main thread.
  *
  *  @note This function may not be called from a callback.
+ *
+ *  @note On some platforms, certain callbacks may be called outside of a call
+ *  to one of the event processing functions.
  *
  *  @sa glfwPollEvents
  *
@@ -1713,6 +1737,10 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
  *  This function returns the last reported position of the cursor to the
  *  specified window.
  *
+ *  If the cursor mode of the specified window is `GLFW_CURSOR_CAPTURED` then
+ *  the cursor position is unbounded and limited only by the minimum and maximum
+ *  values of a `double`.
+ *
  *  @param[in] window The desired window.
  *  @param[out] xpos The cursor x-coordinate, relative to the left edge of the
  *  client area, or `NULL`.
@@ -1731,6 +1759,10 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *  focused.  If the window does not have focus when this function is called, it
  *  fails silently.
  *
+ *  If the cursor mode of the specified window is `GLFW_CURSOR_CAPTURED` then
+ *  the cursor position is unbounded and limited only by the minimum and maximum
+ *  values of a `double`.
+ *
  *  @param[in] window The desired window.
  *  @param[in] xpos The desired x-coordinate, relative to the left edge of the
  *  client area, or `NULL`.
@@ -1748,9 +1780,10 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
  *  This function sets the key callback of the specific window, which is called
  *  when a key is pressed, repeated or released.
  *
- *  The key functions deal with physical keys, with [key tokens](@ref keys)
- *  named after their use on the standard US keyboard layout.  If you want to
- *  input text, use the [character callback](@ref glfwSetCharCallback) instead.
+ *  The key functions deal with physical keys, with layout independent
+ *  [key tokens](@ref keys) named after their values in the standard US keyboard
+ *  layout.  If you want to input text, use the [character callback](@ref
+ *  glfwSetCharCallback) instead.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new key callback, or `NULL` to remove the currently

@@ -38,8 +38,7 @@
 //
 static void setCursorMode(_GLFWwindow* window, int newMode)
 {
-    int width, height, oldMode;
-    double centerPosX, centerPosY;
+    int oldMode;
 
     if (newMode != GLFW_CURSOR_NORMAL &&
         newMode != GLFW_CURSOR_HIDDEN &&
@@ -53,19 +52,21 @@ static void setCursorMode(_GLFWwindow* window, int newMode)
     if (oldMode == newMode)
         return;
 
-    _glfwPlatformGetWindowSize(window, &width, &height);
+    if (oldMode == GLFW_CURSOR_CAPTURED)
+        _glfwPlatformSetCursorPos(window, _glfw.cursorPosX, _glfw.cursorPosY);
+    else if (newMode == GLFW_CURSOR_CAPTURED)
+    {
+        int width, height;
 
-    centerPosX = width / 2.0;
-    centerPosY = height / 2.0;
+        _glfw.cursorPosX = window->cursorPosX;
+        _glfw.cursorPosY = window->cursorPosY;
 
-    if (oldMode == GLFW_CURSOR_CAPTURED || newMode == GLFW_CURSOR_CAPTURED)
-        _glfwPlatformSetCursorPos(window, centerPosX, centerPosY);
+        _glfwPlatformGetWindowSize(window, &width, &height);
+        _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
+    }
 
     _glfwPlatformSetCursorMode(window, newMode);
     window->cursorMode = newMode;
-
-    if (oldMode == GLFW_CURSOR_CAPTURED)
-        _glfwInputCursorMotion(window, window->cursorPosX, window->cursorPosY);
 }
 
 // Set sticky keys mode for the specified window

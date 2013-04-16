@@ -291,6 +291,8 @@ struct _GLFWlibrary
 {
     _GLFWhints      hints;
 
+    double          cursorPosX, cursorPosY;
+
     _GLFWwindow*    windowListHead;
     _GLFWwindow*    focusedWindow;
 

@@ -1018,16 +1018,6 @@ void _glfwPlatformPollEvents(void)
     MSG msg;
     _GLFWwindow* window;
 
-    window = _glfw.focusedWindow;
-    if (window)
-    {
-        int width, height;
-        _glfwPlatformGetWindowSize(window, &width, &height);
-        window->win32.cursorCentered = GL_FALSE;
-        window->win32.oldCursorX = width / 2;
-        window->win32.oldCursorY = height / 2;
-    }
-
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
     {
         if (msg.message == WM_QUIT)
@@ -1076,7 +1066,7 @@ void _glfwPlatformPollEvents(void)
         {
             int width, height;
             _glfwPlatformGetWindowSize(window, &width, &height);
-            _glfwPlatformSetCursorPos(window, width / 2, height / 2);
+            _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
             window->win32.cursorCentered = GL_TRUE;
         }
     }
@@ -1094,6 +1084,9 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos)
     POINT pos = { (int) xpos, (int) ypos };
     ClientToScreen(window->win32.handle, &pos);
     SetCursorPos(pos.x, pos.y);
+
+    window->win32.oldCursorX = xpos;
+    window->win32.oldCursorY = ypos;
 }
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)

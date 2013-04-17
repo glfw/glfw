@@ -54,7 +54,7 @@
  // This path may need to be changed if you build GLFW using your own setup
  // GLFW comes with its own copy of glext.h since it uses fairly new extensions
  // and not all development environments come with an up-to-date version
- #include "../support/GL/glext.h"
+ #include "../deps/GL/glext.h"
 #endif
 
 typedef struct _GLFWhints       _GLFWhints;

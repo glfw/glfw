@@ -14,7 +14,7 @@ if (UNIX AND NOT APPLE)
 endif()
 
 include_directories(${GLFW_SOURCE_DIR}/include
-                    ${GLFW_SOURCE_DIR}/support)
+                    ${GLFW_SOURCE_DIR}/deps)
 
 if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -25,10 +25,10 @@ if (NOT APPLE)
     include_directories(${OPENGL_INCLUDE_DIR})
 endif()
 
-set(GETOPT ${GLFW_SOURCE_DIR}/support/getopt.h
-           ${GLFW_SOURCE_DIR}/support/getopt.c)
-set(TINYCTHREAD ${GLFW_SOURCE_DIR}/support/tinycthread.h
-                ${GLFW_SOURCE_DIR}/support/tinycthread.c)
+set(GETOPT ${GLFW_SOURCE_DIR}/deps/getopt.h
+           ${GLFW_SOURCE_DIR}/deps/getopt.c)
+set(TINYCTHREAD ${GLFW_SOURCE_DIR}/deps/tinycthread.h
+                ${GLFW_SOURCE_DIR}/deps/tinycthread.c)
 
 add_executable(clipboard clipboard.c ${GETOPT})
 add_executable(defaults defaults.c)

@@ -417,7 +417,12 @@ int main(void)
     printf("Main loop starting\n");
 
     while (!glfwWindowShouldClose(window))
+    {
         glfwWaitEvents();
+
+        // Workaround for an issue with msvcrt and mintty
+        fflush(stdout);
+    }
 
     glfwTerminate();
     exit(EXIT_SUCCESS);

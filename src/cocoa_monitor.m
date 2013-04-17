@@ -244,20 +244,9 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     CGGetActiveDisplayList(0, NULL, &monitorCount);
 
     displays = (CGDirectDisplayID*) calloc(monitorCount, sizeof(CGDirectDisplayID));
-    if (!displays)
-    {
-        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
-        return NULL;
-    }
+    monitors = (_GLFWmonitor**) calloc(monitorCount, sizeof(_GLFWmonitor*));
 
     CGGetActiveDisplayList(monitorCount, displays, &monitorCount);
-
-    monitors = (_GLFWmonitor**) calloc(monitorCount, sizeof(_GLFWmonitor*));
-    if (!monitors)
-    {
-        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
-        return NULL;
-    }
 
     for (i = 0;  i < monitorCount;  i++)
     {

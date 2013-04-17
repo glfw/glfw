@@ -158,12 +158,6 @@ void _glfwInputMonitorChange(void)
 _GLFWmonitor* _glfwCreateMonitor(const char* name, int widthMM, int heightMM)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) calloc(1, sizeof(_GLFWmonitor));
-    if (!monitor)
-    {
-        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
-        return NULL;
-    }
-
     monitor->name = strdup(name);
     monitor->widthMM = widthMM;
     monitor->heightMM = heightMM;

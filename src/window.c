@@ -193,12 +193,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
         return GL_FALSE;
 
     window = (_GLFWwindow*) calloc(1, sizeof(_GLFWwindow));
-    if (!window)
-    {
-        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
-        return NULL;
-    }
-
     window->next = _glfw.windowListHead;
     _glfw.windowListHead = window;
 

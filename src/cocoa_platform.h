@@ -119,8 +119,9 @@ typedef struct _GLFWlibraryNS
 //------------------------------------------------------------------------
 typedef struct _GLFWmonitorNS
 {
-    CGDirectDisplayID displayID;
-    CGDisplayModeRef previousMode;
+    CGDirectDisplayID   displayID;
+    CGDisplayModeRef    previousMode;
+    id                  screen;
 
 } _GLFWmonitorNS;
 

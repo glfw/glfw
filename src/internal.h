@@ -706,6 +706,6 @@ void _glfwDestroyMonitor(_GLFWmonitor* monitor);
 
 /*! @ingroup utility
   */
-void _glfwDestroyMonitors(void);
+void _glfwDestroyMonitors(_GLFWmonitor** monitors, int count);
 
 #endif // _internal_h_

@@ -759,7 +759,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             return GL_FALSE;
 
         _glfwPlatformShowWindow(window);
-        [[window->ns.object contentView] enterFullScreenMode:[NSScreen mainScreen]
+        [[window->ns.object contentView] enterFullScreenMode:wndconfig->monitor->ns.screen
                                                  withOptions:nil];
     }
 

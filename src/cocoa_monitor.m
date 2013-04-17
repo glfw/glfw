@@ -272,6 +272,35 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         }
     }
 
+    NSArray* screens = [NSScreen screens];
+
+    for (i = 0;  i < monitorCount;  i++)
+    {
+        int j;
+
+        for (j = 0;  j < [screens count];  j++)
+        {
+            NSScreen* screen = [screens objectAtIndex:j];
+            NSDictionary* dictionary = [screen deviceDescription];
+            NSNumber* number = [dictionary objectForKey:@"NSScreenNumber"];
+
+            if (monitors[i]->ns.displayID == [number unsignedIntegerValue])
+            {
+                monitors[i]->ns.screen = screen;
+                break;
+            }
+        }
+
+        if (monitors[i]->ns.screen == nil)
+        {
+            _glfwDestroyMonitors(monitors, monitorCount);
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Cocoa: Failed to find NSScreen for CGDisplay %s",
+                            monitors[i]->name);
+            return NULL;
+        }
+    }
+
     *count = monitorCount;
     return monitors;
 }

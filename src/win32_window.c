@@ -108,17 +108,12 @@ static void showCursor(_GLFWwindow* window)
 //
 static int translateKey(WPARAM wParam, LPARAM lParam)
 {
-    MSG next_msg;
-    DWORD msg_time;
-    DWORD scan_code;
-
     // Check for numeric keypad keys
     // NOTE: This way we always force "NumLock = ON", which is intentional since
     // the returned key code should correspond to a physical location.
-    int hiFlags = HIWORD(lParam);
-    if (!(hiFlags & 0x100))
+    if ((HIWORD(lParam) & 0x100) == 0)
     {
-        switch (MapVirtualKey(hiFlags & 0xFF, 1))
+        switch (MapVirtualKey(HIWORD(lParam) & 0xFF, 1))
         {
             case VK_INSERT:   return GLFW_KEY_KP_0;
             case VK_END:      return GLFW_KEY_KP_1;
@@ -148,8 +143,8 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
             // Compare scan code for this key with that of VK_RSHIFT in
             // order to determine which shift key was pressed (left or
             // right)
-            scan_code = MapVirtualKey(VK_RSHIFT, 0);
-            if (((lParam & 0x01ff0000) >> 16) == scan_code)
+            const DWORD scancode = MapVirtualKey(VK_RSHIFT, 0);
+            if (((lParam & 0x01ff0000) >> 16) == scancode)
                 return GLFW_KEY_RIGHT_SHIFT;
 
             return GLFW_KEY_LEFT_SHIFT;
@@ -158,6 +153,8 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
         // The CTRL keys require special handling
         case VK_CONTROL:
         {
+            MSG next;
+
             // Is this an extended key (i.e. right key)?
             if (lParam & 0x01000000)
                 return GLFW_KEY_RIGHT_CONTROL;
@@ -165,18 +162,19 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
             // Here is a trick: "Alt Gr" sends LCTRL, then RALT. We only
             // want the RALT message, so we try to see if the next message
             // is a RALT message. In that case, this is a false LCTRL!
-            msg_time = GetMessageTime();
-            if (PeekMessage(&next_msg, NULL, 0, 0, PM_NOREMOVE))
+            const DWORD time = GetMessageTime();
+
+            if (PeekMessage(&next, NULL, 0, 0, PM_NOREMOVE))
             {
-                if (next_msg.message == WM_KEYDOWN ||
-                    next_msg.message == WM_SYSKEYDOWN)
+                if (next.message == WM_KEYDOWN ||
+                    next.message == WM_SYSKEYDOWN)
                 {
-                    if (next_msg.wParam == VK_MENU &&
-                        (next_msg.lParam & 0x01000000) &&
-                        next_msg.time == msg_time)
+                    if (next.wParam == VK_MENU &&
+                        (next.lParam & 0x01000000) &&
+                        next.time == time)
                     {
                         // Next message is a RALT down message, which
-                        // means that this is NOT a proper LCTRL message!
+                        // means that this is not a proper LCTRL message
                         return -1;
                     }
                 }
@@ -906,7 +904,6 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     }
 
     SetWindowText(window->win32.handle, wideTitle);
-
     free(wideTitle);
 }
 
@@ -952,7 +949,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
         SetWindowPos(window->win32.handle, HWND_TOP,
                      0, 0, mode.width, mode.height,
                      SWP_NOMOVE);
-        }
+    }
     else
     {
         int fullWidth, fullHeight;
@@ -1019,18 +1016,18 @@ void _glfwPlatformPollEvents(void)
         // This is the only async event handling in GLFW, but it solves some
         // nasty problems
         {
-            int lshift_down, rshift_down;
+            int lshiftDown, rshiftDown;
 
             // Get current state of left and right shift keys
-            lshift_down = (GetAsyncKeyState(VK_LSHIFT) >> 15) & 1;
-            rshift_down = (GetAsyncKeyState(VK_RSHIFT) >> 15) & 1;
+            lshiftDown = (GetAsyncKeyState(VK_LSHIFT) >> 15) & 1;
+            rshiftDown = (GetAsyncKeyState(VK_RSHIFT) >> 15) & 1;
 
             // See if this differs from our belief of what has happened
             // (we only have to check for lost key up events)
-            if (!lshift_down && window->key[GLFW_KEY_LEFT_SHIFT] == 1)
+            if (!lshiftDown && window->key[GLFW_KEY_LEFT_SHIFT] == 1)
                 _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, GLFW_RELEASE);
 
-            if (!rshift_down && window->key[GLFW_KEY_RIGHT_SHIFT] == 1)
+            if (!rshiftDown && window->key[GLFW_KEY_RIGHT_SHIFT] == 1)
                 _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, GLFW_RELEASE);
         }
 
@@ -1078,6 +1075,7 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
             break;
     }
 }
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

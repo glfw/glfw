@@ -11,6 +11,8 @@ and contexts, multi-monitor support, EGL and OpenGL ES support, clipboard text
 support, an error description callback, gamma ramp control, layout-independent
 keyboard input and UTF-8 for all strings.
 
+GLFW is now hosted on [GitHub](https://github.com/glfw/glfw).
+
 If you are new to GLFW, you may find the
 [introductory tutorial](http://www.glfw.org/docs/3.0/quick.html) for GLFW
 3 useful.  If

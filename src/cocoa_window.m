@@ -48,6 +48,16 @@
 
 @implementation GLFWWindowDelegate
 
+static void resetMouseCursor(_GLFWwindow *window)
+{
+    if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+    {
+        int width, height;
+        _glfwPlatformGetWindowSize(window, &width, &height);
+        _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
+    }
+}
+
 - (id)initWithGlfwWindow:(_GLFWwindow *)initWindow
 {
     self = [super init];
@@ -70,6 +80,8 @@
     int width, height;
     _glfwPlatformGetWindowSize(window, &width, &height);
     _glfwInputWindowSize(window, width, height);
+
+    resetMouseCursor(window);
 }
 
 - (void)windowDidMove:(NSNotification *)notification
@@ -79,6 +91,8 @@
     int x, y;
     _glfwPlatformGetWindowPos(window, &x, &y);
     _glfwInputWindowPos(window, x, y);
+
+    resetMouseCursor(window);
 }
 
 - (void)windowDidMiniaturize:(NSNotification *)notification
@@ -94,6 +108,8 @@
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
     _glfwInputWindowFocus(window, GL_TRUE);
+
+    resetMouseCursor(window);
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
@@ -293,6 +309,8 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 // Content view class for the GLFW window
 //------------------------------------------------------------------------
 
+static NSCursor *emptyCursor = nil;
+
 @interface GLFWContentView : NSView
 {
     _GLFWwindow* window;
@@ -304,6 +322,16 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 @end
 
 @implementation GLFWContentView
+
++ (void)initialize
+{
+    if (self == [GLFWContentView class])
+    {
+        NSImage *emptyImage = [[NSImage alloc] initWithSize:NSMakeSize(1, 1)];
+        emptyCursor = [[NSCursor alloc] initWithImage:emptyImage hotSpot:NSZeroPoint];
+        [emptyImage release];
+    }
+}
 
 - (id)initWithGlfwWindow:(_GLFWwindow *)initWindow
 {
@@ -476,6 +504,11 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
     if (fabs(deltaX) > 0.0 || fabs(deltaY) > 0.0)
         _glfwInputScroll(window, deltaX, deltaY);
+}
+
+- (void)resetCursorRects
+{
+    [self addCursorRect:[self bounds] cursor:emptyCursor];
 }
 
 @end
@@ -913,16 +946,21 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
+    // Unhide the cursor if the last mode was CAPTURED.
+    if (window->cursorMode == GLFW_CURSOR_CAPTURED) {
+        CGAssociateMouseAndMouseCursorPosition(true);
+    }
+
     switch (mode)
     {
         case GLFW_CURSOR_NORMAL:
-            [NSCursor unhide];
-            CGAssociateMouseAndMouseCursorPosition(true);
+            [window->ns.object disableCursorRects];
             break;
         case GLFW_CURSOR_HIDDEN:
+            [window->ns.object enableCursorRects];
             break;
         case GLFW_CURSOR_CAPTURED:
-            [NSCursor hide];
+            [window->ns.object enableCursorRects];
             CGAssociateMouseAndMouseCursorPosition(false);
             break;
     }

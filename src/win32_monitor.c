@@ -106,8 +106,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
     for (;;)
     {
-        // Enumerate display adapters
-
         DISPLAY_DEVICE adapter, display;
         char* name;
         HDC dc;
@@ -148,7 +146,9 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         name = _glfwCreateUTF8FromWideString(display.DeviceString);
         if (!name)
         {
-            // TODO: wat
+            _glfwDestroyMonitors(monitors, found);
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Failed to convert string to UTF-8");
             return NULL;
         }
 
@@ -158,12 +158,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
         free(name);
         DeleteDC(dc);
-
-        if (!monitors[found])
-        {
-            // TODO: wat
-            return NULL;
-        }
 
         wcscpy(monitors[found]->win32.name, adapter.DeviceName);
         found++;

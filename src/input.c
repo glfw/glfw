@@ -52,20 +52,24 @@ static void setCursorMode(_GLFWwindow* window, int newMode)
     if (oldMode == newMode)
         return;
 
-    if (oldMode == GLFW_CURSOR_CAPTURED)
-        _glfwPlatformSetCursorPos(window, _glfw.cursorPosX, _glfw.cursorPosY);
-    else if (newMode == GLFW_CURSOR_CAPTURED)
+    if (window == _glfw.focusedWindow)
     {
-        int width, height;
+        if (oldMode == GLFW_CURSOR_CAPTURED)
+            _glfwPlatformSetCursorPos(window, _glfw.cursorPosX, _glfw.cursorPosY);
+        else if (newMode == GLFW_CURSOR_CAPTURED)
+        {
+            int width, height;
 
-        _glfw.cursorPosX = window->cursorPosX;
-        _glfw.cursorPosY = window->cursorPosY;
+            _glfw.cursorPosX = window->cursorPosX;
+            _glfw.cursorPosY = window->cursorPosY;
 
-        _glfwPlatformGetWindowSize(window, &width, &height);
-        _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
+            _glfwPlatformGetWindowSize(window, &width, &height);
+            _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
+        }
+
+        _glfwPlatformSetCursorMode(window, newMode);
     }
 
-    _glfwPlatformSetCursorMode(window, newMode);
     window->cursorMode = newMode;
 }
 

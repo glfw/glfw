@@ -80,6 +80,7 @@ static void resetMouseCursor(_GLFWwindow *window)
     int width, height;
     _glfwPlatformGetWindowSize(window, &width, &height);
     _glfwInputWindowSize(window, width, height);
+    _glfwInputWindowDamage(window);
 
     resetMouseCursor(window);
 }

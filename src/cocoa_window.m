@@ -477,20 +477,20 @@ static NSCursor *emptyCursor = nil;
 
 - (void)flagsChanged:(NSEvent *)event
 {
-    int mode, key;
+    int action, key;
     unsigned int newModifierFlags =
         [event modifierFlags] & NSDeviceIndependentModifierFlagsMask;
 
     if (newModifierFlags > window->ns.modifierFlags)
-        mode = GLFW_PRESS;
+        action = GLFW_PRESS;
     else
-        mode = GLFW_RELEASE;
+        action = GLFW_RELEASE;
 
     window->ns.modifierFlags = newModifierFlags;
 
     key = convertMacKeyCode([event keyCode]);
     if (key != -1)
-      _glfwInputKey(window, key, mode);
+      _glfwInputKey(window, key, action);
 }
 
 - (void)keyUp:(NSEvent *)event

@@ -48,14 +48,11 @@
 
 @implementation GLFWWindowDelegate
 
-static void resetMouseCursor(_GLFWwindow *window)
+static void centerCursor(_GLFWwindow *window)
 {
-    if (window->cursorMode == GLFW_CURSOR_CAPTURED)
-    {
-        int width, height;
-        _glfwPlatformGetWindowSize(window, &width, &height);
-        _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
-    }
+    int width, height;
+    _glfwPlatformGetWindowSize(window, &width, &height);
+    _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
 }
 
 - (id)initWithGlfwWindow:(_GLFWwindow *)initWindow
@@ -82,7 +79,8 @@ static void resetMouseCursor(_GLFWwindow *window)
     _glfwInputWindowSize(window, width, height);
     _glfwInputWindowDamage(window);
 
-    resetMouseCursor(window);
+    if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+        centerCursor(window);
 }
 
 - (void)windowDidMove:(NSNotification *)notification
@@ -93,7 +91,8 @@ static void resetMouseCursor(_GLFWwindow *window)
     _glfwPlatformGetWindowPos(window, &x, &y);
     _glfwInputWindowPos(window, x, y);
 
-    resetMouseCursor(window);
+    if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+        centerCursor(window);
 }
 
 - (void)windowDidMiniaturize:(NSNotification *)notification
@@ -110,7 +109,8 @@ static void resetMouseCursor(_GLFWwindow *window)
 {
     _glfwInputWindowFocus(window, GL_TRUE);
 
-    resetMouseCursor(window);
+    if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+        centerCursor(window);
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
@@ -310,8 +310,6 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 // Content view class for the GLFW window
 //------------------------------------------------------------------------
 
-static NSCursor *emptyCursor = nil;
-
 @interface GLFWContentView : NSView
 {
     _GLFWwindow* window;
@@ -328,9 +326,13 @@ static NSCursor *emptyCursor = nil;
 {
     if (self == [GLFWContentView class])
     {
-        NSImage *emptyImage = [[NSImage alloc] initWithSize:NSMakeSize(1, 1)];
-        emptyCursor = [[NSCursor alloc] initWithImage:emptyImage hotSpot:NSZeroPoint];
-        [emptyImage release];
+        if (_glfw.ns.cursor == nil)
+        {
+            NSImage* data = [[NSImage alloc] initWithSize:NSMakeSize(1, 1)];
+            _glfw.ns.cursor = [[NSCursor alloc] initWithImage:data
+                                                      hotSpot:NSZeroPoint];
+            [data release];
+        }
     }
 }
 
@@ -509,7 +511,7 @@ static NSCursor *emptyCursor = nil;
 
 - (void)resetCursorRects
 {
-    [self addCursorRect:[self bounds] cursor:emptyCursor];
+    [self addCursorRect:[self bounds] cursor:_glfw.ns.cursor];
 }
 
 @end

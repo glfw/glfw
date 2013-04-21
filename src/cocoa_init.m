@@ -124,6 +124,9 @@ void _glfwPlatformTerminate(void)
     [_glfw.ns.autoreleasePool release];
     _glfw.ns.autoreleasePool = nil;
 
+    [_glfw.ns.cursor release];
+    _glfw.ns.cursor = nil;
+
     _glfwTerminateJoysticks();
 
     _glfwTerminateContextAPI();

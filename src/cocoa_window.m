@@ -942,26 +942,36 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
-    // Unhide the cursor if the last mode was CAPTURED.
-    if (window->cursorMode == GLFW_CURSOR_CAPTURED) {
-        CGAssociateMouseAndMouseCursorPosition(true);
+    if (mode == GLFW_CURSOR_HIDDEN)
+    {
+        [window->ns.object enableCursorRects];
+        [window->ns.object invalidateCursorRectsForView:window->ns.view];
+    }
+    else
+    {
+        [window->ns.object disableCursorRects];
+        [window->ns.object invalidateCursorRectsForView:window->ns.view];
     }
 
-    switch (mode)
+    if (mode == GLFW_CURSOR_CAPTURED)
     {
-        case GLFW_CURSOR_NORMAL:
-            [window->ns.object disableCursorRects];
-            [window->ns.object invalidateCursorRectsForView:window->ns.view];
-            break;
-        case GLFW_CURSOR_HIDDEN:
-            [window->ns.object enableCursorRects];
-            [window->ns.object invalidateCursorRectsForView:window->ns.view];
-            break;
-        case GLFW_CURSOR_CAPTURED:
-            [window->ns.object enableCursorRects];
-            [window->ns.object invalidateCursorRectsForView:window->ns.view];
-            CGAssociateMouseAndMouseCursorPosition(false);
-            break;
+        CGAssociateMouseAndMouseCursorPosition(false);
+
+        if (!_glfw.ns.cursorHidden)
+        {
+            [NSCursor hide];
+            _glfw.ns.cursorHidden = GL_TRUE;
+        }
+    }
+    else
+    {
+        CGAssociateMouseAndMouseCursorPosition(true);
+
+        if (_glfw.ns.cursorHidden)
+        {
+            [NSCursor unhide];
+            _glfw.ns.cursorHidden = GL_FALSE;
+        }
     }
 }
 

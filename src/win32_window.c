@@ -154,6 +154,7 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
         case VK_CONTROL:
         {
             MSG next;
+            DWORD time;
 
             // Is this an extended key (i.e. right key)?
             if (lParam & 0x01000000)
@@ -162,7 +163,7 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
             // Here is a trick: "Alt Gr" sends LCTRL, then RALT. We only
             // want the RALT message, so we try to see if the next message
             // is a RALT message. In that case, this is a false LCTRL!
-            const DWORD time = GetMessageTime();
+            time = GetMessageTime();
 
             if (PeekMessage(&next, NULL, 0, 0, PM_NOREMOVE))
             {

@@ -511,6 +511,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
 - (void)resetCursorRects
 {
+    [self discardCursorRects];
     [self addCursorRect:[self bounds] cursor:_glfw.ns.cursor];
 }
 
@@ -726,6 +727,7 @@ static GLboolean createWindow(_GLFWwindow* window,
     [window->ns.object setContentView:window->ns.view];
     [window->ns.object setDelegate:window->ns.delegate];
     [window->ns.object setAcceptsMouseMovedEvents:YES];
+    [window->ns.object disableCursorRects];
     [window->ns.object center];
 
     if ([window->ns.object respondsToSelector:@selector(setRestorable:)])
@@ -949,12 +951,15 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
     {
         case GLFW_CURSOR_NORMAL:
             [window->ns.object disableCursorRects];
+            [window->ns.object invalidateCursorRectsForView:window->ns.view];
             break;
         case GLFW_CURSOR_HIDDEN:
             [window->ns.object enableCursorRects];
+            [window->ns.object invalidateCursorRectsForView:window->ns.view];
             break;
         case GLFW_CURSOR_CAPTURED:
             [window->ns.object enableCursorRects];
+            [window->ns.object invalidateCursorRectsForView:window->ns.view];
             CGAssociateMouseAndMouseCursorPosition(false);
             break;
     }

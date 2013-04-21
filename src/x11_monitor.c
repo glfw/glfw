@@ -41,7 +41,7 @@
 
 // Set the current video mode for the specified monitor
 //
-void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* mode)
+void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 {
     if (_glfw.x11.randr.available)
     {
@@ -82,10 +82,10 @@ void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* mode)
             if (mi->modeFlags & RR_Interlace)
                 continue;
 
-            unsigned int sizeDiff = (mi->width - mode->width) *
-                                    (mi->width - mode->width) +
-                                    (mi->height - mode->height) *
-                                    (mi->height - mode->height);
+            unsigned int sizeDiff = (mi->width - desired->width) *
+                                    (mi->width - desired->width) +
+                                    (mi->height - desired->height) *
+                                    (mi->height - desired->height);
 
             if (sizeDiff < leastSizeDiff)
             {

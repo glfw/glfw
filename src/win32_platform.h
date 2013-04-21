@@ -247,7 +247,7 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
                         const _GLFWfbconfig* fbconfig);
 
 // Fullscreen support
-int _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* mode);
+GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
 

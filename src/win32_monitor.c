@@ -50,13 +50,13 @@
 
 // Change the current video mode
 //
-int _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* mode)
+GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 {
     GLFWvidmode current;
     const GLFWvidmode* best;
     DEVMODE dm;
 
-    best = _glfwChooseVideoMode(monitor, mode);
+    best = _glfwChooseVideoMode(monitor, desired);
 
     _glfwPlatformGetVideoMode(monitor, &current);
     if (_glfwCompareVideoModes(&current, best) == 0)

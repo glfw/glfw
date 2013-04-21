@@ -767,13 +767,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    // Mac OS X needs non-zero color size, so set resonable values
-    int colorBits = fbconfig->redBits + fbconfig->greenBits + fbconfig->blueBits;
-    if (colorBits == 0)
-        colorBits = 24;
-    else if (colorBits < 15)
-        colorBits = 15;
-
     // Don't use accumulation buffer support; it's not accelerated
     // Aux buffers probably aren't accelerated either
 
@@ -787,9 +780,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (wndconfig->monitor)
     {
-        int bpp = colorBits + fbconfig->alphaBits;
-
-        if (!_glfwSetVideoMode(window->monitor, &window->videoMode.width, &window->videoMode.height, &bpp))
+        if (!_glfwSetVideoMode(window->monitor, &window->videoMode))
             return GL_FALSE;
 
         _glfwPlatformShowWindow(window);

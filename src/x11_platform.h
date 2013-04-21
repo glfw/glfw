@@ -229,7 +229,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 void _glfwDestroyContext(_GLFWwindow* window);
 
 // Fullscreen support
-void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* mode);
+void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
 // Joystick input

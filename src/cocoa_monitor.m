@@ -152,12 +152,13 @@ static void endFadeReservation(CGDisplayFadeReservationToken token)
 
 // Change the current video mode
 //
-GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, int* width, int* height, int* bpp)
+GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 {
     CGDisplayModeRef bestMode = NULL;
     CFArrayRef modes;
     CFIndex count, i;
     unsigned int leastSizeDiff = UINT_MAX;
+    const int bpp = desired->redBits - desired->greenBits - desired->blueBits;
 
     modes = CGDisplayCopyAllDisplayModes(monitor->ns.displayID, NULL);
     count = CFArrayGetCount(modes);
@@ -185,14 +186,13 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, int* width, int* height, int*
         int modeWidth = (int) CGDisplayModeGetWidth(mode);
         int modeHeight = (int) CGDisplayModeGetHeight(mode);
 
-        unsigned int sizeDiff = (abs(modeBPP - *bpp) << 25) |
-                                ((modeWidth - *width) * (modeWidth - *width) +
-                                 (modeHeight - *height) * (modeHeight - *height));
+        unsigned int sizeDiff = (abs(modeBPP - bpp) << 25) |
+                                ((modeWidth - desired->width) * (modeWidth - desired->width) +
+                                 (modeHeight - desired->height) * (modeHeight - desired->height));
 
         if (sizeDiff < leastSizeDiff)
         {
             bestMode = mode;
-
             leastSizeDiff = sizeDiff;
         }
     }

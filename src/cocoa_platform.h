@@ -138,7 +138,7 @@ void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
 // Fullscreen
-GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, int* width, int* height, int* bpp);
+GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
 // OpenGL support

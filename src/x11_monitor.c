@@ -224,6 +224,11 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* found)
     return monitors;
 }
 
+GLboolean _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
+{
+    return first->x11.crtc == second->x11.crtc;
+}
+
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {
     if (_glfw.x11.randr.available)

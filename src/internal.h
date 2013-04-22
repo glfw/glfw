@@ -363,6 +363,16 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
  */
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count);
 
+/*! @brief Checks whether two monitor objects represent the same monitor.
+ *
+ *  @param[in] first The first monitor.
+ *  @param[in] second The second monitor.
+ *  @return @c GL_TRUE if the monitor objects represent the same monitor, or @c
+ *  GL_FALSE otherwise.
+ *  @ingroup platform
+ */
+GLboolean _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second);
+
 /*! @copydoc glfwGetMonitorPos
  *  @ingroup platform
  */

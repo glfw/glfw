@@ -106,7 +106,7 @@ void _glfwInputMonitorChange(void)
             if (_glfw.monitors[j] == NULL)
                 continue;
 
-            if (strcmp(monitors[i]->name, _glfw.monitors[j]->name) == 0)
+            if (_glfwPlatformIsSameMonitor(monitors[i], _glfw.monitors[j]))
             {
                 // This monitor was connected before, so re-use the existing
                 // monitor object to preserve its address and user pointer

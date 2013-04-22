@@ -305,6 +305,11 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     return monitors;
 }
 
+GLboolean _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
+{
+    return first->ns.displayID == second->ns.displayID;
+}
+
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {
     const CGRect bounds = CGDisplayBounds(monitor->ns.displayID);

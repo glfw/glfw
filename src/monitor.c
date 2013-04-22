@@ -111,8 +111,6 @@ void _glfwInputMonitorChange(void)
                 // This monitor was connected before, so re-use the existing
                 // monitor object to preserve its address and user pointer
 
-                // TODO: Transfer monitor properties
-
                 _glfwDestroyMonitor(monitors[i]);
                 monitors[i] = _glfw.monitors[j];
                 _glfw.monitors[j] = NULL;

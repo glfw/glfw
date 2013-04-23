@@ -1700,9 +1700,6 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  glfwGetMouseButton returns @ref GLFW_PRESS the next time it is called even
  *  if the mouse button had been released before the call.
  *
- *  @bug **Mac OS X:** The @ref GLFW_CURSOR_HIDDEN value of @ref
- *  GLFW_CURSOR_MODE is not yet implemented.
- *
  *  @sa glfwGetInputMode
  *
  *  @ingroup input

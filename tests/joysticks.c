@@ -136,30 +136,32 @@ static void refresh_joysticks(void)
     {
         Joystick* j = joysticks + i;
 
-        if (glfwGetJoystickParam(GLFW_JOYSTICK_1 + i, GLFW_PRESENT))
+        if (glfwJoystickPresent(GLFW_JOYSTICK_1 + i))
         {
+            float* axes;
+            unsigned char* buttons;
             int axis_count, button_count;
 
             free(j->name);
             j->name = strdup(glfwGetJoystickName(GLFW_JOYSTICK_1 + i));
 
-            axis_count = glfwGetJoystickParam(GLFW_JOYSTICK_1 + i, GLFW_AXES);
+            axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1 + i, &axis_count);
             if (axis_count != j->axis_count)
             {
                 j->axis_count = axis_count;
                 j->axes = realloc(j->axes, j->axis_count * sizeof(float));
             }
 
-            glfwGetJoystickAxes(GLFW_JOYSTICK_1 + i, j->axes, j->axis_count);
+            memcpy(j->axes, axes, axis_count * sizeof(float));
 
-            button_count = glfwGetJoystickParam(GLFW_JOYSTICK_1 + i, GLFW_BUTTONS);
+            buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1 + i, &button_count);
             if (button_count != j->button_count)
             {
                 j->button_count = button_count;
                 j->buttons = realloc(j->buttons, j->button_count);
             }
 
-            glfwGetJoystickButtons(GLFW_JOYSTICK_1 + i, j->buttons, j->button_count);
+            memcpy(j->buttons, buttons, button_count * sizeof(unsigned char));
 
             if (!j->present)
             {

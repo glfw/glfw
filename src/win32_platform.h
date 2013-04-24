@@ -200,6 +200,8 @@ typedef struct _GLFWlibraryWin32
     } dwmapi;
 
     struct {
+        float           axes[6];
+        unsigned char   buttons[36]; // 32 buttons plus one hat
         char*           name;
     } joystick[GLFW_JOYSTICK_LAST + 1];
 

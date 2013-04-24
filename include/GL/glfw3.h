@@ -530,10 +530,6 @@ extern "C" {
 #define GLFW_CURSOR_HIDDEN          0x00040002
 #define GLFW_CURSOR_CAPTURED        0x00040003
 
-#define GLFW_PRESENT                0x00050001
-#define GLFW_AXES                   0x00050002
-#define GLFW_BUTTONS                0x00050003
-
 #define GLFW_GAMMA_RAMP_SIZE        256
 
 #define GLFW_CONNECTED              0x00061000
@@ -1930,37 +1926,31 @@ GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun cb
  *
  *  @ingroup input
  */
-GLFWAPI int glfwGetJoystickParam(int joy, int param);
+GLFWAPI int glfwJoystickPresent(int joy);
 
-/*! @brief Returns the values of axes of the specified joystick.
- *
- *  This function returns the current positions of axes of the specified
- *  joystick.
- *
+/*! @brief Returns the values of all axes of the specified joystick.
  *  @param[in] joy The joystick to query.
- *  @param[out] axes The array to hold the values.
- *  @param[in] numaxes The size of the provided array.
- *  @return The number of values written to `axes`, or zero if an error
- *  occurred.
+ *  @param[out] count The size of the returned array.
+ *  @return An array of axis values, or @c NULL if the joystick is not present.
+ *
+ *  @note The returned array is valid only until the next call to @ref
+ *  glfwGetJoystickAxes for that joystick.
  *
  *  @ingroup input
  */
-GLFWAPI int glfwGetJoystickAxes(int joy, float* axes, int numaxes);
+GLFWAPI float* glfwGetJoystickAxes(int joy, int* count);
 
-/*! @brief Returns the values of buttons of the specified joystick.
- *
- *  This function returns the current state of buttons of the specified
- *  joystick.
- *
+/*! @brief Returns the values of all buttons of the specified joystick.
  *  @param[in] joy The joystick to query.
- *  @param[out] buttons The array to hold the values.
- *  @param[in] numbuttons The size of the provided array.
- *  @return The number of values written to `buttons`, or zero if an error
- *  occurred.
+ *  @param[out] count The size of the returned array.
+ *  @return An array of axis values, or @c NULL if the joystick is not present.
+ *
+ *  @note The returned array is valid only until the next call to @ref
+ *  glfwGetJoystickButtons for that joystick.
  *
  *  @ingroup input
  */
-GLFWAPI int glfwGetJoystickButtons(int joy, unsigned char* buttons, int numbuttons);
+GLFWAPI unsigned char* glfwGetJoystickButtons(int joy, int* count);
 
 /*! @brief Returns the name of the specified joystick.
  *

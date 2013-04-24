@@ -78,18 +78,17 @@ typedef struct _GLFWwindowNS
 //------------------------------------------------------------------------
 typedef struct
 {
-    int present;
-    char name[256];
+    int             present;
+    char            name[256];
 
     IOHIDDeviceInterface** interface;
 
-    int numAxes;
-    int numButtons;
-    int numHats;
+    CFMutableArrayRef axisElements;
+    CFMutableArrayRef buttonElements;
+    CFMutableArrayRef hatElements;
 
-    CFMutableArrayRef axes;
-    CFMutableArrayRef buttons;
-    CFMutableArrayRef hats;
+    float*          axes;
+    unsigned char*  buttons;
 
 } _GLFWjoy;
 

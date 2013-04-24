@@ -189,10 +189,10 @@ typedef struct _GLFWlibraryX11
     struct {
         int         present;
         int         fd;
-        int         numAxes;
-        int         numButtons;
-        float*      axis;
-        unsigned char* button;
+        float*      axes;
+        int         axisCount;
+        unsigned char* buttons;
+        int         buttonCount;
         char*       name;
     } joystick[GLFW_JOYSTICK_LAST + 1];
 

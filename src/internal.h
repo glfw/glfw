@@ -407,20 +407,20 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string);
  */
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window);
 
-/*! @copydoc glfwGetJoystickParam
+/*! @copydoc glfwJoystickPresent
  *  @ingroup platform
  */
-int _glfwPlatformGetJoystickParam(int joy, int param);
+int _glfwPlatformJoystickPresent(int joy);
 
 /*! @copydoc glfwGetJoystickAxes
  *  @ingroup platform
  */
-int _glfwPlatformGetJoystickAxes(int joy, float* axes, int numaxes);
+float* _glfwPlatformGetJoystickAxes(int joy, int* count);
 
 /*! @copydoc glfwGetJoystickButtons
  *  @ingroup platform
  */
-int _glfwPlatformGetJoystickButtons(int joy, unsigned char* buttons, int numbuttons);
+unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count);
 
 /*! @copydoc glfwGetJoystickName
  *  @ingroup platform

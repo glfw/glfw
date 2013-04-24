@@ -121,4 +121,11 @@ glfwShowWindow and created initially hidden with the `GLFW_VISIBLE` window hint.
 This allows for off-screen rendering in a way compatible with most drivers, as
 well as moving a window to a specific position before showing it.
 
+
+@subsection news_30_undecorated Undecorated windows
+
+Windowed mode windows can now be created without decorations, i.e. things like
+a frame, a title bar, with the `GLFW_DECORATED` window hint.  This allows for
+the creation of things like splash screens.
+
 */

@@ -125,40 +125,6 @@ typedef struct _GLFWmonitor     _GLFWmonitor;
 // Internal types
 //========================================================================
 
-/*! @brief Window, framebuffer and context hints.
- *
- *  It is used only by shared code and only to store parameters passed to us by
- *  @ref glfwWindowHint for use by @ref glfwCreateWindow.
- */
-struct _GLFWhints
-{
-    int         redBits;
-    int         greenBits;
-    int         blueBits;
-    int         alphaBits;
-    int         depthBits;
-    int         stencilBits;
-    int         accumRedBits;
-    int         accumGreenBits;
-    int         accumBlueBits;
-    int         accumAlphaBits;
-    int         auxBuffers;
-    GLboolean   stereo;
-    GLboolean   resizable;
-    GLboolean   visible;
-    GLboolean   decorated;
-    int         samples;
-    GLboolean   sRGB;
-    int         clientAPI;
-    int         glMajor;
-    int         glMinor;
-    GLboolean   glForward;
-    GLboolean   glDebug;
-    int         glProfile;
-    int         glRobustness;
-};
-
-
 /*! @brief Window and context configuration.
  *
  *  Parameters relating to the creation of the context and window but not
@@ -289,7 +255,32 @@ struct _GLFWmonitor
  */
 struct _GLFWlibrary
 {
-    _GLFWhints      hints;
+    struct {
+        int         redBits;
+        int         greenBits;
+        int         blueBits;
+        int         alphaBits;
+        int         depthBits;
+        int         stencilBits;
+        int         accumRedBits;
+        int         accumGreenBits;
+        int         accumBlueBits;
+        int         accumAlphaBits;
+        int         auxBuffers;
+        GLboolean   stereo;
+        GLboolean   resizable;
+        GLboolean   visible;
+        GLboolean   decorated;
+        int         samples;
+        GLboolean   sRGB;
+        int         clientAPI;
+        int         glMajor;
+        int         glMinor;
+        GLboolean   glForward;
+        GLboolean   glDebug;
+        int         glProfile;
+        int         glRobustness;
+    } hints;
 
     double          cursorPosX, cursorPosY;
 

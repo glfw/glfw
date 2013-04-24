@@ -1580,6 +1580,11 @@ GLFWAPI GLFWwindowrefreshfun glfwSetWindowRefreshCallback(GLFWwindow* window, GL
  *  This function sets the focus callback of the specified window, which is
  *  called when the window gains or loses focus.
  *
+ *  After the focus callback is called for a window that lost focus, synthetic
+ *  key and mouse button release events will be generated for all such that had
+ *  been pressed.  For more information, see @ref glfwSetKeyCallback and @ref
+ *  glfwSetMouseButtonCallback.
+ *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
@@ -1800,6 +1805,12 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
  *  layout.  If you want to input text, use the [character callback](@ref
  *  glfwSetCharCallback) instead.
  *
+ *  When a window loses focus, it will generate synthetic key release events
+ *  for all pressed keys.  You can tell these events from user-generated events
+ *  by the fact that the synthetic ones are generated after the window has lost
+ *  focus, i.e. `GLFW_FOCUSED` will be false and the focus callback will have
+ *  already been called.
+ *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new key callback, or `NULL` to remove the currently
  *  set callback.
@@ -1833,6 +1844,12 @@ GLFWAPI GLFWcharfun glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
  *
  *  This function sets the mouse button callback of the specified window, which
  *  is called when a mouse button is pressed or released.
+ *
+ *  When a window loses focus, it will generate synthetic mouse button release
+ *  events for all pressed mouse buttons.  You can tell these events from
+ *  user-generated events by the fact that the synthetic ones are generated
+ *  after the window has lost focus, i.e. `GLFW_FOCUSED` will be false and the
+ *  focus callback will have already been called.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set

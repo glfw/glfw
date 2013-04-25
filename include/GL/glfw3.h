@@ -1758,6 +1758,10 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
  *  the cursor position is unbounded and limited only by the minimum and maximum
  *  values of a `double`.
  *
+ *  The coordinate can be converted to their integer equivalents with the
+ *  `floor` function.  Casting directly to an integer type works for positive
+ *  coordinates, but fails for negative ones.
+ *
  *  @param[in] window The desired window.
  *  @param[out] xpos The cursor x-coordinate, relative to the left edge of the
  *  client area, or `NULL`.

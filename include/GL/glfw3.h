@@ -537,7 +537,7 @@ extern "C" {
 #define GLFW_OPENGL_CORE_PROFILE    0x00000001
 #define GLFW_OPENGL_COMPAT_PROFILE  0x00000002
 
-#define GLFW_CURSOR_MODE            0x00030001
+#define GLFW_CURSOR                 0x00030001
 #define GLFW_STICKY_KEYS            0x00030002
 #define GLFW_STICKY_MOUSE_BUTTONS   0x00030003
 
@@ -1684,7 +1684,7 @@ GLFWAPI void glfwWaitEvents(void);
 /*! @brief Returns the value of an input option for the specified window.
  *
  *  @param[in] window The window to query.
- *  @param[in] mode One of `GLFW_CURSOR_MODE`, `GLFW_STICKY_KEYS` or
+ *  @param[in] mode One of `GLFW_CURSOR`, `GLFW_STICKY_KEYS` or
  *  `GLFW_STICKY_MOUSE_BUTTONS`.
  *
  *  @sa glfwSetInputMode
@@ -1695,11 +1695,11 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
 
 /*! @brief Sets an input option for the specified window.
  *  @param[in] window The window whose input mode to set.
- *  @param[in] mode One of `GLFW_CURSOR_MODE`, `GLFW_STICKY_KEYS` or
+ *  @param[in] mode One of `GLFW_CURSOR`, `GLFW_STICKY_KEYS` or
  *  `GLFW_STICKY_MOUSE_BUTTONS`.
  *  @param[in] value The new value of the specified input mode.
  *
- *  If `mode` is `GLFW_CURSOR_MODE`, the value must be one of the supported input
+ *  If `mode` is `GLFW_CURSOR`, the value must be one of the supported input
  *  modes:
  *  - `GLFW_CURSOR_NORMAL` makes the cursor visible and behaving normally.
  *  - `GLFW_CURSOR_HIDDEN` makes the cursor invisible when it is over the client

@@ -41,15 +41,15 @@ static double cursor_y;
 
 static void toggle_cursor(GLFWwindow* window)
 {
-    if (glfwGetInputMode(window, GLFW_CURSOR_MODE) == GLFW_CURSOR_CAPTURED)
+    if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_CAPTURED)
     {
         printf("Released cursor\n");
-        glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_NORMAL);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
     else
     {
         printf("Captured cursor\n");
-        glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_CAPTURED);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_CAPTURED);
     }
 }
 

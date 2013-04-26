@@ -269,7 +269,7 @@ systems, where it uses the [soname](https://en.wikipedia.org/wiki/soname)
 | `GLFW_FSAA_SAMPLES`         | `GLFW_SAMPLES`               | Renamed to match the OpenGL API |
 | `GLFW_ACTIVE`               | `GLFW_FOCUSED`               | Renamed to match the window focus callback |
 | `GLFW_WINDOW_NO_RESIZE`     | `GLFW_RESIZABLE`             | The default has been inverted |
-| `GLFW_MOUSE_CURSOR`         | `GLFW_CURSOR_MODE`           | Used with @ref glfwSetInputMode |
+| `GLFW_MOUSE_CURSOR`         | `GLFW_CURSOR`                | Used with @ref glfwSetInputMode |
 | `GLFW_KEY_ESC`              | `GLFW_KEY_ESCAPE`            |       |
 | `GLFW_KEY_DEL`              | `GLFW_KEY_DELETE`            |       |
 | `GLFW_KEY_PAGEUP`           | `GLFW_KEY_PAGE_UP`           |       |

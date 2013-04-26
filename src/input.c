@@ -223,7 +223,7 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* handle, int mode)
 
     switch (mode)
     {
-        case GLFW_CURSOR_MODE:
+        case GLFW_CURSOR:
             return window->cursorMode;
         case GLFW_STICKY_KEYS:
             return window->stickyKeys;
@@ -243,7 +243,7 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
 
     switch (mode)
     {
-        case GLFW_CURSOR_MODE:
+        case GLFW_CURSOR:
             setCursorMode(window, value);
             break;
         case GLFW_STICKY_KEYS:

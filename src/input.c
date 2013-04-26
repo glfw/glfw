@@ -42,7 +42,7 @@ static void setCursorMode(_GLFWwindow* window, int newMode)
 
     if (newMode != GLFW_CURSOR_NORMAL &&
         newMode != GLFW_CURSOR_HIDDEN &&
-        newMode != GLFW_CURSOR_CAPTURED)
+        newMode != GLFW_CURSOR_DISABLED)
     {
         _glfwInputError(GLFW_INVALID_ENUM, NULL);
         return;
@@ -54,9 +54,9 @@ static void setCursorMode(_GLFWwindow* window, int newMode)
 
     if (window == _glfw.focusedWindow)
     {
-        if (oldMode == GLFW_CURSOR_CAPTURED)
+        if (oldMode == GLFW_CURSOR_DISABLED)
             _glfwPlatformSetCursorPos(window, _glfw.cursorPosX, _glfw.cursorPosY);
-        else if (newMode == GLFW_CURSOR_CAPTURED)
+        else if (newMode == GLFW_CURSOR_DISABLED)
         {
             int width, height;
 
@@ -179,7 +179,7 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
 
 void _glfwInputCursorMotion(_GLFWwindow* window, double x, double y)
 {
-    if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+    if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         if (x == 0.0 && y == 0.0)
             return;
@@ -333,8 +333,8 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, double xpos, double ypos)
     window->cursorPosX = xpos;
     window->cursorPosY = ypos;
 
-    // Do not move physical cursor in locked cursor mode
-    if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+    // Do not move physical cursor if it is disabled
+    if (window->cursorMode == GLFW_CURSOR_DISABLED)
         return;
 
     // Update physical cursor position

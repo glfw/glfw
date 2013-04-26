@@ -116,7 +116,7 @@ static void centerCursor(_GLFWwindow *window)
     _glfwInputWindowSize(window, width, height);
     _glfwInputWindowDamage(window);
 
-    if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+    if (window->cursorMode == GLFW_CURSOR_DISABLED)
         centerCursor(window);
 }
 
@@ -128,7 +128,7 @@ static void centerCursor(_GLFWwindow *window)
     _glfwPlatformGetWindowPos(window, &x, &y);
     _glfwInputWindowPos(window, x, y);
 
-    if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+    if (window->cursorMode == GLFW_CURSOR_DISABLED)
         centerCursor(window);
 }
 
@@ -149,7 +149,7 @@ static void centerCursor(_GLFWwindow *window)
 {
     _glfwInputWindowFocus(window, GL_TRUE);
 
-    if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+    if (window->cursorMode == GLFW_CURSOR_DISABLED)
         centerCursor(window);
 }
 
@@ -450,7 +450,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
 - (void)mouseMoved:(NSEvent *)event
 {
-    if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+    if (window->cursorMode == GLFW_CURSOR_DISABLED)
         _glfwInputCursorMotion(window, [event deltaX], [event deltaY]);
     else
     {
@@ -1020,7 +1020,7 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
         [window->ns.object invalidateCursorRectsForView:window->ns.view];
     }
 
-    if (mode == GLFW_CURSOR_CAPTURED)
+    if (mode == GLFW_CURSOR_DISABLED)
     {
         CGAssociateMouseAndMouseCursorPosition(false);
 

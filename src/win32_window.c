@@ -412,7 +412,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             {
                 // The window was focused
 
-                if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+                if (window->cursorMode == GLFW_CURSOR_DISABLED)
                     captureCursor(window);
                 else if (window->cursorMode == GLFW_CURSOR_HIDDEN)
                     hideCursor(window);
@@ -579,7 +579,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             {
                 double x, y;
 
-                if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+                if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 {
                     if (_glfw.focusedWindow != window)
                         return 0;
@@ -638,7 +638,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_SIZE:
         {
-            if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+            if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 updateClipRect(window);
 
             _glfwInputWindowSize(window, LOWORD(lParam), HIWORD(lParam));
@@ -647,7 +647,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOVE:
         {
-            if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+            if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 updateClipRect(window);
 
             _glfwInputWindowPos(window, LOWORD(lParam), HIWORD(lParam));
@@ -1071,7 +1071,7 @@ void _glfwPlatformPollEvents(void)
         }
 
         // Did the cursor move in an focused window that has captured the cursor
-        if (window->cursorMode == GLFW_CURSOR_CAPTURED &&
+        if (window->cursorMode == GLFW_CURSOR_DISABLED &&
             !window->win32.cursorCentered)
         {
             int width, height;
@@ -1109,7 +1109,7 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
         case GLFW_CURSOR_HIDDEN:
             hideCursor(window);
             break;
-        case GLFW_CURSOR_CAPTURED:
+        case GLFW_CURSOR_DISABLED:
             captureCursor(window);
             break;
     }

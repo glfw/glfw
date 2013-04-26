@@ -626,7 +626,7 @@ static void processEvent(XEvent *event)
 
                 int x, y;
 
-                if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+                if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 {
                     if (_glfw.focusedWindow != window)
                         break;
@@ -705,7 +705,7 @@ static void processEvent(XEvent *event)
         {
             _glfwInputWindowFocus(window, GL_TRUE);
 
-            if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+            if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 captureCursor(window);
 
             break;
@@ -715,7 +715,7 @@ static void processEvent(XEvent *event)
         {
             _glfwInputWindowFocus(window, GL_FALSE);
 
-            if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+            if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 showCursor(window);
 
             break;
@@ -788,7 +788,7 @@ static void processEvent(XEvent *event)
 
                             double x, y;
 
-                            if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+                            if (window->cursorMode == GLFW_CURSOR_DISABLED)
                             {
                                 if (_glfw.focusedWindow != window)
                                     break;
@@ -1092,7 +1092,7 @@ void _glfwPlatformPollEvents(void)
     window = _glfw.focusedWindow;
     if (window)
     {
-        if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+        if (window->cursorMode == GLFW_CURSOR_DISABLED)
         {
             int width, height;
             _glfwPlatformGetWindowSize(window, &width, &height);
@@ -1148,7 +1148,7 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
         case GLFW_CURSOR_HIDDEN:
             hideCursor(window);
             break;
-        case GLFW_CURSOR_CAPTURED:
+        case GLFW_CURSOR_DISABLED:
             captureCursor(window);
             break;
     }

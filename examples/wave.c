@@ -320,7 +320,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
     if (action == GLFW_PRESS)
     {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_CAPTURED);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         locked = GL_TRUE;
     }
     else

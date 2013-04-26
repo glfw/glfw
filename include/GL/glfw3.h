@@ -543,7 +543,7 @@ extern "C" {
 
 #define GLFW_CURSOR_NORMAL          0x00040001
 #define GLFW_CURSOR_HIDDEN          0x00040002
-#define GLFW_CURSOR_CAPTURED        0x00040003
+#define GLFW_CURSOR_DISABLED        0x00040003
 
 #define GLFW_GAMMA_RAMP_SIZE        256
 
@@ -1704,8 +1704,8 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  - `GLFW_CURSOR_NORMAL` makes the cursor visible and behaving normally.
  *  - `GLFW_CURSOR_HIDDEN` makes the cursor invisible when it is over the client
  *    area of the window.
- *  - `GLFW_CURSOR_CAPTURED` makes the cursor invisible and unable to leave the
- *    window but unconstrained in terms of position.
+ *  - `GLFW_CURSOR_DISABLED` disables the cursor and removes any limitations on
+ *    cursor movement.
  *
  *  If `mode` is `GLFW_STICKY_KEYS`, the value must be either `GL_TRUE` to
  *  enable sticky keys, or `GL_FALSE` to disable it.  If sticky keys are
@@ -1773,9 +1773,9 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
  *  This function returns the last reported position of the cursor to the
  *  specified window.
  *
- *  If the cursor mode of the specified window is `GLFW_CURSOR_CAPTURED` then
- *  the cursor position is unbounded and limited only by the minimum and maximum
- *  values of a `double`.
+ *  If the cursor is disabled (with `GLFW_CURSOR_DISABLED`) then the cursor
+ *  position is unbounded and limited only by the minimum and maximum values of
+ *  a `double`.
  *
  *  The coordinate can be converted to their integer equivalents with the
  *  `floor` function.  Casting directly to an integer type works for positive
@@ -1799,9 +1799,9 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *  focused.  If the window does not have focus when this function is called, it
  *  fails silently.
  *
- *  If the cursor mode of the specified window is `GLFW_CURSOR_CAPTURED` then
- *  the cursor position is unbounded and limited only by the minimum and maximum
- *  values of a `double`.
+ *  If the cursor is disabled (with `GLFW_CURSOR_DISABLED`) then the cursor
+ *  position is unbounded and limited only by the minimum and maximum values of
+ *  a `double`.
  *
  *  @param[in] window The desired window.
  *  @param[in] xpos The desired x-coordinate, relative to the left edge of the

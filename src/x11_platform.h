@@ -66,11 +66,7 @@
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorX11 x11
 
-// Clipboard format atom indices (in order of preference)
-#define _GLFW_CLIPBOARD_FORMAT_UTF8     0
-#define _GLFW_CLIPBOARD_FORMAT_COMPOUND 1
-#define _GLFW_CLIPBOARD_FORMAT_STRING   2
-#define _GLFW_CLIPBOARD_FORMAT_COUNT    3
+#define _GLFW_CLIPBOARD_FORMAT_COUNT 3
 
 
 //========================================================================

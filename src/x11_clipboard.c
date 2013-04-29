@@ -49,14 +49,9 @@ static Bool isSelectionMessage(Display* display, XEvent* event, XPointer pointer
     return False;
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-// Set the specified property to the contents of the requested selection
+// Set the specified property to the selection converted to the requested target
 //
-Atom _glfwWriteSelection(XSelectionRequestEvent* request)
+static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
 {
     int i;
     const Atom formats[] = { _glfw.x11.UTF8_STRING,
@@ -67,6 +62,7 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
     if (request->property == None)
     {
         // The requestor is a legacy client (ICCCM section 2.2)
+        // We don't support legacy clients, so fail here
         return None;
     }
 
@@ -145,8 +141,8 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
 
     if (request->target == _glfw.x11.SAVE_TARGETS)
     {
-        // Conversion by clients to SAVE_TARGETS should be treated like
-        // a side-effect target without side effects
+        // The request is a check whether we support SAVE_TARGETS
+        // It should be handled as a no-op side effect target
 
         XChangeProperty(_glfw.x11.display,
                         request->requestor,
@@ -159,6 +155,8 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
 
         return request->property;
     }
+
+    // Conversion to a data target was requested
 
     for (i = 0;  i < formatCount;  i++)
     {
@@ -179,29 +177,42 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
         }
     }
 
+    // The requested target is not supported
+
     return None;
 }
 
-// Save clipboard data to clipboard manager
-//
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+void _glfwHandleSelectionClear(XEvent* event)
+{
+    free(_glfw.x11.selection.string);
+    _glfw.x11.selection.string = NULL;
+}
+
+void _glfwHandleSelectionRequest(XEvent* event)
+{
+    const XSelectionRequestEvent* request = &event->xselectionrequest;
+
+    XEvent response;
+    memset(&response, 0, sizeof(response));
+
+    response.xselection.property = writeTargetToProperty(request);
+    response.xselection.type = SelectionNotify;
+    response.xselection.display = request->display;
+    response.xselection.requestor = request->requestor;
+    response.xselection.selection = request->selection;
+    response.xselection.target = request->target;
+    response.xselection.time = request->time;
+
+    XSendEvent(_glfw.x11.display, request->requestor, False, 0, &response);
+}
+
 void _glfwPushSelectionToManager(_GLFWwindow* window)
 {
-    XEvent request;
-
-    if (XGetSelectionOwner(_glfw.x11.display, _glfw.x11.CLIPBOARD) !=
-        window->x11.handle)
-    {
-        // This window does not own the clipboard selection
-        return;
-    }
-
-    if (XGetSelectionOwner(_glfw.x11.display, _glfw.x11.CLIPBOARD_MANAGER) ==
-        None)
-    {
-        // There is no running clipboard manager
-        return;
-    }
-
     XConvertSelection(_glfw.x11.display,
                       _glfw.x11.CLIPBOARD_MANAGER,
                       _glfw.x11.SAVE_TARGETS,
@@ -211,49 +222,37 @@ void _glfwPushSelectionToManager(_GLFWwindow* window)
 
     for (;;)
     {
-        if (!XCheckIfEvent(_glfw.x11.display, &request, isSelectionMessage, NULL))
+        XEvent event;
+
+        if (!XCheckIfEvent(_glfw.x11.display, &event, isSelectionMessage, NULL))
             continue;
 
-        switch (request.type)
+        switch (event.type)
         {
             case SelectionRequest:
-            {
-                XEvent response;
-                memset(&response, 0, sizeof(response));
-
-                response.xselection.property = _glfwWriteSelection(&request.xselectionrequest);
-                response.xselection.type = SelectionNotify;
-                response.xselection.display = request.xselectionrequest.display;
-                response.xselection.requestor = request.xselectionrequest.requestor;
-                response.xselection.selection = request.xselectionrequest.selection;
-                response.xselection.target = request.xselectionrequest.target;
-                response.xselection.time = request.xselectionrequest.time;
-
-                XSendEvent(_glfw.x11.display,
-                           request.xselectionrequest.requestor,
-                           False, 0, &response);
-
+                _glfwHandleSelectionRequest(&event);
                 break;
-            }
 
             case SelectionClear:
-            {
-                free(_glfw.x11.selection.string);
-                _glfw.x11.selection.string = NULL;
+                _glfwHandleSelectionClear(&event);
                 break;
-            }
 
             case SelectionNotify:
             {
-                if (request.xselection.target == _glfw.x11.SAVE_TARGETS)
+                if (event.xselection.target == _glfw.x11.SAVE_TARGETS)
+                {
+                    // This means one of two things; either the selection was
+                    // not owned, which means there is no clipboard manager, or
+                    // the transfer to the clipboard manager has completed
+                    // In either case, it means we are done here
                     return;
+                }
 
                 break;
             }
         }
     }
 }
-
 
 
 //////////////////////////////////////////////////////////////////////////

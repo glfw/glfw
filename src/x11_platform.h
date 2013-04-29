@@ -237,7 +237,8 @@ void _glfwTerminateJoysticks(void);
 long _glfwKeySym2Unicode(KeySym keysym);
 
 // Clipboard handling
-Atom _glfwWriteSelection(XSelectionRequestEvent* request);
+void _glfwHandleSelectionClear(XEvent* event);
+void _glfwHandleSelectionRequest(XEvent* event);
 void _glfwPushSelectionToManager(_GLFWwindow* window);
 
 // Window support

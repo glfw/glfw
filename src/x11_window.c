@@ -719,33 +719,13 @@ static void processEvent(XEvent *event)
 
         case SelectionClear:
         {
-            // The ownership of the clipboard selection was lost
-
-            free(_glfw.x11.selection.string);
-            _glfw.x11.selection.string = NULL;
+            _glfwHandleSelectionClear(event);
             break;
         }
 
         case SelectionRequest:
         {
-            // The contents of the clipboard selection was requested
-
-            XSelectionRequestEvent* request = &event->xselectionrequest;
-
-            XEvent response;
-            memset(&response, 0, sizeof(response));
-
-            response.xselection.property = _glfwWriteSelection(request);
-            response.xselection.type = SelectionNotify;
-            response.xselection.display = request->display;
-            response.xselection.requestor = request->requestor;
-            response.xselection.selection = request->selection;
-            response.xselection.target = request->target;
-            response.xselection.time = request->time;
-
-            XSendEvent(_glfw.x11.display,
-                       request->requestor,
-                       False, 0, &response);
+            _glfwHandleSelectionRequest(event);
             break;
         }
 
@@ -904,7 +884,11 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 
     if (window->x11.handle)
     {
-        _glfwPushSelectionToManager(window);
+        if (window->x11.handle ==
+            XGetSelectionOwner(_glfw.x11.display, _glfw.x11.CLIPBOARD))
+        {
+            _glfwPushSelectionToManager(window);
+        }
 
         XDeleteContext(_glfw.x11.display, window->x11.handle, _glfw.x11.context);
         XUnmapWindow(_glfw.x11.display, window->x11.handle);

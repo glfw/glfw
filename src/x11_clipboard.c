@@ -67,6 +67,57 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
         return request->property;
     }
 
+    if (request->target == _glfw.x11.MULTIPLE)
+    {
+        // Multiple conversions were requested
+
+        Atom* targets;
+        unsigned long i, count;
+
+        count = _glfwGetWindowProperty(request->requestor,
+                                       request->property,
+                                       XA_ATOM,
+                                       (unsigned char**) &targets);
+
+        for (i = 0;  i < count;  i += 2)
+        {
+            int j;
+
+            for (j = 0;  j < _GLFW_CLIPBOARD_FORMAT_COUNT;  j++)
+            {
+                if (targets[i] == _glfw.x11.selection.formats[j])
+                    break;
+            }
+
+            if (j < _GLFW_CLIPBOARD_FORMAT_COUNT)
+            {
+                XChangeProperty(_glfw.x11.display,
+                                request->requestor,
+                                targets[i + 1],
+                                targets[i],
+                                8,
+                                PropModeReplace,
+                                (unsigned char*) _glfw.x11.selection.string,
+                                strlen(_glfw.x11.selection.string));
+            }
+            else
+                targets[i + 1] = None;
+        }
+
+        XChangeProperty(_glfw.x11.display,
+                        request->requestor,
+                        request->property,
+                        request->target,
+                        32,
+                        PropModeReplace,
+                        (unsigned char*) targets,
+                        count);
+
+        XFree(targets);
+
+        return request->property;
+    }
+
     for (i = 0;  i < _GLFW_CLIPBOARD_FORMAT_COUNT;  i++)
     {
         if (request->target == _glfw.x11.selection.formats[i])

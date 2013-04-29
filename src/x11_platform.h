@@ -119,6 +119,7 @@ typedef struct _GLFWlibraryX11
 
     // Selection atoms
     Atom            TARGETS;
+    Atom            MULTIPLE;
     Atom            CLIPBOARD;
     Atom            UTF8_STRING;
     Atom            COMPOUND_STRING;

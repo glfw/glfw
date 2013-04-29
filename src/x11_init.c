@@ -544,6 +544,7 @@ static GLboolean initDisplay(void)
 
     // Find or create standard clipboard atoms
     _glfw.x11.TARGETS = XInternAtom(_glfw.x11.display, "TARGETS", False);
+    _glfw.x11.MULTIPLE = XInternAtom(_glfw.x11.display, "MULTIPLE", False);
     _glfw.x11.CLIPBOARD = XInternAtom(_glfw.x11.display, "CLIPBOARD", False);
 
     // Store clipboard format atoms in order of preference

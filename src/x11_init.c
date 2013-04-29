@@ -547,11 +547,6 @@ static GLboolean initDisplay(void)
     _glfw.x11.MULTIPLE = XInternAtom(_glfw.x11.display, "MULTIPLE", False);
     _glfw.x11.CLIPBOARD = XInternAtom(_glfw.x11.display, "CLIPBOARD", False);
 
-    // Store clipboard format atoms in order of preference
-    _glfw.x11.selection.formats[0] = _glfw.x11.UTF8_STRING;
-    _glfw.x11.selection.formats[1] = _glfw.x11.COMPOUND_STRING;
-    _glfw.x11.selection.formats[2] = XA_STRING;
-
     return GL_TRUE;
 }
 

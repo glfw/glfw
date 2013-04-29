@@ -66,8 +66,6 @@
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorX11 x11
 
-#define _GLFW_CLIPBOARD_FORMAT_COUNT 3
-
 
 //========================================================================
 // GLFW platform specific types
@@ -177,7 +175,6 @@ typedef struct _GLFWlibraryX11
     } timer;
 
     struct {
-        Atom        formats[_GLFW_CLIPBOARD_FORMAT_COUNT];
         char*       string;
         Atom        property;
     } selection;

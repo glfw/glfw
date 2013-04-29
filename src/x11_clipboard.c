@@ -44,6 +44,10 @@
 Atom _glfwWriteSelection(XSelectionRequestEvent* request)
 {
     int i;
+    const Atom formats[] = { _glfw.x11.UTF8_STRING,
+                             _glfw.x11.COMPOUND_STRING,
+                             XA_STRING };
+    const int formatCount = sizeof(formats) / sizeof(formats[0]);
 
     if (request->property == None)
     {
@@ -55,14 +59,20 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
     {
         // The list of supported targets was requested
 
+        const Atom targets[] = { _glfw.x11.TARGETS,
+                                 _glfw.x11.MULTIPLE,
+                                 _glfw.x11.UTF8_STRING,
+                                 _glfw.x11.COMPOUND_STRING,
+                                 XA_STRING };
+
         XChangeProperty(_glfw.x11.display,
                         request->requestor,
                         request->property,
                         XA_ATOM,
                         32,
                         PropModeReplace,
-                        (unsigned char*) _glfw.x11.selection.formats,
-                        _GLFW_CLIPBOARD_FORMAT_COUNT);
+                        (unsigned char*) targets,
+                        sizeof(targets) / sizeof(targets[0]));
 
         return request->property;
     }
@@ -83,13 +93,13 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
         {
             int j;
 
-            for (j = 0;  j < _GLFW_CLIPBOARD_FORMAT_COUNT;  j++)
+            for (j = 0;  j < formatCount;  j++)
             {
-                if (targets[i] == _glfw.x11.selection.formats[j])
+                if (targets[i] == formats[j])
                     break;
             }
 
-            if (j < _GLFW_CLIPBOARD_FORMAT_COUNT)
+            if (j < formatCount)
             {
                 XChangeProperty(_glfw.x11.display,
                                 request->requestor,
@@ -118,9 +128,9 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
         return request->property;
     }
 
-    for (i = 0;  i < _GLFW_CLIPBOARD_FORMAT_COUNT;  i++)
+    for (i = 0;  i < formatCount;  i++)
     {
-        if (request->target == _glfw.x11.selection.formats[i])
+        if (request->target == formats[i])
         {
             // The requested target is one we support
 
@@ -165,6 +175,9 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {
     int i;
+    const Atom formats[] = { _glfw.x11.UTF8_STRING,
+                             _glfw.x11.COMPOUND_STRING,
+                             XA_STRING };
 
     if (_glfwFindWindowByHandle(XGetSelectionOwner(_glfw.x11.display,
                                                    _glfw.x11.CLIPBOARD)))
@@ -177,14 +190,14 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     free(_glfw.x11.selection.string);
     _glfw.x11.selection.string = NULL;
 
-    for (i = 0;  i < _GLFW_CLIPBOARD_FORMAT_COUNT;  i++)
+    for (i = 0;  i < sizeof(formats) / sizeof(formats[0]);  i++)
     {
         char* data;
         XEvent event;
 
         XConvertSelection(_glfw.x11.display,
                           _glfw.x11.CLIPBOARD,
-                          _glfw.x11.selection.formats[i],
+                          formats[i],
                           _glfw.x11.selection.property,
                           window->x11.handle, CurrentTime);
 

@@ -537,6 +537,7 @@ static GLboolean initDisplay(void)
         XInternAtom(_glfw.x11.display, "UTF8_STRING", False);
     _glfw.x11.COMPOUND_STRING =
         XInternAtom(_glfw.x11.display, "COMPOUND_STRING", False);
+    _glfw.x11.ATOM_PAIR = XInternAtom(_glfw.x11.display, "ATOM_PAIR", False);
 
     // Find or create selection property atom
     _glfw.x11.GLFW_SELECTION =
@@ -546,6 +547,12 @@ static GLboolean initDisplay(void)
     _glfw.x11.TARGETS = XInternAtom(_glfw.x11.display, "TARGETS", False);
     _glfw.x11.MULTIPLE = XInternAtom(_glfw.x11.display, "MULTIPLE", False);
     _glfw.x11.CLIPBOARD = XInternAtom(_glfw.x11.display, "CLIPBOARD", False);
+
+    // Find or create clipboard manager atoms
+    _glfw.x11.CLIPBOARD_MANAGER =
+        XInternAtom(_glfw.x11.display, "CLIPBOARD_MANAGER", False);
+    _glfw.x11.SAVE_TARGETS =
+        XInternAtom(_glfw.x11.display, "SAVE_TARGETS", False);
 
     return GL_TRUE;
 }

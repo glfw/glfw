@@ -35,6 +35,21 @@
 #include <stdlib.h>
 
 
+// Returns whether the event is a selection event
+//
+static Bool isSelectionMessage(Display* display, XEvent* event, XPointer pointer)
+{
+    if (event->type == SelectionRequest ||
+        event->type == SelectionNotify ||
+        event->type == SelectionClear)
+    {
+        return True;
+    }
+
+    return False;
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -86,7 +101,7 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
 
         count = _glfwGetWindowProperty(request->requestor,
                                        request->property,
-                                       XA_ATOM,
+                                       _glfw.x11.ATOM_PAIR,
                                        (unsigned char**) &targets);
 
         for (i = 0;  i < count;  i += 2)
@@ -117,13 +132,30 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
         XChangeProperty(_glfw.x11.display,
                         request->requestor,
                         request->property,
-                        request->target,
+                        _glfw.x11.ATOM_PAIR,
                         32,
                         PropModeReplace,
                         (unsigned char*) targets,
                         count);
 
         XFree(targets);
+
+        return request->property;
+    }
+
+    if (request->target == _glfw.x11.SAVE_TARGETS)
+    {
+        // Conversion by clients to SAVE_TARGETS should be treated like
+        // a side-effect target without side effects
+
+        XChangeProperty(_glfw.x11.display,
+                        request->requestor,
+                        request->property,
+                        XInternAtom(_glfw.x11.display, "NULL", False),
+                        32,
+                        PropModeReplace,
+                        NULL,
+                        0);
 
         return request->property;
     }
@@ -149,6 +181,79 @@ Atom _glfwWriteSelection(XSelectionRequestEvent* request)
 
     return None;
 }
+
+// Save clipboard data to clipboard manager
+//
+void _glfwPushSelectionToManager(_GLFWwindow* window)
+{
+    XEvent request;
+
+    if (XGetSelectionOwner(_glfw.x11.display, _glfw.x11.CLIPBOARD) !=
+        window->x11.handle)
+    {
+        // This window does not own the clipboard selection
+        return;
+    }
+
+    if (XGetSelectionOwner(_glfw.x11.display, _glfw.x11.CLIPBOARD_MANAGER) ==
+        None)
+    {
+        // There is no running clipboard manager
+        return;
+    }
+
+    XConvertSelection(_glfw.x11.display,
+                      _glfw.x11.CLIPBOARD_MANAGER,
+                      _glfw.x11.SAVE_TARGETS,
+                      None,
+                      window->x11.handle,
+                      CurrentTime);
+
+    for (;;)
+    {
+        if (!XCheckIfEvent(_glfw.x11.display, &request, isSelectionMessage, NULL))
+            continue;
+
+        switch (request.type)
+        {
+            case SelectionRequest:
+            {
+                XEvent response;
+                memset(&response, 0, sizeof(response));
+
+                response.xselection.property = _glfwWriteSelection(&request.xselectionrequest);
+                response.xselection.type = SelectionNotify;
+                response.xselection.display = request.xselectionrequest.display;
+                response.xselection.requestor = request.xselectionrequest.requestor;
+                response.xselection.selection = request.xselectionrequest.selection;
+                response.xselection.target = request.xselectionrequest.target;
+                response.xselection.time = request.xselectionrequest.time;
+
+                XSendEvent(_glfw.x11.display,
+                           request.xselectionrequest.requestor,
+                           False, 0, &response);
+
+                break;
+            }
+
+            case SelectionClear:
+            {
+                free(_glfw.x11.selection.string);
+                _glfw.x11.selection.string = NULL;
+                break;
+            }
+
+            case SelectionNotify:
+            {
+                if (request.xselection.target == _glfw.x11.SAVE_TARGETS)
+                    return;
+
+                break;
+            }
+        }
+    }
+}
+
 
 
 //////////////////////////////////////////////////////////////////////////

@@ -119,8 +119,11 @@ typedef struct _GLFWlibraryX11
     Atom            TARGETS;
     Atom            MULTIPLE;
     Atom            CLIPBOARD;
+    Atom            CLIPBOARD_MANAGER;
+    Atom            SAVE_TARGETS;
     Atom            UTF8_STRING;
     Atom            COMPOUND_STRING;
+    Atom            ATOM_PAIR;
     Atom            GLFW_SELECTION;
 
     // True if window manager supports EWMH
@@ -235,6 +238,7 @@ long _glfwKeySym2Unicode(KeySym keysym);
 
 // Clipboard handling
 Atom _glfwWriteSelection(XSelectionRequestEvent* request);
+void _glfwPushSelectionToManager(_GLFWwindow* window);
 
 // Window support
 _GLFWwindow* _glfwFindWindowByHandle(Window handle);

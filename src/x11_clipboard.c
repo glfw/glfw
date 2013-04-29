@@ -179,9 +179,6 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 
     for (i = 0;  i < _GLFW_CLIPBOARD_FORMAT_COUNT;  i++)
     {
-        Atom actualType;
-        int actualFormat;
-        unsigned long itemCount, bytesAfter;
         char* data;
         XEvent event;
 
@@ -199,26 +196,19 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
         if (event.xselection.property == None)
             continue;
 
-        XGetWindowProperty(_glfw.x11.display,
-                           event.xselection.requestor,
-                           event.xselection.property,
-                           0, LONG_MAX,
-                           False,
-                           event.xselection.target,
-                           &actualType,
-                           &actualFormat,
-                           &itemCount,
-                           &bytesAfter,
-                           (unsigned char**) &data);
+        if (_glfwGetWindowProperty(event.xselection.requestor,
+                                   event.xselection.property,
+                                   event.xselection.target,
+                                   (unsigned char**) &data))
+        {
+            _glfw.x11.selection.string = strdup(data);
+        }
+
+        XFree(data);
 
         XDeleteProperty(_glfw.x11.display,
                         event.xselection.requestor,
                         event.xselection.property);
-
-        if (actualType == event.xselection.target)
-            _glfw.x11.selection.string = strdup(data);
-
-        XFree(data);
 
         if (_glfw.x11.selection.string)
             break;

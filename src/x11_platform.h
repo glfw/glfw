@@ -121,6 +121,7 @@ typedef struct _GLFWlibraryX11
     Atom            CLIPBOARD;
     Atom            UTF8_STRING;
     Atom            COMPOUND_STRING;
+    Atom            GLFW_SELECTION;
 
     // True if window manager supports EWMH
     GLboolean       hasEWMH;
@@ -176,7 +177,6 @@ typedef struct _GLFWlibraryX11
 
     struct {
         char*       string;
-        Atom        property;
     } selection;
 
     struct {

@@ -198,7 +198,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
         XConvertSelection(_glfw.x11.display,
                           _glfw.x11.CLIPBOARD,
                           formats[i],
-                          _glfw.x11.selection.property,
+                          _glfw.x11.GLFW_SELECTION,
                           window->x11.handle, CurrentTime);
 
         // XCheckTypedEvent is used instead of XIfEvent in order not to lock

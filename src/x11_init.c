@@ -539,7 +539,7 @@ static GLboolean initDisplay(void)
         XInternAtom(_glfw.x11.display, "COMPOUND_STRING", False);
 
     // Find or create selection property atom
-    _glfw.x11.selection.property =
+    _glfw.x11.GLFW_SELECTION =
         XInternAtom(_glfw.x11.display, "GLFW_SELECTION", False);
 
     // Find or create standard clipboard atoms

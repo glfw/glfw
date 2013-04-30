@@ -466,15 +466,13 @@ static int convertMacKeyCode(unsigned int macKeyCode)
     _glfwInputKey(window, convertMacKeyCode([event keyCode]), GLFW_PRESS);
 
     if ([event modifierFlags] & NSCommandKeyMask)
-        [super keyDown:event];
-    else
-    {
-        NSString* characters = [event characters];
-        NSUInteger i, length = [characters length];
+        return;
 
-        for (i = 0;  i < length;  i++)
-            _glfwInputChar(window, [characters characterAtIndex:i]);
-    }
+    NSString* characters = [event characters];
+    NSUInteger i, length = [characters length];
+
+    for (i = 0;  i < length;  i++)
+        _glfwInputChar(window, [characters characterAtIndex:i]);
 }
 
 - (void)flagsChanged:(NSEvent *)event

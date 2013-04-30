@@ -778,7 +778,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (!_glfwCreateContext(window, wndconfig, fbconfig))
         return GL_FALSE;
 
-    [window->nsgl.context setView:[window->ns.object contentView]];
+    [window->nsgl.context setView:window->ns.view];
 
     if (wndconfig->monitor)
     {
@@ -786,8 +786,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             return GL_FALSE;
 
         _glfwPlatformShowWindow(window);
-        [[window->ns.object contentView] enterFullScreenMode:wndconfig->monitor->ns.screen
-                                                 withOptions:nil];
+        [window->ns.view enterFullScreenMode:wndconfig->monitor->ns.screen
+                                 withOptions:nil];
     }
 
     NSPoint point = [[NSCursor currentCursor] hotSpot];
@@ -807,7 +807,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 
         // Exit full screen after the video restore to avoid a nasty display
         // flickering during the fade.
-        [[window->ns.object contentView] exitFullScreenModeWithOptions:nil];
+        [window->ns.view exitFullScreenModeWithOptions:nil];
     }
 
     _glfwDestroyContext(window);

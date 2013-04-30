@@ -86,7 +86,11 @@ typedef struct _GLFWwindowX11
     GLboolean       cursorGrabbed;    // True if cursor is currently grabbed
     GLboolean       cursorHidden;     // True if cursor is currently hidden
     GLboolean       cursorCentered;   // True if cursor was moved since last poll
+
+    // The last received cursor position, regardless of source
     double          cursorPosX, cursorPosY;
+    // The last position the cursor was warped to by GLFW
+    int             warpPosX, warpPosY;
 
 } _GLFWwindowX11;
 

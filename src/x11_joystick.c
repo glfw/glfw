@@ -80,8 +80,8 @@ static int openJoystickDevice(int joy, const char* path)
     ioctl(fd, JSIOCGBUTTONS, &numButtons);
     _glfw.x11.joystick[joy].numButtons = (int) numButtons;
 
-    _glfw.x11.joystick[joy].axis = (float*) malloc(sizeof(float) * numAxes);
-    _glfw.x11.joystick[joy].button = (unsigned char*) malloc(numButtons);
+    _glfw.x11.joystick[joy].axis = (float*) calloc(numAxes, sizeof(float));
+    _glfw.x11.joystick[joy].button = (unsigned char*) calloc(numButtons, 1);
 
     _glfw.x11.joystick[joy].present = GL_TRUE;
 #endif // __linux__

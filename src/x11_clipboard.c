@@ -39,14 +39,9 @@
 //
 static Bool isSelectionMessage(Display* display, XEvent* event, XPointer pointer)
 {
-    if (event->type == SelectionRequest ||
-        event->type == SelectionNotify ||
-        event->type == SelectionClear)
-    {
-        return True;
-    }
-
-    return False;
+    return event->type == SelectionRequest ||
+           event->type == SelectionNotify ||
+           event->type == SelectionClear;
 }
 
 // Set the specified property to the selection converted to the requested target
@@ -282,6 +277,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     const Atom formats[] = { _glfw.x11.UTF8_STRING,
                              _glfw.x11.COMPOUND_STRING,
                              XA_STRING };
+    const int formatCount = sizeof(formats) / sizeof(formats[0]);
 
     if (_glfwFindWindowByHandle(XGetSelectionOwner(_glfw.x11.display,
                                                    _glfw.x11.CLIPBOARD)))
@@ -294,7 +290,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     free(_glfw.x11.selection.string);
     _glfw.x11.selection.string = NULL;
 
-    for (i = 0;  i < sizeof(formats) / sizeof(formats[0]);  i++)
+    for (i = 0;  i < formatCount;  i++)
     {
         char* data;
         XEvent event;

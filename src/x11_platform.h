@@ -85,7 +85,6 @@ typedef struct _GLFWwindowX11
     GLboolean       overrideRedirect; // True if window is OverrideRedirect
     GLboolean       cursorGrabbed;    // True if cursor is currently grabbed
     GLboolean       cursorHidden;     // True if cursor is currently hidden
-    GLboolean       cursorCentered;   // True if cursor was moved since last poll
 
     // The last received cursor position, regardless of source
     double          cursorPosX, cursorPosY;

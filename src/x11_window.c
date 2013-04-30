@@ -301,7 +301,6 @@ static void captureCursor(_GLFWwindow* window)
             GrabSuccess)
         {
             window->x11.cursorGrabbed = GL_TRUE;
-            window->x11.cursorCentered = GL_FALSE;
         }
     }
 }
@@ -601,7 +600,6 @@ static void processEvent(XEvent *event)
                     y = event->xmotion.y;
                 }
 
-                window->x11.cursorCentered = GL_FALSE;
                 _glfwInputCursorMotion(window, x, y);
             }
 
@@ -764,7 +762,6 @@ static void processEvent(XEvent *event)
                                 y = data->event_y;
                             }
 
-                            window->x11.cursorCentered = GL_FALSE;
                             _glfwInputCursorMotion(window, x, y);
                         }
 
@@ -1052,13 +1049,11 @@ void _glfwPlatformPollEvents(void)
     window = _glfw.focusedWindow;
     if (window)
     {
-        if (window->cursorMode == GLFW_CURSOR_CAPTURED &&
-            !window->x11.cursorCentered)
+        if (window->cursorMode == GLFW_CURSOR_CAPTURED)
         {
             int width, height;
             _glfwPlatformGetWindowSize(window, &width, &height);
             _glfwPlatformSetCursorPos(window, width / 2, height / 2);
-            window->x11.cursorCentered = GL_TRUE;
 
             // NOTE: This is a temporary fix.  It works as long as you use
             //       offsets accumulated over the course of a frame, instead of

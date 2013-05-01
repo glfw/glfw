@@ -77,7 +77,7 @@ endif()
 #--------------------------------------------------------------------
 if (BUILD_SHARED_LIBS)
     set(_GLFW_BUILD_DLL 1)
-    if (UNIX OR APPLE)
+    if (UNIX)
         add_definitions(-fvisibility=hidden)
     endif()
 endif()

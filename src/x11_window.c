@@ -204,6 +204,16 @@ static GLboolean createWindow(_GLFWwindow* window,
         }
     }
 
+    if (_glfw.x11.NET_WM_PID != None)
+    {
+        const pid_t pid = getpid();
+
+        XChangeProperty(_glfw.x11.display,  window->x11.handle,
+                        _glfw.x11.NET_WM_PID, XA_CARDINAL, 32,
+                        PropModeReplace,
+                        (unsigned char*) &pid, 1);
+    }
+
     // Set ICCCM WM_HINTS property
     {
         XWMHints* hints = XAllocWMHints();

@@ -93,6 +93,9 @@ typedef struct _GLFWlibraryGLX
     int             eventBase;
     int             errorBase;
 
+    // GLX error code received by Xlib error callback
+    int             errorCode;
+
     // GLX extensions
     PFNGLXSWAPINTERVALSGIPROC             SwapIntervalSGI;
     PFNGLXSWAPINTERVALEXTPROC             SwapIntervalEXT;

@@ -53,10 +53,6 @@ void (*glXGetProcAddressEXT(const GLubyte* procName))();
 #endif
 
 
-// The X error code as provided to the X error handler
-//
-static unsigned long _glfwErrorCode = Success;
-
 // The per-thread current context/window pointer
 //
 static _GLFW_TLS _GLFWwindow* _glfwCurrentWindow = NULL;
@@ -66,7 +62,7 @@ static _GLFW_TLS _GLFWwindow* _glfwCurrentWindow = NULL;
 //
 static int errorHandler(Display *display, XErrorEvent* event)
 {
-    _glfwErrorCode = event->error_code;
+    _glfw.glx.errorCode = event->error_code;
     return 0;
 }
 
@@ -393,7 +389,7 @@ int _glfwCreateContext(_GLFWwindow* window,
         }
     }
 
-    _glfwErrorCode = Success;
+    _glfw.glx.errorCode = Success;
     XSetErrorHandler(errorHandler);
 
     if (_glfw.glx.ARB_create_context)
@@ -465,7 +461,7 @@ int _glfwCreateContext(_GLFWwindow* window,
             // HACK: This is a fallback for the broken Mesa implementation of
             // GLX_ARB_create_context_profile, which fails default 1.0 context
             // creation with a GLXBadProfileARB error in violation of the spec
-            if (_glfwErrorCode == _glfw.glx.errorBase + GLXBadProfileARB &&
+            if (_glfw.glx.errorCode == _glfw.glx.errorBase + GLXBadProfileARB &&
                 wndconfig->clientAPI == GLFW_OPENGL_API &&
                 wndconfig->glProfile == GLFW_OPENGL_NO_PROFILE &&
                 wndconfig->glForward == GL_FALSE)
@@ -485,7 +481,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     {
         char buffer[8192];
         XGetErrorText(_glfw.x11.display,
-                      _glfwErrorCode,
+                      _glfw.glx.errorCode,
                       buffer, sizeof(buffer));
 
         _glfwInputError(GLFW_PLATFORM_ERROR,

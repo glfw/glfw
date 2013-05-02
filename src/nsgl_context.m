@@ -138,13 +138,6 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     ADD_ATTR(NSOpenGLPFADoubleBuffer);
 
-    if (wndconfig->monitor)
-    {
-        ADD_ATTR(NSOpenGLPFANoRecovery);
-        ADD_ATTR2(NSOpenGLPFAScreenMask,
-                  CGDisplayIDToOpenGLDisplayMask(wndconfig->monitor->ns.displayID));
-    }
-
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (wndconfig->glMajor > 2)
         ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);

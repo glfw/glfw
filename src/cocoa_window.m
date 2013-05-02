@@ -33,6 +33,34 @@
 #include <crt_externs.h>
 
 
+// Enter fullscreen mode
+//
+static void enterFullscreenMode(_GLFWwindow* window)
+{
+    if ([window->ns.view isInFullScreenMode])
+        return;
+
+    _glfwSetVideoMode(window->monitor, &window->videoMode);
+
+    [window->ns.view enterFullScreenMode:window->monitor->ns.screen
+                             withOptions:nil];
+}
+
+// Leave fullscreen mode
+//
+static void leaveFullscreenMode(_GLFWwindow* window)
+{
+    if (![window->ns.view isInFullScreenMode])
+        return;
+
+    _glfwRestoreVideoMode(window->monitor);
+
+    // Exit full screen after the video restore to avoid a nasty display
+    // flickering during the fade
+    [window->ns.view exitFullScreenModeWithOptions:nil];
+}
+
+
 //------------------------------------------------------------------------
 // Delegate for window related notifications
 //------------------------------------------------------------------------
@@ -102,6 +130,9 @@ static void centerCursor(_GLFWwindow *window)
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification
 {
+    if (window->monitor)
+        enterFullscreenMode(window);
+
     _glfwInputWindowIconify(window, GL_FALSE);
 }
 
@@ -781,14 +812,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     [window->nsgl.context setView:window->ns.view];
 
     if (wndconfig->monitor)
-    {
-        if (!_glfwSetVideoMode(window->monitor, &window->videoMode))
-            return GL_FALSE;
-
-        _glfwPlatformShowWindow(window);
-        [window->ns.view enterFullScreenMode:wndconfig->monitor->ns.screen
-                                 withOptions:nil];
-    }
+        enterFullscreenMode(window);
 
     NSPoint point = [[NSCursor currentCursor] hotSpot];
     window->cursorPosX = point.x;
@@ -802,13 +826,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     [window->ns.object orderOut:nil];
 
     if (window->monitor)
-    {
-        _glfwRestoreVideoMode(window->monitor);
-
-        // Exit full screen after the video restore to avoid a nasty display
-        // flickering during the fade.
-        [window->ns.view exitFullScreenModeWithOptions:nil];
-    }
+        leaveFullscreenMode(window);
 
     _glfwDestroyContext(window);
 
@@ -864,6 +882,9 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
+    if (window->monitor)
+        leaveFullscreenMode(window);
+
     [window->ns.object miniaturize:nil];
 }
 

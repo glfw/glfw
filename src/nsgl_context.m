@@ -137,6 +137,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     NSOpenGLPixelFormatAttribute attributes[40];
 
     ADD_ATTR(NSOpenGLPFADoubleBuffer);
+    ADD_ATTR(NSOpenGLPFAClosestPolicy);
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (wndconfig->glMajor > 2)

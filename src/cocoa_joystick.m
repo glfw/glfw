@@ -317,7 +317,6 @@ void _glfwInitJoysticks(void)
 
     while ((ioHIDDeviceObject = IOIteratorNext(objectIterator)))
     {
-        CFMutableDictionaryRef hidProperties = 0;
         kern_return_t result;
         CFTypeRef refCF = 0;
 
@@ -327,16 +326,11 @@ void _glfwInitJoysticks(void)
 
         long usagePage, usage;
 
-        result = IORegistryEntryCreateCFProperties(ioHIDDeviceObject,
-                                                   &hidProperties,
-                                                   kCFAllocatorDefault,
-                                                   kNilOptions);
-
-        if (result != kIOReturnSuccess)
-            continue;
-
         // Check device type
-        refCF = CFDictionaryGetValue(hidProperties, CFSTR(kIOHIDPrimaryUsagePageKey));
+        refCF = IORegistryEntryCreateCFProperty(ioHIDDeviceObject,
+                                                CFSTR(kIOHIDPrimaryUsagePageKey),
+                                                kCFAllocatorDefault,
+                                                kNilOptions);
         if (refCF)
         {
             CFNumberGetValue(refCF, kCFNumberLongType, &usagePage);
@@ -347,7 +341,10 @@ void _glfwInitJoysticks(void)
             }
         }
 
-        refCF = CFDictionaryGetValue(hidProperties, CFSTR(kIOHIDPrimaryUsageKey));
+        refCF = IORegistryEntryCreateCFProperty(ioHIDDeviceObject,
+                                                CFSTR(kIOHIDPrimaryUsageKey),
+                                                kCFAllocatorDefault,
+                                                kNilOptions);
         if (refCF)
         {
             CFNumberGetValue(refCF, kCFNumberLongType, &usage);
@@ -391,7 +388,10 @@ void _glfwInitJoysticks(void)
                                                      joystick);
 
         // Get product string
-        refCF = CFDictionaryGetValue(hidProperties, CFSTR(kIOHIDProductKey));
+        refCF = IORegistryEntryCreateCFProperty(ioHIDDeviceObject,
+                                                CFSTR(kIOHIDProductKey),
+                                                kCFAllocatorDefault,
+                                                kNilOptions);
         if (refCF)
         {
             CFStringGetCString(refCF,
@@ -407,8 +407,12 @@ void _glfwInitJoysticks(void)
         joystick->buttons = CFArrayCreateMutable(NULL, 0, NULL);
         joystick->hats = CFArrayCreateMutable(NULL, 0, NULL);
 
-        CFTypeRef refTopElement = CFDictionaryGetValue(hidProperties,
-                                                       CFSTR(kIOHIDElementKey));
+        CFTypeRef refTopElement;
+
+        refTopElement = IORegistryEntryCreateCFProperty(ioHIDDeviceObject,
+                                                        CFSTR(kIOHIDElementKey),
+                                                        kCFAllocatorDefault,
+                                                        kNilOptions);
         CFTypeID type = CFGetTypeID(refTopElement);
         if (type == CFArrayGetTypeID())
         {

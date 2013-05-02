@@ -47,6 +47,15 @@ int _glfwInitContextAPI(void)
         return GL_FALSE;
     }
 
+    _glfw.nsgl.framework =
+        CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
+    if (_glfw.nsgl.framework == NULL)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "NSGL: Failed to locate OpenGL framework");
+        return GL_FALSE;
+    }
+
     return GL_TRUE;
 }
 

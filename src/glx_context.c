@@ -33,6 +33,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <pthread.h>
 
 
 // This is the only glXGetProcAddress variant not declared by glxext.h
@@ -42,20 +43,6 @@ void (*glXGetProcAddressEXT(const GLubyte* procName))();
 #ifndef GLXBadProfileARB
  #define GLXBadProfileARB 13
 #endif
-
-
-// Thread local storage attribute macro
-//
-#if defined(__GNUC__)
- #define _GLFW_TLS __thread
-#else
- #define _GLFW_TLS
-#endif
-
-
-// The per-thread current context/window pointer
-//
-static _GLFW_TLS _GLFWwindow* _glfwCurrentWindow = NULL;
 
 
 // Error handler used when creating a context
@@ -123,6 +110,13 @@ int _glfwInitContextAPI(void)
         return GL_FALSE;
     }
 #endif
+
+    if (pthread_key_create(&_glfw.glx.current, NULL) != 0)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "GLX: Failed to create context TLS");
+        return GL_FALSE;
+    }
 
     // Check if GLX is supported on this display
     if (!glXQueryExtension(_glfw.x11.display,
@@ -228,6 +222,8 @@ void _glfwTerminateContextAPI(void)
         _glfw.glx.libGL = NULL;
     }
 #endif
+
+    pthread_key_delete(_glfw.glx.current);
 }
 
 #define setGLXattrib(attribName, attribValue) \
@@ -529,12 +525,12 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     else
         glXMakeCurrent(_glfw.x11.display, None, NULL);
 
-    _glfwCurrentWindow = window;
+    pthread_setspecific(_glfw.glx.current, window);
 }
 
 _GLFWwindow* _glfwPlatformGetCurrentContext(void)
 {
-    return _glfwCurrentWindow;
+    return (_GLFWwindow*) pthread_getspecific(_glfw.glx.current);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)
@@ -544,7 +540,7 @@ void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 
 void _glfwPlatformSwapInterval(int interval)
 {
-    _GLFWwindow* window = _glfwCurrentWindow;
+    _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
     if (_glfw.glx.EXT_swap_control)
     {

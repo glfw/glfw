@@ -32,11 +32,6 @@
 #include <pthread.h>
 
 
-// The per-thread current context/window pointer
-//
-static pthread_key_t _glfwCurrentTLS;
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -45,7 +40,7 @@ static pthread_key_t _glfwCurrentTLS;
 //
 int _glfwInitContextAPI(void)
 {
-    if (pthread_key_create(&_glfwCurrentTLS, NULL) != 0)
+    if (pthread_key_create(&_glfw.nsgl.current, NULL) != 0)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "NSOpenGL: Failed to create context TLS");
@@ -59,7 +54,7 @@ int _glfwInitContextAPI(void)
 //
 void _glfwTerminateContextAPI(void)
 {
-    pthread_key_delete(_glfwCurrentTLS);
+    pthread_key_delete(_glfw.nsgl.current);
 }
 
 // Create the OpenGL context
@@ -242,12 +237,12 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     else
         [NSOpenGLContext clearCurrentContext];
 
-    pthread_setspecific(_glfwCurrentTLS, window);
+    pthread_setspecific(_glfw.nsgl.current, window);
 }
 
 _GLFWwindow* _glfwPlatformGetCurrentContext(void)
 {
-    return (_GLFWwindow*) pthread_getspecific(_glfwCurrentTLS);
+    return (_GLFWwindow*) pthread_getspecific(_glfw.nsgl.current);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)

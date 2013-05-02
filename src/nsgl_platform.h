@@ -55,7 +55,11 @@ typedef struct _GLFWcontextNSGL
 typedef struct _GLFWlibraryNSGL
 {
     // dlopen handle for dynamically loading OpenGL extension entry points
-    void*            framework;
+    void*           framework;
+
+    // TLS key for per-thread current context/window
+    pthread_key_t   current;
+
 } _GLFWlibraryNSGL;
 
 

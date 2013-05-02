@@ -133,8 +133,8 @@ static void initWGLExtensions(_GLFWwindow* window)
 //
 int _glfwInitContextAPI(void)
 {
-    _glfw.wgl.tls = TlsAlloc();
-    if (_glfw.wgl.tls == TLS_OUT_OF_INDEXES)
+    _glfw.wgl.current = TlsAlloc();
+    if (_glfw.wgl.current == TLS_OUT_OF_INDEXES)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "WGL: Failed to allocate TLS index");
@@ -151,7 +151,7 @@ int _glfwInitContextAPI(void)
 void _glfwTerminateContextAPI(void)
 {
     if (_glfw.wgl.hasTLS)
-        TlsFree(_glfw.wgl.tls);
+        TlsFree(_glfw.wgl.current);
 }
 
 #define setWGLattrib(attribName, attribValue) \
@@ -512,12 +512,12 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     else
         wglMakeCurrent(NULL, NULL);
 
-    TlsSetValue(_glfw.wgl.tls, window);
+    TlsSetValue(_glfw.wgl.current, window);
 }
 
 _GLFWwindow* _glfwPlatformGetCurrentContext(void)
 {
-    return TlsGetValue(_glfw.wgl.tls);
+    return TlsGetValue(_glfw.wgl.current);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)

@@ -93,6 +93,9 @@ typedef struct _GLFWlibraryGLX
     int             eventBase;
     int             errorBase;
 
+    // TLS key for per-thread current context/window
+    pthread_key_t   current;
+
     // GLX error code received by Xlib error callback
     int             errorCode;
 

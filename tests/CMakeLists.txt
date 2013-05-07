@@ -56,6 +56,7 @@ set_target_properties(title PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Title")
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c)
 set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 
+target_link_libraries(threads ${CMAKE_THREAD_LIBS_INIT} ${RT_LIBRARY})
 
 set(WINDOWS_BINARIES accuracy sharing tearing threads title windows)
 set(CONSOLE_BINARIES clipboard defaults events fsaa fsfocus gamma glfwinfo

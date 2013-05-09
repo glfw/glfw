@@ -81,5 +81,7 @@ if (BUILD_SHARED_LIBS)
     target_link_libraries(glfw LINK_INTERFACE_LIBRARIES)
 endif()
 
-install(TARGETS glfw DESTINATION lib${LIB_SUFFIX} )
+install(TARGETS glfw
+		EXPORT glfwTargets
+		DESTINATION lib${LIB_SUFFIX} )
 

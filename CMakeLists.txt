@@ -388,6 +388,21 @@ install(DIRECTORY include/GL DESTINATION include
         FILES_MATCHING PATTERN glfw3.h PATTERN glfw3native.h)
 
 #--------------------------------------------------------------------
+# Create and install glfwConfig.cmake and glfwConfigVersion files
+#--------------------------------------------------------------------
+configure_file(${GLFW_SOURCE_DIR}/src/glfwConfig.cmake.in
+               ${GLFW_BINARY_DIR}/src/glfwConfig.cmake @ONLY)
+configure_file(${GLFW_SOURCE_DIR}/src/glfwConfigVersion.cmake.in
+               ${GLFW_BINARY_DIR}/src/glfwConfigVersion.cmake @ONLY)
+
+install(FILES ${GLFW_BINARY_DIR}/src/glfwConfig.cmake
+              ${GLFW_BINARY_DIR}/src/glfwConfigVersion.cmake
+			  DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
+
+# Install the export set for use with the install-tree
+install(EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
+
+#--------------------------------------------------------------------
 # Create and install pkg-config file on supported platforms
 #--------------------------------------------------------------------
 if (UNIX)

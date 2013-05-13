@@ -250,7 +250,10 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 
 GLFWAPI GLFWmonitor** glfwGetMonitors(int* count)
 {
+    *count = 0;
+
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
     *count = _glfw.monitorCount;
     return (GLFWmonitor**) _glfw.monitors;
 }
@@ -300,6 +303,8 @@ GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+
+    *count = 0;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 

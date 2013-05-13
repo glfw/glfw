@@ -397,10 +397,11 @@ configure_file(${GLFW_SOURCE_DIR}/src/glfwConfigVersion.cmake.in
 
 install(FILES ${GLFW_BINARY_DIR}/src/glfwConfig.cmake
               ${GLFW_BINARY_DIR}/src/glfwConfigVersion.cmake
-			  DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
+		DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
 
-# Install the export set for use with the install-tree
-install(EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
+if (UNIX)
+    install(EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
+endif()
 
 #--------------------------------------------------------------------
 # Create and install pkg-config file on supported platforms

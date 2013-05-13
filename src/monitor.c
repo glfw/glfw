@@ -99,6 +99,8 @@ void _glfwInputMonitorChange(void)
 
     monitors = _glfwPlatformGetMonitors(&monitorCount);
 
+    // Re-use unchanged monitors and report new ones
+
     for (i = 0;  i < monitorCount;  i++)
     {
         for (j = 0;  j < _glfw.monitorCount;  j++)
@@ -125,6 +127,9 @@ void _glfwInputMonitorChange(void)
         }
     }
 
+    // The only monitors remaining in the global list are the disconnected ones
+    // Report them as disconnected
+
     for (i = 0;  i < _glfw.monitorCount;  i++)
     {
         _GLFWwindow* window;
@@ -132,7 +137,6 @@ void _glfwInputMonitorChange(void)
         if (_glfw.monitors[i] == NULL)
             continue;
 
-        // This monitor is no longer connected
         _glfw.monitorCallback((GLFWmonitor*) _glfw.monitors[i], GLFW_DISCONNECTED);
 
         for (window = _glfw.windowListHead;  window;  window = window->next)

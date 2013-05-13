@@ -43,6 +43,7 @@
  #include <dlfcn.h>
 #endif
 
+#define _GLFW_PLATFORM_FBCONFIG             EGLConfig       egl
 #define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextEGL egl
 #define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryEGL egl
 

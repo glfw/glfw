@@ -153,8 +153,11 @@ struct _GLFWwndconfig
 
 /*! @brief Framebuffer configuration.
  *
- *  This describes buffers and their sizes.  It is used to pass framebuffer
- *  parameters from shared code to the platform API.
+ *  This describes buffers and their sizes.  It also contains
+ *  a platform-specific ID used to map back to the backend API's object.
+ *
+ *  It is used to pass framebuffer parameters from shared code to the platform
+ *  API and also to enumerate and select available framebuffer configs.
  */
 struct _GLFWfbconfig
 {
@@ -172,6 +175,9 @@ struct _GLFWfbconfig
     GLboolean   stereo;
     int         samples;
     GLboolean   sRGB;
+
+    // This is defined in the context API's platform.h
+    _GLFW_PLATFORM_FBCONFIG;
 };
 
 
@@ -669,6 +675,18 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
  *  @ingroup utility
  */
 int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);
+
+/*! @brief Chooses the framebuffer config that best matches the desired one.
+ *  @param[in] desired The desired framebuffer config.
+ *  @param[in] alternatives The framebuffer configs supported by the system.
+ *  @param[in] count The number of entries in the alternatives array.
+ *  @return The framebuffer config most closely matching the desired one, or @c
+ *  NULL if none fulfilled the hard constraints of the desired values.
+ *  @ingroup utility
+ */
+const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
+                                         const _GLFWfbconfig* alternatives,
+                                         unsigned int count);
 
 /*! @brief Checks and reads back properties from the current context.
  *  @return `GL_TRUE` if successful, or `GL_FALSE` if the context is unusable.

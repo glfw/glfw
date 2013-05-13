@@ -53,6 +53,130 @@ static int errorHandler(Display *display, XErrorEvent* event)
     return 0;
 }
 
+// Returns the specified attribute of the specified GLXFBConfig
+// NOTE: Do not call this unless we have found GLX 1.3+ or GLX_SGIX_fbconfig
+//
+static int getFBConfigAttrib(GLXFBConfig fbconfig, int attrib)
+{
+    int value;
+
+    if (_glfw.glx.SGIX_fbconfig)
+    {
+        _glfw.glx.GetFBConfigAttribSGIX(_glfw.x11.display,
+                                        fbconfig, attrib, &value);
+    }
+    else
+        glXGetFBConfigAttrib(_glfw.x11.display, fbconfig, attrib, &value);
+
+    return value;
+}
+
+// Return a list of available and usable framebuffer configs
+//
+static GLboolean chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* result)
+{
+    GLXFBConfig* nativeConfigs;
+    _GLFWfbconfig* usableConfigs;
+    const _GLFWfbconfig* closest;
+    int i, nativeCount, usableCount;
+    const char* vendor;
+    GLboolean trustWindowBit = GL_TRUE;
+
+    vendor = glXGetClientString(_glfw.x11.display, GLX_VENDOR);
+    if (strcmp(vendor, "Chromium") == 0)
+    {
+        // HACK: This is a (hopefully temporary) workaround for Chromium
+        // (VirtualBox GL) not setting the window bit on any GLXFBConfigs
+        trustWindowBit = GL_FALSE;
+    }
+
+    if (_glfw.glx.SGIX_fbconfig)
+    {
+        nativeConfigs = _glfw.glx.ChooseFBConfigSGIX(_glfw.x11.display,
+                                                     _glfw.x11.screen,
+                                                     NULL,
+                                                     &nativeCount);
+    }
+    else
+    {
+        nativeConfigs = glXGetFBConfigs(_glfw.x11.display,
+                                        _glfw.x11.screen,
+                                        &nativeCount);
+    }
+
+    if (!nativeCount)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "GLX: No GLXFBConfigs returned");
+        return GL_FALSE;
+    }
+
+    usableConfigs = (_GLFWfbconfig*) calloc(nativeCount, sizeof(_GLFWfbconfig));
+    usableCount = 0;
+
+    for (i = 0;  i < nativeCount;  i++)
+    {
+        const GLXFBConfig n = nativeConfigs[i];
+        _GLFWfbconfig* u = usableConfigs + usableCount;
+
+        if (!getFBConfigAttrib(n, GLX_DOUBLEBUFFER) ||
+            !getFBConfigAttrib(n, GLX_VISUAL_ID))
+        {
+            // Only consider double-buffered GLXFBConfigs with associated visuals
+            continue;
+        }
+
+        if (!(getFBConfigAttrib(n, GLX_RENDER_TYPE) & GLX_RGBA_BIT))
+        {
+            // Only consider RGBA GLXFBConfigs
+            continue;
+        }
+
+        if (!(getFBConfigAttrib(n, GLX_DRAWABLE_TYPE) & GLX_WINDOW_BIT))
+        {
+            if (trustWindowBit)
+            {
+                // Only consider window GLXFBConfigs
+                continue;
+            }
+        }
+
+        u->redBits = getFBConfigAttrib(n, GLX_RED_SIZE);
+        u->greenBits = getFBConfigAttrib(n, GLX_GREEN_SIZE);
+        u->blueBits = getFBConfigAttrib(n, GLX_BLUE_SIZE);
+
+        u->alphaBits = getFBConfigAttrib(n, GLX_ALPHA_SIZE);
+        u->depthBits = getFBConfigAttrib(n, GLX_DEPTH_SIZE);
+        u->stencilBits = getFBConfigAttrib(n, GLX_STENCIL_SIZE);
+
+        u->accumRedBits = getFBConfigAttrib(n, GLX_ACCUM_RED_SIZE);
+        u->accumGreenBits = getFBConfigAttrib(n, GLX_ACCUM_GREEN_SIZE);
+        u->accumBlueBits = getFBConfigAttrib(n, GLX_ACCUM_BLUE_SIZE);
+        u->accumAlphaBits = getFBConfigAttrib(n, GLX_ACCUM_ALPHA_SIZE);
+
+        u->auxBuffers = getFBConfigAttrib(n, GLX_AUX_BUFFERS);
+        u->stereo = getFBConfigAttrib(n, GLX_STEREO);
+
+        if (_glfw.glx.ARB_multisample)
+            u->samples = getFBConfigAttrib(n, GLX_SAMPLES);
+
+        if (_glfw.glx.ARB_framebuffer_sRGB)
+            u->sRGB = getFBConfigAttrib(n, GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB);
+
+        u->glx = n;
+        usableCount++;
+    }
+
+    closest = _glfwChooseFBConfig(desired, usableConfigs, usableCount);
+    if (closest)
+        *result = closest->glx;
+
+    XFree(nativeConfigs);
+    free(usableConfigs);
+
+    return closest ? GL_TRUE : GL_FALSE;
+}
+
 // Create the OpenGL context using legacy API
 //
 static GLXContext createLegacyContext(_GLFWwindow* window,
@@ -240,104 +364,30 @@ int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWfbconfig* fbconfig)
 {
     int attribs[40];
-    GLXFBConfig* native;
+    GLXFBConfig native;
     GLXContext share = NULL;
 
     if (wndconfig->share)
         share = wndconfig->share->glx.context;
 
-    // Find a suitable GLXFBConfig
+    if (!chooseFBConfig(fbconfig, &native))
     {
-        int count, index = 0;
-
-        setGLXattrib(GLX_DOUBLEBUFFER, True);
-        setGLXattrib(GLX_X_RENDERABLE, True);
-
-        if (fbconfig->redBits)
-            setGLXattrib(GLX_RED_SIZE, fbconfig->redBits);
-        if (fbconfig->greenBits)
-            setGLXattrib(GLX_GREEN_SIZE, fbconfig->greenBits);
-        if (fbconfig->blueBits)
-            setGLXattrib(GLX_BLUE_SIZE, fbconfig->blueBits);
-        if (fbconfig->alphaBits)
-            setGLXattrib(GLX_ALPHA_SIZE, fbconfig->alphaBits);
-
-        if (fbconfig->depthBits)
-            setGLXattrib(GLX_DEPTH_SIZE, fbconfig->depthBits);
-        if (fbconfig->stencilBits)
-            setGLXattrib(GLX_STENCIL_SIZE, fbconfig->stencilBits);
-
-        if (fbconfig->auxBuffers)
-            setGLXattrib(GLX_AUX_BUFFERS, fbconfig->auxBuffers);
-
-        if (fbconfig->accumRedBits)
-            setGLXattrib(GLX_ACCUM_RED_SIZE, fbconfig->accumRedBits);
-        if (fbconfig->accumGreenBits)
-            setGLXattrib(GLX_ACCUM_GREEN_SIZE, fbconfig->accumGreenBits);
-        if (fbconfig->accumBlueBits)
-            setGLXattrib(GLX_ACCUM_BLUE_SIZE, fbconfig->accumBlueBits);
-        if (fbconfig->accumAlphaBits)
-            setGLXattrib(GLX_ACCUM_BLUE_SIZE, fbconfig->accumAlphaBits);
-
-        if (fbconfig->stereo)
-            setGLXattrib(GLX_STEREO, True);
-
-        if (_glfw.glx.ARB_multisample)
-        {
-            if (fbconfig->samples)
-            {
-                setGLXattrib(GLX_SAMPLE_BUFFERS_ARB, 1);
-                setGLXattrib(GLX_SAMPLES_ARB, fbconfig->samples);
-            }
-        }
-
-        if (_glfw.glx.ARB_framebuffer_sRGB)
-        {
-            if (fbconfig->sRGB)
-                setGLXattrib(GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB, True);
-        }
-
-        setGLXattrib(None, None);
-
-        if (_glfw.glx.SGIX_fbconfig)
-        {
-            native = _glfw.glx.ChooseFBConfigSGIX(_glfw.x11.display,
-                                                  _glfw.x11.screen,
-                                                  attribs,
-                                                  &count);
-        }
-        else
-        {
-            native = glXChooseFBConfig(_glfw.x11.display,
-                                       _glfw.x11.screen,
-                                       attribs,
-                                       &count);
-        }
-
-        if (native == NULL)
-        {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "GLX: Failed to find a suitable GLXFBConfig");
-            return GL_FALSE;
-        }
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "GLX: Failed to find a suitable GLXFBConfig");
+        return GL_FALSE;
     }
 
     // Retrieve the corresponding visual
     if (_glfw.glx.SGIX_fbconfig)
     {
         window->glx.visual =
-            _glfw.glx.GetVisualFromFBConfigSGIX(_glfw.x11.display, *native);
+            _glfw.glx.GetVisualFromFBConfigSGIX(_glfw.x11.display, native);
     }
     else
-    {
-        window->glx.visual = glXGetVisualFromFBConfig(_glfw.x11.display,
-                                                      *native);
-    }
+        window->glx.visual = glXGetVisualFromFBConfig(_glfw.x11.display, native);
 
     if (window->glx.visual == NULL)
     {
-        XFree(native);
-
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "GLX: Failed to retrieve visual for GLXFBConfig");
         return GL_FALSE;
@@ -349,8 +399,6 @@ int _glfwCreateContext(_GLFWwindow* window,
             !_glfw.glx.ARB_create_context_profile ||
             !_glfw.glx.EXT_create_context_es2_profile)
         {
-            XFree(native);
-
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                             "GLX: OpenGL ES requested but "
                             "GLX_EXT_create_context_es2_profile is unavailable");
@@ -362,8 +410,6 @@ int _glfwCreateContext(_GLFWwindow* window,
     {
         if (!_glfw.glx.ARB_create_context)
         {
-            XFree(native);
-
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                             "GLX: Forward compatibility requested but "
                             "GLX_ARB_create_context_profile is unavailable");
@@ -376,8 +422,6 @@ int _glfwCreateContext(_GLFWwindow* window,
         if (!_glfw.glx.ARB_create_context ||
             !_glfw.glx.ARB_create_context_profile)
         {
-            XFree(native);
-
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                             "GLX: An OpenGL profile requested but "
                             "GLX_ARB_create_context_profile is unavailable");
@@ -447,7 +491,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
         window->glx.context =
             _glfw.glx.CreateContextAttribsARB(_glfw.x11.display,
-                                              *native,
+                                              native,
                                               share,
                                               True,
                                               attribs);
@@ -462,16 +506,14 @@ int _glfwCreateContext(_GLFWwindow* window,
                 wndconfig->glProfile == GLFW_OPENGL_NO_PROFILE &&
                 wndconfig->glForward == GL_FALSE)
             {
-                window->glx.context = createLegacyContext(window, *native, share);
+                window->glx.context = createLegacyContext(window, native, share);
             }
         }
     }
     else
-        window->glx.context = createLegacyContext(window, *native, share);
+        window->glx.context = createLegacyContext(window, native, share);
 
     XSetErrorHandler(NULL);
-
-    XFree(native);
 
     if (window->glx.context == NULL)
     {

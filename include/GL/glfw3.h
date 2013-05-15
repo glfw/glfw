@@ -934,7 +934,8 @@ GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun);
  *  This function returns an array of handles for all currently connected
  *  monitors.
  *
- *  @param[out] count The size of the returned array.
+ *  @param[out] count The size of the returned array, or zero if an error
+ *  occurred.
  *  @return An array of monitor handles, or `NULL` if an error occurred.
  *
  *  @note The returned array is valid only until the monitor configuration
@@ -1027,7 +1028,8 @@ GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun);
  *  product of width and height).
  *
  *  @param[in] monitor The monitor to query.
- *  @param[out] count The number of video modes in the returned array.
+ *  @param[out] count The number of video modes in the returned array, or zero
+ *  if an error occurred.
  *  @return An array of video modes, or `NULL` if an error occurred.
  *
  *  @note The returned array is valid only until this function is called again

@@ -26,6 +26,16 @@ GLFW 3 API.
 To compile GLFW and the accompanying example programs, you will need the
 [CMake](http://www.cmake.org/) build system.
 
+### Dependencies
+
+#### X11 dependencies
+
+To compile GLFW for X11 and GLX, you need to have the X and OpenGL header
+packages installed.  For example, on Ubuntu and other distributions based on
+Debian GNU/Linux, you need to install the `xorg-dev` and `libglu1-mesa-dev`
+packages.  Note that using header files from Mesa *will not* tie your binary to
+the Mesa implementation of OpenGL.
+
 ### CMake options
 
 There are a number of CMake build options for GLFW, although not all are

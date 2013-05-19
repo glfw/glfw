@@ -362,6 +362,10 @@ static void enterFullscreenMode(_GLFWwindow* window)
         _glfw.x11.NET_WM_STATE != None &&
         _glfw.x11.NET_WM_STATE_FULLSCREEN != None)
     {
+        int x, y;
+        _glfwPlatformGetMonitorPos(window->monitor, &x, &y);
+        _glfwPlatformSetWindowPos(window, x, y);
+
         if (_glfw.x11.NET_ACTIVE_WINDOW != None)
         {
             // Ask the window manager to raise and focus the GLFW window
@@ -961,6 +965,7 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
 {
     XMoveWindow(_glfw.x11.display, window->x11.handle, xpos, ypos);
+    XFlush(_glfw.x11.display);
 }
 
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
@@ -1004,6 +1009,8 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     }
     else
         XResizeWindow(_glfw.x11.display, window->x11.handle, width, height);
+
+    XFlush(_glfw.x11.display);
 }
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)

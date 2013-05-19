@@ -85,9 +85,17 @@ static GLFWwindow* open_window(int width, int height, GLFWmonitor* monitor)
     glfwSetWindowCloseCallback(window, window_close_callback);
     glfwSetKeyCallback(window, key_callback);
 
-    printf("Opening %s mode window took %0.3f seconds\n",
-           monitor ? "fullscreen" : "windowed",
-           glfwGetTime() - base);
+    if (monitor)
+    {
+        printf("Opening full screen window on monitor %s took %0.3f seconds\n",
+               glfwGetMonitorName(monitor),
+               glfwGetTime() - base);
+    }
+    else
+    {
+        printf("Opening regular window took %0.3f seconds\n",
+               glfwGetTime() - base);
+    }
 
     return window;
 }

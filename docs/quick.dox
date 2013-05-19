@@ -42,7 +42,7 @@ In other words:
 - Do *not* include `windows.h` or other platform-specific headers unless
   you plan on using those APIs directly
 - If you *do* need to include such headers, do it *before* including the
-  GLFW and it will detect this
+  GLFW one and it will detect this
 
 Starting with version 3.0, the GLU header `glu.h` is no longer included by
 default.  If you wish to include it, define `GLFW_INCLUDE_GLU` before the

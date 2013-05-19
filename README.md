@@ -129,7 +129,7 @@ In other words:
  * Do *not* include `windows.h` or other platform-specific headers unless you
    plan on using those APIs directly
  * If you *do* need to include such headers, do it *before* including
-   the GLFW and it will detect this
+   the GLFW one and it will detect this
 
 If you are using an OpenGL extension loading library such as
 [GLEW](http://glew.sourceforge.net/), the GLEW header should also be included

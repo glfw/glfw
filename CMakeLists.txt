@@ -172,14 +172,17 @@ if (_GLFW_X11)
         message(FATAL_ERROR "The RandR library and headers were not found")
     endif()
 
-    if (X11_Xinput_FOUND)
-        list(APPEND glfw_INCLUDE_DIRS ${X11_Xinput_INCLUDE_PATH})
-        list(APPEND glfw_LIBRARIES ${X11_Xinput_LIB})
-    endif()
-
     list(APPEND glfw_INCLUDE_DIRS ${X11_Xrandr_INCLUDE_PATH})
     list(APPEND glfw_LIBRARIES ${X11_Xrandr_LIB})
     set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xrandr")
+
+    # Check for XInput (high-resolution cursor motion)
+    if (NOT X11_Xinput_FOUND)
+        message(FATAL_ERROR "The XInput library and headers were not found")
+    endif()
+
+    list(APPEND glfw_INCLUDE_DIRS ${X11_Xinput_INCLUDE_PATH})
+    list(APPEND glfw_LIBRARIES ${X11_Xinput_LIB})
 
     # Check for Xf86VidMode (fallback gamma control)
     if (NOT X11_xf86vmode_FOUND)

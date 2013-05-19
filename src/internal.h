@@ -250,7 +250,7 @@ struct _GLFWmonitor
     int             modeCount;
 
     GLFWgammaramp   originalRamp;
-    GLboolean       rampChanged;
+    GLFWgammaramp   currentRamp;
 
     // This is defined in the window API's platform.h
     _GLFW_PLATFORM_MONITOR_STATE;
@@ -715,6 +715,14 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig);
  *  @ingroup utility
  */
 GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig);
+
+/*! @ingroup utility
+ */
+void _glfwAllocGammaRamp(GLFWgammaramp* ramp, unsigned int size);
+
+/*! @ingroup utility
+ */
+void _glfwFreeGammaRamp(GLFWgammaramp* ramp);
 
 /*! @ingroup utility
  */

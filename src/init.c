@@ -160,7 +160,7 @@ GLFWAPI void glfwTerminate(void)
     for (i = 0;  i < _glfw.monitorCount;  i++)
     {
         _GLFWmonitor* monitor = _glfw.monitors[i];
-        if (monitor->rampChanged)
+        if (monitor->originalRamp.size)
             _glfwPlatformSetGammaRamp(monitor, &monitor->originalRamp);
     }
 

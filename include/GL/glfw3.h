@@ -545,8 +545,6 @@ extern "C" {
 #define GLFW_CURSOR_HIDDEN          0x00040002
 #define GLFW_CURSOR_DISABLED        0x00040003
 
-#define GLFW_GAMMA_RAMP_SIZE        256
-
 #define GLFW_CONNECTED              0x00061000
 #define GLFW_DISCONNECTED           0x00061001
 
@@ -800,9 +798,10 @@ typedef struct
  */
 typedef struct
 {
-    unsigned short red[GLFW_GAMMA_RAMP_SIZE];
-    unsigned short green[GLFW_GAMMA_RAMP_SIZE];
-    unsigned short blue[GLFW_GAMMA_RAMP_SIZE];
+    unsigned short* red;
+    unsigned short* green;
+    unsigned short* blue;
+    unsigned int size;
 } GLFWgammaramp;
 
 
@@ -1072,8 +1071,8 @@ GLFWAPI GLFWvidmode glfwGetVideoMode(GLFWmonitor* monitor);
 
 /*! @brief Generates a gamma ramp and sets it for the specified monitor.
  *
- *  This function generates a gamma ramp from the specified exponent and then
- *  calls @ref glfwSetGamma with it.
+ *  This function generates a 256-element gamma ramp from the specified exponent
+ *  and then calls @ref glfwSetGamma with it.
  *
  *  @param[in] monitor The monitor whose gamma ramp to set.
  *  @param[in] gamma The desired exponent.
@@ -1087,14 +1086,11 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* monitor, float gamma);
  *  This function retrieves the current gamma ramp of the specified monitor.
  *
  *  @param[in] monitor The monitor to query.
- *  @param[out] ramp Where to store the gamma ramp.
- *
- *  @bug This function does not yet support monitors whose original gamma ramp
- *  has more or less than 256 entries.
+ *  @return The current gamma ramp.
  *
  *  @ingroup gamma
  */
-GLFWAPI void glfwGetGammaRamp(GLFWmonitor* monitor, GLFWgammaramp* ramp);
+GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
 
 /*! @brief Sets the current gamma ramp for the specified monitor.
  *
@@ -1103,8 +1099,7 @@ GLFWAPI void glfwGetGammaRamp(GLFWmonitor* monitor, GLFWgammaramp* ramp);
  *  @param[in] monitor The monitor whose gamma ramp to set.
  *  @param[in] ramp The gamma ramp to use.
  *
- *  @bug This function does not yet support monitors whose original gamma ramp
- *  has more or less than 256 entries.
+ *  @note Gamma ramp sizes other than 256 are not supported by all hardware.
  *
  *  @ingroup gamma
  */

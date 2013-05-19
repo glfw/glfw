@@ -30,6 +30,7 @@
 #include "internal.h"
 
 #include <limits.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <ApplicationServices/ApplicationServices.h>
@@ -41,64 +42,45 @@
 
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
-    // TODO: Support ramp sizes other than 256
-
-    uint32_t sampleCount;
-    int i;
-    CGGammaValue red[GLFW_GAMMA_RAMP_SIZE];
-    CGGammaValue green[GLFW_GAMMA_RAMP_SIZE];
-    CGGammaValue blue[GLFW_GAMMA_RAMP_SIZE];
-
-    if (CGDisplayGammaTableCapacity(monitor->ns.displayID) !=
-        GLFW_GAMMA_RAMP_SIZE)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Only gamma ramps of size 256 supported");
-        return;
-    }
+    uint32_t size = CGDisplayGammaTableCapacity(monitor->ns.displayID);
+    CGGammaValue* values = (CGGammaValue*) malloc(size * 3 * sizeof(CGGammaValue));
 
     CGGetDisplayTransferByTable(monitor->ns.displayID,
-                                GLFW_GAMMA_RAMP_SIZE,
-                                red, green, blue,
-                                &sampleCount);
+                                size,
+                                values,
+                                values + size,
+                                values + size * 2,
+                                &size);
 
-    for (i = 0; i < GLFW_GAMMA_RAMP_SIZE; i++)
+    _glfwAllocGammaRamp(ramp, size);
+
+    for (int i = 0; i < size; i++)
     {
-        ramp->red[i] = red[i] * 65535;
-        ramp->green[i] = green[i] * 65535;
-        ramp->blue[i] = blue[i] * 65535;
+        ramp->red[i]   = (unsigned short) (values[i] * 65535);
+        ramp->green[i] = (unsigned short) (values[i + size] * 65535);
+        ramp->blue[i]  = (unsigned short) (values[i + size * 2] * 65535);
     }
+
+    free(values);
 }
 
 void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 {
-    // TODO: Support ramp sizes other than 256
+    CGGammaValue* values = (CGGammaValue*) malloc(ramp->size * 3 * sizeof(CGGammaValue));
 
-    int i;
-    int size = GLFW_GAMMA_RAMP_SIZE;
-    CGGammaValue red[GLFW_GAMMA_RAMP_SIZE];
-    CGGammaValue green[GLFW_GAMMA_RAMP_SIZE];
-    CGGammaValue blue[GLFW_GAMMA_RAMP_SIZE];
-
-    if (CGDisplayGammaTableCapacity(monitor->ns.displayID) !=
-        GLFW_GAMMA_RAMP_SIZE)
+    for (int i = 0;  i < ramp->size;  i++)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Only gamma ramps of size 256 supported");
-        return;
-    }
-
-    // Convert to float & take the difference of the original gamma and
-    // the linear function.
-    for (i = 0; i < size; i++)
-    {
-        red[i] = ramp->red[i] / 65535.f;
-        green[i] = ramp->green[i] / 65535.f;
-        blue[i] = ramp->blue[i] / 65535.f;
+        values[i]                  = ramp->red[i] / 65535.f;
+        values[i + ramp->size]     = ramp->green[i] / 65535.f;
+        values[i + ramp->size * 2] = ramp->blue[i] / 65535.f;
     }
 
     CGSetDisplayTransferByTable(monitor->ns.displayID,
-                                GLFW_GAMMA_RAMP_SIZE,
-                                red, green, blue);
+                                ramp->size,
+                                values,
+                                values + ramp->size,
+                                values + ramp->size * 2);
+
+    free(values);
 }
 

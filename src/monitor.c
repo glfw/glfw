@@ -172,6 +172,9 @@ void _glfwDestroyMonitor(_GLFWmonitor* monitor)
     if (monitor == NULL)
         return;
 
+    _glfwFreeGammaRamp(&monitor->originalRamp);
+    _glfwFreeGammaRamp(&monitor->currentRamp);
+
     free(monitor->modes);
     free(monitor->name);
     free(monitor);

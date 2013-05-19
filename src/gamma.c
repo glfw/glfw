@@ -30,7 +30,30 @@
 #include "internal.h"
 
 #include <math.h>
+#include <stdlib.h>
 #include <string.h>
+
+#if defined(_MSC_VER)
+ #include <malloc.h>
+#endif
+
+
+void _glfwAllocGammaRamp(GLFWgammaramp* ramp, unsigned int size)
+{
+    ramp->red = (unsigned short*) malloc(size * sizeof(unsigned short));
+    ramp->green = (unsigned short*) malloc(size * sizeof(unsigned short));
+    ramp->blue = (unsigned short*) malloc(size * sizeof(unsigned short));
+    ramp->size = size;
+}
+
+void _glfwFreeGammaRamp(GLFWgammaramp* ramp)
+{
+    free(ramp->red);
+    free(ramp->green);
+    free(ramp->blue);
+
+    memset(ramp, 0, sizeof(GLFWgammaramp));
+}
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -39,7 +62,8 @@
 
 GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
 {
-    int i, size = GLFW_GAMMA_RAMP_SIZE;
+    int i;
+    unsigned short values[256];
     GLFWgammaramp ramp;
 
     _GLFW_REQUIRE_INIT();
@@ -51,12 +75,12 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
         return;
     }
 
-    for (i = 0;  i < size;  i++)
+    for (i = 0;  i < 256;  i++)
     {
         float value;
 
         // Calculate intensity
-        value = (float) i / (float) (size - 1);
+        value = i / 255.f;
         // Apply gamma curve
         value = (float) pow(value, 1.f / gamma) * 65535.f + 0.5f;
 
@@ -66,19 +90,27 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
         else if (value > 65535.f)
             value = 65535.f;
 
-        ramp.red[i]   = (unsigned short) value;
-        ramp.green[i] = (unsigned short) value;
-        ramp.blue[i]  = (unsigned short) value;
+        values[i] = (unsigned short) value;
     }
+
+    ramp.red = values;
+    ramp.green = values;
+    ramp.blue = values;
+    ramp.size = 256;
 
     glfwSetGammaRamp(handle, &ramp);
 }
 
-GLFWAPI void glfwGetGammaRamp(GLFWmonitor* handle, GLFWgammaramp* ramp)
+GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-    _GLFW_REQUIRE_INIT();
-    _glfwPlatformGetGammaRamp(monitor, ramp);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+    _glfwFreeGammaRamp(&monitor->currentRamp);
+    _glfwPlatformGetGammaRamp(monitor, &monitor->currentRamp);
+
+    return &monitor->currentRamp;
 }
 
 GLFWAPI void glfwSetGammaRamp(GLFWmonitor* handle, const GLFWgammaramp* ramp)
@@ -87,11 +119,8 @@ GLFWAPI void glfwSetGammaRamp(GLFWmonitor* handle, const GLFWgammaramp* ramp)
 
     _GLFW_REQUIRE_INIT();
 
-    if (!monitor->rampChanged)
-    {
+    if (!monitor->originalRamp.size)
         _glfwPlatformGetGammaRamp(monitor, &monitor->originalRamp);
-        monitor->rampChanged = GL_TRUE;
-    }
 
     _glfwPlatformSetGammaRamp(monitor, ramp);
 }

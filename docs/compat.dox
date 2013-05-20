@@ -42,6 +42,12 @@ protocol, full screen windows may not work properly.  GLFW has a fallback code
 path in case this protocol is unavailable, but every window manager behaves
 slightly differently in this regard.
 
+GLFW uses the
+[clipboard manager protocol](http://www.freedesktop.org/wiki/ClipboardManager/)
+to push a clipboard string (i.e. selection) owned by a GLFW window about to be
+destroyed to the clipboard manager.  If there is no running clipboard manager,
+the clipboard string will be unavailable once the window has been destroyed.
+
 @section compat_glx GLX extensions
 
 The GLX API is the default API used to create OpenGL contexts on Unix-like

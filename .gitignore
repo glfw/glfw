@@ -29,7 +29,6 @@ tests/clipboard
 tests/defaults
 tests/events
 tests/fsaa
-tests/fsfocus
 tests/gamma
 tests/glfwinfo
 tests/iconify

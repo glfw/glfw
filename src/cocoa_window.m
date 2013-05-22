@@ -60,6 +60,15 @@ static void leaveFullscreenMode(_GLFWwindow* window)
     [window->ns.view exitFullScreenModeWithOptions:nil];
 }
 
+// Transforms the specified y-coordinate between the CG display and NS screen
+// coordinate systems
+//
+static float transformY(float y)
+{
+    const float height = CGDisplayBounds(CGMainDisplayID()).size.height;
+    return height - y;
+}
+
 
 //------------------------------------------------------------------------
 // Delegate for window related notifications
@@ -941,21 +950,18 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
     if (window->monitor)
     {
-        CGPoint globalPoint = CGPointMake(x, y);
-        CGDisplayMoveCursorToPoint(CGMainDisplayID(), globalPoint);
+        CGDisplayMoveCursorToPoint(window->monitor->ns.displayID,
+                                   CGPointMake(x, y));
     }
     else
     {
         const NSRect contentRect =
             [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
-        NSPoint localPoint = NSMakePoint(x, contentRect.size.height - y - 1);
-        NSPoint globalPoint = [window->ns.object convertBaseToScreen:localPoint];
-        CGPoint mainScreenOrigin = CGDisplayBounds(CGMainDisplayID()).origin;
-        double mainScreenHeight = CGDisplayBounds(CGMainDisplayID()).size.height;
-        CGPoint targetPoint = CGPointMake(globalPoint.x - mainScreenOrigin.x,
-                                          mainScreenHeight - globalPoint.y -
-                                            mainScreenOrigin.y);
-        CGDisplayMoveCursorToPoint(CGMainDisplayID(), targetPoint);
+        const NSPoint localPoint = NSMakePoint(x, contentRect.size.height - y - 1);
+        const NSPoint globalPoint = [window->ns.object convertBaseToScreen:localPoint];
+
+        CGWarpMouseCursorPosition(CGPointMake(globalPoint.x,
+                                              transformY(globalPoint.y)));
     }
 }
 

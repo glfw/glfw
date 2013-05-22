@@ -107,7 +107,7 @@ The first point is covered in the WIP
 In the files of your program where you use OpenGL or GLFW, you should include
 the GLFW 3 header file, i.e.:
 
-    #include <GL/glfw3.h>
+    #include <GLFW/glfw3.h>
 
 This defines all the constants, types and function prototypes of the GLFW API.
 It also includes the chosen client API header files (by default OpenGL), and
@@ -327,6 +327,7 @@ GLFW.
    modes for the specified monitor
  * Changed cursor position to double-precision floating-point
  * Changed default cursor mode for fullscreen to normal
+ * Renamed header directory `GL` to `GLFW`
  * Renamed `glfw.h` to `glfw3.h` to avoid conflicts with 2.x series
  * Renamed `glfwOpenWindowHint` to `glfwWindowHint`
  * Renamed `GLFW_ACTIVE` to `GLFW_FOCUSED`

@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <GL/glfw3.h>
+#include <GLFW/glfw3.h>
 
 #ifndef M_PI
 #define M_PI 3.141592654

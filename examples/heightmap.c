@@ -30,7 +30,7 @@
 #include <stddef.h>
 #include "getopt.h"
 
-#include <GL/glfw3.h>
+#include <GLFW/glfw3.h>
 #include <GL/glext.h>
 
 /* OpenGL function pointers */

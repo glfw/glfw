@@ -48,7 +48,7 @@
 // inclusion of our own, newer glext.h below
 #define GL_GLEXT_LEGACY
 
-#include "../include/GL/glfw3.h"
+#include "../include/GLFW/glfw3.h"
 
 #if defined(_GLFW_USE_OPENGL)
  // This path may need to be changed if you build GLFW using your own setup

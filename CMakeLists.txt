@@ -394,7 +394,7 @@ configure_file(${GLFW_SOURCE_DIR}/src/config.h.in
 # Install the public headers
 # The src directory's CMakeLists.txt file installs the library
 #--------------------------------------------------------------------
-install(DIRECTORY include/GL DESTINATION include 
+install(DIRECTORY include/GLFW DESTINATION include 
         FILES_MATCHING PATTERN glfw3.h PATTERN glfw3native.h)
 
 #--------------------------------------------------------------------

@@ -42,7 +42,7 @@
 
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
-    uint32_t size = CGDisplayGammaTableCapacity(monitor->ns.displayID);
+    uint32_t i, size = CGDisplayGammaTableCapacity(monitor->ns.displayID);
     CGGammaValue* values = (CGGammaValue*) malloc(size * 3 * sizeof(CGGammaValue));
 
     CGGetDisplayTransferByTable(monitor->ns.displayID,
@@ -54,7 +54,7 @@ void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 
     _glfwAllocGammaRamp(ramp, size);
 
-    for (int i = 0; i < size; i++)
+    for (i = 0; i < size; i++)
     {
         ramp->red[i]   = (unsigned short) (values[i] * 65535);
         ramp->green[i] = (unsigned short) (values[i + size] * 65535);
@@ -66,9 +66,10 @@ void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 
 void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 {
+    int i;
     CGGammaValue* values = (CGGammaValue*) malloc(ramp->size * 3 * sizeof(CGGammaValue));
 
-    for (int i = 0;  i < ramp->size;  i++)
+    for (i = 0;  i < ramp->size;  i++)
     {
         values[i]                  = ramp->red[i] / 65535.f;
         values[i + ramp->size]     = ramp->green[i] / 65535.f;

@@ -82,7 +82,7 @@ static void key_callback(GLFWwindow* window, int key, int action, int mods)
 static void list_modes(GLFWmonitor* monitor)
 {
     int count, x, y, widthMM, heightMM, dpi, i;
-    GLFWvidmode mode = glfwGetVideoMode(monitor);
+    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
     const GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
 
     glfwGetMonitorPos(monitor, &x, &y);
@@ -91,10 +91,10 @@ static void list_modes(GLFWmonitor* monitor)
     printf("Name: %s (%s)\n",
            glfwGetMonitorName(monitor),
            glfwGetPrimaryMonitor() == monitor ? "primary" : "secondary");
-    printf("Current mode: %s\n", format_mode(&mode));
+    printf("Current mode: %s\n", format_mode(mode));
     printf("Virtual position: %i %i\n", x, y);
 
-    dpi = (int) ((float) mode.width * 25.4f / (float) widthMM);
+    dpi = (int) ((float) mode->width * 25.4f / (float) widthMM);
     printf("Physical size: %i x %i mm (%i dpi)\n", widthMM, heightMM, dpi);
 
     printf("Modes:\n");

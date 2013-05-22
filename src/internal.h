@@ -248,6 +248,7 @@ struct _GLFWmonitor
 
     GLFWvidmode*    modes;
     int             modeCount;
+    GLFWvidmode     currentMode;
 
     GLFWgammaramp   originalRamp;
     GLFWgammaramp   currentRamp;

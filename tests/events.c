@@ -371,7 +371,7 @@ void monitor_callback(GLFWmonitor* monitor, int event)
     if (event == GLFW_CONNECTED)
     {
         int x, y, widthMM, heightMM;
-        GLFWvidmode mode = glfwGetVideoMode(monitor);
+        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
         glfwGetMonitorPos(monitor, &x, &y);
         glfwGetMonitorPhysicalSize(monitor, &widthMM, &heightMM);
@@ -380,7 +380,7 @@ void monitor_callback(GLFWmonitor* monitor, int event)
                counter++,
                glfwGetTime(),
                glfwGetMonitorName(monitor),
-               mode.width, mode.height,
+               mode->width, mode->height,
                x, y,
                widthMM, heightMM);
     }

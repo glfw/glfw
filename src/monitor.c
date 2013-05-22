@@ -322,14 +322,13 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)
     return monitor->modes;
 }
 
-GLFWAPI GLFWvidmode glfwGetVideoMode(GLFWmonitor* handle)
+GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-    GLFWvidmode mode = { 0, 0, 0, 0, 0 };
 
-    _GLFW_REQUIRE_INIT_OR_RETURN(mode);
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
-    _glfwPlatformGetVideoMode(monitor, &mode);
-    return mode;
+    _glfwPlatformGetVideoMode(monitor, &monitor->currentMode);
+    return &monitor->currentMode;
 }
 

@@ -1060,14 +1060,13 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count);
  *  on whether it is focused.
  *
  *  @param[in] monitor The monitor to query.
- *  @return The current mode of the monitor, or a struct cleared to all zeroes
- *  if an error occurred.
+ *  @return The current mode of the monitor, or `NULL` if an error occurred.
  *
  *  @sa glfwGetVideoModes
  *
  *  @ingroup monitor
  */
-GLFWAPI GLFWvidmode glfwGetVideoMode(GLFWmonitor* monitor);
+GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor);
 
 /*! @brief Generates a gamma ramp and sets it for the specified monitor.
  *

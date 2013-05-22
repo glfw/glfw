@@ -863,7 +863,7 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
     if (xpos)
         *xpos = contentRect.origin.x;
     if (ypos)
-        *ypos = contentRect.origin.y;
+        *ypos = transformY(contentRect.origin.y + contentRect.size.height);
 }
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)

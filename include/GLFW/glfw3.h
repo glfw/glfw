@@ -407,19 +407,20 @@ extern "C" {
 
 /*! @} */
 
-/*! @name keys Modifier key flags
+/*! @defgroup mods Modifier key flags
+ *  @ingroup input
  *  @{ */
 
-/*! @ingroup input
+/*! @brief If this bit is set one or more Shift keys were held down.
  */
 #define GLFW_MOD_SHIFT           0x0001
-/*! @ingroup input
+/*! @brief If this bit is set one or more Control keys were held down.
  */
 #define GLFW_MOD_CONTROL         0x0002
-/*! @ingroup input
+/*! @brief If this bit is set one or more Alt keys were held down.
  */
 #define GLFW_MOD_ALT             0x0004
-/*! @ingroup input
+/*! @brief If this bit is set one or more Super keys were held down.
  */
 #define GLFW_MOD_SUPER           0x0008
 
@@ -685,7 +686,8 @@ typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
  *  @param[in] button The [mouse button](@ref buttons) that was pressed or
  *  released.
  *  @param[in] action One of `GLFW_PRESS` or `GLFW_RELEASE`.
- *  @param[in] mods Bit field describing which modifier keys were held down.
+ *  @param[in] mods Bit field describing which [modifier keys](@ref mods) were
+ *  held down.
  *
  *  @sa glfwSetMouseButtonCallback
  *
@@ -742,7 +744,8 @@ typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
  *  @param[in] window The window that received the event.
  *  @param[in] key The [keyboard key](@ref keys) that was pressed or released.
  *  @param[in] action @ref GLFW_PRESS, @ref GLFW_RELEASE or @ref GLFW_REPEAT.
- *  @param[in] mods Bit field describing which modifier keys were held down.
+ *  @param[in] mods Bit field describing which [modifier keys](@ref mods) were
+ *  held down.
  *
  *  @sa glfwSetKeyCallback
  *

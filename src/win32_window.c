@@ -113,7 +113,7 @@ static int getKeyMods(void)
     if (GetKeyState(VK_SHIFT) & (1 << 31))
         mods |= GLFW_MOD_SHIFT;
     if (GetKeyState(VK_CONTROL) & (1 << 31))
-        mods |= GLFW_MOD_CTRL;
+        mods |= GLFW_MOD_CONTROL;
     if (GetKeyState(VK_MENU) & (1 << 31))
         mods |= GLFW_MOD_ALT;
 
@@ -129,7 +129,7 @@ static int getAsyncKeyMods(void)
     if (GetAsyncKeyState(VK_SHIFT) & (1 << 31))
         mods |= GLFW_MOD_SHIFT;
     if (GetAsyncKeyState(VK_CONTROL) & (1 << 31))
-        mods |= GLFW_MOD_CTRL;
+        mods |= GLFW_MOD_CONTROL;
     if (GetAsyncKeyState(VK_MENU) & (1 << 31))
         mods |= GLFW_MOD_ALT;
 

@@ -67,7 +67,7 @@ int translateState(int state)
     if (state & ShiftMask)
         mods |= GLFW_MOD_SHIFT;
     if (state & ControlMask)
-        mods |= GLFW_MOD_CTRL;
+        mods |= GLFW_MOD_CONTROL;
     if (state & Mod1Mask)
         mods |= GLFW_MOD_ALT;
 
@@ -532,7 +532,7 @@ static void processEvent(XEvent *event)
 
             _glfwInputKey(window, key, GLFW_PRESS, mods);
 
-            if (!(mods & GLFW_MOD_CTRL) && !(mods & GLFW_MOD_ALT))
+            if (!(mods & GLFW_MOD_CONTROL) && !(mods & GLFW_MOD_ALT))
                 _glfwInputChar(window, translateChar(&event->xkey));
 
             break;

@@ -415,7 +415,7 @@ extern "C" {
 #define GLFW_MOD_SHIFT           0x0001
 /*! @ingroup input
  */
-#define GLFW_MOD_CTRL            0x0002
+#define GLFW_MOD_CONTROL         0x0002
 /*! @ingroup input
  */
 #define GLFW_MOD_ALT             0x0004

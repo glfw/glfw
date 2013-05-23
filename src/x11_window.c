@@ -70,6 +70,8 @@ int translateState(int state)
         mods |= GLFW_MOD_CONTROL;
     if (state & Mod1Mask)
         mods |= GLFW_MOD_ALT;
+    if (state & Mod4Mask)
+        mods |= GLFW_MOD_SUPER;
 
     return mods;
 }

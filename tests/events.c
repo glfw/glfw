@@ -219,6 +219,8 @@ static const char* get_mods_name(int mods)
         strcat(name, " control");
     if (mods & GLFW_MOD_ALT)
         strcat(name, " alt");
+    if (mods & GLFW_MOD_SUPER)
+        strcat(name, " super");
 
     return name;
 }

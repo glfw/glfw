@@ -116,6 +116,8 @@ static int getKeyMods(void)
         mods |= GLFW_MOD_CONTROL;
     if (GetKeyState(VK_MENU) & (1 << 31))
         mods |= GLFW_MOD_ALT;
+    if ((GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & (1 << 31))
+        mods |= GLFW_MOD_SUPER;
 
     return mods;
 }
@@ -132,6 +134,8 @@ static int getAsyncKeyMods(void)
         mods |= GLFW_MOD_CONTROL;
     if (GetAsyncKeyState(VK_MENU) & (1 << 31))
         mods |= GLFW_MOD_ALT;
+    if ((GetAsyncKeyState(VK_LWIN) | GetAsyncKeyState(VK_RWIN)) & (1 << 31))
+        mods |= GLFW_MOD_SUPER;
 
     return mods;
 }

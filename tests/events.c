@@ -215,7 +215,7 @@ static const char* get_mods_name(int mods)
 
     if (mods & GLFW_MOD_SHIFT)
         strcat(name, " shift");
-    if (mods & GLFW_MOD_CTRL)
+    if (mods & GLFW_MOD_CONTROL)
         strcat(name, " control");
     if (mods & GLFW_MOD_ALT)
         strcat(name, " alt");

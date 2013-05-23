@@ -56,7 +56,7 @@ static void key_callback(GLFWwindow* window, int key, int action, int mods)
             break;
 
         case GLFW_KEY_V:
-            if (mods == GLFW_MOD_CTRL)
+            if (mods == GLFW_MOD_CONTROL)
             {
                 const char* string;
 
@@ -69,7 +69,7 @@ static void key_callback(GLFWwindow* window, int key, int action, int mods)
             break;
 
         case GLFW_KEY_C:
-            if (mods == GLFW_MOD_CTRL)
+            if (mods == GLFW_MOD_CONTROL)
             {
                 const char* string = "Hello GLFW World!";
                 glfwSetClipboardString(window, string);

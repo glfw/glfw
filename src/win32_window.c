@@ -862,12 +862,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             return GL_FALSE;
     }
 
-    if (window->monitor)
-    {
-        if (!_glfwSetVideoMode(window->monitor, &window->videoMode))
-            return GL_FALSE;
-    }
-
     if (!createWindow(window, wndconfig, fbconfig))
         return GL_FALSE;
 
@@ -909,6 +903,9 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (window->monitor)
     {
+        if (!_glfwSetVideoMode(window->monitor, &window->videoMode))
+            return GL_FALSE;
+
         // Place the window above all topmost windows
         _glfwPlatformShowWindow(window);
         SetWindowPos(window->win32.handle, HWND_TOPMOST, 0,0,0,0,

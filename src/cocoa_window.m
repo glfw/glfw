@@ -867,10 +867,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (wndconfig->monitor)
         enterFullscreenMode(window);
 
-    NSPoint point = [[NSCursor currentCursor] hotSpot];
-    window->cursorPosX = point.x;
-    window->cursorPosY = point.y;
-
     return GL_TRUE;
 }
 

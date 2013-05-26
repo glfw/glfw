@@ -762,7 +762,6 @@ static int createWindow(_GLFWwindow* window,
                         const _GLFWfbconfig* fbconfig)
 {
     int xpos, ypos, fullWidth, fullHeight;
-    POINT cursorPos;
     WCHAR* wideTitle;
 
     window->win32.dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
@@ -828,12 +827,6 @@ static int createWindow(_GLFWwindow* window,
         _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to create window");
         return GL_FALSE;
     }
-
-    // Initialize cursor position data
-    GetCursorPos(&cursorPos);
-    ScreenToClient(window->win32.handle, &cursorPos);
-    window->win32.oldCursorX = window->cursorPosX = cursorPos.x;
-    window->win32.oldCursorY = window->cursorPosY = cursorPos.y;
 
     if (!_glfwCreateContext(window, wndconfig, fbconfig))
         return GL_FALSE;

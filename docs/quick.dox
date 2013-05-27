@@ -167,7 +167,7 @@ glfwMakeContextCurrent(window);
 @endcode
 
 
-@section quick_window_params Checking the window close flag
+@section quick_window_close Checking the window close flag
 
 Each window has a flag indicating whether the window should be closed.  This can
 be checked with @ref glfwWindowShouldClose.  

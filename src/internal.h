@@ -690,15 +690,15 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
                                          const _GLFWfbconfig* alternatives,
                                          unsigned int count);
 
-/*! @brief Checks and reads back properties from the current context.
+/*! @brief Retrieves the attributes of the current context.
  *  @return `GL_TRUE` if successful, or `GL_FALSE` if the context is unusable.
  *  @ingroup utility
  */
-GLboolean _glfwRefreshContextParams(void);
+GLboolean _glfwRefreshContextAttribs(void);
 
-/*! @brief Checks whether the desired context properties are valid.
- *  @param[in] wndconfig The context properties to check.
- *  @return `GL_TRUE` if the context properties are valid, or `GL_FALSE`
+/*! @brief Checks whether the desired context attributes are valid.
+ *  @param[in] wndconfig The context attributes to check.
+ *  @return `GL_TRUE` if the context attributes are valid, or `GL_FALSE`
  *  otherwise.
  *  @ingroup utility
  *
@@ -710,7 +710,7 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig);
 
 /*! @brief Checks whether the current context fulfils the specified hard
  *  constraints.
- *  @param[in] wndconfig The desired context properties.
+ *  @param[in] wndconfig The desired context attributes.
  *  @return `GL_TRUE` if the context fulfils the hard constraints, or `GL_FALSE`
  *  otherwise.
  *  @ingroup utility

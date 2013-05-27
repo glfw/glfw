@@ -25,7 +25,7 @@ glfwInit, can be individually set with @ref glfwWindowHint and reset all at once
 to their defaults with @ref glfwDefaultWindowHints.
 
 Note again that they need to be set *before* the creation of the window you wish
-to have the specified properties.
+to have the specified attributes.
 
 
 @subsection window_hints_hard Hard and soft constraints
@@ -34,8 +34,8 @@ Some window hints are hard constraints.  These must match the available
 capabilities *exactly* for window and context creation to succeed.  Hints
 that are not hard constraints are matched as closely as possible, but the
 resulting window and context may differ from what these hints requested.  To
-find out the actual parameters of the created window and context, use the
-@ref glfwGetWindowParam function.
+find out the actual attributes of the created window and context, use the
+@ref glfwGetWindowAttrib function.
 
 The following hints are hard constraints:
 - `GLFW_STEREO`

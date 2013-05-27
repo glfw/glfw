@@ -257,7 +257,8 @@ Unix-like systems, where it uses the
 | `glfwSetMousePosCallback`   | @ref glfwSetCursorPosCallback |       |
 | `glfwSetMouseWheelCallback` | @ref glfwSetScrollCallback    | Accepts two-dimensional scroll offsets as doubles |
 | `glfwGetJoystickPos`        | @ref glfwGetJoystickAxes      |       |
-| `glfwGetGLVersion`          | @ref glfwGetWindowParam       | Use `GLFW_OPENGL_VERSION_MAJOR`, `GLFW_OPENGL_VERSION_MINOR` and `GLFW_OPENGL_REVISION` |
+| `glfwGetWindowParam`        | @ref glfwGetWindowAttrib      |       |
+| `glfwGetGLVersion`          | @ref glfwGetWindowAttrib      | Use `GLFW_OPENGL_VERSION_MAJOR`, `GLFW_OPENGL_VERSION_MINOR` and `GLFW_OPENGL_REVISION` |
 | `glfwGetDesktopMode`        | @ref glfwGetVideoMode         | Returns the current mode of a monitor |
 
 @subsection moving_renamed_tokens Tokens

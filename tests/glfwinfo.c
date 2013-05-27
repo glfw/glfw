@@ -293,10 +293,10 @@ int main(int argc, char** argv)
 
     // Report client API version
 
-    api = glfwGetWindowParam(window, GLFW_CLIENT_API);
-    major = glfwGetWindowParam(window, GLFW_CONTEXT_VERSION_MAJOR);
-    minor = glfwGetWindowParam(window, GLFW_CONTEXT_VERSION_MINOR);
-    revision = glfwGetWindowParam(window, GLFW_CONTEXT_REVISION);
+    api = glfwGetWindowAttrib(window, GLFW_CLIENT_API);
+    major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
+    minor = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR);
+    revision = glfwGetWindowAttrib(window, GLFW_CONTEXT_REVISION);
 
     printf("%s context version string: \"%s\"\n",
            get_client_api_name(api),
@@ -325,18 +325,18 @@ int main(int argc, char** argv)
 
             printf("%s context flags parsed by GLFW:", get_client_api_name(api));
 
-            if (glfwGetWindowParam(window, GLFW_OPENGL_FORWARD_COMPAT))
+            if (glfwGetWindowAttrib(window, GLFW_OPENGL_FORWARD_COMPAT))
                 printf(" forward-compatible");
-            if (glfwGetWindowParam(window, GLFW_OPENGL_DEBUG_CONTEXT))
+            if (glfwGetWindowAttrib(window, GLFW_OPENGL_DEBUG_CONTEXT))
                 printf(" debug");
-            if (glfwGetWindowParam(window, GLFW_CONTEXT_ROBUSTNESS) != GLFW_NO_ROBUSTNESS)
+            if (glfwGetWindowAttrib(window, GLFW_CONTEXT_ROBUSTNESS) != GLFW_NO_ROBUSTNESS)
                 printf(" robustness");
             putchar('\n');
         }
 
         if (major > 3 || (major == 3 && minor >= 2))
         {
-            int profile = glfwGetWindowParam(window, GLFW_OPENGL_PROFILE);
+            int profile = glfwGetWindowAttrib(window, GLFW_OPENGL_PROFILE);
 
             glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
             printf("%s profile mask (0x%08x): %s\n",
@@ -360,7 +360,7 @@ int main(int argc, char** argv)
                    strategy,
                    get_strategy_name_gl(strategy));
 
-            robustness = glfwGetWindowParam(window, GLFW_CONTEXT_ROBUSTNESS);
+            robustness = glfwGetWindowAttrib(window, GLFW_CONTEXT_ROBUSTNESS);
 
             printf("%s robustness strategy parsed by GLFW: %s\n",
                    get_client_api_name(api),

@@ -330,6 +330,7 @@ GLFW.
  * Renamed header directory `GL` to `GLFW`
  * Renamed `glfw.h` to `glfw3.h` to avoid conflicts with 2.x series
  * Renamed `glfwOpenWindowHint` to `glfwWindowHint`
+ * Renamed `glfwGetWindowParam` to `glfwGetWindowAttrib`
  * Renamed `GLFW_ACTIVE` to `GLFW_FOCUSED`
  * Renamed `GLFW_FSAA_SAMPLES` to `GLFW_SAMPLES`
  * Renamed `GLFW_WINDOW_NO_RESIZE` to `GLFW_RESIZABLE`

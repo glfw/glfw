@@ -143,8 +143,8 @@ int main(int argc, char** argv)
     glfwSetWindowIconifyCallback(window, window_iconify_callback);
 
     printf("Window is %s and %s\n",
-           glfwGetWindowParam(window, GLFW_ICONIFIED) ? "iconified" : "restored",
-           glfwGetWindowParam(window, GLFW_FOCUSED) ? "focused" : "defocused");
+           glfwGetWindowAttrib(window, GLFW_ICONIFIED) ? "iconified" : "restored",
+           glfwGetWindowAttrib(window, GLFW_FOCUSED) ? "focused" : "defocused");
 
     glEnable(GL_SCISSOR_TEST);
 

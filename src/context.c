@@ -361,7 +361,7 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
     return closest;
 }
 
-GLboolean _glfwRefreshContextParams(void)
+GLboolean _glfwRefreshContextAttribs(void)
 {
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 

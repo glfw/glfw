@@ -1159,8 +1159,8 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  as not all parameters and hints are
  *  [hard constraints](@ref window_hints_hard).  This includes the size of the
  *  window, especially for full screen windows.  To retrieve the actual
- *  properties of the window and context, use queries like @ref
- *  glfwGetWindowParam and @ref glfwGetWindowSize.
+ *  attributes of the created window and context, use queries like @ref
+ *  glfwGetWindowAttrib and @ref glfwGetWindowSize.
  *
  *  @param[in] width The desired width, in screen coordinates, of the window.
  *  This must be greater than zero.
@@ -1435,56 +1435,56 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
  */
 GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
 
-/*! @brief Returns a parameter of the specified window.
+/*! @brief Returns an attribute of the specified window.
  *
- *  This function returns a property of the specified window.  There are many
- *  different properties, some related to the window and others to its context.
+ *  This function returns an attribute of the specified window.  There are many
+ *  attributes, some related to the window and others to its context.
  *
  *  @param[in] window The window to query.
- *  @param[in] param The parameter whose value to return.
- *  @return The value of the parameter, or zero if an error occurred.
+ *  @param[in] attrib The attribute whose value to return.
+ *  @return The value of the attribute, or zero if an error occurred.
  *
- *  @par Window parameters
+ *  @par Window attributes
  *
- *  The `GLFW_FOCUSED` parameter indicates whether the window is focused.
+ *  The `GLFW_FOCUSED` attribute indicates whether the window is focused.
  *
- *  The `GLFW_ICONIFIED` parameter indicates whether the window is iconified.
+ *  The `GLFW_ICONIFIED` attribute indicates whether the window is iconified.
  *
- *  The `GLFW_VISIBLE` parameter indicates whether the window is visible.
+ *  The `GLFW_VISIBLE` attribute indicates whether the window is visible.
  *
- *  The `GLFW_RESIZABLE` parameter indicates whether the window is resizable
+ *  The `GLFW_RESIZABLE` attribute indicates whether the window is resizable
  *  by the user.
  *
- *  The `GLFW_DECORATED` parameter indicates whether the window is decorated.
+ *  The `GLFW_DECORATED` attribute indicates whether the window is decorated.
  *
- *  @par Context parameters
+ *  @par Context attributes
  *
- *  The `GLFW_CLIENT_API` parameter indicates the client API provided by the
+ *  The `GLFW_CLIENT_API` attribute indicates the client API provided by the
  *  window's context; either `GLFW_OPENGL_API` or `GLFW_OPENGL_ES_API`.
  *
  *  The `GLFW_CONTEXT_VERSION_MAJOR`, `GLFW_CONTEXT_VERSION_MINOR` and
- *  `GLFW_CONTEXT_REVISION` parameters indicate the client API version of the
+ *  `GLFW_CONTEXT_REVISION` attributes indicate the client API version of the
  *  window's context.
  *
- *  The `GLFW_OPENGL_FORWARD_COMPAT` parameter is `GL_TRUE` if the window's
+ *  The `GLFW_OPENGL_FORWARD_COMPAT` attribute is `GL_TRUE` if the window's
  *  context is an OpenGL forward-compatible one, or `GL_FALSE` otherwise.
  *
- *  The `GLFW_OPENGL_DEBUG_CONTEXT` parameter is `GL_TRUE` if the window's
+ *  The `GLFW_OPENGL_DEBUG_CONTEXT` attribute is `GL_TRUE` if the window's
  *  context is an OpenGL debug context, or `GL_FALSE` otherwise.
  *
- *  The `GLFW_OPENGL_PROFILE` parameter indicates the OpenGL profile used by the
+ *  The `GLFW_OPENGL_PROFILE` attribute indicates the OpenGL profile used by the
  *  context.  This is `GLFW_OPENGL_CORE_PROFILE` or `GLFW_OPENGL_COMPAT_PROFILE`
  *  if the context uses a known profile, or `GLFW_OPENGL_NO_PROFILE` if the
  *  OpenGL profile is unknown or the context is for another client API.
  *
- *  The `GLFW_CONTEXT_ROBUSTNESS` parameter indicates the robustness strategy
+ *  The `GLFW_CONTEXT_ROBUSTNESS` attribute indicates the robustness strategy
  *  used by the context.  This is `GLFW_LOSE_CONTEXT_ON_RESET` or
  *  `GLFW_NO_RESET_NOTIFICATION` if the window's context supports robustness, or
  *  `GLFW_NO_ROBUSTNESS` otherwise.
  *
  *  @ingroup window
  */
-GLFWAPI int glfwGetWindowParam(GLFWwindow* window, int param);
+GLFWAPI int glfwGetWindowAttrib(GLFWwindow* window, int attrib);
 
 /*! @brief Sets the user pointer of the specified window.
  *

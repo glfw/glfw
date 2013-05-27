@@ -226,8 +226,8 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
 
     glfwMakeContextCurrent((GLFWwindow*) window);
 
-    // Cache the actual (as opposed to requested) context parameters
-    if (!_glfwRefreshContextParams())
+    // Retrieve the actual (as opposed to requested) context attributes
+    if (!_glfwRefreshContextAttribs())
     {
         glfwDestroyWindow((GLFWwindow*) window);
         glfwMakeContextCurrent((GLFWwindow*) previous);
@@ -521,13 +521,13 @@ GLFWAPI void glfwHideWindow(GLFWwindow* handle)
     _glfwPlatformHideWindow(window);
 }
 
-GLFWAPI int glfwGetWindowParam(GLFWwindow* handle, int param)
+GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(0);
 
-    switch (param)
+    switch (attrib)
     {
         case GLFW_FOCUSED:
             return window == _glfw.focusedWindow;

@@ -1932,14 +1932,12 @@ GLFWAPI GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcu
  */
 GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun cbfun);
 
-/*! @brief Returns a parameter of the specified joystick.
+/*! @brief Returns whether the specified joystick is present.
  *
- *  This function returns a parameter of the specified joystick.
+ *  This function returns whether the specified joystick is present.
  *
  *  @param[in] joy The joystick to query.
- *  @param[in] param The parameter whose value to return.
- *  @return The specified joystick's current value, or zero if the joystick is
- *  not present.
+ *  @return `GL_TRUE` if the joystick is present, or `GL_FALSE` otherwise.
  *
  *  @ingroup input
  */

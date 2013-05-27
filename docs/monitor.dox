@@ -2,13 +2,33 @@
 
 @page monitor Multi-monitor guide
 
+@tableofcontents
+
+
 @section monitor_objects Monitor objects
+
+The @ref GLFWmonitor object represents a currently connected monitor.
+
+The primary monitor is returned by @ref glfwGetPrimaryMonitor.  It is usually
+the user's preferred monitor and the one with global UI elements like task bar
+or menu bar.
+
+@code
+GLFWmonitor* primary = glfwGetPrimaryMonitor();
+@endcode
+
+You can retrieve all currently connected monitors with @ref glfwGetMonitors.
+
+@code
+int count;
+GLFWmonitor** monitors = glfwGetMonitors(&count);
+@endcode
 
 
 @section monitor_modes Querying video modes
 
 Although GLFW generally does a good job at selecting a suitable video
-mode for you when you open a fullscreen window, it is sometimes useful to
+mode for you when you open a full screen window, it is sometimes useful to
 know exactly which modes are available on a certain system. For example,
 you may want to present the user with a list of video modes to select
 from. To get a list of available video modes, you can use the function
@@ -26,6 +46,51 @@ const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 @endcode
 
 
-@section monitor_gamma Gamma ramps
+@section monitor_size Monitor physical size
+
+The physical size in millimetres of a monitor, or an approximation of it, can be
+retrieved with @ref glfwGetMonitorPhysicalSize.  This can, for example, be used
+together with the current video mode to calculate DPI.
+
+@code
+int widthMM, heightMM;
+glfwGetMonitorPhysicalSize(monitor, &widthMM, &heightMM);
+@endcode
+
+
+@section monitor_name Monitor name
+
+The name of a monitor is returned by @ref glfwGetMonitorName.
+
+@code
+const char* name = glfwGetMonitorName(monitor);
+@endcode
+
+The monitor name is a regular C string using the UTF-8 encoding.  Note that
+monitor names are not guaranteed to be unique.                        
+
+
+@section monitor_gamma Monitor gamma ramp
+
+The gamma ramp of a monitor can be set with @ref glfwSetGammaRamp, which accepts
+a monitor handle and a pointer to a @ref GLFWgammaramp structure.
+
+@code
+glfwSetGammaRamp(monitor, &ramp);
+@endcode
+
+The current gamma ramp for a monitor is returned by @ref glfwGetGammaRamp.
+
+@code
+const GLFWgammaramp* ramp = glfwGetGammaRamp(monitor);
+@endcode
+
+If you wish to set a regular gamma ramp, you can have GLFW calculate it for you
+from the desired exponent with @ref glfwSetGamma, which in turn calls @ref
+glfwSetGammaRamp with the resulting ramp.
+
+@code
+glfwSetGamma(monitor, 1.0);
+@endcode
 
 */

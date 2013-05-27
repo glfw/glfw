@@ -787,10 +787,20 @@ typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
  */
 typedef struct
 {
+    /*! The width, in pixels, of the video mode.
+     */
     int width;
+    /*! The height, in pixels, of the video mode.
+     */
     int height;
+    /*! The bit depth of the red channel of the video mode.
+     */
     int redBits;
+    /*! The bit depth of the green channel of the video mode.
+     */
     int greenBits;
+    /*! The bit depth of the blue channel of the video mode.
+     */
     int blueBits;
 } GLFWvidmode;
 
@@ -804,9 +814,17 @@ typedef struct
  */
 typedef struct
 {
+    /*! An array of value describing the response of the red channel.
+     */
     unsigned short* red;
+    /*! An array of value describing the response of the green channel.
+     */
     unsigned short* green;
+    /*! An array of value describing the response of the blue channel.
+     */
     unsigned short* blue;
+    /*! The number of elements in each array.
+     */
     unsigned int size;
 } GLFWgammaramp;
 

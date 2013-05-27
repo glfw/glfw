@@ -470,57 +470,57 @@ extern "C" {
  *  @{ */
 /*! @brief GLFW has not been initialized.
  */
-#define GLFW_NOT_INITIALIZED        0x00070001
+#define GLFW_NOT_INITIALIZED        0x00010001
 /*! @brief No context is current for this thread.
  */
-#define GLFW_NO_CURRENT_CONTEXT     0x00070002
+#define GLFW_NO_CURRENT_CONTEXT     0x00010002
 /*! @brief One of the enum parameters for the function was given an invalid
  *  enum.
  */
-#define GLFW_INVALID_ENUM           0x00070003
+#define GLFW_INVALID_ENUM           0x00010003
 /*! @brief One of the parameters for the function was given an invalid value.
  */
-#define GLFW_INVALID_VALUE          0x00070004
+#define GLFW_INVALID_VALUE          0x00010004
 /*! @brief A memory allocation failed.
  */
-#define GLFW_OUT_OF_MEMORY          0x00070005
+#define GLFW_OUT_OF_MEMORY          0x00010005
 /*! @brief GLFW could not find support for the requested client API on the
  *  system.
  */
-#define GLFW_API_UNAVAILABLE        0x00070006
+#define GLFW_API_UNAVAILABLE        0x00010006
 /*! @brief The requested client API version is not available.
  */
-#define GLFW_VERSION_UNAVAILABLE    0x00070007
+#define GLFW_VERSION_UNAVAILABLE    0x00010007
 /*! @brief A platform-specific error occurred that does not match any of the
  *  more specific categories.
  */
-#define GLFW_PLATFORM_ERROR         0x00070008
+#define GLFW_PLATFORM_ERROR         0x00010008
 /*! @brief The clipboard did not contain data in the requested format.
  */
-#define GLFW_FORMAT_UNAVAILABLE     0x00070009
+#define GLFW_FORMAT_UNAVAILABLE     0x00010009
 /*! @} */
 
 #define GLFW_FOCUSED                0x00020001
 #define GLFW_ICONIFIED              0x00020002
-#define GLFW_RESIZABLE              0x00022007
-#define GLFW_VISIBLE                0x00022008
-#define GLFW_DECORATED              0x00022009
+#define GLFW_RESIZABLE              0x00020003
+#define GLFW_VISIBLE                0x00020004
+#define GLFW_DECORATED              0x00020005
 
-#define GLFW_CONTEXT_REVISION       0x00020004
-#define GLFW_RED_BITS               0x00021000
-#define GLFW_GREEN_BITS             0x00021001
-#define GLFW_BLUE_BITS              0x00021002
-#define GLFW_ALPHA_BITS             0x00021003
-#define GLFW_DEPTH_BITS             0x00021004
-#define GLFW_STENCIL_BITS           0x00021005
-#define GLFW_ACCUM_RED_BITS         0x00021006
-#define GLFW_ACCUM_GREEN_BITS       0x00021007
-#define GLFW_ACCUM_BLUE_BITS        0x00021008
-#define GLFW_ACCUM_ALPHA_BITS       0x00021009
-#define GLFW_AUX_BUFFERS            0x0002100A
-#define GLFW_STEREO                 0x0002100B
-#define GLFW_SAMPLES                0x0002100C
-#define GLFW_SRGB_CAPABLE           0x0002100D
+#define GLFW_CONTEXT_REVISION       0x00021001
+#define GLFW_RED_BITS               0x00021002
+#define GLFW_GREEN_BITS             0x00021003
+#define GLFW_BLUE_BITS              0x00021004
+#define GLFW_ALPHA_BITS             0x00021005
+#define GLFW_DEPTH_BITS             0x00021006
+#define GLFW_STENCIL_BITS           0x00021007
+#define GLFW_ACCUM_RED_BITS         0x00021008
+#define GLFW_ACCUM_GREEN_BITS       0x00021009
+#define GLFW_ACCUM_BLUE_BITS        0x0002100A
+#define GLFW_ACCUM_ALPHA_BITS       0x0002100B
+#define GLFW_AUX_BUFFERS            0x0002100C
+#define GLFW_STEREO                 0x0002100D
+#define GLFW_SAMPLES                0x0002100E
+#define GLFW_SRGB_CAPABLE           0x0002100F
 
 #define GLFW_CLIENT_API             0x00022000
 #define GLFW_CONTEXT_VERSION_MAJOR  0x00022001
@@ -530,27 +530,27 @@ extern "C" {
 #define GLFW_OPENGL_DEBUG_CONTEXT   0x00022005
 #define GLFW_OPENGL_PROFILE         0x00022006
 
-#define GLFW_OPENGL_API             0x00000001
-#define GLFW_OPENGL_ES_API          0x00000002
+#define GLFW_OPENGL_API             0x00030001
+#define GLFW_OPENGL_ES_API          0x00030002
 
-#define GLFW_NO_ROBUSTNESS          0x00000000
-#define GLFW_NO_RESET_NOTIFICATION  0x00000001
-#define GLFW_LOSE_CONTEXT_ON_RESET  0x00000002
+#define GLFW_NO_ROBUSTNESS                   0
+#define GLFW_NO_RESET_NOTIFICATION  0x00031001
+#define GLFW_LOSE_CONTEXT_ON_RESET  0x00031002
 
-#define GLFW_OPENGL_NO_PROFILE      0x00000000
-#define GLFW_OPENGL_CORE_PROFILE    0x00000001
-#define GLFW_OPENGL_COMPAT_PROFILE  0x00000002
+#define GLFW_OPENGL_NO_PROFILE               0
+#define GLFW_OPENGL_CORE_PROFILE    0x00032001
+#define GLFW_OPENGL_COMPAT_PROFILE  0x00032002
 
-#define GLFW_CURSOR                 0x00030001
-#define GLFW_STICKY_KEYS            0x00030002
-#define GLFW_STICKY_MOUSE_BUTTONS   0x00030003
+#define GLFW_CURSOR                 0x00033001
+#define GLFW_STICKY_KEYS            0x00033002
+#define GLFW_STICKY_MOUSE_BUTTONS   0x00033003
 
-#define GLFW_CURSOR_NORMAL          0x00040001
-#define GLFW_CURSOR_HIDDEN          0x00040002
-#define GLFW_CURSOR_DISABLED        0x00040003
+#define GLFW_CURSOR_NORMAL          0x00034001
+#define GLFW_CURSOR_HIDDEN          0x00034002
+#define GLFW_CURSOR_DISABLED        0x00034003
 
-#define GLFW_CONNECTED              0x00061000
-#define GLFW_DISCONNECTED           0x00061001
+#define GLFW_CONNECTED              0x00040001
+#define GLFW_DISCONNECTED           0x00040002
 
 
 /*************************************************************************

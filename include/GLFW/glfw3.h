@@ -1268,7 +1268,7 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *  @param[out] xpos The x-coordinate of the upper-left corner of the client area.
  *  @param[out] ypos The y-coordinate of the upper-left corner of the client area.
  *
- *  @remarks Either or both coordinate parameters may be `NULL`.
+ *  @remarks Either or both coordinate arguments may be `NULL`.
  *
  *  @bug **Mac OS X:** The screen coordinate system is inverted.
  *
@@ -1441,46 +1441,9 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  attributes, some related to the window and others to its context.
  *
  *  @param[in] window The window to query.
- *  @param[in] attrib The attribute whose value to return.
+ *  @param[in] attrib The [window attribute](@ref window_attribs) whose value to
+ *  return.
  *  @return The value of the attribute, or zero if an error occurred.
- *
- *  @par Window attributes
- *
- *  The `GLFW_FOCUSED` attribute indicates whether the window is focused.
- *
- *  The `GLFW_ICONIFIED` attribute indicates whether the window is iconified.
- *
- *  The `GLFW_VISIBLE` attribute indicates whether the window is visible.
- *
- *  The `GLFW_RESIZABLE` attribute indicates whether the window is resizable
- *  by the user.
- *
- *  The `GLFW_DECORATED` attribute indicates whether the window is decorated.
- *
- *  @par Context attributes
- *
- *  The `GLFW_CLIENT_API` attribute indicates the client API provided by the
- *  window's context; either `GLFW_OPENGL_API` or `GLFW_OPENGL_ES_API`.
- *
- *  The `GLFW_CONTEXT_VERSION_MAJOR`, `GLFW_CONTEXT_VERSION_MINOR` and
- *  `GLFW_CONTEXT_REVISION` attributes indicate the client API version of the
- *  window's context.
- *
- *  The `GLFW_OPENGL_FORWARD_COMPAT` attribute is `GL_TRUE` if the window's
- *  context is an OpenGL forward-compatible one, or `GL_FALSE` otherwise.
- *
- *  The `GLFW_OPENGL_DEBUG_CONTEXT` attribute is `GL_TRUE` if the window's
- *  context is an OpenGL debug context, or `GL_FALSE` otherwise.
- *
- *  The `GLFW_OPENGL_PROFILE` attribute indicates the OpenGL profile used by the
- *  context.  This is `GLFW_OPENGL_CORE_PROFILE` or `GLFW_OPENGL_COMPAT_PROFILE`
- *  if the context uses a known profile, or `GLFW_OPENGL_NO_PROFILE` if the
- *  OpenGL profile is unknown or the context is for another client API.
- *
- *  The `GLFW_CONTEXT_ROBUSTNESS` attribute indicates the robustness strategy
- *  used by the context.  This is `GLFW_LOSE_CONTEXT_ON_RESET` or
- *  `GLFW_NO_RESET_NOTIFICATION` if the window's context supports robustness, or
- *  `GLFW_NO_ROBUSTNESS` otherwise.
  *
  *  @ingroup window
  */
@@ -2138,9 +2101,9 @@ GLFWAPI void glfwSwapInterval(int interval);
 /*! @brief Returns whether the specified extension is available.
  *
  *  This function returns whether the specified
- *  [OpenGL or context creation API extension](@ref glext) is supported by the
- *  current context.  For example, on Windows both the OpenGL and WGL extension
- *  strings are checked.
+ *  [OpenGL or context creation API extension](@ref context_glext) is supported
+ *  by the current context.  For example, on Windows both the OpenGL and WGL
+ *  extension strings are checked.
  *
  *  @param[in] extension The ASCII encoded name of the extension.
  *  @return `GL_TRUE` if the extension is available, or `GL_FALSE` otherwise.
@@ -2160,8 +2123,8 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
  *  context.
  *
  *  This function returns the address of the specified
- *  [client API or extension function](@ref glext), if it is supported by the
- *  current context.
+ *  [client API or extension function](@ref context_glext), if it is supported
+ *  by the current context.
  *
  *  @param[in] procname The ASCII encoded name of the function.
  *  @return The address of the function, or `NULL` if the function is

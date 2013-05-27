@@ -1,0 +1,31 @@
+/*!
+
+@page monitor Multi-monitor guide
+
+@section monitor_objects Monitor objects
+
+
+@section monitor_modes Querying video modes
+
+Although GLFW generally does a good job at selecting a suitable video
+mode for you when you open a fullscreen window, it is sometimes useful to
+know exactly which modes are available on a certain system. For example,
+you may want to present the user with a list of video modes to select
+from. To get a list of available video modes, you can use the function
+@ref glfwGetVideoModes.
+
+@code
+int count;
+GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
+@endcode
+
+To get the current video mode of a monitor call @ref glfwGetVideoMode.
+
+@code
+const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+@endcode
+
+
+@section monitor_gamma Gamma ramps
+
+*/

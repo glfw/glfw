@@ -128,4 +128,9 @@ Windowed mode windows can now be created without decorations, i.e. things like
 a frame, a title bar, with the `GLFW_DECORATED` window hint.  This allows for
 the creation of things like splash screens.
 
+
+@subsection news_30_jsname Joystick names
+
+The name of a joystick can now be retrieved using @ref glfwGetJoystickName.
+
 */

@@ -1,31 +1,32 @@
-/*! @page window Window handling
+/*!
+
+@page window Window handling guide
  
 @tableofcontents
 
 The primary purpose of GLFW is to provide a simple interface to window
-management and OpenGL and OpenGL ES context creation.  GLFW supports
-multiple windows, which can be either a normal desktop window or
-a fullscreen window.
+management and OpenGL and OpenGL ES context creation.  GLFW supports multiple
+windows, which can be either a normal desktop window or a fullscreen window.
 
-@section window_object Window objects
+
+@section window_object Window handles
 
 The @ref GLFWwindow object encapsulates both a window and a context.  They are
 created with @ref glfwCreateWindow and destroyed with @ref glfwDestroyWindow (or
 @ref glfwTerminate, if any remain).  As the window and context are inseparably
-linked, the window handle (i.e. window object pointer) is used as a context
-handle as well, for example when calling @ref glfwMakeContextCurrent.
+linked, the object pointer is used as both a context and window handle.
 
 
-@section window_hints Window hints
+@section window_hints Window creation hints
 
-There are a number of hints that can be set before the creation of a window.
-Some affect the window itself, others its framebuffer or context.  These hints
-are set to their default values each time the library is initialized with @ref
-glfwInit, can be individually set with @ref glfwWindowHint and reset all at once
-to their defaults with @ref glfwDefaultWindowHints.
+There are a number of hints that can be set before the creation of a window and
+context.  Some affect the window itself, others affect the framebuffer or
+context.  These hints are set to their default values each time the library is
+initialized with @ref glfwInit, can be set individually with @ref glfwWindowHint
+and reset all at once to their defaults with @ref glfwDefaultWindowHints.
 
-Note again that they need to be set *before* the creation of the window you wish
-to have the specified attributes.
+Note that hints need to be set *before* the creation of the window and context
+you wish to have the specified attributes.
 
 
 @subsection window_hints_hard Hard and soft constraints
@@ -47,6 +48,21 @@ context:
 - `GLFW_OPENGL_PROFILE`
 
 Hints that do not apply to a given type of window or context are ignored.
+
+
+@subsection window_hints_wnd Window related hints
+
+The `GLFW_RESIZABLE` hint specifies whether the window will be resizable *by the
+user*.  The window will still be resizable using the @ref glfwSetWindowSize
+function.  This hint is ignored for fullscreen windows.
+
+The `GLFW_VISIBLE` hint specifies whether the window will be initially
+visible.  This hint is ignored for fullscreen windows.
+
+The `GLFW_DECORATED` hint specifies whether the window will have window
+decorations such as a border, a close widget, etc.  This hint is ignored for
+fullscreen windows.  Note that even though a window may lack a close widget, it
+is usually still possible for the user to generate close events.
 
 
 @subsection window_hints_fb Framebuffer related hints
@@ -116,21 +132,6 @@ used by the context.  This can be one of `GLFW_NO_RESET_NOTIFICATION` or
 a robustness strategy.
 
 
-@subsection window_hints_wnd Window related hints
-
-The `GLFW_RESIZABLE` hint specifies whether the window will be resizable *by the
-user*.  The window will still be resizable using the @ref glfwSetWindowSize
-function.  This hint is ignored for fullscreen windows.
-
-The `GLFW_VISIBLE` hint specifies whether the window will be initially
-visible.  This hint is ignored for fullscreen windows.
-
-The `GLFW_DECORATED` hint specifies whether the window will have window
-decorations such as a border, a close widget, etc.  This hint is ignored for
-fullscreen windows.  Note that even though a window may lack a close widget, it
-is usually still possible for the user to generate close events.
-
-
 @subsection window_hints_values Supported and default values
 
 | Name                         | Default value            | Supported values        |
@@ -161,20 +162,235 @@ is usually still possible for the user to generate close events.
 | `GLFW_OPENGL_PROFILE`        | `GLFW_OPENGL_NO_PROFILE` | `GLFW_OPENGL_NO_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE` |
 
 
-@section window_closing Window closing
+@section window_close Window close flag
 
 When the user attempts to close the window, for example by clicking the close
-widget or using a key chord like Alt+F4, the window's close flag is set and then
-its close callback is called.  The window is not actually destroyed and, unless
-you are monitoring the close flag, nothing further happens.
+widget or using a key chord like Alt+F4, the *close flag* of the window is set.
+The window is however not actually destroyed and, unless you watch for this
+state change, nothing further happens.
 
-If you do not want the close flag to be set, it can be cleared again from the
-close callback (or from any other point in your program) with @ref
-glfwSetWindowShouldClose.
+The current state of the close flag is returned by @ref glfwWindowShouldClose
+and can be set or cleared directly with @ref glfwSetWindowShouldClose.  A common
+pattern is to use the close flag as a main loop condition.
+
+@code
+while (!glfwWindowShouldClose(window))
+{
+    render(window);
+
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+}
+@endcode
+
+If you wish to be notified when the user attempts to close a window, you can set
+the close callback with @ref glfwSetWindowCloseCallback.  This callback is
+called directly *after* the close flag has been set.
+
+@code
+glfwSetWindowCloseCallback(window, window_close_callback);
+@endcode
+
+The callback function can be used for example to filter close requests and clear
+the close flag again unless certain conditions are met.
+
+@code
+void window_close_callback(GLFWwindow* window)
+{
+    if (!time_to_close)
+        glfwSetWindowShouldClose(window, GL_FALSE);
+}
+@endcode
 
 
-@section window_dims Window dimensions
+@section window_size Window size
 
-Text here.
+The size of a window can be changed with @ref glfwSetWindowSize.  For windowed
+mode windows, this resizes the specified window so that its *client area* has
+the specified size.  Note that the window system may put limitations on size.
+For full screen windows, it selects and sets the video mode most closely
+matching the specified size.
+
+@code
+void glfwSetWindowSize(window, 640, 480);
+@endcode
+
+If you wish to be notified when a window is resized, whether by the user or
+the system, you can set the size callback with @ref glfwSetWindowSizeCallback.
+
+@code
+glfwSetWindowSizeCallback(window, window_size_callback);
+@endcode
+
+The callback function receives the new size of the client area of the window,
+which can for example be used to update the viewport.
+
+@code
+void window_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+@endcode
+
+There is also @ref glfwGetWindowSize for directly retrieving the current size of
+a window.
+
+@code
+int width, height;
+glfwGetWindowSize(window, &width, &height);
+glViewport(0, 0, width, height);
+@endcode
+
+
+@section window_pos Window position
+
+The position of a windowed-mode window can be changed with @ref
+glfwSetWindowPos.  This moves the window so that the upper-left corner of its
+client area has the specified screen coordinates.  Note that the window system
+may put limitations on placement.
+
+@code
+glfwSetWindowPos(window, 100, 100);
+@endcode
+
+If you wish to be notified when a window is moved, whether by the user or
+the system, you can set the position callback with @ref glfwSetWindowPosCallback.
+
+@code
+glfwSetWindowPosCallback(window, window_pos_callback);
+@endcode
+
+The callback function receives the new position of the upper-left corner of its
+client area.
+
+@code
+void window_size_callback(GLFWwindow* window, int xpos, int ypos)
+{
+}
+@endcode
+
+There is also @ref glfwGetWindowPos for directly retrieving the current position
+of the client area of the window.
+
+@code
+int xpos, ypos;
+glfwGetWindowPos(window, &xpos, &ypos);
+@endcode
+
+
+@section window_title Window title
+
+All GLFW windows have a title, although undecorated or full screen windows may
+not display it or only display it in a task bar or similar interface.  To change
+the title of a window, use @ref glfwSetWindowTitle.
+
+@code
+glfwSetWindowTitle(window, "My Window");
+@endcode
+
+The window title is a regular C string using the UTF-8 encoding.  This means
+for example that, as long as your source file is encoded as UTF-8, you can use
+any Unicode characters.
+
+@code
+glfwSetWindowTitle(window, "さよなら絶望先生");
+@endcode
+
+
+@section window_attribs Window attributes
+
+Windows have a number of attributes that can be returned using @ref
+glfwGetWindowAttrib.  Some reflect state that may change during the lifetime of
+the window, while others reflect the corresponding hints and are fixed at the
+time of creation.
+
+@code
+if (glfwGetWindowAttrib(window, GLFW_FOCUSED))
+{
+    // window has input focus
+}
+@endcode
+
+
+@subsection window_attribs_window Window attributes
+
+The `GLFW_FOCUSED` attribute indicates whether the specified window currently
+has input focus.
+
+The `GLFW_ICONIFIED` attribute indicates whether the specified window is
+currently iconified, whether by the user or with @ref glfwIconifyWindow.
+
+The `GLFW_VISIBLE` attribute indicates whether the specified window is currently
+visible.  Window visibility can be controlled with @ref glfwShowWindow and @ref
+glfwHideWindow and initial visibility is controlled by the [window hint](@ref
+window_hints) with the same name.  
+
+The `GLFW_RESIZABLE` attribute indicates whether the specified window is
+resizable *by the user*.  This is controlled by the [window hint](@ref
+window_hints) with the same name.
+
+The `GLFW_DECORATED` attribute indicates whether the specified window has
+decorations such as a border, a close widget, etc.  This is controlled by the
+[window hint](@ref window_hints) with the same name. 
+
+
+@subsection window_attribs_context Context attributes
+
+The `GLFW_CLIENT_API` attribute indicates the client API provided by the
+window's context; either `GLFW_OPENGL_API` or `GLFW_OPENGL_ES_API`.
+
+The `GLFW_CONTEXT_VERSION_MAJOR`, `GLFW_CONTEXT_VERSION_MINOR` and
+`GLFW_CONTEXT_REVISION` attributes indicate the client API version of the
+window's context.
+
+The `GLFW_OPENGL_FORWARD_COMPAT` attribute is `GL_TRUE` if the window's
+context is an OpenGL forward-compatible one, or `GL_FALSE` otherwise.
+
+The `GLFW_OPENGL_DEBUG_CONTEXT` attribute is `GL_TRUE` if the window's
+context is an OpenGL debug context, or `GL_FALSE` otherwise.
+
+The `GLFW_OPENGL_PROFILE` attribute indicates the OpenGL profile used by the
+context.  This is `GLFW_OPENGL_CORE_PROFILE` or `GLFW_OPENGL_COMPAT_PROFILE`
+if the context uses a known profile, or `GLFW_OPENGL_NO_PROFILE` if the
+OpenGL profile is unknown or the context is for another client API.
+
+The `GLFW_CONTEXT_ROBUSTNESS` attribute indicates the robustness strategy
+used by the context.  This is `GLFW_LOSE_CONTEXT_ON_RESET` or
+`GLFW_NO_RESET_NOTIFICATION` if the window's context supports robustness, or
+`GLFW_NO_ROBUSTNESS` otherwise.
+
+
+@section window_swap Swapping buffers
+
+GLFW windows are always double buffered.  That means that you have two
+rendering buffers; a front buffer and a back buffer.  The front buffer is
+the one being displayed and the back buffer the one you render to.
+
+When the entire frame has been rendered, it is time to swap the back and the
+front buffers in order to display what has been rendered and begin rendering
+a new frame.  This is done with @ref glfwSwapBuffers.
+
+@code
+glfwSwapBuffers(window);
+@endcode
+
+Sometimes it can be useful to select when the buffer swap will occur.  With the
+function @ref glfwSwapInterval it is possible to select the minimum number of
+monitor refreshes the driver should wait before swapping the buffers:
+
+@code
+glfwSwapInterval(1);
+@endcode
+
+If the interval is zero, the swap will take place immediately when @ref
+glfwSwapBuffers is called without waiting for a refresh.  Otherwise at least
+interval retraces will pass between each buffer swap.  Using a swap interval of
+zero can be useful for benchmarking purposes, when it is not desirable to
+measure the time it takes to wait for the vertical retrace.  However, a swap
+interval of one lets you avoid tearing.
+
+Note that not all OpenGL implementations properly implement this function, in
+which case @ref glfwSwapInterval will have no effect.  Some drivers also have
+user settings that override requests by GLFW.
 
 */

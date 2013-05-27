@@ -1,6 +1,57 @@
 /*!
 
-@page glext OpenGL extension handling
+@page context Context handling guide
+
+@tableofcontents
+
+The primary purpose of GLFW is to provide a simple interface to window
+management and OpenGL and OpenGL ES context creation.  GLFW supports
+multiple windows, each of which has its own context.
+
+
+@section context_object Context handles
+
+The @ref GLFWwindow object encapsulates both a window and a context.  They are
+created with @ref glfwCreateWindow and destroyed with @ref glfwDestroyWindow (or
+@ref glfwTerminate, if any remain).  As the window and context are inseparably
+linked, the object pointer is used as both a context and window handle.
+
+
+@section context_hints Context creation hints
+
+There are a number of hints, specified using @ref glfwWindowHint, related to
+what kind of context is created.  See
+[context related hints](@ref window_hints_ctx) in the window handling guide.
+
+
+@section context_current Current context
+
+Before you can use the OpenGL or OpenGL ES APIs, you need to have a current
+context of the proper type.  The context encapsulates all render state and all
+objects like textures and shaders.
+
+Note that a context can only be current for a single thread at a time, and
+a thread can only have a single context at a time.
+
+A context is made current with @ref glfwMakeContextCurrent.
+
+@code
+glfwMakeContextCurrent(window);
+@endcode
+
+The current context is returned by @ref glfwGetCurrentContext.
+
+@code
+GLFWwindow* window = glfwGetCurrentContext();
+@endcode
+
+
+@section context_swap Swapping buffers
+
+See [swapping buffers](@ref window_swap) in the window handling guide.
+
+
+@section context_glext OpenGL extension handling
 
 One of the benefits of OpenGL is its extensibility.  Independent hardware
 vendors (IHVs) may include functionality in their OpenGL implementations that
@@ -16,10 +67,9 @@ An extension is defined by:
 Note the `ARB` affix, which stands for Architecture Review Board and is used
 for official extensions.  There are many different affixes, depending on who
 wrote the extension.  A list of extensions, together with their specifications,
-can be found at the
-[OpenGL Registry](http://www.opengl.org/registry/).
+can be found at the [OpenGL Registry](http://www.opengl.org/registry/).
 
-To use a certain extension, you must first check whether the context exposes
+To use a certain extension, you must first check whether the context supports
 that extension and then, if it introduces new functions, retrieve the pointers
 to those functions.
 
@@ -31,7 +81,7 @@ the OpenGL API.  GLEW in particular has been extensively tested with and works
 well with GLFW.
 
 
-@section glext_header The glext.h header
+@subsection context_glext_header The glext.h header
 
 The `glext.h` header is a continually updated file that defines the interfaces
 for all OpenGL extensions.  The latest version of this can always be found at
@@ -42,30 +92,30 @@ you wish to use.
 
 The header defines function pointer types for all functions of all extensions it
 supports.  These have names like `PFNGLGETDEBUGMESSAGELOGARB` (for
-`glGetDebugMessageLogARB`), i.e. the name is made uppercase, the `gl` prefix is
-removed and `PFN` and `PROC` are added to the ends.
+`glGetDebugMessageLogARB`), i.e. the name is made uppercase and `PFN` and `PROC`
+are added to the ends.
 
 
-@section glext_string Checking for extensions
+@subsection context_glext_string Checking for extensions
 
 A given machine may not actually support the extension (it may have older
 drivers or a graphics card that lacks the necessary hardware features), so it
-is necessary to check whether the context exposes the extension.  This is done
+is necessary to check whether the context supports the extension.  This is done
 with @ref glfwExtensionSupported.
 
 @code
 if (glfwExtensionSupported("GL_ARB_debug_output"))
 {
-    // The extension is exposed by the current context
+    // The extension is supported by the current context
 }
 @endcode
 
 The argument is a null terminated ASCII string with the extension name.  If the
-extension is exposed, @ref glfwExtensionSupported returns non-zero, otherwise it
-returns zero.
+extension is supported, @ref glfwExtensionSupported returns non-zero, otherwise
+it returns zero.
 
 
-@section glext_proc Fetching function pointers
+@subsection context_glext_proc Fetching function pointers
 
 Many extensions, though not all, require the use of new OpenGL functions.
 These entry points are often not exposed by your link libraries, making
@@ -89,7 +139,7 @@ when used together.
 #define glGetDebugMessageLogARB pfnGetDebugMessageLog
 PFNGLGETDEBUGMESSAGELOGARB pfnGetDebugMessageLog;
 
-// Flag indicating whether the extension is present
+// Flag indicating whether the extension is supported
 int has_debug_output = 0;
 
 void load_extensions(void)

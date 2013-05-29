@@ -1288,8 +1288,6 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *
  *  @remarks Either or both coordinate arguments may be `NULL`.
  *
- *  @bug **Mac OS X:** The screen coordinate system is inverted.
- *
  *  @sa glfwSetWindowPos
  *
  *  @ingroup window
@@ -1321,8 +1319,6 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
  *  @bug **X11:** Some window managers ignore the set position of hidden (i.e.
  *  unmapped) windows, instead placing them where it thinks is appropriate once
  *  they are shown.
- *
- *  @bug **Mac OS X:** The screen coordinate system is inverted.
  *
  *  @sa glfwGetWindowPos
  *
@@ -1380,9 +1376,6 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* window, int width, int height);
  *
  *  @note This function may only be called from the main thread.
  *
- *  @bug **Mac OS X:** This function is not yet implemented for
- *  full screen windows.
- *
  *  @sa glfwRestoreWindow
  *
  *  @ingroup window
@@ -1399,9 +1392,6 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow* window);
  *  @param[in] window The window to restore.
  *
  *  @note This function may only be called from the main thread.
- *
- *  @bug **Mac OS X:** This function is not yet implemented for full screen
- *  windows.
  *
  *  @sa glfwIconifyWindow
  *

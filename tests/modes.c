@@ -103,7 +103,7 @@ static void list_modes(GLFWmonitor* monitor)
     {
         printf("%3u: %s", (unsigned int) i, format_mode(modes + i));
 
-        if (memcmp(&mode, modes + i, sizeof(GLFWvidmode)) == 0)
+        if (memcmp(mode, modes + i, sizeof(GLFWvidmode)) == 0)
             printf(" (current mode)");
 
         putchar('\n');

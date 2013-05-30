@@ -35,6 +35,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -111,6 +112,8 @@ int main(int argc, char** argv)
 {
     int count = 0;
     GLFWwindow* window;
+
+    srand(time(NULL));
 
     glfwSetErrorCallback(error_callback);
 

@@ -787,10 +787,10 @@ typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
  */
 typedef struct
 {
-    /*! The width, in pixels, of the video mode.
+    /*! The width, in screen coordinates, of the video mode.
      */
     int width;
-    /*! The height, in pixels, of the video mode.
+    /*! The height, in screen coordinates, of the video mode.
      */
     int height;
     /*! The bit depth of the red channel of the video mode.

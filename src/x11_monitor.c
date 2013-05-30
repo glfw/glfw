@@ -35,6 +35,28 @@
 #include <string.h>
 
 
+static int calculateRefreshRate(const XRRModeInfo* mi)
+{
+    if (!mi->hTotal || !mi->vTotal)
+        return 0;
+
+    return (int) ((double) mi->dotClock / ((double) mi->hTotal * (double) mi->vTotal));
+}
+
+static const XRRModeInfo* getModeInfo(const XRRScreenResources* sr, RRMode id)
+{
+    int i;
+
+    for (i = 0;  i < sr->nmode;  i++)
+    {
+        if (sr->modes[i].id == id)
+            return sr->modes + i;
+    }
+
+    return NULL;
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -45,52 +67,35 @@ void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 {
     if (_glfw.x11.randr.available)
     {
-        int i, j, k;
+        int i;
         XRRScreenResources* sr;
         XRRCrtcInfo* ci;
         RRMode bestMode = 0;
-        unsigned int leastSizeDiff = UINT_MAX;
+        unsigned int leastSizeDiff = UINT_MAX, leastRateDiff = UINT_MAX;
 
         sr = XRRGetScreenResources(_glfw.x11.display, _glfw.x11.root);
         ci = XRRGetCrtcInfo(_glfw.x11.display, sr, monitor->x11.crtc);
 
         for (i = 0;  i < sr->nmode;  i++)
         {
-            GLboolean usable = GL_TRUE;
             XRRModeInfo* mi = sr->modes + i;
-
-            for (j = 0;  j < ci->noutput;  j++)
-            {
-                XRROutputInfo* oi = XRRGetOutputInfo(_glfw.x11.display,
-                                                     sr, ci->outputs[j]);
-
-                for (k = 0;  k < oi->nmode;  k++)
-                {
-                    if (oi->modes[k] == mi->id)
-                        break;
-                }
-
-                if (k == oi->nmode)
-                    usable = GL_FALSE;
-
-                XRRFreeOutputInfo(oi);
-            }
-
-            if (!usable)
-                continue;
 
             if (mi->modeFlags & RR_Interlace)
                 continue;
 
-            unsigned int sizeDiff = (mi->width - desired->width) *
-                                    (mi->width - desired->width) +
-                                    (mi->height - desired->height) *
-                                    (mi->height - desired->height);
+            const unsigned int sizeDiff = (mi->width - desired->width) *
+                                          (mi->width - desired->width) +
+                                          (mi->height - desired->height) *
+                                          (mi->height - desired->height);
 
-            if (sizeDiff < leastSizeDiff)
+            const unsigned int rateDiff = abs(calculateRefreshRate(mi) - desired->refreshRate);
+
+            if ((sizeDiff < leastSizeDiff) ||
+                (sizeDiff == leastSizeDiff && rateDiff < leastRateDiff))
             {
                 bestMode = mi->id;
                 leastSizeDiff = sizeDiff;
+                leastRateDiff = rateDiff;
             }
         }
 
@@ -282,23 +287,17 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         for (i = 0;  i < oi->nmode;  i++)
         {
             GLFWvidmode mode;
+            const XRRModeInfo* mi = getModeInfo(sr, oi->modes[i]);
 
-            for (j = 0;  j < sr->nmode;  j++)
-            {
-                if (sr->modes[j].id == oi->modes[i])
-                    break;
-            }
-
-            if (j == sr->nmode)
-                continue;
-
-            mode.width  = sr->modes[j].width;
-            mode.height = sr->modes[j].height;
+            mode.width  = mi->width;
+            mode.height = mi->height;
+            mode.refreshRate = calculateRefreshRate(mi);
 
             for (j = 0;  j < *found;  j++)
             {
                 if (result[j].width == mode.width &&
-                    result[j].height == mode.height)
+                    result[j].height == mode.height &&
+                    result[j].refreshRate == mode.refreshRate)
                 {
                     break;
                 }
@@ -332,6 +331,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         result[0].redBits = r;
         result[0].greenBits = g;
         result[0].blueBits = b;
+        result[0].refreshRate = 0;
     }
 
     return result;
@@ -350,6 +350,8 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
         mode->width = ci->width;
         mode->height = ci->height;
 
+        mode->refreshRate = calculateRefreshRate(getModeInfo(sr, ci->mode));
+
         XRRFreeCrtcInfo(ci);
         XRRFreeScreenResources(sr);
     }
@@ -357,6 +359,7 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
     {
         mode->width = DisplayWidth(_glfw.x11.display, _glfw.x11.screen);
         mode->height = DisplayHeight(_glfw.x11.display, _glfw.x11.screen);
+        mode->refreshRate = 0;
     }
 
     _glfwSplitBPP(DefaultDepth(_glfw.x11.display, _glfw.x11.screen),

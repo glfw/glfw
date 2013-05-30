@@ -102,6 +102,7 @@ static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode)
     GLFWvidmode result;
     result.width = CGDisplayModeGetWidth(mode);
     result.height = CGDisplayModeGetHeight(mode);
+    result.refreshRate = (int) CGDisplayModeGetRefreshRate(mode);
 
     CFStringRef format = CGDisplayModeCopyPixelEncoding(mode);
 
@@ -157,7 +158,7 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
     CGDisplayModeRef bestMode = NULL;
     CFArrayRef modes;
     CFIndex count, i;
-    unsigned int leastSizeDiff = UINT_MAX;
+    unsigned int leastSizeDiff = UINT_MAX, leastRateDiff = UINT_MAX;
     const int bpp = desired->redBits - desired->greenBits - desired->blueBits;
 
     modes = CGDisplayCopyAllDisplayModes(monitor->ns.displayID, NULL);
@@ -183,17 +184,22 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
             CFRelease(format);
         }
 
-        int modeWidth = (int) CGDisplayModeGetWidth(mode);
-        int modeHeight = (int) CGDisplayModeGetHeight(mode);
+        const int modeWidth = (int) CGDisplayModeGetWidth(mode);
+        const int modeHeight = (int) CGDisplayModeGetHeight(mode);
+        const int modeRate = (int) CGDisplayModeGetRefreshRate(mode);
 
         unsigned int sizeDiff = (abs(modeBPP - bpp) << 25) |
                                 ((modeWidth - desired->width) * (modeWidth - desired->width) +
                                  (modeHeight - desired->height) * (modeHeight - desired->height));
 
-        if (sizeDiff < leastSizeDiff)
+        const unsigned int rateDiff = modeRate - desired->refreshRate;
+
+        if ((sizeDiff < leastSizeDiff) ||
+            (sizeDiff == leastSizeDiff && rateDiff < leastRateDiff))
         {
             bestMode = mode;
             leastSizeDiff = sizeDiff;
+            leastRateDiff = rateDiff;
         }
     }
 

@@ -52,10 +52,11 @@ static const char* format_mode(const GLFWvidmode* mode)
     static char buffer[512];
 
     sprintf(buffer,
-            "%i x %i x %i (%i %i %i)",
+            "%i x %i x %i (%i %i %i) %i Hz",
             mode->width, mode->height,
             mode->redBits + mode->greenBits + mode->blueBits,
-            mode->redBits, mode->greenBits, mode->blueBits);
+            mode->redBits, mode->greenBits, mode->blueBits,
+            mode->refreshRate);
 
     buffer[sizeof(buffer) - 1] = '\0';
     return buffer;

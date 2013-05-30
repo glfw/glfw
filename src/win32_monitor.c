@@ -63,10 +63,12 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
         return GL_TRUE;
 
     dm.dmSize = sizeof(DEVMODE);
-    dm.dmFields     = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
-    dm.dmPelsWidth  = best->width;
-    dm.dmPelsHeight = best->height;
-    dm.dmBitsPerPel = best->redBits + best->greenBits + best->blueBits;
+    dm.dmFields           = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL |
+                            DM_DISPLAYFREQUENCY;
+    dm.dmPelsWidth        = best->width;
+    dm.dmPelsHeight       = best->height;
+    dm.dmBitsPerPel       = best->redBits + best->greenBits + best->blueBits;
+    dm.dmDisplayFrequency = best->refreshRate;
 
     if (dm.dmBitsPerPel < 15 || dm.dmBitsPerPel >= 24)
         dm.dmBitsPerPel = 32;
@@ -223,8 +225,9 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
             continue;
         }
 
-        mode.width = dm.dmPelsWidth;
+        mode.width  = dm.dmPelsWidth;
         mode.height = dm.dmPelsHeight;
+        mode.refreshRate = dm.dmDisplayFrequency;
         _glfwSplitBPP(dm.dmBitsPerPel,
                       &mode.redBits,
                       &mode.greenBits,
@@ -270,6 +273,7 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 
     mode->width  = dm.dmPelsWidth;
     mode->height = dm.dmPelsHeight;
+    mode->refreshRate = dm.dmDisplayFrequency;
     _glfwSplitBPP(dm.dmBitsPerPel,
                   &mode->redBits,
                   &mode->greenBits,

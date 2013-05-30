@@ -802,6 +802,9 @@ typedef struct
     /*! The bit depth of the blue channel of the video mode.
      */
     int blueBits;
+    /*! The refresh rate, in Hz, of the video mode.
+     */
+    int refreshRate;
 } GLFWvidmode;
 
 /*! @brief Gamma ramp.

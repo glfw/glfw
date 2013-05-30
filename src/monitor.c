@@ -65,7 +65,12 @@ static int compareVideoModes(const void* firstPtr, const void* secondPtr)
     firstSize = first->width * first->height;
     secondSize = second->width * second->height;
 
-    return firstSize - secondSize;
+    if (firstSize != secondSize)
+        return firstSize - secondSize;
+
+    // Lastly sort on refresh rate
+
+    return first->refreshRate - second->refreshRate;
 }
 
 // Retrieves the available modes for the specified monitor
@@ -205,6 +210,7 @@ const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
 {
     int i;
     unsigned int sizeDiff, leastSizeDiff = UINT_MAX;
+    unsigned int rateDiff, leastRateDiff = UINT_MAX;
     unsigned int colorDiff, leastColorDiff = UINT_MAX;
     const GLFWvidmode* current;
     const GLFWvidmode* closest = NULL;
@@ -224,11 +230,15 @@ const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
                        (current->height - desired->height) *
                        (current->height - desired->height));
 
+        rateDiff = abs(current->refreshRate - desired->refreshRate);
+
         if ((colorDiff < leastColorDiff) ||
-            (colorDiff == leastColorDiff && sizeDiff < leastSizeDiff))
+            (colorDiff == leastColorDiff && sizeDiff < leastSizeDiff) ||
+            (colorDiff == leastColorDiff && sizeDiff == leastSizeDiff && rateDiff < leastRateDiff))
         {
             closest = current;
             leastSizeDiff = sizeDiff;
+            leastRateDiff = rateDiff;
             leastColorDiff = colorDiff;
         }
     }

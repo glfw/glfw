@@ -67,28 +67,43 @@ void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 {
     if (_glfw.x11.randr.available)
     {
-        int i;
+        int i, j;
         XRRScreenResources* sr;
         XRRCrtcInfo* ci;
+        XRROutputInfo* oi;
         RRMode bestMode = 0;
-        unsigned int leastSizeDiff = UINT_MAX, leastRateDiff = UINT_MAX;
+        unsigned int sizeDiff, leastSizeDiff = UINT_MAX;
+        unsigned int rateDiff, leastRateDiff = UINT_MAX;
 
         sr = XRRGetScreenResources(_glfw.x11.display, _glfw.x11.root);
         ci = XRRGetCrtcInfo(_glfw.x11.display, sr, monitor->x11.crtc);
+        oi = XRRGetOutputInfo(_glfw.x11.display, sr, monitor->x11.output);
 
         for (i = 0;  i < sr->nmode;  i++)
         {
-            XRRModeInfo* mi = sr->modes + i;
+            const XRRModeInfo* mi = sr->modes + i;
 
             if (mi->modeFlags & RR_Interlace)
                 continue;
 
-            const unsigned int sizeDiff = (mi->width - desired->width) *
-                                          (mi->width - desired->width) +
-                                          (mi->height - desired->height) *
-                                          (mi->height - desired->height);
+            for (j = 0;  j < oi->nmode;  j++)
+            {
+                if (oi->modes[j] == mi->id)
+                    break;
+            }
 
-            const unsigned int rateDiff = abs(calculateRefreshRate(mi) - desired->refreshRate);
+            if (j == oi->nmode)
+                continue;
+
+            sizeDiff = (mi->width - desired->width) *
+                       (mi->width - desired->width) +
+                       (mi->height - desired->height) *
+                       (mi->height - desired->height);
+
+            if (desired->refreshRate)
+                rateDiff = abs(calculateRefreshRate(mi) - desired->refreshRate);
+            else
+                rateDiff = UINT_MAX - calculateRefreshRate(mi);
 
             if ((sizeDiff < leastSizeDiff) ||
                 (sizeDiff == leastSizeDiff && rateDiff < leastRateDiff))
@@ -110,6 +125,7 @@ void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
                          ci->outputs,
                          ci->noutput);
 
+        XRRFreeOutputInfo(oi);
         XRRFreeCrtcInfo(ci);
         XRRFreeScreenResources(sr);
     }

@@ -280,6 +280,7 @@ struct _GLFWlibrary
         GLboolean   decorated;
         int         samples;
         GLboolean   sRGB;
+        int         refreshRate;
         int         clientAPI;
         int         glMajor;
         int         glMinor;

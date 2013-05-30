@@ -230,7 +230,10 @@ const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
                        (current->height - desired->height) *
                        (current->height - desired->height));
 
-        rateDiff = abs(current->refreshRate - desired->refreshRate);
+        if (desired->refreshRate)
+            rateDiff = abs(current->refreshRate - desired->refreshRate);
+        else
+            rateDiff = UINT_MAX - current->refreshRate;
 
         if ((colorDiff < leastColorDiff) ||
             (colorDiff == leastColorDiff && sizeDiff < leastSizeDiff) ||

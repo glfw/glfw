@@ -201,11 +201,13 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
         wndconfig.resizable = GL_TRUE;
         wndconfig.visible   = GL_TRUE;
 
-        window->videoMode.width     = width;
-        window->videoMode.height    = height;
-        window->videoMode.redBits   = fbconfig.redBits;
-        window->videoMode.greenBits = fbconfig.greenBits;
-        window->videoMode.blueBits  = fbconfig.blueBits;
+        // Set up desired video mode
+        window->videoMode.width       = width;
+        window->videoMode.height      = height;
+        window->videoMode.redBits     = Max(_glfw.hints.redBits, 0);
+        window->videoMode.greenBits   = Max(_glfw.hints.greenBits, 0);
+        window->videoMode.blueBits    = Max(_glfw.hints.blueBits, 0);
+        window->videoMode.refreshRate = Max(_glfw.hints.refreshRate, 0);
     }
 
     window->monitor     = wndconfig.monitor;
@@ -321,6 +323,9 @@ GLFWAPI void glfwWindowHint(int target, int hint)
             break;
         case GLFW_STEREO:
             _glfw.hints.stereo = hint;
+            break;
+        case GLFW_REFRESH_RATE:
+            _glfw.hints.refreshRate = hint;
             break;
         case GLFW_RESIZABLE:
             _glfw.hints.resizable = hint;

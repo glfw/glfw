@@ -71,6 +71,13 @@ static void changeToResourcesDirectory(void)
 
 #endif /* _GLFW_USE_CHDIR */
 
+static void reconfigurationCallback(CGDirectDisplayID displayID,
+                                    CGDisplayChangeSummaryFlags flags,
+                                    void* data)
+{
+    _glfwInputMonitorChange();
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -95,6 +102,12 @@ int _glfwPlatformInit(void)
     if (!_glfw.ns.eventSource)
         return GL_FALSE;
 
+    if (CGDisplayRegisterReconfigurationCallback(reconfigurationCallback,
+                                                 NULL) != kCGErrorSuccess)
+    {
+        return GL_FALSE;
+    }
+
     CGEventSourceSetLocalEventsSuppressionInterval(_glfw.ns.eventSource, 0.0);
 
     return GL_TRUE;
@@ -102,6 +115,8 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
+    CGDisplayRemoveReconfigurationCallback(reconfigurationCallback, NULL);
+
     if (_glfw.ns.eventSource)
     {
         CFRelease(_glfw.ns.eventSource);

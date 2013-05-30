@@ -311,6 +311,7 @@ GLFW.
  * Added `GLFW_VISIBLE` window hint and parameter for controlling and polling
    window visibility
  * Added `GLFW_REPEAT` key action for repeated keys
+ * Added scancode parameter to key callback
  * Added `refreshRate` member to `GLFWvidmode` struct
  * Added key modifier parameter to key and mouse button callbacks
  * Added `windows` simple multi-window test program

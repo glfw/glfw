@@ -203,9 +203,9 @@ static void centerCursor(_GLFWwindow *window)
 
 @end
 
-// Converts Mac OS X key modifiers into GLFW ones
+// Translates Mac OS X key modifiers into GLFW ones
 //
-static int convertKeyMods(NSUInteger flags)
+static int translateFlags(NSUInteger flags)
 {
     int mods = 0;
 
@@ -221,9 +221,9 @@ static int convertKeyMods(NSUInteger flags)
     return mods;
 }
 
-// Converts a Mac OS X keycode to a GLFW keycode
+// Translates a Mac OS X keycode to a GLFW keycode
 //
-static int convertMacKeyCode(unsigned int macKeyCode)
+static int translateKey(unsigned int key)
 {
     // Keyboard symbol translation table
     // TODO: Need to find mappings for F13-F15, volume down/up/mute, and eject.
@@ -281,7 +281,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
         /* 31 */ GLFW_KEY_SPACE,
         /* 32 */ GLFW_KEY_WORLD_1,
         /* 33 */ GLFW_KEY_BACKSPACE,
-        /* 34 */ -1,
+        /* 34 */ GLFW_KEY_UNKNOWN,
         /* 35 */ GLFW_KEY_ESCAPE,
         /* 36 */ GLFW_KEY_RIGHT_SUPER,
         /* 37 */ GLFW_KEY_LEFT_SUPER,
@@ -292,21 +292,21 @@ static int convertMacKeyCode(unsigned int macKeyCode)
         /* 3c */ GLFW_KEY_RIGHT_SHIFT,
         /* 3d */ GLFW_KEY_RIGHT_ALT,
         /* 3e */ GLFW_KEY_RIGHT_CONTROL,
-        /* 3f */ -1, /* Function */
+        /* 3f */ GLFW_KEY_UNKNOWN, /* Function */
         /* 40 */ GLFW_KEY_F17,
         /* 41 */ GLFW_KEY_KP_DECIMAL,
-        /* 42 */ -1,
+        /* 42 */ GLFW_KEY_UNKNOWN,
         /* 43 */ GLFW_KEY_KP_MULTIPLY,
-        /* 44 */ -1,
+        /* 44 */ GLFW_KEY_UNKNOWN,
         /* 45 */ GLFW_KEY_KP_ADD,
-        /* 46 */ -1,
+        /* 46 */ GLFW_KEY_UNKNOWN,
         /* 47 */ GLFW_KEY_NUM_LOCK, /* Really KeypadClear... */
-        /* 48 */ -1, /* VolumeUp */
-        /* 49 */ -1, /* VolumeDown */
-        /* 4a */ -1, /* Mute */
+        /* 48 */ GLFW_KEY_UNKNOWN, /* VolumeUp */
+        /* 49 */ GLFW_KEY_UNKNOWN, /* VolumeDown */
+        /* 4a */ GLFW_KEY_UNKNOWN, /* Mute */
         /* 4b */ GLFW_KEY_KP_DIVIDE,
         /* 4c */ GLFW_KEY_KP_ENTER,
-        /* 4d */ -1,
+        /* 4d */ GLFW_KEY_UNKNOWN,
         /* 4e */ GLFW_KEY_KP_SUBTRACT,
         /* 4f */ GLFW_KEY_F18,
         /* 50 */ GLFW_KEY_F19,
@@ -322,26 +322,26 @@ static int convertMacKeyCode(unsigned int macKeyCode)
         /* 5a */ GLFW_KEY_F20,
         /* 5b */ GLFW_KEY_KP_8,
         /* 5c */ GLFW_KEY_KP_9,
-        /* 5d */ -1,
-        /* 5e */ -1,
-        /* 5f */ -1,
+        /* 5d */ GLFW_KEY_UNKNOWN,
+        /* 5e */ GLFW_KEY_UNKNOWN,
+        /* 5f */ GLFW_KEY_UNKNOWN,
         /* 60 */ GLFW_KEY_F5,
         /* 61 */ GLFW_KEY_F6,
         /* 62 */ GLFW_KEY_F7,
         /* 63 */ GLFW_KEY_F3,
         /* 64 */ GLFW_KEY_F8,
         /* 65 */ GLFW_KEY_F9,
-        /* 66 */ -1,
+        /* 66 */ GLFW_KEY_UNKNOWN,
         /* 67 */ GLFW_KEY_F11,
-        /* 68 */ -1,
+        /* 68 */ GLFW_KEY_UNKNOWN,
         /* 69 */ GLFW_KEY_PRINT_SCREEN,
         /* 6a */ GLFW_KEY_F16,
         /* 6b */ GLFW_KEY_F14,
-        /* 6c */ -1,
+        /* 6c */ GLFW_KEY_UNKNOWN,
         /* 6d */ GLFW_KEY_F10,
-        /* 6e */ -1,
+        /* 6e */ GLFW_KEY_UNKNOWN,
         /* 6f */ GLFW_KEY_F12,
-        /* 70 */ -1,
+        /* 70 */ GLFW_KEY_UNKNOWN,
         /* 71 */ GLFW_KEY_F15,
         /* 72 */ GLFW_KEY_INSERT, /* Really Help... */
         /* 73 */ GLFW_KEY_HOME,
@@ -356,13 +356,13 @@ static int convertMacKeyCode(unsigned int macKeyCode)
         /* 7c */ GLFW_KEY_RIGHT,
         /* 7d */ GLFW_KEY_DOWN,
         /* 7e */ GLFW_KEY_UP,
-        /* 7f */ -1,
+        /* 7f */ GLFW_KEY_UNKNOWN,
     };
 
-    if (macKeyCode >= 128)
-        return -1;
+    if (key >= 128)
+        return GLFW_KEY_UNKNOWN;
 
-    return table[macKeyCode];
+    return table[key];
 }
 
 
@@ -436,7 +436,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_LEFT,
                          GLFW_PRESS,
-                         convertKeyMods([event modifierFlags]));
+                         translateFlags([event modifierFlags]));
 }
 
 - (void)mouseDragged:(NSEvent *)event
@@ -449,7 +449,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_LEFT,
                          GLFW_RELEASE,
-                         convertKeyMods([event modifierFlags]));
+                         translateFlags([event modifierFlags]));
 }
 
 - (void)mouseMoved:(NSEvent *)event
@@ -470,7 +470,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_RIGHT,
                          GLFW_PRESS,
-                         convertKeyMods([event modifierFlags]));
+                         translateFlags([event modifierFlags]));
 }
 
 - (void)rightMouseDragged:(NSEvent *)event
@@ -483,7 +483,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_RIGHT,
                          GLFW_RELEASE,
-                         convertKeyMods([event modifierFlags]));
+                         translateFlags([event modifierFlags]));
 }
 
 - (void)otherMouseDown:(NSEvent *)event
@@ -491,7 +491,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
     _glfwInputMouseClick(window,
                          [event buttonNumber],
                          GLFW_PRESS,
-                         convertKeyMods([event modifierFlags]));
+                         translateFlags([event modifierFlags]));
 }
 
 - (void)otherMouseDragged:(NSEvent *)event
@@ -504,7 +504,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
     _glfwInputMouseClick(window,
                          [event buttonNumber],
                          GLFW_RELEASE,
-                         convertKeyMods([event modifierFlags]));
+                         translateFlags([event modifierFlags]));
 }
 
 - (void)mouseExited:(NSEvent *)event
@@ -548,14 +548,11 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
 - (void)keyDown:(NSEvent *)event
 {
-    const NSUInteger mods = [event modifierFlags];
+    const int key = translateKey([event keyCode]);
+    const int mods = translateFlags([event modifierFlags]);
+    _glfwInputKey(window, key, [event keyCode], GLFW_PRESS, mods);
 
-    _glfwInputKey(window,
-                  convertMacKeyCode([event keyCode]),
-                  GLFW_PRESS,
-                  convertKeyMods(mods));
-
-    if ([event modifierFlags] & NSCommandKeyMask)
+    if (mods & GLFW_MOD_SUPER)
         return;
 
     NSString* characters = [event characters];
@@ -567,7 +564,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
 - (void)flagsChanged:(NSEvent *)event
 {
-    int action, key;
+    int action;
     unsigned int newModifierFlags =
         [event modifierFlags] & NSDeviceIndependentModifierFlagsMask;
 
@@ -578,17 +575,16 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 
     window->ns.modifierFlags = newModifierFlags;
 
-    key = convertMacKeyCode([event keyCode]);
-    if (key != -1)
-        _glfwInputKey(window, key, action, convertKeyMods([event modifierFlags]));
+    const int key = translateKey([event keyCode]);
+    const int mods = translateFlags([event modifierFlags]);
+    _glfwInputKey(window, key, [event keyCode], action, mods);
 }
 
 - (void)keyUp:(NSEvent *)event
 {
-    _glfwInputKey(window,
-                  convertMacKeyCode([event keyCode]),
-                  GLFW_RELEASE,
-                  convertKeyMods([event modifierFlags]));
+    const int key = translateKey([event keyCode]);
+    const int mods = translateFlags([event modifierFlags]);
+    _glfwInputKey(window, key, [event keyCode], GLFW_RELEASE, mods);
 }
 
 - (void)scrollWheel:(NSEvent *)event

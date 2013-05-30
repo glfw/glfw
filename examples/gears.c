@@ -211,7 +211,7 @@ static void animate(void)
 
 
 /* change view angle, exit upon ESC */
-void key( GLFWwindow* window, int k, int action, int mods )
+void key( GLFWwindow* window, int k, int s, int action, int mods )
 {
   if( action != GLFW_PRESS ) return;
 

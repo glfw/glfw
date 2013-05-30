@@ -265,6 +265,9 @@ extern "C" {
  *  @{
  */
 
+/* The unknown key */
+#define GLFW_KEY_UNKNOWN            -1
+
 /* Printable keys */
 #define GLFW_KEY_SPACE              32
 #define GLFW_KEY_APOSTROPHE         39  /* ' */
@@ -744,6 +747,7 @@ typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
  *
  *  @param[in] window The window that received the event.
  *  @param[in] key The [keyboard key](@ref keys) that was pressed or released.
+ *  @param[in] scancode The system-specific scancode of the key.
  *  @param[in] action @ref GLFW_PRESS, @ref GLFW_RELEASE or @ref GLFW_REPEAT.
  *  @param[in] mods Bit field describing which [modifier keys](@ref mods) were
  *  held down.
@@ -752,7 +756,7 @@ typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
  *
  *  @ingroup input
  */
-typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int);
+typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int);
 
 /*! @brief The function signature for Unicode character callbacks.
  *
@@ -1771,6 +1775,8 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* window, int mode, int value);
  *  @param[in] key The desired [keyboard key](@ref keys).
  *  @return One of `GLFW_PRESS` or `GLFW_RELEASE`.
  *
+ *  @note `GLFW_KEY_UNKNOWN` is not a valid key for this function.
+ *
  *  @ingroup input
  */
 GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
@@ -1856,6 +1862,14 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
  *  by the fact that the synthetic ones are generated after the window has lost
  *  focus, i.e. `GLFW_FOCUSED` will be false and the focus callback will have
  *  already been called.
+ *
+ *  The scancode of a key is specific to that platform or sometimes even to that
+ *  machine.  Scancodes are intended to allow users to bind keys that don't have
+ *  a GLFW key token.  Such keys have `key` set to `GLFW_KEY_UNKNOWN`, their
+ *  state is not saved and so it cannot be retrieved with @ref glfwGetKey.
+ *
+ *  Sometimes GLFW needs to generate synthetic key events, in which case the
+ *  scancode may be zero.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new key callback, or `NULL` to remove the currently

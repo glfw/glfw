@@ -43,7 +43,7 @@
 void init( void );
 void display( void );
 void reshape( GLFWwindow* window, int w, int h );
-void key_callback( GLFWwindow* window, int key, int action, int mods );
+void key_callback( GLFWwindow* window, int key, int scancode, int action, int mods );
 void DrawBoingBall( void );
 void BounceBall( double dt );
 void DrawBoingBallBand( GLfloat long_lo, GLfloat long_hi );
@@ -245,7 +245,7 @@ void reshape( GLFWwindow* window, int w, int h )
               0.0, -1.0, 0.0 );         /* up vector */
 }
 
-void key_callback( GLFWwindow* window, int key, int action, int mods )
+void key_callback( GLFWwindow* window, int key, int scancode, int action, int mods )
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);

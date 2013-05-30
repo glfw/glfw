@@ -83,8 +83,8 @@ static int translateKey(int keycode)
     // Use the pre-filled LUT (see updateKeyCodeLUT() in x11_init.c)
     if ((keycode >= 0) && (keycode < 256))
         return _glfw.x11.keyCodeLUT[keycode];
-    else
-        return -1;
+
+    return GLFW_KEY_UNKNOWN;
 }
 
 // Translates an X Window event to Unicode
@@ -515,7 +515,7 @@ static void processEvent(XEvent *event)
             const int key = translateKey(event->xkey.keycode);
             const int mods = translateState(event->xkey.state);
 
-            _glfwInputKey(window, key, GLFW_PRESS, mods);
+            _glfwInputKey(window, key, event->xkey.keycode, GLFW_PRESS, mods);
 
             if (!(mods & GLFW_MOD_CONTROL) && !(mods & GLFW_MOD_ALT))
                 _glfwInputChar(window, translateChar(&event->xkey));
@@ -528,7 +528,7 @@ static void processEvent(XEvent *event)
             const int key = translateKey(event->xkey.keycode);
             const int mods = translateState(event->xkey.state);
 
-            _glfwInputKey(window, key, GLFW_RELEASE, mods);
+            _glfwInputKey(window, key, event->xkey.keycode, GLFW_RELEASE, mods);
             break;
         }
 

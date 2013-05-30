@@ -39,13 +39,13 @@
 
 // Translate an X11 key code to a GLFW key code.
 //
-static int keyCodeToGLFWKeyCode(int keyCode)
+static int translateKey(int keyCode)
 {
     int keySym;
 
     // Valid key code range is  [8,255], according to the XLib manual
     if (keyCode < 8 || keyCode > 255)
-        return -1;
+        return GLFW_KEY_UNKNOWN;
 
     // Try secondary keysym, for numeric keypad keys
     // Note: This way we always force "NumLock = ON", which is intentional
@@ -211,8 +211,8 @@ static int keyCodeToGLFWKeyCode(int keyCode)
         default:                break;
     }
 
-    // No matching translation was found, so return -1
-    return -1;
+    // No matching translation was found
+    return GLFW_KEY_UNKNOWN;
 }
 
 // Update the key code LUT
@@ -225,7 +225,7 @@ static void updateKeyCodeLUT(void)
 
     // Clear the LUT
     for (keyCode = 0;  keyCode < 256;  keyCode++)
-        _glfw.x11.keyCodeLUT[keyCode] = -1;
+        _glfw.x11.keyCodeLUT[keyCode] = GLFW_KEY_UNKNOWN;
 
     // Use XKB to determine physical key locations independently of the current
     // keyboard layout
@@ -296,7 +296,7 @@ static void updateKeyCodeLUT(void)
         else if (strcmp(name, "AB10") == 0) keyCodeGLFW = GLFW_KEY_SLASH;
         else if (strcmp(name, "BKSL") == 0) keyCodeGLFW = GLFW_KEY_BACKSLASH;
         else if (strcmp(name, "LSGT") == 0) keyCodeGLFW = GLFW_KEY_WORLD_1;
-        else keyCodeGLFW = -1;
+        else keyCodeGLFW = GLFW_KEY_UNKNOWN;
 
         // Update the key code LUT
         if ((keyCode >= 0) && (keyCode < 256))
@@ -311,7 +311,7 @@ static void updateKeyCodeLUT(void)
     for (keyCode = 0;  keyCode < 256;  keyCode++)
     {
         if (_glfw.x11.keyCodeLUT[keyCode] < 0)
-            _glfw.x11.keyCodeLUT[keyCode] = keyCodeToGLFWKeyCode(keyCode);
+            _glfw.x11.keyCodeLUT[keyCode] = translateKey(keyCode);
     }
 }
 

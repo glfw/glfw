@@ -434,7 +434,7 @@ static void mouseButtonFun(GLFWwindow* window, int button, int action, int mods)
     do_redraw = 1;
 }
 
-static void key_callback(GLFWwindow* window, int key, int action, int mods)
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);

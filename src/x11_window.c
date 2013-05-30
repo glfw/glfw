@@ -60,7 +60,7 @@ typedef struct
 
 // Translates an X event modifier state mask
 //
-int translateState(int state)
+static int translateState(int state)
 {
     int mods = 0;
 
@@ -491,23 +491,6 @@ static void leaveFullscreenMode(_GLFWwindow* window)
     }
 }
 
-// Return the GLFW window corresponding to the specified X11 window
-//
-_GLFWwindow* _glfwFindWindowByHandle(Window handle)
-{
-    _GLFWwindow* window;
-
-    if (XFindContext(_glfw.x11.display,
-                     handle,
-                     _glfw.x11.context,
-                     (XPointer*) &window) != 0)
-    {
-        return NULL;
-    }
-
-    return window;
-}
-
 // Process the specified X event
 //
 static void processEvent(XEvent *event)
@@ -837,6 +820,23 @@ static void processEvent(XEvent *event)
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
+
+// Return the GLFW window corresponding to the specified X11 window
+//
+_GLFWwindow* _glfwFindWindowByHandle(Window handle)
+{
+    _GLFWwindow* window;
+
+    if (XFindContext(_glfw.x11.display,
+                     handle,
+                     _glfw.x11.context,
+                     (XPointer*) &window) != 0)
+    {
+        return NULL;
+    }
+
+    return window;
+}
 
 // Retrieve a single window property of the specified type
 // Inspired by fghGetWindowProperty from freeglut

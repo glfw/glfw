@@ -38,6 +38,10 @@
 #endif
 
 
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
 void _glfwAllocGammaRamp(GLFWgammaramp* ramp, unsigned int size)
 {
     ramp->red = (unsigned short*) malloc(size * sizeof(unsigned short));

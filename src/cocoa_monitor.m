@@ -38,7 +38,7 @@
 
 // Get the name of the specified display
 //
-const char* getDisplayName(CGDirectDisplayID displayID)
+static const char* getDisplayName(CGDirectDisplayID displayID)
 {
     char* name;
     CFDictionaryRef info, names;

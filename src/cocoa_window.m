@@ -456,8 +456,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
         _glfwInputCursorMotion(window, [event deltaX], [event deltaY]);
     else
     {
-        const NSRect contentRect =
-            [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
+        const NSRect contentRect = [window->ns.view frame];
         const NSPoint p = [event locationInWindow];
 
         _glfwInputCursorMotion(window, p.x, contentRect.size.height - p.y);
@@ -662,7 +661,7 @@ static NSString* findAppName(void)
         id name = [infoDictionary objectForKey:GLFWNameKeys[i]];
         if (name &&
             [name isKindOfClass:[NSString class]] &&
-            ![@"" isEqualToString:name])
+            ![name isEqualToString:@""])
         {
             return name;
         }
@@ -915,8 +914,7 @@ void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
 
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 {
-    const NSRect contentRect =
-        [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
+    const NSRect contentRect = [window->ns.view frame];
 
     if (width)
         *width = contentRect.size.width;
@@ -995,8 +993,7 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
     }
     else
     {
-        const NSRect contentRect =
-            [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
+        const NSRect contentRect = [window->ns.view frame];
         const NSPoint localPoint = NSMakePoint(x, contentRect.size.height - y - 1);
         const NSPoint globalPoint = [window->ns.object convertBaseToScreen:localPoint];
 

@@ -277,7 +277,7 @@ Unix-like systems, where it uses the
 | `glfwSetMouseWheelCallback` | @ref glfwSetScrollCallback    | Accepts two-dimensional scroll offsets as doubles |
 | `glfwGetJoystickPos`        | @ref glfwGetJoystickAxes      |       |
 | `glfwGetWindowParam`        | @ref glfwGetWindowAttrib      |       |
-| `glfwGetGLVersion`          | @ref glfwGetWindowAttrib      | Use `GLFW_OPENGL_VERSION_MAJOR`, `GLFW_OPENGL_VERSION_MINOR` and `GLFW_OPENGL_REVISION` |
+| `glfwGetGLVersion`          | @ref glfwGetWindowAttrib      | Use `GLFW_CONTEXT_VERSION_MAJOR`, `GLFW_CONTEXT_VERSION_MINOR` and `GLFW_CONTEXT_REVISION` |
 | `glfwGetDesktopMode`        | @ref glfwGetVideoMode         | Returns the current mode of a monitor |
 | `glfwGetJoystickParam`      | @ref glfwJoystickPresent      | The axis and button counts are provided by @ref glfwGetJoystickAxes and @ref glfwGetJoystickButtons |
 

@@ -96,9 +96,9 @@ int main(void)
     }
 
     glfwMakeContextCurrent(window);
-    glfwGetWindowSize(window, &width, &height);
+    glfwGetFramebufferSize(window, &width, &height);
 
-    printf("window size: %ix%i\n", width, height);
+    printf("framebuffer size: %ix%i\n", width, height);
 
     for (i = 0;  glfw_attribs[i].name;   i++)
     {

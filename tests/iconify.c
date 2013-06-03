@@ -68,6 +68,11 @@ static void key_callback(GLFWwindow* window, int key, int action, int mods)
 static void window_size_callback(GLFWwindow* window, int width, int height)
 {
     printf("%0.2f Window resized to %ix%i\n", glfwGetTime(), width, height);
+}
+
+static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    printf("%0.2f Framebuffer resized to %ix%i\n", glfwGetTime(), width, height);
 
     glViewport(0, 0, width, height);
 }
@@ -138,6 +143,7 @@ int main(int argc, char** argv)
     glfwSwapInterval(1);
 
     glfwSetKeyCallback(window, key_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetWindowSizeCallback(window, window_size_callback);
     glfwSetWindowFocusCallback(window, window_focus_callback);
     glfwSetWindowIconifyCallback(window, window_iconify_callback);
@@ -150,7 +156,7 @@ int main(int argc, char** argv)
 
     while (!glfwWindowShouldClose(window))
     {
-        glfwGetWindowSize(window, &width, &height);
+        glfwGetFramebufferSize(window, &width, &height);
 
         glScissor(0, 0, width, height);
         glClearColor(0, 0, 0, 0);

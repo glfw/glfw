@@ -354,10 +354,10 @@ static void drawAllViews(void)
 
 
 //========================================================================
-// Window size callback function
+// Framebuffer size callback function
 //========================================================================
 
-static void windowSizeFun(GLFWwindow* window, int w, int h)
+static void framebufferSizeFun(GLFWwindow* window, int w, int h)
 {
     width  = w;
     height = h > 0 ? h : 1;
@@ -467,7 +467,7 @@ int main(void)
     }
 
     // Set callback functions
-    glfwSetWindowSizeCallback(window, windowSizeFun);
+    glfwSetFramebufferSizeCallback(window, framebufferSizeFun);
     glfwSetWindowRefreshCallback(window, windowRefreshFun);
     glfwSetCursorPosCallback(window, cursorPosFun);
     glfwSetMouseButtonCallback(window, mouseButtonFun);
@@ -477,8 +477,8 @@ int main(void)
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    glfwGetWindowSize(window, &width, &height);
-    windowSizeFun(window, width, height);
+    glfwGetFramebufferSize(window, &width, &height);
+    framebufferSizeFun(window, width, height);
 
     // Main loop
     for (;;)

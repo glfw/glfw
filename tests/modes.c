@@ -67,9 +67,9 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void window_size_callback(GLFWwindow* window, int width, int height)
+static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    printf("Window resized to %ix%i\n", width, height);
+    printf("Framebuffer resized to %ix%i\n", width, height);
 
     glViewport(0, 0, width, height);
 }
@@ -143,7 +143,7 @@ static void test_modes(GLFWmonitor* monitor)
             continue;
         }
 
-        glfwSetWindowSizeCallback(window, window_size_callback);
+        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         glfwSetKeyCallback(window, key_callback);
 
         glfwMakeContextCurrent(window);

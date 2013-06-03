@@ -679,6 +679,21 @@ typedef void (* GLFWwindowfocusfun)(GLFWwindow*,int);
  */
 typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
 
+/*! @brief The function signature for framebuffer resize callbacks.
+ *
+ *  This is the function signature for framebuffer resize callback
+ *  functions.
+ *
+ *  @param[in] window The window whose framebuffer was resized.
+ *  @param[in] width The new width, in pixels, of the framebuffer.
+ *  @param[in] height The new height, in pixels, of the framebuffer.
+ *
+ *  @sa glfwSetFramebufferSizeCallback
+ *
+ *  @ingroup window
+ */
+typedef void (* GLFWframebuffersizefun)(GLFWwindow*,int,int);
+
 /*! @brief The function signature for mouse button callbacks.
  *
  *  This is the function signature for mouse button callback functions.
@@ -1369,6 +1384,21 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
  */
 GLFWAPI void glfwSetWindowSize(GLFWwindow* window, int width, int height);
 
+/*! @brief Retrieves the size of the framebuffer of the specified window.
+ *
+ *  This function retrieves the size, in pixels, of the framebuffer of the
+ *  specified window.
+ *
+ *  @param[in] window The window whose framebuffer to query.
+ *  @param[out] width The width of the framebuffer.
+ *  @param[out] height The height of the framebuffer.
+ *
+ *  @sa glfwSetFramebufferSizeCallback
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwGetFramebufferSize(GLFWwindow* window, int* width, int* height);
+
 /*! @brief Iconifies the specified window.
  *
  *  This function iconifies/minimizes the specified window, if it was previously
@@ -1603,6 +1633,21 @@ GLFWAPI GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwi
  *  @ingroup window
  */
 GLFWAPI GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow* window, GLFWwindowiconifyfun cbfun);
+
+/*! @brief Sets the framebuffer resize callback for the specified window.
+ *
+ *  This function sets the framebuffer resize callback of the specified window,
+ *  which is called when the framebuffer of the specified window is resized.
+ *
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *
+ *  @return The previously set callback, or `NULL` if an error occurred.
+ *
+ *  @ingroup window
+ */
+GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window, GLFWframebuffersizefun cbfun);
 
 /*! @brief Processes all pending events.
  *

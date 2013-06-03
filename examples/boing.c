@@ -589,13 +589,13 @@ int main( void )
        exit( EXIT_FAILURE );
    }
 
-   glfwSetWindowSizeCallback(window, reshape);
+   glfwSetFramebufferSizeCallback(window, reshape);
    glfwSetKeyCallback(window, key_callback);
 
    glfwMakeContextCurrent(window);
    glfwSwapInterval( 1 );
 
-   glfwGetWindowSize(window, &width, &height);
+   glfwGetFramebufferSize(window, &width, &height);
    reshape(window, width, height);
 
    glfwSetTime( 0.0 );

@@ -361,10 +361,10 @@ void scroll_callback(GLFWwindow* window, double x, double y)
 
 
 //========================================================================
-// Callback function for window resize events
+// Callback function for framebuffer resize events
 //========================================================================
 
-void window_size_callback(GLFWwindow* window, int width, int height)
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     float ratio = 1.f;
 
@@ -404,7 +404,7 @@ int main(int argc, char* argv[])
     }
 
     glfwSetKeyCallback(window, key_callback);
-    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetScrollCallback(window, scroll_callback);
@@ -412,8 +412,8 @@ int main(int argc, char* argv[])
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    glfwGetWindowSize(window, &width, &height);
-    window_size_callback(window, width, height);
+    glfwGetFramebufferSize(window, &width, &height);
+    framebuffer_size_callback(window, width, height);
 
     // Initialize OpenGL
     init_opengl();

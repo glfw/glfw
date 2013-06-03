@@ -113,6 +113,12 @@ void _glfwInputWindowIconify(_GLFWwindow* window, int iconified)
         window->callbacks.iconify((GLFWwindow*) window, iconified);
 }
 
+void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height)
+{
+    if (window->callbacks.fbsize)
+        window->callbacks.fbsize((GLFWwindow*) window, width, height);
+}
+
 void _glfwInputWindowVisibility(_GLFWwindow* window, int visible)
 {
     window->visible = visible;
@@ -478,6 +484,15 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* handle, int width, int height)
     _glfwPlatformSetWindowSize(window, width, height);
 }
 
+GLFWAPI void glfwGetFramebufferSize(GLFWwindow* handle, int* width, int* height)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    _GLFW_REQUIRE_INIT();
+
+    _glfwPlatformGetFramebufferSize(window, width, height);
+}
+
 GLFWAPI void glfwIconifyWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -662,6 +677,19 @@ GLFWAPI GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow* handle,
 
     previous = window->callbacks.iconify;
     window->callbacks.iconify = cbfun;
+    return previous;
+}
+
+GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* handle,
+                                                              GLFWframebuffersizefun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    GLFWframebuffersizefun previous;
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+    previous = window->callbacks.fbsize;
+    window->callbacks.fbsize = cbfun;
     return previous;
 }
 

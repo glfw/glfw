@@ -216,18 +216,19 @@ struct _GLFWwindow
 #endif
 
     struct {
-        GLFWwindowposfun     pos;
-        GLFWwindowsizefun    size;
-        GLFWwindowclosefun   close;
-        GLFWwindowrefreshfun refresh;
-        GLFWwindowfocusfun   focus;
-        GLFWwindowiconifyfun iconify;
-        GLFWmousebuttonfun   mouseButton;
-        GLFWcursorposfun     cursorPos;
-        GLFWcursorenterfun   cursorEnter;
-        GLFWscrollfun        scroll;
-        GLFWkeyfun           key;
-        GLFWcharfun          character;
+        GLFWwindowposfun        pos;
+        GLFWwindowsizefun       size;
+        GLFWwindowclosefun      close;
+        GLFWwindowrefreshfun    refresh;
+        GLFWwindowfocusfun      focus;
+        GLFWwindowiconifyfun    iconify;
+        GLFWframebuffersizefun  fbsize;
+        GLFWmousebuttonfun      mouseButton;
+        GLFWcursorposfun        cursorPos;
+        GLFWcursorenterfun      cursorEnter;
+        GLFWscrollfun           scroll;
+        GLFWkeyfun              key;
+        GLFWcharfun             character;
     } callbacks;
 
     // This is defined in the window API's platform.h
@@ -474,6 +475,11 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height);
  */
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height);
 
+/*! @copydoc glfwGetFramebufferSize
+ *  @ingroup platform
+ */
+void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height);
+
 /*! @copydoc glfwIconifyWindow
  *  @ingroup platform
  */
@@ -561,6 +567,14 @@ void _glfwInputWindowPos(_GLFWwindow* window, int xpos, int ypos);
  *  @ingroup event
  */
 void _glfwInputWindowSize(_GLFWwindow* window, int width, int height);
+
+/*! @brief Notifies shared code of a framebuffer resize event.
+ *  @param[in] window The window that received the event.
+ *  @param[in] width The new width, in pixels, of the framebuffer.
+ *  @param[in] height The new height, in pixels, of the framebuffer.
+ *  @ingroup event
+ */
+void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height);
 
 /*! @brief Notifies shared code of a window iconification event.
  *  @param[in] window The window that received the event.

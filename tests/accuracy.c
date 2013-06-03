@@ -56,7 +56,7 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void window_size_callback(GLFWwindow* window, int width, int height)
+static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     window_width = width;
     window_height = height;
@@ -98,13 +98,13 @@ int main(void)
     }
 
     glfwSetCursorPosCallback(window, cursor_position_callback);
-    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetKeyCallback(window, key_callback);
 
     glfwMakeContextCurrent(window);
 
-    glfwGetWindowSize(window, &width, &height);
-    window_size_callback(window, width, height);
+    glfwGetFramebufferSize(window, &width, &height);
+    framebuffer_size_callback(window, width, height);
 
     set_swap_interval(window, swap_interval);
 

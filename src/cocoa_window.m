@@ -111,9 +111,11 @@ static void centerCursor(_GLFWwindow *window)
 {
     [window->nsgl.context update];
 
-    int width, height;
-    _glfwPlatformGetWindowSize(window, &width, &height);
-    _glfwInputWindowSize(window, width, height);
+    const NSRect contentRect = [window->ns.view frame];
+    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+
+    _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
+    _glfwInputWindowSize(window, contentRect.size.width, contentRect.size.height);
     _glfwInputWindowDamage(window);
 
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
@@ -515,6 +517,14 @@ static int convertMacKeyCode(unsigned int macKeyCode)
     _glfwInputCursorEnter(window, GL_TRUE);
 }
 
+- (void)viewDidChangeBackingProperties
+{
+    const NSRect contentRect = [window->ns.view frame];
+    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+
+    _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
+}
+
 - (void)updateTrackingAreas
 {
     if (trackingArea != nil)
@@ -804,6 +814,8 @@ static GLboolean createWindow(_GLFWwindow* window,
 
     window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
 
+    [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
+
     [window->ns.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
     [window->ns.object setContentView:window->ns.view];
     [window->ns.object setDelegate:window->ns.delegate];
@@ -925,6 +937,11 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     [window->ns.object setContentSize:NSMakeSize(width, height)];
+}
+
+void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
+{
+    _glfwPlatformGetWindowSize(window, width, height);
 }
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)

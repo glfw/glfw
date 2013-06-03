@@ -280,6 +280,8 @@ GLFW.
    compile time
  * Added `glfwGetWindowMonitor` for querying the monitor, if any, of the
    specified window
+ * Added `glfwGetFramebufferSize` and `glfwSetFramebufferSizeCallback` for
+   receiving the current size, in pixels, of the framebuffer
  * Added `glfwSetWindowPosCallback` and `GLFWwindowposfun` for receiving window
    position events
  * Added `glfwSetWindowFocusCallback` and `GLFWwindowfocusfun` for receiving
@@ -377,6 +379,7 @@ GLFW.
  * Bugfix: Cursor centering upon leaving captured cursor mode was reported
            before the mode was changed to non-captured
  * [Cocoa] Added support for OpenGL 3.2 core profile in 10.7 Lion and above
+ * [Cocoa] Added support for high-DPI (Retina) monitors
  * [Cocoa] Added support for joysticks
  * [Cocoa] Postponed menu creation to first window creation
  * [Cocoa] Replaced `NSDate` time source with `mach_absolute_time`
@@ -413,6 +416,7 @@ GLFW.
                  mode was incorrectly removed
  * [X11] Bugfix: The window size hints were not updated when calling
                  `glfwSetWindowSize` on a non-resizable window
+ * [Win32] Added support for high-DPI monitors
  * [Win32] Changed port to use Unicode mode only
  * [Win32] Removed explicit support for versions of Windows older than Windows
            XP

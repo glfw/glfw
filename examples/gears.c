@@ -337,13 +337,13 @@ int main(int argc, char *argv[])
     }
 
     // Set callback functions
-    glfwSetWindowSizeCallback(window, reshape);
+    glfwSetFramebufferSizeCallback(window, reshape);
     glfwSetKeyCallback(window, key);
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval( 1 );
 
-    glfwGetWindowSize(window, &width, &height);
+    glfwGetFramebufferSize(window, &width, &height);
     reshape(window, width, height);
 
     // Parse command-line options

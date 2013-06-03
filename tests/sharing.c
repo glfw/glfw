@@ -94,7 +94,7 @@ static GLuint create_texture(void)
 static void draw_quad(GLuint texture)
 {
     int width, height;
-    glfwGetWindowSize(glfwGetCurrentContext(), &width, &height);
+    glfwGetFramebufferSize(glfwGetCurrentContext(), &width, &height);
 
     glViewport(0, 0, width, height);
 

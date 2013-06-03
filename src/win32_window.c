@@ -645,6 +645,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 updateClipRect(window);
 
+            _glfwInputFramebufferSize(window, LOWORD(lParam), HIWORD(lParam));
             _glfwInputWindowSize(window, LOWORD(lParam), HIWORD(lParam));
             return 0;
         }
@@ -989,6 +990,11 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
                      0, 0, fullWidth, fullHeight,
                      SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
     }
+}
+
+void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
+{
+    _glfwPlatformGetWindowSize(window, width, height);
 }
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)

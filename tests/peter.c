@@ -87,7 +87,7 @@ static void key_callback(GLFWwindow* window, int key, int action, int mods)
     }
 }
 
-static void window_size_callback(GLFWwindow* window, int width, int height)
+static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
@@ -104,7 +104,7 @@ static GLFWwindow* open_window(void)
     glfwGetCursorPos(window, &cursor_x, &cursor_y);
     printf("Cursor position: %f %f\n", cursor_x, cursor_y);
 
-    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetKeyCallback(window, key_callback);
 

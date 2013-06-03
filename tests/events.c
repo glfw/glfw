@@ -259,6 +259,15 @@ static void window_size_callback(GLFWwindow* window, int width, int height)
            glfwGetTime(),
            width,
            height);
+}
+
+static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    printf("%08x at %0.3f: Framebuffer size: %i %i\n",
+           counter++,
+           glfwGetTime(),
+           width,
+           height);
 
     glViewport(0, 0, width, height);
 }
@@ -422,6 +431,7 @@ int main(void)
 
     glfwSetWindowPosCallback(window, window_pos_callback);
     glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetWindowCloseCallback(window, window_close_callback);
     glfwSetWindowRefreshCallback(window, window_refresh_callback);
     glfwSetWindowFocusCallback(window, window_focus_callback);

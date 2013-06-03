@@ -56,7 +56,7 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void window_size_callback(GLFWwindow* window, int width, int height)
+static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
@@ -108,7 +108,7 @@ static void draw_joysticks(GLFWwindow* window)
 {
     int i, width, height;
 
-    glfwGetWindowSize(window, &width, &height);
+    glfwGetFramebufferSize(window, &width, &height);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -208,7 +208,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);

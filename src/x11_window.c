@@ -635,6 +635,10 @@ static void processEvent(XEvent *event)
 
         case ConfigureNotify:
         {
+            _glfwInputFramebufferSize(window,
+                                      event->xconfigure.width,
+                                      event->xconfigure.height);
+
             _glfwInputWindowSize(window,
                                  event->xconfigure.width,
                                  event->xconfigure.height);
@@ -1019,6 +1023,11 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
         XResizeWindow(_glfw.x11.display, window->x11.handle, width, height);
 
     XFlush(_glfw.x11.display);
+}
+
+void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
+{
+    _glfwPlatformGetWindowSize(window, width, height);
 }
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)

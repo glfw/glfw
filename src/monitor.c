@@ -140,7 +140,8 @@ void _glfwInputMonitorChange(void)
                 window->monitor = NULL;
         }
 
-        _glfw.monitorCallback((GLFWmonitor*) monitors[i], GLFW_DISCONNECTED);
+        if (_glfw.monitorCallback)
+            _glfw.monitorCallback((GLFWmonitor*) monitors[i], GLFW_DISCONNECTED);
     }
 
     // Find and report newly connected monitors (not in the old list)
@@ -161,7 +162,8 @@ void _glfwInputMonitorChange(void)
         if (j < monitorCount)
             continue;
 
-        _glfw.monitorCallback((GLFWmonitor*) _glfw.monitors[i], GLFW_CONNECTED);
+        if (_glfw.monitorCallback)
+            _glfw.monitorCallback((GLFWmonitor*) _glfw.monitors[i], GLFW_CONNECTED);
     }
 
     _glfwDestroyMonitors(monitors, monitorCount);

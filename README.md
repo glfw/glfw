@@ -461,6 +461,7 @@ skills.
  * Matt Arsenault
  * Keith Bauer
  * John Bartholomew
+ * Niklas Bergström
  * blanco
  * Lambert Clara
  * Noel Cower

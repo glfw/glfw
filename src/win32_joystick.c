@@ -84,7 +84,7 @@ int _glfwPlatformJoystickPresent(int joy)
     return GL_TRUE;
 }
 
-float* _glfwPlatformGetJoystickAxes(int joy, int* count)
+const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 {
     JOYCAPS jc;
     JOYINFOEX ji;
@@ -117,7 +117,7 @@ float* _glfwPlatformGetJoystickAxes(int joy, int* count)
     return axes;
 }
 
-unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
+const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
 {
     JOYCAPS jc;
     JOYINFOEX ji;

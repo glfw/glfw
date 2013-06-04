@@ -138,8 +138,8 @@ static void refresh_joysticks(void)
 
         if (glfwJoystickPresent(GLFW_JOYSTICK_1 + i))
         {
-            float* axes;
-            unsigned char* buttons;
+            const float* axes;
+            const unsigned char* buttons;
             int axis_count, button_count;
 
             free(j->name);

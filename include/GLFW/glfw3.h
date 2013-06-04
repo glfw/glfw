@@ -1973,7 +1973,7 @@ GLFWAPI int glfwJoystickPresent(int joy);
  *
  *  @ingroup input
  */
-GLFWAPI float* glfwGetJoystickAxes(int joy, int* count);
+GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count);
 
 /*! @brief Returns the values of all buttons of the specified joystick.
  *  @param[in] joy The joystick to query.
@@ -1985,7 +1985,7 @@ GLFWAPI float* glfwGetJoystickAxes(int joy, int* count);
  *
  *  @ingroup input
  */
-GLFWAPI unsigned char* glfwGetJoystickButtons(int joy, int* count);
+GLFWAPI const unsigned char* glfwGetJoystickButtons(int joy, int* count);
 
 /*! @brief Returns the name of the specified joystick.
  *

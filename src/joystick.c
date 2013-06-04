@@ -48,7 +48,7 @@ GLFWAPI int glfwJoystickPresent(int joy)
     return _glfwPlatformJoystickPresent(joy);
 }
 
-GLFWAPI float* glfwGetJoystickAxes(int joy, int* count)
+GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count)
 {
     *count = 0;
 
@@ -63,7 +63,7 @@ GLFWAPI float* glfwGetJoystickAxes(int joy, int* count)
     return _glfwPlatformGetJoystickAxes(joy, count);
 }
 
-GLFWAPI unsigned char* glfwGetJoystickButtons(int joy, int* count)
+GLFWAPI const unsigned char* glfwGetJoystickButtons(int joy, int* count)
 {
     *count = 0;
 

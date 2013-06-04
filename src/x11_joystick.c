@@ -241,7 +241,7 @@ int _glfwPlatformJoystickPresent(int joy)
     return _glfw.x11.joystick[joy].present;
 }
 
-float* _glfwPlatformGetJoystickAxes(int joy, int* count)
+const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 {
     pollJoystickEvents();
 
@@ -252,7 +252,7 @@ float* _glfwPlatformGetJoystickAxes(int joy, int* count)
     return _glfw.x11.joystick[joy].axes;
 }
 
-unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
+const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
 {
     pollJoystickEvents();
 

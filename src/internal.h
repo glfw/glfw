@@ -418,12 +418,12 @@ int _glfwPlatformJoystickPresent(int joy);
 /*! @copydoc glfwGetJoystickAxes
  *  @ingroup platform
  */
-float* _glfwPlatformGetJoystickAxes(int joy, int* count);
+const float* _glfwPlatformGetJoystickAxes(int joy, int* count);
 
 /*! @copydoc glfwGetJoystickButtons
  *  @ingroup platform
  */
-unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count);
+const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count);
 
 /*! @copydoc glfwGetJoystickName
  *  @ingroup platform

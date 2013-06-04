@@ -390,21 +390,6 @@ extern "C" {
 #define GLFW_KEY_MENU               348
 #define GLFW_KEY_LAST               GLFW_KEY_MENU
 
-/* GLFW 2.x key name aliases (deprecated) */
-#define GLFW_KEY_ESC                GLFW_KEY_ESCAPE
-#define GLFW_KEY_DEL                GLFW_KEY_DELETE
-#define GLFW_KEY_PAGEUP             GLFW_KEY_PAGE_UP
-#define GLFW_KEY_PAGEDOWN           GLFW_KEY_PAGE_DOWN
-#define GLFW_KEY_KP_NUM_LOCK        GLFW_KEY_NUM_LOCK
-#define GLFW_KEY_LCTRL              GLFW_KEY_LEFT_CONTROL
-#define GLFW_KEY_LSHIFT             GLFW_KEY_LEFT_SHIFT
-#define GLFW_KEY_LALT               GLFW_KEY_LEFT_ALT
-#define GLFW_KEY_LSUPER             GLFW_KEY_LEFT_SUPER
-#define GLFW_KEY_RCTRL              GLFW_KEY_RIGHT_CONTROL
-#define GLFW_KEY_RSHIFT             GLFW_KEY_RIGHT_SHIFT
-#define GLFW_KEY_RALT               GLFW_KEY_RIGHT_ALT
-#define GLFW_KEY_RSUPER             GLFW_KEY_RIGHT_SUPER
-
 /*! @} */
 
 /*! @defgroup mods Modifier key flags

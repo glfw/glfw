@@ -503,7 +503,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             if (wParam == VK_SHIFT)
             {
-                // Special trick: release both shift keys on SHIFT up event
+                // Release both Shift keys on Shift up event, as only one event
+                // is sent even if both keys are released
                 _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, GLFW_RELEASE, mods);
                 _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, GLFW_RELEASE, mods);
             }

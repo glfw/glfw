@@ -978,6 +978,9 @@ GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun);
  *  occurred.
  *  @return An array of monitor handles, or `NULL` if an error occurred.
  *
+ *  @note The returned array is allocated and freed by GLFW.  You should not
+ *  free it yourself.
+ *
  *  @note The returned array is valid only until the monitor configuration
  *  changes.  See @ref glfwSetMonitorCallback to receive notifications of
  *  configuration changes.
@@ -1040,6 +1043,9 @@ GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* monitor, int* width, int* h
  *  @return The UTF-8 encoded name of the monitor, or `NULL` if an error
  *  occurred.
  *
+ *  @note The returned string is allocated and freed by GLFW.  You should not
+ *  free it yourself.
+ *
  *  @ingroup monitor
  */
 GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* monitor);
@@ -1072,6 +1078,9 @@ GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun);
  *  if an error occurred.
  *  @return An array of video modes, or `NULL` if an error occurred.
  *
+ *  @note The returned array is allocated and freed by GLFW.  You should not
+ *  free it yourself.
+ *
  *  @note The returned array is valid only until this function is called again
  *  for the specified monitor.
  *
@@ -1089,6 +1098,9 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count);
  *
  *  @param[in] monitor The monitor to query.
  *  @return The current mode of the monitor, or `NULL` if an error occurred.
+ *
+ *  @note The returned struct is allocated and freed by GLFW.  You should not
+ *  free it yourself.
  *
  *  @sa glfwGetVideoModes
  *
@@ -1114,6 +1126,9 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* monitor, float gamma);
  *
  *  @param[in] monitor The monitor to query.
  *  @return The current gamma ramp.
+ *
+ *  @note The value arrays of the returned ramp are allocated and freed by GLFW.
+ *  You should not free them yourself.
  *
  *  @ingroup gamma
  */
@@ -1953,6 +1968,9 @@ GLFWAPI int glfwJoystickPresent(int joy);
  *  @param[out] count The size of the returned array.
  *  @return An array of axis values, or @c NULL if the joystick is not present.
  *
+ *  @note The returned array is allocated and freed by GLFW.  You should not
+ *  free it yourself.
+ *
  *  @note The returned array is valid only until the next call to @ref
  *  glfwGetJoystickAxes for that joystick.
  *
@@ -1964,6 +1982,9 @@ GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count);
  *  @param[in] joy The joystick to query.
  *  @param[out] count The size of the returned array.
  *  @return An array of axis values, or @c NULL if the joystick is not present.
+ *
+ *  @note The returned array is allocated and freed by GLFW.  You should not
+ *  free it yourself.
  *
  *  @note The returned array is valid only until the next call to @ref
  *  glfwGetJoystickButtons for that joystick.
@@ -1979,6 +2000,9 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int joy, int* count);
  *  @param[in] joy The joystick to query.
  *  @return The UTF-8 encoded name of the joystick, or `NULL` if the joystick
  *  is not present.
+ *
+ *  @note The returned string is allocated and freed by GLFW.  You should not
+ *  free it yourself.
  *
  *  @note The returned string is valid only until the next call to @ref
  *  glfwGetJoystickName for that joystick.
@@ -2014,6 +2038,9 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  *  if an error occurred.
  *
  *  @note This function may only be called from the main thread.
+ *
+ *  @note The returned string is allocated and freed by GLFW.  You should not
+ *  free it yourself.
  *
  *  @note The returned string is valid only until the next call to @ref
  *  glfwGetClipboardString or @ref glfwSetClipboardString.

@@ -204,7 +204,9 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
             if (PeekMessage(&next, NULL, 0, 0, PM_NOREMOVE))
             {
                 if (next.message == WM_KEYDOWN ||
-                    next.message == WM_SYSKEYDOWN)
+                    next.message == WM_SYSKEYDOWN ||
+                    next.message == WM_KEYUP ||
+                    next.message == WM_SYSKEYUP)
                 {
                     if (next.wParam == VK_MENU &&
                         (next.lParam & 0x01000000) &&

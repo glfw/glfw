@@ -201,6 +201,11 @@ static void centerCursor(_GLFWwindow *window)
     }
 }
 
+- (void)applicationDidChangeScreenParameters:(NSNotification *) notification
+{
+    _glfwInputMonitorChange();
+}
+
 @end
 
 // Translates Mac OS X key modifiers into GLFW ones

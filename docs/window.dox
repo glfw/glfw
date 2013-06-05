@@ -126,8 +126,8 @@ client API is requested, this hint is ignored.
 If an OpenGL context is requested, the `GLFW_OPENGL_PROFILE` hint specifies
 which OpenGL profile to create the context for.  Possible values are one of
 `GLFW_OPENGL_CORE_PROFILE` or `GLFW_OPENGL_COMPAT_PROFILE`, or
-`GLFW_OPENGL_NO_PROFILE` to not request a specific profile.  If requesting
-an OpenGL version below 3.2, `GLFW_OPENGL_NO_PROFILE` must be used.  If
+`GLFW_OPENGL_ANY_PROFILE` to not request a specific profile.  If requesting
+an OpenGL version below 3.2, `GLFW_OPENGL_ANY_PROFILE` must be used.  If
 another client API is requested, this hint is ignored.
 
 The `GLFW_CONTEXT_ROBUSTNESS` hint specifies the robustness strategy to be
@@ -138,33 +138,33 @@ a robustness strategy.
 
 @subsection window_hints_values Supported and default values
 
-| Name                         | Default value            | Supported values        |
-| ---------------------------- | ------------------------ | ----------------------- |
-| `GLFW_RESIZABLE`             | `GL_TRUE`                | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_VISIBLE`               | `GL_TRUE`                | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_DECORATED`             | `GL_TRUE`                | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_RED_BITS`              | 8                        | 0 to `INT_MAX`          |
-| `GLFW_GREEN_BITS`            | 8                        | 0 to `INT_MAX`          |
-| `GLFW_BLUE_BITS`             | 8                        | 0 to `INT_MAX`          |
-| `GLFW_ALPHA_BITS`            | 8                        | 0 to `INT_MAX`          |
-| `GLFW_DEPTH_BITS`            | 24                       | 0 to `INT_MAX`          |
-| `GLFW_STENCIL_BITS`          | 8                        | 0 to `INT_MAX`          |
-| `GLFW_ACCUM_RED_BITS`        | 0                        | 0 to `INT_MAX`          |
-| `GLFW_ACCUM_GREEN_BITS`      | 0                        | 0 to `INT_MAX`          |
-| `GLFW_ACCUM_BLUE_BITS`       | 0                        | 0 to `INT_MAX`          |
-| `GLFW_ACCUM_ALPHA_BITS`      | 0                        | 0 to `INT_MAX`          |
-| `GLFW_AUX_BUFFERS`           | 0                        | 0 to `INT_MAX`          |
-| `GLFW_SAMPLES`               | 0                        | 0 to `INT_MAX`          |
-| `GLFW_REFRESH_RATE`          | 0                        | 0 to `INT_MAX`          |
-| `GLFW_STEREO`                | `GL_FALSE`               | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_SRGB_CAPABLE`          | `GL_FALSE`               | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_CLIENT_API`            | `GLFW_OPENGL_API`        | `GLFW_OPENGL_API` or `GLFW_OPENGL_ES_API` |
-| `GLFW_CONTEXT_VERSION_MAJOR` | 1                        | Any valid major version number of the chosen client API |
-| `GLFW_CONTEXT_VERSION_MINOR` | 0                        | Any valid minor version number of the chosen client API |
-| `GLFW_CONTEXT_ROBUSTNESS`    | `GLFW_NO_ROBUSTNESS`     | `GLFW_NO_ROBUSTNESS`, `GLFW_NO_RESET_NOTIFICATION` or `GLFW_LOSE_CONTEXT_ON_RESET` |
-| `GLFW_OPENGL_FORWARD_COMPAT` | `GL_FALSE`               | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_OPENGL_DEBUG_CONTEXT`  | `GL_FALSE`               | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_OPENGL_PROFILE`        | `GLFW_OPENGL_NO_PROFILE` | `GLFW_OPENGL_NO_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE` |
+| Name                         | Default value             | Supported values        |
+| ---------------------------- | ------------------------- | ----------------------- |
+| `GLFW_RESIZABLE`             | `GL_TRUE`                 | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_VISIBLE`               | `GL_TRUE`                 | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_DECORATED`             | `GL_TRUE`                 | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_RED_BITS`              | 8                         | 0 to `INT_MAX`          |
+| `GLFW_GREEN_BITS`            | 8                         | 0 to `INT_MAX`          |
+| `GLFW_BLUE_BITS`             | 8                         | 0 to `INT_MAX`          |
+| `GLFW_ALPHA_BITS`            | 8                         | 0 to `INT_MAX`          |
+| `GLFW_DEPTH_BITS`            | 24                        | 0 to `INT_MAX`          |
+| `GLFW_STENCIL_BITS`          | 8                         | 0 to `INT_MAX`          |
+| `GLFW_ACCUM_RED_BITS`        | 0                         | 0 to `INT_MAX`          |
+| `GLFW_ACCUM_GREEN_BITS`      | 0                         | 0 to `INT_MAX`          |
+| `GLFW_ACCUM_BLUE_BITS`       | 0                         | 0 to `INT_MAX`          |
+| `GLFW_ACCUM_ALPHA_BITS`      | 0                         | 0 to `INT_MAX`          |
+| `GLFW_AUX_BUFFERS`           | 0                         | 0 to `INT_MAX`          |
+| `GLFW_SAMPLES`               | 0                         | 0 to `INT_MAX`          |
+| `GLFW_REFRESH_RATE`          | 0                         | 0 to `INT_MAX`          |
+| `GLFW_STEREO`                | `GL_FALSE`                | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_SRGB_CAPABLE`          | `GL_FALSE`                | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_CLIENT_API`            | `GLFW_OPENGL_API`         | `GLFW_OPENGL_API` or `GLFW_OPENGL_ES_API` |
+| `GLFW_CONTEXT_VERSION_MAJOR` | 1                         | Any valid major version number of the chosen client API |
+| `GLFW_CONTEXT_VERSION_MINOR` | 0                         | Any valid minor version number of the chosen client API |
+| `GLFW_CONTEXT_ROBUSTNESS`    | `GLFW_NO_ROBUSTNESS`      | `GLFW_NO_ROBUSTNESS`, `GLFW_NO_RESET_NOTIFICATION` or `GLFW_LOSE_CONTEXT_ON_RESET` |
+| `GLFW_OPENGL_FORWARD_COMPAT` | `GL_FALSE`                | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_OPENGL_DEBUG_CONTEXT`  | `GL_FALSE`                | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_OPENGL_PROFILE`        | `GLFW_OPENGL_ANY_PROFILE` | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE` |
 
 
 @section window_close Window close flag
@@ -356,7 +356,7 @@ context is an OpenGL debug context, or `GL_FALSE` otherwise.
 
 The `GLFW_OPENGL_PROFILE` attribute indicates the OpenGL profile used by the
 context.  This is `GLFW_OPENGL_CORE_PROFILE` or `GLFW_OPENGL_COMPAT_PROFILE`
-if the context uses a known profile, or `GLFW_OPENGL_NO_PROFILE` if the
+if the context uses a known profile, or `GLFW_OPENGL_ANY_PROFILE` if the
 OpenGL profile is unknown or the context is for another client API.
 
 The `GLFW_CONTEXT_ROBUSTNESS` attribute indicates the robustness strategy

@@ -503,7 +503,7 @@ int _glfwCreateContext(_GLFWwindow* window,
             // creation with a GLXBadProfileARB error in violation of the spec
             if (_glfw.glx.errorCode == _glfw.glx.errorBase + GLXBadProfileARB &&
                 wndconfig->clientAPI == GLFW_OPENGL_API &&
-                wndconfig->glProfile == GLFW_OPENGL_NO_PROFILE &&
+                wndconfig->glProfile == GLFW_OPENGL_ANY_PROFILE &&
                 wndconfig->glForward == GL_FALSE)
             {
                 window->glx.context = createLegacyContext(window, native, share);

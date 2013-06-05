@@ -71,7 +71,7 @@ GLFW now has an (experimental) EGL context creation back end, which can be
 selected through CMake options.
 
 
-@section news_30_hidpi High-DPI support
+@subsection news_30_hidpi High-DPI support
 
 GLFW now supports high-DPI monitors on both Windows and OS X, giving windows full
 resolution framebuffers where other UI elements are scaled up.  To achieve this,

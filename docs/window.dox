@@ -327,12 +327,12 @@ currently iconified, whether by the user or with @ref glfwIconifyWindow.
 
 The `GLFW_VISIBLE` attribute indicates whether the specified window is currently
 visible.  Window visibility can be controlled with @ref glfwShowWindow and @ref
-glfwHideWindow and initial visibility is controlled by the [window hint](@ref
-window_hints) with the same name.  
+glfwHideWindow and initial visibility is controlled by the
+[window hint](@ref window_hints) with the same name.  
 
 The `GLFW_RESIZABLE` attribute indicates whether the specified window is
-resizable *by the user*.  This is controlled by the [window hint](@ref
-window_hints) with the same name.
+resizable *by the user*.  This is controlled by the
+[window hint](@ref window_hints) with the same name.
 
 The `GLFW_DECORATED` attribute indicates whether the specified window has
 decorations such as a border, a close widget, etc.  This is controlled by the

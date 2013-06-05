@@ -197,14 +197,21 @@ for example pressing the escape key.
 @section quick_render Rendering with OpenGL
 
 Once you have a current OpenGL context, you can use OpenGL normally.  In this
-tutorial, a multi-colored rotating triangle will be rendered.  The window size,
-needed here by `glViewport` and `glOrtho`, is retrieved using @ref
-glfwGetWindowSize.  However, if you only need it for updating the viewport when
-the window size changes, you can set a window size callback using @ref
-glfwSetWindowSizeCallback and call `glViewport` from there.
+tutorial, a multi-colored rotating triangle will be rendered.  The framebuffer
+size, needed by this example for `glViewport` and `glOrtho`, is retrieved with
+@ref glfwGetFramebufferSize.
 
 @code
-void window_size_callback(GLFWwindow* window, int width, int height)
+int width, height;
+glfwGetFramebufferSize(window, &width, &height);
+glViewport(0, 0, width, height);
+@endcode
+
+However, you can also set a framebuffer size callback using @ref
+glfwSetFramebufferSizeCallback and call `glViewport` from there.
+
+@code
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }

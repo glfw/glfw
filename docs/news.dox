@@ -96,8 +96,8 @@ easier to integrate GLFW into C++ code.
 
 @subsection news_30_iconifyfun Window iconification callback
 
-Each window object has a callback for iconification and restoration events, which is
-set with @ref glfwSetWindowIconifyCallback.
+Each window object has a callback for iconification and restoration events,
+which is set with @ref glfwSetWindowIconifyCallback.
 
 
 @subsection news_30_wndposfun Window position callback

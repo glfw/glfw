@@ -194,6 +194,24 @@ useful if you want to interpret other kinds of input as closing the window, like
 for example pressing the escape key.
 
 
+@section quick_key_input Receiving input events
+
+Each window has a large number of callbacks that can be set to receive all the
+various kinds of events.  To receive key press and release events, a
+[key callback](@ref GLFWkeyfun) is set using @ref glfwSetKeyCallback.
+
+@code
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GL_TRUE);
+}
+@endcode
+
+For event callbacks to actually be called when an event occurs, you need to
+process events as described below.
+
+
 @section quick_render Rendering with OpenGL
 
 Once you have a current OpenGL context, you can use OpenGL normally.  In this

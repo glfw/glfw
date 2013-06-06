@@ -138,8 +138,27 @@ a frame, a title bar, with the `GLFW_DECORATED` window hint.  This allows for
 the creation of things like splash screens.
 
 
+@subsection news_30_keymods Modifier key bit masks
+
+[Modifier key bit mask](@ref mods) parameters have been added to the
+[mouse button](@ref GLFWmousebuttonfun) and [key](@ref GLFWkeyfun) callbacks.
+
+
+@subsection news_30_scancode Platform-specific scancodes
+
+A scancode parameter has been added to the [key callback](@ref GLFWkeyfun). Keys
+that don't have a [key token](@ref keys) still get passed on with the key
+parameter set to `GLFW_KEY_UNKNOWN`.  These scancodes will vary between machines
+and are intended to be used for key bindings.
+
+
 @subsection news_30_jsname Joystick names
 
 The name of a joystick can now be retrieved using @ref glfwGetJoystickName.
+
+
+@subsection news_30_doxygen Doxygen documentation
+
+You are reading it.
 
 */

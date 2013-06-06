@@ -732,8 +732,8 @@ typedef void (* GLFWcursorenterfun)(GLFWwindow*,int);
  *  This is the function signature for scroll callback functions.
  *
  *  @param[in] window The window that received the event.
- *  @param[in] xpos The scroll offset along the x-axis.
- *  @param[in] ypos The scroll offset along the y-axis.
+ *  @param[in] xoffset The scroll offset along the x-axis.
+ *  @param[in] yoffset The scroll offset along the y-axis.
  *
  *  @sa glfwSetScrollCallback
  *

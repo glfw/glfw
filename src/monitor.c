@@ -79,6 +79,9 @@ static int refreshVideoModes(_GLFWmonitor* monitor)
 {
     int modeCount;
 
+    if (monitor->modes)
+        return GL_TRUE;
+
     GLFWvidmode* modes = _glfwPlatformGetVideoModes(monitor, &modeCount);
     if (!modes)
         return GL_FALSE;
@@ -340,11 +343,8 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
-    if (monitor->modes == NULL)
-    {
-        if (!refreshVideoModes(monitor))
-            return GL_FALSE;
-    }
+    if (!refreshVideoModes(monitor))
+        return NULL;
 
     *count = monitor->modeCount;
     return monitor->modes;

@@ -78,11 +78,12 @@ static int compareVideoModes(const void* firstPtr, const void* secondPtr)
 static int refreshVideoModes(_GLFWmonitor* monitor)
 {
     int modeCount;
+    GLFWvidmode* modes;
 
     if (monitor->modes)
         return GL_TRUE;
 
-    GLFWvidmode* modes = _glfwPlatformGetVideoModes(monitor, &modeCount);
+    modes = _glfwPlatformGetVideoModes(monitor, &modeCount);
     if (!modes)
         return GL_FALSE;
 

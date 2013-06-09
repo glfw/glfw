@@ -162,15 +162,15 @@ void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-_GLFWmonitor** _glfwPlatformGetMonitors(int* found)
+_GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
     _GLFWmonitor** monitors = NULL;
 
-    *found = 0;
+    *count = 0;
 
     if (_glfw.x11.randr.available)
     {
-        int i;
+        int i, found = 0;
         RROutput primary;
         XRRScreenResources* sr;
 
@@ -206,21 +206,21 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* found)
                 continue;
             }
 
-            monitors[*found] = _glfwCreateMonitor(oi->name,
-                                                  oi->mm_width, oi->mm_height);
+            monitors[found] = _glfwCreateMonitor(oi->name,
+                                                 oi->mm_width, oi->mm_height);
 
-            monitors[*found]->x11.output = output;
-            monitors[*found]->x11.crtc   = oi->crtc;
+            monitors[found]->x11.output = output;
+            monitors[found]->x11.crtc   = oi->crtc;
 
             XRRFreeOutputInfo(oi);
             XRRFreeCrtcInfo(ci);
 
-            (*found)++;
+            found++;
         }
 
         XRRFreeScreenResources(sr);
 
-        for (i = 0;  i < *found;  i++)
+        for (i = 0;  i < found;  i++)
         {
             if (monitors[i]->x11.output == primary)
             {
@@ -230,6 +230,14 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* found)
                 break;
             }
         }
+
+        if (found == 0)
+        {
+            free(monitors);
+            monitors = NULL;
+        }
+
+        *count = found;
     }
     else
     {
@@ -239,7 +247,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* found)
                                                         _glfw.x11.screen),
                                          DisplayHeightMM(_glfw.x11.display,
                                                          _glfw.x11.screen));
-        *found = 1;
+        *count = 1;
     }
 
     return monitors;

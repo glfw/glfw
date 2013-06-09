@@ -107,6 +107,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     DWORD adapterIndex = 0;
     int primaryIndex = 0;
 
+    *count = 0;
+
     for (;;)
     {
         DISPLAY_DEVICE adapter, display;
@@ -152,6 +154,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             _glfwDestroyMonitors(monitors, found);
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Failed to convert string to UTF-8");
+
+            free(monitors);
             return NULL;
         }
 

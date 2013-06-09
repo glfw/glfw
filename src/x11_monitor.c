@@ -177,7 +177,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* found)
         sr = XRRGetScreenResources(_glfw.x11.display, _glfw.x11.root);
         primary = XRRGetOutputPrimary(_glfw.x11.display, _glfw.x11.root);
 
-        monitors = (_GLFWmonitor**) calloc(sr->noutput, sizeof(_GLFWmonitor*));
+        monitors = (_GLFWmonitor**) calloc(sr->ncrtc, sizeof(_GLFWmonitor*));
 
         for (i = 0;  i < sr->ncrtc;  i++)
         {

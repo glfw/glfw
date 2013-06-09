@@ -62,6 +62,7 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
     if (_glfwCompareVideoModes(&current, best) == 0)
         return GL_TRUE;
 
+    ZeroMemory(&dm, sizeof(dm));
     dm.dmSize = sizeof(DEVMODE);
     dm.dmFields           = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL |
                             DM_DISPLAYFREQUENCY;

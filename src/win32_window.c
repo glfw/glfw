@@ -182,7 +182,7 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
             // order to determine which shift key was pressed (left or
             // right)
             const DWORD scancode = MapVirtualKey(VK_RSHIFT, 0);
-            if (((lParam & 0x01ff0000) >> 16) == scancode)
+            if ((DWORD) ((lParam & 0x01ff0000) >> 16) == scancode)
                 return GLFW_KEY_RIGHT_SHIFT;
 
             return GLFW_KEY_LEFT_SHIFT;

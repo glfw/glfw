@@ -183,7 +183,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
 GLboolean _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
 {
-    return wcscmp(first->win32.name, second->win32.name);
+    return wcscmp(first->win32.name, second->win32.name) == 0;
 }
 
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)

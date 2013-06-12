@@ -671,6 +671,7 @@ WARN_LOGFILE           = @GLFW_BINARY_DIR@/docs/warnings.txt
 INPUT                  = @GLFW_INTERNAL_DOCS@                         \
                          @GLFW_SOURCE_DIR@/include/GLFW/glfw3.h       \
                          @GLFW_SOURCE_DIR@/include/GLFW/glfw3native.h \
+                         @GLFW_SOURCE_DIR@/docs/build.dox             \
                          @GLFW_SOURCE_DIR@/docs/compat.dox            \
                          @GLFW_SOURCE_DIR@/docs/context.dox           \
                          @GLFW_SOURCE_DIR@/docs/main.dox              \

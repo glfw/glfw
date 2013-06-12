@@ -131,7 +131,7 @@ const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
     if (_glfw_joyGetPosEx(joy, &ji) != JOYERR_NOERROR)
         return NULL;
 
-    while (*count < jc.wNumButtons)
+    while (*count < (int) jc.wNumButtons)
     {
         buttons[*count] = (unsigned char)
             (ji.dwButtons & (1UL << *count) ? GLFW_PRESS : GLFW_RELEASE);

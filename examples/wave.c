@@ -339,12 +339,12 @@ void cursor_position_callback(GLFWwindow* window, double x, double y)
 {
     if (locked)
     {
-        alpha += (x - cursorX) / 10.f;
-        beta += (y - cursorY) / 10.f;
+        alpha += (GLfloat) (x - cursorX) / 10.f;
+        beta += (GLfloat) (y - cursorY) / 10.f;
     }
 
-    cursorX = x;
-    cursorY = y;
+    cursorX = (int) x;
+    cursorY = (int) y;
 }
 
 

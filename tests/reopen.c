@@ -113,7 +113,7 @@ int main(int argc, char** argv)
     int count = 0;
     GLFWwindow* window;
 
-    srand(time(NULL));
+    srand((unsigned int) time(NULL));
 
     glfwSetErrorCallback(error_callback);
 

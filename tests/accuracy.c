@@ -113,8 +113,8 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         glBegin(GL_LINES);
-        glVertex2f(0.f, (GLfloat) window_height - cursor_y);
-        glVertex2f((GLfloat) window_width, (GLfloat) window_height - cursor_y);
+        glVertex2f(0.f, (GLfloat) (window_height - cursor_y));
+        glVertex2f((GLfloat) window_width, (GLfloat) (window_height - cursor_y));
         glVertex2f((GLfloat) cursor_x, 0.f);
         glVertex2f((GLfloat) cursor_x, (GLfloat) window_height);
         glEnd();

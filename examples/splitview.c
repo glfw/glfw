@@ -385,18 +385,18 @@ static void cursorPosFun(GLFWwindow* window, double x, double y)
     switch (active_view)
     {
         case 1:
-            rot_x += (int) y - ypos;
-            rot_z += (int) x - xpos;
+            rot_x += (int) (y - ypos);
+            rot_z += (int) (x - xpos);
             do_redraw = 1;
             break;
         case 3:
-            rot_x += (int) y - ypos;
-            rot_y += (int) x - xpos;
+            rot_x += (int) (y - ypos);
+            rot_y += (int) (x - xpos);
             do_redraw = 1;
             break;
         case 4:
-            rot_y += (int) x - xpos;
-            rot_z += (int) y - ypos;
+            rot_y += (int) (x - xpos);
+            rot_z += (int) (y - ypos);
             do_redraw = 1;
             break;
         default:

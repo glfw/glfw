@@ -328,7 +328,7 @@ int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWfbconfig* fbconfig)
 {
     int attribs[40];
-    int pixelFormat;
+    int pixelFormat = 0;
     PIXELFORMATDESCRIPTOR pfd;
     HGLRC share = NULL;
 

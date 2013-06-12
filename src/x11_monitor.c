@@ -187,6 +187,12 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             RROutput output;
 
             ci = XRRGetCrtcInfo(_glfw.x11.display, sr, sr->crtcs[i]);
+            if (ci->noutput == 0)
+            {
+                XRRFreeCrtcInfo(ci);
+                continue;
+            }
+
             output = ci->outputs[0];
 
             for (j = 0;  j < ci->noutput;  j++)

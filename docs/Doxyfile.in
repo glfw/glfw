@@ -668,7 +668,17 @@ WARN_LOGFILE           = @GLFW_BINARY_DIR@/docs/warnings.txt
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = @GLFW_DOC_HEADERS@ @GLFW_SOURCE_DIR@/include/GLFW/ @GLFW_SOURCE_DIR@/docs/
+INPUT                  = @GLFW_INTERNAL_DOCS@                         \
+                         @GLFW_SOURCE_DIR@/include/GLFW/glfw3.h       \
+                         @GLFW_SOURCE_DIR@/include/GLFW/glfw3native.h \
+                         @GLFW_SOURCE_DIR@/docs/compat.dox            \
+                         @GLFW_SOURCE_DIR@/docs/context.dox           \
+                         @GLFW_SOURCE_DIR@/docs/main.dox              \
+                         @GLFW_SOURCE_DIR@/docs/monitor.dox           \
+                         @GLFW_SOURCE_DIR@/docs/moving.dox            \
+                         @GLFW_SOURCE_DIR@/docs/news.dox              \
+                         @GLFW_SOURCE_DIR@/docs/quick.dox             \
+                         @GLFW_SOURCE_DIR@/docs/window.dox
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is

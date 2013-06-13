@@ -70,6 +70,7 @@ typedef struct _GLFWwindowNS
     id	            delegate;
     id              view;
     unsigned int    modifierFlags;
+    GLboolean       cursorHidden;
 } _GLFWwindowNS;
 
 
@@ -107,8 +108,6 @@ typedef struct _GLFWlibraryNS
     id              delegate;
     id              autoreleasePool;
     id              cursor;
-
-    GLboolean       cursorHidden;
 
     char*           clipboardString;
 

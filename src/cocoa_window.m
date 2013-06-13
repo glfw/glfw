@@ -604,7 +604,8 @@ static int translateKey(unsigned int key)
 - (void)resetCursorRects
 {
     [self discardCursorRects];
-    [self addCursorRect:[self bounds] cursor:_glfw.ns.cursor];
+    if (window->ns.cursorHidden)
+        [self addCursorRect:[self bounds] cursor:_glfw.ns.cursor];
 }
 
 @end
@@ -821,7 +822,7 @@ static GLboolean createWindow(_GLFWwindow* window,
     [window->ns.object setContentView:window->ns.view];
     [window->ns.object setDelegate:window->ns.delegate];
     [window->ns.object setAcceptsMouseMovedEvents:YES];
-    [window->ns.object disableCursorRects];
+    [window->ns.object enableCursorRects];
     [window->ns.object center];
 
     if ([window->ns.object respondsToSelector:@selector(setRestorable:)])
@@ -1022,37 +1023,17 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
-    if (mode == GLFW_CURSOR_HIDDEN)
-    {
-        [window->ns.object enableCursorRects];
-        [window->ns.object invalidateCursorRectsForView:window->ns.view];
-    }
+    if (mode == GLFW_CURSOR_NORMAL)
+        window->ns.cursorHidden = GL_FALSE;
     else
-    {
-        [window->ns.object disableCursorRects];
-        [window->ns.object invalidateCursorRectsForView:window->ns.view];
-    }
+        window->ns.cursorHidden = GL_TRUE;
+
+    [window->ns.object invalidateCursorRectsForView:window->ns.view];
 
     if (mode == GLFW_CURSOR_DISABLED)
-    {
         CGAssociateMouseAndMouseCursorPosition(false);
-
-        if (!_glfw.ns.cursorHidden)
-        {
-            [NSCursor hide];
-            _glfw.ns.cursorHidden = GL_TRUE;
-        }
-    }
     else
-    {
         CGAssociateMouseAndMouseCursorPosition(true);
-
-        if (_glfw.ns.cursorHidden)
-        {
-            [NSCursor unhide];
-            _glfw.ns.cursorHidden = GL_FALSE;
-        }
-    }
 }
 
 

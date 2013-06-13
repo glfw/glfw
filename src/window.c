@@ -470,10 +470,7 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* handle, int width, int height)
     _GLFW_REQUIRE_INIT();
 
     if (window->iconified)
-    {
-        // TODO: Figure out if this is an error
         return;
-    }
 
     if (window->monitor)
     {

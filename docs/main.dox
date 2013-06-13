@@ -17,6 +17,4 @@ If you have used GLFW 2.x in the past, there is a
 [transition guide](@ref moving) that explains what has changed and how to update
 existing code to use the new API.
 
-As this is still unfinished software, there are still [a number of bugs](@ref bug).
-
 */

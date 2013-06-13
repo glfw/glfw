@@ -117,6 +117,12 @@ Windows now have a callback for focus events, which is set with @ref
 glfwSetWindowFocusCallback.
 
 
+@subsection news_30_enterleave Cursor enter/leave callback
+
+Each window now has a callback for when the mouse cursor enters or leaves its
+client area, which is set with @ref glfwSetCursorEnterCallback.
+
+
 @subsection news_30_wndtitle Initial window title
 
 The title of a window is now specified at creation time, as one of the arguments

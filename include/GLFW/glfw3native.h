@@ -60,8 +60,8 @@ extern "C" {
  *  * `GLFW_EXPOSE_NATIVE_GLX`
  *  * `GLFW_EXPOSE_NATIVE_EGL`
  *
- *  These macros select which of the native access functions are declared and
- *  which platform-specific headers to include.  It is then up your (by
+ *  These macros select which of the native access functions that are declared
+ *  and which platform-specific headers to include.  It is then up your (by
  *  definition platform-specific) code to handle which of these should be
  *  defined.
  */

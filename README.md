@@ -1,4 +1,4 @@
-# GLFW 3.0.1
+# GLFW
 
 ## Introduction
 

@@ -98,7 +98,7 @@ CMake.
 See the [GLFW 3.0 documentation](http://www.glfw.org/docs/3.0/).
 
 
-## Changes for version 3.0.1
+## Changelog
 
 
 ## Contact

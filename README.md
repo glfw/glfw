@@ -100,6 +100,9 @@ See the [GLFW 3.0 documentation](http://www.glfw.org/docs/3.0/).
 
 ## Changelog
 
+ - [Win32] Bugfix: Context creation was attempted even if no valid pixel formats
+                   had been found
+
 
 ## Contact
 

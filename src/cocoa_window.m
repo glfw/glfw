@@ -32,7 +32,6 @@
 // Needed for _NSGetProgname
 #include <crt_externs.h>
 
-
 // Enter fullscreen mode
 //
 static void enterFullscreenMode(_GLFWwindow* window)
@@ -112,7 +111,11 @@ static void centerCursor(_GLFWwindow *window)
     [window->nsgl.context update];
 
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 1070
+	  const NSRect fbRect = contentRect;
+#else
+  	const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+#endif
 
     _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
     _glfwInputWindowSize(window, contentRect.size.width, contentRect.size.height);
@@ -525,7 +528,11 @@ static int translateKey(unsigned int key)
 - (void)viewDidChangeBackingProperties
 {
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 1070
+  	const NSRect fbRect = contentRect;
+#else
+  	const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+#endif
 
     _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
 }
@@ -814,8 +821,10 @@ static GLboolean createWindow(_GLFWwindow* window,
     }
 
     window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
-
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 1070
+#else
     [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
+#endif
 
     [window->ns.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
     [window->ns.object setContentView:window->ns.view];
@@ -823,9 +832,12 @@ static GLboolean createWindow(_GLFWwindow* window,
     [window->ns.object setAcceptsMouseMovedEvents:YES];
     [window->ns.object disableCursorRects];
     [window->ns.object center];
-
+	
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 1070
+#else
     if ([window->ns.object respondsToSelector:@selector(setRestorable:)])
         [window->ns.object setRestorable:NO];
+#endif
 
     return GL_TRUE;
 }

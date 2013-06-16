@@ -69,6 +69,16 @@ static float transformY(float y)
     return height - y;
 }
 
+// Returns the backing rect of the specified window
+//
+static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
+{
+    if ([window->ns.view respondsToSelector:@selector(convertRectToBacking:)])
+        return [window->ns.view convertRectToBacking:contentRect];
+    else
+        return contentRect;
+}
+
 
 //------------------------------------------------------------------------
 // Delegate for window related notifications
@@ -112,7 +122,7 @@ static void centerCursor(_GLFWwindow *window)
     [window->nsgl.context update];
 
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+    const NSRect fbRect = convertRectToBacking(window, contentRect);
 
     _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
     _glfwInputWindowSize(window, contentRect.size.width, contentRect.size.height);
@@ -525,7 +535,7 @@ static int translateKey(unsigned int key)
 - (void)viewDidChangeBackingProperties
 {
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+    const NSRect fbRect = convertRectToBacking(window, contentRect);
 
     _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
 }
@@ -815,7 +825,8 @@ static GLboolean createWindow(_GLFWwindow* window,
 
     window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
 
-    [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
+    if ([window->ns.view respondsToSelector:@selector(setWantsBestResolutionOpenGLSurface:)])
+        [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
 
     [window->ns.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
     [window->ns.object setContentView:window->ns.view];
@@ -943,7 +954,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+    const NSRect fbRect = convertRectToBacking(window, contentRect);
 
     if (width)
         *width = (int) fbRect.size.width;

@@ -13,6 +13,7 @@ set(LIB_SUFFIX "" CACHE STRING "Takes an empty string or 64. Directory where lib
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(GLFW_INSTALL "Generate installation target" ON)
 
 set(DOXYGEN_SKIP_DOT TRUE)
 find_package(Doxygen)
@@ -389,45 +390,41 @@ configure_file(${GLFW_SOURCE_DIR}/docs/Doxyfile.in
 configure_file(${GLFW_SOURCE_DIR}/src/config.h.in 
                ${GLFW_BINARY_DIR}/src/config.h @ONLY)
 
-#--------------------------------------------------------------------
-# Install the public headers
-# The src directory's CMakeLists.txt file installs the library
-#--------------------------------------------------------------------
-install(DIRECTORY include/GLFW DESTINATION include 
-        FILES_MATCHING PATTERN glfw3.h PATTERN glfw3native.h)
-
-#--------------------------------------------------------------------
-# Create and install glfwConfig.cmake and glfwConfigVersion files
-#--------------------------------------------------------------------
 configure_file(${GLFW_SOURCE_DIR}/src/glfwConfig.cmake.in
                ${GLFW_BINARY_DIR}/src/glfwConfig.cmake @ONLY)
+
 configure_file(${GLFW_SOURCE_DIR}/src/glfwConfigVersion.cmake.in
                ${GLFW_BINARY_DIR}/src/glfwConfigVersion.cmake @ONLY)
 
-install(FILES ${GLFW_BINARY_DIR}/src/glfwConfig.cmake
-              ${GLFW_BINARY_DIR}/src/glfwConfigVersion.cmake
-		DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
-
-if (UNIX)
-    install(EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
-endif()
-
-#--------------------------------------------------------------------
-# Create and install pkg-config file on supported platforms
-#--------------------------------------------------------------------
 if (UNIX)
     configure_file(${GLFW_SOURCE_DIR}/src/glfw3.pc.in
                    ${GLFW_BINARY_DIR}/src/glfw3.pc @ONLY)
+endif()
 
-    install(FILES ${GLFW_BINARY_DIR}/src/glfw3.pc
-            DESTINATION lib${LIB_SUFFIX}/pkgconfig)
+#--------------------------------------------------------------------
+# Install files
+# The library is installed by src/CMakeLists.txt
+#--------------------------------------------------------------------
+if (GLFW_INSTALL)
+    install(DIRECTORY include/GLFW DESTINATION include 
+            FILES_MATCHING PATTERN glfw3.h PATTERN glfw3native.h)
+
+    install(FILES ${GLFW_BINARY_DIR}/src/glfwConfig.cmake
+                  ${GLFW_BINARY_DIR}/src/glfwConfigVersion.cmake
+            DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
+
+    if (UNIX)
+        install(EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
+        install(FILES ${GLFW_BINARY_DIR}/src/glfw3.pc
+                DESTINATION lib${LIB_SUFFIX}/pkgconfig)
+    endif()
 endif()
 
 #--------------------------------------------------------------------
 # Uninstall operation
 # Don't generate this target if a higher-level project already has
 #--------------------------------------------------------------------
-if (NOT TARGET uninstall)
+if (GLFW_INSTALL AND NOT TARGET uninstall)
     configure_file(${GLFW_SOURCE_DIR}/cmake_uninstall.cmake.in
                    ${GLFW_BINARY_DIR}/cmake_uninstall.cmake IMMEDIATE @ONLY)
 

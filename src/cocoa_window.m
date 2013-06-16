@@ -32,7 +32,6 @@
 // Needed for _NSGetProgname
 #include <crt_externs.h>
 
-
 // Enter fullscreen mode
 //
 static void enterFullscreenMode(_GLFWwindow* window)
@@ -112,7 +111,9 @@ static void centerCursor(_GLFWwindow *window)
     [window->nsgl.context update];
 
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+  	const NSRect fbRect = [window->ns.view respondsToSelector:@selector(convertRectToBacking:)]
+	      ? [window->ns.view convertRectToBacking:contentRect]
+      	: contentRect;
 
     _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
     _glfwInputWindowSize(window, contentRect.size.width, contentRect.size.height);
@@ -524,8 +525,10 @@ static int translateKey(unsigned int key)
 
 - (void)viewDidChangeBackingProperties
 {
-    const NSRect contentRect = [window->ns.view frame];
-    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+  	const NSRect contentRect = [window->ns.view frame];
+  	const NSRect fbRect = [window->ns.view respondsToSelector:@selector(convertRectToBacking:)]
+  	  	? [window->ns.view convertRectToBacking:contentRect]
+  		  : contentRect;
 
     _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
 }
@@ -814,8 +817,9 @@ static GLboolean createWindow(_GLFWwindow* window,
     }
 
     window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
-
-    [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
+	
+	  if ([window->ns.view respondsToSelector:@selector(setWantsBestResolutionOpenGLSurface:)])
+        [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
 
     [window->ns.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
     [window->ns.object setContentView:window->ns.view];
@@ -823,7 +827,7 @@ static GLboolean createWindow(_GLFWwindow* window,
     [window->ns.object setAcceptsMouseMovedEvents:YES];
     [window->ns.object disableCursorRects];
     [window->ns.object center];
-
+	
     if ([window->ns.object respondsToSelector:@selector(setRestorable:)])
         [window->ns.object setRestorable:NO];
 

@@ -688,14 +688,6 @@ static NSString* findAppName(void)
         }
     }
 
-    // If we get here, the application is unbundled
-    ProcessSerialNumber psn = { 0, kCurrentProcess };
-    TransformProcessType(&psn, kProcessTransformToForegroundApplication);
-
-    // Having the app in front of the terminal window is also generally
-    // handy.  There is an NSApplication API to do this, but...
-    SetFrontProcess(&psn);
-
     char** progname = _NSGetProgname();
     if (progname && *progname)
         return [NSString stringWithUTF8String:*progname];
@@ -780,6 +772,14 @@ static GLboolean initializeAppKit(void)
 
     // Implicitly create shared NSApplication instance
     [GLFWApplication sharedApplication];
+
+    // If we get here, the application is unbundled
+    ProcessSerialNumber psn = { 0, kCurrentProcess };
+    TransformProcessType(&psn, kProcessTransformToForegroundApplication);
+
+    // Having the app in front of the terminal window is also generally
+    // handy.  There is an NSApplication API to do this, but...
+    SetFrontProcess(&psn);
 
 #if defined(_GLFW_USE_MENUBAR)
     // Menu bar setup must go between sharedApplication above and

@@ -106,6 +106,8 @@ See the [GLFW 3.0 documentation](http://www.glfw.org/docs/3.0/).
                    coordinates
  - [Cocoa] Bugfix: Messages not supported on Mac OS X 10.6 were used without
                    tests for precence
+ - [Cocoa] Bugfix: Process transformation was not performed if menu bar creation
+                   was disabled
  - [Win32] Bugfix: Context creation was attempted even if no valid pixel formats
                    had been found
  - [X11] Bugfix: Duplicate window position and window and framebuffer size

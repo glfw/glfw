@@ -942,7 +942,13 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
-    _glfwPlatformGetWindowSize(window, width, height);
+    const NSRect contentRect = [window->ns.view frame];
+    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+
+    if (width)
+        *width = (int) fbRect.size.width;
+    if (height)
+        *height = (int) fbRect.size.height;
 }
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)

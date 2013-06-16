@@ -100,6 +100,8 @@ See the [GLFW 3.0 documentation](http://www.glfw.org/docs/3.0/).
 
 ## Changelog
 
+ - Bugfix: The wrong name was used for the CMake variable for the Xxf86vm
+           library
  - [Win32] Bugfix: Context creation was attempted even if no valid pixel formats
                    had been found
 
@@ -134,6 +136,7 @@ skills.
  - Matt Arsenault
  - Keith Bauer
  - John Bartholomew
+ - Niklas Behrens
  - Niklas Bergström
  - blanco
  - Lambert Clara

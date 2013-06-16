@@ -2006,14 +2006,14 @@ GLFWAPI int glfwJoystickPresent(int joy);
  */
 GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count);
 
-/*! @brief Returns the values of all buttons of the specified joystick.
+/*! @brief Returns the state of all buttons of the specified joystick.
  *
- *  This function returns the values of all buttons of the specified joystick.
+ *  This function returns the state of all buttons of the specified joystick.
  *
  *  @param[in] joy The joystick to query.
  *  @param[out] count Where to store the size of the returned array.  This is
  *  set to zero if an error occurred.
- *  @return An array of axis values, or `NULL` if the joystick is not present.
+ *  @return An array of button states, or `NULL` if the joystick is not present.
  *
  *  @note The returned array is allocated and freed by GLFW.  You should not
  *  free it yourself.

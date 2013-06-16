@@ -199,11 +199,10 @@ if (_GLFW_X11)
     list(APPEND glfw_INCLUDE_DIRS ${X11_xf86vmode_INCLUDE_PATH})
     set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xxf86vm")
 
-    # NOTE: This is a workaround for CMake bug 0006976 (missing
-    # X11_xf86vmode_LIB variable)
-    if (X11_xf86vmode_LIB)
-        list(APPEND glfw_LIBRARIES ${X11_xf86vmode_LIB})
+    if (X11_Xxf86vm_LIB)
+        list(APPEND glfw_LIBRARIES ${X11_Xxf86vm_LIB})
     else()
+        # Backwards compatibility (see CMake bug 0006976)
         list(APPEND glfw_LIBRARIES Xxf86vm)
     endif()
 

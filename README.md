@@ -104,6 +104,8 @@ See the [GLFW 3.0 documentation](http://www.glfw.org/docs/3.0/).
            library
  - [Win32] Bugfix: Context creation was attempted even if no valid pixel formats
                    had been found
+ - [X11] Bugfix: Duplicate window position and window and framebuffer size
+                 events were reported
 
 
 ## Contact

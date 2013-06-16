@@ -86,6 +86,10 @@ typedef struct _GLFWwindowX11
     GLboolean       cursorGrabbed;    // True if cursor is currently grabbed
     GLboolean       cursorHidden;     // True if cursor is currently hidden
 
+    // Cached position and size used to filter out duplicate events
+    int             width, height;
+    int             xpos, ypos;
+
     // The last received cursor position, regardless of source
     double          cursorPosX, cursorPosY;
     // The last position the cursor was warped to by GLFW

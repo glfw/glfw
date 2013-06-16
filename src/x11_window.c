@@ -291,6 +291,9 @@ static GLboolean createWindow(_GLFWwindow* window,
     XRRSelectInput(_glfw.x11.display, window->x11.handle,
                    RRScreenChangeNotifyMask);
 
+    _glfwPlatformGetWindowPos(window, &window->x11.xpos, &window->x11.ypos);
+    _glfwPlatformGetWindowSize(window, &window->x11.width, &window->x11.height);
+
     return GL_TRUE;
 }
 
@@ -635,17 +638,31 @@ static void processEvent(XEvent *event)
 
         case ConfigureNotify:
         {
-            _glfwInputFramebufferSize(window,
-                                      event->xconfigure.width,
-                                      event->xconfigure.height);
+            if (event->xconfigure.width != window->x11.width ||
+                event->xconfigure.height != window->x11.height)
+            {
+                _glfwInputFramebufferSize(window,
+                                          event->xconfigure.width,
+                                          event->xconfigure.height);
 
-            _glfwInputWindowSize(window,
-                                 event->xconfigure.width,
-                                 event->xconfigure.height);
+                _glfwInputWindowSize(window,
+                                     event->xconfigure.width,
+                                     event->xconfigure.height);
 
-            _glfwInputWindowPos(window,
-                                event->xconfigure.x,
-                                event->xconfigure.y);
+                window->x11.width = event->xconfigure.width;
+                window->x11.height = event->xconfigure.height;
+            }
+
+            if (event->xconfigure.x != window->x11.xpos ||
+                event->xconfigure.y != window->x11.ypos)
+            {
+                _glfwInputWindowPos(window,
+                                    event->xconfigure.x,
+                                    event->xconfigure.y);
+
+                window->x11.xpos = event->xconfigure.x;
+                window->x11.ypos = event->xconfigure.y;
+            }
 
             break;
         }

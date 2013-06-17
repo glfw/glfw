@@ -41,7 +41,7 @@ extern "C" {
 
 /*! @defgroup native Native access
  *
- *  **By using the native API, you assert that you know what you are doing and
+ *  **By using the native API, you assert that you know what you're doing and
  *  how to fix problems caused by using it.  If you don't, you shouldn't be
  *  using it.**
  *

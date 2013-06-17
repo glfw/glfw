@@ -45,21 +45,22 @@ extern "C" {
  */
 /*! @defgroup error Error handling
  */
-/*! @defgroup gamma Gamma ramp support
- */
 /*! @defgroup init Initialization and version information
  */
 /*! @defgroup input Input handling
  */
 /*! @defgroup monitor Monitor handling
+ *
+ *  This is the reference documentation for monitor related functions and types.
+ *  For more information, see the @ref monitor.
  */
 /*! @defgroup time Time input
  */
 /*! @defgroup window Window handling
  *
- *  This is the reference documentation for the window handling API, including
- *  creation, deletion and event polling.  For more information, see the
- *  [article on window handling](@ref window).
+ *  This is the reference documentation for window related functions and types,
+ *  including creation, deletion and event polling.  For more information, see
+ *  the @ref window.
  */
 
 
@@ -818,7 +819,7 @@ typedef struct
  *
  *  @sa glfwGetGammaRamp glfwSetGammaRamp
  *
- *  @ingroup gamma
+ *  @ingroup monitor
  */
 typedef struct
 {
@@ -1124,7 +1125,7 @@ GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor);
  *  @param[in] monitor The monitor whose gamma ramp to set.
  *  @param[in] gamma The desired exponent.
  *
- *  @ingroup gamma
+ *  @ingroup monitor
  */
 GLFWAPI void glfwSetGamma(GLFWmonitor* monitor, float gamma);
 
@@ -1138,7 +1139,7 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* monitor, float gamma);
  *  @note The value arrays of the returned ramp are allocated and freed by GLFW.
  *  You should not free them yourself.
  *
- *  @ingroup gamma
+ *  @ingroup monitor
  */
 GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
 
@@ -1151,7 +1152,7 @@ GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
  *
  *  @note Gamma ramp sizes other than 256 are not supported by all hardware.
  *
- *  @ingroup gamma
+ *  @ingroup monitor
  */
 GLFWAPI void glfwSetGammaRamp(GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 

@@ -49,12 +49,18 @@ const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 @section monitor_size Monitor physical size
 
 The physical size in millimetres of a monitor, or an approximation of it, can be
-retrieved with @ref glfwGetMonitorPhysicalSize.  This can, for example, be used
-together with the current video mode to calculate DPI.
+retrieved with @ref glfwGetMonitorPhysicalSize.  
 
 @code
 int widthMM, heightMM;
 glfwGetMonitorPhysicalSize(monitor, &widthMM, &heightMM);
+@endcode
+
+This can, for example, be used together with the current video mode to calculate
+the DPI of a monitor. 
+
+@code
+const double dpi = mode->width / (widthMM / 25.4);
 @endcode
 
 

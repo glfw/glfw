@@ -366,23 +366,6 @@ else()
 endif()
 
 #--------------------------------------------------------------------
-# Add subdirectories
-#--------------------------------------------------------------------
-add_subdirectory(src)
-
-if (GLFW_BUILD_EXAMPLES)
-    add_subdirectory(examples)
-endif()
-
-if (GLFW_BUILD_TESTS)
-    add_subdirectory(tests)
-endif()
-
-if (DOXYGEN_FOUND)
-    add_subdirectory(docs)
-endif()
-
-#--------------------------------------------------------------------
 # Create generated files
 #--------------------------------------------------------------------
 configure_file(${GLFW_SOURCE_DIR}/docs/Doxyfile.in
@@ -400,6 +383,23 @@ configure_file(${GLFW_SOURCE_DIR}/src/glfwConfigVersion.cmake.in
 if (UNIX)
     configure_file(${GLFW_SOURCE_DIR}/src/glfw3.pc.in
                    ${GLFW_BINARY_DIR}/src/glfw3.pc @ONLY)
+endif()
+
+#--------------------------------------------------------------------
+# Add subdirectories
+#--------------------------------------------------------------------
+add_subdirectory(src)
+
+if (GLFW_BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()
+
+if (GLFW_BUILD_TESTS)
+    add_subdirectory(tests)
+endif()
+
+if (DOXYGEN_FOUND)
+    add_subdirectory(docs)
 endif()
 
 #--------------------------------------------------------------------

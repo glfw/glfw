@@ -67,10 +67,14 @@ endif()
 find_package(Threads REQUIRED)
 
 #--------------------------------------------------------------------
-# Enable all warnings on GCC, regardless of OS
+# Set GCC-specific flags
 #--------------------------------------------------------------------
 if (CMAKE_COMPILER_IS_GNUCC)
     add_definitions(-Wall)
+
+    if (UNIX AND BUILD_SHARED_LIBS)
+        add_definitions(-fvisibility=hidden)
+    endif()
 endif()
 
 #--------------------------------------------------------------------
@@ -78,9 +82,6 @@ endif()
 #--------------------------------------------------------------------
 if (BUILD_SHARED_LIBS)
     set(_GLFW_BUILD_DLL 1)
-    if (UNIX)
-        add_definitions(-fvisibility=hidden)
-    endif()
 endif()
 
 #--------------------------------------------------------------------

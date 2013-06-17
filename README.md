@@ -11,8 +11,7 @@ API changes.
 
 If you are new to GLFW, you may find the
 [introductory tutorial](http://www.glfw.org/docs/3.0/quick.html) for GLFW
-3 useful.  If
-you have used GLFW 2 in the past, there is a
+3 useful.  If you have used GLFW 2 in the past, there is a
 [transition guide](http://www.glfw.org/docs/3.0/moving.html) for moving to the
 GLFW 3 API.
 
@@ -70,8 +69,8 @@ directory of bundled applications to the `Contents/Resources` directory.
 
 #### Windows specific options
 
-`USE_MSVC_RUNTIME_LIBRARY_DLL` determines whether to use the DLL version of the
-Visual C++ runtime library.
+`USE_MSVC_RUNTIME_LIBRARY_DLL` determines whether to use the DLL version or the
+static library version of the Visual C++ runtime library.
 
 
 #### EGL specific options
@@ -99,6 +98,8 @@ See the [GLFW 3.0 documentation](http://www.glfw.org/docs/3.0/).
 
 
 ## Changelog
+
+ - Bugfix: The `-Wall` flag was not used with Clang and other GCC compatibles
 
 
 ## Contact
@@ -167,7 +168,7 @@ skills.
  - Jeff Molofee
  - Jon Morton
  - Julian Møller
- - Ozzy at Orkysquad
+ - Ozzy
  - Peoro
  - Braden Pellett
  - Arturo J. Pérez

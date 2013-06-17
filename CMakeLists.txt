@@ -10,24 +10,26 @@ set(GLFW_VERSION "${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}")
 set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA}")
 set(LIB_SUFFIX "" CACHE STRING "Takes an empty string or 64. Directory where lib will be installed: lib or lib64")
 
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
-option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(GLFW_INSTALL "Generate installation target" ON)
-
-set(DOXYGEN_SKIP_DOT TRUE)
-find_package(Doxygen)
-
 option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
-if (GLFW_DOCUMENT_INTERNALS)
-    set(GLFW_INTERNAL_DOCS "${GLFW_SOURCE_DIR}/src/internal.h ${GLFW_SOURCE_DIR}/docs/internal.dox")
-endif()
 
 if (APPLE)
+    option(GLFW_BUILD_UNIVERSAL "Build GLFW as a Universal Binary" OFF)
     option(GLFW_USE_CHDIR "Make glfwInit chdir to Contents/Resources" ON)
     option(GLFW_USE_MENUBAR "Populate the menu bar on first window creation" ON)
 else()
     option(GLFW_USE_EGL "Use EGL for context creation" OFF)
+endif()
+
+if (MSVC)
+    option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON)
+endif()
+
+if (BUILD_SHARED_LIBS)
+    set(_GLFW_BUILD_DLL 1)
 endif()
 
 if (GLFW_USE_EGL)
@@ -66,22 +68,43 @@ endif()
 
 find_package(Threads REQUIRED)
 
+set(DOXYGEN_SKIP_DOT TRUE)
+find_package(Doxygen)
+
+if (GLFW_DOCUMENT_INTERNALS)
+    set(GLFW_INTERNAL_DOCS "${GLFW_SOURCE_DIR}/src/internal.h ${GLFW_SOURCE_DIR}/docs/internal.dox")
+endif()
+
 #--------------------------------------------------------------------
-# Set GCC-specific flags
+# Set compiler specific flags
 #--------------------------------------------------------------------
-if (CMAKE_COMPILER_IS_GNUCC)
+if (UNIX)
     add_definitions(-Wall)
 
-    if (UNIX AND BUILD_SHARED_LIBS)
+    if (BUILD_SHARED_LIBS)
         add_definitions(-fvisibility=hidden)
     endif()
 endif()
 
-#--------------------------------------------------------------------
-# Export shared library / dynamic library / DLL build option
-#--------------------------------------------------------------------
-if (BUILD_SHARED_LIBS)
-    set(_GLFW_BUILD_DLL 1)
+if (MSVC)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+
+    if (NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
+        foreach (flag CMAKE_C_FLAGS
+                        CMAKE_C_FLAGS_DEBUG
+                        CMAKE_C_FLAGS_RELEASE
+                        CMAKE_C_FLAGS_MINSIZEREL
+                        CMAKE_C_FLAGS_RELWITHDEBINFO)
+
+            if (${flag} MATCHES "/MD")
+                string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
+            endif()
+            if (${flag} MATCHES "/MDd")
+                string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
+            endif()
+
+        endforeach()
+    endif()
 endif()
 
 #--------------------------------------------------------------------
@@ -122,31 +145,10 @@ endif()
 # Use Win32 for window creation
 #--------------------------------------------------------------------
 if (_GLFW_WIN32)
-
-    if (MSVC)
-        option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON)
-
-        if (NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
-            foreach (flag CMAKE_C_FLAGS
-                          CMAKE_C_FLAGS_DEBUG
-                          CMAKE_C_FLAGS_RELEASE
-                          CMAKE_C_FLAGS_MINSIZEREL
-                          CMAKE_C_FLAGS_RELWITHDEBINFO)
-
-                if (${flag} MATCHES "/MD")
-                    string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
-                endif()
-                if (${flag} MATCHES "/MDd")
-                    string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
-                endif()
-
-            endforeach()
-        endif()
-    endif()
-
-    set(_GLFW_NO_DLOAD_WINMM ${BUILD_SHARED_LIBS})
-
+    # The DLL links against winmm; the static library loads it
+    # That way, both code paths receive testing
     if (BUILD_SHARED_LIBS)
+        set(_GLFW_NO_DLOAD_WINMM 1)
         list(APPEND glfw_LIBRARIES winmm)
     endif()
 endif()
@@ -244,16 +246,9 @@ if (_GLFW_GLX)
     include(CheckFunctionExists)
 
     set(CMAKE_REQUIRED_LIBRARIES ${OPENGL_gl_LIBRARY})
-
     check_function_exists(glXGetProcAddress _GLFW_HAS_GLXGETPROCADDRESS)
-
-    if (NOT _GLFW_HAS_GLXGETPROCADDRESS)
-        check_function_exists(glXGetProcAddressARB _GLFW_HAS_GLXGETPROCADDRESSARB)
-    endif()
-
-    if (NOT _GLFW_HAS_GLXGETPROCADDRESS AND NOT _GLFW_HAS_GLXGETPROCADDRESSARB)
-        check_function_exists(glXGetProcAddressEXT _GLFW_HAS_GLXGETPROCADDRESSEXT)
-    endif()
+    check_function_exists(glXGetProcAddressARB _GLFW_HAS_GLXGETPROCADDRESSARB)
+    check_function_exists(glXGetProcAddressEXT _GLFW_HAS_GLXGETPROCADDRESSEXT)
 
     if (NOT _GLFW_HAS_GLXGETPROCADDRESS AND
         NOT _GLFW_HAS_GLXGETPROCADDRESSARB AND
@@ -292,8 +287,6 @@ if (_GLFW_EGL)
     list(APPEND glfw_INCLUDE_DIRS ${EGL_INCLUDE_DIR})
     list(APPEND glfw_LIBRARIES ${EGL_LIBRARY})
 
-    set(CMAKE_REQUIRED_LIBRARIES ${EGL_LIBRARY})
-
     if (UNIX)
         set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} egl")
     endif()
@@ -319,8 +312,6 @@ endif()
 #--------------------------------------------------------------------
 if (_GLFW_COCOA AND _GLFW_NSGL)
         
-    option(GLFW_BUILD_UNIVERSAL "Build GLFW as a Universal Binary" OFF)
-
     if (GLFW_USE_MENUBAR)
         set(_GLFW_USE_MENUBAR 1)
     endif()
@@ -329,7 +320,6 @@ if (_GLFW_COCOA AND _GLFW_NSGL)
         set(_GLFW_USE_CHDIR 1)
     endif()
 
-    # Universal build
     if (GLFW_BUILD_UNIVERSAL)
         message(STATUS "Building GLFW as Universal Binaries")
         set(CMAKE_OSX_ARCHITECTURES i386;x86_64)
@@ -403,7 +393,7 @@ if (DOXYGEN_FOUND)
 endif()
 
 #--------------------------------------------------------------------
-# Install files
+# Install files other than the library
 # The library is installed by src/CMakeLists.txt
 #--------------------------------------------------------------------
 if (GLFW_INSTALL)
@@ -419,18 +409,15 @@ if (GLFW_INSTALL)
         install(FILES ${GLFW_BINARY_DIR}/src/glfw3.pc
                 DESTINATION lib${LIB_SUFFIX}/pkgconfig)
     endif()
-endif()
 
-#--------------------------------------------------------------------
-# Uninstall operation
-# Don't generate this target if a higher-level project already has
-#--------------------------------------------------------------------
-if (GLFW_INSTALL AND NOT TARGET uninstall)
-    configure_file(${GLFW_SOURCE_DIR}/cmake_uninstall.cmake.in
-                   ${GLFW_BINARY_DIR}/cmake_uninstall.cmake IMMEDIATE @ONLY)
+    # Only generate this target if no higher-level project already has
+    if (NOT TARGET uninstall)
+        configure_file(${GLFW_SOURCE_DIR}/cmake_uninstall.cmake.in
+                       ${GLFW_BINARY_DIR}/cmake_uninstall.cmake IMMEDIATE @ONLY)
 
-    add_custom_target(uninstall
-                      ${CMAKE_COMMAND} -P
-                      ${GLFW_BINARY_DIR}/cmake_uninstall.cmake)
+        add_custom_target(uninstall
+                          ${CMAKE_COMMAND} -P
+                          ${GLFW_BINARY_DIR}/cmake_uninstall.cmake)
+    endif()
 endif()
 

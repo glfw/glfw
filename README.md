@@ -6,8 +6,8 @@ GLFW is a free, Open Source, portable library for OpenGL and OpenGL ES
 application development.  It provides a simple, platform-independent API for
 creating windows and contexts, reading input, handling events, etc.
 
-Version 3.0.1 adds fixes for a number of bugs that together affect all supported
-platforms.  As this is a patch release, there are no API changes.
+Version 3.0.2 is *not yet described*.  As this is a patch release, there are no
+API changes.
 
 If you are new to GLFW, you may find the
 [introductory tutorial](http://www.glfw.org/docs/3.0/quick.html) for GLFW
@@ -99,19 +99,6 @@ See the [GLFW 3.0 documentation](http://www.glfw.org/docs/3.0/).
 
 
 ## Changelog
-
- - Bugfix: The wrong name was used for the CMake variable for the Xxf86vm
-           library
- - [Cocoa] Bugfix: `glfwGetFramebufferSize` return the size in screen
-                   coordinates
- - [Cocoa] Bugfix: Messages not supported on Mac OS X 10.6 were used without
-                   tests for precence
- - [Cocoa] Bugfix: Process transformation was not performed if menu bar creation
-                   was disabled
- - [Win32] Bugfix: Context creation was attempted even if no valid pixel formats
-                   had been found
- - [X11] Bugfix: Duplicate window position and window and framebuffer size
-                 events were reported
 
 
 ## Contact

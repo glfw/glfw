@@ -225,7 +225,7 @@ extern "C" {
  *  API changes.
  *  @ingroup init
  */
-#define GLFW_VERSION_REVISION       1
+#define GLFW_VERSION_REVISION       2
 /*! @} */
 
 /*! @name Key and button actions

@@ -100,6 +100,7 @@ See the [GLFW 3.0 documentation](http://www.glfw.org/docs/3.0/).
 ## Changelog
 
  - Bugfix: The `-Wall` flag was not used with Clang and other GCC compatibles
+ - Bugfix: The default for `GLFW_ALPHA_BITS` was set to zero
 
 
 ## Contact
@@ -184,6 +185,7 @@ skills.
  - Bradley Smith
  - Julian Squires
  - Johannes Stein
+ - Justin Stoecker
  - Nathan Sweet
  - TTK-Bandit
  - Sergey Tikhomirov

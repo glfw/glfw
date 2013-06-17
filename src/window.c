@@ -284,6 +284,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.redBits     = 8;
     _glfw.hints.greenBits   = 8;
     _glfw.hints.blueBits    = 8;
+    _glfw.hints.alphaBits   = 8;
     _glfw.hints.depthBits   = 24;
     _glfw.hints.stencilBits = 8;
 }

@@ -210,7 +210,7 @@ static GLboolean chooseFBConfigs(const _GLFWwndconfig* wndconfig,
 //
 int _glfwInitContextAPI(void)
 {
-    _glfw.egl.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
+    _glfw.egl.display = eglGetDisplay((EGLNativeDisplayType)_GLFW_EGL_NATIVE_DISPLAY);
     if (_glfw.egl.display == EGL_NO_DISPLAY)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
@@ -464,7 +464,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
         {
             window->egl.surface = eglCreateWindowSurface(_glfw.egl.display,
                                                          window->egl.config,
-                                                         _GLFW_EGL_NATIVE_WINDOW,
+                                                         (EGLNativeWindowType)_GLFW_EGL_NATIVE_WINDOW,
                                                          NULL);
             if (window->egl.surface == EGL_NO_SURFACE)
             {

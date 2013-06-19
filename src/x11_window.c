@@ -505,8 +505,7 @@ static void processEvent(XEvent *event)
         window = _glfwFindWindowByHandle(event->xany.window);
         if (window == NULL)
         {
-            // This is either an event for a destroyed GLFW window or an event
-            // of a type not currently supported by GLFW
+            // This is an event for a window that has already been destroyed
             return;
         }
     }

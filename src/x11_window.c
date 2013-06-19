@@ -1026,15 +1026,15 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
     if (window->monitor)
     {
+        _glfwSetVideoMode(window->monitor, &window->videoMode);
+
         if (window->x11.overrideRedirect)
         {
             GLFWvidmode mode;
             _glfwPlatformGetVideoMode(window->monitor, &mode);
             XResizeWindow(_glfw.x11.display, window->x11.handle,
-                          window->videoMode.width, window->videoMode.height);
+                          mode.width, mode.height);
         }
-
-        _glfwSetVideoMode(window->monitor, &window->videoMode);
     }
     else
         XResizeWindow(_glfw.x11.display, window->x11.handle, width, height);

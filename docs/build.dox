@@ -73,19 +73,7 @@ to the compiler that the GLFW functions will be coming from another executable.
 
 @section build_link Link with the right libraries
 
-@subsection build_link_cmake Using GLFW from CMake
-
-The `GLFW_LIBRARIES` cache variable contains all link-time dependencies of GLFW
-as it is currently configured, so to link against GLFW simply do:
-
-    target_link_libraries(myapp glfw ${GLFW_LIBRARIES})
-
-Note that this does not include GLU, as GLFW does not use it.  If your
-application needs GLU, you can add it to the list of dependencies with the
-`OPENGL_glu_LIBRARY` cache variable.
-
-
-@subsection build_link_win32 Windows
+@subsection build_link_win32 With any toolchain on Windows
 
 The static version of the GLFW library is named `glfw3`.  When using this
 version, it is also necessary to link with some libraries that GLFW uses.
@@ -104,12 +92,72 @@ dependencies, but you still have to link against `opengl32` if your program uses
 OpenGL and `glu32` if it uses GLU.
 
 
-@subsection build_link_unix Unix with X11
+@subsection build_link_cmake With CMake and GLFW source
+
+You can use the GLFW source tree directly from a project that uses CMake.  This
+way, GLFW will be built along with your application as needed.
+
+Firstly, add the root directory of the GLFW source tree to your project.  This
+will add the `glfw` target and the necessary cache variables to your project.
+
+    add_subdirectory(path/to/glfw)
+
+To be able to include the GLFW header from your code, you need to tell the
+compiler where to find it.
+
+    include_directories(path/to/glfw/include)
+
+Once GLFW has been added to the project, the `GLFW_LIBRARIES` cache variable
+contains all link-time dependencies of GLFW as it is currently configured.  To
+link against GLFW, link against them and the `glfw` target.
+
+    target_link_libraries(myapp glfw ${GLFW_LIBRARIES})
+
+Note that `GLFW_LIBRARIES` does not include GLU, as GLFW does not use it.  If
+your application needs GLU, you can add it to the list of dependencies with the
+`OPENGL_glu_LIBRARY` cache variable, which is implicitly created when the GLFW
+CMake files look for OpenGL.
+
+    target_link_libraries(myapp glfw ${OPENGL_glu_LIBRARY} ${GLFW_LIBRARIES})
+
+
+@subsection build_link_cmake With CMake on Unix and installed GLFW binaries
+
+CMake can import settings from pkg-config, which GLFW supports.  When you
+installed GLFW, the pkg-config file `glfw3.pc` was installed along with it.
+
+First you need to find the PkgConfig package.  If this fails, you may need to
+install the pkg-config package for your distribution.
+
+    find_package(PkgConfig REQUIRED)
+
+This creates the CMake commands to find pkg-config packages.  Then you need to
+find the GLFW package.
+
+    pkg_search_module(GLFW REQUIRED glfw3)
+
+This creates the CMake variables you need to use GLFW.  To be able to include
+the GLFW header, you need to tell your compiler where it is.
+
+    include_directories(${GLFW_INCLUDE_DIRS})
+
+You also need to link against the correct libraries.  If you are using the
+shared library version of GLFW, use the `GLFW_LIBRARIES` variable.
+
+    target_link_libraries(simple ${GLFW_LIBRARIES})
+
+
+If you are using the static library version of GLFW, use the
+`GLFW_STATIC_LIBRARIES` variable.
+
+    target_link_libraries(simple ${GLFW_STATIC_LIBRARIES})
+
+
+@subsection build_link_pkgconfig With pkg-config on OS X or other Unix
 
 GLFW supports [pkg-config](http://www.freedesktop.org/wiki/Software/pkg-config/),
-and `glfw3.pc` file is generated when the library is built and installed along
-with it.  You can use it without installation using the `PKG_CONFIG_PATH`
-environment variable.  See the documentation for pkg-config for more details.
+and `glfw3.pc` file is generated when the GLFW library is built and installed
+along with it.  
 
 A typical compile and link command-line when using the static may look like this:
 
@@ -117,31 +165,32 @@ A typical compile and link command-line when using the static may look like this
 
 If you are using the shared library, simply omit the `--static` flag.
 
-If you are using GLU, you should also add `-lGLU` to your link flags.
+    cc `pkg-config --cflags glfw3` -o myprog myprog.c `pkg-config --libs glfw3`
+
+You can also use the `glfw3.pc` file without installing it first, by using the
+`PKG_CONFIG_PATH` environment variable.
+
+    env PKG_CONFIG_PATH=path/to/glfw/src cc `pkg-config --cflags glfw3` -o myprog myprog.c `pkg-config --static --libs glfw3`
+
+The dependencies do not include GLU, as GLFW does not need it.  On OS X, GLU is
+built into the OpenGL framework, so if you need GLU you don't need to do
+anything extra.  If you need GLU and are using Linux or BSD, you should add
+`-lGLU` to your link flags.
+
+See the manpage and other documentation for pkg-config and your compiler and
+linker for more information on how to link programs.
 
 
-@subsection build_link_osx Mac OS X
+@subsection build_link_xcode With Xcode on OS X
 
-GLFW on Mac OS X uses the Cocoa, OpenGL and IOKit frameworks.
+If you are using the dynamic library version of GLFW, simply add it to the
+project dependencies.
 
-If you are using Xcode, you can simply add the GLFW library and these frameworks
-as dependencies.
+If you are using the static library version of GLFW, add it and the Cocoa,
+OpenGL and IOKit frameworks to the project as dependencies.
 
-If you are building from the
-command-line, it is recommended that you use pkg-config
 
-GLFW supports [pkg-config](http://www.freedesktop.org/wiki/Software/pkg-config/),
-and `glfw3.pc` file is generated when the library is built and installed along
-with it.  You can use it without installation using the `PKG_CONFIG_PATH`
-environment variable.  See the documentation for pkg-config for more details.
-
-You can find pkg-config in most package systems such as
-[Fink](http://www.finkproject.org/) and [MacPorts](http://www.macports.org/), so
-if you have one of them installed, simply install pkg-config.  Once you have
-pkg-config available, the command-line for compiling and linking your
-program is:
-
-    cc `pkg-config --cflags glfw3` -o myprog myprog.c `pkg-config --static --libs glfw3`
+@subsection build_link_osx With command-line on OS X
 
 If you do not wish to use pkg-config, you need to add the required frameworks
 and libraries to your command-line using the `-l` and `-framework` switches,
@@ -152,10 +201,9 @@ i.e.:
 Note that you do not add the `.framework` extension to a framework when adding
 it from the command-line.
 
-The OpenGL framework contains both the OpenGL and GLU APIs, so there is no need
-to add additional libraries or frameworks when using GLU.  Also note that even
-though your machine may have `libGL`-style OpenGL libraries, they are for use
-with the X Window System and will *not* work with the Mac OS X native version of
-GLFW.
+The OpenGL framework contains both the OpenGL and GLU APIs, so there is nothing
+special to do when using GLU.  Also note that even though your machine may have
+`libGL`-style OpenGL libraries, they are for use with the X Window System and
+will *not* work with the Mac OS X native version of GLFW.
 
 */

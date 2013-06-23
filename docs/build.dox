@@ -73,7 +73,7 @@ to the compiler that the GLFW functions will be coming from another executable.
 
 @section build_link Link with the right libraries
 
-@subsection build_link_win32 With any toolchain on Windows
+@subsection build_link_win32 With MinGW or Visual C++ on Windows
 
 The static version of the GLFW library is named `glfw3`.  When using this
 version, it is also necessary to link with some libraries that GLFW uses.
@@ -92,7 +92,7 @@ dependencies, but you still have to link against `opengl32` if your program uses
 OpenGL and `glu32` if it uses GLU.
 
 
-@subsection build_link_cmake With CMake and GLFW source
+@subsection build_link_cmake_source With CMake and GLFW source
 
 You can use the GLFW source tree directly from a project that uses CMake.  This
 way, GLFW will be built along with your application as needed.
@@ -121,7 +121,7 @@ CMake files look for OpenGL.
     target_link_libraries(myapp glfw ${OPENGL_glu_LIBRARY} ${GLFW_LIBRARIES})
 
 
-@subsection build_link_cmake With CMake on Unix and installed GLFW binaries
+@subsection build_link_cmake_pkgconfig With CMake on Unix and installed GLFW binaries
 
 CMake can import settings from pkg-config, which GLFW supports.  When you
 installed GLFW, the pkg-config file `glfw3.pc` was installed along with it.
@@ -148,7 +148,7 @@ shared library version of GLFW, use the `GLFW_LIBRARIES` variable.
 
 
 If you are using the static library version of GLFW, use the
-`GLFW_STATIC_LIBRARIES` variable.
+`GLFW_STATIC_LIBRARIES` variable instead.
 
     target_link_libraries(simple ${GLFW_STATIC_LIBRARIES})
 

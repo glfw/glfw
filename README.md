@@ -118,11 +118,11 @@ If you have questions related to the use of GLFW, we have a
 channel `#glfw` on [Freenode](http://freenode.net/).
 
 If you have a bug to report, a patch to submit or a feature you'd like to
-request, please file it in one of the
-[issue trackers](https://sourceforge.net/p/glfw/_list/tickets) on SF.net.
+request, please file it in the
+[issue tracker](https://github.com/glfw/glfw/issues) on GitHub.
 
 Finally, if you're interested in helping out with the development of GLFW or
-porting it to your favorite platform, we have a
+porting it to your favorite platform, we have an occasionally active
 [developer's mailing list](https://lists.stacken.kth.se/mailman/listinfo/glfw-dev),
 or you could join us on `#glfw`.
 

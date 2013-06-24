@@ -238,7 +238,7 @@ void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
 // Joystick input
-int  _glfwInitJoysticks(void);
+void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
 // Unicode support

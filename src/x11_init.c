@@ -420,20 +420,9 @@ static void detectEWMH(void)
 
 // Initialize X11 display and look for supported X11 extensions
 //
-static GLboolean initDisplay(void)
+static GLboolean initExtensions(void)
 {
     Bool supported;
-
-    _glfw.x11.display = XOpenDisplay(NULL);
-    if (!_glfw.x11.display)
-    {
-        _glfwInputError(GLFW_API_UNAVAILABLE, "X11: Failed to open X display");
-        return GL_FALSE;
-    }
-
-    _glfw.x11.screen = DefaultScreen(_glfw.x11.display);
-    _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
-    _glfw.x11.context = XUniqueContext();
 
     // Find or create window manager atoms
     _glfw.x11.WM_STATE = XInternAtom(_glfw.x11.display, "WM_STATE", False);
@@ -602,20 +591,28 @@ int _glfwPlatformInit(void)
 {
     XInitThreads();
 
-    if (!initDisplay())
+    _glfw.x11.display = XOpenDisplay(NULL);
+    if (!_glfw.x11.display)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE, "X11: Failed to open X display");
         return GL_FALSE;
+    }
 
-    _glfwInitGammaRamp();
+    _glfw.x11.screen = DefaultScreen(_glfw.x11.display);
+    _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
+    _glfw.x11.context = XUniqueContext();
 
-    if (!_glfwInitContextAPI())
+    if (!initExtensions())
         return GL_FALSE;
 
     _glfw.x11.cursor = createNULLCursor();
 
-    if (!_glfwInitJoysticks())
+    if (!_glfwInitContextAPI())
         return GL_FALSE;
 
     _glfwInitTimer();
+    _glfwInitJoysticks();
+    _glfwInitGammaRamp();
 
     return GL_TRUE;
 }
@@ -631,9 +628,7 @@ void _glfwPlatformTerminate(void)
     free(_glfw.x11.selection.string);
 
     _glfwTerminateJoysticks();
-
     _glfwTerminateContextAPI();
-
     terminateDisplay();
 }
 

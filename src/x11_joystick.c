@@ -159,7 +159,7 @@ static void pollJoystickEvents(void)
 
 // Initialize joystick interface
 //
-int _glfwInitJoysticks(void)
+void _glfwInitJoysticks(void)
 {
 #ifdef __linux__
     int i, joy = 0;
@@ -174,7 +174,7 @@ int _glfwInitJoysticks(void)
     if (regcomp(&regex, "^js[0-9]\\+$", 0) != 0)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Failed to compile regex");
-        return GL_FALSE;
+        return;
     }
 
     for (i = 0;  i < sizeof(dirs) / sizeof(dirs[0]);  i++)
@@ -203,8 +203,6 @@ int _glfwInitJoysticks(void)
 
     regfree(&regex);
 #endif // __linux__
-
-    return GL_TRUE;
 }
 
 // Close all opened joystick handles

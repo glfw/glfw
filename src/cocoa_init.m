@@ -84,18 +84,17 @@ int _glfwPlatformInit(void)
     changeToResourcesDirectory();
 #endif
 
-    _glfwInitTimer();
-
-    _glfwInitJoysticks();
-
-    if (!_glfwInitContextAPI())
-        return GL_FALSE;
-
     _glfw.ns.eventSource = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
     if (!_glfw.ns.eventSource)
         return GL_FALSE;
 
     CGEventSourceSetLocalEventsSuppressionInterval(_glfw.ns.eventSource, 0.0);
+
+    if (!_glfwInitContextAPI())
+        return GL_FALSE;
+
+    _glfwInitTimer();
+    _glfwInitJoysticks();
 
     return GL_TRUE;
 }
@@ -121,7 +120,6 @@ void _glfwPlatformTerminate(void)
     free(_glfw.ns.clipboardString);
 
     _glfwTerminateJoysticks();
-
     _glfwTerminateContextAPI();
 }
 

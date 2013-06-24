@@ -98,7 +98,7 @@ static GLboolean initLibraries(void)
 
 // Unload used libraries (DLLs)
 //
-static void freeLibraries(void)
+static void terminateLibraries(void)
 {
 #ifndef _GLFW_NO_DLOAD_WINMM
     if (_glfw.win32.winmm.instance != NULL)
@@ -204,7 +204,6 @@ int _glfwPlatformInit(void)
         return GL_FALSE;
 
     _glfwInitTimer();
-
     _glfwInitJoysticks();
 
     return GL_TRUE;
@@ -218,18 +217,16 @@ void _glfwPlatformTerminate(void)
         _glfw.win32.classAtom = 0;
     }
 
-    free(_glfw.win32.clipboardString);
-
-    _glfwTerminateContextAPI();
-
-    _glfwTerminateJoysticks();
-
-    freeLibraries();
-
-    // Restore previous FOREGROUNDLOCKTIMEOUT system setting
+    // Restore previous foreground lock timeout system setting
     SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0,
                          UIntToPtr(_glfw.win32.foregroundLockTimeout),
                          SPIF_SENDCHANGE);
+
+    free(_glfw.win32.clipboardString);
+
+    _glfwTerminateJoysticks();
+    _glfwTerminateContextAPI();
+    terminateLibraries();
 }
 
 const char* _glfwPlatformGetVersionString(void)

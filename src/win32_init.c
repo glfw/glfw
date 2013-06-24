@@ -218,6 +218,8 @@ void _glfwPlatformTerminate(void)
         _glfw.win32.classAtom = 0;
     }
 
+    free(_glfw.win32.clipboardString);
+
     _glfwTerminateContextAPI();
 
     _glfwTerminateJoysticks();

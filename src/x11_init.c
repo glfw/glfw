@@ -628,14 +628,13 @@ void _glfwPlatformTerminate(void)
         _glfw.x11.cursor = (Cursor) 0;
     }
 
+    free(_glfw.x11.selection.string);
+
     _glfwTerminateJoysticks();
 
     _glfwTerminateContextAPI();
 
     terminateDisplay();
-
-    if (_glfw.x11.selection.string)
-        free(_glfw.x11.selection.string);
 }
 
 const char* _glfwPlatformGetVersionString(void)

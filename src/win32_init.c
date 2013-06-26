@@ -107,6 +107,12 @@ static void terminateLibraries(void)
         _glfw.win32.winmm.instance = NULL;
     }
 #endif // _GLFW_NO_DLOAD_WINMM
+
+    if (_glfw.win32.user32.instance)
+        FreeLibrary(_glfw.win32.user32.instance);
+
+    if (_glfw.win32.dwmapi.instance)
+        FreeLibrary(_glfw.win32.dwmapi.instance);
 }
 
 

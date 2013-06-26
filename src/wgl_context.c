@@ -297,6 +297,13 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
 //
 int _glfwInitContextAPI(void)
 {
+    _glfw.wgl.opengl32.instance = LoadLibrary(L"opengl32.dll");
+    if (!_glfw.wgl.opengl32.instance)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to load opengl32.dll");
+        return GL_FALSE;
+    }
+
     _glfw.wgl.current = TlsAlloc();
     if (_glfw.wgl.current == TLS_OUT_OF_INDEXES)
     {
@@ -316,6 +323,9 @@ void _glfwTerminateContextAPI(void)
 {
     if (_glfw.wgl.hasTLS)
         TlsFree(_glfw.wgl.current);
+
+    if (_glfw.wgl.opengl32.instance)
+        FreeLibrary(_glfw.wgl.opengl32.instance);
 }
 
 #define setWGLattrib(attribName, attribValue) \
@@ -632,7 +642,11 @@ int _glfwPlatformExtensionSupported(const char* extension)
 
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 {
-    return (GLFWglproc) wglGetProcAddress(procname);
+    const GLFWglproc proc = (GLFWglproc) wglGetProcAddress(procname);
+    if (proc)
+        return proc;
+
+    return (GLFWglproc) GetProcAddress(_glfw.wgl.opengl32.instance, procname);
 }
 
 

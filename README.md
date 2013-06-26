@@ -102,6 +102,8 @@ See the [GLFW 3.0 documentation](http://www.glfw.org/docs/3.0/).
  - Bugfix: The `-Wall` flag was not used with Clang and other GCC compatibles
  - Bugfix: The default for `GLFW_ALPHA_BITS` was set to zero
  - [Win32] Bugfix: The clipboard string was not freed on terminate
+ - [Win32] Bugfix: Entry points for OpenGL 1.0 and 1.1 functions were not
+                   returned by `glfwGetProcAddress`
  - [Cocoa] Bugfix: The clipboard string was not freed on terminate
  - [X11] Bugfix: Override-redirect windows were resized to the desired instead
                  of the actual resolution of the selected video mode

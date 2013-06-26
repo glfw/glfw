@@ -77,8 +77,13 @@ typedef struct _GLFWcontextWGL
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryWGL
 {
-    GLboolean   hasTLS;
-    DWORD       current;
+    GLboolean       hasTLS;
+    DWORD           current;
+
+    // opengl32.dll
+    struct {
+        HINSTANCE   instance;
+    } opengl32;
 
 } _GLFWlibraryWGL;
 

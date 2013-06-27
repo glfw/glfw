@@ -32,6 +32,12 @@
 // Needed for _NSGetProgname
 #include <crt_externs.h>
 
+// Fix for 10.6.
+@interface NSWindow (GLFWNSWindowPolyfill)
+
+-(NSRect)convertRectToBacking:(NSRect)rect;
+
+@end
 
 // Enter fullscreen mode
 //

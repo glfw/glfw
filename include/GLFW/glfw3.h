@@ -1689,7 +1689,7 @@ GLFWAPI void glfwPollEvents(void);
 /*! @brief Waits until events are pending and processes them.
  *
  *  This function puts the calling thread to sleep until at least one event has
- *  been received.  Once one or more events have been recevied, it behaves as if
+ *  been received.  Once one or more events have been received, it behaves as if
  *  @ref glfwPollEvents was called, i.e. the events are processed and the
  *  function then returns immediately.  Processing events will cause the window
  *  and input callbacks associated with those events to be called.

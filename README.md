@@ -174,6 +174,7 @@ skills.
  - Jonathan Mercier
  - Marcel Metz
  - Kenneth Miller
+ - Bruce Mitchener
  - Jeff Molofee
  - Jon Morton
  - Julian Møller

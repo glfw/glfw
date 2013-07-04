@@ -173,7 +173,7 @@ typedef struct _GLFWlibraryX11
     int             keyCodeLUT[256];
 
     struct {
-        GLboolean   changed;
+        int         count;
         int         timeout;
         int         interval;
         int         blanking;

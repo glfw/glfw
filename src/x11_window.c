@@ -361,7 +361,7 @@ static void showCursor(_GLFWwindow* window)
 //
 static void enterFullscreenMode(_GLFWwindow* window)
 {
-    if (!_glfw.x11.saver.changed)
+    if (_glfw.x11.saver.count == 0)
     {
         // Remember old screen saver settings
         XGetScreenSaver(_glfw.x11.display,
@@ -373,9 +373,9 @@ static void enterFullscreenMode(_GLFWwindow* window)
         // Disable screen saver
         XSetScreenSaver(_glfw.x11.display, 0, 0, DontPreferBlanking,
                         DefaultExposures);
-
-        _glfw.x11.saver.changed = GL_TRUE;
     }
+
+    _glfw.x11.saver.count++;
 
     _glfwSetVideoMode(window->monitor, &window->videoMode);
 
@@ -455,7 +455,9 @@ static void leaveFullscreenMode(_GLFWwindow* window)
 {
     _glfwRestoreVideoMode(window->monitor);
 
-    if (_glfw.x11.saver.changed)
+    _glfw.x11.saver.count--;
+
+    if (_glfw.x11.saver.count == 0)
     {
         // Restore old screen saver settings
         XSetScreenSaver(_glfw.x11.display,
@@ -463,8 +465,6 @@ static void leaveFullscreenMode(_GLFWwindow* window)
                         _glfw.x11.saver.interval,
                         _glfw.x11.saver.blanking,
                         _glfw.x11.saver.exposure);
-
-        _glfw.x11.saver.changed = GL_FALSE;
     }
 
     if (_glfw.x11.hasEWMH &&

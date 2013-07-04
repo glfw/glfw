@@ -52,7 +52,7 @@ void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
                                 values + size * 2,
                                 &size);
 
-    _glfwAllocGammaRamp(ramp, size);
+    _glfwAllocGammaArrays(ramp, size);
 
     for (i = 0; i < size; i++)
     {

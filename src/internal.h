@@ -735,11 +735,11 @@ GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig);
 
 /*! @ingroup utility
  */
-void _glfwAllocGammaRamp(GLFWgammaramp* ramp, unsigned int size);
+void _glfwAllocGammaArrays(GLFWgammaramp* ramp, unsigned int size);
 
 /*! @ingroup utility
  */
-void _glfwFreeGammaRamp(GLFWgammaramp* ramp);
+void _glfwFreeGammaArrays(GLFWgammaramp* ramp);
 
 /*! @ingroup utility
  */

@@ -50,7 +50,7 @@ void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
     GetDeviceGammaRamp(dc, values);
     DeleteDC(dc);
 
-    _glfwAllocGammaRamp(ramp, 256);
+    _glfwAllocGammaArrays(ramp, 256);
 
     memcpy(ramp->red,   values +   0, 256 * sizeof(unsigned short));
     memcpy(ramp->green, values + 256, 256 * sizeof(unsigned short));

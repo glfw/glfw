@@ -84,15 +84,15 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
         float inv255, value;
 
         // Calculate intensity
-	inv255 = 1.f / 255.f;
+        inv255 = 1.f / 255.f;
         value = i * inv255;
         // Apply gamma curve
         value = powf(value, 1.f / gamma) * 65535.f + 0.5f;
 
         // Clamp to value range
-	// There isn't any need to check for values smaller than zero.
-	// It is always positive and bigger than 0.5f.
-	value = value < 65535.f ? value : 65535.f;
+        // There isn't any need to check for values smaller than zero.
+        // It is always positive and bigger than 0.5f.
+        value = value < 65535.f ? value : 65535.f;
 
         values[i] = (unsigned short) value;
     }

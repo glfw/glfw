@@ -107,6 +107,7 @@ See the [GLFW 3.0 documentation](http://www.glfw.org/docs/3.0/).
  - [Win32] Bugfix: The user32 and dwmapi module handles were not freed on
                    library termination
  - [Cocoa] Bugfix: The clipboard string was not freed on terminate
+ - [Cocoa] Bugfix: Selectors were used that are not declared by the 10.6 SDK
  - [X11] Bugfix: Override-redirect windows were resized to the desired instead
                  of the actual resolution of the selected video mode
 

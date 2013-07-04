@@ -73,9 +73,11 @@ static float transformY(float y)
 //
 static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 {
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if ([window->ns.view respondsToSelector:@selector(convertRectToBacking:)])
         return [window->ns.view convertRectToBacking:contentRect];
     else
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
         return contentRect;
 }
 
@@ -825,8 +827,10 @@ static GLboolean createWindow(_GLFWwindow* window,
 
     window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if ([window->ns.view respondsToSelector:@selector(setWantsBestResolutionOpenGLSurface:)])
         [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
     [window->ns.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
     [window->ns.object setContentView:window->ns.view];
@@ -835,8 +839,10 @@ static GLboolean createWindow(_GLFWwindow* window,
     [window->ns.object disableCursorRects];
     [window->ns.object center];
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if ([window->ns.object respondsToSelector:@selector(setRestorable:)])
         [window->ns.object setRestorable:NO];
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
     return GL_TRUE;
 }

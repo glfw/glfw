@@ -146,7 +146,7 @@ WCHAR* _glfwCreateWideStringFromUTF8(const char* source)
     if (!length)
         return NULL;
 
-    target = (WCHAR*) malloc(sizeof(WCHAR) * (length + 1));
+    target = (WCHAR*) calloc(length + 1, sizeof(WCHAR));
 
     if (!MultiByteToWideChar(CP_UTF8, 0, source, -1, target, length + 1))
     {
@@ -168,7 +168,7 @@ char* _glfwCreateUTF8FromWideString(const WCHAR* source)
     if (!length)
         return NULL;
 
-    target = (char*) malloc(length + 1);
+    target = (char*) calloc(length + 1, sizeof(char));
 
     if (!WideCharToMultiByte(CP_UTF8, 0, source, -1, target, length + 1, NULL, NULL))
     {

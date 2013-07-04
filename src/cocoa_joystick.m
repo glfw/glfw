@@ -113,7 +113,7 @@ static void addJoystickElement(_GLFWjoy* joystick, CFTypeRef elementRef)
         {
             long number;
             CFTypeRef numberRef;
-            _GLFWjoyelement* element = (_GLFWjoyelement*) malloc(sizeof(_GLFWjoyelement));
+            _GLFWjoyelement* element = (_GLFWjoyelement*) calloc(1, sizeof(_GLFWjoyelement));
 
             CFArrayAppendValue(elementsArray, element);
 

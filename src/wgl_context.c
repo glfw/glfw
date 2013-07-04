@@ -172,7 +172,7 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    usableConfigs = (_GLFWfbconfig*) calloc(nativeCount, sizeof(_GLFWfbconfig));
+    usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
     usableCount = 0;
 
     for (i = 0;  i < nativeCount;  i++)

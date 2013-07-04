@@ -58,7 +58,7 @@ static const char* getDisplayName(CGDirectDisplayID displayID)
 
     size = CFStringGetMaximumSizeForEncoding(CFStringGetLength(value),
                                              kCFStringEncodingUTF8);
-    name = (char*) calloc(size + 1, sizeof(char));
+    name = calloc(size + 1, sizeof(char));
     CFStringGetCString(value, name, size, kCFStringEncodingUTF8);
 
     CFRelease(info);
@@ -253,8 +253,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
     CGGetActiveDisplayList(0, NULL, &monitorCount);
 
-    displays = (CGDirectDisplayID*) calloc(monitorCount, sizeof(CGDirectDisplayID));
-    monitors = (_GLFWmonitor**) calloc(monitorCount, sizeof(_GLFWmonitor*));
+    displays = calloc(monitorCount, sizeof(CGDirectDisplayID));
+    monitors = calloc(monitorCount, sizeof(_GLFWmonitor*));
 
     CGGetActiveDisplayList(monitorCount, displays, &monitorCount);
 
@@ -341,7 +341,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
     modes = CGDisplayCopyAllDisplayModes(monitor->ns.displayID, NULL);
     count = CFArrayGetCount(modes);
 
-    result = (GLFWvidmode*) calloc(count, sizeof(GLFWvidmode));
+    result = calloc(count, sizeof(GLFWvidmode));
     *found = 0;
 
     for (i = 0;  i < count;  i++)

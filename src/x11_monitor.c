@@ -177,7 +177,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         sr = XRRGetScreenResources(_glfw.x11.display, _glfw.x11.root);
         primary = XRRGetOutputPrimary(_glfw.x11.display, _glfw.x11.root);
 
-        monitors = (_GLFWmonitor**) calloc(sr->ncrtc, sizeof(_GLFWmonitor*));
+        monitors = calloc(sr->ncrtc, sizeof(_GLFWmonitor*));
 
         for (i = 0;  i < sr->ncrtc;  i++)
         {
@@ -247,7 +247,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     }
     else
     {
-        monitors = (_GLFWmonitor**) calloc(1, sizeof(_GLFWmonitor*));
+        monitors = calloc(1, sizeof(_GLFWmonitor*));
         monitors[0] = _glfwCreateMonitor("Display",
                                          DisplayWidthMM(_glfw.x11.display,
                                                         _glfw.x11.screen),
@@ -312,7 +312,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         sr = XRRGetScreenResources(_glfw.x11.display, _glfw.x11.root);
         oi = XRRGetOutputInfo(_glfw.x11.display, sr, monitor->x11.output);
 
-        result = (GLFWvidmode*) calloc(oi->nmode, sizeof(GLFWvidmode));
+        result = calloc(oi->nmode, sizeof(GLFWvidmode));
 
         for (i = 0;  i < oi->nmode;  i++)
         {
@@ -354,7 +354,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
     {
         *found = 1;
 
-        result = (GLFWvidmode*) calloc(1, sizeof(GLFWvidmode));
+        result = calloc(1, sizeof(GLFWvidmode));
 
         result[0].width = DisplayWidth(_glfw.x11.display, _glfw.x11.screen);
         result[0].height = DisplayHeight(_glfw.x11.display, _glfw.x11.screen);

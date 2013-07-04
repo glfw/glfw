@@ -127,10 +127,10 @@ static GLboolean chooseFBConfigs(const _GLFWwndconfig* wndconfig,
         return GL_FALSE;
     }
 
-    nativeConfigs = (EGLConfig*) calloc(nativeCount, sizeof(EGLConfig));
+    nativeConfigs = calloc(nativeCount, sizeof(EGLConfig));
     eglGetConfigs(_glfw.egl.display, nativeConfigs, nativeCount, &nativeCount);
 
-    usableConfigs = (_GLFWfbconfig*) calloc(nativeCount, sizeof(_GLFWfbconfig));
+    usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
     usableCount = 0;
 
     for (i = 0;  i < nativeCount;  i++)

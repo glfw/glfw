@@ -44,9 +44,9 @@
 
 void _glfwAllocGammaArrays(GLFWgammaramp* ramp, unsigned int size)
 {
-    ramp->red = (unsigned short*) calloc(size, sizeof(unsigned short));
-    ramp->green = (unsigned short*) calloc(size, sizeof(unsigned short));
-    ramp->blue = (unsigned short*) calloc(size, sizeof(unsigned short));
+    ramp->red = calloc(size, sizeof(unsigned short));
+    ramp->green = calloc(size, sizeof(unsigned short));
+    ramp->blue = calloc(size, sizeof(unsigned short));
     ramp->size = size;
 }
 

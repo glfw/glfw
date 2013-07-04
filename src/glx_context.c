@@ -191,14 +191,12 @@ static GLXContext createLegacyContext(_GLFWwindow* window,
                                                      share,
                                                      True);
     }
-    else
-    {
-        return glXCreateNewContext(_glfw.x11.display,
-                                   fbconfig,
-                                   GLX_RGBA_TYPE,
-                                   share,
-                                   True);
-    }
+
+    return glXCreateNewContext(_glfw.x11.display,
+                               fbconfig,
+                               GLX_RGBA_TYPE,
+                               share,
+                               True);
 }
 
 

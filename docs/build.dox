@@ -51,7 +51,7 @@ These macros may be defined before the inclusion of the GLFW header and affect
 how that header behaves.
 
 `GLFW_INCLUDE_GLCOREARB` makes the header include the modern `GL/glcorearb.h`
-header (`OpenGL/gl3.h` on Mac OS X) instead of the regular OpenGL header.
+header (`OpenGL/gl3.h` on OS X) instead of the regular OpenGL header.
 
 `GLFW_INCLUDE_ES1` makes the header include the OpenGL ES 1.x `GLES/gl.h` header
 instead of the regular OpenGL header.
@@ -64,11 +64,13 @@ header instead of the regular OpenGL header.
 
 `GLFW_INCLUDE_NONE` makes the header not include any client API header.
 
-`GLFW_INCLUDE_GLU` makes the header include the GLU header.  This only makes
-sense if you are using OpenGL.
+`GLFW_INCLUDE_GLU` makes the header include the GLU header *in addition to* the
+OpenGL header.  This should only be used with the default `GL/gl.h` header
+(`OpenGL/gl.h` on OS X), i.e. if you are not using any of the above macros.
 
 `GLFW_DLL` is necessary when using the GLFW DLL on Windows, in order to explain
 to the compiler that the GLFW functions will be coming from another executable.
+It has no function on other platforms.
 
 
 @section build_link Link with the right libraries

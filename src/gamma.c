@@ -81,11 +81,10 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
 
     for (i = 0;  i < 256;  i++)
     {
-        float inv255, value;
+        float value;
 
         // Calculate intensity
-        inv255 = 1.f / 255.f;
-        value = i * inv255;
+        value = i / 255.f;
         // Apply gamma curve
         value = (float) pow(value, 1.f / gamma) * 65535.f + 0.5f;
 

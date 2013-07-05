@@ -88,11 +88,11 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
         // Apply gamma curve
         value = (float) pow(value, 1.f / gamma) * 65535.f + 0.5f;
 
-        // Clamp to value range
-        if (value < 0.f)
-            value = 0.f;
-        else if (value > 65535.f)
-            value = 65535.f;
+        // Clamp to value range [0.f, 65535.f]
+        // There isn't any need to check for values smaller than zero.
+        // It is always positive and bigger than 0.5f.
+        if (value > 65535.f)
+                value = 65535.f;
 
         values[i] = (unsigned short) value;
     }

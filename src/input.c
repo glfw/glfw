@@ -64,7 +64,7 @@ static void setCursorMode(_GLFWwindow* window, int newMode)
             _glfw.cursorPosY = window->cursorPosY;
 
             _glfwPlatformGetWindowSize(window, &width, &height);
-            _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
+            _glfwPlatformSetCursorPos(window, width * 0.5, height * 0.5);
         }
 
         _glfwPlatformSetCursorMode(window, newMode);

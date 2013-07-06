@@ -552,21 +552,37 @@ static Cursor createNULLCursor(void)
     GC gc;
     XColor col;
     Cursor cursor;
-
-    // TODO: Add error checks
+    int rectstatus;
 
     cursormask = XCreatePixmap(_glfw.x11.display, _glfw.x11.root, 1, 1, 1);
+    if (cursormask == BadValue)
+        return 0;
+
     xgc.function = GXclear;
     gc = XCreateGC(_glfw.x11.display, cursormask, GCFunction, &xgc);
-    XFillRectangle(_glfw.x11.display, cursormask, gc, 0, 0, 1, 1);
+    if (gc == BadAlloc || gc == BadDrawable ||
+        gc == BadFont || gc == BadMatch ||
+        gc == BadPixmap || gc == BadValue)
+        return 0;
+
+    rectstatus = XFillRectangle(_glfw.x11.display, cursormask, gc, 0, 0, 1, 1);
+    if (rectstatus == BadDrawable || rectstatus == BadGC || rectstatus == BadMatch)
+        return 0;
+
     col.pixel = 0;
     col.red = 0;
     col.flags = 4;
     cursor = XCreatePixmapCursor(_glfw.x11.display,
                                  cursormask, cursormask,
                                  &col, &col, 0, 0);
-    XFreePixmap(_glfw.x11.display, cursormask);
-    XFreeGC(_glfw.x11.display, gc);
+    if (cursor == BadAlloc || cursor == BadPixmap)
+        return 0;
+
+    if (XFreePixmap(_glfw.x11.display, cursormask) == BadPixmap)
+        return 0;
+
+    if (XFreeGC(_glfw.x11.display, gc) == BadGC)
+        return 0;
 
     return cursor;
 }
@@ -606,6 +622,8 @@ int _glfwPlatformInit(void)
         return GL_FALSE;
 
     _glfw.x11.cursor = createNULLCursor();
+    if (_glfw.x11.cursor == 0)
+        return GL_FALSE;
 
     if (!_glfwInitContextAPI())
         return GL_FALSE;

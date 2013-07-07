@@ -55,7 +55,12 @@ static void setCursorMode(_GLFWwindow* window, int newMode)
     if (window == _glfw.focusedWindow)
     {
         if (oldMode == GLFW_CURSOR_DISABLED)
+        {
+            window->cursorPosX = _glfw.cursorPosX;
+            window->cursorPosY = _glfw.cursorPosY;
+
             _glfwPlatformSetCursorPos(window, _glfw.cursorPosX, _glfw.cursorPosY);
+        }
         else if (newMode == GLFW_CURSOR_DISABLED)
         {
             int width, height;

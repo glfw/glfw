@@ -1208,10 +1208,16 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  attributes of the created window and context, use queries like @ref
  *  glfwGetWindowAttrib and @ref glfwGetWindowSize.
  *
+ *  To create a full screen window, you need to specify the monitor to use.  If
+ *  no monitor is specified, windowed mode will be used.  Unless you have a way
+ *  for the user to choose a specific monitor, it is recommended that you pick
+ *  the primary monitor.  For more information on how to retrieve monitors, see
+ *  @ref monitor_monitors.
+ *
  *  To create the window at a specific position, make it initially invisible
  *  using the `GLFW_VISIBLE` window hint, set its position and then show it.
  *
- *  If a fullscreen window is active, the screensaver is prohibited from
+ *  If a full screen window is active, the screensaver is prohibited from
  *  starting.
  *
  *  @param[in] width The desired width, in screen coordinates, of the window.

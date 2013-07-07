@@ -9,6 +9,9 @@
 
 The @ref GLFWmonitor object represents a currently connected monitor.
 
+
+@section monitor_monitors Retrieving monitors
+
 The primary monitor is returned by @ref glfwGetPrimaryMonitor.  It is usually
 the user's preferred monitor and the one with global UI elements like task bar
 or menu bar.
@@ -25,7 +28,7 @@ GLFWmonitor** monitors = glfwGetMonitors(&count);
 @endcode
 
 
-@section monitor_modes Querying video modes
+@section monitor_modes Retrieving video modes
 
 Although GLFW generally does a good job at selecting a suitable video
 mode for you when you open a full screen window, it is sometimes useful to

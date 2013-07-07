@@ -6,7 +6,7 @@
 
 The primary purpose of GLFW is to provide a simple interface to window
 management and OpenGL and OpenGL ES context creation.  GLFW supports multiple
-windows, which can be either a normal desktop window or a fullscreen window.
+windows, which can be either a normal desktop window or a full screen window.
 
 
 @section window_object Window handles
@@ -15,6 +15,51 @@ The @ref GLFWwindow object encapsulates both a window and a context.  They are
 created with @ref glfwCreateWindow and destroyed with @ref glfwDestroyWindow (or
 @ref glfwTerminate, if any remain).  As the window and context are inseparably
 linked, the object pointer is used as both a context and window handle.
+
+
+@section window_creation Window creation
+
+The window and its context are created with @ref glfwCreateWindow, which
+returns a handle to the created window object.  For example, this creates a 640
+by 480 windowed mode window:
+
+@code
+GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
+@endcode
+
+If window creation fails, `NULL` will be returned, so you need to check whether
+it did.
+
+This handle is then passed to all window related functions, and is provided to
+you along with input events, so you know which window received the input.
+
+To create a full screen window, you need to specify which monitor the window
+should use.  In most cases, the user's primary monitor is a good choice.  For
+more information about monitors, see the @ref monitor.
+
+@code
+GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", glfwGetPrimaryMonitor(), NULL);
+@endcode
+
+Full screen windows cover the entire display area of a monitor, have no border
+or decorations, and change the monitor's resolution to the one most closely
+matching the requested window size.
+
+For more control over how the window and its context are created, see @ref
+window_hints below.
+
+
+@section window_destruction Window destruction
+
+When you are done with the window, destroy it with the @ref glfwDestroyWindow
+function.
+
+@code
+glfwDestroyWindow(window);
+@endcode
+
+Once this function is called, no more events will be delivered for that window
+and its handle becomes invalid.
 
 
 @section window_hints Window creation hints
@@ -54,14 +99,14 @@ Hints that do not apply to a given type of window or context are ignored.
 
 The `GLFW_RESIZABLE` hint specifies whether the window will be resizable *by the
 user*.  The window will still be resizable using the @ref glfwSetWindowSize
-function.  This hint is ignored for fullscreen windows.
+function.  This hint is ignored for full screen windows.
 
 The `GLFW_VISIBLE` hint specifies whether the window will be initially
-visible.  This hint is ignored for fullscreen windows.
+visible.  This hint is ignored for full screen windows.
 
 The `GLFW_DECORATED` hint specifies whether the window will have window
 decorations such as a border, a close widget, etc.  This hint is ignored for
-fullscreen windows.  Note that even though a window may lack a close widget, it
+full screen windows.  Note that even though a window may lack a close widget, it
 is usually still possible for the user to generate close events.
 
 
@@ -227,13 +272,11 @@ the system, you can set the size callback with @ref glfwSetWindowSizeCallback.
 glfwSetWindowSizeCallback(window, window_size_callback);
 @endcode
 
-The callback function receives the new size of the client area of the window,
-which can for example be used to update the viewport.
+The callback function receives the new size of the client area of the window.
 
 @code
 void window_size_callback(GLFWwindow* window, int width, int height)
 {
-    glViewport(0, 0, width, height);
 }
 @endcode
 
@@ -243,8 +286,48 @@ a window.
 @code
 int width, height;
 glfwGetWindowSize(window, &width, &height);
+@endcode
+
+
+@section window_fbsize Window framebuffer size
+
+While the size of a window is measured in screen coordinates, OpenGL works with
+pixels.  The size you pass into `glViewport`, for example, should be in pixels
+and not screen coordinates.  On some platforms screen coordinates and pixels are
+the same, but this is not the case on all platforms supported by GLFW.  There is
+a second set of functions to retrieve the size in pixels of the framebuffer of
+a window.
+
+If you wish to be notified when the framebuffer of a window is resized, whether
+by the user or the system, you can set the size callback with @ref
+glfwSetFramebufferSizeCallback.
+
+@code
+glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+@endcode
+
+The callback function receives the new size of the client area of the window,
+which can for example be used to update the OpenGL viewport.
+
+@code
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+@endcode
+
+There is also @ref glfwGetFramebufferSize for directly retrieving the current
+size of the framebuffer of a window.
+
+@code
+int width, height;
+glfwGetFramebufferSize(window, &width, &height);
 glViewport(0, 0, width, height);
 @endcode
+
+Note that the size of a framebuffer may change independently of the size of
+a window, for example if the window is dragged between a regular monitor and
+a high-DPI one.
 
 
 @section window_pos Window position

@@ -140,9 +140,9 @@ full screen, just pass along the monitor handle:
 GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", glfwGetPrimaryMonitor(), NULL);
 @endcode
 
-Full screen windows cover the entire screen, have no border or decorations, and
-change the monitor's resolution to the one most closely matching the requested
-window size.
+Full screen windows cover the entire display area of a monitor, have no border
+or decorations, and change the monitor's resolution to the one most closely
+matching the requested window size.
 
 When you are done with the window, destroy it with the @ref glfwDestroyWindow
 function.

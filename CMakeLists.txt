@@ -16,6 +16,10 @@ option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(GLFW_INSTALL "Generate installation target" ON)
 option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
+if (WIN32)
+    option(GLFW_USE_DWM_SWAP_INTERVAL "Set swap interval even when DWM compositing is enabled" OFF)
+endif()
+
 if (APPLE)
     option(GLFW_BUILD_UNIVERSAL "Build GLFW as a Universal Binary" OFF)
     option(GLFW_USE_CHDIR "Make glfwInit chdir to Contents/Resources" ON)
@@ -150,6 +154,10 @@ if (_GLFW_WIN32)
     if (BUILD_SHARED_LIBS)
         set(_GLFW_NO_DLOAD_WINMM 1)
         list(APPEND glfw_LIBRARIES winmm)
+    endif()
+
+    if (GLFW_USE_DWM_SWAP_INTERVAL)
+        set(_GLFW_USE_DWM_SWAP_INTERVAL 1)
     endif()
 endif()
 

@@ -72,6 +72,10 @@ directory of bundled applications to the `Contents/Resources` directory.
 `USE_MSVC_RUNTIME_LIBRARY_DLL` determines whether to use the DLL version or the
 static library version of the Visual C++ runtime library.
 
+`GLFW_USE_DWM_SWAP_INTERVAL` determines whether the swap interval is set even
+when DWM compositing is enabled.  This can lead to severe jitter and is not
+usually recommended.
+
 
 #### EGL specific options
 
@@ -101,6 +105,8 @@ See the [GLFW 3.0 documentation](http://www.glfw.org/docs/3.0/).
 
  - Bugfix: The `-Wall` flag was not used with Clang and other GCC compatibles
  - Bugfix: The default for `GLFW_ALPHA_BITS` was set to zero
+ - [Win32] Added `_GLFW_USE_DWM_SWAP_INTERVAL` for forcing the swap interval
+           to be set even when DWM compositing is enabled
  - [Win32] Bugfix: The clipboard string was not freed on terminate
  - [Win32] Bugfix: Entry points for OpenGL 1.0 and 1.1 functions were not
                    returned by `glfwGetProcAddress`

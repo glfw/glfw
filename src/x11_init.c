@@ -37,20 +37,6 @@
 #include <limits.h>
 
 
-// Error handler used when creating a blank cursor
-//
-static int errorHandler(Display *display, XErrorEvent* event)
-{
-    char buffer[8192];
-    XGetErrorText(display,
-                  event->error_code,
-                  buffer, sizeof(buffer));
-
-    _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Failed to create a blank cursor: %s", buffer);
-
-    return 0;
-}
-
 // Translate an X11 key code to a GLFW key code.
 //
 static int translateKey(int keyCode)
@@ -567,7 +553,7 @@ static Cursor createNULLCursor(void)
     XColor col;
     Cursor cursor;
 
-    XSetErrorHandler(errorHandler);
+    _glfwGrabXErrorHandler();
 
     cursormask = XCreatePixmap(_glfw.x11.display, _glfw.x11.root, 1, 1, 1);
     xgc.function = GXclear;
@@ -582,8 +568,7 @@ static Cursor createNULLCursor(void)
     XFreePixmap(_glfw.x11.display, cursormask);
     XFreeGC(_glfw.x11.display, gc);
 
-    XSync(_glfw.x11.display, False);
-    XSetErrorHandler(NULL);
+    _glfwReleaseXErrorHandler();
 
     return cursor;
 }

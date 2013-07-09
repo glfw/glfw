@@ -114,6 +114,7 @@ See the [GLFW 3.0 documentation](http://www.glfw.org/docs/3.0/).
                    library termination
  - [Cocoa] Bugfix: The clipboard string was not freed on terminate
  - [Cocoa] Bugfix: Selectors were used that are not declared by the 10.6 SDK
+ - [Cocoa] Bugfix: The position set by `glfwSetWindowPos` was incorrect
  - [X11] Bugfix: Override-redirect windows were resized to the desired instead
                  of the actual resolution of the selected video mode
  - [X11] Bugfix: Screensaver override for full screen windows had a possible

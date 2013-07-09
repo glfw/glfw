@@ -937,8 +937,9 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
 {
-    const NSRect frameRect =
-        [window->ns.object frameRectForContentRect:NSMakeRect(x, y, 0, 0)];
+    const NSRect contentRect = [window->ns.view frame];
+    const NSRect dummyRect = NSMakeRect(x, transformY(y + contentRect.size.height), 0, 0);
+    const NSRect frameRect = [window->ns.object frameRectForContentRect:dummyRect];
     [window->ns.object setFrameOrigin:frameRect.origin];
 }
 

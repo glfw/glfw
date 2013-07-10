@@ -112,7 +112,7 @@ context profiles.  Where this extension is unavailable, setting the
 `GLFW_OPENGL_PROFILE` hint to anything but zero will cause @ref glfwCreateWindow
 to fail.
 
-@section cmopat_osx OpenGL 3.2 on OS X
+@section compat_osx OpenGL 3.2 on OS X
 
 Support for OpenGL 3.0 and above was introduced with OS X 10.7, and even then
 only forward-compatible OpenGL 3.2 core profile contexts are supported.  There

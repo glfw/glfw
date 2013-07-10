@@ -206,6 +206,6 @@ it from the command-line.
 The OpenGL framework contains both the OpenGL and GLU APIs, so there is nothing
 special to do when using GLU.  Also note that even though your machine may have
 `libGL`-style OpenGL libraries, they are for use with the X Window System and
-will *not* work with the Mac OS X native version of GLFW.
+will *not* work with the OS X native version of GLFW.
 
 */

@@ -220,7 +220,7 @@ static void centerCursor(_GLFWwindow *window)
 
 @end
 
-// Translates Mac OS X key modifiers into GLFW ones
+// Translates OS X key modifiers into GLFW ones
 //
 static int translateFlags(NSUInteger flags)
 {
@@ -238,7 +238,7 @@ static int translateFlags(NSUInteger flags)
     return mods;
 }
 
-// Translates a Mac OS X keycode to a GLFW keycode
+// Translates a OS X keycode to a GLFW keycode
 //
 static int translateKey(unsigned int key)
 {

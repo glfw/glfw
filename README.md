@@ -56,7 +56,7 @@ along with the library.
 built along with the library.
 
 
-#### Mac OS X specific options
+#### OS X specific options
 
 `GLFW_USE_CHDIR` determines whether `glfwInit` changes the current
 directory of bundled applications to the `Contents/Resources` directory.

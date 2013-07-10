@@ -112,6 +112,8 @@ See the [GLFW 3.0 documentation](http://www.glfw.org/docs/3.0/).
                    returned by `glfwGetProcAddress`
  - [Win32] Bugfix: The user32 and dwmapi module handles were not freed on
                    library termination
+ - [Cocoa] Enabled explicit creation of OpenGL 3.x and 4.x contexts as supported
+           by OS X 10.9
  - [Cocoa] Bugfix: The clipboard string was not freed on terminate
  - [Cocoa] Bugfix: Selectors were used that are not declared by the 10.6 SDK
  - [Cocoa] Bugfix: The position set by `glfwSetWindowPos` was incorrect

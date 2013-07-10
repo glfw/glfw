@@ -90,12 +90,11 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     // Fail if any OpenGL version above 2.1 other than 3.2 was requested
-    if (wndconfig->glMajor > 3 ||
-        (wndconfig->glMajor == 3 && wndconfig->glMinor != 2))
+    if (wndconfig->glMajor == 3 && wndconfig->glMinor < 2)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "NSOpenGL: The targeted version of Mac OS X does not "
-                        "support any OpenGL version above 2.1 except 3.2");
+                        "support OpenGL 3.0 or 3.1");
         return GL_FALSE;
     }
 
@@ -105,8 +104,8 @@ int _glfwCreateContext(_GLFWwindow* window,
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                             "NSOpenGL: The targeted version of Mac OS X only "
-                            "supports OpenGL 3.2 contexts if they are "
-                            "forward-compatible");
+                            "supports OpenGL 3.2 and later versions if they "
+                            "are forward-compatible");
             return GL_FALSE;
         }
 
@@ -114,8 +113,8 @@ int _glfwCreateContext(_GLFWwindow* window,
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                             "NSOpenGL: The targeted version of Mac OS X only "
-                            "supports OpenGL 3.2 contexts if they use the "
-                            "core profile");
+                            "supports OpenGL 3.2 and later versions if they "
+                            "use the core profile");
             return GL_FALSE;
         }
     }

@@ -137,6 +137,9 @@ typedef struct _GLFWlibraryX11
     // True if window manager supports EWMH
     GLboolean       hasEWMH;
 
+    // Error code received by the X error handler
+    int             errorCode;
+
     struct {
         GLboolean   available;
         int         eventBase;
@@ -259,5 +262,6 @@ unsigned long _glfwGetWindowProperty(Window window,
 // X11 error handler
 void _glfwGrabXErrorHandler(void);
 void _glfwReleaseXErrorHandler(void);
+void _glfwInputXError(int error, const char* message);
 
 #endif // _x11_platform_h_

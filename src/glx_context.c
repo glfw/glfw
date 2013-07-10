@@ -45,32 +45,6 @@ void (*glXGetProcAddressEXT(const GLubyte* procName))();
 #endif
 
 
-// Error handler used when creating a context and blank cursor
-//
-static int errorHandler(Display *display, XErrorEvent* event)
-{
-    char buffer[8192];
-    XGetErrorText(display,
-                  event->error_code,
-                  buffer, sizeof(buffer));
-
-    _glfwInputError(GLFW_PLATFORM_ERROR, "X11 failure: %s", buffer);
-
-    return 0;
-}
-
-void _glfwGrabXErrorHandler(void)
-{
-    XSetErrorHandler(errorHandler);
-}
-
-void _glfwReleaseXErrorHandler(void)
-{
-    // Syncing to make sure all commands are processed
-    XSync(_glfw.x11.display, False);
-    XSetErrorHandler(NULL);
-}
-
 // Returns the specified attribute of the specified GLXFBConfig
 // NOTE: Do not call this unless we have found GLX 1.3+ or GLX_SGIX_fbconfig
 //
@@ -445,7 +419,6 @@ int _glfwCreateContext(_GLFWwindow* window,
         }
     }
 
-    _glfw.glx.errorCode = Success;
     _glfwGrabXErrorHandler();
 
     if (_glfw.glx.ARB_create_context)
@@ -517,7 +490,7 @@ int _glfwCreateContext(_GLFWwindow* window,
             // HACK: This is a fallback for the broken Mesa implementation of
             // GLX_ARB_create_context_profile, which fails default 1.0 context
             // creation with a GLXBadProfileARB error in violation of the spec
-            if (_glfw.glx.errorCode == _glfw.glx.errorBase + GLXBadProfileARB &&
+            if (_glfw.x11.errorCode == _glfw.glx.errorBase + GLXBadProfileARB &&
                 wndconfig->clientAPI == GLFW_OPENGL_API &&
                 wndconfig->glProfile == GLFW_OPENGL_ANY_PROFILE &&
                 wndconfig->glForward == GL_FALSE)
@@ -533,9 +506,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     if (window->glx.context == NULL)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "GLX: Failed to create context.");
-
+        _glfwInputXError(GLFW_PLATFORM_ERROR, "GLX: Failed to create context");
         return GL_FALSE;
     }
 

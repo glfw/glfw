@@ -570,6 +570,12 @@ static Cursor createNULLCursor(void)
 
     _glfwReleaseXErrorHandler();
 
+    if (cursor == None)
+    {
+        _glfwInputXError(GLFW_PLATFORM_ERROR,
+                         "X11: Failed to create null cursor");
+    }
+
     return cursor;
 }
 
@@ -582,6 +588,47 @@ static void terminateDisplay(void)
         XCloseDisplay(_glfw.x11.display);
         _glfw.x11.display = NULL;
     }
+}
+
+// X error handler
+//
+static int errorHandler(Display *display, XErrorEvent* event)
+{
+    _glfw.x11.errorCode = event->error_code;
+    return 0;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+// Install the X error handler
+//
+void _glfwGrabXErrorHandler(void)
+{
+    _glfw.x11.errorCode = Success;
+    XSetErrorHandler(errorHandler);
+}
+
+// Remove the X error handler
+//
+void _glfwReleaseXErrorHandler(void)
+{
+    // Synchronize to make sure all commands are processed
+    XSync(_glfw.x11.display, False);
+    XSetErrorHandler(NULL);
+}
+
+// Report X error
+//
+void _glfwInputXError(int error, const char* message)
+{
+    char buffer[8192];
+    XGetErrorText(_glfw.x11.display, _glfw.x11.errorCode,
+                  buffer, sizeof(buffer));
+
+    _glfwInputError(error, "%s: %s", message, buffer);
 }
 
 

@@ -229,6 +229,7 @@ struct _GLFWwindow
         GLFWscrollfun           scroll;
         GLFWkeyfun              key;
         GLFWcharfun             character;
+        GLFWdropfun             drop;
     } callbacks;
 
     // This is defined in the window API's platform.h
@@ -665,6 +666,14 @@ void _glfwInputMonitorChange(void);
  *  @ingroup event
  */
 void _glfwInputError(int error, const char* format, ...);
+
+/*! @brief Notifies dropped object over window.
+ *  @param[in] window The window that received the event.
+ *  @param[in] dropString The string descriptor of the dropped object
+ *  description.
+ *  @ingroup event
+ */
+void _glfwInputDrop(_GLFWwindow* window, const char* dropString);
 
 
 //========================================================================

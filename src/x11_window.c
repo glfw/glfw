@@ -286,6 +286,15 @@ static GLboolean createWindow(_GLFWwindow* window,
         XISelectEvents(_glfw.x11.display, window->x11.handle, &eventmask, 1);
     }
 
+    // Enable Xdnd
+    {
+    	//Announce XDND support
+    	XMapWindow(_glfw.x11.display, window->x11.handle);
+    	Atom XdndAware = XInternAtom(_glfw.x11.display, "XdndAware", False);
+    	Atom version=5;
+    	XChangeProperty(_glfw.x11.display, window->x11.handle, XdndAware, XA_ATOM, 32, PropModeReplace, (unsigned char*)&version, 1);
+    }
+
     _glfwPlatformSetWindowTitle(window, wndconfig->title);
 
     XRRSelectInput(_glfw.x11.display, window->x11.handle,
@@ -494,6 +503,7 @@ static void leaveFullscreenMode(_GLFWwindow* window)
     }
 }
 
+
 // Process the specified X event
 //
 static void processEvent(XEvent *event)
@@ -689,10 +699,113 @@ static void processEvent(XEvent *event)
                            False,
                            SubstructureNotifyMask | SubstructureRedirectMask,
                            event);
+
+            }
+            else if(event->xclient.message_type == _glfw.x11.XdndEnter)
+            {
+            	// Xdnd Enter: the drag&drop event has started in the window,
+            	// we could be getting the type and possible conversions here
+            	// but since we use always string conversion we don't need
+            	// it
+            }
+            else if(event->xclient.message_type == _glfw.x11.XdndDrop)
+            {
+            	// Xdnd Drop: The drag&drop event has finished dropping on
+            	// the window, ask to convert the selection
+
+            	_glfw.x11.xdnd.sourceWindow = event->xclient.data.l[0];
+
+                const Atom formats[] = { _glfw.x11.UTF8_STRING,
+                                         _glfw.x11.COMPOUND_STRING,
+                                         XA_STRING };
+                const int formatCount = sizeof(formats) / sizeof(formats[0]);
+                int i;
+
+                for(i=0;i<formatCount;i++){
+					XConvertSelection(_glfw.x11.display,
+									  _glfw.x11.XdndSelection,
+									  formats[i],
+									  _glfw.x11.XdndSelection,
+									  window->x11.handle, CurrentTime);
+                }
+
+            }
+            else if(event->xclient.message_type == _glfw.x11.XdndLeave)
+            {
+
+            }
+            else if(event->xclient.message_type == _glfw.x11.XdndPosition)
+            {
+            	// Xdnd Position: get coordinates of the mouse inside the window
+            	// and update the mouse position
+            	int absX = (event->xclient.data.l[2]>>16) & 0xFFFF;
+            	int absY = (event->xclient.data.l[2]) & 0xFFFF;
+            	int x;
+            	int y;
+
+            	_glfwPlatformGetWindowPos(window,&x,&y);
+
+            	_glfwInputCursorMotion(window,absX-x,absY-y);
+
+				// Xdnd: reply with an XDND status message
+				XClientMessageEvent m;
+				memset(&m, sizeof(m), 0);
+				m.type = ClientMessage;
+				m.display = event->xclient.display;
+				m.window = event->xclient.data.l[0];
+				m.message_type = _glfw.x11.XdndStatus;
+				m.format=32;
+				m.data.l[0] = window->x11.handle;
+				m.data.l[1] = 1; // Always accept the dnd with no rectangle
+				m.data.l[2] = 0; // Specify an empty rectangle
+				m.data.l[3] = 0;
+				m.data.l[4] = _glfw.x11.XdndActionCopy; // We only accept copying
+
+				XSendEvent(_glfw.x11.display, event->xclient.data.l[0], False, NoEventMask, (XEvent*)&m);
+				XFlush(_glfw.x11.display);
+
             }
 
             break;
         }
+        case SelectionNotify:
+		{
+
+			if(event->xselection.property != None)
+			{
+				// Xdnd: got a selection notification from the conversion
+				// we asked for, get the data and finish the d&d event
+				char* data;
+				_glfwGetWindowProperty(event->xselection.requestor,
+				                                   event->xselection.property,
+				                                   event->xselection.target,
+				                                   (unsigned char**) &data);
+
+				free(_glfw.x11.xdnd.string);
+				_glfw.x11.xdnd.string = strdup(data);
+
+				XClientMessageEvent m;
+				memset(&m, sizeof(m), 0);
+				m.type = ClientMessage;
+				m.display = _glfw.x11.display;
+				m.window = _glfw.x11.xdnd.sourceWindow;
+				m.message_type = _glfw.x11.XdndFinished;
+				m.format=32;
+				m.data.l[0] = window->x11.handle;
+				m.data.l[1] = 1;
+				m.data.l[2] = _glfw.x11.XdndActionCopy; //We only ever copy.
+
+				// Reply that all is well.
+				XSendEvent(_glfw.x11.display, _glfw.x11.xdnd.sourceWindow, False, NoEventMask, (XEvent*)&m);
+
+				XSync(_glfw.x11.display, False);
+
+				XFree(data);
+
+				_glfwInputDrop(window,_glfw.x11.xdnd.string);
+			}
+			break;
+		}
 
         case MapNotify:
         {
@@ -883,7 +996,7 @@ unsigned long _glfwGetWindowProperty(Window window,
                        &bytesAfter,
                        value);
 
-    if (actualType != type)
+    if (type != AnyPropertyType && actualType != type)
         return 0;
 
     return itemCount;

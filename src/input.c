@@ -218,6 +218,12 @@ void _glfwInputCursorEnter(_GLFWwindow* window, int entered)
         window->callbacks.cursorEnter((GLFWwindow*) window, entered);
 }
 
+void _glfwInputDrop(_GLFWwindow* window, const char* dropString){
+
+    if (window->callbacks.drop)
+        window->callbacks.drop((GLFWwindow*) window, dropString);
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////
@@ -425,3 +431,14 @@ GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* handle,
     return previous;
 }
 
+GLFWAPI GLFWdropfun glfwSetDropCallback(GLFWwindow* handle, GLFWdropfun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    GLFWdropfun previous;
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+    previous = window->callbacks.drop;
+    window->callbacks.drop = cbfun;
+    return previous;
+}

@@ -10,10 +10,10 @@ Version 3.0.2 is *not yet described*.  As this is a patch release, there are no
 API changes.
 
 If you are new to GLFW, you may find the
-[introductory tutorial](http://www.glfw.org/docs/3.0/quick.html) for GLFW
+[introductory tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW
 3 useful.  If you have used GLFW 2 in the past, there is a
-[transition guide](http://www.glfw.org/docs/3.0/moving.html) for moving to the
-GLFW 3 API.
+[transition guide](http://www.glfw.org/docs/latest/moving.html) for moving to
+the GLFW 3 API.
 
 
 ## Compiling GLFW
@@ -98,7 +98,7 @@ CMake.
 
 ## Using GLFW
 
-See the [GLFW 3.0 documentation](http://www.glfw.org/docs/3.0/).
+See the [GLFW documentation](http://www.glfw.org/docs/latest/).
 
 
 ## Changelog

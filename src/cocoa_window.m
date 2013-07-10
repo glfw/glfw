@@ -619,6 +619,126 @@ static int translateKey(unsigned int key)
     [self addCursorRect:[self bounds] cursor:_glfw.ns.cursor];
 }
 
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
+{
+    if ((NSDragOperationGeneric & [sender draggingSourceOperationMask]) 
+		== NSDragOperationGeneric) {
+		
+        return NSDragOperationGeneric;
+		
+    } // end if
+	
+    // not a drag we can use
+	return NSDragOperationNone;	
+	
+} // end draggingEntered
+
+- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender {
+    return YES;
+} // end prepareForDragOperation
+
+
+
+
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
+    
+	//int i;
+	int count;
+	NSPasteboard *zPasteboard = [sender draggingPasteboard];
+	NSArray *files = [zPasteboard propertyListForType:NSFilenamesPboardType];
+    
+	// define the images  types we accept
+	// NSPasteboardTypeTIFF: (used to be NSTIFFPboardType).
+	// NSFilenamesPboardType:An array of NSString filenames
+	
+	//memset(fileNames, 0, 100*1000);
+
+	int dragX = [sender draggingLocation].x;
+	int dragY = [sender draggingLocation].y;
+	
+	count = 0;
+	int howManyFiles = 0;
+	if ([files count]) {
+		NSEnumerator *filenameEnum = [files objectEnumerator]; 
+        NSString *name;
+		while (name = [filenameEnum nextObject]) {
+			if (count < 100){
+				if (strlen([name UTF8String]) < MAXPATHLEN){
+					strcpy(fileNames[count], [name UTF8String]);
+					howManyFiles = count + 1;
+					//memcpy(fileNames[0], "hello", 5);
+					count++;
+				}
+			}
+			
+		}
+	}
+	
+	//memset(fileNames[0], 0, 100);
+	
+		
+	if(_dragEventFunc) {
+		(*_dragEventFunc)(fileNames, howManyFiles, dragX, dragY);
+	}
+	
+	
+	
+	
+	
+	//NSLog(@"Got a drag!");
+	return YES;
+	/*
+	 NSArray *zImageTypesAry = [NSArray arrayWithObjects:NSPasteboardTypeTIFF, 
+	 NSFilenamesPboardType, nil];
+	 
+	 NSString *zDesiredType = [zPasteboard availableTypeFromArray:zImageTypesAry];
+	 
+	 if ([zDesiredType isEqualToString:NSPasteboardTypeTIFF]) { 
+	 NSData *zPasteboardData   = [zPasteboard dataForType:zDesiredType];
+	 if (zPasteboardData == nil) {
+	 NSLog(@"Error: MyNSView performDragOperation zPasteboardData == nil");
+	 return NO;
+	 } // end if
+	 
+	 self.nsImageObj = [[NSImage alloc] initWithData:zPasteboardData];			
+	 [self setNeedsDisplay:YES];
+	 return YES;
+	 
+	 } //end if
+	 
+	 
+	 if ([zDesiredType isEqualToString:NSFilenamesPboardType]) {
+	 // the pasteboard contains a list of file names
+	 //Take the first one
+	 NSArray *zFileNamesAry = [zPasteboard propertyListForType:@"NSFilenamesPboardType"];
+	 NSString *zPath = [zFileNamesAry objectAtIndex:0];
+	 //NSImage *zNewImage = [[NSImage alloc] initWithContentsOfFile:zPath];
+	 
+	 //if (zNewImage == nil) {			
+	 //			NSLog(@"Error: MyNSView performDragOperation zNewImage == nil");
+	 //			return NO;
+	 //        }// end if
+	 //		
+	 //		self.nsImageObj = zNewImage;				
+	 //		[self setNeedsDisplay:YES];
+	 //		
+	 
+	 NSLog(@"Got a drag!");
+	 return YES;
+	 
+	 }// end if
+	 */
+	//this can't happen ???
+	//NSLog(@"Error MyNSView performDragOperation");
+	//return NO;
+	
+} // end performDragOperation
+
+
+- (void)concludeDragOperation:(id <NSDraggingInfo>)sender {
+    //[self setNeedsDisplay:YES];
+} // end concludeDragOperation
+
 @end
 
 

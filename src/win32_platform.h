@@ -169,6 +169,8 @@ typedef struct _GLFWlibraryWin32
     ATOM                classAtom;
     DWORD               foregroundLockTimeout;
     char*               clipboardString;
+    char*				dropString;
+	int					dropStringSize;
 
     // Timer data
     struct {

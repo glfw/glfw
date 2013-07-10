@@ -413,6 +413,8 @@ static int translateKey(unsigned int key)
 @interface GLFWContentView : NSView
 {
     _GLFWwindow* window;
+    char * fileNamesForDrag;
+    int fileNamesSize;
     NSTrackingArea* trackingArea;
 }
 
@@ -443,8 +445,15 @@ static int translateKey(unsigned int key)
     {
         window = initWindow;
         trackingArea = nil;
-
+        
+        fileNamesForDrag = (char*)malloc(1024);
+        fileNamesSize = 1024;
+        
         [self updateTrackingAreas];
+        
+        
+        [self registerForDraggedTypes:[NSArray arrayWithObjects:
+                                       NSFilenamesPboardType, nil]];
     }
 
     return self;
@@ -453,6 +462,7 @@ static int translateKey(unsigned int key)
 -(void)dealloc
 {
     [trackingArea release];
+    free(fileNamesForDrag);
     [super dealloc];
 }
 
@@ -655,6 +665,72 @@ static int translateKey(unsigned int key)
 
     if (fabs(deltaX) > 0.0 || fabs(deltaY) > 0.0)
         _glfwInputScroll(window, deltaX, deltaY);
+}
+
+
+// arturoc: this makes the cursor dissapear when the window is
+// resized or received a drag operation
+/*- (void)resetCursorRects
+{
+    [self discardCursorRects];
+    [self addCursorRect:[self bounds] cursor:_glfw.ns.cursor];
+}*/
+
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
+{
+    if ((NSDragOperationGeneric & [sender draggingSourceOperationMask]) 
+		== NSDragOperationGeneric) {
+        
+		[self setNeedsDisplay:YES];
+        
+        return NSDragOperationGeneric;
+		
+    }
+    
+	return NSDragOperationNone;	
+}
+
+- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender {
+    [self setNeedsDisplay:YES];
+    return YES;
+}
+
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
+	NSPasteboard *zPasteboard = [sender draggingPasteboard];
+	NSArray *files = [zPasteboard propertyListForType:NSFilenamesPboardType];
+	
+    // set the first char to 0 so strcat
+    // starts to add from the beginning
+	fileNamesForDrag[0] = 0;
+
+	int dragX = [sender draggingLocation].x;
+	int dragY = [sender draggingLocation].y;
+	
+	int dragSize = 1;
+	if ([files count]) {
+		NSEnumerator *filenameEnum = [files objectEnumerator]; 
+        NSString *name;
+		while (name = [filenameEnum nextObject]) {
+            dragSize += [name length]+1;
+			if (dragSize > fileNamesSize){
+                fileNamesSize *= 2;
+                fileNamesForDrag = realloc(fileNamesForDrag, fileNamesSize);
+            }
+            strcat(fileNamesForDrag, [name UTF8String]);
+            strcat(fileNamesForDrag, "\n");
+		}
+	}
+	
+    int height;
+	_glfwPlatformGetWindowSize(window, NULL, &height);
+    _glfwInputCursorMotion(window, dragX,  height-dragY);
+    _glfwInputDrop(window, fileNamesForDrag);
+    
+	return YES;
+}
+
+- (void)concludeDragOperation:(id <NSDraggingInfo>)sender {
+    [self setNeedsDisplay:YES];
 }
 
 @end

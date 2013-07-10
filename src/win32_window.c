@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include <windowsx.h>
-#include <windows.h>
+#include <Shellapi.h>
 
 #define _GLFW_KEY_INVALID -2
 
@@ -719,41 +719,32 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_DROPFILES:
         {
 
-			// DragQueryFile() takes a LPWSTR for the name so we need a TCHAR string
 			TCHAR szName[MAX_PATH];
-
-			// Here we cast the wParam as a HDROP handle to pass into the next functions
 			HDROP hDrop = (HDROP)wParam;
-
 			POINT pt;
 			DragQueryPoint(hDrop, &pt);
-			//printf("%i %i \n", pt.x, pt.y);
 
-			_glfwInputMouseMotion(window,pt.x,pt.y);
+			// Move the mouse to the position of the drop
+			_glfwInputCursorMotion(window,pt.x,pt.y);
 
-
-			// This functions has a couple functionalities.  If you pass in 0xFFFFFFFF in
-			// the second parameter then it returns the count of how many filers were drag
-			// and dropped.  Otherwise, the function fills in the szName string array with
-			// the current file being queried.
+			// Retrieve the names of the dropped objects
 			int count = DragQueryFile(hDrop, 0xFFFFFFFF, szName, MAX_PATH);
-
-		    wchar_t * s;
-			// Here we go through all the files that were drag and dropped then display them
-			for(int i = 0; i < count; i++)
+		    char s[MAX_PATH*count];
+			memset(s,0,sizeof(s));
+			int i;
+			for(i = 0; i < count; i++)
 			{
-				// Grab the name of the file associated with index "i" in the list of files dropped.
-				// Be sure you know that the name is attached to the FULL path of the file.
 				DragQueryFile(hDrop, i, szName, MAX_PATH);
-
-				wcscat(s, (const wchar_t*)szName);
-				wcscat(s, (const wchar_t*)"\n");
+				char* utf8str = _glfwCreateUTF8FromWideString((const wchar_t*)szName)
+				strcat(s, utf8str);
+				strcat(s, "\n");
+				free(utf8str);
 			}
 		    free(_glfw.win32.dropString);
-		    char * str = _glfwCreateUTF8FromWideString(s);
-
+			_glfw.win32.dropString = strdup(s);
+			free(s);
+			
 			_glfwInputDrop(window,_glfw.win32.dropString);
-
 			DragFinish(hDrop);
 			break;
         }
@@ -875,6 +866,8 @@ static int createWindow(_GLFWwindow* window,
                                           window); // Pass object to WM_CREATE
 
     free(wideTitle);
+	
+	DragAcceptFiles(window->win32.handle, TRUE);
 
     if (!window->win32.handle)
     {

@@ -553,7 +553,7 @@ static Cursor createNULLCursor(void)
     XColor col;
     Cursor cursor;
 
-    // TODO: Add error checks
+    _glfwGrabXErrorHandler();
 
     cursormask = XCreatePixmap(_glfw.x11.display, _glfw.x11.root, 1, 1, 1);
     xgc.function = GXclear;
@@ -567,6 +567,8 @@ static Cursor createNULLCursor(void)
                                  &col, &col, 0, 0);
     XFreePixmap(_glfw.x11.display, cursormask);
     XFreeGC(_glfw.x11.display, gc);
+
+    _glfwReleaseXErrorHandler();
 
     return cursor;
 }

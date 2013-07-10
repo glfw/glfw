@@ -45,12 +45,30 @@ void (*glXGetProcAddressEXT(const GLubyte* procName))();
 #endif
 
 
-// Error handler used when creating a context
+// Error handler used when creating a context and blank cursor
 //
 static int errorHandler(Display *display, XErrorEvent* event)
 {
-    _glfw.glx.errorCode = event->error_code;
+    char buffer[8192];
+    XGetErrorText(display,
+                  event->error_code,
+                  buffer, sizeof(buffer));
+
+    _glfwInputError(GLFW_PLATFORM_ERROR, "X11 failure: %s", buffer);
+
     return 0;
+}
+
+void _glfwGrabXErrorHandler(void)
+{
+    XSetErrorHandler(errorHandler);
+}
+
+void _glfwReleaseXErrorHandler(void)
+{
+    // Syncing to make sure all commands are processed
+    XSync(_glfw.x11.display, False);
+    XSetErrorHandler(NULL);
 }
 
 // Returns the specified attribute of the specified GLXFBConfig
@@ -428,7 +446,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     }
 
     _glfw.glx.errorCode = Success;
-    XSetErrorHandler(errorHandler);
+    _glfwGrabXErrorHandler();
 
     if (_glfw.glx.ARB_create_context)
     {
@@ -511,18 +529,12 @@ int _glfwCreateContext(_GLFWwindow* window,
     else
         window->glx.context = createLegacyContext(window, native, share);
 
-    XSetErrorHandler(NULL);
+    _glfwReleaseXErrorHandler();
 
     if (window->glx.context == NULL)
     {
-        char buffer[8192];
-        XGetErrorText(_glfw.x11.display,
-                      _glfw.glx.errorCode,
-                      buffer, sizeof(buffer));
-
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "GLX: Failed to create context: %s",
-                        buffer);
+                        "GLX: Failed to create context.");
 
         return GL_FALSE;
     }

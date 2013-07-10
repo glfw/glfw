@@ -256,4 +256,8 @@ unsigned long _glfwGetWindowProperty(Window window,
                                      Atom type,
                                      unsigned char** value);
 
+// X11 error handler
+void _glfwGrabXErrorHandler(void);
+void _glfwReleaseXErrorHandler(void);
+
 #endif // _x11_platform_h_

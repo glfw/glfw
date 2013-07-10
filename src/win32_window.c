@@ -715,7 +715,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             // TODO: Restore vsync if compositing was disabled
             break;
         }
-        case WM_DROPFILES:
+        case WM_DROPFILES:{
 
 			// DragQueryFile() takes a LPWSTR for the name so we need a TCHAR string
 			TCHAR szName[MAX_PATH];
@@ -753,7 +753,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 			_glfwInputDrop(window,_glfw.win32.dropString);
 
 			DragFinish(hDrop);
-			break;
+        }
+		break;
     }
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);

@@ -30,6 +30,9 @@
 
 #include "internal.h"
 
+#include <float.h>
+#include <math.h>
+
 // Internal key state used for sticky keys
 #define _GLFW_STICK 3
 
@@ -154,9 +157,6 @@ void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int m
 
 void _glfwInputChar(_GLFWwindow* window, unsigned int character)
 {
-    if (character == -1)
-        return;
-
     if (character < 32 || (character > 126 && character < 160))
         return;
 
@@ -189,7 +189,7 @@ void _glfwInputCursorMotion(_GLFWwindow* window, double x, double y)
 {
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
-        if (x == 0.0 && y == 0.0)
+        if (fabs(x) <= DBL_EPSILON && fabs(y) <= DBL_EPSILON)
             return;
 
         window->cursorPosX += x;
@@ -197,7 +197,7 @@ void _glfwInputCursorMotion(_GLFWwindow* window, double x, double y)
     }
     else
     {
-        if (window->cursorPosX == x && window->cursorPosY == y)
+        if (fabs(window->cursorPosX - x) <= DBL_EPSILON && fabs(window->cursorPosY - y) <= DBL_EPSILON)
             return;
 
         window->cursorPosX = x;
@@ -334,7 +334,7 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, double xpos, double ypos)
         return;
 
     // Don't do anything if the cursor position did not change
-    if (xpos == window->cursorPosX && ypos == window->cursorPosY)
+    if (fabs(xpos - window->cursorPosX) <= DBL_EPSILON && fabs(ypos - window->cursorPosY) <= DBL_EPSILON)
         return;
 
     // Set GLFW cursor position

@@ -701,11 +701,6 @@ static void processEvent(XEvent *event)
                            event);
 
             }
-
-#define xdndEnter_sourceWindow(evt)		( (evt)->data.l[0])
-#define xdndEnter_version(evt)			( (evt)->data.l[1] >> 24)
-#define xdndEnter_hasThreeTypes(evt)		(((evt)->xclient.data.l[1] & 0x1UL) == 0)
-#define xdndEnter_typeAt(evt, idx)		( (evt)->xclient.data.l[2 + (idx)])
             else if(event->xclient.message_type == _glfw.x11.XdndEnter)
             {
             	// Xdnd Enter: the drag&drop event has started in the window,

@@ -1279,6 +1279,8 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* window);
  *  @param[in] window The window to query.
  *  @return The value of the close flag.
  *
+ *  @remarks This function may be called from secondary threads.
+ *
  *  @ingroup window
  */
 GLFWAPI int glfwWindowShouldClose(GLFWwindow* window);
@@ -1291,6 +1293,8 @@ GLFWAPI int glfwWindowShouldClose(GLFWwindow* window);
  *
  *  @param[in] window The window whose flag to change.
  *  @param[in] value The new value.
+ *
+ *  @remarks This function may be called from secondary threads.
  *
  *  @ingroup window
  */

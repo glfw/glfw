@@ -125,6 +125,14 @@ or something else, are nowadays expected to be good desktop citizens and allow
 these hotkeys to function even when running in full screen mode.
 
 
+@subsection moving_opened Window open parameter
+
+The `GLFW_OPENED` window parameter has been removed.  As long as the
+[window object](@ref window_object) is around, the window is "open".  To detect
+when the user attempts to close the window, see @ref glfwWindowShouldClose and
+the [close callback](@ref GLFWwindowclosefun).
+
+
 @subsection moving_autopoll Automatic polling of events
 
 GLFW 3 does not automatically poll for events on @ref glfwSwapBuffers, which

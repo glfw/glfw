@@ -177,7 +177,7 @@ void _glfwInitJoysticks(void)
         return;
     }
 
-    for (i = 0;  i < sizeof(dirs) / sizeof(dirs[0]);  i++)
+    for (i = 0;  i < (int)(sizeof(dirs) / sizeof(dirs[0]));  i++)
     {
         struct dirent* entry;
 

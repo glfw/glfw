@@ -36,6 +36,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <float.h>
+#include <math.h>
 
 // Action for EWMH client messages
 #define _NET_WM_STATE_REMOVE        0
@@ -520,7 +522,12 @@ static void processEvent(XEvent *event)
             _glfwInputKey(window, key, event->xkey.keycode, GLFW_PRESS, mods);
 
             if (!(mods & GLFW_MOD_CONTROL) && !(mods & GLFW_MOD_ALT))
-                _glfwInputChar(window, translateChar(&event->xkey));
+            {
+                const int translatedChar = translateChar(&event->xkey);
+
+                if (translatedChar != -1)
+                    _glfwInputChar(window, translatedChar);
+            }
 
             break;
         }
@@ -786,8 +793,8 @@ static void processEvent(XEvent *event)
                     window = _glfwFindWindowByHandle(data->event);
                     if (window)
                     {
-                        if (data->event_x != window->x11.warpPosX ||
-                            data->event_y != window->x11.warpPosY)
+                        if (fabs(data->event_x - window->x11.warpPosX) >= DBL_EPSILON ||
+                            fabs(data->event_y - window->x11.warpPosY) >= DBL_EPSILON)
                         {
                             // The cursor was moved by something other than GLFW
 

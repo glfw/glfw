@@ -344,7 +344,7 @@ void _glfwTerminateContextAPI(void)
 { \
     attribs[index++] = attribName; \
     attribs[index++] = attribValue; \
-    assert(index < sizeof(attribs) / sizeof(attribs[0])); \
+    assert(index < (int)(sizeof(attribs) / sizeof(attribs[0]))); \
 }
 
 // Prepare for creation of the OpenGL context

@@ -730,12 +730,12 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 			// Retrieve the names of the dropped objects
 			int count = DragQueryFile(hDrop, 0xFFFFFFFF, szName, MAX_PATH);
 		    char s[MAX_PATH*count];
-			memset(s,0,sizeof(s));
+			s[0] = 0;
 			int i;
 			for(i = 0; i < count; i++)
 			{
 				DragQueryFile(hDrop, i, szName, MAX_PATH);
-				char* utf8str = _glfwCreateUTF8FromWideString((const wchar_t*)szName)
+				char* utf8str = _glfwCreateUTF8FromWideString((const wchar_t*)szName);
 				strcat(s, utf8str);
 				strcat(s, "\n");
 				free(utf8str);

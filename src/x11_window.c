@@ -714,20 +714,11 @@ static void processEvent(XEvent *event)
             	// the window, ask to convert the selection
 
             	_glfw.x11.xdnd.sourceWindow = event->xclient.data.l[0];
-
-                const Atom formats[] = { _glfw.x11.UTF8_STRING,
-                                         _glfw.x11.COMPOUND_STRING,
-                                         XA_STRING };
-                const int formatCount = sizeof(formats) / sizeof(formats[0]);
-                int i;
-
-                for(i=0;i<formatCount;i++){
-					XConvertSelection(_glfw.x11.display,
-									  _glfw.x11.XdndSelection,
-									  formats[i],
-									  _glfw.x11.XdndSelection,
-									  window->x11.handle, CurrentTime);
-                }
+				XConvertSelection(_glfw.x11.display,
+								  _glfw.x11.XdndSelection,
+								  _glfw.x11.UTF8_STRING,
+								  _glfw.x11.XdndSelection,
+								  window->x11.handle, CurrentTime);
 
             }
             else if(event->xclient.message_type == _glfw.x11.XdndLeave)
@@ -740,12 +731,14 @@ static void processEvent(XEvent *event)
             	// and update the mouse position
             	int absX = (event->xclient.data.l[2]>>16) & 0xFFFF;
             	int absY = (event->xclient.data.l[2]) & 0xFFFF;
-            	int x;
-            	int y;
 
-            	_glfwPlatformGetWindowPos(window,&x,&y);
+                Window child;
+                int x, y;
 
-            	_glfwInputCursorMotion(window,absX-x,absY-y);
+                XTranslateCoordinates(_glfw.x11.display, _glfw.x11.root, window->x11.handle,
+                                      absX, absY, &x, &y, &child);
+
+            	_glfwInputCursorMotion(window,x,y);
 
 				// Xdnd: reply with an XDND status message
 				XClientMessageEvent m;
@@ -763,7 +756,6 @@ static void processEvent(XEvent *event)
 
 				XSendEvent(_glfw.x11.display, event->xclient.data.l[0], False, NoEventMask, (XEvent*)&m);
 				XFlush(_glfw.x11.display);
-
             }
 
             break;
@@ -776,13 +768,36 @@ static void processEvent(XEvent *event)
 				// Xdnd: got a selection notification from the conversion
 				// we asked for, get the data and finish the d&d event
 				char* data;
-				_glfwGetWindowProperty(event->xselection.requestor,
+				free(_glfw.x11.xdnd.string);
+				_glfw.x11.xdnd.string = NULL;
+				int result = _glfwGetWindowProperty(event->xselection.requestor,
 				                                   event->xselection.property,
 				                                   event->xselection.target,
 				                                   (unsigned char**) &data);
 
-				free(_glfw.x11.xdnd.string);
-				_glfw.x11.xdnd.string = strdup(data);
+				if(result){
+					// nautilus seems to add a \r at the end of the paths
+					// remove it so paths can be directly used
+					_glfw.x11.xdnd.string = malloc(strlen(data));
+					char *to = _glfw.x11.xdnd.string;
+					const char *from = data;
+					const char *current = strchr(from, '\r');
+					while(current)
+					{
+						int charsToCopy = current - from;
+						memcpy(to, from, (size_t)charsToCopy);
+						to += charsToCopy;
+
+						from = current+1;
+						current = strchr(from, '\r');
+					}
+
+					size_t remaining = strlen(from);
+
+					memcpy(to, from, remaining);
+					to += remaining;
+					*to = 0;
+				}
 
 				XClientMessageEvent m;
 				memset(&m, sizeof(m), 0);
@@ -792,7 +807,7 @@ static void processEvent(XEvent *event)
 				m.message_type = _glfw.x11.XdndFinished;
 				m.format=32;
 				m.data.l[0] = window->x11.handle;
-				m.data.l[1] = 1;
+				m.data.l[1] = result;
 				m.data.l[2] = _glfw.x11.XdndActionCopy; //We only ever copy.
 
 				// Reply that all is well.
@@ -802,7 +817,7 @@ static void processEvent(XEvent *event)
 
 				XFree(data);
 
-				_glfwInputDrop(window,_glfw.x11.xdnd.string);
+				if(result) _glfwInputDrop(window,_glfw.x11.xdnd.string);
 			}
 			break;
 		}
@@ -1093,14 +1108,21 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 {
     Window child;
     int x, y;
+    int left;
+    int top;
 
-    XTranslateCoordinates(_glfw.x11.display, window->x11.handle, _glfw.x11.root,
+
+   XTranslateCoordinates(_glfw.x11.display, window->x11.handle, _glfw.x11.root,
                           0, 0, &x, &y, &child);
+
+   XTranslateCoordinates(_glfw.x11.display, window->x11.handle,  child,
+		   	   	   	   	  0, 0, &left, &top, &child);
+
 
     if (xpos)
         *xpos = x;
     if (ypos)
-        *ypos = y;
+        *ypos = y-top;
 }
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)

@@ -127,14 +127,11 @@ typedef struct _GLFWlibraryX11
 	Atom 			XdndEnter;
 	Atom 			XdndPosition;
 	Atom 			XdndStatus;
-	Atom 			XdndTypeList;
 	Atom 			XdndActionCopy;
 	Atom 			XdndDrop;
 	Atom 			XdndLeave;
 	Atom 			XdndFinished;
 	Atom 			XdndSelection;
-	Atom 			XdndProxy;
-	Atom			XA_TARGETS;
 	struct{
 		Window 			sourceWindow;
 		char*			string;

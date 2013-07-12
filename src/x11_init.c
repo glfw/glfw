@@ -546,14 +546,11 @@ static GLboolean initExtensions(void)
     _glfw.x11.XdndEnter = XInternAtom(_glfw.x11.display, "XdndEnter", False);
     _glfw.x11.XdndPosition = XInternAtom(_glfw.x11.display, "XdndPosition", False);
     _glfw.x11.XdndStatus = XInternAtom(_glfw.x11.display, "XdndStatus", False);
-    _glfw.x11.XdndTypeList = XInternAtom(_glfw.x11.display, "XdndTypeList", False);
     _glfw.x11.XdndActionCopy = XInternAtom(_glfw.x11.display, "XdndActionCopy", False);
     _glfw.x11.XdndDrop = XInternAtom(_glfw.x11.display, "XdndDrop", False);
     _glfw.x11.XdndLeave = XInternAtom(_glfw.x11.display, "XdndLeave", False);
     _glfw.x11.XdndFinished = XInternAtom(_glfw.x11.display, "XdndFinished", False);
     _glfw.x11.XdndSelection = XInternAtom(_glfw.x11.display, "XdndSelection", False);
-    _glfw.x11.XdndProxy = XInternAtom(_glfw.x11.display, "XdndProxy", False);
-	_glfw.x11.XA_TARGETS = XInternAtom(_glfw.x11.display, "TARGETS", False);
     _glfw.x11.xdnd.string = NULL;
     _glfw.x11.xdnd.type1 = NULL;
     _glfw.x11.xdnd.type2 = NULL;

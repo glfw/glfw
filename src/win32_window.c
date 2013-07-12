@@ -32,6 +32,7 @@
 
 #include <stdlib.h>
 #include <malloc.h>
+#include <Windows.h>
 #include <windowsx.h>
 #include <Shellapi.h>
 
@@ -718,31 +719,32 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         }
         case WM_DROPFILES:
         {
-
 			TCHAR szName[MAX_PATH];
 			HDROP hDrop = (HDROP)wParam;
 			POINT pt;
+			int numFiles = DragQueryFile(hDrop, 0xFFFFFFFF, szName, MAX_PATH);
+			int currentSize = 1;
+			int i;
+			char* utf8str;
 			DragQueryPoint(hDrop, &pt);
 
 			// Move the mouse to the position of the drop
 			_glfwInputCursorMotion(window,pt.x,pt.y);
-
-			// Retrieve the names of the dropped objects
-			int count = DragQueryFile(hDrop, 0xFFFFFFFF, szName, MAX_PATH);
-		    char s[MAX_PATH*count];
-			s[0] = 0;
-			int i;
-			for(i = 0; i < count; i++)
+			
+			memset(_glfw.win32.dropString, 0, _glfw.win32.dropStringSize);
+			for(i = 0; i < numFiles; i++)
 			{
 				DragQueryFile(hDrop, i, szName, MAX_PATH);
-				char* utf8str = _glfwCreateUTF8FromWideString((const wchar_t*)szName);
-				strcat(s, utf8str);
-				strcat(s, "\n");
+				utf8str = _glfwCreateUTF8FromWideString((const wchar_t*)szName);
+				currentSize += strlen(utf8str);
+				if(_glfw.win32.dropStringSize < currentSize){
+					_glfw.win32.dropStringSize *= 2;
+					_glfw.win32.dropString = (char*)realloc(_glfw.win32.dropString,_glfw.win32.dropStringSize);
+				}
+				strcat(_glfw.win32.dropString, utf8str);
+				strcat(_glfw.win32.dropString, "\n");
 				free(utf8str);
 			}
-		    free(_glfw.win32.dropString);
-			_glfw.win32.dropString = strdup(s);
-			free(s);
 			
 			_glfwInputDrop(window,_glfw.win32.dropString);
 			DragFinish(hDrop);

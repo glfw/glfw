@@ -168,6 +168,7 @@ typedef struct _GLFWlibraryWin32
     DWORD               foregroundLockTimeout;
     char*               clipboardString;
     char*				dropString;
+	int					dropStringSize;
 
     // Timer data
     struct {

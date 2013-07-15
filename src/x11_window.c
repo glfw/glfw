@@ -520,7 +520,11 @@ static void processEvent(XEvent *event)
             _glfwInputKey(window, key, event->xkey.keycode, GLFW_PRESS, mods);
 
             if (!(mods & GLFW_MOD_CONTROL) && !(mods & GLFW_MOD_ALT))
-                _glfwInputChar(window, translateChar(&event->xkey));
+            {
+                const int character = translateChar(&event->xkey);
+                if (character != -1)
+                    _glfwInputChar(window, character);
+            }
 
             break;
         }

@@ -154,9 +154,6 @@ void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int m
 
 void _glfwInputChar(_GLFWwindow* window, unsigned int character)
 {
-    if (character == -1)
-        return;
-
     if (character < 32 || (character > 126 && character < 160))
         return;
 

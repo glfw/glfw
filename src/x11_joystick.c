@@ -162,7 +162,8 @@ static void pollJoystickEvents(void)
 void _glfwInitJoysticks(void)
 {
 #ifdef __linux__
-    int i, joy = 0;
+    int joy = 0;
+    size_t i;
     regex_t regex;
     DIR* dir;
     const char* dirs[] =

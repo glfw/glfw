@@ -668,7 +668,7 @@ static int translateKey(unsigned int key)
 //
 static NSString* findAppName(void)
 {
-    unsigned int i;
+    size_t i;
     NSDictionary* infoDictionary = [[NSBundle mainBundle] infoDictionary];
 
     // Keys to search for as potential application names

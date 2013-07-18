@@ -112,6 +112,7 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
                    returned by `glfwGetProcAddress`
  - [Win32] Bugfix: The user32 and dwmapi module handles were not freed on
                    library termination
+ - [Cocoa] Changed scroll callback to use precise scrolling deltas when available
  - [Cocoa] Enabled explicit creation of OpenGL 3.x and 4.x contexts as supported
            by OS X 10.9
  - [Cocoa] Bugfix: The clipboard string was not freed on terminate

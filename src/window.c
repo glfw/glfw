@@ -284,6 +284,9 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.alphaBits   = 8;
     _glfw.hints.depthBits   = 24;
     _glfw.hints.stencilBits = 8;
+
+	// Set the default gpu to -1.
+    _glfw.hints.gpu = -1;
 }
 
 GLFWAPI void glfwWindowHint(int target, int hint)
@@ -366,6 +369,9 @@ GLFWAPI void glfwWindowHint(int target, int hint)
             break;
         case GLFW_OPENGL_PROFILE:
             _glfw.hints.glProfile = hint;
+            break;
+		case GLFW_AFFINITY_GPU:
+            _glfw.hints.gpu = hint;
             break;
         default:
             _glfwInputError(GLFW_INVALID_ENUM, NULL);

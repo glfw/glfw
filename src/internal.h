@@ -299,6 +299,7 @@ struct _GLFWlibrary
         GLboolean   glDebug;
         int         glProfile;
         int         glRobustness;
+        int         gpu;
     } hints;
 
     double          cursorPosX, cursorPosY;

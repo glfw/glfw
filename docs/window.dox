@@ -188,6 +188,11 @@ used by the context.  This can be one of `GLFW_NO_RESET_NOTIFICATION` or
 `GLFW_LOSE_CONTEXT_ON_RESET`, or `GLFW_NO_ROBUSTNESS` to not request
 a robustness strategy.
 
+The `GLFW_AFFINITY_GPU` hint specifies which GPU should render OpenGL commands
+for the associated context. This uses the WGL_NV_gpu_affinity extension, and is
+only available on windows systems. The value corresponds with an index position
+returned from a call to wglEnumGpusNV(...). Note that if sharing context resources
+with another window, both windows must have the same affinity gpu mask.
 
 @subsection window_hints_values Supported and default values
 
@@ -218,6 +223,7 @@ a robustness strategy.
 | `GLFW_OPENGL_FORWARD_COMPAT` | `GL_FALSE`                | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_OPENGL_DEBUG_CONTEXT`  | `GL_FALSE`                | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_OPENGL_PROFILE`        | `GLFW_OPENGL_ANY_PROFILE` | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE` |
+| `GLFW_AFFINITY_GPU`          | -1                        | 0 to maximum number of GPUs |
 
 
 @section window_close Window close flag

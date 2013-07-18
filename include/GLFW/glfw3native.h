@@ -115,6 +115,11 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* window);
  *  @ingroup native
  */
 GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* window);
+/*! @brief Returns the `HDC` of the specified window.
+ *  @return The `HDC` of the specified window.
+ *  @ingroup native
+ */
+GLFWAPI HDC glfwGetWGLDC(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_COCOA)

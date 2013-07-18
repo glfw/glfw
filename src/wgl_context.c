@@ -46,6 +46,9 @@ static void initWGLExtensions(_GLFWwindow* window)
     window->wgl.GetExtensionsStringARB = NULL;
     window->wgl.GetExtensionsStringEXT = NULL;
     window->wgl.CreateContextAttribsARB = NULL;
+	window->wgl.CreateAffinityDCNV = NULL;
+	window->wgl.DeleteDCNV = NULL;
+	window->wgl.EnumGpusNV = NULL;
 
     // This needs to include every extension used below except for
     // WGL_ARB_extensions_string and WGL_EXT_extensions_string
@@ -57,6 +60,7 @@ static void initWGLExtensions(_GLFWwindow* window)
     window->wgl.ARB_create_context_robustness = GL_FALSE;
     window->wgl.EXT_swap_control = GL_FALSE;
     window->wgl.ARB_pixel_format = GL_FALSE;
+	window->wgl.NV_gpu_affinity = GL_FALSE;
 
     window->wgl.GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)
         wglGetProcAddress("wglGetExtensionsStringEXT");
@@ -119,6 +123,21 @@ static void initWGLExtensions(_GLFWwindow* window)
         if (window->wgl.GetPixelFormatAttribivARB)
             window->wgl.ARB_pixel_format = GL_TRUE;
     }
+
+	if (_glfwPlatformExtensionSupported("WGL_NV_gpu_affinity"))
+	{
+		window->wgl.EnumGpusNV = (PFNWGLENUMGPUSNVPROC)
+			wglGetProcAddress("wglEnumGpusNV");
+
+		window->wgl.CreateAffinityDCNV = (PFNWGLCREATEAFFINITYDCNVPROC)
+			wglGetProcAddress("wglCreateAffinityDCNV");
+
+		window->wgl.DeleteDCNV = (PFNWGLDELETEDCNVPROC)
+			wglGetProcAddress("wglDeleteDCNV");
+		
+		if (window->wgl.EnumGpusNV && window->wgl.CreateAffinityDCNV)
+			window->wgl.NV_gpu_affinity = GL_TRUE;
+	}
 }
 
 // Returns the specified attribute of the specified pixel format
@@ -358,7 +377,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     if (wndconfig->share)
         share = wndconfig->share->wgl.context;
 
-    window->wgl.dc = GetDC(window->win32.handle);
+	window->wgl.dc = GetDC(window->win32.handle);
     if (!window->wgl.dc)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -383,6 +402,30 @@ int _glfwCreateContext(_GLFWwindow* window,
                         "Win32: Failed to set selected pixel format");
         return GL_FALSE;
     }
+
+	// If the nvidia affinity extension is available and the gpu has been set through a hint, create an affinityDC bound to a specific gpu.
+	// We create the affinityDC and then make an affinity context using the
+	// affinityDC. Because we are doing onscreen rendering and the affinityDC isn't bound to a window (i.e. doesn't contain a framebuffer),
+	// we make the affinitycontext current with the normal dc that is bound to the window.
+	if (window->wgl.NV_gpu_affinity && _glfw.hints.gpu != -1)
+	{
+		HGPUNV gpuMask;
+		window->wgl.EnumGpusNV(_glfw.hints.gpu, &gpuMask);
+		window->wgl.affinityDC = window->wgl.CreateAffinityDCNV(&gpuMask);
+		if (!window->wgl.affinityDC)
+		{
+			_glfwInputError(GLFW_PLATFORM_ERROR,
+							"WGL: Failed to create NV Affinity DC for window");
+		}
+		else {
+			if (!SetPixelFormat(window->wgl.affinityDC, pixelFormat, &pfd))
+			{
+				_glfwInputError(GLFW_PLATFORM_ERROR,
+								"Win32: Failed to set selected pixel format for affinity DC");
+				return GL_FALSE;
+			}
+		}
+	}
 
     if (window->wgl.ARB_create_context)
     {
@@ -437,9 +480,19 @@ int _glfwCreateContext(_GLFWwindow* window,
 
         setWGLattrib(0, 0);
 
-        window->wgl.context = window->wgl.CreateContextAttribsARB(window->wgl.dc,
-                                                                  share,
-                                                                  attribs);
+        if (window->wgl.affinityDC)
+		{
+			window->wgl.context = window->wgl.CreateContextAttribsARB(window->wgl.affinityDC,
+																	  share,
+																	  attribs);
+		}
+		else
+		{
+			window->wgl.context = window->wgl.CreateContextAttribsARB(window->wgl.dc,
+																	  share,
+																	  attribs);
+		}
+
         if (!window->wgl.context)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
@@ -449,7 +502,11 @@ int _glfwCreateContext(_GLFWwindow* window,
     }
     else
     {
-        window->wgl.context = wglCreateContext(window->wgl.dc);
+        if (window->wgl.affinityDC)
+			window->wgl.context = wglCreateContext(window->wgl.affinityDC);
+		else
+			window->wgl.context = wglCreateContext(window->wgl.dc);
+
         if (!window->wgl.context)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -490,8 +547,14 @@ void _glfwDestroyContext(_GLFWwindow* window)
     if (window->wgl.dc)
     {
         ReleaseDC(window->win32.handle, window->wgl.dc);
-        window->wgl.dc = NULL;
+		window->wgl.dc = NULL;
     }
+
+	if (window->wgl.affinityDC)
+	{
+		window->wgl.DeleteDCNV(window->wgl.affinityDC);
+		window->wgl.affinityDC = NULL;
+	}
 }
 
 // Analyzes the specified context for possible recreation
@@ -569,6 +632,12 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
             required = GL_TRUE;
         }
     }
+
+	if (window->wgl.NV_gpu_affinity && _glfw.hints.gpu != -1)
+	{
+		// We have requested an nvidia affinity context with a specific gpu
+		required = GL_TRUE;
+	}
 
     if (required)
         return _GLFW_RECREATION_REQUIRED;
@@ -668,3 +737,9 @@ GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* handle)
     return window->wgl.context;
 }
 
+GLFWAPI HDC glfwGetWGLDC(GLFWwindow* handle)
+{
+	_GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+	return window->wgl.dc;
+}

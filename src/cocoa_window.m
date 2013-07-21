@@ -560,7 +560,7 @@ static int translateKey(unsigned int key)
                                                userInfo:nil];
 
     [self addTrackingArea:trackingArea];
-	[super updateTrackingAreas];
+    [super updateTrackingAreas];
 }
 
 - (void)keyDown:(NSEvent *)event
@@ -606,8 +606,27 @@ static int translateKey(unsigned int key)
 
 - (void)scrollWheel:(NSEvent *)event
 {
-    double deltaX = [event deltaX];
-    double deltaY = [event deltaY];
+    double deltaX, deltaY;
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+    if ([event respondsToSelector:@selector(hasPreciseScrollingDeltas:)])
+    {
+        deltaX = [event scrollingDeltaX];
+        deltaY = [event scrollingDeltaY];
+
+        if ([event hasPreciseScrollingDeltas])
+        {
+            deltaX *= 0.1;
+            deltaY *= 0.1;
+        }
+    }
+    else
+#else
+    {
+        deltaX = [event deltaX];
+        deltaY = [event deltaY];
+    }
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
     if (fabs(deltaX) > 0.0 || fabs(deltaY) > 0.0)
         _glfwInputScroll(window, deltaX, deltaY);

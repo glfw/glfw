@@ -132,10 +132,9 @@ extern "C" {
  #define GLFW_CALLBACK_DEFINED
 #endif /* CALLBACK */
 
-/* Most <GL/glu.h> variants on Windows need wchar_t */
-#if defined(_WIN32)
- #include <stddef.h>
-#endif
+/* Most GL/glu.h variants on Windows need wchar_t
+ * OpenGL/gl.h blocks the definition of ptrdiff_t by glext.h on OS X */
+#include <stddef.h>
 
 
 /* ---------------- GLFW related system specific defines ----------------- */

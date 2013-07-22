@@ -140,6 +140,10 @@ extern "C" {
 /* ---------------- GLFW related system specific defines ----------------- */
 
 #if defined(GLFW_DLL) && defined(_GLFW_BUILD_DLL)
+ /* GLFW_DLL is defined by users of GLFW when compiling programs that will link
+  * to the DLL version of the GLFW library.  _GLFW_BUILD_DLL is defined by the
+  * GLFW configuration header when compiling the DLL version of the library.
+  */
  #error "You must not have both GLFW_DLL and _GLFW_BUILD_DLL defined"
 #endif
 

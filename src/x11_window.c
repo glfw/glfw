@@ -289,7 +289,6 @@ static GLboolean createWindow(_GLFWwindow* window,
     // Enable Xdnd
     {
     	//Announce XDND support
-    	XMapWindow(_glfw.x11.display, window->x11.handle);
     	Atom XdndAware = XInternAtom(_glfw.x11.display, "XdndAware", False);
     	Atom version=5;
     	XChangeProperty(_glfw.x11.display, window->x11.handle, XdndAware, XA_ATOM, 32, PropModeReplace, (unsigned char*)&version, 1);

@@ -290,7 +290,7 @@ static GLboolean createWindow(_GLFWwindow* window,
     if(_glfw.x11.XdndAware!=None)
     {
     	//Announce XDND support
-		unsigned long version=5;
+		Atom version=5;
 		XChangeProperty(_glfw.x11.display, window->x11.handle, _glfw.x11.XdndAware, XA_ATOM, 32, PropModeReplace, (unsigned char*)&version, 1);
     }
 
@@ -1109,15 +1109,18 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 {
     Window child;
     int x, y;
-    int left;
-    int top;
+    int left=0;
+    int top=0;
 
 
    XTranslateCoordinates(_glfw.x11.display, window->x11.handle, _glfw.x11.root,
                           0, 0, &x, &y, &child);
 
-   XTranslateCoordinates(_glfw.x11.display, window->x11.handle,  child,
+   if(child)
+   {
+	   XTranslateCoordinates(_glfw.x11.display, window->x11.handle,  child,
 		   	   	   	   	  0, 0, &left, &top, &child);
+   }
 
 
     if (xpos)

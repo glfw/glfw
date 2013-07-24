@@ -287,11 +287,11 @@ static GLboolean createWindow(_GLFWwindow* window,
     }
 
     // Enable Xdnd
+    if(_glfw.x11.XdndAware!=None)
     {
     	//Announce XDND support
-    	Atom XdndAware = XInternAtom(_glfw.x11.display, "XdndAware", False);
-    	Atom version=5;
-    	XChangeProperty(_glfw.x11.display, window->x11.handle, XdndAware, XA_ATOM, 32, PropModeReplace, (unsigned char*)&version, 1);
+		unsigned long version=5;
+		XChangeProperty(_glfw.x11.display, window->x11.handle, _glfw.x11.XdndAware, XA_ATOM, 32, PropModeReplace, (unsigned char*)&version, 1);
     }
 
     _glfwPlatformSetWindowTitle(window, wndconfig->title);
@@ -711,7 +711,6 @@ static void processEvent(XEvent *event)
             {
             	// Xdnd Drop: The drag&drop event has finished dropping on
             	// the window, ask to convert the selection
-
             	_glfw.x11.xdnd.sourceWindow = event->xclient.data.l[0];
 				XConvertSelection(_glfw.x11.display,
 								  _glfw.x11.XdndSelection,
@@ -761,7 +760,6 @@ static void processEvent(XEvent *event)
         }
         case SelectionNotify:
 		{
-
 			if(event->xselection.property != None)
 			{
 				// Xdnd: got a selection notification from the conversion
@@ -816,7 +814,11 @@ static void processEvent(XEvent *event)
 
 				XFree(data);
 
-				if(result) _glfwInputDrop(window,_glfw.x11.xdnd.string);
+				if(result)
+				{
+					_glfwInputDrop(window,_glfw.x11.xdnd.string);
+
+				}
 			}
 			break;
 		}

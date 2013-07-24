@@ -124,6 +124,7 @@ typedef struct _GLFWlibraryX11
     Atom            MOTIF_WM_HINTS;
 
 	// Atoms for Xdnd
+    Atom			XdndAware;
 	Atom 			XdndEnter;
 	Atom 			XdndPosition;
 	Atom 			XdndStatus;

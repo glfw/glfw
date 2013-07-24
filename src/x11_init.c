@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <stdio.h>
 
 
 // Translate an X11 key code to a GLFW key code.
@@ -397,7 +398,6 @@ static void detectEWMH(void)
                                        (unsigned char**) &supportedAtoms);
 
     // See which of the atoms we support that are supported by the WM
-
     _glfw.x11.NET_WM_STATE =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE");
     _glfw.x11.NET_WM_STATE_FULLSCREEN =
@@ -543,18 +543,15 @@ static GLboolean initExtensions(void)
     // Find or create drag and drop atoms
 
 	//Atoms for Xdnd
-    _glfw.x11.XdndEnter = XInternAtom(_glfw.x11.display, "XdndEnter", False);
-    _glfw.x11.XdndPosition = XInternAtom(_glfw.x11.display, "XdndPosition", False);
-    _glfw.x11.XdndStatus = XInternAtom(_glfw.x11.display, "XdndStatus", False);
-    _glfw.x11.XdndActionCopy = XInternAtom(_glfw.x11.display, "XdndActionCopy", False);
-    _glfw.x11.XdndDrop = XInternAtom(_glfw.x11.display, "XdndDrop", False);
-    _glfw.x11.XdndLeave = XInternAtom(_glfw.x11.display, "XdndLeave", False);
-    _glfw.x11.XdndFinished = XInternAtom(_glfw.x11.display, "XdndFinished", False);
-    _glfw.x11.XdndSelection = XInternAtom(_glfw.x11.display, "XdndSelection", False);
-    _glfw.x11.xdnd.string = NULL;
-    _glfw.x11.xdnd.type1 = NULL;
-    _glfw.x11.xdnd.type2 = NULL;
-    _glfw.x11.xdnd.type3 = NULL;
+    _glfw.x11.XdndAware = XInternAtom(_glfw.x11.display, "XdndAware", True);
+    _glfw.x11.XdndEnter = XInternAtom(_glfw.x11.display, "XdndEnter", True);
+    _glfw.x11.XdndPosition = XInternAtom(_glfw.x11.display, "XdndPosition", True);
+    _glfw.x11.XdndStatus = XInternAtom(_glfw.x11.display, "XdndStatus", True);
+    _glfw.x11.XdndActionCopy = XInternAtom(_glfw.x11.display, "XdndActionCopy", True);
+    _glfw.x11.XdndDrop = XInternAtom(_glfw.x11.display, "XdndDrop", True);
+    _glfw.x11.XdndLeave = XInternAtom(_glfw.x11.display, "XdndLeave", True);
+    _glfw.x11.XdndFinished = XInternAtom(_glfw.x11.display, "XdndFinished", True);
+    _glfw.x11.XdndSelection = XInternAtom(_glfw.x11.display, "XdndSelection", True);
 
 
 

@@ -609,7 +609,7 @@ static int translateKey(unsigned int key)
     double deltaX, deltaY;
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if ([event respondsToSelector:@selector(hasPreciseScrollingDeltas:)])
+    if ([event respondsToSelector:@selector(hasPreciseScrollingDeltas)])
     {
         deltaX = [event scrollingDeltaX];
         deltaY = [event scrollingDeltaY];
@@ -621,12 +621,11 @@ static int translateKey(unsigned int key)
         }
     }
     else
-#else
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
     {
         deltaX = [event deltaX];
         deltaY = [event deltaY];
     }
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
     if (fabs(deltaX) > 0.0 || fabs(deltaY) > 0.0)
         _glfwInputScroll(window, deltaX, deltaY);

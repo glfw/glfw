@@ -985,6 +985,17 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
     XTranslateCoordinates(_glfw.x11.display, window->x11.handle, _glfw.x11.root,
                           0, 0, &x, &y, &child);
 
+    if (child != None)
+    {
+        int left, top;
+
+        XTranslateCoordinates(_glfw.x11.display, window->x11.handle, child,
+                              0, 0, &left, &top, &child);
+
+        x -= left;
+        y -= top;
+    }
+
     if (xpos)
         *xpos = x;
     if (ypos)

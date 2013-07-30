@@ -122,6 +122,8 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
                  of the actual resolution of the selected video mode
  - [X11] Bugfix: Screensaver override for full screen windows had a possible
                  race condition
+ - [X11] Bugfix: The reported window position did not account for the size of
+                 the window frame on some WMs
 
 
 ## Contact
@@ -151,6 +153,7 @@ skills.
 
  - Bobyshev Alexander
  - artblanc
+ - arturo
  - Matt Arsenault
  - Keith Bauer
  - John Bartholomew

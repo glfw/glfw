@@ -158,7 +158,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     if (width <= 0 || height <= 0)
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid window size");
-        return GL_FALSE;
+        return NULL;
     }
 
     // Set up desired framebuffer config
@@ -196,7 +196,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
 
     // Check the OpenGL bits of the window config
     if (!_glfwIsValidContextConfig(&wndconfig))
-        return GL_FALSE;
+        return NULL;
 
     window = calloc(1, sizeof(_GLFWwindow));
     window->next = _glfw.windowListHead;
@@ -229,7 +229,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     {
         glfwDestroyWindow((GLFWwindow*) window);
         glfwMakeContextCurrent((GLFWwindow*) previous);
-        return GL_FALSE;
+        return NULL;
     }
 
     glfwMakeContextCurrent((GLFWwindow*) window);
@@ -239,7 +239,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     {
         glfwDestroyWindow((GLFWwindow*) window);
         glfwMakeContextCurrent((GLFWwindow*) previous);
-        return GL_FALSE;
+        return NULL;
     }
 
     // Verify the context against the requested parameters
@@ -247,7 +247,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     {
         glfwDestroyWindow((GLFWwindow*) window);
         glfwMakeContextCurrent((GLFWwindow*) previous);
-        return GL_FALSE;
+        return NULL;
     }
 
     // Clearing the front buffer to black to avoid garbage pixels left over

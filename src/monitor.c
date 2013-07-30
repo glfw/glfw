@@ -141,8 +141,8 @@ void _glfwInputMonitorChange(void)
                 window->monitor = NULL;
         }
 
-        if (_glfw.monitorCallback)
-            _glfw.monitorCallback((GLFWmonitor*) monitors[i], GLFW_DISCONNECTED);
+        if (_glfw.callbacks.monitor)
+            _glfw.callbacks.monitor((GLFWmonitor*) monitors[i], GLFW_DISCONNECTED);
     }
 
     // Find and report newly connected monitors (not in the old list)
@@ -163,8 +163,8 @@ void _glfwInputMonitorChange(void)
         if (j < monitorCount)
             continue;
 
-        if (_glfw.monitorCallback)
-            _glfw.monitorCallback((GLFWmonitor*) _glfw.monitors[i], GLFW_CONNECTED);
+        if (_glfw.callbacks.monitor)
+            _glfw.callbacks.monitor((GLFWmonitor*) _glfw.monitors[i], GLFW_CONNECTED);
     }
 
     _glfwDestroyMonitors(monitors, monitorCount);
@@ -326,7 +326,7 @@ GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* handle)
 GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(_glfw.monitorCallback, cbfun);
+    _GLFW_SWAP_POINTERS(_glfw.callbacks.monitor, cbfun);
     return cbfun;
 }
 

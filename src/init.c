@@ -150,6 +150,8 @@ GLFWAPI void glfwTerminate(void)
     if (!_glfwInitialized)
         return;
 
+    memset(&_glfw.callbacks, 0, sizeof(_glfw.callbacks));
+
     // Close all remaining windows
     while (_glfw.windowListHead)
         glfwDestroyWindow((GLFWwindow*) _glfw.windowListHead);

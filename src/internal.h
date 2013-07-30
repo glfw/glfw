@@ -304,7 +304,10 @@ struct _GLFWlibrary
 
     _GLFWmonitor**  monitors;
     int             monitorCount;
-    GLFWmonitorfun  monitorCallback;
+
+    struct {
+        GLFWmonitorfun  monitor;
+    } callbacks;
 
     // This is defined in the window API's platform.h
     _GLFW_PLATFORM_LIBRARY_WINDOW_STATE;

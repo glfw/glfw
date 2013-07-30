@@ -604,91 +604,63 @@ GLFWAPI GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow* handle,
                                                   GLFWwindowposfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-    GLFWwindowposfun previous;
-
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-
-    previous = window->callbacks.pos;
-    window->callbacks.pos = cbfun;
-    return previous;
+    _GLFW_SWAP_POINTERS(window->callbacks.pos, cbfun);
+    return cbfun;
 }
 
 GLFWAPI GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* handle,
                                                     GLFWwindowsizefun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-    GLFWwindowsizefun previous;
-
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-
-    previous = window->callbacks.size;
-    window->callbacks.size = cbfun;
-    return previous;
+    _GLFW_SWAP_POINTERS(window->callbacks.size, cbfun);
+    return cbfun;
 }
 
 GLFWAPI GLFWwindowclosefun glfwSetWindowCloseCallback(GLFWwindow* handle,
                                                       GLFWwindowclosefun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-    GLFWwindowclosefun previous;
-
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-
-    previous = window->callbacks.close;
-    window->callbacks.close = cbfun;
-    return previous;
+    _GLFW_SWAP_POINTERS(window->callbacks.close, cbfun);
+    return cbfun;
 }
 
 GLFWAPI GLFWwindowrefreshfun glfwSetWindowRefreshCallback(GLFWwindow* handle,
                                                           GLFWwindowrefreshfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-    GLFWwindowrefreshfun previous;
-
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-
-    previous = window->callbacks.refresh;
-    window->callbacks.refresh = cbfun;
-    return previous;
+    _GLFW_SWAP_POINTERS(window->callbacks.refresh, cbfun);
+    return cbfun;
 }
 
 GLFWAPI GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* handle,
                                                       GLFWwindowfocusfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-    GLFWwindowfocusfun previous;
-
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-
-    previous = window->callbacks.focus;
-    window->callbacks.focus = cbfun;
-    return previous;
+    _GLFW_SWAP_POINTERS(window->callbacks.focus, cbfun);
+    return cbfun;
 }
 
 GLFWAPI GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow* handle,
                                                           GLFWwindowiconifyfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-    GLFWwindowiconifyfun previous;
-
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-
-    previous = window->callbacks.iconify;
-    window->callbacks.iconify = cbfun;
-    return previous;
+    _GLFW_SWAP_POINTERS(window->callbacks.iconify, cbfun);
+    return cbfun;
 }
 
 GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* handle,
                                                               GLFWframebuffersizefun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-    GLFWframebuffersizefun previous;
-
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-
-    previous = window->callbacks.fbsize;
-    window->callbacks.fbsize = cbfun;
-    return previous;
+    _GLFW_SWAP_POINTERS(window->callbacks.fbsize, cbfun);
+    return cbfun;
 }
 
 GLFWAPI void glfwPollEvents(void)

@@ -328,12 +328,9 @@ GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* handle)
 
 GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 {
-    GLFWmonitorfun previous;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-
-    previous = _glfw.monitorCallback;
-    _glfw.monitorCallback = cbfun;
-    return previous;
+    _GLFW_SWAP_POINTERS(_glfw.monitorCallback, cbfun);
+    return cbfun;
 }
 
 GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)

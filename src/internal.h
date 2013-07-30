@@ -120,6 +120,15 @@ typedef struct _GLFWmonitor     _GLFWmonitor;
         return x;                                    \
     }
 
+// Swaps the provided pointers
+#define _GLFW_SWAP_POINTERS(x, y) \
+    {                             \
+        void* t;                  \
+        t = x;                    \
+        x = y;                    \
+        y = t;                    \
+    }
+
 
 //========================================================================
 // Internal types

@@ -192,8 +192,7 @@ GLFWAPI const char* glfwGetVersionString(void)
 
 GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun)
 {
-    GLFWerrorfun previous = _glfwErrorCallback;
-    _glfwErrorCallback = cbfun;
-    return previous;
+    _GLFW_SWAP_POINTERS(_glfwErrorCallback, cbfun);
+    return cbfun;
 }
 

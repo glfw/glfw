@@ -97,15 +97,6 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     if (wndconfig->glMajor > 2)
     {
-        if (!wndconfig->glForward)
-        {
-            _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                            "NSOpenGL: The targeted version of OS X only "
-                            "supports OpenGL 3.2 and later versions if they "
-                            "are forward-compatible");
-            return GL_FALSE;
-        }
-
         if (wndconfig->glProfile != GLFW_OPENGL_CORE_PROFILE)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,

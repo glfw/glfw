@@ -329,7 +329,7 @@ void _glfwTerminateContextAPI(void)
 { \
     attribs[index++] = attribName; \
     attribs[index++] = attribValue; \
-    assert((size_t) index < sizeof(attribs) / sizeof(attribs[0])); \
+    assert(index < sizeof(attribs) / sizeof(attribs[0])); \
 }
 
 // Prepare for creation of the OpenGL context
@@ -378,7 +378,8 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     if (window->wgl.ARB_create_context)
     {
-        int index = 0, mask = 0, flags = 0, strategy = 0;
+        int mask = 0, flags = 0, strategy = 0;
+        size_t index = 0;
 
         if (wndconfig->clientAPI == GLFW_OPENGL_API)
         {

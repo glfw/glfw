@@ -36,6 +36,9 @@
 //
 static Bool isSelectionMessage(Display* display, XEvent* event, XPointer pointer)
 {
+    (void)display;
+    (void)pointer;
+
     return event->type == SelectionRequest ||
            event->type == SelectionNotify ||
            event->type == SelectionClear;
@@ -181,6 +184,8 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
 
 void _glfwHandleSelectionClear(XEvent* event)
 {
+    (void) event;
+
     free(_glfw.x11.selection.string);
     _glfw.x11.selection.string = NULL;
 }

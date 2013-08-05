@@ -591,6 +591,8 @@ static void terminateDisplay(void)
 //
 static int errorHandler(Display *display, XErrorEvent* event)
 {
+    (void)display;
+
     _glfw.x11.errorCode = event->error_code;
     return 0;
 }

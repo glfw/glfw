@@ -124,6 +124,8 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
                  race condition
  - [X11] Bugfix: The reported window position did not account for the size of
                  the window frame on some WMs
+ - [X11] Bugfix: The original video mode of a monitor was overwritten by calls
+                 to glfwSetWindowSize
 
 
 ## Contact

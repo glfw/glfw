@@ -111,7 +111,8 @@ void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
             }
         }
 
-        monitor->x11.oldMode = ci->mode;
+        if (monitor->x11.oldMode == None)
+            monitor->x11.oldMode = ci->mode;
 
         XRRSetCrtcConfig(_glfw.x11.display,
                          sr, monitor->x11.crtc,
@@ -137,6 +138,9 @@ void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
         XRRScreenResources* sr;
         XRRCrtcInfo* ci;
 
+        if (monitor->x11.oldMode == None)
+            return;
+
         sr = XRRGetScreenResources(_glfw.x11.display, _glfw.x11.root);
         ci = XRRGetCrtcInfo(_glfw.x11.display, sr, monitor->x11.crtc);
 
@@ -151,6 +155,8 @@ void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 
         XRRFreeCrtcInfo(ci);
         XRRFreeScreenResources(sr);
+
+        monitor->x11.oldMode = None;
     }
 }
 

@@ -36,6 +36,15 @@
 #endif // __BORLANDC__
 
 
+#if defined(_GLFW_USE_OPTIMUS_HPG)
+
+// Applications exporting this symbol with this value will be automatically
+// directed to the high-performance GPU on nVidia Optimus systems
+//
+GLFWAPI DWORD NvOptimusEnablement = 0x00000001;
+
+#endif // _GLFW_USE_OPTIMUS_HPG
+
 #if defined(_GLFW_BUILD_DLL)
 
 // GLFW DLL entry point

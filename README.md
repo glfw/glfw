@@ -173,6 +173,10 @@ static library version of the Visual C++ runtime library.
 when DWM compositing is enabled.  This can lead to severe jitter and is not
 usually recommended.
 
+`GLFW_USE_OPTIMUS_HPG` determines whether to export the `NvOptimusEnablement`
+symbol, which forces the use of the high-performance GPU on nVidia Optimus
+systems.
+
 
 #### EGL specific options
 
@@ -204,6 +208,8 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
  - Bugfix: The default for `GLFW_ALPHA_BITS` was set to zero
  - [Win32] Added `_GLFW_USE_DWM_SWAP_INTERVAL` for forcing the swap interval
            to be set even when DWM compositing is enabled
+ - [Win32] Added support for forcing the use of the high-performance GPU
+           on nVidia Optimus systems
  - [Win32] Bugfix: The clipboard string was not freed on terminate
  - [Win32] Bugfix: Entry points for OpenGL 1.0 and 1.1 functions were not
                    returned by `glfwGetProcAddress`

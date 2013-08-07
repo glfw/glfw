@@ -55,6 +55,8 @@
 #cmakedefine _GLFW_NO_DLOAD_WINMM
 // Define this to 1 if glfwSwapInterval should ignore DWM compositing status
 #cmakedefine _GLFW_USE_DWM_SWAP_INTERVAL
+// Define this to 1 to force use of high-performance GPU on Optimus systems
+#cmakedefine _GLFW_USE_OPTIMUS_HPG
 
 // Define this to 1 if glXGetProcAddress is available
 #cmakedefine _GLFW_HAS_GLXGETPROCADDRESS

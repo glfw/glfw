@@ -29,8 +29,10 @@ To compile GLFW and the accompanying example programs, you will need the
 To compile GLFW for X11 and GLX, you need to have the X and OpenGL header
 packages installed.  For example, on Ubuntu and other distributions based on
 Debian GNU/Linux, you need to install the `xorg-dev` and `libglu1-mesa-dev`
-packages.  Note that using header files from Mesa *will not* tie your binary to
-the Mesa implementation of OpenGL.
+packages.  The former pulls in all X.org header packages and the latter
+pulls in the Mesa OpenGL and GLU packages.  Note that using header files and
+libraries from Mesa during compilation *will not* tie your binaries to the Mesa
+implementation of OpenGL.
 
 
 ### CMake options

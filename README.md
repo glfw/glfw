@@ -89,27 +89,38 @@ compilation *will not* tie your binaries to the Mesa implementation of OpenGL.
 ### Generating with CMake
 
 Once you have all necessary dependencies, it is time to generate the project
-files or makefiles for your development environment.  If you are using the
-command-line version of CMake, the easiest way is to make an in-tree build.
-Enter the root directory of the GLFW source tree and do
+files or makefiles for your development environment.  CMake needs to know two
+paths for this: the path to the source directory and the target path for the
+generated files and compiled binaries.  If these are the same, it is called an
+in-tree build, otherwise it is called an out-of-tree build.
+
+One of several advantages of out-of-tree builds is that you can generate files
+and compile for different development environments using a single source tree.
+
+#### Using CMake from the command-line
+
+To make an in-tree build, enter the root directory of the GLFW source tree and
+run CMake.  The current directory is used as target path, while the path
+provided as an argument is used to find the source tree.
 
     cd <glfw-root-dir>
     cmake .
 
-The dot is an argument telling CMake where the root of the source tree is
-located, while the current directory is used as the target for binaries.  If
-you prefer to do an out-of-tree build, make another directory, enter it and
-run CMake with the (relative or absolute) path to the root directory.
+To make an out-of-tree build, make another directory, enter it and run CMake
+with the (relative or absolute) path to the root of the source tree as an
+argument.
 
     cd <glfw-root-dir>
     mkdir build
     cd build
     cmake ..
 
+#### Using the CMake GUI
+
 If you are using the GUI version, choose the root of the GLFW source tree as
 source location and the same directory or another, empty directory as the
 destination for binaries.  Choose *Configure*, change any options you wish to,
-*Configure* again and then *Generate*.
+*Configure* again to let the changes take effect and then *Generate*.
 
 
 ### CMake options

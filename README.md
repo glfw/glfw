@@ -77,12 +77,12 @@ the Mac App Store.
 
 #### Unix-like systems with X11
 
-To compile GLFW for X11 and GLX, you need to have the X and OpenGL header
-packages installed, as well as the basic development tools like GCC and make.
-For example, on Ubuntu and other distributions based on Debian GNU/Linux, you
-need to install the `xorg-dev` and `libglu1-mesa-dev` packages.  The former
-pulls in all X.org header packages and the latter pulls in the Mesa OpenGL and
-GLU packages.  Note that using header files and libraries from Mesa during
+To compile GLFW for X11, you need to have the X11 and OpenGL header packages
+installed, as well as the basic development tools like GCC and make.  For
+example, on Ubuntu and other distributions based on Debian GNU/Linux, you need
+to install the `xorg-dev` and `libglu1-mesa-dev` packages.  The former pulls in
+all X.org header packages and the latter pulls in the Mesa OpenGL and GLU
+packages.  Note that using header files and libraries from Mesa during
 compilation *will not* tie your binaries to the Mesa implementation of OpenGL.
 
 
@@ -96,6 +96,7 @@ in-tree build, otherwise it is called an out-of-tree build.
 
 One of several advantages of out-of-tree builds is that you can generate files
 and compile for different development environments using a single source tree.
+
 
 #### Using CMake from the command-line
 
@@ -114,6 +115,7 @@ argument.
     mkdir build
     cd build
     cmake ..
+
 
 #### Using the CMake GUI
 

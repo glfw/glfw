@@ -108,6 +108,7 @@ typedef struct _GLFWlibraryNS
     GLboolean       cursorHidden;
 
     char*           clipboardString;
+    char*           keyName;
 
     _GLFWjoy        joysticks[GLFW_JOYSTICK_LAST + 1];
 } _GLFWlibraryNS;

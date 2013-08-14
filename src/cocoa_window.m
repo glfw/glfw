@@ -1098,7 +1098,11 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 
 const char* _glfwPlatformGetKeyName(int key)
 {
-    // First try to translate virtual key mac os x style
+    // free temp keyname
+    free(_glfw.ns.keyName);
+    _glfw.ns.keyName = 0;
+
+    // Try to translate virtual key mac os x style
     UInt16 vKey = 0;
     switch(key)
     {
@@ -1189,8 +1193,8 @@ const char* _glfwPlatformGetKeyName(int key)
             if (actualStringLength > 0 && status == noErr)
             {
                 NSString* tempNS = [[NSString stringWithCharacters:unicodeString length:(NSUInteger)actualStringLength] uppercaseString];
-                char* pTodoFree = strdup([tempNS UTF8String]);
-                return pTodoFree;
+                _glfw.ns.keyName = strdup([tempNS UTF8String]);
+                return _glfw.ns.keyName;
             }
         }
     }

@@ -1094,6 +1094,11 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
     }
 }
 
+const char*_glfwPlatformGetKeyName(int key)
+{
+	// TODO: Implement.
+	return NULL;
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

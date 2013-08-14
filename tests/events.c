@@ -340,15 +340,36 @@ static void scroll_callback(GLFWwindow* window, double x, double y)
     printf("%08x at %0.3f: Scroll: %0.3f %0.3f\n", counter++, glfwGetTime(), x, y);
 }
 
+// Work-around for windows console output of UTF-8 strings
+#ifdef _WIN32
+    #define WIN32_LEAN_AND_MEAN
+    #include "Windows.h"
+    void PlatformPrintKeyName(const char* keyName)
+    {
+        WCHAR target[80];
+        MultiByteToWideChar(CP_UTF8, 0, keyName, -1, target, 80);
+        printf(" (%ls)",  target );
+    }
+#else
+    void PlatformPrintKeyName(const char* keyName)
+    {
+        printf(" (%s)",  keyName );
+    }
+#endif
+
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    const char* name = get_key_name(key);
+    const char* name = glfwGetKeyName(key);
+    const char* glfwName = get_key_name(key);
 
     printf("%08x at %0.3f: Key 0x%04x Scancode 0x%04x",
            counter++, glfwGetTime(), key, scancode);
 
     if (name)
-        printf(" (%s)", name);
+        PlatformPrintKeyName( name );
+
+    if(glfwName)
+        printf(" GLFW Key Code Name: [%s]", glfwName);
 
     if (mods)
         printf(" (with%s)", get_mods_name(mods));

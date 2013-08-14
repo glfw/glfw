@@ -367,6 +367,11 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos);
  */
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
 
+/*! @copydoc glfwGetKeyName
+ *  @ingroup platform
+ */
+const char*_glfwPlatformGetKeyName(int key);
+
 /*! @copydoc glfwGetMonitors
  *  @ingroup platform
  */

@@ -260,6 +260,20 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
     }
 }
 
+GLFWAPI const char* glfwGetKeyName(int key)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+    if (key < 0 || key > GLFW_KEY_LAST)
+    {
+        _glfwInputError(GLFW_INVALID_ENUM, "The specified key is invalid");
+        return NULL;
+    }
+
+    return _glfwPlatformGetKeyName(key);
+}
+
+
 GLFWAPI int glfwGetKey(GLFWwindow* handle, int key)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;

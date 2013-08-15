@@ -1194,6 +1194,36 @@ const char* _glfwPlatformGetKeyName(int key)
             {
                 NSString* tempNS = [[NSString stringWithCharacters:unicodeString length:(NSUInteger)actualStringLength] uppercaseString];
                 _glfw.ns.keyName = strdup([tempNS UTF8String]);
+                
+                // need to ensure common chars are interpreted similarily:
+                int length = strlen(_glfw.ns.keyName);
+                if(1==length)
+                {
+                    if(_glfw.ns.keyName[0]>='a' && _glfw.ns.keyName[0]<='z')
+                    {
+                        // Capitalize
+                        _glfw.ns.keyName[0] += 'A'-'a';
+                    }
+                    
+                    switch(_glfw.ns.keyName[0])
+                    {
+                        case ' ': 	return "SPACE";
+                        case '-': 	return "MINUS";
+                        case '=': 	return "EQUAL";
+                        case '[': 	return "LEFT BRACKET";
+                        case ']':	return "RIGHT BRACKET";
+                        case '\\':	return "BACKSLASH";
+                        case ';':   return "SEMICOLON";
+                        case '\'':  return "APOSTROPHE";
+                        case '`': 	return "GRAVE ACCENT";
+                        case ',':   return "COMMA";
+                        case '.':   return "PERIOD";
+                        case '/':   return "SLASH";
+                        default: 	break;
+                    }
+                }
+                
+                
                 return _glfw.ns.keyName;
             }
         }

@@ -308,7 +308,7 @@ static void updateKeyCodeLUT(void)
     // lookups
     for (keyCode = 0;  keyCode < 256;  keyCode++)
     {
-        //if (_glfw.x11.keyCodeLUT[keyCode] < 0)
+        if (_glfw.x11.keyCodeLUT[keyCode] < 0)
             _glfw.x11.keyCodeLUT[keyCode] = translateKey(keyCode);
     }
 }

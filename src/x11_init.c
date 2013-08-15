@@ -673,6 +673,7 @@ void _glfwPlatformTerminate(void)
     }
 
     free(_glfw.x11.selection.string);
+    free(_glfw.x11.keyName);
 
     _glfwTerminateJoysticks();
     _glfwTerminateContextAPI();

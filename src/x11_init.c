@@ -48,7 +48,7 @@ static int translateKey(int keyCode)
     // Note: This way we always force "NumLock = ON", which is intentional
     // since the returned key code should correspond to a physical
     // location.
-    keySym = XkbKeycodeToKeysym(_glfw.x11.display, keyCode, 1, 0);
+    keySym = XkbKeycodeToKeysym(_glfw.x11.display, keyCode, 0, 1);
     switch (keySym)
     {
         case XK_KP_0:           return GLFW_KEY_KP_0;
@@ -67,6 +67,7 @@ static int translateKey(int keyCode)
         case XK_KP_Enter:       return GLFW_KEY_KP_ENTER;
         default:                break;
     }
+
 
     // Now try pimary keysym for function keys (non-printable keys). These
     // should not be layout dependent (i.e. US layout and international
@@ -307,7 +308,7 @@ static void updateKeyCodeLUT(void)
     // lookups
     for (keyCode = 0;  keyCode < 256;  keyCode++)
     {
-        if (_glfw.x11.keyCodeLUT[keyCode] < 0)
+        //if (_glfw.x11.keyCodeLUT[keyCode] < 0)
             _glfw.x11.keyCodeLUT[keyCode] = translateKey(keyCode);
     }
 }

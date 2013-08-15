@@ -1204,7 +1204,7 @@ const char*_glfwPlatformGetKeyName(int key)
 
             // need to ensure common chars are interpreted similarily:
             length = strlen(_glfw.win32.keyName);
-            if(length=1)
+            if(1==length)
             {
                 if(_glfw.win32.keyName[0]>='a' && _glfw.win32.keyName[0]<='z')
                 {

@@ -229,6 +229,7 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
                  the window frame on some WMs
  - [X11] Bugfix: The original video mode of a monitor was overwritten by calls
                  to `glfwSetWindowSize`
+ - [X11] Bugfix: Key release events for `GLFW_KEY_KP_5` were discarded.
 
 
 ## Contact
@@ -264,6 +265,7 @@ skills.
  - John Bartholomew
  - Niklas Behrens
  - Niklas Bergström
+ - Doug Binks
  - blanco
  - Lambert Clara
  - Noel Cower

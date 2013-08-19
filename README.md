@@ -204,6 +204,7 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
 
 ## Changelog
 
+ - Allowed character callback to be triggered regardless of modifier keys
  - Bugfix: The `-Wall` flag was not used with Clang and other GCC compatibles
  - Bugfix: The default for `GLFW_ALPHA_BITS` was set to zero
  - [Win32] Added `_GLFW_USE_DWM_SWAP_INTERVAL` for forcing the swap interval

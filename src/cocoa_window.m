@@ -566,9 +566,6 @@ static int translateKey(unsigned int key)
     const int mods = translateFlags([event modifierFlags]);
     _glfwInputKey(window, key, [event keyCode], GLFW_PRESS, mods);
 
-    if (mods & GLFW_MOD_SUPER)
-        return;
-
     NSString* characters = [event characters];
     NSUInteger i, length = [characters length];
 

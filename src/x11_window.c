@@ -513,15 +513,12 @@ static void processEvent(XEvent *event)
         {
             const int key = translateKey(event->xkey.keycode);
             const int mods = translateState(event->xkey.state);
+            const int character = translateChar(&event->xkey);
 
             _glfwInputKey(window, key, event->xkey.keycode, GLFW_PRESS, mods);
 
-            if (!(mods & GLFW_MOD_CONTROL) && !(mods & GLFW_MOD_ALT))
-            {
-                const int character = translateChar(&event->xkey);
-                if (character != -1)
-                    _glfwInputChar(window, character);
-            }
+            if (character != -1)
+                _glfwInputChar(window, character);
 
             break;
         }

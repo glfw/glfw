@@ -208,6 +208,8 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
  - Allowed character callback to be triggered regardless of modifier keys
  - Bugfix: The `-Wall` flag was not used with Clang and other GCC compatibles
  - Bugfix: The default for `GLFW_ALPHA_BITS` was set to zero
+ - Bugfix: `glfwInit` would segfault if monitor enumeration failed and no error
+           callback was set
  - [Win32] Added `_GLFW_USE_DWM_SWAP_INTERVAL` for forcing the swap interval
            to be set even when DWM compositing is enabled
  - [Win32] Added support for forcing the use of the high-performance GPU

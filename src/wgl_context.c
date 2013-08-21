@@ -529,7 +529,7 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
             !window->wgl.ARB_create_context_profile ||
             !window->wgl.EXT_create_context_es2_profile)
         {
-            _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+            _glfwInputError(GLFW_API_UNAVAILABLE,
                             "WGL: OpenGL ES requested but "
                             "WGL_ARB_create_context_es2_profile is unavailable");
             return _GLFW_RECREATION_IMPOSSIBLE;

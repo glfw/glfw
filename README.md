@@ -7,8 +7,8 @@ application development.  It provides a simple, platform-independent API for
 creating windows and contexts, reading input, handling events, etc.
 
 Version 3.0.2 adds support for OpenGL 4 on and precise scrolling deltas on OS
-X and fixes for a number of bugs affecting all supported platforms.  As this is
-a patch release, there are no API changes.
+X and fixes for a number of bugs that together affect all supported platforms.
+As this is a patch release, there are no API changes.
 
 If you are new to GLFW, you may find the
 [introductory tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW

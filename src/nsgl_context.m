@@ -86,7 +86,6 @@ int _glfwCreateContext(_GLFWwindow* window,
     }
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    // Fail if any OpenGL version above 2.1 other than 3.2 was requested
     if (wndconfig->glMajor == 3 && wndconfig->glMinor < 2)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,

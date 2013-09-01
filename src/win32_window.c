@@ -680,7 +680,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_SETCURSOR:
         {
             if ((window->cursorMode == GLFW_CURSOR_HIDDEN ||
-				 window->cursorMode == GLFW_CURSOR_DISABLED) &&
+                 window->cursorMode == GLFW_CURSOR_DISABLED) &&
                 window->win32.handle == GetForegroundWindow() &&
                 LOWORD(lParam) == HTCLIENT)
             {

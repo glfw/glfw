@@ -205,6 +205,7 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
 ## Changelog
 
  - [Win32] Bugfix: `_WIN32_WINNT` was not set to Windows XP or later
+ - [X11] Bugfix: Events for mouse buttons 4 and above were not reported
 
 
 ## Contact

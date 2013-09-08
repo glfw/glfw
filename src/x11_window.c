@@ -553,6 +553,16 @@ static void processEvent(XEvent *event)
             else if (event->xbutton.button == Button7)
                 _glfwInputScroll(window, 1.0, 0.0);
 
+            else
+            {
+                // Additional buttons after 7 are treated as regular buttons
+                // We subtract 4 to fill the gap left by scroll input above
+                _glfwInputMouseClick(window,
+                                     event->xbutton.button - 4,
+                                     GLFW_PRESS,
+                                     mods);
+            }
+
             break;
         }
 
@@ -578,6 +588,15 @@ static void processEvent(XEvent *event)
             {
                 _glfwInputMouseClick(window,
                                      GLFW_MOUSE_BUTTON_RIGHT,
+                                     GLFW_RELEASE,
+                                     mods);
+            }
+            else if (event->xbutton.button > Button7)
+            {
+                // Additional buttons after 7 are treated as regular buttons
+                // We subtract 4 to fill the gap left by scroll input above
+                _glfwInputMouseClick(window,
+                                     event->xbutton.button - 4,
                                      GLFW_RELEASE,
                                      mods);
             }

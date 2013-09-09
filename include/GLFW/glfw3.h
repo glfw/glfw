@@ -1853,9 +1853,9 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *
  *  @param[in] window The desired window.
  *  @param[in] xpos The desired x-coordinate, relative to the left edge of the
- *  client area, or `NULL`.
+ *  client area.
  *  @param[in] ypos The desired y-coordinate, relative to the top edge of the
- *  client area, or `NULL`.
+ *  client area.
  *
  *  @sa glfwGetCursorPos
  *

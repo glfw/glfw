@@ -759,7 +759,7 @@ static void createMenuBar(void)
     [NSApp setWindowsMenu:windowMenu];
     [windowMenuItem setSubmenu:windowMenu];
 
-    [windowMenu addItemWithTitle:@"Miniaturize"
+    [windowMenu addItemWithTitle:@"Minimize"
                           action:@selector(performMiniaturize:)
                    keyEquivalent:@"m"];
     [windowMenu addItemWithTitle:@"Zoom"

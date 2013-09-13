@@ -53,10 +53,12 @@
 #endif
 
 // GLFW requires Windows XP or later
-#ifndef WINVER
+#if WINVER < 0x0501
+ #undef WINVER
  #define WINVER 0x0501
 #endif
-#ifndef _WIN32_WINNT
+#if _WIN32_WINNT < 0x0501
+ #undef _WIN32_WINNT
  #define _WIN32_WINNT 0x0501
 #endif
 

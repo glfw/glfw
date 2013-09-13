@@ -212,7 +212,8 @@ if (_GLFW_X11)
 
     list(APPEND glfw_INCLUDE_DIRS ${X11_Xinput_INCLUDE_PATH})
     list(APPEND glfw_LIBRARIES ${X11_Xinput_LIB})
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xi")
+    find_library(XI_LIBRARY Xi)
+    list(APPEND glfw_LIBRARIES ${XI_LIBRARY})
 
     # Check for Xf86VidMode (fallback gamma control)
     if (NOT X11_xf86vmode_FOUND)

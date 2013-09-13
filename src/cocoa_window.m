@@ -29,6 +29,11 @@
 // Needed for _NSGetProgname
 #include <crt_externs.h>
 
+@interface NSEvent (DeviceDelta)
+  - (bool)_continuousScroll;
+  - (CGFloat)deviceDeltaX;
+  - (CGFloat)deviceDeltaY;
+@end
 
 // Enter fullscreen mode
 //
@@ -617,8 +622,16 @@ static int translateKey(unsigned int key)
     else
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
     {
-        deltaX = [event deltaX];
-        deltaY = [event deltaY];
+        if ([event _continuousScroll])
+        {
+            deltaX = [event deviceDeltaX] * 0.1;
+            deltaY = [event deviceDeltaY] * 0.1;
+        }
+        else
+        {
+            deltaX = [event deltaX];
+            deltaY = [event deltaY];
+        }
     }
 
     if (fabs(deltaX) > 0.0 || fabs(deltaY) > 0.0)

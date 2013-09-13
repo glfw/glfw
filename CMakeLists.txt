@@ -211,7 +211,13 @@ if (_GLFW_X11)
     endif()
 
     list(APPEND glfw_INCLUDE_DIRS ${X11_Xinput_INCLUDE_PATH})
-    list(APPEND glfw_LIBRARIES ${X11_Xinput_LIB})
+
+    if (X11_Xinput_LIB)
+        list(APPEND glfw_LIBRARIES ${X11_Xinput_LIB})
+    else()
+        # Backwards compatibility (bug in CMake 2.8.7)
+        list(APPEND glfw_LIBRARIES Xi)
+    endif()
     set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xi")
 
     # Check for Xf86VidMode (fallback gamma control)

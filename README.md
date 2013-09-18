@@ -206,6 +206,9 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
 
  - [Win32] Bugfix: `_WIN32_WINNT` was not set to Windows XP or later
  - [Win32] Bugfix: Legacy MinGW needs `WINVER` and `UNICODE` before `stddef.h`
+ - [Cocoa] Bugfix: Cursor was not visible in normal mode in full screen
+ - [Cocoa] Bugfix: Cursor was not actually hidden in hidden mode
+ - [Cocoa] Bugfix: Cursor modes were not applied to inactive windows
  - [X11] Bugfix: Events for mouse buttons 4 and above were not reported
  - [X11] Bugfix: CMake 2.8.7 does not set `X11_Xinput_LIB` even when found
 

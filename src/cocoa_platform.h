@@ -105,8 +105,6 @@ typedef struct _GLFWlibraryNS
     id              autoreleasePool;
     id              cursor;
 
-    GLboolean       cursorHidden;
-
     char*           clipboardString;
 
     _GLFWjoy        joysticks[GLFW_JOYSTICK_LAST + 1];

@@ -168,11 +168,15 @@ directory of bundled applications to the `Contents/Resources` directory.
 #### Windows specific options
 
 `USE_MSVC_RUNTIME_LIBRARY_DLL` determines whether to use the DLL version or the
-static library version of the Visual C++ runtime library.
+static library version of the Visual C++ runtime library.  If set to `ON`, the
+DLL version of the Visual C++ library is used.  It is recommended to set this to
+`ON`, as this keeps the executable smaller and benefits from security and bug
+fix updates of the Visual C++ runtime.
 
 `GLFW_USE_DWM_SWAP_INTERVAL` determines whether the swap interval is set even
-when DWM compositing is enabled.  This can lead to severe jitter and is not
-usually recommended.
+when DWM compositing is enabled.  If this is `ON`, the swap interval is set even
+if DWM is enabled.  It is recommended to set this to `OFF`, as doing otherwise
+can lead to severe jitter.
 
 `GLFW_USE_OPTIMUS_HPG` determines whether to export the `NvOptimusEnablement`
 symbol, which forces the use of the high-performance GPU on nVidia Optimus

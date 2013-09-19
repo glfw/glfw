@@ -1243,6 +1243,10 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  information from the application's bundle.  For more information on bundles,
  *  see the Bundle Programming Guide provided by Apple.
  *
+ *  @remarks The swap interval is not set during window creation, but is left at
+ *  the default value for that platform.  For more information, see @ref
+ *  glfwSwapInterval.
+ *
  *  @note This function may only be called from the main thread.
  *
  *  @sa glfwDestroyWindow
@@ -2200,6 +2204,11 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
  *  until the buffers are swapped by @ref glfwSwapBuffers.
  *
  *  @remarks This function may be called from secondary threads.
+ *
+ *  @note This function is not called during window creation, leaving the swap
+ *  interval set to whatever is the default on that platform.  This is done
+ *  because some swap interval extensions used by GLFW do not allow the swap
+ *  interval to be reset to zero once it has been set to a non-zero value.
  *
  *  @note Some GPU drivers do not honor the requested swap interval, either
  *  because of user settings that override the request or due to bugs in the

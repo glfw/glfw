@@ -216,11 +216,6 @@ td.memSeparator {
 	background:linear-gradient(to right,hsl(0,0%,95%) 0%,hsl(0,0%,85%) 50%,hsl(0,0%,95%) 100%);
 }
 
-hr.footer {
-	height:0px;
-	border:0px;
-}
-
 dl.note,dl.pre,dl.post,dl.invariant {
 	background:linear-gradient(to bottom,hsl(103,80%,90%) 0%,hsl(103,80%,85%) 100%);
 	box-shadow:inset 0px 0px 32px hsl(103,40%,80%);

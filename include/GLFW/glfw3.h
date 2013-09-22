@@ -133,10 +133,38 @@ extern "C" {
 
 /* Most GL/glu.h variants on Windows need wchar_t
  * OpenGL/gl.h blocks the definition of ptrdiff_t by glext.h on OS X */
-#include <stddef.h>
+#if !defined(GLFW_INCLUDE_NONE)
+ #include <stddef.h>
+#endif
 
-
-/* ---------------- GLFW related system specific defines ----------------- */
+/* Include the chosen client API headers.
+ */
+#if defined(__APPLE_CC__)
+  #if defined(GLFW_INCLUDE_GLCOREARB)
+    #include <OpenGL/gl3.h>
+  #elif !defined(GLFW_INCLUDE_NONE)
+    #define GL_GLEXT_LEGACY
+    #include <OpenGL/gl.h>
+  #endif
+  #if defined(GLFW_INCLUDE_GLU)
+    #include <OpenGL/glu.h>
+  #endif
+#else
+  #if defined(GLFW_INCLUDE_GLCOREARB)
+    #include <GL/glcorearb.h>
+  #elif defined(GLFW_INCLUDE_ES1)
+    #include <GLES/gl.h>
+  #elif defined(GLFW_INCLUDE_ES2)
+    #include <GLES2/gl2.h>
+  #elif defined(GLFW_INCLUDE_ES3)
+    #include <GLES3/gl3.h>
+  #elif !defined(GLFW_INCLUDE_NONE)
+    #include <GL/gl.h>
+  #endif
+  #if defined(GLFW_INCLUDE_GLU)
+    #include <GL/glu.h>
+  #endif
+#endif
 
 #if defined(GLFW_DLL) && defined(_GLFW_BUILD_DLL)
  /* GLFW_DLL is defined by users of GLFW when compiling programs that will link
@@ -173,35 +201,6 @@ extern "C" {
 
 /* -------------------- END SYSTEM/COMPILER SPECIFIC --------------------- */
 
-/* Include the chosen client API headers.
- */
-#if defined(__APPLE_CC__)
-  #if defined(GLFW_INCLUDE_GLCOREARB)
-    #include <OpenGL/gl3.h>
-  #elif !defined(GLFW_INCLUDE_NONE)
-    #define GL_GLEXT_LEGACY
-    #include <OpenGL/gl.h>
-  #endif
-  #if defined(GLFW_INCLUDE_GLU)
-    #include <OpenGL/glu.h>
-  #endif
-#else
-  #if defined(GLFW_INCLUDE_GLCOREARB)
-    #include <GL/glcorearb.h>
-  #elif defined(GLFW_INCLUDE_ES1)
-    #include <GLES/gl.h>
-  #elif defined(GLFW_INCLUDE_ES2)
-    #include <GLES2/gl2.h>
-  #elif defined(GLFW_INCLUDE_ES3)
-    #include <GLES3/gl3.h>
-  #elif !defined(GLFW_INCLUDE_NONE)
-    #include <GL/gl.h>
-  #endif
-  #if defined(GLFW_INCLUDE_GLU)
-    #include <GL/glu.h>
-  #endif
-#endif
-
 
 /*************************************************************************
  * GLFW API tokens
@@ -228,7 +227,7 @@ extern "C" {
  *  API changes.
  *  @ingroup init
  */
-#define GLFW_VERSION_REVISION       2
+#define GLFW_VERSION_REVISION       3
 /*! @} */
 
 /*! @name Key and button actions
@@ -793,7 +792,7 @@ typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
  *
  *  @ingroup monitor
  */
-typedef struct
+typedef struct GLFWvidmode
 {
     /*! The width, in screen coordinates, of the video mode.
      */
@@ -823,7 +822,7 @@ typedef struct
  *
  *  @ingroup monitor
  */
-typedef struct
+typedef struct GLFWgammaramp
 {
     /*! An array of value describing the response of the red channel.
      */
@@ -1243,6 +1242,10 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  common commands like Hide, Quit and About.  The (minimal) about dialog uses
  *  information from the application's bundle.  For more information on bundles,
  *  see the Bundle Programming Guide provided by Apple.
+ *
+ *  @remarks The swap interval is not set during window creation, but is left at
+ *  the default value for that platform.  For more information, see @ref
+ *  glfwSwapInterval.
  *
  *  @note This function may only be called from the main thread.
  *
@@ -1854,9 +1857,9 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *
  *  @param[in] window The desired window.
  *  @param[in] xpos The desired x-coordinate, relative to the left edge of the
- *  client area, or `NULL`.
+ *  client area.
  *  @param[in] ypos The desired y-coordinate, relative to the top edge of the
- *  client area, or `NULL`.
+ *  client area.
  *
  *  @sa glfwGetCursorPos
  *
@@ -2201,6 +2204,11 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
  *  until the buffers are swapped by @ref glfwSwapBuffers.
  *
  *  @remarks This function may be called from secondary threads.
+ *
+ *  @note This function is not called during window creation, leaving the swap
+ *  interval set to whatever is the default on that platform.  This is done
+ *  because some swap interval extensions used by GLFW do not allow the swap
+ *  interval to be reset to zero once it has been set to a non-zero value.
  *
  *  @note Some GPU drivers do not honor the requested swap interval, either
  *  because of user settings that override the request or due to bugs in the

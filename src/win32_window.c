@@ -480,6 +480,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         }
 
         case WM_CHAR:
+        case WM_SYSCHAR:
         {
             _glfwInputChar(window, (unsigned int) wParam);
             return 0;

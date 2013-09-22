@@ -48,7 +48,7 @@ static int translateKey(int keyCode)
     // Note: This way we always force "NumLock = ON", which is intentional
     // since the returned key code should correspond to a physical
     // location.
-    keySym = XkbKeycodeToKeysym(_glfw.x11.display, keyCode, 1, 0);
+    keySym = XkbKeycodeToKeysym(_glfw.x11.display, keyCode, 0, 1);
     switch (keySym)
     {
         case XK_KP_0:           return GLFW_KEY_KP_0;

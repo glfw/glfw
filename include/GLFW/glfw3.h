@@ -866,7 +866,7 @@ typedef struct GLFWgammaramp
  *  @note This function may take several seconds to complete on some systems,
  *  while on other systems it may take only a fraction of a second to complete.
  *
- *  @note **Mac OS X:** This function will change the current directory of the
+ *  @note **OS X:** This function will change the current directory of the
  *  application to the `Contents/Resources` subdirectory of the application's
  *  bundle, if present.
  *
@@ -1236,7 +1236,7 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  `GLFW_ICON,` it will be set as the icon for the window.  If no such icon is
  *  present, the `IDI_WINLOGO` icon will be used instead.
  *
- *  @remarks **Mac OS X:** The GLFW window has no icon, as it is not a document
+ *  @remarks **OS X:** The GLFW window has no icon, as it is not a document
  *  window, but the dock icon will be the same as the application bundle's icon.
  *  Also, the first time a window is opened the menu bar is populated with
  *  common commands like Hide, Quit and About.  The (minimal) about dialog uses
@@ -1595,7 +1595,7 @@ GLFWAPI GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwind
  *  @return The previously set callback, or `NULL` if no callback was set or an
  *  error occurred.
  *
- *  @remarks **Mac OS X:** Selecting Quit from the application menu will
+ *  @remarks **OS X:** Selecting Quit from the application menu will
  *  trigger the close callback for all windows.
  *
  *  @ingroup window

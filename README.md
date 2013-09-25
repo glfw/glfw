@@ -208,6 +208,9 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
 
 ## Changelog
 
+ - [Cocoa] Bugfix: The `GLFW_KEY_GRAVE_ACCENT` and `GLFW_KEY_WORLD_1` keys had
+                   been flipped
+
 
 ## Contact
 

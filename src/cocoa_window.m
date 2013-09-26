@@ -359,7 +359,7 @@ static int translateKey(unsigned int key)
         /* 66 */ GLFW_KEY_UNKNOWN,
         /* 67 */ GLFW_KEY_F11,
         /* 68 */ GLFW_KEY_UNKNOWN,
-        /* 69 */ GLFW_KEY_PRINT_SCREEN,
+        /* 69 */ GLFW_KEY_F13,
         /* 6a */ GLFW_KEY_F16,
         /* 6b */ GLFW_KEY_F14,
         /* 6c */ GLFW_KEY_UNKNOWN,

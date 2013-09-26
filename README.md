@@ -210,6 +210,8 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
 
  - [Cocoa] Bugfix: The `GLFW_KEY_GRAVE_ACCENT` and `GLFW_KEY_WORLD_1` keys had
                    been flipped
+ - [Cocoa] Bugfix: The `GLFW_KEY_F13` key was reported as
+                   `GLFW_KEY_PRINT_SCREEN`
 
 
 ## Contact

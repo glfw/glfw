@@ -1232,6 +1232,9 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  to not share resources.
  *  @return The handle of the created window, or `NULL` if an error occurred.
  *
+ *  @remarks **Windows:** Window creation will fail if the Microsoft GDI
+ *  software OpenGL implementation is the only one available.
+ *
  *  @remarks **Windows:** If the executable has an icon resource named
  *  `GLFW_ICON,` it will be set as the icon for the window.  If no such icon is
  *  present, the `IDI_WINLOGO` icon will be used instead.

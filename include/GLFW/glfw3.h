@@ -1374,7 +1374,8 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow* window, int xpos, int ypos);
 /*! @brief Retrieves the size of the client area of the specified window.
  *
  *  This function retrieves the size, in screen coordinates, of the client area
- *  of the specified window.
+ *  of the specified window.  If you wish to retrieve the size of the
+ *  framebuffer in pixels, see @ref glfwGetFramebufferSize.
  *
  *  @param[in] window The window whose size to retrieve.
  *  @param[out] width Where to store the width, in screen coordinates, of the
@@ -1415,7 +1416,8 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* window, int width, int height);
 /*! @brief Retrieves the size of the framebuffer of the specified window.
  *
  *  This function retrieves the size, in pixels, of the framebuffer of the
- *  specified window.
+ *  specified window.  If you wish to retrieve the size of the window in screen
+ *  coordinates, see @ref glfwGetWindowSize.
  *
  *  @param[in] window The window whose framebuffer to query.
  *  @param[out] width Where to store the width, in pixels, of the framebuffer,

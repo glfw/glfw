@@ -1775,6 +1775,23 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  */
 GLFWAPI void glfwSetInputMode(GLFWwindow* window, int mode, int value);
 
+/*! @brief Returns the name of the specified key.
+ *
+ *  This function returns the name, encoded as UTF-8, of the specified key.
+ *
+ *  @param[in] key The key to query.
+ *  @return The UTF-8 encoded name of the key, or `NULL` if there is an error.
+ *
+ *  @note The returned string is allocated and freed by GLFW.  You should not
+ *  free it yourself.
+ *
+ *  @note The returned string is valid only until the next call to @ref
+ *  glfwGetKeyName.
+ *
+ *  @ingroup input
+ */
+GLFWAPI const char* glfwGetKeyName(int key);
+
 /*! @brief Returns the last reported state of a keyboard key for the specified
  *  window.
  *

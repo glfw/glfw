@@ -68,6 +68,7 @@ static int translateKey(int keyCode)
         default:                break;
     }
 
+
     // Now try pimary keysym for function keys (non-printable keys). These
     // should not be layout dependent (i.e. US layout and international
     // layouts should give the same result).
@@ -672,6 +673,7 @@ void _glfwPlatformTerminate(void)
     }
 
     free(_glfw.x11.selection.string);
+    free(_glfw.x11.keyName);
 
     _glfwTerminateJoysticks();
     _glfwTerminateContextAPI();

@@ -706,8 +706,8 @@ typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int,int);
  *  This is the function signature for cursor position callback functions.
  *
  *  @param[in] window The window that received the event.
- *  @param[in] xpos The new x-coordinate of the cursor.
- *  @param[in] ypos The new y-coordinate of the cursor.
+ *  @param[in] xpos The new x-coordinate, in screen coordinates, of the cursor.
+ *  @param[in] ypos The new y-coordinate, in screen coordinates, of the cursor.
  *
  *  @sa glfwSetCursorPosCallback
  *
@@ -1827,7 +1827,8 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
 /*! @brief Retrieves the last reported cursor position, relative to the client
  *  area of the window.
  *
- *  This function returns the last reported position of the cursor to the
+ *  This function returns the last reported position of the cursor, in screen
+ *  coordinates, relative to the upper-left corner of the client area of the
  *  specified window.
  *
  *  If the cursor is disabled (with `GLFW_CURSOR_DISABLED`) then the cursor
@@ -1850,11 +1851,13 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
  */
 GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
 
-/*! @brief Sets the position of the cursor, relative to the client area of the window.
+/*! @brief Sets the position of the cursor, relative to the client area of the
+ *  window.
  *
- *  This function sets the position of the cursor.  The specified window must be
- *  focused.  If the window does not have focus when this function is called, it
- *  fails silently.
+ *  This function sets the position, in screen coordinates, of the cursor
+ *  relative to the upper-left corner of the client area of the specified
+ *  window.  The window must be focused.  If the window does not have focus when
+ *  this function is called, it fails silently.
  *
  *  If the cursor is disabled (with `GLFW_CURSOR_DISABLED`) then the cursor
  *  position is unbounded and limited only by the minimum and maximum values of
@@ -1950,7 +1953,8 @@ GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmo
  *
  *  This function sets the cursor position callback of the specified window,
  *  which is called when the cursor is moved.  The callback is provided with the
- *  position relative to the upper-left corner of the client area of the window.
+ *  position, in screen coordinates, relative to the upper-left corner of the
+ *  client area of the window.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set

@@ -23,13 +23,13 @@
 //    distribution.
 //
 //========================================================================
-// As config.h.in, this file is used by CMake to produce the config.h shared
+// As glfw_config.h.in, this file is used by CMake to produce the config.h shared
 // configuration header file.  If you are adding a feature requiring
 // conditional compilation, this is the proper place to add the macros.
 //========================================================================
-// As config.h, this file defines compile-time build options and macros for
+// As glfw_config.h, this file defines compile-time build options and macros for
 // all platforms supported by GLFW.  As this is a generated file, don't modify
-// it.  Instead, you should modify the config.h.in file.
+// it.  Instead, you should modify the glfw_config.h.in file.
 //========================================================================
 
 // Define this to 1 if building GLFW for X11

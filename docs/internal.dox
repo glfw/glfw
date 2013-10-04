@@ -105,8 +105,8 @@ Examples: `clearScrollOffsets`
 @section internals_config Configuration macros
 
 GLFW uses a number of configuration macros to select at compile time which
-interfaces and code paths to use.  They are defined in the config.h header file,
-which is generated from the `config.h.in` file by CMake.
+interfaces and code paths to use.  They are defined in the glfw_config.h header file,
+which is generated from the `glfw_config.h.in` file by CMake.
 
 Configuration macros the same style as tokens in the public interface, except
 with a leading underscore.

@@ -29,7 +29,7 @@
 #define _internal_h_
 
 
-#include "config.h"
+#include "glfw_config.h"
 
 #if defined(_GLFW_USE_OPENGL)
  // This is the default for glfw3.h

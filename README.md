@@ -212,6 +212,7 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
                    been flipped
  - [Cocoa] Bugfix: The `GLFW_KEY_F13` key was reported as
                    `GLFW_KEY_PRINT_SCREEN`
+ - [X11] Added setting of the `WM_CLASS` property to the initial window title
 
 
 ## Contact

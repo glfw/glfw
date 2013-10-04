@@ -268,6 +268,19 @@ static GLboolean createWindow(_GLFWwindow* window,
         XFree(hints);
     }
 
+    // Set ICCCM WM_CLASS property
+    // HACK: Until a mechanism for specifying the application name is added, the
+    // initial window title is used as the window class name
+    if (strlen(wndconfig->title))
+    {
+        XClassHint* hint = XAllocClassHint();
+        hint->res_name = (char*) wndconfig->title;
+        hint->res_class = (char*) wndconfig->title;
+
+        XSetClassHint(_glfw.x11.display, window->x11.handle, hint);
+        XFree(hint);
+    }
+
     if (_glfw.x11.xi.available)
     {
         // Select for XInput2 events

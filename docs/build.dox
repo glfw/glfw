@@ -158,7 +158,7 @@ If you are using the static library version of GLFW, use the
 @subsection build_link_pkgconfig With pkg-config on OS X or other Unix
 
 GLFW supports [pkg-config](http://www.freedesktop.org/wiki/Software/pkg-config/),
-and `glfw3.pc` file is generated when the GLFW library is built and installed
+and the `glfw3.pc` file is generated when the GLFW library is built and installed
 along with it.  
 
 A typical compile and link command-line when using the static may look like this:

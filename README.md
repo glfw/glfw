@@ -251,6 +251,7 @@ skills.
  - Doug Binks
  - blanco
  - Lambert Clara
+ - Andrew Corrigan
  - Noel Cower
  - Jarrod Davis
  - Olivier Delannoy

@@ -86,15 +86,54 @@ static int translateKey(int keycode)
 
 // Translates an X Window event to Unicode
 //
-static int translateChar(XKeyEvent* event)
+static wchar_t * translateChar(XEvent * event, _GLFWwindow * window, int * count)
 {
     KeySym keysym;
+    static wchar_t buffer[16];
+    
+    // If there is no input method / context available, use the old fallback
+    // mechanism
+    if (!window || !window->x11.ic)
+    {
+        long uc;
+        
+        // Get X11 keysym
+        XLookupString(&event->xkey, NULL, 0, &keysym, NULL);
 
-    // Get X11 keysym
-    XLookupString(event, NULL, 0, &keysym, NULL);
-
-    // Convert to Unicode (see x11_unicode.c)
-    return (int) _glfwKeySym2Unicode(keysym);
+        // Convert to Unicode (see x11_unicode.c)
+        uc = _glfwKeySym2Unicode(keysym);
+        if (uc < 0 || uc > 0xFFFF)
+        {
+            *count = 0;
+            return NULL;
+        }
+        
+        buffer[0] = (unsigned int)uc;
+        *count = 1;
+    }
+    // Else lookup the wide char string with respect to dead characters
+    else
+    {
+        Status dummy;
+        
+        // Check if the given event is a dead char. In that case, it does not
+        // produce a unicode char.
+        if (XFilterEvent(event, None))
+        {
+            *count = 0;
+            return NULL;
+        }
+        
+        // Retrieve unicode string
+        *count = XwcLookupString(window->x11.ic, &event->xkey, buffer, 16 * sizeof(wchar_t), 0, &dummy);
+        if (*count < 0)
+        {
+            *count = 0;
+            return NULL;
+        }
+    }
+    
+    return buffer;
 }
 
 // Create the X11 window (and its colormap)
@@ -105,6 +144,8 @@ static GLboolean createWindow(_GLFWwindow* window,
     unsigned long wamask;
     XSetWindowAttributes wa;
     XVisualInfo* visual = _GLFW_X11_CONTEXT_VISUAL;
+    
+    window->x11.ic = NULL;
 
     // Every window needs a colormap
     // Create one based on the visual used by the current context
@@ -300,6 +341,13 @@ static GLboolean createWindow(_GLFWwindow* window,
 
     XRRSelectInput(_glfw.x11.display, window->x11.handle,
                    RRScreenChangeNotifyMask);
+    
+    // Try to create an input context. If this function returns NULL, ic is
+    // set to NULL and we know we have to use fallback mechanisms to parse
+    // char events.
+    window->x11.ic = XCreateIC(_glfw.x11.im, XNInputStyle,
+        XIMPreeditNothing | XIMStatusNothing, XNClientWindow,
+        window->x11.handle, XNFocusWindow, window->x11.handle, NULL);
 
     _glfwPlatformGetWindowPos(window, &window->x11.xpos, &window->x11.ypos);
     _glfwPlatformGetWindowSize(window, &window->x11.width, &window->x11.height);
@@ -524,14 +572,15 @@ static void processEvent(XEvent *event)
     {
         case KeyPress:
         {
+            int i, n_chars;
             const int key = translateKey(event->xkey.keycode);
             const int mods = translateState(event->xkey.state);
-            const int character = translateChar(&event->xkey);
+            const wchar_t * characters = translateChar(event, window, &n_chars);
 
             _glfwInputKey(window, key, event->xkey.keycode, GLFW_PRESS, mods);
 
-            if (character != -1)
-                _glfwInputChar(window, character);
+            for (i = 0; i < n_chars; i++)
+                _glfwInputChar(window, (unsigned int)characters[i]);
 
             break;
         }
@@ -947,6 +996,12 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     if (window->monitor)
         leaveFullscreenMode(window);
+    
+    if (window->x11.ic)
+    {
+        XDestroyIC(window->x11.ic);
+        window->x11.ic = NULL;
+    }
 
     _glfwDestroyContext(window);
 

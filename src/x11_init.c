@@ -420,6 +420,8 @@ static void detectEWMH(void)
 static GLboolean initExtensions(void)
 {
     Bool supported;
+    unsigned int u;
+    XIMStyles * styles = NULL;
 
     // Find or create window manager atoms
     _glfw.x11.WM_STATE = XInternAtom(_glfw.x11.display, "WM_STATE", False);
@@ -536,6 +538,44 @@ static GLboolean initExtensions(void)
         XInternAtom(_glfw.x11.display, "CLIPBOARD_MANAGER", False);
     _glfw.x11.SAVE_TARGETS =
         XInternAtom(_glfw.x11.display, "SAVE_TARGETS", False);
+        
+        
+    // ------------------------------------------------------------------------
+    // Optional extensions (function returns always true from here!)
+    
+    // Open input method
+    if (!XSupportsLocale())
+        return GL_TRUE;
+    
+    XSetLocaleModifiers("");
+    _glfw.x11.im = XOpenIM(_glfw.x11.display, 0, 0, 0);
+    if (!_glfw.x11.im)
+        return GL_TRUE;
+    
+    // Get available input styles
+    if (XGetIMValues(_glfw.x11.im, XNQueryInputStyle, &styles, NULL) || !styles)
+    {
+        XCloseIM(_glfw.x11.im);
+        _glfw.x11.im = NULL;
+        return GL_TRUE;
+    }
+    
+    // Search for needed input style
+    for (u = 0; u < styles->count_styles; u++)
+    {
+        if (styles->supported_styles[u] == (XIMPreeditNothing | XIMStatusNothing))
+            break;
+    }
+    
+    if (u >= styles->count_styles)
+    {
+        XFree(styles);
+        XCloseIM(_glfw.x11.im);
+        _glfw.x11.im = NULL;
+        return GL_TRUE;
+    }
+    
+    XFree(styles);
 
     return GL_TRUE;
 }
@@ -636,6 +676,8 @@ void _glfwInputXError(int error, const char* message)
 int _glfwPlatformInit(void)
 {
     XInitThreads();
+    
+    _glfw.x11.im = NULL;
 
     _glfw.x11.display = XOpenDisplay(NULL);
     if (!_glfw.x11.display)
@@ -672,6 +714,12 @@ void _glfwPlatformTerminate(void)
     }
 
     free(_glfw.x11.selection.string);
+    
+    if (_glfw.x11.im)
+    {
+        XCloseIM(_glfw.x11.im);
+        _glfw.x11.im = NULL;
+    }
 
     _glfwTerminateJoysticks();
     _glfwTerminateContextAPI();

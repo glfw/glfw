@@ -1070,6 +1070,7 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
     {
         CGAssociateMouseAndMouseCursorPosition(true);
     }
+    setModeCursor(window, window->cursorMode);
 }
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)

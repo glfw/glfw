@@ -449,6 +449,9 @@ static void detectEWMH(void)
 //
 static GLboolean initExtensions(void)
 {
+    unsigned int u;
+    XIMStyles * styles = NULL;
+
     // Find or create window manager atoms
     _glfw.x11.WM_PROTOCOLS = XInternAtom(_glfw.x11.display,
                                          "WM_PROTOCOLS",
@@ -579,6 +582,43 @@ static GLboolean initExtensions(void)
     _glfw.x11.SAVE_TARGETS =
         XInternAtom(_glfw.x11.display, "SAVE_TARGETS", False);
 
+    // ------------------------------------------------------------------------
+    // Optional extensions (function returns always true from here!)
+
+    // Open input method
+    if (!XSupportsLocale())
+        return GL_TRUE;
+
+    XSetLocaleModifiers("");
+    _glfw.x11.im = XOpenIM(_glfw.x11.display, 0, 0, 0);
+    if (!_glfw.x11.im)
+        return GL_TRUE;
+
+    // Get available input styles
+    if (XGetIMValues(_glfw.x11.im, XNQueryInputStyle, &styles, NULL) || !styles)
+    {
+        XCloseIM(_glfw.x11.im);
+        _glfw.x11.im = NULL;
+        return GL_TRUE;
+    }
+
+    // Search for needed input style
+    for (u = 0; u < styles->count_styles; u++)
+    {
+        if (styles->supported_styles[u] == (XIMPreeditNothing | XIMStatusNothing))
+            break;
+    }
+
+    if (u >= styles->count_styles)
+    {
+        XFree(styles);
+        XCloseIM(_glfw.x11.im);
+        _glfw.x11.im = NULL;
+        return GL_TRUE;
+    }
+
+    XFree(styles);
+
     // Find Xdnd (drag and drop) atoms, if available
     _glfw.x11.XdndAware = XInternAtom(_glfw.x11.display, "XdndAware", True);
     _glfw.x11.XdndEnter = XInternAtom(_glfw.x11.display, "XdndEnter", True);
@@ -686,6 +726,8 @@ int _glfwPlatformInit(void)
 {
     XInitThreads();
 
+    _glfw.x11.im = NULL;
+
     _glfw.x11.display = XOpenDisplay(NULL);
     if (!_glfw.x11.display)
     {
@@ -720,6 +762,12 @@ void _glfwPlatformTerminate(void)
     }
 
     free(_glfw.x11.clipboardString);
+
+    if (_glfw.x11.im)
+    {
+        XCloseIM(_glfw.x11.im);
+        _glfw.x11.im = NULL;
+    }
 
     _glfwTerminateJoysticks();
     _glfwTerminateContextAPI();

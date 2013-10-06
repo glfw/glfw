@@ -90,6 +90,8 @@ typedef struct _GLFWwindowX11
     // The last position the cursor was warped to by GLFW
     int             warpPosX, warpPosY;
 
+    // The window's input context
+    XIC ic;
 } _GLFWwindowX11;
 
 
@@ -201,6 +203,9 @@ typedef struct _GLFWlibraryX11
     struct {
         Window      source;
     } xdnd;
+
+    // Input method and context
+    XIM im;
 
 } _GLFWlibraryX11;
 

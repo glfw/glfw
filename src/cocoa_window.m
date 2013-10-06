@@ -1058,6 +1058,10 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
         CGDisplayMoveCursorToPoint(window->monitor->ns.displayID,
                                    CGPointMake(x, y));
     }
+    else if ([window->ns.view isInFullScreenMode])
+    {
+        CGWarpMouseCursorPosition(CGPointMake(x, y));
+    }
     else
     {
         const NSRect contentRect = [window->ns.view frame];

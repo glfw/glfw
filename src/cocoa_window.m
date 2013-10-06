@@ -60,6 +60,8 @@ static void enterFullscreenMode(_GLFWwindow* window)
 
     [window->ns.view enterFullScreenMode:window->monitor->ns.screen
                              withOptions:nil];
+    
+    _glfwInputWindowFocus(window, GL_TRUE);
 }
 
 // Leave fullscreen mode

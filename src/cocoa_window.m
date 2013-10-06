@@ -1065,6 +1065,11 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
         CGWarpMouseCursorPosition(CGPointMake(globalPoint.x,
                                               transformY(globalPoint.y)));
     }
+    
+    if (window->cursorMode != GLFW_CURSOR_DISABLED)
+    {
+        CGAssociateMouseAndMouseCursorPosition(true);
+    }
 }
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)

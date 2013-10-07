@@ -388,10 +388,21 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             if (focused && iconified)
             {
-                // This is a workaround for window iconification using the
-                // taskbar leading to windows being told they're focused and
-                // iconified and then never told they're defocused
-                focused = FALSE;
+                if (window->iconified && _glfw.focusedWindow != window)
+                {
+                    // This is a workaround for window restoration using the
+                    // Win+D hot key leading to windows being told they're
+                    // focused and iconified and then never told they're
+                    // restored
+                    iconified = FALSE;
+                }
+                else
+                {
+                    // This is a workaround for window iconification using the
+                    // taskbar leading to windows being told they're focused and
+                    // iconified and then never told they're defocused
+                    focused = FALSE;
+                }
             }
 
             if (!focused && _glfw.focusedWindow == window)

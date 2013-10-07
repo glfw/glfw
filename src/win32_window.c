@@ -654,8 +654,11 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_SIZE:
         {
-            if (window->cursorMode == GLFW_CURSOR_DISABLED)
+            if (window->cursorMode == GLFW_CURSOR_DISABLED &&
+                _glfw.focusedWindow == window)
+            {
                 updateClipRect(window);
+            }
 
             _glfwInputFramebufferSize(window, LOWORD(lParam), HIWORD(lParam));
             _glfwInputWindowSize(window, LOWORD(lParam), HIWORD(lParam));
@@ -664,8 +667,11 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOVE:
         {
-            if (window->cursorMode == GLFW_CURSOR_DISABLED)
+            if (window->cursorMode == GLFW_CURSOR_DISABLED &&
+                _glfw.focusedWindow == window)
+            {
                 updateClipRect(window);
+            }
 
             _glfwInputWindowPos(window, LOWORD(lParam), HIWORD(lParam));
             return 0;

@@ -208,6 +208,8 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
 
 ## Changelog
 
+ - [Win32] Bugfix: The disabled cursor mode clip rectangle was updated for
+                   unfocused windows
  - [Cocoa] Bugfix: The `GLFW_KEY_GRAVE_ACCENT` and `GLFW_KEY_WORLD_1` keys had
                    been flipped
  - [Cocoa] Bugfix: The `GLFW_KEY_F13` key was reported as
@@ -307,6 +309,7 @@ skills.
  - TTK-Bandit
  - Sergey Tikhomirov
  - Samuli Tuomola
+ - urraka
  - Jari Vetoniemi
  - Simon Voordouw
  - Torsten Walluhn

@@ -97,8 +97,8 @@ static GLboolean modeIsGood(CGDisplayModeRef mode)
 static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode)
 {
     GLFWvidmode result;
-    result.width = CGDisplayModeGetWidth(mode);
-    result.height = CGDisplayModeGetHeight(mode);
+    result.width = (int) CGDisplayModeGetWidth(mode);
+    result.height = (int) CGDisplayModeGetHeight(mode);
     result.refreshRate = (int) CGDisplayModeGetRefreshRate(mode);
 
     CFStringRef format = CGDisplayModeCopyPixelEncoding(mode);

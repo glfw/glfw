@@ -519,7 +519,7 @@ static int translateKey(unsigned int key)
 - (void)otherMouseDown:(NSEvent *)event
 {
     _glfwInputMouseClick(window,
-                         [event buttonNumber],
+                         (int) [event buttonNumber],
                          GLFW_PRESS,
                          translateFlags([event modifierFlags]));
 }
@@ -532,7 +532,7 @@ static int translateKey(unsigned int key)
 - (void)otherMouseUp:(NSEvent *)event
 {
     _glfwInputMouseClick(window,
-                         [event buttonNumber],
+                         (int) [event buttonNumber],
                          GLFW_RELEASE,
                          translateFlags([event modifierFlags]));
 }
@@ -783,7 +783,8 @@ static void createMenuBar(void)
 
     // Prior to Snow Leopard, we need to use this oddly-named semi-private API
     // to get the application menu working properly.
-    [NSApp performSelector:@selector(setAppleMenu:) withObject:appMenu];
+    SEL setAppleMenuSelector = NSSelectorFromString(@"setAppleMenu:");
+    [NSApp performSelector:setAppleMenuSelector withObject:appMenu];
 }
 
 #endif /* _GLFW_USE_MENUBAR */

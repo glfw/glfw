@@ -214,8 +214,8 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
  - [Win32] Bugfix: The disabled cursor mode clip rectangle was updated for
                    unfocused windows
  - [Cocoa] Added dependency on CoreVideo framework
- - [Cocoa] Bugfix: The `GLFW_KEY_GRAVE_ACCENT` and `GLFW_KEY_WORLD_1` keys had
-                   been flipped
+ - [Cocoa] Bugfix: The `GLFW_KEY_GRAVE_ACCENT` key was reported as
+                   `GLFW_KEY_WORLD_1` and vice versa
  - [Cocoa] Bugfix: The `GLFW_KEY_F13` key was reported as
                    `GLFW_KEY_PRINT_SCREEN`
  - [Cocoa] Bugfix: Implicit conversion from `NSUInteger` to int caused warnings

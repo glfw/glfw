@@ -217,6 +217,10 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
                    been flipped
  - [Cocoa] Bugfix: The `GLFW_KEY_F13` key was reported as
                    `GLFW_KEY_PRINT_SCREEN`
+ - [Cocoa] Bugfix: Implicit conversion from `NSUInteger` to int caused warnings
+                   with Xcode 5
+ - [Cocoa] Bugfix: Use of undeclared selectors with `@selector` caused warnings
+                   with Xcode 5
  - [X11] Added setting of the `WM_CLASS` property to the initial window title
 
 

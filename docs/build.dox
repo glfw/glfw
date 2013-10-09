@@ -189,7 +189,7 @@ If you are using the dynamic library version of GLFW, simply add it to the
 project dependencies.
 
 If you are using the static library version of GLFW, add it and the Cocoa,
-OpenGL and IOKit frameworks to the project as dependencies.
+OpenGL, IOKit and CoreVideo frameworks to the project as dependencies.
 
 
 @subsection build_link_osx With command-line on OS X
@@ -198,7 +198,7 @@ If you do not wish to use pkg-config, you need to add the required frameworks
 and libraries to your command-line using the `-l` and `-framework` switches,
 i.e.:
 
-    cc -o myprog myprog.c -lglfw -framework Cocoa -framework OpenGL -framework IOKit
+    cc -o myprog myprog.c -lglfw -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo
 
 Note that you do not add the `.framework` extension to a framework when adding
 it from the command-line.

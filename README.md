@@ -221,6 +221,8 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
                    with Xcode 5
  - [Cocoa] Bugfix: Use of undeclared selectors with `@selector` caused warnings
                    with Xcode 5
+ - [Cocoa] Bugfix: The cursor remained visible if moved onto client area after
+                   having been set to hidden outside it
  - [X11] Added setting of the `WM_CLASS` property to the initial window title
 
 
@@ -296,6 +298,7 @@ skills.
  - Pierre Moulon
  - Julian Møller
  - Ozzy
+ - Andri Pálsson
  - Peoro
  - Braden Pellett
  - Arturo J. Pérez

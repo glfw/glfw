@@ -35,7 +35,7 @@
 //
 static void setCursorMode(_GLFWwindow* window, int newMode)
 {
-    int oldMode;
+    const int oldMode = window->cursorMode;
 
     if (newMode != GLFW_CURSOR_NORMAL &&
         newMode != GLFW_CURSOR_HIDDEN &&
@@ -45,9 +45,10 @@ static void setCursorMode(_GLFWwindow* window, int newMode)
         return;
     }
 
-    oldMode = window->cursorMode;
     if (oldMode == newMode)
         return;
+
+    window->cursorMode = newMode;
 
     if (window == _glfw.focusedWindow)
     {
@@ -71,8 +72,6 @@ static void setCursorMode(_GLFWwindow* window, int newMode)
 
         _glfwPlatformSetCursorMode(window, newMode);
     }
-
-    window->cursorMode = newMode;
 }
 
 // Set sticky keys mode for the specified window

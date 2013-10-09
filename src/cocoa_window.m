@@ -1051,6 +1051,8 @@ void _glfwPlatformWaitEvents(void)
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
+    setModeCursor(window, window->cursorMode);
+
     if (window->monitor)
     {
         CGDisplayMoveCursorToPoint(window->monitor->ns.displayID,

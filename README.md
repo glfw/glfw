@@ -213,6 +213,7 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
                    focus callback
  - [Win32] Bugfix: The disabled cursor mode clip rectangle was updated for
                    unfocused windows
+ - [Cocoa] Added dependency on CoreVideo framework
  - [Cocoa] Bugfix: The `GLFW_KEY_GRAVE_ACCENT` and `GLFW_KEY_WORLD_1` keys had
                    been flipped
  - [Cocoa] Bugfix: The `GLFW_KEY_F13` key was reported as

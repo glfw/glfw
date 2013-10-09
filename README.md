@@ -304,6 +304,7 @@ skills.
  - Peoro
  - Braden Pellett
  - Arturo J. Pérez
+ - Pieroman
  - Jorge Rodriguez
  - Ed Ropple
  - Riku Salminen

@@ -58,12 +58,13 @@ static void enterFullscreenMode(_GLFWwindow* window)
 
     _glfwSetVideoMode(window->monitor, &window->videoMode);
 
-	NSDictionary *opts = [NSDictionary dictionaryWithObjectsAndKeys:
-	      [NSNumber numberWithBool:NO], NSFullScreenModeAllScreens,
-	       nil];
-	       
+	NSDictionary* options = [NSDictionary dictionaryWithObjectsAndKeys:
+                                [NSNumber numberWithBool:NO],
+                                NSFullScreenModeAllScreens,
+                                nil];
+
     [window->ns.view enterFullScreenMode:window->monitor->ns.screen
-                             withOptions:opts];
+                             withOptions:options];
 }
 
 // Leave fullscreen mode

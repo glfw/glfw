@@ -858,7 +858,12 @@ static GLboolean createWindow(_GLFWwindow* window,
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_7)
+    {
         [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
+
+        if (wndconfig->resizable)
+            [window->ns.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+    }
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
     [window->ns.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];

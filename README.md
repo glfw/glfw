@@ -208,12 +208,12 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
 
 ## Changelog
 
- - Renamed configuration header to `glfw_config.h`
+ - Renamed configuration header to `glfw_config.h` to avoid conflicts
  - [Win32] Bugfix: Restoring windows using the Win+D hot key did not trigger the
                    focus callback
  - [Win32] Bugfix: The disabled cursor mode clip rectangle was updated for
                    unfocused windows
- - [Cocoa] Added dependency on CoreVideo framework
+ - [Cocoa] Added dependency on CoreVideo framework for refresh rate retrieval
  - [Cocoa] Bugfix: The `GLFW_KEY_GRAVE_ACCENT` key was reported as
                    `GLFW_KEY_WORLD_1` and vice versa
  - [Cocoa] Bugfix: The `GLFW_KEY_F13` key was reported as

@@ -60,6 +60,8 @@ static void enterFullscreenMode(_GLFWwindow* window)
 
     [window->ns.view enterFullScreenMode:window->monitor->ns.screen
                              withOptions:nil];
+    
+    _glfwInputWindowFocus(window, GL_TRUE);
 }
 
 // Leave fullscreen mode
@@ -1056,6 +1058,10 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
         CGDisplayMoveCursorToPoint(window->monitor->ns.displayID,
                                    CGPointMake(x, y));
     }
+    else if ([window->ns.view isInFullScreenMode])
+    {
+        CGWarpMouseCursorPosition(CGPointMake(x, y));
+    }
     else
     {
         const NSRect contentRect = [window->ns.view frame];
@@ -1065,6 +1071,12 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
         CGWarpMouseCursorPosition(CGPointMake(globalPoint.x,
                                               transformY(globalPoint.y)));
     }
+    
+    if (window->cursorMode != GLFW_CURSOR_DISABLED)
+    {
+        CGAssociateMouseAndMouseCursorPosition(true);
+    }
+    setModeCursor(window, window->cursorMode);
 }
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)

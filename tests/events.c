@@ -39,6 +39,8 @@
 #include <string.h>
 #include <locale.h>
 
+#include "getopt.h"
+
 // These must match the input mode defaults
 static GLboolean closeable = GL_TRUE;
 
@@ -406,10 +408,11 @@ void monitor_callback(GLFWmonitor* monitor, int event)
     }
 }
 
-int main(void)
+int main(int argc, char** argv)
 {
     GLFWwindow* window;
-    int width, height;
+    GLFWmonitor* monitor = NULL;
+    int ch, width, height;
 
     setlocale(LC_ALL, "");
 
@@ -420,7 +423,17 @@ int main(void)
 
     printf("Library initialized\n");
 
-    window = glfwCreateWindow(640, 480, "Event Linter", NULL, NULL);
+    while ((ch = getopt(argc, argv, "f")) != -1)
+    {
+        switch (ch)
+        {
+            case 'f':
+                monitor = glfwGetPrimaryMonitor();
+                break;
+        }
+    }
+
+    window = glfwCreateWindow(640, 480, "Event Linter", monitor, NULL);
     if (!window)
     {
         glfwTerminate();

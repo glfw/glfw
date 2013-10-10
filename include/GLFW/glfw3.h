@@ -765,7 +765,7 @@ typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int);
  *  This is the function signature for Unicode character callback functions.
  *
  *  @param[in] window The window that received the event.
- *  @param[in] character The Unicode code point of the character.
+ *  @param[in] codepoint The Unicode code point of the character.
  *
  *  @sa glfwSetCharCallback
  *

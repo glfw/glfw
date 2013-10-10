@@ -148,13 +148,13 @@ void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int m
         window->callbacks.key((GLFWwindow*) window, key, scancode, action, mods);
 }
 
-void _glfwInputChar(_GLFWwindow* window, unsigned int character)
+void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint)
 {
-    if (character < 32 || (character > 126 && character < 160))
+    if (codepoint < 32 || (codepoint > 126 && codepoint < 160))
         return;
 
     if (window->callbacks.character)
-        window->callbacks.character((GLFWwindow*) window, character);
+        window->callbacks.character((GLFWwindow*) window, codepoint);
 }
 
 void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset)

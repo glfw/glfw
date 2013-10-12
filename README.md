@@ -209,6 +209,7 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
 ## Changelog
 
  - Renamed configuration header to `glfw_config.h` to avoid conflicts
+ - Generated file `glfw3.pc` did not respect the LIB\_SUFFIX CMake option
  - [Win32] Bugfix: Restoring windows using the Win+D hot key did not trigger the
                    focus callback
  - [Win32] Bugfix: The disabled cursor mode clip rectangle was updated for

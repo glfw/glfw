@@ -62,6 +62,14 @@ Once this function is called, no more events will be delivered for that window
 and its handle becomes invalid.
 
 
+@section window_userptr Window user pointer
+
+Each window has a user pointer that can be set with @ref
+glfwSetWindowUserPointer and fetched with @ref glfwGetWindowUserPointer.  This
+can be used for any purpose you need and will not modified by GLFW throughout
+the life-time of the window.
+
+
 @section window_hints Window creation hints
 
 There are a number of hints that can be set before the creation of a window and

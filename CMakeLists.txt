@@ -282,23 +282,15 @@ if (_GLFW_GLX)
 
         # Check for dlopen support as a fallback
 
-        find_library(DL_LIBRARY dl)
-        mark_as_advanced(DL_LIBRARY)
-        if (DL_LIBRARY)
-            set(CMAKE_REQUIRED_LIBRARIES ${DL_LIBRARY})
-        else()
-            set(CMAKE_REQUIRED_LIBRARIES "")
-        endif()
-
+        set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_DL_LIBS})
         check_function_exists(dlopen _GLFW_HAS_DLOPEN)
-
         if (NOT _GLFW_HAS_DLOPEN)
             message(FATAL_ERROR "No entry point retrieval mechanism found")
         endif()
 
-        if (DL_LIBRARY)
-            list(APPEND glfw_LIBRARIES ${DL_LIBRARY})
-            set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -ldl")
+        if (CMAKE_DL_LIBS)
+            list(APPEND glfw_LIBRARIES ${CMAKE_DL_LIBS})
+            set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -l${CMAKE_DL_LIBS}")
         endif()
     endif()
 

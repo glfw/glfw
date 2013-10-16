@@ -148,6 +148,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [X11] Bugfix: Full screen override redirect windows were not always
                  positioned over the specified monitor
  - [X11] Bugfix: Character input did not work for the default `"C"` locale
+ - [X11] Bugfix: Joysticks connected after `glfwInit` were not detected
+                 (temporary inotify solution until proper libudev solution)
 
 
 ## Contact

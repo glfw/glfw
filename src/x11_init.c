@@ -749,8 +749,10 @@ int _glfwPlatformInit(void)
     if (!_glfwInitContextAPI())
         return GL_FALSE;
 
+    if (!_glfwInitJoysticks())
+        return GL_FALSE;
+
     _glfwInitTimer();
-    _glfwInitJoysticks();
 
     return GL_TRUE;
 }

@@ -42,10 +42,11 @@ typedef struct _GLFWjoystickLinux
     unsigned char*  buttons;
     int             buttonCount;
     char*           name;
+    char*           path;
 } _GLFWjoystickLinux;
 
 
-void _glfwInitJoysticks(void);
+int _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
 #endif // _linux_joystick_h_

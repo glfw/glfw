@@ -72,7 +72,8 @@ if (BUILD_SHARED_LIBS)
             set(glfw_CFLAGS "")
         endif()
         set_target_properties(glfw PROPERTIES
-                              COMPILE_FLAGS "${glfw_CFLAGS} -fno-common")
+                              COMPILE_FLAGS "${glfw_CFLAGS} -fno-common"
+                              INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}")
     endif()
 
     target_link_libraries(glfw ${glfw_LIBRARIES})

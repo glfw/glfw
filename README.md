@@ -227,6 +227,7 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
  - [Cocoa] Bugfix: The cursor remained visible if moved onto client area after
                    having been set to hidden outside it
  - [Cocoa] Bugfix: The refresh rate was zero for all modes of certain monitors
+ - [Cocoa] Bugfix: The `install_name` field of the dynamic library was not set
  - [X11] Added setting of the `WM_CLASS` property to the initial window title
 
 

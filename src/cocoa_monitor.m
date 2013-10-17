@@ -76,9 +76,6 @@ static GLboolean modeIsGood(CGDisplayModeRef mode)
     if (flags & kDisplayModeInterlacedFlag)
         return GL_FALSE;
 
-    if (flags & kDisplayModeTelevisionFlag)
-        return GL_FALSE;
-
     if (flags & kDisplayModeStretchedFlag)
         return GL_FALSE;
 

@@ -230,6 +230,8 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
  - [Cocoa] Bugfix: The refresh rate was zero for all modes of certain monitors
  - [Cocoa] Bugfix: The `install_name` field of the dynamic library was not set
  - [Cocoa] Bugfix: Full screen windows were never reported as having focus
+ - [Cocoa] Bugfix: A superfluous IO flag test prevented video modes from being
+                   listed for Thunderbolt monitor
  - [X11] Added setting of the `WM_CLASS` property to the initial window title
  - [X11] Bugfix: Removed joystick axis value negation left over from GLFW 2
 

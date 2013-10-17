@@ -210,6 +210,7 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
 
  - Renamed configuration header to `glfw_config.h` to avoid conflicts
  - Generated file `glfw3.pc` did not respect the LIB\_SUFFIX CMake option
+ - [Win32] Bugfix: Removed joystick axis value negation left over from GLFW 2
  - [Win32] Bugfix: Restoring windows using the Win+D hot key did not trigger the
                    focus callback
  - [Win32] Bugfix: The disabled cursor mode clip rectangle was updated for
@@ -230,6 +231,7 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
  - [Cocoa] Bugfix: The `install_name` field of the dynamic library was not set
  - [Cocoa] Bugfix: Full screen windows were never reported as having focus
  - [X11] Added setting of the `WM_CLASS` property to the initial window title
+ - [X11] Bugfix: Removed joystick axis value negation left over from GLFW 2
 
 
 ## Contact

@@ -97,7 +97,7 @@ const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
         return NULL;
 
     axes[(*count)++] = calcJoystickPos(ji.dwXpos, jc.wXmin, jc.wXmax);
-    axes[(*count)++] = -calcJoystickPos(ji.dwYpos, jc.wYmin, jc.wYmax);
+    axes[(*count)++] = calcJoystickPos(ji.dwYpos, jc.wYmin, jc.wYmax);
 
     if (jc.wCaps & JOYCAPS_HASZ)
         axes[(*count)++] = calcJoystickPos(ji.dwZpos, jc.wZmin, jc.wZmax);
@@ -109,7 +109,7 @@ const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
         axes[(*count)++] = calcJoystickPos(ji.dwUpos, jc.wUmin, jc.wUmax);
 
     if (jc.wCaps & JOYCAPS_HASV)
-        axes[(*count)++] = -calcJoystickPos(ji.dwVpos, jc.wVmin, jc.wVmax);
+        axes[(*count)++] = calcJoystickPos(ji.dwVpos, jc.wVmin, jc.wVmax);
 
     return axes;
 }

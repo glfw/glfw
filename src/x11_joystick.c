@@ -125,15 +125,6 @@ static void pollJoystickEvents(void)
                 case JS_EVENT_AXIS:
                     _glfw.x11.joystick[i].axes[e.number] =
                         (float) e.value / 32767.0f;
-
-                    // We need to change the sign for the Y axes, so that
-                    // positive = up/forward, according to the GLFW spec.
-                    if (e.number & 1)
-                    {
-                        _glfw.x11.joystick[i].axes[e.number] =
-                            -_glfw.x11.joystick[i].axes[e.number];
-                    }
-
                     break;
 
                 case JS_EVENT_BUTTON:

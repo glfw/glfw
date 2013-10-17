@@ -65,6 +65,11 @@ static void enterFullscreenMode(_GLFWwindow* window)
 
     [window->ns.view enterFullScreenMode:window->monitor->ns.screen
                              withOptions:options];
+
+    // HACK: Synthesize focus event as window does not become key when the view
+    // is made full screen
+    // TODO: Remove this when moving to a full screen window
+    _glfwInputWindowFocus(window, GL_TRUE);
 }
 
 // Leave fullscreen mode
@@ -73,6 +78,11 @@ static void leaveFullscreenMode(_GLFWwindow* window)
 {
     if (![window->ns.view isInFullScreenMode])
         return;
+
+    // HACK: Synthesize focus event as window does not become key when the view
+    // is made full screen
+    // TODO: Remove this when moving to a full screen window
+    _glfwInputWindowFocus(window, GL_FALSE);
 
     _glfwRestoreVideoMode(window->monitor);
 

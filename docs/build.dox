@@ -5,7 +5,9 @@
 @tableofcontents
 
 This is about compiling and linking programs that use GLFW.  For information on
-how to *write* such programs, start with the [introductory tutorial](@ref quick).
+how to write such programs, start with the [introductory tutorial](@ref quick).
+For information on how to build the GLFW library itself, see the
+[Building GLFW](https://github.com/glfw/glfw#building-glfw) guide.
 
 
 @section build_include Including the GLFW header file

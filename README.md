@@ -16,7 +16,12 @@ If you are new to GLFW, you may find the
 the GLFW 3 API.
 
 
-## Compiling GLFW
+## Building GLFW
+
+These are the build instructions for the GLFW library itself.  For information
+on how to build programs that use GLFW, see the [Building programs using
+GLFW](http://www.glfw.org/docs/latest/build.html) guide.
+
 
 ### Dependencies
 

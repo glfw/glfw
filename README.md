@@ -43,8 +43,8 @@ the necessary headers, link libraries and tools except for CMake.
 
 #### Dependencies with MinGW or MinGW-w64 on Windows
 
-These packages contain all the necessary headers, link libraries and tools
-except for CMake.
+Both the MinGW and the MinGW-w64 packages contain all the necessary headers,
+link libraries and tools except for CMake.
 
 
 #### Dependencies using MinGW or MinGW-w64 cross-compilation
@@ -77,7 +77,7 @@ the CMake wiki.
 
 Xcode contains all necessary tools except for CMake.  The necessary headers and
 libraries are included in the core OS frameworks.  Xcode can be downloaded from
-the Mac App Store.
+the Mac App Store or from the ADC Member Center.
 
 
 #### Dependencies using Linux and X11
@@ -87,13 +87,14 @@ installed, as well as the basic development tools like GCC and make.  For
 example, on Ubuntu and other distributions based on Debian GNU/Linux, you need
 to install the `xorg-dev` and `libglu1-mesa-dev` packages.  The former pulls in
 all X.org header packages and the latter pulls in the Mesa OpenGL and GLU
-packages.  Note that using header files and libraries from Mesa during
-compilation *will not* tie your binaries to the Mesa implementation of OpenGL.
+packages.  GLFW itself doesn't need or use GLU, but some of the examples do.
+Note that using header files and libraries from Mesa during compilation *will
+not* tie your binaries to the Mesa implementation of OpenGL.
 
 
 ### Generating files with CMake
 
-Once you have all necessary dependencies, it is time to generate the project
+Once you have all necessary dependencies it is time to generate the project
 files or makefiles for your development environment.  CMake needs to know two
 paths for this: the path to the source directory and the target path for the
 generated files and compiled binaries.  If these are the same, it is called an

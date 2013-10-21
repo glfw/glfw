@@ -209,7 +209,7 @@ See the [GLFW documentation](http://www.glfw.org/docs/latest/).
 ## Changelog
 
  - Renamed configuration header to `glfw_config.h` to avoid conflicts
- - Generated file `glfw3.pc` did not respect the LIB\_SUFFIX CMake option
+ - Bugfix: The `glfw3.pc` file did not respect the `LIB_SUFFIX` CMake option
  - [Win32] Bugfix: Removed joystick axis value negation left over from GLFW 2
  - [Win32] Bugfix: Restoring windows using the Win+D hot key did not trigger the
                    focus callback

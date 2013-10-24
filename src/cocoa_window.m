@@ -105,7 +105,7 @@ static float transformY(float y)
 static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 {
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_7)
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
         return [window->ns.view convertRectToBacking:contentRect];
     else
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
@@ -635,7 +635,7 @@ static int translateKey(unsigned int key)
     double deltaX, deltaY;
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_7)
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
     {
         deltaX = [event scrollingDeltaX];
         deltaY = [event scrollingDeltaY];
@@ -867,7 +867,7 @@ static GLboolean createWindow(_GLFWwindow* window,
     window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_7)
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
     {
         [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
 
@@ -883,7 +883,7 @@ static GLboolean createWindow(_GLFWwindow* window,
     [window->ns.object center];
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_7)
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
         [window->ns.object setRestorable:NO];
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 

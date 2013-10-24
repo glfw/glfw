@@ -33,6 +33,7 @@
 #include <IOKit/graphics/IOGraphicsLib.h>
 #include <IOKit/graphics/IOGraphicsLib.h>
 #include <CoreVideo/CVBase.h>
+#include <CoreVideo/CVDisplayLink.h>
 
 
 // Get the name of the specified display

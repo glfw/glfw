@@ -176,12 +176,23 @@ similar to that of GLFW 2.
 
 @subsection moving_window_close Window closing
 
-Window closing is now just an event like any other.  GLFW 3 windows won't
-disappear from underfoot even when no close callback is set; instead the
-window's close flag is set.  You can query this flag using @ref
-glfwWindowShouldClose, or capture close events by setting a close callback.  The
-close flag can be modified from any point in your program using @ref
+Window closing initiated by the user is now just an event like any other.
+Unlike GLFW 2, windows and contexts created with GLFW 3 will not disappear from
+underfoot.  Each window now has a close flag, which is set when the user
+attempts to close it.  By default, nothing else happens and the window stays
+open and visible.  It is then up to you to either destroy the window, take some
+other action or simply ignore the request.  You can query the close flag at any
+time with @ref glfwWindowShouldClose and set it at any time with @ref
 glfwSetWindowShouldClose.
+
+The close callback no longer returns a value.  Instead, it is called after the
+close flag has been set so it can override its value, if it chooses to, before
+event processing completes.  You may however not call @ref glfwDestroyWindow
+from the close callback (or any other window related callback).
+
+GLFW itself never clears the close flag, allowing you to set it for other
+reasons for the window to close as well, for example the user choosing Quit from
+the main menu.
 
 
 @subsection moving_context Explicit context management

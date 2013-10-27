@@ -1246,6 +1246,8 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  information from the application's bundle.  For more information on bundles,
  *  see the Bundle Programming Guide provided by Apple.
  *
+ *  @remarks **X11:** There is no mechanism for setting the window icon yet.
+ *
  *  @remarks The swap interval is not set during window creation, but is left at
  *  the default value for that platform.  For more information, see @ref
  *  glfwSwapInterval.
@@ -1599,6 +1601,9 @@ GLFWAPI GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwind
  *  callback.
  *  @return The previously set callback, or `NULL` if no callback was set or an
  *  error occurred.
+ *
+ *  @par New in GLFW 3
+ *  The close callback no longer returns a value.
  *
  *  @remarks **OS X:** Selecting Quit from the application menu will
  *  trigger the close callback for all windows.

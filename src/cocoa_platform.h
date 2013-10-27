@@ -78,7 +78,7 @@ typedef struct
     int             present;
     char            name[256];
 
-    IOHIDDeviceInterface** interface;
+    IOHIDDeviceRef device;
 
     CFMutableArrayRef axisElements;
     CFMutableArrayRef buttonElements;
@@ -107,6 +107,7 @@ typedef struct _GLFWlibraryNS
 
     char*           clipboardString;
 
+    IOHIDManagerRef ioHIDManagerRef;
     _GLFWjoy        joysticks[GLFW_JOYSTICK_LAST + 1];
 } _GLFWlibraryNS;
 

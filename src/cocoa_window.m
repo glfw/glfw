@@ -796,6 +796,19 @@ static void createMenuBar(void)
                           action:@selector(arrangeInFront:)
                    keyEquivalent:@""];
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
+    {
+        // TODO: Make this appear at the bottom of the menu (for consistency)
+
+        [windowMenu addItem:[NSMenuItem separatorItem]];
+        [[windowMenu addItemWithTitle:@"Enter Full Screen"
+                               action:@selector(toggleFullScreen:)
+                        keyEquivalent:@"f"]
+            setKeyEquivalentModifierMask:NSControlKeyMask | NSCommandKeyMask];
+    }
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+
     // Prior to Snow Leopard, we need to use this oddly-named semi-private API
     // to get the application menu working properly.
     SEL setAppleMenuSelector = NSSelectorFromString(@"setAppleMenu:");

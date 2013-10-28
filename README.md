@@ -126,6 +126,7 @@ skills.
  - Marcel Metz
  - Kenneth Miller
  - Bruce Mitchener
+ - Jack Moffitt
  - Jeff Molofee
  - Jon Morton
  - Pierre Moulon

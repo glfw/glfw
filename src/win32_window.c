@@ -919,7 +919,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
         // First we clear the current context (the one we just created)
         // This is usually done by glfwDestroyWindow, but as we're not doing
-        // full window destruction, it's duplicated here
+        // full GLFW window destruction, it's duplicated here
         _glfwPlatformMakeContextCurrent(NULL);
 
         // Next destroy the Win32 window and WGL context (without resetting or

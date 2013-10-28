@@ -1617,9 +1617,33 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
  *
  *  @note This function may only be called from the main thread.
  *
+ *  @sa glfwSetWindowMonitor
+ *
  *  @ingroup window
  */
 GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
+
+/*! @brief Sets the monitor that the window uses for full screen mode.
+ *
+ *  This function sets the monitor that the specified window uses for full
+ *  screen mode, or if no monitor is specified, makes it windowed mode.
+ *
+ *  The specified width and height are used as the new size of a windowed mode
+ *  window or, if a monitor is specified, used to find a suitable video mode for
+ *  the monitor the window will become full screen on.
+ *
+ *  @param[in] window The window whose monitor to set or unset.
+ *  @param[in] monitor The monitor, or `NULL` to make it windowed mode.
+ *  @param[in] width The desired width, in screen coordinates, of the window or
+ *  video mode.
+ *  @param[in] height The desired height, in screen coordinates, of the window or
+ *  video mode.
+ *
+ *  @sa glfwGetWindowMonitor
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowMonitor(GLFWwindow* window, GLFWmonitor* monitor, int width, int height);
 
 /*! @brief Returns an attribute of the specified window.
  *

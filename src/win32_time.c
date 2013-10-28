@@ -28,6 +28,21 @@
 #include "internal.h"
 
 
+// Return raw time
+//
+static unsigned __int64 getRawTime(void)
+{
+    if (_glfw.win32.timer.hasPC)
+    {
+        unsigned __int64 time;
+        QueryPerformanceCounter((LARGE_INTEGER*) &time);
+        return time;
+    }
+    else
+        return (unsigned __int64) _glfw_timeGetTime();
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -36,20 +51,20 @@
 //
 void _glfwInitTimer(void)
 {
-    __int64 freq;
+    unsigned __int64 frequency;
 
-    if (QueryPerformanceFrequency((LARGE_INTEGER*) &freq))
+    if (QueryPerformanceFrequency((LARGE_INTEGER*) &frequency))
     {
         _glfw.win32.timer.hasPC = GL_TRUE;
-        _glfw.win32.timer.resolution = 1.0 / (double) freq;
-        QueryPerformanceCounter((LARGE_INTEGER*) &_glfw.win32.timer.t0_64);
+        _glfw.win32.timer.resolution = 1.0 / (double) frequency;
     }
     else
     {
         _glfw.win32.timer.hasPC = GL_FALSE;
         _glfw.win32.timer.resolution = 0.001; // winmm resolution is 1 ms
-        _glfw.win32.timer.t0_32 = _glfw_timeGetTime();
     }
+
+    _glfw.win32.timer.base = getRawTime();
 }
 
 
@@ -59,30 +74,13 @@ void _glfwInitTimer(void)
 
 double _glfwPlatformGetTime(void)
 {
-    double t;
-    __int64 t_64;
-
-    if (_glfw.win32.timer.hasPC)
-    {
-        QueryPerformanceCounter((LARGE_INTEGER*) &t_64);
-        t =  (double)(t_64 - _glfw.win32.timer.t0_64);
-    }
-    else
-        t = (double)(_glfw_timeGetTime() - _glfw.win32.timer.t0_32);
-
-    return t * _glfw.win32.timer.resolution;
+    return (double) (getRawTime() - _glfw.win32.timer.base) *
+        _glfw.win32.timer.resolution;
 }
 
-void _glfwPlatformSetTime(double t)
+void _glfwPlatformSetTime(double time)
 {
-    __int64 t_64;
-
-    if (_glfw.win32.timer.hasPC)
-    {
-        QueryPerformanceCounter((LARGE_INTEGER*) &t_64);
-        _glfw.win32.timer.t0_64 = t_64 - (__int64) (t / _glfw.win32.timer.resolution);
-    }
-    else
-        _glfw.win32.timer.t0_32 = _glfw_timeGetTime() - (int)(t * 1000.0);
+    _glfw.win32.timer.base = getRawTime() -
+        (unsigned __int64) (time / _glfw.win32.timer.resolution);
 }
 

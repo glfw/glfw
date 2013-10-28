@@ -52,7 +52,7 @@ typedef struct
 
 } _GLFWjoyelement;
 
-static void CFSetApplierFunctionCopyToCFArray(const void *value, void *context)
+static void copyToCFArray(const void *value, void *context)
 {
     CFArrayAppendValue( ( CFMutableArrayRef ) context, value );
 }
@@ -206,30 +206,23 @@ static void pollJoystickEvents(void)
     }
 }
 
-static CFMutableDictionaryRef creates_osx_device_match(int usage)
+static CFMutableDictionaryRef createDevMatchDictionary(int page, int usage)
 {
-    CFMutableDictionaryRef result = CFDictionaryCreateMutable( NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks );
+    CFMutableDictionaryRef resultRef = CFDictionaryCreateMutable( NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks );
+    CFNumberRef pageRef = CFNumberCreate( NULL, kCFNumberIntType, &page);
+    CFNumberRef usageRef = CFNumberCreate( NULL, kCFNumberIntType, &usage);
 
-    if ( !result )
+    if ( resultRef && pageRef && usageRef)
+    {
+        CFDictionarySetValue( resultRef, CFSTR( kIOHIDDeviceUsagePageKey ), pageRef );
+        CFDictionarySetValue( resultRef, CFSTR( kIOHIDPrimaryUsageKey ), usageRef );
+        CFRelease( pageRef );
+        CFRelease( usageRef );
+
+        return resultRef;
+    }
+    else
         return NULL;
-
-    int page = kHIDPage_GenericDesktop;
-    CFNumberRef pageCFNumberRef = CFNumberCreate( NULL, kCFNumberIntType, &page);
-
-    if ( !pageCFNumberRef )
-        return NULL;
-
-    CFDictionarySetValue( result, CFSTR( kIOHIDDeviceUsagePageKey ), pageCFNumberRef );
-    CFRelease( pageCFNumberRef );
-
-    CFNumberRef usageCFNumberRef = CFNumberCreate( NULL, kCFNumberIntType, &usage);
-    if ( !usageCFNumberRef )
-        return NULL;
-
-    CFDictionarySetValue( result, CFSTR( kIOHIDDeviceUsageKey ), usageCFNumberRef );
-    CFRelease( usageCFNumberRef );
-
-    return result;
 }
 
 
@@ -248,85 +241,58 @@ void _glfwInitJoysticks(void)
     if ( kIOReturnSuccess != tIOReturn )
         return;
 
-    CFMutableArrayRef matching = CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks);
+    CFMutableDictionaryRef joystickMatchRef =  createDevMatchDictionary(kHIDPage_GenericDesktop, kHIDUsage_GD_Joystick);
+    CFMutableDictionaryRef gamepadMatchRef =   createDevMatchDictionary(kHIDPage_GenericDesktop, kHIDUsage_GD_GamePad);
+    CFMutableDictionaryRef multiAxisMatchRef = createDevMatchDictionary(kHIDPage_GenericDesktop, kHIDUsage_GD_MultiAxisController);
+    CFArrayRef matchArrayRef = NULL;
+    if(multiAxisMatchRef && gamepadMatchRef && multiAxisMatchRef)
     {
-        CFMutableDictionaryRef result = creates_osx_device_match(kHIDUsage_GD_Joystick);
-        if (result)
-        {
-            CFArrayAppendValue( matching, result );
-            CFRelease(result);
-            result = creates_osx_device_match(kHIDUsage_GD_GamePad);
-        }
-        if (result)
-        {
-            CFArrayAppendValue( matching, result );
-            CFRelease(result);
-            result = creates_osx_device_match(kHIDUsage_GD_MultiAxisController);
-        }
-        if (result)
-        {
-            CFArrayAppendValue( matching, result );
-            CFRelease(result);
-        }
+        CFMutableDictionaryRef matchArray[] = { joystickMatchRef, gamepadMatchRef, multiAxisMatchRef };
+        matchArrayRef = CFArrayCreate(kCFAllocatorDefault,(const void **)matchArray, 3, &kCFTypeArrayCallBacks);
+        CFRelease(joystickMatchRef);CFRelease(gamepadMatchRef);CFRelease(multiAxisMatchRef);
     }
-    IOHIDManagerSetDeviceMatchingMultiple( _glfw.ns.ioHIDManagerRef, matching);
-    CFRelease(matching);
-    CFSetRef devset = IOHIDManagerCopyDevices( _glfw.ns.ioHIDManagerRef );
-    if(!devset)
+    if(!matchArrayRef)
         return;
 
-    CFMutableArrayRef devarray = CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks);
-    CFSetApplyFunction(devset, CFSetApplierFunctionCopyToCFArray, devarray);
-    CFRelease( devset);
-    CFIndex idx,countDevices = CFArrayGetCount(devarray);
+    IOHIDManagerSetDeviceMatchingMultiple( _glfw.ns.ioHIDManagerRef, matchArrayRef);
+    CFRelease(matchArrayRef);
+    CFSetRef deviceSet = IOHIDManagerCopyDevices( _glfw.ns.ioHIDManagerRef );
+    if(!deviceSet)
+        return;
 
-    for (idx = 0; idx < countDevices; idx++)
+    CFMutableArrayRef deviceArray = CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks);
+    CFSetApplyFunction(deviceSet, copyToCFArray, deviceArray);
+    CFRelease( deviceSet);
+
+    CFIndex idx;
+    for (idx = 0; idx < CFArrayGetCount(deviceArray); idx++)
     {
-        IOHIDDeviceRef tDevice = (IOHIDDeviceRef) CFArrayGetValueAtIndex(devarray, idx);
+        IOHIDDeviceRef dev = (IOHIDDeviceRef) CFArrayGetValueAtIndex(deviceArray, idx);
 
-        CFArrayRef elementCFArrayRef = IOHIDDeviceCopyMatchingElements(tDevice, NULL, 0);
+        CFArrayRef elementArray = IOHIDDeviceCopyMatchingElements(dev, NULL, 0);
 
-        if (!elementCFArrayRef)
+        if (!elementArray)
             continue;
-
-        CFTypeRef valueRef = IOHIDDeviceGetProperty(tDevice, CFSTR( kIOHIDPrimaryUsageKey ));
-        if (!valueRef)
-        {
-            CFRelease(elementCFArrayRef);
-            continue;
-        }
-        long primaryUsage;
-        CFNumberGetValue(valueRef, kCFNumberLongType, &primaryUsage);
-        CFRelease(valueRef);
-
-        if ((primaryUsage != kHIDUsage_GD_Joystick &&
-             primaryUsage != kHIDUsage_GD_GamePad &&
-             primaryUsage != kHIDUsage_GD_MultiAxisController))
-        {
-            // This device is not relevant to GLFW
-            CFRelease(elementCFArrayRef);
-            continue;
-        }
 
         _GLFWjoy* joystick = _glfw.ns.joysticks + joy;
         joystick->present = GL_TRUE;
 
-        CFStringRef strRef = IOHIDDeviceGetProperty(tDevice, CFSTR( kIOHIDProductKey ));
+        CFStringRef strRef = IOHIDDeviceGetProperty(dev, CFSTR( kIOHIDProductKey ));
         CFStringGetCString(strRef, joystick->name, sizeof(joystick->name), kCFStringEncodingUTF8);
         CFRelease(strRef);
 
-        joystick->device = tDevice;
+        joystick->device = dev;
         joystick->axisElements = CFArrayCreateMutable(NULL, 0, NULL);
         joystick->buttonElements = CFArrayCreateMutable(NULL, 0, NULL);
         joystick->hatElements = CFArrayCreateMutable(NULL, 0, NULL);
 
-        CFIndex eleidx, elecnt = CFArrayGetCount(elementCFArrayRef);
+        CFIndex eleidx, elecnt = CFArrayGetCount(elementArray);
         for (eleidx=0; eleidx<elecnt; eleidx++)
         {
-            IOHIDElementRef tIOHIDElementRef = (IOHIDElementRef)CFArrayGetValueAtIndex(elementCFArrayRef, eleidx);
-            int elementType = IOHIDElementGetType(tIOHIDElementRef);
-            int usagePage = IOHIDElementGetUsagePage(tIOHIDElementRef);
-            int usage = IOHIDElementGetUsage(tIOHIDElementRef);
+            IOHIDElementRef elementRef = (IOHIDElementRef)CFArrayGetValueAtIndex(elementArray, eleidx);
+            int elementType = IOHIDElementGetType(elementRef);
+            int usagePage = IOHIDElementGetUsagePage(elementRef);
+            int usage = IOHIDElementGetUsage(elementRef);
 
             if ((elementType != kIOHIDElementTypeInput_Axis) &&
                 (elementType != kIOHIDElementTypeInput_Button) &&
@@ -372,14 +338,14 @@ void _glfwInitJoysticks(void)
 
             CFArrayAppendValue(elementsArray, control);
 
-            control->elementRef = tIOHIDElementRef;
+            control->elementRef = elementRef;
             CFRetain(control->elementRef);
 
-            control->max = control->maxReport = IOHIDElementGetLogicalMax(tIOHIDElementRef);
-            control->min = control->minReport = IOHIDElementGetLogicalMin(tIOHIDElementRef);
+            control->max = control->maxReport = IOHIDElementGetLogicalMax(elementRef);
+            control->min = control->minReport = IOHIDElementGetLogicalMin(elementRef);
 
         }
-        CFRelease(elementCFArrayRef);
+        CFRelease(elementArray);
 
         joystick->axes = calloc(CFArrayGetCount(joystick->axisElements),
                                          sizeof(float));
@@ -391,7 +357,7 @@ void _glfwInitJoysticks(void)
             break;
 
     }
-    CFRelease(devarray);
+    CFRelease(deviceArray);
 
     IOHIDManagerRegisterDeviceRemovalCallback(_glfw.ns.ioHIDManagerRef, &removalCallback, NULL);
 

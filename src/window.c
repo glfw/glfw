@@ -498,11 +498,8 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* handle, int width, int height)
     if (window->iconified)
         return;
 
-    if (window->monitor)
-    {
-        window->videoMode.width  = width;
-        window->videoMode.height = height;
-    }
+    window->videoMode.width  = width;
+    window->videoMode.height = height;
 
     _glfwPlatformSetWindowSize(window, width, height);
 }
@@ -634,6 +631,29 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* handle)
     _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     return (GLFWmonitor*) window->monitor;
+}
+
+GLFWAPI void glfwSetWindowMonitor(GLFWwindow* wh,
+                                  GLFWmonitor* mh,
+                                  int width, int height)
+{
+    _GLFWwindow* window = (_GLFWwindow*) wh;
+    _GLFWmonitor* monitor = (_GLFWmonitor*) mh;
+    _GLFW_REQUIRE_INIT();
+
+    if (window->monitor == monitor)
+    {
+        glfwSetWindowSize(wh, width, height);
+        return;
+    }
+
+    if (window->iconified)
+        return;
+
+    window->videoMode.width  = width;
+    window->videoMode.height = height;
+
+    _glfwPlatformSetWindowMonitor(window, monitor, width, height);
 }
 
 GLFWAPI void glfwSetWindowUserPointer(GLFWwindow* handle, void* pointer)

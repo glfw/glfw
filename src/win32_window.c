@@ -35,6 +35,37 @@
 #define _GLFW_KEY_INVALID -2
 
 
+// Returns the window style for the specified window configuration
+//
+static getWindowStyle(const _GLFWwndconfig* wndconfig)
+{
+    DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+
+    if (wndconfig->decorated && wndconfig->monitor == NULL)
+    {
+        style |= WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+
+        if (wndconfig->resizable)
+            style |= WS_MAXIMIZEBOX | WS_SIZEBOX;
+    }
+    else
+        style |= WS_POPUP;
+
+    return style;
+}
+
+// Returns the extended window style for the specified window configuration
+//
+static getWindowExStyle(const _GLFWwndconfig* wndconfig)
+{
+    DWORD style = WS_EX_APPWINDOW;
+
+    if (wndconfig->decorated && wndconfig->monitor == NULL)
+        style |= WS_EX_WINDOWEDGE;
+
+    return style;
+}
+
 // Updates the cursor clip rect
 //
 static void updateClipRect(_GLFWwindow* window)
@@ -885,38 +916,23 @@ static int createWindow(_GLFWwindow* window,
     int xpos, ypos, fullWidth, fullHeight;
     WCHAR* wideTitle;
 
-    window->win32.dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
-    window->win32.dwExStyle = WS_EX_APPWINDOW;
+    window->win32.dwStyle = getWindowStyle(wndconfig);
+    window->win32.dwExStyle = getWindowExStyle(wndconfig);
 
     if (window->monitor)
     {
-        window->win32.dwStyle |= WS_POPUP;
-
         _glfwPlatformGetMonitorPos(wndconfig->monitor, &xpos, &ypos);
         fullWidth  = wndconfig->width;
         fullHeight = wndconfig->height;
     }
     else
     {
-        if (wndconfig->decorated)
-        {
-            window->win32.dwStyle |= WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
-
-            if (wndconfig->resizable)
-            {
-                window->win32.dwStyle |= WS_MAXIMIZEBOX | WS_SIZEBOX;
-                window->win32.dwExStyle |= WS_EX_WINDOWEDGE;
-            }
-        }
-        else
-            window->win32.dwStyle |= WS_POPUP;
-
         xpos = CW_USEDEFAULT;
         ypos = CW_USEDEFAULT;
 
         getFullWindowSize(window,
-                        wndconfig->width, wndconfig->height,
-                        &fullWidth, &fullHeight);
+                          wndconfig->width, wndconfig->height,
+                          &fullWidth, &fullHeight);
     }
 
     wideTitle = _glfwCreateWideStringFromUTF8(wndconfig->title);
@@ -1181,6 +1197,55 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     ShowWindow(window->win32.handle, SW_HIDE);
+}
+
+void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
+                                   _GLFWmonitor* monitor,
+                                   int width, int height)
+{
+    if (window->monitor)
+        _glfwRestoreVideoMode(window->monitor);
+
+    _glfwInputWindowMonitorChange(window, monitor);
+
+    // Update window styles
+    {
+        _GLFWwndconfig wndconfig;
+        wndconfig.resizable = window->resizable;
+        wndconfig.decorated = window->decorated;
+        wndconfig.monitor   = monitor;
+
+        window->win32.dwStyle = getWindowStyle(&wndconfig);
+        window->win32.dwExStyle = getWindowExStyle(&wndconfig);
+
+        SetWindowLongPtr(window->win32.handle,
+                         GWL_STYLE, window->win32.dwStyle);
+        SetWindowLongPtr(window->win32.handle,
+                         GWL_EXSTYLE, window->win32.dwExStyle);
+    }
+
+    if (window->monitor)
+    {
+        GLFWvidmode mode;
+        int xpos, ypos;
+
+        _glfwSetVideoMode(window->monitor, &window->videoMode);
+        _glfwPlatformGetVideoMode(window->monitor, &mode);
+        _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
+
+        SetWindowPos(window->win32.handle, HWND_TOPMOST,
+                     xpos, ypos, mode.width, mode.height,
+                     SWP_FRAMECHANGED);
+    }
+    else
+    {
+        int fullWidth, fullHeight;
+        getFullWindowSize(window, width, height, &fullWidth, &fullHeight);
+
+        SetWindowPos(window->win32.handle, HWND_TOPMOST,
+                     0, 0, fullWidth, fullHeight,
+                     SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    }
 }
 
 void _glfwPlatformPollEvents(void)

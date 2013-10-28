@@ -378,6 +378,32 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             printf("(( closing %s ))\n", slot->closeable ? "enabled" : "disabled");
             break;
         }
+
+        case GLFW_KEY_ENTER:
+        {
+            if (mods == GLFW_MOD_ALT)
+            {
+                GLFWmonitor* monitor = glfwGetWindowMonitor(window);
+                if (monitor)
+                {
+                    printf("(( switching to windowed mode ))\n");
+                    glfwSetWindowMonitor(window, NULL, 640, 480);
+                }
+                else
+                {
+                    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+                    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+                    printf("(( switching to %ix%i full screen mode on %s ))\n",
+                           mode->width, mode->height,
+                           glfwGetMonitorName(monitor));
+
+                    glfwSetWindowMonitor(window, monitor, mode->width, mode->height);
+                }
+            }
+
+            break;
+        }
     }
 }
 

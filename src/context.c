@@ -595,11 +595,12 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 
         for (i = 0;  i < count;  i++)
         {
-             if (strcmp((const char*) window->GetStringi(GL_EXTENSIONS, i),
-                         extension) == 0)
-             {
-                 return GL_TRUE;
-             }
+            const char* en = (const char*) window->GetStringi(GL_EXTENSIONS, i);
+            if (en != NULL)
+            {
+                if (strcmp(en, extension) == 0)
+                    return GL_TRUE;
+            }
         }
     }
 #endif // _GLFW_USE_OPENGL

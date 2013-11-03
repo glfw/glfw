@@ -186,9 +186,6 @@ int main(int argc, char** argv)
     GLint flags, mask;
     GLFWwindow* window;
 
-    if (!valid_version())
-        exit(EXIT_FAILURE);
-
     while ((ch = getopt(argc, argv, "a:dfhlm:n:p:r:")) != -1)
     {
         switch (ch)
@@ -253,6 +250,9 @@ int main(int argc, char** argv)
     argv += optind;
 
     // Initialize GLFW and create window
+
+    if (!valid_version())
+        exit(EXIT_FAILURE);
 
     glfwSetErrorCallback(error_callback);
 

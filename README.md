@@ -57,6 +57,7 @@ guide in the GLFW documentation.
                    listed for Thunderbolt monitor
  - [X11] Added setting of the `WM_CLASS` property to the initial window title
  - [X11] Bugfix: Removed joystick axis value negation left over from GLFW 2
+ - [X11] Bugfix: The position of hidden windows was ignored by Metacity
 
 
 ## Contact

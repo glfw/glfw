@@ -1033,6 +1033,20 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
 {
+    XSizeHints* hints = XAllocSizeHints();
+    long flags;
+
+    XGetWMNormalHints(_glfw.x11.display, window->x11.handle, hints, &flags);
+
+    // Tell the window manager that we want to decide the initial position in case the window isn't open yet
+
+    hints->flags |= (PPosition | USPosition);
+    hints->x = xpos;
+    hints->y = ypos;
+
+    XSetWMNormalHints(_glfw.x11.display, window->x11.handle, hints);
+    XFree(hints);
+
     XMoveWindow(_glfw.x11.display, window->x11.handle, xpos, ypos);
     XFlush(_glfw.x11.display);
 }
@@ -1064,19 +1078,28 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     }
     else
     {
+        XSizeHints* hints = XAllocSizeHints();
+        long flags;
+
+        XGetWMNormalHints(_glfw.x11.display, window->x11.handle, hints, &flags);
+
+        // Tell the window manager that we want to decide the initial size in case the window isn't open yet
+
+        hints->flags |= (PSize | USSize);
+        hints->width = width;
+        hints->height = height;
+
         if (!window->resizable)
         {
             // Update window size restrictions to match new window size
 
-            XSizeHints* hints = XAllocSizeHints();
-
             hints->flags |= (PMinSize | PMaxSize);
             hints->min_width  = hints->max_width  = width;
             hints->min_height = hints->max_height = height;
-
-            XSetWMNormalHints(_glfw.x11.display, window->x11.handle, hints);
-            XFree(hints);
         }
+
+        XSetWMNormalHints(_glfw.x11.display, window->x11.handle, hints);
+        XFree(hints);
 
         XResizeWindow(_glfw.x11.display, window->x11.handle, width, height);
     }

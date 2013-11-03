@@ -1363,10 +1363,6 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
  *
  *  @note The window manager may put limits on what positions are allowed.
  *
- *  @bug **X11:** Some window managers ignore the set position of hidden (i.e.
- *  unmapped) windows, instead placing them where it thinks is appropriate once
- *  they are shown.
- *
  *  @sa glfwGetWindowPos
  *
  *  @ingroup window

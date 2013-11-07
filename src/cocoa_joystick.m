@@ -251,9 +251,6 @@ static void pollJoystickEvents(void)
                 joystick->axes[i] = value;
             else
                 joystick->axes[i] = (2.f * (value - axis->minReport) / readScale) - 1.f;
-
-            if (i & 1)
-                joystick->axes[i] = -joystick->axes[i];
         }
 
         for (i = 0;  i < CFArrayGetCount(joystick->hatElements);  i++)

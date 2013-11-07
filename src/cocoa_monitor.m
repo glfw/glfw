@@ -49,9 +49,11 @@ static const char* getDisplayName(CGDirectDisplayID displayID)
                                          kIODisplayOnlyPreferredName);
     names = CFDictionaryGetValue(info, CFSTR(kDisplayProductName));
 
-    if (!CFDictionaryGetValueIfPresent(names, CFSTR("en_US"),
-                                       (const void**) &value))
+    if (!names || !CFDictionaryGetValueIfPresent(names, CFSTR("en_US"),
+                                                 (const void**) &value))
     {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to retrieve display name");
+
         CFRelease(info);
         return strdup("Unknown");
     }

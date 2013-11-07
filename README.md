@@ -63,6 +63,7 @@ guide in the GLFW documentation.
  - [Cocoa] Bugfix: The 10.9 SDK defines `GLintptrARB` and `GLsizeiptrARB`
                    differently from the Khronos `glext.h`
  - [Cocoa] Bugfix: Creating hidden windows would steal application focus
+ - [Cocoa] Bugfix: Controllers were reported as having zero buttons and axes
  - [X11] Added setting of the `WM_CLASS` property to the initial window title
  - [X11] Bugfix: Removed joystick axis value negation left over from GLFW 2
  - [X11] Bugfix: The position of hidden windows was ignored by Metacity

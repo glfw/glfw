@@ -830,9 +830,6 @@ static GLboolean initializeAppKit(void)
     // In case we are unbundled, make us a proper UI application
     [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
-    // Make us the active application
-    [NSApp activateIgnoringOtherApps:YES];
-
 #if defined(_GLFW_USE_MENUBAR)
     // Menu bar setup must go between sharedApplication above and
     // finishLaunching below, in order to properly emulate the behavior
@@ -1038,6 +1035,9 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
+    // Make us the active application
+    [NSApp activateIgnoringOtherApps:YES];
+
     [window->ns.object makeKeyAndOrderFront:nil];
     _glfwInputWindowVisibility(window, GL_TRUE);
 }

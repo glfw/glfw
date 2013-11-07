@@ -149,6 +149,9 @@ along with the library.
 `GLFW_BUILD_TESTS` determines whether the GLFW test programs are
 built along with the library.
 
+`GLFW_BUILD_DOCS` determines whether the GLFW documentation is built along with
+the library.
+
 
 @subsection compile_options_osx OS X specific CMake options
 

@@ -31,6 +31,8 @@ guide in the GLFW documentation.
 
 ## Changelog
 
+ - Added the `GLFW_BUILD_DOCS` CMake option for controlling whether the
+   documentation is built
  - Renamed configuration header to `glfw_config.h` to avoid conflicts
  - Bugfix: The `glfw3.pc` file did not respect the `LIB_SUFFIX` CMake option
  - [Win32] Bugfix: Removed joystick axis value negation left over from GLFW 2

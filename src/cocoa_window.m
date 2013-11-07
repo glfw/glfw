@@ -827,13 +827,11 @@ static GLboolean initializeAppKit(void)
     // Implicitly create shared NSApplication instance
     [GLFWApplication sharedApplication];
 
-    // If we get here, the application is unbundled
-    ProcessSerialNumber psn = { 0, kCurrentProcess };
-    TransformProcessType(&psn, kProcessTransformToForegroundApplication);
+    // In case we are unbundled, make us a proper UI application
+    [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
-    // Having the app in front of the terminal window is also generally
-    // handy.  There is an NSApplication API to do this, but...
-    SetFrontProcess(&psn);
+    // Make us the active application
+    [NSApp activateIgnoringOtherApps:YES];
 
 #if defined(_GLFW_USE_MENUBAR)
     // Menu bar setup must go between sharedApplication above and

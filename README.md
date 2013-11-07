@@ -40,6 +40,7 @@ guide in the GLFW documentation.
                    unfocused windows
  - [Cocoa] Added dependency on CoreVideo framework for refresh rate retrieval
  - [Cocoa] Enabled Lion full screen for resizable windowed mode windows
+ - [Cocoa] Moved to Cocoa API for application transformation and activation
  - [Cocoa] Bugfix: The `GLFW_KEY_GRAVE_ACCENT` key was reported as
                    `GLFW_KEY_WORLD_1` and vice versa
  - [Cocoa] Bugfix: The `GLFW_KEY_F13` key was reported as

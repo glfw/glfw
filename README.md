@@ -35,6 +35,7 @@ guide in the GLFW documentation.
    documentation is built
  - Renamed configuration header to `glfw_config.h` to avoid conflicts
  - Bugfix: The `glfw3.pc` file did not respect the `LIB_SUFFIX` CMake option
+ - Bugfix: The `joysticks` test would segfault if a controller had no axes
  - [Win32] Bugfix: Removed joystick axis value negation left over from GLFW 2
  - [Win32] Bugfix: Restoring windows using the Win+D hot key did not trigger the
                    focus callback

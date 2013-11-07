@@ -566,7 +566,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
         return GL_FALSE;
     }
 
-    if (extension == NULL || *extension == '\0')
+    if (!extension || *extension == '\0')
     {
         _glfwInputError(GLFW_INVALID_VALUE, NULL);
         return GL_FALSE;
@@ -577,11 +577,15 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
         // Check if extension is in the old style OpenGL extensions string
 
         extensions = glGetString(GL_EXTENSIONS);
-        if (extensions != NULL)
+        if (!extensions)
         {
-            if (_glfwStringInExtensionString(extension, extensions))
-                return GL_TRUE;
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Failed to retrieve extension string");
+            return GL_FALSE;
         }
+
+        if (_glfwStringInExtensionString(extension, extensions))
+            return GL_TRUE;
     }
 #if defined(_GLFW_USE_OPENGL)
     else
@@ -596,11 +600,15 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
         for (i = 0;  i < count;  i++)
         {
             const char* en = (const char*) window->GetStringi(GL_EXTENSIONS, i);
-            if (en != NULL)
+            if (!en)
             {
-                if (strcmp(en, extension) == 0)
-                    return GL_TRUE;
+                _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "Failed to retrieve extension string %i", i);
+                return GL_FALSE;
             }
+
+            if (strcmp(en, extension) == 0)
+                return GL_TRUE;
         }
     }
 #endif // _GLFW_USE_OPENGL

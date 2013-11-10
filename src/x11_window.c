@@ -136,6 +136,8 @@ static GLboolean createWindow(_GLFWwindow* window,
             wamask |= CWBackPixel;
         }
 
+        _glfwGrabXErrorHandler();
+
         window->x11.handle = XCreateWindow(_glfw.x11.display,
                                            _glfw.x11.root,
                                            0, 0,
@@ -147,12 +149,12 @@ static GLboolean createWindow(_GLFWwindow* window,
                                            wamask,
                                            &wa);
 
+        _glfwReleaseXErrorHandler();
+
         if (!window->x11.handle)
         {
-            // TODO: Handle all the various error codes here and translate them
-            //       to GLFW errors
-
-            _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Failed to create window");
+            _glfwInputXError(GLFW_PLATFORM_ERROR,
+                             "X11: Failed to create window");
             return GL_FALSE;
         }
 

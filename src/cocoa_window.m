@@ -266,7 +266,6 @@ static int translateFlags(NSUInteger flags)
 static int translateKey(unsigned int key)
 {
     // Keyboard symbol translation table
-    // TODO: Need to find mappings for F13-F15, volume down/up/mute, and eject.
     static const unsigned int table[128] =
     {
         /* 00 */ GLFW_KEY_A,

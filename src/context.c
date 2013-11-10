@@ -425,7 +425,7 @@ GLboolean _glfwRefreshContextAttribs(void)
         if (glfwExtensionSupported("GL_ARB_robustness"))
         {
             // NOTE: We avoid using the context flags for detection, as they are
-            // only present from 3.0 while the extension applies from 1.1
+            //       only present from 3.0 while the extension applies from 1.1
 
             GLint strategy;
             glGetIntegerv(GL_RESET_NOTIFICATION_STRATEGY_ARB, &strategy);
@@ -442,7 +442,7 @@ GLboolean _glfwRefreshContextAttribs(void)
         if (glfwExtensionSupported("GL_EXT_robustness"))
         {
             // NOTE: The values of these constants match those of the OpenGL ARB
-            // one, so we can reuse them here
+            //       one, so we can reuse them here
 
             GLint strategy;
             glGetIntegerv(GL_RESET_NOTIFICATION_STRATEGY_ARB, &strategy);

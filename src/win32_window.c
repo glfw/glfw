@@ -145,7 +145,7 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
 {
     // Check for numeric keypad keys
     // NOTE: This way we always force "NumLock = ON", which is intentional since
-    // the returned key code should correspond to a physical location.
+    //       the returned key code should correspond to a physical location.
     if ((HIWORD(lParam) & 0x100) == 0)
     {
         switch (MapVirtualKey(HIWORD(lParam) & 0xFF, 1))

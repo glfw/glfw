@@ -457,8 +457,8 @@ int _glfwCreateContext(_GLFWwindow* window,
         if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
         {
             // NOTE: Only request an explicitly versioned context when
-            // necessary, as explicitly requesting version 1.0 does not always
-            // return the highest available version
+            //       necessary, as explicitly requesting version 1.0 does not
+            //       always return the highest available version
 
             setGLXattrib(GLX_CONTEXT_MAJOR_VERSION_ARB, wndconfig->glMajor);
             setGLXattrib(GLX_CONTEXT_MINOR_VERSION_ARB, wndconfig->glMinor);

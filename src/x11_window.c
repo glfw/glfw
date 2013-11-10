@@ -150,7 +150,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         if (!window->x11.handle)
         {
             // TODO: Handle all the various error codes here and translate them
-            // to GLFW errors
+            //       to GLFW errors
 
             _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Failed to create window");
             return GL_FALSE;

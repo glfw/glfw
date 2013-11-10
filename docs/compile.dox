@@ -135,9 +135,9 @@ GNU/Linux have this tool in a separate `cmake-curses-gui` package.
 `BUILD_SHARED_LIBS` determines whether GLFW is built as a static
 library or as a DLL / shared library / dynamic library.
 
-`LIB_SUFFIX` affects where the GLFW shared /dynamic library is
-installed.  If it is empty, it is installed to `$PREFIX/lib`.  If it is set to
-`64`, it is installed to `$PREFIX/lib64`.
+`LIB_SUFFIX` affects where the GLFW shared /dynamic library is installed.  If it
+is empty, it is installed to `${CMAKE_INSTALL_PREFIX}/lib`.  If it is set to
+`64`, it is installed to `${CMAKE_INSTALL_PREFIX}/lib64`.
 
 `GLFW_CLIENT_LIBRARY` determines which client API library to use.  If set to
 `opengl` the OpenGL library is used, if set to `glesv1` for the OpenGL ES 1.x

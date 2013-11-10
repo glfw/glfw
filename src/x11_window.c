@@ -129,8 +129,8 @@ static GLboolean createWindow(_GLFWwindow* window,
         if (wndconfig->monitor == NULL)
         {
             // HACK: This is a workaround for windows without a background pixel
-            // not getting any decorations on certain older versions of Compiz
-            // running on Intel hardware
+            //       not getting any decorations on certain older versions of
+            //       Compiz running on Intel hardware
             wa.background_pixel = BlackPixel(_glfw.x11.display,
                                              _glfw.x11.screen);
             wamask |= CWBackPixel;
@@ -258,6 +258,9 @@ static GLboolean createWindow(_GLFWwindow* window,
         }
         else
         {
+            // HACK: Explicitly setting PPosition to any value causes some WMs,
+            //       notably Compiz and Metacity, to honor the position of
+            //       unmapped windows set by XMoveWindow
             hints->flags |= PPosition;
             hints->x = hints->y = 0;
         }
@@ -275,7 +278,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 
     // Set ICCCM WM_CLASS property
     // HACK: Until a mechanism for specifying the application name is added, the
-    // initial window title is used as the window class name
+    //       initial window title is used as the window class name
     if (strlen(wndconfig->title))
     {
         XClassHint* hint = XAllocClassHint();

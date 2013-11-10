@@ -67,7 +67,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
                              withOptions:options];
 
     // HACK: Synthesize focus event as window does not become key when the view
-    // is made full screen
+    //       is made full screen
     // TODO: Remove this when moving to a full screen window
     _glfwInputWindowFocus(window, GL_TRUE);
 }
@@ -80,7 +80,7 @@ static void leaveFullscreenMode(_GLFWwindow* window)
         return;
 
     // HACK: Synthesize focus event as window does not become key when the view
-    // is made full screen
+    //       is made full screen
     // TODO: Remove this when moving to a full screen window
     _glfwInputWindowFocus(window, GL_FALSE);
 
@@ -1036,6 +1036,9 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
     // Make us the active application
+    // HACK: This has been moved here from initializeAppKit to prevent
+    //       applications using only hidden windows from being activated, but
+    //       should probably not be done every time any window is shown
     [NSApp activateIgnoringOtherApps:YES];
 
     [window->ns.object makeKeyAndOrderFront:nil];

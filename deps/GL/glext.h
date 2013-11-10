@@ -4130,6 +4130,9 @@ GLAPI void APIENTRY glVertexBlendARB (GLint count);
 
 #ifndef GL_ARB_vertex_buffer_object
 #define GL_ARB_vertex_buffer_object 1
+/* HACK: This is a workaround for gltypes.h on OS X 10.9 defining these types as
+ *       long instead of ptrdiff_t
+ */
 #if defined(__APPLE__)
 typedef long GLsizeiptrARB;
 typedef long GLintptrARB;

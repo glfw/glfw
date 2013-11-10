@@ -75,7 +75,7 @@ static GLboolean chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* resul
     if (strcmp(vendor, "Chromium") == 0)
     {
         // HACK: This is a (hopefully temporary) workaround for Chromium
-        // (VirtualBox GL) not setting the window bit on any GLXFBConfigs
+        //       (VirtualBox GL) not setting the window bit on any GLXFBConfigs
         trustWindowBit = GL_FALSE;
     }
 
@@ -485,8 +485,9 @@ int _glfwCreateContext(_GLFWwindow* window,
         if (window->glx.context == NULL)
         {
             // HACK: This is a fallback for the broken Mesa implementation of
-            // GLX_ARB_create_context_profile, which fails default 1.0 context
-            // creation with a GLXBadProfileARB error in violation of the spec
+            //       GLX_ARB_create_context_profile, which fails default 1.0
+            //       context creation with a GLXBadProfileARB error in violation
+            //       of the extension spec
             if (_glfw.x11.errorCode == _glfw.glx.errorBase + GLXBadProfileARB &&
                 wndconfig->clientAPI == GLFW_OPENGL_API &&
                 wndconfig->glProfile == GLFW_OPENGL_ANY_PROFILE &&

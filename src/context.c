@@ -402,8 +402,8 @@ GLboolean _glfwRefreshContextAttribs(void)
             else if (glfwExtensionSupported("GL_ARB_debug_output"))
             {
                 // HACK: This is a workaround for older drivers (pre KHR_debug)
-                // not setting the debug bit in the context flags for debug
-                // contexts
+                //       not setting the debug bit in the context flags for
+                //       debug contexts
                 window->glDebug = GL_TRUE;
             }
         }

@@ -81,9 +81,10 @@ not* tie your binaries to the Mesa implementation of OpenGL.
 
 Once you have all necessary dependencies it is time to generate the project
 files or makefiles for your development environment.  CMake needs to know two
-paths for this: the path to the source directory and the target path for the
-generated files and compiled binaries.  If these are the same, it is called an
-in-tree build, otherwise it is called an out-of-tree build.
+paths for this: the path to the *root* directory of the GLFW source tree (i.e.
+*not* the `src` subdirectory) and the target path for the generated files and
+compiled binaries.  If these are the same, it is called an in-tree build,
+otherwise it is called an out-of-tree build.
 
 One of several advantages of out-of-tree builds is that you can generate files
 and compile for different development environments using a single source tree.
@@ -91,9 +92,10 @@ and compile for different development environments using a single source tree.
 
 @subsection compile_cmake_cli Generating files with the CMake command-line tool
 
-To make an in-tree build, enter the root directory of the GLFW source tree and
-run CMake.  The current directory is used as target path, while the path
-provided as an argument is used to find the source tree.
+To make an in-tree build, enter the *root* directory of the GLFW source tree
+(i.e. *not* the `src` subdirectory) and run CMake.  The current directory is
+used as target path, while the path provided as an argument is used to find the
+source tree.
 
     cd <glfw-root-dir>
     cmake .

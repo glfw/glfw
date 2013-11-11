@@ -143,12 +143,13 @@ void _glfwInputWindowCloseRequest(_GLFWwindow* window)
 GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
                                      const char* title,
                                      GLFWmonitor* monitor,
-                                     GLFWwindow* share)
+                                     GLFWwindow* share,
+                                     GLFWwindow* parent )
 {
     _GLFWfbconfig fbconfig;
     _GLFWwndconfig wndconfig;
-    _GLFWwindow* window;
-    _GLFWwindow* previous;
+    _GLFWwindow* window = NULL;
+    _GLFWwindow* previous = NULL;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
@@ -222,7 +223,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     previous = (_GLFWwindow*) glfwGetCurrentContext();
 
     // Open the actual window and create its context
-    if (!_glfwPlatformCreateWindow(window, &wndconfig, &fbconfig))
+    if (!_glfwPlatformCreateWindow(window, &wndconfig, &fbconfig, (_GLFWwindow*)parent ))
     {
         glfwDestroyWindow((GLFWwindow*) window);
         glfwMakeContextCurrent((GLFWwindow*) previous);

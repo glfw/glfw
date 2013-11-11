@@ -844,7 +844,8 @@ static GLboolean initializeAppKit(void)
 // Create the Cocoa window
 //
 static GLboolean createWindow(_GLFWwindow* window,
-                              const _GLFWwndconfig* wndconfig)
+                              const _GLFWwndconfig* wndconfig,
+							  _GLFWwindow* parent)
 {
     unsigned int styleMask = 0;
 
@@ -904,7 +905,8 @@ static GLboolean createWindow(_GLFWwindow* window,
 
 int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
-                              const _GLFWfbconfig* fbconfig)
+                              const _GLFWfbconfig* fbconfig,
+							  _GLFWwindow* parent)
 {
     if (!initializeAppKit())
         return GL_FALSE;
@@ -938,7 +940,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (!createWindow(window, wndconfig))
         return GL_FALSE;
 
-    if (!_glfwCreateContext(window, wndconfig, fbconfig))
+    if (!_glfwCreateContext(window, wndconfig, fbconfig, parent))
         return GL_FALSE;
 
     [window->nsgl.context setView:window->ns.view];

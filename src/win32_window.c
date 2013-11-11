@@ -789,7 +789,8 @@ static ATOM registerWindowClass(void)
 //
 static int createWindow(_GLFWwindow* window,
                         const _GLFWwndconfig* wndconfig,
-                        const _GLFWfbconfig* fbconfig)
+                        const _GLFWfbconfig* fbconfig,
+                        _GLFWwindow* parent )
 {
     int xpos, ypos, fullWidth, fullHeight;
     WCHAR* wideTitle;
@@ -842,7 +843,7 @@ static int createWindow(_GLFWwindow* window,
                                           window->win32.dwStyle,
                                           xpos, ypos,
                                           fullWidth, fullHeight,
-                                          NULL, // No parent window
+                                          parent ? parent->win32.handle : NULL, // No parent window
                                           NULL, // No window menu
                                           GetModuleHandle(NULL),
                                           window); // Pass object to WM_CREATE
@@ -881,7 +882,8 @@ static void destroyWindow(_GLFWwindow* window)
 
 int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
-                              const _GLFWfbconfig* fbconfig)
+                              const _GLFWfbconfig* fbconfig,
+                              _GLFWwindow* parent)
 {
     int status;
 
@@ -892,7 +894,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             return GL_FALSE;
     }
 
-    if (!createWindow(window, wndconfig, fbconfig))
+    if (!createWindow(window, wndconfig, fbconfig, parent ))
         return GL_FALSE;
 
     status = _glfwAnalyzeContext(window, wndconfig, fbconfig);
@@ -927,7 +929,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         destroyWindow(window);
 
         // ...and then create them again, this time with better APIs
-        if (!createWindow(window, wndconfig, fbconfig))
+        if (!createWindow(window, wndconfig, fbconfig, parent))
             return GL_FALSE;
     }
 

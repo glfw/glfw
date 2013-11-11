@@ -1230,6 +1230,9 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  windowed mode.
  *  @param[in] share The window whose context to share resources with, or `NULL`
  *  to not share resources.
+ *  @param[in] make this window parent to new one, new window will be always on top another. Pass `NULL`
+ *  to not make new window a child one.
+
  *  @return The handle of the created window, or `NULL` if an error occurred.
  *
  *  @remarks **Windows:** Window creation will fail if the Microsoft GDI
@@ -1258,7 +1261,7 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *
  *  @ingroup window
  */
-GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share);
+GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWwindow* parent);
 
 /*! @brief Destroys the specified window and its context.
  *

@@ -100,7 +100,8 @@ static int translateChar(XKeyEvent* event)
 // Create the X11 window (and its colormap)
 //
 static GLboolean createWindow(_GLFWwindow* window,
-                              const _GLFWwndconfig* wndconfig)
+                              const _GLFWwndconfig* wndconfig,
+							  _GLFWwindow* parent )
 {
     unsigned long wamask;
     XSetWindowAttributes wa;
@@ -139,7 +140,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         _glfwGrabXErrorHandler();
 
         window->x11.handle = XCreateWindow(_glfw.x11.display,
-                                           _glfw.x11.root,
+                                           parent ? parent->x11.handle , _glfw.x11.root,
                                            0, 0,
                                            wndconfig->width, wndconfig->height,
                                            0,              // Border width
@@ -936,12 +937,13 @@ unsigned long _glfwGetWindowProperty(Window window,
 
 int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
-                              const _GLFWfbconfig* fbconfig)
+                              const _GLFWfbconfig* fbconfig,
+							  _GLFWwindow* parent )
 {
     if (!_glfwCreateContext(window, wndconfig, fbconfig))
         return GL_FALSE;
 
-    if (!createWindow(window, wndconfig))
+    if (!createWindow(window, wndconfig, parent))
         return GL_FALSE;
 
     if (wndconfig->monitor)

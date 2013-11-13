@@ -41,6 +41,7 @@ guide in the GLFW documentation.
                    focus callback
  - [Win32] Bugfix: The disabled cursor mode clip rectangle was updated for
                    unfocused windows
+ - [Win32] Bugfix: Cursor was not properly re-centered over odd-sized windows
  - [Cocoa] Added dependency on CoreVideo framework for refresh rate retrieval
  - [Cocoa] Enabled Lion full screen for resizable windowed mode windows
  - [Cocoa] Moved to Cocoa API for application transformation and activation

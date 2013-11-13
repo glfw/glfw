@@ -604,7 +604,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (newCursorX != window->win32.oldCursorX ||
                 newCursorY != window->win32.oldCursorY)
             {
-                double x, y;
+                int x, y;
 
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 {
@@ -1121,8 +1121,8 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos)
     ClientToScreen(window->win32.handle, &pos);
     SetCursorPos(pos.x, pos.y);
 
-    window->win32.oldCursorX = xpos;
-    window->win32.oldCursorY = ypos;
+    window->win32.oldCursorX = (int) xpos;
+    window->win32.oldCursorY = (int) ypos;
 }
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)

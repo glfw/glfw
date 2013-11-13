@@ -684,7 +684,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 updateClipRect(window);
             }
 
-            _glfwInputWindowPos(window, LOWORD(lParam), HIWORD(lParam));
+            _glfwInputWindowPos(window,
+                                GET_X_LPARAM(lParam),
+                                GET_Y_LPARAM(lParam));
             return 0;
         }
 

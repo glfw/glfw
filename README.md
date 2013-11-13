@@ -145,6 +145,7 @@ skills.
  - Jon Morton
  - Pierre Moulon
  - Julian Møller
+ - Kamil Nowakowski
  - Ozzy
  - Andri Pálsson
  - Peoro

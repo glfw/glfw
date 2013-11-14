@@ -111,6 +111,9 @@ void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
             }
         }
 
+        if (bestMode == ci->mode)
+            return;
+
         if (monitor->x11.oldMode == None)
             monitor->x11.oldMode = ci->mode;
 

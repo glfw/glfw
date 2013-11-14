@@ -253,9 +253,6 @@ int main(int argc, char** argv)
         }
     }
 
-    argc -= optind;
-    argv += optind;
-
     // Initialize GLFW and create window
 
     if (!valid_version())

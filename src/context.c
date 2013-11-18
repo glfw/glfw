@@ -98,7 +98,7 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
 
     if (wndconfig->clientAPI == GLFW_OPENGL_API)
     {
-        if (wndconfig->glMajor < 1 || wndconfig->glMinor < 0 ||
+        if ((wndconfig->glMajor < 1 || wndconfig->glMinor < 0) ||
             (wndconfig->glMajor == 1 && wndconfig->glMinor > 5) ||
             (wndconfig->glMajor == 2 && wndconfig->glMinor > 1) ||
             (wndconfig->glMajor == 3 && wndconfig->glMinor > 3))

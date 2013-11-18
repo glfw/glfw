@@ -419,6 +419,14 @@ GLboolean _glfwRefreshContextAttribs(void)
                 window->glProfile = GLFW_OPENGL_COMPAT_PROFILE;
             else if (mask & GL_CONTEXT_CORE_PROFILE_BIT)
                 window->glProfile = GLFW_OPENGL_CORE_PROFILE;
+            else if (glfwExtensionSupported("GL_ARB_compatibility"))
+            {
+                // HACK: This is a workaround for the compatibility profile bit
+                //       not being set in the context flags if an OpenGL 3.2+
+                //       context was created without having requested a specific
+                //       version
+                window->glProfile = GLFW_OPENGL_COMPAT_PROFILE;
+            }
         }
 
         // Read back robustness strategy

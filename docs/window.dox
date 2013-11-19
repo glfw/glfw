@@ -448,7 +448,9 @@ context is an OpenGL debug context, or `GL_FALSE` otherwise.
 The `GLFW_OPENGL_PROFILE` attribute indicates the OpenGL profile used by the
 context.  This is `GLFW_OPENGL_CORE_PROFILE` or `GLFW_OPENGL_COMPAT_PROFILE`
 if the context uses a known profile, or `GLFW_OPENGL_ANY_PROFILE` if the
-OpenGL profile is unknown or the context is for another client API.
+OpenGL profile is unknown or the context is for another client API.  Note that
+the returned profile may not match the profile bits of the context flags, as
+GLFW will try other means of detecting the profile when no bits are set.
 
 The `GLFW_CONTEXT_ROBUSTNESS` attribute indicates the robustness strategy
 used by the context.  This is `GLFW_LOSE_CONTEXT_ON_RESET` or

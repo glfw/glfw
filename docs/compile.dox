@@ -190,4 +190,71 @@ systems.
 context creation API.  Note that EGL is not yet provided on all supported
 platforms.
 
+
+@section compile_manual Compiling GLFW manually
+
+If you wish to compile GLFW without its CMake build environment then you will
+have to do at least some of the platform detection yourself.  GLFW needs
+a number of configuration macros to be defined in order to know what it's being
+compiled for and has many optional, platform-specific ones for various features.
+
+When building with CMake, the `glfw_config.h` configuration header is generated
+based on the current platform and CMake options.  The GLFW CMake environment
+defines `_GLFW_USE_CONFIG_H`, which causes this header to be included by
+`internal.h`.  Without this macro, GLFW will expect the necessary configuration
+macros to be defined on the command-line.
+
+Three macros *must* be defined when compiling GLFW: one for selecting the window
+creation API, one selecting the context creation API and one client library.
+Exactly one of each kind must be defined for GLFW to compile and link.
+
+The window creation API is used to create windows, handle input, monitors, gamma
+ramps and clipboard.  The options are:
+
+ - `_GLFW_COCOA` to use the Cocoa frameworks
+ - `_GLFW_WIN32` to use the Win32 API
+ - `_GLFW_X11` to use the X Window System
+
+The context creation API is used to enumerate pixel formats / framebuffer
+configurations and to create contexts.  The options are:
+
+ - `_GLFW_NSGL` to use the Cocoa OpenGL framework
+ - `_GLFW_WGL` to use the Win32 WGL API
+ - `_GLFW_GLX` to use the X11 GLX API
+ - `_GLFW_EGL` to use the EGL API
+
+The client library is the one providing the OpenGL or OpenGL ES API, which is
+used by GLFW to probe the created context.  This is not the same thing as the
+client API, as many desktop OpenGL client libraries now expose the OpenGL ES API
+through extensions.  The options are:
+
+ - `_GLFW_USE_OPENGL` for the desktop OpenGL
+ - `_GLFW_USE_GLESV1` for OpenGL ES 1.x
+ - `_GLFW_USE_GLESV2` for OpenGL ES 2.x
+
+Note that `_GLFW_USE_GLESV1` and `_GLFW_USE_GLESV2` may only be used with EGL,
+as the other context creation APIs do not interface with 
+
+If you are building GLFW as a shared library / dynamic library / DLL then you
+must also define `_GLFW_BUILD_DLL`.  Otherwise, you may not define it.
+
+If you are using the X11 window creation API then you *must* also select an entry
+point retrieval mechanism.
+
+ - `_GLFW_HAS_GLXGETPROCADDRESS` to use glXGetProcAddress (recommended)
+ - `_GLFW_HAS_GLXGETPROCADDRESSARB` to use glXGetProcAddressARB
+ - `_GLFW_HAS_GLXGETPROCADDRESSEXT` to use glXGetProcAddressEXT
+ - `_GLFW_HAS_DLOPEN` to do manual retrieval with `dlopen`
+
+On modern systems it is usually safe to assume that
+`_GLFW_HAS_GLXGETPROCADDRESS` is present.
+
+If you are using the Cocoa window creation API, the following options are
+available:
+
+ - `_GLFW_USE_CHDIR` to `chdir` into the `Resources` directory of the
+   application bundle during @ref glfwInit (recommended)
+ - `_GLFW_USE_MENUBAR` to create and populate the menu bar when the first window
+   is created (recommended)
+
 */

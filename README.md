@@ -35,6 +35,7 @@ guide in the GLFW documentation.
    documentation is built
  - Added the `_GLFW_USE_CONFIG_H` configuration macro for controlling whether to
    include the configuration header
+ - Moved version number macro to `internal.h` for easier manual compilation
  - Renamed configuration header to `glfw_config.h` to avoid conflicts
  - Bugfix: The `glfw3.pc` file did not respect the `LIB_SUFFIX` CMake option
  - Bugfix: The `joysticks` test would segfault if a controller had no axes

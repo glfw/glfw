@@ -33,6 +33,8 @@
  #include "glfw_config.h"
 #endif
 
+#define _GLFW_VERSION_NUMBER "3.0.4"
+
 #if defined(_GLFW_USE_OPENGL)
  // This is the default for glfw3.h
 #elif defined(_GLFW_USE_GLESV1)

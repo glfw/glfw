@@ -680,7 +680,7 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = _GLFW_VERSION_FULL " X11"
+    const char* version = _GLFW_VERSION_NUMBER " X11"
 #if defined(_GLFW_GLX)
         " GLX"
 #elif defined(_GLFW_EGL)

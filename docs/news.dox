@@ -18,7 +18,7 @@ For more information on how to use CMake, see the
 [CMake manual](http://cmake.org/cmake/help/documentation.html).
 
 
-@subsection new_30_multiwnd Multi-window support
+@subsection news_30_multiwnd Multi-window support
 
 GLFW now supports the creation of multiple windows, each with their own OpenGL
 or OpenGL ES context, and all window functions now take a window handle.  Event

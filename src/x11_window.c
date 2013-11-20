@@ -399,6 +399,15 @@ static void enterFullscreenMode(_GLFWwindow* window)
 
     _glfwSetVideoMode(window->monitor, &window->videoMode);
 
+    if (_glfw.x11.NET_WM_BYPASS_COMPOSITOR != None)
+    {
+        const unsigned long value = 1;
+
+        XChangeProperty(_glfw.x11.display,  window->x11.handle,
+                        _glfw.x11.NET_WM_BYPASS_COMPOSITOR, XA_CARDINAL, 32,
+                        PropModeReplace, (unsigned char*) &value, 1);
+    }
+
     if (_glfw.x11.hasEWMH &&
         _glfw.x11.NET_WM_STATE != None &&
         _glfw.x11.NET_WM_STATE_FULLSCREEN != None)
@@ -485,6 +494,15 @@ static void leaveFullscreenMode(_GLFWwindow* window)
                         _glfw.x11.saver.interval,
                         _glfw.x11.saver.blanking,
                         _glfw.x11.saver.exposure);
+    }
+
+    if (_glfw.x11.NET_WM_BYPASS_COMPOSITOR != None)
+    {
+        const unsigned long value = 0;
+
+        XChangeProperty(_glfw.x11.display,  window->x11.handle,
+                        _glfw.x11.NET_WM_BYPASS_COMPOSITOR, XA_CARDINAL, 32,
+                        PropModeReplace, (unsigned char*) &value, 1);
     }
 
     if (_glfw.x11.hasEWMH &&

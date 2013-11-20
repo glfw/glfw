@@ -3,6 +3,8 @@ include_directories(${GLFW_SOURCE_DIR}/src
                     ${GLFW_BINARY_DIR}/src
                     ${glfw_INCLUDE_DIRS})
 
+add_definitions(-D_GLFW_USE_CONFIG_H)
+
 set(common_HEADERS ${GLFW_BINARY_DIR}/src/glfw_config.h internal.h
                    ${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h
                    ${GLFW_SOURCE_DIR}/include/GLFW/glfw3native.h)

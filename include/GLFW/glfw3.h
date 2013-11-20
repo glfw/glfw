@@ -863,9 +863,6 @@ typedef struct GLFWgammaramp
  *
  *  @note This function may only be called from the main thread.
  *
- *  @note This function may take several seconds to complete on some systems,
- *  while on other systems it may take only a fraction of a second to complete.
- *
  *  @note **OS X:** This function will change the current directory of the
  *  application to the `Contents/Resources` subdirectory of the application's
  *  bundle, if present.

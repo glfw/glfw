@@ -221,19 +221,21 @@ configurations and to create contexts.  The options are:
  - `_GLFW_NSGL` to use the Cocoa OpenGL framework
  - `_GLFW_WGL` to use the Win32 WGL API
  - `_GLFW_GLX` to use the X11 GLX API
- - `_GLFW_EGL` to use the EGL API
+ - `_GLFW_EGL` to use the EGL API (experimental)
 
 The client library is the one providing the OpenGL or OpenGL ES API, which is
 used by GLFW to probe the created context.  This is not the same thing as the
 client API, as many desktop OpenGL client libraries now expose the OpenGL ES API
 through extensions.  The options are:
 
- - `_GLFW_USE_OPENGL` for the desktop OpenGL
- - `_GLFW_USE_GLESV1` for OpenGL ES 1.x
- - `_GLFW_USE_GLESV2` for OpenGL ES 2.x
+ - `_GLFW_USE_OPENGL` for the desktop OpenGL (opengl32.dll, libGL.so or
+   OpenGL.framework)
+ - `_GLFW_USE_GLESV1` for OpenGL ES 1.x (experimental)
+ - `_GLFW_USE_GLESV2` for OpenGL ES 2.x (experimental)
 
 Note that `_GLFW_USE_GLESV1` and `_GLFW_USE_GLESV2` may only be used with EGL,
-as the other context creation APIs do not interface with 
+as the other context creation APIs do not interface with OpenGL ES client
+libraries.
 
 If you are building GLFW as a shared library / dynamic library / DLL then you
 must also define `_GLFW_BUILD_DLL`.  Otherwise, you may not define it.
@@ -241,18 +243,15 @@ must also define `_GLFW_BUILD_DLL`.  Otherwise, you may not define it.
 If you are using the X11 window creation API then you *must* also select an entry
 point retrieval mechanism.
 
- - `_GLFW_HAS_GLXGETPROCADDRESS` to use glXGetProcAddress (recommended)
- - `_GLFW_HAS_GLXGETPROCADDRESSARB` to use glXGetProcAddressARB
- - `_GLFW_HAS_GLXGETPROCADDRESSEXT` to use glXGetProcAddressEXT
- - `_GLFW_HAS_DLOPEN` to do manual retrieval with `dlopen`
-
-On modern systems it is usually safe to assume that
-`_GLFW_HAS_GLXGETPROCADDRESS` is present.
+ - `_GLFW_HAS_GLXGETPROCADDRESS` to use `glXGetProcAddress` (recommended)
+ - `_GLFW_HAS_GLXGETPROCADDRESSARB` to use `glXGetProcAddressARB` (legacy)
+ - `_GLFW_HAS_GLXGETPROCADDRESSEXT` to use `glXGetProcAddressEXT` (legacy)
+ - `_GLFW_HAS_DLOPEN` to do manual retrieval with `dlopen` (fallback)
 
 If you are using the Cocoa window creation API, the following options are
 available:
 
- - `_GLFW_USE_CHDIR` to `chdir` into the `Resources` directory of the
+ - `_GLFW_USE_CHDIR` to `chdir` to the `Resources` subdirectory of the
    application bundle during @ref glfwInit (recommended)
  - `_GLFW_USE_MENUBAR` to create and populate the menu bar when the first window
    is created (recommended)

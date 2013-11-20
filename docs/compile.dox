@@ -19,6 +19,8 @@ Windows and OS X from the [CMake website](http://www.cmake.org/).
 
 Additional dependencies are listed below.
 
+If you wish to compile GLFW without CMake, see @ref compile_manual.
+
 
 @subsection compile_deps_msvc Dependencies using Visual C++ on Windows
 

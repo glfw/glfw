@@ -754,11 +754,18 @@ void _glfwAllocGammaArrays(GLFWgammaramp* ramp, unsigned int size);
  */
 void _glfwFreeGammaArrays(GLFWgammaramp* ramp);
 
-/*! @ingroup utility
+/*! @brief Allocates and returns a monitor object with the specified name
+ *  and dimensions.
+ *  @param[in] name The name of the monitor.
+ *  @param[in] widthMM The width, in mm, of the monitor's display area.
+ *  @param[in] heightMM The height, in mm, of the monitor's display area.
+ *  @return The newly created object.
+ *  @ingroup utility
  */
 _GLFWmonitor* _glfwCreateMonitor(const char* name, int widthMM, int heightMM);
 
-/*! @ingroup utility
+/*! @brief Frees a monitor object and any data associated with it.
+ *  @ingroup utility
   */
 void _glfwDestroyMonitor(_GLFWmonitor* monitor);
 

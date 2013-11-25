@@ -62,6 +62,12 @@ static const XRRModeInfo* getModeInfo(const XRRScreenResources* sr, RRMode id)
 //
 void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 {
+    GLFWvidmode current;
+
+    _glfwPlatformGetVideoMode(monitor, &current);
+    if (_glfwCompareVideoModes(&current, desired) == 0)
+        return;
+
     if (_glfw.x11.randr.available)
     {
         int i, j;

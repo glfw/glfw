@@ -27,6 +27,11 @@
 
 #include "internal.h"
 
+#include <stdlib.h>
+#if defined(_MSC_VER)
+ #include <malloc.h>
+#endif
+
 // Internal key state used for sticky keys
 #define _GLFW_STICK 3
 
@@ -340,6 +345,76 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, double xpos, double ypos)
 
     // Update physical cursor position
     _glfwPlatformSetCursorPos(window, xpos, ypos);
+}
+
+GLFWAPI GLFWcursor* glfwCreateCursor(int width, int height, int cx, int cy,
+                                     int format, const void* data)
+{
+    _GLFWcursor* cursor;
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+    cursor = calloc(1, sizeof(_GLFWcursor));
+
+    if (!_glfwPlatformCreateCursor(cursor, width, height, cx, cy, format, data))
+    {
+        free(cursor);
+        return NULL;
+    }
+
+    cursor->next = _glfw.cursorListHead;
+    _glfw.cursorListHead = cursor;
+
+    return (GLFWcursor*) cursor;
+}
+
+GLFWAPI void glfwDestroyCursor(GLFWcursor* handle)
+{
+    _GLFWcursor* cursor = (_GLFWcursor*) handle;
+
+    _GLFW_REQUIRE_INIT();
+
+    if (cursor == NULL)
+        return;
+
+    // Make sure the cursor is not being used by any window
+    {
+        _GLFWwindow* window = _glfw.windowListHead;
+
+        while (window)
+        {
+            if (window->cursor == cursor)
+                glfwSetCursor((GLFWwindow*) window, NULL);
+
+            window = window->next;
+        }
+    }
+
+    _glfwPlatformDestroyCursor(cursor);
+
+    // Unlink cursor from global linked list
+    {
+        _GLFWcursor** prev = &_glfw.cursorListHead;
+
+        while (*prev != cursor)
+            prev = &((*prev)->next);
+
+        *prev = cursor->next;
+    }
+
+    free(cursor);
+}
+
+GLFWAPI void glfwSetCursor(GLFWwindow* windowHandle, GLFWcursor* cursorHandle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) windowHandle;
+    _GLFWcursor* cursor = (_GLFWcursor*) cursorHandle;
+
+    _GLFW_REQUIRE_INIT();
+
+    _glfwPlatformSetCursor(window, cursor);
+
+    window->cursor = cursor;
 }
 
 GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* handle, GLFWkeyfun cbfun)

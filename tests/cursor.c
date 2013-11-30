@@ -86,7 +86,7 @@ static void command_callback(int key)
                 int w = cursorSize[currentSize].w;
                 int h = cursorSize[currentSize].h;
                 int x, y, i = 0;
-                unsigned char image[4 * w * h];
+                unsigned char *image = malloc(4 * w * h);
 
                 for (y = 0; y < h; y++)
                 {
@@ -100,8 +100,8 @@ static void command_callback(int key)
                 }
 
                 cursor = glfwCreateCursor(w, h, w / 2, h / 2, 0, image);
-
                 currentSize = (currentSize + 1) % SizeCount;
+                free(image);
             }
         }
         break;

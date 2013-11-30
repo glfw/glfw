@@ -32,25 +32,33 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define SIZE 64
+#ifdef min
+ #undef min
+#endif
+#ifdef max
+ #undef max
+#endif
+
+#define SIZE 64  // cursor size (width & height)
+#define N    60  // number of frames
 
 unsigned char buffer[4 * SIZE * SIZE];
 
-static inline float max(float a, float b) { return a > b ? a : b; }
-static inline float min(float a, float b) { return a < b ? a : b; }
+static float max(float a, float b) { return a > b ? a : b; }
+static float min(float a, float b) { return a < b ? a : b; }
 
 static float star(int x, int y, float t)
 {
     float c = SIZE / 2.0f;
 
-    float i = (0.25f * sin(2.0f * 3.1415926f * t) + 0.75f);
+    float i = (0.25f * (float)sin(2.0f * 3.1415926f * t) + 0.75f);
     float k = SIZE * 0.046875f * i;
 
-    float dist = sqrt((x - c) * (x - c) + (y - c) * (y - c));
+    float dist = (float)sqrt((x - c) * (x - c) + (y - c) * (y - c));
 
     float salpha = 1.0f - dist / c;
-    float xalpha = (float)x == c ? c : k / fabs(x - c);
-    float yalpha = (float)y == c ? c : k / fabs(y - c);
+    float xalpha = (float)x == c ? c : k / (float)fabs(x - c);
+    float yalpha = (float)y == c ? c : k / (float)fabs(y - c);
 
     return max(0.0f, min(1.0f, i * salpha * 0.2f + salpha * xalpha * yalpha));
 }
@@ -66,7 +74,7 @@ static GLFWcursor* load_frame(float t)
             buffer[i++] = 255;
             buffer[i++] = 255;
             buffer[i++] = 255;
-            buffer[i++] = 255 * star(x, y, t);
+            buffer[i++] = (unsigned char)(255 * star(x, y, t));
         }
     }
 
@@ -75,7 +83,6 @@ static GLFWcursor* load_frame(float t)
 
 int main(void)
 {
-    const int N = 60;
     int i;
     double t0, t1, frameTime = 0.0;
 

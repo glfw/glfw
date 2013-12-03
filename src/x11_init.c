@@ -44,6 +44,7 @@ static int translateKey(int keyCode)
     if (keyCode < 8 || keyCode > 255)
         return GLFW_KEY_UNKNOWN;
 
+#if defined(_GLFW_USE_XKB)
     // Try secondary keysym, for numeric keypad keys
     // Note: This way we always force "NumLock = ON", which is intentional
     // since the returned key code should correspond to a physical
@@ -72,6 +73,10 @@ static int translateKey(int keyCode)
     // should not be layout dependent (i.e. US layout and international
     // layouts should give the same result).
     keySym = XkbKeycodeToKeysym(_glfw.x11.display, keyCode, 0, 0);
+#else
+    keySym = XKeycodeToKeysym(_glfw.x11.display, keyCode, 0);
+#endif
+
     switch (keySym)
     {
         case XK_Escape:         return GLFW_KEY_ESCAPE;
@@ -216,7 +221,9 @@ static int translateKey(int keyCode)
 //
 static void updateKeyCodeLUT(void)
 {
-    int i, keyCode, keyCodeGLFW;
+    int keyCode, keyCodeGLFW;
+#if defined(_GLFW_USE_XKB)
+    int i;
     char name[XkbKeyNameLength + 1];
     XkbDescPtr descr;
 
@@ -302,6 +309,7 @@ static void updateKeyCodeLUT(void)
 
     // Free the keyboard description
     XkbFreeKeyboard(descr, 0, True);
+#endif
 
     // Translate the un-translated key codes using traditional X11 KeySym
     // lookups
@@ -481,6 +489,7 @@ static GLboolean initExtensions(void)
     }
 
     // Check if Xkb is supported on this display
+#if defined(_GLFW_USE_XKB)
     _glfw.x11.xkb.versionMajor = 1;
     _glfw.x11.xkb.versionMinor = 0;
     if (!XkbQueryExtension(_glfw.x11.display,
@@ -508,6 +517,7 @@ static GLboolean initExtensions(void)
                         "X11: Detectable key repeat is not supported");
         return GL_FALSE;
     }
+#endif
 
     // Update the key code LUT
     // FIXME: We should listen to XkbMapNotify events to track changes to

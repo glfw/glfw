@@ -85,6 +85,16 @@ static GLboolean chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* resul
                                                      _glfw.x11.screen,
                                                      NULL,
                                                      &nativeCount);
+
+        // fallback, for when the above call fails running over TurboVNC + VirtualGL
+        if(!nativeCount)
+        {
+            nativeConfigs = glXGetFBConfigs(_glfw.x11.display,
+                                            _glfw.x11.screen,
+                                            &nativeCount);
+
+            _glfw.glx.SGIX_fbconfig = GL_FALSE;
+        }
     }
     else
     {

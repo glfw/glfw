@@ -1,0 +1,261 @@
+/*!
+
+@page compile Compiling GLFW
+
+@tableofcontents
+
+This is about compiling the GLFW library itself.  For information on how to
+build programs that use GLFW, see the @ref build guide.
+
+
+@section compile_deps Dependencies
+
+To compile GLFW and the accompanying example programs, you will need **CMake**,
+which will generate the project files or makefiles for your particular
+development environment.  If you are on a Unix-like system such as Linux or
+FreeBSD or have a package system like Fink, MacPorts, Cygwin or Homebrew, you
+can simply install its CMake package.  If not, you can get installers for
+Windows and OS X from the [CMake website](http://www.cmake.org/).
+
+Additional dependencies are listed below.
+
+If you wish to compile GLFW without CMake, see @ref compile_manual.
+
+
+@subsection compile_deps_msvc Dependencies using Visual C++ on Windows
+
+The Microsoft Platform SDK that is installed along with Visual C++ contains all
+the necessary headers, link libraries and tools except for CMake.
+
+
+@subsection compile_deps_mingw Dependencies with MinGW or MinGW-w64 on Windows
+
+Both the MinGW and the MinGW-w64 packages contain all the necessary headers,
+link libraries and tools except for CMake.
+
+
+@subsection compile_deps_mingw_cross Dependencies using MinGW or MinGW-w64 cross-compilation
+
+Both Cygwin and many Linux distributions have MinGW or MinGW-w64 packages.  For
+example, Cygwin has the `mingw64-i686-gcc` and `mingw64-x86_64-gcc` packages
+for 32- and 64-bit version of MinGW-w64, while Debian GNU/Linux and derivatives
+like Ubuntu have the `mingw-w64` package for both.
+
+GLFW has CMake toolchain files in the `CMake/` directory that allow for easy
+cross-compilation of Windows binaries.  To use these files you need to add a
+special parameter when generating the project files or makefiles:
+
+    cmake -DCMAKE_TOOLCHAIN_FILE=<toolchain-file> .
+
+The exact toolchain file to use depends on the prefix used by the MinGW or
+MinGW-w64 binaries on your system.  You can usually see this in the /usr
+directory.  For example, both the Debian/Ubuntu and Cygwin MinGW-w64 packages
+have `/usr/x86_64-w64-mingw32` for the 64-bit compilers, so the correct
+invocation would be:
+
+    cmake -DCMAKE_TOOLCHAIN_FILE=CMake/x86_64-w64-mingw32.cmake .
+
+For more details see the article
+[CMake Cross Compiling](http://www.paraview.org/Wiki/CMake_Cross_Compiling) on
+the CMake wiki.
+
+
+@subsection compile_deps_xcode Dependencies using Xcode on OS X
+
+Xcode contains all necessary tools except for CMake.  The necessary headers and
+libraries are included in the core OS frameworks.  Xcode can be downloaded from
+the Mac App Store or from the ADC Member Center.
+
+
+@subsection compile_deps_x11 Dependencies using Linux and X11
+
+To compile GLFW for X11, you need to have the X11 and OpenGL header packages
+installed, as well as the basic development tools like GCC and make.  For
+example, on Ubuntu and other distributions based on Debian GNU/Linux, you need
+to install the `xorg-dev` and `libglu1-mesa-dev` packages.  The former pulls in
+all X.org header packages and the latter pulls in the Mesa OpenGL and GLU
+packages.  GLFW itself doesn't need or use GLU, but some of the examples do.
+Note that using header files and libraries from Mesa during compilation *will
+not* tie your binaries to the Mesa implementation of OpenGL.
+
+
+@section compile_cmake Generating files with CMake
+
+Once you have all necessary dependencies it is time to generate the project
+files or makefiles for your development environment.  CMake needs to know two
+paths for this: the path to the *root* directory of the GLFW source tree (i.e.
+*not* the `src` subdirectory) and the target path for the generated files and
+compiled binaries.  If these are the same, it is called an in-tree build,
+otherwise it is called an out-of-tree build.
+
+One of several advantages of out-of-tree builds is that you can generate files
+and compile for different development environments using a single source tree.
+
+
+@subsection compile_cmake_cli Generating files with the CMake command-line tool
+
+To make an in-tree build, enter the *root* directory of the GLFW source tree
+(i.e. *not* the `src` subdirectory) and run CMake.  The current directory is
+used as target path, while the path provided as an argument is used to find the
+source tree.
+
+    cd <glfw-root-dir>
+    cmake .
+
+To make an out-of-tree build, make another directory, enter it and run CMake
+with the (relative or absolute) path to the root of the source tree as an
+argument.
+
+    cd <glfw-root-dir>
+    mkdir build
+    cd build
+    cmake ..
+
+
+@subsection compile_cmake_gui Generating files with the CMake GUI
+
+If you are using the GUI version, choose the root of the GLFW source tree as
+source location and the same directory or another, empty directory as the
+destination for binaries.  Choose *Configure*, change any options you wish to,
+*Configure* again to let the changes take effect and then *Generate*.
+
+
+@section compile_options CMake options
+
+The CMake files for GLFW provide a number of options, although not all are
+available on all supported platforms.  Some of these are de facto standards
+among CMake users and so have no `GLFW_` prefix.
+
+If you are using the GUI version of CMake, these are listed and can be changed
+from there.  If you are using the command-line version, use the `ccmake` tool.
+Some package systems like Ubuntu and other distributions based on Debian
+GNU/Linux have this tool in a separate `cmake-curses-gui` package.
+
+
+@subsection compile_options_shared Shared CMake options
+
+`BUILD_SHARED_LIBS` determines whether GLFW is built as a static
+library or as a DLL / shared library / dynamic library.
+
+`LIB_SUFFIX` affects where the GLFW shared /dynamic library is installed.  If it
+is empty, it is installed to `${CMAKE_INSTALL_PREFIX}/lib`.  If it is set to
+`64`, it is installed to `${CMAKE_INSTALL_PREFIX}/lib64`.
+
+`GLFW_CLIENT_LIBRARY` determines which client API library to use.  If set to
+`opengl` the OpenGL library is used, if set to `glesv1` for the OpenGL ES 1.x
+library is used, or if set to `glesv2` the OpenGL ES 2.0 library is used.  The
+selected library and its header files must be present on the system for this to
+work.
+
+`GLFW_BUILD_EXAMPLES` determines whether the GLFW examples are built
+along with the library.
+
+`GLFW_BUILD_TESTS` determines whether the GLFW test programs are
+built along with the library.
+
+`GLFW_BUILD_DOCS` determines whether the GLFW documentation is built along with
+the library.
+
+
+@subsection compile_options_osx OS X specific CMake options
+
+`GLFW_USE_CHDIR` determines whether `glfwInit` changes the current
+directory of bundled applications to the `Contents/Resources` directory.
+
+`GLFW_USE_MENUBAR` determines whether the first call to
+`glfwCreateWindow` sets up a minimal menu bar.
+
+`GLFW_BUILD_UNIVERSAL` determines whether to build Universal Binaries.
+
+
+@subsection compile_options_win32 Windows specific CMake options
+
+`USE_MSVC_RUNTIME_LIBRARY_DLL` determines whether to use the DLL version or the
+static library version of the Visual C++ runtime library.  If set to `ON`, the
+DLL version of the Visual C++ library is used.  It is recommended to set this to
+`ON`, as this keeps the executable smaller and benefits from security and bug
+fix updates of the Visual C++ runtime.
+
+`GLFW_USE_DWM_SWAP_INTERVAL` determines whether the swap interval is set even
+when DWM compositing is enabled.  If this is `ON`, the swap interval is set even
+if DWM is enabled.  It is recommended to set this to `OFF`, as doing otherwise
+can lead to severe jitter.
+
+`GLFW_USE_OPTIMUS_HPG` determines whether to export the `NvOptimusEnablement`
+symbol, which forces the use of the high-performance GPU on nVidia Optimus
+systems.
+
+
+@subsection compile_options_egl EGL specific CMake options
+
+`GLFW_USE_EGL` determines whether to use EGL instead of the platform-specific
+context creation API.  Note that EGL is not yet provided on all supported
+platforms.
+
+
+@section compile_manual Compiling GLFW manually
+
+If you wish to compile GLFW without its CMake build environment then you will
+have to do at least some of the platform detection yourself.  GLFW needs
+a number of configuration macros to be defined in order to know what it's being
+compiled for and has many optional, platform-specific ones for various features.
+
+When building with CMake, the `glfw_config.h` configuration header is generated
+based on the current platform and CMake options.  The GLFW CMake environment
+defines `_GLFW_USE_CONFIG_H`, which causes this header to be included by
+`internal.h`.  Without this macro, GLFW will expect the necessary configuration
+macros to be defined on the command-line.
+
+Three macros *must* be defined when compiling GLFW: one for selecting the window
+creation API, one selecting the context creation API and one client library.
+Exactly one of each kind must be defined for GLFW to compile and link.
+
+The window creation API is used to create windows, handle input, monitors, gamma
+ramps and clipboard.  The options are:
+
+ - `_GLFW_COCOA` to use the Cocoa frameworks
+ - `_GLFW_WIN32` to use the Win32 API
+ - `_GLFW_X11` to use the X Window System
+
+The context creation API is used to enumerate pixel formats / framebuffer
+configurations and to create contexts.  The options are:
+
+ - `_GLFW_NSGL` to use the Cocoa OpenGL framework
+ - `_GLFW_WGL` to use the Win32 WGL API
+ - `_GLFW_GLX` to use the X11 GLX API
+ - `_GLFW_EGL` to use the EGL API (experimental)
+
+The client library is the one providing the OpenGL or OpenGL ES API, which is
+used by GLFW to probe the created context.  This is not the same thing as the
+client API, as many desktop OpenGL client libraries now expose the OpenGL ES API
+through extensions.  The options are:
+
+ - `_GLFW_USE_OPENGL` for the desktop OpenGL (opengl32.dll, libGL.so or
+   OpenGL.framework)
+ - `_GLFW_USE_GLESV1` for OpenGL ES 1.x (experimental)
+ - `_GLFW_USE_GLESV2` for OpenGL ES 2.x (experimental)
+
+Note that `_GLFW_USE_GLESV1` and `_GLFW_USE_GLESV2` may only be used with EGL,
+as the other context creation APIs do not interface with OpenGL ES client
+libraries.
+
+If you are building GLFW as a shared library / dynamic library / DLL then you
+must also define `_GLFW_BUILD_DLL`.  Otherwise, you may not define it.
+
+If you are using the X11 window creation API then you *must* also select an entry
+point retrieval mechanism.
+
+ - `_GLFW_HAS_GLXGETPROCADDRESS` to use `glXGetProcAddress` (recommended)
+ - `_GLFW_HAS_GLXGETPROCADDRESSARB` to use `glXGetProcAddressARB` (legacy)
+ - `_GLFW_HAS_GLXGETPROCADDRESSEXT` to use `glXGetProcAddressEXT` (legacy)
+ - `_GLFW_HAS_DLOPEN` to do manual retrieval with `dlopen` (fallback)
+
+If you are using the Cocoa window creation API, the following options are
+available:
+
+ - `_GLFW_USE_CHDIR` to `chdir` to the `Resources` subdirectory of the
+   application bundle during @ref glfwInit (recommended)
+ - `_GLFW_USE_MENUBAR` to create and populate the menu bar when the first window
+   is created (recommended)
+
+*/

@@ -35,7 +35,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <assert.h>
 
 typedef struct
 {
@@ -57,8 +56,6 @@ static int thread_main(void* data)
     const Thread* thread = (const Thread*) data;
 
     glfwMakeContextCurrent(thread->window);
-    assert(glfwGetCurrentContext() == thread->window);
-
     glfwSwapInterval(1);
 
     while (running)
@@ -118,8 +115,6 @@ int main(void)
 
     while (running)
     {
-        assert(glfwGetCurrentContext() == NULL);
-
         glfwWaitEvents();
 
         for (i = 0;  i < count;  i++)

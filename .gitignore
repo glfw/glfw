@@ -21,7 +21,7 @@ cmake_uninstall.cmake
 docs/Doxyfile
 docs/html
 docs/warnings.txt
-src/config.h
+src/glfw_config.h
 src/glfw3.pc
 src/glfwConfig.cmake
 src/glfwConfigVersion.cmake

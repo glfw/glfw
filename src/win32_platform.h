@@ -1,8 +1,5 @@
 //========================================================================
-// GLFW - An OpenGL library
-// Platform:    Win32
-// API version: 3.0
-// WWW:         http://www.glfw.org/
+// GLFW 3.0 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -55,9 +52,14 @@
  #define UNICODE
 #endif
 
-// GLFW requires Windows XP
-#ifndef WINVER
+// GLFW requires Windows XP or later
+#if WINVER < 0x0501
+ #undef WINVER
  #define WINVER 0x0501
+#endif
+#if _WIN32_WINNT < 0x0501
+ #undef _WIN32_WINNT
+ #define _WIN32_WINNT 0x0501
 #endif
 
 #include <windows.h>
@@ -155,7 +157,7 @@ typedef struct _GLFWwindowWin32
     GLboolean           cursorCentered;
     GLboolean           cursorInside;
     GLboolean           cursorHidden;
-    double              oldCursorX, oldCursorY;
+    int                 oldCursorX, oldCursorY;
 } _GLFWwindowWin32;
 
 
@@ -174,8 +176,7 @@ typedef struct _GLFWlibraryWin32
     struct {
         GLboolean       hasPC;
         double          resolution;
-        unsigned int    t0_32;
-        __int64         t0_64;
+        unsigned __int64 base;
     } timer;
 
 #ifndef _GLFW_NO_DLOAD_WINMM

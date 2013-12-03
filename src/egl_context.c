@@ -1,8 +1,5 @@
 //========================================================================
-// GLFW - An OpenGL library
-// Platform:    EGL
-// API version: 3.0
-// WWW:         http://www.glfw.org/
+// GLFW 3.0 EGL - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -246,7 +243,7 @@ void _glfwTerminateContextAPI(void)
 { \
     attribs[index++] = attribName; \
     attribs[index++] = attribValue; \
-    assert(index < sizeof(attribs) / sizeof(attribs[0])); \
+    assert((size_t) index < sizeof(attribs) / sizeof(attribs[0])); \
 }
 
 // Prepare for creation of the OpenGL context

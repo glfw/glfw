@@ -39,6 +39,8 @@
 #include <string.h>
 #include <locale.h>
 
+#include "getopt.h"
+
 // These must match the input mode defaults
 static GLboolean closeable = GL_TRUE;
 
@@ -226,12 +228,12 @@ static const char* get_mods_name(int mods)
     return name;
 }
 
-static const char* get_character_string(int character)
+static const char* get_character_string(int codepoint)
 {
     // This assumes UTF-8, which is stupid
     static char result[6 + 1];
 
-    int length = wctomb(result, character);
+    int length = wctomb(result, codepoint);
     if (length == -1)
         length = 0;
 
@@ -370,13 +372,13 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     }
 }
 
-static void char_callback(GLFWwindow* window, unsigned int character)
+static void char_callback(GLFWwindow* window, unsigned int codepoint)
 {
     printf("%08x at %0.3f: Character 0x%08x (%s) input\n",
            counter++,
            glfwGetTime(),
-           character,
-           get_character_string(character));
+           codepoint,
+           get_character_string(codepoint));
 }
 
 void monitor_callback(GLFWmonitor* monitor, int event)
@@ -406,10 +408,11 @@ void monitor_callback(GLFWmonitor* monitor, int event)
     }
 }
 
-int main(void)
+int main(int argc, char** argv)
 {
     GLFWwindow* window;
-    int width, height;
+    GLFWmonitor* monitor = NULL;
+    int ch, width, height;
 
     setlocale(LC_ALL, "");
 
@@ -420,7 +423,17 @@ int main(void)
 
     printf("Library initialized\n");
 
-    window = glfwCreateWindow(640, 480, "Event Linter", NULL, NULL);
+    while ((ch = getopt(argc, argv, "f")) != -1)
+    {
+        switch (ch)
+        {
+            case 'f':
+                monitor = glfwGetPrimaryMonitor();
+                break;
+        }
+    }
+
+    window = glfwCreateWindow(640, 480, "Event Linter", monitor, NULL);
     if (!window)
     {
         glfwTerminate();

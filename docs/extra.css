@@ -1,0 +1,312 @@
+html {
+	background-color:hsl(0,0%,95%);
+}
+
+.glfwheader {
+	font-size:16px;
+	height:64px;
+	max-width:920px;
+	margin:0em auto;
+}
+
+.glfwheader a#glfwhome {
+	line-height:64px;
+	padding-right:48px;
+	float:left;
+	color:hsl(0,0%,40%);
+	font-size:2.5em;
+	background-image:url("http://www.glfw.org/css/arrow.png");
+	background-position:right top;
+	background-repeat:no-repeat;
+}
+
+.glfwnavbar {
+	list-style-type:none;
+	margin-top:0px;
+	float:right;
+}
+
+.glfwnavbar li {
+	float:left;
+}
+
+.glfwnavbar a,.glfwnavbar a:visited {
+	line-height:64px;
+	margin-left:2em;
+	display:block;
+	color:hsl(0,0%,40%);
+}
+
+.glfwheader a#glfwhome,.glfwnavbar a,.glfwnavbar a:visited {
+	transition:all 0.35s ease 0s;
+}
+
+#titlearea,address.footer {
+	color:hsl(0,0%,40%);
+	background-color:hsl(0,0%,95%);
+	border-bottom:none;
+}
+
+address.footer {
+	text-align:center;
+	padding:2em;
+}
+
+div#top {
+	background-color:hsl(0,0%,40%);
+}
+
+div#navrow1,div#navrow2,div#navrow3,div#navrow4 {
+	background-color:hsl(0,0%,40%);
+	background-image:none;
+	max-width:920px;
+	margin:0em auto;
+}
+
+ul.tablist {
+	min-width:700px;
+}
+
+.tablist a,.tablist a:hover,.tablist li,.tablist li.current a {
+	background-image:none;
+	text-shadow:none;
+}
+
+.tablist a,.tablist a:visited {
+	color:hsl(0,0%,95%);
+	text-shadow:none;
+}
+
+.tablist li.current a {
+	background:linear-gradient(to bottom,hsl(34,100%,60%) 0%,hsl(24,100%,50%) 100%);
+	box-shadow:inset 0px 0px 32px hsl(24,100%,50%);
+	text-shadow:0px -1px 1px hsl(24,100%,35%);
+	color:hsl(0,0%,100%);
+}
+
+div.contents {
+	min-height:590px;
+}
+
+div.contents,div.header {
+	max-width:920px;
+	margin:0em auto;
+	padding:0em 2em 2em 2em;
+	background-color:hsl(0,0%,100%);
+}
+
+div.header {
+	background-image:none;
+	border-bottom:none;
+}
+
+table.doxtable th,dl.reflist dt,div.levels {
+	background:linear-gradient(to bottom,hsl(34,100%,60%) 0%,hsl(24,100%,50%) 100%);
+	box-shadow:inset 0px 0px 32px hsl(24,100%,50%);
+	text-shadow:0px -1px 1px hsl(24,100%,35%);
+	color:hsl(0,0%,100%);
+}
+
+dl.reflist dt a.el,div.levels span {
+	color:hsl(24,100%,50%);
+	padding:0.2em;
+	border-radius:4px;
+	background-color:hsl(24,100%,90%);
+	text-shadow:none;
+}
+
+div.memproto,div.qindex,div.ah {
+	background:linear-gradient(to bottom,hsl(34,0%,95%) 0%,hsl(24,0%,90%) 100%);
+	box-shadow:inset 0px 0px 32px hsl(24,0%,90%);
+	text-shadow:0px 1px 1px hsl(24,0%,100%);
+	color:hsl(0,0%,10%);
+}
+
+div.memproto a {
+	color:hsl(24,100%,50%);
+}
+
+div.memproto td.paramname {
+	text-shadow:0px 1px 1px hsl(24,0%,100%);
+}
+
+div.memproto,div.qindex,div.ah {
+	border:2px solid hsl(24,0%,90%);
+	border-radius:4px;
+}
+
+div.memdoc {
+	background:none;
+	box-shadow:none;
+	border:none;
+}
+
+td.paramname {
+	color:hsl(24,100%,25%);
+}
+
+dl.reflist dt {
+	border:2px solid hsl(24,100%,50%);
+	border-top-left-radius:4px;
+	border-top-right-radius:4px;
+	border-bottom:none;
+}
+
+dl.reflist dd {
+	border:2px solid hsl(24,100%,50%);
+	border-bottom-right-radius:4px;
+	border-bottom-left-radius:4px;
+		border-top:none;
+	background:none;
+	box-shadow:none;
+}
+
+table.doxtable {
+	border-collapse:inherit;
+	border-spacing:0px;
+	border:2px solid hsl(24,100%,50%);
+	border-radius:4px;
+}
+
+table.doxtable td,table.doxtable th {
+	border:none;
+}
+
+tr.even,.directory tr.even,table.doxtable tr:nth-child(even) {
+	background-color:hsl(0,0%,95%);
+}
+
+body {
+	color:hsl(0,0%,30%);
+}
+
+h1,h2,h2.groupheader,h3,div.toc h3,h4,h5,h6,strong,em {
+	color:hsl(0,0%,10%);
+	border-bottom:none;
+}
+
+a,a:hover,a:visited,a:visited:hover,a.el,a.el:visited,.glfwheader a#glfwhome:hover,.tablist a:hover {
+	color:hsl(24,100%,50%);
+	text-decoration:none;
+}
+
+.mdescLeft,.mdescRight,.memItemLeft,.memItemRight {
+	background-color:hsl(0,0%,95%);
+}
+
+div.directory {
+	border-collapse:inherit;
+	border-spacing:0px;
+	border:2px solid hsl(24,100%,50%);
+	border-radius:4px;
+}
+
+.directory .levels span {
+	color:hsl(24,100%,50%);
+	padding:0.1em 0.5em;
+	margin:auto 0.25em;
+	border-radius:2px;
+	background-color:hsl(24,100%,90%);
+	text-shadow:none;
+}
+
+td.memSeparator {
+	height:2px;
+	border:0px;
+	background:linear-gradient(to right,hsl(0,0%,95%) 0%,hsl(0,0%,85%) 50%,hsl(0,0%,95%) 100%);
+}
+
+dl.note,dl.pre,dl.post,dl.invariant {
+	background:linear-gradient(to bottom,hsl(103,80%,90%) 0%,hsl(103,80%,85%) 100%);
+	box-shadow:inset 0px 0px 32px hsl(103,40%,80%);
+	color:hsl(103,80%,10%);
+	border:2px solid hsl(103,40%,75%);
+}
+
+dl.warning,dl.attention {
+	background:linear-gradient(to bottom,hsl(34,80%,90%) 0%,hsl(34,80%,85%) 100%);
+	box-shadow:inset 0px 0px 32px hsl(34,40%,80%);
+	color:hsl(34,80%,10%);
+	border:2px solid hsl(34,40%,75%);
+}
+
+dl.deprecated,dl.bug {
+	background:linear-gradient(to bottom,hsl(333,80%,90%) 0%,hsl(333,80%,85%) 100%);
+	box-shadow:inset 0px 0px 32px hsl(333,40%,80%);
+	color:hsl(333,80%,10%);
+	border:2px solid hsl(333,40%,75%);
+}
+
+dl.todo,dl.test {
+	background:linear-gradient(to bottom,hsl(200,80%,90%) 0%,hsl(200,80%,85%) 100%);
+	box-shadow:inset 0px 0px 32px hsl(200,40%,80%);
+	color:hsl(200,80%,10%);
+	border:2px solid hsl(200,40%,75%);
+}
+
+dl.note,dl.pre,dl.post,dl.invariant,dl.warning,dl.attention,dl.deprecated,dl.bug,dl.todo,dl.test {
+	border-radius:4px;
+	padding:1em;
+	text-shadow:0px 1px 1px hsl(0,0%,100%);
+}
+
+div.toc {
+	background:linear-gradient(to bottom,hsl(34,0%,95%) 0%,hsl(24,0%,90%) 100%);
+	box-shadow:inset 0px 0px 32px hsl(24,0%,90%);
+	text-shadow:0px 1px 1px hsl(24,0%,100%);
+	color:hsl(0,0%,10%);
+	border:2px solid hsl(24,0%,90%);
+	border-radius:4px;
+	float:none;
+	width:auto;
+}
+
+div.toc h3 {
+	font-size:1.17em;
+}
+
+div.toc ul {
+	padding-left:1.5em;
+}
+
+div.toc li {
+	background:none;
+	font-size:1em;
+	padding-left:0em;
+	list-style-type:disc;
+}
+
+div.ah {
+	background-image:none;
+}
+
+div.fragment,pre.fragment {
+	background-color:hsl(0,0%,20%);
+	border-radius:4px;
+	border-width:0px;
+	padding:0.5em 2em;
+	overflow:auto;
+	border-left:4px solid hsl(0,0%,80%);
+}
+
+div.line,pre.fragment {
+	color:hsl(60,30%,96%);
+}
+
+a.code,a.code:visited,span.preprocessor,span.comment {
+	color:hsl(80,76%,53%);
+}
+
+span.keyword,span.keywordtype,span.keywordflow {
+	color:hsl(190,81%,67%);
+}
+
+span.stringliteral {
+	color:hsl(54,70%,68%);
+}
+
+code {
+	background-color:hsl(0,0%,95%);
+	padding:0.1em;
+	border-radius: 4px;
+}

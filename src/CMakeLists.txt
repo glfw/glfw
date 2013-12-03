@@ -3,7 +3,9 @@ include_directories(${GLFW_SOURCE_DIR}/src
                     ${GLFW_BINARY_DIR}/src
                     ${glfw_INCLUDE_DIRS})
 
-set(common_HEADERS ${GLFW_BINARY_DIR}/src/config.h internal.h
+add_definitions(-D_GLFW_USE_CONFIG_H)
+
+set(common_HEADERS ${GLFW_BINARY_DIR}/src/glfw_config.h internal.h
                    ${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h
                    ${GLFW_SOURCE_DIR}/include/GLFW/glfw3native.h)
 set(common_SOURCES clipboard.c context.c gamma.c init.c input.c joystick.c
@@ -72,7 +74,8 @@ if (BUILD_SHARED_LIBS)
             set(glfw_CFLAGS "")
         endif()
         set_target_properties(glfw PROPERTIES
-                              COMPILE_FLAGS "${glfw_CFLAGS} -fno-common")
+                              COMPILE_FLAGS "${glfw_CFLAGS} -fno-common"
+                              INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}")
     endif()
 
     target_link_libraries(glfw ${glfw_LIBRARIES})

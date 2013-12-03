@@ -62,6 +62,14 @@ Once this function is called, no more events will be delivered for that window
 and its handle becomes invalid.
 
 
+@section window_userptr Window user pointer
+
+Each window has a user pointer that can be set with @ref
+glfwSetWindowUserPointer and fetched with @ref glfwGetWindowUserPointer.  This
+can be used for any purpose you need and will not modified by GLFW throughout
+the life-time of the window.
+
+
 @section window_hints Window creation hints
 
 There are a number of hints that can be set before the creation of a window and
@@ -440,7 +448,9 @@ context is an OpenGL debug context, or `GL_FALSE` otherwise.
 The `GLFW_OPENGL_PROFILE` attribute indicates the OpenGL profile used by the
 context.  This is `GLFW_OPENGL_CORE_PROFILE` or `GLFW_OPENGL_COMPAT_PROFILE`
 if the context uses a known profile, or `GLFW_OPENGL_ANY_PROFILE` if the
-OpenGL profile is unknown or the context is for another client API.
+OpenGL profile is unknown or the context is for another client API.  Note that
+the returned profile may not match the profile bits of the context flags, as
+GLFW will try other means of detecting the profile when no bits are set.
 
 The `GLFW_CONTEXT_ROBUSTNESS` attribute indicates the robustness strategy
 used by the context.  This is `GLFW_LOSE_CONTEXT_ON_RESET` or
@@ -477,8 +487,10 @@ zero can be useful for benchmarking purposes, when it is not desirable to
 measure the time it takes to wait for the vertical retrace.  However, a swap
 interval of one lets you avoid tearing.
 
-Note that not all OpenGL implementations properly implement this function, in
-which case @ref glfwSwapInterval will have no effect.  Some drivers also have
-user settings that override requests by GLFW.
+Note that this may not work on all machines, as some drivers have
+user-controlled settings that override any swap interval the application
+requests.  It is also by default disabled on Windows Vista and later when using
+DWM (Aero), as using it there sometimes leads to severe jitter.  You can
+forcibly enable it for machines using DWM using @ref compile_options_win32.
 
 */

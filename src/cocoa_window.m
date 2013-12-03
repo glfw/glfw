@@ -33,6 +33,25 @@
 #include <crt_externs.h>
 
 
+// Center the cursor in the view of the window
+//
+static void centerCursor(_GLFWwindow *window)
+{
+    int width, height;
+    _glfwPlatformGetWindowSize(window, &width, &height);
+    _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
+}
+
+// Update the cursor to match the specified cursor mode
+//
+static void setModeCursor(_GLFWwindow* window, int mode)
+{
+    if (mode == GLFW_CURSOR_NORMAL)
+        [[NSCursor arrowCursor] set];
+    else
+        [(NSCursor*) _glfw.ns.cursor set];
+}
+
 // Enter fullscreen mode
 //
 static void enterFullscreenMode(_GLFWwindow* window)
@@ -42,8 +61,18 @@ static void enterFullscreenMode(_GLFWwindow* window)
 
     _glfwSetVideoMode(window->monitor, &window->videoMode);
 
+	NSDictionary* options = [NSDictionary dictionaryWithObjectsAndKeys:
+                                [NSNumber numberWithBool:NO],
+                                NSFullScreenModeAllScreens,
+                                nil];
+
     [window->ns.view enterFullScreenMode:window->monitor->ns.screen
-                             withOptions:nil];
+                             withOptions:options];
+
+    // HACK: Synthesize focus event as window does not become key when the view
+    //       is made full screen
+    // TODO: Remove this when moving to a full screen window
+    _glfwInputWindowFocus(window, GL_TRUE);
 }
 
 // Leave fullscreen mode
@@ -52,6 +81,11 @@ static void leaveFullscreenMode(_GLFWwindow* window)
 {
     if (![window->ns.view isInFullScreenMode])
         return;
+
+    // HACK: Synthesize focus event as window does not become key when the view
+    //       is made full screen
+    // TODO: Remove this when moving to a full screen window
+    _glfwInputWindowFocus(window, GL_FALSE);
 
     _glfwRestoreVideoMode(window->monitor);
 
@@ -74,7 +108,7 @@ static float transformY(float y)
 static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 {
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if ([window->ns.view respondsToSelector:@selector(convertRectToBacking:)])
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
         return [window->ns.view convertRectToBacking:contentRect];
     else
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
@@ -96,13 +130,6 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 @end
 
 @implementation GLFWWindowDelegate
-
-static void centerCursor(_GLFWwindow *window)
-{
-    int width, height;
-    _glfwPlatformGetWindowSize(window, &width, &height);
-    _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
-}
 
 - (id)initWithGlfwWindow:(_GLFWwindow *)initWindow
 {
@@ -162,14 +189,13 @@ static void centerCursor(_GLFWwindow *window)
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
     _glfwInputWindowFocus(window, GL_TRUE);
-
-    if (window->cursorMode == GLFW_CURSOR_DISABLED)
-        centerCursor(window);
+    _glfwPlatformSetCursorMode(window, window->cursorMode);
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
 {
     _glfwInputWindowFocus(window, GL_FALSE);
+    _glfwPlatformSetCursorMode(window, GLFW_CURSOR_NORMAL);
 }
 
 @end
@@ -220,7 +246,7 @@ static void centerCursor(_GLFWwindow *window)
 
 @end
 
-// Translates Mac OS X key modifiers into GLFW ones
+// Translates OS X key modifiers into GLFW ones
 //
 static int translateFlags(NSUInteger flags)
 {
@@ -238,12 +264,11 @@ static int translateFlags(NSUInteger flags)
     return mods;
 }
 
-// Translates a Mac OS X keycode to a GLFW keycode
+// Translates a OS X keycode to a GLFW keycode
 //
 static int translateKey(unsigned int key)
 {
     // Keyboard symbol translation table
-    // TODO: Need to find mappings for F13-F15, volume down/up/mute, and eject.
     static const unsigned int table[128] =
     {
         /* 00 */ GLFW_KEY_A,
@@ -256,7 +281,7 @@ static int translateKey(unsigned int key)
         /* 07 */ GLFW_KEY_X,
         /* 08 */ GLFW_KEY_C,
         /* 09 */ GLFW_KEY_V,
-        /* 0a */ GLFW_KEY_GRAVE_ACCENT,
+        /* 0a */ GLFW_KEY_WORLD_1,
         /* 0b */ GLFW_KEY_B,
         /* 0c */ GLFW_KEY_Q,
         /* 0d */ GLFW_KEY_W,
@@ -296,7 +321,7 @@ static int translateKey(unsigned int key)
         /* 2f */ GLFW_KEY_PERIOD,
         /* 30 */ GLFW_KEY_TAB,
         /* 31 */ GLFW_KEY_SPACE,
-        /* 32 */ GLFW_KEY_WORLD_1,
+        /* 32 */ GLFW_KEY_GRAVE_ACCENT,
         /* 33 */ GLFW_KEY_BACKSPACE,
         /* 34 */ GLFW_KEY_UNKNOWN,
         /* 35 */ GLFW_KEY_ESCAPE,
@@ -351,7 +376,7 @@ static int translateKey(unsigned int key)
         /* 66 */ GLFW_KEY_UNKNOWN,
         /* 67 */ GLFW_KEY_F11,
         /* 68 */ GLFW_KEY_UNKNOWN,
-        /* 69 */ GLFW_KEY_PRINT_SCREEN,
+        /* 69 */ GLFW_KEY_F13,
         /* 6a */ GLFW_KEY_F16,
         /* 6b */ GLFW_KEY_F14,
         /* 6c */ GLFW_KEY_UNKNOWN,
@@ -458,6 +483,11 @@ static int translateKey(unsigned int key)
     return YES;
 }
 
+- (void)cursorUpdate:(NSEvent *)event
+{
+    setModeCursor(window, window->cursorMode);
+}
+
 - (void)mouseDown:(NSEvent *)event
 {
     _glfwInputMouseClick(window,
@@ -516,7 +546,7 @@ static int translateKey(unsigned int key)
 - (void)otherMouseDown:(NSEvent *)event
 {
     _glfwInputMouseClick(window,
-                         [event buttonNumber],
+                         (int) [event buttonNumber],
                          GLFW_PRESS,
                          translateFlags([event modifierFlags]));
 }
@@ -529,7 +559,7 @@ static int translateKey(unsigned int key)
 - (void)otherMouseUp:(NSEvent *)event
 {
     _glfwInputMouseClick(window,
-                         [event buttonNumber],
+                         (int) [event buttonNumber],
                          GLFW_RELEASE,
                          translateFlags([event modifierFlags]));
 }
@@ -561,7 +591,8 @@ static int translateKey(unsigned int key)
     }
 
     NSTrackingAreaOptions options = NSTrackingMouseEnteredAndExited |
-                                    NSTrackingActiveAlways |
+                                    NSTrackingActiveInKeyWindow |
+                                    NSTrackingCursorUpdate |
                                     NSTrackingInVisibleRect;
 
     trackingArea = [[NSTrackingArea alloc] initWithRect:[self bounds]
@@ -570,7 +601,7 @@ static int translateKey(unsigned int key)
                                                userInfo:nil];
 
     [self addTrackingArea:trackingArea];
-	[super updateTrackingAreas];
+    [super updateTrackingAreas];
 }
 
 - (void)keyDown:(NSEvent *)event
@@ -578,9 +609,6 @@ static int translateKey(unsigned int key)
     const int key = translateKey([event keyCode]);
     const int mods = translateFlags([event modifierFlags]);
     _glfwInputKey(window, key, [event keyCode], GLFW_PRESS, mods);
-
-    if (mods & GLFW_MOD_SUPER)
-        return;
 
     NSString* characters = [event characters];
     NSUInteger i, length = [characters length];
@@ -616,21 +644,30 @@ static int translateKey(unsigned int key)
 
 - (void)scrollWheel:(NSEvent *)event
 {
-    double deltaX = [event deltaX];
-    double deltaY = [event deltaY];
+    double deltaX, deltaY;
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
+    {
+        deltaX = [event scrollingDeltaX];
+        deltaY = [event scrollingDeltaY];
+
+        if ([event hasPreciseScrollingDeltas])
+        {
+            deltaX *= 0.1;
+            deltaY *= 0.1;
+        }
+    }
+    else
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+    {
+        deltaX = [event deltaX];
+        deltaY = [event deltaY];
+    }
 
     if (fabs(deltaX) > 0.0 || fabs(deltaY) > 0.0)
         _glfwInputScroll(window, deltaX, deltaY);
 }
-
-
-// arturoc: this makes the cursor dissapear when the window is
-// resized or received a drag operation
-/*- (void)resetCursorRects
-{
-    [self discardCursorRects];
-    [self addCursorRect:[self bounds] cursor:_glfw.ns.cursor];
-}*/
 
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
 {
@@ -738,7 +775,7 @@ static int translateKey(unsigned int key)
 //
 static NSString* findAppName(void)
 {
-    unsigned int i;
+    size_t i;
     NSDictionary* infoDictionary = [[NSBundle mainBundle] infoDictionary];
 
     // Keys to search for as potential application names
@@ -817,7 +854,7 @@ static void createMenuBar(void)
     [NSApp setWindowsMenu:windowMenu];
     [windowMenuItem setSubmenu:windowMenu];
 
-    [windowMenu addItemWithTitle:@"Miniaturize"
+    [windowMenu addItemWithTitle:@"Minimize"
                           action:@selector(performMiniaturize:)
                    keyEquivalent:@"m"];
     [windowMenu addItemWithTitle:@"Zoom"
@@ -828,9 +865,23 @@ static void createMenuBar(void)
                           action:@selector(arrangeInFront:)
                    keyEquivalent:@""];
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
+    {
+        // TODO: Make this appear at the bottom of the menu (for consistency)
+
+        [windowMenu addItem:[NSMenuItem separatorItem]];
+        [[windowMenu addItemWithTitle:@"Enter Full Screen"
+                               action:@selector(toggleFullScreen:)
+                        keyEquivalent:@"f"]
+            setKeyEquivalentModifierMask:NSControlKeyMask | NSCommandKeyMask];
+    }
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+
     // Prior to Snow Leopard, we need to use this oddly-named semi-private API
     // to get the application menu working properly.
-    [NSApp performSelector:@selector(setAppleMenu:) withObject:appMenu];
+    SEL setAppleMenuSelector = NSSelectorFromString(@"setAppleMenu:");
+    [NSApp performSelector:setAppleMenuSelector withObject:appMenu];
 }
 
 #endif /* _GLFW_USE_MENUBAR */
@@ -845,13 +896,8 @@ static GLboolean initializeAppKit(void)
     // Implicitly create shared NSApplication instance
     [GLFWApplication sharedApplication];
 
-    // If we get here, the application is unbundled
-    ProcessSerialNumber psn = { 0, kCurrentProcess };
-    TransformProcessType(&psn, kProcessTransformToForegroundApplication);
-
-    // Having the app in front of the terminal window is also generally
-    // handy.  There is an NSApplication API to do this, but...
-    SetFrontProcess(&psn);
+    // In case we are unbundled, make us a proper UI application
+    [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
 #if defined(_GLFW_USE_MENUBAR)
     // Menu bar setup must go between sharedApplication above and
@@ -898,19 +944,23 @@ static GLboolean createWindow(_GLFWwindow* window,
     window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if ([window->ns.view respondsToSelector:@selector(setWantsBestResolutionOpenGLSurface:)])
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
+    {
         [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
+
+        if (wndconfig->resizable)
+            [window->ns.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+    }
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
     [window->ns.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
     [window->ns.object setContentView:window->ns.view];
     [window->ns.object setDelegate:window->ns.delegate];
     [window->ns.object setAcceptsMouseMovedEvents:YES];
-    [window->ns.object disableCursorRects];
     [window->ns.object center];
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if ([window->ns.object respondsToSelector:@selector(setRestorable:)])
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
         [window->ns.object setRestorable:NO];
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
@@ -1007,8 +1057,9 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
 {
-    const NSRect frameRect =
-        [window->ns.object frameRectForContentRect:NSMakeRect(x, y, 0, 0)];
+    const NSRect contentRect = [window->ns.view frame];
+    const NSRect dummyRect = NSMakeRect(x, transformY(y + contentRect.size.height), 0, 0);
+    const NSRect frameRect = [window->ns.object frameRectForContentRect:dummyRect];
     [window->ns.object setFrameOrigin:frameRect.origin];
 }
 
@@ -1053,6 +1104,12 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
+    // Make us the active application
+    // HACK: This has been moved here from initializeAppKit to prevent
+    //       applications using only hidden windows from being activated, but
+    //       should probably not be done every time any window is shown
+    [NSApp activateIgnoringOtherApps:YES];
+
     [window->ns.object makeKeyAndOrderFront:nil];
     _glfwInputWindowVisibility(window, GL_TRUE);
 }
@@ -1097,6 +1154,8 @@ void _glfwPlatformWaitEvents(void)
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
+    setModeCursor(window, window->cursorMode);
+
     if (window->monitor)
     {
         CGDisplayMoveCursorToPoint(window->monitor->ns.displayID,
@@ -1115,37 +1174,15 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
-    if (mode == GLFW_CURSOR_HIDDEN)
-    {
-        [window->ns.object enableCursorRects];
-        [window->ns.object invalidateCursorRectsForView:window->ns.view];
-    }
-    else
-    {
-        [window->ns.object disableCursorRects];
-        [window->ns.object invalidateCursorRectsForView:window->ns.view];
-    }
+    setModeCursor(window, mode);
 
     if (mode == GLFW_CURSOR_DISABLED)
     {
         CGAssociateMouseAndMouseCursorPosition(false);
-
-        if (!_glfw.ns.cursorHidden)
-        {
-            [NSCursor hide];
-            _glfw.ns.cursorHidden = GL_TRUE;
-        }
+        centerCursor(window);
     }
     else
-    {
         CGAssociateMouseAndMouseCursorPosition(true);
-
-        if (_glfw.ns.cursorHidden)
-        {
-            [NSCursor unhide];
-            _glfw.ns.cursorHidden = GL_FALSE;
-        }
-    }
 }
 
 

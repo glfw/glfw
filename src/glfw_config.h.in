@@ -1,8 +1,5 @@
 //========================================================================
-// GLFW - An OpenGL library
-// Platform:    Any
-// API version: 3.0
-// WWW:         http://www.glfw.org/
+// GLFW 3.0 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -26,13 +23,15 @@
 //    distribution.
 //
 //========================================================================
-// As config.h.in, this file is used by CMake to produce the config.h shared
-// configuration header file.  If you are adding a feature requiring
-// conditional compilation, this is the proper place to add the macros.
+// As glfw_config.h.in, this file is used by CMake to produce the
+// glfw_config.h configuration header file.  If you are adding a feature
+// requiring conditional compilation, this is where to add the macro.
 //========================================================================
-// As config.h, this file defines compile-time build options and macros for
-// all platforms supported by GLFW.  As this is a generated file, don't modify
-// it.  Instead, you should modify the config.h.in file.
+// As glfw_config.h, this file defines compile-time option macros for a
+// specific platform and development environment.  If you are using the
+// GLFW CMake files, modify glfw_config.h.in instead of this file.  If you
+// are using your own build system, make this file define the appropriate
+// macros in whatever way is suitable.
 //========================================================================
 
 // Define this to 1 if building GLFW for X11
@@ -56,6 +55,10 @@
 
 // Define this to 1 to disable dynamic loading of winmm
 #cmakedefine _GLFW_NO_DLOAD_WINMM
+// Define this to 1 if glfwSwapInterval should ignore DWM compositing status
+#cmakedefine _GLFW_USE_DWM_SWAP_INTERVAL
+// Define this to 1 to force use of high-performance GPU on Optimus systems
+#cmakedefine _GLFW_USE_OPTIMUS_HPG
 
 // Define this to 1 if glXGetProcAddress is available
 #cmakedefine _GLFW_HAS_GLXGETPROCADDRESS
@@ -77,7 +80,4 @@
 #cmakedefine _GLFW_USE_GLESV1
 // Define this to 1 if using OpenGL ES 2.0 as the client library
 #cmakedefine _GLFW_USE_GLESV2
-
-// The GLFW version as used by glfwGetVersionString
-#define _GLFW_VERSION_FULL "@GLFW_VERSION_FULL@"
 

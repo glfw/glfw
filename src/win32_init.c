@@ -1,8 +1,5 @@
 //========================================================================
-// GLFW - An OpenGL library
-// Platform:    Win32/WGL
-// API version: 3.0
-// WWW:         http://www.glfw.org/
+// GLFW 3.0 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -38,6 +35,15 @@
 #include <float.h>
 #endif // __BORLANDC__
 
+
+#if defined(_GLFW_USE_OPTIMUS_HPG)
+
+// Applications exporting this symbol with this value will be automatically
+// directed to the high-performance GPU on nVidia Optimus systems
+//
+GLFWAPI DWORD NvOptimusEnablement = 0x00000001;
+
+#endif // _GLFW_USE_OPTIMUS_HPG
 
 #if defined(_GLFW_BUILD_DLL)
 
@@ -240,7 +246,7 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = _GLFW_VERSION_FULL " Win32"
+    const char* version = _GLFW_VERSION_NUMBER " Win32"
 #if defined(_GLFW_WGL)
         " WGL"
 #elif defined(_GLFW_EGL)

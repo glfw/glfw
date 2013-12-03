@@ -11,7 +11,9 @@ existing applications and does not lay claim to the main loop.
 This is the documentation for version 3.0, which has [many new features](@ref news).
 
 There is a [quick tutorial](@ref quick) for people new to GLFW, which shows how
-to write a small but complete program.
+to write a small but complete program, and guides for
+[compiling GLFW](@ref compile) and
+[building programs that use GLFW](@ref build).
 
 If you have used GLFW 2.x in the past, there is a
 [transition guide](@ref moving) that explains what has changed and how to update

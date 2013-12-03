@@ -1,11 +1,13 @@
 /*!
 
-@page build Building programs using GLFW
+@page build Building programs that use GLFW
 
 @tableofcontents
 
 This is about compiling and linking programs that use GLFW.  For information on
-how to *write* such programs, start with the [introductory tutorial](@ref quick).
+how to write such programs, start with the [introductory tutorial](@ref quick).
+For information on how to compile the GLFW library itself, see the @ref compile
+guide.
 
 
 @section build_include Including the GLFW header file
@@ -158,7 +160,7 @@ If you are using the static library version of GLFW, use the
 @subsection build_link_pkgconfig With pkg-config on OS X or other Unix
 
 GLFW supports [pkg-config](http://www.freedesktop.org/wiki/Software/pkg-config/),
-and `glfw3.pc` file is generated when the GLFW library is built and installed
+and the `glfw3.pc` file is generated when the GLFW library is built and installed
 along with it.  
 
 A typical compile and link command-line when using the static may look like this:
@@ -189,7 +191,7 @@ If you are using the dynamic library version of GLFW, simply add it to the
 project dependencies.
 
 If you are using the static library version of GLFW, add it and the Cocoa,
-OpenGL and IOKit frameworks to the project as dependencies.
+OpenGL, IOKit and CoreVideo frameworks to the project as dependencies.
 
 
 @subsection build_link_osx With command-line on OS X
@@ -198,7 +200,7 @@ If you do not wish to use pkg-config, you need to add the required frameworks
 and libraries to your command-line using the `-l` and `-framework` switches,
 i.e.:
 
-    cc -o myprog myprog.c -lglfw -framework Cocoa -framework OpenGL -framework IOKit
+    cc -o myprog myprog.c -lglfw -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo
 
 Note that you do not add the `.framework` extension to a framework when adding
 it from the command-line.
@@ -206,6 +208,6 @@ it from the command-line.
 The OpenGL framework contains both the OpenGL and GLU APIs, so there is nothing
 special to do when using GLU.  Also note that even though your machine may have
 `libGL`-style OpenGL libraries, they are for use with the X Window System and
-will *not* work with the Mac OS X native version of GLFW.
+will *not* work with the OS X native version of GLFW.
 
 */

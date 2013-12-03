@@ -1,8 +1,5 @@
 //========================================================================
-// GLFW - An OpenGL library
-// Platform:    X11
-// API version: 3.0
-// WWW:         http://www.glfw.org/
+// GLFW 3.0 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -128,15 +125,6 @@ static void pollJoystickEvents(void)
                 case JS_EVENT_AXIS:
                     _glfw.x11.joystick[i].axes[e.number] =
                         (float) e.value / 32767.0f;
-
-                    // We need to change the sign for the Y axes, so that
-                    // positive = up/forward, according to the GLFW spec.
-                    if (e.number & 1)
-                    {
-                        _glfw.x11.joystick[i].axes[e.number] =
-                            -_glfw.x11.joystick[i].axes[e.number];
-                    }
-
                     break;
 
                 case JS_EVENT_BUTTON:
@@ -162,7 +150,8 @@ static void pollJoystickEvents(void)
 void _glfwInitJoysticks(void)
 {
 #ifdef __linux__
-    int i, joy = 0;
+    int joy = 0;
+    size_t i;
     regex_t regex;
     DIR* dir;
     const char* dirs[] =

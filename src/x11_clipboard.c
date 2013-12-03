@@ -1,8 +1,5 @@
 //========================================================================
-// GLFW - An OpenGL library
-// Platform:    X11
-// API version: 3.0
-// WWW:         http://www.glfw.org/
+// GLFW 3.0 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -273,11 +270,11 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {
-    int i;
+    size_t i;
     const Atom formats[] = { _glfw.x11.UTF8_STRING,
                              _glfw.x11.COMPOUND_STRING,
                              XA_STRING };
-    const int formatCount = sizeof(formats) / sizeof(formats[0]);
+    const size_t formatCount = sizeof(formats) / sizeof(formats[0]);
 
     if (_glfwFindWindowByHandle(XGetSelectionOwner(_glfw.x11.display,
                                                    _glfw.x11.CLIPBOARD)))

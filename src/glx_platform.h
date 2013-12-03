@@ -1,8 +1,5 @@
 //========================================================================
-// GLFW - An OpenGL library
-// Platform:    X11/GLX
-// API version: 3.0
-// WWW:         http://www.glfw.org/
+// GLFW 3.0 GLX - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -96,9 +93,6 @@ typedef struct _GLFWlibraryGLX
 
     // TLS key for per-thread current context/window
     pthread_key_t   current;
-
-    // GLX error code received by Xlib error callback
-    int             errorCode;
 
     // GLX extensions
     PFNGLXSWAPINTERVALSGIPROC             SwapIntervalSGI;

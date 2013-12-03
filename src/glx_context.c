@@ -1,8 +1,5 @@
 //========================================================================
-// GLFW - An OpenGL library
-// Platform:    X11/GLX
-// API version: 3.0
-// WWW:         http://www.glfw.org/
+// GLFW 3.0 GLX - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -45,14 +42,6 @@ void (*glXGetProcAddressEXT(const GLubyte* procName))();
 #endif
 
 
-// Error handler used when creating a context
-//
-static int errorHandler(Display *display, XErrorEvent* event)
-{
-    _glfw.glx.errorCode = event->error_code;
-    return 0;
-}
-
 // Returns the specified attribute of the specified GLXFBConfig
 // NOTE: Do not call this unless we have found GLX 1.3+ or GLX_SGIX_fbconfig
 //
@@ -86,7 +75,7 @@ static GLboolean chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* resul
     if (strcmp(vendor, "Chromium") == 0)
     {
         // HACK: This is a (hopefully temporary) workaround for Chromium
-        // (VirtualBox GL) not setting the window bit on any GLXFBConfigs
+        //       (VirtualBox GL) not setting the window bit on any GLXFBConfigs
         trustWindowBit = GL_FALSE;
     }
 
@@ -352,7 +341,7 @@ void _glfwTerminateContextAPI(void)
 { \
     attribs[index++] = attribName; \
     attribs[index++] = attribValue; \
-    assert(index < sizeof(attribs) / sizeof(attribs[0])); \
+    assert((size_t) index < sizeof(attribs) / sizeof(attribs[0])); \
 }
 
 // Prepare for creation of the OpenGL context
@@ -397,7 +386,7 @@ int _glfwCreateContext(_GLFWwindow* window,
             !_glfw.glx.ARB_create_context_profile ||
             !_glfw.glx.EXT_create_context_es2_profile)
         {
-            _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+            _glfwInputError(GLFW_API_UNAVAILABLE,
                             "GLX: OpenGL ES requested but "
                             "GLX_EXT_create_context_es2_profile is unavailable");
             return GL_FALSE;
@@ -427,8 +416,7 @@ int _glfwCreateContext(_GLFWwindow* window,
         }
     }
 
-    _glfw.glx.errorCode = Success;
-    XSetErrorHandler(errorHandler);
+    _glfwGrabXErrorHandler();
 
     if (_glfw.glx.ARB_create_context)
     {
@@ -469,8 +457,8 @@ int _glfwCreateContext(_GLFWwindow* window,
         if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
         {
             // NOTE: Only request an explicitly versioned context when
-            // necessary, as explicitly requesting version 1.0 does not always
-            // return the highest available version
+            //       necessary, as explicitly requesting version 1.0 does not
+            //       always return the highest available version
 
             setGLXattrib(GLX_CONTEXT_MAJOR_VERSION_ARB, wndconfig->glMajor);
             setGLXattrib(GLX_CONTEXT_MINOR_VERSION_ARB, wndconfig->glMinor);
@@ -497,9 +485,10 @@ int _glfwCreateContext(_GLFWwindow* window,
         if (window->glx.context == NULL)
         {
             // HACK: This is a fallback for the broken Mesa implementation of
-            // GLX_ARB_create_context_profile, which fails default 1.0 context
-            // creation with a GLXBadProfileARB error in violation of the spec
-            if (_glfw.glx.errorCode == _glfw.glx.errorBase + GLXBadProfileARB &&
+            //       GLX_ARB_create_context_profile, which fails default 1.0
+            //       context creation with a GLXBadProfileARB error in violation
+            //       of the extension spec
+            if (_glfw.x11.errorCode == _glfw.glx.errorBase + GLXBadProfileARB &&
                 wndconfig->clientAPI == GLFW_OPENGL_API &&
                 wndconfig->glProfile == GLFW_OPENGL_ANY_PROFILE &&
                 wndconfig->glForward == GL_FALSE)
@@ -511,19 +500,11 @@ int _glfwCreateContext(_GLFWwindow* window,
     else
         window->glx.context = createLegacyContext(window, native, share);
 
-    XSetErrorHandler(NULL);
+    _glfwReleaseXErrorHandler();
 
     if (window->glx.context == NULL)
     {
-        char buffer[8192];
-        XGetErrorText(_glfw.x11.display,
-                      _glfw.glx.errorCode,
-                      buffer, sizeof(buffer));
-
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "GLX: Failed to create context: %s",
-                        buffer);
-
+        _glfwInputXError(GLFW_PLATFORM_ERROR, "GLX: Failed to create context");
         return GL_FALSE;
     }
 

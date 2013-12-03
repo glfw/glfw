@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8)
 
 set(GLFW_VERSION_MAJOR "3")
 set(GLFW_VERSION_MINOR "0")
-set(GLFW_VERSION_PATCH "2")
+set(GLFW_VERSION_PATCH "4")
 set(GLFW_VERSION_EXTRA "")
 set(GLFW_VERSION "${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}")
 set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA}")
@@ -13,8 +13,14 @@ set(LIB_SUFFIX "" CACHE STRING "Takes an empty string or 64. Directory where lib
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
+option(GLFW_BUILD_DOCS "Build the GLFW documentation" ON)
 option(GLFW_INSTALL "Generate installation target" ON)
 option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
+
+if (WIN32)
+    option(GLFW_USE_DWM_SWAP_INTERVAL "Set swap interval even when DWM compositing is enabled" OFF)
+    option(GLFW_USE_OPTIMUS_HPG "Force use of high-performance GPU on Optimus systems" OFF)
+endif()
 
 if (APPLE)
     option(GLFW_BUILD_UNIVERSAL "Build GLFW as a Universal Binary" OFF)
@@ -68,11 +74,13 @@ endif()
 
 find_package(Threads REQUIRED)
 
-set(DOXYGEN_SKIP_DOT TRUE)
-find_package(Doxygen)
+if (GLFW_BUILD_DOCS)
+    set(DOXYGEN_SKIP_DOT TRUE)
+    find_package(Doxygen)
 
-if (GLFW_DOCUMENT_INTERNALS)
-    set(GLFW_INTERNAL_DOCS "${GLFW_SOURCE_DIR}/src/internal.h ${GLFW_SOURCE_DIR}/docs/internal.dox")
+    if (GLFW_DOCUMENT_INTERNALS)
+        set(GLFW_INTERNAL_DOCS "${GLFW_SOURCE_DIR}/src/internal.h ${GLFW_SOURCE_DIR}/docs/internal.dox")
+    endif()
 endif()
 
 #--------------------------------------------------------------------
@@ -151,6 +159,20 @@ if (_GLFW_WIN32)
         set(_GLFW_NO_DLOAD_WINMM 1)
         list(APPEND glfw_LIBRARIES winmm)
     endif()
+
+    if (GLFW_USE_DWM_SWAP_INTERVAL)
+        set(_GLFW_USE_DWM_SWAP_INTERVAL 1)
+    endif()
+    if (GLFW_USE_OPTIMUS_HPG)
+        set(_GLFW_USE_OPTIMUS_HPG 1)
+    endif()
+
+    # HACK: When building on MinGW, WINVER and UNICODE need to be defined before
+    # the inclusion of stddef.h (by glfw3.h), which is itself included before
+    # win32_platform.h.  We define them here until a saner solution can be found
+    # NOTE: MinGW-w64 and Visual C++ do /not/ need this hack.
+    add_definitions(-DUNICODE)
+    add_definitions(-DWINVER=0x0501)
 endif()
 
 #--------------------------------------------------------------------
@@ -192,7 +214,13 @@ if (_GLFW_X11)
     endif()
 
     list(APPEND glfw_INCLUDE_DIRS ${X11_Xinput_INCLUDE_PATH})
-    list(APPEND glfw_LIBRARIES ${X11_Xinput_LIB})
+
+    if (X11_Xinput_LIB)
+        list(APPEND glfw_LIBRARIES ${X11_Xinput_LIB})
+    else()
+        # Backwards compatibility (bug in CMake 2.8.7)
+        list(APPEND glfw_LIBRARIES Xi)
+    endif()
     set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xi")
 
     # Check for Xf86VidMode (fallback gamma control)
@@ -257,23 +285,15 @@ if (_GLFW_GLX)
 
         # Check for dlopen support as a fallback
 
-        find_library(DL_LIBRARY dl)
-        mark_as_advanced(DL_LIBRARY)
-        if (DL_LIBRARY)
-            set(CMAKE_REQUIRED_LIBRARIES ${DL_LIBRARY})
-        else()
-            set(CMAKE_REQUIRED_LIBRARIES "")
-        endif()
-
+        set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_DL_LIBS})
         check_function_exists(dlopen _GLFW_HAS_DLOPEN)
-
         if (NOT _GLFW_HAS_DLOPEN)
             message(FATAL_ERROR "No entry point retrieval mechanism found")
         endif()
 
-        if (DL_LIBRARY)
-            list(APPEND glfw_LIBRARIES ${DL_LIBRARY})
-            set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -ldl")
+        if (CMAKE_DL_LIBS)
+            list(APPEND glfw_LIBRARIES ${CMAKE_DL_LIBS})
+            set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -l${CMAKE_DL_LIBS}")
         endif()
     endif()
 
@@ -331,13 +351,15 @@ if (_GLFW_COCOA AND _GLFW_NSGL)
     find_library(COCOA_FRAMEWORK Cocoa)
     find_library(IOKIT_FRAMEWORK IOKit)
     find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
+    find_library(CORE_VIDEO_FRAMEWORK CoreVideo)
     list(APPEND glfw_LIBRARIES ${COCOA_FRAMEWORK}
                                ${OPENGL_gl_LIBRARY}
                                ${IOKIT_FRAMEWORK}
-                               ${CORE_FOUNDATION_FRAMEWORK})
+                               ${CORE_FOUNDATION_FRAMEWORK}
+                               ${CORE_VIDEO_FRAMEWORK})
 
     set(GLFW_PKG_DEPS "")
-    set(GLFW_PKG_LIBS "-framework Cocoa -framework OpenGL -framework IOKit -framework CoreFoundation")
+    set(GLFW_PKG_LIBS "-framework Cocoa -framework OpenGL -framework IOKit -framework CoreFoundation -framework CoreVideo")
 endif()
 
 #--------------------------------------------------------------------
@@ -361,8 +383,8 @@ endif()
 configure_file(${GLFW_SOURCE_DIR}/docs/Doxyfile.in
                ${GLFW_BINARY_DIR}/docs/Doxyfile @ONLY)
 
-configure_file(${GLFW_SOURCE_DIR}/src/config.h.in 
-               ${GLFW_BINARY_DIR}/src/config.h @ONLY)
+configure_file(${GLFW_SOURCE_DIR}/src/glfw_config.h.in 
+               ${GLFW_BINARY_DIR}/src/glfw_config.h @ONLY)
 
 configure_file(${GLFW_SOURCE_DIR}/src/glfwConfig.cmake.in
                ${GLFW_BINARY_DIR}/src/glfwConfig.cmake @ONLY)
@@ -388,7 +410,7 @@ if (GLFW_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
 
-if (DOXYGEN_FOUND)
+if (DOXYGEN_FOUND AND GLFW_BUILD_DOCS)
     add_subdirectory(docs)
 endif()
 

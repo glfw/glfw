@@ -1,8 +1,5 @@
 //========================================================================
-// GLFW - An OpenGL library
-// Platform:    Any
-// API version: 3.0
-// WWW:         http://www.glfw.org/
+// GLFW 3.0 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -32,7 +29,11 @@
 #define _internal_h_
 
 
-#include "config.h"
+#if defined(_GLFW_USE_CONFIG_H)
+ #include "glfw_config.h"
+#endif
+
+#define _GLFW_VERSION_NUMBER "3.0.4"
 
 #if defined(_GLFW_USE_OPENGL)
  // This is the default for glfw3.h
@@ -118,6 +119,15 @@ typedef struct _GLFWmonitor     _GLFWmonitor;
     {                                                \
         _glfwInputError(GLFW_NOT_INITIALIZED, NULL); \
         return x;                                    \
+    }
+
+// Swaps the provided pointers
+#define _GLFW_SWAP_POINTERS(x, y) \
+    {                             \
+        void* t;                  \
+        t = x;                    \
+        x = y;                    \
+        y = t;                    \
     }
 
 
@@ -299,7 +309,10 @@ struct _GLFWlibrary
 
     _GLFWmonitor**  monitors;
     int             monitorCount;
-    GLFWmonitorfun  monitorCallback;
+
+    struct {
+        GLFWmonitorfun  monitor;
+    } callbacks;
 
     // This is defined in the window API's platform.h
     _GLFW_PLATFORM_LIBRARY_WINDOW_STATE;
@@ -616,10 +629,10 @@ void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int m
 
 /*! @brief Notifies shared code of a Unicode character input event.
  *  @param[in] window The window that received the event.
- *  @param[in] character The Unicode code point of the input character.
+ *  @param[in] codepoint The Unicode code point of the input character.
  *  @ingroup event
  */
-void _glfwInputChar(_GLFWwindow* window, unsigned int character);
+void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint);
 
 /*! @brief Notifies shared code of a scroll event.
  *  @param[in] window The window that received the event.
@@ -750,11 +763,18 @@ void _glfwAllocGammaArrays(GLFWgammaramp* ramp, unsigned int size);
  */
 void _glfwFreeGammaArrays(GLFWgammaramp* ramp);
 
-/*! @ingroup utility
+/*! @brief Allocates and returns a monitor object with the specified name
+ *  and dimensions.
+ *  @param[in] name The name of the monitor.
+ *  @param[in] widthMM The width, in mm, of the monitor's display area.
+ *  @param[in] heightMM The height, in mm, of the monitor's display area.
+ *  @return The newly created object.
+ *  @ingroup utility
  */
 _GLFWmonitor* _glfwCreateMonitor(const char* name, int widthMM, int heightMM);
 
-/*! @ingroup utility
+/*! @brief Frees a monitor object and any data associated with it.
+ *  @ingroup utility
   */
 void _glfwDestroyMonitor(_GLFWmonitor* monitor);
 

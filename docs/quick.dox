@@ -302,4 +302,7 @@ the screen, rendering a triangle and processing events until the user closes the
 window.  It can be found in the source distribution as `examples/simple.c`, and
 is by default compiled along with all other examples when you build GLFW.
 
+To learn more about how to compile and link programs that use GLFW, see
+@ref build.
+
 */

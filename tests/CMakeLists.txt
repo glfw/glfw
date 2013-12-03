@@ -23,7 +23,7 @@ set(TINYCTHREAD ${GLFW_SOURCE_DIR}/deps/tinycthread.h
 
 add_executable(clipboard clipboard.c ${GETOPT})
 add_executable(defaults defaults.c)
-add_executable(events events.c)
+add_executable(events events.c ${GETOPT})
 add_executable(fsaa fsaa.c ${GETOPT})
 add_executable(gamma gamma.c ${GETOPT})
 add_executable(glfwinfo glfwinfo.c ${GETOPT})

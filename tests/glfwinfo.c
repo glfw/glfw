@@ -54,9 +54,16 @@
 static void usage(void)
 {
     printf("Usage: glfwinfo [-h] [-a API] [-m MAJOR] [-n MINOR] [-d] [-l] [-f] [-p PROFILE] [-r STRATEGY]\n");
-    printf("available APIs: " API_OPENGL " " API_OPENGL_ES "\n");
-    printf("available profiles: " PROFILE_NAME_CORE " " PROFILE_NAME_COMPAT "\n");
-    printf("available strategies: " STRATEGY_NAME_NONE " " STRATEGY_NAME_LOSE "\n");
+    printf("Options:\n");
+    printf("  -a the client API to use (" API_OPENGL " or " API_OPENGL_ES ")\n");
+    printf("  -d request a debug context\n");
+    printf("  -f require a forward-compatible context\n");
+    printf("  -h show this help\n");
+    printf("  -l list all client API extensions after context creation\n");
+    printf("  -m the major number of the requred client API version\n");
+    printf("  -n the minor number of the requred client API version\n");
+    printf("  -p the OpenGL profile to use (" PROFILE_NAME_CORE " or " PROFILE_NAME_COMPAT ")\n");
+    printf("  -r the robustness strategy to use (" STRATEGY_NAME_NONE " or " STRATEGY_NAME_LOSE ")\n");
 }
 
 static void error_callback(int error, const char* description)
@@ -186,9 +193,6 @@ int main(int argc, char** argv)
     GLint flags, mask;
     GLFWwindow* window;
 
-    if (!valid_version())
-        exit(EXIT_FAILURE);
-
     while ((ch = getopt(argc, argv, "a:dfhlm:n:p:r:")) != -1)
     {
         switch (ch)
@@ -249,10 +253,10 @@ int main(int argc, char** argv)
         }
     }
 
-    argc -= optind;
-    argv += optind;
-
     // Initialize GLFW and create window
+
+    if (!valid_version())
+        exit(EXIT_FAILURE);
 
     glfwSetErrorCallback(error_callback);
 

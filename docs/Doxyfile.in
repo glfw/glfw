@@ -659,6 +659,7 @@ INPUT                  = @GLFW_INTERNAL_DOCS@                         \
                          @GLFW_SOURCE_DIR@/docs/news.dox              \
                          @GLFW_SOURCE_DIR@/docs/quick.dox             \
                          @GLFW_SOURCE_DIR@/docs/moving.dox            \
+                         @GLFW_SOURCE_DIR@/docs/compile.dox           \
                          @GLFW_SOURCE_DIR@/docs/build.dox             \
                          @GLFW_SOURCE_DIR@/docs/context.dox           \
                          @GLFW_SOURCE_DIR@/docs/monitor.dox           \
@@ -899,13 +900,13 @@ HTML_FILE_EXTENSION    = .html
 # have to redo this when upgrading to a newer version of doxygen or when
 # changing the value of configuration settings such as GENERATE_TREEVIEW!
 
-HTML_HEADER            =
+HTML_HEADER            = @GLFW_SOURCE_DIR@/docs/header.html
 
 # The HTML_FOOTER tag can be used to specify a personal HTML footer for
 # each generated HTML page. If it is left blank doxygen will generate a
 # standard footer.
 
-HTML_FOOTER            =
+HTML_FOOTER            = @GLFW_SOURCE_DIR@/docs/footer.html
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading
 # style sheet that is used by each HTML page. It can be used to
@@ -924,7 +925,7 @@ HTML_STYLESHEET        =
 # robust against future updates. Doxygen will copy the style sheet file to
 # the output directory.
 
-HTML_EXTRA_STYLESHEET  = 
+HTML_EXTRA_STYLESHEET  = @GLFW_SOURCE_DIR@/docs/extra.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note

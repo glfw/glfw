@@ -1,8 +1,5 @@
 //========================================================================
-// GLFW - An OpenGL library
-// Platform:    X11/GLX
-// API version: 3.0
-// WWW:         http://www.glfw.org/
+// GLFW 3.0 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -52,7 +49,7 @@ static int translateKey(int keyCode)
     // Note: This way we always force "NumLock = ON", which is intentional
     // since the returned key code should correspond to a physical
     // location.
-    keySym = XkbKeycodeToKeysym(_glfw.x11.display, keyCode, 1, 0);
+    keySym = XkbKeycodeToKeysym(_glfw.x11.display, keyCode, 0, 1);
     switch (keySym)
     {
         case XK_KP_0:           return GLFW_KEY_KP_0;
@@ -412,6 +409,8 @@ static void detectEWMH(void)
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_PING");
     _glfw.x11.NET_ACTIVE_WINDOW =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_ACTIVE_WINDOW");
+    _glfw.x11.NET_WM_BYPASS_COMPOSITOR =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_BYPASS_COMPOSITOR");
 
     XFree(supportedAtoms);
 
@@ -568,7 +567,7 @@ static Cursor createNULLCursor(void)
     XColor col;
     Cursor cursor;
 
-    // TODO: Add error checks
+    _glfwGrabXErrorHandler();
 
     cursormask = XCreatePixmap(_glfw.x11.display, _glfw.x11.root, 1, 1, 1);
     xgc.function = GXclear;
@@ -583,6 +582,14 @@ static Cursor createNULLCursor(void)
     XFreePixmap(_glfw.x11.display, cursormask);
     XFreeGC(_glfw.x11.display, gc);
 
+    _glfwReleaseXErrorHandler();
+
+    if (cursor == None)
+    {
+        _glfwInputXError(GLFW_PLATFORM_ERROR,
+                         "X11: Failed to create null cursor");
+    }
+
     return cursor;
 }
 
@@ -595,6 +602,47 @@ static void terminateDisplay(void)
         XCloseDisplay(_glfw.x11.display);
         _glfw.x11.display = NULL;
     }
+}
+
+// X error handler
+//
+static int errorHandler(Display *display, XErrorEvent* event)
+{
+    _glfw.x11.errorCode = event->error_code;
+    return 0;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+// Install the X error handler
+//
+void _glfwGrabXErrorHandler(void)
+{
+    _glfw.x11.errorCode = Success;
+    XSetErrorHandler(errorHandler);
+}
+
+// Remove the X error handler
+//
+void _glfwReleaseXErrorHandler(void)
+{
+    // Synchronize to make sure all commands are processed
+    XSync(_glfw.x11.display, False);
+    XSetErrorHandler(NULL);
+}
+
+// Report X error
+//
+void _glfwInputXError(int error, const char* message)
+{
+    char buffer[8192];
+    XGetErrorText(_glfw.x11.display, _glfw.x11.errorCode,
+                  buffer, sizeof(buffer));
+
+    _glfwInputError(error, "%s: %s", message, buffer);
 }
 
 
@@ -649,7 +697,7 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = _GLFW_VERSION_FULL " X11"
+    const char* version = _GLFW_VERSION_NUMBER " X11"
 #if defined(_GLFW_GLX)
         " GLX"
 #elif defined(_GLFW_EGL)

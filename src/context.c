@@ -1,8 +1,5 @@
 //========================================================================
-// GLFW - An OpenGL library
-// Platform:    Any
-// API version: 3.0
-// WWW:         http://www.glfw.org/
+// GLFW 3.0 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -101,7 +98,7 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
 
     if (wndconfig->clientAPI == GLFW_OPENGL_API)
     {
-        if (wndconfig->glMajor < 1 || wndconfig->glMinor < 0 ||
+        if ((wndconfig->glMajor < 1 || wndconfig->glMinor < 0) ||
             (wndconfig->glMajor == 1 && wndconfig->glMinor > 5) ||
             (wndconfig->glMajor == 2 && wndconfig->glMinor > 1) ||
             (wndconfig->glMajor == 3 && wndconfig->glMinor > 3))
@@ -405,8 +402,8 @@ GLboolean _glfwRefreshContextAttribs(void)
             else if (glfwExtensionSupported("GL_ARB_debug_output"))
             {
                 // HACK: This is a workaround for older drivers (pre KHR_debug)
-                // not setting the debug bit in the context flags for debug
-                // contexts
+                //       not setting the debug bit in the context flags for
+                //       debug contexts
                 window->glDebug = GL_TRUE;
             }
         }
@@ -422,13 +419,21 @@ GLboolean _glfwRefreshContextAttribs(void)
                 window->glProfile = GLFW_OPENGL_COMPAT_PROFILE;
             else if (mask & GL_CONTEXT_CORE_PROFILE_BIT)
                 window->glProfile = GLFW_OPENGL_CORE_PROFILE;
+            else if (glfwExtensionSupported("GL_ARB_compatibility"))
+            {
+                // HACK: This is a workaround for the compatibility profile bit
+                //       not being set in the context flags if an OpenGL 3.2+
+                //       context was created without having requested a specific
+                //       version
+                window->glProfile = GLFW_OPENGL_COMPAT_PROFILE;
+            }
         }
 
         // Read back robustness strategy
         if (glfwExtensionSupported("GL_ARB_robustness"))
         {
             // NOTE: We avoid using the context flags for detection, as they are
-            // only present from 3.0 while the extension applies from 1.1
+            //       only present from 3.0 while the extension applies from 1.1
 
             GLint strategy;
             glGetIntegerv(GL_RESET_NOTIFICATION_STRATEGY_ARB, &strategy);
@@ -445,7 +450,7 @@ GLboolean _glfwRefreshContextAttribs(void)
         if (glfwExtensionSupported("GL_EXT_robustness"))
         {
             // NOTE: The values of these constants match those of the OpenGL ARB
-            // one, so we can reuse them here
+            //       one, so we can reuse them here
 
             GLint strategy;
             glGetIntegerv(GL_RESET_NOTIFICATION_STRATEGY_ARB, &strategy);
@@ -569,7 +574,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
         return GL_FALSE;
     }
 
-    if (extension == NULL || *extension == '\0')
+    if (!extension || *extension == '\0')
     {
         _glfwInputError(GLFW_INVALID_VALUE, NULL);
         return GL_FALSE;
@@ -580,11 +585,15 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
         // Check if extension is in the old style OpenGL extensions string
 
         extensions = glGetString(GL_EXTENSIONS);
-        if (extensions != NULL)
+        if (!extensions)
         {
-            if (_glfwStringInExtensionString(extension, extensions))
-                return GL_TRUE;
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Failed to retrieve extension string");
+            return GL_FALSE;
         }
+
+        if (_glfwStringInExtensionString(extension, extensions))
+            return GL_TRUE;
     }
 #if defined(_GLFW_USE_OPENGL)
     else
@@ -598,11 +607,16 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 
         for (i = 0;  i < count;  i++)
         {
-             if (strcmp((const char*) window->GetStringi(GL_EXTENSIONS, i),
-                         extension) == 0)
-             {
-                 return GL_TRUE;
-             }
+            const char* en = (const char*) window->GetStringi(GL_EXTENSIONS, i);
+            if (!en)
+            {
+                _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "Failed to retrieve extension string %i", i);
+                return GL_FALSE;
+            }
+
+            if (strcmp(en, extension) == 0)
+                return GL_TRUE;
         }
     }
 #endif // _GLFW_USE_OPENGL

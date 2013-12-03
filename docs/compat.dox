@@ -112,19 +112,21 @@ context profiles.  Where this extension is unavailable, setting the
 `GLFW_OPENGL_PROFILE` hint to anything but zero will cause @ref glfwCreateWindow
 to fail.
 
-@section cmopat_osx OpenGL 3.2 on Mac OS X
+@section compat_osx OpenGL 3.2 and later on OS X
 
-Support for OpenGL 3.0 and above was introduced with Mac OS X 10.7, and even
-then only forward-compatible OpenGL 3.2 core profile contexts are supported.
-There is also still no mechanism for requesting debug contexts.  Versions of
-Mac OS X earlier than 10.7 support at most OpenGL version 2.1.
+Support for OpenGL 3.2 and above was introduced with OS X 10.7 and even then
+only forward-compatible, core profile contexts are supported.  Support for
+OpenGL 4.1 was introduced with OS X 10.9, also limited to forward-compatible,
+core profile contexts.  There is also still no mechanism for requesting debug
+contexts.  Versions of Mac OS X earlier than 10.7 support at most OpenGL
+version 2.1.
 
-Because of this, on Mac OS X 10.7, the `GLFW_CONTEXT_VERSION_MAJOR` and
-`GLFW_CONTEXT_VERSION_MINOR` hints will fail if given a version above 3.2, the
-`GLFW_OPENGL_FORWARD_COMPAT` is required for creating OpenGL 3.2 contexts, the
-`GLFW_OPENGL_DEBUG_CONTEXT` hint is ignored and setting the
-`GLFW_OPENGL_PROFILE` hint to anything except `GLFW_OPENGL_CORE_PROFILE` will
-cause @ref glfwCreateWindow to fail.                      
+Because of this, on OS X 10.7 and later, the `GLFW_CONTEXT_VERSION_MAJOR` and
+`GLFW_CONTEXT_VERSION_MINOR` hints will cause @ref glfwCreateWindow to fail if
+given version 3.0 or 3.1, the `GLFW_OPENGL_FORWARD_COMPAT` is required for
+creating contexts for OpenGL 3.2 and later, the `GLFW_OPENGL_DEBUG_CONTEXT` hint
+is ignored and setting the `GLFW_OPENGL_PROFILE` hint to anything except
+`GLFW_OPENGL_CORE_PROFILE` will cause @ref glfwCreateWindow to fail.
 
 Also, on Mac OS X 10.6 and below, the `GLFW_CONTEXT_VERSION_MAJOR` and
 `GLFW_CONTEXT_VERSION_MINOR` hints will fail if given a version above 2.1, the

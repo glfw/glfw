@@ -226,11 +226,13 @@ static void updateKeyCodeLUT(void)
     int i;
     char name[XkbKeyNameLength + 1];
     XkbDescPtr descr;
+#endif
 
     // Clear the LUT
     for (keyCode = 0;  keyCode < 256;  keyCode++)
         _glfw.x11.keyCodeLUT[keyCode] = GLFW_KEY_UNKNOWN;
 
+#if defined(_GLFW_USE_XKB)
     // Use XKB to determine physical key locations independently of the current
     // keyboard layout
 

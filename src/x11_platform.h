@@ -34,6 +34,7 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
+#include <X11/Xcursor/Xcursor.h>
 
 // The Xf86VidMode extension provides fallback gamma control
 #include <X11/extensions/xf86vmode.h>
@@ -62,6 +63,7 @@
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  x11
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorX11 x11
+#define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorX11  x11
 
 
 //========================================================================
@@ -214,6 +216,15 @@ typedef struct _GLFWmonitorX11
     RRMode          oldMode;
 
 } _GLFWmonitorX11;
+
+
+//------------------------------------------------------------------------
+// Platform-specific cursor structure
+//------------------------------------------------------------------------
+typedef struct _GLFWcursorX11
+{
+    Cursor handle;
+} _GLFWcursorX11;
 
 
 //========================================================================

@@ -64,6 +64,7 @@ typedef struct _GLFWfbconfig    _GLFWfbconfig;
 typedef struct _GLFWwindow      _GLFWwindow;
 typedef struct _GLFWlibrary     _GLFWlibrary;
 typedef struct _GLFWmonitor     _GLFWmonitor;
+typedef struct _GLFWcursor      _GLFWcursor;
 
 #if defined(_GLFW_COCOA)
  #include "cocoa_platform.h"
@@ -206,6 +207,7 @@ struct _GLFWwindow
     void*               userPointer;
     GLFWvidmode         videoMode;
     _GLFWmonitor*       monitor;
+    _GLFWcursor*        cursor;
 
     // Window input state
     GLboolean           stickyKeys;
@@ -269,6 +271,17 @@ struct _GLFWmonitor
 };
 
 
+/*! @brief Cursor structure
+ */
+
+struct _GLFWcursor
+{
+    _GLFWcursor*    next;
+
+    // This is defined in the window API's platform.h
+    _GLFW_PLATFORM_CURSOR_STATE;
+};
+
 /*! @brief Library global data.
  */
 struct _GLFWlibrary
@@ -302,6 +315,8 @@ struct _GLFWlibrary
     } hints;
 
     double          cursorPosX, cursorPosY;
+
+    _GLFWcursor*    cursorListHead;
 
     _GLFWwindow*    windowListHead;
     _GLFWwindow*    focusedWindow;
@@ -552,6 +567,12 @@ int _glfwPlatformExtensionSupported(const char* extension);
  */
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname);
 
+int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int cx, int cy,
+                              int format, const void* data);
+
+void _glfwPlatformDestroyCursor(_GLFWcursor* cursor);
+
+void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor);
 
 //========================================================================
 // Event API functions

@@ -606,7 +606,7 @@ void _glfwPlatformSwapInterval(int interval)
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
 #if !defined(_GLFW_USE_DWM_SWAP_INTERVAL)
-    if (_glfwIsCompositionEnabled())
+    if (_glfwIsCompositionEnabled() && interval)
     {
         // Don't enabled vsync when desktop compositing is enabled, as it leads
         // to frame jitter

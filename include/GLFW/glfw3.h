@@ -1691,6 +1691,12 @@ GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window
  *  This function is no longer called by @ref glfwSwapBuffers.  You need to call
  *  it or @ref glfwWaitEvents yourself.
  *
+ *  @remarks On some platforms, a window move, resize or menu operation will
+ *  cause event processing to block.  This is due to how event processing is
+ *  designed on those platforms.  You can use the
+ *  [window refresh callback](@ref GLFWwindowrefreshfun) to redraw the contents
+ *  of your window when necessary during the operation.
+ *
  *  @note This function may only be called from the main thread.
  *
  *  @note This function may not be called from a callback.
@@ -1717,6 +1723,12 @@ GLFWAPI void glfwPollEvents(void);
  *  callbacks.
  *
  *  This function is not required for joystick input to work.
+ *
+ *  @remarks On some platforms, a window move, resize or menu operation will
+ *  cause event processing to block.  This is due to how event processing is
+ *  designed on those platforms.  You can use the
+ *  [window refresh callback](@ref GLFWwindowrefreshfun) to redraw the contents
+ *  of your window when necessary during the operation.
  *
  *  @note This function may only be called from the main thread.
  *

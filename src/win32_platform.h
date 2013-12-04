@@ -164,6 +164,7 @@ typedef HRESULT (WINAPI * DWMISCOMPOSITIONENABLED_T)(BOOL*);
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWin32  win32
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 win32
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWin32 win32
+#define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorWin32  win32
 
 
 //========================================================================
@@ -248,6 +249,15 @@ typedef struct _GLFWmonitorWin32
     GLboolean           modeChanged;
 
 } _GLFWmonitorWin32;
+
+
+//------------------------------------------------------------------------
+// Platform-specific cursor structure
+//------------------------------------------------------------------------
+typedef struct _GLFWcursorWin32
+{
+    HCURSOR handle;
+} _GLFWcursorWin32;
 
 
 //========================================================================

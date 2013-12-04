@@ -100,7 +100,12 @@ static void restoreCursor(_GLFWwindow* window)
     if (GetCursorPos(&pos))
     {
         if (WindowFromPoint(pos) == window->win32.handle)
-            SetCursor(LoadCursorW(NULL, IDC_ARROW));
+        {
+            if (window->cursor)
+                SetCursor(window->cursor->win32.handle);
+            else
+                SetCursor(LoadCursorW(NULL, IDC_ARROW));
+        }
     }
 }
 
@@ -720,6 +725,11 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     SetCursor(NULL);
                     return TRUE;
                 }
+                else if (window->cursor)
+                {
+                    SetCursor(window->cursor->win32.handle);
+                    return TRUE;
+                }
             }
 
             break;
@@ -1210,6 +1220,89 @@ void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
         case GLFW_CURSOR_DISABLED:
             disableCursor(window);
             break;
+    }
+}
+
+int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int cx, int cy,
+                              int format, const void* data)
+{
+    HDC hdc;
+    HBITMAP hBitmap, hMonoBitmap;
+    BITMAPV5HEADER bi;
+    ICONINFO ii;
+    DWORD *buffer = 0;
+    BYTE *image = (BYTE*) data;
+    int i, size = width * height;
+
+    ZeroMemory(&bi, sizeof(BITMAPV5HEADER));
+
+    bi.bV5Size        = sizeof(BITMAPV5HEADER);
+    bi.bV5Width       = width;
+    bi.bV5Height      = -height;
+    bi.bV5Planes      = 1;
+    bi.bV5BitCount    = 32;
+    bi.bV5Compression = BI_BITFIELDS;
+    bi.bV5RedMask     = 0x00FF0000;
+    bi.bV5GreenMask   = 0x0000FF00;
+    bi.bV5BlueMask    = 0x000000FF;
+    bi.bV5AlphaMask   = 0xFF000000;
+
+    hdc = GetDC(NULL);
+
+    hBitmap = CreateDIBSection(hdc, (BITMAPINFO*) &bi, DIB_RGB_COLORS, (void**) &buffer,
+                               NULL, (DWORD) 0);
+
+    ReleaseDC(NULL, hdc);
+
+    if (hBitmap == NULL)
+        return GL_FALSE;
+
+    hMonoBitmap = CreateBitmap(width, height, 1, 1, NULL);
+
+    if (hMonoBitmap == NULL)
+    {
+        DeleteObject(hBitmap);
+        return GL_FALSE;
+    }
+
+    for (i = 0; i < size; i++, buffer++, image += 4)
+        *buffer = (image[3] << 24) | (image[0] << 16) | (image[1] << 8) | image[2];
+
+    ii.fIcon = FALSE;
+    ii.xHotspot = cx;
+    ii.yHotspot = cy;
+    ii.hbmMask = hMonoBitmap;
+    ii.hbmColor = hBitmap;
+
+    cursor->win32.handle = (HCURSOR) CreateIconIndirect(&ii);
+
+    DeleteObject(hBitmap);
+    DeleteObject(hMonoBitmap);
+
+    if (cursor->win32.handle == NULL)
+        return GL_FALSE;
+
+    return GL_TRUE;
+}
+
+void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
+{
+    DestroyIcon((HICON) cursor->win32.handle);
+}
+
+void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
+{
+    // It should be guaranteed that the cursor is not being used by this window if
+    // the following condition is not met. That way it should be safe to destroy the
+    // cursor after calling glfwSetCursor(window, NULL) on all windows using the cursor.
+
+    if (window->cursorMode == GLFW_CURSOR_NORMAL && _glfw.focusedWindow == window &&
+        window->win32.cursorInside)
+    {
+        if (cursor)
+            SetCursor(cursor->win32.handle);
+        else
+            SetCursor(LoadCursor(NULL, IDC_ARROW));
     }
 }
 

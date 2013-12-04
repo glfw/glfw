@@ -394,7 +394,14 @@ static void disableCursor(_GLFWwindow* window)
 static void restoreCursor(_GLFWwindow* window)
 {
     XUngrabPointer(_glfw.x11.display, CurrentTime);
-    XUndefineCursor(_glfw.x11.display, window->x11.handle);
+
+    if (window->cursor)
+    {
+        XDefineCursor(_glfw.x11.display, window->x11.handle,
+                      window->cursor->x11.handle);
+    }
+    else
+        XUndefineCursor(_glfw.x11.display, window->x11.handle);
 }
 
 // Enter fullscreen mode
@@ -1346,6 +1353,55 @@ void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
         case GLFW_CURSOR_DISABLED:
             disableCursor(window);
             break;
+    }
+}
+
+int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int cx, int cy,
+                              int format, const void* data)
+{
+    XcursorImage* cursorImage;
+    XcursorPixel* buffer;
+    unsigned char* image = (unsigned char*) data;
+    int i, size = width * height;
+
+    cursorImage = XcursorImageCreate(width, height);
+
+    if (cursorImage == NULL)
+        return GL_FALSE;
+
+    cursorImage->xhot = cx;
+    cursorImage->yhot = cy;
+
+    buffer = cursorImage->pixels;
+
+    for (i = 0; i < size; i++, buffer++, image += 4)
+        *buffer = (image[3] << 24) | (image[0] << 16) | (image[1] << 8) | image[2];
+
+    cursor->x11.handle = XcursorImageLoadCursor(_glfw.x11.display, cursorImage);
+
+    XcursorImageDestroy(cursorImage);
+
+    if (cursor->x11.handle == None)
+        return GL_FALSE;
+
+    return GL_TRUE;
+}
+
+void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
+{
+    XFreeCursor(_glfw.x11.display, cursor->x11.handle);
+}
+
+void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
+{
+    if (window->cursorMode == GLFW_CURSOR_NORMAL)
+    {
+        if (cursor)
+            XDefineCursor(_glfw.x11.display, window->x11.handle, cursor->x11.handle);
+        else
+            XUndefineCursor(_glfw.x11.display, window->x11.handle);
+
+        XFlush(_glfw.x11.display);
     }
 }
 

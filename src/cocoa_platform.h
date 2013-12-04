@@ -51,6 +51,7 @@ typedef void* id;
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  ns
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS ns
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorNS ns
+#define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorNS  ns
 
 
 //========================================================================
@@ -67,6 +68,7 @@ typedef struct _GLFWwindowNS
     id	            delegate;
     id              view;
     unsigned int    modifierFlags;
+    int             cursorInside;
 } _GLFWwindowNS;
 
 
@@ -121,6 +123,15 @@ typedef struct _GLFWmonitorNS
     id                  screen;
 
 } _GLFWmonitorNS;
+
+
+//------------------------------------------------------------------------
+// Platform-specific cursor structure
+//------------------------------------------------------------------------
+typedef struct _GLFWcursorNS
+{
+    id handle;
+} _GLFWcursorNS;
 
 
 //========================================================================

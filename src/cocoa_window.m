@@ -44,7 +44,12 @@ static void centerCursor(_GLFWwindow *window)
 static void setModeCursor(_GLFWwindow* window, int mode)
 {
     if (mode == GLFW_CURSOR_NORMAL)
-        [[NSCursor arrowCursor] set];
+    {
+        if (window->cursor)
+            [(NSCursor*) window->cursor->ns.handle set];
+        else
+            [[NSCursor arrowCursor] set];
+    }
     else
         [(NSCursor*) _glfw.ns.cursor set];
 }
@@ -553,11 +558,13 @@ static int translateKey(unsigned int key)
 
 - (void)mouseExited:(NSEvent *)event
 {
+    window->ns.cursorInside = GL_FALSE;
     _glfwInputCursorEnter(window, GL_FALSE);
 }
 
 - (void)mouseEntered:(NSEvent *)event
 {
+    window->ns.cursorInside = GL_TRUE;
     _glfwInputCursorEnter(window, GL_TRUE);
 }
 
@@ -1113,6 +1120,61 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
     }
     else
         CGAssociateMouseAndMouseCursorPosition(true);
+}
+
+int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int cx, int cy,
+                              int format, const void* data)
+{
+    NSImage* image;
+    NSBitmapImageRep* rep;
+
+    rep = [[NSBitmapImageRep alloc]
+        initWithBitmapDataPlanes:NULL
+                      pixelsWide:width
+                      pixelsHigh:height
+                   bitsPerSample:8
+                 samplesPerPixel:4
+                        hasAlpha:YES
+                        isPlanar:NO
+                  colorSpaceName:NSCalibratedRGBColorSpace
+                    bitmapFormat:NSAlphaNonpremultipliedBitmapFormat
+                     bytesPerRow:width * 4
+                    bitsPerPixel:32];
+
+    if (rep == nil)
+        return GL_FALSE;
+
+    memcpy([rep bitmapData], data, 4 * width * height);
+
+    image = [[NSImage alloc] initWithSize:NSMakeSize(width, height)];
+    [image addRepresentation: rep];
+
+    cursor->ns.handle = [[NSCursor alloc] initWithImage:image
+                                                hotSpot:NSMakePoint(cx, cy)];
+
+    [image release];
+    [rep release];
+
+    if (cursor->ns.handle == nil)
+        return GL_FALSE;
+
+    return GL_TRUE;
+}
+
+void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
+{
+    [(NSCursor*) cursor->ns.handle release];
+}
+
+void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
+{
+    if (window->cursorMode == GLFW_CURSOR_NORMAL && window->ns.cursorInside)
+    {
+        if (cursor)
+            [(NSCursor*) cursor->ns.handle set];
+        else
+            [[NSCursor arrowCursor] set];
+    }
 }
 
 

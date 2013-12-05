@@ -47,6 +47,8 @@ guide in the GLFW documentation.
                    unfocused windows
  - [Win32] Bugfix: Cursor was not properly re-centered over odd-sized windows
  - [Win32] Bugfix: Negative window positions were reported incorrectly
+ - [Win32] Bugfix: The iconify callback was not triggered when switching away
+                   from a full screen window using Alt+Tab
  - [Cocoa] Added dependency on CoreVideo framework for refresh rate retrieval
  - [Cocoa] Enabled Lion full screen for resizable windowed mode windows
  - [Cocoa] Moved to Cocoa API for application transformation and activation

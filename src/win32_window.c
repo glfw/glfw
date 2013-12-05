@@ -442,6 +442,19 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             return 0;
         }
 
+        case WM_ACTIVATEAPP:
+        {
+            if (!wParam && IsIconic(hWnd))
+            {
+                // This is a workaround for full screen windows losing focus
+                // through Alt+Tab leading to windows being told they're
+                // unfocused and restored and then never told they're iconified
+                _glfwInputWindowIconify(window, GL_TRUE);
+            }
+
+            return 0;
+        }
+
         case WM_SHOWWINDOW:
         {
             _glfwInputWindowVisibility(window, wParam ? GL_TRUE : GL_FALSE);

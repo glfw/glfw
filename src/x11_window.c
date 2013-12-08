@@ -1119,6 +1119,9 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window)
     {
         // Override-redirect windows cannot be iconified or restored, as those
         // tasks are performed by the window manager
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "X11: Iconification of full screen windows requires "
+                        "a WM that supports EWMH");
         return;
     }
 
@@ -1131,6 +1134,9 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
     {
         // Override-redirect windows cannot be iconified or restored, as those
         // tasks are performed by the window manager
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "X11: Iconification of full screen windows requires "
+                        "a WM that supports EWMH");
         return;
     }
 

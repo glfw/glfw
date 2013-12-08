@@ -1178,10 +1178,8 @@ void _glfwPlatformWaitEvents(void)
 {
     if (!XPending(_glfw.x11.display))
     {
-        int fd;
         fd_set fds;
-
-        fd = ConnectionNumber(_glfw.x11.display);
+        const int fd = ConnectionNumber(_glfw.x11.display);
 
         FD_ZERO(&fds);
         FD_SET(fd, &fds);

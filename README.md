@@ -78,6 +78,8 @@ guide in the GLFW documentation.
  - [X11] Bugfix: Removed joystick axis value negation left over from GLFW 2
  - [X11] Bugfix: The position of hidden windows was ignored by Metacity
                  and Compiz
+ - [X11] Bugfix: The `pthread.h` header was not included by the GLX platform
+                 header.
 
 
 ## Contact

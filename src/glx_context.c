@@ -30,7 +30,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <pthread.h>
 
 
 // This is the only glXGetProcAddress variant not declared by glxext.h

@@ -126,6 +126,7 @@ skills.
  - Jonathan Dummer
  - Ralph Eastwood
  - Gerald Franz
+ - Michael Fogleman
  - GeO4d
  - Marcus Geelnard
  - Stefan Gustavson

@@ -125,8 +125,8 @@ skills.
  - Paul R. Deppe
  - Jonathan Dummer
  - Ralph Eastwood
- - Gerald Franz
  - Michael Fogleman
+ - Gerald Franz
  - GeO4d
  - Marcus Geelnard
  - Stefan Gustavson

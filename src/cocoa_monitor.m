@@ -36,6 +36,68 @@
 #include <CoreVideo/CVDisplayLink.h>
 
 
+// Returns the io_service_t corresponding to a CG display ID, or 0 on failure.
+// The io_service_t should be released with IOObjectRelease when not needed.
+//
+static io_service_t IOServicePortFromCGDisplayID(CGDirectDisplayID displayID)
+{
+    io_iterator_t iter;
+    io_service_t serv, servicePort = 0;
+    
+    CFMutableDictionaryRef matching = IOServiceMatching("IODisplayConnect");
+    
+    // releases matching for us
+    kern_return_t err = IOServiceGetMatchingServices(kIOMasterPortDefault,
+                             matching,
+                             &iter);
+    if (err)
+    {
+        return 0;
+    }
+    
+    while ((serv = IOIteratorNext(iter)) != 0)
+    {
+        CFDictionaryRef info;
+        CFIndex vendorID, productID;
+        CFNumberRef vendorIDRef, productIDRef;
+        Boolean success;
+        
+        info = IODisplayCreateInfoDictionary(serv,
+                             kIODisplayOnlyPreferredName);
+        
+        vendorIDRef = CFDictionaryGetValue(info,
+                           CFSTR(kDisplayVendorID));
+        productIDRef = CFDictionaryGetValue(info,
+                            CFSTR(kDisplayProductID));
+        
+        success = CFNumberGetValue(vendorIDRef, kCFNumberCFIndexType,
+                                   &vendorID);
+        success &= CFNumberGetValue(productIDRef, kCFNumberCFIndexType,
+                                    &productID);
+
+        if (!success)
+        {
+            CFRelease(info);
+            continue;
+        }
+        
+        if (CGDisplayVendorNumber(displayID) != vendorID ||
+            CGDisplayModelNumber(displayID) != productID)
+        {
+            CFRelease(info);
+            continue;
+        }
+        
+        // we're a match
+        servicePort = serv;
+        CFRelease(info);
+        break;
+    }
+    
+    IOObjectRelease(iter);
+    return servicePort;
+}
+
 // Get the name of the specified display
 //
 static const char* getDisplayName(CGDirectDisplayID displayID)
@@ -44,29 +106,38 @@ static const char* getDisplayName(CGDirectDisplayID displayID)
     CFDictionaryRef info, names;
     CFStringRef value;
     CFIndex size;
-
-    info = IODisplayCreateInfoDictionary(CGDisplayIOServicePort(displayID),
-                                         kIODisplayOnlyPreferredName);
-    names = CFDictionaryGetValue(info, CFSTR(kDisplayProductName));
-
-    if (!names || !CFDictionaryGetValueIfPresent(names, CFSTR("en_US"),
-                                                 (const void**) &value))
+    
+    io_service_t serv = IOServicePortFromCGDisplayID(displayID);
+    if (!serv)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to retrieve display name");
-
+        return strdup("Unknown");
+    }
+    
+    info = IODisplayCreateInfoDictionary(serv,
+                         kIODisplayOnlyPreferredName);
+    
+    IOObjectRelease(serv);
+    
+    names = CFDictionaryGetValue(info, CFSTR(kDisplayProductName));
+    
+    if (!names || !CFDictionaryGetValueIfPresent(names, CFSTR("en_US"),
+                             (const void**) &value))
+    {
+        
         CFRelease(info);
         return strdup("Unknown");
     }
-
+    
     size = CFStringGetMaximumSizeForEncoding(CFStringGetLength(value),
-                                             kCFStringEncodingUTF8);
+                         kCFStringEncodingUTF8);
     name = calloc(size + 1, sizeof(char));
     CFStringGetCString(value, name, size, kCFStringEncodingUTF8);
-
+    
     CFRelease(info);
-
+    
     return name;
 }
+
 
 // Check whether the display mode should be included in enumeration
 //

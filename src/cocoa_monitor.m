@@ -123,7 +123,7 @@ static const char* getDisplayName(CGDirectDisplayID displayID)
     if (!names || !CFDictionaryGetValueIfPresent(names, CFSTR("en_US"),
                              (const void**) &value))
     {
-        
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to retrieve display name");
         CFRelease(info);
         return strdup("Unknown");
     }

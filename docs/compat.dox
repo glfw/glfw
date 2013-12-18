@@ -123,15 +123,15 @@ version 2.1.
 
 Because of this, on OS X 10.7 and later, the `GLFW_CONTEXT_VERSION_MAJOR` and
 `GLFW_CONTEXT_VERSION_MINOR` hints will cause @ref glfwCreateWindow to fail if
-given version 3.0 or 3.1, the `GLFW_OPENGL_FORWARD_COMPAT` is required for
-creating contexts for OpenGL 3.2 and later, the `GLFW_OPENGL_DEBUG_CONTEXT` hint
-is ignored and setting the `GLFW_OPENGL_PROFILE` hint to anything except
-`GLFW_OPENGL_CORE_PROFILE` will cause @ref glfwCreateWindow to fail.
+given version 3.0 or 3.1, the `GLFW_OPENGL_FORWARD_COMPAT` hint must be set to
+non-zero and the `GLFW_OPENGL_PROFILE` hint must be set to
+`GLFW_OPENGL_CORE_PROFILE` when creating OpenGL 3.2 and later contexts and the
+`GLFW_OPENGL_DEBUG_CONTEXT` hint is ignored.
 
 Also, on Mac OS X 10.6 and below, the `GLFW_CONTEXT_VERSION_MAJOR` and
-`GLFW_CONTEXT_VERSION_MINOR` hints will fail if given a version above 2.1, the
-`GLFW_OPENGL_DEBUG_CONTEXT` hint will have no effect, and setting the
-`GLFW_OPENGL_PROFILE` or `GLFW_OPENGL_FORWARD_COMPAT` hints to a non-zero value
-will cause @ref glfwCreateWindow to fail.
+`GLFW_CONTEXT_VERSION_MINOR` hints will fail if given a version above 2.1,
+setting the `GLFW_OPENGL_PROFILE` or `GLFW_OPENGL_FORWARD_COMPAT` hints to
+a non-default value will cause @ref glfwCreateWindow to fail and the
+`GLFW_OPENGL_DEBUG_CONTEXT` hint is ignored.
 
 */

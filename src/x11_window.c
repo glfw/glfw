@@ -749,7 +749,7 @@ static void processEvent(XEvent *event)
 
                 // Xdnd: reply with an XDND status message
                 XEvent reply;
-                memset(&reply, sizeof(reply), 0);
+                memset(&reply, 0, sizeof(reply));
 
                 reply.type = ClientMessage;
                 reply.xclient.window = event->xclient.data.l[0];
@@ -812,7 +812,8 @@ static void processEvent(XEvent *event)
                 }
 
                 XEvent reply;
-                memset(&reply, sizeof(reply), 0);
+                memset(&reply, 0, sizeof(reply));
+
                 reply.type = ClientMessage;
                 reply.xclient.window = _glfw.x11.xdnd.sourceWindow;
                 reply.xclient.message_type = _glfw.x11.XdndFinished;

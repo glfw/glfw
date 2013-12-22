@@ -121,20 +121,21 @@ typedef struct _GLFWlibraryX11
 
 	// Atoms for Xdnd
     Atom			XdndAware;
-	Atom 			XdndEnter;
-	Atom 			XdndPosition;
-	Atom 			XdndStatus;
-	Atom 			XdndActionCopy;
-	Atom 			XdndDrop;
-	Atom 			XdndLeave;
-	Atom 			XdndFinished;
-	Atom 			XdndSelection;
-	struct{
-		Window 			sourceWindow;
-		char*			string;
-		char*			type1;
-		char*			type2;
-		char*			type3;
+	Atom			XdndEnter;
+	Atom			XdndPosition;
+	Atom			XdndStatus;
+	Atom			XdndActionCopy;
+	Atom			XdndDrop;
+	Atom			XdndLeave;
+	Atom			XdndFinished;
+	Atom			XdndSelection;
+
+	struct {
+		Window      sourceWindow;
+		char*		string;
+		char*		type1;
+		char*		type2;
+		char*		type3;
 	} xdnd;
 
     // Selection atoms

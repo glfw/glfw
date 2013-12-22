@@ -98,7 +98,7 @@ static GLboolean initLibraries(void)
         _glfw.win32.dwmapi.DwmIsCompositionEnabled = (DWMISCOMPOSITIONENABLED_T)
             GetProcAddress(_glfw.win32.dwmapi.instance, "DwmIsCompositionEnabled");
     }
-	
+
     return GL_TRUE;
 }
 
@@ -214,8 +214,8 @@ int _glfwPlatformInit(void)
 
     if (!_glfwInitContextAPI())
         return GL_FALSE;
-	
-	_glfw.win32.dropString = (char*)malloc(1000);
+
+    _glfw.win32.dropString = malloc(1000);
 	_glfw.win32.dropStringSize = 1000;
 
     _glfwInitTimer();

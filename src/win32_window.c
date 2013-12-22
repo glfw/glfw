@@ -749,38 +749,43 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             // TODO: Restore vsync if compositing was disabled
             break;
         }
+
         case WM_DROPFILES:
         {
-			TCHAR szName[MAX_PATH];
-			HDROP hDrop = (HDROP)wParam;
-			POINT pt;
-			int numFiles = DragQueryFile(hDrop, 0xFFFFFFFF, szName, MAX_PATH);
-			int currentSize = 1;
-			int i;
-			char* utf8str;
-			DragQueryPoint(hDrop, &pt);
+            WCHAR szName[MAX_PATH];
+            HDROP hDrop = (HDROP) wParam;
+            POINT pt;
+            const int numFiles = DragQueryFile(hDrop, 0xffffffff, szName, MAX_PATH);
+            int i, currentSize = 1;
+            char* utf8str;
 
-			// Move the mouse to the position of the drop
-			_glfwInputCursorMotion(window,pt.x,pt.y);
-			
-			memset(_glfw.win32.dropString, 0, _glfw.win32.dropStringSize);
-			for(i = 0; i < numFiles; i++)
-			{
-				DragQueryFile(hDrop, i, szName, MAX_PATH);
-				utf8str = _glfwCreateUTF8FromWideString((const wchar_t*)szName);
-				currentSize += strlen(utf8str);
-				if(_glfw.win32.dropStringSize < currentSize){
-					_glfw.win32.dropStringSize *= 2;
-					_glfw.win32.dropString = (char*)realloc(_glfw.win32.dropString,_glfw.win32.dropStringSize);
-				}
-				strcat(_glfw.win32.dropString, utf8str);
-				strcat(_glfw.win32.dropString, "\n");
-				free(utf8str);
-			}
-			
-			_glfwInputDrop(window,_glfw.win32.dropString);
-			DragFinish(hDrop);
-			break;
+            // Move the mouse to the position of the drop
+            DragQueryPoint(hDrop, &pt);
+            _glfwInputCursorMotion(window, pt.x, pt.y);
+
+            memset(_glfw.win32.dropString, 0, _glfw.win32.dropStringSize);
+
+            for (i = 0;  i < numFiles;  i++)
+            {
+                DragQueryFile(hDrop, i, szName, MAX_PATH);
+                utf8str = _glfwCreateUTF8FromWideString((const WCHAR*) szName);
+                currentSize += strlen(utf8str);
+
+                if (_glfw.win32.dropStringSize < currentSize)
+                {
+                    _glfw.win32.dropStringSize *= 2;
+                    _glfw.win32.dropString = realloc(_glfw.win32.dropString,
+                                                     _glfw.win32.dropStringSize);
+                }
+
+                strcat(_glfw.win32.dropString, utf8str);
+                strcat(_glfw.win32.dropString, "\n");
+                free(utf8str);
+            }
+
+            _glfwInputDrop(window,_glfw.win32.dropString);
+            DragFinish(hDrop);
+            break;
         }
     }
 
@@ -900,8 +905,8 @@ static int createWindow(_GLFWwindow* window,
                                           window); // Pass object to WM_CREATE
 
     free(wideTitle);
-	
-	DragAcceptFiles(window->win32.handle, TRUE);
+
+    DragAcceptFiles(window->win32.handle, TRUE);
 
     if (!window->win32.handle)
     {

@@ -445,13 +445,11 @@ static int translateKey(unsigned int key)
     {
         window = initWindow;
         trackingArea = nil;
-        
-        fileNamesForDrag = (char*)malloc(1024);
+
+        fileNamesForDrag = malloc(1024);
         fileNamesSize = 1024;
-        
+
         [self updateTrackingAreas];
-        
-        
         [self registerForDraggedTypes:[NSArray arrayWithObjects:
                                        NSFilenamesPboardType, nil]];
     }
@@ -667,69 +665,75 @@ static int translateKey(unsigned int key)
         _glfwInputScroll(window, deltaX, deltaY);
 }
 
-
-// arturoc: this makes the cursor dissapear when the window is
-// resized or received a drag operation
-/*- (void)resetCursorRects
+- (void)resetCursorRects
 {
+    // This makes the cursor dissapear when the window is
+    // resized or received a drag operation
     [self discardCursorRects];
     [self addCursorRect:[self bounds] cursor:_glfw.ns.cursor];
-}*/
+}
 
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
 {
-    if ((NSDragOperationGeneric & [sender draggingSourceOperationMask]) 
-		== NSDragOperationGeneric) {
-        
-		[self setNeedsDisplay:YES];
-        
+    if ((NSDragOperationGeneric & [sender draggingSourceOperationMask])
+        == NSDragOperationGeneric)
+    {
+        [self setNeedsDisplay:YES];
         return NSDragOperationGeneric;
-		
     }
-    
-	return NSDragOperationNone;	
+
+    return NSDragOperationNone;
 }
 
-- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender {
+- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
+{
     [self setNeedsDisplay:YES];
     return YES;
 }
 
-- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
-	NSPasteboard *zPasteboard = [sender draggingPasteboard];
-	NSArray *files = [zPasteboard propertyListForType:NSFilenamesPboardType];
-	
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
+{
+    NSPasteboard* pasteboard = [sender draggingPasteboard];
+    NSArray* files = [pasteboard propertyListForType:NSFilenamesPboardType];
+
     // set the first char to 0 so strcat
     // starts to add from the beginning
-	fileNamesForDrag[0] = 0;
+    fileNamesForDrag[0] = 0;
 
-	int dragX = [sender draggingLocation].x;
-	int dragY = [sender draggingLocation].y;
-	
-	int dragSize = 1;
-	if ([files count]) {
-		NSEnumerator *filenameEnum = [files objectEnumerator]; 
-        NSString *name;
-		while (name = [filenameEnum nextObject]) {
-            dragSize += [name length]+1;
-			if (dragSize > fileNamesSize){
+    const int dragX = [sender draggingLocation].x;
+    const int dragY = [sender draggingLocation].y;
+    int dragSize = 1;
+
+    if ([files count])
+    {
+        NSEnumerator* filenameEnum = [files objectEnumerator];
+        NSString* name;
+
+        while (name = [filenameEnum nextObject])
+        {
+            dragSize += [name length] + 1;
+
+            if (dragSize > fileNamesSize)
+            {
                 fileNamesSize *= 2;
                 fileNamesForDrag = realloc(fileNamesForDrag, fileNamesSize);
             }
+
             strcat(fileNamesForDrag, [name UTF8String]);
             strcat(fileNamesForDrag, "\n");
-		}
-	}
-	
+        }
+    }
+
     int height;
-	_glfwPlatformGetWindowSize(window, NULL, &height);
-    _glfwInputCursorMotion(window, dragX,  height-dragY);
+    _glfwPlatformGetWindowSize(window, NULL, &height);
+    _glfwInputCursorMotion(window, dragX, height - dragY);
     _glfwInputDrop(window, fileNamesForDrag);
-    
-	return YES;
+
+    return YES;
 }
 
-- (void)concludeDragOperation:(id <NSDraggingInfo>)sender {
+- (void)concludeDragOperation:(id <NSDraggingInfo>)sender
+{
     [self setNeedsDisplay:YES];
 }
 

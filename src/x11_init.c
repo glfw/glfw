@@ -540,8 +540,6 @@ static GLboolean initExtensions(void)
         XInternAtom(_glfw.x11.display, "SAVE_TARGETS", False);
 
     // Find or create drag and drop atoms
-
-	//Atoms for Xdnd
     _glfw.x11.XdndAware = XInternAtom(_glfw.x11.display, "XdndAware", True);
     _glfw.x11.XdndEnter = XInternAtom(_glfw.x11.display, "XdndEnter", True);
     _glfw.x11.XdndPosition = XInternAtom(_glfw.x11.display, "XdndPosition", True);
@@ -551,8 +549,6 @@ static GLboolean initExtensions(void)
     _glfw.x11.XdndLeave = XInternAtom(_glfw.x11.display, "XdndLeave", True);
     _glfw.x11.XdndFinished = XInternAtom(_glfw.x11.display, "XdndFinished", True);
     _glfw.x11.XdndSelection = XInternAtom(_glfw.x11.display, "XdndSelection", True);
-
-
 
     return GL_TRUE;
 }

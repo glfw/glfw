@@ -789,7 +789,7 @@ static void processEvent(XEvent *event)
                 {
                     // Nautilus seems to add a \r at the end of the paths
                     // remove it so paths can be directly used
-                    _glfw.x11.xdnd.string = malloc(strlen(data));
+                    _glfw.x11.xdnd.string = malloc(strlen(data) + 1);
                     char *to = _glfw.x11.xdnd.string;
                     const char *from = data;
                     const char *current = strchr(from, '\r');

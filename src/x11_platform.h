@@ -132,10 +132,6 @@ typedef struct _GLFWlibraryX11
 
 	struct {
 		Window      sourceWindow;
-		char*		string;
-		char*		type1;
-		char*		type2;
-		char*		type3;
 	} xdnd;
 
     // Selection atoms

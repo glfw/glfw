@@ -779,13 +779,14 @@ typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
  *  This is the function signature for drop callbacks.
  *
  *  @param[in] window The window that received the event.
- *  @param[in] string The string descriptor for the dropped object.
+ *  @param[in] count The number of dropped objects.
+ *  @param[in] names The names of the dropped object.
  *
  *  @sa glfwSetDropCallback
  *
  *  @ingroup input
  */
-typedef void (* GLFWdropfun)(GLFWwindow*,const char*);
+typedef void (* GLFWdropfun)(GLFWwindow*,int,const char**);
 
 /*! @brief The function signature for monitor configuration callbacks.
  *

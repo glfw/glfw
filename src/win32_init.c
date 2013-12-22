@@ -215,9 +215,6 @@ int _glfwPlatformInit(void)
     if (!_glfwInitContextAPI())
         return GL_FALSE;
 
-    _glfw.win32.dropString = malloc(1000);
-	_glfw.win32.dropStringSize = 1000;
-
     _glfwInitTimer();
     _glfwInitJoysticks();
 

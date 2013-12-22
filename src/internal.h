@@ -681,11 +681,11 @@ void _glfwInputError(int error, const char* format, ...);
 
 /*! @brief Notifies dropped object over window.
  *  @param[in] window The window that received the event.
- *  @param[in] dropString The string descriptor of the dropped object
- *  description.
+ *  @param[in] count The number of dropped objects.
+ *  @param[in] names The names of the dropped objects.
  *  @ingroup event
  */
-void _glfwInputDrop(_GLFWwindow* window, const char* dropString);
+void _glfwInputDrop(_GLFWwindow* window, int count, const char** names);
 
 
 //========================================================================

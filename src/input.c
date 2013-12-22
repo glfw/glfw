@@ -211,10 +211,10 @@ void _glfwInputCursorEnter(_GLFWwindow* window, int entered)
         window->callbacks.cursorEnter((GLFWwindow*) window, entered);
 }
 
-void _glfwInputDrop(_GLFWwindow* window, const char* dropString)
+void _glfwInputDrop(_GLFWwindow* window, int count, const char** names)
 {
     if (window->callbacks.drop)
-        window->callbacks.drop((GLFWwindow*) window, dropString);
+        window->callbacks.drop((GLFWwindow*) window, count, names);
 }
 
 

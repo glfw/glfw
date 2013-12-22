@@ -413,8 +413,6 @@ static int translateKey(unsigned int key)
 @interface GLFWContentView : NSView
 {
     _GLFWwindow* window;
-    char * fileNamesForDrag;
-    int fileNamesSize;
     NSTrackingArea* trackingArea;
 }
 
@@ -446,9 +444,6 @@ static int translateKey(unsigned int key)
         window = initWindow;
         trackingArea = nil;
 
-        fileNamesForDrag = malloc(1024);
-        fileNamesSize = 1024;
-
         [self updateTrackingAreas];
         [self registerForDraggedTypes:[NSArray arrayWithObjects:
                                        NSFilenamesPboardType, nil]];
@@ -460,7 +455,6 @@ static int translateKey(unsigned int key)
 -(void)dealloc
 {
     [trackingArea release];
-    free(fileNamesForDrag);
     [super dealloc];
 }
 
@@ -696,38 +690,27 @@ static int translateKey(unsigned int key)
     NSPasteboard* pasteboard = [sender draggingPasteboard];
     NSArray* files = [pasteboard propertyListForType:NSFilenamesPboardType];
 
-    // set the first char to 0 so strcat
-    // starts to add from the beginning
-    fileNamesForDrag[0] = 0;
-
-    const int dragX = [sender draggingLocation].x;
-    const int dragY = [sender draggingLocation].y;
-    int dragSize = 1;
-
-    if ([files count])
-    {
-        NSEnumerator* filenameEnum = [files objectEnumerator];
-        NSString* name;
-
-        while (name = [filenameEnum nextObject])
-        {
-            dragSize += [name length] + 1;
-
-            if (dragSize > fileNamesSize)
-            {
-                fileNamesSize *= 2;
-                fileNamesForDrag = realloc(fileNamesForDrag, fileNamesSize);
-            }
-
-            strcat(fileNamesForDrag, [name UTF8String]);
-            strcat(fileNamesForDrag, "\n");
-        }
-    }
-
     int height;
     _glfwPlatformGetWindowSize(window, NULL, &height);
-    _glfwInputCursorMotion(window, dragX, height - dragY);
-    _glfwInputDrop(window, fileNamesForDrag);
+    _glfwInputCursorMotion(window,
+                           [sender draggingLocation].x,
+                           height - [sender draggingLocation].y);
+
+    const int count = [files count];
+    if (count)
+    {
+        NSEnumerator* e = [files objectEnumerator];
+        char** names = calloc(count, sizeof(char*));
+
+        for (int i = 0;  i < count;  i++)
+            names[i] = strdup([[e nextObject] UTF8String]);
+
+        _glfwInputDrop(window, count, (const char**) names);
+
+        for (int i = 0;  i < count;  i++)
+            free(names[i]);
+        free(names);
+    }
 
     return YES;
 }

@@ -751,38 +751,34 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_DROPFILES:
         {
-            WCHAR szName[MAX_PATH];
             HDROP hDrop = (HDROP) wParam;
             POINT pt;
-            const int numFiles = DragQueryFile(hDrop, 0xffffffff, szName, MAX_PATH);
-            int i, currentSize = 1;
-            char* utf8str;
+            int i;
+
+            const int count = DragQueryFile(hDrop, 0xffffffff, NULL, 0);
+            char** names = calloc(count, sizeof(char*));
 
             // Move the mouse to the position of the drop
             DragQueryPoint(hDrop, &pt);
             _glfwInputCursorMotion(window, pt.x, pt.y);
 
-            memset(_glfw.win32.dropString, 0, _glfw.win32.dropStringSize);
-
-            for (i = 0;  i < numFiles;  i++)
+            for (i = 0;  i < count;  i++)
             {
-                DragQueryFile(hDrop, i, szName, MAX_PATH);
-                utf8str = _glfwCreateUTF8FromWideString((const WCHAR*) szName);
-                currentSize += strlen(utf8str);
+                const UINT length = DragQueryFile(hDrop, i, NULL, 0);
+                WCHAR* buffer = calloc(length + 1, sizeof(WCHAR));
 
-                if (_glfw.win32.dropStringSize < currentSize)
-                {
-                    _glfw.win32.dropStringSize *= 2;
-                    _glfw.win32.dropString = realloc(_glfw.win32.dropString,
-                                                     _glfw.win32.dropStringSize);
-                }
+                DragQueryFile(hDrop, i, buffer, length + 1);
+                names[i] = _glfwCreateUTF8FromWideString(buffer);
 
-                strcat(_glfw.win32.dropString, utf8str);
-                strcat(_glfw.win32.dropString, "\n");
-                free(utf8str);
+                free(buffer);
             }
 
-            _glfwInputDrop(window,_glfw.win32.dropString);
+            _glfwInputDrop(window, count, (const char**) names);
+
+            for (i = 0;  i < count;  i++)
+                free(names[i]);
+            free(names);
+
             DragFinish(hDrop);
             break;
         }

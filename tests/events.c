@@ -381,12 +381,14 @@ static void char_callback(GLFWwindow* window, unsigned int codepoint)
            get_character_string(codepoint));
 }
 
-static void drop_callback(GLFWwindow* window, const char* descriptor)
+static void drop_callback(GLFWwindow* window, int count, const char** names)
 {
-    printf("%08x at %0.3f: Drop of \"%s\" input\n",
-           counter++,
-           glfwGetTime(),
-           descriptor);
+    int i;
+
+    printf("%08x at %0.3f: Drop input\n", counter++, glfwGetTime());
+
+    for (i = 0;  i < count;  i++)
+        printf("  %i: \"%s\"\n", i, names[i]);
 }
 
 void monitor_callback(GLFWmonitor* monitor, int event)

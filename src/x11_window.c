@@ -97,6 +97,51 @@ static int translateChar(XKeyEvent* event)
     return (int) _glfwKeySym2Unicode(keysym);
 }
 
+// Splits a text/uri-list into separate file paths
+//
+static char** splitUriList(char* text, int* count)
+{
+    const char* prefix = "file://";
+    char** names = NULL;
+    char* line;
+
+    *count = 0;
+
+    while ((line = strtok(text, "\r\n")))
+    {
+        text = NULL;
+
+        if (*line == '#')
+            continue;
+
+        if (strncmp(line, prefix, strlen(prefix)) == 0)
+            line += strlen(prefix);
+
+        (*count)++;
+
+        char* name = calloc(strlen(line) + 1, 1);
+        names = realloc(names, *count * sizeof(char*));
+        names[*count - 1] = name;
+
+        while (*line)
+        {
+            if (line[0] == '%' && line[1] && line[2])
+            {
+                const char digits[3] = { line[1], line[2], '\0' };
+                *name = strtol(digits, NULL, 16);
+                line += 2;
+            }
+            else
+                *name = *line;
+
+            name++;
+            line++;
+        }
+    }
+
+    return names;
+}
+
 // Create the X11 window (and its colormap)
 //
 static GLboolean createWindow(_GLFWwindow* window,
@@ -714,7 +759,6 @@ static void processEvent(XEvent *event)
                            False,
                            SubstructureNotifyMask | SubstructureRedirectMask,
                            event);
-
             }
             else if (event->xclient.message_type == _glfw.x11.XdndEnter)
             {
@@ -732,9 +776,6 @@ static void processEvent(XEvent *event)
                                   _glfw.x11.UTF8_STRING,
                                   _glfw.x11.XdndSelection,
                                   window->x11.handle, CurrentTime);
-            }
-            else if (event->xclient.message_type == _glfw.x11.XdndLeave)
-            {
             }
             else if (event->xclient.message_type == _glfw.x11.XdndPosition)
             {
@@ -771,14 +812,11 @@ static void processEvent(XEvent *event)
 
         case SelectionNotify:
         {
-            if (event->xselection.property != None)
+            if (event->xselection.property)
             {
                 // Xdnd: got a selection notification from the conversion
                 // we asked for, get the data and finish the d&d event
                 char* data;
-
-                free(_glfw.x11.xdnd.string);
-                _glfw.x11.xdnd.string = NULL;
 
                 const int result = _glfwGetWindowProperty(event->xselection.requestor,
                                                           event->xselection.property,
@@ -787,29 +825,17 @@ static void processEvent(XEvent *event)
 
                 if (result)
                 {
-                    // Nautilus seems to add a \r at the end of the paths
-                    // remove it so paths can be directly used
-                    _glfw.x11.xdnd.string = malloc(strlen(data) + 1);
-                    char *to = _glfw.x11.xdnd.string;
-                    const char *from = data;
-                    const char *current = strchr(from, '\r');
+                    int i, count;
+                    char** names = splitUriList(data, &count);
 
-                    while (current)
-                    {
-                        const int charsToCopy = current - from;
-                        memcpy(to, from, (size_t) charsToCopy);
-                        to += charsToCopy;
+                    _glfwInputDrop(window, count, (const char**) names);
 
-                        from = current + 1;
-                        current = strchr(from, '\r');
-                    }
-
-                    const size_t remaining = strlen(from);
-
-                    memcpy(to, from, remaining);
-                    to += remaining;
-                    *to = 0;
+                    for (i = 0;  i < count;  i++)
+                        free(names[i]);
+                    free(names);
                 }
+
+                XFree(data);
 
                 XEvent reply;
                 memset(&reply, 0, sizeof(reply));
@@ -825,11 +851,7 @@ static void processEvent(XEvent *event)
                 // Reply that all is well
                 XSendEvent(_glfw.x11.display, _glfw.x11.xdnd.sourceWindow,
                            False, NoEventMask, &reply);
-                XSync(_glfw.x11.display, False);
-                XFree(data);
-
-                if (result)
-                    _glfwInputDrop(window, _glfw.x11.xdnd.string);
+                XFlush(_glfw.x11.display);
             }
 
             break;

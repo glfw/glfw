@@ -1034,7 +1034,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
         SetWindowPos(window->win32.handle, HWND_TOP,
                      0, 0, fullWidth, fullHeight,
-                     SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
+                     SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
     }
 }
 

@@ -49,6 +49,7 @@ guide in the GLFW documentation.
  - [Win32] Bugfix: Negative window positions were reported incorrectly
  - [Win32] Bugfix: The iconify callback was not triggered when switching away
                    from a full screen window using Alt+Tab
+ - [Win32] Bugfix: Resizing a window with `glfwSetWindowSize` gave it focus
  - [Cocoa] Added dependency on CoreVideo framework for refresh rate retrieval
  - [Cocoa] Enabled Lion full screen for resizable windowed mode windows
  - [Cocoa] Moved to Cocoa API for application transformation and activation

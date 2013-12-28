@@ -24,6 +24,15 @@ what kind of context is created.  See
 [context related hints](@ref window_hints_ctx) in the window handling guide.
 
 
+@section context_sharing Context object sharing
+
+When creating a window and context with @ref glfwCreateWindow, you can specify
+another window whose context the new one should share its objects with.  OpenGL
+object sharing is implemented by the operating system and graphics driver and is
+described in the OpenGL documentation.  On platforms where it is possible to
+choose which types of objects are shared, GLFW requests that all are shared.
+
+
 @section context_current Current context
 
 Before you can use the OpenGL or OpenGL ES APIs, you need to have a current

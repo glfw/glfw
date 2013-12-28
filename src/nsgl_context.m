@@ -178,7 +178,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     }
 
     // NOTE: All NSOpenGLPixelFormats on the relevant cards support sRGB
-    // frambuffer, so there's no need (and no way) to request it
+    //       frambuffer, so there's no need (and no way) to request it
 
     ADD_ATTR(0);
 

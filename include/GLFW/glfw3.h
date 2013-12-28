@@ -863,9 +863,6 @@ typedef struct GLFWgammaramp
  *
  *  @note This function may only be called from the main thread.
  *
- *  @note This function may take several seconds to complete on some systems,
- *  while on other systems it may take only a fraction of a second to complete.
- *
  *  @note **OS X:** This function will change the current directory of the
  *  application to the `Contents/Resources` subdirectory of the application's
  *  bundle, if present.
@@ -1694,6 +1691,12 @@ GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window
  *  This function is no longer called by @ref glfwSwapBuffers.  You need to call
  *  it or @ref glfwWaitEvents yourself.
  *
+ *  @remarks On some platforms, a window move, resize or menu operation will
+ *  cause event processing to block.  This is due to how event processing is
+ *  designed on those platforms.  You can use the
+ *  [window refresh callback](@ref GLFWwindowrefreshfun) to redraw the contents
+ *  of your window when necessary during the operation.
+ *
  *  @note This function may only be called from the main thread.
  *
  *  @note This function may not be called from a callback.
@@ -1720,6 +1723,12 @@ GLFWAPI void glfwPollEvents(void);
  *  callbacks.
  *
  *  This function is not required for joystick input to work.
+ *
+ *  @remarks On some platforms, a window move, resize or menu operation will
+ *  cause event processing to block.  This is due to how event processing is
+ *  designed on those platforms.  You can use the
+ *  [window refresh callback](@ref GLFWwindowrefreshfun) to redraw the contents
+ *  of your window when necessary during the operation.
  *
  *  @note This function may only be called from the main thread.
  *
@@ -1756,9 +1765,12 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  modes:
  *  - `GLFW_CURSOR_NORMAL` makes the cursor visible and behaving normally.
  *  - `GLFW_CURSOR_HIDDEN` makes the cursor invisible when it is over the client
- *    area of the window.
- *  - `GLFW_CURSOR_DISABLED` disables the cursor and removes any limitations on
- *    cursor movement.
+ *    area of the window but does not restrict the cursor from leaving.  This is
+ *    useful if you wish to render your own cursor or have no visible cursor at
+ *    all.
+ *  - `GLFW_CURSOR_DISABLED` hides and grabs the cursor, providing virtual
+ *    and unlimited cursor movement.  This is useful for implementing for
+ *    example 3D camera controls.
  *
  *  If `mode` is `GLFW_STICKY_KEYS`, the value must be either `GL_TRUE` to
  *  enable sticky keys, or `GL_FALSE` to disable it.  If sticky keys are

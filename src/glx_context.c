@@ -30,7 +30,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <pthread.h>
 
 
 // This is the only glXGetProcAddress variant not declared by glxext.h
@@ -75,7 +74,7 @@ static GLboolean chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* resul
     if (strcmp(vendor, "Chromium") == 0)
     {
         // HACK: This is a (hopefully temporary) workaround for Chromium
-        // (VirtualBox GL) not setting the window bit on any GLXFBConfigs
+        //       (VirtualBox GL) not setting the window bit on any GLXFBConfigs
         trustWindowBit = GL_FALSE;
     }
 
@@ -457,8 +456,8 @@ int _glfwCreateContext(_GLFWwindow* window,
         if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
         {
             // NOTE: Only request an explicitly versioned context when
-            // necessary, as explicitly requesting version 1.0 does not always
-            // return the highest available version
+            //       necessary, as explicitly requesting version 1.0 does not
+            //       always return the highest available version
 
             setGLXattrib(GLX_CONTEXT_MAJOR_VERSION_ARB, wndconfig->glMajor);
             setGLXattrib(GLX_CONTEXT_MINOR_VERSION_ARB, wndconfig->glMinor);
@@ -485,8 +484,9 @@ int _glfwCreateContext(_GLFWwindow* window,
         if (window->glx.context == NULL)
         {
             // HACK: This is a fallback for the broken Mesa implementation of
-            // GLX_ARB_create_context_profile, which fails default 1.0 context
-            // creation with a GLXBadProfileARB error in violation of the spec
+            //       GLX_ARB_create_context_profile, which fails default 1.0
+            //       context creation with a GLXBadProfileARB error in violation
+            //       of the extension spec
             if (_glfw.x11.errorCode == _glfw.glx.errorBase + GLXBadProfileARB &&
                 wndconfig->clientAPI == GLFW_OPENGL_API &&
                 wndconfig->glProfile == GLFW_OPENGL_ANY_PROFILE &&

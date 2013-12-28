@@ -272,9 +272,21 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
         usableCount++;
     }
 
+    if (!usableCount)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "WGL: The driver does not appear to support OpenGL");
+
+        free(usableConfigs);
+        return GL_FALSE;
+    }
+
     closest = _glfwChooseFBConfig(desired, usableConfigs, usableCount);
     if (!closest)
     {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "WGL: Failed to find a suitable pixel format");
+
         free(usableConfigs);
         return GL_FALSE;
     }
@@ -355,11 +367,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     }
 
     if (!choosePixelFormat(window, fbconfig, &pixelFormat))
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "WGL: Failed to find a suitable pixel format");
         return GL_FALSE;
-    }
 
     if (!DescribePixelFormat(window->wgl.dc, pixelFormat, sizeof(pfd), &pfd))
     {
@@ -598,7 +606,7 @@ void _glfwPlatformSwapInterval(int interval)
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
 #if !defined(_GLFW_USE_DWM_SWAP_INTERVAL)
-    if (_glfwIsCompositionEnabled())
+    if (_glfwIsCompositionEnabled() && interval)
     {
         // Don't enabled vsync when desktop compositing is enabled, as it leads
         // to frame jitter

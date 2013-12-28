@@ -251,9 +251,6 @@ static void pollJoystickEvents(void)
                 joystick->axes[i] = value;
             else
                 joystick->axes[i] = (2.f * (value - axis->minReport) / readScale) - 1.f;
-
-            if (i & 1)
-                joystick->axes[i] = -joystick->axes[i];
         }
 
         for (i = 0;  i < CFArrayGetCount(joystick->hatElements);  i++)
@@ -319,8 +316,9 @@ void _glfwInitJoysticks(void)
 
     while ((ioHIDDeviceObject = IOIteratorNext(objectIterator)))
     {
+        CFMutableDictionaryRef propsRef = NULL;
+        CFTypeRef valueRef = NULL;
         kern_return_t result;
-        CFTypeRef valueRef = 0;
 
         IOCFPlugInInterface** ppPlugInInterface = NULL;
         HRESULT plugInResult = S_OK;
@@ -329,26 +327,29 @@ void _glfwInitJoysticks(void)
         long usagePage, usage;
 
         // Check device type
-        valueRef = IORegistryEntryCreateCFProperty(ioHIDDeviceObject,
-                                                   CFSTR(kIOHIDPrimaryUsagePageKey),
+        result = IORegistryEntryCreateCFProperties(ioHIDDeviceObject,
+                                                   &propsRef,
                                                    kCFAllocatorDefault,
                                                    kNilOptions);
+
+        if (result != kIOReturnSuccess)
+            continue;
+
+        valueRef = CFDictionaryGetValue(propsRef, CFSTR(kIOHIDPrimaryUsagePageKey));
         if (valueRef)
         {
             CFNumberGetValue(valueRef, kCFNumberLongType, &usagePage);
             if (usagePage != kHIDPage_GenericDesktop)
             {
                 // This device is not relevant to GLFW
+                CFRelease(valueRef);
                 continue;
             }
 
             CFRelease(valueRef);
         }
 
-        valueRef = IORegistryEntryCreateCFProperty(ioHIDDeviceObject,
-                                                   CFSTR(kIOHIDPrimaryUsageKey),
-                                                   kCFAllocatorDefault,
-                                                   kNilOptions);
+        valueRef = CFDictionaryGetValue(propsRef, CFSTR(kIOHIDPrimaryUsageKey));
         if (valueRef)
         {
             CFNumberGetValue(valueRef, kCFNumberLongType, &usage);
@@ -358,6 +359,7 @@ void _glfwInitJoysticks(void)
                  usage != kHIDUsage_GD_MultiAxisController))
             {
                 // This device is not relevant to GLFW
+                CFRelease(valueRef);
                 continue;
             }
 
@@ -393,10 +395,7 @@ void _glfwInitJoysticks(void)
                                                      joystick);
 
         // Get product string
-        valueRef = IORegistryEntryCreateCFProperty(ioHIDDeviceObject,
-                                                   CFSTR(kIOHIDProductKey),
-                                                   kCFAllocatorDefault,
-                                                   kNilOptions);
+        valueRef = CFDictionaryGetValue(propsRef, CFSTR(kIOHIDProductKey));
         if (valueRef)
         {
             CFStringGetCString(valueRef,
@@ -410,10 +409,7 @@ void _glfwInitJoysticks(void)
         joystick->buttonElements = CFArrayCreateMutable(NULL, 0, NULL);
         joystick->hatElements = CFArrayCreateMutable(NULL, 0, NULL);
 
-        valueRef = IORegistryEntryCreateCFProperty(ioHIDDeviceObject,
-                                                   CFSTR(kIOHIDElementKey),
-                                                   kCFAllocatorDefault,
-                                                   kNilOptions);
+        valueRef = CFDictionaryGetValue(propsRef, CFSTR(kIOHIDElementKey));
         if (CFGetTypeID(valueRef) == CFArrayGetTypeID())
         {
             CFRange range = { 0, CFArrayGetCount(valueRef) };

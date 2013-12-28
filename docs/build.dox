@@ -50,7 +50,9 @@ header that the GLFW header includes and GLEW will work as expected.
 @subsection build_macros GLFW header option macros
 
 These macros may be defined before the inclusion of the GLFW header and affect
-how that header behaves.
+the behavior of the header.  Note that GLFW does not provide any of the OpenGL
+or OpenGL ES headers mentioned below.  These are provided by your development
+environment or your OpenGL or OpenGL ES SDK.
 
 `GLFW_INCLUDE_GLCOREARB` makes the header include the modern `GL/glcorearb.h`
 header (`OpenGL/gl3.h` on OS X) instead of the regular OpenGL header.
@@ -83,8 +85,10 @@ The static version of the GLFW library is named `glfw3`.  When using this
 version, it is also necessary to link with some libraries that GLFW uses.
 
 When linking a program under Windows that uses the static version of GLFW, you
-must link with `opengl32`.  If you are using GLU, you must also link with
-`glu32`.
+must link with `opengl32`.  On some versions of MinGW, you must also explicitly
+link with `gdi32`, while other versions of MinGW include it in the set of
+default libraries along with other dependencies like `user32` and `kernel32`.
+If you are using GLU, you must also link with `glu32`.
 
 The link library for the GLFW DLL is named `glfw3dll`.  When compiling a program
 that uses the DLL version of GLFW, you need to define the `GLFW_DLL` macro

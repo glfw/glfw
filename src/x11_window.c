@@ -129,12 +129,14 @@ static GLboolean createWindow(_GLFWwindow* window,
         if (wndconfig->monitor == NULL)
         {
             // HACK: This is a workaround for windows without a background pixel
-            // not getting any decorations on certain older versions of Compiz
-            // running on Intel hardware
+            //       not getting any decorations on certain older versions of
+            //       Compiz running on Intel hardware
             wa.background_pixel = BlackPixel(_glfw.x11.display,
                                              _glfw.x11.screen);
             wamask |= CWBackPixel;
         }
+
+        _glfwGrabXErrorHandler();
 
         window->x11.handle = XCreateWindow(_glfw.x11.display,
                                            _glfw.x11.root,
@@ -147,12 +149,12 @@ static GLboolean createWindow(_GLFWwindow* window,
                                            wamask,
                                            &wa);
 
+        _glfwReleaseXErrorHandler();
+
         if (!window->x11.handle)
         {
-            // TODO: Handle all the various error codes here and translate them
-            // to GLFW errors
-
-            _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Failed to create window");
+            _glfwInputXError(GLFW_PLATFORM_ERROR,
+                             "X11: Failed to create window");
             return GL_FALSE;
         }
 
@@ -203,13 +205,13 @@ static GLboolean createWindow(_GLFWwindow* window,
 
         // The WM_DELETE_WINDOW ICCCM protocol
         // Basic window close notification protocol
-        if (_glfw.x11.WM_DELETE_WINDOW != None)
+        if (_glfw.x11.WM_DELETE_WINDOW)
             protocols[count++] = _glfw.x11.WM_DELETE_WINDOW;
 
         // The _NET_WM_PING EWMH protocol
         // Tells the WM to ping the GLFW window and flag the application as
         // unresponsive if the WM doesn't get a reply within a few seconds
-        if (_glfw.x11.NET_WM_PING != None)
+        if (_glfw.x11.NET_WM_PING)
             protocols[count++] = _glfw.x11.NET_WM_PING;
 
         if (count > 0)
@@ -219,7 +221,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         }
     }
 
-    if (_glfw.x11.NET_WM_PID != None)
+    if (_glfw.x11.NET_WM_PID)
     {
         const pid_t pid = getpid();
 
@@ -258,6 +260,9 @@ static GLboolean createWindow(_GLFWwindow* window,
         }
         else
         {
+            // HACK: Explicitly setting PPosition to any value causes some WMs,
+            //       notably Compiz and Metacity, to honor the position of
+            //       unmapped windows set by XMoveWindow
             hints->flags |= PPosition;
             hints->x = hints->y = 0;
         }
@@ -275,7 +280,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 
     // Set ICCCM WM_CLASS property
     // HACK: Until a mechanism for specifying the application name is added, the
-    // initial window title is used as the window class name
+    //       initial window title is used as the window class name
     if (strlen(wndconfig->title))
     {
         XClassHint* hint = XAllocClassHint();
@@ -394,15 +399,22 @@ static void enterFullscreenMode(_GLFWwindow* window)
 
     _glfwSetVideoMode(window->monitor, &window->videoMode);
 
-    if (_glfw.x11.hasEWMH &&
-        _glfw.x11.NET_WM_STATE != None &&
-        _glfw.x11.NET_WM_STATE_FULLSCREEN != None)
+    if (_glfw.x11.NET_WM_BYPASS_COMPOSITOR)
+    {
+        const unsigned long value = 1;
+
+        XChangeProperty(_glfw.x11.display,  window->x11.handle,
+                        _glfw.x11.NET_WM_BYPASS_COMPOSITOR, XA_CARDINAL, 32,
+                        PropModeReplace, (unsigned char*) &value, 1);
+    }
+
+    if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_FULLSCREEN)
     {
         int x, y;
         _glfwPlatformGetMonitorPos(window->monitor, &x, &y);
         _glfwPlatformSetWindowPos(window, x, y);
 
-        if (_glfw.x11.NET_ACTIVE_WINDOW != None)
+        if (_glfw.x11.NET_ACTIVE_WINDOW)
         {
             // Ask the window manager to raise and focus the GLFW window
             // Only focused windows with the _NET_WM_STATE_FULLSCREEN state end
@@ -482,9 +494,16 @@ static void leaveFullscreenMode(_GLFWwindow* window)
                         _glfw.x11.saver.exposure);
     }
 
-    if (_glfw.x11.hasEWMH &&
-        _glfw.x11.NET_WM_STATE != None &&
-        _glfw.x11.NET_WM_STATE_FULLSCREEN != None)
+    if (_glfw.x11.NET_WM_BYPASS_COMPOSITOR)
+    {
+        const unsigned long value = 0;
+
+        XChangeProperty(_glfw.x11.display,  window->x11.handle,
+                        _glfw.x11.NET_WM_BYPASS_COMPOSITOR, XA_CARDINAL, 32,
+                        PropModeReplace, (unsigned char*) &value, 1);
+    }
+
+    if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_FULLSCREEN)
     {
         // Ask the window manager to make the GLFW window a normal window
         // Normal windows usually have frames and other decorations
@@ -712,7 +731,7 @@ static void processEvent(XEvent *event)
 
                 _glfwInputWindowCloseRequest(window);
             }
-            else if (_glfw.x11.NET_WM_PING != None &&
+            else if (_glfw.x11.NET_WM_PING &&
                      (Atom) event->xclient.data.l[0] == _glfw.x11.NET_WM_PING)
             {
                 // The window manager is pinging the application to ensure it's
@@ -994,7 +1013,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
                        NULL, NULL, NULL);
 #endif
 
-    if (_glfw.x11.NET_WM_NAME != None)
+    if (_glfw.x11.NET_WM_NAME)
     {
         XChangeProperty(_glfw.x11.display,  window->x11.handle,
                         _glfw.x11.NET_WM_NAME, _glfw.x11.UTF8_STRING, 8,
@@ -1002,7 +1021,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
                         (unsigned char*) title, strlen(title));
     }
 
-    if (_glfw.x11.NET_WM_ICON_NAME != None)
+    if (_glfw.x11.NET_WM_ICON_NAME)
     {
         XChangeProperty(_glfw.x11.display,  window->x11.handle,
                         _glfw.x11.NET_WM_ICON_NAME, _glfw.x11.UTF8_STRING, 8,
@@ -1019,7 +1038,7 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
     XTranslateCoordinates(_glfw.x11.display, window->x11.handle, _glfw.x11.root,
                           0, 0, &x, &y, &child);
 
-    if (child != None)
+    if (child)
     {
         int left, top;
 
@@ -1100,6 +1119,9 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window)
     {
         // Override-redirect windows cannot be iconified or restored, as those
         // tasks are performed by the window manager
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "X11: Iconification of full screen windows requires "
+                        "a WM that supports EWMH");
         return;
     }
 
@@ -1112,6 +1134,9 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
     {
         // Override-redirect windows cannot be iconified or restored, as those
         // tasks are performed by the window manager
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "X11: Iconification of full screen windows requires "
+                        "a WM that supports EWMH");
         return;
     }
 
@@ -1153,10 +1178,8 @@ void _glfwPlatformWaitEvents(void)
 {
     if (!XPending(_glfw.x11.display))
     {
-        int fd;
         fd_set fds;
-
-        fd = ConnectionNumber(_glfw.x11.display);
+        const int fd = ConnectionNumber(_glfw.x11.display);
 
         FD_ZERO(&fds);
         FD_SET(fd, &fds);

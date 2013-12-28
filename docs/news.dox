@@ -18,7 +18,7 @@ For more information on how to use CMake, see the
 [CMake manual](http://cmake.org/cmake/help/documentation.html).
 
 
-@subsection new_30_multiwnd Multi-window support
+@subsection news_30_multiwnd Multi-window support
 
 GLFW now supports the creation of multiple windows, each with their own OpenGL
 or OpenGL ES context, and all window functions now take a window handle.  Event
@@ -79,7 +79,7 @@ through CMake options.
 GLFW now supports high-DPI monitors on both Windows and OS X, giving windows full
 resolution framebuffers where other UI elements are scaled up.  To achieve this,
 @ref glfwGetFramebufferSize and @ref glfwSetFramebufferSizeCallback have been
-added.  These work with pixels, while the rest of the GLFW API work with screen
+added.  These work with pixels, while the rest of the GLFW API works with screen
 coordinates.
 
 

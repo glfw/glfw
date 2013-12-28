@@ -409,6 +409,8 @@ static void detectEWMH(void)
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_PING");
     _glfw.x11.NET_ACTIVE_WINDOW =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_ACTIVE_WINDOW");
+    _glfw.x11.NET_WM_BYPASS_COMPOSITOR =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_BYPASS_COMPOSITOR");
 
     XFree(supportedAtoms);
 
@@ -680,7 +682,7 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = _GLFW_VERSION_FULL " X11"
+    const char* version = _GLFW_VERSION_NUMBER " X11"
 #if defined(_GLFW_GLX)
         " GLX"
 #elif defined(_GLFW_EGL)

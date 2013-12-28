@@ -117,6 +117,7 @@ typedef struct _GLFWlibraryX11
     Atom            NET_WM_PING;
     Atom            NET_WM_STATE;
     Atom            NET_WM_STATE_FULLSCREEN;
+    Atom            NET_WM_BYPASS_COMPOSITOR;
     Atom            NET_ACTIVE_WINDOW;
     Atom            MOTIF_WM_HINTS;
 

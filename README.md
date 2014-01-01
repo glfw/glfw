@@ -6,9 +6,7 @@ GLFW is a free, Open Source, portable library for OpenGL and OpenGL ES
 application development.  It provides a simple, platform-independent API for
 creating windows and contexts, reading input, handling events, etc.
 
-Version 3.0.4 adds better support for custom build environments and fixes for
-a large number of bugs that together affect all supported platforms.  As this is
-a patch release, there are no API changes.
+Version 3.1 is *not yet described*.
 
 If you are new to GLFW, you may find the
 [introductory tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW
@@ -31,57 +29,6 @@ guide in the GLFW documentation.
 
 
 ## Changelog
-
- - Added the `GLFW_BUILD_DOCS` CMake option for controlling whether the
-   documentation is built
- - Added the `_GLFW_USE_CONFIG_H` configuration macro for controlling whether to
-   include the configuration header
- - Moved version number macro to `internal.h` for easier manual compilation
- - Renamed configuration header to `glfw_config.h` to avoid conflicts
- - Bugfix: The `glfw3.pc` file did not respect the `LIB_SUFFIX` CMake option
- - Bugfix: The `joysticks` test would segfault if a controller had no axes
- - [Win32] Allowed swap interval to be explicitly set to zero on DWM systems
- - [Win32] Bugfix: Removed joystick axis value negation left over from GLFW 2
- - [Win32] Bugfix: Restoring windows using the Win+D hot key did not trigger the
-                   focus callback
- - [Win32] Bugfix: The disabled cursor mode clip rectangle was updated for
-                   unfocused windows
- - [Win32] Bugfix: Cursor was not properly re-centered over odd-sized windows
- - [Win32] Bugfix: Negative window positions were reported incorrectly
- - [Win32] Bugfix: The iconify callback was not triggered when switching away
-                   from a full screen window using Alt+Tab
- - [Win32] Bugfix: Resizing a window with `glfwSetWindowSize` gave it focus
- - [Cocoa] Added dependency on CoreVideo framework for refresh rate retrieval
- - [Cocoa] Enabled Lion full screen for resizable windowed mode windows
- - [Cocoa] Moved to Cocoa API for application transformation and activation
- - [Cocoa] Bugfix: The `GLFW_KEY_GRAVE_ACCENT` key was reported as
-                   `GLFW_KEY_WORLD_1` and vice versa
- - [Cocoa] Bugfix: The `GLFW_KEY_F13` key was reported as
-                   `GLFW_KEY_PRINT_SCREEN`
- - [Cocoa] Bugfix: Implicit conversion from `NSUInteger` to int caused warnings
-                   with Xcode 5
- - [Cocoa] Bugfix: Use of undeclared selectors with `@selector` caused warnings
-                   with Xcode 5
- - [Cocoa] Bugfix: The cursor remained visible if moved onto client area after
-                   having been set to hidden outside it
- - [Cocoa] Bugfix: The refresh rate was zero for all modes of certain monitors
- - [Cocoa] Bugfix: The `install_name` field of the dynamic library was not set
- - [Cocoa] Bugfix: Full screen windows were never reported as having focus
- - [Cocoa] Bugfix: A superfluous I/O flag test prevented video modes from being
-                   listed for Thunderbolt monitor
- - [Cocoa] Bugfix: Retrieving the name of some external displays caused segfault
- - [Cocoa] Bugfix: The 10.9 SDK defines `GLintptrARB` and `GLsizeiptrARB`
-                   differently from the Khronos `glext.h`
- - [Cocoa] Bugfix: Creating hidden windows would steal application focus
- - [Cocoa] Bugfix: Controllers were reported as having zero buttons and axes
- - [Cocoa] Bugfix: Removed joystick axis value negation left over from GLFW 2
- - [X11] Added setting of the `WM_CLASS` property to the initial window title
- - [X11] Added support for `_NET_WM_BYPASS_COMPOSITOR`
- - [X11] Bugfix: Removed joystick axis value negation left over from GLFW 2
- - [X11] Bugfix: The position of hidden windows was ignored by Metacity
-                 and Compiz
- - [X11] Bugfix: The `pthread.h` header was not included by the GLX platform
-                 header.
 
 
 ## Contact

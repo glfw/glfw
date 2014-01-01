@@ -220,14 +220,14 @@ extern "C" {
  *  backward-compatible.
  *  @ingroup init
  */
-#define GLFW_VERSION_MINOR          0
+#define GLFW_VERSION_MINOR          1
 /*! @brief The revision number of the GLFW library.
  *
  *  This is incremented when a bug fix release is made that does not contain any
  *  API changes.
  *  @ingroup init
  */
-#define GLFW_VERSION_REVISION       4
+#define GLFW_VERSION_REVISION       0
 /*! @} */
 
 /*! @name Key and button actions

@@ -251,7 +251,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
         *count = found;
     }
-    else
+
+    if (monitors == NULL)
     {
         monitors = calloc(1, sizeof(_GLFWmonitor*));
         monitors[0] = _glfwCreateMonitor("Display",

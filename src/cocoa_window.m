@@ -427,7 +427,7 @@ static int translateKey(unsigned int key)
     {
         if (_glfw.ns.cursor == nil)
         {
-            NSImage* data = [[NSImage alloc] initWithSize:NSMakeSize(1, 1)];
+            NSImage* data = [[NSImage alloc] initWithSize:NSMakeSize(16, 16)];
             _glfw.ns.cursor = [[NSCursor alloc] initWithImage:data
                                                       hotSpot:NSZeroPoint];
             [data release];

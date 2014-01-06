@@ -30,6 +30,9 @@ guide in the GLFW documentation.
 
 ## Changelog
 
+- [Cocoa] Bugfix: Using a 1x1 cursor for hidden mode caused some screen
+                  recorders to fail
+
 
 ## Contact
 

@@ -41,7 +41,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <GL/glfw.h>
+
+#define GLFW_INCLUDE_GLU
+#include <GLFW/glfw3.h>
+
+#include <tinycthread.h>
 
 // Define tokens for GL_EXT_separate_specular_color if not already defined
 #ifndef GL_EXT_separate_specular_color
@@ -100,9 +104,9 @@ struct {
     float     dt;        // Time since last frame (s)
     int       p_frame;   // Particle physics frame number
     int       d_frame;   // Particle draw frame number
-    GLFWcond  p_done;    // Condition: particle physics done
-    GLFWcond  d_done;    // Condition: particle draw done
-    GLFWmutex particles_lock; // Particles data sharing mutex
+    cnd_t     p_done;    // Condition: particle physics done
+    cnd_t     d_done;    // Condition: particle draw done
+    mtx_t     particles_lock; // Particles data sharing mutex
 } thread_sync;
 
 
@@ -456,11 +460,12 @@ void DrawParticles( double t, float dt )
     if( multithreading )
     {
         // Wait for particle physics thread to be done
-        glfwLockMutex( thread_sync.particles_lock );
+        mtx_lock( &thread_sync.particles_lock );
         while( running && thread_sync.p_frame <= thread_sync.d_frame )
         {
-            glfwWaitCond( thread_sync.p_done, thread_sync.particles_lock,
-                          0.1 );
+            struct timespec ts = { 0, 100000000 };
+            cnd_timedwait( &thread_sync.p_done, &thread_sync.particles_lock,
+                           &ts );
         }
 
         // Store the frame time and delta time for the physics thread
@@ -563,8 +568,8 @@ void DrawParticles( double t, float dt )
     // thread
     if( multithreading )
     {
-        glfwUnlockMutex( thread_sync.particles_lock );
-        glfwSignalCond( thread_sync.d_done );
+        mtx_unlock( &thread_sync.particles_lock );
+        cnd_signal( &thread_sync.d_done );
     }
 
     // Draw final batch of particles (if any)
@@ -897,7 +902,7 @@ void Draw( double t )
 // Resize() - GLFW window resize callback function
 //========================================================================
 
-void GLFWCALL Resize( int x, int y )
+void Resize( GLFWwindow* window, int x, int y )
 {
     width = x;
     height = y > 0 ? y : 1;   // Prevent division by zero in aspect calc.
@@ -908,16 +913,16 @@ void GLFWCALL Resize( int x, int y )
 // Input callback functions
 //========================================================================
 
-void GLFWCALL KeyFun( int key, int action )
+void KeyFun( GLFWwindow* window, int key, int scancode, int action, int mods )
 {
     if( action == GLFW_PRESS )
     {
         switch( key )
         {
-        case GLFW_KEY_ESC:
+        case GLFW_KEY_ESCAPE:
             running = 0;
             break;
-        case 'W':
+        case GLFW_KEY_W:
             wireframe = !wireframe;
             glPolygonMode( GL_FRONT_AND_BACK,
                            wireframe ? GL_LINE : GL_FILL );
@@ -933,18 +938,19 @@ void GLFWCALL KeyFun( int key, int action )
 // PhysicsThreadFun() - Thread for updating particle physics
 //========================================================================
 
-void GLFWCALL PhysicsThreadFun( void *arg )
+int PhysicsThreadFun( void *arg )
 {
     while( running )
     {
         // Lock mutex
-        glfwLockMutex( thread_sync.particles_lock );
+        mtx_lock( &thread_sync.particles_lock );
 
         // Wait for particle drawing to be done
         while( running && thread_sync.p_frame > thread_sync.d_frame )
         {
-            glfwWaitCond( thread_sync.d_done, thread_sync.particles_lock,
-                          0.1 );
+            struct timespec ts = { 0, 100000000 };
+            cnd_timedwait( &thread_sync.d_done, &thread_sync.particles_lock,
+                           &ts );
         }
 
         // No longer running?
@@ -960,9 +966,11 @@ void GLFWCALL PhysicsThreadFun( void *arg )
         thread_sync.p_frame ++;
 
         // Unlock mutex and signal drawing thread
-        glfwUnlockMutex( thread_sync.particles_lock );
-        glfwSignalCond( thread_sync.p_done );
+        mtx_unlock( &thread_sync.particles_lock );
+        cnd_signal( &thread_sync.p_done );
     }
+
+    return 0;
 }
 
 
@@ -974,7 +982,8 @@ int main( int argc, char **argv )
 {
     int        i, frames, benchmark;
     double     t0, t;
-    GLFWthread physics_thread = 0;
+    thrd_t     physics_thread = 0;
+    GLFWwindow* window;
 
     // Use multithreading by default, but don't benchmark
     multithreading = 1;
@@ -1028,24 +1037,25 @@ int main( int argc, char **argv )
     }
 
     // Open OpenGL fullscreen window
-    if( !glfwOpenWindow( WIDTH, HEIGHT, 0,0,0,0, 16,0, GLFW_FULLSCREEN ) )
+    window = glfwCreateWindow( WIDTH, HEIGHT, "Particle Engine",
+                               glfwGetPrimaryMonitor(), NULL);
+    if( !window )
     {
         fprintf( stderr, "Failed to open GLFW window\n" );
         glfwTerminate();
         exit( EXIT_FAILURE );
     }
 
-    // Set window title
-    glfwSetWindowTitle( "Particle engine" );
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    // Disable VSync (we want to get as high FPS as possible!)
+    glfwMakeContextCurrent(window);
     glfwSwapInterval( 0 );
 
     // Window resize callback function
-    glfwSetWindowSizeCallback( Resize );
+    glfwSetWindowSizeCallback( window, Resize );
 
     // Set keyboard input callback function
-    glfwSetKeyCallback( KeyFun );
+    glfwSetKeyCallback( window, KeyFun );
 
     // Upload particle texture
     glGenTextures( 1, &particle_tex_id );
@@ -1099,10 +1109,15 @@ int main( int argc, char **argv )
     {
         thread_sync.p_frame = 0;
         thread_sync.d_frame = 0;
-        thread_sync.particles_lock = glfwCreateMutex();
-        thread_sync.p_done = glfwCreateCond();
-        thread_sync.d_done = glfwCreateCond();
-        physics_thread = glfwCreateThread( PhysicsThreadFun, NULL );
+        mtx_init(&thread_sync.particles_lock, mtx_timed);
+        cnd_init(&thread_sync.p_done);
+        cnd_init(&thread_sync.d_done);
+
+        if (thrd_create( &physics_thread, PhysicsThreadFun, NULL ) != thrd_success)
+        {
+            glfwTerminate();
+            exit(EXIT_FAILURE);
+        }
     }
 
     // Main loop
@@ -1117,10 +1132,11 @@ int main( int argc, char **argv )
         Draw( t );
 
         // Swap buffers
-        glfwSwapBuffers();
+        glfwSwapBuffers(window);
+        glfwPollEvents();
 
         // Check if window was closed
-        running = running && glfwGetWindowParam( GLFW_OPENED );
+        running = running && !glfwWindowShouldClose( window );
 
         // Increase frame count
         frames ++;
@@ -1136,13 +1152,15 @@ int main( int argc, char **argv )
     // Wait for particle physics thread to die
     if( multithreading )
     {
-        glfwWaitThread( physics_thread, GLFW_WAIT );
+        thrd_join( physics_thread, NULL );
     }
 
     // Display profiling information
     printf( "%d frames in %.2f seconds = %.1f FPS", frames, t,
             (double)frames / t );
     printf( " (multithreading %s)\n", multithreading ? "on" : "off" );
+
+    glfwDestroyWindow(window);
 
     // Terminate OpenGL
     glfwTerminate();

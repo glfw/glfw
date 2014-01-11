@@ -1,40 +1,27 @@
 //========================================================================
-// This is a simple, but cool particle engine (buzz-word meaning many
-// small objects that are treated as points and drawn as textures
-// projected on simple geometry).
+// A simple particle engine with threaded physics
+// Copyright (c) Marcus Geelnard
+// Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
 //
-// This demonstration generates a colorful fountain-like animation. It
-// uses several advanced OpenGL teqhniques:
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
 //
-//  1) Lighting (per vertex)
-//  2) Alpha blending
-//  3) Fog
-//  4) Texturing
-//  5) Display lists (for drawing the static environment geometry)
-//  6) Vertex arrays (for drawing the particles)
-//  7) GL_EXT_separate_specular_color is used (if available)
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
 //
-// Even more so, this program uses multi threading. The program is
-// essentialy divided into a main rendering thread and a particle physics
-// calculation thread. My benchmarks under Windows 2000 on a single
-// processor system show that running this program as two threads instead
-// of a single thread means no difference (there may be a very marginal
-// advantage for the multi threaded case). On dual processor systems I
-// have had reports of 5-25% of speed increase when running this program
-// as two threads instead of one thread.
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would
+//    be appreciated but is not required.
 //
-// The default behaviour of this program is to use two threads. To force
-// a single thread to be used, use the command line switch -s.
+// 2. Altered source versions must be plainly marked as such, and must not
+//    be misrepresented as being the original software.
 //
-// To run a fixed length benchmark (60 s), use the command line switch -b.
+// 3. This notice may not be removed or altered from any source
+//    distribution.
 //
-// Benchmark results (640x480x16, best of three tests):
-//
-//  CPU               GFX                   1 thread      2 threads
-//  Athlon XP 2700+   GeForce Ti4200 (oc)    757 FPS        759 FPS
-//  P4 2.8 GHz (SMT)  GeForce FX5600         548 FPS        550 FPS
-//
-// One more thing: Press 'w' during the demo to toggle wireframe mode.
 //========================================================================
 
 #include <stdlib.h>
@@ -59,10 +46,6 @@
 #ifndef M_PI
 #define M_PI 3.141592654
 #endif
-
-// Desired fullscreen resolution
-#define WIDTH  640
-#define HEIGHT 480
 
 
 //========================================================================
@@ -93,17 +76,11 @@ typedef struct
 // Program control global variables
 //========================================================================
 
-// "Running" flag (true if program shall continue to run)
-int running;
-
 // Window dimensions
-int width, height;
+float aspect_ratio;
 
 // "wireframe" flag (true if we use wireframe view)
 int wireframe;
-
-// "multithreading" flag (true if we use multithreading)
-int multithreading;
 
 // Thread synchronization
 struct {
@@ -245,11 +222,11 @@ const GLfloat fog_color[4]         = { 0.1f, 0.1f, 0.1f, 1.f };
 
 static void usage(void)
 {
-    printf("Usage: particles [-hbs]\n");
+    printf("Usage: particles [-bfhs]\n");
     printf("Options:\n");
-    printf(" -b   Benchmark (run program for 60 seconds)\n");
-    printf(" -s   Run program as single thread (default is to use two threads)\n");
+    printf(" -f   Run in full screen\n");
     printf(" -h   Display this help\n");
+    printf(" -s   Run program as single thread (default is to use two threads)\n");
     printf("\n");
     printf("Program runtime controls:\n");
     printf(" W    Toggle wireframe mode\n");
@@ -411,7 +388,7 @@ static void particle_engine(double t, float dt)
                             // the L1 data cache on most CPUs)
 #define PARTICLE_VERTS  4   // Number of vertices per particle
 
-static void draw_particles(double t, float dt)
+static void draw_particles(GLFWwindow* window, double t, float dt)
 {
     int i, particle_count;
     Vertex vertex_array[BATCH_PARTICLES * PARTICLE_VERTS];
@@ -471,29 +448,21 @@ static void draw_particles(double t, float dt)
     // Most OpenGL cards / drivers are optimized for this format.
     glInterleavedArrays(GL_T2F_C4UB_V3F, 0, vertex_array);
 
-    // Is particle physics carried out in a separate thread?
-    if (multithreading)
+    // Wait for particle physics thread to be done
+    mtx_lock(&thread_sync.particles_lock);
+    while (!glfwWindowShouldClose(window) &&
+            thread_sync.p_frame <= thread_sync.d_frame)
     {
-        // Wait for particle physics thread to be done
-        mtx_lock(&thread_sync.particles_lock);
-        while (running && thread_sync.p_frame <= thread_sync.d_frame)
-        {
-            struct timespec ts = { 0, 100000000 };
-            cnd_timedwait(&thread_sync.p_done, &thread_sync.particles_lock, &ts);
-        }
-
-        // Store the frame time and delta time for the physics thread
-        thread_sync.t = t;
-        thread_sync.dt = dt;
-
-        // Update frame counter
-        thread_sync.d_frame++;
+        struct timespec ts = { 0, 100000000 };
+        cnd_timedwait(&thread_sync.p_done, &thread_sync.particles_lock, &ts);
     }
-    else
-    {
-        // Perform particle physics in this thread
-        particle_engine(t, dt);
-    }
+
+    // Store the frame time and delta time for the physics thread
+    thread_sync.t = t;
+    thread_sync.dt = dt;
+
+    // Update frame counter
+    thread_sync.d_frame++;
 
     // Loop through all particles and build vertex arrays.
     particle_count = 0;
@@ -577,13 +546,9 @@ static void draw_particles(double t, float dt)
         pptr++;
     }
 
-    // We are done with the particle data: Unlock mutex and signal physics
-    // thread
-    if (multithreading)
-    {
-        mtx_unlock(&thread_sync.particles_lock);
-        cnd_signal(&thread_sync.d_done);
-    }
+    // We are done with the particle data
+    mtx_unlock(&thread_sync.particles_lock);
+    cnd_signal(&thread_sync.d_done);
 
     // Draw final batch of particles (if any)
     glDrawArrays(GL_QUADS, 0, PARTICLE_VERTS * particle_count);
@@ -812,7 +777,7 @@ static void setup_lights(void)
 // Main rendering function
 //========================================================================
 
-static void draw_scene(double t)
+static void draw_scene(GLFWwindow* window, double t)
 {
     double xpos, ypos, zpos, angle_x, angle_y, angle_z;
     static double t_old = 0.0;
@@ -822,14 +787,12 @@ static void draw_scene(double t)
     dt = (float) (t - t_old);
     t_old = t;
 
-    glViewport(0, 0, width, height);
-
     glClearColor(0.1f, 0.1f, 0.1f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(65.0, (double) width / (double) height, 1.0, 60.0);
+    gluPerspective(65.0, aspect_ratio, 1.0, 60.0);
 
     // Setup camera
     glMatrixMode(GL_MODELVIEW);
@@ -875,7 +838,7 @@ static void draw_scene(double t)
     glDisable(GL_FOG);
 
     // Particles must be drawn after all solid objects have been drawn
-    draw_particles(t, dt);
+    draw_particles(window, t, dt);
 
     // Z-buffer not needed anymore
     glDisable(GL_DEPTH_TEST);
@@ -886,10 +849,10 @@ static void draw_scene(double t)
 // Window resize callback function
 //========================================================================
 
-static void resize_callback(GLFWwindow* window, int w, int h)
+static void resize_callback(GLFWwindow* window, int width, int height)
 {
-    width = w;
-    height = h > 0 ? h : 1;   // Prevent division by zero in aspect calc.
+    glViewport(0, 0, width, height);
+    aspect_ratio = height ? width / (float) height : 1.f;
 }
 
 
@@ -904,7 +867,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         switch (key)
         {
             case GLFW_KEY_ESCAPE:
-                running = 0;
+                glfwSetWindowShouldClose(window, GL_TRUE);
                 break;
             case GLFW_KEY_W:
                 wireframe = !wireframe;
@@ -924,18 +887,21 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 static int physics_thread_main(void* arg)
 {
+    GLFWwindow* window = arg;
+
     for (;;)
     {
         mtx_lock(&thread_sync.particles_lock);
 
         // Wait for particle drawing to be done
-        while (running && thread_sync.p_frame > thread_sync.d_frame)
+        while (!glfwWindowShouldClose(window) &&
+               thread_sync.p_frame > thread_sync.d_frame)
         {
             struct timespec ts = { 0, 100000000 };
             cnd_timedwait(&thread_sync.d_done, &thread_sync.particles_lock, &ts);
         }
 
-        if (!running)
+        if (glfwWindowShouldClose(window))
             break;
 
         // Update particles
@@ -959,30 +925,10 @@ static int physics_thread_main(void* arg)
 
 int main(int argc, char** argv)
 {
-    int i, ch, frames, benchmark;
-    double t0, t;
+    int ch, width, height;
     thrd_t physics_thread = 0;
     GLFWwindow* window;
-
-    // Use multithreading by default, but don't benchmark
-    multithreading = 1;
-    benchmark = 0;
-
-    while ((ch = getopt(argc, argv, "bhs")) != -1)
-    {
-        switch (ch)
-        {
-            case 'b':
-                benchmark = 1;
-                break;
-            case 'h':
-                usage();
-                exit(EXIT_SUCCESS);
-            case 's':
-                multithreading = 0;
-                break;
-        }
-    }
+    GLFWmonitor* monitor = NULL;
 
     if (!glfwInit())
     {
@@ -990,22 +936,57 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    window = glfwCreateWindow(WIDTH, HEIGHT, "Particle Engine",
-                              glfwGetPrimaryMonitor(), NULL);
+    while ((ch = getopt(argc, argv, "fhs")) != -1)
+    {
+        switch (ch)
+        {
+            case 'f':
+                monitor = glfwGetPrimaryMonitor();
+                break;
+            case 'h':
+                usage();
+                exit(EXIT_SUCCESS);
+        }
+    }
+
+    if (monitor)
+    {
+        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+        glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+        glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+        glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+        glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+        width  = mode->width;
+        height = mode->height;
+    }
+    else
+    {
+        width  = 640;
+        height = 480;
+    }
+
+    window = glfwCreateWindow(width, height, "Particle Engine", monitor, NULL);
     if (!window)
     {
-        fprintf(stderr, "Failed to open GLFW window\n");
+        fprintf(stderr, "Failed to create GLFW window\n");
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
 
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    if (monitor)
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(0);
+    glfwSwapInterval(1);
 
     glfwSetWindowSizeCallback(window, resize_callback);
     glfwSetKeyCallback(window, key_callback);
+
+    // Set initial aspect ratio
+    glfwGetWindowSize(window, &width, &height);
+    resize_callback(window, width, height);
 
     // Upload particle texture
     glGenTextures(1, &particle_tex_id);
@@ -1039,64 +1020,33 @@ int main(int argc, char** argv)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     wireframe = 0;
 
-    // Clear particle system
-    for (i = 0;  i < MAX_PARTICLES;  i++)
-        particles[i].active = 0;
-
-    min_age = 0.f;
-
-    running = 1;
-
     // Set initial times
     thread_sync.t  = 0.0;
     thread_sync.dt = 0.001f;
+    thread_sync.p_frame = 0;
+    thread_sync.d_frame = 0;
 
-    if (multithreading)
+    mtx_init(&thread_sync.particles_lock, mtx_timed);
+    cnd_init(&thread_sync.p_done);
+    cnd_init(&thread_sync.d_done);
+
+    if (thrd_create(&physics_thread, physics_thread_main, window) != thrd_success)
     {
-        thread_sync.p_frame = 0;
-        thread_sync.d_frame = 0;
-        mtx_init(&thread_sync.particles_lock, mtx_timed);
-        cnd_init(&thread_sync.p_done);
-        cnd_init(&thread_sync.d_done);
-
-        if (thrd_create(&physics_thread, physics_thread_main, NULL) != thrd_success)
-        {
-            glfwTerminate();
-            exit(EXIT_FAILURE);
-        }
+        glfwTerminate();
+        exit(EXIT_FAILURE);
     }
 
-    t0 = glfwGetTime();
-    frames = 0;
+    glfwSetTime(0.0);
 
-    while (running)
+    while (!glfwWindowShouldClose(window))
     {
-        // Get frame time
-        t = glfwGetTime() - t0;
-
-        draw_scene(t);
+        draw_scene(window, glfwGetTime());
 
         glfwSwapBuffers(window);
         glfwPollEvents();
-
-        running = running && !glfwWindowShouldClose(window);
-
-        frames++;
-
-        // End of benchmark?
-        if (benchmark && t >= 60.0)
-            running = 0;
     }
 
-    t = glfwGetTime() - t0;
-
-    // Wait for particle physics thread to die
-    if (multithreading)
-        thrd_join(physics_thread, NULL);
-
-    // Display profiling information
-    printf("%d frames in %.2f seconds = %.1f FPS", frames, t, (double) frames / t);
-    printf(" (multithreading %s)\n", multithreading ? "on" : "off");
+    thrd_join(physics_thread, NULL);
 
     glfwDestroyWindow(window);
     glfwTerminate();

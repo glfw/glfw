@@ -44,6 +44,7 @@ examples/*.exe
 examples/boing
 examples/gears
 examples/heightmap
+examples/particles
 examples/splitview
 examples/simple
 examples/wave

@@ -46,6 +46,7 @@
 #include <GLFW/glfw3.h>
 
 #include <tinycthread.h>
+#include <getopt.h>
 
 // Define tokens for GL_EXT_separate_specular_color if not already defined
 #ifndef GL_EXT_separate_specular_color
@@ -236,6 +237,24 @@ const GLfloat floor_diffuse[4]     = { 1.f,  0.6f, 0.6f, 1.f };
 const GLfloat floor_specular[4]    = { 0.6f, 0.6f, 0.6f, 1.f };
 const GLfloat floor_shininess      = 18.f;
 const GLfloat fog_color[4]         = { 0.1f, 0.1f, 0.1f, 1.f };
+
+
+//========================================================================
+// Print usage information
+//========================================================================
+
+static void usage(void)
+{
+    printf("Usage: particles [-hbs]\n");
+    printf("Options:\n");
+    printf(" -b   Benchmark (run program for 60 seconds)\n");
+    printf(" -s   Run program as single thread (default is to use two threads)\n");
+    printf(" -h   Display this help\n");
+    printf("\n");
+    printf("Program runtime controls:\n");
+    printf(" W    Toggle wireframe mode\n");
+    printf(" Esc  Exit program\n");
+}
 
 
 //========================================================================
@@ -940,7 +959,7 @@ static int physics_thread_main(void* arg)
 
 int main(int argc, char** argv)
 {
-    int i, frames, benchmark;
+    int i, ch, frames, benchmark;
     double t0, t;
     thrd_t physics_thread = 0;
     GLFWwindow* window;
@@ -949,38 +968,19 @@ int main(int argc, char** argv)
     multithreading = 1;
     benchmark = 0;
 
-    for (i = 1;  i < argc;  i++)
+    while ((ch = getopt(argc, argv, "bhs")) != -1)
     {
-        // Use benchmarking?
-        if (strcmp(argv[i], "-b") == 0)
-            benchmark = 1;
-
-        // Force multithreading off?
-        else if (strcmp(argv[i], "-s") == 0)
-            multithreading = 0;
-
-        // With a Finder launch on Mac OS X we get a bogus -psn_0_46268417
-        // kind of argument (actual numbers vary). Ignore it.
-        else if (strncmp(argv[i], "-psn_", 5) == 0)
-            ;
-
-        // Usage
-        else
+        switch (ch)
         {
-            if (strcmp(argv[i], "-?") != 0)
-                printf("Unknonwn option %s\n\n", argv[i]);
-
-            printf("Usage: %s [options]\n", argv[0]);
-            printf("\n");
-            printf("Options:\n");
-            printf(" -b   Benchmark (run program for 60 s)\n");
-            printf(" -s   Run program as single thread (default is to use two threads)\n");
-            printf(" -?   Display this text\n");
-            printf("\n");
-            printf("Program runtime controls:\n");
-            printf(" w    Toggle wireframe mode\n");
-            printf(" ESC  Exit program\n");
-            exit(EXIT_FAILURE);
+            case 'b':
+                benchmark = 1;
+                break;
+            case 'h':
+                usage();
+                exit(EXIT_SUCCESS);
+            case 's':
+                multithreading = 0;
+                break;
         }
     }
 

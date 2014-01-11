@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 
 #define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
@@ -453,7 +454,9 @@ static void draw_particles(GLFWwindow* window, double t, float dt)
     while (!glfwWindowShouldClose(window) &&
             thread_sync.p_frame <= thread_sync.d_frame)
     {
-        struct timespec ts = { 0, 100000000 };
+        struct timespec ts;
+        clock_gettime(CLOCK_REALTIME, &ts);
+        ts.tv_nsec += 100000000;
         cnd_timedwait(&thread_sync.p_done, &thread_sync.particles_lock, &ts);
     }
 
@@ -897,7 +900,9 @@ static int physics_thread_main(void* arg)
         while (!glfwWindowShouldClose(window) &&
                thread_sync.p_frame > thread_sync.d_frame)
         {
-            struct timespec ts = { 0, 100000000 };
+            struct timespec ts;
+            clock_gettime(CLOCK_REALTIME, &ts);
+            ts.tv_nsec += 100000000;
             cnd_timedwait(&thread_sync.d_done, &thread_sync.particles_lock, &ts);
         }
 

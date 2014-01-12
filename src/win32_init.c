@@ -252,7 +252,7 @@ const char* _glfwPlatformGetVersionString(void)
 #if defined(__MINGW32__)
         " MinGW"
 #elif defined(_MSC_VER)
-        " VisualC "
+        " VisualC"
 #elif defined(__BORLANDC__)
         " BorlandC"
 #endif

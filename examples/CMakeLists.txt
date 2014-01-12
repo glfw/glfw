@@ -16,19 +16,25 @@ if (NOT APPLE)
     include_directories(${OPENGL_INCLUDE_DIR})
 endif()
 
+set(GLAD ${GLFW_SOURCE_DIR}/deps/glad/glad.h
+         ${GLFW_SOURCE_DIR}/deps/glad.c)
 set(GETOPT ${GLFW_SOURCE_DIR}/deps/getopt.h
            ${GLFW_SOURCE_DIR}/deps/getopt.c)
+set(TINYCTHREAD ${GLFW_SOURCE_DIR}/deps/tinycthread.h
+                ${GLFW_SOURCE_DIR}/deps/tinycthread.c)
 
 if (APPLE)
     # Set fancy names for bundles
     add_executable(Boing MACOSX_BUNDLE boing.c)
     add_executable(Gears MACOSX_BUNDLE gears.c)
+    add_executable(Particles MACOSX_BUNDLE particles.c ${TINYCTHREAD})
     add_executable(Simple MACOSX_BUNDLE simple.c)
     add_executable("Split View" MACOSX_BUNDLE splitview.c)
     add_executable(Wave MACOSX_BUNDLE wave.c)
 
     set_target_properties(Boing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Boing")
     set_target_properties(Gears PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Gears")
+    set_target_properties(Particles PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Particles")
     set_target_properties(Simple PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Simple")
     set_target_properties("Split View" PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Split View")
     set_target_properties(Wave PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Wave")
@@ -36,14 +42,15 @@ else()
     # Set boring names for executables
     add_executable(boing WIN32 boing.c)
     add_executable(gears WIN32 gears.c)
-    add_executable(heightmap WIN32 heightmap.c ${GETOPT})
+    add_executable(heightmap WIN32 heightmap.c ${GETOPT} ${GLAD})
+    add_executable(particles WIN32 particles.c ${TINYCTHREAD} ${GETOPT})
     add_executable(simple WIN32 simple.c)
     add_executable(splitview WIN32 splitview.c)
     add_executable(wave WIN32 wave.c)
 endif()
 
 if (MSVC)
-    set(WINDOWS_BINARIES boing gears heightmap simple splitview wave)
+    set(WINDOWS_BINARIES boing gears heightmap particles simple splitview wave)
 
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables
     set_target_properties(${WINDOWS_BINARIES} PROPERTIES
@@ -51,7 +58,7 @@ if (MSVC)
 endif()
 
 if (APPLE)
-    set(BUNDLE_BINARIES Boing Gears Simple "Split View" Wave)
+    set(BUNDLE_BINARIES Boing Gears Particles Simple "Split View" Wave)
 
     set_target_properties(${BUNDLE_BINARIES} PROPERTIES
                           MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}

@@ -55,7 +55,8 @@ extern "C" {
  *
  *  The available context API macros are:
  *  * `GLFW_EXPOSE_NATIVE_WGL`
- *  * `GLFW_EXPOSE_NATIVE_NSGL`
+ *  * `GLFW_EXPOSE_NATIVE_NSGL` (OSX, ObjC required to do anything useful)
+ *  * `GLFW_EXPOSE_NATIVE_CGL`
  *  * `GLFW_EXPOSE_NATIVE_GLX`
  *  * `GLFW_EXPOSE_NATIVE_EGL`
  *
@@ -88,6 +89,8 @@ extern "C" {
  /* WGL is declared by windows.h */
 #elif defined(GLFW_EXPOSE_NATIVE_NSGL)
  /* NSGL is declared by Cocoa.h */
+#elif defined(GLFW_EXPOSE_NATIVE_CGL)
+ #include <OpenGL/OpenGL.h>
 #elif defined(GLFW_EXPOSE_NATIVE_GLX)
  #include <GL/glx.h>
 #elif defined(GLFW_EXPOSE_NATIVE_EGL)
@@ -131,6 +134,14 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow* window);
  *  @ingroup native
  */
 GLFWAPI id glfwGetNSGLContext(GLFWwindow* window);
+#endif
+
+#if defined(GLFW_EXPOSE_NATIVE_CGL)
+/*! @brief Returns the `CGLContextObj` of the specified window.
+ *  @return The `CGLContextObj` of the specified window.
+ *  @ingroup native
+ */
+GLFWAPI CGLContextObj glfwGetCGLContext(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_X11)

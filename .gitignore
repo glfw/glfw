@@ -25,6 +25,7 @@ src/glfw_config.h
 src/glfw3.pc
 src/glfwConfig.cmake
 src/glfwConfigVersion.cmake
+install_manifest.txt
 
 # Compiled binaries
 src/libglfw.so

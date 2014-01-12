@@ -1,44 +1,6 @@
 #include <string.h>
 #include <glad/glad.h>
 
-static int has_ext(const char *ext) {
-    if(GLVersion.major < 3) {
-        const char *extensions;
-        const char *loc;
-        const char *terminator;
-        extensions = (const char *)glGetString(GL_EXTENSIONS);
-        if(extensions == NULL || ext == NULL) {
-            return 0;
-        }
-
-        while(1) {
-            loc = strstr(extensions, ext);
-            if(loc == NULL) {
-                return 0;
-            }
-
-            terminator = loc + strlen(ext);
-            if((loc == extensions || *(loc - 1) == ' ') &&
-                (*terminator == ' ' || *terminator == '\0')) {
-                return 1;
-            }
-            extensions = terminator;
-        }
-    } else {
-        int num;
-        glGetIntegerv(GL_NUM_EXTENSIONS, &num);
-
-        unsigned int index;
-        for(index = 0; index < num; index++) {
-            const char *e = (const char*)glGetStringi(GL_EXTENSIONS, index);
-            if(strcmp(e, ext) == 0) {
-                return 1;
-            }
-        }
-    }
-
-    return 0;
-}
 int GLAD_GL_VERSION_1_0;
 int GLAD_GL_VERSION_1_1;
 int GLAD_GL_VERSION_1_2;

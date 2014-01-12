@@ -21,9 +21,6 @@
 #ifndef APIENTRYP
 #define APIENTRYP APIENTRY *
 #endif
-#ifndef GLAPI
-#define GLAPI extern
-#endif
 
 struct {
     int major;

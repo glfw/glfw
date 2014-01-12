@@ -30,35 +30,8 @@
 #include <stddef.h>
 #include "getopt.h"
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <GL/glext.h>
-
-/* OpenGL function pointers */
-static PFNGLGENBUFFERSPROC              pglGenBuffers = NULL;
-static PFNGLGENVERTEXARRAYSPROC         pglGenVertexArrays = NULL;
-static PFNGLDELETEVERTEXARRAYSPROC      pglDeleteVertexArrays = NULL;
-static PFNGLCREATESHADERPROC            pglCreateShader = NULL;
-static PFNGLSHADERSOURCEPROC            pglShaderSource = NULL;
-static PFNGLCOMPILESHADERPROC           pglCompileShader = NULL;
-static PFNGLGETSHADERIVPROC             pglGetShaderiv = NULL;
-static PFNGLGETSHADERINFOLOGPROC        pglGetShaderInfoLog = NULL;
-static PFNGLDELETESHADERPROC            pglDeleteShader = NULL;
-static PFNGLCREATEPROGRAMPROC           pglCreateProgram = NULL;
-static PFNGLATTACHSHADERPROC            pglAttachShader = NULL;
-static PFNGLLINKPROGRAMPROC             pglLinkProgram = NULL;
-static PFNGLUSEPROGRAMPROC              pglUseProgram = NULL;
-static PFNGLGETPROGRAMIVPROC            pglGetProgramiv = NULL;
-static PFNGLGETPROGRAMINFOLOGPROC       pglGetProgramInfoLog = NULL;
-static PFNGLDELETEPROGRAMPROC           pglDeleteProgram = NULL;
-static PFNGLGETUNIFORMLOCATIONPROC      pglGetUniformLocation = NULL;
-static PFNGLUNIFORMMATRIX4FVPROC        pglUniformMatrix4fv = NULL;
-static PFNGLGETATTRIBLOCATIONPROC       pglGetAttribLocation = NULL;
-static PFNGLBINDVERTEXARRAYPROC         pglBindVertexArray = NULL;
-static PFNGLBUFFERDATAPROC              pglBufferData = NULL;
-static PFNGLBINDBUFFERPROC              pglBindBuffer = NULL;
-static PFNGLBUFFERSUBDATAPROC           pglBufferSubData = NULL;
-static PFNGLENABLEVERTEXATTRIBARRAYPROC pglEnableVertexAttribArray = NULL;
-static PFNGLVERTEXATTRIBPOINTERPROC     pglVertexAttribPointer = NULL;
 
 /* Map height updates */
 #define MAX_CIRCLE_SIZE (5.0f)
@@ -75,49 +48,6 @@ static PFNGLVERTEXATTRIBPOINTERPROC     pglVertexAttribPointer = NULL;
                2 * (MAP_NUM_VERTICES - 1))
 
 
-/* OpenGL function pointers */
-
-#define RESOLVE_GL_FCN(type, var, name) \
-    if (status == GL_TRUE) \
-    {\
-        var = (type) glfwGetProcAddress((name));\
-        if ((var) == NULL)\
-        {\
-            status = GL_FALSE;\
-        }\
-    }
-
-
-static GLboolean init_opengl(void)
-{
-    GLboolean status = GL_TRUE;
-    RESOLVE_GL_FCN(PFNGLCREATESHADERPROC, pglCreateShader, "glCreateShader");
-    RESOLVE_GL_FCN(PFNGLSHADERSOURCEPROC, pglShaderSource, "glShaderSource");
-    RESOLVE_GL_FCN(PFNGLCOMPILESHADERPROC, pglCompileShader, "glCompileShader");
-    RESOLVE_GL_FCN(PFNGLGETSHADERIVPROC, pglGetShaderiv, "glGetShaderiv");
-    RESOLVE_GL_FCN(PFNGLGETSHADERINFOLOGPROC, pglGetShaderInfoLog, "glGetShaderInfoLog");
-    RESOLVE_GL_FCN(PFNGLDELETESHADERPROC, pglDeleteShader, "glDeleteShader");
-    RESOLVE_GL_FCN(PFNGLCREATEPROGRAMPROC, pglCreateProgram, "glCreateProgram");
-    RESOLVE_GL_FCN(PFNGLATTACHSHADERPROC, pglAttachShader, "glAttachShader");
-    RESOLVE_GL_FCN(PFNGLLINKPROGRAMPROC, pglLinkProgram, "glLinkProgram");
-    RESOLVE_GL_FCN(PFNGLUSEPROGRAMPROC, pglUseProgram, "glUseProgram");
-    RESOLVE_GL_FCN(PFNGLGETPROGRAMIVPROC, pglGetProgramiv, "glGetProgramiv");
-    RESOLVE_GL_FCN(PFNGLGETPROGRAMINFOLOGPROC, pglGetProgramInfoLog, "glGetProgramInfoLog");
-    RESOLVE_GL_FCN(PFNGLDELETEPROGRAMPROC, pglDeleteProgram, "glDeleteProgram");
-    RESOLVE_GL_FCN(PFNGLGETUNIFORMLOCATIONPROC, pglGetUniformLocation, "glGetUniformLocation");
-    RESOLVE_GL_FCN(PFNGLUNIFORMMATRIX4FVPROC, pglUniformMatrix4fv, "glUniformMatrix4fv");
-    RESOLVE_GL_FCN(PFNGLGETATTRIBLOCATIONPROC, pglGetAttribLocation, "glGetAttribLocation");
-    RESOLVE_GL_FCN(PFNGLGENVERTEXARRAYSPROC, pglGenVertexArrays, "glGenVertexArrays");
-    RESOLVE_GL_FCN(PFNGLDELETEVERTEXARRAYSPROC, pglDeleteVertexArrays, "glDeleteVertexArrays");
-    RESOLVE_GL_FCN(PFNGLBINDVERTEXARRAYPROC, pglBindVertexArray, "glBindVertexArray");
-    RESOLVE_GL_FCN(PFNGLGENBUFFERSPROC, pglGenBuffers, "glGenBuffers");
-    RESOLVE_GL_FCN(PFNGLBINDBUFFERPROC, pglBindBuffer, "glBindBuffer");
-    RESOLVE_GL_FCN(PFNGLBUFFERDATAPROC, pglBufferData, "glBufferData");
-    RESOLVE_GL_FCN(PFNGLBUFFERSUBDATAPROC, pglBufferSubData, "glBufferSubData");
-    RESOLVE_GL_FCN(PFNGLENABLEVERTEXATTRIBARRAYPROC, pglEnableVertexAttribArray, "glEnableVertexAttribArray");
-    RESOLVE_GL_FCN(PFNGLVERTEXATTRIBPOINTERPROC, pglVertexAttribPointer, "glVertexAttribPointer");
-    return status;
-}
 /**********************************************************************
  * Default shader programs
  *********************************************************************/
@@ -223,18 +153,18 @@ static GLuint make_shader(GLenum type, const char* shader_src)
     GLsizei log_length;
     char info_log[8192];
 
-    shader = pglCreateShader(type);
+    shader = glCreateShader(type);
     if (shader != 0)
     {
-        pglShaderSource(shader, 1, (const GLchar**)&shader_src, NULL);
-        pglCompileShader(shader);
-        pglGetShaderiv(shader, GL_COMPILE_STATUS, &shader_ok);
+        glShaderSource(shader, 1, (const GLchar**)&shader_src, NULL);
+        glCompileShader(shader);
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &shader_ok);
         if (shader_ok != GL_TRUE)
         {
             fprintf(stderr, "ERROR: Failed to compile %s shader\n", (type == GL_FRAGMENT_SHADER) ? "fragment" : "vertex" );
-            pglGetShaderInfoLog(shader, 8192, &log_length,info_log);
+            glGetShaderInfoLog(shader, 8192, &log_length,info_log);
             fprintf(stderr, "ERROR: \n%s\n\n", info_log);
-            pglDeleteShader(shader);
+            glDeleteShader(shader);
             shader = 0;
         }
     }
@@ -259,23 +189,23 @@ static GLuint make_shader_program(const char* vertex_shader_src, const char* fra
         if (fragment_shader != 0u)
         {
             /* make the program that connect the two shader and link it */
-            program = pglCreateProgram();
+            program = glCreateProgram();
             if (program != 0u)
             {
                 /* attach both shader and link */
-                pglAttachShader(program, vertex_shader);
-                pglAttachShader(program, fragment_shader);
-                pglLinkProgram(program);
-                pglGetProgramiv(program, GL_LINK_STATUS, &program_ok);
+                glAttachShader(program, vertex_shader);
+                glAttachShader(program, fragment_shader);
+                glLinkProgram(program);
+                glGetProgramiv(program, GL_LINK_STATUS, &program_ok);
 
                 if (program_ok != GL_TRUE)
                 {
                     fprintf(stderr, "ERROR, failed to link shader program\n");
-                    pglGetProgramInfoLog(program, 8192, &log_length, info_log);
+                    glGetProgramInfoLog(program, 8192, &log_length, info_log);
                     fprintf(stderr, "ERROR: \n%s\n\n", info_log);
-                    pglDeleteProgram(program);
-                    pglDeleteShader(fragment_shader);
-                    pglDeleteShader(vertex_shader);
+                    glDeleteProgram(program);
+                    glDeleteShader(fragment_shader);
+                    glDeleteShader(vertex_shader);
                     program = 0u;
                 }
             }
@@ -283,7 +213,7 @@ static GLuint make_shader_program(const char* vertex_shader_src, const char* fra
         else
         {
             fprintf(stderr, "ERROR: Unable to load fragment shader\n");
-            pglDeleteShader(vertex_shader);
+            glDeleteShader(vertex_shader);
         }
     }
     else
@@ -439,38 +369,38 @@ static void make_mesh(GLuint program)
 {
     GLuint attrloc;
 
-    pglGenVertexArrays(1, &mesh);
-    pglGenBuffers(4, mesh_vbo);
-    pglBindVertexArray(mesh);
+    glGenVertexArrays(1, &mesh);
+    glGenBuffers(4, mesh_vbo);
+    glBindVertexArray(mesh);
     /* Prepare the data for drawing through a buffer inidices */
-    pglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh_vbo[3]);
-    pglBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)* MAP_NUM_LINES * 2, map_line_indices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh_vbo[3]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)* MAP_NUM_LINES * 2, map_line_indices, GL_STATIC_DRAW);
 
     /* Prepare the attributes for rendering */
-    attrloc = pglGetAttribLocation(program, "x");
-    pglBindBuffer(GL_ARRAY_BUFFER, mesh_vbo[0]);
-    pglBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * MAP_NUM_TOTAL_VERTICES, &map_vertices[0][0], GL_STATIC_DRAW);
-    pglEnableVertexAttribArray(attrloc);
-    pglVertexAttribPointer(attrloc, 1, GL_FLOAT, GL_FALSE, 0, 0);
+    attrloc = glGetAttribLocation(program, "x");
+    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbo[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * MAP_NUM_TOTAL_VERTICES, &map_vertices[0][0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(attrloc);
+    glVertexAttribPointer(attrloc, 1, GL_FLOAT, GL_FALSE, 0, 0);
 
-    attrloc = pglGetAttribLocation(program, "z");
-    pglBindBuffer(GL_ARRAY_BUFFER, mesh_vbo[2]);
-    pglBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * MAP_NUM_TOTAL_VERTICES, &map_vertices[2][0], GL_STATIC_DRAW);
-    pglEnableVertexAttribArray(attrloc);
-    pglVertexAttribPointer(attrloc, 1, GL_FLOAT, GL_FALSE, 0, 0);
+    attrloc = glGetAttribLocation(program, "z");
+    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbo[2]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * MAP_NUM_TOTAL_VERTICES, &map_vertices[2][0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(attrloc);
+    glVertexAttribPointer(attrloc, 1, GL_FLOAT, GL_FALSE, 0, 0);
 
-    attrloc = pglGetAttribLocation(program, "y");
-    pglBindBuffer(GL_ARRAY_BUFFER, mesh_vbo[1]);
-    pglBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * MAP_NUM_TOTAL_VERTICES, &map_vertices[1][0], GL_DYNAMIC_DRAW);
-    pglEnableVertexAttribArray(attrloc);
-    pglVertexAttribPointer(attrloc, 1, GL_FLOAT, GL_FALSE, 0, 0);
+    attrloc = glGetAttribLocation(program, "y");
+    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbo[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * MAP_NUM_TOTAL_VERTICES, &map_vertices[1][0], GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(attrloc);
+    glVertexAttribPointer(attrloc, 1, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
 /* Update VBO vertices from source data
  */
 static void update_mesh(void)
 {
-    pglBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * MAP_NUM_TOTAL_VERTICES, &map_vertices[1][0]);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * MAP_NUM_TOTAL_VERTICES, &map_vertices[1][0]);
 }
 
 /**********************************************************************
@@ -588,15 +518,8 @@ int main(int argc, char** argv)
     glfwSetKeyCallback(window, key_callback);
 
     glfwMakeContextCurrent(window);
-    if (GL_TRUE != init_opengl())
-    {
-        fprintf(stderr, "ERROR: unable to resolve OpenGL function pointers\n");
-        free(vertex_shader_src);
-        free(fragment_shader_src);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
     /* Prepare opengl resources for rendering */
     shader_program = make_shader_program(vertex_shader_src , fragment_shader_src);
     free(vertex_shader_src);
@@ -611,9 +534,9 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    pglUseProgram(shader_program);
-    uloc_project   = pglGetUniformLocation(shader_program, "project");
-    uloc_modelview = pglGetUniformLocation(shader_program, "modelview");
+    glUseProgram(shader_program);
+    uloc_project   = glGetUniformLocation(shader_program, "project");
+    uloc_modelview = glGetUniformLocation(shader_program, "modelview");
 
     /* Compute the projection matrix */
     f = 1.0f / tanf(view_angle / 2.0f);
@@ -622,13 +545,13 @@ int main(int argc, char** argv)
     projection_matrix[10] = (z_far + z_near)/ (z_near - z_far);
     projection_matrix[11] = -1.0f;
     projection_matrix[14] = 2.0f * (z_far * z_near) / (z_near - z_far);
-    pglUniformMatrix4fv(uloc_project, 1, GL_FALSE, projection_matrix);
+    glUniformMatrix4fv(uloc_project, 1, GL_FALSE, projection_matrix);
 
     /* Set the camera position */
     modelview_matrix[12]  = -5.0f;
     modelview_matrix[13]  = -5.0f;
     modelview_matrix[14]  = -20.0f;
-    pglUniformMatrix4fv(uloc_modelview, 1, GL_FALSE, modelview_matrix);
+    glUniformMatrix4fv(uloc_modelview, 1, GL_FALSE, modelview_matrix);
 
     /* Create mesh data */
     init_map();

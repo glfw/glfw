@@ -16,6 +16,8 @@ if (NOT APPLE)
     include_directories(${OPENGL_INCLUDE_DIR})
 endif()
 
+set(GLAD ${GLFW_SOURCE_DIR}/deps/glad/glad.h
+         ${GLFW_SOURCE_DIR}/deps/glad.c)
 set(GETOPT ${GLFW_SOURCE_DIR}/deps/getopt.h
            ${GLFW_SOURCE_DIR}/deps/getopt.c)
 set(TINYCTHREAD ${GLFW_SOURCE_DIR}/deps/tinycthread.h
@@ -40,7 +42,7 @@ else()
     # Set boring names for executables
     add_executable(boing WIN32 boing.c)
     add_executable(gears WIN32 gears.c)
-    add_executable(heightmap WIN32 heightmap.c ${GETOPT})
+    add_executable(heightmap WIN32 heightmap.c ${GETOPT} ${GLAD})
     add_executable(particles WIN32 particles.c ${TINYCTHREAD} ${GETOPT})
     add_executable(simple WIN32 simple.c)
     add_executable(splitview WIN32 splitview.c)

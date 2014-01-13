@@ -107,6 +107,7 @@ extern "C" {
  *  @ingroup native
  */
 GLFWAPI const WCHAR* glfwGetWin32Monitor(GLFWmonitor* monitor);
+
 /*! @brief Returns the `HWND` of the specified window.
  *  @return The `HWND` of the specified window.
  *  @ingroup native
@@ -128,6 +129,7 @@ GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* window);
  *  @ingroup native
  */
 GLFWAPI CGDirectDisplayID glfwGetCocoaMonitor(GLFWmonitor* monitor);
+
 /*! @brief Returns the `NSWindow` of the specified window.
  *  @return The `NSWindow` of the specified window.
  *  @ingroup native
@@ -149,11 +151,13 @@ GLFWAPI id glfwGetNSGLContext(GLFWwindow* window);
  *  @ingroup native
  */
 GLFWAPI Display* glfwGetX11Display(void);
+
 /*! @brief Returns the `RRCrtc` of the specified monitor.
  *  @return The the `RRCrtc` of the specified monitor.
  *  @ingroup native
  */
 GLFWAPI RRCrtc glfwGetX11Monitor(GLFWmonitor* monitor);
+
 /*! @brief Returns the `Window` of the specified window.
  *  @return The `Window` of the specified window.
  *  @ingroup native
@@ -175,11 +179,13 @@ GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* window);
  *  @ingroup native
  */
 GLFWAPI EGLDisplay glfwGetEGLDisplay(void);
+
 /*! @brief Returns the `EGLContext` of the specified window.
  *  @return The `EGLContext` of the specified window.
  *  @ingroup native
  */
 GLFWAPI EGLContext glfwGetEGLContext(GLFWwindow* window);
+
 /*! @brief Returns the `EGLSurface` of the specified window.
  *  @return The `EGLSurface` of the specified window.
  *  @ingroup native

@@ -45,9 +45,9 @@ The following dependencies are needed by the examples and test programs:
 
 ## Changelog
 
-- Added native monitor handle access to native API
-- [Cocoa] Bugfix: Using a 1x1 cursor for hidden mode caused some screen
-                  recorders to fail
+ - Added native monitor handle access to native API
+ - [Cocoa] Bugfix: Using a 1x1 cursor for hidden mode caused some screen
+                   recorders to fail
 
 
 ## Contact

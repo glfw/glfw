@@ -341,14 +341,12 @@ static void hideCursor(_GLFWwindow* window)
 //
 static void captureCursor(_GLFWwindow* window)
 {
-    hideCursor(window);
-
     if (!window->x11.cursorGrabbed)
     {
         if (XGrabPointer(_glfw.x11.display, window->x11.handle, True,
                          ButtonPressMask | ButtonReleaseMask |
                          PointerMotionMask, GrabModeAsync, GrabModeAsync,
-                         window->x11.handle, None, CurrentTime) ==
+                         window->x11.handle, _glfw.x11.cursor, CurrentTime) ==
             GrabSuccess)
         {
             window->x11.cursorGrabbed = GL_TRUE;

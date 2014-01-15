@@ -80,8 +80,6 @@ typedef struct _GLFWwindowX11
 
     // Various platform specific internal variables
     GLboolean       overrideRedirect; // True if window is OverrideRedirect
-    GLboolean       cursorGrabbed;    // True if cursor is currently grabbed
-    GLboolean       cursorHidden;     // True if cursor is currently hidden
 
     // Cached position and size used to filter out duplicate events
     int             width, height;

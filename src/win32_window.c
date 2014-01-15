@@ -45,7 +45,7 @@ static void updateClipRect(_GLFWwindow* window)
     ClipCursor(&clipRect);
 }
 
-// Hide mouse cursor
+// Hide the mouse cursor
 //
 static void hideCursor(_GLFWwindow* window)
 {
@@ -67,9 +67,9 @@ static void hideCursor(_GLFWwindow* window)
     }
 }
 
-// Capture mouse cursor
+// Disable the mouse cursor
 //
-static void captureCursor(_GLFWwindow* window)
+static void disableCursor(_GLFWwindow* window)
 {
     if (!window->win32.cursorHidden)
     {
@@ -81,9 +81,9 @@ static void captureCursor(_GLFWwindow* window)
     SetCapture(window->win32.handle);
 }
 
-// Show mouse cursor
+// Restores the mouse cursor
 //
-static void showCursor(_GLFWwindow* window)
+static void restoreCursor(_GLFWwindow* window)
 {
     POINT pos;
 
@@ -410,7 +410,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 // The window was defocused (or iconified, see above)
 
                 if (window->cursorMode != GLFW_CURSOR_NORMAL)
-                    showCursor(window);
+                    restoreCursor(window);
 
                 if (window->monitor)
                 {
@@ -428,10 +428,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             {
                 // The window was focused
 
-                if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                    captureCursor(window);
-                else if (window->cursorMode == GLFW_CURSOR_HIDDEN)
-                    hideCursor(window);
+                if (window->cursorMode != GLFW_CURSOR_NORMAL)
+                    _glfwPlatformApplyCursorMode(window);
 
                 if (window->monitor)
                     _glfwSetVideoMode(window->monitor, &window->videoMode);
@@ -678,10 +676,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_SIZE:
         {
-            if (window->cursorMode == GLFW_CURSOR_DISABLED &&
-                _glfw.focusedWindow == window)
+            if (_glfw.focusedWindow == window)
             {
-                updateClipRect(window);
+                if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                    updateClipRect(window);
             }
 
             _glfwInputFramebufferSize(window, LOWORD(lParam), HIWORD(lParam));
@@ -691,10 +689,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOVE:
         {
-            if (window->cursorMode == GLFW_CURSOR_DISABLED &&
-                _glfw.focusedWindow == window)
+            if (_glfw.focusedWindow == window)
             {
-                updateClipRect(window);
+                if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                    updateClipRect(window);
             }
 
             // NOTE: This cannot use LOWORD/HIWORD recommended by MSDN, as
@@ -713,12 +711,14 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_SETCURSOR:
         {
-            if (window->cursorMode != GLFW_CURSOR_NORMAL &&
-                _glfw.focusedWindow == window &&
-                LOWORD(lParam) == HTCLIENT)
+            if (_glfw.focusedWindow == window && LOWORD(lParam) == HTCLIENT)
             {
-                SetCursor(NULL);
-                return TRUE;
+                if (window->cursorMode == GLFW_CURSOR_HIDDEN ||
+                    window->cursorMode == GLFW_CURSOR_DISABLED)
+                {
+                    SetCursor(NULL);
+                    return TRUE;
+                }
             }
 
             break;
@@ -1113,7 +1113,7 @@ void _glfwPlatformPollEvents(void)
                 _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, 0, GLFW_RELEASE, mods);
         }
 
-        // Did the cursor move in an focused window that has captured the cursor
+        // Did the cursor move in an focused window that has disabled the cursor
         if (window->cursorMode == GLFW_CURSOR_DISABLED &&
             !window->win32.cursorCentered)
         {
@@ -1142,18 +1142,18 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos)
     window->win32.oldCursorY = (int) ypos;
 }
 
-void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
+void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
 {
-    switch (mode)
+    switch (window->cursorMode)
     {
         case GLFW_CURSOR_NORMAL:
-            showCursor(window);
+            restoreCursor(window);
             break;
         case GLFW_CURSOR_HIDDEN:
             hideCursor(window);
             break;
         case GLFW_CURSOR_DISABLED:
-            captureCursor(window);
+            disableCursor(window);
             break;
     }
 }

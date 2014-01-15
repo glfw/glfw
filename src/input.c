@@ -70,7 +70,7 @@ static void setCursorMode(_GLFWwindow* window, int newMode)
             _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
         }
 
-        _glfwPlatformSetCursorMode(window, newMode);
+        _glfwPlatformApplyCursorMode(window);
     }
 }
 

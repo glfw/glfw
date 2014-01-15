@@ -41,9 +41,9 @@ static void centerCursor(_GLFWwindow *window)
 
 // Update the cursor to match the specified cursor mode
 //
-static void setModeCursor(_GLFWwindow* window, int mode)
+static void setModeCursor(_GLFWwindow* window)
 {
-    if (mode == GLFW_CURSOR_NORMAL)
+    if (window->cursorMode == GLFW_CURSOR_NORMAL)
         [[NSCursor arrowCursor] set];
     else
         [(NSCursor*) _glfw.ns.cursor set];
@@ -472,7 +472,7 @@ static int translateKey(unsigned int key)
 
 - (void)cursorUpdate:(NSEvent *)event
 {
-    setModeCursor(window, window->cursorMode);
+    setModeCursor(window);
 }
 
 - (void)mouseDown:(NSEvent *)event
@@ -1084,7 +1084,7 @@ void _glfwPlatformWaitEvents(void)
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
-    setModeCursor(window, window->cursorMode);
+    setModeCursor(window);
 
     if (window->monitor)
     {
@@ -1102,11 +1102,11 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
     }
 }
 
-void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
+void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
 {
-    setModeCursor(window, mode);
+    setModeCursor(window);
 
-    if (mode == GLFW_CURSOR_DISABLED)
+    if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         CGAssociateMouseAndMouseCursorPosition(false);
         centerCursor(window);

@@ -317,62 +317,30 @@ static GLboolean createWindow(_GLFWwindow* window,
     return GL_TRUE;
 }
 
-// Hide cursor
+// Hide the mouse cursor
 //
 static void hideCursor(_GLFWwindow* window)
 {
-    // Un-grab cursor (in windowed mode only; in fullscreen mode we still
-    // want the cursor grabbed in order to confine the cursor to the window
-    // area)
-    if (window->x11.cursorGrabbed && window->monitor == NULL)
-    {
-        XUngrabPointer(_glfw.x11.display, CurrentTime);
-        window->x11.cursorGrabbed = GL_FALSE;
-    }
-
-    if (!window->x11.cursorHidden)
-    {
-        XDefineCursor(_glfw.x11.display, window->x11.handle, _glfw.x11.cursor);
-        window->x11.cursorHidden = GL_TRUE;
-    }
+    XUngrabPointer(_glfw.x11.display, CurrentTime);
+    XDefineCursor(_glfw.x11.display, window->x11.handle, _glfw.x11.cursor);
 }
 
-// Capture cursor
+// Disable the mouse cursor
 //
-static void captureCursor(_GLFWwindow* window)
+static void disableCursor(_GLFWwindow* window)
 {
-    if (!window->x11.cursorGrabbed)
-    {
-        if (XGrabPointer(_glfw.x11.display, window->x11.handle, True,
-                         ButtonPressMask | ButtonReleaseMask |
-                         PointerMotionMask, GrabModeAsync, GrabModeAsync,
-                         window->x11.handle, _glfw.x11.cursor, CurrentTime) ==
-            GrabSuccess)
-        {
-            window->x11.cursorGrabbed = GL_TRUE;
-        }
-    }
+    XGrabPointer(_glfw.x11.display, window->x11.handle, True,
+                 ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
+                 GrabModeAsync, GrabModeAsync,
+                 window->x11.handle, _glfw.x11.cursor, CurrentTime);
 }
 
-// Show cursor
+// Restores the mouse cursor
 //
-static void showCursor(_GLFWwindow* window)
+static void restoreCursor(_GLFWwindow* window)
 {
-    // Un-grab cursor (in windowed mode only; in fullscreen mode we still
-    // want the cursor grabbed in order to confine the cursor to the window
-    // area)
-    if (window->x11.cursorGrabbed && window->monitor == NULL)
-    {
-        XUngrabPointer(_glfw.x11.display, CurrentTime);
-        window->x11.cursorGrabbed = GL_FALSE;
-    }
-
-    // Show cursor
-    if (window->x11.cursorHidden)
-    {
-        XUndefineCursor(_glfw.x11.display, window->x11.handle);
-        window->x11.cursorHidden = GL_FALSE;
-    }
+    XUngrabPointer(_glfw.x11.display, CurrentTime);
+    XUndefineCursor(_glfw.x11.display, window->x11.handle);
 }
 
 // Enter fullscreen mode
@@ -640,18 +608,12 @@ static void processEvent(XEvent *event)
 
         case EnterNotify:
         {
-            if (window->cursorMode == GLFW_CURSOR_HIDDEN)
-                hideCursor(window);
-
             _glfwInputCursorEnter(window, GL_TRUE);
             break;
         }
 
         case LeaveNotify:
         {
-            if (window->cursorMode == GLFW_CURSOR_HIDDEN)
-                showCursor(window);
-
             _glfwInputCursorEnter(window, GL_FALSE);
             break;
         }
@@ -763,7 +725,7 @@ static void processEvent(XEvent *event)
             _glfwInputWindowFocus(window, GL_TRUE);
 
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                captureCursor(window);
+                disableCursor(window);
 
             break;
         }
@@ -773,7 +735,7 @@ static void processEvent(XEvent *event)
             _glfwInputWindowFocus(window, GL_FALSE);
 
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                showCursor(window);
+                restoreCursor(window);
 
             break;
         }
@@ -1202,18 +1164,18 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
                  0,0,0,0, (int) x, (int) y);
 }
 
-void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
+void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
 {
-    switch (mode)
+    switch (window->cursorMode)
     {
         case GLFW_CURSOR_NORMAL:
-            showCursor(window);
+            restoreCursor(window);
             break;
         case GLFW_CURSOR_HIDDEN:
             hideCursor(window);
             break;
         case GLFW_CURSOR_DISABLED:
-            captureCursor(window);
+            disableCursor(window);
             break;
     }
 }

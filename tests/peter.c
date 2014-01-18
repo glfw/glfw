@@ -1,5 +1,5 @@
 //========================================================================
-// Cursor input bug test
+// Cursor mode test
 // Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
@@ -23,10 +23,7 @@
 //
 //========================================================================
 //
-// This test came about as the result of bugs #1262764, #1726540 and
-// #1726592, all reported by the user peterpp, hence the name
-//
-// The utility of this test outside of these bugs is uncertain
+// This test allows you to switch between the various cursor modes
 //
 //========================================================================
 
@@ -39,20 +36,6 @@ static GLboolean reopen = GL_FALSE;
 static double cursor_x;
 static double cursor_y;
 
-static void toggle_cursor(GLFWwindow* window)
-{
-    if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
-    {
-        printf("Released cursor\n");
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    }
-    else
-    {
-        printf("Captured cursor\n");
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    }
-}
-
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
@@ -60,30 +43,36 @@ static void error_callback(int error, const char* description)
 
 static void cursor_position_callback(GLFWwindow* window, double x, double y)
 {
-    printf("Cursor moved to: %f %f (%f %f)\n", x, y, x - cursor_x, y - cursor_y);
+    printf("%0.3f: Cursor position: %f %f (%f %f)\n",
+           glfwGetTime(),
+           x, y, x - cursor_x, y - cursor_y);
+
     cursor_x = x;
     cursor_y = y;
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    if (action != GLFW_PRESS)
+        return;
+
     switch (key)
     {
-        case GLFW_KEY_SPACE:
-        {
-            if (action == GLFW_PRESS)
-                toggle_cursor(window);
-
+        case GLFW_KEY_D:
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             break;
-        }
+
+        case GLFW_KEY_H:
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+            break;
+
+        case GLFW_KEY_N:
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            break;
 
         case GLFW_KEY_R:
-        {
-            if (action == GLFW_PRESS)
-                reopen = GL_TRUE;
-
+            reopen = GL_TRUE;
             break;
-        }
     }
 }
 

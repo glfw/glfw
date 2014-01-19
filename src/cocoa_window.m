@@ -186,7 +186,7 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
     _glfwInputWindowFocus(window, GL_TRUE);
-    _glfwPlatformApplyCursorMode(window, window->cursorMode);
+    _glfwPlatformApplyCursorMode(window);
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification

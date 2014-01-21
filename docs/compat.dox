@@ -14,7 +14,7 @@ specification but merely list some of the preconditions for certain parts of the
 API to function on a given machine.  As such, any part of it may change in
 future versions without this being considered a breaking API change.
 
-@section compat_wm ICCCM and EWMH conformance
+@section compat_x11 X11 extensions, protocols and IPC standards
 
 As GLFW uses Xlib, directly, without any intervening toolkit
 library, it has sole responsibility for interacting well with the many and

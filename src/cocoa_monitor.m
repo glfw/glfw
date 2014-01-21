@@ -52,6 +52,7 @@ static const char* getDisplayName(CGDirectDisplayID displayID)
     if (!names || !CFDictionaryGetValueIfPresent(names, CFSTR("en_US"),
                                                  (const void**) &value))
     {
+        // This may happen if a desktop Mac is running headless
         _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to retrieve display name");
 
         CFRelease(info);

@@ -252,37 +252,30 @@ void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
-    uint32_t i, found = 0, monitorCount;
+    uint32_t i, found = 0, displayCount;
     _GLFWmonitor** monitors;
     CGDirectDisplayID* displays;
 
     *count = 0;
 
-    CGGetActiveDisplayList(0, NULL, &monitorCount);
+    CGGetActiveDisplayList(0, NULL, &displayCount);
 
-    displays = calloc(monitorCount, sizeof(CGDirectDisplayID));
-    monitors = calloc(monitorCount, sizeof(_GLFWmonitor*));
+    displays = calloc(displayCount, sizeof(CGDirectDisplayID));
+    monitors = calloc(displayCount, sizeof(_GLFWmonitor*));
 
-    CGGetActiveDisplayList(monitorCount, displays, &monitorCount);
+    CGGetActiveDisplayList(displayCount, displays, &displayCount);
 
-    for (i = 0;  i < monitorCount;  i++)
+    NSArray* screens = [NSScreen screens];
+
+    for (i = 0;  i < displayCount;  i++)
     {
+        int j;
         const CGSize size = CGDisplayScreenSize(displays[i]);
 
         monitors[found] = _glfwCreateMonitor(getDisplayName(displays[i]),
                                              size.width, size.height);
 
         monitors[found]->ns.displayID = displays[i];
-        found++;
-    }
-
-    free(displays);
-
-    NSArray* screens = [NSScreen screens];
-
-    for (i = 0;  i < monitorCount;  i++)
-    {
-        int j;
 
         for (j = 0;  j < [screens count];  j++)
         {
@@ -290,26 +283,29 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             NSDictionary* dictionary = [screen deviceDescription];
             NSNumber* number = [dictionary objectForKey:@"NSScreenNumber"];
 
-            if (monitors[i]->ns.displayID == [number unsignedIntegerValue])
+            if (monitors[found]->ns.displayID == [number unsignedIntegerValue])
             {
-                monitors[i]->ns.screen = screen;
+                monitors[found]->ns.screen = screen;
                 break;
             }
         }
 
-        if (monitors[i]->ns.screen == nil)
+        if (monitors[found]->ns.screen)
+            found++;
+        else
         {
-            _glfwDestroyMonitors(monitors, monitorCount);
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Cocoa: Failed to find NSScreen for CGDisplay %s",
-                            monitors[i]->name);
+                            monitors[found]->name);
 
-            free(monitors);
-            return NULL;
+            _glfwDestroyMonitor(monitors[found]);
+            monitors[found] = NULL;
         }
     }
 
-    *count = monitorCount;
+    free(displays);
+
+    *count = found;
     return monitors;
 }
 

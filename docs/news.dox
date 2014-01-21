@@ -5,6 +5,14 @@
 @tableofcontents
 
 
+@section news_31 New features in version 3.1
+
+@subsection news_31_drop Drop event support
+
+GLFW now provides a callback for receiving the paths of files dropped onto GLFW
+windows.  The callback is set with the @ref glfwSetDropCallback function.
+
+
 @section news_30 New features in version 3.0
 
 @subsection news_30_cmake CMake build system

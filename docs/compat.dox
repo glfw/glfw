@@ -27,6 +27,10 @@ X11 API; most importantly the
 [Extended Window Manager Hints](http://standards.freedesktop.org/wm-spec/wm-spec-latest.html)
 (EWMH) standards.
 
+GLFW uses the `_MOTIF_WM_HINTS` window property to support borderless windows.
+If the running window manager does not support this property, the
+`GLFW_DECORATED` hint will have no effect.
+
 GLFW uses the ICCCM `WM_DELETE_WINDOW` protocol to intercept the user
 attempting to close the GLFW window.  If the running window manager does not
 support this protocol, the close callback will never be called.
@@ -36,11 +40,16 @@ the user when the application has stopped responding, i.e. when it has ceased to
 process events.  If the running window manager does not support this protocol,
 the user will not be notified if the application locks up.
 
-GLFW uses the EWMH `_NET_WM_STATE` protocol to tell the window manager to make
-the GLFW window full screen.  If the running window manager does not support this
-protocol, full screen windows may not work properly.  GLFW has a fallback code
-path in case this protocol is unavailable, but every window manager behaves
-slightly differently in this regard.
+GLFW uses the EWMH `_NET_WM_STATE_FULLSCREEN` window state to tell the window
+manager to make the GLFW window full screen.  If the running window manager does
+not support this state, full screen windows may not work properly.  GLFW has
+a fallback code path in case this state is unavailable, but every window manager
+behaves slightly differently in this regard.
+
+GLFW uses the EWMH `_NET_WM_BYPASS_COMPOSITOR` window property to tell a
+compositing window manager to un-redirect full screen GLFW windows.  If the
+running window manager uses compositing but does not support this property then
+additional copying may be performed for each buffer swap of full screen windows.
 
 GLFW uses the
 [clipboard manager protocol](http://www.freedesktop.org/wiki/ClipboardManager/)

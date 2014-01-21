@@ -780,7 +780,7 @@ typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
  *
  *  @param[in] window The window that received the event.
  *  @param[in] count The number of dropped objects.
- *  @param[in] names The names of the dropped object.
+ *  @param[in] names The UTF-8 encoded names of the dropped objects.
  *
  *  @sa glfwSetDropCallback
  *

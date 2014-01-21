@@ -48,6 +48,11 @@ to push a clipboard string (i.e. selection) owned by a GLFW window about to be
 destroyed to the clipboard manager.  If there is no running clipboard manager,
 the clipboard string will be unavailable once the window has been destroyed.
 
+GLFW uses the
+[X drag-and-drop protocol](http://www.freedesktop.org/wiki/Specifications/XDND/)
+to provide file drop events.  If the application originating the drag does not
+support this protocol, drag and drop will not work.
+
 @section compat_glx GLX extensions
 
 The GLX API is the default API used to create OpenGL contexts on Unix-like

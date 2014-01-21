@@ -761,15 +761,15 @@ void _glfwFreeGammaArrays(GLFWgammaramp* ramp);
  *  @return The newly created object.
  *  @ingroup utility
  */
-_GLFWmonitor* _glfwCreateMonitor(const char* name, int widthMM, int heightMM);
+_GLFWmonitor* _glfwAllocMonitor(const char* name, int widthMM, int heightMM);
 
 /*! @brief Frees a monitor object and any data associated with it.
  *  @ingroup utility
   */
-void _glfwDestroyMonitor(_GLFWmonitor* monitor);
+void _glfwFreeMonitor(_GLFWmonitor* monitor);
 
 /*! @ingroup utility
   */
-void _glfwDestroyMonitors(_GLFWmonitor** monitors, int count);
+void _glfwFreeMonitors(_GLFWmonitor** monitors, int count);
 
 #endif // _internal_h_

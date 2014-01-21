@@ -148,7 +148,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         name = _glfwCreateUTF8FromWideString(display.DeviceString);
         if (!name)
         {
-            _glfwDestroyMonitors(monitors, found);
+            _glfwFreeMonitors(monitors, found);
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Failed to convert string to UTF-8");
 
@@ -156,7 +156,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             return NULL;
         }
 
-        monitors[found] = _glfwCreateMonitor(name,
+        monitors[found] = _glfwAllocMonitor(name,
                                              GetDeviceCaps(dc, HORZSIZE),
                                              GetDeviceCaps(dc, VERTSIZE));
 

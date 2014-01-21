@@ -113,7 +113,7 @@ void _glfwInputMonitorChange(void)
         {
             if (_glfwPlatformIsSameMonitor(_glfw.monitors[i], monitors[j]))
             {
-                _glfwDestroyMonitor(_glfw.monitors[i]);
+                _glfwFreeMonitor(_glfw.monitors[i]);
                 _glfw.monitors[i] = monitors[j];
                 break;
             }
@@ -167,7 +167,7 @@ void _glfwInputMonitorChange(void)
             _glfw.callbacks.monitor((GLFWmonitor*) _glfw.monitors[i], GLFW_CONNECTED);
     }
 
-    _glfwDestroyMonitors(monitors, monitorCount);
+    _glfwFreeMonitors(monitors, monitorCount);
 }
 
 
@@ -175,7 +175,7 @@ void _glfwInputMonitorChange(void)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-_GLFWmonitor* _glfwCreateMonitor(const char* name, int widthMM, int heightMM)
+_GLFWmonitor* _glfwAllocMonitor(const char* name, int widthMM, int heightMM)
 {
     _GLFWmonitor* monitor = calloc(1, sizeof(_GLFWmonitor));
     monitor->name = strdup(name);
@@ -185,7 +185,7 @@ _GLFWmonitor* _glfwCreateMonitor(const char* name, int widthMM, int heightMM)
     return monitor;
 }
 
-void _glfwDestroyMonitor(_GLFWmonitor* monitor)
+void _glfwFreeMonitor(_GLFWmonitor* monitor)
 {
     if (monitor == NULL)
         return;
@@ -198,12 +198,12 @@ void _glfwDestroyMonitor(_GLFWmonitor* monitor)
     free(monitor);
 }
 
-void _glfwDestroyMonitors(_GLFWmonitor** monitors, int count)
+void _glfwFreeMonitors(_GLFWmonitor** monitors, int count)
 {
     int i;
 
     for (i = 0;  i < count;  i++)
-        _glfwDestroyMonitor(monitors[i]);
+        _glfwFreeMonitor(monitors[i]);
 
     free(monitors);
 }

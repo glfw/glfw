@@ -273,8 +273,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         int j;
         const CGSize size = CGDisplayScreenSize(displays[i]);
 
-        monitors[found] = _glfwCreateMonitor(getDisplayName(displays[i]),
-                                             size.width, size.height);
+        monitors[found] = _glfwAllocMonitor(getDisplayName(displays[i]),
+                                            size.width, size.height);
 
         monitors[found]->ns.displayID = displays[i];
 
@@ -299,7 +299,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                             "Cocoa: Failed to find NSScreen for CGDisplay %s",
                             monitors[found]->name);
 
-            _glfwDestroyMonitor(monitors[found]);
+            _glfwFreeMonitor(monitors[found]);
             monitors[found] = NULL;
         }
     }

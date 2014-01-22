@@ -77,4 +77,18 @@ typedef struct _GLFWlibraryEGL
 } _GLFWlibraryEGL;
 
 
+//========================================================================
+// Prototypes for platform specific internal functions
+//========================================================================
+
+int _glfwInitContextAPI(void);
+void _glfwTerminateContextAPI(void);
+int _glfwCreateContext(_GLFWwindow* window,
+                       const _GLFWwndconfig* wndconfig,
+                       const _GLFWfbconfig* fbconfig);
+void _glfwDestroyContext(_GLFWwindow* window);
+int _glfwAnalyzeContext(const _GLFWwindow* window,
+                        const _GLFWwndconfig* wndconfig,
+                        const _GLFWfbconfig* fbconfig);
+
 #endif // _egl_platform_h_

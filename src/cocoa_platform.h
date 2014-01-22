@@ -138,12 +138,4 @@ void _glfwTerminateJoysticks(void);
 GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
-// OpenGL support
-int _glfwInitContextAPI(void);
-void _glfwTerminateContextAPI(void);
-int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWwndconfig* wndconfig,
-                       const _GLFWfbconfig* fbconfig);
-void _glfwDestroyContext(_GLFWwindow* window);
-
 #endif // _cocoa_platform_h_

@@ -238,17 +238,6 @@ void _glfwInitTimer(void);
 void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
-// OpenGL support
-int _glfwInitContextAPI(void);
-void _glfwTerminateContextAPI(void);
-int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWwndconfig* wndconfig,
-                       const _GLFWfbconfig* fbconfig);
-void _glfwDestroyContext(_GLFWwindow* window);
-int _glfwAnalyzeContext(const _GLFWwindow* window,
-                        const _GLFWwndconfig* wndconfig,
-                        const _GLFWfbconfig* fbconfig);
-
 // Fullscreen support
 GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);

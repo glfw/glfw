@@ -49,6 +49,7 @@ The following dependencies are needed by the examples and test programs:
  - Added `glfwSetDropCallback` and `GLFWdropfun` for receiving dropped files
  - [Cocoa] Bugfix: Using a 1x1 cursor for hidden mode caused some screen
                    recorders to fail
+ - [X11] Bugfix: The case of finding no usable CRTCs was not detected
 
 
 ## Contact

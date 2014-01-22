@@ -62,7 +62,7 @@ static const XRRModeInfo* getModeInfo(const XRRScreenResources* sr, RRMode id)
 //
 void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 {
-    if (_glfw.x11.randr.available)
+    if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
     {
         int i, j;
         XRRScreenResources* sr;
@@ -136,7 +136,7 @@ void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 //
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 {
-    if (_glfw.x11.randr.available)
+    if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
     {
         XRRScreenResources* sr;
         XRRCrtcInfo* ci;
@@ -170,13 +170,13 @@ void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
+    int i, found = 0;
     _GLFWmonitor** monitors = NULL;
 
     *count = 0;
 
     if (_glfw.x11.randr.available)
     {
-        int i, found = 0;
         RROutput primary;
         XRRScreenResources* sr;
 
@@ -245,13 +245,16 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
         if (found == 0)
         {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: RandR monitor support seems broken");
+            _glfw.x11.randr.monitorBroken = GL_TRUE;
+
             free(monitors);
             monitors = NULL;
         }
-
-        *count = found;
     }
-    else
+
+    if (!monitors)
     {
         monitors = calloc(1, sizeof(_GLFWmonitor*));
         monitors[0] = _glfwAllocMonitor("Display",
@@ -259,9 +262,10 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                                                        _glfw.x11.screen),
                                         DisplayHeightMM(_glfw.x11.display,
                                                         _glfw.x11.screen));
-        *count = 1;
+        found = 1;
     }
 
+    *count = found;
     return monitors;
 }
 
@@ -272,7 +276,7 @@ GLboolean _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
 
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {
-    if (_glfw.x11.randr.available)
+    if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
     {
         XRRScreenResources* sr;
         XRRCrtcInfo* ci;
@@ -309,7 +313,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 
     // Build array of available resolutions
 
-    if (_glfw.x11.randr.available)
+    if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
     {
         int i, j;
         XRRScreenResources* sr;
@@ -375,7 +379,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
-    if (_glfw.x11.randr.available)
+    if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
     {
         XRRScreenResources* sr;
         XRRCrtcInfo* ci;

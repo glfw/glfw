@@ -164,6 +164,7 @@ typedef struct _GLFWlibraryX11
         int         versionMajor;
         int         versionMinor;
         GLboolean   gammaBroken;
+        GLboolean   monitorBroken;
     } randr;
 
     struct {

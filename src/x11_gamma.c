@@ -51,7 +51,11 @@ void _glfwInitGammaRamp(void)
         XRRScreenResources* rr = XRRGetScreenResources(_glfw.x11.display,
                                                        _glfw.x11.root);
 
-        if (XRRGetCrtcGammaSize(_glfw.x11.display, rr->crtcs[0]) == 0)
+        if (rr->ncrtc == 0)
+        {
+            _glfw.x11.randr.gammaBroken = GL_TRUE;
+        }
+        else if (XRRGetCrtcGammaSize(_glfw.x11.display, rr->crtcs[0]) == 0)
         {
             // This is probably older Nvidia RandR with broken gamma support
             // Flag it as useless and try Xf86VidMode below, if available

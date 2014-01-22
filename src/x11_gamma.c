@@ -40,17 +40,13 @@ void _glfwInitGammaRamp(void)
 {
     if (_glfw.x11.randr.available)
     {
-        // FIXME: Assumes that all monitors have the same size gamma tables
-        // This is reasonable as I suspect the that if they did differ, it
-        // would imply that setting the gamma size to an arbitary size is
-        // possible as well.
         XRRScreenResources* rr = XRRGetScreenResources(_glfw.x11.display,
                                                        _glfw.x11.root);
 
         if (XRRGetCrtcGammaSize(_glfw.x11.display, rr->crtcs[0]) == 0)
         {
             // This is probably older Nvidia RandR with broken gamma support
-            // Flag it as useless and try Xf86VidMode below, if available
+            // Flag it as useless and fall back to Xf86VidMode, if available
             _glfw.x11.randr.gammaBroken = GL_TRUE;
         }
 

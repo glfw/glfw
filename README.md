@@ -50,6 +50,8 @@ The following dependencies are needed by the examples and test programs:
  - [Cocoa] Bugfix: Using a 1x1 cursor for hidden mode caused some screen
                    recorders to fail
  - [X11] Bugfix: The case of finding no usable CRTCs was not detected
+ - [X11] Bugfix: Detection of broken Nvidia RandR gamma support did not verify
+                 that at least one CRTC was present
 
 
 ## Contact

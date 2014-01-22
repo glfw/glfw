@@ -73,6 +73,7 @@ extern "C" {
 #if defined(GLFW_EXPOSE_NATIVE_WIN32)
  #include <windows.h>
 #elif defined(GLFW_EXPOSE_NATIVE_COCOA)
+ #include <ApplicationServices/ApplicationServices.h>
  #if defined(__OBJC__)
   #import <Cocoa/Cocoa.h>
  #else

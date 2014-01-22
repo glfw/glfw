@@ -119,7 +119,7 @@ typedef struct _GLFWlibraryX11
     Atom            NET_ACTIVE_WINDOW;
     Atom            MOTIF_WM_HINTS;
 
-	// Atoms for Xdnd
+	// Xdnd (drag and drop) atoms
     Atom			XdndAware;
 	Atom			XdndEnter;
 	Atom			XdndPosition;
@@ -130,11 +130,7 @@ typedef struct _GLFWlibraryX11
 	Atom			XdndFinished;
 	Atom			XdndSelection;
 
-	struct {
-		Window      sourceWindow;
-	} xdnd;
-
-    // Selection atoms
+    // Selection (clipboard) atoms
     Atom            TARGETS;
     Atom            MULTIPLE;
     Atom            CLIPBOARD;
@@ -204,6 +200,10 @@ typedef struct _GLFWlibraryX11
     struct {
         char*       string;
     } selection;
+
+	struct {
+		Window      source;
+	} xdnd;
 
     struct {
         int         present;

@@ -353,7 +353,7 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, double xpos, double ypos)
     _glfwPlatformSetCursorPos(window, xpos, ypos);
 }
 
-GLFWAPI GLFWcursor* glfwCreateCursor(int width, int height, int cx, int cy,
+GLFWAPI GLFWcursor* glfwCreateCursor(int width, int height, int xhot, int yhot,
                                      int format, const void* data)
 {
     _GLFWcursor* cursor;
@@ -361,15 +361,14 @@ GLFWAPI GLFWcursor* glfwCreateCursor(int width, int height, int cx, int cy,
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     cursor = calloc(1, sizeof(_GLFWcursor));
-
-    if (!_glfwPlatformCreateCursor(cursor, width, height, cx, cy, format, data))
-    {
-        free(cursor);
-        return NULL;
-    }
-
     cursor->next = _glfw.cursorListHead;
     _glfw.cursorListHead = cursor;
+
+    if (!_glfwPlatformCreateCursor(cursor, width, height, xhot, yhot, format, data))
+    {
+        glfwDestroyCursor((GLFWcursor*) cursor);
+        return NULL;
+    }
 
     return (GLFWcursor*) cursor;
 }
@@ -385,14 +384,12 @@ GLFWAPI void glfwDestroyCursor(GLFWcursor* handle)
 
     // Make sure the cursor is not being used by any window
     {
-        _GLFWwindow* window = _glfw.windowListHead;
+        _GLFWwindow* window;
 
-        while (window)
+        for (window = _glfw.windowListHead;  window;  window = window->next)
         {
             if (window->cursor == cursor)
                 glfwSetCursor((GLFWwindow*) window, NULL);
-
-            window = window->next;
         }
     }
 

@@ -37,11 +37,15 @@ static int W = 640;
 static int H = 480;
 static int delay = 0;
 
-static GLFWwindow* windows[2] = {NULL, NULL};
+static GLFWwindow* windows[2] = { NULL, NULL };
 static GLFWwindow* activeWindow = NULL;
 static GLFWcursor* cursor = NULL;
 
-static struct { int key; double time; } commands[] = {
+static struct
+{
+    int key;
+    double time;
+} commands[] = {
     {GLFW_KEY_H, 0},
     {GLFW_KEY_C, 0},
     {GLFW_KEY_D, 0},
@@ -54,8 +58,11 @@ static struct { int key; double time; } commands[] = {
 
 static int CommandCount = sizeof(commands) / sizeof(commands[0]);
 
-static struct { int w, h; } cursorSize[] = {
-    {24, 24}, {13, 37}, {5, 53}, {43, 64}, {300, 300}
+static struct
+{
+    int w, h;
+} cursorSize[] = {
+    { 24, 24 }, { 13, 37 }, { 5, 53 }, { 43, 64 }, { 300, 300 }
 };
 
 static int SizeCount = sizeof(cursorSize) / sizeof(cursorSize[0]);
@@ -88,11 +95,11 @@ static void command_callback(int key)
                 int x, y, i = 0;
                 unsigned char *image = malloc(4 * w * h);
 
-                for (y = 0; y < h; y++)
+                for (y = 0;  y < h;  y++)
                 {
-                    for (x = 0; x < w; x++)
+                    for (x = 0;  x < w;  x++)
                     {
-                        image[i++] = 0xFF;
+                        image[i++] = 0xff;
                         image[i++] = 0;
                         image[i++] = 255 * y / h;
                         image[i++] = 255 * x / w;
@@ -103,8 +110,9 @@ static void command_callback(int key)
                 currentSize = (currentSize + 1) % SizeCount;
                 free(image);
             }
+
+            break;
         }
-        break;
 
         case GLFW_KEY_D:
         {
@@ -113,8 +121,9 @@ static void command_callback(int key)
                 glfwDestroyCursor(cursor);
                 cursor = NULL;
             }
+
+            break;
         }
-        break;
 
         case GLFW_KEY_S:
         {
@@ -122,32 +131,25 @@ static void command_callback(int key)
                 glfwSetCursor(activeWindow, cursor);
             else
                 printf("The cursor is not created\n");
+
+            break;
         }
-        break;
 
         case GLFW_KEY_N:
-        {
             glfwSetCursor(activeWindow, NULL);
-        }
-        break;
+            break;
 
         case GLFW_KEY_1:
-        {
             glfwSetInputMode(activeWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        }
-        break;
+            break;
 
         case GLFW_KEY_2:
-        {
             glfwSetInputMode(activeWindow, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-        }
-        break;
+            break;
 
         case GLFW_KEY_3:
-        {
             glfwSetInputMode(activeWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        }
-        break;
+            break;
     }
 }
 

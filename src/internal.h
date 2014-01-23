@@ -588,7 +588,7 @@ int _glfwPlatformExtensionSupported(const char* extension);
  */
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname);
 
-int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int cx, int cy,
+int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int xhot, int yhot,
                               int format, const void* data);
 
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor);

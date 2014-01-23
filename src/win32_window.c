@@ -1223,63 +1223,60 @@ void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
     }
 }
 
-int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int cx, int cy,
+int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int xhot, int yhot,
                               int format, const void* data)
 {
-    HDC hdc;
-    HBITMAP hBitmap, hMonoBitmap;
+    HDC dc;
+    HBITMAP bitmap, mask;
     BITMAPV5HEADER bi;
     ICONINFO ii;
-    DWORD *buffer = 0;
-    BYTE *image = (BYTE*) data;
-    int i, size = width * height;
+    DWORD* target = 0;
+    BYTE* source = (BYTE*) data;
+    int i;
 
-    ZeroMemory(&bi, sizeof(BITMAPV5HEADER));
-
+    ZeroMemory(&bi, sizeof(bi));
     bi.bV5Size        = sizeof(BITMAPV5HEADER);
     bi.bV5Width       = width;
     bi.bV5Height      = -height;
     bi.bV5Planes      = 1;
     bi.bV5BitCount    = 32;
     bi.bV5Compression = BI_BITFIELDS;
-    bi.bV5RedMask     = 0x00FF0000;
-    bi.bV5GreenMask   = 0x0000FF00;
-    bi.bV5BlueMask    = 0x000000FF;
-    bi.bV5AlphaMask   = 0xFF000000;
+    bi.bV5RedMask     = 0x00ff0000;
+    bi.bV5GreenMask   = 0x0000ff00;
+    bi.bV5BlueMask    = 0x000000ff;
+    bi.bV5AlphaMask   = 0xff000000;
 
-    hdc = GetDC(NULL);
+    dc = GetDC(NULL);
+    bitmap = CreateDIBSection(dc, (BITMAPINFO*) &bi, DIB_RGB_COLORS,
+                              (void**) &target, NULL, (DWORD) 0);
+    ReleaseDC(NULL, dc);
 
-    hBitmap = CreateDIBSection(hdc, (BITMAPINFO*) &bi, DIB_RGB_COLORS, (void**) &buffer,
-                               NULL, (DWORD) 0);
-
-    ReleaseDC(NULL, hdc);
-
-    if (hBitmap == NULL)
+    if (!bitmap)
         return GL_FALSE;
 
-    hMonoBitmap = CreateBitmap(width, height, 1, 1, NULL);
-
-    if (hMonoBitmap == NULL)
+    mask = CreateBitmap(width, height, 1, 1, NULL);
+    if (!mask)
     {
-        DeleteObject(hBitmap);
+        DeleteObject(bitmap);
         return GL_FALSE;
     }
 
-    for (i = 0; i < size; i++, buffer++, image += 4)
-        *buffer = (image[3] << 24) | (image[0] << 16) | (image[1] << 8) | image[2];
+    for (i = 0;  i < width * height;  i++, target++, source += 4)
+        *target = (source[3] << 24) | (source[0] << 16) | (source[1] << 8) | source[2];
 
-    ii.fIcon = FALSE;
-    ii.xHotspot = cx;
-    ii.yHotspot = cy;
-    ii.hbmMask = hMonoBitmap;
-    ii.hbmColor = hBitmap;
+    ZeroMemory(&ii, sizeof(ii));
+    ii.fIcon    = FALSE;
+    ii.xHotspot = xhot;
+    ii.yHotspot = yhot;
+    ii.hbmMask  = mask;
+    ii.hbmColor = bitmap;
 
     cursor->win32.handle = (HCURSOR) CreateIconIndirect(&ii);
 
-    DeleteObject(hBitmap);
-    DeleteObject(hMonoBitmap);
+    DeleteObject(bitmap);
+    DeleteObject(mask);
 
-    if (cursor->win32.handle == NULL)
+    if (!cursor->win32.handle)
         return GL_FALSE;
 
     return GL_TRUE;
@@ -1287,7 +1284,8 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int cx
 
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 {
-    DestroyIcon((HICON) cursor->win32.handle);
+    if (cursor->win32.handle)
+        DestroyIcon((HICON) cursor->win32.handle);
 }
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
@@ -1302,7 +1300,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
         if (cursor)
             SetCursor(cursor->win32.handle);
         else
-            SetCursor(LoadCursor(NULL, IDC_ARROW));
+            SetCursor(LoadCursorW(NULL, IDC_ARROW));
     }
 }
 

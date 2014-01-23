@@ -130,7 +130,7 @@ typedef struct _GLFWmonitorNS
 //------------------------------------------------------------------------
 typedef struct _GLFWcursorNS
 {
-    id handle;
+    id                  object;
 } _GLFWcursorNS;
 
 

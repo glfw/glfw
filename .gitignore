@@ -52,6 +52,8 @@ tests/*.app
 tests/*.exe
 tests/accuracy
 tests/clipboard
+tests/cursor
+tests/cursoranim
 tests/defaults
 tests/empty
 tests/events

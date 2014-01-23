@@ -1356,30 +1356,26 @@ void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
     }
 }
 
-int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int cx, int cy,
+int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int xhot, int yhot,
                               int format, const void* data)
 {
-    XcursorImage* cursorImage;
-    XcursorPixel* buffer;
-    unsigned char* image = (unsigned char*) data;
-    int i, size = width * height;
+    int i;
 
-    cursorImage = XcursorImageCreate(width, height);
-
-    if (cursorImage == NULL)
+    XcursorImage* native = XcursorImageCreate(width, height);
+    if (native == NULL)
         return GL_FALSE;
 
-    cursorImage->xhot = cx;
-    cursorImage->yhot = cy;
+    native->xhot = xhot;
+    native->yhot = yhot;
 
-    buffer = cursorImage->pixels;
+    unsigned char* source = (unsigned char*) data;
+    XcursorPixel* target = native->pixels;
 
-    for (i = 0; i < size; i++, buffer++, image += 4)
-        *buffer = (image[3] << 24) | (image[0] << 16) | (image[1] << 8) | image[2];
+    for (i = 0;  i < width * height;  i++, target++, source += 4)
+        *target = (source[3] << 24) | (source[0] << 16) | (source[1] << 8) | source[2];
 
-    cursor->x11.handle = XcursorImageLoadCursor(_glfw.x11.display, cursorImage);
-
-    XcursorImageDestroy(cursorImage);
+    cursor->x11.handle = XcursorImageLoadCursor(_glfw.x11.display, native);
+    XcursorImageDestroy(native);
 
     if (cursor->x11.handle == None)
         return GL_FALSE;
@@ -1389,7 +1385,8 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int cx
 
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 {
-    XFreeCursor(_glfw.x11.display, cursor->x11.handle);
+    if (cursor->x11.handle)
+        XFreeCursor(_glfw.x11.display, cursor->x11.handle);
 }
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)

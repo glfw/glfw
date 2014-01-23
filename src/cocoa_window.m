@@ -46,7 +46,7 @@ static void setModeCursor(_GLFWwindow* window)
     if (window->cursorMode == GLFW_CURSOR_NORMAL)
     {
         if (window->cursor)
-            [(NSCursor*) window->cursor->ns.handle set];
+            [(NSCursor*) window->cursor->ns.object set];
         else
             [[NSCursor arrowCursor] set];
     }
@@ -1201,7 +1201,7 @@ void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
         CGAssociateMouseAndMouseCursorPosition(true);
 }
 
-int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int cx, int cy,
+int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int xhot, int yhot,
                               int format, const void* data)
 {
     NSImage* image;
@@ -1223,18 +1223,18 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int cx
     if (rep == nil)
         return GL_FALSE;
 
-    memcpy([rep bitmapData], data, 4 * width * height);
+    memcpy([rep bitmapData], data, width * height * 4);
 
     image = [[NSImage alloc] initWithSize:NSMakeSize(width, height)];
     [image addRepresentation: rep];
 
-    cursor->ns.handle = [[NSCursor alloc] initWithImage:image
-                                                hotSpot:NSMakePoint(cx, cy)];
+    cursor->ns.object = [[NSCursor alloc] initWithImage:image
+                                                hotSpot:NSMakePoint(xhot, yhot)];
 
     [image release];
     [rep release];
 
-    if (cursor->ns.handle == nil)
+    if (cursor->ns.object == nil)
         return GL_FALSE;
 
     return GL_TRUE;
@@ -1242,7 +1242,8 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int cx
 
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 {
-    [(NSCursor*) cursor->ns.handle release];
+    if (cursor->ns.object)
+        [(NSCursor*) cursor->ns.object release];
 }
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
@@ -1250,7 +1251,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
     if (window->cursorMode == GLFW_CURSOR_NORMAL && window->ns.cursorInside)
     {
         if (cursor)
-            [(NSCursor*) cursor->ns.handle set];
+            [(NSCursor*) cursor->ns.object set];
         else
             [[NSCursor arrowCursor] set];
     }

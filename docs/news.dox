@@ -88,7 +88,7 @@ GLFW now supports high-DPI monitors on both Windows and OS X, giving windows ful
 resolution framebuffers where other UI elements are scaled up.  To achieve this,
 @ref glfwGetFramebufferSize and @ref glfwSetFramebufferSizeCallback have been
 added.  These work with pixels, while the rest of the GLFW API works with screen
-coordinates.
+coordinates.  This is important as OpenGL uses pixels, not screen coordinates.
 
 
 @subsection news_30_error Error callback

@@ -174,6 +174,17 @@ window to use.  There is @ref glfwGetPrimaryMonitor that provides behaviour
 similar to that of GLFW 2.
 
 
+@subsection moving_hidpi Separation of window and framebuffer sizes
+
+Window positions and sizes now use screen coordinates, which may not be the same
+as pixels on machines with high-DPI monitors.  This is important as OpenGL uses
+pixels, not screen coordinates.  Most commonly, the rectangle specified with
+`glViewport` needs to use pixels.  Therefore, framebuffer size functions have
+been added.  You can retrieve the size of the framebuffer of a window with @ref
+glfwGetFramebufferSize function.  A framebuffer size callback has been added,
+which can be set with @ref glfwSetFramebufferSizeCallback.
+
+
 @subsection moving_window_close Window closing
 
 Window closing initiated by the user is now just an event like any other.

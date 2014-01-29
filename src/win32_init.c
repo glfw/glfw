@@ -65,7 +65,11 @@ static GLboolean initLibraries(void)
 
     _glfw.win32.winmm.instance = LoadLibrary(L"winmm.dll");
     if (!_glfw.win32.winmm.instance)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to load winmm.dll");
         return GL_FALSE;
+    }
 
     _glfw.win32.winmm.joyGetDevCaps = (JOYGETDEVCAPS_T)
         GetProcAddress(_glfw.win32.winmm.instance, "joyGetDevCapsW");
@@ -81,6 +85,8 @@ static GLboolean initLibraries(void)
         !_glfw.win32.winmm.joyGetPosEx ||
         !_glfw.win32.winmm.timeGetTime)
     {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to load winmm functions");
         return GL_FALSE;
     }
 #endif // _GLFW_NO_DLOAD_WINMM

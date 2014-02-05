@@ -50,6 +50,7 @@ typedef struct _GLFWcontextWGL
 {
     // Platform specific window resources
     HDC       dc;              // Private GDI device context
+	HDC       affinityDC;      // gpu affinity device context
     HGLRC     context;         // Permanent rendering context
 
     // Platform specific extensions (context specific)
@@ -58,6 +59,9 @@ typedef struct _GLFWcontextWGL
     PFNWGLGETEXTENSIONSSTRINGEXTPROC    GetExtensionsStringEXT;
     PFNWGLGETEXTENSIONSSTRINGARBPROC    GetExtensionsStringARB;
     PFNWGLCREATECONTEXTATTRIBSARBPROC   CreateContextAttribsARB;
+	PFNWGLCREATEAFFINITYDCNVPROC		CreateAffinityDCNV;
+	PFNWGLDELETEDCNVPROC				DeleteDCNV;
+	PFNWGLENUMGPUSNVPROC				EnumGpusNV;
     GLboolean                           EXT_swap_control;
     GLboolean                           ARB_multisample;
     GLboolean                           ARB_framebuffer_sRGB;
@@ -66,6 +70,7 @@ typedef struct _GLFWcontextWGL
     GLboolean                           ARB_create_context_profile;
     GLboolean                           EXT_create_context_es2_profile;
     GLboolean                           ARB_create_context_robustness;
+	GLboolean							NV_gpu_affinity;
 } _GLFWcontextWGL;
 
 

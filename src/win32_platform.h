@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 Win32 - www.glfw.org
+// GLFW 3.1 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -157,7 +157,7 @@ typedef struct _GLFWwindowWin32
     GLboolean           cursorCentered;
     GLboolean           cursorInside;
     GLboolean           cursorHidden;
-    double              oldCursorX, oldCursorY;
+    int                 oldCursorX, oldCursorY;
 } _GLFWwindowWin32;
 
 
@@ -174,8 +174,7 @@ typedef struct _GLFWlibraryWin32
     struct {
         GLboolean       hasPC;
         double          resolution;
-        unsigned int    t0_32;
-        __int64         t0_64;
+        unsigned __int64 base;
     } timer;
 
 #ifndef _GLFW_NO_DLOAD_WINMM
@@ -238,17 +237,6 @@ void _glfwInitTimer(void);
 // Joystick input
 void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
-
-// OpenGL support
-int _glfwInitContextAPI(void);
-void _glfwTerminateContextAPI(void);
-int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWwndconfig* wndconfig,
-                       const _GLFWfbconfig* fbconfig);
-void _glfwDestroyContext(_GLFWwindow* window);
-int _glfwAnalyzeContext(const _GLFWwindow* window,
-                        const _GLFWwndconfig* wndconfig,
-                        const _GLFWfbconfig* fbconfig);
 
 // Fullscreen support
 GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);

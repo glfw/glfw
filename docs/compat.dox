@@ -14,7 +14,7 @@ specification but merely list some of the preconditions for certain parts of the
 API to function on a given machine.  As such, any part of it may change in
 future versions without this being considered a breaking API change.
 
-@section compat_wm ICCCM and EWMH conformance
+@section compat_x11 X11 extensions, protocols and IPC standards
 
 As GLFW uses Xlib, directly, without any intervening toolkit
 library, it has sole responsibility for interacting well with the many and
@@ -27,6 +27,10 @@ X11 API; most importantly the
 [Extended Window Manager Hints](http://standards.freedesktop.org/wm-spec/wm-spec-latest.html)
 (EWMH) standards.
 
+GLFW uses the `_MOTIF_WM_HINTS` window property to support borderless windows.
+If the running window manager does not support this property, the
+`GLFW_DECORATED` hint will have no effect.
+
 GLFW uses the ICCCM `WM_DELETE_WINDOW` protocol to intercept the user
 attempting to close the GLFW window.  If the running window manager does not
 support this protocol, the close callback will never be called.
@@ -36,17 +40,44 @@ the user when the application has stopped responding, i.e. when it has ceased to
 process events.  If the running window manager does not support this protocol,
 the user will not be notified if the application locks up.
 
-GLFW uses the EWMH `_NET_WM_STATE` protocol to tell the window manager to make
-the GLFW window full screen.  If the running window manager does not support this
-protocol, full screen windows may not work properly.  GLFW has a fallback code
-path in case this protocol is unavailable, but every window manager behaves
-slightly differently in this regard.
+GLFW uses the EWMH `_NET_WM_STATE_FULLSCREEN` window state to tell the window
+manager to make the GLFW window full screen.  If the running window manager does
+not support this state, full screen windows may not work properly.  GLFW has
+a fallback code path in case this state is unavailable, but every window manager
+behaves slightly differently in this regard.
+
+GLFW uses the EWMH `_NET_WM_BYPASS_COMPOSITOR` window property to tell a
+compositing window manager to un-redirect full screen GLFW windows.  If the
+running window manager uses compositing but does not support this property then
+additional copying may be performed for each buffer swap of full screen windows.
 
 GLFW uses the
 [clipboard manager protocol](http://www.freedesktop.org/wiki/ClipboardManager/)
 to push a clipboard string (i.e. selection) owned by a GLFW window about to be
 destroyed to the clipboard manager.  If there is no running clipboard manager,
 the clipboard string will be unavailable once the window has been destroyed.
+
+GLFW uses the
+[X drag-and-drop protocol](http://www.freedesktop.org/wiki/Specifications/XDND/)
+to provide file drop events.  If the application originating the drag does not
+support this protocol, drag and drop will not work.
+
+GLFW uses the XInput 2 extension to provide sub-pixel cursor motion events.  If
+the running X server does not support this version of this extension, cursor
+motion will be snapped to the pixel grid.
+
+GLFW uses the XRandR 1.3 extension to provide multi-monitor support.  If the
+running X server does not support this version of this extension, multi-monitor
+support will not function and only a single, desktop-spanning monitor will be
+reported.
+
+GLFW uses the XRandR 1.3 and Xf86vidmode extensions to provide gamma ramp
+support.  If the running X server does not support either or both of these
+extensions, gamma ramp support will not function.
+
+GLFW requires the Xkb extension with detectable auto-repeat to provide keyboard
+input.  If the running X server does not support this extension and detectable
+auto-repeat, `glfwInit` will fail.
 
 @section compat_glx GLX extensions
 
@@ -123,15 +154,15 @@ version 2.1.
 
 Because of this, on OS X 10.7 and later, the `GLFW_CONTEXT_VERSION_MAJOR` and
 `GLFW_CONTEXT_VERSION_MINOR` hints will cause @ref glfwCreateWindow to fail if
-given version 3.0 or 3.1, the `GLFW_OPENGL_FORWARD_COMPAT` is required for
-creating contexts for OpenGL 3.2 and later, the `GLFW_OPENGL_DEBUG_CONTEXT` hint
-is ignored and setting the `GLFW_OPENGL_PROFILE` hint to anything except
-`GLFW_OPENGL_CORE_PROFILE` will cause @ref glfwCreateWindow to fail.
+given version 3.0 or 3.1, the `GLFW_OPENGL_FORWARD_COMPAT` hint must be set to
+non-zero and the `GLFW_OPENGL_PROFILE` hint must be set to
+`GLFW_OPENGL_CORE_PROFILE` when creating OpenGL 3.2 and later contexts and the
+`GLFW_OPENGL_DEBUG_CONTEXT` hint is ignored.
 
 Also, on Mac OS X 10.6 and below, the `GLFW_CONTEXT_VERSION_MAJOR` and
-`GLFW_CONTEXT_VERSION_MINOR` hints will fail if given a version above 2.1, the
-`GLFW_OPENGL_DEBUG_CONTEXT` hint will have no effect, and setting the
-`GLFW_OPENGL_PROFILE` or `GLFW_OPENGL_FORWARD_COMPAT` hints to a non-zero value
-will cause @ref glfwCreateWindow to fail.
+`GLFW_CONTEXT_VERSION_MINOR` hints will fail if given a version above 2.1,
+setting the `GLFW_OPENGL_PROFILE` or `GLFW_OPENGL_FORWARD_COMPAT` hints to
+a non-default value will cause @ref glfwCreateWindow to fail and the
+`GLFW_OPENGL_DEBUG_CONTEXT` hint is ignored.
 
 */

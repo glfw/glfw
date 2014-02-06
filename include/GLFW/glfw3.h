@@ -1,5 +1,5 @@
 /*************************************************************************
- * GLFW 3.0 - www.glfw.org
+ * GLFW 3.1 - www.glfw.org
  * A library for OpenGL, window and input
  *------------------------------------------------------------------------
  * Copyright (c) 2002-2006 Marcus Geelnard
@@ -220,14 +220,14 @@ extern "C" {
  *  backward-compatible.
  *  @ingroup init
  */
-#define GLFW_VERSION_MINOR          0
+#define GLFW_VERSION_MINOR          1
 /*! @brief The revision number of the GLFW library.
  *
  *  This is incremented when a bug fix release is made that does not contain any
  *  API changes.
  *  @ingroup init
  */
-#define GLFW_VERSION_REVISION       4
+#define GLFW_VERSION_REVISION       0
 /*! @} */
 
 /*! @name Key and button actions
@@ -773,6 +773,21 @@ typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int);
  */
 typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
 
+
+/*! @brief The function signature for drop callbacks.
+ *
+ *  This is the function signature for drop callbacks.
+ *
+ *  @param[in] window The window that received the event.
+ *  @param[in] count The number of dropped objects.
+ *  @param[in] names The UTF-8 encoded names of the dropped objects.
+ *
+ *  @sa glfwSetDropCallback
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWdropfun)(GLFWwindow*,int,const char**);
+
 /*! @brief The function signature for monitor configuration callbacks.
  *
  *  This is the function signature for monitor configuration callback functions.
@@ -862,9 +877,6 @@ typedef struct GLFWgammaramp
  *  This function no longer registers @ref glfwTerminate with `atexit`.
  *
  *  @note This function may only be called from the main thread.
- *
- *  @note This function may take several seconds to complete on some systems,
- *  while on other systems it may take only a fraction of a second to complete.
  *
  *  @note **OS X:** This function will change the current directory of the
  *  application to the `Contents/Resources` subdirectory of the application's
@@ -1246,6 +1258,8 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  information from the application's bundle.  For more information on bundles,
  *  see the Bundle Programming Guide provided by Apple.
  *
+ *  @remarks **X11:** There is no mechanism for setting the window icon yet.
+ *
  *  @remarks The swap interval is not set during window creation, but is left at
  *  the default value for that platform.  For more information, see @ref
  *  glfwSwapInterval.
@@ -1360,10 +1374,6 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
  *  @note This function may only be called from the main thread.
  *
  *  @note The window manager may put limits on what positions are allowed.
- *
- *  @bug **X11:** Some window managers ignore the set position of hidden (i.e.
- *  unmapped) windows, instead placing them where it thinks is appropriate once
- *  they are shown.
  *
  *  @sa glfwGetWindowPos
  *
@@ -1600,6 +1610,9 @@ GLFWAPI GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwind
  *  @return The previously set callback, or `NULL` if no callback was set or an
  *  error occurred.
  *
+ *  @par New in GLFW 3
+ *  The close callback no longer returns a value.
+ *
  *  @remarks **OS X:** Selecting Quit from the application menu will
  *  trigger the close callback for all windows.
  *
@@ -1693,6 +1706,12 @@ GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window
  *  This function is no longer called by @ref glfwSwapBuffers.  You need to call
  *  it or @ref glfwWaitEvents yourself.
  *
+ *  @remarks On some platforms, a window move, resize or menu operation will
+ *  cause event processing to block.  This is due to how event processing is
+ *  designed on those platforms.  You can use the
+ *  [window refresh callback](@ref GLFWwindowrefreshfun) to redraw the contents
+ *  of your window when necessary during the operation.
+ *
  *  @note This function may only be called from the main thread.
  *
  *  @note This function may not be called from a callback.
@@ -1719,6 +1738,12 @@ GLFWAPI void glfwPollEvents(void);
  *  callbacks.
  *
  *  This function is not required for joystick input to work.
+ *
+ *  @remarks On some platforms, a window move, resize or menu operation will
+ *  cause event processing to block.  This is due to how event processing is
+ *  designed on those platforms.  You can use the
+ *  [window refresh callback](@ref GLFWwindowrefreshfun) to redraw the contents
+ *  of your window when necessary during the operation.
  *
  *  @note This function may only be called from the main thread.
  *
@@ -1755,9 +1780,12 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  modes:
  *  - `GLFW_CURSOR_NORMAL` makes the cursor visible and behaving normally.
  *  - `GLFW_CURSOR_HIDDEN` makes the cursor invisible when it is over the client
- *    area of the window.
- *  - `GLFW_CURSOR_DISABLED` disables the cursor and removes any limitations on
- *    cursor movement.
+ *    area of the window but does not restrict the cursor from leaving.  This is
+ *    useful if you wish to render your own cursor or have no visible cursor at
+ *    all.
+ *  - `GLFW_CURSOR_DISABLED` hides and grabs the cursor, providing virtual
+ *    and unlimited cursor movement.  This is useful for implementing for
+ *    example 3D camera controls.
  *
  *  If `mode` is `GLFW_STICKY_KEYS`, the value must be either `GL_TRUE` to
  *  enable sticky keys, or `GL_FALSE` to disable it.  If sticky keys are
@@ -2000,6 +2028,22 @@ GLFWAPI GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcu
  *  @ingroup input
  */
 GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun cbfun);
+
+/*! @brief Sets the drop callback.
+ *
+ *  This function sets the drop callback of the specified window, which is
+ *  called when an object is dropped over the window.
+ *
+ *
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] cbfun The new drop callback, or `NULL` to remove the currently
+ *  set callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or an
+ *  error occurred.
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWdropfun glfwSetDropCallback(GLFWwindow* window, GLFWdropfun cbfun);
 
 /*! @brief Returns whether the specified joystick is present.
  *

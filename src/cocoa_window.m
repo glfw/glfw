@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 OS X - www.glfw.org
+// GLFW 3.1 OS X - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -41,9 +41,9 @@ static void centerCursor(_GLFWwindow *window)
 
 // Update the cursor to match the specified cursor mode
 //
-static void setModeCursor(_GLFWwindow* window, int mode)
+static void setModeCursor(_GLFWwindow* window)
 {
-    if (mode == GLFW_CURSOR_NORMAL)
+    if (window->cursorMode == GLFW_CURSOR_NORMAL)
         [[NSCursor arrowCursor] set];
     else
         [(NSCursor*) _glfw.ns.cursor set];
@@ -67,7 +67,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
                              withOptions:options];
 
     // HACK: Synthesize focus event as window does not become key when the view
-    // is made full screen
+    //       is made full screen
     // TODO: Remove this when moving to a full screen window
     _glfwInputWindowFocus(window, GL_TRUE);
 }
@@ -80,7 +80,7 @@ static void leaveFullscreenMode(_GLFWwindow* window)
         return;
 
     // HACK: Synthesize focus event as window does not become key when the view
-    // is made full screen
+    //       is made full screen
     // TODO: Remove this when moving to a full screen window
     _glfwInputWindowFocus(window, GL_FALSE);
 
@@ -186,13 +186,14 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
     _glfwInputWindowFocus(window, GL_TRUE);
-    _glfwPlatformSetCursorMode(window, window->cursorMode);
+    _glfwPlatformApplyCursorMode(window);
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
 {
     _glfwInputWindowFocus(window, GL_FALSE);
-    _glfwPlatformSetCursorMode(window, GLFW_CURSOR_NORMAL);
+    window->cursorMode = GLFW_CURSOR_NORMAL;
+    _glfwPlatformApplyCursorMode(window);
 }
 
 @end
@@ -266,7 +267,6 @@ static int translateFlags(NSUInteger flags)
 static int translateKey(unsigned int key)
 {
     // Keyboard symbol translation table
-    // TODO: Need to find mappings for F13-F15, volume down/up/mute, and eject.
     static const unsigned int table[128] =
     {
         /* 00 */ GLFW_KEY_A,
@@ -428,7 +428,7 @@ static int translateKey(unsigned int key)
     {
         if (_glfw.ns.cursor == nil)
         {
-            NSImage* data = [[NSImage alloc] initWithSize:NSMakeSize(1, 1)];
+            NSImage* data = [[NSImage alloc] initWithSize:NSMakeSize(16, 16)];
             _glfw.ns.cursor = [[NSCursor alloc] initWithImage:data
                                                       hotSpot:NSZeroPoint];
             [data release];
@@ -445,6 +445,8 @@ static int translateKey(unsigned int key)
         trackingArea = nil;
 
         [self updateTrackingAreas];
+        [self registerForDraggedTypes:[NSArray arrayWithObjects:
+                                       NSFilenamesPboardType, nil]];
     }
 
     return self;
@@ -473,7 +475,7 @@ static int translateKey(unsigned int key)
 
 - (void)cursorUpdate:(NSEvent *)event
 {
-    setModeCursor(window, window->cursorMode);
+    setModeCursor(window);
 }
 
 - (void)mouseDown:(NSEvent *)event
@@ -657,6 +659,67 @@ static int translateKey(unsigned int key)
         _glfwInputScroll(window, deltaX, deltaY);
 }
 
+- (void)resetCursorRects
+{
+    // This makes the cursor dissapear when the window is
+    // resized or received a drag operation
+    [self discardCursorRects];
+    [self addCursorRect:[self bounds] cursor:_glfw.ns.cursor];
+}
+
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
+{
+    if ((NSDragOperationGeneric & [sender draggingSourceOperationMask])
+        == NSDragOperationGeneric)
+    {
+        [self setNeedsDisplay:YES];
+        return NSDragOperationGeneric;
+    }
+
+    return NSDragOperationNone;
+}
+
+- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
+{
+    [self setNeedsDisplay:YES];
+    return YES;
+}
+
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
+{
+    NSPasteboard* pasteboard = [sender draggingPasteboard];
+    NSArray* files = [pasteboard propertyListForType:NSFilenamesPboardType];
+
+    int height;
+    _glfwPlatformGetWindowSize(window, NULL, &height);
+    _glfwInputCursorMotion(window,
+                           [sender draggingLocation].x,
+                           height - [sender draggingLocation].y);
+
+    const int count = [files count];
+    if (count)
+    {
+        NSEnumerator* e = [files objectEnumerator];
+        char** names = calloc(count, sizeof(char*));
+
+        for (int i = 0;  i < count;  i++)
+            names[i] = strdup([[e nextObject] UTF8String]);
+
+        _glfwInputDrop(window, count, (const char**) names);
+
+        for (int i = 0;  i < count;  i++)
+            free(names[i]);
+        free(names);
+    }
+
+    return YES;
+}
+
+- (void)concludeDragOperation:(id <NSDraggingInfo>)sender
+{
+    [self setNeedsDisplay:YES];
+}
+
 @end
 
 
@@ -796,6 +859,19 @@ static void createMenuBar(void)
                           action:@selector(arrangeInFront:)
                    keyEquivalent:@""];
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
+    {
+        // TODO: Make this appear at the bottom of the menu (for consistency)
+
+        [windowMenu addItem:[NSMenuItem separatorItem]];
+        [[windowMenu addItemWithTitle:@"Enter Full Screen"
+                               action:@selector(toggleFullScreen:)
+                        keyEquivalent:@"f"]
+            setKeyEquivalentModifierMask:NSControlKeyMask | NSCommandKeyMask];
+    }
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+
     // Prior to Snow Leopard, we need to use this oddly-named semi-private API
     // to get the application menu working properly.
     SEL setAppleMenuSelector = NSSelectorFromString(@"setAppleMenu:");
@@ -814,13 +890,8 @@ static GLboolean initializeAppKit(void)
     // Implicitly create shared NSApplication instance
     [GLFWApplication sharedApplication];
 
-    // If we get here, the application is unbundled
-    ProcessSerialNumber psn = { 0, kCurrentProcess };
-    TransformProcessType(&psn, kProcessTransformToForegroundApplication);
-
-    // Having the app in front of the terminal window is also generally
-    // handy.  There is an NSApplication API to do this, but...
-    SetFrontProcess(&psn);
+    // In case we are unbundled, make us a proper UI application
+    [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
 #if defined(_GLFW_USE_MENUBAR)
     // Menu bar setup must go between sharedApplication above and
@@ -1027,6 +1098,12 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
+    // Make us the active application
+    // HACK: This has been moved here from initializeAppKit to prevent
+    //       applications using only hidden windows from being activated, but
+    //       should probably not be done every time any window is shown
+    [NSApp activateIgnoringOtherApps:YES];
+
     [window->ns.object makeKeyAndOrderFront:nil];
     _glfwInputWindowVisibility(window, GL_TRUE);
 }
@@ -1071,7 +1148,7 @@ void _glfwPlatformWaitEvents(void)
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
-    setModeCursor(window, window->cursorMode);
+    setModeCursor(window);
 
     if (window->monitor)
     {
@@ -1089,11 +1166,11 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
     }
 }
 
-void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
+void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
 {
-    setModeCursor(window, mode);
+    setModeCursor(window);
 
-    if (mode == GLFW_CURSOR_DISABLED)
+    if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         CGAssociateMouseAndMouseCursorPosition(false);
         centerCursor(window);

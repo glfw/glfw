@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 Win32 - www.glfw.org
+// GLFW 3.1 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -65,7 +65,11 @@ static GLboolean initLibraries(void)
 
     _glfw.win32.winmm.instance = LoadLibrary(L"winmm.dll");
     if (!_glfw.win32.winmm.instance)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to load winmm.dll");
         return GL_FALSE;
+    }
 
     _glfw.win32.winmm.joyGetDevCaps = (JOYGETDEVCAPS_T)
         GetProcAddress(_glfw.win32.winmm.instance, "joyGetDevCapsW");
@@ -81,6 +85,8 @@ static GLboolean initLibraries(void)
         !_glfw.win32.winmm.joyGetPosEx ||
         !_glfw.win32.winmm.timeGetTime)
     {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to load winmm functions");
         return GL_FALSE;
     }
 #endif // _GLFW_NO_DLOAD_WINMM
@@ -243,7 +249,7 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = _GLFW_VERSION_FULL " Win32"
+    const char* version = _GLFW_VERSION_NUMBER " Win32"
 #if defined(_GLFW_WGL)
         " WGL"
 #elif defined(_GLFW_EGL)
@@ -252,7 +258,7 @@ const char* _glfwPlatformGetVersionString(void)
 #if defined(__MINGW32__)
         " MinGW"
 #elif defined(_MSC_VER)
-        " VisualC "
+        " VisualC"
 #elif defined(__BORLANDC__)
         " BorlandC"
 #endif

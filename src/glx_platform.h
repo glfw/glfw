@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 GLX - www.glfw.org
+// GLFW 3.1 GLX - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -40,6 +40,8 @@
 #if defined(_GLFW_HAS_DLOPEN)
  #include <dlfcn.h>
 #endif
+
+#include <pthread.h>
 
 // We support four different ways for getting addresses for GL/GLX
 // extension functions: glXGetProcAddress, glXGetProcAddressARB,
@@ -119,5 +121,16 @@ typedef struct _GLFWlibraryGLX
 #endif
 } _GLFWlibraryGLX;
 
+
+//========================================================================
+// Prototypes for platform specific internal functions
+//========================================================================
+
+int _glfwInitContextAPI(void);
+void _glfwTerminateContextAPI(void);
+int _glfwCreateContext(_GLFWwindow* window,
+                       const _GLFWwndconfig* wndconfig,
+                       const _GLFWfbconfig* fbconfig);
+void _glfwDestroyContext(_GLFWwindow* window);
 
 #endif // _glx_platform_h_

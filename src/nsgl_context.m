@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 OS X - www.glfw.org
+// GLFW 3.1 OS X - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -178,7 +178,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     }
 
     // NOTE: All NSOpenGLPixelFormats on the relevant cards support sRGB
-    // frambuffer, so there's no need (and no way) to request it
+    //       frambuffer, so there's no need (and no way) to request it
 
     ADD_ATTR(0);
 

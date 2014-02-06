@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 Win32 - www.glfw.org
+// GLFW 3.1 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -148,7 +148,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         name = _glfwCreateUTF8FromWideString(display.DeviceString);
         if (!name)
         {
-            _glfwDestroyMonitors(monitors, found);
+            _glfwFreeMonitors(monitors, found);
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Failed to convert string to UTF-8");
 
@@ -156,7 +156,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             return NULL;
         }
 
-        monitors[found] = _glfwCreateMonitor(name,
+        monitors[found] = _glfwAllocMonitor(name,
                                              GetDeviceCaps(dc, HORZSIZE),
                                              GetDeviceCaps(dc, VERTSIZE));
 
@@ -280,5 +280,17 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
                   &mode->redBits,
                   &mode->greenBits,
                   &mode->blueBits);
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW native API                       //////
+//////////////////////////////////////////////////////////////////////////
+
+GLFWAPI const WCHAR* glfwGetWin32Monitor(GLFWmonitor* handle)
+{
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    return monitor->win32.name;
 }
 

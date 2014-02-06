@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 - www.glfw.org
+// GLFW 3.1 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -213,10 +213,10 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
         window->videoMode.refreshRate = Max(_glfw.hints.refreshRate, 0);
     }
 
-    window->monitor     = wndconfig.monitor;
-    window->resizable   = wndconfig.resizable;
-    window->decorated   = wndconfig.decorated;
-    window->cursorMode  = GLFW_CURSOR_NORMAL;
+    window->monitor    = wndconfig.monitor;
+    window->resizable  = wndconfig.resizable;
+    window->decorated  = wndconfig.decorated;
+    window->cursorMode = GLFW_CURSOR_NORMAL;
 
     // Save the currently current context so it can be restored later
     previous = (_GLFWwindow*) glfwGetCurrentContext();

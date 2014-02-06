@@ -5,6 +5,14 @@
 @tableofcontents
 
 
+@section news_31 New features in version 3.1
+
+@subsection news_31_drop Drop event support
+
+GLFW now provides a callback for receiving the paths of files dropped onto GLFW
+windows.  The callback is set with the @ref glfwSetDropCallback function.
+
+
 @section news_30 New features in version 3.0
 
 @subsection news_30_cmake CMake build system
@@ -18,7 +26,7 @@ For more information on how to use CMake, see the
 [CMake manual](http://cmake.org/cmake/help/documentation.html).
 
 
-@subsection new_30_multiwnd Multi-window support
+@subsection news_30_multiwnd Multi-window support
 
 GLFW now supports the creation of multiple windows, each with their own OpenGL
 or OpenGL ES context, and all window functions now take a window handle.  Event
@@ -79,8 +87,8 @@ through CMake options.
 GLFW now supports high-DPI monitors on both Windows and OS X, giving windows full
 resolution framebuffers where other UI elements are scaled up.  To achieve this,
 @ref glfwGetFramebufferSize and @ref glfwSetFramebufferSizeCallback have been
-added.  These work with pixels, while the rest of the GLFW API work with screen
-coordinates.
+added.  These work with pixels, while the rest of the GLFW API works with screen
+coordinates.  This is important as OpenGL uses pixels, not screen coordinates.
 
 
 @subsection news_30_error Error callback

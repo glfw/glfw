@@ -3,8 +3,8 @@ project(GLFW C)
 cmake_minimum_required(VERSION 2.8)
 
 set(GLFW_VERSION_MAJOR "3")
-set(GLFW_VERSION_MINOR "0")
-set(GLFW_VERSION_PATCH "4")
+set(GLFW_VERSION_MINOR "1")
+set(GLFW_VERSION_PATCH "0")
 set(GLFW_VERSION_EXTRA "")
 set(GLFW_VERSION "${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}")
 set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA}")
@@ -13,6 +13,7 @@ set(LIB_SUFFIX "" CACHE STRING "Takes an empty string or 64. Directory where lib
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
+option(GLFW_BUILD_DOCS "Build the GLFW documentation" ON)
 option(GLFW_INSTALL "Generate installation target" ON)
 option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
@@ -73,11 +74,13 @@ endif()
 
 find_package(Threads REQUIRED)
 
-set(DOXYGEN_SKIP_DOT TRUE)
-find_package(Doxygen)
+if (GLFW_BUILD_DOCS)
+    set(DOXYGEN_SKIP_DOT TRUE)
+    find_package(Doxygen)
 
-if (GLFW_DOCUMENT_INTERNALS)
-    set(GLFW_INTERNAL_DOCS "${GLFW_SOURCE_DIR}/src/internal.h ${GLFW_SOURCE_DIR}/docs/internal.dox")
+    if (GLFW_DOCUMENT_INTERNALS)
+        set(GLFW_INTERNAL_DOCS "${GLFW_SOURCE_DIR}/src/internal.h ${GLFW_SOURCE_DIR}/docs/internal.dox")
+    endif()
 endif()
 
 #--------------------------------------------------------------------
@@ -407,7 +410,7 @@ if (GLFW_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
 
-if (DOXYGEN_FOUND)
+if (DOXYGEN_FOUND AND GLFW_BUILD_DOCS)
     add_subdirectory(docs)
 endif()
 

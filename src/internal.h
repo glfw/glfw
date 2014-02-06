@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 - www.glfw.org
+// GLFW 3.1 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -29,7 +29,11 @@
 #define _internal_h_
 
 
-#include "glfw_config.h"
+#if defined(_GLFW_USE_CONFIG_H)
+ #include "glfw_config.h"
+#endif
+
+#define _GLFW_VERSION_NUMBER "3.1.0"
 
 #if defined(_GLFW_USE_OPENGL)
  // This is the default for glfw3.h
@@ -235,6 +239,7 @@ struct _GLFWwindow
         GLFWscrollfun           scroll;
         GLFWkeyfun              key;
         GLFWcharfun             character;
+        GLFWdropfun             drop;
     } callbacks;
 
     // This is defined in the window API's platform.h
@@ -360,12 +365,11 @@ const char* _glfwPlatformGetVersionString(void);
  */
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos);
 
-/*! @brief Sets up the specified cursor mode for the specified window.
- *  @param[in] window The window whose cursor mode to change.
- *  @param[in] mode The desired cursor mode.
+/*! @brief Applies the cursor mode of the specified window to the system.
+ *  @param[in] window The window whose cursor mode to apply.
  *  @ingroup platform
  */
-void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
+void _glfwPlatformApplyCursorMode(_GLFWwindow* window);
 
 /*! @copydoc glfwGetMonitors
  *  @ingroup platform
@@ -675,6 +679,14 @@ void _glfwInputMonitorChange(void);
  */
 void _glfwInputError(int error, const char* format, ...);
 
+/*! @brief Notifies dropped object over window.
+ *  @param[in] window The window that received the event.
+ *  @param[in] count The number of dropped objects.
+ *  @param[in] names The names of the dropped objects.
+ *  @ingroup event
+ */
+void _glfwInputDrop(_GLFWwindow* window, int count, const char** names);
+
 
 //========================================================================
 // Utility functions
@@ -750,16 +762,23 @@ void _glfwAllocGammaArrays(GLFWgammaramp* ramp, unsigned int size);
  */
 void _glfwFreeGammaArrays(GLFWgammaramp* ramp);
 
-/*! @ingroup utility
+/*! @brief Allocates and returns a monitor object with the specified name
+ *  and dimensions.
+ *  @param[in] name The name of the monitor.
+ *  @param[in] widthMM The width, in mm, of the monitor's display area.
+ *  @param[in] heightMM The height, in mm, of the monitor's display area.
+ *  @return The newly created object.
+ *  @ingroup utility
  */
-_GLFWmonitor* _glfwCreateMonitor(const char* name, int widthMM, int heightMM);
+_GLFWmonitor* _glfwAllocMonitor(const char* name, int widthMM, int heightMM);
+
+/*! @brief Frees a monitor object and any data associated with it.
+ *  @ingroup utility
+  */
+void _glfwFreeMonitor(_GLFWmonitor* monitor);
 
 /*! @ingroup utility
   */
-void _glfwDestroyMonitor(_GLFWmonitor* monitor);
-
-/*! @ingroup utility
-  */
-void _glfwDestroyMonitors(_GLFWmonitor** monitors, int count);
+void _glfwFreeMonitors(_GLFWmonitor** monitors, int count);
 
 #endif // _internal_h_

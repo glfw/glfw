@@ -343,6 +343,7 @@ void _glfwInitJoysticks(void)
             {
                 // This device is not relevant to GLFW
                 CFRelease(valueRef);
+                CFRelease(propsRef);
                 continue;
             }
 
@@ -360,6 +361,7 @@ void _glfwInitJoysticks(void)
             {
                 // This device is not relevant to GLFW
                 CFRelease(valueRef);
+                CFRelease(propsRef);
                 continue;
             }
 
@@ -376,7 +378,11 @@ void _glfwInitJoysticks(void)
                                                    &score);
 
         if (kIOReturnSuccess != result)
+        {
+            CFRelease(valueRef);
+            CFRelease(propsRef);
             return;
+        }
 
         plugInResult = (*ppPlugInInterface)->QueryInterface(
                             ppPlugInInterface,
@@ -384,7 +390,11 @@ void _glfwInitJoysticks(void)
                             (void *) &(joystick->interface));
 
         if (plugInResult != S_OK)
+        {
+            CFRelease(valueRef);
+            CFRelease(propsRef);
             return;
+        }
 
         (*ppPlugInInterface)->Release(ppPlugInInterface);
 
@@ -419,6 +429,7 @@ void _glfwInitJoysticks(void)
                                  (void*) joystick);
             CFRelease(valueRef);
         }
+        CFRelease(propsRef);
 
         joystick->axes = calloc(CFArrayGetCount(joystick->axisElements),
                                          sizeof(float));

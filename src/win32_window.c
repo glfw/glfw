@@ -780,7 +780,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             free(names);
 
             DragFinish(hDrop);
-            break;
+            return 0;
         }
     }
 

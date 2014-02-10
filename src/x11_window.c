@@ -1297,6 +1297,10 @@ void _glfwPlatformWaitEvents(void)
     _glfwPlatformPollEvents();
 }
 
+void _glfwPlatformPostEmptyEvent(void)
+{
+}
+
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
     // Store the new position so it can be recognized later

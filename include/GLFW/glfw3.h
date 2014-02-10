@@ -1758,6 +1758,19 @@ GLFWAPI void glfwPollEvents(void);
  */
 GLFWAPI void glfwWaitEvents(void);
 
+/*! @brief Posts an empty event to the event queue.
+ *
+ *  This function posts an empty event from the current thread to the main
+ *  thread event queue, causing @ref glfwWaitEvents to return.
+ *
+ *  @remarks This function may be called from secondary threads.
+ *
+ *  @sa glfwWaitEvents
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwPostEmptyEvent(void);
+
 /*! @brief Returns the value of an input option for the specified window.
  *
  *  @param[in] window The window to query.

@@ -672,3 +672,9 @@ GLFWAPI void glfwWaitEvents(void)
     _glfwPlatformWaitEvents();
 }
 
+GLFWAPI void glfwPostEmptyEvent(void)
+{
+    _GLFW_REQUIRE_INIT();
+    _glfwPlatformPostEmptyEvent();
+}
+

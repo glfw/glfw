@@ -523,6 +523,11 @@ void _glfwPlatformPollEvents(void);
  */
 void _glfwPlatformWaitEvents(void);
 
+/*! @copydoc glfwPostEmptyEvent
+ *  @ingroup platform
+ */
+void _glfwPlatformPostEmptyEvent(void);
+
 /*! @copydoc glfwMakeContextCurrent
  *  @ingroup platform
  */

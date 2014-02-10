@@ -47,6 +47,8 @@ The following dependencies are needed by the examples and test programs:
 
  - Added native monitor handle access to native API
  - Added `glfwSetDropCallback` and `GLFWdropfun` for receiving dropped files
+ - Added `glfwPostEmptyEvent` for allowing secondary threads to cause
+   `glfwWaitEvents` to return
  - [Cocoa] Added `_GLFW_USE_RETINA` to control whether windows will use the full
            resolution on Retina displays
  - [Cocoa] Bugfix: Using a 1x1 cursor for hidden mode caused some screen

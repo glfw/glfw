@@ -1148,6 +1148,10 @@ void _glfwPlatformWaitEvents(void)
     _glfwPlatformPollEvents();
 }
 
+void _glfwPlatformPostEmptyEvent(void)
+{
+}
+
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
     setModeCursor(window);

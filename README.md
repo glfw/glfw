@@ -53,6 +53,7 @@ The following dependencies are needed by the examples and test programs:
                    recorders to fail
  - [Cocoa] Bugfix: Some Core Foundation objects were leaked during joystick
                    enumeration
+ - [Win32] Enabled generation of pkg-config file for MinGW
  - [Win32] Bugfix: Failure to load winmm or its functions was not reported to
                    the error callback
  - [X11] Bugfix: The case of finding no usable CRTCs was not detected

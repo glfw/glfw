@@ -1305,6 +1305,21 @@ void _glfwPlatformWaitEvents(void)
     _glfwPlatformPollEvents();
 }
 
+void _glfwPlatformPostEmptyEvent(void)
+{
+    XEvent event;
+    _GLFWwindow* window = _glfw.windowListHead;
+
+    memset(&event, 0, sizeof(event));
+    event.type = ClientMessage;
+    event.xclient.window = window->x11.handle;
+    event.xclient.format = 32; // Data is 32-bit longs
+    event.xclient.message_type = _glfw.x11._NULL;
+
+    XSendEvent(_glfw.x11.display, window->x11.handle, False, 0, &event);
+    XFlush(_glfw.x11.display);
+}
+
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
     // Store the new position so it can be recognized later

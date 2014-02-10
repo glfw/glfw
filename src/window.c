@@ -669,6 +669,20 @@ GLFWAPI void glfwPollEvents(void)
 GLFWAPI void glfwWaitEvents(void)
 {
     _GLFW_REQUIRE_INIT();
+
+    if (!_glfw.windowListHead)
+        return;
+
     _glfwPlatformWaitEvents();
+}
+
+GLFWAPI void glfwPostEmptyEvent(void)
+{
+    _GLFW_REQUIRE_INIT();
+
+    if (!_glfw.windowListHead)
+        return;
+
+    _glfwPlatformPostEmptyEvent();
 }
 

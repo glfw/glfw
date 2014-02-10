@@ -1745,6 +1745,10 @@ GLFWAPI void glfwPollEvents(void);
  *  [window refresh callback](@ref GLFWwindowrefreshfun) to redraw the contents
  *  of your window when necessary during the operation.
  *
+ *  @remarks If no windows exist, this function returns immediately.  For
+ *  synchronization of threads in applications that do not create windows, use
+ *  your threading library of choice.
+ *
  *  @note This function may only be called from the main thread.
  *
  *  @note This function may not be called from a callback.
@@ -1757,6 +1761,23 @@ GLFWAPI void glfwPollEvents(void);
  *  @ingroup window
  */
 GLFWAPI void glfwWaitEvents(void);
+
+/*! @brief Posts an empty event to the event queue.
+ *
+ *  This function posts an empty event from the current thread to the main
+ *  thread event queue, causing @ref glfwWaitEvents to return.
+ *
+ *  @remarks If no windows exist, this function returns immediately.  For
+ *  synchronization of threads in applications that do not create windows, use
+ *  your threading library of choice.
+ *
+ *  @remarks This function may be called from secondary threads.
+ *
+ *  @sa glfwWaitEvents
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwPostEmptyEvent(void);
 
 /*! @brief Returns the value of an input option for the specified window.
  *

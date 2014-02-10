@@ -132,6 +132,9 @@ const char* _glfwPlatformGetVersionString(void)
 #if defined(_GLFW_USE_MENUBAR)
         " menubar"
 #endif
+#if defined(_GLFW_USE_RETINA)
+        " retina"
+#endif
 #if defined(_GLFW_BUILD_DLL)
         " dynamic"
 #endif

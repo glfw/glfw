@@ -940,7 +940,9 @@ static GLboolean createWindow(_GLFWwindow* window,
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
     {
+#if defined(_GLFW_USE_RETINA)
         [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
+#endif
 
         if (wndconfig->resizable)
             [window->ns.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];

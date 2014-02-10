@@ -955,6 +955,14 @@ static GLboolean createWindow(_GLFWwindow* window,
     [window->ns.object setAcceptsMouseMovedEvents:YES];
     [window->ns.object center];
 
+    if (window->cursorMode != GLFW_CURSOR_DISABLED)
+    {
+        const NSRect contentRect = [window->ns.view frame];
+        const NSPoint p = [window->ns.object mouseLocationOutsideOfEventStream];
+        window->cursorPosX = p.x;
+        window->cursorPosY = contentRect.size.height - p.y;
+    }
+
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
         [window->ns.object setRestorable:NO];
@@ -1057,6 +1065,17 @@ void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
     const NSRect dummyRect = NSMakeRect(x, transformY(y + contentRect.size.height), 0, 0);
     const NSRect frameRect = [window->ns.object frameRectForContentRect:dummyRect];
     [window->ns.object setFrameOrigin:frameRect.origin];
+
+    if (window->cursorMode != GLFW_CURSOR_DISABLED)
+    {
+        const NSPoint p = [window->ns.object mouseLocationOutsideOfEventStream];
+        // TODO: This should enqueue an event that will result in cursor position callback being called
+        // during the next glfwPollEvents()
+        // (But can't call _glfwInputCursorMotion directly here because that'd result in callbacks
+        // being called outside of glfwPollEvents() timeframe)
+        window->cursorPosX = p.x;
+        window->cursorPosY = contentRect.size.height - p.y;
+    }
 }
 
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)

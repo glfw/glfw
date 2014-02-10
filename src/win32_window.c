@@ -901,6 +901,16 @@ static int createWindow(_GLFWwindow* window,
 
     free(wideTitle);
 
+    if (_glfw_ChangeWindowMessageFilterEx)
+    {
+        _glfw_ChangeWindowMessageFilterEx(window->win32.handle,
+                                        WM_DROPFILES, MSGFLT_ALLOW, NULL);
+        _glfw_ChangeWindowMessageFilterEx(window->win32.handle,
+                                        WM_COPYDATA, MSGFLT_ALLOW, NULL);
+        _glfw_ChangeWindowMessageFilterEx(window->win32.handle,
+                                        WM_COPYGLOBALDATA, MSGFLT_ALLOW, NULL);
+    }
+
     DragAcceptFiles(window->win32.handle, TRUE);
 
     if (!window->win32.handle)

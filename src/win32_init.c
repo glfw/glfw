@@ -96,6 +96,8 @@ static GLboolean initLibraries(void)
     {
         _glfw.win32.user32.SetProcessDPIAware = (SETPROCESSDPIAWARE_T)
             GetProcAddress(_glfw.win32.user32.instance, "SetProcessDPIAware");
+        _glfw.win32.user32.ChangeWindowMessageFilterEx = (CHANGEWINDOWMESSAGEFILTEREX_T)
+            GetProcAddress(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
     }
 
     _glfw.win32.dwmapi.instance = LoadLibrary(L"dwmapi.dll");

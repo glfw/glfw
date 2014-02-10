@@ -799,7 +799,7 @@ static void processEvent(XEvent *event)
                 reply.xclient.data.l[3] = 0;
                 reply.xclient.data.l[4] = _glfw.x11.XdndActionCopy;
 
-                XSendEvent(_glfw.x11.display, window->x11.handle,
+                XSendEvent(_glfw.x11.display, event->xclient.data.l[0],
                            False, NoEventMask, &reply);
                 XFlush(_glfw.x11.display);
             }

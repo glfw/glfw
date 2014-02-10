@@ -175,8 +175,9 @@ if (_GLFW_WIN32)
     # the inclusion of stddef.h (by glfw3.h), which is itself included before
     # win32_platform.h.  We define them here until a saner solution can be found
     # NOTE: MinGW-w64 and Visual C++ do /not/ need this hack.
-    add_definitions(-DUNICODE)
-    add_definitions(-DWINVER=0x0501)
+    if (CMAKE_COMPILER_IS_GNUC)
+        add_definitions(-DUNICODE -DWINVER=0x0501)
+    endif()
 endif()
 
 #--------------------------------------------------------------------

@@ -80,17 +80,18 @@
 #ifndef WM_COPYGLOBALDATA
  #define WM_COPYGLOBALDATA 0x0049
 #endif
-#ifndef MSGFLT_ALLOW
- #define MSGFLT_ALLOW 1
-#endif
 
-#if defined(__MINGW32__)
+#if WINVER < 0x0601
 typedef struct tagCHANGEFILTERSTRUCT
 {
     DWORD cbSize;
     DWORD ExtStatus;
+
 } CHANGEFILTERSTRUCT, *PCHANGEFILTERSTRUCT;
-#endif /*__MINGW32__*/
+#ifndef MSGFLT_ALLOW
+ #define MSGFLT_ALLOW 1
+#endif
+#endif /*Windows 7*/
 
 
 //========================================================================

@@ -51,6 +51,8 @@ The following dependencies are needed by the examples and test programs:
            resolution on Retina displays
  - [Cocoa] Bugfix: Using a 1x1 cursor for hidden mode caused some screen
                    recorders to fail
+ - [Cocoa] Bugfix: Some Core Foundation objects were leaked during joystick
+                   enumeration
  - [Win32] Bugfix: Failure to load winmm or its functions was not reported to
                    the error callback
  - [X11] Bugfix: The case of finding no usable CRTCs was not detected

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-GLFW is a free, Open Source, portable library for OpenGL and OpenGL ES
+GLFW is a free, Open Source, multi-platform library for OpenGL and OpenGL ES
 application development.  It provides a simple, platform-independent API for
 creating windows and contexts, reading input, handling events, etc.
 

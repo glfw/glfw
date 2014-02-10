@@ -4,7 +4,7 @@ includedir=${prefix}/include
 libdir=${exec_prefix}/lib@LIB_SUFFIX@
 
 Name: GLFW
-Description: A portable library for OpenGL, window and input
+Description: A multi-platform library for OpenGL, window and input
 Version: @GLFW_VERSION_FULL@
 URL: http://www.glfw.org/
 Requires.private: @GLFW_PKG_DEPS@

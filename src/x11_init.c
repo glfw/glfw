@@ -334,6 +334,16 @@ static Atom getSupportedAtom(Atom* supportedAtoms,
     return None;
 }
 
+// X error handler and state variable needed to catch BadWindow in detectEWMH
+//
+static Bool handlerRan;
+static int setFlagOnXError(Display* display, XErrorEvent* err)
+{
+    handlerRan = True;
+
+    return 0;
+}
+
 // Check whether the running window manager is EWMH-compliant
 //
 static void detectEWMH(void)
@@ -359,15 +369,28 @@ static void detectEWMH(void)
         return;
     }
 
+    // Since we don't trust that the window ID is valid, we set an error handler
+    // In order to ensure the handler runs immediately, also make XLib
+    // synchronous for the duration
+    handlerRan = False;
+    int (*oldHandler)(Display*, XErrorEvent*) = XSetErrorHandler(setFlagOnXError);
+    XSynchronize(_glfw.x11.display, True);
+
     // It should be the ID of a child window (of the root)
     // Then we look for the same property on the child window
-    if (_glfwGetWindowProperty(*windowFromRoot,
+    unsigned long windowCount = _glfwGetWindowProperty(*windowFromRoot,
                                supportingWmCheck,
                                XA_WINDOW,
-                               (unsigned char**) &windowFromChild) != 1)
+                               (unsigned char**) &windowFromChild);
+
+    XSetErrorHandler(oldHandler);
+    XSynchronize(_glfw.x11.display, False);
+
+    if (windowCount != 1 || handlerRan)
     {
         XFree(windowFromRoot);
-        XFree(windowFromChild);
+        if (!handlerRan)
+            XFree(windowFromChild);
         return;
     }
 

@@ -359,6 +359,8 @@ static void detectEWMH(void)
         return;
     }
 
+    _glfwGrabXErrorHandler();
+
     // It should be the ID of a child window (of the root)
     // Then we look for the same property on the child window
     if (_glfwGetWindowProperty(*windowFromRoot,
@@ -370,6 +372,10 @@ static void detectEWMH(void)
         XFree(windowFromChild);
         return;
     }
+
+    _glfwReleaseXErrorHandler();
+    if (_glfw.x11.errorCode != Success)
+        return;
 
     // It should be the ID of that same child window
     if (*windowFromRoot != *windowFromChild)

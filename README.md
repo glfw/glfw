@@ -59,6 +59,8 @@ The following dependencies are needed by the examples and test programs:
  - [X11] Bugfix: The case of finding no usable CRTCs was not detected
  - [X11] Bugfix: Detection of broken Nvidia RandR gamma support did not verify
                  that at least one CRTC was present
+ - [X11] Bugfix: A stale `_NET_SUPPORTING_WM_CHECK` root window property would
+                 cause an uncaught `BadWindow` error
 
 
 ## Contact

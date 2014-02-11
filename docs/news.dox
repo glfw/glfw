@@ -81,6 +81,13 @@ The support for EGL is now stable, successfully running on PandaBoards, Mesa,
 ANGLE, Wayland, AMD EGL and others.
 
 
+@subsection news_31_getcursorpos Direct query for cursor position
+
+GLFW now queries the system cursor position directly when you call @ref
+glfwGetCursorPos instead of returning cached data, except for when the window is
+in captured cursor mode.
+
+
 @section news_30 New features in version 3.0
 
 @subsection news_30_cmake CMake build system

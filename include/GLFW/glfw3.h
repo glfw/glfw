@@ -2573,12 +2573,12 @@ GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
  */
 GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
 
-/*! @brief Retrieves the last reported cursor position, relative to the client
- *  area of the window.
+/*! @brief Retrieves the position of the cursor relative to the client area of
+ *  the window.
  *
- *  This function returns the last reported position of the cursor, in screen
- *  coordinates, relative to the upper-left corner of the client area of the
- *  specified window.
+ *  This function returns the position of the cursor, in screen coordinates,
+ *  relative to the upper-left corner of the client area of the specified
+ *  window.
  *
  *  If the cursor is disabled (with `GLFW_CURSOR_DISABLED`) then the cursor
  *  position is unbounded and limited only by the minimum and maximum values of

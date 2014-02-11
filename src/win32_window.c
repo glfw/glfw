@@ -55,14 +55,7 @@ static void hideCursor(_GLFWwindow* window)
 {
     POINT pos;
 
-    ReleaseCapture();
     ClipCursor(NULL);
-
-    if (window->win32.cursorHidden)
-    {
-        ShowCursor(TRUE);
-        window->win32.cursorHidden = GL_FALSE;
-    }
 
     if (GetCursorPos(&pos))
     {
@@ -75,14 +68,15 @@ static void hideCursor(_GLFWwindow* window)
 //
 static void disableCursor(_GLFWwindow* window)
 {
-    if (!window->win32.cursorHidden)
-    {
-        ShowCursor(FALSE);
-        window->win32.cursorHidden = GL_TRUE;
-    }
+    POINT pos;
 
     updateClipRect(window);
-    SetCapture(window->win32.handle);
+
+    if (GetCursorPos(&pos))
+    {
+        if (WindowFromPoint(pos) == window->win32.handle)
+            SetCursor(NULL);
+    }
 }
 
 // Restores the mouse cursor
@@ -91,14 +85,7 @@ static void restoreCursor(_GLFWwindow* window)
 {
     POINT pos;
 
-    ReleaseCapture();
     ClipCursor(NULL);
-
-    if (window->win32.cursorHidden)
-    {
-        ShowCursor(TRUE);
-        window->win32.cursorHidden = GL_FALSE;
-    }
 
     if (GetCursorPos(&pos))
     {
@@ -439,34 +426,23 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOUSEMOVE:
         {
-            const int newCursorX = GET_X_LPARAM(lParam);
-            const int newCursorY = GET_Y_LPARAM(lParam);
+            const int x = GET_X_LPARAM(lParam);
+            const int y = GET_Y_LPARAM(lParam);
 
-            if (newCursorX != window->win32.oldCursorX ||
-                newCursorY != window->win32.oldCursorY)
+            if (window->cursorMode == GLFW_CURSOR_DISABLED)
             {
-                int x, y;
+                if (_glfw.focusedWindow != window)
+                    break;
 
-                if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                {
-                    if (_glfw.focusedWindow != window)
-                        return 0;
-
-                    x = newCursorX - window->win32.oldCursorX;
-                    y = newCursorY - window->win32.oldCursorY;
-                }
-                else
-                {
-                    x = newCursorX;
-                    y = newCursorY;
-                }
-
-                window->win32.oldCursorX = newCursorX;
-                window->win32.oldCursorY = newCursorY;
-                window->win32.cursorCentered = GL_FALSE;
-
-                _glfwInputCursorMotion(window, x, y);
+                _glfwInputCursorMotion(window,
+                                        x - window->win32.cursorPosX,
+                                        y - window->win32.cursorPosY);
             }
+            else
+                _glfwInputCursorMotion(window, x, y);
+
+            window->win32.cursorPosX = x;
+            window->win32.cursorPosY = y;
 
             if (!window->win32.cursorInside)
             {
@@ -1058,13 +1034,11 @@ void _glfwPlatformPollEvents(void)
         }
 
         // Did the cursor move in an focused window that has disabled the cursor
-        if (window->cursorMode == GLFW_CURSOR_DISABLED &&
-            !window->win32.cursorCentered)
+        if (window->cursorMode == GLFW_CURSOR_DISABLED)
         {
             int width, height;
             _glfwPlatformGetWindowSize(window, &width, &height);
-            _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
-            window->win32.cursorCentered = GL_TRUE;
+            _glfwPlatformSetCursorPos(window, width / 2, height / 2);
         }
     }
 }
@@ -1082,14 +1056,31 @@ void _glfwPlatformPostEmptyEvent(void)
     PostMessage(window->win32.handle, WM_NULL, 0, 0);
 }
 
+void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
+{
+    POINT pos;
+
+    if (GetCursorPos(&pos))
+    {
+        ScreenToClient(window->win32.handle, &pos);
+
+        if (xpos)
+            *xpos = pos.x;
+        if (ypos)
+            *ypos = pos.y;
+    }
+}
+
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos)
 {
     POINT pos = { (int) xpos, (int) ypos };
+
+    // Store the new position so it can be recognized later
+    window->win32.cursorPosX = pos.x;
+    window->win32.cursorPosY = pos.y;
+
     ClientToScreen(window->win32.handle, &pos);
     SetCursorPos(pos.x, pos.y);
-
-    window->win32.oldCursorX = (int) xpos;
-    window->win32.oldCursorY = (int) ypos;
 }
 
 void _glfwPlatformApplyCursorMode(_GLFWwindow* window)

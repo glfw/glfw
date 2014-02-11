@@ -228,10 +228,6 @@ double xpos, ypos;
 glfwGetCursorPos(window, &xpos, &ypos);
 @endcode
 
-This function only returns cached cursor positions.  It does not poll the
-system for the current position.  Whenever you poll state, you risk missing the
-state change you are looking for.
-
 
 @subsection input_cursor_mode Cursor modes
 

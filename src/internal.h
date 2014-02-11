@@ -410,6 +410,11 @@ void _glfwPlatformTerminate(void);
  */
 const char* _glfwPlatformGetVersionString(void);
 
+/*! @copydoc glfwGetCursorPos
+ *  @ingroup platform
+ */
+void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos);
+
 /*! @copydoc glfwSetCursorPos
  *  @ingroup platform
  */

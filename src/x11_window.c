@@ -1066,32 +1066,28 @@ static void processEvent(XEvent *event)
 
         case MotionNotify:
         {
-            if (event->xmotion.x != window->x11.warpPosX ||
-                event->xmotion.y != window->x11.warpPosY)
+            const int x = event->xmotion.x;
+            const int y = event->xmotion.y;
+
+            if (x != window->x11.warpPosX || y != window->x11.warpPosY)
             {
                 // The cursor was moved by something other than GLFW
-
-                int x, y;
 
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 {
                     if (_glfw.focusedWindow != window)
                         break;
 
-                    x = event->xmotion.x - window->x11.cursorPosX;
-                    y = event->xmotion.y - window->x11.cursorPosY;
+                    _glfwInputCursorMotion(window,
+                                           x - window->x11.cursorPosX,
+                                           y - window->x11.cursorPosY);
                 }
                 else
-                {
-                    x = event->xmotion.x;
-                    y = event->xmotion.y;
-                }
-
-                _glfwInputCursorMotion(window, x, y);
+                    _glfwInputCursorMotion(window, x, y);
             }
 
-            window->x11.cursorPosX = event->xmotion.x;
-            window->x11.cursorPosY = event->xmotion.y;
+            window->x11.cursorPosX = x;
+            window->x11.cursorPosY = y;
             break;
         }
 
@@ -1742,6 +1738,23 @@ void _glfwPlatformPostEmptyEvent(void)
 
     XSendEvent(_glfw.x11.display, window->x11.handle, False, 0, &event);
     XFlush(_glfw.x11.display);
+}
+
+void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
+{
+    Window root, child;
+    int rootX, rootY, childX, childY;
+    unsigned int mask;
+
+    XQueryPointer(_glfw.x11.display, window->x11.handle,
+                  &root, &child,
+                  &rootX, &rootY, &childX, &childY,
+                  &mask);
+
+    if (xpos)
+        *xpos = childX;
+    if (ypos)
+        *ypos = childY;
 }
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)

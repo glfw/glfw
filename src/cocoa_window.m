@@ -156,25 +156,31 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 
 - (void)windowDidResize:(NSNotification *)notification
 {
+    if (_glfw.focusedWindow == window &&
+        window->cursorMode == GLFW_CURSOR_DISABLED)
+    {
+        centerCursor(window);
+    }
+
     const NSRect contentRect = [window->ns.view frame];
     const NSRect fbRect = convertRectToBacking(window, contentRect);
 
     _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
     _glfwInputWindowSize(window, contentRect.size.width, contentRect.size.height);
     _glfwInputWindowDamage(window);
-
-    if (window->cursorMode == GLFW_CURSOR_DISABLED)
-        centerCursor(window);
 }
 
 - (void)windowDidMove:(NSNotification *)notification
 {
+    if (_glfw.focusedWindow == window &&
+        window->cursorMode == GLFW_CURSOR_DISABLED)
+    {
+        centerCursor(window);
+    }
+
     int x, y;
     _glfwPlatformGetWindowPos(window, &x, &y);
     _glfwInputWindowPos(window, x, y);
-
-    if (window->cursorMode == GLFW_CURSOR_DISABLED)
-        centerCursor(window);
 }
 
 - (void)windowDidMiniaturize:(NSNotification *)notification
@@ -191,6 +197,12 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 {
     if (window->monitor)
         enterFullscreenMode(window);
+
+    if (_glfw.focusedWindow == window &&
+        window->cursorMode == GLFW_CURSOR_DISABLED)
+    {
+        centerCursor(window);
+    }
 
     _glfwInputWindowFocus(window, GL_TRUE);
     _glfwPlatformApplyCursorMode(window);
@@ -366,14 +378,21 @@ static int translateKey(unsigned int key)
 - (void)mouseMoved:(NSEvent *)event
 {
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
-        _glfwInputCursorMotion(window, [event deltaX], [event deltaY]);
+    {
+        _glfwInputCursorMotion(window,
+                               [event deltaX] - window->ns.warpDeltaX,
+                               [event deltaY] - window->ns.warpDeltaY);
+    }
     else
     {
         const NSRect contentRect = [window->ns.view frame];
-        const NSPoint p = [event locationInWindow];
+        const NSPoint pos = [event locationInWindow];
 
-        _glfwInputCursorMotion(window, p.x, contentRect.size.height - p.y);
+        _glfwInputCursorMotion(window, pos.x, contentRect.size.height - pos.y);
     }
+
+    window->ns.warpDeltaX = 0;
+    window->ns.warpDeltaY = 0;
 }
 
 - (void)rightMouseDown:(NSEvent *)event
@@ -563,11 +582,10 @@ static int translateKey(unsigned int key)
     NSPasteboard* pasteboard = [sender draggingPasteboard];
     NSArray* files = [pasteboard propertyListForType:NSFilenamesPboardType];
 
-    int height;
-    _glfwPlatformGetWindowSize(window, NULL, &height);
+    const NSRect contentRect = [window->ns.view frame];
     _glfwInputCursorMotion(window,
                            [sender draggingLocation].x,
-                           height - [sender draggingLocation].y);
+                           contentRect.size.height - [sender draggingLocation].y);
 
     const int count = [files count];
     if (count)
@@ -1098,9 +1116,26 @@ void _glfwPlatformPostEmptyEvent(void)
     [pool drain];
 }
 
+void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
+{
+    const NSRect contentRect = [window->ns.view frame];
+    const NSPoint pos = [window->ns.object mouseLocationOutsideOfEventStream];
+
+    if (xpos)
+        *xpos = pos.x;
+    if (ypos)
+        *ypos = contentRect.size.height - pos.y - 1;
+}
+
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
     updateModeCursor(window);
+
+    const NSRect contentRect = [window->ns.view frame];
+    const NSPoint pos = [window->ns.object mouseLocationOutsideOfEventStream];
+
+    window->ns.warpDeltaX += x - pos.x;
+    window->ns.warpDeltaY += y - contentRect.size.height + pos.y;
 
     if (window->monitor)
     {
@@ -1109,7 +1144,6 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
     }
     else
     {
-        const NSRect contentRect = [window->ns.view frame];
         const NSPoint localPoint = NSMakePoint(x, contentRect.size.height - y - 1);
         const NSPoint globalPoint = [window->ns.object convertBaseToScreen:localPoint];
 
@@ -1123,10 +1157,7 @@ void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
     updateModeCursor(window);
 
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
-    {
         CGAssociateMouseAndMouseCursorPosition(false);
-        centerCursor(window);
-    }
     else
         CGAssociateMouseAndMouseCursorPosition(true);
 }
@@ -1192,10 +1223,10 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 {
-    const NSPoint p = [window->ns.object mouseLocationOutsideOfEventStream];
+    const NSPoint pos = [window->ns.object mouseLocationOutsideOfEventStream];
 
     if (window->cursorMode == GLFW_CURSOR_NORMAL &&
-        [window->ns.view mouse:p inRect:[window->ns.view frame]])
+        [window->ns.view mouse:pos inRect:[window->ns.view frame]])
     {
         if (cursor)
             [(NSCursor*) cursor->ns.object set];

@@ -1916,6 +1916,24 @@ GLFWAPI void glfwGetFramebufferSize(GLFWwindow* window, int* width, int* height)
  */
 GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* window, int* left, int* top, int* right, int* bottom);
 
+/*! @brief Sets the application icons to use for the given window.
+ *  @param[in] window The window to set the icons for.
+ *  @param[in] icons A pointer to the first element of an array of GLFWimage structs.
+ *  @param[in] numicons The number of icons in the given array.
+ *  @ingroup window
+ *
+ *  @note This function may only be called from the main thread.
+ *
+ *  @note From all the given icons GLFW will automatically pick the most appropriate
+ *  size for the different locations in which the application icon can occur. For
+ *  example on Windows, if a larger and a smaller icon are given the larger icon
+ *  will be used for the ALT-TAB screen and the smaller for the taskbar.
+ *
+ *  @note If the icon does not exactly fit the operating systems requirements for the
+ *  icon size the icon will be automatically resized.
+ */
+GLFWAPI void glfwSetWindowIcons(GLFWwindow* window, GLFWimage* icons, int numicons);
+
 /*! @brief Iconifies the specified window.
  *
  *  This function iconifies (minimizes) the specified window if it was

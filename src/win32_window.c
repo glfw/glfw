@@ -727,6 +727,136 @@ static void destroyWindow(_GLFWwindow* window)
     }
 }
 
+// Creates a Windows icon from a GLFWimage
+//
+static HICON createIcon(GLFWimage* image)
+{
+    BITMAPV5HEADER header;
+    HDC hdc;
+    unsigned char* BGRAData;
+    HBITMAP bitmap, mask;
+    ICONINFO iconinfo;
+    HICON icon;
+    unsigned char* dibData;
+    int i;
+
+    // fill in BITMAPV5HEADER to pass to CreateDIBSection
+    header.bV5Size = sizeof(header);
+    header.bV5Width = image->width;
+    header.bV5Height = image->height;
+    header.bV5Planes = 1;
+    header.bV5BitCount = 32;
+    header.bV5Compression = BI_BITFIELDS;
+    header.bV5RedMask =   0x00ff0000;
+    header.bV5GreenMask = 0x0000ff00;
+    header.bV5BlueMask =  0x000000ff;
+    header.bV5AlphaMask = 0xff000000;
+
+    // create a HBITMAP that we can write to
+    hdc = GetDC(NULL);
+    bitmap = CreateDIBSection(hdc, (BITMAPINFO*) &header, DIB_RGB_COLORS, (void**) &dibData, NULL, 0);
+    ReleaseDC(NULL, hdc);
+
+    // first we need to convert RGBA to BGRA (yay Windows!)
+    // we also need to convert lines, because Windows wants bottom-to-top RGBA
+    BGRAData = malloc(image->width * image->height * 4);
+    if (!BGRAData)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
+        return NULL;
+    }
+
+    for (i = 0; i < image->width * image->height; i++) {
+        unsigned char *dst = BGRAData + 4 * i;
+        unsigned char *src = image->pixels + 4 * i;
+
+        dst[0] = src[2]; // copy blue channel
+        dst[1] = src[1]; // copy green channel
+        dst[2] = src[0]; // copy red channel
+        dst[3] = src[3]; // copy alpha channel
+    }
+
+    // copy the BGRA data into dibData
+    memcpy(dibData, BGRAData, image->width * image->height * 4);
+
+    // free the BGRA data
+    free(BGRAData);
+
+    // create a mask that we don't use (but needed for iconinfo)
+    mask = CreateBitmap(image->width, image->height, 1, 1, NULL);
+
+    iconinfo.fIcon = TRUE;
+    iconinfo.hbmMask = mask;
+    iconinfo.hbmColor = bitmap;
+
+    // create our icon
+    icon = CreateIconIndirect(&iconinfo);
+
+    // clean up
+    DeleteObject(mask);
+    DeleteObject(bitmap);
+
+    return icon;
+}
+
+// Chooses the best fitting image given the images and desired size
+//
+static GLFWimage* bestFit(GLFWimage *icons, const int numicons, const int targetWidth, const int targetHeight)
+{
+    GLFWimage *curIcon = icons;
+    GLFWimage *bestIcon = curIcon;
+    const double targetRatio = (double) targetWidth / targetHeight;
+
+    while (curIcon < icons + numicons)
+    {
+        // always use exact match
+        if (curIcon->width == targetWidth && curIcon->height == targetHeight)
+        {
+            return curIcon;
+        }
+
+        // at least wide or high enough, ratio preferably as close as possible
+        if (curIcon->width >= targetWidth || curIcon->height >= targetHeight)
+        {
+            const double curRatio = (double) curIcon->width / curIcon->height;
+            const double bestRatio = (double) bestIcon->width / bestIcon->height;
+            double curDelta = targetRatio - curRatio;
+            double bestDelta = targetRatio - bestRatio;
+
+            if (curDelta < 0)
+            {
+                curDelta = -curDelta;
+            }
+    
+            if (bestDelta < 0)
+            {
+                bestDelta = -bestDelta;
+            }
+
+            // if our ratio is closer OR if the best icon so far isn't large
+            // enough we'll become the new best icon
+            if ((curDelta < bestDelta)
+                || (bestIcon->width < targetWidth && bestIcon->height < targetHeight))
+            {
+                bestIcon = curIcon;
+            }
+        }
+
+        // maybe nothing is wide or high enough, if that's the case
+        // we'll get the largest thing available (in area)
+        else if (bestIcon->width < targetWidth && bestIcon->height < targetHeight)
+        {
+            if (curIcon->width * curIcon->height > bestIcon->width * bestIcon->height)
+            {
+                bestIcon = curIcon;
+            }
+        }
+        
+        ++curIcon;
+    }
+            
+    return bestIcon;
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -927,6 +1057,18 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
         *right = rect.right - width;
     if (bottom)
         *bottom = rect.bottom - height;
+}
+
+void _glfwPlatformSetWindowIcons(_GLFWwindow* window, GLFWimage *icons, int numicons)
+{
+    GLFWimage* normalicon;
+    GLFWimage* smallicon;
+
+    normalicon = bestFit(icons, numicons, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON));
+    smallicon = bestFit(icons, numicons, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
+
+    SendMessage(window->win32.handle, WM_SETICON, ICON_BIG, (LPARAM) createIcon(normalicon));
+    SendMessage(window->win32.handle, WM_SETICON, ICON_SMALL, (LPARAM) createIcon(smallicon));
 }
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)

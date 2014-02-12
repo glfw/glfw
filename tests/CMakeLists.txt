@@ -42,6 +42,9 @@ set_target_properties(accuracy PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Accuracy")
 add_executable(empty WIN32 MACOSX_BUNDLE empty.c ${TINYCTHREAD})
 set_target_properties(empty PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Empty Event")
 
+add_executable(icons WIN32 MACOSX_BUNDLE icons.c)
+set_target_properties(icons PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Icons")
+
 add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c)
 set_target_properties(sharing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Sharing")
 
@@ -60,7 +63,8 @@ set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 target_link_libraries(empty "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 
-set(WINDOWS_BINARIES accuracy empty sharing tearing threads title windows cursoranim)
+set(WINDOWS_BINARIES accuracy empty icons sharing tearing threads title windows
+                     cursoranim)
 set(CONSOLE_BINARIES clipboard defaults events msaa gamma glfwinfo
                      iconify joysticks monitors peter reopen cursor)
 

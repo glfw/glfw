@@ -941,7 +941,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    while ((ch = getopt(argc, argv, "fhs")) != -1)
+    while ((ch = getopt(argc, argv, "fh")) != -1)
     {
         switch (ch)
         {

@@ -125,6 +125,7 @@ static void test_modes(GLFWmonitor* monitor)
         glfwWindowHint(GLFW_RED_BITS, mode->redBits);
         glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
         glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+        glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
         printf("Testing mode %u on monitor %s: %s\n",
                (unsigned int) i,

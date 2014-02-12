@@ -465,7 +465,7 @@ int main(int argc, char** argv)
 {
     Slot* slots;
     GLFWmonitor* monitor = NULL;
-    int ch, i, count = 1;
+    int ch, i, width, height, count = 1;
 
     setlocale(LC_ALL, "");
 
@@ -494,6 +494,24 @@ int main(int argc, char** argv)
         }
     }
 
+    if (monitor)
+    {
+        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+        glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+        glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+        glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+        glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+
+        width = mode->width;
+        height = mode->height;
+    }
+    else
+    {
+        width  = 640;
+        height = 480;
+    }
+
     if (!count)
     {
         fprintf(stderr, "Invalid user\n");
@@ -511,7 +529,7 @@ int main(int argc, char** argv)
 
         sprintf(title, "Event Linter (Window %i)", slots[i].number);
 
-        slots[i].window = glfwCreateWindow(640, 480, title, monitor, NULL);
+        slots[i].window = glfwCreateWindow(width, height, title, monitor, NULL);
         if (!slots[i].window)
         {
             free(slots);

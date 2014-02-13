@@ -611,6 +611,8 @@ int main( void )
        exit( EXIT_FAILURE );
    }
 
+   glfwSetWindowAspectRatio(window, 1, 1);
+
    glfwSetFramebufferSizeCallback(window, reshape);
    glfwSetKeyCallback(window, key_callback);
    glfwSetMouseButtonCallback(window, mouse_button_callback);

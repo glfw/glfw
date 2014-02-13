@@ -1845,6 +1845,78 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow* window, int xpos, int ypos);
  */
 GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
 
+/*! @brief Sets the size limits of the specified window.
+ *
+ *  This function sets the size limits of the client area of the specified
+ *  window.  If the window is full screen or not resizable, this function does
+ *  nothing.
+ *
+ *  The size limits are applied immediately and may cause the window to be
+ *  resized.
+ *
+ *  @param[in] window The window to set limits for.
+ *  @param[in] minwidth The minimum width, in screen coordinates, of the client
+ *  area, or `GLFW_DONT_CARE`.
+ *  @param[in] minheight The minimum height, in screen coordinates, of the
+ *  client area, or `GLFW_DONT_CARE`.
+ *  @param[in] maxwidth The maximum width, in screen coordinates, of the client
+ *  area, or `GLFW_DONT_CARE`.
+ *  @param[in] maxheight The maximum height, in screen coordinates, of the
+ *  client area, or `GLFW_DONT_CARE`.
+ *
+ *  @remarks If you set size limits and an aspect ratio that conflict, the
+ *  results are undefined.
+ *
+ *  @par Thread Safety
+ *  This function may only be called from the main thread.
+ *
+ *  @sa @ref window_sizelimits
+ *  @sa glfwSetWindowAspectRatio
+ *
+ *  @since Added in GLFW 3.2.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowSizeLimits(GLFWwindow* window, int minwidth, int minheight, int maxwidth, int maxheight);
+
+/*! @brief Sets the aspect ratio of the specified window.
+ *
+ *  This function sets the required aspect ratio of the client area of the
+ *  specified window.  If the window is full screen or not resizable, this
+ *  function does nothing.
+ *
+ *  The aspect ratio is specified as a numerator and a denominator.  For
+ *  example, the common 16:9 aspect ratio is specified as 16 and 9,
+ *  respectively.  The denominator may not be zero.
+ *
+ *  If the numerator and denominator is set to `GLFW_DONT_CARE` then the window
+ *  may be resized to any aspect ratio permitted by the window system and any
+ *  limits set by @ref glfwSetWindowSizeLimits.
+ *
+ *  The aspect ratio is applied immediately and may cause the window to be
+ *  resized.
+ *
+ *  @param[in] window The window to set limits for.
+ *  @param[in] numer The numerator of the desired aspect ratio, or
+ *  `GLFW_DONT_CARE`.
+ *  @param[in] denom The denominator of the desired aspect ratio, or
+ *  `GLFW_DONT_CARE`.
+ *
+ *  @remarks If you set size limits and an aspect ratio that conflict, the
+ *  results are undefined.
+ *
+ *  @par Thread Safety
+ *  This function may only be called from the main thread.
+ *
+ *  @sa @ref window_sizelimits
+ *  @sa glfwSetWindowSizeLimits
+ *
+ *  @since Added in GLFW 3.2.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* window, int numer, int denom);
+
 /*! @brief Sets the size of the client area of the specified window.
  *
  *  This function sets the size, in screen coordinates, of the client area of

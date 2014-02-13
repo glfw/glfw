@@ -4,6 +4,11 @@
 
 @section news_32 New features in 3.2
 
+@subsection news_32_sizelimits Window size limit support
+
+GLFW now supports setting both absolute and relative window size limits with
+@ref glfwSetWindowSizeLimits and @ref glfwSetWindowAspectRatio.
+
 
 @section news_31 New features in 3.1
 

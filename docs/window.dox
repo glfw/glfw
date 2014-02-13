@@ -485,6 +485,45 @@ The size of a framebuffer may change independently of the size of a window, for
 example if the window is dragged between a regular monitor and a high-DPI one.
 
 
+@subsection window_sizelimits Window size limits
+
+The minimum and maximum size of the client area of a windowed mode window can be
+set with @ref glfwSetWindowSizeLimits.  The user may resize the window to any
+size and aspect ratio within the specified limits, unless the aspect ratio is
+also set.
+
+@code
+glfwSetWindowSizeLimits(window, 200, 200, 400, 400);
+@endcode
+
+To disable size limits for a window, set them to `GLFW_DONT_CARE`.
+
+@code
+glfwSetWindowSizeLimits(window, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE);
+@endcode
+
+The aspect ratio of the client area of a windowed mode window can be set with
+@ref glfwSetWindowAspectRatio.  The user may resize the window freely unless
+size limits are also set, but the size will be constrained to maintain the
+aspect ratio.
+
+The aspect ratio is specified as a numerator and denominator, corresponding to
+the width and height, respectively.
+
+@code
+glfwSetWindowAspectRatio(window, 16, 9);
+@endcode
+
+To disable aspect ratio for a window, set it to `GLFW_DONT_CARE`.
+
+@code
+glfwSetWindowAspectRatio(window, GLFW_DONT_CARE, GLFW_DONT_CARE);
+@endcode
+
+You can have both size limits and aspect ratio set for a window, but the results
+are undefined if they conflict.
+
+
 @subsection window_pos Window position
 
 The position of a windowed-mode window can be changed with @ref

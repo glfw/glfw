@@ -529,6 +529,20 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     mir_surface_spec_release(spec);
 }
 
+void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
+                                      int minwidth, int minheight,
+                                      int maxwidth, int maxheight)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
+}
+
+void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
+}
+
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,

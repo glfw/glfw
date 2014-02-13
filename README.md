@@ -61,6 +61,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
 
 ## Changelog
 
+ - Added `glfwSetWindowSizeLimits` and `glfwSetWindowAspectRatio` for setting
+   absolute and relative window size limits
  - Added `GLFW_TRUE` and `GLFW_FALSE` as client API independent boolean values
  - Removed dependency on external OpenGL or OpenGL ES headers
  - [WGL] Removed dependency on external WGL headers

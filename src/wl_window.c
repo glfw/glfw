@@ -302,6 +302,20 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     window->wl.height = height;
 }
 
+void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
+                                      int minwidth, int minheight,
+                                      int maxwidth, int maxheight)
+{
+    // TODO
+    fprintf(stderr, "_glfwPlatformSetWindowSizeLimits not implemented yet\n");
+}
+
+void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom)
+{
+    // TODO
+    fprintf(stderr, "_glfwPlatformSetWindowAspectRatio not implemented yet\n");
+}
+
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
     _glfwPlatformGetWindowSize(window, width, height);

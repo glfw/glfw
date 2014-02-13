@@ -69,6 +69,47 @@ static DWORD getWindowExStyle(const _GLFWwindow* window)
     return style;
 }
 
+// Translate client window size to full window size (including window borders)
+//
+static void getFullWindowSize(_GLFWwindow* window,
+                              int clientWidth, int clientHeight,
+                              int* fullWidth, int* fullHeight)
+{
+    RECT rect = { 0, 0, clientWidth, clientHeight };
+    AdjustWindowRectEx(&rect, getWindowStyle(window),
+                       FALSE, getWindowExStyle(window));
+    *fullWidth = rect.right - rect.left;
+    *fullHeight = rect.bottom - rect.top;
+}
+
+// Enforce the client rect aspect ratio based on which edge is being dragged
+//
+static void applyAspectRatio(_GLFWwindow* window, int edge, RECT* area)
+{
+    int xoff, yoff;
+    const float ratio = (float) window->win32.numer /
+                        (float) window->win32.denom;
+
+    getFullWindowSize(window, 0, 0, &xoff, &yoff);
+
+    if (edge == WMSZ_LEFT  || edge == WMSZ_BOTTOMLEFT ||
+        edge == WMSZ_RIGHT || edge == WMSZ_BOTTOMRIGHT)
+    {
+        area->bottom = area->top + yoff +
+            (int) ((area->right - area->left - xoff) / ratio);
+    }
+    else if (edge == WMSZ_TOPLEFT || edge == WMSZ_TOPRIGHT)
+    {
+        area->top = area->bottom - yoff -
+            (int) ((area->right - area->left - xoff) / ratio);
+    }
+    else if (edge == WMSZ_TOP || edge == WMSZ_BOTTOM)
+    {
+        area->right = area->left + xoff +
+            (int) ((area->bottom - area->top - yoff) * ratio);
+    }
+}
+
 // Updates the cursor clip rect
 //
 static void updateClipRect(_GLFWwindow* window)
@@ -503,6 +544,41 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             return 0;
         }
 
+        case WM_SIZING:
+        {
+            if (window->win32.numer == GLFW_DONT_CARE ||
+                window->win32.denom == GLFW_DONT_CARE)
+            {
+                break;
+            }
+
+            applyAspectRatio(window, (int) wParam, (RECT*) lParam);
+            return TRUE;
+        }
+
+        case WM_GETMINMAXINFO:
+        {
+            int xoff, yoff;
+            MINMAXINFO* mmi = (MINMAXINFO*) lParam;
+            getFullWindowSize(window, 0, 0, &xoff, &yoff);
+
+            if (window->win32.minwidth != GLFW_DONT_CARE &&
+                window->win32.minheight != GLFW_DONT_CARE)
+            {
+                mmi->ptMinTrackSize.x = window->win32.minwidth + xoff;
+                mmi->ptMinTrackSize.y = window->win32.minheight + yoff;
+            }
+
+            if (window->win32.maxwidth != GLFW_DONT_CARE &&
+                window->win32.maxheight != GLFW_DONT_CARE)
+            {
+                mmi->ptMaxTrackSize.x = window->win32.maxwidth + xoff;
+                mmi->ptMaxTrackSize.y = window->win32.maxheight + yoff;
+            }
+
+            return 0;
+        }
+
         case WM_PAINT:
         {
             _glfwInputWindowDamage(window);
@@ -580,19 +656,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
     }
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
-}
-
-// Translate client window size to full window size (including window borders)
-//
-static void getFullWindowSize(_GLFWwindow* window,
-                              int clientWidth, int clientHeight,
-                              int* fullWidth, int* fullHeight)
-{
-    RECT rect = { 0, 0, clientWidth, clientHeight };
-    AdjustWindowRectEx(&rect, getWindowStyle(window),
-                       FALSE, getWindowExStyle(window));
-    *fullWidth = rect.right - rect.left;
-    *fullHeight = rect.bottom - rect.top;
 }
 
 // Creates the GLFW window and rendering context
@@ -676,6 +739,13 @@ static GLFWbool createWindow(_GLFWwindow* window,
 
     if (!_glfwCreateContext(window, ctxconfig, fbconfig))
         return GLFW_FALSE;
+
+    window->win32.minwidth  = GLFW_DONT_CARE;
+    window->win32.minheight = GLFW_DONT_CARE;
+    window->win32.maxwidth  = GLFW_DONT_CARE;
+    window->win32.maxheight = GLFW_DONT_CARE;
+    window->win32.numer     = GLFW_DONT_CARE;
+    window->win32.denom     = GLFW_DONT_CARE;
 
     return GLFW_TRUE;
 }
@@ -870,6 +940,48 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
                      0, 0, fullWidth, fullHeight,
                      SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
     }
+}
+
+void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
+                                      int minwidth, int minheight,
+                                      int maxwidth, int maxheight)
+{
+    RECT area;
+
+    window->win32.minwidth  = minwidth;
+    window->win32.minheight = minheight;
+    window->win32.maxwidth  = maxwidth;
+    window->win32.maxheight = maxheight;
+
+    if ((minwidth == GLFW_DONT_CARE || minheight == GLFW_DONT_CARE) &&
+        (maxwidth == GLFW_DONT_CARE || maxheight == GLFW_DONT_CARE))
+    {
+        return;
+    }
+
+    GetWindowRect(window->win32.handle, &area);
+    MoveWindow(window->win32.handle,
+               area.left, area.top,
+               area.right - area.left,
+               area.bottom - area.top, TRUE);
+}
+
+void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom)
+{
+    RECT area;
+
+    window->win32.numer = numer;
+    window->win32.denom = denom;
+
+    if (numer == GLFW_DONT_CARE || denom == GLFW_DONT_CARE)
+        return;
+
+    GetWindowRect(window->win32.handle, &area);
+    applyAspectRatio(window, WMSZ_BOTTOMRIGHT, &area);
+    MoveWindow(window->win32.handle,
+               area.left, area.top,
+               area.right - area.left,
+               area.bottom - area.top, TRUE);
 }
 
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)

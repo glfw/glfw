@@ -481,6 +481,40 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* handle, int width, int height)
     _glfwPlatformSetWindowSize(window, width, height);
 }
 
+GLFWAPI void glfwSetWindowSizeLimits(GLFWwindow* handle,
+                                     int minwidth, int minheight,
+                                     int maxwidth, int maxheight)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    _GLFW_REQUIRE_INIT();
+
+    if (window->monitor || !window->resizable)
+        return;
+
+    _glfwPlatformSetWindowSizeLimits(window,
+                                     minwidth, minheight,
+                                     maxwidth, maxheight);
+}
+
+GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* handle, int numer, int denom)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    _GLFW_REQUIRE_INIT();
+
+    if (window->monitor || !window->resizable)
+        return;
+
+    if (!denom)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE, "Denominator cannot be zero");
+        return;
+    }
+
+    _glfwPlatformSetWindowAspectRatio(window, numer, denom);
+}
+
 GLFWAPI void glfwGetFramebufferSize(GLFWwindow* handle, int* width, int* height)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;

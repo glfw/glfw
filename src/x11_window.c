@@ -607,9 +607,9 @@ static void processEvent(XEvent *event)
             else if (event->xbutton.button == Button5)
                 _glfwInputScroll(window, 0.0, -1.0);
             else if (event->xbutton.button == Button6)
-                _glfwInputScroll(window, -1.0, 0.0);
-            else if (event->xbutton.button == Button7)
                 _glfwInputScroll(window, 1.0, 0.0);
+            else if (event->xbutton.button == Button7)
+                _glfwInputScroll(window, -1.0, 0.0);
 
             else
             {

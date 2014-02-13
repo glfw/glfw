@@ -381,6 +381,16 @@ static void char_callback(GLFWwindow* window, unsigned int codepoint)
            get_character_string(codepoint));
 }
 
+static void drop_callback(GLFWwindow* window, int count, const char** names)
+{
+    int i;
+
+    printf("%08x at %0.3f: Drop input\n", counter++, glfwGetTime());
+
+    for (i = 0;  i < count;  i++)
+        printf("  %i: \"%s\"\n", i, names[i]);
+}
+
 void monitor_callback(GLFWmonitor* monitor, int event)
 {
     if (event == GLFW_CONNECTED)
@@ -457,6 +467,7 @@ int main(int argc, char** argv)
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetKeyCallback(window, key_callback);
     glfwSetCharCallback(window, char_callback);
+    glfwSetDropCallback(window, drop_callback);
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);

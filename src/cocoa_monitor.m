@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 OS X - www.glfw.org
+// GLFW 3.1 OS X - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -52,6 +52,7 @@ static const char* getDisplayName(CGDirectDisplayID displayID)
     if (!names || !CFDictionaryGetValueIfPresent(names, CFSTR("en_US"),
                                                  (const void**) &value))
     {
+        // This may happen if a desktop Mac is running headless
         _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to retrieve display name");
 
         CFRelease(info);
@@ -252,48 +253,30 @@ void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
-    uint32_t i, found = 0, monitorCount;
+    uint32_t i, found = 0, displayCount;
     _GLFWmonitor** monitors;
     CGDirectDisplayID* displays;
 
     *count = 0;
 
-    CGGetActiveDisplayList(0, NULL, &monitorCount);
+    CGGetActiveDisplayList(0, NULL, &displayCount);
 
-    displays = calloc(monitorCount, sizeof(CGDirectDisplayID));
-    monitors = calloc(monitorCount, sizeof(_GLFWmonitor*));
+    displays = calloc(displayCount, sizeof(CGDirectDisplayID));
+    monitors = calloc(displayCount, sizeof(_GLFWmonitor*));
 
-    CGGetActiveDisplayList(monitorCount, displays, &monitorCount);
-
-    for (i = 0;  i < monitorCount;  i++)
-    {
-        const CGSize size = CGDisplayScreenSize(displays[i]);
-
-        monitors[found] = _glfwCreateMonitor(getDisplayName(displays[i]),
-                                             size.width, size.height);
-
-        monitors[found]->ns.displayID = displays[i];
-        found++;
-    }
-
-    free(displays);
-
-    for (i = 0;  i < monitorCount;  i++)
-    {
-        if (CGDisplayIsMain(monitors[i]->ns.displayID))
-        {
-            _GLFWmonitor* temp = monitors[0];
-            monitors[0] = monitors[i];
-            monitors[i] = temp;
-            break;
-        }
-    }
+    CGGetActiveDisplayList(displayCount, displays, &displayCount);
 
     NSArray* screens = [NSScreen screens];
 
-    for (i = 0;  i < monitorCount;  i++)
+    for (i = 0;  i < displayCount;  i++)
     {
         int j;
+        const CGSize size = CGDisplayScreenSize(displays[i]);
+
+        monitors[found] = _glfwAllocMonitor(getDisplayName(displays[i]),
+                                            size.width, size.height);
+
+        monitors[found]->ns.displayID = displays[i];
 
         for (j = 0;  j < [screens count];  j++)
         {
@@ -301,26 +284,29 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             NSDictionary* dictionary = [screen deviceDescription];
             NSNumber* number = [dictionary objectForKey:@"NSScreenNumber"];
 
-            if (monitors[i]->ns.displayID == [number unsignedIntegerValue])
+            if (monitors[found]->ns.displayID == [number unsignedIntegerValue])
             {
-                monitors[i]->ns.screen = screen;
+                monitors[found]->ns.screen = screen;
                 break;
             }
         }
 
-        if (monitors[i]->ns.screen == nil)
+        if (monitors[found]->ns.screen)
+            found++;
+        else
         {
-            _glfwDestroyMonitors(monitors, monitorCount);
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Cocoa: Failed to find NSScreen for CGDisplay %s",
-                            monitors[i]->name);
+                            monitors[found]->name);
 
-            free(monitors);
-            return NULL;
+            _glfwFreeMonitor(monitors[found]);
+            monitors[found] = NULL;
         }
     }
 
-    *count = monitorCount;
+    free(displays);
+
+    *count = found;
     return monitors;
 }
 

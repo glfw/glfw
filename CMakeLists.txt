@@ -26,6 +26,7 @@ if (APPLE)
     option(GLFW_BUILD_UNIVERSAL "Build GLFW as a Universal Binary" OFF)
     option(GLFW_USE_CHDIR "Make glfwInit chdir to Contents/Resources" ON)
     option(GLFW_USE_MENUBAR "Populate the menu bar on first window creation" ON)
+    option(GLFW_USE_RETINA "Use the full resolution of Retina displays" ON)
 else()
     option(GLFW_USE_EGL "Use EGL for context creation" OFF)
 endif()
@@ -153,6 +154,9 @@ endif()
 # Use Win32 for window creation
 #--------------------------------------------------------------------
 if (_GLFW_WIN32)
+
+    set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lgdi32 -lwinmm")
+
     # The DLL links against winmm; the static library loads it
     # That way, both code paths receive testing
     if (BUILD_SHARED_LIBS)
@@ -171,16 +175,21 @@ if (_GLFW_WIN32)
     # the inclusion of stddef.h (by glfw3.h), which is itself included before
     # win32_platform.h.  We define them here until a saner solution can be found
     # NOTE: MinGW-w64 and Visual C++ do /not/ need this hack.
-    add_definitions(-DUNICODE)
-    add_definitions(-DWINVER=0x0501)
+    if (CMAKE_COMPILER_IS_GNUC)
+        add_definitions(-DUNICODE -DWINVER=0x0501)
+    endif()
 endif()
 
 #--------------------------------------------------------------------
 # Use WGL for context creation
 #--------------------------------------------------------------------
 if (_GLFW_WGL)
+
+    set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lopengl32")
+
     list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
     list(APPEND glfw_LIBRARIES ${OPENGL_gl_LIBRARY})
+
 endif()
 
 #--------------------------------------------------------------------
@@ -307,9 +316,7 @@ if (_GLFW_EGL)
     list(APPEND glfw_INCLUDE_DIRS ${EGL_INCLUDE_DIR})
     list(APPEND glfw_LIBRARIES ${EGL_LIBRARY})
 
-    if (UNIX)
-        set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} egl")
-    endif()
+    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} egl")
 
     if (_GLFW_USE_OPENGL)
         list(APPEND glfw_LIBRARIES ${OPENGL_gl_LIBRARY})
@@ -338,6 +345,10 @@ if (_GLFW_COCOA AND _GLFW_NSGL)
 
     if (GLFW_USE_CHDIR)
         set(_GLFW_USE_CHDIR 1)
+    endif()
+
+    if (GLFW_USE_RETINA)
+        set(_GLFW_USE_RETINA 1)
     endif()
 
     if (GLFW_BUILD_UNIVERSAL)
@@ -392,10 +403,8 @@ configure_file(${GLFW_SOURCE_DIR}/src/glfwConfig.cmake.in
 configure_file(${GLFW_SOURCE_DIR}/src/glfwConfigVersion.cmake.in
                ${GLFW_BINARY_DIR}/src/glfwConfigVersion.cmake @ONLY)
 
-if (UNIX)
-    configure_file(${GLFW_SOURCE_DIR}/src/glfw3.pc.in
-                   ${GLFW_BINARY_DIR}/src/glfw3.pc @ONLY)
-endif()
+configure_file(${GLFW_SOURCE_DIR}/src/glfw3.pc.in
+                ${GLFW_BINARY_DIR}/src/glfw3.pc @ONLY)
 
 #--------------------------------------------------------------------
 # Add subdirectories
@@ -426,11 +435,9 @@ if (GLFW_INSTALL)
                   ${GLFW_BINARY_DIR}/src/glfwConfigVersion.cmake
             DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
 
-    if (UNIX)
-        install(EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
-        install(FILES ${GLFW_BINARY_DIR}/src/glfw3.pc
-                DESTINATION lib${LIB_SUFFIX}/pkgconfig)
-    endif()
+    install(EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
+    install(FILES ${GLFW_BINARY_DIR}/src/glfw3.pc
+            DESTINATION lib${LIB_SUFFIX}/pkgconfig)
 
     # Only generate this target if no higher-level project already has
     if (NOT TARGET uninstall)

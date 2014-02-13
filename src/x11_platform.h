@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 X11 - www.glfw.org
+// GLFW 3.1 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -119,7 +119,18 @@ typedef struct _GLFWlibraryX11
     Atom            NET_ACTIVE_WINDOW;
     Atom            MOTIF_WM_HINTS;
 
-    // Selection atoms
+	// Xdnd (drag and drop) atoms
+    Atom			XdndAware;
+	Atom			XdndEnter;
+	Atom			XdndPosition;
+	Atom			XdndStatus;
+	Atom			XdndActionCopy;
+	Atom			XdndDrop;
+	Atom			XdndLeave;
+	Atom			XdndFinished;
+	Atom			XdndSelection;
+
+    // Selection (clipboard) atoms
     Atom            TARGETS;
     Atom            MULTIPLE;
     Atom            CLIPBOARD;
@@ -149,6 +160,7 @@ typedef struct _GLFWlibraryX11
         int         versionMajor;
         int         versionMinor;
         GLboolean   gammaBroken;
+        GLboolean   monitorBroken;
     } randr;
 
     struct {
@@ -189,6 +201,10 @@ typedef struct _GLFWlibraryX11
         char*       string;
     } selection;
 
+	struct {
+		Window      source;
+	} xdnd;
+
     struct {
         int         present;
         int         fd;
@@ -223,14 +239,6 @@ void _glfwInitTimer(void);
 
 // Gamma
 void _glfwInitGammaRamp(void);
-
-// OpenGL support
-int _glfwInitContextAPI(void);
-void _glfwTerminateContextAPI(void);
-int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWwndconfig* wndconfig,
-                       const _GLFWfbconfig* fbconfig);
-void _glfwDestroyContext(_GLFWwindow* window);
 
 // Fullscreen support
 void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);

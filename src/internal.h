@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 - www.glfw.org
+// GLFW 3.1 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -239,6 +239,7 @@ struct _GLFWwindow
         GLFWscrollfun           scroll;
         GLFWkeyfun              key;
         GLFWcharfun             character;
+        GLFWdropfun             drop;
     } callbacks;
 
     // This is defined in the window API's platform.h
@@ -678,6 +679,14 @@ void _glfwInputMonitorChange(void);
  */
 void _glfwInputError(int error, const char* format, ...);
 
+/*! @brief Notifies dropped object over window.
+ *  @param[in] window The window that received the event.
+ *  @param[in] count The number of dropped objects.
+ *  @param[in] names The names of the dropped objects.
+ *  @ingroup event
+ */
+void _glfwInputDrop(_GLFWwindow* window, int count, const char** names);
+
 
 //========================================================================
 // Utility functions
@@ -761,15 +770,15 @@ void _glfwFreeGammaArrays(GLFWgammaramp* ramp);
  *  @return The newly created object.
  *  @ingroup utility
  */
-_GLFWmonitor* _glfwCreateMonitor(const char* name, int widthMM, int heightMM);
+_GLFWmonitor* _glfwAllocMonitor(const char* name, int widthMM, int heightMM);
 
 /*! @brief Frees a monitor object and any data associated with it.
  *  @ingroup utility
   */
-void _glfwDestroyMonitor(_GLFWmonitor* monitor);
+void _glfwFreeMonitor(_GLFWmonitor* monitor);
 
 /*! @ingroup utility
   */
-void _glfwDestroyMonitors(_GLFWmonitor** monitors, int count);
+void _glfwFreeMonitors(_GLFWmonitor** monitors, int count);
 
 #endif // _internal_h_

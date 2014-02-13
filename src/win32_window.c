@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 Win32 - www.glfw.org
+// GLFW 3.1 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include <windowsx.h>
+#include <shellapi.h>
 
 #define _GLFW_KEY_INVALID -2
 
@@ -747,6 +748,40 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             // TODO: Restore vsync if compositing was disabled
             break;
         }
+
+        case WM_DROPFILES:
+        {
+            HDROP hDrop = (HDROP) wParam;
+            POINT pt;
+            int i;
+
+            const int count = DragQueryFile(hDrop, 0xffffffff, NULL, 0);
+            char** names = calloc(count, sizeof(char*));
+
+            // Move the mouse to the position of the drop
+            DragQueryPoint(hDrop, &pt);
+            _glfwInputCursorMotion(window, pt.x, pt.y);
+
+            for (i = 0;  i < count;  i++)
+            {
+                const UINT length = DragQueryFile(hDrop, i, NULL, 0);
+                WCHAR* buffer = calloc(length + 1, sizeof(WCHAR));
+
+                DragQueryFile(hDrop, i, buffer, length + 1);
+                names[i] = _glfwCreateUTF8FromWideString(buffer);
+
+                free(buffer);
+            }
+
+            _glfwInputDrop(window, count, (const char**) names);
+
+            for (i = 0;  i < count;  i++)
+                free(names[i]);
+            free(names);
+
+            DragFinish(hDrop);
+            return 0;
+        }
     }
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -865,6 +900,18 @@ static int createWindow(_GLFWwindow* window,
                                           window); // Pass object to WM_CREATE
 
     free(wideTitle);
+
+    if (_glfw_ChangeWindowMessageFilterEx)
+    {
+        _glfw_ChangeWindowMessageFilterEx(window->win32.handle,
+                                        WM_DROPFILES, MSGFLT_ALLOW, NULL);
+        _glfw_ChangeWindowMessageFilterEx(window->win32.handle,
+                                        WM_COPYDATA, MSGFLT_ALLOW, NULL);
+        _glfw_ChangeWindowMessageFilterEx(window->win32.handle,
+                                        WM_COPYGLOBALDATA, MSGFLT_ALLOW, NULL);
+    }
+
+    DragAcceptFiles(window->win32.handle, TRUE);
 
     if (!window->win32.handle)
     {

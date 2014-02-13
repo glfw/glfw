@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 X11 - www.glfw.org
+// GLFW 3.1 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <stdio.h>
 
 
 // Translate an X11 key code to a GLFW key code.
@@ -358,6 +359,8 @@ static void detectEWMH(void)
         return;
     }
 
+    _glfwGrabXErrorHandler();
+
     // It should be the ID of a child window (of the root)
     // Then we look for the same property on the child window
     if (_glfwGetWindowProperty(*windowFromRoot,
@@ -369,6 +372,10 @@ static void detectEWMH(void)
         XFree(windowFromChild);
         return;
     }
+
+    _glfwReleaseXErrorHandler();
+    if (_glfw.x11.errorCode != Success)
+        return;
 
     // It should be the ID of that same child window
     if (*windowFromRoot != *windowFromChild)
@@ -394,7 +401,6 @@ static void detectEWMH(void)
                                        (unsigned char**) &supportedAtoms);
 
     // See which of the atoms we support that are supported by the WM
-
     _glfw.x11.NET_WM_STATE =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE");
     _glfw.x11.NET_WM_STATE_FULLSCREEN =
@@ -538,6 +544,17 @@ static GLboolean initExtensions(void)
         XInternAtom(_glfw.x11.display, "CLIPBOARD_MANAGER", False);
     _glfw.x11.SAVE_TARGETS =
         XInternAtom(_glfw.x11.display, "SAVE_TARGETS", False);
+
+    // Find Xdnd (drag and drop) atoms, if available
+    _glfw.x11.XdndAware = XInternAtom(_glfw.x11.display, "XdndAware", True);
+    _glfw.x11.XdndEnter = XInternAtom(_glfw.x11.display, "XdndEnter", True);
+    _glfw.x11.XdndPosition = XInternAtom(_glfw.x11.display, "XdndPosition", True);
+    _glfw.x11.XdndStatus = XInternAtom(_glfw.x11.display, "XdndStatus", True);
+    _glfw.x11.XdndActionCopy = XInternAtom(_glfw.x11.display, "XdndActionCopy", True);
+    _glfw.x11.XdndDrop = XInternAtom(_glfw.x11.display, "XdndDrop", True);
+    _glfw.x11.XdndLeave = XInternAtom(_glfw.x11.display, "XdndLeave", True);
+    _glfw.x11.XdndFinished = XInternAtom(_glfw.x11.display, "XdndFinished", True);
+    _glfw.x11.XdndSelection = XInternAtom(_glfw.x11.display, "XdndSelection", True);
 
     return GL_TRUE;
 }

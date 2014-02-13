@@ -5,6 +5,14 @@
 @tableofcontents
 
 
+@section news_31 New features in version 3.1
+
+@subsection news_31_drop Drop event support
+
+GLFW now provides a callback for receiving the paths of files dropped onto GLFW
+windows.  The callback is set with the @ref glfwSetDropCallback function.
+
+
 @section news_30 New features in version 3.0
 
 @subsection news_30_cmake CMake build system
@@ -80,7 +88,7 @@ GLFW now supports high-DPI monitors on both Windows and OS X, giving windows ful
 resolution framebuffers where other UI elements are scaled up.  To achieve this,
 @ref glfwGetFramebufferSize and @ref glfwSetFramebufferSizeCallback have been
 added.  These work with pixels, while the rest of the GLFW API works with screen
-coordinates.
+coordinates.  This is important as OpenGL uses pixels, not screen coordinates.
 
 
 @subsection news_30_error Error callback

@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 WGL - www.glfw.org
+// GLFW 3.1 WGL - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -84,5 +84,19 @@ typedef struct _GLFWlibraryWGL
 
 } _GLFWlibraryWGL;
 
+
+//========================================================================
+// Prototypes for platform specific internal functions
+//========================================================================
+
+int _glfwInitContextAPI(void);
+void _glfwTerminateContextAPI(void);
+int _glfwCreateContext(_GLFWwindow* window,
+                       const _GLFWwndconfig* wndconfig,
+                       const _GLFWfbconfig* fbconfig);
+void _glfwDestroyContext(_GLFWwindow* window);
+int _glfwAnalyzeContext(const _GLFWwindow* window,
+                        const _GLFWwndconfig* wndconfig,
+                        const _GLFWfbconfig* fbconfig);
 
 #endif // _wgl_platform_h_

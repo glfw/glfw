@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 Win32 - www.glfw.org
+// GLFW 3.1 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -65,7 +65,11 @@ static GLboolean initLibraries(void)
 
     _glfw.win32.winmm.instance = LoadLibrary(L"winmm.dll");
     if (!_glfw.win32.winmm.instance)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to load winmm.dll");
         return GL_FALSE;
+    }
 
     _glfw.win32.winmm.joyGetDevCaps = (JOYGETDEVCAPS_T)
         GetProcAddress(_glfw.win32.winmm.instance, "joyGetDevCapsW");
@@ -81,6 +85,8 @@ static GLboolean initLibraries(void)
         !_glfw.win32.winmm.joyGetPosEx ||
         !_glfw.win32.winmm.timeGetTime)
     {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to load winmm functions");
         return GL_FALSE;
     }
 #endif // _GLFW_NO_DLOAD_WINMM
@@ -90,6 +96,8 @@ static GLboolean initLibraries(void)
     {
         _glfw.win32.user32.SetProcessDPIAware = (SETPROCESSDPIAWARE_T)
             GetProcAddress(_glfw.win32.user32.instance, "SetProcessDPIAware");
+        _glfw.win32.user32.ChangeWindowMessageFilterEx = (CHANGEWINDOWMESSAGEFILTEREX_T)
+            GetProcAddress(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
     }
 
     _glfw.win32.dwmapi.instance = LoadLibrary(L"dwmapi.dll");

@@ -1,5 +1,5 @@
 /*************************************************************************
- * GLFW 3.0 - www.glfw.org
+ * GLFW 3.1 - www.glfw.org
  * A library for OpenGL, window and input
  *------------------------------------------------------------------------
  * Copyright (c) 2002-2006 Marcus Geelnard
@@ -772,6 +772,21 @@ typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int);
  *  @ingroup input
  */
 typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
+
+
+/*! @brief The function signature for drop callbacks.
+ *
+ *  This is the function signature for drop callbacks.
+ *
+ *  @param[in] window The window that received the event.
+ *  @param[in] count The number of dropped objects.
+ *  @param[in] names The UTF-8 encoded names of the dropped objects.
+ *
+ *  @sa glfwSetDropCallback
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWdropfun)(GLFWwindow*,int,const char**);
 
 /*! @brief The function signature for monitor configuration callbacks.
  *
@@ -2013,6 +2028,22 @@ GLFWAPI GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcu
  *  @ingroup input
  */
 GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun cbfun);
+
+/*! @brief Sets the drop callback.
+ *
+ *  This function sets the drop callback of the specified window, which is
+ *  called when an object is dropped over the window.
+ *
+ *
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] cbfun The new drop callback, or `NULL` to remove the currently
+ *  set callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or an
+ *  error occurred.
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWdropfun glfwSetDropCallback(GLFWwindow* window, GLFWdropfun cbfun);
 
 /*! @brief Returns whether the specified joystick is present.
  *

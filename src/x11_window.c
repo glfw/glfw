@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 X11 - www.glfw.org
+// GLFW 3.1 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -95,6 +95,51 @@ static int translateChar(XKeyEvent* event)
 
     // Convert to Unicode (see x11_unicode.c)
     return (int) _glfwKeySym2Unicode(keysym);
+}
+
+// Splits a text/uri-list into separate file paths
+//
+static char** splitUriList(char* text, int* count)
+{
+    const char* prefix = "file://";
+    char** names = NULL;
+    char* line;
+
+    *count = 0;
+
+    while ((line = strtok(text, "\r\n")))
+    {
+        text = NULL;
+
+        if (*line == '#')
+            continue;
+
+        if (strncmp(line, prefix, strlen(prefix)) == 0)
+            line += strlen(prefix);
+
+        (*count)++;
+
+        char* name = calloc(strlen(line) + 1, 1);
+        names = realloc(names, *count * sizeof(char*));
+        names[*count - 1] = name;
+
+        while (*line)
+        {
+            if (line[0] == '%' && line[1] && line[2])
+            {
+                const char digits[3] = { line[1], line[2], '\0' };
+                *name = strtol(digits, NULL, 16);
+                line += 2;
+            }
+            else
+                *name = *line;
+
+            name++;
+            line++;
+        }
+    }
+
+    return names;
 }
 
 // Create the X11 window (and its colormap)
@@ -306,6 +351,15 @@ static GLboolean createWindow(_GLFWwindow* window,
         XISelectEvents(_glfw.x11.display, window->x11.handle, &eventmask, 1);
     }
 
+    if (_glfw.x11.XdndAware)
+    {
+        // Announce support for Xdnd (drag and drop)
+        const Atom version = 5;
+        XChangeProperty(_glfw.x11.display, window->x11.handle,
+                        _glfw.x11.XdndAware, XA_ATOM, 32,
+                        PropModeReplace, (unsigned char*) &version, 1);
+    }
+
     _glfwPlatformSetWindowTitle(window, wndconfig->title);
 
     XRRSelectInput(_glfw.x11.display, window->x11.handle,
@@ -493,6 +547,7 @@ static void leaveFullscreenMode(_GLFWwindow* window)
                    &event);
     }
 }
+
 
 // Process the specified X event
 //
@@ -704,6 +759,95 @@ static void processEvent(XEvent *event)
                            SubstructureNotifyMask | SubstructureRedirectMask,
                            event);
             }
+            else if (event->xclient.message_type == _glfw.x11.XdndEnter)
+            {
+                // A drag operation has entered the window
+                // TODO: Check if UTF-8 string is supported by the source
+            }
+            else if (event->xclient.message_type == _glfw.x11.XdndDrop)
+            {
+                // The drag operation has finished dropping on
+                // the window, ask to convert it to a UTF-8 string
+                _glfw.x11.xdnd.source = event->xclient.data.l[0];
+                XConvertSelection(_glfw.x11.display,
+                                  _glfw.x11.XdndSelection,
+                                  _glfw.x11.UTF8_STRING,
+                                  _glfw.x11.XdndSelection,
+                                  window->x11.handle, CurrentTime);
+            }
+            else if (event->xclient.message_type == _glfw.x11.XdndPosition)
+            {
+                // The drag operation has moved over the window
+                const int absX = (event->xclient.data.l[2] >> 16) & 0xFFFF;
+                const int absY = (event->xclient.data.l[2]) & 0xFFFF;
+                int x, y;
+
+                _glfwPlatformGetWindowPos(window, &x, &y);
+                _glfwInputCursorMotion(window, absX - x, absY - y);
+
+                // Reply that we are ready to copy the dragged data
+                XEvent reply;
+                memset(&reply, 0, sizeof(reply));
+
+                reply.type = ClientMessage;
+                reply.xclient.window = event->xclient.data.l[0];
+                reply.xclient.message_type = _glfw.x11.XdndStatus;
+                reply.xclient.format = 32;
+                reply.xclient.data.l[0] = window->x11.handle;
+                reply.xclient.data.l[1] = 1; // Always accept the dnd with no rectangle
+                reply.xclient.data.l[2] = 0; // Specify an empty rectangle
+                reply.xclient.data.l[3] = 0;
+                reply.xclient.data.l[4] = _glfw.x11.XdndActionCopy;
+
+                XSendEvent(_glfw.x11.display, event->xclient.data.l[0],
+                           False, NoEventMask, &reply);
+                XFlush(_glfw.x11.display);
+            }
+
+            break;
+        }
+
+        case SelectionNotify:
+        {
+            if (event->xselection.property)
+            {
+                // The converted data from the drag operation has arrived
+                char* data;
+                const int result = _glfwGetWindowProperty(event->xselection.requestor,
+                                                          event->xselection.property,
+                                                          event->xselection.target,
+                                                          (unsigned char**) &data);
+
+                if (result)
+                {
+                    int i, count;
+                    char** names = splitUriList(data, &count);
+
+                    _glfwInputDrop(window, count, (const char**) names);
+
+                    for (i = 0;  i < count;  i++)
+                        free(names[i]);
+                    free(names);
+                }
+
+                XFree(data);
+
+                XEvent reply;
+                memset(&reply, 0, sizeof(reply));
+
+                reply.type = ClientMessage;
+                reply.xclient.window = _glfw.x11.xdnd.source;
+                reply.xclient.message_type = _glfw.x11.XdndFinished;
+                reply.xclient.format = 32;
+                reply.xclient.data.l[0] = window->x11.handle;
+                reply.xclient.data.l[1] = result;
+                reply.xclient.data.l[2] = _glfw.x11.XdndActionCopy;
+
+                // Reply that all is well
+                XSendEvent(_glfw.x11.display, _glfw.x11.xdnd.source,
+                           False, NoEventMask, &reply);
+                XFlush(_glfw.x11.display);
+            }
 
             break;
         }
@@ -897,7 +1041,7 @@ unsigned long _glfwGetWindowProperty(Window window,
                        &bytesAfter,
                        value);
 
-    if (actualType != type)
+    if (type != AnyPropertyType && actualType != type)
         return 0;
 
     return itemCount;
@@ -1001,7 +1145,6 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
     if (child)
     {
         int left, top;
-
         XTranslateCoordinates(_glfw.x11.display, window->x11.handle, child,
                               0, 0, &left, &top, &child);
 

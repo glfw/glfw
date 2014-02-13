@@ -165,6 +165,9 @@ directory of bundled applications to the `Contents/Resources` directory.
 `GLFW_USE_MENUBAR` determines whether the first call to
 `glfwCreateWindow` sets up a minimal menu bar.
 
+`GLFW_USE_RETINA` determines whether windows will use the full resolution of
+Retina displays.
+
 `GLFW_BUILD_UNIVERSAL` determines whether to build Universal Binaries.
 
 
@@ -257,5 +260,7 @@ available:
    application bundle during @ref glfwInit (recommended)
  - `_GLFW_USE_MENUBAR` to create and populate the menu bar when the first window
    is created (recommended)
+ - `_GLFW_USE_RETINA` to have windows use the full resolution of Retina displays
+   (recommended)
 
 */

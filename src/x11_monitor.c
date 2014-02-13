@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 X11 - www.glfw.org
+// GLFW 3.1 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -62,7 +62,7 @@ static const XRRModeInfo* getModeInfo(const XRRScreenResources* sr, RRMode id)
 //
 void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 {
-    if (_glfw.x11.randr.available)
+    if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
     {
         int i, j;
         XRRScreenResources* sr;
@@ -136,7 +136,7 @@ void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 //
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 {
-    if (_glfw.x11.randr.available)
+    if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
     {
         XRRScreenResources* sr;
         XRRCrtcInfo* ci;
@@ -170,13 +170,13 @@ void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
+    int i, found = 0;
     _GLFWmonitor** monitors = NULL;
 
     *count = 0;
 
     if (_glfw.x11.randr.available)
     {
-        int i, found = 0;
         RROutput primary;
         XRRScreenResources* sr;
 
@@ -218,8 +218,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                 continue;
             }
 
-            monitors[found] = _glfwCreateMonitor(oi->name,
-                                                 oi->mm_width, oi->mm_height);
+            monitors[found] = _glfwAllocMonitor(oi->name,
+                                                oi->mm_width, oi->mm_height);
 
             monitors[found]->x11.output = output;
             monitors[found]->x11.crtc   = oi->crtc;
@@ -245,23 +245,27 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
         if (found == 0)
         {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: RandR monitor support seems broken");
+            _glfw.x11.randr.monitorBroken = GL_TRUE;
+
             free(monitors);
             monitors = NULL;
         }
-
-        *count = found;
     }
-    else
+
+    if (!monitors)
     {
         monitors = calloc(1, sizeof(_GLFWmonitor*));
-        monitors[0] = _glfwCreateMonitor("Display",
-                                         DisplayWidthMM(_glfw.x11.display,
-                                                        _glfw.x11.screen),
-                                         DisplayHeightMM(_glfw.x11.display,
-                                                         _glfw.x11.screen));
-        *count = 1;
+        monitors[0] = _glfwAllocMonitor("Display",
+                                        DisplayWidthMM(_glfw.x11.display,
+                                                       _glfw.x11.screen),
+                                        DisplayHeightMM(_glfw.x11.display,
+                                                        _glfw.x11.screen));
+        found = 1;
     }
 
+    *count = found;
     return monitors;
 }
 
@@ -272,7 +276,7 @@ GLboolean _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
 
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {
-    if (_glfw.x11.randr.available)
+    if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
     {
         XRRScreenResources* sr;
         XRRCrtcInfo* ci;
@@ -309,7 +313,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 
     // Build array of available resolutions
 
-    if (_glfw.x11.randr.available)
+    if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
     {
         int i, j;
         XRRScreenResources* sr;
@@ -375,7 +379,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
-    if (_glfw.x11.randr.available)
+    if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
     {
         XRRScreenResources* sr;
         XRRCrtcInfo* ci;

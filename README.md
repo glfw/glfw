@@ -104,6 +104,7 @@ skills.
  - Jarrod Davis
  - Olivier Delannoy
  - Paul R. Deppe
+ - Michael Dickens
  - Jonathan Dummer
  - Ralph Eastwood
  - Michael Fogleman

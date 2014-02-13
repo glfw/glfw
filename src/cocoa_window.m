@@ -701,13 +701,14 @@ static int translateKey(unsigned int key)
     {
         NSEnumerator* e = [files objectEnumerator];
         char** names = calloc(count, sizeof(char*));
+        int i;
 
-        for (int i = 0;  i < count;  i++)
+        for (i = 0;  i < count;  i++)
             names[i] = strdup([[e nextObject] UTF8String]);
 
         _glfwInputDrop(window, count, (const char**) names);
 
-        for (int i = 0;  i < count;  i++)
+        for (i = 0;  i < count;  i++)
             free(names[i]);
         free(names);
     }

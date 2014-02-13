@@ -306,7 +306,5 @@ span.stringliteral {
 }
 
 code {
-	background-color:hsl(0,0%,95%);
 	padding:0.1em;
-	border-radius: 4px;
 }

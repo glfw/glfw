@@ -81,6 +81,7 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
         return GL_FALSE;
     }
 
+    monitor->win32.modeChanged = GL_TRUE;
     return GL_TRUE;
 }
 
@@ -88,8 +89,12 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 //
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 {
-    ChangeDisplaySettingsEx(monitor->win32.name,
-                            NULL, NULL, CDS_FULLSCREEN, NULL);
+    if (monitor->win32.modeChanged)
+    {
+        ChangeDisplaySettingsEx(monitor->win32.name,
+                                NULL, NULL, CDS_FULLSCREEN, NULL);
+        monitor->win32.modeChanged = GL_FALSE;
+    }
 }
 
 

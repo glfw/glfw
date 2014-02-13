@@ -1042,9 +1042,9 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
         *bottom = contentRect.origin.y - frameRect.origin.y;
 }
 
-void _glfwPlatformSetWindowIcons(_GLFWwindow* window, GLFWimage *icons, int numicons)
+void _glfwPlatformSetWindowIcons(_GLFWwindow* window, GLFWimage* icons, int count)
 {
-    /* TODO: implement this */
+    // TODO: Implement this
 }
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)

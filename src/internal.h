@@ -542,7 +542,7 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window, int* left, int* top, i
 /*! @copydoc glfwSetWindowIcons
  *  @ingroup platform
  */
-void _glfwPlatformSetWindowIcons(_GLFWwindow* window, GLFWimage* icons, int numicons);
+void _glfwPlatformSetWindowIcons(_GLFWwindow* window, GLFWimage* icons, int count);
 
 /*! @copydoc glfwIconifyWindow
  *  @ingroup platform

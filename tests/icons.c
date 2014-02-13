@@ -34,7 +34,7 @@
 #include <string.h>
 
 // a simple glfw logo
-const char * const logo[] = {
+const char* const logo[] = {
     "................",
     "................",
     "...0000..0......",
@@ -54,16 +54,17 @@ const char * const logo[] = {
 };
 
 const unsigned char icon_colors[5][4] = {
-    {0x00, 0x00, 0x00, 0xff}, // black
-    {0xff, 0x00, 0x00, 0xff}, // red
-    {0x00, 0xff, 0x00, 0xff}, // green
-    {0xff, 0x00, 0xff, 0xff}, // blue
-    {0xff, 0xff, 0xff, 0xff} // white
+    { 0x00, 0x00, 0x00, 0xff }, // black
+    { 0xff, 0x00, 0x00, 0xff }, // red
+    { 0x00, 0xff, 0x00, 0xff }, // green
+    { 0xff, 0x00, 0xff, 0xff }, // blue
+    { 0xff, 0xff, 0xff, 0xff } // white
 };
 
 static int cur_icon_color = 0;
 
-static void set_icon(GLFWwindow* window, int icon_color) {
+static void set_icon(GLFWwindow* window, int icon_color)
+{
     GLFWimage img;
     int x, y;
     char* pixels;
@@ -73,17 +74,9 @@ static void set_icon(GLFWwindow* window, int icon_color) {
     img.height = 16;
     pixels = malloc(img.width * img.height * 4);
 
-    if (!pixels)
+    for (x = 0;  x < 16;  x++)
     {
-        glfwTerminate();
-
-        fprintf(stderr, "Failed to allocate memory.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    for (x = 0; x < 16; ++x)
-    {
-        for (y = 0; y < 16; ++y)
+        for (y = 0;  y < 16;  y++)
         {
             // 15 - y because we need to flip the icon
             if (logo[15 - y][x] == '0')
@@ -116,7 +109,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     }
 }
 
-
 int main(int argc, char** argv)
 {
     GLFWwindow* window;
@@ -146,6 +138,6 @@ int main(int argc, char** argv)
     }
 
     glfwTerminate();
-    
-    return EXIT_SUCCESS;
+    exit(EXIT_SUCCESS);
 }
+

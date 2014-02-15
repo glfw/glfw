@@ -1181,6 +1181,8 @@ void _glfwPlatformWaitEvents(void)
 
 void _glfwPlatformPostEmptyEvent(void)
 {
+	_GLFWwindow* window = _glfw.windowListHead;
+	SendMessage(window->win32.handle, 0, 0, 0);
 }
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos)

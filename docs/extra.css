@@ -311,7 +311,7 @@ code {
 	border-radius:4px;
 }
 
-dl.section.note code, table.doxtable code {
+dl.note code,dl.pre code,dl.post code,dl.invariant code,dl.warning code,dl.attention code,dl.deprecated code,dl.bug code,dl.todo code,dl.test code,table.doxtable code {
 	background-color:transparent;
 	padding:0;
 	border-radius:0;

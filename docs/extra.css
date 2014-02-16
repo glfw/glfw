@@ -306,5 +306,13 @@ span.stringliteral {
 }
 
 code {
+	background-color:hsl(0,0%,95%);
 	padding:0.1em;
+	border-radius:4px;
+}
+
+dl.section.note code, table.doxtable code {
+	background-color:transparent;
+	padding:0;
+	border-radius:0;
 }

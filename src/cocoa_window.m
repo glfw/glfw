@@ -1201,37 +1201,38 @@ void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
         CGAssociateMouseAndMouseCursorPosition(true);
 }
 
-int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int xhot, int yhot,
-                              int format, const void* data)
+int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
+                              const GLFWimage* image,
+                              int xhot, int yhot)
 {
-    NSImage* image;
+    NSImage* native;
     NSBitmapImageRep* rep;
 
     rep = [[NSBitmapImageRep alloc]
         initWithBitmapDataPlanes:NULL
-                      pixelsWide:width
-                      pixelsHigh:height
+                      pixelsWide:image->width
+                      pixelsHigh:image->height
                    bitsPerSample:8
                  samplesPerPixel:4
                         hasAlpha:YES
                         isPlanar:NO
                   colorSpaceName:NSCalibratedRGBColorSpace
                     bitmapFormat:NSAlphaNonpremultipliedBitmapFormat
-                     bytesPerRow:width * 4
+                     bytesPerRow:image->width * 4
                     bitsPerPixel:32];
 
     if (rep == nil)
         return GL_FALSE;
 
-    memcpy([rep bitmapData], data, width * height * 4);
+    memcpy([rep bitmapData], image->pixels, image->width * image->height * 4);
 
-    image = [[NSImage alloc] initWithSize:NSMakeSize(width, height)];
-    [image addRepresentation: rep];
+    native = [[NSImage alloc] initWithSize:NSMakeSize(image->width, image->height)];
+    [native addRepresentation: rep];
 
-    cursor->ns.object = [[NSCursor alloc] initWithImage:image
+    cursor->ns.object = [[NSCursor alloc] initWithImage:native
                                                 hotSpot:NSMakePoint(xhot, yhot)];
 
-    [image release];
+    [native release];
     [rep release];
 
     if (cursor->ns.object == nil)

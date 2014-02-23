@@ -353,8 +353,7 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, double xpos, double ypos)
     _glfwPlatformSetCursorPos(window, xpos, ypos);
 }
 
-GLFWAPI GLFWcursor* glfwCreateCursor(int width, int height, int xhot, int yhot,
-                                     int format, const void* data)
+GLFWAPI GLFWcursor* glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
 {
     _GLFWcursor* cursor;
 
@@ -364,7 +363,7 @@ GLFWAPI GLFWcursor* glfwCreateCursor(int width, int height, int xhot, int yhot,
     cursor->next = _glfw.cursorListHead;
     _glfw.cursorListHead = cursor;
 
-    if (!_glfwPlatformCreateCursor(cursor, width, height, xhot, yhot, format, data))
+    if (!_glfwPlatformCreateCursor(cursor, image, xhot, yhot))
     {
         glfwDestroyCursor((GLFWcursor*) cursor);
         return NULL;

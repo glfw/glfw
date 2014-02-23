@@ -863,6 +863,23 @@ typedef struct GLFWgammaramp
     unsigned int size;
 } GLFWgammaramp;
 
+/*! @brief Image data.
+ *
+ *  @ingroup window
+ */
+typedef struct GLFWimage
+{
+    /*! The width, in pixels, of this image.
+     */
+    int width;
+    /*! The height, in pixels, of this image.
+     */
+    int height;
+    /*! The pixel data of this image, arranged left-to-right, top-to-bottom.
+     */
+    unsigned char* pixels;
+} GLFWimage;
+
 
 /*************************************************************************
  * GLFW API functions
@@ -1936,13 +1953,9 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
 
 /*! @brief Creates a cursor.
  *
- *  @param[in] width The desired cursor width.
- *  @param[in] height The desired cursor height.
+ *  @param[in] image The desired cursor image.
  *  @param[in] xhot The desired x-coordinate of the cursor hotspot.
  *  @param[in] yhot The desired y-coordinate of the cursor hotspot.
- *  @param[in] format Not used.
- *  @param[in] data The cursor image data in RGBA8 format, packed in rows from
- *  top to bottom.
  *
  *  @return A new cursor ready to use or `NULL` if an error occurred. If you
  *  don't destroy the cursor by calling `glfwDestroyCursor` it will be destroyed
@@ -1952,7 +1965,7 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
  *
  *  @ingroup input
  */
-GLFWAPI GLFWcursor* glfwCreateCursor(int width, int height, int xhot, int yhot, int format, const void* data);
+GLFWAPI GLFWcursor* glfwCreateCursor(const GLFWimage* image, int xhot, int yhot);
 
 /*! @brief Destroys a cursor.
  *

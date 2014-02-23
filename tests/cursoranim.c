@@ -66,10 +66,11 @@ static float star(int x, int y, float t)
 static GLFWcursor* load_frame(float t)
 {
     int i = 0, x, y;
+    const GLFWimage image = { SIZE, SIZE, buffer };
 
-    for (y = 0; y < SIZE; y++)
+    for (y = 0;  y < image.width;  y++)
     {
-        for (x = 0; x < SIZE; x++)
+        for (x = 0;  x < image.height;  x++)
         {
             buffer[i++] = 255;
             buffer[i++] = 255;
@@ -78,7 +79,7 @@ static GLFWcursor* load_frame(float t)
         }
     }
 
-    return glfwCreateCursor(SIZE, SIZE, SIZE / 2, SIZE / 2, 0, buffer);
+    return glfwCreateCursor(&image, image.width / 2, image.height / 2);
 }
 
 int main(void)

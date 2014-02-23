@@ -1356,22 +1356,23 @@ void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
     }
 }
 
-int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int xhot, int yhot,
-                              int format, const void* data)
+int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
+                              const GLFWimage* image,
+                              int xhot, int yhot)
 {
     int i;
 
-    XcursorImage* native = XcursorImageCreate(width, height);
+    XcursorImage* native = XcursorImageCreate(image->width, image->height);
     if (native == NULL)
         return GL_FALSE;
 
     native->xhot = xhot;
     native->yhot = yhot;
 
-    unsigned char* source = (unsigned char*) data;
+    unsigned char* source = (unsigned char*) image->pixels;
     XcursorPixel* target = native->pixels;
 
-    for (i = 0;  i < width * height;  i++, target++, source += 4)
+    for (i = 0;  i < image->width * image->height;  i++, target++, source += 4)
         *target = (source[3] << 24) | (source[0] << 16) | (source[1] << 8) | source[2];
 
     cursor->x11.handle = XcursorImageLoadCursor(_glfw.x11.display, native);

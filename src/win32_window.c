@@ -1223,21 +1223,22 @@ void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
     }
 }
 
-int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int xhot, int yhot,
-                              int format, const void* data)
+int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
+                              const GLFWimage* image,
+                              int xhot, int yhot)
 {
     HDC dc;
     HBITMAP bitmap, mask;
     BITMAPV5HEADER bi;
     ICONINFO ii;
     DWORD* target = 0;
-    BYTE* source = (BYTE*) data;
+    BYTE* source = (BYTE*) image->pixels;
     int i;
 
     ZeroMemory(&bi, sizeof(bi));
     bi.bV5Size        = sizeof(BITMAPV5HEADER);
-    bi.bV5Width       = width;
-    bi.bV5Height      = -height;
+    bi.bV5Width       = image->width;
+    bi.bV5Height      = -image->height;
     bi.bV5Planes      = 1;
     bi.bV5BitCount    = 32;
     bi.bV5Compression = BI_BITFIELDS;
@@ -1254,14 +1255,14 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int xh
     if (!bitmap)
         return GL_FALSE;
 
-    mask = CreateBitmap(width, height, 1, 1, NULL);
+    mask = CreateBitmap(image->width, image->height, 1, 1, NULL);
     if (!mask)
     {
         DeleteObject(bitmap);
         return GL_FALSE;
     }
 
-    for (i = 0;  i < width * height;  i++, target++, source += 4)
+    for (i = 0;  i < image->width * image->height;  i++, target++, source += 4)
         *target = (source[3] << 24) | (source[0] << 16) | (source[1] << 8) | source[2];
 
     ZeroMemory(&ii, sizeof(ii));

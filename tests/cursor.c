@@ -88,29 +88,33 @@ static void command_callback(int key)
 
         case GLFW_KEY_C:
         {
-            if (cursor == NULL)
+            int x, y;
+            GLFWimage image;
+            unsigned char* pixels;
+
+            if (cursor)
+              break;
+
+            image.width = cursorSize[currentSize].w;
+            image.height = cursorSize[currentSize].h;
+
+            pixels = malloc(4 * image.width * image.height);
+            image.pixels = pixels;
+
+            for (y = 0;  y < image.height;  y++)
             {
-                int w = cursorSize[currentSize].w;
-                int h = cursorSize[currentSize].h;
-                int x, y, i = 0;
-                unsigned char *image = malloc(4 * w * h);
-
-                for (y = 0;  y < h;  y++)
+                for (x =  0;  x < image.width;  x++)
                 {
-                    for (x = 0;  x < w;  x++)
-                    {
-                        image[i++] = 0xff;
-                        image[i++] = 0;
-                        image[i++] = 255 * y / h;
-                        image[i++] = 255 * x / w;
-                    }
+                    *pixels++ = 0xff;
+                    *pixels++ = 0;
+                    *pixels++ = 255 * y / image.height;
+                    *pixels++ = 255 * x / image.width;
                 }
-
-                cursor = glfwCreateCursor(w, h, w / 2, h / 2, 0, image);
-                currentSize = (currentSize + 1) % SizeCount;
-                free(image);
             }
 
+            cursor = glfwCreateCursor(&image, image.width / 2, image.height / 2);
+            currentSize = (currentSize + 1) % SizeCount;
+            free(image.pixels);
             break;
         }
 

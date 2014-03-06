@@ -841,6 +841,7 @@ static ATOM registerWindowClass(void)
 //
 static int createWindow(_GLFWwindow* window,
                         const _GLFWwndconfig* wndconfig,
+                        const _GLFWctxconfig* ctxconfig,
                         const _GLFWfbconfig* fbconfig)
 {
     int xpos, ypos, fullWidth, fullHeight;
@@ -919,7 +920,7 @@ static int createWindow(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    if (!_glfwCreateContext(window, wndconfig, fbconfig))
+    if (!_glfwCreateContext(window, ctxconfig, fbconfig))
         return GL_FALSE;
 
     return GL_TRUE;
@@ -945,6 +946,7 @@ static void destroyWindow(_GLFWwindow* window)
 
 int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
+                              const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
     int status;
@@ -956,10 +958,10 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             return GL_FALSE;
     }
 
-    if (!createWindow(window, wndconfig, fbconfig))
+    if (!createWindow(window, wndconfig, ctxconfig, fbconfig))
         return GL_FALSE;
 
-    status = _glfwAnalyzeContext(window, wndconfig, fbconfig);
+    status = _glfwAnalyzeContext(window, ctxconfig, fbconfig);
 
     if (status == _GLFW_RECREATION_IMPOSSIBLE)
         return GL_FALSE;
@@ -991,7 +993,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         destroyWindow(window);
 
         // ...and then create them again, this time with better APIs
-        if (!createWindow(window, wndconfig, fbconfig))
+        if (!createWindow(window, wndconfig, ctxconfig, fbconfig))
             return GL_FALSE;
     }
 

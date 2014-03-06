@@ -347,7 +347,7 @@ void _glfwTerminateContextAPI(void)
 // Prepare for creation of the OpenGL context
 //
 int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWwndconfig* wndconfig,
+                       const _GLFWctxconfig* ctxconfig,
                        const _GLFWfbconfig* fbconfig)
 {
     int attribs[40];
@@ -355,8 +355,8 @@ int _glfwCreateContext(_GLFWwindow* window,
     PIXELFORMATDESCRIPTOR pfd;
     HGLRC share = NULL;
 
-    if (wndconfig->share)
-        share = wndconfig->share->wgl.context;
+    if (ctxconfig->share)
+        share = ctxconfig->share->wgl.context;
 
     window->wgl.dc = GetDC(window->win32.handle);
     if (!window->wgl.dc)
@@ -388,42 +388,42 @@ int _glfwCreateContext(_GLFWwindow* window,
     {
         int index = 0, mask = 0, flags = 0, strategy = 0;
 
-        if (wndconfig->clientAPI == GLFW_OPENGL_API)
+        if (ctxconfig->api == GLFW_OPENGL_API)
         {
-            if (wndconfig->glForward)
+            if (ctxconfig->forward)
                 flags |= WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
 
-            if (wndconfig->glDebug)
+            if (ctxconfig->debug)
                 flags |= WGL_CONTEXT_DEBUG_BIT_ARB;
 
-            if (wndconfig->glProfile)
+            if (ctxconfig->profile)
             {
-                if (wndconfig->glProfile == GLFW_OPENGL_CORE_PROFILE)
+                if (ctxconfig->profile == GLFW_OPENGL_CORE_PROFILE)
                     mask |= WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
-                else if (wndconfig->glProfile == GLFW_OPENGL_COMPAT_PROFILE)
+                else if (ctxconfig->profile == GLFW_OPENGL_COMPAT_PROFILE)
                     mask |= WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
             }
         }
         else
             mask |= WGL_CONTEXT_ES2_PROFILE_BIT_EXT;
 
-        if (wndconfig->glRobustness)
+        if (ctxconfig->robustness)
         {
             if (window->wgl.ARB_create_context_robustness)
             {
-                if (wndconfig->glRobustness == GLFW_NO_RESET_NOTIFICATION)
+                if (ctxconfig->robustness == GLFW_NO_RESET_NOTIFICATION)
                     strategy = WGL_NO_RESET_NOTIFICATION_ARB;
-                else if (wndconfig->glRobustness == GLFW_LOSE_CONTEXT_ON_RESET)
+                else if (ctxconfig->robustness == GLFW_LOSE_CONTEXT_ON_RESET)
                     strategy = WGL_LOSE_CONTEXT_ON_RESET_ARB;
 
                 flags |= WGL_CONTEXT_ROBUST_ACCESS_BIT_ARB;
             }
         }
 
-        if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
+        if (ctxconfig->major != 1 || ctxconfig->minor != 0)
         {
-            setWGLattrib(WGL_CONTEXT_MAJOR_VERSION_ARB, wndconfig->glMajor);
-            setWGLattrib(WGL_CONTEXT_MINOR_VERSION_ARB, wndconfig->glMinor);
+            setWGLattrib(WGL_CONTEXT_MAJOR_VERSION_ARB, ctxconfig->major);
+            setWGLattrib(WGL_CONTEXT_MINOR_VERSION_ARB, ctxconfig->minor);
         }
 
         if (flags)
@@ -497,14 +497,14 @@ void _glfwDestroyContext(_GLFWwindow* window)
 // Analyzes the specified context for possible recreation
 //
 int _glfwAnalyzeContext(const _GLFWwindow* window,
-                        const _GLFWwndconfig* wndconfig,
+                        const _GLFWctxconfig* ctxconfig,
                         const _GLFWfbconfig* fbconfig)
 {
     GLboolean required = GL_FALSE;
 
-    if (wndconfig->clientAPI == GLFW_OPENGL_API)
+    if (ctxconfig->api == GLFW_OPENGL_API)
     {
-        if (wndconfig->glForward)
+        if (ctxconfig->forward)
         {
             if (!window->wgl.ARB_create_context)
             {
@@ -518,7 +518,7 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
             required = GL_TRUE;
         }
 
-        if (wndconfig->glProfile)
+        if (ctxconfig->profile)
         {
             if (!window->wgl.ARB_create_context_profile)
             {
@@ -546,13 +546,13 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
         required = GL_TRUE;
     }
 
-    if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
+    if (ctxconfig->major != 1 || ctxconfig->minor != 0)
     {
         if (window->wgl.ARB_create_context)
             required = GL_TRUE;
     }
 
-    if (wndconfig->glDebug)
+    if (ctxconfig->debug)
     {
         if (window->wgl.ARB_create_context)
             required = GL_TRUE;

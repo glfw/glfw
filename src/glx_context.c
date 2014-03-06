@@ -301,15 +301,15 @@ void _glfwTerminateContextAPI(void)
 // Prepare for creation of the OpenGL context
 //
 int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWwndconfig* wndconfig,
+                       const _GLFWctxconfig* ctxconfig,
                        const _GLFWfbconfig* fbconfig)
 {
     int attribs[40];
     GLXFBConfig native;
     GLXContext share = NULL;
 
-    if (wndconfig->share)
-        share = wndconfig->share->glx.context;
+    if (ctxconfig->share)
+        share = ctxconfig->share->glx.context;
 
     if (!chooseFBConfig(fbconfig, &native))
     {
@@ -328,7 +328,7 @@ int _glfwCreateContext(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
+    if (ctxconfig->api == GLFW_OPENGL_ES_API)
     {
         if (!_glfw.glx.ARB_create_context ||
             !_glfw.glx.ARB_create_context_profile ||
@@ -341,7 +341,7 @@ int _glfwCreateContext(_GLFWwindow* window,
         }
     }
 
-    if (wndconfig->glForward)
+    if (ctxconfig->forward)
     {
         if (!_glfw.glx.ARB_create_context)
         {
@@ -352,7 +352,7 @@ int _glfwCreateContext(_GLFWwindow* window,
         }
     }
 
-    if (wndconfig->glProfile)
+    if (ctxconfig->profile)
     {
         if (!_glfw.glx.ARB_create_context ||
             !_glfw.glx.ARB_create_context_profile)
@@ -370,46 +370,46 @@ int _glfwCreateContext(_GLFWwindow* window,
     {
         int index = 0, mask = 0, flags = 0, strategy = 0;
 
-        if (wndconfig->clientAPI == GLFW_OPENGL_API)
+        if (ctxconfig->api == GLFW_OPENGL_API)
         {
-            if (wndconfig->glForward)
+            if (ctxconfig->forward)
                 flags |= GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
 
-            if (wndconfig->glDebug)
+            if (ctxconfig->debug)
                 flags |= GLX_CONTEXT_DEBUG_BIT_ARB;
 
-            if (wndconfig->glProfile)
+            if (ctxconfig->profile)
             {
-                if (wndconfig->glProfile == GLFW_OPENGL_CORE_PROFILE)
+                if (ctxconfig->profile == GLFW_OPENGL_CORE_PROFILE)
                     mask |= GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
-                else if (wndconfig->glProfile == GLFW_OPENGL_COMPAT_PROFILE)
+                else if (ctxconfig->profile == GLFW_OPENGL_COMPAT_PROFILE)
                     mask |= GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
             }
         }
         else
             mask |= GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
 
-        if (wndconfig->glRobustness != GLFW_NO_ROBUSTNESS)
+        if (ctxconfig->robustness != GLFW_NO_ROBUSTNESS)
         {
             if (_glfw.glx.ARB_create_context_robustness)
             {
-                if (wndconfig->glRobustness == GLFW_NO_RESET_NOTIFICATION)
+                if (ctxconfig->robustness == GLFW_NO_RESET_NOTIFICATION)
                     strategy = GLX_NO_RESET_NOTIFICATION_ARB;
-                else if (wndconfig->glRobustness == GLFW_LOSE_CONTEXT_ON_RESET)
+                else if (ctxconfig->robustness == GLFW_LOSE_CONTEXT_ON_RESET)
                     strategy = GLX_LOSE_CONTEXT_ON_RESET_ARB;
 
                 flags |= GLX_CONTEXT_ROBUST_ACCESS_BIT_ARB;
             }
         }
 
-        if (wndconfig->glMajor != 1 || wndconfig->glMinor != 0)
+        if (ctxconfig->major != 1 || ctxconfig->minor != 0)
         {
             // NOTE: Only request an explicitly versioned context when
             //       necessary, as explicitly requesting version 1.0 does not
             //       always return the highest available version
 
-            setGLXattrib(GLX_CONTEXT_MAJOR_VERSION_ARB, wndconfig->glMajor);
-            setGLXattrib(GLX_CONTEXT_MINOR_VERSION_ARB, wndconfig->glMinor);
+            setGLXattrib(GLX_CONTEXT_MAJOR_VERSION_ARB, ctxconfig->major);
+            setGLXattrib(GLX_CONTEXT_MINOR_VERSION_ARB, ctxconfig->minor);
         }
 
         if (mask)
@@ -437,9 +437,9 @@ int _glfwCreateContext(_GLFWwindow* window,
             //       context creation with a GLXBadProfileARB error in violation
             //       of the extension spec
             if (_glfw.x11.errorCode == _glfw.glx.errorBase + GLXBadProfileARB &&
-                wndconfig->clientAPI == GLFW_OPENGL_API &&
-                wndconfig->glProfile == GLFW_OPENGL_ANY_PROFILE &&
-                wndconfig->glForward == GL_FALSE)
+                ctxconfig->api == GLFW_OPENGL_API &&
+                ctxconfig->profile == GLFW_OPENGL_ANY_PROFILE &&
+                ctxconfig->forward == GL_FALSE)
             {
                 window->glx.context = createLegacyContext(window, native, share);
             }

@@ -66,7 +66,7 @@ void _glfwTerminateContextAPI(void)
 // Create the OpenGL context
 //
 int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWwndconfig* wndconfig,
+                       const _GLFWctxconfig* ctxconfig,
                        const _GLFWfbconfig* fbconfig)
 {
     unsigned int attributeCount = 0;
@@ -78,7 +78,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     else if (colorBits < 15)
         colorBits = 15;
 
-    if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
+    if (ctxconfig->api == GLFW_OPENGL_ES_API)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "NSGL: This API does not support OpenGL ES");
@@ -86,7 +86,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     }
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (wndconfig->glMajor == 3 && wndconfig->glMinor < 2)
+    if (ctxconfig->major == 3 && ctxconfig->minor < 2)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "NSGL: The targeted version of OS X does not "
@@ -94,9 +94,9 @@ int _glfwCreateContext(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    if (wndconfig->glMajor > 2)
+    if (ctxconfig->major > 2)
     {
-        if (!wndconfig->glForward)
+        if (!ctxconfig->forward)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                             "NSGL: The targeted version of OS X only "
@@ -105,7 +105,7 @@ int _glfwCreateContext(_GLFWwindow* window,
             return GL_FALSE;
         }
 
-        if (wndconfig->glProfile != GLFW_OPENGL_CORE_PROFILE)
+        if (ctxconfig->profile != GLFW_OPENGL_CORE_PROFILE)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                             "NSGL: The targeted version of OS X only "
@@ -116,7 +116,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     }
 #else
     // Fail if OpenGL 3.0 or above was requested
-    if (wndconfig->glMajor > 2)
+    if (ctxconfig->major > 2)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "NSGL: The targeted version of OS X does not "
@@ -126,7 +126,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
     // Fail if a robustness strategy was requested
-    if (wndconfig->glRobustness)
+    if (ctxconfig->robustness)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "NSGL: OS X does not support OpenGL robustness "
@@ -144,7 +144,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     ADD_ATTR(NSOpenGLPFAClosestPolicy);
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (wndconfig->glMajor > 2)
+    if (ctxconfig->major > 2)
         ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
@@ -196,8 +196,8 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     NSOpenGLContext* share = NULL;
 
-    if (wndconfig->share)
-        share = wndconfig->share->nsgl.context;
+    if (ctxconfig->share)
+        share = ctxconfig->share->nsgl.context;
 
     window->nsgl.context =
         [[NSOpenGLContext alloc] initWithFormat:window->nsgl.pixelFormat

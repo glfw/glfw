@@ -146,6 +146,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
                                      GLFWwindow* share)
 {
     _GLFWfbconfig fbconfig;
+    _GLFWctxconfig ctxconfig;
     _GLFWwndconfig wndconfig;
     _GLFWwindow* window;
     _GLFWwindow* previous;
@@ -181,18 +182,20 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     wndconfig.resizable     = _glfw.hints.resizable ? GL_TRUE : GL_FALSE;
     wndconfig.visible       = _glfw.hints.visible ? GL_TRUE : GL_FALSE;
     wndconfig.decorated     = _glfw.hints.decorated ? GL_TRUE : GL_FALSE;
-    wndconfig.clientAPI     = _glfw.hints.clientAPI;
-    wndconfig.glMajor       = _glfw.hints.glMajor;
-    wndconfig.glMinor       = _glfw.hints.glMinor;
-    wndconfig.glForward     = _glfw.hints.glForward ? GL_TRUE : GL_FALSE;
-    wndconfig.glDebug       = _glfw.hints.glDebug ? GL_TRUE : GL_FALSE;
-    wndconfig.glProfile     = _glfw.hints.glProfile;
-    wndconfig.glRobustness  = _glfw.hints.glRobustness;
     wndconfig.monitor       = (_GLFWmonitor*) monitor;
-    wndconfig.share         = (_GLFWwindow*) share;
+
+    // Set up desired context config
+    ctxconfig.api           = _glfw.hints.api;
+    ctxconfig.major         = _glfw.hints.major;
+    ctxconfig.minor         = _glfw.hints.minor;
+    ctxconfig.forward       = _glfw.hints.forward ? GL_TRUE : GL_FALSE;
+    ctxconfig.debug         = _glfw.hints.debug ? GL_TRUE : GL_FALSE;
+    ctxconfig.profile       = _glfw.hints.profile;
+    ctxconfig.robustness    = _glfw.hints.robustness;
+    ctxconfig.share         = (_GLFWwindow*) share;
 
     // Check the OpenGL bits of the window config
-    if (!_glfwIsValidContextConfig(&wndconfig))
+    if (!_glfwIsValidContextConfig(&ctxconfig))
         return NULL;
 
     window = calloc(1, sizeof(_GLFWwindow));
@@ -222,7 +225,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     previous = (_GLFWwindow*) glfwGetCurrentContext();
 
     // Open the actual window and create its context
-    if (!_glfwPlatformCreateWindow(window, &wndconfig, &fbconfig))
+    if (!_glfwPlatformCreateWindow(window, &wndconfig, &ctxconfig, &fbconfig))
     {
         glfwDestroyWindow((GLFWwindow*) window);
         glfwMakeContextCurrent((GLFWwindow*) previous);
@@ -232,7 +235,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     glfwMakeContextCurrent((GLFWwindow*) window);
 
     // Retrieve the actual (as opposed to requested) context attributes
-    if (!_glfwRefreshContextAttribs(&wndconfig))
+    if (!_glfwRefreshContextAttribs(&ctxconfig))
     {
         glfwDestroyWindow((GLFWwindow*) window);
         glfwMakeContextCurrent((GLFWwindow*) previous);
@@ -240,7 +243,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     }
 
     // Verify the context against the requested parameters
-    if (!_glfwIsValidContext(&wndconfig))
+    if (!_glfwIsValidContext(&ctxconfig))
     {
         glfwDestroyWindow((GLFWwindow*) window);
         glfwMakeContextCurrent((GLFWwindow*) previous);
@@ -268,9 +271,9 @@ void glfwDefaultWindowHints(void)
     memset(&_glfw.hints, 0, sizeof(_glfw.hints));
 
     // The default is OpenGL with minimum version 1.0
-    _glfw.hints.clientAPI = GLFW_OPENGL_API;
-    _glfw.hints.glMajor = 1;
-    _glfw.hints.glMinor = 0;
+    _glfw.hints.api = GLFW_OPENGL_API;
+    _glfw.hints.major = 1;
+    _glfw.hints.minor = 0;
 
     // The default is a visible, resizable window with decorations
     _glfw.hints.resizable = GL_TRUE;
@@ -347,25 +350,25 @@ GLFWAPI void glfwWindowHint(int target, int hint)
             _glfw.hints.sRGB = hint;
             break;
         case GLFW_CLIENT_API:
-            _glfw.hints.clientAPI = hint;
+            _glfw.hints.api = hint;
             break;
         case GLFW_CONTEXT_VERSION_MAJOR:
-            _glfw.hints.glMajor = hint;
+            _glfw.hints.major = hint;
             break;
         case GLFW_CONTEXT_VERSION_MINOR:
-            _glfw.hints.glMinor = hint;
+            _glfw.hints.minor = hint;
             break;
         case GLFW_CONTEXT_ROBUSTNESS:
-            _glfw.hints.glRobustness = hint;
+            _glfw.hints.robustness = hint;
             break;
         case GLFW_OPENGL_FORWARD_COMPAT:
-            _glfw.hints.glForward = hint;
+            _glfw.hints.forward = hint;
             break;
         case GLFW_OPENGL_DEBUG_CONTEXT:
-            _glfw.hints.glDebug = hint;
+            _glfw.hints.debug = hint;
             break;
         case GLFW_OPENGL_PROFILE:
-            _glfw.hints.glProfile = hint;
+            _glfw.hints.profile = hint;
             break;
         default:
             _glfwInputError(GLFW_INVALID_ENUM, NULL);
@@ -555,21 +558,21 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
         case GLFW_VISIBLE:
             return window->visible;
         case GLFW_CLIENT_API:
-            return window->clientAPI;
+            return window->context.api;
         case GLFW_CONTEXT_VERSION_MAJOR:
-            return window->glMajor;
+            return window->context.major;
         case GLFW_CONTEXT_VERSION_MINOR:
-            return window->glMinor;
+            return window->context.minor;
         case GLFW_CONTEXT_REVISION:
-            return window->glRevision;
+            return window->context.revision;
         case GLFW_CONTEXT_ROBUSTNESS:
-            return window->glRobustness;
+            return window->context.robustness;
         case GLFW_OPENGL_FORWARD_COMPAT:
-            return window->glForward;
+            return window->context.forward;
         case GLFW_OPENGL_DEBUG_CONTEXT:
-            return window->glDebug;
+            return window->context.debug;
         case GLFW_OPENGL_PROFILE:
-            return window->glProfile;
+            return window->context.profile;
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, NULL);

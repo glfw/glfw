@@ -60,6 +60,7 @@
 
 typedef struct _GLFWhints       _GLFWhints;
 typedef struct _GLFWwndconfig   _GLFWwndconfig;
+typedef struct _GLFWctxconfig   _GLFWctxconfig;
 typedef struct _GLFWfbconfig    _GLFWfbconfig;
 typedef struct _GLFWwindow      _GLFWwindow;
 typedef struct _GLFWlibrary     _GLFWlibrary;
@@ -135,11 +136,11 @@ typedef struct _GLFWmonitor     _GLFWmonitor;
 // Internal types
 //========================================================================
 
-/*! @brief Window and context configuration.
+/*! @brief Window configuration.
  *
- *  Parameters relating to the creation of the context and window but not
- *  directly related to the framebuffer.  This is used to pass window and
- *  context creation parameters from shared code to the platform API.
+ *  Parameters relating to the creation of the window but not directly related
+ *  to the framebuffer.  This is used to pass context creation parameters from
+ *  shared code to the platform API.
  */
 struct _GLFWwndconfig
 {
@@ -149,14 +150,25 @@ struct _GLFWwndconfig
     GLboolean     resizable;
     GLboolean     visible;
     GLboolean     decorated;
-    int           clientAPI;
-    int           glMajor;
-    int           glMinor;
-    GLboolean     glForward;
-    GLboolean     glDebug;
-    int           glProfile;
-    int           glRobustness;
     _GLFWmonitor* monitor;
+};
+
+
+/*! @brief Context configuration.
+ *
+ *  Parameters relating to the creation of the context but not directly related
+ *  to the framebuffer.  This is used to pass context creation parameters from
+ *  shared code to the platform API.
+ */
+struct _GLFWctxconfig
+{
+    int           api;
+    int           major;
+    int           minor;
+    GLboolean     forward;
+    GLboolean     debug;
+    int           profile;
+    int           robustness;
     _GLFWwindow*  share;
 };
 
@@ -216,11 +228,14 @@ struct _GLFWwindow
     char                key[GLFW_KEY_LAST + 1];
 
     // OpenGL extensions and context attributes
-    int                 clientAPI;
-    int                 glMajor, glMinor, glRevision;
-    GLboolean           glForward, glDebug;
-    int                 glProfile;
-    int                 glRobustness;
+    struct {
+        int             api;
+        int             major, minor, revision;
+        GLboolean       forward, debug;
+        int             profile;
+        int             robustness;
+    } context;
+
 #if defined(_GLFW_USE_OPENGL)
     PFNGLGETSTRINGIPROC GetStringi;
 #endif
@@ -293,13 +308,13 @@ struct _GLFWlibrary
         int         samples;
         GLboolean   sRGB;
         int         refreshRate;
-        int         clientAPI;
-        int         glMajor;
-        int         glMinor;
-        GLboolean   glForward;
-        GLboolean   glDebug;
-        int         glProfile;
-        int         glRobustness;
+        int         api;
+        int         major;
+        int         minor;
+        GLboolean   forward;
+        GLboolean   debug;
+        int         profile;
+        int         robustness;
     } hints;
 
     double          cursorPosX, cursorPosY;
@@ -457,6 +472,7 @@ void _glfwPlatformSetTime(double time);
  */
 int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
+                              const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig);
 
 /*! @ingroup platform
@@ -728,14 +744,14 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
                                          unsigned int count);
 
 /*! @brief Retrieves the attributes of the current context.
- *  @param[in] wndconfig The desired context attributes.
+ *  @param[in] ctxconfig The desired context attributes.
  *  @return `GL_TRUE` if successful, or `GL_FALSE` if the context is unusable.
  *  @ingroup utility
  */
-GLboolean _glfwRefreshContextAttribs(const _GLFWwndconfig* wndconfig);
+GLboolean _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig);
 
 /*! @brief Checks whether the desired context attributes are valid.
- *  @param[in] wndconfig The context attributes to check.
+ *  @param[in] ctxconfig The context attributes to check.
  *  @return `GL_TRUE` if the context attributes are valid, or `GL_FALSE`
  *  otherwise.
  *  @ingroup utility
@@ -744,16 +760,16 @@ GLboolean _glfwRefreshContextAttribs(const _GLFWwndconfig* wndconfig);
  *  exists and whether all relevant options have supported and non-conflicting
  *  values.
  */
-GLboolean _glfwIsValidContextConfig(const _GLFWwndconfig* wndconfig);
+GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig);
 
 /*! @brief Checks whether the current context fulfils the specified hard
  *  constraints.
- *  @param[in] wndconfig The desired context attributes.
+ *  @param[in] ctxconfig The desired context attributes.
  *  @return `GL_TRUE` if the context fulfils the hard constraints, or `GL_FALSE`
  *  otherwise.
  *  @ingroup utility
  */
-GLboolean _glfwIsValidContext(const _GLFWwndconfig* wndconfig);
+GLboolean _glfwIsValidContext(const _GLFWctxconfig* ctxconfig);
 
 /*! @ingroup utility
  */

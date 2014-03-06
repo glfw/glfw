@@ -124,7 +124,7 @@ typedef struct _GLFWlibraryGLX
 int _glfwInitContextAPI(void);
 void _glfwTerminateContextAPI(void);
 int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWwndconfig* wndconfig,
+                       const _GLFWctxconfig* ctxconfig,
                        const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContext(_GLFWwindow* window);
 

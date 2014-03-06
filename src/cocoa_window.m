@@ -1000,9 +1000,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    // Don't use accumulation buffer support; it's not accelerated
-    // Aux buffers probably aren't accelerated either
-
     if (!createWindow(window, wndconfig))
         return GL_FALSE;
 

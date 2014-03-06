@@ -49,7 +49,11 @@ else()
     add_executable(wave WIN32 wave.c)
 endif()
 
-target_link_libraries(particles ${CMAKE_THREAD_LIBS_INIT} ${RT_LIBRARY})
+if (APPLE)
+    target_link_libraries(Particles ${CMAKE_THREAD_LIBS_INIT})
+elseif (UNIX)
+    target_link_libraries(particles ${CMAKE_THREAD_LIBS_INIT} ${RT_LIBRARY})
+endif()
 
 if (MSVC)
     set(WINDOWS_BINARIES boing gears heightmap particles simple splitview wave)

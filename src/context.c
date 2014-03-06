@@ -358,7 +358,7 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
     return closest;
 }
 
-GLboolean _glfwRefreshContextAttribs(void)
+GLboolean _glfwRefreshContextAttribs(const _GLFWwndconfig* wndconfig)
 {
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
@@ -399,7 +399,8 @@ GLboolean _glfwRefreshContextAttribs(void)
 
             if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
                 window->glDebug = GL_TRUE;
-            else if (glfwExtensionSupported("GL_ARB_debug_output"))
+            else if (glfwExtensionSupported("GL_ARB_debug_output") &&
+                     wndconfig->glDebug)
             {
                 // HACK: This is a workaround for older drivers (pre KHR_debug)
                 //       not setting the debug bit in the context flags for

@@ -232,7 +232,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     glfwMakeContextCurrent((GLFWwindow*) window);
 
     // Retrieve the actual (as opposed to requested) context attributes
-    if (!_glfwRefreshContextAttribs())
+    if (!_glfwRefreshContextAttribs(&wndconfig))
     {
         glfwDestroyWindow((GLFWwindow*) window);
         glfwMakeContextCurrent((GLFWwindow*) previous);

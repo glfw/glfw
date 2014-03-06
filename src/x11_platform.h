@@ -45,7 +45,9 @@
 #include <X11/extensions/XInput2.h>
 
 // The Xkb extension provides improved keyboard support
-#include <X11/XKBlib.h>
+#if defined(_GLFW_USE_XKB)
+ #include <X11/XKBlib.h>
+#endif
 
 #if defined(_GLFW_GLX)
  #define _GLFW_X11_CONTEXT_VISUAL window->glx.visual

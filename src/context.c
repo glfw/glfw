@@ -87,7 +87,7 @@ static GLboolean parseGLVersion(int* api, int* major, int* minor, int* rev)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig)
+GLboolean _glfwIsValidContextConfig(const _GLFWwndconfig* wndconfig)
 {
     if (wndconfig->clientAPI != GLFW_OPENGL_API &&
         wndconfig->clientAPI != GLFW_OPENGL_ES_API)
@@ -466,7 +466,7 @@ GLboolean _glfwRefreshContextAttribs(void)
     return GL_TRUE;
 }
 
-GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig)
+GLboolean _glfwIsValidContext(const _GLFWwndconfig* wndconfig)
 {
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 

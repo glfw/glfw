@@ -743,7 +743,7 @@ GLboolean _glfwRefreshContextAttribs(void);
  *  exists and whether all relevant options have supported and non-conflicting
  *  values.
  */
-GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig);
+GLboolean _glfwIsValidContextConfig(const _GLFWwndconfig* wndconfig);
 
 /*! @brief Checks whether the current context fulfils the specified hard
  *  constraints.
@@ -752,7 +752,7 @@ GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig);
  *  otherwise.
  *  @ingroup utility
  */
-GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig);
+GLboolean _glfwIsValidContext(const _GLFWwndconfig* wndconfig);
 
 /*! @ingroup utility
  */

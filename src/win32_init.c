@@ -63,7 +63,7 @@ static GLboolean initLibraries(void)
 #ifndef _GLFW_NO_DLOAD_WINMM
     // winmm.dll (for joystick and timer support)
 
-    _glfw.win32.winmm.instance = LoadLibrary(L"winmm.dll");
+    _glfw.win32.winmm.instance = LoadLibraryW(L"winmm.dll");
     if (!_glfw.win32.winmm.instance)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -91,7 +91,7 @@ static GLboolean initLibraries(void)
     }
 #endif // _GLFW_NO_DLOAD_WINMM
 
-    _glfw.win32.user32.instance = LoadLibrary(L"user32.dll");
+    _glfw.win32.user32.instance = LoadLibraryW(L"user32.dll");
     if (_glfw.win32.user32.instance)
     {
         _glfw.win32.user32.SetProcessDPIAware = (SETPROCESSDPIAWARE_T)
@@ -100,7 +100,7 @@ static GLboolean initLibraries(void)
             GetProcAddress(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
     }
 
-    _glfw.win32.dwmapi.instance = LoadLibrary(L"dwmapi.dll");
+    _glfw.win32.dwmapi.instance = LoadLibraryW(L"dwmapi.dll");
     if (_glfw.win32.dwmapi.instance)
     {
         _glfw.win32.dwmapi.DwmIsCompositionEnabled = (DWMISCOMPOSITIONENABLED_T)
@@ -203,10 +203,10 @@ int _glfwPlatformInit(void)
     // To make SetForegroundWindow work as we want, we need to fiddle
     // with the FOREGROUNDLOCKTIMEOUT system setting (we do this as early
     // as possible in the hope of still being the foreground process)
-    SystemParametersInfo(SPI_GETFOREGROUNDLOCKTIMEOUT, 0,
-                         &_glfw.win32.foregroundLockTimeout, 0);
-    SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, UIntToPtr(0),
-                         SPIF_SENDCHANGE);
+    SystemParametersInfoW(SPI_GETFOREGROUNDLOCKTIMEOUT, 0,
+                          &_glfw.win32.foregroundLockTimeout, 0);
+    SystemParametersInfoW(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, UIntToPtr(0),
+                          SPIF_SENDCHANGE);
 
     if (!initLibraries())
         return GL_FALSE;
@@ -233,14 +233,14 @@ void _glfwPlatformTerminate(void)
 {
     if (_glfw.win32.classAtom)
     {
-        UnregisterClass(_GLFW_WNDCLASSNAME, GetModuleHandle(NULL));
+        UnregisterClassW(_GLFW_WNDCLASSNAME, GetModuleHandleW(NULL));
         _glfw.win32.classAtom = 0;
     }
 
     // Restore previous foreground lock timeout system setting
-    SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0,
-                         UIntToPtr(_glfw.win32.foregroundLockTimeout),
-                         SPIF_SENDCHANGE);
+    SystemParametersInfoW(SPI_SETFOREGROUNDLOCKTIMEOUT, 0,
+                          UIntToPtr(_glfw.win32.foregroundLockTimeout),
+                          SPIF_SENDCHANGE);
 
     free(_glfw.win32.clipboardString);
 

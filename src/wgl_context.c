@@ -306,7 +306,7 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
 //
 int _glfwInitContextAPI(void)
 {
-    _glfw.wgl.opengl32.instance = LoadLibrary(L"opengl32.dll");
+    _glfw.wgl.opengl32.instance = LoadLibraryW(L"opengl32.dll");
     if (!_glfw.wgl.opengl32.instance)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to load opengl32.dll");

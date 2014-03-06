@@ -100,7 +100,7 @@ static void restoreCursor(_GLFWwindow* window)
     if (GetCursorPos(&pos))
     {
         if (WindowFromPoint(pos) == window->win32.handle)
-            SetCursor(LoadCursor(NULL, IDC_ARROW));
+            SetCursor(LoadCursorW(NULL, IDC_ARROW));
     }
 }
 
@@ -201,7 +201,7 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
             // is a RALT message. In that case, this is a false LCTRL!
             time = GetMessageTime();
 
-            if (PeekMessage(&next, NULL, 0, 0, PM_NOREMOVE))
+            if (PeekMessageW(&next, NULL, 0, 0, PM_NOREMOVE))
             {
                 if (next.message == WM_KEYDOWN ||
                     next.message == WM_SYSKEYDOWN ||
@@ -369,14 +369,14 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                                    WPARAM wParam, LPARAM lParam)
 {
-    _GLFWwindow* window = (_GLFWwindow*) GetWindowLongPtr(hWnd, 0);
+    _GLFWwindow* window = (_GLFWwindow*) GetWindowLongPtrW(hWnd, 0);
 
     switch (uMsg)
     {
         case WM_CREATE:
         {
-            CREATESTRUCT* cs = (CREATESTRUCT*) lParam;
-            SetWindowLongPtr(hWnd, 0, (LONG_PTR) cs->lpCreateParams);
+            CREATESTRUCTW* cs = (CREATESTRUCTW*) lParam;
+            SetWindowLongPtrW(hWnd, 0, (LONG_PTR) cs->lpCreateParams);
             break;
         }
 
@@ -755,7 +755,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             POINT pt;
             int i;
 
-            const int count = DragQueryFile(hDrop, 0xffffffff, NULL, 0);
+            const int count = DragQueryFileW(hDrop, 0xffffffff, NULL, 0);
             char** names = calloc(count, sizeof(char*));
 
             // Move the mouse to the position of the drop
@@ -764,10 +764,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             for (i = 0;  i < count;  i++)
             {
-                const UINT length = DragQueryFile(hDrop, i, NULL, 0);
+                const UINT length = DragQueryFileW(hDrop, i, NULL, 0);
                 WCHAR* buffer = calloc(length + 1, sizeof(WCHAR));
 
-                DragQueryFile(hDrop, i, buffer, length + 1);
+                DragQueryFileW(hDrop, i, buffer, length + 1);
                 names[i] = _glfwCreateUTF8FromWideString(buffer);
 
                 free(buffer);
@@ -812,21 +812,21 @@ static ATOM registerWindowClass(void)
     wc.lpfnWndProc   = (WNDPROC) windowProc;
     wc.cbClsExtra    = 0;                           // No extra class data
     wc.cbWndExtra    = sizeof(void*) + sizeof(int); // Make room for one pointer
-    wc.hInstance     = GetModuleHandle(NULL);
-    wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+    wc.hInstance     = GetModuleHandleW(NULL);
+    wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
     wc.hbrBackground = NULL;                        // No background
     wc.lpszMenuName  = NULL;                        // No menu
     wc.lpszClassName = _GLFW_WNDCLASSNAME;
 
     // Load user-provided icon if available
-    wc.hIcon = LoadIcon(GetModuleHandle(NULL), L"GLFW_ICON");
+    wc.hIcon = LoadIconW(GetModuleHandleW(NULL), L"GLFW_ICON");
     if (!wc.hIcon)
     {
         // No user-provided icon found, load default icon
-        wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+        wc.hIcon = LoadIconW(NULL, IDI_WINLOGO);
     }
 
-    classAtom = RegisterClass(&wc);
+    classAtom = RegisterClassW(&wc);
     if (!classAtom)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -888,16 +888,16 @@ static int createWindow(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    window->win32.handle = CreateWindowEx(window->win32.dwExStyle,
-                                          _GLFW_WNDCLASSNAME,
-                                          wideTitle,
-                                          window->win32.dwStyle,
-                                          xpos, ypos,
-                                          fullWidth, fullHeight,
-                                          NULL, // No parent window
-                                          NULL, // No window menu
-                                          GetModuleHandle(NULL),
-                                          window); // Pass object to WM_CREATE
+    window->win32.handle = CreateWindowExW(window->win32.dwExStyle,
+                                           _GLFW_WNDCLASSNAME,
+                                           wideTitle,
+                                           window->win32.dwStyle,
+                                           xpos, ypos,
+                                           fullWidth, fullHeight,
+                                           NULL, // No parent window
+                                           NULL, // No window menu
+                                           GetModuleHandleW(NULL),
+                                           window); // Pass object to WM_CREATE
 
     free(wideTitle);
 
@@ -1027,7 +1027,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
         return;
     }
 
-    SetWindowText(window->win32.handle, wideTitle);
+    SetWindowTextW(window->win32.handle, wideTitle);
     free(wideTitle);
 }
 
@@ -1118,7 +1118,7 @@ void _glfwPlatformPollEvents(void)
     MSG msg;
     _GLFWwindow* window;
 
-    while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+    while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
     {
         if (msg.message == WM_QUIT)
         {
@@ -1134,7 +1134,7 @@ void _glfwPlatformPollEvents(void)
         else
         {
             TranslateMessage(&msg);
-            DispatchMessage(&msg);
+            DispatchMessageW(&msg);
         }
     }
 

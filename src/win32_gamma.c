@@ -37,13 +37,13 @@ void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
     HDC dc;
     WORD values[768];
-    DISPLAY_DEVICE display;
+    DISPLAY_DEVICEW display;
 
-    ZeroMemory(&display, sizeof(DISPLAY_DEVICE));
-    display.cb = sizeof(DISPLAY_DEVICE);
-    EnumDisplayDevices(monitor->win32.name, 0, &display, 0);
+    ZeroMemory(&display, sizeof(DISPLAY_DEVICEW));
+    display.cb = sizeof(DISPLAY_DEVICEW);
+    EnumDisplayDevicesW(monitor->win32.name, 0, &display, 0);
 
-    dc = CreateDC(L"DISPLAY", display.DeviceString, NULL, NULL);
+    dc = CreateDCW(L"DISPLAY", display.DeviceString, NULL, NULL);
     GetDeviceGammaRamp(dc, values);
     DeleteDC(dc);
 
@@ -71,11 +71,11 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
     memcpy(values + 256, ramp->green, 256 * sizeof(unsigned short));
     memcpy(values + 512, ramp->blue,  256 * sizeof(unsigned short));
 
-    ZeroMemory(&display, sizeof(DISPLAY_DEVICE));
-    display.cb = sizeof(DISPLAY_DEVICE);
-    EnumDisplayDevices(monitor->win32.name, 0, &display, 0);
+    ZeroMemory(&display, sizeof(DISPLAY_DEVICEW));
+    display.cb = sizeof(DISPLAY_DEVICEW);
+    EnumDisplayDevicesW(monitor->win32.name, 0, &display, 0);
 
-    dc = CreateDC(L"DISPLAY", display.DeviceString, NULL, NULL);
+    dc = CreateDCW(L"DISPLAY", display.DeviceString, NULL, NULL);
     SetDeviceGammaRamp(dc, values);
     DeleteDC(dc);
 }

@@ -58,11 +58,14 @@ The following dependencies are needed by the examples and test programs:
  - [Win32] Enabled generation of pkg-config file for MinGW
  - [Win32] Bugfix: Failure to load winmm or its functions was not reported to
                    the error callback
+ - [X11] Made GLX 1.3 the minimum supported version
  - [X11] Bugfix: The case of finding no usable CRTCs was not detected
  - [X11] Bugfix: Detection of broken Nvidia RandR gamma support did not verify
                  that at least one CRTC was present
  - [X11] Bugfix: A stale `_NET_SUPPORTING_WM_CHECK` root window property would
                  cause an uncaught `BadWindow` error
+ - [X11] Bugfix: No check was made for the presence GLX 1.3 when
+                 `GLX_SGIX_fbconfig` was unavailable
 
 
 ## Contact

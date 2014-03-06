@@ -42,20 +42,11 @@ void (*glXGetProcAddressEXT(const GLubyte* procName))();
 
 
 // Returns the specified attribute of the specified GLXFBConfig
-// NOTE: Do not call this unless we have found GLX 1.3+ or GLX_SGIX_fbconfig
 //
 static int getFBConfigAttrib(GLXFBConfig fbconfig, int attrib)
 {
     int value;
-
-    if (_glfw.glx.SGIX_fbconfig)
-    {
-        _glfw.glx.GetFBConfigAttribSGIX(_glfw.x11.display,
-                                        fbconfig, attrib, &value);
-    }
-    else
-        glXGetFBConfigAttrib(_glfw.x11.display, fbconfig, attrib, &value);
-
+    glXGetFBConfigAttrib(_glfw.x11.display, fbconfig, attrib, &value);
     return value;
 }
 
@@ -78,24 +69,11 @@ static GLboolean chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* resul
         trustWindowBit = GL_FALSE;
     }
 
-    if (_glfw.glx.SGIX_fbconfig)
-    {
-        nativeConfigs = _glfw.glx.ChooseFBConfigSGIX(_glfw.x11.display,
-                                                     _glfw.x11.screen,
-                                                     NULL,
-                                                     &nativeCount);
-    }
-    else
-    {
-        nativeConfigs = glXGetFBConfigs(_glfw.x11.display,
-                                        _glfw.x11.screen,
-                                        &nativeCount);
-    }
-
+    nativeConfigs = glXGetFBConfigs(_glfw.x11.display, _glfw.x11.screen,
+                                    &nativeCount);
     if (!nativeCount)
     {
-        _glfwInputError(GLFW_API_UNAVAILABLE,
-                        "GLX: No GLXFBConfigs returned");
+        _glfwInputError(GLFW_API_UNAVAILABLE, "GLX: No GLXFBConfigs returned");
         return GL_FALSE;
     }
 
@@ -171,15 +149,6 @@ static GLXContext createLegacyContext(_GLFWwindow* window,
                                       GLXFBConfig fbconfig,
                                       GLXContext share)
 {
-    if (_glfw.glx.SGIX_fbconfig)
-    {
-        return _glfw.glx.CreateContextWithConfigSGIX(_glfw.x11.display,
-                                                     fbconfig,
-                                                     GLX_RGBA_TYPE,
-                                                     share,
-                                                     True);
-    }
-
     return glXCreateNewContext(_glfw.x11.display,
                                fbconfig,
                                GLX_RGBA_TYPE,
@@ -273,26 +242,6 @@ int _glfwInitContextAPI(void)
             _glfw.glx.MESA_swap_control = GL_TRUE;
     }
 
-    if (_glfwPlatformExtensionSupported("GLX_SGIX_fbconfig"))
-    {
-        _glfw.glx.GetFBConfigAttribSGIX = (PFNGLXGETFBCONFIGATTRIBSGIXPROC)
-            _glfwPlatformGetProcAddress("glXGetFBConfigAttribSGIX");
-        _glfw.glx.ChooseFBConfigSGIX = (PFNGLXCHOOSEFBCONFIGSGIXPROC)
-            _glfwPlatformGetProcAddress("glXChooseFBConfigSGIX");
-        _glfw.glx.CreateContextWithConfigSGIX = (PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC)
-            _glfwPlatformGetProcAddress("glXCreateContextWithConfigSGIX");
-        _glfw.glx.GetVisualFromFBConfigSGIX = (PFNGLXGETVISUALFROMFBCONFIGSGIXPROC)
-            _glfwPlatformGetProcAddress("glXGetVisualFromFBConfigSGIX");
-
-        if (_glfw.glx.GetFBConfigAttribSGIX &&
-            _glfw.glx.ChooseFBConfigSGIX &&
-            _glfw.glx.CreateContextWithConfigSGIX &&
-            _glfw.glx.GetVisualFromFBConfigSGIX)
-        {
-            _glfw.glx.SGIX_fbconfig = GL_TRUE;
-        }
-    }
-
     if (_glfwPlatformExtensionSupported("GLX_ARB_multisample"))
         _glfw.glx.ARB_multisample = GL_TRUE;
 
@@ -316,6 +265,12 @@ int _glfwInitContextAPI(void)
 
     if (_glfwPlatformExtensionSupported("GLX_EXT_create_context_es2_profile"))
         _glfw.glx.EXT_create_context_es2_profile = GL_TRUE;
+
+    if (_glfw.glx.versionMajor == 1 && _glfw.glx.versionMinor < 3)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE, "No GLXFBConfig support found");
+        return GL_FALSE;
+    }
 
     return GL_TRUE;
 }
@@ -364,13 +319,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     }
 
     // Retrieve the corresponding visual
-    if (_glfw.glx.SGIX_fbconfig)
-    {
-        window->glx.visual =
-            _glfw.glx.GetVisualFromFBConfigSGIX(_glfw.x11.display, native);
-    }
-    else
-        window->glx.visual = glXGetVisualFromFBConfig(_glfw.x11.display, native);
+    window->glx.visual = glXGetVisualFromFBConfig(_glfw.x11.display, native);
 
     if (window->glx.visual == NULL)
     {

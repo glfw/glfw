@@ -100,12 +100,7 @@ typedef struct _GLFWlibraryGLX
     PFNGLXSWAPINTERVALSGIPROC             SwapIntervalSGI;
     PFNGLXSWAPINTERVALEXTPROC             SwapIntervalEXT;
     PFNGLXSWAPINTERVALMESAPROC            SwapIntervalMESA;
-    PFNGLXGETFBCONFIGATTRIBSGIXPROC       GetFBConfigAttribSGIX;
-    PFNGLXCHOOSEFBCONFIGSGIXPROC          ChooseFBConfigSGIX;
-    PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC CreateContextWithConfigSGIX;
-    PFNGLXGETVISUALFROMFBCONFIGSGIXPROC   GetVisualFromFBConfigSGIX;
     PFNGLXCREATECONTEXTATTRIBSARBPROC     CreateContextAttribsARB;
-    GLboolean       SGIX_fbconfig;
     GLboolean       SGI_swap_control;
     GLboolean       EXT_swap_control;
     GLboolean       MESA_swap_control;

@@ -62,6 +62,11 @@
  #define _WIN32_WINNT 0x0501
 #endif
 
+#if defined(_MSC_VER)
+ #include <malloc.h>
+ #define strdup _strdup
+#endif
+
 #include <windows.h>
 #include <mmsystem.h>
 #include <dbt.h>

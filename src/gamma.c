@@ -30,10 +30,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(_MSC_VER)
- #include <malloc.h>
-#endif
-
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////

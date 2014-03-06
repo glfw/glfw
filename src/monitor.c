@@ -31,11 +31,6 @@
 #include <stdlib.h>
 #include <limits.h>
 
-#if defined(_MSC_VER)
- #include <malloc.h>
- #define strdup _strdup
-#endif
-
 
 // Lexical comparison function for GLFW video modes, used by qsort
 //

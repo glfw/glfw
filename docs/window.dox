@@ -360,7 +360,7 @@ The callback function receives the new position of the upper-left corner of its
 client area.
 
 @code
-void window_size_callback(GLFWwindow* window, int xpos, int ypos)
+void window_pos_callback(GLFWwindow* window, int xpos, int ypos)
 {
 }
 @endcode

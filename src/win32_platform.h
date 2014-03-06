@@ -85,6 +85,12 @@
 #ifndef WM_COPYGLOBALDATA
  #define WM_COPYGLOBALDATA 0x0049
 #endif
+#ifndef WM_UNICHAR
+ #define WM_UNICHAR 0x0109
+#endif
+#ifndef UNICODE_NOCHAR
+ #define UNICODE_NOCHAR 0xFFFF
+#endif
 
 #if WINVER < 0x0601
 typedef struct tagCHANGEFILTERSTRUCT

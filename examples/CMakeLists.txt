@@ -49,6 +49,8 @@ else()
     add_executable(wave WIN32 wave.c)
 endif()
 
+target_link_libraries(particles ${CMAKE_THREAD_LIBS_INIT} ${RT_LIBRARY})
+
 if (MSVC)
     set(WINDOWS_BINARIES boing gears heightmap particles simple splitview wave)
 

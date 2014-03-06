@@ -804,7 +804,7 @@ static void getFullWindowSize(_GLFWwindow* window,
 //
 static ATOM registerWindowClass(void)
 {
-    WNDCLASS wc;
+    WNDCLASSW wc;
     ATOM classAtom;
 
     // Set window class parameters

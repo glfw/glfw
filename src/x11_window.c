@@ -739,25 +739,32 @@ static void processEvent(XEvent *event)
         {
             // Custom client message, probably from the window manager
 
-            if ((Atom) event->xclient.data.l[0] == _glfw.x11.WM_DELETE_WINDOW)
-            {
-                // The window manager was asked to close the window, for example by
-                // the user pressing a 'close' window decoration button
+            if (event->xclient.message_type == None)
+                break;
 
-                _glfwInputWindowCloseRequest(window);
-            }
-            else if (_glfw.x11.NET_WM_PING &&
-                     (Atom) event->xclient.data.l[0] == _glfw.x11.NET_WM_PING)
+            if (event->xclient.message_type == _glfw.x11.WM_PROTOCOLS)
             {
-                // The window manager is pinging the application to ensure it's
-                // still responding to events
+                if (_glfw.x11.WM_DELETE_WINDOW &&
+                    (Atom) event->xclient.data.l[0] == _glfw.x11.WM_DELETE_WINDOW)
+                {
+                    // The window manager was asked to close the window, for example by
+                    // the user pressing a 'close' window decoration button
 
-                event->xclient.window = _glfw.x11.root;
-                XSendEvent(_glfw.x11.display,
-                           event->xclient.window,
-                           False,
-                           SubstructureNotifyMask | SubstructureRedirectMask,
-                           event);
+                    _glfwInputWindowCloseRequest(window);
+                }
+                else if (_glfw.x11.NET_WM_PING &&
+                        (Atom) event->xclient.data.l[0] == _glfw.x11.NET_WM_PING)
+                {
+                    // The window manager is pinging the application to ensure it's
+                    // still responding to events
+
+                    event->xclient.window = _glfw.x11.root;
+                    XSendEvent(_glfw.x11.display,
+                            event->xclient.window,
+                            False,
+                            SubstructureNotifyMask | SubstructureRedirectMask,
+                            event);
+                }
             }
             else if (event->xclient.message_type == _glfw.x11.XdndEnter)
             {

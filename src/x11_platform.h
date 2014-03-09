@@ -107,6 +107,7 @@ typedef struct _GLFWlibraryX11
     XContext        context;
 
     // Window manager atoms
+    Atom            WM_PROTOCOLS;
     Atom            WM_STATE;
     Atom            WM_DELETE_WINDOW;
     Atom            NET_WM_NAME;

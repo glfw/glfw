@@ -430,6 +430,9 @@ static GLboolean initExtensions(void)
     Bool supported;
 
     // Find or create window manager atoms
+    _glfw.x11.WM_PROTOCOLS = XInternAtom(_glfw.x11.display,
+                                         "WM_PROTOCOLS",
+                                         False);
     _glfw.x11.WM_STATE = XInternAtom(_glfw.x11.display, "WM_STATE", False);
     _glfw.x11.WM_DELETE_WINDOW = XInternAtom(_glfw.x11.display,
                                              "WM_DELETE_WINDOW",

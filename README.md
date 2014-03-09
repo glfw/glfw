@@ -67,6 +67,7 @@ The following dependencies are needed by the examples and test programs:
                  cause an uncaught `BadWindow` error
  - [X11] Bugfix: No check was made for the presence GLX 1.3 when
                  `GLX_SGIX_fbconfig` was unavailable
+ - [X11] Bugfix: The message type of ICCCM protocol events was not checked
 
 
 ## Contact

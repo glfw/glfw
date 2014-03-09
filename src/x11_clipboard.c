@@ -139,7 +139,7 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
         XChangeProperty(_glfw.x11.display,
                         request->requestor,
                         request->property,
-                        XInternAtom(_glfw.x11.display, "NULL", False),
+                        _glfw.x11._NULL,
                         32,
                         PropModeReplace,
                         NULL,

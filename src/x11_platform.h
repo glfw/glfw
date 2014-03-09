@@ -136,6 +136,7 @@ typedef struct _GLFWlibraryX11
     Atom            CLIPBOARD;
     Atom            CLIPBOARD_MANAGER;
     Atom            SAVE_TARGETS;
+    Atom            _NULL;
     Atom            UTF8_STRING;
     Atom            COMPOUND_STRING;
     Atom            ATOM_PAIR;

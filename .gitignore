@@ -53,6 +53,7 @@ tests/*.exe
 tests/accuracy
 tests/clipboard
 tests/defaults
+tests/empty
 tests/events
 tests/fsaa
 tests/gamma

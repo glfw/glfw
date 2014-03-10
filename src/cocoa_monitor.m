@@ -308,6 +308,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         monitors[found] = _glfwAllocMonitor(name, size.width, size.height);
         monitors[found]->ns.displayID = displays[i];
 
+        free(name);
+
         for (j = 0;  j < [screens count];  j++)
         {
             NSScreen* screen = [screens objectAtIndex:j];

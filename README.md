@@ -59,6 +59,7 @@ The following dependencies are needed by the examples and test programs:
                    recorders to fail
  - [Cocoa] Bugfix: Some Core Foundation objects were leaked during joystick
                    enumeration
+ - [Cocoa] Bugfix: One copy of each display name string was leaked
  - [Win32] Enabled generation of pkg-config file for MinGW
  - [Win32] Bugfix: Failure to load winmm or its functions was not reported to
                    the error callback

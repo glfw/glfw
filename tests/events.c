@@ -491,6 +491,10 @@ int main(int argc, char** argv)
             case 'n':
                 count = (int) strtol(optarg, NULL, 10);
                 break;
+
+            default:
+                usage();
+                exit(EXIT_FAILURE);
         }
     }
 

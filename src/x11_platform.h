@@ -243,7 +243,7 @@ void _glfwInitTimer(void);
 void _glfwInitGammaRamp(void);
 
 // Fullscreen support
-void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
+GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
 // Joystick input

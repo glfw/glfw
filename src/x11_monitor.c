@@ -86,7 +86,7 @@ static GLFWvidmode vidmodeFromModeInfo(const XRRModeInfo* mi)
 
 // Set the current video mode for the specified monitor
 //
-void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
+GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 {
     if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
     {
@@ -99,10 +99,9 @@ void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
         int i;
 
         best = _glfwChooseVideoMode(monitor, desired);
-
         _glfwPlatformGetVideoMode(monitor, &current);
         if (_glfwCompareVideoModes(&current, best) == 0)
-            return;
+            return GL_TRUE;
 
         sr = XRRGetScreenResources(_glfw.x11.display, _glfw.x11.root);
         ci = XRRGetCrtcInfo(_glfw.x11.display, sr, monitor->x11.crtc);
@@ -136,16 +135,20 @@ void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
                              ci->outputs,
                              ci->noutput);
         }
-        else
-        {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "X11: Monitor mode list changed");
-        }
 
         XRRFreeOutputInfo(oi);
         XRRFreeCrtcInfo(ci);
         XRRFreeScreenResources(sr);
+
+        if (!native)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Monitor mode list changed");
+            return GL_FALSE;
+        }
     }
+
+    return GL_TRUE;
 }
 
 // Restore the saved (original) video mode for the specified monitor

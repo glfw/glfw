@@ -54,7 +54,6 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
     DEVMODEW dm;
 
     best = _glfwChooseVideoMode(monitor, desired);
-
     _glfwPlatformGetVideoMode(monitor, &current);
     if (_glfwCompareVideoModes(&current, best) == 0)
         return GL_TRUE;

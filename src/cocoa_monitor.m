@@ -163,74 +163,60 @@ static void endFadeReservation(CGDisplayFadeReservationToken token)
 //
 GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 {
-    CGDisplayModeRef bestMode = NULL;
     CFArrayRef modes;
     CFIndex count, i;
-    unsigned int sizeDiff, leastSizeDiff = UINT_MAX;
-    unsigned int rateDiff, leastRateDiff = UINT_MAX;
-    const int bpp = desired->redBits - desired->greenBits - desired->blueBits;
+    CVDisplayLinkRef link;
+    CGDisplayModeRef native = NULL;
+    GLFWvidmode current;
+    const GLFWvidmode* best;
+
+    best = _glfwChooseVideoMode(monitor, desired);
+    _glfwPlatformGetVideoMode(monitor, &current);
+    if (_glfwCompareVideoModes(&current, best) == 0)
+        return GL_TRUE;
+
+    CVDisplayLinkCreateWithCGDisplay(monitor->ns.displayID, &link);
 
     modes = CGDisplayCopyAllDisplayModes(monitor->ns.displayID, NULL);
     count = CFArrayGetCount(modes);
 
     for (i = 0;  i < count;  i++)
     {
-        CGDisplayModeRef mode = (CGDisplayModeRef) CFArrayGetValueAtIndex(modes, i);
-        if (!modeIsGood(mode))
+        CGDisplayModeRef dm = (CGDisplayModeRef) CFArrayGetValueAtIndex(modes, i);
+        if (!modeIsGood(dm))
             continue;
 
-        int modeBPP;
-
-        // Identify display mode pixel encoding
+        const GLFWvidmode mode = vidmodeFromCGDisplayMode(dm, link);
+        if (_glfwCompareVideoModes(best, &mode) == 0)
         {
-            CFStringRef format = CGDisplayModeCopyPixelEncoding(mode);
-
-            if (CFStringCompare(format, CFSTR(IO16BitDirectPixels), 0) == 0)
-                modeBPP = 16;
-            else
-                modeBPP = 32;
-
-            CFRelease(format);
-        }
-
-        const int modeWidth = (int) CGDisplayModeGetWidth(mode);
-        const int modeHeight = (int) CGDisplayModeGetHeight(mode);
-        const int modeRate = (int) CGDisplayModeGetRefreshRate(mode);
-
-        sizeDiff = (abs(modeBPP - bpp) << 25) |
-                   ((modeWidth - desired->width) * (modeWidth - desired->width) +
-                    (modeHeight - desired->height) * (modeHeight - desired->height));
-
-        if (desired->refreshRate)
-            rateDiff = abs(modeRate - desired->refreshRate);
-        else
-            rateDiff = UINT_MAX - modeRate;
-
-        if ((sizeDiff < leastSizeDiff) ||
-            (sizeDiff == leastSizeDiff && rateDiff < leastRateDiff))
-        {
-            bestMode = mode;
-            leastSizeDiff = sizeDiff;
-            leastRateDiff = rateDiff;
+            native = dm;
+            break;
         }
     }
 
-    if (!bestMode)
+    if (native)
     {
-        CFRelease(modes);
+        if (monitor->ns.previousMode == NULL)
+            monitor->ns.previousMode = CGDisplayCopyDisplayMode(monitor->ns.displayID);
+
+        CGDisplayFadeReservationToken token = beginFadeReservation();
+
+        CGDisplayCapture(monitor->ns.displayID);
+        CGDisplaySetDisplayMode(monitor->ns.displayID, native, NULL);
+
+        endFadeReservation(token);
+    }
+
+    CFRelease(modes);
+    CVDisplayLinkRelease(link);
+
+    if (!native)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Monitor mode list changed");
         return GL_FALSE;
     }
 
-    monitor->ns.previousMode = CGDisplayCopyDisplayMode(monitor->ns.displayID);
-
-    CGDisplayFadeReservationToken token = beginFadeReservation();
-
-    CGDisplayCapture(monitor->ns.displayID);
-    CGDisplaySetDisplayMode(monitor->ns.displayID, bestMode, NULL);
-
-    endFadeReservation(token);
-
-    CFRelease(modes);
     return GL_TRUE;
 }
 
@@ -342,9 +328,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 
     for (i = 0;  i < count;  i++)
     {
-        CGDisplayModeRef mode;
-
-        mode = (CGDisplayModeRef) CFArrayGetValueAtIndex(modes, i);
+        CGDisplayModeRef mode = (CGDisplayModeRef) CFArrayGetValueAtIndex(modes, i);
         if (modeIsGood(mode))
         {
             result[*found] = vidmodeFromCGDisplayMode(mode, link);

@@ -476,6 +476,8 @@ int main(int argc, char** argv)
 
     printf("Library initialized\n");
 
+    glfwSetMonitorCallback(monitor_callback);
+
     while ((ch = getopt(argc, argv, "hfn:")) != -1)
     {
         switch (ch)
@@ -556,8 +558,6 @@ int main(int argc, char** argv)
         }
 
         glfwSetWindowUserPointer(slots[i].window, slots + i);
-
-        glfwSetMonitorCallback(monitor_callback);
 
         glfwSetWindowPosCallback(slots[i].window, window_pos_callback);
         glfwSetWindowSizeCallback(slots[i].window, window_size_callback);

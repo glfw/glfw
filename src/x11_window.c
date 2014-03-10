@@ -820,10 +820,11 @@ static void processEvent(XEvent *event)
             {
                 // The converted data from the drag operation has arrived
                 char* data;
-                const int result = _glfwGetWindowProperty(event->xselection.requestor,
-                                                          event->xselection.property,
-                                                          event->xselection.target,
-                                                          (unsigned char**) &data);
+                const int result =
+                    _glfwGetWindowProperty(event->xselection.requestor,
+                                           event->xselection.property,
+                                           event->xselection.target,
+                                           (unsigned char**) &data);
 
                 if (result)
                 {

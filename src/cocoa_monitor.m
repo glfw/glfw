@@ -200,10 +200,8 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
             monitor->ns.previousMode = CGDisplayCopyDisplayMode(monitor->ns.displayID);
 
         CGDisplayFadeReservationToken token = beginFadeReservation();
-
         CGDisplayCapture(monitor->ns.displayID);
         CGDisplaySetDisplayMode(monitor->ns.displayID, native, NULL);
-
         endFadeReservation(token);
     }
 
@@ -224,12 +222,17 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 //
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 {
-    CGDisplayFadeReservationToken token = beginFadeReservation();
+    if (monitor->ns.previousMode)
+    {
+        CGDisplayFadeReservationToken token = beginFadeReservation();
+        CGDisplaySetDisplayMode(monitor->ns.displayID,
+                                monitor->ns.previousMode, NULL);
+        CGDisplayRelease(monitor->ns.displayID);
+        endFadeReservation(token);
 
-    CGDisplaySetDisplayMode(monitor->ns.displayID, monitor->ns.previousMode, NULL);
-    CGDisplayRelease(monitor->ns.displayID);
-
-    endFadeReservation(token);
+        CGDisplayModeRelease(monitor->ns.previousMode);
+        monitor->ns.previousMode = NULL;
+    }
 }
 
 

@@ -529,6 +529,20 @@ int main(int argc, char** argv)
 
         sprintf(title, "Event Linter (Window %i)", slots[i].number);
 
+        if (monitor)
+        {
+            printf("Creating full screen window %i (%ix%i on %s)\n",
+                   slots[i].number,
+                   width, height,
+                   glfwGetMonitorName(monitor));
+        }
+        else
+        {
+            printf("Creating windowed mode window %i (%ix%i)\n",
+                   slots[i].number,
+                   width, height);
+        }
+
         slots[i].window = glfwCreateWindow(width, height, title, monitor, NULL);
         if (!slots[i].window)
         {

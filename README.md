@@ -123,6 +123,7 @@ skills.
  - Marcus Geelnard
  - Stefan Gustavson
  - Sylvain Hellegouarch
+ - Matthew Henry
  - heromyth
  - Paul Holden
  - Toni Jovanoski

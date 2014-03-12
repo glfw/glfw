@@ -1106,6 +1106,8 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         XFreeColormap(_glfw.x11.display, window->x11.colormap);
         window->x11.colormap = (Colormap) 0;
     }
+
+    XFlush(_glfw.x11.display);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)

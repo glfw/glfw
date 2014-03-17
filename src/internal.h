@@ -72,6 +72,8 @@ typedef struct _GLFWcursor      _GLFWcursor;
  #include "win32_platform.h"
 #elif defined(_GLFW_X11)
  #include "x11_platform.h"
+#elif defined(_GLFW_WAYLAND)
+ #include "wayland_platform.h"
 #else
  #error "No supported window creation API selected"
 #endif

@@ -31,12 +31,20 @@ else()
     option(GLFW_USE_EGL "Use EGL for context creation" OFF)
 endif()
 
+if (UNIX)
+    option(GLFW_USE_WAYLAND "Use Wayland for context creation (implies EGL as well)" OFF)
+endif()
+
 if (MSVC)
     option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON)
 endif()
 
 if (BUILD_SHARED_LIBS)
     set(_GLFW_BUILD_DLL 1)
+endif()
+
+if (GLFW_USE_WAYLAND)
+    set(GLFW_USE_EGL 1)
 endif()
 
 if (GLFW_USE_EGL)
@@ -136,8 +144,13 @@ elseif (APPLE)
     set(_GLFW_NSGL 1)
     message(STATUS "Using NSGL for context creation")
 elseif (UNIX)
-    set(_GLFW_X11 1)
-    message(STATUS "Using X11 for window creation")
+    if (GLFW_USE_WAYLAND)
+        set(_GLFW_WAYLAND 1)
+        message(STATUS "Using Wayland for window creation")
+    else()
+        set(_GLFW_X11 1)
+        message(STATUS "Using X11 for window creation")
+    endif()
 
     if (GLFW_USE_EGL)
         set(_GLFW_EGL 1)
@@ -189,7 +202,6 @@ if (_GLFW_WGL)
 
     list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
     list(APPEND glfw_LIBRARIES ${OPENGL_gl_LIBRARY})
-
 endif()
 
 #--------------------------------------------------------------------
@@ -277,6 +289,24 @@ if (_GLFW_X11)
     list(APPEND glfw_LIBRARIES ${X11_Xcursor_LIB})
     set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xcursor")
 
+endif()
+
+#--------------------------------------------------------------------
+# Use Wayland for window creation
+#--------------------------------------------------------------------
+if (_GLFW_WAYLAND)
+    find_package(Wayland REQUIRED)
+    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} wayland")
+
+    list(APPEND glfw_INCLUDE_DIRS ${WAYLAND_INCLUDE_DIR})
+    list(APPEND glfw_LIBRARIES ${WAYLAND_LIBRARIES})
+
+    find_library(MATH_LIBRARY m)
+    mark_as_advanced(MATH_LIBRARY)
+    if (MATH_LIBRARY)
+        list(APPEND glfw_LIBRARIES ${MATH_LIBRARY})
+        set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lm")
+    endif()
 endif()
 
 #--------------------------------------------------------------------

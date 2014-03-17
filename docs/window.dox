@@ -66,7 +66,7 @@ and its handle becomes invalid.
 
 Each window has a user pointer that can be set with @ref
 glfwSetWindowUserPointer and fetched with @ref glfwGetWindowUserPointer.  This
-can be used for any purpose you need and will not modified by GLFW throughout
+can be used for any purpose you need and will not be modified by GLFW throughout
 the life-time of the window.
 
 

@@ -396,7 +396,7 @@ static void char_callback(GLFWwindow* window, unsigned int codepoint)
            get_character_string(codepoint));
 }
 
-static int drop_callback(GLFWwindow* window, int count, const char** names)
+static void drop_callback(GLFWwindow* window, int count, const char** names)
 {
     int i;
     Slot* slot = glfwGetWindowUserPointer(window);
@@ -406,8 +406,6 @@ static int drop_callback(GLFWwindow* window, int count, const char** names)
 
     for (i = 0;  i < count;  i++)
         printf("  %i: \"%s\"\n", i, names[i]);
-
-    return GL_FALSE;
 }
 
 void monitor_callback(GLFWmonitor* monitor, int event)

@@ -183,6 +183,7 @@ skills.
  - Frank Wille
  - yuriks
  - Santi Zupancic
+ - Jonas Ådahl
  - Lasse Öörni
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement

@@ -40,6 +40,8 @@
 #cmakedefine _GLFW_WIN32
 // Define this to 1 if building GLFW for Cocoa
 #cmakedefine _GLFW_COCOA
+// Define this to 1 if building GLFW for Wayland
+#cmakedefine _GLFW_WAYLAND
 
 // Define this to 1 if building GLFW for EGL
 #cmakedefine _GLFW_EGL

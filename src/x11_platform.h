@@ -59,6 +59,12 @@
  #error "No supported context creation API selected"
 #endif
 
+#define _GLFW_UNIX_TIME_CONTEXT _glfw.x11.timer
+#include "unix_time.h"
+
+#define _GLFW_LINUX_JOYSTICK_CONTEXT _glfw.x11.joystick
+#include "linux_joystick.h"
+
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  x11
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorX11 x11
@@ -193,11 +199,7 @@ typedef struct _GLFWlibraryX11
         int         exposure;
     } saver;
 
-    struct {
-        GLboolean   monotonic;
-        double      resolution;
-        uint64_t    base;
-    } timer;
+    _GLFWtimeUNIX   timer;
 
     struct {
         char*       string;
@@ -207,15 +209,7 @@ typedef struct _GLFWlibraryX11
         Window      source;
     } xdnd;
 
-    struct {
-        int         present;
-        int         fd;
-        float*      axes;
-        int         axisCount;
-        unsigned char* buttons;
-        int         buttonCount;
-        char*       name;
-    } joystick[GLFW_JOYSTICK_LAST + 1];
+    _GLFWjoystickLinux joystick;
 
 } _GLFWlibraryX11;
 
@@ -236,19 +230,12 @@ typedef struct _GLFWmonitorX11
 // Prototypes for platform specific internal functions
 //========================================================================
 
-// Time
-void _glfwInitTimer(void);
-
 // Gamma
 void _glfwInitGammaRamp(void);
 
 // Fullscreen support
 GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
-
-// Joystick input
-void _glfwInitJoysticks(void);
-void _glfwTerminateJoysticks(void);
 
 // Unicode support
 long _glfwKeySym2Unicode(KeySym keysym);

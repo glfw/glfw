@@ -36,72 +36,37 @@
 #include <CoreVideo/CVDisplayLink.h>
 
 
-// Returns the name of the specified display
+// Get the name of the specified display
 //
 static char* getDisplayName(CGDirectDisplayID displayID)
 {
-    io_iterator_t iter;
-    io_service_t service;
-    char* result = NULL;
+    char* name;
+    CFDictionaryRef info, names;
+    CFStringRef value;
+    CFIndex size;
 
-    const uint32_t modelNumber = CGDisplayModelNumber(displayID);
-    const uint32_t vendorNumber = CGDisplayVendorNumber(displayID);
+    info = IODisplayCreateInfoDictionary(CGDisplayIOServicePort(displayID),
+                                         kIODisplayOnlyPreferredName);
+    names = CFDictionaryGetValue(info, CFSTR(kDisplayProductName));
 
-    if (modelNumber == kDisplayProductIDGeneric || modelNumber == 0xffffffff ||
-        vendorNumber == kDisplayVendorIDUnknown || vendorNumber == 0xffffffff)
+    if (!names || !CFDictionaryGetValueIfPresent(names, CFSTR("en_US"),
+                                                 (const void**) &value))
     {
-        return NULL;
-    }
-
-    CFMutableDictionaryRef matching = IOServiceMatching("IODisplayConnect");
-
-    if (IOServiceGetMatchingServices(kIOMasterPortDefault, matching, &iter) != 0)
-        return NULL;
-
-    while ((service = IOIteratorNext(iter)) != 0)
-    {
-        CFIndex size, vendorID, productID;
-        CFDictionaryRef info, names;
-        CFStringRef name;
-
-        info = IODisplayCreateInfoDictionary(service, kIODisplayOnlyPreferredName);
-
-        CFNumberGetValue(CFDictionaryGetValue(info, CFSTR(kDisplayVendorID)),
-                         kCFNumberCFIndexType, &vendorID);
-        CFNumberGetValue(CFDictionaryGetValue(info, CFSTR(kDisplayProductID)),
-                         kCFNumberCFIndexType, &productID);
-
-        if (vendorNumber != vendorID || modelNumber != productID)
-        {
-            CFRelease(info);
-            continue;
-        }
-
-        names = CFDictionaryGetValue(info, CFSTR(kDisplayProductName));
-        if (!names)
-        {
-            // This may happen if a desktop Mac is running headless
-            CFRelease(info);
-            continue;
-        }
-
-        if (!CFDictionaryGetValueIfPresent(names, CFSTR("en_US"),
-                                           (const void**) &name))
-        {
-            CFRelease(info);
-            continue;
-        }
-
-        size = CFStringGetMaximumSizeForEncoding(CFStringGetLength(name),
-                                                 kCFStringEncodingUTF8);
-        result = calloc(size + 1, sizeof(char));
-        CFStringGetCString(name, result, size, kCFStringEncodingUTF8);
+        // This may happen if a desktop Mac is running headless
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to retrieve display name");
 
         CFRelease(info);
+        return strdup("Unknown");
     }
 
-    IOObjectRelease(iter);
-    return result;
+    size = CFStringGetMaximumSizeForEncoding(CFStringGetLength(value),
+                                             kCFStringEncodingUTF8);
+    name = calloc(size + 1, sizeof(char));
+    CFStringGetCString(value, name, size, kCFStringEncodingUTF8);
+
+    CFRelease(info);
+
+    return name;
 }
 
 // Check whether the display mode should be included in enumeration
@@ -297,13 +262,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         int j;
         const CGSize size = CGDisplayScreenSize(displays[i]);
         char* name = getDisplayName(displays[i]);
-
-        if (!name)
-        {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Cocoa: Failed to retrieve display name");
-            name = strdup("Unknown");
-        }
 
         monitors[found] = _glfwAllocMonitor(name, size.width, size.height);
         monitors[found]->ns.displayID = displays[i];

@@ -143,7 +143,7 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
     // to (0, 0)
 
     _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Wayland does not allow manual window positioning");
+                    "Wayland: Window position retreival not supported");
 
     if (xpos)
         *xpos = 0;
@@ -156,7 +156,7 @@ void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
     // A Wayland client can not set its position, so just warn
 
     _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Wayland does not allow manual window positioning");
+                    "Wayland: Window position setting not supported");
 }
 
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
@@ -253,7 +253,7 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
     // A Wayland client can not set the cursor position
     _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Wayland does not allow cursor positioning");
+                    "Wayland: Cursor position setting not supported");
 }
 
 void _glfwPlatformApplyCursorMode(_GLFWwindow* window)

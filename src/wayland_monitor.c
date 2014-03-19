@@ -123,7 +123,7 @@ void _glfwAddOutput(uint32_t name, uint32_t version)
     if (version < 2)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Unsupported wl_output interface version");
+                        "Wayland: Unsupported output interface version");
         return;
     }
 

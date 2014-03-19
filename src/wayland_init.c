@@ -102,7 +102,11 @@ int _glfwPlatformInit(void)
 {
     _glfw.wl.display = wl_display_connect(NULL);
     if (!_glfw.wl.display)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to connect to display");
         return GL_FALSE;
+    }
 
     _glfw.wl.registry = wl_display_get_registry(_glfw.wl.display);
     wl_registry_add_listener(_glfw.wl.registry, &registryListener, NULL);

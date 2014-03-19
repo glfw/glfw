@@ -45,10 +45,7 @@ typedef void* id;
  #error "No supported context creation API selected"
 #endif
 
-#include <IOKit/IOKitLib.h>
-#include <IOKit/IOCFPlugIn.h>
-#include <IOKit/hid/IOHIDLib.h>
-#include <IOKit/hid/IOHIDKeys.h>
+#include "iokit_joystick.h"
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  ns
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS ns
@@ -75,26 +72,6 @@ typedef struct _GLFWwindowNS
 
 
 //------------------------------------------------------------------------
-// Joystick information & state
-//------------------------------------------------------------------------
-typedef struct
-{
-    int             present;
-    char            name[256];
-
-    IOHIDDeviceInterface** interface;
-
-    CFMutableArrayRef axisElements;
-    CFMutableArrayRef buttonElements;
-    CFMutableArrayRef hatElements;
-
-    float*          axes;
-    unsigned char*  buttons;
-
-} _GLFWjoy;
-
-
-//------------------------------------------------------------------------
 // Platform-specific library global data for Cocoa
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryNS
@@ -111,7 +88,6 @@ typedef struct _GLFWlibraryNS
 
     char*           clipboardString;
 
-    _GLFWjoy        joysticks[GLFW_JOYSTICK_LAST + 1];
 } _GLFWlibraryNS;
 
 
@@ -142,10 +118,6 @@ typedef struct _GLFWcursorNS
 
 // Time
 void _glfwInitTimer(void);
-
-// Joystick input
-void _glfwInitJoysticks(void);
-void _glfwTerminateJoysticks(void);
 
 // Fullscreen
 GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);

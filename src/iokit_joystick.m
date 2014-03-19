@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.1 OS X - www.glfw.org
+// GLFW 3.1 IOKit - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
 // Copyright (c) 2012 Torsten Walluhn <tw@mad-cad.net>
@@ -58,7 +58,7 @@ static void getElementsCFArrayHandler(const void* value, void* parameter);
 
 // Adds an element to the specified joystick
 //
-static void addJoystickElement(_GLFWjoy* joystick, CFTypeRef elementRef)
+static void addJoystickElement(_GLFWjoystickIOKit* joystick, CFTypeRef elementRef)
 {
     long elementType, usagePage, usage;
     CFMutableArrayRef elementsArray = NULL;
@@ -146,12 +146,12 @@ static void addJoystickElement(_GLFWjoy* joystick, CFTypeRef elementRef)
 static void getElementsCFArrayHandler(const void* value, void* parameter)
 {
     if (CFGetTypeID(value) == CFDictionaryGetTypeID())
-        addJoystickElement((_GLFWjoy*) parameter, (CFTypeRef) value);
+        addJoystickElement((_GLFWjoystickIOKit*) parameter, (CFTypeRef) value);
 }
 
 // Returns the value of the specified element of the specified joystick
 //
-static long getElementValue(_GLFWjoy* joystick, _GLFWjoyelement* element)
+static long getElementValue(_GLFWjoystickIOKit* joystick, _GLFWjoyelement* element)
 {
     IOReturn result = kIOReturnSuccess;
     IOHIDEventStruct hidEvent;
@@ -178,7 +178,7 @@ static long getElementValue(_GLFWjoy* joystick, _GLFWjoyelement* element)
 
 // Removes the specified joystick
 //
-static void removeJoystick(_GLFWjoy* joystick)
+static void removeJoystick(_GLFWjoystickIOKit* joystick)
 {
     int i;
 
@@ -203,14 +203,14 @@ static void removeJoystick(_GLFWjoy* joystick)
     (*(joystick->interface))->close(joystick->interface);
     (*(joystick->interface))->Release(joystick->interface);
 
-    memset(joystick, 0, sizeof(_GLFWjoy));
+    memset(joystick, 0, sizeof(_GLFWjoystickIOKit));
 }
 
 // Callback for user-initiated joystick removal
 //
 static void removalCallback(void* target, IOReturn result, void* refcon, void* sender)
 {
-    removeJoystick((_GLFWjoy*) refcon);
+    removeJoystick((_GLFWjoystickIOKit*) refcon);
 }
 
 // Polls for joystick events and updates GLFW state
@@ -223,7 +223,7 @@ static void pollJoystickEvents(void)
     {
         CFIndex i;
         int buttonIndex = 0;
-        _GLFWjoy* joystick = _glfw.ns.joysticks + joy;
+        _GLFWjoystickIOKit* joystick = _glfw.joystick + joy;
 
         if (!joystick->present)
             continue;
@@ -368,7 +368,7 @@ void _glfwInitJoysticks(void)
             CFRelease(valueRef);
         }
 
-        _GLFWjoy* joystick = _glfw.ns.joysticks + joy;
+        _GLFWjoystickIOKit* joystick = _glfw.joystick + joy;
         joystick->present = GL_TRUE;
 
         result = IOCreatePlugInInterfaceForService(ioHIDDeviceObject,
@@ -450,7 +450,7 @@ void _glfwTerminateJoysticks(void)
 
     for (i = 0;  i < GLFW_JOYSTICK_LAST + 1;  i++)
     {
-        _GLFWjoy* joystick = &_glfw.ns.joysticks[i];
+        _GLFWjoystickIOKit* joystick = &_glfw.joystick[i];
         removeJoystick(joystick);
     }
 }
@@ -464,12 +464,12 @@ int _glfwPlatformJoystickPresent(int joy)
 {
     pollJoystickEvents();
 
-    return _glfw.ns.joysticks[joy].present;
+    return _glfw.joystick[joy].present;
 }
 
 const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 {
-    _GLFWjoy* joystick = _glfw.ns.joysticks + joy;
+    _GLFWjoystickIOKit* joystick = _glfw.joystick + joy;
 
     pollJoystickEvents();
 
@@ -482,7 +482,7 @@ const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 
 const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
 {
-    _GLFWjoy* joystick = _glfw.ns.joysticks + joy;
+    _GLFWjoystickIOKit* joystick = _glfw.joystick + joy;
 
     pollJoystickEvents();
 
@@ -498,6 +498,6 @@ const char* _glfwPlatformGetJoystickName(int joy)
 {
     pollJoystickEvents();
 
-    return _glfw.ns.joysticks[joy].name;
+    return _glfw.joystick[joy].name;
 }
 

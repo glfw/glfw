@@ -65,7 +65,6 @@
 #define _GLFW_UNIX_TIME_CONTEXT _glfw.x11.timer
 #include "unix_time.h"
 
-#define _GLFW_LINUX_JOYSTICK_CONTEXT _glfw.x11.joystick
 #include "linux_joystick.h"
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  x11
@@ -214,8 +213,6 @@ typedef struct _GLFWlibraryX11
     struct {
         Window      source;
     } xdnd;
-
-    _GLFWjoystickLinux joystick;
 
 } _GLFWlibraryX11;
 

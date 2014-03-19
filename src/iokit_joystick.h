@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.1 Linux - www.glfw.org
+// GLFW 3.1 IOKit - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
+// Copyright (c) 2006-2014 Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -24,11 +24,16 @@
 //
 //========================================================================
 
-#ifndef _linux_joystick_h_
-#define _linux_joystick_h_
+#ifndef _iokit_joystick_h_
+#define _iokit_joystick_h_
+
+#include <IOKit/IOKitLib.h>
+#include <IOKit/IOCFPlugIn.h>
+#include <IOKit/hid/IOHIDLib.h>
+#include <IOKit/hid/IOHIDKeys.h>
 
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE \
-    _GLFWjoystickLinux joystick[GLFW_JOYSTICK_LAST + 1]
+    _GLFWjoystickIOKit joystick[GLFW_JOYSTICK_LAST + 1]
 
 
 //========================================================================
@@ -38,16 +43,20 @@
 //------------------------------------------------------------------------
 // Platform-specific joystick structure
 //------------------------------------------------------------------------
-typedef struct _GLFWjoystickLinux
+typedef struct _GLFWjoystickIOKit
 {
     int             present;
-    int             fd;
+    char            name[256];
+
+    IOHIDDeviceInterface** interface;
+
+    CFMutableArrayRef axisElements;
+    CFMutableArrayRef buttonElements;
+    CFMutableArrayRef hatElements;
+
     float*          axes;
-    int             axisCount;
     unsigned char*  buttons;
-    int             buttonCount;
-    char*           name;
-} _GLFWjoystickLinux;
+} _GLFWjoystickIOKit;
 
 
 //========================================================================
@@ -57,4 +66,4 @@ typedef struct _GLFWjoystickLinux
 void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
-#endif // _linux_joystick_h_
+#endif // _iokit_joystick_h_

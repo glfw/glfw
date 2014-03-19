@@ -163,6 +163,8 @@ typedef HRESULT (WINAPI * DWMISCOMPOSITIONENABLED_T)(BOOL*);
  #error "No supported context creation API selected"
 #endif
 
+#include "winmm_joystick.h"
+
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWin32  win32
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 win32
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWin32 win32
@@ -232,11 +234,6 @@ typedef struct _GLFWlibraryWin32
         DWMISCOMPOSITIONENABLED_T DwmIsCompositionEnabled;
     } dwmapi;
 
-    struct {
-        float           axes[6];
-        unsigned char   buttons[36]; // 32 buttons plus one hat
-        char*           name;
-    } joystick[GLFW_JOYSTICK_LAST + 1];
 
 } _GLFWlibraryWin32;
 
@@ -275,10 +272,6 @@ char* _glfwCreateUTF8FromWideString(const WCHAR* source);
 
 // Time
 void _glfwInitTimer(void);
-
-// Joystick input
-void _glfwInitJoysticks(void);
-void _glfwTerminateJoysticks(void);
 
 // Fullscreen support
 GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);

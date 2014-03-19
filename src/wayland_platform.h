@@ -36,7 +36,6 @@
  #error "The Wayland backend depends on EGL platform support"
 #endif
 
-#define _GLFW_LINUX_JOYSTICK_CONTEXT    _glfw.wayland.joystick
 #include "linux_joystick.h"
 
 #define _GLFW_UNIX_TIME_CONTEXT         _glfw.wayland.timer
@@ -76,7 +75,6 @@ typedef struct _GLFWlibraryWayland
     int                         monitorsSize;
 
     _GLFWtimeUNIX               timer;
-    _GLFWjoystickLinux          joystick;
 } _GLFWlibraryWayland;
 
 typedef struct _GLFWmonitorWayland

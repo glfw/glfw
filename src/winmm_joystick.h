@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.1 Linux - www.glfw.org
+// GLFW 3.1 WinMM - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
+// Copyright (c) 2006-2014 Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -24,11 +24,11 @@
 //
 //========================================================================
 
-#ifndef _linux_joystick_h_
-#define _linux_joystick_h_
+#ifndef _winmm_joystick_h_
+#define _winmm_joystick_h_
 
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE \
-    _GLFWjoystickLinux joystick[GLFW_JOYSTICK_LAST + 1]
+    _GLFWjoystickWinMM joystick[GLFW_JOYSTICK_LAST + 1]
 
 
 //========================================================================
@@ -38,16 +38,12 @@
 //------------------------------------------------------------------------
 // Platform-specific joystick structure
 //------------------------------------------------------------------------
-typedef struct _GLFWjoystickLinux
+typedef struct _GLFWjoystickWinMM
 {
-    int             present;
-    int             fd;
-    float*          axes;
-    int             axisCount;
-    unsigned char*  buttons;
-    int             buttonCount;
+    float           axes[6];
+    unsigned char   buttons[36]; // 32 buttons plus one hat
     char*           name;
-} _GLFWjoystickLinux;
+} _GLFWjoystickWinMM;
 
 
 //========================================================================
@@ -57,4 +53,4 @@ typedef struct _GLFWjoystickLinux
 void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
-#endif // _linux_joystick_h_
+#endif // _winmm_joystick_h_

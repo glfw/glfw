@@ -94,3 +94,4 @@ void _glfwPlatformSetTime(double time)
     _GLFW_UNIX_TIME_CONTEXT.base = getRawTime() -
         (uint64_t) (time / _GLFW_UNIX_TIME_CONTEXT.resolution);
 }
+

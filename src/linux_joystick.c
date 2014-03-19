@@ -56,7 +56,7 @@ static int openJoystickDevice(int joy, const char* path)
     if (fd == -1)
         return GL_FALSE;
 
-    _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[joy].fd = fd;
+    _glfw.joystick[joy].fd = fd;
 
     // Verify that the joystick driver version is at least 1.0
     ioctl(fd, JSIOCGVERSION, &version);
@@ -70,20 +70,18 @@ static int openJoystickDevice(int joy, const char* path)
     if (ioctl(fd, JSIOCGNAME(sizeof(name)), name) < 0)
         strncpy(name, "Unknown", sizeof(name));
 
-    _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[joy].name = strdup(name);
+    _glfw.joystick[joy].name = strdup(name);
 
     ioctl(fd, JSIOCGAXES, &axisCount);
-    _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[joy].axisCount = (int) axisCount;
+    _glfw.joystick[joy].axisCount = (int) axisCount;
 
     ioctl(fd, JSIOCGBUTTONS, &buttonCount);
-    _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[joy].buttonCount = (int) buttonCount;
+    _glfw.joystick[joy].buttonCount = (int) buttonCount;
 
-    _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[joy].axes =
-        calloc(axisCount, sizeof(float));
-    _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[joy].buttons =
-        calloc(buttonCount, 1);
+    _glfw.joystick[joy].axes = calloc(axisCount, sizeof(float));
+    _glfw.joystick[joy].buttons = calloc(buttonCount, 1);
 
-    _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[joy].present = GL_TRUE;
+    _glfw.joystick[joy].present = GL_TRUE;
 #endif // __linux__
 
     return GL_TRUE;
@@ -100,23 +98,21 @@ static void pollJoystickEvents(void)
 
     for (i = 0;  i <= GLFW_JOYSTICK_LAST;  i++)
     {
-        if (!_GLFW_LINUX_JOYSTICK_CONTEXT.joystick[i].present)
+        if (!_glfw.joystick[i].present)
             continue;
 
         // Read all queued events (non-blocking)
         for (;;)
         {
             errno = 0;
-            result = read(_GLFW_LINUX_JOYSTICK_CONTEXT.joystick[i].fd,
-                          &e,
-                          sizeof(e));
+            result = read(_glfw.joystick[i].fd, &e, sizeof(e));
 
             if (errno == ENODEV)
             {
-                free(_GLFW_LINUX_JOYSTICK_CONTEXT.joystick[i].axes);
-                free(_GLFW_LINUX_JOYSTICK_CONTEXT.joystick[i].buttons);
-                free(_GLFW_LINUX_JOYSTICK_CONTEXT.joystick[i].name);
-                _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[i].present = GL_FALSE;
+                free(_glfw.joystick[i].axes);
+                free(_glfw.joystick[i].buttons);
+                free(_glfw.joystick[i].name);
+                _glfw.joystick[i].present = GL_FALSE;
             }
 
             if (result == -1)
@@ -128,12 +124,12 @@ static void pollJoystickEvents(void)
             switch (e.type)
             {
                 case JS_EVENT_AXIS:
-                    _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[i].axes[e.number] =
+                    _glfw.joystick[i].axes[e.number] =
                         (float) e.value / 32767.0f;
                     break;
 
                 case JS_EVENT_BUTTON:
-                    _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[i].buttons[e.number] =
+                    _glfw.joystick[i].buttons[e.number] =
                         e.value ? GLFW_PRESS : GLFW_RELEASE;
                     break;
 
@@ -208,14 +204,14 @@ void _glfwTerminateJoysticks(void)
 
     for (i = 0;  i <= GLFW_JOYSTICK_LAST;  i++)
     {
-        if (_GLFW_LINUX_JOYSTICK_CONTEXT.joystick[i].present)
+        if (_glfw.joystick[i].present)
         {
-            close(_GLFW_LINUX_JOYSTICK_CONTEXT.joystick[i].fd);
-            free(_GLFW_LINUX_JOYSTICK_CONTEXT.joystick[i].axes);
-            free(_GLFW_LINUX_JOYSTICK_CONTEXT.joystick[i].buttons);
-            free(_GLFW_LINUX_JOYSTICK_CONTEXT.joystick[i].name);
+            close(_glfw.joystick[i].fd);
+            free(_glfw.joystick[i].axes);
+            free(_glfw.joystick[i].buttons);
+            free(_glfw.joystick[i].name);
 
-            _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[i].present = GL_FALSE;
+            _glfw.joystick[i].present = GL_FALSE;
         }
     }
 #endif // __linux__
@@ -230,35 +226,35 @@ int _glfwPlatformJoystickPresent(int joy)
 {
     pollJoystickEvents();
 
-    return _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[joy].present;
+    return _glfw.joystick[joy].present;
 }
 
 const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 {
     pollJoystickEvents();
 
-    if (!_GLFW_LINUX_JOYSTICK_CONTEXT.joystick[joy].present)
+    if (!_glfw.joystick[joy].present)
         return NULL;
 
-    *count = _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[joy].axisCount;
-    return _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[joy].axes;
+    *count = _glfw.joystick[joy].axisCount;
+    return _glfw.joystick[joy].axes;
 }
 
 const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
 {
     pollJoystickEvents();
 
-    if (!_GLFW_LINUX_JOYSTICK_CONTEXT.joystick[joy].present)
+    if (!_glfw.joystick[joy].present)
         return NULL;
 
-    *count = _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[joy].buttonCount;
-    return _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[joy].buttons;
+    *count = _glfw.joystick[joy].buttonCount;
+    return _glfw.joystick[joy].buttons;
 }
 
 const char* _glfwPlatformGetJoystickName(int joy)
 {
     pollJoystickEvents();
 
-    return _GLFW_LINUX_JOYSTICK_CONTEXT.joystick[joy].name;
+    return _glfw.joystick[joy].name;
 }
 

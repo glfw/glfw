@@ -44,7 +44,7 @@ if (BUILD_SHARED_LIBS)
 endif()
 
 if (GLFW_USE_WAYLAND)
-    set(GLFW_USE_EGL 1)
+    set(GLFW_USE_EGL ON)
 endif()
 
 if (GLFW_USE_EGL)

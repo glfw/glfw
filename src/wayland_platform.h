@@ -28,20 +28,23 @@
 #define _wayland_platform_h_
 
 
-#if !defined(_GLFW_EGL)
+#include <wayland-client.h>
+
+#if defined(_GLFW_EGL)
+ #include "egl_platform.h"
+#else
  #error "The Wayland backend depends on EGL platform support"
 #endif
 
-#include <wayland-client.h>
-#include "egl_platform.h"
+#define _GLFW_LINUX_JOYSTICK_CONTEXT    _glfw.wayland.joystick
 #include "linux_joystick.h"
+
+#define _GLFW_UNIX_TIME_CONTEXT         _glfw.wayland.timer
 #include "unix_time.h"
 
 #define _GLFW_X11_CONTEXT_VISUAL        window->egl.visual
 #define _GLFW_EGL_NATIVE_WINDOW         window->wayland.native
 #define _GLFW_EGL_NATIVE_DISPLAY        _glfw.wayland.display
-#define _GLFW_UNIX_TIME_CONTEXT         _glfw.wayland.timer
-#define _GLFW_LINUX_JOYSTICK_CONTEXT    _glfw.wayland.joystick
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWayland  wayland
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWayland wayland

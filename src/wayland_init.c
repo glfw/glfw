@@ -73,11 +73,11 @@ static void registryHandleGlobal(void* data,
     else if (strcmp(interface, "wl_shell") == 0)
     {
         _glfw.wl.shell =
-	    wl_registry_bind(registry, name, &wl_shell_interface, 1);
+        wl_registry_bind(registry, name, &wl_shell_interface, 1);
     }
     else if (strcmp(interface, "wl_output") == 0)
     {
-	_glfwAddOutput(name, version);
+        _glfwAddOutput(name, version);
     }
 }
 

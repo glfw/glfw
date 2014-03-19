@@ -22,7 +22,7 @@ elseif (_GLFW_WIN32)
                      win32_init.c win32_joystick.c win32_monitor.c win32_time.c
                      win32_tls.c win32_window.c)
 elseif (_GLFW_X11)
-    set(glfw_HEADERS ${common_HEADERS} x11_platform.h posix_tls.h unix_time.h)
+    set(glfw_HEADERS ${common_HEADERS} x11_platform.h posix_tls.h)
     set(glfw_SOURCES ${common_SOURCES} x11_clipboard.c x11_gamma.c x11_init.c
                      x11_monitor.c x11_window.c x11_unicode.c posix_tls.c)
 elseif (_GLFW_WAYLAND)

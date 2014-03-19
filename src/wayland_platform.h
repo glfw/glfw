@@ -41,7 +41,6 @@
 #define _GLFW_UNIX_TIME_CONTEXT         _glfw.wl.timer
 #include "unix_time.h"
 
-#define _GLFW_X11_CONTEXT_VISUAL        window->egl.visual
 #define _GLFW_EGL_NATIVE_WINDOW         window->wl.native
 #define _GLFW_EGL_NATIVE_DISPLAY        _glfw.wl.display
 

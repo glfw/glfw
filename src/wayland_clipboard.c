@@ -45,3 +45,4 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     fprintf(stderr, "_glfwPlatformGetClipboardString not implemented yet\n");
     return NULL;
 }
+

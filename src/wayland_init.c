@@ -34,25 +34,22 @@
 #include <wayland-cursor.h>
 
 
-static void
-handlePing(void* data,
-           struct wl_shell_surface* shellSurface,
-           uint32_t serial)
+static void handlePing(void* data,
+                       struct wl_shell_surface* shellSurface,
+                       uint32_t serial)
 {
     wl_shell_surface_pong(shellSurface, serial);
 }
 
-static void
-handleConfigure(void* data,
-                struct wl_shell_surface* shellSurface,
-                uint32_t edges,
-                int32_t width,
-                int32_t height)
+static void handleConfigure(void* data,
+                            struct wl_shell_surface* shellSurface,
+                            uint32_t edges,
+                            int32_t width,
+                            int32_t height)
 {
 }
 
-static void
-handlePopupDone(void *data, struct wl_shell_surface *shell_surface)
+static void handlePopupDone(void *data, struct wl_shell_surface *shell_surface)
 {
 }
 
@@ -113,14 +110,12 @@ int _glfwPlatformInit(void)
     wl_registry_add_listener(_glfw.wayland.registry, &registryListener, NULL);
 
     _glfw.wayland.monitors = calloc(4, sizeof(_GLFWmonitor*));
-    if (!_glfw.wayland.monitors)
-	return GL_FALSE;
     _glfw.wayland.monitorsSize = 4;
 
-    // Sync so we got all registry objects.
+    // Sync so we got all registry objects
     wl_display_roundtrip(_glfw.wayland.display);
 
-    // Sync so we got all initial output events.
+    // Sync so we got all initial output events
     wl_display_roundtrip(_glfw.wayland.display);
 
     if (!_glfwInitContextAPI())
@@ -157,3 +152,4 @@ const char* _glfwPlatformGetVersionString(void)
 
     return version;
 }
+

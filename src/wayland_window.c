@@ -32,26 +32,23 @@
 #include <wayland-egl.h>
 
 
-static void
-handlePing(void* data,
-           struct wl_shell_surface* shellSurface,
-           uint32_t serial)
+static void handlePing(void* data,
+                       struct wl_shell_surface* shellSurface,
+                       uint32_t serial)
 {
     wl_shell_surface_pong(shellSurface, serial);
 }
 
-static void
-handleConfigure(void* data,
-                struct wl_shell_surface* shellSurface,
-                uint32_t edges,
-                int32_t width,
-                int32_t height)
+static void handleConfigure(void* data,
+                            struct wl_shell_surface* shellSurface,
+                            uint32_t edges,
+                            int32_t width,
+                            int32_t height)
 {
 }
 
-static void
-handlePopupDone(void* data,
-                struct wl_shell_surface* shellSurface)
+static void handlePopupDone(void* data,
+                            struct wl_shell_surface* shellSurface)
 {
 }
 
@@ -159,8 +156,7 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
 {
-    // A Wayland client can not set its position, so just warn and set it
-    // to (0, 0)
+    // A Wayland client can not set its position, so just warn
 
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "Wayland does not allow manual window positioning");
@@ -258,7 +254,7 @@ void _glfwPlatformPostEmptyEvent(void)
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
-    // A Wayland client can not set the cursor position.
+    // A Wayland client can not set the cursor position
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "Wayland does not allow cursor positioning");
 }
@@ -279,3 +275,4 @@ void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
             break;
     }
 }
+

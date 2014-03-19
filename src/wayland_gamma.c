@@ -44,3 +44,4 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
     // TODO
     fprintf(stderr, "_glfwPlatformSetGammaRamp not implemented yet\n");
 }
+

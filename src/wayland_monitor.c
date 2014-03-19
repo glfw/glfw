@@ -32,7 +32,8 @@
 #include <errno.h>
 
 
-struct _GLFWvidmodeWayland {
+struct _GLFWvidmodeWayland
+{
     GLFWvidmode         base;
     uint32_t            flags;
 };
@@ -77,10 +78,6 @@ static void mode(void* data,
         _GLFWvidmodeWayland* modes =
             realloc(monitor->wayland.modes,
                     monitor->wayland.modesSize * sizeof(_GLFWvidmodeWayland));
-        if (!modes)
-        {
-            return;
-        }
         monitor->wayland.modes = modes;
         monitor->wayland.modesSize = size;
     }
@@ -154,14 +151,6 @@ void _glfwAddOutput(uint32_t name, uint32_t version)
         int size = _glfw.wayland.monitorsSize * 2;
 
         monitors = realloc(monitors, size * sizeof(_GLFWmonitor*));
-        if (!monitors)
-        {
-            wl_output_destroy(output);
-            _glfwFreeMonitor(monitor);
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Failed to retrieve monitor information");
-            return;
-        }
 
         _glfw.wayland.monitors = monitors;
         _glfw.wayland.monitorsSize = size;
@@ -179,45 +168,27 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
     _GLFWmonitor** monitors;
     _GLFWmonitor* monitor;
-    int monitorsCount = _glfw.wayland.monitorsCount;
-    int i;
+    int i, monitorsCount = _glfw.wayland.monitorsCount;
 
     if (_glfw.wayland.monitorsCount == 0)
         goto err;
 
     monitors = calloc(monitorsCount, sizeof(_GLFWmonitor*));
-    if (!monitors)
-        goto err;
 
     for (i = 0; i < monitorsCount; i++)
     {
-	_GLFWmonitor* origMonitor = _glfw.wayland.monitors[i];
-        monitor = malloc(sizeof(_GLFWmonitor));
-        if (!monitor)
-        {
-            if (i > 0)
-            {
-                *count = i;
-                return monitors;
-            }
-            else
-            {
-                goto err_free;
-            }
-        }
+        _GLFWmonitor* origMonitor = _glfw.wayland.monitors[i];
+        monitor = calloc(1, sizeof(_GLFWmonitor));
 
-	monitor->modes =
-	    _glfwPlatformGetVideoModes(origMonitor,
-				       &origMonitor->wayland.modesCount);
-	*monitor = *_glfw.wayland.monitors[i];
+        monitor->modes =
+            _glfwPlatformGetVideoModes(origMonitor,
+                                       &origMonitor->wayland.modesCount);
+        *monitor = *_glfw.wayland.monitors[i];
         monitors[i] = monitor;
     }
 
     *count = monitorsCount;
     return monitors;
-
-err_free:
-    free(monitors);
 
 err:
     *count = 0;
@@ -240,17 +211,11 @@ void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 {
     GLFWvidmode *modes;
-    int modesCount = monitor->wayland.modesCount;
-    int i;
+    int i, modesCount = monitor->wayland.modesCount;
 
     modes = calloc(modesCount, sizeof(GLFWvidmode));
-    if (!modes)
-    {
-            *found = 0;;
-            return NULL;
-    }
 
-    for (i = 0; i < modesCount; i++)
+    for (i = 0;  i < modesCount;  i++)
         modes[i] = monitor->wayland.modes[i].base;
 
     *found = modesCount;
@@ -261,7 +226,7 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
     int i;
 
-    for (i = 0; i < monitor->wayland.modesCount; i++)
+    for (i = 0;  i < monitor->wayland.modesCount;  i++)
     {
         if (monitor->wayland.modes[i].flags & WL_OUTPUT_MODE_CURRENT)
         {
@@ -270,3 +235,4 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
         }
     }
 }
+

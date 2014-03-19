@@ -38,16 +38,16 @@
 
 #include "linux_joystick.h"
 
-#define _GLFW_UNIX_TIME_CONTEXT         _glfw.wayland.timer
+#define _GLFW_UNIX_TIME_CONTEXT         _glfw.wl.timer
 #include "unix_time.h"
 
 #define _GLFW_X11_CONTEXT_VISUAL        window->egl.visual
-#define _GLFW_EGL_NATIVE_WINDOW         window->wayland.native
-#define _GLFW_EGL_NATIVE_DISPLAY        _glfw.wayland.display
+#define _GLFW_EGL_NATIVE_WINDOW         window->wl.native
+#define _GLFW_EGL_NATIVE_DISPLAY        _glfw.wl.display
 
-#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWayland  wayland
-#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWayland wayland
-#define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWayland wayland
+#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWayland  wl
+#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWayland wl
+#define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWayland wl
 
 
 typedef struct _GLFWvidmodeWayland _GLFWvidmodeWayland;

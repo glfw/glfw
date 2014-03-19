@@ -51,8 +51,8 @@ static void geometry(void* data,
 {
     struct _GLFWmonitor *monitor = data;
 
-    monitor->wayland.x = x;
-    monitor->wayland.y = y;
+    monitor->wl.x = x;
+    monitor->wl.y = y;
     monitor->widthMM = physicalWidth;
     monitor->heightMM = physicalHeight;
 }
@@ -72,17 +72,17 @@ static void mode(void* data,
     mode.base.refreshRate = refresh;
     mode.flags = flags;
 
-    if (monitor->wayland.modesCount + 1 >= monitor->wayland.modesSize)
+    if (monitor->wl.modesCount + 1 >= monitor->wl.modesSize)
     {
-        int size = monitor->wayland.modesSize * 2;
+        int size = monitor->wl.modesSize * 2;
         _GLFWvidmodeWayland* modes =
-            realloc(monitor->wayland.modes,
-                    monitor->wayland.modesSize * sizeof(_GLFWvidmodeWayland));
-        monitor->wayland.modes = modes;
-        monitor->wayland.modesSize = size;
+            realloc(monitor->wl.modes,
+                    monitor->wl.modesSize * sizeof(_GLFWvidmodeWayland));
+        monitor->wl.modes = modes;
+        monitor->wl.modesSize = size;
     }
 
-    monitor->wayland.modes[monitor->wayland.modesCount++] = mode;
+    monitor->wl.modes[monitor->wl.modesCount++] = mode;
 }
 
 static void done(void* data,
@@ -90,7 +90,7 @@ static void done(void* data,
 {
     struct _GLFWmonitor *monitor = data;
 
-    monitor->wayland.done = GL_TRUE;
+    monitor->wl.done = GL_TRUE;
 }
 
 static void scale(void* data,
@@ -129,7 +129,7 @@ void _glfwAddOutput(uint32_t name, uint32_t version)
 
     monitor = _glfwAllocMonitor(name_str, 0, 0);
 
-    output = wl_registry_bind(_glfw.wayland.registry,
+    output = wl_registry_bind(_glfw.wl.registry,
                               name,
                               &wl_output_interface,
                               2);
@@ -139,24 +139,24 @@ void _glfwAddOutput(uint32_t name, uint32_t version)
         return;
     }
 
-    monitor->wayland.modes = calloc(4, sizeof(_GLFWvidmodeWayland));
-    monitor->wayland.modesSize = 4;
+    monitor->wl.modes = calloc(4, sizeof(_GLFWvidmodeWayland));
+    monitor->wl.modesSize = 4;
 
-    monitor->wayland.output = output;
+    monitor->wl.output = output;
     wl_output_add_listener(output, &output_listener, monitor);
 
-    if (_glfw.wayland.monitorsCount + 1 >= _glfw.wayland.monitorsSize)
+    if (_glfw.wl.monitorsCount + 1 >= _glfw.wl.monitorsSize)
     {
-        _GLFWmonitor** monitors = _glfw.wayland.monitors;
-        int size = _glfw.wayland.monitorsSize * 2;
+        _GLFWmonitor** monitors = _glfw.wl.monitors;
+        int size = _glfw.wl.monitorsSize * 2;
 
         monitors = realloc(monitors, size * sizeof(_GLFWmonitor*));
 
-        _glfw.wayland.monitors = monitors;
-        _glfw.wayland.monitorsSize = size;
+        _glfw.wl.monitors = monitors;
+        _glfw.wl.monitorsSize = size;
     }
 
-    _glfw.wayland.monitors[_glfw.wayland.monitorsCount++] = monitor;
+    _glfw.wl.monitors[_glfw.wl.monitorsCount++] = monitor;
 }
 
 
@@ -168,22 +168,22 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
     _GLFWmonitor** monitors;
     _GLFWmonitor* monitor;
-    int i, monitorsCount = _glfw.wayland.monitorsCount;
+    int i, monitorsCount = _glfw.wl.monitorsCount;
 
-    if (_glfw.wayland.monitorsCount == 0)
+    if (_glfw.wl.monitorsCount == 0)
         goto err;
 
     monitors = calloc(monitorsCount, sizeof(_GLFWmonitor*));
 
     for (i = 0; i < monitorsCount; i++)
     {
-        _GLFWmonitor* origMonitor = _glfw.wayland.monitors[i];
+        _GLFWmonitor* origMonitor = _glfw.wl.monitors[i];
         monitor = calloc(1, sizeof(_GLFWmonitor));
 
         monitor->modes =
             _glfwPlatformGetVideoModes(origMonitor,
-                                       &origMonitor->wayland.modesCount);
-        *monitor = *_glfw.wayland.monitors[i];
+                                       &origMonitor->wl.modesCount);
+        *monitor = *_glfw.wl.monitors[i];
         monitors[i] = monitor;
     }
 
@@ -197,26 +197,26 @@ err:
 
 GLboolean _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
 {
-    return first->wayland.output == second->wayland.output;
+    return first->wl.output == second->wl.output;
 }
 
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {
     if (xpos)
-        *xpos = monitor->wayland.x;
+        *xpos = monitor->wl.x;
     if (ypos)
-        *ypos = monitor->wayland.y;
+        *ypos = monitor->wl.y;
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 {
     GLFWvidmode *modes;
-    int i, modesCount = monitor->wayland.modesCount;
+    int i, modesCount = monitor->wl.modesCount;
 
     modes = calloc(modesCount, sizeof(GLFWvidmode));
 
     for (i = 0;  i < modesCount;  i++)
-        modes[i] = monitor->wayland.modes[i].base;
+        modes[i] = monitor->wl.modes[i].base;
 
     *found = modesCount;
     return modes;
@@ -226,11 +226,11 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
     int i;
 
-    for (i = 0;  i < monitor->wayland.modesCount;  i++)
+    for (i = 0;  i < monitor->wl.modesCount;  i++)
     {
-        if (monitor->wayland.modes[i].flags & WL_OUTPUT_MODE_CURRENT)
+        if (monitor->wl.modes[i].flags & WL_OUTPUT_MODE_CURRENT)
         {
-            *mode = monitor->wayland.modes[i].base;
+            *mode = monitor->wl.modes[i].base;
             return;
         }
     }

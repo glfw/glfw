@@ -61,30 +61,27 @@ static const struct wl_shell_surface_listener shellSurfaceListener = {
 static GLboolean createSurface(_GLFWwindow* window,
                                const _GLFWwndconfig* wndconfig)
 {
-    window->wayland.surface =
-        wl_compositor_create_surface(_glfw.wayland.compositor);
-    if (!window->wayland.surface)
+    window->wl.surface = wl_compositor_create_surface(_glfw.wl.compositor);
+    if (!window->wl.surface)
         return GL_FALSE;
 
-    window->wayland.native =
-        wl_egl_window_create(window->wayland.surface,
-                             wndconfig->width,
-                             wndconfig->height);
-    if (!window->wayland.native)
+    window->wl.native = wl_egl_window_create(window->wl.surface,
+                                             wndconfig->width,
+                                             wndconfig->height);
+    if (!window->wl.native)
         return GL_FALSE;
 
-    window->wayland.shell_surface =
-        wl_shell_get_shell_surface(_glfw.wayland.shell,
-                                   window->wayland.surface);
-    if (!window->wayland.shell_surface)
+    window->wl.shell_surface = wl_shell_get_shell_surface(_glfw.wl.shell,
+                                                          window->wl.surface);
+    if (!window->wl.shell_surface)
         return GL_FALSE;
 
-    wl_shell_surface_add_listener(window->wayland.shell_surface,
+    wl_shell_surface_add_listener(window->wl.shell_surface,
                                   &shellSurfaceListener,
                                   window);
 
-    window->wayland.width = wndconfig->width;
-    window->wayland.height = wndconfig->height;
+    window->wl.width = wndconfig->width;
+    window->wl.height = wndconfig->height;
 
     return GL_TRUE;
 }
@@ -108,14 +105,14 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (wndconfig->monitor)
     {
 	wl_shell_surface_set_fullscreen(
-		window->wayland.shell_surface,
+		window->wl.shell_surface,
 		WL_SHELL_SURFACE_FULLSCREEN_METHOD_DEFAULT,
 		0,
-		wndconfig->monitor->wayland.output);
+		wndconfig->monitor->wl.output);
     }
     else
     {
-        wl_shell_surface_set_toplevel(window->wayland.shell_surface);
+        wl_shell_surface_set_toplevel(window->wl.shell_surface);
     }
 
     return GL_TRUE;
@@ -123,21 +120,21 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
-    if (window->wayland.native)
-        wl_egl_window_destroy(window->wayland.native);
+    if (window->wl.native)
+        wl_egl_window_destroy(window->wl.native);
 
     _glfwDestroyContext(window);
 
-    if (window->wayland.shell_surface)
-        wl_shell_surface_destroy(window->wayland.shell_surface);
+    if (window->wl.shell_surface)
+        wl_shell_surface_destroy(window->wl.shell_surface);
 
-    if (window->wayland.surface)
-        wl_surface_destroy(window->wayland.surface);
+    if (window->wl.surface)
+        wl_surface_destroy(window->wl.surface);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
-    wl_shell_surface_set_title(window->wayland.shell_surface, title);
+    wl_shell_surface_set_title(window->wl.shell_surface, title);
 }
 
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
@@ -165,16 +162,16 @@ void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 {
     if (width)
-        *width = window->wayland.width;
+        *width = window->wl.width;
     if (height)
-        *height = window->wayland.height;
+        *height = window->wl.height;
 }
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    wl_egl_window_resize(window->wayland.native, width, height, 0, 0);
-    window->wayland.width = width;
-    window->wayland.height = height;
+    wl_egl_window_resize(window->wl.native, width, height, 0, 0);
+    window->wl.width = width;
+    window->wl.height = height;
 }
 
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
@@ -196,18 +193,18 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
-    wl_shell_surface_set_toplevel(window->wayland.shell_surface);
+    wl_shell_surface_set_toplevel(window->wl.shell_surface);
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
-    wl_surface_attach(window->wayland.surface, NULL, 0, 0);
-    wl_surface_commit(window->wayland.surface);
+    wl_surface_attach(window->wl.surface, NULL, 0, 0);
+    wl_surface_commit(window->wl.surface);
 }
 
 void _glfwPlatformPollEvents(void)
 {
-    struct wl_display* display = _glfw.wayland.display;
+    struct wl_display* display = _glfw.wl.display;
     struct pollfd fds[] = {
         { wl_display_get_fd(display), POLLIN },
     };
@@ -228,7 +225,7 @@ void _glfwPlatformPollEvents(void)
 
 void _glfwPlatformWaitEvents(void)
 {
-    struct wl_display* display = _glfw.wayland.display;
+    struct wl_display* display = _glfw.wl.display;
     struct pollfd fds[] = {
         { wl_display_get_fd(display), POLLIN },
     };
@@ -249,7 +246,7 @@ void _glfwPlatformWaitEvents(void)
 
 void _glfwPlatformPostEmptyEvent(void)
 {
-    wl_display_sync(_glfw.wayland.display);
+    wl_display_sync(_glfw.wl.display);
 }
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)

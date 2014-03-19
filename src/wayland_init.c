@@ -65,16 +65,14 @@ static void registryHandleGlobal(void* data,
                                  const char* interface,
                                  uint32_t version)
 {
-    _GLFWlibraryWayland* wayland = &_glfw.wayland;
-
     if (strcmp(interface, "wl_compositor") == 0)
     {
-        wayland->compositor =
+        _glfw.wl.compositor =
             wl_registry_bind(registry, name, &wl_compositor_interface, 1);
     }
     else if (strcmp(interface, "wl_shell") == 0)
     {
-        wayland->shell =
+        _glfw.wl.shell =
 	    wl_registry_bind(registry, name, &wl_shell_interface, 1);
     }
     else if (strcmp(interface, "wl_output") == 0)
@@ -102,21 +100,21 @@ static const struct wl_registry_listener registryListener = {
 
 int _glfwPlatformInit(void)
 {
-    _glfw.wayland.display = wl_display_connect(NULL);
-    if (!_glfw.wayland.display)
+    _glfw.wl.display = wl_display_connect(NULL);
+    if (!_glfw.wl.display)
         return GL_FALSE;
 
-    _glfw.wayland.registry = wl_display_get_registry(_glfw.wayland.display);
-    wl_registry_add_listener(_glfw.wayland.registry, &registryListener, NULL);
+    _glfw.wl.registry = wl_display_get_registry(_glfw.wl.display);
+    wl_registry_add_listener(_glfw.wl.registry, &registryListener, NULL);
 
-    _glfw.wayland.monitors = calloc(4, sizeof(_GLFWmonitor*));
-    _glfw.wayland.monitorsSize = 4;
+    _glfw.wl.monitors = calloc(4, sizeof(_GLFWmonitor*));
+    _glfw.wl.monitorsSize = 4;
 
     // Sync so we got all registry objects
-    wl_display_roundtrip(_glfw.wayland.display);
+    wl_display_roundtrip(_glfw.wl.display);
 
     // Sync so we got all initial output events
-    wl_display_roundtrip(_glfw.wayland.display);
+    wl_display_roundtrip(_glfw.wl.display);
 
     if (!_glfwInitContextAPI())
         return GL_FALSE;
@@ -131,12 +129,12 @@ void _glfwPlatformTerminate(void)
 {
     _glfwTerminateContextAPI();
 
-    if (_glfw.wayland.registry)
-        wl_registry_destroy(_glfw.wayland.registry);
-    if (_glfw.wayland.display)
-        wl_display_flush(_glfw.wayland.display);
-    if (_glfw.wayland.display)
-        wl_display_disconnect(_glfw.wayland.display);
+    if (_glfw.wl.registry)
+        wl_registry_destroy(_glfw.wl.registry);
+    if (_glfw.wl.display)
+        wl_display_flush(_glfw.wl.display);
+    if (_glfw.wl.display)
+        wl_display_disconnect(_glfw.wl.display);
 }
 
 const char* _glfwPlatformGetVersionString(void)

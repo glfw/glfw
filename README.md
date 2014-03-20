@@ -48,12 +48,12 @@ The following dependencies are needed by the examples and test programs:
  - Added native monitor handle access to native API
  - Added `glfwSetDropCallback` and `GLFWdropfun` for receiving dropped files
  - Added `glfwPostEmptyEvent` for allowing secondary threads to cause
+   `glfwWaitEvents` to return
  - Added `empty` test program for verifying posting of empty events
  - Added `GLFW_INCLUDE_ES31` for including the OpenGL ES 3.1 header
  - Bugfix: The debug context attribute was set from `GL_ARB_debug_output` even
            when a debug context had not been requested
  - Bugfix: The particles example was not linked against the threading library
-           `glfwWaitEvents` to return
  - [Cocoa] Added `_GLFW_USE_RETINA` to control whether windows will use the full
            resolution on Retina displays
  - [Cocoa] Bugfix: Using a 1x1 cursor for hidden mode caused some screen

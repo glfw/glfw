@@ -45,6 +45,10 @@ The following dependencies are needed by the examples and test programs:
 
 ## Changelog
 
+ - Added `GLFWcursor` custom system cursor handle
+ - Added `glfwCreateCursor`, `glfwDestroyCursor` and `glfwSetCursor` for
+   managing custom system cursors
+ - Added `GLFWimage` struct for passing 32-bit RGBA images
  - Added native monitor handle access to native API
  - Added `glfwSetDropCallback` and `GLFWdropfun` for receiving dropped files
  - Added `glfwPostEmptyEvent` for allowing secondary threads to cause

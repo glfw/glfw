@@ -1263,7 +1263,12 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     }
 
     for (i = 0;  i < image->width * image->height;  i++, target++, source += 4)
-        *target = (source[3] << 24) | (source[0] << 16) | (source[1] << 8) | source[2];
+    {
+        *target = (source[3] << 24) |
+                  (source[0] << 16) |
+                  (source[1] <<  8) |
+                   source[2];
+    }
 
     ZeroMemory(&ii, sizeof(ii));
     ii.fIcon    = FALSE;

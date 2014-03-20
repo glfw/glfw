@@ -1373,7 +1373,12 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     XcursorPixel* target = native->pixels;
 
     for (i = 0;  i < image->width * image->height;  i++, target++, source += 4)
-        *target = (source[3] << 24) | (source[0] << 16) | (source[1] << 8) | source[2];
+    {
+        *target = (source[3] << 24) |
+                  (source[0] << 16) |
+                  (source[1] <<  8) |
+                   source[2];
+    }
 
     cursor->x11.handle = XcursorImageLoadCursor(_glfw.x11.display, native);
     XcursorImageDestroy(native);

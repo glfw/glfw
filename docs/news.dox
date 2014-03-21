@@ -7,6 +7,13 @@
 
 @section news_31 New features in version 3.1
 
+@subsection news_31_cursor Custom system cursor support
+
+GLFW now supports creating and setting custom system cursors.  They can be
+created with @ref glfwCreateCursor and set with @ref glfwSetCursor.  Note that
+custom cursors are only visible in normal cursor mode.
+
+
 @subsection news_31_drop Drop event support
 
 GLFW now provides a callback for receiving the paths of files dropped onto GLFW

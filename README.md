@@ -68,6 +68,8 @@ The following dependencies are needed by the examples and test programs:
  - [Win32] Enabled generation of pkg-config file for MinGW
  - [Win32] Bugfix: Failure to load winmm or its functions was not reported to
                    the error callback
+ - [Win32] Bugfix: Some keys were reported based on the current layout instead
+                   of their physical location
  - [X11] Made GLX 1.3 the minimum supported version
  - [X11] Bugfix: The case of finding no usable CRTCs was not detected
  - [X11] Bugfix: Detection of broken Nvidia RandR gamma support did not verify

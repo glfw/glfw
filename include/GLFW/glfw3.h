@@ -1328,7 +1328,7 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* window);
  *  @param[in] window The window to query.
  *  @return The value of the close flag.
  *
- *  @remarks This function may be called from secondary threads.
+ *  @remarks This function may be called from any thread.
  *
  *  @ingroup window
  */
@@ -1343,7 +1343,7 @@ GLFWAPI int glfwWindowShouldClose(GLFWwindow* window);
  *  @param[in] window The window whose flag to change.
  *  @param[in] value The new value.
  *
- *  @remarks This function may be called from secondary threads.
+ *  @remarks This function may be called from any thread.
  *
  *  @ingroup window
  */
@@ -1798,7 +1798,7 @@ GLFWAPI void glfwWaitEvents(void);
  *  synchronization of threads in applications that do not create windows, use
  *  your threading library of choice.
  *
- *  @remarks This function may be called from secondary threads.
+ *  @remarks This function may be called from any thread.
  *
  *  @sa glfwWaitEvents
  *
@@ -2248,7 +2248,7 @@ GLFWAPI const char* glfwGetClipboardString(GLFWwindow* window);
  *
  *  @return The current value, in seconds, or zero if an error occurred.
  *
- *  @remarks This function may be called from secondary threads.
+ *  @remarks This function may be called from any thread.
  *
  *  @note The resolution of the timer is system dependent, but is usually on the
  *  order of a few micro- or nanoseconds.  It uses the highest-resolution
@@ -2283,7 +2283,7 @@ GLFWAPI void glfwSetTime(double time);
  *  @param[in] window The window whose context to make current, or `NULL` to
  *  detach the current context.
  *
- *  @remarks This function may be called from secondary threads.
+ *  @remarks This function may be called from any thread.
  *
  *  @sa glfwGetCurrentContext
  *
@@ -2299,7 +2299,7 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* window);
  *  @return The window whose context is current, or `NULL` if no window's
  *  context is current.
  *
- *  @remarks This function may be called from secondary threads.
+ *  @remarks This function may be called from any thread.
  *
  *  @sa glfwMakeContextCurrent
  *
@@ -2315,7 +2315,7 @@ GLFWAPI GLFWwindow* glfwGetCurrentContext(void);
  *
  *  @param[in] window The window whose buffers to swap.
  *
- *  @remarks This function may be called from secondary threads.
+ *  @remarks This function may be called from any thread.
  *
  *  @par New in GLFW 3
  *  This function no longer calls @ref glfwPollEvents.  You need to call it or
@@ -2344,7 +2344,7 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
  *  @param[in] interval The minimum number of screen updates to wait for
  *  until the buffers are swapped by @ref glfwSwapBuffers.
  *
- *  @remarks This function may be called from secondary threads.
+ *  @remarks This function may be called from any thread.
  *
  *  @note This function is not called during window creation, leaving the swap
  *  interval set to whatever is the default on that platform.  This is done
@@ -2371,7 +2371,7 @@ GLFWAPI void glfwSwapInterval(int interval);
  *  @param[in] extension The ASCII encoded name of the extension.
  *  @return `GL_TRUE` if the extension is available, or `GL_FALSE` otherwise.
  *
- *  @remarks This function may be called from secondary threads.
+ *  @remarks This function may be called from any thread.
  *
  *  @note As this functions searches one or more extension strings on each call,
  *  it is recommended that you cache its results if it's going to be used
@@ -2393,7 +2393,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
  *  @return The address of the function, or `NULL` if the function is
  *  unavailable.
  *
- *  @remarks This function may be called from secondary threads.
+ *  @remarks This function may be called from any thread.
  *
  *  @note The addresses of these functions are not guaranteed to be the same for
  *  all contexts, especially if they use different client APIs or even different

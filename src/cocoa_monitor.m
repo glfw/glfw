@@ -286,8 +286,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         else
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Cocoa: Failed to find NSScreen for CGDisplay %s",
-                            monitors[found]->name);
+                            "Cocoa: Failed to find NSScreen for CGDisplay");
 
             _glfwFreeMonitor(monitors[found]);
             monitors[found] = NULL;

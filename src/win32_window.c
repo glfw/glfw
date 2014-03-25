@@ -1120,6 +1120,28 @@ void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* heigh
     _glfwPlatformGetWindowSize(window, width, height);
 }
 
+void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
+                                     int* left, int* top,
+                                     int* right, int* bottom)
+{
+    RECT rect;
+    int width, height;
+
+    _glfwPlatformGetWindowSize(window, &width, &height);
+    SetRect(&rect, 0, 0, width, height);
+    AdjustWindowRectEx(&rect, window->win32.dwStyle,
+                       FALSE, window->win32.dwExStyle);
+
+    if (left)
+        *left = -rect.left;
+    if (top)
+        *top = -rect.top;
+    if (right)
+        *right = rect.right - width;
+    if (bottom)
+        *bottom = rect.bottom - height;
+}
+
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
     ShowWindow(window->win32.handle, SW_MINIMIZE);

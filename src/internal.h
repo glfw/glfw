@@ -524,6 +524,11 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height);
  */
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height);
 
+/*! @copydoc glfwGetWindowFrameSize
+ *  @ingroup platform
+ */
+void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window, int* left, int* top, int* right, int* bottom);
+
 /*! @copydoc glfwIconifyWindow
  *  @ingroup platform
  */

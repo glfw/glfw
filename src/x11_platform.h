@@ -120,6 +120,7 @@ typedef struct _GLFWlibraryX11
     Atom            NET_WM_STATE_FULLSCREEN;
     Atom            NET_WM_BYPASS_COMPOSITOR;
     Atom            NET_ACTIVE_WINDOW;
+    Atom            NET_FRAME_EXTENTS;
     Atom            MOTIF_WM_HINTS;
 
     // Xdnd (drag and drop) atoms

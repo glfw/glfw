@@ -1234,6 +1234,43 @@ void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* heigh
     _glfwPlatformGetWindowSize(window, width, height);
 }
 
+void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
+                                     int* left, int* top,
+                                     int* right, int* bottom)
+{
+    long* extents = NULL;
+
+    if (left)
+        *left = 0;
+    if (top)
+        *top = 0;
+    if (right)
+        *right = 0;
+    if (bottom)
+        *bottom = 0;
+
+    if (_glfw.x11.NET_FRAME_EXTENTS == None)
+        return;
+
+    if (_glfwGetWindowProperty(window->x11.handle,
+                               _glfw.x11.NET_FRAME_EXTENTS,
+                               XA_CARDINAL,
+                               (unsigned char**) &extents) == 4)
+    {
+        if (left)
+            *left = extents[0];
+        if (top)
+            *top = extents[2];
+        if (right)
+            *right = extents[1];
+        if (bottom)
+            *bottom = extents[3];
+    }
+
+    if (extents)
+        XFree(extents);
+}
+
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
     if (window->x11.overrideRedirect)

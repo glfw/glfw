@@ -1498,6 +1498,33 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* window, int width, int height);
  */
 GLFWAPI void glfwGetFramebufferSize(GLFWwindow* window, int* width, int* height);
 
+/*! @brief Retrieves the size of the frame of the window.
+ *
+ *  This function retrieves the size, in screen coordinates, of each edge of the
+ *  frame of the specified window.  This size includes the title bar, if the
+ *  window has one.  The size of the frame may vary depending on the
+ *  [window-related hints](@ref window_hints_wnd) used to create it.
+ *
+ *  @param[in] window The window whose frame size to query.
+ *  @param[out] left Where to store the size, in screen coordinates, of the left
+ *  edge of the window frame.
+ *  @param[out] top Where to store the offset, in screen coordinates, of the top
+ *  edge of the window frame.
+ *  @param[out] right Where to store the offset, in screen coordinates, of the
+ *  right edge of the window frame.
+ *  @param[out] bottom Where to store the offset, in screen coordinates, of the
+ *  bottom edge of the window frame.
+ *
+ *  @remarks This function returns the size of each window frame edge, not its
+ *  offset from the client area edge, so the returned values will always be zero
+ *  or positive.
+ *
+ *  @note This function may only be called from the main thread.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* window, int* left, int* top, int* right, int* bottom);
+
 /*! @brief Iconifies the specified window.
  *
  *  This function iconifies/minimizes the specified window, if it was previously

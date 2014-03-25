@@ -1091,6 +1091,25 @@ void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* heigh
         *height = (int) fbRect.size.height;
 }
 
+void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
+                                     int* left, int* top,
+                                     int* right, int* bottom)
+{
+    const NSRect contentRect = [window->ns.view frame];
+    const NSRect frameRect = [window->ns.object frameRectForContentRect:contentRect];
+
+    if (left)
+        *left = contentRect.origin.x - frameRect.origin.x;
+    if (top)
+        *top = frameRect.origin.y + frameRect.size.height -
+               contentRect.origin.y - contentRect.size.height;
+    if (right)
+        *right = frameRect.origin.x + frameRect.size.width -
+                 contentRect.origin.x - contentRect.size.width;
+    if (bottom)
+        *bottom = contentRect.origin.y - frameRect.origin.y;
+}
+
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
     if (window->monitor)

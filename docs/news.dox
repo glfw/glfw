@@ -27,6 +27,12 @@ event from a secondary thread to the main thread event queue, causing @ref
 glfwWaitEvents to return.
 
 
+@subsection news_31_framesize Window frame size query
+
+GLFW now supports querying the size, on each side, of the frame around the
+client area of a window, with @ref glfwGetWindowFrameSize.
+
+
 @section news_30 New features in version 3.0
 
 @subsection news_30_cmake CMake build system

@@ -415,6 +415,8 @@ static void detectEWMH(void)
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_PING");
     _glfw.x11.NET_ACTIVE_WINDOW =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_ACTIVE_WINDOW");
+    _glfw.x11.NET_FRAME_EXTENTS =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_FRAME_EXTENTS");
     _glfw.x11.NET_WM_BYPASS_COMPOSITOR =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_BYPASS_COMPOSITOR");
 

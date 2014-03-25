@@ -488,6 +488,15 @@ GLFWAPI void glfwGetFramebufferSize(GLFWwindow* handle, int* width, int* height)
     _glfwPlatformGetFramebufferSize(window, width, height);
 }
 
+GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* handle,
+                                    int* left, int* top,
+                                    int* right, int* bottom)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT();
+    _glfwPlatformGetWindowFrameSize(window, left, top, right, bottom);
+}
+
 GLFWAPI void glfwIconifyWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;

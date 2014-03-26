@@ -231,8 +231,8 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
         case 0x2E:             return GLFW_KEY_C;
         case 0x2F:             return GLFW_KEY_V;
         case 0x30:             return GLFW_KEY_B;
-        case 0x31:             return GLFW_KEY_M;
-        case 0x32:             return GLFW_KEY_N;
+        case 0x31:             return GLFW_KEY_N;
+        case 0x32:             return GLFW_KEY_M;
         case 0x33:             return GLFW_KEY_COMMA;
         case 0x34:             return GLFW_KEY_PERIOD;
         case 0x35:             return GLFW_KEY_SLASH;

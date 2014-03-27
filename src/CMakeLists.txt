@@ -35,8 +35,8 @@ elseif (_GLFW_WAYLAND)
 endif()
 
 if (_GLFW_X11 OR _GLFW_WAYLAND)
-    list(APPEND glfw_HEADERS linux_joystick.h unix_time.h)
-    list(APPEND glfw_SOURCES linux_joystick.c unix_time.c)
+    list(APPEND glfw_HEADERS linux_joystick.h posix_time.h)
+    list(APPEND glfw_SOURCES linux_joystick.c posix_time.c)
 endif()
 
 if (_GLFW_EGL)

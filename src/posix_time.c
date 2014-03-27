@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.1 UNIX - www.glfw.org
+// GLFW 3.1 POSIX - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -35,7 +35,7 @@
 static uint64_t getRawTime(void)
 {
 #if defined(CLOCK_MONOTONIC)
-    if (_GLFW_UNIX_TIME_CONTEXT.monotonic)
+    if (_GLFW_POSIX_TIME_CONTEXT.monotonic)
     {
         struct timespec ts;
 
@@ -66,16 +66,16 @@ void _glfwInitTimer(void)
 
     if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0)
     {
-        _GLFW_UNIX_TIME_CONTEXT.monotonic = GL_TRUE;
-        _GLFW_UNIX_TIME_CONTEXT.resolution = 1e-9;
+        _GLFW_POSIX_TIME_CONTEXT.monotonic = GL_TRUE;
+        _GLFW_POSIX_TIME_CONTEXT.resolution = 1e-9;
     }
     else
 #endif
     {
-        _GLFW_UNIX_TIME_CONTEXT.resolution = 1e-6;
+        _GLFW_POSIX_TIME_CONTEXT.resolution = 1e-6;
     }
 
-    _GLFW_UNIX_TIME_CONTEXT.base = getRawTime();
+    _GLFW_POSIX_TIME_CONTEXT.base = getRawTime();
 }
 
 
@@ -85,13 +85,13 @@ void _glfwInitTimer(void)
 
 double _glfwPlatformGetTime(void)
 {
-    return (double) (getRawTime() - _GLFW_UNIX_TIME_CONTEXT.base) *
-        _GLFW_UNIX_TIME_CONTEXT.resolution;
+    return (double) (getRawTime() - _GLFW_POSIX_TIME_CONTEXT.base) *
+        _GLFW_POSIX_TIME_CONTEXT.resolution;
 }
 
 void _glfwPlatformSetTime(double time)
 {
-    _GLFW_UNIX_TIME_CONTEXT.base = getRawTime() -
-        (uint64_t) (time / _GLFW_UNIX_TIME_CONTEXT.resolution);
+    _GLFW_POSIX_TIME_CONTEXT.base = getRawTime() -
+        (uint64_t) (time / _GLFW_POSIX_TIME_CONTEXT.resolution);
 }
 

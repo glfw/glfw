@@ -38,8 +38,8 @@
 
 #include "linux_joystick.h"
 
-#define _GLFW_UNIX_TIME_CONTEXT         _glfw.wl.timer
-#include "unix_time.h"
+#define _GLFW_POSIX_TIME_CONTEXT        _glfw.wl.timer
+#include "posix_time.h"
 
 #define _GLFW_EGL_NATIVE_WINDOW         window->wl.native
 #define _GLFW_EGL_NATIVE_DISPLAY        _glfw.wl.display
@@ -73,7 +73,7 @@ typedef struct _GLFWlibraryWayland
     int                         monitorsCount;
     int                         monitorsSize;
 
-    _GLFWtimeUNIX               timer;
+    _GLFWtimePOSIX              timer;
 } _GLFWlibraryWayland;
 
 typedef struct _GLFWmonitorWayland

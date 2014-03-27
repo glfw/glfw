@@ -62,8 +62,8 @@
  #error "No supported context creation API selected"
 #endif
 
-#define _GLFW_UNIX_TIME_CONTEXT _glfw.x11.timer
-#include "unix_time.h"
+#define _GLFW_POSIX_TIME_CONTEXT            _glfw.x11.timer
+#include "posix_time.h"
 
 #include "linux_joystick.h"
 
@@ -204,7 +204,7 @@ typedef struct _GLFWlibraryX11
         int         exposure;
     } saver;
 
-    _GLFWtimeUNIX   timer;
+    _GLFWtimePOSIX  timer;
 
     struct {
         char*       string;

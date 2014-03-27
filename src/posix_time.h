@@ -29,7 +29,6 @@
 #define _posix_time_h_
 
 #include <stdint.h>
-#include <GL/gl.h>
 
 typedef struct _GLFWtimePOSIX
 {

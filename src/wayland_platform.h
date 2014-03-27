@@ -47,6 +47,7 @@
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWayland  wl
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWayland wl
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWayland wl
+#define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorWayland  wl
 
 
 typedef struct _GLFWvidmodeWayland _GLFWvidmodeWayland;
@@ -88,6 +89,11 @@ typedef struct _GLFWmonitorWayland
     int                         x;
     int                         y;
 } _GLFWmonitorWayland;
+
+typedef struct _GLFWcursorWayland
+{
+    int                         dummy;
+} _GLFWcursorWayland;
 
 
 //========================================================================

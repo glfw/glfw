@@ -273,3 +273,21 @@ void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
     }
 }
 
+int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
+                              const GLFWimage* image,
+                              int xhot, int yhot)
+{
+    fprintf(stderr, "_glfwPlatformCreateCursor not implemented yet\n");
+    return GL_FALSE;
+}
+
+void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
+{
+    fprintf(stderr, "_glfwPlatformDestroyCursor not implemented yet\n");
+}
+
+void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
+{
+    fprintf(stderr, "_glfwPlatformSetCursor not implemented yet\n");
+}
+

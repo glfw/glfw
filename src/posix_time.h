@@ -28,6 +28,8 @@
 #ifndef _posix_time_h_
 #define _posix_time_h_
 
+#define _GLFW_PLATFORM_LIBRARY_TIME_STATE _GLFWtimePOSIX posix_time
+
 #include <stdint.h>
 
 typedef struct _GLFWtimePOSIX

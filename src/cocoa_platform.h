@@ -49,6 +49,7 @@ typedef void* id;
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  ns
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS ns
+#define _GLFW_PLATFORM_LIBRARY_TIME_STATE   _GLFWtimeNS    ns_time
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorNS ns
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorNS  ns
 
@@ -76,11 +77,6 @@ typedef struct _GLFWwindowNS
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryNS
 {
-    struct {
-        double      base;
-        double      resolution;
-    } timer;
-
     CGEventSourceRef eventSource;
     id              delegate;
     id              autoreleasePool;
@@ -110,6 +106,16 @@ typedef struct _GLFWcursorNS
 {
     id                  object;
 } _GLFWcursorNS;
+
+
+//------------------------------------------------------------------------
+// Platform-specific time structure
+//------------------------------------------------------------------------
+typedef struct _GLFWtimeNS
+{
+        double      base;
+        double      resolution;
+} _GLFWtimeNS;
 
 
 //========================================================================

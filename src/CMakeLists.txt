@@ -15,8 +15,8 @@ if (_GLFW_COCOA)
     set(glfw_HEADERS ${common_HEADERS} cocoa_platform.h iokit_joystick.h
                      posix_tls.h)
     set(glfw_SOURCES ${common_SOURCES} cocoa_clipboard.m cocoa_gamma.c
-                     cocoa_init.m cocoa_monitor.m cocoa_time.c cocoa_window.m
-                     iokit_joystick.m posix_tls.c)
+                     cocoa_init.m cocoa_monitor.m cocoa_window.m
+                     iokit_joystick.m mach_time.c posix_tls.c)
 elseif (_GLFW_WIN32)
     set(glfw_HEADERS ${common_HEADERS} win32_platform.h win32_tls.h
                      winmm_joystick.h)

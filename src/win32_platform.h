@@ -167,6 +167,7 @@ typedef HRESULT (WINAPI * DWMISCOMPOSITIONENABLED_T)(BOOL*);
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWin32  win32
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 win32
+#define _GLFW_PLATFORM_LIBRARY_TIME_STATE   _GLFWtimeWin32    win32_time
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWin32 win32
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorWin32  win32
 
@@ -202,13 +203,6 @@ typedef struct _GLFWlibraryWin32
     ATOM                classAtom;
     DWORD               foregroundLockTimeout;
     char*               clipboardString;
-
-    // Timer data
-    struct {
-        GLboolean       hasPC;
-        double          resolution;
-        unsigned __int64 base;
-    } timer;
 
 #ifndef _GLFW_NO_DLOAD_WINMM
     // winmm.dll
@@ -257,6 +251,18 @@ typedef struct _GLFWcursorWin32
 {
     HCURSOR handle;
 } _GLFWcursorWin32;
+
+
+//------------------------------------------------------------------------
+// Platform-specific time structure
+//------------------------------------------------------------------------
+typedef struct _GLFWtimeWin32
+{
+    GLboolean           hasPC;
+    double              resolution;
+    unsigned __int64    base;
+
+} _GLFWtimeWin32;
 
 
 //========================================================================

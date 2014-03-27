@@ -35,7 +35,7 @@
 static uint64_t getRawTime(void)
 {
 #if defined(CLOCK_MONOTONIC)
-    if (_GLFW_POSIX_TIME_CONTEXT.monotonic)
+    if (_glfw.posix_time.monotonic)
     {
         struct timespec ts;
 
@@ -66,16 +66,16 @@ void _glfwInitTimer(void)
 
     if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0)
     {
-        _GLFW_POSIX_TIME_CONTEXT.monotonic = GL_TRUE;
-        _GLFW_POSIX_TIME_CONTEXT.resolution = 1e-9;
+        _glfw.posix_time.monotonic = GL_TRUE;
+        _glfw.posix_time.resolution = 1e-9;
     }
     else
 #endif
     {
-        _GLFW_POSIX_TIME_CONTEXT.resolution = 1e-6;
+        _glfw.posix_time.resolution = 1e-6;
     }
 
-    _GLFW_POSIX_TIME_CONTEXT.base = getRawTime();
+    _glfw.posix_time.base = getRawTime();
 }
 
 
@@ -85,13 +85,13 @@ void _glfwInitTimer(void)
 
 double _glfwPlatformGetTime(void)
 {
-    return (double) (getRawTime() - _GLFW_POSIX_TIME_CONTEXT.base) *
-        _GLFW_POSIX_TIME_CONTEXT.resolution;
+    return (double) (getRawTime() - _glfw.posix_time.base) *
+        _glfw.posix_time.resolution;
 }
 
 void _glfwPlatformSetTime(double time)
 {
-    _GLFW_POSIX_TIME_CONTEXT.base = getRawTime() -
-        (uint64_t) (time / _GLFW_POSIX_TIME_CONTEXT.resolution);
+    _glfw.posix_time.base = getRawTime() -
+        (uint64_t) (time / _glfw.posix_time.resolution);
 }
 

@@ -166,23 +166,7 @@ static GLXContext createLegacyContext(_GLFWwindow* window,
 int _glfwInitContextAPI(void)
 {
 #ifdef _GLFW_DLOPEN_LIBGL
-    int i;
-    char* libGL_names[ ] =
-    {
-        "libGL.so",
-        "libGL.so.1",
-        "/usr/lib/libGL.so",
-        "/usr/lib/libGL.so.1",
-        NULL
-    };
-
-    for (i = 0;  libGL_names[i] != NULL;  i++)
-    {
-        _glfw.glx.libGL = dlopen(libGL_names[i], RTLD_LAZY | RTLD_GLOBAL);
-        if (_glfw.glx.libGL)
-            break;
-    }
-
+    _glfw.glx.libGL = dlopen("libGL.so.1", RTLD_LAZY | RTLD_GLOBAL);
     if (!_glfw.glx.libGL)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "GLX: Failed to find libGL");

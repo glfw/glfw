@@ -784,13 +784,13 @@ typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int);
 typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
 
 
-/*! @brief The function signature for drop callbacks.
+/*! @brief The function signature for file drop callbacks.
  *
- *  This is the function signature for drop callbacks.
+ *  This is the function signature for file drop callbacks.
  *
  *  @param[in] window The window that received the event.
- *  @param[in] count The number of dropped objects.
- *  @param[in] names The UTF-8 encoded names of the dropped objects.
+ *  @param[in] count The number of dropped files.
+ *  @param[in] names The UTF-8 encoded path names of the dropped files.
  *
  *  @sa glfwSetDropCallback
  *
@@ -2195,15 +2195,15 @@ GLFWAPI GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcu
  */
 GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun cbfun);
 
-/*! @brief Sets the drop callback.
+/*! @brief Sets the file drop callback.
  *
- *  This function sets the drop callback of the specified window, which is
- *  called when an object is dropped over the window.
+ *  This function sets the file drop callback of the specified window, which is
+ *  called when one or more dragged files are dropped on the window.
  *
  *
  *  @param[in] window The window whose callback to set.
- *  @param[in] cbfun The new drop callback, or `NULL` to remove the currently
- *  set callback.
+ *  @param[in] cbfun The new file drop callback, or `NULL` to remove the
+ *  currently set callback.
  *  @return The previously set callback, or `NULL` if no callback was set or an
  *  error occurred.
  *

@@ -14,7 +14,7 @@ created with @ref glfwCreateCursor and set with @ref glfwSetCursor.  Note that
 custom cursors are only visible in normal cursor mode.
 
 
-@subsection news_31_drop Drop event support
+@subsection news_31_drop File drop event support
 
 GLFW now provides a callback for receiving the paths of files dropped onto GLFW
 windows.  The callback is set with the @ref glfwSetDropCallback function.

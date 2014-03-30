@@ -76,6 +76,7 @@ typedef struct _GLFWlibraryNS
     id              autoreleasePool;
     id              cursor;
 
+    short int       publicKeys[256];
     char*           clipboardString;
 
 } _GLFWlibraryNS;

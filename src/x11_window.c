@@ -86,13 +86,13 @@ static int translateState(int state)
 
 // Translates an X Window key to internal coding
 //
-static int translateKey(int keycode)
+static int translateKey(int scancode)
 {
-    // Use the pre-filled LUT (see updateKeyCodeLUT() in x11_init.c)
-    if (keycode < 0 || keycode > 255)
+    // Use the pre-filled LUT (see createKeyTables() in x11_init.c)
+    if (scancode < 0 || scancode > 255)
         return GLFW_KEY_UNKNOWN;
 
-    return _glfw.x11.keyCodeLUT[keycode];
+    return _glfw.x11.publicKeys[scancode];
 }
 
 // Return the GLFW window corresponding to the specified X11 window

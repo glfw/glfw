@@ -37,12 +37,12 @@
 
 // Translate an X11 key code to a GLFW key code.
 //
-static int translateKey(int keyCode)
+static int translateKey(int scancode)
 {
     int keySym;
 
     // Valid key code range is  [8,255], according to the XLib manual
-    if (keyCode < 8 || keyCode > 255)
+    if (scancode < 8 || scancode > 255)
         return GLFW_KEY_UNKNOWN;
 
     if (_glfw.x11.xkb.available)
@@ -51,7 +51,7 @@ static int translateKey(int keyCode)
         // Note: This way we always force "NumLock = ON", which is intentional
         // since the returned key code should correspond to a physical
         // location.
-        keySym = XkbKeycodeToKeysym(_glfw.x11.display, keyCode, 0, 1);
+        keySym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, 0, 1);
         switch (keySym)
         {
             case XK_KP_0:           return GLFW_KEY_KP_0;
@@ -74,14 +74,14 @@ static int translateKey(int keyCode)
         // Now try pimary keysym for function keys (non-printable keys). These
         // should not be layout dependent (i.e. US layout and international
         // layouts should give the same result).
-        keySym = XkbKeycodeToKeysym(_glfw.x11.display, keyCode, 0, 0);
+        keySym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, 0, 0);
     }
     else
     {
         int dummy;
         KeySym* keySyms;
 
-        keySyms = XGetKeyboardMapping(_glfw.x11.display, keyCode, 1, &dummy);
+        keySyms = XGetKeyboardMapping(_glfw.x11.display, scancode, 1, &dummy);
         keySym = keySyms[0];
         XFree(keySyms);
     }
@@ -226,106 +226,97 @@ static int translateKey(int keyCode)
     return GLFW_KEY_UNKNOWN;
 }
 
-// Update the key code LUT
+// Create key code translation tables
 //
-static void updateKeyCodeLUT(void)
+static void createKeyTables(void)
 {
-    int i, keyCode, keyCodeGLFW;
-    char name[XkbKeyNameLength + 1];
-    XkbDescPtr descr;
+    int scancode, key;
 
-    // Clear the LUT
-    for (keyCode = 0;  keyCode < 256;  keyCode++)
-        _glfw.x11.keyCodeLUT[keyCode] = GLFW_KEY_UNKNOWN;
+    memset(_glfw.x11.publicKeys, -1, sizeof(_glfw.x11.publicKeys));
 
     if (_glfw.x11.xkb.available)
     {
         // Use XKB to determine physical key locations independently of the current
         // keyboard layout
 
-        // Get keyboard description
-        descr = XkbGetKeyboard(_glfw.x11.display,
-                                XkbAllComponentsMask,
-                                XkbUseCoreKbd);
+        char name[XkbKeyNameLength + 1];
+        XkbDescPtr descr = XkbGetKeyboard(_glfw.x11.display,
+                                          XkbAllComponentsMask,
+                                          XkbUseCoreKbd);
 
         // Find the X11 key code -> GLFW key code mapping
-        for (keyCode = descr->min_key_code; keyCode <= descr->max_key_code; ++keyCode)
+        for (scancode = descr->min_key_code;  scancode <= descr->max_key_code;  scancode++)
         {
-            // Get the key name
-            for (i = 0;  i < XkbKeyNameLength;  i++)
-                name[i] = descr->names->keys[keyCode].name[i];
-
+            memcpy(name, descr->names->keys[scancode].name, XkbKeyNameLength);
             name[XkbKeyNameLength] = 0;
 
             // Map the key name to a GLFW key code. Note: We only map printable
             // keys here, and we use the US keyboard layout. The rest of the
             // keys (function keys) are mapped using traditional KeySym
             // translations.
-            if (strcmp(name, "TLDE") == 0) keyCodeGLFW = GLFW_KEY_GRAVE_ACCENT;
-            else if (strcmp(name, "AE01") == 0) keyCodeGLFW = GLFW_KEY_1;
-            else if (strcmp(name, "AE02") == 0) keyCodeGLFW = GLFW_KEY_2;
-            else if (strcmp(name, "AE03") == 0) keyCodeGLFW = GLFW_KEY_3;
-            else if (strcmp(name, "AE04") == 0) keyCodeGLFW = GLFW_KEY_4;
-            else if (strcmp(name, "AE05") == 0) keyCodeGLFW = GLFW_KEY_5;
-            else if (strcmp(name, "AE06") == 0) keyCodeGLFW = GLFW_KEY_6;
-            else if (strcmp(name, "AE07") == 0) keyCodeGLFW = GLFW_KEY_7;
-            else if (strcmp(name, "AE08") == 0) keyCodeGLFW = GLFW_KEY_8;
-            else if (strcmp(name, "AE09") == 0) keyCodeGLFW = GLFW_KEY_9;
-            else if (strcmp(name, "AE10") == 0) keyCodeGLFW = GLFW_KEY_0;
-            else if (strcmp(name, "AE11") == 0) keyCodeGLFW = GLFW_KEY_MINUS;
-            else if (strcmp(name, "AE12") == 0) keyCodeGLFW = GLFW_KEY_EQUAL;
-            else if (strcmp(name, "AD01") == 0) keyCodeGLFW = GLFW_KEY_Q;
-            else if (strcmp(name, "AD02") == 0) keyCodeGLFW = GLFW_KEY_W;
-            else if (strcmp(name, "AD03") == 0) keyCodeGLFW = GLFW_KEY_E;
-            else if (strcmp(name, "AD04") == 0) keyCodeGLFW = GLFW_KEY_R;
-            else if (strcmp(name, "AD05") == 0) keyCodeGLFW = GLFW_KEY_T;
-            else if (strcmp(name, "AD06") == 0) keyCodeGLFW = GLFW_KEY_Y;
-            else if (strcmp(name, "AD07") == 0) keyCodeGLFW = GLFW_KEY_U;
-            else if (strcmp(name, "AD08") == 0) keyCodeGLFW = GLFW_KEY_I;
-            else if (strcmp(name, "AD09") == 0) keyCodeGLFW = GLFW_KEY_O;
-            else if (strcmp(name, "AD10") == 0) keyCodeGLFW = GLFW_KEY_P;
-            else if (strcmp(name, "AD11") == 0) keyCodeGLFW = GLFW_KEY_LEFT_BRACKET;
-            else if (strcmp(name, "AD12") == 0) keyCodeGLFW = GLFW_KEY_RIGHT_BRACKET;
-            else if (strcmp(name, "AC01") == 0) keyCodeGLFW = GLFW_KEY_A;
-            else if (strcmp(name, "AC02") == 0) keyCodeGLFW = GLFW_KEY_S;
-            else if (strcmp(name, "AC03") == 0) keyCodeGLFW = GLFW_KEY_D;
-            else if (strcmp(name, "AC04") == 0) keyCodeGLFW = GLFW_KEY_F;
-            else if (strcmp(name, "AC05") == 0) keyCodeGLFW = GLFW_KEY_G;
-            else if (strcmp(name, "AC06") == 0) keyCodeGLFW = GLFW_KEY_H;
-            else if (strcmp(name, "AC07") == 0) keyCodeGLFW = GLFW_KEY_J;
-            else if (strcmp(name, "AC08") == 0) keyCodeGLFW = GLFW_KEY_K;
-            else if (strcmp(name, "AC09") == 0) keyCodeGLFW = GLFW_KEY_L;
-            else if (strcmp(name, "AC10") == 0) keyCodeGLFW = GLFW_KEY_SEMICOLON;
-            else if (strcmp(name, "AC11") == 0) keyCodeGLFW = GLFW_KEY_APOSTROPHE;
-            else if (strcmp(name, "AB01") == 0) keyCodeGLFW = GLFW_KEY_Z;
-            else if (strcmp(name, "AB02") == 0) keyCodeGLFW = GLFW_KEY_X;
-            else if (strcmp(name, "AB03") == 0) keyCodeGLFW = GLFW_KEY_C;
-            else if (strcmp(name, "AB04") == 0) keyCodeGLFW = GLFW_KEY_V;
-            else if (strcmp(name, "AB05") == 0) keyCodeGLFW = GLFW_KEY_B;
-            else if (strcmp(name, "AB06") == 0) keyCodeGLFW = GLFW_KEY_N;
-            else if (strcmp(name, "AB07") == 0) keyCodeGLFW = GLFW_KEY_M;
-            else if (strcmp(name, "AB08") == 0) keyCodeGLFW = GLFW_KEY_COMMA;
-            else if (strcmp(name, "AB09") == 0) keyCodeGLFW = GLFW_KEY_PERIOD;
-            else if (strcmp(name, "AB10") == 0) keyCodeGLFW = GLFW_KEY_SLASH;
-            else if (strcmp(name, "BKSL") == 0) keyCodeGLFW = GLFW_KEY_BACKSLASH;
-            else if (strcmp(name, "LSGT") == 0) keyCodeGLFW = GLFW_KEY_WORLD_1;
-            else keyCodeGLFW = GLFW_KEY_UNKNOWN;
+            if (strcmp(name, "TLDE") == 0) key = GLFW_KEY_GRAVE_ACCENT;
+            else if (strcmp(name, "AE01") == 0) key = GLFW_KEY_1;
+            else if (strcmp(name, "AE02") == 0) key = GLFW_KEY_2;
+            else if (strcmp(name, "AE03") == 0) key = GLFW_KEY_3;
+            else if (strcmp(name, "AE04") == 0) key = GLFW_KEY_4;
+            else if (strcmp(name, "AE05") == 0) key = GLFW_KEY_5;
+            else if (strcmp(name, "AE06") == 0) key = GLFW_KEY_6;
+            else if (strcmp(name, "AE07") == 0) key = GLFW_KEY_7;
+            else if (strcmp(name, "AE08") == 0) key = GLFW_KEY_8;
+            else if (strcmp(name, "AE09") == 0) key = GLFW_KEY_9;
+            else if (strcmp(name, "AE10") == 0) key = GLFW_KEY_0;
+            else if (strcmp(name, "AE11") == 0) key = GLFW_KEY_MINUS;
+            else if (strcmp(name, "AE12") == 0) key = GLFW_KEY_EQUAL;
+            else if (strcmp(name, "AD01") == 0) key = GLFW_KEY_Q;
+            else if (strcmp(name, "AD02") == 0) key = GLFW_KEY_W;
+            else if (strcmp(name, "AD03") == 0) key = GLFW_KEY_E;
+            else if (strcmp(name, "AD04") == 0) key = GLFW_KEY_R;
+            else if (strcmp(name, "AD05") == 0) key = GLFW_KEY_T;
+            else if (strcmp(name, "AD06") == 0) key = GLFW_KEY_Y;
+            else if (strcmp(name, "AD07") == 0) key = GLFW_KEY_U;
+            else if (strcmp(name, "AD08") == 0) key = GLFW_KEY_I;
+            else if (strcmp(name, "AD09") == 0) key = GLFW_KEY_O;
+            else if (strcmp(name, "AD10") == 0) key = GLFW_KEY_P;
+            else if (strcmp(name, "AD11") == 0) key = GLFW_KEY_LEFT_BRACKET;
+            else if (strcmp(name, "AD12") == 0) key = GLFW_KEY_RIGHT_BRACKET;
+            else if (strcmp(name, "AC01") == 0) key = GLFW_KEY_A;
+            else if (strcmp(name, "AC02") == 0) key = GLFW_KEY_S;
+            else if (strcmp(name, "AC03") == 0) key = GLFW_KEY_D;
+            else if (strcmp(name, "AC04") == 0) key = GLFW_KEY_F;
+            else if (strcmp(name, "AC05") == 0) key = GLFW_KEY_G;
+            else if (strcmp(name, "AC06") == 0) key = GLFW_KEY_H;
+            else if (strcmp(name, "AC07") == 0) key = GLFW_KEY_J;
+            else if (strcmp(name, "AC08") == 0) key = GLFW_KEY_K;
+            else if (strcmp(name, "AC09") == 0) key = GLFW_KEY_L;
+            else if (strcmp(name, "AC10") == 0) key = GLFW_KEY_SEMICOLON;
+            else if (strcmp(name, "AC11") == 0) key = GLFW_KEY_APOSTROPHE;
+            else if (strcmp(name, "AB01") == 0) key = GLFW_KEY_Z;
+            else if (strcmp(name, "AB02") == 0) key = GLFW_KEY_X;
+            else if (strcmp(name, "AB03") == 0) key = GLFW_KEY_C;
+            else if (strcmp(name, "AB04") == 0) key = GLFW_KEY_V;
+            else if (strcmp(name, "AB05") == 0) key = GLFW_KEY_B;
+            else if (strcmp(name, "AB06") == 0) key = GLFW_KEY_N;
+            else if (strcmp(name, "AB07") == 0) key = GLFW_KEY_M;
+            else if (strcmp(name, "AB08") == 0) key = GLFW_KEY_COMMA;
+            else if (strcmp(name, "AB09") == 0) key = GLFW_KEY_PERIOD;
+            else if (strcmp(name, "AB10") == 0) key = GLFW_KEY_SLASH;
+            else if (strcmp(name, "BKSL") == 0) key = GLFW_KEY_BACKSLASH;
+            else if (strcmp(name, "LSGT") == 0) key = GLFW_KEY_WORLD_1;
+            else key = GLFW_KEY_UNKNOWN;
 
-            // Update the key code LUT
-            if ((keyCode >= 0) && (keyCode < 256))
-                _glfw.x11.keyCodeLUT[keyCode] = keyCodeGLFW;
+            if ((scancode >= 0) && (scancode < 256))
+                _glfw.x11.publicKeys[scancode] = key;
         }
 
-        // Free the keyboard description
         XkbFreeKeyboard(descr, 0, True);
     }
 
     // Translate the un-translated key codes using traditional X11 KeySym
     // lookups
-    for (keyCode = 0;  keyCode < 256;  keyCode++)
+    for (scancode = 0;  scancode < 256;  scancode++)
     {
-        if (_glfw.x11.keyCodeLUT[keyCode] < 0)
-            _glfw.x11.keyCodeLUT[keyCode] = translateKey(keyCode);
+        if (_glfw.x11.publicKeys[scancode] < 0)
+            _glfw.x11.publicKeys[scancode] = translateKey(scancode);
     }
 }
 
@@ -585,7 +576,7 @@ static GLboolean initExtensions(void)
     // Update the key code LUT
     // FIXME: We should listen to XkbMapNotify events to track changes to
     // the keyboard mapping.
-    updateKeyCodeLUT();
+    createKeyTables();
 
     // Detect whether an EWMH-conformant window manager is running
     detectEWMH();

@@ -152,242 +152,44 @@ static int getAsyncKeyMods(void)
 //
 static int translateKey(WPARAM wParam, LPARAM lParam)
 {
-    // Check for numeric keypad keys
-    // NOTE: This way we always force "NumLock = ON", which is intentional since
-    //       the returned key code should correspond to a physical location.
-    if ((HIWORD(lParam) & 0x100) == 0)
+    if (wParam == VK_CONTROL)
     {
-        switch (MapVirtualKey(HIWORD(lParam) & 0xFF, 1))
-        {
-            case VK_INSERT:   return GLFW_KEY_KP_0;
-            case VK_END:      return GLFW_KEY_KP_1;
-            case VK_DOWN:     return GLFW_KEY_KP_2;
-            case VK_NEXT:     return GLFW_KEY_KP_3;
-            case VK_LEFT:     return GLFW_KEY_KP_4;
-            case VK_CLEAR:    return GLFW_KEY_KP_5;
-            case VK_RIGHT:    return GLFW_KEY_KP_6;
-            case VK_HOME:     return GLFW_KEY_KP_7;
-            case VK_UP:       return GLFW_KEY_KP_8;
-            case VK_PRIOR:    return GLFW_KEY_KP_9;
-            case VK_DIVIDE:   return GLFW_KEY_KP_DIVIDE;
-            case VK_MULTIPLY: return GLFW_KEY_KP_MULTIPLY;
-            case VK_SUBTRACT: return GLFW_KEY_KP_SUBTRACT;
-            case VK_ADD:      return GLFW_KEY_KP_ADD;
-            case VK_DELETE:   return GLFW_KEY_KP_DECIMAL;
-            default:          break;
-        }
-    }
-
-    switch (HIWORD(lParam) & 0xFF)
-    {
-        // handle printable chars except space in a language independent way,
-        // using scancodes rather than virtual keys
-        // as virtual keys are language dependent.
-        // Printable keys are mapped according to US layout.
-
-        // Row 0:
-        case 0x29:             return GLFW_KEY_GRAVE_ACCENT;
-        case 0x02:             return GLFW_KEY_1;
-        case 0x03:             return GLFW_KEY_2;
-        case 0x04:             return GLFW_KEY_3;
-        case 0x05:             return GLFW_KEY_4;
-        case 0x06:             return GLFW_KEY_5;
-        case 0x07:             return GLFW_KEY_6;
-        case 0x08:             return GLFW_KEY_7;
-        case 0x09:             return GLFW_KEY_8;
-        case 0x0A:             return GLFW_KEY_9;
-        case 0x0B:             return GLFW_KEY_0;
-        case 0x0C:             return GLFW_KEY_MINUS;
-        case 0x0D:             return GLFW_KEY_EQUAL;
-
-        // Row 1:
-        case 0x10:             return GLFW_KEY_Q;
-        case 0x11:             return GLFW_KEY_W;
-        case 0x12:             return GLFW_KEY_E;
-        case 0x13:             return GLFW_KEY_R;
-        case 0x14:             return GLFW_KEY_T;
-        case 0x15:             return GLFW_KEY_Y;
-        case 0x16:             return GLFW_KEY_U;
-        case 0x17:             return GLFW_KEY_I;
-        case 0x18:             return GLFW_KEY_O;
-        case 0x19:             return GLFW_KEY_P;
-        case 0x1A:             return GLFW_KEY_LEFT_BRACKET;
-        case 0x1B:             return GLFW_KEY_RIGHT_BRACKET;
-        // We do not map 0x2B as this is only on US - use vKeys for this to prevent confusion with 0x56
-
-        // Row 2:
-        case 0x1E:             return GLFW_KEY_A;
-        case 0x1F:             return GLFW_KEY_S;
-        case 0x20:             return GLFW_KEY_D;
-        case 0x21:             return GLFW_KEY_F;
-        case 0x22:             return GLFW_KEY_G;
-        case 0x23:             return GLFW_KEY_H;
-        case 0x24:             return GLFW_KEY_J;
-        case 0x25:             return GLFW_KEY_K;
-        case 0x26:             return GLFW_KEY_L;
-        case 0x27:             return GLFW_KEY_SEMICOLON;
-        case 0x28:             return GLFW_KEY_APOSTROPHE;
-
-        // Row 3:
-        case 0x2C:             return GLFW_KEY_Z;
-        case 0x2D:             return GLFW_KEY_X;
-        case 0x2E:             return GLFW_KEY_C;
-        case 0x2F:             return GLFW_KEY_V;
-        case 0x30:             return GLFW_KEY_B;
-        case 0x31:             return GLFW_KEY_N;
-        case 0x32:             return GLFW_KEY_M;
-        case 0x33:             return GLFW_KEY_COMMA;
-        case 0x34:             return GLFW_KEY_PERIOD;
-        case 0x35:             return GLFW_KEY_SLASH;
-        default:               break;
-    }
-
-    // Check which key was pressed or released
-    switch (wParam)
-    {
-        // The SHIFT keys require special handling
-        case VK_SHIFT:
-        {
-            // Compare scan code for this key with that of VK_RSHIFT in
-            // order to determine which shift key was pressed (left or
-            // right)
-            const DWORD scancode = MapVirtualKey(VK_RSHIFT, 0);
-            if ((DWORD) ((lParam & 0x01ff0000) >> 16) == scancode)
-                return GLFW_KEY_RIGHT_SHIFT;
-
-            return GLFW_KEY_LEFT_SHIFT;
-        }
-
         // The CTRL keys require special handling
-        case VK_CONTROL:
+
+        MSG next;
+        DWORD time;
+
+        // Is this an extended key (i.e. right key)?
+        if (lParam & 0x01000000)
+            return GLFW_KEY_RIGHT_CONTROL;
+
+        // Here is a trick: "Alt Gr" sends LCTRL, then RALT. We only
+        // want the RALT message, so we try to see if the next message
+        // is a RALT message. In that case, this is a false LCTRL!
+        time = GetMessageTime();
+
+        if (PeekMessageW(&next, NULL, 0, 0, PM_NOREMOVE))
         {
-            MSG next;
-            DWORD time;
-
-            // Is this an extended key (i.e. right key)?
-            if (lParam & 0x01000000)
-                return GLFW_KEY_RIGHT_CONTROL;
-
-            // Here is a trick: "Alt Gr" sends LCTRL, then RALT. We only
-            // want the RALT message, so we try to see if the next message
-            // is a RALT message. In that case, this is a false LCTRL!
-            time = GetMessageTime();
-
-            if (PeekMessageW(&next, NULL, 0, 0, PM_NOREMOVE))
+            if (next.message == WM_KEYDOWN ||
+                next.message == WM_SYSKEYDOWN ||
+                next.message == WM_KEYUP ||
+                next.message == WM_SYSKEYUP)
             {
-                if (next.message == WM_KEYDOWN ||
-                    next.message == WM_SYSKEYDOWN ||
-                    next.message == WM_KEYUP ||
-                    next.message == WM_SYSKEYUP)
+                if (next.wParam == VK_MENU &&
+                    (next.lParam & 0x01000000) &&
+                    next.time == time)
                 {
-                    if (next.wParam == VK_MENU &&
-                        (next.lParam & 0x01000000) &&
-                        next.time == time)
-                    {
-                        // Next message is a RALT down message, which
-                        // means that this is not a proper LCTRL message
-                        return _GLFW_KEY_INVALID;
-                    }
+                    // Next message is a RALT down message, which
+                    // means that this is not a proper LCTRL message
+                    return _GLFW_KEY_INVALID;
                 }
             }
-
-            return GLFW_KEY_LEFT_CONTROL;
         }
 
-        // The ALT keys require special handling
-        case VK_MENU:
-        {
-            // Is this an extended key (i.e. right key)?
-            if (lParam & 0x01000000)
-                return GLFW_KEY_RIGHT_ALT;
-
-            return GLFW_KEY_LEFT_ALT;
-        }
-
-        // The ENTER keys require special handling
-        case VK_RETURN:
-        {
-            // Is this an extended key (i.e. right key)?
-            if (lParam & 0x01000000)
-                return GLFW_KEY_KP_ENTER;
-
-            return GLFW_KEY_ENTER;
-        }
-
-        // Funcion keys (non-printable keys)
-        case VK_ESCAPE:        return GLFW_KEY_ESCAPE;
-        case VK_TAB:           return GLFW_KEY_TAB;
-        case VK_BACK:          return GLFW_KEY_BACKSPACE;
-        case VK_HOME:          return GLFW_KEY_HOME;
-        case VK_END:           return GLFW_KEY_END;
-        case VK_PRIOR:         return GLFW_KEY_PAGE_UP;
-        case VK_NEXT:          return GLFW_KEY_PAGE_DOWN;
-        case VK_INSERT:        return GLFW_KEY_INSERT;
-        case VK_DELETE:        return GLFW_KEY_DELETE;
-        case VK_LEFT:          return GLFW_KEY_LEFT;
-        case VK_UP:            return GLFW_KEY_UP;
-        case VK_RIGHT:         return GLFW_KEY_RIGHT;
-        case VK_DOWN:          return GLFW_KEY_DOWN;
-        case VK_F1:            return GLFW_KEY_F1;
-        case VK_F2:            return GLFW_KEY_F2;
-        case VK_F3:            return GLFW_KEY_F3;
-        case VK_F4:            return GLFW_KEY_F4;
-        case VK_F5:            return GLFW_KEY_F5;
-        case VK_F6:            return GLFW_KEY_F6;
-        case VK_F7:            return GLFW_KEY_F7;
-        case VK_F8:            return GLFW_KEY_F8;
-        case VK_F9:            return GLFW_KEY_F9;
-        case VK_F10:           return GLFW_KEY_F10;
-        case VK_F11:           return GLFW_KEY_F11;
-        case VK_F12:           return GLFW_KEY_F12;
-        case VK_F13:           return GLFW_KEY_F13;
-        case VK_F14:           return GLFW_KEY_F14;
-        case VK_F15:           return GLFW_KEY_F15;
-        case VK_F16:           return GLFW_KEY_F16;
-        case VK_F17:           return GLFW_KEY_F17;
-        case VK_F18:           return GLFW_KEY_F18;
-        case VK_F19:           return GLFW_KEY_F19;
-        case VK_F20:           return GLFW_KEY_F20;
-        case VK_F21:           return GLFW_KEY_F21;
-        case VK_F22:           return GLFW_KEY_F22;
-        case VK_F23:           return GLFW_KEY_F23;
-        case VK_F24:           return GLFW_KEY_F24;
-        case VK_NUMLOCK:       return GLFW_KEY_NUM_LOCK;
-        case VK_CAPITAL:       return GLFW_KEY_CAPS_LOCK;
-        case VK_SNAPSHOT:      return GLFW_KEY_PRINT_SCREEN;
-        case VK_SCROLL:        return GLFW_KEY_SCROLL_LOCK;
-        case VK_PAUSE:         return GLFW_KEY_PAUSE;
-        case VK_LWIN:          return GLFW_KEY_LEFT_SUPER;
-        case VK_RWIN:          return GLFW_KEY_RIGHT_SUPER;
-        case VK_APPS:          return GLFW_KEY_MENU;
-
-        // Numeric keypad
-        case VK_NUMPAD0:       return GLFW_KEY_KP_0;
-        case VK_NUMPAD1:       return GLFW_KEY_KP_1;
-        case VK_NUMPAD2:       return GLFW_KEY_KP_2;
-        case VK_NUMPAD3:       return GLFW_KEY_KP_3;
-        case VK_NUMPAD4:       return GLFW_KEY_KP_4;
-        case VK_NUMPAD5:       return GLFW_KEY_KP_5;
-        case VK_NUMPAD6:       return GLFW_KEY_KP_6;
-        case VK_NUMPAD7:       return GLFW_KEY_KP_7;
-        case VK_NUMPAD8:       return GLFW_KEY_KP_8;
-        case VK_NUMPAD9:       return GLFW_KEY_KP_9;
-        case VK_DIVIDE:        return GLFW_KEY_KP_DIVIDE;
-        case VK_MULTIPLY:      return GLFW_KEY_KP_MULTIPLY;
-        case VK_SUBTRACT:      return GLFW_KEY_KP_SUBTRACT;
-        case VK_ADD:           return GLFW_KEY_KP_ADD;
-        case VK_DECIMAL:       return GLFW_KEY_KP_DECIMAL;
-
-        // Printable keys are mapped according to US layout
-        case VK_SPACE:         return GLFW_KEY_SPACE;
-        case 0xDC:             return GLFW_KEY_BACKSLASH;
-        case 0xDF:             return GLFW_KEY_WORLD_1;
-        case 0xE2:             return GLFW_KEY_WORLD_2;
-        default:               break;
+        return GLFW_KEY_LEFT_CONTROL;
     }
 
-    // No matching translation was found
-    return GLFW_KEY_UNKNOWN;
+    return _glfw.win32.publicKeys[HIWORD(lParam) & 0x1FF];
 }
 
 // Enter fullscreen mode

@@ -24,19 +24,17 @@ elseif (_GLFW_WIN32)
                      win32_init.c win32_monitor.c win32_time.c win32_tls.c
                      win32_window.c winmm_joystick.c)
 elseif (_GLFW_X11)
-    set(glfw_HEADERS ${common_HEADERS} x11_platform.h posix_tls.h)
+    set(glfw_HEADERS ${common_HEADERS} x11_platform.h linux_joystick.h
+                     posix_time.h posix_tls.h)
     set(glfw_SOURCES ${common_SOURCES} x11_clipboard.c x11_gamma.c x11_init.c
-                     x11_monitor.c x11_window.c x11_unicode.c posix_tls.c)
+                     x11_monitor.c x11_window.c x11_unicode.c linux_joystick.c
+                     posix_time.c posix_tls.c)
 elseif (_GLFW_WAYLAND)
-    set(glfw_HEADERS ${common_HEADERS} wayland_platform.h posix_tls.h)
+    set(glfw_HEADERS ${common_HEADERS} wayland_platform.h linux_joystick.h
+                     posix_time.h posix_tls.h)
     set(glfw_SOURCES ${common_SOURCES} wayland_clipboard.c wayland_gamma.c
                      wayland_init.c wayland_monitor.c wayland_window.c
-                     posix_tls.c)
-endif()
-
-if (_GLFW_X11 OR _GLFW_WAYLAND)
-    list(APPEND glfw_HEADERS linux_joystick.h posix_time.h)
-    list(APPEND glfw_SOURCES linux_joystick.c posix_time.c)
+                     linux_joystick.c posix_time.c posix_tls.c)
 endif()
 
 if (_GLFW_EGL)

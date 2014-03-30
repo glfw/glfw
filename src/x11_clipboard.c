@@ -34,7 +34,7 @@
 
 // Returns whether the event is a selection event
 //
-static Bool isSelectionMessage(Display* display, XEvent* event, XPointer pointer)
+static Bool isSelectionEvent(Display* display, XEvent* event, XPointer pointer)
 {
     return event->type == SelectionRequest ||
            event->type == SelectionNotify ||
@@ -216,7 +216,7 @@ void _glfwPushSelectionToManager(_GLFWwindow* window)
     {
         XEvent event;
 
-        if (!XCheckIfEvent(_glfw.x11.display, &event, isSelectionMessage, NULL))
+        if (!XCheckIfEvent(_glfw.x11.display, &event, isSelectionEvent, NULL))
             continue;
 
         switch (event.type)

@@ -1003,9 +1003,9 @@ GLFWAPI const char* glfwGetVersionString(void);
  *
  *  @note This function may only be called from the main thread.
  *
- *  @note The error callback is called by the thread where the error was
- *  generated.  If you are using GLFW from multiple threads, your error callback
- *  needs to be written accordingly.
+ *  @note The error callback is called by the thread where the error occurred.
+ *  If you are using GLFW from multiple threads, your error callback needs to be
+ *  written accordingly.
  *
  *  @note Because the description string provided to the callback may have been
  *  generated specifically for that error, it is not guaranteed to be valid

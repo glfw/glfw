@@ -27,6 +27,7 @@
 
 #include "internal.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 
@@ -45,6 +46,50 @@ static float calcJoystickPos(DWORD pos, DWORD min, DWORD max)
     return (2.f * (fpos - fmin) / (fmax - fmin)) - 1.f;
 }
 
+static int calcJoystickName( int joy, WCHAR * dest, const WCHAR *szRegKey )
+{
+	HKEY  hKey, hLoc;
+	WCHAR temp[256];
+	DWORD size;
+	char key[256];
+	int  result;
+
+	size = sizeof(temp);
+	_snwprintf ( temp, size, L"%s\\%s\\%s", REGSTR_PATH_JOYCONFIG, szRegKey, REGSTR_KEY_JOYCURR );
+	hLoc = HKEY_LOCAL_MACHINE;
+	result = RegOpenKeyEx( hLoc, temp, 0, KEY_READ, &hKey);
+	if ( result != ERROR_SUCCESS ) 
+	{
+		hLoc = HKEY_CURRENT_USER;
+		result = RegOpenKeyEx( hLoc, temp, 0, KEY_READ, &hKey);
+		if( result != ERROR_SUCCESS)
+			return 0;
+	}
+
+	_snwprintf ( temp, size, L"Joystick%d%s", joy + 1, REGSTR_VAL_JOYOEMNAME );
+
+	size = sizeof(key);
+	result = RegQueryValueEx(hKey, temp, 0, 0, (LPBYTE)key, (LPDWORD)&size);
+	RegCloseKey ( hKey );
+
+	if ( result != ERROR_SUCCESS )
+		return 0;
+
+	size = sizeof(temp);
+	_snwprintf ( temp, size, L"%s\\%s", REGSTR_PATH_JOYOEM, key );
+	result = RegOpenKeyEx ( hLoc, temp, 0, KEY_QUERY_VALUE, &hKey );
+	if ( result != ERROR_SUCCESS )
+		return 0;
+
+	size = sizeof(temp);
+	result = RegQueryValueEx ( hKey, REGSTR_VAL_JOYOEMNAME, 0, 0, (LPBYTE)dest, (LPDWORD)&size );
+	RegCloseKey ( hKey );
+
+	if ( result != ERROR_SUCCESS ) 
+		return 0;
+
+	return 1;
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -164,14 +209,18 @@ const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
 
 const char* _glfwPlatformGetJoystickName(int joy)
 {
+	WCHAR	name[256];
     JOYCAPS jc;
 
     if (_glfw_joyGetDevCaps(joy, &jc, sizeof(JOYCAPS)) != JOYERR_NOERROR)
         return NULL;
 
     free(_glfw.win32.joystick[joy].name);
-    _glfw.win32.joystick[joy].name = _glfwCreateUTF8FromWideString(jc.szPname);
 
+	if(calcJoystickName(joy, name, jc.szRegKey) == 0)
+        return NULL;
+
+	_glfw.win32.joystick[joy].name = _glfwCreateUTF8FromWideString(name);
     return _glfw.win32.joystick[joy].name;
 }
 

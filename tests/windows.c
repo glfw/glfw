@@ -60,6 +60,8 @@ int main(void)
 
     for (i = 0;  i < 4;  i++)
     {
+        int left, top, right, bottom;
+
         windows[i] = glfwCreateWindow(200, 200, titles[i], NULL, NULL);
         if (!windows[i])
         {
@@ -73,7 +75,10 @@ int main(void)
                      i ? 0.f : 1.f,
                      0.f);
 
-        glfwSetWindowPos(windows[i], 100 + (i & 1) * 300, 100 + (i >> 1) * 300);
+        glfwGetWindowFrameSize(windows[i], &left, &top, &right, &bottom);
+        glfwSetWindowPos(windows[i],
+                         100 + (i & 1) * (200 + left + right),
+                         100 + (i >> 1) * (200 + top + bottom));
         glfwShowWindow(windows[i]);
     }
 

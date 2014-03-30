@@ -348,6 +348,8 @@ struct _GLFWlibrary
     _GLFW_PLATFORM_LIBRARY_WINDOW_STATE;
     // This is defined in the context API's platform.h
     _GLFW_PLATFORM_LIBRARY_OPENGL_STATE;
+    // This is defined in the platform's tls.h
+    _GLFW_PLATFORM_TLS_STATE;
 };
 
 

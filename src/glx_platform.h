@@ -41,8 +41,6 @@
  #include <dlfcn.h>
 #endif
 
-#include <pthread.h>
-
 // We support four different ways for getting addresses for GL/GLX
 // extension functions: glXGetProcAddress, glXGetProcAddressARB,
 // glXGetProcAddressEXT, and dlsym
@@ -92,9 +90,6 @@ typedef struct _GLFWlibraryGLX
     int             versionMajor, versionMinor;
     int             eventBase;
     int             errorBase;
-
-    // TLS key for per-thread current context/window
-    pthread_key_t   current;
 
     // GLX extensions
     PFNGLXSWAPINTERVALSGIPROC             SwapIntervalSGI;

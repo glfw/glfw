@@ -26,8 +26,6 @@
 
 #include "internal.h"
 
-#include <pthread.h>
-
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -37,12 +35,8 @@
 //
 int _glfwInitContextAPI(void)
 {
-    if (pthread_key_create(&_glfw.nsgl.current, NULL) != 0)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "NSGL: Failed to create context TLS");
+    if (!_glfwInitTLS())
         return GL_FALSE;
-    }
 
     _glfw.nsgl.framework =
         CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
@@ -60,7 +54,7 @@ int _glfwInitContextAPI(void)
 //
 void _glfwTerminateContextAPI(void)
 {
-    pthread_key_delete(_glfw.nsgl.current);
+    _glfwTerminateTLS();
 }
 
 // Create the OpenGL context
@@ -235,12 +229,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     else
         [NSOpenGLContext clearCurrentContext];
 
-    pthread_setspecific(_glfw.nsgl.current, window);
-}
-
-_GLFWwindow* _glfwPlatformGetCurrentContext(void)
-{
-    return (_GLFWwindow*) pthread_getspecific(_glfw.nsgl.current);
+    _glfwSetCurrentContext(window);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)

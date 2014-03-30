@@ -48,6 +48,8 @@
 // The Xkb extension provides improved keyboard support
 #include <X11/XKBlib.h>
 
+#include "posix_tls.h"
+
 #if defined(_GLFW_GLX)
  #define _GLFW_X11_CONTEXT_VISUAL window->glx.visual
  #include "glx_platform.h"

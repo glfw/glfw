@@ -151,6 +151,8 @@ typedef HRESULT (WINAPI * DWMISCOMPOSITIONENABLED_T)(BOOL*);
 #define _GLFW_RECREATION_IMPOSSIBLE 2
 
 
+#include "win32_tls.h"
+
 #if defined(_GLFW_WGL)
  #include "wgl_platform.h"
 #elif defined(_GLFW_EGL)

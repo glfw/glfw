@@ -33,7 +33,6 @@
 // extensions and not all operating systems come with an up-to-date version
 #include "../deps/GL/wglext.h"
 
-
 #define _GLFW_PLATFORM_FBCONFIG             int             wgl
 #define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextWGL wgl
 #define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryWGL wgl
@@ -74,9 +73,6 @@ typedef struct _GLFWcontextWGL
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryWGL
 {
-    GLboolean       hasTLS;
-    DWORD           current;
-
     // opengl32.dll
     struct {
         HINSTANCE   instance;

@@ -1,7 +1,8 @@
 //========================================================================
-// GLFW 3.1 OS X - www.glfw.org
+// GLFW 3.1 Win32 - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2002-2006 Marcus Geelnard
+// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -24,48 +25,30 @@
 //
 //========================================================================
 
-#ifndef _nsgl_platform_h_
-#define _nsgl_platform_h_
+#ifndef _win32_tls_h_
+#define _win32_tls_h_
 
-#define _GLFW_PLATFORM_FBCONFIG
-#define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextNSGL nsgl
-#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryNSGL nsgl
+#define _GLFW_PLATFORM_TLS_STATE _GLFWtlsWin32 win32_tls
 
 
 //========================================================================
 // GLFW platform specific types
 //========================================================================
 
-//------------------------------------------------------------------------
-// Platform-specific OpenGL context structure
-//------------------------------------------------------------------------
-typedef struct _GLFWcontextNSGL
+typedef struct _GLFWtlsWin32
 {
-    id           pixelFormat;
-    id	         context;
-} _GLFWcontextNSGL;
+    GLboolean       allocated;
+    DWORD           context;
 
-
-//------------------------------------------------------------------------
-// Platform-specific library global data for NSGL
-//------------------------------------------------------------------------
-typedef struct _GLFWlibraryNSGL
-{
-    // dlopen handle for dynamically loading OpenGL extension entry points
-    void*           framework;
-
-} _GLFWlibraryNSGL;
+} _GLFWtlsWin32;
 
 
 //========================================================================
 // Prototypes for platform specific internal functions
 //========================================================================
 
-int _glfwInitContextAPI(void);
-void _glfwTerminateContextAPI(void);
-int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWctxconfig* ctxconfig,
-                       const _GLFWfbconfig* fbconfig);
-void _glfwDestroyContext(_GLFWwindow* window);
+int _glfwInitTLS(void);
+void _glfwTerminateTLS(void);
+void _glfwSetCurrentContext(_GLFWwindow* context);
 
-#endif // _nsgl_platform_h_
+#endif // _win32_tls_h_

@@ -165,6 +165,9 @@ static GLXContext createLegacyContext(_GLFWwindow* window,
 //
 int _glfwInitContextAPI(void)
 {
+    if (!_glfwInitTLS())
+        return GL_FALSE;
+
 #ifdef _GLFW_DLOPEN_LIBGL
     _glfw.glx.libGL = dlopen("libGL.so.1", RTLD_LAZY | RTLD_GLOBAL);
     if (!_glfw.glx.libGL)
@@ -173,13 +176,6 @@ int _glfwInitContextAPI(void)
         return GL_FALSE;
     }
 #endif
-
-    if (pthread_key_create(&_glfw.glx.current, NULL) != 0)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "GLX: Failed to create context TLS");
-        return GL_FALSE;
-    }
 
     if (!glXQueryExtension(_glfw.x11.display,
                            &_glfw.glx.errorBase,
@@ -272,7 +268,7 @@ void _glfwTerminateContextAPI(void)
     }
 #endif
 
-    pthread_key_delete(_glfw.glx.current);
+    _glfwTerminateTLS();
 }
 
 #define setGLXattrib(attribName, attribValue) \
@@ -478,12 +474,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     else
         glXMakeCurrent(_glfw.x11.display, None, NULL);
 
-    pthread_setspecific(_glfw.glx.current, window);
-}
-
-_GLFWwindow* _glfwPlatformGetCurrentContext(void)
-{
-    return (_GLFWwindow*) pthread_getspecific(_glfw.glx.current);
+    _glfwSetCurrentContext(window);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)

@@ -37,6 +37,8 @@
 typedef void* id;
 #endif
 
+#include "posix_tls.h"
+
 #if defined(_GLFW_NSGL)
  #include "nsgl_platform.h"
 #else

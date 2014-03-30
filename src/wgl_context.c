@@ -306,22 +306,15 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
 //
 int _glfwInitContextAPI(void)
 {
+    if (!_glfwInitTLS())
+        return GL_FALSE;
+
     _glfw.wgl.opengl32.instance = LoadLibraryW(L"opengl32.dll");
     if (!_glfw.wgl.opengl32.instance)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to load opengl32.dll");
         return GL_FALSE;
     }
-
-    _glfw.wgl.current = TlsAlloc();
-    if (_glfw.wgl.current == TLS_OUT_OF_INDEXES)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "WGL: Failed to allocate TLS index");
-        return GL_FALSE;
-    }
-
-    _glfw.wgl.hasTLS = GL_TRUE;
 
     return GL_TRUE;
 }
@@ -330,11 +323,10 @@ int _glfwInitContextAPI(void)
 //
 void _glfwTerminateContextAPI(void)
 {
-    if (_glfw.wgl.hasTLS)
-        TlsFree(_glfw.wgl.current);
-
     if (_glfw.wgl.opengl32.instance)
         FreeLibrary(_glfw.wgl.opengl32.instance);
+
+    _glfwTerminateTLS();
 }
 
 #define setWGLattrib(attribName, attribValue) \
@@ -588,12 +580,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     else
         wglMakeCurrent(NULL, NULL);
 
-    TlsSetValue(_glfw.wgl.current, window);
-}
-
-_GLFWwindow* _glfwPlatformGetCurrentContext(void)
-{
-    return TlsGetValue(_glfw.wgl.current);
+    _glfwSetCurrentContext(window);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)

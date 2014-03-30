@@ -516,7 +516,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_KEYDOWN:
         case WM_SYSKEYDOWN:
         {
-            const int scancode = (lParam >> 16) & 0xff;
+            const int scancode = (lParam >> 16) & 0x1ff;
             const int key = translateKey(wParam, lParam);
             if (key == _GLFW_KEY_INVALID)
                 break;
@@ -551,7 +551,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_SYSKEYUP:
         {
             const int mods = getKeyMods();
-            const int scancode = (lParam >> 16) & 0xff;
+            const int scancode = (lParam >> 16) & 0x1ff;
             const int key = translateKey(wParam, lParam);
             if (key == _GLFW_KEY_INVALID)
                 break;

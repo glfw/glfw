@@ -181,12 +181,11 @@ int _glfwInitContextAPI(void)
         return GL_FALSE;
     }
 
-    // Check if GLX is supported on this display
     if (!glXQueryExtension(_glfw.x11.display,
                            &_glfw.glx.errorBase,
                            &_glfw.glx.eventBase))
     {
-        _glfwInputError(GLFW_API_UNAVAILABLE, "GLX: GLX support not found");
+        _glfwInputError(GLFW_API_UNAVAILABLE, "GLX: GLX extension not found");
         return GL_FALSE;
     }
 
@@ -196,6 +195,13 @@ int _glfwInitContextAPI(void)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
                         "GLX: Failed to query GLX version");
+        return GL_FALSE;
+    }
+
+    if (_glfw.glx.versionMajor == 1 && _glfw.glx.versionMinor < 3)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "GLX: GLX version 1.3 is required");
         return GL_FALSE;
     }
 
@@ -249,12 +255,6 @@ int _glfwInitContextAPI(void)
 
     if (_glfwPlatformExtensionSupported("GLX_EXT_create_context_es2_profile"))
         _glfw.glx.EXT_create_context_es2_profile = GL_TRUE;
-
-    if (_glfw.glx.versionMajor == 1 && _glfw.glx.versionMinor < 3)
-    {
-        _glfwInputError(GLFW_API_UNAVAILABLE, "No GLXFBConfig support found");
-        return GL_FALSE;
-    }
 
     return GL_TRUE;
 }

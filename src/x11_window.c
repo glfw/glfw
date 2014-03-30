@@ -55,6 +55,17 @@ typedef struct
 #define MWM_HINTS_DECORATIONS (1L << 1)
 
 
+// Returns whether the event is a selection event
+//
+static Bool isFrameExtentsEvent(Display* display, XEvent* event, XPointer pointer)
+{
+    _GLFWwindow* window = (_GLFWwindow*) pointer;
+    return event->type == PropertyNotify &&
+           event->xproperty.state == PropertyNewValue &&
+           event->xproperty.window == window->x11.handle &&
+           event->xproperty.atom == _glfw.x11.NET_FRAME_EXTENTS;
+}
+
 // Translates an X event modifier state mask
 //
 static int translateState(int state)
@@ -358,6 +369,27 @@ static GLboolean createWindow(_GLFWwindow* window,
         XChangeProperty(_glfw.x11.display, window->x11.handle,
                         _glfw.x11.XdndAware, XA_ATOM, 32,
                         PropModeReplace, (unsigned char*) &version, 1);
+    }
+
+    if (_glfw.x11.NET_REQUEST_FRAME_EXTENTS)
+    {
+        // Ensure _NET_FRAME_EXTENTS is set, allowing glfwGetWindowFrameSize to
+        // function before the window is mapped
+
+        XEvent event;
+        memset(&event, 0, sizeof(event));
+
+        event.type = ClientMessage;
+        event.xclient.window = window->x11.handle;
+        event.xclient.format = 32; // Data is 32-bit longs
+        event.xclient.message_type = _glfw.x11.NET_REQUEST_FRAME_EXTENTS;
+
+        XSendEvent(_glfw.x11.display,
+                   _glfw.x11.root,
+                   False,
+                   SubstructureNotifyMask | SubstructureRedirectMask,
+                   &event);
+        XIfEvent(_glfw.x11.display, &event, isFrameExtentsEvent, (XPointer) window);
     }
 
     _glfwPlatformSetWindowTitle(window, wndconfig->title);

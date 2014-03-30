@@ -89,10 +89,10 @@ static int translateState(int state)
 static int translateKey(int keycode)
 {
     // Use the pre-filled LUT (see updateKeyCodeLUT() in x11_init.c)
-    if ((keycode >= 0) && (keycode < 256))
-        return _glfw.x11.keyCodeLUT[keycode];
+    if (keycode < 0 || keycode > 255)
+        return GLFW_KEY_UNKNOWN;
 
-    return GLFW_KEY_UNKNOWN;
+    return _glfw.x11.keyCodeLUT[keycode];
 }
 
 // Translates an X Window event to Unicode

@@ -75,7 +75,7 @@ int main(void)
     thrd_t thread;
     GLFWwindow* window;
 
-    srand(time(NULL));
+    srand((unsigned int) time(NULL));
 
     glfwSetErrorCallback(error_callback);
 

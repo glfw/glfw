@@ -187,7 +187,7 @@ int getopt_long(int argc, char* const argv[], const char* optstring,
     /* If longindex is not NULL, it points to a variable which is set to the
        index of the long option relative to longopts. */
     if (longindex)
-      *longindex = (match - longopts);
+      *longindex = (int) (match - longopts);
 
     /* If flag is NULL, then getopt_long() shall return val.
        Otherwise, getopt_long() returns 0, and flag shall point to a variable

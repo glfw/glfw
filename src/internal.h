@@ -58,7 +58,6 @@
  #include "../deps/GL/glext.h"
 #endif
 
-typedef struct _GLFWhints       _GLFWhints;
 typedef struct _GLFWwndconfig   _GLFWwndconfig;
 typedef struct _GLFWctxconfig   _GLFWctxconfig;
 typedef struct _GLFWfbconfig    _GLFWfbconfig;

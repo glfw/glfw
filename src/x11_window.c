@@ -913,20 +913,26 @@ static void processEvent(XEvent *event)
 
         case FocusIn:
         {
-            _glfwInputWindowFocus(window, GL_TRUE);
+            if (event->xfocus.mode == NotifyNormal)
+            {
+                _glfwInputWindowFocus(window, GL_TRUE);
 
-            if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                disableCursor(window);
+                if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                    disableCursor(window);
+            }
 
             break;
         }
 
         case FocusOut:
         {
-            _glfwInputWindowFocus(window, GL_FALSE);
+            if (event->xfocus.mode == NotifyNormal)
+            {
+                _glfwInputWindowFocus(window, GL_FALSE);
 
-            if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                restoreCursor(window);
+                if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                    restoreCursor(window);
+            }
 
             break;
         }

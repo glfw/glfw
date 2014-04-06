@@ -918,6 +918,14 @@ static GLboolean initializeAppKit(void)
 static GLboolean createWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig)
 {
+    window->ns.delegate = [[GLFWWindowDelegate alloc] initWithGlfwWindow:window];
+    if (window->ns.delegate == nil)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to create window delegate");
+        return GL_FALSE;
+    }
+
     unsigned int styleMask = 0;
 
     if (wndconfig->monitor || !wndconfig->decorated)
@@ -997,14 +1005,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         }
 
         [NSApp setDelegate:_glfw.ns.delegate];
-    }
-
-    window->ns.delegate = [[GLFWWindowDelegate alloc] initWithGlfwWindow:window];
-    if (window->ns.delegate == nil)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Failed to create window delegate");
-        return GL_FALSE;
     }
 
     if (!createWindow(window, wndconfig))

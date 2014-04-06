@@ -125,6 +125,9 @@ int main(void)
     }
 
     for (i = 0;  i < count;  i++)
+        glfwHideWindow(threads[i].window);
+
+    for (i = 0;  i < count;  i++)
         thrd_join(threads[i].id, &result);
 
     exit(EXIT_SUCCESS);

@@ -319,11 +319,15 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* handle, double* xpos, double* ypos)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
+    if (xpos)
+        *xpos = 0;
+    if (ypos)
+        *ypos = 0;
+
     _GLFW_REQUIRE_INIT();
 
     if (xpos)
         *xpos = window->cursorPosX;
-
     if (ypos)
         *ypos = window->cursorPosY;
 }

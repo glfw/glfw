@@ -434,6 +434,12 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* handle, const char* title)
 GLFWAPI void glfwGetWindowPos(GLFWwindow* handle, int* xpos, int* ypos)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (xpos)
+        *xpos = 0;
+    if (ypos)
+        *ypos = 0;
+
     _GLFW_REQUIRE_INIT();
     _glfwPlatformGetWindowPos(window, xpos, ypos);
 }
@@ -457,6 +463,12 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow* handle, int xpos, int ypos)
 GLFWAPI void glfwGetWindowSize(GLFWwindow* handle, int* width, int* height)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (width)
+        *width = 0;
+    if (height)
+        *height = 0;
+
     _GLFW_REQUIRE_INIT();
     _glfwPlatformGetWindowSize(window, width, height);
 }
@@ -483,8 +495,12 @@ GLFWAPI void glfwGetFramebufferSize(GLFWwindow* handle, int* width, int* height)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
-    _GLFW_REQUIRE_INIT();
+    if (width)
+        *width = 0;
+    if (height)
+        *height = 0;
 
+    _GLFW_REQUIRE_INIT();
     _glfwPlatformGetFramebufferSize(window, width, height);
 }
 
@@ -493,6 +509,16 @@ GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* handle,
                                     int* right, int* bottom)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (left)
+        *left = 0;
+    if (top)
+        *top = 0;
+    if (right)
+        *right = 0;
+    if (bottom)
+        *bottom = 0;
+
     _GLFW_REQUIRE_INIT();
     _glfwPlatformGetWindowFrameSize(window, left, top, right, bottom);
 }

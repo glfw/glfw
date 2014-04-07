@@ -1280,15 +1280,6 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
 {
     long* extents = NULL;
 
-    if (left)
-        *left = 0;
-    if (top)
-        *top = 0;
-    if (right)
-        *right = 0;
-    if (bottom)
-        *bottom = 0;
-
     if (_glfw.x11.NET_FRAME_EXTENTS == None)
         return;
 

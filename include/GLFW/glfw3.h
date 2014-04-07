@@ -1508,11 +1508,11 @@ GLFWAPI void glfwGetFramebufferSize(GLFWwindow* window, int* width, int* height)
  *  @param[in] window The window whose frame size to query.
  *  @param[out] left Where to store the size, in screen coordinates, of the left
  *  edge of the window frame.
- *  @param[out] top Where to store the offset, in screen coordinates, of the top
+ *  @param[out] top Where to store the size, in screen coordinates, of the top
  *  edge of the window frame.
- *  @param[out] right Where to store the offset, in screen coordinates, of the
+ *  @param[out] right Where to store the size, in screen coordinates, of the
  *  right edge of the window frame.
- *  @param[out] bottom Where to store the offset, in screen coordinates, of the
+ *  @param[out] bottom Where to store the size, in screen coordinates, of the
  *  bottom edge of the window frame.
  *
  *  @remarks This function returns the size of each window frame edge, not its

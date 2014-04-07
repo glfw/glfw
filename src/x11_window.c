@@ -108,9 +108,9 @@ static int translateChar(XKeyEvent* event)
     return (int) _glfwKeySym2Unicode(keysym);
 }
 
-// Splits a text/uri-list into separate file paths
+// Splits and translates a text/uri-list into separate file paths
 //
-static char** splitUriList(char* text, int* count)
+static char** parseUriList(char* text, int* count)
 {
     const char* prefix = "file://";
     char** names = NULL;
@@ -868,7 +868,7 @@ static void processEvent(XEvent *event)
                 if (result)
                 {
                     int i, count;
-                    char** names = splitUriList(data, &count);
+                    char** names = parseUriList(data, &count);
 
                     _glfwInputDrop(window, count, (const char**) names);
 

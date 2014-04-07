@@ -1188,6 +1188,8 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
                         PropModeReplace,
                         (unsigned char*) title, strlen(title));
     }
+
+    XFlush(_glfw.x11.display);
 }
 
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
@@ -1322,6 +1324,7 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window)
     }
 
     XIconifyWindow(_glfw.x11.display, window->x11.handle, _glfw.x11.screen);
+    XFlush(_glfw.x11.display);
 }
 
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
@@ -1337,6 +1340,7 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
     }
 
     XMapWindow(_glfw.x11.display, window->x11.handle);
+    XFlush(_glfw.x11.display);
 }
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)

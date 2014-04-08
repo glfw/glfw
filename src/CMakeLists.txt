@@ -30,11 +30,11 @@ elseif (_GLFW_X11)
                      x11_monitor.c x11_window.c x11_unicode.c linux_joystick.c
                      posix_time.c posix_tls.c)
 elseif (_GLFW_WAYLAND)
-    set(glfw_HEADERS ${common_HEADERS} wayland_platform.h linux_joystick.h
+    set(glfw_HEADERS ${common_HEADERS} wl_platform.h linux_joystick.h
                      posix_time.h posix_tls.h)
-    set(glfw_SOURCES ${common_SOURCES} wayland_clipboard.c wayland_gamma.c
-                     wayland_init.c wayland_monitor.c wayland_window.c
-                     linux_joystick.c posix_time.c posix_tls.c)
+    set(glfw_SOURCES ${common_SOURCES} wl_clipboard.c wl_gamma.c wl_init.c
+                     wl_monitor.c wl_window.c linux_joystick.c posix_time.c
+                     posix_tls.c)
 endif()
 
 if (_GLFW_EGL)

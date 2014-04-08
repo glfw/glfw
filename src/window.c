@@ -48,38 +48,32 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused)
 {
     if (focused)
     {
-        if (_glfw.focusedWindow != window)
-        {
-            _glfw.focusedWindow = window;
+        _glfw.focusedWindow = window;
 
-            if (window->callbacks.focus)
-                window->callbacks.focus((GLFWwindow*) window, focused);
-        }
+        if (window->callbacks.focus)
+            window->callbacks.focus((GLFWwindow*) window, focused);
     }
     else
     {
-        if (_glfw.focusedWindow == window)
+        int i;
+
+        _glfw.focusedWindow = NULL;
+
+        if (window->callbacks.focus)
+            window->callbacks.focus((GLFWwindow*) window, focused);
+
+        // Release all pressed keyboard keys
+        for (i = 0;  i <= GLFW_KEY_LAST;  i++)
         {
-            int i;
+            if (window->key[i] == GLFW_PRESS)
+                _glfwInputKey(window, i, 0, GLFW_RELEASE, 0);
+        }
 
-            _glfw.focusedWindow = NULL;
-
-            if (window->callbacks.focus)
-                window->callbacks.focus((GLFWwindow*) window, focused);
-
-            // Release all pressed keyboard keys
-            for (i = 0;  i <= GLFW_KEY_LAST;  i++)
-            {
-                if (window->key[i] == GLFW_PRESS)
-                    _glfwInputKey(window, i, 0, GLFW_RELEASE, 0);
-            }
-
-            // Release all pressed mouse buttons
-            for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
-            {
-                if (window->mouseButton[i] == GLFW_PRESS)
-                    _glfwInputMouseClick(window, i, GLFW_RELEASE, 0);
-            }
+        // Release all pressed mouse buttons
+        for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
+        {
+            if (window->mouseButton[i] == GLFW_PRESS)
+                _glfwInputMouseClick(window, i, GLFW_RELEASE, 0);
         }
     }
 }

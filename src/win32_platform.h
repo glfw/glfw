@@ -154,11 +154,11 @@ typedef HRESULT (WINAPI * DWMISCOMPOSITIONENABLED_T)(BOOL*);
 #include "win32_tls.h"
 
 #if defined(_GLFW_WGL)
- #include "wgl_platform.h"
+ #include "wgl_context.h"
 #elif defined(_GLFW_EGL)
  #define _GLFW_EGL_NATIVE_WINDOW  window->win32.handle
  #define _GLFW_EGL_NATIVE_DISPLAY EGL_DEFAULT_DISPLAY
- #include "egl_platform.h"
+ #include "egl_context.h"
 #else
  #error "No supported context creation API selected"
 #endif

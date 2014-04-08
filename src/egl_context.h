@@ -1,7 +1,8 @@
 //========================================================================
-// GLFW 3.1 OS X - www.glfw.org
+// GLFW 3.1 EGL - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2002-2006 Marcus Geelnard
+// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -24,12 +25,24 @@
 //
 //========================================================================
 
-#ifndef _nsgl_platform_h_
-#define _nsgl_platform_h_
+#ifndef _egl_context_h_
+#define _egl_context_h_
 
-#define _GLFW_PLATFORM_FBCONFIG
-#define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextNSGL nsgl
-#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryNSGL nsgl
+#include <EGL/egl.h>
+
+// This path may need to be changed if you build GLFW using your own setup
+// We ship and use our own copy of eglext.h since GLFW uses fairly new
+// extensions and not all operating systems come with an up-to-date version
+#include "../deps/EGL/eglext.h"
+
+// Do we have support for dlopen/dlsym?
+#if defined(_GLFW_HAS_DLOPEN)
+ #include <dlfcn.h>
+#endif
+
+#define _GLFW_PLATFORM_FBCONFIG             EGLConfig       egl
+#define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextEGL egl
+#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryEGL egl
 
 
 //========================================================================
@@ -39,22 +52,29 @@
 //------------------------------------------------------------------------
 // Platform-specific OpenGL context structure
 //------------------------------------------------------------------------
-typedef struct _GLFWcontextNSGL
+typedef struct _GLFWcontextEGL
 {
-    id           pixelFormat;
-    id	         context;
-} _GLFWcontextNSGL;
+   EGLConfig      config;
+   EGLContext     context;
+   EGLSurface     surface;
+
+#if defined(_GLFW_X11)
+   XVisualInfo*   visual;
+#endif
+} _GLFWcontextEGL;
 
 
 //------------------------------------------------------------------------
-// Platform-specific library global data for NSGL
+// Platform-specific library global data for EGL
 //------------------------------------------------------------------------
-typedef struct _GLFWlibraryNSGL
+typedef struct _GLFWlibraryEGL
 {
-    // dlopen handle for dynamically loading OpenGL extension entry points
-    void*           framework;
+    EGLDisplay      display;
+    EGLint          versionMajor, versionMinor;
 
-} _GLFWlibraryNSGL;
+    GLboolean       KHR_create_context;
+
+} _GLFWlibraryEGL;
 
 
 //========================================================================
@@ -67,5 +87,8 @@ int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWctxconfig* ctxconfig,
                        const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContext(_GLFWwindow* window);
+int _glfwAnalyzeContext(const _GLFWwindow* window,
+                        const _GLFWctxconfig* ctxconfig,
+                        const _GLFWfbconfig* fbconfig);
 
-#endif // _nsgl_platform_h_
+#endif // _egl_context_h_

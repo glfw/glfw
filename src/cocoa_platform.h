@@ -40,7 +40,7 @@ typedef void* id;
 #include "posix_tls.h"
 
 #if defined(_GLFW_NSGL)
- #include "nsgl_platform.h"
+ #include "nsgl_context.h"
 #else
  #error "No supported context creation API selected"
 #endif

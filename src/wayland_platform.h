@@ -31,7 +31,7 @@
 #include <wayland-client.h>
 
 #if defined(_GLFW_EGL)
- #include "egl_platform.h"
+ #include "egl_context.h"
 #else
  #error "The Wayland backend depends on EGL platform support"
 #endif

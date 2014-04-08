@@ -25,8 +25,8 @@
 //
 //========================================================================
 
-#ifndef _wgl_platform_h_
-#define _wgl_platform_h_
+#ifndef _wgl_context_h_
+#define _wgl_context_h_
 
 // This path may need to be changed if you build GLFW using your own setup
 // We ship and use our own copy of wglext.h since GLFW uses fairly new
@@ -95,4 +95,4 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
                         const _GLFWctxconfig* ctxconfig,
                         const _GLFWfbconfig* fbconfig);
 
-#endif // _wgl_platform_h_
+#endif // _wgl_context_h_

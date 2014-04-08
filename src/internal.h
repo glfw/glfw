@@ -200,7 +200,7 @@ struct _GLFWfbconfig
     int         samples;
     GLboolean   sRGB;
 
-    // This is defined in the context API's platform.h
+    // This is defined in the context API's context.h
     _GLFW_PLATFORM_FBCONFIG;
 };
 
@@ -262,7 +262,7 @@ struct _GLFWwindow
 
     // This is defined in the window API's platform.h
     _GLFW_PLATFORM_WINDOW_STATE;
-    // This is defined in the context API's platform.h
+    // This is defined in the context API's context.h
     _GLFW_PLATFORM_CONTEXT_STATE;
 };
 
@@ -347,7 +347,7 @@ struct _GLFWlibrary
 
     // This is defined in the window API's platform.h
     _GLFW_PLATFORM_LIBRARY_WINDOW_STATE;
-    // This is defined in the context API's platform.h
+    // This is defined in the context API's context.h
     _GLFW_PLATFORM_LIBRARY_OPENGL_STATE;
     // This is defined in the platform's time.h
     _GLFW_PLATFORM_LIBRARY_TIME_STATE;

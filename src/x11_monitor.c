@@ -311,13 +311,6 @@ void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
         XRRFreeCrtcInfo(ci);
         XRRFreeScreenResources(sr);
     }
-    else
-    {
-        if (xpos)
-            *xpos = 0;
-        if (ypos)
-            *ypos = 0;
-    }
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)

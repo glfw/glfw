@@ -182,16 +182,6 @@ static GLboolean createWindow(_GLFWwindow* window,
                         ExposureMask | FocusChangeMask | VisibilityChangeMask |
                         EnterWindowMask | LeaveWindowMask | PropertyChangeMask;
 
-        if (wndconfig->monitor == NULL)
-        {
-            // HACK: This is a workaround for windows without a background pixel
-            //       not getting any decorations on certain older versions of
-            //       Compiz running on Intel hardware
-            wa.background_pixel = BlackPixel(_glfw.x11.display,
-                                             _glfw.x11.screen);
-            wamask |= CWBackPixel;
-        }
-
         _glfwGrabXErrorHandler();
 
         window->x11.handle = XCreateWindow(_glfw.x11.display,

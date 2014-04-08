@@ -235,8 +235,11 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
             if (desired->stencilBits > 0 && current->stencilBits == 0)
                 missing++;
 
-            if (desired->auxBuffers > 0 && current->auxBuffers < desired->auxBuffers)
+            if (desired->auxBuffers > 0 &&
+                current->auxBuffers < desired->auxBuffers)
+            {
                 missing += desired->auxBuffers - current->auxBuffers;
+            }
 
             if (desired->samples > 0 && current->samples == 0)
             {
@@ -254,19 +257,19 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
         {
             colorDiff = 0;
 
-            if (desired->redBits > 0)
+            if (desired->redBits != GLFW_DONT_CARE)
             {
                 colorDiff += (desired->redBits - current->redBits) *
                              (desired->redBits - current->redBits);
             }
 
-            if (desired->greenBits > 0)
+            if (desired->greenBits != GLFW_DONT_CARE)
             {
                 colorDiff += (desired->greenBits - current->greenBits) *
                              (desired->greenBits - current->greenBits);
             }
 
-            if (desired->blueBits > 0)
+            if (desired->blueBits != GLFW_DONT_CARE)
             {
                 colorDiff += (desired->blueBits - current->blueBits) *
                              (desired->blueBits - current->blueBits);
@@ -277,59 +280,56 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
         {
             extraDiff = 0;
 
-            if (desired->alphaBits > 0)
+            if (desired->alphaBits != GLFW_DONT_CARE)
             {
                 extraDiff += (desired->alphaBits - current->alphaBits) *
                              (desired->alphaBits - current->alphaBits);
             }
 
-            if (desired->depthBits > 0)
+            if (desired->depthBits != GLFW_DONT_CARE)
             {
                 extraDiff += (desired->depthBits - current->depthBits) *
                              (desired->depthBits - current->depthBits);
             }
 
-            if (desired->stencilBits > 0)
+            if (desired->stencilBits != GLFW_DONT_CARE)
             {
                 extraDiff += (desired->stencilBits - current->stencilBits) *
                              (desired->stencilBits - current->stencilBits);
             }
 
-            if (desired->accumRedBits > 0)
+            if (desired->accumRedBits != GLFW_DONT_CARE)
             {
                 extraDiff += (desired->accumRedBits - current->accumRedBits) *
                              (desired->accumRedBits - current->accumRedBits);
             }
 
-            if (desired->accumGreenBits > 0)
+            if (desired->accumGreenBits != GLFW_DONT_CARE)
             {
                 extraDiff += (desired->accumGreenBits - current->accumGreenBits) *
                              (desired->accumGreenBits - current->accumGreenBits);
             }
 
-            if (desired->accumBlueBits > 0)
+            if (desired->accumBlueBits != GLFW_DONT_CARE)
             {
                 extraDiff += (desired->accumBlueBits - current->accumBlueBits) *
                              (desired->accumBlueBits - current->accumBlueBits);
             }
 
-            if (desired->accumAlphaBits > 0)
+            if (desired->accumAlphaBits != GLFW_DONT_CARE)
             {
                 extraDiff += (desired->accumAlphaBits - current->accumAlphaBits) *
                              (desired->accumAlphaBits - current->accumAlphaBits);
             }
 
-            if (desired->samples > 0)
+            if (desired->samples != GLFW_DONT_CARE)
             {
                 extraDiff += (desired->samples - current->samples) *
                              (desired->samples - current->samples);
             }
 
-            if (desired->sRGB)
-            {
-                if (!current->sRGB)
-                    extraDiff++;
-            }
+            if (desired->sRGB && !current->sRGB)
+                extraDiff++;
         }
 
         // Figure out if the current one is better than the best one found so far

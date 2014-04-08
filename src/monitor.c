@@ -220,15 +220,21 @@ const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
     {
         current = monitor->modes + i;
 
-        colorDiff = abs((current->redBits + current->greenBits + current->blueBits) -
-                        (desired->redBits + desired->greenBits + desired->blueBits));
+        colorDiff = 0;
+
+        if (desired->redBits != GLFW_DONT_CARE)
+            colorDiff += abs(current->redBits - desired->redBits);
+        if (desired->greenBits != GLFW_DONT_CARE)
+            colorDiff += abs(current->greenBits - desired->greenBits);
+        if (desired->blueBits != GLFW_DONT_CARE)
+            colorDiff += abs(current->blueBits - desired->blueBits);
 
         sizeDiff = abs((current->width - desired->width) *
                        (current->width - desired->width) +
                        (current->height - desired->height) *
                        (current->height - desired->height));
 
-        if (desired->refreshRate)
+        if (desired->refreshRate != GLFW_DONT_CARE)
             rateDiff = abs(current->refreshRate - desired->refreshRate);
         else
             rateDiff = UINT_MAX - current->refreshRate;

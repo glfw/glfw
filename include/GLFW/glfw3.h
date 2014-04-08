@@ -546,6 +546,8 @@ extern "C" {
 #define GLFW_CONNECTED              0x00040001
 #define GLFW_DISCONNECTED           0x00040002
 
+#define GLFW_DONT_CARE              -1
+
 
 /*************************************************************************
  * GLFW API types

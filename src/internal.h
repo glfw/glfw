@@ -197,9 +197,9 @@ struct _GLFWfbconfig
     int         accumBlueBits;
     int         accumAlphaBits;
     int         auxBuffers;
-    GLboolean   stereo;
+    int         stereo;
     int         samples;
-    GLboolean   sRGB;
+    int         sRGB;
 
     // This is defined in the context API's context.h
     _GLFW_PLATFORM_FBCONFIG;
@@ -317,19 +317,19 @@ struct _GLFWlibrary
         int         accumBlueBits;
         int         accumAlphaBits;
         int         auxBuffers;
-        GLboolean   stereo;
-        GLboolean   resizable;
-        GLboolean   visible;
-        GLboolean   decorated;
-        GLboolean   autoIconify;
+        int         stereo;
+        int         resizable;
+        int         visible;
+        int         decorated;
+        int         autoIconify;
         int         samples;
-        GLboolean   sRGB;
+        int         sRGB;
         int         refreshRate;
         int         api;
         int         major;
         int         minor;
-        GLboolean   forward;
-        GLboolean   debug;
+        int         forward;
+        int         debug;
         int         profile;
         int         robustness;
     } hints;

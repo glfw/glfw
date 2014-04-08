@@ -126,19 +126,22 @@ This hint is ignored for windowed mode windows.
 
 The `GLFW_RED_BITS`, `GLFW_GREEN_BITS`, `GLFW_BLUE_BITS`, `GLFW_ALPHA_BITS`,
 `GLFW_DEPTH_BITS` and `GLFW_STENCIL_BITS` hints specify the desired bit
-depths of the various components of the default framebuffer.
+depths of the various components of the default framebuffer.  `GLFW_DONT_CARE`
+means the application has no preference.
 
 The `GLFW_ACCUM_RED_BITS`, `GLFW_ACCUM_GREEN_BITS`, `GLFW_ACCUM_BLUE_BITS`
 and `GLFW_ACCUM_ALPHA_BITS` hints specify the desired bit depths of the
-various components of the accumulation buffer.
+various components of the accumulation buffer.  `GLFW_DONT_CARE` means the
+application has no preference.
 
 The `GLFW_AUX_BUFFERS` hint specifies the desired number of auxiliary
-buffers.
+buffers.  `GLFW_DONT_CARE` means the application has no preference.
 
 The `GLFW_STEREO` hint specifies whether to use stereoscopic rendering.
 
 The `GLFW_SAMPLES` hint specifies the desired number of samples to use for
-multisampling.  Zero disables multisampling.
+multisampling.  Zero disables multisampling.  `GLFW_DONT_CARE` means the
+application has no preference.
 
 The `GLFW_SRGB_CAPABLE` hint specifies whether the framebuffer should be
 sRGB capable.
@@ -201,19 +204,19 @@ a robustness strategy.
 | `GLFW_VISIBLE`               | `GL_TRUE`                 | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_DECORATED`             | `GL_TRUE`                 | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_AUTO_ICONIFY`          | `GL_TRUE`                 | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_RED_BITS`              | 8                         | 0 to `INT_MAX`          |
-| `GLFW_GREEN_BITS`            | 8                         | 0 to `INT_MAX`          |
-| `GLFW_BLUE_BITS`             | 8                         | 0 to `INT_MAX`          |
-| `GLFW_ALPHA_BITS`            | 8                         | 0 to `INT_MAX`          |
-| `GLFW_DEPTH_BITS`            | 24                        | 0 to `INT_MAX`          |
-| `GLFW_STENCIL_BITS`          | 8                         | 0 to `INT_MAX`          |
-| `GLFW_ACCUM_RED_BITS`        | 0                         | 0 to `INT_MAX`          |
-| `GLFW_ACCUM_GREEN_BITS`      | 0                         | 0 to `INT_MAX`          |
-| `GLFW_ACCUM_BLUE_BITS`       | 0                         | 0 to `INT_MAX`          |
-| `GLFW_ACCUM_ALPHA_BITS`      | 0                         | 0 to `INT_MAX`          |
-| `GLFW_AUX_BUFFERS`           | 0                         | 0 to `INT_MAX`          |
-| `GLFW_SAMPLES`               | 0                         | 0 to `INT_MAX`          |
-| `GLFW_REFRESH_RATE`          | 0                         | 0 to `INT_MAX`          |
+| `GLFW_RED_BITS`              | 8                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_GREEN_BITS`            | 8                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_BLUE_BITS`             | 8                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_ALPHA_BITS`            | 8                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_DEPTH_BITS`            | 24                        | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_STENCIL_BITS`          | 8                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_ACCUM_RED_BITS`        | 0                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_ACCUM_GREEN_BITS`      | 0                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_ACCUM_BLUE_BITS`       | 0                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_ACCUM_ALPHA_BITS`      | 0                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_AUX_BUFFERS`           | 0                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_SAMPLES`               | 0                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_REFRESH_RATE`          | 0                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
 | `GLFW_STEREO`                | `GL_FALSE`                | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_SRGB_CAPABLE`          | `GL_FALSE`                | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_CLIENT_API`            | `GLFW_OPENGL_API`         | `GLFW_OPENGL_API` or `GLFW_OPENGL_ES_API` |

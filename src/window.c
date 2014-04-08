@@ -32,14 +32,6 @@
 #include <stdlib.h>
 
 
-// Return the maxiumum of the specified values
-//
-static int Max(int a, int b)
-{
-    return (a > b) ? a : b;
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                         GLFW event API                       //////
 //////////////////////////////////////////////////////////////////////////
@@ -151,20 +143,20 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     }
 
     // Set up desired framebuffer config
-    fbconfig.redBits        = Max(_glfw.hints.redBits, 0);
-    fbconfig.greenBits      = Max(_glfw.hints.greenBits, 0);
-    fbconfig.blueBits       = Max(_glfw.hints.blueBits, 0);
-    fbconfig.alphaBits      = Max(_glfw.hints.alphaBits, 0);
-    fbconfig.depthBits      = Max(_glfw.hints.depthBits, 0);
-    fbconfig.stencilBits    = Max(_glfw.hints.stencilBits, 0);
-    fbconfig.accumRedBits   = Max(_glfw.hints.accumRedBits, 0);
-    fbconfig.accumGreenBits = Max(_glfw.hints.accumGreenBits, 0);
-    fbconfig.accumBlueBits  = Max(_glfw.hints.accumBlueBits, 0);
-    fbconfig.accumAlphaBits = Max(_glfw.hints.accumAlphaBits, 0);
-    fbconfig.auxBuffers     = Max(_glfw.hints.auxBuffers, 0);
-    fbconfig.stereo         = _glfw.hints.stereo ? GL_TRUE : GL_FALSE;
-    fbconfig.samples        = Max(_glfw.hints.samples, 0);
-    fbconfig.sRGB           = _glfw.hints.sRGB ? GL_TRUE : GL_FALSE;
+    fbconfig.redBits        = _glfw.hints.redBits;
+    fbconfig.greenBits      = _glfw.hints.greenBits;
+    fbconfig.blueBits       = _glfw.hints.blueBits;
+    fbconfig.alphaBits      = _glfw.hints.alphaBits;
+    fbconfig.depthBits      = _glfw.hints.depthBits;
+    fbconfig.stencilBits    = _glfw.hints.stencilBits;
+    fbconfig.accumRedBits   = _glfw.hints.accumRedBits;
+    fbconfig.accumGreenBits = _glfw.hints.accumGreenBits;
+    fbconfig.accumBlueBits  = _glfw.hints.accumBlueBits;
+    fbconfig.accumAlphaBits = _glfw.hints.accumAlphaBits;
+    fbconfig.auxBuffers     = _glfw.hints.auxBuffers;
+    fbconfig.stereo         = _glfw.hints.stereo;
+    fbconfig.samples        = _glfw.hints.samples;
+    fbconfig.sRGB           = _glfw.hints.sRGB;
 
     // Set up desired window config
     wndconfig.width         = width;
@@ -202,10 +194,10 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
         // Set up desired video mode
         window->videoMode.width       = width;
         window->videoMode.height      = height;
-        window->videoMode.redBits     = Max(_glfw.hints.redBits, 0);
-        window->videoMode.greenBits   = Max(_glfw.hints.greenBits, 0);
-        window->videoMode.blueBits    = Max(_glfw.hints.blueBits, 0);
-        window->videoMode.refreshRate = Max(_glfw.hints.refreshRate, 0);
+        window->videoMode.redBits     = _glfw.hints.redBits;
+        window->videoMode.greenBits   = _glfw.hints.greenBits;
+        window->videoMode.blueBits    = _glfw.hints.blueBits;
+        window->videoMode.refreshRate = _glfw.hints.refreshRate;
     }
 
     window->monitor     = wndconfig.monitor;

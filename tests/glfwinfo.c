@@ -284,6 +284,20 @@ int main(int argc, char** argv)
     if (strategy)
         glfwWindowHint(GLFW_CONTEXT_ROBUSTNESS, strategy);
 
+    glfwWindowHint(GLFW_RED_BITS, GLFW_DONT_CARE);
+    glfwWindowHint(GLFW_GREEN_BITS, GLFW_DONT_CARE);
+    glfwWindowHint(GLFW_BLUE_BITS, GLFW_DONT_CARE);
+    glfwWindowHint(GLFW_ALPHA_BITS, GLFW_DONT_CARE);
+    glfwWindowHint(GLFW_DEPTH_BITS, GLFW_DONT_CARE);
+    glfwWindowHint(GLFW_STENCIL_BITS, GLFW_DONT_CARE);
+    glfwWindowHint(GLFW_ACCUM_RED_BITS, GLFW_DONT_CARE);
+    glfwWindowHint(GLFW_ACCUM_GREEN_BITS, GLFW_DONT_CARE);
+    glfwWindowHint(GLFW_ACCUM_BLUE_BITS, GLFW_DONT_CARE);
+    glfwWindowHint(GLFW_ACCUM_ALPHA_BITS, GLFW_DONT_CARE);
+    glfwWindowHint(GLFW_AUX_BUFFERS, GLFW_DONT_CARE);
+    glfwWindowHint(GLFW_SAMPLES, GLFW_DONT_CARE);
+    glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_DONT_CARE);
+
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
     window = glfwCreateWindow(200, 200, "Version", NULL, NULL);

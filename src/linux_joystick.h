@@ -28,7 +28,7 @@
 #define _linux_joystick_h_
 
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE \
-    _GLFWjoystickLinux joystick[GLFW_JOYSTICK_LAST + 1]
+    _GLFWjoystickLinux linux_js[GLFW_JOYSTICK_LAST + 1]
 
 
 //========================================================================

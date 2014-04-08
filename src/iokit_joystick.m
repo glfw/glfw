@@ -223,7 +223,7 @@ static void pollJoystickEvents(void)
     {
         CFIndex i;
         int buttonIndex = 0;
-        _GLFWjoystickIOKit* joystick = _glfw.joystick + joy;
+        _GLFWjoystickIOKit* joystick = _glfw.iokit_js + joy;
 
         if (!joystick->present)
             continue;
@@ -368,7 +368,7 @@ void _glfwInitJoysticks(void)
             CFRelease(valueRef);
         }
 
-        _GLFWjoystickIOKit* joystick = _glfw.joystick + joy;
+        _GLFWjoystickIOKit* joystick = _glfw.iokit_js + joy;
         joystick->present = GL_TRUE;
 
         result = IOCreatePlugInInterfaceForService(ioHIDDeviceObject,
@@ -450,7 +450,7 @@ void _glfwTerminateJoysticks(void)
 
     for (i = 0;  i < GLFW_JOYSTICK_LAST + 1;  i++)
     {
-        _GLFWjoystickIOKit* joystick = &_glfw.joystick[i];
+        _GLFWjoystickIOKit* joystick = &_glfw.iokit_js[i];
         removeJoystick(joystick);
     }
 }
@@ -464,12 +464,12 @@ int _glfwPlatformJoystickPresent(int joy)
 {
     pollJoystickEvents();
 
-    return _glfw.joystick[joy].present;
+    return _glfw.iokit_js[joy].present;
 }
 
 const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 {
-    _GLFWjoystickIOKit* joystick = _glfw.joystick + joy;
+    _GLFWjoystickIOKit* joystick = _glfw.iokit_js + joy;
 
     pollJoystickEvents();
 
@@ -482,7 +482,7 @@ const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 
 const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
 {
-    _GLFWjoystickIOKit* joystick = _glfw.joystick + joy;
+    _GLFWjoystickIOKit* joystick = _glfw.iokit_js + joy;
 
     pollJoystickEvents();
 
@@ -498,6 +498,6 @@ const char* _glfwPlatformGetJoystickName(int joy)
 {
     pollJoystickEvents();
 
-    return _glfw.joystick[joy].name;
+    return _glfw.iokit_js[joy].name;
 }
 

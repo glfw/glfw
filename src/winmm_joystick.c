@@ -63,7 +63,7 @@ void _glfwTerminateJoysticks(void)
     int i;
 
     for (i = 0;  i < GLFW_JOYSTICK_LAST;  i++)
-        free(_glfw.joystick[i].name);
+        free(_glfw.winmm_js[i].name);
 }
 
 
@@ -85,7 +85,7 @@ const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 {
     JOYCAPS jc;
     JOYINFOEX ji;
-    float* axes = _glfw.joystick[joy].axes;
+    float* axes = _glfw.winmm_js[joy].axes;
 
     if (_glfw_joyGetDevCaps(joy, &jc, sizeof(JOYCAPS)) != JOYERR_NOERROR)
         return NULL;
@@ -118,7 +118,7 @@ const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
 {
     JOYCAPS jc;
     JOYINFOEX ji;
-    unsigned char* buttons = _glfw.joystick[joy].buttons;
+    unsigned char* buttons = _glfw.winmm_js[joy].buttons;
 
     if (_glfw_joyGetDevCaps(joy, &jc, sizeof(JOYCAPS)) != JOYERR_NOERROR)
         return NULL;
@@ -169,9 +169,9 @@ const char* _glfwPlatformGetJoystickName(int joy)
     if (_glfw_joyGetDevCaps(joy, &jc, sizeof(JOYCAPS)) != JOYERR_NOERROR)
         return NULL;
 
-    free(_glfw.joystick[joy].name);
-    _glfw.joystick[joy].name = _glfwCreateUTF8FromWideString(jc.szPname);
+    free(_glfw.winmm_js[joy].name);
+    _glfw.winmm_js[joy].name = _glfwCreateUTF8FromWideString(jc.szPname);
 
-    return _glfw.joystick[joy].name;
+    return _glfw.winmm_js[joy].name;
 }
 

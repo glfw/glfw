@@ -33,7 +33,7 @@
 #include <IOKit/hid/IOHIDKeys.h>
 
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE \
-    _GLFWjoystickIOKit joystick[GLFW_JOYSTICK_LAST + 1]
+    _GLFWjoystickIOKit iokit_js[GLFW_JOYSTICK_LAST + 1]
 
 
 //========================================================================

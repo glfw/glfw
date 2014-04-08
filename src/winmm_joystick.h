@@ -28,7 +28,7 @@
 #define _winmm_joystick_h_
 
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE \
-    _GLFWjoystickWinMM joystick[GLFW_JOYSTICK_LAST + 1]
+    _GLFWjoystickWinMM winmm_js[GLFW_JOYSTICK_LAST + 1]
 
 
 //========================================================================

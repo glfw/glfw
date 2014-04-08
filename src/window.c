@@ -173,6 +173,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     wndconfig.resizable     = _glfw.hints.resizable ? GL_TRUE : GL_FALSE;
     wndconfig.visible       = _glfw.hints.visible ? GL_TRUE : GL_FALSE;
     wndconfig.decorated     = _glfw.hints.decorated ? GL_TRUE : GL_FALSE;
+    wndconfig.autoIconify   = _glfw.hints.autoIconify ? GL_TRUE : GL_FALSE;
     wndconfig.monitor       = (_GLFWmonitor*) monitor;
 
     // Set up desired context config
@@ -207,10 +208,11 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
         window->videoMode.refreshRate = Max(_glfw.hints.refreshRate, 0);
     }
 
-    window->monitor    = wndconfig.monitor;
-    window->resizable  = wndconfig.resizable;
-    window->decorated  = wndconfig.decorated;
-    window->cursorMode = GLFW_CURSOR_NORMAL;
+    window->monitor     = wndconfig.monitor;
+    window->resizable   = wndconfig.resizable;
+    window->decorated   = wndconfig.decorated;
+    window->autoIconify = wndconfig.autoIconify;
+    window->cursorMode  = GLFW_CURSOR_NORMAL;
 
     // Save the currently current context so it can be restored later
     previous = _glfwPlatformGetCurrentContext();
@@ -267,9 +269,10 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.minor = 0;
 
     // The default is a visible, resizable window with decorations
-    _glfw.hints.resizable = GL_TRUE;
-    _glfw.hints.visible   = GL_TRUE;
-    _glfw.hints.decorated = GL_TRUE;
+    _glfw.hints.resizable   = GL_TRUE;
+    _glfw.hints.visible     = GL_TRUE;
+    _glfw.hints.decorated   = GL_TRUE;
+    _glfw.hints.autoIconify = GL_TRUE;
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil
     _glfw.hints.redBits     = 8;
@@ -330,6 +333,9 @@ GLFWAPI void glfwWindowHint(int target, int hint)
             break;
         case GLFW_DECORATED:
             _glfw.hints.decorated = hint;
+            break;
+        case GLFW_AUTO_ICONIFY:
+            _glfw.hints.autoIconify = hint;
             break;
         case GLFW_VISIBLE:
             _glfw.hints.visible = hint;

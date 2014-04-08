@@ -152,6 +152,7 @@ struct _GLFWwndconfig
     GLboolean     resizable;
     GLboolean     visible;
     GLboolean     decorated;
+    GLboolean     autoIconify;
     _GLFWmonitor* monitor;
 };
 
@@ -215,6 +216,7 @@ struct _GLFWwindow
     GLboolean           iconified;
     GLboolean           resizable;
     GLboolean           decorated;
+    GLboolean           autoIconify;
     GLboolean           visible;
     GLboolean           closed;
     void*               userPointer;
@@ -319,6 +321,7 @@ struct _GLFWlibrary
         GLboolean   resizable;
         GLboolean   visible;
         GLboolean   decorated;
+        GLboolean   autoIconify;
         int         samples;
         GLboolean   sRGB;
         int         refreshRate;

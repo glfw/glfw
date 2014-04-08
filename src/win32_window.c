@@ -436,7 +436,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 if (window->cursorMode != GLFW_CURSOR_NORMAL)
                     restoreCursor(window);
 
-                if (window->monitor)
+                if (window->monitor && window->autoIconify)
                 {
                     if (!iconified)
                     {
@@ -455,7 +455,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 if (window->cursorMode != GLFW_CURSOR_NORMAL)
                     _glfwPlatformApplyCursorMode(window);
 
-                if (window->monitor)
+                if (window->monitor && window->autoIconify)
                     _glfwSetVideoMode(window->monitor, &window->videoMode);
             }
 

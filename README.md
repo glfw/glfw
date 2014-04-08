@@ -58,6 +58,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - Added `empty` test program for verifying posting of empty events
  - Added `glfwGetWindowFrameSize` for retrieving the size of the frame around
    the client area of a window
+ - Added `GLFW_AUTO_ICONIFY` for controlling whether full screen windows
+   automatically iconify (and restore the previous video mode) on focus loss
  - Added `GLFW_INCLUDE_ES31` for including the OpenGL ES 3.1 header
  - Added *partial and experimental* support for Wayland
  - Bugfix: The debug context attribute was set from `GL_ARB_debug_output` even

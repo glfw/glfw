@@ -348,7 +348,7 @@ struct _GLFWlibrary
     // This is defined in the window API's platform.h
     _GLFW_PLATFORM_LIBRARY_WINDOW_STATE;
     // This is defined in the context API's context.h
-    _GLFW_PLATFORM_LIBRARY_OPENGL_STATE;
+    _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE;
     // This is defined in the platform's time.h
     _GLFW_PLATFORM_LIBRARY_TIME_STATE;
     // This is defined in the platform's joystick.h

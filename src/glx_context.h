@@ -59,7 +59,7 @@
 
 #define _GLFW_PLATFORM_FBCONFIG             GLXFBConfig     glx
 #define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextGLX glx
-#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryGLX glx
+#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE _GLFWlibraryGLX glx
 
 #ifndef GLX_MESA_swap_control
 typedef int (*PFNGLXSWAPINTERVALMESAPROC)(int);

@@ -35,7 +35,7 @@
 
 #define _GLFW_PLATFORM_FBCONFIG             int             wgl
 #define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextWGL wgl
-#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryWGL wgl
+#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE _GLFWlibraryWGL wgl
 
 
 //========================================================================

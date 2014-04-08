@@ -30,7 +30,7 @@
 
 #include <pthread.h>
 
-#define _GLFW_PLATFORM_TLS_STATE _GLFWtlsPOSIX posix_tls
+#define _GLFW_PLATFORM_LIBRARY_TLS_STATE _GLFWtlsPOSIX posix_tls
 
 
 //========================================================================

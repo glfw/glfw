@@ -354,7 +354,7 @@ struct _GLFWlibrary
     // This is defined in the platform's joystick.h
     _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE;
     // This is defined in the platform's tls.h
-    _GLFW_PLATFORM_TLS_STATE;
+    _GLFW_PLATFORM_LIBRARY_TLS_STATE;
 };
 
 

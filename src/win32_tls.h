@@ -28,7 +28,7 @@
 #ifndef _win32_tls_h_
 #define _win32_tls_h_
 
-#define _GLFW_PLATFORM_TLS_STATE _GLFWtlsWin32 win32_tls
+#define _GLFW_PLATFORM_LIBRARY_TLS_STATE _GLFWtlsWin32 win32_tls
 
 
 //========================================================================

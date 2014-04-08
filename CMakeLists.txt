@@ -31,7 +31,7 @@ else()
     option(GLFW_USE_EGL "Use EGL for context creation" OFF)
 endif()
 
-if (UNIX)
+if (UNIX AND NOT APPLE)
     option(GLFW_USE_WAYLAND "Use Wayland for context creation (implies EGL as well)" OFF)
 endif()
 

@@ -36,6 +36,7 @@
  #error "The Wayland backend depends on EGL platform support"
 #endif
 
+#include "posix_tls.h"
 #include "posix_time.h"
 #include "linux_joystick.h"
 

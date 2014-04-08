@@ -14,6 +14,9 @@ If you are new to GLFW, you may find the
 [transition guide](http://www.glfw.org/docs/latest/moving.html) for moving to
 the GLFW 3 API.
 
+Note that a number of source files have been added or renamed in 3.1, which may
+require you to update any custom build files you have.
+
 
 ## Compiling GLFW
 

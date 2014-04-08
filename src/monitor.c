@@ -313,7 +313,7 @@ GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* handle, int* width, int* he
     if (width)
         *width = 0;
     if (height)
-        height = 0;
+        *height = 0;
 
     _GLFW_REQUIRE_INIT();
 

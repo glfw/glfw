@@ -41,6 +41,7 @@ src/glfw3dll.lib
 src/glfw3dll.a
 examples/*.app
 examples/*.exe
+examples/bin
 examples/boing
 examples/gears
 examples/heightmap
@@ -51,6 +52,7 @@ examples/wave
 tests/*.app
 tests/*.exe
 tests/accuracy
+tests/bin
 tests/clipboard
 tests/cursor
 tests/cursoranim
@@ -71,4 +73,5 @@ tests/threads
 tests/title
 tests/version
 tests/windows
+
 

@@ -79,6 +79,16 @@ It has no function on other platforms.
 
 @section build_link Link with the right libraries
 
+This section assumes basic understanding of how to link a C/C++ program as well
+as how to use the specific linker of your chosen development environment.
+**This is not a tutorial on linking.**  The linking process should be explained
+in your C/C++ programming material and the use and options for your linker
+should be described in detail in the documentation for your development
+environment.  A good general introduction to linking is
+[Beginner's Guide to Linkers](http://www.lurklurk.org/linkers/linkers.html) by
+David Drysdale.
+
+
 @subsection build_link_win32 With MinGW or Visual C++ on Windows
 
 The static version of the GLFW library is named `glfw3`.  When using this

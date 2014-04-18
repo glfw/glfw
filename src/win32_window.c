@@ -396,7 +396,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
     switch (uMsg)
     {
-        case WM_CREATE:
+        case WM_NCCREATE:
         {
             CREATESTRUCTW* cs = (CREATESTRUCTW*) lParam;
             SetWindowLongPtrW(hWnd, 0, (LONG_PTR) cs->lpCreateParams);

@@ -6,6 +6,8 @@ html {
 	font-size:16px;
 	height:64px;
 	max-width:920px;
+	min-width:800px;
+	padding:0px 32px;
 	margin:0em auto;
 }
 
@@ -22,7 +24,7 @@ html {
 
 .glfwnavbar {
 	list-style-type:none;
-	margin-top:0px;
+	margin:0px auto;
 	float:right;
 }
 
@@ -50,6 +52,7 @@ html {
 address.footer {
 	text-align:center;
 	padding:2em;
+	margin-top:3em;
 }
 
 div#top {
@@ -60,12 +63,12 @@ div#navrow1,div#navrow2,div#navrow3,div#navrow4 {
 	background-color:hsl(0,0%,40%);
 	background-image:none;
 	max-width:920px;
+	min-width:800px;
 	margin:0em auto;
 	font-size:13px;
 }
 
 ul.tablist {
-	min-width:700px;
 	height:36px;
 	display:block;
 	position:relative;
@@ -74,13 +77,11 @@ ul.tablist {
 .tablist a,.tablist a:hover,.tablist li,.tablist li.current a {
 	background-image:none;
 	text-shadow:none;
-	height:36px;
 }
 
 .tablist a,.tablist a:visited {
 	color:hsl(0,0%,95%);
 	text-shadow:none;
-	padding:0px 12px;
 }
 
 .tablist li.current a {
@@ -97,7 +98,7 @@ div.contents {
 div.contents,div.header {
 	max-width:920px;
 	margin:0em auto;
-	padding:0em 2em 2em 2em;
+	padding:0px 32px;
 	background-color:hsl(0,0%,100%);
 }
 

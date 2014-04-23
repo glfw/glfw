@@ -657,13 +657,15 @@ INPUT                  = @GLFW_INTERNAL_DOCS@                         \
                          @GLFW_SOURCE_DIR@/include/GLFW/glfw3native.h \
                          @GLFW_SOURCE_DIR@/docs/main.dox              \
                          @GLFW_SOURCE_DIR@/docs/news.dox              \
-                         @GLFW_SOURCE_DIR@/docs/quick.dox             \
                          @GLFW_SOURCE_DIR@/docs/moving.dox            \
+                         @GLFW_SOURCE_DIR@/docs/quick.dox             \
                          @GLFW_SOURCE_DIR@/docs/compile.dox           \
                          @GLFW_SOURCE_DIR@/docs/build.dox             \
+                         @GLFW_SOURCE_DIR@/docs/intro.dox             \
                          @GLFW_SOURCE_DIR@/docs/context.dox           \
                          @GLFW_SOURCE_DIR@/docs/monitor.dox           \
                          @GLFW_SOURCE_DIR@/docs/window.dox            \
+                         @GLFW_SOURCE_DIR@/docs/input.dox             \
                          @GLFW_SOURCE_DIR@/docs/compat.dox
 
 # This tag can be used to specify the character encoding of the source files

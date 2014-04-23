@@ -6,15 +6,16 @@
 
 The primary purpose of GLFW is to provide a simple interface to window
 management and OpenGL and OpenGL ES context creation.  GLFW supports
-multiple windows, each of which has its own context.
+multiple windows, with each window having its own context.
 
 
 @section context_object Context handles
 
-The @ref GLFWwindow object encapsulates both a window and a context.  They are
-created with @ref glfwCreateWindow and destroyed with @ref glfwDestroyWindow (or
-@ref glfwTerminate, if any remain).  As the window and context are inseparably
-linked, the object pointer is used as both a context and window handle.
+The @ref GLFWwindow object encapsulates both a [window](@ref window) and
+a context.  It is created with @ref glfwCreateWindow and destroyed with @ref
+glfwDestroyWindow or @ref glfwTerminate.  As the window and context are
+inseparably linked, the object pointer is used as both a context and window
+handle.
 
 
 @section context_hints Context creation hints
@@ -27,20 +28,18 @@ what kind of context is created.  See
 @section context_sharing Context object sharing
 
 When creating a window and context with @ref glfwCreateWindow, you can specify
-another window whose context the new one should share its objects with.  OpenGL
-object sharing is implemented by the operating system and graphics driver and is
-described in the OpenGL documentation.  On platforms where it is possible to
-choose which types of objects are shared, GLFW requests that all are shared.
+another window whose context the new one should share its objects with.  Object
+sharing is implemented by the operating system and graphics driver and is
+described in the OpenGL and OpenGL ES documentation.  On platforms where it is
+possible to choose which types of objects are shared, GLFW requests that all are
+shared.
 
 
 @section context_current Current context
 
-Before you can use the OpenGL or OpenGL ES APIs, you need to have a current
+Before you can make OpenGL or OpenGL ES calls, you need to have a current
 context of the proper type.  The context encapsulates all render state and all
 objects like textures and shaders.
-
-Note that a context can only be current for a single thread at a time, and
-a thread can only have a single context at a time.
 
 A context is made current with @ref glfwMakeContextCurrent.
 
@@ -54,18 +53,23 @@ The current context is returned by @ref glfwGetCurrentContext.
 GLFWwindow* window = glfwGetCurrentContext();
 @endcode
 
+@note A context must only be current for a single thread at a time, and a thread
+must only have a single context current at a time.
+
 
 @section context_swap Swapping buffers
 
-See [swapping buffers](@ref window_swap) in the window handling guide.
+Buffer swapping is part of the window and framebuffer, not the context.  See
+@ref window_swap in the window handling guide.
 
 
-@section context_glext OpenGL extension handling
+@section context_glext OpenGL and OpenGL ES extensions
 
-One of the benefits of OpenGL is its extensibility.  Independent hardware
-vendors (IHVs) may include functionality in their OpenGL implementations that
-expand upon the OpenGL standard before that functionality is included in a new
-version of the OpenGL specification.
+One of the benefits of OpenGL and OpenGL ES are their extensibility.
+Hardware vendors may include extensions in their implementations that extend the
+API before that functionality is included in a new version of the OpenGL or
+OpenGL ES specification, and some extensions are never included and remain
+as extensions until they become obsolete.
 
 An extension is defined by:
 
@@ -74,23 +78,105 @@ An extension is defined by:
 - New OpenGL functions (e.g. `glGetDebugMessageLogARB`)
 
 Note the `ARB` affix, which stands for Architecture Review Board and is used
-for official extensions.  There are many different affixes, depending on who
-wrote the extension.  A list of extensions, together with their specifications,
-can be found at the [OpenGL Registry](http://www.opengl.org/registry/).
+for official extensions.  The extension above was created by the ARB, but there
+are many different affixes, like `NV` for Nvidia and `AMD` for, well, AMD.  Any
+group may also use the generic `EXT` affix.  Lists of extensions, together with
+their specifications, can be found at the
+[OpenGL Registry](http://www.opengl.org/registry/) and
+[OpenGL ES Registry](https://www.khronos.org/registry/gles/).
+
+
+@subsection context_glext_auto Using an extension loader library
+
+This is the easiest and best way to load extensions and newer versions of the
+OpenGL or OpenGL ES API.  One such library is
+[glad](https://github.com/Dav1dde/glad) and there are several others.  They will
+take care of all the details of declaring and loading everything you need.
+
+The following example will use glad, but other extension loader libraries work
+similary.
+
+First you need to generate the source files using the glad Python script.  This
+example generates a loader for any version of OpenGL, which is the default for
+both GLFW and glad, but loaders for OpenGL ES, as well as loaders for specific
+API versions and extension sets can be generated.  The generated files are
+written to the `output` directory.
+
+@code{.sh}
+python main.py --no-loader --out-path output
+@endcode
+
+@note The `--no-loader` option is used because GLFW already provides a function
+for loading OpenGL and OpenGL ES function pointers and glad can use this instead
+of having to add its own.
+
+Add the generated `output/src/glad.c`, `output/include/glad/glad.h` and
+`output/include/KHR/khrplatform.h` files to your build.  Then you need to
+include the glad header file, which will replace the OpenGL header of your
+development environment.
+
+@code
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+@endcode
+
+Finally you need to initialize glad once you have a matching current context.
+
+@code
+window = glfwCreateWindow(640, 480, "My Window", NULL, NULL);
+if (!window)
+{
+    ...
+}
+
+glfwMakeContextCurrent(window);
+
+gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+@endcode
+
+Once glad has been loaded, you have access to all OpenGL core and extension
+functions supported by the context you created and you are ready to start
+rendering.
+
+You can specify a minimum required OpenGL or OpenGL ES version with
+[context hints](@ref window_hints_ctx).  If your needs are more complex, you can
+check the actual OpenGL or OpenGL ES version with
+[context attributes](@ref window_attribs_context), or you can check whether
+a specific version is supported by the current context with the
+`GLAD_GL_VERSION_x_x` booleans.
+
+@code
+if (GLAD_GL_VERSION_3_2)
+{
+    // Call OpenGL 3.2+ specific code
+}
+@endcode
+
+To check whether a specific extension is supported, use the `GLAD_GL_xxx`
+booleans.
+
+@code
+if (GLAD_GL_ARB_debug_output)
+{
+    // Use GL_ARB_debug_output
+}
+@endcode
+
+
+@subsection context_glext_manual Loading extensions manually
 
 To use a certain extension, you must first check whether the context supports
 that extension and then, if it introduces new functions, retrieve the pointers
-to those functions.
+to those functions.  GLFW provides @ref glfwExtensionSupported and @ref
+glfwGetProcAddress for manual loading of extensions and new API functions.
 
-This can be done with GLFW, as will be described in this section, but usually
-you will instead want to use a dedicated extension loading library such as
-[GLEW](http://glew.sourceforge.net/).  This kind of library greatly reduces the
-amount of work necessary to use both OpenGL extensions and modern versions of
-the OpenGL API.  GLEW in particular has been extensively tested with and works
-well with GLFW.
+@note It is strongly recommended that you use an existing extension loader
+library like [glad](https://github.com/Dav1dde/glad) instead of loading
+manually.  Extension loading is a solved problem and you will gain nothing from
+solving it again by hand.
 
 
-@subsection context_glext_header The glext.h header
+@subsubsection context_glext_header The glext.h header
 
 The `glext.h` header is a continually updated file that defines the interfaces
 for all OpenGL extensions.  The latest version of this can always be found at
@@ -101,11 +187,11 @@ you wish to use.
 
 The header defines function pointer types for all functions of all extensions it
 supports.  These have names like `PFNGLGETDEBUGMESSAGELOGARB` (for
-`glGetDebugMessageLogARB`), i.e. the name is made uppercase and `PFN` and `PROC`
-are added to the ends.
+`glGetDebugMessageLogARB`), i.e. the name is made uppercase and `PFN` (pointer
+to function) and `PROC` (procedure) are added to the ends.
 
 
-@subsection context_glext_string Checking for extensions
+@subsubsection context_glext_string Checking for extensions
 
 A given machine may not actually support the extension (it may have older
 drivers or a graphics card that lacks the necessary hardware features), so it
@@ -124,12 +210,12 @@ extension is supported, @ref glfwExtensionSupported returns non-zero, otherwise
 it returns zero.
 
 
-@subsection context_glext_proc Fetching function pointers
+@subsubsection context_glext_proc Fetching function pointers
 
 Many extensions, though not all, require the use of new OpenGL functions.
-These entry points are often not exposed by your link libraries, making
-it necessary to fetch them at run time.  With @ref glfwGetProcAddress you can
-retrieve the address of extension and non-extension OpenGL functions.
+These functions often do not have entry points in the client API libraries of
+your operating system, making it necessary to fetch them at run time.  You can
+retreive pointers to these functions with @ref glfwGetProcAddress.
 
 @code
 PFNGLGETDEBUGMESSAGELOGARB pfnGetDebugMessageLog = glfwGetProcAddress("glGetDebugMessageLogARB");

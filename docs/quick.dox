@@ -1,6 +1,6 @@
 /*!
 
-@page quick Getting started
+@page quick Getting started — A quick introduction
 
 @tableofcontents
 
@@ -290,19 +290,39 @@ glfwWaitEvents();
 @endcode
 
 
-@section quick_example Putting it together: A small GLFW application
+@section quick_example Putting it together: A simple application
 
 Now that you know how to initialize GLFW, create a window and poll for
 keyboard input, it's possible to create a simple program.
 
 @snippet simple.c code
 
-This program creates a 640 by 480 windowed mode window and runs a loop clearing
-the screen, rendering a triangle and processing events until the user closes the
-window.  It can be found in the source distribution as `examples/simple.c`, and
-is by default compiled along with all other examples when you build GLFW.
+This program creates a 640 by 480 windowed mode window and starts a loop that
+clears the screen, renders a triangle and processes events until the user either
+presses Escape or closes the window.
 
-To learn more about how to compile and link programs that use GLFW, see
+This program uses only a few of the many functions GLFW provides.  There are
+guides for each of the areas covered by GLFW.  Each guide will introduce all the
+functions for that category.
+
+ - @ref intro
+ - @ref window
+ - @ref context
+ - @ref monitor
+ - @ref input
+
+
+@section quick_build Compiling and linking the program
+
+The complete program above can be found in the source distribution as
+`examples/simple.c` and is compiled along with all other examples when you
+build GLFW.  That is, if you have compiled GLFW then you have already built this
+as `simple.exe` on Windows, `simple` on Linux or `simple.app` on OS X.
+
+This tutorial ends here.  Once you have written a program that uses GLFW, you
+will need to compile and link it.  How to do that depends on the development
+environment you are using and is best explained by the documentation for that
+environment.  To learn about the details that are specific to GLFW, see
 @ref build.
 
 */

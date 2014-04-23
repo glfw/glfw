@@ -23,7 +23,7 @@ windows.  The callback is set with the @ref glfwSetDropCallback function.
 @subsection news_31_emptyevent Empty event support
 
 GLFW now provides the @ref glfwPostEmptyEvent function for posting an empty
-event from a secondary thread to the main thread event queue, causing @ref
+event from another thread to the main thread event queue, causing @ref
 glfwWaitEvents to return.
 
 
@@ -45,6 +45,12 @@ screen despite losing focus.
 
 GLFW not supports floating windows, also called topmost or always on top, for
 easier debugging, with the `GLFW_FLOATING` window hint.
+
+
+@subsection news_31_egl Stable EGL support
+
+The support for EGL is now stable, successfully running on PandaBoards, Mesa,
+ANGLE, Wayland, AMD EGL and others.
 
 
 @section news_30 New features in version 3.0

@@ -57,10 +57,10 @@ Examples: @ref _glfwIsValidContextConfig, @ref _GLFWwindow, `_glfw.currentRamp`
 
 The platform interface implements all platform-specific operations as a service
 to the public interface.  This includes event processing.  The platform
-interface is never directly called by users of GLFW and never directly calls the
-user's code.  It is also prohibited from modifying the platform-independent part
-of the internal structs.  Instead, it calls the event interface when events
-interesting to GLFW are received.
+interface is never directly called by application code and never directly calls
+application-provided callbacks.  It is also prohibited from modifying the
+platform-independent part of the internal structs.  Instead, it calls the event
+interface when events interesting to GLFW are received.
 
 The platform interface mirrors those parts of the public interface that needs to
 perform platform-specific operations on some or all platforms.  The are also
@@ -85,8 +85,8 @@ Examples: `window.win32.handle`, `_glfw.x11.display`
 @section internals_event Event interface
 
 The event interface is implemented in the same shared source files as the public
-interface and is responsible for delivering the events it receives to the user,
-either via callbacks, via window state changes or both.
+interface and is responsible for delivering the events it receives to the
+application, either via callbacks, via window state changes or both.
 
 The function names of the event interface use a `_glfwInput` prefix and the
 ObjectEvent pattern.

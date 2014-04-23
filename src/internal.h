@@ -599,7 +599,8 @@ void _glfwPlatformSwapBuffers(_GLFWwindow* window);
  */
 void _glfwPlatformSwapInterval(int interval);
 
-/*! @ingroup platform
+/*! @copydoc glfwExtensionSupported
+ *  @ingroup platform
  */
 int _glfwPlatformExtensionSupported(const char* extension);
 
@@ -608,10 +609,19 @@ int _glfwPlatformExtensionSupported(const char* extension);
  */
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname);
 
+/*! @copydoc glfwCreateCursor
+ *  @ingroup platform
+ */
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot);
 
+/*! @copydoc glfwDestroyCursor
+ *  @ingroup platform
+ */
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor);
 
+/*! @copydoc glfwSetCursor
+ *  @ingroup platform
+ */
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor);
 
 //========================================================================

@@ -25,10 +25,15 @@ by 480 windowed mode window:
 
 @code
 GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
+if (!window)
+{
+    // Handle window creation failure
+}
 @endcode
 
-If window creation fails, `NULL` will be returned, so you need to check whether
-it did.
+If window creation fails, `NULL` will be returned, so you need to check the
+return value.  If creation failed, an error will have been reported to the error
+callback.
 
 This handle is then passed to all window related functions, and is provided to
 you along with input events, so you know which window received the input.
@@ -91,17 +96,15 @@ resulting window and context may differ from what these hints requested.  To
 find out the actual attributes of the created window and context, use the
 @ref glfwGetWindowAttrib function.
 
-The following hints are hard constraints:
+The following hints are always hard constraints:
 - `GLFW_STEREO`
 - `GLFW_DOUBLEBUFFER`
 - `GLFW_CLIENT_API`
 
-The following additional hints are hard constraints if requesting an OpenGL
-context:
+The following additional hints are hard constraints when requesting an OpenGL
+context, but are ignored when requesting an OpenGL ES context:
 - `GLFW_OPENGL_FORWARD_COMPAT`
 - `GLFW_OPENGL_PROFILE`
-
-Hints that do not apply to a given type of window or context are ignored.
 
 
 @subsection window_hints_wnd Window related hints
@@ -140,8 +143,14 @@ and `GLFW_ACCUM_ALPHA_BITS` hints specify the desired bit depths of the
 various components of the accumulation buffer.  `GLFW_DONT_CARE` means the
 application has no preference.
 
+@note Accumulation buffers are a legacy OpenGL feature and should not be used in
+new code.
+
 The `GLFW_AUX_BUFFERS` hint specifies the desired number of auxiliary
 buffers.  `GLFW_DONT_CARE` means the application has no preference.
+
+@note Auxiliary buffers are a legacy OpenGL feature and should not be used in
+new code.
 
 The `GLFW_STEREO` hint specifies whether to use stereoscopic rendering.  This is
 a hard constraint.
@@ -317,6 +326,10 @@ a window.
 int width, height;
 glfwGetWindowSize(window, &width, &height);
 @endcode
+
+@note Do not pass the window size to `glViewport` or other pixel-based OpenGL
+calls.  The window size is in screen coordinates, not pixels.  Use the
+framebuffer size, which is in pixels, for pixel-based calls.
 
 
 @section window_fbsize Window framebuffer size

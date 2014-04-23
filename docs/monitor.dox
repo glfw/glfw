@@ -7,13 +7,25 @@
 
 @section monitor_objects Monitor objects
 
-The @ref GLFWmonitor object represents a currently connected monitor.
+A monitor object represents a currently connected monitor and is represented as
+a pointer to the [opaque](https://en.wikipedia.org/wiki/Opaque_data_type) type
+@ref GLFWmonitor.  Monitor objects cannot be created or destroyed by the
+application and retain their addresses until the monitors they represent are
+disconnected or until the library is [terminated](@ref intro_init_terminate).
+
+Each monitor has a human-readable name, a current video mode, a list of
+supported video modes, a virtual position, an estimated physical size and
+a gamma ramp.  
+
+The virtual position of a monitor is in screen coordinates and, together with
+the current video mode, describes the viewports that the connected monitors
+provide into the virtual desktop that spans them.
 
 
-@section monitor_monitors Retrieving monitors
+@subsection monitor_monitors Retrieving monitors
 
-The primary monitor is returned by @ref glfwGetPrimaryMonitor.  It is usually
-the user's preferred monitor and the one with global UI elements like task bar
+The primary monitor is returned by @ref glfwGetPrimaryMonitor.  It is the user's
+preferred monitor and is usually the one with global UI elements like task bar
 or menu bar.
 
 @code
@@ -21,14 +33,20 @@ GLFWmonitor* primary = glfwGetPrimaryMonitor();
 @endcode
 
 You can retrieve all currently connected monitors with @ref glfwGetMonitors.
+The primary monitor is always the first monitor in the returned array.
 
 @code
 int count;
 GLFWmonitor** monitors = glfwGetMonitors(&count);
 @endcode
 
+@note Monitors other than the primary monitor may be moved to a different index
+in the array if another monitor is disconnected.
 
-@section monitor_modes Retrieving video modes
+
+@section monitor_properties Monitor properties
+
+@subsection monitor_modes Video modes
 
 Although GLFW generally does a good job at selecting a suitable video
 mode for you when you open a full screen window, it is sometimes useful to
@@ -49,10 +67,10 @@ const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 @endcode
 
 
-@section monitor_size Monitor physical size
+@subsection monitor_size Physical size
 
-The physical size in millimetres of a monitor, or an approximation of it, can be
-retrieved with @ref glfwGetMonitorPhysicalSize.  
+The physical size in millimetres of a monitor, or an estimation of it, can be
+retrieved with @ref glfwGetMonitorPhysicalSize.
 
 @code
 int widthMM, heightMM;
@@ -67,28 +85,61 @@ const double dpi = mode->width / (widthMM / 25.4);
 @endcode
 
 
-@section monitor_name Monitor name
+@subsection monitor_pos Virtual position
 
-The name of a monitor is returned by @ref glfwGetMonitorName.
+The position of the monitor on the virtual desktop, in screen coordinates, can
+be retrieved with @ref glfwGetMonitorPos.
+
+@code
+int xpos, ypos;
+glfwGetMonitorPos(monitor, &xpos, &ypos);
+@endcode
+
+
+@subsection monitor_name Human-readable name
+
+The human-readable name of a monitor is returned by @ref glfwGetMonitorName.
+It is a regular C string using the UTF-8 encoding.
 
 @code
 const char* name = glfwGetMonitorName(monitor);
 @endcode
 
-The monitor name is a regular C string using the UTF-8 encoding.  Note that
-monitor names are not guaranteed to be unique.                        
+@note Monitor names are not guaranteed to be unique.  Two monitors of the same
+model and make may have the same name.  Only the address of a monitor object is
+guaranteed to be unique.
 
 
-@section monitor_gamma Monitor gamma ramp
+@subsection monitor_gamma Gamma ramp
 
 The gamma ramp of a monitor can be set with @ref glfwSetGammaRamp, which accepts
 a monitor handle and a pointer to a @ref GLFWgammaramp structure.
 
 @code
+GLFWgammaramp ramp;
+unsigned short red[256], green[256], blue[256];
+
+ramp.size = 256;
+ramp.red = red;
+ramp.green = green;
+ramp.blue = blue;
+
+for (i = 0;  i < ramp.size;  i++)
+{
+    // Fill out gamma ramp arrays as desired
+}
+
 glfwSetGammaRamp(monitor, &ramp);
 @endcode
 
-The current gamma ramp for a monitor is returned by @ref glfwGetGammaRamp.
+The gamma ramp data is copied before the function returns, so there is no need
+to keep it around once the ramp has been set.
+
+@note It is recommended to use gamma ramps of size 256, as that is the size
+supported by virtually all graphics cards on all platforms.
+
+The current gamma ramp for a monitor is returned by @ref glfwGetGammaRamp.  The
+returned structure and its arrays are allocated and freed by GLFW.
 
 @code
 const GLFWgammaramp* ramp = glfwGetGammaRamp(monitor);

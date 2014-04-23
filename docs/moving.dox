@@ -7,19 +7,38 @@
 This is a transition guide for moving from GLFW 2 to 3.  It describes what has
 changed or been removed, but does *not* include
 [new features](@ref news) unless they are required when moving an existing code
-base onto the new API.  For example, use of the new multi-monitor functions are
+base onto the new API.  For example, the new multi-monitor functions are
 required to create full screen windows with GLFW 3.
 
 
-@section moving_removed Removed features
+@section moving_removed Changed and removed features
 
-@subsection moving_threads Threading functions
+@subsection moving_renamed_files Renamed library and header file
 
-The threading functions have been removed, including the sleep function.  They
-were fairly primitive, under-used, poorly integrated and took time away from the
-focus of GLFW (i.e.  context, input and window).  There are better threading
-libraries available and native threading support is available in both C++11 and
-C11, both of which are gaining traction. 
+The GLFW 3 header is named @ref glfw3.h and moved to the `GLFW` directory, to
+avoid collisions with the headers of other major versions.  Similarly, the GLFW
+3 library is named `glfw3,` except when it's installed as a shared library on
+Unix-like systems, where it uses the
+[soname](https://en.wikipedia.org/wiki/soname) `libglfw.so.3`.
+
+@par Old syntax
+@code
+#include <GL/glfw.h>
+@endcode
+
+@par New syntax
+@code
+#include <GLFW/glfw3.h>
+@endcode
+
+
+@subsection moving_threads Removal of threading functions
+
+The threading functions have been removed, including the per-thread sleep
+function.  They were fairly primitive, under-used, poorly integrated and took
+time away from the focus of GLFW (i.e.  context, input and window).  There are
+better threading libraries available and native threading support is available
+in both C++11 and C11, both of which are gaining traction. 
 
 If you wish to use the C++11 or C11 facilities but your compiler doesn't yet
 support them, see the
@@ -30,30 +49,233 @@ threading APIs in C++11 and C11, and in fact some GLFW 3 test programs use
 TinyCThread.
 
 However, GLFW 3 has better support for *use from multiple threads* than GLFW
-2 had.  Contexts can be made current on and rendered with from secondary
-threads, and the documentation explicitly states which functions may be used
-from secondary threads and which may only be used from the main thread, i.e. the
-thread that calls main.
+2 had.  Contexts can be made current on any thread, although only a single
+thread at a time, and the documentation explicitly states which functions may be
+used from any thread and which may only be used from the main thread.
+
+@par Removed functions
+`glfwSleep`, `glfwCreateThread`, `glfwDestroyThread`, `glfwWaitThread`,
+`glfwGetThreadID`, `glfwCreateMutex`, `glfwDestroyMutex`, `glfwLockMutex`,
+`glfwUnlockMutex`, `glfwCreateCond`, `glfwDestroyCond`, `glfwWaitCond`,
+`glfwSignalCond`, `glfwBroadcastCond` and `glfwGetNumberOfProcessors`.
 
 
-@subsection moving_image Image and texture loading
+@subsection moving_image Removal of image and texture loading
 
 The image and texture loading functions have been removed.  They only supported
 the Targa image format, making them mostly useful for beginner level examples.
 To become of sufficiently high quality to warrant keeping them in GLFW 3, they
-would need not only to support other formats, but also modern extensions to the
-OpenGL texturing facilities.  This would either add a number of external
+would need not only to support other formats, but also modern extensions to
+OpenGL texturing.  This would either add a number of external
 dependencies (libjpeg, libpng, etc.), or force GLFW to ship with inline versions
 of these libraries. 
 
-As there already are libraries doing this, it seems unnecessary both to
-duplicate this work and to tie this duplicate to GLFW.  Projects similar to
-GLFW, such as freeglut, could also gain from such a library.  Also, would be no
-platform-specific part of such a library, as both OpenGL and stdio are available
-wherever GLFW is.
+As there already are libraries doing this, it is unnecessary both to duplicate
+the work and to tie the duplicate to GLFW.  The resulting library would also be
+platform-independent, as both OpenGL and stdio are available wherever GLFW is.
+
+@par Removed functions
+`glfwReadImage`, `glfwReadMemoryImage`, `glfwFreeImage`, `glfwLoadTexture2D`,
+`glfwLoadMemoryTexture2D` and `glfwLoadTextureImage2D`.
 
 
-@subsection moving_char_up Character actions
+@subsection moving_stdcall Removal of GLFWCALL macro
+
+The `GLFWCALL` macro, which made callback functions use
+[__stdcall](http://msdn.microsoft.com/en-us/library/zxk0tw93.aspx) on Windows,
+has been removed.  GLFW is written in C, not Pascal.  Removing this macro means
+there's one less thing for application programmers to remember, i.e. the
+requirement to mark all callback functions with `GLFWCALL`.  It also simplifies
+the creation of DLLs and DLL link libraries, as there's no need to explicitly
+disable `@n` entry point suffixes. 
+
+@par Old syntax
+@code
+void GLFWCALL callback_function(...);
+@endcode
+
+@par New syntax
+@code
+void callback_function(...);
+@endcode
+
+
+@subsection moving_window_handles Window handle parameters
+
+Because GLFW 3 supports multiple windows, window handle parameters have been
+added to all window-related GLFW functions and callbacks.  The handle of
+a newly created window is returned by @ref glfwCreateWindow (formerly
+`glfwOpenWindow`).  Window handles are pointers to the
+[opaque](https://en.wikipedia.org/wiki/Opaque_data_type) type @ref GLFWwindow.
+
+@par Old syntax
+@code
+glfwSetWindowTitle("New Window Title");
+@endcode
+
+@par New syntax
+@code
+glfwSetWindowTitle(window, "New Window Title");
+@endcode
+
+
+@subsection moving_monitor Explicit monitor selection
+
+GLFW 3 provides support for multiple monitors.  To request a full screen mode window,
+instead of passing `GLFW_FULLSCREEN` you specify which monitor you wish the
+window to use.  The @ref glfwGetPrimaryMonitor function returns the monitor that
+GLFW 2 would have selected, but there are many other
+[monitor functions](@ref monitor).  Monitor handles are pointers to the
+[opaque](https://en.wikipedia.org/wiki/Opaque_data_type) type @ref GLFWmonitor.
+
+@par Old basic full screen
+@code
+glfwOpenWindow(640, 480, 8, 8, 8, 0, 24, 0, GLFW_FULLSCREEN);
+@endcode
+
+@par New basic full screen
+@code
+window = glfwCreateWindow(640, 480, "My Window", glfwGetPrimaryMonitor(), NULL);
+@endcode
+
+@note The framebuffer bit depth parameters of `glfwOpenWindow` have been turned
+into [window hints](@ref window_hints), but as they have been given
+[sane defaults](@ref window_hints_values) you rarely need to set these hints.
+
+
+@subsection moving_autopoll Removal of automatic event polling
+
+GLFW 3 does not automatically poll for events on @ref glfwSwapBuffers, which
+means you need to call @ref glfwPollEvents or @ref glfwWaitEvents yourself.
+Unlike buffer swap, which acts on a single window, **glfwPollEvents** and
+**glfwWaitEvents** process events for all windows at once.
+
+@par Old basic main loop
+@code
+while (...)
+{
+    // Process input
+    // Render output
+    glfwSwapBuffers();
+}
+@endcode
+
+@par New basic main loop
+@code
+while (...)
+{
+    // Process input
+    // Render output
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+}
+@endcode
+
+
+@subsection moving_context Explicit context management
+
+Each GLFW 3 window has its own OpenGL context and only you, the application
+programmer, can know which context should be current on which thread at any
+given time.  Therefore, GLFW 3 leaves that decision to you.
+
+This means that you need to call @ref glfwMakeContextCurrent after creating
+a window before you can call any OpenGL functions.
+
+
+@subsection moving_hidpi Separation of window and framebuffer sizes
+
+Window positions and sizes now use screen coordinates, which may not be the same
+as pixels on machines with high-DPI monitors.  This is important as OpenGL uses
+pixels, not screen coordinates.  For example, the rectangle specified with
+`glViewport` needs to use pixels.  Therefore, framebuffer size functions have
+been added.  You can retrieve the size of the framebuffer of a window with @ref
+glfwGetFramebufferSize function.  A framebuffer size callback has also been
+added, which can be set with @ref glfwSetFramebufferSizeCallback.
+
+@par Old basic viewport setup
+@code
+glfwGetWindowSize(&width, &height);
+glViewport(0, 0, width, height);
+@endcode
+
+@par New basic viewport setup
+@code
+glfwGetFramebufferSize(window, &width, &height);
+glViewport(0, 0, width, height);
+@endcode
+
+
+@subsection moving_window_close Window closing changes
+
+The `GLFW_OPENED` window parameter has been removed.  As long as the window has
+not been destroyed, whether through @ref glfwDestroyWindow or @ref
+glfwTerminate, the window is "open".
+
+A user attempting to close a window is now just an event like any other.  Unlike
+GLFW 2, windows and contexts created with GLFW 3 will never be destroyed unless
+you choose them to be.  Each window now has a close flag that is set to
+`GL_TRUE` when the user attempts to close that window.  By default, nothing else
+happens and the window stays visible.  It is then up to you to either destroy
+the window, take some other action or simply ignore the request.
+
+You can query the close flag at any time with @ref glfwWindowShouldClose and set
+it at any time with @ref glfwSetWindowShouldClose.
+
+@par Old basic main loop
+@code
+while (glfwGetWindowParam(GLFW_OPENED))
+{
+    ...
+}
+@endcode
+
+@par New basic main loop
+@code
+while (!glfwWindowShouldClose(window))
+{
+    ...
+}
+@endcode
+
+The close callback no longer returns a value.  Instead, it is called after the
+close flag has been set so it can override its value, if it chooses to, before
+event processing completes.  You may however not call @ref glfwDestroyWindow
+from the close callback (or any other window related callback).
+
+@par Old syntax
+@code
+int GLFWCALL window_close_callback(void);
+@endcode
+
+@par New syntax
+@code
+void window_close_callback(GLFWwindow* window);
+@endcode
+
+@note GLFW never clears the close flag to `GL_FALSE`, meaning you can use it
+for other reasons to close the window as well, for example the user choosing
+Quit from an in-game menu.
+
+
+@subsection moving_hints Persistent window hints
+
+The `glfwOpenWindowHint` function has been renamed to @ref glfwWindowHint.
+
+Window hints are no longer reset to their default values on window creation, but
+instead retain their values until modified by @ref glfwWindowHint or @ref
+glfwDefaultWindowHints, or until the library is terminated and re-initialized.
+
+
+@subsection moving_video_modes Video mode enumeration
+
+Video mode enumeration is now per-monitor.  The @ref glfwGetVideoModes function
+now returns all available modes for a specific monitor instead of requiring you
+to guess how large an array you need.  The `glfwGetDesktopMode` function, which
+had poorly defined behavior, has been replaced by @ref glfwGetVideoMode, which
+returns the current mode of a monitor.
+
+
+@subsection moving_char_up Removal of character actions
 
 The action parameter of the [character callback](@ref GLFWcharfun) has been
 removed.  This was an artefact of the origin of GLFW, i.e. being developed in
@@ -61,29 +283,92 @@ English by a Swede.  However, many keyboard layouts require more than one key to
 produce characters with diacritical marks. Even the Swedish keyboard layout
 requires this for uncommon cases like ü.
 
-Note that this is only the removal of the *action parameter* of the character
-callback, *not* the removal of the character callback itself. 
+@par Old syntax
+@code
+void GLFWCALL character_callback(int character, int action);
+@endcode
+
+@par New syntax
+@code
+void character_callback(int character);
+@endcode
 
 
-@subsection moving_wheel Mouse wheel position
+@subsection moving_cursorpos Cursor position changes
 
-The `glfwGetMouseWheel` function has been removed.  Scroll events do not
-represent an absolute state, but is instead an interpretation of a relative
-change in state, like character input.  So, like character input, there is no
-sane 'current state' to return.  The mouse wheel callback has been replaced by
-a [scroll callback](@ref GLFWscrollfun) that receives two-dimensional scroll
-offsets.
+The `glfwGetMousePos` function has been renamed to @ref glfwGetCursorPos,
+`glfwSetMousePos` to @ref glfwSetCursorPos and `glfwSetMousePosCallback` to @ref
+glfwSetCursorPosCallback.
+
+The cursor position is now `double` instead of `int`, both for the direct
+functions and for the callback.  Some platforms can provide sub-pixel cursor
+movement and this data is now passed on to the application where available.  On
+platforms where this is not provided, the decimal part is zero.
+
+GLFW 3 only allows you to position the cursor within a window using @ref
+glfwSetCursorPos (formerly `glfwSetMousePos`) when that window is active.
+Unless the window is active, the function fails silently.
 
 
-@subsection moving_stdcall GLFWCALL macro
+@subsection moving_wheel Wheel position replaced by scroll offsets
 
-The `GLFWCALL` macro, which made callback functions use
-[__stdcall](http://msdn.microsoft.com/en-us/library/zxk0tw93.aspx) on Windows,
-has been removed.  GLFW is written in C, not Pascal.  Removing this macro means
-there's one less thing for users of GLFW to remember, i.e. the requirement to
-mark all callback functions with `GLFWCALL`.  It also simplifies the creation of
-DLLs and DLL link libraries, as there's no need to explicitly disable `@n` entry
-point suffixes. 
+The `glfwGetMouseWheel` function has been removed.  Scrolling is the input of
+offsets and has no absolute position.  The mouse wheel callback has been
+replaced by a [scroll callback](@ref GLFWscrollfun) that receives
+two-dimensional floating point scroll offsets.  This allows you to receive
+precise scroll data from for example modern touchpads.
+
+@par Old syntax
+@code
+void GLFWCALL mouse_wheel_callback(int position);
+@endcode
+
+@par New syntax
+@code
+void scroll_callback(double xoffset, double yoffset);
+@endcode
+
+@par Removed functions
+`glfwGetMouseWheel`
+
+
+@subsection moving_repeat Key repeat action
+
+The `GLFW_KEY_REPEAT` enable has been removed and key repeat is always enabled
+for both keys and characters.  A new key action, `GLFW_REPEAT`, has been added
+to allow the [key callback](@ref GLFWkeyfun) to distinguish an initial key press
+from a repeat.  Note that @ref glfwGetKey still returns only `GLFW_PRESS` or
+`GLFW_RELEASE`.
+
+
+@subsection moving_keys Physical key input
+
+GLFW 3 key tokens map to physical keys, unlike in GLFW 2 where they mapped to
+the values generated by the current keyboard layout.  The tokens are named
+according to the values they would have using the standard US layout, but this
+is only a convenience, as most programmers are assumed to know that layout.
+This means that (for example) `GLFW_KEY_LEFT_BRACKET` is always a single key and
+is the same key in the same place regardless of what keyboard layouts the users
+of your program has.
+
+The key input facility was never meant for text input, although using it that
+way worked slightly better in GLFW 2.  If you were using it to input text, you
+should be using the character callback instead, on both GLFW 2 and 3.  This will
+give you the characters being input, as opposed to the keys being pressed.
+
+GLFW 3 has key tokens for all keys on a standard 105 key keyboard, so instead of
+having to remember whether to check for `'a'` or `'A'`, you now check for
+`GLFW_KEY_A`.
+
+
+@subsection moving_joystick Joystick function changes
+
+The `glfwGetJoystickPos` function has been renamed to @ref glfwGetJoystickAxes.
+
+The `glfwGetJoystickParam` function and the `GLFW_PRESENT`, `GLFW_AXES` and
+`GLFW_BUTTONS` tokens have been replaced by the @ref glfwJoystickPresent
+function as well as axis and button counts returned by the @ref
+glfwGetJoystickAxes and @ref glfwGetJoystickButtons functions.
 
 
 @subsection moving_mbcs Win32 MBCS support
@@ -125,174 +410,38 @@ or something else, are nowadays expected to be good desktop citizens and allow
 these hotkeys to function even when running in full screen mode.
 
 
-@subsection moving_opened Window open parameter
-
-The `GLFW_OPENED` window parameter has been removed.  As long as the
-[window object](@ref window_object) is around, the window is "open".  To detect
-when the user attempts to close the window, see @ref glfwWindowShouldClose and
-the [close callback](@ref GLFWwindowclosefun).
-
-
-@subsection moving_autopoll Automatic polling of events
-
-GLFW 3 does not automatically poll for events on @ref glfwSwapBuffers, which
-means you need to call @ref glfwPollEvents or @ref glfwWaitEvents yourself.
-Unlike buffer swap, the event processing functions act on all windows at once.
-
-
 @subsection moving_terminate Automatic termination
 
 GLFW 3 does not register @ref glfwTerminate with `atexit` at initialization.  To
-properly release all resources allocated by GLFW, you should therefore call @ref
-glfwTerminate yourself before exiting.
+release all resources allocated by GLFW, you should call @ref glfwTerminate
+yourself.  Note that this destroys all windows not already destroyed with @ref
+glfwDestroyWindow, invalidating all window handles you may still have.
 
 
 @subsection moving_glu GLU header inclusion
 
-GLFW 3 does not include the GLU header by default and GLU itself has been
-deprecated, but you can request that the GLFW 3 header includes it by defining
-`GLFW_INCLUDE_GLU` before the inclusion of the GLFW 3 header.
+GLFW 3 does not by default include the GLU header and GLU itself has been
+deprecated by [Khronos](https://en.wikipedia.org/wiki/Khronos_Group).  **New
+projects should avoid using GLU**, but if you need to compile legacy code that
+has been moved to GLFW 3, you can request that the GLFW header includes it by
+defining `GLFW_INCLUDE_GLU` before the inclusion of the GLFW header.
+
+@par Old syntax
+@code
+#include <GL/glfw.h>
+@endcode
+
+@par New syntax
+@code
+#define GLFW_INCLUDE_GLU
+#include <GLFW/glfw3.h>
+@endcode
 
 
-@section moving_changed Changes to existing features
-
-@subsection moving_window_handles Window handles
-
-Because GLFW 3 supports multiple windows, window handle parameters have been
-added to all window-related GLFW functions and callbacks.  The handle of
-a newly created window is returned by @ref glfwCreateWindow (formerly
-`glfwOpenWindow`).  Window handles are of the `GLFWwindow*` type, i.e. a pointer
-to an opaque struct.
+@section moving_tables Name change tables
 
 
-@subsection moving_monitor Multi-monitor support
-
-GLFW 3 provides support for multiple monitors, adding the `GLFWmonitor*` handle
-type and a set of related functions.  To request a full screen mode window,
-instead of passing `GLFW_FULLSCREEN` you specify which monitor you wish the
-window to use.  There is @ref glfwGetPrimaryMonitor that provides behaviour
-similar to that of GLFW 2.
-
-
-@subsection moving_hidpi Separation of window and framebuffer sizes
-
-Window positions and sizes now use screen coordinates, which may not be the same
-as pixels on machines with high-DPI monitors.  This is important as OpenGL uses
-pixels, not screen coordinates.  Most commonly, the rectangle specified with
-`glViewport` needs to use pixels.  Therefore, framebuffer size functions have
-been added.  You can retrieve the size of the framebuffer of a window with @ref
-glfwGetFramebufferSize function.  A framebuffer size callback has been added,
-which can be set with @ref glfwSetFramebufferSizeCallback.
-
-
-@subsection moving_window_close Window closing
-
-Window closing initiated by the user is now just an event like any other.
-Unlike GLFW 2, windows and contexts created with GLFW 3 will not disappear from
-underfoot.  Each window now has a close flag, which is set when the user
-attempts to close it.  By default, nothing else happens and the window stays
-open and visible.  It is then up to you to either destroy the window, take some
-other action or simply ignore the request.  You can query the close flag at any
-time with @ref glfwWindowShouldClose and set it at any time with @ref
-glfwSetWindowShouldClose.
-
-The close callback no longer returns a value.  Instead, it is called after the
-close flag has been set so it can override its value, if it chooses to, before
-event processing completes.  You may however not call @ref glfwDestroyWindow
-from the close callback (or any other window related callback).
-
-GLFW itself never clears the close flag, allowing you to set it for other
-reasons for the window to close as well, for example the user choosing Quit from
-the main menu.
-
-
-@subsection moving_context Explicit context management
-
-Each GLFW 3 window has its own OpenGL context and only you, the user, can know
-which context should be current on which thread at any given time.  Therefore,
-GLFW 3 makes no assumptions about when you want a certain context to be current,
-leaving that decision to you.
-
-This means, among other things, that you need to call @ref
-glfwMakeContextCurrent after creating a window before you can call any OpenGL
-functions.
-
-
-@subsection moving_repeat Key repeat
-
-The `GLFW_KEY_REPEAT` enable has been removed and key repeat is always enabled
-for both keys and characters.  A new key action, `GLFW_REPEAT`, has been added
-to allow the [key callback](@ref GLFWkeyfun) to distinguish an initial key press
-from a repeat.  Note that @ref glfwGetKey still returns only `GLFW_PRESS` or
-`GLFW_RELEASE`.
-
-
-@subsection moving_keys Physical key input
-
-GLFW 3 key tokens map to physical keys, unlike in GLFW 2 where they mapped to
-the values generated by the current keyboard layout.  The tokens are named
-according to the values they would have using the standard US layout, but this
-is only a convenience, as most programmers are assumed to know that layout.
-This means that (for example) `GLFW_KEY_LEFT_BRACKET` is always a single key and
-is the same key in the same place regardless of what keyboard layouts the users
-of your program has.
-
-The key input facility was never meant for text input, although using it that
-way worked slightly better in GLFW 2.  If you were using it to input text, you
-should be using the character callback instead, on both GLFW 2 and 3.  This will
-give you the characters being input, as opposed to the keys being pressed.
-
-GLFW 3 has key tokens for all keys on a standard 105 key keyboard, so instead of
-having to remember whether to check for `'a'` or `'A'`, you now check for
-`GLFW_KEY_A`.
-
-
-@subsection moving_joystick Joystick input
-
-The `glfwGetJoystickPos` function has been renamed to @ref glfwGetJoystickAxes.
-
-The `glfwGetJoystickParam` function and the `GLFW_PRESENT`, `GLFW_AXES` and
-`GLFW_BUTTONS` tokens have been replaced by the @ref glfwJoystickPresent
-function as well as axis and button counts returned by the @ref
-glfwGetJoystickAxes and @ref glfwGetJoystickButtons functions.
-
-
-@subsection moving_video_modes Video mode enumeration
-
-Video mode enumeration is now per-monitor.  The @ref glfwGetVideoModes function
-now returns all available modes for a specific monitor instead of requiring you
-to guess how large an array you need.  The `glfwGetDesktopMode` function, which
-had poorly defined behavior, has been replaced by @ref glfwGetVideoMode, which
-returns the current mode of a monitor.
-
-
-@subsection moving_cursor Cursor positioning
-
-GLFW 3 only allows you to position the cursor within a window using @ref
-glfwSetCursorPos (formerly `glfwSetMousePos`) when that window is active.
-Unless the window is active, the function fails silently.
-
-
-@subsection moving_hints Persistent window hints
-
-Window hints are no longer reset to their default values on window creation, but
-instead retain their values until modified by @ref glfwWindowHint (formerly
-`glfwOpenWindowHint`) or @ref glfwDefaultWindowHints, or until the library is
-terminated and re-initialized.
-
-
-@section moving_renamed Name changes
-
-@subsection moving_renamed_files Library and header file
-
-The GLFW 3 header is named @ref glfw3.h and moved to the `GLFW` directory, to
-avoid collisions with the headers of other major versions.  Similarly, the GLFW
-3 library is named `glfw3`, except when it's installed as a shared library on
-Unix-like systems, where it uses the
-[soname](https://en.wikipedia.org/wiki/soname) `libglfw.so.3`.
-
-
-@subsection moving_renamed_functions Functions
+@subsection moving_renamed_functions Renamed functions
 
 | GLFW 2                      | GLFW 3                        | Notes |
 | --------------------------- | ----------------------------- | ----- |
@@ -311,7 +460,7 @@ Unix-like systems, where it uses the
 | `glfwGetDesktopMode`        | @ref glfwGetVideoMode         | Returns the current mode of a monitor |
 | `glfwGetJoystickParam`      | @ref glfwJoystickPresent      | The axis and button counts are provided by @ref glfwGetJoystickAxes and @ref glfwGetJoystickButtons |
 
-@subsection moving_renamed_tokens Tokens
+@subsection moving_renamed_tokens Renamed tokens
 
 | GLFW 2                      | GLFW 3                       | Notes |
 | --------------------------- | ---------------------------- | ----- |

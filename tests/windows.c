@@ -32,7 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static const char* titles[] =
+static const char* titles[4] =
 {
     "Foo",
     "Bar",

@@ -261,10 +261,11 @@ if (_GLFW_X11)
 
     # Check for Xkb (X keyboard extension)
     if (NOT X11_Xkb_FOUND)
-        message(FATAL_ERROR "The X keyboard extension headers were not found")
+        message("The X keyboard extension headers were not found")
+    else()
+       list(APPEND glfw_INCLUDE_DIR ${X11_Xkb_INCLUDE_PATH})
+       set(_GLFW_HAS_XKB 1)
     endif()
-
-    list(APPEND glfw_INCLUDE_DIR ${X11_Xkb_INCLUDE_PATH})
 
     find_library(RT_LIBRARY rt)
     mark_as_advanced(RT_LIBRARY)

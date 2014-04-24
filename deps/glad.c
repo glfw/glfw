@@ -1,6 +1,12 @@
 #include <string.h>
 #include <glad/glad.h>
 
+struct gladGLversionStruct GLVersion;
+
+#if defined(GL_ES_VERSION_3_0) || defined(GL_VERSION_3_0)
+#define _GLAD_IS_SOME_NEW_VERSION 1
+#endif
+
 int GLAD_GL_VERSION_1_0;
 int GLAD_GL_VERSION_1_1;
 int GLAD_GL_VERSION_1_2;

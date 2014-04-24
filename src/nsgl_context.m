@@ -127,7 +127,6 @@ int _glfwCreateContext(_GLFWwindow* window,
     // Arbitrary array size here
     NSOpenGLPixelFormatAttribute attributes[40];
 
-    ADD_ATTR(NSOpenGLPFADoubleBuffer);
     ADD_ATTR(NSOpenGLPFAClosestPolicy);
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
@@ -179,6 +178,9 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     if (fbconfig->stereo)
         ADD_ATTR(NSOpenGLPFAStereo);
+
+    if (fbconfig->doublebuffer)
+        ADD_ATTR(NSOpenGLPFADoubleBuffer);
 
     if (fbconfig->samples != GLFW_DONT_CARE)
     {

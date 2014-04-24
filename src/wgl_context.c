@@ -181,8 +181,7 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
         {
             // Get pixel format attributes through WGL_ARB_pixel_format
             if (!getPixelFormatAttrib(window, n, WGL_SUPPORT_OPENGL_ARB) ||
-                !getPixelFormatAttrib(window, n, WGL_DRAW_TO_WINDOW_ARB) ||
-                !getPixelFormatAttrib(window, n, WGL_DOUBLE_BUFFER_ARB))
+                !getPixelFormatAttrib(window, n, WGL_DRAW_TO_WINDOW_ARB))
             {
                 continue;
             }
@@ -213,13 +212,20 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
             u->accumAlphaBits = getPixelFormatAttrib(window, n, WGL_ACCUM_ALPHA_BITS_ARB);
 
             u->auxBuffers = getPixelFormatAttrib(window, n, WGL_AUX_BUFFERS_ARB);
-            u->stereo = getPixelFormatAttrib(window, n, WGL_STEREO_ARB);
+
+            if (getPixelFormatAttrib(window, n, WGL_STEREO_ARB))
+                u->stereo = GL_TRUE;
+            if (getPixelFormatAttrib(window, n, WGL_DOUBLE_BUFFER_ARB))
+                u->doublebuffer = GL_TRUE;
 
             if (window->wgl.ARB_multisample)
                 u->samples = getPixelFormatAttrib(window, n, WGL_SAMPLES_ARB);
 
             if (window->wgl.ARB_framebuffer_sRGB)
-                u->sRGB = getPixelFormatAttrib(window, n, WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB);
+            {
+                if (getPixelFormatAttrib(window, n, WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB))
+                    u->sRGB = GL_TRUE;
+            }
         }
         else
         {
@@ -236,8 +242,7 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
             }
 
             if (!(pfd.dwFlags & PFD_DRAW_TO_WINDOW) ||
-                !(pfd.dwFlags & PFD_SUPPORT_OPENGL) ||
-                !(pfd.dwFlags & PFD_DOUBLEBUFFER))
+                !(pfd.dwFlags & PFD_SUPPORT_OPENGL))
             {
                 continue;
             }
@@ -265,7 +270,11 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
             u->accumAlphaBits = pfd.cAccumAlphaBits;
 
             u->auxBuffers = pfd.cAuxBuffers;
-            u->stereo = (pfd.dwFlags & PFD_STEREO) ? GL_TRUE : GL_FALSE;
+
+            if (pfd.dwFlags & PFD_STEREO)
+                u->stereo = GL_TRUE;
+            if (pfd.dwFlags & PFD_DOUBLEBUFFER)
+                u->doublebuffer = GL_TRUE;
         }
 
         u->wgl = n;

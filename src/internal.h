@@ -200,6 +200,7 @@ struct _GLFWfbconfig
     int         stereo;
     int         samples;
     int         sRGB;
+    int         doublebuffer;
 
     // This is defined in the context API's context.h
     _GLFW_PLATFORM_FBCONFIG;
@@ -325,6 +326,7 @@ struct _GLFWlibrary
         int         samples;
         int         sRGB;
         int         refreshRate;
+        int         doublebuffer;
         int         api;
         int         major;
         int         minor;

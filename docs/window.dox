@@ -93,6 +93,7 @@ find out the actual attributes of the created window and context, use the
 
 The following hints are hard constraints:
 - `GLFW_STEREO`
+- `GLFW_DOUBLEBUFFER`
 - `GLFW_CLIENT_API`
 
 The following additional hints are hard constraints if requesting an OpenGL
@@ -137,7 +138,8 @@ application has no preference.
 The `GLFW_AUX_BUFFERS` hint specifies the desired number of auxiliary
 buffers.  `GLFW_DONT_CARE` means the application has no preference.
 
-The `GLFW_STEREO` hint specifies whether to use stereoscopic rendering.
+The `GLFW_STEREO` hint specifies whether to use stereoscopic rendering.  This is
+a hard constraint.
 
 The `GLFW_SAMPLES` hint specifies the desired number of samples to use for
 multisampling.  Zero disables multisampling.  `GLFW_DONT_CARE` means the
@@ -145,6 +147,10 @@ application has no preference.
 
 The `GLFW_SRGB_CAPABLE` hint specifies whether the framebuffer should be
 sRGB capable.
+
+The `GLFW_DOUBLEBUFFER` hint specifies whether the framebuffer should be double
+buffered.  You nearly always want to use double buffering.  This is a hard
+constraint.
 
 The `GLFW_REFRESH_RATE` hint specifies the desired refresh rate for full screen
 windows.  If set to zero, the highest available refresh rate will be used.  This
@@ -154,7 +160,8 @@ hint is ignored for windowed mode windows.
 @subsection window_hints_ctx Context related hints
 
 The `GLFW_CLIENT_API` hint specifies which client API to create the context
-for.  Possible values are `GLFW_OPENGL_API` and `GLFW_OPENGL_ES_API`.
+for.  Possible values are `GLFW_OPENGL_API` and `GLFW_OPENGL_ES_API`.  This is
+a hard constraint.
 
 The `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` hints
 specify the client API version that the created context must be compatible
@@ -219,6 +226,7 @@ a robustness strategy.
 | `GLFW_REFRESH_RATE`          | 0                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
 | `GLFW_STEREO`                | `GL_FALSE`                | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_SRGB_CAPABLE`          | `GL_FALSE`                | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_DOUBLEBUFFER`          | `GL_TRUE`                 | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_CLIENT_API`            | `GLFW_OPENGL_API`         | `GLFW_OPENGL_API` or `GLFW_OPENGL_ES_API` |
 | `GLFW_CONTEXT_VERSION_MAJOR` | 1                         | Any valid major version number of the chosen client API |
 | `GLFW_CONTEXT_VERSION_MINOR` | 0                         | Any valid minor version number of the chosen client API |
@@ -468,7 +476,7 @@ used by the context.  This is `GLFW_LOSE_CONTEXT_ON_RESET` or
 
 @section window_swap Swapping buffers
 
-GLFW windows are always double buffered.  That means that you have two
+GLFW windows are by default double buffered.  That means that you have two
 rendering buffers; a front buffer and a back buffer.  The front buffer is
 the one being displayed and the back buffer the one you render to.
 

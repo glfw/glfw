@@ -157,6 +157,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     fbconfig.stereo         = _glfw.hints.stereo;
     fbconfig.samples        = _glfw.hints.samples;
     fbconfig.sRGB           = _glfw.hints.sRGB;
+    fbconfig.doublebuffer   = _glfw.hints.doublebuffer ? GL_TRUE : GL_FALSE;
 
     // Set up desired window config
     wndconfig.width         = width;
@@ -266,13 +267,15 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.decorated   = GL_TRUE;
     _glfw.hints.autoIconify = GL_TRUE;
 
-    // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil
-    _glfw.hints.redBits     = 8;
-    _glfw.hints.greenBits   = 8;
-    _glfw.hints.blueBits    = 8;
-    _glfw.hints.alphaBits   = 8;
-    _glfw.hints.depthBits   = 24;
-    _glfw.hints.stencilBits = 8;
+    // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
+    // double buffered
+    _glfw.hints.redBits      = 8;
+    _glfw.hints.greenBits    = 8;
+    _glfw.hints.blueBits     = 8;
+    _glfw.hints.alphaBits    = 8;
+    _glfw.hints.depthBits    = 24;
+    _glfw.hints.stencilBits  = 8;
+    _glfw.hints.doublebuffer = GL_TRUE;
 }
 
 GLFWAPI void glfwWindowHint(int target, int hint)
@@ -319,6 +322,9 @@ GLFWAPI void glfwWindowHint(int target, int hint)
             break;
         case GLFW_REFRESH_RATE:
             _glfw.hints.refreshRate = hint;
+            break;
+        case GLFW_DOUBLEBUFFER:
+            _glfw.hints.doublebuffer = hint;
             break;
         case GLFW_RESIZABLE:
             _glfw.hints.resizable = hint;

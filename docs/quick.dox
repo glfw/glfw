@@ -250,7 +250,7 @@ double time = glfwGetTime();
 
 @section quick_swap_buffers Swapping buffers
 
-GLFW windows always use double-buffering.  That means that you have two
+GLFW windows by default use double buffering.  That means that you have two
 rendering buffers; a front buffer and a back buffer.  The front buffer is the
 one being displayed and the back buffer the one you render to.
 

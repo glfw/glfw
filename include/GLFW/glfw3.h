@@ -514,6 +514,7 @@ extern "C" {
 #define GLFW_SAMPLES                0x0002100D
 #define GLFW_SRGB_CAPABLE           0x0002100E
 #define GLFW_REFRESH_RATE           0x0002100F
+#define GLFW_DOUBLEBUFFER           0x00021010
 
 #define GLFW_CLIENT_API             0x00022001
 #define GLFW_CONTEXT_VERSION_MAJOR  0x00022002

@@ -85,10 +85,9 @@ static GLboolean chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* resul
         const GLXFBConfig n = nativeConfigs[i];
         _GLFWfbconfig* u = usableConfigs + usableCount;
 
-        if (!getFBConfigAttrib(n, GLX_DOUBLEBUFFER) ||
-            !getFBConfigAttrib(n, GLX_VISUAL_ID))
+        if (!getFBConfigAttrib(n, GLX_VISUAL_ID))
         {
-            // Only consider double-buffered GLXFBConfigs with associated visuals
+            // Only consider GLXFBConfigs with associated visuals
             continue;
         }
 
@@ -121,7 +120,11 @@ static GLboolean chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* resul
         u->accumAlphaBits = getFBConfigAttrib(n, GLX_ACCUM_ALPHA_SIZE);
 
         u->auxBuffers = getFBConfigAttrib(n, GLX_AUX_BUFFERS);
-        u->stereo = getFBConfigAttrib(n, GLX_STEREO);
+
+        if (getFBConfigAttrib(n, GLX_STEREO))
+            u->stereo = GL_TRUE;
+        if (getFBConfigAttrib(n, GLX_DOUBLEBUFFER))
+            u->doublebuffer = GL_TRUE;
 
         if (_glfw.glx.ARB_multisample)
             u->samples = getFBConfigAttrib(n, GLX_SAMPLES);

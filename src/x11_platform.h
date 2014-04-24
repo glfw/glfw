@@ -175,6 +175,7 @@ typedef struct _GLFWlibraryX11
     } randr;
 
     struct {
+        GLboolean   available;
         int         majorOpcode;
         int         eventBase;
         int         errorBase;

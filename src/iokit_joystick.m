@@ -324,43 +324,48 @@ void _glfwInitJoysticks(void)
         HRESULT plugInResult = S_OK;
         SInt32 score = 0;
 
-        long usagePage, usage;
+        long usagePage = 0;
+        long usage = 0;
 
-        // Check device type
+        valueRef = IORegistryEntryCreateCFProperty(ioHIDDeviceObject,
+                                                   CFSTR(kIOHIDPrimaryUsagePageKey),
+                                                   kCFAllocatorDefault, kNilOptions);
+        if (valueRef)
+        {
+            CFNumberGetValue(valueRef, kCFNumberLongType, &usagePage);
+            CFRelease(valueRef);
+        }
+
+        valueRef = IORegistryEntryCreateCFProperty(ioHIDDeviceObject,
+                                                   CFSTR(kIOHIDPrimaryUsageKey),
+                                                   kCFAllocatorDefault, kNilOptions);
+        if (valueRef)
+        {
+            CFNumberGetValue(valueRef, kCFNumberLongType, &usage);
+            CFRelease(valueRef);
+        }
+
+        if (usagePage != kHIDPage_GenericDesktop)
+        {
+            // This device is not relevant to GLFW
+            continue;
+        }
+
+        if ((usage != kHIDUsage_GD_Joystick &&
+             usage != kHIDUsage_GD_GamePad &&
+             usage != kHIDUsage_GD_MultiAxisController))
+        {
+            // This device is not relevant to GLFW
+            continue;
+        }
+        
         result = IORegistryEntryCreateCFProperties(ioHIDDeviceObject,
                                                    &propsRef,
                                                    kCFAllocatorDefault,
                                                    kNilOptions);
-
+        
         if (result != kIOReturnSuccess)
             continue;
-
-        valueRef = CFDictionaryGetValue(propsRef, CFSTR(kIOHIDPrimaryUsagePageKey));
-        if (valueRef)
-        {
-            CFNumberGetValue(valueRef, kCFNumberLongType, &usagePage);
-            if (usagePage != kHIDPage_GenericDesktop)
-            {
-                // This device is not relevant to GLFW
-                CFRelease(propsRef);
-                continue;
-            }
-        }
-
-        valueRef = CFDictionaryGetValue(propsRef, CFSTR(kIOHIDPrimaryUsageKey));
-        if (valueRef)
-        {
-            CFNumberGetValue(valueRef, kCFNumberLongType, &usage);
-
-            if ((usage != kHIDUsage_GD_Joystick &&
-                 usage != kHIDUsage_GD_GamePad &&
-                 usage != kHIDUsage_GD_MultiAxisController))
-            {
-                // This device is not relevant to GLFW
-                CFRelease(propsRef);
-                continue;
-            }
-        }
 
         _GLFWjoystickIOKit* joystick = _glfw.iokit_js + joy;
         joystick->present = GL_TRUE;

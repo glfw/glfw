@@ -81,6 +81,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
                    found for a given `CGDisplay`
  - [Cocoa] Bugfix: Modifier key events were lost if the corresponding modifier
                    bit field was unchanged
+ - [Cocoa] Bugfix: Joystick enumeration took hundreds of ms on some systems
  - [Win32] Enabled generation of pkg-config file for MinGW
  - [Win32] Bugfix: Failure to load winmm or its functions was not reported to
                    the error callback
@@ -160,6 +161,7 @@ skills.
  - heromyth
  - Paul Holden
  - Toni Jovanoski
+ - Arseny Kapoulkine
  - Osman Keskin
  - Cameron King
  - Peter Knut

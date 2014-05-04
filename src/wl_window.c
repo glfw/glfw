@@ -179,6 +179,14 @@ void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* heigh
     _glfwPlatformGetWindowSize(window, width, height);
 }
 
+void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
+                                     int* left, int* top,
+                                     int* right, int* bottom)
+{
+    // TODO
+    fprintf(stderr, "_glfwPlatformGetWindowFrameSize not implemented yet\n");
+}
+
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
     // TODO

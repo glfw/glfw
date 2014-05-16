@@ -211,8 +211,6 @@ void _glfwTerminateJoysticks(void)
             free(_glfw.linux_js[i].axes);
             free(_glfw.linux_js[i].buttons);
             free(_glfw.linux_js[i].name);
-
-            _glfw.linux_js[i].present = GL_FALSE;
         }
     }
 #endif // __linux__
@@ -234,9 +232,6 @@ const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 {
     pollJoystickEvents();
 
-    if (!_glfw.linux_js[joy].present)
-        return NULL;
-
     *count = _glfw.linux_js[joy].axisCount;
     return _glfw.linux_js[joy].axes;
 }
@@ -244,9 +239,6 @@ const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
 {
     pollJoystickEvents();
-
-    if (!_glfw.linux_js[joy].present)
-        return NULL;
 
     *count = _glfw.linux_js[joy].buttonCount;
     return _glfw.linux_js[joy].buttons;

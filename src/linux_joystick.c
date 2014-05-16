@@ -112,7 +112,8 @@ static void pollJoystickEvents(void)
                 free(_glfw.linux_js[i].axes);
                 free(_glfw.linux_js[i].buttons);
                 free(_glfw.linux_js[i].name);
-                _glfw.linux_js[i].present = GL_FALSE;
+
+                memset(&_glfw.linux_js[i], 0, sizeof(_glfw.linux_js[i]));
             }
 
             if (result == -1)

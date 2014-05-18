@@ -176,6 +176,7 @@ typedef struct _GLFWlibraryX11
 
     struct {
         GLboolean   available;
+        GLboolean   detectable;
         int         majorOpcode;
         int         eventBase;
         int         errorBase;

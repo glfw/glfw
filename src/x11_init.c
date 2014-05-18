@@ -40,14 +40,12 @@
 static int translateKey(int keyCode)
 {
     int keySym;
-    int keysyms_per_keycode_return;
-    KeySym *keysyms;
 
     // Valid key code range is  [8,255], according to the XLib manual
     if (keyCode < 8 || keyCode > 255)
         return GLFW_KEY_UNKNOWN;
 
-    if(_glfw.x11.xkb.available)
+    if (_glfw.x11.xkb.available)
     {
         // Try secondary keysym, for numeric keypad keys
         // Note: This way we always force "NumLock = ON", which is intentional
@@ -80,13 +78,12 @@ static int translateKey(int keyCode)
     }
     else
     {
-        keysyms =
-        XGetKeyboardMapping(_glfw.x11.display,
-                            keyCode,
-                            1,
-                            &keysyms_per_keycode_return);
-        keySym = keysyms[0];
-        XFree(keysyms);
+        int dummy;
+        KeySym* keySyms;
+
+        keySyms = XGetKeyboardMapping(_glfw.x11.display, keyCode, 1, &dummy);
+        keySym = keySyms[0];
+        XFree(keySyms);
     }
 
     switch (keySym)
@@ -233,8 +230,7 @@ static int translateKey(int keyCode)
 //
 static void updateKeyCodeLUT(void)
 {
-    int keyCode;
-    int keyCodeGLFW, i;
+    int i, keyCode, keyCodeGLFW;
     char name[XkbKeyNameLength + 1];
     XkbDescPtr descr;
 
@@ -242,7 +238,7 @@ static void updateKeyCodeLUT(void)
     for (keyCode = 0;  keyCode < 256;  keyCode++)
         _glfw.x11.keyCodeLUT[keyCode] = GLFW_KEY_UNKNOWN;
 
-    if(_glfw.x11.xkb.available)
+    if (_glfw.x11.xkb.available)
     {
         // Use XKB to determine physical key locations independently of the current
         // keyboard layout
@@ -451,8 +447,6 @@ static void detectEWMH(void)
 //
 static GLboolean initExtensions(void)
 {
-    Bool supported;
-
     // Find or create window manager atoms
     _glfw.x11.WM_PROTOCOLS = XInternAtom(_glfw.x11.display,
                                          "WM_PROTOCOLS",
@@ -524,18 +518,14 @@ static GLboolean initExtensions(void)
                           &_glfw.x11.xkb.versionMajor,
                           &_glfw.x11.xkb.versionMinor);
 
-    if(_glfw.x11.xkb.available)
+    if (_glfw.x11.xkb.available)
     {
-        if (!XkbSetDetectableAutoRepeat(_glfw.x11.display, True, &supported))
-        {
-            // X11: Failed to set detectable key repeat
-            _glfw.x11.xkb.available = GL_FALSE;
-        }
+        Bool supported;
 
-        if (!supported)
+        if (XkbSetDetectableAutoRepeat(_glfw.x11.display, True, &supported))
         {
-            // X11: Detectable key repeat is not supported
-            _glfw.x11.xkb.available = GL_FALSE;
+            if (supported)
+                _glfw.x11.xkb.detectable = GL_TRUE;
         }
     }
 

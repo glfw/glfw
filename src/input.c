@@ -130,24 +130,19 @@ static void setStickyMouseButtons(_GLFWwindow* window, int enabled)
 
 void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    GLboolean repeated = GL_FALSE;
-
-    if (action == GLFW_RELEASE && window->key[key] == GLFW_RELEASE)
-        return;
-
     if (key >= 0 && key <= GLFW_KEY_LAST)
     {
-        if (action == GLFW_PRESS && window->key[key] == GLFW_PRESS)
-            repeated = GL_TRUE;
+        if (action == GLFW_RELEASE && window->key[key] == GLFW_RELEASE)
+            return;
 
         if (action == GLFW_RELEASE && window->stickyKeys)
             window->key[key] = _GLFW_STICK;
         else
             window->key[key] = (char) action;
-    }
 
-    if (repeated)
-        action = GLFW_REPEAT;
+        if (action == GLFW_PRESS && window->key[key] == GLFW_PRESS)
+            action = GLFW_REPEAT;
+    }
 
     if (window->callbacks.key)
         window->callbacks.key((GLFWwindow*) window, key, scancode, action, mods);

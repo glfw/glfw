@@ -46,7 +46,9 @@
 #include <X11/extensions/XInput2.h>
 
 // The Xkb extension provides improved keyboard support
-#include <X11/XKBlib.h>
+#if defined(_GLFW_HAS_XKB)
+ #include <X11/XKBlib.h>
+#endif
 
 #include "posix_tls.h"
 
@@ -175,6 +177,7 @@ typedef struct _GLFWlibraryX11
     } randr;
 
     struct {
+        GLboolean   available;
         int         majorOpcode;
         int         eventBase;
         int         errorBase;

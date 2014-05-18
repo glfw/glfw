@@ -93,8 +93,8 @@ static void setStickyKeys(_GLFWwindow* window, int enabled)
         // Release all sticky keys
         for (i = 0;  i <= GLFW_KEY_LAST;  i++)
         {
-            if (window->key[i] == _GLFW_STICK)
-                window->key[i] = GLFW_RELEASE;
+            if (window->keys[i] == _GLFW_STICK)
+                window->keys[i] = GLFW_RELEASE;
         }
     }
 
@@ -115,8 +115,8 @@ static void setStickyMouseButtons(_GLFWwindow* window, int enabled)
         // Release all sticky mouse buttons
         for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
         {
-            if (window->mouseButton[i] == _GLFW_STICK)
-                window->mouseButton[i] = GLFW_RELEASE;
+            if (window->mouseButtons[i] == _GLFW_STICK)
+                window->mouseButtons[i] = GLFW_RELEASE;
         }
     }
 
@@ -134,16 +134,16 @@ void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int m
     {
         GLboolean repeated = GL_FALSE;
 
-        if (action == GLFW_RELEASE && window->key[key] == GLFW_RELEASE)
+        if (action == GLFW_RELEASE && window->keys[key] == GLFW_RELEASE)
             return;
 
-        if (action == GLFW_PRESS && window->key[key] == GLFW_PRESS)
+        if (action == GLFW_PRESS && window->keys[key] == GLFW_PRESS)
             repeated = GL_TRUE;
 
         if (action == GLFW_RELEASE && window->stickyKeys)
-            window->key[key] = _GLFW_STICK;
+            window->keys[key] = _GLFW_STICK;
         else
-            window->key[key] = (char) action;
+            window->keys[key] = (char) action;
 
         if (repeated)
             action = GLFW_REPEAT;
@@ -175,9 +175,9 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
 
     // Register mouse button action
     if (action == GLFW_RELEASE && window->stickyMouseButtons)
-        window->mouseButton[button] = _GLFW_STICK;
+        window->mouseButtons[button] = _GLFW_STICK;
     else
-        window->mouseButton[button] = (char) action;
+        window->mouseButtons[button] = (char) action;
 
     if (window->callbacks.mouseButton)
         window->callbacks.mouseButton((GLFWwindow*) window, button, action, mods);
@@ -282,14 +282,14 @@ GLFWAPI int glfwGetKey(GLFWwindow* handle, int key)
         return GLFW_RELEASE;
     }
 
-    if (window->key[key] == _GLFW_STICK)
+    if (window->keys[key] == _GLFW_STICK)
     {
         // Sticky mode: release key now
-        window->key[key] = GLFW_RELEASE;
+        window->keys[key] = GLFW_RELEASE;
         return GLFW_PRESS;
     }
 
-    return (int) window->key[key];
+    return (int) window->keys[key];
 }
 
 GLFWAPI int glfwGetMouseButton(GLFWwindow* handle, int button)
@@ -305,14 +305,14 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* handle, int button)
         return GLFW_RELEASE;
     }
 
-    if (window->mouseButton[button] == _GLFW_STICK)
+    if (window->mouseButtons[button] == _GLFW_STICK)
     {
         // Sticky mode: release mouse button now
-        window->mouseButton[button] = GLFW_RELEASE;
+        window->mouseButtons[button] = GLFW_RELEASE;
         return GLFW_PRESS;
     }
 
-    return (int) window->mouseButton[button];
+    return (int) window->mouseButtons[button];
 }
 
 GLFWAPI void glfwGetCursorPos(GLFWwindow* handle, double* xpos, double* ypos)

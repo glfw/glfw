@@ -232,8 +232,8 @@ struct _GLFWwindow
     GLboolean           stickyMouseButtons;
     double              cursorPosX, cursorPosY;
     int                 cursorMode;
-    char                mouseButton[GLFW_MOUSE_BUTTON_LAST + 1];
-    char                key[GLFW_KEY_LAST + 1];
+    char                mouseButtons[GLFW_MOUSE_BUTTON_LAST + 1];
+    char                keys[GLFW_KEY_LAST + 1];
 
     // OpenGL extensions and context attributes
     struct {

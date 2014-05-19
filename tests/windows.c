@@ -91,8 +91,10 @@ int main(void)
         glfwSetWindowPos(windows[i],
                          100 + (i & 1) * (200 + left + right),
                          100 + (i >> 1) * (200 + top + bottom));
-        glfwShowWindow(windows[i]);
     }
+
+    for (i = 0;  i < 4;  i++)
+        glfwShowWindow(windows[i]);
 
     while (running)
     {

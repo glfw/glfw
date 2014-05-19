@@ -78,6 +78,7 @@ The following dependencies are needed by the examples and test programs:
                    the error callback
  - [Win32] Bugfix: Some keys were reported based on the current layout instead
                    of their physical location
+ - [Win32] Bugfix: Maximized hidden windows were restored by `glfwShowWindow`
  - [X11] Added run-time support for systems lacking the XKB extension
  - [X11] Made GLX 1.3 the minimum supported version
  - [X11] Bugfix: The case of finding no usable CRTCs was not detected

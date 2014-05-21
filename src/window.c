@@ -219,23 +219,23 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->cursorMode = GLFW_CURSOR_NORMAL;
 
     // Save the currently current context so it can be restored later
-    previous = (_GLFWwindow*) glfwGetCurrentContext();
+    previous = _glfwPlatformGetCurrentContext();
 
     // Open the actual window and create its context
     if (!_glfwPlatformCreateWindow(window, &wndconfig, &ctxconfig, &fbconfig))
     {
         glfwDestroyWindow((GLFWwindow*) window);
-        glfwMakeContextCurrent((GLFWwindow*) previous);
+        _glfwPlatformMakeContextCurrent(previous);
         return NULL;
     }
 
-    glfwMakeContextCurrent((GLFWwindow*) window);
+    _glfwPlatformMakeContextCurrent(window);
 
     // Retrieve the actual (as opposed to requested) context attributes
     if (!_glfwRefreshContextAttribs(&ctxconfig))
     {
         glfwDestroyWindow((GLFWwindow*) window);
-        glfwMakeContextCurrent((GLFWwindow*) previous);
+        _glfwPlatformMakeContextCurrent(previous);
         return NULL;
     }
 
@@ -243,7 +243,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     if (!_glfwIsValidContext(&ctxconfig))
     {
         glfwDestroyWindow((GLFWwindow*) window);
-        glfwMakeContextCurrent((GLFWwindow*) previous);
+        _glfwPlatformMakeContextCurrent(previous);
         return NULL;
     }
 
@@ -253,10 +253,10 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     _glfwPlatformSwapBuffers(window);
 
     // Restore the previously current context (or NULL)
-    glfwMakeContextCurrent((GLFWwindow*) previous);
+    _glfwPlatformMakeContextCurrent(previous);
 
     if (wndconfig.monitor == NULL && wndconfig.visible)
-        glfwShowWindow((GLFWwindow*) window);
+        _glfwPlatformShowWindow(window);
 
     return (GLFWwindow*) window;
 }

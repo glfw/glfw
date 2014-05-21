@@ -68,6 +68,10 @@ div#navrow1,div#navrow2,div#navrow3,div#navrow4 {
 	font-size:13px;
 }
 
+div#nav-path {
+	display: none;
+}
+
 ul.tablist {
 	height:36px;
 	display:block;
@@ -192,7 +196,7 @@ h1,h2,h2.groupheader,h3,div.toc h3,h4,h5,h6,strong,em {
 	border-bottom:none;
 }
 
-a,a:hover,a:visited,a:visited:hover,a.el,a.el:visited,.glfwheader a#glfwhome:hover,.tablist a:hover {
+a,a:hover,a:visited,a:visited:hover,a.el,a.el:visited,.glfwheader a#glfwhome:hover,.tablist a:hover, span.lineno a:hover {
 	color:hsl(24,100%,50%);
 	text-decoration:none;
 }
@@ -294,6 +298,14 @@ div.fragment,pre.fragment {
 	padding:0.5em 2em;
 	overflow:auto;
 	border-left:4px solid hsl(0,0%,80%);
+}
+
+span.lineno, span.lineno a, span.lineno a:hover {
+	background: none;
+}
+
+span.lineno a, span.lineno a:visited {
+	color: hsl(0,0%,95%);
 }
 
 div.line,pre.fragment {

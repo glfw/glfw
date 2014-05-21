@@ -141,7 +141,7 @@ typedef struct _GLFWcursor      _GLFWcursor;
 /*! @brief Window configuration.
  *
  *  Parameters relating to the creation of the window but not directly related
- *  to the framebuffer.  This is used to pass context creation parameters from
+ *  to the framebuffer.  This is used to pass window creation parameters from
  *  shared code to the platform API.
  */
 struct _GLFWwndconfig

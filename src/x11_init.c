@@ -419,6 +419,8 @@ static void detectEWMH(void)
     // See which of the atoms we support that are supported by the WM
     _glfw.x11.NET_WM_STATE =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE");
+    _glfw.x11.NET_WM_STATE_ABOVE =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_ABOVE");
     _glfw.x11.NET_WM_STATE_FULLSCREEN =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_FULLSCREEN");
     _glfw.x11.NET_WM_NAME =

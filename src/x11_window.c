@@ -108,6 +108,29 @@ static int translateChar(XKeyEvent* event)
     return (int) _glfwKeySym2Unicode(keysym);
 }
 
+// Adds or removes an EWMH state to a window
+//
+static void changeWindowState(_GLFWwindow* window, Atom state, int action)
+{
+    XEvent event;
+    memset(&event, 0, sizeof(event));
+
+    event.type = ClientMessage;
+    event.xclient.window = window->x11.handle;
+    event.xclient.format = 32; // Data is 32-bit longs
+    event.xclient.message_type = _glfw.x11.NET_WM_STATE;
+    event.xclient.data.l[0] = action;
+    event.xclient.data.l[1] = state;
+    event.xclient.data.l[2] = 0; // No secondary property
+    event.xclient.data.l[3] = 1; // Sender is a normal application
+
+    XSendEvent(_glfw.x11.display,
+               _glfw.x11.root,
+               False,
+               SubstructureNotifyMask | SubstructureRedirectMask,
+               &event);
+}
+
 // Splits and translates a text/uri-list into separate file paths
 //
 static char** parseUriList(char* text, int* count)
@@ -382,6 +405,16 @@ static GLboolean createWindow(_GLFWwindow* window,
         XIfEvent(_glfw.x11.display, &event, isFrameExtentsEvent, (XPointer) window);
     }
 
+    if (wndconfig->floating && !wndconfig->monitor)
+    {
+        if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_ABOVE)
+        {
+            changeWindowState(window,
+                              _glfw.x11.NET_WM_STATE_ABOVE,
+                              _NET_WM_STATE_ADD);
+        }
+    }
+
     _glfwPlatformSetWindowTitle(window, wndconfig->title);
 
     XRRSelectInput(_glfw.x11.display, window->x11.handle,
@@ -490,23 +523,9 @@ static void enterFullscreenMode(_GLFWwindow* window)
         // Fullscreen windows are undecorated and, when focused, are kept
         // on top of all other windows
 
-        XEvent event;
-        memset(&event, 0, sizeof(event));
-
-        event.type = ClientMessage;
-        event.xclient.window = window->x11.handle;
-        event.xclient.format = 32; // Data is 32-bit longs
-        event.xclient.message_type = _glfw.x11.NET_WM_STATE;
-        event.xclient.data.l[0] = _NET_WM_STATE_ADD;
-        event.xclient.data.l[1] = _glfw.x11.NET_WM_STATE_FULLSCREEN;
-        event.xclient.data.l[2] = 0; // No secondary property
-        event.xclient.data.l[3] = 1; // Sender is a normal application
-
-        XSendEvent(_glfw.x11.display,
-                   _glfw.x11.root,
-                   False,
-                   SubstructureNotifyMask | SubstructureRedirectMask,
-                   &event);
+        changeWindowState(window,
+                          _glfw.x11.NET_WM_STATE_FULLSCREEN,
+                          _NET_WM_STATE_ADD);
     }
     else if (window->x11.overrideRedirect)
     {
@@ -557,23 +576,9 @@ static void leaveFullscreenMode(_GLFWwindow* window)
         // Ask the window manager to make the GLFW window a normal window
         // Normal windows usually have frames and other decorations
 
-        XEvent event;
-        memset(&event, 0, sizeof(event));
-
-        event.type = ClientMessage;
-        event.xclient.window = window->x11.handle;
-        event.xclient.format = 32; // Data is 32-bit longs
-        event.xclient.message_type = _glfw.x11.NET_WM_STATE;
-        event.xclient.data.l[0] = _NET_WM_STATE_REMOVE;
-        event.xclient.data.l[1] = _glfw.x11.NET_WM_STATE_FULLSCREEN;
-        event.xclient.data.l[2] = 0; // No secondary property
-        event.xclient.data.l[3] = 1; // Sender is a normal application
-
-        XSendEvent(_glfw.x11.display,
-                   _glfw.x11.root,
-                   False,
-                   SubstructureNotifyMask | SubstructureRedirectMask,
-                   &event);
+        changeWindowState(window,
+                          _glfw.x11.NET_WM_STATE_FULLSCREEN,
+                          _NET_WM_STATE_REMOVE);
     }
 }
 

@@ -951,6 +951,14 @@ static int createWindow(_GLFWwindow* window,
                                           WM_COPYGLOBALDATA, MSGFLT_ALLOW, NULL);
     }
 
+    if (wndconfig->floating && !wndconfig->monitor)
+    {
+        SetWindowPos(window->win32.handle,
+                        HWND_TOPMOST,
+                        0, 0, 0, 0,
+                        SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
+    }
+
     DragAcceptFiles(window->win32.handle, TRUE);
 
     if (!_glfwCreateContext(window, ctxconfig, fbconfig))

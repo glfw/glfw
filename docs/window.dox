@@ -122,6 +122,11 @@ The `GLFW_AUTO_ICONIFY` hint specifies whether the (full screen) window
 will automatically iconify and restore the previous video mode on focus loss.
 This hint is ignored for windowed mode windows.
 
+The `GLFW_FLOATING` hint specifies whether the window will be floating above
+other regular windows, also called topmost or always-on-top.  This is intended
+primarily for debugging purposes and cannot be used to implement proper full
+screen windows.  This hint is ignored for full screen windows.
+
 
 @subsection window_hints_fb Framebuffer related hints
 
@@ -211,6 +216,7 @@ a robustness strategy.
 | `GLFW_VISIBLE`               | `GL_TRUE`                 | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_DECORATED`             | `GL_TRUE`                 | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_AUTO_ICONIFY`          | `GL_TRUE`                 | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_FLOATING`              | `GL_FALSE`                | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_RED_BITS`              | 8                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
 | `GLFW_GREEN_BITS`            | 8                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
 | `GLFW_BLUE_BITS`             | 8                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
@@ -443,6 +449,10 @@ resizable *by the user*.  This is controlled by the
 
 The `GLFW_DECORATED` attribute indicates whether the specified window has
 decorations such as a border, a close widget, etc.  This is controlled by the
+[window hint](@ref window_hints) with the same name. 
+
+The `GLFW_FLOATING` attribute indicates whether the specified window is
+floating, also called topmost or always-on-top.  This is controlled by the
 [window hint](@ref window_hints) with the same name. 
 
 

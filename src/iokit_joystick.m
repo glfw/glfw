@@ -316,8 +316,10 @@ void _glfwInitJoysticks(void)
 
     while ((ioHIDDeviceObject = IOIteratorNext(objectIterator)))
     {
+
         CFMutableDictionaryRef propsRef = NULL;
         CFTypeRef valueRef = NULL;
+
         kern_return_t result;
 
         IOCFPlugInInterface** ppPlugInInterface = NULL;
@@ -332,12 +334,14 @@ void _glfwInitJoysticks(void)
                                                    kCFAllocatorDefault,
                                                    kNilOptions);
 
-        if (result != kIOReturnSuccess)
-            continue;
+        if (result != kIOReturnSuccess) continue;
+
+        CFRetain(propsRef);
 
         valueRef = CFDictionaryGetValue(propsRef, CFSTR(kIOHIDPrimaryUsagePageKey));
         if (valueRef)
         {
+            CFRetain(valueRef);
             CFNumberGetValue(valueRef, kCFNumberLongType, &usagePage);
             if (usagePage != kHIDPage_GenericDesktop)
             {
@@ -346,13 +350,13 @@ void _glfwInitJoysticks(void)
                 CFRelease(propsRef);
                 continue;
             }
-
             CFRelease(valueRef);
         }
 
         valueRef = CFDictionaryGetValue(propsRef, CFSTR(kIOHIDPrimaryUsageKey));
         if (valueRef)
         {
+            CFRetain(valueRef);
             CFNumberGetValue(valueRef, kCFNumberLongType, &usage);
 
             if ((usage != kHIDUsage_GD_Joystick &&
@@ -364,7 +368,6 @@ void _glfwInitJoysticks(void)
                 CFRelease(propsRef);
                 continue;
             }
-
             CFRelease(valueRef);
         }
 
@@ -377,24 +380,14 @@ void _glfwInitJoysticks(void)
                                                    &ppPlugInInterface,
                                                    &score);
 
-        if (kIOReturnSuccess != result)
-        {
-            CFRelease(valueRef);
-            CFRelease(propsRef);
-            return;
-        }
+        if (kIOReturnSuccess != result) return;
 
         plugInResult = (*ppPlugInInterface)->QueryInterface(
                             ppPlugInInterface,
                             CFUUIDGetUUIDBytes(kIOHIDDeviceInterfaceID),
                             (void *) &(joystick->interface));
 
-        if (plugInResult != S_OK)
-        {
-            CFRelease(valueRef);
-            CFRelease(propsRef);
-            return;
-        }
+        if (plugInResult != S_OK) return;
 
         (*ppPlugInInterface)->Release(ppPlugInInterface);
 
@@ -408,6 +401,7 @@ void _glfwInitJoysticks(void)
         valueRef = CFDictionaryGetValue(propsRef, CFSTR(kIOHIDProductKey));
         if (valueRef)
         {
+            CFRetain(valueRef);
             CFStringGetCString(valueRef,
                                joystick->name,
                                sizeof(joystick->name),
@@ -420,7 +414,7 @@ void _glfwInitJoysticks(void)
         joystick->hatElements = CFArrayCreateMutable(NULL, 0, NULL);
 
         valueRef = CFDictionaryGetValue(propsRef, CFSTR(kIOHIDElementKey));
-        if (CFGetTypeID(valueRef) == CFArrayGetTypeID())
+        if (valueRef && (CFGetTypeID(valueRef) == CFArrayGetTypeID()))
         {
             CFRange range = { 0, CFArrayGetCount(valueRef) };
             CFArrayApplyFunction(valueRef,

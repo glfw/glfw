@@ -287,7 +287,7 @@ terminated and re-initialized.
 
 The GLFW 3 header is named @ref glfw3.h and moved to the `GLFW` directory, to
 avoid collisions with the headers of other major versions.  Similarly, the GLFW
-3 library is named `glfw3,` except when it's installed as a shared library on
+3 library is named `glfw3`, except when it's installed as a shared library on
 Unix-like systems, where it uses the
 [soname](https://en.wikipedia.org/wiki/soname) `libglfw.so.3`.
 

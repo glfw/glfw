@@ -342,12 +342,9 @@ void _glfwInitJoysticks(void)
             if (usagePage != kHIDPage_GenericDesktop)
             {
                 // This device is not relevant to GLFW
-                CFRelease(valueRef);
                 CFRelease(propsRef);
                 continue;
             }
-
-            CFRelease(valueRef);
         }
 
         valueRef = CFDictionaryGetValue(propsRef, CFSTR(kIOHIDPrimaryUsageKey));
@@ -360,12 +357,9 @@ void _glfwInitJoysticks(void)
                  usage != kHIDUsage_GD_MultiAxisController))
             {
                 // This device is not relevant to GLFW
-                CFRelease(valueRef);
                 CFRelease(propsRef);
                 continue;
             }
-
-            CFRelease(valueRef);
         }
 
         _GLFWjoystickIOKit* joystick = _glfw.iokit_js + joy;
@@ -379,7 +373,6 @@ void _glfwInitJoysticks(void)
 
         if (kIOReturnSuccess != result)
         {
-            CFRelease(valueRef);
             CFRelease(propsRef);
             return;
         }
@@ -391,7 +384,6 @@ void _glfwInitJoysticks(void)
 
         if (plugInResult != S_OK)
         {
-            CFRelease(valueRef);
             CFRelease(propsRef);
             return;
         }
@@ -412,7 +404,6 @@ void _glfwInitJoysticks(void)
                                joystick->name,
                                sizeof(joystick->name),
                                kCFStringEncodingUTF8);
-            CFRelease(valueRef);
         }
 
         joystick->axisElements = CFArrayCreateMutable(NULL, 0, NULL);
@@ -427,8 +418,8 @@ void _glfwInitJoysticks(void)
                                  range,
                                  getElementsCFArrayHandler,
                                  (void*) joystick);
-            CFRelease(valueRef);
         }
+
         CFRelease(propsRef);
 
         joystick->axes = calloc(CFArrayGetCount(joystick->axisElements),

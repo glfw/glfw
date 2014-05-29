@@ -443,6 +443,13 @@ void _glfwTerminateJoysticks(void)
     {
         _GLFWjoystickIOKit* joystick = &_glfw.iokit_js[i];
         removeJoystick(joystick);
+
+        if (joystick->axisElements)
+            CFRelease(joystick->axisElements);
+        if (joystick->buttonElements)
+            CFRelease(joystick->buttonElements);
+        if (joystick->hatElements)
+            CFRelease(joystick->hatElements);
     }
 }
 

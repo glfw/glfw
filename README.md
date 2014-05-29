@@ -69,7 +69,7 @@ The following dependencies are needed by the examples and test programs:
  - [Cocoa] Bugfix: Using a 1x1 cursor for hidden mode caused some screen
                    recorders to fail
  - [Cocoa] Bugfix: Some Core Foundation objects were leaked during joystick
-                   enumeration
+                   enumeration and termination
  - [Cocoa] Bugfix: One copy of each display name string was leaked
  - [Cocoa] Bugfix: Monitor enumeration caused a segfault if no `NSScreen` was
                    found for a given `CGDisplay`

@@ -1,5 +1,38 @@
-html {
-	background-color:hsl(0,0%,95%);
+#navrow1,#navrow2,#navrow3,#navrow4,.tablist a,.tablist a:visited,.tablist a:hover,.tablist li,.tablist li.current a,.memdoc,dl.reflist dd,div.toc li,.ah,span.lineno,span.lineno a,span.lineno a:hover,.note code,.pre code,.post code,.invariant code,.warning code,.attention code,.deprecated code,.bug code,.todo code,.test code,.doxtable code {
+	background:none;
+}
+
+#titlearea,.footer,.contents,div.header,.memdoc,table.doxtable td,table.doxtable th {
+	border:none;
+}
+
+.tablist a,.tablist a:visited,.tablist a:hover,.tablist li,.tablist li.current a,.reflist dt a.el,.levels span,.directory .levels span {
+	text-shadow:none;
+}
+
+.memdoc,dl.reflist dd {
+	box-shadow:none;
+}
+
+div.headertitle,.note code,.pre code,.post code,.invariant code,.warning code,.attention code,.deprecated code,.bug code,.todo code,.test code,table.doxtable code {
+	padding:0;
+}
+
+#nav-path,.directory .levels {
+	display:none;
+}
+
+html,#titlearea,.footer,tr.even,.directory tr.even,.doxtable tr:nth-child(even),.mdescLeft,.mdescRight,.memItemLeft,.memItemRight,code {
+	background:hsl(0,0%,95%);
+}
+
+body {
+	color:hsl(0,0%,30%);
+}
+
+h1,h2,h2.groupheader,h3,div.toc h3,h4,h5,h6,strong,em {
+	color:hsl(0,0%,10%);
+	border-bottom:none;
 }
 
 .glfwheader {
@@ -7,28 +40,25 @@ html {
 	height:64px;
 	max-width:920px;
 	min-width:800px;
-	padding:0px 32px;
-	margin:0em auto;
+	padding:0 32px;
+	margin:0 auto;
 }
 
-.glfwheader a#glfwhome {
+#glfwhome {
 	line-height:64px;
 	padding-right:48px;
-	float:left;
 	color:hsl(0,0%,40%);
 	font-size:2.5em;
-	background-image:url("http://www.glfw.org/css/arrow.png");
-	background-position:right top;
-	background-repeat:no-repeat;
+	background:url("http://www.glfw.org/css/arrow.png") no-repeat right;
 }
 
 .glfwnavbar {
 	list-style-type:none;
-	margin:0px auto;
+	margin:0 auto;
 	float:right;
 }
 
-.glfwnavbar li {
+#glfwhome,.glfwnavbar li {
 	float:left;
 }
 
@@ -39,14 +69,12 @@ html {
 	color:hsl(0,0%,40%);
 }
 
-.glfwheader a#glfwhome,.glfwnavbar a,.glfwnavbar a:visited {
-	transition:all 0.35s ease 0s;
+#glfwhome,.glfwnavbar a,.glfwnavbar a:visited {
+	transition:.35s ease;
 }
 
-#titlearea,address.footer {
+#titlearea,.footer {
 	color:hsl(0,0%,40%);
-	background-color:hsl(0,0%,95%);
-	border-bottom:none;
 }
 
 address.footer {
@@ -55,104 +83,96 @@ address.footer {
 	margin-top:3em;
 }
 
-div#top {
-	background-color:hsl(0,0%,40%);
+#top {
+	background:hsl(0,0%,40%);
 }
 
-div#navrow1,div#navrow2,div#navrow3,div#navrow4 {
-	background-color:hsl(0,0%,40%);
-	background-image:none;
+#navrow1,#navrow2,#navrow3,#navrow4 {
 	max-width:920px;
 	min-width:800px;
-	margin:0em auto;
+	margin:0 auto;
 	font-size:13px;
 }
 
-div#nav-path {
-	display: none;
-}
-
-ul.tablist {
+.tablist {
 	height:36px;
 	display:block;
 	position:relative;
 }
 
-.tablist a,.tablist a:hover,.tablist li,.tablist li.current a {
-	background-image:none;
-	text-shadow:none;
-}
-
-.tablist a,.tablist a:visited {
+.tablist a,.tablist a:visited,.tablist a:hover,.tablist li,.tablist li.current a {
 	color:hsl(0,0%,95%);
-	text-shadow:none;
 }
 
 .tablist li.current a {
 	background:linear-gradient(to bottom,hsl(34,100%,60%) 0%,hsl(24,100%,50%) 100%);
-	box-shadow:inset 0px 0px 32px hsl(24,100%,50%);
-	text-shadow:0px -1px 1px hsl(24,100%,35%);
+	box-shadow:inset 0 0 32px hsl(24,100%,50%);
+	text-shadow:0 -1px 1px hsl(24,100%,35%);
 	color:hsl(0,0%,100%);
 }
 
-div.contents {
+.contents {
 	min-height:590px;
 }
 
 div.contents,div.header {
 	max-width:920px;
-	margin:0em auto;
-	padding:0px 32px;
-	background-color:hsl(0,0%,100%);
+	margin:0 auto;
+	padding:0 32px;
+	background:hsl(0,0%,100%) none;
 }
 
-div.header {
-	background-image:none;
-	border-bottom:none;
-}
-
-table.doxtable th,dl.reflist dt,div.levels {
+table.doxtable th,dl.reflist dt {
 	background:linear-gradient(to bottom,hsl(34,100%,60%) 0%,hsl(24,100%,50%) 100%);
-	box-shadow:inset 0px 0px 32px hsl(24,100%,50%);
-	text-shadow:0px -1px 1px hsl(24,100%,35%);
+	box-shadow:inset 0 0 32px hsl(24,100%,50%);
+	text-shadow:0 -1px 1px hsl(24,100%,35%);
 	color:hsl(0,0%,100%);
 }
 
-dl.reflist dt a.el,div.levels span {
+dl.reflist dt a.el {
 	color:hsl(24,100%,50%);
-	padding:0.2em;
+	padding:.2em;
 	border-radius:4px;
 	background-color:hsl(24,100%,90%);
-	text-shadow:none;
 }
 
-div.memproto,div.qindex,div.ah {
-	background:linear-gradient(to bottom,hsl(34,0%,95%) 0%,hsl(24,0%,90%) 100%);
-	box-shadow:inset 0px 0px 32px hsl(24,0%,90%);
-	text-shadow:0px 1px 1px hsl(24,0%,100%);
+div.toc {
+	float:none;
+	width:auto;
+}
+
+div.toc h3 {
+	font-size:1.17em;
+}
+
+div.toc ul {
+	padding-left:1.5em;
+}
+
+div.toc li {
+	font-size:1em;
+	padding-left:0;
+	list-style-type:disc;
+}
+
+div.toc,.memproto,div.qindex,div.ah {
+	background:linear-gradient(to bottom,hsl(0,0%,95%) 0%,hsl(0,0%,90%) 100%);
+	box-shadow:inset 0 0 32px hsl(0,0%,90%);
+	text-shadow:0 1px 1px hsl(0,0%,100%);
 	color:hsl(0,0%,10%);
-}
-
-div.memproto a {
-	color:hsl(24,100%,50%);
-}
-
-div.memproto td.paramname {
-	text-shadow:0px 1px 1px hsl(24,0%,100%);
-}
-
-div.memproto,div.qindex,div.ah {
-	border:2px solid hsl(24,0%,90%);
+	border:2px solid hsl(0,0%,90%);
 	border-radius:4px;
 }
 
-div.memdoc {
-	background:none;
-	box-shadow:none;
-	border:none;
+.memproto a {
+	color:hsl(24,100%,50%);
 }
 
-td.paramname {
+.memproto td.paramname {
+	text-shadow:0 1px 1px hsl(0,0%,100%);
+}
+
+.paramname {
 	color:hsl(24,100%,25%);
 }
 
@@ -167,90 +187,58 @@ dl.reflist dd {
 	border:2px solid hsl(24,100%,50%);
 	border-bottom-right-radius:4px;
 	border-bottom-left-radius:4px;
-		border-top:none;
-	background:none;
-	box-shadow:none;
+	border-top:none;
 }
 
 table.doxtable {
 	border-collapse:inherit;
-	border-spacing:0px;
+	border-spacing:0;
 	border:2px solid hsl(24,100%,50%);
 	border-radius:4px;
 }
 
-table.doxtable td,table.doxtable th {
-	border:none;
-}
-
-tr.even,.directory tr.even,table.doxtable tr:nth-child(even) {
-	background-color:hsl(0,0%,95%);
-}
-
-body {
-	color:hsl(0,0%,30%);
-}
-
-h1,h2,h2.groupheader,h3,div.toc h3,h4,h5,h6,strong,em {
-	color:hsl(0,0%,10%);
-	border-bottom:none;
-}
-
-a,a:hover,a:visited,a:visited:hover,a.el,a.el:visited,.glfwheader a#glfwhome:hover,.tablist a:hover, span.lineno a:hover {
+a,a:hover,a:visited,a:visited:hover,.contents a:visited,.el,a.el:visited,#glfwhome:hover,.tablist a:hover,span.lineno a:hover {
 	color:hsl(24,100%,50%);
 	text-decoration:none;
 }
 
-.mdescLeft,.mdescRight,.memItemLeft,.memItemRight {
-	background-color:hsl(0,0%,95%);
-}
-
 div.directory {
 	border-collapse:inherit;
-	border-spacing:0px;
+	border-spacing:0;
 	border:2px solid hsl(24,100%,50%);
 	border-radius:4px;
 }
 
-.directory .levels span {
-	color:hsl(24,100%,50%);
-	padding:0.1em 0.5em;
-	margin:auto 0.25em;
-	border-radius:2px;
-	background-color:hsl(24,100%,90%);
-	text-shadow:none;
-}
-
-td.memSeparator {
+.memSeparator {
 	height:2px;
-	border:0px;
+	border:none;
 	background:linear-gradient(to right,hsl(0,0%,95%) 0%,hsl(0,0%,85%) 50%,hsl(0,0%,95%) 100%);
 }
 
 dl.note,dl.pre,dl.post,dl.invariant {
 	background:linear-gradient(to bottom,hsl(103,80%,90%) 0%,hsl(103,80%,85%) 100%);
-	box-shadow:inset 0px 0px 32px hsl(103,40%,80%);
+	box-shadow:inset 0 0 32px hsl(103,40%,80%);
 	color:hsl(103,80%,10%);
 	border:2px solid hsl(103,40%,75%);
 }
 
 dl.warning,dl.attention {
 	background:linear-gradient(to bottom,hsl(34,80%,90%) 0%,hsl(34,80%,85%) 100%);
-	box-shadow:inset 0px 0px 32px hsl(34,40%,80%);
+	box-shadow:inset 0 0 32px hsl(34,40%,80%);
 	color:hsl(34,80%,10%);
 	border:2px solid hsl(34,40%,75%);
 }
 
 dl.deprecated,dl.bug {
 	background:linear-gradient(to bottom,hsl(333,80%,90%) 0%,hsl(333,80%,85%) 100%);
-	box-shadow:inset 0px 0px 32px hsl(333,40%,80%);
+	box-shadow:inset 0 0 32px hsl(333,40%,80%);
 	color:hsl(333,80%,10%);
 	border:2px solid hsl(333,40%,75%);
 }
 
 dl.todo,dl.test {
 	background:linear-gradient(to bottom,hsl(200,80%,90%) 0%,hsl(200,80%,85%) 100%);
-	box-shadow:inset 0px 0px 32px hsl(200,40%,80%);
+	box-shadow:inset 0 0 32px hsl(200,40%,80%);
 	color:hsl(200,80%,10%);
 	border:2px solid hsl(200,40%,75%);
 }
@@ -258,57 +246,19 @@ dl.todo,dl.test {
 dl.note,dl.pre,dl.post,dl.invariant,dl.warning,dl.attention,dl.deprecated,dl.bug,dl.todo,dl.test {
 	border-radius:4px;
 	padding:1em;
-	text-shadow:0px 1px 1px hsl(0,0%,100%);
-}
-
-div.toc {
-	background:linear-gradient(to bottom,hsl(34,0%,95%) 0%,hsl(24,0%,90%) 100%);
-	box-shadow:inset 0px 0px 32px hsl(24,0%,90%);
-	text-shadow:0px 1px 1px hsl(24,0%,100%);
-	color:hsl(0,0%,10%);
-	border:2px solid hsl(24,0%,90%);
-	border-radius:4px;
-	float:none;
-	width:auto;
-}
-
-div.toc h3 {
-	font-size:1.17em;
-}
-
-div.toc ul {
-	padding-left:1.5em;
-}
-
-div.toc li {
-	background:none;
-	font-size:1em;
-	padding-left:0em;
-	list-style-type:disc;
-}
-
-div.ah {
-	background-image:none;
+	text-shadow:0 1px 1px hsl(0,0%,100%);
 }
 
 div.fragment,pre.fragment {
-	background-color:hsl(0,0%,20%);
+	background:hsl(0,0%,20%);
 	border-radius:4px;
-	border-width:0px;
-	padding:0.5em 2em;
+	border:none;
+	padding:.5em 2em;
 	overflow:auto;
 	border-left:4px solid hsl(0,0%,80%);
 }
 
-span.lineno, span.lineno a, span.lineno a:hover {
-	background: none;
-}
-
-span.lineno a, span.lineno a:visited {
-	color: hsl(0,0%,95%);
-}
-
-div.line,pre.fragment {
+.lineno a,.lineno a:visited,.line,pre.fragment {
 	color:hsl(60,30%,96%);
 }
 
@@ -325,13 +275,6 @@ span.stringliteral {
 }
 
 code {
-	background-color:hsl(0,0%,95%);
-	padding:0.1em;
+	padding:.1em;
 	border-radius:4px;
-}
-
-dl.note code,dl.pre code,dl.post code,dl.invariant code,dl.warning code,dl.attention code,dl.deprecated code,dl.bug code,dl.todo code,dl.test code,table.doxtable code {
-	background-color:transparent;
-	padding:0;
-	border-radius:0;
 }

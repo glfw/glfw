@@ -202,6 +202,17 @@ extern "C" {
 #endif
 
 /* -------------------- END SYSTEM/COMPILER SPECIFIC --------------------- */
+#if defined(__APPLE_CC__)
+#include <OpenGL/gl.h>
+#ifndef GLFW_NO_GLU
+#include <OpenGL/glu.h>
+#endif
+#else
+#include <GL/gl.h>
+#ifndef GLFW_NO_GLU
+#include <GL/glu.h>
+#endif
+#endif
 
 
 /*************************************************************************

@@ -48,6 +48,7 @@ The following dependencies are needed by the examples and test programs:
 
 ## Changelog
 
+ - Added `mods` parameter to character callback
  - Added `GLFWcursor` custom system cursor handle
  - Added `glfwCreateCursor`, `glfwDestroyCursor` and `glfwSetCursor` for
    managing custom system cursors

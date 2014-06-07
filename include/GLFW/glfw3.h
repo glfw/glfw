@@ -776,12 +776,14 @@ typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int);
  *
  *  @param[in] window The window that received the event.
  *  @param[in] codepoint The Unicode code point of the character.
+ *  @param[in] mods Bit field describing which [modifier keys](@ref mods) were
+ *  held down.
  *
  *  @sa glfwSetCharCallback
  *
  *  @ingroup input
  */
-typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
+typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int,int);
 
 
 /*! @brief The function signature for file drop callbacks.

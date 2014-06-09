@@ -64,7 +64,7 @@
 //****                KeySym to Unicode mapping table                 ****
 //************************************************************************
 
-static struct codepair {
+static const struct codepair {
   unsigned short keysym;
   unsigned short ucs;
 } keysymtab[] = {

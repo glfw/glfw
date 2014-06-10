@@ -29,7 +29,6 @@
 //
 //========================================================================
 
-#define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -65,7 +64,7 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(0.f, window_width, 0.f, window_height);
+    glOrtho(0.f, window_width, 0.f, window_height, 0.f, 1.f);
 }
 
 static void cursor_position_callback(GLFWwindow* window, double x, double y)

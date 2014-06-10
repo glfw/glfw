@@ -124,7 +124,7 @@ int main(int argc, char** argv)
     {
         GLFWmonitor* monitor = NULL;
 
-        if (count & 1)
+        if (count % 2 == 0)
         {
             int monitorCount;
             GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);

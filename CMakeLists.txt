@@ -445,7 +445,7 @@ configure_file(${GLFW_SOURCE_DIR}/src/glfwConfigVersion.cmake.in
                ${GLFW_BINARY_DIR}/src/glfwConfigVersion.cmake @ONLY)
 
 configure_file(${GLFW_SOURCE_DIR}/src/glfw3.pc.in
-                ${GLFW_BINARY_DIR}/src/glfw3.pc @ONLY)
+               ${GLFW_BINARY_DIR}/src/glfw3.pc @ONLY)
 
 #--------------------------------------------------------------------
 # Add subdirectories

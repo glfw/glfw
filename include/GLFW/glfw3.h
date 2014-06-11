@@ -783,7 +783,6 @@ typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int);
  */
 typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
 
-
 /*! @brief The function signature for file drop callbacks.
  *
  *  This is the function signature for file drop callbacks.

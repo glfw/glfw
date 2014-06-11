@@ -577,7 +577,6 @@ static void leaveFullscreenMode(_GLFWwindow* window)
     }
 }
 
-
 // Process the specified X event
 //
 static void processEvent(XEvent *event)

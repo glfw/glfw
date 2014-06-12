@@ -47,6 +47,14 @@ GLFW not supports floating windows, also called topmost or always on top, for
 easier debugging, with the `GLFW_FLOATING` window hint.
 
 
+@subsection news_31_charmods Character with modifiers callback
+
+GLFW now provides a callback for character events with modifier key bits.
+Unlike the regular character callback, this will report character events that
+will not result in a character being input, for example if the Control key is
+held down.
+
+
 @subsection news_31_egl Stable EGL support
 
 The support for EGL is now stable, successfully running on PandaBoards, Mesa,

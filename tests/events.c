@@ -187,9 +187,8 @@ static const char* get_key_name(int key)
         case GLFW_KEY_LEFT_SUPER:   return "LEFT SUPER";
         case GLFW_KEY_RIGHT_SUPER:  return "RIGHT SUPER";
         case GLFW_KEY_MENU:         return "MENU";
-        case GLFW_KEY_UNKNOWN:      return "UNKNOWN";
 
-        default:                    return NULL;
+        default:                    return "UNKNOWN";
     }
 }
 
@@ -218,14 +217,21 @@ static const char* get_button_name(int button)
             return "right";
         case GLFW_MOUSE_BUTTON_MIDDLE:
             return "middle";
+        default:
+        {
+            static char name[16];
+            sprintf(name, "%i", button);
+            return name;
+        }
     }
-
-    return NULL;
 }
 
 static const char* get_mods_name(int mods)
 {
     static char name[512];
+
+    if (mods == 0)
+        return " no mods";
 
     name[0] = '\0';
 
@@ -321,18 +327,11 @@ static void window_iconify_callback(GLFWwindow* window, int iconified)
 static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
     Slot* slot = glfwGetWindowUserPointer(window);
-    const char* name = get_button_name(button);
-
-    printf("%08x to %i at %0.3f: Mouse button %i",
-           counter++, slot->number, glfwGetTime(), button);
-
-    if (name)
-        printf(" (%s)", name);
-
-    if (mods)
-        printf(" (with%s)", get_mods_name(mods));
-
-    printf(" was %s\n", get_action_name(action));
+    printf("%08x to %i at %0.3f: Mouse button %i (%s) (with%s) was %s\n",
+           counter++, slot->number, glfwGetTime(), button,
+           get_button_name(button),
+           get_mods_name(mods),
+           get_action_name(action));
 }
 
 static void cursor_position_callback(GLFWwindow* window, double x, double y)
@@ -359,19 +358,13 @@ static void scroll_callback(GLFWwindow* window, double x, double y)
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    const char* name = get_key_name(key);
     Slot* slot = glfwGetWindowUserPointer(window);
 
-    printf("%08x to %i at %0.3f: Key 0x%04x Scancode 0x%04x",
-           counter++, slot->number, glfwGetTime(), key, scancode);
-
-    if (name)
-        printf(" (%s)", name);
-
-    if (mods)
-        printf(" (with%s)", get_mods_name(mods));
-
-    printf(" was %s\n", get_action_name(action));
+    printf("%08x to %i at %0.3f: Key 0x%04x Scancode 0x%04x (%s) (with%s) was %s\n",
+           counter++, slot->number, glfwGetTime(), key, scancode,
+           get_key_name(key),
+           get_mods_name(mods),
+           get_action_name(action));
 
     if (action != GLFW_PRESS)
         return;
@@ -394,6 +387,15 @@ static void char_callback(GLFWwindow* window, unsigned int codepoint)
     printf("%08x to %i at %0.3f: Character 0x%08x (%s) input\n",
            counter++, slot->number, glfwGetTime(), codepoint,
            get_character_string(codepoint));
+}
+
+static void char_mods_callback(GLFWwindow* window, unsigned int codepoint, int mods)
+{
+    Slot* slot = glfwGetWindowUserPointer(window);
+    printf("%08x to %i at %0.3f: Character 0x%08x (%s) (with%s) input\n",
+            counter++, slot->number, glfwGetTime(), codepoint,
+            get_character_string(codepoint),
+            get_mods_name(mods));
 }
 
 static void drop_callback(GLFWwindow* window, int count, const char** names)
@@ -546,6 +548,7 @@ int main(int argc, char** argv)
         glfwSetScrollCallback(slots[i].window, scroll_callback);
         glfwSetKeyCallback(slots[i].window, key_callback);
         glfwSetCharCallback(slots[i].window, char_callback);
+        glfwSetCharModsCallback(slots[i].window, char_mods_callback);
         glfwSetDropCallback(slots[i].window, drop_callback);
 
         glfwMakeContextCurrent(slots[i].window);

@@ -526,9 +526,14 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         }
 
         case WM_CHAR:
+        {
+            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), GL_TRUE);
+            return 0;
+        }
+
         case WM_SYSCHAR:
         {
-            _glfwInputChar(window, (unsigned int) wParam);
+            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), GL_FALSE);
             return 0;
         }
 
@@ -543,7 +548,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 return TRUE;
             }
 
-            _glfwInputChar(window, (unsigned int) wParam);
+            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), GL_TRUE);
             return FALSE;
         }
 

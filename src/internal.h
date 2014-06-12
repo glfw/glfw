@@ -262,6 +262,7 @@ struct _GLFWwindow
         GLFWscrollfun           scroll;
         GLFWkeyfun              key;
         GLFWcharfun             character;
+        GLFWcharmodsfun         charmods;
         GLFWdropfun             drop;
     } callbacks;
 
@@ -700,9 +701,12 @@ void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int m
 /*! @brief Notifies shared code of a Unicode character input event.
  *  @param[in] window The window that received the event.
  *  @param[in] codepoint The Unicode code point of the input character.
+ *  @param[in] mods Bit field describing which modifier keys were held down.
+ *  @param[in] plain `GL_TRUE` if the character is regular text input, or
+ *  `GL_FALSE` otherwise.
  *  @ingroup event
  */
-void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint);
+void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint, int mods, int plain);
 
 /*! @brief Notifies shared code of a scroll event.
  *  @param[in] window The window that received the event.

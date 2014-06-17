@@ -73,6 +73,8 @@ The following dependencies are needed by the examples and test programs:
  - [Cocoa] Bugfix: One copy of each display name string was leaked
  - [Cocoa] Bugfix: Monitor enumeration caused a segfault if no `NSScreen` was
                    found for a given `CGDisplay`
+ - [Cocoa] Bugfix: Modifier key events were lost if the corresponding modifier
+                   bit field was unchanged
  - [Win32] Enabled generation of pkg-config file for MinGW
  - [Win32] Bugfix: Failure to load winmm or its functions was not reported to
                    the error callback

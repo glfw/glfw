@@ -624,7 +624,7 @@ static int translateKey(unsigned int key)
 
     if (modifierFlags == window->ns.modifierFlags)
     {
-        if (window->key[key] == GLFW_PRESS)
+        if (window->keys[key] == GLFW_PRESS)
             action = GLFW_RELEASE;
         else
             action = GLFW_PRESS;

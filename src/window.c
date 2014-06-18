@@ -246,8 +246,21 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     // Restore the previously current context (or NULL)
     _glfwPlatformMakeContextCurrent(previous);
 
-    if (wndconfig.monitor == NULL && wndconfig.visible)
-        _glfwPlatformShowWindow(window);
+    if (wndconfig.monitor)
+    {
+        int width, height;
+        _glfwPlatformGetWindowSize(window, &width, &height);
+
+        window->cursorPosX = width / 2;
+        window->cursorPosY = height / 2;
+
+        _glfwPlatformSetCursorPos(window, window->cursorPosX, window->cursorPosY);
+    }
+    else
+    {
+        if (wndconfig.visible)
+            _glfwPlatformShowWindow(window);
+    }
 
     return (GLFWwindow*) window;
 }

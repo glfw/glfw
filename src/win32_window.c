@@ -1183,6 +1183,11 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     SetFocus(window->win32.handle);
 }
 
+void _glfwPlatformUnhideWindow(_GLFWwindow* window)
+{
+    ShowWindow(window->win32.handle, SW_SHOW);
+}
+
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     ShowWindow(window->win32.handle, SW_HIDE);

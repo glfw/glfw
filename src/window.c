@@ -163,6 +163,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     wndconfig.resizable     = _glfw.hints.resizable ? GL_TRUE : GL_FALSE;
     wndconfig.visible       = _glfw.hints.visible ? GL_TRUE : GL_FALSE;
     wndconfig.decorated     = _glfw.hints.decorated ? GL_TRUE : GL_FALSE;
+    wndconfig.focused       = _glfw.hints.focused ? GL_TRUE : GL_FALSE;
     wndconfig.autoIconify   = _glfw.hints.autoIconify ? GL_TRUE : GL_FALSE;
     wndconfig.floating      = _glfw.hints.floating ? GL_TRUE : GL_FALSE;
     wndconfig.monitor       = (_GLFWmonitor*) monitor;
@@ -190,6 +191,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     {
         wndconfig.resizable = GL_TRUE;
         wndconfig.visible   = GL_TRUE;
+        wndconfig.focused   = GL_TRUE;
 
         // Set up desired video mode
         window->videoMode.width       = width;
@@ -200,6 +202,8 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
         window->videoMode.refreshRate = _glfw.hints.refreshRate;
     }
 
+    // Transfer window hints that are persistent settings and not
+    // just initial states
     window->monitor     = wndconfig.monitor;
     window->resizable   = wndconfig.resizable;
     window->decorated   = wndconfig.decorated;
@@ -257,7 +261,12 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     else
     {
         if (wndconfig.visible)
-            _glfwPlatformShowWindow(window);
+        {
+            if (wndconfig.focused)
+                _glfwPlatformShowWindow(window);
+            else
+                _glfwPlatformUnhideWindow(window);
+        }
     }
 
     return (GLFWwindow*) window;
@@ -274,10 +283,11 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.major = 1;
     _glfw.hints.minor = 0;
 
-    // The default is a visible, resizable window with decorations
+    // The default is a focused, visible, resizable window with decorations
     _glfw.hints.resizable   = GL_TRUE;
     _glfw.hints.visible     = GL_TRUE;
     _glfw.hints.decorated   = GL_TRUE;
+    _glfw.hints.focused     = GL_TRUE;
     _glfw.hints.autoIconify = GL_TRUE;
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
@@ -344,6 +354,9 @@ GLFWAPI void glfwWindowHint(int target, int hint)
             break;
         case GLFW_DECORATED:
             _glfw.hints.decorated = hint;
+            break;
+        case GLFW_FOCUSED:
+            _glfw.hints.focused = hint;
             break;
         case GLFW_AUTO_ICONIFY:
             _glfw.hints.autoIconify = hint;

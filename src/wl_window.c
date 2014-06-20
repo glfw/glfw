@@ -325,6 +325,12 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     wl_shell_surface_set_toplevel(window->wl.shell_surface);
 }
 
+void _glfwPlatformUnhideWindow(_GLFWwindow* window)
+{
+    // TODO
+    fprintf(stderr, "_glfwPlatformUnhideWindow not implemented yet\n");
+}
+
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     wl_surface_attach(window->wl.surface, NULL, 0, 0);

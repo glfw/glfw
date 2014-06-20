@@ -47,6 +47,12 @@ GLFW now supports floating windows, also called topmost or always on top, for
 easier debugging, with the `GLFW_FLOATING` window hint.
 
 
+@subsection news_31_focused Initially unfocused windows
+
+GLFW now supports preventing a windowed mode window from gaining input focus on
+creation, with the `GLFW_FOCUSED` window hint.
+
+
 @subsection news_31_charmods Character with modifiers callback
 
 GLFW now provides a callback for character events with modifier key bits.

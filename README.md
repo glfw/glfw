@@ -68,6 +68,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
    `GLFW_RELEASE_BEHAVIOR_NONE` for `GL_KHR_context_flush_control` support
  - Added `GLFW_INCLUDE_ES31` for including the OpenGL ES 3.1 header
  - Added `GLFW_FLOATING` for creating always-on-top windowed mode windows
+ - Added `GLFW_FOCUSED` window hint for controlling initial input focus
  - Added *partial and experimental* support for Wayland
  - Bugfix: The debug context attribute was set from `GL_ARB_debug_output` even
            when a debug context had not been requested

@@ -121,6 +121,10 @@ window decorations such as a border, a close widget, etc.  This hint is ignored
 for full screen windows.  Note that even though a window may lack a close
 widget, it is usually still possible for the user to generate close events.
 
+The `GLFW_FOCUSED` hint specifies whether the (windowed mode) window will be
+given input focus when created.  This hint is ignored for full screen and
+initially hidden windows.
+
 The `GLFW_AUTO_ICONIFY` hint specifies whether the (full screen) window
 will automatically iconify and restore the previous video mode on focus loss.
 This hint is ignored for windowed mode windows.
@@ -243,6 +247,7 @@ extension.
 | `GLFW_RESIZABLE`                | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_VISIBLE`                  | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_DECORATED`                | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_FOCUSED`                  | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_AUTO_ICONIFY`             | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_FLOATING`                 | `GL_FALSE`                  | `GL_TRUE` or `GL_FALSE` |
 | `GLFW_RED_BITS`                 | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE` |

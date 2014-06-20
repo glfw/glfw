@@ -1155,6 +1155,12 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     _glfwInputWindowVisibility(window, GL_TRUE);
 }
 
+void _glfwPlatformUnhideWindow(_GLFWwindow* window)
+{
+    [window->ns.object orderFront:nil];
+    _glfwInputWindowVisibility(window, GL_TRUE);
+}
+
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     [window->ns.object orderOut:nil];

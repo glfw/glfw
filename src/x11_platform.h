@@ -256,6 +256,8 @@ void _glfwHandleSelectionClear(XEvent* event);
 void _glfwHandleSelectionRequest(XEvent* event);
 void _glfwPushSelectionToManager(_GLFWwindow* window);
 
+Cursor _glfwCreateCursor(const GLFWimage* image, int xhot, int yhot);
+
 // Window support
 _GLFWwindow* _glfwFindWindowByHandle(Window handle);
 unsigned long _glfwGetWindowProperty(Window window,

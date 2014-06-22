@@ -576,40 +576,16 @@ static GLboolean initExtensions(void)
     return GL_TRUE;
 }
 
-// Create a blank cursor (for locked mouse mode)
+// Create a blank cursor for hidden and disabled cursor modes
 //
 static Cursor createNULLCursor(void)
 {
-    Pixmap cursormask;
-    XGCValues xgc;
-    GC gc;
-    XColor col;
-    Cursor cursor;
+    unsigned char pixels[16 * 16 * 4];
+    GLFWimage image = { 16, 16, pixels };
 
-    _glfwGrabXErrorHandler();
+    memset(pixels, 0, sizeof(pixels));
 
-    cursormask = XCreatePixmap(_glfw.x11.display, _glfw.x11.root, 1, 1, 1);
-    xgc.function = GXclear;
-    gc = XCreateGC(_glfw.x11.display, cursormask, GCFunction, &xgc);
-    XFillRectangle(_glfw.x11.display, cursormask, gc, 0, 0, 1, 1);
-    col.pixel = 0;
-    col.red = 0;
-    col.flags = 4;
-    cursor = XCreatePixmapCursor(_glfw.x11.display,
-                                 cursormask, cursormask,
-                                 &col, &col, 0, 0);
-    XFreePixmap(_glfw.x11.display, cursormask);
-    XFreeGC(_glfw.x11.display, gc);
-
-    _glfwReleaseXErrorHandler();
-
-    if (cursor == None)
-    {
-        _glfwInputXError(GLFW_PLATFORM_ERROR,
-                         "X11: Failed to create null cursor");
-    }
-
-    return cursor;
+    return _glfwCreateCursor(&image, 0, 0);
 }
 
 // Terminate X11 display
@@ -662,6 +638,37 @@ void _glfwInputXError(int error, const char* message)
                   buffer, sizeof(buffer));
 
     _glfwInputError(error, "%s: %s", message, buffer);
+}
+
+// Create a cursor object
+//
+Cursor _glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
+{
+    int i;
+    Cursor cursor;
+
+    XcursorImage* native = XcursorImageCreate(image->width, image->height);
+    if (native == NULL)
+        return None;
+
+    native->xhot = xhot;
+    native->yhot = yhot;
+
+    unsigned char* source = (unsigned char*) image->pixels;
+    XcursorPixel* target = native->pixels;
+
+    for (i = 0;  i < image->width * image->height;  i++, target++, source += 4)
+    {
+        *target = (source[3] << 24) |
+                  (source[0] << 16) |
+                  (source[1] <<  8) |
+                   source[2];
+    }
+
+    cursor = XcursorImageLoadCursor(_glfw.x11.display, native);
+    XcursorImageDestroy(native);
+
+    return cursor;
 }
 
 

@@ -609,7 +609,7 @@ static void processEvent(XEvent *event)
             _glfwInputKey(window, key, event->xkey.keycode, GLFW_PRESS, mods);
 
             if (character != -1)
-                _glfwInputChar(window, character);
+                _glfwInputChar(window, character, mods);
 
             break;
         }

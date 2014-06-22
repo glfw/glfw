@@ -388,12 +388,18 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     }
 }
 
-static void char_callback(GLFWwindow* window, unsigned int codepoint)
+static void char_callback(GLFWwindow* window, unsigned int codepoint, int mods)
 {
     Slot* slot = glfwGetWindowUserPointer(window);
-    printf("%08x to %i at %0.3f: Character 0x%08x (%s) input\n",
+
+    printf("%08x to %i at %0.3f: Character 0x%08x (%s)",
            counter++, slot->number, glfwGetTime(), codepoint,
            get_character_string(codepoint));
+
+    if (mods)
+        printf(" (with%s)", get_mods_name(mods));
+
+    printf(" input\n");
 }
 
 static void drop_callback(GLFWwindow* window, int count, const char** names)

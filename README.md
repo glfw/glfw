@@ -47,6 +47,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
 
 ## Changelog
 
+ - Added `mods` parameter to character callback
  - Added `GLFWcursor` custom system cursor handle
  - Added `glfwCreateCursor`, `glfwDestroyCursor` and `glfwSetCursor` for
    managing custom system cursors

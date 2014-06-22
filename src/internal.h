@@ -700,9 +700,10 @@ void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int m
 /*! @brief Notifies shared code of a Unicode character input event.
  *  @param[in] window The window that received the event.
  *  @param[in] codepoint The Unicode code point of the input character.
+ *  @param[in] mods The modifiers pressed when the event was generated.
  *  @ingroup event
  */
-void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint);
+void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint, int mods);
 
 /*! @brief Notifies shared code of a scroll event.
  *  @param[in] window The window that received the event.

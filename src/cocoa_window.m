@@ -611,7 +611,7 @@ static int translateKey(unsigned int key)
     NSUInteger i, length = [characters length];
 
     for (i = 0;  i < length;  i++)
-        _glfwInputChar(window, [characters characterAtIndex:i]);
+        _glfwInputChar(window, [characters characterAtIndex:i], mods);
 }
 
 - (void)flagsChanged:(NSEvent *)event

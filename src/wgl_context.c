@@ -571,6 +571,18 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
         }
     }
 
+    if (fbconfig->sRGB)
+    {
+        // We want sRGB, but can we get it?
+        // sRGB is not a hard constraint, so otherwise we just don't care
+
+        if (window->wgl.ARB_framebuffer_sRGB && window->wgl.ARB_pixel_format)
+        {
+            // We appear to have both the extension and the means to ask for it
+            required = GL_TRUE;
+        }
+    }
+
     if (required)
         return _GLFW_RECREATION_REQUIRED;
 

@@ -95,10 +95,10 @@ GLFW bundles a number of dependencies in the `deps/` directory.
                  that at least one CRTC was present
  - [X11] Bugfix: A stale `_NET_SUPPORTING_WM_CHECK` root window property would
                  cause an uncaught `BadWindow` error
- - [X11] Bugfix: No check was made for the presence GLX 1.3 when
+ - [X11] Bugfix: No check was made for the presence of GLX 1.3 when
                  `GLX_SGIX_fbconfig` was unavailable
  - [X11] Bugfix: The message type of ICCCM protocol events was not checked
- - [X11] Bugfix: `glfwDestroyWindow` did not flush the output buffer.
+ - [X11] Bugfix: `glfwDestroyWindow` did not flush the output buffer
  - [X11] Bugfix: Window frame interactions were reported as focus events
  - [X11] Bugfix: Workaround for legacy Compiz caused flickering during resize
  - [X11] Bugfix: The name pointer of joysticks were not cleared on disconnection

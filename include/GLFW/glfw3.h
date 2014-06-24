@@ -788,6 +788,24 @@ typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int);
  */
 typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
 
+/*! @brief The function signature for Unicode character with modifiers
+ *  callbacks.
+ *
+ *  This is the function signature for Unicode character with modifiers callback
+ *  functions.  It is called for each input character, regardless of what
+ *  modifier keys are held down.
+ *
+ *  @param[in] window The window that received the event.
+ *  @param[in] codepoint The Unicode code point of the character.
+ *  @param[in] mods Bit field describing which [modifier keys](@ref mods) were
+ *  held down.
+ *
+ *  @sa glfwSetCharModsCallback
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWcharmodsfun)(GLFWwindow*,unsigned int,int);
+
 /*! @brief The function signature for file drop callbacks.
  *
  *  This is the function signature for file drop callbacks.
@@ -2151,9 +2169,19 @@ GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
  *  This function sets the character callback of the specific window, which is
  *  called when a Unicode character is input.
  *
- *  The character callback is intended for text input.  If you want to know
- *  whether a specific key was pressed or released, use the
- *  [key callback](@ref glfwSetKeyCallback) instead.
+ *  The character callback is intended for Unicode text input.  As it deals with
+ *  characters, it is keyboard layout dependent, whereas the
+ *  [key callback](@ref glfwSetKeyCallback) is not.  Characters do not map 1:1
+ *  to physical keys, as a key may produce zero, one or more characters.  If you
+ *  want to know whether a specific physical key was pressed or released, see
+ *  the key callback instead.
+ *
+ *  The character callback behaves as system text input normally does and will
+ *  not be called if modifier keys are held down that would prevent normal text
+ *  input on that platform, for example a Super (Command) key on OS X or Alt key
+ *  on Windows.  There is a
+ *  [character with modifiers callback](@ref glfwSetCharModsCallback) that
+ *  receives these events.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
@@ -2166,6 +2194,33 @@ GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
  *  @ingroup input
  */
 GLFWAPI GLFWcharfun glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
+
+/*! @brief Sets the Unicode character with modifiers callback.
+ *
+ *  This function sets the character with modifiers callback of the specific
+ *  window, which is called when a Unicode character is input regardless of what
+ *  modifier keys are used.
+ *
+ *  The character with modifiers callback is intended for implementing custom
+ *  Unicode character input.  For regular Unicode text input, see the
+ *  [character callback](@ref glfwSetCharCallback).  Like the character
+ *  callback, the character with modifiers callback deals with characters and is
+ *  keyboard layout dependent.  Characters do not map 1:1 to physical keys, as
+ *  a key may produce zero, one or more characters.  If you want to know whether
+ *  a specific physical key was pressed or released, see the
+ *  [key callback](@ref glfwSetKeyCallback) instead.
+ *
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or an
+ *  error occurred.
+ *
+ *  @note This function may only be called from the main thread.
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmodsfun cbfun);
 
 /*! @brief Sets the mouse button callback.
  *

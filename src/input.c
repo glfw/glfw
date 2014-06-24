@@ -153,13 +153,19 @@ void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int m
         window->callbacks.key((GLFWwindow*) window, key, scancode, action, mods);
 }
 
-void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint)
+void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint, int mods, int plain)
 {
     if (codepoint < 32 || (codepoint > 126 && codepoint < 160))
         return;
 
-    if (window->callbacks.character)
-        window->callbacks.character((GLFWwindow*) window, codepoint);
+    if (window->callbacks.charmods)
+        window->callbacks.charmods((GLFWwindow*) window, codepoint, mods);
+
+    if (plain)
+    {
+        if (window->callbacks.character)
+            window->callbacks.character((GLFWwindow*) window, codepoint);
+    }
 }
 
 void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset)
@@ -436,6 +442,14 @@ GLFWAPI GLFWcharfun glfwSetCharCallback(GLFWwindow* handle, GLFWcharfun cbfun)
     _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     _GLFW_SWAP_POINTERS(window->callbacks.character, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* handle, GLFWcharmodsfun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(window->callbacks.charmods, cbfun);
     return cbfun;
 }
 

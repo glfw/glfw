@@ -56,6 +56,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - Added `glfwPostEmptyEvent` for allowing secondary threads to cause
    `glfwWaitEvents` to return
  - Added `empty` test program for verifying posting of empty events
+ - Added `glfwSetCharModsCallback` for receiving character events with modifiers
  - Added `glfwGetWindowFrameSize` for retrieving the size of the frame around
    the client area of a window
  - Added `GLFW_AUTO_ICONIFY` for controlling whether full screen windows

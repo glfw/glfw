@@ -609,7 +609,10 @@ static void processEvent(XEvent *event)
             _glfwInputKey(window, key, event->xkey.keycode, GLFW_PRESS, mods);
 
             if (character != -1)
-                _glfwInputChar(window, character);
+            {
+                const int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
+                _glfwInputChar(window, character, mods, plain);
+            }
 
             break;
         }
@@ -1454,29 +1457,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                               const GLFWimage* image,
                               int xhot, int yhot)
 {
-    int i;
-
-    XcursorImage* native = XcursorImageCreate(image->width, image->height);
-    if (native == NULL)
-        return GL_FALSE;
-
-    native->xhot = xhot;
-    native->yhot = yhot;
-
-    unsigned char* source = (unsigned char*) image->pixels;
-    XcursorPixel* target = native->pixels;
-
-    for (i = 0;  i < image->width * image->height;  i++, target++, source += 4)
-    {
-        *target = (source[3] << 24) |
-                  (source[0] << 16) |
-                  (source[1] <<  8) |
-                   source[2];
-    }
-
-    cursor->x11.handle = XcursorImageLoadCursor(_glfw.x11.display, native);
-    XcursorImageDestroy(native);
-
+    cursor->x11.handle = _glfwCreateCursor(image, xhot, yhot);
     if (cursor->x11.handle == None)
         return GL_FALSE;
 

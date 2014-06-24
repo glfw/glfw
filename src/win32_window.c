@@ -39,7 +39,7 @@
 //
 static getWindowStyle(const _GLFWwndconfig* wndconfig)
 {
-    DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+    DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE;
 
     if (wndconfig->decorated && wndconfig->monitor == NULL)
     {

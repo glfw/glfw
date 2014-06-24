@@ -41,11 +41,6 @@ static getWindowStyle(const _GLFWwndconfig* wndconfig)
 {
     DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 
-    if (wndconfig->visible)
-    {
-        style |= WS_VISIBLE;
-    }
-
     if (wndconfig->decorated && wndconfig->monitor == NULL)
     {
         style |= WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
@@ -1214,13 +1209,14 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
         wndconfig.resizable = window->resizable;
         wndconfig.decorated = window->decorated;
         wndconfig.monitor   = monitor;
-        wndconfig.visible   = window->visible || monitor;
 
         window->win32.dwStyle = getWindowStyle(&wndconfig);
         window->win32.dwExStyle = getWindowExStyle(&wndconfig);
 
+        DWORD styleMod   = (window->visible || monitor) ? WS_VISIBLE : 0;
+
         SetWindowLongPtr(window->win32.handle,
-                         GWL_STYLE, window->win32.dwStyle);
+                         GWL_STYLE, window->win32.dwStyle | WS_VISIBLE);
         SetWindowLongPtr(window->win32.handle,
                          GWL_EXSTYLE, window->win32.dwExStyle);
     }

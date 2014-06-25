@@ -1213,10 +1213,8 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
         window->win32.dwStyle = getWindowStyle(&wndconfig);
         window->win32.dwExStyle = getWindowExStyle(&wndconfig);
 
-        DWORD styleMod   = (window->visible || monitor) ? WS_VISIBLE : 0;
-
         SetWindowLongPtr(window->win32.handle,
-                         GWL_STYLE, window->win32.dwStyle | styleMod);
+                         GWL_STYLE, window->win32.dwStyle | WS_VISIBLE);
         SetWindowLongPtr(window->win32.handle,
                          GWL_EXSTYLE, window->win32.dwExStyle);
     }

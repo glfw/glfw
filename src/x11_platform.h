@@ -64,6 +64,7 @@
 
 #include "posix_time.h"
 #include "linux_joystick.h"
+#include "xkb_unicode.h"
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  x11
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11
@@ -247,9 +248,6 @@ void _glfwInitGammaRamp(void);
 // Fullscreen support
 GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
-
-// Unicode support
-long _glfwKeySym2Unicode(KeySym keysym);
 
 // Clipboard handling
 void _glfwHandleSelectionClear(XEvent* event);

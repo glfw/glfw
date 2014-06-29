@@ -299,7 +299,7 @@ if (_GLFW_WAYLAND)
     set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} wayland")
 
     list(APPEND glfw_INCLUDE_DIRS ${WAYLAND_INCLUDE_DIR})
-    list(APPEND glfw_LIBRARIES ${WAYLAND_LIBRARIES})
+    list(APPEND glfw_LIBRARIES ${WAYLAND_LIBRARIES} -pthread)
 
     find_library(MATH_LIBRARY m)
     mark_as_advanced(MATH_LIBRARY)

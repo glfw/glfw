@@ -34,7 +34,7 @@ elseif (_GLFW_WAYLAND)
                      posix_time.h posix_tls.h)
     set(glfw_SOURCES ${common_SOURCES} wl_clipboard.c wl_gamma.c wl_init.c
                      wl_monitor.c wl_window.c linux_joystick.c posix_time.c
-                     posix_tls.c)
+                     posix_tls.c xkb_unicode.c xkb_unicode.h)
 endif()
 
 if (_GLFW_EGL)

@@ -27,14 +27,14 @@ elseif (_GLFW_X11)
     set(glfw_HEADERS ${common_HEADERS} x11_platform.h linux_joystick.h
                      posix_time.h posix_tls.h)
     set(glfw_SOURCES ${common_SOURCES} x11_clipboard.c x11_gamma.c x11_init.c
-                     x11_monitor.c x11_window.c x11_unicode.c linux_joystick.c
-                     posix_time.c posix_tls.c)
+                     x11_monitor.c x11_window.c xkb_unicode.c xkb_unicode.h
+                     linux_joystick.c posix_time.c posix_tls.c)
 elseif (_GLFW_WAYLAND)
     set(glfw_HEADERS ${common_HEADERS} wl_platform.h linux_joystick.h
                      posix_time.h posix_tls.h)
     set(glfw_SOURCES ${common_SOURCES} wl_clipboard.c wl_gamma.c wl_init.c
                      wl_monitor.c wl_window.c linux_joystick.c posix_time.c
-                     posix_tls.c)
+                     posix_tls.c xkb_unicode.c xkb_unicode.h)
 endif()
 
 if (_GLFW_EGL)

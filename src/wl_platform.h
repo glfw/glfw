@@ -29,6 +29,7 @@
 
 
 #include <wayland-client.h>
+#include <xkbcommon/xkbcommon.h>
 
 #if defined(_GLFW_EGL)
  #include "egl_context.h"
@@ -68,11 +69,27 @@ typedef struct _GLFWlibraryWayland
     struct wl_registry*         registry;
     struct wl_compositor*       compositor;
     struct wl_shell*            shell;
+    struct wl_seat*             seat;
+    struct wl_pointer*          pointer;
+    struct wl_keyboard*         keyboard;
 
     _GLFWmonitor**              monitors;
     int                         monitorsCount;
     int                         monitorsSize;
 
+    struct {
+        struct xkb_context*     context;
+        struct xkb_keymap*      keymap;
+        struct xkb_state*       state;
+        xkb_mod_mask_t          control_mask;
+        xkb_mod_mask_t          alt_mask;
+        xkb_mod_mask_t          shift_mask;
+        xkb_mod_mask_t          super_mask;
+        unsigned int            modifiers;
+    } xkb;
+
+    _GLFWwindow*                pointerFocus;
+    _GLFWwindow*                keyboardFocus;
 } _GLFWlibraryWayland;
 
 typedef struct _GLFWmonitorWayland

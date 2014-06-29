@@ -44,6 +44,8 @@ void init( void );
 void display( void );
 void reshape( GLFWwindow* window, int w, int h );
 void key_callback( GLFWwindow* window, int key, int scancode, int action, int mods );
+void mouse_button_callback( GLFWwindow* window, int button, int action, int mods );
+void cursor_position_callback( GLFWwindow* window, double x, double y );
 void DrawBoingBall( void );
 void BounceBall( double dt );
 void DrawBoingBallBand( GLfloat long_lo, GLfloat long_hi );
@@ -80,8 +82,12 @@ typedef enum { DRAW_BALL, DRAW_BALL_SHADOW } DRAW_BALL_ENUM;
 typedef struct {float x; float y; float z;} vertex_t;
 
 /* Global vars */
+int width, height;
 GLfloat deg_rot_y       = 0.f;
 GLfloat deg_rot_y_inc   = 2.f;
+GLboolean override_pos  = GL_FALSE;
+GLfloat cursor_x        = 0.f;
+GLfloat cursor_y        = 0.f;
 GLfloat ball_x          = -RADIUS;
 GLfloat ball_y          = -RADIUS;
 GLfloat ball_x_inc      = 1.f;
@@ -251,6 +257,37 @@ void key_callback( GLFWwindow* window, int key, int scancode, int action, int mo
         glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
+static void set_ball_pos ( GLfloat x, GLfloat y )
+{
+   ball_x = (width / 2) - x;
+   ball_y = y - (height / 2);
+}
+
+void mouse_button_callback( GLFWwindow* window, int button, int action, int mods )
+{
+   if (button != GLFW_MOUSE_BUTTON_LEFT)
+      return;
+
+   if (action == GLFW_PRESS)
+   {
+      override_pos = GL_TRUE;
+      set_ball_pos(cursor_x, cursor_y);
+   }
+   else
+   {
+      override_pos = GL_FALSE;
+   }
+}
+
+void cursor_position_callback( GLFWwindow* window, double x, double y )
+{
+   cursor_x = x;
+   cursor_y = y;
+
+   if ( override_pos )
+      set_ball_pos(cursor_x, cursor_y);
+}
+
 /*****************************************************************************
  * Draw the Boing ball.
  *
@@ -340,6 +377,9 @@ void BounceBall( double delta_t )
 {
    GLfloat sign;
    GLfloat deg;
+
+   if ( override_pos )
+     return;
 
    /* Bounce on walls */
    if ( ball_x >  (BOUNCE_WIDTH/2 + WALL_R_OFFSET ) )
@@ -574,7 +614,6 @@ void DrawGrid( void )
 int main( void )
 {
    GLFWwindow* window;
-   int width, height;
 
    /* Init GLFW */
    if( !glfwInit() )
@@ -591,6 +630,8 @@ int main( void )
 
    glfwSetFramebufferSizeCallback(window, reshape);
    glfwSetKeyCallback(window, key_callback);
+   glfwSetMouseButtonCallback(window, mouse_button_callback);
+   glfwSetCursorPosCallback(window, cursor_position_callback);
 
    glfwMakeContextCurrent(window);
    glfwSwapInterval( 1 );

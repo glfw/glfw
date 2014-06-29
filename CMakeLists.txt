@@ -302,7 +302,7 @@ if (_GLFW_WAYLAND)
     list(APPEND glfw_LIBRARIES ${WAYLAND_LIBRARIES} -pthread)
 
     find_package(XKBCommon REQUIRED)
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} libxkbcommon")
+    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xkbcommon")
     list(APPEND glfw_INCLUDE_DIRS ${XKBCOMMON_INCLUDE_DIRS})
     list(APPEND glfw_LIBRARIES ${XKBCOMMON_LIBRARY})
 

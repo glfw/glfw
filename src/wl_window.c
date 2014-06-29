@@ -65,6 +65,8 @@ static GLboolean createSurface(_GLFWwindow* window,
     if (!window->wl.surface)
         return GL_FALSE;
 
+    wl_surface_set_user_data(window->wl.surface, window);
+
     window->wl.native = wl_egl_window_create(window->wl.surface,
                                              wndconfig->width,
                                              wndconfig->height);

@@ -68,11 +68,16 @@ typedef struct _GLFWlibraryWayland
     struct wl_registry*         registry;
     struct wl_compositor*       compositor;
     struct wl_shell*            shell;
+    struct wl_seat*             seat;
+    struct wl_pointer*          pointer;
+    struct wl_keyboard*         keyboard;
 
     _GLFWmonitor**              monitors;
     int                         monitorsCount;
     int                         monitorsSize;
 
+    _GLFWwindow*                pointerFocus;
+    _GLFWwindow*                keyboardFocus;
 } _GLFWlibraryWayland;
 
 typedef struct _GLFWmonitorWayland

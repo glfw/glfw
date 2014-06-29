@@ -404,8 +404,10 @@ static void keyboardHandleKey(void* data,
     if (num_syms == 1)
     {
         sym = _glfwKeySym2Unicode(syms[0]);
-        if (sym != -1)
-            _glfwInputChar(window, sym);
+        if (sym != -1){
+            const int plain = !(_glfw.wl.xkb.modifiers & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
+            _glfwInputChar(window, sym, _glfw.wl.xkb.modifiers, plain);
+        }
     }
 }
 

@@ -167,6 +167,7 @@ static GLboolean chooseFBConfigs(const _GLFWctxconfig* ctxconfig,
         u->stencilBits = getConfigAttrib(n, EGL_STENCIL_SIZE);
 
         u->samples = getConfigAttrib(n, EGL_SAMPLES);
+        u->doublebuffer = GL_TRUE;
 
         u->egl = n;
         usableCount++;

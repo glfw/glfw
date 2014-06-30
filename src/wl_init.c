@@ -385,7 +385,7 @@ static void keyboardHandleKey(void* data,
                               uint32_t state)
 {
     uint32_t code, num_syms;
-    long sym;
+    long cp;
     int keyCode;
     int action;
     const xkb_keysym_t *syms;
@@ -403,9 +403,13 @@ static void keyboardHandleKey(void* data,
 
     if (num_syms == 1)
     {
-        sym = _glfwKeySym2Unicode(syms[0]);
-        if (sym != -1)
-            _glfwInputChar(window, sym);
+        cp = _glfwKeySym2Unicode(syms[0]);
+        if (cp != -1)
+        {
+            const int mods = _glfw.wl.xkb.modifiers;
+            const int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
+            _glfwInputChar(window, cp, mods, plain);
+        }
     }
 }
 

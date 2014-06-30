@@ -77,7 +77,7 @@ static void mode(void* data,
         int size = monitor->wl.modesSize * 2;
         _GLFWvidmodeWayland* modes =
             realloc(monitor->wl.modes,
-                    monitor->wl.modesSize * sizeof(_GLFWvidmodeWayland));
+                    size * sizeof(_GLFWvidmodeWayland));
         monitor->wl.modes = modes;
         monitor->wl.modesSize = size;
     }

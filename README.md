@@ -206,6 +206,7 @@ skills.
  - Samuli Tuomola
  - urraka
  - Jari Vetoniemi
+ - Ricardo Vieira
  - Simon Voordouw
  - Torsten Walluhn
  - Jay Weisskopf

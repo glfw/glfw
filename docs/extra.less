@@ -97,7 +97,7 @@ div.headertitle,.note code,.pre code,.post code,.invariant code,.warning code,.a
 	padding:0;
 }
 
-#nav-path,.directory .levels {
+#nav-path,.directory .levels,span.lineno {
 	display:none;
 }
 
@@ -311,8 +311,12 @@ dl.note,dl.pre,dl.post,dl.invariant,dl.warning,dl.attention,dl.deprecated,dl.bug
 	color:inherit;
 }
 
+div.line {
+	line-height:inherit;
+}
+
 div.fragment,pre.fragment {
-	background:hsl(0,0%,20%);
+	background:hsl(0,0%,95%);
 	border-radius:4px;
 	border:none;
 	padding:2em;
@@ -321,23 +325,24 @@ div.fragment,pre.fragment {
 }
 
 .lineno a,.lineno a:visited,.line,pre.fragment {
-	color:hsl(60,30%,96%);
+	color:@default-text-color;
 }
 
 span.preprocessor,span.comment {
-	color:hsl(80,76%,53%);
+	color:hsl(193,100%,30%);
 }
 
 a.code,a.code:visited {
-	color:hsl(34,100%,60%);
+	color:hsl(18,100%,45%);
 }
 
 span.keyword,span.keywordtype,span.keywordflow {
-	color:hsl(190,81%,67%);
+	color:darken(@default-text-color, 5%);
+	font-weight:bold;
 }
 
 span.stringliteral {
-	color:hsl(54,70%,68%);
+	color:hsl(261,100%,30%);
 }
 
 code {

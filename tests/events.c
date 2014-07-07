@@ -410,7 +410,7 @@ static void drop_callback(GLFWwindow* window, int count, const char** names)
         printf("  %i: \"%s\"\n", i, names[i]);
 }
 
-void monitor_callback(GLFWmonitor* monitor, int event)
+static void monitor_callback(GLFWmonitor* monitor, int event)
 {
     if (event == GLFW_CONNECTED)
     {

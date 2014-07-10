@@ -45,6 +45,11 @@ static void handleConfigure(void* data,
                             int32_t width,
                             int32_t height)
 {
+    _GLFWwindow* window = data;
+    _glfwInputFramebufferSize(window, width, height);
+    _glfwInputWindowSize(window, width, height);
+    _glfwPlatformSetWindowSize(window, width, height);
+    _glfwInputWindowDamage(window);
 }
 
 static void handlePopupDone(void* data,

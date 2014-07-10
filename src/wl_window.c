@@ -127,10 +127,10 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
+    _glfwDestroyContext(window);
+
     if (window->wl.native)
         wl_egl_window_destroy(window->wl.native);
-
-    _glfwDestroyContext(window);
 
     if (window->wl.shell_surface)
         wl_shell_surface_destroy(window->wl.shell_surface);

@@ -45,6 +45,11 @@ static void handleConfigure(void* data,
                             int32_t width,
                             int32_t height)
 {
+    _GLFWwindow* window = data;
+    _glfwInputFramebufferSize(window, width, height);
+    _glfwInputWindowSize(window, width, height);
+    _glfwPlatformSetWindowSize(window, width, height);
+    _glfwInputWindowDamage(window);
 }
 
 static void handlePopupDone(void* data,
@@ -122,10 +127,10 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
+    _glfwDestroyContext(window);
+
     if (window->wl.native)
         wl_egl_window_destroy(window->wl.native);
-
-    _glfwDestroyContext(window);
 
     if (window->wl.shell_surface)
         wl_shell_surface_destroy(window->wl.shell_surface);

@@ -290,7 +290,7 @@ void GLFWCALL character_callback(int character, int action);
 
 @par New syntax
 @code
-void character_callback(int character);
+void character_callback(GLFWwindow* window, int character);
 @endcode
 
 
@@ -325,7 +325,7 @@ void GLFWCALL mouse_wheel_callback(int position);
 
 @par New syntax
 @code
-void scroll_callback(double xoffset, double yoffset);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 @endcode
 
 @par Removed functions

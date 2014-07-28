@@ -81,6 +81,7 @@ extern "C" {
  #endif
 #elif defined(GLFW_EXPOSE_NATIVE_X11)
  #include <X11/Xlib.h>
+ #include <X11/extensions/Xrandr.h>
 #else
  #error "No window API specified"
 #endif

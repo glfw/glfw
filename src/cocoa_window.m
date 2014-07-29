@@ -197,8 +197,6 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 - (void)windowDidResignKey:(NSNotification *)notification
 {
     _glfwInputWindowFocus(window, GL_FALSE);
-    window->cursorMode = GLFW_CURSOR_NORMAL;
-    _glfwPlatformApplyCursorMode(window);
 }
 
 @end
@@ -673,14 +671,6 @@ static int translateKey(unsigned int key)
 
     if (fabs(deltaX) > 0.0 || fabs(deltaY) > 0.0)
         _glfwInputScroll(window, deltaX, deltaY);
-}
-
-- (void)resetCursorRects
-{
-    // This makes the cursor dissapear when the window is
-    // resized or received a drag operation
-    [self discardCursorRects];
-    [self addCursorRect:[self bounds] cursor:_glfw.ns.cursor];
 }
 
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender

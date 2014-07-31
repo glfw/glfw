@@ -1242,9 +1242,9 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
         int fullWidth, fullHeight;
         getFullWindowSize(window, width, height, &fullWidth, &fullHeight);
 
-        SetWindowPos(window->win32.handle, HWND_TOPMOST,
+        SetWindowPos(window->win32.handle, HWND_NOTOPMOST,
                      0, 0, fullWidth, fullHeight,
-                     SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+                     SWP_NOMOVE | SWP_FRAMECHANGED);
     }
 }
 

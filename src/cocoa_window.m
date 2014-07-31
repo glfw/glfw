@@ -39,19 +39,31 @@ static void centerCursor(_GLFWwindow *window)
     _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
 }
 
-// Update the cursor to match the specified cursor mode
+// Get the cursor object that window uses in the specified cursor mode
 //
-static void setModeCursor(_GLFWwindow* window)
+static NSCursor* getModeCursor(_GLFWwindow* window)
 {
     if (window->cursorMode == GLFW_CURSOR_NORMAL)
     {
         if (window->cursor)
-            [(NSCursor*) window->cursor->ns.object set];
+            return (NSCursor*) window->cursor->ns.object;
         else
-            [[NSCursor arrowCursor] set];
+            return [NSCursor arrowCursor];
     }
     else
-        [(NSCursor*) _glfw.ns.cursor set];
+        return (NSCursor*) _glfw.ns.cursor;
+}
+
+// Update the cursor to match the specified cursor mode
+//
+static void updateModeCursor(_GLFWwindow* window)
+{
+    // This is required for the cursor to update if cursor is inside the window
+    NSCursor* cursor = getModeCursor(window);
+    [cursor set];
+
+    // This is required for the cursor to update if cursor is outside the window
+    [window->ns.object invalidateCursorRectsForView:window->ns.view];
 }
 
 // Enter fullscreen mode
@@ -478,7 +490,7 @@ static int translateKey(unsigned int key)
 
 - (void)cursorUpdate:(NSEvent *)event
 {
-    setModeCursor(window);
+    updateModeCursor(window);
 }
 
 - (void)mouseDown:(NSEvent *)event
@@ -671,6 +683,13 @@ static int translateKey(unsigned int key)
 
     if (fabs(deltaX) > 0.0 || fabs(deltaY) > 0.0)
         _glfwInputScroll(window, deltaX, deltaY);
+}
+
+- (void)resetCursorRects
+{
+    NSCursor* cursor = getModeCursor(window);
+
+    [self addCursorRect:[self bounds] cursor:cursor];
 }
 
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
@@ -1191,7 +1210,7 @@ void _glfwPlatformPostEmptyEvent(void)
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
-    setModeCursor(window);
+    updateModeCursor(window);
 
     if (window->monitor)
     {
@@ -1211,7 +1230,7 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 
 void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
 {
-    setModeCursor(window);
+    updateModeCursor(window);
 
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {

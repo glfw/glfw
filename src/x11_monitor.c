@@ -66,11 +66,22 @@ static const XRRModeInfo* getModeInfo(const XRRScreenResources* sr, RRMode id)
 
 // Convert RandR mode info to GLFW video mode
 //
-static GLFWvidmode vidmodeFromModeInfo(const XRRModeInfo* mi)
+static GLFWvidmode vidmodeFromModeInfo(const XRRModeInfo* mi,
+                                       const XRRCrtcInfo* ci)
 {
     GLFWvidmode mode;
-    mode.width  = mi->width;
-    mode.height = mi->height;
+
+    if (ci->rotation == RR_Rotate_90 || ci->rotation == RR_Rotate_270)
+    {
+        mode.width  = mi->height;
+        mode.height = mi->width;
+    }
+    else
+    {
+        mode.width  = mi->width;
+        mode.height = mi->height;
+    }
+
     mode.refreshRate = calculateRefreshRate(mi);
 
     _glfwSplitBPP(DefaultDepth(_glfw.x11.display, _glfw.x11.screen),
@@ -113,7 +124,7 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
             if (!modeIsGood(mi))
                 continue;
 
-            const GLFWvidmode mode = vidmodeFromModeInfo(mi);
+            const GLFWvidmode mode = vidmodeFromModeInfo(mi, ci);
             if (_glfwCompareVideoModes(best, &mode) == 0)
             {
                 native = mi->id;
@@ -325,9 +336,11 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
     {
         int i, j;
         XRRScreenResources* sr;
+        XRRCrtcInfo* ci;
         XRROutputInfo* oi;
 
         sr = XRRGetScreenResources(_glfw.x11.display, _glfw.x11.root);
+        ci = XRRGetCrtcInfo(_glfw.x11.display, sr, monitor->x11.crtc);
         oi = XRRGetOutputInfo(_glfw.x11.display, sr, monitor->x11.output);
 
         result = calloc(oi->nmode, sizeof(GLFWvidmode));
@@ -338,7 +351,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
             if (!modeIsGood(mi))
                 continue;
 
-            const GLFWvidmode mode = vidmodeFromModeInfo(mi);
+            const GLFWvidmode mode = vidmodeFromModeInfo(mi, ci);
 
             for (j = 0;  j < *found;  j++)
             {
@@ -361,6 +374,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         }
 
         XRRFreeOutputInfo(oi);
+        XRRFreeCrtcInfo(ci);
         XRRFreeScreenResources(sr);
     }
     else
@@ -383,7 +397,7 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
         sr = XRRGetScreenResources(_glfw.x11.display, _glfw.x11.root);
         ci = XRRGetCrtcInfo(_glfw.x11.display, sr, monitor->x11.crtc);
 
-        *mode = vidmodeFromModeInfo(getModeInfo(sr, ci->mode));
+        *mode = vidmodeFromModeInfo(getModeInfo(sr, ci->mode), ci);
 
         XRRFreeCrtcInfo(ci);
         XRRFreeScreenResources(sr);

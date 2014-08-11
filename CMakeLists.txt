@@ -299,7 +299,7 @@ if (_GLFW_WAYLAND)
     set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} wayland-egl")
 
     list(APPEND glfw_INCLUDE_DIRS "${WAYLAND_INCLUDE_DIR}")
-    list(APPEND glfw_LIBRARIES "${WAYLAND_LIBRARIES}" -pthread)
+    list(APPEND glfw_LIBRARIES "${WAYLAND_LIBRARIES}" "${CMAKE_THREAD_LIBS_INIT}")
 
     find_package(XKBCommon REQUIRED)
     set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xkbcommon")

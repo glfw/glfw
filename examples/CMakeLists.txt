@@ -1,27 +1,27 @@
 
-link_libraries(glfw ${OPENGL_glu_LIBRARY})
+link_libraries(glfw "${OPENGL_glu_LIBRARY}")
 
 if (BUILD_SHARED_LIBS)
     add_definitions(-DGLFW_DLL)
-    link_libraries(${OPENGL_gl_LIBRARY} ${MATH_LIBRARY})
+    link_libraries("${OPENGL_gl_LIBRARY}" "${MATH_LIBRARY}")
 else()
     link_libraries(${glfw_LIBRARIES})
 endif()
 
-include_directories(${GLFW_SOURCE_DIR}/include
-                    ${GLFW_SOURCE_DIR}/deps)
+include_directories("${GLFW_SOURCE_DIR}/include"
+                    "${GLFW_SOURCE_DIR}/deps")
 
 if (NOT APPLE)
     # HACK: This is NOTFOUND on OS X 10.8
-    include_directories(${OPENGL_INCLUDE_DIR})
+    include_directories("${OPENGL_INCLUDE_DIR}")
 endif()
 
-set(GLAD ${GLFW_SOURCE_DIR}/deps/glad/glad.h
-         ${GLFW_SOURCE_DIR}/deps/glad.c)
-set(GETOPT ${GLFW_SOURCE_DIR}/deps/getopt.h
-           ${GLFW_SOURCE_DIR}/deps/getopt.c)
-set(TINYCTHREAD ${GLFW_SOURCE_DIR}/deps/tinycthread.h
-                ${GLFW_SOURCE_DIR}/deps/tinycthread.c)
+set(GLAD "${GLFW_SOURCE_DIR}/deps/glad/glad.h"
+         "${GLFW_SOURCE_DIR}/deps/glad.c")
+set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"
+           "${GLFW_SOURCE_DIR}/deps/getopt.c")
+set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
+                "${GLFW_SOURCE_DIR}/deps/tinycthread.c")
 
 if (APPLE)
     # Set fancy names for bundles
@@ -50,9 +50,9 @@ else()
 endif()
 
 if (APPLE)
-    target_link_libraries(Particles ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(Particles "${CMAKE_THREAD_LIBS_INIT}")
 elseif (UNIX)
-    target_link_libraries(particles ${CMAKE_THREAD_LIBS_INIT} ${RT_LIBRARY})
+    target_link_libraries(particles "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 endif()
 
 if (MSVC)

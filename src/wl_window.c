@@ -127,6 +127,17 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
+    if (window == _glfw.wl.pointerFocus)
+    {
+        _glfw.wl.pointerFocus = NULL;
+        _glfwInputCursorEnter(window, GL_FALSE);
+    }
+    if (window == _glfw.wl.keyboardFocus)
+    {
+        _glfw.wl.keyboardFocus = NULL;
+        _glfwInputWindowFocus(window, GL_FALSE);
+    }
+
     _glfwDestroyContext(window);
 
     if (window->wl.native)

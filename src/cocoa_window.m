@@ -58,11 +58,10 @@ static NSCursor* getModeCursor(_GLFWwindow* window)
 //
 static void updateModeCursor(_GLFWwindow* window)
 {
-    // This is required for the cursor to update if cursor is inside the window
-    NSCursor* cursor = getModeCursor(window);
-    [cursor set];
+    // This is required for the cursor to update if it's inside the window
+    [getModeCursor(window) set];
 
-    // This is required for the cursor to update if cursor is outside the window
+    // This is required for the cursor to update if it's outside the window
     [window->ns.object invalidateCursorRectsForView:window->ns.view];
 }
 
@@ -687,9 +686,7 @@ static int translateKey(unsigned int key)
 
 - (void)resetCursorRects
 {
-    NSCursor* cursor = getModeCursor(window);
-
-    [self addCursorRect:[self bounds] cursor:cursor];
+    [self addCursorRect:[self bounds] cursor:getModeCursor(window)];
 }
 
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender

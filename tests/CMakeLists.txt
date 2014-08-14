@@ -3,7 +3,7 @@ link_libraries(glfw "${OPENGL_glu_LIBRARY}")
 
 if (BUILD_SHARED_LIBS)
     add_definitions(-DGLFW_DLL)
-    link_libraries(${OPENGL_gl_LIBRARY} ${MATH_LIBRARY})
+    link_libraries("${OPENGL_gl_LIBRARY}" "${MATH_LIBRARY}")
 else()
     link_libraries(${glfw_LIBRARIES})
 endif()
@@ -11,9 +11,8 @@ endif()
 include_directories("${GLFW_SOURCE_DIR}/include"
                     "${GLFW_SOURCE_DIR}/deps")
 
-if (NOT APPLE)
-    # HACK: This is NOTFOUND on OS X 10.8
-    include_directories(${OPENGL_INCLUDE_DIR})
+if ("${OPENGL_INCLUDE_DIR}")
+    include_directories("${OPENGL_INCLUDE_DIR}")
 endif()
 
 set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"

@@ -11,8 +11,7 @@ endif()
 include_directories("${GLFW_SOURCE_DIR}/include"
                     "${GLFW_SOURCE_DIR}/deps")
 
-if (NOT APPLE)
-    # HACK: This is NOTFOUND on OS X 10.8
+if ("${OPENGL_INCLUDE_DIR}")
     include_directories("${OPENGL_INCLUDE_DIR}")
 endif()
 

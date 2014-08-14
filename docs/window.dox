@@ -199,6 +199,9 @@ where all functionality deprecated in the requested version of OpenGL is
 removed.  This may only be used if the requested OpenGL version is 3.0 or
 above.  If another client API is requested, this hint is ignored.
 
+@note Forward-compatibility is described in detail in the
+[OpenGL Reference Manual](https://www.opengl.org/registry/).
+
 If an OpenGL context is requested, the `GLFW_OPENGL_DEBUG_CONTEXT` hint
 specifies whether to create a debug OpenGL context, which may have
 additional error and performance issue reporting functionality.  If another
@@ -210,6 +213,9 @@ which OpenGL profile to create the context for.  Possible values are one of
 `GLFW_OPENGL_ANY_PROFILE` to not request a specific profile.  If requesting
 an OpenGL version below 3.2, `GLFW_OPENGL_ANY_PROFILE` must be used.  If
 another client API is requested, this hint is ignored.
+
+@note OpenGL profiles are described in detail in the
+[OpenGL Reference Manual](https://www.opengl.org/registry/).
 
 The `GLFW_CONTEXT_ROBUSTNESS` hint specifies the robustness strategy to be
 used by the context.  This can be one of `GLFW_NO_RESET_NOTIFICATION` or

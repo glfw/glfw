@@ -281,8 +281,8 @@ void mouse_button_callback( GLFWwindow* window, int button, int action, int mods
 
 void cursor_position_callback( GLFWwindow* window, double x, double y )
 {
-   cursor_x = x;
-   cursor_y = y;
+   cursor_x = (float) x;
+   cursor_y = (float) y;
 
    if ( override_pos )
       set_ball_pos(cursor_x, cursor_y);

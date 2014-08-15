@@ -30,11 +30,11 @@
 #include <math.h>
 #include <time.h>
 
-#define GLFW_INCLUDE_GLU
-#include <GLFW/glfw3.h>
-
 #include <tinycthread.h>
 #include <getopt.h>
+
+#define GLFW_INCLUDE_GLU
+#include <GLFW/glfw3.h>
 
 // Define tokens for GL_EXT_separate_specular_color if not already defined
 #ifndef GL_EXT_separate_specular_color

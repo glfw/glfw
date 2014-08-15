@@ -168,14 +168,7 @@ endif()
 #--------------------------------------------------------------------
 if (_GLFW_WIN32)
 
-    set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lgdi32 -lwinmm")
-
-    # The DLL links against winmm; the static library loads it
-    # That way, both code paths receive testing
-    if (BUILD_SHARED_LIBS)
-        set(_GLFW_NO_DLOAD_WINMM 1)
-        list(APPEND glfw_LIBRARIES winmm)
-    endif()
+    set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lgdi32")
 
     if (GLFW_USE_DWM_SWAP_INTERVAL)
         set(_GLFW_USE_DWM_SWAP_INTERVAL 1)

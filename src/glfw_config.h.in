@@ -55,8 +55,6 @@
 // Define this to 1 if building as a shared library / dynamic library / DLL
 #cmakedefine _GLFW_BUILD_DLL
 
-// Define this to 1 to disable dynamic loading of winmm
-#cmakedefine _GLFW_NO_DLOAD_WINMM
 // Define this to 1 if glfwSwapInterval should ignore DWM compositing status
 #cmakedefine _GLFW_USE_DWM_SWAP_INTERVAL
 // Define this to 1 to force use of high-performance GPU on Optimus systems

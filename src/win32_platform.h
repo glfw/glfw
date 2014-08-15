@@ -110,26 +110,14 @@ typedef struct tagCHANGEFILTERSTRUCT
 //========================================================================
 
 // winmm.dll function pointer typedefs
-#ifndef _GLFW_NO_DLOAD_WINMM
-typedef MMRESULT (WINAPI * JOYGETDEVCAPS_T) (UINT,LPJOYCAPS,UINT);
-typedef MMRESULT (WINAPI * JOYGETPOS_T) (UINT,LPJOYINFO);
-typedef MMRESULT (WINAPI * JOYGETPOSEX_T) (UINT,LPJOYINFOEX);
-typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
-#endif // _GLFW_NO_DLOAD_WINMM
-
-
-// winmm.dll shortcuts
-#ifndef _GLFW_NO_DLOAD_WINMM
- #define _glfw_joyGetDevCaps _glfw.win32.winmm.joyGetDevCaps
- #define _glfw_joyGetPos     _glfw.win32.winmm.joyGetPos
- #define _glfw_joyGetPosEx   _glfw.win32.winmm.joyGetPosEx
- #define _glfw_timeGetTime   _glfw.win32.winmm.timeGetTime
-#else
- #define _glfw_joyGetDevCaps joyGetDevCaps
- #define _glfw_joyGetPos     joyGetPos
- #define _glfw_joyGetPosEx   joyGetPosEx
- #define _glfw_timeGetTime   timeGetTime
-#endif // _GLFW_NO_DLOAD_WINMM
+typedef MMRESULT (WINAPI * JOYGETDEVCAPS_T)(UINT,LPJOYCAPS,UINT);
+typedef MMRESULT (WINAPI * JOYGETPOS_T)(UINT,LPJOYINFO);
+typedef MMRESULT (WINAPI * JOYGETPOSEX_T)(UINT,LPJOYINFOEX);
+typedef DWORD (WINAPI * TIMEGETTIME_T)(void);
+#define _glfw_joyGetDevCaps _glfw.win32.winmm.joyGetDevCaps
+#define _glfw_joyGetPos _glfw.win32.winmm.joyGetPos
+#define _glfw_joyGetPosEx _glfw.win32.winmm.joyGetPosEx
+#define _glfw_timeGetTime _glfw.win32.winmm.timeGetTime
 
 // user32.dll function pointer typedefs
 typedef BOOL (WINAPI * SETPROCESSDPIAWARE_T)(void);
@@ -204,7 +192,6 @@ typedef struct _GLFWlibraryWin32
     DWORD               foregroundLockTimeout;
     char*               clipboardString;
 
-#ifndef _GLFW_NO_DLOAD_WINMM
     // winmm.dll
     struct {
         HINSTANCE       instance;
@@ -213,7 +200,6 @@ typedef struct _GLFWlibraryWin32
         JOYGETPOSEX_T   joyGetPosEx;
         TIMEGETTIME_T   timeGetTime;
     } winmm;
-#endif // _GLFW_NO_DLOAD_WINMM
 
     // user32.dll
     struct {

@@ -60,9 +60,6 @@ BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
 //
 static GLboolean initLibraries(void)
 {
-#ifndef _GLFW_NO_DLOAD_WINMM
-    // winmm.dll (for joystick and timer support)
-
     _glfw.win32.winmm.instance = LoadLibraryW(L"winmm.dll");
     if (!_glfw.win32.winmm.instance)
     {
@@ -89,7 +86,6 @@ static GLboolean initLibraries(void)
                         "Win32: Failed to load winmm functions");
         return GL_FALSE;
     }
-#endif // _GLFW_NO_DLOAD_WINMM
 
     _glfw.win32.user32.instance = LoadLibraryW(L"user32.dll");
     if (_glfw.win32.user32.instance)
@@ -114,13 +110,8 @@ static GLboolean initLibraries(void)
 //
 static void terminateLibraries(void)
 {
-#ifndef _GLFW_NO_DLOAD_WINMM
-    if (_glfw.win32.winmm.instance != NULL)
-    {
+    if (_glfw.win32.winmm.instance)
         FreeLibrary(_glfw.win32.winmm.instance);
-        _glfw.win32.winmm.instance = NULL;
-    }
-#endif // _GLFW_NO_DLOAD_WINMM
 
     if (_glfw.win32.user32.instance)
         FreeLibrary(_glfw.win32.user32.instance);
@@ -263,9 +254,6 @@ const char* _glfwPlatformGetVersionString(void)
         " VisualC"
 #elif defined(__BORLANDC__)
         " BorlandC"
-#endif
-#if !defined(_GLFW_NO_DLOAD_WINMM)
-        " LoadLibrary(winmm)"
 #endif
 #if defined(_GLFW_BUILD_DLL)
         " DLL"

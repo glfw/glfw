@@ -87,6 +87,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [Cocoa] Bugfix: Joystick enumeration took hundreds of ms on some systems
  - [Cocoa] Bugfix: The cursor was hidden when the user resized a GLFW window
  - [Win32] Enabled generation of pkg-config file for MinGW
+ - [Win32] Removed option to require explicitly linking against `winmm.dll`
  - [Win32] Bugfix: Failure to load winmm or its functions was not reported to
                    the error callback
  - [Win32] Bugfix: Some keys were reported based on the current layout instead

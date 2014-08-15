@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.2 Win32 - www.glfw.org
+// GLFW 3.1 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2006-2015 Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -27,22 +27,169 @@
 
 #include "internal.h"
 
-#include <stdlib.h>
+#include <math.h>
+
+#define _GLFW_UPDATE_BUTTONS 1
+#define _GLFW_UPDATE_AXES    2
 
 
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-// Convert axis value to the [-1,1] range
+// Returns a description fitting the specified XInput capabilities
 //
-static float normalizeAxis(DWORD pos, DWORD min, DWORD max)
+static const char* getDeviceDescription(const XINPUT_CAPABILITIES* xic)
 {
-    float fpos = (float) pos;
-    float fmin = (float) min;
-    float fmax = (float) max;
+    switch (xic->SubType)
+    {
+        case XINPUT_DEVSUBTYPE_WHEEL:
+            return "XInput Wheel";
+        case XINPUT_DEVSUBTYPE_ARCADE_STICK:
+            return "XInput Arcade Stick";
+        case XINPUT_DEVSUBTYPE_FLIGHT_STICK:
+            return "XInput Flight Stick";
+        case XINPUT_DEVSUBTYPE_DANCE_PAD:
+            return "XInput Dance Pad";
+        case XINPUT_DEVSUBTYPE_GUITAR:
+            return "XInput Guitar";
+        case XINPUT_DEVSUBTYPE_DRUM_KIT:
+            return "XInput Drum Kit";
+        case XINPUT_DEVSUBTYPE_GAMEPAD:
+        {
+            if (xic->Flags & XINPUT_CAPS_WIRELESS)
+                return "Wireless Xbox 360 Controller";
+            else
+                return "Xbox 360 Controller";
+        }
+    }
 
-    return (2.f * (fpos - fmin) / (fmax - fmin)) - 1.f;
+    return "Unknown XInput Device";
+}
+
+// Attempt to open the specified joystick device
+// TODO: Pack state arrays for non-gamepad devices
+//
+static GLFWbool openJoystickDevice(DWORD index)
+{
+    int joy;
+    XINPUT_CAPABILITIES xic;
+    _GLFWjoystickWin32* js;
+
+    for (joy = GLFW_JOYSTICK_1;  joy <= GLFW_JOYSTICK_LAST;  joy++)
+    {
+        if (_glfw.win32_js[joy].present && _glfw.win32_js[joy].index == index)
+            return GLFW_FALSE;
+    }
+
+    for (joy = GLFW_JOYSTICK_1;  joy <= GLFW_JOYSTICK_LAST;  joy++)
+    {
+        if (!_glfw.win32_js[joy].present)
+            break;
+    }
+
+    if (joy > GLFW_JOYSTICK_LAST)
+        return GLFW_FALSE;
+
+    if (_glfw_XInputGetCapabilities(index, 0, &xic) != ERROR_SUCCESS)
+        return GLFW_FALSE;
+
+    js = _glfw.win32_js + joy;
+    js->axisCount = 6;
+    js->buttonCount = 14;
+    js->present = GLFW_TRUE;
+    js->name = strdup(getDeviceDescription(&xic));
+    js->index = index;
+
+    return GLFW_TRUE;
+}
+
+// Polls for and processes events the specified joystick
+//
+static GLFWbool pollJoystickEvents(_GLFWjoystickWin32* js, int flags)
+{
+    XINPUT_STATE xis;
+    DWORD result;
+
+    if (!_glfw.win32.xinput.instance)
+        return GLFW_FALSE;
+
+    if (!js->present)
+        return GLFW_FALSE;
+
+    result = _glfw_XInputGetState(js->index, &xis);
+    if (result != ERROR_SUCCESS)
+    {
+        if (result == ERROR_DEVICE_NOT_CONNECTED)
+        {
+            free(js->name);
+            memset(js, 0, sizeof(_GLFWjoystickWin32));
+        }
+
+        return GLFW_FALSE;
+    }
+
+    if (flags & _GLFW_UPDATE_AXES)
+    {
+        if (sqrtf((float) (xis.Gamepad.sThumbLX * xis.Gamepad.sThumbLX +
+                           xis.Gamepad.sThumbLY * xis.Gamepad.sThumbLY)) >
+            (float) XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+        {
+            js->axes[0] = (xis.Gamepad.sThumbLX + 0.5f) / 32767.f;
+            js->axes[1] = (xis.Gamepad.sThumbLY + 0.5f) / 32767.f;
+        }
+        else
+        {
+            js->axes[0] = 0.f;
+            js->axes[1] = 0.f;
+        }
+
+        if (sqrtf((float) (xis.Gamepad.sThumbRX * xis.Gamepad.sThumbRX +
+                           xis.Gamepad.sThumbRY * xis.Gamepad.sThumbRY)) >
+            (float) XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
+        {
+            js->axes[2] = (xis.Gamepad.sThumbRX + 0.5f) / 32767.f;
+            js->axes[3] = (xis.Gamepad.sThumbRY + 0.5f) / 32767.f;
+        }
+        else
+        {
+            js->axes[2] = 0.f;
+            js->axes[3] = 0.f;
+        }
+
+        if (xis.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+            js->axes[4] = xis.Gamepad.bLeftTrigger / 127.5f - 1.f;
+        else
+            js->axes[4] = -1.f;
+
+        if (xis.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+            js->axes[5] = xis.Gamepad.bRightTrigger / 127.5f - 1.f;
+        else
+            js->axes[5] = -1.f;
+    }
+
+    if (flags & _GLFW_UPDATE_BUTTONS)
+    {
+        int i;
+        const WORD buttons[14] =
+        {
+            XINPUT_GAMEPAD_A,
+            XINPUT_GAMEPAD_B,
+            XINPUT_GAMEPAD_X,
+            XINPUT_GAMEPAD_Y,
+            XINPUT_GAMEPAD_LEFT_SHOULDER,
+            XINPUT_GAMEPAD_RIGHT_SHOULDER,
+            XINPUT_GAMEPAD_BACK,
+            XINPUT_GAMEPAD_START,
+            XINPUT_GAMEPAD_LEFT_THUMB,
+            XINPUT_GAMEPAD_RIGHT_THUMB,
+            XINPUT_GAMEPAD_DPAD_UP,
+            XINPUT_GAMEPAD_DPAD_RIGHT,
+            XINPUT_GAMEPAD_DPAD_DOWN,
+            XINPUT_GAMEPAD_DPAD_LEFT
+        };
+
+        for (i = 0;  i < 14;  i++)
+            js->buttons[i] = (xis.Gamepad.wButtons & buttons[i]) ? 1 : 0;
+    }
+
+    return GLFW_TRUE;
 }
 
 
@@ -54,16 +201,43 @@ static float normalizeAxis(DWORD pos, DWORD min, DWORD max)
 //
 void _glfwInitJoysticksWin32(void)
 {
+    _glfwDetectJoystickConnectionWin32();
 }
 
 // Close all opened joystick handles
 //
 void _glfwTerminateJoysticksWin32(void)
 {
-    int i;
+    int joy;
 
-    for (i = 0;  i < GLFW_JOYSTICK_LAST;  i++)
-        free(_glfw.win32_js[i].name);
+    for (joy = GLFW_JOYSTICK_1;  joy <= GLFW_JOYSTICK_LAST;  joy++)
+        free(_glfw.win32_js[joy].name);
+}
+
+// Looks for new joysticks
+//
+void _glfwDetectJoystickConnectionWin32(void)
+{
+    DWORD i;
+
+    if (!_glfw.win32.xinput.instance)
+        return;
+
+    for (i = 0;  i < XUSER_MAX_COUNT;  i++)
+        openJoystickDevice(i);
+}
+
+// Checks if any current joystick has been disconnected
+//
+void _glfwDetectJoystickDisconnectionWin32(void)
+{
+    DWORD i;
+
+    if (!_glfw.win32.xinput.instance)
+        return;
+
+    for (i = 0;  i < XUSER_MAX_COUNT;  i++)
+        pollJoystickEvents(_glfw.win32_js + i, 0);
 }
 
 
@@ -73,105 +247,36 @@ void _glfwTerminateJoysticksWin32(void)
 
 int _glfwPlatformJoystickPresent(int joy)
 {
-    JOYINFO ji;
-
-    if (_glfw_joyGetPos(joy, &ji) != JOYERR_NOERROR)
-        return GLFW_FALSE;
-
-    return GLFW_TRUE;
+    _GLFWjoystickWin32* js = _glfw.win32_js + joy;
+    return pollJoystickEvents(js, 0);
 }
 
 const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 {
-    JOYCAPS jc;
-    JOYINFOEX ji;
-    float* axes = _glfw.win32_js[joy].axes;
-
-    if (_glfw_joyGetDevCaps(joy, &jc, sizeof(JOYCAPS)) != JOYERR_NOERROR)
+    _GLFWjoystickWin32* js = _glfw.win32_js + joy;
+    if (!pollJoystickEvents(js, _GLFW_UPDATE_AXES))
         return NULL;
 
-    ji.dwSize = sizeof(JOYINFOEX);
-    ji.dwFlags = JOY_RETURNX | JOY_RETURNY | JOY_RETURNZ |
-                 JOY_RETURNR | JOY_RETURNU | JOY_RETURNV;
-    if (_glfw_joyGetPosEx(joy, &ji) != JOYERR_NOERROR)
-        return NULL;
-
-    axes[(*count)++] = normalizeAxis(ji.dwXpos, jc.wXmin, jc.wXmax);
-    axes[(*count)++] = normalizeAxis(ji.dwYpos, jc.wYmin, jc.wYmax);
-
-    if (jc.wCaps & JOYCAPS_HASZ)
-        axes[(*count)++] = normalizeAxis(ji.dwZpos, jc.wZmin, jc.wZmax);
-
-    if (jc.wCaps & JOYCAPS_HASR)
-        axes[(*count)++] = normalizeAxis(ji.dwRpos, jc.wRmin, jc.wRmax);
-
-    if (jc.wCaps & JOYCAPS_HASU)
-        axes[(*count)++] = normalizeAxis(ji.dwUpos, jc.wUmin, jc.wUmax);
-
-    if (jc.wCaps & JOYCAPS_HASV)
-        axes[(*count)++] = normalizeAxis(ji.dwVpos, jc.wVmin, jc.wVmax);
-
-    return axes;
+    *count = js->axisCount;
+    return js->axes;
 }
 
 const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
 {
-    JOYCAPS jc;
-    JOYINFOEX ji;
-    unsigned char* buttons = _glfw.win32_js[joy].buttons;
-
-    if (_glfw_joyGetDevCaps(joy, &jc, sizeof(JOYCAPS)) != JOYERR_NOERROR)
+    _GLFWjoystickWin32* js = _glfw.win32_js + joy;
+    if (!pollJoystickEvents(js, _GLFW_UPDATE_BUTTONS))
         return NULL;
 
-    ji.dwSize = sizeof(JOYINFOEX);
-    ji.dwFlags = JOY_RETURNBUTTONS | JOY_RETURNPOV;
-    if (_glfw_joyGetPosEx(joy, &ji) != JOYERR_NOERROR)
-        return NULL;
-
-    while (*count < (int) jc.wNumButtons)
-    {
-        buttons[*count] = (unsigned char)
-            (ji.dwButtons & (1UL << *count) ? GLFW_PRESS : GLFW_RELEASE);
-        (*count)++;
-    }
-
-    // Virtual buttons - Inject data from hats
-    // Each hat is exposed as 4 buttons which exposes 8 directions with
-    // concurrent button presses
-    // NOTE: this API exposes only one hat
-
-    if ((jc.wCaps & JOYCAPS_HASPOV) && (jc.wCaps & JOYCAPS_POV4DIR))
-    {
-        int i, value = ji.dwPOV / 100 / 45;
-
-        // Bit fields of button presses for each direction, including nil
-        const int directions[9] = { 1, 3, 2, 6, 4, 12, 8, 9, 0 };
-
-        if (value < 0 || value > 8)
-            value = 8;
-
-        for (i = 0;  i < 4;  i++)
-        {
-            if (directions[value] & (1 << i))
-                buttons[(*count)++] = GLFW_PRESS;
-            else
-                buttons[(*count)++] = GLFW_RELEASE;
-        }
-    }
-
-    return buttons;
+    *count = js->buttonCount;
+    return js->buttons;
 }
 
 const char* _glfwPlatformGetJoystickName(int joy)
 {
-    JOYCAPS jc;
-
-    if (_glfw_joyGetDevCaps(joy, &jc, sizeof(JOYCAPS)) != JOYERR_NOERROR)
+    _GLFWjoystickWin32* js = _glfw.win32_js + joy;
+    if (!pollJoystickEvents(js, 0))
         return NULL;
 
-    free(_glfw.win32_js[joy].name);
-    _glfw.win32_js[joy].name = _glfwCreateUTF8FromWideStringWin32(jc.szPname);
-
-    return _glfw.win32_js[joy].name;
+    return js->name;
 }
 

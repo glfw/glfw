@@ -30,18 +30,23 @@
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE \
     _GLFWjoystickWin32 win32_js[GLFW_JOYSTICK_LAST + 1]
 
-
 // Win32-specific per-joystick data
 //
 typedef struct _GLFWjoystickWin32
 {
+    GLFWbool        present;
     float           axes[6];
-    unsigned char   buttons[36]; // 32 buttons plus one hat
+    int             axisCount;
+    unsigned char   buttons[14];
+    int             buttonCount;
     char*           name;
+    DWORD           index;
 } _GLFWjoystickWin32;
 
 
 void _glfwInitJoysticksWin32(void);
 void _glfwTerminateJoysticksWin32(void);
+void _glfwDetectJoystickConnectionWin32(void);
+void _glfwDetectJoystickDisconnectionWin32(void);
 
 #endif // _glfw3_win32_joystick_h_

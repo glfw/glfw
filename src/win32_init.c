@@ -30,6 +30,8 @@
 #include <stdlib.h>
 #include <malloc.h>
 
+#include <initguid.h>
+DEFINE_GUID(GUID_DEVINTERFACE_HID,0x4d1e55b2,0xf16f,0x11cf,0x88,0xcb,0x00,0x11,0x11,0x00,0x00,0x30);
 
 #if defined(_GLFW_USE_HYBRID_HPG) || defined(_GLFW_USE_OPTIMUS_HPG)
 
@@ -69,12 +71,6 @@ static GLFWbool loadLibraries(void)
         return GLFW_FALSE;
     }
 
-    _glfw.win32.winmm.joyGetDevCaps = (JOYGETDEVCAPS_T)
-        GetProcAddress(_glfw.win32.winmm.instance, "joyGetDevCapsW");
-    _glfw.win32.winmm.joyGetPos = (JOYGETPOS_T)
-        GetProcAddress(_glfw.win32.winmm.instance, "joyGetPos");
-    _glfw.win32.winmm.joyGetPosEx = (JOYGETPOSEX_T)
-        GetProcAddress(_glfw.win32.winmm.instance, "joyGetPosEx");
     _glfw.win32.winmm.timeGetTime = (TIMEGETTIME_T)
         GetProcAddress(_glfw.win32.winmm.instance, "timeGetTime");
 
@@ -89,6 +85,33 @@ static GLFWbool loadLibraries(void)
         GetProcAddress(_glfw.win32.user32.instance, "SetProcessDPIAware");
     _glfw.win32.user32.ChangeWindowMessageFilterEx = (CHANGEWINDOWMESSAGEFILTEREX_T)
         GetProcAddress(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
+
+    {
+        int i;
+        const char* names[] =
+        {
+            "xinput1_4.dll",
+            "xinput1_3.dll",
+            "xinput9_1_0.dll",
+            "xinput1_2.dll",
+            "xinput1_1.dll",
+            NULL
+        };
+
+        for (i = 0;  names[i];  i++)
+        {
+            _glfw.win32.xinput.instance = LoadLibraryA(names[i]);
+            if (_glfw.win32.xinput.instance)
+            {
+                _glfw.win32.xinput.XInputGetCapabilities = (XINPUTGETCAPABILITIES_T)
+                    GetProcAddress(_glfw.win32.xinput.instance, "XInputGetCapabilities");
+                _glfw.win32.xinput.XInputGetState = (XINPUTGETSTATE_T)
+                    GetProcAddress(_glfw.win32.xinput.instance, "XInputGetState");
+
+                break;
+            }
+        }
+    }
 
     _glfw.win32.dwmapi.instance = LoadLibraryA("dwmapi.dll");
     if (_glfw.win32.dwmapi.instance)
@@ -113,6 +136,9 @@ static GLFWbool loadLibraries(void)
 //
 static void freeLibraries(void)
 {
+    if (_glfw.win32.xinput.instance)
+        FreeLibrary(_glfw.win32.xinput.instance);
+
     if (_glfw.win32.winmm.instance)
         FreeLibrary(_glfw.win32.winmm.instance);
 
@@ -283,7 +309,20 @@ static HWND createHelperWindow(void)
         return NULL;
     }
 
-    return window;
+    // Register for HID device notifications
+    {
+        DEV_BROADCAST_DEVICEINTERFACE_W dbi;
+        ZeroMemory(&dbi, sizeof(dbi));
+        dbi.dbcc_size = sizeof(dbi);
+        dbi.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
+        dbi.dbcc_classguid = GUID_DEVINTERFACE_HID;
+
+        RegisterDeviceNotificationW(window,
+                                    (DEV_BROADCAST_HDR*) &dbi,
+                                    DEVICE_NOTIFY_WINDOW_HANDLE);
+    }
+
+   return window;
 }
 
 

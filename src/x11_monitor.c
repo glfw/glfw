@@ -95,29 +95,6 @@ static GLFWvidmode vidmodeFromModeInfo(const XRRModeInfo* mi,
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-// Detect gamma ramp support
-//
-void _glfwInitGammaRamp(void)
-{
-    if (_glfw.x11.randr.available)
-    {
-        XRRScreenResources* sr = XRRGetScreenResources(_glfw.x11.display,
-                                                       _glfw.x11.root);
-
-        if (!sr->ncrtc || !XRRGetCrtcGammaSize(_glfw.x11.display, sr->crtcs[0]))
-        {
-            // This is either a headless system or an older Nvidia binary driver
-            // with broken gamma support
-            // Flag it as useless and fall back to Xf86VidMode, if available
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "X11: RandR gamma ramp support seems broken");
-            _glfw.x11.randr.gammaBroken = GL_TRUE;
-        }
-
-        XRRFreeScreenResources(sr);
-    }
-}
-
 // Set the current video mode for the specified monitor
 //
 GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)

@@ -174,6 +174,7 @@ GLFWAPI void glfwTerminate(void)
 
     _glfwPlatformTerminate();
 
+    memset(&_glfw, 0, sizeof(_glfw));
     _glfwInitialized = GL_FALSE;
 }
 

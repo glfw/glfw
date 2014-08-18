@@ -286,6 +286,53 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
                   &mode->blueBits);
 }
 
+void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
+{
+    HDC dc;
+    WORD values[768];
+    DISPLAY_DEVICEW display;
+
+    ZeroMemory(&display, sizeof(DISPLAY_DEVICEW));
+    display.cb = sizeof(DISPLAY_DEVICEW);
+    EnumDisplayDevicesW(monitor->win32.name, 0, &display, 0);
+
+    dc = CreateDCW(L"DISPLAY", display.DeviceString, NULL, NULL);
+    GetDeviceGammaRamp(dc, values);
+    DeleteDC(dc);
+
+    _glfwAllocGammaArrays(ramp, 256);
+
+    memcpy(ramp->red,   values +   0, 256 * sizeof(unsigned short));
+    memcpy(ramp->green, values + 256, 256 * sizeof(unsigned short));
+    memcpy(ramp->blue,  values + 512, 256 * sizeof(unsigned short));
+}
+
+void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
+{
+    HDC dc;
+    WORD values[768];
+    DISPLAY_DEVICE display;
+
+    if (ramp->size != 256)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Gamma ramp size must be 256");
+        return;
+    }
+
+    memcpy(values +   0, ramp->red,   256 * sizeof(unsigned short));
+    memcpy(values + 256, ramp->green, 256 * sizeof(unsigned short));
+    memcpy(values + 512, ramp->blue,  256 * sizeof(unsigned short));
+
+    ZeroMemory(&display, sizeof(DISPLAY_DEVICEW));
+    display.cb = sizeof(DISPLAY_DEVICEW);
+    EnumDisplayDevicesW(monitor->win32.name, 0, &display, 0);
+
+    dc = CreateDCW(L"DISPLAY", display.DeviceString, NULL, NULL);
+    SetDeviceGammaRamp(dc, values);
+    DeleteDC(dc);
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

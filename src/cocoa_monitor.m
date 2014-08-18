@@ -28,12 +28,14 @@
 #include "internal.h"
 
 #include <stdlib.h>
+#include <stdlib.h>
 #include <limits.h>
 
 #include <IOKit/graphics/IOGraphicsLib.h>
 #include <IOKit/graphics/IOGraphicsLib.h>
 #include <CoreVideo/CVBase.h>
 #include <CoreVideo/CVDisplayLink.h>
+#include <ApplicationServices/ApplicationServices.h>
 
 
 // Get the name of the specified display
@@ -354,6 +356,51 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode *mode)
     CGDisplayModeRelease(displayMode);
 
     CVDisplayLinkRelease(link);
+}
+
+void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
+{
+    uint32_t i, size = CGDisplayGammaTableCapacity(monitor->ns.displayID);
+    CGGammaValue* values = calloc(size * 3, sizeof(CGGammaValue));
+
+    CGGetDisplayTransferByTable(monitor->ns.displayID,
+                                size,
+                                values,
+                                values + size,
+                                values + size * 2,
+                                &size);
+
+    _glfwAllocGammaArrays(ramp, size);
+
+    for (i = 0; i < size; i++)
+    {
+        ramp->red[i]   = (unsigned short) (values[i] * 65535);
+        ramp->green[i] = (unsigned short) (values[i + size] * 65535);
+        ramp->blue[i]  = (unsigned short) (values[i + size * 2] * 65535);
+    }
+
+    free(values);
+}
+
+void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
+{
+    int i;
+    CGGammaValue* values = calloc(ramp->size * 3, sizeof(CGGammaValue));
+
+    for (i = 0;  i < ramp->size;  i++)
+    {
+        values[i]                  = ramp->red[i] / 65535.f;
+        values[i + ramp->size]     = ramp->green[i] / 65535.f;
+        values[i + ramp->size * 2] = ramp->blue[i] / 65535.f;
+    }
+
+    CGSetDisplayTransferByTable(monitor->ns.displayID,
+                                ramp->size,
+                                values,
+                                values + ramp->size,
+                                values + ramp->size * 2);
+
+    free(values);
 }
 
 

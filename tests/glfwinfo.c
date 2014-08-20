@@ -207,6 +207,7 @@ int main(int argc, char** argv)
                     usage();
                     exit(EXIT_FAILURE);
                 }
+                break;
             case 'd':
                 debug = GL_TRUE;
                 break;

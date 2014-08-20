@@ -33,10 +33,10 @@ extern "C" {
 ** used to make the header, and the header can be found at
 **   http://www.opengl.org/registry/
 **
-** Khronos $Revision: 26196 $ on $Date: 2014-04-02 22:34:41 -0700 (Wed, 02 Apr 2014) $
+** Khronos $Revision: 27684 $ on $Date: 2014-08-11 01:21:35 -0700 (Mon, 11 Aug 2014) $
 */
 
-#define GLX_GLXEXT_VERSION 20140402
+#define GLX_GLXEXT_VERSION 20140810
 
 /* Generated C header for:
  * API: glx
@@ -157,6 +157,13 @@ typedef __GLXextFuncPtr ( *PFNGLXGETPROCADDRESSPROC) (const GLubyte *procName);
 __GLXextFuncPtr glXGetProcAddress (const GLubyte *procName);
 #endif
 #endif /* GLX_VERSION_1_4 */
+
+#ifndef GLX_ARB_context_flush_control
+#define GLX_ARB_context_flush_control 1
+#define GLX_CONTEXT_RELEASE_BEHAVIOR_ARB  0x2097
+#define GLX_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB 0
+#define GLX_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB 0x2098
+#endif /* GLX_ARB_context_flush_control */
 
 #ifndef GLX_ARB_create_context
 #define GLX_ARB_create_context 1
@@ -468,6 +475,16 @@ Bool glXSet3DfxModeMESA (int mode);
 #endif
 #endif /* GLX_MESA_set_3dfx_mode */
 
+#ifndef GLX_NV_copy_buffer
+#define GLX_NV_copy_buffer 1
+typedef void ( *PFNGLXCOPYBUFFERSUBDATANVPROC) (Display *dpy, GLXContext readCtx, GLXContext writeCtx, GLenum readTarget, GLenum writeTarget, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+typedef void ( *PFNGLXNAMEDCOPYBUFFERSUBDATANVPROC) (Display *dpy, GLXContext readCtx, GLXContext writeCtx, GLuint readBuffer, GLuint writeBuffer, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+#ifdef GLX_GLXEXT_PROTOTYPES
+void glXCopyBufferSubDataNV (Display *dpy, GLXContext readCtx, GLXContext writeCtx, GLenum readTarget, GLenum writeTarget, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+void glXNamedCopyBufferSubDataNV (Display *dpy, GLXContext readCtx, GLXContext writeCtx, GLuint readBuffer, GLuint writeBuffer, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+#endif
+#endif /* GLX_NV_copy_buffer */
+
 #ifndef GLX_NV_copy_image
 #define GLX_NV_copy_image 1
 typedef void ( *PFNGLXCOPYIMAGESUBDATANVPROC) (Display *dpy, GLXContext srcCtx, GLuint srcName, GLenum srcTarget, GLint srcLevel, GLint srcX, GLint srcY, GLint srcZ, GLXContext dstCtx, GLuint dstName, GLenum dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei width, GLsizei height, GLsizei depth);
@@ -544,8 +561,8 @@ void glXReleaseVideoCaptureDeviceNV (Display *dpy, GLXVideoCaptureDeviceNV devic
 #endif
 #endif /* GLX_NV_video_capture */
 
-#ifndef GLX_NV_video_output
-#define GLX_NV_video_output 1
+#ifndef GLX_NV_video_out
+#define GLX_NV_video_out 1
 typedef unsigned int GLXVideoDeviceNV;
 #define GLX_VIDEO_OUT_COLOR_NV            0x20C3
 #define GLX_VIDEO_OUT_ALPHA_NV            0x20C4
@@ -571,7 +588,7 @@ int glXReleaseVideoImageNV (Display *dpy, GLXPbuffer pbuf);
 int glXSendPbufferToVideoNV (Display *dpy, GLXPbuffer pbuf, int iBufferType, unsigned long *pulCounterPbuffer, GLboolean bBlock);
 int glXGetVideoInfoNV (Display *dpy, int screen, GLXVideoDeviceNV VideoDevice, unsigned long *pulCounterOutputPbuffer, unsigned long *pulCounterOutputVideo);
 #endif
-#endif /* GLX_NV_video_output */
+#endif /* GLX_NV_video_out */
 
 #ifndef GLX_OML_swap_method
 #define GLX_OML_swap_method 1

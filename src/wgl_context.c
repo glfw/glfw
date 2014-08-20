@@ -345,7 +345,7 @@ void _glfwTerminateContextAPI(void)
     assert((size_t) index < sizeof(attribs) / sizeof(attribs[0])); \
 }
 
-// Prepare for creation of the OpenGL context
+// Create the OpenGL or OpenGL ES context
 //
 int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWctxconfig* ctxconfig,
@@ -423,6 +423,10 @@ int _glfwCreateContext(_GLFWwindow* window,
 
         if (ctxconfig->major != 1 || ctxconfig->minor != 0)
         {
+            // NOTE: Only request an explicitly versioned context when
+            //       necessary, as explicitly requesting version 1.0 does not
+            //       always return the highest available version
+
             setWGLattrib(WGL_CONTEXT_MAJOR_VERSION_ARB, ctxconfig->major);
             setWGLattrib(WGL_CONTEXT_MINOR_VERSION_ARB, ctxconfig->minor);
         }

@@ -112,14 +112,8 @@ int _glfwCreateContext(_GLFWwindow* window,
     }
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
-    // Fail if a robustness strategy was requested
-    if (ctxconfig->robustness)
-    {
-        _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                        "NSGL: OS X does not support OpenGL robustness "
-                        "strategies");
-        return GL_FALSE;
-    }
+    // Context robustness modes (GL_KHR_robustness) are not yet supported on
+    // OS X but are not a hard constraint, so ignore and continue
 
 #define ADD_ATTR(x) { attributes[attributeCount++] = x; }
 #define ADD_ATTR2(x, y) { ADD_ATTR(x); ADD_ATTR(y); }

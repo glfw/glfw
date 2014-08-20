@@ -281,7 +281,7 @@ void _glfwTerminateContextAPI(void)
     assert((size_t) index < sizeof(attribs) / sizeof(attribs[0])); \
 }
 
-// Prepare for creation of the OpenGL context
+// Create the OpenGL or OpenGL ES context
 //
 int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWctxconfig* ctxconfig,
@@ -303,8 +303,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     // Retrieve the corresponding visual
     window->glx.visual = glXGetVisualFromFBConfig(_glfw.x11.display, native);
-
-    if (window->glx.visual == NULL)
+    if (!window->glx.visual)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "GLX: Failed to retrieve visual for GLXFBConfig");
@@ -372,7 +371,7 @@ int _glfwCreateContext(_GLFWwindow* window,
         else
             mask |= GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
 
-        if (ctxconfig->robustness != GLFW_NO_ROBUSTNESS)
+        if (ctxconfig->robustness)
         {
             if (_glfw.glx.ARB_create_context_robustness)
             {
@@ -413,7 +412,7 @@ int _glfwCreateContext(_GLFWwindow* window,
                                               True,
                                               attribs);
 
-        if (window->glx.context == NULL)
+        if (!window->glx.context)
         {
             // HACK: This is a fallback for the broken Mesa implementation of
             //       GLX_ARB_create_context_profile, which fails default 1.0
@@ -433,7 +432,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     _glfwReleaseXErrorHandler();
 
-    if (window->glx.context == NULL)
+    if (!window->glx.context)
     {
         _glfwInputXError(GLFW_PLATFORM_ERROR, "GLX: Failed to create context");
         return GL_FALSE;

@@ -236,7 +236,7 @@ void _glfwTerminateContextAPI(void)
     assert((size_t) index < sizeof(attribs) / sizeof(attribs[0])); \
 }
 
-// Prepare for creation of the OpenGL context
+// Create the OpenGL or OpenGL ES context
 //
 int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWctxconfig* ctxconfig,
@@ -296,8 +296,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
         window->egl.visual = XGetVisualInfo(_glfw.x11.display,
                                             mask, &info, &count);
-
-        if (window->egl.visual == NULL)
+        if (!window->egl.visual)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "EGL: Failed to retrieve visual for EGLConfig");
@@ -345,7 +344,7 @@ int _glfwCreateContext(_GLFWwindow* window,
                 flags |= EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR;
         }
 
-        if (ctxconfig->robustness != GLFW_NO_ROBUSTNESS)
+        if (ctxconfig->robustness)
         {
             if (ctxconfig->robustness == GLFW_NO_RESET_NOTIFICATION)
                 strategy = EGL_NO_RESET_NOTIFICATION_KHR;

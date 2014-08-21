@@ -63,6 +63,9 @@ GLFW bundles a number of dependencies in the `deps/` directory.
    automatically iconify (and restore the previous video mode) on focus loss
  - Added `GLFW_DONT_CARE` for indicating that any value is acceptable
  - Added `GLFW_DOUBLEBUFFER` for controlling whether to use double buffering
+ - Added `GLFW_CONTEXT_RELEASE_BEHAVIOR` and values
+   `GLFW_ANY_RELEASE_BEHAVIOR`, `GLFW_RELEASE_BEHAVIOR_FLUSH` and
+   `GLFW_RELEASE_BEHAVIOR_NONE` for `GL_KHR_context_flush_control` support
  - Added `GLFW_INCLUDE_ES31` for including the OpenGL ES 3.1 header
  - Added `GLFW_FLOATING` for creating always-on-top windowed mode windows
  - Added *partial and experimental* support for Wayland

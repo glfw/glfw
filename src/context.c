@@ -198,6 +198,17 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
         }
     }
 
+    if (ctxconfig->release)
+    {
+        if (ctxconfig->release != GLFW_RELEASE_BEHAVIOR_NONE &&
+            ctxconfig->release != GLFW_RELEASE_BEHAVIOR_FLUSH)
+        {
+            _glfwInputError(GLFW_INVALID_VALUE,
+                            "Invalid context release behavior requested");
+            return GL_FALSE;
+        }
+    }
+
     return GL_TRUE;
 }
 
@@ -467,6 +478,17 @@ GLboolean _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
             else if (strategy == GL_NO_RESET_NOTIFICATION_ARB)
                 window->context.robustness = GLFW_NO_RESET_NOTIFICATION;
         }
+    }
+
+    if (glfwExtensionSupported("GL_KHR_context_flush_control"))
+    {
+        GLint behavior;
+        glGetIntegerv(GL_CONTEXT_RELEASE_BEHAVIOR, &behavior);
+
+        if (behavior == GL_NONE)
+            window->context.release = GLFW_RELEASE_BEHAVIOR_NONE;
+        else if (behavior == GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH)
+            window->context.release = GLFW_RELEASE_BEHAVIOR_FLUSH;
     }
 #endif // _GLFW_USE_OPENGL
 

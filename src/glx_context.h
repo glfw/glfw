@@ -105,6 +105,7 @@ typedef struct _GLFWlibraryGLX
     GLboolean       ARB_create_context_profile;
     GLboolean       ARB_create_context_robustness;
     GLboolean       EXT_create_context_es2_profile;
+    GLboolean       ARB_context_flush_control;
 
 #if defined(_GLFW_DLOPEN_LIBGL)
     void*           libGL;  // dlopen handle for libGL.so

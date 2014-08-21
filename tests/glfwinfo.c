@@ -48,14 +48,18 @@
 #define PROFILE_NAME_CORE   "core"
 #define PROFILE_NAME_COMPAT "compat"
 
-#define STRATEGY_NAME_NONE "none"
-#define STRATEGY_NAME_LOSE "lose"
+#define STRATEGY_NAME_NONE  "none"
+#define STRATEGY_NAME_LOSE  "lose"
+
+#define BEHAVIOR_NAME_NONE  "none"
+#define BEHAVIOR_NAME_FLUSH "flush"
 
 static void usage(void)
 {
-    printf("Usage: glfwinfo [-h] [-a API] [-m MAJOR] [-n MINOR] [-d] [-l] [-f] [-p PROFILE] [-r STRATEGY]\n");
+    printf("Usage: glfwinfo [-h] [-a API] [-m MAJOR] [-n MINOR] [-d] [-l] [-f] [-p PROFILE] [-s STRATEGY] [-b BEHAVIOR]\n");
     printf("Options:\n");
     printf("  -a the client API to use (" API_OPENGL " or " API_OPENGL_ES ")\n");
+    printf("  -b the release behavior to use (" BEHAVIOR_NAME_NONE " or " BEHAVIOR_NAME_FLUSH ")\n");
     printf("  -d request a debug context\n");
     printf("  -f require a forward-compatible context\n");
     printf("  -h show this help\n");
@@ -63,7 +67,7 @@ static void usage(void)
     printf("  -m the major number of the requred client API version\n");
     printf("  -n the minor number of the requred client API version\n");
     printf("  -p the OpenGL profile to use (" PROFILE_NAME_CORE " or " PROFILE_NAME_COMPAT ")\n");
-    printf("  -r the robustness strategy to use (" STRATEGY_NAME_NONE " or " STRATEGY_NAME_LOSE ")\n");
+    printf("  -s the robustness strategy to use (" STRATEGY_NAME_NONE " or " STRATEGY_NAME_LOSE ")\n");
 }
 
 static void error_callback(int error, const char* description)
@@ -188,12 +192,12 @@ static GLboolean valid_version(void)
 
 int main(int argc, char** argv)
 {
-    int ch, api = 0, profile = 0, strategy = 0, major = 1, minor = 0, revision;
+    int ch, api = 0, profile = 0, strategy = 0, behavior = 0, major = 1, minor = 0, revision;
     GLboolean debug = GL_FALSE, forward = GL_FALSE, list = GL_FALSE;
     GLint flags, mask;
     GLFWwindow* window;
 
-    while ((ch = getopt(argc, argv, "a:dfhlm:n:p:r:")) != -1)
+    while ((ch = getopt(argc, argv, "a:b:dfhlm:n:p:s:")) != -1)
     {
         switch (ch)
         {
@@ -202,6 +206,17 @@ int main(int argc, char** argv)
                     api = GLFW_OPENGL_API;
                 else if (strcasecmp(optarg, API_OPENGL_ES) == 0)
                     api = GLFW_OPENGL_ES_API;
+                else
+                {
+                    usage();
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 'b':
+                if (strcasecmp(optarg, BEHAVIOR_NAME_NONE) == 0)
+                    behavior = GLFW_RELEASE_BEHAVIOR_NONE;
+                else if (strcasecmp(optarg, BEHAVIOR_NAME_FLUSH) == 0)
+                    behavior = GLFW_RELEASE_BEHAVIOR_FLUSH;
                 else
                 {
                     usage();
@@ -237,7 +252,7 @@ int main(int argc, char** argv)
                     exit(EXIT_FAILURE);
                 }
                 break;
-            case 'r':
+            case 's':
                 if (strcasecmp(optarg, STRATEGY_NAME_NONE) == 0)
                     strategy = GLFW_NO_RESET_NOTIFICATION;
                 else if (strcasecmp(optarg, STRATEGY_NAME_LOSE) == 0)
@@ -284,6 +299,9 @@ int main(int argc, char** argv)
 
     if (strategy)
         glfwWindowHint(GLFW_CONTEXT_ROBUSTNESS, strategy);
+
+    if (behavior)
+        glfwWindowHint(GLFW_CONTEXT_RELEASE_BEHAVIOR, behavior);
 
     glfwWindowHint(GLFW_RED_BITS, GLFW_DONT_CARE);
     glfwWindowHint(GLFW_GREEN_BITS, GLFW_DONT_CARE);

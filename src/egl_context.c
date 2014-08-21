@@ -381,6 +381,9 @@ int _glfwCreateContext(_GLFWwindow* window,
         setEGLattrib(EGL_NONE, EGL_NONE);
     }
 
+    // Context release behaviors (GL_KHR_context_flush_control) are not yet
+    // supported on EGL but are not a hard constraint, so ignore and continue
+
     window->egl.context = eglCreateContext(_glfw.egl.display,
                                            config, share, attribs);
 

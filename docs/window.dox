@@ -222,39 +222,53 @@ used by the context.  This can be one of `GLFW_NO_RESET_NOTIFICATION` or
 `GLFW_LOSE_CONTEXT_ON_RESET`, or `GLFW_NO_ROBUSTNESS` to not request
 a robustness strategy.
 
+The `GLFW_CONTEXT_RELEASE_BEHAVIOR` hint specifies the release behavior to be
+used by the context.  Possible values are one of `GLFW_ANY_RELEASE_BEHAVIOR`,
+`GLFW_RELEASE_BEHAVIOR_FLUSH` or `GLFW_RELEASE_BEHAVIOR_NONE`.  If the
+behavior is `GLFW_ANY_RELEASE_BEHAVIOR`, the default behavior of the context
+creation API will be used.  If the behavior is `GLFW_RELEASE_BEHAVIOR_FLUSH`,
+the pipeline will be flushed whenever the context is released from being the
+current one.  If the behavior is `GLFW_RELEASE_BEHAVIOR_NONE`, the pipeline will
+not be flushed on release.
+
+@note Context release behaviors are described in detail by the
+[GL_KHR_context_flush_control](https://www.opengl.org/registry/specs/KHR/context_flush_control.txt)
+extension.
+
 
 @subsection window_hints_values Supported and default values
 
-| Name                         | Default value             | Supported values        |
-| ---------------------------- | ------------------------- | ----------------------- |
-| `GLFW_RESIZABLE`             | `GL_TRUE`                 | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_VISIBLE`               | `GL_TRUE`                 | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_DECORATED`             | `GL_TRUE`                 | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_AUTO_ICONIFY`          | `GL_TRUE`                 | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_FLOATING`              | `GL_FALSE`                | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_RED_BITS`              | 8                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
-| `GLFW_GREEN_BITS`            | 8                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
-| `GLFW_BLUE_BITS`             | 8                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
-| `GLFW_ALPHA_BITS`            | 8                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
-| `GLFW_DEPTH_BITS`            | 24                        | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
-| `GLFW_STENCIL_BITS`          | 8                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
-| `GLFW_ACCUM_RED_BITS`        | 0                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
-| `GLFW_ACCUM_GREEN_BITS`      | 0                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
-| `GLFW_ACCUM_BLUE_BITS`       | 0                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
-| `GLFW_ACCUM_ALPHA_BITS`      | 0                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
-| `GLFW_AUX_BUFFERS`           | 0                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
-| `GLFW_SAMPLES`               | 0                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
-| `GLFW_REFRESH_RATE`          | 0                         | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
-| `GLFW_STEREO`                | `GL_FALSE`                | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_SRGB_CAPABLE`          | `GL_FALSE`                | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_DOUBLEBUFFER`          | `GL_TRUE`                 | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_CLIENT_API`            | `GLFW_OPENGL_API`         | `GLFW_OPENGL_API` or `GLFW_OPENGL_ES_API` |
-| `GLFW_CONTEXT_VERSION_MAJOR` | 1                         | Any valid major version number of the chosen client API |
-| `GLFW_CONTEXT_VERSION_MINOR` | 0                         | Any valid minor version number of the chosen client API |
-| `GLFW_CONTEXT_ROBUSTNESS`    | `GLFW_NO_ROBUSTNESS`      | `GLFW_NO_ROBUSTNESS`, `GLFW_NO_RESET_NOTIFICATION` or `GLFW_LOSE_CONTEXT_ON_RESET` |
-| `GLFW_OPENGL_FORWARD_COMPAT` | `GL_FALSE`                | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_OPENGL_DEBUG_CONTEXT`  | `GL_FALSE`                | `GL_TRUE` or `GL_FALSE` |
-| `GLFW_OPENGL_PROFILE`        | `GLFW_OPENGL_ANY_PROFILE` | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE` |
+| Name                            | Default value               | Supported values        |
+| ------------------------------- | --------------------------- | ----------------------- |
+| `GLFW_RESIZABLE`                | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_VISIBLE`                  | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_DECORATED`                | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_AUTO_ICONIFY`             | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_FLOATING`                 | `GL_FALSE`                  | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_RED_BITS`                 | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_GREEN_BITS`               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_BLUE_BITS`                | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_ALPHA_BITS`               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_DEPTH_BITS`               | 24                          | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_STENCIL_BITS`             | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_ACCUM_RED_BITS`           | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_ACCUM_GREEN_BITS`         | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_ACCUM_BLUE_BITS`          | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_ACCUM_ALPHA_BITS`         | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_AUX_BUFFERS`              | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_SAMPLES`                  | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_REFRESH_RATE`             | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE` |
+| `GLFW_STEREO`                   | `GL_FALSE`                  | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_SRGB_CAPABLE`             | `GL_FALSE`                  | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_DOUBLEBUFFER`             | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_CLIENT_API`               | `GLFW_OPENGL_API`           | `GLFW_OPENGL_API` or `GLFW_OPENGL_ES_API` |
+| `GLFW_CONTEXT_VERSION_MAJOR`    | 1                           | Any valid major version number of the chosen client API |
+| `GLFW_CONTEXT_VERSION_MINOR`    | 0                           | Any valid minor version number of the chosen client API |
+| `GLFW_CONTEXT_ROBUSTNESS`       | `GLFW_NO_ROBUSTNESS`        | `GLFW_NO_ROBUSTNESS`, `GLFW_NO_RESET_NOTIFICATION` or `GLFW_LOSE_CONTEXT_ON_RESET` |
+| `GLFW_CONTEXT_RELEASE_BEHAVIOR` | `GLFW_ANY_RELEASE_BEHAVIOR` | `GLFW_ANY_RELEASE_BEHAVIOR`, `GLFW_RELEASE_BEHAVIOR_FLUSH` or `GLFW_RELEASE_BEHAVIOR_NONE` |
+| `GLFW_OPENGL_FORWARD_COMPAT`    | `GL_FALSE`                  | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_OPENGL_DEBUG_CONTEXT`     | `GL_FALSE`                  | `GL_TRUE` or `GL_FALSE` |
+| `GLFW_OPENGL_PROFILE`           | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE` |
 
 
 @section window_close Window close flag

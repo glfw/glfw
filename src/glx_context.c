@@ -255,6 +255,9 @@ int _glfwInitContextAPI(void)
     if (_glfwPlatformExtensionSupported("GLX_EXT_create_context_es2_profile"))
         _glfw.glx.EXT_create_context_es2_profile = GL_TRUE;
 
+    if (_glfwPlatformExtensionSupported("GLX_ARB_context_flush_control"))
+        _glfw.glx.ARB_context_flush_control = GL_TRUE;
+
     return GL_TRUE;
 }
 
@@ -381,6 +384,23 @@ int _glfwCreateContext(_GLFWwindow* window,
                     strategy = GLX_LOSE_CONTEXT_ON_RESET_ARB;
 
                 flags |= GLX_CONTEXT_ROBUST_ACCESS_BIT_ARB;
+            }
+        }
+
+        if (ctxconfig->release)
+        {
+            if (_glfw.glx.ARB_context_flush_control)
+            {
+                if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_NONE)
+                {
+                    setGLXattrib(GLX_CONTEXT_RELEASE_BEHAVIOR_ARB,
+                                 GLX_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB);
+                }
+                else if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_FLUSH)
+                {
+                    setGLXattrib(GLX_CONTEXT_RELEASE_BEHAVIOR_ARB,
+                                 GLX_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB);
+                }
             }
         }
 

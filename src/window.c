@@ -178,6 +178,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     ctxconfig.debug         = _glfw.hints.debug ? GL_TRUE : GL_FALSE;
     ctxconfig.profile       = _glfw.hints.profile;
     ctxconfig.robustness    = _glfw.hints.robustness;
+    ctxconfig.release       = _glfw.hints.release;
     ctxconfig.share         = (_GLFWwindow*) share;
 
     // Check the OpenGL bits of the window config
@@ -272,7 +273,7 @@ void glfwDefaultWindowHints(void)
     memset(&_glfw.hints, 0, sizeof(_glfw.hints));
 
     // The default is OpenGL with minimum version 1.0
-    _glfw.hints.api = GLFW_OPENGL_API;
+    _glfw.hints.api   = GLFW_OPENGL_API;
     _glfw.hints.major = 1;
     _glfw.hints.minor = 0;
 
@@ -382,6 +383,9 @@ GLFWAPI void glfwWindowHint(int target, int hint)
             break;
         case GLFW_OPENGL_PROFILE:
             _glfw.hints.profile = hint;
+            break;
+        case GLFW_CONTEXT_RELEASE_BEHAVIOR:
+            _glfw.hints.release = hint;
             break;
         default:
             _glfwInputError(GLFW_INVALID_ENUM, NULL);
@@ -623,6 +627,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->context.debug;
         case GLFW_OPENGL_PROFILE:
             return window->context.profile;
+        case GLFW_CONTEXT_RELEASE_BEHAVIOR:
+            return window->context.release;
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, NULL);

@@ -173,6 +173,7 @@ struct _GLFWctxconfig
     GLboolean     debug;
     int           profile;
     int           robustness;
+    int           release;
     _GLFWwindow*  share;
 };
 
@@ -242,6 +243,7 @@ struct _GLFWwindow
         GLboolean       forward, debug;
         int             profile;
         int             robustness;
+        int             release;
     } context;
 
 #if defined(_GLFW_USE_OPENGL)
@@ -338,6 +340,7 @@ struct _GLFWlibrary
         int         debug;
         int         profile;
         int         robustness;
+        int         release;
     } hints;
 
     double          cursorPosX, cursorPosY;

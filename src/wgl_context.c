@@ -57,6 +57,7 @@ static void initWGLExtensions(_GLFWwindow* window)
     window->wgl.ARB_create_context_robustness = GL_FALSE;
     window->wgl.EXT_swap_control = GL_FALSE;
     window->wgl.ARB_pixel_format = GL_FALSE;
+    window->wgl.ARB_context_flush_control = GL_FALSE;
 
     window->wgl.GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)
         wglGetProcAddress("wglGetExtensionsStringEXT");
@@ -119,6 +120,9 @@ static void initWGLExtensions(_GLFWwindow* window)
         if (window->wgl.GetPixelFormatAttribivARB)
             window->wgl.ARB_pixel_format = GL_TRUE;
     }
+
+    if (_glfwPlatformExtensionSupported("WGL_ARB_context_flush_control"))
+        window->wgl.ARB_context_flush_control = GL_TRUE;
 }
 
 // Returns the specified attribute of the specified pixel format
@@ -421,6 +425,23 @@ int _glfwCreateContext(_GLFWwindow* window,
             }
         }
 
+        if (ctxconfig->release)
+        {
+            if (window->wgl.ARB_context_flush_control)
+            {
+                if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_NONE)
+                {
+                    setWGLattrib(WGL_CONTEXT_RELEASE_BEHAVIOR_ARB,
+                                 WGL_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB);
+                }
+                else if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_FLUSH)
+                {
+                    setWGLattrib(WGL_CONTEXT_RELEASE_BEHAVIOR_ARB,
+                                 WGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB);
+                }
+            }
+        }
+
         if (ctxconfig->major != 1 || ctxconfig->minor != 0)
         {
             // NOTE: Only request an explicitly versioned context when
@@ -534,6 +555,12 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
             }
 
             required = GL_TRUE;
+        }
+
+        if (ctxconfig->release)
+        {
+            if (window->wgl.ARB_context_flush_control)
+                required = GL_TRUE;
         }
     }
     else

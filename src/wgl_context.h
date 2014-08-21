@@ -65,6 +65,7 @@ typedef struct _GLFWcontextWGL
     GLboolean                           ARB_create_context_profile;
     GLboolean                           EXT_create_context_es2_profile;
     GLboolean                           ARB_create_context_robustness;
+    GLboolean                           ARB_context_flush_control;
 } _GLFWcontextWGL;
 
 

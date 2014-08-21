@@ -110,8 +110,8 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
                                 targets[i],
                                 8,
                                 PropModeReplace,
-                                (unsigned char*) _glfw.x11.selection.string,
-                                strlen(_glfw.x11.selection.string));
+                                (unsigned char*) _glfw.x11.clipboardString,
+                                strlen(_glfw.x11.clipboardString));
             }
             else
                 targets[i + 1] = None;
@@ -162,8 +162,8 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
                             request->target,
                             8,
                             PropModeReplace,
-                            (unsigned char*) _glfw.x11.selection.string,
-                            strlen(_glfw.x11.selection.string));
+                            (unsigned char*) _glfw.x11.clipboardString,
+                            strlen(_glfw.x11.clipboardString));
 
             return request->property;
         }
@@ -181,8 +181,8 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
 
 void _glfwHandleSelectionClear(XEvent* event)
 {
-    free(_glfw.x11.selection.string);
-    _glfw.x11.selection.string = NULL;
+    free(_glfw.x11.clipboardString);
+    _glfw.x11.clipboardString = NULL;
 }
 
 void _glfwHandleSelectionRequest(XEvent* event)
@@ -253,8 +253,8 @@ void _glfwPushSelectionToManager(_GLFWwindow* window)
 
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
-    free(_glfw.x11.selection.string);
-    _glfw.x11.selection.string = strdup(string);
+    free(_glfw.x11.clipboardString);
+    _glfw.x11.clipboardString = strdup(string);
 
     XSetSelectionOwner(_glfw.x11.display,
                        _glfw.x11.CLIPBOARD,
@@ -281,11 +281,11 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     {
         // Instead of doing a large number of X round-trips just to put this
         // string into a window property and then read it back, just return it
-        return _glfw.x11.selection.string;
+        return _glfw.x11.clipboardString;
     }
 
-    free(_glfw.x11.selection.string);
-    _glfw.x11.selection.string = NULL;
+    free(_glfw.x11.clipboardString);
+    _glfw.x11.clipboardString = NULL;
 
     for (i = 0;  i < formatCount;  i++)
     {
@@ -311,7 +311,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
                                    event.xselection.target,
                                    (unsigned char**) &data))
         {
-            _glfw.x11.selection.string = strdup(data);
+            _glfw.x11.clipboardString = strdup(data);
         }
 
         XFree(data);
@@ -320,16 +320,16 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
                         event.xselection.requestor,
                         event.xselection.property);
 
-        if (_glfw.x11.selection.string)
+        if (_glfw.x11.clipboardString)
             break;
     }
 
-    if (_glfw.x11.selection.string == NULL)
+    if (_glfw.x11.clipboardString == NULL)
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "X11: Failed to convert selection to string");
     }
 
-    return _glfw.x11.selection.string;
+    return _glfw.x11.clipboardString;
 }
 

@@ -730,7 +730,7 @@ void _glfwPlatformTerminate(void)
         _glfw.x11.cursor = (Cursor) 0;
     }
 
-    free(_glfw.x11.selection.string);
+    free(_glfw.x11.clipboardString);
 
     _glfwTerminateJoysticks();
     _glfwTerminateContextAPI();

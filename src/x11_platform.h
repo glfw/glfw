@@ -114,6 +114,8 @@ typedef struct _GLFWlibraryX11
     Cursor          cursor;
     XContext        context;
 
+    char*           clipboardString;
+
     // Window manager atoms
     Atom            WM_PROTOCOLS;
     Atom            WM_STATE;
@@ -205,10 +207,6 @@ typedef struct _GLFWlibraryX11
         int         blanking;
         int         exposure;
     } saver;
-
-    struct {
-        char*       string;
-    } selection;
 
     struct {
         Window      source;

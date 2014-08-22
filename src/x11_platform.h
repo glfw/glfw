@@ -112,9 +112,17 @@ typedef struct _GLFWlibraryX11
 
     // Invisible cursor for hidden cursor mode
     Cursor          cursor;
+    // Context for mapping window XIDs to _GLFWwindow pointers
     XContext        context;
+    // True if window manager supports EWMH
+    GLboolean       hasEWMH;
+    // Most recent error code received by X error handler
+    int             errorCode;
 
     char*           clipboardString;
+
+    // LUT for mapping X11 key codes to GLFW key codes
+    int             keyCodeLUT[256];
 
     // Window manager atoms
     Atom            WM_PROTOCOLS;
@@ -156,12 +164,6 @@ typedef struct _GLFWlibraryX11
     Atom            ATOM_PAIR;
     Atom            GLFW_SELECTION;
 
-    // True if window manager supports EWMH
-    GLboolean       hasEWMH;
-
-    // Error code received by the X error handler
-    int             errorCode;
-
     struct {
         GLboolean   available;
         int         eventBase;
@@ -196,9 +198,6 @@ typedef struct _GLFWlibraryX11
         int         versionMajor;
         int         versionMinor;
     } xi;
-
-    // LUT for mapping X11 key codes to GLFW key codes
-    int             keyCodeLUT[256];
 
     struct {
         int         count;

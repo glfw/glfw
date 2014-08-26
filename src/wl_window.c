@@ -157,16 +157,11 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 {
-    // A Wayland client is not aware of its position, so just warn and set it
-    // to (0, 0)
+    // A Wayland client is not aware of its position, so just warn and leave it
+    // as (0, 0)
 
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "Wayland: Window position retreival not supported");
-
-    if (xpos)
-        *xpos = 0;
-    if (ypos)
-        *ypos = 0;
 }
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)

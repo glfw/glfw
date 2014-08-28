@@ -116,7 +116,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    glClearColor(0.f, 0.f, 0.f, 0.f);
+    glClearColor(0.f, 0.f, 0.f, 1.f);
 
     while (!glfwWindowShouldClose(window))
     {

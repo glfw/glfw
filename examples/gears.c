@@ -278,6 +278,8 @@ static void init(int argc, char *argv[])
   glEnable(GL_LIGHT0);
   glEnable(GL_DEPTH_TEST);
 
+  glClearColor(0.f, 0.f, 0.f, 0.7f);
+
   /* make the gears */
   gear1 = glGenLists(1);
   glNewList(gear1, GL_COMPILE);

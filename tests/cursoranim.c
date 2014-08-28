@@ -111,6 +111,8 @@ int main(void)
 
     t0 = glfwGetTime();
 
+    glClearColor(0.f, 0.f, 0.f, 1.f);
+
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);

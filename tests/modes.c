@@ -151,6 +151,7 @@ static void test_modes(GLFWmonitor* monitor)
         glfwSwapInterval(1);
 
         glfwSetTime(0.0);
+        glClearColor(0.f, 0.f, 0.f, 1.f);
 
         while (glfwGetTime() < 5.0)
         {

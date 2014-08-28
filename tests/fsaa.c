@@ -127,6 +127,8 @@ int main(int argc, char** argv)
     glOrtho(0.f, 1.f, 0.f, 0.5f, 0.f, 1.f);
     glMatrixMode(GL_MODELVIEW);
 
+    glClearColor(0.f, 0.f, 0.f, 1.f);
+
     while (!glfwWindowShouldClose(window))
     {
         GLfloat time = (GLfloat) glfwGetTime();

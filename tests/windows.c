@@ -85,7 +85,7 @@ int main(void)
         glClearColor((GLclampf) (i & 1),
                      (GLclampf) (i >> 1),
                      i ? 0.f : 1.f,
-                     0.f);
+                     1.f);
 
         glfwGetWindowFrameSize(windows[i], &left, &top, &right, &bottom);
         glfwSetWindowPos(windows[i],

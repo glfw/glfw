@@ -162,7 +162,7 @@ int main(int argc, char** argv)
     glOrtho(-1.f, 1.f, -1.f, 1.f, -1.f, 1.f);
     glMatrixMode(GL_MODELVIEW);
 
-    glClearColor(0.5f, 0.5f, 0.5f, 0);
+    glClearColor(0.5f, 0.5f, 0.5f, 1.f);
 
     while (!glfwWindowShouldClose(window))
     {

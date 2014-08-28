@@ -165,11 +165,11 @@ int main(int argc, char** argv)
         glfwGetFramebufferSize(window, &width, &height);
 
         glScissor(0, 0, width, height);
-        glClearColor(0, 0, 0, 0);
+        glClearColor(0.f, 0.f, 0.f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glScissor(0, 0, 640, 480);
-        glClearColor(1, 1, 1, 0);
+        glClearColor(1.f, 1.f, 1.f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glfwSwapBuffers(window);

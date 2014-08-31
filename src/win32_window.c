@@ -34,6 +34,8 @@
 
 #define _GLFW_KEY_INVALID -2
 
+#define _GLFW_WNDCLASSNAME L"GLFW30"
+
 
 // Updates the cursor clip rect
 //
@@ -838,43 +840,6 @@ static void getFullWindowSize(_GLFWwindow* window,
     *fullHeight = rect.bottom - rect.top;
 }
 
-// Registers the GLFW window class
-//
-static ATOM registerWindowClass(void)
-{
-    WNDCLASSW wc;
-    ATOM classAtom;
-
-    // Set window class parameters
-    wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-    wc.lpfnWndProc   = (WNDPROC) windowProc;
-    wc.cbClsExtra    = 0;                           // No extra class data
-    wc.cbWndExtra    = sizeof(void*) + sizeof(int); // Make room for one pointer
-    wc.hInstance     = GetModuleHandleW(NULL);
-    wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
-    wc.hbrBackground = NULL;                        // No background
-    wc.lpszMenuName  = NULL;                        // No menu
-    wc.lpszClassName = _GLFW_WNDCLASSNAME;
-
-    // Load user-provided icon if available
-    wc.hIcon = LoadIconW(GetModuleHandleW(NULL), L"GLFW_ICON");
-    if (!wc.hIcon)
-    {
-        // No user-provided icon found, load default icon
-        wc.hIcon = LoadIconW(NULL, IDI_WINLOGO);
-    }
-
-    classAtom = RegisterClassW(&wc);
-    if (!classAtom)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to register window class");
-        return 0;
-    }
-
-    return classAtom;
-}
-
 // Creates the GLFW window and rendering context
 //
 static int createWindow(_GLFWwindow* window,
@@ -987,6 +952,52 @@ static void destroyWindow(_GLFWwindow* window)
 
 
 //////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+// Registers the GLFW window class
+//
+GLboolean _glfwRegisterWindowClass(void)
+{
+    WNDCLASSW wc;
+
+    wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+    wc.lpfnWndProc   = (WNDPROC) windowProc;
+    wc.cbClsExtra    = 0;                           // No extra class data
+    wc.cbWndExtra    = sizeof(void*) + sizeof(int); // Make room for one pointer
+    wc.hInstance     = GetModuleHandleW(NULL);
+    wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
+    wc.hbrBackground = NULL;                        // No background
+    wc.lpszMenuName  = NULL;                        // No menu
+    wc.lpszClassName = _GLFW_WNDCLASSNAME;
+
+    // Load user-provided icon if available
+    wc.hIcon = LoadIconW(GetModuleHandleW(NULL), L"GLFW_ICON");
+    if (!wc.hIcon)
+    {
+        // No user-provided icon found, load default icon
+        wc.hIcon = LoadIconW(NULL, IDI_WINLOGO);
+    }
+
+    if (!RegisterClassW(&wc))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to register window class");
+        return GL_FALSE;
+    }
+
+    return GL_TRUE;
+}
+
+// Unregisters the GLFW window class
+//
+void _glfwUnregisterWindowClass(void)
+{
+    UnregisterClassW(_GLFW_WNDCLASSNAME, GetModuleHandleW(NULL));
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
@@ -996,13 +1007,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWfbconfig* fbconfig)
 {
     int status;
-
-    if (!_glfw.win32.classAtom)
-    {
-        _glfw.win32.classAtom = registerWindowClass();
-        if (!_glfw.win32.classAtom)
-            return GL_FALSE;
-    }
 
     if (!createWindow(window, wndconfig, ctxconfig, fbconfig))
         return GL_FALSE;

@@ -130,10 +130,6 @@ typedef HRESULT (WINAPI * DWMISCOMPOSITIONENABLED_T)(BOOL*);
 #define _glfw_DwmIsCompositionEnabled _glfw.win32.dwmapi.DwmIsCompositionEnabled
 
 
-// We use versioned window class names in order not to cause conflicts
-// between applications using different versions of GLFW
-#define _GLFW_WNDCLASSNAME L"GLFW30"
-
 #define _GLFW_RECREATION_NOT_NEEDED 0
 #define _GLFW_RECREATION_REQUIRED   1
 #define _GLFW_RECREATION_IMPOSSIBLE 2
@@ -188,7 +184,6 @@ typedef struct _GLFWwindowWin32
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryWin32
 {
-    ATOM                classAtom;
     DWORD               foregroundLockTimeout;
     char*               clipboardString;
 
@@ -254,6 +249,10 @@ typedef struct _GLFWtimeWin32
 //========================================================================
 // Prototypes for platform specific internal functions
 //========================================================================
+
+// Window class
+GLboolean _glfwRegisterWindowClass(void);
+void _glfwUnregisterWindowClass(void);
 
 // Desktop compositing
 BOOL _glfwIsCompositionEnabled(void);

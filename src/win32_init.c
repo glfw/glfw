@@ -211,6 +211,9 @@ int _glfwPlatformInit(void)
     _control87(MCW_EM, MCW_EM);
 #endif
 
+    if (!_glfwRegisterWindowClass())
+        return GL_FALSE;
+
     if (!_glfwInitContextAPI())
         return GL_FALSE;
 
@@ -222,11 +225,7 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
-    if (_glfw.win32.classAtom)
-    {
-        UnregisterClassW(_GLFW_WNDCLASSNAME, GetModuleHandleW(NULL));
-        _glfw.win32.classAtom = 0;
-    }
+    _glfwUnregisterWindowClass();
 
     // Restore previous foreground lock timeout system setting
     SystemParametersInfoW(SPI_SETFOREGROUNDLOCKTIMEOUT, 0,

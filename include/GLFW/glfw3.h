@@ -2077,6 +2077,10 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *  @param[in] ypos The desired y-coordinate, relative to the top edge of the
  *  client area.
  *
+ *  @remarks **X11:** Due to the asynchronous nature of a modern X desktop, it
+ *  may take a moment for the window focus event to arrive.  This means you will
+ *  not be able to set the cursor position directly after window creation.
+ *
  *  @note This function may only be called from the main thread.
  *
  *  @sa glfwGetCursorPos

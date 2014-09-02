@@ -624,10 +624,10 @@ static void processEvent(XEvent *event)
 
             if (!_glfw.x11.xkb.detectable)
             {
-                // XKB detectable key repeat is not supported on this server
-                // For key repeats we will get KeyRelease/KeyPress pairs with
-                // similar or identical time stamps.  User selected key repeat
-                // filtering is handled in _glfwInputKey/_glfwInputChar.
+                // HACK: Key repeat events will arrive as KeyRelease/KeyPress
+                //       pairs with similar or identical time stamps
+                //       The key repeat logic in _glfwInputKey expectes only key
+                //       presses to repeat, so detect and discard release events
                 if (XEventsQueued(_glfw.x11.display, QueuedAfterReading))
                 {
                     XEvent nextEvent;
@@ -637,15 +637,16 @@ static void processEvent(XEvent *event)
                         nextEvent.xkey.window == event->xkey.window &&
                         nextEvent.xkey.keycode == event->xkey.keycode)
                     {
-                        // This last check is a hack to work around key repeats
-                        // leaking through due to some sort of time drift
-                        // Toshiyuki Takahashi can press a button 16 times per
-                        // second so it's fairly safe to assume that no human is
-                        // pressing the key 50 times per second (value is ms)
+                        // HACK: Repeat events sometimes leak through due to
+                        //       some sort of time drift, so add an epsilon
+                        //       Toshiyuki Takahashi can press a button 16 times
+                        //       per second so it's fairly safe to assume that
+                        //       no human is pressing the key 50 times per
+                        //       second (value is ms)
                         if ((nextEvent.xkey.time - event->xkey.time) < 20)
                         {
-                            // This is a server-generated key repeat event
-                            // Do not report anything for this event
+                            // This is very likely a server-generated key repeat
+                            // event, so ignore it
                             break;
                         }
                     }

@@ -47,6 +47,8 @@ static char* getDisplayName(CGDirectDisplayID displayID)
     CFStringRef value;
     CFIndex size;
 
+    // NOTE: This uses a deprecated function because Apple has
+    //       (as of September 2014) not provided any alternative
     info = IODisplayCreateInfoDictionary(CGDisplayIOServicePort(displayID),
                                          kIODisplayOnlyPreferredName);
     names = CFDictionaryGetValue(info, CFSTR(kDisplayProductName));

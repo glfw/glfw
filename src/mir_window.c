@@ -610,6 +610,14 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     return GL_FALSE;
 }
 
+int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported Function %s!", __PRETTY_FUNCTION__);
+
+    return GL_FALSE;
+}
+
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,

@@ -27,6 +27,8 @@
 
 #include "internal.h"
 
+#include <X11/cursorfont.h>
+
 #include <sys/select.h>
 
 #include <string.h>
@@ -64,6 +66,29 @@ static Bool isFrameExtentsEvent(Display* display, XEvent* event, XPointer pointe
            event->xproperty.state == PropertyNewValue &&
            event->xproperty.window == window->x11.handle &&
            event->xproperty.atom == _glfw.x11.NET_FRAME_EXTENTS;
+}
+
+// Translates a GLFW standard cursor to a font cursor shape
+//
+static int translateCursorShape(int shape)
+{
+    switch (shape)
+    {
+        case GLFW_ARROW_CURSOR:
+            return XC_arrow;
+        case GLFW_IBEAM_CURSOR:
+            return XC_xterm;
+        case GLFW_CROSSHAIR_CURSOR:
+            return XC_crosshair;
+        case GLFW_HAND_CURSOR:
+            return XC_hand1;
+        case GLFW_HRESIZE_CURSOR:
+            return XC_sb_h_double_arrow;
+        case GLFW_VRESIZE_CURSOR:
+            return XC_sb_v_double_arrow;
+    }
+
+    return 0;
 }
 
 // Translates an X event modifier state mask
@@ -1731,8 +1756,28 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                               int xhot, int yhot)
 {
     cursor->x11.handle = _glfwCreateCursor(image, xhot, yhot);
-    if (cursor->x11.handle == None)
+    if (!cursor->x11.handle)
         return GL_FALSE;
+
+    return GL_TRUE;
+}
+
+int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
+{
+    const unsigned int native = translateCursorShape(shape);
+    if (!native)
+    {
+        _glfwInputError(GLFW_INVALID_ENUM, "X11: Invalid standard cursor");
+        return GL_FALSE;
+    }
+
+    cursor->x11.handle = XCreateFontCursor(_glfw.x11.display, native);
+    if (!cursor->x11.handle)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "X11: Failed to create standard cursor");
+        return GL_FALSE;
+    }
 
     return GL_TRUE;
 }

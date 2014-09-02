@@ -625,6 +625,11 @@ GLFWglproc _glfwPlatformGetProcAddress(const char* procname);
  */
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot);
 
+/*! @copydoc glfwCreateStandardCursor
+ *  @ingroup platform
+ */
+int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape);
+
 /*! @copydoc glfwDestroyCursor
  *  @ingroup platform
  */

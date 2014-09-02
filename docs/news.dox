@@ -9,10 +9,9 @@
 
 @subsection news_31_cursor Custom system cursor support
 
-GLFW now supports creating and setting custom system cursors.  They can be
-created with @ref glfwCreateCursor, set with @ref glfwSetCursor and destroyed
-with @ref glfwDestroyCursor.  Custom cursors are only visible in normal cursor
-mode.
+GLFW now supports creating and setting both custom and standard system cursors.
+They can be created with @ref glfwCreateCursor or @ref glfwCreateStandardCursor,
+set with @ref glfwSetCursor and destroyed with @ref glfwDestroyCursor.
 
 
 @subsection news_31_drop File drop event support

@@ -32,6 +32,29 @@
 #include <crt_externs.h>
 
 
+// Returns the specified standard cursor
+//
+static NSCursor* getStandardCursor(int shape)
+{
+    switch (shape)
+    {
+        case GLFW_ARROW_CURSOR:
+            return [NSCursor arrowCursor];
+        case GLFW_IBEAM_CURSOR:
+            return [NSCursor IBeamCursor];
+        case GLFW_CROSSHAIR_CURSOR:
+            return [NSCursor crosshairCursor];
+        case GLFW_HAND_CURSOR:
+            return [NSCursor pointingHandCursor];
+        case GLFW_HRESIZE_CURSOR:
+            return [NSCursor resizeLeftRightCursor];
+        case GLFW_VRESIZE_CURSOR:
+            return [NSCursor resizeUpDownCursor];
+    }
+
+    return nil;
+}
+
 // Center the cursor in the view of the window
 //
 static void centerCursor(_GLFWwindow *window)
@@ -1158,6 +1181,19 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     if (cursor->ns.object == nil)
         return GL_FALSE;
 
+    return GL_TRUE;
+}
+
+int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
+{
+    cursor->ns.object = getStandardCursor(shape);
+    if (!cursor->ns.object)
+    {
+        _glfwInputError(GLFW_INVALID_ENUM, "Cocoa: Invalid standard cursor");
+        return GL_FALSE;
+    }
+
+    [cursor->ns.object retain];
     return GL_TRUE;
 }
 

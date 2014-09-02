@@ -343,6 +343,20 @@ When a cursor is destroyed, it is removed from any window where it is set.  This
 does not affect the cursor modes of those windows.
 
 
+@subsubsection input_cursor_standard Standard cursor shapes
+
+Cursor objects with platform-specific variants of the
+[standard shapes](@ref shapes) can be created with @ref
+glfwCreateStandardCursor.
+
+@code
+GLFWcursor* cursor = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
+@endcode
+
+These cursor objects behave in the exact same way as those created with @ref
+glfwCreateCursor except that the platform provides the cursor image data.
+
+
 @subsection input_cursor_enter Cursor enter/leave events
 
 If you wish to be notified when the cursor enters or leaves the client area of

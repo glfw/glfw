@@ -422,6 +422,13 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     return GL_TRUE;
 }
 
+int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
+{
+    // TODO
+    fprintf(stderr, "_glfwPlatformCreateStandardCursor not implemented yet\n");
+    return GL_FALSE;
+}
+
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 {
     wl_buffer_destroy(cursor->wl.buffer);

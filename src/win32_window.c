@@ -112,6 +112,29 @@ static void restoreCursor(_GLFWwindow* window)
     }
 }
 
+// Translates a GLFW standard cursor to a resource ID
+//
+static LPWSTR translateCursorShape(int shape)
+{
+    switch (shape)
+    {
+        case GLFW_ARROW_CURSOR:
+            return IDC_ARROW;
+        case GLFW_IBEAM_CURSOR:
+            return IDC_IBEAM;
+        case GLFW_CROSSHAIR_CURSOR:
+            return IDC_CROSS;
+        case GLFW_HAND_CURSOR:
+            return IDC_HAND;
+        case GLFW_HRESIZE_CURSOR:
+            return IDC_SIZEWE;
+        case GLFW_VRESIZE_CURSOR:
+            return IDC_SIZENS;
+    }
+
+    return NULL;
+}
+
 // Retrieves and translates modifier keys
 //
 static int getKeyMods(void)
@@ -1172,6 +1195,26 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
     if (!cursor->win32.handle)
         return GL_FALSE;
+
+    return GL_TRUE;
+}
+
+int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
+{
+    LPCWSTR native = translateCursorShape(shape);
+    if (!native)
+    {
+        _glfwInputError(GLFW_INVALID_ENUM, "Win32: Invalid standard cursor");
+        return GL_FALSE;
+    }
+
+    cursor->win32.handle = CopyCursor(LoadCursorW(NULL, native));
+    if (!cursor->win32.handle)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to retrieve shared cursor");
+        return GL_FALSE;
+    }
 
     return GL_TRUE;
 }

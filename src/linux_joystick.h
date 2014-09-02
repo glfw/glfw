@@ -31,13 +31,8 @@
     _GLFWjoystickLinux linux_js[GLFW_JOYSTICK_LAST + 1]
 
 
-//========================================================================
-// GLFW platform specific types
-//========================================================================
-
-//------------------------------------------------------------------------
-// Platform-specific joystick structure
-//------------------------------------------------------------------------
+// Linux-specific per-joystick data
+//
 typedef struct _GLFWjoystickLinux
 {
     int             present;
@@ -49,10 +44,6 @@ typedef struct _GLFWjoystickLinux
     char*           name;
 } _GLFWjoystickLinux;
 
-
-//========================================================================
-// Prototypes for platform specific internal functions
-//========================================================================
 
 void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);

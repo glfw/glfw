@@ -618,7 +618,7 @@ static int errorHandler(Display *display, XErrorEvent* event)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-// Install the X error handler
+// Sets the X error handler callback
 //
 void _glfwGrabXErrorHandler(void)
 {
@@ -626,7 +626,7 @@ void _glfwGrabXErrorHandler(void)
     XSetErrorHandler(errorHandler);
 }
 
-// Remove the X error handler
+// Clears the X error handler callback
 //
 void _glfwReleaseXErrorHandler(void)
 {
@@ -635,7 +635,7 @@ void _glfwReleaseXErrorHandler(void)
     XSetErrorHandler(NULL);
 }
 
-// Report X error
+// Reports the specified error, appending information about the last X error
 //
 void _glfwInputXError(int error, const char* message)
 {
@@ -646,7 +646,7 @@ void _glfwInputXError(int error, const char* message)
     _glfwInputError(error, "%s: %s", message, buffer);
 }
 
-// Create a cursor object
+// Creates a native cursor object from the specified image and hotspot
 //
 Cursor _glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
 {

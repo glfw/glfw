@@ -31,10 +31,8 @@
 #define _GLFW_PLATFORM_LIBRARY_TLS_STATE _GLFWtlsWin32 win32_tls
 
 
-//========================================================================
-// GLFW platform specific types
-//========================================================================
-
+// Win32-specific global TLS data
+//
 typedef struct _GLFWtlsWin32
 {
     GLboolean       allocated;
@@ -42,10 +40,6 @@ typedef struct _GLFWtlsWin32
 
 } _GLFWtlsWin32;
 
-
-//========================================================================
-// Prototypes for platform specific internal functions
-//========================================================================
 
 int _glfwInitTLS(void);
 void _glfwTerminateTLS(void);

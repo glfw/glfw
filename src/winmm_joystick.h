@@ -31,13 +31,8 @@
     _GLFWjoystickWinMM winmm_js[GLFW_JOYSTICK_LAST + 1]
 
 
-//========================================================================
-// GLFW platform specific types
-//========================================================================
-
-//------------------------------------------------------------------------
-// Platform-specific joystick structure
-//------------------------------------------------------------------------
+// WinMM-specific per-joystick data
+//
 typedef struct _GLFWjoystickWinMM
 {
     float           axes[6];
@@ -45,10 +40,6 @@ typedef struct _GLFWjoystickWinMM
     char*           name;
 } _GLFWjoystickWinMM;
 
-
-//========================================================================
-// Prototypes for platform specific internal functions
-//========================================================================
 
 void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);

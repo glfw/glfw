@@ -38,20 +38,14 @@
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryWGL wgl
 
 
-//========================================================================
-// GLFW platform specific types
-//========================================================================
-
-//------------------------------------------------------------------------
-// Platform-specific OpenGL context structure
-//------------------------------------------------------------------------
+// WGL-specific per-context data
+//
 typedef struct _GLFWcontextWGL
 {
-    // Platform specific window resources
     HDC       dc;              // Private GDI device context
     HGLRC     context;         // Permanent rendering context
 
-    // Platform specific extensions (context specific)
+    // WGL extensions (context specific)
     PFNWGLSWAPINTERVALEXTPROC           SwapIntervalEXT;
     PFNWGLGETPIXELFORMATATTRIBIVARBPROC GetPixelFormatAttribivARB;
     PFNWGLGETEXTENSIONSSTRINGEXTPROC    GetExtensionsStringEXT;
@@ -66,25 +60,21 @@ typedef struct _GLFWcontextWGL
     GLboolean                           EXT_create_context_es2_profile;
     GLboolean                           ARB_create_context_robustness;
     GLboolean                           ARB_context_flush_control;
+
 } _GLFWcontextWGL;
 
 
-//------------------------------------------------------------------------
-// Platform-specific library global data for WGL
-//------------------------------------------------------------------------
+// WGL-specific global data
+//
 typedef struct _GLFWlibraryWGL
 {
-    // opengl32.dll
+    // opengl32.dll (for glfwGetProcAddress)
     struct {
         HINSTANCE   instance;
     } opengl32;
 
 } _GLFWlibraryWGL;
 
-
-//========================================================================
-// Prototypes for platform specific internal functions
-//========================================================================
 
 int _glfwInitContextAPI(void);
 void _glfwTerminateContextAPI(void);

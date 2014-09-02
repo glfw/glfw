@@ -45,13 +45,8 @@
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryEGL egl
 
 
-//========================================================================
-// GLFW platform specific types
-//========================================================================
-
-//------------------------------------------------------------------------
-// Platform-specific OpenGL context structure
-//------------------------------------------------------------------------
+// EGL-specific per-context data
+//
 typedef struct _GLFWcontextEGL
 {
    EGLConfig      config;
@@ -61,12 +56,12 @@ typedef struct _GLFWcontextEGL
 #if defined(_GLFW_X11)
    XVisualInfo*   visual;
 #endif
+
 } _GLFWcontextEGL;
 
 
-//------------------------------------------------------------------------
-// Platform-specific library global data for EGL
-//------------------------------------------------------------------------
+// EGL-specific global data
+//
 typedef struct _GLFWlibraryEGL
 {
     EGLDisplay      display;
@@ -76,10 +71,6 @@ typedef struct _GLFWlibraryEGL
 
 } _GLFWlibraryEGL;
 
-
-//========================================================================
-// Prototypes for platform specific internal functions
-//========================================================================
 
 int _glfwInitContextAPI(void);
 void _glfwTerminateContextAPI(void);

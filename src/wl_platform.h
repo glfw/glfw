@@ -50,8 +50,13 @@
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorWayland  wl
 
 
+// Wayland-specific video mode data
+//
 typedef struct _GLFWvidmodeWayland _GLFWvidmodeWayland;
 
+
+// Wayland-specific per-window data
+//
 typedef struct _GLFWwindowWayland
 {
     int                         width, height;
@@ -61,8 +66,12 @@ typedef struct _GLFWwindowWayland
     struct wl_shell_surface*    shell_surface;
     EGLSurface                  egl_surface;
     struct wl_callback*         callback;
+
 } _GLFWwindowWayland;
 
+
+// Wayland-specific global data
+//
 typedef struct _GLFWlibraryWayland
 {
     struct wl_display*          display;
@@ -90,8 +99,12 @@ typedef struct _GLFWlibraryWayland
 
     _GLFWwindow*                pointerFocus;
     _GLFWwindow*                keyboardFocus;
+
 } _GLFWlibraryWayland;
 
+
+// Wayland-specific per-monitor data
+//
 typedef struct _GLFWmonitorWayland
 {
     struct wl_output*           output;
@@ -103,17 +116,18 @@ typedef struct _GLFWmonitorWayland
 
     int                         x;
     int                         y;
+
 } _GLFWmonitorWayland;
 
+
+// Wayland-specific per-cursor data
+//
 typedef struct _GLFWcursorWayland
 {
     int                         dummy;
+
 } _GLFWcursorWayland;
 
-
-//========================================================================
-// Prototypes for platform specific internal functions
-//========================================================================
 
 void _glfwAddOutput(uint32_t name, uint32_t version);
 

@@ -33,20 +33,14 @@
 #define _GLFW_PLATFORM_LIBRARY_TLS_STATE _GLFWtlsPOSIX posix_tls
 
 
-//========================================================================
-// GLFW platform specific types
-//========================================================================
-
+// POSIX-specific global TLS data
+//
 typedef struct _GLFWtlsPOSIX
 {
     pthread_key_t   context;
 
 } _GLFWtlsPOSIX;
 
-
-//========================================================================
-// Prototypes for platform specific internal functions
-//========================================================================
 
 int _glfwInitTLS(void);
 void _glfwTerminateTLS(void);

@@ -32,34 +32,25 @@
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryNSGL nsgl
 
 
-//========================================================================
-// GLFW platform specific types
-//========================================================================
-
-//------------------------------------------------------------------------
-// Platform-specific OpenGL context structure
-//------------------------------------------------------------------------
+// NSGL-specific per-context data
+//
 typedef struct _GLFWcontextNSGL
 {
     id           pixelFormat;
     id	         context;
+
 } _GLFWcontextNSGL;
 
 
-//------------------------------------------------------------------------
-// Platform-specific library global data for NSGL
-//------------------------------------------------------------------------
+// NSGL-specific global data
+//
 typedef struct _GLFWlibraryNSGL
 {
-    // dlopen handle for dynamically loading OpenGL extension entry points
+    // dlopen handle for OpenGL.framework (for glfwGetProcAddress)
     void*           framework;
 
 } _GLFWlibraryNSGL;
 
-
-//========================================================================
-// Prototypes for platform specific internal functions
-//========================================================================
 
 int _glfwInitContextAPI(void);
 void _glfwTerminateContextAPI(void);

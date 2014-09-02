@@ -32,6 +32,9 @@
 
 #include <stdint.h>
 
+
+// POSIX-specific global timer data
+//
 typedef struct _GLFWtimePOSIX
 {
     GLboolean   monotonic;
@@ -39,6 +42,7 @@ typedef struct _GLFWtimePOSIX
     uint64_t    base;
 
 } _GLFWtimePOSIX;
+
 
 void _glfwInitTimer(void);
 

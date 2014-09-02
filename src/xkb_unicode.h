@@ -27,7 +27,7 @@
 #ifndef _xkb_unicode_h_
 #define _xkb_unicode_h_
 
-// Unicode support
+
 long _glfwKeySym2Unicode(unsigned int keysym);
 
 #endif // _xkb_unicode_h_

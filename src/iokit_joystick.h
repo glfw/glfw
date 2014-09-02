@@ -36,13 +36,8 @@
     _GLFWjoystickIOKit iokit_js[GLFW_JOYSTICK_LAST + 1]
 
 
-//========================================================================
-// GLFW platform specific types
-//========================================================================
-
-//------------------------------------------------------------------------
-// Platform-specific joystick structure
-//------------------------------------------------------------------------
+// IOKit-specific per-joystick data
+//
 typedef struct _GLFWjoystickIOKit
 {
     int             present;
@@ -56,12 +51,9 @@ typedef struct _GLFWjoystickIOKit
 
     float*          axes;
     unsigned char*  buttons;
+
 } _GLFWjoystickIOKit;
 
-
-//========================================================================
-// Prototypes for platform specific internal functions
-//========================================================================
 
 void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);

@@ -66,27 +66,22 @@ typedef int (*PFNGLXSWAPINTERVALMESAPROC)(int);
 #endif
 
 
-//========================================================================
-// GLFW platform specific types
-//========================================================================
-
-//------------------------------------------------------------------------
-// Platform-specific OpenGL context structure
-//------------------------------------------------------------------------
+// GLX-specific per-context data
+//
 typedef struct _GLFWcontextGLX
 {
-    GLXContext      context; // OpenGL rendering context
-    XVisualInfo*    visual;  // Visual for selected GLXFBConfig
+    // Rendering context
+    GLXContext      context;
+    // Visual of selected GLXFBConfig
+    XVisualInfo*    visual;
 
 } _GLFWcontextGLX;
 
 
-//------------------------------------------------------------------------
-// Platform-specific library global data for GLX
-//------------------------------------------------------------------------
+// GLX-specific global data
+//
 typedef struct _GLFWlibraryGLX
 {
-    // Server-side GLX version
     int             versionMajor, versionMinor;
     int             eventBase;
     int             errorBase;
@@ -108,14 +103,12 @@ typedef struct _GLFWlibraryGLX
     GLboolean       ARB_context_flush_control;
 
 #if defined(_GLFW_DLOPEN_LIBGL)
-    void*           libGL;  // dlopen handle for libGL.so
+    // dlopen handle for libGL.so (for glfwGetProcAddress)
+    void*           libGL;
 #endif
+
 } _GLFWlibraryGLX;
 
-
-//========================================================================
-// Prototypes for platform specific internal functions
-//========================================================================
 
 int _glfwInitContextAPI(void);
 void _glfwTerminateContextAPI(void);

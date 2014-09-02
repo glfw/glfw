@@ -135,7 +135,7 @@ typedef struct _GLFWcursor      _GLFWcursor;
 
 
 //========================================================================
-// Internal types
+// Platform-independent structures
 //========================================================================
 
 /*! @brief Window configuration.
@@ -298,7 +298,6 @@ struct _GLFWmonitor
 
 /*! @brief Cursor structure
  */
-
 struct _GLFWcursor
 {
     _GLFWcursor*    next;
@@ -627,6 +626,7 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor);
  *  @ingroup platform
  */
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor);
+
 
 //========================================================================
 // Event API functions

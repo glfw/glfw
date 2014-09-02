@@ -72,9 +72,7 @@
 #endif
 
 
-//========================================================================
-// Hack: Define things that some windows.h variants don't
-//========================================================================
+// HACK: Define macros that some older windows.h variants don't
 
 #ifndef WM_MOUSEHWHEEL
  #define WM_MOUSEHWHEEL 0x020E
@@ -104,10 +102,6 @@ typedef struct tagCHANGEFILTERSTRUCT
 #endif
 #endif /*Windows 7*/
 
-
-//========================================================================
-// DLLs that are loaded at glfwInit()
-//========================================================================
 
 // winmm.dll function pointer typedefs
 typedef MMRESULT (WINAPI * JOYGETDEVCAPS_T)(UINT,LPJOYCAPS,UINT);
@@ -156,32 +150,24 @@ typedef HRESULT (WINAPI * DWMISCOMPOSITIONENABLED_T)(BOOL*);
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorWin32  win32
 
 
-//========================================================================
-// GLFW platform specific types
-//========================================================================
-
-
-//------------------------------------------------------------------------
-// Platform-specific window structure
-//------------------------------------------------------------------------
+// Win32-specific per-window data
+//
 typedef struct _GLFWwindowWin32
 {
-    // Platform specific window resources
-    HWND                handle;    // Window handle
-    DWORD               dwStyle;   // Window styles used for window creation
-    DWORD               dwExStyle; // --"--
+    HWND                handle;
+    DWORD               dwStyle;
+    DWORD               dwExStyle;
 
-    // Various platform specific internal variables
     GLboolean           cursorCentered;
     GLboolean           cursorInside;
     GLboolean           cursorHidden;
     int                 oldCursorX, oldCursorY;
+
 } _GLFWwindowWin32;
 
 
-//------------------------------------------------------------------------
-// Platform-specific library global data for Win32
-//------------------------------------------------------------------------
+// Win32-specific global data
+//
 typedef struct _GLFWlibraryWin32
 {
     DWORD               foregroundLockTimeout;
@@ -209,13 +195,11 @@ typedef struct _GLFWlibraryWin32
         DWMISCOMPOSITIONENABLED_T DwmIsCompositionEnabled;
     } dwmapi;
 
-
 } _GLFWlibraryWin32;
 
 
-//------------------------------------------------------------------------
-// Platform-specific monitor structure
-//------------------------------------------------------------------------
+// Win32-specific per-monitor data
+//
 typedef struct _GLFWmonitorWin32
 {
     // This size matches the static size of DISPLAY_DEVICE.DeviceName
@@ -225,18 +209,17 @@ typedef struct _GLFWmonitorWin32
 } _GLFWmonitorWin32;
 
 
-//------------------------------------------------------------------------
-// Platform-specific cursor structure
-//------------------------------------------------------------------------
+// Win32-specific per-cursor data
+//
 typedef struct _GLFWcursorWin32
 {
     HCURSOR handle;
+
 } _GLFWcursorWin32;
 
 
-//------------------------------------------------------------------------
-// Platform-specific time structure
-//------------------------------------------------------------------------
+// Win32-specific global timer data
+//
 typedef struct _GLFWtimeWin32
 {
     GLboolean           hasPC;
@@ -246,27 +229,17 @@ typedef struct _GLFWtimeWin32
 } _GLFWtimeWin32;
 
 
-//========================================================================
-// Prototypes for platform specific internal functions
-//========================================================================
-
-// Window class
 GLboolean _glfwRegisterWindowClass(void);
 void _glfwUnregisterWindowClass(void);
 
-// Desktop compositing
 BOOL _glfwIsCompositionEnabled(void);
 
-// Wide strings
 WCHAR* _glfwCreateWideStringFromUTF8(const char* source);
 char* _glfwCreateUTF8FromWideString(const WCHAR* source);
 
-// Time
 void _glfwInitTimer(void);
 
-// Fullscreen support
 GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
-
 
 #endif // _win32_platform_h_

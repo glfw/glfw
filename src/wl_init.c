@@ -46,7 +46,10 @@ static void pointerHandleEnter(void* data,
 {
     _GLFWwindow* window = wl_surface_get_user_data(surface);
 
+    _glfw.wl.pointerSerial = serial;
     _glfw.wl.pointerFocus = window;
+
+    _glfwPlatformSetCursor(window, window->wl.currentCursor);
     _glfwInputCursorEnter(window, GL_TRUE);
 }
 
@@ -60,6 +63,7 @@ static void pointerHandleLeave(void* data,
     if (!window)
         return;
 
+    _glfw.wl.pointerSerial = serial;
     _glfw.wl.pointerFocus = NULL;
     _glfwInputCursorEnter(window, GL_FALSE);
 }
@@ -491,6 +495,11 @@ static void registryHandleGlobal(void* data,
         _glfw.wl.compositor =
             wl_registry_bind(registry, name, &wl_compositor_interface, 1);
     }
+    else if (strcmp(interface, "wl_shm") == 0)
+    {
+        _glfw.wl.shm =
+            wl_registry_bind(registry, name, &wl_shm_interface, 1);
+    }
     else if (strcmp(interface, "wl_shell") == 0)
     {
         _glfw.wl.shell =
@@ -564,6 +573,20 @@ int _glfwPlatformInit(void)
     _glfwInitTimer();
     _glfwInitJoysticks();
 
+    if (_glfw.wl.pointer && _glfw.wl.shm){
+        _glfw.wl.cursorTheme = wl_cursor_theme_load(NULL, 24, _glfw.wl.shm);
+        if (!_glfw.wl.cursorTheme) {
+            _glfwInputError(GLFW_PLATFORM_ERROR, "Wayland: Unable to load default cursor theme\n");
+            return GL_FALSE;
+        }
+        _glfw.wl.defaultCursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, "left_ptr");
+        if (!_glfw.wl.defaultCursor) {
+            _glfwInputError(GLFW_PLATFORM_ERROR, "Wayland: Unable to load default left pointer\n");
+            return GL_FALSE;
+        }
+        _glfw.wl.cursorSurface = wl_compositor_create_surface(_glfw.wl.compositor);
+    }
+
     return GL_TRUE;
 }
 
@@ -571,6 +594,10 @@ void _glfwPlatformTerminate(void)
 {
     _glfwTerminateContextAPI();
 
+    if (_glfw.wl.cursorTheme)
+        wl_cursor_theme_destroy(_glfw.wl.cursorTheme);
+    if (_glfw.wl.cursorSurface)
+        wl_surface_destroy(_glfw.wl.cursorSurface);
     if (_glfw.wl.registry)
         wl_registry_destroy(_glfw.wl.registry);
     if (_glfw.wl.display)

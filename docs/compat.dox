@@ -109,6 +109,11 @@ context profiles.  Where this extension is unavailable, setting the
 `GLFW_OPENGL_PROFILE` hint to anything but zero, or setting `GLFW_CLIENT_API` to
 anything but `GLFW_OPENGL_API` will cause @ref glfwCreateWindow to fail.
 
+GLFW uses the `GLX_ARB_context_flush_control` extension to provide control over
+whether a context is flushed when it is released (made non-current).  Where this
+extension is unavailable, the `GLFW_CONTEXT_RELEASE_BEHAVIOR` hint will have no
+effect and the context will always be flushed when released.
+
 @section compat_wgl WGL extensions
 
 The WGL API is used to create OpenGL contexts on Microsoft Windows and other
@@ -140,6 +145,11 @@ GLFW uses the `WGL_ARB_create_context_profile` extension to provide support for
 context profiles.  Where this extension is unavailable, setting the
 `GLFW_OPENGL_PROFILE` hint to anything but zero will cause @ref glfwCreateWindow
 to fail.
+
+GLFW uses the `WGL_ARB_context_flush_control` extension to provide control over
+whether a context is flushed when it is released (made non-current).  Where this
+extension is unavailable, the `GLFW_CONTEXT_RELEASE_BEHAVIOR` hint will have no
+effect and the context will always be flushed when released.
 
 @section compat_osx OpenGL 3.2 and later on OS X
 

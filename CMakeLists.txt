@@ -11,6 +11,7 @@ set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA
 set(LIB_SUFFIX "" CACHE STRING "Takes an empty string or 64. Directory where lib will be installed: lib or lib64")
 
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(GLFW_FORCE_NOFPIC "Don't build with -fPIC" OFF)
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" ON)
@@ -20,6 +21,10 @@ option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 if (WIN32)
     option(GLFW_USE_DWM_SWAP_INTERVAL "Set swap interval even when DWM compositing is enabled" OFF)
     option(GLFW_USE_OPTIMUS_HPG "Force use of high-performance GPU on Optimus systems" OFF)
+endif()
+
+if (UNIX AND NOT GLFW_FORCE_NOFPIC)
+    set(CMAKE_C_FLAGS "-fPIC ${CMAKE_C_FLAGS}")
 endif()
 
 if (APPLE)

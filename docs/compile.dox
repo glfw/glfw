@@ -147,6 +147,13 @@ library is used, or if set to `glesv2` the OpenGL ES 2.0 library is used.  The
 selected library and its header files must be present on the system for this to
 work.
 
+`GLFW_FORCE_INSECURE` will disable ASLR and, on Windows, DEP. On non-Windows
+systems, this just means not compiling with `-fPIC`. On 32-bit systems,
+position independant code has a performance penalty, and might be reasonably
+disabled. On 64-bit systems, there is no penalty. On Windows, disabling
+ASLR/DEP for any DLL linked in an executable to be unable to use ASLR/DEP,
+which can cause security issues. Use this lightly.
+
 `GLFW_BUILD_EXAMPLES` determines whether the GLFW examples are built
 along with the library.
 

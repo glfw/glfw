@@ -26,6 +26,8 @@
 
 #include "internal.h"
 
+#include <string.h>
+
 // Needed for _NSGetProgname
 #include <crt_externs.h>
 
@@ -1293,6 +1295,40 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
         else
             [[NSCursor arrowCursor] set];
     }
+}
+
+void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
+{
+    NSArray* types = [NSArray arrayWithObjects:NSStringPboardType, nil];
+
+    NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
+    [pasteboard declareTypes:types owner:nil];
+    [pasteboard setString:[NSString stringWithUTF8String:string]
+                  forType:NSStringPboardType];
+}
+
+const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
+{
+    NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
+
+    if (![[pasteboard types] containsObject:NSStringPboardType])
+    {
+        _glfwInputError(GLFW_FORMAT_UNAVAILABLE, NULL);
+        return NULL;
+    }
+
+    NSString* object = [pasteboard stringForType:NSStringPboardType];
+    if (!object)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to retrieve object from pasteboard");
+        return NULL;
+    }
+
+    free(_glfw.ns.clipboardString);
+    _glfw.ns.clipboardString = strdup([object UTF8String]);
+
+    return _glfw.ns.clipboardString;
 }
 
 

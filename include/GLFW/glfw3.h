@@ -38,8 +38,6 @@ extern "C" {
  * Doxygen documentation
  *************************************************************************/
 
-/*! @defgroup clipboard Clipboard support
- */
 /*! @defgroup context Context handling
  */
 /*! @defgroup error Error handling
@@ -2418,7 +2416,7 @@ GLFWAPI const char* glfwGetJoystickName(int joy);
  *
  *  @sa glfwGetClipboardString
  *
- *  @ingroup clipboard
+ *  @ingroup input
  */
 GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
 
@@ -2442,7 +2440,7 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  *
  *  @sa glfwSetClipboardString
  *
- *  @ingroup clipboard
+ *  @ingroup input
  */
 GLFWAPI const char* glfwGetClipboardString(GLFWwindow* window);
 

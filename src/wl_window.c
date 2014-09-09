@@ -312,3 +312,16 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
     fprintf(stderr, "_glfwPlatformSetCursor not implemented yet\n");
 }
 
+void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
+{
+    // TODO
+    fprintf(stderr, "_glfwPlatformSetClipboardString not implemented yet\n");
+}
+
+const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
+{
+    // TODO
+    fprintf(stderr, "_glfwPlatformGetClipboardString not implemented yet\n");
+    return NULL;
+}
+

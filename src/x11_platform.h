@@ -228,13 +228,8 @@ typedef struct _GLFWcursorX11
 GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
-void _glfwHandleSelectionClear(XEvent* event);
-void _glfwHandleSelectionRequest(XEvent* event);
-void _glfwPushSelectionToManager(_GLFWwindow* window);
-
 Cursor _glfwCreateCursor(const GLFWimage* image, int xhot, int yhot);
 
-_GLFWwindow* _glfwFindWindowByHandle(Window handle);
 unsigned long _glfwGetWindowProperty(Window window,
                                      Atom property,
                                      Atom type,

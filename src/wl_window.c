@@ -34,7 +34,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <poll.h>
-#include <GL/gl.h>
+
 #include <wayland-egl.h>
 #include <wayland-cursor.h>
 

@@ -84,9 +84,6 @@ void _glfwInputWindowSize(_GLFWwindow* window, int width, int height)
 
 void _glfwInputWindowIconify(_GLFWwindow* window, int iconified)
 {
-    if (window->iconified == iconified)
-        return;
-
     window->iconified = iconified;
 
     if (window->callbacks.iconify)
@@ -499,9 +496,6 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* handle, int width, int height)
 
     _GLFW_REQUIRE_INIT();
 
-    if (window->iconified)
-        return;
-
     if (window->monitor)
     {
         window->videoMode.width  = width;
@@ -546,24 +540,14 @@ GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* handle,
 GLFWAPI void glfwIconifyWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-
     _GLFW_REQUIRE_INIT();
-
-    if (window->iconified)
-        return;
-
     _glfwPlatformIconifyWindow(window);
 }
 
 GLFWAPI void glfwRestoreWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-
     _GLFW_REQUIRE_INIT();
-
-    if (!window->iconified)
-        return;
-
     _glfwPlatformRestoreWindow(window);
 }
 

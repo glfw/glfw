@@ -66,7 +66,7 @@ typedef struct _GLFWwindowWayland
     struct wl_shell_surface*    shell_surface;
     EGLSurface                  egl_surface;
     struct wl_callback*         callback;
-
+    _GLFWcursor*                currentCursor;
 } _GLFWwindowWayland;
 
 
@@ -78,9 +78,15 @@ typedef struct _GLFWlibraryWayland
     struct wl_registry*         registry;
     struct wl_compositor*       compositor;
     struct wl_shell*            shell;
+    struct wl_shm*              shm;
     struct wl_seat*             seat;
     struct wl_pointer*          pointer;
     struct wl_keyboard*         keyboard;
+
+    struct wl_cursor_theme*     cursorTheme;
+    struct wl_cursor*           defaultCursor;
+    struct wl_surface*          cursorSurface;
+    uint32_t                    pointerSerial;
 
     _GLFWmonitor**              monitors;
     int                         monitorsCount;
@@ -124,8 +130,9 @@ typedef struct _GLFWmonitorWayland
 //
 typedef struct _GLFWcursorWayland
 {
-    int                         dummy;
-
+    struct wl_buffer*           buffer;
+    int                         width, height;
+    int                         xhot, yhot;
 } _GLFWcursorWayland;
 
 

@@ -96,6 +96,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [Win32] Bugfix: Context re-creation was not triggered by sRGB hint
  - [X11] Added run-time support for systems lacking the XKB extension
  - [X11] Made GLX 1.3 the minimum supported version
+ - [X11] Replaced `XRRGetScreenResources` with `XRRGetScreenResourcesCurrent`
+         for monitor property retrieval
  - [X11] Bugfix: The case of finding no usable CRTCs was not detected
  - [X11] Bugfix: Detection of broken Nvidia RandR gamma support did not verify
                  that at least one CRTC was present
@@ -160,6 +162,7 @@ skills.
  - Gerald Franz
  - GeO4d
  - Marcus Geelnard
+ - Eloi Marín Gratacós
  - Stefan Gustavson
  - Sylvain Hellegouarch
  - Matthew Henry

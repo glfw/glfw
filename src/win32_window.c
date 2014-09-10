@@ -390,6 +390,32 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
     return GLFW_KEY_UNKNOWN;
 }
 
+// Enter fullscreen mode
+//
+static GLboolean enterFullscreenMode(_GLFWwindow* window)
+{
+    GLFWvidmode mode;
+    GLboolean status;
+    int xpos, ypos;
+
+    status = _glfwSetVideoMode(window->monitor, &window->videoMode);
+
+    _glfwPlatformGetVideoMode(window->monitor, &mode);
+    _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
+
+    SetWindowPos(window->win32.handle, HWND_TOPMOST,
+                 xpos, ypos, mode.width, mode.height, SWP_NOCOPYBITS);
+
+    return status;
+}
+
+// Leave fullscreen mode
+//
+static void leaveFullscreenMode(_GLFWwindow* window)
+{
+    _glfwRestoreVideoMode(window->monitor);
+}
+
 // Window callback function (handles window events)
 //
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
@@ -448,7 +474,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                         _glfwPlatformIconifyWindow(window);
                     }
 
-                    _glfwRestoreVideoMode(window->monitor);
+                    leaveFullscreenMode(window);
                 }
             }
             else if (focused && _glfw.focusedWindow != window)
@@ -459,7 +485,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     _glfwPlatformApplyCursorMode(window);
 
                 if (window->monitor && window->autoIconify)
-                    _glfwSetVideoMode(window->monitor, &window->videoMode);
+                    enterFullscreenMode(window);
             }
 
             _glfwInputWindowFocus(window, focused);
@@ -858,6 +884,9 @@ static int createWindow(_GLFWwindow* window,
     {
         window->win32.dwStyle |= WS_POPUP;
 
+        // NOTE: This window placement is temporary and approximate, as the
+        //       correct position and size cannot be known until the monitor
+        //       video mode has been set
         _glfwPlatformGetMonitorPos(wndconfig->monitor, &xpos, &ypos);
         fullWidth  = wndconfig->width;
         fullHeight = wndconfig->height;
@@ -1050,13 +1079,9 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (window->monitor)
     {
-        if (!_glfwSetVideoMode(window->monitor, &window->videoMode))
-            return GL_FALSE;
-
-        // Place the window above all topmost windows
         _glfwPlatformShowWindow(window);
-        SetWindowPos(window->win32.handle, HWND_TOPMOST, 0,0,0,0,
-                     SWP_NOMOVE | SWP_NOSIZE);
+        if (!enterFullscreenMode(window))
+            return GL_FALSE;
     }
 
     return GL_TRUE;
@@ -1064,10 +1089,10 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
-    destroyWindow(window);
-
     if (window->monitor)
-        _glfwRestoreVideoMode(window->monitor);
+        leaveFullscreenMode(window);
+
+    destroyWindow(window);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
@@ -1118,15 +1143,7 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     if (window->monitor)
-    {
-        GLFWvidmode mode;
-        _glfwSetVideoMode(window->monitor, &window->videoMode);
-        _glfwPlatformGetVideoMode(window->monitor, &mode);
-
-        SetWindowPos(window->win32.handle, HWND_TOP,
-                     0, 0, mode.width, mode.height,
-                     SWP_NOMOVE);
-    }
+        enterFullscreenMode(window);
     else
     {
         int fullWidth, fullHeight;

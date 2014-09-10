@@ -339,7 +339,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         XRRCrtcInfo* ci;
         XRROutputInfo* oi;
 
-        sr = XRRGetScreenResources(_glfw.x11.display, _glfw.x11.root);
+        sr = XRRGetScreenResourcesCurrent(_glfw.x11.display, _glfw.x11.root);
         ci = XRRGetCrtcInfo(_glfw.x11.display, sr, monitor->x11.crtc);
         oi = XRRGetOutputInfo(_glfw.x11.display, sr, monitor->x11.output);
 
@@ -394,7 +394,7 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
         XRRScreenResources* sr;
         XRRCrtcInfo* ci;
 
-        sr = XRRGetScreenResources(_glfw.x11.display, _glfw.x11.root);
+        sr = XRRGetScreenResourcesCurrent(_glfw.x11.display, _glfw.x11.root);
         ci = XRRGetCrtcInfo(_glfw.x11.display, sr, monitor->x11.crtc);
 
         *mode = vidmodeFromModeInfo(getModeInfo(sr, ci->mode), ci);

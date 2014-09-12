@@ -112,7 +112,7 @@ extern "C" {
  *  @return The the display device name of the specified monitor.
  *  @ingroup native
  */
-GLFWAPI const WCHAR* glfwGetWin32Monitor(GLFWmonitor* monitor);
+GLFWAPI const char* glfwGetWin32Monitor(GLFWmonitor* monitor);
 
 /*! @brief Returns the `HWND` of the specified window.
  *  @return The `HWND` of the specified window.

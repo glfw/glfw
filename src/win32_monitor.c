@@ -160,6 +160,12 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             wcscpy(monitors[found]->win32.adapterName, adapter.DeviceName);
             wcscpy(monitors[found]->win32.displayName, display.DeviceName);
 
+            WideCharToMultiByte(CP_UTF8, 0,
+                                display.DeviceName, -1,
+                                monitors[found]->win32.nativeName,
+                                sizeof(monitors[found]->win32.nativeName),
+                                NULL, NULL);
+
             if (adapter.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE &&
                 displayIndex == 0)
             {
@@ -320,10 +326,10 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 //////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWAPI const WCHAR* glfwGetWin32Monitor(GLFWmonitor* handle)
+GLFWAPI const char* glfwGetWin32Monitor(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    return monitor->win32.displayName;
+    return monitor->win32.nativeName;
 }
 

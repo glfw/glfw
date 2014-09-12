@@ -108,8 +108,8 @@ extern "C" {
  *************************************************************************/
 
 #if defined(GLFW_EXPOSE_NATIVE_WIN32)
-/*! @brief Returns the device name of the specified monitor.
- *  @return The the device name of the specified monitor.
+/*! @brief Returns the display device name of the specified monitor.
+ *  @return The the display device name of the specified monitor.
  *  @ingroup native
  */
 GLFWAPI const WCHAR* glfwGetWin32Monitor(GLFWmonitor* monitor);

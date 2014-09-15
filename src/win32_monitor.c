@@ -103,7 +103,7 @@ void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
-    int size = 0, found = 0;
+    int size = 0, found = 0, primaryIndex = 0, mirroring;
     _GLFWmonitor** monitors = NULL;
     DWORD adapterIndex, displayIndex;
 
@@ -140,6 +140,9 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                 monitors = realloc(monitors, sizeof(_GLFWmonitor*) * size);
             }
 
+            if (displayIndex == 0)
+                mirroring = -1;
+
             name = _glfwCreateUTF8FromWideString(display.DeviceString);
             if (!name)
             {
@@ -150,12 +153,16 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
             dc = CreateDCW(L"DISPLAY", adapter.DeviceName, NULL, NULL);
 
-            monitors[found] = _glfwAllocMonitor(name,
-                                                GetDeviceCaps(dc, HORZSIZE),
-                                                GetDeviceCaps(dc, VERTSIZE));
+            monitors[found] = _glfwCreateMonitor(name,
+                                                 GetDeviceCaps(dc, HORZSIZE),
+                                                 GetDeviceCaps(dc, VERTSIZE),
+                                                 mirroring);
 
             DeleteDC(dc);
             free(name);
+
+            if (displayIndex == 0)
+                mirroring = found;
 
             wcscpy(monitors[found]->win32.adapterName, adapter.DeviceName);
             wcscpy(monitors[found]->win32.displayName, display.DeviceName);

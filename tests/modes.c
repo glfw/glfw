@@ -83,15 +83,23 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 static void list_modes(GLFWmonitor* monitor)
 {
     int count, x, y, widthMM, heightMM, dpi, i;
+    GLFWmonitor* mirrored;
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
     const GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
 
     glfwGetMonitorPos(monitor, &x, &y);
     glfwGetMonitorPhysicalSize(monitor, &widthMM, &heightMM);
 
-    printf("Name: %s (%s)\n",
-           glfwGetMonitorName(monitor),
-           glfwGetPrimaryMonitor() == monitor ? "primary" : "secondary");
+    printf("Name: %s", glfwGetMonitorName(monitor));
+
+    mirrored = glfwGetMirroredMonitor(monitor);
+    if (mirrored)
+        printf(" (mirroring %s)\n", glfwGetMonitorName(mirrored));
+    else if (glfwGetPrimaryMonitor() == monitor)
+        printf(" (primary)\n");
+    else
+        printf(" (secondary)\n");
+
     printf("Current mode: %s\n", format_mode(mode));
     printf("Virtual position: %i %i\n", x, y);
 

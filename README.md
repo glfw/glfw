@@ -74,6 +74,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - Added `glfwSetCharModsCallback` for receiving character events with modifiers
  - Added `glfwGetWindowFrameSize` for retrieving the size of the frame around
    the client area of a window
+ - Added `glfwGetMirroredMonitor` for discovering monitor mirroring sets
  - Added `GLFW_AUTO_ICONIFY` for controlling whether full screen windows
    automatically iconify (and restore the previous video mode) on focus loss
  - Added `GLFW_DONT_CARE` for indicating that any value is acceptable

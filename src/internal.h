@@ -286,6 +286,7 @@ struct _GLFWmonitor
 
     // Physical dimensions in millimeters.
     int             widthMM, heightMM;
+    int             mirroring;
 
     GLFWvidmode*    modes;
     int             modeCount;
@@ -859,18 +860,19 @@ void _glfwFreeGammaArrays(GLFWgammaramp* ramp);
  *  @param[in] name The name of the monitor.
  *  @param[in] widthMM The width, in mm, of the monitor's display area.
  *  @param[in] heightMM The height, in mm, of the monitor's display area.
+ *  @param[in] mirroring The monitor this monitor is mirroring, or `NULL`.
  *  @return The newly created object.
  *  @ingroup utility
  */
-_GLFWmonitor* _glfwAllocMonitor(const char* name, int widthMM, int heightMM);
+_GLFWmonitor* _glfwCreateMonitor(const char* name, int widthMM, int heightMM, int mirroring);
 
 /*! @brief Frees a monitor object and any data associated with it.
  *  @ingroup utility
   */
-void _glfwFreeMonitor(_GLFWmonitor* monitor);
+void _glfwDestroyMonitor(_GLFWmonitor* monitor);
 
 /*! @ingroup utility
   */
-void _glfwFreeMonitors(_GLFWmonitor** monitors, int count);
+void _glfwDestroyMonitors(_GLFWmonitor** monitors, int count);
 
 #endif // _internal_h_

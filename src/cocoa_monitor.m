@@ -273,7 +273,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         const CGSize size = CGDisplayScreenSize(displays[i]);
         char* name = getDisplayName(displays[i]);
 
-        monitors[found] = _glfwAllocMonitor(name, size.width, size.height);
+        monitors[found] = _glfwCreateMonitor(name, size.width, size.height);
         monitors[found]->ns.displayID = displays[i];
 
         free(name);
@@ -295,7 +295,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             found++;
         else
         {
-            _glfwFreeMonitor(monitors[found]);
+            _glfwDestroyMonitor(monitors[found]);
             monitors[found] = NULL;
         }
     }

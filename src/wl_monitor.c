@@ -127,7 +127,7 @@ void _glfwAddOutput(uint32_t name, uint32_t version)
         return;
     }
 
-    monitor = _glfwAllocMonitor(name_str, 0, 0);
+    monitor = _glfwCreateMonitor(name_str, 0, 0);
 
     output = wl_registry_bind(_glfw.wl.registry,
                               name,
@@ -135,7 +135,7 @@ void _glfwAddOutput(uint32_t name, uint32_t version)
                               2);
     if (!output)
     {
-        _glfwFreeMonitor(monitor);
+        _glfwDestroyMonitor(monitor);
         return;
     }
 

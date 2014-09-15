@@ -99,6 +99,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
                    systems
  - [Win32] Bugfix: Gamma ramp functions acted on entire desktop instead of the
                    specified monitor
+ - [Win32] Bugfix: The wrong incorrect physical size was returned for
+                   non-primary monitors
  - [X11] Added run-time support for systems lacking the XKB extension
  - [X11] Made GLX 1.3 the minimum supported version
  - [X11] Replaced `XRRGetScreenResources` with `XRRGetScreenResourcesCurrent`

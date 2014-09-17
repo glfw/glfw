@@ -158,11 +158,11 @@ GLFWAPI id glfwGetNSGLContext(GLFWwindow* window);
  */
 GLFWAPI Display* glfwGetX11Display(void);
 
-/*! @brief Returns the `RRCrtc` of the specified monitor.
- *  @return The the `RRCrtc` of the specified monitor.
+/*! @brief Returns the `RROutput` of the specified monitor.
+ *  @return The the `RROutput` of the specified monitor.
  *  @ingroup native
  */
-GLFWAPI RRCrtc glfwGetX11Monitor(GLFWmonitor* monitor);
+GLFWAPI RROutput glfwGetX11Monitor(GLFWmonitor* monitor);
 
 /*! @brief Returns the `Window` of the specified window.
  *  @return The `Window` of the specified window.

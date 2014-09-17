@@ -421,7 +421,7 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 GLFWAPI CGDirectDisplayID glfwGetCocoaMonitor(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-    _GLFW_REQUIRE_INIT_OR_RETURN(0);
+    _GLFW_REQUIRE_INIT_OR_RETURN(kCGNullDirectDisplay);
     return monitor->ns.displayID;
 }
 

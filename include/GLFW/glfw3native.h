@@ -109,7 +109,7 @@ extern "C" {
 
 #if defined(GLFW_EXPOSE_NATIVE_WIN32)
 /*! @brief Returns the display device name of the specified monitor.
- *  @return The the display device name of the specified monitor.
+ *  @return The display device name of the specified monitor.
  *  @ingroup native
  */
 GLFWAPI const char* glfwGetWin32Monitor(GLFWmonitor* monitor);
@@ -131,7 +131,7 @@ GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* window);
 
 #if defined(GLFW_EXPOSE_NATIVE_COCOA)
 /*! @brief Returns the `CGDirectDisplayID` of the specified monitor.
- *  @return The the `CGDirectDisplayID` of the specified monitor.
+ *  @return The `CGDirectDisplayID` of the specified monitor.
  *  @ingroup native
  */
 GLFWAPI CGDirectDisplayID glfwGetCocoaMonitor(GLFWmonitor* monitor);
@@ -159,7 +159,7 @@ GLFWAPI id glfwGetNSGLContext(GLFWwindow* window);
 GLFWAPI Display* glfwGetX11Display(void);
 
 /*! @brief Returns the `RROutput` of the specified monitor.
- *  @return The the `RROutput` of the specified monitor.
+ *  @return The `RROutput` of the specified monitor.
  *  @ingroup native
  */
 GLFWAPI RROutput glfwGetX11Monitor(GLFWmonitor* monitor);

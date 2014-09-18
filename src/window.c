@@ -151,7 +151,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     fbconfig.accumBlueBits  = _glfw.hints.accumBlueBits;
     fbconfig.accumAlphaBits = _glfw.hints.accumAlphaBits;
     fbconfig.auxBuffers     = _glfw.hints.auxBuffers;
-    fbconfig.stereo         = _glfw.hints.stereo;
+    fbconfig.stereo         = _glfw.hints.stereo ? GL_TRUE : GL_FALSE;
     fbconfig.samples        = _glfw.hints.samples;
     fbconfig.sRGB           = _glfw.hints.sRGB;
     fbconfig.doublebuffer   = _glfw.hints.doublebuffer ? GL_TRUE : GL_FALSE;

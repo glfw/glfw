@@ -1,6 +1,6 @@
 /*!
 
-@page context Context handling guide
+@page context Context guide
 
 @tableofcontents
 
@@ -8,31 +8,52 @@ The primary purpose of GLFW is to provide a simple interface to window
 management and OpenGL and OpenGL ES context creation.  GLFW supports
 multiple windows, with each window having its own context.
 
+This guide introduces the functions related to managing OpenGL and OpenGL ES
+contexts.  There are also guides for the other areas of the GLFW API.
 
-@section context_object Context handles
+ - @ref intro
+ - @ref window
+ - @ref monitor
+ - @ref input
 
-The @ref GLFWwindow object encapsulates both a [window](@ref window) and
-a context.  It is created with @ref glfwCreateWindow and destroyed with @ref
+
+@section context_object Context objects
+
+@ref window_object encapsulate both the OS level window and a OpenGL or OpenGL
+ES context.  It is created with @ref glfwCreateWindow and destroyed with @ref
 glfwDestroyWindow or @ref glfwTerminate.  As the window and context are
 inseparably linked, the object pointer is used as both a context and window
-handle.
+handle.  See @ref window_creation for more information.
 
 
-@section context_hints Context creation hints
+@subsection context_hints Context creation hints
 
 There are a number of hints, specified using @ref glfwWindowHint, related to
 what kind of context is created.  See
-[context related hints](@ref window_hints_ctx) in the window handling guide.
+[context related hints](@ref window_hints_ctx) in the window guide.
 
 
-@section context_sharing Context object sharing
+@subsection context_sharing Context object sharing
 
-When creating a window and context with @ref glfwCreateWindow, you can specify
-another window whose context the new one should share its objects with.  Object
-sharing is implemented by the operating system and graphics driver and is
-described in the OpenGL and OpenGL ES documentation.  On platforms where it is
-possible to choose which types of objects are shared, GLFW requests that all are
-shared.
+When creating a window and its OpenGL or OpenGL ES context with @ref
+glfwCreateWindow, you can specify another window whose context the new one
+should share its objects (textures, vertex and element buffers, etc.) with.
+
+@code
+GLFWwindow* second_window = glfwCreateWindow(640, 480, "Second Window", NULL, first_window);
+@endcode
+
+Object sharing is implemented by the operating system and graphics driver.  On
+platforms where it is possible to choose which types of objects are shared, GLFW
+requests that all types are shared.
+
+See the relevant chapter of the [OpenGL](https://www.opengl.org/registry/) or
+[OpenGL ES](http://www.khronos.org/opengles/) reference documents for more
+information.  The name and number of this chapter unfortunately varies between
+versions and APIs, but has at times been named *Shared Objects and Multiple
+Contexts*.
+
+GLFW comes with a simple object sharing test program called `sharing`.
 
 
 @section context_current Current context
@@ -53,14 +74,14 @@ The current context is returned by @ref glfwGetCurrentContext.
 GLFWwindow* window = glfwGetCurrentContext();
 @endcode
 
-@note A context must only be current for a single thread at a time, and a thread
-must only have a single context current at a time.
+@note A context can only be current for a single thread at a time, and a thread
+can only have a single context current at a time.
 
 
-@section context_swap Swapping buffers
+@section context_swap Buffer swapping
 
 Buffer swapping is part of the window and framebuffer, not the context.  See
-@ref window_swap in the window handling guide.
+@ref window_swap in the window guide.
 
 
 @section context_glext OpenGL and OpenGL ES extensions
@@ -170,10 +191,8 @@ that extension and then, if it introduces new functions, retrieve the pointers
 to those functions.  GLFW provides @ref glfwExtensionSupported and @ref
 glfwGetProcAddress for manual loading of extensions and new API functions.
 
-@note It is strongly recommended that you use an existing extension loader
-library like [glad](https://github.com/Dav1dde/glad) instead of loading
-manually.  Extension loading is a solved problem and you will gain nothing from
-solving it again by hand.
+@note It is recommended that you use an existing extension loader library, as
+described above, instead of loading manually.
 
 
 @subsubsection context_glext_header The glext.h header

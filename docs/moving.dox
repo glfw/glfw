@@ -38,7 +38,9 @@ The threading functions have been removed, including the per-thread sleep
 function.  They were fairly primitive, under-used, poorly integrated and took
 time away from the focus of GLFW (i.e.  context, input and window).  There are
 better threading libraries available and native threading support is available
-in both C++11 and C11, both of which are gaining traction. 
+in both [C++11](http://en.cppreference.com/w/cpp/thread) and
+[C11](http://en.cppreference.com/w/c/thread), both of which are gaining
+traction. 
 
 If you wish to use the C++11 or C11 facilities but your compiler doesn't yet
 support them, see the
@@ -148,7 +150,7 @@ into [window hints](@ref window_hints), but as they have been given
 GLFW 3 does not automatically poll for events on @ref glfwSwapBuffers, which
 means you need to call @ref glfwPollEvents or @ref glfwWaitEvents yourself.
 Unlike buffer swap, which acts on a single window, **glfwPollEvents** and
-**glfwWaitEvents** process events for all windows at once.
+__glfwWaitEvents__ process events for all windows at once.
 
 @par Old basic main loop
 @code
@@ -412,10 +414,15 @@ these hotkeys to function even when running in full screen mode.
 
 @subsection moving_terminate Automatic termination
 
-GLFW 3 does not register @ref glfwTerminate with `atexit` at initialization.  To
-release all resources allocated by GLFW, you should call @ref glfwTerminate
-yourself.  Note that this destroys all windows not already destroyed with @ref
-glfwDestroyWindow, invalidating all window handles you may still have.
+GLFW 3 does not register @ref glfwTerminate with `atexit` at initialization,
+because `exit` calls registered functions from the calling thread and while it
+is permitted to call `exit` from any thread, @ref glfwTerminate may only be
+called from the main thread.
+
+To release all resources allocated by GLFW, you should call @ref glfwTerminate
+yourself, from the main thread, before the program terminates.  Note that this
+destroys all windows not already destroyed with @ref glfwDestroyWindow,
+invalidating any window handles you may still have.
 
 
 @subsection moving_glu GLU header inclusion

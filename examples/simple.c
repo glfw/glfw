@@ -57,6 +57,7 @@ int main(void)
     }
 
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
 
     glfwSetKeyCallback(window, key_callback);
 

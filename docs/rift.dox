@@ -1,0 +1,91 @@
+/*!
+
+@page rift Oculus Rift guide
+ 
+@tableofcontents
+
+GLFW has no explicit support for the Oculus Rift, but 
+
+This guide requires you to use the [native API](@ref native) and assumes
+a certain level of proficiency with system level APIs and the compiler
+toolchain.
+
+
+@section rift_init Initializing libOVR and GLFW
+
+libOVR needs to be initialized before GLFW.  This means calling
+`ovr_Initialize`, `ovrHmd_Create` and `ovrHmd_ConfigureTracking` before @ref
+glfwInit.  Similarly, libOVR must be shut down after GLFW.  This means calling
+`ovrHmd_Destroy` and `ovr_Shutdown` after @ref glfwTerminate.
+
+
+@section rift_extend Extend Desktop mode
+
+@subsection rift_extend_detect Detecting a Rift with GLFW
+
+If you have an actual Rift connected to your machine you can deduce which GLFW
+monitor it corresponds to.  Doing this requires you to use the
+[native API](@ref native).
+
+
+@subsubsection rift_extend_detect_win32 Detecting a Rift on Windows
+
+To identify which monitor corresponds to the Rift, compare Win32 display device
+names.  The display device name of a GLFW monitor is returned by @ref
+glfwGetWin32Monitor and the display device name of the detected Rift is stored
+in the `DisplayDeviceName` member of `ovrHmdDesc`.
+
+@code
+int i, count;
+GLFWmonitor* monitor = NULL;
+GLFWmonitor** monitors = glfwGetMonitors(&count);
+
+for (i = 0;  i < count;  i++)
+{
+    if (strcmp(glfwGetWin32Monitor(monitors[i]), hmd->DisplayDeviceName) == 0)
+    {
+        monitor = monitors[i];
+        break;
+    }
+}
+@endcode
+
+
+@subsubsection rift_extend_detect_osx Detecting a Rift on OS X
+
+To identify which monitor corresponds to the Rift, compare OS X display IDs.
+The display ID of a GLFW monitor is returned by @ref glfwGetCocoaMonitor and the
+display ID of the detected Rift is stored in the `DisplayId` member of
+`ovrHmdDesc`.
+
+@code
+int i, count;
+GLFWmonitor* monitor = NULL;
+GLFWmonitor** monitors = glfwGetMonitors(&count);
+
+for (i = 0;  i < count;  i++)
+{
+    if (glfwGetCocoaMonitor(monitors[i]) == hmd->DisplayId)
+    {
+        monitor = monitors[i];
+        break;
+    }
+}
+@endcode
+
+
+@subsubsection rift_extend_detect_x11 Detecting a Rift on X11
+
+At the time of writing, the 0.4 Rift SDK does not yet support X11.
+
+
+@subsection rift_extend_create Creating a window and context
+
+LOL create.
+
+
+@section rift_direct Direct HMD mode
+
+LOL direct.
+
+*/

@@ -666,6 +666,8 @@ INPUT                  = @GLFW_INTERNAL_DOCS@                         \
                          @GLFW_SOURCE_DIR@/docs/monitor.dox           \
                          @GLFW_SOURCE_DIR@/docs/window.dox            \
                          @GLFW_SOURCE_DIR@/docs/input.dox             \
+                         @GLFW_SOURCE_DIR@/docs/common.dox            \
+                         @GLFW_SOURCE_DIR@/docs/rift.dox              \
                          @GLFW_SOURCE_DIR@/docs/compat.dox
 
 # This tag can be used to specify the character encoding of the source files
@@ -936,7 +938,7 @@ HTML_EXTRA_STYLESHEET  = @GLFW_SOURCE_DIR@/docs/extra.css
 # files. In the HTML_STYLESHEET file, use the file name only. Also note that
 # the files will be copied as-is; there are no commands or markers available.
 
-HTML_EXTRA_FILES       =
+HTML_EXTRA_FILES       = @GLFW_SOURCE_DIR@/docs/spaces.svg
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output.
 # Doxygen will adjust the colors in the style sheet and background images

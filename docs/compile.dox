@@ -5,36 +5,45 @@
 @tableofcontents
 
 This is about compiling the GLFW library itself.  For information on how to
-build programs that use GLFW, see the @ref build guide.
+build applications that use GLFW, see the @ref build guide.
 
 
-@section compile_deps Dependencies
+@section compile_cmake Using CMake
 
-To compile GLFW and the accompanying example programs, you will need **CMake**,
-which will generate the project files or makefiles for your particular
-development environment.  If you are on a Unix-like system such as Linux or
-FreeBSD or have a package system like Fink, MacPorts, Cygwin or Homebrew, you
-can simply install its CMake package.  If not, you can get installers for
-Windows and OS X from the [CMake website](http://www.cmake.org/).
+GLFW uses [CMake](http://www.cmake.org/) to generate project files or makefiles
+for a particular development environment.  If you are on a Unix-like system such
+as Linux or FreeBSD or have a package system like Fink, MacPorts, Cygwin or
+Homebrew, you can simply install its CMake package.  If not, you can download
+installers for Windows and OS X from the [CMake website](http://www.cmake.org/).
 
-Additional dependencies are listed below.
-
-If you wish to compile GLFW without CMake, see @ref compile_manual.
-
-
-@subsection compile_deps_msvc Dependencies using Visual C++ on Windows
-
-The Microsoft Platform SDK that is installed along with Visual C++ contains all
-the necessary headers, link libraries and tools except for CMake.
+@note CMake only generates project files or makefiles.  It does not compile the
+actual GLFW library.  To compile GLFW, first generate these files and then use
+them in your chosen development environment to compile the actual GLFW library.
 
 
-@subsection compile_deps_mingw Dependencies with MinGW or MinGW-w64 on Windows
+@subsection compile_deps Dependencies
 
-Both the MinGW and the MinGW-w64 packages contain all the necessary headers,
-link libraries and tools except for CMake.
+Once you have installed CMake, make sure that all other dependencies are
+available.  On some platforms, GLFW needs a few additional packages to be
+installed.  See the section for your chosen platform and development environment
+below.
 
 
-@subsection compile_deps_mingw_cross Dependencies using MinGW or MinGW-w64 cross-compilation
+@subsubsection compile_deps_msvc Dependencies for Visual C++ on Windows
+
+The Microsoft Platform SDK that is installed along with Visual C++ already
+contains all the necessary headers, link libraries and tools except for CMake.
+Move on to @ref compile_generate.
+
+
+@subsubsection compile_deps_mingw Dependencies for MinGW or MinGW-w64 on Windows
+
+Both the MinGW and the MinGW-w64 packages already contain all the necessary
+headers, link libraries and tools except for CMake.  Move on to @ref
+compile_generate.
+
+
+@subsubsection compile_deps_mingw_cross Dependencies for MinGW or MinGW-w64 cross-compilation
 
 Both Cygwin and many Linux distributions have MinGW or MinGW-w64 packages.  For
 example, Cygwin has the `mingw64-i686-gcc` and `mingw64-x86_64-gcc` packages
@@ -45,7 +54,9 @@ GLFW has CMake toolchain files in the `CMake/` directory that allow for easy
 cross-compilation of Windows binaries.  To use these files you need to add a
 special parameter when generating the project files or makefiles:
 
-    cmake -DCMAKE_TOOLCHAIN_FILE=<toolchain-file> .
+@code{.sh}
+cmake -DCMAKE_TOOLCHAIN_FILE=<toolchain-file> .
+@endcode
 
 The exact toolchain file to use depends on the prefix used by the MinGW or
 MinGW-w64 binaries on your system.  You can usually see this in the /usr
@@ -53,21 +64,27 @@ directory.  For example, both the Debian/Ubuntu and Cygwin MinGW-w64 packages
 have `/usr/x86_64-w64-mingw32` for the 64-bit compilers, so the correct
 invocation would be:
 
-    cmake -DCMAKE_TOOLCHAIN_FILE=CMake/x86_64-w64-mingw32.cmake .
+@code{.sh}
+cmake -DCMAKE_TOOLCHAIN_FILE=CMake/x86_64-w64-mingw32.cmake .
+@endcode
 
 For more details see the article
 [CMake Cross Compiling](http://www.paraview.org/Wiki/CMake_Cross_Compiling) on
 the CMake wiki.
 
-
-@subsection compile_deps_xcode Dependencies using Xcode on OS X
-
-Xcode contains all necessary tools except for CMake.  The necessary headers and
-libraries are included in the core OS frameworks.  Xcode can be downloaded from
-the Mac App Store or from the ADC Member Center.
+Once you have this set up, move on to @ref compile_generate.
 
 
-@subsection compile_deps_x11 Dependencies using Linux and X11
+@subsubsection compile_deps_xcode Dependencies for Xcode on OS X
+
+Xcode comes with all necessary tools except for CMake.  The required headers
+and libraries are included in the core OS X frameworks.  Xcode can be downloaded
+from the Mac App Store or from the ADC Member Center.
+
+Once you have Xcode installed, move on to @ref compile_generate.
+
+
+@subsubsection compile_deps_x11 Dependencies for Linux and X11
 
 To compile GLFW for X11, you need to have the X11 and OpenGL header packages
 installed, as well as the basic development tools like GCC and make.  For
@@ -78,8 +95,11 @@ packages.  GLFW itself doesn't need or use GLU, but some of the examples do.
 Note that using header files and libraries from Mesa during compilation *will
 not* tie your binaries to the Mesa implementation of OpenGL.
 
+Once you have installed the necessary packages, move on to @ref
+compile_generate.
 
-@section compile_cmake Generating files with CMake
+
+@subsection compile_generate Generating build files with CMake
 
 Once you have all necessary dependencies it is time to generate the project
 files or makefiles for your development environment.  CMake needs to know two
@@ -91,36 +111,59 @@ otherwise it is called an out-of-tree build.
 One of several advantages of out-of-tree builds is that you can generate files
 and compile for different development environments using a single source tree.
 
+@note This section is about generating the project files or makefiles necessary
+to compile the GLFW library, not about compiling the actual library.
 
-@subsection compile_cmake_cli Generating files with the CMake command-line tool
+
+@subsubsection compile_generate_cli Generating files with the CMake command-line tool
 
 To make an in-tree build, enter the *root* directory of the GLFW source tree
 (i.e. *not* the `src` subdirectory) and run CMake.  The current directory is
 used as target path, while the path provided as an argument is used to find the
 source tree.
 
-    cd <glfw-root-dir>
-    cmake .
+@code{.sh}
+cd <glfw-root-dir>
+cmake .
+@endcode
 
 To make an out-of-tree build, make another directory, enter it and run CMake
 with the (relative or absolute) path to the root of the source tree as an
 argument.
 
-    cd <glfw-root-dir>
-    mkdir build
-    cd build
-    cmake ..
+@code{.sh}
+cd <glfw-root-dir>
+mkdir build
+cd build
+cmake ..
+@endcode
+
+Once you have generated the project files or makefiles for your chosen
+development environment, move on to @ref compile_compile.
 
 
-@subsection compile_cmake_gui Generating files with the CMake GUI
+@subsubsection compile_generate_gui Generating files with the CMake GUI
 
 If you are using the GUI version, choose the root of the GLFW source tree as
 source location and the same directory or another, empty directory as the
 destination for binaries.  Choose *Configure*, change any options you wish to,
 *Configure* again to let the changes take effect and then *Generate*.
 
+Once you have generated the project files or makefiles for your chosen
+development environment, move on to @ref compile_compile.
 
-@section compile_options CMake options
+
+@subsection compile_compile Compiling the library
+
+You should now have all required dependencies and the project files or makefiles
+necessary to compile GLFW.  Go ahead and compile the actual GLFW library with
+these files, as you would with any other project.
+
+Once the GLFW library is compiled, you are ready to build your applications,
+linking it to the GLFW library.  See the @ref build guide for more information.
+
+
+@subsection compile_options CMake options
 
 The CMake files for GLFW provide a number of options, although not all are
 available on all supported platforms.  Some of these are de facto standards
@@ -132,7 +175,7 @@ Some package systems like Ubuntu and other distributions based on Debian
 GNU/Linux have this tool in a separate `cmake-curses-gui` package.
 
 
-@subsection compile_options_shared Shared CMake options
+@subsubsection compile_options_shared Shared CMake options
 
 `BUILD_SHARED_LIBS` determines whether GLFW is built as a static
 library or as a DLL / shared library / dynamic library.
@@ -157,7 +200,7 @@ built along with the library.
 the library.
 
 
-@subsection compile_options_osx OS X specific CMake options
+@subsubsection compile_options_osx OS X specific CMake options
 
 `GLFW_USE_CHDIR` determines whether `glfwInit` changes the current
 directory of bundled applications to the `Contents/Resources` directory.
@@ -171,7 +214,7 @@ Retina displays.
 `GLFW_BUILD_UNIVERSAL` determines whether to build Universal Binaries.
 
 
-@subsection compile_options_win32 Windows specific CMake options
+@subsubsection compile_options_win32 Windows specific CMake options
 
 `USE_MSVC_RUNTIME_LIBRARY_DLL` determines whether to use the DLL version or the
 static library version of the Visual C++ runtime library.  If set to `ON`, the
@@ -189,7 +232,7 @@ symbol, which forces the use of the high-performance GPU on nVidia Optimus
 systems.
 
 
-@subsection compile_options_egl EGL specific CMake options
+@subsubsection compile_options_egl EGL specific CMake options
 
 `GLFW_USE_EGL` determines whether to use EGL instead of the platform-specific
 context creation API.  Note that EGL is not yet provided on all supported

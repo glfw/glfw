@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="688.48718"
+   height="327.98221"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="spaces.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Lend"
+       style="overflow:visible;">
+      <path
+         id="path3888"
+         style="fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(1.1) rotate(180) translate(1,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="8"
+     inkscape:cx="273.7909"
+     inkscape:cy="186.31212"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1021"
+     inkscape:window-x="0"
+     inkscape:window-y="30"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     units="px"
+     showborder="false"
+     inkscape:showpageshadow="false" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-12.627039,-339.86462)">
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#0000ff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:3,3;stroke-dashoffset:0"
+       id="rect2985"
+       width="687.36469"
+       height="326.85971"
+       x="13.188287"
+       y="340.42587"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113" />
+    <rect
+       style="fill:#f3fff3;fill-opacity:1;stroke:#00b800;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3757"
+       width="318.05698"
+       height="277.04684"
+       x="38.315689"
+       y="366.05841"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113" />
+    <rect
+       style="fill:#f3fff3;fill-opacity:1;stroke:#00b800;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3767"
+       width="319.01456"
+       height="198.09369"
+       x="356.36722"
+       y="366.01291"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="363.40543"
+       y="381.11581"
+       id="text3769"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113"><tspan
+         sodipodi:role="line"
+         x="363.40543"
+         y="381.11581"
+         id="tspan3785"
+         style="font-size:10px;text-align:start;text-anchor:start">Primary monitor position</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#00b800;fill-opacity:1;stroke:none;font-family:Sans"
+       x="236.43106"
+       y="633.68793"
+       id="text3773"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113"><tspan
+         sodipodi:role="line"
+         id="tspan3775"
+         x="236.43106"
+         y="633.68793">Secondary Monitor</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#00b800;fill-opacity:1;stroke:none;font-family:Sans"
+       x="572.90869"
+       y="555.30212"
+       id="text3777"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113"><tspan
+         sodipodi:role="line"
+         id="tspan3779"
+         x="572.90869"
+         y="555.30212">Primary Monitor</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="609.20776"
+       y="657.77118"
+       id="text3781"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113"><tspan
+         sodipodi:role="line"
+         id="tspan3783"
+         x="609.20776"
+         y="657.77118">Virtual Screen</tspan></text>
+    <rect
+       style="fill:#b8b8b8;fill-opacity:1;stroke:#b8b8b8;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect5577"
+       width="173.25098"
+       height="141.43118"
+       x="157.75581"
+       y="436.97159" />
+    <rect
+       style="fill:#ededed;fill-opacity:1;stroke:#ededed;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3789"
+       width="168.99611"
+       height="136.87178"
+       x="159.87543"
+       y="439.39697"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#454545;fill-opacity:1;stroke:none;font-family:Sans"
+       x="273.8884"
+       y="567.73486"
+       id="text3791"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113"><tspan
+         sodipodi:role="line"
+         id="tspan3793"
+         x="273.8884"
+         y="567.73486">Window</tspan></text>
+    <rect
+       y="439.39581"
+       x="159.87428"
+       height="8.8251209"
+       width="168.99841"
+       id="rect3795"
+       style="fill:#7b7bff;fill-opacity:1;stroke:#7b7bff;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="path3797"
+       sodipodi:cx="352.54324"
+       sodipodi:cy="373.03461"
+       sodipodi:rx="2.5253813"
+       sodipodi:ry="2.5253813"
+       d="m 355.06862,373.03461 c 0,1.39473 -1.13065,2.52538 -2.52538,2.52538 -1.39473,0 -2.52538,-1.13065 -2.52538,-2.52538 0,-1.39473 1.13065,-2.52538 2.52538,-2.52538 1.39473,0 2.52538,1.13065 2.52538,2.52538 z"
+       transform="matrix(0.66107369,0,0,0.66107369,123.32145,119.41326)"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113" />
+    <path
+       transform="matrix(0.66107369,0,0,0.66107369,-194.73594,119.44704)"
+       d="m 355.06862,373.03461 c 0,1.39473 -1.13065,2.52538 -2.52538,2.52538 -1.39473,0 -2.52538,-1.13065 -2.52538,-2.52538 0,-1.39473 1.13065,-2.52538 2.52538,-2.52538 1.39473,0 2.52538,1.13065 2.52538,2.52538 z"
+       sodipodi:ry="2.5253813"
+       sodipodi:rx="2.5253813"
+       sodipodi:cy="373.03461"
+       sodipodi:cx="352.54324"
+       id="path3799"
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="path3801"
+       sodipodi:cx="352.54324"
+       sodipodi:cy="373.03461"
+       sodipodi:rx="2.5253813"
+       sodipodi:ry="2.5253813"
+       d="m 355.06862,373.03461 a 2.5253813,2.5253813 0 1 1 -5.05076,0 2.5253813,2.5253813 0 1 1 5.05076,0 z"
+       transform="matrix(0.66107369,0,0,0.66107369,-73.218648,201.61091)"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="21.213203"
+       y="340.20465"
+       id="text3803"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113"><tspan
+         sodipodi:role="line"
+         id="tspan3805"
+         x="21.213203"
+         y="340.20465" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="70.847862"
+       y="462.84561"
+       id="text3807"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113"><tspan
+         sodipodi:role="line"
+         x="70.847862"
+         y="462.84561"
+         style="font-size:10px"
+         id="tspan3815">Window position</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="44.446709"
+       y="381.11581"
+       id="text3817"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113"><tspan
+         sodipodi:role="line"
+         id="tspan3819"
+         x="44.446709"
+         y="381.11581"
+         style="font-size:10px">Secondary monitor position</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="165.78685"
+       y="462.84561"
+       id="text3826"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/elmindreda/projects/glfw/glfw/docs/spaces.png"
+       inkscape:export-xdpi="109.89113"
+       inkscape:export-ydpi="109.89113"><tspan
+         sodipodi:role="line"
+         id="tspan3828"
+         x="165.78685"
+         y="462.84561"
+         style="font-size:10px">Client area origin</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="364.30875"
+       y="356.71783"
+       id="text3017"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3019"
+         x="364.30875"
+         y="356.71783"
+         style="font-size:10px">Virtual screen origin</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m 343.73692,26.224389 0.01,294.941191"
+       id="path3861"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       transform="translate(12.627039,339.86462)" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4307"
+       d="m 356.48533,366.00457 336.31202,-0.0196"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend);stroke-miterlimit:4;stroke-dasharray:none" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4309"
+       d="m 159.89916,447.6257 -0.0625,145.00422"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m 160.03997,448.23877 184.95568,-0.0159"
+       id="path4493"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="228.4128"
+       y="445.67239"
+       id="text4495"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4497"
+         x="228.4128"
+         y="445.67239"
+         style="font-size:5px;fill:#ffffff;fill-opacity:1">Window Title</tspan></text>
+  </g>
+</svg>

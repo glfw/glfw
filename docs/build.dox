@@ -1,24 +1,24 @@
 /*!
 
-@page build Building programs that use GLFW
+@page build Building applications
 
 @tableofcontents
 
-This is about compiling and linking programs that use GLFW.  For information on
-how to write such programs, start with the [introductory tutorial](@ref quick).
+This is about compiling and linking applications that use GLFW.  For information on
+how to write such applications, start with the [introductory tutorial](@ref quick).
 For information on how to compile the GLFW library itself, see the @ref compile
 guide.
 
-This is not a tutorial on compilation.  It assumes basic understanding of how to
-compile a C program as well as how to use the specific compiler of your chosen
-development environment.  The compilation process should be explained in your
-C programming material and the use of and options for your compiler should be
-described in detail in the documentation for your development environment.
+This is not a tutorial on compilation or linking.  It assumes basic
+understanding of how to compile and link a C program as well as how to use the
+specific compiler of your chosen development environment.  The compilation
+and linking process should be explained in your C programming material and in
+the documentation for your development environment.
 
 @section build_include Including the GLFW header file
 
-In the files of your program where you use OpenGL or GLFW, you should include
-the GLFW header file, i.e.:
+In the source files of your application where you use OpenGL or GLFW, you should
+include the GLFW header file, i.e.:
 
 @code
 #include <GLFW/glfw3.h>
@@ -30,13 +30,14 @@ types and function prototypes of the OpenGL API.
 
 The GLFW header also defines everything necessary for your OpenGL header to
 function.  For example, under Windows you are normally required to include
-`windows.h` before the OpenGL header.  This would make your source file tied
-to Windows and pollute your code's namespace with the whole Win32 API.
+`windows.h` before the OpenGL header, which would pollute your code namespace
+with the entire Win32 API.
 
 Instead, the GLFW header takes care of this for you, not by including
 `windows.h`, but by duplicating only the very few necessary parts of it.  It
 does this only when needed, so if `windows.h` *is* included, the GLFW header
-does not try to redefine those symbols.
+does not try to redefine those symbols.  The reverse is not true, i.e.
+`windows.h` cannot cope if any of its symbols have already been defined.
 
 In other words:
 
@@ -44,7 +45,7 @@ In other words:
  - Do *not* include `windows.h` or other platform-specific headers unless you
    plan on using those APIs directly
  - If you *do* need to include such headers, do it *before* including
-   the GLFW one and it will detect this
+   the GLFW header and it will handle this
 
 If you are using an OpenGL extension loading library such as
 [glad](https://github.com/Dav1dde/glad), the extension loader header should
@@ -60,28 +61,29 @@ its behavior.
 `GLFW_DLL` is required on Windows when using the GLFW DLL, to tell the compiler
 that the GLFW functions are defined in a DLL.
 
-The following macros control which client API header is included.
+The following macros control which OpenGL or OpenGL ES API header is included.
 
-`GLFW_INCLUDE_GLCOREARB` makes the header include the modern `GL/glcorearb.h`
-header (`OpenGL/gl3.h` on OS X) instead of the regular OpenGL header.
+`GLFW_INCLUDE_GLCOREARB` makes the GLFW header include the modern
+`GL/glcorearb.h` header (`OpenGL/gl3.h` on OS X) instead of the regular OpenGL
+header.
 
-`GLFW_INCLUDE_ES1` makes the header include the OpenGL ES 1.x `GLES/gl.h` header
-instead of the regular OpenGL header.
-
-`GLFW_INCLUDE_ES2` makes the header include the OpenGL ES 2.0 `GLES2/gl2.h`
+`GLFW_INCLUDE_ES1` makes the GLFW header include the OpenGL ES 1.x `GLES/gl.h`
 header instead of the regular OpenGL header.
 
-`GLFW_INCLUDE_ES3` makes the header include the OpenGL ES 3.0 `GLES3/gl3.h`
+`GLFW_INCLUDE_ES2` makes the GLFW header include the OpenGL ES 2.0 `GLES2/gl2.h`
 header instead of the regular OpenGL header.
 
-`GLFW_INCLUDE_ES31` makes the header include the OpenGL ES 3.1 `GLES3/gl31.h`
+`GLFW_INCLUDE_ES3` makes the GLFW header include the OpenGL ES 3.0 `GLES3/gl3.h`
 header instead of the regular OpenGL header.
 
-`GLFW_INCLUDE_NONE` makes the header not include any client API header.  This is
-useful in combination with an extension loading library.
+`GLFW_INCLUDE_ES31` makes the GLFW header include the OpenGL ES 3.1 `GLES3/gl31.h`
+header instead of the regular OpenGL header.
 
-If none of the above inclusion macros are defined, the standard OpenGL header is
-included.
+`GLFW_INCLUDE_NONE` makes the GLFW header not include any OpenGL or OpenGL ES API
+header.  This is useful in combination with an extension loading library.
+
+If none of the above inclusion macros are defined, the standard OpenGL `GL/gl.h`
+header (`OpenGL/gl.h` on OS X) is included.
 
 `GLFW_INCLUDE_GLU` makes the header include the GLU header *in addition to* the
 header selected above.  This should only be used with legacy code.  GLU has been
@@ -104,12 +106,6 @@ hard-coded into your build environment.  See the section for your development
 environment below.  On Linux and other Unix-like operating systems, the list
 varies but can be retrieved in various ways as described below.
 
-This is not a tutorial on linking.  It assumes basic understanding of how to
-link a C program as well as how to use the specific linker of your chosen
-development environment.  The linking process should be explained in your
-C programming material and the use of and options for your linker should be
-described in detail in the documentation for your development environment.
-
 A good general introduction to linking is
 [Beginner's Guide to Linkers](http://www.lurklurk.org/linkers/linkers.html) by
 David Drysdale.
@@ -120,20 +116,20 @@ David Drysdale.
 The static version of the GLFW library is named `glfw3`.  When using this
 version, it is also necessary to link with some libraries that GLFW uses.
 
-When linking a program under Windows that uses the static version of GLFW, you
-must link with `opengl32`.  On some versions of MinGW, you must also explicitly
-link with `gdi32`, while other versions of MinGW include it in the set of
-default libraries along with other dependencies like `user32` and `kernel32`.
-If you are using GLU, you must also link with `glu32`.
+When linking an application under Windows that uses the static version of GLFW,
+you must link with `opengl32`.  On some versions of MinGW, you must also
+explicitly link with `gdi32`, while other versions of MinGW include it in the
+set of default libraries along with other dependencies like `user32` and
+`kernel32`.  If you are using GLU, you must also link with `glu32`.
 
-The link library for the GLFW DLL is named `glfw3dll`.  When compiling a program
-that uses the DLL version of GLFW, you need to define the `GLFW_DLL` macro
-*before* any inclusion of the GLFW header.  This can be done either with
+The link library for the GLFW DLL is named `glfw3dll`.  When compiling an
+application that uses the DLL version of GLFW, you need to define the `GLFW_DLL`
+macro *before* any inclusion of the GLFW header.  This can be done either with
 a compiler switch or by defining it in your source code.
 
-A program using the GLFW DLL does not need to link against any of its
-dependencies, but you still have to link against `opengl32` if your program uses
-OpenGL and `glu32` if it uses GLU.
+An application using the GLFW DLL does not need to link against any of its
+dependencies, but you still have to link against `opengl32` if your application
+uses OpenGL and `glu32` if it uses GLU.
 
 
 @subsection build_link_cmake_source With CMake and GLFW source
@@ -266,8 +262,12 @@ If you are using the dynamic library version of GLFW, simply add it to the
 project dependencies.
 
 If you are using the static library version of GLFW, add it and the Cocoa,
-OpenGL, IOKit and CoreVideo frameworks to the project as dependencies.  They can
-all be found in `/System/Library/Frameworks`.
+OpenGL, IOKit, CoreVideo and Carbon frameworks to the project as dependencies.
+They can all be found in `/System/Library/Frameworks`.
+
+@note GLFW needs the Carbon framework only to access the current keyboard layout
+via the Text Input Source Services.  This is one of the non-deprecated parts of
+the Carbon API and the only way to access this information on OS X.
 
 
 @subsection build_link_osx With command-line on OS X

@@ -4,19 +4,39 @@
 
 @section main_intro Introduction
 
-GLFW is a free, Open Source, multi-platform library for opening a window,
-creating an OpenGL context and managing input.  It is easy to integrate into
-existing applications and does not lay claim to the main loop.
+__GLFW__ is a free, Open Source, multi-platform library for creating windows
+with OpenGL or OpenGL ES contexts and receiving many kinds of input.  It is easy
+to integrate into existing applications and does not lay claim to the main loop.
 
-This is the documentation for version 3.1, which has [many new features](@ref news).
+This is the documentation for version 3.1, which adds many
+[new features](@ref news).
 
-There is a [quick tutorial](@ref quick) for people new to GLFW, which shows how
-to write a small but complete program, and guides for
-[compiling GLFW](@ref compile) and
-[building programs that use GLFW](@ref build).
+@ref quick is a guide for those new to GLFW.  It takes you through how to write
+a small but complete program.  For people coming from GLFW 2, the @ref moving
+guide explains what has changed and how to update existing code to use the new
+API.
 
-If you have used GLFW 2.x in the past, there is a
-[transition guide](@ref moving) that explains what has changed and how to update
-existing code to use the new API.
+There are guides for each of the various areas of the API.
+
+ - @ref intro
+ - @ref window
+ - @ref context
+ - @ref monitor
+ - @ref input
+
+The [FAQ](http://www.glfw.org/faq.html) answers many common questions about the
+design, implementation and use of GLFW.
+
+The [reference documentation](modules.html) provides more detailed information
+about specific functions.
+
+Once you have written a program, see the @ref compile and @ref build guides.        
+
+Finally, the @ref compat guide explains what APIs, standards and protocols GLFW
+uses and what happens when they are not present on a given machine.
+
+This documentation was generated with Doxygen.  The sources for it are available
+in both the [source distribution](http://www.glfw.org/download.html) and
+[GitHub repository](https://github.com/glfw/glfw).
 
 */

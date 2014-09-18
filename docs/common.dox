@@ -1,0 +1,18 @@
+/*!
+
+@page common Common tasks
+
+@tableofcontents
+
+This guide explains how to 
+
+
+@section common_full_screen Windowed full screen mode
+
+@section common_window_pos Initial window position
+
+GLFW comes with the `windows` test program, which illustrates this method.
+
+@section common_fps_camera First-person camera controls
+
+*/

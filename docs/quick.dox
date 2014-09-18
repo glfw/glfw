@@ -1,23 +1,25 @@
 /*!
 
-@page quick Getting started — A quick introduction
+@page quick Getting started
 
 @tableofcontents
 
-This guide will show how to write simple OpenGL applications using GLFW 3.  It
-will introduce a few of the most commonly used functions, but there are many
-others.  To see detailed documentation on any GLFW function, just click on its
-name.
+This guide takes you through writing a simple application using GLFW 3.  The
+application will create a window and OpenGL context, render a rotating triangle
+and exit when the user closes the window or presses Escape.  This guide will
+introduce a few of the most commonly used functions, but there are many more.
 
 This guide assumes no experience with earlier versions of GLFW.  If you
-have used GLFW 2.x in the past, you should also read the
-[transition guide](@ref moving).
+have used GLFW 2 in the past, read the @ref moving guide, as some functions
+behave differently in GLFW 3.
 
 
-@section quick_include Including the GLFW header
+@section quick_steps Step by step
 
-In the files of your program where you use OpenGL or GLFW, you need to include
-the GLFW 3 header file.
+@subsection quick_include Including the GLFW header
+
+In the source files of your application where you use OpenGL or GLFW, you need
+to include the GLFW 3 header file.
 
 @code
 #include <GLFW/glfw3.h>
@@ -54,40 +56,39 @@ inclusion of the GLFW header.
 @endcode
 
 
-@section quick_init_term Initializing and terminating GLFW
+@subsection quick_init_term Initializing and terminating GLFW
 
-Before you can use most GLFW functions, the library must be initialized.  This
-is done with @ref glfwInit, which returns non-zero if successful, or zero if an
-error occurred.
+Before you can use most GLFW functions, the library must be initialized.  On
+successful initialization, non-zero is returned.  If an error occurred, zero is
+returned.
 
 @code
 if (!glfwInit())
     exit(EXIT_FAILURE);
 @endcode
 
-When you are done using GLFW, typically at the very end of the program, you need
-to call @ref glfwTerminate.
+When you are done using GLFW, typically just before the application exits, you
+need to terminate GLFW.
 
 @code
 glfwTerminate();
 @endcode
 
 This destroys any remaining windows and releases any other resources allocated by
-GLFW.  After this call, you must call @ref glfwInit again before using any GLFW
+GLFW.  After this call, you must initialize GLFW again before using any GLFW
 functions that require it.
 
 
-@section quick_capture_error Setting an error callback
+@subsection quick_capture_error Setting an error callback
 
 Most events are reported through callbacks, whether it's a key being pressed,
 a GLFW window being moved, or an error occurring.  Callbacks are simply
 C functions (or C++ static methods) that are called by GLFW with arguments
 describing the event.
 
-In case @ref glfwInit or any other GLFW function fails, an error is reported to
-the GLFW error callback.  You can receive these reports by setting the error
-callback.  The callback function itself should match the signature of @ref
-GLFWerrorfun.  Here is a simple error callback that just prints the error
+In case a GLFW function fails, an error is reported to the GLFW error callback.
+You can receive these reports with an error callback.  This function must have
+the signature below.  This simple error callback just prints the error
 description to `stderr`.
 
 @code
@@ -97,28 +98,28 @@ void error_callback(int error, const char* description)
 }
 @endcode
 
-Setting the callback, so GLFW knows to call it, is done with @ref
-glfwSetErrorCallback.  This is one of the few GLFW functions that may be called
-before @ref glfwInit, which lets you be notified of errors during
-initialization, so you should set it before you do anything else with GLFW.
+Callback functions must be set, so GLFW knows to call them.  The function to set
+the error callback is one of the few GLFW functions that may be called before
+initialization, which lets you be notified of errors both during and after
+initialization.
 
 @code
 glfwSetErrorCallback(error_callback);
 @endcode
 
 
-@section quick_create_window Creating a window and context
+@subsection quick_create_window Creating a window and context
 
-The window (and its context) is created with @ref glfwCreateWindow, which
-returns a handle to the created window.  For example, this creates a 640 by 480
-windowed mode window:
+The window and its OpenGL context are created with a single call, which returns
+a handle to the created combined window and context object.  For example, this
+creates a 640 by 480 windowed mode window with an OpenGL context:
 
 @code
 GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
 @endcode
 
-If window creation fails, `NULL` will be returned, so you need to check whether
-it did.
+If window or context creation fails, `NULL` will be returned, so it is necessary
+to check the return value.
 
 @code
 if (!window)
@@ -128,24 +129,11 @@ if (!window)
 }
 @endcode
 
-This handle is then passed to all window related functions, and is provided to
-you along with input events, so you know which window received the input.
+The window handle is passed to all window related functions and is provided to
+along to all window related callbacks, so they can tell which window received
+the event.
 
-To create a full screen window, you need to specify which monitor the window
-should use.  In most cases, the user's primary monitor is a good choice.  You
-can get this with @ref glfwGetPrimaryMonitor.  To make the above window
-full screen, just pass along the monitor handle:
-
-@code
-GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", glfwGetPrimaryMonitor(), NULL);
-@endcode
-
-Full screen windows cover the entire display area of a monitor, have no border
-or decorations, and change the monitor's resolution to the one most closely
-matching the requested window size.
-
-When you are done with the window, destroy it with the @ref glfwDestroyWindow
-function.
+When a window is no longer needed, destroy it.
 
 @code
 glfwDestroyWindow(window);
@@ -155,22 +143,22 @@ Once this function is called, no more events will be delivered for that window
 and its handle becomes invalid.
 
 
-@section quick_context_current Making the OpenGL context current
+@subsection quick_context_current Making the OpenGL context current
 
 Before you can use the OpenGL API, it must have a current OpenGL context.  You
-make a window's context current with @ref glfwMakeContextCurrent.  It will then
-remain as the current context until you make another context current or until
-the window owning it is destroyed.
+make a window's context current.
 
 @code
 glfwMakeContextCurrent(window);
 @endcode
 
+The context will then remain as current until you make another context current
+or until the window owning the current context is destroyed.                    
 
-@section quick_window_close Checking the window close flag
 
-Each window has a flag indicating whether the window should be closed.  This can
-be checked with @ref glfwWindowShouldClose.  
+@subsection quick_window_close Checking the window close flag
+
+Each window has a flag indicating whether the window should be closed.
 
 When the user attempts to close the window, either by pressing the close widget
 in the title bar or using a key combination like Alt+F4, this flag is set to 1.
@@ -194,11 +182,11 @@ useful if you want to interpret other kinds of input as closing the window, like
 for example pressing the escape key.
 
 
-@section quick_key_input Receiving input events
+@subsection quick_key_input Receiving input events
 
 Each window has a large number of callbacks that can be set to receive all the
-various kinds of events.  To receive key press and release events, a
-[key callback](@ref GLFWkeyfun) is set using @ref glfwSetKeyCallback.
+various kinds of events.  To receive key press and release events, create a key
+callback function.
 
 @code
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -208,16 +196,21 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 }
 @endcode
 
-For event callbacks to actually be called when an event occurs, you need to
-process events as described below.
+The key callback, like other window related callbacks, are set per-window.
+
+@code
+glfwSetKeyCallback(window, key_callback);
+@endcode
+
+In order for event callbacks to be called when events occur, you need to process
+events as described below.
 
 
-@section quick_render Rendering with OpenGL
+@subsection quick_render Rendering with OpenGL
 
 Once you have a current OpenGL context, you can use OpenGL normally.  In this
 tutorial, a multi-colored rotating triangle will be rendered.  The framebuffer
-size, needed by this example for `glViewport` and `glOrtho`, is retrieved with
-@ref glfwGetFramebufferSize.
+size needs to be retrieved for `glViewport`.
 
 @code
 int width, height;
@@ -225,72 +218,80 @@ glfwGetFramebufferSize(window, &width, &height);
 glViewport(0, 0, width, height);
 @endcode
 
-However, you can also set a framebuffer size callback using @ref
+You can also set a framebuffer size callback using @ref
 glfwSetFramebufferSizeCallback and call `glViewport` from there.
 
-@code
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
-@endcode
 
+@subsection quick_timer Reading the timer
 
-@section quick_timer Reading the timer
-
-For the triangle to rotate properly, a time source is needed.  GLFW provides
-@ref glfwGetTime, which returns the number of seconds since @ref glfwInit as
-a `double`.  The time source used is the most accurate on each platform and
-generally has micro- or nanosecond resolution.
+To create smooth animation, a time source is needed.  GLFW provides a timer that
+returns the number of seconds since initialization.  The time source used is the
+most accurate on each platform and generally has micro- or nanosecond
+resolution.
 
 @code
 double time = glfwGetTime();
 @endcode
 
 
-@section quick_swap_buffers Swapping buffers
+@subsection quick_swap_buffers Swapping buffers
 
-GLFW windows by default use double buffering.  That means that you have two
-rendering buffers; a front buffer and a back buffer.  The front buffer is the
-one being displayed and the back buffer the one you render to.
+GLFW windows by default use double buffering.  That means that each window has
+two rendering buffers; a front buffer and a back buffer.  The front buffer is
+the one being displayed and the back buffer the one you render to.
 
-When the entire frame has been rendered, it is time to swap the back and the
-front buffers in order to display the rendered frame, and begin rendering a new
-frame.  This is done with @ref glfwSwapBuffers.
+When the entire frame has been rendered, the buffers need to be swapped with one
+another, so the back buffer becomes the front buffer and vice versa.
 
 @code
 glfwSwapBuffers(window);
 @endcode
 
+The swap interval indicates how many frames to wait until swapping the buffers,
+commonly known as *vsync*.  By default, the swap interval is zero, meaning
+buffer swapping will occur immediately.  On fast machines, many of those frames
+will never be seen, as the screen is still only updated typically 60-75 times
+per second, so this wastes a lot of CPU and GPU cycles.
 
-@section quick_process_events Processing events
+Also, because the buffers will be swapped in the middle the screen update,
+leading to [screen tearing](https://en.wikipedia.org/wiki/Screen_tearing).
+
+For these reasons, applications will typically want to set the swap interval to
+one.  It can be set to higher values, but this is usually not recommended,
+because of the input latency it leads to.
+
+@code
+glfwSwapInterval(1);
+@endcode
+
+This function acts on the current context and will fail unless a context is
+current.
+
+
+@subsection quick_process_events Processing events
 
 GLFW needs to communicate regularly with the window system both in order to
-receive events and to show that it hasn't locked up.  Event processing must be
-done regularly and is normally done each frame before rendering but after buffer
-swap.
+receive events and to show that the application hasn't locked up.  Event
+processing must be done regularly while you have visible windows and is normally
+done each frame after buffer swapping.
 
-There are two ways to process pending events.  @ref glfwPollEvents processes
-only those events that have already been received and then returns immediately.
-This is the best choice when rendering continually, like most games do.
+There are two methods for processing pending events; polling and waiting.  This
+example will use event polling, which processes only those events that have
+already been received and then returns immediately.  
 
 @code
 glfwPollEvents();
 @endcode
 
-If instead you only need to update your rendering once you have received new
-input, @ref glfwWaitEvents is a better choice.  It waits until at least one
-event has been received, putting the thread to sleep in the meantime, and then
-processes all received events just like @ref glfwPollEvents does.  This saves
-a great deal of CPU cycles and is useful for, for example, many kinds of editing
-tools.
-
-@code
-glfwWaitEvents();
-@endcode
+This is the best choice when rendering continually, like most games do.  If
+instead you only need to update your rendering once you have received new input,
+@ref glfwWaitEvents is a better choice.  It waits until at least one event has
+been received, putting the thread to sleep in the meantime, and then processes
+all received events.  This saves a great deal of CPU cycles and is useful for,
+for example, many kinds of editing tools.
 
 
-@section quick_example Putting it together: A simple application
+@section quick_example Putting it together
 
 Now that you know how to initialize GLFW, create a window and poll for
 keyboard input, it's possible to create a simple program.

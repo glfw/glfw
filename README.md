@@ -118,6 +118,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [X11] Bugfix: Workaround for legacy Compiz caused flickering during resize
  - [X11] Bugfix: The name pointer of joysticks were not cleared on disconnection
  - [X11] Bugfix: Video mode dimensions were not rotated to match the CRTC
+ - [X11] Bugfix: Unicode character input ignored dead keys
 
 
 ## Contact
@@ -174,6 +175,7 @@ skills.
  - Sylvain Hellegouarch
  - Matthew Henry
  - heromyth
+ - Lucas Hinderberger
  - Paul Holden
  - Toni Jovanoski
  - Arseny Kapoulkine

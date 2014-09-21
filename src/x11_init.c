@@ -329,6 +329,30 @@ static void updateKeyCodeLUT(void)
     }
 }
 
+// Check whether the IM has a usable style
+//
+static GLboolean hasUsableInputMethodStyle(void)
+{
+    unsigned int i;
+    GLboolean found = GL_FALSE;
+    XIMStyles* styles = NULL;
+
+    if (XGetIMValues(_glfw.x11.im, XNQueryInputStyle, &styles, NULL) != NULL)
+        return GL_FALSE;
+
+    for (i = 0;  i < styles->count_styles;  i++)
+    {
+        if (styles->supported_styles[i] == (XIMPreeditNothing | XIMStatusNothing))
+        {
+            found = GL_TRUE;
+            break;
+        }
+    }
+
+    XFree(styles);
+    return found;
+}
+
 // Check whether the specified atom is supported
 //
 static Atom getSupportedAtom(Atom* supportedAtoms,
@@ -449,9 +473,6 @@ static void detectEWMH(void)
 //
 static GLboolean initExtensions(void)
 {
-    unsigned int u;
-    XIMStyles * styles = NULL;
-
     // Find or create window manager atoms
     _glfw.x11.WM_PROTOCOLS = XInternAtom(_glfw.x11.display,
                                          "WM_PROTOCOLS",
@@ -582,43 +603,6 @@ static GLboolean initExtensions(void)
     _glfw.x11.SAVE_TARGETS =
         XInternAtom(_glfw.x11.display, "SAVE_TARGETS", False);
 
-    // ------------------------------------------------------------------------
-    // Optional extensions (function returns always true from here!)
-
-    // Open input method
-    if (!XSupportsLocale())
-        return GL_TRUE;
-
-    XSetLocaleModifiers("");
-    _glfw.x11.im = XOpenIM(_glfw.x11.display, 0, 0, 0);
-    if (!_glfw.x11.im)
-        return GL_TRUE;
-
-    // Get available input styles
-    if (XGetIMValues(_glfw.x11.im, XNQueryInputStyle, &styles, NULL) || !styles)
-    {
-        XCloseIM(_glfw.x11.im);
-        _glfw.x11.im = NULL;
-        return GL_TRUE;
-    }
-
-    // Search for needed input style
-    for (u = 0; u < styles->count_styles; u++)
-    {
-        if (styles->supported_styles[u] == (XIMPreeditNothing | XIMStatusNothing))
-            break;
-    }
-
-    if (u >= styles->count_styles)
-    {
-        XFree(styles);
-        XCloseIM(_glfw.x11.im);
-        _glfw.x11.im = NULL;
-        return GL_TRUE;
-    }
-
-    XFree(styles);
-
     // Find Xdnd (drag and drop) atoms, if available
     _glfw.x11.XdndAware = XInternAtom(_glfw.x11.display, "XdndAware", True);
     _glfw.x11.XdndEnter = XInternAtom(_glfw.x11.display, "XdndEnter", True);
@@ -726,8 +710,6 @@ int _glfwPlatformInit(void)
 {
     XInitThreads();
 
-    _glfw.x11.im = NULL;
-
     _glfw.x11.display = XOpenDisplay(NULL);
     if (!_glfw.x11.display)
     {
@@ -743,6 +725,21 @@ int _glfwPlatformInit(void)
         return GL_FALSE;
 
     _glfw.x11.cursor = createNULLCursor();
+
+    if (XSupportsLocale())
+    {
+        XSetLocaleModifiers("");
+
+        _glfw.x11.im = XOpenIM(_glfw.x11.display, 0, 0, 0);
+        if (_glfw.x11.im)
+        {
+            if (!hasUsableInputMethodStyle())
+            {
+                XCloseIM(_glfw.x11.im);
+                _glfw.x11.im = NULL;
+            }
+        }
+    }
 
     if (!_glfwInitContextAPI())
         return GL_FALSE;

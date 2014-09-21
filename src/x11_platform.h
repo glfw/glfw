@@ -78,6 +78,7 @@ typedef struct _GLFWwindowX11
 {
     Colormap        colormap;
     Window          handle;
+    XIC             ic;
 
     GLboolean       overrideRedirect;
 
@@ -90,8 +91,6 @@ typedef struct _GLFWwindowX11
     // The last position the cursor was warped to by GLFW
     int             warpPosX, warpPosY;
 
-    // The window's input context
-    XIC ic;
 } _GLFWwindowX11;
 
 
@@ -107,6 +106,8 @@ typedef struct _GLFWlibraryX11
     Cursor          cursor;
     // Context for mapping window XIDs to _GLFWwindow pointers
     XContext        context;
+    // XIM input method
+    XIM             im;
     // True if window manager supports EWMH
     GLboolean       hasEWMH;
     // Most recent error code received by X error handler
@@ -203,9 +204,6 @@ typedef struct _GLFWlibraryX11
     struct {
         Window      source;
     } xdnd;
-
-    // Input method and context
-    XIM im;
 
 } _GLFWlibraryX11;
 

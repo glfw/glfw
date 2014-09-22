@@ -447,6 +447,8 @@ static void detectEWMH(void)
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_ABOVE");
     _glfw.x11.NET_WM_STATE_FULLSCREEN =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_FULLSCREEN");
+    _glfw.x11.NET_WM_FULLSCREEN_MONITORS =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_FULLSCREEN_MONITORS");
     _glfw.x11.NET_WM_NAME =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_NAME");
     _glfw.x11.NET_WM_ICON_NAME =
@@ -531,6 +533,14 @@ static GLboolean initExtensions(void)
         }
 
         XRRFreeScreenResources(sr);
+    }
+
+    if (XineramaQueryExtension(_glfw.x11.display,
+                               &_glfw.x11.xinerama.versionMajor,
+                               &_glfw.x11.xinerama.versionMinor))
+    {
+        if (XineramaIsActive(_glfw.x11.display))
+            _glfw.x11.xinerama.available = GL_TRUE;
     }
 
     if (XQueryExtension(_glfw.x11.display,

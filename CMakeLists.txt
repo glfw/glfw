@@ -222,6 +222,15 @@ if (_GLFW_X11)
     list(APPEND glfw_LIBRARIES "${X11_Xrandr_LIB}")
     set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xrandr")
 
+    # Check for Xinerama (legacy multi-monitor support)
+    if (NOT X11_Xinerama_FOUND)
+        message(FATAL_ERROR "The Xinerama library and headers were not found")
+    endif()
+
+    list(APPEND glfw_INCLUDE_DIRS "${X11_Xinerama_INCLUDE_PATH}")
+    list(APPEND glfw_LIBRARIES "${X11_Xinerama_LIB}")
+    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xinerama")
+
     # Check for XInput (high-resolution cursor motion)
     if (NOT X11_Xinput_FOUND)
         message(FATAL_ERROR "The XInput library and headers were not found")

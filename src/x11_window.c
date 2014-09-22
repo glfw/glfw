@@ -715,6 +715,27 @@ static void enterFullscreenMode(_GLFWwindow* window)
                         PropModeReplace, (unsigned char*) &value, 1);
     }
 
+    if (_glfw.x11.xinerama.available && _glfw.x11.NET_WM_FULLSCREEN_MONITORS)
+    {
+        XEvent event;
+        memset(&event, 0, sizeof(event));
+
+        event.type = ClientMessage;
+        event.xclient.window = window->x11.handle;
+        event.xclient.format = 32; // Data is 32-bit longs
+        event.xclient.message_type = _glfw.x11.NET_WM_FULLSCREEN_MONITORS;
+        event.xclient.data.l[0] = window->monitor->x11.index;
+        event.xclient.data.l[1] = window->monitor->x11.index;
+        event.xclient.data.l[2] = window->monitor->x11.index;
+        event.xclient.data.l[3] = window->monitor->x11.index;
+
+        XSendEvent(_glfw.x11.display,
+                   _glfw.x11.root,
+                   False,
+                   SubstructureNotifyMask | SubstructureRedirectMask,
+                   &event);
+    }
+
     if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_FULLSCREEN)
     {
         int x, y;

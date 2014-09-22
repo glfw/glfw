@@ -48,6 +48,9 @@
 // The Xkb extension provides improved keyboard support
 #include <X11/XKBlib.h>
 
+// The Xinerama extension provides legacy monitor indices
+#include <X11/extensions/Xinerama.h>
+
 #include "posix_tls.h"
 
 #if defined(_GLFW_GLX)
@@ -130,6 +133,7 @@ typedef struct _GLFWlibraryX11
     Atom            NET_WM_STATE_ABOVE;
     Atom            NET_WM_STATE_FULLSCREEN;
     Atom            NET_WM_BYPASS_COMPOSITOR;
+    Atom            NET_WM_FULLSCREEN_MONITORS;
     Atom            NET_ACTIVE_WINDOW;
     Atom            NET_FRAME_EXTENTS;
     Atom            NET_REQUEST_FRAME_EXTENTS;
@@ -205,6 +209,12 @@ typedef struct _GLFWlibraryX11
         Window      source;
     } xdnd;
 
+    struct {
+        GLboolean   available;
+        int         versionMajor;
+        int         versionMinor;
+    } xinerama;
+
 } _GLFWlibraryX11;
 
 
@@ -215,6 +225,10 @@ typedef struct _GLFWmonitorX11
     RROutput        output;
     RRCrtc          crtc;
     RRMode          oldMode;
+
+    // Index of corresponding Xinerama screen,
+    // for EWMH full screen window placement
+    int             index;
 
 } _GLFWmonitorX11;
 

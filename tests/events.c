@@ -392,7 +392,7 @@ static void char_callback(GLFWwindow* window, unsigned int codepoint)
 static void char_mods_callback(GLFWwindow* window, unsigned int codepoint, int mods)
 {
     Slot* slot = glfwGetWindowUserPointer(window);
-    printf("%08x to %i at %0.3f: Character with modifiers 0x%08x (%s) (with%s) input\n",
+    printf("%08x to %i at %0.3f: Character 0x%08x (%s) with modifiers (with%s) input\n",
             counter++, slot->number, glfwGetTime(), codepoint,
             get_character_string(codepoint),
             get_mods_name(mods));

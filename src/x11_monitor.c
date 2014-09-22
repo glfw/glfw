@@ -352,12 +352,8 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 
             for (j = 0;  j < *found;  j++)
             {
-                if (result[j].width == mode.width &&
-                    result[j].height == mode.height &&
-                    result[j].refreshRate == mode.refreshRate)
-                {
+                if (_glfwCompareVideoModes(result + j, &mode) == 0)
                     break;
-                }
             }
 
             if (j < *found)

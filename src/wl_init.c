@@ -99,7 +99,7 @@ static void pointerHandleEnter(void* data,
     }
 
     window->wl.decorations.focus = focus;
-    _glfw.wl.pointerSerial = serial;
+    _glfw.wl.serial = serial;
     _glfw.wl.pointerFocus = window;
 
     window->wl.hovered = GLFW_TRUE;
@@ -120,7 +120,7 @@ static void pointerHandleLeave(void* data,
 
     window->wl.hovered = GLFW_FALSE;
 
-    _glfw.wl.pointerSerial = serial;
+    _glfw.wl.serial = serial;
     _glfw.wl.pointerFocus = NULL;
     _glfwInputCursorEnter(window, GLFW_FALSE);
 }
@@ -158,7 +158,7 @@ static void setCursor(_GLFWwindow* window, const char* name)
     buffer = wl_cursor_image_get_buffer(image);
     if (!buffer)
         return;
-    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
+    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.serial,
                           surface,
                           image->hotspot_x / scale,
                           image->hotspot_y / scale);
@@ -309,7 +309,7 @@ static void pointerHandleButton(void* data,
     if (window->wl.decorations.focus != mainWindow)
         return;
 
-    _glfw.wl.pointerSerial = serial;
+    _glfw.wl.serial = serial;
 
     /* Makes left, right and middle 0, 1 and 2. Overall order follows evdev
      * codes. */
@@ -478,6 +478,7 @@ static void keyboardHandleEnter(void* data,
             return;
     }
 
+    _glfw.wl.serial = serial;
     _glfw.wl.keyboardFocus = window;
     _glfwInputWindowFocus(window, GLFW_TRUE);
 }
@@ -492,6 +493,7 @@ static void keyboardHandleLeave(void* data,
     if (!window)
         return;
 
+    _glfw.wl.serial = serial;
     _glfw.wl.keyboardFocus = NULL;
     _glfwInputWindowFocus(window, GLFW_FALSE);
 }
@@ -575,6 +577,7 @@ static void keyboardHandleKey(void* data,
     action = state == WL_KEYBOARD_KEY_STATE_PRESSED
             ? GLFW_PRESS : GLFW_RELEASE;
 
+    _glfw.wl.serial = serial;
     _glfwInputKey(window, keyCode, key, action,
                   _glfw.wl.xkb.modifiers);
 
@@ -605,6 +608,8 @@ static void keyboardHandleModifiers(void* data,
 {
     xkb_mod_mask_t mask;
     unsigned int modifiers = 0;
+
+    _glfw.wl.serial = serial;
 
     if (!_glfw.wl.xkb.keymap)
         return;

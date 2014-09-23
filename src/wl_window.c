@@ -727,7 +727,7 @@ static void lockPointer(_GLFWwindow* window)
     window->wl.pointerLock.relativePointer = relativePointer;
     window->wl.pointerLock.lockedPointer = lockedPointer;
 
-    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
+    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.serial,
                           NULL, 0, 0);
 }
 
@@ -779,7 +779,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
             buffer = wl_cursor_image_get_buffer(image);
             if (!buffer)
                 return;
-            wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
+            wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.serial,
                                   surface,
                                   image->hotspot_x,
                                   image->hotspot_y);
@@ -790,7 +790,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
         }
         else
         {
-            wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
+            wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.serial,
                                   surface,
                                   cursor->wl.xhot,
                                   cursor->wl.yhot);
@@ -807,8 +807,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
     }
     else if (window->cursorMode == GLFW_CURSOR_HIDDEN)
     {
-        wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
-                              NULL, 0, 0);
+        wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.serial, NULL, 0, 0);
     }
 }
 

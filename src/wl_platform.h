@@ -124,7 +124,7 @@ typedef struct _GLFWlibraryWayland
 
     struct wl_cursor_theme*     cursorTheme;
     struct wl_surface*          cursorSurface;
-    uint32_t                    pointerSerial;
+    uint32_t                    serial;
 
     _GLFWmonitor**              monitors;
     int                         monitorsCount;

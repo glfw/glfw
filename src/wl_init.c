@@ -50,7 +50,7 @@ static void pointerHandleEnter(void* data,
 {
     _GLFWwindow* window = wl_surface_get_user_data(surface);
 
-    _glfw.wl.pointerSerial = serial;
+    _glfw.wl.serial = serial;
     _glfw.wl.pointerFocus = window;
 
     _glfwPlatformSetCursor(window, window->wl.currentCursor);
@@ -67,7 +67,7 @@ static void pointerHandleLeave(void* data,
     if (!window)
         return;
 
-    _glfw.wl.pointerSerial = serial;
+    _glfw.wl.serial = serial;
     _glfw.wl.pointerFocus = NULL;
     _glfwInputCursorEnter(window, GLFW_FALSE);
 }
@@ -105,6 +105,8 @@ static void pointerHandleButton(void* data,
 {
     _GLFWwindow* window = _glfw.wl.pointerFocus;
     int glfwButton;
+
+    _glfw.wl.serial = serial;
 
     if (!window)
         return;
@@ -232,6 +234,7 @@ static void keyboardHandleEnter(void* data,
 {
     _GLFWwindow* window = wl_surface_get_user_data(surface);
 
+    _glfw.wl.serial = serial;
     _glfw.wl.keyboardFocus = window;
     _glfwInputWindowFocus(window, GLFW_TRUE);
 }
@@ -246,6 +249,7 @@ static void keyboardHandleLeave(void* data,
     if (!window)
         return;
 
+    _glfw.wl.serial = serial;
     _glfw.wl.keyboardFocus = NULL;
     _glfwInputWindowFocus(window, GLFW_FALSE);
 }
@@ -271,6 +275,8 @@ static void keyboardHandleKey(void* data,
     int action;
     const xkb_keysym_t *syms;
     _GLFWwindow* window = _glfw.wl.keyboardFocus;
+
+    _glfw.wl.serial = serial;
 
     if (!window)
         return;
@@ -307,6 +313,8 @@ static void keyboardHandleModifiers(void* data,
 {
     xkb_mod_mask_t mask;
     unsigned int modifiers = 0;
+
+    _glfw.wl.serial = serial;
 
     if (!_glfw.wl.xkb.keymap)
         return;

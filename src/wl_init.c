@@ -574,7 +574,7 @@ int _glfwPlatformInit(void)
     _glfwInitJoysticks();
 
     if (_glfw.wl.pointer && _glfw.wl.shm){
-        _glfw.wl.cursorTheme = wl_cursor_theme_load(NULL, 24, _glfw.wl.shm);
+        _glfw.wl.cursorTheme = wl_cursor_theme_load(NULL, 32, _glfw.wl.shm);
         if (!_glfw.wl.cursorTheme) {
             _glfwInputError(GLFW_PLATFORM_ERROR, "Wayland: Unable to load default cursor theme\n");
             return GL_FALSE;

@@ -179,9 +179,6 @@ os_create_anonymous_file(off_t size)
     }
 
     name = malloc(strlen(path) + sizeof(template));
-    if (!name)
-        return -1;
-
     strcpy(name, path);
     strcat(name, template);
 

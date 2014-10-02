@@ -35,15 +35,15 @@ and pollute your code's namespace with the whole Win32 API.
 
 Instead, the GLFW header takes care of this for you, not by including
 `windows.h`, but rather by itself duplicating only the necessary parts of it.
-It does this only where needed, so if `windows.h` *is* included, the GLFW header
+It does this only where needed, so if `windows.h` _is_ included, the GLFW header
 does not try to redefine those symbols.
 
 In other words:
 
-- Do *not* include the OpenGL headers yourself, as GLFW does this for you
-- Do *not* include `windows.h` or other platform-specific headers unless
+- Do _not_ include the OpenGL headers yourself, as GLFW does this for you
+- Do _not_ include `windows.h` or other platform-specific headers unless
   you plan on using those APIs directly
-- If you *do* need to include such headers, do it *before* including the
+- If you _do_ need to include such headers, do it _before_ including the
   GLFW one and it will detect this
 
 Starting with version 3.0, the GLU header `glu.h` is no longer included by
@@ -162,7 +162,7 @@ Each window has a flag indicating whether the window should be closed.
 
 When the user attempts to close the window, either by pressing the close widget
 in the title bar or using a key combination like Alt+F4, this flag is set to 1.
-Note that **the window isn't actually closed**, so you are expected to monitor
+Note that __the window isn't actually closed__, so you are expected to monitor
 this flag and either destroy the window or give some kind of feedback to the
 user.
 
@@ -248,7 +248,7 @@ glfwSwapBuffers(window);
 @endcode
 
 The swap interval indicates how many frames to wait until swapping the buffers,
-commonly known as *vsync*.  By default, the swap interval is zero, meaning
+commonly known as _vsync_.  By default, the swap interval is zero, meaning
 buffer swapping will occur immediately.  On fast machines, many of those frames
 will never be seen, as the screen is still only updated typically 60-75 times
 per second, so this wastes a lot of CPU and GPU cycles.

@@ -50,8 +50,8 @@ requests that all types are shared.
 See the relevant chapter of the [OpenGL](https://www.opengl.org/registry/) or
 [OpenGL ES](http://www.khronos.org/opengles/) reference documents for more
 information.  The name and number of this chapter unfortunately varies between
-versions and APIs, but has at times been named *Shared Objects and Multiple
-Contexts*.
+versions and APIs, but has at times been named _Shared Objects and Multiple
+Contexts_.
 
 GLFW comes with a simple object sharing test program called `sharing`.
 

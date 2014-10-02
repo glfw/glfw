@@ -5,7 +5,7 @@
 @tableofcontents
 
 This is a transition guide for moving from GLFW 2 to 3.  It describes what has
-changed or been removed, but does *not* include
+changed or been removed, but does _not_ include
 [new features](@ref news) unless they are required when moving an existing code
 base onto the new API.  For example, the new multi-monitor functions are
 required to create full screen windows with GLFW 3.
@@ -50,7 +50,7 @@ the original author of GLFW.  These libraries implement a usable subset of the
 threading APIs in C++11 and C11, and in fact some GLFW 3 test programs use
 TinyCThread.
 
-However, GLFW 3 has better support for *use from multiple threads* than GLFW
+However, GLFW 3 has better support for _use from multiple threads_ than GLFW
 2 had.  Contexts can be made current on any thread, although only a single
 thread at a time, and the documentation explicitly states which functions may be
 used from any thread and which may only be used from the main thread.
@@ -149,7 +149,7 @@ into [window hints](@ref window_hints), but as they have been given
 
 GLFW 3 does not automatically poll for events on @ref glfwSwapBuffers, which
 means you need to call @ref glfwPollEvents or @ref glfwWaitEvents yourself.
-Unlike buffer swap, which acts on a single window, **glfwPollEvents** and
+Unlike buffer swap, which acts on a single window, __glfwPollEvents__ and
 __glfwWaitEvents__ process events for all windows at once.
 
 @par Old basic main loop
@@ -428,8 +428,8 @@ invalidating any window handles you may still have.
 @subsection moving_glu GLU header inclusion
 
 GLFW 3 does not by default include the GLU header and GLU itself has been
-deprecated by [Khronos](https://en.wikipedia.org/wiki/Khronos_Group).  **New
-projects should avoid using GLU**, but if you need to compile legacy code that
+deprecated by [Khronos](https://en.wikipedia.org/wiki/Khronos_Group).  __New
+projects should avoid using GLU__, but if you need to compile legacy code that
 has been moved to GLFW 3, you can request that the GLFW header includes it by
 defining `GLFW_INCLUDE_GLU` before the inclusion of the GLFW header.
 

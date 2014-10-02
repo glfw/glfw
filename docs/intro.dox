@@ -78,7 +78,7 @@ additional calls return immediately.
 @section error_handling Error handling
 
 Some GLFW functions have return values that indicate an error, but this is often
-not very helpful when trying to figure out *why* the error occurred.  Some
+not very helpful when trying to figure out _why_ the error occurred.  Some
 functions also return otherwise valid values on error.  Finally, far from all
 GLFW functions have return values.
 

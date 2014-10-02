@@ -18,11 +18,11 @@ API.
 
 There are guides for each of the various areas of the API.
 
- - @ref intro
- - @ref window
- - @ref context
- - @ref monitor
- - @ref input
+ - @ref intro – initialization, error handling and high-level design
+ - @ref window – creating and working with windows and framebuffers
+ - @ref context – working with OpenGL and OpenGL ES contexts
+ - @ref monitor – enumerating and working with monitors and video modes
+ - @ref input – receiving events, polling and processing input
 
 The [FAQ](http://www.glfw.org/faq.html) answers many common questions about the
 design, implementation and use of GLFW.

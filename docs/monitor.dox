@@ -24,9 +24,9 @@ a pointer to the [opaque](https://en.wikipedia.org/wiki/Opaque_data_type) type
 application and retain their addresses until the monitors they represent are
 disconnected or until the library is [terminated](@ref intro_init_terminate).
 
-Each monitor has a human-readable name, a current video mode, a list of
-supported video modes, a virtual position, an estimated physical size and
-a gamma ramp.  
+Each monitor has a current video mode, a list of supported video modes,
+a virtual position, a human-readable name, an estimated physical size and
+a gamma ramp.  One of the monitors is the primary monitor.
 
 The virtual position of a monitor is in screen coordinates and, together with
 the current video mode, describes the viewports that the connected monitors
@@ -37,7 +37,7 @@ provide into the virtual desktop that spans them.
 
 The primary monitor is returned by @ref glfwGetPrimaryMonitor.  It is the user's
 preferred monitor and is usually the one with global UI elements like task bar
-or menu bar.  The returned structure is allocated and freed by GLFW.
+or menu bar.
 
 @code
 GLFWmonitor* primary = glfwGetPrimaryMonitor();
@@ -59,7 +59,7 @@ disconnected.
 @subsection monitor_event Monitor configuration changes
 
 If you wish to be notified when a monitor is connected or disconnected, set
-a monitor callback with @ref glfwSetMonitorCallback.
+a monitor callback.
 
 @code
 glfwSetMonitorCallback(monitor_callback);
@@ -79,6 +79,11 @@ The action is one of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.
 
 @section monitor_properties Monitor properties
 
+Each monitor has a current video mode, a list of supported video modes,
+a virtual position, a human-readable name, an estimated physical size and
+a gamma ramp.
+
+
 @subsection monitor_modes Video modes
 
 Although GLFW generally does a good job at selecting a suitable video
@@ -87,7 +92,7 @@ know exactly which modes are available on a certain system. For example,
 you may want to present the user with a list of video modes to select
 from.
 
-To get a list of available video modes, you can use the function @ref
+To get a list of supported video modes, you can use the function @ref
 glfwGetVideoModes.  See the reference documentation for the lifetime of the
 returned array.
 

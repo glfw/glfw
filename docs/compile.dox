@@ -92,8 +92,8 @@ example, on Ubuntu and other distributions based on Debian GNU/Linux, you need
 to install the `xorg-dev` and `libglu1-mesa-dev` packages.  The former pulls in
 all X.org header packages and the latter pulls in the Mesa OpenGL and GLU
 packages.  GLFW itself doesn't need or use GLU, but some of the examples do.
-Note that using header files and libraries from Mesa during compilation *will
-not* tie your binaries to the Mesa implementation of OpenGL.
+Note that using header files and libraries from Mesa during compilation
+_will not_ tie your binaries to the Mesa implementation of OpenGL.
 
 Once you have installed the necessary packages, move on to @ref
 compile_generate.
@@ -103,8 +103,8 @@ compile_generate.
 
 Once you have all necessary dependencies it is time to generate the project
 files or makefiles for your development environment.  CMake needs to know two
-paths for this: the path to the *root* directory of the GLFW source tree (i.e.
-*not* the `src` subdirectory) and the target path for the generated files and
+paths for this: the path to the _root_ directory of the GLFW source tree (i.e.
+_not_ the `src` subdirectory) and the target path for the generated files and
 compiled binaries.  If these are the same, it is called an in-tree build,
 otherwise it is called an out-of-tree build.
 
@@ -117,8 +117,8 @@ to compile the GLFW library, not about compiling the actual library.
 
 @subsubsection compile_generate_cli Generating files with the CMake command-line tool
 
-To make an in-tree build, enter the *root* directory of the GLFW source tree
-(i.e. *not* the `src` subdirectory) and run CMake.  The current directory is
+To make an in-tree build, enter the _root_ directory of the GLFW source tree
+(i.e. _not_ the `src` subdirectory) and run CMake.  The current directory is
 used as target path, while the path provided as an argument is used to find the
 source tree.
 
@@ -146,8 +146,8 @@ development environment, move on to @ref compile_compile.
 
 If you are using the GUI version, choose the root of the GLFW source tree as
 source location and the same directory or another, empty directory as the
-destination for binaries.  Choose *Configure*, change any options you wish to,
-*Configure* again to let the changes take effect and then *Generate*.
+destination for binaries.  Choose _Configure_, change any options you wish to,
+_Configure_ again to let the changes take effect and then _Generate_.
 
 Once you have generated the project files or makefiles for your chosen
 development environment, move on to @ref compile_compile.
@@ -252,7 +252,7 @@ defines `_GLFW_USE_CONFIG_H`, which causes this header to be included by
 `internal.h`.  Without this macro, GLFW will expect the necessary configuration
 macros to be defined on the command-line.
 
-Three macros *must* be defined when compiling GLFW: one for selecting the window
+Three macros _must_ be defined when compiling GLFW: one for selecting the window
 creation API, one selecting the context creation API and one client library.
 Exactly one of each kind must be defined for GLFW to compile and link.
 
@@ -289,7 +289,7 @@ libraries.
 If you are building GLFW as a shared library / dynamic library / DLL then you
 must also define `_GLFW_BUILD_DLL`.  Otherwise, you may not define it.
 
-If you are using the X11 window creation API then you *must* also select an entry
+If you are using the X11 window creation API then you _must_ also select an entry
 point retrieval mechanism.
 
  - `_GLFW_HAS_GLXGETPROCADDRESS` to use `glXGetProcAddress` (recommended)

@@ -139,7 +139,7 @@ glfwSetGamma, which generates a ramp from a gamma value and then sets it.
 
 GLFW now supports the creation of OpenGL ES contexts, by setting the
 `GLFW_CLIENT_API` window hint to `GLFW_OPENGL_ES_API`, where creation of such
-contexts are supported.  Note that GLFW *does not implement* OpenGL ES, so your
+contexts are supported.  Note that GLFW _does not implement_ OpenGL ES, so your
 driver must provide support in a way usable by GLFW.  Modern nVidia and Intel
 drivers support creation of OpenGL ES context using the GLX and WGL APIs, while
 AMD provides an EGL implementation instead.

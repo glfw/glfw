@@ -38,32 +38,65 @@ GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
 If window creation fails, `NULL` will be returned, so it is necessary to check
 the return value.
 
-@code
-if (!window)
-{
-    // Handle window creation failure
-}
-@endcode
-
 The window handle is passed to all window related functions and is provided to
 along with all input events, so event handlers can tell which window received
 the event.
 
+
+@subsubsection window_full_screen Full screen windows
+
 To create a full screen window, you need to specify which monitor the window
-should use.  In most cases, the user's primary monitor is a good choice.  You
-can get this with @ref glfwGetPrimaryMonitor.  For more information about
-monitors, see the @ref monitor.
+should use.  In most cases, the user's primary monitor is a good choice.
+For more information about retrieving monitors, see @ref monitor_monitors. 
 
 @code
 GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", glfwGetPrimaryMonitor(), NULL);
 @endcode
 
 Full screen windows cover the entire display area of a monitor, have no border
-or decorations, and change the monitor's resolution to the one most closely
-matching the requested window size.
+or decorations.
 
-For more control over how the window and its context are created, see @ref
-window_hints below.
+The requested window size combined with the window hints below form the _desired
+video mode_.  The supported video mode most closely matching the desired video
+mode will be set for the chosen monitor as long as the window is focused.  For
+more information about video modes supported by a monitor, see @ref
+monitor_modes.
+
+Video mode field        | Corresponds to
+----------------------- | ------------------------
+GLFWvidmode.width       | `width` parameter
+GLFWvidmode.height      | `height` parameter
+GLFWvidmode.redBits     | `GLFW_RED_BITS` hint
+GLFWvidmode.greenBits   | `GLFW_GREEN_BITS` hint
+GLFWvidmode.blueBits    | `GLFW_BLUE_BITS` hint
+GLFWvidmode.refreshRate | `GLFW_REFRESH_RATE` hint
+
+Once you have a full screen window, you can change its resolution with @ref
+glfwSetWindowSize.  The new video mode will be selected and set the same way as
+the video mode chosen by @ref glfwCreateWindow.
+
+By default, the original video mode of the monitor will be restored and the
+window iconified if it loses input focus, to allow the user to switch back to
+the desktop.  This can be disabled with the `GLFW_AUTO_ICONIFY` window hint, for
+example if you wish to simultaneously cover multiple windows with full screen
+windows.
+
+To create a so called _windowed full screen_ or _borderless full screen_ window,
+i.e. a full screen window that doesn't change the video mode of the monitor, you
+need to request the current video mode of the chosen monitor.
+
+@code
+const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "My Title", monitor, NULL);
+@endcode
+
+GLFW will detect this and will not perform any mode setting for that window.   
 
 
 @subsection window_destruction Window destruction
@@ -80,8 +113,7 @@ callbacks are removed so no further events will be delivered for the window.
 When a full screen window is destroyed, the original video mode of its monitor
 is restored, but the gamma ramp is left untouched.
 
-All windows remaining at the time @ref glfwTerminate is called are destroyed as
-well.
+All windows remaining when @ref glfwTerminate is called are destroyed as well.
 
 
 @subsection window_hints Window creation hints
@@ -92,14 +124,14 @@ context.  These hints are set to their default values each time the library is
 initialized with @ref glfwInit, can be set individually with @ref glfwWindowHint
 and reset all at once to their defaults with @ref glfwDefaultWindowHints.
 
-Note that hints need to be set *before* the creation of the window and context
+Note that hints need to be set _before_ the creation of the window and context
 you wish to have the specified attributes.
 
 
 @subsubsection window_hints_hard Hard and soft constraints
 
 Some window hints are hard constraints.  These must match the available
-capabilities *exactly* for window and context creation to succeed.  Hints
+capabilities _exactly_ for window and context creation to succeed.  Hints
 that are not hard constraints are matched as closely as possible, but the
 resulting window and context may differ from what these hints requested.  To
 find out the actual attributes of the created window and context, use the
@@ -119,7 +151,7 @@ context, but are ignored when requesting an OpenGL ES context:
 @subsubsection window_hints_wnd Window related hints
 
 `GLFW_RESIZABLE` specifies whether the (windowed mode) window will be resizable
-*by the user*.  The window will still be resizable using the @ref
+_by the user_.  The window will still be resizable using the @ref
 glfwSetWindowSize function.  This hint is ignored for full screen windows.
 
 `GLFW_VISIBLE` specifies whether the (windowed mode) window will be initially
@@ -306,7 +338,7 @@ The initial value of the pointer is `NULL`.
 @subsection window_close Closing and close flag
 
 When the user attempts to close the window, for example by clicking the close
-widget or using a key chord like Alt+F4, the *close flag* of the window is set.
+widget or using a key chord like Alt+F4, the _close flag_ of the window is set.
 The window is however not actually destroyed and, unless you watch for this
 state change, nothing further happens.
 
@@ -325,13 +357,13 @@ while (!glfwWindowShouldClose(window))
 @endcode
 
 If you wish to be notified when the user attempts to close a window, set a close
-callback with @ref glfwSetWindowCloseCallback.
+callback.
 
 @code
 glfwSetWindowCloseCallback(window, window_close_callback);
 @endcode
 
-The callback function is called directly *after* the close flag has been set.
+The callback function is called directly _after_ the close flag has been set.
 It can be used for example to filter close requests and clear the close flag
 again unless certain conditions are met.
 
@@ -344,20 +376,23 @@ void window_close_callback(GLFWwindow* window)
 @endcode
 
 
-@subsection window_size Client area size
+@subsection window_size Size
 
 The size of a window can be changed with @ref glfwSetWindowSize.  For windowed
-mode windows, this resizes the window so that its *client area* has the
-specified size.  The window system may impose limits on window size.  For full
-screen windows, it selects and sets the video mode most closely matching the
-specified size and the color bit depth and refresh rate hints set at creation.
+mode windows, this sets the size of the _client area_ or _content area_ of the
+window.  The window system may impose limits on window size.
 
 @code
-void glfwSetWindowSize(window, 640, 480);
+glfwSetWindowSize(window, 640, 480);
 @endcode
 
+For full screen windows, the specified size becomes the new resolution of the
+window's *desired video mode*.  The video mode most closely matching the new
+desired video mode is set immediately.  The window is resized to fit the
+resolution of the set video mode.
+
 If you wish to be notified when a window is resized, whether by the user or
-the system, set a size callback with @ref glfwSetWindowSizeCallback.
+the system, set a size callback.
 
 @code
 glfwSetWindowSizeCallback(window, window_size_callback);
@@ -409,8 +444,7 @@ a second set of functions to retrieve the size in pixels of the framebuffer of
 a window.
 
 If you wish to be notified when the framebuffer of a window is resized, whether
-by the user or the system, set a size callback with @ref
-glfwSetFramebufferSizeCallback.
+by the user or the system, set a size callback.
 
 @code
 glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -452,7 +486,7 @@ glfwSetWindowPos(window, 100, 100);
 @endcode
 
 If you wish to be notified when a window is moved, whether by the user, system
-or your own code, set a position callback with @ref glfwSetWindowPosCallback.
+or your own code, set a position callback.
 
 @code
 glfwSetWindowPosCallback(window, window_pos_callback);
@@ -533,8 +567,7 @@ When a full screen window is restored, the desired video mode is restored to its
 monitor as well.
 
 If you wish to be notified when a window is iconified or restored, whether by
-the user, system or your own code, set a iconify callback with @ref
-glfwSetWindowIconifyCallback.
+the user, system or your own code, set a iconify callback.
 
 @code
 glfwSetWindowIconifyCallback(window, window_iconify_callback);
@@ -597,8 +630,7 @@ int visible = glfwGetWindowAttrib(window, GLFW_VISIBLE);
 @subsection window_focus Input focus
 
 If you wish to be notified when a window gains or loses focus, whether by
-the user, system or your own code, set a focus callback with @ref
-glfwSetWindowFocusCallback.
+the user, system or your own code, set a focus callback.
 
 @code
 glfwSetWindowFocusCallback(window, window_focus_callback);
@@ -630,8 +662,7 @@ int focused = glfwGetWindowAttrib(window, GLFW_FOCUSED);
 @subsection window_refresh Damage and refresh
 
 If you wish to be notified when the contents of a window is damaged and needs
-to be refreshed, set a window refresh callback with @ref
-glfwSetWindowRefreshCallback.
+to be refreshed, set a window refresh callback.
 
 @code
 glfwSetWindowRefreshCallback(m_handle, window_refresh_callback);
@@ -681,8 +712,8 @@ visibility can be controlled with @ref glfwShowWindow and @ref glfwHideWindow
 and initial visibility is controlled by the [window hint](@ref window_hints)
 with the same name.  
 
-`GLFW_RESIZABLE` indicates whether the specified window is resizable *by the
-user*.  This is controlled by the [window hint](@ref window_hints) with the same
+`GLFW_RESIZABLE` indicates whether the specified window is resizable _by the
+user_.  This is controlled by the [window hint](@ref window_hints) with the same
 name.
 
 `GLFW_DECORATED` indicates whether the specified window has decorations such as

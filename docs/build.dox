@@ -35,21 +35,21 @@ with the entire Win32 API.
 
 Instead, the GLFW header takes care of this for you, not by including
 `windows.h`, but by duplicating only the very few necessary parts of it.  It
-does this only when needed, so if `windows.h` *is* included, the GLFW header
+does this only when needed, so if `windows.h` _is_ included, the GLFW header
 does not try to redefine those symbols.  The reverse is not true, i.e.
 `windows.h` cannot cope if any of its symbols have already been defined.
 
 In other words:
 
- - Do *not* include the OpenGL headers yourself, as GLFW does this for you
- - Do *not* include `windows.h` or other platform-specific headers unless you
+ - Do _not_ include the OpenGL headers yourself, as GLFW does this for you
+ - Do _not_ include `windows.h` or other platform-specific headers unless you
    plan on using those APIs directly
- - If you *do* need to include such headers, do it *before* including
+ - If you _do_ need to include such headers, do it _before_ including
    the GLFW header and it will handle this
 
 If you are using an OpenGL extension loading library such as
 [glad](https://github.com/Dav1dde/glad), the extension loader header should
-either be included *before* the GLFW one, or the `GLFW_INCLUDE_NONE` macro
+either be included _before_ the GLFW one, or the `GLFW_INCLUDE_NONE` macro
 (described below) should be defined.
 
 
@@ -85,7 +85,7 @@ header.  This is useful in combination with an extension loading library.
 If none of the above inclusion macros are defined, the standard OpenGL `GL/gl.h`
 header (`OpenGL/gl.h` on OS X) is included.
 
-`GLFW_INCLUDE_GLU` makes the header include the GLU header *in addition to* the
+`GLFW_INCLUDE_GLU` makes the header include the GLU header _in addition to_ the
 header selected above.  This should only be used with legacy code.  GLU has been
 deprecated and should not be used in new code.
 
@@ -124,7 +124,7 @@ set of default libraries along with other dependencies like `user32` and
 
 The link library for the GLFW DLL is named `glfw3dll`.  When compiling an
 application that uses the DLL version of GLFW, you need to define the `GLFW_DLL`
-macro *before* any inclusion of the GLFW header.  This can be done either with
+macro _before_ any inclusion of the GLFW header.  This can be done either with
 a compiler switch or by defining it in your source code.
 
 An application using the GLFW DLL does not need to link against any of its
@@ -293,6 +293,6 @@ against it from the command-line.
 The OpenGL framework contains both the OpenGL and GLU APIs, so there is nothing
 special to do when using GLU.  Also note that even though your machine may have
 `libGL`-style OpenGL libraries, they are for use with the X Window System and
-will *not* work with the OS X native version of GLFW.
+will _not_ work with the OS X native version of GLFW.
 
 */

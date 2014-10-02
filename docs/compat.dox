@@ -9,7 +9,7 @@ It lists what are essentially implementation details, but which are nonetheless
 vital knowledge for developers intending to deploy their applications on a wide
 range of machines.
 
-@note The information in this guide is not a part of GLFW API, but merely
+The information in this guide is not a part of GLFW API, but merely
 preconditions for some parts of the library to function on a given machine.  Any
 part of this information may change in future versions of GLFW and that will not
 be considered a breaking API change.

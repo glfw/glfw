@@ -263,7 +263,7 @@ extern "C" {
 
 /*! @defgroup keys Keyboard keys
  *
- * These key codes are inspired by the *USB HID Usage Tables v1.12* (p. 53-60),
+ * These key codes are inspired by the _USB HID Usage Tables v1.12_ (p. 53-60),
  * but re-arranged to map to 7-bit ASCII for printable keys (function keys are
  * put in the 256+ range).
  *
@@ -839,7 +839,7 @@ typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
  *  @param[in] window The window that received the event.
  *  @param[in] key The [keyboard key](@ref keys) that was pressed or released.
  *  @param[in] scancode The system-specific scancode of the key.
- *  @param[in] action @ref GLFW_PRESS, @ref GLFW_RELEASE or @ref GLFW_REPEAT.
+ *  @param[in] action `GLFW_PRESS`, `GLFW_RELEASE` or `GLFW_REPEAT`.
  *  @param[in] mods Bit field describing which [modifier keys](@ref mods) were
  *  held down.
  *
@@ -997,7 +997,7 @@ typedef struct GLFWimage
  *  @return `GL_TRUE` if successful, or `GL_FALSE` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @remarks **OS X:** This function will change the current directory of the
+ *  @remarks __OS X:__ This function will change the current directory of the
  *  application to the `Contents/Resources` subdirectory of the application's
  *  bundle, if present.  This can be disabled with a
  *  [compile-time option](@ref compile_options_osx).
@@ -1012,7 +1012,7 @@ typedef struct GLFWimage
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** This function no longer registers @ref glfwTerminate with `atexit`.
+ *  __GLFW 3:__ This function no longer registers @ref glfwTerminate with `atexit`.
  *
  *  @ingroup init
  */
@@ -1277,7 +1277,7 @@ GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* monitor);
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @bug **X11:** This callback is not yet called on monitor configuration
+ *  @bug __X11:__ This callback is not yet called on monitor configuration
  *  changes.
  *
  *  @par Thread Safety
@@ -1320,7 +1320,7 @@ GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun);
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Changed to return a dynamic array of video modes for a specific
+ *  __GLFW 3:__ Changed to return a dynamic array of video modes for a specific
  *  monitor.
  *
  *  @ingroup monitor
@@ -1463,7 +1463,7 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  Added in GLFW 2.2.
  *
  *  @par
- *  **GLFW 3:** Renamed from `glfwOpenWindowHint`.  Hints are no longer reset to
+ *  __GLFW 3:__ Renamed from `glfwOpenWindowHint`.  Hints are no longer reset to
  *  default values on window creation.
  *
  *  @ingroup window
@@ -1494,17 +1494,24 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  that you pick the primary monitor.  For more information on how to query
  *  connected monitors, see @ref monitor_monitors.
  *
+ *  For full screen windows, the specified size becomes the resolution of the
+ *  window's _desired video mode_.  As long as a full screen window has input
+ *  focus, the supported video mode most closely matching the desired video mode
+ *  is set for the specified monitor.  For more information about full screen
+ *  windows, including the creation of so called _windowed full screen_ or
+ *  _borderless full screen_ windows, see @ref window_full_screen.
+ *
  *  By default, newly created windows use the placement recommended by the
  *  window system.  To create the window at a specific position, make it
- *  initially invisible using the `GLFW_VISIBLE` window hint, set its position
- *  and then show it.
+ *  initially invisible using the `GLFW_VISIBLE` window hint, set its
+ *  [position](@ref window_pos) and then [show](@ref window_hide) it.
  *
- *  If a full screen window is active, the screensaver is prohibited from
+ *  If a full screen window is focused, the screensaver is prohibited from
  *  starting.
  *
  *  Window systems put limits on window sizes.  Very large or very small window
  *  dimensions may be overridden by the window system on creation.  Check the
- *  actual [window size](@ref window_size) after creation.
+ *  actual [size](@ref window_size) after creation.
  *
  *  The [swap interval](@ref window_swap) is not set during window creation and
  *  the initial value may vary depending on driver settings and defaults.
@@ -1521,27 +1528,27 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  @return The handle of the created window, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @remarks **Windows:** Window creation will fail if the Microsoft GDI
+ *  @remarks __Windows:__ Window creation will fail if the Microsoft GDI
  *  software OpenGL implementation is the only one available.
  *
- *  @remarks **Windows:** If the executable has an icon resource named
+ *  @remarks __Windows:__ If the executable has an icon resource named
  *  `GLFW_ICON,` it will be set as the icon for the window.  If no such icon is
  *  present, the `IDI_WINLOGO` icon will be used instead.
  *
- *  @remarks **OS X:** The GLFW window has no icon, as it is not a document
+ *  @remarks __OS X:__ The GLFW window has no icon, as it is not a document
  *  window, but the dock icon will be the same as the application bundle's icon.
  *  For more information on bundles, see the
  *  [Bundle Programming Guide](https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/)
  *  in the Mac Developer Library.
  *
- *  @remarks **OS X:** The first time a window is opened the menu bar is populated with
+ *  @remarks __OS X:__ The first time a window is opened the menu bar is populated with
  *  common commands like Hide, Quit and About.  The About entry opens a minimal
  *  about dialog with information from the application's bundle.  The menu bar can be
  *  disabled with a [compile-time option](@ref compile_options_osx).
  *
- *  @remarks **X11:** There is no mechanism for setting the window icon yet.
+ *  @remarks __X11:__ There is no mechanism for setting the window icon yet.
  *
- *  @remarks **X11:** Some window managers will not respect the placement of
+ *  @remarks __X11:__ Some window managers will not respect the placement of
  *  initially hidden windows.
  *
  *  @note This function may not be called from a callback.
@@ -1556,7 +1563,7 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Renamed from `glfwOpenWindow`.  Complete signature overhaul.
+ *  __GLFW 3:__ Renamed from `glfwOpenWindow`.  Complete signature overhaul.
  *
  *  @ingroup window
  */
@@ -1587,7 +1594,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height, const char* title, G
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Renamed from `glfwCloseWindow`.  Added window handle parameter.
+ *  __GLFW 3:__ Renamed from `glfwCloseWindow`.  Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -1650,7 +1657,7 @@ GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int value);
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Added window handle parameter.
+ *  __GLFW 3:__ Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -1708,7 +1715,7 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Added window handle parameter.
+ *  __GLFW 3:__ Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -1739,7 +1746,7 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow* window, int xpos, int ypos);
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Added window handle parameter.
+ *  __GLFW 3:__ Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -1771,7 +1778,7 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Added window handle parameter.
+ *  __GLFW 3:__ Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -1862,7 +1869,7 @@ GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* window, int* left, int* top, int
  *  Added in GLFW 2.1.
  *
  *  @par
- *  **GLFW 3:** Added window handle parameter.
+ *  __GLFW 3:__ Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -1888,7 +1895,7 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow* window);
  *  Added in GLFW 2.1.
  *
  *  @par
- *  **GLFW 3:** Added window handle parameter.
+ *  __GLFW 3:__ Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -1977,7 +1984,7 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Renamed from `glfwGetWindowParam`.  Added window handle
+ *  __GLFW 3:__ Renamed from `glfwGetWindowParam`.  Added window handle
  *  parameter.
  *
  *  @ingroup window
@@ -2047,7 +2054,7 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
  *  Added in GLFW 3.0.
  *
  *  @par
- *  **GLFW 3:** Added window handle parameter.  Updated callback signature.
+ *  __GLFW 3:__ Added window handle parameter.  Updated callback signature.
  *
  *  @ingroup window
  */
@@ -2074,7 +2081,7 @@ GLFWAPI GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow* window, GLFWwindow
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Added window handle parameter.  Updated callback signature.
+ *  __GLFW 3:__ Added window handle parameter.  Updated callback signature.
  *
  *  @ingroup window
  */
@@ -2097,7 +2104,7 @@ GLFWAPI GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwind
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @remarks **OS X:** Selecting Quit from the application menu will
+ *  @remarks __OS X:__ Selecting Quit from the application menu will
  *  trigger the close callback for all windows.
  *
  *  @par Thread Safety
@@ -2109,7 +2116,7 @@ GLFWAPI GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwind
  *  Added in GLFW 2.5.
  *
  *  @par
- *  **GLFW 3:** Added window handle parameter.  Updated callback signature.
+ *  __GLFW 3:__ Added window handle parameter.  Updated callback signature.
  *
  *  @ingroup window
  */
@@ -2140,7 +2147,7 @@ GLFWAPI GLFWwindowclosefun glfwSetWindowCloseCallback(GLFWwindow* window, GLFWwi
  *  Added in GLFW 2.5.
  *
  *  @par
- *  **GLFW 3:** Added window handle parameter.  Updated callback signature.
+ *  __GLFW 3:__ Added window handle parameter.  Updated callback signature.
  *
  *  @ingroup window
  */
@@ -2250,7 +2257,7 @@ GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** This function is no longer called by @ref glfwSwapBuffers.
+ *  __GLFW 3:__ This function is no longer called by @ref glfwSwapBuffers.
  *
  *  @ingroup window
  */
@@ -2323,6 +2330,10 @@ GLFWAPI void glfwPostEmptyEvent(void);
 
 /*! @brief Returns the value of an input option for the specified window.
  *
+ *  This function returns the value of an input option for the specified window.
+ *  The mode must be one of `GLFW_CURSOR`, `GLFW_STICKY_KEYS` or
+ *  `GLFW_STICKY_MOUSE_BUTTONS`.
+ *
  *  @param[in] window The window to query.
  *  @param[in] mode One of `GLFW_CURSOR`, `GLFW_STICKY_KEYS` or
  *  `GLFW_STICKY_MOUSE_BUTTONS`.
@@ -2340,10 +2351,10 @@ GLFWAPI void glfwPostEmptyEvent(void);
 GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
 
 /*! @brief Sets an input option for the specified window.
- *  @param[in] window The window whose input mode to set.
- *  @param[in] mode One of `GLFW_CURSOR`, `GLFW_STICKY_KEYS` or
+ *
+ *  This function sets an input mode option for the specified window.  The mode
+ *  must be one of `GLFW_CURSOR`, `GLFW_STICKY_KEYS` or
  *  `GLFW_STICKY_MOUSE_BUTTONS`.
- *  @param[in] value The new value of the specified input mode.
  *
  *  If the mode is `GLFW_CURSOR`, the value must be one of the following cursor
  *  modes:
@@ -2358,18 +2369,23 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *
  *  If the mode is `GLFW_STICKY_KEYS`, the value must be either `GL_TRUE` to
  *  enable sticky keys, or `GL_FALSE` to disable it.  If sticky keys are
- *  enabled, a key press will ensure that @ref glfwGetKey returns @ref
- *  GLFW_PRESS the next time it is called even if the key had been released
- *  before the call.  This is useful when you are only interested in whether
- *  keys have been pressed but not when or in which order.
+ *  enabled, a key press will ensure that @ref glfwGetKey returns `GLFW_PRESS`
+ *  the next time it is called even if the key had been released before the
+ *  call.  This is useful when you are only interested in whether keys have been
+ *  pressed but not when or in which order.
  *
  *  If the mode is `GLFW_STICKY_MOUSE_BUTTONS`, the value must be either
  *  `GL_TRUE` to enable sticky mouse buttons, or `GL_FALSE` to disable it.  If
  *  sticky mouse buttons are enabled, a mouse button press will ensure that @ref
- *  glfwGetMouseButton returns @ref GLFW_PRESS the next time it is called even
- *  if the mouse button had been released before the call.  This is useful when
- *  you are only interested in whether mouse buttons have been pressed but not
- *  when or in which order.
+ *  glfwGetMouseButton returns `GLFW_PRESS` the next time it is called even if
+ *  the mouse button had been released before the call.  This is useful when you
+ *  are only interested in whether mouse buttons have been pressed but not when
+ *  or in which order.
+ *
+ *  @param[in] window The window whose input mode to set.
+ *  @param[in] mode One of `GLFW_CURSOR`, `GLFW_STICKY_KEYS` or
+ *  `GLFW_STICKY_MOUSE_BUTTONS`.
+ *  @param[in] value The new value of the specified input mode.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -2416,7 +2432,7 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* window, int mode, int value);
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Added window handle parameter.
+ *  __GLFW 3:__ Added window handle parameter.
  *
  *  @ingroup input
  */
@@ -2447,7 +2463,7 @@ GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Added window handle parameter.
+ *  __GLFW 3:__ Added window handle parameter.
  *
  *  @ingroup input
  */
@@ -2487,7 +2503,7 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Renamed from `glfwGetMousePos`.  Added window handle parameter.
+ *  __GLFW 3:__ Renamed from `glfwGetMousePos`.  Added window handle parameter.
  *  Moved to floating-point coordinates.
  *
  *  @ingroup input
@@ -2512,7 +2528,7 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *  @param[in] ypos The desired y-coordinate, relative to the top edge of the
  *  client area.
  *
- *  @remarks **X11:** Due to the asynchronous nature of a modern X desktop, it
+ *  @remarks __X11:__ Due to the asynchronous nature of a modern X desktop, it
  *  may take a moment for the window focus event to arrive.  This means you will
  *  not be able to set the cursor position directly after window creation.
  *
@@ -2526,7 +2542,7 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Renamed from `glfwSetMousePos`.  Added window handle parameter.
+ *  __GLFW 3:__ Renamed from `glfwSetMousePos`.  Added window handle parameter.
  *  Moved to floating-point coordinates.
  *
  *  @ingroup input
@@ -2650,7 +2666,7 @@ GLFWAPI void glfwSetCursor(GLFWwindow* window, GLFWcursor* cursor);
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Added window handle parameter.  Updated callback signature.
+ *  __GLFW 3:__ Added window handle parameter.  Updated callback signature.
  *
  *  @ingroup input
  */
@@ -2690,7 +2706,7 @@ GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
  *  Added in GLFW 2.4.
  *
  *  @par
- *  **GLFW 3:** Added window handle parameter.  Updated callback signature.
+ *  __GLFW 3:__ Added window handle parameter.  Updated callback signature.
  *
  *  @ingroup input
  */
@@ -2755,7 +2771,7 @@ GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmods
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Added window handle parameter.  Updated callback signature.
+ *  __GLFW 3:__ Added window handle parameter.  Updated callback signature.
  *
  *  @ingroup input
  */
@@ -2783,7 +2799,7 @@ GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmo
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Renamed from `glfwSetMousePosCallback`. Added window handle
+ *  __GLFW 3:__ Renamed from `glfwSetMousePosCallback`. Added window handle
  *  parameter.  Updated callback signature.
  *
  *  @ingroup input
@@ -2838,7 +2854,7 @@ GLFWAPI GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcu
  *  Added in GLFW 2.1.
  *
  *  @par
- *  **GLFW 3:** Renamed from `glfwSetMouseWheelCallback`.  Added window handle.
+ *  __GLFW 3:__ Renamed from `glfwSetMouseWheelCallback`.  Added window handle.
  *  Updated callback signature.
  *
  *  @ingroup input
@@ -2916,7 +2932,7 @@ GLFWAPI int glfwJoystickPresent(int joy);
  *  Added in GLFW 2.2.
  *
  *  @par
- *  **GLFW 3:** Renamed from `glfwGetJoystickPos`.  Changed to return a dynamic
+ *  __GLFW 3:__ Renamed from `glfwGetJoystickPos`.  Changed to return a dynamic
  *  array.
  *
  *  @ingroup input
@@ -2947,7 +2963,7 @@ GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count);
  *  Added in GLFW 2.2.
  *
  *  @par
- *  **GLFW 3:** Changed to return a dynamic array.
+ *  __GLFW 3:__ Changed to return a dynamic array.
  *
  *  @ingroup input
  */
@@ -3143,7 +3159,7 @@ GLFWAPI GLFWwindow* glfwGetCurrentContext(void);
  *  Added in GLFW 1.0.
  *
  *  @par
- *  **GLFW 3:** Added window handle parameter.  Removed call to @ref
+ *  __GLFW 3:__ Added window handle parameter.  Removed call to @ref
  *  glfwPollEvents.
  *
  *  @ingroup window

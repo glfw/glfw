@@ -28,6 +28,7 @@
 
 #include <linux/input.h>
 #include <stdio.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -40,6 +41,76 @@ static inline int min(int n1, int n2)
 {
     return n1 < n2 ? n1 : n2;
 }
+
+static void dataOfferOffer(void* data,
+                           struct wl_data_offer* offer,
+                           const char* type)
+{
+    if (_glfw.wl.dataOffer)
+    {
+        wl_data_offer_destroy(_glfw.wl.dataOffer);
+        _glfw.wl.dataOffer = NULL;
+    }
+    if (strcmp(type, _glfw.wl.clipboardMimeType) == 0)
+    {
+        _glfw.wl.dataOffer = offer;
+    }
+}
+
+static const struct wl_data_offer_listener dataOfferListener = {
+    dataOfferOffer,
+};
+
+static void dataDeviceHandleDataOffer(void* data,
+                                      struct wl_data_device* dataDevice,
+                                      struct wl_data_offer* offer)
+{
+    wl_data_offer_add_listener(offer, &dataOfferListener, NULL);
+}
+
+static void dataDeviceHandleEnter(void* data,
+                                  struct wl_data_device* dataDevice,
+                                  uint32_t serial,
+                                  struct wl_surface *surface,
+                                  wl_fixed_t sx,
+                                  wl_fixed_t sf,
+                                  struct wl_data_offer *offer)
+{
+    _glfw.wl.serial = serial;
+}
+
+static void dataDeviceHandleLeave(void *data,
+                                  struct wl_data_device* dataDevice)
+{
+}
+
+static void dataDeviceHandleMotion(void *data,
+                                   struct wl_data_device* dataDevice,
+                                   uint32_t time,
+                                   wl_fixed_t sx,
+                                   wl_fixed_t sf)
+{
+}
+
+static void dataDeviceHandleDrop(void *data,
+                                 struct wl_data_device* dataDevice)
+{
+}
+
+static void dataDeviceHandleSelection(void *data,
+                                      struct wl_data_device *dataDevice,
+                                      struct wl_data_offer *offer)
+{
+}
+
+static const struct wl_data_device_listener dataDeviceListener = {
+    dataDeviceHandleDataOffer,
+    dataDeviceHandleEnter,
+    dataDeviceHandleLeave,
+    dataDeviceHandleMotion,
+    dataDeviceHandleDrop,
+    dataDeviceHandleSelection
+};
 
 static void pointerHandleEnter(void* data,
                                struct wl_pointer* pointer,
@@ -430,6 +501,14 @@ static void registryHandleGlobal(void* data,
                              &zwp_pointer_constraints_v1_interface,
                              1);
     }
+    else if (strcmp(interface, "wl_data_device_manager") == 0)
+    {
+        _glfw.wl.dataDeviceManager =
+            wl_registry_bind(registry,
+                             name,
+                             &wl_data_device_manager_interface,
+                             1);
+    }
 }
 
 static void registryHandleGlobalRemove(void *data,
@@ -616,6 +695,17 @@ int _glfwPlatformInit(void)
 
     _glfwInitTimerPOSIX();
 
+    if (_glfw.wl.dataDeviceManager && _glfw.wl.seat)
+    {
+        _glfw.wl.clipboardMimeType = "text/plain;charset=utf-8";
+        _glfw.wl.dataDevice =
+            wl_data_device_manager_get_data_device(_glfw.wl.dataDeviceManager,
+                                                   _glfw.wl.seat);
+        wl_data_device_add_listener(_glfw.wl.dataDevice,
+                                    &dataDeviceListener,
+                                    NULL);
+    }
+
     if (_glfw.wl.pointer && _glfw.wl.shm)
     {
         _glfw.wl.cursorTheme = wl_cursor_theme_load(NULL, 32, _glfw.wl.shm);
@@ -637,6 +727,20 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateEGL();
     _glfwTerminateJoysticksLinux();
     _glfwTerminateThreadLocalStoragePOSIX();
+
+    if (_glfw.wl.dataOffer)
+        wl_data_offer_destroy(_glfw.wl.dataOffer);
+    if (_glfw.wl.clipboardString)
+        free(_glfw.wl.clipboardString);
+    if (_glfw.wl.dataSource)
+    {
+        free(wl_data_source_get_user_data(_glfw.wl.dataSource));
+        wl_data_source_destroy(_glfw.wl.dataSource);
+    }
+    if (_glfw.wl.dataDevice)
+        wl_data_device_destroy(_glfw.wl.dataDevice);
+    if (_glfw.wl.dataDeviceManager)
+        wl_data_device_manager_destroy(_glfw.wl.dataDeviceManager);
 
     if (_glfw.wl.cursorTheme)
         wl_cursor_theme_destroy(_glfw.wl.cursorTheme);

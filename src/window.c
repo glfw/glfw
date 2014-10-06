@@ -290,6 +290,9 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.focused     = GL_TRUE;
     _glfw.hints.autoIconify = GL_TRUE;
 
+    // The default is to select the highest available refresh rate
+    _glfw.hints.refreshRate = GLFW_DONT_CARE;
+
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
     // double buffered
     _glfw.hints.redBits      = 8;

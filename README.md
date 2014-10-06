@@ -70,6 +70,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - Added `GLFW_FLOATING` for creating always-on-top windowed mode windows
  - Added `GLFW_FOCUSED` window hint for controlling initial input focus
  - Added *partial and experimental* support for Wayland
+ - Changed the default of `GLFW_REFRESH_RATE` to `GLFW_DONT_CARE` to maintain
+   the default behavior
  - Bugfix: The debug context attribute was set from `GL_ARB_debug_output` even
            when a debug context had not been requested
  - Bugfix: The particles example was not linked against the threading library

@@ -304,7 +304,7 @@ Window hint                     | Default value               | Supported values
 `GLFW_ACCUM_ALPHA_BITS`         | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 `GLFW_AUX_BUFFERS`              | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 `GLFW_SAMPLES`                  | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-`GLFW_REFRESH_RATE`             | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+`GLFW_REFRESH_RATE`             | `GLFW_DONT_CARE`            | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 `GLFW_STEREO`                   | `GL_FALSE`                  | `GL_TRUE` or `GL_FALSE`
 `GLFW_SRGB_CAPABLE`             | `GL_FALSE`                  | `GL_TRUE` or `GL_FALSE`
 `GLFW_DOUBLEBUFFER`             | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE`

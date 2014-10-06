@@ -112,7 +112,9 @@ const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 @subsection monitor_size Physical size
 
 The physical size in millimetres of a monitor, or an estimation of it, can be
-retrieved with @ref glfwGetMonitorPhysicalSize.
+retrieved with @ref glfwGetMonitorPhysicalSize.  This has no relation to its
+current _resolution_, i.e. the width and height of its current
+[video mode](@ref monitor_modes).
 
 @code
 int widthMM, heightMM;

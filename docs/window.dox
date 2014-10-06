@@ -213,8 +213,8 @@ You nearly always want to use double buffering.  This is a hard constraint.
 @subsubsection window_hints_mtr Monitor related hints
 
 `GLFW_REFRESH_RATE` specifies the desired refresh rate for full screen windows.
-If set to zero, the highest available refresh rate will be used.  This hint is
-ignored for windowed mode windows.
+If set to `GLFW_DONT_CARE`, the highest available refresh rate will be used.
+This hint is ignored for windowed mode windows.
 
 
 @subsubsection window_hints_ctx Context related hints

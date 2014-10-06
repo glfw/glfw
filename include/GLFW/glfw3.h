@@ -1149,7 +1149,7 @@ GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun);
  *  @par Pointer Lifetime
  *  The returned array is allocated and freed by GLFW.  You should not free it
  *  yourself.  It is guaranteed to be valid only until the monitor configuration
- *  changes.
+ *  changes or the library is terminated.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -1252,7 +1252,8 @@ GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* monitor, int* width, int* h
  *
  *  @par Pointer Lifetime
  *  The returned string is allocated and freed by GLFW.  You should not free it
- *  yourself.  It is valid until the specified monitor is disconnected.
+ *  yourself.  It is valid until the specified monitor is disconnected or the
+ *  library is terminated.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -1307,8 +1308,8 @@ GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun);
  *
  *  @par Pointer Lifetime
  *  The returned array is allocated and freed by GLFW.  You should not free it
- *  yourself.  It is valid until the specified monitor is disconnected or this
- *  function is called again for that monitor.
+ *  yourself.  It is valid until the specified monitor is disconnected, this
+ *  function is called again for that monitor or the library is terminated.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -1339,7 +1340,8 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count);
  *
  *  @par Pointer Lifetime
  *  The returned array is allocated and freed by GLFW.  You should not free it
- *  yourself.  It is valid until the specified monitor is disconnected.
+ *  yourself.  It is valid until the specified monitor is disconnected or the
+ *  library is terminated.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -1385,7 +1387,8 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* monitor, float gamma);
  *  @par Pointer Lifetime
  *  The returned structure and its arrays are allocated and freed by GLFW.  You
  *  should not free them yourself.  They are valid until the specified monitor
- *  is disconnected or this function is called again for that monitor.
+ *  is disconnected, this function is called again for that monitor or the
+ *  library is terminated.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -1448,7 +1451,7 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  This function sets hints for the next call to @ref glfwCreateWindow.  The
  *  hints, once set, retain their values until changed by a call to @ref
  *  glfwWindowHint or @ref glfwDefaultWindowHints, or until the library is
- *  terminated with @ref glfwTerminate.
+ *  terminated.
  *
  *  @param[in] target The [window hint](@ref window_hints) to set.
  *  @param[in] hint The new value of the window hint.
@@ -2920,8 +2923,8 @@ GLFWAPI int glfwJoystickPresent(int joy);
  *
  *  @par Pointer Lifetime
  *  The returned array is allocated and freed by GLFW.  You should not free it
- *  yourself.  It is valid until the specified joystick is disconnected or this
- *  function is called again for that joystick.
+ *  yourself.  It is valid until the specified joystick is disconnected, this
+ *  function is called again for that joystick or the library is terminated.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -2951,8 +2954,8 @@ GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count);
  *
  *  @par Pointer Lifetime
  *  The returned array is allocated and freed by GLFW.  You should not free it
- *  yourself.  It is valid until the specified joystick is disconnected or this
- *  function is called again for that joystick.
+ *  yourself.  It is valid until the specified joystick is disconnected, this
+ *  function is called again for that joystick or the library is terminated.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -2981,8 +2984,8 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int joy, int* count);
  *
  *  @par Pointer Lifetime
  *  The returned string is allocated and freed by GLFW.  You should not free it
- *  yourself.  It is valid until the specified joystick is disconnected or this
- *  function is called again for that joystick.
+ *  yourself.  It is valid until the specified joystick is disconnected, this
+ *  function is called again for that joystick or the library is terminated.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -3032,7 +3035,8 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  *  @par Pointer Lifetime
  *  The returned string is allocated and freed by GLFW.  You should not free it
  *  yourself.  It is valid until the next call to @ref
- *  glfwGetClipboardString or @ref glfwSetClipboardString.
+ *  glfwGetClipboardString or @ref glfwSetClipboardString, or until the library
+ *  is terminated.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -3257,7 +3261,8 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
  *  between contexts.
  *
  *  @par Pointer Lifetime
- *  The returned function pointer is valid until the context is destroyed.
+ *  The returned function pointer is valid until the context is destroyed or the
+ *  library is terminated.
  *
  *  @par Thread Safety
  *  This function may be called from any thread.

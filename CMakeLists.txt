@@ -11,6 +11,7 @@ set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA
 set(LIB_SUFFIX "" CACHE STRING "Takes an empty string or 64. Directory where lib will be installed: lib or lib64")
 
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(GLFW_FORCE_INSECURE "Don't build with -fPIC on UNIX, or ASLR/DEP support on Windows. On Windows, a single insecure DLL will disable security for the entire executable. Use this lightly." OFF)
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" ON)
@@ -20,6 +21,42 @@ option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 if (WIN32)
     option(GLFW_USE_DWM_SWAP_INTERVAL "Set swap interval even when DWM compositing is enabled" OFF)
     option(GLFW_USE_OPTIMUS_HPG "Force use of high-performance GPU on Optimus systems" OFF)
+endif()
+
+if (UNIX AND NOT GLFW_FORCE_INSECURE)
+    set(CMAKE_C_FLAGS "-fPIC ${CMAKE_C_FLAGS}")
+elseif(MINGW AND NOT GLFW_FORCE_INSECURE)
+    include(CheckCCompilerFlag)
+
+    # These default to on in MSVC, when available, but not with MinGW.
+    # Only needed for DLLs.
+
+    # Vista+
+    set(CMAKE_REQUIRED_FLAGS "-Wl,--nxcompat")
+    check_c_compiler_flag("" _DEP_AVAIL)
+
+    # XP SP2+
+    set(CMAKE_REQUIRED_FLAGS "-Wl,--dynamicbase")
+    check_c_compiler_flag("" _ASLR_AVAIL)
+
+    # 64-bit ASLR
+    set(CMAKE_REQUIRED_FLAGS "-Wl,--high-entropy-va")
+    check_c_compiler_flag("" _64ASLR_AVAIL)
+
+    if(_DEP_AVAIL)
+        set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--nxcompat ${CMAKE_SHARED_LINKER_FLAGS}")
+    endif()
+
+    if(_ASLR_AVAIL)
+        set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--dynamicbase ${CMAKE_SHARED_LINKER_FLAGS}")
+    endif()
+
+    if(_64ASLR_AVAIL)
+        set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--high-entropy-va ${CMAKE_SHARED_LINKER_FLAGS}")
+    endif()
+elseif(MSVC AND GLFW_FORCE_INSECURE)
+    # HIGHENTROPYVA will be NO if DYNAMICBASE is.
+    set(CMAKE_SHARED_LINKER_FLAGS "/DYNAMICBASE:NO /NXCOMPAT:NO ${CMAKE_SHARED_LINKER_FLAGS}")
 endif()
 
 if (APPLE)

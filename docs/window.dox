@@ -56,11 +56,11 @@ GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", glfwGetPrimaryMonito
 Full screen windows cover the entire display area of a monitor, have no border
 or decorations.
 
-The requested window size combined with the window hints below form the _desired
-video mode_.  The supported video mode most closely matching the desired video
-mode will be set for the chosen monitor as long as the window is focused.  For
-more information about video modes supported by a monitor, see @ref
-monitor_modes.
+Each field of the @ref GLFWvidmode structure corresponds to a function parameter
+or window hint and combine to form the _desired video mode_ for that window.
+The supported video mode most closely matching the desired video mode will be
+set for the chosen monitor as long as the window is focused.  For more
+information about retrieving video modes, see @ref monitor_modes.
 
 Video mode field        | Corresponds to
 ----------------------- | ------------------------
@@ -77,9 +77,9 @@ the video mode chosen by @ref glfwCreateWindow.
 
 By default, the original video mode of the monitor will be restored and the
 window iconified if it loses input focus, to allow the user to switch back to
-the desktop.  This can be disabled with the `GLFW_AUTO_ICONIFY` window hint, for
-example if you wish to simultaneously cover multiple windows with full screen
-windows.
+the desktop.  This behavior can be disabled with the `GLFW_AUTO_ICONIFY` window
+hint, for example if you wish to simultaneously cover multiple windows with full
+screen windows.
 
 To create a so called _windowed full screen_ or _borderless full screen_ window,
 i.e. a full screen window that doesn't change the video mode of the monitor, you
@@ -109,11 +109,10 @@ glfwDestroyWindow(window);
 
 Window destruction always succeeds.  Before the actual destruction, all
 callbacks are removed so no further events will be delivered for the window.
+All windows remaining when @ref glfwTerminate is called are destroyed as well.
 
 When a full screen window is destroyed, the original video mode of its monitor
 is restored, but the gamma ramp is left untouched.
-
-All windows remaining when @ref glfwTerminate is called are destroyed as well.
 
 
 @subsection window_hints Window creation hints
@@ -224,22 +223,28 @@ Possible values are `GLFW_OPENGL_API` and `GLFW_OPENGL_ES_API`.  This is a hard
 constraint.
 
 `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` specify the client
-API version that the created context must be compatible with.
+API version that the created context must be compatible with.  The exact
+behavior of these hints depend on the requested client API.
 
-For OpenGL, `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are
-not hard constraints, as they don't have to match exactly, but @ref
-glfwCreateWindow will still fail if the resulting OpenGL version is less than
-the one requested.  It is therefore perfectly safe to use the default of version
-1.0 for legacy code and you may still get backwards-compatible contexts of
-version 3.0 and above when available.
+@par OpenGL
+`GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are not hard
+constraints, but creation will fail if the OpenGL version of the created context
+is less than the one requested.  It is therefore perfectly safe to use the
+default of version 1.0 for legacy code and you may still get
+backwards-compatible contexts of version 3.0 and above when available.
 
+@par
 While there is no way to ask the driver for a context of the highest supported
-version, most drivers provide this when you ask GLFW for a version 1.0 context.
+version, GLFW will attempt to provide this when you ask for a version 1.0
+context, which is the default for these hints.
 
-For OpenGL ES, `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are
-hard constraints to the extent that OpenGL ES 1.x cannot be returned if 2.0 or
-later was requested, and vice versa.  This is because OpenGL ES 3.0 and later
-versions are backward compatible, but OpenGL ES 2.0 is not.
+@par OpenGL ES
+`GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are not hard
+constraints, but creation will fail if the OpenGL ES version of the created
+context is less than the one requested.  Additionally, OpenGL ES 1.x cannot be
+returned if 2.0 or later was requested, and vice versa.  This is because OpenGL
+ES 3.x is backward compatible with 2.0, but OpenGL ES 2.0 is not backard
+compatible with 1.x.
 
 `GLFW_OPENGL_FORWARD_COMPAT` specifies whether the OpenGL context should be
 forward-compatible, i.e. one where all functionality deprecated in the requested

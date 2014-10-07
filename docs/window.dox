@@ -187,14 +187,16 @@ application has no preference.
 of the accumulation buffer.  `GLFW_DONT_CARE` means the application has no
 preference.
 
-@note Accumulation buffers are a legacy OpenGL feature and should not be used in
-new code.
+@par
+Accumulation buffers are a legacy OpenGL feature and should not be used in new
+code.
 
 `GLFW_AUX_BUFFERS` specifies the desired number of auxiliary buffers.
 `GLFW_DONT_CARE` means the application has no preference.
 
-@note Auxiliary buffers are a legacy OpenGL feature and should not be used in
-new code.
+@par
+Auxiliary buffers are a legacy OpenGL feature and should not be used in new
+code.
 
 `GLFW_STEREO` specifies whether to use stereoscopic rendering.  This is a hard
 constraint.
@@ -251,6 +253,7 @@ forward-compatible, i.e. one where all functionality deprecated in the requested
 version of OpenGL is removed.  This may only be used if the requested OpenGL
 version is 3.0 or above.  If OpenGL S is requested, this hint is ignored.
 
+@par
 Forward-compatibility is described in detail in the
 [OpenGL Reference Manual](https://www.opengl.org/registry/).
 
@@ -265,6 +268,7 @@ a specific profile.  If requesting an OpenGL version below 3.2,
 `GLFW_OPENGL_ANY_PROFILE` must be used.  If another OpenGL ES is requested,
 this hint is ignored.
 
+@par
 OpenGL profiles are described in detail in the
 [OpenGL Reference Manual](https://www.opengl.org/registry/).
 
@@ -282,6 +286,7 @@ the pipeline will be flushed whenever the context is released from being the
 current one.  If the behavior is `GLFW_RELEASE_BEHAVIOR_NONE`, the pipeline will
 not be flushed on release.
 
+@par
 Context release behaviors are described in detail by the
 [GL_KHR_context_flush_control](https://www.opengl.org/registry/specs/KHR/context_flush_control.txt)
 extension.
@@ -384,8 +389,9 @@ void window_close_callback(GLFWwindow* window)
 @subsection window_size Size
 
 The size of a window can be changed with @ref glfwSetWindowSize.  For windowed
-mode windows, this sets the size of the _client area_ or _content area_ of the
-window.  The window system may impose limits on window size.
+mode windows, this sets the size, in
+[screen coordinates](@ref coordinate_systems) of the _client area_ or _content
+area_ of the window.  The window system may impose limits on window size.
 
 @code
 glfwSetWindowSize(window, 640, 480);
@@ -403,8 +409,8 @@ the system, set a size callback.
 glfwSetWindowSizeCallback(window, window_size_callback);
 @endcode
 
-The callback function receives the new size of the client area of the window
-when it is resized.
+The callback function receives the new size, in screen coordinates, of the
+client area of the window when it is resized.
 
 @code
 void window_size_callback(GLFWwindow* window, int width, int height)
@@ -442,11 +448,10 @@ distances and not coordinates, they are always zero or positive.
 @subsection window_fbsize Framebuffer size
 
 While the size of a window is measured in screen coordinates, OpenGL works with
-pixels.  The size you pass into `glViewport`, for example, should be in pixels
-and not screen coordinates.  On some platforms screen coordinates and pixels are
-the same, but this is not the case on all platforms supported by GLFW.  There is
-a second set of functions to retrieve the size in pixels of the framebuffer of
-a window.
+pixels.  The size you pass into `glViewport`, for example, should be in pixels.
+On some machines screen coordinates and pixels are the same, but on others they
+will not be.  There is a second set of functions to retrieve the size, in
+pixels, of the framebuffer of a window.
 
 If you wish to be notified when the framebuffer of a window is resized, whether
 by the user or the system, set a size callback.
@@ -483,8 +488,8 @@ a high-DPI one.
 
 The position of a windowed-mode window can be changed with @ref
 glfwSetWindowPos.  This moves the window so that the upper-left corner of its
-client area has the specified screen coordinates.  The window system may put
-limitats on window placement.
+client area has the specified [screen coordinates](@ref coordinate_systems).
+The window system may put limitats on window placement.
 
 @code
 glfwSetWindowPos(window, 100, 100);

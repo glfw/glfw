@@ -114,19 +114,24 @@ keep the description string.
 @section coordinate_systems Coordinate systems
 
 GLFW has two primary coordinate systems: the _virtual screen_ and the window
-_client area_.  Both use the same unit: _virtual screen coordinates_, or just
-_screen coordinates_, which don't necessarily correspond to pixels.
+_client area_ or _content area_.  Both use the same unit: _virtual screen
+coordinates_, or just _screen coordinates_, which don't necessarily correspond
+to pixels.
 
 <img src="spaces.svg" width="90%" />
 
-Window and monitor positions are specified relative to the upper-left corners of
-their content areas, while cursor positions are specified relative to the window
-client area.
+Both the virtual screen and the client area coordinate systems have the X-axis
+pointing to the right and the Y-axis pointing down.
 
-The origin of the window client area coordinate system is also the position of
-the window, meaning you can translate client area coordinates to the virtual
-screen by adding the window position.  The window frame, when present, extend
-out from the client area but does not affect the window position.
+Window and monitor positions are specified as the position of the upper-left
+corners of their content areas relative to the virtual screen, while cursor
+positions are specified relative to a window's client area.
+
+Because the origin of the window's client area coordinate system is also the
+point from which the window position is specified, you can translate client area
+coordinates to the virtual screen by adding the window position.  The window
+frame, when present, extends out from the client area but does not affect the
+window position.
 
 Almost all positions and sizes in GLFW are measured in screen coordinates
 relative to one of the two origins above.  This includes cursor positions,
@@ -140,7 +145,7 @@ measured in pixels.
 Pixels and screen coordinates may map 1:1 on your machine, but they won't on
 every other machine, for example on a Mac with a Retina display.  The ratio
 between screen coordinates and pixels may also change at run-time depending on
-which monitor the window is currently on.
+which monitor the window is currently considered to be on.
 
 
 @section guarantees_limitations Guarantees and limitations

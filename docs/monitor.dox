@@ -28,9 +28,10 @@ Each monitor has a current video mode, a list of supported video modes,
 a virtual position, a human-readable name, an estimated physical size and
 a gamma ramp.  One of the monitors is the primary monitor.
 
-The virtual position of a monitor is in screen coordinates and, together with
-the current video mode, describes the viewports that the connected monitors
-provide into the virtual desktop that spans them.
+The virtual position of a monitor is in
+[screen coordinates](@ref coordinate_systems) and, together with the current
+video mode, describes the viewports that the connected monitors provide into the
+virtual desktop that spans them.
 
 
 @subsection monitor_monitors Retrieving monitors
@@ -86,15 +87,13 @@ a gamma ramp.
 
 @subsection monitor_modes Video modes
 
-Although GLFW generally does a good job at selecting a suitable video
-mode for you when you open a full screen window, it is sometimes useful to
-know exactly which modes are available on a certain system. For example,
-you may want to present the user with a list of video modes to select
-from.
+GLFW generally does a good job selecting a suitable video mode when you create
+a full screen window, but it is sometimes useful to know exactly which video
+modes are supported.
 
-To get a list of supported video modes, you can use the function @ref
-glfwGetVideoModes.  See the reference documentation for the lifetime of the
-returned array.
+Video modes are represented as @ref GLFWvidmode structures.  You can get an
+array of the video modes supported by a monitor with @ref glfwGetVideoModes.
+See the reference documentation for the lifetime of the returned array.
 
 @code
 int count;
@@ -102,16 +101,19 @@ GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
 @endcode
 
 To get the current video mode of a monitor call @ref glfwGetVideoMode.  See the
-reference documentation for the lifetime of the returned structure.
+reference documentation for the lifetime of the returned pointer.
 
 @code
 const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 @endcode
 
+The resolution of a video mode is specified in
+[screen coordinates](@ref coordinate_systems), not pixels.
+
 
 @subsection monitor_size Physical size
 
-The physical size in millimetres of a monitor, or an estimation of it, can be
+The physical size of a monitor in millimetres, or an estimation of it, can be
 retrieved with @ref glfwGetMonitorPhysicalSize.  This has no relation to its
 current _resolution_, i.e. the width and height of its current
 [video mode](@ref monitor_modes).
@@ -131,8 +133,9 @@ const double dpi = mode->width / (widthMM / 25.4);
 
 @subsection monitor_pos Virtual position
 
-The position of the monitor on the virtual desktop, in screen coordinates, can
-be retrieved with @ref glfwGetMonitorPos.
+The position of the monitor on the virtual desktop, in
+[screen coordinates](@ref coordinate_systems), can be retrieved with @ref
+glfwGetMonitorPos.
 
 @code
 int xpos, ypos;

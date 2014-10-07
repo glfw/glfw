@@ -666,7 +666,6 @@ INPUT                  = @GLFW_INTERNAL_DOCS@                         \
                          @GLFW_SOURCE_DIR@/docs/monitor.dox           \
                          @GLFW_SOURCE_DIR@/docs/window.dox            \
                          @GLFW_SOURCE_DIR@/docs/input.dox             \
-                         @GLFW_SOURCE_DIR@/docs/common.dox            \
                          @GLFW_SOURCE_DIR@/docs/rift.dox              \
                          @GLFW_SOURCE_DIR@/docs/compat.dox
 

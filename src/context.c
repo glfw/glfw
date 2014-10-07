@@ -35,9 +35,9 @@
 
 // Parses the client API version string and extracts the version number
 //
-static GLboolean parseGLVersion(int* api, int* major, int* minor, int* rev)
+static GLboolean parseVersionString(int* api, int* major, int* minor, int* rev)
 {
-    int i, _api = GLFW_OPENGL_API, _major, _minor = 0, _rev = 0;
+    int i;
     const char* version;
     const char* prefixes[] =
     {
@@ -46,6 +46,8 @@ static GLboolean parseGLVersion(int* api, int* major, int* minor, int* rev)
         "OpenGL ES ",
         NULL
     };
+
+    *api = GLFW_OPENGL_API;
 
     version = (const char*) glGetString(GL_VERSION);
     if (!version)
@@ -62,22 +64,17 @@ static GLboolean parseGLVersion(int* api, int* major, int* minor, int* rev)
         if (strncmp(version, prefixes[i], length) == 0)
         {
             version += length;
-            _api = GLFW_OPENGL_ES_API;
+            *api = GLFW_OPENGL_ES_API;
             break;
         }
     }
 
-    if (!sscanf(version, "%d.%d.%d", &_major, &_minor, &_rev))
+    if (!sscanf(version, "%d.%d.%d", major, minor, rev))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "No version found in context version string");
         return GL_FALSE;
     }
-
-    *api = _api;
-    *major = _major;
-    *minor = _minor;
-    *rev = _rev;
 
     return GL_TRUE;
 }
@@ -379,10 +376,10 @@ GLboolean _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
 {
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
-    if (!parseGLVersion(&window->context.api,
-                        &window->context.major,
-                        &window->context.minor,
-                        &window->context.revision))
+    if (!parseVersionString(&window->context.api,
+                            &window->context.major,
+                            &window->context.minor,
+                            &window->context.revision))
     {
         return GL_FALSE;
     }

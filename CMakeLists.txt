@@ -124,6 +124,33 @@ if (MSVC)
     endif()
 endif()
 
+if (MINGW)
+    # Enable link-time exploit mitigation features enabled by default on MSVC
+
+    include(CheckCCompilerFlag)
+
+    # Compatibility with data execution prevention (DEP)
+    set(CMAKE_REQUIRED_FLAGS "-Wl,--nxcompat")
+    check_c_compiler_flag("" _GLFW_HAS_DEP)
+    if (_GLFW_HAS_DEP)
+        set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--nxcompat ${CMAKE_SHARED_LINKER_FLAGS}")
+    endif()
+
+    # Compatibility with address space layout randomization (ASLR)
+    set(CMAKE_REQUIRED_FLAGS "-Wl,--dynamicbase")
+    check_c_compiler_flag("" _GLFW_HAS_ASLR)
+    if (_GLFW_HAS_ASLR)
+        set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--dynamicbase ${CMAKE_SHARED_LINKER_FLAGS}")
+    endif()
+
+    # Compatibility with 64-bit address space layout randomization (ASLR)
+    set(CMAKE_REQUIRED_FLAGS "-Wl,--high-entropy-va")
+    check_c_compiler_flag("" _GLFW_HAS_64ASLR)
+    if (_GLFW_HAS_64ASLR)
+        set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--high-entropy-va ${CMAKE_SHARED_LINKER_FLAGS}")
+    endif()
+endif()
+
 #--------------------------------------------------------------------
 # Detect and select backend APIs
 #--------------------------------------------------------------------

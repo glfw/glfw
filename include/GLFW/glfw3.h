@@ -1544,10 +1544,11 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  [Bundle Programming Guide](https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/)
  *  in the Mac Developer Library.
  *
- *  @remarks __OS X:__ The first time a window is opened the menu bar is populated with
- *  common commands like Hide, Quit and About.  The About entry opens a minimal
- *  about dialog with information from the application's bundle.  The menu bar can be
- *  disabled with a [compile-time option](@ref compile_options_osx).
+ *  @remarks __OS X:__ The first time a window is created the menu bar is
+ *  populated with common commands like Hide, Quit and About.  The About entry
+ *  opens a minimal about dialog with information from the application's bundle.
+ *  The menu bar can be disabled with a
+ *  [compile-time option](@ref compile_options_osx).
  *
  *  @remarks __X11:__ There is no mechanism for setting the window icon yet.
  *

@@ -9,7 +9,7 @@ with OpenGL or OpenGL ES contexts and receiving many kinds of input.  It is easy
 to integrate into existing applications and does not lay claim to the main loop.
 
 This is the documentation for version 3.1, which adds many
-[new features](@ref news).
+[new features](@ref news_31).
 
 @ref quick is a guide for those new to GLFW.  It takes you through how to write
 a small but complete program.  For people coming from GLFW 2, the @ref moving

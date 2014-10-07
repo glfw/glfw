@@ -31,8 +31,8 @@ successfully initialized, and only from the main thread.
  - @ref glfwInit
  - @ref glfwTerminate
 
-Calling any other function before that time will cause a `GLFW_NOT_INITIALIZED`
-error. 
+Calling any other function before that time will cause a @ref
+GLFW_NOT_INITIALIZED error. 
 
 
 @subsection intro_init_init Initializing GLFW
@@ -71,8 +71,8 @@ any resources allocated by GLFW.
 
 Once the library is terminated, it is as if it had never been initialized and
 you will need to initialize it again before being able to use GLFW.  If the
-library had not been successfully initialized or had already been terminated,
-additional calls return immediately. 
+library was not initialized or had already been terminated, it return
+immediately. 
 
 
 @section error_handling Error handling

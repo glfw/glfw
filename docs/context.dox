@@ -19,12 +19,13 @@ contexts.  There are also guides for the other areas of the GLFW API.
 
 @section context_object Context objects
 
-@ref window_object encapsulate both the OS level window and a OpenGL or OpenGL
-ES context.  It is created with @ref glfwCreateWindow and destroyed with @ref
-glfwDestroyWindow or @ref glfwTerminate.  As the window and context are
-inseparably linked, the object pointer is used as both a context and window
-handle.  See @ref window_creation for more information.
+A window object encapsulates both a top-level window and an OpenGL or OpenGL ES
+context.  It is created with @ref glfwCreateWindow and destroyed with @ref
+glfwDestroyWindow or @ref glfwTerminate.  See @ref window_creation for more
+information.
 
+As the window and context are inseparably linked, the window object also serves
+as the context handle.
 
 @subsection context_hints Context creation hints
 
@@ -54,6 +55,28 @@ versions and APIs, but has at times been named _Shared Objects and Multiple
 Contexts_.
 
 GLFW comes with a simple object sharing test program called `sharing`.
+
+
+@subsection context_offscreen Offscreen contexts
+
+GLFW doesn't support creating contexts without an associated window.  However,
+contexts with hidden windows can be created with the
+[GLFW_VISIBLE](@ref window_hints_wnd) window hint.
+
+@code
+glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+
+GLFWwindow* offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
+@endcode
+
+The window never needs to be shown and its context can be used as a plain
+offscreen context.  The size of a hidden window's framebuffer may not be usable
+or modifiable, so framebuffer objects are recommended for rendering with such
+contexts.
+
+__OS X:__ The first time a window is created the menu bar is populated with
+common commands like Hide, Quit and About.  This can be disabled with a
+[compile-time option](@ref compile_options_osx).
 
 
 @section context_current Current context

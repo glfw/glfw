@@ -567,3 +567,15 @@ GLFWAPI const char* glfwGetClipboardString(GLFWwindow* handle)
     return _glfwPlatformGetClipboardString(window);
 }
 
+GLFWAPI double glfwGetTime(void)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(0.0);
+    return _glfwPlatformGetTime();
+}
+
+GLFWAPI void glfwSetTime(double time)
+{
+    _GLFW_REQUIRE_INIT();
+    _glfwPlatformSetTime(time);
+}
+

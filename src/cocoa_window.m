@@ -683,7 +683,12 @@ static int translateKey(unsigned int key)
     }
 
     if (fabs(deltaX) > 0.0 || fabs(deltaY) > 0.0)
-        _glfwInputScroll(window, deltaX, deltaY);
+    {
+        // NOTE: The X-axis is inverted for consistency with Windows and X11.
+        //       Natural scrolling inverts both axes, making it consistent with
+        //       the similarly named feature on modern X11 desktop systems.
+        _glfwInputScroll(window, -deltaX, deltaY);
+    }
 }
 
 - (void)resetCursorRects

@@ -34,9 +34,9 @@
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-// Calculate normalized joystick position
+// Convert axis value to the [-1,1] range
 //
-static float calcJoystickPos(DWORD pos, DWORD min, DWORD max)
+static float normalizeAxis(DWORD pos, DWORD min, DWORD max)
 {
     float fpos = (float) pos;
     float fmin = (float) min;
@@ -96,20 +96,20 @@ const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
     if (_glfw_joyGetPosEx(joy, &ji) != JOYERR_NOERROR)
         return NULL;
 
-    axes[(*count)++] = calcJoystickPos(ji.dwXpos, jc.wXmin, jc.wXmax);
-    axes[(*count)++] = calcJoystickPos(ji.dwYpos, jc.wYmin, jc.wYmax);
+    axes[(*count)++] = normalizeAxis(ji.dwXpos, jc.wXmin, jc.wXmax);
+    axes[(*count)++] = normalizeAxis(ji.dwYpos, jc.wYmin, jc.wYmax);
 
     if (jc.wCaps & JOYCAPS_HASZ)
-        axes[(*count)++] = calcJoystickPos(ji.dwZpos, jc.wZmin, jc.wZmax);
+        axes[(*count)++] = normalizeAxis(ji.dwZpos, jc.wZmin, jc.wZmax);
 
     if (jc.wCaps & JOYCAPS_HASR)
-        axes[(*count)++] = calcJoystickPos(ji.dwRpos, jc.wRmin, jc.wRmax);
+        axes[(*count)++] = normalizeAxis(ji.dwRpos, jc.wRmin, jc.wRmax);
 
     if (jc.wCaps & JOYCAPS_HASU)
-        axes[(*count)++] = calcJoystickPos(ji.dwUpos, jc.wUmin, jc.wUmax);
+        axes[(*count)++] = normalizeAxis(ji.dwUpos, jc.wUmin, jc.wUmax);
 
     if (jc.wCaps & JOYCAPS_HASV)
-        axes[(*count)++] = calcJoystickPos(ji.dwVpos, jc.wVmin, jc.wVmax);
+        axes[(*count)++] = normalizeAxis(ji.dwVpos, jc.wVmin, jc.wVmax);
 
     return axes;
 }

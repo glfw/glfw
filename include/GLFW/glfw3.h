@@ -182,12 +182,12 @@ extern "C" {
 
 #if defined(_WIN32) && defined(_GLFW_BUILD_DLL)
 
- /* We are building a Win32 DLL */
+ /* We are building GLFW as a Win32 DLL */
  #define GLFWAPI __declspec(dllexport)
 
 #elif defined(_WIN32) && defined(GLFW_DLL)
 
- /* We are calling a Win32 DLL */
+ /* We are calling GLFW as a Win32 DLL */
  #if defined(__LCC__)
   #define GLFWAPI extern
  #else
@@ -196,11 +196,12 @@ extern "C" {
 
 #elif defined(__GNUC__) && defined(_GLFW_BUILD_DLL)
 
+ /* We are building GLFW as a shared / dynamic library */
  #define GLFWAPI __attribute__((visibility("default")))
 
 #else
 
- /* We are either building/calling a static lib or we are non-win32 */
+ /* We are building or calling GLFW as a static library */
  #define GLFWAPI
 
 #endif

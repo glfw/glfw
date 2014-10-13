@@ -85,9 +85,14 @@ header.  This is useful in combination with an extension loading library.
 If none of the above inclusion macros are defined, the standard OpenGL `GL/gl.h`
 header (`OpenGL/gl.h` on OS X) is included.
 
+`GLFW_INCLUDE_GLEXT` makes the GLFW header include the appropriate extension
+header for the OpenGL or OpenGL ES header selected above after and _in addition
+to_ that header.
+
 `GLFW_INCLUDE_GLU` makes the header include the GLU header _in addition to_ the
-header selected above.  This should only be used with legacy code.  GLU has been
-deprecated and should not be used in new code.
+header selected above.  This should only be used with the standard OpenGL header
+and only for legacy code.  GLU has been deprecated and should not be used in new
+code.
 
 @note GLFW does not provide any of the API headers mentioned above.  They must
 be provided by your development environment or your OpenGL or OpenGL ES SDK.

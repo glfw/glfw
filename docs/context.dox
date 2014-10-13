@@ -70,20 +70,21 @@ GLFWwindow* offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
 @endcode
 
 The window never needs to be shown and its context can be used as a plain
-offscreen context.  The size of a hidden window's framebuffer may not be usable
-or modifiable, so framebuffer objects are recommended for rendering with such
-contexts.
+offscreen context.  Depending on the window manager, the size of a hidden
+window's framebuffer may not be usable or modifiable, so framebuffer
+objects are recommended for rendering with such contexts.
 
 __OS X:__ The first time a window is created the menu bar is populated with
-common commands like Hide, Quit and About.  This can be disabled with a
-[compile-time option](@ref compile_options_osx).
+common commands like Hide, Quit and About.  This is not desirable for example
+when writing a command-line only application.  The menu bar setup can be
+disabled with a [compile-time option](@ref compile_options_osx).
 
 
 @section context_current Current context
 
 Before you can make OpenGL or OpenGL ES calls, you need to have a current
-context of the proper type.  The context encapsulates all render state and all
-objects like textures and shaders.
+context of the correct type.  A context can only be current for a single thread
+at a time, and a thread can only have a single context current at a time.
 
 A context is made current with @ref glfwMakeContextCurrent.
 
@@ -97,9 +98,14 @@ The current context is returned by @ref glfwGetCurrentContext.
 GLFWwindow* window = glfwGetCurrentContext();
 @endcode
 
-@note A context can only be current for a single thread at a time, and a thread
-can only have a single context current at a time.
+The following GLFW functions require a context to be current:
 
+ - @ref glfwSwapInterval
+ - @ref glfwExtensionSupported
+ - @ref glfwGetProcAddress
+
+Calling any these functions without a current context will generate a @ref
+GLFW_NO_CURRENT_CONTEXT error.
 
 @section context_swap Buffer swapping
 
@@ -150,9 +156,9 @@ written to the `output` directory.
 python main.py --no-loader --out-path output
 @endcode
 
-@note The `--no-loader` option is used because GLFW already provides a function
-for loading OpenGL and OpenGL ES function pointers and glad can use this instead
-of having to add its own.
+The `--no-loader` option is added because GLFW already provides a function for
+loading OpenGL and OpenGL ES function pointers and glad can call this instead of
+having to implement its own.
 
 Add the generated `output/src/glad.c`, `output/include/glad/glad.h` and
 `output/include/KHR/khrplatform.h` files to your build.  Then you need to

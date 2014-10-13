@@ -527,6 +527,20 @@ extern "C" {
 #define GLFW_OUT_OF_MEMORY          0x00010005
 /*! @brief GLFW could not find support for the requested client API on the
  *  system.
+ *
+ *  GLFW could not find support for the requested client API on the system.
+ *
+ *  @par Analysis
+ *  The installed graphics driver does not support the requested client API, or
+ *  does not support it via the chosen context creation backend.  Below are
+ *  a few examples.
+ *
+ *  @par
+ *  Some pre-installed Windows graphics drivers do not support OpenGL.  AMD only
+ *  supports OpenGL ES via EGL, while nVidia and Intel only supports it via
+ *  a WGL or GLX extension.  OS X does not provide OpenGL ES at all.  The Mesa
+ *  EGL, OpenGL and OpenGL ES libraries do not interface with the nVidia binary
+ *  driver.
  */
 #define GLFW_API_UNAVAILABLE        0x00010006
 /*! @brief The requested OpenGL or OpenGL ES version is not available.
@@ -540,10 +554,11 @@ extern "C" {
  *  Otherwise, inform the user that their machine does not match your
  *  requirements.
  *
- *  @note Because GLFW is not psychic, future invalid OpenGL and OpenGL ES
- *  versions, say for example OpenGL 4.8 if 5.0 comes out before the 4.x series
- *  gets that far, also fail with this error and not @ref GLFW_INVALID_VALUE.
- *  The version logic is updated in every patch release, as needed.
+ *  @par
+ *  Future invalid OpenGL and OpenGL ES versions, for example OpenGL 4.8 if 5.0
+ *  comes out before the 4.x series gets that far, also fail with this error and
+ *  not @ref GLFW_INVALID_VALUE, because GLFW cannot know what future versions
+ *  will exist.
  */
 #define GLFW_VERSION_UNAVAILABLE    0x00010007
 /*! @brief A platform-specific error occurred that does not match any of the
@@ -557,7 +572,24 @@ extern "C" {
  *  [issue tracker](https://github.com/glfw/glfw/issues).
  */
 #define GLFW_PLATFORM_ERROR         0x00010008
-/*! @brief The clipboard did not contain data in the requested format.
+/*! @brief The requested format is not supported or available.
+ *
+ *  If emitted during window creation, the requested pixel format is not
+ *  supported.
+ *
+ *  If emitted when querying the clipboard, the contents of the clipboard could
+ *  not be converted to the requested format.
+ *
+ *  @par Analysis
+ *  If emitted during window creation, one or more
+ *  [hard constraints](@ref window_hints_hard) did not match any of the
+ *  available pixel formats.  If your application is sufficiently flexible,
+ *  downgrade your requirements and try again.  Otherwise, inform the user that
+ *  their machine does not match your requirements.
+ *
+ *  @par
+ *  If emitted when querying the clipboard, ignore the error or report it to
+ *  the user, as appropriate.
  */
 #define GLFW_FORMAT_UNAVAILABLE     0x00010009
 /*! @} */

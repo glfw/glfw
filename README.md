@@ -251,6 +251,7 @@ skills.
  - Ricardo Vieira
  - Simon Voordouw
  - Torsten Walluhn
+ - Patrick Walton
  - Jay Weisskopf
  - Frank Wille
  - yuriks

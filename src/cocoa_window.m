@@ -1206,6 +1206,7 @@ void _glfwPlatformWaitEvents(void)
 
 void _glfwPlatformPostEmptyEvent(void)
 {
+    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     NSEvent* event = [NSEvent otherEventWithType:NSApplicationDefined
                                         location:NSMakePoint(0, 0)
                                    modifierFlags:0
@@ -1216,6 +1217,7 @@ void _glfwPlatformPostEmptyEvent(void)
                                            data1:0
                                            data2:0];
     [NSApp postEvent:event atStart:YES];
+    [pool drain];
 }
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)

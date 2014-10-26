@@ -106,8 +106,6 @@ GLFW bundles a number of dependencies in the `deps/` directory.
                    bit field was unchanged
  - [Cocoa] Bugfix: Joystick enumeration took hundreds of ms on some systems
  - [Cocoa] Bugfix: The cursor was hidden when the user resized a GLFW window
- - [Cocoa] Bugfix: The X-axis scroll offsets were inverted relative to the
-                   Windows and X11 ports
  - [Win32] Enabled generation of pkg-config file for MinGW
  - [Win32] Removed option to require explicitly linking against `winmm.dll`
  - [Win32] Bugfix: Failure to load winmm or its functions was not reported to
@@ -122,6 +120,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
                    specified monitor
  - [Win32] Bugfix: The wrong incorrect physical size was returned for
                    non-primary monitors
+ - [Win32] Bugfix: X-axis scroll offsets were inverted
  - [X11] Added run-time support for systems lacking the XKB extension
  - [X11] Made GLX 1.3 the minimum supported version
  - [X11] Replaced `XRRGetScreenResources` with `XRRGetScreenResourcesCurrent`
@@ -140,6 +139,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [X11] Bugfix: The name pointer of joysticks were not cleared on disconnection
  - [X11] Bugfix: Video mode dimensions were not rotated to match the CRTC
  - [X11] Bugfix: Unicode character input ignored dead keys
+ - [X11] Bugfix: X-axis scroll offsets were inverted
 
 
 ## Contact

@@ -687,7 +687,7 @@ static int translateKey(unsigned int key)
         // NOTE: The X-axis is inverted for consistency with Windows and X11.
         //       Natural scrolling inverts both axes, making it consistent with
         //       the similarly named feature on modern X11 desktop systems.
-        _glfwInputScroll(window, -deltaX, deltaY);
+        _glfwInputScroll(window, deltaX, deltaY);
     }
 }
 

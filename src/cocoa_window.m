@@ -71,42 +71,14 @@ static void updateModeCursor(_GLFWwindow* window)
 //
 static void enterFullscreenMode(_GLFWwindow* window)
 {
-    if ([window->ns.view isInFullScreenMode])
-        return;
-
     _glfwSetVideoMode(window->monitor, &window->videoMode);
-
-	NSDictionary* options = [NSDictionary dictionaryWithObjectsAndKeys:
-                                [NSNumber numberWithBool:NO],
-                                NSFullScreenModeAllScreens,
-                                nil];
-
-    [window->ns.view enterFullScreenMode:window->monitor->ns.screen
-                             withOptions:options];
-
-    // HACK: Synthesize focus event as window does not become key when the view
-    //       is made full screen
-    // TODO: Remove this when moving to a full screen window
-    _glfwInputWindowFocus(window, GL_TRUE);
 }
 
 // Leave fullscreen mode
 //
 static void leaveFullscreenMode(_GLFWwindow* window)
 {
-    if (![window->ns.view isInFullScreenMode])
-        return;
-
-    // HACK: Synthesize focus event as window does not become key when the view
-    //       is made full screen
-    // TODO: Remove this when moving to a full screen window
-    _glfwInputWindowFocus(window, GL_FALSE);
-
     _glfwRestoreVideoMode(window->monitor);
-
-    // Exit full screen after the video restore to avoid a nasty display
-    // flickering during the fade
-    [window->ns.view exitFullScreenModeWithOptions:nil];
 }
 
 // Transforms the specified y-coordinate between the CG display and NS screen
@@ -956,8 +928,15 @@ static GLboolean createWindow(_GLFWwindow* window,
             styleMask |= NSResizableWindowMask;
     }
 
+    NSRect contentRect;
+
+    if (wndconfig->monitor)
+        contentRect = [wndconfig->monitor->ns.screen frame];
+    else
+        contentRect = NSMakeRect(0, 0, wndconfig->width, wndconfig->height);
+
     window->ns.object = [[GLFWWindow alloc]
-        initWithContentRect:NSMakeRect(0, 0, wndconfig->width, wndconfig->height)
+        initWithContentRect:contentRect
                   styleMask:styleMask
                     backing:NSBackingStoreBuffered
                       defer:NO];
@@ -976,20 +955,23 @@ static GLboolean createWindow(_GLFWwindow* window,
 #if defined(_GLFW_USE_RETINA)
         [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
 #endif
-
-        if (wndconfig->resizable)
-            [window->ns.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
     }
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
-    if (wndconfig->floating)
-        [window->ns.object setLevel:NSFloatingWindowLevel];
+    if (wndconfig->monitor)
+        [window->ns.object setLevel:NSMainMenuWindowLevel + 1];
+    else
+    {
+        [window->ns.object center];
+
+        if (wndconfig->floating)
+            [window->ns.object setLevel:NSFloatingWindowLevel];
+    }
 
     [window->ns.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
     [window->ns.object setContentView:window->ns.view];
     [window->ns.object setDelegate:window->ns.delegate];
     [window->ns.object setAcceptsMouseMovedEvents:YES];
-    [window->ns.object center];
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
@@ -1036,7 +1018,10 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     [window->nsgl.context setView:window->ns.view];
 
     if (wndconfig->monitor)
+    {
+        _glfwPlatformShowWindow(window);
         enterFullscreenMode(window);
+    }
 
     return GL_TRUE;
 }
@@ -1152,7 +1137,6 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     [NSApp activateIgnoringOtherApps:YES];
 
     [window->ns.object makeKeyAndOrderFront:nil];
-    _glfwInputWindowVisibility(window, GL_TRUE);
 }
 
 void _glfwPlatformUnhideWindow(_GLFWwindow* window)

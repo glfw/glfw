@@ -252,7 +252,7 @@ defines `_GLFW_USE_CONFIG_H`, which causes this header to be included by
 `internal.h`.  Without this macro, GLFW will expect the necessary configuration
 macros to be defined on the command-line.
 
-Three macros _must_ be defined when compiling GLFW: one for selecting the window
+Three macros _must_ be defined when compiling GLFW: one selecting the window
 creation API, one selecting the context creation API and one client library.
 Exactly one of each kind must be defined for GLFW to compile and link.
 

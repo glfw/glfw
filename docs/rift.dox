@@ -30,46 +30,36 @@ monitor it corresponds to.  Doing this requires you to use the
 
 @subsubsection rift_extend_detect_win32 Detecting a Rift on Windows
 
-To identify which monitor corresponds to the Rift, compare Win32 display device
-names.  The display device name of a GLFW monitor is returned by @ref
-glfwGetWin32Monitor and the display device name of the detected Rift is stored
-in the `DisplayDeviceName` member of `ovrHmdDesc`.
+The native display device name of a GLFW monitor, as returned by @ref
+glfwGetWin32Monitor, corresponds to the display device name of the detected Rift
+as stored, in the `DisplayDeviceName` member of `ovrHmdDesc`.
 
 @code
 int i, count;
-GLFWmonitor* monitor = NULL;
 GLFWmonitor** monitors = glfwGetMonitors(&count);
 
 for (i = 0;  i < count;  i++)
 {
     if (strcmp(glfwGetWin32Monitor(monitors[i]), hmd->DisplayDeviceName) == 0)
-    {
-        monitor = monitors[i];
-        break;
-    }
+        return monitors[i];
 }
 @endcode
 
 
 @subsubsection rift_extend_detect_osx Detecting a Rift on OS X
 
-To identify which monitor corresponds to the Rift, compare OS X display IDs.
-The display ID of a GLFW monitor is returned by @ref glfwGetCocoaMonitor and the
-display ID of the detected Rift is stored in the `DisplayId` member of
-`ovrHmdDesc`.
+The native display ID of a GLFW monitor, as returned by @ref
+glfwGetCocoaMonitor, corresponds to the display ID of the detected Rift, as
+stored in the `DisplayId` member of `ovrHmdDesc`.
 
 @code
 int i, count;
-GLFWmonitor* monitor = NULL;
 GLFWmonitor** monitors = glfwGetMonitors(&count);
 
 for (i = 0;  i < count;  i++)
 {
     if (glfwGetCocoaMonitor(monitors[i]) == hmd->DisplayId)
-    {
-        monitor = monitors[i];
-        break;
-    }
+        return monitors[i];
 }
 @endcode
 

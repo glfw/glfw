@@ -108,11 +108,27 @@ extern "C" {
  *************************************************************************/
 
 #if defined(GLFW_EXPOSE_NATIVE_WIN32)
-/*! @brief Returns the display device name of the specified monitor.
+/*! @brief Returns the adapter device name of the specified monitor.
  *
- *  @return The UTF-8 encoded display device name (`DISPLAY_DEVICE.DeviceName`)
+ *  @return The UTF-8 encoded adapter device name (for example `\\.\DISPLAY1`)
  *  of the specified monitor, or `NULL` if an [error](@ref error_handling)
  *  occurred.
+ *
+ *  @par Thread Safety
+ *  This function may be called from any thread.  Access is not synchronized.
+ *
+ *  @par History
+ *  Added in GLFW 3.1.
+ *
+ *  @ingroup native
+ */
+GLFWAPI const char* glfwGetWin32Adapter(GLFWmonitor* monitor);
+
+/*! @brief Returns the display device name of the specified monitor.
+ *
+ *  @return The UTF-8 encoded display device name (for example
+ *  `\\.\DISPLAY1\Monitor0`) of the specified monitor, or `NULL` if an
+ *  [error](@ref error_handling) occurred.
  *
  *  @par Thread Safety
  *  This function may be called from any thread.  Access is not synchronized.
@@ -221,6 +237,21 @@ GLFWAPI id glfwGetNSGLContext(GLFWwindow* window);
  *  @ingroup native
  */
 GLFWAPI Display* glfwGetX11Display(void);
+
+/*! @brief Returns the `RRCrtc` of the specified monitor.
+ *
+ *  @return The `RRCrtc` of the specified monitor, or `None` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @par Thread Safety
+ *  This function may be called from any thread.  Access is not synchronized.
+ *
+ *  @par History
+ *  Added in GLFW 3.1.
+ *
+ *  @ingroup native
+ */
+GLFWAPI RRCrtc glfwGetX11Adapter(GLFWmonitor* monitor);
 
 /*! @brief Returns the `RROutput` of the specified monitor.
  *

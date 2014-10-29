@@ -955,6 +955,9 @@ static GLboolean createWindow(_GLFWwindow* window,
 #if defined(_GLFW_USE_RETINA)
         [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
 #endif
+
+        if (wndconfig->resizable)
+            [window->ns.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
     }
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 

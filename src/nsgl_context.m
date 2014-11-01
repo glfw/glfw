@@ -125,6 +125,25 @@ int _glfwCreateContext(_GLFWwindow* window,
     NSOpenGLPixelFormatAttribute attributes[40];
 
     ADD_ATTR(NSOpenGLPFAClosestPolicy);
+    
+    // Enables the context to participate in automatic graphics card switching.
+    // This means that GLFW won't force switching to the discrete graphics 
+    // card on any Mac that has dual graphics cards available.  
+    // This will result in lower power consumption for GUI-style apps where
+    // the integrated graphics are more than adequate, but may be ignored
+    // for heavier applications such as games, where the user most likely
+    // wants to take advantage of the more powerful discrete graphics chip.  
+    
+    // For this functionality to actually be active, the Apps' Info.plist
+    // file still needs to be edited to contain: 
+    // <key>NSSupportsAutomaticGraphicsSwitching</key><true/>
+    // otherwise it continues with default behaviour of forced discrete gfx.
+	
+    // Note that switching graphics chipsets also incurs a ~200ms penalty on 
+    // app startup, which is avoided by having this attribute set.
+    // Further info: 
+    // https://developer.apple.com/library/mac/technotes/tn2229/_index.html
+    ADD_ATTR(NSOpenGLPFAAllowOfflineRenderers);
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (ctxconfig->major > 2)

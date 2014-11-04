@@ -128,8 +128,28 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (ctxconfig->major > 2)
+    {
         ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);
+    }
+    else
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+    {
+        if (fbconfig->auxBuffers != GLFW_DONT_CARE)
+            ADD_ATTR2(NSOpenGLPFAAuxBuffers, fbconfig->auxBuffers);
+
+        if (fbconfig->accumRedBits != GLFW_DONT_CARE &&
+            fbconfig->accumGreenBits != GLFW_DONT_CARE &&
+            fbconfig->accumBlueBits != GLFW_DONT_CARE &&
+            fbconfig->accumAlphaBits != GLFW_DONT_CARE)
+        {
+            const int accumBits = fbconfig->accumRedBits +
+                                  fbconfig->accumGreenBits +
+                                  fbconfig->accumBlueBits +
+                                  fbconfig->accumAlphaBits;
+
+            ADD_ATTR2(NSOpenGLPFAAccumSize, accumBits);
+        }
+    }
 
     if (fbconfig->redBits != GLFW_DONT_CARE &&
         fbconfig->greenBits != GLFW_DONT_CARE &&
@@ -156,22 +176,6 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     if (fbconfig->stencilBits != GLFW_DONT_CARE)
         ADD_ATTR2(NSOpenGLPFAStencilSize, fbconfig->stencilBits);
-
-    if (fbconfig->accumRedBits != GLFW_DONT_CARE &&
-        fbconfig->accumGreenBits != GLFW_DONT_CARE &&
-        fbconfig->accumBlueBits != GLFW_DONT_CARE &&
-        fbconfig->accumAlphaBits != GLFW_DONT_CARE)
-    {
-        const int accumBits = fbconfig->accumRedBits +
-                              fbconfig->accumGreenBits +
-                              fbconfig->accumBlueBits +
-                              fbconfig->accumAlphaBits;
-
-        ADD_ATTR2(NSOpenGLPFAAccumSize, accumBits);
-    }
-
-    if (fbconfig->auxBuffers != GLFW_DONT_CARE)
-        ADD_ATTR2(NSOpenGLPFAAuxBuffers, fbconfig->auxBuffers);
 
     if (fbconfig->stereo)
         ADD_ATTR(NSOpenGLPFAStereo);

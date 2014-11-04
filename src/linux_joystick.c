@@ -93,7 +93,6 @@ static void pollJoystickEvents(void)
 {
 #ifdef __linux__
     int i;
-    ssize_t result;
     struct js_event e;
 
     for (i = 0;  i <= GLFW_JOYSTICK_LAST;  i++)
@@ -105,19 +104,21 @@ static void pollJoystickEvents(void)
         for (;;)
         {
             errno = 0;
-            result = read(_glfw.linux_js[i].fd, &e, sizeof(e));
-
-            if (errno == ENODEV)
+            if (read(_glfw.linux_js[i].fd, &e, sizeof(e)) < 0)
             {
-                free(_glfw.linux_js[i].axes);
-                free(_glfw.linux_js[i].buttons);
-                free(_glfw.linux_js[i].name);
+                if (errno == ENODEV)
+                {
+                    // The joystick was disconnected
 
-                memset(&_glfw.linux_js[i], 0, sizeof(_glfw.linux_js[i]));
-            }
+                    free(_glfw.linux_js[i].axes);
+                    free(_glfw.linux_js[i].buttons);
+                    free(_glfw.linux_js[i].name);
 
-            if (result == -1)
+                    memset(&_glfw.linux_js[i], 0, sizeof(_glfw.linux_js[i]));
+                }
+
                 break;
+            }
 
             // We don't care if it's an init event or not
             e.type &= ~JS_EVENT_INIT;

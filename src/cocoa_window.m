@@ -69,9 +69,18 @@ static void updateModeCursor(_GLFWwindow* window)
 
 // Enter fullscreen mode
 //
-static void enterFullscreenMode(_GLFWwindow* window)
+static GLboolean enterFullscreenMode(_GLFWwindow* window)
 {
-    _glfwSetVideoMode(window->monitor, &window->videoMode);
+    GLboolean status;
+
+    status = _glfwSetVideoMode(window->monitor, &window->videoMode);
+
+    // NOTE: The window is resized despite mode setting failure to make
+    //       glfwSetWindowSize more robust
+    [window->ns.object setFrame:[window->monitor->ns.screen frame]
+                        display:YES];
+
+    return status;
 }
 
 // Leave fullscreen mode
@@ -1023,7 +1032,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (wndconfig->monitor)
     {
         _glfwPlatformShowWindow(window);
-        enterFullscreenMode(window);
+        if (!enterFullscreenMode(window))
+            return GL_FALSE;
     }
 
     return GL_TRUE;

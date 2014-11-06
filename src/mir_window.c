@@ -440,7 +440,9 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 {
+  if (width)
     *width  = window->mir.width;
+  if (height)
     *height = window->mir.height;
 }
 

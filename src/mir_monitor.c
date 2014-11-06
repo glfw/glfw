@@ -39,7 +39,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
     _GLFWmonitor** monitors = NULL;
 
-    // TODO Break this loop down into the other functions there
     for (d = 0; d < display_config->num_outputs; d++)
     {
         MirDisplayOutput const* out = display_config->outputs + d;
@@ -57,7 +56,11 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             monitor->mir.x         = out->position_x;
             monitor->mir.y         = out->position_y;
             monitor->mir.output_id = out->output_id;
-            monitor->mir.num_modes = out->num_modes;
+            monitor->mir.cur_mode  = out->current_mode;
+            monitor->modeCount     = out->num_modes;
+            monitor->widthMM       = out->physical_width_mm;
+            monitor->heightMM      = out->physical_height_mm;
+
             monitor->modes         = calloc(out->num_modes, sizeof(GLFWvidmode));
 
             int n_mode;
@@ -67,6 +70,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                 monitor->modes[n_mode].height      = out->modes[n_mode].vertical_resolution;
                 monitor->modes[n_mode].refreshRate = out->modes[n_mode].refresh_rate;
             }
+
+            _glfwPlatformGetVideoMode(monitor, &monitor->currentMode);
 
             monitors[d] = monitor;
         }
@@ -91,15 +96,22 @@ void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
         *ypos = monitor->mir.y;
 }
 
-// FIXME Break down the top function into these functions
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 {
-    return NULL;
+    GLFWvidmode* modes = NULL;
+    int i, count = monitor->modeCount;
+
+    modes = calloc(count, sizeof(GLFWvidmode));
+    for (i = 0; i < count; i++)
+      modes[i] = monitor->modes[i];
+
+    *found = count;
+    return modes;
 }
 
-// FIXME Break down the top function into these functions
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
+  *mode = monitor->modes[monitor->mir.cur_mode];
 }
 
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)

@@ -60,7 +60,7 @@ typedef struct _GLFWwindowMir
 
 typedef struct _GLFWmonitorMir
 {
-    int num_modes;
+    int cur_mode;
     int output_id;
     int x;
     int y;

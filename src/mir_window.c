@@ -201,8 +201,6 @@ void HandleMouseButton(_GLFWwindow* window, int pressed, MirMotionButton button)
 
     last_button = glfw_button;
 
-    printf("WE HAVE TO GET HERE\n");
-
     // FIXME Get the modifiers
     _glfwInputMouseClick(window, glfw_button, pressed, 0);
 }

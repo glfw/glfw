@@ -37,8 +37,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     int d, found = 0;
     MirDisplayConfiguration* display_config = mir_connection_create_display_config(_glfw.mir.connection);
 
-    *count = display_config->num_outputs;
-    _GLFWmonitor** monitors = calloc(*count, sizeof(_GLFWmonitor*));
+    _GLFWmonitor** monitors = NULL;
 
     // TODO Break this loop down into the other functions there
     for (d = 0; d < display_config->num_outputs; d++)
@@ -50,13 +49,16 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             out->num_modes &&
             out->current_mode < out->num_modes)
         {
+            found++;
+            monitors = realloc(monitors, sizeof(_GLFWmonitor*) * found);
+
             _GLFWmonitor* monitor = calloc(1, sizeof(_GLFWmonitor));
 
             monitor->mir.x         = out->position_x;
             monitor->mir.y         = out->position_y;
             monitor->mir.output_id = out->output_id;
+            monitor->mir.num_modes = out->num_modes;
             monitor->modes         = calloc(out->num_modes, sizeof(GLFWvidmode));
-            found++;
 
             int n_mode;
             for (n_mode = 0; n_mode < out->num_modes; n_mode++)

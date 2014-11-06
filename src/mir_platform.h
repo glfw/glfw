@@ -24,6 +24,8 @@
 typedef struct _GLFWwindowMir
 {
   MirSurface* surface;
+  int         width;
+  int         height;
 
   EGLSurface egl_surface;
   MirEGLNativeWindowType  native_window;

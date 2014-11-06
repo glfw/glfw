@@ -28,11 +28,11 @@
 
 #include <stdlib.h>
 
-GLFWvidmode* createMonitorModes(MirDisplayOutput const* out)
+static GLFWvidmode* createMonitorModes(MirDisplayOutput const* out)
 {
+    int n_mode;
     GLFWvidmode* modes = calloc(out->num_modes, sizeof(GLFWvidmode));
 
-    int n_mode;
     for (n_mode = 0; n_mode < out->num_modes; n_mode++)
     {
         modes[n_mode].width       = out->modes[n_mode].horizontal_resolution;
@@ -46,23 +46,6 @@ GLFWvidmode* createMonitorModes(MirDisplayOutput const* out)
     return modes;
 }
 
-_GLFWmonitor* createNewMonitor(MirDisplayOutput const* out)
-{
-    _GLFWmonitor* monitor = calloc(1, sizeof(_GLFWmonitor));
-
-    monitor->mir.x         = out->position_x;
-    monitor->mir.y         = out->position_y;
-    monitor->mir.output_id = out->output_id;
-    monitor->mir.cur_mode  = out->current_mode;
-    monitor->modeCount     = out->num_modes;
-    monitor->widthMM       = out->physical_width_mm;
-    monitor->heightMM      = out->physical_height_mm;
-    monitor->modes         = createMonitorModes(out);
-
-    _glfwPlatformGetVideoMode(monitor, &monitor->currentMode);
-
-    return monitor;
-}
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -86,8 +69,20 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             out->current_mode < out->num_modes)
         {
             found++;
-            monitors    = realloc(monitors, sizeof(_GLFWmonitor*) * found);
-            monitor     = createNewMonitor(out);
+            monitors = realloc(monitors, sizeof(_GLFWmonitor*) * found);
+            monitor = _glfwAllocMonitor("Unknown",
+                                        out->physical_width_mm,
+                                        out->physical_height_mm);
+
+            monitor->mir.x         = out->position_x;
+            monitor->mir.y         = out->position_y;
+            monitor->mir.output_id = out->output_id;
+            monitor->mir.cur_mode  = out->current_mode;
+            monitor->modeCount     = out->num_modes;
+            monitor->modes         = createMonitorModes(out);
+
+            _glfwPlatformGetVideoMode(monitor, &monitor->currentMode);
+
             monitors[d] = monitor;
         }
     }

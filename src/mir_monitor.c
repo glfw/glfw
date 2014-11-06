@@ -1,6 +1,7 @@
 #include "internal.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -8,7 +9,10 @@
 
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
-  return NULL;
+  // FIXME Work out the best way to get this from mir, as we'll end up looping
+  // through all of that info... best to store it before we get here.
+  _GLFWmonitor** monitors = calloc(1, sizeof(_GLFWmonitor*));
+  return monitors;
 }
 
 GLboolean _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)

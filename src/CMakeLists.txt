@@ -30,6 +30,11 @@ elseif (_GLFW_WAYLAND)
                      posix_time.h posix_tls.h xkb_unicode.h)
     set(glfw_SOURCES ${common_SOURCES} wl_init.c wl_monitor.c wl_window.c
                      linux_joystick.c posix_time.c posix_tls.c xkb_unicode.c)
+elseif (_GLFW_MIR)
+    set(glfw_HEADERS ${common_HEADERS} mir_platform.h linux_joystick.h
+                     posix_time.h posix_tls.h xkb_unicode.h)
+    set(glfw_SOURCES ${common_SOURCES} mir_init.c mir_monitor.c mir_window.c
+                     linux_joystick.c posix_time.c posix_tls.c xkb_unicode.c)
 endif()
 
 if (_GLFW_EGL)

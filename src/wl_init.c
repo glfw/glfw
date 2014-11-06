@@ -600,6 +600,7 @@ int _glfwPlatformInit(void)
 void _glfwPlatformTerminate(void)
 {
     _glfwTerminateContextAPI();
+    _glfwTerminateJoysticks();
 
     if (_glfw.wl.cursorTheme)
         wl_cursor_theme_destroy(_glfw.wl.cursorTheme);

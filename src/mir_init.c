@@ -1,0 +1,75 @@
+//========================================================================
+// GLFW 3.1 Mir - www.glfw.org
+//------------------------------------------------------------------------
+// Copyright (c) 2014 Brandon Schaefer <brandon.schaefer@canonical.com>
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would
+//    be appreciated but is not required.
+//
+// 2. Altered source versions must be plainly marked as such, and must not
+//    be misrepresented as being the original software.
+//
+// 3. This notice may not be removed or altered from any source
+//    distribution.
+//
+//========================================================================
+
+#include "internal.h"
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+int _glfwPlatformInit(void)
+{
+    _glfw.mir.connection = mir_connect_sync(NULL, __PRETTY_FUNCTION__);
+
+    if (!mir_connection_is_valid(_glfw.mir.connection))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Mir: Unable to connect to Server\n");
+        return GL_FALSE;
+    }
+
+    _glfw.mir.native_display = mir_connection_get_egl_native_display(_glfw.mir.connection);
+
+    if (!_glfwInitContextAPI())
+        return GL_FALSE;
+
+    _glfwInitTimer();
+    _glfwInitJoysticks();
+
+    return GL_TRUE;
+}
+
+void _glfwPlatformTerminate(void)
+{
+    _glfwTerminateContextAPI();
+    _glfwTerminateJoysticks();
+    mir_connection_release(_glfw.mir.connection);
+}
+
+const char* _glfwPlatformGetVersionString(void)
+{
+    const char* version = _GLFW_VERSION_NUMBER " Mir EGL "
+#if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
+        " clock_gettime"
+#endif
+#if defined(_GLFW_BUILD_DLL)
+        " shared"
+#endif
+        ;
+
+    return version;
+}
+

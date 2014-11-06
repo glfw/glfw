@@ -33,6 +33,7 @@ endif()
 
 if (UNIX AND NOT APPLE)
     option(GLFW_USE_WAYLAND "Use Wayland for context creation (implies EGL as well)" OFF)
+    option(GLFW_USE_MIR     "Use Mir for context creation (implies EGL as well)" OFF)
 endif()
 
 if (MSVC)
@@ -44,6 +45,8 @@ if (BUILD_SHARED_LIBS)
 endif()
 
 if (GLFW_USE_WAYLAND)
+    set(GLFW_USE_EGL ON)
+elseif (GLFW_USE_MIR)
     set(GLFW_USE_EGL ON)
 endif()
 
@@ -174,6 +177,9 @@ elseif (UNIX)
     if (GLFW_USE_WAYLAND)
         set(_GLFW_WAYLAND 1)
         message(STATUS "Using Wayland for window creation")
+    elseif (GLFW_USE_MIR)
+        set(_GLFW_MIR 1)
+        message(STATUS "Using Mir for window creation")
     else()
         set(_GLFW_X11 1)
         message(STATUS "Using X11 for window creation")
@@ -329,6 +335,29 @@ if (_GLFW_WAYLAND)
 
     list(APPEND glfw_INCLUDE_DIRS "${WAYLAND_INCLUDE_DIR}")
     list(APPEND glfw_LIBRARIES "${WAYLAND_LIBRARIES}" "${CMAKE_THREAD_LIBS_INIT}")
+
+    find_package(XKBCommon REQUIRED)
+    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xkbcommon")
+    list(APPEND glfw_INCLUDE_DIRS "${XKBCOMMON_INCLUDE_DIRS}")
+    list(APPEND glfw_LIBRARIES "${XKBCOMMON_LIBRARY}")
+
+    find_library(MATH_LIBRARY m)
+    mark_as_advanced(MATH_LIBRARY)
+    if (MATH_LIBRARY)
+        list(APPEND glfw_LIBRARIES "${MATH_LIBRARY}")
+        set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lm")
+    endif()
+endif()
+
+#--------------------------------------------------------------------
+# Use Mir for window creation
+#--------------------------------------------------------------------
+if (_GLFW_MIR)
+    find_package(Mir REQUIRED)
+    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} mirclient")
+
+    list(APPEND glfw_INCLUDE_DIRS "${MIR_INCLUDE_DIR}")
+    list(APPEND glfw_LIBRARIES "${MIR_LIBRARIES}" "${CMAKE_THREAD_LIBS_INIT}")
 
     find_package(XKBCommon REQUIRED)
     set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xkbcommon")

@@ -13,8 +13,8 @@
  #error "The Mir backend depends on EGL platform support"
 #endif
 
-#define _GLFW_EGL_NATIVE_WINDOW         NULL
-#define _GLFW_EGL_NATIVE_DISPLAY        NULL
+#define _GLFW_EGL_NATIVE_WINDOW  window->mir.native_window
+#define _GLFW_EGL_NATIVE_DISPLAY _glfw.mir.native_display
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowMir  mir;
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorMir mir;
@@ -23,6 +23,11 @@
 
 typedef struct _GLFWwindowMir
 {
+  MirSurface* surface;
+
+  EGLSurface egl_surface;
+  MirEGLNativeWindowType  native_window;
+
 } _GLFWwindowMir;
 
 typedef struct _GLFWmonitorMir
@@ -32,6 +37,9 @@ typedef struct _GLFWmonitorMir
 typedef struct _GLFWlibraryMir
 {
   MirConnection* connection;
+
+  MirEGLNativeDisplayType native_display;
+
 
 } _GLFWlibraryMir;
 

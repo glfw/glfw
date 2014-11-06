@@ -35,15 +35,16 @@
 
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
-    int d, found = 0;
-    MirDisplayConfiguration* display_config = mir_connection_create_display_config(_glfw.mir.connection);
-
+    int i, found = 0;
     _GLFWmonitor** monitors = NULL;
-    _GLFWmonitor*  monitor  = NULL;
+    MirDisplayConfiguration* displayConfig =
+        mir_connection_create_display_config(_glfw.mir.connection);
 
-    for (d = 0; d < display_config->num_outputs; d++)
+    *count = 0;
+
+    for (i = 0;  i < displayConfig->num_outputs;  i++)
     {
-        MirDisplayOutput const* out = display_config->outputs + d;
+        const MirDisplayOutput* out = displayConfig->outputs + i;
 
         if (out->used &&
             out->connected &&
@@ -51,23 +52,22 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             out->current_mode < out->num_modes)
         {
             found++;
-            monitors = realloc(monitors, sizeof(_GLFWmonitor*) * found);
-            monitor = _glfwAllocMonitor("Unknown",
-                                        out->physical_width_mm,
-                                        out->physical_height_mm);
 
-            monitor->mir.x         = out->position_x;
-            monitor->mir.y         = out->position_y;
-            monitor->mir.output_id = out->output_id;
-            monitor->mir.cur_mode  = out->current_mode;
+            monitors[found] = realloc(monitors, sizeof(_GLFWmonitor*) * found);
+            monitors[found] = _glfwAllocMonitor("Unknown",
+                                                out->physical_width_mm,
+                                                out->physical_height_mm);
 
-            monitors[d] = monitor;
+            monitors[found]->mir.x         = out->position_x;
+            monitors[found]->mir.y         = out->position_y;
+            monitors[found]->mir.output_id = out->output_id;
+            monitors[found]->mir.cur_mode  = out->current_mode;
         }
     }
 
-    *count = found;
-    mir_display_config_destroy(display_config);
+    mir_display_config_destroy(displayConfig);
 
+    *count = found;
     return monitors;
 }
 
@@ -88,12 +88,12 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 {
     int i;
     GLFWvidmode* modes = NULL;
-    MirDisplayConfiguration* display_config =
+    MirDisplayConfiguration* displayConfig =
         mir_connection_create_display_config(_glfw.mir.connection);
 
-    for (i = 0;  i < display_config->num_outputs;  i++)
+    for (i = 0;  i < displayConfig->num_outputs;  i++)
     {
-        const MirDisplayOutput* out = display_config->outputs + i;
+        const MirDisplayOutput* out = displayConfig->outputs + i;
         if (out->output_id != monitor->mir.output_id)
             continue;
 
@@ -112,24 +112,25 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         break;
     }
 
-    mir_display_config_destroy(display_config);
+    mir_display_config_destroy(displayConfig);
 
     return modes;
 }
 
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
-  *mode = monitor->modes[monitor->mir.cur_mode];
+    *mode = monitor->modes[monitor->mir.cur_mode];
 }
 
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Mir: Unsupported Function %s!\n", __PRETTY_FUNCTION__);
+                    "Mir: Unsupported Function %s!", __PRETTY_FUNCTION__);
 }
 
 void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Mir: Unsupported Function %s!\n", __PRETTY_FUNCTION__);
+                    "Mir: Unsupported Function %s!", __PRETTY_FUNCTION__);
 }
+

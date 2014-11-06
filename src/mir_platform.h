@@ -39,24 +39,29 @@
  #error "The Mir backend depends on EGL platform support"
 #endif
 
-#define _GLFW_EGL_NATIVE_WINDOW  window->mir.native_window
-#define _GLFW_EGL_NATIVE_DISPLAY _glfw.mir.native_display
+#define _GLFW_EGL_NATIVE_WINDOW  window->mir.window
+#define _GLFW_EGL_NATIVE_DISPLAY _glfw.mir.display
 
-#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowMir  mir;
-#define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorMir mir;
-#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryMir mir;
-#define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorMir  mir;
+#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowMir  mir
+#define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorMir mir
+#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryMir mir
+#define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorMir  mir
 
+
+// Mir-specific per-window data
+//
 typedef struct _GLFWwindowMir
 {
-  MirSurface* surface;
-  int         width;
-  int         height;
-
-  MirEGLNativeWindowType  native_window;
+    MirSurface*             surface;
+    int                     width;
+    int                     height;
+    MirEGLNativeWindowType  window;
 
 } _GLFWwindowMir;
 
+
+// Mir-specific per-monitor data
+//
 typedef struct _GLFWmonitorMir
 {
     int cur_mode;
@@ -66,14 +71,20 @@ typedef struct _GLFWmonitorMir
 
 } _GLFWmonitorMir;
 
+
+// Mir-specific global data
+//
 typedef struct _GLFWlibraryMir
 {
-  MirConnection* connection;
-  MirEGLNativeDisplayType native_display;
+    MirConnection*          connection;
+    MirEGLNativeDisplayType display;
 
 } _GLFWlibraryMir;
 
-// TODO Only system cursors are implemented in mir atm. Need to wait for support.
+
+// Mir-specific per-cursor data
+// TODO: Only system cursors are implemented in mir atm. Need to wait for support.
+//
 typedef struct _GLFWcursorMir
 {
 } _GLFWcursorMir;

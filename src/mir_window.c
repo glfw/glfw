@@ -371,7 +371,21 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (!_glfwCreateContext(window, ctxconfig, fbconfig))
         return GL_FALSE;
 
-    // FIXME Add a check here to ensure we are within our max width/height
+    if (wndconfig->monitor)
+    {
+        mir_surface_set_type(window->mir.surface, mir_surface_state_fullscreen);
+
+        if (wndconfig->width  > wndconfig->monitor->currentMode.width ||
+            wndconfig->height > wndconfig->monitor->currentMode.height)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Mir: Requested surface size is to large (%i %i)\n",
+                             wndconfig->width, wndconfig->height);
+
+            return GL_FALSE;
+        }
+    }
+
     window->mir.width  = wndconfig->width;
     window->mir.height = wndconfig->height;
 
@@ -390,6 +404,8 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     mir_surface_release_sync(window->mir.surface);
     window->mir.surface = NULL;
   }
+
+  _glfwDestroyContext(window);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
@@ -430,8 +446,7 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
-    _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Mir: Unsupported Function %s!\n", __PRETTY_FUNCTION__);
+    mir_surface_set_type(window->mir.surface, mir_surface_state_minimized);
 }
 
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
@@ -441,15 +456,20 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
-    mir_surface_set_type(window->mir.surface, mir_surface_state_minimized);
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported Function %s!\n", __PRETTY_FUNCTION__);
 }
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported Function %s!\n", __PRETTY_FUNCTION__);
 }
 
 void _glfwPlatformUnhideWindow(_GLFWwindow* window)
 {
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported Function %s!\n", __PRETTY_FUNCTION__);
 }
 
 // Mir does event handling in a different thread, so windows get events directly as they happen
@@ -481,6 +501,8 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor, const GLFWimage* image, int x
 
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 {
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported Function %s!\n", __PRETTY_FUNCTION__);
 }
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
@@ -497,6 +519,8 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos)
 
 void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
 {
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported Function %s!\n", __PRETTY_FUNCTION__);
 }
 
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)

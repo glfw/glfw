@@ -85,6 +85,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - Added `GLFW_FLOATING` for creating always-on-top windowed mode windows
  - Added `GLFW_FOCUSED` window hint for controlling initial input focus
  - Added *partial and experimental* support for Wayland
+ - Added *partial and experimental* support for Mir
  - Changed the default of `GLFW_REFRESH_RATE` to `GLFW_DONT_CARE` to maintain
    the default behavior
  - Changed static library to build as position independent code for easier use
@@ -231,6 +232,7 @@ skills.
  - Jorge Rodriguez
  - Ed Ropple
  - Riku Salminen
+ - Brandon Schaefer
  - Sebastian Schuberth
  - Matt Sealey
  - SephiRok

@@ -43,9 +43,6 @@ int _glfwPlatformInit(void)
 
     _glfw.mir.native_display = mir_connection_get_egl_native_display(_glfw.mir.connection);
 
-    // TODO Add in bits to get the correct monitors and screen sizes...
-    // Ill just hard code in my own right now to jump ahead to surface and events.
-
     if (!_glfwInitContextAPI())
         return GL_FALSE;
 
@@ -57,6 +54,8 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
+    _glfwTerminateContextAPI();
+    _glfwTerminateJoysticks();
     mir_connection_release(_glfw.mir.connection);
 }
 

@@ -28,6 +28,42 @@
 
 #include <stdlib.h>
 
+GLFWvidmode* createMonitorModes(MirDisplayOutput const* out)
+{
+    GLFWvidmode* modes = calloc(out->num_modes, sizeof(GLFWvidmode));
+
+    int n_mode;
+    for (n_mode = 0; n_mode < out->num_modes; n_mode++)
+    {
+        modes[n_mode].width       = out->modes[n_mode].horizontal_resolution;
+        modes[n_mode].height      = out->modes[n_mode].vertical_resolution;
+        modes[n_mode].refreshRate = out->modes[n_mode].refresh_rate;
+        modes[n_mode].redBits     = 8;
+        modes[n_mode].greenBits   = 8;
+        modes[n_mode].blueBits    = 8;
+    }
+
+    return modes;
+}
+
+_GLFWmonitor* createNewMonitor(MirDisplayOutput const* out)
+{
+    _GLFWmonitor* monitor = calloc(1, sizeof(_GLFWmonitor));
+
+    monitor->mir.x         = out->position_x;
+    monitor->mir.y         = out->position_y;
+    monitor->mir.output_id = out->output_id;
+    monitor->mir.cur_mode  = out->current_mode;
+    monitor->modeCount     = out->num_modes;
+    monitor->widthMM       = out->physical_width_mm;
+    monitor->heightMM      = out->physical_height_mm;
+    monitor->modes         = createMonitorModes(out);
+
+    _glfwPlatformGetVideoMode(monitor, &monitor->currentMode);
+
+    return monitor;
+}
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -38,6 +74,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     MirDisplayConfiguration* display_config = mir_connection_create_display_config(_glfw.mir.connection);
 
     _GLFWmonitor** monitors = NULL;
+    _GLFWmonitor*  monitor  = NULL;
 
     for (d = 0; d < display_config->num_outputs; d++)
     {
@@ -49,30 +86,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             out->current_mode < out->num_modes)
         {
             found++;
-            monitors = realloc(monitors, sizeof(_GLFWmonitor*) * found);
-
-            _GLFWmonitor* monitor = calloc(1, sizeof(_GLFWmonitor));
-
-            monitor->mir.x         = out->position_x;
-            monitor->mir.y         = out->position_y;
-            monitor->mir.output_id = out->output_id;
-            monitor->mir.cur_mode  = out->current_mode;
-            monitor->modeCount     = out->num_modes;
-            monitor->widthMM       = out->physical_width_mm;
-            monitor->heightMM      = out->physical_height_mm;
-
-            monitor->modes         = calloc(out->num_modes, sizeof(GLFWvidmode));
-
-            int n_mode;
-            for (n_mode = 0; n_mode < out->num_modes; n_mode++)
-            {
-                monitor->modes[n_mode].width       = out->modes[n_mode].horizontal_resolution;
-                monitor->modes[n_mode].height      = out->modes[n_mode].vertical_resolution;
-                monitor->modes[n_mode].refreshRate = out->modes[n_mode].refresh_rate;
-            }
-
-            _glfwPlatformGetVideoMode(monitor, &monitor->currentMode);
-
+            monitors    = realloc(monitors, sizeof(_GLFWmonitor*) * found);
+            monitor     = createNewMonitor(out);
             monitors[d] = monitor;
         }
     }

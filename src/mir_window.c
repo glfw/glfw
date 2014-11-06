@@ -6,7 +6,7 @@
 // FIXME Remove me when done debugging!
 #include <stdio.h>
 
-MirPixelFormat FindValidPixelFormat()
+MirPixelFormat findValidPixelFormat()
 {
     unsigned int pf_size = 32;
     unsigned int valid_formats;
@@ -157,7 +157,7 @@ static int toGLFWKeyCode(uint32_t key)
     }
 }
 
-void HandleKeyEvent(MirKeyEvent const key, _GLFWwindow* window)
+void handleKeyEvent(MirKeyEvent const key, _GLFWwindow* window)
 {
     int pressed = key.action == mir_key_action_up ?  GLFW_RELEASE : GLFW_PRESS;
 
@@ -170,7 +170,7 @@ void HandleKeyEvent(MirKeyEvent const key, _GLFWwindow* window)
    _glfwInputChar(window, text, 0, 0);
 }
 
-void HandleMouseButton(_GLFWwindow* window, int pressed, MirMotionButton button)
+void handleMouseButton(_GLFWwindow* window, int pressed, MirMotionButton button)
 {
     static int last_button;
     int glfw_button;
@@ -206,39 +206,39 @@ void HandleMouseButton(_GLFWwindow* window, int pressed, MirMotionButton button)
 }
 
 // TODO Confirm the x/y is correct and no futher work needs to be done.
-void HandleMouseMotion(_GLFWwindow* window, int x, int y)
+void handleMouseMotion(_GLFWwindow* window, int x, int y)
 {
     _glfwInputCursorMotion(window, x, y);
 }
 
 // TODO Confirm it really wants the dx/dy and that they are in the correct direction!
-void HandleMouseScroll(_GLFWwindow* window, int dx, int dy)
+void handleMouseScroll(_GLFWwindow* window, int dx, int dy)
 {
     _glfwInputScroll(window, dx, dy);
 }
 
-void HandleMouseEvent(MirMotionEvent const motion, int cord_index, _GLFWwindow* window)
+void handleMouseEvent(MirMotionEvent const motion, int cord_index, _GLFWwindow* window)
 {
     switch (motion.action)
     {
           case mir_motion_action_down:
           case mir_motion_action_pointer_down:
-              HandleMouseButton(window, GLFW_PRESS, motion.button_state);
+              handleMouseButton(window, GLFW_PRESS, motion.button_state);
               break;
           case mir_motion_action_up:
           case mir_motion_action_pointer_up:
-              HandleMouseButton(window, GLFW_RELEASE, motion.button_state);
+              handleMouseButton(window, GLFW_RELEASE, motion.button_state);
               break;
           case mir_motion_action_hover_move:
           case mir_motion_action_move:
-              HandleMouseMotion(window,
+              handleMouseMotion(window,
                                 motion.pointer_coordinates[cord_index].x,
                                 motion.pointer_coordinates[cord_index].y);
               break;
           case mir_motion_action_outside:
               break;
           case mir_motion_action_scroll:
-              HandleMouseScroll(window,
+              handleMouseScroll(window,
                                 motion.pointer_coordinates[cord_index].hscroll,
                                 motion.pointer_coordinates[cord_index].vscroll);
               break;
@@ -252,36 +252,65 @@ void HandleMouseEvent(MirMotionEvent const motion, int cord_index, _GLFWwindow* 
     }
 }
 
-static void HandleMotionEvent(MirMotionEvent const motion, _GLFWwindow* window)
+static void handleMotionEvent(MirMotionEvent const motion, _GLFWwindow* window)
 {
     int cord_index;
-    for (cord_index = 0; cord_index < motion.pointer_count; cord_index++) {
-        HandleMouseEvent(motion, cord_index, window);
-        /*
-        // TODO Does GLFW handle touch events?
-        if (motion.pointer_coordinates[cord_index].tool_type == mir_motion_tool_type_finger) {
-            HandleTouchEvent(motion, cord_index, window);
-        }
-        else {
-            HandleMouseEvent(motion, cord_index, window);
-        }
-        */
-    }
+    for (cord_index = 0; cord_index < motion.pointer_count; cord_index++)
+       handleMouseEvent(motion, cord_index, window);
 }
 
-void HandleInput(MirSurface* surface, MirEvent const* event, void* context)
+void handleInput(MirSurface* surface, MirEvent const* event, void* context)
 {
   switch (event->type)
   {
     case(mir_event_type_key):
-      HandleKeyEvent(event->key, (_GLFWwindow*)context);
+      handleKeyEvent(event->key, (_GLFWwindow*)context);
       break;
     case(mir_event_type_motion):
-      HandleMotionEvent(event->motion, (_GLFWwindow*)context);
+      handleMotionEvent(event->motion, (_GLFWwindow*)context);
       break;
     default:
       break;
   }
+}
+
+int createSurface(_GLFWwindow* window)
+{
+    MirSurfaceParameters params = 
+    {
+        .name         = "MirSurface",
+        .width        = window->mir.width,
+        .height       = window->mir.height,
+        .pixel_format = mir_pixel_format_invalid,
+        .buffer_usage = mir_buffer_usage_hardware,
+        .output_id    = mir_display_output_id_invalid
+    };
+
+    MirEventDelegate delegate =
+    {
+        handleInput,
+        window
+    };
+
+    params.pixel_format = findValidPixelFormat();
+    if (params.pixel_format == mir_pixel_format_invalid)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Mir: Unable to find a correct pixel format!\n");
+        return GL_FALSE;
+    }
+
+    window->mir.surface = mir_connection_create_surface_sync(_glfw.mir.connection, &params);
+    if (!mir_surface_is_valid(window->mir.surface))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Mir: Unable to create surface!\n");
+        return GL_FALSE;
+    }
+
+    mir_surface_set_event_handler(window->mir.surface, &delegate);
+
+    return GL_TRUE;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -300,41 +329,10 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     window->mir.width  = wndconfig->width;
     window->mir.height = wndconfig->height;
 
-    MirSurfaceParameters params = 
-    {
-        .name         = "MirSurface",
-        .width        = wndconfig->width,
-        .height       = wndconfig->height,
-        .pixel_format = mir_pixel_format_invalid,
-        .buffer_usage = mir_buffer_usage_hardware,
-        .output_id    = mir_display_output_id_invalid
-    };
-
-    MirEventDelegate delegate =
-    {
-        HandleInput,
-        window
-    };
-
-    params.pixel_format = FindValidPixelFormat();
-    if (params.pixel_format == mir_pixel_format_invalid)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Mir: Unable to find a correct pixel format!\n");
+    if (!createSurface(window))
         return GL_FALSE;
-    }
-
-    window->mir.surface = mir_connection_create_surface_sync(_glfw.mir.connection, &params);
-    if (!mir_surface_is_valid(window->mir.surface))
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Mir: Unable to create surface!\n");
-        return GL_FALSE;
-    }
 
     window->mir.native_window = mir_surface_get_egl_native_window(window->mir.surface);
-
-    mir_surface_set_event_handler(window->mir.surface, &delegate);
 
     return GL_TRUE;
 }

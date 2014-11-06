@@ -28,24 +28,6 @@
 
 #include <stdlib.h>
 
-static GLFWvidmode* createMonitorModes(MirDisplayOutput const* out)
-{
-    int n_mode;
-    GLFWvidmode* modes = calloc(out->num_modes, sizeof(GLFWvidmode));
-
-    for (n_mode = 0; n_mode < out->num_modes; n_mode++)
-    {
-        modes[n_mode].width       = out->modes[n_mode].horizontal_resolution;
-        modes[n_mode].height      = out->modes[n_mode].vertical_resolution;
-        modes[n_mode].refreshRate = out->modes[n_mode].refresh_rate;
-        modes[n_mode].redBits     = 8;
-        modes[n_mode].greenBits   = 8;
-        modes[n_mode].blueBits    = 8;
-    }
-
-    return modes;
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -78,10 +60,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             monitor->mir.y         = out->position_y;
             monitor->mir.output_id = out->output_id;
             monitor->mir.cur_mode  = out->current_mode;
-            monitor->modeCount     = out->num_modes;
-            monitor->modes         = createMonitorModes(out);
-
-            _glfwPlatformGetVideoMode(monitor, &monitor->currentMode);
 
             monitors[d] = monitor;
         }
@@ -108,14 +86,34 @@ void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 {
+    int i;
     GLFWvidmode* modes = NULL;
-    int i, count = monitor->modeCount;
+    MirDisplayConfiguration* display_config =
+        mir_connection_create_display_config(_glfw.mir.connection);
 
-    modes = calloc(count, sizeof(GLFWvidmode));
-    for (i = 0; i < count; i++)
-      modes[i] = monitor->modes[i];
+    for (i = 0;  i < display_config->num_outputs;  i++)
+    {
+        const MirDisplayOutput* out = display_config->outputs + i;
+        if (out->output_id != monitor->mir.output_id)
+            continue;
 
-    *found = count;
+        modes = calloc(out->num_modes, sizeof(GLFWvidmode));
+
+        for (*found = 0;  *found < out->num_modes;  (*found)++)
+        {
+            modes[*found].width  = out->modes[*found].horizontal_resolution;
+            modes[*found].height = out->modes[*found].vertical_resolution;
+            modes[*found].refreshRate = out->modes[*found].refresh_rate;
+            modes[*found].redBits     = 8;
+            modes[*found].greenBits   = 8;
+            modes[*found].blueBits    = 8;
+        }
+
+        break;
+    }
+
+    mir_display_config_destroy(display_config);
+
     return modes;
 }
 

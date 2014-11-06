@@ -373,10 +373,12 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (wndconfig->monitor)
     {
+        GLFWvidmode mode;
+        _glfwPlatformGetVideoMode(wndconfig->monitor, &mode);
+
         mir_surface_set_type(window->mir.surface, mir_surface_state_fullscreen);
 
-        if (wndconfig->width  > wndconfig->monitor->currentMode.width ||
-            wndconfig->height > wndconfig->monitor->currentMode.height)
+        if (wndconfig->width > mode.width || wndconfig->height > mode.height)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Mir: Requested surface size is to large (%i %i)\n",

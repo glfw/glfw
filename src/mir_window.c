@@ -29,7 +29,7 @@
 
 #include <linux/input.h>
 
-MirPixelFormat findValidPixelFormat()
+static MirPixelFormat findValidPixelFormat()
 {
     unsigned int pf_size = 32;
     unsigned int valid_formats;
@@ -53,6 +53,30 @@ MirPixelFormat findValidPixelFormat()
     }
 
     return mir_pixel_format_invalid;
+}
+
+static int mirModToGLFWMod(uint32_t mod)
+{
+    int glfw_mod = 0x0;
+
+    if (mod & mir_key_modifier_alt)
+    {
+        glfw_mod |= GLFW_MOD_ALT;
+    }
+    else if (mod & mir_key_modifier_shift)
+    {
+        glfw_mod |= GLFW_MOD_SHIFT;
+    }
+    else if (mod & mir_key_modifier_ctrl)
+    {
+        glfw_mod |= GLFW_MOD_CONTROL;
+    }
+    else if (mod & mir_key_modifier_meta)
+    {
+        glfw_mod |= GLFW_MOD_SUPER;
+    }
+
+    return glfw_mod;
 }
 
 // Taken from wl_init.c
@@ -180,23 +204,25 @@ static int toGLFWKeyCode(uint32_t key)
     }
 }
 
-void handleKeyEvent(MirKeyEvent const key, _GLFWwindow* window)
+static void handleKeyEvent(MirKeyEvent const key, _GLFWwindow* window)
 {
     int pressed = key.action == mir_key_action_up ?  GLFW_RELEASE : GLFW_PRESS;
+    int mods    = mirModToGLFWMod(key.modifiers);
 
-    // FIXME Get the correct modifiers
-    _glfwInputKey(window, toGLFWKeyCode(key.scan_code), key.scan_code, pressed, 0);
+    long text = _glfwKeySym2Unicode(key.key_code);
+    int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
 
-   long text = _glfwKeySym2Unicode(key.key_code);
+    _glfwInputKey(window, toGLFWKeyCode(key.scan_code), key.scan_code, pressed, mods);
 
-   // FIXME fill in mod, and last argument
-   _glfwInputChar(window, text, 0, 0);
+    if (text != -1)
+        _glfwInputChar(window, text, mods, plain);
 }
 
-void handleMouseButton(_GLFWwindow* window, int pressed, MirMotionButton button)
+static void handleMouseButton(_GLFWwindow* window, int pressed, int mir_mods, MirMotionButton button)
 {
     static int last_button;
     int glfw_button;
+    int mods = mirModToGLFWMod(mir_mods);
 
     switch (button)
     {
@@ -224,33 +250,30 @@ void handleMouseButton(_GLFWwindow* window, int pressed, MirMotionButton button)
 
     last_button = glfw_button;
 
-    // FIXME Get the modifiers
-    _glfwInputMouseClick(window, glfw_button, pressed, 0);
+    _glfwInputMouseClick(window, glfw_button, pressed, mods);
 }
 
-// TODO Confirm the x/y is correct and no futher work needs to be done.
-void handleMouseMotion(_GLFWwindow* window, int x, int y)
+static void handleMouseMotion(_GLFWwindow* window, int x, int y)
 {
     _glfwInputCursorMotion(window, x, y);
 }
 
-// TODO Confirm it really wants the dx/dy and that they are in the correct direction!
-void handleMouseScroll(_GLFWwindow* window, int dx, int dy)
+static void handleMouseScroll(_GLFWwindow* window, int dx, int dy)
 {
     _glfwInputScroll(window, dx, dy);
 }
 
-void handleMouseEvent(MirMotionEvent const motion, int cord_index, _GLFWwindow* window)
+static void handleMouseEvent(MirMotionEvent const motion, int cord_index, _GLFWwindow* window)
 {
     switch (motion.action)
     {
           case mir_motion_action_down:
           case mir_motion_action_pointer_down:
-              handleMouseButton(window, GLFW_PRESS, motion.button_state);
+              handleMouseButton(window, GLFW_PRESS, motion.modifiers, motion.button_state);
               break;
           case mir_motion_action_up:
           case mir_motion_action_pointer_up:
-              handleMouseButton(window, GLFW_RELEASE, motion.button_state);
+              handleMouseButton(window, GLFW_RELEASE, motion.modifiers, motion.button_state);
               break;
           case mir_motion_action_hover_move:
           case mir_motion_action_move:
@@ -282,7 +305,7 @@ static void handleMotionEvent(MirMotionEvent const motion, _GLFWwindow* window)
        handleMouseEvent(motion, cord_index, window);
 }
 
-void handleInput(MirSurface* surface, MirEvent const* event, void* context)
+static void handleInput(MirSurface* surface, MirEvent const* event, void* context)
 {
   switch (event->type)
   {
@@ -297,7 +320,7 @@ void handleInput(MirSurface* surface, MirEvent const* event, void* context)
   }
 }
 
-int createSurface(_GLFWwindow* window)
+static int createSurface(_GLFWwindow* window)
 {
     MirSurfaceParameters params = 
     {

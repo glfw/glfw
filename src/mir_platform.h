@@ -60,17 +60,21 @@ typedef struct _GLFWwindowMir
 
 typedef struct _GLFWmonitorMir
 {
+    int num_modes;
+    int output_id;
+    int x;
+    int y;
+
 } _GLFWmonitorMir;
 
 typedef struct _GLFWlibraryMir
 {
   MirConnection* connection;
-
   MirEGLNativeDisplayType native_display;
-
 
 } _GLFWlibraryMir;
 
+// TODO Only system cursors are implemented in mir atm. Need to wait for support.
 typedef struct _GLFWcursorMir
 {
 } _GLFWcursorMir;

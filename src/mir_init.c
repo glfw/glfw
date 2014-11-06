@@ -43,7 +43,6 @@ int _glfwPlatformInit(void)
 
     _glfw.mir.native_display = mir_connection_get_egl_native_display(_glfw.mir.connection);
 
-
     // TODO Add in bits to get the correct monitors and screen sizes...
     // Ill just hard code in my own right now to jump ahead to surface and events.
 

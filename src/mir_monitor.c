@@ -34,26 +34,68 @@
 
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
-  // FIXME Work out the best way to get this from mir, as we'll end up looping
-  // through all of that info... best to store it before we get here.
-  _GLFWmonitor** monitors = calloc(1, sizeof(_GLFWmonitor*));
-  return monitors;
+    int d, found = 0;
+    MirDisplayConfiguration* display_config = mir_connection_create_display_config(_glfw.mir.connection);
+
+    *count = display_config->num_outputs;
+    _GLFWmonitor** monitors = calloc(*count, sizeof(_GLFWmonitor*));
+
+    // TODO Break this loop down into the other functions there
+    for (d = 0; d < display_config->num_outputs; d++)
+    {
+        MirDisplayOutput const* out = display_config->outputs + d;
+
+        if (out->used &&
+            out->connected &&
+            out->num_modes &&
+            out->current_mode < out->num_modes)
+        {
+            _GLFWmonitor* monitor = calloc(1, sizeof(_GLFWmonitor));
+
+            monitor->mir.x         = out->position_x;
+            monitor->mir.y         = out->position_y;
+            monitor->mir.output_id = out->output_id;
+            monitor->modes         = calloc(out->num_modes, sizeof(GLFWvidmode));
+            found++;
+
+            int n_mode;
+            for (n_mode = 0; n_mode < out->num_modes; n_mode++)
+            {
+                monitor->modes[n_mode].width       = out->modes[n_mode].horizontal_resolution;
+                monitor->modes[n_mode].height      = out->modes[n_mode].vertical_resolution;
+                monitor->modes[n_mode].refreshRate = out->modes[n_mode].refresh_rate;
+            }
+
+            monitors[d] = monitor;
+        }
+    }
+
+    *count = found;
+    mir_display_config_destroy(display_config);
+
+    return monitors;
 }
 
 GLboolean _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
 {
-  return 0;
+    return first->mir.output_id == second->mir.output_id;
 }
 
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {
+    if (xpos)
+        *xpos = monitor->mir.x;
+    if (ypos)
+        *ypos = monitor->mir.y;
 }
 
+// FIXME Break down the top function into these functions
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 {
-  return NULL;
+    return NULL;
 }
 
+// FIXME Break down the top function into these functions
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
 }

@@ -381,6 +381,18 @@ void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
                     "Mir: Unsupported Function %s!\n", __PRETTY_FUNCTION__);
 }
 
+void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window, int* left, int* top, int* right, int* bottom)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported Function %s!\n", __PRETTY_FUNCTION__);
+}
+
+void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported Function %s!\n", __PRETTY_FUNCTION__);
+}
+
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -401,9 +413,19 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
+    mir_surface_set_type(window->mir.surface, mir_surface_state_restored);
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)
+{
+    mir_surface_set_type(window->mir.surface, mir_surface_state_minimized);
+}
+
+void _glfwPlatformShowWindow(_GLFWwindow* window)
+{
+}
+
+void _glfwPlatformUnhideWindow(_GLFWwindow* window)
 {
 }
 
@@ -426,24 +448,6 @@ void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* heigh
     *height = window->mir.height;
 }
 
-void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window, int* left, int* top, int* right, int* bottom)
-{
-    _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Mir: Unsupported Function %s!\n", __PRETTY_FUNCTION__);
-}
-
-void _glfwPlatformShowWindow(_GLFWwindow* window)
-{
-}
-
-void _glfwPlatformUnhideWindow(_GLFWwindow* window)
-{
-}
-
-void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
-{
-}
-
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -458,6 +462,8 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 {
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported Function %s!\n", __PRETTY_FUNCTION__);
 }
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos)

@@ -489,7 +489,9 @@ void _glfwPlatformPostEmptyEvent(void)
 
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
+  if (width)
     *width  = window->mir.width;
+  if (height)
     *height = window->mir.height;
 }
 

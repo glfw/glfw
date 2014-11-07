@@ -64,7 +64,6 @@ typedef struct _GLFWwindowWayland
     struct wl_surface*          surface;
     struct wl_egl_window*       native;
     struct wl_shell_surface*    shell_surface;
-    EGLSurface                  egl_surface;
     struct wl_callback*         callback;
     _GLFWcursor*                currentCursor;
 } _GLFWwindowWayland;

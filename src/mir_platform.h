@@ -53,7 +53,6 @@ typedef struct _GLFWwindowMir
   int         width;
   int         height;
 
-  EGLSurface egl_surface;
   MirEGLNativeWindowType  native_window;
 
 } _GLFWwindowMir;

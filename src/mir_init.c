@@ -26,6 +26,7 @@
 
 #include "internal.h"
 
+#include <stdlib.h>
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -33,6 +34,8 @@
 
 int _glfwPlatformInit(void)
 {
+    int error;
+
     _glfw.mir.connection = mir_connect_sync(NULL, __PRETTY_FUNCTION__);
 
     if (!mir_connection_is_valid(_glfw.mir.connection))
@@ -51,6 +54,17 @@ int _glfwPlatformInit(void)
     _glfwInitTimer();
     _glfwInitJoysticks();
 
+    _glfw.mir.event_queue = calloc(1, sizeof(EventQueue));
+    _glfwInitEventQueue(_glfw.mir.event_queue);
+
+    error = pthread_mutex_init(&_glfw.mir.event_mutex, NULL);
+    if (error)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Mir: Failed to create Event Mutex Error: %i\n", error);
+        return GL_FALSE;
+    }
+
     return GL_TRUE;
 }
 
@@ -58,6 +72,10 @@ void _glfwPlatformTerminate(void)
 {
     _glfwTerminateContextAPI();
     _glfwTerminateJoysticks();
+
+    _glfwDeleteEventQueue(_glfw.mir.event_queue);
+
+    pthread_mutex_destroy(&_glfw.mir.event_mutex);
 
     mir_connection_release(_glfw.mir.connection);
 }

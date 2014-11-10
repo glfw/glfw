@@ -90,8 +90,8 @@ typedef struct _GLFWlibraryMir
     MirEGLNativeDisplayType display;
     EventQueue* event_queue;
 
-   pthread_mutex_t event_mutex;
-   pthread_cond_t  event_cond;
+    pthread_mutex_t event_mutex;
+    pthread_cond_t  event_cond;
 
 } _GLFWlibraryMir;
 

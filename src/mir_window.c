@@ -28,7 +28,65 @@
 #include "xkb_unicode.h"
 
 #include <linux/input.h>
+#include <stdlib.h>
+#include <string.h>
 
+
+typedef struct EventNode
+{
+    TAILQ_ENTRY(EventNode) entries;
+    MirEvent*              event;
+    _GLFWwindow*           window;
+} EventNode;
+
+static void deleteNode(EventQueue* queue, EventNode* node)
+{
+    free(node->event);
+    free(node);
+}
+
+static int emptyEventQueue(EventQueue* queue)
+{
+    return queue->head.tqh_first == NULL ? GL_TRUE : GL_FALSE;
+}
+
+static EventNode* newEventNode(MirEvent const* event, _GLFWwindow* context)
+{
+    EventNode* new_node = calloc(1, sizeof(EventNode));
+    new_node->event     = calloc(1, sizeof(MirEvent));
+    new_node->window    = context;
+
+    memcpy(new_node->event, event, sizeof(MirEvent));
+    return new_node;
+}
+
+static void enqueueEvent(MirEvent const* event, _GLFWwindow* context)
+{
+    pthread_mutex_lock(&_glfw.mir.event_mutex);
+
+    EventNode* new_node = newEventNode(event, context);
+    TAILQ_INSERT_TAIL(&_glfw.mir.event_queue->head, new_node, entries);
+
+    pthread_cond_signal(&_glfw.mir.event_cond);
+
+    pthread_mutex_unlock(&_glfw.mir.event_mutex);
+}
+
+static EventNode* dequeueEvent(EventQueue* queue)
+{
+    EventNode* node = NULL;
+
+    pthread_mutex_lock(&_glfw.mir.event_mutex);
+
+    node = queue->head.tqh_first;
+
+    if (node)
+        TAILQ_REMOVE(&queue->head, node, entries);
+
+    pthread_mutex_unlock(&_glfw.mir.event_mutex);
+
+    return node;
+}
 
 static MirPixelFormat findValidPixelFormat(void)
 {
@@ -298,19 +356,24 @@ static void handleMotionEvent(const MirMotionEvent motion, _GLFWwindow* window)
         handleMouseEvent(motion, i, window);
 }
 
-static void handleInput(MirSurface* surface, const MirEvent* event, void* context)
+static void handleInput(MirEvent const* event, _GLFWwindow* window)
 {
     switch (event->type)
     {
         case mir_event_type_key:
-            handleKeyEvent(event->key, (_GLFWwindow*) context);
+            handleKeyEvent(event->key, window);
             break;
         case mir_event_type_motion:
-            handleMotionEvent(event->motion, (_GLFWwindow*) context);
+            handleMotionEvent(event->motion, window);
             break;
         default:
             break;
     }
+}
+
+static void addNewEvent(MirSurface* surface, MirEvent const* event, void* context)
+{
+    enqueueEvent(event, context);
 }
 
 static int createSurface(_GLFWwindow* window)
@@ -327,7 +390,7 @@ static int createSurface(_GLFWwindow* window)
 
     MirEventDelegate delegate =
     {
-        handleInput,
+        addNewEvent,
         window
     };
 
@@ -353,6 +416,30 @@ static int createSurface(_GLFWwindow* window)
     return GL_TRUE;
 }
 
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+void _glfwInitEventQueue(EventQueue* queue)
+{
+    TAILQ_INIT(&queue->head);
+}
+
+void _glfwDeleteEventQueue(EventQueue* queue)
+{
+    EventNode* node, *node_next;
+    node = queue->head.tqh_first;
+
+    while (node != NULL)
+    {
+        node_next = node->entries.tqe_next;
+
+        TAILQ_REMOVE(&queue->head, node, entries);
+        deleteNode(queue, node);
+
+        node = node_next;
+    }
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -475,14 +562,25 @@ void _glfwPlatformUnhideWindow(_GLFWwindow* window)
 
 void _glfwPlatformPollEvents(void)
 {
-    // Mir does event handling in a different thread, so windows get events
-    // directly as they happen
+    EventNode* node = NULL;
+
+    while ((node = dequeueEvent(_glfw.mir.event_queue)))
+    {
+        handleInput(node->event, node->window);
+        deleteNode(_glfw.mir.event_queue, node);
+    }
 }
 
 void _glfwPlatformWaitEvents(void)
 {
-    // Mir does event handling in a different thread, so windows get events
-    // directly as they happen
+    pthread_mutex_lock(&_glfw.mir.event_mutex);
+
+    if (emptyEventQueue(_glfw.mir.event_queue))
+        pthread_cond_wait(&_glfw.mir.event_cond, &_glfw.mir.event_mutex);
+
+    pthread_mutex_unlock(&_glfw.mir.event_mutex);
+
+    _glfwPlatformPollEvents();
 }
 
 void _glfwPlatformPostEmptyEvent(void)

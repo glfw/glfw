@@ -33,6 +33,10 @@
 #include "posix_time.h"
 #include "linux_joystick.h"
 
+#include <sys/queue.h>
+
+#include <pthread.h>
+
 #if defined(_GLFW_EGL)
  #include "egl_context.h"
 #else
@@ -47,6 +51,12 @@
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryMir mir
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorMir  mir
 
+// Mir-specific Event Queue
+//
+typedef struct EventQueue
+{
+    TAILQ_HEAD(, EventNode) head;
+} EventQueue;
 
 // Mir-specific per-window data
 //
@@ -78,6 +88,10 @@ typedef struct _GLFWlibraryMir
 {
     MirConnection*          connection;
     MirEGLNativeDisplayType display;
+    EventQueue* event_queue;
+
+    pthread_mutex_t event_mutex;
+    pthread_cond_t  event_cond;
 
 } _GLFWlibraryMir;
 
@@ -88,5 +102,9 @@ typedef struct _GLFWlibraryMir
 typedef struct _GLFWcursorMir
 {
 } _GLFWcursorMir;
+
+
+extern void _glfwInitEventQueue(EventQueue* queue);
+extern void _glfwDeleteEventQueue(EventQueue* queue);
 
 #endif // _mir_platform_h_

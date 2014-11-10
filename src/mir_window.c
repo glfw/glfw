@@ -427,18 +427,23 @@ void _glfwInitEventQueue(EventQueue* queue)
 
 void _glfwDeleteEventQueue(EventQueue* queue)
 {
-    EventNode* node, *node_next;
-    node = queue->head.tqh_first;
-
-    while (node != NULL)
+    if (queue)
     {
-        node_next = node->entries.tqe_next;
+        EventNode* node, *node_next;
+        node = queue->head.tqh_first;
 
-        TAILQ_REMOVE(&queue->head, node, entries);
-        deleteNode(queue, node);
+        while (node != NULL)
+        {
+            node_next = node->entries.tqe_next;
 
-        node = node_next;
+            TAILQ_REMOVE(&queue->head, node, entries);
+            deleteNode(queue, node);
+
+            node = node_next;
+        }
     }
+
+    free(queue);
 }
 
 //////////////////////////////////////////////////////////////////////////

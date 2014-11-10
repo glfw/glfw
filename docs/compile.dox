@@ -263,6 +263,7 @@ ramps and clipboard.  The options are:
  - `_GLFW_WIN32` to use the Win32 API
  - `_GLFW_X11` to use the X Window System
  - `_GLFW_WAYLAND` to use the Wayland API (experimental and incomplete)
+ - `_GLFW_MIR` to use the Mir API (experimental and incomplete)
 
 The context creation API is used to enumerate pixel formats / framebuffer
 configurations and to create contexts.  The options are:
@@ -271,6 +272,8 @@ configurations and to create contexts.  The options are:
  - `_GLFW_WGL` to use the Win32 WGL API
  - `_GLFW_GLX` to use the X11 GLX API
  - `_GLFW_EGL` to use the EGL API
+
+Wayland and Mir both require the EGL backend.
 
 The client library is the one providing the OpenGL or OpenGL ES API, which is
 used by GLFW to probe the created context.  This is not the same thing as the

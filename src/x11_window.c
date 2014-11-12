@@ -777,14 +777,15 @@ static void enterFullscreenMode(_GLFWwindow* window)
     {
         // In override-redirect mode we have divorced ourselves from the
         // window manager, so we need to do everything manually
-
+        int x,y;
         GLFWvidmode mode;
+        _glfwPlatformGetMonitorPos(window->monitor, &x, &y);
         _glfwPlatformGetVideoMode(window->monitor, &mode);
 
         XRaiseWindow(_glfw.x11.display, window->x11.handle);
         XSetInputFocus(_glfw.x11.display, window->x11.handle,
                        RevertToParent, CurrentTime);
-        XMoveWindow(_glfw.x11.display, window->x11.handle, 0, 0);
+        XMoveWindow(_glfw.x11.display, window->x11.handle, x, y);
         XResizeWindow(_glfw.x11.display, window->x11.handle,
                       mode.width, mode.height);
     }

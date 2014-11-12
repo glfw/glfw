@@ -441,9 +441,9 @@ void _glfwDeleteEventQueue(EventQueue* queue)
 
             node = node_next;
         }
-    }
 
-    free(queue);
+        free(queue);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -141,6 +141,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [X11] Bugfix: Video mode dimensions were not rotated to match the CRTC
  - [X11] Bugfix: Unicode character input ignored dead keys
  - [X11] Bugfix: X-axis scroll offsets were inverted
+ - [X11] Bugfix: Full screen override redirect windows were not always
+                 positioned over the specified monitor
 
 
 ## Contact
@@ -228,6 +230,7 @@ skills.
  - Peoro
  - Braden Pellett
  - Arturo J. Pérez
+ - Cyril Pichard
  - Pieroman
  - Jorge Rodriguez
  - Ed Ropple

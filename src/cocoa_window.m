@@ -971,7 +971,10 @@ static GLboolean createWindow(_GLFWwindow* window,
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
     if (wndconfig->monitor)
+    {
         [window->ns.object setLevel:NSMainMenuWindowLevel + 1];
+        [window->ns.object setHidesOnDeactivate:YES];
+    }
     else
     {
         [window->ns.object center];
@@ -984,7 +987,6 @@ static GLboolean createWindow(_GLFWwindow* window,
     [window->ns.object setContentView:window->ns.view];
     [window->ns.object setDelegate:window->ns.delegate];
     [window->ns.object setAcceptsMouseMovedEvents:YES];
-    [window->ns.object setHidesOnDeactivate:YES];
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)

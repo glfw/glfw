@@ -465,6 +465,10 @@ if (_GLFW_COCOA AND _GLFW_NSGL)
     find_library(IOKIT_FRAMEWORK IOKit)
     find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
     find_library(CORE_VIDEO_FRAMEWORK CoreVideo)
+    mark_as_advanced(COCOA_FRAMEWORK
+                     IOKIT_FRAMEWORK
+                     CORE_FOUNDATION_FRAMEWORK
+                     CORE_VIDEO_FRAMEWORK)
     list(APPEND glfw_LIBRARIES "${COCOA_FRAMEWORK}"
                                "${OPENGL_gl_LIBRARY}"
                                "${IOKIT_FRAMEWORK}"

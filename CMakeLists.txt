@@ -201,7 +201,7 @@ endif()
 #--------------------------------------------------------------------
 if (_GLFW_WIN32)
 
-    set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lgdi32")
+    list(APPEND glfw_PKG_LIBS "-lgdi32")
 
     if (GLFW_USE_DWM_SWAP_INTERVAL)
         set(_GLFW_USE_DWM_SWAP_INTERVAL 1)
@@ -224,7 +224,7 @@ endif()
 #--------------------------------------------------------------------
 if (_GLFW_WGL)
 
-    set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lopengl32")
+    list(APPEND glfw_PKG_LIBS "-lopengl32")
 
     list(APPEND glfw_INCLUDE_DIRS "${OPENGL_INCLUDE_DIR}")
     list(APPEND glfw_LIBRARIES "${OPENGL_gl_LIBRARY}")
@@ -237,7 +237,7 @@ if (_GLFW_X11)
 
     find_package(X11 REQUIRED)
 
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} x11")
+    list(APPEND glfw_PKG_DEPS "x11")
 
     # Set up library and include paths
     list(APPEND glfw_INCLUDE_DIRS "${X11_X11_INCLUDE_PATH}")
@@ -253,7 +253,7 @@ if (_GLFW_X11)
 
     list(APPEND glfw_INCLUDE_DIRS "${X11_Xrandr_INCLUDE_PATH}")
     list(APPEND glfw_LIBRARIES "${X11_Xrandr_LIB}")
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xrandr")
+    list(APPEND glfw_PKG_DEPS "xrandr")
 
     # Check for Xinerama (legacy multi-monitor support)
     if (NOT X11_Xinerama_FOUND)
@@ -262,7 +262,7 @@ if (_GLFW_X11)
 
     list(APPEND glfw_INCLUDE_DIRS "${X11_Xinerama_INCLUDE_PATH}")
     list(APPEND glfw_LIBRARIES "${X11_Xinerama_LIB}")
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xinerama")
+    list(APPEND glfw_PKG_DEPS "xinerama")
 
     # Check for XInput (high-resolution cursor motion)
     if (NOT X11_Xinput_FOUND)
@@ -277,7 +277,7 @@ if (_GLFW_X11)
         # Backwards compatibility (bug in CMake 2.8.7)
         list(APPEND glfw_LIBRARIES Xi)
     endif()
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xi")
+    list(APPEND glfw_PKG_DEPS "xi")
 
     # Check for Xf86VidMode (fallback gamma control)
     if (NOT X11_xf86vmode_FOUND)
@@ -285,7 +285,7 @@ if (_GLFW_X11)
     endif()
 
     list(APPEND glfw_INCLUDE_DIRS "${X11_xf86vmode_INCLUDE_PATH}")
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xxf86vm")
+    list(APPEND glfw_PKG_DEPS "xxf86vm")
 
     if (X11_Xxf86vm_LIB)
         list(APPEND glfw_LIBRARIES "${X11_Xxf86vm_LIB}")
@@ -305,14 +305,14 @@ if (_GLFW_X11)
     mark_as_advanced(RT_LIBRARY)
     if (RT_LIBRARY)
         list(APPEND glfw_LIBRARIES "${RT_LIBRARY}")
-        set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lrt")
+        list(APPEND glfw_PKG_LIBS "-lrt")
     endif()
 
     find_library(MATH_LIBRARY m)
     mark_as_advanced(MATH_LIBRARY)
     if (MATH_LIBRARY)
         list(APPEND glfw_LIBRARIES "${MATH_LIBRARY}")
-        set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lm")
+        list(APPEND glfw_PKG_LIBS "-lm")
     endif()
 
     # Check for Xcursor
@@ -322,7 +322,7 @@ if (_GLFW_X11)
 
     list(APPEND glfw_INCLUDE_DIR "${X11_Xcursor_INCLUDE_PATH}")
     list(APPEND glfw_LIBRARIES "${X11_Xcursor_LIB}")
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xcursor")
+    list(APPEND glfw_PKG_DEPS "xcursor")
 
 endif()
 
@@ -331,13 +331,13 @@ endif()
 #--------------------------------------------------------------------
 if (_GLFW_WAYLAND)
     find_package(Wayland REQUIRED)
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} wayland-egl")
+    list(APPEND glfw_PKG_DEPS "wayland-egl")
 
     list(APPEND glfw_INCLUDE_DIRS "${WAYLAND_INCLUDE_DIR}")
     list(APPEND glfw_LIBRARIES "${WAYLAND_LIBRARIES}" "${CMAKE_THREAD_LIBS_INIT}")
 
     find_package(XKBCommon REQUIRED)
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xkbcommon")
+    list(APPEND glfw_PKG_DEPS "xkbcommon")
     list(APPEND glfw_INCLUDE_DIRS "${XKBCOMMON_INCLUDE_DIRS}")
     list(APPEND glfw_LIBRARIES "${XKBCOMMON_LIBRARY}")
 
@@ -345,7 +345,7 @@ if (_GLFW_WAYLAND)
     mark_as_advanced(MATH_LIBRARY)
     if (MATH_LIBRARY)
         list(APPEND glfw_LIBRARIES "${MATH_LIBRARY}")
-        set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lm")
+        list(APPEND glfw_PKG_LIBS "-lm")
     endif()
 endif()
 
@@ -354,13 +354,13 @@ endif()
 #--------------------------------------------------------------------
 if (_GLFW_MIR)
     find_package(Mir REQUIRED)
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} mirclient")
+    list(APPEND glfw_PKG_DEPS "mirclient")
 
     list(APPEND glfw_INCLUDE_DIRS "${MIR_INCLUDE_DIR}")
     list(APPEND glfw_LIBRARIES "${MIR_LIBRARIES}" "${CMAKE_THREAD_LIBS_INIT}")
 
     find_package(XKBCommon REQUIRED)
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xkbcommon")
+    list(APPEND glfw_PKG_DEPS "xkbcommon")
     list(APPEND glfw_INCLUDE_DIRS "${XKBCOMMON_INCLUDE_DIRS}")
     list(APPEND glfw_LIBRARIES "${XKBCOMMON_LIBRARY}")
 
@@ -368,7 +368,7 @@ if (_GLFW_MIR)
     mark_as_advanced(MATH_LIBRARY)
     if (MATH_LIBRARY)
         list(APPEND glfw_LIBRARIES "${MATH_LIBRARY}")
-        set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lm")
+        list(APPEND glfw_PKG_LIBS "-lm")
     endif()
 endif()
 
@@ -380,7 +380,7 @@ if (_GLFW_GLX)
     list(APPEND glfw_INCLUDE_DIRS "${OPENGL_INCLUDE_DIR}")
     list(APPEND glfw_LIBRARIES "${OPENGL_gl_LIBRARY}")
 
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} gl")
+    list(APPEND glfw_PKG_DEPS "gl")
 
     include(CheckFunctionExists)
 
@@ -404,7 +404,7 @@ if (_GLFW_GLX)
 
         if (CMAKE_DL_LIBS)
             list(APPEND glfw_LIBRARIES "${CMAKE_DL_LIBS}")
-            set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -l${CMAKE_DL_LIBS}")
+            list(APPEND glfw_PKG_LIBS "-l${CMAKE_DL_LIBS}")
         endif()
     endif()
 
@@ -418,20 +418,20 @@ if (_GLFW_EGL)
     list(APPEND glfw_INCLUDE_DIRS "${EGL_INCLUDE_DIR}")
     list(APPEND glfw_LIBRARIES "${EGL_LIBRARY}")
 
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} egl")
+    list(APPEND glfw_PKG_DEPS "egl")
 
     if (_GLFW_USE_OPENGL)
         list(APPEND glfw_LIBRARIES "${OPENGL_gl_LIBRARY}")
         list(APPEND glfw_INCLUDE_DIRS "${OPENGL_INCLUDE_DIR}")
-        set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} gl")
+        list(APPEND glfw_PKG_DEPS "gl")
     elseif (_GLFW_USE_GLESV1)
         list(APPEND glfw_LIBRARIES "${GLESv1_LIBRARY}")
         list(APPEND glfw_INCLUDE_DIRS "${GLESv1_INCLUDE_DIR}")
-        set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} glesv1_cm")
+        list(APPEND glfw_PKG_DEPS "glesv1_cm")
     elseif (_GLFW_USE_GLESV2)
         list(APPEND glfw_LIBRARIES "${GLESv2_LIBRARY}")
         list(APPEND glfw_INCLUDE_DIRS "${GLESv2_INCLUDE_DIR}")
-        set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} glesv2")
+        list(APPEND glfw_PKG_DEPS "glesv2")
     endif()
 
 endif()
@@ -471,14 +471,20 @@ if (_GLFW_COCOA AND _GLFW_NSGL)
                                "${CORE_FOUNDATION_FRAMEWORK}"
                                "${CORE_VIDEO_FRAMEWORK}")
 
-    set(GLFW_PKG_DEPS "")
-    set(GLFW_PKG_LIBS "-framework Cocoa -framework OpenGL -framework IOKit -framework CoreFoundation -framework CoreVideo")
+    set(glfw_PKG_DEPS "")
+    set(glfw_PKG_LIBS "-framework Cocoa -framework OpenGL -framework IOKit -framework CoreFoundation -framework CoreVideo")
 endif()
 
 #--------------------------------------------------------------------
 # Export GLFW library dependencies
 #--------------------------------------------------------------------
 set(GLFW_LIBRARIES ${glfw_LIBRARIES} CACHE STRING "Dependencies of GLFW")
+foreach(arg ${glfw_PKG_DEPS})
+    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} ${arg}")
+endforeach()
+foreach(arg ${glfw_PKG_LIBS})
+    set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} ${arg}")
+endforeach()
 
 #--------------------------------------------------------------------
 # Choose library output name

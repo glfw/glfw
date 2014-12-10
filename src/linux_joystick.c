@@ -78,8 +78,8 @@ static int openJoystickDevice(int joy, const char* path)
     ioctl(fd, JSIOCGBUTTONS, &buttonCount);
     _glfw.linux_js[joy].buttonCount = (int) buttonCount;
 
-    _glfw.linux_js[joy].axes = calloc(axisCount, sizeof(float));
-    _glfw.linux_js[joy].buttons = calloc(buttonCount, 1);
+    _glfw.linux_js[joy].axes = (float*)calloc(axisCount, sizeof(float));
+    _glfw.linux_js[joy].buttons = (unsigned char*)calloc(buttonCount, 1);
 
     _glfw.linux_js[joy].present = GL_TRUE;
 #endif // __linux__

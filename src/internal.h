@@ -28,6 +28,10 @@
 #ifndef _internal_h_
 #define _internal_h_
 
+#ifdef __cplusplus
+#include <utility> // for std::swap
+#endif
+
 
 #if defined(_GLFW_USE_CONFIG_H)
  #include "glfw_config.h"
@@ -127,6 +131,7 @@ typedef struct _GLFWcursor      _GLFWcursor;
     }
 
 // Swaps the provided pointers
+#if 0
 #define _GLFW_SWAP_POINTERS(x, y) \
     {                             \
         void* t;                  \
@@ -134,7 +139,9 @@ typedef struct _GLFWcursor      _GLFWcursor;
         x = y;                    \
         y = t;                    \
     }
-
+#else
+#define _GLFW_SWAP_POINTERS(x, y) std::swap(x, y)
+#endif
 
 //========================================================================
 // Platform-independent structures

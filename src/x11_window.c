@@ -157,8 +157,8 @@ static char** parseUriList(char* text, int* count)
 
         (*count)++;
 
-        char* name = calloc(strlen(line) + 1, 1);
-        names = realloc(names, *count * sizeof(char*));
+        char* name = (char*)calloc(strlen(line) + 1, 1);
+        names = (char**)realloc(names, *count * sizeof(char*));
         names[*count - 1] = name;
 
         while (*line)

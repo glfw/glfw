@@ -183,7 +183,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     if (!_glfwIsValidContextConfig(&ctxconfig))
         return NULL;
 
-    window = calloc(1, sizeof(_GLFWwindow));
+    window = (_GLFWwindow*)calloc(1, sizeof(_GLFWwindow));
     window->next = _glfw.windowListHead;
     _glfw.windowListHead = window;
 

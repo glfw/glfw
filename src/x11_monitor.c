@@ -235,7 +235,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                 if (found == size)
                 {
                     size += 4;
-                    monitors = realloc(monitors, sizeof(_GLFWmonitor*) * size);
+                    monitors = (_GLFWmonitor**)realloc(monitors, sizeof(_GLFWmonitor*) * size);
                 }
 
                 monitors[found] = _glfwAllocMonitor(oi->name,
@@ -249,8 +249,9 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                 {
                     if (screens[k].x_org == ci->x &&
                         screens[k].y_org == ci->y &&
-                        screens[k].width == ci->width &&
-                        screens[k].height == ci->height)
+						// cast to int to avoid sign comparison warning
+                        screens[k].width == (int)ci->width &&
+                        screens[k].height == (int)ci->height)
                     {
                         monitors[found]->x11.index = k;
                         break;
@@ -283,7 +284,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
     if (!monitors)
     {
-        monitors = calloc(1, sizeof(_GLFWmonitor*));
+        monitors = (_GLFWmonitor**)calloc(1, sizeof(_GLFWmonitor*));
         monitors[0] = _glfwAllocMonitor("Display",
                                         DisplayWidthMM(_glfw.x11.display,
                                                        _glfw.x11.screen),
@@ -340,7 +341,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         ci = XRRGetCrtcInfo(_glfw.x11.display, sr, monitor->x11.crtc);
         oi = XRRGetOutputInfo(_glfw.x11.display, sr, monitor->x11.output);
 
-        result = calloc(oi->nmode, sizeof(GLFWvidmode));
+        result = (GLFWvidmode*)calloc(oi->nmode, sizeof(GLFWvidmode));
 
         for (i = 0;  i < oi->nmode;  i++)
         {
@@ -373,7 +374,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
     else
     {
         *found = 1;
-        result = calloc(1, sizeof(GLFWvidmode));
+        result = (GLFWvidmode*)calloc(1, sizeof(GLFWvidmode));
         _glfwPlatformGetVideoMode(monitor, result);
     }
 

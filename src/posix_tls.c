@@ -61,6 +61,6 @@ void _glfwSetCurrentContext(_GLFWwindow* context)
 
 _GLFWwindow* _glfwPlatformGetCurrentContext(void)
 {
-    return pthread_getspecific(_glfw.posix_tls.context);
+    return (_GLFWwindow*)pthread_getspecific(_glfw.posix_tls.context);
 }
 

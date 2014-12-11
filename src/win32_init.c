@@ -41,7 +41,7 @@
 // Applications exporting this symbol with this value will be automatically
 // directed to the high-performance GPU on nVidia Optimus systems
 //
-GLFWAPI DWORD NvOptimusEnablement = 0x00000001;
+__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
 
 #endif // _GLFW_USE_OPTIMUS_HPG
 

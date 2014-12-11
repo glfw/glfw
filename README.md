@@ -122,6 +122,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [Win32] Bugfix: The wrong incorrect physical size was returned for
                    non-primary monitors
  - [Win32] Bugfix: X-axis scroll offsets were inverted
+ - [Win32] Bugfix: The Optimus HPG forcing variable was not correctly exported
  - [X11] Added run-time support for systems lacking the XKB extension
  - [X11] Made GLX 1.3 the minimum supported version
  - [X11] Replaced `XRRGetScreenResources` with `XRRGetScreenResourcesCurrent`

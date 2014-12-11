@@ -76,7 +76,7 @@ GLFW uses the XRandR 1.3 and Xf86vidmode extensions to provide gamma ramp
 support.  If the running X server does not support either or both of these
 extensions, gamma ramp support will not function.
 
-GLFW requires the Xkb extension with detectable auto-repeat to provide keyboard
+GLFW uses the Xkb extension and detectable auto-repeat to provide keyboard
 input.  If the running X server does not support this extension, a non-Xkb
 fallback path is used.
 

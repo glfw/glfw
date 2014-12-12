@@ -43,6 +43,8 @@
 #define Button6            6
 #define Button7            7
 
+#define MAX(a,b)    ((a) > (b) ? (a) : (b))
+
 typedef struct
 {
     unsigned long flags;
@@ -1671,15 +1673,24 @@ void _glfwPlatformWaitEvents(void)
     {
         fd_set fds;
         const int fd = ConnectionNumber(_glfw.x11.display);
+        const int emptyEventFD = _glfw.x11.emptyEventFDs[0];
 
         FD_ZERO(&fds);
         FD_SET(fd, &fds);
+        FD_SET(emptyEventFD, &fds);
 
         // select(1) is used instead of an X function like XNextEvent, as the
         // wait inside those are guarded by the mutex protecting the display
-        // struct, locking out other threads from using X (including GLX)
-        if (select(fd + 1, &fds, NULL, NULL, NULL) < 0)
+        // struct, locking out other threads from using X (including GLX).
+        // Also, it lets us avoid synchronization on the display, which is
+        // important since glfwPostEmptyEvent() can be called from other
+        // threads.
+        if (select(MAX(fd, emptyEventFD) + 1, &fds, NULL, NULL, NULL) < 0)
             return;
+
+        char zero;
+        if (FD_ISSET(emptyEventFD, &fds))
+            read(emptyEventFD, &zero, 1);
     }
 
     _glfwPlatformPollEvents();
@@ -1687,17 +1698,8 @@ void _glfwPlatformWaitEvents(void)
 
 void _glfwPlatformPostEmptyEvent(void)
 {
-    XEvent event;
-    _GLFWwindow* window = _glfw.windowListHead;
-
-    memset(&event, 0, sizeof(event));
-    event.type = ClientMessage;
-    event.xclient.window = window->x11.handle;
-    event.xclient.format = 32; // Data is 32-bit longs
-    event.xclient.message_type = _glfw.x11._NULL;
-
-    XSendEvent(_glfw.x11.display, window->x11.handle, False, 0, &event);
-    XFlush(_glfw.x11.display);
+    char zero = 0;
+    write(_glfw.x11.emptyEventFDs[1], &zero, 1);
 }
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)

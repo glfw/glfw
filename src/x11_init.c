@@ -29,10 +29,12 @@
 
 #include <X11/Xresource.h>
 
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 #include <stdio.h>
+#include <unistd.h>
 
 
 // Translate an X11 key code to a GLFW key code.
@@ -730,6 +732,8 @@ int _glfwPlatformInit(void)
     _glfw.x11.screen = DefaultScreen(_glfw.x11.display);
     _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
     _glfw.x11.context = XUniqueContext();
+
+    pipe2(_glfw.x11.emptyEventFDs, O_CLOEXEC);
 
     if (!initExtensions())
         return GL_FALSE;

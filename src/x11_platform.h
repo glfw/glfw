@@ -121,6 +121,9 @@ typedef struct _GLFWlibraryX11
     // LUT for mapping X11 key codes to GLFW key codes
     int             keyCodeLUT[256];
 
+    // File descriptors for glfwPostEmptyEvent()
+    int             emptyEventFDs[2];
+
     // Window manager atoms
     Atom            WM_PROTOCOLS;
     Atom            WM_STATE;

@@ -185,7 +185,7 @@ void init_opengl(void)
     glPointSize(2.0);
 
     // Background color is black
-    glClearColor(0, 0, 0, 0);
+    glClearColor(0.f, 0.f, 0.f, 1.f);
 }
 
 

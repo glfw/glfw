@@ -304,6 +304,7 @@ static void window_refresh_callback(GLFWwindow* window)
            counter++, slot->number, glfwGetTime());
 
     glfwMakeContextCurrent(window);
+    glClearColor(0.f, 0.f, 0.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT);
     glfwSwapBuffers(window);
 }

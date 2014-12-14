@@ -61,6 +61,8 @@ int main(void)
 
     glfwSetKeyCallback(window, key_callback);
 
+    glClearColor(0.f, 0.f, 0.f, 0.7f);
+
     while (!glfwWindowShouldClose(window))
     {
         float ratio;

@@ -143,6 +143,7 @@ int main(int argc, char** argv)
         glMatrixMode(GL_MODELVIEW);
 
         glfwSetTime(0.0);
+        glClearColor(0.f, 0.f, 0.f, 1.f);
 
         while (glfwGetTime() < 5.0)
         {

@@ -61,7 +61,7 @@ static int thread_main(void* data)
     while (running)
     {
         const float v = (float) fabs(sin(glfwGetTime() * 2.f));
-        glClearColor(thread->r * v, thread->g * v, thread->b * v, 0.f);
+        glClearColor(thread->r * v, thread->g * v, thread->b * v, 1.f);
 
         glClear(GL_COLOR_BUFFER_BIT);
         glfwSwapBuffers(thread->window);

@@ -201,7 +201,7 @@ void init( void )
    /*
     * Clear background.
     */
-   glClearColor( 0.55f, 0.55f, 0.55f, 0.f );
+   glClearColor( 0.55f, 0.55f, 0.55f, 0.5f );
 
    glShadeModel( GL_FLAT );
 }

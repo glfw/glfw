@@ -562,7 +562,7 @@ int main(int argc, char** argv)
 
     /* setup the scene ready for rendering */
     glViewport(0, 0, 800, 600);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(0.f, 0.f, 0.f, 1.f);
 
     /* main loop */
     frame = 0;

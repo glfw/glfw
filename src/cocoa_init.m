@@ -228,9 +228,12 @@ void _glfwPlatformTerminate(void)
         _glfw.ns.eventSource = NULL;
     }
 
-    [NSApp setDelegate:nil];
-    [_glfw.ns.delegate release];
-    _glfw.ns.delegate = nil;
+    id delegate = [NSApp delegate];
+    if (delegate)
+    {
+        [delegate release];
+        [NSApp setDelegate:nil];
+    }
 
     [_glfw.ns.autoreleasePool release];
     _glfw.ns.autoreleasePool = nil;

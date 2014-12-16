@@ -262,6 +262,13 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
     _glfwInputMonitorChange();
 }
 
+- (void)applicationDidFinishLaunching:(NSNotification *)notification
+{
+    [NSApp stop:nil];
+
+    _glfwPlatformPostEmptyEvent();
+}
+
 @end
 
 // Translates OS X key modifiers into GLFW ones
@@ -802,7 +809,18 @@ static GLboolean initializeAppKit(void)
     createMenuBar();
 #endif
 
-    [NSApp finishLaunching];
+    // There can only be one application delegate, but we allocate it the
+    // first time a window is created to keep all window code in this file
+    id delegate = [[GLFWApplicationDelegate alloc] init];
+    if (delegate == nil)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to create application delegate");
+        return GL_FALSE;
+    }
+
+    [NSApp setDelegate:delegate];
+    [NSApp run];
 
     return GL_TRUE;
 }
@@ -904,21 +922,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 {
     if (!initializeAppKit())
         return GL_FALSE;
-
-    // There can only be one application delegate, but we allocate it the
-    // first time a window is created to keep all window code in this file
-    if (_glfw.ns.delegate == nil)
-    {
-        _glfw.ns.delegate = [[GLFWApplicationDelegate alloc] init];
-        if (_glfw.ns.delegate == nil)
-        {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Cocoa: Failed to create application delegate");
-            return GL_FALSE;
-        }
-
-        [NSApp setDelegate:_glfw.ns.delegate];
-    }
 
     if (!createWindow(window, wndconfig))
         return GL_FALSE;

@@ -72,7 +72,6 @@ typedef struct _GLFWwindowNS
 typedef struct _GLFWlibraryNS
 {
     CGEventSourceRef eventSource;
-    id              delegate;
     id              autoreleasePool;
     id              cursor;
 

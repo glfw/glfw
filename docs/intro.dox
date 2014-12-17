@@ -185,6 +185,7 @@ function:
  - @ref glfwCreateWindow
  - @ref glfwDestroyWindow
  - @ref glfwCreateCursor
+ - @ref glfwCreateStandardCursor
  - @ref glfwDestroyCursor
  - @ref glfwPollEvents
  - @ref glfwWaitEvents

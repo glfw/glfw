@@ -231,8 +231,8 @@ constraint.
 API version that the created context must be compatible with.  The exact
 behavior of these hints depend on the requested client API.
 
-@par OpenGL
-`GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are not hard
+@par
+__OpenGL:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are not hard
 constraints, but creation will fail if the OpenGL version of the created context
 is less than the one requested.  It is therefore perfectly safe to use the
 default of version 1.0 for legacy code and you may still get
@@ -243,8 +243,8 @@ While there is no way to ask the driver for a context of the highest supported
 version, GLFW will attempt to provide this when you ask for a version 1.0
 context, which is the default for these hints.
 
-@par OpenGL ES
-`GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are not hard
+@par
+__OpenGL ES:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are not hard
 constraints, but creation will fail if the OpenGL ES version of the created
 context is less than the one requested.  Additionally, OpenGL ES 1.x cannot be
 returned if 2.0 or later was requested, and vice versa.  This is because OpenGL

@@ -1049,8 +1049,6 @@ typedef struct GLFWgammaramp
 } GLFWgammaramp;
 
 /*! @brief Image data.
- *
- *  @ingroup window
  */
 typedef struct GLFWimage
 {
@@ -1644,7 +1642,8 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  @remarks __X11:__ Some window managers will not respect the placement of
  *  initially hidden windows.
  *
- *  @note This function may not be called from a callback.
+ *  @par Reentrancy
+ *  This function may not be called from a callback.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -1672,10 +1671,11 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height, const char* title, G
  *
  *  @param[in] window The window to destroy.
  *
- *  @note This function may not be called from a callback.
- *
  *  @note The context of the specified window must not be current on any other
  *  thread when this function is called.
+ *
+ *  @par Reentrancy
+ *  This function may not be called from a callback.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -2338,7 +2338,8 @@ GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window
  *
  *  Event processing is not required for joystick input to work.
  *
- *  @note This function may not be called from a callback.
+ *  @par Reentrancy
+ *  This function may not be called from a callback.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -2381,10 +2382,11 @@ GLFWAPI void glfwPollEvents(void);
  *
  *  Event processing is not required for joystick input to work.
  *
- *  @note This function may not be called from a callback.
- *
  *  @note On some platforms, certain callbacks may be called outside of a call
  *  to one of the event processing functions.
+ *
+ *  @par Reentrancy
+ *  This function may not be called from a callback.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -2659,10 +2661,11 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
  *  @return A new cursor ready to use or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @note This function may not be called from a callback.
- *
  *  @par Pointer Lifetime
  *  The specified image data is copied before this function returns.
+ *
+ *  @par Reentrancy
+ *  This function may not be called from a callback.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -2688,7 +2691,8 @@ GLFWAPI GLFWcursor* glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
  *  @return A new cursor ready to use or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @note This function may not be called from a callback.
+ *  @par Reentrancy
+ *  This function may not be called from a callback.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -2711,7 +2715,8 @@ GLFWAPI GLFWcursor* glfwCreateStandardCursor(int shape);
  *
  *  @param[in] cursor The cursor object to destroy.
  *
- *  @note This function may not be called from a callback.
+ *  @par Reentrancy
+ *  This function may not be called from a callback.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.

@@ -33,6 +33,7 @@
 #include <string.h>
 #include <limits.h>
 #include <stdio.h>
+#include <locale.h>
 
 
 // Translate an X11 key code to a GLFW key code.
@@ -709,6 +710,9 @@ Cursor _glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
 
 int _glfwPlatformInit(void)
 {
+    if (strcmp(setlocale(LC_CTYPE, NULL), "C") == 0)
+        setlocale(LC_CTYPE, "");
+
     XInitThreads();
 
     _glfw.x11.display = XOpenDisplay(NULL);

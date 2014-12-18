@@ -37,7 +37,6 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include <locale.h>
 
 #include "getopt.h"
 
@@ -442,8 +441,6 @@ int main(int argc, char** argv)
     Slot* slots;
     GLFWmonitor* monitor = NULL;
     int ch, i, width, height, count = 1;
-
-    setlocale(LC_ALL, "");
 
     glfwSetErrorCallback(error_callback);
 

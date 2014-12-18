@@ -1089,6 +1089,12 @@ typedef struct GLFWimage
  *  bundle, if present.  This can be disabled with a
  *  [compile-time option](@ref compile_options_osx).
  *
+ *  @remarks __X11:__ If the `LC_CTYPE` category of the current locale is set to
+ *  `"C"` then the environment's locale will be applied to that category.  This
+ *  is done because character input will not function when `LC_CTYPE` is set to
+ *  `"C"`.  If another locale was set before this function was called, it will
+ *  be left untouched.
+ *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
  *

@@ -144,6 +144,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [X11] Bugfix: X-axis scroll offsets were inverted
  - [X11] Bugfix: Full screen override redirect windows were not always
                  positioned over the specified monitor
+ - [X11] Bugfix: Character input did not work for the default `"C"` locale
 
 
 ## Contact

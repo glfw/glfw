@@ -76,13 +76,13 @@ glfwSetWindowSize.  The new video mode will be selected and set the same way as
 the video mode chosen by @ref glfwCreateWindow.
 
 
-@subsubsection window_windowed_full_screen "Windowed full screen" windows
-
 By default, the original video mode of the monitor will be restored and the
 window iconified if it loses input focus, to allow the user to switch back to
 the desktop.  This behavior can be disabled with the `GLFW_AUTO_ICONIFY` window
 hint, for example if you wish to simultaneously cover multiple windows with full
 screen windows.
+
+@subsubsection window_windowed_full_screen "Windowed full screen" windows
 
 To create a so called _windowed full screen_ or _borderless full screen_ window,
 i.e. a full screen window that doesn't change the video mode of the monitor, you

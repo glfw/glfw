@@ -84,8 +84,6 @@ void _glfwInputWindowSize(_GLFWwindow* window, int width, int height)
 
 void _glfwInputWindowIconify(_GLFWwindow* window, int iconified)
 {
-    window->iconified = iconified;
-
     if (window->callbacks.iconify)
         window->callbacks.iconify((GLFWwindow*) window, iconified);
 }
@@ -94,11 +92,6 @@ void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height)
 {
     if (window->callbacks.fbsize)
         window->callbacks.fbsize((GLFWwindow*) window, width, height);
-}
-
-void _glfwInputWindowVisibility(_GLFWwindow* window, int visible)
-{
-    window->visible = visible;
 }
 
 void _glfwInputWindowDamage(_GLFWwindow* window)
@@ -600,17 +593,17 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
     switch (attrib)
     {
         case GLFW_FOCUSED:
-            return window == _glfw.focusedWindow;
+            return _glfwPlatformWindowFocused(window);
         case GLFW_ICONIFIED:
-            return window->iconified;
+            return _glfwPlatformWindowIconified(window);
+        case GLFW_VISIBLE:
+            return _glfwPlatformWindowVisible(window);
         case GLFW_RESIZABLE:
             return window->resizable;
         case GLFW_DECORATED:
             return window->decorated;
         case GLFW_FLOATING:
             return window->floating;
-        case GLFW_VISIBLE:
-            return window->visible;
         case GLFW_CLIENT_API:
             return window->context.api;
         case GLFW_CONTEXT_VERSION_MAJOR:

@@ -565,6 +565,27 @@ void _glfwPlatformUnhideWindow(_GLFWwindow* window)
                     "Mir: Unsupported Function %s!", __PRETTY_FUNCTION__);
 }
 
+int _glfwPlatformWindowFocused(_GLFWwindow* window)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported Function %s!", __PRETTY_FUNCTION__);
+    return GL_FALSE;
+}
+
+int _glfwPlatformWindowIconified(_GLFWwindow* window)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported Function %s!", __PRETTY_FUNCTION__);
+    return GL_FALSE;
+}
+
+int _glfwPlatformWindowVisible(_GLFWwindow* window)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported Function %s!", __PRETTY_FUNCTION__);
+    return GL_FALSE;
+}
+
 void _glfwPlatformPollEvents(void)
 {
     EventNode* node = NULL;

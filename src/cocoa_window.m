@@ -226,25 +226,6 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
     return NSTerminateCancel;
 }
 
-- (void)applicationDidHide:(NSNotification *)notification
-{
-    _GLFWwindow* window;
-
-    for (window = _glfw.windowListHead;  window;  window = window->next)
-        _glfwInputWindowVisibility(window, GL_FALSE);
-}
-
-- (void)applicationDidUnhide:(NSNotification *)notification
-{
-    _GLFWwindow* window;
-
-    for (window = _glfw.windowListHead;  window;  window = window->next)
-    {
-        if ([window->ns.object isVisible])
-            _glfwInputWindowVisibility(window, GL_TRUE);
-    }
-}
-
 - (void)applicationDidChangeScreenParameters:(NSNotification *) notification
 {
     _glfwInputMonitorChange();
@@ -1047,13 +1028,26 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
 void _glfwPlatformUnhideWindow(_GLFWwindow* window)
 {
     [window->ns.object orderFront:nil];
-    _glfwInputWindowVisibility(window, GL_TRUE);
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     [window->ns.object orderOut:nil];
-    _glfwInputWindowVisibility(window, GL_FALSE);
+}
+
+int _glfwPlatformWindowFocused(_GLFWwindow* window)
+{
+    return [window->ns.object isKeyWindow];
+}
+
+int _glfwPlatformWindowIconified(_GLFWwindow* window)
+{
+    return [window->ns.object isMiniaturized];
+}
+
+int _glfwPlatformWindowVisible(_GLFWwindow* window)
+{
+    return [window->ns.object isVisible];
 }
 
 void _glfwPlatformPollEvents(void)

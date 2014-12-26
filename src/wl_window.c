@@ -307,6 +307,24 @@ void _glfwPlatformHideWindow(_GLFWwindow* window)
     wl_surface_commit(window->wl.surface);
 }
 
+int _glfwPlatformWindowFocused(_GLFWwindow* window)
+{
+    // TODO
+    return GL_FALSE;
+}
+
+int _glfwPlatformWindowIconified(_GLFWwindow* window)
+{
+    // TODO
+    return GL_FALSE;
+}
+
+int _glfwPlatformWindowVisible(_GLFWwindow* window)
+{
+    // TODO
+    return GL_FALSE;
+}
+
 void _glfwPlatformPollEvents(void)
 {
     struct wl_display* display = _glfw.wl.display;

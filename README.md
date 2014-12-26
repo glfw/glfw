@@ -86,6 +86,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - Added `GLFW_FOCUSED` window hint for controlling initial input focus
  - Added *partial and experimental* support for Wayland
  - Added *partial and experimental* support for Mir
+ - Changed the window states (focused, iconified and visible) to query the
+   system directly
  - Changed the default of `GLFW_REFRESH_RATE` to `GLFW_DONT_CARE` to maintain
    the default behavior
  - Changed static library to build as position independent code for easier use

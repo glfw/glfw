@@ -219,12 +219,10 @@ struct _GLFWwindow
     struct _GLFWwindow* next;
 
     // Window settings and state
-    GLboolean           iconified;
     GLboolean           resizable;
     GLboolean           decorated;
     GLboolean           autoIconify;
     GLboolean           floating;
-    GLboolean           visible;
     GLboolean           closed;
     void*               userPointer;
     GLFWvidmode         videoMode;
@@ -575,6 +573,21 @@ void _glfwPlatformUnhideWindow(_GLFWwindow* window);
  */
 void _glfwPlatformHideWindow(_GLFWwindow* window);
 
+/*! @brief Returns whether the window is focused.
+ *  @ingroup platform
+ */
+int _glfwPlatformWindowFocused(_GLFWwindow* window);
+
+/*! @brief Returns whether the window is iconified.
+ *  @ingroup platform
+ */
+int _glfwPlatformWindowIconified(_GLFWwindow* window);
+
+/*! @brief Returns whether the window is visible.
+ *  @ingroup platform
+ */
+int _glfwPlatformWindowVisible(_GLFWwindow* window);
+
 /*! @copydoc glfwPollEvents
  *  @ingroup platform
  */
@@ -684,14 +697,6 @@ void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height);
  *  @ingroup event
  */
 void _glfwInputWindowIconify(_GLFWwindow* window, int iconified);
-
-/*! @brief Notifies shared code of a window show/hide event.
- *  @param[in] window The window that received the event.
- *  @param[in] visible `GL_TRUE` if the window was shown, or `GL_FALSE` if it
- *  was hidden.
- *  @ingroup event
- */
-void _glfwInputWindowVisibility(_GLFWwindow* window, int visible);
 
 /*! @brief Notifies shared code of a window damage event.
  *  @param[in] window The window that received the event.

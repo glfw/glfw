@@ -124,6 +124,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     // Arbitrary array size here
     NSOpenGLPixelFormatAttribute attributes[40];
 
+    ADD_ATTR(NSOpenGLPFAAccelerated);
     ADD_ATTR(NSOpenGLPFAClosestPolicy);
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070

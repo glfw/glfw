@@ -107,6 +107,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
                    bit field was unchanged
  - [Cocoa] Bugfix: Joystick enumeration took hundreds of ms on some systems
  - [Cocoa] Bugfix: The cursor was hidden when the user resized a GLFW window
+ - [Cocoa] Bugfix: The 10.10 Yosemite OpenGL 4.1 profile token was not used
  - [Win32] Enabled generation of pkg-config file for MinGW
  - [Win32] Removed option to require explicitly linking against `winmm.dll`
  - [Win32] Bugfix: Failure to load winmm or its functions was not reported to

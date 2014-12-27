@@ -127,12 +127,20 @@ int _glfwCreateContext(_GLFWwindow* window,
     ADD_ATTR(NSOpenGLPFAClosestPolicy);
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (ctxconfig->major > 2)
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
+    if (ctxconfig->major >= 4)
     {
-        ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);
+        ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion4_1Core);
     }
     else
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+    if (ctxconfig->major >= 3)
+    {
+        ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);
+    }
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+
+    if (ctxconfig->major <= 2)
     {
         if (fbconfig->auxBuffers != GLFW_DONT_CARE)
             ADD_ATTR2(NSOpenGLPFAAuxBuffers, fbconfig->auxBuffers);

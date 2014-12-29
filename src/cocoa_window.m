@@ -195,20 +195,23 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification
 {
-    if (window->monitor)
-        enterFullscreenMode(window);
-
     _glfwInputWindowIconify(window, GL_FALSE);
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
+    if (window->monitor)
+        enterFullscreenMode(window);
+
     _glfwInputWindowFocus(window, GL_TRUE);
     _glfwPlatformApplyCursorMode(window);
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
 {
+    if (window->monitor)
+        leaveFullscreenMode(window);
+
     _glfwInputWindowFocus(window, GL_FALSE);
 }
 
@@ -1038,9 +1041,6 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
-    if (window->monitor)
-        leaveFullscreenMode(window);
-
     [window->ns.object miniaturize:nil];
 }
 

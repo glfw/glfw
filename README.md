@@ -96,6 +96,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - Bugfix: The cursor was not positioned over newly created full screen windows
  - [Cocoa] Added `_GLFW_USE_RETINA` to control whether windows will use the full
            resolution on Retina displays
+ - [Cocoa] Made content view subclass of `NSOpenGLView`
  - [Cocoa] Bugfix: Using a 1x1 cursor for hidden mode caused some screen
                    recorders to fail
  - [Cocoa] Bugfix: Some Core Foundation objects were leaked during joystick

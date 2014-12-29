@@ -229,7 +229,8 @@ can lead to severe jitter.
 
 `GLFW_USE_OPTIMUS_HPG` determines whether to export the `NvOptimusEnablement`
 symbol, which forces the use of the high-performance GPU on nVidia Optimus
-systems.
+systems.  This symbol needs to be exported by the EXE, so the override will not
+work if GLFW is built as a DLL.
 
 
 @subsubsection compile_options_egl EGL specific CMake options

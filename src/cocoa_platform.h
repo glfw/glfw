@@ -62,7 +62,6 @@ typedef struct _GLFWwindowNS
     id	            delegate;
     id              view;
     unsigned int    modifierFlags;
-    int             cursorInside;
 
 } _GLFWwindowNS;
 

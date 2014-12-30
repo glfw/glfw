@@ -439,13 +439,11 @@ static int translateKey(unsigned int key)
 
 - (void)mouseExited:(NSEvent *)event
 {
-    window->ns.cursorInside = GL_FALSE;
     _glfwInputCursorEnter(window, GL_FALSE);
 }
 
 - (void)mouseEntered:(NSEvent *)event
 {
-    window->ns.cursorInside = GL_TRUE;
     _glfwInputCursorEnter(window, GL_TRUE);
 }
 
@@ -1199,7 +1197,10 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 {
-    if (window->cursorMode == GLFW_CURSOR_NORMAL && window->ns.cursorInside)
+    const NSPoint p = [window->ns.object mouseLocationOutsideOfEventStream];
+
+    if (window->cursorMode == GLFW_CURSOR_NORMAL &&
+        [window->ns.view mouse:p inRect:[window->ns.view frame]])
     {
         if (cursor)
             [(NSCursor*) cursor->ns.object set];

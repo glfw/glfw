@@ -425,7 +425,7 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
         _glfwPlatformMakeContextCurrent(NULL);
 
     // Clear the focused window pointer if this is the focused window
-    if (window == _glfw.focusedWindow)
+    if (_glfw.focusedWindow == window)
         _glfw.focusedWindow = NULL;
 
     _glfwPlatformDestroyWindow(window);

@@ -55,7 +55,7 @@ static void setCursorMode(_GLFWwindow* window, int newMode)
 
     window->cursorMode = newMode;
 
-    if (window == _glfw.focusedWindow)
+    if (_glfw.focusedWindow == window)
     {
         if (oldMode == GLFW_CURSOR_DISABLED)
         {

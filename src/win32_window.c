@@ -566,6 +566,11 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     updateClipRect(window);
             }
 
+            if (wParam == SIZE_MINIMIZED)
+                _glfwInputWindowIconify(window, GL_TRUE);
+            else if (wParam == SIZE_RESTORED)
+                _glfwInputWindowIconify(window, GL_FALSE);
+
             _glfwInputFramebufferSize(window, LOWORD(lParam), HIWORD(lParam));
             _glfwInputWindowSize(window, LOWORD(lParam), HIWORD(lParam));
             return 0;

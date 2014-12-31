@@ -465,6 +465,7 @@ static int translateKey(unsigned int key)
 
     const NSTrackingAreaOptions options = NSTrackingMouseEnteredAndExited |
                                           NSTrackingActiveInKeyWindow |
+                                          NSTrackingEnabledDuringMouseDrag |
                                           NSTrackingCursorUpdate |
                                           NSTrackingInVisibleRect |
                                           NSTrackingAssumeInside;

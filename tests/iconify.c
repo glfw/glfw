@@ -243,6 +243,9 @@ int main(int argc, char** argv)
 
         if (i < window_count)
             break;
+
+        // Workaround for an issue with msvcrt and mintty
+        fflush(stdout);
     }
 
     glfwTerminate();

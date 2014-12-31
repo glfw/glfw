@@ -137,6 +137,9 @@ int main(void)
 
             reopen = GL_FALSE;
         }
+
+        // Workaround for an issue with msvcrt and mintty
+        fflush(stdout);
     }
 
     glfwTerminate();

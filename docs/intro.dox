@@ -189,6 +189,7 @@ function:
  - @ref glfwDestroyCursor
  - @ref glfwPollEvents
  - @ref glfwWaitEvents
+ - @ref glfwTerminate
 
 
 @subsection thread_safety Thread safety

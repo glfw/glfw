@@ -7,20 +7,20 @@
 
 @section news_31 New features in version 3.1
 
-@subsection news_31_cursor Custom system cursor support
+@subsection news_31_cursor Custom mouse cursor images
 
 GLFW now supports creating and setting both custom and standard system cursors.
 They can be created with @ref glfwCreateCursor or @ref glfwCreateStandardCursor,
 set with @ref glfwSetCursor and destroyed with @ref glfwDestroyCursor.
 
 
-@subsection news_31_drop File drop event support
+@subsection news_31_drop File drop event
 
 GLFW now provides a callback for receiving the paths of files dropped onto GLFW
 windows.  The callback is set with @ref glfwSetDropCallback.
 
 
-@subsection news_31_emptyevent Main thread waking support
+@subsection news_31_emptyevent Main thread wake-up
 
 GLFW now provides the @ref glfwPostEmptyEvent function for posting an empty
 event from another thread to the main thread event queue, causing @ref
@@ -33,7 +33,7 @@ GLFW now supports querying the size, on each side, of the frame around the
 client area of a window, with @ref glfwGetWindowFrameSize.
 
 
-@subsection news_31_autoiconify Multi-monitor installation support
+@subsection news_31_autoiconify Simultaneous multi-monitor rendering
 
 GLFW now supports disabling auto-iconification of full screen windows with
 the [GLFW_AUTO_ICONIFY](@ref window_hints_wnd) window hint.  This is intended
@@ -53,6 +53,12 @@ GLFW now supports preventing a windowed mode window from gaining input focus on
 creation, with the [GLFW_FOCUSED](@ref window_hints_wnd) window hint.
 
 
+@subsection news_31_direct Direct access for window attributes and cursor position
+
+GLFW now queries the window focus, visibility and iconification attributes and
+the cursor position directly instead of returning cached data.
+
+
 @subsection news_31_charmods Character with modifiers callback
 
 GLFW now provides a callback for character events with modifier key bits.  The
@@ -61,7 +67,7 @@ callback, this will report character events that will not result in a character
 being input, for example if the Control key is held down.
 
 
-@subsection news_31_release Context release behavior support
+@subsection news_31_release Context release behaviors
 
 GLFW now supports controlling whether the pipeline is flushed when a context is
 made non-current, with the
@@ -69,23 +75,24 @@ made non-current, with the
 machine supports the `GL_KHR_context_flush_control` extension.
 
 
-@subsection news_31_single Single buffering support
+@subsection news_31_single Single buffered framebuffers
 
 GLFW now supports the creation of single buffered windows, with the
 [GLFW_DOUBLEBUFFER](@ref window_hints_fb) window hint.
 
 
-@subsection news_31_egl Stable EGL support
+@subsection news_31_egl Stable EGL implementation
 
 The support for EGL is now stable, successfully running on PandaBoards, Mesa,
 ANGLE, Wayland, AMD EGL and others.
 
 
-@subsection news_31_getcursorpos Direct query for cursor position
+@subsection news_31_glext Macro for including extension header
 
-GLFW now queries the system cursor position directly when you call @ref
-glfwGetCursorPos instead of returning cached data, except for when the window is
-in captured cursor mode.
+GLFW now includes the extension header appropriate for the chosen OpenGL or
+OpenGL ES header when [GLFW_INCLUDE_GLEXT](@ref build_macros) is defined.  GLFW
+does not provide these headers.  They must be provided by your development
+environment or your OpenGL or OpenGL ES SDK.
 
 
 @section news_30 New features in version 3.0

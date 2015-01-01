@@ -1128,6 +1128,9 @@ GLFWAPI int glfwInit(void);
  *  @warning No window's context may be current on another thread when this
  *  function is called.
  *
+ *  @par Reentrancy
+ *  This function may not be called from a callback.
+ *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
  *
@@ -1210,6 +1213,9 @@ GLFWAPI const char* glfwGetVersionString(void);
  *  Because the description string may have been generated specifically for that
  *  error, it is not guaranteed to be valid after the callback has returned.  If
  *  you wish to use it after the callback returns, you need to make a copy.
+ *
+ *  Once set, the error callback remains set even after the library has been
+ *  terminated.
  *
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
@@ -2622,8 +2628,13 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *  window.  The window must be focused.  If the window does not have focus when
  *  this function is called, it fails silently.
  *
- *  If the cursor is disabled (with `GLFW_CURSOR_DISABLED`) then the cursor
- *  position is unbounded and limited only by the minimum and maximum values of
+ *  __Do not use this function__ to implement things like camera controls.  GLFW
+ *  already provides the `GLFW_CURSOR_DISABLED` cursor mode that hides the
+ *  cursor, transparently re-centers it and provides unconstrained cursor
+ *  motion.  See @ref glfwSetInputMode for more information.
+ *
+ *  If the cursor mode is `GLFW_CURSOR_DISABLED` then the cursor position is
+ *  unconstrained and limited only by the minimum and maximum values of
  *  a `double`.
  *
  *  @param[in] window The desired window.

@@ -173,7 +173,7 @@ while (!glfwWindowShouldClose(window))
 }
 @endcode
 
-You can be notified when user is attempting to close the window by setting
+You can be notified when the user is attempting to close the window by setting
 a close callback with @ref glfwSetWindowCloseCallback.  The callback will be
 called immediately after the close flag has been set.
 

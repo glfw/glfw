@@ -86,8 +86,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - Added `GLFW_FOCUSED` window hint for controlling initial input focus
  - Added *partial and experimental* support for Wayland
  - Added *partial and experimental* support for Mir
- - Changed the window states (focused, iconified and visible) to query the
-   system directly
+ - Changed the window state attributes (focused, iconified and visible) to query
+   the system directly
  - Changed the default of `GLFW_REFRESH_RATE` to `GLFW_DONT_CARE` to maintain
    the default behavior
  - Changed static library to build as position independent code for easier use
@@ -98,6 +98,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
            when a debug context had not been requested
  - Bugfix: The particles example was not linked against the threading library
  - Bugfix: The cursor was not positioned over newly created full screen windows
+ - Bugfix: The queried cursor position was not always up-to-date
  - [Cocoa] Added `_GLFW_USE_RETINA` to control whether windows will use the full
            resolution on Retina displays
  - [Cocoa] Made content view subclass of `NSOpenGLView`
@@ -115,6 +116,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [Cocoa] Bugfix: The 10.10 Yosemite OpenGL 4.1 profile token was not used
  - [Cocoa] Bugfix: The generic software OpenGL renderer could be selected under
                    certain conditions
+ - [Cocoa] Bugfix: The virtual cursor jumped unpredictably when entering
+                   disabled cursor mode
  - [Win32] Enabled generation of pkg-config file for MinGW
  - [Win32] Removed option to require explicitly linking against `winmm.dll`
  - [Win32] Bugfix: Failure to load winmm or its functions was not reported to
@@ -131,6 +134,11 @@ GLFW bundles a number of dependencies in the `deps/` directory.
                    non-primary monitors
  - [Win32] Bugfix: X-axis scroll offsets were inverted
  - [Win32] Bugfix: The Optimus HPG forcing variable was not correctly exported
+ - [Win32] Bugfix: The iconified window state attribute was not always updated
+ - [Win32] Bugfix: Previously focused windows with disabled cursor mode and that
+                   had been iconified by Win+D were not visible when restored
+ - [Win32] Bugfix: The virtual cursor jumped unpredictably when entering
+                   disabled cursor mode
  - [X11] Added run-time support for systems lacking the XKB extension
  - [X11] Made GLX 1.3 the minimum supported version
  - [X11] Replaced `XRRGetScreenResources` with `XRRGetScreenResourcesCurrent`

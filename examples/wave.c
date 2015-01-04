@@ -28,10 +28,8 @@
 GLfloat alpha = 210.f, beta = -70.f;
 GLfloat zoom = 2.f;
 
-GLboolean locked = GL_FALSE;
-
-int cursorX;
-int cursorY;
+double cursorX;
+double cursorY;
 
 struct Vertex
 {
@@ -321,13 +319,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
     if (action == GLFW_PRESS)
     {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        locked = GL_TRUE;
+        glfwGetCursorPos(window, &cursorX, &cursorY);
     }
     else
-    {
-        locked = GL_FALSE;
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    }
 }
 
 
@@ -337,14 +332,14 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 void cursor_position_callback(GLFWwindow* window, double x, double y)
 {
-    if (locked)
+    if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
     {
         alpha += (GLfloat) (x - cursorX) / 10.f;
         beta += (GLfloat) (y - cursorY) / 10.f;
-    }
 
-    cursorX = (int) x;
-    cursorY = (int) y;
+        cursorX = x;
+        cursorY = y;
+    }
 }
 
 

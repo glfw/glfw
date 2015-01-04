@@ -64,6 +64,9 @@ set(WINDOWS_BINARIES accuracy empty sharing tearing threads title windows cursor
 set(CONSOLE_BINARIES clipboard defaults events fsaa gamma glfwinfo
                      iconify joysticks modes peter reopen cursor)
 
+set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
+                      FOLDER "GLFW3/Tests")
+
 if (MSVC)
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables
     set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES

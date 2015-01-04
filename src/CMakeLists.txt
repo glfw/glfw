@@ -5,7 +5,8 @@ include_directories("${GLFW_SOURCE_DIR}/src"
 
 add_definitions(-D_GLFW_USE_CONFIG_H)
 
-set(common_HEADERS "${GLFW_BINARY_DIR}/src/glfw_config.h" internal.h
+set(common_HEADERS internal.h
+                   "${GLFW_BINARY_DIR}/src/glfw_config.h"
                    "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"
                    "${GLFW_SOURCE_DIR}/include/GLFW/glfw3native.h")
 set(common_SOURCES context.c init.c input.c monitor.c window.c)
@@ -57,16 +58,14 @@ if (APPLE)
 endif()
 
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
-set_target_properties(glfw PROPERTIES OUTPUT_NAME "${GLFW_LIB_NAME}"
-                                      POSITION_INDEPENDENT_CODE ON)
+set_target_properties(glfw PROPERTIES
+                      OUTPUT_NAME "${GLFW_LIB_NAME}"
+                      VERSION ${GLFW_VERSION}
+                      SOVERSION ${GLFW_VERSION_MAJOR}
+                      POSITION_INDEPENDENT_CODE ON
+                      FOLDER "GLFW3")
 
 if (BUILD_SHARED_LIBS)
-    # Include version information in the output
-    set_target_properties(glfw PROPERTIES VERSION ${GLFW_VERSION})
-    if (UNIX)
-        set_target_properties(glfw PROPERTIES SOVERSION ${GLFW_VERSION_MAJOR})
-    endif()
-
     if (WIN32)
         # The GLFW DLL needs a special compile-time macro and import library name
         set_target_properties(glfw PROPERTIES PREFIX "" IMPORT_PREFIX "")

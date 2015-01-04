@@ -37,6 +37,9 @@ if (APPLE)
     set_target_properties(Simple PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Simple")
     set_target_properties(SplitView PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Split View")
     set_target_properties(Wave PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Wave")
+
+    set_target_properties(Boing Gears Particles Simple SplitView Wave PROPERTIES
+                          FOLDER "GLFW3/Examples")
 else()
     # Set boring names for executables
     add_executable(boing WIN32 boing.c)
@@ -46,6 +49,9 @@ else()
     add_executable(simple WIN32 simple.c)
     add_executable(splitview WIN32 splitview.c)
     add_executable(wave WIN32 wave.c)
+
+    set_target_properties(boing gears particles simple splitview wave PROPERTIES
+                          FOLDER "GLFW3/Examples")
 endif()
 
 if (APPLE)

@@ -794,15 +794,15 @@ static GLboolean initializeAppKit(void)
 
     // There can only be one application delegate, but we allocate it the
     // first time a window is created to keep all window code in this file
-    id delegate = [[GLFWApplicationDelegate alloc] init];
-    if (delegate == nil)
+    _glfw.ns.delegate = [[GLFWApplicationDelegate alloc] init];
+    if (_glfw.ns.delegate == nil)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Cocoa: Failed to create application delegate");
         return GL_FALSE;
     }
 
-    [NSApp setDelegate:delegate];
+    [NSApp setDelegate:_glfw.ns.delegate];
     [NSApp run];
 
     return GL_TRUE;

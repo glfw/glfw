@@ -60,14 +60,17 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     {
         case GLFW_KEY_D:
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            printf("(( cursor is disabled ))\n");
             break;
 
         case GLFW_KEY_H:
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+            printf("(( cursor is hidden ))\n");
             break;
 
         case GLFW_KEY_N:
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            printf("(( cursor is normal ))\n");
             break;
 
         case GLFW_KEY_R:

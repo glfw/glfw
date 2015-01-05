@@ -97,6 +97,7 @@ int main(int argc, char** argv)
         printf("Requesting that FSAA not be available\n");
 
     glfwWindowHint(GLFW_SAMPLES, samples);
+    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
     window = glfwCreateWindow(800, 400, "Aliasing Detector", NULL, NULL);
     if (!window)
@@ -113,9 +114,13 @@ int main(int argc, char** argv)
 
     if (!glfwExtensionSupported("GL_ARB_multisample"))
     {
+        printf("GL_ARB_multisample extension not supported\n");
+
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
+
+    glfwShowWindow(window);
 
     glGetIntegerv(GL_SAMPLES_ARB, &samples);
     if (samples)

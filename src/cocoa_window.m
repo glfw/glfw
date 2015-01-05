@@ -453,6 +453,7 @@ static int translateKey(unsigned int key)
     const NSRect fbRect = convertRectToBacking(window, contentRect);
 
     _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
+    _glfwInputWindowDamage(window);
 }
 
 - (void)updateTrackingAreas

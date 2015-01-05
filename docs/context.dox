@@ -144,7 +144,7 @@ OpenGL or OpenGL ES API.  One such library is
 take care of all the details of declaring and loading everything you need.
 
 The following example will use glad, but other extension loader libraries work
-similary.
+similarly.
 
 First you need to generate the source files using the glad Python script.  This
 example generates a loader for any version of OpenGL, which is the default for
@@ -263,7 +263,7 @@ it returns zero.
 Many extensions, though not all, require the use of new OpenGL functions.
 These functions often do not have entry points in the client API libraries of
 your operating system, making it necessary to fetch them at run time.  You can
-retreive pointers to these functions with @ref glfwGetProcAddress.
+retrieve pointers to these functions with @ref glfwGetProcAddress.
 
 @code
 PFNGLGETDEBUGMESSAGELOGARB pfnGetDebugMessageLog = glfwGetProcAddress("glGetDebugMessageLogARB");

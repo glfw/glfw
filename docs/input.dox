@@ -300,7 +300,7 @@ If cursor creation fails, `NULL` will be returned, so it is necessary to check
 the return value.
 
 The image data is 32-bit RGBA, i.e. eight bits per channel.  The pixels are
-arranged canonically as sequental rows, starting from the top-left corner.
+arranged canonically as sequential rows, starting from the top-left corner.
 
 
 @subsubsection input_cursor_destruction Cursor destruction

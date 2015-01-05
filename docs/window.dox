@@ -248,13 +248,13 @@ __OpenGL ES:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are
 constraints, but creation will fail if the OpenGL ES version of the created
 context is less than the one requested.  Additionally, OpenGL ES 1.x cannot be
 returned if 2.0 or later was requested, and vice versa.  This is because OpenGL
-ES 3.x is backward compatible with 2.0, but OpenGL ES 2.0 is not backard
+ES 3.x is backward compatible with 2.0, but OpenGL ES 2.0 is not backward
 compatible with 1.x.
 
 `GLFW_OPENGL_FORWARD_COMPAT` specifies whether the OpenGL context should be
 forward-compatible, i.e. one where all functionality deprecated in the requested
 version of OpenGL is removed.  This may only be used if the requested OpenGL
-version is 3.0 or above.  If OpenGL S is requested, this hint is ignored.
+version is 3.0 or above.  If OpenGL ES is requested, this hint is ignored.
 
 @par
 Forward-compatibility is described in detail in the
@@ -492,7 +492,7 @@ a high-DPI one.
 The position of a windowed-mode window can be changed with @ref
 glfwSetWindowPos.  This moves the window so that the upper-left corner of its
 client area has the specified [screen coordinates](@ref coordinate_systems).
-The window system may put limitats on window placement.
+The window system may put limitations on window placement.
 
 @code
 glfwSetWindowPos(window, 100, 100);
@@ -602,7 +602,7 @@ void window_iconify_callback(GLFWwindow* window, int iconified)
 }
 @endcode
 
-You can also get the iconification state with @ref glfwGetWindowAttrib.
+You can also get the current iconification state with @ref glfwGetWindowAttrib.
 
 @code
 int iconified = glfwGetWindowAttrib(window, GLFW_ICONIFIED);
@@ -633,7 +633,7 @@ invisible to the user until shown.  This can be useful if you need to set up
 your window further before showing it, for example moving it to a specific
 location.
 
-You can also get the visibility state with @ref glfwGetWindowAttrib.
+You can also get the current visibility state with @ref glfwGetWindowAttrib.
 
 @code
 int visible = glfwGetWindowAttrib(window, GLFW_VISIBLE);
@@ -665,7 +665,7 @@ void window_focus_callback(GLFWwindow* window, int focused)
 }
 @endcode
 
-You can also get the focus state with @ref glfwGetWindowAttrib.
+You can also get the current focus state with @ref glfwGetWindowAttrib.
 
 @code
 int focused = glfwGetWindowAttrib(window, GLFW_FOCUSED);

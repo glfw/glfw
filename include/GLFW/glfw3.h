@@ -557,9 +557,9 @@ extern "C" {
  *
  *  @par
  *  Some pre-installed Windows graphics drivers do not support OpenGL.  AMD only
- *  supports OpenGL ES via EGL, while nVidia and Intel only supports it via
+ *  supports OpenGL ES via EGL, while Nvidia and Intel only supports it via
  *  a WGL or GLX extension.  OS X does not provide OpenGL ES at all.  The Mesa
- *  EGL, OpenGL and OpenGL ES libraries do not interface with the nVidia binary
+ *  EGL, OpenGL and OpenGL ES libraries do not interface with the Nvidia binary
  *  driver.
  */
 #define GLFW_API_UNAVAILABLE        0x00010006
@@ -2672,7 +2672,7 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
  *  glfwTerminate.
  *
  *  The image data is 32-bit RGBA, i.e. eight bits per channel.  The pixels are
- *  arranged canonically as sequental rows, starting from the top-left corner.
+ *  arranged canonically as sequential rows, starting from the top-left corner.
  *
  *  @param[in] image The desired cursor image.
  *  @param[in] xhot The desired x-coordinate of the cursor hotspot.

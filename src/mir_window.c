@@ -90,11 +90,11 @@ static EventNode* dequeueEvent(EventQueue* queue)
 
 static MirPixelFormat findValidPixelFormat(void)
 {
-    unsigned int i, validFormats, size = 32;
-    MirPixelFormat formats[size];
+    unsigned int i, validFormats, mirPixelFormats = 32;
+    MirPixelFormat formats[mir_pixel_formats];
 
     mir_connection_get_available_surface_formats(_glfw.mir.connection, formats,
-                                                 size, &validFormats);
+                                                 mirPixelFormats, &validFormats);
 
     for (i = 0;  i < validFormats;  i++)
     {
@@ -407,7 +407,10 @@ static int createSurface(_GLFWwindow* window)
     if (!mir_surface_is_valid(window->mir.surface))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Mir: Unable to create surface");
+                        "Mir: Unable to create surface %s",
+                        mir_surface_get_error_message(window->mir.surface));
+
+        mir_surface_release_sync(window->mir.surface);
         return GL_FALSE;
     }
 
@@ -463,7 +466,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         GLFWvidmode mode;
         _glfwPlatformGetVideoMode(wndconfig->monitor, &mode);
 
-        mir_surface_set_type(window->mir.surface, mir_surface_state_fullscreen);
+        mir_surface_set_state(window->mir.surface, mir_surface_state_fullscreen);
 
         if (wndconfig->width > mode.width || wndconfig->height > mode.height)
         {
@@ -539,12 +542,12 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
-    mir_surface_set_type(window->mir.surface, mir_surface_state_minimized);
+    mir_surface_set_state(window->mir.surface, mir_surface_state_minimized);
 }
 
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
-    mir_surface_set_type(window->mir.surface, mir_surface_state_restored);
+    mir_surface_set_state(window->mir.surface, mir_surface_state_restored);
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)

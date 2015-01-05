@@ -2,6 +2,12 @@ project(GLFW C)
 
 cmake_minimum_required(VERSION 2.8.9)
 
+if (CMAKE_VERSION VERSION_EQUAL "3.0" OR CMAKE_VERSION VERSION_GREATER "3.0")
+    # Until all major package systems have moved to CMake 3,
+    # we stick with the older INSTALL_NAME_DIR mechanism
+    cmake_policy(SET CMP0042 OLD)
+endif()
+
 set(GLFW_VERSION_MAJOR "3")
 set(GLFW_VERSION_MINOR "1")
 set(GLFW_VERSION_PATCH "0")

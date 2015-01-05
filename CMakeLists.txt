@@ -509,6 +509,24 @@ endif()
 #--------------------------------------------------------------------
 # Create generated files
 #--------------------------------------------------------------------
+include(CMakePackageConfigHelpers)
+
+if (UNIX)
+    set(GLFW_CONFIG_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake/glfw3/")
+else()
+    set(GLFW_CONFIG_PATH "${CMAKE_INSTALL_PREFIX}/")
+endif()
+
+configure_package_config_file("${GLFW_SOURCE_DIR}/src/glfw3Config.cmake.in"
+                              "${GLFW_BINARY_DIR}/src/glfw3Config.cmake"
+                              INSTALL_DESTINATION "${GLFW_CONFIG_PATH}"
+                              PATH_VARS CMAKE_INSTALL_PREFIX
+                              NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+
+write_basic_package_version_file("${GLFW_BINARY_DIR}/src/glfw3ConfigVersion.cmake" 
+                                 VERSION ${GLFW_VERSION_FULL}
+                                 COMPATIBILITY SameMajorVersion)
+
 if (GLFW_BUILD_DOCS)
     configure_file("${GLFW_SOURCE_DIR}/docs/Doxyfile.in"
                    "${GLFW_BINARY_DIR}/docs/Doxyfile" @ONLY)
@@ -516,12 +534,6 @@ endif()
 
 configure_file("${GLFW_SOURCE_DIR}/src/glfw_config.h.in"
                "${GLFW_BINARY_DIR}/src/glfw_config.h" @ONLY)
-
-configure_file("${GLFW_SOURCE_DIR}/src/glfwConfig.cmake.in"
-               "${GLFW_BINARY_DIR}/src/glfwConfig.cmake" @ONLY)
-
-configure_file("${GLFW_SOURCE_DIR}/src/glfwConfigVersion.cmake.in"
-               "${GLFW_BINARY_DIR}/src/glfwConfigVersion.cmake" @ONLY)
 
 configure_file("${GLFW_SOURCE_DIR}/src/glfw3.pc.in"
                "${GLFW_BINARY_DIR}/src/glfw3.pc" @ONLY)
@@ -551,8 +563,8 @@ if (GLFW_INSTALL)
     install(DIRECTORY include/GLFW DESTINATION include
             FILES_MATCHING PATTERN glfw3.h PATTERN glfw3native.h)
 
-    install(FILES "${GLFW_BINARY_DIR}/src/glfwConfig.cmake"
-                  "${GLFW_BINARY_DIR}/src/glfwConfigVersion.cmake"
+    install(FILES "${GLFW_BINARY_DIR}/src/glfw3Config.cmake"
+                  "${GLFW_BINARY_DIR}/src/glfw3ConfigVersion.cmake"
             DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
 
     install(EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX}/cmake/glfw)

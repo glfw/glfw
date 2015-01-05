@@ -23,8 +23,8 @@ docs/html
 docs/warnings.txt
 src/glfw_config.h
 src/glfw3.pc
-src/glfwConfig.cmake
-src/glfwConfigVersion.cmake
+src/glfw3Config.cmake
+src/glfw3ConfigVersion.cmake
 
 # Compiled binaries
 src/libglfw.so

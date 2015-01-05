@@ -97,7 +97,7 @@ typedef struct _GLFWlibraryMir
 
 
 // Mir-specific per-cursor data
-// TODO: Only system cursors are implemented in mir atm. Need to wait for support.
+// TODO: Only system cursors are implemented in Mir atm. Need to wait for support.
 //
 typedef struct _GLFWcursorMir
 {

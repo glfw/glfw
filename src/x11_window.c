@@ -303,7 +303,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         // This is the butcher's way of removing window decorations
         // Setting the override-redirect attribute on a window makes the window
         // manager ignore the window completely (ICCCM, section 4)
-        // The good thing is that this makes undecorated fullscreen windows
+        // The good thing is that this makes undecorated full screen windows
         // easy to do; the bad thing is that we have to do everything manually
         // and some things (like iconify/restore) won't work at all, as those
         // are tasks usually performed by the window manager
@@ -543,7 +543,7 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
 
     if (request->property == None)
     {
-        // The requestor is a legacy client (ICCCM section 2.2)
+        // The requester is a legacy client (ICCCM section 2.2)
         // We don't support legacy clients, so fail here
         return None;
     }
@@ -731,7 +731,7 @@ static void pushSelectionToManager(_GLFWwindow* window)
     }
 }
 
-// Enter fullscreen mode
+// Enter full screen mode
 //
 static void enterFullscreenMode(_GLFWwindow* window)
 {
@@ -812,8 +812,8 @@ static void enterFullscreenMode(_GLFWwindow* window)
                        &event);
         }
 
-        // Ask the window manager to make the GLFW window a fullscreen window
-        // Fullscreen windows are undecorated and, when focused, are kept
+        // Ask the window manager to make the GLFW window a full screen window
+        // Full screen windows are undecorated and, when focused, are kept
         // on top of all other windows
 
         changeWindowState(window,
@@ -839,7 +839,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
     }
 }
 
-// Leave fullscreen mode
+// Leave full screen mode
 //
 static void leaveFullscreenMode(_GLFWwindow* window)
 {
@@ -950,7 +950,7 @@ static void processEvent(XEvent *event)
             {
                 // HACK: Key repeat events will arrive as KeyRelease/KeyPress
                 //       pairs with similar or identical time stamps
-                //       The key repeat logic in _glfwInputKey expectes only key
+                //       The key repeat logic in _glfwInputKey expects only key
                 //       presses to repeat, so detect and discard release events
                 if (XEventsQueued(_glfw.x11.display, QueuedAfterReading))
                 {

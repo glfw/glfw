@@ -202,7 +202,7 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
     return _glfw.win32.publicKeys[HIWORD(lParam) & 0x1FF];
 }
 
-// Enter fullscreen mode
+// Enter full screen mode
 //
 static GLboolean enterFullscreenMode(_GLFWwindow* window)
 {
@@ -221,7 +221,7 @@ static GLboolean enterFullscreenMode(_GLFWwindow* window)
     return status;
 }
 
-// Leave fullscreen mode
+// Leave full screen mode
 //
 static void leaveFullscreenMode(_GLFWwindow* window)
 {
@@ -280,7 +280,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 {
                     if (window->monitor)
                     {
-                        // We are running in fullscreen mode, so disallow
+                        // We are running in full screen mode, so disallow
                         // screen saver and screen blanking
                         return 0;
                     }

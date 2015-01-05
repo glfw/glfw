@@ -479,7 +479,7 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow* handle, int xpos, int ypos)
     if (window->monitor)
     {
         _glfwInputError(GLFW_INVALID_VALUE,
-                        "Fullscreen windows cannot be positioned");
+                        "Full screen windows cannot be positioned");
         return;
     }
 

@@ -42,7 +42,7 @@ static int translateKey(int scancode)
 {
     int keySym;
 
-    // Valid key code range is  [8,255], according to the XLib manual
+    // Valid key code range is  [8,255], according to the Xlib manual
     if (scancode < 8 || scancode > 255)
         return GLFW_KEY_UNKNOWN;
 
@@ -72,7 +72,7 @@ static int translateKey(int scancode)
             default:                break;
         }
 
-        // Now try pimary keysym for function keys (non-printable keys). These
+        // Now try primary keysym for function keys (non-printable keys). These
         // should not be layout dependent (i.e. US layout and international
         // layouts should give the same result).
         keySym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, 0, 0);

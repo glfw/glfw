@@ -64,8 +64,8 @@ static void usage(void)
     printf("  -f require a forward-compatible context\n");
     printf("  -h show this help\n");
     printf("  -l list all client API extensions after context creation\n");
-    printf("  -m the major number of the requred client API version\n");
-    printf("  -n the minor number of the requred client API version\n");
+    printf("  -m the major number of the required client API version\n");
+    printf("  -n the minor number of the required client API version\n");
     printf("  -p the OpenGL profile to use (" PROFILE_NAME_CORE " or " PROFILE_NAME_COMPAT ")\n");
     printf("  -s the robustness strategy to use (" STRATEGY_NAME_NONE " or " STRATEGY_NAME_LOSE ")\n");
 }

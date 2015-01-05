@@ -112,7 +112,7 @@ typedef struct _GLFWcursor      _GLFWcursor;
 // Helper macros
 //========================================================================
 
-// Checks for whether the library has been intitalized
+// Checks for whether the library has been initialized
 #define _GLFW_REQUIRE_INIT()                         \
     if (!_glfwInitialized)                           \
     {                                                \
@@ -184,7 +184,7 @@ struct _GLFWctxconfig
 /*! @brief Framebuffer configuration.
  *
  *  This describes buffers and their sizes.  It also contains
- *  a platform-specific ID used to map back to the backend API's object.
+ *  a platform-specific ID used to map back to the backend API object.
  *
  *  It is used to pass framebuffer parameters from shared code to the platform
  *  API and also to enumerate and select available framebuffer configs.

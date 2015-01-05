@@ -168,7 +168,7 @@ int _glfwCreateContext(_GLFWwindow* window,
                         fbconfig->greenBits +
                         fbconfig->blueBits;
 
-        // OS X needs non-zero color size, so set resonable values
+        // OS X needs non-zero color size, so set reasonable values
         if (colorBits == 0)
             colorBits = 24;
         else if (colorBits < 15)
@@ -206,7 +206,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     }
 
     // NOTE: All NSOpenGLPixelFormats on the relevant cards support sRGB
-    //       frambuffer, so there's no need (and no way) to request it
+    //       framebuffer, so there's no need (and no way) to request it
 
     ADD_ATTR(0);
 

@@ -79,7 +79,7 @@ static void updateModeCursor(_GLFWwindow* window)
         [(NSCursor*) _glfw.ns.cursor set];
 }
 
-// Enter fullscreen mode
+// Enter full screen mode
 //
 static GLboolean enterFullscreenMode(_GLFWwindow* window)
 {
@@ -95,7 +95,7 @@ static GLboolean enterFullscreenMode(_GLFWwindow* window)
     return status;
 }
 
-// Leave fullscreen mode
+// Leave full screen mode
 //
 static void leaveFullscreenMode(_GLFWwindow* window)
 {
@@ -695,7 +695,7 @@ static NSString* findAppName(void)
 // This is nasty, nasty stuff -- calls to undocumented semi-private APIs that
 // could go away at any moment, lots of stuff that really should be
 // localize(d|able), etc.  Loading a nib would save us this horror, but that
-// doesn't seem like a good thing to require of GLFW's clients.
+// doesn't seem like a good thing to require of GLFW users.
 //
 static void createMenuBar(void)
 {

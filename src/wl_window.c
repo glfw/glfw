@@ -239,7 +239,7 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
     // as (0, 0)
 
     _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Wayland: Window position retreival not supported");
+                    "Wayland: Window position retrieval not supported");
 }
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)

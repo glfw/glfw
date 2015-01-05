@@ -39,7 +39,7 @@
 #if defined(_GLFW_USE_OPTIMUS_HPG)
 
 // Applications exporting this symbol with this value will be automatically
-// directed to the high-performance GPU on nVidia Optimus systems
+// directed to the high-performance GPU on Nvidia Optimus systems
 //
 __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
 

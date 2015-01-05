@@ -24,7 +24,7 @@
 //========================================================================
 //
 // This program is used to test the iconify/restore functionality for
-// both fullscreen and windowed mode windows
+// both full screen and windowed mode windows
 //
 //========================================================================
 

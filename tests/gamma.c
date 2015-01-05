@@ -24,7 +24,7 @@
 //========================================================================
 //
 // This program is used to test the gamma correction functionality for
-// both fullscreen and windowed mode windows
+// both full screen and windowed mode windows
 //
 //========================================================================
 

@@ -26,7 +26,7 @@
 // This test came about as the result of bug #1262773
 //
 // It closes and re-opens the GLFW window every five seconds, alternating
-// between windowed and fullscreen mode
+// between windowed and full screen mode
 //
 // It also times and logs opening and closing actions and attempts to separate
 // user initiated window closing from its own

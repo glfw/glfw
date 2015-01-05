@@ -1,5 +1,5 @@
 //========================================================================
-// Multithreading test
+// Multi-threading test
 // Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied

@@ -3316,7 +3316,8 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
  *  This function sets the swap interval for the current context, i.e. the
  *  number of screen updates to wait from the time @ref glfwSwapBuffers was
  *  called before swapping the buffers and returning.  This is sometimes called
- *  'vertical synchronization', 'vertical retrace synchronization' or 'vsync'.
+ *  _vertical synchronization_, _vertical retrace synchronization_ or just
+ *  _vsync_.
  *
  *  Contexts that support either of the `WGL_EXT_swap_control_tear` and
  *  `GLX_EXT_swap_control_tear` extensions also accept negative swap intervals,

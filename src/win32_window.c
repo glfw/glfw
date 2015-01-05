@@ -669,8 +669,8 @@ static int createWindow(_GLFWwindow* window,
         ypos = CW_USEDEFAULT;
 
         getFullWindowSize(window,
-                        wndconfig->width, wndconfig->height,
-                        &fullWidth, &fullHeight);
+                          wndconfig->width, wndconfig->height,
+                          &fullWidth, &fullHeight);
     }
 
     wideTitle = _glfwCreateWideStringFromUTF8(wndconfig->title);

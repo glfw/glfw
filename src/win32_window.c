@@ -483,11 +483,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_SIZE:
         {
-            if (wParam == SIZE_MINIMIZED)
-                _glfwInputWindowIconify(window, GL_TRUE);
-            else if (wParam == SIZE_RESTORED)
-                _glfwInputWindowIconify(window, GL_FALSE);
-
             if (_glfw.focusedWindow == window)
             {
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)

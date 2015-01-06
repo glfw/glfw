@@ -31,7 +31,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdint.h>
-#include <regex.h>
 
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
@@ -215,14 +214,6 @@ typedef struct _GLFWlibraryX11
         int         versionMajor;
         int         versionMinor;
     } xinerama;
-
-#if defined(__linux__)
-    struct {
-      int           fd;
-      int           wd;
-      regex_t       regex;
-    } inotify;
-#endif
 
 } _GLFWlibraryX11;
 

@@ -372,6 +372,12 @@ void _glfwPlatformPostEmptyEvent(void)
     wl_display_sync(_glfw.wl.display);
 }
 
+void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
+{
+    // TODO
+    fprintf(stderr, "_glfwPlatformGetCursorPos not implemented yet\n");
+}
+
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
     // A Wayland client can not set the cursor position

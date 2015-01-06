@@ -26,6 +26,7 @@ if (APPLE)
     # Set fancy names for bundles
     add_executable(Boing MACOSX_BUNDLE boing.c)
     add_executable(Gears MACOSX_BUNDLE gears.c)
+    add_executable(Heightmap MACOSX_BUNDLE heightmap.c ${GLAD})
     add_executable(Particles MACOSX_BUNDLE particles.c ${TINYCTHREAD})
     add_executable(Simple MACOSX_BUNDLE simple.c)
     add_executable(SplitView MACOSX_BUNDLE splitview.c)
@@ -33,12 +34,13 @@ if (APPLE)
 
     set_target_properties(Boing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Boing")
     set_target_properties(Gears PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Gears")
+    set_target_properties(Heightmap PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Heightmap")
     set_target_properties(Particles PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Particles")
     set_target_properties(Simple PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Simple")
     set_target_properties(SplitView PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Split View")
     set_target_properties(Wave PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Wave")
 
-    set_target_properties(Boing Gears Particles Simple SplitView Wave PROPERTIES
+    set_target_properties(Boing Gears Heightmap Particles Simple SplitView Wave PROPERTIES
                           FOLDER "GLFW3/Examples")
 else()
     # Set boring names for executables
@@ -69,7 +71,7 @@ if (MSVC)
 endif()
 
 if (APPLE)
-    set(BUNDLE_BINARIES Boing Gears Particles Simple SplitView Wave)
+    set(BUNDLE_BINARIES Boing Gears Heightmap Particles Simple SplitView Wave)
 
     set_target_properties(${BUNDLE_BINARIES} PROPERTIES
                           MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}

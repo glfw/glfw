@@ -66,10 +66,10 @@ static const char* vertex_shader_text =
 
 static const char* fragment_shader_text =
 "#version 150\n"
-"out vec4 gl_FragColor;\n"
+"out vec4 color;\n"
 "void main()\n"
 "{\n"
-"    gl_FragColor = vec4(0.2, 1.0, 0.2, 1.0); \n"
+"    color = vec4(0.2, 1.0, 0.2, 1.0); \n"
 "}\n";
 
 /**********************************************************************
@@ -418,7 +418,7 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     window = glfwCreateWindow(800, 600, "GLFW OpenGL3 Heightmap demo", NULL, NULL);
     if (! window )

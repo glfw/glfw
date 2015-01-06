@@ -489,10 +489,17 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     updateClipRect(window);
             }
 
-            if (wParam == SIZE_MINIMIZED)
+            if (!window->win32.iconified && wParam == SIZE_MINIMIZED)
+            {
+                window->win32.iconified = GL_TRUE;
                 _glfwInputWindowIconify(window, GL_TRUE);
-            else if (wParam == SIZE_RESTORED)
+            }
+            else if (window->win32.iconified &&
+                     (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED))
+            {
+                window->win32.iconified = GL_FALSE;
                 _glfwInputWindowIconify(window, GL_FALSE);
+            }
 
             _glfwInputFramebufferSize(window, LOWORD(lParam), HIWORD(lParam));
             _glfwInputWindowSize(window, LOWORD(lParam), HIWORD(lParam));

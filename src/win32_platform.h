@@ -159,6 +159,7 @@ typedef struct _GLFWwindowWin32
     DWORD               dwExStyle;
 
     GLboolean           cursorInside;
+    GLboolean           iconified;
 
     // The last received cursor position, regardless of source
     int                 cursorPosX, cursorPosY;

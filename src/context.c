@@ -588,7 +588,6 @@ GLFWAPI void glfwSwapInterval(int interval)
 
 GLFWAPI int glfwExtensionSupported(const char* extension)
 {
-    const GLubyte* extensions;
     _GLFWwindow* window;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(GL_FALSE);
@@ -606,23 +605,8 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
         return GL_FALSE;
     }
 
-    if (window->context.major < 3)
-    {
-        // Check if extension is in the old style OpenGL extensions string
-
-        extensions = glGetString(GL_EXTENSIONS);
-        if (!extensions)
-        {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Failed to retrieve extension string");
-            return GL_FALSE;
-        }
-
-        if (_glfwStringInExtensionString(extension, extensions))
-            return GL_TRUE;
-    }
 #if defined(_GLFW_USE_OPENGL)
-    else
+    if (window->context.major >= 3)
     {
         int i;
         GLint count;
@@ -645,7 +629,22 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
                 return GL_TRUE;
         }
     }
+    else
 #endif // _GLFW_USE_OPENGL
+    {
+        // Check if extension is in the old style OpenGL extensions string
+
+        const GLubyte* extensions = glGetString(GL_EXTENSIONS);
+        if (!extensions)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Failed to retrieve extension string");
+            return GL_FALSE;
+        }
+
+        if (_glfwStringInExtensionString(extension, extensions))
+            return GL_TRUE;
+    }
 
     // Check if extension is in the platform-specific string
     return _glfwPlatformExtensionSupported(extension);

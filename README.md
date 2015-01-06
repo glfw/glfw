@@ -99,6 +99,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - Bugfix: The particles example was not linked against the threading library
  - Bugfix: The cursor was not positioned over newly created full screen windows
  - Bugfix: The queried cursor position was not always up-to-date
+ - Bugfix: `glfwExtensionSupported` always failed for OpenGL ES 3.0 and later if
+           the library was compiled for OpenGL ES
  - [Cocoa] Added `_GLFW_USE_RETINA` to control whether windows will use the full
            resolution on Retina displays
  - [Cocoa] Made content view subclass of `NSOpenGLView`

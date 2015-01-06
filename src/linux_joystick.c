@@ -192,12 +192,13 @@ int _glfwInitJoysticks(void)
 #if defined(__linux__)
     const char* dirname = "/dev/input";
     DIR* dir;
-    struct dirent* entry;
 
     _glfw.linux_js.inotify = inotify_init1(IN_NONBLOCK | IN_CLOEXEC);
     if (_glfw.linux_js.inotify == -1)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Linux: Failed to initialize inotify");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Linux: Failed to initialize inotify: %s",
+                        strerror(errno));
         return GL_FALSE;
     }
 
@@ -210,8 +211,10 @@ int _glfwInitJoysticks(void)
     if (_glfw.linux_js.watch == -1)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Linux: Failed to add watch to %s", dirname);
-        return GL_FALSE;
+                        "Linux: Failed to watch for joystick connections in %s: %s",
+                        dirname,
+                        strerror(errno));
+        // Continue without device connection notifications
     }
 
     if (regcomp(&_glfw.linux_js.regex, "^js[0-9]\\+$", 0) != 0)
@@ -221,25 +224,33 @@ int _glfwInitJoysticks(void)
     }
 
     dir = opendir(dirname);
-    if (!dir)
+    if (dir)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Linux: Failed to open %s", dirname);
-        return GL_FALSE;
+        struct dirent* entry;
+
+        while ((entry = readdir(dir)))
+        {
+            char path[20];
+            regmatch_t match;
+
+            if (regexec(&_glfw.linux_js.regex, entry->d_name, 1, &match, 0) != 0)
+                continue;
+
+            snprintf(path, sizeof(path), "%s/%s", dirname, entry->d_name);
+            openJoystickDevice(path);
+        }
+
+        closedir(dir);
+    }
+    else
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Linux: Failed to open joystick device directory %s: %s",
+                        dirname,
+                        strerror(errno));
+        // Continue with no joysticks detected
     }
 
-    while ((entry = readdir(dir)))
-    {
-        char path[20];
-        regmatch_t match;
-
-        if (regexec(&_glfw.linux_js.regex, entry->d_name, 1, &match, 0) != 0)
-            continue;
-
-        snprintf(path, sizeof(path), "%s/%s", dirname, entry->d_name);
-        openJoystickDevice(path);
-    }
-
-    closedir(dir);
 #endif // __linux__
 
     return GL_TRUE;

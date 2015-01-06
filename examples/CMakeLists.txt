@@ -52,7 +52,7 @@ else()
     add_executable(splitview WIN32 splitview.c)
     add_executable(wave WIN32 wave.c)
 
-    set_target_properties(boing gears particles simple splitview wave PROPERTIES
+    set_target_properties(boing gears heightmap particles simple splitview wave PROPERTIES
                           FOLDER "GLFW3/Examples")
 endif()
 

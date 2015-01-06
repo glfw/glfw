@@ -410,7 +410,6 @@ static int createSurface(_GLFWwindow* window)
                         "Mir: Unable to create surface: %s",
                         mir_surface_get_error_message(window->mir.surface));
 
-        mir_surface_release_sync(window->mir.surface);
         return GL_FALSE;
     }
 

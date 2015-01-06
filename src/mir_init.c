@@ -46,7 +46,6 @@ int _glfwPlatformInit(void)
                         "Mir: Unable to connect to server: %s",
                         mir_connection_get_error_message(_glfw.mir.connection));
 
-        mir_connection_release(_glfw.mir.connection);
         return GL_FALSE;
     }
 

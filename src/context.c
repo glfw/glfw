@@ -599,7 +599,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
         return GL_FALSE;
     }
 
-    if (!extension || *extension == '\0')
+    if (*extension == '\0')
     {
         _glfwInputError(GLFW_INVALID_VALUE, NULL);
         return GL_FALSE;

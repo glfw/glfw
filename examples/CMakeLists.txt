@@ -44,7 +44,7 @@ else()
     # Set boring names for executables
     add_executable(boing WIN32 boing.c)
     add_executable(gears WIN32 gears.c)
-    add_executable(heightmap WIN32 heightmap.c ${GETOPT} ${GLAD})
+    add_executable(heightmap WIN32 heightmap.c ${GLAD})
     add_executable(particles WIN32 particles.c ${TINYCTHREAD} ${GETOPT})
     add_executable(simple WIN32 simple.c)
     add_executable(splitview WIN32 splitview.c)

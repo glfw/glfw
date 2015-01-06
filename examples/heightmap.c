@@ -28,7 +28,6 @@
 #include <math.h>
 #include <assert.h>
 #include <stddef.h>
-#include "getopt.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -52,7 +51,7 @@
  * Default shader programs
  *********************************************************************/
 
-static const char* default_vertex_shader =
+static const char* vertex_shader_text =
 "#version 150\n"
 "uniform mat4 project;\n"
 "uniform mat4 modelview;\n"
@@ -65,7 +64,7 @@ static const char* default_vertex_shader =
 "   gl_Position = project * modelview * vec4(x, y, z, 1.0);\n"
 "}\n";
 
-static const char* default_fragment_shader =
+static const char* fragment_shader_text =
 "#version 150\n"
 "out vec4 gl_FragColor;\n"
 "void main()\n"
@@ -118,35 +117,9 @@ static GLuint mesh_vbo[4];
  * OpenGL helper functions
  *********************************************************************/
 
-/* Load a (text) file into memory and return its contents
- */
-static char* read_file_content(const char* filename)
-{
-    FILE* fd;
-    size_t size = 0;
-    char* result = NULL;
-
-    fd = fopen(filename, "r");
-    if (fd != NULL)
-    {
-        size = fseek(fd, 0, SEEK_END);
-        (void) fseek(fd, 0, SEEK_SET);
-
-        result = malloc(size + 1);
-        result[size] = '\0';
-        if (fread(result, size, 1, fd) != 1)
-        {
-            free(result);
-            result = NULL;
-        }
-        (void) fclose(fd);
-    }
-    return result;
-}
-
 /* Creates a shader object of the specified type using the specified text
  */
-static GLuint make_shader(GLenum type, const char* shader_src)
+static GLuint make_shader(GLenum type, const char* text)
 {
     GLuint shader;
     GLint shader_ok;
@@ -156,7 +129,7 @@ static GLuint make_shader(GLenum type, const char* shader_src)
     shader = glCreateShader(type);
     if (shader != 0)
     {
-        glShaderSource(shader, 1, (const GLchar**)&shader_src, NULL);
+        glShaderSource(shader, 1, (const GLchar**)&text, NULL);
         glCompileShader(shader);
         glGetShaderiv(shader, GL_COMPILE_STATUS, &shader_ok);
         if (shader_ok != GL_TRUE)
@@ -173,7 +146,7 @@ static GLuint make_shader(GLenum type, const char* shader_src)
 
 /* Creates a program object using the specified vertex and fragment text
  */
-static GLuint make_shader_program(const char* vertex_shader_src, const char* fragment_shader_src)
+static GLuint make_shader_program(const char* vs_text, const char* fs_text)
 {
     GLuint program = 0u;
     GLint program_ok;
@@ -182,10 +155,10 @@ static GLuint make_shader_program(const char* vertex_shader_src, const char* fra
     GLsizei log_length;
     char info_log[8192];
 
-    vertex_shader = make_shader(GL_VERTEX_SHADER, (vertex_shader_src == NULL) ? default_vertex_shader : vertex_shader_src);
+    vertex_shader = make_shader(GL_VERTEX_SHADER, vs_text);
     if (vertex_shader != 0u)
     {
-        fragment_shader = make_shader(GL_FRAGMENT_SHADER, (fragment_shader_src == NULL) ? default_fragment_shader : fragment_shader_src);
+        fragment_shader = make_shader(GL_FRAGMENT_SHADER, fs_text);
         if (fragment_shader != 0u)
         {
             /* make the program that connect the two shader and link it */
@@ -418,17 +391,15 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     }
 }
 
-/* Print usage information */
-static void usage(void)
+static void error_callback(int error, const char* description)
 {
-    printf("Usage: heightmap [-v <vertex_shader_path>] [-f <fragment_shader_path>]\n");
-    printf("       heightmap [-h]\n");
+    fprintf(stderr, "Error: %s\n", description);
 }
 
 int main(int argc, char** argv)
 {
     GLFWwindow* window;
-    int ch, iter;
+    int iter;
     double dt;
     double last_update_time;
     int frame;
@@ -436,64 +407,12 @@ int main(int argc, char** argv)
     GLint uloc_modelview;
     GLint uloc_project;
 
-    char* vertex_shader_path = NULL;
-    char* fragment_shader_path = NULL;
-    char* vertex_shader_src = NULL;
-    char* fragment_shader_src = NULL;
     GLuint shader_program;
 
-    while ((ch = getopt(argc, argv, "f:v:h")) != -1)
-    {
-        switch (ch)
-        {
-            case 'f':
-                fragment_shader_path = optarg;
-                break;
-            case 'v':
-                vertex_shader_path = optarg;
-                break;
-            case 'h':
-                usage();
-                exit(EXIT_SUCCESS);
-            default:
-                usage();
-                exit(EXIT_FAILURE);
-        }
-    }
-
-    if (fragment_shader_path)
-    {
-        vertex_shader_src = read_file_content(fragment_shader_path);
-        if (!fragment_shader_src)
-        {
-            fprintf(stderr,
-                    "ERROR: unable to load fragment shader from '%s'\n",
-                    fragment_shader_path);
-            exit(EXIT_FAILURE);
-        }
-    }
-
-    if (vertex_shader_path)
-    {
-        vertex_shader_src = read_file_content(vertex_shader_path);
-        if (!vertex_shader_src)
-        {
-            fprintf(stderr,
-                    "ERROR: unable to load vertex shader from '%s'\n",
-                    fragment_shader_path);
-            exit(EXIT_FAILURE);
-        }
-    }
+    glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
-    {
-        fprintf(stderr, "ERROR: Unable to initialize GLFW\n");
-        usage();
-
-        free(vertex_shader_src);
-        free(fragment_shader_src);
         exit(EXIT_FAILURE);
-    }
 
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -504,12 +423,6 @@ int main(int argc, char** argv)
     window = glfwCreateWindow(800, 600, "GLFW OpenGL3 Heightmap demo", NULL, NULL);
     if (! window )
     {
-        fprintf(stderr, "ERROR: Unable to create the OpenGL context and associated window\n");
-        usage();
-
-        free(vertex_shader_src);
-        free(fragment_shader_src);
-
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
@@ -521,15 +434,10 @@ int main(int argc, char** argv)
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 
     /* Prepare opengl resources for rendering */
-    shader_program = make_shader_program(vertex_shader_src , fragment_shader_src);
-    free(vertex_shader_src);
-    free(fragment_shader_src);
+    shader_program = make_shader_program(vertex_shader_text, fragment_shader_text);
 
     if (shader_program == 0u)
     {
-        fprintf(stderr, "ERROR: during creation of the shader program\n");
-        usage();
-
         glfwTerminate();
         exit(EXIT_FAILURE);
     }

@@ -157,7 +157,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [X11] Bugfix: Window frame interactions were reported as focus events
  - [X11] Bugfix: Workaround for legacy Compiz caused flickering during resize
  - [X11] Bugfix: The name pointer of joysticks were not cleared on disconnection
- - [X11] Bugfix: Video mode dimensions were not rotated to match the CRTC
+ - [X11] Bugfix: Video mode resolutions and monitor physical sizes were not
+                 corrected for rotated CRTCs
  - [X11] Bugfix: Unicode character input ignored dead keys
  - [X11] Bugfix: X-axis scroll offsets were inverted
  - [X11] Bugfix: Full screen override redirect windows were not always

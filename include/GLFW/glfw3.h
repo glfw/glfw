@@ -144,52 +144,52 @@ extern "C" {
 /* Include the chosen client API headers.
  */
 #if defined(__APPLE_CC__)
-  #if defined(GLFW_INCLUDE_GLCOREARB)
-    #include <OpenGL/gl3.h>
-    #if defined(GLFW_INCLUDE_GLEXT)
-      #include <OpenGL/gl3ext.h>
-    #endif
-  #elif !defined(GLFW_INCLUDE_NONE)
-    #if !defined(GLFW_INCLUDE_GLEXT)
-      #define GL_GLEXT_LEGACY
-    #endif
-    #include <OpenGL/gl.h>
+ #if defined(GLFW_INCLUDE_GLCOREARB)
+  #include <OpenGL/gl3.h>
+  #if defined(GLFW_INCLUDE_GLEXT)
+   #include <OpenGL/gl3ext.h>
   #endif
-  #if defined(GLFW_INCLUDE_GLU)
-    #include <OpenGL/glu.h>
+ #elif !defined(GLFW_INCLUDE_NONE)
+  #if !defined(GLFW_INCLUDE_GLEXT)
+   #define GL_GLEXT_LEGACY
   #endif
+  #include <OpenGL/gl.h>
+ #endif
+ #if defined(GLFW_INCLUDE_GLU)
+  #include <OpenGL/glu.h>
+ #endif
 #else
-  #if defined(GLFW_INCLUDE_GLCOREARB)
-    #include <GL/glcorearb.h>
-  #elif defined(GLFW_INCLUDE_ES1)
-    #include <GLES/gl.h>
-    #if defined(GLFW_INCLUDE_GLEXT)
-      #include <GLES/glext.h>
-    #endif
-  #elif defined(GLFW_INCLUDE_ES2)
-    #include <GLES2/gl2.h>
-    #if defined(GLFW_INCLUDE_GLEXT)
-      #include <GLES2/gl2ext.h>
-    #endif
-  #elif defined(GLFW_INCLUDE_ES3)
-    #include <GLES3/gl3.h>
-    #if defined(GLFW_INCLUDE_GLEXT)
-      #include <GLES3/gl2ext.h>
-    #endif
-  #elif defined(GLFW_INCLUDE_ES31)
-    #include <GLES3/gl31.h>
-    #if defined(GLFW_INCLUDE_GLEXT)
-      #include <GLES3/gl2ext.h>
-    #endif
-  #elif !defined(GLFW_INCLUDE_NONE)
-    #include <GL/gl.h>
-    #if defined(GLFW_INCLUDE_GLEXT)
-      #include <GL/glext.h>
-    #endif
+ #if defined(GLFW_INCLUDE_GLCOREARB)
+  #include <GL/glcorearb.h>
+ #elif defined(GLFW_INCLUDE_ES1)
+  #include <GLES/gl.h>
+  #if defined(GLFW_INCLUDE_GLEXT)
+   #include <GLES/glext.h>
   #endif
-  #if defined(GLFW_INCLUDE_GLU)
-    #include <GL/glu.h>
+ #elif defined(GLFW_INCLUDE_ES2)
+  #include <GLES2/gl2.h>
+  #if defined(GLFW_INCLUDE_GLEXT)
+   #include <GLES2/gl2ext.h>
   #endif
+ #elif defined(GLFW_INCLUDE_ES3)
+  #include <GLES3/gl3.h>
+  #if defined(GLFW_INCLUDE_GLEXT)
+   #include <GLES3/gl2ext.h>
+  #endif
+ #elif defined(GLFW_INCLUDE_ES31)
+  #include <GLES3/gl31.h>
+  #if defined(GLFW_INCLUDE_GLEXT)
+   #include <GLES3/gl2ext.h>
+  #endif
+ #elif !defined(GLFW_INCLUDE_NONE)
+  #include <GL/gl.h>
+  #if defined(GLFW_INCLUDE_GLEXT)
+   #include <GL/glext.h>
+  #endif
+ #endif
+ #if defined(GLFW_INCLUDE_GLU)
+  #include <GL/glu.h>
+ #endif
 #endif
 
 #if defined(GLFW_DLL) && defined(_GLFW_BUILD_DLL)
@@ -200,30 +200,25 @@ extern "C" {
  #error "You must not have both GLFW_DLL and _GLFW_BUILD_DLL defined"
 #endif
 
+/* GLFWAPI is used to declare public API functions for export
+ * from the DLL / shared library / dynamic library.
+ */
 #if defined(_WIN32) && defined(_GLFW_BUILD_DLL)
-
  /* We are building GLFW as a Win32 DLL */
  #define GLFWAPI __declspec(dllexport)
-
 #elif defined(_WIN32) && defined(GLFW_DLL)
-
  /* We are calling GLFW as a Win32 DLL */
  #if defined(__LCC__)
   #define GLFWAPI extern
  #else
   #define GLFWAPI __declspec(dllimport)
  #endif
-
 #elif defined(__GNUC__) && defined(_GLFW_BUILD_DLL)
-
  /* We are building GLFW as a shared / dynamic library */
  #define GLFWAPI __attribute__((visibility("default")))
-
 #else
-
  /* We are building or calling GLFW as a static library */
  #define GLFWAPI
-
 #endif
 
 /* -------------------- END SYSTEM/COMPILER SPECIFIC --------------------- */

@@ -86,26 +86,26 @@ Before you can make OpenGL or OpenGL ES calls, you need to have a current
 context of the correct type.  A context can only be current for a single thread
 at a time, and a thread can only have a single context current at a time.
 
-A context is made current with @ref glfwMakeContextCurrent.
+The context of a window is made current with @ref glfwMakeContextCurrent.
 
 @code
 glfwMakeContextCurrent(window);
 @endcode
 
-The current context is returned by @ref glfwGetCurrentContext.
+The window of the current context is returned by @ref glfwGetCurrentContext.
 
 @code
 GLFWwindow* window = glfwGetCurrentContext();
 @endcode
 
-The following GLFW functions require a context to be current:
+The following GLFW functions require a context to be current.  Calling any these
+functions without a current context will generate a @ref GLFW_NO_CURRENT_CONTEXT
+error.
 
  - @ref glfwSwapInterval
  - @ref glfwExtensionSupported
  - @ref glfwGetProcAddress
 
-Calling any these functions without a current context will generate a @ref
-GLFW_NO_CURRENT_CONTEXT error.
 
 @section context_swap Buffer swapping
 
@@ -136,14 +136,15 @@ their specifications, can be found at the
 [OpenGL ES Registry](https://www.khronos.org/registry/gles/).
 
 
-@subsection context_glext_auto Using an extension loader library
+@subsection context_glext_auto Loading extension with a loader library
 
-This is the easiest and best way to load extensions and newer versions of the
-OpenGL or OpenGL ES API.  One such library is
-[glad](https://github.com/Dav1dde/glad) and there are several others.  They will
-take care of all the details of declaring and loading everything you need.
+An extension loader library is the easiest and best way to access both OpenGL and
+OpenGL ES extensions and modern versions of the core OpenGL or OpenGL ES APIs.
+They will take care of all the details of declaring and loading everything you
+need.  One such library is [glad](https://github.com/Dav1dde/glad) and there are
+several others.  
 
-The following example will use glad, but other extension loader libraries work
+The following example will use glad but all extension loader libraries work
 similarly.
 
 First you need to generate the source files using the glad Python script.  This
@@ -153,24 +154,26 @@ API versions and extension sets can be generated.  The generated files are
 written to the `output` directory.
 
 @code{.sh}
-python main.py --no-loader --out-path output
+python main.py --generator c --no-loader --out-path output
 @endcode
 
 The `--no-loader` option is added because GLFW already provides a function for
 loading OpenGL and OpenGL ES function pointers and glad can call this instead of
-having to implement its own.
+having to implement its own.  There are several other command-line options as
+well.  See the glad documentation for details.
 
 Add the generated `output/src/glad.c`, `output/include/glad/glad.h` and
 `output/include/KHR/khrplatform.h` files to your build.  Then you need to
 include the glad header file, which will replace the OpenGL header of your
-development environment.
+development environment.  By including the glad header before the GLFW header,
+it suppresses the development environment's OpenGL or OpenGL ES header.
 
 @code
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 @endcode
 
-Finally you need to initialize glad once you have a matching current context.
+Finally you need to initialize glad once you have a suitable current context.
 
 @code
 window = glfwCreateWindow(640, 480, "My Window", NULL, NULL);
@@ -185,8 +188,8 @@ gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 @endcode
 
 Once glad has been loaded, you have access to all OpenGL core and extension
-functions supported by the context you created and you are ready to start
-rendering.
+functions supported by both the context you created and the glad loader you
+generated and you are ready to start rendering.
 
 You can specify a minimum required OpenGL or OpenGL ES version with
 [context hints](@ref window_hints_ctx).  If your needs are more complex, you can
@@ -215,36 +218,50 @@ if (GLAD_GL_ARB_debug_output)
 
 @subsection context_glext_manual Loading extensions manually
 
+__Do not use this technique__ unless it is absolutely necessary.  An
+[extension loader library](@ref context_glext_auto) will save you a ton of
+tedious, repetitive, error prone work.
+
 To use a certain extension, you must first check whether the context supports
 that extension and then, if it introduces new functions, retrieve the pointers
 to those functions.  GLFW provides @ref glfwExtensionSupported and @ref
 glfwGetProcAddress for manual loading of extensions and new API functions.
 
-@note It is recommended that you use an existing extension loader library, as
-described above, instead of loading manually.
+This section will demonstrate manual loading of OpenGL extensions.  The loading
+of OpenGL ES extensions is identical except for the name of the extension header.
 
 
 @subsubsection context_glext_header The glext.h header
 
-The `glext.h` header is a continually updated file that defines the interfaces
-for all OpenGL extensions.  The latest version of this can always be found at
-the [OpenGL Registry](http://www.opengl.org/registry/).  It it strongly
-recommended that you use your own copy, as the one shipped with your development
-environment may be several years out of date and may not include the extensions
-you wish to use.
+The `glext.h` extension header is a continually updated file that defines the
+interfaces for all OpenGL extensions.  The latest version of this can always be
+found at the [OpenGL Registry](http://www.opengl.org/registry/).  There are also
+extension headers for the various versions of OpenGL ES at the
+[OpenGL ES Registry](https://www.khronos.org/registry/gles/).  It it strongly
+recommended that you use your own copy of the extension header, as the one
+included in your development environment may be several years out of date and
+may not include the extensions you wish to use.
 
 The header defines function pointer types for all functions of all extensions it
-supports.  These have names like `PFNGLGETDEBUGMESSAGELOGARB` (for
+supports.  These have names like `PFNGLGETDEBUGMESSAGELOGARBPROC` (for
 `glGetDebugMessageLogARB`), i.e. the name is made uppercase and `PFN` (pointer
 to function) and `PROC` (procedure) are added to the ends.
+
+To include the extension header, define [GLFW_INCLUDE_GLEXT](@ref build_macros)
+before including the GLFW header.
+
+@code
+#define GLFW_INCLUDE_GLEXT
+#include <GLFW/glfw3.h>
+@endcode
 
 
 @subsubsection context_glext_string Checking for extensions
 
 A given machine may not actually support the extension (it may have older
 drivers or a graphics card that lacks the necessary hardware features), so it
-is necessary to check whether the context supports the extension.  This is done
-with @ref glfwExtensionSupported.
+is necessary to check at run-time whether the context supports the extension.
+This is done with @ref glfwExtensionSupported.
 
 @code
 if (glfwExtensionSupported("GL_ARB_debug_output"))
@@ -266,7 +283,7 @@ your operating system, making it necessary to fetch them at run time.  You can
 retrieve pointers to these functions with @ref glfwGetProcAddress.
 
 @code
-PFNGLGETDEBUGMESSAGELOGARB pfnGetDebugMessageLog = glfwGetProcAddress("glGetDebugMessageLogARB");
+PFNGLGETDEBUGMESSAGELOGARBPROC pfnGetDebugMessageLog = glfwGetProcAddress("glGetDebugMessageLogARB");
 @endcode
 
 In general, you should avoid giving the function pointer variables the (exact)
@@ -277,31 +294,35 @@ Now that all the pieces have been introduced, here is what they might look like
 when used together.
 
 @code
-#include "glext.h"
+#define GLFW_INCLUDE_GLEXT
+#include <GLFW/glfw3.h>
 
 #define glGetDebugMessageLogARB pfnGetDebugMessageLog
-PFNGLGETDEBUGMESSAGELOGARB pfnGetDebugMessageLog;
+PFNGLGETDEBUGMESSAGELOGARBPROC pfnGetDebugMessageLog;
 
 // Flag indicating whether the extension is supported
-int has_debug_output = 0;
+int has_ARB_debug_output = 0;
 
 void load_extensions(void)
 {
     if (glfwExtensionSupported("GL_ARB_debug_output"))
     {
-        pfnGetDebugMessageLog = (PFNGLGETDEBUGMESSAGELOGARB) glfwGetProcAddress("glGetDebugMessageLogARB");
+        pfnGetDebugMessageLog = (PFNGLGETDEBUGMESSAGELOGARBPROC) glfwGetProcAddress("glGetDebugMessageLogARB");
         if (pfnGetDebugMessageLog)
         {
             // Both the extension name and the function pointer are present
-            has_debug_output = 1;
+            has_ARB_debug_output = 1;
         }
     }
 }
 
 void some_function(void)
 {
-    // Now the extension function can be called as usual
-    glGetDebugMessageLogARB(...);
+    if (has_ARB_debug_output)
+    {
+        // Now the extension function can be called as usual
+        glGetDebugMessageLogARB(...);
+    }
 }
 @endcode
 

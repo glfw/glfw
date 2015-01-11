@@ -327,7 +327,7 @@ see which code paths are enabled in a binary.
 The version string is returned by @ref glfwGetVersionString, a function that may
 be called regardless of whether GLFW is initialized.
 
-__Do not use the version string__ to find the GLFW library version.  The @ref
+__Do not use the version string__ to parse the GLFW library version.  The @ref
 glfwGetVersion function already provides the version of the running library
 binary.
 

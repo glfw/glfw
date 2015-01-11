@@ -481,9 +481,8 @@ glfwGetFramebufferSize(window, &width, &height);
 glViewport(0, 0, width, height);
 @endcode
 
-Note that the size of a framebuffer may change independently of the size of
-a window, for example if the window is dragged between a regular monitor and
-a high-DPI one.
+The size of a framebuffer may change independently of the size of a window, for
+example if the window is dragged between a regular monitor and a high-DPI one.
 
 
 @subsection window_pos Position

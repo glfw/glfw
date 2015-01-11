@@ -321,21 +321,21 @@ GLFWAPI void glfwGetMonitorPos(GLFWmonitor* handle, int* xpos, int* ypos)
     _glfwPlatformGetMonitorPos(monitor, xpos, ypos);
 }
 
-GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* handle, int* width, int* height)
+GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* handle, int* widthMM, int* heightMM)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
 
-    if (width)
-        *width = 0;
-    if (height)
-        *height = 0;
+    if (widthMM)
+        *widthMM = 0;
+    if (heightMM)
+        *heightMM = 0;
 
     _GLFW_REQUIRE_INIT();
 
-    if (width)
-        *width = monitor->widthMM;
-    if (height)
-        *height = monitor->heightMM;
+    if (widthMM)
+        *widthMM = monitor->widthMM;
+    if (heightMM)
+        *heightMM = monitor->heightMM;
 }
 
 GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* handle)

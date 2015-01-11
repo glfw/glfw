@@ -4,78 +4,174 @@
  
 @tableofcontents
 
-GLFW has no explicit support for the Oculus Rift, but 
+This guide requires you to use [native access](@ref native) and assumes
+a certain level of proficiency with LibOVR, OS specific APIs and your chosen
+development environment.  It intends only to fill in the gaps between the
+[Oculus PC SDK documentation](https://developer.oculus.com/documentation/) and
+the GLFW API and is not a replacement for the documentation for those APIs.
 
-This guide requires you to use the [native API](@ref native) and assumes
-a certain level of proficiency with system level APIs and the compiler
-toolchain.
+While GLFW has no explicit support for LibOVR, the Oculus PC SDK library, it is
+tested with and tries to interoperate well with it.
+
+@note Because of the speed of development of the Oculus SDK, this guide may
+become outdated before the next release.  If this is a local copy from a GLFW
+release archive, check the GLFW website for an up-to-date version.
 
 
-@section rift_init Initializing libOVR and GLFW
+@section rift_include Including the LibOVR and GLFW header files
 
-libOVR needs to be initialized before GLFW.  This means calling
+Both the LibOVR OpenGL header and the GLFW native header need macros telling
+them what OS you are building for.  Because LibOVR only supports three major
+desktop OSes, this can be solved with the canonical predefined macros.
+
+@code
+#if defined(_WIN32)
+ #define GLFW_EXPOSE_NATIVE_WIN32
+ #define GLFW_EXPOSE_NATIVE_WGL
+ #define OVR_OS_WIN32
+#elif defined(__APPLE__)
+ #define GLFW_EXPOSE_NATIVE_COCOA
+ #define GLFW_EXPOSE_NATIVE_NSGL
+ #define OVR_OS_MAC
+#elif defined(__linux__)
+ #define GLFW_EXPOSE_NATIVE_X11
+ #define GLFW_EXPOSE_NATIVE_GLX
+ #define OVR_OS_LINUX
+#else
+ #error "Platform unsupported"
+#endif
+
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
+
+#include <OVR_CAPI_GL.h>
+@endcode
+
+Both the GLFW and LibOVR headers by default attempt to include the standard
+OpenGL `GL/gl.h` header (`OpenGL/gl.h` on OS X).  If you wish to use a different
+standard header or an [extension loading library](@ref context_glext_auto),
+include that header before these.
+
+
+@section rift_init Initializing LibOVR and GLFW
+
+LibOVR needs to be initialized before GLFW.  This means calling at least
 `ovr_Initialize`, `ovrHmd_Create` and `ovrHmd_ConfigureTracking` before @ref
-glfwInit.  Similarly, libOVR must be shut down after GLFW.  This means calling
+glfwInit.  Similarly, LibOVR must be shut down after GLFW.  This means calling
 `ovrHmd_Destroy` and `ovr_Shutdown` after @ref glfwTerminate.
-
-
-@section rift_extend Extend Desktop mode
-
-@subsection rift_extend_detect Detecting a Rift with GLFW
-
-If you have an actual Rift connected to your machine you can deduce which GLFW
-monitor it corresponds to.  Doing this requires you to use the
-[native API](@ref native).
-
-
-@subsubsection rift_extend_detect_win32 Detecting a Rift on Windows
-
-The native display device name of a GLFW monitor, as returned by @ref
-glfwGetWin32Monitor, corresponds to the display device name of the detected Rift
-as stored, in the `DisplayDeviceName` member of `ovrHmdDesc`.
-
-@code
-int i, count;
-GLFWmonitor** monitors = glfwGetMonitors(&count);
-
-for (i = 0;  i < count;  i++)
-{
-    if (strcmp(glfwGetWin32Monitor(monitors[i]), hmd->DisplayDeviceName) == 0)
-        return monitors[i];
-}
-@endcode
-
-
-@subsubsection rift_extend_detect_osx Detecting a Rift on OS X
-
-The native display ID of a GLFW monitor, as returned by @ref
-glfwGetCocoaMonitor, corresponds to the display ID of the detected Rift, as
-stored in the `DisplayId` member of `ovrHmdDesc`.
-
-@code
-int i, count;
-GLFWmonitor** monitors = glfwGetMonitors(&count);
-
-for (i = 0;  i < count;  i++)
-{
-    if (glfwGetCocoaMonitor(monitors[i]) == hmd->DisplayId)
-        return monitors[i];
-}
-@endcode
-
-
-@subsubsection rift_extend_detect_x11 Detecting a Rift on X11
-
-At the time of writing, the 0.4 Rift SDK does not yet support X11.
-
-
-@subsection rift_extend_create Creating a window and context
-
-LOL create.
 
 
 @section rift_direct Direct HMD mode
 
-LOL direct.
+Direct HMD mode is the recommended display mode for new applications, but the
+Oculus Rift runtime currently (January 2015) only supports this mode on Windows.
+In direct mode the HMD is not detectable as a GLFW monitor.
+
+
+@subsection rift_direct_create Creating a window and context
+
+If the HMD is in direct mode you can use either a full screen or a windowed mode
+window, but full screen is only recommended if there is a monitor that supports
+the resolution of the HMD.  Due to limitations in LibOVR, the size of the client
+area of the window must equal the resolution of the HMD.
+
+If the resolution of the HMD is much larger than the regular monitor, the window
+may be resized by the window manager on creation.  One way to avoid this is to
+make it undecorated with the [GLFW_DECORATED](@ref window_hints_wnd) window
+hint.
+
+
+@subsection rift_direct_attach Attaching the window to the HMD
+
+Once you have created the window and context, you need to attach the native
+handle of the GLFW window to the HMD.
+
+@code
+ovrHmd_AttachToWindow(hmd, glfwGetWin32Window(window), NULL, NULL);
+@endcode
+
+
+@section rift_extend Extend Desktop mode
+
+Extend desktop mode is a legacy display mode, but is still (January 2015) the
+only available mode on OS X and Linux, as well as on Windows machines that for
+technical reasons do not yet support direct HMD mode.
+
+
+@subsection rift_extend_detect Detecting a HMD with GLFW
+
+If the HMD is in extend desktop mode you can deduce which GLFW monitor it
+corresponds to and create a full screen window on that monitor.
+
+On Windows, the native display device name of a GLFW monitor corresponds to the
+display device name of the detected HMD as stored, in the `DisplayDeviceName`
+member of `ovrHmdDesc`.
+
+On OS X, the native display ID of a GLFW monitor corresponds to the display ID
+of the detected HMD, as stored in the `DisplayId` member of `ovrHmdDesc`.
+
+At the time of writing (January 2015), the Oculus SDK does not support detecting
+which monitor corresponds to the HMD in any sane fashion.
+
+@code
+int i, count;
+GLFWmonitor** monitors = glfwGetMonitors(&count);
+
+for (i = 0;  i < count;  i++)
+{
+#if defined(_WIN32)
+    if (strcmp(glfwGetWin32Monitor(monitors[i]), hmd->DisplayDeviceName) == 0)
+        return monitors[i];
+#elif defined(__APPLE__)
+    if (glfwGetCocoaMonitor(monitors[i]) == hmd->DisplayId)
+        return monitors[i];
+#elif defined(__linux__)
+#endif
+}
+@endcode
+
+
+@subsection rift_extend_create Creating a window and context
+
+The window is created as a regular full screen window on the found monitor.  It
+is usually a good idea to create a
+[windowed full screen](@ref window_windowed_full_screen) window, as the HMD will
+very likely already be set to the correct video mode.  However, in extend
+desktop mode it behaves like a regular monitor and any supported video mode can
+be requested.
+
+If other monitors are mirroring the HMD and you request a different video mode,
+all monitors in the mirroring set will get the new video mode.
+
+
+@section rift_render Rendering to the HMD
+
+Once the window and context is created, you can render to it the same as any
+other application using LibOVR.
+
+If you wish to use SDK distortion rendering you will need some information from
+GLFW to configure the renderer.  Below are the parts of the `ovrGLConfig` union
+that need to be filled with from GLFW.  Note that there are other fields that
+also need to be filled for `ovrHmd_ConfigureRendering` to succeed.
+
+@code
+    int width, height;
+    union ovrGLConfig config;
+
+    glfwGetFramebufferSize(window, &width, &height);
+
+    config.OGL.Header.BackBufferSize.w = width;
+    config.OGL.Header.BackBufferSize.h = height;
+#if defined(_WIN32)
+    config.OGL.Window = glfwGetWin32Window(window);
+    config.OGL.DC = GetDC(config.OGL.Window);
+#elif defined(__APPLE__)
+#elif defined(__linux__)
+    config.OGL.Disp = glfwGetX11Display();
+#endif
+@endcode
+
+When using SDK distortion rendering you should not call @ref glfwSwapBuffers,
+as the HMD is updated by `ovrHmd_EndFrame`.
 
 */

@@ -4,12 +4,8 @@
 
 @tableofcontents
 
-The primary purpose of GLFW is to provide a simple interface to window
-management and OpenGL and OpenGL ES context creation.  GLFW supports
-multiple windows, with each window having its own context.
-
-This guide introduces the functions related to managing OpenGL and OpenGL ES
-contexts.  There are also guides for the other areas of the GLFW API.
+This guide introduces the OpenGL and OpenGL ES context related functions of
+GLFW.  There are also guides for the other areas of the GLFW API.
 
  - @ref intro
  - @ref window
@@ -26,6 +22,10 @@ information.
 
 As the window and context are inseparably linked, the window object also serves
 as the context handle.
+
+To test the creation of various kinds of contexts and see their properties, run
+the `glfwinfo` test program.
+
 
 @subsection context_hints Context creation hints
 

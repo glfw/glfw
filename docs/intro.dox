@@ -151,10 +151,10 @@ which monitor the window is currently considered to be on.
 @section guarantees_limitations Guarantees and limitations
 
 This section describes the conditions under which GLFW can be expected to
-function, barring any bugs in GLFW, the operating system or drivers.  Use of
-GLFW outside of these limits may work on some platforms, or on some machines, or
-some of the time, or on some versions of GLFW, but it may break at any time and
-will not be considered a bug.
+function, barring bugs in the operating system or drivers.  Use of GLFW outside
+of these limits may work on some platforms, or on some machines, or some of the
+time, or on some versions of GLFW, but it may break at any time and this will
+not be considered a bug.
 
 
 @subsection lifetime Pointer lifetimes
@@ -171,9 +171,10 @@ If you need to keep this data, you must copy it before its lifetime expires.
 Many GLFW functions accept pointers to structures or strings allocated by the
 application.  These are never freed by GLFW and are always the responsibility of
 the application.  If GLFW needs to keep the data in these structures or strings,
-they are copied before the function returns.
+it is copied before the function returns.
 
-Pointer lifetimes are guaranteed not to be shortened in future minor releases.
+Pointer lifetimes are guaranteed not to be shortened in future minor or patch
+releases.
 
 
 @subsection reentrancy Reentrancy
@@ -191,16 +192,22 @@ function:
  - @ref glfwWaitEvents
  - @ref glfwTerminate
 
+These functions may be made reentrant in future minor or patch releases, but
+functions not on this list will not be made non-reentrant.
+
 
 @subsection thread_safety Thread safety
 
-Most GLFW functions may only be called from the main thread.  The reference
-documentation for every GLFW function states whether it is limited to the main
-thread.
+Most GLFW functions may only be called from the main thread, but some may be
+called from any thread.  However, no GLFW function may be called from any other
+thread until GLFW has been successfully initialized on the main thread,
+including functions that may called before initialization.
 
-There are some general rules that make it easier to remember which functions are
-limited to the main thread.  The following tasks may only be performed on the
-main thread:
+The reference documentation for every GLFW function states whether it is limited
+to the main thread.                                                        
+
+The following categories of functions are and will remain limited to the main
+thread due to the limitations of one or several platforms:
 
  - Initialization and termination
  - Event processing
@@ -236,9 +243,11 @@ The following timer related functions may be called from any thread:
 
  - @ref glfwGetTime
 
-No GLFW function may be called from any other thread until GLFW has been
-successfully initialized on the main thread, including functions that may called
-before initialization.
+Library version information may be queried from any thread.  The following
+version related functions may be called from any thread:
+
+ - @ref glfwGetVersion
+ - @ref glfwGetVersionString
 
 GLFW uses no synchronization objects internally except for thread-local storage
 to keep track of the current context for each thread.  Synchronization is left
@@ -259,8 +268,8 @@ Once a function or constant has been added, the signature of that function or
 value of that constant will remain unchanged until the next major version of
 GLFW.  No compatibility of any kind is guaranteed between major versions.
 
-Undefined behavior, i.e. behavior that is not described in reference
-documentation, may change at any time until it is documented.
+Undocumented behavior, i.e. behavior that is not described in the documentation,
+may change at any time until it is documented.
 
 If the reference documentation and the implementation differ, the reference
 documentation is correct and the implementation will be fixed in the next
@@ -318,6 +327,10 @@ see which code paths are enabled in a binary.
 The version string is returned by @ref glfwGetVersionString, a function that may
 be called regardless of whether GLFW is initialized.
 
+__Do not use the version string__ to find the GLFW library version.  The @ref
+glfwGetVersion function already provides the version of the running library
+binary.
+
 The format of the string is as follows:
  - The version of GLFW
  - The name of the window system API
@@ -330,9 +343,5 @@ back ends, the version string may look something like this:
 @code
 3.0.0 Win32 WGL MinGW
 @endcode
-
-@note Do not parse the version string to find the GLFW library version.  The
-@ref glfwGetVersion function provides the version of the library binary in
-numeric form.
 
 */

@@ -4,10 +4,6 @@
  
 @tableofcontents
 
-The primary purpose of GLFW is to provide a simple interface to window
-management and OpenGL and OpenGL ES context creation.  GLFW supports multiple
-windows, which can be either a normal desktop window or a full screen window.
-
 This guide introduces the window related functions of GLFW.  There are also
 guides for the other areas of GLFW.
 
@@ -23,6 +19,9 @@ The @ref GLFWwindow object encapsulates both a window and a context.  They are
 created with @ref glfwCreateWindow and destroyed with @ref glfwDestroyWindow (or
 @ref glfwTerminate, if any remain).  As the window and context are inseparably
 linked, the object pointer is used as both a context and window handle.
+
+To see the event stream provided to the various window related callbacks, run
+the `events` test program.
 
 
 @subsection window_creation Window creation

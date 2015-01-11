@@ -145,15 +145,14 @@ and its handle becomes invalid.
 
 @subsection quick_context_current Making the OpenGL context current
 
-Before you can use the OpenGL API, it must have a current OpenGL context.  You
-make a window's context current.
+Before you can use the OpenGL API, you must have a current OpenGL context.
 
 @code
 glfwMakeContextCurrent(window);
 @endcode
 
-The context will then remain as current until you make another context current
-or until the window owning the current context is destroyed.                    
+The context will remain current until you make another context current or until
+the window owning the current context is destroyed.
 
 
 @subsection quick_window_close Checking the window close flag

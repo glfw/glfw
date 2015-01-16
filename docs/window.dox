@@ -691,8 +691,8 @@ void window_refresh_callback(GLFWwindow* window)
 @endcode
 
 @note On compositing window systems such as Aero, Compiz or Aqua, where the
-window contents are saved off-screen, this callback may be called only very
-infrequently or never at all.
+window contents are saved off-screen, this callback might only be called when
+the window or framebuffer is resized.
 
 
 @subsection window_attribs Attributes
@@ -713,27 +713,29 @@ if (glfwGetWindowAttrib(window, GLFW_FOCUSED))
 
 @subsubsection window_attribs_window Window related attributes
 
-`GLFW_FOCUSED` indicates whether the specified window has input focus.
+`GLFW_FOCUSED` indicates whether the specified window has input focus.  Initial
+focus is controlled by the [window hint](@ref window_hints_wnd) with the same
+name.   
 
 `GLFW_ICONIFIED` indicates whether the specified window is iconified, whether by
 the user or with @ref glfwIconifyWindow.
 
 `GLFW_VISIBLE` indicates whether the specified window is visible.  Window
 visibility can be controlled with @ref glfwShowWindow and @ref glfwHideWindow
-and initial visibility is controlled by the [window hint](@ref window_hints)
+and initial visibility is controlled by the [window hint](@ref window_hints_wnd)
 with the same name.  
 
 `GLFW_RESIZABLE` indicates whether the specified window is resizable _by the
-user_.  This is controlled by the [window hint](@ref window_hints) with the same
-name.
+user_.  This is set on creation with the [window hint](@ref window_hints_wnd)
+  with the same name.
 
 `GLFW_DECORATED` indicates whether the specified window has decorations such as
-a border, a close widget, etc.  This is controlled by the
-[window hint](@ref window_hints) with the same name. 
+a border, a close widget, etc.  This is set on creation with the
+[window hint](@ref window_hints_wnd) with the same name. 
 
 `GLFW_FLOATING` indicates whether the specified window is floating, also called
 topmost or always-on-top.  This is controlled by the
-[window hint](@ref window_hints) with the same name. 
+[window hint](@ref window_hints_wnd) with the same name. 
 
 
 @subsubsection window_attribs_context Context related attributes

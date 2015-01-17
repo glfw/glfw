@@ -4,25 +4,26 @@
  
 @tableofcontents
 
-This guide requires you to use [native access](@ref native) and assumes
-a certain level of proficiency with LibOVR, OS specific APIs and your chosen
-development environment.  It intends only to fill in the gaps between the
+This guide is intended to fill in the gaps between the
 [Oculus PC SDK documentation](https://developer.oculus.com/documentation/) and
-the GLFW API and is not a replacement for the documentation for those APIs.
+the rest of the GLFW documentation and is not a replacement for either.  It
+requires you to use [native access](@ref native) and assumes a certain level of
+proficiency with LibOVR, OS specific APIs and your chosen development
+environment.
 
-While GLFW has no explicit support for LibOVR, the Oculus PC SDK library, it is
-tested with and tries to interoperate well with it.
+While GLFW has no explicit support for LibOVR, it is tested with and tries to
+interoperate well with it.
 
 @note Because of the speed of development of the Oculus SDK, this guide may
-become outdated before the next release.  If this is a local copy from a GLFW
-release archive, check the GLFW website for an up-to-date version.
+become outdated before the next release.  If this is a local copy of the
+documentation, check the GLFW website for an up-to-date version.
 
 
 @section rift_include Including the LibOVR and GLFW header files
 
-Both the LibOVR OpenGL header and the GLFW native header need macros telling
+Both the OpenGL LibOVR header and the GLFW native header need macros telling
 them what OS you are building for.  Because LibOVR only supports three major
-desktop OSes, this can be solved with the canonical predefined macros.
+desktop OSes, this can be solved with canonical predefined macros.
 
 @code
 #if defined(_WIN32)
@@ -37,8 +38,6 @@ desktop OSes, this can be solved with the canonical predefined macros.
  #define GLFW_EXPOSE_NATIVE_X11
  #define GLFW_EXPOSE_NATIVE_GLX
  #define OVR_OS_LINUX
-#else
- #error "Platform unsupported"
 #endif
 
 #include <GLFW/glfw3.h>
@@ -164,7 +163,6 @@ also need to be filled for `ovrHmd_ConfigureRendering` to succeed.
     config.OGL.Header.BackBufferSize.h = height;
 #if defined(_WIN32)
     config.OGL.Window = glfwGetWin32Window(window);
-    config.OGL.DC = GetDC(config.OGL.Window);
 #elif defined(__APPLE__)
 #elif defined(__linux__)
     config.OGL.Disp = glfwGetX11Display();

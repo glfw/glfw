@@ -4,6 +4,10 @@
 
 @section news_31 New features in version 3.1
 
+These are the release highlights.  For a full list of changes see the
+[version history](http://www.glfw.org/changelog.html).
+
+
 @subsection news_31_cursor Custom mouse cursor images
 
 GLFW now supports creating and setting both custom and standard system cursors.
@@ -56,6 +60,13 @@ GLFW now queries the window focus, visibility and iconification attributes and
 the cursor position directly instead of returning cached data.
 
 
+@subsection news_31_libovr Better interoperability with Oculus Rift
+
+GLFW now provides native access functions for the OS level handles corresponding
+to monitor objects, as well as a [brief guide](@ref rift).  It is also regularly
+tested for compatibility with the latest version of LibOVR (0.4.4 on release).
+
+
 @subsection news_31_charmods Character with modifiers callback
 
 GLFW now provides a callback for character events with modifier key bits.  The
@@ -78,12 +89,6 @@ GLFW now supports the creation of single buffered windows, with the
 [GLFW_DOUBLEBUFFER](@ref window_hints_fb) window hint.
 
 
-@subsection news_31_egl Stable EGL implementation
-
-The support for EGL is now stable, successfully running on PandaBoards, Mesa,
-ANGLE, Wayland, AMD EGL and others.
-
-
 @subsection news_31_glext Macro for including extension header
 
 GLFW now includes the extension header appropriate for the chosen OpenGL or
@@ -92,7 +97,22 @@ does not provide these headers.  They must be provided by your development
 environment or your OpenGL or OpenGL ES SDK.
 
 
+@subsection news_31_wayland (Experimental) Wayland support
+
+GLFW now has an _experimental_ Wayland display protocol backend that can be
+selected on Linux with a CMake option.
+
+
+@subsection news_31_mir (Experimental) Mir support
+
+GLFW now has an _experimental_ Mir display server backend that can be selected
+on Linux with a CMake option.
+
+
 @section news_30 New features in version 3.0
+
+These are the release highlights.  For a full list of changes see the
+[version history](http://www.glfw.org/changelog.html).
 
 @subsection news_30_cmake CMake build system
 

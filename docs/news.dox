@@ -75,14 +75,6 @@ callback, this will report character events that will not result in a character
 being input, for example if the Control key is held down.
 
 
-@subsection news_31_release Context release behaviors
-
-GLFW now supports controlling whether the pipeline is flushed when a context is
-made non-current, with the
-[GLFW_CONTEXT_RELEASE_BEHAVIOR](@ref window_hints_ctx) window hint, provided the
-machine supports the `GL_KHR_context_flush_control` extension.
-
-
 @subsection news_31_single Single buffered framebuffers
 
 GLFW now supports the creation of single buffered windows, with the
@@ -95,6 +87,14 @@ GLFW now includes the extension header appropriate for the chosen OpenGL or
 OpenGL ES header when [GLFW_INCLUDE_GLEXT](@ref build_macros) is defined.  GLFW
 does not provide these headers.  They must be provided by your development
 environment or your OpenGL or OpenGL ES SDK.
+
+
+@subsection news_31_release Context release behaviors
+
+GLFW now supports controlling whether the pipeline is flushed when a context is
+made non-current, with the
+[GLFW_CONTEXT_RELEASE_BEHAVIOR](@ref window_hints_ctx) window hint, provided the
+machine supports the `GL_KHR_context_flush_control` extension.
 
 
 @subsection news_31_wayland (Experimental) Wayland support
@@ -113,6 +113,7 @@ on Linux with a CMake option.
 
 These are the release highlights.  For a full list of changes see the
 [version history](http://www.glfw.org/changelog.html).
+
 
 @subsection news_30_cmake CMake build system
 

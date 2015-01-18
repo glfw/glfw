@@ -2,7 +2,7 @@
 
 @page news New features
 
-@section news_31 New features in version 3.1
+@section news_31 New features in 3.1
 
 These are the release highlights.  For a full list of changes see the
 [version history](http://www.glfw.org/changelog.html).
@@ -10,15 +10,20 @@ These are the release highlights.  For a full list of changes see the
 
 @subsection news_31_cursor Custom mouse cursor images
 
-GLFW now supports creating and setting both custom and standard system cursors.
-They can be created with @ref glfwCreateCursor or @ref glfwCreateStandardCursor,
-set with @ref glfwSetCursor and destroyed with @ref glfwDestroyCursor.
+GLFW now supports creating and setting both custom cursor images and standard
+cursor shapes.  They are created with @ref glfwCreateCursor or @ref
+glfwCreateStandardCursor, set with @ref glfwSetCursor and destroyed with @ref
+glfwDestroyCursor.
+
+@see @ref cursor_object
 
 
-@subsection news_31_drop File drop event
+@subsection news_31_drop Path drop event
 
-GLFW now provides a callback for receiving the paths of files dropped onto GLFW
-windows.  The callback is set with @ref glfwSetDropCallback.
+GLFW now provides a callback for receiving the paths of files and directories
+dropped onto GLFW windows.  The callback is set with @ref glfwSetDropCallback.
+
+@see @ref path_drop
 
 
 @subsection news_31_emptyevent Main thread wake-up
@@ -27,11 +32,15 @@ GLFW now provides the @ref glfwPostEmptyEvent function for posting an empty
 event from another thread to the main thread event queue, causing @ref
 glfwWaitEvents to return.
 
+@see @ref events
+
 
 @subsection news_31_framesize Window frame size query
 
 GLFW now supports querying the size, on each side, of the frame around the
 client area of a window, with @ref glfwGetWindowFrameSize.
+
+@see [Window size](@ref window_size)
 
 
 @subsection news_31_autoiconify Simultaneous multi-monitor rendering
@@ -39,7 +48,7 @@ client area of a window, with @ref glfwGetWindowFrameSize.
 GLFW now supports disabling auto-iconification of full screen windows with
 the [GLFW_AUTO_ICONIFY](@ref window_hints_wnd) window hint.  This is intended
 for people building multi-monitor installations, where you need windows to stay
-in full screen despite losing focus.
+in full screen despite losing input focus.
 
 
 @subsection news_31_floating Floating windows
@@ -56,8 +65,8 @@ creation, with the [GLFW_FOCUSED](@ref window_hints_wnd) window hint.
 
 @subsection news_31_direct Direct access for window attributes and cursor position
 
-GLFW now queries the window focus, visibility and iconification attributes and
-the cursor position directly instead of returning cached data.
+GLFW now queries the window input focus, visibility and iconification attributes
+and the cursor position directly instead of returning cached data.
 
 
 @subsection news_31_libovr Better interoperability with Oculus Rift
@@ -73,6 +82,8 @@ GLFW now provides a callback for character events with modifier key bits.  The
 callback is set with @ref glfwSetCharModsCallback.  Unlike the regular character
 callback, this will report character events that will not result in a character
 being input, for example if the Control key is held down.
+
+@see @ref input_char
 
 
 @subsection news_31_single Single buffered framebuffers
@@ -109,7 +120,7 @@ GLFW now has an _experimental_ Mir display server backend that can be selected
 on Linux with a CMake option.
 
 
-@section news_30 New features in version 3.0
+@section news_30 New features in 3.0
 
 These are the release highlights.  For a full list of changes see the
 [version history](http://www.glfw.org/changelog.html).

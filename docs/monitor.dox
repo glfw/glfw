@@ -13,7 +13,7 @@ guides for the other areas of GLFW.
  - @ref input
 
 
-@section monitor_objects Monitor objects
+@section monitor_object Monitor objects
 
 A monitor object represents a currently connected monitor and is represented as
 a pointer to the [opaque](https://en.wikipedia.org/wiki/Opaque_data_type) type

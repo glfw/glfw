@@ -28,12 +28,12 @@ out all arguments provided for every event, along with time and sequence
 information.
 
 
-@section input_event Event processing
+@section events Event processing
 
 GLFW needs to communicate regularly with the window system both in order to
 receive events and to show that the application hasn't locked up.  Event
 processing must be done regularly while you have visible windows and is normally
-done each frame after [buffer swapping](@ref window_swap).
+done each frame after [buffer swapping](@ref buffer_swap).
 
 There are two functions for processing pending events.  @ref glfwPollEvents,
 processes only those events that have already been received and then returns
@@ -182,7 +182,7 @@ key combinations that a plain text field would ignore, or just want to know
 exactly what modifier keys were used, set a character with modifiers callback.
 
 @code
-glfwSetCharCallback(window, charmods_callback);
+glfwSetCharModsCallback(window, charmods_callback);
 @endcode
 
 The callback function receives Unicode code points and
@@ -197,15 +197,15 @@ void charmods_callback(GLFWwindow* window, unsigned int codepoint, int mods)
 
 @section input_mouse Mouse input
 
-Mouse input comes in many forms, including of mouse motion and button presses,
-system cursor appearance and behavior, and two-dimensional scrolling.  All of
-these are supported by GLFW.
+Mouse input comes in many forms, including cursor motion, button presses and
+scrolling offsets.  The cursor appearance can also be changed, either to
+a custom image or a standard cursor shape from the system theme.
 
 
-@subsection input_cursor_pos Cursor position
+@subsection cursor_pos Cursor position
 
-If you wish to be notified when the system cursor moves over the window, set
-a cursor position callback.
+If you wish to be notified when the cursor moves over the window, set a cursor
+position callback.
 
 @code
 glfwSetCursorPosCallback(window, cursor_pos_callback);
@@ -229,12 +229,12 @@ glfwGetCursorPos(window, &xpos, &ypos);
 @endcode
 
 
-@subsection input_cursor_mode Cursor modes
+@subsection cursor_mode Cursor modes
 
 The `GLFW_CURSOR` input mode provides several cursor modes for special forms of
-mouse motion input.  By default, the `GLFW_CURSOR_NORMAL` cursor mode is used,
-meaning the regular arrow cursor or a [custom cursor](@ref input_cursor) is used
-and cursor motion is not limited.
+mouse motion input.  By default, the cursor mode is `GLFW_CURSOR_NORMAL`,
+meaning the regular arrow cursor (or another cursor set with @ref glfwSetCursor)
+is used and cursor motion is not limited.
 
 If you wish to implement mouse motion based camera controls or other input
 schemes that require unlimited mouse movement, set the cursor mode to
@@ -247,12 +247,11 @@ glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 This will hide the cursor and lock it to the specified window.  GLFW will then
 take care of all the details of cursor re-centering and offset calculation and
 providing the application with a virtual cursor position.  This virtual position
-is provided normally, both via the cursor position callback and via position
-polling.
+is provided normally via both the cursor position callback and through polling.
 
 @note You should not implement your own version of this functionality using
-other features of GLFW.  It will not work as robustly as `GLFW_CURSOR_DISABLED`,
-as those features are not intended for this purpose.
+other features of GLFW.  It is not supported and will not work as robustly as
+`GLFW_CURSOR_DISABLED`.
 
 If you just wish the cursor to become hidden when it is over a window, set
 the cursor mode to `GLFW_CURSOR_HIDDEN`.
@@ -271,18 +270,19 @@ glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 @endcode
 
 
-@subsection input_cursor Cursor objects
+@subsection cursor_object Cursor objects
 
-GLFW supports creating custom system cursor images, encapsulated as @ref
-GLFWcursor objects.  They are created with @ref glfwCreateCursor and destroyed
-with @ref glfwDestroyCursor (or @ref glfwTerminate, if any remain).
+GLFW supports creating both custom and system theme cursor images, encapsulated
+as @ref GLFWcursor objects.  They are created with @ref glfwCreateCursor or @ref
+glfwCreateStandardCursor and destroyed with @ref glfwDestroyCursor, or @ref
+glfwTerminate, if any remain.
 
 
-@subsubsection input_cursor_creation Cursor creation
+@subsubsection cursor_custom Custom cursor creation
 
-A cursor is created with @ref glfwCreateCursor, which returns a handle to the
-created cursor object.  For example, this creates a 16x16 white square cursor
-with the hot-spot in the upper-left corner:
+A custom cursor is created with @ref glfwCreateCursor, which returns a handle to
+the created cursor object.  For example, this creates a 16x16 white square
+cursor with the hot-spot in the upper-left corner:
 
 @code
 unsigned char pixels[16 * 16 * 4];
@@ -303,7 +303,20 @@ The image data is 32-bit RGBA, i.e. eight bits per channel.  The pixels are
 arranged canonically as sequential rows, starting from the top-left corner.
 
 
-@subsubsection input_cursor_destruction Cursor destruction
+@subsubsection cursor_standard Standard cursor creation
+
+A cursor with a [standard shape](@ref shapes) from the current system cursor
+theme can be can be created with @ref glfwCreateStandardCursor.
+
+@code
+GLFWcursor* cursor = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
+@endcode
+
+These cursor objects behave in the exact same way as those created with @ref
+glfwCreateCursor except that the system cursor theme provides the actual image.
+
+
+@subsubsection cursor_destruction Cursor destruction
 
 When a cursor is no longer needed, destroy it with @ref glfwDestroyCursor.
 
@@ -315,7 +328,7 @@ Cursor destruction always succeeds.  All cursors remaining when @ref
 glfwTerminate is called are destroyed as well.
 
 
-@subsubsection input_cursor_set Cursor setting
+@subsubsection cursor_set Cursor setting
 
 A cursor can be set as current for a window with @ref glfwSetCursor.
 
@@ -324,7 +337,7 @@ glfwSetCursor(window, cursor);
 @endcode
 
 Once set, the cursor image will be used as long as the system cursor is over the
-client area of the window and the [cursor mode](@ref input_cursor_mode) is set
+client area of the window and the [cursor mode](@ref cursor_mode) is set
 to `GLFW_CURSOR_NORMAL`.
 
 A single cursor may be set for any number of windows.
@@ -339,21 +352,7 @@ When a cursor is destroyed, it is removed from any window where it is set.  This
 does not affect the cursor modes of those windows.
 
 
-@subsubsection input_cursor_standard Standard cursor shapes
-
-Cursor objects with platform-specific variants of the
-[standard shapes](@ref shapes) can be created with @ref
-glfwCreateStandardCursor.
-
-@code
-GLFWcursor* cursor = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
-@endcode
-
-These cursor objects behave in the exact same way as those created with @ref
-glfwCreateCursor except that the platform provides the cursor image data.
-
-
-@subsection input_cursor_enter Cursor enter/leave events
+@subsection cursor_enter Cursor enter/leave events
 
 If you wish to be notified when the cursor enters or leaves the client area of
 a window, set a cursor enter/leave callback.
@@ -435,7 +434,7 @@ The `GLFW_MOUSE_BUTTON_LAST` constant holds the highest value of any
 [named button](@ref buttons).
 
 
-@subsection input_scroll Scroll input
+@subsection scrolling Scroll input
 
 If you wish to be notified when the user scrolls, whether with a mouse wheel or
 touchpad gesture, set a scroll callback.
@@ -455,7 +454,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 A simple mouse wheel, being vertical, provides offsets along the Y-axis.
 
 
-@section input_joy Joystick input
+@section joystick Joystick input
 
 The joystick functions expose connected joysticks and controllers, with both
 referred to as joysticks.  It supports up to sixteen joysticks, ranging from
@@ -476,7 +475,7 @@ not require a window to be created or @ref glfwPollEvents or @ref glfwWaitEvents
 to be called.
 
 
-@subsection input_joy_axis Joystick axis states
+@subsection joystick_axis Joystick axis states
 
 The positions of all axes of a joystick are returned by @ref
 glfwGetJoystickAxes.  See the reference documentation for the lifetime of the
@@ -490,7 +489,7 @@ const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &count);
 Each element in the returned array is a value between -1.0 and 1.0.
 
 
-@subsection input_joy_button Joystick button states
+@subsection joystick_button Joystick button states
 
 The states of all buttons of a joystick are returned by @ref
 glfwGetJoystickButtons.  See the reference documentation for the lifetime of the
@@ -504,7 +503,7 @@ const unsigned char* axes = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
 Each element in the returned array is either `GLFW_PRESS` or `GLFW_RELEASE`.
 
 
-@subsection input_joy_name Joystick name
+@subsection joystick_name Joystick name
 
 The human-readable, UTF-8 encoded name of a joystick is returned by @ref
 glfwGetJoystickName.  See the reference documentation for the lifetime of the
@@ -519,7 +518,7 @@ and make may have the same name.  Only the [joystick token](@ref joysticks) is
 guaranteed to be unique, and only until that joystick is disconnected.
 
 
-@section input_time Time input
+@section time Time input
 
 GLFW provides high-resolution time input, in seconds, with @ref glfwGetTime.
 
@@ -540,7 +539,7 @@ glfwSetTime(4.0);
 This sets the timer to the specified time, in seconds.
 
 
-@section input_clipboard Clipboard input and output
+@section clipboard Clipboard input and output
 
 If the system clipboard contains a UTF-8 encoded string or if it can be
 converted to one, you can retrieve it with @ref glfwGetClipboardString.  See the
@@ -562,7 +561,7 @@ systems require a window to communicate with the system clipboard.  Any valid
 window may be used.
 
 
-@section input_drop Path drop input
+@section path_drop Path drop input
 
 If you wish to receive the paths of files and/or directories dropped on
 a window, set a file drop callback.

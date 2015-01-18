@@ -37,8 +37,8 @@ GLFW_NOT_INITIALIZED error.
 
 @subsection intro_init_init Initializing GLFW
 
-The library is initialized with @ref glfwInit, which returns zero if an error
-occurred.
+The library is initialized with @ref glfwInit, which returns `GL_FALSE` if an
+error occurred.
 
 @code
 if (!glfwInit())
@@ -50,7 +50,7 @@ if (!glfwInit())
 If any part of initialization fails, all remaining bits are terminated as if
 @ref glfwTerminate was called.  The library only needs to be initialized once
 and additional calls to an already initialized library will simply return
-non-zero immediately.
+`GL_TRUE` immediately.
 
 Once the library has been successfully initialized, it should be terminated
 before the application exits.

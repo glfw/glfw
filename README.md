@@ -6,10 +6,10 @@ GLFW is a free, Open Source, multi-platform library for OpenGL and OpenGL ES
 application development.  It provides a simple, platform-independent API for
 creating windows and contexts, reading input, handling events, etc.
 
-Version 3.1 adds support for custom system cursors, file drop events, main
-thread wake-up, improved documentation, window frame size retrieval, floating
-windows, character input with modifier keys, single buffered windows, build
-improvements and fixes for a large number of bugs.
+Version 3.1 adds improved documentation, support for custom system cursors, file
+drop events, main thread wake-up, window frame size retrieval, floating windows,
+character input with modifier keys, single buffered windows, build improvements
+and fixes for a large number of bugs.
 
 If you are new to GLFW, you may find the
 [introductory tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW

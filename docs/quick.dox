@@ -59,8 +59,8 @@ inclusion of the GLFW header.
 @subsection quick_init_term Initializing and terminating GLFW
 
 Before you can use most GLFW functions, the library must be initialized.  On
-successful initialization, non-zero is returned.  If an error occurred, zero is
-returned.
+successful initialization, `GL_TRUE` is returned.  If an error occurred,
+`GL_FALSE` is returned.
 
 @code
 if (!glfwInit())

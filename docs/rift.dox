@@ -8,7 +8,7 @@ This guide is intended to fill in the gaps between the
 [Oculus PC SDK documentation](https://developer.oculus.com/documentation/) and
 the rest of the GLFW documentation and is not a replacement for either.  It
 requires you to use [native access](@ref native) and assumes a certain level of
-proficiency with LibOVR, OS specific APIs and your chosen development
+proficiency with LibOVR, platform specific APIs and your chosen development
 environment.
 
 While GLFW has no explicit support for LibOVR, it is tested with and tries to
@@ -16,14 +16,15 @@ interoperate well with it.
 
 @note Because of the speed of development of the Oculus SDK, this guide may
 become outdated before the next release.  If this is a local copy of the
-documentation, check the GLFW website for an up-to-date version.
+documentation, you may want to check the GLFW website for updates.  This
+revision of the guide is written against version 0.4.4 of the SDK.
 
 
 @section rift_include Including the LibOVR and GLFW header files
 
 Both the OpenGL LibOVR header and the GLFW native header need macros telling
 them what OS you are building for.  Because LibOVR only supports three major
-desktop OSes, this can be solved with canonical predefined macros.
+desktop platforms, this can be solved with canonical predefined macros.
 
 @code
 #if defined(_WIN32)
@@ -110,7 +111,11 @@ On OS X, the native display ID of a GLFW monitor corresponds to the display ID
 of the detected HMD, as stored in the `DisplayId` member of `ovrHmdDesc`.
 
 At the time of writing (January 2015), the Oculus SDK does not support detecting
-which monitor corresponds to the HMD in any sane fashion.
+which monitor corresponds to the HMD in any sane fashion, but as long as the HMD
+is set up and rotated properly it can be found via the screen position and
+resolution provided by LibOVR.  This method may instead find another monitor
+that is mirroring the HMD, but this only matters if you intend to change its
+video mode.
 
 @code
 int i, count;
@@ -125,6 +130,17 @@ for (i = 0;  i < count;  i++)
     if (glfwGetCocoaMonitor(monitors[i]) == hmd->DisplayId)
         return monitors[i];
 #elif defined(__linux__)
+    int xpos, ypos;
+    const GLFWvidmode* mode = glfwGetVideoMode(monitors[i]);
+    glfwGetMonitorPos(monitors[i], &xpos, &ypos);
+
+    if (hmd->WindowsPos.x == xpos &&
+        hmd->WindowsPos.y == ypos &&
+        hmd->Resolution.w == mode->width &&
+        hmd->Resolution.h == mode->height)
+    {
+        return monitors[i];
+    }
 #endif
 }
 @endcode
@@ -145,13 +161,15 @@ all monitors in the mirroring set will get the new video mode.
 
 @section rift_render Rendering to the HMD
 
-Once the window and context is created, you can render to it the same as any
-other application using LibOVR.
+@subsection rift_render_sdk SDK distortion rendering
 
 If you wish to use SDK distortion rendering you will need some information from
 GLFW to configure the renderer.  Below are the parts of the `ovrGLConfig` union
 that need to be filled with from GLFW.  Note that there are other fields that
 also need to be filled for `ovrHmd_ConfigureRendering` to succeed.
+
+Before configuring SDK distortion rendering you should make your context
+current.
 
 @code
     int width, height;
@@ -169,7 +187,13 @@ also need to be filled for `ovrHmd_ConfigureRendering` to succeed.
 #endif
 @endcode
 
-When using SDK distortion rendering you should not call @ref glfwSwapBuffers,
-as the HMD is updated by `ovrHmd_EndFrame`.
+When using SDK distortion rendering you should not swap the buffers yourself, as
+the HMD is updated by `ovrHmd_EndFrame`.
+
+
+@subsection rift_render_custom Client distortion rendering
+
+With client distortion rendering you are in full control of the contents of the
+HMD and should render and swap the buffers normally.
 
 */

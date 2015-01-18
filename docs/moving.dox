@@ -147,10 +147,10 @@ into [window hints](@ref window_hints), but as they have been given
 
 @subsection moving_autopoll Removal of automatic event polling
 
-GLFW 3 does not automatically poll for events on @ref glfwSwapBuffers, which
-means you need to call @ref glfwPollEvents or @ref glfwWaitEvents yourself.
-Unlike buffer swap, which acts on a single window, __glfwPollEvents__ and
-__glfwWaitEvents__ process events for all windows at once.
+GLFW 3 does not automatically poll for events in @ref glfwSwapBuffers, meaning
+you need to call @ref glfwPollEvents or @ref glfwWaitEvents yourself.  Unlike
+buffer swap, which acts on a single window, the event processing functions act
+on all windows at once.
 
 @par Old basic main loop
 @code

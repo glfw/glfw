@@ -8,8 +8,8 @@ __GLFW__ is a free, Open Source, multi-platform library for creating windows
 with OpenGL or OpenGL ES contexts and receiving many kinds of input.  It is easy
 to integrate into existing applications and does not lay claim to the main loop.
 
-This is the documentation for version 3.1, which adds many
-[new features](@ref news_31).
+See @ref news_31 for release highlights or the
+[version history](http://www.glfw.org/changelog.html) for details.
 
 @ref quick is a guide for those new to GLFW.  It takes you through how to write
 a small but complete program.  For people coming from GLFW 2, the @ref moving
@@ -24,13 +24,18 @@ There are guides for each of the various areas of the API.
  - @ref monitor – enumerating and working with monitors and video modes
  - @ref input – receiving events, polling and processing input
 
-The [FAQ](http://www.glfw.org/faq.html) answers many common questions about the
-design, implementation and use of GLFW.
+Once you have written a program, see the @ref compile and @ref build guides.        
 
 The [reference documentation](modules.html) provides more detailed information
 about specific functions.
 
-Once you have written a program, see the @ref compile and @ref build guides.        
+There is a section on @ref guarantees_limitations for pointer lifetimes,
+reentrancy, thread safety, event order and backward and forward compatibility.
+
+The @ref rift fills in the gaps for how to use LibOVR with GLFW.
+
+The [FAQ](http://www.glfw.org/faq.html) answers many common questions about the
+design, implementation and use of GLFW.
 
 Finally, the @ref compat guide explains what APIs, standards and protocols GLFW
 uses and what happens when they are not present on a given machine.

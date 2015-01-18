@@ -110,7 +110,7 @@ error.
 @section context_swap Buffer swapping
 
 Buffer swapping is part of the window and framebuffer, not the context.  See
-@ref window_swap in the window guide.
+@ref buffer_swap.
 
 
 @section context_glext OpenGL and OpenGL ES extensions
@@ -194,7 +194,7 @@ generated and you are ready to start rendering.
 You can specify a minimum required OpenGL or OpenGL ES version with
 [context hints](@ref window_hints_ctx).  If your needs are more complex, you can
 check the actual OpenGL or OpenGL ES version with
-[context attributes](@ref window_attribs_context), or you can check whether
+[context attributes](@ref window_attribs_ctx), or you can check whether
 a specific version is supported by the current context with the
 `GLAD_GL_VERSION_x_x` booleans.
 
@@ -271,8 +271,8 @@ if (glfwExtensionSupported("GL_ARB_debug_output"))
 @endcode
 
 The argument is a null terminated ASCII string with the extension name.  If the
-extension is supported, @ref glfwExtensionSupported returns non-zero, otherwise
-it returns zero.
+extension is supported, @ref glfwExtensionSupported returns `GL_TRUE`, otherwise
+it returns `GL_FALSE`.
 
 
 @subsubsection context_glext_proc Fetching function pointers

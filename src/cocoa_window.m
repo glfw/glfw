@@ -990,7 +990,10 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    [window->ns.object setContentSize:NSMakeSize(width, height)];
+    if (window->monitor)
+        enterFullscreenMode(window);
+    else
+        [window->ns.object setContentSize:NSMakeSize(width, height)];
 }
 
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)

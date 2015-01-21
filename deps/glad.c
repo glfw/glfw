@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 #include <glad/glad.h>
 
@@ -687,10 +688,34 @@ static void find_extensionsGL(void) {
 }
 
 static void find_coreGL(void) {
-	const char *v = (const char *)glGetString(GL_VERSION);
-	int major = v[0] - '0';
-	int minor = v[2] - '0';
-	GLVersion.major = major; GLVersion.minor = minor;
+
+    /* Thank you @elmindreda
+     * https://github.com/elmindreda/greg/blob/master/templates/greg.c.in#L176
+     * https://github.com/glfw/glfw/blob/master/src/context.c#L36
+     */
+    int i, major, minor;
+
+    const char* version;
+    const char* prefixes[] = {
+        "OpenGL ES-CM ",
+        "OpenGL ES-CL ",
+        "OpenGL ES ",
+        NULL
+    };
+
+    version = (const char*) glGetString(GL_VERSION);
+    if (!version) return;
+
+    for (i = 0;  prefixes[i];  i++) {
+        const size_t length = strlen(prefixes[i]);
+        if (strncmp(version, prefixes[i], length) == 0) {
+            version += length;
+            break;
+        }
+    }
+
+    sscanf(version, "%d.%d", &major, &minor);
+    GLVersion.major = major; GLVersion.minor = minor;
 	GLAD_GL_VERSION_1_0 = (major == 1 && minor >= 0) || major > 1;
 	GLAD_GL_VERSION_1_1 = (major == 1 && minor >= 1) || major > 1;
 	GLAD_GL_VERSION_1_2 = (major == 1 && minor >= 2) || major > 1;
@@ -704,10 +729,11 @@ static void find_coreGL(void) {
 	GLAD_GL_VERSION_3_2 = (major == 3 && minor >= 2) || major > 3;
 }
 
-void gladLoadGLLoader(GLADloadproc load) {
+int gladLoadGLLoader(GLADloadproc load) {
 	GLVersion.major = 0; GLVersion.minor = 0;
 	glGetString = (PFNGLGETSTRINGPROC)load("glGetString");
-	if(glGetString == NULL) return;
+	if(glGetString == NULL) return 0;
+	if(glGetString(GL_VERSION) == NULL) return 0;
 	find_coreGL();
 	load_GL_VERSION_1_0(load);
 	load_GL_VERSION_1_1(load);
@@ -722,7 +748,6 @@ void gladLoadGLLoader(GLADloadproc load) {
 	load_GL_VERSION_3_2(load);
 
 	find_extensionsGL();
-
-	return;
+	return GLVersion.major != 0 || GLVersion.minor != 0;
 }
 

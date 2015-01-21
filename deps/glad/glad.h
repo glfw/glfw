@@ -22,14 +22,16 @@
 #define APIENTRYP APIENTRY *
 #endif
 
-extern struct gladGLversionStruct {
-    int major;
-    int minor;
-} GLVersion;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct gladGLversionStruct {
+    int major;
+    int minor;
+};
+
+extern struct gladGLversionStruct GLVersion;
 
 typedef void* (* GLADloadproc)(const char *name);
 
@@ -58,7 +60,7 @@ typedef void* (* GLADloadproc)(const char *name);
 #  define GLAPI extern
 # endif
 #endif
-GLAPI void gladLoadGLLoader(GLADloadproc);
+GLAPI int gladLoadGLLoader(GLADloadproc);
 
 #include <stddef.h>
 #include <KHR/khrplatform.h>
@@ -836,11 +838,13 @@ typedef GLintptr GLvdpauSurfaceNV;
 #define GL_UNIFORM_BUFFER_START 0x8A29
 #define GL_UNIFORM_BUFFER_SIZE 0x8A2A
 #define GL_MAX_VERTEX_UNIFORM_BLOCKS 0x8A2B
+#define GL_MAX_GEOMETRY_UNIFORM_BLOCKS 0x8A2C
 #define GL_MAX_FRAGMENT_UNIFORM_BLOCKS 0x8A2D
 #define GL_MAX_COMBINED_UNIFORM_BLOCKS 0x8A2E
 #define GL_MAX_UNIFORM_BUFFER_BINDINGS 0x8A2F
 #define GL_MAX_UNIFORM_BLOCK_SIZE 0x8A30
 #define GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS 0x8A31
+#define GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS 0x8A32
 #define GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS 0x8A33
 #define GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT 0x8A34
 #define GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH 0x8A35
@@ -859,6 +863,7 @@ typedef GLintptr GLvdpauSurfaceNV;
 #define GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS 0x8A42
 #define GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES 0x8A43
 #define GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER 0x8A44
+#define GL_UNIFORM_BLOCK_REFERENCED_BY_GEOMETRY_SHADER 0x8A45
 #define GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER 0x8A46
 #define GL_INVALID_INDEX 0xFFFFFFFF
 #define GL_CONTEXT_CORE_PROFILE_BIT 0x00000001

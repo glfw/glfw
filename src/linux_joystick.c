@@ -277,11 +277,13 @@ void _glfwTerminateJoysticks(void)
 
     regfree(&_glfw.linux_js.regex);
 
-    if (_glfw.linux_js.watch > 0)
-        close(_glfw.linux_js.watch);
-
     if (_glfw.linux_js.inotify > 0)
+    {
+        if (_glfw.linux_js.watch > 0)
+            inotify_rm_watch(_glfw.linux_js.inotify, _glfw.linux_js.watch);
+
         close(_glfw.linux_js.inotify);
+    }
 #endif // __linux__
 }
 

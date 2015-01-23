@@ -69,6 +69,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [X11] Made XInput2 optional at compile-time
  - [X11] Made Xxf86vm optional at compile-time
  - [X11] Bugfix: `glfwTerminate` could close an unrelated file descriptor
+ - [X11] Bugfix: Some WMs did not respect cursor redefinition
 
 
 ## Contact
@@ -161,6 +162,7 @@ skills.
  - Pieroman
  - Jorge Rodriguez
  - Ed Ropple
+ - Aleksey Rybalkin
  - Riku Salminen
  - Brandon Schaefer
  - Sebastian Schuberth

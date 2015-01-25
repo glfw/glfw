@@ -31,7 +31,7 @@ video mode, describes the viewports that the connected monitors provide into the
 virtual desktop that spans them.
 
 To see how GLFW views your monitor setup and its available video modes, run the
-`modes` test program.
+`monitors` test program.
 
 
 @subsection monitor_monitors Retrieving monitors

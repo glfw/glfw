@@ -1,5 +1,5 @@
 //========================================================================
-// Video mode test
+// Monitor information tool
 // Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
@@ -23,7 +23,8 @@
 //
 //========================================================================
 //
-// This test enumerates or verifies video modes
+// This test prints monitor and video mode information or verifies video
+// modes
 //
 //========================================================================
 
@@ -43,8 +44,8 @@ enum Mode
 
 static void usage(void)
 {
-    printf("Usage: modes [-t]\n");
-    printf("       modes -h\n");
+    printf("Usage: monitors [-t]\n");
+    printf("       monitors -h\n");
 }
 
 static const char* format_mode(const GLFWvidmode* mode)

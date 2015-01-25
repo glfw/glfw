@@ -62,7 +62,7 @@ tests/gamma
 tests/glfwinfo
 tests/iconify
 tests/joysticks
-tests/modes
+tests/monitors
 tests/peter
 tests/reopen
 tests/sharing

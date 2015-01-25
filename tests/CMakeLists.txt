@@ -1,5 +1,5 @@
 
-link_libraries(glfw "${OPENGL_glu_LIBRARY}")
+link_libraries(glfw)
 
 if (BUILD_SHARED_LIBS)
     add_definitions(-DGLFW_DLL)

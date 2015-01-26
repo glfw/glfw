@@ -83,7 +83,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 static void list_modes(GLFWmonitor* monitor)
 {
-    int count, x, y, widthMM, heightMM, dpi, i;
+    int count, x, y, widthMM, heightMM, i;
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
     const GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
 
@@ -96,8 +96,8 @@ static void list_modes(GLFWmonitor* monitor)
     printf("Current mode: %s\n", format_mode(mode));
     printf("Virtual position: %i %i\n", x, y);
 
-    dpi = (int) ((float) mode->width * 25.4f / (float) widthMM);
-    printf("Physical size: %i x %i mm (%i dpi)\n", widthMM, heightMM, dpi);
+    printf("Physical size: %i x %i mm (%0.2f dpi)\n",
+           widthMM, heightMM, mode->width * 25.4f / widthMM);
 
     printf("Modes:\n");
 

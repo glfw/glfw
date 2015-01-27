@@ -398,7 +398,7 @@ static void char_mods_callback(GLFWwindow* window, unsigned int codepoint, int m
             get_mods_name(mods));
 }
 
-static void drop_callback(GLFWwindow* window, int count, const char** names)
+static void drop_callback(GLFWwindow* window, int count, const char** paths)
 {
     int i;
     Slot* slot = glfwGetWindowUserPointer(window);
@@ -407,7 +407,7 @@ static void drop_callback(GLFWwindow* window, int count, const char** names)
            counter++, slot->number, glfwGetTime());
 
     for (i = 0;  i < count;  i++)
-        printf("  %i: \"%s\"\n", i, names[i]);
+        printf("  %i: \"%s\"\n", i, paths[i]);
 }
 
 static void monitor_callback(GLFWmonitor* monitor, int event)

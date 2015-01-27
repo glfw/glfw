@@ -592,17 +592,17 @@ static int translateKey(unsigned int key)
     if (count)
     {
         NSEnumerator* e = [files objectEnumerator];
-        char** names = calloc(count, sizeof(char*));
+        char** paths = calloc(count, sizeof(char*));
         int i;
 
         for (i = 0;  i < count;  i++)
-            names[i] = strdup([[e nextObject] UTF8String]);
+            paths[i] = strdup([[e nextObject] UTF8String]);
 
-        _glfwInputDrop(window, count, (const char**) names);
+        _glfwInputDrop(window, count, (const char**) paths);
 
         for (i = 0;  i < count;  i++)
-            free(names[i]);
-        free(names);
+            free(paths[i]);
+        free(paths);
     }
 
     return YES;

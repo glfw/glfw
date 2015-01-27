@@ -988,7 +988,7 @@ typedef void (* GLFWcharmodsfun)(GLFWwindow*,unsigned int,int);
  *
  *  @param[in] window The window that received the event.
  *  @param[in] count The number of dropped files.
- *  @param[in] names The UTF-8 encoded path names of the dropped files.
+ *  @param[in] paths The UTF-8 encoded file and/or directory path names.
  *
  *  @sa glfwSetDropCallback
  *

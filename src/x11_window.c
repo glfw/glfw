@@ -188,7 +188,7 @@ static void changeWindowState(_GLFWwindow* window, Atom state, int action)
 static char** parseUriList(char* text, int* count)
 {
     const char* prefix = "file://";
-    char** names = NULL;
+    char** paths = NULL;
     char* line;
 
     *count = 0;
@@ -205,27 +205,27 @@ static char** parseUriList(char* text, int* count)
 
         (*count)++;
 
-        char* name = calloc(strlen(line) + 1, 1);
-        names = realloc(names, *count * sizeof(char*));
-        names[*count - 1] = name;
+        char* path = calloc(strlen(line) + 1, 1);
+        paths = realloc(paths, *count * sizeof(char*));
+        paths[*count - 1] = path;
 
         while (*line)
         {
             if (line[0] == '%' && line[1] && line[2])
             {
                 const char digits[3] = { line[1], line[2], '\0' };
-                *name = strtol(digits, NULL, 16);
+                *path = strtol(digits, NULL, 16);
                 line += 2;
             }
             else
-                *name = *line;
+                *path = *line;
 
-            name++;
+            path++;
             line++;
         }
     }
 
-    return names;
+    return paths;
 }
 
 // Create the X11 window (and its colormap)
@@ -1217,13 +1217,13 @@ static void processEvent(XEvent *event)
                 if (result)
                 {
                     int i, count;
-                    char** names = parseUriList(data, &count);
+                    char** paths = parseUriList(data, &count);
 
-                    _glfwInputDrop(window, count, (const char**) names);
+                    _glfwInputDrop(window, count, (const char**) paths);
 
                     for (i = 0;  i < count;  i++)
-                        free(names[i]);
-                    free(names);
+                        free(paths[i]);
+                    free(paths);
                 }
 
                 XFree(data);

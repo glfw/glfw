@@ -28,6 +28,7 @@
 #include "internal.h"
 
 #include <X11/cursorfont.h>
+#include <X11/Xmd.h>
 
 #include <sys/select.h>
 
@@ -632,7 +633,7 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
         XChangeProperty(_glfw.x11.display,
                         request->requestor,
                         request->property,
-                        _glfw.x11._NULL,
+                        _glfw.x11.NULL_,
                         32,
                         PropModeReplace,
                         NULL,
@@ -1739,7 +1740,7 @@ void _glfwPlatformPostEmptyEvent(void)
     event.type = ClientMessage;
     event.xclient.window = window->x11.handle;
     event.xclient.format = 32; // Data is 32-bit longs
-    event.xclient.message_type = _glfw.x11._NULL;
+    event.xclient.message_type = _glfw.x11.NULL_;
 
     XSendEvent(_glfw.x11.display, window->x11.handle, False, 0, &event);
     XFlush(_glfw.x11.display);

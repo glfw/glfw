@@ -64,6 +64,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
 
  - [Cocoa] Bugfix: `glfwSetWindowSize` did not change the video mode for full
                    screen windows
+ - [X11] Added support for Cygwin-X
  - [X11] Made XInput2 optional at compile-time
  - [X11] Made Xxf86vm optional at compile-time
 

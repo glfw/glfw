@@ -587,7 +587,7 @@ static GLboolean initExtensions(void)
     detectEWMH();
 
     // Find or create string format atoms
-    _glfw.x11._NULL = XInternAtom(_glfw.x11.display, "NULL", False);
+    _glfw.x11.NULL_ = XInternAtom(_glfw.x11.display, "NULL", False);
     _glfw.x11.UTF8_STRING =
         XInternAtom(_glfw.x11.display, "UTF8_STRING", False);
     _glfw.x11.COMPOUND_STRING =

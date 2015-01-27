@@ -37,9 +37,6 @@
 #include <X11/Xatom.h>
 #include <X11/Xcursor/Xcursor.h>
 
-// The Xf86VidMode extension provides fallback gamma control
-#include <X11/extensions/xf86vmode.h>
-
 // The XRandR extension provides mode setting and gamma control
 #include <X11/extensions/Xrandr.h>
 
@@ -52,6 +49,11 @@
 #if defined(_GLFW_HAS_XINPUT)
  // The XInput2 extension provides improved input events
  #include <X11/extensions/XInput2.h>
+#endif
+
+#if defined(_GLFW_HAS_XF86VM)
+ // The Xf86VidMode extension provides fallback gamma control
+ #include <X11/extensions/xf86vmode.h>
 #endif
 
 #include "posix_tls.h"
@@ -168,12 +170,6 @@ typedef struct _GLFWlibraryX11
         GLboolean   available;
         int         eventBase;
         int         errorBase;
-    } vidmode;
-
-    struct {
-        GLboolean   available;
-        int         eventBase;
-        int         errorBase;
         int         versionMajor;
         int         versionMinor;
         GLboolean   gammaBroken;
@@ -218,6 +214,14 @@ typedef struct _GLFWlibraryX11
         int         versionMinor;
     } xi;
 #endif /*_GLFW_HAS_XINPUT*/
+
+#if defined(_GLFW_HAS_XF86VM)
+    struct {
+        GLboolean   available;
+        int         eventBase;
+        int         errorBase;
+    } vidmode;
+#endif /*_GLFW_HAS_XF86VM*/
 
 } _GLFWlibraryX11;
 

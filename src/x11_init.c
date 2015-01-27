@@ -479,11 +479,13 @@ static GLboolean initExtensions(void)
                                            "_MOTIF_WM_HINTS",
                                            False);
 
+#if defined(_GLFW_HAS_XF86VM)
     // Check for XF86VidMode extension
     _glfw.x11.vidmode.available =
         XF86VidModeQueryExtension(_glfw.x11.display,
                                   &_glfw.x11.vidmode.eventBase,
                                   &_glfw.x11.vidmode.errorBase);
+#endif /*_GLFW_HAS_XF86VM*/
 
     // Check for RandR extension
     _glfw.x11.randr.available =

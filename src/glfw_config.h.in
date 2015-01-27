@@ -64,6 +64,8 @@
 
 // Define this to 1 if the XInput X11 extension is available
 #cmakedefine _GLFW_HAS_XINPUT
+// Define this to 1 if the Xxf86vm X11 extension is available
+#cmakedefine _GLFW_HAS_XF86VM
 // Define this to 1 if glXGetProcAddress is available
 #cmakedefine _GLFW_HAS_GLXGETPROCADDRESS
 // Define this to 1 if glXGetProcAddressARB is available

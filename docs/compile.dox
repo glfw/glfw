@@ -302,6 +302,11 @@ point retrieval mechanism.
  - `_GLFW_HAS_GLXGETPROCADDRESSEXT` to use `glXGetProcAddressEXT` (legacy)
  - `_GLFW_HAS_DLOPEN` to do manual retrieval with `dlopen` (fallback)
 
+In addition, support for the following X11 extensions can be enabled:
+
+ - `_GLFW_HAS_XINPUT` to use XInput2 for high-resolution cursor motion
+ (recommended)
+
 If you are using the Cocoa window creation API, the following options are
 available:
 

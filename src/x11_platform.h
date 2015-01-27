@@ -43,14 +43,16 @@
 // The XRandR extension provides mode setting and gamma control
 #include <X11/extensions/Xrandr.h>
 
-// The XInput2 extension provides improved input events
-#include <X11/extensions/XInput2.h>
-
 // The Xkb extension provides improved keyboard support
 #include <X11/XKBlib.h>
 
 // The Xinerama extension provides legacy monitor indices
 #include <X11/extensions/Xinerama.h>
+
+#if defined(_GLFW_HAS_XINPUT)
+ // The XInput2 extension provides improved input events
+ #include <X11/extensions/XInput2.h>
+#endif
 
 #include "posix_tls.h"
 
@@ -189,15 +191,6 @@ typedef struct _GLFWlibraryX11
     } xkb;
 
     struct {
-        GLboolean   available;
-        int         majorOpcode;
-        int         eventBase;
-        int         errorBase;
-        int         versionMajor;
-        int         versionMinor;
-    } xi;
-
-    struct {
         int         count;
         int         timeout;
         int         interval;
@@ -214,6 +207,17 @@ typedef struct _GLFWlibraryX11
         int         versionMajor;
         int         versionMinor;
     } xinerama;
+
+#if defined(_GLFW_HAS_XINPUT)
+    struct {
+        GLboolean   available;
+        int         majorOpcode;
+        int         eventBase;
+        int         errorBase;
+        int         versionMajor;
+        int         versionMinor;
+    } xi;
+#endif /*_GLFW_HAS_XINPUT*/
 
 } _GLFWlibraryX11;
 

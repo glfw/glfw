@@ -412,6 +412,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         XFree(hint);
     }
 
+#if defined(_GLFW_HAS_XINPUT)
     if (_glfw.x11.xi.available)
     {
         // Select for XInput2 events
@@ -426,6 +427,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 
         XISelectEvents(_glfw.x11.display, window->x11.handle, &eventmask, 1);
     }
+#endif /*_GLFW_HAS_XINPUT*/
 
     if (_glfw.x11.XdndAware)
     {
@@ -1310,6 +1312,7 @@ static void processEvent(XEvent *event)
         case DestroyNotify:
             return;
 
+#if defined(_GLFW_HAS_XINPUT)
         case GenericEvent:
         {
             if (event->xcookie.extension == _glfw.x11.xi.majorOpcode &&
@@ -1355,6 +1358,7 @@ static void processEvent(XEvent *event)
             XFreeEventData(_glfw.x11.display, &event->xcookie);
             break;
         }
+#endif /*_GLFW_HAS_XINPUT*/
 
         default:
         {

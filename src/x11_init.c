@@ -535,6 +535,7 @@ static GLboolean initExtensions(void)
             _glfw.x11.xinerama.available = GL_TRUE;
     }
 
+#if defined(_GLFW_HAS_XINPUT)
     if (XQueryExtension(_glfw.x11.display,
                         "XInputExtension",
                         &_glfw.x11.xi.majorOpcode,
@@ -551,6 +552,7 @@ static GLboolean initExtensions(void)
             _glfw.x11.xi.available = GL_TRUE;
         }
     }
+#endif /*_GLFW_HAS_XINPUT*/
 
     // Check if Xkb is supported on this display
     _glfw.x11.xkb.versionMajor = 1;

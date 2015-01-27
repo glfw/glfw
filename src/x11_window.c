@@ -183,6 +183,7 @@ static void changeWindowState(_GLFWwindow* window, Atom state, int action)
 }
 
 // Splits and translates a text/uri-list into separate file paths
+// NOTE: This function destroys the provided string
 //
 static char** parseUriList(char* text, int* count)
 {
@@ -196,7 +197,7 @@ static char** parseUriList(char* text, int* count)
     {
         text = NULL;
 
-        if (*line == '#')
+        if (line[0] == '#')
             continue;
 
         if (strncmp(line, prefix, strlen(prefix)) == 0)

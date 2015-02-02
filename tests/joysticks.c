@@ -126,8 +126,8 @@ static void draw_joysticks(GLFWwindow* window)
         if (j->present)
         {
             draw_joystick(j,
-                          0, i * height / joystick_count,
-                          width, height / joystick_count);
+                          0, i * height / (sizeof(joysticks) / sizeof(Joystick)),
+                          width, height / (sizeof(joysticks) / sizeof(Joystick)));
         }
     }
 }

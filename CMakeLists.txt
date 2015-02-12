@@ -545,6 +545,11 @@ configure_file("${GLFW_SOURCE_DIR}/src/glfw3.pc.in"
 #--------------------------------------------------------------------
 add_subdirectory(src)
 
+IF(BIICODE)
+    INCLUDE(biicode.cmake)
+    return ()
+ENDIF()
+
 if (GLFW_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
@@ -583,4 +588,3 @@ if (GLFW_INSTALL)
                           "${GLFW_BINARY_DIR}/cmake_uninstall.cmake")
     endif()
 endif()
-

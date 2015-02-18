@@ -240,6 +240,10 @@ High Performance Graphics Rendering on Optimus Systems_ for more details.
 context creation API.  Note that EGL is not yet provided on all supported
 platforms.
 
+@note Define these options before `add_subdirectory(path/to/glfw)` to make them
+effective in your `CMakeLists.txt` file in case you are building your project
+@ref build_link_cmake_source.
+
 
 @section compile_manual Compiling GLFW manually
 

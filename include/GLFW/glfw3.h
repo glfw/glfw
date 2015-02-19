@@ -3136,7 +3136,7 @@ GLFWAPI double glfwGetTime(void);
 /*! @brief Sets the GLFW timer.
  *
  *  This function sets the value of the GLFW timer.  It then continues to count
- *  up from that value.
+ *  up from that value.  The value must be a positive finite number.
  *
  *  @param[in] time The new value, in seconds.
  *

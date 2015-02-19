@@ -62,6 +62,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
 
 ## Changelog
 
+ - Bugfix: `glfwSetTime` silently accepted invalid values
  - [Cocoa] Bugfix: `glfwSetWindowSize` did not change the video mode for full
                    screen windows
  - [X11] Added support for Cygwin-X

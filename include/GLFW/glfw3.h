@@ -3243,14 +3243,14 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
  *  @param[in] interval The minimum number of screen updates to wait for
  *  until the buffers are swapped by @ref glfwSwapBuffers.
  *
- *  @note This function is not called during window creation, leaving the swap
- *  interval set to whatever is the default on that platform.  This is done
+ *  @remarks This function is not called during context creation, leaving the
+ *  swap interval set to whatever is the default on that platform.  This is done
  *  because some swap interval extensions used by GLFW do not allow the swap
  *  interval to be reset to zero once it has been set to a non-zero value.
  *
- *  @note Some GPU drivers do not honor the requested swap interval, either
- *  because of user settings that override the request or due to bugs in the
- *  driver.
+ *  @remarks Some GPU drivers do not honor the requested swap interval, either
+ *  because of a user setting that overrides the application's request or due to
+ *  bugs in the driver.
  *
  *  @par Thread Safety
  *  This function may be called from any thread.
@@ -3267,9 +3267,9 @@ GLFWAPI void glfwSwapInterval(int interval);
 /*! @brief Returns whether the specified extension is available.
  *
  *  This function returns whether the specified
- *  [API extension](@ref context_glext) is supported by the current OpenGL or
- *  OpenGL ES context.  It searches both for OpenGL and OpenGL ES extension and
- *  platform-specific context creation API extensions.
+ *  [client API extension](@ref context_glext) is supported by the current
+ *  OpenGL or OpenGL ES context.  It searches both for OpenGL and OpenGL ES
+ *  extension and platform-specific context creation API extensions.
  *
  *  A context must be current on the calling thread.  Calling this function
  *  without a current context will cause a @ref GLFW_NO_CURRENT_CONTEXT error.
@@ -3298,7 +3298,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
  *  context.
  *
  *  This function returns the address of the specified
- *  [client API or extension function](@ref context_glext), if it is supported
+ *  [core or extension function](@ref context_glext), if it is supported
  *  by the current context.
  *
  *  A context must be current on the calling thread.  Calling this function
@@ -3308,8 +3308,12 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
  *  @return The address of the function, or `NULL` if the function is
  *  unavailable or an [error](@ref error_handling) occurred.
  *
- *  @note The addresses of a given function is not guaranteed to be the same
+ *  @remarks The addresses of a given function is not guaranteed to be the same
  *  between contexts.
+ *
+ *  @remarks This function may return a non-`NULL` address despite the
+ *  associated version or extension not being available.  Always check the
+ *  context version or extension string presence first.
  *
  *  @par Pointer Lifetime
  *  The returned function pointer is valid until the context is destroyed or the

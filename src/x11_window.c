@@ -1058,6 +1058,8 @@ static void processEvent(XEvent *event)
 
         case EnterNotify:
         {
+            // HACK: This is a workaround for WMs (KWM, Fluxbox) that otherwise
+            //       ignore the defined cursor for hidden cursor mode
             if (window->cursorMode == GLFW_CURSOR_HIDDEN)
                 hideCursor(window);
 

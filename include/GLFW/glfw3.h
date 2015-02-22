@@ -109,9 +109,6 @@ extern "C" {
  #if defined(_MSC_VER) || defined(__POCC__)
   /* Microsoft Visual C++ and Pelles C */
   #define WINGDIAPI __declspec(dllimport)
- #elif defined(__LCC__)
-  /* LCC-Win32 */
-  #define WINGDIAPI __stdcall
  #else
   /* Others (e.g. MinGW, Cygwin) */
   #define WINGDIAPI extern
@@ -208,11 +205,7 @@ extern "C" {
  #define GLFWAPI __declspec(dllexport)
 #elif defined(_WIN32) && defined(GLFW_DLL)
  /* We are calling GLFW as a Win32 DLL */
- #if defined(__LCC__)
-  #define GLFWAPI extern
- #else
-  #define GLFWAPI __declspec(dllimport)
- #endif
+ #define GLFWAPI __declspec(dllimport)
 #elif defined(__GNUC__) && defined(_GLFW_BUILD_DLL)
  /* We are building GLFW as a shared / dynamic library */
  #define GLFWAPI __attribute__((visibility("default")))

@@ -106,8 +106,8 @@ extern "C" {
 
 /* Under Windows, we need WINGDIAPI defined */
 #if !defined(WINGDIAPI) && defined(_WIN32)
- #if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__POCC__)
-  /* Microsoft Visual C++, Borland C++ Builder and Pelles C */
+ #if defined(_MSC_VER) || defined(__POCC__)
+  /* Microsoft Visual C++ and Pelles C */
   #define WINGDIAPI __declspec(dllimport)
  #elif defined(__LCC__)
   /* LCC-Win32 */

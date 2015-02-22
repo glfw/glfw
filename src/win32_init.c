@@ -30,11 +30,6 @@
 #include <stdlib.h>
 #include <malloc.h>
 
-#ifdef __BORLANDC__
-// With the Borland C++ compiler, we want to disable FPU exceptions
-#include <float.h>
-#endif // __BORLANDC__
-
 
 #if defined(_GLFW_USE_OPTIMUS_HPG)
 
@@ -335,12 +330,6 @@ int _glfwPlatformInit(void)
     if (_glfw_SetProcessDPIAware)
         _glfw_SetProcessDPIAware();
 
-#ifdef __BORLANDC__
-    // With the Borland C++ compiler, we want to disable FPU exceptions
-    // (this is recommended for OpenGL applications under Windows)
-    _control87(MCW_EM, MCW_EM);
-#endif
-
     if (!_glfwRegisterWindowClass())
         return GL_FALSE;
 
@@ -381,8 +370,6 @@ const char* _glfwPlatformGetVersionString(void)
         " MinGW"
 #elif defined(_MSC_VER)
         " VisualC"
-#elif defined(__BORLANDC__)
-        " BorlandC"
 #endif
 #if defined(_GLFW_BUILD_DLL)
         " DLL"

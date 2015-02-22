@@ -112,17 +112,7 @@ extern "C" {
 
 /* Some <GL/glu.h> files also need CALLBACK defined */
 #if !defined(CALLBACK) && defined(_WIN32)
- #if defined(_MSC_VER)
-  /* Microsoft Visual C++ */
-  #if (defined(_M_MRX000) || defined(_M_IX86) || defined(_M_ALPHA) || defined(_M_PPC)) && !defined(MIDL_PASS)
-   #define CALLBACK __stdcall
-  #else
-   #define CALLBACK
-  #endif
- #else
-  /* Other Windows compilers */
-  #define CALLBACK __stdcall
- #endif
+ #define CALLBACK __stdcall
  #define GLFW_CALLBACK_DEFINED
 #endif /* CALLBACK */
 

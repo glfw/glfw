@@ -78,12 +78,8 @@ extern "C" {
  * been able to test this file with yet.
  *
  * First: If we are we on Windows, we want a single define for it (_WIN32)
- * (Note: For Cygwin the compiler flag -mwin32 should be used, but to
- * make sure that things run smoothly for Cygwin users, we add __CYGWIN__
- * to the list of "valid Win32 identifiers", which removes the need for
- * -mwin32)
  */
-#if !defined(_WIN32) && (defined(__WIN32__) || defined(WIN32) || defined(__CYGWIN__))
+#if !defined(_WIN32) && (defined(__WIN32__) || defined(WIN32) || defined(__MINGW32__))
  #define _WIN32
 #endif /* _WIN32 */
 

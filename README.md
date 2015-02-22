@@ -62,6 +62,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
 
 ## Changelog
 
+ - Removed support for LCC and Borland C++
  - Bugfix: `glfwSetTime` silently accepted invalid values
  - [Cocoa] Bugfix: `glfwSetWindowSize` did not change the video mode for full
                    screen windows
@@ -70,7 +71,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [X11] Made Xxf86vm optional at compile-time
  - [X11] Bugfix: Mouse button `GLFW_MOUSE_BUTTON_4` was never used
  - [X11] Bugfix: `glfwTerminate` could close an unrelated file descriptor
- - [X11] Bugfix: Some WMs did not respect cursor redefinition
+ - [X11] Bugfix: Some WMs (KWM, Fluxbox) did not respect cursor redefinition
 
 
 ## Contact

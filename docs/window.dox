@@ -83,9 +83,11 @@ screen windows.
 
 @subsubsection window_windowed_full_screen "Windowed full screen" windows
 
-To create a so called _windowed full screen_ or _borderless full screen_ window,
-i.e. a full screen window that doesn't change the video mode of the monitor, you
-need to request the current video mode of the chosen monitor.
+If the closest match for the desired video mode is the current one, the video
+mode will not be changed, making window creation faster and application
+switching much smoother.  This is sometimes called _windowed full screen_ or
+_borderless full screen_ window and counts as a full screen window.  To create
+such a window, simply request the current video mode.
 
 @code
 const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -97,8 +99,6 @@ glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
 GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "My Title", monitor, NULL);
 @endcode
-
-GLFW will detect this and will not perform any mode setting for that window.   
 
 
 @subsection window_destruction Window destruction

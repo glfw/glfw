@@ -106,13 +106,7 @@ extern "C" {
 
 /* Under Windows, we need WINGDIAPI defined */
 #if !defined(WINGDIAPI) && defined(_WIN32)
- #if defined(_MSC_VER) || defined(__POCC__)
-  /* Microsoft Visual C++ and Pelles C */
-  #define WINGDIAPI __declspec(dllimport)
- #else
-  /* Others (e.g. MinGW, Cygwin) */
-  #define WINGDIAPI extern
- #endif
+ #define WINGDIAPI __declspec(dllimport)
  #define GLFW_WINGDIAPI_DEFINED
 #endif /* WINGDIAPI */
 

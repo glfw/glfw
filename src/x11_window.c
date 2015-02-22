@@ -1054,6 +1054,9 @@ static void processEvent(XEvent *event)
 
         case EnterNotify:
         {
+            if (window->cursorMode == GLFW_CURSOR_HIDDEN)
+                hideCursor(window);
+
             _glfwInputCursorEnter(window, GL_TRUE);
             break;
         }

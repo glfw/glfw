@@ -68,24 +68,17 @@ extern "C" {
 
 
 /*************************************************************************
- * Global definitions
+ * Compiler- and platform-specific preprocessor work
  *************************************************************************/
 
-/* ------------------- BEGIN SYSTEM/COMPILER SPECIFIC -------------------- */
-
-/* Please report any problems that you find with your compiler, which may
- * be solved in this section! There are several compilers that I have not
- * been able to test this file with yet.
- *
- * First: If we are we on Windows, we want a single define for it (_WIN32)
+/* If we are we on Windows, we want a single define for it.
  */
 #if !defined(_WIN32) && (defined(__WIN32__) || defined(WIN32) || defined(__MINGW32__))
  #define _WIN32
 #endif /* _WIN32 */
 
-/* In order for extension support to be portable, we need to define an
- * OpenGL function call method. We use the keyword APIENTRY, which is
- * defined for Win32. (Note: Windows also needs this for <GL/gl.h>)
+/* It is customary to use APIENTRY for OpenGL function pointer declarations on
+ * all platforms.  Additionally, the Windows OpenGL header needs APIENTRY.
  */
 #ifndef APIENTRY
  #ifdef _WIN32
@@ -95,25 +88,23 @@ extern "C" {
  #endif
 #endif /* APIENTRY */
 
-/* The following three defines are here solely to make some Windows-based
- * <GL/gl.h> files happy. Theoretically we could include <windows.h>, but
- * it has the major drawback of severely polluting our namespace.
+/* Some Windows OpenGL headers need this.
  */
-
-/* Under Windows, we need WINGDIAPI defined */
 #if !defined(WINGDIAPI) && defined(_WIN32)
  #define WINGDIAPI __declspec(dllimport)
  #define GLFW_WINGDIAPI_DEFINED
 #endif /* WINGDIAPI */
 
-/* Some <GL/glu.h> files also need CALLBACK defined */
+/* Some Windows GLU headers need this.
+ */
 #if !defined(CALLBACK) && defined(_WIN32)
  #define CALLBACK __stdcall
  #define GLFW_CALLBACK_DEFINED
 #endif /* CALLBACK */
 
-/* Most GL/glu.h variants on Windows need wchar_t
- * OpenGL/gl.h blocks the definition of ptrdiff_t by glext.h on OS X */
+/* Most Windows GLU headers need wchar_t.
+ * The OS X OpenGL header blocks the definition of ptrdiff_t by glext.h.
+ */
 #if !defined(GLFW_INCLUDE_NONE)
  #include <stddef.h>
 #endif
@@ -193,8 +184,6 @@ extern "C" {
  /* We are building or calling GLFW as a static library */
  #define GLFWAPI
 #endif
-
-/* -------------------- END SYSTEM/COMPILER SPECIFIC --------------------- */
 
 
 /*************************************************************************

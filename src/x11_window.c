@@ -1458,8 +1458,8 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 
     if (window->x11.handle)
     {
-        if (window->x11.handle ==
-            XGetSelectionOwner(_glfw.x11.display, _glfw.x11.CLIPBOARD))
+        if (XGetSelectionOwner(_glfw.x11.display, _glfw.x11.CLIPBOARD) ==
+            window->x11.handle)
         {
             pushSelectionToManager(window);
         }

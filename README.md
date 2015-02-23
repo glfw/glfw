@@ -147,6 +147,7 @@ skills.
  - Hans Mackowiak
  - Kyle McDonald
  - David Medlock
+ - Bryce Mehring
  - Jonathan Mercier
  - Marcel Metz
  - Jonathan Miller

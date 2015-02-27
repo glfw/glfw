@@ -339,10 +339,10 @@ int _glfwCreateContext(_GLFWwindow* window,
 
             if (ctxconfig->forward)
                 flags |= EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR;
-
-            if (ctxconfig->debug)
-                flags |= EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR;
         }
+
+        if (ctxconfig->debug)
+            flags |= EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR;
 
         if (ctxconfig->robustness)
         {

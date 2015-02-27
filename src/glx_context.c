@@ -360,9 +360,6 @@ int _glfwCreateContext(_GLFWwindow* window,
             if (ctxconfig->forward)
                 flags |= GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
 
-            if (ctxconfig->debug)
-                flags |= GLX_CONTEXT_DEBUG_BIT_ARB;
-
             if (ctxconfig->profile)
             {
                 if (ctxconfig->profile == GLFW_OPENGL_CORE_PROFILE)
@@ -373,6 +370,9 @@ int _glfwCreateContext(_GLFWwindow* window,
         }
         else
             mask |= GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
+
+        if (ctxconfig->debug)
+            flags |= GLX_CONTEXT_DEBUG_BIT_ARB;
 
         if (ctxconfig->robustness)
         {

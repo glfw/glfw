@@ -529,6 +529,18 @@ write_basic_package_version_file("${GLFW_BINARY_DIR}/src/glfw3ConfigVersion.cmak
                                  VERSION ${GLFW_VERSION_FULL}
                                  COMPATIBILITY SameMajorVersion)
 
+OPTION(GLFW_USE_GL3W "Use Internal OpenGL loader" ON)
+if(GLFW_USE_GL3W)
+    FIND_PACKAGE(PythonInterp 2.6 REQUIRED)
+    EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/gl3w_gen.py
+                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/include)
+    ADD_LIBRARY(gl3w ${CMAKE_CURRENT_BINARY_DIR}/src/gl3w.c)    
+    IF(UNIX)
+        TARGET_LINK_LIBRARIES(gl3w dl)
+    ENDIF()
+endif()
+
 if (GLFW_BUILD_DOCS)
     configure_file("${GLFW_SOURCE_DIR}/docs/Doxyfile.in"
                    "${GLFW_BINARY_DIR}/docs/Doxyfile" @ONLY)

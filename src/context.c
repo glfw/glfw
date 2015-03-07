@@ -166,22 +166,6 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
         {
             // For now, let everything else through
         }
-
-        if (ctxconfig->profile)
-        {
-            // OpenGL ES does not support profiles
-            _glfwInputError(GLFW_INVALID_VALUE,
-                            "Context profiles are not supported by OpenGL ES");
-            return GL_FALSE;
-        }
-
-        if (ctxconfig->forward)
-        {
-            // OpenGL ES does not support forward-compatibility
-            _glfwInputError(GLFW_INVALID_VALUE,
-                            "Forward compatibility is not supported by OpenGL ES");
-            return GL_FALSE;
-        }
     }
 
     if (ctxconfig->robustness)

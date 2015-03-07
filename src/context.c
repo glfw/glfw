@@ -104,15 +104,12 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
             // OpenGL 1.x series ended with version 1.5
             // OpenGL 2.x series ended with version 2.1
             // OpenGL 3.x series ended with version 3.3
+            // For now, let everything else through
 
             _glfwInputError(GLFW_INVALID_VALUE,
                             "Invalid OpenGL version %i.%i requested",
                             ctxconfig->major, ctxconfig->minor);
             return GL_FALSE;
-        }
-        else
-        {
-            // For now, let everything else through
         }
 
         if (ctxconfig->profile)
@@ -156,15 +153,12 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
             // OpenGL ES 1.0 is the smallest valid version
             // OpenGL ES 1.x series ended with version 1.1
             // OpenGL ES 2.x series ended with version 2.0
+            // For now, let everything else through
 
             _glfwInputError(GLFW_INVALID_VALUE,
                             "Invalid OpenGL ES version %i.%i requested",
                             ctxconfig->major, ctxconfig->minor);
             return GL_FALSE;
-        }
-        else
-        {
-            // For now, let everything else through
         }
     }
 

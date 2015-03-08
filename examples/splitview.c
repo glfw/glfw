@@ -371,7 +371,9 @@ static void framebufferSizeFun(GLFWwindow* window, int w, int h)
 
 static void windowRefreshFun(GLFWwindow* window)
 {
-    do_redraw = 1;
+    drawAllViews();
+    glfwSwapBuffers(window);
+    do_redraw = 0;
 }
 
 
@@ -485,15 +487,7 @@ int main(void)
     {
         // Only redraw if we need to
         if (do_redraw)
-        {
-            // Draw all views
-            drawAllViews();
-
-            // Swap buffers
-            glfwSwapBuffers(window);
-
-            do_redraw = 0;
-        }
+            windowRefreshFun(window);
 
         // Wait for new events
         glfwWaitEvents();

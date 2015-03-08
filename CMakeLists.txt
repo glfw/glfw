@@ -479,7 +479,7 @@ endif()
 include(CMakePackageConfigHelpers)
 
 if (UNIX)
-    set(GLFW_CONFIG_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake/glfw3/")
+    set(GLFW_CONFIG_PATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/cmake/glfw3/")
 else()
     set(GLFW_CONFIG_PATH "${CMAKE_INSTALL_PREFIX}/")
 endif()
@@ -532,7 +532,7 @@ if (GLFW_INSTALL)
 
     install(FILES "${GLFW_BINARY_DIR}/src/glfw3Config.cmake"
                   "${GLFW_BINARY_DIR}/src/glfw3ConfigVersion.cmake"
-            DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
+            DESTINATION ${GLFW_CONFIG_PATH})
 
     install(EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
     install(FILES "${GLFW_BINARY_DIR}/src/glfw3.pc"

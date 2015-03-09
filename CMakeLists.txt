@@ -534,7 +534,7 @@ if (GLFW_INSTALL)
                   "${GLFW_BINARY_DIR}/src/glfw3ConfigVersion.cmake"
             DESTINATION ${GLFW_CONFIG_PATH})
 
-    install(EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
+    install(EXPORT glfwTargets DESTINATION ${GLFW_CONFIG_PATH})
     install(FILES "${GLFW_BINARY_DIR}/src/glfw3.pc"
             DESTINATION lib${LIB_SUFFIX}/pkgconfig)
 

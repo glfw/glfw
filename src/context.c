@@ -89,7 +89,7 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
     if (ctxconfig->api != GLFW_OPENGL_API &&
         ctxconfig->api != GLFW_OPENGL_ES_API)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid client API requested");
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid client API");
         return GL_FALSE;
     }
 
@@ -107,7 +107,7 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
             // For now, let everything else through
 
             _glfwInputError(GLFW_INVALID_VALUE,
-                            "Invalid OpenGL version %i.%i requested",
+                            "Invalid OpenGL version %i.%i",
                             ctxconfig->major, ctxconfig->minor);
             return GL_FALSE;
         }
@@ -118,7 +118,7 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
                 ctxconfig->profile != GLFW_OPENGL_COMPAT_PROFILE)
             {
                 _glfwInputError(GLFW_INVALID_ENUM,
-                                "Invalid OpenGL profile requested");
+                                "Invalid OpenGL profile");
                 return GL_FALSE;
             }
 
@@ -129,8 +129,7 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
                 // and above
 
                 _glfwInputError(GLFW_INVALID_VALUE,
-                                "Context profiles only exist for "
-                                "OpenGL version 3.2 and above");
+                                "Context profiles are only defined for OpenGL version 3.2 and above");
                 return GL_FALSE;
             }
         }
@@ -139,8 +138,7 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
         {
             // Forward-compatible contexts are only defined for OpenGL version 3.0 and above
             _glfwInputError(GLFW_INVALID_VALUE,
-                            "Forward compatibility only exist for OpenGL "
-                            "version 3.0 and above");
+                            "Forward-compatibility is only defined for OpenGL version 3.0 and above");
             return GL_FALSE;
         }
     }
@@ -156,7 +154,7 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
             // For now, let everything else through
 
             _glfwInputError(GLFW_INVALID_VALUE,
-                            "Invalid OpenGL ES version %i.%i requested",
+                            "Invalid OpenGL ES version %i.%i",
                             ctxconfig->major, ctxconfig->minor);
             return GL_FALSE;
         }
@@ -167,8 +165,8 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
         if (ctxconfig->robustness != GLFW_NO_RESET_NOTIFICATION &&
             ctxconfig->robustness != GLFW_LOSE_CONTEXT_ON_RESET)
         {
-            _glfwInputError(GLFW_INVALID_VALUE,
-                            "Invalid context robustness mode requested");
+            _glfwInputError(GLFW_INVALID_ENUM,
+                            "Invalid context robustness mode");
             return GL_FALSE;
         }
     }
@@ -178,8 +176,8 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
         if (ctxconfig->release != GLFW_RELEASE_BEHAVIOR_NONE &&
             ctxconfig->release != GLFW_RELEASE_BEHAVIOR_FLUSH)
         {
-            _glfwInputError(GLFW_INVALID_VALUE,
-                            "Invalid context release behavior requested");
+            _glfwInputError(GLFW_INVALID_ENUM,
+                            "Invalid context release behavior");
             return GL_FALSE;
         }
     }

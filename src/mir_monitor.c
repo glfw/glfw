@@ -127,12 +127,12 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Mir: Unsupported function %s!", __PRETTY_FUNCTION__);
+                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
 }
 
 void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Mir: Unsupported function %s!", __PRETTY_FUNCTION__);
+                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
 }
 

@@ -394,7 +394,7 @@ GLFWAPI void glfwWindowHint(int target, int hint)
             _glfw.hints.release = hint;
             break;
         default:
-            _glfwInputError(GLFW_INVALID_ENUM, NULL);
+            _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint");
             break;
     }
 }
@@ -479,7 +479,7 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow* handle, int xpos, int ypos)
     if (window->monitor)
     {
         _glfwInputError(GLFW_INVALID_VALUE,
-                        "Full screen windows cannot be positioned");
+                        "Full screen windows cannot be moved");
         return;
     }
 
@@ -624,7 +624,7 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->context.release;
     }
 
-    _glfwInputError(GLFW_INVALID_ENUM, NULL);
+    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute");
     return 0;
 }
 

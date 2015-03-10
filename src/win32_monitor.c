@@ -144,7 +144,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             if (!name)
             {
                 _glfwInputError(GLFW_PLATFORM_ERROR,
-                                "Failed to convert string to UTF-8");
+                                "Win32: Failed to convert string to UTF-8");
                 continue;
             }
 

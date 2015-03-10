@@ -57,7 +57,8 @@ static char* getDisplayName(CGDirectDisplayID displayID)
                                                  (const void**) &value))
     {
         // This may happen if a desktop Mac is running headless
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to retrieve display name");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to retrieve display name");
 
         CFRelease(info);
         return strdup("Unknown");

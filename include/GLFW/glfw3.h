@@ -520,7 +520,9 @@ extern "C" {
 /*! @brief GLFW could not find support for the requested client API on the
  *  system.
  *
- *  GLFW could not find support for the requested client API on the system.
+ *  GLFW could not find support for the requested client API on the system.  If
+ *  emitted by functions other than @ref glfwCreateWindow, no supported client
+ *  API was found.
  *
  *  @par Analysis
  *  The installed graphics driver does not support the requested client API, or
@@ -537,8 +539,8 @@ extern "C" {
 #define GLFW_API_UNAVAILABLE        0x00010006
 /*! @brief The requested OpenGL or OpenGL ES version is not available.
  *
- *  The requested OpenGL or OpenGL ES version (including any requested profile
- *  or context option) is not available on this machine.
+ *  The requested OpenGL or OpenGL ES version (including any requested context
+ *  or framebuffer hints) is not available on this machine.
  *
  *  @par Analysis
  *  The machine does not support your requirements.  If your application is
@@ -560,7 +562,8 @@ extern "C" {
  *  specific categories.
  *
  *  @par Analysis
- *  A bug in GLFW or the underlying operating system.  Report the bug to our
+ *  A bug or configuration error in GLFW, the underlying operating system or
+ *  its drivers, or a lack of required resources.  Report the issue to our
  *  [issue tracker](https://github.com/glfw/glfw/issues).
  */
 #define GLFW_PLATFORM_ERROR         0x00010008

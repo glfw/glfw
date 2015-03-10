@@ -1619,9 +1619,7 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
             if (_glfwPlatformGetTime() - base > 0.5)
             {
                 _glfwInputError(GLFW_PLATFORM_ERROR,
-                                "X11: The window manager has a broken "
-                                "_NET_REQUEST_FRAME_EXTENTS implementation; "
-                                "please report this issue");
+                                "X11: The window manager has a broken _NET_REQUEST_FRAME_EXTENTS implementation; please report this issue");
                 break;
             }
 
@@ -1660,9 +1658,8 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window)
     {
         // Override-redirect windows cannot be iconified or restored, as those
         // tasks are performed by the window manager
-        _glfwInputError(GLFW_API_UNAVAILABLE,
-                        "X11: Iconification of full screen windows requires "
-                        "a WM that supports EWMH");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "X11: Iconification of full screen windows requires a WM that supports EWMH");
         return;
     }
 
@@ -1676,9 +1673,8 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
     {
         // Override-redirect windows cannot be iconified or restored, as those
         // tasks are performed by the window manager
-        _glfwInputError(GLFW_API_UNAVAILABLE,
-                        "X11: Iconification of full screen windows requires "
-                        "a WM that supports EWMH");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "X11: Iconification of full screen windows requires a WM that supports EWMH");
         return;
     }
 
@@ -1835,14 +1831,8 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
-    const unsigned int native = translateCursorShape(shape);
-    if (!native)
-    {
-        _glfwInputError(GLFW_INVALID_ENUM, "X11: Invalid standard cursor");
-        return GL_FALSE;
-    }
-
-    cursor->x11.handle = XCreateFontCursor(_glfw.x11.display, native);
+    cursor->x11.handle = XCreateFontCursor(_glfw.x11.display,
+                                           translateCursorShape(shape));
     if (!cursor->x11.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -1885,7 +1875,7 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
         window->x11.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "X11: Failed to become owner of the clipboard selection");
+                        "X11: Failed to become owner of clipboard selection");
     }
 }
 
@@ -1948,7 +1938,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     if (_glfw.x11.clipboardString == NULL)
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
-                        "X11: Failed to convert selection to string");
+                        "X11: Failed to convert clipboard to string");
     }
 
     return _glfw.x11.clipboardString;

@@ -722,7 +722,7 @@ int _glfwPlatformInit(void)
     _glfw.x11.display = XOpenDisplay(NULL);
     if (!_glfw.x11.display)
     {
-        _glfwInputError(GLFW_API_UNAVAILABLE, "X11: Failed to open X display");
+        _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Failed to open X display");
         return GL_FALSE;
     }
 

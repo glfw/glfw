@@ -1211,7 +1211,8 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
     cursor->ns.object = getStandardCursor(shape);
     if (!cursor->ns.object)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Cocoa: Invalid standard cursor");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to retrieve standard cursor");
         return GL_FALSE;
     }
 
@@ -1255,7 +1256,8 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 
     if (![[pasteboard types] containsObject:NSStringPboardType])
     {
-        _glfwInputError(GLFW_FORMAT_UNAVAILABLE, NULL);
+        _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
+                        "Cocoa: Failed to retrieve string from pasteboard");
         return NULL;
     }
 

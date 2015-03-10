@@ -110,6 +110,10 @@ have been generated specifically for that error.  This lets GLFW provide much
 more specific error descriptions but means you must make a copy if you want to
 keep the description string.
 
+@note Relying on erroneous behavior is not forward compatible.  In other words,
+do not rely on a currently invalid call to generate a specific error, as that
+same call may in future versions generate a different error or become valid.
+
 
 @section coordinate_systems Coordinate systems
 

@@ -65,7 +65,7 @@ int _glfwPlatformInit(void)
     if (error)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Mir: Failed to create event mutex: %s\n",
+                        "Mir: Failed to create event mutex: %s",
                         strerror(error));
         return GL_FALSE;
     }

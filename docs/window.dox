@@ -267,7 +267,7 @@ If OpenGL ES is requested, this hint is ignored.
 Possible values are one of `GLFW_OPENGL_CORE_PROFILE` or
 `GLFW_OPENGL_COMPAT_PROFILE`, or `GLFW_OPENGL_ANY_PROFILE` to not request
 a specific profile.  If requesting an OpenGL version below 3.2,
-`GLFW_OPENGL_ANY_PROFILE` must be used.  If another OpenGL ES is requested,
+`GLFW_OPENGL_ANY_PROFILE` must be used.  If OpenGL ES is requested,
 this hint is ignored.
 
 @par

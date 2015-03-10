@@ -3098,9 +3098,14 @@ GLFWAPI double glfwGetTime(void);
 /*! @brief Sets the GLFW timer.
  *
  *  This function sets the value of the GLFW timer.  It then continues to count
- *  up from that value.  The value must be a positive finite number.
+ *  up from that value.  The value must be a positive finite number less than
+ *  or equal to 18446744073.0, which is approximately 584.5 years.
  *
  *  @param[in] time The new value, in seconds.
+ *
+ *  @remarks The upper limit of the timer is calculated as
+ *  floor((2<sup>64</sup> - 1) / 10<sup>9</sup>) and is due to implementations
+ *  storing nanoseconds in 64 bits.  The limit may be increased in the future.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.

@@ -28,7 +28,6 @@
 #include "internal.h"
 
 #include <stdlib.h>
-#include <float.h>
 #if defined(_MSC_VER)
  #include <malloc.h>
 #endif
@@ -593,7 +592,7 @@ GLFWAPI void glfwSetTime(double time)
 {
     _GLFW_REQUIRE_INIT();
 
-    if (time != time || time - DBL_MAX == time || time < 0.0)
+    if (time != time || time < 0.0 || time > 18446744073.0)
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid time");
         return;

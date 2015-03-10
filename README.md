@@ -184,6 +184,7 @@ skills.
  - Nathan Sweet
  - TTK-Bandit
  - Sergey Tikhomirov
+ - A. Tombs
  - Samuli Tuomola
  - urraka
  - Jari Vetoniemi

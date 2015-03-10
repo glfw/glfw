@@ -1474,7 +1474,10 @@ GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
  *  @param[in] monitor The monitor whose gamma ramp to set.
  *  @param[in] ramp The gamma ramp to use.
  *
- *  @note Gamma ramp sizes other than 256 are not supported by all hardware.
+ *  @remarks Gamma ramp sizes other than 256 are not supported by all platforms
+ *  or graphics hardware.
+ *
+ *  @remarks __Windows:__ The gamma ramp size must be 256.
  *
  *  @par Pointer Lifetime
  *  The specified gamma ramp is copied before this function returns.

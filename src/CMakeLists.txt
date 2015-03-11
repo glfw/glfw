@@ -90,6 +90,7 @@ if (BUILD_SHARED_LIBS)
 endif()
 
 if (GLFW_INSTALL)
+    target_include_directories(glfw PUBLIC ${CMAKE_INSTALL_PREFIX}/include)
     install(TARGETS glfw EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX})
 endif()
 

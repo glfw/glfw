@@ -478,19 +478,18 @@ endif()
 #--------------------------------------------------------------------
 include(CMakePackageConfigHelpers)
 
-if (UNIX)
-    set(GLFW_CONFIG_PATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/cmake/glfw3/")
-else()
-    set(GLFW_CONFIG_PATH "${CMAKE_INSTALL_PREFIX}/")
-endif()
+set(GLFW_INSTALL_INCLUDE_DIR   "include")
+set(GLFW_INSTALL_LIBRARY_DIR   "lib${LIB_SUFFIX}")
+set(GLFW_INSTALL_CONFIG_DIR    "lib${LIB_SUFFIX}/cmake/glfw3")
+set(GLFW_INSTALL_PKGCONFIG_DIR "lib${LIB_SUFFIX}/pkgconfig")
 
 configure_package_config_file("${GLFW_SOURCE_DIR}/src/glfw3Config.cmake.in"
                               "${GLFW_BINARY_DIR}/src/glfw3Config.cmake"
-                              INSTALL_DESTINATION "${GLFW_CONFIG_PATH}"
+                              INSTALL_DESTINATION "${GLFW_INSTALL_CONFIG_DIR}"
                               PATH_VARS CMAKE_INSTALL_PREFIX
                               NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
-write_basic_package_version_file("${GLFW_BINARY_DIR}/src/glfw3ConfigVersion.cmake" 
+write_basic_package_version_file("${GLFW_BINARY_DIR}/src/glfw3ConfigVersion.cmake"
                                  VERSION ${GLFW_VERSION_FULL}
                                  COMPATIBILITY SameMajorVersion)
 
@@ -527,18 +526,18 @@ endif()
 # The library is installed by src/CMakeLists.txt
 #--------------------------------------------------------------------
 if (GLFW_INSTALL)
-    install(DIRECTORY include/GLFW DESTINATION include
+    install(DIRECTORY include/GLFW DESTINATION ${GLFW_INSTALL_INCLUDE_DIR}
             FILES_MATCHING PATTERN glfw3.h PATTERN glfw3native.h)
 
     install(FILES "${GLFW_BINARY_DIR}/src/glfw3Config.cmake"
                   "${GLFW_BINARY_DIR}/src/glfw3ConfigVersion.cmake"
-            DESTINATION ${GLFW_CONFIG_PATH})
+            DESTINATION ${GLFW_INSTALL_CONFIG_DIR})
 
     install(EXPORT glfwTargets FILE glfw3Targets.cmake
-            DESTINATION ${GLFW_CONFIG_PATH})
+            DESTINATION ${GLFW_INSTALL_CONFIG_DIR})
 
     install(FILES "${GLFW_BINARY_DIR}/src/glfw3.pc"
-            DESTINATION lib${LIB_SUFFIX}/pkgconfig)
+            DESTINATION ${GLFW_INSTALL_PKGCONFIG_DIR})
 
     # Only generate this target if no higher-level project already has
     if (NOT TARGET uninstall)

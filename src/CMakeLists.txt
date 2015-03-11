@@ -58,6 +58,7 @@ if (APPLE)
 endif()
 
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
+target_link_libraries(glfw ${glfw_LIBRARIES})
 set_target_properties(glfw PROPERTIES
                       OUTPUT_NAME "${GLFW_LIB_NAME}"
                       VERSION ${GLFW_VERSION}
@@ -86,8 +87,6 @@ if (BUILD_SHARED_LIBS)
                               COMPILE_FLAGS "${glfw_CFLAGS} -fno-common"
                               INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}")
     endif()
-
-    target_link_libraries(glfw ${glfw_LIBRARIES})
 endif()
 
 if (GLFW_INSTALL)

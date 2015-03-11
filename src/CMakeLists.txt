@@ -59,6 +59,8 @@ endif()
 
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
 target_link_libraries(glfw ${glfw_LIBRARIES})
+target_include_directories(glfw PUBLIC $<INSTALL_INTERFACE:${GLFW_INSTALL_INCLUDE_DIR}>)
+
 set_target_properties(glfw PROPERTIES
                       OUTPUT_NAME "${GLFW_LIB_NAME}"
                       VERSION ${GLFW_VERSION}
@@ -90,7 +92,6 @@ if (BUILD_SHARED_LIBS)
 endif()
 
 if (GLFW_INSTALL)
-    target_include_directories(glfw PUBLIC ${CMAKE_INSTALL_PREFIX}/include)
     install(TARGETS glfw EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX})
 endif()
 

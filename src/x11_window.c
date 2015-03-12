@@ -439,27 +439,6 @@ static GLboolean createWindow(_GLFWwindow* window,
                         PropModeReplace, (unsigned char*) &version, 1);
     }
 
-    if (_glfw.x11.NET_REQUEST_FRAME_EXTENTS)
-    {
-        // Ensure _NET_FRAME_EXTENTS is set, allowing glfwGetWindowFrameSize to
-        // function before the window is mapped
-
-        XEvent event;
-        memset(&event, 0, sizeof(event));
-
-        event.type = ClientMessage;
-        event.xclient.window = window->x11.handle;
-        event.xclient.format = 32; // Data is 32-bit longs
-        event.xclient.message_type = _glfw.x11.NET_REQUEST_FRAME_EXTENTS;
-
-        XSendEvent(_glfw.x11.display,
-                   _glfw.x11.root,
-                   False,
-                   SubstructureNotifyMask | SubstructureRedirectMask,
-                   &event);
-        XIfEvent(_glfw.x11.display, &event, isFrameExtentsEvent, (XPointer) window);
-    }
-
     if (wndconfig->floating && !wndconfig->monitor)
     {
         if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_ABOVE)
@@ -1606,6 +1585,55 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
 
     if (_glfw.x11.NET_FRAME_EXTENTS == None)
         return;
+
+    if (!_glfwPlatformWindowVisible(window) &&
+        _glfw.x11.NET_REQUEST_FRAME_EXTENTS)
+    {
+        // Ensure _NET_FRAME_EXTENTS is set, allowing glfwGetWindowFrameSize to
+        // function before the window is mapped
+
+        double base;
+        XEvent event;
+        memset(&event, 0, sizeof(event));
+
+        event.type = ClientMessage;
+        event.xclient.window = window->x11.handle;
+        event.xclient.format = 32; // Data is 32-bit longs
+        event.xclient.message_type = _glfw.x11.NET_REQUEST_FRAME_EXTENTS;
+
+        XSendEvent(_glfw.x11.display,
+                   _glfw.x11.root,
+                   False,
+                   SubstructureNotifyMask | SubstructureRedirectMask,
+                   &event);
+
+        // HACK: Poll with timeout for the required response instead of blocking
+        //       This is done because some window managers (at least Unity,
+        //       Fluxbox and Xfwm) failed to send the required response
+        //       They have been fixed but broken versions are still in the wild
+        //       If you are affected by this and your window manager is NOT
+        //       listed above, PLEASE report it to their and our issue trackers
+        base = _glfwPlatformGetTime();
+        for (;;)
+        {
+            if (_glfwPlatformGetTime() - base > 0.5)
+            {
+                _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "X11: The window manager has a broken "
+                                "_NET_REQUEST_FRAME_EXTENTS implementation; "
+                                "please report this issue");
+                break;
+            }
+
+            if (XCheckIfEvent(_glfw.x11.display,
+                              &event,
+                              isFrameExtentsEvent,
+                              (XPointer) window))
+            {
+                break;
+            }
+        }
+    }
 
     if (_glfwGetWindowProperty(window->x11.handle,
                                _glfw.x11.NET_FRAME_EXTENTS,

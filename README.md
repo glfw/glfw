@@ -70,6 +70,9 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [X11] Added support for Cygwin-X
  - [X11] Made XInput2 optional at compile-time
  - [X11] Made Xxf86vm optional at compile-time
+ - [X11] Bugfix: Moved `_NET_REQUEST_FRAME_EXTENTS` request to
+                 `glfwGetWindowFrameSize` and added protocol-breaking timeout
+                 as a workaround for broken support in Unity, Fluxbox and Xfwm
  - [X11] Bugfix: Mouse button `GLFW_MOUSE_BUTTON_4` was never used
  - [X11] Bugfix: `glfwTerminate` could close an unrelated file descriptor
  - [X11] Bugfix: Some WMs (KWM, Fluxbox) did not respect cursor redefinition

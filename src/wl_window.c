@@ -265,6 +265,16 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     window->wl.height = height;
 }
 
+void _glfwPlatformSetWindowIcons(_GLFWwindow* window, const GLFWimage* images, int count)
+{
+    // There is currently no standard way to set the icon at runtime on
+    // Wayland, the closest thing is xdg_surface.set_app_id combined with a
+    // .desktop file containing the icon.
+
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Wayland: Set window icons not supported");
+}
+
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
     _glfwPlatformGetWindowSize(window, width, height);

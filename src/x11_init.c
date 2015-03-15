@@ -714,6 +714,8 @@ Cursor _glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
 
 int _glfwPlatformInit(void)
 {
+    // HACK: If the current locale is C, apply the environment's locale
+    //       This is done because the C locale breaks character input
     if (strcmp(setlocale(LC_CTYPE, NULL), "C") == 0)
         setlocale(LC_CTYPE, "");
 

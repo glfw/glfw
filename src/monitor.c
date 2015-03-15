@@ -28,6 +28,7 @@
 #include "internal.h"
 
 #include <math.h>
+#include <float.h>
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -385,10 +386,9 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
 
     _GLFW_REQUIRE_INIT();
 
-    if (gamma <= 0.f)
+    if (gamma != gamma || gamma <= 0.f || gamma > FLT_MAX)
     {
-        _glfwInputError(GLFW_INVALID_VALUE,
-                        "Gamma value must be greater than zero");
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid gamma value");
         return;
     }
 

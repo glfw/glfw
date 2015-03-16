@@ -1617,6 +1617,13 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  The menu bar can be disabled with a
  *  [compile-time option](@ref compile_options_osx).
  *
+ *  @remarks __OS X:__ On OS X 10.10 and later the window frame will not be
+ *  rendered at full resolution on Retina displays unless the
+ *  `NSHighResolutionCapable` key is enabled in the application bundle's
+ *  `Info.plist`.  For more information, see
+ *  [High Resolution Guidelines for OS X](https://developer.apple.com/library/mac/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Explained/Explained.html)
+ *  in the Mac Developer Library.
+ *
  *  @remarks __X11:__ There is no mechanism for setting the window icon yet.
  *
  *  @remarks __X11:__ Some window managers will not respect the placement of

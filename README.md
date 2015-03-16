@@ -66,6 +66,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - Removed support for LCC and Borland C++
  - Bugfix: `glfwSetTime` silently accepted invalid values
  - [WGL] Bugfix: The context flags debug bit was not set for OpenGL ES
+ - [Cocoa] Bugfix: `NSHighResolutionCapable` was not enabled for test and
+                   example programs
  - [Cocoa] Bugfix: `glfwSetWindowSize` did not change the video mode for full
                    screen windows
  - [X11] Added support for Cygwin-X

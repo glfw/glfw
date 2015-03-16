@@ -58,6 +58,22 @@ typedef struct
 #define MWM_HINTS_DECORATIONS (1L << 1)
 
 
+// Wait for data to arrive
+//
+void selectDisplayConnection(struct timeval* timeout)
+{
+    fd_set fds;
+    const int fd = ConnectionNumber(_glfw.x11.display);
+
+    FD_ZERO(&fds);
+    FD_SET(fd, &fds);
+
+    // select(1) is used instead of an X function like XNextEvent, as the
+    // wait inside those are guarded by the mutex protecting the display
+    // struct, locking out other threads from using X (including GLX)
+    select(fd + 1, &fds, NULL, NULL, timeout);
+}
+
 // Returns whether the window is iconified
 //
 static int getWindowState(_GLFWwindow* window)
@@ -684,33 +700,35 @@ static void pushSelectionToManager(_GLFWwindow* window)
     {
         XEvent event;
 
-        if (!XCheckIfEvent(_glfw.x11.display, &event, isSelectionEvent, NULL))
-            continue;
-
-        switch (event.type)
+        while (XCheckIfEvent(_glfw.x11.display, &event, isSelectionEvent, NULL))
         {
-            case SelectionRequest:
-                handleSelectionRequest(&event);
-                break;
-
-            case SelectionClear:
-                handleSelectionClear(&event);
-                break;
-
-            case SelectionNotify:
+            switch (event.type)
             {
-                if (event.xselection.target == _glfw.x11.SAVE_TARGETS)
-                {
-                    // This means one of two things; either the selection was
-                    // not owned, which means there is no clipboard manager, or
-                    // the transfer to the clipboard manager has completed
-                    // In either case, it means we are done here
-                    return;
-                }
+                case SelectionRequest:
+                    handleSelectionRequest(&event);
+                    break;
 
-                break;
+                case SelectionClear:
+                    handleSelectionClear(&event);
+                    break;
+
+                case SelectionNotify:
+                {
+                    if (event.xselection.target == _glfw.x11.SAVE_TARGETS)
+                    {
+                        // This means one of two things; either the selection was
+                        // not owned, which means there is no clipboard manager, or
+                        // the transfer to the clipboard manager has completed
+                        // In either case, it means we are done here
+                        return;
+                    }
+
+                    break;
+                }
             }
         }
+
+        selectDisplayConnection(NULL);
     }
 }
 
@@ -1614,22 +1632,25 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
         //       If you are affected by this and your window manager is NOT
         //       listed above, PLEASE report it to their and our issue trackers
         base = _glfwPlatformGetTime();
-        for (;;)
-        {
-            if (_glfwPlatformGetTime() - base > 0.5)
-            {
-                _glfwInputError(GLFW_PLATFORM_ERROR,
-                                "X11: The window manager has a broken _NET_REQUEST_FRAME_EXTENTS implementation; please report this issue");
-                break;
-            }
-
-            if (XCheckIfEvent(_glfw.x11.display,
+        while (!XCheckIfEvent(_glfw.x11.display,
                               &event,
                               isFrameExtentsEvent,
                               (XPointer) window))
+        {
+            double remaining;
+            struct timeval timeout;
+
+            remaining = 0.5 + base - _glfwPlatformGetTime();
+            if (remaining <= 0.0)
             {
-                break;
+                _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "X11: The window manager has a broken _NET_REQUEST_FRAME_EXTENTS implementation; please report this issue");
+                return;
             }
+
+            timeout.tv_sec = 0;
+            timeout.tv_usec = (long) (remaining * 1e6);
+            selectDisplayConnection(&timeout);
         }
     }
 
@@ -1743,19 +1764,7 @@ void _glfwPlatformPollEvents(void)
 void _glfwPlatformWaitEvents(void)
 {
     if (!XPending(_glfw.x11.display))
-    {
-        fd_set fds;
-        const int fd = ConnectionNumber(_glfw.x11.display);
-
-        FD_ZERO(&fds);
-        FD_SET(fd, &fds);
-
-        // select(1) is used instead of an X function like XNextEvent, as the
-        // wait inside those are guarded by the mutex protecting the display
-        // struct, locking out other threads from using X (including GLX)
-        if (select(fd + 1, &fds, NULL, NULL, NULL) < 0)
-            return;
-    }
+        selectDisplayConnection(NULL);
 
     _glfwPlatformPollEvents();
 }
@@ -1912,7 +1921,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
         // XCheckTypedEvent is used instead of XIfEvent in order not to lock
         // other threads out from the display during the entire wait period
         while (!XCheckTypedEvent(_glfw.x11.display, SelectionNotify, &event))
-            ;
+            selectDisplayConnection(NULL);
 
         if (event.xselection.property == None)
             continue;

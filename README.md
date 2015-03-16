@@ -65,7 +65,6 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - Made library compilation fail if any header option macros are defined
  - Removed support for LCC and Borland C++
  - Bugfix: `glfwSetTime` silently accepted invalid values
- - [WGL] Bugfix: The context flags debug bit was not set for OpenGL ES
  - [Cocoa] Bugfix: `NSHighResolutionCapable` was not enabled for test and
                    example programs
  - [Cocoa] Bugfix: `glfwSetWindowSize` did not change the video mode for full
@@ -79,6 +78,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [X11] Bugfix: Mouse button `GLFW_MOUSE_BUTTON_4` was never used
  - [X11] Bugfix: `glfwTerminate` could close an unrelated file descriptor
  - [X11] Bugfix: Some WMs (KWM, Fluxbox) did not respect cursor redefinition
+ - [WGL] Bugfix: The context flags debug bit was not set for OpenGL ES
  - [GLX] Bugfix: The context flags debug bit was not set for OpenGL ES
  - [EGL] Bugfix: The context flags debug bit was not set for OpenGL ES
 

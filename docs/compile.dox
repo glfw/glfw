@@ -317,4 +317,8 @@ available:
  - `_GLFW_USE_RETINA` to have windows use the full resolution of Retina displays
    (recommended)
 
+@note None of the @ref build_macros may be defined during the compilation of
+GLFW.  If you define any of these in your build files, make sure they are not
+applied to the GLFW sources.
+
 */

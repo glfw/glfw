@@ -62,6 +62,7 @@ its behavior.
 that the GLFW functions are defined in a DLL.
 
 The following macros control which OpenGL or OpenGL ES API header is included.
+Only one of these may be defined at a time.
 
 `GLFW_INCLUDE_GLCOREARB` makes the GLFW header include the modern
 `GL/glcorearb.h` header (`OpenGL/gl3.h` on OS X) instead of the regular OpenGL
@@ -85,17 +86,25 @@ header.  This is useful in combination with an extension loading library.
 If none of the above inclusion macros are defined, the standard OpenGL `GL/gl.h`
 header (`OpenGL/gl.h` on OS X) is included.
 
-`GLFW_INCLUDE_GLEXT` makes the GLFW header include the appropriate extension
-header for the OpenGL or OpenGL ES header selected above after and _in addition
-to_ that header.
+The following macros control the inclusion of additional API headers.  Any
+number of these may be defined simultaneously, and/or together with one of the
+above macros.
 
-`GLFW_INCLUDE_GLU` makes the header include the GLU header _in addition to_ the
+`GLFW_INCLUDE_GLEXT` makes the GLFW header include the appropriate extension
+header for the OpenGL or OpenGL ES header selected above after and in addition
+to that header.
+
+`GLFW_INCLUDE_GLU` makes the header include the GLU header in addition to the
 header selected above.  This should only be used with the standard OpenGL header
 and only for legacy code.  GLU has been deprecated and should not be used in new
 code.
 
 @note GLFW does not provide any of the API headers mentioned above.  They must
 be provided by your development environment or your OpenGL or OpenGL ES SDK.
+
+@note None of these macros may be defined during the compilation of GLFW itself.
+If your build includes GLFW and you define any these in your build files, make
+sure they are not applied to the GLFW sources.
 
 
 @section build_link Link with the right libraries

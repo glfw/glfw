@@ -165,7 +165,7 @@ extern "C" {
   * version of the GLFW library.  _GLFW_BUILD_DLL is defined by the GLFW
   * configuration header when compiling the DLL version of the library.
   */
- #error "You must not have both GLFW_DLL and _GLFW_BUILD_DLL defined"
+ #error "You may not have both GLFW_DLL and _GLFW_BUILD_DLL defined"
 #endif
 
 /* GLFWAPI is used to declare public API functions for export

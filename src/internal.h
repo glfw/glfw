@@ -35,6 +35,17 @@
 
 #define _GLFW_VERSION_NUMBER "3.1.1"
 
+#if defined(GLFW_INCLUDE_GLCOREARB) || \
+    defined(GLFW_INCLUDE_ES1)       || \
+    defined(GLFW_INCLUDE_ES2)       || \
+    defined(GLFW_INCLUDE_ES3)       || \
+    defined(GLFW_INCLUDE_NONE)      || \
+    defined(GLFW_INCLUDE_GLEXT)     || \
+    defined(GLFW_INCLUDE_GLU)       || \
+    defined(GLFW_DLL)
+ #error "You may not define any header option macros when compiling GLFW"
+#endif
+
 #if defined(_GLFW_USE_OPENGL)
  // This is the default for glfw3.h
 #elif defined(_GLFW_USE_GLESV1)

@@ -62,6 +62,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
 
 ## Changelog
 
+ - Made library compilation fail if any header option macros are defined
  - Removed support for LCC and Borland C++
  - Bugfix: `glfwSetTime` silently accepted invalid values
  - [WGL] Bugfix: The context flags debug bit was not set for OpenGL ES
@@ -125,6 +126,7 @@ skills.
  - Michael Dickens
  - Jonathan Dummer
  - Ralph Eastwood
+ - Siavash Eliasi
  - Michael Fogleman
  - Gerald Franz
  - GeO4d

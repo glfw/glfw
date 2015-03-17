@@ -182,6 +182,9 @@ CMake files look for OpenGL.
 target_link_libraries(myapp glfw ${OPENGL_glu_LIBRARY} ${GLFW_LIBRARIES})
 @endcode
 
+@warning Don't define `GLFW_INCLUDE_NONE` before `add_subdirectory(path/to/glfw)`
+in your `CMakeLists.txt` file, otherwise you will encounter build errors.
+
 
 @subsection build_link_cmake_pkgconfig With CMake on Unix and installed GLFW binaries
 

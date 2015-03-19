@@ -68,6 +68,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - Bugfix: `glfwSetTime` silently accepted invalid values
  - [Cocoa] Bugfix: `NSHighResolutionCapable` was not enabled for test and
                    example programs
+ - [Cocoa] Bugfix: Sleeping monitors were not included in the monitor list
  - [Cocoa] Bugfix: `glfwSetWindowSize` did not change the video mode for full
                    screen windows
  - [X11] Added support for Cygwin-X

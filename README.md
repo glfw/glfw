@@ -6,8 +6,7 @@ GLFW is a free, Open Source, multi-platform library for OpenGL and OpenGL ES
 application development.  It provides a simple, platform-independent API for
 creating windows and contexts, reading input, handling events, etc.
 
-Version 3.1.1 adds fixes for a number of bugs that together affect all supported
-platforms, most notably workarounds for bugs in some popular window managers.
+Version 3.1.2 is _not yet described_.
 
 If you are new to GLFW, you may find the
 [introductory tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW
@@ -62,27 +61,6 @@ GLFW bundles a number of dependencies in the `deps/` directory.
 
 
 ## Changelog
-
- - Made library compilation fail if any header option macros are defined
- - Removed support for LCC and Borland C++
- - Bugfix: `glfwSetTime` silently accepted invalid values
- - [Cocoa] Bugfix: `NSHighResolutionCapable` was not enabled for test and
-                   example programs
- - [Cocoa] Bugfix: Sleeping monitors were not included in the monitor list
- - [Cocoa] Bugfix: `glfwSetWindowSize` did not change the video mode for full
-                   screen windows
- - [X11] Added support for Cygwin-X
- - [X11] Made XInput2 optional at compile-time
- - [X11] Made Xxf86vm optional at compile-time
- - [X11] Bugfix: Moved `_NET_REQUEST_FRAME_EXTENTS` request to
-                 `glfwGetWindowFrameSize` and added protocol-breaking timeout
-                 as a workaround for broken support in Unity, Fluxbox and Xfwm
- - [X11] Bugfix: Mouse button `GLFW_MOUSE_BUTTON_4` was never used
- - [X11] Bugfix: `glfwTerminate` could close an unrelated file descriptor
- - [X11] Bugfix: Some WMs (KWM, Fluxbox) did not respect cursor redefinition
- - [WGL] Bugfix: The context flags debug bit was not set for OpenGL ES
- - [GLX] Bugfix: The context flags debug bit was not set for OpenGL ES
- - [EGL] Bugfix: The context flags debug bit was not set for OpenGL ES
 
 
 ## Contact

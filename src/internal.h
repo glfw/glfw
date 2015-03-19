@@ -33,7 +33,7 @@
  #include "glfw_config.h"
 #endif
 
-#define _GLFW_VERSION_NUMBER "3.1.1"
+#define _GLFW_VERSION_NUMBER "3.1.2"
 
 #if defined(GLFW_INCLUDE_GLCOREARB) || \
     defined(GLFW_INCLUDE_ES1)       || \

@@ -538,7 +538,7 @@ As long as your source file is encoded as UTF-8, you can use any Unicode
 characters directly in the source.
 
 @code
-glfwSetWindowTitle(window, "おもひでぽろぽろ");
+glfwSetWindowTitle(window, "プラネテス");
 @endcode
 
 

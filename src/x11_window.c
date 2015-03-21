@@ -913,12 +913,6 @@ static void processEvent(XEvent *event)
                 Status status;
                 wchar_t buffer[16];
 
-                if (XFilterEvent(event, None))
-                {
-                    // Discard intermediary (dead key) events for character input
-                    break;
-                }
-
                 const int count = XwcLookupString(window->x11.ic,
                                                   &event->xkey,
                                                   buffer, sizeof(buffer),
@@ -1749,6 +1743,8 @@ void _glfwPlatformPollEvents(void)
     {
         XEvent event;
         XNextEvent(_glfw.x11.display, &event);
+        if (XFilterEvent(event, None))
+            continue;
         processEvent(&event);
     }
 

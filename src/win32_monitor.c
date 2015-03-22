@@ -103,7 +103,7 @@ void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
-    int size = 0, found = 0;
+    int found = 0;
     _GLFWmonitor** monitors = NULL;
     DWORD adapterIndex, displayIndex;
 
@@ -125,6 +125,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         for (displayIndex = 0;  ;  displayIndex++)
         {
             DISPLAY_DEVICEW display;
+            _GLFWmonitor* monitor;
             char* name;
             HDC dc;
 
@@ -133,12 +134,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
             if (!EnumDisplayDevicesW(adapter.DeviceName, displayIndex, &display, 0))
                 break;
-
-            if (found == size)
-            {
-                size += 4;
-                monitors = realloc(monitors, sizeof(_GLFWmonitor*) * size);
-            }
 
             name = _glfwCreateUTF8FromWideString(display.DeviceString);
             if (!name)
@@ -150,35 +145,37 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
             dc = CreateDCW(L"DISPLAY", adapter.DeviceName, NULL, NULL);
 
-            monitors[found] = _glfwAllocMonitor(name,
-                                                GetDeviceCaps(dc, HORZSIZE),
-                                                GetDeviceCaps(dc, VERTSIZE));
+            monitor = _glfwAllocMonitor(name,
+                                        GetDeviceCaps(dc, HORZSIZE),
+                                        GetDeviceCaps(dc, VERTSIZE));
 
             DeleteDC(dc);
             free(name);
 
-            wcscpy(monitors[found]->win32.adapterName, adapter.DeviceName);
-            wcscpy(monitors[found]->win32.displayName, display.DeviceName);
+            wcscpy(monitor->win32.adapterName, adapter.DeviceName);
+            wcscpy(monitor->win32.displayName, display.DeviceName);
 
             WideCharToMultiByte(CP_UTF8, 0,
                                 adapter.DeviceName, -1,
-                                monitors[found]->win32.publicAdapterName,
-                                sizeof(monitors[found]->win32.publicAdapterName),
+                                monitor->win32.publicAdapterName,
+                                sizeof(monitor->win32.publicAdapterName),
                                 NULL, NULL);
 
             WideCharToMultiByte(CP_UTF8, 0,
                                 display.DeviceName, -1,
-                                monitors[found]->win32.publicDisplayName,
-                                sizeof(monitors[found]->win32.publicDisplayName),
+                                monitor->win32.publicDisplayName,
+                                sizeof(monitor->win32.publicDisplayName),
                                 NULL, NULL);
+
+            found++;
+            monitors = realloc(monitors, sizeof(_GLFWmonitor*) * found);
+            monitors[found - 1] = monitor;
 
             if (adapter.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE &&
                 displayIndex == 0)
             {
-                _GLFW_SWAP_POINTERS(monitors[0], monitors[found]);
+                _GLFW_SWAP_POINTERS(monitors[0], monitors[found - 1]);
             }
-
-            found++;
         }
     }
 
@@ -208,12 +205,12 @@ void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
         *ypos = settings.dmPosition.y;
 }
 
-GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
+GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
 {
-    int modeIndex = 0, count = 0;
+    int modeIndex = 0, size = 0;
     GLFWvidmode* result = NULL;
 
-    *found = 0;
+    *count = 0;
 
     for (;;)
     {
@@ -229,11 +226,9 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 
         modeIndex++;
 
+        // Skip modes with less than 15 BPP
         if (dm.dmBitsPerPel < 15)
-        {
-            // Skip modes with less than 15 BPP
             continue;
-        }
 
         mode.width  = dm.dmPelsWidth;
         mode.height = dm.dmPelsHeight;
@@ -243,30 +238,28 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
                       &mode.greenBits,
                       &mode.blueBits);
 
-        for (i = 0;  i < *found;  i++)
+        for (i = 0;  i < *count;  i++)
         {
             if (_glfwCompareVideoModes(result + i, &mode) == 0)
                 break;
         }
 
-        if (i < *found)
-        {
-            // This is a duplicate, so skip it
+        // Skip duplicate modes
+        if (i < *count)
             continue;
-        }
 
-        if (*found == count)
+        if (*count == size)
         {
-            if (count)
-                count *= 2;
+            if (*count)
+                size *= 2;
             else
-                count = 128;
+                size = 128;
 
-            result = (GLFWvidmode*) realloc(result, count * sizeof(GLFWvidmode));
+            result = (GLFWvidmode*) realloc(result, size * sizeof(GLFWvidmode));
         }
 
-        result[*found] = mode;
-        (*found)++;
+        (*count)++;
+        result[*count - 1] = mode;
     }
 
     return result;

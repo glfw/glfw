@@ -252,29 +252,20 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     *count = 0;
 
     CGGetOnlineDisplayList(0, NULL, &displayCount);
-
     displays = calloc(displayCount, sizeof(CGDirectDisplayID));
     monitors = calloc(displayCount, sizeof(_GLFWmonitor*));
 
     CGGetOnlineDisplayList(displayCount, displays, &displayCount);
-
     NSArray* screens = [NSScreen screens];
 
     for (i = 0;  i < displayCount;  i++)
     {
-        int j;
+        NSUInteger j;
+        _GLFWmonitor* monitor;
 
         CGDirectDisplayID screenDisplayID = CGDisplayMirrorsDisplay(displays[i]);
         if (screenDisplayID == kCGNullDirectDisplay)
             screenDisplayID = displays[i];
-
-        const CGSize size = CGDisplayScreenSize(displays[i]);
-        char* name = getDisplayName(displays[i]);
-
-        monitors[found] = _glfwAllocMonitor(name, size.width, size.height);
-        monitors[found]->ns.displayID = displays[i];
-
-        free(name);
 
         for (j = 0;  j < [screens count];  j++)
         {
@@ -283,19 +274,24 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             NSNumber* number = [dictionary objectForKey:@"NSScreenNumber"];
 
             if ([number unsignedIntegerValue] == screenDisplayID)
-            {
-                monitors[found]->ns.screen = screen;
                 break;
-            }
         }
 
-        if (monitors[found]->ns.screen)
-            found++;
-        else
-        {
-            _glfwFreeMonitor(monitors[found]);
-            monitors[found] = NULL;
-        }
+        // Skip displays that has no screen
+        if (j == [screens count])
+            continue;
+
+        const CGSize size = CGDisplayScreenSize(displays[i]);
+        char* name = getDisplayName(displays[i]);
+
+        monitor = _glfwAllocMonitor(name, size.width, size.height);
+        monitor->ns.displayID = displays[i];
+        monitor->ns.screen = [screens objectAtIndex:j];
+
+        free(name);
+
+        found++;
+        monitors[found - 1] = monitor;
     }
 
     free(displays);
@@ -319,22 +315,22 @@ void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
         *ypos = (int) bounds.origin.y;
 }
 
-GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
+GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
 {
     CFArrayRef modes;
-    CFIndex count, i, j;
+    CFIndex found, i, j;
     GLFWvidmode* result;
     CVDisplayLinkRef link;
+
+    *count = 0;
 
     CVDisplayLinkCreateWithCGDisplay(monitor->ns.displayID, &link);
 
     modes = CGDisplayCopyAllDisplayModes(monitor->ns.displayID, NULL);
-    count = CFArrayGetCount(modes);
+    found = CFArrayGetCount(modes);
+    result = calloc(found, sizeof(GLFWvidmode));
 
-    result = calloc(count, sizeof(GLFWvidmode));
-    *found = 0;
-
-    for (i = 0;  i < count;  i++)
+    for (i = 0;  i < found;  i++)
     {
         CGDisplayModeRef dm = (CGDisplayModeRef) CFArrayGetValueAtIndex(modes, i);
         if (!modeIsGood(dm))
@@ -342,24 +338,21 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 
         const GLFWvidmode mode = vidmodeFromCGDisplayMode(dm, link);
 
-        for (j = 0;  j < *found;  j++)
+        for (j = 0;  j < *count;  j++)
         {
             if (_glfwCompareVideoModes(result + j, &mode) == 0)
                 break;
         }
 
-        if (i < *found)
-        {
-            // This is a duplicate, so skip it
+        // Skip duplicate modes
+        if (i < *count)
             continue;
-        }
 
-        result[*found] = mode;
-        (*found)++;
+        (*count)++;
+        result[*count - 1] = mode;
     }
 
     CFRelease(modes);
-
     CVDisplayLinkRelease(link);
     return result;
 }

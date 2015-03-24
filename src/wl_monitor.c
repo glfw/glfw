@@ -180,10 +180,9 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         _GLFWmonitor* origMonitor = _glfw.wl.monitors[i];
         monitor = calloc(1, sizeof(_GLFWmonitor));
 
-        monitor->modes =
-            _glfwPlatformGetVideoModes(origMonitor,
-                                       &origMonitor->wl.modesCount);
         *monitor = *_glfw.wl.monitors[i];
+        monitor->modes = _glfwPlatformGetVideoModes(origMonitor, &origMonitor->wl.modesCount);
+        monitor->modeCount = origMonitor->wl.modesCount;
         monitors[i] = monitor;
     }
 

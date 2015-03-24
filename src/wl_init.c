@@ -627,6 +627,8 @@ void _glfwPlatformTerminate(void)
         }
         free(_glfw.wl.monitors);
     }
+
+    xkb_context_unref(_glfw.wl.xkb.context);
 }
 
 const char* _glfwPlatformGetVersionString(void)

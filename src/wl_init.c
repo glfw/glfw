@@ -612,6 +612,8 @@ void _glfwPlatformTerminate(void)
         wl_display_flush(_glfw.wl.display);
     if (_glfw.wl.display)
         wl_display_disconnect(_glfw.wl.display);
+    if (_glfw.wl.monitors)
+        free(_glfw.wl.monitors);
 }
 
 const char* _glfwPlatformGetVersionString(void)

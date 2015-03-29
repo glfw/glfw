@@ -305,6 +305,10 @@ GLFWAPI GLFWmonitor** glfwGetMonitors(int* count)
 GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+    if (!_glfw.monitorCount)
+        return NULL;
+
     return (GLFWmonitor*) _glfw.monitors[0];
 }
 

@@ -62,6 +62,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
 
 ## Changelog
 
+ - Bugfix: Initialization failed on headless systems
+
 
 ## Contact
 

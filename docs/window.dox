@@ -762,6 +762,37 @@ This is `GLFW_LOSE_CONTEXT_ON_RESET` or `GLFW_NO_RESET_NOTIFICATION` if the
 window's context supports robustness, or `GLFW_NO_ROBUSTNESS` otherwise.
 
 
+@subsubsection window_attribs_fb Framebuffer related attributes
+
+The attributes of the default framebuffer (i.e. the framebuffer attached to the
+window) are not provided by this function but can be queried with both OpenGL
+and OpenGL ES.
+
+If you are using version 3.0 or later of OpenGL or OpenGL ES, the
+`glGetFramebufferAttachmentParameteriv` function can be used to retrieve the
+number of bits for the red, green, blue, alpha, depth and stencil buffer
+channels.  Otherwise, the `glGetIntegerv` function can be used.
+
+The number of MSAA samples are always retrieved with `glGetIntegerv`.  For
+contexts supporting framebuffer objects, the number of samples of the currently
+bound framebuffer is returned.
+
+Attribute    | glGetIntegerv     | glGetFramebufferAttachmentParameteriv
+------------ | ----------------- | -------------------------------------
+Red bits     | `GL_RED_BITS`     | `GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE`
+Green bits   | `GL_GREEN_BITS`   | `GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE`
+Blue bits    | `GL_BLUE_BITS`    | `GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE`
+Alpha bits   | `GL_ALPHA_BITS`   | `GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE`
+Depth bits   | `GL_DEPTH_BITS`   | `GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE`
+Stencil bits | `GL_STENCIL_BITS` | `GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE`
+MSAA samples | `GL_SAMPLES`      | _Not provided by this function_
+
+When calling `glGetFramebufferAttachmentParameteriv`, the red, green, blue and
+alpha sizes can be queried from the `GL_BACK_LEFT`, while the depth and stencil
+sizes can be queried from the `GL_DEPTH` and `GL_STENCIL` attachments,
+respectively.
+
+
 @section buffer_swap Buffer swapping
 
 GLFW windows are by default double buffered.  That means that you have two

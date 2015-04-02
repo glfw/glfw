@@ -530,9 +530,6 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
 
     _GLFW_REQUIRE_INIT();
 
-    if (_glfwPlatformGetCurrentContext() == window)
-        return;
-
     _glfwPlatformMakeContextCurrent(window);
 }
 

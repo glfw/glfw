@@ -64,7 +64,9 @@ if (NOT CMAKE_VERSION VERSION_LESS "2.8.11")
     # include and/or export public, private, and interface include
     # directories.  TODO If/when cmake_minimum_required increases to
     # >=2.8.11, call this command unconditionally.
-    target_include_directories(glfw PUBLIC $<INSTALL_INTERFACE:${GLFW_INSTALL_INCLUDE_DIR}>)
+    target_include_directories(glfw PUBLIC 
+        $<INSTALL_INTERFACE:${GLFW_INSTALL_INCLUDE_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
 endif()
 
 set_target_properties(glfw PROPERTIES

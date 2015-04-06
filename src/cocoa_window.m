@@ -87,6 +87,32 @@ static GLboolean enterFullscreenMode(_GLFWwindow* window)
 
     status = _glfwSetVideoMode(window->monitor, &window->videoMode);
 
+    // NOTE: Apple's documentation of [NSScreen screens] mentions that,
+    //       "The [screens] array should not be cached. Screens can be
+    //       added, removed, or dynamically reconfigured at any time."
+    //       Because of this, window->monitor->ns.screen may not point
+    //       to a valid object so [window->monitor->ns.screen frame]
+    //       used below can crash an application. The follow code
+    //       provides a quick-and-dirty fix to this problem.
+    NSScreen *cached = window->monitor->ns.screen;
+    NSArray *current = [NSScreen screens];
+
+    bool updated = YES;
+    for (NSScreen *screen in current)
+        if (cached == screen)
+            updated = NO;
+
+    if (updated)
+        for(NSScreen *screen in current) {
+                NSDictionary* dictionary = [screen deviceDescription];
+                NSNumber *number = [dictionary objectForKey:@"NSScreenNumber"];
+                if ([number unsignedIntegerValue] ==
+		    window->monitor->ns.displayID) {
+                    window->monitor->ns.screen = screen;
+                    break;
+                }
+        }
+
     // NOTE: The window is resized despite mode setting failure to make
     //       glfwSetWindowSize more robust
     [window->ns.object setFrame:[window->monitor->ns.screen frame]
@@ -1286,4 +1312,3 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
     _GLFW_REQUIRE_INIT_OR_RETURN(nil);
     return window->ns.object;
 }
-

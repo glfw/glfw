@@ -86,7 +86,7 @@ void _glfwInputError(int error, const char* format, ...)
 {
     if (_glfwErrorCallback)
     {
-        char buffer[16384];
+        char buffer[8192];
         const char* description;
 
         if (format)

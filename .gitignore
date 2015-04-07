@@ -3,12 +3,16 @@
 _ReSharper*
 *.opensdf
 *.sdf
+*.suo
 *.dir
 *.vcxproj*
 *.sln
 Win32
+x64
 Debug
 Release
+MinSizeRel
+RelWithDebInfo
 
 # CMake files
 Makefile

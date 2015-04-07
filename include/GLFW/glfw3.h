@@ -2035,6 +2035,14 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  @return The value of the attribute, or zero if an
  *  [error](@ref error_handling) occurred.
  *
+ *  @remarks Framebuffer related hints are not window attributes.  See @ref
+ *  window_attribs_fb for more information.
+ *
+ *  @remarks Zero is a valid value for many window and context related
+ *  attributes so you cannot use a return value of zero as an indication of
+ *  errors.  However, this function should not fail as long as it is passed
+ *  valid arguments and the library has been [initialized](@ref intro_init).
+ *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
  *

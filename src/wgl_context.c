@@ -176,7 +176,8 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
 
         if (window->wgl.ARB_pixel_format)
         {
-            // Get pixel format attributes through WGL_ARB_pixel_format
+            // Get pixel format attributes through "modern" extension
+
             if (!getPixelFormatAttrib(window, n, WGL_SUPPORT_OPENGL_ARB) ||
                 !getPixelFormatAttrib(window, n, WGL_DRAW_TO_WINDOW_ARB))
             {
@@ -228,7 +229,7 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
         {
             PIXELFORMATDESCRIPTOR pfd;
 
-            // Get pixel format attributes through old-fashioned PFDs
+            // Get pixel format attributes through legacy PFDs
 
             if (!DescribePixelFormat(window->wgl.dc,
                                      n,
@@ -437,12 +438,11 @@ int _glfwCreateContext(_GLFWwindow* window,
             }
         }
 
+        // NOTE: Only request an explicitly versioned context when necessary, as
+        //       explicitly requesting version 1.0 does not always return the
+        //       highest version supported by the driver
         if (ctxconfig->major != 1 || ctxconfig->minor != 0)
         {
-            // NOTE: Only request an explicitly versioned context when
-            //       necessary, as explicitly requesting version 1.0 does not
-            //       always return the highest available version
-
             setWGLattrib(WGL_CONTEXT_MAJOR_VERSION_ARB, ctxconfig->major);
             setWGLattrib(WGL_CONTEXT_MINOR_VERSION_ARB, ctxconfig->minor);
         }
@@ -579,26 +579,16 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
 
     if (fbconfig->samples > 0)
     {
-        // We want FSAA, but can we get it?
-        // FSAA is not a hard constraint, so otherwise we just don't care
-
+        // MSAA is not a hard constraint, so do nothing if it's not supported
         if (window->wgl.ARB_multisample && window->wgl.ARB_pixel_format)
-        {
-            // We appear to have both the extension and the means to ask for it
             required = GL_TRUE;
-        }
     }
 
     if (fbconfig->sRGB)
     {
-        // We want sRGB, but can we get it?
-        // sRGB is not a hard constraint, so otherwise we just don't care
-
+        // sRGB is not a hard constraint, so do nothing if it's not supported
         if (window->wgl.ARB_framebuffer_sRGB && window->wgl.ARB_pixel_format)
-        {
-            // We appear to have both the extension and the means to ask for it
             required = GL_TRUE;
-        }
     }
 
     if (required)
@@ -632,12 +622,10 @@ void _glfwPlatformSwapInterval(int interval)
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
 #if !defined(_GLFW_USE_DWM_SWAP_INTERVAL)
+    // HACK: Don't enabled vsync when desktop compositing is enabled, as it
+    //       leads to severe frame jitter on some cards
     if (_glfwIsCompositionEnabled() && interval)
-    {
-        // Don't enabled vsync when desktop compositing is enabled, as it leads
-        // to frame jitter
         return;
-    }
 #endif
 
     if (window->wgl.EXT_swap_control)

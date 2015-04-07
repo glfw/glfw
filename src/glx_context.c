@@ -61,13 +61,11 @@ static GLboolean chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* resul
     const char* vendor;
     GLboolean trustWindowBit = GL_TRUE;
 
+    // HACK: This is a (hopefully temporary) workaround for Chromium
+    //       (VirtualBox GL) not setting the window bit on any GLXFBConfigs
     vendor = glXGetClientString(_glfw.x11.display, GLX_VENDOR);
     if (strcmp(vendor, "Chromium") == 0)
-    {
-        // HACK: This is a (hopefully temporary) workaround for Chromium
-        //       (VirtualBox GL) not setting the window bit on any GLXFBConfigs
         trustWindowBit = GL_FALSE;
-    }
 
     nativeConfigs = glXGetFBConfigs(_glfw.x11.display, _glfw.x11.screen,
                                     &nativeCount);
@@ -85,25 +83,19 @@ static GLboolean chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* resul
         const GLXFBConfig n = nativeConfigs[i];
         _GLFWfbconfig* u = usableConfigs + usableCount;
 
+        // Only consider GLXFBConfigs with associated visuals
         if (!getFBConfigAttrib(n, GLX_VISUAL_ID))
-        {
-            // Only consider GLXFBConfigs with associated visuals
             continue;
-        }
 
+        // Only consider RGBA GLXFBConfigs
         if (!(getFBConfigAttrib(n, GLX_RENDER_TYPE) & GLX_RGBA_BIT))
-        {
-            // Only consider RGBA GLXFBConfigs
             continue;
-        }
 
+        // Only consider window GLXFBConfigs
         if (!(getFBConfigAttrib(n, GLX_DRAWABLE_TYPE) & GLX_WINDOW_BIT))
         {
             if (trustWindowBit)
-            {
-                // Only consider window GLXFBConfigs
                 continue;
-            }
         }
 
         u->redBits = getFBConfigAttrib(n, GLX_RED_SIZE);
@@ -304,7 +296,6 @@ int _glfwCreateContext(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    // Retrieve the corresponding visual
     window->glx.visual = glXGetVisualFromFBConfig(_glfw.x11.display, native);
     if (!window->glx.visual)
     {
@@ -404,12 +395,11 @@ int _glfwCreateContext(_GLFWwindow* window,
             }
         }
 
+        // NOTE: Only request an explicitly versioned context when necessary, as
+        //       explicitly requesting version 1.0 does not always return the
+        //       highest version supported by the driver
         if (ctxconfig->major != 1 || ctxconfig->minor != 0)
         {
-            // NOTE: Only request an explicitly versioned context when
-            //       necessary, as explicitly requesting version 1.0 does not
-            //       always return the highest available version
-
             setGLXattrib(GLX_CONTEXT_MAJOR_VERSION_ARB, ctxconfig->major);
             setGLXattrib(GLX_CONTEXT_MINOR_VERSION_ARB, ctxconfig->minor);
         }
@@ -429,12 +419,12 @@ int _glfwCreateContext(_GLFWwindow* window,
                                               True,
                                               attribs);
 
+        // HACK: This is a fallback for broken versions of the Mesa
+        //       implementation of GLX_ARB_create_context_profile that fail
+        //       default 1.0 context creation with a GLXBadProfileARB error in
+        //       violation of the extension spec
         if (!window->glx.context)
         {
-            // HACK: This is a fallback for the broken Mesa implementation of
-            //       GLX_ARB_create_context_profile, which fails default 1.0
-            //       context creation with a GLXBadProfileARB error in violation
-            //       of the extension spec
             if (_glfw.x11.errorCode == _glfw.glx.errorBase + GLXBadProfileARB &&
                 ctxconfig->api == GLFW_OPENGL_API &&
                 ctxconfig->profile == GLFW_OPENGL_ANY_PROFILE &&
@@ -522,12 +512,11 @@ void _glfwPlatformSwapInterval(int interval)
 
 int _glfwPlatformExtensionSupported(const char* extension)
 {
-    const GLubyte* extensions;
+    const GLubyte* extensions =
+        (const GLubyte*) glXQueryExtensionsString(_glfw.x11.display,
+                                                  _glfw.x11.screen);
 
-    // Get list of GLX extensions
-    extensions = (const GLubyte*) glXQueryExtensionsString(_glfw.x11.display,
-                                                           _glfw.x11.screen);
-    if (extensions != NULL)
+    if (extensions)
     {
         if (_glfwStringInExtensionString(extension, extensions))
             return GL_TRUE;

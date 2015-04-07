@@ -112,24 +112,18 @@ static GLboolean chooseFBConfigs(const _GLFWctxconfig* ctxconfig,
         _GLFWfbconfig* u = usableConfigs + usableCount;
 
 #if defined(_GLFW_X11)
+        // Only consider EGLConfigs with associated visuals
         if (!getConfigAttrib(n, EGL_NATIVE_VISUAL_ID))
-        {
-            // Only consider EGLConfigs with associated visuals
             continue;
-        }
 #endif // _GLFW_X11
 
+        // Only consider RGB(A) EGLConfigs
         if (!(getConfigAttrib(n, EGL_COLOR_BUFFER_TYPE) & EGL_RGB_BUFFER))
-        {
-            // Only consider RGB(A) EGLConfigs
             continue;
-        }
 
+        // Only consider window EGLConfigs
         if (!(getConfigAttrib(n, EGL_SURFACE_TYPE) & EGL_WINDOW_BIT))
-        {
-            // Only consider window EGLConfigs
             continue;
-        }
 
         if (ctxconfig->api == GLFW_OPENGL_ES_API)
         {
@@ -270,8 +264,8 @@ int _glfwCreateContext(_GLFWwindow* window,
         }
         else
         {
-            // some EGL drivers don't implement the EGL_NATIVE_VISUAL_ID
-            // attribute, so attempt to find the closest match.
+            // Some EGL drivers do not implement the EGL_NATIVE_VISUAL_ID
+            // attribute, so attempt to find the closest match
 
             eglGetConfigAttrib(_glfw.egl.display, config,
                                EGL_RED_SIZE, &redBits);

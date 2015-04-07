@@ -1718,6 +1718,9 @@ GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int value);
  *  @param[in] window The window whose title to change.
  *  @param[in] title The UTF-8 encoded window title.
  *
+ *  @remarks __OS X:__ The window title will not be updated until the next time
+ *  you process events.
+ *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
  *

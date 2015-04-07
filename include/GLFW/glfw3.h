@@ -1551,8 +1551,8 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  requested, as not all parameters and hints are
  *  [hard constraints](@ref window_hints_hard).  This includes the size of the
  *  window, especially for full screen windows.  To query the actual attributes
- *  of the created window, framebuffer and context, use queries like @ref
- *  glfwGetWindowAttrib and @ref glfwGetWindowSize.
+ *  of the created window, framebuffer and context, see @ref
+ *  glfwGetWindowAttrib, @ref glfwGetWindowSize and @ref glfwGetFramebufferSize.
  *
  *  To create a full screen window, you need to specify the monitor the window
  *  will cover.  If no monitor is specified, windowed mode will be used.  Unless

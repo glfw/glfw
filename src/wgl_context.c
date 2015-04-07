@@ -133,7 +133,9 @@ static int getPixelFormatAttrib(_GLFWwindow* window, int pixelFormat, int attrib
                                                pixelFormat,
                                                0, 1, &attrib, &value))
     {
-        // NOTE: We should probably handle this error somehow
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "WGL: Failed to retrieve pixel format attribute %i",
+                        attrib);
         return 0;
     }
 

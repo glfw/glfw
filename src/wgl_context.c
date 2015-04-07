@@ -122,11 +122,12 @@ static void initWGLExtensions(_GLFWwindow* window)
 }
 
 // Returns the specified attribute of the specified pixel format
-// NOTE: Do not call this unless we have found WGL_ARB_pixel_format
 //
 static int getPixelFormatAttrib(_GLFWwindow* window, int pixelFormat, int attrib)
 {
     int value = 0;
+
+    assert(window->wgl.ARB_pixel_format);
 
     if (!window->wgl.GetPixelFormatAttribivARB(window->wgl.dc,
                                                pixelFormat,

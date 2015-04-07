@@ -127,15 +127,14 @@ cd <glfw-root-dir>
 cmake .
 @endcode
 
-To make an out-of-tree build, make another directory, enter it and run CMake
-with the (relative or absolute) path to the root of the source tree as an
-argument.
+To make an out-of-tree build, make a directory outside of the source tree, enter
+it and run CMake with the (relative or absolute) path to the root of the source
+tree as an argument.
 
 @code{.sh}
-cd <glfw-root-dir>
-mkdir build
-cd build
-cmake ..
+mkdir glfw-build
+cd glfw-build
+cmake <glfw-root-dir>
 @endcode
 
 Once you have generated the project files or makefiles for your chosen

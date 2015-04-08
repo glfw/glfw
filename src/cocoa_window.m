@@ -32,6 +32,27 @@
 #include <crt_externs.h>
 
 
+// Returns the screen that is specified by a displayID
+//
+static NSScreen *getScreen(CGDirectDisplayID displayID)
+{
+    // NOTE: Apple's documentation of [NSScreen screens] mentions that,
+    //       "The (screens) array should not be cached. Screens can be
+    //       added, removed, or dynamically reconfigured at any time."
+    //       Because of this, we simply obtain the screen from a
+    //       displayID whenever we need it.
+    NSArray *screens = [NSScreen screens];
+
+    for(NSScreen *screen in screens) {
+        NSDictionary *dictionary = [screen deviceDescription];
+        NSNumber     *number     = [dictionary objectForKey:@"NSScreenNumber"];
+        if ([number unsignedIntegerValue] == displayID)
+            return screen;
+    }
+
+    return nil;
+}
+
 // Returns the specified standard cursor
 //
 static NSCursor* getStandardCursor(int shape)
@@ -89,8 +110,8 @@ static GLboolean enterFullscreenMode(_GLFWwindow* window)
 
     // NOTE: The window is resized despite mode setting failure to make
     //       glfwSetWindowSize more robust
-    [window->ns.object setFrame:[window->monitor->ns.screen frame]
-                        display:YES];
+    [window->ns.object setFrame:[getScreen(window->monitor->ns.displayID) frame]
+			display:YES];
 
     return status;
 }
@@ -838,7 +859,7 @@ static GLboolean createWindow(_GLFWwindow* window,
     NSRect contentRect;
 
     if (wndconfig->monitor)
-        contentRect = [wndconfig->monitor->ns.screen frame];
+        contentRect = [getScreen(wndconfig->monitor->ns.displayID) frame];
     else
         contentRect = NSMakeRect(0, 0, wndconfig->width, wndconfig->height);
 
@@ -1286,4 +1307,3 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
     _GLFW_REQUIRE_INIT_OR_RETURN(nil);
     return window->ns.object;
 }
-

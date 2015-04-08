@@ -92,7 +92,6 @@ typedef struct _GLFWmonitorNS
 {
     CGDirectDisplayID   displayID;
     CGDisplayModeRef    previousMode;
-    id                  screen;
 
 } _GLFWmonitorNS;
 

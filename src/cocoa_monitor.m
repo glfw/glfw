@@ -286,7 +286,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
         monitor = _glfwAllocMonitor(name, size.width, size.height);
         monitor->ns.displayID = displays[i];
-        monitor->ns.screen = [screens objectAtIndex:j];
 
         free(name);
 

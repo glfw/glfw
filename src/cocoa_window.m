@@ -32,20 +32,16 @@
 #include <crt_externs.h>
 
 
-// Returns the screen that is specified by a displayID
+// Returns the NSScreen corresponding to the specified CGDirectDisplayID
 //
-static NSScreen *getScreen(CGDirectDisplayID displayID)
+static NSScreen* getScreen(CGDirectDisplayID displayID)
 {
-    // NOTE: Apple's documentation of [NSScreen screens] mentions that,
-    //       "The (screens) array should not be cached. Screens can be
-    //       added, removed, or dynamically reconfigured at any time."
-    //       Because of this, we simply obtain the screen from a
-    //       displayID whenever we need it.
-    NSArray *screens = [NSScreen screens];
+    NSArray* screens = [NSScreen screens];
 
-    for(NSScreen *screen in screens) {
-        NSDictionary *dictionary = [screen deviceDescription];
-        NSNumber     *number     = [dictionary objectForKey:@"NSScreenNumber"];
+    for (NSScreen* screen in screens)
+    {
+        NSDictionary* dictionary = [screen deviceDescription];
+        NSNumber* number = [dictionary objectForKey:@"NSScreenNumber"];
         if ([number unsignedIntegerValue] == displayID)
             return screen;
     }

@@ -506,11 +506,10 @@ write_basic_package_version_file(
     COMPATIBILITY SameMajorVersion)
 
 # build tree package export
-configure_package_config_file(src/glfw3Config.cmake.in
+configure_file(
+    src/glfw3BuildConfig.cmake.in
     glfw3Config.cmake
-    INSTALL_DESTINATION ${GLFW_BINARY_DIR}
-    PATH_VARS CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR
-    NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+    COPYONLY)
 
 export(
     EXPORT glfwTargets

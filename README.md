@@ -63,6 +63,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
 ## Changelog
 
  - Bugfix: Initialization failed on headless systems
+ - Bugfix: The cached current context could get out of sync
 
 
 ## Contact
@@ -171,6 +172,7 @@ skills.
  - Julian Squires
  - Johannes Stein
  - Justin Stoecker
+ - Elviss Strazdins
  - Nathan Sweet
  - TTK-Bandit
  - Sergey Tikhomirov

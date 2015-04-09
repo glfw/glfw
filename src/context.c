@@ -527,9 +527,7 @@ int _glfwStringInExtensionString(const char* string, const GLubyte* extensions)
 GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-
     _GLFW_REQUIRE_INIT();
-
     _glfwPlatformMakeContextCurrent(window);
 }
 

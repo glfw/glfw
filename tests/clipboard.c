@@ -34,6 +34,12 @@
 
 #include "getopt.h"
 
+#if defined(__APPLE__)
+ #define MODIFIER GLFW_MOD_SUPER
+#else
+ #define MODIFIER GLFW_MOD_CONTROL
+#endif
+
 static void usage(void)
 {
     printf("Usage: clipboard [-h]\n");
@@ -56,7 +62,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             break;
 
         case GLFW_KEY_V:
-            if (mods == GLFW_MOD_CONTROL)
+            if (mods == MODIFIER)
             {
                 const char* string;
 
@@ -69,7 +75,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             break;
 
         case GLFW_KEY_C:
-            if (mods == GLFW_MOD_CONTROL)
+            if (mods == MODIFIER)
             {
                 const char* string = "Hello GLFW World!";
                 glfwSetClipboardString(window, string);

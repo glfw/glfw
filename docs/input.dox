@@ -104,15 +104,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 @endcode
 
 The action is one of `GLFW_PRESS`, `GLFW_REPEAT` or `GLFW_RELEASE`.  The key
-will be `GLFW_KEY_UNKNOWN` if GLFW lacks a key token for it.  These keys still
-have unique, if platform-specific scancodes.
+will be `GLFW_KEY_UNKNOWN` if GLFW lacks a key token for it, for example
+_E-mail_ and _Play_ keys.
 
-The scancode is unique for every key but is platform-specific, so a scancode
-will map to different keys on different platforms.
-
-The key will be `GLFW_KEY_UNKNOWN` for special keys like _E-mail_ or _Play_ that
-don't have a key token.  Those keys will still have unique, if platform-specific
-scancodes.
+The scancode is unique for every key, regardless of whether it has a key token.
+Scancodes are platform-specific but consistent over time, so keys will have
+different scancodes depending on the platform but they are safe to save to disk.
 
 Key states for [named keys](@ref keys) are also saved in per-window state arrays
 that can be polled with @ref glfwGetKey.

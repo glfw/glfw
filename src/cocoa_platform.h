@@ -59,7 +59,7 @@ typedef void* id;
 typedef struct _GLFWwindowNS
 {
     id              object;
-    id	            delegate;
+    id              delegate;
     id              view;
     unsigned int    modifierFlags;
 

@@ -107,7 +107,7 @@ static GLboolean enterFullscreenMode(_GLFWwindow* window)
     // NOTE: The window is resized despite mode setting failure to make
     //       glfwSetWindowSize more robust
     [window->ns.object setFrame:[getScreen(window->monitor->ns.displayID) frame]
-			display:YES];
+                        display:YES];
 
     return status;
 }

@@ -380,20 +380,17 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     if (window->wgl.ARB_create_context)
     {
-        int index = 0, mask = 0, flags = 0, strategy = 0;
+        int index = 0, mask = 0, flags = 0;
 
         if (ctxconfig->api == GLFW_OPENGL_API)
         {
             if (ctxconfig->forward)
                 flags |= WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
 
-            if (ctxconfig->profile)
-            {
-                if (ctxconfig->profile == GLFW_OPENGL_CORE_PROFILE)
-                    mask |= WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
-                else if (ctxconfig->profile == GLFW_OPENGL_COMPAT_PROFILE)
-                    mask |= WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
-            }
+            if (ctxconfig->profile == GLFW_OPENGL_CORE_PROFILE)
+                mask |= WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
+            else if (ctxconfig->profile == GLFW_OPENGL_COMPAT_PROFILE)
+                mask |= WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
         }
         else
             mask |= WGL_CONTEXT_ES2_PROFILE_BIT_EXT;
@@ -406,9 +403,15 @@ int _glfwCreateContext(_GLFWwindow* window,
             if (window->wgl.ARB_create_context_robustness)
             {
                 if (ctxconfig->robustness == GLFW_NO_RESET_NOTIFICATION)
-                    strategy = WGL_NO_RESET_NOTIFICATION_ARB;
+                {
+                    setWGLattrib(WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
+                                 WGL_NO_RESET_NOTIFICATION_ARB);
+                }
                 else if (ctxconfig->robustness == GLFW_LOSE_CONTEXT_ON_RESET)
-                    strategy = WGL_LOSE_CONTEXT_ON_RESET_ARB;
+                {
+                    setWGLattrib(WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
+                                 WGL_LOSE_CONTEXT_ON_RESET_ARB);
+                }
 
                 flags |= WGL_CONTEXT_ROBUST_ACCESS_BIT_ARB;
             }
@@ -446,9 +449,6 @@ int _glfwCreateContext(_GLFWwindow* window,
 
         if (mask)
             setWGLattrib(WGL_CONTEXT_PROFILE_MASK_ARB, mask);
-
-        if (strategy)
-            setWGLattrib(WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB, strategy);
 
         setWGLattrib(0, 0);
 

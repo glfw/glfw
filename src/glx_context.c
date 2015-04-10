@@ -350,20 +350,17 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     if (_glfw.glx.ARB_create_context)
     {
-        int index = 0, mask = 0, flags = 0, strategy = 0;
+        int index = 0, mask = 0, flags = 0;
 
         if (ctxconfig->api == GLFW_OPENGL_API)
         {
             if (ctxconfig->forward)
                 flags |= GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
 
-            if (ctxconfig->profile)
-            {
-                if (ctxconfig->profile == GLFW_OPENGL_CORE_PROFILE)
-                    mask |= GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
-                else if (ctxconfig->profile == GLFW_OPENGL_COMPAT_PROFILE)
-                    mask |= GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
-            }
+            if (ctxconfig->profile == GLFW_OPENGL_CORE_PROFILE)
+                mask |= GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
+            else if (ctxconfig->profile == GLFW_OPENGL_COMPAT_PROFILE)
+                mask |= GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
         }
         else
             mask |= GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
@@ -376,9 +373,15 @@ int _glfwCreateContext(_GLFWwindow* window,
             if (_glfw.glx.ARB_create_context_robustness)
             {
                 if (ctxconfig->robustness == GLFW_NO_RESET_NOTIFICATION)
-                    strategy = GLX_NO_RESET_NOTIFICATION_ARB;
+                {
+                    setGLXattrib(GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
+                                 GLX_NO_RESET_NOTIFICATION_ARB);
+                }
                 else if (ctxconfig->robustness == GLFW_LOSE_CONTEXT_ON_RESET)
-                    strategy = GLX_LOSE_CONTEXT_ON_RESET_ARB;
+                {
+                    setGLXattrib(GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
+                                 GLX_LOSE_CONTEXT_ON_RESET_ARB);
+                }
 
                 flags |= GLX_CONTEXT_ROBUST_ACCESS_BIT_ARB;
             }
@@ -416,9 +419,6 @@ int _glfwCreateContext(_GLFWwindow* window,
 
         if (flags)
             setGLXattrib(GLX_CONTEXT_FLAGS_ARB, flags);
-
-        if (strategy)
-            setGLXattrib(GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB, strategy);
 
         setGLXattrib(None, None);
 

@@ -320,17 +320,17 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     if (_glfw.egl.KHR_create_context)
     {
-        int index = 0, mask = 0, flags = 0, strategy = 0;
+        int index = 0, mask = 0, flags = 0;
 
         if (ctxconfig->api == GLFW_OPENGL_API)
         {
+            if (ctxconfig->forward)
+                flags |= EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR;
+
             if (ctxconfig->profile == GLFW_OPENGL_CORE_PROFILE)
                 mask |= EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR;
             else if (ctxconfig->profile == GLFW_OPENGL_COMPAT_PROFILE)
                 mask |= EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR;
-
-            if (ctxconfig->forward)
-                flags |= EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR;
         }
 
         if (ctxconfig->debug)
@@ -339,9 +339,15 @@ int _glfwCreateContext(_GLFWwindow* window,
         if (ctxconfig->robustness)
         {
             if (ctxconfig->robustness == GLFW_NO_RESET_NOTIFICATION)
-                strategy = EGL_NO_RESET_NOTIFICATION_KHR;
+            {
+                setEGLattrib(EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY_KHR,
+                             EGL_NO_RESET_NOTIFICATION_KHR);
+            }
             else if (ctxconfig->robustness == GLFW_LOSE_CONTEXT_ON_RESET)
-                strategy = EGL_LOSE_CONTEXT_ON_RESET_KHR;
+            {
+                setEGLattrib(EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY_KHR,
+                             EGL_LOSE_CONTEXT_ON_RESET_KHR);
+            }
 
             flags |= EGL_CONTEXT_OPENGL_ROBUST_ACCESS_BIT_KHR;
         }
@@ -357,9 +363,6 @@ int _glfwCreateContext(_GLFWwindow* window,
 
         if (flags)
             setEGLattrib(EGL_CONTEXT_FLAGS_KHR, flags);
-
-        if (strategy)
-            setEGLattrib(EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY_KHR, strategy);
 
         setEGLattrib(EGL_NONE, EGL_NONE);
     }

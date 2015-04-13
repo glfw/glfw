@@ -201,7 +201,7 @@ void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
     int i, j, k, found = 0;
-    _GLFWmonitor** monitors;
+    _GLFWmonitor** monitors = NULL;
 
     *count = 0;
 

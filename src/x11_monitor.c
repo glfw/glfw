@@ -214,7 +214,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         RROutput primary = XRRGetOutputPrimary(_glfw.x11.display,
                                                _glfw.x11.root);
 
-        monitors = calloc(sizeof(_GLFWmonitor*), sr->noutput);
+        monitors = calloc(sr->noutput, sizeof(_GLFWmonitor*));
 
         if (_glfw.x11.xinerama.available)
             screens = XineramaQueryScreens(_glfw.x11.display, &screenCount);

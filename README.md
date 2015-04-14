@@ -1,5 +1,7 @@
 # GLFW
 
+[![Build Status](https://travis-ci.org/glfw/glfw.svg?branch=master)](https://travis-ci.org/glfw/glfw)
+
 ## Introduction
 
 GLFW is a free, Open Source, multi-platform library for OpenGL and OpenGL ES

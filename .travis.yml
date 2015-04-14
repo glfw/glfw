@@ -1,0 +1,19 @@
+language: c
+compiler: clang
+before_install:
+  - sudo apt-add-repository ppa:irie/cmake -y
+  - sudo apt-get update -q
+  - sudo apt-get install cmake xorg-dev libglu1-mesa-dev
+branches:
+    only:
+        - travis
+        - master
+script:
+  - cmake .
+  - make
+notifications:
+  email:
+    recipients:
+      - travis@glfw.org
+    on_success: never
+    on_failure: always

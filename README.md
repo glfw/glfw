@@ -130,6 +130,7 @@ skills.
  - Osman Keskin
  - Cameron King
  - Peter Knut
+ - Eric Larson
  - Robin Leffmann
  - Glenn Lewis
  - Shane Liesegang

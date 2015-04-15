@@ -66,6 +66,7 @@ typedef struct _GLFWwindowWayland
     struct wl_shell_surface*    shell_surface;
     struct wl_callback*         callback;
     _GLFWcursor*                currentCursor;
+    double                      cursorPosX, cursorPosY;
 } _GLFWwindowWayland;
 
 

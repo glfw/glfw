@@ -86,6 +86,11 @@ static void pointerHandleMotion(void* data,
                         "Wayland: GLFW_CURSOR_DISABLED not supported");
         return;
     }
+    else
+    {
+        window->wl.cursorPosX = wl_fixed_to_double(sx);
+        window->wl.cursorPosY = wl_fixed_to_double(sy);
+    }
 
     _glfwInputCursorMotion(window,
                            wl_fixed_to_double(sx),

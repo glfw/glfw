@@ -379,8 +379,10 @@ void _glfwPlatformPostEmptyEvent(void)
 
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
 {
-    // TODO
-    fprintf(stderr, "_glfwPlatformGetCursorPos not implemented yet\n");
+    if (xpos)
+        *xpos = window->wl.cursorX;
+    if (ypos)
+        *ypos = window->wl.cursorY;
 }
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)

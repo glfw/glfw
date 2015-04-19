@@ -157,6 +157,7 @@ skills.
  - Peoro
  - Braden Pellett
  - Arturo J. Pérez
+ - Emmanuel Gil Peyrot
  - Cyril Pichard
  - Pieroman
  - Jorge Rodriguez

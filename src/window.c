@@ -238,9 +238,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     glClear(GL_COLOR_BUFFER_BIT);
     _glfwPlatformSwapBuffers(window);
 
-    // Restore the previously current context (or NULL)
-    _glfwPlatformMakeContextCurrent(previous);
-
     if (wndconfig.monitor)
     {
         int width, height;
@@ -261,6 +258,9 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
                 _glfwPlatformUnhideWindow(window);
         }
     }
+
+    // Restore the previously current context (or NULL)
+    _glfwPlatformMakeContextCurrent(previous);
 
     return (GLFWwindow*) window;
 }

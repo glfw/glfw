@@ -36,89 +36,45 @@
 //
 static void initWGLExtensions(_GLFWwindow* window)
 {
-    // This needs to include every function pointer loaded below
-    window->wgl.SwapIntervalEXT = NULL;
-    window->wgl.GetPixelFormatAttribivARB = NULL;
-    window->wgl.GetExtensionsStringARB = NULL;
-    window->wgl.GetExtensionsStringEXT = NULL;
-    window->wgl.CreateContextAttribsARB = NULL;
+    // Functions for WGL_EXT_extension_string
+    // NOTE: These are needed by _glfwPlatformExtensionSupported
+    window->wgl.GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)
+        wglGetProcAddress("wglGetExtensionsStringEXT");
+    window->wgl.GetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)
+        wglGetProcAddress("wglGetExtensionsStringARB");
+
+    // Functions for WGL_ARB_create_context
+    window->wgl.CreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)
+        wglGetProcAddress("wglCreateContextAttribsARB");
+
+    // Functions for WGL_EXT_swap_control
+    window->wgl.SwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)
+        wglGetProcAddress("wglSwapIntervalEXT");
+
+    // Functions for WGL_ARB_pixel_format
+    window->wgl.GetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)
+        wglGetProcAddress("wglGetPixelFormatAttribivARB");
 
     // This needs to include every extension used below except for
     // WGL_ARB_extensions_string and WGL_EXT_extensions_string
-    window->wgl.ARB_multisample = GL_FALSE;
-    window->wgl.ARB_framebuffer_sRGB = GL_FALSE;
-    window->wgl.ARB_create_context = GL_FALSE;
-    window->wgl.ARB_create_context_profile = GL_FALSE;
-    window->wgl.EXT_create_context_es2_profile = GL_FALSE;
-    window->wgl.ARB_create_context_robustness = GL_FALSE;
-    window->wgl.EXT_swap_control = GL_FALSE;
-    window->wgl.ARB_pixel_format = GL_FALSE;
-    window->wgl.ARB_context_flush_control = GL_FALSE;
-
-    window->wgl.GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)
-        wglGetProcAddress("wglGetExtensionsStringEXT");
-    if (!window->wgl.GetExtensionsStringEXT)
-    {
-        window->wgl.GetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)
-            wglGetProcAddress("wglGetExtensionsStringARB");
-        if (!window->wgl.GetExtensionsStringARB)
-            return;
-    }
-
-    if (_glfwPlatformExtensionSupported("WGL_ARB_multisample"))
-        window->wgl.ARB_multisample = GL_TRUE;
-
-    if (_glfwPlatformExtensionSupported("WGL_ARB_framebuffer_sRGB"))
-        window->wgl.ARB_framebuffer_sRGB = GL_TRUE;
-
-    if (_glfwPlatformExtensionSupported("WGL_ARB_create_context"))
-    {
-        window->wgl.CreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)
-            wglGetProcAddress("wglCreateContextAttribsARB");
-
-        if (window->wgl.CreateContextAttribsARB)
-            window->wgl.ARB_create_context = GL_TRUE;
-    }
-
-    if (window->wgl.ARB_create_context)
-    {
-        if (_glfwPlatformExtensionSupported("WGL_ARB_create_context_profile"))
-            window->wgl.ARB_create_context_profile = GL_TRUE;
-    }
-
-    if (window->wgl.ARB_create_context &&
-        window->wgl.ARB_create_context_profile)
-    {
-        if (_glfwPlatformExtensionSupported("WGL_EXT_create_context_es2_profile"))
-            window->wgl.EXT_create_context_es2_profile = GL_TRUE;
-    }
-
-    if (window->wgl.ARB_create_context)
-    {
-        if (_glfwPlatformExtensionSupported("WGL_ARB_create_context_robustness"))
-            window->wgl.ARB_create_context_robustness = GL_TRUE;
-    }
-
-    if (_glfwPlatformExtensionSupported("WGL_EXT_swap_control"))
-    {
-        window->wgl.SwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)
-            wglGetProcAddress("wglSwapIntervalEXT");
-
-        if (window->wgl.SwapIntervalEXT)
-            window->wgl.EXT_swap_control = GL_TRUE;
-    }
-
-    if (_glfwPlatformExtensionSupported("WGL_ARB_pixel_format"))
-    {
-        window->wgl.GetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)
-            wglGetProcAddress("wglGetPixelFormatAttribivARB");
-
-        if (window->wgl.GetPixelFormatAttribivARB)
-            window->wgl.ARB_pixel_format = GL_TRUE;
-    }
-
-    if (_glfwPlatformExtensionSupported("WGL_ARB_context_flush_control"))
-        window->wgl.ARB_context_flush_control = GL_TRUE;
+    window->wgl.ARB_multisample =
+        _glfwPlatformExtensionSupported("WGL_ARB_multisample");
+    window->wgl.ARB_framebuffer_sRGB =
+        _glfwPlatformExtensionSupported("WGL_ARB_framebuffer_sRGB");
+    window->wgl.ARB_create_context =
+        _glfwPlatformExtensionSupported("WGL_ARB_create_context");
+    window->wgl.ARB_create_context_profile =
+        _glfwPlatformExtensionSupported("WGL_ARB_create_context_profile");
+    window->wgl.EXT_create_context_es2_profile =
+        _glfwPlatformExtensionSupported("WGL_EXT_create_context_es2_profile");
+    window->wgl.ARB_create_context_robustness =
+        _glfwPlatformExtensionSupported("WGL_ARB_create_context_robustness");
+    window->wgl.EXT_swap_control =
+        _glfwPlatformExtensionSupported("WGL_EXT_swap_control");
+    window->wgl.ARB_pixel_format =
+        _glfwPlatformExtensionSupported("WGL_ARB_pixel_format");
+    window->wgl.ARB_context_flush_control =
+        _glfwPlatformExtensionSupported("WGL_ARB_context_flush_control");
 }
 
 // Returns the specified attribute of the specified pixel format

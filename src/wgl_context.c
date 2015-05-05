@@ -269,7 +269,7 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
 //
 int _glfwInitContextAPI(void)
 {
-    if (!_glfwInitTLS())
+    if (!_glfwCreateContextTLS())
         return GL_FALSE;
 
     _glfw.wgl.opengl32.instance = LoadLibraryW(L"opengl32.dll");
@@ -289,7 +289,7 @@ void _glfwTerminateContextAPI(void)
     if (_glfw.wgl.opengl32.instance)
         FreeLibrary(_glfw.wgl.opengl32.instance);
 
-    _glfwTerminateTLS();
+    _glfwDestroyContextTLS();
 }
 
 #define setWGLattrib(attribName, attribValue) \
@@ -565,7 +565,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     else
         wglMakeCurrent(NULL, NULL);
 
-    _glfwSetCurrentContext(window);
+    _glfwSetContextTLS(window);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)

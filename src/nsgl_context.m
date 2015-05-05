@@ -35,7 +35,7 @@
 //
 int _glfwInitContextAPI(void)
 {
-    if (!_glfwInitTLS())
+    if (!_glfwCreateContextTLS())
         return GL_FALSE;
 
     _glfw.nsgl.framework =
@@ -54,7 +54,7 @@ int _glfwInitContextAPI(void)
 //
 void _glfwTerminateContextAPI(void)
 {
-    _glfwTerminateTLS();
+    _glfwDestroyContextTLS();
 }
 
 // Create the OpenGL context
@@ -257,7 +257,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     else
         [NSOpenGLContext clearCurrentContext];
 
-    _glfwSetCurrentContext(window);
+    _glfwSetContextTLS(window);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)

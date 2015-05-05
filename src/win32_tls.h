@@ -41,8 +41,8 @@ typedef struct _GLFWtlsWin32
 } _GLFWtlsWin32;
 
 
-int _glfwInitTLS(void);
-void _glfwTerminateTLS(void);
-void _glfwSetCurrentContext(_GLFWwindow* context);
+int _glfwCreateContextTLS(void);
+void _glfwDestroyContextTLS(void);
+void _glfwSetContextTLS(_GLFWwindow* context);
 
 #endif // _win32_tls_h_

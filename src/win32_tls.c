@@ -32,7 +32,7 @@
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwInitTLS(void)
+int _glfwCreateContextTLS(void)
 {
     _glfw.win32_tls.context = TlsAlloc();
     if (_glfw.win32_tls.context == TLS_OUT_OF_INDEXES)
@@ -46,13 +46,13 @@ int _glfwInitTLS(void)
     return GL_TRUE;
 }
 
-void _glfwTerminateTLS(void)
+void _glfwDestroyContextTLS(void)
 {
     if (_glfw.win32_tls.allocated)
         TlsFree(_glfw.win32_tls.context);
 }
 
-void _glfwSetCurrentContext(_GLFWwindow* context)
+void _glfwSetContextTLS(_GLFWwindow* context)
 {
     TlsSetValue(_glfw.win32_tls.context, context);
 }

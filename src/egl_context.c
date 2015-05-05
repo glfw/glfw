@@ -178,7 +178,7 @@ static GLboolean chooseFBConfigs(const _GLFWctxconfig* ctxconfig,
 //
 int _glfwInitContextAPI(void)
 {
-    if (!_glfwInitTLS())
+    if (!_glfwCreateContextTLS())
         return GL_FALSE;
 
     _glfw.egl.display = eglGetDisplay((EGLNativeDisplayType)_GLFW_EGL_NATIVE_DISPLAY);
@@ -210,7 +210,7 @@ void _glfwTerminateContextAPI(void)
 {
     eglTerminate(_glfw.egl.display);
 
-    _glfwTerminateTLS();
+    _glfwDestroyContextTLS();
 }
 
 #define setEGLattrib(attribName, attribValue) \
@@ -461,7 +461,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
                        EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     }
 
-    _glfwSetCurrentContext(window);
+    _glfwSetContextTLS(window);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)

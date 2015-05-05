@@ -156,7 +156,7 @@ static GLXContext createLegacyContext(_GLFWwindow* window,
 //
 int _glfwInitContextAPI(void)
 {
-    if (!_glfwInitTLS())
+    if (!_glfwCreateContextTLS())
         return GL_FALSE;
 
     _glfw.glx.handle = dlopen("libGL.so.1", RTLD_LAZY | RTLD_GLOBAL);
@@ -260,7 +260,7 @@ void _glfwTerminateContextAPI(void)
         _glfw.glx.handle = NULL;
     }
 
-    _glfwTerminateTLS();
+    _glfwDestroyContextTLS();
 }
 
 #define setGLXattrib(attribName, attribValue) \
@@ -477,7 +477,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     else
         glXMakeCurrent(_glfw.x11.display, None, NULL);
 
-    _glfwSetCurrentContext(window);
+    _glfwSetContextTLS(window);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)

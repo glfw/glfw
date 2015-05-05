@@ -32,7 +32,7 @@
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwInitTLS(void)
+int _glfwCreateContextTLS(void)
 {
     if (pthread_key_create(&_glfw.posix_tls.context, NULL) != 0)
     {
@@ -44,12 +44,12 @@ int _glfwInitTLS(void)
     return GL_TRUE;
 }
 
-void _glfwTerminateTLS(void)
+void _glfwDestroyContextTLS(void)
 {
     pthread_key_delete(_glfw.posix_tls.context);
 }
 
-void _glfwSetCurrentContext(_GLFWwindow* context)
+void _glfwSetContextTLS(_GLFWwindow* context)
 {
     pthread_setspecific(_glfw.posix_tls.context, context);
 }

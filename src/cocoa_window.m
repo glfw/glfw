@@ -212,7 +212,7 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
-    if (window->monitor)
+    if (window->monitor && window->autoIconify)
         enterFullscreenMode(window);
 
     if (_glfw.focusedWindow == window &&
@@ -227,7 +227,7 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 
 - (void)windowDidResignKey:(NSNotification *)notification
 {
-    if (window->monitor)
+    if (window->monitor && window->autoIconify)
         leaveFullscreenMode(window);
 
     _glfwInputWindowFocus(window, GL_FALSE);
@@ -882,7 +882,9 @@ static GLboolean createWindow(_GLFWwindow* window,
     if (wndconfig->monitor)
     {
         [window->ns.object setLevel:NSMainMenuWindowLevel + 1];
-        [window->ns.object setHidesOnDeactivate:YES];
+
+        if (window->autoIconify)
+            [window->ns.object setHidesOnDeactivate:YES];
     }
     else
     {

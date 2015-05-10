@@ -189,6 +189,7 @@ struct _GLFWctxconfig
     int           robustness;
     int           release;
     _GLFWwindow*  share;
+    int           reuseContext;
 };
 
 
@@ -353,6 +354,7 @@ struct _GLFWlibrary
         int         profile;
         int         robustness;
         int         release;
+        int         reuseContext;
     } hints;
 
     double          cursorPosX, cursorPosY;

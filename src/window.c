@@ -171,6 +171,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     ctxconfig.robustness    = _glfw.hints.robustness;
     ctxconfig.release       = _glfw.hints.release;
     ctxconfig.share         = (_GLFWwindow*) share;
+    ctxconfig.reuseContext  = _glfw.hints.reuseContext;
 
     // Check the OpenGL bits of the window config
     if (!_glfwIsValidContextConfig(&ctxconfig))
@@ -295,6 +296,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.depthBits    = 24;
     _glfw.hints.stencilBits  = 8;
     _glfw.hints.doublebuffer = GL_TRUE;
+    _glfw.hints.reuseContext = GL_FALSE;
 }
 
 GLFWAPI void glfwWindowHint(int target, int hint)
@@ -393,6 +395,8 @@ GLFWAPI void glfwWindowHint(int target, int hint)
         case GLFW_CONTEXT_RELEASE_BEHAVIOR:
             _glfw.hints.release = hint;
             break;
+        case GLFW_REUSE_CONTEXT:
+            _glfw.hints.reuseContext = hint;
         default:
             _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint");
             break;

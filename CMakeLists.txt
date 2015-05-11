@@ -400,14 +400,7 @@ if (_GLFW_GLX)
         NOT _GLFW_HAS_GLXGETPROCADDRESSEXT)
         message(WARNING "No glXGetProcAddressXXX variant found")
 
-        # Check for dlopen support as a fallback
-
-        set(CMAKE_REQUIRED_LIBRARIES "${CMAKE_DL_LIBS}")
-        check_function_exists(dlopen _GLFW_HAS_DLOPEN)
-        if (NOT _GLFW_HAS_DLOPEN)
-            message(FATAL_ERROR "No entry point retrieval mechanism found")
-        endif()
-
+        set(_GLFW_HAS_DLOPEN 1)
         if (CMAKE_DL_LIBS)
             list(APPEND glfw_LIBRARIES "${CMAKE_DL_LIBS}")
             list(APPEND glfw_PKG_LIBS "-l${CMAKE_DL_LIBS}")

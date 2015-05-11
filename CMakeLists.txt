@@ -72,7 +72,6 @@ if (GLFW_USE_EGL)
         message(FATAL_ERROR "Unsupported client library")
     endif()
 
-    set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake/modules")
     find_package(EGL REQUIRED)
 
     if (NOT _GLFW_USE_OPENGL)
@@ -83,6 +82,8 @@ if (GLFW_USE_EGL)
 else()
     set(_GLFW_USE_OPENGL 1)
 endif()
+
+set(CMAKE_MODULE_PATH "${GLFW_SOURCE_DIR}/CMake/modules")
 
 if (_GLFW_USE_OPENGL)
     find_package(OpenGL REQUIRED)

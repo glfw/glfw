@@ -1240,7 +1240,7 @@ GLFWAPI GLFWmonitor** glfwGetMonitors(int* count);
 /*! @brief Returns the primary monitor.
  *
  *  This function returns the primary monitor.  This is usually the monitor
- *  where elements like the Windows task bar or the OS X menu bar is located.
+ *  where elements like the Windows task bar or the OS X menu bar are located.
  *
  *  @return The primary monitor, or `NULL` if an [error](@ref error_handling)
  *  occurred.

@@ -55,55 +55,58 @@ static io_service_t IOServicePortFromCGDisplayID(CGDirectDisplayID displayID)
     if (err)
         return 0;
     
-    while ((serv = IOIteratorNext(iter)) != 0)
+    while((serv = IOIteratorNext(iter)) != 0)
     {
-        CFDictionaryRef info;
-        CFIndex vendorID, productID, serialNumber;
-        CFNumberRef vendorIDRef, productIDRef, serialNumberRef;
+        CFDictionaryRef displayInfo;
+
+        CFNumberRef vendorIDRef;
+        CFNumberRef productIDRef;
+        CFNumberRef serialNumberRef;
+
+        NSNumber *vendorID;
+        NSNumber *productID;
+        NSNumber *serialNumber;
+
         Boolean success;
-        
-        info = IODisplayCreateInfoDictionary(serv,
-                                             kIODisplayOnlyPreferredName);
-        
-        vendorIDRef = CFDictionaryGetValue(info,
-                                           CFSTR(kDisplayVendorID));
-        productIDRef = CFDictionaryGetValue(info,
-                                            CFSTR(kDisplayProductID));
-        serialNumberRef = CFDictionaryGetValue(info,
-                                               CFSTR(kDisplaySerialNumber));
-        
-        success = CFNumberGetValue(vendorIDRef, kCFNumberCFIndexType,
-                                   &vendorID);
-        success &= CFNumberGetValue(productIDRef, kCFNumberCFIndexType,
-                                    &productID);
-        success &= CFNumberGetValue(serialNumberRef, kCFNumberCFIndexType,
-                                    &serialNumber);
-        
-        if (!success)
+
+        displayInfo = IODisplayCreateInfoDictionary(serv, kIODisplayOnlyPreferredName);
+
+        success = CFDictionaryGetValueIfPresent(displayInfo, CFSTR(kDisplayVendorID), (const void**)&vendorIDRef);
+        success &= CFDictionaryGetValueIfPresent(displayInfo, CFSTR(kDisplayProductID), (const void**)&productIDRef);
+
+        if(!success)
         {
-            CFRelease(info);
+            CFRelease(displayInfo);
             continue;
         }
-        
+
+        vendorID = (__bridge NSNumber*)vendorIDRef;
+        productID = (__bridge NSNumber*)productIDRef;
+
+        // If a serial number is found use it
+        // Otherwise serial number will be nil (= 0) which will match with the output of 'CGDisplaySerialNumber'
+        if(CFDictionaryGetValueIfPresent(displayInfo, CFSTR(kDisplaySerialNumber), (const void**)&serialNumberRef))
+        {
+            serialNumber = (__bridge NSNumber*)serialNumberRef;
+        }
+
         // If the vendor and product id along with the serial don't match
         // then we are not looking at the correct monitor.
         // NOTE: The serial number is important in cases where two monitors
         //       are the exact same.
-        if (CGDisplayVendorNumber(displayID) != vendorID  ||
-            CGDisplayModelNumber(displayID) != productID  ||
-            CGDisplaySerialNumber(displayID) != serialNumber)
+        if(CGDisplayVendorNumber(displayID) != vendorID.unsignedIntValue ||
+           CGDisplayModelNumber(displayID) != productID.unsignedIntValue ||
+           CGDisplaySerialNumber(displayID) != serialNumber.unsignedIntValue)
         {
-            CFRelease(info);
+            CFRelease(displayInfo);
             continue;
         }
-        
-        // The VendorID, Product ID, and the Serial Number all Match Up!
-        // Therefore we have found the appropriate display io_service
+
         servicePort = serv;
-        CFRelease(info);
+        CFRelease(displayInfo);
         break;
     }
-    
+
     IOObjectRelease(iter);
     return servicePort;
 }

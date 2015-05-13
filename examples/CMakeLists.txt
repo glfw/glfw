@@ -42,7 +42,7 @@ if (APPLE)
 
     set_target_properties(Boing Gears Heightmap Particles Simple SplitView Wave PROPERTIES
                           FOLDER "GLFW3/Examples"
-                          MACOSX_BUNDLE_INFO_PLIST "${GLFW_SOURCE_DIR}/CMake/AppleInfo.plist")
+                          MACOSX_BUNDLE_INFO_PLIST "${GLFW_SOURCE_DIR}/CMake/MacOSXBundleInfo.plist.in")
 
 else()
     # Set boring names for executables

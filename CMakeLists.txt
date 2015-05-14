@@ -58,6 +58,8 @@ elseif (GLFW_USE_MIR)
     set(GLFW_USE_EGL ON)
 endif()
 
+set(CMAKE_MODULE_PATH "${GLFW_SOURCE_DIR}/CMake/modules")
+
 if (GLFW_USE_EGL)
     set(GLFW_CLIENT_LIBRARY "opengl" CACHE STRING
         "The client library to use; one of opengl, glesv1 or glesv2")
@@ -82,8 +84,6 @@ if (GLFW_USE_EGL)
 else()
     set(_GLFW_USE_OPENGL 1)
 endif()
-
-set(CMAKE_MODULE_PATH "${GLFW_SOURCE_DIR}/CMake/modules")
 
 if (_GLFW_USE_OPENGL)
     find_package(OpenGL REQUIRED)

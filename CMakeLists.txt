@@ -211,6 +211,25 @@ else()
 endif()
 
 #--------------------------------------------------------------------
+# Find and add Unix math and time libraries
+#--------------------------------------------------------------------
+if (UNIX AND NOT APPLE)
+    find_library(RT_LIBRARY rt)
+    mark_as_advanced(RT_LIBRARY)
+    if (RT_LIBRARY)
+        list(APPEND glfw_LIBRARIES "${RT_LIBRARY}")
+        list(APPEND glfw_PKG_LIBS "-lrt")
+    endif()
+
+    find_library(MATH_LIBRARY m)
+    mark_as_advanced(MATH_LIBRARY)
+    if (MATH_LIBRARY)
+        list(APPEND glfw_LIBRARIES "${MATH_LIBRARY}")
+        list(APPEND glfw_PKG_LIBS "-lm")
+    endif()
+endif()
+
+#--------------------------------------------------------------------
 # Use Win32 for window creation
 #--------------------------------------------------------------------
 if (_GLFW_WIN32)
@@ -304,20 +323,6 @@ if (_GLFW_X11)
 
     list(APPEND glfw_INCLUDE_DIR "${X11_Xkb_INCLUDE_PATH}")
 
-    find_library(RT_LIBRARY rt)
-    mark_as_advanced(RT_LIBRARY)
-    if (RT_LIBRARY)
-        list(APPEND glfw_LIBRARIES "${RT_LIBRARY}")
-        list(APPEND glfw_PKG_LIBS "-lrt")
-    endif()
-
-    find_library(MATH_LIBRARY m)
-    mark_as_advanced(MATH_LIBRARY)
-    if (MATH_LIBRARY)
-        list(APPEND glfw_LIBRARIES "${MATH_LIBRARY}")
-        list(APPEND glfw_PKG_LIBS "-lm")
-    endif()
-
     # Check for Xcursor
     if (NOT X11_Xcursor_FOUND)
         message(FATAL_ERROR "The Xcursor libraries and headers were not found")
@@ -343,13 +348,6 @@ if (_GLFW_WAYLAND)
     list(APPEND glfw_PKG_DEPS "xkbcommon")
     list(APPEND glfw_INCLUDE_DIRS "${XKBCOMMON_INCLUDE_DIRS}")
     list(APPEND glfw_LIBRARIES "${XKBCOMMON_LIBRARY}")
-
-    find_library(MATH_LIBRARY m)
-    mark_as_advanced(MATH_LIBRARY)
-    if (MATH_LIBRARY)
-        list(APPEND glfw_LIBRARIES "${MATH_LIBRARY}")
-        list(APPEND glfw_PKG_LIBS "-lm")
-    endif()
 endif()
 
 #--------------------------------------------------------------------
@@ -366,13 +364,6 @@ if (_GLFW_MIR)
     list(APPEND glfw_PKG_DEPS "xkbcommon")
     list(APPEND glfw_INCLUDE_DIRS "${XKBCOMMON_INCLUDE_DIRS}")
     list(APPEND glfw_LIBRARIES "${XKBCOMMON_LIBRARY}")
-
-    find_library(MATH_LIBRARY m)
-    mark_as_advanced(MATH_LIBRARY)
-    if (MATH_LIBRARY)
-        list(APPEND glfw_LIBRARIES "${MATH_LIBRARY}")
-        list(APPEND glfw_PKG_LIBS "-lm")
-    endif()
 endif()
 
 #--------------------------------------------------------------------

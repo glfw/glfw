@@ -85,9 +85,7 @@ request, please file it in the
 [issue tracker](https://github.com/glfw/glfw/issues) on GitHub.
 
 Finally, if you're interested in helping out with the development of GLFW or
-porting it to your favorite platform, we have an occasionally active
-[developer's mailing list](https://lists.stacken.kth.se/mailman/listinfo/glfw-dev),
-or you could join us on `#glfw`.
+porting it to your favorite platform, join us on GitHub or IRC.
 
 
 ## Acknowledgements

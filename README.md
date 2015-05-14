@@ -62,10 +62,12 @@ GLFW bundles a number of dependencies in the `deps/` directory.
 
 ## Changelog
 
+ - Minimum required CMake version updated to 2.8.12
  - Bugfix: Initialization failed on headless systems
  - Bugfix: The cached current context could get out of sync
  - [Cocoa] Bugfix: The cached `NSScreen` for a monitor could get out of sync
  - [Cocoa] Bugfix: The `GLFW_AUTO_ICONIFY` window hint was ignored
+ - [X11] Bugfix: `glfwInit` would segfault on systems without RandR
 
 
 ## Contact

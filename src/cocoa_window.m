@@ -173,6 +173,8 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 
 - (void)windowDidResize:(NSNotification *)notification
 {
+    [window->nsgl.context update];
+
     if (_glfw.focusedWindow == window &&
         window->cursorMode == GLFW_CURSOR_DISABLED)
     {
@@ -189,6 +191,8 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 
 - (void)windowDidMove:(NSNotification *)notification
 {
+    [window->nsgl.context update];
+
     if (_glfw.focusedWindow == window &&
         window->cursorMode == GLFW_CURSOR_DISABLED)
     {
@@ -302,7 +306,7 @@ static int translateKey(unsigned int key)
 // Content view class for the GLFW window
 //------------------------------------------------------------------------
 
-@interface GLFWContentView : NSOpenGLView
+@interface GLFWContentView : NSView
 {
     _GLFWwindow* window;
     NSTrackingArea* trackingArea;
@@ -330,8 +334,7 @@ static int translateKey(unsigned int key)
 
 - (id)initWithGlfwWindow:(_GLFWwindow *)initWindow
 {
-    self = [super initWithFrame:NSMakeRect(0, 0, 1, 1)
-                    pixelFormat:nil];
+    self = [super init];
     if (self != nil)
     {
         window = initWindow;
@@ -894,9 +897,19 @@ static GLboolean createWindow(_GLFWwindow* window,
             [window->ns.object setLevel:NSFloatingWindowLevel];
     }
 
+    window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
+
+#if defined(_GLFW_USE_RETINA)
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
+        [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+#endif /*_GLFW_USE_RETINA*/
+
     [window->ns.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
     [window->ns.object setDelegate:window->ns.delegate];
     [window->ns.object setAcceptsMouseMovedEvents:YES];
+    [window->ns.object setContentView:window->ns.view];
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
@@ -925,22 +938,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (!_glfwCreateContext(window, ctxconfig, fbconfig))
         return GL_FALSE;
 
-    window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
-
-#if defined(_GLFW_USE_RETINA)
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
-        [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
-#endif /*_GLFW_USE_RETINA*/
-
-    [window->ns.object setContentView:window->ns.view];
-    // NOTE: If you set the pixel format before the context it creates another
-    //       context, only to have it destroyed by the next line
-    //       We cannot use the view to create the context because that interface
-    //       does not support context resource sharing
-    [window->ns.view setOpenGLContext:window->nsgl.context];
-    [window->ns.view setPixelFormat:window->nsgl.pixelFormat];
     [window->nsgl.context setView:window->ns.view];
 
     if (wndconfig->monitor)

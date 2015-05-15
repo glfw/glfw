@@ -67,6 +67,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - Bugfix: The cached current context could get out of sync
  - [Cocoa] Bugfix: The cached `NSScreen` for a monitor could get out of sync
  - [Cocoa] Bugfix: The `GLFW_AUTO_ICONIFY` window hint was ignored
+ - [Cocoa] Bugfix: Resizing a window to its minimum size would segfault
+ - [Cocoa] Bugfix: Creating or showing a window would make its context current
  - [X11] Bugfix: `glfwInit` would segfault on systems without RandR
 
 

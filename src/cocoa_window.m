@@ -140,6 +140,34 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
         return contentRect;
 }
 
+// Translates OS X key modifiers into GLFW ones
+//
+static int translateFlags(NSUInteger flags)
+{
+    int mods = 0;
+
+    if (flags & NSShiftKeyMask)
+        mods |= GLFW_MOD_SHIFT;
+    if (flags & NSControlKeyMask)
+        mods |= GLFW_MOD_CONTROL;
+    if (flags & NSAlternateKeyMask)
+        mods |= GLFW_MOD_ALT;
+    if (flags & NSCommandKeyMask)
+        mods |= GLFW_MOD_SUPER;
+
+    return mods;
+}
+
+// Translates a OS X keycode to a GLFW keycode
+//
+static int translateKey(unsigned int key)
+{
+    if (key >= sizeof(_glfw.ns.publicKeys) / sizeof(_glfw.ns.publicKeys[0]))
+        return GLFW_KEY_UNKNOWN;
+
+    return _glfw.ns.publicKeys[key];
+}
+
 
 //------------------------------------------------------------------------
 // Delegate for window related notifications
@@ -272,34 +300,6 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 }
 
 @end
-
-// Translates OS X key modifiers into GLFW ones
-//
-static int translateFlags(NSUInteger flags)
-{
-    int mods = 0;
-
-    if (flags & NSShiftKeyMask)
-        mods |= GLFW_MOD_SHIFT;
-    if (flags & NSControlKeyMask)
-        mods |= GLFW_MOD_CONTROL;
-    if (flags & NSAlternateKeyMask)
-        mods |= GLFW_MOD_ALT;
-    if (flags & NSCommandKeyMask)
-        mods |= GLFW_MOD_SUPER;
-
-    return mods;
-}
-
-// Translates a OS X keycode to a GLFW keycode
-//
-static int translateKey(unsigned int key)
-{
-    if (key >= sizeof(_glfw.ns.publicKeys) / sizeof(_glfw.ns.publicKeys[0]))
-        return GLFW_KEY_UNKNOWN;
-
-    return _glfw.ns.publicKeys[key];
-}
 
 
 //------------------------------------------------------------------------

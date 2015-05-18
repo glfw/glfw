@@ -1060,12 +1060,16 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     //       should probably not be done every time any window is shown
     [NSApp activateIgnoringOtherApps:YES];
 
+    _GLFWwindow* previous = _glfwPlatformGetCurrentContext();
     [window->ns.object makeKeyAndOrderFront:nil];
+    _glfwPlatformMakeContextCurrent(previous);
 }
 
 void _glfwPlatformUnhideWindow(_GLFWwindow* window)
 {
+    _GLFWwindow* previous = _glfwPlatformGetCurrentContext();
     [window->ns.object orderFront:nil];
+    _glfwPlatformMakeContextCurrent(previous);
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)

@@ -651,6 +651,17 @@ static int translateKey(unsigned int key)
     return YES;
 }
 
+- (float)titleBarHeight
+{
+    NSRect frame = NSMakeRect (0, 0, 100, 100);
+    
+    NSRect contentRect;
+    contentRect = [NSWindow contentRectForFrameRect: frame
+                                          styleMask: NSTitledWindowMask];
+    
+    return (frame.size.height - contentRect.size.height);
+}
+
 @end
 
 
@@ -910,6 +921,10 @@ static GLboolean createWindow(_GLFWwindow* window,
     [window->ns.object setDelegate:window->ns.delegate];
     [window->ns.object setAcceptsMouseMovedEvents:YES];
     [window->ns.object setContentView:window->ns.view];
+
+    // OS X puts an application into "App Nap" if it's window size drops below 4-pixels.
+    NSUInteger minWindowHeight = 4;
+    [window->ns.object setMinSize:NSMakeSize(0, [window->ns.object titleBarHeight] + minWindowHeight)];
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)

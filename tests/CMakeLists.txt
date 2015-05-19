@@ -23,7 +23,7 @@ set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
 add_executable(clipboard clipboard.c ${GETOPT})
 add_executable(defaults defaults.c)
 add_executable(events events.c ${GETOPT})
-add_executable(fsaa fsaa.c ${GETOPT})
+add_executable(msaa msaa.c ${GETOPT})
 add_executable(gamma gamma.c ${GETOPT})
 add_executable(glfwinfo glfwinfo.c ${GETOPT})
 add_executable(iconify iconify.c ${GETOPT})
@@ -61,7 +61,7 @@ target_link_libraries(empty "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 
 set(WINDOWS_BINARIES accuracy empty sharing tearing threads title windows cursoranim)
-set(CONSOLE_BINARIES clipboard defaults events fsaa gamma glfwinfo
+set(CONSOLE_BINARIES clipboard defaults events msaa gamma glfwinfo
                      iconify joysticks monitors peter reopen cursor)
 
 set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES

@@ -57,7 +57,7 @@ static AttribGL gl_attribs[] =
     { GL_DEPTH_BITS, NULL, "depth bits" },
     { GL_STENCIL_BITS, NULL, "stencil bits" },
     { GL_STEREO, NULL, "stereo" },
-    { GL_SAMPLES_ARB, "GL_ARB_multisample", "FSAA samples" },
+    { GL_SAMPLES_ARB, "GL_ARB_multisample", "MSAA samples" },
     { 0, NULL, NULL }
 };
 

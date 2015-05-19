@@ -1,5 +1,5 @@
 //========================================================================
-// Full screen anti-aliasing test
+// Multisample anti-aliasing test
 // Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
@@ -25,7 +25,7 @@
 //
 // This test renders two high contrast, slowly rotating quads, one aliased
 // and one (hopefully) anti-aliased, thus allowing for visual verification
-// of whether FSAA is indeed enabled
+// of whether MSAA is indeed enabled
 //
 //========================================================================
 
@@ -62,7 +62,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 static void usage(void)
 {
-    printf("Usage: fsaa [-h] [-s SAMPLES]\n");
+    printf("Usage: msaa [-h] [-s SAMPLES]\n");
 }
 
 int main(int argc, char** argv)
@@ -92,9 +92,9 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
 
     if (samples)
-        printf("Requesting FSAA with %i samples\n", samples);
+        printf("Requesting MSAA with %i samples\n", samples);
     else
-        printf("Requesting that FSAA not be available\n");
+        printf("Requesting that MSAA not be available\n");
 
     glfwWindowHint(GLFW_SAMPLES, samples);
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
@@ -124,9 +124,9 @@ int main(int argc, char** argv)
 
     glGetIntegerv(GL_SAMPLES_ARB, &samples);
     if (samples)
-        printf("Context reports FSAA is available with %i samples\n", samples);
+        printf("Context reports MSAA is available with %i samples\n", samples);
     else
-        printf("Context reports FSAA is unavailable\n");
+        printf("Context reports MSAA is unavailable\n");
 
     glMatrixMode(GL_PROJECTION);
     glOrtho(0.f, 1.f, 0.f, 0.5f, 0.f, 1.f);

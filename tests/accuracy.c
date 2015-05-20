@@ -35,7 +35,6 @@
 #include <stdlib.h>
 
 static double cursor_x = 0.0, cursor_y = 0.0;
-static int window_width = 640, window_height = 480;
 static int swap_interval = 1;
 
 static void set_swap_interval(GLFWwindow* window, int interval)
@@ -55,18 +54,6 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    window_width = width;
-    window_height = height;
-
-    glViewport(0, 0, window_width, window_height);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.f, window_width, 0.f, window_height, 0.f, 1.f);
-}
-
 static void cursor_position_callback(GLFWwindow* window, double x, double y)
 {
     cursor_x = x;
@@ -82,14 +69,13 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 int main(void)
 {
     GLFWwindow* window;
-    int width, height;
 
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    window = glfwCreateWindow(window_width, window_height, "", NULL, NULL);
+    window = glfwCreateWindow(640, 480, "", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -97,25 +83,35 @@ int main(void)
     }
 
     glfwSetCursorPosCallback(window, cursor_position_callback);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetKeyCallback(window, key_callback);
 
     glfwMakeContextCurrent(window);
-
-    glfwGetFramebufferSize(window, &width, &height);
-    framebuffer_size_callback(window, width, height);
 
     set_swap_interval(window, swap_interval);
 
     while (!glfwWindowShouldClose(window))
     {
+        int wnd_width, wnd_height, fb_width, fb_height;
+        float scale;
+
+        glfwGetWindowSize(window, &wnd_width, &wnd_height);
+        glfwGetFramebufferSize(window, &fb_width, &fb_height);
+
+        scale = (float) fb_width / (float) wnd_width;
+
         glClear(GL_COLOR_BUFFER_BIT);
 
+        glViewport(0, 0, fb_width, fb_height);
+
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0.f, fb_width, 0.f, fb_height, 0.f, 1.f);
+
         glBegin(GL_LINES);
-        glVertex2f(0.f, (GLfloat) (window_height - cursor_y));
-        glVertex2f((GLfloat) window_width, (GLfloat) (window_height - cursor_y));
-        glVertex2f((GLfloat) cursor_x, 0.f);
-        glVertex2f((GLfloat) cursor_x, (GLfloat) window_height);
+        glVertex2f(0.f, (GLfloat) (fb_height - cursor_y * scale));
+        glVertex2f((GLfloat) fb_width, (GLfloat) (fb_height - cursor_y * scale));
+        glVertex2f((GLfloat) cursor_x * scale, 0.f);
+        glVertex2f((GLfloat) cursor_x * scale, (GLfloat) fb_height);
         glEnd();
 
         glfwSwapBuffers(window);

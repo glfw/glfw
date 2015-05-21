@@ -121,7 +121,9 @@ typedef BOOL (WINAPI * CHANGEWINDOWMESSAGEFILTEREX_T)(HWND,UINT,DWORD,PCHANGEFIL
 
 // dwmapi.dll function pointer typedefs
 typedef HRESULT (WINAPI * DWMISCOMPOSITIONENABLED_T)(BOOL*);
+typedef HRESULT (WINAPI * DWMFLUSH_T)(VOID);
 #define _glfw_DwmIsCompositionEnabled _glfw.win32.dwmapi.DwmIsCompositionEnabled
+#define _glfw_DwmFlush _glfw.win32.dwmapi.DwmFlush
 
 
 #define _GLFW_RECREATION_NOT_NEEDED 0
@@ -195,6 +197,7 @@ typedef struct _GLFWlibraryWin32
     struct {
         HINSTANCE       instance;
         DWMISCOMPOSITIONENABLED_T DwmIsCompositionEnabled;
+        DWMFLUSH_T      DwmFlush;
     } dwmapi;
 
 } _GLFWlibraryWin32;

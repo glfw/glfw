@@ -44,6 +44,7 @@ typedef struct _GLFWcontextWGL
 {
     HDC       dc;              // Private GDI device context
     HGLRC     context;         // Permanent rendering context
+    int       interval;
 
     // WGL extensions (context specific)
     PFNWGLSWAPINTERVALEXTPROC           SwapIntervalEXT;

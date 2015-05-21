@@ -96,6 +96,8 @@ static GLboolean initLibraries(void)
     {
         _glfw.win32.dwmapi.DwmIsCompositionEnabled = (DWMISCOMPOSITIONENABLED_T)
             GetProcAddress(_glfw.win32.dwmapi.instance, "DwmIsCompositionEnabled");
+        _glfw.win32.dwmapi.DwmFlush = (DWMFLUSH_T)
+            GetProcAddress(_glfw.win32.dwmapi.instance, "DwmFlush");
     }
 
     return GL_TRUE;

@@ -825,8 +825,6 @@ interval of one lets you avoid tearing.
 
 Note that this may not work on all machines, as some drivers have
 user-controlled settings that override any swap interval the application
-requests.  It is also by default disabled on Windows Vista and later when using
-DWM (Aero), as using it there sometimes leads to severe jitter.  You can
-forcibly enable it for machines using DWM using @ref compile_options_win32.
+requests.
 
 */

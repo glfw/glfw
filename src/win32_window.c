@@ -565,15 +565,12 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_DWMCOMPOSITIONCHANGED:
         {
-            if (_glfwIsCompositionEnabled())
-            {
-                _GLFWwindow* previous = _glfwPlatformGetCurrentContext();
-                _glfwPlatformMakeContextCurrent(window);
-                _glfwPlatformSwapInterval(0);
-                _glfwPlatformMakeContextCurrent(previous);
-            }
-
-            // TODO: Restore vsync if compositing was disabled
+            // HACK: Re-apply interval when desktop composition is toggled to
+            //       ensure WGL swap interval is disabled when necessary
+            _GLFWwindow* previous = _glfwPlatformGetCurrentContext();
+            _glfwPlatformMakeContextCurrent(window);
+            _glfwPlatformSwapInterval(window->wgl.interval);
+            _glfwPlatformMakeContextCurrent(previous);
             break;
         }
 

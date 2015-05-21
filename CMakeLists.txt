@@ -26,7 +26,6 @@ option(GLFW_INSTALL "Generate installation target" ON)
 option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
 if (WIN32)
-    option(GLFW_USE_DWM_SWAP_INTERVAL "Set swap interval even when DWM compositing is enabled" OFF)
     option(GLFW_USE_OPTIMUS_HPG "Force use of high-performance GPU on Optimus systems" OFF)
 endif()
 
@@ -236,9 +235,6 @@ if (_GLFW_WIN32)
 
     list(APPEND glfw_PKG_LIBS "-lgdi32")
 
-    if (GLFW_USE_DWM_SWAP_INTERVAL)
-        set(_GLFW_USE_DWM_SWAP_INTERVAL 1)
-    endif()
     if (GLFW_USE_OPTIMUS_HPG)
         set(_GLFW_USE_OPTIMUS_HPG 1)
     endif()

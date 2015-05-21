@@ -570,6 +570,14 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 {
+    // HACK: Use DwmFlush when desktop composition is enabled
+    if (_glfwIsCompositionEnabled())
+    {
+        int count = window->wgl.interval;
+        while (count--)
+            _glfw_DwmFlush();
+    }
+
     SwapBuffers(window->wgl.dc);
 }
 
@@ -577,12 +585,12 @@ void _glfwPlatformSwapInterval(int interval)
 {
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
-#if !defined(_GLFW_USE_DWM_SWAP_INTERVAL)
-    // HACK: Don't enabled vsync when desktop compositing is enabled, as it
-    //       leads to severe frame jitter on some cards
-    if (_glfwIsCompositionEnabled() && interval)
-        return;
-#endif
+    window->wgl.interval = interval;
+
+    // HACK: Disable WGL swap interval when desktop composition is enabled to
+    //       avoid interfering with DWM vsync
+    if (_glfwIsCompositionEnabled())
+        interval = 0;
 
     if (window->wgl.EXT_swap_control)
         window->wgl.SwapIntervalEXT(interval);

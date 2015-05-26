@@ -372,25 +372,10 @@ if (_GLFW_GLX)
 
     list(APPEND glfw_PKG_DEPS "gl")
 
-    include(CheckFunctionExists)
-
-    set(CMAKE_REQUIRED_LIBRARIES "${OPENGL_gl_LIBRARY}")
-    check_function_exists(glXGetProcAddress _GLFW_HAS_GLXGETPROCADDRESS)
-    check_function_exists(glXGetProcAddressARB _GLFW_HAS_GLXGETPROCADDRESSARB)
-    check_function_exists(glXGetProcAddressEXT _GLFW_HAS_GLXGETPROCADDRESSEXT)
-
-    if (NOT _GLFW_HAS_GLXGETPROCADDRESS AND
-        NOT _GLFW_HAS_GLXGETPROCADDRESSARB AND
-        NOT _GLFW_HAS_GLXGETPROCADDRESSEXT)
-        message(WARNING "No glXGetProcAddressXXX variant found")
-
-        set(_GLFW_HAS_DLOPEN 1)
-        if (CMAKE_DL_LIBS)
-            list(APPEND glfw_LIBRARIES "${CMAKE_DL_LIBS}")
-            list(APPEND glfw_PKG_LIBS "-l${CMAKE_DL_LIBS}")
-        endif()
+    if (CMAKE_DL_LIBS)
+        list(APPEND glfw_LIBRARIES "${CMAKE_DL_LIBS}")
+        list(APPEND glfw_PKG_LIBS "-l${CMAKE_DL_LIBS}")
     endif()
-
 endif()
 
 #--------------------------------------------------------------------

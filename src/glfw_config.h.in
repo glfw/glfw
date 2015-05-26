@@ -64,14 +64,6 @@
 #cmakedefine _GLFW_HAS_XINPUT
 // Define this to 1 if the Xxf86vm X11 extension is available
 #cmakedefine _GLFW_HAS_XF86VM
-// Define this to 1 if glXGetProcAddress is available
-#cmakedefine _GLFW_HAS_GLXGETPROCADDRESS
-// Define this to 1 if glXGetProcAddressARB is available
-#cmakedefine _GLFW_HAS_GLXGETPROCADDRESSARB
-// Define this to 1 if glXGetProcAddressEXT is available
-#cmakedefine _GLFW_HAS_GLXGETPROCADDRESSEXT
-// Define this to 1 if dlopen is available
-#cmakedefine _GLFW_HAS_DLOPEN
 
 // Define this to 1 if glfwInit should change the current directory
 #cmakedefine _GLFW_USE_CHDIR

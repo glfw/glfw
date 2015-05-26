@@ -35,11 +35,6 @@
 // extensions and not all operating systems come with an up-to-date version
 #include "../deps/EGL/eglext.h"
 
-// Do we have support for dlopen/dlsym?
-#if defined(_GLFW_HAS_DLOPEN)
- #include <dlfcn.h>
-#endif
-
 #define _GLFW_PLATFORM_FBCONFIG                 EGLConfig       egl
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextEGL egl
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryEGL egl

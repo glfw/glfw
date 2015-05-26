@@ -797,15 +797,6 @@ const char* _glfwPlatformGetVersionString(void)
 #elif defined(_GLFW_EGL)
         " EGL"
 #endif
-#if defined(_GLFW_HAS_GLXGETPROCADDRESS)
-        " glXGetProcAddress"
-#elif defined(_GLFW_HAS_GLXGETPROCADDRESSARB)
-        " glXGetProcAddressARB"
-#elif defined(_GLFW_HAS_GLXGETPROCADDRESSEXT)
-        " glXGetProcAddressEXT"
-#elif defined(_GLFW_DLOPEN_LIBGL)
-        " dlsym(libGL)"
-#endif
 #if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
         " clock_gettime"
 #endif

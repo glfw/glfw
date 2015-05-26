@@ -72,6 +72,9 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [Cocoa] Bugfix: Resizing a window to its minimum size would segfault
  - [Cocoa] Bugfix: Creating or showing a window would make its context current
  - [X11] Bugfix: `glfwInit` would segfault on systems without RandR
+ - [GLX] Added dependency on `libdl` on systems where it provides `dlopen`
+ - [GLX] Removed `_GLFW_HAS_GLXGETPROCADDRESS*` and `_GLFW_HAS_DLOPEN`
+         compile-time options
 
 
 ## Contact

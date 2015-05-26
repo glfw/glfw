@@ -288,15 +288,8 @@ libraries.
 If you are building GLFW as a shared library / dynamic library / DLL then you
 must also define `_GLFW_BUILD_DLL`.  Otherwise, you may not define it.
 
-If you are using the X11 window creation API then you _must_ also select an entry
-point retrieval mechanism.
-
- - `_GLFW_HAS_GLXGETPROCADDRESS` to use `glXGetProcAddress` (recommended)
- - `_GLFW_HAS_GLXGETPROCADDRESSARB` to use `glXGetProcAddressARB` (legacy)
- - `_GLFW_HAS_GLXGETPROCADDRESSEXT` to use `glXGetProcAddressEXT` (legacy)
- - `_GLFW_HAS_DLOPEN` to do manual retrieval with `dlopen` (fallback)
-
-In addition, support for the following X11 extensions can be enabled:
+If you are using the X11 window creation API, support for the following X11
+extensions can be enabled:
 
  - `_GLFW_HAS_XINPUT` to use XInput2 for high-resolution cursor motion
  (recommended)

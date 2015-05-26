@@ -30,11 +30,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
-
-
-// This is the only glXGetProcAddress variant not declared by glxext.h
-void (*glXGetProcAddressEXT(const GLubyte* procName))();
-
+#include <dlfcn.h>
 
 #ifndef GLXBadProfileARB
  #define GLXBadProfileARB 13
@@ -163,14 +159,17 @@ int _glfwInitContextAPI(void)
     if (!_glfwInitTLS())
         return GL_FALSE;
 
-#ifdef _GLFW_DLOPEN_LIBGL
-    _glfw.glx.libGL = dlopen("libGL.so.1", RTLD_LAZY | RTLD_GLOBAL);
-    if (!_glfw.glx.libGL)
+    _glfw.glx.handle = dlopen("libGL.so.1", RTLD_LAZY | RTLD_GLOBAL);
+    if (!_glfw.glx.handle)
     {
-        _glfwInputError(GLFW_API_UNAVAILABLE, "GLX: Failed to find libGL");
+        _glfwInputError(GLFW_API_UNAVAILABLE, "GLX: %s", dlerror());
         return GL_FALSE;
     }
-#endif
+
+    _glfw.glx.GetProcAddress =
+        dlsym(_glfw.glx.handle, "glXGetProcAddress");
+    _glfw.glx.GetProcAddressARB =
+        dlsym(_glfw.glx.handle, "glXGetProcAddressARB");
 
     if (!glXQueryExtension(_glfw.x11.display,
                            &_glfw.glx.errorBase,
@@ -257,14 +256,11 @@ int _glfwInitContextAPI(void)
 //
 void _glfwTerminateContextAPI(void)
 {
-    // Unload libGL.so if necessary
-#ifdef _GLFW_DLOPEN_LIBGL
-    if (_glfw.glx.libGL != NULL)
+    if (_glfw.glx.handle)
     {
-        dlclose(_glfw.glx.libGL);
-        _glfw.glx.libGL = NULL;
+        dlclose(_glfw.glx.handle);
+        _glfw.glx.handle = NULL;
     }
-#endif
 
     _glfwTerminateTLS();
 }
@@ -527,7 +523,12 @@ int _glfwPlatformExtensionSupported(const char* extension)
 
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 {
-    return _glfw_glXGetProcAddress((const GLubyte*) procname);
+    if (_glfw.glx.GetProcAddress)
+        return _glfw.glx.GetProcAddress((const GLubyte*) procname);
+    else if (_glfw.glx.GetProcAddressARB)
+        return _glfw.glx.GetProcAddressARB((const GLubyte*) procname);
+    else
+        return dlsym(_glfw.glx.handle, procname);
 }
 
 

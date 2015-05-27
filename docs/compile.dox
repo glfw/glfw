@@ -293,6 +293,8 @@ extensions can be enabled:
 
  - `_GLFW_HAS_XINPUT` to use XInput2 for high-resolution cursor motion
  (recommended)
+ - `_GLFW_HAS_XF86VM` to use Xxf86vm as a fallback when RandR gamma is broken
+ (recommended)
 
 If you are using the Cocoa window creation API, the following options are
 available:

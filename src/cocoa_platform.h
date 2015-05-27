@@ -27,7 +27,6 @@
 #ifndef _cocoa_platform_h_
 #define _cocoa_platform_h_
 
-
 #include <stdint.h>
 
 #if defined(__OBJC__)
@@ -38,14 +37,13 @@ typedef void* id;
 #endif
 
 #include "posix_tls.h"
+#include "iokit_joystick.h"
 
 #if defined(_GLFW_NSGL)
  #include "nsgl_context.h"
 #else
- #error "No supported context creation API selected"
+ #error "The Cocoa backend depends on NSGL platform support"
 #endif
-
-#include "iokit_joystick.h"
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  ns
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS ns

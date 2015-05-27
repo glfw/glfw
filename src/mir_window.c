@@ -25,7 +25,6 @@
 //========================================================================
 
 #include "internal.h"
-#include "xkb_unicode.h"
 
 #include <linux/input.h>
 #include <stdlib.h>

@@ -27,15 +27,15 @@
 #ifndef _mir_platform_h_
 #define _mir_platform_h_
 
+#include <sys/queue.h>
+#include <pthread.h>
+
 #include <mir_toolkit/mir_client_library.h>
 
 #include "posix_tls.h"
 #include "posix_time.h"
 #include "linux_joystick.h"
-
-#include <sys/queue.h>
-
-#include <pthread.h>
+#include "xkb_unicode.h"
 
 #if defined(_GLFW_EGL)
  #include "egl_context.h"
@@ -50,6 +50,7 @@
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorMir mir
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryMir mir
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorMir  mir
+
 
 // Mir-specific Event Queue
 //

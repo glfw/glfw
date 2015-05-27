@@ -57,6 +57,9 @@
 #endif
 
 #include "posix_tls.h"
+#include "posix_time.h"
+#include "linux_joystick.h"
+#include "xkb_unicode.h"
 
 #if defined(_GLFW_GLX)
  #define _GLFW_X11_CONTEXT_VISUAL window->glx.visual
@@ -69,10 +72,6 @@
 #else
  #error "No supported context creation API selected"
 #endif
-
-#include "posix_time.h"
-#include "linux_joystick.h"
-#include "xkb_unicode.h"
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  x11
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11

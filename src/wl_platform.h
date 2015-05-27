@@ -27,19 +27,19 @@
 #ifndef _wayland_platform_h_
 #define _wayland_platform_h_
 
-
 #include <wayland-client.h>
 #include <xkbcommon/xkbcommon.h>
+
+#include "posix_tls.h"
+#include "posix_time.h"
+#include "linux_joystick.h"
+#include "xkb_unicode.h"
 
 #if defined(_GLFW_EGL)
  #include "egl_context.h"
 #else
  #error "The Wayland backend depends on EGL platform support"
 #endif
-
-#include "posix_tls.h"
-#include "posix_time.h"
-#include "linux_joystick.h"
 
 #define _GLFW_EGL_NATIVE_WINDOW         window->wl.native
 #define _GLFW_EGL_NATIVE_DISPLAY        _glfw.wl.display

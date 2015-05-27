@@ -35,7 +35,6 @@
 #include <wayland-client.h>
 #include <wayland-cursor.h>
 
-#include "xkb_unicode.h"
 
 static void pointerHandleEnter(void* data,
                                struct wl_pointer* pointer,

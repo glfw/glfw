@@ -179,16 +179,14 @@ int _glfwInitContextAPI(void)
         return GL_FALSE;
     }
 
-    if (!glXQueryVersion(_glfw.x11.display,
-                         &_glfw.glx.versionMajor,
-                         &_glfw.glx.versionMinor))
+    if (!glXQueryVersion(_glfw.x11.display, &_glfw.glx.major, &_glfw.glx.minor))
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
                         "GLX: Failed to query GLX version");
         return GL_FALSE;
     }
 
-    if (_glfw.glx.versionMajor == 1 && _glfw.glx.versionMinor < 3)
+    if (_glfw.glx.major == 1 && _glfw.glx.minor < 3)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
                         "GLX: GLX version 1.3 is required");

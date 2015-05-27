@@ -190,9 +190,7 @@ int _glfwInitContextAPI(void)
         return GL_FALSE;
     }
 
-    if (!eglInitialize(_glfw.egl.display,
-                       &_glfw.egl.versionMajor,
-                       &_glfw.egl.versionMinor))
+    if (!eglInitialize(_glfw.egl.display, &_glfw.egl.major, &_glfw.egl.minor))
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
                         "EGL: Failed to initialize EGL: %s",

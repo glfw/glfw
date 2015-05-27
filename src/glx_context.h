@@ -62,7 +62,7 @@ typedef struct _GLFWcontextGLX
 //
 typedef struct _GLFWlibraryGLX
 {
-    int             versionMajor, versionMinor;
+    int             major, minor;
     int             eventBase;
     int             errorBase;
 

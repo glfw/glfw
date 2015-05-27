@@ -170,8 +170,8 @@ typedef struct _GLFWlibraryX11
         GLboolean   available;
         int         eventBase;
         int         errorBase;
-        int         versionMajor;
-        int         versionMinor;
+        int         major;
+        int         minor;
         GLboolean   gammaBroken;
         GLboolean   monitorBroken;
     } randr;
@@ -182,8 +182,8 @@ typedef struct _GLFWlibraryX11
         int         majorOpcode;
         int         eventBase;
         int         errorBase;
-        int         versionMajor;
-        int         versionMinor;
+        int         major;
+        int         minor;
     } xkb;
 
     struct {
@@ -200,8 +200,8 @@ typedef struct _GLFWlibraryX11
 
     struct {
         GLboolean   available;
-        int         versionMajor;
-        int         versionMinor;
+        int         major;
+        int         minor;
     } xinerama;
 
 #if defined(_GLFW_HAS_XINPUT)
@@ -210,8 +210,8 @@ typedef struct _GLFWlibraryX11
         int         majorOpcode;
         int         eventBase;
         int         errorBase;
-        int         versionMajor;
-        int         versionMinor;
+        int         major;
+        int         minor;
     } xi;
 #endif /*_GLFW_HAS_XINPUT*/
 

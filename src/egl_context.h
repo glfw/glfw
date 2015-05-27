@@ -60,7 +60,7 @@ typedef struct _GLFWcontextEGL
 typedef struct _GLFWlibraryEGL
 {
     EGLDisplay      display;
-    EGLint          versionMajor, versionMinor;
+    EGLint          major, minor;
 
     GLboolean       KHR_create_context;
 

@@ -34,8 +34,18 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "getopt.h"
+
 static int swap_interval;
 static double frame_rate;
+
+static void usage(void)
+{
+    printf("Usage: iconify [-h] [-f]\n");
+    printf("Options:\n");
+    printf("  -f create full screen window\n");
+    printf("  -h show this help\n");
+}
 
 static void update_window_title(GLFWwindow* window)
 {
@@ -66,23 +76,53 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
-        set_swap_interval(window, 1 - swap_interval);
+    if (action != GLFW_PRESS)
+        return;
+
+    switch (key)
+    {
+        case GLFW_KEY_SPACE:
+            set_swap_interval(window, 1 - swap_interval);
+            break;
+        case GLFW_KEY_ESCAPE:
+            glfwSetWindowShouldClose(window, 1);
+            break;
+    }
 }
 
-int main(void)
+int main(int argc, char** argv)
 {
+    int ch;
     float position;
     unsigned long frame_count = 0;
     double last_time, current_time;
+    GLboolean fullscreen = GL_FALSE;
+    GLFWmonitor* monitor = NULL;
     GLFWwindow* window;
+
+    while ((ch = getopt(argc, argv, "fh")) != -1)
+    {
+        switch (ch)
+        {
+            case 'h':
+                usage();
+                exit(EXIT_SUCCESS);
+
+            case 'f':
+                fullscreen = GL_TRUE;
+                break;
+        }
+    }
 
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    window = glfwCreateWindow(640, 480, "", NULL, NULL);
+    if (fullscreen)
+        monitor = glfwGetPrimaryMonitor();
+
+    window = glfwCreateWindow(640, 480, "", monitor, NULL);
     if (!window)
     {
         glfwTerminate();

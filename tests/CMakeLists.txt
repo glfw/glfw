@@ -45,7 +45,7 @@ set_target_properties(empty PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Empty Event")
 add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c)
 set_target_properties(sharing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Sharing")
 
-add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c)
+add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c ${GETOPT})
 set_target_properties(tearing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Tearing")
 
 add_executable(threads WIN32 MACOSX_BUNDLE threads.c ${TINYCTHREAD})

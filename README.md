@@ -65,13 +65,13 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - Minimum required CMake version updated to 2.8.12
  - Bugfix: Initialization failed on headless systems
  - Bugfix: The cached current context could get out of sync
- - [Win32] Removed `GLFW_USE_DWM_SWAP_INTERVAL` compile-time option
- - [Win32] Bugfix: Swap interval was ignored when DWM was enabled
  - [Cocoa] Bugfix: The cached `NSScreen` for a monitor could get out of sync
  - [Cocoa] Bugfix: The `GLFW_AUTO_ICONIFY` window hint was ignored
  - [Cocoa] Bugfix: Resizing a window to its minimum size would segfault
  - [Cocoa] Bugfix: Creating or showing a window would make its context current
  - [X11] Bugfix: `glfwInit` would segfault on systems without RandR
+ - [WGL] Removed `GLFW_USE_DWM_SWAP_INTERVAL` compile-time option
+ - [WGL] Bugfix: Swap interval was ignored when DWM was enabled
  - [GLX] Added dependency on `libdl` on systems where it provides `dlopen`
  - [GLX] Removed `_GLFW_HAS_GLXGETPROCADDRESS*` and `_GLFW_HAS_DLOPEN`
          compile-time options

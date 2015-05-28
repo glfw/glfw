@@ -25,6 +25,7 @@ cmake_uninstall.cmake
 docs/Doxyfile
 docs/html
 docs/warnings.txt
+docs/doxygen_sqlite3.db
 src/glfw_config.h
 src/glfw3.pc
 src/glfw3Config.cmake
@@ -61,12 +62,12 @@ tests/cursoranim
 tests/defaults
 tests/empty
 tests/events
-tests/fsaa
 tests/gamma
 tests/glfwinfo
 tests/iconify
 tests/joysticks
 tests/monitors
+tests/msaa
 tests/peter
 tests/reopen
 tests/sharing

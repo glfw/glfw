@@ -563,17 +563,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             break;
         }
 
-        case WM_DWMCOMPOSITIONCHANGED:
-        {
-            // HACK: Re-apply interval when desktop composition is toggled to
-            //       ensure WGL swap interval is disabled when necessary
-            _GLFWwindow* previous = _glfwPlatformGetCurrentContext();
-            _glfwPlatformMakeContextCurrent(window);
-            _glfwPlatformSwapInterval(window->wgl.interval);
-            _glfwPlatformMakeContextCurrent(previous);
-            break;
-        }
-
         case WM_DROPFILES:
         {
             HDROP hDrop = (HDROP) wParam;

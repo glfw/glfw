@@ -26,7 +26,7 @@ option(GLFW_INSTALL "Generate installation target" ON)
 option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
 if (WIN32)
-    option(GLFW_USE_OPTIMUS_HPG "Force use of high-performance GPU on Optimus systems" OFF)
+    option(GLFW_USE_HYBRID_HPG "Force use of high-performance GPU on hybrid systems" OFF)
 endif()
 
 if (APPLE)
@@ -235,8 +235,8 @@ if (_GLFW_WIN32)
 
     list(APPEND glfw_PKG_LIBS "-lgdi32")
 
-    if (GLFW_USE_OPTIMUS_HPG)
-        set(_GLFW_USE_OPTIMUS_HPG 1)
+    if (GLFW_USE_HYBRID_HPG)
+        set(_GLFW_USE_HYBRID_HPG 1)
     endif()
 endif()
 

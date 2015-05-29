@@ -63,6 +63,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
 ## Changelog
 
  - Minimum required CMake version updated to 2.8.12
+ - Renamed hybrid GPU override compile-time option to `_GLFW_USE_HYBRID_HPG` and
+   added support for AMD PowerXpress systems
  - Bugfix: Initialization failed on headless systems
  - Bugfix: The cached current context could get out of sync
  - [Cocoa] Bugfix: The cached `NSScreen` for a monitor could get out of sync

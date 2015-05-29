@@ -221,11 +221,11 @@ DLL version of the Visual C++ library is used.  It is recommended to set this to
 `ON`, as this keeps the executable smaller and benefits from security and bug
 fix updates of the Visual C++ runtime.
 
-`GLFW_USE_OPTIMUS_HPG` determines whether to export the `NvOptimusEnablement`
-symbol, which forces the use of the high-performance GPU on Nvidia Optimus
-systems.  This symbol needs to be exported by the EXE to be detected by the
-driver, so the override will not work if GLFW is built as a DLL.  See _Enabling
-High Performance Graphics Rendering on Optimus Systems_ for more details.
+`GLFW_USE_HYBRID_HPG` determines whether to export the `NvOptimusEnablement` and
+`AmdPowerXpressRequestHighPerformance` symbols, which force the use of the
+high-performance GPU on Nvidia Optimus and AMD PowerXpress systems.  These symbols
+need to be exported by the EXE to be detected by the driver, so the override
+will not work if GLFW is built as a DLL.
 
 
 @subsubsection compile_options_egl EGL specific CMake options

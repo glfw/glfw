@@ -31,14 +31,21 @@
 #include <malloc.h>
 
 
-#if defined(_GLFW_USE_OPTIMUS_HPG)
+#if defined(_GLFW_USE_HYBRID_HPG) || defined(_GLFW_USE_OPTIMUS_HPG)
 
 // Applications exporting this symbol with this value will be automatically
-// directed to the high-performance GPU on Nvidia Optimus systems
+// directed to the high-performance GPU on Nvidia Optimus systems with
+// up-to-date drivers
 //
-__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+__declspec(dllexport) DWORD NvOptimusEnablement = 1;
 
-#endif // _GLFW_USE_OPTIMUS_HPG
+// Applications exporting this symbol with this value will be automatically
+// directed to the high-performance GPU on AMD PowerXpress systems with
+// up-to-date drivers
+//
+__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+
+#endif // _GLFW_USE_HYBRID_HPG
 
 #if defined(_GLFW_BUILD_DLL)
 

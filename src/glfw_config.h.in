@@ -57,8 +57,8 @@
 // Define this to 1 if building as a shared library / dynamic library / DLL
 #cmakedefine _GLFW_BUILD_DLL
 
-// Define this to 1 to force use of high-performance GPU on Optimus systems
-#cmakedefine _GLFW_USE_OPTIMUS_HPG
+// Define this to 1 to force use of high-performance GPU on hybrid systems
+#cmakedefine _GLFW_USE_HYBRID_HPG
 
 // Define this to 1 if the XInput X11 extension is available
 #cmakedefine _GLFW_HAS_XINPUT

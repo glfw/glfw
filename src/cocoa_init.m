@@ -249,7 +249,7 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = _GLFW_VERSION_NUMBER " Cocoa"
+    return _GLFW_VERSION_NUMBER " Cocoa"
 #if defined(_GLFW_NSGL)
         " NSGL"
 #endif
@@ -266,7 +266,5 @@ const char* _glfwPlatformGetVersionString(void)
         " dynamic"
 #endif
         ;
-
-    return version;
 }
 

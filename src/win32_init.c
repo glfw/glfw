@@ -369,7 +369,7 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = _GLFW_VERSION_NUMBER " Win32"
+    return _GLFW_VERSION_NUMBER " Win32"
 #if defined(_GLFW_WGL)
         " WGL"
 #elif defined(_GLFW_EGL)
@@ -384,7 +384,5 @@ const char* _glfwPlatformGetVersionString(void)
         " DLL"
 #endif
         ;
-
-    return version;
 }
 

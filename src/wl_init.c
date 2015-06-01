@@ -620,9 +620,14 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = _GLFW_VERSION_NUMBER " Wayland EGL "
+    const char* version = _GLFW_VERSION_NUMBER " Wayland EGL"
 #if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
         " clock_gettime"
+#else
+        " gettimeofday"
+#endif
+#if defined(__linux__)
+        " /dev/js"
 #endif
 #if defined(_GLFW_BUILD_DLL)
         " shared"

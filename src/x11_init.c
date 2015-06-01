@@ -796,6 +796,8 @@ const char* _glfwPlatformGetVersionString(void)
 #endif
 #if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
         " clock_gettime"
+#else
+        " gettimeofday"
 #endif
 #if defined(__linux__)
         " /dev/js"

@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.1 Linux - www.glfw.org
+// GLFW 3.2 Linux - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>

@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.1 Mir - www.glfw.org
+// GLFW 3.2 Mir - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014-2015 Brandon Schaefer <brandon.schaefer@canonical.com>
 //

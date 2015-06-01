@@ -62,7 +62,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
 
 ## Changelog
 
- - Minimum required CMake version updated to 2.8.12
+ - Changed minimum required CMake version to 2.8.12
  - Bugfix: Initialization failed on headless systems
  - Bugfix: The cached current context could get out of sync
  - [Win32] Renamed hybrid GPU override compile-time option to

@@ -42,7 +42,7 @@ typedef struct _GLFWtlsPOSIX
 } _GLFWtlsPOSIX;
 
 
-int _glfCreateContextTLS(void);
+int _glfwCreateContextTLS(void);
 void _glfwDestroyContextTLS(void);
 void _glfwSetContextTLS(_GLFWwindow* context);
 

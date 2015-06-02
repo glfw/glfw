@@ -150,8 +150,6 @@ typedef HRESULT (WINAPI * DWMFLUSH_T)(VOID);
 typedef struct _GLFWwindowWin32
 {
     HWND                handle;
-    DWORD               dwStyle;
-    DWORD               dwExStyle;
 
     GLboolean           cursorInside;
     GLboolean           iconified;

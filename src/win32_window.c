@@ -38,6 +38,37 @@
 #define _GLFW_WNDCLASSNAME L"GLFW30"
 
 
+// Returns the window style for the specified window
+//
+static getWindowStyle(const _GLFWwindow* window)
+{
+    DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+
+    if (window->decorated && !window->monitor)
+    {
+        style |= WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+
+        if (window->resizable)
+            style |= WS_MAXIMIZEBOX | WS_SIZEBOX;
+    }
+    else
+        style |= WS_POPUP;
+
+    return style;
+}
+
+// Returns the extended window style for the specified window
+//
+static getWindowExStyle(const _GLFWwindow* window)
+{
+    DWORD style = WS_EX_APPWINDOW;
+
+    if (window->decorated && !window->monitor)
+        style |= WS_EX_WINDOWEDGE;
+
+    return style;
+}
+
 // Updates the cursor clip rect
 //
 static void updateClipRect(_GLFWwindow* window)
@@ -608,8 +639,8 @@ static void getFullWindowSize(_GLFWwindow* window,
                               int* fullWidth, int* fullHeight)
 {
     RECT rect = { 0, 0, clientWidth, clientHeight };
-    AdjustWindowRectEx(&rect, window->win32.dwStyle,
-                       FALSE, window->win32.dwExStyle);
+    AdjustWindowRectEx(&rect, getWindowStyle(window),
+                       FALSE, getWindowExStyle(window));
     *fullWidth = rect.right - rect.left;
     *fullHeight = rect.bottom - rect.top;
 }
@@ -624,13 +655,8 @@ static int createWindow(_GLFWwindow* window,
     int xpos, ypos, fullWidth, fullHeight;
     WCHAR* wideTitle;
 
-    window->win32.dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
-    window->win32.dwExStyle = WS_EX_APPWINDOW;
-
     if (window->monitor)
     {
-        window->win32.dwStyle |= WS_POPUP;
-
         // NOTE: This window placement is temporary and approximate, as the
         //       correct position and size cannot be known until the monitor
         //       video mode has been set
@@ -640,19 +666,6 @@ static int createWindow(_GLFWwindow* window,
     }
     else
     {
-        if (wndconfig->decorated)
-        {
-            window->win32.dwStyle |= WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
-
-            if (wndconfig->resizable)
-            {
-                window->win32.dwStyle |= WS_MAXIMIZEBOX | WS_SIZEBOX;
-                window->win32.dwExStyle |= WS_EX_WINDOWEDGE;
-            }
-        }
-        else
-            window->win32.dwStyle |= WS_POPUP;
-
         xpos = CW_USEDEFAULT;
         ypos = CW_USEDEFAULT;
 
@@ -669,10 +682,10 @@ static int createWindow(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    window->win32.handle = CreateWindowExW(window->win32.dwExStyle,
+    window->win32.handle = CreateWindowExW(getWindowExStyle(window),
                                            _GLFW_WNDCLASSNAME,
                                            wideTitle,
-                                           window->win32.dwStyle,
+                                           getWindowStyle(window),
                                            xpos, ypos,
                                            fullWidth, fullHeight,
                                            NULL, // No parent window
@@ -870,8 +883,8 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
 {
     RECT rect = { xpos, ypos, xpos, ypos };
-    AdjustWindowRectEx(&rect, window->win32.dwStyle,
-                       FALSE, window->win32.dwExStyle);
+    AdjustWindowRectEx(&rect, getWindowStyle(window),
+                       FALSE, getWindowExStyle(window));
     SetWindowPos(window->win32.handle, NULL, rect.left, rect.top, 0, 0,
                  SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
 }
@@ -916,8 +929,8 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
 
     _glfwPlatformGetWindowSize(window, &width, &height);
     SetRect(&rect, 0, 0, width, height);
-    AdjustWindowRectEx(&rect, window->win32.dwStyle,
-                       FALSE, window->win32.dwExStyle);
+    AdjustWindowRectEx(&rect, getWindowStyle(window),
+                       FALSE, getWindowExStyle(window));
 
     if (left)
         *left = -rect.left;

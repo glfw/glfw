@@ -194,8 +194,7 @@ static void sendEventToWM(_GLFWwindow* window, Atom type,
     event.xclient.data.l[3] = d;
     event.xclient.data.l[4] = e;
 
-    XSendEvent(_glfw.x11.display,
-               _glfw.x11.root,
+    XSendEvent(_glfw.x11.display, _glfw.x11.root,
                False,
                SubstructureNotifyMask | SubstructureRedirectMask,
                &event);
@@ -1135,8 +1134,7 @@ static void processEvent(XEvent *event)
                     XEvent reply = *event;
                     reply.xclient.window = _glfw.x11.root;
 
-                    XSendEvent(_glfw.x11.display,
-                               _glfw.x11.root,
+                    XSendEvent(_glfw.x11.display, _glfw.x11.root,
                                False,
                                SubstructureNotifyMask | SubstructureRedirectMask,
                                &reply);

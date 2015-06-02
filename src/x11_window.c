@@ -1117,16 +1117,17 @@ static void processEvent(XEvent *event)
 
             if (event->xclient.message_type == _glfw.x11.WM_PROTOCOLS)
             {
-                if (_glfw.x11.WM_DELETE_WINDOW &&
-                    (Atom) event->xclient.data.l[0] == _glfw.x11.WM_DELETE_WINDOW)
+                const Atom protocol = event->xclient.data.l[0];
+                if (protocol == None)
+                    break;
+
+                if (protocol == _glfw.x11.WM_DELETE_WINDOW)
                 {
                     // The window manager was asked to close the window, for example by
                     // the user pressing a 'close' window decoration button
-
                     _glfwInputWindowCloseRequest(window);
                 }
-                else if (_glfw.x11.NET_WM_PING &&
-                        (Atom) event->xclient.data.l[0] == _glfw.x11.NET_WM_PING)
+                else if (protocol == _glfw.x11.NET_WM_PING)
                 {
                     // The window manager is pinging the application to ensure it's
                     // still responding to events

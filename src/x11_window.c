@@ -677,18 +677,18 @@ static void handleSelectionRequest(XEvent* event)
 {
     const XSelectionRequestEvent* request = &event->xselectionrequest;
 
-    XEvent response;
-    memset(&response, 0, sizeof(response));
+    XEvent reply;
+    memset(&reply, 0, sizeof(reply));
 
-    response.xselection.property = writeTargetToProperty(request);
-    response.xselection.type = SelectionNotify;
-    response.xselection.display = request->display;
-    response.xselection.requestor = request->requestor;
-    response.xselection.selection = request->selection;
-    response.xselection.target = request->target;
-    response.xselection.time = request->time;
+    reply.xselection.property = writeTargetToProperty(request);
+    reply.xselection.type = SelectionNotify;
+    reply.xselection.display = request->display;
+    reply.xselection.requestor = request->requestor;
+    reply.xselection.selection = request->selection;
+    reply.xselection.target = request->target;
+    reply.xselection.time = request->time;
 
-    XSendEvent(_glfw.x11.display, request->requestor, False, 0, &response);
+    XSendEvent(_glfw.x11.display, request->requestor, False, 0, &reply);
 }
 
 static void pushSelectionToManager(_GLFWwindow* window)
@@ -1598,9 +1598,9 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
         sendEventToWM(window, _glfw.x11.NET_REQUEST_FRAME_EXTENTS,
                       0, 0, 0, 0, 0);
 
-        // HACK: Poll with timeout for the required response instead of blocking
+        // HACK: Poll with timeout for the required reply instead of blocking
         //       This is done because some window managers (at least Unity,
-        //       Fluxbox and Xfwm) failed to send the required response
+        //       Fluxbox and Xfwm) failed to send the required reply
         //       They have been fixed but broken versions are still in the wild
         //       If you are affected by this and your window manager is NOT
         //       listed above, PLEASE report it to their and our issue trackers

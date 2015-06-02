@@ -176,9 +176,10 @@ static _GLFWwindow* findWindowByHandle(Window handle)
     return window;
 }
 
-// Adds or removes an EWMH state to a window
+// Sends an EWMH or ICCCM event to the window manager
 //
-static void changeWindowState(_GLFWwindow* window, Atom state, int action)
+static void sendEventToWM(_GLFWwindow* window, Atom type,
+                          long a, long b, long c, long d, long e)
 {
     XEvent event;
     memset(&event, 0, sizeof(event));
@@ -186,11 +187,12 @@ static void changeWindowState(_GLFWwindow* window, Atom state, int action)
     event.type = ClientMessage;
     event.xclient.window = window->x11.handle;
     event.xclient.format = 32; // Data is 32-bit longs
-    event.xclient.message_type = _glfw.x11.NET_WM_STATE;
-    event.xclient.data.l[0] = action;
-    event.xclient.data.l[1] = state;
-    event.xclient.data.l[2] = 0; // No secondary property
-    event.xclient.data.l[3] = 1; // Sender is a normal application
+    event.xclient.message_type = type;
+    event.xclient.data.l[0] = a;
+    event.xclient.data.l[1] = b;
+    event.xclient.data.l[2] = c;
+    event.xclient.data.l[3] = d;
+    event.xclient.data.l[4] = e;
 
     XSendEvent(_glfw.x11.display,
                _glfw.x11.root,
@@ -459,9 +461,11 @@ static GLboolean createWindow(_GLFWwindow* window,
     {
         if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_ABOVE)
         {
-            changeWindowState(window,
-                              _glfw.x11.NET_WM_STATE_ABOVE,
-                              _NET_WM_STATE_ADD);
+            sendEventToWM(window,
+                          _glfw.x11.NET_WM_STATE,
+                          _NET_WM_STATE_ADD,
+                          _glfw.x11.NET_WM_STATE_ABOVE,
+                          0, 1, 0);
         }
     }
 
@@ -765,23 +769,13 @@ static void enterFullscreenMode(_GLFWwindow* window)
 
     if (_glfw.x11.xinerama.available && _glfw.x11.NET_WM_FULLSCREEN_MONITORS)
     {
-        XEvent event;
-        memset(&event, 0, sizeof(event));
-
-        event.type = ClientMessage;
-        event.xclient.window = window->x11.handle;
-        event.xclient.format = 32; // Data is 32-bit longs
-        event.xclient.message_type = _glfw.x11.NET_WM_FULLSCREEN_MONITORS;
-        event.xclient.data.l[0] = window->monitor->x11.index;
-        event.xclient.data.l[1] = window->monitor->x11.index;
-        event.xclient.data.l[2] = window->monitor->x11.index;
-        event.xclient.data.l[3] = window->monitor->x11.index;
-
-        XSendEvent(_glfw.x11.display,
-                   _glfw.x11.root,
-                   False,
-                   SubstructureNotifyMask | SubstructureRedirectMask,
-                   &event);
+        sendEventToWM(window,
+                      _glfw.x11.NET_WM_FULLSCREEN_MONITORS,
+                      window->monitor->x11.index,
+                      window->monitor->x11.index,
+                      window->monitor->x11.index,
+                      window->monitor->x11.index,
+                      0);
     }
 
     if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_FULLSCREEN)
@@ -795,31 +789,17 @@ static void enterFullscreenMode(_GLFWwindow* window)
             // Ask the window manager to raise and focus the GLFW window
             // Only focused windows with the _NET_WM_STATE_FULLSCREEN state end
             // up on top of all other windows ("Stacking order" in EWMH spec)
-
-            XEvent event;
-            memset(&event, 0, sizeof(event));
-
-            event.type = ClientMessage;
-            event.xclient.window = window->x11.handle;
-            event.xclient.format = 32; // Data is 32-bit longs
-            event.xclient.message_type = _glfw.x11.NET_ACTIVE_WINDOW;
-            event.xclient.data.l[0] = 1; // Sender is a normal application
-            event.xclient.data.l[1] = 0; // We don't really know the timestamp
-
-            XSendEvent(_glfw.x11.display,
-                       _glfw.x11.root,
-                       False,
-                       SubstructureNotifyMask | SubstructureRedirectMask,
-                       &event);
+            sendEventToWM(window, _glfw.x11.NET_ACTIVE_WINDOW, 1, 0, 0, 0, 0);
         }
 
         // Ask the window manager to make the GLFW window a full screen window
         // Full screen windows are undecorated and, when focused, are kept
         // on top of all other windows
-
-        changeWindowState(window,
-                          _glfw.x11.NET_WM_STATE_FULLSCREEN,
-                          _NET_WM_STATE_ADD);
+        sendEventToWM(window,
+                      _glfw.x11.NET_WM_STATE,
+                      _NET_WM_STATE_ADD,
+                      _glfw.x11.NET_WM_STATE_FULLSCREEN,
+                      0, 1, 0);
     }
     else if (window->x11.overrideRedirect)
     {
@@ -871,10 +851,11 @@ static void leaveFullscreenMode(_GLFWwindow* window)
     {
         // Ask the window manager to make the GLFW window a normal window
         // Normal windows usually have frames and other decorations
-
-        changeWindowState(window,
-                          _glfw.x11.NET_WM_STATE_FULLSCREEN,
-                          _NET_WM_STATE_REMOVE);
+        sendEventToWM(window,
+                      _glfw.x11.NET_WM_STATE,
+                      _NET_WM_STATE_REMOVE,
+                      _glfw.x11.NET_WM_STATE_FULLSCREEN,
+                      0, 1, 0);
     }
 }
 
@@ -1607,23 +1588,13 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
     if (!_glfwPlatformWindowVisible(window) &&
         _glfw.x11.NET_REQUEST_FRAME_EXTENTS)
     {
-        // Ensure _NET_FRAME_EXTENTS is set, allowing glfwGetWindowFrameSize to
-        // function before the window is mapped
-
         double base;
         XEvent event;
-        memset(&event, 0, sizeof(event));
 
-        event.type = ClientMessage;
-        event.xclient.window = window->x11.handle;
-        event.xclient.format = 32; // Data is 32-bit longs
-        event.xclient.message_type = _glfw.x11.NET_REQUEST_FRAME_EXTENTS;
-
-        XSendEvent(_glfw.x11.display,
-                   _glfw.x11.root,
-                   False,
-                   SubstructureNotifyMask | SubstructureRedirectMask,
-                   &event);
+        // Ensure _NET_FRAME_EXTENTS is set, allowing glfwGetWindowFrameSize to
+        // function before the window is mapped
+        sendEventToWM(window, _glfw.x11.NET_REQUEST_FRAME_EXTENTS,
+                      0, 0, 0, 0, 0);
 
         // HACK: Poll with timeout for the required response instead of blocking
         //       This is done because some window managers (at least Unity,

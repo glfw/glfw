@@ -1132,12 +1132,14 @@ static void processEvent(XEvent *event)
                     // The window manager is pinging the application to ensure it's
                     // still responding to events
 
-                    event->xclient.window = _glfw.x11.root;
+                    XEvent reply = *event;
+                    reply.xclient.window = _glfw.x11.root;
+
                     XSendEvent(_glfw.x11.display,
-                               event->xclient.window,
+                               _glfw.x11.root,
                                False,
                                SubstructureNotifyMask | SubstructureRedirectMask,
-                               event);
+                               &reply);
                 }
             }
             else if (event->xclient.message_type == _glfw.x11.XdndEnter)

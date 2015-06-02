@@ -92,7 +92,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 int main(int argc, char** argv)
 {
-    int ch;
+    int ch, width, height;
     float position;
     unsigned long frame_count = 0;
     double last_time, current_time;
@@ -120,9 +120,27 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
 
     if (fullscreen)
-        monitor = glfwGetPrimaryMonitor();
+    {
+        const GLFWvidmode* mode;
 
-    window = glfwCreateWindow(640, 480, "", monitor, NULL);
+        monitor = glfwGetPrimaryMonitor();
+        mode = glfwGetVideoMode(monitor);
+
+        glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+        glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+        glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+        glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+        width = mode->width;
+        height = mode->height;
+    }
+    else
+    {
+        width = 640;
+        height = 480;
+    }
+
+    window = glfwCreateWindow(width, height, "", monitor, NULL);
     if (!window)
     {
         glfwTerminate();

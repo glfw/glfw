@@ -1134,10 +1134,10 @@ static void processEvent(XEvent *event)
 
                     event->xclient.window = _glfw.x11.root;
                     XSendEvent(_glfw.x11.display,
-                            event->xclient.window,
-                            False,
-                            SubstructureNotifyMask | SubstructureRedirectMask,
-                            event);
+                               event->xclient.window,
+                               False,
+                               SubstructureNotifyMask | SubstructureRedirectMask,
+                               event);
                 }
             }
             else if (event->xclient.message_type == _glfw.x11.XdndEnter)

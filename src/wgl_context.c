@@ -338,7 +338,11 @@ int _glfwCreateContext(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    if (window->wgl.ARB_create_context)
+    if (share && ctxconfig->reuseContext)
+    {
+        window->wgl.context = share;
+    }
+    else if (window->wgl.ARB_create_context)
     {
         int index = 0, mask = 0, flags = 0;
 

@@ -323,36 +323,10 @@ struct _GLFWcursor
 struct _GLFWlibrary
 {
     struct {
-        int         redBits;
-        int         greenBits;
-        int         blueBits;
-        int         alphaBits;
-        int         depthBits;
-        int         stencilBits;
-        int         accumRedBits;
-        int         accumGreenBits;
-        int         accumBlueBits;
-        int         accumAlphaBits;
-        int         auxBuffers;
-        int         stereo;
-        int         resizable;
-        int         visible;
-        int         decorated;
-        int         focused;
-        int         autoIconify;
-        int         floating;
-        int         samples;
-        int         sRGB;
-        int         refreshRate;
-        int         doublebuffer;
-        int         api;
-        int         major;
-        int         minor;
-        int         forward;
-        int         debug;
-        int         profile;
-        int         robustness;
-        int         release;
+        _GLFWfbconfig  framebuffer;
+        _GLFWwndconfig window;
+        _GLFWctxconfig context;
+        int            refreshRate;
     } hints;
 
     double          cursorPosX, cursorPosY;

@@ -132,45 +132,15 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
         return NULL;
     }
 
-    // Set up desired framebuffer config
-    fbconfig.redBits        = _glfw.hints.redBits;
-    fbconfig.greenBits      = _glfw.hints.greenBits;
-    fbconfig.blueBits       = _glfw.hints.blueBits;
-    fbconfig.alphaBits      = _glfw.hints.alphaBits;
-    fbconfig.depthBits      = _glfw.hints.depthBits;
-    fbconfig.stencilBits    = _glfw.hints.stencilBits;
-    fbconfig.accumRedBits   = _glfw.hints.accumRedBits;
-    fbconfig.accumGreenBits = _glfw.hints.accumGreenBits;
-    fbconfig.accumBlueBits  = _glfw.hints.accumBlueBits;
-    fbconfig.accumAlphaBits = _glfw.hints.accumAlphaBits;
-    fbconfig.auxBuffers     = _glfw.hints.auxBuffers;
-    fbconfig.stereo         = _glfw.hints.stereo ? GL_TRUE : GL_FALSE;
-    fbconfig.samples        = _glfw.hints.samples;
-    fbconfig.sRGB           = _glfw.hints.sRGB;
-    fbconfig.doublebuffer   = _glfw.hints.doublebuffer ? GL_TRUE : GL_FALSE;
+    fbconfig  = _glfw.hints.framebuffer;
+    ctxconfig = _glfw.hints.context;
+    wndconfig = _glfw.hints.window;
 
-    // Set up desired window config
-    wndconfig.width         = width;
-    wndconfig.height        = height;
-    wndconfig.title         = title;
-    wndconfig.resizable     = _glfw.hints.resizable ? GL_TRUE : GL_FALSE;
-    wndconfig.visible       = _glfw.hints.visible ? GL_TRUE : GL_FALSE;
-    wndconfig.decorated     = _glfw.hints.decorated ? GL_TRUE : GL_FALSE;
-    wndconfig.focused       = _glfw.hints.focused ? GL_TRUE : GL_FALSE;
-    wndconfig.autoIconify   = _glfw.hints.autoIconify ? GL_TRUE : GL_FALSE;
-    wndconfig.floating      = _glfw.hints.floating ? GL_TRUE : GL_FALSE;
-    wndconfig.monitor       = (_GLFWmonitor*) monitor;
-
-    // Set up desired context config
-    ctxconfig.api           = _glfw.hints.api;
-    ctxconfig.major         = _glfw.hints.major;
-    ctxconfig.minor         = _glfw.hints.minor;
-    ctxconfig.forward       = _glfw.hints.forward ? GL_TRUE : GL_FALSE;
-    ctxconfig.debug         = _glfw.hints.debug ? GL_TRUE : GL_FALSE;
-    ctxconfig.profile       = _glfw.hints.profile;
-    ctxconfig.robustness    = _glfw.hints.robustness;
-    ctxconfig.release       = _glfw.hints.release;
-    ctxconfig.share         = (_GLFWwindow*) share;
+    wndconfig.width   = width;
+    wndconfig.height  = height;
+    wndconfig.title   = title;
+    wndconfig.monitor = (_GLFWmonitor*) monitor;
+    ctxconfig.share   = (_GLFWwindow*) share;
 
     // Check the OpenGL bits of the window config
     if (!_glfwIsValidContextConfig(&ctxconfig))
@@ -180,19 +150,18 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->next = _glfw.windowListHead;
     _glfw.windowListHead = window;
 
+    window->videoMode.width       = width;
+    window->videoMode.height      = height;
+    window->videoMode.redBits     = fbconfig.redBits;
+    window->videoMode.greenBits   = fbconfig.greenBits;
+    window->videoMode.blueBits    = fbconfig.blueBits;
+    window->videoMode.refreshRate = _glfw.hints.refreshRate;
+
     if (wndconfig.monitor)
     {
         wndconfig.resizable = GL_TRUE;
         wndconfig.visible   = GL_TRUE;
         wndconfig.focused   = GL_TRUE;
-
-        // Set up desired video mode
-        window->videoMode.width       = width;
-        window->videoMode.height      = height;
-        window->videoMode.redBits     = _glfw.hints.redBits;
-        window->videoMode.greenBits   = _glfw.hints.greenBits;
-        window->videoMode.blueBits    = _glfw.hints.blueBits;
-        window->videoMode.refreshRate = _glfw.hints.refreshRate;
     }
 
     // Transfer window hints that are persistent settings and not
@@ -272,29 +241,29 @@ void glfwDefaultWindowHints(void)
     memset(&_glfw.hints, 0, sizeof(_glfw.hints));
 
     // The default is OpenGL with minimum version 1.0
-    _glfw.hints.api   = GLFW_OPENGL_API;
-    _glfw.hints.major = 1;
-    _glfw.hints.minor = 0;
+    _glfw.hints.context.api   = GLFW_OPENGL_API;
+    _glfw.hints.context.major = 1;
+    _glfw.hints.context.minor = 0;
 
     // The default is a focused, visible, resizable window with decorations
-    _glfw.hints.resizable   = GL_TRUE;
-    _glfw.hints.visible     = GL_TRUE;
-    _glfw.hints.decorated   = GL_TRUE;
-    _glfw.hints.focused     = GL_TRUE;
-    _glfw.hints.autoIconify = GL_TRUE;
+    _glfw.hints.window.resizable   = GL_TRUE;
+    _glfw.hints.window.visible     = GL_TRUE;
+    _glfw.hints.window.decorated   = GL_TRUE;
+    _glfw.hints.window.focused     = GL_TRUE;
+    _glfw.hints.window.autoIconify = GL_TRUE;
 
     // The default is to select the highest available refresh rate
     _glfw.hints.refreshRate = GLFW_DONT_CARE;
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
     // double buffered
-    _glfw.hints.redBits      = 8;
-    _glfw.hints.greenBits    = 8;
-    _glfw.hints.blueBits     = 8;
-    _glfw.hints.alphaBits    = 8;
-    _glfw.hints.depthBits    = 24;
-    _glfw.hints.stencilBits  = 8;
-    _glfw.hints.doublebuffer = GL_TRUE;
+    _glfw.hints.framebuffer.redBits      = 8;
+    _glfw.hints.framebuffer.greenBits    = 8;
+    _glfw.hints.framebuffer.blueBits     = 8;
+    _glfw.hints.framebuffer.alphaBits    = 8;
+    _glfw.hints.framebuffer.depthBits    = 24;
+    _glfw.hints.framebuffer.stencilBits  = 8;
+    _glfw.hints.framebuffer.doublebuffer = GL_TRUE;
 }
 
 GLFWAPI void glfwWindowHint(int target, int hint)
@@ -304,94 +273,94 @@ GLFWAPI void glfwWindowHint(int target, int hint)
     switch (target)
     {
         case GLFW_RED_BITS:
-            _glfw.hints.redBits = hint;
+            _glfw.hints.framebuffer.redBits = hint;
             break;
         case GLFW_GREEN_BITS:
-            _glfw.hints.greenBits = hint;
+            _glfw.hints.framebuffer.greenBits = hint;
             break;
         case GLFW_BLUE_BITS:
-            _glfw.hints.blueBits = hint;
+            _glfw.hints.framebuffer.blueBits = hint;
             break;
         case GLFW_ALPHA_BITS:
-            _glfw.hints.alphaBits = hint;
+            _glfw.hints.framebuffer.alphaBits = hint;
             break;
         case GLFW_DEPTH_BITS:
-            _glfw.hints.depthBits = hint;
+            _glfw.hints.framebuffer.depthBits = hint;
             break;
         case GLFW_STENCIL_BITS:
-            _glfw.hints.stencilBits = hint;
+            _glfw.hints.framebuffer.stencilBits = hint;
             break;
         case GLFW_ACCUM_RED_BITS:
-            _glfw.hints.accumRedBits = hint;
+            _glfw.hints.framebuffer.accumRedBits = hint;
             break;
         case GLFW_ACCUM_GREEN_BITS:
-            _glfw.hints.accumGreenBits = hint;
+            _glfw.hints.framebuffer.accumGreenBits = hint;
             break;
         case GLFW_ACCUM_BLUE_BITS:
-            _glfw.hints.accumBlueBits = hint;
+            _glfw.hints.framebuffer.accumBlueBits = hint;
             break;
         case GLFW_ACCUM_ALPHA_BITS:
-            _glfw.hints.accumAlphaBits = hint;
+            _glfw.hints.framebuffer.accumAlphaBits = hint;
             break;
         case GLFW_AUX_BUFFERS:
-            _glfw.hints.auxBuffers = hint;
+            _glfw.hints.framebuffer.auxBuffers = hint;
             break;
         case GLFW_STEREO:
-            _glfw.hints.stereo = hint;
+            _glfw.hints.framebuffer.stereo = hint ? GL_TRUE : GL_FALSE;
             break;
         case GLFW_REFRESH_RATE:
             _glfw.hints.refreshRate = hint;
             break;
         case GLFW_DOUBLEBUFFER:
-            _glfw.hints.doublebuffer = hint;
+            _glfw.hints.framebuffer.doublebuffer = hint ? GL_TRUE : GL_FALSE;
             break;
         case GLFW_RESIZABLE:
-            _glfw.hints.resizable = hint;
+            _glfw.hints.window.resizable = hint ? GL_TRUE : GL_FALSE;
             break;
         case GLFW_DECORATED:
-            _glfw.hints.decorated = hint;
+            _glfw.hints.window.decorated = hint ? GL_TRUE : GL_FALSE;
             break;
         case GLFW_FOCUSED:
-            _glfw.hints.focused = hint;
+            _glfw.hints.window.focused = hint ? GL_TRUE : GL_FALSE;
             break;
         case GLFW_AUTO_ICONIFY:
-            _glfw.hints.autoIconify = hint;
+            _glfw.hints.window.autoIconify = hint ? GL_TRUE : GL_FALSE;
             break;
         case GLFW_FLOATING:
-            _glfw.hints.floating = hint;
+            _glfw.hints.window.floating = hint ? GL_TRUE : GL_FALSE;
             break;
         case GLFW_VISIBLE:
-            _glfw.hints.visible = hint;
+            _glfw.hints.window.visible = hint ? GL_TRUE : GL_FALSE;
             break;
         case GLFW_SAMPLES:
-            _glfw.hints.samples = hint;
+            _glfw.hints.framebuffer.samples = hint;
             break;
         case GLFW_SRGB_CAPABLE:
-            _glfw.hints.sRGB = hint;
+            _glfw.hints.framebuffer.sRGB = hint ? GL_TRUE : GL_FALSE;
             break;
         case GLFW_CLIENT_API:
-            _glfw.hints.api = hint;
+            _glfw.hints.context.api = hint;
             break;
         case GLFW_CONTEXT_VERSION_MAJOR:
-            _glfw.hints.major = hint;
+            _glfw.hints.context.major = hint;
             break;
         case GLFW_CONTEXT_VERSION_MINOR:
-            _glfw.hints.minor = hint;
+            _glfw.hints.context.minor = hint;
             break;
         case GLFW_CONTEXT_ROBUSTNESS:
-            _glfw.hints.robustness = hint;
+            _glfw.hints.context.robustness = hint;
             break;
         case GLFW_OPENGL_FORWARD_COMPAT:
-            _glfw.hints.forward = hint;
+            _glfw.hints.context.forward = hint ? GL_TRUE : GL_FALSE;
             break;
         case GLFW_OPENGL_DEBUG_CONTEXT:
-            _glfw.hints.debug = hint;
+            _glfw.hints.context.debug = hint ? GL_TRUE : GL_FALSE;
             break;
         case GLFW_OPENGL_PROFILE:
-            _glfw.hints.profile = hint;
+            _glfw.hints.context.profile = hint;
             break;
         case GLFW_CONTEXT_RELEASE_BEHAVIOR:
-            _glfw.hints.release = hint;
+            _glfw.hints.context.release = hint;
             break;
         default:
             _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint");

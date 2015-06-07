@@ -323,21 +323,21 @@ struct _GLFWcursor
 struct _GLFWlibrary
 {
     struct {
-        _GLFWfbconfig  framebuffer;
-        _GLFWwndconfig window;
-        _GLFWctxconfig context;
-        int            refreshRate;
+        _GLFWfbconfig   framebuffer;
+        _GLFWwndconfig  window;
+        _GLFWctxconfig  context;
+        int             refreshRate;
     } hints;
 
-    double          cursorPosX, cursorPosY;
+    double              cursorPosX, cursorPosY;
 
-    _GLFWcursor*    cursorListHead;
+    _GLFWcursor*        cursorListHead;
 
-    _GLFWwindow*    windowListHead;
-    _GLFWwindow*    focusedWindow;
+    _GLFWwindow*        windowListHead;
+    _GLFWwindow*        focusedWindow;
 
-    _GLFWmonitor**  monitors;
-    int             monitorCount;
+    _GLFWmonitor**      monitors;
+    int                 monitorCount;
 
     struct {
         GLFWmonitorfun  monitor;

@@ -24,8 +24,8 @@
 //
 //========================================================================
 
-#ifndef _cocoa_platform_h_
-#define _cocoa_platform_h_
+#ifndef _glfw3_cocoa_platform_h_
+#define _glfw3_cocoa_platform_h_
 
 #include <stdint.h>
 
@@ -118,4 +118,4 @@ void _glfwInitTimer(void);
 GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
-#endif // _cocoa_platform_h_
+#endif // _glfw3_cocoa_platform_h_

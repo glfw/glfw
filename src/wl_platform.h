@@ -24,8 +24,8 @@
 //
 //========================================================================
 
-#ifndef _wayland_platform_h_
-#define _wayland_platform_h_
+#ifndef _glfw3_wayland_platform_h_
+#define _glfw3_wayland_platform_h_
 
 #include <wayland-client.h>
 #include <xkbcommon/xkbcommon.h>
@@ -138,4 +138,4 @@ typedef struct _GLFWcursorWayland
 
 void _glfwAddOutput(uint32_t name, uint32_t version);
 
-#endif // _wayland_platform_h_
+#endif // _glfw3_wayland_platform_h_

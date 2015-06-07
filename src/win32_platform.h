@@ -25,8 +25,8 @@
 //
 //========================================================================
 
-#ifndef _win32_platform_h_
-#define _win32_platform_h_
+#ifndef _glfw3_win32_platform_h_
+#define _glfw3_win32_platform_h_
 
 // We don't need all the fancy stuff
 #ifndef NOMINMAX
@@ -243,4 +243,4 @@ void _glfwInitTimer(void);
 GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
-#endif // _win32_platform_h_
+#endif // _glfw3_win32_platform_h_

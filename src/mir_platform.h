@@ -24,8 +24,8 @@
 //
 //========================================================================
 
-#ifndef _mir_platform_h_
-#define _mir_platform_h_
+#ifndef _glfw3_mir_platform_h_
+#define _glfw3_mir_platform_h_
 
 #include <sys/queue.h>
 #include <pthread.h>
@@ -108,4 +108,4 @@ typedef struct _GLFWcursorMir
 extern void _glfwInitEventQueue(EventQueue* queue);
 extern void _glfwDeleteEventQueue(EventQueue* queue);
 
-#endif // _mir_platform_h_
+#endif // _glfw3_mir_platform_h_

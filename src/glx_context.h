@@ -25,8 +25,8 @@
 //
 //========================================================================
 
-#ifndef _glx_context_h_
-#define _glx_context_h_
+#ifndef _glfw3_glx_context_h_
+#define _glfw3_glx_context_h_
 
 #define GLX_GLXEXT_LEGACY
 #include <GL/glx.h>
@@ -97,4 +97,4 @@ int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContext(_GLFWwindow* window);
 
-#endif // _glx_context_h_
+#endif // _glfw3_glx_context_h_

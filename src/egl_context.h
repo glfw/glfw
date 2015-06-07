@@ -25,8 +25,8 @@
 //
 //========================================================================
 
-#ifndef _egl_context_h_
-#define _egl_context_h_
+#ifndef _glfw3_egl_context_h_
+#define _glfw3_egl_context_h_
 
 #include <EGL/egl.h>
 
@@ -77,4 +77,4 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
                         const _GLFWctxconfig* ctxconfig,
                         const _GLFWfbconfig* fbconfig);
 
-#endif // _egl_context_h_
+#endif // _glfw3_egl_context_h_

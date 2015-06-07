@@ -24,10 +24,10 @@
 //
 //========================================================================
 
-#ifndef _xkb_unicode_h_
-#define _xkb_unicode_h_
+#ifndef _glfw3_xkb_unicode_h_
+#define _glfw3_xkb_unicode_h_
 
 
 long _glfwKeySym2Unicode(unsigned int keysym);
 
-#endif // _xkb_unicode_h_
+#endif // _glfw3_xkb_unicode_h_

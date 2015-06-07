@@ -25,8 +25,8 @@
 //
 //========================================================================
 
-#ifndef _win32_tls_h_
-#define _win32_tls_h_
+#ifndef _glfw3_win32_tls_h_
+#define _glfw3_win32_tls_h_
 
 #define _GLFW_PLATFORM_LIBRARY_TLS_STATE _GLFWtlsWin32 win32_tls
 
@@ -45,4 +45,4 @@ int _glfwCreateContextTLS(void);
 void _glfwDestroyContextTLS(void);
 void _glfwSetContextTLS(_GLFWwindow* context);
 
-#endif // _win32_tls_h_
+#endif // _glfw3_win32_tls_h_

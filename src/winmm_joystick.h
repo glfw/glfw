@@ -24,8 +24,8 @@
 //
 //========================================================================
 
-#ifndef _winmm_joystick_h_
-#define _winmm_joystick_h_
+#ifndef _glfw3_winmm_joystick_h_
+#define _glfw3_winmm_joystick_h_
 
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE \
     _GLFWjoystickWinMM winmm_js[GLFW_JOYSTICK_LAST + 1]
@@ -44,4 +44,4 @@ typedef struct _GLFWjoystickWinMM
 void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
-#endif // _winmm_joystick_h_
+#endif // _glfw3_winmm_joystick_h_

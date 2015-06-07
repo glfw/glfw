@@ -24,8 +24,8 @@
 //
 //========================================================================
 
-#ifndef _iokit_joystick_h_
-#define _iokit_joystick_h_
+#ifndef _glfw3_iokit_joystick_h_
+#define _glfw3_iokit_joystick_h_
 
 #include <IOKit/IOKitLib.h>
 #include <IOKit/IOCFPlugIn.h>
@@ -58,4 +58,4 @@ typedef struct _GLFWjoystickIOKit
 void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
-#endif // _iokit_joystick_h_
+#endif // _glfw3_iokit_joystick_h_

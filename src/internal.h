@@ -25,8 +25,8 @@
 //
 //========================================================================
 
-#ifndef _internal_h_
-#define _internal_h_
+#ifndef _glfw3_internal_h_
+#define _glfw3_internal_h_
 
 
 #if defined(_GLFW_USE_CONFIG_H)
@@ -868,4 +868,4 @@ void _glfwFreeMonitor(_GLFWmonitor* monitor);
   */
 void _glfwFreeMonitors(_GLFWmonitor** monitors, int count);
 
-#endif // _internal_h_
+#endif // _glfw3_internal_h_

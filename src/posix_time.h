@@ -25,8 +25,8 @@
 //
 //========================================================================
 
-#ifndef _posix_time_h_
-#define _posix_time_h_
+#ifndef _glfw3_posix_time_h_
+#define _glfw3_posix_time_h_
 
 #define _GLFW_PLATFORM_LIBRARY_TIME_STATE _GLFWtimePOSIX posix_time
 
@@ -46,4 +46,4 @@ typedef struct _GLFWtimePOSIX
 
 void _glfwInitTimer(void);
 
-#endif // _posix_time_h_
+#endif // _glfw3_posix_time_h_

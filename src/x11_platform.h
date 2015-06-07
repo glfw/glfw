@@ -25,8 +25,8 @@
 //
 //========================================================================
 
-#ifndef _x11_platform_h_
-#define _x11_platform_h_
+#ifndef _glfw3_x11_platform_h_
+#define _glfw3_x11_platform_h_
 
 #include <unistd.h>
 #include <signal.h>
@@ -263,4 +263,4 @@ void _glfwGrabXErrorHandler(void);
 void _glfwReleaseXErrorHandler(void);
 void _glfwInputXError(int error, const char* message);
 
-#endif // _x11_platform_h_
+#endif // _glfw3_x11_platform_h_

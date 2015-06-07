@@ -226,6 +226,15 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
 
         modeIndex++;
 
+        if (ChangeDisplaySettingsExW(monitor->win32.adapterName,
+                                    &dm,
+                                    NULL,
+                                    CDS_TEST,
+                                    NULL) != DISP_CHANGE_SUCCESSFUL)
+        {
+            continue;
+        }
+
         // Skip modes with less than 15 BPP
         if (dm.dmBitsPerPel < 15)
             continue;

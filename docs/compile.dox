@@ -17,8 +17,9 @@ Homebrew, you can simply install its CMake package.  If not, you can download
 installers for Windows and OS X from the [CMake website](http://www.cmake.org/).
 
 @note CMake only generates project files or makefiles.  It does not compile the
-actual GLFW library.  To compile GLFW, first generate these files and then use
-them in your chosen development environment to compile the actual GLFW library.
+actual GLFW library.  To compile GLFW, first generate these files for your
+chosen development environment and then use them to compile the actual GLFW
+library.
 
 
 @subsection compile_deps Dependencies

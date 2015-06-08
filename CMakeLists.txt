@@ -546,8 +546,8 @@ if (GLFW_INSTALL)
 
     install(
         FILES 
-            ${GLFW_INSTALL_CONFIG_DIR}/glfw3Config.cmake
-            glfw3ConfigVersion.cmake
+            ${GLFW_BINARY_DIR}/${GLFW_INSTALL_CONFIG_DIR}/glfw3Config.cmake
+            ${GLFW_BINARY_DIR}/glfw3ConfigVersion.cmake
         DESTINATION ${GLFW_INSTALL_CONFIG_DIR})
 
     install(

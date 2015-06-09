@@ -74,6 +74,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [Cocoa] Bugfix: Creating or showing a window would make its context current
  - [X11] Bugfix: `glfwInit` would segfault on systems without RandR
  - [X11] Bugfix: The response to `_NET_WM_PING` was sent to the wrong window
+ - [X11] Bugfix: Character input via XIM did not work in many cases
  - [WGL] Removed `GLFW_USE_DWM_SWAP_INTERVAL` compile-time option
  - [WGL] Bugfix: Swap interval was ignored when DWM was enabled
  - [GLX] Added dependency on `libdl` on systems where it provides `dlopen`

@@ -863,6 +863,10 @@ static void leaveFullscreenMode(_GLFWwindow* window)
 static void processEvent(XEvent *event)
 {
     _GLFWwindow* window = NULL;
+    Bool filtered = False;
+
+    if (_glfw.x11.im)
+        filtered = XFilterEvent(event, None);
 
     if (event->type != GenericEvent)
     {
@@ -893,11 +897,8 @@ static void processEvent(XEvent *event)
                 Status status;
                 wchar_t buffer[16];
 
-                if (XFilterEvent(event, None))
-                {
-                    // Discard intermediary (dead key) events for character input
+                if (filtered)
                     break;
-                }
 
                 const int count = XwcLookupString(window->x11.ic,
                                                   &event->xkey,
@@ -1112,6 +1113,9 @@ static void processEvent(XEvent *event)
         {
             // Custom client message, probably from the window manager
 
+            if (filtered)
+                break;
+
             if (event->xclient.message_type == None)
                 break;
 
@@ -1239,6 +1243,9 @@ static void processEvent(XEvent *event)
         {
             if (event->xfocus.mode == NotifyNormal)
             {
+                if (window->x11.ic)
+                    XSetICFocus(window->x11.ic);
+
                 _glfwInputWindowFocus(window, GL_TRUE);
 
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)
@@ -1252,6 +1259,9 @@ static void processEvent(XEvent *event)
         {
             if (event->xfocus.mode == NotifyNormal)
             {
+                if (window->x11.ic)
+                    XUnsetICFocus(window->x11.ic);
+
                 _glfwInputWindowFocus(window, GL_FALSE);
 
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)

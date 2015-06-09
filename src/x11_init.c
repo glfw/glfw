@@ -738,7 +738,7 @@ int _glfwPlatformInit(void)
     {
         XSetLocaleModifiers("");
 
-        _glfw.x11.im = XOpenIM(_glfw.x11.display, 0, 0, 0);
+        _glfw.x11.im = XOpenIM(_glfw.x11.display, 0, NULL, NULL);
         if (_glfw.x11.im)
         {
             if (!hasUsableInputMethodStyle())

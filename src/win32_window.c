@@ -71,13 +71,18 @@ static getWindowExStyle(const _GLFWwindow* window)
 
 // Updates the cursor clip rect
 //
-static void updateClipRect(_GLFWwindow* window)
+static BOOL updateClipRect(_GLFWwindow* window)
 {
     RECT clipRect;
-    GetClientRect(window->win32.handle, &clipRect);
-    ClientToScreen(window->win32.handle, (POINT*) &clipRect.left);
-    ClientToScreen(window->win32.handle, (POINT*) &clipRect.right);
-    ClipCursor(&clipRect);
+    if (GetClientRect(window->win32.handle, &clipRect))
+    {
+        if (ClientToScreen(window->win32.handle, (POINT*) &clipRect.left))
+        {
+            if (ClientToScreen(window->win32.handle, (POINT*) &clipRect.right))
+                return ClipCursor(&clipRect);
+        }
+    }
+    return FALSE;
 }
 
 // Hide the mouse cursor

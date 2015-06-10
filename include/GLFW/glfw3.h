@@ -127,7 +127,9 @@ extern "C" {
   #include <OpenGL/glu.h>
  #endif
 #else
- #if defined(GLFW_INCLUDE_GLCOREARB)
+ #if defined(GLFW_INCLUDE_GL3W)
+  #include <GL/gl3w.h>
+ #elif defined(GLFW_INCLUDE_GLCOREARB)
   #include <GL/glcorearb.h>
  #elif defined(GLFW_INCLUDE_ES1)
   #include <GLES/gl.h>

@@ -898,7 +898,7 @@ static void processEvent(XEvent *event)
                 wchar_t buffer[16];
 
                 if (filtered)
-                    break;
+                    return;
 
                 const int count = XwcLookupString(window->x11.ic,
                                                   &event->xkey,
@@ -920,7 +920,7 @@ static void processEvent(XEvent *event)
                     _glfwInputChar(window, character, mods, plain);
             }
 
-            break;
+            return;
         }
 
         case KeyRelease:
@@ -953,14 +953,14 @@ static void processEvent(XEvent *event)
                         {
                             // This is very likely a server-generated key repeat
                             // event, so ignore it
-                            break;
+                            return;
                         }
                     }
                 }
             }
 
             _glfwInputKey(window, key, event->xkey.keycode, GLFW_RELEASE, mods);
-            break;
+            return;
         }
 
         case ButtonPress:
@@ -994,7 +994,7 @@ static void processEvent(XEvent *event)
                                      mods);
             }
 
-            break;
+            return;
         }
 
         case ButtonRelease:
@@ -1031,7 +1031,8 @@ static void processEvent(XEvent *event)
                                      GLFW_RELEASE,
                                      mods);
             }
-            break;
+
+            return;
         }
 
         case EnterNotify:
@@ -1042,13 +1043,13 @@ static void processEvent(XEvent *event)
                 hideCursor(window);
 
             _glfwInputCursorEnter(window, GL_TRUE);
-            break;
+            return;
         }
 
         case LeaveNotify:
         {
             _glfwInputCursorEnter(window, GL_FALSE);
-            break;
+            return;
         }
 
         case MotionNotify:
@@ -1063,7 +1064,7 @@ static void processEvent(XEvent *event)
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 {
                     if (_glfw.focusedWindow != window)
-                        break;
+                        return;
 
                     _glfwInputCursorMotion(window,
                                            x - window->x11.cursorPosX,
@@ -1075,7 +1076,7 @@ static void processEvent(XEvent *event)
 
             window->x11.cursorPosX = x;
             window->x11.cursorPosY = y;
-            break;
+            return;
         }
 
         case ConfigureNotify:
@@ -1106,7 +1107,7 @@ static void processEvent(XEvent *event)
                 window->x11.ypos = event->xconfigure.y;
             }
 
-            break;
+            return;
         }
 
         case ClientMessage:
@@ -1114,16 +1115,16 @@ static void processEvent(XEvent *event)
             // Custom client message, probably from the window manager
 
             if (filtered)
-                break;
+                return;
 
             if (event->xclient.message_type == None)
-                break;
+                return;
 
             if (event->xclient.message_type == _glfw.x11.WM_PROTOCOLS)
             {
                 const Atom protocol = event->xclient.data.l[0];
                 if (protocol == None)
-                    break;
+                    return;
 
                 if (protocol == _glfw.x11.WM_DELETE_WINDOW)
                 {
@@ -1190,7 +1191,7 @@ static void processEvent(XEvent *event)
                 XFlush(_glfw.x11.display);
             }
 
-            break;
+            return;
         }
 
         case SelectionNotify:
@@ -1236,7 +1237,7 @@ static void processEvent(XEvent *event)
                 XFlush(_glfw.x11.display);
             }
 
-            break;
+            return;
         }
 
         case FocusIn:
@@ -1252,7 +1253,7 @@ static void processEvent(XEvent *event)
                     disableCursor(window);
             }
 
-            break;
+            return;
         }
 
         case FocusOut:
@@ -1268,13 +1269,13 @@ static void processEvent(XEvent *event)
                     restoreCursor(window);
             }
 
-            break;
+            return;
         }
 
         case Expose:
         {
             _glfwInputWindowDamage(window);
-            break;
+            return;
         }
 
         case PropertyNotify:
@@ -1289,19 +1290,19 @@ static void processEvent(XEvent *event)
                     _glfwInputWindowIconify(window, GL_FALSE);
             }
 
-            break;
+            return;
         }
 
         case SelectionClear:
         {
             handleSelectionClear(event);
-            break;
+            return;
         }
 
         case SelectionRequest:
         {
             handleSelectionRequest(event);
-            break;
+            return;
         }
 
         case DestroyNotify:
@@ -1330,7 +1331,7 @@ static void processEvent(XEvent *event)
                             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                             {
                                 if (_glfw.focusedWindow != window)
-                                    break;
+                                    return;
 
                                 x = data->event_x - window->x11.cursorPosX;
                                 y = data->event_y - window->x11.cursorPosY;
@@ -1351,23 +1352,15 @@ static void processEvent(XEvent *event)
             }
 
             XFreeEventData(_glfw.x11.display, &event->xcookie);
-            break;
+            return;
         }
 #endif /*_GLFW_HAS_XINPUT*/
+    }
 
-        default:
-        {
-            switch (event->type - _glfw.x11.randr.eventBase)
-            {
-                case RRScreenChangeNotify:
-                {
-                    XRRUpdateConfiguration(event);
-                    break;
-                }
-            }
-
-            break;
-        }
+    if (event->type - _glfw.x11.randr.eventBase == RRScreenChangeNotify)
+    {
+        XRRUpdateConfiguration(event);
+        return;
     }
 }
 

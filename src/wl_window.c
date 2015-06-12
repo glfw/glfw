@@ -377,6 +377,11 @@ void _glfwPlatformPostEmptyEvent(void)
     wl_display_sync(_glfw.wl.display);
 }
 
+void _glfwPlatformSetTouchInput(_GLFWwindow* window, int enabled)
+{
+    _glfw.wl.touchEnabled = enabled;
+}
+
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
 {
     if (xpos)

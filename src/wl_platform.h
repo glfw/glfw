@@ -82,6 +82,7 @@ typedef struct _GLFWlibraryWayland
     struct wl_seat*             seat;
     struct wl_pointer*          pointer;
     struct wl_keyboard*         keyboard;
+    struct wl_touch*            touch;
 
     struct wl_cursor_theme*     cursorTheme;
     struct wl_cursor*           defaultCursor;
@@ -105,6 +106,11 @@ typedef struct _GLFWlibraryWayland
 
     _GLFWwindow*                pointerFocus;
     _GLFWwindow*                keyboardFocus;
+
+    int*                        touchIDs;
+    _GLFWwindow**               touchFocuses;
+    int                         touchSize;
+    int                         touchEnabled;
 
 } _GLFWlibraryWayland;
 

@@ -1374,9 +1374,6 @@ GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* monitor);
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @bug __X11:__ This callback is not yet called on monitor configuration
- *  changes.
- *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
  *

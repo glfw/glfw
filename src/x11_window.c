@@ -480,9 +480,6 @@ static GLFWbool createWindow(_GLFWwindow* window,
 
     _glfwPlatformSetWindowTitle(window, wndconfig->title);
 
-    XRRSelectInput(_glfw.x11.display, window->x11.handle,
-                   RRScreenChangeNotifyMask);
-
     if (_glfw.x11.im)
     {
         window->x11.ic = XCreateIC(_glfw.x11.im,
@@ -851,6 +848,16 @@ static void processEvent(XEvent *event)
 
     if (_glfw.x11.im)
         filtered = XFilterEvent(event, None);
+
+    if (_glfw.x11.randr.available)
+    {
+        if (event->type == _glfw.x11.randr.eventBase + RRNotify)
+        {
+            XRRUpdateConfiguration(event);
+            _glfwInputMonitorChange();
+            return;
+        }
+    }
 
     if (event->type != GenericEvent)
     {
@@ -1411,12 +1418,6 @@ static void processEvent(XEvent *event)
             return;
         }
 #endif /*_GLFW_HAS_XINPUT*/
-    }
-
-    if (event->type - _glfw.x11.randr.eventBase == RRScreenChangeNotify)
-    {
-        XRRUpdateConfiguration(event);
-        return;
     }
 }
 

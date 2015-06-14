@@ -486,29 +486,29 @@ static GLFWbool initExtensions(void)
 #endif /*_GLFW_HAS_XF86VM*/
 
     // Check for RandR extension
-    _glfw.x11.randr.available =
-        XRRQueryExtension(_glfw.x11.display,
+    if (XRRQueryExtension(_glfw.x11.display,
                           &_glfw.x11.randr.eventBase,
-                          &_glfw.x11.randr.errorBase);
-
-    if (_glfw.x11.randr.available)
+                          &_glfw.x11.randr.errorBase))
     {
-        XRRScreenResources* sr;
-
-        if (!XRRQueryVersion(_glfw.x11.display,
-                             &_glfw.x11.randr.major,
-                             &_glfw.x11.randr.minor))
+        if (XRRQueryVersion(_glfw.x11.display,
+                            &_glfw.x11.randr.major,
+                            &_glfw.x11.randr.minor))
+        {
+            // The GLFW RandR path requires at least version 1.3
+            if (_glfw.x11.randr.major > 1 || _glfw.x11.randr.minor >= 3)
+                _glfw.x11.randr.available = GLFW_TRUE;
+        }
+        else
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "X11: Failed to query RandR version");
-            return GLFW_FALSE;
         }
+    }
 
-        // The GLFW RandR path requires at least version 1.3
-        if (_glfw.x11.randr.major == 1 && _glfw.x11.randr.minor < 3)
-            _glfw.x11.randr.available = GLFW_FALSE;
-
-        sr = XRRGetScreenResources(_glfw.x11.display, _glfw.x11.root);
+    if (_glfw.x11.randr.available)
+    {
+        XRRScreenResources* sr = XRRGetScreenResources(_glfw.x11.display,
+                                                       _glfw.x11.root);
 
         if (!sr->ncrtc || !XRRGetCrtcGammaSize(_glfw.x11.display, sr->crtcs[0]))
         {
@@ -522,6 +522,9 @@ static GLFWbool initExtensions(void)
         }
 
         XRRFreeScreenResources(sr);
+
+        XRRSelectInput(_glfw.x11.display, _glfw.x11.root,
+                       RROutputChangeNotifyMask);
     }
 
     if (XineramaQueryExtension(_glfw.x11.display,

@@ -834,26 +834,6 @@ static void leaveFullscreenMode(_GLFWwindow* window)
                         _glfw.x11.saver.blanking,
                         _glfw.x11.saver.exposure);
     }
-
-    if (_glfw.x11.NET_WM_BYPASS_COMPOSITOR)
-    {
-        const unsigned long value = 0;
-
-        XChangeProperty(_glfw.x11.display,  window->x11.handle,
-                        _glfw.x11.NET_WM_BYPASS_COMPOSITOR, XA_CARDINAL, 32,
-                        PropModeReplace, (unsigned char*) &value, 1);
-    }
-
-    if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_FULLSCREEN)
-    {
-        // Ask the window manager to make the GLFW window a normal window
-        // Normal windows usually have frames and other decorations
-        sendEventToWM(window,
-                      _glfw.x11.NET_WM_STATE,
-                      _NET_WM_STATE_REMOVE,
-                      _glfw.x11.NET_WM_STATE_FULLSCREEN,
-                      0, 1, 0);
-    }
 }
 
 // Process the specified X event

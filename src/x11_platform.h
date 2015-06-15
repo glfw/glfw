@@ -115,8 +115,6 @@ typedef struct _GLFWlibraryX11
     XContext        context;
     // XIM input method
     XIM             im;
-    // True if window manager supports EWMH
-    GLboolean       hasEWMH;
     // Most recent error code received by X error handler
     int             errorCode;
     // Clipboard string (while the selection is owned)

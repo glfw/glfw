@@ -459,8 +459,6 @@ static void detectEWMH(void)
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_BYPASS_COMPOSITOR");
 
     XFree(supportedAtoms);
-
-    _glfw.x11.hasEWMH = GL_TRUE;
 }
 
 // Initialize X11 display and look for supported X11 extensions

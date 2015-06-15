@@ -317,24 +317,27 @@ static GLboolean createWindow(_GLFWwindow* window,
                      (XPointer) window);
     }
 
-    if (window->monitor && !_glfw.x11.hasEWMH)
+    if (window->monitor)
     {
-        // This is the butcher's way of removing window decorations
-        // Setting the override-redirect attribute on a window makes the window
-        // manager ignore the window completely (ICCCM, section 4)
-        // The good thing is that this makes undecorated full screen windows
-        // easy to do; the bad thing is that we have to do everything manually
-        // and some things (like iconify/restore) won't work at all, as those
-        // are tasks usually performed by the window manager
+        if (!_glfw.x11.NET_WM_STATE || !_glfw.x11.NET_WM_STATE_FULLSCREEN)
+        {
+            // This is the butcher's way of removing window decorations
+            // Setting the override-redirect attribute on a window makes the
+            // window manager ignore the window completely (ICCCM, section 4)
+            // The good thing is that this makes undecorated full screen windows
+            // easy to do; the bad thing is that we have to do everything
+            // manually and some things (like iconify/restore) won't work at
+            // all, as those are tasks usually performed by the window manager
 
-        XSetWindowAttributes attributes;
-        attributes.override_redirect = True;
-        XChangeWindowAttributes(_glfw.x11.display,
-                                window->x11.handle,
-                                CWOverrideRedirect,
-                                &attributes);
+            XSetWindowAttributes attributes;
+            attributes.override_redirect = True;
+            XChangeWindowAttributes(_glfw.x11.display,
+                                    window->x11.handle,
+                                    CWOverrideRedirect,
+                                    &attributes);
 
-        window->x11.overrideRedirect = GL_TRUE;
+            window->x11.overrideRedirect = GL_TRUE;
+        }
     }
 
     // Declare the WM protocols supported by GLFW

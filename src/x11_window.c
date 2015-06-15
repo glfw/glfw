@@ -767,6 +767,18 @@ static void enterFullscreenMode(_GLFWwindow* window)
                         PropModeReplace, (unsigned char*) &value, 1);
     }
 
+    // Position the window over its monitor
+    {
+        int xpos, ypos;
+        GLFWvidmode mode;
+
+        _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
+        _glfwPlatformGetVideoMode(window->monitor, &mode);
+
+        XMoveResizeWindow(_glfw.x11.display, window->x11.handle,
+                          xpos, ypos, mode.width, mode.height);
+    }
+
     if (_glfw.x11.xinerama.available && _glfw.x11.NET_WM_FULLSCREEN_MONITORS)
     {
         sendEventToWM(window,
@@ -802,20 +814,6 @@ static void enterFullscreenMode(_GLFWwindow* window)
                       _NET_WM_STATE_ADD,
                       _glfw.x11.NET_WM_STATE_FULLSCREEN,
                       0, 1, 0);
-    }
-    else
-    {
-        // In override-redirect mode we have divorced ourselves from the
-        // window manager, so we need to do everything manually
-        int xpos, ypos;
-        GLFWvidmode mode;
-
-        _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
-        _glfwPlatformGetVideoMode(window->monitor, &mode);
-
-        XMoveWindow(_glfw.x11.display, window->x11.handle, xpos, ypos);
-        XResizeWindow(_glfw.x11.display, window->x11.handle,
-                      mode.width, mode.height);
     }
 }
 

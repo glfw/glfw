@@ -782,10 +782,6 @@ static void enterFullscreenMode(_GLFWwindow* window)
 
     if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_FULLSCREEN)
     {
-        int x, y;
-        _glfwPlatformGetMonitorPos(window->monitor, &x, &y);
-        _glfwPlatformSetWindowPos(window, x, y);
-
         if (_glfw.x11.NET_ACTIVE_WINDOW)
         {
             // Ask the window manager to raise and focus the GLFW window

@@ -210,12 +210,9 @@ including functions that may called before initialization.
 The reference documentation for every GLFW function states whether it is limited
 to the main thread.                                                        
 
-The following categories of functions are and will remain limited to the main
-thread due to the limitations of one or several platforms:
-
- - Initialization and termination
- - Event processing
- - Creation and destruction of window, context and cursor objects
+Initialization and termination, event processing and the creation and
+destruction of windows, contexts and cursors are all limited to the main thread
+due to limitations of one or several platforms.
 
 Because event processing must be performed on the main thread, all callbacks
 except for the error callback will only be called on that thread.  The error

@@ -1220,32 +1220,42 @@ static void processEvent(XEvent *event)
 
         case FocusIn:
         {
-            if (event->xfocus.mode == NotifyNormal)
+            if (event->xfocus.mode == NotifyGrab ||
+                event->xfocus.mode == NotifyUngrab)
             {
-                if (window->x11.ic)
-                    XSetICFocus(window->x11.ic);
-
-                _glfwInputWindowFocus(window, GL_TRUE);
-
-                if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                    disableCursor(window);
+                // Ignore focus events from popup indicator windows, window menu
+                // key chords and window dragging
+                return;
             }
+
+            if (window->x11.ic)
+                XSetICFocus(window->x11.ic);
+
+            _glfwInputWindowFocus(window, GL_TRUE);
+
+            if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                disableCursor(window);
 
             return;
         }
 
         case FocusOut:
         {
-            if (event->xfocus.mode == NotifyNormal)
+            if (event->xfocus.mode == NotifyGrab ||
+                event->xfocus.mode == NotifyUngrab)
             {
-                if (window->x11.ic)
-                    XUnsetICFocus(window->x11.ic);
-
-                _glfwInputWindowFocus(window, GL_FALSE);
-
-                if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                    restoreCursor(window);
+                // Ignore focus events from popup indicator windows, window menu
+                // key chords and window dragging
+                return;
             }
+
+            if (window->x11.ic)
+                XUnsetICFocus(window->x11.ic);
+
+            _glfwInputWindowFocus(window, GL_FALSE);
+
+            if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                restoreCursor(window);
 
             return;
         }

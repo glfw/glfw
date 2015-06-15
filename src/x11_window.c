@@ -1234,6 +1234,9 @@ static void processEvent(XEvent *event)
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 disableCursor(window);
 
+            if (window->monitor && window->autoIconify)
+                enterFullscreenMode(window);
+
             _glfwInputWindowFocus(window, GL_TRUE);
             return;
         }
@@ -1253,6 +1256,12 @@ static void processEvent(XEvent *event)
 
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 restoreCursor(window);
+
+            if (window->monitor && window->autoIconify)
+            {
+                _glfwPlatformIconifyWindow(window);
+                leaveFullscreenMode(window);
+            }
 
             _glfwInputWindowFocus(window, GL_FALSE);
             return;

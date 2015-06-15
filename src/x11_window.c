@@ -335,8 +335,6 @@ static GLboolean createWindow(_GLFWwindow* window,
                                     window->x11.handle,
                                     CWOverrideRedirect,
                                     &attributes);
-
-            window->x11.overrideRedirect = GL_TRUE;
         }
     }
 
@@ -799,7 +797,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
                       _glfw.x11.NET_WM_STATE_FULLSCREEN,
                       0, 1, 0);
     }
-    else if (window->x11.overrideRedirect)
+    else
     {
         // In override-redirect mode we have divorced ourselves from the
         // window manager, so we need to do everything manually
@@ -1544,7 +1542,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     {
         _glfwSetVideoMode(window->monitor, &window->videoMode);
 
-        if (window->x11.overrideRedirect)
+        if (!_glfw.x11.NET_WM_STATE || !_glfw.x11.NET_WM_STATE_FULLSCREEN)
         {
             GLFWvidmode mode;
             _glfwPlatformGetVideoMode(window->monitor, &mode);
@@ -1649,7 +1647,7 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
-    if (window->x11.overrideRedirect)
+    if (!_glfw.x11.NET_WM_STATE || !_glfw.x11.NET_WM_STATE_FULLSCREEN)
     {
         // Override-redirect windows cannot be iconified or restored, as those
         // tasks are performed by the window manager
@@ -1664,7 +1662,7 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
-    if (window->x11.overrideRedirect)
+    if (!_glfw.x11.NET_WM_STATE || !_glfw.x11.NET_WM_STATE_FULLSCREEN)
     {
         // Override-redirect windows cannot be iconified or restored, as those
         // tasks are performed by the window manager

@@ -75,6 +75,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [X11] Bugfix: `glfwInit` would segfault on systems without RandR
  - [X11] Bugfix: The response to `_NET_WM_PING` was sent to the wrong window
  - [X11] Bugfix: Character input via XIM did not work in many cases
+ - [X11] Bugfix: No fallback existed for missing `_NET_ACTIVE_WINDOW` support
  - [WGL] Removed `GLFW_USE_DWM_SWAP_INTERVAL` compile-time option
  - [WGL] Bugfix: Swap interval was ignored when DWM was enabled
  - [GLX] Added dependency on `libdl` on systems where it provides `dlopen`

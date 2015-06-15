@@ -778,16 +778,22 @@ static void enterFullscreenMode(_GLFWwindow* window)
                       0);
     }
 
+    if (_glfw.x11.NET_ACTIVE_WINDOW)
+    {
+        // Ask the window manager to raise and focus the GLFW window
+        // Only focused windows with the _NET_WM_STATE_FULLSCREEN state end up
+        // on top of all other windows ("Stacking order" in EWMH spec)
+        sendEventToWM(window, _glfw.x11.NET_ACTIVE_WINDOW, 1, 0, 0, 0, 0);
+    }
+    else
+    {
+        XRaiseWindow(_glfw.x11.display, window->x11.handle);
+        XSetInputFocus(_glfw.x11.display, window->x11.handle,
+                       RevertToParent, CurrentTime);
+    }
+
     if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_FULLSCREEN)
     {
-        if (_glfw.x11.NET_ACTIVE_WINDOW)
-        {
-            // Ask the window manager to raise and focus the GLFW window
-            // Only focused windows with the _NET_WM_STATE_FULLSCREEN state end
-            // up on top of all other windows ("Stacking order" in EWMH spec)
-            sendEventToWM(window, _glfw.x11.NET_ACTIVE_WINDOW, 1, 0, 0, 0, 0);
-        }
-
         // Ask the window manager to make the GLFW window a full screen window
         // Full screen windows are undecorated and, when focused, are kept
         // on top of all other windows
@@ -807,9 +813,6 @@ static void enterFullscreenMode(_GLFWwindow* window)
         _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
         _glfwPlatformGetVideoMode(window->monitor, &mode);
 
-        XRaiseWindow(_glfw.x11.display, window->x11.handle);
-        XSetInputFocus(_glfw.x11.display, window->x11.handle,
-                       RevertToParent, CurrentTime);
         XMoveWindow(_glfw.x11.display, window->x11.handle, xpos, ypos);
         XResizeWindow(_glfw.x11.display, window->x11.handle,
                       mode.width, mode.height);

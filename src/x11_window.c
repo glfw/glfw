@@ -317,7 +317,7 @@ static GLboolean createWindow(_GLFWwindow* window,
                      (XPointer) window);
     }
 
-    if (window->monitor)
+    if (wndconfig->monitor)
     {
         if (!_glfw.x11.NET_WM_STATE || !_glfw.x11.NET_WM_STATE_FULLSCREEN)
         {
@@ -337,6 +337,21 @@ static GLboolean createWindow(_GLFWwindow* window,
                                     &attributes);
         }
     }
+    else
+    {
+        if (wndconfig->floating)
+        {
+            if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_ABOVE)
+            {
+                sendEventToWM(window,
+                              _glfw.x11.NET_WM_STATE,
+                              _NET_WM_STATE_ADD,
+                              _glfw.x11.NET_WM_STATE_ABOVE,
+                              0, 1, 0);
+            }
+        }
+    }
+
 
     // Declare the WM protocols supported by GLFW
     {
@@ -455,18 +470,6 @@ static GLboolean createWindow(_GLFWwindow* window,
         XChangeProperty(_glfw.x11.display, window->x11.handle,
                         _glfw.x11.XdndAware, XA_ATOM, 32,
                         PropModeReplace, (unsigned char*) &version, 1);
-    }
-
-    if (wndconfig->floating && !wndconfig->monitor)
-    {
-        if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_ABOVE)
-        {
-            sendEventToWM(window,
-                          _glfw.x11.NET_WM_STATE,
-                          _NET_WM_STATE_ADD,
-                          _glfw.x11.NET_WM_STATE_ABOVE,
-                          0, 1, 0);
-        }
     }
 
     _glfwPlatformSetWindowTitle(window, wndconfig->title);

@@ -492,16 +492,13 @@ GLboolean _glfwIsValidContext(const _GLFWctxconfig* ctxconfig)
 
 int _glfwStringInExtensionString(const char* string, const GLubyte* extensions)
 {
-    const GLubyte* start;
-    GLubyte* where;
-    GLubyte* terminator;
+    const GLubyte* start = extensions;
 
-    // It takes a bit of care to be fool-proof about parsing the
-    // OpenGL extensions string. Don't be fooled by sub-strings,
-    // etc.
-    start = extensions;
     for (;;)
     {
+        GLubyte* where;
+        GLubyte* terminator;
+
         where = (GLubyte*) strstr((const char*) start, string);
         if (!where)
             return GL_FALSE;

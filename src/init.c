@@ -33,8 +33,8 @@
 #include <stdarg.h>
 
 
-// The three global variables below comprise all global data in GLFW, except for
-// various static const translation tables.  Any other global variable is a bug.
+// The three global variables below comprise all global data in GLFW.
+// Any other global variable is a bug.
 
 // Global state shared between compilation units of GLFW
 // These are documented in internal.h

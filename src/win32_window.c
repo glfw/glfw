@@ -462,7 +462,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
             {
-                if (_glfw.focusedWindow != window)
+                if (_glfw.cursorWindow != window)
                     break;
 
                 _glfwInputCursorMotion(window,
@@ -514,7 +514,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_SIZE:
         {
-            if (_glfw.focusedWindow == window)
+            if (_glfw.cursorWindow == window)
             {
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)
                     updateClipRect(window);
@@ -539,7 +539,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOVE:
         {
-            if (_glfw.focusedWindow == window)
+            if (_glfw.cursorWindow == window)
             {
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)
                     updateClipRect(window);
@@ -566,7 +566,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_SETCURSOR:
         {
-            if (_glfw.focusedWindow == window && LOWORD(lParam) == HTCLIENT)
+            if (_glfw.cursorWindow == window && LOWORD(lParam) == HTCLIENT)
             {
                 if (window->cursorMode == GLFW_CURSOR_HIDDEN ||
                     window->cursorMode == GLFW_CURSOR_DISABLED)
@@ -1015,7 +1015,7 @@ void _glfwPlatformPollEvents(void)
         }
     }
 
-    window = _glfw.focusedWindow;
+    window = _glfw.cursorWindow;
     if (window)
     {
         // LSHIFT/RSHIFT fixup (keys tend to "stick" without this fix)
@@ -1194,7 +1194,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
     // the following condition is not met. That way it should be safe to destroy the
     // cursor after calling glfwSetCursor(window, NULL) on all windows using the cursor.
 
-    if (_glfw.focusedWindow == window &&
+    if (_glfw.cursorWindow == window &&
         window->cursorMode == GLFW_CURSOR_NORMAL &&
         window->win32.cursorInside)
     {

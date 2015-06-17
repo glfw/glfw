@@ -203,7 +203,7 @@ static int translateKey(unsigned int key)
 {
     [window->nsgl.context update];
 
-    if (_glfw.focusedWindow == window &&
+    if (_glfw.cursorWindow == window &&
         window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         centerCursor(window);
@@ -221,7 +221,7 @@ static int translateKey(unsigned int key)
 {
     [window->nsgl.context update];
 
-    if (_glfw.focusedWindow == window &&
+    if (_glfw.cursorWindow == window &&
         window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         centerCursor(window);
@@ -247,7 +247,7 @@ static int translateKey(unsigned int key)
     if (window->monitor && window->autoIconify)
         enterFullscreenMode(window);
 
-    if (_glfw.focusedWindow == window &&
+    if (_glfw.cursorWindow == window &&
         window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         centerCursor(window);

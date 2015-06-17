@@ -1044,7 +1044,7 @@ static void processEvent(XEvent *event)
 
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 {
-                    if (_glfw.focusedWindow != window)
+                    if (_glfw.cursorWindow != window)
                         return;
 
                     _glfwInputCursorMotion(window,
@@ -1328,7 +1328,7 @@ static void processEvent(XEvent *event)
 
                             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                             {
-                                if (_glfw.focusedWindow != window)
+                                if (_glfw.cursorWindow != window)
                                     return;
 
                                 x = data->event_x - window->x11.cursorPosX;
@@ -1725,7 +1725,7 @@ void _glfwPlatformPollEvents(void)
         processEvent(&event);
     }
 
-    _GLFWwindow* window = _glfw.focusedWindow;
+    _GLFWwindow* window = _glfw.cursorWindow;
     if (window && window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         int width, height;

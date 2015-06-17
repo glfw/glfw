@@ -334,7 +334,7 @@ struct _GLFWlibrary
     _GLFWcursor*        cursorListHead;
 
     _GLFWwindow*        windowListHead;
-    _GLFWwindow*        focusedWindow;
+    _GLFWwindow*        cursorWindow;
 
     _GLFWmonitor**      monitors;
     int                 monitorCount;

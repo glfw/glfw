@@ -477,6 +477,8 @@ endif()
 #--------------------------------------------------------------------
 # Add subdirectories
 #--------------------------------------------------------------------
+include(GNUInstallDirs)
+
 add_subdirectory(src)
 
 if (GLFW_BUILD_EXAMPLES)
@@ -495,7 +497,6 @@ endif()
 # Create generated files
 #--------------------------------------------------------------------
 include(CMakePackageConfigHelpers)
-include(GNUInstallDirs)
 
 set(GLFW_INSTALL_CONFIG_DIR    "${CMAKE_INSTALL_LIBDIR}/cmake/glfw3")
 set(GLFW_INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_LIBDIR}/pkgconfig")

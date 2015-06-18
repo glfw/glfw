@@ -219,6 +219,7 @@ int _glfwCreateContext(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
+    [window->nsgl.context setView:window->ns.view];
     return GLFW_TRUE;
 }
 
@@ -291,6 +292,13 @@ GLFWAPI id glfwGetNSGLContext(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(nil);
+
+    if (window->context.api == GLFW_NO_API)
+    {
+        _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
+        return NULL;
+    }
+
     return window->nsgl.context;
 }
 

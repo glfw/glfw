@@ -111,10 +111,7 @@ typedef XVisualInfo* (*PFNGLXGETVISUALFROMFBCONFIGPROC)(Display*,GLXFBConfig);
 //
 typedef struct _GLFWcontextGLX
 {
-    // Rendering context
     GLXContext      context;
-    // Visual of selected GLXFBConfig
-    XVisualInfo*    visual;
 
 } _GLFWcontextGLX;
 
@@ -171,5 +168,8 @@ int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWctxconfig* ctxconfig,
                        const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContext(_GLFWwindow* window);
+GLFWbool _glfwChooseVisual(const _GLFWctxconfig* ctxconfig,
+                           const _GLFWfbconfig* fbconfig,
+                           Visual** visual, int* depth);
 
 #endif // _glfw3_glx_context_h_

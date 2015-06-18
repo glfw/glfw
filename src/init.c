@@ -72,6 +72,8 @@ static const char* getErrorString(int error)
             return "A platform-specific error occurred";
         case GLFW_FORMAT_UNAVAILABLE:
             return "The requested format is unavailable";
+        case GLFW_NO_WINDOW_CONTEXT:
+            return "The specified window has no context";
     }
 
     return "ERROR: UNKNOWN ERROR TOKEN PASSED TO glfwErrorString";

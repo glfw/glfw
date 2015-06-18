@@ -147,10 +147,6 @@ typedef struct _GLFWcontextEGL
    EGLContext       context;
    EGLSurface       surface;
 
-#if defined(_GLFW_X11)
-   XVisualInfo*     visual;
-#endif
-
    void*            client;
 
 } _GLFWcontextEGL;
@@ -193,8 +189,15 @@ int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWctxconfig* ctxconfig,
                        const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContext(_GLFWwindow* window);
+#if defined(_GLFW_WIN32)
 int _glfwAnalyzeContext(const _GLFWwindow* window,
                         const _GLFWctxconfig* ctxconfig,
                         const _GLFWfbconfig* fbconfig);
+#endif /*_GLFW_WIN32*/
+#if defined(_GLFW_X11)
+GLFWbool _glfwChooseVisual(const _GLFWctxconfig* ctxconfig,
+                           const _GLFWfbconfig* fbconfig,
+                           Visual** visual, int* depth);
+#endif /*_GLFW_X11*/
 
 #endif // _glfw3_egl_context_h_

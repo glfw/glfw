@@ -67,65 +67,53 @@ static void addJoystickElement(_GLFWjoydevice* joystick, IOHIDElementRef element
     usagePage = IOHIDElementGetUsagePage(elementRef);
     usage = IOHIDElementGetUsage(elementRef);
 
-    if ((elementType == kIOHIDElementTypeInput_Axis) ||
-        (elementType == kIOHIDElementTypeInput_Button) ||
-        (elementType == kIOHIDElementTypeInput_Misc))
-    {
-        switch (usagePage)
-        {
-            case kHIDPage_GenericDesktop:
-            {
-                switch (usage)
-                {
-                    case kHIDUsage_GD_X:
-                    case kHIDUsage_GD_Y:
-                    case kHIDUsage_GD_Z:
-                    case kHIDUsage_GD_Rx:
-                    case kHIDUsage_GD_Ry:
-                    case kHIDUsage_GD_Rz:
-                    case kHIDUsage_GD_Slider:
-                    case kHIDUsage_GD_Dial:
-                    case kHIDUsage_GD_Wheel:
-                        elementsArray = joystick->axisElements;
-                        break;
-                    case kHIDUsage_GD_Hatswitch:
-                        elementsArray = joystick->hatElements;
-                        break;
-                }
+    if ((elementType != kIOHIDElementTypeInput_Axis) &&
+        (elementType != kIOHIDElementTypeInput_Button) &&
+        (elementType != kIOHIDElementTypeInput_Misc))
+        return;
 
-                break;
+    switch (usagePage)
+    {
+        case kHIDPage_GenericDesktop:
+        {
+            switch (usage)
+            {
+                case kHIDUsage_GD_X:
+                case kHIDUsage_GD_Y:
+                case kHIDUsage_GD_Z:
+                case kHIDUsage_GD_Rx:
+                case kHIDUsage_GD_Ry:
+                case kHIDUsage_GD_Rz:
+                case kHIDUsage_GD_Slider:
+                case kHIDUsage_GD_Dial:
+                case kHIDUsage_GD_Wheel:
+                    elementsArray = joystick->axisElements;
+                    break;
+                case kHIDUsage_GD_Hatswitch:
+                    elementsArray = joystick->hatElements;
+                    break;
             }
 
-            case kHIDPage_Button:
-                elementsArray = joystick->buttonElements;
-                break;
-            default:
-                break;
+            break;
         }
 
-        if (elementsArray)
-        {
-            _GLFWjoyelement* element = calloc(1, sizeof(_GLFWjoyelement));
-
-            CFArrayAppendValue(elementsArray, element);
-
-            element->elementRef = elementRef;
-
-            element->minReport = IOHIDElementGetLogicalMin(elementRef);
-            element->maxReport = IOHIDElementGetLogicalMax(elementRef);
-        }
+        case kHIDPage_Button:
+            elementsArray = joystick->buttonElements;
+            break;
+        default:
+            break;
     }
-    else
+
+    if (elementsArray)
     {
-        CFArrayRef array = IOHIDElementGetChildren(elementRef);
-        if (array)
-        {
-            if (CFGetTypeID(array) == CFArrayGetTypeID())
-            {
-                CFRange range = { 0, CFArrayGetCount(array) };
-                CFArrayApplyFunction(array, range, getElementsCFArrayHandler, joystick);
-            }
-        }
+        _GLFWjoyelement* element = calloc(1, sizeof(_GLFWjoyelement));
+
+        CFArrayAppendValue(elementsArray, element);
+
+        element->elementRef = elementRef;
+
+        element->minReport = IOHIDElementGetLogicalMin(elementRef);
+        element->maxReport = IOHIDElementGetLogicalMax(elementRef);
     }
 }
 

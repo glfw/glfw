@@ -253,7 +253,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 {
     unsigned long wamask;
     XSetWindowAttributes wa;
-    XVisualInfo* visual = _GLFW_X11_CONTEXT_VISUAL;
+    XVisualInfo* vi = _GLFW_X11_CONTEXT_VISUAL;
 
     // Every window needs a colormap
     // Create one based on the visual used by the current context
@@ -261,7 +261,7 @@ static GLboolean createWindow(_GLFWwindow* window,
 
     window->x11.colormap = XCreateColormap(_glfw.x11.display,
                                            _glfw.x11.root,
-                                           visual->visual,
+                                           vi->visual,
                                            AllocNone);
 
     // Create the actual window
@@ -281,10 +281,10 @@ static GLboolean createWindow(_GLFWwindow* window,
                                            _glfw.x11.root,
                                            0, 0,
                                            wndconfig->width, wndconfig->height,
-                                           0,              // Border width
-                                           visual->depth,  // Color depth
+                                           0,          // Border width
+                                           vi->depth,  // Color depth
                                            InputOutput,
-                                           visual->visual,
+                                           vi->visual,
                                            wamask,
                                            &wa);
 

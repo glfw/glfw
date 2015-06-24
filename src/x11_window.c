@@ -867,34 +867,41 @@ static void processEvent(XEvent *event)
             const int mods = translateState(event->xkey.state);
             const int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
 
-            if (event->xkey.keycode)
-                _glfwInputKey(window, key, event->xkey.keycode, GLFW_PRESS, mods);
-
             if (window->x11.ic)
             {
-                // Translate keys to characters with XIM input context
-
                 int i;
                 Status status;
                 wchar_t buffer[16];
 
                 if (filtered)
-                    return;
+                {
+                    // HACK: Ignore key press events intended solely for XIM
+                    if (event->xkey.keycode)
+                    {
+                        _glfwInputKey(window,
+                                      key, event->xkey.keycode,
+                                      GLFW_PRESS, mods);
+                    }
+                }
+                else
+                {
+                    const int count = XwcLookupString(window->x11.ic,
+                                                    &event->xkey,
+                                                    buffer, sizeof(buffer),
+                                                    NULL, &status);
 
-                const int count = XwcLookupString(window->x11.ic,
-                                                  &event->xkey,
-                                                  buffer, sizeof(buffer),
-                                                  NULL, &status);
-
-                for (i = 0;  i < count;  i++)
-                    _glfwInputChar(window, buffer[i], mods, plain);
+                    for (i = 0;  i < count;  i++)
+                        _glfwInputChar(window, buffer[i], mods, plain);
+                }
             }
             else
             {
-                // Translate keys to characters with fallback lookup table
-
                 KeySym keysym;
                 XLookupString(&event->xkey, NULL, 0, &keysym, NULL);
+
+                _glfwInputKey(window,
+                              key, event->xkey.keycode,
+                              GLFW_PRESS, mods);
 
                 const long character = _glfwKeySym2Unicode(keysym);
                 if (character != -1)

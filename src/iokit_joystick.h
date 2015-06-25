@@ -33,17 +33,17 @@
 #include <IOKit/hid/IOHIDKeys.h>
 
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE \
-    _GLFWjoystickIOKit iokit_js[GLFW_JOYSTICK_LAST + 1]
+    _GLFWjoystickIOKit iokit_js
 
 
 // IOKit-specific per-joystick data
 //
-typedef struct _GLFWjoystickIOKit
+typedef struct _GLFWjoydevice
 {
     int             present;
     char            name[256];
 
-    IOHIDDeviceInterface** interface;
+    IOHIDDeviceRef deviceRef;
 
     CFMutableArrayRef axisElements;
     CFMutableArrayRef buttonElements;
@@ -51,7 +51,16 @@ typedef struct _GLFWjoystickIOKit
 
     float*          axes;
     unsigned char*  buttons;
+} _GLFWjoydevice;
 
+
+// IOKit-specific joystick API data
+//
+typedef struct _GLFWjoystickIOKit
+{
+    _GLFWjoydevice devices[GLFW_JOYSTICK_LAST + 1];
+
+    IOHIDManagerRef managerRef;
 } _GLFWjoystickIOKit;
 
 

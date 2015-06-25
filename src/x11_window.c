@@ -114,7 +114,7 @@ static int translateCursorShape(int shape)
     switch (shape)
     {
         case GLFW_ARROW_CURSOR:
-            return XC_arrow;
+            return XC_left_ptr;
         case GLFW_IBEAM_CURSOR:
             return XC_xterm;
         case GLFW_CROSSHAIR_CURSOR:

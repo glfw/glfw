@@ -78,7 +78,9 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [X11] Bugfix: Character input via XIM did not work in many cases
  - [X11] Bugfix: No fallback existed for missing `_NET_ACTIVE_WINDOW` support
  - [X11] Bugfix: Some significant window focus events were ignored
- - [X11] Bugfix: Auto-iconification of full screen windows was not implemented
+ - [X11] Bugfix: The `GLFW_AUTO_ICONIFY` window hint was ignored
+ - [X11] Bugfix: The original video mode was not restored on iconification of
+                 full screen windows
  - [X11] Bugfix: `GLFW_ARROW_CURSOR` selected the wrong cursor image
  - [WGL] Removed `GLFW_USE_DWM_SWAP_INTERVAL` compile-time option
  - [WGL] Bugfix: Swap interval was ignored when DWM was enabled

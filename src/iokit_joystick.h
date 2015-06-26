@@ -53,7 +53,6 @@ typedef struct _GLFWjoydevice
     unsigned char*  buttons;
 } _GLFWjoydevice;
 
-
 // IOKit-specific joystick API data
 //
 typedef struct _GLFWjoystickIOKit
@@ -62,7 +61,6 @@ typedef struct _GLFWjoystickIOKit
 
     IOHIDManagerRef managerRef;
 } _GLFWjoystickIOKit;
-
 
 void _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);

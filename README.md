@@ -72,6 +72,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [Cocoa] Bugfix: The `GLFW_AUTO_ICONIFY` window hint was ignored
  - [Cocoa] Bugfix: Resizing a window to its minimum size would segfault
  - [Cocoa] Bugfix: Creating or showing a window would make its context current
+ - [Cocoa] Bugfix: Joysticks connected after `glfwInit` were not detected
  - [X11] Bugfix: `glfwInit` would segfault on systems without RandR
  - [X11] Bugfix: The response to `_NET_WM_PING` was sent to the wrong window
  - [X11] Bugfix: Character input via XIM did not work in many cases
@@ -142,6 +143,7 @@ skills.
  - heromyth
  - Lucas Hinderberger
  - Paul Holden
+ - Aaron Jacobs
  - Toni Jovanoski
  - Arseny Kapoulkine
  - Osman Keskin

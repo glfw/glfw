@@ -172,15 +172,7 @@ static void list_extensions(int api, int major, int minor)
 static GLboolean valid_version(void)
 {
     int major, minor, revision;
-
     glfwGetVersion(&major, &minor, &revision);
-
-    printf("GLFW header version: %u.%u.%u\n",
-           GLFW_VERSION_MAJOR,
-           GLFW_VERSION_MINOR,
-           GLFW_VERSION_REVISION);
-
-    printf("GLFW library version: %u.%u.%u\n", major, minor, revision);
 
     if (major != GLFW_VERSION_MAJOR)
     {
@@ -191,8 +183,20 @@ static GLboolean valid_version(void)
     if (minor != GLFW_VERSION_MINOR || revision != GLFW_VERSION_REVISION)
         printf("*** WARNING: GLFW version mismatch! ***\n");
 
-    printf("GLFW library version string: \"%s\"\n", glfwGetVersionString());
     return GL_TRUE;
+}
+
+static void print_version(void)
+{
+    int major, minor, revision;
+    glfwGetVersion(&major, &minor, &revision);
+
+    printf("GLFW header version: %u.%u.%u\n",
+           GLFW_VERSION_MAJOR,
+           GLFW_VERSION_MINOR,
+           GLFW_VERSION_REVISION);
+    printf("GLFW library version: %u.%u.%u\n", major, minor, revision);
+    printf("GLFW library version string: \"%s\"\n", glfwGetVersionString());
 }
 
 int main(int argc, char** argv)
@@ -327,6 +331,8 @@ int main(int argc, char** argv)
                 exit(EXIT_FAILURE);
         }
     }
+
+    print_version();
 
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 

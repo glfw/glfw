@@ -72,6 +72,21 @@ static void usage(void)
     printf("  -s, --robustness=STRATEGY the robustness strategy to use ("
                                         STRATEGY_NAME_NONE " or "
                                         STRATEGY_NAME_LOSE ")\n");
+    printf("      --red-bits=N          the number of red bits to request\n");
+    printf("      --green-bits=N        the number of green bits to request\n");
+    printf("      --blue-bits=N         the number of blue bits to request\n");
+    printf("      --alpha-bits=N        the number of alpha bits to request\n");
+    printf("      --depth-bits=N        the number of depth bits to request\n");
+    printf("      --stencil-bits=N      the number of stencil bits to request\n");
+    printf("      --accum-red-bits=N    the number of red bits to request\n");
+    printf("      --accum-green-bits=N  the number of green bits to request\n");
+    printf("      --accum-blue-bits=N   the number of blue bits to request\n");
+    printf("      --accum-alpha-bits=N  the number of alpha bits to request\n");
+    printf("      --aux-buffers=N       the number of aux buffers to request\n");
+    printf("      --samples=N           the number of MSAA samples to request\n");
+    printf("      --stereo              request stereo rendering\n");
+    printf("      --srgb                request an sRGB capable framebuffer\n");
+    printf("      --singlebuffer        request single-buffering\n");
 }
 
 static void error_callback(int error, const char* description)
@@ -201,24 +216,42 @@ static void print_version(void)
 
 int main(int argc, char** argv)
 {
-    int ch, api, major, minor, revision;
+    int ch, api, major, minor, revision, profile;
     GLboolean list = GL_FALSE;
     GLFWwindow* window;
 
     enum { API, BEHAVIOR, DEBUG, FORWARD, HELP, EXTENSIONS,
-           MAJOR, MINOR, PROFILE, ROBUSTNESS };
+           MAJOR, MINOR, PROFILE, ROBUSTNESS,
+           REDBITS, GREENBITS, BLUEBITS, ALPHABITS, DEPTHBITS, STENCILBITS,
+           ACCUMREDBITS, ACCUMGREENBITS, ACCUMBLUEBITS, ACCUMALPHABITS,
+           AUXBUFFERS, SAMPLES, STEREO, SRGB, SINGLEBUFFER };
     const struct option options[] =
     {
-        { "behavior", 1, NULL, BEHAVIOR },
-        { "client-api", 1, NULL, API },
-        { "debug", 0, NULL, DEBUG },
-        { "forward", 0, NULL, FORWARD },
-        { "help", 0, NULL, HELP },
-        { "list-extensions", 0, NULL, EXTENSIONS },
-        { "major", 1, NULL, MAJOR },
-        { "minor", 1, NULL, MINOR },
-        { "profile", 1, NULL, PROFILE },
-        { "robustness", 1, NULL, ROBUSTNESS },
+        { "behavior",         1, NULL, BEHAVIOR },
+        { "client-api",       1, NULL, API },
+        { "debug",            0, NULL, DEBUG },
+        { "forward",          0, NULL, FORWARD },
+        { "help",             0, NULL, HELP },
+        { "list-extensions",  0, NULL, EXTENSIONS },
+        { "major",            1, NULL, MAJOR },
+        { "minor",            1, NULL, MINOR },
+        { "profile",          1, NULL, PROFILE },
+        { "robustness",       1, NULL, ROBUSTNESS },
+        { "red-bits",         1, NULL, REDBITS },
+        { "green-bits",       1, NULL, GREENBITS },
+        { "blue-bits",        1, NULL, BLUEBITS },
+        { "alpha-bits",       1, NULL, ALPHABITS },
+        { "depth-bits",       1, NULL, DEPTHBITS },
+        { "stencil-bits",     1, NULL, STENCILBITS },
+        { "accum-red-bits",   1, NULL, ACCUMREDBITS },
+        { "accum-green-bits", 1, NULL, ACCUMGREENBITS },
+        { "accum-blue-bits",  1, NULL, ACCUMBLUEBITS },
+        { "accum-alpha-bits", 1, NULL, ACCUMALPHABITS },
+        { "aux-buffers",      1, NULL, AUXBUFFERS },
+        { "samples",          1, NULL, SAMPLES },
+        { "stereo",           0, NULL, STEREO },
+        { "srgb",             0, NULL, SRGB },
+        { "singlebuffer",     0, NULL, SINGLEBUFFER },
         { NULL, 0, NULL, 0 }
     };
 
@@ -326,6 +359,87 @@ int main(int argc, char** argv)
                     exit(EXIT_FAILURE);
                 }
                 break;
+            case REDBITS:
+                if (strcmp(optarg, "-") == 0)
+                    glfwWindowHint(GLFW_RED_BITS, GLFW_DONT_CARE);
+                else
+                    glfwWindowHint(GLFW_RED_BITS, atoi(optarg));
+                break;
+            case GREENBITS:
+                if (strcmp(optarg, "-") == 0)
+                    glfwWindowHint(GLFW_GREEN_BITS, GLFW_DONT_CARE);
+                else
+                    glfwWindowHint(GLFW_GREEN_BITS, atoi(optarg));
+                break;
+            case BLUEBITS:
+                if (strcmp(optarg, "-") == 0)
+                    glfwWindowHint(GLFW_BLUE_BITS, GLFW_DONT_CARE);
+                else
+                    glfwWindowHint(GLFW_BLUE_BITS, atoi(optarg));
+                break;
+            case ALPHABITS:
+                if (strcmp(optarg, "-") == 0)
+                    glfwWindowHint(GLFW_ALPHA_BITS, GLFW_DONT_CARE);
+                else
+                    glfwWindowHint(GLFW_ALPHA_BITS, atoi(optarg));
+                break;
+            case DEPTHBITS:
+                if (strcmp(optarg, "-") == 0)
+                    glfwWindowHint(GLFW_DEPTH_BITS, GLFW_DONT_CARE);
+                else
+                    glfwWindowHint(GLFW_DEPTH_BITS, atoi(optarg));
+                break;
+            case STENCILBITS:
+                if (strcmp(optarg, "-") == 0)
+                    glfwWindowHint(GLFW_STENCIL_BITS, GLFW_DONT_CARE);
+                else
+                    glfwWindowHint(GLFW_STENCIL_BITS, atoi(optarg));
+                break;
+            case ACCUMREDBITS:
+                if (strcmp(optarg, "-") == 0)
+                    glfwWindowHint(GLFW_ACCUM_RED_BITS, GLFW_DONT_CARE);
+                else
+                    glfwWindowHint(GLFW_ACCUM_RED_BITS, atoi(optarg));
+                break;
+            case ACCUMGREENBITS:
+                if (strcmp(optarg, "-") == 0)
+                    glfwWindowHint(GLFW_ACCUM_GREEN_BITS, GLFW_DONT_CARE);
+                else
+                    glfwWindowHint(GLFW_ACCUM_GREEN_BITS, atoi(optarg));
+                break;
+            case ACCUMBLUEBITS:
+                if (strcmp(optarg, "-") == 0)
+                    glfwWindowHint(GLFW_ACCUM_BLUE_BITS, GLFW_DONT_CARE);
+                else
+                    glfwWindowHint(GLFW_ACCUM_BLUE_BITS, atoi(optarg));
+                break;
+            case ACCUMALPHABITS:
+                if (strcmp(optarg, "-") == 0)
+                    glfwWindowHint(GLFW_ACCUM_ALPHA_BITS, GLFW_DONT_CARE);
+                else
+                    glfwWindowHint(GLFW_ACCUM_ALPHA_BITS, atoi(optarg));
+                break;
+            case AUXBUFFERS:
+                if (strcmp(optarg, "-") == 0)
+                    glfwWindowHint(GLFW_AUX_BUFFERS, GLFW_DONT_CARE);
+                else
+                    glfwWindowHint(GLFW_AUX_BUFFERS, atoi(optarg));
+                break;
+            case SAMPLES:
+                if (strcmp(optarg, "-") == 0)
+                    glfwWindowHint(GLFW_SAMPLES, GLFW_DONT_CARE);
+                else
+                    glfwWindowHint(GLFW_SAMPLES, atoi(optarg));
+                break;
+            case STEREO:
+                glfwWindowHint(GLFW_STEREO, GL_TRUE);
+                break;
+            case SRGB:
+                glfwWindowHint(GLFW_SRGB_CAPABLE, GL_TRUE);
+                break;
+            case SINGLEBUFFER:
+                glfwWindowHint(GLFW_DOUBLEBUFFER, GL_FALSE);
+                break;
             default:
                 usage();
                 exit(EXIT_FAILURE);
@@ -351,6 +465,7 @@ int main(int argc, char** argv)
     major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
     minor = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR);
     revision = glfwGetWindowAttrib(window, GLFW_CONTEXT_REVISION);
+    profile = glfwGetWindowAttrib(window, GLFW_OPENGL_PROFILE);
 
     printf("%s context version string: \"%s\"\n",
            get_api_name(api),
@@ -393,9 +508,8 @@ int main(int argc, char** argv)
         if (major >= 4 || (major == 3 && minor >= 2))
         {
             GLint mask;
-            int profile = glfwGetWindowAttrib(window, GLFW_OPENGL_PROFILE);
-
             glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
+
             printf("%s profile mask (0x%08x): %s\n",
                    get_api_name(api),
                    mask,
@@ -408,7 +522,7 @@ int main(int argc, char** argv)
 
         if (glfwExtensionSupported("GL_ARB_robustness"))
         {
-            int robustness;
+            const int robustness = glfwGetWindowAttrib(window, GLFW_CONTEXT_ROBUSTNESS);
             GLint strategy;
             glGetIntegerv(GL_RESET_NOTIFICATION_STRATEGY_ARB, &strategy);
 
@@ -416,8 +530,6 @@ int main(int argc, char** argv)
                    get_api_name(api),
                    strategy,
                    get_strategy_name_gl(strategy));
-
-            robustness = glfwGetWindowAttrib(window, GLFW_CONTEXT_ROBUSTNESS);
 
             printf("%s robustness strategy parsed by GLFW: %s\n",
                    get_api_name(api),
@@ -437,6 +549,88 @@ int main(int argc, char** argv)
         printf("%s context shading language version: \"%s\"\n",
                get_api_name(api),
                glGetString(GL_SHADING_LANGUAGE_VERSION));
+    }
+
+    {
+        printf("Framebuffer:\n");
+
+        GLint redbits, greenbits, bluebits, alphabits, depthbits, stencilbits;
+
+        if (api == GLFW_OPENGL_API && profile == GLFW_OPENGL_CORE_PROFILE)
+        {
+            PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC
+                glGetFramebufferAttachmentParameteriv =
+                (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC)
+                glfwGetProcAddress("glGetFramebufferAttachmentParameteriv");
+            if (!glGetFramebufferAttachmentParameteriv)
+            {
+                glfwTerminate();
+                exit(EXIT_FAILURE);
+            }
+
+            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                                  GL_BACK_LEFT,
+                                                  GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE,
+                                                  &redbits);
+            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                                  GL_BACK_LEFT,
+                                                  GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE,
+                                                  &greenbits);
+            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                                  GL_BACK_LEFT,
+                                                  GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE,
+                                                  &bluebits);
+            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                                  GL_BACK_LEFT,
+                                                  GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE,
+                                                  &alphabits);
+            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                                  GL_DEPTH,
+                                                  GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE,
+                                                  &depthbits);
+            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                                  GL_STENCIL,
+                                                  GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE,
+                                                  &stencilbits);
+        }
+        else
+        {
+            glGetIntegerv(GL_RED_BITS, &redbits);
+            glGetIntegerv(GL_GREEN_BITS, &greenbits);
+            glGetIntegerv(GL_BLUE_BITS, &bluebits);
+            glGetIntegerv(GL_ALPHA_BITS, &alphabits);
+            glGetIntegerv(GL_DEPTH_BITS, &depthbits);
+            glGetIntegerv(GL_STENCIL_BITS, &stencilbits);
+        }
+
+        printf(" red: %u green: %u blue: %u alpha: %u depth: %u stencil: %u\n",
+               redbits, greenbits, bluebits, alphabits, depthbits, stencilbits);
+
+        if (api == GLFW_OPENGL_ES_API ||
+            glfwExtensionSupported("GL_ARB_multisample") ||
+            major > 1 || minor >= 3)
+        {
+            GLint samples, samplebuffers;
+            glGetIntegerv(GL_SAMPLES, &samples);
+            glGetIntegerv(GL_SAMPLE_BUFFERS, &samplebuffers);
+
+            printf(" samples: %u sample buffers: %u\n", samples, samplebuffers);
+        }
+
+        if (api == GLFW_OPENGL_API && profile != GLFW_OPENGL_CORE_PROFILE)
+        {
+            GLint accumredbits, accumgreenbits, accumbluebits, accumalphabits;
+            GLint auxbuffers;
+
+            glGetIntegerv(GL_ACCUM_RED_BITS, &accumredbits);
+            glGetIntegerv(GL_ACCUM_GREEN_BITS, &accumgreenbits);
+            glGetIntegerv(GL_ACCUM_BLUE_BITS, &accumbluebits);
+            glGetIntegerv(GL_ACCUM_ALPHA_BITS, &accumalphabits);
+            glGetIntegerv(GL_AUX_BUFFERS, &auxbuffers);
+
+            printf(" accum red: %u accum green: %u accum blue: %u accum alpha: %u aux buffers: %u\n",
+                   accumredbits, accumgreenbits, accumbluebits, accumalphabits, auxbuffers);
+        }
     }
 
     // Report client API extensions

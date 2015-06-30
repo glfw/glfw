@@ -197,10 +197,8 @@ static GLboolean valid_version(void)
 
 int main(int argc, char** argv)
 {
-    int ch, profile = 0, strategy = 0, behavior = 0;
-    int api = 0, major = 1, minor = 0, revision;
-    GLboolean debug = GL_FALSE, forward = GL_FALSE, list = GL_FALSE;
-    GLint flags, mask;
+    int ch, api, major, minor, revision;
+    GLboolean list = GL_FALSE;
     GLFWwindow* window;
 
     enum { API, BEHAVIOR, DEBUG, FORWARD, HELP, EXTENSIONS,
@@ -220,6 +218,16 @@ int main(int argc, char** argv)
         { NULL, 0, NULL, 0 }
     };
 
+    // Initialize GLFW and create window
+
+    if (!valid_version())
+        exit(EXIT_FAILURE);
+
+    glfwSetErrorCallback(error_callback);
+
+    if (!glfwInit())
+        exit(EXIT_FAILURE);
+
     while ((ch = getopt_long(argc, argv, "a:b:dfhlm:n:p:s:", options, NULL)) != -1)
     {
         switch (ch)
@@ -227,9 +235,9 @@ int main(int argc, char** argv)
             case 'a':
             case API:
                 if (strcasecmp(optarg, API_NAME_OPENGL) == 0)
-                    api = GLFW_OPENGL_API;
+                    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
                 else if (strcasecmp(optarg, API_NAME_OPENGL_ES) == 0)
-                    api = GLFW_OPENGL_ES_API;
+                    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
                 else
                 {
                     usage();
@@ -239,9 +247,15 @@ int main(int argc, char** argv)
             case 'b':
             case BEHAVIOR:
                 if (strcasecmp(optarg, BEHAVIOR_NAME_NONE) == 0)
-                    behavior = GLFW_RELEASE_BEHAVIOR_NONE;
+                {
+                    glfwWindowHint(GLFW_CONTEXT_RELEASE_BEHAVIOR,
+                                   GLFW_RELEASE_BEHAVIOR_NONE);
+                }
                 else if (strcasecmp(optarg, BEHAVIOR_NAME_FLUSH) == 0)
-                    behavior = GLFW_RELEASE_BEHAVIOR_FLUSH;
+                {
+                    glfwWindowHint(GLFW_CONTEXT_RELEASE_BEHAVIOR,
+                                   GLFW_RELEASE_BEHAVIOR_FLUSH);
+                }
                 else
                 {
                     usage();
@@ -250,11 +264,11 @@ int main(int argc, char** argv)
                 break;
             case 'd':
             case DEBUG:
-                debug = GL_TRUE;
+                glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
                 break;
             case 'f':
             case FORWARD:
-                forward = GL_TRUE;
+                glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
                 break;
             case 'h':
             case HELP:
@@ -266,18 +280,24 @@ int main(int argc, char** argv)
                 break;
             case 'm':
             case MAJOR:
-                major = atoi(optarg);
+                glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, atoi(optarg));
                 break;
             case 'n':
             case MINOR:
-                minor = atoi(optarg);
+                glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, atoi(optarg));
                 break;
             case 'p':
             case PROFILE:
                 if (strcasecmp(optarg, PROFILE_NAME_CORE) == 0)
-                    profile = GLFW_OPENGL_CORE_PROFILE;
+                {
+                    glfwWindowHint(GLFW_OPENGL_PROFILE,
+                                   GLFW_OPENGL_CORE_PROFILE);
+                }
                 else if (strcasecmp(optarg, PROFILE_NAME_COMPAT) == 0)
-                    profile = GLFW_OPENGL_COMPAT_PROFILE;
+                {
+                    glfwWindowHint(GLFW_OPENGL_PROFILE,
+                                   GLFW_OPENGL_COMPAT_PROFILE);
+                }
                 else
                 {
                     usage();
@@ -287,9 +307,15 @@ int main(int argc, char** argv)
             case 's':
             case ROBUSTNESS:
                 if (strcasecmp(optarg, STRATEGY_NAME_NONE) == 0)
-                    strategy = GLFW_NO_RESET_NOTIFICATION;
+                {
+                    glfwWindowHint(GLFW_CONTEXT_ROBUSTNESS,
+                                   GLFW_NO_RESET_NOTIFICATION);
+                }
                 else if (strcasecmp(optarg, STRATEGY_NAME_LOSE) == 0)
-                    strategy = GLFW_LOSE_CONTEXT_ON_RESET;
+                {
+                    glfwWindowHint(GLFW_CONTEXT_ROBUSTNESS,
+                                   GLFW_LOSE_CONTEXT_ON_RESET);
+                }
                 else
                 {
                     usage();
@@ -301,35 +327,6 @@ int main(int argc, char** argv)
                 exit(EXIT_FAILURE);
         }
     }
-
-    // Initialize GLFW and create window
-
-    if (!valid_version())
-        exit(EXIT_FAILURE);
-
-    glfwSetErrorCallback(error_callback);
-
-    if (!glfwInit())
-        exit(EXIT_FAILURE);
-
-    if (major != 1 || minor != 0)
-    {
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
-    }
-
-    if (api)
-        glfwWindowHint(GLFW_CLIENT_API, api);
-    if (debug)
-        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-    if (forward)
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    if (profile)
-        glfwWindowHint(GLFW_OPENGL_PROFILE, profile);
-    if (strategy)
-        glfwWindowHint(GLFW_CONTEXT_ROBUSTNESS, strategy);
-    if (behavior)
-        glfwWindowHint(GLFW_CONTEXT_RELEASE_BEHAVIOR, behavior);
 
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
@@ -363,6 +360,8 @@ int main(int argc, char** argv)
     {
         if (major >= 3)
         {
+            GLint flags;
+
             glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
             printf("%s context flags (0x%08x):", get_api_name(api), flags);
 
@@ -387,6 +386,7 @@ int main(int argc, char** argv)
 
         if (major >= 4 || (major == 3 && minor >= 2))
         {
+            GLint mask;
             int profile = glfwGetWindowAttrib(window, GLFW_OPENGL_PROFILE);
 
             glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);

@@ -72,6 +72,7 @@ static void usage(void)
     printf("  -s, --robustness=STRATEGY the robustness strategy to use ("
                                         STRATEGY_NAME_NONE " or "
                                         STRATEGY_NAME_LOSE ")\n");
+    printf("  -v, --version             print version information\n");
     printf("      --red-bits=N          the number of red bits to request\n");
     printf("      --green-bits=N        the number of green bits to request\n");
     printf("      --blue-bits=N         the number of blue bits to request\n");
@@ -221,7 +222,7 @@ int main(int argc, char** argv)
     GLFWwindow* window;
 
     enum { API, BEHAVIOR, DEBUG, FORWARD, HELP, EXTENSIONS,
-           MAJOR, MINOR, PROFILE, ROBUSTNESS,
+           MAJOR, MINOR, PROFILE, ROBUSTNESS, VERSION,
            REDBITS, GREENBITS, BLUEBITS, ALPHABITS, DEPTHBITS, STENCILBITS,
            ACCUMREDBITS, ACCUMGREENBITS, ACCUMBLUEBITS, ACCUMALPHABITS,
            AUXBUFFERS, SAMPLES, STEREO, SRGB, SINGLEBUFFER };
@@ -237,6 +238,7 @@ int main(int argc, char** argv)
         { "minor",            1, NULL, MINOR },
         { "profile",          1, NULL, PROFILE },
         { "robustness",       1, NULL, ROBUSTNESS },
+        { "version",          0, NULL, VERSION },
         { "red-bits",         1, NULL, REDBITS },
         { "green-bits",       1, NULL, GREENBITS },
         { "blue-bits",        1, NULL, BLUEBITS },
@@ -265,7 +267,7 @@ int main(int argc, char** argv)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    while ((ch = getopt_long(argc, argv, "a:b:dfhlm:n:p:s:", options, NULL)) != -1)
+    while ((ch = getopt_long(argc, argv, "a:b:dfhlm:n:p:s:v", options, NULL)) != -1)
     {
         switch (ch)
         {
@@ -359,6 +361,10 @@ int main(int argc, char** argv)
                     exit(EXIT_FAILURE);
                 }
                 break;
+            case 'v':
+            case VERSION:
+                print_version();
+                exit(EXIT_SUCCESS);
             case REDBITS:
                 if (strcmp(optarg, "-") == 0)
                     glfwWindowHint(GLFW_RED_BITS, GLFW_DONT_CARE);

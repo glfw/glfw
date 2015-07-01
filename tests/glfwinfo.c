@@ -218,6 +218,7 @@ static void print_version(void)
 int main(int argc, char** argv)
 {
     int ch, api, major, minor, revision, profile;
+    GLint redbits, greenbits, bluebits, alphabits, depthbits, stencilbits;
     GLboolean list = GL_FALSE;
     GLFWwindow* window;
 
@@ -557,86 +558,82 @@ int main(int argc, char** argv)
                glGetString(GL_SHADING_LANGUAGE_VERSION));
     }
 
+    printf("Framebuffer:\n");
+
+    if (api == GLFW_OPENGL_API && profile == GLFW_OPENGL_CORE_PROFILE)
     {
-        printf("Framebuffer:\n");
-
-        GLint redbits, greenbits, bluebits, alphabits, depthbits, stencilbits;
-
-        if (api == GLFW_OPENGL_API && profile == GLFW_OPENGL_CORE_PROFILE)
+        PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC
+            glGetFramebufferAttachmentParameteriv =
+            (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC)
+            glfwGetProcAddress("glGetFramebufferAttachmentParameteriv");
+        if (!glGetFramebufferAttachmentParameteriv)
         {
-            PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC
-                glGetFramebufferAttachmentParameteriv =
-                (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC)
-                glfwGetProcAddress("glGetFramebufferAttachmentParameteriv");
-            if (!glGetFramebufferAttachmentParameteriv)
-            {
-                glfwTerminate();
-                exit(EXIT_FAILURE);
-            }
-
-            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
-                                                  GL_BACK_LEFT,
-                                                  GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE,
-                                                  &redbits);
-            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
-                                                  GL_BACK_LEFT,
-                                                  GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE,
-                                                  &greenbits);
-            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
-                                                  GL_BACK_LEFT,
-                                                  GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE,
-                                                  &bluebits);
-            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
-                                                  GL_BACK_LEFT,
-                                                  GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE,
-                                                  &alphabits);
-            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
-                                                  GL_DEPTH,
-                                                  GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE,
-                                                  &depthbits);
-            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
-                                                  GL_STENCIL,
-                                                  GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE,
-                                                  &stencilbits);
-        }
-        else
-        {
-            glGetIntegerv(GL_RED_BITS, &redbits);
-            glGetIntegerv(GL_GREEN_BITS, &greenbits);
-            glGetIntegerv(GL_BLUE_BITS, &bluebits);
-            glGetIntegerv(GL_ALPHA_BITS, &alphabits);
-            glGetIntegerv(GL_DEPTH_BITS, &depthbits);
-            glGetIntegerv(GL_STENCIL_BITS, &stencilbits);
+            glfwTerminate();
+            exit(EXIT_FAILURE);
         }
 
-        printf(" red: %u green: %u blue: %u alpha: %u depth: %u stencil: %u\n",
-               redbits, greenbits, bluebits, alphabits, depthbits, stencilbits);
+        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                              GL_BACK_LEFT,
+                                              GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE,
+                                              &redbits);
+        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                              GL_BACK_LEFT,
+                                              GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE,
+                                              &greenbits);
+        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                              GL_BACK_LEFT,
+                                              GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE,
+                                              &bluebits);
+        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                              GL_BACK_LEFT,
+                                              GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE,
+                                              &alphabits);
+        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                              GL_DEPTH,
+                                              GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE,
+                                              &depthbits);
+        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                              GL_STENCIL,
+                                              GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE,
+                                              &stencilbits);
+    }
+    else
+    {
+        glGetIntegerv(GL_RED_BITS, &redbits);
+        glGetIntegerv(GL_GREEN_BITS, &greenbits);
+        glGetIntegerv(GL_BLUE_BITS, &bluebits);
+        glGetIntegerv(GL_ALPHA_BITS, &alphabits);
+        glGetIntegerv(GL_DEPTH_BITS, &depthbits);
+        glGetIntegerv(GL_STENCIL_BITS, &stencilbits);
+    }
 
-        if (api == GLFW_OPENGL_ES_API ||
-            glfwExtensionSupported("GL_ARB_multisample") ||
-            major > 1 || minor >= 3)
-        {
-            GLint samples, samplebuffers;
-            glGetIntegerv(GL_SAMPLES, &samples);
-            glGetIntegerv(GL_SAMPLE_BUFFERS, &samplebuffers);
+    printf(" red: %u green: %u blue: %u alpha: %u depth: %u stencil: %u\n",
+           redbits, greenbits, bluebits, alphabits, depthbits, stencilbits);
 
-            printf(" samples: %u sample buffers: %u\n", samples, samplebuffers);
-        }
+    if (api == GLFW_OPENGL_ES_API ||
+        glfwExtensionSupported("GL_ARB_multisample") ||
+        major > 1 || minor >= 3)
+    {
+        GLint samples, samplebuffers;
+        glGetIntegerv(GL_SAMPLES, &samples);
+        glGetIntegerv(GL_SAMPLE_BUFFERS, &samplebuffers);
 
-        if (api == GLFW_OPENGL_API && profile != GLFW_OPENGL_CORE_PROFILE)
-        {
-            GLint accumredbits, accumgreenbits, accumbluebits, accumalphabits;
-            GLint auxbuffers;
+        printf(" samples: %u sample buffers: %u\n", samples, samplebuffers);
+    }
 
-            glGetIntegerv(GL_ACCUM_RED_BITS, &accumredbits);
-            glGetIntegerv(GL_ACCUM_GREEN_BITS, &accumgreenbits);
-            glGetIntegerv(GL_ACCUM_BLUE_BITS, &accumbluebits);
-            glGetIntegerv(GL_ACCUM_ALPHA_BITS, &accumalphabits);
-            glGetIntegerv(GL_AUX_BUFFERS, &auxbuffers);
+    if (api == GLFW_OPENGL_API && profile != GLFW_OPENGL_CORE_PROFILE)
+    {
+        GLint accumredbits, accumgreenbits, accumbluebits, accumalphabits;
+        GLint auxbuffers;
 
-            printf(" accum red: %u accum green: %u accum blue: %u accum alpha: %u aux buffers: %u\n",
-                   accumredbits, accumgreenbits, accumbluebits, accumalphabits, auxbuffers);
-        }
+        glGetIntegerv(GL_ACCUM_RED_BITS, &accumredbits);
+        glGetIntegerv(GL_ACCUM_GREEN_BITS, &accumgreenbits);
+        glGetIntegerv(GL_ACCUM_BLUE_BITS, &accumbluebits);
+        glGetIntegerv(GL_ACCUM_ALPHA_BITS, &accumalphabits);
+        glGetIntegerv(GL_AUX_BUFFERS, &auxbuffers);
+
+        printf(" accum red: %u accum green: %u accum blue: %u accum alpha: %u aux buffers: %u\n",
+               accumredbits, accumgreenbits, accumbluebits, accumalphabits, auxbuffers);
     }
 
     // Report client API extensions

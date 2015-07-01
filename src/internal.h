@@ -69,6 +69,7 @@
  #include "../deps/GL/glext.h"
 #endif
 
+typedef struct _GLFWmemory      _GLFWmemory;
 typedef struct _GLFWwndconfig   _GLFWwndconfig;
 typedef struct _GLFWctxconfig   _GLFWctxconfig;
 typedef struct _GLFWfbconfig    _GLFWfbconfig;
@@ -150,6 +151,18 @@ typedef struct _GLFWcursor      _GLFWcursor;
 //========================================================================
 // Platform-independent structures
 //========================================================================
+
+/*! @brief Memory Configuration
+ *
+ * This is used to store the functions used for allocating and deallocating
+ * dynamic memory.
+ */
+struct _GLFWmemory
+{
+  GLFWmallocfun   malloc;
+  GLFWcallocfun   calloc;
+  GLFWfreefun     free;
+};
 
 /*! @brief Window configuration.
  *
@@ -369,6 +382,12 @@ extern GLboolean _glfwInitialized;
  *  followed by a call to @ref glfwTerminate.
  */
 extern _GLFWlibrary _glfw;
+
+/*! @brief All global data protected by @ref _glfwInitialized.
+ * This should only be touched before a call to @ref glfwInit or after a call to
+ * @ref glfwTerminate.
+ */
+extern _GLFWmemory _memory;
 
 
 //========================================================================

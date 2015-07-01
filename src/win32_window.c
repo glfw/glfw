@@ -28,7 +28,6 @@
 #include "internal.h"
 
 #include <stdlib.h>
-#include <malloc.h>
 #include <string.h>
 #include <windowsx.h>
 #include <shellapi.h>
@@ -601,7 +600,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             int i;
 
             const int count = DragQueryFileW(hDrop, 0xffffffff, NULL, 0);
-            char** paths = calloc(count, sizeof(char*));
+            char** paths = _memory.calloc(count, sizeof(char*));
 
             // Move the mouse to the position of the drop
             DragQueryPoint(hDrop, &pt);
@@ -610,19 +609,19 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             for (i = 0;  i < count;  i++)
             {
                 const UINT length = DragQueryFileW(hDrop, i, NULL, 0);
-                WCHAR* buffer = calloc(length + 1, sizeof(WCHAR));
+                WCHAR* buffer = _memory.calloc(length + 1, sizeof(WCHAR));
 
                 DragQueryFileW(hDrop, i, buffer, length + 1);
                 paths[i] = _glfwCreateUTF8FromWideString(buffer);
 
-                free(buffer);
+                _memory.free(buffer);
             }
 
             _glfwInputDrop(window, count, (const char**) paths);
 
             for (i = 0;  i < count;  i++)
-                free(paths[i]);
-            free(paths);
+                _memory.free(paths[i]);
+            _memory.free(paths);
 
             DragFinish(hDrop);
             return 0;
@@ -696,7 +695,7 @@ static int createWindow(_GLFWwindow* window,
                                            GetModuleHandleW(NULL),
                                            window); // Pass object to WM_CREATE
 
-    free(wideTitle);
+    _memory.free(wideTitle);
 
     if (!window->win32.handle)
     {
@@ -869,7 +868,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     }
 
     SetWindowTextW(window->win32.handle, wideTitle);
-    free(wideTitle);
+    _memory.free(wideTitle);
 }
 
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
@@ -1224,7 +1223,7 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
     stringHandle = GlobalAlloc(GMEM_MOVEABLE, wideSize);
     if (!stringHandle)
     {
-        free(wideString);
+        _memory.free(wideString);
 
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Win32: Failed to allocate global handle for clipboard");
@@ -1237,7 +1236,7 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
     if (!OpenClipboard(window->win32.handle))
     {
         GlobalFree(stringHandle);
-        free(wideString);
+        _memory.free(wideString);
 
         _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to open clipboard");
         return;
@@ -1247,7 +1246,7 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
     SetClipboardData(CF_UNICODETEXT, stringHandle);
     CloseClipboard();
 
-    free(wideString);
+    _memory.free(wideString);
 }
 
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
@@ -1270,7 +1269,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
         return NULL;
     }
 
-    free(_glfw.win32.clipboardString);
+    _memory.free(_glfw.win32.clipboardString);
     _glfw.win32.clipboardString =
         _glfwCreateUTF8FromWideString(GlobalLock(stringHandle));
 

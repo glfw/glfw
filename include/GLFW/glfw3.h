@@ -43,6 +43,11 @@ extern "C" {
  *  This is the reference documentation for context related functions.  For more
  *  information, see the @ref context.
  */
+/*! @defgroup memory Dynamic Memory
+ *
+ * This is the reference documentation for memory management related functions 
+ * and types.
+ */
 /*! @defgroup init Initialization, version and errors
  *
  *  This is the reference documentation for initialization and termination of
@@ -587,6 +592,16 @@ extern "C" {
  *  the user, as appropriate.
  */
 #define GLFW_FORMAT_UNAVAILABLE     0x00010009
+/*! @brief GLFW has been initialized.
+ *
+ *  This occurs if a GLFW function was called that may not be called unless the
+ *  library is not [initialized](@ref intro_init).
+ *
+ *  @par Analysis
+ *  Application programmer error.  Terminate GLFW before calling any function
+ *  that requires initialization.
+ */
+#define GLFW_INITIALIZED            0x00010010
 /*! @} */
 
 #define GLFW_FOCUSED                0x00020001
@@ -741,6 +756,38 @@ typedef struct GLFWcursor GLFWcursor;
  *  @ingroup init
  */
 typedef void (* GLFWerrorfun)(int,const char*);
+
+/*! @brief The function signature for malloc-like memory callbacks.
+ *
+ * This is the function signature for allocating memory.
+ *
+ * @param[in] size The size in bytes that should be allocated.
+ *
+ * @ingroup memory
+ *
+ */
+typedef void* (* GLFWmallocfun)(size_t);
+
+/*! @brief The function signature for calloc-like memory callbacks.
+ *
+ * This is the function signature for allocating memory calloc-style.
+ *
+ * @param[in] num The number of elements to allocate.
+ * @param[in] size The size of each element.
+ * 
+ * @ingroup memory
+ */
+typedef void* (*GLFWcallocfun)(size_t, size_t);
+
+/*! @brief The function signature for freeing allocated memory.
+ *
+ * This is the function signature for deallocating memory.
+ *
+ * @param[in] ptr The pointer that should be deallocated.
+ *
+ * @ingroup memory
+ */
+typedef void (* GLFWfreefun)(void*);
 
 /*! @brief The function signature for window position callbacks.
  *
@@ -1045,6 +1092,26 @@ typedef struct GLFWimage
 /*************************************************************************
  * GLFW API functions
  *************************************************************************/
+
+/*! @brief Sets the memory functions of the GLFW library.
+ *
+ * This function sets the memory allocation/deallocation functions that the
+ * GLFW library will use.  This function can be called before calling
+ * @ref glfwInit.
+ *
+ * If @ref glfwInit has already been called, @ref glfwTerminate must be called
+ * before the memory functions can be changed.
+ *
+ * @param[in] mallocfun The function to be called when malloc normally would.
+ * @param[in] callocfun The function to be called when calloc normally would.
+ * @param[in] freefun The function to be called when free normally would.
+ *
+ * @return 'GL_TRUE' if successful, or 'GL_FALSE' if an
+ * [error](@ref error_handling) occurred.
+ *
+ * @ingroup memory
+ */
+GLFWAPI int glfwSetMemoryFuncs(GLFWmallocfun mallocfun, GLFWcallocfun callocfun, GLFWfreefun freefun);
 
 /*! @brief Initializes the GLFW library.
  *

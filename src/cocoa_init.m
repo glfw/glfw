@@ -241,7 +241,7 @@ void _glfwPlatformTerminate(void)
     [_glfw.ns.cursor release];
     _glfw.ns.cursor = nil;
 
-    free(_glfw.ns.clipboardString);
+    _memory.free(_glfw.ns.clipboardString);
 
     _glfwTerminateJoysticks();
     _glfwTerminateContextAPI();

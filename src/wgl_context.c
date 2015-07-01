@@ -28,7 +28,6 @@
 #include "internal.h"
 
 #include <stdlib.h>
-#include <malloc.h>
 #include <assert.h>
 
 
@@ -122,7 +121,7 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
                                           NULL);
     }
 
-    usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
+    usableConfigs = _memory.calloc(nativeCount, sizeof(_GLFWfbconfig));
     usableCount = 0;
 
     for (i = 0;  i < nativeCount;  i++)
@@ -240,7 +239,7 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
         _glfwInputError(GLFW_API_UNAVAILABLE,
                         "WGL: The driver does not appear to support OpenGL");
 
-        free(usableConfigs);
+        _memory.free(usableConfigs);
         return GL_FALSE;
     }
 
@@ -250,12 +249,12 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "WGL: Failed to find a suitable pixel format");
 
-        free(usableConfigs);
+        _memory.free(usableConfigs);
         return GL_FALSE;
     }
 
     *result = closest->wgl;
-    free(usableConfigs);
+    _memory.free(usableConfigs);
 
     return GL_TRUE;
 }

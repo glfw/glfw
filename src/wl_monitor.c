@@ -139,7 +139,7 @@ void _glfwAddOutput(uint32_t name, uint32_t version)
         return;
     }
 
-    monitor->wl.modes = calloc(4, sizeof(_GLFWvidmodeWayland));
+    monitor->wl.modes = _memory.calloc(4, sizeof(_GLFWvidmodeWayland));
     monitor->wl.modesSize = 4;
 
     monitor->wl.output = output;
@@ -173,12 +173,12 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     if (_glfw.wl.monitorsCount == 0)
         goto err;
 
-    monitors = calloc(monitorsCount, sizeof(_GLFWmonitor*));
+    monitors = _memory.calloc(monitorsCount, sizeof(_GLFWmonitor*));
 
     for (i = 0; i < monitorsCount; i++)
     {
         _GLFWmonitor* origMonitor = _glfw.wl.monitors[i];
-        monitor = calloc(1, sizeof(_GLFWmonitor));
+        monitor = _memory.calloc(1, sizeof(_GLFWmonitor));
 
         monitor->modes =
             _glfwPlatformGetVideoModes(origMonitor,
@@ -213,7 +213,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
     GLFWvidmode *modes;
     int i, modesCount = monitor->wl.modesCount;
 
-    modes = calloc(modesCount, sizeof(GLFWvidmode));
+    modes = _memory.calloc(modesCount, sizeof(GLFWvidmode));
 
     for (i = 0;  i < modesCount;  i++)
         modes[i] = monitor->wl.modes[i].base;

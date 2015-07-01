@@ -28,7 +28,6 @@
 #include "internal.h"
 
 #include <stdlib.h>
-#include <malloc.h>
 
 
 #if defined(_GLFW_USE_HYBRID_HPG) || defined(_GLFW_USE_OPTIMUS_HPG)
@@ -283,11 +282,11 @@ WCHAR* _glfwCreateWideStringFromUTF8(const char* source)
     if (!length)
         return NULL;
 
-    target = calloc(length, sizeof(WCHAR));
+    target = _memory.calloc(length, sizeof(WCHAR));
 
     if (!MultiByteToWideChar(CP_UTF8, 0, source, -1, target, length))
     {
-        free(target);
+        _memory.free(target);
         return NULL;
     }
 
@@ -305,11 +304,11 @@ char* _glfwCreateUTF8FromWideString(const WCHAR* source)
     if (!length)
         return NULL;
 
-    target = calloc(length, sizeof(char));
+    target = _memory.calloc(length, sizeof(char));
 
     if (!WideCharToMultiByte(CP_UTF8, 0, source, -1, target, length, NULL, NULL))
     {
-        free(target);
+        _memory.free(target);
         return NULL;
     }
 
@@ -360,7 +359,7 @@ void _glfwPlatformTerminate(void)
                           UIntToPtr(_glfw.win32.foregroundLockTimeout),
                           SPIF_SENDCHANGE);
 
-    free(_glfw.win32.clipboardString);
+    _memory.free(_glfw.win32.clipboardString);
 
     _glfwTerminateJoysticks();
     _glfwTerminateContextAPI();

@@ -554,7 +554,7 @@ int _glfwPlatformInit(void)
     _glfw.wl.registry = wl_display_get_registry(_glfw.wl.display);
     wl_registry_add_listener(_glfw.wl.registry, &registryListener, NULL);
 
-    _glfw.wl.monitors = calloc(4, sizeof(_GLFWmonitor*));
+    _glfw.wl.monitors = _memory.calloc(4, sizeof(_GLFWmonitor*));
     _glfw.wl.monitorsSize = 4;
 
     _glfw.wl.xkb.context = xkb_context_new(0);

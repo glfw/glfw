@@ -187,13 +187,13 @@ createAnonymousFile(off_t size)
         return -1;
     }
 
-    name = malloc(strlen(path) + sizeof(template));
+    name = _memory.malloc(strlen(path) + sizeof(template));
     strcpy(name, path);
     strcat(name, template);
 
     fd = createTmpfileCloexec(name);
 
-    free(name);
+    _memory.free(name);
 
     if (fd < 0)
         return -1;

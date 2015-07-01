@@ -612,7 +612,7 @@ static int translateKey(unsigned int key)
     if (count)
     {
         NSEnumerator* e = [files objectEnumerator];
-        char** paths = calloc(count, sizeof(char*));
+        char** paths = _memory.calloc(count, sizeof(char*));
         int i;
 
         for (i = 0;  i < count;  i++)
@@ -621,8 +621,8 @@ static int translateKey(unsigned int key)
         _glfwInputDrop(window, count, (const char**) paths);
 
         for (i = 0;  i < count;  i++)
-            free(paths[i]);
-        free(paths);
+            _memory.free(paths[i]);
+        _memory.free(paths);
     }
 
     return YES;
@@ -1285,7 +1285,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
         return NULL;
     }
 
-    free(_glfw.ns.clipboardString);
+    _memory.free(_glfw.ns.clipboardString);
     _glfw.ns.clipboardString = strdup([object UTF8String]);
 
     return _glfw.ns.clipboardString;

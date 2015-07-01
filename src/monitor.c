@@ -74,7 +74,7 @@ static int refreshVideoModes(_GLFWmonitor* monitor)
 
     qsort(modes, modeCount, sizeof(GLFWvidmode), compareVideoModes);
 
-    free(monitor->modes);
+    _memory.free(monitor->modes);
     monitor->modes = modes;
     monitor->modeCount = modeCount;
 
@@ -165,7 +165,7 @@ void _glfwInputMonitorChange(void)
 
 _GLFWmonitor* _glfwAllocMonitor(const char* name, int widthMM, int heightMM)
 {
-    _GLFWmonitor* monitor = calloc(1, sizeof(_GLFWmonitor));
+    _GLFWmonitor* monitor = _memory.calloc(1, sizeof(_GLFWmonitor));
     monitor->name = strdup(name);
     monitor->widthMM = widthMM;
     monitor->heightMM = heightMM;
@@ -181,24 +181,24 @@ void _glfwFreeMonitor(_GLFWmonitor* monitor)
     _glfwFreeGammaArrays(&monitor->originalRamp);
     _glfwFreeGammaArrays(&monitor->currentRamp);
 
-    free(monitor->modes);
-    free(monitor->name);
-    free(monitor);
+    _memory.free(monitor->modes);
+    _memory.free(monitor->name);
+    _memory.free(monitor);
 }
 
 void _glfwAllocGammaArrays(GLFWgammaramp* ramp, unsigned int size)
 {
-    ramp->red = calloc(size, sizeof(unsigned short));
-    ramp->green = calloc(size, sizeof(unsigned short));
-    ramp->blue = calloc(size, sizeof(unsigned short));
+    ramp->red = _memory.calloc(size, sizeof(unsigned short));
+    ramp->green = _memory.calloc(size, sizeof(unsigned short));
+    ramp->blue = _memory.calloc(size, sizeof(unsigned short));
     ramp->size = size;
 }
 
 void _glfwFreeGammaArrays(GLFWgammaramp* ramp)
 {
-    free(ramp->red);
-    free(ramp->green);
-    free(ramp->blue);
+    _memory.free(ramp->red);
+    _memory.free(ramp->green);
+    _memory.free(ramp->blue);
 
     memset(ramp, 0, sizeof(GLFWgammaramp));
 }
@@ -210,7 +210,7 @@ void _glfwFreeMonitors(_GLFWmonitor** monitors, int count)
     for (i = 0;  i < count;  i++)
         _glfwFreeMonitor(monitors[i]);
 
-    free(monitors);
+    _memory.free(monitors);
 }
 
 const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,

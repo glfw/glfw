@@ -71,7 +71,7 @@ static GLboolean chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* resul
         return GL_FALSE;
     }
 
-    usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
+    usableConfigs = _memory.calloc(nativeCount, sizeof(_GLFWfbconfig));
     usableCount = 0;
 
     for (i = 0;  i < nativeCount;  i++)
@@ -129,7 +129,7 @@ static GLboolean chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* resul
         *result = closest->glx;
 
     XFree(nativeConfigs);
-    free(usableConfigs);
+    _memory.free(usableConfigs);
 
     return closest ? GL_TRUE : GL_FALSE;
 }

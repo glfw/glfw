@@ -63,7 +63,7 @@ void _glfwTerminateJoysticks(void)
     int i;
 
     for (i = 0;  i < GLFW_JOYSTICK_LAST;  i++)
-        free(_glfw.winmm_js[i].name);
+        _memory.free(_glfw.winmm_js[i].name);
 }
 
 
@@ -169,7 +169,7 @@ const char* _glfwPlatformGetJoystickName(int joy)
     if (_glfw_joyGetDevCaps(joy, &jc, sizeof(JOYCAPS)) != JOYERR_NOERROR)
         return NULL;
 
-    free(_glfw.winmm_js[joy].name);
+    _memory.free(_glfw.winmm_js[joy].name);
     _glfw.winmm_js[joy].name = _glfwCreateUTF8FromWideString(jc.szPname);
 
     return _glfw.winmm_js[joy].name;

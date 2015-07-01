@@ -40,8 +40,8 @@ typedef struct EventNode
 
 static void deleteNode(EventQueue* queue, EventNode* node)
 {
-    free(node->event);
-    free(node);
+    _memory.free(node->event);
+    _memory.free(node);
 }
 
 static int emptyEventQueue(EventQueue* queue)
@@ -51,8 +51,8 @@ static int emptyEventQueue(EventQueue* queue)
 
 static EventNode* newEventNode(MirEvent const* event, _GLFWwindow* context)
 {
-    EventNode* new_node = calloc(1, sizeof(EventNode));
-    new_node->event     = calloc(1, sizeof(MirEvent));
+    EventNode* new_node = _memory.calloc(1, sizeof(EventNode));
+    new_node->event     = _memory.calloc(1, sizeof(MirEvent));
     new_node->window    = context;
 
     memcpy(new_node->event, event, sizeof(MirEvent));
@@ -443,7 +443,7 @@ void _glfwDeleteEventQueue(EventQueue* queue)
             node = node_next;
         }
 
-        free(queue);
+        _memory.free(queue);
     }
 }
 

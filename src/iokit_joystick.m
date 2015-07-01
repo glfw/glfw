@@ -109,7 +109,7 @@ static void addJoystickElement(_GLFWjoydevice* joystick,
 
     if (elementsArray)
     {
-        _GLFWjoyelement* element = calloc(1, sizeof(_GLFWjoyelement));
+        _GLFWjoyelement* element = _memory.calloc(1, sizeof(_GLFWjoyelement));
 
         CFArrayAppendValue(elementsArray, element);
 
@@ -171,22 +171,22 @@ static void removeJoystick(_GLFWjoydevice* joystick)
         return;
 
     for (i = 0;  i < CFArrayGetCount(joystick->axisElements);  i++)
-        free((void*) CFArrayGetValueAtIndex(joystick->axisElements, i));
+        _memory.free((void*) CFArrayGetValueAtIndex(joystick->axisElements, i));
     CFArrayRemoveAllValues(joystick->axisElements);
     CFRelease(joystick->axisElements);
 
     for (i = 0;  i < CFArrayGetCount(joystick->buttonElements);  i++)
-        free((void*) CFArrayGetValueAtIndex(joystick->buttonElements, i));
+        _memory.free((void*) CFArrayGetValueAtIndex(joystick->buttonElements, i));
     CFArrayRemoveAllValues(joystick->buttonElements);
     CFRelease(joystick->buttonElements);
 
     for (i = 0;  i < CFArrayGetCount(joystick->hatElements);  i++)
-        free((void*) CFArrayGetValueAtIndex(joystick->hatElements, i));
+        _memory.free((void*) CFArrayGetValueAtIndex(joystick->hatElements, i));
     CFArrayRemoveAllValues(joystick->hatElements);
     CFRelease(joystick->hatElements);
 
-    free(joystick->axes);
-    free(joystick->buttons);
+    _memory.free(joystick->axes);
+    _memory.free(joystick->buttons);
 
     memset(joystick, 0, sizeof(_GLFWjoydevice));
 }
@@ -311,9 +311,9 @@ static void matchCallback(void* context,
 
     CFRelease(arrayRef);
 
-    joystick->axes = calloc(CFArrayGetCount(joystick->axisElements),
+    joystick->axes = _memory.calloc(CFArrayGetCount(joystick->axisElements),
                             sizeof(float));
-    joystick->buttons = calloc(CFArrayGetCount(joystick->buttonElements) +
+    joystick->buttons = _memory.calloc(CFArrayGetCount(joystick->buttonElements) +
                                CFArrayGetCount(joystick->hatElements) * 4, 1);
 }
 

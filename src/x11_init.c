@@ -766,7 +766,7 @@ void _glfwPlatformTerminate(void)
         _glfw.x11.cursor = (Cursor) 0;
     }
 
-    free(_glfw.x11.clipboardString);
+    _memory.free(_glfw.x11.clipboardString);
 
     if (_glfw.x11.im)
     {

@@ -58,7 +58,7 @@ int _glfwPlatformInit(void)
     _glfwInitTimer();
     _glfwInitJoysticks();
 
-    _glfw.mir.event_queue = calloc(1, sizeof(EventQueue));
+    _glfw.mir.event_queue = _memory.calloc(1, sizeof(EventQueue));
     _glfwInitEventQueue(_glfw.mir.event_queue);
 
     error = pthread_mutex_init(&_glfw.mir.event_mutex, NULL);

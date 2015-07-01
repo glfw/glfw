@@ -100,10 +100,10 @@ static GLboolean chooseFBConfigs(const _GLFWctxconfig* ctxconfig,
         return GL_FALSE;
     }
 
-    nativeConfigs = calloc(nativeCount, sizeof(EGLConfig));
+    nativeConfigs = _memory.calloc(nativeCount, sizeof(EGLConfig));
     eglGetConfigs(_glfw.egl.display, nativeConfigs, nativeCount, &nativeCount);
 
-    usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
+    usableConfigs = _memory.calloc(nativeCount, sizeof(_GLFWfbconfig));
     usableCount = 0;
 
     for (i = 0;  i < nativeCount;  i++)
@@ -163,8 +163,8 @@ static GLboolean chooseFBConfigs(const _GLFWctxconfig* ctxconfig,
     if (closest)
         *result = closest->egl;
 
-    free(nativeConfigs);
-    free(usableConfigs);
+    _memory.free(nativeConfigs);
+    _memory.free(usableConfigs);
 
     return closest ? GL_TRUE : GL_FALSE;
 }

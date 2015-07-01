@@ -30,7 +30,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include <malloc.h>
 
 // These constants are missing on MinGW
 #ifndef EDS_ROTATEDMODE
@@ -150,7 +149,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                                         GetDeviceCaps(dc, VERTSIZE));
 
             DeleteDC(dc);
-            free(name);
+            _memory.free(name);
 
             wcscpy(monitor->win32.adapterName, adapter.DeviceName);
             wcscpy(monitor->win32.displayName, display.DeviceName);

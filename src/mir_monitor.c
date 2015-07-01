@@ -99,7 +99,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         if (out->output_id != monitor->mir.output_id)
             continue;
 
-        modes = calloc(out->num_modes, sizeof(GLFWvidmode));
+        modes = _memory.calloc(out->num_modes, sizeof(GLFWvidmode));
 
         for (*found = 0;  *found < out->num_modes;  (*found)++)
         {

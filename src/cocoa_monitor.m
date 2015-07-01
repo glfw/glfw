@@ -66,7 +66,7 @@ static char* getDisplayName(CGDirectDisplayID displayID)
 
     size = CFStringGetMaximumSizeForEncoding(CFStringGetLength(value),
                                              kCFStringEncodingUTF8);
-    name = calloc(size + 1, sizeof(char));
+    name = _memory.calloc(size + 1, sizeof(char));
     CFStringGetCString(value, name, size, kCFStringEncodingUTF8);
 
     CFRelease(info);
@@ -252,8 +252,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     *count = 0;
 
     CGGetOnlineDisplayList(0, NULL, &displayCount);
-    displays = calloc(displayCount, sizeof(CGDirectDisplayID));
-    monitors = calloc(displayCount, sizeof(_GLFWmonitor*));
+    displays = _memory.calloc(displayCount, sizeof(CGDirectDisplayID));
+    monitors = _memory.calloc(displayCount, sizeof(_GLFWmonitor*));
 
     CGGetOnlineDisplayList(displayCount, displays, &displayCount);
     NSArray* screens = [NSScreen screens];
@@ -287,13 +287,13 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         monitor = _glfwAllocMonitor(name, size.width, size.height);
         monitor->ns.displayID = displays[i];
 
-        free(name);
+        _memory.free(name);
 
         found++;
         monitors[found - 1] = monitor;
     }
 
-    free(displays);
+    _memory.free(displays);
 
     *count = found;
     return monitors;
@@ -327,7 +327,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
 
     modes = CGDisplayCopyAllDisplayModes(monitor->ns.displayID, NULL);
     found = CFArrayGetCount(modes);
-    result = calloc(found, sizeof(GLFWvidmode));
+    result = _memory.calloc(found, sizeof(GLFWvidmode));
 
     for (i = 0;  i < found;  i++)
     {
@@ -373,7 +373,7 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode *mode)
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
     uint32_t i, size = CGDisplayGammaTableCapacity(monitor->ns.displayID);
-    CGGammaValue* values = calloc(size * 3, sizeof(CGGammaValue));
+    CGGammaValue* values = _memory.calloc(size * 3, sizeof(CGGammaValue));
 
     CGGetDisplayTransferByTable(monitor->ns.displayID,
                                 size,
@@ -391,13 +391,13 @@ void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
         ramp->blue[i]  = (unsigned short) (values[i + size * 2] * 65535);
     }
 
-    free(values);
+    _memory.free(values);
 }
 
 void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 {
     int i;
-    CGGammaValue* values = calloc(ramp->size * 3, sizeof(CGGammaValue));
+    CGGammaValue* values = _memory.calloc(ramp->size * 3, sizeof(CGGammaValue));
 
     for (i = 0;  i < ramp->size;  i++)
     {
@@ -412,7 +412,7 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
                                 values + ramp->size,
                                 values + ramp->size * 2);
 
-    free(values);
+    _memory.free(values);
 }
 
 

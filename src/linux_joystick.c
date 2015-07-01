@@ -97,8 +97,8 @@ static void openJoystickDevice(const char* path)
     ioctl(fd, JSIOCGBUTTONS, &buttonCount);
     _glfw.linux_js.js[joy].buttonCount = (int) buttonCount;
 
-    _glfw.linux_js.js[joy].axes = calloc(axisCount, sizeof(float));
-    _glfw.linux_js.js[joy].buttons = calloc(buttonCount, 1);
+    _glfw.linux_js.js[joy].axes = _memory.calloc(axisCount, sizeof(float));
+    _glfw.linux_js.js[joy].buttons = _memory.calloc(buttonCount, 1);
 
     _glfw.linux_js.js[joy].present = GL_TRUE;
 #endif // __linux__
@@ -146,10 +146,10 @@ static void pollJoystickEvents(void)
                 {
                     // The joystick was disconnected
 
-                    free(_glfw.linux_js.js[i].axes);
-                    free(_glfw.linux_js.js[i].buttons);
-                    free(_glfw.linux_js.js[i].name);
-                    free(_glfw.linux_js.js[i].path);
+                    _memory.free(_glfw.linux_js.js[i].axes);
+                    _memory.free(_glfw.linux_js.js[i].buttons);
+                    _memory.free(_glfw.linux_js.js[i].name);
+                    _memory.free(_glfw.linux_js.js[i].path);
 
                     memset(&_glfw.linux_js.js[i], 0, sizeof(_glfw.linux_js.js[i]));
                 }
@@ -268,14 +268,14 @@ void _glfwTerminateJoysticks(void)
         if (_glfw.linux_js.js[i].present)
         {
             close(_glfw.linux_js.js[i].fd);
-            free(_glfw.linux_js.js[i].axes);
-            free(_glfw.linux_js.js[i].buttons);
-            free(_glfw.linux_js.js[i].name);
-            free(_glfw.linux_js.js[i].path);
+            _memory.free(_glfw.linux_js.js[i].axes);
+            _memory.free(_glfw.linux_js.js[i].buttons);
+            _memory.free(_glfw.linux_js.js[i].name);
+            _memory.free(_glfw.linux_js.js[i].path);
         }
     }
 
-    regfree(&_glfw.linux_js.regex);
+    reg_memory.free(&_glfw.linux_js.regex);
 
     if (_glfw.linux_js.inotify > 0)
     {

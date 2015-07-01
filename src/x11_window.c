@@ -223,7 +223,7 @@ static char** parseUriList(char* text, int* count)
 
         (*count)++;
 
-        char* path = calloc(strlen(line) + 1, 1);
+        char* path = _memory.calloc(strlen(line) + 1, 1);
         paths = realloc(paths, *count * sizeof(char*));
         paths[*count - 1] = path;
 
@@ -672,7 +672,7 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
 
 static void handleSelectionClear(XEvent* event)
 {
-    free(_glfw.x11.clipboardString);
+    _memory.free(_glfw.x11.clipboardString);
     _glfw.x11.clipboardString = NULL;
 }
 
@@ -1202,8 +1202,8 @@ static void processEvent(XEvent *event)
                     _glfwInputDrop(window, count, (const char**) paths);
 
                     for (i = 0;  i < count;  i++)
-                        free(paths[i]);
-                    free(paths);
+                        _memory.free(paths[i]);
+                    _memory.free(paths);
                 }
 
                 XFree(data);
@@ -1853,7 +1853,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
-    free(_glfw.x11.clipboardString);
+    _memory.free(_glfw.x11.clipboardString);
     _glfw.x11.clipboardString = strdup(string);
 
     XSetSelectionOwner(_glfw.x11.display,
@@ -1884,7 +1884,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
         return _glfw.x11.clipboardString;
     }
 
-    free(_glfw.x11.clipboardString);
+    _memory.free(_glfw.x11.clipboardString);
     _glfw.x11.clipboardString = NULL;
 
     for (i = 0;  i < formatCount;  i++)

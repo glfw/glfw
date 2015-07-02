@@ -224,8 +224,23 @@ static char** parseUriList(char* text, int* count)
         (*count)++;
 
         char* path = calloc(strlen(line) + 1, 1);
+		if (path == NULL)
+		{
+			_glfwInputError(GLFW_OUT_OF_MEMORY,
+							"X11: Failed to allocate path");
+			return NULL;
+		}
+
         paths = realloc(paths, *count * sizeof(char*));
-        paths[*count - 1] = path;
+        if (paths == NULL)
+		{
+			_glfwInputError(GLFW_OUT_OF_MEMORY,
+							"X11: Failed to allocate paths");
+			free(path);
+			return NULL;
+		}
+		
+		paths[*count - 1] = path;
 
         while (*line)
         {

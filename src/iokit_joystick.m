@@ -110,6 +110,12 @@ static void addJoystickElement(_GLFWjoydevice* joystick,
     if (elementsArray)
     {
         _GLFWjoyelement* element = calloc(1, sizeof(_GLFWjoyelement));
+		if (element == NULL)
+		{
+			_glfwInputError(GLFW_OUT_OF_MEMORY,
+							"IOKit: Failed to allocate element");
+			return;
+		}
 
         CFArrayAppendValue(elementsArray, element);
 
@@ -313,8 +319,25 @@ static void matchCallback(void* context,
 
     joystick->axes = calloc(CFArrayGetCount(joystick->axisElements),
                             sizeof(float));
+	if (joystick->axes == NULL)
+	{
+		_glfwInputError(GLFW_OUT_OF_MEMORY,
+						"IOKit: Failed to allocate axes");
+		
+		joystick->present = GL_FALSE;
+		return;
+	}
+
     joystick->buttons = calloc(CFArrayGetCount(joystick->buttonElements) +
                                CFArrayGetCount(joystick->hatElements) * 4, 1);
+	if (joystick->buttons == NULL)
+	{
+		_glfwInputError(GLFW_OUT_OF_MEMORY,
+						"IOKit: Failed to allocate buttons");
+
+		joystick->present = GL_FALSE;
+		return;
+	}
 }
 
 // Callback for user-initiated joystick removal

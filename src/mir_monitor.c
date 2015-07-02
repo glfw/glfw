@@ -100,6 +100,14 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
             continue;
 
         modes = calloc(out->num_modes, sizeof(GLFWvidmode));
+		if (modes == NULL)
+		{
+			_glfwInputError(GLFW_OUT_OF_MEMORY,
+							"Mir: Failed to allocate modes");
+			
+			mir_display_config_destroy(displayConfig);
+			return NULL;
+		}
 
         for (*found = 0;  *found < out->num_modes;  (*found)++)
         {

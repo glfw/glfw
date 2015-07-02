@@ -72,7 +72,10 @@ static void changeToResourcesDirectory(void)
 //
 static void createKeyTables(void)
 {
+    int scancode;
+
     memset(_glfw.ns.publicKeys, -1, sizeof(_glfw.ns.publicKeys));
+    memset(_glfw.ns.nativeKeys, -1, sizeof(_glfw.ns.nativeKeys));
 
     _glfw.ns.publicKeys[0x1D] = GLFW_KEY_0;
     _glfw.ns.publicKeys[0x12] = GLFW_KEY_1;
@@ -188,6 +191,13 @@ static void createKeyTables(void)
     _glfw.ns.publicKeys[0x51] = GLFW_KEY_KP_EQUAL;
     _glfw.ns.publicKeys[0x43] = GLFW_KEY_KP_MULTIPLY;
     _glfw.ns.publicKeys[0x4E] = GLFW_KEY_KP_SUBTRACT;
+
+    for (scancode = 0;  scancode < 256;  scancode++)
+    {
+        // Store the reverse translation for faster key name lookup
+        if (_glfw.ns.publicKeys[scancode] >= 0)
+            _glfw.ns.nativeKeys[_glfw.ns.publicKeys[scancode]] = scancode;
+    }
 }
 
 
@@ -211,6 +221,17 @@ int _glfwPlatformInit(void)
 
     CGEventSourceSetLocalEventsSuppressionInterval(_glfw.ns.eventSource, 0.0);
 
+    // TODO: Catch kTISNotifySelectedKeyboardInputSourceChanged and update
+
+    _glfw.ns.inputSource = TISCopyCurrentKeyboardLayoutInputSource();
+    if (!_glfw.ns.inputSource)
+        return GLFW_FALSE;
+
+    _glfw.ns.unicodeData = TISGetInputSourceProperty(_glfw.ns.inputSource,
+                                                     kTISPropertyUnicodeKeyLayoutData);
+    if (!_glfw.ns.unicodeData)
+        return GLFW_FALSE;
+
     if (!_glfwInitContextAPI())
         return GLFW_FALSE;
 
@@ -222,6 +243,12 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
+    if (_glfw.ns.inputSource)
+    {
+        CFRelease(_glfw.ns.inputSource);
+        _glfw.ns.inputSource = NULL;
+    }
+
     if (_glfw.ns.eventSource)
     {
         CFRelease(_glfw.ns.eventSource);

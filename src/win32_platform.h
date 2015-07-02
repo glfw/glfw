@@ -182,7 +182,9 @@ typedef struct _GLFWlibraryWin32
 {
     DWORD               foregroundLockTimeout;
     char*               clipboardString;
+    char                keyName[64];
     short int           publicKeys[512];
+    short int           nativeKeys[GLFW_KEY_LAST + 1];
 
     // winmm.dll
     struct {

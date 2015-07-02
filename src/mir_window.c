@@ -802,6 +802,13 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
                     "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
 }
 
+const char* _glfwPlatformGetKeyName(int key, int scancode)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
+    return NULL;
+}
+
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,

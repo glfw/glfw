@@ -428,6 +428,11 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos);
  */
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
 
+/*! @copydoc glfwGetKeyName
+ *  @ingroup platform
+ */
+const char* _glfwPlatformGetKeyName(int key, int scancode);
+
 /*! @copydoc glfwGetMonitors
  *  @ingroup platform
  */
@@ -899,5 +904,9 @@ void _glfwFreeMonitor(_GLFWmonitor* monitor);
 /*! @ingroup utility
   */
 void _glfwFreeMonitors(_GLFWmonitor** monitors, int count);
+
+/*! @ingroup utility
+ */
+int _glfwIsPrintable(int key);
 
 #endif // _glfw3_internal_h_

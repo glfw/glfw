@@ -130,7 +130,10 @@ static void terminateLibraries(void)
 //
 static void createKeyTables(void)
 {
+    int scancode;
+
     memset(_glfw.win32.publicKeys, -1, sizeof(_glfw.win32.publicKeys));
+    memset(_glfw.win32.nativeKeys, -1, sizeof(_glfw.win32.nativeKeys));
 
     _glfw.win32.publicKeys[0x00B] = GLFW_KEY_0;
     _glfw.win32.publicKeys[0x002] = GLFW_KEY_1;
@@ -252,6 +255,12 @@ static void createKeyTables(void)
     _glfw.win32.publicKeys[0x11C] = GLFW_KEY_KP_ENTER;
     _glfw.win32.publicKeys[0x037] = GLFW_KEY_KP_MULTIPLY;
     _glfw.win32.publicKeys[0x04A] = GLFW_KEY_KP_SUBTRACT;
+
+    for (scancode = 0;  scancode < 512;  scancode++)
+    {
+        if (_glfw.win32.publicKeys[scancode] > 0)
+            _glfw.win32.nativeKeys[_glfw.win32.publicKeys[scancode]] = scancode;
+    }
 }
 
 

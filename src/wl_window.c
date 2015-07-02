@@ -436,6 +436,12 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
     _glfwPlatformSetCursor(window, window->wl.currentCursor);
 }
 
+const char* _glfwPlatformGetKeyName(int key, int scancode)
+{
+    // TODO
+    return NULL;
+}
+
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                               const GLFWimage* image,
                               int xhot, int yhot)

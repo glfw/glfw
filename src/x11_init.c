@@ -234,6 +234,7 @@ static void createKeyTables(void)
     int scancode, key;
 
     memset(_glfw.x11.publicKeys, -1, sizeof(_glfw.x11.publicKeys));
+    memset(_glfw.x11.nativeKeys, -1, sizeof(_glfw.x11.nativeKeys));
 
     if (_glfw.x11.xkb.available)
     {
@@ -312,12 +313,16 @@ static void createKeyTables(void)
         XkbFreeClientMap(desc, 0, True);
     }
 
-    // Translate the un-translated key codes using traditional X11 KeySym
-    // lookups
     for (scancode = 0;  scancode < 256;  scancode++)
     {
+        // Translate the un-translated key codes using traditional X11 KeySym
+        // lookups
         if (_glfw.x11.publicKeys[scancode] < 0)
             _glfw.x11.publicKeys[scancode] = translateKeyCode(scancode);
+
+        // Store the reverse translation for faster key name lookup
+        if (_glfw.x11.publicKeys[scancode] > 0)
+            _glfw.x11.nativeKeys[_glfw.x11.publicKeys[scancode]] = scancode;
     }
 }
 

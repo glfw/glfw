@@ -121,8 +121,12 @@ typedef struct _GLFWlibraryX11
     int             errorCode;
     // Clipboard string (while the selection is owned)
     char*           clipboardString;
+    // Key name string
+    char            keyName[64];
     // X11 keycode to GLFW key LUT
     short int       publicKeys[256];
+    // GLFW key to X11 keycode LUT
+    short int       nativeKeys[GLFW_KEY_LAST + 1];
 
     // Window manager atoms
     Atom            WM_PROTOCOLS;

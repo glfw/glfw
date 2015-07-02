@@ -30,8 +30,10 @@
 #include <stdint.h>
 
 #if defined(__OBJC__)
+#import <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
 #else
+#include <Carbon/Carbon.h>
 #include <ApplicationServices/ApplicationServices.h>
 typedef void* id;
 #endif
@@ -73,13 +75,17 @@ typedef struct _GLFWwindowNS
 //
 typedef struct _GLFWlibraryNS
 {
-    CGEventSourceRef eventSource;
-    id              delegate;
-    id              autoreleasePool;
-    id              cursor;
+    CGEventSourceRef    eventSource;
+    id                  delegate;
+    id                  autoreleasePool;
+    id                  cursor;
+    TISInputSourceRef   inputSource;
+    id                  unicodeData;
 
-    short int       publicKeys[256];
-    char*           clipboardString;
+    char                keyName[64];
+    short int           publicKeys[256];
+    short int           nativeKeys[GLFW_KEY_LAST + 1];
+    char*               clipboardString;
 
 } _GLFWlibraryNS;
 

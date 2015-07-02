@@ -502,39 +502,6 @@ static GLboolean createWindow(_GLFWwindow* window,
     return GL_TRUE;
 }
 
-// Hide the mouse cursor
-//
-static void hideCursor(_GLFWwindow* window)
-{
-    XUngrabPointer(_glfw.x11.display, CurrentTime);
-    XDefineCursor(_glfw.x11.display, window->x11.handle, _glfw.x11.cursor);
-}
-
-// Disable the mouse cursor
-//
-static void disableCursor(_GLFWwindow* window)
-{
-    XGrabPointer(_glfw.x11.display, window->x11.handle, True,
-                 ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
-                 GrabModeAsync, GrabModeAsync,
-                 window->x11.handle, _glfw.x11.cursor, CurrentTime);
-}
-
-// Restores the mouse cursor
-//
-static void restoreCursor(_GLFWwindow* window)
-{
-    XUngrabPointer(_glfw.x11.display, CurrentTime);
-
-    if (window->cursor)
-    {
-        XDefineCursor(_glfw.x11.display, window->x11.handle,
-                      window->cursor->x11.handle);
-    }
-    else
-        XUndefineCursor(_glfw.x11.display, window->x11.handle);
-}
-
 // Returns whether the event is a selection event
 //
 static Bool isSelectionEvent(Display* display, XEvent* event, XPointer pointer)
@@ -1109,7 +1076,7 @@ static void processEvent(XEvent *event)
             // HACK: This is a workaround for WMs (KWM, Fluxbox) that otherwise
             //       ignore the defined cursor for hidden cursor mode
             if (window->cursorMode == GLFW_CURSOR_HIDDEN)
-                hideCursor(window);
+                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_HIDDEN);
 
             _glfwInputCursorEnter(window, GL_TRUE);
             return;
@@ -1323,7 +1290,7 @@ static void processEvent(XEvent *event)
                 XSetICFocus(window->x11.ic);
 
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                disableCursor(window);
+                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_DISABLED);
 
             _glfwInputWindowFocus(window, GL_TRUE);
             return;
@@ -1343,7 +1310,7 @@ static void processEvent(XEvent *event)
                 XUnsetICFocus(window->x11.ic);
 
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                restoreCursor(window);
+                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_NORMAL);
 
             if (window->monitor && window->autoIconify)
                 _glfwPlatformIconifyWindow(window);
@@ -1876,19 +1843,34 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
                  0,0,0,0, (int) x, (int) y);
 }
 
-void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
+void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
-    switch (window->cursorMode)
+    if (mode == GLFW_CURSOR_DISABLED)
     {
-        case GLFW_CURSOR_NORMAL:
-            restoreCursor(window);
-            break;
-        case GLFW_CURSOR_HIDDEN:
-            hideCursor(window);
-            break;
-        case GLFW_CURSOR_DISABLED:
-            disableCursor(window);
-            break;
+        XGrabPointer(_glfw.x11.display, window->x11.handle, True,
+                     ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
+                     GrabModeAsync, GrabModeAsync,
+                     window->x11.handle, _glfw.x11.cursor, CurrentTime);
+    }
+    else
+    {
+        XUngrabPointer(_glfw.x11.display, CurrentTime);
+
+        if (mode == GLFW_CURSOR_NORMAL)
+        {
+            if (window->cursor)
+            {
+                XDefineCursor(_glfw.x11.display, window->x11.handle,
+                              window->cursor->x11.handle);
+            }
+            else
+                XUndefineCursor(_glfw.x11.display, window->x11.handle);
+        }
+        else
+        {
+            XDefineCursor(_glfw.x11.display, window->x11.handle,
+                          _glfw.x11.cursor);
+        }
     }
 }
 

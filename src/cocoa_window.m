@@ -64,21 +64,6 @@ static void centerCursor(_GLFWwindow *window)
     _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
 }
 
-// Update the cursor to match the specified cursor mode
-//
-static void updateModeCursor(_GLFWwindow* window)
-{
-    if (window->cursorMode == GLFW_CURSOR_NORMAL)
-    {
-        if (window->cursor)
-            [(NSCursor*) window->cursor->ns.object set];
-        else
-            [[NSCursor arrowCursor] set];
-    }
-    else
-        [(NSCursor*) _glfw.ns.cursor set];
-}
-
 // Enter full screen mode
 //
 static GLboolean enterFullscreenMode(_GLFWwindow* window)
@@ -242,7 +227,7 @@ static int translateKey(unsigned int key)
     }
 
     _glfwInputWindowFocus(window, GL_TRUE);
-    _glfwPlatformApplyCursorMode(window);
+    _glfwPlatformSetCursorMode(window, window->cursorMode);
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
@@ -367,7 +352,7 @@ static int translateKey(unsigned int key)
 
 - (void)cursorUpdate:(NSEvent *)event
 {
-    updateModeCursor(window);
+    _glfwPlatformSetCursorMode(window, window->cursorMode);
 }
 
 - (void)mouseDown:(NSEvent *)event
@@ -1156,7 +1141,7 @@ void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
-    updateModeCursor(window);
+    _glfwPlatformSetCursorMode(window, window->cursorMode);
 
     const NSRect contentRect = [window->ns.view frame];
     const NSPoint pos = [window->ns.object mouseLocationOutsideOfEventStream];
@@ -1185,11 +1170,19 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
     }
 }
 
-void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
+void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
-    updateModeCursor(window);
+    if (mode == GLFW_CURSOR_NORMAL)
+    {
+        if (window->cursor)
+            [(NSCursor*) window->cursor->ns.object set];
+        else
+            [[NSCursor arrowCursor] set];
+    }
+    else
+        [(NSCursor*) _glfw.ns.cursor set];
 
-    if (window->cursorMode == GLFW_CURSOR_DISABLED)
+    if (mode == GLFW_CURSOR_DISABLED)
         CGAssociateMouseAndMouseCursorPosition(false);
     else
         CGAssociateMouseAndMouseCursorPosition(true);

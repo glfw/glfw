@@ -412,11 +412,11 @@ void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos);
  */
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos);
 
-/*! @brief Applies the cursor mode of the specified window to the system.
- *  @param[in] window The window whose cursor mode to apply.
+/*! @brief Sets the specified cursor mode of the specified window.
+ *  @param[in] window The window whose cursor mode to set.
  *  @ingroup platform
  */
-void _glfwPlatformApplyCursorMode(_GLFWwindow* window);
+void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
 
 /*! @copydoc glfwGetMonitors
  *  @ingroup platform

@@ -80,56 +80,6 @@ static void updateClipRect(_GLFWwindow* window)
     ClipCursor(&clipRect);
 }
 
-// Hide the mouse cursor
-//
-static void hideCursor(_GLFWwindow* window)
-{
-    POINT pos;
-
-    ClipCursor(NULL);
-
-    if (GetCursorPos(&pos))
-    {
-        if (WindowFromPoint(pos) == window->win32.handle)
-            SetCursor(NULL);
-    }
-}
-
-// Disable the mouse cursor
-//
-static void disableCursor(_GLFWwindow* window)
-{
-    POINT pos;
-
-    updateClipRect(window);
-
-    if (GetCursorPos(&pos))
-    {
-        if (WindowFromPoint(pos) == window->win32.handle)
-            SetCursor(NULL);
-    }
-}
-
-// Restores the mouse cursor
-//
-static void restoreCursor(_GLFWwindow* window)
-{
-    POINT pos;
-
-    ClipCursor(NULL);
-
-    if (GetCursorPos(&pos))
-    {
-        if (WindowFromPoint(pos) == window->win32.handle)
-        {
-            if (window->cursor)
-                SetCursor(window->cursor->win32.handle);
-            else
-                SetCursor(LoadCursorW(NULL, IDC_ARROW));
-        }
-    }
-}
-
 // Translates a GLFW standard cursor to a resource ID
 //
 static LPWSTR translateCursorShape(int shape)
@@ -277,8 +227,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_SETFOCUS:
         {
-            if (window->cursorMode != GLFW_CURSOR_NORMAL)
-                _glfwPlatformApplyCursorMode(window);
+            if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_DISABLED);
 
             _glfwInputWindowFocus(window, GL_TRUE);
             return 0;
@@ -286,8 +236,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_KILLFOCUS:
         {
-            if (window->cursorMode != GLFW_CURSOR_NORMAL)
-                restoreCursor(window);
+            if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_NORMAL);
 
             if (window->monitor && window->autoIconify)
                 _glfwPlatformIconifyWindow(window);
@@ -1093,20 +1043,30 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos)
     SetCursorPos(pos.x, pos.y);
 }
 
-void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
+void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
-    switch (window->cursorMode)
+    POINT pos;
+
+    if (mode == GLFW_CURSOR_DISABLED)
+        updateClipRect(window);
+    else
+        ClipCursor(NULL);
+
+    if (!GetCursorPos(&pos))
+        return;
+
+    if (WindowFromPoint(pos) != window->win32.handle)
+        return;
+
+    if (mode == GLFW_CURSOR_NORMAL)
     {
-        case GLFW_CURSOR_NORMAL:
-            restoreCursor(window);
-            break;
-        case GLFW_CURSOR_HIDDEN:
-            hideCursor(window);
-            break;
-        case GLFW_CURSOR_DISABLED:
-            disableCursor(window);
-            break;
+        if (window->cursor)
+            SetCursor(window->cursor->win32.handle);
+        else
+            SetCursor(LoadCursorW(NULL, IDC_ARROW));
     }
+    else
+        SetCursor(NULL);
 }
 
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor,

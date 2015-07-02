@@ -392,7 +392,7 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
                     "Wayland: Cursor position setting not supported");
 }
 
-void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
+void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
     _glfwPlatformSetCursor(window, window->wl.currentCursor);
 }

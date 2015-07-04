@@ -101,24 +101,24 @@ static GLboolean chooseFBConfigs(const _GLFWctxconfig* ctxconfig,
     }
 
     nativeConfigs = calloc(nativeCount, sizeof(EGLConfig));
-	if (nativeConfigs == NULL)
-	{
-		_glfwInputError(GLFW_OUT_OF_MEMORY,
-						"EGL: Failed to allocate native configs");
-		return GL_FALSE;
-	}
+    if (nativeConfigs == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "EGL: Failed to allocate native configs");
+        return GL_FALSE;
+    }
 
     eglGetConfigs(_glfw.egl.display, nativeConfigs, nativeCount, &nativeCount);
 
     usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
-	if (usableConfigs == NULL)
-	{
-		_glfwInputError(GLFW_OUT_OF_MEMORY,
-						"EGL: Failed to allocate usable configs");
-		
-		free(nativeConfigs);
-		return GL_FALSE;
-	}
+    if (usableConfigs == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "EGL: Failed to allocate usable configs");
+        
+        free(nativeConfigs);
+        return GL_FALSE;
+    }
 
     usableCount = 0;
 

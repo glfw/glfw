@@ -215,14 +215,14 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                                                _glfw.x11.root);
 
         monitors = calloc(sr->noutput, sizeof(_GLFWmonitor*));
-		if (monitors == NULL)
-		{
-			_glfwInputError(GLFW_OUT_OF_MEMORY, 
-							"X11: Failed to allocate monitors");
-		
-			*count = 0;
-			return NULL;
-		}
+        if (monitors == NULL)
+        {
+            _glfwInputError(GLFW_OUT_OF_MEMORY, 
+                            "X11: Failed to allocate monitors");
+        
+            *count = 0;
+            return NULL;
+        }
 
         if (_glfw.x11.xinerama.available)
             screens = XineramaQueryScreens(_glfw.x11.display, &screenCount);
@@ -302,13 +302,13 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     if (!monitors)
     {
         monitors = calloc(1, sizeof(_GLFWmonitor*));
-		if (monitors == NULL)
-		{
-			_glfwInputError(GLFW_OUT_OF_MEMORY,
-							"X11: Failed to allocate monitors");
-			*count = 0;
-			return NULL;
-		}
+        if (monitors == NULL)
+        {
+            _glfwInputError(GLFW_OUT_OF_MEMORY,
+                            "X11: Failed to allocate monitors");
+            *count = 0;
+            return NULL;
+        }
 
         monitors[0] = _glfwAllocMonitor("Display",
                                         DisplayWidthMM(_glfw.x11.display,

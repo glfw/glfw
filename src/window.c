@@ -154,12 +154,12 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
         return NULL;
 
     window = calloc(1, sizeof(_GLFWwindow));
-	if (window == NULL)
-	{
-		_glfwInputError(GLFW_OUT_OF_MEMORY,
-						"Failed to allocate window");
-		return NULL;
-	}
+    if (window == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "Failed to allocate window");
+        return NULL;
+    }
 
     window->next = _glfw.windowListHead;
     _glfw.windowListHead = window;

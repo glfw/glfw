@@ -166,12 +166,12 @@ void _glfwInputMonitorChange(void)
 _GLFWmonitor* _glfwAllocMonitor(const char* name, int widthMM, int heightMM)
 {
     _GLFWmonitor* monitor = calloc(1, sizeof(_GLFWmonitor));
-	if (monitor == NULL)
-	{
-		_glfwInputError(GLFW_OUT_OF_MEMORY,
-						"Failed to allocate monitor");
-		return NULL;
-	}
+    if (monitor == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "Failed to allocate monitor");
+        return NULL;
+    }
 
     monitor->name = strdup(name);
     monitor->widthMM = widthMM;
@@ -199,13 +199,13 @@ void _glfwAllocGammaArrays(GLFWgammaramp* ramp, unsigned int size)
     ramp->green = calloc(size, sizeof(unsigned short));
     ramp->blue = calloc(size, sizeof(unsigned short));
 
-	if (ramp->red == NULL ||
-		ramp->green == NULL ||
-		ramp->blue == NULL)
-	{
-		_glfwInputError(GLFW_OUT_OF_MEMORY,
-						"Failed to allocate gamma arrays");
-	}
+    if (ramp->red == NULL ||
+        ramp->green == NULL ||
+        ramp->blue == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "Failed to allocate gamma arrays");
+    }
 
     ramp->size = size;
 }

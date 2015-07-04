@@ -366,12 +366,12 @@ GLFWAPI GLFWcursor* glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     cursor = calloc(1, sizeof(_GLFWcursor));
-	if (cursor == NULL)
-	{
-		_glfwInputError(GLFW_OUT_OF_MEMORY,
-						"Failed to allocate cursor");
-		return NULL;
-	}
+    if (cursor == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "Failed to allocate cursor");
+        return NULL;
+    }
 
     cursor->next = _glfw.cursorListHead;
     _glfw.cursorListHead = cursor;
@@ -403,12 +403,12 @@ GLFWAPI GLFWcursor* glfwCreateStandardCursor(int shape)
     }
 
     cursor = calloc(1, sizeof(_GLFWcursor));
-	if (cursor == NULL)
-	{
-		_glfwInputError(GLFW_OUT_OF_MEMORY,
-						"Failed to allocate cursor");
-		return NULL;
-	}
+    if (cursor == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "Failed to allocate cursor");
+        return NULL;
+    }
     cursor->next = _glfw.cursorListHead;
     _glfw.cursorListHead = cursor;
 

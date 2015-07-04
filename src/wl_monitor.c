@@ -140,12 +140,12 @@ void _glfwAddOutput(uint32_t name, uint32_t version)
     }
 
     monitor->wl.modes = calloc(4, sizeof(_GLFWvidmodeWayland));
-	if (monitor->wl.modes == NULL)
-	{
-		_glfwInputError(GLFW_OUT_OF_MEMORY, 
-						"Wayland: Failed to allocate modes");
-		return;
-	}
+    if (monitor->wl.modes == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, 
+                        "Wayland: Failed to allocate modes");
+        return;
+    }
 
     monitor->wl.modesSize = 4;
 
@@ -158,12 +158,12 @@ void _glfwAddOutput(uint32_t name, uint32_t version)
         int size = _glfw.wl.monitorsSize * 2;
 
         monitors = realloc(monitors, size * sizeof(_GLFWmonitor*));
-		if (monitors == NULL)
-		{
-			_glfwInputError(GLFW_OUT_OF_MEMORY, 
-							"Wayland: Failed to allocate monitors");
-			return;
-		}
+        if (monitors == NULL)
+        {
+            _glfwInputError(GLFW_OUT_OF_MEMORY, 
+                            "Wayland: Failed to allocate monitors");
+            return;
+        }
 
         _glfw.wl.monitors = monitors;
         _glfw.wl.monitorsSize = size;

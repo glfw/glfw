@@ -40,7 +40,7 @@
 
 // Returns the window style for the specified window
 //
-static getWindowStyle(const _GLFWwindow* window)
+static DWORD getWindowStyle(const _GLFWwindow* window)
 {
     DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 
@@ -59,7 +59,7 @@ static getWindowStyle(const _GLFWwindow* window)
 
 // Returns the extended window style for the specified window
 //
-static getWindowExStyle(const _GLFWwindow* window)
+static DWORD getWindowExStyle(const _GLFWwindow* window)
 {
     DWORD style = WS_EX_APPWINDOW;
 

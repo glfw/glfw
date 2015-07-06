@@ -719,7 +719,18 @@ int _glfwPlatformInit(void)
     _glfw.x11.display = XOpenDisplay(NULL);
     if (!_glfw.x11.display)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Failed to open X display");
+        const char* display = getenv("DISPLAY");
+        if (display)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Failed to open display %s", display);
+        }
+        else
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: The DISPLAY environment variable is missing");
+        }
+
         return GL_FALSE;
     }
 

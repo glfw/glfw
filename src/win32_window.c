@@ -475,7 +475,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             window->win32.cursorPosX = x;
             window->win32.cursorPosY = y;
 
-            if (!window->win32.cursorInside)
+            if (!window->win32.cursorTracked)
             {
                 TRACKMOUSEEVENT tme;
                 ZeroMemory(&tme, sizeof(tme));
@@ -484,7 +484,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 tme.hwndTrack = window->win32.handle;
                 TrackMouseEvent(&tme);
 
-                window->win32.cursorInside = GL_TRUE;
+                window->win32.cursorTracked = GL_TRUE;
                 _glfwInputCursorEnter(window, GL_TRUE);
             }
 
@@ -493,7 +493,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOUSELEAVE:
         {
-            window->win32.cursorInside = GL_FALSE;
+            window->win32.cursorTracked = GL_FALSE;
             _glfwInputCursorEnter(window, GL_FALSE);
             return 0;
         }
@@ -1196,7 +1196,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 
     if (_glfw.cursorWindow == window &&
         window->cursorMode == GLFW_CURSOR_NORMAL &&
-        window->win32.cursorInside)
+        window->win32.cursorTracked)
     {
         if (cursor)
             SetCursor(cursor->win32.handle);

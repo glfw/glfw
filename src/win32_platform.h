@@ -151,7 +151,7 @@ typedef struct _GLFWwindowWin32
 {
     HWND                handle;
 
-    GLboolean           cursorInside;
+    GLboolean           cursorTracked;
     GLboolean           iconified;
 
     // The last received cursor position, regardless of source

@@ -1190,19 +1190,24 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 {
-    // It should be guaranteed that the cursor is not being used by this window if
-    // the following condition is not met. That way it should be safe to destroy the
-    // cursor after calling glfwSetCursor(window, NULL) on all windows using the cursor.
+    POINT pos;
 
-    if (_glfw.cursorWindow == window &&
-        window->cursorMode == GLFW_CURSOR_NORMAL &&
-        window->win32.cursorTracked)
-    {
-        if (cursor)
-            SetCursor(cursor->win32.handle);
-        else
-            SetCursor(LoadCursorW(NULL, IDC_ARROW));
-    }
+    if (_glfw.cursorWindow != window)
+        return;
+
+    if (window->cursorMode != GLFW_CURSOR_NORMAL)
+        return;
+
+    if (!GetCursorPos(&pos))
+        return;
+
+    if (WindowFromPoint(pos) != window->win32.handle)
+        return;
+
+    if (cursor)
+        SetCursor(cursor->win32.handle);
+    else
+        SetCursor(LoadCursorW(NULL, IDC_ARROW));
 }
 
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)

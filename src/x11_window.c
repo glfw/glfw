@@ -886,9 +886,9 @@ static void processEvent(XEvent *event)
                 else
                 {
                     const int count = XwcLookupString(window->x11.ic,
-                                                    &event->xkey,
-                                                    buffer, sizeof(buffer),
-                                                    NULL, &status);
+                                                      &event->xkey,
+                                                      buffer, sizeof(buffer),
+                                                      NULL, &status);
 
                     for (i = 0;  i < count;  i++)
                         _glfwInputChar(window, buffer[i], mods, plain);
@@ -924,12 +924,12 @@ static void processEvent(XEvent *event)
                 //       presses to repeat, so detect and discard release events
                 if (XEventsQueued(_glfw.x11.display, QueuedAfterReading))
                 {
-                    XEvent nextEvent;
-                    XPeekEvent(_glfw.x11.display, &nextEvent);
+                    XEvent next;
+                    XPeekEvent(_glfw.x11.display, &next);
 
-                    if (nextEvent.type == KeyPress &&
-                        nextEvent.xkey.window == event->xkey.window &&
-                        nextEvent.xkey.keycode == event->xkey.keycode)
+                    if (next.type == KeyPress &&
+                        next.xkey.window == event->xkey.window &&
+                        next.xkey.keycode == event->xkey.keycode)
                     {
                         // HACK: Repeat events sometimes leak through due to
                         //       some sort of time drift, so add an epsilon
@@ -937,7 +937,7 @@ static void processEvent(XEvent *event)
                         //       per second so it's fairly safe to assume that
                         //       no human is pressing the key 50 times per
                         //       second (value is ms)
-                        if ((nextEvent.xkey.time - event->xkey.time) < 20)
+                        if ((next.xkey.time - event->xkey.time) < 20)
                         {
                             // This is very likely a server-generated key repeat
                             // event, so ignore it

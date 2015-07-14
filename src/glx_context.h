@@ -81,6 +81,7 @@ typedef struct _GLFWlibraryGLX
     GLboolean       MESA_swap_control;
     GLboolean       ARB_multisample;
     GLboolean       ARB_framebuffer_sRGB;
+    GLboolean       EXT_framebuffer_sRGB;
     GLboolean       ARB_create_context;
     GLboolean       ARB_create_context_profile;
     GLboolean       ARB_create_context_robustness;

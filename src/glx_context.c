@@ -117,7 +117,7 @@ static GLboolean chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* resul
         if (_glfw.glx.ARB_multisample)
             u->samples = getFBConfigAttrib(n, GLX_SAMPLES);
 
-        if (_glfw.glx.ARB_framebuffer_sRGB)
+        if (_glfw.glx.ARB_framebuffer_sRGB || _glfw.glx.EXT_framebuffer_sRGB)
             u->sRGB = getFBConfigAttrib(n, GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB);
 
         u->glx = n;
@@ -225,6 +225,9 @@ int _glfwInitContextAPI(void)
 
     if (_glfwPlatformExtensionSupported("GLX_ARB_framebuffer_sRGB"))
         _glfw.glx.ARB_framebuffer_sRGB = GL_TRUE;
+
+    if (_glfwPlatformExtensionSupported("GLX_EXT_framebuffer_sRGB"))
+        _glfw.glx.EXT_framebuffer_sRGB = GL_TRUE;
 
     if (_glfwPlatformExtensionSupported("GLX_ARB_create_context"))
     {

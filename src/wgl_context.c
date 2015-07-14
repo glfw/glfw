@@ -61,6 +61,8 @@ static void initWGLExtensions(_GLFWwindow* window)
         _glfwPlatformExtensionSupported("WGL_ARB_multisample");
     window->wgl.ARB_framebuffer_sRGB =
         _glfwPlatformExtensionSupported("WGL_ARB_framebuffer_sRGB");
+    window->wgl.EXT_framebuffer_sRGB =
+        _glfwPlatformExtensionSupported("WGL_EXT_framebuffer_sRGB");
     window->wgl.ARB_create_context =
         _glfwPlatformExtensionSupported("WGL_ARB_create_context");
     window->wgl.ARB_create_context_profile =
@@ -175,7 +177,8 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
             if (window->wgl.ARB_multisample)
                 u->samples = getPixelFormatAttrib(window, n, WGL_SAMPLES_ARB);
 
-            if (window->wgl.ARB_framebuffer_sRGB)
+            if (window->wgl.ARB_framebuffer_sRGB ||
+                window->wgl.EXT_framebuffer_sRGB)
             {
                 if (getPixelFormatAttrib(window, n, WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB))
                     u->sRGB = GL_TRUE;
@@ -543,8 +546,12 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
     if (fbconfig->sRGB)
     {
         // sRGB is not a hard constraint, so do nothing if it's not supported
-        if (window->wgl.ARB_framebuffer_sRGB && window->wgl.ARB_pixel_format)
+        if ((window->wgl.ARB_framebuffer_sRGB ||
+             window->wgl.EXT_framebuffer_sRGB) &&
+            window->wgl.ARB_pixel_format)
+        {
             required = GL_TRUE;
+        }
     }
 
     if (required)

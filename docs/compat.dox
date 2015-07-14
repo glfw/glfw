@@ -117,6 +117,11 @@ whether a context is flushed when it is released (made non-current).  Where this
 extension is unavailable, the `GLFW_CONTEXT_RELEASE_BEHAVIOR` hint will have no
 effect and the context will always be flushed when released.
 
+GLFW uses the `GLX_ARB_framebuffer_sRGB` and `GLX_EXT_framebuffer_sRGB`
+extensions to provide support for sRGB framebuffers.  Where both of these
+extensions are unavailable, the `GLFW_SRGB_CAPABLE` hint will have no effect.
+
+
 @section compat_wgl WGL extensions
 
 The WGL API is used to create OpenGL contexts on Microsoft Windows and other
@@ -153,6 +158,11 @@ GLFW uses the `WGL_ARB_context_flush_control` extension to provide control over
 whether a context is flushed when it is released (made non-current).  Where this
 extension is unavailable, the `GLFW_CONTEXT_RELEASE_BEHAVIOR` hint will have no
 effect and the context will always be flushed when released.
+
+GLFW uses the `WGL_ARB_framebuffer_sRGB` and `WGL_EXT_framebuffer_sRGB`
+extensions to provide support for sRGB framebuffers.  Where both of these
+extension are unavailable, the `GLFW_SRGB_CAPABLE` hint will have no effect.
+
 
 @section compat_osx OpenGL 3.2 and later on OS X
 

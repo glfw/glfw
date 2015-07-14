@@ -206,6 +206,8 @@ Zero disables multisampling.  `GLFW_DONT_CARE` means the application has no
 preference.
 
 `GLFW_SRGB_CAPABLE` specifies whether the framebuffer should be sRGB capable.
+If supported, the created context will provide `GL_ARB_framebuffer_sRGB` or
+`GL_EXT_framebuffer_sRGB`.
 
 `GLFW_DOUBLEBUFFER` specifies whether the framebuffer should be double buffered.
 You nearly always want to use double buffering.  This is a hard constraint.

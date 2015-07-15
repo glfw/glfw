@@ -55,10 +55,8 @@ examples/simple
 examples/wave
 tests/*.app
 tests/*.exe
-tests/accuracy
 tests/clipboard
 tests/cursor
-tests/cursoranim
 tests/empty
 tests/events
 tests/gamma
@@ -67,7 +65,6 @@ tests/iconify
 tests/joysticks
 tests/monitors
 tests/msaa
-tests/peter
 tests/reopen
 tests/sharing
 tests/tearing

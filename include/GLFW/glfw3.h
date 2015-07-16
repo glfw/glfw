@@ -149,6 +149,8 @@ extern "C" {
   #if defined(GLFW_INCLUDE_GLEXT)
    #include <GLES3/gl2ext.h>
   #endif
+ #elif defined(GLFW_INCLUDE_EPOXY)
+  #include <epoxy/gl.h>
  #elif !defined(GLFW_INCLUDE_NONE)
   #include <GL/gl.h>
   #if defined(GLFW_INCLUDE_GLEXT)

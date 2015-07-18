@@ -6,7 +6,7 @@
 
 find_path(EGL_INCLUDE_DIR NAMES EGL/egl.h PATHS /opt/vc/include)
 
-set(EGL_NAMES ${EGL_NAMES} egl EGL)
+set(EGL_NAMES ${EGL_NAMES} egl EGL libEGL)
 find_library(EGL_LIBRARY NAMES ${EGL_NAMES} PATHS /opt/vc/lib)
 
 include(FindPackageHandleStandardArgs)

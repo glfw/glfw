@@ -11,6 +11,7 @@
 //========================================================================
 
 #define GLFW_INCLUDE_GLU
+#define GLFW_INCLUDE_GLEXT
 #include <GLFW/glfw3.h>
 
 #include <math.h>
@@ -469,6 +470,8 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
+    glfwWindowHint(GLFW_SAMPLES, 4);
+
     // Open OpenGL window
     window = glfwCreateWindow(500, 500, "Split view demo", NULL, NULL);
     if (!window)
@@ -489,6 +492,13 @@ int main(void)
     // Enable vsync
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+
+    if (glfwExtensionSupported("GL_ARB_multisample") ||
+        glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR) >= 2 ||
+        glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR) >= 3)
+    {
+        glEnable(GL_MULTISAMPLE_ARB);
+    }
 
     glfwGetFramebufferSize(window, &width, &height);
     framebufferSizeFun(window, width, height);

@@ -73,6 +73,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [Cocoa] Bugfix: Resizing a window to its minimum size would segfault
  - [Cocoa] Bugfix: Creating or showing a window would make its context current
  - [Cocoa] Bugfix: Joysticks connected after `glfwInit` were not detected
+ - [Cocoa] Bugfix: Cursor creation failed unless a window had been created.
  - [X11] Bugfix: `glfwInit` would segfault on systems without RandR
  - [X11] Bugfix: The response to `_NET_WM_PING` was sent to the wrong window
  - [X11] Bugfix: Character input via XIM did not work in many cases

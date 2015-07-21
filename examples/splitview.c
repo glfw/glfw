@@ -383,6 +383,17 @@ static void windowRefreshFun(GLFWwindow* window)
 
 static void cursorPosFun(GLFWwindow* window, double x, double y)
 {
+    int wnd_width, wnd_height, fb_width, fb_height;
+    double scale;
+
+    glfwGetWindowSize(window, &wnd_width, &wnd_height);
+    glfwGetFramebufferSize(window, &fb_width, &fb_height);
+
+    scale = (double) fb_width / (double) wnd_width;
+
+    x *= scale;
+    y *= scale;
+
     // Depending on which view was selected, rotate around different axes
     switch (active_view)
     {

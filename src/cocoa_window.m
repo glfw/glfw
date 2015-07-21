@@ -1189,6 +1189,9 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     NSImage* native;
     NSBitmapImageRep* rep;
 
+    if (!initializeAppKit())
+        return GL_FALSE;
+
     rep = [[NSBitmapImageRep alloc]
         initWithBitmapDataPlanes:NULL
                       pixelsWide:image->width
@@ -1224,6 +1227,9 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
+    if (!initializeAppKit())
+        return GL_FALSE;
+
     cursor->ns.object = getStandardCursor(shape);
     if (!cursor->ns.object)
     {

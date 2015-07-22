@@ -284,6 +284,12 @@ WCHAR* _glfwCreateWideStringFromUTF8(const char* source)
         return NULL;
 
     target = calloc(length, sizeof(WCHAR));
+    if (target == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "Win32 Init: Failed to allocate target");
+        return NULL;
+    }
 
     if (!MultiByteToWideChar(CP_UTF8, 0, source, -1, target, length))
     {
@@ -306,6 +312,12 @@ char* _glfwCreateUTF8FromWideString(const WCHAR* source)
         return NULL;
 
     target = calloc(length, sizeof(char));
+    if (target == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "Win32 Init: Failed to allocate target");
+        return NULL;
+    }
 
     if (!WideCharToMultiByte(CP_UTF8, 0, source, -1, target, length, NULL, NULL))
     {

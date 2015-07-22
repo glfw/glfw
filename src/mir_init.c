@@ -59,6 +59,13 @@ int _glfwPlatformInit(void)
     _glfwInitJoysticks();
 
     _glfw.mir.event_queue = calloc(1, sizeof(EventQueue));
+    if (_glfw.mir.event_queue == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "Mir: Failed to allocate event queue");
+        return GL_FALSE;
+    }
+
     _glfwInitEventQueue(_glfw.mir.event_queue);
 
     error = pthread_mutex_init(&_glfw.mir.event_mutex, NULL);

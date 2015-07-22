@@ -72,6 +72,13 @@ static GLboolean chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* resul
     }
 
     usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
+    if (usableConfigs == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "GLX: Failed to allocate usable configs");
+        return GL_FALSE;
+    }
+
     usableCount = 0;
 
     for (i = 0;  i < nativeCount;  i++)

@@ -613,6 +613,11 @@ static int translateKey(unsigned int key)
     {
         NSEnumerator* e = [files objectEnumerator];
         char** paths = calloc(count, sizeof(char*));
+        if (paths == NULL)
+        {
+            return NO;
+        }
+
         int i;
 
         for (i = 0;  i < count;  i++)

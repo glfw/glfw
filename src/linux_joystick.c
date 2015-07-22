@@ -98,8 +98,23 @@ static void openJoystickDevice(const char* path)
     _glfw.linux_js.js[joy].buttonCount = (int) buttonCount;
 
     _glfw.linux_js.js[joy].axes = calloc(axisCount, sizeof(float));
-    _glfw.linux_js.js[joy].buttons = calloc(buttonCount, 1);
+    if (_glfw.linux_js.js[joy].axes == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "Linux: Failed to allocate joystix axes");
+        close(fd);
+        return;
+    }
 
+    _glfw.linux_js.js[joy].buttons = calloc(buttonCount, 1);
+    if (_glfw.linux_js.js[joy].buttons == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "Linux: Failed to allocate joystick buttons");
+        close(fd);
+        return;
+    }
+            
     _glfw.linux_js.js[joy].present = GL_TRUE;
 #endif // __linux__
 }

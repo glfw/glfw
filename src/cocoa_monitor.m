@@ -67,6 +67,15 @@ static char* getDisplayName(CGDirectDisplayID displayID)
     size = CFStringGetMaximumSizeForEncoding(CFStringGetLength(value),
                                              kCFStringEncodingUTF8);
     name = calloc(size + 1, sizeof(char));
+    if (name == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, 
+                        "Cocoa: Failed to allocate name");
+
+        CFRelease(info);
+        return strdup("Unknown");
+    }
+
     CFStringGetCString(value, name, size, kCFStringEncodingUTF8);
 
     CFRelease(info);
@@ -253,7 +262,22 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
     CGGetOnlineDisplayList(0, NULL, &displayCount);
     displays = calloc(displayCount, sizeof(CGDirectDisplayID));
+    if (displays == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, 
+                        "Failed to allocate displays");
+        return NULL;
+    }
+
     monitors = calloc(displayCount, sizeof(_GLFWmonitor*));
+    if (monitors == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, 
+                        "Failed to allocate monitors");
+
+        free(displays);
+        return NULL;
+    }
 
     CGGetOnlineDisplayList(displayCount, displays, &displayCount);
     NSArray* screens = [NSScreen screens];

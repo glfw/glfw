@@ -602,6 +602,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             const int count = DragQueryFileW(hDrop, 0xffffffff, NULL, 0);
             char** paths = calloc(count, sizeof(char*));
+            if (paths == NULL)
+            {
+                _glfwInputError(GLFW_OUT_OF_MEMORY,
+                                "Win32: Failed to allocate paths");
+
+                return 0;
+            }
 
             // Move the mouse to the position of the drop
             DragQueryPoint(hDrop, &pt);
@@ -611,6 +618,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             {
                 const UINT length = DragQueryFileW(hDrop, i, NULL, 0);
                 WCHAR* buffer = calloc(length + 1, sizeof(WCHAR));
+                if (buffer == NULL)
+                {
+                    _glfwInputError(GLFW_OUT_OF_MEMORY,
+                                    "Win32: Failed to allocate buffer");
+                    free(paths);
+                    return 0;
+                }
 
                 DragQueryFileW(hDrop, i, buffer, length + 1);
                 paths[i] = _glfwCreateUTF8FromWideString(buffer);

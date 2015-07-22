@@ -555,6 +555,12 @@ int _glfwPlatformInit(void)
     wl_registry_add_listener(_glfw.wl.registry, &registryListener, NULL);
 
     _glfw.wl.monitors = calloc(4, sizeof(_GLFWmonitor*));
+    if (_glfw.wl.monitors == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "WL: Failed to allocate monitors");
+        return GL_FALSE;
+    }
     _glfw.wl.monitorsSize = 4;
 
     _glfw.wl.xkb.context = xkb_context_new(0);

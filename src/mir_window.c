@@ -52,7 +52,22 @@ static int emptyEventQueue(EventQueue* queue)
 static EventNode* newEventNode(MirEvent const* event, _GLFWwindow* context)
 {
     EventNode* new_node = calloc(1, sizeof(EventNode));
+    if (new_node == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "Mir: Failed to allocate new node");
+        return NULL;
+    }
+
     new_node->event     = calloc(1, sizeof(MirEvent));
+    if (new_node->event == NULL)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "Mir: failed to allocate new node event");
+        free(new_node);
+        return NULL;
+    }
+
     new_node->window    = context;
 
     memcpy(new_node->event, event, sizeof(MirEvent));

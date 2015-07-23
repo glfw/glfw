@@ -516,8 +516,6 @@ export(
     EXPORT glfwTargets
     FILE   "${GLFW_BINARY_DIR}/glfw3Targets.cmake")
 
-export(PACKAGE glfw3)
-
 if (GLFW_BUILD_DOCS)
     configure_file(docs/Doxyfile.in
                    docs/Doxyfile @ONLY)

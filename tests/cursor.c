@@ -36,6 +36,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 #define CURSOR_FRAME_COUNT 60
 
 static double cursor_x;
@@ -64,7 +68,7 @@ static float star(int x, int y, float t)
     const float xalpha = (float) x == c ? c : k / (float) fabs(x - c);
     const float yalpha = (float) y == c ? c : k / (float) fabs(y - c);
 
-    return fmax(0.f, fmin(1.f, i * salpha * 0.2f + salpha * xalpha * yalpha));
+    return fmaxf(0.f, fminf(1.f, i * salpha * 0.2f + salpha * xalpha * yalpha));
 }
 
 static GLFWcursor* create_cursor_frame(float t)

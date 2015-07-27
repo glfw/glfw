@@ -32,6 +32,11 @@
 
 #include <GLFW/glfw3.h>
 
+#if defined(_MSC_VER)
+ // Make MS math.h define M_PI
+ #define _USE_MATH_DEFINES
+#endif
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>

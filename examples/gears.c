@@ -21,16 +21,16 @@
  *   - Enabled vsync
  */
 
+#if defined(_MSC_VER)
+ // Make MS math.h define M_PI
+ #define _USE_MATH_DEFINES
+#endif
 
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <GLFW/glfw3.h>
-
-#ifndef M_PI
-#define M_PI 3.141592654
-#endif
 
 /* If non-zero, the program exits after that many seconds
  */

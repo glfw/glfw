@@ -8,16 +8,17 @@
  * 2010-10-24: Formatting and cleanup - Camilla Berglund
  *****************************************************************************/
 
+#if defined(_MSC_VER)
+ // Make MS math.h define M_PI
+ #define _USE_MATH_DEFINES
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
 #define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
-
-#ifndef M_PI
- #define M_PI 3.1415926535897932384626433832795
-#endif
 
 // Maximum delta T to allow for differential calculations
 #define MAX_DELTA_T 0.01

@@ -27,6 +27,11 @@
  * a hidden computer or VCR.
  *****************************************************************************/
 
+#if defined(_MSC_VER)
+ // Make MS math.h define M_PI
+ #define _USE_MATH_DEFINES
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -100,11 +105,6 @@ double  dt;
 /* Random number generator */
 #ifndef RAND_MAX
  #define RAND_MAX 4095
-#endif
-
-/* PI */
-#ifndef M_PI
- #define M_PI 3.1415926535897932384626433832795
 #endif
 
 

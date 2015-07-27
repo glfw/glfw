@@ -24,6 +24,11 @@
 //
 //========================================================================
 
+#if defined(_MSC_VER)
+ // Make MS math.h define M_PI
+ #define _USE_MATH_DEFINES
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -42,11 +47,6 @@
 #define GL_SINGLE_COLOR_EXT               0x81F9
 #define GL_SEPARATE_SPECULAR_COLOR_EXT    0x81FA
 #endif // GL_EXT_separate_specular_color
-
-// Some <math.h>'s do not define M_PI
-#ifndef M_PI
-#define M_PI 3.141592654
-#endif
 
 
 //========================================================================

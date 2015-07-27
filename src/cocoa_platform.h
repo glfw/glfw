@@ -66,7 +66,6 @@ typedef struct _GLFWwindowNS
     id              object;
     id              delegate;
     id              view;
-    unsigned int    modifierFlags;
 
     // The total sum of the distances the cursor has been warped
     // since the last cursor motion event was processed

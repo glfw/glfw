@@ -123,6 +123,29 @@ static int translateKey(unsigned int key)
     return _glfw.ns.publicKeys[key];
 }
 
+// Translate a GLFW keycode to a Cocoa modifier flag
+//
+static NSUInteger translateKeyToModifierFlag(int key)
+{
+    switch (key)
+    {
+        case GLFW_KEY_LEFT_SHIFT:
+        case GLFW_KEY_RIGHT_SHIFT:
+            return NSShiftKeyMask;
+        case GLFW_KEY_LEFT_CONTROL:
+        case GLFW_KEY_RIGHT_CONTROL:
+            return NSControlKeyMask;
+        case GLFW_KEY_LEFT_ALT:
+        case GLFW_KEY_RIGHT_ALT:
+            return NSAlternateKeyMask;
+        case GLFW_KEY_LEFT_SUPER:
+        case GLFW_KEY_RIGHT_SUPER:
+            return NSCommandKeyMask;
+    }
+
+    return 0;
+}
+
 
 //------------------------------------------------------------------------
 // Delegate for window related notifications
@@ -206,9 +229,6 @@ static int translateKey(unsigned int key)
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
-    window->ns.modifierFlags =
-        [NSEvent modifierFlags] & NSDeviceIndependentModifierFlagsMask;
-
     if (_glfw.cursorWindow == window &&
         window->cursorMode == GLFW_CURSOR_DISABLED)
     {
@@ -502,20 +522,17 @@ static int translateKey(unsigned int key)
         [event modifierFlags] & NSDeviceIndependentModifierFlagsMask;
     const int key = translateKey([event keyCode]);
     const int mods = translateFlags(modifierFlags);
+    const NSUInteger keyFlag = translateKeyToModifierFlag(key);
 
-    if (modifierFlags == window->ns.modifierFlags)
+    if (keyFlag & modifierFlags)
     {
         if (window->keys[key] == GLFW_PRESS)
             action = GLFW_RELEASE;
         else
             action = GLFW_PRESS;
     }
-    else if (modifierFlags > window->ns.modifierFlags)
-        action = GLFW_PRESS;
     else
         action = GLFW_RELEASE;
-
-    window->ns.modifierFlags = modifierFlags;
 
     _glfwInputKey(window, key, [event keyCode], action, mods);
 }

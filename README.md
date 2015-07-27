@@ -247,6 +247,7 @@ skills.
  - Simon Voordouw
  - Torsten Walluhn
  - Patrick Walton
+ - Xo Wang
  - Jay Weisskopf
  - Frank Wille
  - yuriks

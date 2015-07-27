@@ -64,7 +64,7 @@ static float star(int x, int y, float t)
     const float xalpha = (float) x == c ? c : k / (float) fabs(x - c);
     const float yalpha = (float) y == c ? c : k / (float) fabs(y - c);
 
-    return fmax(0.f, fmin(1.f, i * salpha * 0.2f + salpha * xalpha * yalpha));
+    return (float) fmax(0.f, fmin(1.f, i * salpha * 0.2f + salpha * xalpha * yalpha));
 }
 
 static GLFWcursor* create_cursor_frame(float t)

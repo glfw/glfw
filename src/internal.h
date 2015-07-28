@@ -52,6 +52,8 @@
  #define GLFW_INCLUDE_ES1
 #elif defined(_GLFW_USE_GLESV2)
  #define GLFW_INCLUDE_ES2
+#elif defined(_GLFW_USE_EPOXY)
+ #define GLFW_INCLUDE_EPOXY
 #else
  #error "No supported client library selected"
 #endif

@@ -281,6 +281,8 @@ through extensions.  The options are:
    OpenGL.framework)
  - `_GLFW_USE_GLESV1` for OpenGL ES 1.x (experimental)
  - `_GLFW_USE_GLESV2` for OpenGL ES 2.x (experimental)
+ - `_GLFW_USE_EPOXY` for libepoxy to resolve which of the three previous ones
+   to use at runtime.
 
 Note that `_GLFW_USE_GLESV1` and `_GLFW_USE_GLESV2` may only be used with EGL,
 as the other context creation APIs do not interface with OpenGL ES client

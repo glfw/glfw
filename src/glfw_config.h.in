@@ -78,4 +78,6 @@
 #cmakedefine _GLFW_USE_GLESV1
 // Define this to 1 if using OpenGL ES 2.0 as the client library
 #cmakedefine _GLFW_USE_GLESV2
+// Define this to 1 if using libepoxy as the client library
+#cmakedefine _GLFW_USE_EPOXY
 

@@ -530,6 +530,12 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
                     "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
 }
 
+void _glfwPlatformSetWindowIcons(_GLFWwindow* window, const GLFWimage* images, int count)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
+}
+
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 {
     if (width)

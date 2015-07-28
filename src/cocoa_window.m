@@ -1012,6 +1012,13 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
         [window->ns.object setContentSize:NSMakeSize(width, height)];
 }
 
+void _glfwPlatformSetWindowIcons(_GLFWwindow* window, const GLFWimage* images, int count)
+{
+    // TODO
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Cocoa: Set window icons not implemented yet");
+}
+
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
     const NSRect contentRect = [window->ns.view frame];

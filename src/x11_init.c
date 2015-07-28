@@ -443,6 +443,8 @@ static void detectEWMH(void)
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_FULLSCREEN_MONITORS");
     _glfw.x11.NET_WM_NAME =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_NAME");
+    _glfw.x11.NET_WM_ICON =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_ICON");
     _glfw.x11.NET_WM_ICON_NAME =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_ICON_NAME");
     _glfw.x11.NET_WM_PID =

@@ -1856,6 +1856,26 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
  */
 GLFWAPI void glfwSetWindowSize(GLFWwindow* window, int width, int height);
 
+/*! @brief Sets the icons representing the specified window.
+ *
+ *  This function sets the icons, as an array of GLFWimage, of the specified
+ *  window.
+ *
+ *  If count is 0, it removes any icon previously set that way.
+ *
+ *  @param[in] window The window whose icons to change.
+ *  @param[in] images Array with the icons to set.
+ *  @param[in] count Number of images in the array.
+ *
+ *  @par Thread Safety
+ *  TODO
+ *
+ *  @since Added in GLFW TODO.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowIcons(GLFWwindow* window, const GLFWimage* images, int count);
+
 /*! @brief Retrieves the size of the framebuffer of the specified window.
  *
  *  This function retrieves the size, in pixels, of the framebuffer of the

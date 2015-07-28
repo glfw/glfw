@@ -1580,6 +1580,42 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     XFlush(_glfw.x11.display);
 }
 
+void _glfwPlatformSetWindowIcons(_GLFWwindow* window, const GLFWimage* images, int count)
+{
+    if (count > 0)
+    {
+        int propsize = 2 * count;
+        int i;
+        for (i = 0; i < count; ++i)
+            propsize += images[i].width * images[i].height * 4;
+
+        long* propdata = calloc(propsize, sizeof(long));
+        long index = 0;
+        for (i = 0; i < count; ++i)
+        {
+            int width = images[i].width;
+            int height = images[i].height;
+            propdata[index++] = width;
+            propdata[index++] = height;
+
+            // As Xlib specifies its properties in terms of long, we can’t blindly
+            // memcpy the provided data, since sizeof(long) can be different from 4.
+            const uint32_t* pixels = (const uint32_t*) images[i].pixels;
+            int j;
+            for (j = 0; j < width * height; ++j)
+                propdata[index++] = *pixels++;
+        }
+
+        XChangeProperty(_glfw.x11.display, window->x11.handle,
+                        _glfw.x11.NET_WM_ICON, XA_CARDINAL, 32,
+                        PropModeReplace, (unsigned char*) propdata, propsize);
+        free(propdata);
+    }
+    else
+        XDeleteProperty(_glfw.x11.display, window->x11.handle,
+                        _glfw.x11.NET_WM_ICON);
+}
+
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
     _glfwPlatformGetWindowSize(window, width, height);

@@ -23,8 +23,8 @@
 //
 //========================================================================
 
+#define GLFW_INCLUDE_GLEXT
 #include <GLFW/glfw3.h>
-#include <GL/glext.h>
 
 #include <stdio.h>
 #include <stdlib.h>

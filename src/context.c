@@ -490,16 +490,16 @@ GLboolean _glfwIsValidContext(const _GLFWctxconfig* ctxconfig)
     return GL_TRUE;
 }
 
-int _glfwStringInExtensionString(const char* string, const GLubyte* extensions)
+int _glfwStringInExtensionString(const char* string, const char* extensions)
 {
-    const GLubyte* start = extensions;
+    const char* start = extensions;
 
     for (;;)
     {
-        GLubyte* where;
-        GLubyte* terminator;
+        const char* where;
+        const char* terminator;
 
-        where = (GLubyte*) strstr((const char*) start, string);
+        where = strstr(start, string);
         if (!where)
             return GL_FALSE;
 
@@ -602,7 +602,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
     {
         // Check if extension is in the old style OpenGL extensions string
 
-        const GLubyte* extensions = glGetString(GL_EXTENSIONS);
+        const char* extensions = (const char*) glGetString(GL_EXTENSIONS);
         if (!extensions)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,

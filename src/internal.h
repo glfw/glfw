@@ -799,7 +799,7 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
  *  @return `GL_TRUE` if the extension was found, or `GL_FALSE` otherwise.
  *  @ingroup utility
  */
-int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);
+int _glfwStringInExtensionString(const char* string, const char* extensions);
 
 /*! @brief Chooses the framebuffer config that best matches the desired one.
  *  @param[in] desired The desired framebuffer config.

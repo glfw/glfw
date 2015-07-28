@@ -605,14 +605,14 @@ void _glfwPlatformSwapInterval(int interval)
 
 int _glfwPlatformExtensionSupported(const char* extension)
 {
-    const GLubyte* extensions;
+    const char* extensions;
 
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
     if (window->wgl.GetExtensionsStringEXT != NULL)
     {
-        extensions = (GLubyte*) window->wgl.GetExtensionsStringEXT();
-        if (extensions != NULL)
+        extensions = window->wgl.GetExtensionsStringEXT();
+        if (extensions)
         {
             if (_glfwStringInExtensionString(extension, extensions))
                 return GL_TRUE;
@@ -621,8 +621,8 @@ int _glfwPlatformExtensionSupported(const char* extension)
 
     if (window->wgl.GetExtensionsStringARB != NULL)
     {
-        extensions = (GLubyte*) window->wgl.GetExtensionsStringARB(window->wgl.dc);
-        if (extensions != NULL)
+        extensions = window->wgl.GetExtensionsStringARB(window->wgl.dc);
+        if (extensions)
         {
             if (_glfwStringInExtensionString(extension, extensions))
                 return GL_TRUE;

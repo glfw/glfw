@@ -476,12 +476,10 @@ void _glfwPlatformSwapInterval(int interval)
 
 int _glfwPlatformExtensionSupported(const char* extension)
 {
-    const char* extensions;
-
-    extensions = eglQueryString(_glfw.egl.display, EGL_EXTENSIONS);
-    if (extensions != NULL)
+    const char* extensions = eglQueryString(_glfw.egl.display, EGL_EXTENSIONS);
+    if (extensions)
     {
-        if (_glfwStringInExtensionString(extension, (unsigned char*) extensions))
+        if (_glfwStringInExtensionString(extension, extensions))
             return GL_TRUE;
     }
 

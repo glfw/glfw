@@ -509,10 +509,8 @@ void _glfwPlatformSwapInterval(int interval)
 
 int _glfwPlatformExtensionSupported(const char* extension)
 {
-    const GLubyte* extensions =
-        (const GLubyte*) glXQueryExtensionsString(_glfw.x11.display,
-                                                  _glfw.x11.screen);
-
+    const char* extensions = glXQueryExtensionsString(_glfw.x11.display,
+                                                      _glfw.x11.screen);
     if (extensions)
     {
         if (_glfwStringInExtensionString(extension, extensions))

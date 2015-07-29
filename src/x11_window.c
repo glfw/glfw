@@ -844,10 +844,6 @@ static void leaveFullscreenMode(_GLFWwindow* window)
 static void processEvent(XEvent *event)
 {
     _GLFWwindow* window = NULL;
-    Bool filtered = False;
-
-    if (_glfw.x11.im)
-        filtered = XFilterEvent(event, None);
 
     if (event->type != GenericEvent)
     {
@@ -869,22 +865,20 @@ static void processEvent(XEvent *event)
 
             if (window->x11.ic)
             {
-                int i;
-                Status status;
-                wchar_t buffer[16];
-
-                if (filtered)
+                // HACK: Ignore key press events intended solely for XIM
+                if (event->xkey.keycode)
                 {
-                    // HACK: Ignore key press events intended solely for XIM
-                    if (event->xkey.keycode)
-                    {
-                        _glfwInputKey(window,
-                                      key, event->xkey.keycode,
-                                      GLFW_PRESS, mods);
-                    }
+                    _glfwInputKey(window,
+                                  key, event->xkey.keycode,
+                                  GLFW_PRESS, mods);
                 }
-                else
+
+                if (!XFilterEvent(event, None))
                 {
+                    int i;
+                    Status status;
+                    wchar_t buffer[16];
+
                     const int count = XwcLookupString(window->x11.ic,
                                                       &event->xkey,
                                                       buffer, sizeof(buffer),
@@ -1102,7 +1096,7 @@ static void processEvent(XEvent *event)
         {
             // Custom client message, probably from the window manager
 
-            if (filtered)
+            if (_glfw.x11.im && XFilterEvent(event, None))
                 return;
 
             if (event->xclient.message_type == None)

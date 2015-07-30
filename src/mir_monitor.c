@@ -1,7 +1,7 @@
 //========================================================================
 // GLFW 3.1 Mir - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2014 Brandon Schaefer <brandon.schaefer@canonical.com>
+// Copyright (c) 2014-2015 Brandon Schaefer <brandon.schaefer@canonical.com>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -86,6 +86,39 @@ void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
         *ypos = monitor->mir.y;
 }
 
+void FillInRGBBitsFromPixelFormat(GLFWvidmode* mode, MirPixelFormat const pf)
+{
+    switch (pf)
+    {
+      case mir_pixel_format_rgb_565:
+          mode->redBits   = 5;
+          mode->greenBits = 6;
+          mode->blueBits  = 5;
+          break;
+      case mir_pixel_format_rgba_5551:
+          mode->redBits   = 5;
+          mode->greenBits = 5;
+          mode->blueBits  = 5;
+          break;
+      case mir_pixel_format_rgba_4444:
+          mode->redBits   = 4;
+          mode->greenBits = 4;
+          mode->blueBits  = 4;
+          break;
+      case mir_pixel_format_abgr_8888:
+      case mir_pixel_format_xbgr_8888:
+      case mir_pixel_format_argb_8888:
+      case mir_pixel_format_xrgb_8888:
+      case mir_pixel_format_bgr_888:
+      case mir_pixel_format_rgb_888:
+      default:
+        mode->redBits   = 8;
+        mode->greenBits = 8;
+        mode->blueBits  = 8;
+        break;
+    }
+}
+
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 {
     int i;
@@ -106,9 +139,8 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
             modes[*found].width  = out->modes[*found].horizontal_resolution;
             modes[*found].height = out->modes[*found].vertical_resolution;
             modes[*found].refreshRate = out->modes[*found].refresh_rate;
-            modes[*found].redBits     = 8;
-            modes[*found].greenBits   = 8;
-            modes[*found].blueBits    = 8;
+
+            FillInRGBBitsFromPixelFormat(&modes[*found], out->output_formats[*found]);
         }
 
         break;

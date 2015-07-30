@@ -1,7 +1,7 @@
 //========================================================================
 // GLFW 3.1 Mir - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2014 Brandon Schaefer <brandon.schaefer@canonical.com>
+// Copyright (c) 2014-2015 Brandon Schaefer <brandon.schaefer@canonical.com>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -89,6 +89,7 @@ typedef struct _GLFWlibraryMir
 {
     MirConnection*          connection;
     MirEGLNativeDisplayType display;
+    MirCursorConfiguration* default_conf;
     EventQueue* event_queue;
 
     pthread_mutex_t event_mutex;
@@ -102,6 +103,8 @@ typedef struct _GLFWlibraryMir
 //
 typedef struct _GLFWcursorMir
 {
+    MirCursorConfiguration* conf;
+    MirBufferStream*        custom_cursor;
 } _GLFWcursorMir;
 
 

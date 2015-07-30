@@ -317,15 +317,11 @@ static void handlePointerMotion(_GLFWwindow* window,
     int y  = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_y);
     int dx = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_hscroll);
     int dy = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_vscroll);
-    int rx = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_relative_x);
-    int ry = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_relative_y);
 
     if (current_x != x || current_y != y)
       _glfwInputCursorMotion(window, x, y);
     if (dx != 0 || dy != 0)
       _glfwInputScroll(window, dx, dy);
-    if (rx != 0 || ry != 0)
-      printf("%i %i\n", rx, ry);
 }
 
 static void handlePointerEvent(const MirPointerEvent* pointer_event,

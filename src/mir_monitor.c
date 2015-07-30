@@ -112,10 +112,10 @@ void FillInRGBBitsFromPixelFormat(GLFWvidmode* mode, MirPixelFormat const pf)
       case mir_pixel_format_bgr_888:
       case mir_pixel_format_rgb_888:
       default:
-        mode->redBits   = 8;
-        mode->greenBits = 8;
-        mode->blueBits  = 8;
-        break;
+          mode->redBits   = 8;
+          mode->greenBits = 8;
+          mode->blueBits  = 8;
+          break;
     }
 }
 

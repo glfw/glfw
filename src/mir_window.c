@@ -707,15 +707,15 @@ char const* getSystemCursorName(int shape)
     switch (shape)
     {
         case GLFW_ARROW_CURSOR:
-             return mir_arrow_cursor_name;
+            return mir_arrow_cursor_name;
         case GLFW_IBEAM_CURSOR:
-             return mir_caret_cursor_name;
+            return mir_caret_cursor_name;
         case GLFW_CROSSHAIR_CURSOR:
-             return mir_crosshair_cursor_name;
+            return mir_crosshair_cursor_name;
         case GLFW_HAND_CURSOR:
-             return mir_open_hand_cursor_name;
+            return mir_open_hand_cursor_name;
         case GLFW_HRESIZE_CURSOR:
-             return mir_horizontal_resize_cursor_name;
+            return mir_horizontal_resize_cursor_name;
         case GLFW_VRESIZE_CURSOR:
             return mir_vertical_resize_cursor_name;
     }

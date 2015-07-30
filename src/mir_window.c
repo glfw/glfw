@@ -368,8 +368,6 @@ static void handleInput(const MirInputEvent* input_event, _GLFWwindow* window)
 
 static void handleEvent(const MirEvent* event, _GLFWwindow* window)
 {
-    if (!event)
-      return;
     int type = mir_event_get_type(event);
 
     switch (type)

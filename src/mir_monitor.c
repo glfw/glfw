@@ -86,7 +86,7 @@ void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
         *ypos = monitor->mir.y;
 }
 
-void FillInRGBBitsFromPixelFormat(GLFWvidmode* mode, MirPixelFormat const pf)
+void FillInRGBBitsFromPixelFormat(GLFWvidmode* mode, const MirPixelFormat pf)
 {
     switch (pf)
     {

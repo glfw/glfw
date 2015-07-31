@@ -702,7 +702,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     return GL_TRUE;
 }
 
-char const* getSystemCursorName(int shape)
+const char* getSystemCursorName(int shape)
 {
     switch (shape)
     {
@@ -725,7 +725,7 @@ char const* getSystemCursorName(int shape)
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
-    char const* cursor_name = getSystemCursorName(shape);
+    const char* cursor_name = getSystemCursorName(shape);
 
     if (cursor_name)
     {

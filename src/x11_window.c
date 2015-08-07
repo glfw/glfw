@@ -885,6 +885,10 @@ static void processEvent(XEvent *event)
                 }
                 else
                 {
+					_glfwInputKey(window,
+								  key, event->xkey.keycode,
+								  GLFW_PRESS, mods);
+                    
                     const int count = XwcLookupString(window->x11.ic,
                                                       &event->xkey,
                                                       buffer, sizeof(buffer),

@@ -23,8 +23,13 @@
 //
 //========================================================================
 
-#define GLFW_INCLUDE_GLEXT
 #include <GLFW/glfw3.h>
+
+/* HACK: Explicitly include the glext.h shipping with GLFW, as this program uses
+ *       many modern symbols not provided by the versions in some development
+ *       environments (for example on OS X).
+ */
+#include <GL/glext.h>
 
 #include <stdio.h>
 #include <stdlib.h>

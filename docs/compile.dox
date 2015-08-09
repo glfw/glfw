@@ -90,11 +90,10 @@ Once you have Xcode installed, move on to @ref compile_generate.
 To compile GLFW for X11, you need to have the X11 and OpenGL header packages
 installed, as well as the basic development tools like GCC and make.  For
 example, on Ubuntu and other distributions based on Debian GNU/Linux, you need
-to install the `xorg-dev` and `libglu1-mesa-dev` packages.  The former pulls in
-all X.org header packages and the latter pulls in the Mesa OpenGL and GLU
-packages.  GLFW itself doesn't need or use GLU, but some of the examples do.
-Note that using header files and libraries from Mesa during compilation
-_will not_ tie your binaries to the Mesa implementation of OpenGL.
+to install the `xorg-dev` and `libgl1-mesa-dev` packages.  The former pulls in
+all X.org header packages and the latter pulls in the Mesa OpenGL development
+packages.  Note that using header files and libraries from Mesa during
+compilation _will not_ tie your binaries to the Mesa implementation of OpenGL.
 
 Once you have installed the necessary packages, move on to @ref
 compile_generate.

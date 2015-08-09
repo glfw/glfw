@@ -63,6 +63,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
 ## Changelog
 
  - Changed minimum required CMake version to 2.8.12
+ - Replaced GLU with [linmath.h](https://github.com/datenwolf/linmath.h) in
+   example programs
  - Bugfix: Initialization failed on headless systems
  - Bugfix: The cached current context could get out of sync
  - [Win32] Renamed hybrid GPU override compile-time option to

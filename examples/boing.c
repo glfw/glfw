@@ -36,8 +36,9 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
+
+#include <linmath.h>
 
 
 /*****************************************************************************
@@ -167,28 +168,6 @@ void CrossProduct( vertex_t a, vertex_t b, vertex_t c, vertex_t *n )
    n->z = u1 * v2 - v1 * u2;
 }
 
-/*****************************************************************************
- * Calculate the angle to be passed to gluPerspective() so that a scene
- * is visible.  This function originates from the OpenGL Red Book.
- *
- * Parms   : size
- *           The size of the segment when the angle is intersected at "dist"
- *           (ie at the outermost edge of the angle of vision).
- *
- *           dist
- *           Distance from viewpoint to scene.
- *****************************************************************************/
-GLfloat PerspectiveAngle( GLfloat size,
-                          GLfloat dist )
-{
-   GLfloat radTheta, degTheta;
-
-   radTheta = 2.f * (GLfloat) atan2( size / 2.f, dist );
-   degTheta = (180.f * radTheta) / (GLfloat) M_PI;
-   return degTheta;
-}
-
-
 
 #define BOING_DEBUG 0
 
@@ -233,22 +212,25 @@ void display(void)
  *****************************************************************************/
 void reshape( GLFWwindow* window, int w, int h )
 {
+   mat4x4 projection, view;
+
    glViewport( 0, 0, (GLsizei)w, (GLsizei)h );
 
    glMatrixMode( GL_PROJECTION );
-   glLoadIdentity();
-
-   gluPerspective( PerspectiveAngle( RADIUS * 2, 200 ),
-                   (GLfloat)w / (GLfloat)h,
-                   1.0,
-                   VIEW_SCENE_DIST );
+   mat4x4_perspective( projection,
+                       2.f * (float) atan2( RADIUS, 200.f ),
+                       (float)w / (float)h,
+                       1.f, VIEW_SCENE_DIST );
+   glLoadMatrixf((const GLfloat*) projection);
 
    glMatrixMode( GL_MODELVIEW );
-   glLoadIdentity();
-
-   gluLookAt( 0.0, 0.0, VIEW_SCENE_DIST,/* eye */
-              0.0, 0.0, 0.0,            /* center of vision */
-              0.0, -1.0, 0.0 );         /* up vector */
+   {
+      vec3 eye = { 0.f, 0.f, VIEW_SCENE_DIST };
+      vec3 center = { 0.f, 0.f, 0.f };
+      vec3 up = { 0.f, -1.f, 0.f };
+      mat4x4_look_at( view, eye, center, up );
+   }
+   glLoadMatrixf((const GLfloat*) view);
 }
 
 void key_callback( GLFWwindow* window, int key, int scancode, int action, int mods )

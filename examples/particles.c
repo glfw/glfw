@@ -37,8 +37,8 @@
 
 #include <tinycthread.h>
 #include <getopt.h>
+#include <linmath.h>
 
-#define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
 
 // Define tokens for GL_EXT_separate_specular_color if not already defined
@@ -785,17 +785,22 @@ static void draw_scene(GLFWwindow* window, double t)
     double xpos, ypos, zpos, angle_x, angle_y, angle_z;
     static double t_old = 0.0;
     float dt;
+    mat4x4 projection;
 
     // Calculate frame-to-frame delta time
     dt = (float) (t - t_old);
     t_old = t;
 
+    mat4x4_perspective(projection,
+                       65.f * (float) M_PI / 180.f,
+                       aspect_ratio,
+                       1.0, 60.0);
+
     glClearColor(0.1f, 0.1f, 0.1f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(65.0, aspect_ratio, 1.0, 60.0);
+    glLoadMatrixf((const GLfloat*) projection);
 
     // Setup camera
     glMatrixMode(GL_MODELVIEW);

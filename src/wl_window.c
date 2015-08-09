@@ -187,7 +187,7 @@ createAnonymousFile(off_t size)
         return -1;
     }
 
-    name = malloc(strlen(path) + sizeof(template));
+    name = calloc(strlen(path) + sizeof(template), 1);
     strcpy(name, path);
     strcat(name, template);
 

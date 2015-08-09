@@ -32,10 +32,6 @@
 #include <string.h>
 #include <GLFW/glfw3.h>
 
-/* If non-zero, the program exits after that many seconds
- */
-static int autoexit = 0;
-
 /**
 
   Draw a gear wheel.  You'll probably want to call this function when
@@ -264,13 +260,12 @@ void reshape( GLFWwindow* window, int width, int height )
 
 
 /* program & OpenGL initialization */
-static void init(int argc, char *argv[])
+static void init(void)
 {
   static GLfloat pos[4] = {5.f, 5.f, 10.f, 0.f};
   static GLfloat red[4] = {0.8f, 0.1f, 0.f, 1.f};
   static GLfloat green[4] = {0.f, 0.8f, 0.2f, 1.f};
   static GLfloat blue[4] = {0.2f, 0.2f, 1.f, 1.f};
-  GLint i;
 
   glLightfv(GL_LIGHT0, GL_POSITION, pos);
   glEnable(GL_CULL_FACE);
@@ -298,19 +293,6 @@ static void init(int argc, char *argv[])
   glEndList();
 
   glEnable(GL_NORMALIZE);
-
-  for ( i=1; i<argc; i++ ) {
-    if (strcmp(argv[i], "-info")==0) {
-      printf("GL_RENDERER   = %s\n", (char *) glGetString(GL_RENDERER));
-      printf("GL_VERSION    = %s\n", (char *) glGetString(GL_VERSION));
-      printf("GL_VENDOR     = %s\n", (char *) glGetString(GL_VENDOR));
-      printf("GL_EXTENSIONS = %s\n", (char *) glGetString(GL_EXTENSIONS));
-    }
-    else if ( strcmp(argv[i], "-exit")==0) {
-      autoexit = 30;
-      printf("Auto Exit after %i seconds.\n", autoexit );
-    }
-  }
 }
 
 
@@ -347,7 +329,7 @@ int main(int argc, char *argv[])
     reshape(window, width, height);
 
     // Parse command-line options
-    init(argc, argv);
+    init();
 
     // Main loop
     while( !glfwWindowShouldClose(window) )

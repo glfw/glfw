@@ -596,23 +596,23 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_DROPFILES:
         {
-            HDROP hDrop = (HDROP) wParam;
+            HDROP drop = (HDROP) wParam;
             POINT pt;
             int i;
 
-            const int count = DragQueryFileW(hDrop, 0xffffffff, NULL, 0);
+            const int count = DragQueryFileW(drop, 0xffffffff, NULL, 0);
             char** paths = calloc(count, sizeof(char*));
 
             // Move the mouse to the position of the drop
-            DragQueryPoint(hDrop, &pt);
+            DragQueryPoint(drop, &pt);
             _glfwInputCursorMotion(window, pt.x, pt.y);
 
             for (i = 0;  i < count;  i++)
             {
-                const UINT length = DragQueryFileW(hDrop, i, NULL, 0);
+                const UINT length = DragQueryFileW(drop, i, NULL, 0);
                 WCHAR* buffer = calloc(length + 1, sizeof(WCHAR));
 
-                DragQueryFileW(hDrop, i, buffer, length + 1);
+                DragQueryFileW(drop, i, buffer, length + 1);
                 paths[i] = _glfwCreateUTF8FromWideString(buffer);
 
                 free(buffer);
@@ -624,7 +624,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 free(paths[i]);
             free(paths);
 
-            DragFinish(hDrop);
+            DragFinish(drop);
             return 0;
         }
     }

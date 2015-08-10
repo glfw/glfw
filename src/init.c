@@ -130,6 +130,8 @@ GLFWAPI int glfwInit(void)
         return GLFW_FALSE;
     }
 
+    _glfwInitVulkan();
+
     _glfw.monitors = _glfwPlatformGetMonitors(&_glfw.monitorCount);
     _glfwInitialized = GLFW_TRUE;
 
@@ -160,6 +162,8 @@ GLFWAPI void glfwTerminate(void)
         if (monitor->originalRamp.size)
             _glfwPlatformSetGammaRamp(monitor, &monitor->originalRamp);
     }
+
+    _glfwTerminateVulkan();
 
     _glfwFreeMonitors(_glfw.monitors, _glfw.monitorCount);
     _glfw.monitors = NULL;

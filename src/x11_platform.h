@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdint.h>
+#include <dlfcn.h>
 
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
@@ -56,6 +57,37 @@
  #include <X11/extensions/xf86vmode.h>
 #endif
 
+typedef XID xcb_window_t;
+typedef XID xcb_visualid_t;
+typedef struct xcb_connection_t xcb_connection_t;
+typedef xcb_connection_t* (* XGETXCBCONNECTION_T)(Display*);
+
+typedef VkFlags VkXlibSurfaceCreateFlagsKHR;
+typedef VkFlags VkXcbSurfaceCreateFlagsKHR;
+
+typedef struct VkXlibSurfaceCreateInfoKHR
+{
+    VkStructureType             sType;
+    const void*                 pNext;
+    VkXlibSurfaceCreateFlagsKHR flags;
+    Display*                    dpy;
+    Window                      window;
+} VkXlibSurfaceCreateInfoKHR;
+
+typedef struct VkXcbSurfaceCreateInfoKHR
+{
+    VkStructureType             sType;
+    const void*                 pNext;
+    VkXcbSurfaceCreateFlagsKHR  flags;
+    xcb_connection_t*           connection;
+    xcb_window_t                window;
+} VkXcbSurfaceCreateInfoKHR;
+
+typedef VkResult (APIENTRY *PFN_vkCreateXlibSurfaceKHR)(VkInstance,const VkXlibSurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
+typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR)(VkPhysicalDevice,uint32_t,Display*,VisualID);
+typedef VkResult (APIENTRY *PFN_vkCreateXcbSurfaceKHR)(VkInstance,const VkXcbSurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
+typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)(VkPhysicalDevice,uint32_t,xcb_connection_t*,xcb_visualid_t);
+
 #include "posix_tls.h"
 #include "posix_time.h"
 #include "linux_joystick.h"
@@ -70,6 +102,10 @@
 #else
  #error "No supported context creation API selected"
 #endif
+
+#define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
+#define _glfw_dlclose(handle) dlclose(handle)
+#define _glfw_dlsym(handle, name) dlsym(handle, name)
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  x11
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11
@@ -206,6 +242,11 @@ typedef struct _GLFWlibraryX11
         int         major;
         int         minor;
     } xinerama;
+
+    struct {
+        void*       handle;
+        XGETXCBCONNECTION_T XGetXCBConnection;
+    } x11xcb;
 
 #if defined(_GLFW_HAS_XINPUT)
     struct {

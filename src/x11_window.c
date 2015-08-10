@@ -1470,13 +1470,21 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     Visual* visual;
     int depth;
 
+    if (ctxconfig->api == GLFW_NO_API)
+    {
+        visual = DefaultVisual(_glfw.x11.display, _glfw.x11.screen);
+        depth = DefaultDepth(_glfw.x11.display, _glfw.x11.screen);
+    }
+    else
+    {
 #if defined(_GLFW_GLX)
-    if (!_glfwChooseVisualGLX(ctxconfig, fbconfig, &visual, &depth))
-        return GLFW_FALSE;
+        if (!_glfwChooseVisualGLX(ctxconfig, fbconfig, &visual, &depth))
+            return GLFW_FALSE;
 #elif defined(_GLFW_EGL)
-    if (!_glfwChooseVisualEGL(ctxconfig, fbconfig, &visual, &depth))
-        return GLFW_FALSE;
+        if (!_glfwChooseVisualEGL(ctxconfig, fbconfig, &visual, &depth))
+            return GLFW_FALSE;
 #endif
+    }
 
     if (!createWindow(window, wndconfig, visual, depth))
         return GLFW_FALSE;
@@ -2107,6 +2115,158 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     }
 
     return _glfw.x11.clipboardString;
+}
+
+char** _glfwPlatformGetRequiredInstanceExtensions(int* count)
+{
+    char** extensions;
+
+    *count = 0;
+
+    if (!_glfw.vk.KHR_xlib_surface)
+    {
+        if (!_glfw.vk.KHR_xcb_surface || !_glfw.x11.x11xcb.handle)
+            return NULL;
+    }
+
+    extensions = calloc(2, sizeof(char*));
+    extensions[0] = strdup("VK_KHR_surface");
+
+    if (_glfw.vk.KHR_xlib_surface)
+        extensions[1] = strdup("VK_KHR_xlib_surface");
+    else
+        extensions[1] = strdup("VK_KHR_xcb_surface");
+
+    *count = 2;
+    return extensions;
+}
+
+int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
+                                                      VkPhysicalDevice device,
+                                                      unsigned int queuefamily)
+{
+    VisualID visualID = XVisualIDFromVisual(DefaultVisual(_glfw.x11.display,
+                                                          _glfw.x11.screen));
+
+    if (_glfw.vk.KHR_xlib_surface)
+    {
+        PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR vkGetPhysicalDeviceXlibPresentationSupportKHR =
+            (PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR)
+            vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceXlibPresentationSupportKHR");
+        if (!vkGetPhysicalDeviceXlibPresentationSupportKHR)
+        {
+            _glfwInputError(GLFW_API_UNAVAILABLE,
+                            "X11: Vulkan instance missing VK_KHR_xlib_surface extension");
+            return GLFW_FALSE;
+        }
+
+        return vkGetPhysicalDeviceXlibPresentationSupportKHR(device,
+                                                             queuefamily,
+                                                             _glfw.x11.display,
+                                                             visualID);
+    }
+    else
+    {
+        PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR vkGetPhysicalDeviceXcbPresentationSupportKHR =
+            (PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)
+            vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceXcbPresentationSupportKHR");
+        if (!vkGetPhysicalDeviceXcbPresentationSupportKHR)
+        {
+            _glfwInputError(GLFW_API_UNAVAILABLE,
+                            "X11: Vulkan instance missing VK_KHR_xcb_surface extension");
+            return GLFW_FALSE;
+        }
+
+        xcb_connection_t* connection =
+            _glfw.x11.x11xcb.XGetXCBConnection(_glfw.x11.display);
+        if (!connection)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Failed to retrieve XCB connection");
+            return GLFW_FALSE;
+        }
+
+        return vkGetPhysicalDeviceXcbPresentationSupportKHR(device,
+                                                            queuefamily,
+                                                            connection,
+                                                            visualID);
+    }
+}
+
+VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
+                                          _GLFWwindow* window,
+                                          const VkAllocationCallbacks* allocator,
+                                          VkSurfaceKHR* surface)
+{
+    if (_glfw.vk.KHR_xlib_surface)
+    {
+        VkResult err;
+        VkXlibSurfaceCreateInfoKHR sci;
+        PFN_vkCreateXlibSurfaceKHR vkCreateXlibSurfaceKHR;
+
+        vkCreateXlibSurfaceKHR = (PFN_vkCreateXlibSurfaceKHR)
+            vkGetInstanceProcAddr(instance, "vkCreateXlibSurfaceKHR");
+        if (!vkCreateXlibSurfaceKHR)
+        {
+            _glfwInputError(GLFW_API_UNAVAILABLE,
+                            "X11: Vulkan instance missing VK_KHR_xlib_surface extension");
+            return VK_ERROR_EXTENSION_NOT_PRESENT;
+        }
+
+        memset(&sci, 0, sizeof(sci));
+        sci.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
+        sci.dpy = _glfw.x11.display;
+        sci.window = window->x11.handle;
+
+        err = vkCreateXlibSurfaceKHR(instance, &sci, allocator, surface);
+        if (err)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Failed to create Vulkan X11 surface: %s",
+                            _glfwGetVulkanResultString(err));
+        }
+
+        return err;
+    }
+    else
+    {
+        VkResult err;
+        VkXcbSurfaceCreateInfoKHR sci;
+        PFN_vkCreateXcbSurfaceKHR vkCreateXcbSurfaceKHR;
+
+        xcb_connection_t* connection =
+            _glfw.x11.x11xcb.XGetXCBConnection(_glfw.x11.display);
+        if (!connection)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Failed to retrieve XCB connection");
+            return VK_ERROR_EXTENSION_NOT_PRESENT;
+        }
+
+        vkCreateXcbSurfaceKHR = (PFN_vkCreateXcbSurfaceKHR)
+            vkGetInstanceProcAddr(instance, "vkCreateXcbSurfaceKHR");
+        if (!vkCreateXcbSurfaceKHR)
+        {
+            _glfwInputError(GLFW_API_UNAVAILABLE,
+                            "X11: Vulkan instance missing VK_KHR_xcb_surface extension");
+            return VK_ERROR_EXTENSION_NOT_PRESENT;
+        }
+
+        memset(&sci, 0, sizeof(sci));
+        sci.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
+        sci.connection = connection;
+        sci.window = window->x11.handle;
+
+        err = vkCreateXcbSurfaceKHR(instance, &sci, allocator, surface);
+        if (err)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Failed to create Vulkan XCB surface: %s",
+                            _glfwGetVulkanResultString(err));
+        }
+
+        return err;
+    }
 }
 
 

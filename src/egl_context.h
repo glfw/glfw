@@ -28,17 +28,6 @@
 #ifndef _glfw3_egl_context_h_
 #define _glfw3_egl_context_h_
 
-#if defined(_GLFW_WIN32)
- #define _glfw_dlopen(name) LoadLibraryA(name)
- #define _glfw_dlclose(handle) FreeLibrary((HMODULE) handle)
- #define _glfw_dlsym(handle, name) GetProcAddress((HMODULE) handle, name)
-#else
- #include <dlfcn.h>
- #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
- #define _glfw_dlclose(handle) dlclose(handle)
- #define _glfw_dlsym(handle, name) dlsym(handle, name)
-#endif
-
 #if defined(_GLFW_USE_EGLPLATFORM_H)
  #include <EGL/eglplatform.h>
 #elif defined(_GLFW_WIN32)

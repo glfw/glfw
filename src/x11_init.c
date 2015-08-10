@@ -581,6 +581,13 @@ static GLFWbool initExtensions(void)
         }
     }
 
+    _glfw.x11.x11xcb.handle = dlopen("libX11-xcb.so", RTLD_LAZY | RTLD_GLOBAL);
+    if (_glfw.x11.x11xcb.handle)
+    {
+        _glfw.x11.x11xcb.XGetXCBConnection = (XGETXCBCONNECTION_T)
+            dlsym(_glfw.x11.x11xcb.handle, "XGetXCBConnection");
+    }
+
     // Update the key code LUT
     // FIXME: We should listen to XkbMapNotify events to track changes to
     // the keyboard mapping.
@@ -789,6 +796,12 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
+    if (_glfw.x11.x11xcb.handle)
+    {
+        dlclose(_glfw.x11.x11xcb.handle);
+        _glfw.x11.x11xcb.handle = NULL;
+    }
+
     if (_glfw.x11.cursor)
     {
         XFreeCursor(_glfw.x11.display, _glfw.x11.cursor);

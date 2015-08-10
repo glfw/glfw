@@ -1322,6 +1322,27 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return _glfw.ns.clipboardString;
 }
 
+char** _glfwPlatformGetRequiredInstanceExtensions(int* count)
+{
+    *count = 0;
+    return NULL;
+}
+
+int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
+                                                      VkPhysicalDevice device,
+                                                      unsigned int queuefamily)
+{
+    return GLFW_FALSE;
+}
+
+VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
+                                          _GLFWwindow* window,
+                                          const VkAllocationCallbacks* allocator,
+                                          VkSurfaceKHR* surface)
+{
+    return VK_ERROR_EXTENSION_NOT_PRESENT;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

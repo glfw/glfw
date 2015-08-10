@@ -674,6 +674,7 @@ INPUT                  = @GLFW_INTERNAL_DOCS@                         \
                          @GLFW_SOURCE_DIR@/docs/monitor.dox           \
                          @GLFW_SOURCE_DIR@/docs/window.dox            \
                          @GLFW_SOURCE_DIR@/docs/input.dox             \
+                         @GLFW_SOURCE_DIR@/docs/vulkan.dox            \
                          @GLFW_SOURCE_DIR@/docs/rift.dox              \
                          @GLFW_SOURCE_DIR@/docs/compat.dox
 
@@ -1590,7 +1591,8 @@ PREDEFINED             = GLFWAPI=                   \
                          GLFW_EXPOSE_NATIVE_GLX     \
                          GLFW_EXPOSE_NATIVE_COCOA   \
                          GLFW_EXPOSE_NATIVE_NSGL    \
-                         GLFW_EXPOSE_NATIVE_EGL
+                         GLFW_EXPOSE_NATIVE_EGL     \
+                         VK_VERSION_1_0
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then
 # this tag can be used to specify a list of macro names that should be expanded.

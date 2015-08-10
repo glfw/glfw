@@ -699,6 +699,76 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return NULL;
 }
 
+char** _glfwPlatformGetRequiredInstanceExtensions(int* count)
+{
+    char** extensions;
+
+    *count = 0;
+
+    if (!_glfw.vk.KHR_wayland_surface)
+        return NULL;
+
+    extensions = calloc(2, sizeof(char*));
+    extensions[0] = strdup("VK_KHR_surface");
+    extensions[1] = strdup("VK_KHR_wayland_surface");
+
+    *count = 2;
+    return extensions;
+}
+
+int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
+                                                      VkPhysicalDevice device,
+                                                      unsigned int queuefamily)
+{
+    PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR vkGetPhysicalDeviceWaylandPresentationSupportKHR =
+        (PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR)
+        vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceWaylandPresentationSupportKHR");
+    if (!vkGetPhysicalDeviceWaylandPresentationSupportKHR)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "Wayland: Vulkan instance missing VK_KHR_wayland_surface extension");
+        return VK_NULL_HANDLE;
+    }
+
+    return vkGetPhysicalDeviceWaylandPresentationSupportKHR(device,
+                                                            queuefamily,
+                                                            _glfw.wl.display);
+}
+
+VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
+                                          _GLFWwindow* window,
+                                          const VkAllocationCallbacks* allocator,
+                                          VkSurfaceKHR* surface)
+{
+    VkResult err;
+    VkWaylandSurfaceCreateInfoKHR sci;
+    PFN_vkCreateWaylandSurfaceKHR vkCreateWaylandSurfaceKHR;
+
+    vkCreateWaylandSurfaceKHR = (PFN_vkCreateWaylandSurfaceKHR)
+        vkGetInstanceProcAddr(instance, "vkCreateWaylandSurfaceKHR");
+    if (!vkCreateWaylandSurfaceKHR)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "Wayland: Vulkan instance missing VK_KHR_wayland_surface extension");
+        return VK_ERROR_EXTENSION_NOT_PRESENT;
+    }
+
+    memset(&sci, 0, sizeof(sci));
+    sci.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+    sci.display = _glfw.wl.display;
+    sci.surface = window->wl.surface;
+
+    err = vkCreateWaylandSurfaceKHR(instance, &sci, allocator, surface);
+    if (err)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to create Vulkan surface: %s",
+                        _glfwGetVulkanResultString(err));
+    }
+
+    return err;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

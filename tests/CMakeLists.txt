@@ -43,6 +43,13 @@ set(WINDOWS_BINARIES empty sharing tearing threads title windows)
 set(CONSOLE_BINARIES clipboard events msaa gamma glfwinfo
                      iconify joysticks monitors reopen cursor)
 
+if (VULKAN_FOUND)
+    add_executable(vulkan WIN32 vulkan.c ${ICON})
+    target_include_directories(vulkan PRIVATE "${VULKAN_INCLUDE_DIR}")
+    target_link_libraries(vulkan "${VULKAN_LIBRARY}")
+    list(APPEND WINDOWS_BINARIES vulkan)
+endif()
+
 set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
                       FOLDER "GLFW3/Tests")
 

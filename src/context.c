@@ -403,6 +403,9 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
                 //       debug contexts
                 window->context.debug = GLFW_TRUE;
             }
+
+            if (flags & GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR)
+                window->context.noerror = GLFW_TRUE;
         }
 
         // Read back OpenGL context profile (OpenGL 3.2 and above)

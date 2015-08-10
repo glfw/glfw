@@ -88,6 +88,7 @@ static void usage(void)
     printf("      --stereo              request stereo rendering\n");
     printf("      --srgb                request an sRGB capable framebuffer\n");
     printf("      --singlebuffer        request single-buffering\n");
+    printf("      --no-error            request a context that does not emit errors\n");
 }
 
 static void error_callback(int error, const char* description)
@@ -226,7 +227,7 @@ int main(int argc, char** argv)
            MAJOR, MINOR, PROFILE, ROBUSTNESS, VERSION,
            REDBITS, GREENBITS, BLUEBITS, ALPHABITS, DEPTHBITS, STENCILBITS,
            ACCUMREDBITS, ACCUMGREENBITS, ACCUMBLUEBITS, ACCUMALPHABITS,
-           AUXBUFFERS, SAMPLES, STEREO, SRGB, SINGLEBUFFER };
+           AUXBUFFERS, SAMPLES, STEREO, SRGB, SINGLEBUFFER, NOERROR };
     const struct option options[] =
     {
         { "behavior",         1, NULL, BEHAVIOR },
@@ -255,6 +256,7 @@ int main(int argc, char** argv)
         { "stereo",           0, NULL, STEREO },
         { "srgb",             0, NULL, SRGB },
         { "singlebuffer",     0, NULL, SINGLEBUFFER },
+        { "no-error",         0, NULL, NOERROR },
         { NULL, 0, NULL, 0 }
     };
 
@@ -447,6 +449,9 @@ int main(int argc, char** argv)
             case SINGLEBUFFER:
                 glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
                 break;
+            case NOERROR:
+                glfwWindowHint(GLFW_CONTEXT_NO_ERROR, GLFW_TRUE);
+                break;
             default:
                 usage();
                 exit(EXIT_FAILURE);
@@ -500,6 +505,8 @@ int main(int argc, char** argv)
                 printf(" debug");
             if (flags & GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB)
                 printf(" robustness");
+            if (flags & 8/*GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR*/)
+                printf(" no-error");
             putchar('\n');
 
             printf("%s context flags parsed by GLFW:", get_api_name(api));
@@ -510,6 +517,8 @@ int main(int argc, char** argv)
                 printf(" debug");
             if (glfwGetWindowAttrib(window, GLFW_CONTEXT_ROBUSTNESS) == GLFW_LOSE_CONTEXT_ON_RESET)
                 printf(" robustness");
+            if (glfwGetWindowAttrib(window, GLFW_CONTEXT_NO_ERROR))
+                printf(" no-error");
             putchar('\n');
         }
 

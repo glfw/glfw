@@ -264,6 +264,8 @@ int _glfwInitContextAPI(void)
 
     _glfw.egl.KHR_create_context =
         _glfwPlatformExtensionSupported("EGL_KHR_create_context");
+    _glfw.egl.KHR_create_context_no_error =
+        _glfwPlatformExtensionSupported("EGL_KHR_create_context_no_error");
 
     return GLFW_TRUE;
 }
@@ -345,6 +347,12 @@ int _glfwCreateContext(_GLFWwindow* window,
                 mask |= EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR;
             else if (ctxconfig->profile == GLFW_OPENGL_COMPAT_PROFILE)
                 mask |= EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR;
+
+            if (_glfw.egl.KHR_create_context_no_error)
+            {
+                if (ctxconfig->noerror)
+                    flags |= EGL_CONTEXT_OPENGL_NO_ERROR_KHR;
+            }
         }
 
         if (ctxconfig->debug)

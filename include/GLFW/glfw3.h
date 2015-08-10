@@ -658,6 +658,7 @@ extern "C" {
 #define GLFW_OPENGL_DEBUG_CONTEXT   0x00022007
 #define GLFW_OPENGL_PROFILE         0x00022008
 #define GLFW_CONTEXT_RELEASE_BEHAVIOR 0x00022009
+#define GLFW_CONTEXT_NO_ERROR       0x0002200A
 
 #define GLFW_NO_API                          0
 #define GLFW_OPENGL_API             0x00030001

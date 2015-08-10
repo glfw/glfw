@@ -357,6 +357,9 @@ GLFWAPI void glfwWindowHint(int target, int hint)
         case GLFW_OPENGL_DEBUG_CONTEXT:
             _glfw.hints.context.debug = hint ? GLFW_TRUE : GLFW_FALSE;
             break;
+        case GLFW_CONTEXT_NO_ERROR:
+            _glfw.hints.context.noerror = hint ? GLFW_TRUE : GLFW_FALSE;
+            break;
         case GLFW_OPENGL_PROFILE:
             _glfw.hints.context.profile = hint;
             break;
@@ -629,6 +632,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->context.profile;
         case GLFW_CONTEXT_RELEASE_BEHAVIOR:
             return window->context.release;
+        case GLFW_CONTEXT_NO_ERROR:
+            return window->context.noerror;
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute");

@@ -65,6 +65,7 @@
 #define GL_NO_RESET_NOTIFICATION_ARB 0x8261
 #define GL_CONTEXT_RELEASE_BEHAVIOR 0x82fb
 #define GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH 0x82fc
+#define GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR 0x00000008
 
 typedef int	GLint;
 typedef unsigned int GLuint;
@@ -195,6 +196,7 @@ struct _GLFWctxconfig
     int           minor;
     GLFWbool      forward;
     GLFWbool      debug;
+    GLFWbool      noerror;
     int           profile;
     int           robustness;
     int           release;
@@ -262,7 +264,7 @@ struct _GLFWwindow
     struct {
         int             api;
         int             major, minor, revision;
-        GLFWbool        forward, debug;
+        GLFWbool        forward, debug, noerror;
         int             profile;
         int             robustness;
         int             release;

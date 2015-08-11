@@ -87,6 +87,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [X11] Bugfix: The original video mode was not restored on iconification of
                  full screen windows
  - [X11] Bugfix: `GLFW_ARROW_CURSOR` selected the wrong cursor image
+ - [WGL] Made all WGL functions dynamically loaded
  - [WGL] Removed `GLFW_USE_DWM_SWAP_INTERVAL` compile-time option
  - [WGL] Bugfix: Swap interval was ignored when DWM was enabled
  - [GLX] Added dependency on `libdl` on systems where it provides `dlopen`

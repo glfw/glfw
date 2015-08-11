@@ -38,6 +38,7 @@
 static GLboolean parseVersionString(int* api, int* major, int* minor, int* rev)
 {
     int i;
+    _GLFWwindow* window;
     const char* version;
     const char* prefixes[] =
     {
@@ -49,7 +50,9 @@ static GLboolean parseVersionString(int* api, int* major, int* minor, int* rev)
 
     *api = GLFW_OPENGL_API;
 
-    version = (const char*) glGetString(GL_VERSION);
+    window = _glfwPlatformGetCurrentContext();
+
+    version = (const char*) window->GetString(GL_VERSION);
     if (!version)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -352,6 +355,10 @@ GLboolean _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
 {
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
+    window->GetIntegerv = (PFNGLGETINTEGERVPROC) glfwGetProcAddress("glGetIntegerv");
+    window->GetString = (PFNGLGETSTRINGPROC) glfwGetProcAddress("glGetString");
+    window->Clear = (PFNGLCLEARPROC) glfwGetProcAddress("glClear");
+
     if (!parseVersionString(&window->context.api,
                             &window->context.major,
                             &window->context.minor,
@@ -382,7 +389,7 @@ GLboolean _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
         if (window->context.major >= 3)
         {
             GLint flags;
-            glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+            window->GetIntegerv(GL_CONTEXT_FLAGS, &flags);
 
             if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
                 window->context.forward = GL_TRUE;
@@ -404,7 +411,7 @@ GLboolean _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
             (window->context.major == 3 && window->context.minor >= 2))
         {
             GLint mask;
-            glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
+            window->GetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
 
             if (mask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)
                 window->context.profile = GLFW_OPENGL_COMPAT_PROFILE;
@@ -427,7 +434,7 @@ GLboolean _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
             //       only present from 3.0 while the extension applies from 1.1
 
             GLint strategy;
-            glGetIntegerv(GL_RESET_NOTIFICATION_STRATEGY_ARB, &strategy);
+            window->GetIntegerv(GL_RESET_NOTIFICATION_STRATEGY_ARB, &strategy);
 
             if (strategy == GL_LOSE_CONTEXT_ON_RESET_ARB)
                 window->context.robustness = GLFW_LOSE_CONTEXT_ON_RESET;
@@ -444,7 +451,7 @@ GLboolean _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
             //       one, so we can reuse them here
 
             GLint strategy;
-            glGetIntegerv(GL_RESET_NOTIFICATION_STRATEGY_ARB, &strategy);
+            window->GetIntegerv(GL_RESET_NOTIFICATION_STRATEGY_ARB, &strategy);
 
             if (strategy == GL_LOSE_CONTEXT_ON_RESET_ARB)
                 window->context.robustness = GLFW_LOSE_CONTEXT_ON_RESET;
@@ -456,7 +463,7 @@ GLboolean _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
     if (glfwExtensionSupported("GL_KHR_context_flush_control"))
     {
         GLint behavior;
-        glGetIntegerv(GL_CONTEXT_RELEASE_BEHAVIOR, &behavior);
+        window->GetIntegerv(GL_CONTEXT_RELEASE_BEHAVIOR, &behavior);
 
         if (behavior == GL_NONE)
             window->context.release = GLFW_RELEASE_BEHAVIOR_NONE;
@@ -581,7 +588,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 
         // Check if extension is in the modern OpenGL extensions string list
 
-        glGetIntegerv(GL_NUM_EXTENSIONS, &count);
+        window->GetIntegerv(GL_NUM_EXTENSIONS, &count);
 
         for (i = 0;  i < count;  i++)
         {
@@ -602,7 +609,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
     {
         // Check if extension is in the old style OpenGL extensions string
 
-        const char* extensions = (const char*) glGetString(GL_EXTENSIONS);
+        const char* extensions = (const char*) window->GetString(GL_EXTENSIONS);
         if (!extensions)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,

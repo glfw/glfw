@@ -69,6 +69,10 @@
  #include "../deps/GL/glext.h"
 #endif
 
+typedef void (APIENTRY * PFNGLCLEARPROC)(GLbitfield);
+typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGPROC)(GLenum);
+typedef void (APIENTRY * PFNGLGETINTEGERVPROC)(GLenum,GLint*);
+
 typedef struct _GLFWwndconfig   _GLFWwndconfig;
 typedef struct _GLFWctxconfig   _GLFWctxconfig;
 typedef struct _GLFWfbconfig    _GLFWfbconfig;
@@ -261,6 +265,9 @@ struct _GLFWwindow
 #if defined(_GLFW_USE_OPENGL)
     PFNGLGETSTRINGIPROC GetStringi;
 #endif
+    PFNGLGETINTEGERVPROC GetIntegerv;
+    PFNGLGETSTRINGPROC  GetString;
+    PFNGLCLEARPROC      Clear;
 
     struct {
         GLFWwindowposfun        pos;

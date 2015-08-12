@@ -297,20 +297,6 @@ static GLboolean createWindow(_GLFWwindow* window,
             return GL_FALSE;
         }
 
-        if (!wndconfig->decorated)
-        {
-            MotifWmHints hints;
-            hints.flags = MWM_HINTS_DECORATIONS;
-            hints.decorations = 0;
-
-            XChangeProperty(_glfw.x11.display, window->x11.handle,
-                            _glfw.x11.MOTIF_WM_HINTS,
-                            _glfw.x11.MOTIF_WM_HINTS, 32,
-                            PropModeReplace,
-                            (unsigned char*) &hints,
-                            sizeof(MotifWmHints) / sizeof(long));
-        }
-
         XSaveContext(_glfw.x11.display,
                      window->x11.handle,
                      _glfw.x11.context,
@@ -339,6 +325,20 @@ static GLboolean createWindow(_GLFWwindow* window,
     }
     else
     {
+        if (!wndconfig->decorated)
+        {
+            MotifWmHints hints;
+            hints.flags = MWM_HINTS_DECORATIONS;
+            hints.decorations = 0;
+
+            XChangeProperty(_glfw.x11.display, window->x11.handle,
+                            _glfw.x11.MOTIF_WM_HINTS,
+                            _glfw.x11.MOTIF_WM_HINTS, 32,
+                            PropModeReplace,
+                            (unsigned char*) &hints,
+                            sizeof(MotifWmHints) / sizeof(long));
+        }
+
         if (wndconfig->floating)
         {
             if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_ABOVE)

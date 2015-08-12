@@ -280,7 +280,7 @@ int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWfbconfig* fbconfig)
 {
     int attribs[40];
-    GLXFBConfig native;
+    GLXFBConfig native = NULL;
     GLXContext share = NULL;
 
     if (ctxconfig->share)

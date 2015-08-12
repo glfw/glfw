@@ -99,6 +99,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [WGL] Removed `GLFW_USE_DWM_SWAP_INTERVAL` compile-time option
  - [WGL] Bugfix: Swap interval was ignored when DWM was enabled
  - [GLX] Added dependency on `libdl` on systems where it provides `dlopen`
+ - [GLX] Made all GLX functions dynamically loaded
  - [GLX] Removed `_GLFW_HAS_GLXGETPROCADDRESS*` and `_GLFW_HAS_DLOPEN`
          compile-time options
 

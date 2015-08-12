@@ -42,7 +42,7 @@
 static int getFBConfigAttrib(GLXFBConfig fbconfig, int attrib)
 {
     int value;
-    glXGetFBConfigAttrib(_glfw.x11.display, fbconfig, attrib, &value);
+    _glfw_glXGetFBConfigAttrib(_glfw.x11.display, fbconfig, attrib, &value);
     return value;
 }
 
@@ -59,12 +59,12 @@ static GLboolean chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* resul
 
     // HACK: This is a (hopefully temporary) workaround for Chromium
     //       (VirtualBox GL) not setting the window bit on any GLXFBConfigs
-    vendor = glXGetClientString(_glfw.x11.display, GLX_VENDOR);
+    vendor = _glfw_glXGetClientString(_glfw.x11.display, GLX_VENDOR);
     if (strcmp(vendor, "Chromium") == 0)
         trustWindowBit = GL_FALSE;
 
-    nativeConfigs = glXGetFBConfigs(_glfw.x11.display, _glfw.x11.screen,
-                                    &nativeCount);
+    nativeConfigs = _glfw_glXGetFBConfigs(_glfw.x11.display, _glfw.x11.screen,
+                                          &nativeCount);
     if (!nativeCount)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE, "GLX: No GLXFBConfigs returned");
@@ -140,11 +140,11 @@ static GLXContext createLegacyContext(_GLFWwindow* window,
                                       GLXFBConfig fbconfig,
                                       GLXContext share)
 {
-    return glXCreateNewContext(_glfw.x11.display,
-                               fbconfig,
-                               GLX_RGBA_TYPE,
-                               share,
-                               True);
+    return _glfw_glXCreateNewContext(_glfw.x11.display,
+                                     fbconfig,
+                                     GLX_RGBA_TYPE,
+                                     share,
+                                     True);
 }
 
 
@@ -172,20 +172,44 @@ int _glfwInitContextAPI(void)
         return GL_FALSE;
     }
 
+    _glfw.glx.GetFBConfigs =
+        dlsym(_glfw.glx.handle, "glXGetFBConfigs");
+    _glfw.glx.GetFBConfigAttrib =
+        dlsym(_glfw.glx.handle, "glXGetFBConfigAttrib");
+    _glfw.glx.GetClientString =
+        dlsym(_glfw.glx.handle, "glXGetClientString");
+    _glfw.glx.QueryExtension =
+        dlsym(_glfw.glx.handle, "glXQueryExtension");
+    _glfw.glx.QueryVersion =
+        dlsym(_glfw.glx.handle, "glXQueryVersion");
+    _glfw.glx.DestroyContext =
+        dlsym(_glfw.glx.handle, "glXDestroyContext");
+    _glfw.glx.MakeCurrent =
+        dlsym(_glfw.glx.handle, "glXMakeCurrent");
+    _glfw.glx.SwapBuffers =
+        dlsym(_glfw.glx.handle, "glXSwapBuffers");
+    _glfw.glx.QueryExtensionsString =
+        dlsym(_glfw.glx.handle, "glXQueryExtensionsString");
+    _glfw.glx.CreateNewContext =
+        dlsym(_glfw.glx.handle, "glXCreateNewContext");
+    _glfw.glx.GetVisualFromFBConfig =
+        dlsym(_glfw.glx.handle, "glXGetVisualFromFBConfig");
     _glfw.glx.GetProcAddress =
         dlsym(_glfw.glx.handle, "glXGetProcAddress");
     _glfw.glx.GetProcAddressARB =
         dlsym(_glfw.glx.handle, "glXGetProcAddressARB");
 
-    if (!glXQueryExtension(_glfw.x11.display,
-                           &_glfw.glx.errorBase,
-                           &_glfw.glx.eventBase))
+    if (!_glfw_glXQueryExtension(_glfw.x11.display,
+                                 &_glfw.glx.errorBase,
+                                 &_glfw.glx.eventBase))
     {
         _glfwInputError(GLFW_API_UNAVAILABLE, "GLX: GLX extension not found");
         return GL_FALSE;
     }
 
-    if (!glXQueryVersion(_glfw.x11.display, &_glfw.glx.major, &_glfw.glx.minor))
+    if (!_glfw_glXQueryVersion(_glfw.x11.display,
+                               &_glfw.glx.major,
+                               &_glfw.glx.minor))
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
                         "GLX: Failed to query GLX version");
@@ -263,6 +287,9 @@ int _glfwInitContextAPI(void)
 //
 void _glfwTerminateContextAPI(void)
 {
+    // NOTE: This function may not call any X11 functions, as it is called after
+    //       XCloseDisplay (see _glfwPlatformTerminate for details)
+
     if (_glfw.glx.handle)
     {
         dlclose(_glfw.glx.handle);
@@ -299,7 +326,8 @@ int _glfwCreateContext(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    window->glx.visual = glXGetVisualFromFBConfig(_glfw.x11.display, native);
+    window->glx.visual = _glfw_glXGetVisualFromFBConfig(_glfw.x11.display,
+                                                        native);
     if (!window->glx.visual)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -465,7 +493,7 @@ void _glfwDestroyContext(_GLFWwindow* window)
 
     if (window->glx.context)
     {
-        glXDestroyContext(_glfw.x11.display, window->glx.context);
+        _glfw_glXDestroyContext(_glfw.x11.display, window->glx.context);
         window->glx.context = NULL;
     }
 }
@@ -479,19 +507,19 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 {
     if (window)
     {
-        glXMakeCurrent(_glfw.x11.display,
-                       window->x11.handle,
-                       window->glx.context);
+        _glfw_glXMakeCurrent(_glfw.x11.display,
+                             window->x11.handle,
+                             window->glx.context);
     }
     else
-        glXMakeCurrent(_glfw.x11.display, None, NULL);
+        _glfw_glXMakeCurrent(_glfw.x11.display, None, NULL);
 
     _glfwSetContextTLS(window);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 {
-    glXSwapBuffers(_glfw.x11.display, window->x11.handle);
+    _glfw_glXSwapBuffers(_glfw.x11.display, window->x11.handle);
 }
 
 void _glfwPlatformSwapInterval(int interval)
@@ -515,8 +543,8 @@ void _glfwPlatformSwapInterval(int interval)
 
 int _glfwPlatformExtensionSupported(const char* extension)
 {
-    const char* extensions = glXQueryExtensionsString(_glfw.x11.display,
-                                                      _glfw.x11.screen);
+    const char* extensions =
+        _glfw_glXQueryExtensionsString(_glfw.x11.display, _glfw.x11.screen);
     if (extensions)
     {
         if (_glfwStringInExtensionString(extension, extensions))

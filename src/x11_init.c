@@ -786,13 +786,16 @@ void _glfwPlatformTerminate(void)
     }
 
     _glfwTerminateJoysticks();
-    _glfwTerminateContextAPI();
 
     if (_glfw.x11.display)
     {
         XCloseDisplay(_glfw.x11.display);
         _glfw.x11.display = NULL;
     }
+
+    // NOTE: This needs to be done after XCloseDisplay, as libGL registers
+    //       internal cleanup callbacks in libX11
+    _glfwTerminateContextAPI();
 }
 
 const char* _glfwPlatformGetVersionString(void)

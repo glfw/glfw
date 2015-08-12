@@ -1631,6 +1631,11 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  @remarks __X11:__ Some window managers will not respect the placement of
  *  initially hidden windows.
  *
+ *  @remarks __X11:__ Due to the asynchronous nature of X11, it may take
+ *  a moment for a window to reach its requested state.  This means you may not
+ *  be able to query the final size, position or other attributes directly after
+ *  window creation.
+ *
  *  @par Reentrancy
  *  This function may not be called from a callback.
  *
@@ -2574,9 +2579,9 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *  @param[in] ypos The desired y-coordinate, relative to the top edge of the
  *  client area.
  *
- *  @remarks __X11:__ Due to the asynchronous nature of a modern X desktop, it
- *  may take a moment for the window focus event to arrive.  This means you will
- *  not be able to set the cursor position directly after window creation.
+ *  @remarks __X11:__ Due to the asynchronous nature of X11, it may take
+ *  a moment for the window focus event to arrive.  This means you may not be
+ *  able to set the cursor position directly after window creation.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.

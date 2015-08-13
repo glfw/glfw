@@ -62,6 +62,7 @@ typedef struct
 //
 void selectDisplayConnection(struct timeval* timeout)
 {
+    int rc;
     fd_set fds;
     const int fd = ConnectionNumber(_glfw.x11.display);
 
@@ -71,7 +72,9 @@ void selectDisplayConnection(struct timeval* timeout)
     // select(1) is used instead of an X function like XNextEvent, as the
     // wait inside those are guarded by the mutex protecting the display
     // struct, locking out other threads from using X (including GLX)
-    select(fd + 1, &fds, NULL, NULL, timeout);
+    do {
+        rc = select(fd + 1, &fds, NULL, NULL, timeout);
+    } while (-1 == rc && EINTR == errno);
 }
 
 // Returns whether the window is iconified

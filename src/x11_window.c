@@ -47,17 +47,6 @@
 #define Button6            6
 #define Button7            7
 
-typedef struct
-{
-    unsigned long flags;
-    unsigned long functions;
-    unsigned long decorations;
-    long input_mode;
-    unsigned long status;
-} MotifWmHints;
-
-#define MWM_HINTS_DECORATIONS (1L << 1)
-
 
 // Wait for data to arrive
 //
@@ -336,16 +325,24 @@ static GLboolean createWindow(_GLFWwindow* window,
     {
         if (!wndconfig->decorated)
         {
-            MotifWmHints hints;
-            hints.flags = MWM_HINTS_DECORATIONS;
-            hints.decorations = 0;
+            struct
+            {
+                unsigned long flags;
+                unsigned long functions;
+                unsigned long decorations;
+                long input_mode;
+                unsigned long status;
+            } hints;
+
+            hints.flags = 2;       // Set decorations
+            hints.decorations = 0; // No decorations
 
             XChangeProperty(_glfw.x11.display, window->x11.handle,
                             _glfw.x11.MOTIF_WM_HINTS,
                             _glfw.x11.MOTIF_WM_HINTS, 32,
                             PropModeReplace,
                             (unsigned char*) &hints,
-                            sizeof(MotifWmHints) / sizeof(long));
+                            sizeof(hints) / sizeof(long));
         }
 
         if (wndconfig->floating)

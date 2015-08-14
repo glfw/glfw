@@ -1758,7 +1758,7 @@ void _glfwPlatformPollEvents(void)
 
 void _glfwPlatformWaitEvents(void)
 {
-    if (!XPending(_glfw.x11.display))
+    while (!XPending(_glfw.x11.display))
         selectDisplayConnection(NULL);
 
     _glfwPlatformPollEvents();

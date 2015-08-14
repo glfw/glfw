@@ -90,6 +90,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [X11] Bugfix: `GLFW_ARROW_CURSOR` selected the wrong cursor image
  - [X11] Bugfix: The `GLFW_DECORATED` hint was not ignored for full screen
  - [X11] Bugfix: `glfwWaitEvents` did not handle `EINTR` for `select`
+ - [X11] Bugfix: `glfwWaitEvents` could return when no events were available
  - [WGL] Made all WGL functions dynamically loaded
  - [WGL] Removed `GLFW_USE_DWM_SWAP_INTERVAL` compile-time option
  - [WGL] Bugfix: Swap interval was ignored when DWM was enabled

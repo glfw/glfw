@@ -22,8 +22,9 @@ freely, subject to the following restrictions:
 */
 
 /* 2013-01-06 Camilla Berglund <elmindreda@elmindreda.org>
- * 
+ *
  * Added casts from time_t to DWORD to avoid warnings on VC++.
+ * Fixed time retrieval on POSIX systems.
  */
 
 #include "tinycthread.h"
@@ -294,7 +295,7 @@ int cnd_timedwait(cnd_t *cond, mtx_t *mtx, const struct timespec *ts)
 {
 #if defined(_TTHREAD_WIN32_)
   struct timespec now;
-  if (clock_gettime(TIME_UTC, &now) == 0)
+  if (clock_gettime(CLOCK_REALTIME, &now) == 0)
   {
     DWORD delta = (DWORD) ((ts->tv_sec - now.tv_sec) * 1000 +
                            (ts->tv_nsec - now.tv_nsec + 500000) / 1000000);
@@ -471,7 +472,7 @@ int thrd_sleep(const struct timespec *time_point, struct timespec *remaining)
 #endif
 
   /* Get the current time */
-  if (clock_gettime(TIME_UTC, &now) != 0)
+  if (clock_gettime(CLOCK_REALTIME, &now) != 0)
     return -2;  // FIXME: Some specific error code?
 
 #if defined(_TTHREAD_WIN32_)

@@ -241,15 +241,14 @@ static void createKeyTables(void)
         // keyboard layout
 
         char name[XkbKeyNameLength + 1];
-        XkbDescPtr descr = XkbGetKeyboard(_glfw.x11.display,
-                                          XkbAllComponentsMask,
-                                          XkbUseCoreKbd);
+        XkbDescPtr desc = XkbGetMap(_glfw.x11.display, 0, XkbUseCoreKbd);
+        XkbGetNames(_glfw.x11.display, XkbKeyNamesMask, desc);
 
         // Find the X11 key code -> GLFW key code mapping
-        for (scancode = descr->min_key_code;  scancode <= descr->max_key_code;  scancode++)
+        for (scancode = desc->min_key_code;  scancode <= desc->max_key_code;  scancode++)
         {
-            memcpy(name, descr->names->keys[scancode].name, XkbKeyNameLength);
-            name[XkbKeyNameLength] = 0;
+            memcpy(name, desc->names->keys[scancode].name, XkbKeyNameLength);
+            name[XkbKeyNameLength] = '\0';
 
             // Map the key name to a GLFW key code. Note: We only map printable
             // keys here, and we use the US keyboard layout. The rest of the
@@ -309,7 +308,8 @@ static void createKeyTables(void)
                 _glfw.x11.publicKeys[scancode] = key;
         }
 
-        XkbFreeKeyboard(descr, 0, True);
+        XkbFreeNames(desc, XkbKeyNamesMask, True);
+        XkbFreeClientMap(desc, 0, True);
     }
 
     // Translate the un-translated key codes using traditional X11 KeySym

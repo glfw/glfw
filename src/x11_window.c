@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <errno.h>
 
 // Action for EWMH client messages
 #define _NET_WM_STATE_REMOVE        0
@@ -63,15 +64,23 @@ typedef struct
 void selectDisplayConnection(struct timeval* timeout)
 {
     fd_set fds;
+    int result;
     const int fd = ConnectionNumber(_glfw.x11.display);
 
     FD_ZERO(&fds);
     FD_SET(fd, &fds);
 
-    // select(1) is used instead of an X function like XNextEvent, as the
-    // wait inside those are guarded by the mutex protecting the display
-    // struct, locking out other threads from using X (including GLX)
-    select(fd + 1, &fds, NULL, NULL, timeout);
+    // NOTE: We use select instead of an X function like XNextEvent, as the
+    //       wait inside those are guarded by the mutex protecting the display
+    //       struct, locking out other threads from using X (including GLX)
+    // NOTE: Only retry on EINTR if there is no timeout, as select is not
+    //       required to update it for the time elapsed
+    // TODO: Update timeout value manually
+    do
+    {
+        result = select(fd + 1, &fds, NULL, NULL, timeout);
+    }
+    while (result == -1 && errno == EINTR && timeout == NULL);
 }
 
 // Returns whether the window is iconified

@@ -89,6 +89,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
                  full screen windows
  - [X11] Bugfix: `GLFW_ARROW_CURSOR` selected the wrong cursor image
  - [X11] Bugfix: The `GLFW_DECORATED` hint was not ignored for full screen
+ - [X11] Bugfix: `glfwWaitEvents` did not handle `EINTR` for `select`
  - [WGL] Made all WGL functions dynamically loaded
  - [WGL] Removed `GLFW_USE_DWM_SWAP_INTERVAL` compile-time option
  - [WGL] Bugfix: Swap interval was ignored when DWM was enabled
@@ -163,6 +164,7 @@ skills.
  - Robin Leffmann
  - Glenn Lewis
  - Shane Liesegang
+ - Eyal Lotem
  - Дмитри Малышев
  - Martins Mozeiko
  - Tristam MacDonald

@@ -1037,12 +1037,18 @@ void _glfwPlatformPollEvents(void)
                 _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, 0, GLFW_RELEASE, mods);
         }
 
-        // Did the cursor move in an focused window that has disabled the cursor
         if (window->cursorMode == GLFW_CURSOR_DISABLED)
         {
             int width, height;
             _glfwPlatformGetWindowSize(window, &width, &height);
-            _glfwPlatformSetCursorPos(window, width / 2, height / 2);
+
+            // NOTE: Re-center the cursor only if it has moved since the last
+            //       call, to avoid breaking glfwWaitEvents with WM_MOUSEMOVE
+            if (window->win32.cursorPosX != width / 2 ||
+                window->win32.cursorPosY != height / 2)
+            {
+                _glfwPlatformSetCursorPos(window, width / 2, height / 2);
+            }
         }
     }
 }

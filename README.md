@@ -73,6 +73,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [Win32] Renamed hybrid GPU override compile-time option to
            `_GLFW_USE_HYBRID_HPG` and added support for AMD PowerXpress systems
  - [Win32] Bugfix: `glfwGetVideoModes` included unusable modes on some systems
+ - [Win32] Bugfix: `glfwWaitEvents` would return directly for focused windows in
+                   disabled cursor mode
  - [Cocoa] Bugfix: The cached `NSScreen` for a monitor could get out of sync
  - [Cocoa] Bugfix: The `GLFW_AUTO_ICONIFY` window hint was ignored
  - [Cocoa] Bugfix: Resizing a window to its minimum size would segfault

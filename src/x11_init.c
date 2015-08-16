@@ -38,7 +38,7 @@
 
 // Translate an X11 key code to a GLFW key code.
 //
-static int translateKey(int scancode)
+static int translateKeyCode(int scancode)
 {
     int keySym;
 
@@ -317,7 +317,7 @@ static void createKeyTables(void)
     for (scancode = 0;  scancode < 256;  scancode++)
     {
         if (_glfw.x11.publicKeys[scancode] < 0)
-            _glfw.x11.publicKeys[scancode] = translateKey(scancode);
+            _glfw.x11.publicKeys[scancode] = translateKeyCode(scancode);
     }
 }
 

@@ -529,3 +529,21 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return NULL;
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW native API                       //////
+//////////////////////////////////////////////////////////////////////////
+
+GLFWAPI struct wl_display* glfwGetWaylandDisplay(void)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    return _glfw.wl.display;
+}
+
+GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    return window->wl.surface;
+}
+

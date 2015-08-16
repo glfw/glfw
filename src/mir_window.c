@@ -799,3 +799,21 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return NULL;
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW native API                       //////
+//////////////////////////////////////////////////////////////////////////
+
+GLFWAPI MirConnection* glfwGetMirDisplay(void)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    return _glfw.mir.connection;
+}
+
+GLFWAPI MirSurface* glfwGetMirWindow(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    return window->mir.surface;
+}
+

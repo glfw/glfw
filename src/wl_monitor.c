@@ -248,3 +248,15 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
     fprintf(stderr, "_glfwPlatformSetGammaRamp not implemented yet\n");
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW native API                       //////
+//////////////////////////////////////////////////////////////////////////
+
+GLFWAPI struct wl_output* glfwGetWaylandMonitor(GLFWmonitor* handle)
+{
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    return monitor->wl.output;
+}
+

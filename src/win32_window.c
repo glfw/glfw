@@ -466,8 +466,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     break;
 
                 _glfwInputCursorMotion(window,
-                                        x - window->win32.cursorPosX,
-                                        y - window->win32.cursorPosY);
+                                       x - window->win32.cursorPosX,
+                                       y - window->win32.cursorPosY);
             }
             else
                 _glfwInputCursorMotion(window, x, y);

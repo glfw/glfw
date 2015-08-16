@@ -157,7 +157,7 @@ static int translateState(int state)
     return mods;
 }
 
-// Translates an X Window key to internal coding
+// Translates an X11 key code to a GLFW key token
 //
 static int translateKey(int scancode)
 {

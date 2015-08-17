@@ -1165,10 +1165,10 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
     else
     {
         const NSPoint localPoint = NSMakePoint(x, contentRect.size.height - y - 1);
-        const NSPoint globalPoint = [window->ns.object convertBaseToScreen:localPoint];
+        const NSRect globalPoint = [window->ns.object convertRectToScreen:NSMakeRect(localPoint.x, localPoint.y, 0, 0)];
 
-        CGWarpMouseCursorPosition(CGPointMake(globalPoint.x,
-                                              transformY(globalPoint.y)));
+        CGWarpMouseCursorPosition(CGPointMake(globalPoint.origin.x,
+                                              transformY(globalPoint.origin.y)));
     }
 }
 

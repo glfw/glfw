@@ -2601,9 +2601,9 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
  *  glfwSetCursor.  The cursor can be destroyed with @ref glfwDestroyCursor.
  *  Any remaining cursors are destroyed by @ref glfwTerminate.
  *
- *  The pixels are 32-bit little-endian RGBA, i.e. eight bits per channel.  They
- *  are arranged canonically as packed sequential rows, starting from the
- *  top-left corner.
+ *  The pixels are 32-bit, little-endian, non-premultiplied RGBA, i.e. eight
+ *  bits per channel.  They are arranged canonically as packed sequential rows,
+ *  starting from the top-left corner.
  *
  *  The cursor hotspot is specified in pixels, relative to the upper-left corner
  *  of the cursor image.  Like all other coordinate systems in GLFW, the X-axis

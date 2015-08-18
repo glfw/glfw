@@ -156,10 +156,16 @@ static GLXContext createLegacyContext(_GLFWwindow* window,
 //
 int _glfwInitContextAPI(void)
 {
+#if defined(__CYGWIN__)
+    const char* soname = "libGL-1.so";
+#else
+    const char* soname = "libGL.so.1";
+#endif
+
     if (!_glfwCreateContextTLS())
         return GL_FALSE;
 
-    _glfw.glx.handle = dlopen("libGL.so.1", RTLD_LAZY | RTLD_GLOBAL);
+    _glfw.glx.handle = dlopen(soname, RTLD_LAZY | RTLD_GLOBAL);
     if (!_glfw.glx.handle)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE, "GLX: %s", dlerror());

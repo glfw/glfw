@@ -367,7 +367,6 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
         return GLFW_FALSE;
     }
 
-#if defined(_GLFW_USE_OPENGL)
     if (window->context.major > 2)
     {
         // OpenGL 3.0+ uses a different function for extension string retrieval
@@ -470,7 +469,6 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
         else if (behavior == GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH)
             window->context.release = GLFW_RELEASE_BEHAVIOR_FLUSH;
     }
-#endif // _GLFW_USE_OPENGL
 
     return GLFW_TRUE;
 }
@@ -580,7 +578,6 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
         return GLFW_FALSE;
     }
 
-#if defined(_GLFW_USE_OPENGL)
     if (window->context.major >= 3)
     {
         int i;
@@ -605,7 +602,6 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
         }
     }
     else
-#endif // _GLFW_USE_OPENGL
     {
         // Check if extension is in the old style OpenGL extensions string
 

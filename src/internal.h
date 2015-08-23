@@ -46,32 +46,36 @@
  #error "You may not define any header option macros when compiling GLFW"
 #endif
 
-#if defined(_GLFW_USE_OPENGL)
- // This is the default for glfw3.h
-#elif defined(_GLFW_USE_GLESV1)
- #define GLFW_INCLUDE_ES1
-#elif defined(_GLFW_USE_GLESV2)
- #define GLFW_INCLUDE_ES2
-#else
- #error "No supported client library selected"
-#endif
-
-// Disable the inclusion of the platform glext.h by gl.h to allow proper
-// inclusion of our own, newer glext.h below
-#define GL_GLEXT_LEGACY
-
+#define GLFW_INCLUDE_NONE
 #include "../include/GLFW/glfw3.h"
 
-#if defined(_GLFW_USE_OPENGL)
- // This path may need to be changed if you build GLFW using your own setup
- // GLFW comes with its own copy of glext.h since it uses fairly new extensions
- // and not all development environments come with an up-to-date version
- #include "../deps/GL/glext.h"
-#endif
+#define GL_VERSION 0x1f02
+#define GL_NONE	0
+#define GL_COLOR_BUFFER_BIT	0x00004000
+#define GL_EXTENSIONS 0x1f03
+#define GL_NUM_EXTENSIONS 0x821d
+#define GL_CONTEXT_FLAGS 0x821e
+#define GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT 0x00000001
+#define GL_CONTEXT_FLAG_DEBUG_BIT 0x00000002
+#define GL_CONTEXT_PROFILE_MASK 0x9126
+#define GL_CONTEXT_COMPATIBILITY_PROFILE_BIT 0x00000002
+#define GL_CONTEXT_CORE_PROFILE_BIT 0x00000001
+#define GL_RESET_NOTIFICATION_STRATEGY_ARB 0x8256
+#define GL_LOSE_CONTEXT_ON_RESET_ARB 0x8252
+#define GL_NO_RESET_NOTIFICATION_ARB 0x8261
+#define GL_CONTEXT_RELEASE_BEHAVIOR 0x82fb
+#define GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH 0x82fc
+
+typedef int	GLint;
+typedef unsigned int GLuint;
+typedef unsigned int GLenum;
+typedef unsigned int GLbitfield;
+typedef unsigned char GLubyte;
 
 typedef void (APIENTRY * PFNGLCLEARPROC)(GLbitfield);
 typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGPROC)(GLenum);
 typedef void (APIENTRY * PFNGLGETINTEGERVPROC)(GLenum,GLint*);
+typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGIPROC)(GLenum,GLuint);
 
 typedef struct _GLFWwndconfig   _GLFWwndconfig;
 typedef struct _GLFWctxconfig   _GLFWctxconfig;

@@ -62,6 +62,10 @@ GLFW bundles a number of dependencies in the `deps/` directory.
 ## Changelog
 
    - Added `GLFW_TRUE` and `GLFW_FALSE` as client API independent boolean values
+   - Removed dependency on external OpenGL or OpenGL ES headers
+   - [WGL] Removed dependency on external WGL headers
+   - [GLX] Removed dependency on external GLX headers
+   - [EGL] Removed dependency on external EGL headers
 
 
 ## Contact

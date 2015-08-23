@@ -247,7 +247,6 @@ if (_GLFW_WGL)
 
     list(APPEND glfw_PKG_LIBS "-lopengl32")
 
-    list(APPEND glfw_INCLUDE_DIRS "${OPENGL_INCLUDE_DIR}")
     list(APPEND glfw_LIBRARIES "${OPENGL_gl_LIBRARY}")
 endif()
 
@@ -367,7 +366,6 @@ endif()
 #--------------------------------------------------------------------
 if (_GLFW_GLX)
 
-    list(APPEND glfw_INCLUDE_DIRS "${OPENGL_INCLUDE_DIR}")
     list(APPEND glfw_LIBRARIES "${OPENGL_gl_LIBRARY}")
 
     list(APPEND glfw_PKG_DEPS "gl")
@@ -390,15 +388,12 @@ if (_GLFW_EGL)
 
     if (_GLFW_USE_OPENGL)
         list(APPEND glfw_LIBRARIES "${OPENGL_gl_LIBRARY}")
-        list(APPEND glfw_INCLUDE_DIRS "${OPENGL_INCLUDE_DIR}")
         list(APPEND glfw_PKG_DEPS "gl")
     elseif (_GLFW_USE_GLESV1)
         list(APPEND glfw_LIBRARIES "${GLESv1_LIBRARY}")
-        list(APPEND glfw_INCLUDE_DIRS "${GLESv1_INCLUDE_DIR}")
         list(APPEND glfw_PKG_DEPS "glesv1_cm")
     elseif (_GLFW_USE_GLESV2)
         list(APPEND glfw_LIBRARIES "${GLESv2_LIBRARY}")
-        list(APPEND glfw_INCLUDE_DIRS "${GLESv2_INCLUDE_DIR}")
         list(APPEND glfw_PKG_DEPS "glesv2")
     endif()
 

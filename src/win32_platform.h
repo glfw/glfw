@@ -151,8 +151,8 @@ typedef struct _GLFWwindowWin32
 {
     HWND                handle;
 
-    GLboolean           cursorTracked;
-    GLboolean           iconified;
+    GLFWbool            cursorTracked;
+    GLFWbool            iconified;
 
     // The last received cursor position, regardless of source
     int                 cursorPosX, cursorPosY;
@@ -203,8 +203,8 @@ typedef struct _GLFWmonitorWin32
     WCHAR               displayName[32];
     char                publicAdapterName[64];
     char                publicDisplayName[64];
-    GLboolean           modesPruned;
-    GLboolean           modeChanged;
+    GLFWbool            modesPruned;
+    GLFWbool            modeChanged;
 
 } _GLFWmonitorWin32;
 
@@ -222,14 +222,14 @@ typedef struct _GLFWcursorWin32
 //
 typedef struct _GLFWtimeWin32
 {
-    GLboolean           hasPC;
+    GLFWbool            hasPC;
     double              resolution;
     unsigned __int64    base;
 
 } _GLFWtimeWin32;
 
 
-GLboolean _glfwRegisterWindowClass(void);
+GLFWbool _glfwRegisterWindowClass(void);
 void _glfwUnregisterWindowClass(void);
 
 BOOL _glfwIsCompositionEnabled(void);
@@ -239,7 +239,7 @@ char* _glfwCreateUTF8FromWideString(const WCHAR* source);
 
 void _glfwInitTimer(void);
 
-GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
+GLFWbool _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
 #endif // _glfw3_win32_platform_h_

@@ -207,17 +207,17 @@ int _glfwPlatformInit(void)
 
     _glfw.ns.eventSource = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
     if (!_glfw.ns.eventSource)
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     CGEventSourceSetLocalEventsSuppressionInterval(_glfw.ns.eventSource, 0.0);
 
     if (!_glfwInitContextAPI())
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     _glfwInitTimer();
     _glfwInitJoysticks();
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformTerminate(void)

@@ -102,9 +102,9 @@ static int getPixelFormatAttrib(_GLFWwindow* window, int pixelFormat, int attrib
 
 // Return a list of available and usable framebuffer configs
 //
-static GLboolean choosePixelFormat(_GLFWwindow* window,
-                                   const _GLFWfbconfig* desired,
-                                   int* result)
+static GLFWbool choosePixelFormat(_GLFWwindow* window,
+                                  const _GLFWfbconfig* desired,
+                                  int* result)
 {
     _GLFWfbconfig* usableConfigs;
     const _GLFWfbconfig* closest;
@@ -170,9 +170,9 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
             u->auxBuffers = getPixelFormatAttrib(window, n, WGL_AUX_BUFFERS_ARB);
 
             if (getPixelFormatAttrib(window, n, WGL_STEREO_ARB))
-                u->stereo = GL_TRUE;
+                u->stereo = GLFW_TRUE;
             if (getPixelFormatAttrib(window, n, WGL_DOUBLE_BUFFER_ARB))
-                u->doublebuffer = GL_TRUE;
+                u->doublebuffer = GLFW_TRUE;
 
             if (window->wgl.ARB_multisample)
                 u->samples = getPixelFormatAttrib(window, n, WGL_SAMPLES_ARB);
@@ -181,7 +181,7 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
                 window->wgl.EXT_framebuffer_sRGB)
             {
                 if (getPixelFormatAttrib(window, n, WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB))
-                    u->sRGB = GL_TRUE;
+                    u->sRGB = GLFW_TRUE;
             }
         }
         else
@@ -229,9 +229,9 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
             u->auxBuffers = pfd.cAuxBuffers;
 
             if (pfd.dwFlags & PFD_STEREO)
-                u->stereo = GL_TRUE;
+                u->stereo = GLFW_TRUE;
             if (pfd.dwFlags & PFD_DOUBLEBUFFER)
-                u->doublebuffer = GL_TRUE;
+                u->doublebuffer = GLFW_TRUE;
         }
 
         u->wgl = n;
@@ -244,7 +244,7 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
                         "WGL: The driver does not appear to support OpenGL");
 
         free(usableConfigs);
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     closest = _glfwChooseFBConfig(desired, usableConfigs, usableCount);
@@ -254,13 +254,13 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
                         "WGL: Failed to find a suitable pixel format");
 
         free(usableConfigs);
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     *result = closest->wgl;
     free(usableConfigs);
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 
@@ -273,13 +273,13 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
 int _glfwInitContextAPI(void)
 {
     if (!_glfwCreateContextTLS())
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     _glfw.wgl.opengl32.instance = LoadLibraryW(L"opengl32.dll");
     if (!_glfw.wgl.opengl32.instance)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "WGL: Failed to load opengl32.dll");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     _glfw.wgl.opengl32.CreateContext = (WGLCREATECONTEXT_T)
@@ -301,10 +301,10 @@ int _glfwInitContextAPI(void)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "WGL: Failed to load opengl32 functions");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 // Terminate WGL
@@ -343,24 +343,24 @@ int _glfwCreateContext(_GLFWwindow* window,
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "WGL: Failed to retrieve DC for window");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     if (!choosePixelFormat(window, fbconfig, &pixelFormat))
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     if (!DescribePixelFormat(window->wgl.dc, pixelFormat, sizeof(pfd), &pfd))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "WGL: Failed to retrieve PFD for selected pixel format");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     if (!SetPixelFormat(window->wgl.dc, pixelFormat, &pfd))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "WGL: Failed to set selected pixel format");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     if (window->wgl.ARB_create_context)
@@ -443,7 +443,7 @@ int _glfwCreateContext(_GLFWwindow* window,
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                             "WGL: Failed to create OpenGL context");
-            return GL_FALSE;
+            return GLFW_FALSE;
         }
     }
     else
@@ -453,7 +453,7 @@ int _glfwCreateContext(_GLFWwindow* window,
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                             "WGL: Failed to create OpenGL context");
-            return GL_FALSE;
+            return GLFW_FALSE;
         }
 
         if (share)
@@ -462,7 +462,7 @@ int _glfwCreateContext(_GLFWwindow* window,
             {
                 _glfwInputError(GLFW_PLATFORM_ERROR,
                                 "WGL: Failed to enable sharing with specified OpenGL context");
-                return GL_FALSE;
+                return GLFW_FALSE;
             }
         }
     }
@@ -470,7 +470,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     _glfwPlatformMakeContextCurrent(window);
     initWGLExtensions(window);
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 #undef setWGLattrib
@@ -498,7 +498,7 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
                         const _GLFWctxconfig* ctxconfig,
                         const _GLFWfbconfig* fbconfig)
 {
-    GLboolean required = GL_FALSE;
+    GLFWbool required = GLFW_FALSE;
 
     if (ctxconfig->api == GLFW_OPENGL_API)
     {
@@ -511,7 +511,7 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
                 return _GLFW_RECREATION_IMPOSSIBLE;
             }
 
-            required = GL_TRUE;
+            required = GLFW_TRUE;
         }
 
         if (ctxconfig->profile)
@@ -523,13 +523,13 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
                 return _GLFW_RECREATION_IMPOSSIBLE;
             }
 
-            required = GL_TRUE;
+            required = GLFW_TRUE;
         }
 
         if (ctxconfig->release)
         {
             if (window->wgl.ARB_context_flush_control)
-                required = GL_TRUE;
+                required = GLFW_TRUE;
         }
     }
     else
@@ -543,26 +543,26 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
             return _GLFW_RECREATION_IMPOSSIBLE;
         }
 
-        required = GL_TRUE;
+        required = GLFW_TRUE;
     }
 
     if (ctxconfig->major != 1 || ctxconfig->minor != 0)
     {
         if (window->wgl.ARB_create_context)
-            required = GL_TRUE;
+            required = GLFW_TRUE;
     }
 
     if (ctxconfig->debug)
     {
         if (window->wgl.ARB_create_context)
-            required = GL_TRUE;
+            required = GLFW_TRUE;
     }
 
     if (fbconfig->samples > 0)
     {
         // MSAA is not a hard constraint, so do nothing if it's not supported
         if (window->wgl.ARB_multisample && window->wgl.ARB_pixel_format)
-            required = GL_TRUE;
+            required = GLFW_TRUE;
     }
 
     if (fbconfig->sRGB)
@@ -572,7 +572,7 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
              window->wgl.EXT_framebuffer_sRGB) &&
             window->wgl.ARB_pixel_format)
         {
-            required = GL_TRUE;
+            required = GLFW_TRUE;
         }
     }
 
@@ -637,7 +637,7 @@ int _glfwPlatformExtensionSupported(const char* extension)
         if (extensions)
         {
             if (_glfwStringInExtensionString(extension, extensions))
-                return GL_TRUE;
+                return GLFW_TRUE;
         }
     }
 
@@ -647,11 +647,11 @@ int _glfwPlatformExtensionSupported(const char* extension)
         if (extensions)
         {
             if (_glfwStringInExtensionString(extension, extensions))
-                return GL_TRUE;
+                return GLFW_TRUE;
         }
     }
 
-    return GL_FALSE;
+    return GLFW_FALSE;
 }
 
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname)

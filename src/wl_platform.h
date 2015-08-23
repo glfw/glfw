@@ -60,7 +60,7 @@ typedef struct _GLFWvidmodeWayland _GLFWvidmodeWayland;
 typedef struct _GLFWwindowWayland
 {
     int                         width, height;
-    GLboolean                   visible;
+    GLFWbool                    visible;
     struct wl_surface*          surface;
     struct wl_egl_window*       native;
     struct wl_shell_surface*    shell_surface;
@@ -118,7 +118,7 @@ typedef struct _GLFWmonitorWayland
     _GLFWvidmodeWayland*        modes;
     int                         modesCount;
     int                         modesSize;
-    GLboolean                   done;
+    GLFWbool                    done;
 
     int                         x;
     int                         y;

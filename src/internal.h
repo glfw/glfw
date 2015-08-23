@@ -81,6 +81,8 @@ typedef struct _GLFWlibrary     _GLFWlibrary;
 typedef struct _GLFWmonitor     _GLFWmonitor;
 typedef struct _GLFWcursor      _GLFWcursor;
 
+typedef int GLFWbool;
+
 #if defined(_GLFW_COCOA)
  #include "cocoa_platform.h"
 #elif defined(_GLFW_WIN32)
@@ -166,12 +168,12 @@ struct _GLFWwndconfig
     int           width;
     int           height;
     const char*   title;
-    GLboolean     resizable;
-    GLboolean     visible;
-    GLboolean     decorated;
-    GLboolean     focused;
-    GLboolean     autoIconify;
-    GLboolean     floating;
+    GLFWbool      resizable;
+    GLFWbool      visible;
+    GLFWbool      decorated;
+    GLFWbool      focused;
+    GLFWbool      autoIconify;
+    GLFWbool      floating;
     _GLFWmonitor* monitor;
 };
 
@@ -187,8 +189,8 @@ struct _GLFWctxconfig
     int           api;
     int           major;
     int           minor;
-    GLboolean     forward;
-    GLboolean     debug;
+    GLFWbool      forward;
+    GLFWbool      debug;
     int           profile;
     int           robustness;
     int           release;
@@ -234,19 +236,19 @@ struct _GLFWwindow
     struct _GLFWwindow* next;
 
     // Window settings and state
-    GLboolean           resizable;
-    GLboolean           decorated;
-    GLboolean           autoIconify;
-    GLboolean           floating;
-    GLboolean           closed;
+    GLFWbool            resizable;
+    GLFWbool            decorated;
+    GLFWbool            autoIconify;
+    GLFWbool            floating;
+    GLFWbool            closed;
     void*               userPointer;
     GLFWvidmode         videoMode;
     _GLFWmonitor*       monitor;
     _GLFWcursor*        cursor;
 
     // Window input state
-    GLboolean           stickyKeys;
-    GLboolean           stickyMouseButtons;
+    GLFWbool            stickyKeys;
+    GLFWbool            stickyMouseButtons;
     double              cursorPosX, cursorPosY;
     int                 cursorMode;
     char                mouseButtons[GLFW_MOUSE_BUTTON_LAST + 1];
@@ -256,7 +258,7 @@ struct _GLFWwindow
     struct {
         int             api;
         int             major, minor, revision;
-        GLboolean       forward, debug;
+        GLFWbool        forward, debug;
         int             profile;
         int             robustness;
         int             release;
@@ -369,7 +371,7 @@ struct _GLFWlibrary
 
 /*! @brief Flag indicating whether GLFW has been successfully initialized.
  */
-extern GLboolean _glfwInitialized;
+extern GLFWbool _glfwInitialized;
 
 /*! @brief All global data protected by @ref _glfwInitialized.
  *  This should only be touched after a call to @ref glfwInit that has not been
@@ -383,7 +385,7 @@ extern _GLFWlibrary _glfw;
 //========================================================================
 
 /*! @brief Initializes the platform-specific part of the library.
- *  @return `GL_TRUE` if successful, or `GL_FALSE` if an error occurred.
+ *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if an error occurred.
  *  @ingroup platform
  */
 int _glfwPlatformInit(void);
@@ -427,11 +429,11 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count);
  *
  *  @param[in] first The first monitor.
  *  @param[in] second The second monitor.
- *  @return @c GL_TRUE if the monitor objects represent the same monitor, or @c
- *  GL_FALSE otherwise.
+ *  @return @c GLFW_TRUE if the monitor objects represent the same monitor, or
+ *  @c GLFW_FALSE otherwise.
  *  @ingroup platform
  */
-GLboolean _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second);
+GLFWbool _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second);
 
 /*! @copydoc glfwGetMonitorPos
  *  @ingroup platform
@@ -657,11 +659,11 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor);
 
 /*! @brief Notifies shared code of a window focus event.
  *  @param[in] window The window that received the event.
- *  @param[in] focused `GL_TRUE` if the window received focus, or `GL_FALSE`
+ *  @param[in] focused `GLFW_TRUE` if the window received focus, or `GLFW_FALSE`
  *  if it lost focus.
  *  @ingroup event
  */
-void _glfwInputWindowFocus(_GLFWwindow* window, GLboolean focused);
+void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused);
 
 /*! @brief Notifies shared code of a window movement event.
  *  @param[in] window The window that received the event.
@@ -689,8 +691,8 @@ void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height);
 
 /*! @brief Notifies shared code of a window iconification event.
  *  @param[in] window The window that received the event.
- *  @param[in] iconified `GL_TRUE` if the window was iconified, or `GL_FALSE`
- *  if it was restored.
+ *  @param[in] iconified `GLFW_TRUE` if the window was iconified, or
+ *  `GLFW_FALSE` if it was restored.
  *  @ingroup event
  */
 void _glfwInputWindowIconify(_GLFWwindow* window, int iconified);
@@ -720,8 +722,8 @@ void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int m
  *  @param[in] window The window that received the event.
  *  @param[in] codepoint The Unicode code point of the input character.
  *  @param[in] mods Bit field describing which modifier keys were held down.
- *  @param[in] plain `GL_TRUE` if the character is regular text input, or
- *  `GL_FALSE` otherwise.
+ *  @param[in] plain `GLFW_TRUE` if the character is regular text input, or
+ *  `GLFW_FALSE` otherwise.
  *  @ingroup event
  */
 void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint, int mods, int plain);
@@ -754,8 +756,8 @@ void _glfwInputCursorMotion(_GLFWwindow* window, double x, double y);
 
 /*! @brief Notifies shared code of a cursor enter/leave event.
  *  @param[in] window The window that received the event.
- *  @param[in] entered `GL_TRUE` if the cursor entered the client area of the
- *  window, or `GL_FALSE` if it left it.
+ *  @param[in] entered `GLFW_TRUE` if the cursor entered the client area of the
+ *  window, or `GLFW_FALSE` if it left it.
  *  @ingroup event
  */
 void _glfwInputCursorEnter(_GLFWwindow* window, int entered);
@@ -803,7 +805,7 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 /*! @brief Searches an extension string for the specified extension.
  *  @param[in] string The extension string to search.
  *  @param[in] extensions The extension to search for.
- *  @return `GL_TRUE` if the extension was found, or `GL_FALSE` otherwise.
+ *  @return `GLFW_TRUE` if the extension was found, or `GLFW_FALSE` otherwise.
  *  @ingroup utility
  */
 int _glfwStringInExtensionString(const char* string, const char* extensions);
@@ -822,14 +824,15 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
 
 /*! @brief Retrieves the attributes of the current context.
  *  @param[in] ctxconfig The desired context attributes.
- *  @return `GL_TRUE` if successful, or `GL_FALSE` if the context is unusable.
+ *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if the context is
+ *  unusable.
  *  @ingroup utility
  */
-GLboolean _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig);
+GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig);
 
 /*! @brief Checks whether the desired context attributes are valid.
  *  @param[in] ctxconfig The context attributes to check.
- *  @return `GL_TRUE` if the context attributes are valid, or `GL_FALSE`
+ *  @return `GLFW_TRUE` if the context attributes are valid, or `GLFW_FALSE`
  *  otherwise.
  *  @ingroup utility
  *
@@ -837,16 +840,16 @@ GLboolean _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig);
  *  exists and whether all relevant options have supported and non-conflicting
  *  values.
  */
-GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig);
+GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig);
 
 /*! @brief Checks whether the current context fulfils the specified hard
  *  constraints.
  *  @param[in] ctxconfig The desired context attributes.
- *  @return `GL_TRUE` if the context fulfils the hard constraints, or `GL_FALSE`
- *  otherwise.
+ *  @return `GLFW_TRUE` if the context fulfils the hard constraints, or
+ *  `GLFW_FALSE` otherwise.
  *  @ingroup utility
  */
-GLboolean _glfwIsValidContext(const _GLFWctxconfig* ctxconfig);
+GLFWbool _glfwIsValidContext(const _GLFWctxconfig* ctxconfig);
 
 /*! @ingroup utility
  */

@@ -66,7 +66,7 @@ void _glfwInitTimer(void)
 
     if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0)
     {
-        _glfw.posix_time.monotonic = GL_TRUE;
+        _glfw.posix_time.monotonic = GLFW_TRUE;
         _glfw.posix_time.resolution = 1e-9;
     }
     else

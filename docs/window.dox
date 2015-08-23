@@ -298,12 +298,12 @@ extension.
 
 Window hint                     | Default value               | Supported values
 ------------------------------- | --------------------------- | ----------------
-`GLFW_RESIZABLE`                | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE`
-`GLFW_VISIBLE`                  | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE`
-`GLFW_DECORATED`                | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE`
-`GLFW_FOCUSED`                  | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE`
-`GLFW_AUTO_ICONIFY`             | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE`
-`GLFW_FLOATING`                 | `GL_FALSE`                  | `GL_TRUE` or `GL_FALSE`
+`GLFW_RESIZABLE`                | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+`GLFW_VISIBLE`                  | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+`GLFW_DECORATED`                | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+`GLFW_FOCUSED`                  | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+`GLFW_AUTO_ICONIFY`             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+`GLFW_FLOATING`                 | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 `GLFW_RED_BITS`                 | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 `GLFW_GREEN_BITS`               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 `GLFW_BLUE_BITS`                | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
@@ -317,16 +317,16 @@ Window hint                     | Default value               | Supported values
 `GLFW_AUX_BUFFERS`              | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 `GLFW_SAMPLES`                  | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 `GLFW_REFRESH_RATE`             | `GLFW_DONT_CARE`            | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-`GLFW_STEREO`                   | `GL_FALSE`                  | `GL_TRUE` or `GL_FALSE`
-`GLFW_SRGB_CAPABLE`             | `GL_FALSE`                  | `GL_TRUE` or `GL_FALSE`
-`GLFW_DOUBLEBUFFER`             | `GL_TRUE`                   | `GL_TRUE` or `GL_FALSE`
+`GLFW_STEREO`                   | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+`GLFW_SRGB_CAPABLE`             | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+`GLFW_DOUBLEBUFFER`             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 `GLFW_CLIENT_API`               | `GLFW_OPENGL_API`           | `GLFW_OPENGL_API` or `GLFW_OPENGL_ES_API`
 `GLFW_CONTEXT_VERSION_MAJOR`    | 1                           | Any valid major version number of the chosen client API
 `GLFW_CONTEXT_VERSION_MINOR`    | 0                           | Any valid minor version number of the chosen client API
 `GLFW_CONTEXT_ROBUSTNESS`       | `GLFW_NO_ROBUSTNESS`        | `GLFW_NO_ROBUSTNESS`, `GLFW_NO_RESET_NOTIFICATION` or `GLFW_LOSE_CONTEXT_ON_RESET`
 `GLFW_CONTEXT_RELEASE_BEHAVIOR` | `GLFW_ANY_RELEASE_BEHAVIOR` | `GLFW_ANY_RELEASE_BEHAVIOR`, `GLFW_RELEASE_BEHAVIOR_FLUSH` or `GLFW_RELEASE_BEHAVIOR_NONE`
-`GLFW_OPENGL_FORWARD_COMPAT`    | `GL_FALSE`                  | `GL_TRUE` or `GL_FALSE`
-`GLFW_OPENGL_DEBUG_CONTEXT`     | `GL_FALSE`                  | `GL_TRUE` or `GL_FALSE`
+`GLFW_OPENGL_FORWARD_COMPAT`    | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+`GLFW_OPENGL_DEBUG_CONTEXT`     | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 `GLFW_OPENGL_PROFILE`           | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE`
 
 
@@ -383,7 +383,7 @@ again unless certain conditions are met.
 void window_close_callback(GLFWwindow* window)
 {
     if (!time_to_close)
-        glfwSetWindowShouldClose(window, GL_FALSE);
+        glfwSetWindowShouldClose(window, GLFW_FALSE);
 }
 @endcode
 
@@ -746,11 +746,11 @@ either `GLFW_OPENGL_API` or `GLFW_OPENGL_ES_API`.
 `GLFW_CONTEXT_VERSION_MAJOR`, `GLFW_CONTEXT_VERSION_MINOR` and
 `GLFW_CONTEXT_REVISION` indicate the client API version of the window's context.
 
-`GLFW_OPENGL_FORWARD_COMPAT` is `GL_TRUE` if the window's context is an OpenGL
-forward-compatible one, or `GL_FALSE` otherwise.
+`GLFW_OPENGL_FORWARD_COMPAT` is `GLFW_TRUE` if the window's context is an OpenGL
+forward-compatible one, or `GLFW_FALSE` otherwise.
 
-`GLFW_OPENGL_DEBUG_CONTEXT` is `GL_TRUE` if the window's context is an OpenGL
-debug context, or `GL_FALSE` otherwise.
+`GLFW_OPENGL_DEBUG_CONTEXT` is `GLFW_TRUE` if the window's context is an OpenGL
+debug context, or `GLFW_FALSE` otherwise.
 
 `GLFW_OPENGL_PROFILE` indicates the OpenGL profile used by the context.  This is
 `GLFW_OPENGL_CORE_PROFILE` or `GLFW_OPENGL_COMPAT_PROFILE` if the context uses

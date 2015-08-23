@@ -60,14 +60,14 @@ BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
 
 // Load necessary libraries (DLLs)
 //
-static GLboolean initLibraries(void)
+static GLFWbool initLibraries(void)
 {
     _glfw.win32.winmm.instance = LoadLibraryW(L"winmm.dll");
     if (!_glfw.win32.winmm.instance)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Win32: Failed to load winmm.dll");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     _glfw.win32.winmm.joyGetDevCaps = (JOYGETDEVCAPS_T)
@@ -86,7 +86,7 @@ static GLboolean initLibraries(void)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Win32: Failed to load winmm functions");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     _glfw.win32.user32.instance = LoadLibraryW(L"user32.dll");
@@ -107,7 +107,7 @@ static GLboolean initLibraries(void)
             GetProcAddress(_glfw.win32.dwmapi.instance, "DwmFlush");
     }
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 // Unload used libraries (DLLs)
@@ -332,7 +332,7 @@ int _glfwPlatformInit(void)
                           SPIF_SENDCHANGE);
 
     if (!initLibraries())
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     createKeyTables();
 
@@ -340,15 +340,15 @@ int _glfwPlatformInit(void)
         _glfw_SetProcessDPIAware();
 
     if (!_glfwRegisterWindowClass())
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     if (!_glfwInitContextAPI())
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     _glfwInitTimer();
     _glfwInitJoysticks();
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformTerminate(void)

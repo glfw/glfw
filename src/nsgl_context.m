@@ -36,7 +36,7 @@
 int _glfwInitContextAPI(void)
 {
     if (!_glfwCreateContextTLS())
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     _glfw.nsgl.framework =
         CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
@@ -44,10 +44,10 @@ int _glfwInitContextAPI(void)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
                         "NSGL: Failed to locate OpenGL framework");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 // Terminate OpenGL support
@@ -69,7 +69,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
                         "NSGL: OpenGL ES is not available on OS X");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
@@ -77,7 +77,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "NSGL: The targeted version of OS X does not support OpenGL 3.0 or 3.1");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     if (ctxconfig->major > 2)
@@ -86,14 +86,14 @@ int _glfwCreateContext(_GLFWwindow* window,
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                             "NSGL: The targeted version of OS X only supports forward-compatible contexts for OpenGL 3.2 and above");
-            return GL_FALSE;
+            return GLFW_FALSE;
         }
 
         if (ctxconfig->profile != GLFW_OPENGL_CORE_PROFILE)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                             "NSGL: The targeted version of OS X only supports core profile contexts for OpenGL 3.2 and above");
-            return GL_FALSE;
+            return GLFW_FALSE;
         }
     }
 #else
@@ -102,7 +102,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "NSGL: The targeted version of OS X does not support OpenGL version 3.0 or above");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
@@ -213,7 +213,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "NSGL: Failed to find a suitable pixel format");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     NSOpenGLContext* share = NULL;
@@ -228,10 +228,10 @@ int _glfwCreateContext(_GLFWwindow* window,
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "NSGL: Failed to create OpenGL context");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 // Destroy the OpenGL context
@@ -277,7 +277,7 @@ void _glfwPlatformSwapInterval(int interval)
 int _glfwPlatformExtensionSupported(const char* extension)
 {
     // There are no NSGL extensions
-    return GL_FALSE;
+    return GLFW_FALSE;
 }
 
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname)

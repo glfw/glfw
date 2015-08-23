@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static volatile GLboolean running = GL_TRUE;
+static volatile int running = GLFW_TRUE;
 
 static void error_callback(int error, const char* description)
 {
@@ -61,7 +61,7 @@ static int thread_main(void* data)
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GL_TRUE);
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
 static float nrand(void)
@@ -116,7 +116,7 @@ int main(void)
         glfwWaitEvents();
 
         if (glfwWindowShouldClose(window))
-            running = GL_FALSE;
+            running = GLFW_FALSE;
     }
 
     glfwHideWindow(window);

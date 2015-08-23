@@ -60,17 +60,17 @@ static int compareVideoModes(const void* firstPtr, const void* secondPtr)
 
 // Retrieves the available modes for the specified monitor
 //
-static int refreshVideoModes(_GLFWmonitor* monitor)
+static GLFWbool refreshVideoModes(_GLFWmonitor* monitor)
 {
     int modeCount;
     GLFWvidmode* modes;
 
     if (monitor->modes)
-        return GL_TRUE;
+        return GLFW_TRUE;
 
     modes = _glfwPlatformGetVideoModes(monitor, &modeCount);
     if (!modes)
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     qsort(modes, modeCount, sizeof(GLFWvidmode), compareVideoModes);
 
@@ -78,7 +78,7 @@ static int refreshVideoModes(_GLFWmonitor* monitor)
     monitor->modes = modes;
     monitor->modeCount = modeCount;
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 

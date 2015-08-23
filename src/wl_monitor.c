@@ -90,7 +90,7 @@ static void done(void* data,
 {
     struct _GLFWmonitor *monitor = data;
 
-    monitor->wl.done = GL_TRUE;
+    monitor->wl.done = GLFW_TRUE;
 }
 
 static void scale(void* data,
@@ -195,7 +195,7 @@ err:
     return NULL;
 }
 
-GLboolean _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
+GLFWbool _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
 {
     return first->wl.output == second->wl.output;
 }

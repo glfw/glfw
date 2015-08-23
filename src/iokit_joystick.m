@@ -286,7 +286,7 @@ static void matchCallback(void* context,
     if (joy > GLFW_JOYSTICK_LAST)
         return;
 
-    joystick->present = GL_TRUE;
+    joystick->present = GLFW_TRUE;
     joystick->deviceRef = deviceRef;
 
     CFStringRef name = IOHIDDeviceGetProperty(deviceRef,

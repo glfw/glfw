@@ -61,6 +61,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
 
 ## Changelog
 
+   - Added `GLFW_TRUE` and `GLFW_FALSE` as client API independent boolean values
+
 
 ## Contact
 

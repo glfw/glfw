@@ -91,7 +91,7 @@ typedef struct {float x; float y; float z;} vertex_t;
 int width, height;
 GLfloat deg_rot_y       = 0.f;
 GLfloat deg_rot_y_inc   = 2.f;
-GLboolean override_pos  = GL_FALSE;
+int override_pos        = GLFW_FALSE;
 GLfloat cursor_x        = 0.f;
 GLfloat cursor_y        = 0.f;
 GLfloat ball_x          = -RADIUS;
@@ -236,7 +236,7 @@ void reshape( GLFWwindow* window, int w, int h )
 void key_callback( GLFWwindow* window, int key, int scancode, int action, int mods )
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GL_TRUE);
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
 static void set_ball_pos ( GLfloat x, GLfloat y )
@@ -252,12 +252,12 @@ void mouse_button_callback( GLFWwindow* window, int button, int action, int mods
 
    if (action == GLFW_PRESS)
    {
-      override_pos = GL_TRUE;
+      override_pos = GLFW_TRUE;
       set_ball_pos(cursor_x, cursor_y);
    }
    else
    {
-      override_pos = GL_FALSE;
+      override_pos = GLFW_FALSE;
    }
 }
 

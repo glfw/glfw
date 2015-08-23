@@ -35,7 +35,7 @@
 //
 typedef struct _GLFWtlsWin32
 {
-    GLboolean       allocated;
+    GLFWbool        allocated;
     DWORD           context;
 
 } _GLFWtlsWin32;

@@ -214,6 +214,24 @@ extern "C" {
 #define GLFW_VERSION_REVISION       0
 /*! @} */
 
+/*! @name Boolean values
+ *  @{ */
+/*! @brief One.
+ *
+ *  One.  Seriously.  You don't _need_ to use this symbol in your code.  It's
+ *  just semantic sugar for the number 1.  You can use `1` or `true` or `_True`
+ *  or `GL_TRUE` or whatever you want.
+ */
+#define GLFW_TRUE                   1
+/*! @brief Zero.
+ *
+ *  Zero.  Seriously.  You don't _need_ to use this symbol in your code.  It's
+ *  just just semantic sugar for the number 0.  You can use `0` or `false` or
+ *  `_False` or `GL_FALSE` or whatever you want.
+ */
+#define GLFW_FALSE                  0
+/*! @} */
+
 /*! @name Key and button actions
  *  @{ */
 /*! @brief The key or mouse button was released.
@@ -801,8 +819,8 @@ typedef void (* GLFWwindowrefreshfun)(GLFWwindow*);
  *  This is the function signature for window focus callback functions.
  *
  *  @param[in] window The window that gained or lost input focus.
- *  @param[in] focused `GL_TRUE` if the window was given input focus, or
- *  `GL_FALSE` if it lost it.
+ *  @param[in] focused `GLFW_TRUE` if the window was given input focus, or
+ *  `GLFW_FALSE` if it lost it.
  *
  *  @sa glfwSetWindowFocusCallback
  *
@@ -816,8 +834,8 @@ typedef void (* GLFWwindowfocusfun)(GLFWwindow*,int);
  *  functions.
  *
  *  @param[in] window The window that was iconified or restored.
- *  @param[in] iconified `GL_TRUE` if the window was iconified, or `GL_FALSE`
- *  if it was restored.
+ *  @param[in] iconified `GLFW_TRUE` if the window was iconified, or
+ *  `GLFW_FALSE` if it was restored.
  *
  *  @sa glfwSetWindowIconifyCallback
  *
@@ -876,8 +894,8 @@ typedef void (* GLFWcursorposfun)(GLFWwindow*,double,double);
  *  This is the function signature for cursor enter/leave callback functions.
  *
  *  @param[in] window The window that received the event.
- *  @param[in] entered `GL_TRUE` if the cursor entered the window's client
- *  area, or `GL_FALSE` if it left it.
+ *  @param[in] entered `GLFW_TRUE` if the cursor entered the window's client
+ *  area, or `GLFW_FALSE` if it left it.
  *
  *  @sa glfwSetCursorEnterCallback
  *
@@ -1057,9 +1075,9 @@ typedef struct GLFWimage
  *  succeeds, you should call @ref glfwTerminate before the application exits.
  *
  *  Additional calls to this function after successful initialization but before
- *  termination will return `GL_TRUE` immediately.
+ *  termination will return `GLFW_TRUE` immediately.
  *
- *  @return `GL_TRUE` if successful, or `GL_FALSE` if an
+ *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if an
  *  [error](@ref error_handling) occurred.
  *
  *  @remarks __OS X:__ This function will change the current directory of the
@@ -2420,20 +2438,20 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *    and unlimited cursor movement.  This is useful for implementing for
  *    example 3D camera controls.
  *
- *  If the mode is `GLFW_STICKY_KEYS`, the value must be either `GL_TRUE` to
- *  enable sticky keys, or `GL_FALSE` to disable it.  If sticky keys are
+ *  If the mode is `GLFW_STICKY_KEYS`, the value must be either `GLFW_TRUE` to
+ *  enable sticky keys, or `GLFW_FALSE` to disable it.  If sticky keys are
  *  enabled, a key press will ensure that @ref glfwGetKey returns `GLFW_PRESS`
  *  the next time it is called even if the key had been released before the
  *  call.  This is useful when you are only interested in whether keys have been
  *  pressed but not when or in which order.
  *
  *  If the mode is `GLFW_STICKY_MOUSE_BUTTONS`, the value must be either
- *  `GL_TRUE` to enable sticky mouse buttons, or `GL_FALSE` to disable it.  If
- *  sticky mouse buttons are enabled, a mouse button press will ensure that @ref
- *  glfwGetMouseButton returns `GLFW_PRESS` the next time it is called even if
- *  the mouse button had been released before the call.  This is useful when you
- *  are only interested in whether mouse buttons have been pressed but not when
- *  or in which order.
+ *  `GLFW_TRUE` to enable sticky mouse buttons, or `GLFW_FALSE` to disable it.
+ *  If sticky mouse buttons are enabled, a mouse button press will ensure that
+ *  @ref glfwGetMouseButton returns `GLFW_PRESS` the next time it is called even
+ *  if the mouse button had been released before the call.  This is useful when
+ *  you are only interested in whether mouse buttons have been pressed but not
+ *  when or in which order.
  *
  *  @param[in] window The window whose input mode to set.
  *  @param[in] mode One of `GLFW_CURSOR`, `GLFW_STICKY_KEYS` or
@@ -2957,7 +2975,7 @@ GLFWAPI GLFWdropfun glfwSetDropCallback(GLFWwindow* window, GLFWdropfun cbfun);
  *  This function returns whether the specified joystick is present.
  *
  *  @param[in] joy The [joystick](@ref joysticks) to query.
- *  @return `GL_TRUE` if the joystick is present, or `GL_FALSE` otherwise.
+ *  @return `GLFW_TRUE` if the joystick is present, or `GLFW_FALSE` otherwise.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -3279,7 +3297,8 @@ GLFWAPI void glfwSwapInterval(int interval);
  *  a context, so there is no danger in doing this.
  *
  *  @param[in] extension The ASCII encoded name of the extension.
- *  @return `GL_TRUE` if the extension is available, or `GL_FALSE` otherwise.
+ *  @return `GLFW_TRUE` if the extension is available, or `GLFW_FALSE`
+ *  otherwise.
  *
  *  @par Thread Safety
  *  This function may be called from any thread.

@@ -36,7 +36,7 @@
 
 #include "getopt.h"
 
-static GLboolean swap_tear;
+static int swap_tear;
 static int swap_interval;
 static double frame_rate;
 
@@ -118,7 +118,7 @@ int main(int argc, char** argv)
     float position;
     unsigned long frame_count = 0;
     double last_time, current_time;
-    GLboolean fullscreen = GL_FALSE;
+    int fullscreen = GLFW_FALSE;
     GLFWmonitor* monitor = NULL;
     GLFWwindow* window;
 
@@ -131,7 +131,7 @@ int main(int argc, char** argv)
                 exit(EXIT_SUCCESS);
 
             case 'f':
-                fullscreen = GL_TRUE;
+                fullscreen = GLFW_TRUE;
                 break;
         }
     }

@@ -38,10 +38,10 @@ int _glfwCreateContextTLS(void)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "POSIX: Failed to create context TLS");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 void _glfwDestroyContextTLS(void)

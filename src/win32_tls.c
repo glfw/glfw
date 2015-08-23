@@ -39,11 +39,11 @@ int _glfwCreateContextTLS(void)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Win32: Failed to allocate TLS index");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
-    _glfw.win32_tls.allocated = GL_TRUE;
-    return GL_TRUE;
+    _glfw.win32_tls.allocated = GLFW_TRUE;
+    return GLFW_TRUE;
 }
 
 void _glfwDestroyContextTLS(void)

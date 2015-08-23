@@ -219,7 +219,7 @@ void key( GLFWwindow* window, int k, int s, int action, int mods )
       view_rotz += 5.0;
     break;
   case GLFW_KEY_ESCAPE:
-    glfwSetWindowShouldClose(window, GL_TRUE);
+    glfwSetWindowShouldClose(window, GLFW_TRUE);
     break;
   case GLFW_KEY_UP:
     view_rotx += 5.0;

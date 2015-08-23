@@ -64,7 +64,7 @@ contexts with hidden windows can be created with the
 [GLFW_VISIBLE](@ref window_hints_wnd) window hint.
 
 @code
-glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
 GLFWwindow* offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
 @endcode
@@ -271,8 +271,8 @@ if (glfwExtensionSupported("GL_ARB_debug_output"))
 @endcode
 
 The argument is a null terminated ASCII string with the extension name.  If the
-extension is supported, @ref glfwExtensionSupported returns `GL_TRUE`, otherwise
-it returns `GL_FALSE`.
+extension is supported, @ref glfwExtensionSupported returns `GLFW_TRUE`,
+otherwise it returns `GLFW_FALSE`.
 
 
 @subsubsection context_glext_proc Fetching function pointers

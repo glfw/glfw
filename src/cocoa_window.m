@@ -66,10 +66,10 @@ static void centerCursor(_GLFWwindow *window)
 
 // Enter full screen mode
 //
-static GLboolean enterFullscreenMode(_GLFWwindow* window)
+static GLFWbool enterFullscreenMode(_GLFWwindow* window)
 {
     GLFWvidmode mode;
-    GLboolean status;
+    GLFWbool status;
     int xpos, ypos;
 
     status = _glfwSetVideoMode(window->monitor, &window->videoMode);
@@ -207,7 +207,7 @@ static int translateKey(unsigned int key)
     if (window->monitor)
         leaveFullscreenMode(window);
 
-    _glfwInputWindowIconify(window, GL_TRUE);
+    _glfwInputWindowIconify(window, GLFW_TRUE);
 }
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification
@@ -215,7 +215,7 @@ static int translateKey(unsigned int key)
     if (window->monitor)
         enterFullscreenMode(window);
 
-    _glfwInputWindowIconify(window, GL_FALSE);
+    _glfwInputWindowIconify(window, GLFW_FALSE);
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
@@ -226,7 +226,7 @@ static int translateKey(unsigned int key)
         centerCursor(window);
     }
 
-    _glfwInputWindowFocus(window, GL_TRUE);
+    _glfwInputWindowFocus(window, GLFW_TRUE);
     _glfwPlatformSetCursorMode(window, window->cursorMode);
 }
 
@@ -235,7 +235,7 @@ static int translateKey(unsigned int key)
     if (window->monitor && window->autoIconify)
         _glfwPlatformIconifyWindow(window);
 
-    _glfwInputWindowFocus(window, GL_FALSE);
+    _glfwInputWindowFocus(window, GLFW_FALSE);
 }
 
 @end
@@ -440,12 +440,12 @@ static int translateKey(unsigned int key)
 
 - (void)mouseExited:(NSEvent *)event
 {
-    _glfwInputCursorEnter(window, GL_FALSE);
+    _glfwInputCursorEnter(window, GLFW_FALSE);
 }
 
 - (void)mouseEntered:(NSEvent *)event
 {
-    _glfwInputCursorEnter(window, GL_TRUE);
+    _glfwInputCursorEnter(window, GLFW_TRUE);
 }
 
 - (void)viewDidChangeBackingProperties
@@ -782,10 +782,10 @@ static void createMenuBar(void)
 
 // Initialize the Cocoa Application Kit
 //
-static GLboolean initializeAppKit(void)
+static GLFWbool initializeAppKit(void)
 {
     if (NSApp)
-        return GL_TRUE;
+        return GLFW_TRUE;
 
     // Implicitly create shared NSApplication instance
     [GLFWApplication sharedApplication];
@@ -807,26 +807,26 @@ static GLboolean initializeAppKit(void)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Cocoa: Failed to create application delegate");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     [NSApp setDelegate:_glfw.ns.delegate];
     [NSApp run];
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 // Create the Cocoa window
 //
-static GLboolean createWindow(_GLFWwindow* window,
-                              const _GLFWwndconfig* wndconfig)
+static GLFWbool createWindow(_GLFWwindow* window,
+                             const _GLFWwndconfig* wndconfig)
 {
     window->ns.delegate = [[GLFWWindowDelegate alloc] initWithGlfwWindow:window];
     if (window->ns.delegate == nil)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Cocoa: Failed to create window delegate");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     unsigned int styleMask = 0;
@@ -866,7 +866,7 @@ static GLboolean createWindow(_GLFWwindow* window,
     if (window->ns.object == nil)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Cocoa: Failed to create window");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
@@ -908,7 +908,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         [window->ns.object setRestorable:NO];
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 
@@ -922,13 +922,13 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWfbconfig* fbconfig)
 {
     if (!initializeAppKit())
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     if (!createWindow(window, wndconfig))
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     if (!_glfwCreateContext(window, ctxconfig, fbconfig))
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     [window->nsgl.context setView:window->ns.view];
 
@@ -936,10 +936,10 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     {
         _glfwPlatformShowWindow(window);
         if (!enterFullscreenMode(window))
-            return GL_FALSE;
+            return GLFW_FALSE;
     }
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
@@ -1196,7 +1196,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     NSBitmapImageRep* rep;
 
     if (!initializeAppKit())
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     rep = [[NSBitmapImageRep alloc]
         initWithBitmapDataPlanes:NULL
@@ -1212,7 +1212,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                     bitsPerPixel:32];
 
     if (rep == nil)
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     memcpy([rep bitmapData], image->pixels, image->width * image->height * 4);
 
@@ -1226,26 +1226,26 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     [rep release];
 
     if (cursor->ns.object == nil)
-        return GL_FALSE;
+        return GLFW_FALSE;
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
     if (!initializeAppKit())
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     cursor->ns.object = getStandardCursor(shape);
     if (!cursor->ns.object)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Cocoa: Failed to retrieve standard cursor");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     [cursor->ns.object retain];
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)

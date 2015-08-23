@@ -47,7 +47,7 @@
 
 // Change the current video mode
 //
-GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
+GLFWbool _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 {
     GLFWvidmode current;
     const GLFWvidmode* best;
@@ -56,7 +56,7 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
     best = _glfwChooseVideoMode(monitor, desired);
     _glfwPlatformGetVideoMode(monitor, &current);
     if (_glfwCompareVideoModes(&current, best) == 0)
-        return GL_TRUE;
+        return GLFW_TRUE;
 
     ZeroMemory(&dm, sizeof(dm));
     dm.dmSize = sizeof(DEVMODEW);
@@ -77,11 +77,11 @@ GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
                                  NULL) != DISP_CHANGE_SUCCESSFUL)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to set video mode");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
-    monitor->win32.modeChanged = GL_TRUE;
-    return GL_TRUE;
+    monitor->win32.modeChanged = GLFW_TRUE;
+    return GLFW_TRUE;
 }
 
 // Restore the previously saved (original) video mode
@@ -92,7 +92,7 @@ void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
     {
         ChangeDisplaySettingsExW(monitor->win32.adapterName,
                                  NULL, NULL, CDS_FULLSCREEN, NULL);
-        monitor->win32.modeChanged = GL_FALSE;
+        monitor->win32.modeChanged = GLFW_FALSE;
     }
 }
 
@@ -153,7 +153,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             free(name);
 
             if (adapter.StateFlags & DISPLAY_DEVICE_MODESPRUNED)
-                monitor->win32.modesPruned = GL_TRUE;
+                monitor->win32.modesPruned = GLFW_TRUE;
 
             wcscpy(monitor->win32.adapterName, adapter.DeviceName);
             wcscpy(monitor->win32.displayName, display.DeviceName);
@@ -186,7 +186,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     return monitors;
 }
 
-GLboolean _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
+GLFWbool _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
 {
     return wcscmp(first->win32.displayName, second->win32.displayName) == 0;
 }

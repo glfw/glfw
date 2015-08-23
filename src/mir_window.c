@@ -44,9 +44,9 @@ static void deleteNode(EventQueue* queue, EventNode* node)
     free(node);
 }
 
-static int emptyEventQueue(EventQueue* queue)
+static GLFWbool emptyEventQueue(EventQueue* queue)
 {
-    return queue->head.tqh_first == NULL ? GL_TRUE : GL_FALSE;
+    return queue->head.tqh_first == NULL;
 }
 
 // TODO The mir_event_ref is not supposed to be used but ... its needed
@@ -385,7 +385,7 @@ static void addNewEvent(MirSurface* surface, const MirEvent* event, void* contex
     enqueueEvent(event, context);
 }
 
-static int createSurface(_GLFWwindow* window)
+static GLFWbool createSurface(_GLFWwindow* window)
 {
     MirSurfaceSpec* spec;
     MirBufferUsage buffer_usage = mir_buffer_usage_hardware;
@@ -395,7 +395,7 @@ static int createSurface(_GLFWwindow* window)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Mir: Unable to find a correct pixel format");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
  
     spec = mir_connection_create_spec_for_normal_surface(_glfw.mir.connection,
@@ -415,12 +415,12 @@ static int createSurface(_GLFWwindow* window)
                         "Mir: Unable to create surface: %s",
                         mir_surface_get_error_message(window->mir.surface));
 
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     mir_surface_set_event_handler(window->mir.surface, addNewEvent, window);
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -463,7 +463,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWfbconfig* fbconfig)
 {
     if (!_glfwCreateContext(window, ctxconfig, fbconfig))
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     if (wndconfig->monitor)
     {
@@ -478,7 +478,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                             "Mir: Requested surface size too large: %ix%i",
                             wndconfig->width, wndconfig->height);
 
-            return GL_FALSE;
+            return GLFW_FALSE;
         }
     }
 
@@ -486,12 +486,12 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     window->mir.height = wndconfig->height;
 
     if (!createSurface(window))
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     window->mir.window = mir_buffer_stream_get_egl_native_window(
                                    mir_surface_get_buffer_stream(window->mir.surface));
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
@@ -599,14 +599,14 @@ int _glfwPlatformWindowFocused(_GLFWwindow* window)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
-    return GL_FALSE;
+    return GLFW_FALSE;
 }
 
 int _glfwPlatformWindowIconified(_GLFWwindow* window)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
-    return GL_FALSE;
+    return GLFW_FALSE;
 }
 
 int _glfwPlatformWindowVisible(_GLFWwindow* window)
@@ -664,7 +664,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Mir: Unable to find a correct pixel format");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     stream = mir_connection_create_buffer_stream_sync(_glfw.mir.connection,
@@ -699,7 +699,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
     cursor->mir.custom_cursor = stream;
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 const char* getSystemCursorName(int shape)
@@ -732,10 +732,10 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
         cursor->mir.conf          = mir_cursor_configuration_from_name(cursor_name);
         cursor->mir.custom_cursor = NULL;
 
-        return GL_TRUE;
+        return GLFW_TRUE;
     }
 
-    return GL_FALSE;
+    return GLFW_FALSE;
 }
 
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)

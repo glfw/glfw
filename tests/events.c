@@ -506,7 +506,7 @@ int main(int argc, char** argv)
     {
         char title[128];
 
-        slots[i].closeable = GL_TRUE;
+        slots[i].closeable = GLFW_TRUE;
         slots[i].number = i + 1;
 
         sprintf(title, "Event Linter (Window %i)", slots[i].number);

@@ -323,20 +323,20 @@ static void createKeyTables(void)
 
 // Check whether the IM has a usable style
 //
-static GLboolean hasUsableInputMethodStyle(void)
+static GLFWbool hasUsableInputMethodStyle(void)
 {
     unsigned int i;
-    GLboolean found = GL_FALSE;
+    GLFWbool found = GLFW_FALSE;
     XIMStyles* styles = NULL;
 
     if (XGetIMValues(_glfw.x11.im, XNQueryInputStyle, &styles, NULL) != NULL)
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     for (i = 0;  i < styles->count_styles;  i++)
     {
         if (styles->supported_styles[i] == (XIMPreeditNothing | XIMStatusNothing))
         {
-            found = GL_TRUE;
+            found = GLFW_TRUE;
             break;
         }
     }
@@ -463,7 +463,7 @@ static void detectEWMH(void)
 
 // Initialize X11 display and look for supported X11 extensions
 //
-static GLboolean initExtensions(void)
+static GLFWbool initExtensions(void)
 {
     // Find or create window manager atoms
     _glfw.x11.WM_PROTOCOLS = XInternAtom(_glfw.x11.display,
@@ -501,12 +501,12 @@ static GLboolean initExtensions(void)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "X11: Failed to query RandR version");
-            return GL_FALSE;
+            return GLFW_FALSE;
         }
 
         // The GLFW RandR path requires at least version 1.3
         if (_glfw.x11.randr.major == 1 && _glfw.x11.randr.minor < 3)
-            _glfw.x11.randr.available = GL_FALSE;
+            _glfw.x11.randr.available = GLFW_FALSE;
 
         sr = XRRGetScreenResources(_glfw.x11.display, _glfw.x11.root);
 
@@ -518,7 +518,7 @@ static GLboolean initExtensions(void)
             // available
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "X11: RandR gamma ramp support seems broken");
-            _glfw.x11.randr.gammaBroken = GL_TRUE;
+            _glfw.x11.randr.gammaBroken = GLFW_TRUE;
         }
 
         XRRFreeScreenResources(sr);
@@ -529,7 +529,7 @@ static GLboolean initExtensions(void)
                                &_glfw.x11.xinerama.minor))
     {
         if (XineramaIsActive(_glfw.x11.display))
-            _glfw.x11.xinerama.available = GL_TRUE;
+            _glfw.x11.xinerama.available = GLFW_TRUE;
     }
 
 #if defined(_GLFW_HAS_XINPUT)
@@ -546,7 +546,7 @@ static GLboolean initExtensions(void)
                            &_glfw.x11.xi.major,
                            &_glfw.x11.xi.minor) != BadRequest)
         {
-            _glfw.x11.xi.available = GL_TRUE;
+            _glfw.x11.xi.available = GLFW_TRUE;
         }
     }
 #endif /*_GLFW_HAS_XINPUT*/
@@ -569,7 +569,7 @@ static GLboolean initExtensions(void)
         if (XkbSetDetectableAutoRepeat(_glfw.x11.display, True, &supported))
         {
             if (supported)
-                _glfw.x11.xkb.detectable = GL_TRUE;
+                _glfw.x11.xkb.detectable = GLFW_TRUE;
         }
     }
 
@@ -615,7 +615,7 @@ static GLboolean initExtensions(void)
     _glfw.x11.XdndFinished = XInternAtom(_glfw.x11.display, "XdndFinished", True);
     _glfw.x11.XdndSelection = XInternAtom(_glfw.x11.display, "XdndSelection", True);
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 // Create a blank cursor for hidden and disabled cursor modes
@@ -733,7 +733,7 @@ int _glfwPlatformInit(void)
                             "X11: The DISPLAY environment variable is missing");
         }
 
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     _glfw.x11.screen = DefaultScreen(_glfw.x11.display);
@@ -741,7 +741,7 @@ int _glfwPlatformInit(void)
     _glfw.x11.context = XUniqueContext();
 
     if (!initExtensions())
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     _glfw.x11.cursor = createNULLCursor();
 
@@ -761,14 +761,14 @@ int _glfwPlatformInit(void)
     }
 
     if (!_glfwInitContextAPI())
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     if (!_glfwInitJoysticks())
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     _glfwInitTimer();
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformTerminate(void)

@@ -39,7 +39,7 @@
 // Global state shared between compilation units of GLFW
 // These are documented in internal.h
 //
-GLboolean _glfwInitialized = GL_FALSE;
+GLFWbool _glfwInitialized = GLFW_FALSE;
 _GLFWlibrary _glfw;
 
 // This is outside of _glfw so it can be initialized and usable before
@@ -118,23 +118,23 @@ void _glfwInputError(int error, const char* format, ...)
 GLFWAPI int glfwInit(void)
 {
     if (_glfwInitialized)
-        return GL_TRUE;
+        return GLFW_TRUE;
 
     memset(&_glfw, 0, sizeof(_glfw));
 
     if (!_glfwPlatformInit())
     {
         _glfwPlatformTerminate();
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     _glfw.monitors = _glfwPlatformGetMonitors(&_glfw.monitorCount);
-    _glfwInitialized = GL_TRUE;
+    _glfwInitialized = GLFW_TRUE;
 
     // Not all window hints have zero as their default value
     glfwDefaultWindowHints();
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 GLFWAPI void glfwTerminate(void)
@@ -166,7 +166,7 @@ GLFWAPI void glfwTerminate(void)
     _glfwPlatformTerminate();
 
     memset(&_glfw, 0, sizeof(_glfw));
-    _glfwInitialized = GL_FALSE;
+    _glfwInitialized = GLFW_FALSE;
 }
 
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)

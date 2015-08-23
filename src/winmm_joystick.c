@@ -76,9 +76,9 @@ int _glfwPlatformJoystickPresent(int joy)
     JOYINFO ji;
 
     if (_glfw_joyGetPos(joy, &ji) != JOYERR_NOERROR)
-        return GL_FALSE;
+        return GLFW_FALSE;
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 const float* _glfwPlatformGetJoystickAxes(int joy, int* count)

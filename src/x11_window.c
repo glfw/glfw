@@ -247,8 +247,8 @@ static char** parseUriList(char* text, int* count)
 
 // Create the X11 window (and its colormap)
 //
-static GLboolean createWindow(_GLFWwindow* window,
-                              const _GLFWwndconfig* wndconfig)
+static GLFWbool createWindow(_GLFWwindow* window,
+                             const _GLFWwndconfig* wndconfig)
 {
     unsigned long wamask;
     XSetWindowAttributes wa;
@@ -293,7 +293,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         {
             _glfwInputXError(GLFW_PLATFORM_ERROR,
                              "X11: Failed to create window");
-            return GL_FALSE;
+            return GLFW_FALSE;
         }
 
         XSaveContext(_glfw.x11.display,
@@ -400,7 +400,7 @@ static GLboolean createWindow(_GLFWwindow* window,
         {
             _glfwInputError(GLFW_OUT_OF_MEMORY,
                             "X11: Failed to allocate WM hints");
-            return GL_FALSE;
+            return GLFW_FALSE;
         }
 
         hints->flags = StateHint;
@@ -499,7 +499,7 @@ static GLboolean createWindow(_GLFWwindow* window,
     _glfwPlatformGetWindowPos(window, &window->x11.xpos, &window->x11.ypos);
     _glfwPlatformGetWindowSize(window, &window->x11.width, &window->x11.height);
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 // Returns whether the event is a selection event
@@ -1078,13 +1078,13 @@ static void processEvent(XEvent *event)
             if (window->cursorMode == GLFW_CURSOR_HIDDEN)
                 _glfwPlatformSetCursorMode(window, GLFW_CURSOR_HIDDEN);
 
-            _glfwInputCursorEnter(window, GL_TRUE);
+            _glfwInputCursorEnter(window, GLFW_TRUE);
             return;
         }
 
         case LeaveNotify:
         {
-            _glfwInputCursorEnter(window, GL_FALSE);
+            _glfwInputCursorEnter(window, GLFW_FALSE);
             return;
         }
 
@@ -1292,7 +1292,7 @@ static void processEvent(XEvent *event)
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 _glfwPlatformSetCursorMode(window, GLFW_CURSOR_DISABLED);
 
-            _glfwInputWindowFocus(window, GL_TRUE);
+            _glfwInputWindowFocus(window, GLFW_TRUE);
             return;
         }
 
@@ -1315,7 +1315,7 @@ static void processEvent(XEvent *event)
             if (window->monitor && window->autoIconify)
                 _glfwPlatformIconifyWindow(window);
 
-            _glfwInputWindowFocus(window, GL_FALSE);
+            _glfwInputWindowFocus(window, GLFW_FALSE);
             return;
         }
 
@@ -1336,14 +1336,14 @@ static void processEvent(XEvent *event)
                     if (window->monitor)
                         leaveFullscreenMode(window);
 
-                    _glfwInputWindowIconify(window, GL_TRUE);
+                    _glfwInputWindowIconify(window, GLFW_TRUE);
                 }
                 else if (state == NormalState)
                 {
                     if (window->monitor)
                         enterFullscreenMode(window);
 
-                    _glfwInputWindowIconify(window, GL_FALSE);
+                    _glfwInputWindowIconify(window, GLFW_FALSE);
                 }
             }
 
@@ -1468,10 +1468,10 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWfbconfig* fbconfig)
 {
     if (!_glfwCreateContext(window, ctxconfig, fbconfig))
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     if (!createWindow(window, wndconfig))
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     if (wndconfig->monitor)
     {
@@ -1479,7 +1479,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         enterFullscreenMode(window);
     }
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
@@ -1880,9 +1880,9 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 {
     cursor->x11.handle = _glfwCreateCursor(image, xhot, yhot);
     if (!cursor->x11.handle)
-        return GL_FALSE;
+        return GLFW_FALSE;
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
@@ -1893,10 +1893,10 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "X11: Failed to create standard cursor");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)

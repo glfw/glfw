@@ -65,7 +65,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             glfwIconifyWindow(window);
             break;
         case GLFW_KEY_ESCAPE:
-            glfwSetWindowShouldClose(window, GL_TRUE);
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
             break;
     }
 }
@@ -155,7 +155,7 @@ static GLFWwindow* create_window(GLFWmonitor* monitor)
 int main(int argc, char** argv)
 {
     int ch, i, window_count;
-    GLboolean auto_iconify = GL_TRUE, fullscreen = GL_FALSE, all_monitors = GL_FALSE;
+    int auto_iconify = GLFW_TRUE, fullscreen = GLFW_FALSE, all_monitors = GLFW_FALSE;
     GLFWwindow** windows;
 
     while ((ch = getopt(argc, argv, "afhn")) != -1)
@@ -163,7 +163,7 @@ int main(int argc, char** argv)
         switch (ch)
         {
             case 'a':
-                all_monitors = GL_TRUE;
+                all_monitors = GLFW_TRUE;
                 break;
 
             case 'h':
@@ -171,11 +171,11 @@ int main(int argc, char** argv)
                 exit(EXIT_SUCCESS);
 
             case 'f':
-                fullscreen = GL_TRUE;
+                fullscreen = GLFW_TRUE;
                 break;
 
             case 'n':
-                auto_iconify = GL_FALSE;
+                auto_iconify = GLFW_FALSE;
                 break;
 
             default:

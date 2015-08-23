@@ -55,12 +55,12 @@ void _glfwInitTimer(void)
 
     if (QueryPerformanceFrequency((LARGE_INTEGER*) &frequency))
     {
-        _glfw.win32_time.hasPC = GL_TRUE;
+        _glfw.win32_time.hasPC = GLFW_TRUE;
         _glfw.win32_time.resolution = 1.0 / (double) frequency;
     }
     else
     {
-        _glfw.win32_time.hasPC = GL_FALSE;
+        _glfw.win32_time.hasPC = GLFW_FALSE;
         _glfw.win32_time.resolution = 0.001; // winmm resolution is 1 ms
     }
 

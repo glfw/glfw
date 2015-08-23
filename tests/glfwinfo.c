@@ -190,7 +190,7 @@ static void list_extensions(int api, int major, int minor)
     putchar('\n');
 }
 
-static GLboolean valid_version(void)
+static int valid_version(void)
 {
     int major, minor, revision;
     glfwGetVersion(&major, &minor, &revision);
@@ -198,13 +198,13 @@ static GLboolean valid_version(void)
     if (major != GLFW_VERSION_MAJOR)
     {
         printf("*** ERROR: GLFW major version mismatch! ***\n");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     if (minor != GLFW_VERSION_MINOR || revision != GLFW_VERSION_REVISION)
         printf("*** WARNING: GLFW version mismatch! ***\n");
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 static void print_version(void)
@@ -224,7 +224,7 @@ int main(int argc, char** argv)
 {
     int ch, api, major, minor, revision, profile;
     GLint redbits, greenbits, bluebits, alphabits, depthbits, stencilbits;
-    GLboolean list = GL_FALSE;
+    int list = GLFW_FALSE;
     GLFWwindow* window;
 
     enum { API, BEHAVIOR, DEBUG, FORWARD, HELP, EXTENSIONS,
@@ -309,11 +309,11 @@ int main(int argc, char** argv)
                 break;
             case 'd':
             case DEBUG:
-                glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+                glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
                 break;
             case 'f':
             case FORWARD:
-                glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+                glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
                 break;
             case 'h':
             case HELP:
@@ -321,7 +321,7 @@ int main(int argc, char** argv)
                 exit(EXIT_SUCCESS);
             case 'l':
             case EXTENSIONS:
-                list = GL_TRUE;
+                list = GLFW_TRUE;
                 break;
             case 'm':
             case MAJOR:
@@ -444,13 +444,13 @@ int main(int argc, char** argv)
                     glfwWindowHint(GLFW_SAMPLES, atoi(optarg));
                 break;
             case STEREO:
-                glfwWindowHint(GLFW_STEREO, GL_TRUE);
+                glfwWindowHint(GLFW_STEREO, GLFW_TRUE);
                 break;
             case SRGB:
-                glfwWindowHint(GLFW_SRGB_CAPABLE, GL_TRUE);
+                glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE);
                 break;
             case SINGLEBUFFER:
-                glfwWindowHint(GLFW_DOUBLEBUFFER, GL_FALSE);
+                glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
                 break;
             default:
                 usage();
@@ -460,7 +460,7 @@ int main(int argc, char** argv)
 
     print_version();
 
-    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     window = glfwCreateWindow(200, 200, "Version", NULL, NULL);
     if (!window)

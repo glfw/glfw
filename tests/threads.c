@@ -44,7 +44,7 @@ typedef struct
     thrd_t id;
 } Thread;
 
-static volatile GLboolean running = GL_TRUE;
+static volatile int running = GLFW_TRUE;
 
 static void error_callback(int error, const char* description)
 {
@@ -87,7 +87,7 @@ int main(void)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     for (i = 0;  i < count;  i++)
     {
@@ -120,7 +120,7 @@ int main(void)
         for (i = 0;  i < count;  i++)
         {
             if (glfwWindowShouldClose(threads[i].window))
-                running = GL_FALSE;
+                running = GLFW_FALSE;
         }
     }
 

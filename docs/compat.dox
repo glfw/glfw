@@ -103,7 +103,7 @@ creating OpenGL contexts of version 2.1 and below.  Where this extension is
 unavailable, the `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR`
 hints will only be partially supported, the `GLFW_OPENGL_DEBUG_CONTEXT` hint
 will have no effect, and setting the `GLFW_OPENGL_PROFILE` or
-`GLFW_OPENGL_FORWARD_COMPAT` hints to `GL_TRUE` will cause @ref
+`GLFW_OPENGL_FORWARD_COMPAT` hints to `GLFW_TRUE` will cause @ref
 glfwCreateWindow to fail.
 
 GLFW uses the `GLX_ARB_create_context_profile` extension to provide support for
@@ -146,7 +146,7 @@ creating OpenGL contexts of version 2.1 and below.  Where this extension is
 unavailable, the `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR`
 hints will only be partially supported, the `GLFW_OPENGL_DEBUG_CONTEXT` hint
 will have no effect, and setting the `GLFW_OPENGL_PROFILE` or
-`GLFW_OPENGL_FORWARD_COMPAT` hints to `GL_TRUE` will cause @ref
+`GLFW_OPENGL_FORWARD_COMPAT` hints to `GLFW_TRUE` will cause @ref
 glfwCreateWindow to fail.
 
 GLFW uses the `WGL_ARB_create_context_profile` extension to provide support for
@@ -176,7 +176,7 @@ version 2.1.
 Because of this, on OS X 10.7 and later, the `GLFW_CONTEXT_VERSION_MAJOR` and
 `GLFW_CONTEXT_VERSION_MINOR` hints will cause @ref glfwCreateWindow to fail if
 given version 3.0 or 3.1, the `GLFW_OPENGL_FORWARD_COMPAT` hint must be set to
-`GL_TRUE` and the `GLFW_OPENGL_PROFILE` hint must be set to
+`GLFW_TRUE` and the `GLFW_OPENGL_PROFILE` hint must be set to
 `GLFW_OPENGL_CORE_PROFILE` when creating OpenGL 3.2 and later contexts and the
 `GLFW_OPENGL_DEBUG_CONTEXT` hint is ignored.
 

@@ -185,10 +185,10 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
 
 // Enter full screen mode
 //
-static GLboolean enterFullscreenMode(_GLFWwindow* window)
+static GLFWbool enterFullscreenMode(_GLFWwindow* window)
 {
     GLFWvidmode mode;
-    GLboolean status;
+    GLFWbool status;
     int xpos, ypos;
 
     status = _glfwSetVideoMode(window->monitor, &window->videoMode);
@@ -230,7 +230,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 _glfwPlatformSetCursorMode(window, GLFW_CURSOR_DISABLED);
 
-            _glfwInputWindowFocus(window, GL_TRUE);
+            _glfwInputWindowFocus(window, GLFW_TRUE);
             return 0;
         }
 
@@ -242,7 +242,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (window->monitor && window->autoIconify)
                 _glfwPlatformIconifyWindow(window);
 
-            _glfwInputWindowFocus(window, GL_FALSE);
+            _glfwInputWindowFocus(window, GLFW_FALSE);
             return 0;
         }
 
@@ -290,13 +290,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_CHAR:
         {
-            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), GL_TRUE);
+            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), GLFW_TRUE);
             return 0;
         }
 
         case WM_SYSCHAR:
         {
-            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), GL_FALSE);
+            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), GLFW_FALSE);
             return 0;
         }
 
@@ -311,7 +311,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 return TRUE;
             }
 
-            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), GL_TRUE);
+            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), GLFW_TRUE);
             return FALSE;
         }
 
@@ -428,8 +428,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 tme.hwndTrack = window->win32.handle;
                 TrackMouseEvent(&tme);
 
-                window->win32.cursorTracked = GL_TRUE;
-                _glfwInputCursorEnter(window, GL_TRUE);
+                window->win32.cursorTracked = GLFW_TRUE;
+                _glfwInputCursorEnter(window, GLFW_TRUE);
             }
 
             return 0;
@@ -437,8 +437,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOUSELEAVE:
         {
-            window->win32.cursorTracked = GL_FALSE;
-            _glfwInputCursorEnter(window, GL_FALSE);
+            window->win32.cursorTracked = GLFW_FALSE;
+            _glfwInputCursorEnter(window, GLFW_FALSE);
             return 0;
         }
 
@@ -466,20 +466,20 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             if (!window->win32.iconified && wParam == SIZE_MINIMIZED)
             {
-                window->win32.iconified = GL_TRUE;
+                window->win32.iconified = GLFW_TRUE;
                 if (window->monitor)
                     leaveFullscreenMode(window);
 
-                _glfwInputWindowIconify(window, GL_TRUE);
+                _glfwInputWindowIconify(window, GLFW_TRUE);
             }
             else if (window->win32.iconified &&
                      (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED))
             {
-                window->win32.iconified = GL_FALSE;
+                window->win32.iconified = GLFW_FALSE;
                 if (window->monitor)
                     enterFullscreenMode(window);
 
-                _glfwInputWindowIconify(window, GL_FALSE);
+                _glfwInputWindowIconify(window, GLFW_FALSE);
             }
 
             _glfwInputFramebufferSize(window, LOWORD(lParam), HIWORD(lParam));
@@ -597,10 +597,10 @@ static void getFullWindowSize(_GLFWwindow* window,
 
 // Creates the GLFW window and rendering context
 //
-static int createWindow(_GLFWwindow* window,
-                        const _GLFWwndconfig* wndconfig,
-                        const _GLFWctxconfig* ctxconfig,
-                        const _GLFWfbconfig* fbconfig)
+static GLFWbool createWindow(_GLFWwindow* window,
+                             const _GLFWwndconfig* wndconfig,
+                             const _GLFWctxconfig* ctxconfig,
+                             const _GLFWfbconfig* fbconfig)
 {
     int xpos, ypos, fullWidth, fullHeight;
     WCHAR* wideTitle;
@@ -632,7 +632,7 @@ static int createWindow(_GLFWwindow* window,
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Win32: Failed to convert window title to UTF-16");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     window->win32.handle = CreateWindowExW(getWindowExStyle(window),
@@ -651,7 +651,7 @@ static int createWindow(_GLFWwindow* window,
     if (!window->win32.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to create window");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     if (_glfw_ChangeWindowMessageFilterEx)
@@ -675,9 +675,9 @@ static int createWindow(_GLFWwindow* window,
     DragAcceptFiles(window->win32.handle, TRUE);
 
     if (!_glfwCreateContext(window, ctxconfig, fbconfig))
-        return GL_FALSE;
+        return GLFW_FALSE;
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 // Destroys the GLFW window and rendering context
@@ -700,7 +700,7 @@ static void destroyWindow(_GLFWwindow* window)
 
 // Registers the GLFW window class
 //
-GLboolean _glfwRegisterWindowClass(void)
+GLFWbool _glfwRegisterWindowClass(void)
 {
     WNDCLASSW wc;
 
@@ -726,10 +726,10 @@ GLboolean _glfwRegisterWindowClass(void)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Win32: Failed to register window class");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 // Unregisters the GLFW window class
@@ -752,12 +752,12 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     int status;
 
     if (!createWindow(window, wndconfig, ctxconfig, fbconfig))
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     status = _glfwAnalyzeContext(window, ctxconfig, fbconfig);
 
     if (status == _GLFW_RECREATION_IMPOSSIBLE)
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     if (status == _GLFW_RECREATION_REQUIRED)
     {
@@ -787,17 +787,17 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
         // ...and then create them again, this time with better APIs
         if (!createWindow(window, wndconfig, ctxconfig, fbconfig))
-            return GL_FALSE;
+            return GLFW_FALSE;
     }
 
     if (window->monitor)
     {
         _glfwPlatformShowWindow(window);
         if (!enterFullscreenMode(window))
-            return GL_FALSE;
+            return GLFW_FALSE;
     }
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
@@ -1099,13 +1099,13 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     ReleaseDC(NULL, dc);
 
     if (!bitmap)
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     mask = CreateBitmap(image->width, image->height, 1, 1, NULL);
     if (!mask)
     {
         DeleteObject(bitmap);
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
     for (i = 0;  i < image->width * image->height;  i++, target++, source += 4)
@@ -1129,9 +1129,9 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     DeleteObject(mask);
 
     if (!cursor->win32.handle)
-        return GL_FALSE;
+        return GLFW_FALSE;
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
@@ -1142,10 +1142,10 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Win32: Failed to create standard cursor");
-        return GL_FALSE;
+        return GLFW_FALSE;
     }
 
-    return GL_TRUE;
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)

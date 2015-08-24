@@ -402,6 +402,11 @@ if (_GLFW_EGL)
         list(APPEND glfw_PKG_DEPS "glesv2")
     endif()
 
+    if (CMAKE_DL_LIBS)
+        list(APPEND glfw_LIBRARIES "${CMAKE_DL_LIBS}")
+        list(APPEND glfw_PKG_LIBS "-l${CMAKE_DL_LIBS}")
+    endif()
+
 endif()
 
 #--------------------------------------------------------------------

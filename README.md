@@ -102,6 +102,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [GLX] Made all GLX functions dynamically loaded
  - [GLX] Removed `_GLFW_HAS_GLXGETPROCADDRESS*` and `_GLFW_HAS_DLOPEN`
          compile-time options
+ - [EGL] Made all EGL functions dynamically loaded
 
 
 ## Contact

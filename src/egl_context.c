@@ -262,8 +262,8 @@ int _glfwInitContextAPI(void)
         return GL_FALSE;
     }
 
-    if (_glfwPlatformExtensionSupported("EGL_KHR_create_context"))
-        _glfw.egl.KHR_create_context = GL_TRUE;
+    _glfw.egl.KHR_create_context =
+        _glfwPlatformExtensionSupported("EGL_KHR_create_context");
 
     return GL_TRUE;
 }

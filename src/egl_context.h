@@ -89,12 +89,12 @@ typedef GLFWglproc (EGLAPIENTRY * PFNEGLGETPROCADDRESSPROC)(const char*);
 //
 typedef struct _GLFWcontextEGL
 {
-   EGLConfig      config;
-   EGLContext     context;
-   EGLSurface     surface;
+   EGLConfig        config;
+   EGLContext       context;
+   EGLSurface       surface;
 
 #if defined(_GLFW_X11)
-   XVisualInfo*   visual;
+   XVisualInfo*     visual;
 #endif
 
 } _GLFWcontextEGL;

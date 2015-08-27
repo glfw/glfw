@@ -103,6 +103,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [GLX] Removed `_GLFW_HAS_GLXGETPROCADDRESS*` and `_GLFW_HAS_DLOPEN`
          compile-time options
  - [EGL] Made all EGL functions dynamically loaded
+ - [EGL] Bugfix: `glfwGetProcAddress` did not return the addresses of core
+                 functions
 
 
 ## Contact

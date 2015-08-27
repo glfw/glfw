@@ -455,6 +455,70 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     window->egl.config = config;
 
+    // Load the appropriate client library
+    {
+        int i;
+        const char** sonames;
+        const char* es1sonames[] =
+        {
+#if defined(_GLFW_WIN32)
+            "GLESv1_CM.dll",
+            "libGLES_CM.dll",
+#elif defined(_GLFW_COCOA)
+            "libGLESv1_CM.dylib",
+#else
+            "libGLESv1_CM.so.1",
+            "libGLES_CM.so.1",
+#endif
+            NULL
+        };
+        const char* es2sonames[] =
+        {
+#if defined(_GLFW_WIN32)
+            "GLESv2.dll",
+            "libGLESv2.dll",
+#elif defined(_GLFW_COCOA)
+            "libGLESv2.dylib",
+#else
+            "libGLESv2.so.2",
+#endif
+            NULL
+        };
+        const char* glsonames[] =
+        {
+#if defined(_GLFW_WIN32)
+#elif defined(_GLFW_COCOA)
+#else
+            "libGL.so.1",
+#endif
+            NULL
+        };
+
+        if (ctxconfig->api == GLFW_OPENGL_ES_API)
+        {
+            if (ctxconfig->major == 1)
+                sonames = es1sonames;
+            else
+                sonames = es2sonames;
+        }
+        else
+            sonames = glsonames;
+
+        for (i = 0;  sonames[i];  i++)
+        {
+            window->egl.client = _glfw_dlopen(sonames[i]);
+            if (window->egl.client)
+                break;
+        }
+
+        if (!window->egl.client)
+        {
+            _glfwInputError(GLFW_API_UNAVAILABLE,
+                            "EGL: Failed to load client library");
+            return GL_FALSE;
+        }
+    }
+
     return GL_TRUE;
 }
 
@@ -464,6 +528,19 @@ int _glfwCreateContext(_GLFWwindow* window,
 //
 void _glfwDestroyContext(_GLFWwindow* window)
 {
+#if defined(_GLFW_X11)
+    // NOTE: Do not unload libGL.so.1 while the X11 display is still open,
+    //       as it will make XCloseDisplay segfault
+    if (window->context.api != GLFW_OPENGL_API)
+#endif // _GLFW_X11
+    {
+        if (window->egl.client)
+        {
+            _glfw_dlclose(window->egl.client);
+            window->egl.client = NULL;
+        }
+    }
+
 #if defined(_GLFW_X11)
     if (window->egl.visual)
     {
@@ -563,6 +640,15 @@ int _glfwPlatformExtensionSupported(const char* extension)
 
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 {
+    _GLFWwindow* window = _glfwPlatformGetCurrentContext();
+
+    if (window->egl.client)
+    {
+        GLFWglproc proc = (GLFWglproc) _glfw_dlsym(window->egl.client, procname);
+        if (proc)
+            return proc;
+    }
+
     return _glfw_eglGetProcAddress(procname);
 }
 

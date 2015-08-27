@@ -97,6 +97,8 @@ typedef struct _GLFWcontextEGL
    XVisualInfo*     visual;
 #endif
 
+   void*            client;
+
 } _GLFWcontextEGL;
 
 

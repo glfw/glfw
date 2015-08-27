@@ -602,7 +602,7 @@ void _glfwPlatformSwapBuffers(_GLFWwindow* window)
     // HACK: Use DwmFlush when desktop composition is enabled
     if (_glfwIsCompositionEnabled() && !window->monitor)
     {
-        int count = window->wgl.interval;
+        int count = abs(window->wgl.interval);
         while (count--)
             _glfw_DwmFlush();
     }

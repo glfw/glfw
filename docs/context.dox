@@ -307,12 +307,9 @@ void load_extensions(void)
 {
     if (glfwExtensionSupported("GL_ARB_debug_output"))
     {
-        pfnGetDebugMessageLog = (PFNGLGETDEBUGMESSAGELOGARBPROC) glfwGetProcAddress("glGetDebugMessageLogARB");
-        if (pfnGetDebugMessageLog)
-        {
-            // Both the extension name and the function pointer are present
-            has_ARB_debug_output = 1;
-        }
+        pfnGetDebugMessageLog = (PFNGLGETDEBUGMESSAGELOGARBPROC)
+            glfwGetProcAddress("glGetDebugMessageLogARB");
+        has_ARB_debug_output = 1;
     }
 }
 

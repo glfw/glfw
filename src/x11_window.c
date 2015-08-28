@@ -1256,9 +1256,6 @@ static void processEvent(XEvent *event)
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 disableCursor(window);
 
-            if (window->monitor && window->autoIconify)
-                enterFullscreenMode(window);
-
             _glfwInputWindowFocus(window, GL_TRUE);
             return;
         }
@@ -1280,10 +1277,7 @@ static void processEvent(XEvent *event)
                 restoreCursor(window);
 
             if (window->monitor && window->autoIconify)
-            {
                 _glfwPlatformIconifyWindow(window);
-                leaveFullscreenMode(window);
-            }
 
             _glfwInputWindowFocus(window, GL_FALSE);
             return;
@@ -1302,9 +1296,19 @@ static void processEvent(XEvent *event)
             {
                 const int state = getWindowState(window);
                 if (state == IconicState)
+                {
+                    if (window->monitor)
+                        leaveFullscreenMode(window);
+
                     _glfwInputWindowIconify(window, GL_TRUE);
+                }
                 else if (state == NormalState)
+                {
+                    if (window->monitor)
+                        enterFullscreenMode(window);
+
                     _glfwInputWindowIconify(window, GL_FALSE);
+                }
             }
 
             return;

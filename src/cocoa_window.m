@@ -234,19 +234,22 @@ static int translateKey(unsigned int key)
 
 - (void)windowDidMiniaturize:(NSNotification *)notification
 {
+    if (window->monitor)
+        leaveFullscreenMode(window);
+
     _glfwInputWindowIconify(window, GL_TRUE);
 }
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification
 {
+    if (window->monitor)
+        enterFullscreenMode(window);
+
     _glfwInputWindowIconify(window, GL_FALSE);
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
-    if (window->monitor && window->autoIconify)
-        enterFullscreenMode(window);
-
     if (_glfw.cursorWindow == window &&
         window->cursorMode == GLFW_CURSOR_DISABLED)
     {
@@ -260,7 +263,7 @@ static int translateKey(unsigned int key)
 - (void)windowDidResignKey:(NSNotification *)notification
 {
     if (window->monitor && window->autoIconify)
-        leaveFullscreenMode(window);
+        _glfwPlatformIconifyWindow(window);
 
     _glfwInputWindowFocus(window, GL_FALSE);
 }
@@ -885,9 +888,6 @@ static GLboolean createWindow(_GLFWwindow* window,
     if (wndconfig->monitor)
     {
         [window->ns.object setLevel:NSMainMenuWindowLevel + 1];
-
-        if (window->autoIconify)
-            [window->ns.object setHidesOnDeactivate:YES];
     }
     else
     {

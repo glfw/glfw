@@ -280,9 +280,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (window->cursorMode != GLFW_CURSOR_NORMAL)
                 _glfwPlatformApplyCursorMode(window);
 
-            if (window->monitor && window->autoIconify)
-                enterFullscreenMode(window);
-
             _glfwInputWindowFocus(window, GL_TRUE);
             return 0;
         }
@@ -293,10 +290,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 restoreCursor(window);
 
             if (window->monitor && window->autoIconify)
-            {
                 _glfwPlatformIconifyWindow(window);
-                leaveFullscreenMode(window);
-            }
 
             _glfwInputWindowFocus(window, GL_FALSE);
             return 0;
@@ -523,12 +517,18 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (!window->win32.iconified && wParam == SIZE_MINIMIZED)
             {
                 window->win32.iconified = GL_TRUE;
+                if (window->monitor)
+                    leaveFullscreenMode(window);
+
                 _glfwInputWindowIconify(window, GL_TRUE);
             }
             else if (window->win32.iconified &&
                      (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED))
             {
                 window->win32.iconified = GL_FALSE;
+                if (window->monitor)
+                    enterFullscreenMode(window);
+
                 _glfwInputWindowIconify(window, GL_FALSE);
             }
 

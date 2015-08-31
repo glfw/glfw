@@ -717,9 +717,9 @@ static int createWindow(_GLFWwindow* window,
     if (wndconfig->floating && !wndconfig->monitor)
     {
         SetWindowPos(window->win32.handle,
-                        HWND_TOPMOST,
-                        0, 0, 0, 0,
-                        SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
+                     HWND_TOPMOST,
+                     0, 0, 0, 0,
+                     SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
     }
 
     DragAcceptFiles(window->win32.handle, TRUE);
@@ -991,7 +991,6 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
 void _glfwPlatformPollEvents(void)
 {
     MSG msg;
-    _GLFWwindow* window;
 
     while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
     {
@@ -1001,7 +1000,7 @@ void _glfwPlatformPollEvents(void)
             // While GLFW does not itself post WM_QUIT, other processes may post
             // it to this one, for example Task Manager
 
-            window = _glfw.windowListHead;
+            _GLFWwindow* window = _glfw.windowListHead;
             while (window)
             {
                 _glfwInputWindowCloseRequest(window);
@@ -1015,9 +1014,10 @@ void _glfwPlatformPollEvents(void)
         }
     }
 
-    window = _glfw.cursorWindow;
-    if (window)
+    if (_glfw.cursorWindow)
     {
+        _GLFWwindow* window = _glfw.cursorWindow;
+
         // LSHIFT/RSHIFT fixup (keys tend to "stick" without this fix)
         // This is the only async event handling in GLFW, but it solves some
         // nasty problems

@@ -389,7 +389,8 @@ GLFWAPI GLFWcursor* glfwCreateStandardCursor(int shape)
         shape != GLFW_CROSSHAIR_CURSOR &&
         shape != GLFW_HAND_CURSOR &&
         shape != GLFW_HRESIZE_CURSOR &&
-        shape != GLFW_VRESIZE_CURSOR)
+        shape != GLFW_VRESIZE_CURSOR &&
+        shape != GLFW_WAIT_CURSOR)
     {
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid standard cursor");
         return NULL;

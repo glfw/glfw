@@ -148,6 +148,8 @@ static LPWSTR translateCursorShape(int shape)
             return IDC_SIZEWE;
         case GLFW_VRESIZE_CURSOR:
             return IDC_SIZENS;
+        case GLFW_WAIT_CURSOR:
+            return IDC_WAIT;
     }
 
     return NULL;

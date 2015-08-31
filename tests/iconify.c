@@ -99,6 +99,9 @@ static void window_iconify_callback(GLFWwindow* window, int iconified)
 static void window_refresh_callback(GLFWwindow* window)
 {
     int width, height;
+
+    printf("%0.2f Window refresh\n", glfwGetTime());
+
     glfwGetFramebufferSize(window, &width, &height);
 
     glfwMakeContextCurrent(window);

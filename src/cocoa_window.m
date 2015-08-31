@@ -214,7 +214,6 @@ static int translateKey(unsigned int key)
 
     _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
     _glfwInputWindowSize(window, contentRect.size.width, contentRect.size.height);
-    _glfwInputWindowDamage(window);
 }
 
 - (void)windowDidMove:(NSNotification *)notification
@@ -476,6 +475,10 @@ static int translateKey(unsigned int key)
     const NSRect fbRect = convertRectToBacking(window, contentRect);
 
     _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
+}
+
+- (void)drawRect:(NSRect)rect
+{
     _glfwInputWindowDamage(window);
 }
 

@@ -123,6 +123,8 @@ static int translateCursorShape(int shape)
             return XC_sb_h_double_arrow;
         case GLFW_VRESIZE_CURSOR:
             return XC_sb_v_double_arrow;
+        case GLFW_WAIT_CURSOR:
+            return XC_watch;
     }
 
     return 0;

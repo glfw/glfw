@@ -814,6 +814,12 @@ const char* _glfwPlatformGetVersionString(void)
 #if defined(__linux__)
         " /dev/js"
 #endif
+#if defined(_GLFW_HAS_XINPUT)
+        " XI"
+#endif
+#if defined(_GLFW_HAS_XF86VM)
+        " Xf86vm"
+#endif
 #if defined(_GLFW_BUILD_DLL)
         " shared"
 #endif

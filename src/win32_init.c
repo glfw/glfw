@@ -380,6 +380,9 @@ const char* _glfwPlatformGetVersionString(void)
 #elif defined(_MSC_VER)
         " VisualC"
 #endif
+#if defined(_GLFW_USE_HYBRID_HPG) || defined(_GLFW_USE_OPTIMUS_HPG)
+        " hybrid-GPU"
+#endif
 #if defined(_GLFW_BUILD_DLL)
         " DLL"
 #endif

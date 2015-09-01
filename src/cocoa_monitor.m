@@ -256,29 +256,12 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     monitors = calloc(displayCount, sizeof(_GLFWmonitor*));
 
     CGGetOnlineDisplayList(displayCount, displays, &displayCount);
-    NSArray* screens = [NSScreen screens];
 
     for (i = 0;  i < displayCount;  i++)
     {
-        NSUInteger j;
         _GLFWmonitor* monitor;
 
-        CGDirectDisplayID screenDisplayID = CGDisplayMirrorsDisplay(displays[i]);
-        if (screenDisplayID == kCGNullDirectDisplay)
-            screenDisplayID = displays[i];
-
-        for (j = 0;  j < [screens count];  j++)
-        {
-            NSScreen* screen = [screens objectAtIndex:j];
-            NSDictionary* dictionary = [screen deviceDescription];
-            NSNumber* number = [dictionary objectForKey:@"NSScreenNumber"];
-
-            if ([number unsignedIntegerValue] == screenDisplayID)
-                break;
-        }
-
-        // Skip displays that has no screen
-        if (j == [screens count])
+        if (CGDisplayIsAsleep(displays[i]))
             continue;
 
         const CGSize size = CGDisplayScreenSize(displays[i]);

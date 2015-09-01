@@ -32,23 +32,6 @@
 #include <crt_externs.h>
 
 
-// Returns the NSScreen corresponding to the specified CGDirectDisplayID
-//
-static NSScreen* getScreen(CGDirectDisplayID displayID)
-{
-    NSArray* screens = [NSScreen screens];
-
-    for (NSScreen* screen in screens)
-    {
-        NSDictionary* dictionary = [screen deviceDescription];
-        NSNumber* number = [dictionary objectForKey:@"NSScreenNumber"];
-        if ([number unsignedIntegerValue] == displayID)
-            return screen;
-    }
-
-    return nil;
-}
-
 // Returns the specified standard cursor
 //
 static NSCursor* getStandardCursor(int shape)
@@ -100,13 +83,16 @@ static void updateModeCursor(_GLFWwindow* window)
 //
 static GLboolean enterFullscreenMode(_GLFWwindow* window)
 {
+    GLFWvidmode mode;
     GLboolean status;
+    int xpos, ypos;
 
     status = _glfwSetVideoMode(window->monitor, &window->videoMode);
 
-    // NOTE: The window is resized despite mode setting failure to make
-    //       glfwSetWindowSize more robust
-    [window->ns.object setFrame:[getScreen(window->monitor->ns.displayID) frame]
+    _glfwPlatformGetVideoMode(window->monitor, &mode);
+    _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
+
+    [window->ns.object setFrame:NSMakeRect(xpos, ypos, mode.width, mode.height)
                         display:YES];
 
     return status;
@@ -864,7 +850,15 @@ static GLboolean createWindow(_GLFWwindow* window,
     NSRect contentRect;
 
     if (wndconfig->monitor)
-        contentRect = [getScreen(wndconfig->monitor->ns.displayID) frame];
+    {
+        GLFWvidmode mode;
+        int xpos, ypos;
+
+        _glfwPlatformGetVideoMode(window->monitor, &mode);
+        _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
+
+        contentRect = NSMakeRect(xpos, ypos, mode.width, mode.height);
+    }
     else
         contentRect = NSMakeRect(0, 0, wndconfig->width, wndconfig->height);
 

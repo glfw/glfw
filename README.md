@@ -1,4 +1,5 @@
 # GLFW
+[![Build Status](https://travis-ci.org/boddicheg/glfw.svg?branch=multi-platform)](https://travis-ci.org/boddicheg/glfw)
 
 ## Introduction
 

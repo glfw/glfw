@@ -3,4 +3,4 @@ tar xzf cmake-2.8.12.tar.gz
 cd cmake-2.8.12
 cmake .
 make
-make install
+sudo make install

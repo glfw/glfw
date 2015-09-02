@@ -90,6 +90,7 @@ typedef struct _GLFWmonitorNS
 {
     CGDirectDisplayID   displayID;
     CGDisplayModeRef    previousMode;
+    uint32_t            unitNumber;
 
 } _GLFWmonitorNS;
 

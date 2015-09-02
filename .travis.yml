@@ -2,11 +2,12 @@ language: cpp
 
 os:
 - linux
-- osx
 
 sudo: true
+
+before_install:
+- sh install-deps.sh
 
 install:
 - cmake .
 - make
-- sudo make install

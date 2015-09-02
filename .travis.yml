@@ -1,0 +1,12 @@
+language: cpp
+
+os:
+- linux
+- osx
+
+sudo: true
+
+install:
+- cmake .
+- make
+- sudo make install

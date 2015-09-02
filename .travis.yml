@@ -5,9 +5,9 @@ os:
 
 sudo: true
 
-before_install:
+before_script:
 - sh install-deps.sh
 
-install:
+script:
 - cmake .
 - make

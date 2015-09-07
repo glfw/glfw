@@ -1647,7 +1647,39 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
 
 void _glfwPlatformSetWindowIcons(_GLFWwindow* window, GLFWimage* icons, int count)
 {
-    // TODO: Implement this
+    int i, d, p;
+    long* data;
+
+    // calculate number of elements
+    int nelements = count * 2; // width & height per icon
+    for (i = 0, nelements = 0;  i < count;  i++)
+        nelements += icons[i].width * icons[i].height; // pixel data
+
+    data = (long*)malloc(sizeof(long), nelements);
+
+    // build property data
+    for (i = 0, d = 0;  i < count;  i++)
+    {
+        data[d++] = icons[i].width;
+        data[d++] = icons[i].height;
+
+        for (p = 0;  p < icons[i].width * icons[i].height;  p++)
+        {
+            unsigned char* pixel = icons[i].pixels + p * 4;
+            data[d++] = // pack to ARGB integer
+                (pixel[3] << 24) |
+                (pixel[0] << 16) |
+                (pixel[1] <<  8) |
+                (pixel[2] <<  0) ;
+        }
+    }
+
+    XChangeProperty(_glfw.x11.display, window->x11.handle,
+                    _glfw.x11.NET_WM_ICON,
+                    XA_CARDINAL,
+                    32, PropModeReplace, (unsigned char*)data, nelements);
+
+    free(data);
 }
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)

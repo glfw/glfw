@@ -743,7 +743,7 @@ static HICON createIcon(GLFWimage* image)
     // fill in BITMAPV5HEADER to pass to CreateDIBSection
     header.bV5Size = sizeof(header);
     header.bV5Width = image->width;
-    header.bV5Height = image->height;
+    header.bV5Height = -image->height;
     header.bV5Planes = 1;
     header.bV5BitCount = 32;
     header.bV5Compression = BI_BITFIELDS;
@@ -758,7 +758,6 @@ static HICON createIcon(GLFWimage* image)
     ReleaseDC(NULL, hdc);
 
     // first we need to convert RGBA to BGRA (yay Windows!)
-    // we also need to convert lines, because Windows wants bottom-to-top RGBA
     BGRAData = calloc(1, image->width * image->height * 4);
 
     for (i = 0;  i < image->width * image->height;  i++)

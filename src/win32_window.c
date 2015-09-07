@@ -733,7 +733,6 @@ static HICON createIcon(GLFWimage* image)
 {
     BITMAPV5HEADER header;
     HDC hdc;
-    unsigned char* BGRAData;
     HBITMAP bitmap, mask;
     ICONINFO iconinfo;
     HICON icon;
@@ -757,25 +756,17 @@ static HICON createIcon(GLFWimage* image)
     bitmap = CreateDIBSection(hdc, (BITMAPINFO*) &header, DIB_RGB_COLORS, (void**) &dibData, NULL, 0);
     ReleaseDC(NULL, hdc);
 
-    // first we need to convert RGBA to BGRA (yay Windows!)
-    BGRAData = calloc(1, image->width * image->height * 4);
-
     for (i = 0;  i < image->width * image->height;  i++)
     {
-        unsigned char* dst = BGRAData + 4 * i;
+        unsigned char* dst = dibData + 4 * i;
         unsigned char *src = image->pixels + 4 * i;
 
+        // convert RGBA to BGRA
         dst[0] = src[2]; // copy blue channel
         dst[1] = src[1]; // copy green channel
         dst[2] = src[0]; // copy red channel
         dst[3] = src[3]; // copy alpha channel
     }
-
-    // copy the BGRA data into dibData
-    memcpy(dibData, BGRAData, image->width * image->height * 4);
-
-    // free the BGRA data
-    free(BGRAData);
 
     // create a mask that we don't use (but needed for iconinfo)
     mask = CreateBitmap(image->width, image->height, 1, 1, NULL);

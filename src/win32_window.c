@@ -722,8 +722,18 @@ static void destroyWindow(_GLFWwindow* window)
 
     if (window->win32.handle)
     {
+        HICON iconBig = (HICON)SendMessage(window->win32.handle, WM_GETICON, ICON_BIG, 0);
+        HICON iconSmall = (HICON)SendMessage(window->win32.handle, WM_GETICON, ICON_SMALL, 0);
+
         DestroyWindow(window->win32.handle);
         window->win32.handle = NULL;
+
+        if (iconBig) // Destroy icon(s)
+        {
+            DestroyIcon(iconBig);
+            if (iconSmall != iconBig)
+                DestroyIcon(iconSmall);
+        }
     }
 }
 
@@ -733,7 +743,6 @@ static HICON createIcon(GLFWimage* image)
 {
     BITMAPV5HEADER header;
     HDC hdc;
-    unsigned char* BGRAData;
     HBITMAP bitmap, mask;
     ICONINFO iconinfo;
     HICON icon;
@@ -743,7 +752,7 @@ static HICON createIcon(GLFWimage* image)
     // fill in BITMAPV5HEADER to pass to CreateDIBSection
     header.bV5Size = sizeof(header);
     header.bV5Width = image->width;
-    header.bV5Height = image->height;
+    header.bV5Height = -image->height;
     header.bV5Planes = 1;
     header.bV5BitCount = 32;
     header.bV5Compression = BI_BITFIELDS;
@@ -757,26 +766,17 @@ static HICON createIcon(GLFWimage* image)
     bitmap = CreateDIBSection(hdc, (BITMAPINFO*) &header, DIB_RGB_COLORS, (void**) &dibData, NULL, 0);
     ReleaseDC(NULL, hdc);
 
-    // first we need to convert RGBA to BGRA (yay Windows!)
-    // we also need to convert lines, because Windows wants bottom-to-top RGBA
-    BGRAData = calloc(1, image->width * image->height * 4);
-
     for (i = 0;  i < image->width * image->height;  i++)
     {
-        unsigned char* dst = BGRAData + 4 * i;
+        unsigned char* dst = dibData + 4 * i;
         unsigned char *src = image->pixels + 4 * i;
 
+        // convert RGBA to BGRA
         dst[0] = src[2]; // copy blue channel
         dst[1] = src[1]; // copy green channel
         dst[2] = src[0]; // copy red channel
         dst[3] = src[3]; // copy alpha channel
     }
-
-    // copy the BGRA data into dibData
-    memcpy(dibData, BGRAData, image->width * image->height * 4);
-
-    // free the BGRA data
-    free(BGRAData);
 
     // create a mask that we don't use (but needed for iconinfo)
     mask = CreateBitmap(image->width, image->height, 1, 1, NULL);
@@ -1050,14 +1050,22 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
 
 void _glfwPlatformSetWindowIcons(_GLFWwindow* window, GLFWimage* icons, int count)
 {
-    GLFWimage* normalicon;
-    GLFWimage* smallicon;
+    GLFWimage* imgBig;
+    GLFWimage* imgSmall;
 
-    normalicon = bestFit(icons, count, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON));
-    smallicon = bestFit(icons, count, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
+    imgBig = bestFit(icons, count, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON));
+    imgSmall = bestFit(icons, count, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
 
-    SendMessage(window->win32.handle, WM_SETICON, ICON_BIG, (LPARAM) createIcon(normalicon));
-    SendMessage(window->win32.handle, WM_SETICON, ICON_SMALL, (LPARAM) createIcon(smallicon));
+    HICON icon = createIcon(imgBig);
+    HICON iconBig = (HICON)SendMessage(window->win32.handle, WM_SETICON, ICON_BIG, (LPARAM) icon);
+    HICON iconSmall = (HICON)SendMessage(window->win32.handle, WM_SETICON, ICON_SMALL, (LPARAM) (imgSmall == imgBig ? icon : createIcon(imgSmall)));
+
+    if (iconBig) // Destroy previous icon(s)
+    {
+        DestroyIcon(iconBig);
+        if (iconSmall != iconBig)
+            DestroyIcon(iconSmall);
+    }
 }
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)

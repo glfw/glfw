@@ -1040,14 +1040,15 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
 
 void _glfwPlatformSetWindowIcons(_GLFWwindow* window, GLFWimage* icons, int count)
 {
-    GLFWimage* normalicon;
-    GLFWimage* smallicon;
+    GLFWimage* imgBig;
+    GLFWimage* imgSmall;
 
-    normalicon = bestFit(icons, count, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON));
-    smallicon = bestFit(icons, count, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
+    imgBig = bestFit(icons, count, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON));
+    imgSmall = bestFit(icons, count, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
 
-    SendMessage(window->win32.handle, WM_SETICON, ICON_BIG, (LPARAM) createIcon(normalicon));
-    SendMessage(window->win32.handle, WM_SETICON, ICON_SMALL, (LPARAM) createIcon(smallicon));
+    HICON icon = createIcon(imgBig);
+    SendMessage(window->win32.handle, WM_SETICON, ICON_BIG, (LPARAM) icon);
+    SendMessage(window->win32.handle, WM_SETICON, ICON_SMALL, (LPARAM) (imgSmall == imgBig ? icon : createIcon(imgSmall)));
 }
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)

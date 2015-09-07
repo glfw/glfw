@@ -722,8 +722,18 @@ static void destroyWindow(_GLFWwindow* window)
 
     if (window->win32.handle)
     {
+        HICON iconBig = (HICON)SendMessage(window->win32.handle, WM_GETICON, ICON_BIG, 0);
+        HICON iconSmall = (HICON)SendMessage(window->win32.handle, WM_GETICON, ICON_SMALL, 0);
+
         DestroyWindow(window->win32.handle);
         window->win32.handle = NULL;
+
+        if (iconBig) // Destroy icon(s)
+        {
+            DestroyIcon(iconBig);
+            if (iconSmall != iconBig)
+                DestroyIcon(iconSmall);
+        }
     }
 }
 
@@ -1047,8 +1057,15 @@ void _glfwPlatformSetWindowIcons(_GLFWwindow* window, GLFWimage* icons, int coun
     imgSmall = bestFit(icons, count, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
 
     HICON icon = createIcon(imgBig);
-    SendMessage(window->win32.handle, WM_SETICON, ICON_BIG, (LPARAM) icon);
-    SendMessage(window->win32.handle, WM_SETICON, ICON_SMALL, (LPARAM) (imgSmall == imgBig ? icon : createIcon(imgSmall)));
+    HICON iconBig = (HICON)SendMessage(window->win32.handle, WM_SETICON, ICON_BIG, (LPARAM) icon);
+    HICON iconSmall = (HICON)SendMessage(window->win32.handle, WM_SETICON, ICON_SMALL, (LPARAM) (imgSmall == imgBig ? icon : createIcon(imgSmall)));
+
+    if (iconBig) // Destroy previous icon(s)
+    {
+        DestroyIcon(iconBig);
+        if (iconSmall != iconBig)
+            DestroyIcon(iconSmall);
+    }
 }
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)

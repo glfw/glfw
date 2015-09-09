@@ -92,6 +92,8 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [Cocoa] Bugfix: The primary monitor would get reported as disconnected when
                    entering full screen on a dual-GPU machine with automatic
                    graphics switching
+ - [Cocoa] Bugfix: The original video modes were not restored when the
+                   application was hidden
  - [X11] Bugfix: `glfwInit` would segfault on systems without RandR
  - [X11] Bugfix: The response to `_NET_WM_PING` was sent to the wrong window
  - [X11] Bugfix: Character input via XIM did not work in many cases

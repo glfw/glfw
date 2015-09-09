@@ -287,6 +287,14 @@ static int translateKey(unsigned int key)
     _glfwPlatformPostEmptyEvent();
 }
 
+- (void)applicationDidHide:(NSNotification *)notification
+{
+    int i;
+
+    for (i = 0;  i < _glfw.monitorCount;  i++)
+        _glfwRestoreVideoMode(_glfw.monitors[i]);
+}
+
 @end
 
 

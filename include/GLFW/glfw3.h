@@ -3307,7 +3307,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
  *  @return The address of the function, or `NULL` if an [error](@ref
  *  error_handling) occurred.
  *
- *  @remarks The addresses of a given function is not guaranteed to be the same
+ *  @remarks The address of a given function is not guaranteed to be the same
  *  between contexts.
  *
  *  @remarks This function may return a non-`NULL` address despite the

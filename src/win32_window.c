@@ -627,6 +627,35 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             DragFinish(drop);
             return 0;
         }
+
+		case WM_POINTERDOWN:
+		case WM_POINTERUPDATE:
+		case WM_POINTERUP:
+		case WM_POINTERWHEEL:
+		case WM_POINTERHWHEEL:
+		{
+			if (window->win32.pointerInput)
+			{
+				window->win32.pointerInput((GLFWwindow*)window, GET_POINTERID_WPARAM(wParam));
+				return 0;
+			}
+			else
+			{
+				break;
+			}
+		}
+		case WM_POINTERCAPTURECHANGED:
+		{
+			if (window->win32.pointerCaptureChange)
+			{
+				window->win32.pointerCaptureChange((GLFWwindow*)window, GET_POINTERID_WPARAM(wParam));
+				return 0;
+			}
+			else
+			{
+				break;
+			}
+		}
     }
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -726,6 +755,15 @@ static int createWindow(_GLFWwindow* window,
 
     if (!_glfwCreateContext(window, ctxconfig, fbconfig))
         return GL_FALSE;
+
+	// Enable mouse to act as pointing device for this application
+	// if window.
+	if (!EnableMouseInPointer(TRUE))
+	{
+		//HRESULT_FROM_WIN32(GetLastError())
+		_glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to enable MouseInPointer");
+		return GL_FALSE;
+	}
 
     return GL_TRUE;
 }

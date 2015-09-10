@@ -437,6 +437,21 @@ static void monitor_callback(GLFWmonitor* monitor, int event)
     }
 }
 
+// for win32 PointInput API
+static void pointer_input_callback(GLFWwindow* window, unsigned int point_id)
+{
+	Slot* slot = glfwGetWindowUserPointer(window);
+	printf("%08x to %i at %0.3f: point input, point ID: %i\n",
+	counter++, slot->number, glfwGetTime(), point_id);
+}
+
+static void pointer_capture_change_callback(GLFWwindow* window, unsigned int point_id)
+{
+	Slot* slot = glfwGetWindowUserPointer(window);
+	printf("%08x to %i at %0.3f: point capture change, point ID: %i\n",
+		counter++, slot->number, glfwGetTime(), point_id);
+}
+
 int main(int argc, char** argv)
 {
     Slot* slots;
@@ -550,6 +565,11 @@ int main(int argc, char** argv)
         glfwSetCharCallback(slots[i].window, char_callback);
         glfwSetCharModsCallback(slots[i].window, char_mods_callback);
         glfwSetDropCallback(slots[i].window, drop_callback);
+
+		// if Uncomment, will response win32 PointInput events,
+		// but MouseButton, CursorPos event will not response.
+		glfwSetPointerInputCallback(slots[i].window, pointer_input_callback);
+		glfwSetPointerCaptureChangeCallback(slots[i].window, pointer_capture_change_callback);
 
         glfwMakeContextCurrent(slots[i].window);
         glfwSwapInterval(1);

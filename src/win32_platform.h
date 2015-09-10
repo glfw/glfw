@@ -51,14 +51,14 @@
  #define UNICODE
 #endif
 
-// GLFW requires Windows XP or later
-#if WINVER < 0x0501
- #undef WINVER
- #define WINVER 0x0501
+// GLFW requires Windows 8.1 or later, owing to Pointer Input API.
+#if WINVER < 0x0602
+#undef WINVER
+#define WINVER 0x0602
 #endif
-#if _WIN32_WINNT < 0x0501
- #undef _WIN32_WINNT
- #define _WIN32_WINNT 0x0501
+#if _WIN32_WINNT < 0x0602
+#undef _WIN32_WINNT
+#define _WIN32_WINNT 0x0602
 #endif
 
 #include <windows.h>
@@ -156,6 +156,11 @@ typedef struct _GLFWwindowWin32
 
     // The last received cursor position, regardless of source
     int                 cursorPosX, cursorPosY;
+
+	// for pointer input events
+	UINT32 pointerFrameID;
+	GLFWpointerinputfun pointerInput;
+	GLFWpointercapturechangefun pointerCaptureChange;
 
 } _GLFWwindowWin32;
 

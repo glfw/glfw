@@ -3330,6 +3330,15 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
  */
 GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);
 
+/*************************************************************************
+* For win32 PointerInputer API 
+*************************************************************************/
+
+typedef void(*GLFWpointerinputfun)(GLFWwindow*, unsigned int);
+GLFWAPI GLFWpointerinputfun glfwSetPointerInputCallback(GLFWwindow* window, GLFWpointerinputfun cbfun);
+
+typedef void(*GLFWpointercapturechangefun)(GLFWwindow*, unsigned int);
+GLFWAPI GLFWpointercapturechangefun glfwSetPointerCaptureChangeCallback(GLFWwindow* window, GLFWpointercapturechangefun cbfun);
 
 /*************************************************************************
  * Global definition cleanup

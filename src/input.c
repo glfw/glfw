@@ -612,3 +612,21 @@ GLFWAPI void glfwSetTime(double time)
     _glfwPlatformSetTime(time);
 }
 
+GLFWAPI GLFWpointerinputfun glfwSetPointerInputCallback(GLFWwindow* handle,
+	GLFWpointerinputfun cbfun)
+{
+	_GLFWwindow* window = (_GLFWwindow*)handle;
+	_GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+	_GLFW_SWAP_POINTERS(window->win32.pointerInput, cbfun);
+	return cbfun;
+}
+
+GLFWAPI GLFWpointercapturechangefun glfwSetPointerCaptureChangeCallback(GLFWwindow* handle,
+	GLFWpointercapturechangefun cbfun)
+{
+	_GLFWwindow* window = (_GLFWwindow*)handle;
+	_GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+	_GLFW_SWAP_POINTERS(window->win32.pointerCaptureChange, cbfun);
+	return cbfun;
+}
+

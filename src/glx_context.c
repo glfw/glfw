@@ -321,7 +321,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     if (!chooseFBConfig(fbconfig, &native))
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
+        _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "GLX: Failed to find a suitable GLXFBConfig");
         return GL_FALSE;
     }

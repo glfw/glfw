@@ -211,8 +211,8 @@ int _glfwCreateContext(_GLFWwindow* window,
         [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
     if (window->nsgl.pixelFormat == nil)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "NSGL: Failed to create OpenGL pixel format");
+        _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
+                        "NSGL: Failed to find a suitable pixel format");
         return GL_FALSE;
     }
 

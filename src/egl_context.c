@@ -306,7 +306,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     if (!chooseFBConfigs(ctxconfig, fbconfig, &config))
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
+        _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "EGL: Failed to find a suitable EGLConfig");
         return GL_FALSE;
     }

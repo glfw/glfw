@@ -250,7 +250,7 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
     closest = _glfwChooseFBConfig(desired, usableConfigs, usableCount);
     if (!closest)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
+        _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "WGL: Failed to find a suitable pixel format");
 
         free(usableConfigs);

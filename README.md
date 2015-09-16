@@ -102,13 +102,17 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [WGL] Made all WGL functions dynamically loaded
  - [WGL] Removed `GLFW_USE_DWM_SWAP_INTERVAL` compile-time option
  - [WGL] Bugfix: Swap interval was ignored when DWM was enabled
+ - [WGL] Bugfix: Failure to find a pixel format was reported incorrectly
  - [GLX] Added dependency on `libdl` on systems where it provides `dlopen`
  - [GLX] Made all GLX functions dynamically loaded
  - [GLX] Removed `_GLFW_HAS_GLXGETPROCADDRESS*` and `_GLFW_HAS_DLOPEN`
          compile-time options
+ - [GLX] Bugfix: Failure to find a `GLXFBConfig` was reported incorrectly
  - [EGL] Made all EGL functions dynamically loaded
  - [EGL] Bugfix: `glfwGetProcAddress` did not return the addresses of core
                  functions
+ - [EGL] Bugfix: Failure to find an `EGLConfig` was reported incorrectly
+ - [NSGL] Bugfix: Failure to find a pixel format was reported incorrectly
 
 
 ## Contact

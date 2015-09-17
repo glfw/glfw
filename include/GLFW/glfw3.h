@@ -1212,12 +1212,13 @@ GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun);
 /*! @brief Returns the currently connected monitors.
  *
  *  This function returns an array of handles for all currently connected
- *  monitors.
+ *  monitors.  The primary monitor is always first in the returned array.  If no
+ *  monitors were found, this function returns `NULL`.
  *
  *  @param[out] count Where to store the number of monitors in the returned
  *  array.  This is set to zero if an error occurred.
- *  @return An array of monitor handles, or `NULL` if an
- *  [error](@ref error_handling) occurred.
+ *  @return An array of monitor handles, or `NULL` if no monitors were found or
+ *  if an [error](@ref error_handling) occurred.
  *
  *  @par Pointer Lifetime
  *  The returned array is allocated and freed by GLFW.  You should not free it
@@ -1240,13 +1241,16 @@ GLFWAPI GLFWmonitor** glfwGetMonitors(int* count);
 /*! @brief Returns the primary monitor.
  *
  *  This function returns the primary monitor.  This is usually the monitor
- *  where elements like the Windows task bar or the OS X menu bar are located.
+ *  where elements like the task bar or global menu bar are located.
  *
- *  @return The primary monitor, or `NULL` if an [error](@ref error_handling)
- *  occurred.
+ *  @return The primary monitor, or `NULL` if no monitors were found or if an
+ *  [error](@ref error_handling) occurred.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
+ *
+ *  @remarks The primary monitor is always first in the array returned by @ref
+ *  glfwGetMonitors.
  *
  *  @sa @ref monitor_monitors
  *  @sa glfwGetMonitors

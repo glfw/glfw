@@ -203,6 +203,7 @@ typedef struct _GLFWmonitorWin32
     WCHAR               displayName[32];
     char                publicAdapterName[64];
     char                publicDisplayName[64];
+    GLboolean           modesPruned;
     GLboolean           modeChanged;
 
 } _GLFWmonitorWin32;

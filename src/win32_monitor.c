@@ -152,6 +152,9 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             DeleteDC(dc);
             free(name);
 
+            if (adapter.StateFlags & DISPLAY_DEVICE_MODESPRUNED)
+                monitor->win32.modesPruned = GL_TRUE;
+
             wcscpy(monitor->win32.adapterName, adapter.DeviceName);
             wcscpy(monitor->win32.displayName, display.DeviceName);
 
@@ -226,15 +229,6 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
 
         modeIndex++;
 
-        if (ChangeDisplaySettingsExW(monitor->win32.adapterName,
-                                    &dm,
-                                    NULL,
-                                    CDS_TEST,
-                                    NULL) != DISP_CHANGE_SUCCESSFUL)
-        {
-            continue;
-        }
-
         // Skip modes with less than 15 BPP
         if (dm.dmBitsPerPel < 15)
             continue;
@@ -256,6 +250,19 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
         // Skip duplicate modes
         if (i < *count)
             continue;
+
+        if (monitor->win32.modesPruned)
+        {
+            // Skip modes not supported by the connected displays
+            if (ChangeDisplaySettingsExW(monitor->win32.adapterName,
+                                         &dm,
+                                         NULL,
+                                         CDS_TEST,
+                                         NULL) != DISP_CHANGE_SUCCESSFUL)
+            {
+                continue;
+            }
+        }
 
         if (*count == size)
         {

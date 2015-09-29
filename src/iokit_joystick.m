@@ -352,7 +352,7 @@ static CFMutableDictionaryRef createMatchingDictionary(long usagePage,
     if (result)
     {
         CFNumberRef pageRef = CFNumberCreate(kCFAllocatorDefault,
-                                             kCFNumberIntType,
+                                             kCFNumberLongType,
                                              &usagePage);
         if (pageRef)
         {
@@ -362,7 +362,7 @@ static CFMutableDictionaryRef createMatchingDictionary(long usagePage,
             CFRelease(pageRef);
 
             CFNumberRef usageRef = CFNumberCreate(kCFAllocatorDefault,
-                                                  kCFNumberIntType,
+                                                  kCFNumberLongType,
                                                   &usage);
             if (usageRef)
             {
@@ -421,11 +421,11 @@ void _glfwInitJoysticks(void)
             CFArrayAppendValue(matchingCFArrayRef, matchingCFDictRef);
             CFRelease(matchingCFDictRef);
         }
-    }
 
-    IOHIDManagerSetDeviceMatchingMultiple(_glfw.iokit_js.managerRef,
-                                          matchingCFArrayRef);
-    CFRelease(matchingCFArrayRef);
+        IOHIDManagerSetDeviceMatchingMultiple(_glfw.iokit_js.managerRef,
+                                              matchingCFArrayRef);
+        CFRelease(matchingCFArrayRef);
+    }
 
     IOHIDManagerRegisterDeviceMatchingCallback(_glfw.iokit_js.managerRef,
                                                &matchCallback, NULL);

@@ -512,9 +512,11 @@ configure_file(
     glfw3Config.cmake
     COPYONLY)
 
-export(
-    EXPORT glfwTargets
-    FILE   "${GLFW_BINARY_DIR}/glfw3Targets.cmake")
+if(NOT CMAKE_VERSION VERSION_LESS 3.0)
+    export(
+        EXPORT glfwTargets
+        FILE   "${GLFW_BINARY_DIR}/glfw3Targets.cmake")
+endif()
 
 if (GLFW_BUILD_DOCS)
     configure_file(docs/Doxyfile.in

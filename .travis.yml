@@ -1,9 +1,10 @@
 language: cpp
-
 os:
     - linux
     - osx
-
+env:
+    - BUILD_SHARED_LIBS=ON
+    - BUILD_SHARED_LIBS=OFF
 sudo: false
 addons:
     apt:
@@ -12,5 +13,5 @@ addons:
         packages:
             - cmake
 script:
-    - cmake .
+    - cmake -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} .
     - cmake --build .

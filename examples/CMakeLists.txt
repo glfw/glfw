@@ -1,15 +1,5 @@
-
 link_libraries(glfw)
-
-if (BUILD_SHARED_LIBS)
-    add_definitions(-DGLFW_DLL)
-    link_libraries("${OPENGL_gl_LIBRARY}" "${MATH_LIBRARY}")
-else()
-    link_libraries(${glfw_LIBRARIES})
-endif()
-
-include_directories("${GLFW_SOURCE_DIR}/include"
-                    "${GLFW_SOURCE_DIR}/deps")
+include_directories(${GLFW_SOURCE_DIR}/deps)
 
 if ("${OPENGL_INCLUDE_DIR}")
     include_directories("${OPENGL_INCLUDE_DIR}")
@@ -56,4 +46,3 @@ if (APPLE)
                           MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION_FULL}
                           MACOSX_BUNDLE_INFO_PLIST "${GLFW_SOURCE_DIR}/CMake/MacOSXBundleInfo.plist.in")
 endif()
-

@@ -1,10 +1,3 @@
-
-include_directories("${GLFW_SOURCE_DIR}/src"
-                    "${GLFW_BINARY_DIR}/src"
-                    ${glfw_INCLUDE_DIRS})
-
-add_definitions(-D_GLFW_USE_CONFIG_H)
-
 set(common_HEADERS internal.h
                    "${GLFW_BINARY_DIR}/src/glfw_config.h"
                    "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"
@@ -59,9 +52,15 @@ endif()
 
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
 target_link_libraries(glfw ${glfw_LIBRARIES})
-target_include_directories(glfw PUBLIC 
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
+target_include_directories(glfw 
+    PUBLIC 
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+    PRIVATE 
+        "${GLFW_SOURCE_DIR}/src"
+        "${GLFW_BINARY_DIR}/src"
+        ${glfw_INCLUDE_DIRS})
+target_compile_definitions(glfw PRIVATE -D_GLFW_USE_CONFIG_H)
 
 set_target_properties(glfw PROPERTIES
                       OUTPUT_NAME "${GLFW_LIB_NAME}"
@@ -97,4 +96,3 @@ endif()
 if (GLFW_INSTALL)
     install(TARGETS glfw EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX})
 endif()
-

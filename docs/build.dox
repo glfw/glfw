@@ -191,13 +191,7 @@ CMake can import settings from CMake package file, which GLFW supports.
 find_package(glfw3 REQUIRED)
 @endcode
 
-This registers glfw imported target in your build.  If you re using CMake < 2.8.11, to be able to include
-the GLFW header, you need to tell your compiler where it is.
-
-@code{.cmake}
-include_directories(${GLFW3_INCLUDE_DIR})
-@endcode
-
+This registers glfw imported target in your build.
 You need to link against glfw library and its transitive dependencies (platform-specific).
 
 @code{.cmake}

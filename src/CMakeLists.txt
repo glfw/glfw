@@ -59,15 +59,9 @@ endif()
 
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
 target_link_libraries(glfw ${glfw_LIBRARIES})
-if (NOT CMAKE_VERSION VERSION_LESS "2.8.11")
-    # CMake 2.8.11 introduced the target_include_directories command to
-    # include and/or export public, private, and interface include
-    # directories.  TODO If/when cmake_minimum_required increases to
-    # >=2.8.11, call this command unconditionally.
-    target_include_directories(glfw PUBLIC 
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
-endif()
+target_include_directories(glfw PUBLIC 
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
 
 set_target_properties(glfw PROPERTIES
                       OUTPUT_NAME "${GLFW_LIB_NAME}"

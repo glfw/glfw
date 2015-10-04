@@ -1,0 +1,12 @@
+sudo: false
+addons:
+    apt:
+        sources:
+            - kubuntu-backports
+        packages:
+            - cmake
+script:
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make

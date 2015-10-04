@@ -1,3 +1,9 @@
+language: cpp
+
+os:
+    - linux
+    - osx
+
 sudo: false
 addons:
     apt:
@@ -6,7 +12,5 @@ addons:
         packages:
             - cmake
 script:
-    - mkdir build
-    - cd build
-    - cmake ..
+    - cmake .
     - make

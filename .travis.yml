@@ -13,4 +13,4 @@ addons:
             - cmake
 script:
     - cmake .
-    - make
+    - cmake --build .

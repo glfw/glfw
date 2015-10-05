@@ -72,6 +72,7 @@ set_target_properties(glfw PROPERTIES
 
 if (BUILD_SHARED_LIBS)
     if (WIN32)
+        target_compile_definitions(glfw INTERFACE -DGLFW_DLL)
         # The GLFW DLL needs a special compile-time macro and import library name
         set_target_properties(glfw PROPERTIES PREFIX "" IMPORT_PREFIX "")
 

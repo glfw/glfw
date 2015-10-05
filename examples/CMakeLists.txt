@@ -1,10 +1,6 @@
 link_libraries(glfw)
 include_directories(${GLFW_SOURCE_DIR}/deps)
 
-if ("${OPENGL_INCLUDE_DIR}")
-    include_directories("${OPENGL_INCLUDE_DIR}")
-endif()
-
 set(GLAD "${GLFW_SOURCE_DIR}/deps/glad/glad.h"
          "${GLFW_SOURCE_DIR}/deps/glad.c")
 set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"

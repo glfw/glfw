@@ -58,7 +58,7 @@ either be included _before_ the GLFW one, or the `GLFW_INCLUDE_NONE` macro
 These macros may be defined before the inclusion of the GLFW header and affect
 its behavior.
 
-`GLFW_DLL` is required on Windows when using the GLFW DLL, to tell the compiler
+`GLFW_DLL` is required on Windows (GLFW before 3.2) when using the GLFW DLL, to tell the compiler
 that the GLFW functions are defined in a DLL.
 
 The following macros control which OpenGL or OpenGL ES API header is included.
@@ -165,23 +165,19 @@ compiler where to find it.
 include_directories(path/to/glfw/include)
 @endcode
 
-Once GLFW has been added to the project, the `GLFW_LIBRARIES` cache variable
-contains all link-time dependencies of GLFW as it is currently configured.  To
-link against GLFW, link against them and the `glfw` target.
-
+You need to link against glfw library and its transitive dependencies.
 @code{.cmake}
-target_link_libraries(myapp glfw ${GLFW_LIBRARIES})
+target_link_libraries(myapp glfw)
 @endcode
 
-Note that `GLFW_LIBRARIES` does not include GLU, as GLFW does not use it.  If
-your application needs GLU, you can add it to the list of dependencies with the
-`OPENGL_glu_LIBRARY` cache variable, which is implicitly created when the GLFW
-CMake files look for OpenGL.
+Note that glfw transitive dependencies do not include GLU, as GLFW does not use
+it. If your application needs GLU, you can add it to the list of dependencies 
+with the `OPENGL_glu_LIBRARY` cache variable, which is implicitly created when 
+the GLFW CMake files look for OpenGL.
 
 @code{.cmake}
-target_link_libraries(myapp glfw ${OPENGL_glu_LIBRARY} ${GLFW_LIBRARIES})
+target_link_libraries(myapp glfw ${OPENGL_glu_LIBRARY})
 @endcode
-
 
 @subsection build_link_cmake With CMake and installed GLFW binaries
 
@@ -192,14 +188,59 @@ find_package(glfw3 REQUIRED)
 @endcode
 
 This registers glfw imported target in your build.
-You need to link against glfw library and its transitive dependencies (platform-specific).
+You need to link against glfw library and its transitive dependencies.
 
 @code{.cmake}
-target_link_libraries(simple ${GLFW3_LIBRARY})
+target_link_libraries(simple glfw)
 @endcode
 
+@subsection build_link_cmake_pkgconfig With CMake on Unix and installed GLFW binaries
+
+@deprecated Since GLFW 3.2 it is recommended to use @ref build_link_cmake
+"native CMake configuration files"
+
+CMake can import settings from pkg-config, which GLFW supports.  When you
+installed GLFW, the pkg-config file `glfw3.pc` was installed along with it.
+
+First you need to find the PkgConfig package.  If this fails, you may need to
+install the pkg-config package for your distribution.
+
+@code{.cmake}
+find_package(PkgConfig REQUIRED)
+@endcode
+
+This creates the CMake commands to find pkg-config packages.  Then you need to
+find the GLFW package.
+
+@code{.cmake}
+pkg_search_module(GLFW REQUIRED glfw3)
+@endcode
+
+This creates the CMake variables you need to use GLFW.  To be able to include
+the GLFW header, you need to tell your compiler where it is.
+
+@code{.cmake}
+include_directories(${GLFW_INCLUDE_DIRS})
+@endcode
+
+You also need to link against the correct libraries.  If you are using the
+shared library version of GLFW, use the `GLFW_LIBRARIES` variable.
+
+@code{.cmake}
+target_link_libraries(simple ${GLFW_LIBRARIES})
+@endcode
+
+If you are using the static library version of GLFW, use the
+`GLFW_STATIC_LIBRARIES` variable instead.
+
+@code{.cmake}
+target_link_libraries(simple ${GLFW_STATIC_LIBRARIES})
+@endcode
 
 @subsection build_link_pkgconfig With pkg-config on OS X or other Unix
+
+@deprecated Since GLFW 3.2 it is recommended to use @ref build_link_cmake
+"native CMake configuration files"
 
 GLFW supports [pkg-config](http://www.freedesktop.org/wiki/Software/pkg-config/),
 and the `glfw3.pc` pkf-config file is generated when the GLFW library is built

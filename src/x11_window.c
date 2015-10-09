@@ -37,6 +37,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <errno.h>
+#include <assert.h>
 
 // Action for EWMH client messages
 #define _NET_WM_STATE_REMOVE        0
@@ -845,6 +846,31 @@ static void leaveFullscreenMode(_GLFWwindow* window)
     }
 }
 
+// Decode a Unicode code point from a UTF-8 stream
+// Based on cutef8 by Jeff Bezanson (Public Domain)
+//
+#if defined(X_HAVE_UTF8_STRING)
+static unsigned int decodeUTF8(const char** s)
+{
+    unsigned int ch = 0, count = 0;
+    static const unsigned int offsets[] =
+    {
+        0x00000000u, 0x00003080u, 0x000e2080u,
+        0x03c82080u, 0xfa082080u, 0x82082080u
+    };
+
+    do
+    {
+        ch = (ch << 6) + (unsigned char) **s;
+        (*s)++;
+        count++;
+    } while ((**s & 0xc0) == 0x80);
+
+    assert(count <= 6);
+    return ch - offsets[count - 1];
+}
+#endif /*X_HAVE_UTF8_STRING*/
+
 // Process the specified X event
 //
 static void processEvent(XEvent *event)
@@ -895,6 +921,19 @@ static void processEvent(XEvent *event)
 
                 if (!filtered)
                 {
+#if defined(X_HAVE_UTF8_STRING)
+                    Status status;
+                    char buffer[96];
+                    const char* c = buffer;
+
+                    const int count = Xutf8LookupString(window->x11.ic,
+                                                        &event->xkey,
+                                                        buffer, sizeof(buffer),
+                                                        NULL, &status);
+
+                    while (c - buffer < count)
+                        _glfwInputChar(window, decodeUTF8(&c), mods, plain);
+#else
                     int i;
                     Status status;
                     wchar_t buffer[16];
@@ -906,6 +945,7 @@ static void processEvent(XEvent *event)
 
                     for (i = 0;  i < count;  i++)
                         _glfwInputChar(window, buffer[i], mods, plain);
+#endif
                 }
             }
             else

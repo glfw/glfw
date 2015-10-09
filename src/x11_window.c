@@ -921,31 +921,60 @@ static void processEvent(XEvent *event)
 
                 if (!filtered)
                 {
+                    int count;
+                    Status status;
 #if defined(X_HAVE_UTF8_STRING)
-                    Status status;
                     char buffer[96];
-                    const char* c = buffer;
+                    char* chars = buffer;
 
-                    const int count = Xutf8LookupString(window->x11.ic,
-                                                        &event->xkey,
-                                                        buffer, sizeof(buffer),
-                                                        NULL, &status);
+                    count = Xutf8LookupString(window->x11.ic,
+                                              &event->xkey,
+                                              buffer, sizeof(buffer),
+                                              NULL, &status);
 
-                    while (c - buffer < count)
-                        _glfwInputChar(window, decodeUTF8(&c), mods, plain);
+                    if (status == XBufferOverflow)
+                    {
+                        chars = calloc(count, 1);
+                        count = Xutf8LookupString(window->x11.ic,
+                                                  &event->xkey,
+                                                  chars, count,
+                                                  NULL, &status);
+                    }
+
+                    if (status == XLookupChars || status == XLookupBoth)
+                    {
+                        const char* c = chars;
+                        while (c - chars < count)
+                            _glfwInputChar(window, decodeUTF8(&c), mods, plain);
+                    }
 #else
-                    int i;
-                    Status status;
                     wchar_t buffer[16];
+                    wchar_t* chars = buffer;
 
-                    const int count = XwcLookupString(window->x11.ic,
-                                                      &event->xkey,
-                                                      buffer, sizeof(buffer),
-                                                      NULL, &status);
+                    count = XwcLookupString(window->x11.ic,
+                                            &event->xkey,
+                                            buffer, sizeof(buffer) / sizeof(wchar_t),
+                                            NULL, &status);
 
-                    for (i = 0;  i < count;  i++)
-                        _glfwInputChar(window, buffer[i], mods, plain);
+                    if (status == XBufferOverflow)
+                    {
+                        chars = calloc(count, sizeof(wchar_t));
+                        count = XwcLookupString(window->x11.ic,
+                                                &event->xkey,
+                                                chars, count,
+                                                NULL, &status);
+                    }
+
+                    if (status == XLookupChars || status == XLookupBoth)
+                    {
+                        int i;
+                        for (i = 0;  i < count;  i++)
+                            _glfwInputChar(window, chars[i], mods, plain);
+                    }
 #endif
+
+                    if (chars != buffer)
+                        free(chars);
                 }
             }
             else

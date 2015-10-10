@@ -97,6 +97,9 @@ static void scale(void* data,
                   struct wl_output* output,
                   int32_t factor)
 {
+    struct _GLFWmonitor *monitor = data;
+
+    monitor->wl.scale = factor;
 }
 
 static const struct wl_output_listener output_listener = {
@@ -141,6 +144,8 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
 
     monitor->wl.modes = calloc(4, sizeof(_GLFWvidmodeWayland));
     monitor->wl.modesSize = 4;
+
+    monitor->wl.scale = 1;
 
     monitor->wl.output = output;
     wl_output_add_listener(output, &output_listener, monitor);

@@ -86,6 +86,8 @@ extern "C" {
 #elif defined(GLFW_EXPOSE_NATIVE_X11)
  #include <X11/Xlib.h>
  #include <X11/extensions/Xrandr.h>
+#elif defined(GLFW_EXPOSE_NATIVE_WAYLAND)
+ #include <wayland-client-protocol.h>
 #else
  #error "No window API selected"
 #endif
@@ -299,6 +301,23 @@ GLFWAPI Window glfwGetX11Window(GLFWwindow* window);
  *  @ingroup native
  */
 GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* window);
+#endif
+
+#if defined(GLFW_EXPOSE_NATIVE_WAYLAND)
+/*! @brief Returns the `struct wl_surface*` of the specified window.
+ *
+ *  @return The `struct wl_surface*` of the specified window, or `NULL` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @par Thread Safety
+ *  This function may be called from any thread.  Access is not synchronized.
+ *
+ *  @par History
+ *  Added in GLFW 3.2.
+ *
+ *  @ingroup native
+ */
+GLFWAPI struct wl_surface* glfwGetWaylandSurface(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_EGL)

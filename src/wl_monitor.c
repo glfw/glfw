@@ -97,6 +97,9 @@ static void scale(void* data,
                   struct wl_output* output,
                   int32_t factor)
 {
+    struct _GLFWmonitor *monitor = data;
+
+    monitor->wl.scale = factor;
 }
 
 static const struct wl_output_listener output_listener = {

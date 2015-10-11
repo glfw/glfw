@@ -122,6 +122,7 @@ int main(int argc, char** argv)
 
     for (;;)
     {
+        int width, height;
         GLFWmonitor* monitor = NULL;
 
         if (count % 2 == 0)
@@ -131,7 +132,19 @@ int main(int argc, char** argv)
             monitor = monitors[rand() % monitorCount];
         }
 
-        window = open_window(640, 480, monitor);
+        if (monitor)
+        {
+            const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+            width = mode->width;
+            height = mode->height;
+        }
+        else
+        {
+            width = 640;
+            height = 480;
+        }
+
+        window = open_window(width, height, monitor);
         if (!window)
         {
             glfwTerminate();

@@ -6,7 +6,9 @@ GLFW is a free, Open Source, multi-platform library for OpenGL and OpenGL ES
 application development.  It provides a simple, platform-independent API for
 creating windows and contexts, reading input, handling events, etc.
 
-Version 3.1.2 is _not yet described_.
+Version 3.1.2 adds fixes for a large number of bugs that together affect all
+supported platforms, as well as dynamic loading work that simplifies compilation
+and linking.
 
 If you are new to GLFW, you may find the
 [introductory tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW

@@ -96,8 +96,8 @@ to that header.
 
 `GLFW_INCLUDE_GLU` makes the header include the GLU header in addition to the
 header selected above.  This should only be used with the standard OpenGL header
-and only for legacy code.  GLU has been deprecated and should not be used in new
-code.
+and only for compatibility with legacy code.  GLU has been deprecated and should
+not be used in new code.
 
 @note GLFW does not provide any of the API headers mentioned above.  They must
 be provided by your development environment or your OpenGL or OpenGL ES SDK.
@@ -254,7 +254,7 @@ You can also use the `glfw3.pc` file without installing it first, by using the
 env PKG_CONFIG_PATH=path/to/glfw/src cc `pkg-config --cflags glfw3` -o myprog myprog.c `pkg-config --libs glfw3`
 @endcode
 
-The dependencies do not include GLU, as GLFW does not need it.  On OS X, GLU is
+The dependencies do not include GLU, as GLFW does not use it.  On OS X, GLU is
 built into the OpenGL framework, so if you need GLU you don't need to do
 anything extra.  If you need GLU and are using Linux or BSD, you should add the
 `glu` pkg-config module.
@@ -263,7 +263,8 @@ anything extra.  If you need GLU and are using Linux or BSD, you should add the
 cc `pkg-config --cflags glfw3 glu` -o myprog myprog.c `pkg-config --libs glfw3 glu`
 @endcode
 
-If you are using the static version of the GLFW library, make sure you don't link statically against GLU.
+If you are using the static version of the GLFW library, make sure you don't
+link statically against GLU.
 
 @code{.sh}
 cc `pkg-config --cflags glfw3 glu` -o myprog myprog.c `pkg-config --static --libs glfw3` `pkg-config --libs glu`

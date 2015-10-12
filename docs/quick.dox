@@ -47,8 +47,9 @@ In other words:
   GLFW one and it will detect this
 
 Starting with version 3.0, the GLU header `glu.h` is no longer included by
-default.  If you wish to include it, define `GLFW_INCLUDE_GLU` before the
-inclusion of the GLFW header.
+default.  GLU is deprecated and should not be used in new code.  If you need to
+include it for legacy code, define `GLFW_INCLUDE_GLU` before the inclusion of
+the GLFW header.
 
 @code
 #define GLFW_INCLUDE_GLU

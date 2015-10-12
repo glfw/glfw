@@ -429,7 +429,7 @@ invalidating any window handles you may still have.
 
 GLFW 3 does not by default include the GLU header and GLU itself has been
 deprecated by [Khronos](https://en.wikipedia.org/wiki/Khronos_Group).  __New
-projects should avoid using GLU__, but if you need to compile legacy code that
+projects should not use GLU__, but if you need it for legacy code that
 has been moved to GLFW 3, you can request that the GLFW header includes it by
 defining `GLFW_INCLUDE_GLU` before the inclusion of the GLFW header.
 

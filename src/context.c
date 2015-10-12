@@ -125,7 +125,7 @@ GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
                 return GLFW_FALSE;
             }
 
-            if (ctxconfig->major < 3 ||
+            if (ctxconfig->major <= 2 ||
                 (ctxconfig->major == 3 && ctxconfig->minor < 2))
             {
                 // Desktop OpenGL context profiles are only defined for version 3.2
@@ -137,7 +137,7 @@ GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
             }
         }
 
-        if (ctxconfig->forward && ctxconfig->major < 3)
+        if (ctxconfig->forward && ctxconfig->major <= 2)
         {
             // Forward-compatible contexts are only defined for OpenGL version 3.0 and above
             _glfwInputError(GLFW_INVALID_VALUE,
@@ -367,7 +367,7 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
         return GLFW_FALSE;
     }
 
-    if (window->context.major > 2)
+    if (window->context.major >= 3)
     {
         // OpenGL 3.0+ uses a different function for extension string retrieval
         // We cache it here instead of in glfwExtensionSupported mostly to alert
@@ -406,7 +406,7 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
         }
 
         // Read back OpenGL context profile (OpenGL 3.2 and above)
-        if (window->context.major > 3 ||
+        if (window->context.major >= 4 ||
             (window->context.major == 3 && window->context.minor >= 2))
         {
             GLint mask;

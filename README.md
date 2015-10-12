@@ -70,6 +70,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - Changed minimum required CMake version to 2.8.12
  - Replaced GLU with [linmath.h](https://github.com/datenwolf/linmath.h) in
    example programs
+ - Merged all cursor test programs into the `cursor` program
  - Removed all mention of GLU in examples, build files and package dependencies
  - Bugfix: Initialization failed on headless systems
  - Bugfix: The cached current context could get out of sync

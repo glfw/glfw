@@ -1,6 +1,7 @@
 project(GLFW C)
 
 cmake_minimum_required(VERSION 2.8.12)
+cmake_policy(SET CMP0022 NEW)
 
 if (NOT CMAKE_VERSION VERSION_LESS "3.0")
     # Until all major package systems have moved to CMake 3,
@@ -469,40 +470,10 @@ else()
 endif()
 
 #--------------------------------------------------------------------
-# Create generated files
-#--------------------------------------------------------------------
-include(CMakePackageConfigHelpers)
-
-if (UNIX)
-    set(GLFW_CONFIG_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake/glfw3/")
-else()
-    set(GLFW_CONFIG_PATH "${CMAKE_INSTALL_PREFIX}/")
-endif()
-
-configure_package_config_file("${GLFW_SOURCE_DIR}/src/glfw3Config.cmake.in"
-                              "${GLFW_BINARY_DIR}/src/glfw3Config.cmake"
-                              INSTALL_DESTINATION "${GLFW_CONFIG_PATH}"
-                              PATH_VARS CMAKE_INSTALL_PREFIX
-                              NO_CHECK_REQUIRED_COMPONENTS_MACRO)
-
-write_basic_package_version_file("${GLFW_BINARY_DIR}/src/glfw3ConfigVersion.cmake" 
-                                 VERSION ${GLFW_VERSION_FULL}
-                                 COMPATIBILITY SameMajorVersion)
-
-if (GLFW_BUILD_DOCS)
-    configure_file("${GLFW_SOURCE_DIR}/docs/Doxyfile.in"
-                   "${GLFW_BINARY_DIR}/docs/Doxyfile" @ONLY)
-endif()
-
-configure_file("${GLFW_SOURCE_DIR}/src/glfw_config.h.in"
-               "${GLFW_BINARY_DIR}/src/glfw_config.h" @ONLY)
-
-configure_file("${GLFW_SOURCE_DIR}/src/glfw3.pc.in"
-               "${GLFW_BINARY_DIR}/src/glfw3.pc" @ONLY)
-
-#--------------------------------------------------------------------
 # Add subdirectories
 #--------------------------------------------------------------------
+include(GNUInstallDirs)
+
 add_subdirectory(src)
 
 if (GLFW_BUILD_EXAMPLES)
@@ -518,25 +489,74 @@ if (DOXYGEN_FOUND AND GLFW_BUILD_DOCS)
 endif()
 
 #--------------------------------------------------------------------
+# Create generated files
+#--------------------------------------------------------------------
+include(CMakePackageConfigHelpers)
+
+set(GLFW_INSTALL_CONFIG_DIR    "${CMAKE_INSTALL_LIBDIR}/cmake/glfw3")
+set(GLFW_INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+
+write_basic_package_version_file(
+    glfw3ConfigVersion.cmake
+    VERSION ${GLFW_VERSION_FULL}
+    COMPATIBILITY SameMajorVersion)
+
+# build tree package export
+configure_file(
+    src/glfw3BuildConfig.cmake.in
+    glfw3Config.cmake
+    COPYONLY)
+
+export(
+    TARGETS glfw
+    FILE glfw3Targets.cmake)
+
+if (GLFW_BUILD_DOCS)
+    configure_file(docs/Doxyfile.in
+                   docs/Doxyfile @ONLY)
+endif()
+
+configure_file(src/glfw_config.h.in
+               src/glfw_config.h @ONLY)
+
+configure_file(src/glfw3.pc.in
+               src/glfw3.pc @ONLY)
+
+#--------------------------------------------------------------------
 # Install files other than the library
 # The library is installed by src/CMakeLists.txt
 #--------------------------------------------------------------------
 if (GLFW_INSTALL)
-    install(DIRECTORY include/GLFW DESTINATION include
-            FILES_MATCHING PATTERN glfw3.h PATTERN glfw3native.h)
+    configure_package_config_file(src/glfw3Config.cmake.in
+        ${GLFW_INSTALL_CONFIG_DIR}/glfw3Config.cmake
+        INSTALL_DESTINATION ${GLFW_INSTALL_CONFIG_DIR}
+        PATH_VARS CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR
+        NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
-    install(FILES "${GLFW_BINARY_DIR}/src/glfw3Config.cmake"
-                  "${GLFW_BINARY_DIR}/src/glfw3ConfigVersion.cmake"
-            DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
+    install(
+        DIRECTORY include/GLFW 
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        FILES_MATCHING PATTERN *.h)
 
-    install(EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
-    install(FILES "${GLFW_BINARY_DIR}/src/glfw3.pc"
-            DESTINATION lib${LIB_SUFFIX}/pkgconfig)
+    install(
+        FILES 
+            ${GLFW_BINARY_DIR}/${GLFW_INSTALL_CONFIG_DIR}/glfw3Config.cmake
+            ${GLFW_BINARY_DIR}/glfw3ConfigVersion.cmake
+        DESTINATION ${GLFW_INSTALL_CONFIG_DIR})
+
+    install(
+        EXPORT glfwTargets 
+        FILE glfw3Targets.cmake
+        DESTINATION ${GLFW_INSTALL_CONFIG_DIR})
+
+    install(
+        FILES "${GLFW_BINARY_DIR}/src/glfw3.pc"
+        DESTINATION ${GLFW_INSTALL_PKGCONFIG_DIR})
 
     # Only generate this target if no higher-level project already has
     if (NOT TARGET uninstall)
-        configure_file("${GLFW_SOURCE_DIR}/cmake_uninstall.cmake.in"
-                       "${GLFW_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
+        configure_file(cmake_uninstall.cmake.in
+                       cmake_uninstall.cmake IMMEDIATE @ONLY)
 
         add_custom_target(uninstall
                           "${CMAKE_COMMAND}" -P

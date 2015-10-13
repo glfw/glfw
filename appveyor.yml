@@ -1,0 +1,7 @@
+environment:
+    matrix:
+        - BUILD_SHARED_LIBS: ON
+        - BUILD_SHARED_LIBS: OFF
+build_script:
+    - cmake -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% .
+    - cmake --build .

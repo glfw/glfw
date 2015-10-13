@@ -1,10 +1,3 @@
-
-include_directories("${GLFW_SOURCE_DIR}/src"
-                    "${GLFW_BINARY_DIR}/src"
-                    ${glfw_INCLUDE_DIRS})
-
-add_definitions(-D_GLFW_USE_CONFIG_H)
-
 set(common_HEADERS internal.h
                    "${GLFW_BINARY_DIR}/src/glfw_config.h"
                    "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"
@@ -58,15 +51,28 @@ if (APPLE)
 endif()
 
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
+target_link_libraries(glfw ${glfw_LIBRARIES})
+target_include_directories(glfw 
+    PUBLIC 
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+    PRIVATE 
+        "${GLFW_SOURCE_DIR}/src"
+        "${GLFW_BINARY_DIR}/src"
+        ${glfw_INCLUDE_DIRS})
+target_compile_definitions(glfw PRIVATE -D_GLFW_USE_CONFIG_H)
+
 set_target_properties(glfw PROPERTIES
                       OUTPUT_NAME "${GLFW_LIB_NAME}"
                       VERSION ${GLFW_VERSION}
                       SOVERSION ${GLFW_VERSION_MAJOR}
                       POSITION_INDEPENDENT_CODE ON
-                      FOLDER "GLFW3")
+                      FOLDER "GLFW3"
+                      DEBUG_POSTFIX d)
 
 if (BUILD_SHARED_LIBS)
     if (WIN32)
+        target_compile_definitions(glfw INTERFACE -DGLFW_DLL)
         # The GLFW DLL needs a special compile-time macro and import library name
         set_target_properties(glfw PROPERTIES PREFIX "" IMPORT_PREFIX "")
 
@@ -86,11 +92,8 @@ if (BUILD_SHARED_LIBS)
                               COMPILE_FLAGS "${glfw_CFLAGS} -fno-common"
                               INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}")
     endif()
-
-    target_link_libraries(glfw ${glfw_LIBRARIES})
 endif()
 
 if (GLFW_INSTALL)
     install(TARGETS glfw EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX})
 endif()
-

@@ -62,8 +62,14 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
     switch (key)
     {
-        case GLFW_KEY_SPACE:
+        case GLFW_KEY_I:
             glfwIconifyWindow(window);
+            break;
+        case GLFW_KEY_M:
+            glfwMaximizeWindow(window);
+            break;
+        case GLFW_KEY_R:
+            glfwRestoreWindow(window);
             break;
         case GLFW_KEY_ESCAPE:
             glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -240,7 +246,7 @@ int main(int argc, char** argv)
 
     for (;;)
     {
-        glfwPollEvents();
+        glfwWaitEvents();
 
         for (i = 0;  i < window_count;  i++)
         {

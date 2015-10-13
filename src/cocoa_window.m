@@ -851,6 +851,9 @@ static GLFWbool createWindow(_GLFWwindow* window,
 
         if (wndconfig->floating)
             [window->ns.object setLevel:NSFloatingWindowLevel];
+
+        if (wndconfig->maximized)
+            [window->ns.object zoom:nil];
     }
 
     window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
@@ -1023,7 +1026,16 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
-    [window->ns.object deminiaturize:nil];
+    if ([window->ns.object isMiniaturized])
+        [window->ns.object deminiaturize:nil];
+    else if ([window->ns.object isZoomed])
+        [window->ns.object zoom:nil];
+}
+
+void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
+{
+    if (![window->ns.object isZoomed])
+        [window->ns.object zoom:nil];
 }
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
@@ -1060,6 +1072,11 @@ int _glfwPlatformWindowIconified(_GLFWwindow* window)
 int _glfwPlatformWindowVisible(_GLFWwindow* window)
 {
     return [window->ns.object isVisible];
+}
+
+int _glfwPlatformWindowMaximized(_GLFWwindow* window)
+{
+    return [window->ns.object isZoomed];
 }
 
 void _glfwPlatformPollEvents(void)

@@ -444,6 +444,10 @@ static void detectEWMH(void)
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_ABOVE");
     _glfw.x11.NET_WM_STATE_FULLSCREEN =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_FULLSCREEN");
+    _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_MAXIMIZED_VERT");
+    _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_MAXIMIZED_HORZ");
     _glfw.x11.NET_WM_FULLSCREEN_MONITORS =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_FULLSCREEN_MONITORS");
     _glfw.x11.NET_WM_NAME =

@@ -626,6 +626,7 @@ extern "C" {
 #define GLFW_DECORATED              0x00020005
 #define GLFW_AUTO_ICONIFY           0x00020006
 #define GLFW_FLOATING               0x00020007
+#define GLFW_MAXIMIZED              0x00020008
 
 #define GLFW_RED_BITS               0x00021001
 #define GLFW_GREEN_BITS             0x00021002
@@ -2180,6 +2181,7 @@ GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* window, int* left, int* top, int
  *
  *  @sa @ref window_iconify
  *  @sa glfwRestoreWindow
+ *  @sa glfwMaximizeWindow
  *
  *  @since Added in version 2.1.
  *  @glfw3 Added window handle parameter.
@@ -2191,7 +2193,8 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow* window);
 /*! @brief Restores the specified window.
  *
  *  This function restores the specified window if it was previously iconified
- *  (minimized).  If the window is already restored, this function does nothing.
+ *  (minimized) or maximized.  If the window is already restored, this function
+ *  does nothing.
  *
  *  If the specified window is a full screen window, the resolution chosen for
  *  the window is restored on the selected monitor.
@@ -2205,6 +2208,7 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow* window);
  *
  *  @sa @ref window_iconify
  *  @sa glfwIconifyWindow
+ *  @sa glfwMaximizeWindow
  *
  *  @since Added in version 2.1.
  *  @glfw3 Added window handle parameter.
@@ -2212,6 +2216,28 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow* window);
  *  @ingroup window
  */
 GLFWAPI void glfwRestoreWindow(GLFWwindow* window);
+
+/*! @brief Maximizes the specified window.
+ *
+ *  This function maximizes the specified window if it was previously not
+ *  maximized.  If the window is already maximized, this function does nothing.
+ *
+ *  If the specified window is a full screen window, this function does nothing.
+ *
+ *  @param[in] window The window to maximize.
+ *
+ *  @par Thread Safety
+ *  This function may only be called from the main thread.
+ *
+ *  @sa @ref window_iconify
+ *  @sa glfwIconifyWindow
+ *  @sa glfwRestoreWindow
+ *
+ *  @since Added in GLFW 3.2.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwMaximizeWindow(GLFWwindow* window);
 
 /*! @brief Makes the specified window visible.
  *

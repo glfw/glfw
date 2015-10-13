@@ -255,6 +255,7 @@ struct _GLFWwndconfig
     GLFWbool      focused;
     GLFWbool      autoIconify;
     GLFWbool      floating;
+    GLFWbool      maximized;
     _GLFWmonitor* monitor;
 };
 
@@ -673,6 +674,11 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window);
  */
 void _glfwPlatformRestoreWindow(_GLFWwindow* window);
 
+/*! @copydoc glfwMaximizeWindow
+ *  @ingroup platform
+ */
+void _glfwPlatformMaximizeWindow(_GLFWwindow* window);
+
 /*! @copydoc glfwShowWindow
  *  @ingroup platform
  */
@@ -701,6 +707,11 @@ int _glfwPlatformWindowIconified(_GLFWwindow* window);
  *  @ingroup platform
  */
 int _glfwPlatformWindowVisible(_GLFWwindow* window);
+
+/*! @brief Returns whether the window is maximized.
+ *  @ingroup platform
+ */
+int _glfwPlatformWindowMaximized(_GLFWwindow* window);
 
 /*! @copydoc glfwPollEvents
  *  @ingroup platform

@@ -653,6 +653,8 @@ static int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
 {
     int xpos, ypos, fullWidth, fullHeight;
     WCHAR* wideTitle;
+    DWORD style = getWindowStyle(window);
+    DWORD exStyle = getWindowExStyle(window);
 
     if (wndconfig->monitor)
     {
@@ -671,7 +673,10 @@ static int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
         xpos = CW_USEDEFAULT;
         ypos = CW_USEDEFAULT;
 
-        getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
+        if (wndconfig->maximized)
+            style |= WS_MAXIMIZE;
+
+        getFullWindowSize(style, exStyle,
                           wndconfig->width, wndconfig->height,
                           &fullWidth, &fullHeight);
     }
@@ -684,10 +689,10 @@ static int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
         return GLFW_FALSE;
     }
 
-    window->win32.handle = CreateWindowExW(getWindowExStyle(window),
+    window->win32.handle = CreateWindowExW(exStyle,
                                            _GLFW_WNDCLASSNAME,
                                            wideTitle,
-                                           getWindowStyle(window),
+                                           style,
                                            xpos, ypos,
                                            fullWidth, fullHeight,
                                            NULL, // No parent window
@@ -1026,6 +1031,11 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
     ShowWindow(window->win32.handle, SW_RESTORE);
 }
 
+void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
+{
+    ShowWindow(window->win32.handle, SW_MAXIMIZE);
+}
+
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
     ShowWindow(window->win32.handle, SW_SHOW);
@@ -1057,6 +1067,11 @@ int _glfwPlatformWindowIconified(_GLFWwindow* window)
 int _glfwPlatformWindowVisible(_GLFWwindow* window)
 {
     return IsWindowVisible(window->win32.handle);
+}
+
+int _glfwPlatformWindowMaximized(_GLFWwindow* window)
+{
+    return IsZoomed(window->win32.handle);
 }
 
 void _glfwPlatformPollEvents(void)

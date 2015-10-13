@@ -175,6 +175,9 @@ above other regular windows, also called topmost or always-on-top.  This is
 intended primarily for debugging purposes and cannot be used to implement proper
 full screen windows.  This hint is ignored for full screen windows.
 
+`GLFW_MAXIMIZED` specifies whether the windowed mode window will be maximized
+when created.  This hint is ignored for full screen windows.
+
 
 @subsubsection window_hints_fb Framebuffer related hints
 
@@ -323,6 +326,7 @@ Window hint                     | Default value               | Supported values
 `GLFW_FOCUSED`                  | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 `GLFW_AUTO_ICONIFY`             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 `GLFW_FLOATING`                 | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+`GLFW_MAXIMIZED`                | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 `GLFW_RED_BITS`                 | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 `GLFW_GREEN_BITS`               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 `GLFW_BLUE_BITS`                | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
@@ -790,6 +794,9 @@ same name.
 
 `GLFW_ICONIFIED` indicates whether the specified window is iconified, whether by
 the user or with @ref glfwIconifyWindow.
+
+`GLFW_MAXIMIZED` indicates whether the specified window is maximized, whether by
+the user or with @ref glfwMaximizeWindow.
 
 `GLFW_VISIBLE` indicates whether the specified window is visible.  Window
 visibility can be controlled with @ref glfwShowWindow and @ref glfwHideWindow

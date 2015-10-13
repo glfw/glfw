@@ -355,6 +355,24 @@ static GLFWbool createWindow(_GLFWwindow* window,
                               0, 1, 0);
             }
         }
+
+        if (wndconfig->maximized)
+        {
+            if (_glfw.x11.NET_WM_STATE &&
+                _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT &&
+                _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ)
+            {
+                const Atom states[2] =
+                {
+                    _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT,
+                    _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ
+                };
+
+                XChangeProperty(_glfw.x11.display, window->x11.handle,
+                                _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
+                                PropModeReplace, (unsigned char*) &states, 2);
+            }
+        }
     }
 
 
@@ -1820,8 +1838,40 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
         return;
     }
 
-    XMapWindow(_glfw.x11.display, window->x11.handle);
+    if (_glfwPlatformWindowIconified(window))
+        XMapWindow(_glfw.x11.display, window->x11.handle);
+    else
+    {
+        if (_glfw.x11.NET_WM_STATE &&
+            _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT &&
+            _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ)
+        {
+            sendEventToWM(window,
+                          _glfw.x11.NET_WM_STATE,
+                          _NET_WM_STATE_REMOVE,
+                          _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT,
+                          _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ,
+                          1, 0);
+        }
+    }
+
     XFlush(_glfw.x11.display);
+}
+
+void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
+{
+    if (_glfw.x11.NET_WM_STATE &&
+        _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT &&
+        _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ)
+    {
+        sendEventToWM(window,
+                      _glfw.x11.NET_WM_STATE,
+                      _NET_WM_STATE_ADD,
+                      _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT,
+                      _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ,
+                      1, 0);
+        XFlush(_glfw.x11.display);
+    }
 }
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
@@ -1861,6 +1911,31 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
     XWindowAttributes wa;
     XGetWindowAttributes(_glfw.x11.display, window->x11.handle, &wa);
     return wa.map_state == IsViewable;
+}
+
+int _glfwPlatformWindowMaximized(_GLFWwindow* window)
+{
+    Atom* states;
+    unsigned long i;
+    GLFWbool maximized = GLFW_FALSE;
+    const unsigned long count =
+        _glfwGetWindowPropertyX11(window->x11.handle,
+                                  _glfw.x11.NET_WM_STATE,
+                                  XA_ATOM,
+                                  (unsigned char**) &states);
+
+    for (i = 0;  i < count;  i++)
+    {
+        if (states[i] == _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT ||
+            states[i] == _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ)
+        {
+            maximized = GLFW_TRUE;
+            break;
+        }
+    }
+
+    XFree(states);
+    return maximized;
 }
 
 void _glfwPlatformPollEvents(void)

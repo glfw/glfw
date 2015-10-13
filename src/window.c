@@ -339,6 +339,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_FLOATING:
             _glfw.hints.window.floating = value ? GLFW_TRUE : GLFW_FALSE;
             break;
+        case GLFW_MAXIMIZED:
+            _glfw.hints.window.maximized = hint ? GLFW_TRUE : GLFW_FALSE;
+            break;
         case GLFW_VISIBLE:
             _glfw.hints.window.visible = value ? GLFW_TRUE : GLFW_FALSE;
             break;
@@ -593,6 +596,13 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow* handle)
     _glfwPlatformRestoreWindow(window);
 }
 
+GLFWAPI void glfwMaximizeWindow(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT();
+    _glfwPlatformMaximizeWindow(window);
+}
+
 GLFWAPI void glfwShowWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -634,6 +644,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return _glfwPlatformWindowIconified(window);
         case GLFW_VISIBLE:
             return _glfwPlatformWindowVisible(window);
+        case GLFW_MAXIMIZED:
+            return _glfwPlatformWindowMaximized(window);
         case GLFW_RESIZABLE:
             return window->resizable;
         case GLFW_DECORATED:

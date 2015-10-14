@@ -90,10 +90,7 @@ Once you have Xcode installed, move on to @ref compile_generate.
 To compile GLFW for X11, you need to have the X11 and OpenGL header packages
 installed, as well as the basic development tools like GCC and make.  For
 example, on Ubuntu and other distributions based on Debian GNU/Linux, you need
-to install the `xorg-dev` and `libgl1-mesa-dev` packages.  The former pulls in
-all X.org header packages and the latter pulls in the Mesa OpenGL development
-packages.  Note that using header files and libraries from Mesa during
-compilation _will not_ tie your binaries to the Mesa implementation of OpenGL.
+to install the `xorg-dev` package, which pulls in all X.org header packages.
 
 Once you have installed the necessary packages, move on to @ref
 compile_generate.
@@ -183,12 +180,6 @@ library or as a DLL / shared library / dynamic library.
 is empty, it is installed to `${CMAKE_INSTALL_PREFIX}/lib`.  If it is set to
 `64`, it is installed to `${CMAKE_INSTALL_PREFIX}/lib64`.
 
-`GLFW_CLIENT_LIBRARY` determines which client API library to use.  If set to
-`opengl` the OpenGL library is used, if set to `glesv1` for the OpenGL ES 1.x
-library is used, or if set to `glesv2` the OpenGL ES 2.0 library is used.  The
-selected library and its header files must be present on the system for this to
-work.
-
 `GLFW_BUILD_EXAMPLES` determines whether the GLFW examples are built
 along with the library.
 
@@ -249,8 +240,8 @@ defines `_GLFW_USE_CONFIG_H`, which causes this header to be included by
 macros to be defined on the command-line.
 
 Three macros _must_ be defined when compiling GLFW: one selecting the window
-creation API, one selecting the context creation API and one client library.
-Exactly one of each kind must be defined for GLFW to compile and link.
+creation API and one selecting the context creation API.  Exactly one of each
+kind must be defined for GLFW to compile and link.
 
 The window creation API is used to create windows, handle input, monitors, gamma
 ramps and clipboard.  The options are:
@@ -270,20 +261,6 @@ configurations and to create contexts.  The options are:
  - `_GLFW_EGL` to use the EGL API
 
 Wayland and Mir both require the EGL backend.
-
-The client library is the one providing the OpenGL or OpenGL ES API, which is
-used by GLFW to probe the created context.  This is not the same thing as the
-client API, as many desktop OpenGL client libraries now expose the OpenGL ES API
-through extensions.  The options are:
-
- - `_GLFW_USE_OPENGL` for the desktop OpenGL (opengl32.dll, libGL.so or
-   OpenGL.framework)
- - `_GLFW_USE_GLESV1` for OpenGL ES 1.x (experimental)
- - `_GLFW_USE_GLESV2` for OpenGL ES 2.x (experimental)
-
-Note that `_GLFW_USE_GLESV1` and `_GLFW_USE_GLESV2` may only be used with EGL,
-as the other context creation APIs do not interface with OpenGL ES client
-libraries.
 
 If you are building GLFW as a shared library / dynamic library / DLL then you
 must also define `_GLFW_BUILD_DLL`.  Otherwise, you may not define it.

@@ -268,9 +268,7 @@ struct _GLFWwindow
         int             release;
     } context;
 
-#if defined(_GLFW_USE_OPENGL)
     PFNGLGETSTRINGIPROC GetStringi;
-#endif
     PFNGLGETINTEGERVPROC GetIntegerv;
     PFNGLGETSTRINGPROC  GetString;
     PFNGLCLEARPROC      Clear;

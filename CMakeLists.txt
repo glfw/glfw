@@ -86,10 +86,10 @@ if (MSVC)
 
     if (NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
         foreach (flag CMAKE_C_FLAGS
-                        CMAKE_C_FLAGS_DEBUG
-                        CMAKE_C_FLAGS_RELEASE
-                        CMAKE_C_FLAGS_MINSIZEREL
-                        CMAKE_C_FLAGS_RELWITHDEBINFO)
+                      CMAKE_C_FLAGS_DEBUG
+                      CMAKE_C_FLAGS_RELEASE
+                      CMAKE_C_FLAGS_MINSIZEREL
+                      CMAKE_C_FLAGS_RELWITHDEBINFO)
 
             if (${flag} MATCHES "/MD")
                 string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")

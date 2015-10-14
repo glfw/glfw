@@ -406,6 +406,7 @@ int main(int argc, char** argv)
     float f;
     GLint uloc_modelview;
     GLint uloc_project;
+    int width, height;
 
     GLuint shader_program;
 
@@ -469,7 +470,8 @@ int main(int argc, char** argv)
     /* Create the vbo to store all the information for the grid and the height */
 
     /* setup the scene ready for rendering */
-    glViewport(0, 0, 800, 600);
+    glfwGetFramebufferSize(window, &width, &height);
+    glViewport(0, 0, width, height);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     /* main loop */

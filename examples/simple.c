@@ -24,6 +24,7 @@
 //========================================================================
 //! [code]
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdlib.h>
@@ -57,6 +58,7 @@ int main(void)
     }
 
     glfwMakeContextCurrent(window);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
 
     glfwSetKeyCallback(window, key_callback);

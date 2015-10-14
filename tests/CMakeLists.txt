@@ -3,7 +3,7 @@ link_libraries(glfw)
 
 if (BUILD_SHARED_LIBS)
     add_definitions(-DGLFW_DLL)
-    link_libraries("${OPENGL_gl_LIBRARY}" "${MATH_LIBRARY}")
+    link_libraries("${MATH_LIBRARY}")
 else()
     link_libraries(${glfw_LIBRARIES})
 endif()
@@ -11,42 +11,40 @@ endif()
 include_directories("${GLFW_SOURCE_DIR}/include"
                     "${GLFW_SOURCE_DIR}/deps")
 
-if ("${OPENGL_INCLUDE_DIR}")
-    include_directories("${OPENGL_INCLUDE_DIR}")
-endif()
-
+set(GLAD "${GLFW_SOURCE_DIR}/deps/glad/glad.h"
+         "${GLFW_SOURCE_DIR}/deps/glad.c")
 set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"
            "${GLFW_SOURCE_DIR}/deps/getopt.c")
 set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
                 "${GLFW_SOURCE_DIR}/deps/tinycthread.c")
 
-add_executable(clipboard clipboard.c ${GETOPT})
-add_executable(events events.c ${GETOPT})
-add_executable(msaa msaa.c ${GETOPT})
-add_executable(gamma gamma.c ${GETOPT})
-add_executable(glfwinfo glfwinfo.c ${GETOPT})
-add_executable(iconify iconify.c ${GETOPT})
-add_executable(joysticks joysticks.c)
-add_executable(monitors monitors.c ${GETOPT})
-add_executable(reopen reopen.c)
-add_executable(cursor cursor.c)
+add_executable(clipboard clipboard.c ${GETOPT} ${GLAD})
+add_executable(events events.c ${GETOPT} ${GLAD})
+add_executable(msaa msaa.c ${GETOPT} ${GLAD})
+add_executable(gamma gamma.c ${GETOPT} ${GLAD})
+add_executable(glfwinfo glfwinfo.c ${GETOPT} ${GLAD})
+add_executable(iconify iconify.c ${GETOPT} ${GLAD})
+add_executable(joysticks joysticks.c ${GLAD})
+add_executable(monitors monitors.c ${GETOPT} ${GLAD})
+add_executable(reopen reopen.c ${GLAD})
+add_executable(cursor cursor.c ${GLAD})
 
-add_executable(empty WIN32 MACOSX_BUNDLE empty.c ${TINYCTHREAD})
+add_executable(empty WIN32 MACOSX_BUNDLE empty.c ${TINYCTHREAD} ${GLAD})
 set_target_properties(empty PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Empty Event")
 
-add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c)
+add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c ${GLAD})
 set_target_properties(sharing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Sharing")
 
-add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c ${GETOPT})
+add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c ${GETOPT} ${GLAD})
 set_target_properties(tearing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Tearing")
 
-add_executable(threads WIN32 MACOSX_BUNDLE threads.c ${TINYCTHREAD})
+add_executable(threads WIN32 MACOSX_BUNDLE threads.c ${TINYCTHREAD} ${GLAD})
 set_target_properties(threads PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Threads")
 
-add_executable(title WIN32 MACOSX_BUNDLE title.c)
+add_executable(title WIN32 MACOSX_BUNDLE title.c ${GLAD})
 set_target_properties(title PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Title")
 
-add_executable(windows WIN32 MACOSX_BUNDLE windows.c)
+add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GLAD})
 set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 
 target_link_libraries(empty "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")

@@ -30,6 +30,7 @@
 
 #include "tinycthread.h"
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -102,7 +103,14 @@ int main(void)
 
         glfwSetWindowPos(threads[i].window, 200 + 250 * i, 200);
         glfwShowWindow(threads[i].window);
+    }
 
+    glfwMakeContextCurrent(threads[0].window);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    glfwMakeContextCurrent(NULL);
+
+    for (i = 0;  i < count;  i++)
+    {
         if (thrd_create(&threads[i].id, thread_main, threads + i) !=
             thrd_success)
         {

@@ -23,13 +23,8 @@
 //
 //========================================================================
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-/* HACK: Explicitly include the glext.h shipping with GLFW, as this program uses
- *       many modern symbols not provided by the versions in some development
- *       environments (for example on OS X).
- */
-#include <GL/glext.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -470,6 +465,7 @@ int main(int argc, char** argv)
     }
 
     glfwMakeContextCurrent(window);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 
     // Report client API version
 
@@ -500,7 +496,7 @@ int main(int argc, char** argv)
 
             if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
                 printf(" forward-compatible");
-            if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+            if (flags & 2/*GL_CONTEXT_FLAG_DEBUG_BIT*/)
                 printf(" debug");
             if (flags & GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB)
                 printf(" robustness");

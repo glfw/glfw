@@ -33,6 +33,7 @@
 //
 //========================================================================
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <time.h>
@@ -80,6 +81,7 @@ static GLFWwindow* open_window(int width, int height, GLFWmonitor* monitor)
         return NULL;
 
     glfwMakeContextCurrent(window);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);

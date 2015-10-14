@@ -27,6 +27,7 @@
 //
 //========================================================================
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -59,6 +60,7 @@ static GLFWwindow* open_window(const char* title, GLFWwindow* share, int posX, i
         return NULL;
 
     glfwMakeContextCurrent(window);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
     glfwSetWindowPos(window, posX, posY);
     glfwShowWindow(window);

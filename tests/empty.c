@@ -29,6 +29,7 @@
 
 #include "tinycthread.h"
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <math.h>
@@ -90,6 +91,7 @@ int main(void)
     }
 
     glfwMakeContextCurrent(window);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSetKeyCallback(window, key_callback);
 
     if (thrd_create(&thread, thread_main, NULL) != thrd_success)

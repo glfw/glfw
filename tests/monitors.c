@@ -28,6 +28,7 @@
 //
 //========================================================================
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -149,6 +150,7 @@ static void test_modes(GLFWmonitor* monitor)
         glfwSetKeyCallback(window, key_callback);
 
         glfwMakeContextCurrent(window);
+        gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
         glfwSwapInterval(1);
 
         glfwSetTime(0.0);

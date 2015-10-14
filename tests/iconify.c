@@ -28,6 +28,7 @@
 //
 //========================================================================
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -148,6 +149,9 @@ static GLFWwindow* create_window(GLFWmonitor* monitor)
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
+
+    glfwMakeContextCurrent(window);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 
     return window;
 }

@@ -30,6 +30,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 /**
@@ -323,6 +325,7 @@ int main(int argc, char *argv[])
     glfwSetKeyCallback(window, key);
 
     glfwMakeContextCurrent(window);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval( 1 );
 
     glfwGetFramebufferSize(window, &width, &height);

@@ -52,7 +52,7 @@ if (APPLE)
     set_target_properties(heightmap PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Heightmap")
     set_target_properties(particles PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Particles")
     set_target_properties(simple PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Simple")
-    set_target_properties(splitview PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Split View")
+    set_target_properties(splitview PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "SplitView")
     set_target_properties(wave PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Wave")
 
     set_target_properties(${WINDOWS_BINARIES} PROPERTIES

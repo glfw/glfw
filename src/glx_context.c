@@ -188,6 +188,10 @@ int _glfwInitContextAPI(void)
         dlsym(_glfw.glx.handle, "glXQueryExtensionsString");
     _glfw.glx.CreateNewContext =
         dlsym(_glfw.glx.handle, "glXCreateNewContext");
+    _glfw.glx.CreateWindow =
+        dlsym(_glfw.glx.handle, "glXCreateWindow");
+    _glfw.glx.DestroyWindow =
+        dlsym(_glfw.glx.handle, "glXDestroyWindow");
     _glfw.glx.GetProcAddress =
         dlsym(_glfw.glx.handle, "glXGetProcAddress");
     _glfw.glx.GetProcAddressARB =
@@ -463,6 +467,14 @@ int _glfwCreateContext(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
+    window->glx.window = _glfw_glXCreateWindow(_glfw.x11.display, native,
+                                               window->x11.handle, NULL);
+    if (!window->glx.window)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "GLX: Failed to create window");
+        return GLFW_FALSE;
+    }
+
     return GLFW_TRUE;
 }
 
@@ -472,6 +484,12 @@ int _glfwCreateContext(_GLFWwindow* window,
 //
 void _glfwDestroyContext(_GLFWwindow* window)
 {
+    if (window->glx.window)
+    {
+        _glfw_glXDestroyWindow(_glfw.x11.display, window->glx.window);
+        window->glx.window = None;
+    }
+
     if (window->glx.context)
     {
         _glfw_glXDestroyContext(_glfw.x11.display, window->glx.context);
@@ -520,7 +538,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     if (window)
     {
         _glfw_glXMakeCurrent(_glfw.x11.display,
-                             window->x11.handle,
+                             window->glx.window,
                              window->glx.context);
     }
     else
@@ -531,7 +549,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 {
-    _glfw_glXSwapBuffers(_glfw.x11.display, window->x11.handle);
+    _glfw_glXSwapBuffers(_glfw.x11.display, window->glx.window);
 }
 
 void _glfwPlatformSwapInterval(int interval)
@@ -541,7 +559,7 @@ void _glfwPlatformSwapInterval(int interval)
     if (_glfw.glx.EXT_swap_control)
     {
         _glfw.glx.SwapIntervalEXT(_glfw.x11.display,
-                                  window->x11.handle,
+                                  window->glx.window,
                                   interval);
     }
     else if (_glfw.glx.MESA_swap_control)

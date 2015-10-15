@@ -67,6 +67,7 @@
 #define GLX_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB 0
 #define GLX_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB 0x2098
 
+typedef XID GLXWindow;
 typedef XID GLXDrawable;
 typedef struct __GLXFBConfig* GLXFBConfig;
 typedef struct __GLXcontext* GLXContext;
@@ -88,6 +89,8 @@ typedef int (*PFNGLXSWAPINTERVALSGIPROC)(int);
 typedef void (*PFNGLXSWAPINTERVALEXTPROC)(Display*,GLXDrawable,int);
 typedef GLXContext (*PFNGLXCREATECONTEXTATTRIBSARBPROC)(Display*,GLXFBConfig,GLXContext,Bool,const int*);
 typedef XVisualInfo* (*PFNGLXGETVISUALFROMFBCONFIGPROC)(Display*,GLXFBConfig);
+typedef GLXWindow (*PFNGLXCREATEWINDOWPROC)(Display*,GLXFBConfig,Window,const int*);
+typedef void (*PFNGLXDESTROYWINDOWPROC)(Display*,GLXWindow);
 
 // libGL.so function pointer typedefs
 #define _glfw_glXGetFBConfigs _glfw.glx.GetFBConfigs
@@ -101,6 +104,8 @@ typedef XVisualInfo* (*PFNGLXGETVISUALFROMFBCONFIGPROC)(Display*,GLXFBConfig);
 #define _glfw_glXQueryExtensionsString _glfw.glx.QueryExtensionsString
 #define _glfw_glXCreateNewContext _glfw.glx.CreateNewContext
 #define _glfw_glXGetVisualFromFBConfig _glfw.glx.GetVisualFromFBConfig
+#define _glfw_glXCreateWindow _glfw.glx.CreateWindow
+#define _glfw_glXDestroyWindow _glfw.glx.DestroyWindow
 
 #define _GLFW_PLATFORM_FBCONFIG                 GLXFBConfig     glx
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextGLX glx
@@ -112,6 +117,7 @@ typedef XVisualInfo* (*PFNGLXGETVISUALFROMFBCONFIGPROC)(Display*,GLXFBConfig);
 typedef struct _GLFWcontextGLX
 {
     GLXContext      context;
+    GLXWindow       window;
 
 } _GLFWcontextGLX;
 
@@ -139,6 +145,8 @@ typedef struct _GLFWlibraryGLX
     PFNGLXQUERYEXTENSIONSSTRINGPROC     QueryExtensionsString;
     PFNGLXCREATENEWCONTEXTPROC          CreateNewContext;
     PFNGLXGETVISUALFROMFBCONFIGPROC     GetVisualFromFBConfig;
+    PFNGLXCREATEWINDOWPROC              CreateWindow;
+    PFNGLXDESTROYWINDOWPROC             DestroyWindow;
 
     // GLX 1.4 and extension functions
     PFNGLXGETPROCADDRESSPROC            GetProcAddress;

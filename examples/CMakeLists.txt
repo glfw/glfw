@@ -11,6 +11,14 @@ endif()
 include_directories("${GLFW_SOURCE_DIR}/include"
                     "${GLFW_SOURCE_DIR}/deps")
 
+if (WIN32)
+    set(ICON glfw.rc)
+elseif (APPLE)
+    set(ICON glfw.icns)
+    set_source_files_properties(glfw.icns PROPERTIES
+        MAXOSX_PACKAGE_LOCATION "Resources")
+endif()
+
 set(GLAD "${GLFW_SOURCE_DIR}/deps/glad/glad.h"
          "${GLFW_SOURCE_DIR}/deps/glad.c")
 set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"
@@ -18,13 +26,13 @@ set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"
 set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
                 "${GLFW_SOURCE_DIR}/deps/tinycthread.c")
 
-add_executable(boing WIN32 MACOSX_BUNDLE boing.c ${GLAD})
-add_executable(gears WIN32 MACOSX_BUNDLE gears.c ${GLAD})
-add_executable(heightmap WIN32 MACOSX_BUNDLE heightmap.c ${GLAD})
-add_executable(particles WIN32 MACOSX_BUNDLE particles.c ${TINYCTHREAD} ${GETOPT} ${GLAD})
-add_executable(simple WIN32 MACOSX_BUNDLE simple.c ${GLAD})
-add_executable(splitview WIN32 MACOSX_BUNDLE splitview.c ${GLAD})
-add_executable(wave WIN32 MACOSX_BUNDLE wave.c ${GLAD})
+add_executable(boing WIN32 MACOSX_BUNDLE boing.c ${ICON} ${GLAD})
+add_executable(gears WIN32 MACOSX_BUNDLE gears.c ${ICON} ${GLAD})
+add_executable(heightmap WIN32 MACOSX_BUNDLE heightmap.c ${ICON} ${GLAD})
+add_executable(particles WIN32 MACOSX_BUNDLE particles.c ${ICON} ${TINYCTHREAD} ${GETOPT} ${GLAD})
+add_executable(simple WIN32 MACOSX_BUNDLE simple.c ${ICON} ${GLAD})
+add_executable(splitview WIN32 MACOSX_BUNDLE splitview.c ${ICON} ${GLAD})
+add_executable(wave WIN32 MACOSX_BUNDLE wave.c ${ICON} ${GLAD})
 
 target_link_libraries(particles "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 
@@ -48,8 +56,10 @@ if (APPLE)
     set_target_properties(wave PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Wave")
 
     set_target_properties(${WINDOWS_BINARIES} PROPERTIES
+                          RESOURCE glfw.icns
                           MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}
                           MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION_FULL}
+                          MACOSX_BUNDLE_ICON_FILE glfw.icns
                           MACOSX_BUNDLE_INFO_PLIST "${GLFW_SOURCE_DIR}/CMake/MacOSXBundleInfo.plist.in")
 endif()
 

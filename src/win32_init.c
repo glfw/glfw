@@ -65,8 +65,7 @@ static GLFWbool initLibraries(void)
     _glfw.win32.winmm.instance = LoadLibraryW(L"winmm.dll");
     if (!_glfw.win32.winmm.instance)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to load winmm.dll");
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to load winmm.dll");
         return GLFW_FALSE;
     }
 
@@ -79,24 +78,17 @@ static GLFWbool initLibraries(void)
     _glfw.win32.winmm.timeGetTime = (TIMEGETTIME_T)
         GetProcAddress(_glfw.win32.winmm.instance, "timeGetTime");
 
-    if (!_glfw.win32.winmm.joyGetDevCaps ||
-        !_glfw.win32.winmm.joyGetPos ||
-        !_glfw.win32.winmm.joyGetPosEx ||
-        !_glfw.win32.winmm.timeGetTime)
+    _glfw.win32.user32.instance = LoadLibraryW(L"user32.dll");
+    if (!_glfw.win32.user32.instance)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to load winmm functions");
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to load user32.dll");
         return GLFW_FALSE;
     }
 
-    _glfw.win32.user32.instance = LoadLibraryW(L"user32.dll");
-    if (_glfw.win32.user32.instance)
-    {
-        _glfw.win32.user32.SetProcessDPIAware = (SETPROCESSDPIAWARE_T)
-            GetProcAddress(_glfw.win32.user32.instance, "SetProcessDPIAware");
-        _glfw.win32.user32.ChangeWindowMessageFilterEx = (CHANGEWINDOWMESSAGEFILTEREX_T)
-            GetProcAddress(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
-    }
+    _glfw.win32.user32.SetProcessDPIAware = (SETPROCESSDPIAWARE_T)
+        GetProcAddress(_glfw.win32.user32.instance, "SetProcessDPIAware");
+    _glfw.win32.user32.ChangeWindowMessageFilterEx = (CHANGEWINDOWMESSAGEFILTEREX_T)
+        GetProcAddress(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
 
     _glfw.win32.dwmapi.instance = LoadLibraryW(L"dwmapi.dll");
     if (_glfw.win32.dwmapi.instance)

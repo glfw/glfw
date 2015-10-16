@@ -7,7 +7,7 @@ struct gladGLversionStruct GLVersion;
 
 static int has_ext(const char *ext) {
 #if defined(GL_VERSION_3_0) || defined(GL_ES_VERSION_3_0)
-    if(glGetStringi == NULL) {
+    if(GLVersion.major < 3 || glGetStringi == NULL) {
 #endif
         const char *extensions;
         const char *loc;

@@ -6,10 +6,8 @@
 struct gladGLversionStruct GLVersion;
 
 static int has_ext(const char *ext) {
-#if defined(GL_ES_VERSION_3_0)
-    if(!GLAD_GL_ES_VERSION_3_0) {
-#elif defined(GL_VERSION_3_0)
-    if(!GLAD_GL_VERSION_3_0) {
+#if defined(GL_VERSION_3_0) || defined(GL_ES_VERSION_3_0)
+    if(glGetStringi == NULL) {
 #endif
         const char *extensions;
         const char *loc;
@@ -32,7 +30,7 @@ static int has_ext(const char *ext) {
             }
             extensions = terminator;
         }
-#if defined(GL_ES_VERSION_3_0) || defined(GL_VERSION_3_0)
+#if defined(GL_VERSION_3_0) || defined(GL_ES_VERSION_3_0)
     } else {
         GLint num_exts, index;
 

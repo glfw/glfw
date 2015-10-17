@@ -47,8 +47,6 @@ This will help both us and other people experiencing the same bug.
 
 GLFW bundles a number of dependencies in the `deps/` directory.
 
- - [Khronos extension headers](https://www.opengl.org/registry/) for API
-   extension symbols used by GLFW
  - [getopt\_port](https://github.com/kimgr/getopt_port/) for examples
    with command-line options
  - [TinyCThread](https://github.com/tinycthread/tinycthread) for threaded

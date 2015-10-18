@@ -230,7 +230,7 @@ glViewport(0, 0, width, height);
 @endcode
 
 You can also set a framebuffer size callback using @ref
-glfwSetFramebufferSizeCallback and call `glViewport` from there.
+glfwSetFramebufferSizeCallback and be notified when the size changes.
 
 Actual rendering with OpenGL is outside the scope of this tutorial, but there
 are [many](https://open.gl/) [excellent](http://learnopengl.com/)

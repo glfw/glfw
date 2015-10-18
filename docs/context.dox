@@ -115,7 +115,7 @@ Buffer swapping is part of the window and framebuffer, not the context.  See
 
 @section context_glext OpenGL and OpenGL ES extensions
 
-One of the benefits of OpenGL and OpenGL ES are their extensibility.
+One of the benefits of OpenGL and OpenGL ES is their extensibility.
 Hardware vendors may include extensions in their implementations that extend the
 API before that functionality is included in a new version of the OpenGL or
 OpenGL ES specification, and some extensions are never included and remain

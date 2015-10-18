@@ -560,6 +560,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         {
             int xoff, yoff;
             MINMAXINFO* mmi = (MINMAXINFO*) lParam;
+
+            if (!window)
+                break;
+
             getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
                               0, 0, &xoff, &yoff);
 

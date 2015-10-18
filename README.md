@@ -101,6 +101,7 @@ does not find Doxygen, the documentation will not be generated.
                    when no windows existed
  - [Win32] Bugfix: Activating or deactivating displays in software did not
                    trigger monitor callback
+ - [Win32] Bugfix: No monitors were listed on headless and VMware guest systems
  - [Cocoa] Removed support for OS X 10.6
  - [Cocoa] Bugfix: Full screen windows on secondary monitors were mispositioned
  - [Cocoa] Bugfix: Connecting a joystick that reports no name would segfault

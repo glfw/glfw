@@ -33,6 +33,59 @@
 #include <malloc.h>
 
 
+// Create monitor from an adapter and (optionally) a display
+//
+static _GLFWmonitor* createMonitor(DISPLAY_DEVICEW* adapter,
+                                   DISPLAY_DEVICEW* display)
+{
+    _GLFWmonitor* monitor;
+    char* name;
+    HDC dc;
+
+    if (display)
+        name = _glfwCreateUTF8FromWideStringWin32(display->DeviceString);
+    else
+        name = _glfwCreateUTF8FromWideStringWin32(adapter->DeviceString);
+    if (!name)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to convert string to UTF-8");
+        return NULL;
+    }
+
+    dc = CreateDCW(L"DISPLAY", adapter->DeviceName, NULL, NULL);
+
+    monitor = _glfwAllocMonitor(name,
+                                GetDeviceCaps(dc, HORZSIZE),
+                                GetDeviceCaps(dc, VERTSIZE));
+
+    DeleteDC(dc);
+    free(name);
+
+    if (adapter->StateFlags & DISPLAY_DEVICE_MODESPRUNED)
+        monitor->win32.modesPruned = GLFW_TRUE;
+
+    wcscpy(monitor->win32.adapterName, adapter->DeviceName);
+    WideCharToMultiByte(CP_UTF8, 0,
+                        adapter->DeviceName, -1,
+                        monitor->win32.publicAdapterName,
+                        sizeof(monitor->win32.publicAdapterName),
+                        NULL, NULL);
+
+    if (display)
+    {
+        wcscpy(monitor->win32.displayName, display->DeviceName);
+        WideCharToMultiByte(CP_UTF8, 0,
+                            display->DeviceName, -1,
+                            monitor->win32.publicDisplayName,
+                            sizeof(monitor->win32.publicDisplayName),
+                            NULL, NULL);
+    }
+
+    return monitor;
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -96,17 +149,18 @@ void _glfwRestoreVideoModeWin32(_GLFWmonitor* monitor)
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
     int found = 0;
+    DWORD adapterIndex, displayIndex, primaryIndex = 0;
+    DISPLAY_DEVICEW adapter, display;
+    GLFWbool hasDisplays = GLFW_FALSE;
     _GLFWmonitor** monitors = NULL;
-    DWORD adapterIndex, displayIndex;
 
     *count = 0;
 
+    // HACK: Check if any active adapters have connected displays
+    //       If not, this is a headless system or a VMware guest
+
     for (adapterIndex = 0;  ;  adapterIndex++)
     {
-        DISPLAY_DEVICEW adapter;
-        int widthMM, heightMM;
-        HDC dc;
-
         ZeroMemory(&adapter, sizeof(DISPLAY_DEVICEW));
         adapter.cb = sizeof(DISPLAY_DEVICEW);
 
@@ -116,63 +170,54 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         if (!(adapter.StateFlags & DISPLAY_DEVICE_ACTIVE))
             continue;
 
-        dc = CreateDCW(L"DISPLAY", adapter.DeviceName, NULL, NULL);
-        widthMM  = GetDeviceCaps(dc, HORZSIZE);
-        heightMM = GetDeviceCaps(dc, VERTSIZE);
-        DeleteDC(dc);
+        ZeroMemory(&display, sizeof(DISPLAY_DEVICEW));
+        display.cb = sizeof(DISPLAY_DEVICEW);
 
-        for (displayIndex = 0;  ;  displayIndex++)
+        if (EnumDisplayDevicesW(adapter.DeviceName, 0, &display, 0))
         {
-            DISPLAY_DEVICEW display;
-            _GLFWmonitor* monitor;
-            char* name;
-
-            ZeroMemory(&display, sizeof(DISPLAY_DEVICEW));
-            display.cb = sizeof(DISPLAY_DEVICEW);
-
-            if (!EnumDisplayDevicesW(adapter.DeviceName, displayIndex, &display, 0))
-                break;
-
-            name = _glfwCreateUTF8FromWideStringWin32(display.DeviceString);
-            if (!name)
-            {
-                _glfwInputError(GLFW_PLATFORM_ERROR,
-                                "Win32: Failed to convert string to UTF-8");
-                continue;
-            }
-
-            monitor = _glfwAllocMonitor(name, widthMM, heightMM);
-            free(name);
-
-            if (adapter.StateFlags & DISPLAY_DEVICE_MODESPRUNED)
-                monitor->win32.modesPruned = GLFW_TRUE;
-
-            wcscpy(monitor->win32.adapterName, adapter.DeviceName);
-            wcscpy(monitor->win32.displayName, display.DeviceName);
-
-            WideCharToMultiByte(CP_UTF8, 0,
-                                adapter.DeviceName, -1,
-                                monitor->win32.publicAdapterName,
-                                sizeof(monitor->win32.publicAdapterName),
-                                NULL, NULL);
-
-            WideCharToMultiByte(CP_UTF8, 0,
-                                display.DeviceName, -1,
-                                monitor->win32.publicDisplayName,
-                                sizeof(monitor->win32.publicDisplayName),
-                                NULL, NULL);
-
-            found++;
-            monitors = realloc(monitors, sizeof(_GLFWmonitor*) * found);
-            monitors[found - 1] = monitor;
-
-            if (adapter.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE &&
-                displayIndex == 0)
-            {
-                _GLFW_SWAP_POINTERS(monitors[0], monitors[found - 1]);
-            }
+            hasDisplays = GLFW_TRUE;
+            break;
         }
     }
+
+    for (adapterIndex = 0;  ;  adapterIndex++)
+    {
+        ZeroMemory(&adapter, sizeof(DISPLAY_DEVICEW));
+        adapter.cb = sizeof(DISPLAY_DEVICEW);
+
+        if (!EnumDisplayDevicesW(NULL, adapterIndex, &adapter, 0))
+            break;
+
+        if (!(adapter.StateFlags & DISPLAY_DEVICE_ACTIVE))
+            continue;
+
+        if (adapter.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE)
+            primaryIndex = found;
+
+        if (hasDisplays)
+        {
+            for (displayIndex = 0;  ;  displayIndex++)
+            {
+                ZeroMemory(&display, sizeof(DISPLAY_DEVICEW));
+                display.cb = sizeof(DISPLAY_DEVICEW);
+
+                if (!EnumDisplayDevicesW(adapter.DeviceName, displayIndex, &display, 0))
+                    break;
+
+                found++;
+                monitors = realloc(monitors, sizeof(_GLFWmonitor*) * found);
+                monitors[found - 1] = createMonitor(&adapter, &display);
+            }
+        }
+        else
+        {
+            found++;
+            monitors = realloc(monitors, sizeof(_GLFWmonitor*) * found);
+            monitors[found - 1] = createMonitor(&adapter, NULL);
+        }
+    }
+
+    _GLFW_SWAP_POINTERS(monitors[0], monitors[primaryIndex]);
 
     *count = found;
     return monitors;
@@ -180,7 +225,10 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
 GLFWbool _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
 {
-    return wcscmp(first->win32.displayName, second->win32.displayName) == 0;
+    if (wcslen(first->win32.displayName))
+        return wcscmp(first->win32.displayName, second->win32.displayName) == 0;
+    else
+        return wcscmp(first->win32.adapterName, second->win32.adapterName) == 0;
 }
 
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)

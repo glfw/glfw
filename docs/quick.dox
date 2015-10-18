@@ -26,16 +26,15 @@ to include the GLFW 3 header file.
 @endcode
 
 This defines all the constants, types and function prototypes of the GLFW API.
-It also includes the OpenGL header, and defines all the constants and types
-necessary for it to work on your platform.
+It also includes the OpenGL header from your development environment and
+defines all the constants and types necessary for it to work on your platform.
 
 For example, under Windows you are normally required to include `windows.h`
-before including `GL/gl.h`.  This would make your source file tied to Windows
-and pollute your code's namespace with the whole Win32 API.
+before including `GL/gl.h`.  This would pollute your program's namespace with
+the whole Win32 API.
 
-Instead, the GLFW header takes care of this for you, not by including
-`windows.h`, but rather by itself duplicating only the necessary parts of it.
-It does this only where needed, so if `windows.h` _is_ included, the GLFW header
+Instead, the GLFW header duplicates only the very few necessary parts of it.  It
+does this only when needed, so if `windows.h` _is_ included, the GLFW header
 does not try to redefine those symbols.
 
 In other words:

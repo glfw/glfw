@@ -230,6 +230,13 @@ glViewport(0, 0, width, height);
 You can also set a framebuffer size callback using @ref
 glfwSetFramebufferSizeCallback and call `glViewport` from there.
 
+Actual rendering with OpenGL is outside the scope of this tutorial, but there
+are [many](https://open.gl/) [excellent](http://learnopengl.com/)
+[tutorial](http://openglbook.com/) [sites](http://ogldev.atspace.co.uk/) that
+teach modern OpenGL.  Some of them use GLFW to create the context and window
+while others use GLUT or SDL, but remember that OpenGL itself always works the
+same.
+
 
 @subsection quick_timer Reading the timer
 

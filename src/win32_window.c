@@ -391,6 +391,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         {
             const int mods = getKeyMods();
 
+            if (window->touchInput)
+            {
+                // Skip emulated button events when touch input is enabled
+                if ((GetMessageExtraInfo() & 0xffffff00) == 0xff515700)
+                    break;
+            }
+
             SetCapture(hWnd);
 
             if (uMsg == WM_LBUTTONDOWN)
@@ -418,6 +425,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_XBUTTONUP:
         {
             const int mods = getKeyMods();
+
+            if (window->touchInput)
+            {
+                // Skip emulated button events when touch input is enabled
+                if ((GetMessageExtraInfo() & 0xffffff00) == 0xff515700)
+                    break;
+            }
 
             ReleaseCapture();
 
@@ -473,7 +487,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 _glfwInputCursorEnter(window, GLFW_TRUE);
             }
 
-            return 0;
+            // NOTE: WM_MOUSEMOVE messages must be passed on to DefWindowProc
+            //       for WM_TOUCH messages to be emitted
+            break;
         }
 
         case WM_MOUSELEAVE:

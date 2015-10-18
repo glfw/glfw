@@ -68,6 +68,8 @@ if (!glfwInit())
     exit(EXIT_FAILURE);
 @endcode
 
+Note that `GLFW_TRUE` and `GLFW_FALSE` are and will always be just one and zero.
+
 When you are done using GLFW, typically just before the application exits, you
 need to terminate GLFW.
 

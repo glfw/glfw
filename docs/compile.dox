@@ -201,8 +201,6 @@ directory of bundled applications to the `Contents/Resources` directory.
 `GLFW_USE_RETINA` determines whether windows will use the full resolution of
 Retina displays.
 
-`GLFW_BUILD_UNIVERSAL` determines whether to build Universal Binaries.
-
 
 @subsubsection compile_options_win32 Windows specific CMake options
 

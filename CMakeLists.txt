@@ -30,7 +30,6 @@ if (WIN32)
 endif()
 
 if (APPLE)
-    option(GLFW_BUILD_UNIVERSAL "Build GLFW as a Universal Binary" OFF)
     option(GLFW_USE_CHDIR "Make glfwInit chdir to Contents/Resources" ON)
     option(GLFW_USE_MENUBAR "Populate the menu bar on first window creation" ON)
     option(GLFW_USE_RETINA "Use the full resolution of Retina displays" ON)
@@ -338,13 +337,6 @@ if (_GLFW_COCOA AND _GLFW_NSGL)
 
     if (GLFW_USE_RETINA)
         set(_GLFW_USE_RETINA 1)
-    endif()
-
-    if (GLFW_BUILD_UNIVERSAL)
-        message(STATUS "Building GLFW as Universal Binaries")
-        set(CMAKE_OSX_ARCHITECTURES i386;x86_64)
-    else()
-        message(STATUS "Building GLFW only for the native architecture")
     endif()
 
     # Set up library and include paths

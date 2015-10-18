@@ -65,6 +65,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
    absolute and relative window size limits
  - Added `GLFW_TRUE` and `GLFW_FALSE` as client API independent boolean values
  - Removed dependency on external OpenGL or OpenGL ES headers
+ - [Cocoa] Removed support for OS X 10.6
  - [WGL] Removed dependency on external WGL headers
  - [GLX] Removed dependency on external GLX headers
  - [EGL] Removed dependency on external EGL headers

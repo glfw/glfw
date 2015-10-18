@@ -99,18 +99,6 @@ static float transformY(float y)
     return height - y;
 }
 
-// Returns the backing rect of the specified window
-//
-static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
-{
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
-        return [window->ns.view convertRectToBacking:contentRect];
-    else
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
-        return contentRect;
-}
-
 // Translates OS X key modifiers into GLFW ones
 //
 static int translateFlags(NSUInteger flags)
@@ -181,7 +169,7 @@ static int translateKey(unsigned int key)
     }
 
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect fbRect = convertRectToBacking(window, contentRect);
+    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
 
     _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
     _glfwInputWindowSize(window, contentRect.size.width, contentRect.size.height);
@@ -451,7 +439,7 @@ static int translateKey(unsigned int key)
 - (void)viewDidChangeBackingProperties
 {
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect fbRect = convertRectToBacking(window, contentRect);
+    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
 
     _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
 }
@@ -542,23 +530,13 @@ static int translateKey(unsigned int key)
 {
     double deltaX, deltaY;
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
-    {
-        deltaX = [event scrollingDeltaX];
-        deltaY = [event scrollingDeltaY];
+    deltaX = [event scrollingDeltaX];
+    deltaY = [event scrollingDeltaY];
 
-        if ([event hasPreciseScrollingDeltas])
-        {
-            deltaX *= 0.1;
-            deltaY *= 0.1;
-        }
-    }
-    else
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+    if ([event hasPreciseScrollingDeltas])
     {
-        deltaX = [event deltaX];
-        deltaY = [event deltaY];
+        deltaX *= 0.1;
+        deltaY *= 0.1;
     }
 
     if (fabs(deltaX) > 0.0 || fabs(deltaY) > 0.0)
@@ -759,18 +737,12 @@ static void createMenuBar(void)
                           action:@selector(arrangeInFront:)
                    keyEquivalent:@""];
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
-    {
-        // TODO: Make this appear at the bottom of the menu (for consistency)
-
-        [windowMenu addItem:[NSMenuItem separatorItem]];
-        [[windowMenu addItemWithTitle:@"Enter Full Screen"
-                               action:@selector(toggleFullScreen:)
-                        keyEquivalent:@"f"]
-            setKeyEquivalentModifierMask:NSControlKeyMask | NSCommandKeyMask];
-    }
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+    // TODO: Make this appear at the bottom of the menu (for consistency)
+    [windowMenu addItem:[NSMenuItem separatorItem]];
+    [[windowMenu addItemWithTitle:@"Enter Full Screen"
+                           action:@selector(toggleFullScreen:)
+                    keyEquivalent:@"f"]
+     setKeyEquivalentModifierMask:NSControlKeyMask | NSCommandKeyMask];
 
     // Prior to Snow Leopard, we need to use this oddly-named semi-private API
     // to get the application menu working properly.
@@ -869,13 +841,8 @@ static GLFWbool createWindow(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
-    {
-        if (wndconfig->resizable)
-            [window->ns.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
-    }
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+    if (wndconfig->resizable)
+        [window->ns.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
 
     if (wndconfig->monitor)
     {
@@ -892,21 +859,14 @@ static GLFWbool createWindow(_GLFWwindow* window,
     window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
 
 #if defined(_GLFW_USE_RETINA)
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
-        [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+    [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
 #endif /*_GLFW_USE_RETINA*/
 
     [window->ns.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
     [window->ns.object setDelegate:window->ns.delegate];
     [window->ns.object setAcceptsMouseMovedEvents:YES];
     [window->ns.object setContentView:window->ns.view];
-
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
-        [window->ns.object setRestorable:NO];
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+    [window->ns.object setRestorable:NO];
 
     return GLFW_TRUE;
 }
@@ -1030,7 +990,7 @@ void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect fbRect = convertRectToBacking(window, contentRect);
+    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
 
     if (width)
         *width = (int) fbRect.size.width;
@@ -1179,14 +1139,9 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
     }
     else
     {
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
         const NSRect localRect = NSMakeRect(x, contentRect.size.height - y - 1, 0, 0);
         const NSRect globalRect = [window->ns.object convertRectToScreen:localRect];
         const NSPoint globalPoint = globalRect.origin;
-#else
-        const NSPoint localPoint = NSMakePoint(x, contentRect.size.height - y - 1);
-        const NSPoint globalPoint = [window->ns.object convertBaseToScreen:localPoint];
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
         CGWarpMouseCursorPosition(CGPointMake(globalPoint.x,
                                               transformY(globalPoint.y)));

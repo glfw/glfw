@@ -69,15 +69,14 @@ static DWORD getWindowExStyle(const _GLFWwindow* window)
     return style;
 }
 
-// Translate client window size to full window size (including window borders)
+// Translate client window size to full window size according to styles
 //
-static void getFullWindowSize(_GLFWwindow* window,
+static void getFullWindowSize(DWORD style, DWORD exStyle,
                               int clientWidth, int clientHeight,
                               int* fullWidth, int* fullHeight)
 {
     RECT rect = { 0, 0, clientWidth, clientHeight };
-    AdjustWindowRectEx(&rect, getWindowStyle(window),
-                       FALSE, getWindowExStyle(window));
+    AdjustWindowRectEx(&rect, style, FALSE, exStyle);
     *fullWidth = rect.right - rect.left;
     *fullHeight = rect.bottom - rect.top;
 }
@@ -90,7 +89,8 @@ static void applyAspectRatio(_GLFWwindow* window, int edge, RECT* area)
     const float ratio = (float) window->win32.numer /
                         (float) window->win32.denom;
 
-    getFullWindowSize(window, 0, 0, &xoff, &yoff);
+    getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
+                      0, 0, &xoff, &yoff);
 
     if (edge == WMSZ_LEFT  || edge == WMSZ_BOTTOMLEFT ||
         edge == WMSZ_RIGHT || edge == WMSZ_BOTTOMRIGHT)
@@ -560,7 +560,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         {
             int xoff, yoff;
             MINMAXINFO* mmi = (MINMAXINFO*) lParam;
-            getFullWindowSize(window, 0, 0, &xoff, &yoff);
+            getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
+                              0, 0, &xoff, &yoff);
 
             if (window->win32.minwidth != GLFW_DONT_CARE &&
                 window->win32.minheight != GLFW_DONT_CARE)
@@ -685,7 +686,7 @@ static GLFWbool createWindow(_GLFWwindow* window,
         xpos = CW_USEDEFAULT;
         ypos = CW_USEDEFAULT;
 
-        getFullWindowSize(window,
+        getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
                           wndconfig->width, wndconfig->height,
                           &fullWidth, &fullHeight);
     }
@@ -934,7 +935,8 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     else
     {
         int fullWidth, fullHeight;
-        getFullWindowSize(window, width, height, &fullWidth, &fullHeight);
+        getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
+                          width, height, &fullWidth, &fullHeight);
 
         SetWindowPos(window->win32.handle, HWND_TOP,
                      0, 0, fullWidth, fullHeight,

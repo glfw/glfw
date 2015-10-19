@@ -1885,13 +1885,12 @@ GLFWAPI void glfwSetWindowSizeLimits(GLFWwindow* window, int minwidth, int minhe
  *  specified window.  If the window is full screen or not resizable, this
  *  function does nothing.
  *
- *  The aspect ratio is specified as a numerator and a denominator.  For
- *  example, the common 16:9 aspect ratio is specified as 16 and 9,
- *  respectively.  The denominator may not be zero.
+ *  The aspect ratio is specified as a numerator and a denominator and both
+ *  values must be greater than zero.  For example, the common 16:9 aspect ratio
+ *  is specified as 16 and 9, respectively.
  *
- *  If the numerator and denominator is set to `GLFW_DONT_CARE` then the window
- *  may be resized to any aspect ratio permitted by the window system and any
- *  limits set by @ref glfwSetWindowSizeLimits.
+ *  If the numerator and denominator is set to `GLFW_DONT_CARE` then the aspect
+ *  ratio limit is disabled.
  *
  *  The aspect ratio is applied immediately and may cause the window to be
  *  resized.

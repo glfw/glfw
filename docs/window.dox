@@ -488,37 +488,44 @@ example if the window is dragged between a regular monitor and a high-DPI one.
 @subsection window_sizelimits Window size limits
 
 The minimum and maximum size of the client area of a windowed mode window can be
-set with @ref glfwSetWindowSizeLimits.  The user may resize the window to any
-size and aspect ratio within the specified limits, unless the aspect ratio is
-also set.
+enforced with @ref glfwSetWindowSizeLimits.  The user may resize the window to
+any size and aspect ratio within the specified limits, unless the aspect ratio
+is also set.
 
 @code
 glfwSetWindowSizeLimits(window, 200, 200, 400, 400);
 @endcode
 
-To disable size limits for a window, set them to `GLFW_DONT_CARE`.
+To specify only a minimum size or only a maximum one, set the other pair to
+`GLFW_DONT_CARE`.
 
 @code
-glfwSetWindowSizeLimits(window, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE);
+glfwSetWindowSizeLimits(window, 640, 480, GLFW_DONT_CARE, GLFW_DONT_CARE);
 @endcode
 
-The aspect ratio of the client area of a windowed mode window can be set with
-@ref glfwSetWindowAspectRatio.  The user may resize the window freely unless
-size limits are also set, but the size will be constrained to maintain the
-aspect ratio.
+To disable size limits for a window, set them all to `GLFW_DONT_CARE`.
 
-The aspect ratio is specified as a numerator and denominator, corresponding to
-the width and height, respectively.
+The aspect ratio of the client area of a windowed mode window can be enforced
+with @ref glfwSetWindowAspectRatio.  The user may resize the window freely
+unless size limits are also set, but the size will be constrained to maintain
+the aspect ratio.
 
 @code
 glfwSetWindowAspectRatio(window, 16, 9);
 @endcode
 
-To disable aspect ratio for a window, set it to `GLFW_DONT_CARE`.
+The aspect ratio is specified as a numerator and denominator, corresponding to
+the width and height, respectively.  If you want a window to maintain its
+current aspect ratio, simply use its current size as the ratio.
 
 @code
-glfwSetWindowAspectRatio(window, GLFW_DONT_CARE, GLFW_DONT_CARE);
+int width, height;
+glfwGetWindowSize(window, &width, &height);
+glfwSetWindowAspectRatio(window, width, height);
 @endcode
+
+To disable the aspect ratio limit for a window, set both terms to
+`GLFW_DONT_CARE`.
 
 You can have both size limits and aspect ratio set for a window, but the results
 are undefined if they conflict.

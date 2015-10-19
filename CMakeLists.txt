@@ -27,6 +27,7 @@ option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
 if (WIN32)
     option(GLFW_USE_HYBRID_HPG "Force use of high-performance GPU on hybrid systems" OFF)
+    option(GLFW_USE_XINPUT "Use XInput to handle josticks" ON)
 endif()
 
 if (APPLE)
@@ -208,6 +209,10 @@ if (_GLFW_WIN32)
 
     if (GLFW_USE_HYBRID_HPG)
         set(_GLFW_USE_HYBRID_HPG 1)
+    endif()
+
+    if (GLFW_USE_XINPUT)
+      set(_GLFW_USE_XINPUT 1)
     endif()
 endif()
 
@@ -395,7 +400,7 @@ configure_package_config_file("${GLFW_SOURCE_DIR}/src/glfw3Config.cmake.in"
                               PATH_VARS CMAKE_INSTALL_PREFIX
                               NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
-write_basic_package_version_file("${GLFW_BINARY_DIR}/src/glfw3ConfigVersion.cmake" 
+write_basic_package_version_file("${GLFW_BINARY_DIR}/src/glfw3ConfigVersion.cmake"
                                  VERSION ${GLFW_VERSION_FULL}
                                  COMPATIBILITY SameMajorVersion)
 
@@ -453,4 +458,3 @@ if (GLFW_INSTALL)
                           "${GLFW_BINARY_DIR}/cmake_uninstall.cmake")
     endif()
 endif()
-

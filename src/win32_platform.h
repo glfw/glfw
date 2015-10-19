@@ -64,6 +64,9 @@
 #include <windows.h>
 #include <mmsystem.h>
 #include <dbt.h>
+#ifdef _GLFW_USE_XINPUT
+ #include <Xinput.h>
+#endif
 
 #if defined(_MSC_VER)
  #include <malloc.h>
@@ -100,14 +103,18 @@ typedef struct tagCHANGEFILTERSTRUCT
 #endif /*Windows 7*/
 
 // winmm.dll function pointer typedefs
-typedef MMRESULT (WINAPI * JOYGETDEVCAPS_T)(UINT,LPJOYCAPS,UINT);
-typedef MMRESULT (WINAPI * JOYGETPOS_T)(UINT,LPJOYINFO);
-typedef MMRESULT (WINAPI * JOYGETPOSEX_T)(UINT,LPJOYINFOEX);
 typedef DWORD (WINAPI * TIMEGETTIME_T)(void);
-#define _glfw_joyGetDevCaps _glfw.win32.winmm.joyGetDevCaps
-#define _glfw_joyGetPos _glfw.win32.winmm.joyGetPos
-#define _glfw_joyGetPosEx _glfw.win32.winmm.joyGetPosEx
+#ifndef _GLFW_USE_XINPUT
+typedef MMRESULT(WINAPI * JOYGETDEVCAPS_T)(UINT,LPJOYCAPS,UINT);
+typedef MMRESULT(WINAPI * JOYGETPOS_T)(UINT,LPJOYINFO);
+typedef MMRESULT(WINAPI * JOYGETPOSEX_T)(UINT,LPJOYINFOEX);
+#endif
 #define _glfw_timeGetTime _glfw.win32.winmm.timeGetTime
+#ifndef _GLFW_USE_XINPUT
+ #define _glfw_joyGetDevCaps _glfw.win32.winmm.joyGetDevCaps
+ #define _glfw_joyGetPos _glfw.win32.winmm.joyGetPos
+ #define _glfw_joyGetPosEx _glfw.win32.winmm.joyGetPosEx
+#endif
 
 // user32.dll function pointer typedefs
 typedef BOOL (WINAPI * SETPROCESSDPIAWARE_T)(void);
@@ -121,12 +128,24 @@ typedef HRESULT (WINAPI * DWMFLUSH_T)(VOID);
 #define _glfw_DwmIsCompositionEnabled _glfw.win32.dwmapi.DwmIsCompositionEnabled
 #define _glfw_DwmFlush _glfw.win32.dwmapi.DwmFlush
 
+#ifdef _GLFW_USE_XINPUT
+// Xinput.dll function pointer typedefs
+typedef DWORD(WINAPI * XINPUTGETCAPABILITIES_T)(DWORD,DWORD,XINPUT_CAPABILITIES*);
+typedef DWORD(WINAPI * XINPUTGETSTATE_T)(DWORD,XINPUT_STATE*);
+#define _glfw_XInputGetCapabilities _glfw.win32.xinput.XInputGetCapabilities
+#define _glfw_XInputGetState _glfw.win32.xinput.XInputGetState
+#endif
+
 #define _GLFW_RECREATION_NOT_NEEDED 0
 #define _GLFW_RECREATION_REQUIRED   1
 #define _GLFW_RECREATION_IMPOSSIBLE 2
 
 #include "win32_tls.h"
-#include "winmm_joystick.h"
+#ifdef _GLFW_USE_XINPUT
+ #include "xinput_joystick.h"
+#else
+ #include "winmm_joystick.h"
+#endif
 
 #if defined(_GLFW_WGL)
  #include "wgl_context.h"
@@ -175,9 +194,11 @@ typedef struct _GLFWlibraryWin32
     // winmm.dll
     struct {
         HINSTANCE       instance;
+#ifndef _GLFW_USE_XINPUT
         JOYGETDEVCAPS_T joyGetDevCaps;
         JOYGETPOS_T     joyGetPos;
         JOYGETPOSEX_T   joyGetPosEx;
+#endif
         TIMEGETTIME_T   timeGetTime;
     } winmm;
 
@@ -195,6 +216,14 @@ typedef struct _GLFWlibraryWin32
         DWMFLUSH_T      DwmFlush;
     } dwmapi;
 
+#ifdef _GLFW_USE_XINPUT
+    // Xinput.dll
+    struct {
+        HINSTANCE       instance;
+        XINPUTGETCAPABILITIES_T XInputGetCapabilities;
+        XINPUTGETSTATE_T XInputGetState;
+    } xinput;
+#endif
 } _GLFWlibraryWin32;
 
 

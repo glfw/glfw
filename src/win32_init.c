@@ -69,14 +69,31 @@ static GLFWbool initLibraries(void)
         return GLFW_FALSE;
     }
 
+#ifndef _GLFW_USE_XINPUT
     _glfw.win32.winmm.joyGetDevCaps = (JOYGETDEVCAPS_T)
         GetProcAddress(_glfw.win32.winmm.instance, "joyGetDevCapsW");
     _glfw.win32.winmm.joyGetPos = (JOYGETPOS_T)
         GetProcAddress(_glfw.win32.winmm.instance, "joyGetPos");
     _glfw.win32.winmm.joyGetPosEx = (JOYGETPOSEX_T)
         GetProcAddress(_glfw.win32.winmm.instance, "joyGetPosEx");
+#endif
     _glfw.win32.winmm.timeGetTime = (TIMEGETTIME_T)
         GetProcAddress(_glfw.win32.winmm.instance, "timeGetTime");
+
+#ifdef _GLFW_USE_XINPUT
+    _glfw.win32.xinput.instance = LoadLibraryW(L"XInput9_1_0.dll");
+    if (!_glfw.win32.xinput.instance)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+            "Win32: Failed to load XInput9_1_0.dll");
+        return GLFW_FALSE;
+    }
+
+    _glfw.win32.xinput.XInputGetCapabilities = (XINPUTGETCAPABILITIES_T)
+        GetProcAddress(_glfw.win32.xinput.instance, "XInputGetCapabilities");
+    _glfw.win32.xinput.XInputGetState = (XINPUTGETSTATE_T)
+        GetProcAddress(_glfw.win32.xinput.instance, "XInputGetState");
+#endif
 
     _glfw.win32.user32.instance = LoadLibraryW(L"user32.dll");
     if (!_glfw.win32.user32.instance)
@@ -380,4 +397,3 @@ const char* _glfwPlatformGetVersionString(void)
 #endif
         ;
 }
-

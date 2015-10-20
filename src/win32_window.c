@@ -871,9 +871,14 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (window->monitor)
     {
+        // the following function calls ShowWindow
+        // which sends WM_SETFOCUS to windowProc()
+        // Which then enters fullscreen mode if autoIconify is enabled  (win32_window.c : line 283)
         _glfwPlatformShowWindow(window);
-        if (!enterFullscreenMode(window))
-            return GLFW_FALSE;
+        if (!window->autoIconify) { // add this to prevent entering full screen mode twice when autoIconify == true
+            if (!enterFullscreenMode(window))
+                return GLFW_FALSE;
+        }
     }
 
     return GLFW_TRUE;
@@ -1030,9 +1035,42 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
     ShowWindow(window->win32.handle, SW_SHOW);
+
+    // Consider separating the following function calls to a different function?
+    // e.g. RequestFocus(_GLFWwindow* window) (any of these might fail)
     BringWindowToTop(window->win32.handle);
     SetForegroundWindow(window->win32.handle);
     SetFocus(window->win32.handle);
+}
+
+/* one example of separation */
+
+int _glfwPlatformGrabFocus(_GLFWwindow* window)
+{
+    if (!BringWindowToTop(window->win32.handle))
+        return GLFW_FALSE;
+    if (!SetForegroundWindow(window->win32.handle))
+        return GLFW_FALSE;
+    if (!SetFocus(window->win32.handle))
+        return GLFW_FALSE;
+    return GLFW_FALSE;
+}
+
+void _glfwPlatformRequestFocus(_GLFWwindow* window)
+{
+    // The following can be used to flash the taskbar icon
+    // if any of the focus related functions fail
+    if (!_glfwPlatformGrabFocus(window)) {
+        // create a taskbar notification ("flash")
+        FLASHWINFO info;
+        info.cbSize = sizeof(FLASHWINFO);
+        info.hwnd = window->win32.handle;
+        info.dwFlags = FLASHW_TRAY;
+        info.uCount = 3;
+        info.dwTimeout = 0;
+
+        FlashWindowEx(&info);
+    }
 }
 
 void _glfwPlatformUnhideWindow(_GLFWwindow* window)

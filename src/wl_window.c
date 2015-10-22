@@ -207,6 +207,28 @@ createAnonymousFile(off_t size)
     return fd;
 }
 
+// Translates a GLFW standard cursor to a theme cursor name
+//
+static char *translateCursorShape(int shape)
+{
+    switch (shape)
+    {
+        case GLFW_ARROW_CURSOR:
+            return "left_ptr";
+        case GLFW_IBEAM_CURSOR:
+            return "xterm";
+        case GLFW_CROSSHAIR_CURSOR:
+            return "crosshair";
+        case GLFW_HAND_CURSOR:
+            return "grabbing";
+        case GLFW_HRESIZE_CURSOR:
+            return "sb_h_double_arrow";
+        case GLFW_VRESIZE_CURSOR:
+            return "sb_v_double_arrow";
+    }
+    return NULL;
+}
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -469,19 +491,34 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
-    // TODO
-    fprintf(stderr, "_glfwPlatformCreateStandardCursor not implemented yet\n");
-    return GLFW_FALSE;
+    struct wl_cursor* standard_cursor;
+
+    standard_cursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme,
+                                                 translateCursorShape(shape));
+    if (!standard_cursor) {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Standard cursor \"%s\" not found",
+                        translateCursorShape(shape));
+        return GLFW_FALSE;
+    }
+    cursor->wl.image = standard_cursor->images[0];
+
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 {
+    // If it's a standard cursor we don't need to do anything here
+    if (cursor->wl.image)
+        return;
+
     wl_buffer_destroy(cursor->wl.buffer);
 }
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 {
     struct wl_buffer* buffer;
+    struct wl_cursor* defaultCursor;
     struct wl_cursor_image* image;
     struct wl_surface* surface = _glfw.wl.cursorSurface;
 
@@ -499,7 +536,23 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
     {
         if (cursor == NULL)
         {
-            image = _glfw.wl.defaultCursor->images[0];
+            defaultCursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme,
+                                                       "left_ptr");
+            if (!defaultCursor)
+            {
+                _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "Wayland: Standard cursor not found");
+                return;
+            }
+            image = defaultCursor->images[0];
+        }
+        else
+        {
+            image = cursor->wl.image;
+        }
+
+        if (image)
+        {
             buffer = wl_cursor_image_get_buffer(image);
             if (!buffer)
                 return;

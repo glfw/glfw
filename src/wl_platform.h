@@ -84,7 +84,6 @@ typedef struct _GLFWlibraryWayland
     struct wl_keyboard*         keyboard;
 
     struct wl_cursor_theme*     cursorTheme;
-    struct wl_cursor*           defaultCursor;
     struct wl_surface*          cursorSurface;
     uint32_t                    pointerSerial;
 
@@ -130,6 +129,7 @@ typedef struct _GLFWmonitorWayland
 //
 typedef struct _GLFWcursorWayland
 {
+    struct wl_cursor_image*     image;
     struct wl_buffer*           buffer;
     int                         width, height;
     int                         xhot, yhot;

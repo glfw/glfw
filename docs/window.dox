@@ -44,12 +44,29 @@ the event.
 
 @subsubsection window_full_screen Full screen windows
 
-To create a full screen window, you need to specify which monitor the window
-should use.  In most cases, the user's primary monitor is a good choice.
-For more information about retrieving monitors, see @ref monitor_monitors. 
+To create a full screen window, you can use the GLFW_FULLSCREEN window hint.
+It is also possible to specify which monitor the window should use. In most
+cases, the user's primary monitor is a good choice. For more information about
+retrieving monitors, see @ref monitor_monitors. 
 
 @code
+glfwWindowHint(GLFW_FULLSCREEN, GLFW_TRUE);
+
 GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", glfwGetPrimaryMonitor(), NULL);
+                                                         // same as passing null for the monitor
+@endcode
+
+The mode of a window, whether created as fullscreen or as a windowed mode window,
+can be toggled at any time using @ref glfwToggleWindowFullscreen.
+
+@code
+glfwToggleWindowFullscreen(window);
+@endcode
+
+You can also get the current window state with @ref glfwGetWindowAttrib.
+
+@code
+int fullscreen = glfwGetWindowAttrib(window, GLFW_FULLSCREEN);
 @endcode
 
 Full screen windows cover the entire display area of a monitor, have no border
@@ -92,6 +109,7 @@ such a window, simply request the current video mode.
 @code
 const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
+glfwWindowHint(GLFW_FULLSCREEN, GLFW_TRUE);
 glfwWindowHint(GLFW_RED_BITS, mode->redBits);
 glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
 glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
@@ -173,6 +191,9 @@ This hint is ignored for windowed mode windows.
 above other regular windows, also called topmost or always-on-top.  This is
 intended primarily for debugging purposes and cannot be used to implement proper
 full screen windows.  This hint is ignored for full screen windows.
+
+`GLFW_FULLSCREEN` specifies whether the window will be created in fullscreen mode.
+The window can always be switched back to windowed mode using @ref glfwToggleWindowFullscreen.
 
 
 @subsubsection window_hints_fb Framebuffer related hints
@@ -304,6 +325,7 @@ Window hint                     | Default value               | Supported values
 `GLFW_FOCUSED`                  | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 `GLFW_AUTO_ICONIFY`             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 `GLFW_FLOATING`                 | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+`GLFW_FULLSCREEN`               | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 `GLFW_RED_BITS`                 | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 `GLFW_GREEN_BITS`               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 `GLFW_BLUE_BITS`                | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
@@ -599,8 +621,9 @@ GLFWmonitor* monitor = glfwGetWindowMonitor(window);
 
 This monitor handle is one of those returned by @ref glfwGetMonitors.
 
-For windowed mode windows, this function returns `NULL`.  This is the
-recommended way to tell full screen windows from windowed mode windows.
+For windowed mode windows, this function returns the monitor that will be used
+if the mode would be switched to fullscreen. Using this function to query the mode
+of the window will no longer work and @glfwGetWindowAttrib should be used instead.
 
 
 @subsection window_iconify Window iconification
@@ -663,7 +686,8 @@ glfwHideWindow(window);
 
 This makes the window completely invisible to the user, including removing it
 from the task bar, dock or window list.  Full screen windows cannot be hidden
-and calling @ref glfwHideWindow on a full screen window does nothing.
+and calling @ref glfwHideWindow on a full screen window does nothing. The window
+should be switched to windowed mode first and then hidden.
 
 Hidden windows can be shown with @ref glfwShowWindow.
 

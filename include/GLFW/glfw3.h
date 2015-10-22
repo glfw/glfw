@@ -614,6 +614,7 @@ extern "C" {
 #define GLFW_DECORATED              0x00020005
 #define GLFW_AUTO_ICONIFY           0x00020006
 #define GLFW_FLOATING               0x00020007
+#define GLFW_FULLSCREEN             0x00020008
 
 #define GLFW_RED_BITS               0x00021001
 #define GLFW_GREEN_BITS             0x00021002
@@ -1570,11 +1571,12 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  of the created window, framebuffer and context, see @ref
  *  glfwGetWindowAttrib, @ref glfwGetWindowSize and @ref glfwGetFramebufferSize.
  *
- *  To create a full screen window, you need to specify the monitor the window
- *  will cover.  If no monitor is specified, windowed mode will be used.  Unless
- *  you have a way for the user to choose a specific monitor, it is recommended
- *  that you pick the primary monitor.  For more information on how to query
- *  connected monitors, see @ref monitor_monitors.
+ *  To create a full screen window, you can use the GLFW_FULLSCREEN window hint.
+ *  It is also possible to specify which monitor the window should use. If no
+ *  monitor is specified, the primary monitor is used. Unless you have a way for
+ *  the user to choose a specific monitor, it is recommended that you pick the
+ *  primary monitor.  For more information on how to query connected monitors,
+ *  see @ref monitor_monitors.
  *
  *  For full screen windows, the specified size becomes the resolution of the
  *  window's _desired video mode_.  As long as a full screen window has input
@@ -1605,7 +1607,7 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  This must be greater than zero.
  *  @param[in] title The initial, UTF-8 encoded window title.
  *  @param[in] monitor The monitor to use for full screen mode, or `NULL` to use
- *  windowed mode.
+ *  the primary monitor.
  *  @param[in] share The window whose context to share resources with, or `NULL`
  *  to not share resources.
  *  @return The handle of the created window, or `NULL` if an
@@ -2100,6 +2102,18 @@ GLFWAPI void glfwShowWindow(GLFWwindow* window);
  *  @ingroup window
  */
 GLFWAPI void glfwHideWindow(GLFWwindow* window);
+
+/*! @brief Toggles between fullscreen and windowed mode on the specified window.
+ *
+ *  The functions enters fullscreen mode if the specified window was previously
+ *  in windowed mode. If the window is already in fullscreen mode, the fuctions restores
+ *  the monitor video mode and the specified window switches back to windowed mode.
+ *
+ *  @param[in] window The window to toggle the mode on.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwToggleWindowFullscreen(GLFWwindow* window);
 
 /*! @brief Returns the monitor that the window uses for full screen mode.
  *

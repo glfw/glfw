@@ -249,7 +249,6 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.window.decorated   = GLFW_TRUE;
     _glfw.hints.window.focused     = GLFW_TRUE;
     _glfw.hints.window.autoIconify = GLFW_TRUE;
-    _glfw.hints.window.fullscreen  = GLFW_FALSE;
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
     // double buffered
@@ -572,7 +571,7 @@ GLFWAPI void glfwShowWindow(GLFWwindow* handle)
     _GLFW_REQUIRE_INIT();
 
     if (window->fullscreen)
-        _glfwPlatformToggleWindowFullscreen(window);
+        return;
 
     _glfwPlatformShowWindow(window);
 }
@@ -584,7 +583,7 @@ GLFWAPI void glfwHideWindow(GLFWwindow* handle)
     _GLFW_REQUIRE_INIT();
 
     if (window->fullscreen)
-        _glfwPlatformToggleWindowFullscreen(window);
+        return;
 
     _glfwPlatformHideWindow(window);
 }

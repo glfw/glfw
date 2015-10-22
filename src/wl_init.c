@@ -586,14 +586,6 @@ int _glfwPlatformInit(void)
                             "Wayland: Unable to load default cursor theme\n");
             return GLFW_FALSE;
         }
-        _glfw.wl.defaultCursor =
-            wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, "left_ptr");
-        if (!_glfw.wl.defaultCursor)
-        {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Wayland: Unable to load default left pointer\n");
-            return GLFW_FALSE;
-        }
         _glfw.wl.cursorSurface =
             wl_compositor_create_surface(_glfw.wl.compositor);
     }

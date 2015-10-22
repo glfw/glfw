@@ -178,7 +178,7 @@ struct _GLFWwndconfig
     GLFWbool      focused;
     GLFWbool      autoIconify;
     GLFWbool      floating;
-	GLFWbool      fullscreen;
+    GLFWbool      fullscreen;
     _GLFWmonitor* monitor;
 };
 

@@ -614,6 +614,7 @@ extern "C" {
 #define GLFW_DECORATED              0x00020005
 #define GLFW_AUTO_ICONIFY           0x00020006
 #define GLFW_FLOATING               0x00020007
+#define GLFW_FULLSCREEN             0x00020008
 
 #define GLFW_RED_BITS               0x00021001
 #define GLFW_GREEN_BITS             0x00021002
@@ -2100,6 +2101,18 @@ GLFWAPI void glfwShowWindow(GLFWwindow* window);
  *  @ingroup window
  */
 GLFWAPI void glfwHideWindow(GLFWwindow* window);
+
+/*! @brief Toggles between fullscreen and windowed mode on the specified window.
+ *
+ *  The functions enters fullscreen mode if the specified window was previously
+ *  in windowed mode. If the window is already in fullscreen mode, the fuctions restores
+ *  the monitor video mode and the specified window switches back to windowed mode.
+ *
+ *  @param[in] window The window to toggle his mode.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwToggleWindowFullscreen(GLFWwindow* window);
 
 /*! @brief Returns the monitor that the window uses for full screen mode.
  *

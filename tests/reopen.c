@@ -76,6 +76,8 @@ static GLFWwindow* open_window(int width, int height, GLFWmonitor* monitor)
 
     base = glfwGetTime();
 
+    glfwWindowHint(GLFW_FULLSCREEN, monitor ? GLFW_TRUE : GLFW_FALSE);
+
     window = glfwCreateWindow(width, height, "Window Re-opener", monitor, NULL);
     if (!window)
         return NULL;

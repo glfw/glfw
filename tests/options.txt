@@ -1,0 +1,10 @@
+TODO:
+- Change Resulution
+- Refresh Rate
+- Fullscreen / Window
+all in runtime
+
+new state variables
+
+
+Enter fullscreen mode:

@@ -250,7 +250,7 @@ static void leaveFullscreenMode(_GLFWwindow* window)
     _glfwRestoreVideoMode(window->monitor);
 }
 
-// Window callback function (handles window events)
+// Window callback function (handles window messages)
 //
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                                    WPARAM wParam, LPARAM lParam)

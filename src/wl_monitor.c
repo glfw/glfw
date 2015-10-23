@@ -69,7 +69,7 @@ static void mode(void* data,
 
     mode.base.width = width;
     mode.base.height = height;
-    mode.base.refreshRate = refresh;
+    mode.base.refreshRate = refresh / 1000;
     mode.flags = flags;
 
     if (monitor->wl.modesCount + 1 >= monitor->wl.modesSize)

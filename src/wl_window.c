@@ -491,18 +491,19 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
-    struct wl_cursor* standard_cursor;
+    struct wl_cursor* standardCursor;
 
-    standard_cursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme,
-                                                 translateCursorShape(shape));
-    if (!standard_cursor) {
+    standardCursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme,
+                                                translateCursorShape(shape));
+    if (!standardCursor)
+    {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Standard cursor \"%s\" not found",
                         translateCursorShape(shape));
         return GLFW_FALSE;
     }
-    cursor->wl.image = standard_cursor->images[0];
 
+    cursor->wl.image = standardCursor->images[0];
     return GLFW_TRUE;
 }
 
@@ -534,7 +535,9 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 
     if (window->cursorMode == GLFW_CURSOR_NORMAL)
     {
-        if (cursor == NULL)
+        if (cursor)
+            image = cursor->wl.image;
+        else
         {
             defaultCursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme,
                                                        "left_ptr");
@@ -545,10 +548,6 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
                 return;
             }
             image = defaultCursor->images[0];
-        }
-        else
-        {
-            image = cursor->wl.image;
         }
 
         if (image)

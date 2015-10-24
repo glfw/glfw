@@ -149,7 +149,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
         wndconfig.focused   = GLFW_TRUE;
     }
 
-    // Check the OpenGL bits of the window config
     if (!_glfwIsValidContextConfig(&ctxconfig))
         return NULL;
 

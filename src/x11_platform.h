@@ -295,4 +295,6 @@ void _glfwGrabErrorHandlerX11(void);
 void _glfwReleaseErrorHandlerX11(void);
 void _glfwInputErrorX11(int error, const char* message);
 
+void _glfwPushSelectionToManagerX11(void);
+
 #endif // _glfw3_x11_platform_h_

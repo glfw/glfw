@@ -797,6 +797,12 @@ void _glfwPlatformTerminate(void)
 
     if (_glfw.x11.helperWindowHandle)
     {
+        if (XGetSelectionOwner(_glfw.x11.display, _glfw.x11.CLIPBOARD) ==
+            _glfw.x11.helperWindowHandle)
+        {
+            _glfwPushSelectionToManagerX11();
+        }
+
         XDestroyWindow(_glfw.x11.display, _glfw.x11.helperWindowHandle);
         _glfw.x11.helperWindowHandle = None;
     }

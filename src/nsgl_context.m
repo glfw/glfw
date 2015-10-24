@@ -72,7 +72,6 @@ int _glfwCreateContext(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (ctxconfig->major == 3 && ctxconfig->minor < 2)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
@@ -96,15 +95,6 @@ int _glfwCreateContext(_GLFWwindow* window,
             return GLFW_FALSE;
         }
     }
-#else
-    // Fail if OpenGL 3.0 or above was requested
-    if (ctxconfig->major > 2)
-    {
-        _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                        "NSGL: The targeted version of OS X does not support OpenGL version 3.0 or above");
-        return GLFW_FALSE;
-    }
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
     // Context robustness modes (GL_KHR_robustness) are not yet supported on
     // OS X but are not a hard constraint, so ignore and continue
@@ -121,7 +111,6 @@ int _glfwCreateContext(_GLFWwindow* window,
     ADD_ATTR(NSOpenGLPFAAccelerated);
     ADD_ATTR(NSOpenGLPFAClosestPolicy);
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
     if (ctxconfig->major >= 4)
     {
@@ -133,7 +122,6 @@ int _glfwCreateContext(_GLFWwindow* window,
     {
         ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);
     }
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
     if (ctxconfig->major <= 2)
     {

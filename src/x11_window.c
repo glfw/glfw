@@ -250,8 +250,6 @@ static char** parseUriList(char* text, int* count)
 static GLFWbool createWindow(_GLFWwindow* window,
                              const _GLFWwndconfig* wndconfig)
 {
-    unsigned long wamask;
-    XSetWindowAttributes wa;
     XVisualInfo* vi = _GLFW_X11_CONTEXT_VISUAL;
 
     // Every window needs a colormap
@@ -265,7 +263,8 @@ static GLFWbool createWindow(_GLFWwindow* window,
 
     // Create the actual window
     {
-        wamask = CWBorderPixel | CWColormap | CWEventMask;
+        XSetWindowAttributes wa;
+        const unsigned long wamask = CWBorderPixel | CWColormap | CWEventMask;
 
         wa.colormap = window->x11.colormap;
         wa.border_pixel = 0;

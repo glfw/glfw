@@ -38,6 +38,14 @@ extern "C" {
  * Doxygen documentation
  *************************************************************************/
 
+/*! @file glfw3.h
+ *  @brief The header of the GLFW 3 API.
+ *
+ *  This is the header file of the GLFW 3 API.  It defines all its types and
+ *  declares all its functions.
+ *
+ *  For more information about how to use this file, see @ref build_include.
+ */
 /*! @defgroup context Context handling
  *
  *  This is the reference documentation for context related functions.  For more

@@ -27,29 +27,28 @@ to include the GLFW 3 header file.
 
 This defines all the constants, types and function prototypes of the GLFW API.
 It also includes the OpenGL header from your development environment and
-defines all the constants and types necessary for it to work on your platform.
-
-For example, under Windows you are normally required to include `windows.h`
-before including `GL/gl.h`.  This would pollute your program's namespace with
-the whole Win32 API.
-
-Instead, the GLFW header duplicates only the very few necessary parts of it.  It
-does this only when needed, so if `windows.h` _is_ included, the GLFW header
-does not try to redefine those symbols.
+defines all the constants and types necessary for it to work on your platform
+without including any platform-specific headers.
 
 In other words:
 
-- Do _not_ include the OpenGL headers yourself, as GLFW does this for you
+- Do _not_ include the OpenGL header yourself, as GLFW does this for you in
+  a platform-independent way
 - Do _not_ include `windows.h` or other platform-specific headers unless
-  you plan on using those APIs directly
-- If you _do_ need to include such headers, do it _before_ including the
-  GLFW one and it will detect this
+  you plan on using those APIs yourself
+- If you _do_ need to include such headers, include them _before_ the GLFW
+  header and it will detect this
 
-If you are using an [extension loader library](@ref context_glext_auto) to
-access modern OpenGL then include the header for that library _before_ the GLFW
-header.  This lets it replace the OpenGL header included by GLFW without
-conflicts.  The following example uses [glad](https://github.com/Dav1dde/glad),
-but the same rule applies to all.
+On some platforms supported by GLFW the OpenGL header and link library only
+expose older versions of OpenGL.  The most extreme case is Windows, which only
+exposes OpenGL 1.2.  The easiest way to work around this is to use an
+[extension loader library](@ref context_glext_auto).
+
+If you are using such a library then you should include its header _before_ the
+GLFW header.  This lets it replace the OpenGL header included by GLFW without
+conflicts.  This example uses
+[glad](https://github.com/Dav1dde/glad), but the same rule applies to all such
+libraries.
 
 @code
 #include <glad/glad.h>

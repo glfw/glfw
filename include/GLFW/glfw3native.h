@@ -38,6 +38,12 @@ extern "C" {
  * Doxygen documentation
  *************************************************************************/
 
+/*! @file glfw3native.h
+ *  @brief The header of the native access functions.
+ *
+ *  This is the header file of the native access functions.  See @ref native for
+ *  more information.
+ */
 /*! @defgroup native Native access
  *
  *  **By using the native access functions you assert that you know what you're
@@ -47,6 +53,9 @@ extern "C" {
  *  Before the inclusion of @ref glfw3native.h, you must define exactly one
  *  window system API macro and exactly one context creation API macro.  Failure
  *  to do this will cause a compile-time error.
+ *
+ *  The chosen backends must match those the library was compiled for.  Failure
+ *  to do this will cause a link-time error.
  *
  *  The available window API macros are:
  *  * `GLFW_EXPOSE_NATIVE_WIN32`

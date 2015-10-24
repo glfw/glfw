@@ -587,6 +587,12 @@ characters directly in the source.
 glfwSetWindowTitle(window, "星を追う子ども");
 @endcode
 
+If you are using C++11 or C11, you can use a UTF-8 string literal.
+
+@code
+glfwSetWindowTitle(window, u8"This is always a UTF-8 string");
+@endcode
+
 
 @subsection window_monitor Window monitor
 

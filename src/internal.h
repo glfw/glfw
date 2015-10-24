@@ -784,7 +784,11 @@ void _glfwInputMonitorChange(void);
  *  description.
  *  @ingroup event
  */
-void _glfwInputError(int error, const char* format, ...);
+void _glfwInputError(int error, const char* format, ...)
+#ifdef __GNUC__
+__attribute__((format(printf, 2, 3)))
+#endif
+;
 
 /*! @brief Notifies dropped object over window.
  *  @param[in] window The window that received the event.

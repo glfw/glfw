@@ -271,7 +271,6 @@ struct _GLFWwindow
     PFNGLGETSTRINGIPROC GetStringi;
     PFNGLGETINTEGERVPROC GetIntegerv;
     PFNGLGETSTRINGPROC  GetString;
-    PFNGLCLEARPROC      Clear;
 
     struct {
         GLFWwindowposfun        pos;

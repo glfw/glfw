@@ -357,7 +357,6 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
 
     window->GetIntegerv = (PFNGLGETINTEGERVPROC) glfwGetProcAddress("glGetIntegerv");
     window->GetString = (PFNGLGETSTRINGPROC) glfwGetProcAddress("glGetString");
-    window->Clear = (PFNGLCLEARPROC) glfwGetProcAddress("glClear");
 
     if (!parseVersionString(&window->context.api,
                             &window->context.major,
@@ -468,6 +467,14 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
             window->context.release = GLFW_RELEASE_BEHAVIOR_NONE;
         else if (behavior == GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH)
             window->context.release = GLFW_RELEASE_BEHAVIOR_FLUSH;
+    }
+
+    // Clearing the front buffer to black to avoid garbage pixels left over from
+    // previous uses of our bit of VRAM
+    {
+        PFNGLCLEARPROC glClear = (PFNGLCLEARPROC) glfwGetProcAddress("glClear");
+        glClear(GL_COLOR_BUFFER_BIT);
+        _glfwPlatformSwapBuffers(window);
     }
 
     return GLFW_TRUE;

@@ -630,6 +630,20 @@ static Cursor createHiddenCursor(void)
     return _glfwCreateCursorX11(&image, 0, 0);
 }
 
+// Create a helper window for IPC
+//
+static Window createHelperWindow(void)
+{
+    XSetWindowAttributes wa;
+    wa.event_mask = PropertyChangeMask;
+
+    return XCreateWindow(_glfw.x11.display, _glfw.x11.root,
+                         0, 0, 1, 1, 0, 0,
+                         InputOnly,
+                         DefaultVisual(_glfw.x11.display, _glfw.x11.screen),
+                         CWEventMask, &wa);
+}
+
 // X error handler
 //
 static int errorHandler(Display *display, XErrorEvent* event)
@@ -741,11 +755,11 @@ int _glfwPlatformInit(void)
     _glfw.x11.screen = DefaultScreen(_glfw.x11.display);
     _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
     _glfw.x11.context = XUniqueContext();
+    _glfw.x11.helperWindowHandle = createHelperWindow();
+    _glfw.x11.hiddenCursorHandle = createHiddenCursor();
 
     if (!initExtensions())
         return GLFW_FALSE;
-
-    _glfw.x11.hiddenCursorHandle = createHiddenCursor();
 
     if (XSupportsLocale())
     {
@@ -779,6 +793,12 @@ void _glfwPlatformTerminate(void)
     {
         dlclose(_glfw.x11.x11xcb.handle);
         _glfw.x11.x11xcb.handle = NULL;
+    }
+
+    if (_glfw.x11.helperWindowHandle)
+    {
+        XDestroyWindow(_glfw.x11.display, _glfw.x11.helperWindowHandle);
+        _glfw.x11.helperWindowHandle = None;
     }
 
     if (_glfw.x11.hiddenCursorHandle)

@@ -178,6 +178,7 @@ struct _GLFWwndconfig
     GLFWbool      focused;
     GLFWbool      autoIconify;
     GLFWbool      floating;
+    GLFWbool      fullscreen;
     _GLFWmonitor* monitor;
 };
 
@@ -245,6 +246,7 @@ struct _GLFWwindow
     GLFWbool            autoIconify;
     GLFWbool            floating;
     GLFWbool            closed;
+    GLFWbool            fullscreen;
     void*               userPointer;
     GLFWvidmode         videoMode;
     _GLFWmonitor*       monitor;
@@ -582,6 +584,11 @@ void _glfwPlatformUnhideWindow(_GLFWwindow* window);
  *  @ingroup platform
  */
 void _glfwPlatformHideWindow(_GLFWwindow* window);
+
+/*! @copydoc glfwToggleWindowFullscreen
+ *  @ingroup platform
+ */
+void _glfwPlatformToggleWindowFullscreen(_GLFWwindow* window);
 
 /*! @brief Returns whether the window is focused.
  *  @ingroup platform

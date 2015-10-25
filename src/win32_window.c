@@ -44,7 +44,7 @@ static DWORD getWindowStyle(const _GLFWwindow* window)
 {
     DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 
-    if (window->decorated && !window->monitor)
+    if (window->decorated && !window->fullscreen)
     {
         style |= WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
 
@@ -63,7 +63,7 @@ static DWORD getWindowExStyle(const _GLFWwindow* window)
 {
     DWORD style = WS_EX_APPWINDOW;
 
-    if (window->decorated && !window->monitor)
+    if (window->decorated && !window->fullscreen)
         style |= WS_EX_WINDOWEDGE;
 
     return style;
@@ -224,15 +224,24 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
     return _glfw.win32.publicKeys[HIWORD(lParam) & 0x1FF];
 }
 
+static void updateWindowStyle(_GLFWwindow* window)
+{
+    SetWindowLongPtr(window->win32.handle, GWL_EXSTYLE, getWindowExStyle(window));
+    SetWindowLongPtr(window->win32.handle, GWL_STYLE, getWindowStyle(window));
+    
+   _glfwPlatformShowWindow(window);
+}
+
 // Enter full screen mode
 //
 static GLFWbool enterFullscreenMode(_GLFWwindow* window)
 {
     GLFWvidmode mode;
-    GLFWbool status;
     int xpos, ypos;
 
-    status = _glfwSetVideoMode(window->monitor, &window->videoMode);
+    window->fullscreen = _glfwSetVideoMode(window->monitor, &window->videoMode);
+
+    updateWindowStyle(window);
 
     _glfwPlatformGetVideoMode(window->monitor, &mode);
     _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
@@ -240,7 +249,7 @@ static GLFWbool enterFullscreenMode(_GLFWwindow* window)
     SetWindowPos(window->win32.handle, HWND_TOPMOST,
                  xpos, ypos, mode.width, mode.height, SWP_NOCOPYBITS);
 
-    return status;
+    return window->fullscreen;
 }
 
 // Leave full screen mode
@@ -248,6 +257,10 @@ static GLFWbool enterFullscreenMode(_GLFWwindow* window)
 static void leaveFullscreenMode(_GLFWwindow* window)
 {
     _glfwRestoreVideoMode(window->monitor);
+
+    window->fullscreen = GLFW_FALSE;
+
+    updateWindowStyle(window);
 }
 
 // Window callback function (handles window events)
@@ -280,7 +293,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 _glfwPlatformSetCursorMode(window, GLFW_CURSOR_NORMAL);
 
-            if (window->monitor && window->autoIconify)
+            if (window->fullscreen && window->autoIconify)
                 _glfwPlatformIconifyWindow(window);
 
             _glfwInputWindowFocus(window, GLFW_FALSE);
@@ -294,7 +307,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 case SC_SCREENSAVE:
                 case SC_MONITORPOWER:
                 {
-                    if (window->monitor)
+                    if (window->fullscreen)
                     {
                         // We are running in full screen mode, so disallow
                         // screen saver and screen blanking
@@ -508,8 +521,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (!window->win32.iconified && wParam == SIZE_MINIMIZED)
             {
                 window->win32.iconified = GLFW_TRUE;
-                if (window->monitor)
+
+                if (window->fullscreen)
                     leaveFullscreenMode(window);
+                
+                // We don't really toggle fullscreen,
+                // just temporally restore monitor video mode
+                window->fullscreen = GLFW_TRUE;
 
                 _glfwInputWindowIconify(window, GLFW_TRUE);
             }
@@ -517,7 +535,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                      (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED))
             {
                 window->win32.iconified = GLFW_FALSE;
-                if (window->monitor)
+
+                // check if we should go back to fullscreen mode
+                if (window->fullscreen)
                     enterFullscreenMode(window);
 
                 _glfwInputWindowIconify(window, GLFW_FALSE);
@@ -673,7 +693,7 @@ static GLFWbool createWindow(_GLFWwindow* window,
     int xpos, ypos, fullWidth, fullHeight;
     WCHAR* wideTitle;
 
-    if (wndconfig->monitor)
+    if (wndconfig->fullscreen)
     {
         GLFWvidmode mode;
 
@@ -732,7 +752,7 @@ static GLFWbool createWindow(_GLFWwindow* window,
                                           WM_COPYGLOBALDATA, MSGFLT_ALLOW, NULL);
     }
 
-    if (wndconfig->floating && !wndconfig->monitor)
+    if (wndconfig->floating && !wndconfig->fullscreen)
     {
         SetWindowPos(window->win32.handle,
                      HWND_TOPMOST,
@@ -868,8 +888,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         if (!createWindow(window, wndconfig, ctxconfig, fbconfig))
             return GLFW_FALSE;
     }
-
-    if (window->monitor)
+    
+    if (wndconfig->fullscreen)
     {
         _glfwPlatformShowWindow(window);
         if (!enterFullscreenMode(window))
@@ -881,7 +901,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
-    if (window->monitor)
+    if (window->fullscreen)
         leaveFullscreenMode(window);
 
     destroyWindow(window);
@@ -934,7 +954,7 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    if (window->monitor)
+    if (window->fullscreen)
         enterFullscreenMode(window);
     else
     {
@@ -1027,13 +1047,40 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
     ShowWindow(window->win32.handle, SW_RESTORE);
 }
 
+int WindowGrabFocus(_GLFWwindow* window)
+{
+    if (!BringWindowToTop(window->win32.handle))
+        return GLFW_FALSE;
+    if (!SetForegroundWindow(window->win32.handle))
+        return GLFW_FALSE;
+    if (!SetFocus(window->win32.handle))
+        return GLFW_FALSE;
+    return GLFW_FALSE;
+}
+
+void WindowRequestFocus(_GLFWwindow* window)
+{
+    // The following can be used to flash the taskbar icon
+    // if any of the focus related functions fail
+    if (!WindowGrabFocus(window)) {
+        // create a taskbar notification ("flash")
+        FLASHWINFO info;
+        info.cbSize = sizeof(FLASHWINFO);
+        info.hwnd = window->win32.handle;
+        info.dwFlags = FLASHW_TRAY;
+        info.uCount = 3;
+        info.dwTimeout = 0;
+
+        FlashWindowEx(&info);
+    }
+}
+
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
     ShowWindow(window->win32.handle, SW_SHOW);
-    BringWindowToTop(window->win32.handle);
-    SetForegroundWindow(window->win32.handle);
-    SetFocus(window->win32.handle);
+    WindowRequestFocus(window);
 }
+
 
 void _glfwPlatformUnhideWindow(_GLFWwindow* window)
 {
@@ -1043,6 +1090,15 @@ void _glfwPlatformUnhideWindow(_GLFWwindow* window)
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     ShowWindow(window->win32.handle, SW_HIDE);
+}
+
+void _glfwPlatformToggleWindowFullscreen(_GLFWwindow* window)
+{
+	if (window->fullscreen) {
+		leaveFullscreenMode(window);
+	} else {
+		enterFullscreenMode(window);
+	}
 }
 
 int _glfwPlatformWindowFocused(_GLFWwindow* window)

@@ -36,10 +36,13 @@ add_executable(threads WIN32 MACOSX_BUNDLE threads.c ${TINYCTHREAD} ${GLAD})
 add_executable(title WIN32 MACOSX_BUNDLE title.c ${GLAD})
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GLAD})
 
+add_executable(options MACOSX_BUNDLE options.c ${GETOPT} ${GLAD})
+set_target_properties(options PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Options")
+
 target_link_libraries(empty "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 
-set(WINDOWS_BINARIES empty sharing tearing threads title windows)
+set(WINDOWS_BINARIES empty sharing tearing threads title windows options)
 set(CONSOLE_BINARIES clipboard events msaa gamma glfwinfo
                      iconify joysticks monitors reopen cursor)
 

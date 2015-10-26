@@ -41,6 +41,13 @@ add_executable(wave WIN32 MACOSX_BUNDLE wave.c ${ICON} ${GLAD})
 
 target_link_libraries(particles "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 
+if (APPLE)
+    add_executable(metal MACOSX_BUNDLE metal.m ${ICON})
+    target_compile_options(metal PUBLIC "-fobjc-arc")
+    target_link_libraries(metal "-framework Metal" "-framework QuartzCore")
+    set_target_properties(metal PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Metal")
+endif()
+
 set(WINDOWS_BINARIES boing gears heightmap particles simple splitview wave)
 set(CONSOLE_BINARIES offscreen)
 
@@ -57,6 +64,7 @@ if (APPLE)
     set_target_properties(boing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Boing")
     set_target_properties(gears PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Gears")
     set_target_properties(heightmap PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Heightmap")
+    set_target_properties(metal PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Metal")
     set_target_properties(particles PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Particles")
     set_target_properties(simple PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Simple")
     set_target_properties(splitview PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "SplitView")

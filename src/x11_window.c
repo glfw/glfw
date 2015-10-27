@@ -896,17 +896,17 @@ static void processEvent(XEvent *event)
                     int count;
                     Status status;
 #if defined(X_HAVE_UTF8_STRING)
-                    char buffer[96];
+                    char buffer[100];
                     char* chars = buffer;
 
                     count = Xutf8LookupString(window->x11.ic,
                                               &event->xkey,
-                                              buffer, sizeof(buffer),
+                                              buffer, sizeof(buffer) - 1,
                                               NULL, &status);
 
                     if (status == XBufferOverflow)
                     {
-                        chars = calloc(count, 1);
+                        chars = calloc(count + 1, 1);
                         count = Xutf8LookupString(window->x11.ic,
                                                   &event->xkey,
                                                   chars, count,
@@ -916,6 +916,7 @@ static void processEvent(XEvent *event)
                     if (status == XLookupChars || status == XLookupBoth)
                     {
                         const char* c = chars;
+                        chars[count] = '\0';
                         while (c - chars < count)
                             _glfwInputChar(window, decodeUTF8(&c), mods, plain);
                     }

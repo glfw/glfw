@@ -72,6 +72,7 @@ used by the tests and examples and are not required to build the library.
  - Removed dependency on external OpenGL or OpenGL ES headers
  - [Cocoa] Removed support for OS X 10.6
  - [X11] Bugfix: Monitor connection and disconnection events were not reported
+ - [X11] Bugfix: Decoding of UTF-8 text from XIM could continue past the end
  - [WGL] Removed dependency on external WGL headers
  - [GLX] Replaced legacy renderable with `GLXWindow`
  - [GLX] Removed dependency on external GLX headers

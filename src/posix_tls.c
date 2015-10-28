@@ -41,12 +41,14 @@ int _glfwCreateContextTLS(void)
         return GLFW_FALSE;
     }
 
+    _glfw.posix_tls.allocated = GLFW_TRUE;
     return GLFW_TRUE;
 }
 
 void _glfwDestroyContextTLS(void)
 {
-    pthread_key_delete(_glfw.posix_tls.context);
+    if (_glfw.posix_tls.allocated)
+        pthread_key_delete(_glfw.posix_tls.context);
 }
 
 void _glfwSetContextTLS(_GLFWwindow* context)

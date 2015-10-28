@@ -37,6 +37,7 @@
 //
 typedef struct _GLFWtlsPOSIX
 {
+    GLFWbool        allocated;
     pthread_key_t   context;
 
 } _GLFWtlsPOSIX;

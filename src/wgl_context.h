@@ -92,6 +92,10 @@ typedef BOOL (WINAPI * WGLSHARELISTS_T)(HGLRC,HGLRC);
 #define _glfw_wglMakeCurrent _glfw.wgl.opengl32.MakeCurrent
 #define _glfw_wglShareLists _glfw.wgl.opengl32.ShareLists
 
+#define _GLFW_RECREATION_NOT_NEEDED 0
+#define _GLFW_RECREATION_REQUIRED   1
+#define _GLFW_RECREATION_IMPOSSIBLE 2
+
 #define _GLFW_PLATFORM_FBCONFIG                 int             wgl
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextWGL wgl
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryWGL wgl

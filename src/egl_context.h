@@ -191,11 +191,6 @@ int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWctxconfig* ctxconfig,
                        const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContext(_GLFWwindow* window);
-#if defined(_GLFW_WIN32)
-int _glfwAnalyzeContext(const _GLFWwindow* window,
-                        const _GLFWctxconfig* ctxconfig,
-                        const _GLFWfbconfig* fbconfig);
-#endif /*_GLFW_WIN32*/
 #if defined(_GLFW_X11)
 GLFWbool _glfwChooseVisual(const _GLFWctxconfig* ctxconfig,
                            const _GLFWfbconfig* fbconfig,

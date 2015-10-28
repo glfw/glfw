@@ -830,6 +830,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         if (!_glfwCreateContext(window, ctxconfig, fbconfig))
             return GLFW_FALSE;
 
+#if defined(_GLFW_WGL)
         status = _glfwAnalyzeContext(window, ctxconfig, fbconfig);
 
         if (status == _GLFW_RECREATION_IMPOSSIBLE)
@@ -868,6 +869,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                 return GLFW_FALSE;
             if (!_glfwCreateContext(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
+#endif
         }
     }
 

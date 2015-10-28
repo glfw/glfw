@@ -526,17 +526,6 @@ void _glfwDestroyContext(_GLFWwindow* window)
     }
 }
 
-// Analyzes the specified context for possible recreation
-//
-#if defined(_GLFW_WIN32)
-int _glfwAnalyzeContext(const _GLFWwindow* window,
-                        const _GLFWctxconfig* ctxconfig,
-                        const _GLFWfbconfig* fbconfig)
-{
-    return _GLFW_RECREATION_NOT_NEEDED;
-}
-#endif // _GLFW_WIN32
-
 // Returns the Visual and depth of the chosen EGLConfig
 //
 #if defined(_GLFW_X11)

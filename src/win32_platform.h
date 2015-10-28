@@ -121,10 +121,6 @@ typedef HRESULT (WINAPI * DWMFLUSH_T)(VOID);
 #define _glfw_DwmIsCompositionEnabled _glfw.win32.dwmapi.DwmIsCompositionEnabled
 #define _glfw_DwmFlush _glfw.win32.dwmapi.DwmFlush
 
-#define _GLFW_RECREATION_NOT_NEEDED 0
-#define _GLFW_RECREATION_REQUIRED   1
-#define _GLFW_RECREATION_IMPOSSIBLE 2
-
 #include "win32_tls.h"
 #include "winmm_joystick.h"
 

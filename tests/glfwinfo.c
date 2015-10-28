@@ -227,7 +227,7 @@ int main(int argc, char** argv)
            MAJOR, MINOR, PROFILE, ROBUSTNESS, VERSION,
            REDBITS, GREENBITS, BLUEBITS, ALPHABITS, DEPTHBITS, STENCILBITS,
            ACCUMREDBITS, ACCUMGREENBITS, ACCUMBLUEBITS, ACCUMALPHABITS,
-           AUXBUFFERS, SAMPLES, STEREO, SRGB, SINGLEBUFFER, NOERROR };
+           AUXBUFFERS, SAMPLES, STEREO, SRGB, SINGLEBUFFER, NOERROR_SRSLY };
     const struct option options[] =
     {
         { "behavior",         1, NULL, BEHAVIOR },
@@ -256,7 +256,7 @@ int main(int argc, char** argv)
         { "stereo",           0, NULL, STEREO },
         { "srgb",             0, NULL, SRGB },
         { "singlebuffer",     0, NULL, SINGLEBUFFER },
-        { "no-error",         0, NULL, NOERROR },
+        { "no-error",         0, NULL, NOERROR_SRSLY },
         { NULL, 0, NULL, 0 }
     };
 
@@ -449,7 +449,7 @@ int main(int argc, char** argv)
             case SINGLEBUFFER:
                 glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
                 break;
-            case NOERROR:
+            case NOERROR_SRSLY:
                 glfwWindowHint(GLFW_CONTEXT_NO_ERROR, GLFW_TRUE);
                 break;
             default:

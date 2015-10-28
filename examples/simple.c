@@ -32,7 +32,7 @@
 
 static void error_callback(int error, const char* description)
 {
-    fputs(description, stderr);
+    fprintf(stderr, "Error: %s\n", description);
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)

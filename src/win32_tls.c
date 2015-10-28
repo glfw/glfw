@@ -32,7 +32,7 @@
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwCreateContextTLS(void)
+GLFWbool _glfwCreateContextTLS(void)
 {
     _glfw.win32_tls.context = TlsAlloc();
     if (_glfw.win32_tls.context == TLS_OUT_OF_INDEXES)

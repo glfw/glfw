@@ -41,7 +41,7 @@ typedef struct _GLFWtlsWin32
 } _GLFWtlsWin32;
 
 
-int _glfwCreateContextTLS(void);
+GLFWbool _glfwCreateContextTLS(void);
 void _glfwDestroyContextTLS(void);
 void _glfwSetContextTLS(_GLFWwindow* context);
 

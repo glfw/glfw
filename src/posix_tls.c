@@ -32,7 +32,7 @@
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwCreateContextTLS(void)
+GLFWbool _glfwCreateContextTLS(void)
 {
     if (pthread_key_create(&_glfw.posix_tls.context, NULL) != 0)
     {

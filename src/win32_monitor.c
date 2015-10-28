@@ -112,6 +112,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     for (adapterIndex = 0;  ;  adapterIndex++)
     {
         DISPLAY_DEVICEW adapter;
+        int widthMM, heightMM;
+        HDC dc;
 
         ZeroMemory(&adapter, sizeof(DISPLAY_DEVICEW));
         adapter.cb = sizeof(DISPLAY_DEVICEW);
@@ -122,12 +124,16 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         if (!(adapter.StateFlags & DISPLAY_DEVICE_ACTIVE))
             continue;
 
+        dc = CreateDCW(L"DISPLAY", adapter.DeviceName, NULL, NULL);
+        widthMM  = GetDeviceCaps(dc, HORZSIZE);
+        heightMM = GetDeviceCaps(dc, VERTSIZE);
+        DeleteDC(dc);
+
         for (displayIndex = 0;  ;  displayIndex++)
         {
             DISPLAY_DEVICEW display;
             _GLFWmonitor* monitor;
             char* name;
-            HDC dc;
 
             ZeroMemory(&display, sizeof(DISPLAY_DEVICEW));
             display.cb = sizeof(DISPLAY_DEVICEW);
@@ -143,13 +149,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                 continue;
             }
 
-            dc = CreateDCW(L"DISPLAY", adapter.DeviceName, NULL, NULL);
-
-            monitor = _glfwAllocMonitor(name,
-                                        GetDeviceCaps(dc, HORZSIZE),
-                                        GetDeviceCaps(dc, VERTSIZE));
-
-            DeleteDC(dc);
+            monitor = _glfwAllocMonitor(name, widthMM, heightMM);
             free(name);
 
             if (adapter.StateFlags & DISPLAY_DEVICE_MODESPRUNED)

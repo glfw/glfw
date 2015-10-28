@@ -73,6 +73,7 @@ used by the tests and examples and are not required to build the library.
  - [Cocoa] Removed support for OS X 10.6
  - [X11] Bugfix: Monitor connection and disconnection events were not reported
  - [X11] Bugfix: Decoding of UTF-8 text from XIM could continue past the end
+ - [POSIX] Bugfix: An unrelated TLS key could be deleted by `glfwTerminate`
  - [WGL] Removed dependency on external WGL headers
  - [GLX] Replaced legacy renderable with `GLXWindow`
  - [GLX] Removed dependency on external GLX headers
@@ -121,6 +122,7 @@ skills.
  - Olivier Delannoy
  - Paul R. Deppe
  - Michael Dickens
+ - Роман Донченко
  - Jonathan Dummer
  - Ralph Eastwood
  - Siavash Eliasi

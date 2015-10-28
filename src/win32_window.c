@@ -844,7 +844,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             // have a current context (actually until we have implicitly loaded
             // the vendor ICD)
 
-            // Yes, this is strange, and yes, this is the proper way on Win32
+            // Yes, this is strange, and yes, this is the proper way on WGL
 
             // As Windows only allows you to set the pixel format once for
             // a window, we need to destroy the current window and create a new

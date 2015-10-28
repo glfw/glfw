@@ -869,8 +869,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                 return GLFW_FALSE;
             if (!_glfwCreateContext(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
-#endif
         }
+#endif // _GLFW_WGL
     }
 
     if (window->monitor)

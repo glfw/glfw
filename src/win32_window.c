@@ -317,6 +317,24 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             return 0;
         }
 
+        case WM_CHAR:
+        case WM_SYSCHAR:
+        case WM_UNICHAR:
+        {
+            const GLFWbool plain = (uMsg != WM_SYSCHAR);
+
+            if (uMsg == WM_UNICHAR && wParam == UNICODE_NOCHAR)
+            {
+                // WM_UNICHAR is not sent by Windows, but is sent by some
+                // third-party input method engine
+                // Returning TRUE here announces support for this message
+                return TRUE;
+            }
+
+            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), plain);
+            return 0;
+        }
+
         case WM_KEYDOWN:
         case WM_SYSKEYDOWN:
         {
@@ -327,33 +345,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             _glfwInputKey(window, key, scancode, GLFW_PRESS, getKeyMods());
             break;
-        }
-
-        case WM_CHAR:
-        {
-            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), GLFW_TRUE);
-            return 0;
-        }
-
-        case WM_SYSCHAR:
-        {
-            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), GLFW_FALSE);
-            return 0;
-        }
-
-        case WM_UNICHAR:
-        {
-            // This message is not sent by Windows, but is sent by some
-            // third-party input method engines
-
-            if (wParam == UNICODE_NOCHAR)
-            {
-                // Returning TRUE here announces support for this message
-                return TRUE;
-            }
-
-            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), GLFW_TRUE);
-            return FALSE;
         }
 
         case WM_KEYUP:

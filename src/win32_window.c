@@ -337,40 +337,32 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_KEYDOWN:
         case WM_SYSKEYDOWN:
-        {
-            const int scancode = (lParam >> 16) & 0x1ff;
-            const int key = translateKey(wParam, lParam);
-            if (key == _GLFW_KEY_INVALID)
-                break;
-
-            _glfwInputKey(window, key, scancode, GLFW_PRESS, getKeyMods());
-            break;
-        }
-
         case WM_KEYUP:
         case WM_SYSKEYUP:
         {
-            const int mods = getKeyMods();
-            const int scancode = (lParam >> 16) & 0x1ff;
             const int key = translateKey(wParam, lParam);
+            const int scancode = (lParam >> 16) & 0x1ff;
+            const int action = ((lParam >> 31) & 1) ? GLFW_RELEASE : GLFW_PRESS;
+            const int mods = getKeyMods();
+
             if (key == _GLFW_KEY_INVALID)
                 break;
 
-            if (wParam == VK_SHIFT)
+            if (action == GLFW_RELEASE && wParam == VK_SHIFT)
             {
                 // Release both Shift keys on Shift up event, as only one event
                 // is sent even if both keys are released
-                _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, scancode, GLFW_RELEASE, mods);
-                _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, scancode, GLFW_RELEASE, mods);
+                _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, scancode, action, mods);
+                _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, scancode, action, mods);
             }
             else if (wParam == VK_SNAPSHOT)
             {
-                // Key down is not reported for the print screen key
+                // Key down is not reported for the Print Screen key
                 _glfwInputKey(window, key, scancode, GLFW_PRESS, mods);
                 _glfwInputKey(window, key, scancode, GLFW_RELEASE, mods);
             }
             else
-                _glfwInputKey(window, key, scancode, GLFW_RELEASE, mods);
+                _glfwInputKey(window, key, scancode, action, mods);
 
             break;
         }
@@ -379,54 +371,40 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_RBUTTONDOWN:
         case WM_MBUTTONDOWN:
         case WM_XBUTTONDOWN:
-        {
-            const int mods = getKeyMods();
-
-            SetCapture(hWnd);
-
-            if (uMsg == WM_LBUTTONDOWN)
-                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS, mods);
-            else if (uMsg == WM_RBUTTONDOWN)
-                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_RIGHT, GLFW_PRESS, mods);
-            else if (uMsg == WM_MBUTTONDOWN)
-                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_MIDDLE, GLFW_PRESS, mods);
-            else
-            {
-                if (HIWORD(wParam) == XBUTTON1)
-                    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_4, GLFW_PRESS, mods);
-                else if (HIWORD(wParam) == XBUTTON2)
-                    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_5, GLFW_PRESS, mods);
-
-                return TRUE;
-            }
-
-            return 0;
-        }
-
         case WM_LBUTTONUP:
         case WM_RBUTTONUP:
         case WM_MBUTTONUP:
         case WM_XBUTTONUP:
         {
-            const int mods = getKeyMods();
+            int button, action;
 
-            ReleaseCapture();
+            if (uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP)
+                button = GLFW_MOUSE_BUTTON_LEFT;
+            else if (uMsg == WM_RBUTTONDOWN || uMsg == WM_RBUTTONUP)
+                button = GLFW_MOUSE_BUTTON_RIGHT;
+            else if (uMsg == WM_MBUTTONDOWN || uMsg == WM_MBUTTONUP)
+                button = GLFW_MOUSE_BUTTON_MIDDLE;
+            else if (GET_XBUTTON_WPARAM(wParam) == XBUTTON1)
+                button = GLFW_MOUSE_BUTTON_4;
+            else
+                button = GLFW_MOUSE_BUTTON_5;
 
-            if (uMsg == WM_LBUTTONUP)
-                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE, mods);
-            else if (uMsg == WM_RBUTTONUP)
-                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_RIGHT, GLFW_RELEASE, mods);
-            else if (uMsg == WM_MBUTTONUP)
-                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_MIDDLE, GLFW_RELEASE, mods);
+            if (uMsg == WM_LBUTTONDOWN || uMsg == WM_RBUTTONDOWN ||
+                uMsg == WM_MBUTTONDOWN || uMsg == WM_XBUTTONDOWN)
+            {
+                action = GLFW_PRESS;
+                SetCapture(hWnd);
+            }
             else
             {
-                if (HIWORD(wParam) == XBUTTON1)
-                    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_4, GLFW_RELEASE, mods);
-                else if (HIWORD(wParam) == XBUTTON2)
-                    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_5, GLFW_RELEASE, mods);
-
-                return TRUE;
+                action = GLFW_RELEASE;
+                ReleaseCapture();
             }
+
+            _glfwInputMouseClick(window, button, action, getKeyMods());
+
+            if (uMsg == WM_XBUTTONDOWN || uMsg == WM_XBUTTONUP)
+                return TRUE;
 
             return 0;
         }

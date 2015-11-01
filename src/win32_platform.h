@@ -86,6 +86,9 @@
 #ifndef UNICODE_NOCHAR
  #define UNICODE_NOCHAR 0xFFFF
 #endif
+#ifndef WM_DPICHANGED
+ #define WM_DPICHANGED 0x02E0
+#endif
 
 #if WINVER < 0x0601
 typedef struct tagCHANGEFILTERSTRUCT
@@ -98,6 +101,15 @@ typedef struct tagCHANGEFILTERSTRUCT
  #define MSGFLT_ALLOW 1
 #endif
 #endif /*Windows 7*/
+
+#ifndef DPI_ENUMS_DECLARED
+typedef enum PROCESS_DPI_AWARENESS
+{
+    PROCESS_DPI_UNAWARE = 0,
+    PROCESS_SYSTEM_DPI_AWARE = 1,
+    PROCESS_PER_MONITOR_DPI_AWARE = 2
+} PROCESS_DPI_AWARENESS;
+#endif /*DPI_ENUMS_DECLARED*/
 
 // winmm.dll function pointer typedefs
 typedef MMRESULT (WINAPI * JOYGETDEVCAPS_T)(UINT,LPJOYCAPS,UINT);
@@ -120,6 +132,10 @@ typedef HRESULT (WINAPI * DWMISCOMPOSITIONENABLED_T)(BOOL*);
 typedef HRESULT (WINAPI * DWMFLUSH_T)(VOID);
 #define _glfw_DwmIsCompositionEnabled _glfw.win32.dwmapi.DwmIsCompositionEnabled
 #define _glfw_DwmFlush _glfw.win32.dwmapi.DwmFlush
+
+// shcore.dll function pointer typedefs
+typedef HRESULT (WINAPI * SETPROCESSDPIAWARENESS_T)(PROCESS_DPI_AWARENESS);
+#define _glfw_SetProcessDPIAwareness _glfw.win32.shcore.SetProcessDPIAwareness
 
 #include "win32_tls.h"
 #include "winmm_joystick.h"
@@ -190,6 +206,12 @@ typedef struct _GLFWlibraryWin32
         DWMISCOMPOSITIONENABLED_T DwmIsCompositionEnabled;
         DWMFLUSH_T      DwmFlush;
     } dwmapi;
+
+    // shcore.dll
+    struct {
+        HINSTANCE       instance;
+        SETPROCESSDPIAWARENESS_T SetProcessDPIAwareness;
+    } shcore;
 
 } _GLFWlibraryWin32;
 

@@ -238,14 +238,14 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
+    if (!createSurface(window, wndconfig))
+        return GLFW_FALSE;
+
     if (ctxconfig->api != GLFW_NO_API)
     {
         if (!_glfwCreateContext(window, ctxconfig, fbconfig))
             return GLFW_FALSE;
     }
-
-    if (!createSurface(window, wndconfig))
-        return GLFW_FALSE;
 
     if (wndconfig->monitor)
     {

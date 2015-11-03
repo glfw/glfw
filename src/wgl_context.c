@@ -476,12 +476,6 @@ void _glfwDestroyContext(_GLFWwindow* window)
         _glfw_wglDeleteContext(window->context.wgl.handle);
         window->context.wgl.handle = NULL;
     }
-
-    if (window->context.wgl.dc)
-    {
-        ReleaseDC(window->win32.handle, window->context.wgl.dc);
-        window->context.wgl.dc = NULL;
-    }
 }
 
 // Analyzes the specified context for possible recreation

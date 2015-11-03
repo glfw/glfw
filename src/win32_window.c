@@ -750,16 +750,15 @@ static void destroyWindow(_GLFWwindow* window)
 //
 GLFWbool _glfwRegisterWindowClass(void)
 {
-    WNDCLASSW wc;
+    WNDCLASSEXW wc;
 
+    ZeroMemory(&wc, sizeof(wc));
+    wc.cbSize        = sizeof(wc);
     wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
     wc.lpfnWndProc   = (WNDPROC) windowProc;
-    wc.cbClsExtra    = 0;                           // No extra class data
     wc.cbWndExtra    = sizeof(void*) + sizeof(int); // Make room for one pointer
     wc.hInstance     = GetModuleHandleW(NULL);
     wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
-    wc.hbrBackground = NULL;                        // No background
-    wc.lpszMenuName  = NULL;                        // No menu
     wc.lpszClassName = _GLFW_WNDCLASSNAME;
 
     // Load user-provided icon if available
@@ -774,7 +773,7 @@ GLFWbool _glfwRegisterWindowClass(void)
                               0, 0, LR_DEFAULTSIZE | LR_SHARED);
     }
 
-    if (!RegisterClassW(&wc))
+    if (!RegisterClassExW(&wc))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Win32: Failed to register window class");

@@ -255,16 +255,19 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                                    WPARAM wParam, LPARAM lParam)
 {
     _GLFWwindow* window = (_GLFWwindow*) GetWindowLongPtrW(hWnd, 0);
-
-    switch (uMsg)
+    if (!window)
     {
-        case WM_NCCREATE:
+        if (uMsg == WM_NCCREATE)
         {
             CREATESTRUCTW* cs = (CREATESTRUCTW*) lParam;
             SetWindowLongPtrW(hWnd, 0, (LONG_PTR) cs->lpCreateParams);
-            break;
         }
 
+        return DefWindowProcW(hWnd, uMsg, wParam, lParam);
+    }
+
+    switch (uMsg)
+    {
         case WM_SETFOCUS:
         {
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
@@ -528,9 +531,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         {
             int xoff, yoff;
             MINMAXINFO* mmi = (MINMAXINFO*) lParam;
-
-            if (!window)
-                break;
 
             getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
                               0, 0, &xoff, &yoff);

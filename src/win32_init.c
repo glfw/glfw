@@ -263,6 +263,28 @@ static void createKeyTables(void)
     }
 }
 
+// Creates a dummy window for behind-the-scenes work
+//
+static HWND createHelperWindow(void)
+{
+    HWND window = CreateWindowExW(WS_EX_OVERLAPPEDWINDOW,
+                                  _GLFW_WNDCLASSNAME,
+                                  L"GLFW helper window",
+                                  WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
+                                  0, 0, 1, 1,
+                                  NULL, NULL,
+                                  GetModuleHandleW(NULL),
+                                  NULL);
+    if (!window)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to create helper window");
+        return NULL;
+    }
+
+    return window;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -355,6 +377,12 @@ int _glfwPlatformInit(void)
     if (!_glfwRegisterWindowClass())
         return GLFW_FALSE;
 
+    _glfw.win32.helperWindow = createHelperWindow();
+    if (!_glfw.win32.helperWindow)
+        return GLFW_FALSE;
+
+    _glfwPlatformPollEvents();
+
     if (!_glfwInitContextAPI())
         return GLFW_FALSE;
 
@@ -377,6 +405,9 @@ void _glfwPlatformTerminate(void)
 
     _glfwTerminateJoysticks();
     _glfwTerminateContextAPI();
+
+    if (_glfw.win32.helperWindow)
+        DestroyWindow(_glfw.win32.helperWindow);
 
     freeLibraries();
 }

@@ -35,8 +35,6 @@
 
 #define _GLFW_KEY_INVALID -2
 
-#define _GLFW_WNDCLASSNAME L"GLFW30"
-
 // Returns the window style for the specified window
 //
 static DWORD getWindowStyle(const _GLFWwindow* window)
@@ -257,10 +255,25 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
     _GLFWwindow* window = (_GLFWwindow*) GetWindowLongPtrW(hWnd, 0);
     if (!window)
     {
-        if (uMsg == WM_NCCREATE)
+        switch (uMsg)
         {
-            CREATESTRUCTW* cs = (CREATESTRUCTW*) lParam;
-            SetWindowLongPtrW(hWnd, 0, (LONG_PTR) cs->lpCreateParams);
+            case WM_NCCREATE:
+            {
+                CREATESTRUCTW* cs = (CREATESTRUCTW*) lParam;
+                SetWindowLongPtrW(hWnd, 0, (LONG_PTR) cs->lpCreateParams);
+                break;
+            }
+
+            case WM_DEVICECHANGE:
+            {
+                if (wParam == DBT_DEVNODES_CHANGED)
+                {
+                    _glfwInputMonitorChange();
+                    return TRUE;
+                }
+
+                break;
+            }
         }
 
         return DefWindowProcW(hWnd, uMsg, wParam, lParam);
@@ -593,16 +606,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                          rect->right - rect->left,
                          rect->bottom - rect->top,
                          SWP_NOACTIVATE | SWP_NOZORDER);
-            break;
-        }
-
-        case WM_DEVICECHANGE:
-        {
-            if (DBT_DEVNODES_CHANGED == wParam)
-            {
-                _glfwInputMonitorChange();
-                return TRUE;
-            }
             break;
         }
 

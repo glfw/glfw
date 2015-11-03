@@ -153,6 +153,8 @@ typedef HRESULT (WINAPI * SETPROCESSDPIAWARENESS_T)(PROCESS_DPI_AWARENESS);
  #error "No supported context creation API selected"
 #endif
 
+#define _GLFW_WNDCLASSNAME L"GLFW30"
+
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWin32  win32
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 win32
 #define _GLFW_PLATFORM_LIBRARY_TIME_STATE   _GLFWtimeWin32    win32_time
@@ -183,6 +185,7 @@ typedef struct _GLFWwindowWin32
 //
 typedef struct _GLFWlibraryWin32
 {
+    HWND                helperWindow;
     DWORD               foregroundLockTimeout;
     char*               clipboardString;
     char                keyName[64];

@@ -60,7 +60,7 @@ BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
 
 // Load necessary libraries (DLLs)
 //
-static GLFWbool initLibraries(void)
+static GLFWbool loadLibraries(void)
 {
     _glfw.win32.winmm.instance = LoadLibraryA("winmm.dll");
     if (!_glfw.win32.winmm.instance)
@@ -111,7 +111,7 @@ static GLFWbool initLibraries(void)
 
 // Unload used libraries (DLLs)
 //
-static void terminateLibraries(void)
+static void freeLibraries(void)
 {
     if (_glfw.win32.winmm.instance)
         FreeLibrary(_glfw.win32.winmm.instance);
@@ -342,7 +342,7 @@ int _glfwPlatformInit(void)
     SystemParametersInfoW(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, UIntToPtr(0),
                           SPIF_SENDCHANGE);
 
-    if (!initLibraries())
+    if (!loadLibraries())
         return GLFW_FALSE;
 
     createKeyTables();
@@ -377,7 +377,8 @@ void _glfwPlatformTerminate(void)
 
     _glfwTerminateJoysticks();
     _glfwTerminateContextAPI();
-    terminateLibraries();
+
+    freeLibraries();
 }
 
 const char* _glfwPlatformGetVersionString(void)

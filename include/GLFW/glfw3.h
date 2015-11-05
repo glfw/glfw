@@ -738,6 +738,9 @@ extern "C" {
  *  Generic function pointer used for returning client API function pointers
  *  without forcing a cast from a regular pointer.
  *
+ *  @sa @ref context_glext
+ *  @sa glfwGetProcAddress
+ *
  *  @ingroup context
  */
 typedef void (*GLFWglproc)(void);

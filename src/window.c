@@ -82,7 +82,7 @@ void _glfwInputWindowSize(_GLFWwindow* window, int width, int height)
         window->callbacks.size((GLFWwindow*) window, width, height);
 }
 
-void _glfwInputWindowIconify(_GLFWwindow* window, int iconified)
+void _glfwInputWindowIconify(_GLFWwindow* window, GLFWbool iconified)
 {
     if (window->callbacks.iconify)
         window->callbacks.iconify((GLFWwindow*) window, iconified);

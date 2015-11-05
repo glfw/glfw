@@ -156,7 +156,7 @@ void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int m
         window->callbacks.key((GLFWwindow*) window, key, scancode, action, mods);
 }
 
-void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint, int mods, int plain)
+void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint, int mods, GLFWbool plain)
 {
     if (codepoint < 32 || (codepoint > 126 && codepoint < 160))
         return;
@@ -210,7 +210,7 @@ void _glfwInputCursorMotion(_GLFWwindow* window, double x, double y)
         window->callbacks.cursorPos((GLFWwindow*) window, x, y);
 }
 
-void _glfwInputCursorEnter(_GLFWwindow* window, int entered)
+void _glfwInputCursorEnter(_GLFWwindow* window, GLFWbool entered)
 {
     if (window->callbacks.cursorEnter)
         window->callbacks.cursorEnter((GLFWwindow*) window, entered);

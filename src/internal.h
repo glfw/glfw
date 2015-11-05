@@ -708,7 +708,7 @@ void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height);
  *  `GLFW_FALSE` if it was restored.
  *  @ingroup event
  */
-void _glfwInputWindowIconify(_GLFWwindow* window, int iconified);
+void _glfwInputWindowIconify(_GLFWwindow* window, GLFWbool iconified);
 
 /*! @brief Notifies shared code of a window damage event.
  *  @param[in] window The window that received the event.
@@ -739,7 +739,7 @@ void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int m
  *  `GLFW_FALSE` otherwise.
  *  @ingroup event
  */
-void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint, int mods, int plain);
+void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint, int mods, GLFWbool plain);
 
 /*! @brief Notifies shared code of a scroll event.
  *  @param[in] window The window that received the event.
@@ -773,7 +773,7 @@ void _glfwInputCursorMotion(_GLFWwindow* window, double x, double y);
  *  window, or `GLFW_FALSE` if it left it.
  *  @ingroup event
  */
-void _glfwInputCursorEnter(_GLFWwindow* window, int entered);
+void _glfwInputCursorEnter(_GLFWwindow* window, GLFWbool entered);
 
 /*! @ingroup event
  */
@@ -825,7 +825,7 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
  *  @return `GLFW_TRUE` if the extension was found, or `GLFW_FALSE` otherwise.
  *  @ingroup utility
  */
-int _glfwStringInExtensionString(const char* string, const char* extensions);
+GLFWbool _glfwStringInExtensionString(const char* string, const char* extensions);
 
 /*! @brief Chooses the framebuffer config that best matches the desired one.
  *  @param[in] desired The desired framebuffer config.

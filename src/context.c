@@ -506,7 +506,7 @@ GLFWbool _glfwIsValidContext(const _GLFWctxconfig* ctxconfig)
     return GLFW_TRUE;
 }
 
-int _glfwStringInExtensionString(const char* string, const char* extensions)
+GLFWbool _glfwStringInExtensionString(const char* string, const char* extensions)
 {
     const char* start = extensions;
 

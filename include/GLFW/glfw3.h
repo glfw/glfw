@@ -3450,8 +3450,8 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
  *  without a current context will cause a @ref GLFW_NO_CURRENT_CONTEXT error.
  *
  *  @param[in] procname The ASCII encoded name of the function.
- *  @return The address of the function, or `NULL` if an [error](@ref
- *  error_handling) occurred.
+ *  @return The address of the function, or `NULL` if an
+ *  [error](@ref error_handling) occurred.
  *
  *  @remarks The address of a given function is not guaranteed to be the same
  *  between contexts.

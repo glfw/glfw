@@ -203,9 +203,9 @@ functions not on this list will not be made non-reentrant.
 @subsection thread_safety Thread safety
 
 Most GLFW functions may only be called from the main thread, but some may be
-called from any thread.  However, no GLFW function may be called from any other
-thread until GLFW has been successfully initialized on the main thread,
-including functions that may called before initialization.
+called from any thread.  However, no GLFW function may be called from any thread
+but the main thread until GLFW has been successfully initialized, including
+functions that may called before initialization.
 
 The reference documentation for every GLFW function states whether it is limited
 to the main thread.                                                        

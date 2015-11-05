@@ -109,8 +109,8 @@ glfwCreateWindow to fail.
 GLFW uses the `GLX_ARB_create_context_profile` extension to provide support for
 context profiles.  Where this extension is unavailable, setting the
 `GLFW_OPENGL_PROFILE` hint to anything but `GLFW_OPENGL_ANY_PROFILE`, or setting
-`GLFW_CLIENT_API` to anything but `GLFW_OPENGL_API` will cause @ref
-glfwCreateWindow to fail.
+`GLFW_CLIENT_API` to anything but `GLFW_OPENGL_API` or `GLFW_NO_API` will cause
+@ref glfwCreateWindow to fail.
 
 GLFW uses the `GLX_ARB_context_flush_control` extension to provide control over
 whether a context is flushed when it is released (made non-current).  Where this

@@ -3297,6 +3297,10 @@ GLFWAPI void glfwSetTime(double time);
  *  whether a context performs this flush by setting the
  *  [GLFW_CONTEXT_RELEASE_BEHAVIOR](@ref window_hints_ctx) window hint.
  *
+ *  The specified window must have an OpenGL or OpenGL ES context.  Specifying
+ *  a window without a context will generate a @ref GLFW_NO_WINDOW_CONTEXT
+ *  error.
+ *
  *  @param[in] window The window whose context to make current, or `NULL` to
  *  detach the current context.
  *
@@ -3337,6 +3341,10 @@ GLFWAPI GLFWwindow* glfwGetCurrentContext(void);
  *  This function swaps the front and back buffers of the specified window.  If
  *  the swap interval is greater than zero, the GPU driver waits the specified
  *  number of screen updates before swapping the buffers.
+ *
+ *  The specified window must have an OpenGL or OpenGL ES context.  Specifying
+ *  a window without a context will generate a @ref GLFW_NO_WINDOW_CONTEXT
+ *  error.
  *
  *  @param[in] window The window whose buffers to swap.
  *

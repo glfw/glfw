@@ -6,7 +6,7 @@
 
 This guide takes you through writing a simple application using GLFW 3.  The
 application will create a window and OpenGL context, render a rotating triangle
-and exit when the user closes the window or presses Escape.  This guide will
+and exit when the user closes the window or presses _Escape_.  This guide will
 introduce a few of the most commonly used functions, but there are many more.
 
 This guide assumes no experience with earlier versions of GLFW.  If you
@@ -190,7 +190,7 @@ called immediately after the close flag has been set.
 
 You can also set it yourself with @ref glfwSetWindowShouldClose.  This can be
 useful if you want to interpret other kinds of input as closing the window, like
-for example pressing the escape key.
+for example pressing the _Escape_ key.
 
 
 @subsection quick_key_input Receiving input events
@@ -316,7 +316,7 @@ keyboard input, it's possible to create a simple program.
 
 This program creates a 640 by 480 windowed mode window and starts a loop that
 clears the screen, renders a triangle and processes events until the user either
-presses Escape or closes the window.
+presses _Escape_ or closes the window.
 
 @snippet simple.c code
 

@@ -275,7 +275,7 @@ int _glfwInitContextAPI(void)
     if (!_glfwCreateContextTLS())
         return GLFW_FALSE;
 
-    _glfw.wgl.opengl32.instance = LoadLibraryW(L"opengl32.dll");
+    _glfw.wgl.opengl32.instance = LoadLibraryA("opengl32.dll");
     if (!_glfw.wgl.opengl32.instance)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "WGL: Failed to load opengl32.dll");

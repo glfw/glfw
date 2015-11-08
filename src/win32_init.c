@@ -62,7 +62,7 @@ BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
 //
 static GLFWbool initLibraries(void)
 {
-    _glfw.win32.winmm.instance = LoadLibraryW(L"winmm.dll");
+    _glfw.win32.winmm.instance = LoadLibraryA("winmm.dll");
     if (!_glfw.win32.winmm.instance)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to load winmm.dll");
@@ -78,7 +78,7 @@ static GLFWbool initLibraries(void)
     _glfw.win32.winmm.timeGetTime = (TIMEGETTIME_T)
         GetProcAddress(_glfw.win32.winmm.instance, "timeGetTime");
 
-    _glfw.win32.user32.instance = LoadLibraryW(L"user32.dll");
+    _glfw.win32.user32.instance = LoadLibraryA("user32.dll");
     if (!_glfw.win32.user32.instance)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to load user32.dll");
@@ -90,7 +90,7 @@ static GLFWbool initLibraries(void)
     _glfw.win32.user32.ChangeWindowMessageFilterEx = (CHANGEWINDOWMESSAGEFILTEREX_T)
         GetProcAddress(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
 
-    _glfw.win32.dwmapi.instance = LoadLibraryW(L"dwmapi.dll");
+    _glfw.win32.dwmapi.instance = LoadLibraryA("dwmapi.dll");
     if (_glfw.win32.dwmapi.instance)
     {
         _glfw.win32.dwmapi.DwmIsCompositionEnabled = (DWMISCOMPOSITIONENABLED_T)
@@ -99,7 +99,7 @@ static GLFWbool initLibraries(void)
             GetProcAddress(_glfw.win32.dwmapi.instance, "DwmFlush");
     }
 
-    _glfw.win32.shcore.instance = LoadLibraryW(L"shcore.dll");
+    _glfw.win32.shcore.instance = LoadLibraryA("shcore.dll");
     if (_glfw.win32.shcore.instance)
     {
         _glfw.win32.shcore.SetProcessDPIAwareness = (SETPROCESSDPIAWARENESS_T)

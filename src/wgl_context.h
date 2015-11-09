@@ -105,8 +105,8 @@ typedef BOOL (WINAPI * WGLSHARELISTS_T)(HGLRC,HGLRC);
 //
 typedef struct _GLFWcontextWGL
 {
-    HDC       dc;              // Private GDI device context
-    HGLRC     context;         // Permanent rendering context
+    HDC       dc;
+    HGLRC     handle;
     int       interval;
 
 } _GLFWcontextWGL;

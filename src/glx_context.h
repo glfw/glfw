@@ -116,7 +116,7 @@ typedef void (*PFNGLXDESTROYWINDOWPROC)(Display*,GLXWindow);
 //
 typedef struct _GLFWcontextGLX
 {
-    GLXContext      context;
+    GLXContext      handle;
     GLXWindow       window;
 
 } _GLFWcontextGLX;

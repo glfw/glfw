@@ -317,7 +317,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     GLXContext share = NULL;
 
     if (ctxconfig->share)
-        share = ctxconfig->share->glx.context;
+        share = ctxconfig->share->context.glx.handle;
 
     if (!chooseFBConfig(fbconfig, &native))
     {
@@ -436,7 +436,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
         setGLXattrib(None, None);
 
-        window->glx.context =
+        window->context.glx.handle =
             _glfw.glx.CreateContextAttribsARB(_glfw.x11.display,
                                               native,
                                               share,
@@ -447,31 +447,32 @@ int _glfwCreateContext(_GLFWwindow* window,
         //       implementation of GLX_ARB_create_context_profile that fail
         //       default 1.0 context creation with a GLXBadProfileARB error in
         //       violation of the extension spec
-        if (!window->glx.context)
+        if (!window->context.glx.handle)
         {
             if (_glfw.x11.errorCode == _glfw.glx.errorBase + GLXBadProfileARB &&
                 ctxconfig->api == GLFW_OPENGL_API &&
                 ctxconfig->profile == GLFW_OPENGL_ANY_PROFILE &&
                 ctxconfig->forward == GLFW_FALSE)
             {
-                window->glx.context = createLegacyContext(window, native, share);
+                window->context.glx.handle =
+                    createLegacyContext(window, native, share);
             }
         }
     }
     else
-        window->glx.context = createLegacyContext(window, native, share);
+        window->context.glx.handle = createLegacyContext(window, native, share);
 
     _glfwReleaseXErrorHandler();
 
-    if (!window->glx.context)
+    if (!window->context.glx.handle)
     {
         _glfwInputXError(GLFW_VERSION_UNAVAILABLE, "GLX: Failed to create context");
         return GLFW_FALSE;
     }
 
-    window->glx.window = _glfw_glXCreateWindow(_glfw.x11.display, native,
-                                               window->x11.handle, NULL);
-    if (!window->glx.window)
+    window->context.glx.window = _glfw_glXCreateWindow(_glfw.x11.display, native,
+                                                       window->x11.handle, NULL);
+    if (!window->context.glx.window)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "GLX: Failed to create window");
         return GLFW_FALSE;
@@ -486,16 +487,16 @@ int _glfwCreateContext(_GLFWwindow* window,
 //
 void _glfwDestroyContext(_GLFWwindow* window)
 {
-    if (window->glx.window)
+    if (window->context.glx.window)
     {
-        _glfw_glXDestroyWindow(_glfw.x11.display, window->glx.window);
-        window->glx.window = None;
+        _glfw_glXDestroyWindow(_glfw.x11.display, window->context.glx.window);
+        window->context.glx.window = None;
     }
 
-    if (window->glx.context)
+    if (window->context.glx.handle)
     {
-        _glfw_glXDestroyContext(_glfw.x11.display, window->glx.context);
-        window->glx.context = NULL;
+        _glfw_glXDestroyContext(_glfw.x11.display, window->context.glx.handle);
+        window->context.glx.handle = NULL;
     }
 }
 
@@ -540,8 +541,8 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     if (window)
     {
         _glfw_glXMakeCurrent(_glfw.x11.display,
-                             window->glx.window,
-                             window->glx.context);
+                             window->context.glx.window,
+                             window->context.glx.handle);
     }
     else
         _glfw_glXMakeCurrent(_glfw.x11.display, None, NULL);
@@ -551,7 +552,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 {
-    _glfw_glXSwapBuffers(_glfw.x11.display, window->glx.window);
+    _glfw_glXSwapBuffers(_glfw.x11.display, window->context.glx.window);
 }
 
 void _glfwPlatformSwapInterval(int interval)
@@ -561,7 +562,7 @@ void _glfwPlatformSwapInterval(int interval)
     if (_glfw.glx.EXT_swap_control)
     {
         _glfw.glx.SwapIntervalEXT(_glfw.x11.display,
-                                  window->glx.window,
+                                  window->context.glx.window,
                                   interval);
     }
     else if (_glfw.glx.MESA_swap_control)
@@ -612,6 +613,6 @@ GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* handle)
         return NULL;
     }
 
-    return window->glx.context;
+    return window->context.glx.handle;
 }
 

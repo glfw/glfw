@@ -195,9 +195,9 @@ int _glfwCreateContext(_GLFWwindow* window,
 #undef ADD_ATTR
 #undef ADD_ATTR2
 
-    window->nsgl.pixelFormat =
+    window->context.nsgl.pixelFormat =
         [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
-    if (window->nsgl.pixelFormat == nil)
+    if (window->context.nsgl.pixelFormat == nil)
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "NSGL: Failed to find a suitable pixel format");
@@ -207,19 +207,19 @@ int _glfwCreateContext(_GLFWwindow* window,
     NSOpenGLContext* share = NULL;
 
     if (ctxconfig->share)
-        share = ctxconfig->share->nsgl.context;
+        share = ctxconfig->share->context.nsgl.object;
 
-    window->nsgl.context =
-        [[NSOpenGLContext alloc] initWithFormat:window->nsgl.pixelFormat
+    window->context.nsgl.object =
+        [[NSOpenGLContext alloc] initWithFormat:window->context.nsgl.pixelFormat
                                    shareContext:share];
-    if (window->nsgl.context == nil)
+    if (window->context.nsgl.object == nil)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "NSGL: Failed to create OpenGL context");
         return GLFW_FALSE;
     }
 
-    [window->nsgl.context setView:window->ns.view];
+    [window->context.nsgl.object setView:window->ns.view];
     return GLFW_TRUE;
 }
 
@@ -227,11 +227,11 @@ int _glfwCreateContext(_GLFWwindow* window,
 //
 void _glfwDestroyContext(_GLFWwindow* window)
 {
-    [window->nsgl.pixelFormat release];
-    window->nsgl.pixelFormat = nil;
+    [window->context.nsgl.pixelFormat release];
+    window->context.nsgl.pixelFormat = nil;
 
-    [window->nsgl.context release];
-    window->nsgl.context = nil;
+    [window->context.nsgl.object release];
+    window->context.nsgl.object = nil;
 }
 
 
@@ -242,7 +242,7 @@ void _glfwDestroyContext(_GLFWwindow* window)
 void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 {
     if (window)
-        [window->nsgl.context makeCurrentContext];
+        [window->context.nsgl.object makeCurrentContext];
     else
         [NSOpenGLContext clearCurrentContext];
 
@@ -252,7 +252,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 {
     // ARP appears to be unnecessary, but this is future-proof
-    [window->nsgl.context flushBuffer];
+    [window->context.nsgl.object flushBuffer];
 }
 
 void _glfwPlatformSwapInterval(int interval)
@@ -260,7 +260,8 @@ void _glfwPlatformSwapInterval(int interval)
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
     GLint sync = interval;
-    [window->nsgl.context setValues:&sync forParameter:NSOpenGLCPSwapInterval];
+    [window->context.nsgl.object setValues:&sync
+                              forParameter:NSOpenGLCPSwapInterval];
 }
 
 int _glfwPlatformExtensionSupported(const char* extension)
@@ -299,6 +300,6 @@ GLFWAPI id glfwGetNSGLContext(GLFWwindow* handle)
         return NULL;
     }
 
-    return window->nsgl.context;
+    return window->context.nsgl.object;
 }
 

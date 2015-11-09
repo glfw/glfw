@@ -166,7 +166,7 @@ typedef GLFWglproc (EGLAPIENTRY * PFNEGLGETPROCADDRESSPROC)(const char*);
 typedef struct _GLFWcontextEGL
 {
    EGLConfig        config;
-   EGLContext       context;
+   EGLContext       handle;
    EGLSurface       surface;
 
    void*            client;

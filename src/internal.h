@@ -79,6 +79,7 @@ typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGIPROC)(GLenum,GLuint);
 typedef struct _GLFWwndconfig   _GLFWwndconfig;
 typedef struct _GLFWctxconfig   _GLFWctxconfig;
 typedef struct _GLFWfbconfig    _GLFWfbconfig;
+typedef struct _GLFWcontext     _GLFWcontext;
 typedef struct _GLFWwindow      _GLFWwindow;
 typedef struct _GLFWlibrary     _GLFWlibrary;
 typedef struct _GLFWmonitor     _GLFWmonitor;
@@ -240,6 +241,26 @@ struct _GLFWfbconfig
 };
 
 
+/*! @brief Context structure.
+ */
+struct _GLFWcontext
+{
+    int                 api;
+    int                 major, minor, revision;
+    GLFWbool            forward, debug, noerror;
+    int                 profile;
+    int                 robustness;
+    int                 release;
+
+    PFNGLGETSTRINGIPROC GetStringi;
+    PFNGLGETINTEGERVPROC GetIntegerv;
+    PFNGLGETSTRINGPROC  GetString;
+
+    // This is defined in the context API's context.h
+    _GLFW_PLATFORM_CONTEXT_STATE;
+};
+
+
 /*! @brief Window and context structure.
  */
 struct _GLFWwindow
@@ -265,19 +286,7 @@ struct _GLFWwindow
     char                mouseButtons[GLFW_MOUSE_BUTTON_LAST + 1];
     char                keys[GLFW_KEY_LAST + 1];
 
-    // OpenGL extensions and context attributes
-    struct {
-        int             api;
-        int             major, minor, revision;
-        GLFWbool        forward, debug, noerror;
-        int             profile;
-        int             robustness;
-        int             release;
-    } context;
-
-    PFNGLGETSTRINGIPROC GetStringi;
-    PFNGLGETINTEGERVPROC GetIntegerv;
-    PFNGLGETSTRINGPROC  GetString;
+    _GLFWcontext        context;
 
     struct {
         GLFWwindowposfun        pos;
@@ -299,8 +308,6 @@ struct _GLFWwindow
 
     // This is defined in the window API's platform.h
     _GLFW_PLATFORM_WINDOW_STATE;
-    // This is defined in the context API's context.h
-    _GLFW_PLATFORM_CONTEXT_STATE;
 };
 
 

@@ -314,6 +314,21 @@ GLFWAPI Window glfwGetX11Window(GLFWwindow* window);
  *  @ingroup native
  */
 GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* window);
+
+/*! @brief Returns the `GLXWindow` of the specified window.
+ *
+ *  @return The `GLXWindow` of the specified window, or `None` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @par Thread Safety
+ *  This function may be called from any thread.  Access is not synchronized.
+ *
+ *  @par History
+ *  Added in GLFW 3.2.
+ *
+ *  @ingroup native
+ */
+GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_WAYLAND)

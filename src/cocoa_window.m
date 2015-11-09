@@ -160,7 +160,8 @@ static int translateKey(unsigned int key)
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-    [window->nsgl.context update];
+    if (window->context.api != GLFW_NO_API)
+        [window->nsgl.context update];
 
     if (_glfw.cursorWindow == window &&
         window->cursorMode == GLFW_CURSOR_DISABLED)
@@ -177,7 +178,8 @@ static int translateKey(unsigned int key)
 
 - (void)windowDidMove:(NSNotification *)notification
 {
-    [window->nsgl.context update];
+    if (window->context.api != GLFW_NO_API)
+        [window->nsgl.context update];
 
     if (_glfw.cursorWindow == window &&
         window->cursorMode == GLFW_CURSOR_DISABLED)

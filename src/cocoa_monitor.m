@@ -38,6 +38,79 @@
 #include <ApplicationServices/ApplicationServices.h>
 
 
+// Returns the io_service_t corresponding to a CG display ID, or 0 on failure.
+// The io_service_t should be released with IOObjectRelease when not needed.
+//
+static io_service_t IOServicePortFromCGDisplayID(CGDirectDisplayID displayID)
+{
+    io_iterator_t iter;
+    io_service_t serv, servicePort = 0;
+    
+    CFMutableDictionaryRef matching = IOServiceMatching("IODisplayConnect");
+    
+    // releases matching for us
+    kern_return_t err = IOServiceGetMatchingServices(kIOMasterPortDefault,
+                                                     matching,
+                                                     &iter);
+    if (err)
+        return 0;
+    
+    while((serv = IOIteratorNext(iter)) != 0)
+    {
+        CFDictionaryRef displayInfo;
+
+        CFNumberRef vendorIDRef;
+        CFNumberRef productIDRef;
+        CFNumberRef serialNumberRef;
+
+        NSNumber *vendorID;
+        NSNumber *productID;
+        NSNumber *serialNumber;
+
+        Boolean success;
+
+        displayInfo = IODisplayCreateInfoDictionary(serv, kIODisplayOnlyPreferredName);
+
+        success = CFDictionaryGetValueIfPresent(displayInfo, CFSTR(kDisplayVendorID), (const void**)&vendorIDRef);
+        success &= CFDictionaryGetValueIfPresent(displayInfo, CFSTR(kDisplayProductID), (const void**)&productIDRef);
+
+        if(!success)
+        {
+            CFRelease(displayInfo);
+            continue;
+        }
+
+        vendorID = (__bridge NSNumber*)vendorIDRef;
+        productID = (__bridge NSNumber*)productIDRef;
+
+        // If a serial number is found use it
+        // Otherwise serial number will be nil (= 0) which will match with the output of 'CGDisplaySerialNumber'
+        if(CFDictionaryGetValueIfPresent(displayInfo, CFSTR(kDisplaySerialNumber), (const void**)&serialNumberRef))
+        {
+            serialNumber = (__bridge NSNumber*)serialNumberRef;
+        }
+
+        // If the vendor and product id along with the serial don't match
+        // then we are not looking at the correct monitor.
+        // NOTE: The serial number is important in cases where two monitors
+        //       are the exact same.
+        if(CGDisplayVendorNumber(displayID) != vendorID.unsignedIntValue ||
+           CGDisplayModelNumber(displayID) != productID.unsignedIntValue ||
+           CGDisplaySerialNumber(displayID) != serialNumber.unsignedIntValue)
+        {
+            CFRelease(displayInfo);
+            continue;
+        }
+
+        servicePort = serv;
+        CFRelease(displayInfo);
+        break;
+    }
+
+    IOObjectRelease(iter);
+    return servicePort;
+}
+
 // Get the name of the specified display
 //
 static char* getDisplayName(CGDirectDisplayID displayID)
@@ -47,10 +120,18 @@ static char* getDisplayName(CGDirectDisplayID displayID)
     CFStringRef value;
     CFIndex size;
 
-    // NOTE: This uses a deprecated function because Apple has
-    //       (as of January 2015) not provided any alternative
-    info = IODisplayCreateInfoDictionary(CGDisplayIOServicePort(displayID),
-                                         kIODisplayOnlyPreferredName);
+    // Supports OS X 10.4 Tiger and Newer
+    io_service_t serv = IOServicePortFromCGDisplayID(displayID);
+    if (serv == 0)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: IOServicePortFromCGDisplayID Returned an Invalid Port. (Port: 0)");
+        return strdup("Unknown");
+    }
+
+    info = IODisplayCreateInfoDictionary(serv, kIODisplayOnlyPreferredName);
+    IOObjectRelease(serv);
+    
     names = CFDictionaryGetValue(info, CFSTR(kDisplayProductName));
 
     if (!names || !CFDictionaryGetValueIfPresent(names, CFSTR("en_US"),

@@ -303,3 +303,8 @@ GLFWAPI id glfwGetNSGLContext(GLFWwindow* handle)
     return window->context.nsgl.object;
 }
 
+GLFWAPI CGLContextObj glfwGetCGLContext(GLFWwindow* handle)
+{
+    NSOpenGLContext* ctx = glfwGetNSGLContext(handle);
+    return [ctx CGLContextObj];
+}

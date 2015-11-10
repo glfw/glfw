@@ -37,6 +37,9 @@
 
 #define _GLFW_WNDCLASSNAME L"GLFW30"
 
+#ifndef GET_XBUTTON_WPARAM
+#define GET_XBUTTON_WPARAM(w) (HIWORD(w))
+#endif
 
 // Returns the window style for the specified window
 //

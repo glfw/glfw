@@ -27,7 +27,6 @@
 //
 //========================================================================
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -73,7 +72,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         }
 
         case GLFW_KEY_ESCAPE:
-            glfwSetWindowShouldClose(window, GLFW_TRUE);
+            glfwSetWindowShouldClose(window, GL_TRUE);
             break;
     }
 }
@@ -81,7 +80,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 int main(int argc, char** argv)
 {
     int i;
-    int running = GLFW_TRUE;
+    GLboolean running = GL_TRUE;
     GLFWwindow* windows[4];
 
     glfwSetErrorCallback(error_callback);
@@ -89,8 +88,8 @@ int main(int argc, char** argv)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_DECORATED, GL_FALSE);
+    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
     for (i = 0;  i < 4;  i++)
     {
@@ -106,7 +105,6 @@ int main(int argc, char** argv)
         glfwSetKeyCallback(windows[i], key_callback);
 
         glfwMakeContextCurrent(windows[i]);
-        gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
         glClearColor(colors[i].r, colors[i].g, colors[i].b, 1.f);
 
         glfwGetWindowFrameSize(windows[i], &left, &top, &right, &bottom);
@@ -127,7 +125,7 @@ int main(int argc, char** argv)
             glfwSwapBuffers(windows[i]);
 
             if (glfwWindowShouldClose(windows[i]))
-                running = GLFW_FALSE;
+                running = GL_FALSE;
         }
 
         glfwPollEvents();

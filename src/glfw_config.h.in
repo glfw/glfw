@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 - www.glfw.org
+// GLFW 3.1 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -71,4 +71,11 @@
 #cmakedefine _GLFW_USE_MENUBAR
 // Define this to 1 if windows should use full resolution on Retina displays
 #cmakedefine _GLFW_USE_RETINA
+
+// Define this to 1 if using OpenGL as the client library
+#cmakedefine _GLFW_USE_OPENGL
+// Define this to 1 if using OpenGL ES 1.1 as the client library
+#cmakedefine _GLFW_USE_GLESV1
+// Define this to 1 if using OpenGL ES 2.0 as the client library
+#cmakedefine _GLFW_USE_GLESV2
 

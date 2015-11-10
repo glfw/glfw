@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Wayland - www.glfw.org
+// GLFW 3.1 Wayland - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -69,7 +69,7 @@ static void mode(void* data,
 
     mode.base.width = width;
     mode.base.height = height;
-    mode.base.refreshRate = refresh / 1000;
+    mode.base.refreshRate = refresh;
     mode.flags = flags;
 
     if (monitor->wl.modesCount + 1 >= monitor->wl.modesSize)
@@ -90,7 +90,7 @@ static void done(void* data,
 {
     struct _GLFWmonitor *monitor = data;
 
-    monitor->wl.done = GLFW_TRUE;
+    monitor->wl.done = GL_TRUE;
 }
 
 static void scale(void* data,
@@ -195,7 +195,7 @@ err:
     return NULL;
 }
 
-GLFWbool _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
+GLboolean _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
 {
     return first->wl.output == second->wl.output;
 }
@@ -246,17 +246,5 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 {
     // TODO
     fprintf(stderr, "_glfwPlatformSetGammaRamp not implemented yet\n");
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-//////                        GLFW native API                       //////
-//////////////////////////////////////////////////////////////////////////
-
-GLFWAPI struct wl_output* glfwGetWaylandMonitor(GLFWmonitor* handle)
-{
-    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    return monitor->wl.output;
 }
 

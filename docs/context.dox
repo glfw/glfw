@@ -64,7 +64,7 @@ contexts with hidden windows can be created with the
 [GLFW_VISIBLE](@ref window_hints_wnd) window hint.
 
 @code
-glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
 GLFWwindow* offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
 @endcode
@@ -78,14 +78,6 @@ __OS X:__ The first time a window is created the menu bar is populated with
 common commands like Hide, Quit and About.  This is not desirable for example
 when writing a command-line only application.  The menu bar setup can be
 disabled with a [compile-time option](@ref compile_options_osx).
-
-
-@subsection context_less Windows without contexts
-
-You can disable context creation by setting the
-[GLFW_CLIENT_API](@ref window_hints_ctx) hint to `GLFW_NO_API`.  Windows without
-contexts may not be passed to @ref glfwMakeContextCurrent or @ref
-glfwSwapBuffers.
 
 
 @section context_current Current context
@@ -123,7 +115,7 @@ Buffer swapping is part of the window and framebuffer, not the context.  See
 
 @section context_glext OpenGL and OpenGL ES extensions
 
-One of the benefits of OpenGL and OpenGL ES is their extensibility.
+One of the benefits of OpenGL and OpenGL ES are their extensibility.
 Hardware vendors may include extensions in their implementations that extend the
 API before that functionality is included in a new version of the OpenGL or
 OpenGL ES specification, and some extensions are never included and remain
@@ -279,8 +271,8 @@ if (glfwExtensionSupported("GL_ARB_debug_output"))
 @endcode
 
 The argument is a null terminated ASCII string with the extension name.  If the
-extension is supported, @ref glfwExtensionSupported returns `GLFW_TRUE`,
-otherwise it returns `GLFW_FALSE`.
+extension is supported, @ref glfwExtensionSupported returns `GL_TRUE`, otherwise
+it returns `GL_FALSE`.
 
 
 @subsubsection context_glext_proc Fetching function pointers

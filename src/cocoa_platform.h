@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 OS X - www.glfw.org
+// GLFW 3.1 OS X - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -30,10 +30,8 @@
 #include <stdint.h>
 
 #if defined(__OBJC__)
-#import <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
 #else
-#include <Carbon/Carbon.h>
 #include <ApplicationServices/ApplicationServices.h>
 typedef void* id;
 #endif
@@ -75,17 +73,13 @@ typedef struct _GLFWwindowNS
 //
 typedef struct _GLFWlibraryNS
 {
-    CGEventSourceRef    eventSource;
-    id                  delegate;
-    id                  autoreleasePool;
-    id                  cursor;
-    TISInputSourceRef   inputSource;
-    id                  unicodeData;
+    CGEventSourceRef eventSource;
+    id              delegate;
+    id              autoreleasePool;
+    id              cursor;
 
-    char                keyName[64];
-    short int           publicKeys[256];
-    short int           nativeKeys[GLFW_KEY_LAST + 1];
-    char*               clipboardString;
+    short int       publicKeys[256];
+    char*           clipboardString;
 
 } _GLFWlibraryNS;
 
@@ -122,7 +116,7 @@ typedef struct _GLFWtimeNS
 
 void _glfwInitTimer(void);
 
-GLFWbool _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
+GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
 #endif // _glfw3_cocoa_platform_h_

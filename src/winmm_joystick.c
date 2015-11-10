@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 WinMM - www.glfw.org
+// GLFW 3.1 WinMM - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -76,9 +76,9 @@ int _glfwPlatformJoystickPresent(int joy)
     JOYINFO ji;
 
     if (_glfw_joyGetPos(joy, &ji) != JOYERR_NOERROR)
-        return GLFW_FALSE;
+        return GL_FALSE;
 
-    return GLFW_TRUE;
+    return GL_TRUE;
 }
 
 const float* _glfwPlatformGetJoystickAxes(int joy, int* count)

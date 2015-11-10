@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Win32 - www.glfw.org
+// GLFW 3.1 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -55,12 +55,12 @@ void _glfwInitTimer(void)
 
     if (QueryPerformanceFrequency((LARGE_INTEGER*) &frequency))
     {
-        _glfw.win32_time.hasPC = GLFW_TRUE;
+        _glfw.win32_time.hasPC = GL_TRUE;
         _glfw.win32_time.resolution = 1.0 / (double) frequency;
     }
     else
     {
-        _glfw.win32_time.hasPC = GLFW_FALSE;
+        _glfw.win32_time.hasPC = GL_FALSE;
         _glfw.win32_time.resolution = 0.001; // winmm resolution is 1 ms
     }
 

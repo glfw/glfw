@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Linux - www.glfw.org
+// GLFW 3.1 Linux - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -100,7 +100,7 @@ static void openJoystickDevice(const char* path)
     _glfw.linux_js.js[joy].axes = calloc(axisCount, sizeof(float));
     _glfw.linux_js.js[joy].buttons = calloc(buttonCount, 1);
 
-    _glfw.linux_js.js[joy].present = GLFW_TRUE;
+    _glfw.linux_js.js[joy].present = GL_TRUE;
 #endif // __linux__
 }
 
@@ -199,7 +199,7 @@ int _glfwInitJoysticks(void)
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Linux: Failed to initialize inotify: %s",
                         strerror(errno));
-        return GLFW_FALSE;
+        return GL_FALSE;
     }
 
     // HACK: Register for IN_ATTRIB as well to get notified when udev is done
@@ -220,7 +220,7 @@ int _glfwInitJoysticks(void)
     if (regcomp(&_glfw.linux_js.regex, "^js[0-9]\\+$", 0) != 0)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Linux: Failed to compile regex");
-        return GLFW_FALSE;
+        return GL_FALSE;
     }
 
     dir = opendir(dirname);
@@ -253,7 +253,7 @@ int _glfwInitJoysticks(void)
 
 #endif // __linux__
 
-    return GLFW_TRUE;
+    return GL_TRUE;
 }
 
 // Close all opened joystick handles

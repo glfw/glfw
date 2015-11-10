@@ -9,8 +9,8 @@ if (NOT CMAKE_VERSION VERSION_LESS "3.0")
 endif()
 
 set(GLFW_VERSION_MAJOR "3")
-set(GLFW_VERSION_MINOR "2")
-set(GLFW_VERSION_PATCH "0")
+set(GLFW_VERSION_MINOR "1")
+set(GLFW_VERSION_PATCH "2")
 set(GLFW_VERSION_EXTRA "")
 set(GLFW_VERSION "${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}")
 set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA}")
@@ -30,6 +30,7 @@ if (WIN32)
 endif()
 
 if (APPLE)
+    option(GLFW_BUILD_UNIVERSAL "Build GLFW as a Universal Binary" OFF)
     option(GLFW_USE_CHDIR "Make glfwInit chdir to Contents/Resources" ON)
     option(GLFW_USE_MENUBAR "Populate the menu bar on first window creation" ON)
     option(GLFW_USE_RETINA "Use the full resolution of Retina displays" ON)
@@ -58,6 +59,39 @@ endif()
 
 set(CMAKE_MODULE_PATH "${GLFW_SOURCE_DIR}/CMake/modules")
 
+if (GLFW_USE_EGL)
+    set(GLFW_CLIENT_LIBRARY "opengl" CACHE STRING
+        "The client library to use; one of opengl, glesv1 or glesv2")
+
+    if (${GLFW_CLIENT_LIBRARY} STREQUAL "opengl")
+        set(_GLFW_USE_OPENGL 1)
+    elseif (${GLFW_CLIENT_LIBRARY} STREQUAL "glesv1")
+        set(_GLFW_USE_GLESV1 1)
+    elseif (${GLFW_CLIENT_LIBRARY} STREQUAL "glesv2")
+        set(_GLFW_USE_GLESV2 1)
+    else()
+        message(FATAL_ERROR "Unsupported client library")
+    endif()
+
+    find_package(EGL REQUIRED)
+
+    if (NOT _GLFW_USE_OPENGL)
+        set(GLFW_BUILD_EXAMPLES OFF)
+        set(GLFW_BUILD_TESTS OFF)
+        message(STATUS "NOTE: Examples and tests require OpenGL")
+    endif()
+else()
+    set(_GLFW_USE_OPENGL 1)
+endif()
+
+if (_GLFW_USE_OPENGL)
+    find_package(OpenGL REQUIRED)
+elseif (_GLFW_USE_GLESV1)
+    find_package(GLESv1 REQUIRED)
+elseif (_GLFW_USE_GLESV2)
+    find_package(GLESv2 REQUIRED)
+endif()
+
 find_package(Threads REQUIRED)
 
 if (GLFW_BUILD_DOCS)
@@ -85,10 +119,10 @@ if (MSVC)
 
     if (NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
         foreach (flag CMAKE_C_FLAGS
-                      CMAKE_C_FLAGS_DEBUG
-                      CMAKE_C_FLAGS_RELEASE
-                      CMAKE_C_FLAGS_MINSIZEREL
-                      CMAKE_C_FLAGS_RELWITHDEBINFO)
+                        CMAKE_C_FLAGS_DEBUG
+                        CMAKE_C_FLAGS_RELEASE
+                        CMAKE_C_FLAGS_MINSIZEREL
+                        CMAKE_C_FLAGS_RELWITHDEBINFO)
 
             if (${flag} MATCHES "/MD")
                 string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
@@ -192,11 +226,6 @@ if (UNIX AND NOT APPLE)
         list(APPEND glfw_LIBRARIES "${MATH_LIBRARY}")
         list(APPEND glfw_PKG_LIBS "-lm")
     endif()
-
-    if (CMAKE_DL_LIBS)
-        list(APPEND glfw_LIBRARIES "${CMAKE_DL_LIBS}")
-        list(APPEND glfw_PKG_LIBS "-l${CMAKE_DL_LIBS}")
-    endif()
 endif()
 
 #--------------------------------------------------------------------
@@ -209,6 +238,17 @@ if (_GLFW_WIN32)
     if (GLFW_USE_HYBRID_HPG)
         set(_GLFW_USE_HYBRID_HPG 1)
     endif()
+endif()
+
+#--------------------------------------------------------------------
+# Use WGL for context creation
+#--------------------------------------------------------------------
+if (_GLFW_WGL)
+
+    list(APPEND glfw_PKG_LIBS "-lopengl32")
+
+    list(APPEND glfw_INCLUDE_DIRS "${OPENGL_INCLUDE_DIR}")
+    list(APPEND glfw_LIBRARIES "${OPENGL_gl_LIBRARY}")
 endif()
 
 #--------------------------------------------------------------------
@@ -323,6 +363,53 @@ if (_GLFW_MIR)
 endif()
 
 #--------------------------------------------------------------------
+# Use GLX for context creation
+#--------------------------------------------------------------------
+if (_GLFW_GLX)
+
+    list(APPEND glfw_INCLUDE_DIRS "${OPENGL_INCLUDE_DIR}")
+    list(APPEND glfw_LIBRARIES "${OPENGL_gl_LIBRARY}")
+
+    list(APPEND glfw_PKG_DEPS "gl")
+
+    if (CMAKE_DL_LIBS)
+        list(APPEND glfw_LIBRARIES "${CMAKE_DL_LIBS}")
+        list(APPEND glfw_PKG_LIBS "-l${CMAKE_DL_LIBS}")
+    endif()
+endif()
+
+#--------------------------------------------------------------------
+# Use EGL for context creation
+#--------------------------------------------------------------------
+if (_GLFW_EGL)
+
+    list(APPEND glfw_INCLUDE_DIRS "${EGL_INCLUDE_DIR}")
+    list(APPEND glfw_LIBRARIES "${EGL_LIBRARY}")
+
+    list(APPEND glfw_PKG_DEPS "egl")
+
+    if (_GLFW_USE_OPENGL)
+        list(APPEND glfw_LIBRARIES "${OPENGL_gl_LIBRARY}")
+        list(APPEND glfw_INCLUDE_DIRS "${OPENGL_INCLUDE_DIR}")
+        list(APPEND glfw_PKG_DEPS "gl")
+    elseif (_GLFW_USE_GLESV1)
+        list(APPEND glfw_LIBRARIES "${GLESv1_LIBRARY}")
+        list(APPEND glfw_INCLUDE_DIRS "${GLESv1_INCLUDE_DIR}")
+        list(APPEND glfw_PKG_DEPS "glesv1_cm")
+    elseif (_GLFW_USE_GLESV2)
+        list(APPEND glfw_LIBRARIES "${GLESv2_LIBRARY}")
+        list(APPEND glfw_INCLUDE_DIRS "${GLESv2_INCLUDE_DIR}")
+        list(APPEND glfw_PKG_DEPS "glesv2")
+    endif()
+
+    if (CMAKE_DL_LIBS)
+        list(APPEND glfw_LIBRARIES "${CMAKE_DL_LIBS}")
+        list(APPEND glfw_PKG_LIBS "-l${CMAKE_DL_LIBS}")
+    endif()
+
+endif()
+
+#--------------------------------------------------------------------
 # Use Cocoa for window creation and NSOpenGL for context creation
 #--------------------------------------------------------------------
 if (_GLFW_COCOA AND _GLFW_NSGL)
@@ -339,25 +426,30 @@ if (_GLFW_COCOA AND _GLFW_NSGL)
         set(_GLFW_USE_RETINA 1)
     endif()
 
+    if (GLFW_BUILD_UNIVERSAL)
+        message(STATUS "Building GLFW as Universal Binaries")
+        set(CMAKE_OSX_ARCHITECTURES i386;x86_64)
+    else()
+        message(STATUS "Building GLFW only for the native architecture")
+    endif()
+
     # Set up library and include paths
     find_library(COCOA_FRAMEWORK Cocoa)
     find_library(IOKIT_FRAMEWORK IOKit)
     find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
     find_library(CORE_VIDEO_FRAMEWORK CoreVideo)
-    find_library(CARBON_FRAMEWORK Carbon)
     mark_as_advanced(COCOA_FRAMEWORK
                      IOKIT_FRAMEWORK
                      CORE_FOUNDATION_FRAMEWORK
-                     CORE_VIDEO_FRAMEWORK
-                     CARBON_FRAMEWORK)
+                     CORE_VIDEO_FRAMEWORK)
     list(APPEND glfw_LIBRARIES "${COCOA_FRAMEWORK}"
+                               "${OPENGL_gl_LIBRARY}"
                                "${IOKIT_FRAMEWORK}"
                                "${CORE_FOUNDATION_FRAMEWORK}"
-                               "${CORE_VIDEO_FRAMEWORK}"
-                               "${CARBON_FRAMEWORK}")
+                               "${CORE_VIDEO_FRAMEWORK}")
 
     set(glfw_PKG_DEPS "")
-    set(glfw_PKG_LIBS "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo -framework Carbon")
+    set(glfw_PKG_LIBS "-framework Cocoa -framework OpenGL -framework IOKit -framework CoreFoundation -framework CoreVideo")
 endif()
 
 #--------------------------------------------------------------------

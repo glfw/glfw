@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Wayland - www.glfw.org
+// GLFW 3.1 Wayland - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -49,7 +49,7 @@ static void pointerHandleEnter(void* data,
     _glfw.wl.pointerFocus = window;
 
     _glfwPlatformSetCursor(window, window->wl.currentCursor);
-    _glfwInputCursorEnter(window, GLFW_TRUE);
+    _glfwInputCursorEnter(window, GL_TRUE);
 }
 
 static void pointerHandleLeave(void* data,
@@ -64,7 +64,7 @@ static void pointerHandleLeave(void* data,
 
     _glfw.wl.pointerSerial = serial;
     _glfw.wl.pointerFocus = NULL;
-    _glfwInputCursorEnter(window, GLFW_FALSE);
+    _glfwInputCursorEnter(window, GL_FALSE);
 }
 
 static void pointerHandleMotion(void* data,
@@ -233,7 +233,7 @@ static void keyboardHandleEnter(void* data,
     _GLFWwindow* window = wl_surface_get_user_data(surface);
 
     _glfw.wl.keyboardFocus = window;
-    _glfwInputWindowFocus(window, GLFW_TRUE);
+    _glfwInputWindowFocus(window, GL_TRUE);
 }
 
 static void keyboardHandleLeave(void* data,
@@ -247,7 +247,7 @@ static void keyboardHandleLeave(void* data,
         return;
 
     _glfw.wl.keyboardFocus = NULL;
-    _glfwInputWindowFocus(window, GLFW_FALSE);
+    _glfwInputWindowFocus(window, GL_FALSE);
 }
 
 static int toGLFWKeyCode(uint32_t key)
@@ -548,7 +548,7 @@ int _glfwPlatformInit(void)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Failed to connect to display");
-        return GLFW_FALSE;
+        return GL_FALSE;
     }
 
     _glfw.wl.registry = wl_display_get_registry(_glfw.wl.display);
@@ -562,7 +562,7 @@ int _glfwPlatformInit(void)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Failed to initialize xkb context");
-        return GLFW_FALSE;
+        return GL_FALSE;
     }
 
     // Sync so we got all registry objects
@@ -572,7 +572,7 @@ int _glfwPlatformInit(void)
     wl_display_roundtrip(_glfw.wl.display);
 
     if (!_glfwInitContextAPI())
-        return GLFW_FALSE;
+        return GL_FALSE;
 
     _glfwInitTimer();
     _glfwInitJoysticks();
@@ -584,13 +584,21 @@ int _glfwPlatformInit(void)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Wayland: Unable to load default cursor theme\n");
-            return GLFW_FALSE;
+            return GL_FALSE;
+        }
+        _glfw.wl.defaultCursor =
+            wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, "left_ptr");
+        if (!_glfw.wl.defaultCursor)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Wayland: Unable to load default left pointer\n");
+            return GL_FALSE;
         }
         _glfw.wl.cursorSurface =
             wl_compositor_create_surface(_glfw.wl.compositor);
     }
 
-    return GLFW_TRUE;
+    return GL_TRUE;
 }
 
 void _glfwPlatformTerminate(void)

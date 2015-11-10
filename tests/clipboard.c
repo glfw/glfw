@@ -27,7 +27,6 @@
 //
 //========================================================================
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -59,7 +58,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     switch (key)
     {
         case GLFW_KEY_ESCAPE:
-            glfwSetWindowShouldClose(window, GLFW_TRUE);
+            glfwSetWindowShouldClose(window, GL_TRUE);
             break;
 
         case GLFW_KEY_V:
@@ -128,7 +127,6 @@ int main(int argc, char** argv)
     }
 
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
 
     glfwSetKeyCallback(window, key_callback);

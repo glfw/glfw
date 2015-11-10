@@ -28,7 +28,6 @@
 //
 //========================================================================
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -37,7 +36,7 @@
 
 #include "getopt.h"
 
-static int swap_tear;
+static GLboolean swap_tear;
 static int swap_interval;
 static double frame_rate;
 
@@ -119,7 +118,7 @@ int main(int argc, char** argv)
     float position;
     unsigned long frame_count = 0;
     double last_time, current_time;
-    int fullscreen = GLFW_FALSE;
+    GLboolean fullscreen = GL_FALSE;
     GLFWmonitor* monitor = NULL;
     GLFWwindow* window;
 
@@ -132,7 +131,7 @@ int main(int argc, char** argv)
                 exit(EXIT_SUCCESS);
 
             case 'f':
-                fullscreen = GLFW_TRUE;
+                fullscreen = GL_TRUE;
                 break;
         }
     }
@@ -171,7 +170,6 @@ int main(int argc, char** argv)
     }
 
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     set_swap_interval(window, 0);
 
     last_time = glfwGetTime();

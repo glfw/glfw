@@ -319,7 +319,7 @@ static void update_map(int num_iter)
         {
             GLfloat dx = center_x - map_vertices[0][ii];
             GLfloat dz = center_z - map_vertices[2][ii];
-            GLfloat pd = (2.0f * sqrtf((dx * dx) + (dz * dz))) / circle_size;
+            GLfloat pd = (2.0f * (float) sqrt((dx * dx) + (dz * dz))) / circle_size;
             if (fabs(pd) <= 1.0f)
             {
                 /* tx,tz is within the circle */

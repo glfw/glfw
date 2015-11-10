@@ -89,6 +89,9 @@
 #ifndef WM_DPICHANGED
  #define WM_DPICHANGED 0x02E0
 #endif
+#ifndef GET_XBUTTON_WPARAM
+ #define GET_XBUTTON_WPARAM(w) (HIWORD(w))
+#endif
 
 #if WINVER < 0x0601
 typedef struct tagCHANGEFILTERSTRUCT

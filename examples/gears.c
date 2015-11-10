@@ -30,8 +30,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 /**
@@ -221,7 +219,7 @@ void key( GLFWwindow* window, int k, int s, int action, int mods )
       view_rotz += 5.0;
     break;
   case GLFW_KEY_ESCAPE:
-    glfwSetWindowShouldClose(window, GLFW_TRUE);
+    glfwSetWindowShouldClose(window, GL_TRUE);
     break;
   case GLFW_KEY_UP:
     view_rotx += 5.0;
@@ -325,7 +323,6 @@ int main(int argc, char *argv[])
     glfwSetKeyCallback(window, key);
 
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval( 1 );
 
     glfwGetFramebufferSize(window, &width, &height);

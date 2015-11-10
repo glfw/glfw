@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Win32 - www.glfw.org
+// GLFW 3.1 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -47,7 +47,7 @@
 
 // Change the current video mode
 //
-GLFWbool _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
+GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 {
     GLFWvidmode current;
     const GLFWvidmode* best;
@@ -56,7 +56,7 @@ GLFWbool _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
     best = _glfwChooseVideoMode(monitor, desired);
     _glfwPlatformGetVideoMode(monitor, &current);
     if (_glfwCompareVideoModes(&current, best) == 0)
-        return GLFW_TRUE;
+        return GL_TRUE;
 
     ZeroMemory(&dm, sizeof(dm));
     dm.dmSize = sizeof(DEVMODEW);
@@ -77,11 +77,11 @@ GLFWbool _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
                                  NULL) != DISP_CHANGE_SUCCESSFUL)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to set video mode");
-        return GLFW_FALSE;
+        return GL_FALSE;
     }
 
-    monitor->win32.modeChanged = GLFW_TRUE;
-    return GLFW_TRUE;
+    monitor->win32.modeChanged = GL_TRUE;
+    return GL_TRUE;
 }
 
 // Restore the previously saved (original) video mode
@@ -92,7 +92,7 @@ void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
     {
         ChangeDisplaySettingsExW(monitor->win32.adapterName,
                                  NULL, NULL, CDS_FULLSCREEN, NULL);
-        monitor->win32.modeChanged = GLFW_FALSE;
+        monitor->win32.modeChanged = GL_FALSE;
     }
 }
 
@@ -112,8 +112,6 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     for (adapterIndex = 0;  ;  adapterIndex++)
     {
         DISPLAY_DEVICEW adapter;
-        int widthMM, heightMM;
-        HDC dc;
 
         ZeroMemory(&adapter, sizeof(DISPLAY_DEVICEW));
         adapter.cb = sizeof(DISPLAY_DEVICEW);
@@ -124,16 +122,12 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         if (!(adapter.StateFlags & DISPLAY_DEVICE_ACTIVE))
             continue;
 
-        dc = CreateDCW(L"DISPLAY", adapter.DeviceName, NULL, NULL);
-        widthMM  = GetDeviceCaps(dc, HORZSIZE);
-        heightMM = GetDeviceCaps(dc, VERTSIZE);
-        DeleteDC(dc);
-
         for (displayIndex = 0;  ;  displayIndex++)
         {
             DISPLAY_DEVICEW display;
             _GLFWmonitor* monitor;
             char* name;
+            HDC dc;
 
             ZeroMemory(&display, sizeof(DISPLAY_DEVICEW));
             display.cb = sizeof(DISPLAY_DEVICEW);
@@ -149,11 +143,17 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                 continue;
             }
 
-            monitor = _glfwAllocMonitor(name, widthMM, heightMM);
+            dc = CreateDCW(L"DISPLAY", adapter.DeviceName, NULL, NULL);
+
+            monitor = _glfwAllocMonitor(name,
+                                        GetDeviceCaps(dc, HORZSIZE),
+                                        GetDeviceCaps(dc, VERTSIZE));
+
+            DeleteDC(dc);
             free(name);
 
             if (adapter.StateFlags & DISPLAY_DEVICE_MODESPRUNED)
-                monitor->win32.modesPruned = GLFW_TRUE;
+                monitor->win32.modesPruned = GL_TRUE;
 
             wcscpy(monitor->win32.adapterName, adapter.DeviceName);
             wcscpy(monitor->win32.displayName, display.DeviceName);
@@ -186,7 +186,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
     return monitors;
 }
 
-GLFWbool _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
+GLboolean _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
 {
     return wcscmp(first->win32.displayName, second->win32.displayName) == 0;
 }

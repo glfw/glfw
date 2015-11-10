@@ -27,7 +27,6 @@
 //
 //========================================================================
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -47,20 +46,19 @@ static void error_callback(int error, const char* description)
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
+        glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
 static GLFWwindow* open_window(const char* title, GLFWwindow* share, int posX, int posY)
 {
     GLFWwindow* window;
 
-    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
     window = glfwCreateWindow(WIDTH, HEIGHT, title, NULL, share);
     if (!window)
         return NULL;
 
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
     glfwSetWindowPos(window, posX, posY);
     glfwShowWindow(window);

@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Win32 - www.glfw.org
+// GLFW 3.1 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -35,13 +35,13 @@
 //
 typedef struct _GLFWtlsWin32
 {
-    GLFWbool        allocated;
+    GLboolean       allocated;
     DWORD           context;
 
 } _GLFWtlsWin32;
 
 
-GLFWbool _glfwCreateContextTLS(void);
+int _glfwCreateContextTLS(void);
 void _glfwDestroyContextTLS(void);
 void _glfwSetContextTLS(_GLFWwindow* context);
 

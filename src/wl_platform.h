@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Wayland - www.glfw.org
+// GLFW 3.1 Wayland - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -60,7 +60,7 @@ typedef struct _GLFWvidmodeWayland _GLFWvidmodeWayland;
 typedef struct _GLFWwindowWayland
 {
     int                         width, height;
-    GLFWbool                    visible;
+    GLboolean                   visible;
     struct wl_surface*          surface;
     struct wl_egl_window*       native;
     struct wl_shell_surface*    shell_surface;
@@ -84,6 +84,7 @@ typedef struct _GLFWlibraryWayland
     struct wl_keyboard*         keyboard;
 
     struct wl_cursor_theme*     cursorTheme;
+    struct wl_cursor*           defaultCursor;
     struct wl_surface*          cursorSurface;
     uint32_t                    pointerSerial;
 
@@ -117,7 +118,7 @@ typedef struct _GLFWmonitorWayland
     _GLFWvidmodeWayland*        modes;
     int                         modesCount;
     int                         modesSize;
-    GLFWbool                    done;
+    GLboolean                   done;
 
     int                         x;
     int                         y;
@@ -129,7 +130,6 @@ typedef struct _GLFWmonitorWayland
 //
 typedef struct _GLFWcursorWayland
 {
-    struct wl_cursor_image*     image;
     struct wl_buffer*           buffer;
     int                         width, height;
     int                         xhot, yhot;

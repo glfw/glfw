@@ -216,7 +216,7 @@ glfwTerminate, the window is "open".
 A user attempting to close a window is now just an event like any other.  Unlike
 GLFW 2, windows and contexts created with GLFW 3 will never be destroyed unless
 you choose them to be.  Each window now has a close flag that is set to
-`GLFW_TRUE` when the user attempts to close that window.  By default, nothing else
+`GL_TRUE` when the user attempts to close that window.  By default, nothing else
 happens and the window stays visible.  It is then up to you to either destroy
 the window, take some other action or simply ignore the request.
 
@@ -254,7 +254,7 @@ int GLFWCALL window_close_callback(void);
 void window_close_callback(GLFWwindow* window);
 @endcode
 
-@note GLFW never clears the close flag to `GLFW_FALSE`, meaning you can use it
+@note GLFW never clears the close flag to `GL_FALSE`, meaning you can use it
 for other reasons to close the window as well, for example the user choosing
 Quit from an in-game menu.
 

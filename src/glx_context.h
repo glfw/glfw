@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 GLX - www.glfw.org
+// GLFW 3.1 GLX - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -28,51 +28,16 @@
 #ifndef _glfw3_glx_context_h_
 #define _glfw3_glx_context_h_
 
-#define GLX_VENDOR 1
-#define GLX_RGBA_BIT 0x00000001
-#define GLX_WINDOW_BIT 0x00000001
-#define GLX_DRAWABLE_TYPE 0x8010
-#define GLX_RENDER_TYPE	0x8011
-#define GLX_RGBA_TYPE 0x8014
-#define GLX_DOUBLEBUFFER 5
-#define GLX_STEREO 6
-#define GLX_AUX_BUFFERS	7
-#define GLX_RED_SIZE 8
-#define GLX_GREEN_SIZE 9
-#define GLX_BLUE_SIZE 10
-#define GLX_ALPHA_SIZE 11
-#define GLX_DEPTH_SIZE 12
-#define GLX_STENCIL_SIZE 13
-#define GLX_ACCUM_RED_SIZE 14
-#define GLX_ACCUM_GREEN_SIZE 15
-#define GLX_ACCUM_BLUE_SIZE	16
-#define GLX_ACCUM_ALPHA_SIZE 17
-#define GLX_SAMPLES 0x186a1
-#define GLX_VISUAL_ID 0x800b
-#define GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB 0x20b2
-#define GLX_CONTEXT_DEBUG_BIT_ARB 0x00000001
-#define GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB 0x00000002
-#define GLX_CONTEXT_CORE_PROFILE_BIT_ARB 0x00000001
-#define GLX_CONTEXT_PROFILE_MASK_ARB 0x9126
-#define GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB 0x00000002
-#define GLX_CONTEXT_MAJOR_VERSION_ARB 0x2091
-#define GLX_CONTEXT_MINOR_VERSION_ARB 0x2092
-#define GLX_CONTEXT_FLAGS_ARB 0x2094
-#define GLX_CONTEXT_ES2_PROFILE_BIT_EXT 0x00000004
-#define GLX_CONTEXT_ROBUST_ACCESS_BIT_ARB 0x00000004
-#define GLX_LOSE_CONTEXT_ON_RESET_ARB 0x8252
-#define GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB 0x8256
-#define GLX_NO_RESET_NOTIFICATION_ARB 0x8261
-#define GLX_CONTEXT_RELEASE_BEHAVIOR_ARB 0x2097
-#define GLX_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB 0
-#define GLX_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB 0x2098
+#define GLX_GLXEXT_LEGACY
+#include <GL/glx.h>
 
-typedef XID GLXWindow;
-typedef XID GLXDrawable;
-typedef struct __GLXFBConfig* GLXFBConfig;
-typedef struct __GLXcontext* GLXContext;
-typedef void (*__GLXextproc)(void);
+// This path may need to be changed if you build GLFW using your own setup
+// We ship and use our own copy of glxext.h since GLFW uses fairly new
+// extensions and not all operating systems come with an up-to-date version
+#define GLX_GLXEXT_PROTOTYPES
+#include "../deps/GL/glxext.h"
 
+// libGL.so function pointer typedefs
 typedef int (*PFNGLXGETFBCONFIGATTRIBPROC)(Display*,GLXFBConfig,int,int*);
 typedef const char* (*PFNGLXGETCLIENTSTRINGPROC)(Display*,int);
 typedef Bool (*PFNGLXQUERYEXTENSIONPROC)(Display*,int*,int*);
@@ -81,18 +46,6 @@ typedef void (*PFNGLXDESTROYCONTEXTPROC)(Display*,GLXContext);
 typedef Bool (*PFNGLXMAKECURRENTPROC)(Display*,GLXDrawable,GLXContext);
 typedef void (*PFNGLXSWAPBUFFERSPROC)(Display*,GLXDrawable);
 typedef const char* (*PFNGLXQUERYEXTENSIONSSTRINGPROC)(Display*,int);
-typedef GLXFBConfig* (*PFNGLXGETFBCONFIGSPROC)(Display*,int,int*);
-typedef GLXContext (*PFNGLXCREATENEWCONTEXTPROC)(Display*,GLXFBConfig,int,GLXContext,Bool);
-typedef __GLXextproc (* PFNGLXGETPROCADDRESSPROC) (const GLubyte *procName);
-typedef int (*PFNGLXSWAPINTERVALMESAPROC)(int);
-typedef int (*PFNGLXSWAPINTERVALSGIPROC)(int);
-typedef void (*PFNGLXSWAPINTERVALEXTPROC)(Display*,GLXDrawable,int);
-typedef GLXContext (*PFNGLXCREATECONTEXTATTRIBSARBPROC)(Display*,GLXFBConfig,GLXContext,Bool,const int*);
-typedef XVisualInfo* (*PFNGLXGETVISUALFROMFBCONFIGPROC)(Display*,GLXFBConfig);
-typedef GLXWindow (*PFNGLXCREATEWINDOWPROC)(Display*,GLXFBConfig,Window,const int*);
-typedef void (*PFNGLXDESTROYWINDOWPROC)(Display*,GLXWindow);
-
-// libGL.so function pointer typedefs
 #define _glfw_glXGetFBConfigs _glfw.glx.GetFBConfigs
 #define _glfw_glXGetFBConfigAttrib _glfw.glx.GetFBConfigAttrib
 #define _glfw_glXGetClientString _glfw.glx.GetClientString
@@ -104,20 +57,24 @@ typedef void (*PFNGLXDESTROYWINDOWPROC)(Display*,GLXWindow);
 #define _glfw_glXQueryExtensionsString _glfw.glx.QueryExtensionsString
 #define _glfw_glXCreateNewContext _glfw.glx.CreateNewContext
 #define _glfw_glXGetVisualFromFBConfig _glfw.glx.GetVisualFromFBConfig
-#define _glfw_glXCreateWindow _glfw.glx.CreateWindow
-#define _glfw_glXDestroyWindow _glfw.glx.DestroyWindow
 
 #define _GLFW_PLATFORM_FBCONFIG                 GLXFBConfig     glx
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextGLX glx
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryGLX glx
+
+#ifndef GLX_MESA_swap_control
+typedef int (*PFNGLXSWAPINTERVALMESAPROC)(int);
+#endif
 
 
 // GLX-specific per-context data
 //
 typedef struct _GLFWcontextGLX
 {
-    GLXContext      handle;
-    GLXWindow       window;
+    // Rendering context
+    GLXContext      context;
+    // Visual of selected GLXFBConfig
+    XVisualInfo*    visual;
 
 } _GLFWcontextGLX;
 
@@ -145,8 +102,6 @@ typedef struct _GLFWlibraryGLX
     PFNGLXQUERYEXTENSIONSSTRINGPROC     QueryExtensionsString;
     PFNGLXCREATENEWCONTEXTPROC          CreateNewContext;
     PFNGLXGETVISUALFROMFBCONFIGPROC     GetVisualFromFBConfig;
-    PFNGLXCREATEWINDOWPROC              CreateWindow;
-    PFNGLXDESTROYWINDOWPROC             DestroyWindow;
 
     // GLX 1.4 and extension functions
     PFNGLXGETPROCADDRESSPROC            GetProcAddress;
@@ -155,17 +110,17 @@ typedef struct _GLFWlibraryGLX
     PFNGLXSWAPINTERVALEXTPROC           SwapIntervalEXT;
     PFNGLXSWAPINTERVALMESAPROC          SwapIntervalMESA;
     PFNGLXCREATECONTEXTATTRIBSARBPROC   CreateContextAttribsARB;
-    GLFWbool        SGI_swap_control;
-    GLFWbool        EXT_swap_control;
-    GLFWbool        MESA_swap_control;
-    GLFWbool        ARB_multisample;
-    GLFWbool        ARB_framebuffer_sRGB;
-    GLFWbool        EXT_framebuffer_sRGB;
-    GLFWbool        ARB_create_context;
-    GLFWbool        ARB_create_context_profile;
-    GLFWbool        ARB_create_context_robustness;
-    GLFWbool        EXT_create_context_es2_profile;
-    GLFWbool        ARB_context_flush_control;
+    GLboolean       SGI_swap_control;
+    GLboolean       EXT_swap_control;
+    GLboolean       MESA_swap_control;
+    GLboolean       ARB_multisample;
+    GLboolean       ARB_framebuffer_sRGB;
+    GLboolean       EXT_framebuffer_sRGB;
+    GLboolean       ARB_create_context;
+    GLboolean       ARB_create_context_profile;
+    GLboolean       ARB_create_context_robustness;
+    GLboolean       EXT_create_context_es2_profile;
+    GLboolean       ARB_context_flush_control;
 
 } _GLFWlibraryGLX;
 
@@ -176,8 +131,5 @@ int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWctxconfig* ctxconfig,
                        const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContext(_GLFWwindow* window);
-GLFWbool _glfwChooseVisual(const _GLFWctxconfig* ctxconfig,
-                           const _GLFWfbconfig* fbconfig,
-                           Visual** visual, int* depth);
 
 #endif // _glfw3_glx_context_h_

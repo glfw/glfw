@@ -29,7 +29,7 @@
 //
 //========================================================================
 
-#include <glad/glad.h>
+#define GLFW_INCLUDE_GLEXT
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -97,7 +97,7 @@ int main(int argc, char** argv)
         printf("Requesting that MSAA not be available\n");
 
     glfwWindowHint(GLFW_SAMPLES, samples);
-    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
     window = glfwCreateWindow(800, 400, "Aliasing Detector", NULL, NULL);
     if (!window)
@@ -110,12 +110,11 @@ int main(int argc, char** argv)
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
 
-    if (!GLAD_GL_ARB_multisample && !GLAD_GL_VERSION_1_3)
+    if (!glfwExtensionSupported("GL_ARB_multisample"))
     {
-        printf("Multisampling is not supported\n");
+        printf("GL_ARB_multisample extension not supported\n");
 
         glfwTerminate();
         exit(EXIT_FAILURE);
@@ -123,7 +122,7 @@ int main(int argc, char** argv)
 
     glfwShowWindow(window);
 
-    glGetIntegerv(GL_SAMPLES, &samples);
+    glGetIntegerv(GL_SAMPLES_ARB, &samples);
     if (samples)
         printf("Context reports MSAA is available with %i samples\n", samples);
     else

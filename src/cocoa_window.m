@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 OS X - www.glfw.org
+// GLFW 3.1 OS X - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -64,12 +64,27 @@ static void centerCursor(_GLFWwindow *window)
     _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
 }
 
+// Update the cursor to match the specified cursor mode
+//
+static void updateModeCursor(_GLFWwindow* window)
+{
+    if (window->cursorMode == GLFW_CURSOR_NORMAL)
+    {
+        if (window->cursor)
+            [(NSCursor*) window->cursor->ns.object set];
+        else
+            [[NSCursor arrowCursor] set];
+    }
+    else
+        [(NSCursor*) _glfw.ns.cursor set];
+}
+
 // Enter full screen mode
 //
-static GLFWbool enterFullscreenMode(_GLFWwindow* window)
+static GLboolean enterFullscreenMode(_GLFWwindow* window)
 {
     GLFWvidmode mode;
-    GLFWbool status;
+    GLboolean status;
     int xpos, ypos;
 
     status = _glfwSetVideoMode(window->monitor, &window->videoMode);
@@ -97,6 +112,18 @@ static float transformY(float y)
 {
     const float height = CGDisplayBounds(CGMainDisplayID()).size.height;
     return height - y;
+}
+
+// Returns the backing rect of the specified window
+//
+static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
+{
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
+        return [window->ns.view convertRectToBacking:contentRect];
+    else
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+        return contentRect;
 }
 
 // Translates OS X key modifiers into GLFW ones
@@ -160,8 +187,7 @@ static int translateKey(unsigned int key)
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-    if (window->context.api != GLFW_NO_API)
-        [window->context.nsgl.object update];
+    [window->nsgl.context update];
 
     if (_glfw.cursorWindow == window &&
         window->cursorMode == GLFW_CURSOR_DISABLED)
@@ -170,7 +196,7 @@ static int translateKey(unsigned int key)
     }
 
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+    const NSRect fbRect = convertRectToBacking(window, contentRect);
 
     _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
     _glfwInputWindowSize(window, contentRect.size.width, contentRect.size.height);
@@ -178,8 +204,7 @@ static int translateKey(unsigned int key)
 
 - (void)windowDidMove:(NSNotification *)notification
 {
-    if (window->context.api != GLFW_NO_API)
-        [window->context.nsgl.object update];
+    [window->nsgl.context update];
 
     if (_glfw.cursorWindow == window &&
         window->cursorMode == GLFW_CURSOR_DISABLED)
@@ -197,7 +222,7 @@ static int translateKey(unsigned int key)
     if (window->monitor)
         leaveFullscreenMode(window);
 
-    _glfwInputWindowIconify(window, GLFW_TRUE);
+    _glfwInputWindowIconify(window, GL_TRUE);
 }
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification
@@ -205,7 +230,7 @@ static int translateKey(unsigned int key)
     if (window->monitor)
         enterFullscreenMode(window);
 
-    _glfwInputWindowIconify(window, GLFW_FALSE);
+    _glfwInputWindowIconify(window, GL_FALSE);
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
@@ -216,8 +241,8 @@ static int translateKey(unsigned int key)
         centerCursor(window);
     }
 
-    _glfwInputWindowFocus(window, GLFW_TRUE);
-    _glfwPlatformSetCursorMode(window, window->cursorMode);
+    _glfwInputWindowFocus(window, GL_TRUE);
+    _glfwPlatformApplyCursorMode(window);
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
@@ -225,7 +250,7 @@ static int translateKey(unsigned int key)
     if (window->monitor && window->autoIconify)
         _glfwPlatformIconifyWindow(window);
 
-    _glfwInputWindowFocus(window, GLFW_FALSE);
+    _glfwInputWindowFocus(window, GL_FALSE);
 }
 
 @end
@@ -342,7 +367,7 @@ static int translateKey(unsigned int key)
 
 - (void)cursorUpdate:(NSEvent *)event
 {
-    _glfwPlatformSetCursorMode(window, window->cursorMode);
+    updateModeCursor(window);
 }
 
 - (void)mouseDown:(NSEvent *)event
@@ -430,18 +455,18 @@ static int translateKey(unsigned int key)
 
 - (void)mouseExited:(NSEvent *)event
 {
-    _glfwInputCursorEnter(window, GLFW_FALSE);
+    _glfwInputCursorEnter(window, GL_FALSE);
 }
 
 - (void)mouseEntered:(NSEvent *)event
 {
-    _glfwInputCursorEnter(window, GLFW_TRUE);
+    _glfwInputCursorEnter(window, GL_TRUE);
 }
 
 - (void)viewDidChangeBackingProperties
 {
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+    const NSRect fbRect = convertRectToBacking(window, contentRect);
 
     _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
 }
@@ -532,13 +557,23 @@ static int translateKey(unsigned int key)
 {
     double deltaX, deltaY;
 
-    deltaX = [event scrollingDeltaX];
-    deltaY = [event scrollingDeltaY];
-
-    if ([event hasPreciseScrollingDeltas])
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
     {
-        deltaX *= 0.1;
-        deltaY *= 0.1;
+        deltaX = [event scrollingDeltaX];
+        deltaY = [event scrollingDeltaY];
+
+        if ([event hasPreciseScrollingDeltas])
+        {
+            deltaX *= 0.1;
+            deltaY *= 0.1;
+        }
+    }
+    else
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+    {
+        deltaX = [event deltaX];
+        deltaY = [event deltaY];
     }
 
     if (fabs(deltaX) > 0.0 || fabs(deltaY) > 0.0)
@@ -739,12 +774,18 @@ static void createMenuBar(void)
                           action:@selector(arrangeInFront:)
                    keyEquivalent:@""];
 
-    // TODO: Make this appear at the bottom of the menu (for consistency)
-    [windowMenu addItem:[NSMenuItem separatorItem]];
-    [[windowMenu addItemWithTitle:@"Enter Full Screen"
-                           action:@selector(toggleFullScreen:)
-                    keyEquivalent:@"f"]
-     setKeyEquivalentModifierMask:NSControlKeyMask | NSCommandKeyMask];
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
+    {
+        // TODO: Make this appear at the bottom of the menu (for consistency)
+
+        [windowMenu addItem:[NSMenuItem separatorItem]];
+        [[windowMenu addItemWithTitle:@"Enter Full Screen"
+                               action:@selector(toggleFullScreen:)
+                        keyEquivalent:@"f"]
+            setKeyEquivalentModifierMask:NSControlKeyMask | NSCommandKeyMask];
+    }
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
     // Prior to Snow Leopard, we need to use this oddly-named semi-private API
     // to get the application menu working properly.
@@ -756,10 +797,10 @@ static void createMenuBar(void)
 
 // Initialize the Cocoa Application Kit
 //
-static GLFWbool initializeAppKit(void)
+static GLboolean initializeAppKit(void)
 {
     if (NSApp)
-        return GLFW_TRUE;
+        return GL_TRUE;
 
     // Implicitly create shared NSApplication instance
     [GLFWApplication sharedApplication];
@@ -781,26 +822,26 @@ static GLFWbool initializeAppKit(void)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Cocoa: Failed to create application delegate");
-        return GLFW_FALSE;
+        return GL_FALSE;
     }
 
     [NSApp setDelegate:_glfw.ns.delegate];
     [NSApp run];
 
-    return GLFW_TRUE;
+    return GL_TRUE;
 }
 
 // Create the Cocoa window
 //
-static GLFWbool createWindow(_GLFWwindow* window,
-                             const _GLFWwndconfig* wndconfig)
+static GLboolean createWindow(_GLFWwindow* window,
+                              const _GLFWwndconfig* wndconfig)
 {
     window->ns.delegate = [[GLFWWindowDelegate alloc] initWithGlfwWindow:window];
     if (window->ns.delegate == nil)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Cocoa: Failed to create window delegate");
-        return GLFW_FALSE;
+        return GL_FALSE;
     }
 
     unsigned int styleMask = 0;
@@ -840,11 +881,16 @@ static GLFWbool createWindow(_GLFWwindow* window,
     if (window->ns.object == nil)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Cocoa: Failed to create window");
-        return GLFW_FALSE;
+        return GL_FALSE;
     }
 
-    if (wndconfig->resizable)
-        [window->ns.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
+    {
+        if (wndconfig->resizable)
+            [window->ns.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+    }
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
     if (wndconfig->monitor)
     {
@@ -861,16 +907,23 @@ static GLFWbool createWindow(_GLFWwindow* window,
     window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
 
 #if defined(_GLFW_USE_RETINA)
-    [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
+        [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 #endif /*_GLFW_USE_RETINA*/
 
     [window->ns.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
     [window->ns.object setDelegate:window->ns.delegate];
     [window->ns.object setAcceptsMouseMovedEvents:YES];
     [window->ns.object setContentView:window->ns.view];
-    [window->ns.object setRestorable:NO];
 
-    return GLFW_TRUE;
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
+        [window->ns.object setRestorable:NO];
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+
+    return GL_TRUE;
 }
 
 
@@ -884,25 +937,24 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWfbconfig* fbconfig)
 {
     if (!initializeAppKit())
-        return GLFW_FALSE;
+        return GL_FALSE;
 
     if (!createWindow(window, wndconfig))
-        return GLFW_FALSE;
+        return GL_FALSE;
 
-    if (ctxconfig->api != GLFW_NO_API)
-    {
-        if (!_glfwCreateContext(window, ctxconfig, fbconfig))
-            return GLFW_FALSE;
-    }
+    if (!_glfwCreateContext(window, ctxconfig, fbconfig))
+        return GL_FALSE;
+
+    [window->nsgl.context setView:window->ns.view];
 
     if (wndconfig->monitor)
     {
         _glfwPlatformShowWindow(window);
         if (!enterFullscreenMode(window))
-            return GLFW_FALSE;
+            return GL_FALSE;
     }
 
-    return GLFW_TRUE;
+    return GL_TRUE;
 }
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
@@ -912,8 +964,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     if (window->monitor)
         leaveFullscreenMode(window);
 
-    if (window->context.api != GLFW_NO_API)
-        _glfwDestroyContext(window);
+    _glfwDestroyContext(window);
 
     [window->ns.object setDelegate:nil];
     [window->ns.delegate release];
@@ -968,33 +1019,10 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
         [window->ns.object setContentSize:NSMakeSize(width, height)];
 }
 
-void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
-                                      int minwidth, int minheight,
-                                      int maxwidth, int maxheight)
-{
-    if (minwidth == GLFW_DONT_CARE || minheight == GLFW_DONT_CARE)
-        [window->ns.object setContentMinSize:NSMakeSize(0, 0)];
-    else
-        [window->ns.object setContentMinSize:NSMakeSize(minwidth, minheight)];
-
-    if (maxwidth == GLFW_DONT_CARE || maxheight == GLFW_DONT_CARE)
-        [window->ns.object setContentMaxSize:NSMakeSize(0, 0)];
-    else
-        [window->ns.object setContentMaxSize:NSMakeSize(maxwidth, maxheight)];
-}
-
-void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom)
-{
-    if (numer == GLFW_DONT_CARE || denom == GLFW_DONT_CARE)
-        [window->ns.object setContentAspectRatio:NSMakeSize(0, 0)];
-    else
-        [window->ns.object setContentAspectRatio:NSMakeSize(numer, denom)];
-}
-
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+    const NSRect fbRect = convertRectToBacking(window, contentRect);
 
     if (width)
         *width = (int) fbRect.size.width;
@@ -1128,7 +1156,7 @@ void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
-    _glfwPlatformSetCursorMode(window, window->cursorMode);
+    updateModeCursor(window);
 
     const NSRect contentRect = [window->ns.view frame];
     const NSPoint pos = [window->ns.object mouseLocationOutsideOfEventStream];
@@ -1143,73 +1171,28 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
     }
     else
     {
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
         const NSRect localRect = NSMakeRect(x, contentRect.size.height - y - 1, 0, 0);
         const NSRect globalRect = [window->ns.object convertRectToScreen:localRect];
         const NSPoint globalPoint = globalRect.origin;
+#else
+        const NSPoint localPoint = NSMakePoint(x, contentRect.size.height - y - 1);
+        const NSPoint globalPoint = [window->ns.object convertBaseToScreen:localPoint];
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
         CGWarpMouseCursorPosition(CGPointMake(globalPoint.x,
                                               transformY(globalPoint.y)));
     }
 }
 
-void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
+void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
 {
-    if (mode == GLFW_CURSOR_NORMAL)
-    {
-        if (window->cursor)
-            [(NSCursor*) window->cursor->ns.object set];
-        else
-            [[NSCursor arrowCursor] set];
-    }
-    else
-        [(NSCursor*) _glfw.ns.cursor set];
+    updateModeCursor(window);
 
-    if (mode == GLFW_CURSOR_DISABLED)
+    if (window->cursorMode == GLFW_CURSOR_DISABLED)
         CGAssociateMouseAndMouseCursorPosition(false);
     else
         CGAssociateMouseAndMouseCursorPosition(true);
-}
-
-const char* _glfwPlatformGetKeyName(int key, int scancode)
-{
-    if (key != GLFW_KEY_UNKNOWN)
-        scancode = _glfw.ns.nativeKeys[key];
-
-    if (!_glfwIsPrintable(_glfw.ns.publicKeys[scancode]))
-        return NULL;
-
-    UInt32 deadKeyState = 0;
-    UniChar characters[8];
-    UniCharCount characterCount = 0;
-
-    if (UCKeyTranslate([(NSData*) _glfw.ns.unicodeData bytes],
-                       scancode,
-                       kUCKeyActionDisplay,
-                       0,
-                       LMGetKbdType(),
-                       kUCKeyTranslateNoDeadKeysBit,
-                       &deadKeyState,
-                       sizeof(characters) / sizeof(characters[0]),
-                       &characterCount,
-                       characters) != noErr)
-    {
-        return NULL;
-    }
-
-    if (!characterCount)
-        return NULL;
-
-    CFStringRef string = CFStringCreateWithCharactersNoCopy(kCFAllocatorDefault,
-                                                            characters,
-                                                            characterCount,
-                                                            kCFAllocatorNull);
-    CFStringGetCString(string,
-                       _glfw.ns.keyName,
-                       sizeof(_glfw.ns.keyName),
-                       kCFStringEncodingUTF8);
-    CFRelease(string);
-
-    return _glfw.ns.keyName;
 }
 
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
@@ -1220,7 +1203,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     NSBitmapImageRep* rep;
 
     if (!initializeAppKit())
-        return GLFW_FALSE;
+        return GL_FALSE;
 
     rep = [[NSBitmapImageRep alloc]
         initWithBitmapDataPlanes:NULL
@@ -1236,7 +1219,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                     bitsPerPixel:32];
 
     if (rep == nil)
-        return GLFW_FALSE;
+        return GL_FALSE;
 
     memcpy([rep bitmapData], image->pixels, image->width * image->height * 4);
 
@@ -1250,26 +1233,26 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     [rep release];
 
     if (cursor->ns.object == nil)
-        return GLFW_FALSE;
+        return GL_FALSE;
 
-    return GLFW_TRUE;
+    return GL_TRUE;
 }
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
     if (!initializeAppKit())
-        return GLFW_FALSE;
+        return GL_FALSE;
 
     cursor->ns.object = getStandardCursor(shape);
     if (!cursor->ns.object)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Cocoa: Failed to retrieve standard cursor");
-        return GLFW_FALSE;
+        return GL_FALSE;
     }
 
     [cursor->ns.object retain];
-    return GLFW_TRUE;
+    return GL_TRUE;
 }
 
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)

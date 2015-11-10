@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Mir - www.glfw.org
+// GLFW 3.1 Mir - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014-2015 Brandon Schaefer <brandon.schaefer@canonical.com>
 //
@@ -44,9 +44,9 @@ static void deleteNode(EventQueue* queue, EventNode* node)
     free(node);
 }
 
-static GLFWbool emptyEventQueue(EventQueue* queue)
+static int emptyEventQueue(EventQueue* queue)
 {
-    return queue->head.tqh_first == NULL;
+    return queue->head.tqh_first == NULL ? GL_TRUE : GL_FALSE;
 }
 
 // TODO The mir_event_ref is not supposed to be used but ... its needed
@@ -385,7 +385,7 @@ static void addNewEvent(MirSurface* surface, const MirEvent* event, void* contex
     enqueueEvent(event, context);
 }
 
-static GLFWbool createSurface(_GLFWwindow* window)
+static int createSurface(_GLFWwindow* window)
 {
     MirSurfaceSpec* spec;
     MirBufferUsage buffer_usage = mir_buffer_usage_hardware;
@@ -395,7 +395,7 @@ static GLFWbool createSurface(_GLFWwindow* window)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Mir: Unable to find a correct pixel format");
-        return GLFW_FALSE;
+        return GL_FALSE;
     }
  
     spec = mir_connection_create_spec_for_normal_surface(_glfw.mir.connection,
@@ -415,12 +415,12 @@ static GLFWbool createSurface(_GLFWwindow* window)
                         "Mir: Unable to create surface: %s",
                         mir_surface_get_error_message(window->mir.surface));
 
-        return GLFW_FALSE;
+        return GL_FALSE;
     }
 
     mir_surface_set_event_handler(window->mir.surface, addNewEvent, window);
 
-    return GLFW_TRUE;
+    return GL_TRUE;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -462,11 +462,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    if (ctxconfig->api != GLFW_NO_API)
-    {
-        if (!_glfwCreateContext(window, ctxconfig, fbconfig))
-            return GLFW_FALSE;
-    }
+    if (!_glfwCreateContext(window, ctxconfig, fbconfig))
+        return GL_FALSE;
 
     if (wndconfig->monitor)
     {
@@ -481,7 +478,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                             "Mir: Requested surface size too large: %ix%i",
                             wndconfig->width, wndconfig->height);
 
-            return GLFW_FALSE;
+            return GL_FALSE;
         }
     }
 
@@ -489,12 +486,12 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     window->mir.height = wndconfig->height;
 
     if (!createSurface(window))
-        return GLFW_FALSE;
+        return GL_FALSE;
 
     window->mir.window = mir_buffer_stream_get_egl_native_window(
                                    mir_surface_get_buffer_stream(window->mir.surface));
 
-    return GLFW_TRUE;
+    return GL_TRUE;
 }
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
@@ -530,20 +527,6 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
     mir_surface_apply_spec(window->mir.surface, spec);
     mir_surface_spec_release(spec);
-}
-
-void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
-                                      int minwidth, int minheight,
-                                      int maxwidth, int maxheight)
-{
-    _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
-}
-
-void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom)
-{
-    _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
 }
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
@@ -616,14 +599,14 @@ int _glfwPlatformWindowFocused(_GLFWwindow* window)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
-    return GLFW_FALSE;
+    return GL_FALSE;
 }
 
 int _glfwPlatformWindowIconified(_GLFWwindow* window)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
-    return GLFW_FALSE;
+    return GL_FALSE;
 }
 
 int _glfwPlatformWindowVisible(_GLFWwindow* window)
@@ -681,7 +664,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Mir: Unable to find a correct pixel format");
-        return GLFW_FALSE;
+        return GL_FALSE;
     }
 
     stream = mir_connection_create_buffer_stream_sync(_glfw.mir.connection,
@@ -716,7 +699,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
     cursor->mir.custom_cursor = stream;
 
-    return GLFW_TRUE;
+    return GL_TRUE;
 }
 
 const char* getSystemCursorName(int shape)
@@ -749,10 +732,10 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
         cursor->mir.conf          = mir_cursor_configuration_from_name(cursor_name);
         cursor->mir.custom_cursor = NULL;
 
-        return GLFW_TRUE;
+        return GL_TRUE;
     }
 
-    return GLFW_FALSE;
+    return GL_FALSE;
 }
 
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
@@ -796,17 +779,10 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos)
                     "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
 }
 
-void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
+void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
-}
-
-const char* _glfwPlatformGetKeyName(int key, int scancode)
-{
-    _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
-    return NULL;
 }
 
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
@@ -821,23 +797,5 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
                     "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
 
     return NULL;
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-//////                        GLFW native API                       //////
-//////////////////////////////////////////////////////////////////////////
-
-GLFWAPI MirConnection* glfwGetMirDisplay(void)
-{
-    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    return _glfw.mir.connection;
-}
-
-GLFWAPI MirSurface* glfwGetMirWindow(GLFWwindow* handle)
-{
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    return window->mir.surface;
 }
 

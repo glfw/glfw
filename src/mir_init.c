@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Mir - www.glfw.org
+// GLFW 3.1 Mir - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014-2015 Brandon Schaefer <brandon.schaefer@canonical.com>
 //
@@ -46,14 +46,14 @@ int _glfwPlatformInit(void)
                         "Mir: Unable to connect to server: %s",
                         mir_connection_get_error_message(_glfw.mir.connection));
 
-        return GLFW_FALSE;
+        return GL_FALSE;
     }
 
     _glfw.mir.display =
         mir_connection_get_egl_native_display(_glfw.mir.connection);
 
     if (!_glfwInitContextAPI())
-        return GLFW_FALSE;
+        return GL_FALSE;
 
     // Need the default conf for when we set a NULL cursor
     _glfw.mir.default_conf = mir_cursor_configuration_from_name(mir_arrow_cursor_name);
@@ -70,10 +70,10 @@ int _glfwPlatformInit(void)
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Mir: Failed to create event mutex: %s",
                         strerror(error));
-        return GLFW_FALSE;
+        return GL_FALSE;
     }
 
-    return GLFW_TRUE;
+    return GL_TRUE;
 }
 
 void _glfwPlatformTerminate(void)

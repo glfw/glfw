@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Win32 - www.glfw.org
+// GLFW 3.1 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -32,18 +32,18 @@
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWbool _glfwCreateContextTLS(void)
+int _glfwCreateContextTLS(void)
 {
     _glfw.win32_tls.context = TlsAlloc();
     if (_glfw.win32_tls.context == TLS_OUT_OF_INDEXES)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Win32: Failed to allocate TLS index");
-        return GLFW_FALSE;
+        return GL_FALSE;
     }
 
-    _glfw.win32_tls.allocated = GLFW_TRUE;
-    return GLFW_TRUE;
+    _glfw.win32_tls.allocated = GL_TRUE;
+    return GL_TRUE;
 }
 
 void _glfwDestroyContextTLS(void)

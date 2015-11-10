@@ -72,6 +72,7 @@ used by the tests and examples and are not required to build the library.
  - Added `GLFW_CONTEXT_NO_ERROR` context hint for `GL_KHR_no_error` support
  - Added `GLFW_TRUE` and `GLFW_FALSE` as client API independent boolean values
  - Added `glfwGetGLXWindow` to query the `GLXWindow` of a window
+ - Relaxed rules for native access header macros
  - Removed dependency on external OpenGL or OpenGL ES headers
  - [Win32] Added support for Windows 8.1 per-monitor DPI
  - [Cocoa] Removed support for OS X 10.6

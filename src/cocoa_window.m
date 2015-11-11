@@ -844,7 +844,7 @@ static GLFWbool createWindow(_GLFWwindow* window,
     }
 
     if (wndconfig->resizable)
-        [window->ns.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+        [window->ns.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenAuxiliary];
 
     if (wndconfig->monitor)
     {

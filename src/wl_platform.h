@@ -91,6 +91,8 @@ typedef struct _GLFWlibraryWayland
     int                         monitorsCount;
     int                         monitorsSize;
 
+    short int                   publicKeys[256];
+
     struct {
         struct xkb_context*     context;
         struct xkb_keymap*      keymap;

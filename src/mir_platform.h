@@ -92,6 +92,8 @@ typedef struct _GLFWlibraryMir
     MirCursorConfiguration* default_conf;
     EventQueue* event_queue;
 
+    short int       publicKeys[256];
+
     pthread_mutex_t event_mutex;
     pthread_cond_t  event_cond;
 

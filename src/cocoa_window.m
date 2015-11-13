@@ -146,6 +146,10 @@ static NSUInteger translateKeyToModifierFlag(int key)
     return 0;
 }
 
+// Defines a constant for empty ranges in NSTextInputClient
+//
+static const NSRange kEmptyRange = {NSNotFound, 0};
+
 
 //------------------------------------------------------------------------
 // Delegate for window related notifications
@@ -296,10 +300,11 @@ static NSUInteger translateKeyToModifierFlag(int key)
 // Content view class for the GLFW window
 //------------------------------------------------------------------------
 
-@interface GLFWContentView : NSView
+@interface GLFWContentView : NSView <NSTextInputClient>
 {
     _GLFWwindow* window;
     NSTrackingArea* trackingArea;
+    NSMutableAttributedString* markedText;
 }
 
 - (id)initWithGlfwWindow:(_GLFWwindow *)initWindow;
@@ -329,6 +334,7 @@ static NSUInteger translateKeyToModifierFlag(int key)
     {
         window = initWindow;
         trackingArea = nil;
+        markedText = [[NSMutableAttributedString alloc] init];
 
         [self updateTrackingAreas];
         [self registerForDraggedTypes:[NSArray arrayWithObjects:
@@ -338,9 +344,10 @@ static NSUInteger translateKeyToModifierFlag(int key)
     return self;
 }
 
--(void)dealloc
+- (void)dealloc
 {
     [trackingArea release];
+    [markedText release];
     [super dealloc];
 }
 
@@ -501,18 +508,7 @@ static NSUInteger translateKeyToModifierFlag(int key)
 
     _glfwInputKey(window, key, [event keyCode], GLFW_PRESS, mods);
 
-    NSString* characters = [event characters];
-    NSUInteger i, length = [characters length];
-    const int plain = !(mods & GLFW_MOD_SUPER);
-
-    for (i = 0;  i < length;  i++)
-    {
-        const unichar codepoint = [characters characterAtIndex:i];
-        if ((codepoint & 0xff00) == 0xf700)
-            continue;
-
-        _glfwInputChar(window, codepoint, mods, plain);
-    }
+    [self interpretKeyEvents:[NSArray arrayWithObject:event]];
 }
 
 - (void)flagsChanged:(NSEvent *)event
@@ -612,6 +608,89 @@ static NSUInteger translateKeyToModifierFlag(int key)
 - (void)concludeDragOperation:(id <NSDraggingInfo>)sender
 {
     [self setNeedsDisplay:YES];
+}
+
+- (BOOL)hasMarkedText
+{
+    return (markedText.length > 0);
+}
+
+- (NSRange)markedRange
+{
+    return (markedText.length > 0) ?
+    NSMakeRange(0, markedText.length-1) :
+    kEmptyRange;
+}
+
+- (NSRange)selectedRange
+{
+    return kEmptyRange;
+}
+
+- (void)setMarkedText:(id)aString
+        selectedRange:(NSRange)selectedRange
+     replacementRange:(NSRange)replacementRange
+{
+    if( [aString isKindOfClass: [NSAttributedString class]] )
+    {
+        [markedText initWithAttributedString: aString];
+    }
+    else
+    {
+        [markedText initWithString: aString];
+    }
+}
+
+- (void)unmarkText
+{
+    [[markedText mutableString] setString:@""];
+}
+
+- (NSArray*)validAttributesForMarkedText
+{
+    return [NSArray array];
+}
+
+- (NSAttributedString*)attributedSubstringForProposedRange:(NSRange)aRange
+                                               actualRange:(NSRangePointer)actualRange
+{
+    return nil;
+}
+
+- (NSUInteger)characterIndexForPoint:(NSPoint)aPoint
+{
+    return 0;
+}
+
+- (NSRect)firstRectForCharacterRange:(NSRange)aRange
+                         actualRange:(NSRangePointer)actualRange
+{
+    return NSMakeRect(0, 0, 0, 0);
+}
+
+- (void)insertText:(id)aString replacementRange:(NSRange)replacementRange
+{
+    NSEvent* event = [NSApp currentEvent];
+    const int mods = translateFlags([event modifierFlags]);
+
+    NSString* characters;
+    if ([aString isKindOfClass: [NSAttributedString class]]) {
+        characters = [aString string];
+    } else {
+        characters = (NSString*)aString;
+    }
+
+    NSUInteger i, length = [characters length];
+    const int plain = !(mods & GLFW_MOD_SUPER);
+
+    for (i = 0;  i < length;  i++)
+    {
+        const unichar codepoint = [characters characterAtIndex:i];
+        if ((codepoint & 0xff00) == 0xf700)
+            continue;
+
+        _glfwInputChar(window, codepoint, mods, plain);
+    }
 }
 
 @end

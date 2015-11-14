@@ -285,7 +285,7 @@ static const NSRange kEmptyRange = {NSNotFound, 0};
 {
     _GLFWwindow* window;
     NSTrackingArea* trackingArea;
-    NSMutableAttributedString *markedText;
+    NSMutableAttributedString* markedText;
 }
 
 - (id)initWithGlfwWindow:(_GLFWwindow *)initWindow;
@@ -325,9 +325,10 @@ static const NSRange kEmptyRange = {NSNotFound, 0};
     return self;
 }
 
--(void)dealloc
+- (void)dealloc
 {
     [trackingArea release];
+    [markedText release];
     [super dealloc];
 }
 

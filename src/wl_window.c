@@ -522,7 +522,8 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
     if (cursor->wl.image)
         return;
 
-    wl_buffer_destroy(cursor->wl.buffer);
+    if (cursor->wl.buffer)
+        wl_buffer_destroy(cursor->wl.buffer);
 }
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)

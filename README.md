@@ -82,6 +82,7 @@ used by the tests and examples and are not required to build the library.
  - [WGL] Removed dependency on external WGL headers
  - [GLX] Replaced legacy renderable with `GLXWindow`
  - [GLX] Removed dependency on external GLX headers
+ - [GLX] Bugfix: NetBSD does not provide `libGL.so.1`
  - [EGL] Removed dependency on external EGL headers
 
 

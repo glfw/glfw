@@ -152,19 +152,32 @@ static GLXContext createLegacyContext(_GLFWwindow* window,
 //
 int _glfwInitContextAPI(void)
 {
+    int i;
+    const char* sonames[] =
+    {
 #if defined(__CYGWIN__)
-    const char* soname = "libGL-1.so";
+        "libGL-1.so",
 #else
-    const char* soname = "libGL.so.1";
+        "libGL.so.1",
+        "libGL.so",
 #endif
+        NULL
+    };
+
 
     if (!_glfwCreateContextTLS())
         return GLFW_FALSE;
 
-    _glfw.glx.handle = dlopen(soname, RTLD_LAZY | RTLD_GLOBAL);
+    for (i = 0;  sonames[i];  i++)
+    {
+        _glfw.glx.handle = dlopen(sonames[i], RTLD_LAZY | RTLD_GLOBAL);
+        if (_glfw.glx.handle)
+            break;
+    }
+
     if (!_glfw.glx.handle)
     {
-        _glfwInputError(GLFW_API_UNAVAILABLE, "GLX: %s", dlerror());
+        _glfwInputError(GLFW_API_UNAVAILABLE, "GLX: Failed to load GLX");
         return GLFW_FALSE;
     }
 

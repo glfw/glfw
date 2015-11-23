@@ -74,6 +74,9 @@ offscreen context.  Depending on the window manager, the size of a hidden
 window's framebuffer may not be usable or modifiable, so framebuffer
 objects are recommended for rendering with such contexts.
 
+You should still [process events](@ref events) as long as you have at least one
+window, even if none of them are visible.
+
 __OS X:__ The first time a window is created the menu bar is populated with
 common commands like Hide, Quit and About.  This is not desirable for example
 when writing a command-line only application.  The menu bar setup can be

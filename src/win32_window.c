@@ -222,7 +222,7 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
     {
         // IME notify of filtered keys by setting the virtual key-code to VK_PROCESSKEY
 
-		return _GLFW_KEY_INVALID;
+        return _GLFW_KEY_INVALID;
     }
 
     return _glfw.win32.publicKeys[HIWORD(lParam) & 0x1FF];

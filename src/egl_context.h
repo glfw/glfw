@@ -96,6 +96,11 @@ typedef MirEGLNativeWindowType EGLNativeWindowType;
 #define EGL_NONE 0x3038
 #define EGL_EXTENSIONS 0x3055
 #define EGL_CONTEXT_CLIENT_VERSION 0x3098
+#define EGL_NATIVE_VISUAL_ID 0x302e
+#define EGL_NO_SURFACE ((EGLSurface) 0)
+#define EGL_NO_DISPLAY ((EGLDisplay) 0)
+#define EGL_NO_CONTEXT ((EGLContext) 0)
+
 #define EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR 0x00000002
 #define EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR 0x00000001
 #define EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR 0x00000002
@@ -106,13 +111,9 @@ typedef MirEGLNativeWindowType EGLNativeWindowType;
 #define EGL_CONTEXT_OPENGL_ROBUST_ACCESS_BIT_KHR 0x00000004
 #define EGL_CONTEXT_MAJOR_VERSION_KHR 0x3098
 #define EGL_CONTEXT_MINOR_VERSION_KHR 0x30fb
-#define EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR 0x30FD
+#define EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR 0x30fd
 #define EGL_CONTEXT_FLAGS_KHR 0x30fc
 #define EGL_CONTEXT_OPENGL_NO_ERROR_KHR 0x31b3
-#define EGL_NATIVE_VISUAL_ID 0x302e
-#define EGL_NO_SURFACE ((EGLSurface) 0)
-#define EGL_NO_DISPLAY ((EGLDisplay) 0)
-#define EGL_NO_CONTEXT ((EGLContext) 0)
 
 typedef int EGLint;
 typedef unsigned int EGLBoolean;
@@ -139,22 +140,22 @@ typedef EGLBoolean (EGLAPIENTRY * PFNEGLSWAPBUFFERSPROC)(EGLDisplay,EGLSurface);
 typedef EGLBoolean (EGLAPIENTRY * PFNEGLSWAPINTERVALPROC)(EGLDisplay,EGLint);
 typedef const char* (EGLAPIENTRY * PFNEGLQUERYSTRINGPROC)(EGLDisplay,EGLint);
 typedef GLFWglproc (EGLAPIENTRY * PFNEGLGETPROCADDRESSPROC)(const char*);
-#define _glfw_eglGetConfigAttrib _glfw.egl.GetConfigAttrib
-#define _glfw_eglGetConfigs _glfw.egl.GetConfigs
-#define _glfw_eglGetDisplay _glfw.egl.GetDisplay
-#define _glfw_eglGetError _glfw.egl.GetError
-#define _glfw_eglInitialize _glfw.egl.Initialize
-#define _glfw_eglTerminate _glfw.egl.Terminate
-#define _glfw_eglBindAPI _glfw.egl.BindAPI
-#define _glfw_eglCreateContext _glfw.egl.CreateContext
-#define _glfw_eglDestroySurface _glfw.egl.DestroySurface
-#define _glfw_eglDestroyContext _glfw.egl.DestroyContext
-#define _glfw_eglCreateWindowSurface _glfw.egl.CreateWindowSurface
-#define _glfw_eglMakeCurrent _glfw.egl.MakeCurrent
-#define _glfw_eglSwapBuffers _glfw.egl.SwapBuffers
-#define _glfw_eglSwapInterval _glfw.egl.SwapInterval
-#define _glfw_eglQueryString _glfw.egl.QueryString
-#define _glfw_eglGetProcAddress _glfw.egl.GetProcAddress
+#define eglGetConfigAttrib _glfw.egl.GetConfigAttrib
+#define eglGetConfigs _glfw.egl.GetConfigs
+#define eglGetDisplay _glfw.egl.GetDisplay
+#define eglGetError _glfw.egl.GetError
+#define eglInitialize _glfw.egl.Initialize
+#define eglTerminate _glfw.egl.Terminate
+#define eglBindAPI _glfw.egl.BindAPI
+#define eglCreateContext _glfw.egl.CreateContext
+#define eglDestroySurface _glfw.egl.DestroySurface
+#define eglDestroyContext _glfw.egl.DestroyContext
+#define eglCreateWindowSurface _glfw.egl.CreateWindowSurface
+#define eglMakeCurrent _glfw.egl.MakeCurrent
+#define eglSwapBuffers _glfw.egl.SwapBuffers
+#define eglSwapInterval _glfw.egl.SwapInterval
+#define eglQueryString _glfw.egl.QueryString
+#define eglGetProcAddress _glfw.egl.GetProcAddress
 
 #define _GLFW_PLATFORM_FBCONFIG                 EGLConfig       egl
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextEGL egl

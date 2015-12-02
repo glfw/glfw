@@ -41,8 +41,8 @@
  #error "The Wayland backend depends on EGL platform support"
 #endif
 
-#define _GLFW_EGL_NATIVE_WINDOW         window->wl.native
-#define _GLFW_EGL_NATIVE_DISPLAY        _glfw.wl.display
+#define _GLFW_EGL_NATIVE_WINDOW         ((EGLNativeWindowType) window->wl.native)
+#define _GLFW_EGL_NATIVE_DISPLAY        ((EGLNativeDisplayType) _glfw.wl.display)
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWayland  wl
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWayland wl

@@ -43,8 +43,8 @@
  #error "The Mir backend depends on EGL platform support"
 #endif
 
-#define _GLFW_EGL_NATIVE_WINDOW  window->mir.window
-#define _GLFW_EGL_NATIVE_DISPLAY _glfw.mir.display
+#define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->mir.window)
+#define _GLFW_EGL_NATIVE_DISPLAY ((EGLNativeDisplayType) _glfw.mir.display)
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowMir  mir
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorMir mir

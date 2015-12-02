@@ -64,8 +64,8 @@
 #if defined(_GLFW_GLX)
  #include "glx_context.h"
 #elif defined(_GLFW_EGL)
- #define _GLFW_EGL_NATIVE_WINDOW  window->x11.handle
- #define _GLFW_EGL_NATIVE_DISPLAY _glfw.x11.display
+ #define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->x11.handle)
+ #define _GLFW_EGL_NATIVE_DISPLAY ((EGLNativeDisplayType) _glfw.x11.display)
  #include "egl_context.h"
 #else
  #error "No supported context creation API selected"

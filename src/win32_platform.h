@@ -146,7 +146,7 @@ typedef HRESULT (WINAPI * SETPROCESSDPIAWARENESS_T)(PROCESS_DPI_AWARENESS);
 #if defined(_GLFW_WGL)
  #include "wgl_context.h"
 #elif defined(_GLFW_EGL)
- #define _GLFW_EGL_NATIVE_WINDOW  window->win32.handle
+ #define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->win32.handle)
  #define _GLFW_EGL_NATIVE_DISPLAY EGL_DEFAULT_DISPLAY
  #include "egl_context.h"
 #else

@@ -33,11 +33,8 @@
 
 // Initialize OpenGL support
 //
-int _glfwInitContextAPI(void)
+int _glfwInitNSGL(void)
 {
-    if (!_glfwCreateContextTLS())
-        return GLFW_FALSE;
-
     _glfw.nsgl.framework =
         CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
     if (_glfw.nsgl.framework == NULL)
@@ -52,16 +49,15 @@ int _glfwInitContextAPI(void)
 
 // Terminate OpenGL support
 //
-void _glfwTerminateContextAPI(void)
+void _glfwTerminateNSGL(void)
 {
-    _glfwDestroyContextTLS();
 }
 
 // Create the OpenGL context
 //
-int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWctxconfig* ctxconfig,
-                       const _GLFWfbconfig* fbconfig)
+int _glfwCreateContextNSGL(_GLFWwindow* window,
+                           const _GLFWctxconfig* ctxconfig,
+                           const _GLFWfbconfig* fbconfig)
 {
     unsigned int attributeCount = 0;
 
@@ -225,7 +221,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 // Destroy the OpenGL context
 //
-void _glfwDestroyContext(_GLFWwindow* window)
+void _glfwDestroyContextNSGL(_GLFWwindow* window)
 {
     [window->context.nsgl.pixelFormat release];
     window->context.nsgl.pixelFormat = nil;
@@ -246,7 +242,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     else
         [NSOpenGLContext clearCurrentContext];
 
-    _glfwSetContextTLS(window);
+    _glfwPlatformSetCurrentContext(window);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)

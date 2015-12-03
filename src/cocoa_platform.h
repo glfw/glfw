@@ -120,9 +120,9 @@ typedef struct _GLFWtimeNS
 } _GLFWtimeNS;
 
 
-void _glfwInitTimer(void);
+void _glfwInitTimerNS(void);
 
-GLFWbool _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
-void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
+GLFWbool _glfwSetVideoModeNS(_GLFWmonitor* monitor, const GLFWvidmode* desired);
+void _glfwRestoreVideoModeNS(_GLFWmonitor* monitor);
 
 #endif // _glfw3_cocoa_platform_h_

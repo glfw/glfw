@@ -138,6 +138,6 @@ typedef struct _GLFWcursorWayland
 } _GLFWcursorWayland;
 
 
-void _glfwAddOutput(uint32_t name, uint32_t version);
+void _glfwAddOutputWayland(uint32_t name, uint32_t version);
 
 #endif // _glfw3_wayland_platform_h_

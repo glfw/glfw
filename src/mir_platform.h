@@ -110,7 +110,7 @@ typedef struct _GLFWcursorMir
 } _GLFWcursorMir;
 
 
-extern void _glfwInitEventQueue(EventQueue* queue);
-extern void _glfwDeleteEventQueue(EventQueue* queue);
+extern void _glfwInitEventQueueMir(EventQueue* queue);
+extern void _glfwDeleteEventQueueMir(EventQueue* queue);
 
 #endif // _glfw3_mir_platform_h_

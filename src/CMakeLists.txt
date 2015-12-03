@@ -17,8 +17,7 @@ if (_GLFW_COCOA)
     set(glfw_SOURCES ${common_SOURCES} cocoa_init.m cocoa_monitor.m
                      cocoa_window.m iokit_joystick.m mach_time.c posix_tls.c)
 elseif (_GLFW_WIN32)
-    set(glfw_HEADERS ${common_HEADERS} win32_platform.h win32_tls.h
-                     winmm_joystick.h)
+    set(glfw_HEADERS ${common_HEADERS} win32_platform.h winmm_joystick.h)
     set(glfw_SOURCES ${common_SOURCES} win32_init.c win32_monitor.c win32_time.c
                      win32_tls.c win32_window.c winmm_joystick.c)
 elseif (_GLFW_X11)

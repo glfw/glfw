@@ -207,16 +207,16 @@ typedef struct _GLFWlibraryEGL
 } _GLFWlibraryEGL;
 
 
-int _glfwInitContextAPI(void);
-void _glfwTerminateContextAPI(void);
-int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWctxconfig* ctxconfig,
-                       const _GLFWfbconfig* fbconfig);
-void _glfwDestroyContext(_GLFWwindow* window);
+int _glfwInitEGL(void);
+void _glfwTerminateEGL(void);
+int _glfwCreateContextEGL(_GLFWwindow* window,
+                          const _GLFWctxconfig* ctxconfig,
+                          const _GLFWfbconfig* fbconfig);
+void _glfwDestroyContextEGL(_GLFWwindow* window);
 #if defined(_GLFW_X11)
-GLFWbool _glfwChooseVisual(const _GLFWctxconfig* ctxconfig,
-                           const _GLFWfbconfig* fbconfig,
-                           Visual** visual, int* depth);
+GLFWbool _glfwChooseVisualEGL(const _GLFWctxconfig* ctxconfig,
+                              const _GLFWfbconfig* fbconfig,
+                              Visual** visual, int* depth);
 #endif /*_GLFW_X11*/
 
 #endif // _glfw3_egl_context_h_

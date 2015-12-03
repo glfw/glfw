@@ -49,7 +49,7 @@ static unsigned __int64 getRawTime(void)
 
 // Initialise timer
 //
-void _glfwInitTimer(void)
+void _glfwInitTimerWin32(void)
 {
     unsigned __int64 frequency;
 

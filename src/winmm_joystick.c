@@ -52,13 +52,13 @@ static float normalizeAxis(DWORD pos, DWORD min, DWORD max)
 
 // Initialize joystick interface
 //
-void _glfwInitJoysticks(void)
+void _glfwInitJoysticksWin32(void)
 {
 }
 
 // Close all opened joystick handles
 //
-void _glfwTerminateJoysticks(void)
+void _glfwTerminateJoysticksWin32(void)
 {
     int i;
 
@@ -170,7 +170,7 @@ const char* _glfwPlatformGetJoystickName(int joy)
         return NULL;
 
     free(_glfw.winmm_js[joy].name);
-    _glfw.winmm_js[joy].name = _glfwCreateUTF8FromWideString(jc.szPname);
+    _glfw.winmm_js[joy].name = _glfwCreateUTF8FromWideStringWin32(jc.szPname);
 
     return _glfw.winmm_js[joy].name;
 }

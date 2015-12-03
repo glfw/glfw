@@ -144,14 +144,14 @@ typedef struct _GLFWlibraryWGL
 } _GLFWlibraryWGL;
 
 
-int _glfwInitContextAPI(void);
-void _glfwTerminateContextAPI(void);
-int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWctxconfig* ctxconfig,
-                       const _GLFWfbconfig* fbconfig);
-void _glfwDestroyContext(_GLFWwindow* window);
-int _glfwAnalyzeContext(_GLFWwindow* window,
-                        const _GLFWctxconfig* ctxconfig,
-                        const _GLFWfbconfig* fbconfig);
+int _glfwInitWGL(void);
+void _glfwTerminateWGL(void);
+int _glfwCreateContextWGL(_GLFWwindow* window,
+                          const _GLFWctxconfig* ctxconfig,
+                          const _GLFWfbconfig* fbconfig);
+void _glfwDestroyContextWGL(_GLFWwindow* window);
+int _glfwAnalyzeContextWGL(_GLFWwindow* window,
+                           const _GLFWctxconfig* ctxconfig,
+                           const _GLFWfbconfig* fbconfig);
 
 #endif // _glfw3_wgl_context_h_

@@ -310,12 +310,12 @@ static GLFWbool createSurface(_GLFWwindow* window)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-void _glfwInitEventQueue(EventQueue* queue)
+void _glfwInitEventQueueMir(EventQueue* queue)
 {
     TAILQ_INIT(&queue->head);
 }
 
-void _glfwDeleteEventQueue(EventQueue* queue)
+void _glfwDeleteEventQueueMir(EventQueue* queue)
 {
     if (queue)
     {
@@ -347,7 +347,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 {
     if (ctxconfig->api != GLFW_NO_API)
     {
-        if (!_glfwCreateContext(window, ctxconfig, fbconfig))
+        if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
             return GLFW_FALSE;
     }
 
@@ -388,7 +388,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         window->mir.surface = NULL;
     }
 
-    _glfwDestroyContext(window);
+    _glfwDestroyContextEGL(window);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)

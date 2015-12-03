@@ -176,7 +176,7 @@ static GLFWbool chooseFBConfigs(const _GLFWctxconfig* ctxconfig,
 
 // Initialize EGL
 //
-int _glfwInitContextAPI(void)
+int _glfwInitEGL(void)
 {
     int i;
     const char* sonames[] =
@@ -191,9 +191,6 @@ int _glfwInitContextAPI(void)
 #endif
         NULL
     };
-
-    if (!_glfwCreateContextTLS())
-        return GLFW_FALSE;
 
     for (i = 0;  sonames[i];  i++)
     {
@@ -268,7 +265,7 @@ int _glfwInitContextAPI(void)
 
 // Terminate EGL
 //
-void _glfwTerminateContextAPI(void)
+void _glfwTerminateEGL(void)
 {
     if (_glfw.egl.handle)
     {
@@ -276,8 +273,6 @@ void _glfwTerminateContextAPI(void)
         _glfw_dlclose(_glfw.egl.handle);
         _glfw.egl.handle = NULL;
     }
-
-    _glfwDestroyContextTLS();
 }
 
 #define setEGLattrib(attribName, attribValue) \
@@ -289,9 +284,9 @@ void _glfwTerminateContextAPI(void)
 
 // Create the OpenGL or OpenGL ES context
 //
-int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWctxconfig* ctxconfig,
-                       const _GLFWfbconfig* fbconfig)
+int _glfwCreateContextEGL(_GLFWwindow* window,
+                          const _GLFWctxconfig* ctxconfig,
+                          const _GLFWfbconfig* fbconfig)
 {
     int attribs[40];
     EGLConfig config;
@@ -492,7 +487,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 // Destroy the OpenGL context
 //
-void _glfwDestroyContext(_GLFWwindow* window)
+void _glfwDestroyContextEGL(_GLFWwindow* window)
 {
 #if defined(_GLFW_X11)
     // NOTE: Do not unload libGL.so.1 while the X11 display is still open,
@@ -523,9 +518,9 @@ void _glfwDestroyContext(_GLFWwindow* window)
 // Returns the Visual and depth of the chosen EGLConfig
 //
 #if defined(_GLFW_X11)
-GLFWbool _glfwChooseVisual(const _GLFWctxconfig* ctxconfig,
-                           const _GLFWfbconfig* fbconfig,
-                           Visual** visual, int* depth)
+GLFWbool _glfwChooseVisualEGL(const _GLFWctxconfig* ctxconfig,
+                              const _GLFWfbconfig* fbconfig,
+                              Visual** visual, int* depth)
 {
     XVisualInfo* result;
     XVisualInfo desired;
@@ -584,7 +579,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
                        EGL_NO_CONTEXT);
     }
 
-    _glfwSetContextTLS(window);
+    _glfwPlatformSetCurrentContext(window);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)

@@ -43,8 +43,7 @@ typedef struct _GLFWtlsPOSIX
 } _GLFWtlsPOSIX;
 
 
-GLFWbool _glfwCreateContextTLS(void);
-void _glfwDestroyContextTLS(void);
-void _glfwSetContextTLS(_GLFWwindow* context);
+GLFWbool _glfwInitThreadLocalStoragePOSIX(void);
+void _glfwTerminateThreadLocalStoragePOSIX(void);
 
 #endif // _glfw3_posix_tls_h_

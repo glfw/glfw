@@ -253,18 +253,18 @@ typedef struct _GLFWcursorX11
 } _GLFWcursorX11;
 
 
-GLFWbool _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
-void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
+GLFWbool _glfwSetVideoModeX11(_GLFWmonitor* monitor, const GLFWvidmode* desired);
+void _glfwRestoreVideoModeX11(_GLFWmonitor* monitor);
 
-Cursor _glfwCreateCursor(const GLFWimage* image, int xhot, int yhot);
+Cursor _glfwCreateCursorX11(const GLFWimage* image, int xhot, int yhot);
 
-unsigned long _glfwGetWindowProperty(Window window,
-                                     Atom property,
-                                     Atom type,
-                                     unsigned char** value);
+unsigned long _glfwGetWindowPropertyX11(Window window,
+                                        Atom property,
+                                        Atom type,
+                                        unsigned char** value);
 
-void _glfwGrabXErrorHandler(void);
-void _glfwReleaseXErrorHandler(void);
-void _glfwInputXError(int error, const char* message);
+void _glfwGrabErrorHandlerX11(void);
+void _glfwReleaseErrorHandlerX11(void);
+void _glfwInputErrorX11(int error, const char* message);
 
 #endif // _glfw3_x11_platform_h_

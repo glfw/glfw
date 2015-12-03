@@ -287,11 +287,8 @@ static GLFWbool isCompositionEnabled(void)
 
 // Initialize WGL
 //
-int _glfwInitContextAPI(void)
+int _glfwInitWGL(void)
 {
-    if (!_glfwCreateContextTLS())
-        return GLFW_FALSE;
-
     _glfw.wgl.instance = LoadLibraryA("opengl32.dll");
     if (!_glfw.wgl.instance)
     {
@@ -315,12 +312,10 @@ int _glfwInitContextAPI(void)
 
 // Terminate WGL
 //
-void _glfwTerminateContextAPI(void)
+void _glfwTerminateWGL(void)
 {
     if (_glfw.wgl.instance)
         FreeLibrary(_glfw.wgl.instance);
-
-    _glfwDestroyContextTLS();
 }
 
 #define setWGLattrib(attribName, attribValue) \
@@ -332,14 +327,17 @@ void _glfwTerminateContextAPI(void)
 
 // Create the OpenGL or OpenGL ES context
 //
-int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWctxconfig* ctxconfig,
-                       const _GLFWfbconfig* fbconfig)
+int _glfwCreateContextWGL(_GLFWwindow* window,
+                          const _GLFWctxconfig* ctxconfig,
+                          const _GLFWfbconfig* fbconfig)
 {
     int attribs[40];
     int pixelFormat = 0;
     PIXELFORMATDESCRIPTOR pfd;
     HGLRC share = NULL;
+
+    if (ctxconfig->api == GLFW_NO_API)
+        return GLFW_TRUE;
 
     if (ctxconfig->share)
         share = ctxconfig->share->context.wgl.handle;
@@ -483,7 +481,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 // Destroy the OpenGL context
 //
-void _glfwDestroyContext(_GLFWwindow* window)
+void _glfwDestroyContextWGL(_GLFWwindow* window)
 {
     if (window->context.wgl.handle)
     {
@@ -494,9 +492,9 @@ void _glfwDestroyContext(_GLFWwindow* window)
 
 // Analyzes the specified context for possible recreation
 //
-int _glfwAnalyzeContext(_GLFWwindow* window,
-                        const _GLFWctxconfig* ctxconfig,
-                        const _GLFWfbconfig* fbconfig)
+int _glfwAnalyzeContextWGL(_GLFWwindow* window,
+                           const _GLFWctxconfig* ctxconfig,
+                           const _GLFWfbconfig* fbconfig)
 {
     GLFWbool required = GLFW_FALSE;
 
@@ -600,7 +598,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     else
         wglMakeCurrent(NULL, NULL);
 
-    _glfwSetContextTLS(window);
+    _glfwPlatformSetCurrentContext(window);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)

@@ -637,6 +637,10 @@ void _glfwPlatformPostEmptyEvent(void);
  */
 void _glfwPlatformMakeContextCurrent(_GLFWwindow* window);
 
+/*! @ingroup platform
+ */
+void _glfwPlatformSetCurrentContext(_GLFWwindow* context);
+
 /*! @copydoc glfwGetCurrentContext
  *  @ingroup platform
  */

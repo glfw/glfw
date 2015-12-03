@@ -171,14 +171,14 @@ typedef struct _GLFWlibraryGLX
 } _GLFWlibraryGLX;
 
 
-int _glfwInitContextAPI(void);
-void _glfwTerminateContextAPI(void);
-int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWctxconfig* ctxconfig,
-                       const _GLFWfbconfig* fbconfig);
-void _glfwDestroyContext(_GLFWwindow* window);
-GLFWbool _glfwChooseVisual(const _GLFWctxconfig* ctxconfig,
-                           const _GLFWfbconfig* fbconfig,
-                           Visual** visual, int* depth);
+int _glfwInitGLX(void);
+void _glfwTerminateGLX(void);
+int _glfwCreateContextGLX(_GLFWwindow* window,
+                          const _GLFWctxconfig* ctxconfig,
+                          const _GLFWfbconfig* fbconfig);
+void _glfwDestroyContextGLX(_GLFWwindow* window);
+GLFWbool _glfwChooseVisualGLX(const _GLFWctxconfig* ctxconfig,
+                              const _GLFWfbconfig* fbconfig,
+                              Visual** visual, int* depth);
 
 #endif // _glfw3_glx_context_h_

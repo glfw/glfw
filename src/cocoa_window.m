@@ -76,7 +76,7 @@ static float transformY(float y)
 //
 static GLFWbool enterFullscreenMode(_GLFWwindow* window)
 {
-    const GLFWbool status = _glfwSetVideoMode(window->monitor, &window->videoMode);
+    const GLFWbool status = _glfwSetVideoModeNS(window->monitor, &window->videoMode);
     const CGRect bounds = CGDisplayBounds(window->monitor->ns.displayID);
     const NSRect frame = NSMakeRect(bounds.origin.x,
                                     transformY(bounds.origin.y + bounds.size.height),
@@ -91,7 +91,7 @@ static GLFWbool enterFullscreenMode(_GLFWwindow* window)
 //
 static void leaveFullscreenMode(_GLFWwindow* window)
 {
-    _glfwRestoreVideoMode(window->monitor);
+    _glfwRestoreVideoModeNS(window->monitor);
 }
 
 // Translates OS X key modifiers into GLFW ones
@@ -262,7 +262,7 @@ static int translateKey(unsigned int key)
     int i;
 
     for (i = 0;  i < _glfw.monitorCount;  i++)
-        _glfwRestoreVideoMode(_glfw.monitors[i]);
+        _glfwRestoreVideoModeNS(_glfw.monitors[i]);
 }
 
 @end
@@ -886,7 +886,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (ctxconfig->api != GLFW_NO_API)
     {
-        if (!_glfwCreateContext(window, ctxconfig, fbconfig))
+        if (!_glfwCreateContextNSGL(window, ctxconfig, fbconfig))
             return GLFW_FALSE;
     }
 
@@ -908,7 +908,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         leaveFullscreenMode(window);
 
     if (window->context.api != GLFW_NO_API)
-        _glfwDestroyContext(window);
+        _glfwDestroyContextNSGL(window);
 
     [window->ns.object setDelegate:nil];
     [window->ns.delegate release];

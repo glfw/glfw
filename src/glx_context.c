@@ -150,7 +150,7 @@ static GLXContext createLegacyContext(_GLFWwindow* window,
 
 // Initialize GLX
 //
-int _glfwInitContextAPI(void)
+int _glfwInitGLX(void)
 {
     int i;
     const char* sonames[] =
@@ -164,9 +164,6 @@ int _glfwInitContextAPI(void)
         NULL
     };
 
-
-    if (!_glfwCreateContextTLS())
-        return GLFW_FALSE;
 
     for (i = 0;  sonames[i];  i++)
     {
@@ -296,7 +293,7 @@ int _glfwInitContextAPI(void)
 
 // Terminate GLX
 //
-void _glfwTerminateContextAPI(void)
+void _glfwTerminateGLX(void)
 {
     // NOTE: This function must not call any X11 functions, as it is called
     //       after XCloseDisplay (see _glfwPlatformTerminate for details)
@@ -306,8 +303,6 @@ void _glfwTerminateContextAPI(void)
         dlclose(_glfw.glx.handle);
         _glfw.glx.handle = NULL;
     }
-
-    _glfwDestroyContextTLS();
 }
 
 #define setGLXattrib(attribName, attribValue) \
@@ -319,9 +314,9 @@ void _glfwTerminateContextAPI(void)
 
 // Create the OpenGL or OpenGL ES context
 //
-int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWctxconfig* ctxconfig,
-                       const _GLFWfbconfig* fbconfig)
+int _glfwCreateContextGLX(_GLFWwindow* window,
+                          const _GLFWctxconfig* ctxconfig,
+                          const _GLFWfbconfig* fbconfig)
 {
     int attribs[40];
     GLXFBConfig native = NULL;
@@ -370,7 +365,7 @@ int _glfwCreateContext(_GLFWwindow* window,
         }
     }
 
-    _glfwGrabXErrorHandler();
+    _glfwGrabErrorHandlerX11();
 
     if (_glfw.glx.ARB_create_context)
     {
@@ -473,11 +468,11 @@ int _glfwCreateContext(_GLFWwindow* window,
     else
         window->context.glx.handle = createLegacyContext(window, native, share);
 
-    _glfwReleaseXErrorHandler();
+    _glfwReleaseErrorHandlerX11();
 
     if (!window->context.glx.handle)
     {
-        _glfwInputXError(GLFW_VERSION_UNAVAILABLE, "GLX: Failed to create context");
+        _glfwInputErrorX11(GLFW_VERSION_UNAVAILABLE, "GLX: Failed to create context");
         return GLFW_FALSE;
     }
 
@@ -496,7 +491,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 // Destroy the OpenGL context
 //
-void _glfwDestroyContext(_GLFWwindow* window)
+void _glfwDestroyContextGLX(_GLFWwindow* window)
 {
     if (window->context.glx.window)
     {
@@ -513,9 +508,9 @@ void _glfwDestroyContext(_GLFWwindow* window)
 
 // Returns the Visual and depth of the chosen GLXFBConfig
 //
-GLFWbool _glfwChooseVisual(const _GLFWctxconfig* ctxconfig,
-                           const _GLFWfbconfig* fbconfig,
-                           Visual** visual, int* depth)
+GLFWbool _glfwChooseVisualGLX(const _GLFWctxconfig* ctxconfig,
+                              const _GLFWfbconfig* fbconfig,
+                              Visual** visual, int* depth)
 {
     GLXFBConfig native;
     XVisualInfo* result;
@@ -558,7 +553,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     else
         glXMakeCurrent(_glfw.x11.display, None, NULL);
 
-    _glfwSetContextTLS(window);
+    _glfwPlatformSetCurrentContext(window);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)

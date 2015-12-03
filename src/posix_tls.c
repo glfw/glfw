@@ -32,7 +32,7 @@
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWbool _glfwCreateContextTLS(void)
+GLFWbool _glfwInitThreadLocalStoragePOSIX(void)
 {
     if (pthread_key_create(&_glfw.posix_tls.context, NULL) != 0)
     {
@@ -45,21 +45,21 @@ GLFWbool _glfwCreateContextTLS(void)
     return GLFW_TRUE;
 }
 
-void _glfwDestroyContextTLS(void)
+void _glfwTerminateThreadLocalStoragePOSIX(void)
 {
     if (_glfw.posix_tls.allocated)
         pthread_key_delete(_glfw.posix_tls.context);
-}
-
-void _glfwSetContextTLS(_GLFWwindow* context)
-{
-    pthread_setspecific(_glfw.posix_tls.context, context);
 }
 
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
+
+void _glfwPlatformSetCurrentContext(_GLFWwindow* context)
+{
+    pthread_setspecific(_glfw.posix_tls.context, context);
+}
 
 _GLFWwindow* _glfwPlatformGetCurrentContext(void)
 {

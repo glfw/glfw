@@ -49,6 +49,7 @@
 #define GLX_ACCUM_ALPHA_SIZE 17
 #define GLX_SAMPLES 0x186a1
 #define GLX_VISUAL_ID 0x800b
+
 #define GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB 0x20b2
 #define GLX_CONTEXT_DEBUG_BIT_ARB 0x00000001
 #define GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB 0x00000002
@@ -93,19 +94,19 @@ typedef GLXWindow (*PFNGLXCREATEWINDOWPROC)(Display*,GLXFBConfig,Window,const in
 typedef void (*PFNGLXDESTROYWINDOWPROC)(Display*,GLXWindow);
 
 // libGL.so function pointer typedefs
-#define _glfw_glXGetFBConfigs _glfw.glx.GetFBConfigs
-#define _glfw_glXGetFBConfigAttrib _glfw.glx.GetFBConfigAttrib
-#define _glfw_glXGetClientString _glfw.glx.GetClientString
-#define _glfw_glXQueryExtension _glfw.glx.QueryExtension
-#define _glfw_glXQueryVersion _glfw.glx.QueryVersion
-#define _glfw_glXDestroyContext _glfw.glx.DestroyContext
-#define _glfw_glXMakeCurrent _glfw.glx.MakeCurrent
-#define _glfw_glXSwapBuffers _glfw.glx.SwapBuffers
-#define _glfw_glXQueryExtensionsString _glfw.glx.QueryExtensionsString
-#define _glfw_glXCreateNewContext _glfw.glx.CreateNewContext
-#define _glfw_glXGetVisualFromFBConfig _glfw.glx.GetVisualFromFBConfig
-#define _glfw_glXCreateWindow _glfw.glx.CreateWindow
-#define _glfw_glXDestroyWindow _glfw.glx.DestroyWindow
+#define glXGetFBConfigs _glfw.glx.GetFBConfigs
+#define glXGetFBConfigAttrib _glfw.glx.GetFBConfigAttrib
+#define glXGetClientString _glfw.glx.GetClientString
+#define glXQueryExtension _glfw.glx.QueryExtension
+#define glXQueryVersion _glfw.glx.QueryVersion
+#define glXDestroyContext _glfw.glx.DestroyContext
+#define glXMakeCurrent _glfw.glx.MakeCurrent
+#define glXSwapBuffers _glfw.glx.SwapBuffers
+#define glXQueryExtensionsString _glfw.glx.QueryExtensionsString
+#define glXCreateNewContext _glfw.glx.CreateNewContext
+#define glXGetVisualFromFBConfig _glfw.glx.GetVisualFromFBConfig
+#define glXCreateWindow _glfw.glx.CreateWindow
+#define glXDestroyWindow _glfw.glx.DestroyWindow
 
 #define _GLFW_PLATFORM_FBCONFIG                 GLXFBConfig     glx
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextGLX glx

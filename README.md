@@ -75,6 +75,8 @@ used by the tests and examples and are not required to build the library.
  - Relaxed rules for native access header macros
  - Removed dependency on external OpenGL or OpenGL ES headers
  - [Win32] Added support for Windows 8.1 per-monitor DPI
+ - [Win32] Bugfix: Window creation would segfault if video mode setting required
+                   the system to be restarted
  - [Cocoa] Removed support for OS X 10.6
  - [Cocoa] Bugfix: Full screen windows on secondary monitors were mispositioned
  - [X11] Bugfix: Monitor connection and disconnection events were not reported

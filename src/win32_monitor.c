@@ -278,6 +278,14 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
         result[*count - 1] = mode;
     }
 
+    if (!*count)
+    {
+        // HACK: Report the current mode if no valid modes were found
+        result = calloc(1, sizeof(GLFWvidmode));
+        _glfwPlatformVideoMode(monitor, result);
+        *count = 1;
+    }
+
     return result;
 }
 

@@ -140,7 +140,7 @@ typedef HRESULT (WINAPI * DWMFLUSH_T)(VOID);
 typedef HRESULT (WINAPI * SETPROCESSDPIAWARENESS_T)(PROCESS_DPI_AWARENESS);
 #define _glfw_SetProcessDPIAwareness _glfw.win32.shcore.SetProcessDPIAwareness
 
-#include "winmm_joystick.h"
+#include "win32_joystick.h"
 
 #if defined(_GLFW_WGL)
  #include "wgl_context.h"

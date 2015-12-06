@@ -39,7 +39,7 @@ typedef void* id;
 #endif
 
 #include "posix_tls.h"
-#include "iokit_joystick.h"
+#include "cocoa_joystick.h"
 
 #if defined(_GLFW_NSGL)
  #include "nsgl_context.h"

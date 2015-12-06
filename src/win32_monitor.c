@@ -266,11 +266,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
 
         if (*count == size)
         {
-            if (*count)
-                size *= 2;
-            else
-                size = 128;
-
+            size += 128;
             result = (GLFWvidmode*) realloc(result, size * sizeof(GLFWvidmode));
         }
 

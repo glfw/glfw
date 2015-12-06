@@ -265,6 +265,21 @@ static GLFWbool choosePixelFormat(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
+// Returns whether desktop compositing is enabled
+//
+static GLFWbool isCompositionEnabled(void)
+{
+    BOOL enabled;
+
+    if (!_glfw_DwmIsCompositionEnabled)
+        return FALSE;
+
+    if (_glfw_DwmIsCompositionEnabled(&enabled) != S_OK)
+        return FALSE;
+
+    return enabled;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -595,7 +610,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 {
     // HACK: Use DwmFlush when desktop composition is enabled
-    if (_glfwIsCompositionEnabled() && !window->monitor)
+    if (isCompositionEnabled() && !window->monitor)
     {
         int count = abs(window->context.wgl.interval);
         while (count--)

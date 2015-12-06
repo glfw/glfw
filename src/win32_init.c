@@ -290,21 +290,6 @@ static HWND createHelperWindow(void)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-// Returns whether desktop compositing is enabled
-//
-BOOL _glfwIsCompositionEnabled(void)
-{
-    BOOL enabled;
-
-    if (!_glfw_DwmIsCompositionEnabled)
-        return FALSE;
-
-    if (_glfw_DwmIsCompositionEnabled(&enabled) != S_OK)
-        return FALSE;
-
-    return enabled;
-}
-
 // Returns a wide string version of the specified UTF-8 string
 //
 WCHAR* _glfwCreateWideStringFromUTF8(const char* source)

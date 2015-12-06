@@ -262,8 +262,6 @@ typedef struct _GLFWtimeWin32
 GLFWbool _glfwRegisterWindowClass(void);
 void _glfwUnregisterWindowClass(void);
 
-BOOL _glfwIsCompositionEnabled(void);
-
 WCHAR* _glfwCreateWideStringFromUTF8(const char* source);
 char* _glfwCreateUTF8FromWideString(const WCHAR* source);
 

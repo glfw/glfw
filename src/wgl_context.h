@@ -86,11 +86,11 @@ typedef BOOL (WINAPI * WGLMAKECURRENT_T)(HDC,HGLRC);
 typedef BOOL (WINAPI * WGLSHARELISTS_T)(HGLRC,HGLRC);
 
 // opengl32.dll function pointer typedefs
-#define _glfw_wglCreateContext _glfw.wgl.CreateContext
-#define _glfw_wglDeleteContext _glfw.wgl.DeleteContext
-#define _glfw_wglGetProcAddress _glfw.wgl.GetProcAddress
-#define _glfw_wglMakeCurrent _glfw.wgl.MakeCurrent
-#define _glfw_wglShareLists _glfw.wgl.ShareLists
+#define wglCreateContext _glfw.wgl.CreateContext
+#define wglDeleteContext _glfw.wgl.DeleteContext
+#define wglGetProcAddress _glfw.wgl.GetProcAddress
+#define wglMakeCurrent _glfw.wgl.MakeCurrent
+#define wglShareLists _glfw.wgl.ShareLists
 
 #define _GLFW_RECREATION_NOT_NEEDED 0
 #define _GLFW_RECREATION_REQUIRED   1

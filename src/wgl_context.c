@@ -39,21 +39,21 @@ static void loadExtensions(void)
     // Functions for WGL_EXT_extension_string
     // NOTE: These are needed by _glfwPlatformExtensionSupported
     _glfw.wgl.GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)
-        _glfw_wglGetProcAddress("wglGetExtensionsStringEXT");
+        wglGetProcAddress("wglGetExtensionsStringEXT");
     _glfw.wgl.GetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)
-        _glfw_wglGetProcAddress("wglGetExtensionsStringARB");
+        wglGetProcAddress("wglGetExtensionsStringARB");
 
     // Functions for WGL_ARB_create_context
     _glfw.wgl.CreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)
-        _glfw_wglGetProcAddress("wglCreateContextAttribsARB");
+        wglGetProcAddress("wglCreateContextAttribsARB");
 
     // Functions for WGL_EXT_swap_control
     _glfw.wgl.SwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)
-        _glfw_wglGetProcAddress("wglSwapIntervalEXT");
+        wglGetProcAddress("wglSwapIntervalEXT");
 
     // Functions for WGL_ARB_pixel_format
     _glfw.wgl.GetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)
-        _glfw_wglGetProcAddress("wglGetPixelFormatAttribivARB");
+        wglGetProcAddress("wglGetPixelFormatAttribivARB");
 
     // This needs to include every extension used below except for
     // WGL_ARB_extensions_string and WGL_EXT_extensions_string
@@ -457,8 +457,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     }
     else
     {
-        window->context.wgl.handle =
-            _glfw_wglCreateContext(window->context.wgl.dc);
+        window->context.wgl.handle = wglCreateContext(window->context.wgl.dc);
         if (!window->context.wgl.handle)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
@@ -468,7 +467,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
         if (share)
         {
-            if (!_glfw_wglShareLists(share, window->context.wgl.handle))
+            if (!wglShareLists(share, window->context.wgl.handle))
             {
                 _glfwInputError(GLFW_PLATFORM_ERROR,
                                 "WGL: Failed to enable sharing with specified OpenGL context");
@@ -488,7 +487,7 @@ void _glfwDestroyContext(_GLFWwindow* window)
 {
     if (window->context.wgl.handle)
     {
-        _glfw_wglDeleteContext(window->context.wgl.handle);
+        wglDeleteContext(window->context.wgl.handle);
         window->context.wgl.handle = NULL;
     }
 }
@@ -597,12 +596,9 @@ int _glfwAnalyzeContext(_GLFWwindow* window,
 void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 {
     if (window)
-    {
-        _glfw_wglMakeCurrent(window->context.wgl.dc,
-                             window->context.wgl.handle);
-    }
+        wglMakeCurrent(window->context.wgl.dc, window->context.wgl.handle);
     else
-        _glfw_wglMakeCurrent(NULL, NULL);
+        wglMakeCurrent(NULL, NULL);
 
     _glfwSetContextTLS(window);
 }
@@ -666,7 +662,7 @@ int _glfwPlatformExtensionSupported(const char* extension)
 
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 {
-    const GLFWglproc proc = (GLFWglproc) _glfw_wglGetProcAddress(procname);
+    const GLFWglproc proc = (GLFWglproc) wglGetProcAddress(procname);
     if (proc)
         return proc;
 

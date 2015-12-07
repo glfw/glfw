@@ -64,22 +64,27 @@ static void centerCursor(_GLFWwindow *window)
     _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
 }
 
+// Transforms the specified y-coordinate between the CG display and NS screen
+// coordinate systems
+//
+static float transformY(float y)
+{
+    const float height = CGDisplayBounds(CGMainDisplayID()).size.height;
+    return height - y;
+}
+
 // Enter full screen mode
 //
 static GLFWbool enterFullscreenMode(_GLFWwindow* window)
 {
-    GLFWvidmode mode;
-    GLFWbool status;
-    int xpos, ypos;
+    const GLFWbool status = _glfwSetVideoMode(window->monitor, &window->videoMode);
+    const CGRect bounds = CGDisplayBounds(window->monitor->ns.displayID);
+    const NSRect frame = NSMakeRect(bounds.origin.x,
+                                    transformY(bounds.origin.y + bounds.size.height),
+                                    bounds.size.width,
+                                    bounds.size.height);
 
-    status = _glfwSetVideoMode(window->monitor, &window->videoMode);
-
-    _glfwPlatformGetVideoMode(window->monitor, &mode);
-    _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
-
-    [window->ns.object setFrame:NSMakeRect(xpos, ypos, mode.width, mode.height)
-                        display:YES];
-
+    [window->ns.object setFrame:frame display:YES];
     return status;
 }
 
@@ -88,15 +93,6 @@ static GLFWbool enterFullscreenMode(_GLFWwindow* window)
 static void leaveFullscreenMode(_GLFWwindow* window)
 {
     _glfwRestoreVideoMode(window->monitor);
-}
-
-// Transforms the specified y-coordinate between the CG display and NS screen
-// coordinate systems
-//
-static float transformY(float y)
-{
-    const float height = CGDisplayBounds(CGMainDisplayID()).size.height;
-    return height - y;
 }
 
 // Translates OS X key modifiers into GLFW ones

@@ -76,6 +76,7 @@ used by the tests and examples and are not required to build the library.
  - Removed dependency on external OpenGL or OpenGL ES headers
  - [Win32] Added support for Windows 8.1 per-monitor DPI
  - [Cocoa] Removed support for OS X 10.6
+ - [Cocoa] Bugfix: Full screen windows on secondary monitors were mispositioned
  - [X11] Bugfix: Monitor connection and disconnection events were not reported
  - [X11] Bugfix: Decoding of UTF-8 text from XIM could continue past the end
  - [POSIX] Bugfix: An unrelated TLS key could be deleted by `glfwTerminate`

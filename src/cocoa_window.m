@@ -69,8 +69,7 @@ static void centerCursor(_GLFWwindow *window)
 //
 static float transformY(float y)
 {
-    const float height = CGDisplayBounds(CGMainDisplayID()).size.height;
-    return height - y;
+    return CGDisplayBounds(CGMainDisplayID()).size.height - y;
 }
 
 // Enter full screen mode

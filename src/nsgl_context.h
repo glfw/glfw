@@ -47,7 +47,7 @@ typedef struct _GLFWcontextNSGL
 typedef struct _GLFWlibraryNSGL
 {
     // dlopen handle for OpenGL.framework (for glfwGetProcAddress)
-    void*           framework;
+    CFBundleRef     framework;
 
 } _GLFWlibraryNSGL;
 

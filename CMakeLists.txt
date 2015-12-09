@@ -275,6 +275,8 @@ if (_GLFW_WAYLAND)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
 
     find_package(Wayland REQUIRED)
+    find_package(WaylandScanner REQUIRED)
+    find_package(WaylandProtocols 1.1 REQUIRED)
 
     list(APPEND glfw_PKG_DEPS "wayland-egl")
 

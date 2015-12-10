@@ -231,10 +231,10 @@ struct _GLFWfbconfig
     int         accumBlueBits;
     int         accumAlphaBits;
     int         auxBuffers;
-    int         stereo;
+    GLFWbool    stereo;
     int         samples;
-    int         sRGB;
-    int         doublebuffer;
+    GLFWbool    sRGB;
+    GLFWbool    doublebuffer;
 
     // This is defined in the context API's context.h
     _GLFW_PLATFORM_FBCONFIG;
@@ -918,6 +918,6 @@ void _glfwFreeMonitors(_GLFWmonitor** monitors, int count);
 
 /*! @ingroup utility
  */
-int _glfwIsPrintable(int key);
+GLFWbool _glfwIsPrintable(int key);
 
 #endif // _glfw3_internal_h_

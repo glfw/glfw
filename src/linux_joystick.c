@@ -173,7 +173,7 @@ static GLFWbool pollJoystickEvents(_GLFWjoystickLinux* js)
 
 // Initialize joystick interface
 //
-int _glfwInitJoysticksLinux(void)
+GLFWbool _glfwInitJoysticksLinux(void)
 {
 #if defined(__linux__)
     const char* dirname = "/dev/input";

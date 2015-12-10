@@ -176,7 +176,7 @@ static GLFWbool chooseFBConfigs(const _GLFWctxconfig* ctxconfig,
 
 // Initialize EGL
 //
-int _glfwInitEGL(void)
+GLFWbool _glfwInitEGL(void)
 {
     int i;
     const char* sonames[] =
@@ -284,9 +284,9 @@ void _glfwTerminateEGL(void)
 
 // Create the OpenGL or OpenGL ES context
 //
-int _glfwCreateContextEGL(_GLFWwindow* window,
-                          const _GLFWctxconfig* ctxconfig,
-                          const _GLFWfbconfig* fbconfig)
+GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
+                               const _GLFWctxconfig* ctxconfig,
+                               const _GLFWfbconfig* fbconfig)
 {
     int attribs[40];
     EGLConfig config;

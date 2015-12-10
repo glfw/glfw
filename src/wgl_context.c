@@ -287,7 +287,7 @@ static GLFWbool isCompositionEnabled(void)
 
 // Initialize WGL
 //
-int _glfwInitWGL(void)
+GLFWbool _glfwInitWGL(void)
 {
     _glfw.wgl.instance = LoadLibraryA("opengl32.dll");
     if (!_glfw.wgl.instance)
@@ -327,9 +327,9 @@ void _glfwTerminateWGL(void)
 
 // Create the OpenGL or OpenGL ES context
 //
-int _glfwCreateContextWGL(_GLFWwindow* window,
-                          const _GLFWctxconfig* ctxconfig,
-                          const _GLFWfbconfig* fbconfig)
+GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
+                               const _GLFWctxconfig* ctxconfig,
+                               const _GLFWfbconfig* fbconfig)
 {
     int attribs[40];
     int pixelFormat = 0;

@@ -33,7 +33,7 @@
 
 // Initialize OpenGL support
 //
-int _glfwInitNSGL(void)
+GLFWbool _glfwInitNSGL(void)
 {
     _glfw.nsgl.framework =
         CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
@@ -55,9 +55,9 @@ void _glfwTerminateNSGL(void)
 
 // Create the OpenGL context
 //
-int _glfwCreateContextNSGL(_GLFWwindow* window,
-                           const _GLFWctxconfig* ctxconfig,
-                           const _GLFWfbconfig* fbconfig)
+GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
+                                const _GLFWctxconfig* ctxconfig,
+                                const _GLFWfbconfig* fbconfig)
 {
     unsigned int attributeCount = 0;
 

@@ -39,7 +39,7 @@
 //
 typedef struct _GLFWjoydeviceNS
 {
-    int             present;
+    GLFWbool        present;
     char            name[256];
 
     IOHIDDeviceRef deviceRef;

@@ -150,7 +150,7 @@ static GLXContext createLegacyContext(_GLFWwindow* window,
 
 // Initialize GLX
 //
-int _glfwInitGLX(void)
+GLFWbool _glfwInitGLX(void)
 {
     int i;
     const char* sonames[] =
@@ -314,9 +314,9 @@ void _glfwTerminateGLX(void)
 
 // Create the OpenGL or OpenGL ES context
 //
-int _glfwCreateContextGLX(_GLFWwindow* window,
-                          const _GLFWctxconfig* ctxconfig,
-                          const _GLFWfbconfig* fbconfig)
+GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
+                               const _GLFWctxconfig* ctxconfig,
+                               const _GLFWfbconfig* fbconfig)
 {
     int attribs[40];
     GLXFBConfig native = NULL;

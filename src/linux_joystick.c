@@ -51,6 +51,7 @@ static void openJoystickDevice(const char* path)
     char axisCount, buttonCount;
     char name[256];
     int joy, fd, version;
+    _GLFWjoystickLinux* js;
 
     for (joy = GLFW_JOYSTICK_1;  joy <= GLFW_JOYSTICK_LAST;  joy++)
     {
@@ -74,8 +75,6 @@ static void openJoystickDevice(const char* path)
     if (fd == -1)
         return;
 
-    _glfw.linux_js.js[joy].fd = fd;
-
     // Verify that the joystick driver version is at least 1.0
     ioctl(fd, JSIOCGVERSION, &version);
     if (version < 0x010000)
@@ -88,29 +87,28 @@ static void openJoystickDevice(const char* path)
     if (ioctl(fd, JSIOCGNAME(sizeof(name)), name) < 0)
         strncpy(name, "Unknown", sizeof(name));
 
-    _glfw.linux_js.js[joy].name = strdup(name);
-    _glfw.linux_js.js[joy].path = strdup(path);
+    js = _glfw.linux_js.js + joy;
+    js->name = strdup(name);
+    js->path = strdup(path);
+    js->fd = fd;
 
     ioctl(fd, JSIOCGAXES, &axisCount);
-    _glfw.linux_js.js[joy].axisCount = (int) axisCount;
+    js->axisCount = (int) axisCount;
+    js->axes = calloc(axisCount, sizeof(float));
 
     ioctl(fd, JSIOCGBUTTONS, &buttonCount);
-    _glfw.linux_js.js[joy].buttonCount = (int) buttonCount;
+    js->buttonCount = (int) buttonCount;
+    js->buttons = calloc(buttonCount, 1);
 
-    _glfw.linux_js.js[joy].axes = calloc(axisCount, sizeof(float));
-    _glfw.linux_js.js[joy].buttons = calloc(buttonCount, 1);
-
-    _glfw.linux_js.js[joy].present = GLFW_TRUE;
+    js->present = GLFW_TRUE;
 #endif // __linux__
 }
 
-// Polls for and processes events for all present joysticks
+// Polls for and processes events the specified joystick
 //
-static void pollJoystickEvents(void)
+static GLFWbool pollJoystickEvents(_GLFWjoystickLinux* js)
 {
 #if defined(__linux__)
-    int i;
-    struct js_event e;
     ssize_t offset = 0;
     char buffer[16384];
 
@@ -131,53 +129,41 @@ static void pollJoystickEvents(void)
         offset += sizeof(struct inotify_event) + e->len;
     }
 
-    for (i = 0;  i <= GLFW_JOYSTICK_LAST;  i++)
+    if (!js->present)
+        return GLFW_FALSE;
+
+    // Read all queued events (non-blocking)
+    for (;;)
     {
-        if (!_glfw.linux_js.js[i].present)
-            continue;
+        struct js_event e;
 
-        // Read all queued events (non-blocking)
-        for (;;)
+        errno = 0;
+        if (read(js->fd, &e, sizeof(e)) < 0)
         {
-            errno = 0;
-            if (read(_glfw.linux_js.js[i].fd, &e, sizeof(e)) < 0)
+            // Reset the joystick slot if the device was disconnected
+            if (errno == ENODEV)
             {
-                if (errno == ENODEV)
-                {
-                    // The joystick was disconnected
+                free(js->axes);
+                free(js->buttons);
+                free(js->name);
+                free(js->path);
 
-                    free(_glfw.linux_js.js[i].axes);
-                    free(_glfw.linux_js.js[i].buttons);
-                    free(_glfw.linux_js.js[i].name);
-                    free(_glfw.linux_js.js[i].path);
-
-                    memset(&_glfw.linux_js.js[i], 0, sizeof(_glfw.linux_js.js[i]));
-                }
-
-                break;
+                memset(js, 0, sizeof(_GLFWjoystickLinux));
             }
 
-            // We don't care if it's an init event or not
-            e.type &= ~JS_EVENT_INIT;
-
-            switch (e.type)
-            {
-                case JS_EVENT_AXIS:
-                    _glfw.linux_js.js[i].axes[e.number] =
-                        (float) e.value / 32767.0f;
-                    break;
-
-                case JS_EVENT_BUTTON:
-                    _glfw.linux_js.js[i].buttons[e.number] =
-                        e.value ? GLFW_PRESS : GLFW_RELEASE;
-                    break;
-
-                default:
-                    break;
-            }
+            break;
         }
+
+        // Clear the initial-state bit
+        e.type &= ~JS_EVENT_INIT;
+
+        if (e.type == JS_EVENT_AXIS)
+            js->axes[e.number] = (float) e.value / 32767.0f;
+        else if (e.type == JS_EVENT_BUTTON)
+            js->buttons[e.number] = e.value ? GLFW_PRESS : GLFW_RELEASE;
     }
 #endif // __linux__
+    return js->present;
 }
 
 
@@ -294,31 +280,36 @@ void _glfwTerminateJoysticks(void)
 
 int _glfwPlatformJoystickPresent(int joy)
 {
-    pollJoystickEvents();
-
-    return _glfw.linux_js.js[joy].present;
+    _GLFWjoystickLinux* js = _glfw.linux_js.js + joy;
+    return pollJoystickEvents(js);
 }
 
 const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 {
-    pollJoystickEvents();
+    _GLFWjoystickLinux* js = _glfw.linux_js.js + joy;
+    if (!pollJoystickEvents(js))
+        return NULL;
 
-    *count = _glfw.linux_js.js[joy].axisCount;
-    return _glfw.linux_js.js[joy].axes;
+    *count = js->axisCount;
+    return js->axes;
 }
 
 const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
 {
-    pollJoystickEvents();
+    _GLFWjoystickLinux* js = _glfw.linux_js.js + joy;
+    if (!pollJoystickEvents(js))
+        return NULL;
 
-    *count = _glfw.linux_js.js[joy].buttonCount;
-    return _glfw.linux_js.js[joy].buttons;
+    *count = js->buttonCount;
+    return js->buttons;
 }
 
 const char* _glfwPlatformGetJoystickName(int joy)
 {
-    pollJoystickEvents();
+    _GLFWjoystickLinux* js = _glfw.linux_js.js + joy;
+    if (!pollJoystickEvents(js))
+        return NULL;
 
-    return _glfw.linux_js.js[joy].name;
+    return js->name;
 }
 

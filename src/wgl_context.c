@@ -628,7 +628,7 @@ void _glfwPlatformSwapInterval(int interval)
 
     // HACK: Disable WGL swap interval when desktop composition is enabled to
     //       avoid interfering with DWM vsync
-    if (_glfwIsCompositionEnabled() && !window->monitor)
+    if (isCompositionEnabled() && !window->monitor)
         interval = 0;
 
     if (_glfw.wgl.EXT_swap_control)

@@ -278,7 +278,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
     {
         // HACK: Report the current mode if no valid modes were found
         result = calloc(1, sizeof(GLFWvidmode));
-        _glfwPlatformVideoMode(monitor, result);
+        _glfwPlatformGetVideoMode(monitor, result);
         *count = 1;
     }
 

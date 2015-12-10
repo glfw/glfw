@@ -185,11 +185,13 @@ int _glfwPlatformInit(void)
     if (!_glfwInitEGL())
         return GLFW_FALSE;
 
-    // Need the default conf for when we set a NULL cursor
-    _glfw.mir.default_conf = mir_cursor_configuration_from_name(mir_arrow_cursor_name);
+    if (!_glfwInitJoysticksLinux())
+        return GLFW_FALSE;
 
     _glfwInitTimerPOSIX();
-    _glfwInitJoysticksLinux();
+
+    // Need the default conf for when we set a NULL cursor
+    _glfw.mir.default_conf = mir_cursor_configuration_from_name(mir_arrow_cursor_name);
 
     _glfw.mir.event_queue = calloc(1, sizeof(EventQueue));
     _glfwInitEventQueueMir(_glfw.mir.event_queue);

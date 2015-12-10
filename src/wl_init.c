@@ -587,8 +587,10 @@ int _glfwPlatformInit(void)
     if (!_glfwInitEGL())
         return GLFW_FALSE;
 
+    if (!_glfwInitJoysticksLinux())
+        return GLFW_FALSE;
+
     _glfwInitTimerPOSIX();
-    _glfwInitJoysticksLinux();
 
     if (_glfw.wl.pointer && _glfw.wl.shm)
     {

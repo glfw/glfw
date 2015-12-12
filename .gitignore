@@ -43,7 +43,7 @@ src/libglfw3.a
 src/glfw3.lib
 src/glfw3.dll
 src/glfw3dll.lib
-src/glfw3dll.a
+src/libglfw3dll.a
 examples/*.app
 examples/*.exe
 examples/boing

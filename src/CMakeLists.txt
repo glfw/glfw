@@ -68,7 +68,7 @@ set_target_properties(glfw PROPERTIES
 if (BUILD_SHARED_LIBS)
     if (WIN32)
         # The GLFW DLL needs a special compile-time macro and import library name
-        set_target_properties(glfw PROPERTIES PREFIX "" IMPORT_PREFIX "")
+        set_target_properties(glfw PROPERTIES PREFIX "")
 
         if (MINGW)
             set_target_properties(glfw PROPERTIES IMPORT_SUFFIX "dll.a")

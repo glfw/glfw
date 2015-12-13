@@ -205,37 +205,37 @@ GLFWbool _glfwInitEGL(void)
         return GLFW_FALSE;
     }
 
-    _glfw.egl.GetConfigAttrib =
+    _glfw.egl.GetConfigAttrib = (PFNEGLGETCONFIGATTRIBPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglGetConfigAttrib");
-    _glfw.egl.GetConfigs =
+    _glfw.egl.GetConfigs = (PFNEGLGETCONFIGSPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglGetConfigs");
-    _glfw.egl.GetDisplay =
+    _glfw.egl.GetDisplay = (PFNEGLGETDISPLAYPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglGetDisplay");
-    _glfw.egl.GetError =
+    _glfw.egl.GetError = (PFNEGLGETERRORPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglGetError");
-    _glfw.egl.Initialize =
+    _glfw.egl.Initialize = (PFNEGLINITIALIZEPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglInitialize");
-    _glfw.egl.Terminate =
+    _glfw.egl.Terminate = (PFNEGLTERMINATEPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglTerminate");
-    _glfw.egl.BindAPI =
+    _glfw.egl.BindAPI = (PFNEGLBINDAPIPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglBindAPI");
-    _glfw.egl.CreateContext =
+    _glfw.egl.CreateContext = (PFNEGLCREATECONTEXTPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglCreateContext");
-    _glfw.egl.DestroySurface =
+    _glfw.egl.DestroySurface = (PFNEGLDESTROYSURFACEPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglDestroySurface");
-    _glfw.egl.DestroyContext =
+    _glfw.egl.DestroyContext = (PFNEGLDESTROYCONTEXTPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglDestroyContext");
-    _glfw.egl.CreateWindowSurface =
+    _glfw.egl.CreateWindowSurface = (PFNEGLCREATEWINDOWSURFACEPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglCreateWindowSurface");
-    _glfw.egl.MakeCurrent =
+    _glfw.egl.MakeCurrent = (PFNEGLMAKECURRENTPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglMakeCurrent");
-    _glfw.egl.SwapBuffers =
+    _glfw.egl.SwapBuffers = (PFNEGLSWAPBUFFERSPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglSwapBuffers");
-    _glfw.egl.SwapInterval =
+    _glfw.egl.SwapInterval = (PFNEGLSWAPINTERVALPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglSwapInterval");
-    _glfw.egl.QueryString =
+    _glfw.egl.QueryString = (PFNEGLQUERYSTRINGPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglQueryString");
-    _glfw.egl.GetProcAddress =
+    _glfw.egl.GetProcAddress = (PFNEGLGETPROCADDRESSPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglGetProcAddress");
 
     _glfw.egl.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);

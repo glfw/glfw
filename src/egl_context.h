@@ -100,6 +100,7 @@ typedef MirEGLNativeWindowType EGLNativeWindowType;
 #define EGL_NO_SURFACE ((EGLSurface) 0)
 #define EGL_NO_DISPLAY ((EGLDisplay) 0)
 #define EGL_NO_CONTEXT ((EGLContext) 0)
+#define EGL_DEFAULT_DISPLAY ((EGLNativeDisplayType) 0)
 
 #define EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR 0x00000002
 #define EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR 0x00000001

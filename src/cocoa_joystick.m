@@ -190,6 +190,8 @@ static void removeJoystick(_GLFWjoydeviceNS* joystick)
     free(joystick->buttons);
 
     memset(joystick, 0, sizeof(_GLFWjoydeviceNS));
+
+    _glfwInputJoystickChange(joystick - _glfw.ns_js.devices, GLFW_DISCONNECTED);
 }
 
 // Polls for joystick axis events and updates GLFW state
@@ -329,6 +331,8 @@ static void matchCallback(void* context,
                             sizeof(float));
     joystick->buttons = calloc(CFArrayGetCount(joystick->buttonElements) +
                                CFArrayGetCount(joystick->hatElements) * 4, 1);
+
+    _glfwInputJoystickChange(joy, GLFW_CONNECTED);
 }
 
 // Callback for user-initiated joystick removal

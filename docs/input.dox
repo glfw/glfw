@@ -547,6 +547,33 @@ and make may have the same name.  Only the [joystick token](@ref joysticks) is
 guaranteed to be unique, and only until that joystick is disconnected.
 
 
+@subsection joystick_event Joystick configuration changes
+
+If you wish to be notified when a joystick is connected or disconnected, set
+a joystick callback.
+
+@code
+glfwSetJoystickCallback(joystick_callback);
+@endcode
+
+The callback function receives the ID of the joystick that has been connected
+and disconnected and the event that occurred.
+
+@code
+void joystick_callback(int joy, int event)
+{
+    if (event == GLFW_CONNECTED)
+    {
+        // The joystick was connected
+    }
+    else if (event == GLFW_DISCONNECTED)
+    {
+        // The joystick was disconnected
+    }
+}
+@endcode
+
+
 @section time Time input
 
 GLFW provides high-resolution time input, in seconds, with @ref glfwGetTime.

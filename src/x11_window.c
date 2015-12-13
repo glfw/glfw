@@ -54,11 +54,19 @@
 void selectDisplayConnection(struct timeval* timeout)
 {
     fd_set fds;
-    int result;
+    int result, count;
     const int fd = ConnectionNumber(_glfw.x11.display);
 
     FD_ZERO(&fds);
     FD_SET(fd, &fds);
+#if defined(__linux__)
+    FD_SET(_glfw.linux_js.inotify, &fds);
+#endif
+
+    if (fd > _glfw.linux_js.inotify)
+        count = fd + 1;
+    else
+        count = _glfw.linux_js.inotify + 1;
 
     // NOTE: We use select instead of an X function like XNextEvent, as the
     //       wait inside those are guarded by the mutex protecting the display
@@ -68,7 +76,7 @@ void selectDisplayConnection(struct timeval* timeout)
     // TODO: Update timeout value manually
     do
     {
-        result = select(fd + 1, &fds, NULL, NULL, timeout);
+        result = select(count, &fds, NULL, NULL, timeout);
     }
     while (result == -1 && errno == EINTR && timeout == NULL);
 }
@@ -1999,6 +2007,8 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 
 void _glfwPlatformPollEvents(void)
 {
+    _glfwPollJoystickEvents();
+
     int count = XPending(_glfw.x11.display);
     while (count--)
     {

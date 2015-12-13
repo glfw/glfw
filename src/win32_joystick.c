@@ -97,6 +97,8 @@ static GLFWbool openJoystickDevice(DWORD index)
     js->name = strdup(getDeviceDescription(&xic));
     js->index = index;
 
+    _glfwInputJoystickChange(joy, GLFW_CONNECTED);
+
     return GLFW_TRUE;
 }
 
@@ -120,6 +122,7 @@ static GLFWbool pollJoystickEvents(_GLFWjoystickWin32* js, int flags)
         {
             free(js->name);
             memset(js, 0, sizeof(_GLFWjoystickWin32));
+            _glfwInputJoystickChange((int) (js - _glfw.win32_js), GLFW_DISCONNECTED);
         }
 
         return GLFW_FALSE;

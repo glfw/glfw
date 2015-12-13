@@ -1097,6 +1097,23 @@ typedef void (* GLFWdropfun)(GLFWwindow*,int,const char**);
  */
 typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
 
+/*! @brief The function signature for joystick configuration callbacks.
+ *
+ *  This is the function signature for joystick configuration callback
+ *  functions.
+ *
+ *  @param[in] joy The joystick that was connected or disconnected.
+ *  @param[in] event One of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.
+ *
+ *  @sa @ref joystick_event
+ *  @sa glfwSetJoystickCallback
+ *
+ *  @since Added in version 3.2.
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWjoystickfun)(int,int);
+
 /*! @brief Video mode type.
  *
  *  This describes a single video mode.
@@ -3595,6 +3612,29 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int joy, int* count);
  *  @ingroup input
  */
 GLFWAPI const char* glfwGetJoystickName(int joy);
+
+/*! @brief Sets the joystick configuration callback.
+ *
+ *  This function sets the joystick configuration callback, or removes the
+ *  currently set callback.  This is called when a joystick is connected to or
+ *  disconnected from the system.
+ *
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref joystick_event
+ *
+ *  @since Added in version 3.2.
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun cbfun);
 
 /*! @brief Sets the clipboard to the specified string.
  *

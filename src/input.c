@@ -220,6 +220,12 @@ void _glfwInputDrop(_GLFWwindow* window, int count, const char** paths)
         window->callbacks.drop((GLFWwindow*) window, count, paths);
 }
 
+void _glfwInputJoystickChange(int joy, int event)
+{
+    if (_glfw.callbacks.joystick)
+        _glfw.callbacks.joystick(joy, event);
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -619,6 +625,13 @@ GLFWAPI const char* glfwGetJoystickName(int joy)
     }
 
     return _glfwPlatformGetJoystickName(joy);
+}
+
+GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun cbfun)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(_glfw.callbacks.joystick, cbfun);
+    return cbfun;
 }
 
 GLFWAPI void glfwSetClipboardString(GLFWwindow* handle, const char* string)

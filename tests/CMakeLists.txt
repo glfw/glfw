@@ -8,6 +8,10 @@ else()
     link_libraries(${glfw_LIBRARIES})
 endif()
 
+if (MSVC)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
+
 include_directories("${GLFW_SOURCE_DIR}/include"
                     "${GLFW_SOURCE_DIR}/deps")
 

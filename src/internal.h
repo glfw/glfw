@@ -41,7 +41,7 @@
     defined(GLFW_INCLUDE_GLEXT)     || \
     defined(GLFW_INCLUDE_GLU)       || \
     defined(GLFW_DLL)
- #error "You may not define any header option macros when compiling GLFW"
+ #error "You must not define any header option macros when compiling GLFW"
 #endif
 
 #define GLFW_INCLUDE_NONE
@@ -124,7 +124,7 @@ typedef int GLFWbool;
  *  @brief Various utility functions for internal use.
  *
  *  These functions are shared code and may be used by any part of GLFW
- *  Each platform may add its own utility functions, but those may only be
+ *  Each platform may add its own utility functions, but those must only be
  *  called by the platform-specific code
  */
 

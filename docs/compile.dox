@@ -261,7 +261,7 @@ configurations and to create contexts.  The options are:
 Wayland and Mir both require the EGL backend.
 
 If you are building GLFW as a shared library / dynamic library / DLL then you
-must also define `_GLFW_BUILD_DLL`.  Otherwise, you may not define it.
+must also define `_GLFW_BUILD_DLL`.  Otherwise, you must not define it.
 
 If you are using the X11 window creation API, support for the following X11
 extensions can be enabled:

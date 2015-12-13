@@ -300,8 +300,8 @@ int _glfwInitContextAPI(void)
 //
 void _glfwTerminateContextAPI(void)
 {
-    // NOTE: This function may not call any X11 functions, as it is called after
-    //       XCloseDisplay (see _glfwPlatformTerminate for details)
+    // NOTE: This function must not call any X11 functions, as it is called
+    //       after XCloseDisplay (see _glfwPlatformTerminate for details)
 
     if (_glfw.glx.handle)
     {

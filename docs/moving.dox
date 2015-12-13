@@ -53,7 +53,7 @@ TinyCThread.
 However, GLFW 3 has better support for _use from multiple threads_ than GLFW
 2 had.  Contexts can be made current on any thread, although only a single
 thread at a time, and the documentation explicitly states which functions may be
-used from any thread and which may only be used from the main thread.
+used from any thread and which must only be used from the main thread.
 
 @par Removed functions
 `glfwSleep`, `glfwCreateThread`, `glfwDestroyThread`, `glfwWaitThread`,
@@ -416,7 +416,7 @@ these hotkeys to function even when running in full screen mode.
 
 GLFW 3 does not register @ref glfwTerminate with `atexit` at initialization,
 because `exit` calls registered functions from the calling thread and while it
-is permitted to call `exit` from any thread, @ref glfwTerminate may only be
+is permitted to call `exit` from any thread, @ref glfwTerminate must only be
 called from the main thread.
 
 To release all resources allocated by GLFW, you should call @ref glfwTerminate

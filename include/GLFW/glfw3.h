@@ -742,6 +742,8 @@ extern "C" {
  *  @sa @ref context_glext
  *  @sa glfwGetProcAddress
  *
+ *  @since Added in GLFW 3.0.
+ *
  *  @ingroup context
  */
 typedef void (*GLFWglproc)(void);
@@ -751,6 +753,8 @@ typedef void (*GLFWglproc)(void);
  *  Opaque monitor object.
  *
  *  @see @ref monitor_object
+ *
+ *  @since Added in GLFW 3.0.
  *
  *  @ingroup monitor
  */
@@ -762,6 +766,8 @@ typedef struct GLFWmonitor GLFWmonitor;
  *
  *  @see @ref window_object
  *
+ *  @since Added in GLFW 3.0.
+ *
  *  @ingroup window
  */
 typedef struct GLFWwindow GLFWwindow;
@@ -771,6 +777,8 @@ typedef struct GLFWwindow GLFWwindow;
  *  Opaque cursor object.
  *
  *  @see @ref cursor_object
+ *
+ *  @since Added in GLFW 3.1.
  *
  *  @ingroup cursor
  */
@@ -785,6 +793,8 @@ typedef struct GLFWcursor GLFWcursor;
  *
  *  @sa @ref error_handling
  *  @sa glfwSetErrorCallback
+ *
+ *  @since Added in GLFW 3.0.
  *
  *  @ingroup init
  */
@@ -803,6 +813,8 @@ typedef void (* GLFWerrorfun)(int,const char*);
  *  @sa @ref window_pos
  *  @sa glfwSetWindowPosCallback
  *
+ *  @since Added in GLFW 3.0.
+ *
  *  @ingroup window
  */
 typedef void (* GLFWwindowposfun)(GLFWwindow*,int,int);
@@ -818,6 +830,8 @@ typedef void (* GLFWwindowposfun)(GLFWwindow*,int,int);
  *  @sa @ref window_size
  *  @sa glfwSetWindowSizeCallback
  *
+ *  @since Added in GLFW 3.0.
+ *
  *  @ingroup window
  */
 typedef void (* GLFWwindowsizefun)(GLFWwindow*,int,int);
@@ -831,6 +845,8 @@ typedef void (* GLFWwindowsizefun)(GLFWwindow*,int,int);
  *  @sa @ref window_close
  *  @sa glfwSetWindowCloseCallback
  *
+ *  @since Added in GLFW 3.0.
+ *
  *  @ingroup window
  */
 typedef void (* GLFWwindowclosefun)(GLFWwindow*);
@@ -843,6 +859,8 @@ typedef void (* GLFWwindowclosefun)(GLFWwindow*);
  *
  *  @sa @ref window_refresh
  *  @sa glfwSetWindowRefreshCallback
+ *
+ *  @since Added in GLFW 3.0.
  *
  *  @ingroup window
  */
@@ -858,6 +876,8 @@ typedef void (* GLFWwindowrefreshfun)(GLFWwindow*);
  *
  *  @sa @ref window_focus
  *  @sa glfwSetWindowFocusCallback
+ *
+ *  @since Added in GLFW 3.0.
  *
  *  @ingroup window
  */
@@ -875,6 +895,8 @@ typedef void (* GLFWwindowfocusfun)(GLFWwindow*,int);
  *  @sa @ref window_iconify
  *  @sa glfwSetWindowIconifyCallback
  *
+ *  @since Added in GLFW 3.0.
+ *
  *  @ingroup window
  */
 typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
@@ -890,6 +912,8 @@ typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
  *
  *  @sa @ref window_fbsize
  *  @sa glfwSetFramebufferSizeCallback
+ *
+ *  @since Added in GLFW 3.0.
  *
  *  @ingroup window
  */
@@ -909,6 +933,8 @@ typedef void (* GLFWframebuffersizefun)(GLFWwindow*,int,int);
  *  @sa @ref input_mouse_button
  *  @sa glfwSetMouseButtonCallback
  *
+ *  @since Added in GLFW 3.0.
+ *
  *  @ingroup input
  */
 typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int,int);
@@ -923,6 +949,8 @@ typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int,int);
  *
  *  @sa @ref cursor_pos
  *  @sa glfwSetCursorPosCallback
+ *
+ *  @since Added in GLFW 3.0.
  *
  *  @ingroup input
  */
@@ -939,6 +967,8 @@ typedef void (* GLFWcursorposfun)(GLFWwindow*,double,double);
  *  @sa @ref cursor_enter
  *  @sa glfwSetCursorEnterCallback
  *
+ *  @since Added in GLFW 3.0.
+ *
  *  @ingroup input
  */
 typedef void (* GLFWcursorenterfun)(GLFWwindow*,int);
@@ -953,6 +983,8 @@ typedef void (* GLFWcursorenterfun)(GLFWwindow*,int);
  *
  *  @sa @ref scrolling
  *  @sa glfwSetScrollCallback
+ *
+ *  @since Added in GLFW 3.0.
  *
  *  @ingroup input
  */
@@ -972,6 +1004,8 @@ typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
  *  @sa @ref input_key
  *  @sa glfwSetKeyCallback
  *
+ *  @since Added in GLFW 3.0.
+ *
  *  @ingroup input
  */
 typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int);
@@ -985,6 +1019,8 @@ typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int);
  *
  *  @sa @ref input_char
  *  @sa glfwSetCharCallback
+ *
+ *  @since Added in GLFW 3.0.
  *
  *  @ingroup input
  */
@@ -1005,6 +1041,8 @@ typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
  *  @sa @ref input_char
  *  @sa glfwSetCharModsCallback
  *
+ *  @since Added in GLFW 3.1.
+ *
  *  @ingroup input
  */
 typedef void (* GLFWcharmodsfun)(GLFWwindow*,unsigned int,int);
@@ -1020,6 +1058,8 @@ typedef void (* GLFWcharmodsfun)(GLFWwindow*,unsigned int,int);
  *  @sa @ref path_drop
  *  @sa glfwSetDropCallback
  *
+ *  @since Added in GLFW 3.1.
+ *
  *  @ingroup input
  */
 typedef void (* GLFWdropfun)(GLFWwindow*,int,const char**);
@@ -1034,6 +1074,8 @@ typedef void (* GLFWdropfun)(GLFWwindow*,int,const char**);
  *  @sa @ref monitor_event
  *  @sa glfwSetMonitorCallback
  *
+ *  @since Added in GLFW 3.0.
+ *
  *  @ingroup monitor
  */
 typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
@@ -1044,6 +1086,8 @@ typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
  *
  *  @sa @ref monitor_modes
  *  @sa glfwGetVideoMode glfwGetVideoModes
+ *
+ *  @since Added in GLFW 3.0.
  *
  *  @ingroup monitor
  */
@@ -1076,6 +1120,8 @@ typedef struct GLFWvidmode
  *  @sa @ref monitor_gamma
  *  @sa glfwGetGammaRamp glfwSetGammaRamp
  *
+ *  @since Added in GLFW 3.0.
+ *
  *  @ingroup monitor
  */
 typedef struct GLFWgammaramp
@@ -1097,6 +1143,8 @@ typedef struct GLFWgammaramp
 /*! @brief Image data.
  *
  *  @sa @ref cursor_custom
+ *
+ *  @since Added in GLFW 3.1.
  */
 typedef struct GLFWimage
 {

@@ -24,8 +24,8 @@
 //
 //========================================================================
 
-#ifndef _glfw3_iokit_joystick_h_
-#define _glfw3_iokit_joystick_h_
+#ifndef _glfw3_cocoa_joystick_h_
+#define _glfw3_cocoa_joystick_h_
 
 #include <IOKit/IOKitLib.h>
 #include <IOKit/IOCFPlugIn.h>
@@ -35,7 +35,7 @@
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE _GLFWjoystickNS ns_js
 
 
-// IOKit-specific per-joystick data
+// Cocoa-specific per-joystick data
 //
 typedef struct _GLFWjoydeviceNS
 {
@@ -52,7 +52,7 @@ typedef struct _GLFWjoydeviceNS
     unsigned char*  buttons;
 } _GLFWjoydeviceNS;
 
-// IOKit-specific joystick API data
+// Cocoa-specific joystick API data
 //
 typedef struct _GLFWjoystickNS
 {
@@ -64,4 +64,4 @@ typedef struct _GLFWjoystickNS
 void _glfwInitJoysticksNS(void);
 void _glfwTerminateJoysticksNS(void);
 
-#endif // _glfw3_iokit_joystick_h_
+#endif // _glfw3_cocoa_joystick_h_

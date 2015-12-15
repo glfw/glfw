@@ -39,7 +39,7 @@
 static int compareVideoModes(const void* fp, const void* sp)
 {
     const GLFWvidmode* fm = fp;
-    const GLFWvidmode* sm = fp;
+    const GLFWvidmode* sm = sp;
     const int fbpp = fm->redBits + fm->greenBits + fm->blueBits;
     const int sbpp = sm->redBits + sm->greenBits + sm->blueBits;
     const int farea = fm->width * fm->height;

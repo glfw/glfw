@@ -28,9 +28,6 @@
 #include "internal.h"
 
 #include <stdlib.h>
-#if defined(_MSC_VER)
- #include <malloc.h>
-#endif
 
 // Internal key state used for sticky keys
 #define _GLFW_STICK 3

@@ -34,28 +34,27 @@
 #include <limits.h>
 
 
-// Lexical comparison function for GLFW video modes, used by qsort
+// Lexically compare video modes, used by qsort
 //
-static int compareVideoModes(const void* firstPtr, const void* secondPtr)
+static int compareVideoModes(const void* fp, const void* sp)
 {
-    int firstBPP, secondBPP, firstSize, secondSize;
-    const GLFWvidmode* first = firstPtr;
-    const GLFWvidmode* second = secondPtr;
+    const GLFWvidmode* fm = fp;
+    const GLFWvidmode* sm = fp;
+    const int fbpp = fm->redBits + fm->greenBits + fm->blueBits;
+    const int sbpp = sm->redBits + sm->greenBits + sm->blueBits;
+    const int farea = fm->width * fm->height;
+    const int sarea = sm->width * sm->height;
 
     // First sort on color bits per pixel
-    firstBPP = first->redBits + first->greenBits + first->blueBits;
-    secondBPP = second->redBits + second->greenBits + second->blueBits;
-    if (firstBPP != secondBPP)
-        return firstBPP - secondBPP;
+    if (fbpp != sbpp)
+        return fbpp - sbpp;
 
-    // Then sort on screen area, in pixels
-    firstSize = first->width * first->height;
-    secondSize = second->width * second->height;
-    if (firstSize != secondSize)
-        return firstSize - secondSize;
+    // Then sort on screen area
+    if (farea != sarea)
+        return farea - sarea;
 
     // Lastly sort on refresh rate
-    return first->refreshRate - second->refreshRate;
+    return fm->refreshRate - sm->refreshRate;
 }
 
 // Retrieves the available modes for the specified monitor
@@ -263,9 +262,9 @@ const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
     return closest;
 }
 
-int _glfwCompareVideoModes(const GLFWvidmode* first, const GLFWvidmode* second)
+int _glfwCompareVideoModes(const GLFWvidmode* fm, const GLFWvidmode* sm)
 {
-    return compareVideoModes(first, second);
+    return compareVideoModes(fm, sm);
 }
 
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)

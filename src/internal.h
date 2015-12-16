@@ -185,6 +185,7 @@ struct _GLFWwndconfig
     GLFWbool      focused;
     GLFWbool      autoIconify;
     GLFWbool      floating;
+    GLFWbool      alphaMask;
     _GLFWmonitor* monitor;
 };
 
@@ -235,6 +236,7 @@ struct _GLFWfbconfig
     int         samples;
     GLFWbool    sRGB;
     GLFWbool    doublebuffer;
+    int         alphaMask;
 
     // This is defined in the context API's context.h
     _GLFW_PLATFORM_FBCONFIG;
@@ -272,6 +274,7 @@ struct _GLFWwindow
     GLFWbool            decorated;
     GLFWbool            autoIconify;
     GLFWbool            floating;
+    GLFWbool            transparent;
     GLFWbool            closed;
     void*               userPointer;
     GLFWvidmode         videoMode;

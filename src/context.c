@@ -216,6 +216,12 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
             continue;
         }
 
+        if (desired->alphaMask > 0 && current->alphaMask == 0)
+        {
+            // Alpha mask is a hard constraint
+            continue;
+        }
+
         // Count number of missing buffers
         {
             missing = 0;

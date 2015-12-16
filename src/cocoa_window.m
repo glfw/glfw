@@ -322,7 +322,11 @@ static int translateKey(unsigned int key)
 
 - (BOOL)isOpaque
 {
-    return YES;
+    // Set to NO even if alphaMask is not used;
+    //   The NSView/GLFWContentView does not need to be opaque anyway,
+    //   and to avoid keeping track of alphaMask inside the NSView we
+    //   just return NO here instead.
+    return NO;
 }
 
 - (BOOL)canBecomeKeyView
@@ -858,6 +862,12 @@ static GLFWbool createWindow(_GLFWwindow* window,
 #if defined(_GLFW_USE_RETINA)
     [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
 #endif /*_GLFW_USE_RETINA*/
+
+    if (wndconfig->alphaMask)
+    {
+        [window->ns.object setOpaque:NO];
+        [window->ns.object setBackgroundColor:[NSColor clearColor]];
+    }
 
     [window->ns.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
     [window->ns.object setDelegate:window->ns.delegate];

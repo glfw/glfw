@@ -36,6 +36,7 @@ add_executable(heightmap WIN32 MACOSX_BUNDLE heightmap.c ${ICON} ${GLAD})
 add_executable(particles WIN32 MACOSX_BUNDLE particles.c ${ICON} ${TINYCTHREAD} ${GETOPT} ${GLAD})
 add_executable(simple WIN32 MACOSX_BUNDLE simple.c ${ICON} ${GLAD})
 add_executable(splitview WIN32 MACOSX_BUNDLE splitview.c ${ICON} ${GLAD})
+add_executable(transparent WIN32 MACOSX_BUNDLE transparent.c ${ICON} ${GLAD})
 add_executable(wave WIN32 MACOSX_BUNDLE wave.c ${ICON} ${GLAD})
 
 target_link_libraries(particles "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")

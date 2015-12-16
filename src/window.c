@@ -135,12 +135,14 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     fbconfig  = _glfw.hints.framebuffer;
     ctxconfig = _glfw.hints.context;
     wndconfig = _glfw.hints.window;
+    fbconfig.alphaMask  = _glfw.hints.framebuffer.alphaMask ? GLFW_TRUE : GLFW_FALSE;
 
     wndconfig.width   = width;
     wndconfig.height  = height;
     wndconfig.title   = title;
     wndconfig.monitor = (_GLFWmonitor*) monitor;
     ctxconfig.share   = (_GLFWwindow*) share;
+    wndconfig.alphaMask = _glfw.hints.framebuffer.alphaMask ? GLFW_TRUE : GLFW_FALSE;
 
     if (ctxconfig.share)
     {
@@ -177,6 +179,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->decorated   = wndconfig.decorated;
     window->autoIconify = wndconfig.autoIconify;
     window->floating    = wndconfig.floating;
+    window->transparent = wndconfig.alphaMask;
     window->cursorMode  = GLFW_CURSOR_NORMAL;
 
     // Save the currently current context so it can be restored later
@@ -265,6 +268,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.framebuffer.depthBits    = 24;
     _glfw.hints.framebuffer.stencilBits  = 8;
     _glfw.hints.framebuffer.doublebuffer = GLFW_TRUE;
+    _glfw.hints.framebuffer.alphaMask    = GLFW_FALSE;
 
     // The default is to select the highest available refresh rate
     _glfw.hints.refreshRate = GLFW_DONT_CARE;
@@ -314,6 +318,9 @@ GLFWAPI void glfwWindowHint(int target, int hint)
             break;
         case GLFW_DOUBLEBUFFER:
             _glfw.hints.framebuffer.doublebuffer = hint ? GLFW_TRUE : GLFW_FALSE;
+            break;
+        case GLFW_ALPHA_MASK:
+            _glfw.hints.framebuffer.alphaMask = hint;
             break;
         case GLFW_SAMPLES:
             _glfw.hints.framebuffer.samples = hint;

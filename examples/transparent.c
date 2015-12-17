@@ -87,7 +87,7 @@ int main(void)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
     glfwWindowHint(GLFW_ALPHA_BITS, 8);
-    glfwWindowHint(GLFW_ALPHA_MASK, GLFW_TRUE);
+    glfwWindowHint(GLFW_TRANSPARENT, GLFW_TRUE);
     glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
 
     window = glfwCreateWindow(256, 256, "Transparent window example", NULL, NULL);

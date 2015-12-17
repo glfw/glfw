@@ -91,7 +91,7 @@ int main(void)
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     glfwWindowHint(GLFW_ALPHA_BITS, 8);
-    glfwWindowHint(GLFW_ALPHA_MASK, GLFW_TRUE);
+    glfwWindowHint(GLFW_TRANSPARENT, GLFW_TRUE);
     glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
 
     for (i = 0;  i < count;  i++)

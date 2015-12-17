@@ -319,7 +319,7 @@ GLFWAPI void glfwWindowHint(int target, int hint)
         case GLFW_DOUBLEBUFFER:
             _glfw.hints.framebuffer.doublebuffer = hint ? GLFW_TRUE : GLFW_FALSE;
             break;
-        case GLFW_ALPHA_MASK:
+        case GLFW_TRANSPARENT:
             _glfw.hints.framebuffer.alphaMask = hint;
             break;
         case GLFW_SAMPLES:

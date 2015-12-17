@@ -236,8 +236,8 @@ static GLFWbool choosePixelFormat(_GLFWwindow* window,
                 u->doublebuffer = GLFW_TRUE;
         }
 
-        // always able to create alpha mask on win
-        u->alphaMask = desired->alphaMask;
+        // always able to create transparent windows on Windows
+        u->transparent = desired->transparent;
 
         u->wgl = n;
         usableCount++;

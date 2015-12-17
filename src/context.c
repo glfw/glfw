@@ -216,7 +216,7 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
             continue;
         }
 
-        if (desired->alphaMask > 0 && current->alphaMask == 0)
+        if (desired->transparent > 0 && current->transparent == 0)
         {
             // Alpha mask is a hard constraint
             continue;

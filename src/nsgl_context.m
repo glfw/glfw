@@ -215,7 +215,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    if (fbconfig->alphaMask)
+    if (fbconfig->transparent)
     {
         GLint opaque = 0;
         [window->context.nsgl.object setValues:&opaque forParameter:NSOpenGLCPSurfaceOpacity];

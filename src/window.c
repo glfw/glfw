@@ -135,14 +135,14 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     fbconfig             = _glfw.hints.framebuffer;
     ctxconfig            = _glfw.hints.context;
     wndconfig            = _glfw.hints.window;
-    fbconfig.transparent = _glfw.hints.framebuffer.transparent ? GLFW_TRUE : GLFW_FALSE;
+    fbconfig.transparent = _glfw.hints.framebuffer.transparent;
 
     wndconfig.width       = width;
     wndconfig.height      = height;
     wndconfig.title       = title;
     wndconfig.monitor     = (_GLFWmonitor*) monitor;
     ctxconfig.share       = (_GLFWwindow*) share;
-    wndconfig.transparent = _glfw.hints.framebuffer.transparent ? GLFW_TRUE : GLFW_FALSE;
+    wndconfig.transparent = _glfw.hints.framebuffer.transparent;
 
     if (ctxconfig.share)
     {
@@ -320,7 +320,7 @@ GLFWAPI void glfwWindowHint(int target, int hint)
             _glfw.hints.framebuffer.doublebuffer = hint ? GLFW_TRUE : GLFW_FALSE;
             break;
         case GLFW_TRANSPARENT:
-            _glfw.hints.framebuffer.transparent = hint;
+            _glfw.hints.framebuffer.transparent = hint ? GLFW_TRUE : GLFW_FALSE;
             break;
         case GLFW_SAMPLES:
             _glfw.hints.framebuffer.samples = hint;

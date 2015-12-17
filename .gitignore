@@ -72,6 +72,3 @@ tests/threads
 tests/title
 tests/version
 tests/windows
-
-# Local build directory
-build/

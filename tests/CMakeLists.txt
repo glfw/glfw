@@ -37,13 +37,14 @@ add_executable(empty WIN32 MACOSX_BUNDLE empty.c ${TINYCTHREAD} ${GLAD})
 add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c ${GLAD})
 add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c ${GETOPT} ${GLAD})
 add_executable(threads WIN32 MACOSX_BUNDLE threads.c ${TINYCTHREAD} ${GLAD})
+add_executable(transparent_threads WIN32 MACOSX_BUNDLE transparent_threads.c ${TINYCTHREAD} ${GLAD})
 add_executable(title WIN32 MACOSX_BUNDLE title.c ${GLAD})
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GLAD})
 
 target_link_libraries(empty "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 
-set(WINDOWS_BINARIES empty sharing tearing threads title windows)
+set(WINDOWS_BINARIES empty sharing tearing threads transparent_threads title windows)
 set(CONSOLE_BINARIES clipboard events msaa gamma glfwinfo
                      iconify joysticks monitors reopen cursor)
 
@@ -61,6 +62,7 @@ if (APPLE)
     set_target_properties(sharing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Sharing")
     set_target_properties(tearing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Tearing")
     set_target_properties(threads PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Threads")
+    set_target_properties(transparent_threads PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Transparent threads")
     set_target_properties(title PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Title")
     set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 

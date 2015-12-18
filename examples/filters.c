@@ -54,7 +54,7 @@ static const struct
 {
     { -0.6f, -0.4f, 1.f, 0.f, 0.f },
     {  0.6f, -0.4f, 0.f, 1.f, 0.f },
-    {   0.f,  0.6f, 0.f, 0.f, 1.f }
+    {   0.f,  0.72f, 0.f, 0.f, 1.f }
 };
 
 static const char* vertex_shader_text =

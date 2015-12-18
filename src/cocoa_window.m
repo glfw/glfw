@@ -938,13 +938,32 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)
 
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 {
-    const NSRect contentRect =
-        [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
+    // Code from Matt Reagan on the Cocoa-dev mailing list.
+    CGRect rect;
+    CGWindowID windowID = (CGWindowID)[window->ns.object windowNumber];
+    CFArrayRef windowArray = CGWindowListCopyWindowInfo(kCGWindowListOptionIncludingWindow, windowID);
+
+    if (CFArrayGetCount(windowArray))
+    {
+        CFDictionaryRef windowInfoDictionary = (CFDictionaryRef)CFArrayGetValueAtIndex ((CFArrayRef)windowArray, 0);
+
+        if (CFDictionaryContainsKey(windowInfoDictionary, kCGWindowBounds))
+        {
+            CFDictionaryRef bounds = (CFDictionaryRef)CFDictionaryGetValue(windowInfoDictionary, kCGWindowBounds);
+
+            if (bounds)
+            {
+                CGRectMakeWithDictionaryRepresentation(bounds, &rect);
+            }
+        }
+    }
+
+    CFRelease(windowArray);
 
     if (xpos)
-        *xpos = contentRect.origin.x;
+        *xpos = rect.origin.x;
     if (ypos)
-        *ypos = transformY(contentRect.origin.y + contentRect.size.height);
+        *ypos = rect.origin.y;
 }
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)

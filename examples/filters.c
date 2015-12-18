@@ -155,32 +155,37 @@ static int other_thread_main(void* data)
     while (running)
     {
         int primary_x_pos, primary_y_pos;
+        int primary_width, primary_height;
         int my_x_pos, my_y_pos;
+        int my_width, my_height;
         float delta_x, delta_y;
+        float ratio, x_ratio, y_ratio;
+        float x_offset, y_offset;
+        mat4x4 m, p, mvp;
 
         glfwGetWindowPos(thread->primary_window, &primary_x_pos, &primary_y_pos);
+        glfwGetFramebufferSize(thread->primary_window, &primary_width, &primary_height);
         glfwGetWindowPos(thread->window, &my_x_pos, &my_y_pos);
+        glfwGetFramebufferSize(thread->window, &my_width, &my_height);
 
-        float ratio;
-        int width, height;
-        mat4x4 m, p, mvp;
         const float v = (float) fabs(sin(glfwGetTime() * 2.f));
-        glfwGetFramebufferSize(thread->window, &width, &height);
-        ratio = width / (float) height;
-        glViewport(0, 0, width, height);
+        ratio = my_width / (float) my_height;
+        x_ratio = (my_width / (float) primary_width);
+        y_ratio = (my_height / (float) primary_height);
 
-        delta_x = (((float)(primary_x_pos - my_x_pos)) / ((float) width)) * 2;
-        delta_y = (-((float)(primary_y_pos - my_y_pos)) / ((float) height)) * 2;
+        delta_x = (((float)(primary_x_pos - my_x_pos)) / ((float) my_width)) * x_ratio * 2 - x_ratio + 1;
+        delta_y = (-((float)(primary_y_pos - my_y_pos)) / ((float) my_height)) * y_ratio * 2 + y_ratio - 1;
+
+        glViewport(0, 0, my_width, my_height);
 
         glClearColor(thread->r * v, thread->g * v, thread->b * v, thread->a * v);
         glClear(GL_COLOR_BUFFER_BIT);
 
         mat4x4_identity(m);
         mat4x4_rotate_Z(m, m, (float) glfwGetTime());
-        mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+        mat4x4_ortho(p, -x_ratio, x_ratio, -y_ratio, y_ratio, 1.f, -1.f);
         mat4x4_translate_in_place(p, delta_x, delta_y, 0.0f);
         mat4x4_mul(mvp, p, m);
-        //mat4x4_translate_in_place(mvp, 1.0f, 0.0f, 0.0f);
 
         glUseProgram(program);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
@@ -241,14 +246,7 @@ int main(void)
 
     for (i = 0;  i < count;  i++)
     {
-        if (i == (count - 1))
-        {
-            result = thrd_create(&threads[i].id, other_thread_main, threads + i);
-        }
-        else
-        {
-            result = thrd_create(&threads[i].id, thread_main, threads + i);
-        }
+        result = thrd_create(&threads[i].id, other_thread_main, threads + i);
 
         if (result != thrd_success)
         {

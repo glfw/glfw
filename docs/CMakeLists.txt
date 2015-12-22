@@ -14,6 +14,7 @@ set(glfw_DOCS_SOURCES
     "${GLFW_SOURCE_DIR}/docs/window.dox"
     "${GLFW_SOURCE_DIR}/docs/input.dox"
     "${GLFW_SOURCE_DIR}/docs/vulkan.dox"
+    "${GLFW_SOURCE_DIR}/docs/metal.dox"
     "${GLFW_SOURCE_DIR}/docs/compat.dox")
 
 if (GLFW_DOCUMENT_INTERNALS)

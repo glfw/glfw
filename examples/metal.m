@@ -24,15 +24,14 @@
 //========================================================================
 //! [code]
 
-#import <Metal/Metal.h>
-#import <QuartzCore/QuartzCore.h>
-#import <simd/simd.h>
-
 #define GLFW_INCLUDE_NONE
 #import <GLFW/glfw3.h>
 #define GLFW_EXPOSE_NATIVE_COCOA
-#define GLFW_EXPOSE_NATIVE_NSGL
 #import <GLFW/glfw3native.h>
+
+#import <Metal/Metal.h>
+#import <QuartzCore/QuartzCore.h>
+#import <simd/simd.h>
 
 #include <assert.h>
 #include <stdlib.h>
@@ -53,11 +52,7 @@ int main(void)
 {
 	id<MTLDevice> device = MTLCreateSystemDefaultDevice();
 	if (!device)
-	{
 		exit(EXIT_FAILURE);
-	}
-
-    GLFWwindow* window;
 
     glfwSetErrorCallback(error_callback);
 
@@ -65,28 +60,28 @@ int main(void)
         exit(EXIT_FAILURE);
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    window = glfwCreateWindow(640, 480, "Metal Example", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(640, 480, "Metal Example", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
 
-    NSWindow *nswin = glfwGetCocoaWindow(window);
-    CAMetalLayer *layer = [CAMetalLayer layer];
+    NSWindow* nswin = glfwGetCocoaWindow(window);
+    CAMetalLayer* layer = [CAMetalLayer layer];
     layer.device = device;
     layer.pixelFormat = MTLPixelFormatBGRA8Unorm;
     nswin.contentView.layer = layer;
     nswin.contentView.wantsLayer = YES;
 
-    MTLCompileOptions *compileOptions = [MTLCompileOptions new];
+    MTLCompileOptions* compileOptions = [MTLCompileOptions new];
     compileOptions.languageVersion = MTLLanguageVersion1_1;
-    NSError *compileError;
+    NSError* compileError;
     id<MTLLibrary> lib = [device newLibraryWithSource:
        @"#include <metal_stdlib>\n"
         "using namespace metal;\n"
         "vertex float4 v_simple(\n"
-        "    constant float4 *in  [[buffer(0)]],\n"
+        "    constant float4* in  [[buffer(0)]],\n"
         "    uint             vid [[vertex_id]])\n"
         "{\n"
         "    return in[vid];\n"
@@ -112,7 +107,7 @@ int main(void)
     id<MTLCommandQueue> cq = [device newCommandQueue];
     assert(cq);
 
-    MTLRenderPipelineDescriptor *rpd = [MTLRenderPipelineDescriptor new];
+    MTLRenderPipelineDescriptor* rpd = [MTLRenderPipelineDescriptor new];
     rpd.vertexFunction = vs;
     rpd.fragmentFunction = fs;
     rpd.colorAttachments[0].pixelFormat = layer.pixelFormat;
@@ -135,8 +130,8 @@ int main(void)
 
         id<MTLCommandBuffer> cb = [cq commandBuffer];
 
-        MTLRenderPassDescriptor *rpd = [MTLRenderPassDescriptor new];
-        MTLRenderPassColorAttachmentDescriptor *cd = rpd.colorAttachments[0];
+        MTLRenderPassDescriptor* rpd = [MTLRenderPassDescriptor new];
+        MTLRenderPassColorAttachmentDescriptor* cd = rpd.colorAttachments[0];
         cd.texture = drawable.texture;
         cd.loadAction = MTLLoadActionClear;
         cd.clearColor = MTLClearColorMake(1.0, 1.0, 1.0, 1.0);

@@ -379,6 +379,18 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             else
                 _glfwInputKey(window, key, scancode, action, mods);
 
+            if ((uMsg == WM_KEYDOWN || uMsg == WM_SYSKEYDOWN) && (mods & GLFW_MOD_CONTROL))
+            {
+                static BYTE keys[256] = { 0 };
+                WCHAR buf[4];
+                int buf_sz;
+                int n;
+                keys[VK_SHIFT] = (mods & GLFW_MOD_SHIFT) ? 0x80 : 0;
+                buf_sz = ToUnicodeEx(wParam, scancode, keys, buf, 4, 0, NULL);
+                for (n = 0; n < buf_sz; n++)
+                    _glfwInputChar(window, buf[n], getKeyMods(), FALSE);
+            }
+
             break;
         }
 

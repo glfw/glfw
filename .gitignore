@@ -34,16 +34,16 @@ src/glfw3ConfigVersion.cmake
 # Compiled binaries
 src/libglfw.so
 src/libglfw.so.3
-src/libglfw.so.3.0
+src/libglfw.so.3.2
 src/libglfw.dylib
 src/libglfw.dylib
 src/libglfw.3.dylib
-src/libglfw.3.0.dylib
+src/libglfw.3.2.dylib
 src/libglfw3.a
 src/glfw3.lib
 src/glfw3.dll
 src/glfw3dll.lib
-src/glfw3dll.a
+src/libglfw3dll.a
 examples/*.app
 examples/*.exe
 examples/boing

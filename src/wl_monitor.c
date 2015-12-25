@@ -111,7 +111,7 @@ static const struct wl_output_listener output_listener = {
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-void _glfwAddOutput(uint32_t name, uint32_t version)
+void _glfwAddOutputWayland(uint32_t name, uint32_t version)
 {
     _GLFWmonitor *monitor;
     struct wl_output *output;

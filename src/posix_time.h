@@ -44,6 +44,6 @@ typedef struct _GLFWtimePOSIX
 } _GLFWtimePOSIX;
 
 
-void _glfwInitTimer(void);
+void _glfwInitTimerPOSIX(void);
 
 #endif // _glfw3_posix_time_h_

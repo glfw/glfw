@@ -72,17 +72,29 @@ used by the tests and examples and are not required to build the library.
  - Added `GLFW_CONTEXT_NO_ERROR` context hint for `GL_KHR_no_error` support
  - Added `GLFW_TRUE` and `GLFW_FALSE` as client API independent boolean values
  - Added `glfwGetGLXWindow` to query the `GLXWindow` of a window
+ - Added icons to examples on Windows and OS X
  - Relaxed rules for native access header macros
  - Removed dependency on external OpenGL or OpenGL ES headers
+ - Removed `_GLFW_USE_OPENGL`, `_GLFW_USE_GLESV1` and `_GLFW_USE_GLESV2`
+   configuration macros
  - [Win32] Added support for Windows 8.1 per-monitor DPI
+ - [Win32] Bugfix: Window creation would segfault if video mode setting required
+                   the system to be restarted
+ - [Win32] Bugfix: MinGW import library lacked the `lib` prefix
+ - [Win32] Bugfix: Monitor connection and disconnection events were not reported
+                   when no windows existed
  - [Cocoa] Removed support for OS X 10.6
+ - [Cocoa] Bugfix: Full screen windows on secondary monitors were mispositioned
  - [X11] Bugfix: Monitor connection and disconnection events were not reported
  - [X11] Bugfix: Decoding of UTF-8 text from XIM could continue past the end
  - [POSIX] Bugfix: An unrelated TLS key could be deleted by `glfwTerminate`
+ - [WGL] Changed extension loading to only be performed once
  - [WGL] Removed dependency on external WGL headers
  - [GLX] Replaced legacy renderable with `GLXWindow`
  - [GLX] Removed dependency on external GLX headers
  - [GLX] Bugfix: NetBSD does not provide `libGL.so.1`
+ - [EGL] Added `_GLFW_USE_EGLPLATFORM_H` configuration macro for controlling
+         whether to use an existing `EGL/eglplatform.h` header
  - [EGL] Removed dependency on external EGL headers
 
 

@@ -72,17 +72,7 @@ endif()
 #--------------------------------------------------------------------
 # Set compiler specific flags
 #--------------------------------------------------------------------
-if (UNIX)
-    add_definitions(-Wall)
-
-    if (BUILD_SHARED_LIBS)
-        add_definitions(-fvisibility=hidden)
-    endif()
-endif()
-
 if (MSVC)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-
     if (NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
         foreach (flag CMAKE_C_FLAGS
                       CMAKE_C_FLAGS_DEBUG
@@ -125,12 +115,6 @@ if (MINGW)
     if (_GLFW_HAS_64ASLR)
         set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--high-entropy-va ${CMAKE_SHARED_LINKER_FLAGS}")
     endif()
-
-    # HACK: When building on MinGW, WINVER and UNICODE need to be defined before
-    # the inclusion of stddef.h (by glfw3.h), which is itself included before
-    # win32_platform.h.  We define them here until a saner solution can be found
-    # NOTE: MinGW-w64 and Visual C++ do /not/ need this hack.
-    add_definitions(-DUNICODE -DWINVER=0x0501)
 endif()
 
 #--------------------------------------------------------------------
@@ -370,16 +354,6 @@ endforeach()
 foreach(arg ${glfw_PKG_LIBS})
     set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} ${arg}")
 endforeach()
-
-#--------------------------------------------------------------------
-# Choose library output name
-#--------------------------------------------------------------------
-if (BUILD_SHARED_LIBS AND UNIX)
-    # On Unix-like systems, shared libraries can use the soname system.
-    set(GLFW_LIB_NAME glfw)
-else()
-    set(GLFW_LIB_NAME glfw3)
-endif()
 
 #--------------------------------------------------------------------
 # Create generated files

@@ -140,13 +140,12 @@ typedef HRESULT (WINAPI * DWMFLUSH_T)(VOID);
 typedef HRESULT (WINAPI * SETPROCESSDPIAWARENESS_T)(PROCESS_DPI_AWARENESS);
 #define _glfw_SetProcessDPIAwareness _glfw.win32.shcore.SetProcessDPIAwareness
 
-#include "win32_tls.h"
-#include "winmm_joystick.h"
+#include "win32_joystick.h"
 
 #if defined(_GLFW_WGL)
  #include "wgl_context.h"
 #elif defined(_GLFW_EGL)
- #define _GLFW_EGL_NATIVE_WINDOW  window->win32.handle
+ #define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->win32.handle)
  #define _GLFW_EGL_NATIVE_DISPLAY EGL_DEFAULT_DISPLAY
  #include "egl_context.h"
 #else
@@ -158,6 +157,7 @@ typedef HRESULT (WINAPI * SETPROCESSDPIAWARENESS_T)(PROCESS_DPI_AWARENESS);
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWin32  win32
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 win32
 #define _GLFW_PLATFORM_LIBRARY_TIME_STATE   _GLFWtimeWin32    win32_time
+#define _GLFW_PLATFORM_LIBRARY_TLS_STATE    _GLFWtlsWin32     win32_tls
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWin32 win32
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorWin32  win32
 
@@ -259,17 +259,28 @@ typedef struct _GLFWtimeWin32
 } _GLFWtimeWin32;
 
 
-GLFWbool _glfwRegisterWindowClass(void);
-void _glfwUnregisterWindowClass(void);
+// Win32-specific global TLS data
+//
+typedef struct _GLFWtlsWin32
+{
+    GLFWbool        allocated;
+    DWORD           context;
 
-BOOL _glfwIsCompositionEnabled(void);
+} _GLFWtlsWin32;
 
-WCHAR* _glfwCreateWideStringFromUTF8(const char* source);
-char* _glfwCreateUTF8FromWideString(const WCHAR* source);
 
-void _glfwInitTimer(void);
+GLFWbool _glfwRegisterWindowClassWin32(void);
+void _glfwUnregisterWindowClassWin32(void);
 
-GLFWbool _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
-void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
+GLFWbool _glfwInitThreadLocalStorageWin32(void);
+void _glfwTerminateThreadLocalStorageWin32(void);
+
+WCHAR* _glfwCreateWideStringFromUTF8Win32(const char* source);
+char* _glfwCreateUTF8FromWideStringWin32(const WCHAR* source);
+
+void _glfwInitTimerWin32(void);
+
+GLFWbool _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desired);
+void _glfwRestoreVideoModeWin32(_GLFWmonitor* monitor);
 
 #endif // _glfw3_win32_platform_h_

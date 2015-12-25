@@ -39,21 +39,21 @@ static void loadExtensions(void)
     // Functions for WGL_EXT_extension_string
     // NOTE: These are needed by _glfwPlatformExtensionSupported
     _glfw.wgl.GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)
-        _glfw_wglGetProcAddress("wglGetExtensionsStringEXT");
+        wglGetProcAddress("wglGetExtensionsStringEXT");
     _glfw.wgl.GetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)
-        _glfw_wglGetProcAddress("wglGetExtensionsStringARB");
+        wglGetProcAddress("wglGetExtensionsStringARB");
 
     // Functions for WGL_ARB_create_context
     _glfw.wgl.CreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)
-        _glfw_wglGetProcAddress("wglCreateContextAttribsARB");
+        wglGetProcAddress("wglCreateContextAttribsARB");
 
     // Functions for WGL_EXT_swap_control
     _glfw.wgl.SwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)
-        _glfw_wglGetProcAddress("wglSwapIntervalEXT");
+        wglGetProcAddress("wglSwapIntervalEXT");
 
     // Functions for WGL_ARB_pixel_format
     _glfw.wgl.GetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)
-        _glfw_wglGetProcAddress("wglGetPixelFormatAttribivARB");
+        wglGetProcAddress("wglGetPixelFormatAttribivARB");
 
     // This needs to include every extension used below except for
     // WGL_ARB_extensions_string and WGL_EXT_extensions_string
@@ -265,6 +265,21 @@ static GLFWbool choosePixelFormat(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
+// Returns whether desktop compositing is enabled
+//
+static GLFWbool isCompositionEnabled(void)
+{
+    BOOL enabled;
+
+    if (!_glfw_DwmIsCompositionEnabled)
+        return FALSE;
+
+    if (_glfw_DwmIsCompositionEnabled(&enabled) != S_OK)
+        return FALSE;
+
+    return enabled;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -272,11 +287,8 @@ static GLFWbool choosePixelFormat(_GLFWwindow* window,
 
 // Initialize WGL
 //
-int _glfwInitContextAPI(void)
+GLFWbool _glfwInitWGL(void)
 {
-    if (!_glfwCreateContextTLS())
-        return GLFW_FALSE;
-
     _glfw.wgl.instance = LoadLibraryA("opengl32.dll");
     if (!_glfw.wgl.instance)
     {
@@ -300,12 +312,10 @@ int _glfwInitContextAPI(void)
 
 // Terminate WGL
 //
-void _glfwTerminateContextAPI(void)
+void _glfwTerminateWGL(void)
 {
     if (_glfw.wgl.instance)
         FreeLibrary(_glfw.wgl.instance);
-
-    _glfwDestroyContextTLS();
 }
 
 #define setWGLattrib(attribName, attribValue) \
@@ -317,14 +327,17 @@ void _glfwTerminateContextAPI(void)
 
 // Create the OpenGL or OpenGL ES context
 //
-int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWctxconfig* ctxconfig,
-                       const _GLFWfbconfig* fbconfig)
+GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
+                               const _GLFWctxconfig* ctxconfig,
+                               const _GLFWfbconfig* fbconfig)
 {
     int attribs[40];
     int pixelFormat = 0;
     PIXELFORMATDESCRIPTOR pfd;
     HGLRC share = NULL;
+
+    if (ctxconfig->api == GLFW_NO_API)
+        return GLFW_TRUE;
 
     if (ctxconfig->share)
         share = ctxconfig->share->context.wgl.handle;
@@ -442,8 +455,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     }
     else
     {
-        window->context.wgl.handle =
-            _glfw_wglCreateContext(window->context.wgl.dc);
+        window->context.wgl.handle = wglCreateContext(window->context.wgl.dc);
         if (!window->context.wgl.handle)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
@@ -453,7 +465,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
         if (share)
         {
-            if (!_glfw_wglShareLists(share, window->context.wgl.handle))
+            if (!wglShareLists(share, window->context.wgl.handle))
             {
                 _glfwInputError(GLFW_PLATFORM_ERROR,
                                 "WGL: Failed to enable sharing with specified OpenGL context");
@@ -469,20 +481,20 @@ int _glfwCreateContext(_GLFWwindow* window,
 
 // Destroy the OpenGL context
 //
-void _glfwDestroyContext(_GLFWwindow* window)
+void _glfwDestroyContextWGL(_GLFWwindow* window)
 {
     if (window->context.wgl.handle)
     {
-        _glfw_wglDeleteContext(window->context.wgl.handle);
+        wglDeleteContext(window->context.wgl.handle);
         window->context.wgl.handle = NULL;
     }
 }
 
 // Analyzes the specified context for possible recreation
 //
-int _glfwAnalyzeContext(_GLFWwindow* window,
-                        const _GLFWctxconfig* ctxconfig,
-                        const _GLFWfbconfig* fbconfig)
+int _glfwAnalyzeContextWGL(_GLFWwindow* window,
+                           const _GLFWctxconfig* ctxconfig,
+                           const _GLFWfbconfig* fbconfig)
 {
     GLFWbool required = GLFW_FALSE;
 
@@ -582,20 +594,17 @@ int _glfwAnalyzeContext(_GLFWwindow* window,
 void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 {
     if (window)
-    {
-        _glfw_wglMakeCurrent(window->context.wgl.dc,
-                             window->context.wgl.handle);
-    }
+        wglMakeCurrent(window->context.wgl.dc, window->context.wgl.handle);
     else
-        _glfw_wglMakeCurrent(NULL, NULL);
+        wglMakeCurrent(NULL, NULL);
 
-    _glfwSetContextTLS(window);
+    _glfwPlatformSetCurrentContext(window);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 {
     // HACK: Use DwmFlush when desktop composition is enabled
-    if (_glfwIsCompositionEnabled() && !window->monitor)
+    if (isCompositionEnabled() && !window->monitor)
     {
         int count = abs(window->context.wgl.interval);
         while (count--)
@@ -613,7 +622,7 @@ void _glfwPlatformSwapInterval(int interval)
 
     // HACK: Disable WGL swap interval when desktop composition is enabled to
     //       avoid interfering with DWM vsync
-    if (_glfwIsCompositionEnabled() && !window->monitor)
+    if (isCompositionEnabled() && !window->monitor)
         interval = 0;
 
     if (_glfw.wgl.EXT_swap_control)
@@ -651,7 +660,7 @@ int _glfwPlatformExtensionSupported(const char* extension)
 
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 {
-    const GLFWglproc proc = (GLFWglproc) _glfw_wglGetProcAddress(procname);
+    const GLFWglproc proc = (GLFWglproc) wglGetProcAddress(procname);
     if (proc)
         return proc;
 

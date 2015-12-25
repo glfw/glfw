@@ -236,7 +236,7 @@ static GLFWbool enterFullscreenMode(_GLFWwindow* window)
     GLFWbool status;
     int xpos, ypos;
 
-    status = _glfwSetVideoMode(window->monitor, &window->videoMode);
+    status = _glfwSetVideoModeWin32(window->monitor, &window->videoMode);
 
     _glfwPlatformGetVideoMode(window->monitor, &mode);
     _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
@@ -251,7 +251,7 @@ static GLFWbool enterFullscreenMode(_GLFWwindow* window)
 //
 static void leaveFullscreenMode(_GLFWwindow* window)
 {
-    _glfwRestoreVideoMode(window->monitor);
+    _glfwRestoreVideoModeWin32(window->monitor);
 }
 
 // Window callback function (handles window messages)
@@ -635,7 +635,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 WCHAR* buffer = calloc(length + 1, sizeof(WCHAR));
 
                 DragQueryFileW(drop, i, buffer, length + 1);
-                paths[i] = _glfwCreateUTF8FromWideString(buffer);
+                paths[i] = _glfwCreateUTF8FromWideStringWin32(buffer);
 
                 free(buffer);
             }
@@ -683,7 +683,7 @@ static int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
                           &fullWidth, &fullHeight);
     }
 
-    wideTitle = _glfwCreateWideStringFromUTF8(wndconfig->title);
+    wideTitle = _glfwCreateWideStringFromUTF8Win32(wndconfig->title);
     if (!wideTitle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -758,7 +758,7 @@ static void destroyWindow(_GLFWwindow* window)
 
 // Registers the GLFW window class
 //
-GLFWbool _glfwRegisterWindowClass(void)
+GLFWbool _glfwRegisterWindowClassWin32(void)
 {
     WNDCLASSEXW wc;
 
@@ -795,7 +795,7 @@ GLFWbool _glfwRegisterWindowClass(void)
 
 // Unregisters the GLFW window class
 //
-void _glfwUnregisterWindowClass(void)
+void _glfwUnregisterWindowClassWin32(void)
 {
     UnregisterClassW(_GLFW_WNDCLASSNAME, GetModuleHandleW(NULL));
 }
@@ -817,11 +817,11 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (ctxconfig->api != GLFW_NO_API)
     {
-        if (!_glfwCreateContext(window, ctxconfig, fbconfig))
+#if defined(_GLFW_WGL)
+        if (!_glfwCreateContextWGL(window, ctxconfig, fbconfig))
             return GLFW_FALSE;
 
-#if defined(_GLFW_WGL)
-        status = _glfwAnalyzeContext(window, ctxconfig, fbconfig);
+        status = _glfwAnalyzeContextWGL(window, ctxconfig, fbconfig);
 
         if (status == _GLFW_RECREATION_IMPOSSIBLE)
             return GLFW_FALSE;
@@ -851,16 +851,19 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
             // Next destroy the Win32 window and WGL context (without resetting
             // or destroying the GLFW window object)
-            _glfwDestroyContext(window);
+            _glfwDestroyContextWGL(window);
             destroyWindow(window);
 
             // ...and then create them again, this time with better APIs
             if (!createWindow(window, wndconfig))
                 return GLFW_FALSE;
-            if (!_glfwCreateContext(window, ctxconfig, fbconfig))
+            if (!_glfwCreateContextWGL(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }
-#endif // _GLFW_WGL
+#elif defined(_GLFW_EGL)
+        if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
+            return GLFW_FALSE;
+#endif
     }
 
     if (window->monitor)
@@ -879,14 +882,20 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         leaveFullscreenMode(window);
 
     if (window->context.api != GLFW_NO_API)
-        _glfwDestroyContext(window);
+    {
+#if defined(_GLFW_WGL)
+        _glfwDestroyContextWGL(window);
+#elif defined(_GLFW_EGL)
+        _glfwDestroyContextEGL(window);
+#endif
+    }
 
     destroyWindow(window);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
-    WCHAR* wideTitle = _glfwCreateWideStringFromUTF8(title);
+    WCHAR* wideTitle = _glfwCreateWideStringFromUTF8Win32(title);
     if (!wideTitle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -1325,7 +1334,7 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
     HANDLE stringHandle;
     size_t wideSize;
 
-    wideString = _glfwCreateWideStringFromUTF8(string);
+    wideString = _glfwCreateWideStringFromUTF8Win32(string);
     if (!wideString)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -1386,7 +1395,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 
     free(_glfw.win32.clipboardString);
     _glfw.win32.clipboardString =
-        _glfwCreateUTF8FromWideString(GlobalLock(stringHandle));
+        _glfwCreateUTF8FromWideStringWin32(GlobalLock(stringHandle));
 
     GlobalUnlock(stringHandle);
     CloseClipboard();

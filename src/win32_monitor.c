@@ -47,7 +47,7 @@
 
 // Change the current video mode
 //
-GLFWbool _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
+GLFWbool _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 {
     GLFWvidmode current;
     const GLFWvidmode* best;
@@ -86,7 +86,7 @@ GLFWbool _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 
 // Restore the previously saved (original) video mode
 //
-void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
+void _glfwRestoreVideoModeWin32(_GLFWmonitor* monitor)
 {
     if (monitor->win32.modeChanged)
     {
@@ -141,7 +141,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             if (!EnumDisplayDevicesW(adapter.DeviceName, displayIndex, &display, 0))
                 break;
 
-            name = _glfwCreateUTF8FromWideString(display.DeviceString);
+            name = _glfwCreateUTF8FromWideStringWin32(display.DeviceString);
             if (!name)
             {
                 _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -266,16 +266,20 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
 
         if (*count == size)
         {
-            if (*count)
-                size *= 2;
-            else
-                size = 128;
-
+            size += 128;
             result = (GLFWvidmode*) realloc(result, size * sizeof(GLFWvidmode));
         }
 
         (*count)++;
         result[*count - 1] = mode;
+    }
+
+    if (!*count)
+    {
+        // HACK: Report the current mode if no valid modes were found
+        result = calloc(1, sizeof(GLFWvidmode));
+        _glfwPlatformGetVideoMode(monitor, result);
+        *count = 1;
     }
 
     return result;

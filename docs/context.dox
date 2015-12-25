@@ -87,7 +87,7 @@ disabled with a [compile-time option](@ref compile_options_osx).
 
 You can disable context creation by setting the
 [GLFW_CLIENT_API](@ref window_hints_ctx) hint to `GLFW_NO_API`.  Windows without
-contexts may not be passed to @ref glfwMakeContextCurrent or @ref
+contexts must not be passed to @ref glfwMakeContextCurrent or @ref
 glfwSwapBuffers.
 
 

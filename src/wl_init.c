@@ -395,7 +395,7 @@ static void registryHandleGlobal(void* data,
     }
     else if (strcmp(interface, "wl_output") == 0)
     {
-        _glfwAddOutput(name, version);
+        _glfwAddOutputWayland(name, version);
     }
     else if (strcmp(interface, "wl_seat") == 0)
     {
@@ -581,11 +581,16 @@ int _glfwPlatformInit(void)
     // Sync so we got all initial output events
     wl_display_roundtrip(_glfw.wl.display);
 
-    if (!_glfwInitContextAPI())
+    if (!_glfwInitThreadLocalStoragePOSIX())
         return GLFW_FALSE;
 
-    _glfwInitTimer();
-    _glfwInitJoysticks();
+    if (!_glfwInitEGL())
+        return GLFW_FALSE;
+
+    if (!_glfwInitJoysticksLinux())
+        return GLFW_FALSE;
+
+    _glfwInitTimerPOSIX();
 
     if (_glfw.wl.pointer && _glfw.wl.shm)
     {
@@ -605,8 +610,9 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
-    _glfwTerminateContextAPI();
-    _glfwTerminateJoysticks();
+    _glfwTerminateEGL();
+    _glfwTerminateJoysticksLinux();
+    _glfwTerminateThreadLocalStoragePOSIX();
 
     if (_glfw.wl.cursorTheme)
         wl_cursor_theme_destroy(_glfw.wl.cursorTheme);

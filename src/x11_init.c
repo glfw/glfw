@@ -387,24 +387,24 @@ static void detectEWMH(void)
         return;
 
     // Then we look for the _NET_SUPPORTING_WM_CHECK property of the root window
-    if (_glfwGetWindowProperty(_glfw.x11.root,
-                               supportingWmCheck,
-                               XA_WINDOW,
-                               (unsigned char**) &windowFromRoot) != 1)
+    if (_glfwGetWindowPropertyX11(_glfw.x11.root,
+                                  supportingWmCheck,
+                                  XA_WINDOW,
+                                  (unsigned char**) &windowFromRoot) != 1)
     {
         if (windowFromRoot)
             XFree(windowFromRoot);
         return;
     }
 
-    _glfwGrabXErrorHandler();
+    _glfwGrabErrorHandlerX11();
 
     // It should be the ID of a child window (of the root)
     // Then we look for the same property on the child window
-    if (_glfwGetWindowProperty(*windowFromRoot,
-                               supportingWmCheck,
-                               XA_WINDOW,
-                               (unsigned char**) &windowFromChild) != 1)
+    if (_glfwGetWindowPropertyX11(*windowFromRoot,
+                                  supportingWmCheck,
+                                  XA_WINDOW,
+                                  (unsigned char**) &windowFromChild) != 1)
     {
         XFree(windowFromRoot);
         if (windowFromChild)
@@ -412,7 +412,7 @@ static void detectEWMH(void)
         return;
     }
 
-    _glfwReleaseXErrorHandler();
+    _glfwReleaseErrorHandlerX11();
 
     // It should be the ID of that same child window
     if (*windowFromRoot != *windowFromChild)
@@ -432,10 +432,10 @@ static void detectEWMH(void)
 
     // Now we need to check the _NET_SUPPORTED property of the root window
     // It should be a list of supported WM protocol and state atoms
-    atomCount = _glfwGetWindowProperty(_glfw.x11.root,
-                                       wmSupported,
-                                       XA_ATOM,
-                                       (unsigned char**) &supportedAtoms);
+    atomCount = _glfwGetWindowPropertyX11(_glfw.x11.root,
+                                          wmSupported,
+                                          XA_ATOM,
+                                          (unsigned char**) &supportedAtoms);
 
     // See which of the atoms we support that are supported by the WM
     _glfw.x11.NET_WM_STATE =
@@ -635,7 +635,7 @@ static Cursor createNULLCursor(void)
 
     memset(pixels, 0, sizeof(pixels));
 
-    return _glfwCreateCursor(&image, 0, 0);
+    return _glfwCreateCursorX11(&image, 0, 0);
 }
 
 // X error handler
@@ -653,7 +653,7 @@ static int errorHandler(Display *display, XErrorEvent* event)
 
 // Sets the X error handler callback
 //
-void _glfwGrabXErrorHandler(void)
+void _glfwGrabErrorHandlerX11(void)
 {
     _glfw.x11.errorCode = Success;
     XSetErrorHandler(errorHandler);
@@ -661,7 +661,7 @@ void _glfwGrabXErrorHandler(void)
 
 // Clears the X error handler callback
 //
-void _glfwReleaseXErrorHandler(void)
+void _glfwReleaseErrorHandlerX11(void)
 {
     // Synchronize to make sure all commands are processed
     XSync(_glfw.x11.display, False);
@@ -670,7 +670,7 @@ void _glfwReleaseXErrorHandler(void)
 
 // Reports the specified error, appending information about the last X error
 //
-void _glfwInputXError(int error, const char* message)
+void _glfwInputErrorX11(int error, const char* message)
 {
     char buffer[8192];
     XGetErrorText(_glfw.x11.display, _glfw.x11.errorCode,
@@ -681,7 +681,7 @@ void _glfwInputXError(int error, const char* message)
 
 // Creates a native cursor object from the specified image and hotspot
 //
-Cursor _glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
+Cursor _glfwCreateCursorX11(const GLFWimage* image, int xhot, int yhot)
 {
     int i;
     Cursor cursor;
@@ -768,13 +768,21 @@ int _glfwPlatformInit(void)
         }
     }
 
-    if (!_glfwInitContextAPI())
+    if (!_glfwInitThreadLocalStoragePOSIX())
         return GLFW_FALSE;
 
-    if (!_glfwInitJoysticks())
+#if defined(_GLFW_GLX)
+    if (!_glfwInitGLX())
+        return GLFW_FALSE;
+#elif defined(_GLFW_EGL)
+    if (!_glfwInitEGL())
+        return GLFW_FALSE;
+#endif
+
+    if (!_glfwInitJoysticksLinux())
         return GLFW_FALSE;
 
-    _glfwInitTimer();
+    _glfwInitTimerPOSIX();
 
     return GLFW_TRUE;
 }
@@ -795,6 +803,10 @@ void _glfwPlatformTerminate(void)
         _glfw.x11.im = NULL;
     }
 
+#if defined(_GLFW_EGL)
+    _glfwTerminateEGL();
+#endif
+
     if (_glfw.x11.display)
     {
         XCloseDisplay(_glfw.x11.display);
@@ -803,8 +815,12 @@ void _glfwPlatformTerminate(void)
 
     // NOTE: This needs to be done after XCloseDisplay, as libGL registers
     //       cleanup callbacks that get called by it
-    _glfwTerminateContextAPI();
-    _glfwTerminateJoysticks();
+#if defined(_GLFW_GLX)
+    _glfwTerminateGLX();
+#endif
+
+    _glfwTerminateJoysticksLinux();
+    _glfwTerminateThreadLocalStoragePOSIX();
 }
 
 const char* _glfwPlatformGetVersionString(void)

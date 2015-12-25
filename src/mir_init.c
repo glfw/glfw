@@ -179,17 +179,22 @@ int _glfwPlatformInit(void)
 
     createKeyTables();
 
-    if (!_glfwInitContextAPI())
+    if (!_glfwInitThreadLocalStoragePOSIX())
         return GLFW_FALSE;
+
+    if (!_glfwInitEGL())
+        return GLFW_FALSE;
+
+    if (!_glfwInitJoysticksLinux())
+        return GLFW_FALSE;
+
+    _glfwInitTimerPOSIX();
 
     // Need the default conf for when we set a NULL cursor
     _glfw.mir.default_conf = mir_cursor_configuration_from_name(mir_arrow_cursor_name);
 
-    _glfwInitTimer();
-    _glfwInitJoysticks();
-
     _glfw.mir.event_queue = calloc(1, sizeof(EventQueue));
-    _glfwInitEventQueue(_glfw.mir.event_queue);
+    _glfwInitEventQueueMir(_glfw.mir.event_queue);
 
     error = pthread_mutex_init(&_glfw.mir.event_mutex, NULL);
     if (error)
@@ -205,10 +210,11 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
-    _glfwTerminateContextAPI();
-    _glfwTerminateJoysticks();
+    _glfwTerminateEGL();
+    _glfwTerminateJoysticksLinux();
+    _glfwTerminateThreadLocalStoragePOSIX();
 
-    _glfwDeleteEventQueue(_glfw.mir.event_queue);
+    _glfwDeleteEventQueueMir(_glfw.mir.event_queue);
 
     pthread_mutex_destroy(&_glfw.mir.event_mutex);
 

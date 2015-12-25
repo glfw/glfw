@@ -184,7 +184,7 @@ releases.
 @subsection reentrancy Reentrancy
 
 GLFW event processing and object creation and destruction are not reentrant.
-This means that the following functions may not be called from any callback
+This means that the following functions must not be called from any callback
 function:
 
  - @ref glfwCreateWindow
@@ -202,7 +202,7 @@ functions not on this list will not be made non-reentrant.
 
 @subsection thread_safety Thread safety
 
-Most GLFW functions may only be called from the main thread, but some may be
+Most GLFW functions must only be called from the main thread, but some may be
 called from any thread.  However, no GLFW function may be called from any thread
 but the main thread until GLFW has been successfully initialized, including
 functions that may called before initialization.

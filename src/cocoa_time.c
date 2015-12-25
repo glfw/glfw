@@ -43,7 +43,7 @@ static uint64_t getRawTime(void)
 
 // Initialise timer
 //
-void _glfwInitTimer(void)
+void _glfwInitTimerNS(void)
 {
     mach_timebase_info_data_t info;
     mach_timebase_info(&info);

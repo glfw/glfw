@@ -41,7 +41,7 @@
     defined(GLFW_INCLUDE_GLEXT)     || \
     defined(GLFW_INCLUDE_GLU)       || \
     defined(GLFW_DLL)
- #error "You may not define any header option macros when compiling GLFW"
+ #error "You must not define any header option macros when compiling GLFW"
 #endif
 
 #define GLFW_INCLUDE_NONE
@@ -124,7 +124,7 @@ typedef int GLFWbool;
  *  @brief Various utility functions for internal use.
  *
  *  These functions are shared code and may be used by any part of GLFW
- *  Each platform may add its own utility functions, but those may only be
+ *  Each platform may add its own utility functions, but those must only be
  *  called by the platform-specific code
  */
 
@@ -231,10 +231,10 @@ struct _GLFWfbconfig
     int         accumBlueBits;
     int         accumAlphaBits;
     int         auxBuffers;
-    int         stereo;
+    GLFWbool    stereo;
     int         samples;
-    int         sRGB;
-    int         doublebuffer;
+    GLFWbool    sRGB;
+    GLFWbool    doublebuffer;
 
     // This is defined in the context API's context.h
     _GLFW_PLATFORM_FBCONFIG;
@@ -637,6 +637,10 @@ void _glfwPlatformPostEmptyEvent(void);
  */
 void _glfwPlatformMakeContextCurrent(_GLFWwindow* window);
 
+/*! @ingroup platform
+ */
+void _glfwPlatformSetCurrentContext(_GLFWwindow* context);
+
 /*! @copydoc glfwGetCurrentContext
  *  @ingroup platform
  */
@@ -914,6 +918,6 @@ void _glfwFreeMonitors(_GLFWmonitor** monitors, int count);
 
 /*! @ingroup utility
  */
-int _glfwIsPrintable(int key);
+GLFWbool _glfwIsPrintable(int key);
 
 #endif // _glfw3_internal_h_

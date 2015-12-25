@@ -32,7 +32,7 @@
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWbool _glfwCreateContextTLS(void)
+GLFWbool _glfwInitThreadLocalStorageWin32(void)
 {
     _glfw.win32_tls.context = TlsAlloc();
     if (_glfw.win32_tls.context == TLS_OUT_OF_INDEXES)
@@ -46,21 +46,21 @@ GLFWbool _glfwCreateContextTLS(void)
     return GLFW_TRUE;
 }
 
-void _glfwDestroyContextTLS(void)
+void _glfwTerminateThreadLocalStorageWin32(void)
 {
     if (_glfw.win32_tls.allocated)
         TlsFree(_glfw.win32_tls.context);
-}
-
-void _glfwSetContextTLS(_GLFWwindow* context)
-{
-    TlsSetValue(_glfw.win32_tls.context, context);
 }
 
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
+
+void _glfwPlatformSetCurrentContext(_GLFWwindow* context)
+{
+    TlsSetValue(_glfw.win32_tls.context, context);
+}
 
 _GLFWwindow* _glfwPlatformGetCurrentContext(void)
 {

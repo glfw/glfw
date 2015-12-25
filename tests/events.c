@@ -442,7 +442,7 @@ static void monitor_callback(GLFWmonitor* monitor, int event)
                x, y,
                widthMM, heightMM);
     }
-    else
+    else if (event == GLFW_DISCONNECTED)
     {
         printf("%08x at %0.3f: Monitor %s was disconnected\n",
                counter++,

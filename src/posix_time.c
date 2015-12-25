@@ -59,7 +59,7 @@ static uint64_t getRawTime(void)
 
 // Initialise timer
 //
-void _glfwInitTimer(void)
+void _glfwInitTimerPOSIX(void)
 {
 #if defined(CLOCK_MONOTONIC)
     struct timespec ts;

@@ -41,8 +41,8 @@
  #error "The Wayland backend depends on EGL platform support"
 #endif
 
-#define _GLFW_EGL_NATIVE_WINDOW         window->wl.native
-#define _GLFW_EGL_NATIVE_DISPLAY        _glfw.wl.display
+#define _GLFW_EGL_NATIVE_WINDOW         ((EGLNativeWindowType) window->wl.native)
+#define _GLFW_EGL_NATIVE_DISPLAY        ((EGLNativeDisplayType) _glfw.wl.display)
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWayland  wl
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWayland wl
@@ -138,6 +138,6 @@ typedef struct _GLFWcursorWayland
 } _GLFWcursorWayland;
 
 
-void _glfwAddOutput(uint32_t name, uint32_t version);
+void _glfwAddOutputWayland(uint32_t name, uint32_t version);
 
 #endif // _glfw3_wayland_platform_h_

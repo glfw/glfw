@@ -83,10 +83,10 @@ static int getWindowState(_GLFWwindow* window)
         Window icon;
     } *state = NULL;
 
-    if (_glfwGetWindowProperty(window->x11.handle,
-                               _glfw.x11.WM_STATE,
-                               _glfw.x11.WM_STATE,
-                               (unsigned char**) &state) >= 2)
+    if (_glfwGetWindowPropertyX11(window->x11.handle,
+                                  _glfw.x11.WM_STATE,
+                                  _glfw.x11.WM_STATE,
+                                  (unsigned char**) &state) >= 2)
     {
         result = state->state;
     }
@@ -272,7 +272,7 @@ static GLFWbool createWindow(_GLFWwindow* window,
                         ExposureMask | FocusChangeMask | VisibilityChangeMask |
                         EnterWindowMask | LeaveWindowMask | PropertyChangeMask;
 
-        _glfwGrabXErrorHandler();
+        _glfwGrabErrorHandlerX11();
 
         window->x11.handle = XCreateWindow(_glfw.x11.display,
                                            _glfw.x11.root,
@@ -285,12 +285,12 @@ static GLFWbool createWindow(_GLFWwindow* window,
                                            wamask,
                                            &wa);
 
-        _glfwReleaseXErrorHandler();
+        _glfwReleaseErrorHandlerX11();
 
         if (!window->x11.handle)
         {
-            _glfwInputXError(GLFW_PLATFORM_ERROR,
-                             "X11: Failed to create window");
+            _glfwInputErrorX11(GLFW_PLATFORM_ERROR,
+                               "X11: Failed to create window");
             return GLFW_FALSE;
         }
 
@@ -552,10 +552,10 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
         Atom* targets;
         unsigned long i, count;
 
-        count = _glfwGetWindowProperty(request->requestor,
-                                       request->property,
-                                       _glfw.x11.ATOM_PAIR,
-                                       (unsigned char**) &targets);
+        count = _glfwGetWindowPropertyX11(request->requestor,
+                                          request->property,
+                                          _glfw.x11.ATOM_PAIR,
+                                          (unsigned char**) &targets);
 
         for (i = 0;  i < count;  i += 2)
         {
@@ -728,7 +728,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
 
     _glfw.x11.saver.count++;
 
-    _glfwSetVideoMode(window->monitor, &window->videoMode);
+    _glfwSetVideoModeX11(window->monitor, &window->videoMode);
 
     if (_glfw.x11.NET_WM_BYPASS_COMPOSITOR)
     {
@@ -793,7 +793,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
 //
 static void leaveFullscreenMode(_GLFWwindow* window)
 {
-    _glfwRestoreVideoMode(window->monitor);
+    _glfwRestoreVideoModeX11(window->monitor);
 
     _glfw.x11.saver.count--;
 
@@ -1243,10 +1243,10 @@ static void processEvent(XEvent *event)
                 // The converted data from the drag operation has arrived
                 char* data;
                 const int result =
-                    _glfwGetWindowProperty(event->xselection.requestor,
-                                           event->xselection.property,
-                                           event->xselection.target,
-                                           (unsigned char**) &data);
+                    _glfwGetWindowPropertyX11(event->xselection.requestor,
+                                              event->xselection.property,
+                                              event->xselection.target,
+                                              (unsigned char**) &data);
 
                 if (result)
                 {
@@ -1429,10 +1429,10 @@ static void processEvent(XEvent *event)
 // Retrieve a single window property of the specified type
 // Inspired by fghGetWindowProperty from freeglut
 //
-unsigned long _glfwGetWindowProperty(Window window,
-                                     Atom property,
-                                     Atom type,
-                                     unsigned char** value)
+unsigned long _glfwGetWindowPropertyX11(Window window,
+                                        Atom property,
+                                        Atom type,
+                                        unsigned char** value)
 {
     Atom actualType;
     int actualFormat;
@@ -1470,16 +1470,26 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     Visual* visual;
     int depth;
 
-    if (!_glfwChooseVisual(ctxconfig, fbconfig, &visual, &depth))
+#if defined(_GLFW_GLX)
+    if (!_glfwChooseVisualGLX(ctxconfig, fbconfig, &visual, &depth))
         return GLFW_FALSE;
+#elif defined(_GLFW_EGL)
+    if (!_glfwChooseVisualEGL(ctxconfig, fbconfig, &visual, &depth))
+        return GLFW_FALSE;
+#endif
 
     if (!createWindow(window, wndconfig, visual, depth))
         return GLFW_FALSE;
 
     if (ctxconfig->api != GLFW_NO_API)
     {
-        if (!_glfwCreateContext(window, ctxconfig, fbconfig))
+#if defined(_GLFW_GLX)
+        if (!_glfwCreateContextGLX(window, ctxconfig, fbconfig))
             return GLFW_FALSE;
+#elif defined(_GLFW_EGL)
+        if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
+            return GLFW_FALSE;
+#endif
     }
 
     if (wndconfig->monitor)
@@ -1503,7 +1513,13 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     }
 
     if (window->context.api != GLFW_NO_API)
-        _glfwDestroyContext(window);
+    {
+#if defined(_GLFW_GLX)
+        _glfwDestroyContextGLX(window);
+#elif defined(_GLFW_EGL)
+        _glfwDestroyContextEGL(window);
+#endif
+    }
 
     if (window->x11.handle)
     {
@@ -1610,7 +1626,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     if (window->monitor)
     {
-        _glfwSetVideoMode(window->monitor, &window->videoMode);
+        _glfwSetVideoModeX11(window->monitor, &window->videoMode);
 
         if (!_glfw.x11.NET_WM_STATE || !_glfw.x11.NET_WM_STATE_FULLSCREEN)
         {
@@ -1751,10 +1767,10 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
         }
     }
 
-    if (_glfwGetWindowProperty(window->x11.handle,
-                               _glfw.x11.NET_FRAME_EXTENTS,
-                               XA_CARDINAL,
-                               (unsigned char**) &extents) == 4)
+    if (_glfwGetWindowPropertyX11(window->x11.handle,
+                                  _glfw.x11.NET_FRAME_EXTENTS,
+                                  XA_CARDINAL,
+                                  (unsigned char**) &extents) == 4)
     {
         if (left)
             *left = extents[0];
@@ -1971,7 +1987,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                               const GLFWimage* image,
                               int xhot, int yhot)
 {
-    cursor->x11.handle = _glfwCreateCursor(image, xhot, yhot);
+    cursor->x11.handle = _glfwCreateCursorX11(image, xhot, yhot);
     if (!cursor->x11.handle)
         return GLFW_FALSE;
 
@@ -2066,10 +2082,10 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
         if (event.xselection.property == None)
             continue;
 
-        if (_glfwGetWindowProperty(event.xselection.requestor,
-                                   event.xselection.property,
-                                   event.xselection.target,
-                                   (unsigned char**) &data))
+        if (_glfwGetWindowPropertyX11(event.xselection.requestor,
+                                      event.xselection.property,
+                                      event.xselection.target,
+                                      (unsigned char**) &data))
         {
             _glfw.x11.clipboardString = strdup(data);
         }

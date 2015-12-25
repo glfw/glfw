@@ -67,15 +67,21 @@ glfwSetMonitorCallback(monitor_callback);
 @endcode
 
 The callback function receives the handle for the monitor that has been
-connected or disconnected and a monitor action.
+connected or disconnected and the event that occurred.
 
 @code
 void monitor_callback(GLFWmonitor* monitor, int event)
 {
+    if (event == GLFW_CONNECTED)
+    {
+        // The monitor was connected
+    }
+    else if (event == GLFW_DISCONNECTED)
+    {
+        // The monitor was disconnected
+    }
 }
 @endcode
-
-The action is one of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.
 
 
 @section monitor_properties Monitor properties

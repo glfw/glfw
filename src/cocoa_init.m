@@ -232,11 +232,14 @@ int _glfwPlatformInit(void)
     if (!_glfw.ns.unicodeData)
         return GLFW_FALSE;
 
-    if (!_glfwInitContextAPI())
+    if (!_glfwInitThreadLocalStoragePOSIX())
         return GLFW_FALSE;
 
-    _glfwInitTimer();
-    _glfwInitJoysticks();
+    if (!_glfwInitNSGL())
+        return GLFW_FALSE;
+
+    _glfwInitTimerNS();
+    _glfwInitJoysticksNS();
 
     return GLFW_TRUE;
 }
@@ -270,8 +273,9 @@ void _glfwPlatformTerminate(void)
 
     free(_glfw.ns.clipboardString);
 
-    _glfwTerminateJoysticks();
-    _glfwTerminateContextAPI();
+    _glfwTerminateNSGL();
+    _glfwTerminateJoysticksNS();
+    _glfwTerminateThreadLocalStoragePOSIX();
 }
 
 const char* _glfwPlatformGetVersionString(void)

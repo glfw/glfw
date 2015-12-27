@@ -385,9 +385,10 @@ static void registryHandleGlobal(void* data,
 {
     if (strcmp(interface, "wl_compositor") == 0)
     {
+        _glfw.wl.wl_compositor_version = min(3, version);
         _glfw.wl.compositor =
             wl_registry_bind(registry, name, &wl_compositor_interface,
-                             min(3, version));
+                             _glfw.wl.wl_compositor_version);
     }
     else if (strcmp(interface, "wl_shm") == 0)
     {

@@ -91,6 +91,8 @@ typedef struct _GLFWlibraryWayland
     struct wl_pointer*          pointer;
     struct wl_keyboard*         keyboard;
 
+    int                         wl_compositor_version;
+
     struct wl_cursor_theme*     cursorTheme;
     struct wl_surface*          cursorSurface;
     uint32_t                    pointerSerial;

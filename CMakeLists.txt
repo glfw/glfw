@@ -50,6 +50,13 @@ if (BUILD_SHARED_LIBS)
     set(_GLFW_BUILD_DLL 1)
 endif()
 
+if (BUILD_SHARED_LIBS AND UNIX)
+    # On Unix-like systems, shared libraries can use the soname system.
+    set(GLFW_LIB_NAME glfw)
+else()
+    set(GLFW_LIB_NAME glfw3)
+endif()
+
 if (GLFW_USE_WAYLAND)
     set(GLFW_USE_EGL ON)
 elseif (GLFW_USE_MIR)

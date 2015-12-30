@@ -138,7 +138,7 @@ typedef HRESULT (WINAPI * DWMFLUSH_T)(VOID);
 
 // shcore.dll function pointer typedefs
 typedef HRESULT (WINAPI * SETPROCESSDPIAWARENESS_T)(PROCESS_DPI_AWARENESS);
-#define _glfw_SetProcessDPIAwareness _glfw.win32.shcore.SetProcessDPIAwareness
+#define _glfw_SetProcessDpiAwareness _glfw.win32.shcore.SetProcessDpiAwareness
 
 #include "win32_joystick.h"
 
@@ -218,7 +218,7 @@ typedef struct _GLFWlibraryWin32
     // shcore.dll
     struct {
         HINSTANCE       instance;
-        SETPROCESSDPIAWARENESS_T SetProcessDPIAwareness;
+        SETPROCESSDPIAWARENESS_T SetProcessDpiAwareness;
     } shcore;
 
 } _GLFWlibraryWin32;

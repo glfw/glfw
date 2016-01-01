@@ -25,6 +25,11 @@ option(GLFW_BUILD_DOCS "Build the GLFW documentation" ON)
 option(GLFW_INSTALL "Generate installation target" ON)
 option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
+if (CYGWIN)
+    message(STATUS "Cygwin detected, defining WIN32")
+    set(WIN32 ON)
+endif()
+
 if (WIN32)
     option(GLFW_USE_HYBRID_HPG "Force use of high-performance GPU on hybrid systems" OFF)
 endif()

@@ -30,7 +30,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-
+#include <sys/types.h>
+#include <sys/syscall.h>
 
 // Return a description of the specified EGL error
 //
@@ -564,19 +565,32 @@ GLFWbool _glfwChooseVisualEGL(const _GLFWctxconfig* ctxconfig,
 
 void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 {
+    
+    int tid = syscall(SYS_gettid);
+    EGLBoolean ok = 1;
+    
     if (window)
     {
-        eglMakeCurrent(_glfw.egl.display,
-                       window->context.egl.surface,
-                       window->context.egl.surface,
-                       window->context.egl.handle);
+        printf("----> [glfw]_glfwPlatformMakeContextCurrent With window called (TID: %d).\n", tid);
+        ok = eglMakeCurrent(_glfw.egl.display,
+                        window->context.egl.surface,
+                        window->context.egl.surface,
+                        window->context.egl.handle);
     }
     else
     {
-        eglMakeCurrent(_glfw.egl.display,
-                       EGL_NO_SURFACE,
-                       EGL_NO_SURFACE,
-                       EGL_NO_CONTEXT);
+        printf("----> [glfw]_glfwPlatformMakeContextCurrent empty (TID: %d).\n", tid);
+        ok = eglMakeCurrent(_glfw.egl.display,
+                        EGL_NO_SURFACE,
+                        EGL_NO_SURFACE,
+                        EGL_NO_CONTEXT);
+    }
+
+    if(ok == 0) {
+        printf("----> [glfw] _glfwPlatformMakeContextCurrent failed.\n");
+        int errCode = eglGetError();
+        printf("----> [glfw] Error Code: %0x\n", errCode);
+        abort();
     }
 
     _glfwPlatformSetCurrentContext(window);

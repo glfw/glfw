@@ -310,7 +310,6 @@ static void createKeyTables(void)
         }
 
         XkbFreeNames(desc, XkbKeyNamesMask, True);
-        XkbFreeClientMap(desc, 0, True);
         XkbFreeKeyboard(desc, 0, True);
     }
 

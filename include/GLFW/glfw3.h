@@ -1634,8 +1634,8 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  glfwWindowHint or @ref glfwDefaultWindowHints, or until the library is
  *  terminated.
  *
- *  @param[in] target The [window hint](@ref window_hints) to set.
- *  @param[in] hint The new value of the window hint.
+ *  @param[in] hint The [window hint](@ref window_hints) to set.
+ *  @param[in] value The new value of the window hint.
  *
  *  @par Thread Safety
  *  This function must only be called from the main thread.
@@ -1647,7 +1647,7 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *
  *  @ingroup window
  */
-GLFWAPI void glfwWindowHint(int target, int hint);
+GLFWAPI void glfwWindowHint(int hint, int value);
 
 /*! @brief Creates a window and its associated context.
  *

@@ -96,6 +96,8 @@ used by the tests and examples and are not required to build the library.
  - [GLX] Bugfix: NetBSD does not provide `libGL.so.1`
  - [EGL] Added `_GLFW_USE_EGLPLATFORM_H` configuration macro for controlling
          whether to use an existing `EGL/eglplatform.h` header
+ - [EGL] Added and documented test for if the context is current on the calling
+         thread during buffer swap
  - [EGL] Removed dependency on external EGL headers
 
 

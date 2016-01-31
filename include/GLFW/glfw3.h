@@ -3429,6 +3429,9 @@ GLFWAPI GLFWwindow* glfwGetCurrentContext(void);
  *
  *  @param[in] window The window whose buffers to swap.
  *
+ *  @remarks __EGL:__ The context of the specified window must be current on the
+ *  calling thread.
+ *
  *  @par Thread Safety
  *  This function may be called from any thread.
  *

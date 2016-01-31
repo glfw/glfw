@@ -130,7 +130,7 @@ extern "C" {
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 3.1.
  *
  *  @ingroup native
  */
@@ -145,7 +145,7 @@ GLFWAPI const char* glfwGetWin32Adapter(GLFWmonitor* monitor);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 3.1.
  *
  *  @ingroup native
  */
@@ -159,7 +159,7 @@ GLFWAPI const char* glfwGetWin32Monitor(GLFWmonitor* monitor);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup native
  */
@@ -175,7 +175,7 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* window);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup native
  */
@@ -191,7 +191,7 @@ GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* window);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 3.1.
  *
  *  @ingroup native
  */
@@ -205,7 +205,7 @@ GLFWAPI CGDirectDisplayID glfwGetCocoaMonitor(GLFWmonitor* monitor);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup native
  */
@@ -221,7 +221,7 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow* window);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup native
  */
@@ -237,7 +237,7 @@ GLFWAPI id glfwGetNSGLContext(GLFWwindow* window);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup native
  */
@@ -251,7 +251,7 @@ GLFWAPI Display* glfwGetX11Display(void);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 3.1.
  *
  *  @ingroup native
  */
@@ -265,7 +265,7 @@ GLFWAPI RRCrtc glfwGetX11Adapter(GLFWmonitor* monitor);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 3.1.
  *
  *  @ingroup native
  */
@@ -279,7 +279,7 @@ GLFWAPI RROutput glfwGetX11Monitor(GLFWmonitor* monitor);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup native
  */
@@ -295,7 +295,7 @@ GLFWAPI Window glfwGetX11Window(GLFWwindow* window);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup native
  */
@@ -309,7 +309,7 @@ GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* window);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.2.
+ *  @since Added in version 3.2.
  *
  *  @ingroup native
  */
@@ -325,7 +325,7 @@ GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* window);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.2.
+ *  @since Added in version 3.2.
  *
  *  @ingroup native
  */
@@ -339,7 +339,7 @@ GLFWAPI struct wl_display* glfwGetWaylandDisplay(void);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.2.
+ *  @since Added in version 3.2.
  *
  *  @ingroup native
  */
@@ -353,7 +353,7 @@ GLFWAPI struct wl_output* glfwGetWaylandMonitor(GLFWmonitor* monitor);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.2.
+ *  @since Added in version 3.2.
  *
  *  @ingroup native
  */
@@ -369,7 +369,7 @@ GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* window);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.2.
+ *  @since Added in version 3.2.
  *
  *  @ingroup native
  */
@@ -383,7 +383,7 @@ GLFWAPI MirConnection* glfwGetMirDisplay(void);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.2.
+ *  @since Added in version 3.2.
  *
  *  @ingroup native
  */
@@ -397,7 +397,7 @@ GLFWAPI int glfwGetMirMonitor(GLFWmonitor* monitor);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.2.
+ *  @since Added in version 3.2.
  *
  *  @ingroup native
  */
@@ -413,7 +413,7 @@ GLFWAPI MirSurface* glfwGetMirWindow(GLFWwindow* window);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup native
  */
@@ -427,7 +427,7 @@ GLFWAPI EGLDisplay glfwGetEGLDisplay(void);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup native
  */
@@ -441,7 +441,7 @@ GLFWAPI EGLContext glfwGetEGLContext(GLFWwindow* window);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup native
  */

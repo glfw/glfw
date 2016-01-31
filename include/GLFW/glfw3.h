@@ -732,8 +732,8 @@ extern "C" {
  *  @sa @ref context_glext
  *  @sa glfwGetProcAddress
  *
- *  @since Added in GLFW 3.0.
- *
+ *  @since Added in version 3.0.
+ 
  *  @ingroup context
  */
 typedef void (*GLFWglproc)(void);
@@ -744,7 +744,7 @@ typedef void (*GLFWglproc)(void);
  *
  *  @see @ref monitor_object
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup monitor
  */
@@ -756,7 +756,7 @@ typedef struct GLFWmonitor GLFWmonitor;
  *
  *  @see @ref window_object
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -768,7 +768,7 @@ typedef struct GLFWwindow GLFWwindow;
  *
  *  @see @ref cursor_object
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 3.1.
  *
  *  @ingroup cursor
  */
@@ -784,7 +784,7 @@ typedef struct GLFWcursor GLFWcursor;
  *  @sa @ref error_handling
  *  @sa glfwSetErrorCallback
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup init
  */
@@ -803,7 +803,7 @@ typedef void (* GLFWerrorfun)(int,const char*);
  *  @sa @ref window_pos
  *  @sa glfwSetWindowPosCallback
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -820,7 +820,8 @@ typedef void (* GLFWwindowposfun)(GLFWwindow*,int,int);
  *  @sa @ref window_size
  *  @sa glfwSetWindowSizeCallback
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 1.0.
+ *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -835,7 +836,8 @@ typedef void (* GLFWwindowsizefun)(GLFWwindow*,int,int);
  *  @sa @ref window_close
  *  @sa glfwSetWindowCloseCallback
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 2.5.
+ *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -850,7 +852,8 @@ typedef void (* GLFWwindowclosefun)(GLFWwindow*);
  *  @sa @ref window_refresh
  *  @sa glfwSetWindowRefreshCallback
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 2.5.
+ *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -867,7 +870,7 @@ typedef void (* GLFWwindowrefreshfun)(GLFWwindow*);
  *  @sa @ref window_focus
  *  @sa glfwSetWindowFocusCallback
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -885,7 +888,7 @@ typedef void (* GLFWwindowfocusfun)(GLFWwindow*,int);
  *  @sa @ref window_iconify
  *  @sa glfwSetWindowIconifyCallback
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -903,7 +906,7 @@ typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
  *  @sa @ref window_fbsize
  *  @sa glfwSetFramebufferSizeCallback
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -923,7 +926,8 @@ typedef void (* GLFWframebuffersizefun)(GLFWwindow*,int,int);
  *  @sa @ref input_mouse_button
  *  @sa glfwSetMouseButtonCallback
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 1.0.
+ *  @glfw3 Added window handle and modifier mask parameters.
  *
  *  @ingroup input
  */
@@ -940,7 +944,7 @@ typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int,int);
  *  @sa @ref cursor_pos
  *  @sa glfwSetCursorPosCallback
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.  Replaces `GLFWmouseposfun`.
  *
  *  @ingroup input
  */
@@ -957,7 +961,7 @@ typedef void (* GLFWcursorposfun)(GLFWwindow*,double,double);
  *  @sa @ref cursor_enter
  *  @sa glfwSetCursorEnterCallback
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup input
  */
@@ -974,7 +978,7 @@ typedef void (* GLFWcursorenterfun)(GLFWwindow*,int);
  *  @sa @ref scrolling
  *  @sa glfwSetScrollCallback
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.  Replaces `GLFWmousewheelfun`.
  *
  *  @ingroup input
  */
@@ -994,7 +998,8 @@ typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
  *  @sa @ref input_key
  *  @sa glfwSetKeyCallback
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 1.0.
+ *  @glfw3 Added window handle, scancode and modifier mask parameters.
  *
  *  @ingroup input
  */
@@ -1010,7 +1015,8 @@ typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int);
  *  @sa @ref input_char
  *  @sa glfwSetCharCallback
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 2.4.
+ *  @glfw3 Added window handle parameter.
  *
  *  @ingroup input
  */
@@ -1031,7 +1037,7 @@ typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
  *  @sa @ref input_char
  *  @sa glfwSetCharModsCallback
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 3.1.
  *
  *  @ingroup input
  */
@@ -1048,7 +1054,7 @@ typedef void (* GLFWcharmodsfun)(GLFWwindow*,unsigned int,int);
  *  @sa @ref path_drop
  *  @sa glfwSetDropCallback
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 3.1.
  *
  *  @ingroup input
  */
@@ -1064,7 +1070,7 @@ typedef void (* GLFWdropfun)(GLFWwindow*,int,const char**);
  *  @sa @ref monitor_event
  *  @sa glfwSetMonitorCallback
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup monitor
  */
@@ -1077,7 +1083,8 @@ typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
  *  @sa @ref monitor_modes
  *  @sa glfwGetVideoMode glfwGetVideoModes
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 1.0.
+ *  @glfw3 Added refresh rate member.
  *
  *  @ingroup monitor
  */
@@ -1110,7 +1117,7 @@ typedef struct GLFWvidmode
  *  @sa @ref monitor_gamma
  *  @sa glfwGetGammaRamp glfwSetGammaRamp
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup monitor
  */
@@ -1134,7 +1141,8 @@ typedef struct GLFWgammaramp
  *
  *  @sa @ref cursor_custom
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 2.1.
+ *  @glfw3 Removed format and bytes-per-pixel members.
  */
 typedef struct GLFWimage
 {
@@ -1180,7 +1188,7 @@ typedef struct GLFWimage
  *  @sa @ref intro_init
  *  @sa glfwTerminate
  *
- *  @since Added in GLFW 1.0.
+ *  @since Added in version 1.0.
  *
  *  @ingroup init
  */
@@ -1210,7 +1218,7 @@ GLFWAPI int glfwInit(void);
  *  @sa @ref intro_init
  *  @sa glfwInit
  *
- *  @since Added in GLFW 1.0.
+ *  @since Added in version 1.0.
  *
  *  @ingroup init
  */
@@ -1236,7 +1244,7 @@ GLFWAPI void glfwTerminate(void);
  *  @sa @ref intro_version
  *  @sa glfwGetVersionString
  *
- *  @since Added in GLFW 1.0.
+ *  @since Added in version 1.0.
  *
  *  @ingroup init
  */
@@ -1266,7 +1274,7 @@ GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
  *  @sa @ref intro_version
  *  @sa glfwGetVersion
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup init
  */
@@ -1298,7 +1306,7 @@ GLFWAPI const char* glfwGetVersionString(void);
  *
  *  @sa @ref error_handling
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup init
  */
@@ -1325,7 +1333,7 @@ GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun);
  *  @sa @ref monitor_event
  *  @sa glfwGetPrimaryMonitor
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup monitor
  */
@@ -1347,7 +1355,7 @@ GLFWAPI GLFWmonitor** glfwGetMonitors(int* count);
  *  @sa @ref monitor_monitors
  *  @sa glfwGetMonitors
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup monitor
  */
@@ -1369,7 +1377,7 @@ GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void);
  *
  *  @sa @ref monitor_properties
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup monitor
  */
@@ -1401,7 +1409,7 @@ GLFWAPI void glfwGetMonitorPos(GLFWmonitor* monitor, int* xpos, int* ypos);
  *
  *  @sa @ref monitor_properties
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup monitor
  */
@@ -1425,7 +1433,7 @@ GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* monitor, int* widthMM, int*
  *
  *  @sa @ref monitor_properties
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup monitor
  */
@@ -1446,7 +1454,7 @@ GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* monitor);
  *
  *  @sa @ref monitor_event
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup monitor
  */
@@ -1475,7 +1483,7 @@ GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun);
  *  @sa @ref monitor_modes
  *  @sa glfwGetVideoMode
  *
- *  @since Added in GLFW 1.0.
+ *  @since Added in version 1.0.
  *  @glfw3 Changed to return an array of modes for a specific monitor.
  *
  *  @ingroup monitor
@@ -1501,7 +1509,7 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count);
  *  @sa @ref monitor_modes
  *  @sa glfwGetVideoModes
  *
- *  @since Added in GLFW 3.0.  Replaces `glfwGetDesktopMode`.
+ *  @since Added in version 3.0.  Replaces `glfwGetDesktopMode`.
  *
  *  @ingroup monitor
  */
@@ -1520,7 +1528,7 @@ GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor);
  *
  *  @sa @ref monitor_gamma
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup monitor
  */
@@ -1543,7 +1551,7 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* monitor, float gamma);
  *
  *  @sa @ref monitor_gamma
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup monitor
  */
@@ -1570,7 +1578,7 @@ GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
  *
  *  @sa @ref monitor_gamma
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup monitor
  */
@@ -1586,7 +1594,7 @@ GLFWAPI void glfwSetGammaRamp(GLFWmonitor* monitor, const GLFWgammaramp* ramp);
  *  @sa @ref window_hints
  *  @sa glfwWindowHint
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -1607,7 +1615,7 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  @sa @ref window_hints
  *  @sa glfwDefaultWindowHints
  *
- *  @since Added in GLFW 3.0.  Replaces `glfwOpenWindowHint`.
+ *  @since Added in version 3.0.  Replaces `glfwOpenWindowHint`.
  *
  *  @ingroup window
  */
@@ -1720,7 +1728,7 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  @sa @ref window_creation
  *  @sa glfwDestroyWindow
  *
- *  @since Added in GLFW 3.0.  Replaces `glfwOpenWindow`.
+ *  @since Added in version 3.0.  Replaces `glfwOpenWindow`.
  *
  *  @ingroup window
  */
@@ -1746,7 +1754,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height, const char* title, G
  *  @sa @ref window_creation
  *  @sa glfwCreateWindow
  *
- *  @since Added in GLFW 3.0.  Replaces `glfwCloseWindow`.
+ *  @since Added in version 3.0.  Replaces `glfwCloseWindow`.
  *
  *  @ingroup window
  */
@@ -1764,7 +1772,7 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* window);
  *
  *  @sa @ref window_close
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -1784,7 +1792,7 @@ GLFWAPI int glfwWindowShouldClose(GLFWwindow* window);
  *
  *  @sa @ref window_close
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -1805,7 +1813,7 @@ GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int value);
  *
  *  @sa @ref window_title
  *
- *  @since Added in GLFW 1.0.
+ *  @since Added in version 1.0.
  *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
@@ -1831,7 +1839,7 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *  @sa @ref window_pos
  *  @sa glfwSetWindowPos
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -1858,7 +1866,7 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
  *  @sa @ref window_pos
  *  @sa glfwGetWindowPos
  *
- *  @since Added in GLFW 1.0.
+ *  @since Added in version 1.0.
  *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
@@ -1885,7 +1893,7 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow* window, int xpos, int ypos);
  *  @sa @ref window_size
  *  @sa glfwSetWindowSize
  *
- *  @since Added in GLFW 1.0.
+ *  @since Added in version 1.0.
  *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
@@ -1919,7 +1927,7 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
  *  @sa @ref window_sizelimits
  *  @sa glfwSetWindowAspectRatio
  *
- *  @since Added in GLFW 3.2.
+ *  @since Added in version 3.2.
  *
  *  @ingroup window
  */
@@ -1955,7 +1963,7 @@ GLFWAPI void glfwSetWindowSizeLimits(GLFWwindow* window, int minwidth, int minhe
  *  @sa @ref window_sizelimits
  *  @sa glfwSetWindowSizeLimits
  *
- *  @since Added in GLFW 3.2.
+ *  @since Added in version 3.2.
  *
  *  @ingroup window
  */
@@ -1983,7 +1991,7 @@ GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* window, int numer, int denom);
  *  @sa @ref window_size
  *  @sa glfwGetWindowSize
  *
- *  @since Added in GLFW 1.0.
+ *  @since Added in version 1.0.
  *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
@@ -2010,7 +2018,7 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* window, int width, int height);
  *  @sa @ref window_fbsize
  *  @sa glfwSetFramebufferSizeCallback
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -2044,7 +2052,7 @@ GLFWAPI void glfwGetFramebufferSize(GLFWwindow* window, int* width, int* height)
  *
  *  @sa @ref window_size
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 3.1.
  *
  *  @ingroup window
  */
@@ -2066,7 +2074,7 @@ GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* window, int* left, int* top, int
  *  @sa @ref window_iconify
  *  @sa glfwRestoreWindow
  *
- *  @since Added in GLFW 2.1.
+ *  @since Added in version 2.1.
  *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
@@ -2088,7 +2096,7 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow* window);
  *  @sa @ref window_iconify
  *  @sa glfwIconifyWindow
  *
- *  @since Added in GLFW 2.1.
+ *  @since Added in version 2.1.
  *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
@@ -2108,7 +2116,7 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow* window);
  *  @sa @ref window_hide
  *  @sa glfwHideWindow
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -2127,7 +2135,7 @@ GLFWAPI void glfwShowWindow(GLFWwindow* window);
  *  @sa @ref window_hide
  *  @sa glfwShowWindow
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -2146,7 +2154,7 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
  *
  *  @sa @ref window_monitor
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -2175,7 +2183,7 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *
  *  @sa @ref window_attribs
  *
- *  @since Added in GLFW 3.0.  Replaces `glfwGetWindowParam` and
+ *  @since Added in version 3.0.  Replaces `glfwGetWindowParam` and
  *  `glfwGetGLVersion`.
  *
  *  @ingroup window
@@ -2197,7 +2205,7 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* window, int attrib);
  *  @sa @ref window_userptr
  *  @sa glfwGetWindowUserPointer
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -2216,7 +2224,7 @@ GLFWAPI void glfwSetWindowUserPointer(GLFWwindow* window, void* pointer);
  *  @sa @ref window_userptr
  *  @sa glfwSetWindowUserPointer
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -2238,7 +2246,7 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
  *
  *  @sa @ref window_pos
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -2260,8 +2268,8 @@ GLFWAPI GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow* window, GLFWwindow
  *
  *  @sa @ref window_size
  *
- *  @since Added in GLFW 1.0.
- *  @glfw3 Added window handle parameter.  Updated callback signature.
+ *  @since Added in version 1.0.
+ *  @glfw3 Added window handle parameter and return value.
  *
  *  @ingroup window
  */
@@ -2291,8 +2299,8 @@ GLFWAPI GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwind
  *
  *  @sa @ref window_close
  *
- *  @since Added in GLFW 2.5.
- *  @glfw3 Added window handle parameter.  Updated callback signature.
+ *  @since Added in version 2.5.
+ *  @glfw3 Added window handle parameter and return value.
  *
  *  @ingroup window
  */
@@ -2318,8 +2326,8 @@ GLFWAPI GLFWwindowclosefun glfwSetWindowCloseCallback(GLFWwindow* window, GLFWwi
  *
  *  @sa @ref window_refresh
  *
- *  @since Added in GLFW 2.5.
- *  @glfw3 Added window handle parameter.  Updated callback signature.
+ *  @since Added in version 2.5.
+ *  @glfw3 Added window handle parameter and return value.
  *
  *  @ingroup window
  */
@@ -2345,7 +2353,7 @@ GLFWAPI GLFWwindowrefreshfun glfwSetWindowRefreshCallback(GLFWwindow* window, GL
  *
  *  @sa @ref window_focus
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -2366,7 +2374,7 @@ GLFWAPI GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwi
  *
  *  @sa @ref window_iconify
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -2387,7 +2395,7 @@ GLFWAPI GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow* window, GL
  *
  *  @sa @ref window_fbsize
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
@@ -2418,7 +2426,7 @@ GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window
  *  @sa @ref events
  *  @sa glfwWaitEvents
  *
- *  @since Added in GLFW 1.0.
+ *  @since Added in version 1.0.
  *
  *  @ingroup window
  */
@@ -2459,7 +2467,7 @@ GLFWAPI void glfwPollEvents(void);
  *  @sa @ref events
  *  @sa glfwPollEvents
  *
- *  @since Added in GLFW 2.5.
+ *  @since Added in version 2.5.
  *
  *  @ingroup window
  */
@@ -2479,7 +2487,7 @@ GLFWAPI void glfwWaitEvents(void);
  *  @sa @ref events
  *  @sa glfwWaitEvents
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 3.1.
  *
  *  @ingroup window
  */
@@ -2499,7 +2507,7 @@ GLFWAPI void glfwPostEmptyEvent(void);
  *
  *  @sa glfwSetInputMode
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup input
  */
@@ -2544,7 +2552,7 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *
  *  @sa glfwGetInputMode
  *
- *  @since Added in GLFW 3.0.  Replaces `glfwEnable` and `glfwDisable`.
+ *  @since Added in version 3.0.  Replaces `glfwEnable` and `glfwDisable`.
  *
  *  @ingroup input
  */
@@ -2569,7 +2577,7 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* window, int mode, int value);
  *
  *  @sa @ref input_key_name
  *
- *  @since Added in GLFW 3.2.
+ *  @since Added in version 3.2.
  *
  *  @ingroup input
  */
@@ -2605,7 +2613,7 @@ GLFWAPI const char* glfwGetKeyName(int key, int scancode);
  *
  *  @sa @ref input_key
  *
- *  @since Added in GLFW 1.0.
+ *  @since Added in version 1.0.
  *  @glfw3 Added window handle parameter.
  *
  *  @ingroup input
@@ -2631,7 +2639,7 @@ GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
  *
  *  @sa @ref input_mouse_button
  *
- *  @since Added in GLFW 1.0.
+ *  @since Added in version 1.0.
  *  @glfw3 Added window handle parameter.
  *
  *  @ingroup input
@@ -2667,7 +2675,7 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
  *  @sa @ref cursor_pos
  *  @sa glfwSetCursorPos
  *
- *  @since Added in GLFW 3.0.  Replaces `glfwGetMousePos`.
+ *  @since Added in version 3.0.  Replaces `glfwGetMousePos`.
  *
  *  @ingroup input
  */
@@ -2705,7 +2713,7 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *  @sa @ref cursor_pos
  *  @sa glfwGetCursorPos
  *
- *  @since Added in GLFW 3.0.  Replaces `glfwSetMousePos`.
+ *  @since Added in version 3.0.  Replaces `glfwSetMousePos`.
  *
  *  @ingroup input
  */
@@ -2743,7 +2751,7 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
  *  @sa glfwDestroyCursor
  *  @sa glfwCreateStandardCursor
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 3.1.
  *
  *  @ingroup input
  */
@@ -2766,7 +2774,7 @@ GLFWAPI GLFWcursor* glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
  *  @sa @ref cursor_object
  *  @sa glfwCreateCursor
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 3.1.
  *
  *  @ingroup input
  */
@@ -2787,7 +2795,7 @@ GLFWAPI GLFWcursor* glfwCreateStandardCursor(int shape);
  *  @sa @ref cursor_object
  *  @sa glfwCreateCursor
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 3.1.
  *
  *  @ingroup input
  */
@@ -2811,7 +2819,7 @@ GLFWAPI void glfwDestroyCursor(GLFWcursor* cursor);
  *
  *  @sa @ref cursor_object
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 3.1.
  *
  *  @ingroup input
  */
@@ -2851,8 +2859,8 @@ GLFWAPI void glfwSetCursor(GLFWwindow* window, GLFWcursor* cursor);
  *
  *  @sa @ref input_key
  *
- *  @since Added in GLFW 1.0.
- *  @glfw3 Added window handle parameter.  Updated callback signature.
+ *  @since Added in version 1.0.
+ *  @glfw3 Added window handle parameter and return value.
  *
  *  @ingroup input
  */
@@ -2887,8 +2895,8 @@ GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
  *
  *  @sa @ref input_char
  *
- *  @since Added in GLFW 2.4.
- *  @glfw3 Added window handle parameter.  Updated callback signature.
+ *  @since Added in version 2.4.
+ *  @glfw3 Added window handle parameter and return value.
  *
  *  @ingroup input
  */
@@ -2919,7 +2927,7 @@ GLFWAPI GLFWcharfun glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
  *
  *  @sa @ref input_char
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 3.1.
  *
  *  @ingroup input
  */
@@ -2946,8 +2954,8 @@ GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmods
  *
  *  @sa @ref input_mouse_button
  *
- *  @since Added in GLFW 1.0.
- *  @glfw3 Added window handle parameter.  Updated callback signature.
+ *  @since Added in version 1.0.
+ *  @glfw3 Added window handle parameter and return value.
  *
  *  @ingroup input
  */
@@ -2970,7 +2978,7 @@ GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmo
  *
  *  @sa @ref cursor_pos
  *
- *  @since Added in GLFW 3.0.  Replaces `glfwSetMousePosCallback`.
+ *  @since Added in version 3.0.  Replaces `glfwSetMousePosCallback`.
  *
  *  @ingroup input
  */
@@ -2992,7 +3000,7 @@ GLFWAPI GLFWcursorposfun glfwSetCursorPosCallback(GLFWwindow* window, GLFWcursor
  *
  *  @sa @ref cursor_enter
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup input
  */
@@ -3017,7 +3025,7 @@ GLFWAPI GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcu
  *
  *  @sa @ref scrolling
  *
- *  @since Added in GLFW 3.0.  Replaces `glfwSetMouseWheelCallback`.
+ *  @since Added in version 3.0.  Replaces `glfwSetMouseWheelCallback`.
  *
  *  @ingroup input
  */
@@ -3043,7 +3051,7 @@ GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun cb
  *
  *  @sa @ref path_drop
  *
- *  @since Added in GLFW 3.1.
+ *  @since Added in version 3.1.
  *
  *  @ingroup input
  */
@@ -3060,7 +3068,7 @@ GLFWAPI GLFWdropfun glfwSetDropCallback(GLFWwindow* window, GLFWdropfun cbfun);
  *
  *  @sa @ref joystick
  *
- *  @since Added in GLFW 3.0.  Replaces `glfwGetJoystickParam`.
+ *  @since Added in version 3.0.  Replaces `glfwGetJoystickParam`.
  *
  *  @ingroup input
  */
@@ -3085,7 +3093,7 @@ GLFWAPI int glfwJoystickPresent(int joy);
  *
  *  @sa @ref joystick_axis
  *
- *  @since Added in GLFW 3.0.  Replaces `glfwGetJoystickPos`.
+ *  @since Added in version 3.0.  Replaces `glfwGetJoystickPos`.
  *
  *  @ingroup input
  */
@@ -3110,7 +3118,7 @@ GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count);
  *
  *  @sa @ref joystick_button
  *
- *  @since Added in GLFW 2.2.
+ *  @since Added in version 2.2.
  *  @glfw3 Changed to return a dynamic array.
  *
  *  @ingroup input
@@ -3136,7 +3144,7 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int joy, int* count);
  *
  *  @sa @ref joystick_name
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup input
  */
@@ -3158,7 +3166,7 @@ GLFWAPI const char* glfwGetJoystickName(int joy);
  *  @sa @ref clipboard
  *  @sa glfwGetClipboardString
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup input
  */
@@ -3185,7 +3193,7 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  *  @sa @ref clipboard
  *  @sa glfwSetClipboardString
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup input
  */
@@ -3209,7 +3217,7 @@ GLFWAPI const char* glfwGetClipboardString(GLFWwindow* window);
  *
  *  @sa @ref time
  *
- *  @since Added in GLFW 1.0.
+ *  @since Added in version 1.0.
  *
  *  @ingroup input
  */
@@ -3231,7 +3239,7 @@ GLFWAPI double glfwGetTime(void);
  *
  *  @sa @ref time
  *
- *  @since Added in GLFW 2.2.
+ *  @since Added in version 2.2.
  *
  *  @ingroup input
  */
@@ -3262,7 +3270,7 @@ GLFWAPI void glfwSetTime(double time);
  *  @sa @ref context_current
  *  @sa glfwGetCurrentContext
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup context
  */
@@ -3281,7 +3289,7 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* window);
  *  @sa @ref context_current
  *  @sa glfwMakeContextCurrent
  *
- *  @since Added in GLFW 3.0.
+ *  @since Added in version 3.0.
  *
  *  @ingroup context
  */
@@ -3307,7 +3315,7 @@ GLFWAPI GLFWwindow* glfwGetCurrentContext(void);
  *  @sa @ref buffer_swap
  *  @sa glfwSwapInterval
  *
- *  @since Added in GLFW 1.0.
+ *  @since Added in version 1.0.
  *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
@@ -3349,7 +3357,7 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
  *  @sa @ref buffer_swap
  *  @sa glfwSwapBuffers
  *
- *  @since Added in GLFW 1.0.
+ *  @since Added in version 1.0.
  *
  *  @ingroup context
  */
@@ -3379,7 +3387,7 @@ GLFWAPI void glfwSwapInterval(int interval);
  *  @sa @ref context_glext
  *  @sa glfwGetProcAddress
  *
- *  @since Added in GLFW 1.0.
+ *  @since Added in version 1.0.
  *
  *  @ingroup context
  */
@@ -3414,7 +3422,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
  *  @sa @ref context_glext
  *  @sa glfwExtensionSupported
  *
- *  @since Added in GLFW 1.0.
+ *  @since Added in version 1.0.
  *
  *  @ingroup context
  */

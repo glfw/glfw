@@ -497,9 +497,8 @@ extern "C" {
  *  This occurs if a GLFW function was called that must not be called unless the
  *  library is [initialized](@ref intro_init).
  *
- *  @par Analysis
- *  Application programmer error.  Initialize GLFW before calling any function
- *  that requires initialization.
+ *  @analysis Application programmer error.  Initialize GLFW before calling any
+ *  function that requires initialization.
  */
 #define GLFW_NOT_INITIALIZED        0x00010001
 /*! @brief No context is current for this thread.
@@ -508,9 +507,8 @@ extern "C" {
  *  current OpenGL or OpenGL ES context but no context is current on the calling
  *  thread.  One such function is @ref glfwSwapInterval.
  *
- *  @par Analysis
- *  Application programmer error.  Ensure a context is current before calling
- *  functions that require a current context.
+ *  @analysis Application programmer error.  Ensure a context is current before
+ *  calling functions that require a current context.
  */
 #define GLFW_NO_CURRENT_CONTEXT     0x00010002
 /*! @brief One of the arguments to the function was an invalid enum value.
@@ -519,8 +517,7 @@ extern "C" {
  *  requesting [GLFW_RED_BITS](@ref window_hints_fb) with @ref
  *  glfwGetWindowAttrib.
  *
- *  @par Analysis
- *  Application programmer error.  Fix the offending call.
+ *  @analysis Application programmer error.  Fix the offending call.
  */
 #define GLFW_INVALID_ENUM           0x00010003
 /*! @brief One of the arguments to the function was an invalid value.
@@ -531,17 +528,15 @@ extern "C" {
  *  Requesting a valid but unavailable OpenGL or OpenGL ES version will instead
  *  result in a @ref GLFW_VERSION_UNAVAILABLE error.
  *
- *  @par Analysis
- *  Application programmer error.  Fix the offending call.
+ *  @analysis Application programmer error.  Fix the offending call.
  */
 #define GLFW_INVALID_VALUE          0x00010004
 /*! @brief A memory allocation failed.
  *
  *  A memory allocation failed.
  *
- *  @par Analysis
- *  A bug in GLFW or the underlying operating system.  Report the bug to our
- *  [issue tracker](https://github.com/glfw/glfw/issues).
+ *  @analysis A bug in GLFW or the underlying operating system.  Report the bug
+ *  to our [issue tracker](https://github.com/glfw/glfw/issues).
  */
 #define GLFW_OUT_OF_MEMORY          0x00010005
 /*! @brief GLFW could not find support for the requested client API on the
@@ -551,10 +546,9 @@ extern "C" {
  *  emitted by functions other than @ref glfwCreateWindow, no supported client
  *  API was found.
  *
- *  @par Analysis
- *  The installed graphics driver does not support the requested client API, or
- *  does not support it via the chosen context creation backend.  Below are
- *  a few examples.
+ *  @analysis The installed graphics driver does not support the requested
+ *  client API, or does not support it via the chosen context creation backend.
+ *  Below are a few examples.
  *
  *  @par
  *  Some pre-installed Windows graphics drivers do not support OpenGL.  AMD only
@@ -569,10 +563,9 @@ extern "C" {
  *  The requested OpenGL or OpenGL ES version (including any requested context
  *  or framebuffer hints) is not available on this machine.
  *
- *  @par Analysis
- *  The machine does not support your requirements.  If your application is
- *  sufficiently flexible, downgrade your requirements and try again.
- *  Otherwise, inform the user that their machine does not match your
+ *  @analysis The machine does not support your requirements.  If your
+ *  application is sufficiently flexible, downgrade your requirements and try
+ *  again.  Otherwise, inform the user that their machine does not match your
  *  requirements.
  *
  *  @par
@@ -588,10 +581,9 @@ extern "C" {
  *  A platform-specific error occurred that does not match any of the more
  *  specific categories.
  *
- *  @par Analysis
- *  A bug or configuration error in GLFW, the underlying operating system or
- *  its drivers, or a lack of required resources.  Report the issue to our
- *  [issue tracker](https://github.com/glfw/glfw/issues).
+ *  @analysis A bug or configuration error in GLFW, the underlying operating
+ *  system or its drivers, or a lack of required resources.  Report the issue to
+ *  our [issue tracker](https://github.com/glfw/glfw/issues).
  */
 #define GLFW_PLATFORM_ERROR         0x00010008
 /*! @brief The requested format is not supported or available.
@@ -602,8 +594,7 @@ extern "C" {
  *  If emitted when querying the clipboard, the contents of the clipboard could
  *  not be converted to the requested format.
  *
- *  @par Analysis
- *  If emitted during window creation, one or more
+ *  @analysis If emitted during window creation, one or more
  *  [hard constraints](@ref window_hints_hard) did not match any of the
  *  available pixel formats.  If your application is sufficiently flexible,
  *  downgrade your requirements and try again.  Otherwise, inform the user that
@@ -619,8 +610,7 @@ extern "C" {
  *  A window that does not have an OpenGL or OpenGL ES context was passed to
  *  a function that requires it to have one.
  *
- *  @par Analysis
- *  Application programmer error.  Fix the offending call.
+ *  @analysis Application programmer error.  Fix the offending call.
  */
 #define GLFW_NO_WINDOW_CONTEXT      0x0001000A
 /*! @} */
@@ -1180,13 +1170,12 @@ typedef struct GLFWimage
  *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @remarks __OS X:__ This function will change the current directory of the
+ *  @remark @osx This function will change the current directory of the
  *  application to the `Contents/Resources` subdirectory of the application's
  *  bundle, if present.  This can be disabled with a
  *  [compile-time option](@ref compile_options_osx).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref intro_init
  *  @sa glfwTerminate
@@ -1209,16 +1198,14 @@ GLFWAPI int glfwInit(void);
  *  call this function, as it is called by @ref glfwInit before it returns
  *  failure.
  *
- *  @remarks This function may be called before @ref glfwInit.
+ *  @remark This function may be called before @ref glfwInit.
  *
  *  @warning The contexts of any remaining windows must not be current on any
  *  other thread when this function is called.
  *
- *  @par Reentrancy
- *  This function must not be called from a callback.
+ *  @reentrancy This function must not be called from a callback.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref intro_init
  *  @sa glfwInit
@@ -1242,10 +1229,9 @@ GLFWAPI void glfwTerminate(void);
  *  @param[out] minor Where to store the minor version number, or `NULL`.
  *  @param[out] rev Where to store the revision number, or `NULL`.
  *
- *  @remarks This function may be called before @ref glfwInit.
+ *  @remark This function may be called before @ref glfwInit.
  *
- *  @par Thread Safety
- *  This function may be called from any thread.
+ *  @thread_safety This function may be called from any thread.
  *
  *  @sa @ref intro_version
  *  @sa glfwGetVersionString
@@ -1271,13 +1257,11 @@ GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
  *
  *  @return The GLFW version string.
  *
- *  @remarks This function may be called before @ref glfwInit.
+ *  @remark This function may be called before @ref glfwInit.
  *
- *  @par Pointer Lifetime
- *  The returned string is static and compile-time generated.
+ *  @pointer_lifetime The returned string is static and compile-time generated.
  *
- *  @par Thread Safety
- *  This function may be called from any thread.
+ *  @thread_safety This function may be called from any thread.
  *
  *  @sa @ref intro_version
  *  @sa glfwGetVersion
@@ -1308,10 +1292,9 @@ GLFWAPI const char* glfwGetVersionString(void);
  *  callback.
  *  @return The previously set callback, or `NULL` if no callback was set.
  *
- *  @remarks This function may be called before @ref glfwInit.
+ *  @remark This function may be called before @ref glfwInit.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref error_handling
  *
@@ -1332,13 +1315,11 @@ GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun);
  *  @return An array of monitor handles, or `NULL` if no monitors were found or
  *  if an [error](@ref error_handling) occurred.
  *
- *  @par Pointer Lifetime
- *  The returned array is allocated and freed by GLFW.  You should not free it
- *  yourself.  It is guaranteed to be valid only until the monitor configuration
- *  changes or the library is terminated.
+ *  @pointer_lifetime The returned array is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is guaranteed to be valid only until the
+ *  monitor configuration changes or the library is terminated.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref monitor_monitors
  *  @sa @ref monitor_event
@@ -1358,10 +1339,9 @@ GLFWAPI GLFWmonitor** glfwGetMonitors(int* count);
  *  @return The primary monitor, or `NULL` if no monitors were found or if an
  *  [error](@ref error_handling) occurred.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
- *  @remarks The primary monitor is always first in the array returned by @ref
+ *  @remark The primary monitor is always first in the array returned by @ref
  *  glfwGetMonitors.
  *
  *  @sa @ref monitor_monitors
@@ -1385,8 +1365,7 @@ GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void);
  *  @param[out] xpos Where to store the monitor x-coordinate, or `NULL`.
  *  @param[out] ypos Where to store the monitor y-coordinate, or `NULL`.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref monitor_properties
  *
@@ -1415,11 +1394,10 @@ GLFWAPI void glfwGetMonitorPos(GLFWmonitor* monitor, int* xpos, int* ypos);
  *  @param[out] heightMM Where to store the height, in millimetres, of the
  *  monitor's display area, or `NULL`.
  *
- *  @remarks __Windows:__ The OS calculates the returned physical size from the
+ *  @remark @win32 calculates the returned physical size from the
  *  current resolution and system DPI instead of querying the monitor EDID data.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref monitor_properties
  *
@@ -1439,13 +1417,11 @@ GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* monitor, int* widthMM, int*
  *  @return The UTF-8 encoded name of the monitor, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @par Pointer Lifetime
- *  The returned string is allocated and freed by GLFW.  You should not free it
- *  yourself.  It is valid until the specified monitor is disconnected or the
- *  library is terminated.
+ *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is valid until the specified monitor is
+ *  disconnected or the library is terminated.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref monitor_properties
  *
@@ -1466,8 +1442,7 @@ GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* monitor);
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref monitor_event
  *
@@ -1490,21 +1465,18 @@ GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun);
  *  @return An array of video modes, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @par Pointer Lifetime
- *  The returned array is allocated and freed by GLFW.  You should not free it
- *  yourself.  It is valid until the specified monitor is disconnected, this
- *  function is called again for that monitor or the library is terminated.
+ *  @pointer_lifetime The returned array is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is valid until the specified monitor is
+ *  disconnected, this function is called again for that monitor or the library
+ *  is terminated.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref monitor_modes
  *  @sa glfwGetVideoMode
  *
  *  @since Added in GLFW 1.0.
- *
- *  @par
- *  __GLFW 3:__ Changed to return an array of modes for a specific monitor.
+ *  @glfw3 Changed to return an array of modes for a specific monitor.
  *
  *  @ingroup monitor
  */
@@ -1520,13 +1492,11 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count);
  *  @return The current mode of the monitor, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @par Pointer Lifetime
- *  The returned array is allocated and freed by GLFW.  You should not free it
- *  yourself.  It is valid until the specified monitor is disconnected or the
- *  library is terminated.
+ *  @pointer_lifetime The returned array is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is valid until the specified monitor is
+ *  disconnected or the library is terminated.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref monitor_modes
  *  @sa glfwGetVideoModes
@@ -1546,8 +1516,7 @@ GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor);
  *  @param[in] monitor The monitor whose gamma ramp to set.
  *  @param[in] gamma The desired exponent.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref monitor_gamma
  *
@@ -1565,14 +1534,12 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* monitor, float gamma);
  *  @return The current gamma ramp, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @par Pointer Lifetime
- *  The returned structure and its arrays are allocated and freed by GLFW.  You
- *  should not free them yourself.  They are valid until the specified monitor
- *  is disconnected, this function is called again for that monitor or the
- *  library is terminated.
+ *  @pointer_lifetime The returned structure and its arrays are allocated and
+ *  freed by GLFW.  You should not free them yourself.  They are valid until the
+ *  specified monitor is disconnected, this function is called again for that
+ *  monitor or the library is terminated.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref monitor_gamma
  *
@@ -1591,16 +1558,15 @@ GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
  *  @param[in] monitor The monitor whose gamma ramp to set.
  *  @param[in] ramp The gamma ramp to use.
  *
- *  @remarks Gamma ramp sizes other than 256 are not supported by all platforms
+ *  @remark Gamma ramp sizes other than 256 are not supported by all platforms
  *  or graphics hardware.
  *
- *  @remarks __Windows:__ The gamma ramp size must be 256.
+ *  @remark @win32 The gamma ramp size must be 256.
  *
- *  @par Pointer Lifetime
- *  The specified gamma ramp is copied before this function returns.
+ *  @pointer_lifetime The specified gamma ramp is copied before this function
+ *  returns.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref monitor_gamma
  *
@@ -1615,8 +1581,7 @@ GLFWAPI void glfwSetGammaRamp(GLFWmonitor* monitor, const GLFWgammaramp* ramp);
  *  This function resets all window hints to their
  *  [default values](@ref window_hints_values).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_hints
  *  @sa glfwWindowHint
@@ -1637,8 +1602,7 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  @param[in] hint The [window hint](@ref window_hints) to set.
  *  @param[in] value The new value of the window hint.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_hints
  *  @sa glfwDefaultWindowHints
@@ -1708,52 +1672,50 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  @return The handle of the created window, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @remarks __Windows:__ Window creation will fail if the Microsoft GDI
- *  software OpenGL implementation is the only one available.
+ *  @remark @win32 Window creation will fail if the Microsoft GDI software
+ *  OpenGL implementation is the only one available.
  *
- *  @remarks __Windows:__ If the executable has an icon resource named
- *  `GLFW_ICON,` it will be set as the icon for the window.  If no such icon is
- *  present, the `IDI_WINLOGO` icon will be used instead.
+ *  @remark @win32 If the executable has an icon resource named `GLFW_ICON,`
+ *  it will be set as the icon for the window.  If no such icon is present, the
+ *  `IDI_WINLOGO` icon will be used instead.
  *
- *  @remarks __Windows:__ The context to share resources with must not be
- *  current on any other thread.
+ *  @remark @win32 The context to share resources with must not be current on
+ *  any other thread.
  *
- *  @remarks __OS X:__ The GLFW window has no icon, as it is not a document
+ *  @remark @osx The GLFW window has no icon, as it is not a document
  *  window, but the dock icon will be the same as the application bundle's icon.
  *  For more information on bundles, see the
  *  [Bundle Programming Guide](https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/)
  *  in the Mac Developer Library.
  *
- *  @remarks __OS X:__ The first time a window is created the menu bar is
- *  populated with common commands like Hide, Quit and About.  The About entry
- *  opens a minimal about dialog with information from the application's bundle.
- *  The menu bar can be disabled with a
+ *  @remark @osx The first time a window is created the menu bar is populated
+ *  with common commands like Hide, Quit and About.  The About entry opens
+ *  a minimal about dialog with information from the application's bundle.  The
+ *  menu bar can be disabled with a
  *  [compile-time option](@ref compile_options_osx).
  *
- *  @remarks __OS X:__ On OS X 10.10 and later the window frame will not be
- *  rendered at full resolution on Retina displays unless the
- *  `NSHighResolutionCapable` key is enabled in the application bundle's
- *  `Info.plist`.  For more information, see
+ *  @remark @osx On OS X 10.10 and later the window frame will not be rendered
+ *  at full resolution on Retina displays unless the `NSHighResolutionCapable`
+ *  key is enabled in the application bundle's `Info.plist`.  For more
+ *  information, see
  *  [High Resolution Guidelines for OS X](https://developer.apple.com/library/mac/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Explained/Explained.html)
  *  in the Mac Developer Library.  The GLFW test and example programs use
  *  a custom `Info.plist` template for this, which can be found as
  *  `CMake/MacOSXBundleInfo.plist.in` in the source tree.
  *
- *  @remarks __X11:__ There is no mechanism for setting the window icon yet.
+ *  @remark @x11 There is no mechanism for setting the window icon yet.
  *
- *  @remarks __X11:__ Some window managers will not respect the placement of
+ *  @remark @x11 Some window managers will not respect the placement of
  *  initially hidden windows.
  *
- *  @remarks __X11:__ Due to the asynchronous nature of X11, it may take
- *  a moment for a window to reach its requested state.  This means you may not
- *  be able to query the final size, position or other attributes directly after
- *  window creation.
+ *  @remark @x11 Due to the asynchronous nature of X11, it may take a moment for
+ *  a window to reach its requested state.  This means you may not be able to
+ *  query the final size, position or other attributes directly after window
+ *  creation.
  *
- *  @par Reentrancy
- *  This function must not be called from a callback.
+ *  @reentrancy This function must not be called from a callback.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_creation
  *  @sa glfwDestroyWindow
@@ -1777,11 +1739,9 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height, const char* title, G
  *  @note The context of the specified window must not be current on any other
  *  thread when this function is called.
  *
- *  @par Reentrancy
- *  This function must not be called from a callback.
+ *  @reentrancy This function must not be called from a callback.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_creation
  *  @sa glfwCreateWindow
@@ -1799,8 +1759,8 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* window);
  *  @param[in] window The window to query.
  *  @return The value of the close flag.
  *
- *  @par Thread Safety
- *  This function may be called from any thread.  Access is not synchronized.
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
  *
  *  @sa @ref window_close
  *
@@ -1819,8 +1779,8 @@ GLFWAPI int glfwWindowShouldClose(GLFWwindow* window);
  *  @param[in] window The window whose flag to change.
  *  @param[in] value The new value.
  *
- *  @par Thread Safety
- *  This function may be called from any thread.  Access is not synchronized.
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
  *
  *  @sa @ref window_close
  *
@@ -1838,18 +1798,15 @@ GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int value);
  *  @param[in] window The window whose title to change.
  *  @param[in] title The UTF-8 encoded window title.
  *
- *  @remarks __OS X:__ The window title will not be updated until the next time
- *  you process events.
+ *  @remark @osx The window title will not be updated until the next time you
+ *  process events.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_title
  *
  *  @since Added in GLFW 1.0.
- *
- *  @par
- *  __GLFW 3:__ Added window handle parameter.
+ *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -1869,8 +1826,7 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *  @param[out] ypos Where to store the y-coordinate of the upper-left corner of
  *  the client area, or `NULL`.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_pos
  *  @sa glfwSetWindowPos
@@ -1897,16 +1853,13 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
  *  @param[in] xpos The x-coordinate of the upper-left corner of the client area.
  *  @param[in] ypos The y-coordinate of the upper-left corner of the client area.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_pos
  *  @sa glfwGetWindowPos
  *
  *  @since Added in GLFW 1.0.
- *
- *  @par
- *  __GLFW 3:__ Added window handle parameter.
+ *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -1927,16 +1880,13 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow* window, int xpos, int ypos);
  *  @param[out] height Where to store the height, in screen coordinates, of the
  *  client area, or `NULL`.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_size
  *  @sa glfwSetWindowSize
  *
  *  @since Added in GLFW 1.0.
- *
- *  @par
- *  __GLFW 3:__ Added window handle parameter.
+ *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -1961,11 +1911,10 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
  *  @param[in] maxheight The maximum height, in screen coordinates, of the
  *  client area, or `GLFW_DONT_CARE`.
  *
- *  @remarks If you set size limits and an aspect ratio that conflict, the
+ *  @remark If you set size limits and an aspect ratio that conflict, the
  *  results are undefined.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_sizelimits
  *  @sa glfwSetWindowAspectRatio
@@ -1998,11 +1947,10 @@ GLFWAPI void glfwSetWindowSizeLimits(GLFWwindow* window, int minwidth, int minhe
  *  @param[in] denom The denominator of the desired aspect ratio, or
  *  `GLFW_DONT_CARE`.
  *
- *  @remarks If you set size limits and an aspect ratio that conflict, the
+ *  @remark If you set size limits and an aspect ratio that conflict, the
  *  results are undefined.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_sizelimits
  *  @sa glfwSetWindowSizeLimits
@@ -2030,16 +1978,13 @@ GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* window, int numer, int denom);
  *  @param[in] width The desired width of the specified window.
  *  @param[in] height The desired height of the specified window.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_size
  *  @sa glfwGetWindowSize
  *
  *  @since Added in GLFW 1.0.
- *
- *  @par
- *  __GLFW 3:__ Added window handle parameter.
+ *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -2060,8 +2005,7 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* window, int width, int height);
  *  @param[out] height Where to store the height, in pixels, of the framebuffer,
  *  or `NULL`.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_fbsize
  *  @sa glfwSetFramebufferSizeCallback
@@ -2096,8 +2040,7 @@ GLFWAPI void glfwGetFramebufferSize(GLFWwindow* window, int* width, int* height)
  *  @param[out] bottom Where to store the size, in screen coordinates, of the
  *  bottom edge of the window frame, or `NULL`.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_size
  *
@@ -2118,16 +2061,13 @@ GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* window, int* left, int* top, int
  *
  *  @param[in] window The window to iconify.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_iconify
  *  @sa glfwRestoreWindow
  *
  *  @since Added in GLFW 2.1.
- *
- *  @par
- *  __GLFW 3:__ Added window handle parameter.
+ *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -2143,16 +2083,13 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow* window);
  *
  *  @param[in] window The window to restore.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_iconify
  *  @sa glfwIconifyWindow
  *
  *  @since Added in GLFW 2.1.
- *
- *  @par
- *  __GLFW 3:__ Added window handle parameter.
+ *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -2166,8 +2103,7 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow* window);
  *
  *  @param[in] window The window to make visible.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_hide
  *  @sa glfwHideWindow
@@ -2186,8 +2122,7 @@ GLFWAPI void glfwShowWindow(GLFWwindow* window);
  *
  *  @param[in] window The window to hide.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_hide
  *  @sa glfwShowWindow
@@ -2207,8 +2142,7 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
  *  @return The monitor, or `NULL` if the window is in windowed mode or an error
  *  occurred.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_monitor
  *
@@ -2229,16 +2163,15 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  @return The value of the attribute, or zero if an
  *  [error](@ref error_handling) occurred.
  *
- *  @remarks Framebuffer related hints are not window attributes.  See @ref
+ *  @remark Framebuffer related hints are not window attributes.  See @ref
  *  window_attribs_fb for more information.
  *
- *  @remarks Zero is a valid value for many window and context related
+ *  @remark Zero is a valid value for many window and context related
  *  attributes so you cannot use a return value of zero as an indication of
  *  errors.  However, this function should not fail as long as it is passed
  *  valid arguments and the library has been [initialized](@ref intro_init).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_attribs
  *
@@ -2258,8 +2191,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* window, int attrib);
  *  @param[in] window The window whose pointer to set.
  *  @param[in] pointer The new value.
  *
- *  @par Thread Safety
- *  This function may be called from any thread.  Access is not synchronized.
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
  *
  *  @sa @ref window_userptr
  *  @sa glfwGetWindowUserPointer
@@ -2277,8 +2210,8 @@ GLFWAPI void glfwSetWindowUserPointer(GLFWwindow* window, void* pointer);
  *
  *  @param[in] window The window whose pointer to return.
  *
- *  @par Thread Safety
- *  This function may be called from any thread.  Access is not synchronized.
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
  *
  *  @sa @ref window_userptr
  *  @sa glfwSetWindowUserPointer
@@ -2301,8 +2234,7 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_pos
  *
@@ -2324,15 +2256,12 @@ GLFWAPI GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow* window, GLFWwindow
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_size
  *
  *  @since Added in GLFW 1.0.
- *
- *  @par
- *  __GLFW 3:__ Added window handle parameter.  Updated callback signature.
+ *  @glfw3 Added window handle parameter.  Updated callback signature.
  *
  *  @ingroup window
  */
@@ -2355,18 +2284,15 @@ GLFWAPI GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwind
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @remarks __OS X:__ Selecting Quit from the application menu will
- *  trigger the close callback for all windows.
+ *  @remark @osx Selecting Quit from the application menu will trigger the close
+ *  callback for all windows.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_close
  *
  *  @since Added in GLFW 2.5.
- *
- *  @par
- *  __GLFW 3:__ Added window handle parameter.  Updated callback signature.
+ *  @glfw3 Added window handle parameter.  Updated callback signature.
  *
  *  @ingroup window
  */
@@ -2388,15 +2314,12 @@ GLFWAPI GLFWwindowclosefun glfwSetWindowCloseCallback(GLFWwindow* window, GLFWwi
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_refresh
  *
  *  @since Added in GLFW 2.5.
- *
- *  @par
- *  __GLFW 3:__ Added window handle parameter.  Updated callback signature.
+ *  @glfw3 Added window handle parameter.  Updated callback signature.
  *
  *  @ingroup window
  */
@@ -2418,8 +2341,7 @@ GLFWAPI GLFWwindowrefreshfun glfwSetWindowRefreshCallback(GLFWwindow* window, GL
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_focus
  *
@@ -2440,8 +2362,7 @@ GLFWAPI GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwi
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_iconify
  *
@@ -2462,8 +2383,7 @@ GLFWAPI GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow* window, GL
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_fbsize
  *
@@ -2491,11 +2411,9 @@ GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window
  *
  *  Event processing is not required for joystick input to work.
  *
- *  @par Reentrancy
- *  This function must not be called from a callback.
+ *  @reentrancy This function must not be called from a callback.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref events
  *  @sa glfwWaitEvents
@@ -2534,11 +2452,9 @@ GLFWAPI void glfwPollEvents(void);
  *
  *  Event processing is not required for joystick input to work.
  *
- *  @par Reentrancy
- *  This function must not be called from a callback.
+ *  @reentrancy This function must not be called from a callback.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref events
  *  @sa glfwPollEvents
@@ -2558,8 +2474,7 @@ GLFWAPI void glfwWaitEvents(void);
  *  of threads in applications that do not create windows, use your threading
  *  library of choice.
  *
- *  @par Thread Safety
- *  This function may be called from any thread.
+ *  @thread_safety This function may be called from any thread.
  *
  *  @sa @ref events
  *  @sa glfwWaitEvents
@@ -2580,8 +2495,7 @@ GLFWAPI void glfwPostEmptyEvent(void);
  *  @param[in] mode One of `GLFW_CURSOR`, `GLFW_STICKY_KEYS` or
  *  `GLFW_STICKY_MOUSE_BUTTONS`.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa glfwSetInputMode
  *
@@ -2626,8 +2540,7 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  `GLFW_STICKY_MOUSE_BUTTONS`.
  *  @param[in] value The new value of the specified input mode.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa glfwGetInputMode
  *
@@ -2648,13 +2561,11 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* window, int mode, int value);
  *  @param[in] scancode The scancode of the key to query.
  *  @return The localized name of the key.
  *
- *  @par Pointer Lifetime
- *  The returned string is allocated and freed by GLFW.  You should not free it
- *  yourself.  It is valid until the next call to @ref glfwGetKeyName, or until
- *  the library is terminated.
+ *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is valid until the next call to @ref
+ *  glfwGetKeyName, or until the library is terminated.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref input_key_name
  *
@@ -2690,15 +2601,12 @@ GLFWAPI const char* glfwGetKeyName(int key, int scancode);
  *  not a valid key for this function.
  *  @return One of `GLFW_PRESS` or `GLFW_RELEASE`.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref input_key
  *
  *  @since Added in GLFW 1.0.
- *
- *  @par
- *  __GLFW 3:__ Added window handle parameter.
+ *  @glfw3 Added window handle parameter.
  *
  *  @ingroup input
  */
@@ -2719,15 +2627,12 @@ GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
  *  @param[in] button The desired [mouse button](@ref buttons).
  *  @return One of `GLFW_PRESS` or `GLFW_RELEASE`.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref input_mouse_button
  *
  *  @since Added in GLFW 1.0.
- *
- *  @par
- *  __GLFW 3:__ Added window handle parameter.
+ *  @glfw3 Added window handle parameter.
  *
  *  @ingroup input
  */
@@ -2757,8 +2662,7 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
  *  @param[out] ypos Where to store the cursor y-coordinate, relative to the to
  *  top edge of the client area, or `NULL`.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref cursor_pos
  *  @sa glfwSetCursorPos
@@ -2792,12 +2696,11 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *  @param[in] ypos The desired y-coordinate, relative to the top edge of the
  *  client area.
  *
- *  @remarks __X11:__ Due to the asynchronous nature of X11, it may take
- *  a moment for the window focus event to arrive.  This means you may not be
- *  able to set the cursor position directly after window creation.
+ *  @remark @x11 Due to the asynchronous nature of X11, it may take a moment for
+ *  the window focus event to arrive.  This means you may not be able to set the
+ *  cursor position directly after window creation.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref cursor_pos
  *  @sa glfwGetCursorPos
@@ -2829,14 +2732,12 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
  *  @return The handle of the created cursor, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @par Pointer Lifetime
- *  The specified image data is copied before this function returns.
+ *  @pointer_lifetime The specified image data is copied before this function
+ *  returns.
  *
- *  @par Reentrancy
- *  This function must not be called from a callback.
+ *  @reentrancy This function must not be called from a callback.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref cursor_object
  *  @sa glfwDestroyCursor
@@ -2858,11 +2759,9 @@ GLFWAPI GLFWcursor* glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
  *  @return A new cursor ready to use or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @par Reentrancy
- *  This function must not be called from a callback.
+ *  @reentrancy This function must not be called from a callback.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref cursor_object
  *  @sa glfwCreateCursor
@@ -2881,11 +2780,9 @@ GLFWAPI GLFWcursor* glfwCreateStandardCursor(int shape);
  *
  *  @param[in] cursor The cursor object to destroy.
  *
- *  @par Reentrancy
- *  This function must not be called from a callback.
+ *  @reentrancy This function must not be called from a callback.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref cursor_object
  *  @sa glfwCreateCursor
@@ -2910,8 +2807,7 @@ GLFWAPI void glfwDestroyCursor(GLFWcursor* cursor);
  *  @param[in] cursor The cursor to set, or `NULL` to switch back to the default
  *  arrow cursor.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref cursor_object
  *
@@ -2951,15 +2847,12 @@ GLFWAPI void glfwSetCursor(GLFWwindow* window, GLFWcursor* cursor);
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref input_key
  *
  *  @since Added in GLFW 1.0.
- *
- *  @par
- *  __GLFW 3:__ Added window handle parameter.  Updated callback signature.
+ *  @glfw3 Added window handle parameter.  Updated callback signature.
  *
  *  @ingroup input
  */
@@ -2990,15 +2883,12 @@ GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref input_char
  *
  *  @since Added in GLFW 2.4.
- *
- *  @par
- *  __GLFW 3:__ Added window handle parameter.  Updated callback signature.
+ *  @glfw3 Added window handle parameter.  Updated callback signature.
  *
  *  @ingroup input
  */
@@ -3025,8 +2915,7 @@ GLFWAPI GLFWcharfun glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
  *  @return The previously set callback, or `NULL` if no callback was set or an
  *  error occurred.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref input_char
  *
@@ -3053,15 +2942,12 @@ GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmods
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref input_mouse_button
  *
  *  @since Added in GLFW 1.0.
- *
- *  @par
- *  __GLFW 3:__ Added window handle parameter.  Updated callback signature.
+ *  @glfw3 Added window handle parameter.  Updated callback signature.
  *
  *  @ingroup input
  */
@@ -3080,8 +2966,7 @@ GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmo
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref cursor_pos
  *
@@ -3103,8 +2988,7 @@ GLFWAPI GLFWcursorposfun glfwSetCursorPosCallback(GLFWwindow* window, GLFWcursor
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref cursor_enter
  *
@@ -3129,8 +3013,7 @@ GLFWAPI GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcu
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref scrolling
  *
@@ -3156,8 +3039,7 @@ GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun cb
  *  @return The previously set callback, or `NULL` if no callback was set or the
  *  library had not been [initialized](@ref intro_init).
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref path_drop
  *
@@ -3174,8 +3056,7 @@ GLFWAPI GLFWdropfun glfwSetDropCallback(GLFWwindow* window, GLFWdropfun cbfun);
  *  @param[in] joy The [joystick](@ref joysticks) to query.
  *  @return `GLFW_TRUE` if the joystick is present, or `GLFW_FALSE` otherwise.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref joystick
  *
@@ -3195,13 +3076,12 @@ GLFWAPI int glfwJoystickPresent(int joy);
  *  array.  This is set to zero if an error occurred.
  *  @return An array of axis values, or `NULL` if the joystick is not present.
  *
- *  @par Pointer Lifetime
- *  The returned array is allocated and freed by GLFW.  You should not free it
- *  yourself.  It is valid until the specified joystick is disconnected, this
- *  function is called again for that joystick or the library is terminated.
+ *  @pointer_lifetime The returned array is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is valid until the specified joystick is
+ *  disconnected, this function is called again for that joystick or the library
+ *  is terminated.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref joystick_axis
  *
@@ -3221,20 +3101,17 @@ GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count);
  *  array.  This is set to zero if an error occurred.
  *  @return An array of button states, or `NULL` if the joystick is not present.
  *
- *  @par Pointer Lifetime
- *  The returned array is allocated and freed by GLFW.  You should not free it
- *  yourself.  It is valid until the specified joystick is disconnected, this
- *  function is called again for that joystick or the library is terminated.
+ *  @pointer_lifetime The returned array is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is valid until the specified joystick is
+ *  disconnected, this function is called again for that joystick or the library
+ *  is terminated.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref joystick_button
  *
  *  @since Added in GLFW 2.2.
- *
- *  @par
- *  __GLFW 3:__ Changed to return a dynamic array.
+ *  @glfw3 Changed to return a dynamic array.
  *
  *  @ingroup input
  */
@@ -3250,13 +3127,12 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int joy, int* count);
  *  @return The UTF-8 encoded name of the joystick, or `NULL` if the joystick
  *  is not present.
  *
- *  @par Pointer Lifetime
- *  The returned string is allocated and freed by GLFW.  You should not free it
- *  yourself.  It is valid until the specified joystick is disconnected, this
- *  function is called again for that joystick or the library is terminated.
+ *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is valid until the specified joystick is
+ *  disconnected, this function is called again for that joystick or the library
+ *  is terminated.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref joystick_name
  *
@@ -3274,11 +3150,10 @@ GLFWAPI const char* glfwGetJoystickName(int joy);
  *  @param[in] window The window that will own the clipboard contents.
  *  @param[in] string A UTF-8 encoded string.
  *
- *  @par Pointer Lifetime
- *  The specified string is copied before this function returns.
+ *  @pointer_lifetime The specified string is copied before this function
+ *  returns.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref clipboard
  *  @sa glfwGetClipboardString
@@ -3300,14 +3175,12 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  *  @return The contents of the clipboard as a UTF-8 encoded string, or `NULL`
  *  if an [error](@ref error_handling) occurred.
  *
- *  @par Pointer Lifetime
- *  The returned string is allocated and freed by GLFW.  You should not free it
- *  yourself.  It is valid until the next call to @ref
+ *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is valid until the next call to @ref
  *  glfwGetClipboardString or @ref glfwSetClipboardString, or until the library
  *  is terminated.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref clipboard
  *  @sa glfwSetClipboardString
@@ -3331,8 +3204,8 @@ GLFWAPI const char* glfwGetClipboardString(GLFWwindow* window);
  *  @return The current value, in seconds, or zero if an
  *  [error](@ref error_handling) occurred.
  *
- *  @par Thread Safety
- *  This function may be called from any thread.  Access is not synchronized.
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
  *
  *  @sa @ref time
  *
@@ -3350,12 +3223,11 @@ GLFWAPI double glfwGetTime(void);
  *
  *  @param[in] time The new value, in seconds.
  *
- *  @remarks The upper limit of the timer is calculated as
+ *  @remark The upper limit of the timer is calculated as
  *  floor((2<sup>64</sup> - 1) / 10<sup>9</sup>) and is due to implementations
  *  storing nanoseconds in 64 bits.  The limit may be increased in the future.
  *
- *  @par Thread Safety
- *  This function must only be called from the main thread.
+ *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref time
  *
@@ -3385,8 +3257,7 @@ GLFWAPI void glfwSetTime(double time);
  *  @param[in] window The window whose context to make current, or `NULL` to
  *  detach the current context.
  *
- *  @par Thread Safety
- *  This function may be called from any thread.
+ *  @thread_safety This function may be called from any thread.
  *
  *  @sa @ref context_current
  *  @sa glfwGetCurrentContext
@@ -3405,8 +3276,7 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* window);
  *  @return The window whose context is current, or `NULL` if no window's
  *  context is current.
  *
- *  @par Thread Safety
- *  This function may be called from any thread.
+ *  @thread_safety This function may be called from any thread.
  *
  *  @sa @ref context_current
  *  @sa glfwMakeContextCurrent
@@ -3429,19 +3299,16 @@ GLFWAPI GLFWwindow* glfwGetCurrentContext(void);
  *
  *  @param[in] window The window whose buffers to swap.
  *
- *  @remarks __EGL:__ The context of the specified window must be current on the
+ *  @remark __EGL:__ The context of the specified window must be current on the
  *  calling thread.
  *
- *  @par Thread Safety
- *  This function may be called from any thread.
+ *  @thread_safety This function may be called from any thread.
  *
  *  @sa @ref buffer_swap
  *  @sa glfwSwapInterval
  *
  *  @since Added in GLFW 1.0.
- *
- *  @par
- *  __GLFW 3:__ Added window handle parameter.
+ *  @glfw3 Added window handle parameter.
  *
  *  @ingroup window
  */
@@ -3468,17 +3335,16 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
  *  @param[in] interval The minimum number of screen updates to wait for
  *  until the buffers are swapped by @ref glfwSwapBuffers.
  *
- *  @remarks This function is not called during context creation, leaving the
+ *  @remark This function is not called during context creation, leaving the
  *  swap interval set to whatever is the default on that platform.  This is done
  *  because some swap interval extensions used by GLFW do not allow the swap
  *  interval to be reset to zero once it has been set to a non-zero value.
  *
- *  @remarks Some GPU drivers do not honor the requested swap interval, either
+ *  @remark Some GPU drivers do not honor the requested swap interval, either
  *  because of a user setting that overrides the application's request or due to
  *  bugs in the driver.
  *
- *  @par Thread Safety
- *  This function may be called from any thread.
+ *  @thread_safety This function may be called from any thread.
  *
  *  @sa @ref buffer_swap
  *  @sa glfwSwapBuffers
@@ -3508,8 +3374,7 @@ GLFWAPI void glfwSwapInterval(int interval);
  *  @return `GLFW_TRUE` if the extension is available, or `GLFW_FALSE`
  *  otherwise.
  *
- *  @par Thread Safety
- *  This function may be called from any thread.
+ *  @thread_safety This function may be called from any thread.
  *
  *  @sa @ref context_glext
  *  @sa glfwGetProcAddress
@@ -3534,19 +3399,17 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
  *  @return The address of the function, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @remarks The address of a given function is not guaranteed to be the same
+ *  @remark The address of a given function is not guaranteed to be the same
  *  between contexts.
  *
- *  @remarks This function may return a non-`NULL` address despite the
+ *  @remark This function may return a non-`NULL` address despite the
  *  associated version or extension not being available.  Always check the
  *  context version or extension string first.
  *
- *  @par Pointer Lifetime
- *  The returned function pointer is valid until the context is destroyed or the
- *  library is terminated.
+ *  @pointer_lifetime The returned function pointer is valid until the context
+ *  is destroyed or the library is terminated.
  *
- *  @par Thread Safety
- *  This function may be called from any thread.
+ *  @thread_safety This function may be called from any thread.
  *
  *  @sa @ref context_glext
  *  @sa glfwExtensionSupported

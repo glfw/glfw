@@ -158,13 +158,6 @@ will add the `glfw` target and the necessary cache variables to your project.
 add_subdirectory(path/to/glfw)
 @endcode
 
-To be able to include the GLFW header from your code, you need to tell the
-compiler where to find it.
-
-@code{.cmake}
-include_directories(path/to/glfw/include)
-@endcode
-
 Once GLFW has been added to the project, the `GLFW_LIBRARIES` cache variable
 contains all link-time dependencies of GLFW as it is currently configured.  To
 link against GLFW, link against them and the `glfw` target.
@@ -172,6 +165,8 @@ link against GLFW, link against them and the `glfw` target.
 @code{.cmake}
 target_link_libraries(myapp glfw ${GLFW_LIBRARIES})
 @endcode
+
+This also makes the GLFW header available for inclusion from your code.
 
 Note that `GLFW_LIBRARIES` does not include GLU, as GLFW does not use it.  If
 your application needs GLU, you can add it to the list of dependencies with the

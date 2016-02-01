@@ -64,6 +64,9 @@ target_include_directories(glfw PRIVATE
                            "${GLFW_BINARY_DIR}/src"
                            ${glfw_INCLUDE_DIRS})
 
+# Make the public GLFW includes available for users of the GLFW library.
+target_include_directories(glfw PUBLIC "${GLFW_SOURCE_DIR}/include")
+
 # HACK: When building on MinGW, WINVER and UNICODE need to be defined before
 # the inclusion of stddef.h (by glfw3.h), which is itself included before
 # win32_platform.h.  We define them here until a saner solution can be found

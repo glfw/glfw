@@ -221,6 +221,7 @@ skills.
  - urraka
  - Jari Vetoniemi
  - Ricardo Vieira
+ - Nicholas Vitovitch
  - Simon Voordouw
  - Torsten Walluhn
  - Patrick Walton

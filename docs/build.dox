@@ -159,18 +159,12 @@ add_subdirectory(path/to/glfw)
 @endcode
 
 Once GLFW has been added to the project, link against it with the `glfw` target.
-This adds all link-time dependencies of GLFW as it is currently configured and,
-when applicable, the [GLFW_DLL](@ref build_macros) macro.
+This adds all link-time dependencies of GLFW as it is currently configured,
+the include directory for the GLFW header and, when applicable, the
+[GLFW_DLL](@ref build_macros) macro.
 
 @code{.cmake}
 target_link_libraries(myapp glfw)
-@endcode
-
-To be able to include the GLFW header from your code, you need to tell the
-compiler where to find it.
-
-@code{.cmake}
-include_directories(path/to/glfw/include)
 @endcode
 
 Note that it does not include GLU, as GLFW does not use it.  If your application

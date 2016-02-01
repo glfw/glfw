@@ -59,6 +59,9 @@ set_target_properties(glfw PROPERTIES
                       FOLDER "GLFW3")
 
 target_compile_definitions(glfw PRIVATE -D_GLFW_USE_CONFIG_H)
+target_include_directories(glfw PUBLIC
+                           $<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>
+                           $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>)
 target_include_directories(glfw PRIVATE
                            "${GLFW_SOURCE_DIR}/src"
                            "${GLFW_BINARY_DIR}/src"

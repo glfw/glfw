@@ -173,6 +173,7 @@ skills.
  - Martins Mozeiko
  - Tristam MacDonald
  - Hans Mackowiak
+ - Zbigniew Mandziejewicz
  - Kyle McDonald
  - David Medlock
  - Bryce Mehring

@@ -368,9 +368,9 @@ endforeach()
 include(CMakePackageConfigHelpers)
 
 if (UNIX)
-    set(GLFW_CONFIG_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake/glfw3/")
+    set(GLFW_CONFIG_PATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/cmake/glfw3")
 else()
-    set(GLFW_CONFIG_PATH "${CMAKE_INSTALL_PREFIX}/")
+    set(GLFW_CONFIG_PATH "${CMAKE_INSTALL_PREFIX}")
 endif()
 
 configure_package_config_file("${GLFW_SOURCE_DIR}/src/glfw3Config.cmake.in"
@@ -421,11 +421,11 @@ if (GLFW_INSTALL)
 
     install(FILES "${GLFW_BINARY_DIR}/src/glfw3Config.cmake"
                   "${GLFW_BINARY_DIR}/src/glfw3ConfigVersion.cmake"
-            DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
+            DESTINATION "${GLFW_CONFIG_PATH}")
 
-    install(EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
+    install(EXPORT glfwTargets DESTINATION "${GLFW_CONFIG_PATH}")
     install(FILES "${GLFW_BINARY_DIR}/src/glfw3.pc"
-            DESTINATION lib${LIB_SUFFIX}/pkgconfig)
+            DESTINATION "lib${LIB_SUFFIX}/pkgconfig")
 
     # Only generate this target if no higher-level project already has
     if (NOT TARGET uninstall)

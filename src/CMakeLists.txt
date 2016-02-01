@@ -99,6 +99,7 @@ if (BUILD_SHARED_LIBS)
         target_compile_options(glfw PRIVATE "-fvisibility=hidden")
     endif()
 
+    target_compile_definitions(glfw INTERFACE -DGLFW_DLL)
     target_link_libraries(glfw ${glfw_LIBRARIES})
 endif()
 

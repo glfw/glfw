@@ -2,7 +2,6 @@
 link_libraries(glfw)
 
 if (BUILD_SHARED_LIBS)
-    add_definitions(-DGLFW_DLL)
     link_libraries("${MATH_LIBRARY}")
 else()
     link_libraries(${glfw_LIBRARIES})

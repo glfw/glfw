@@ -3,8 +3,6 @@ link_libraries(glfw)
 
 if (BUILD_SHARED_LIBS)
     link_libraries("${MATH_LIBRARY}")
-else()
-    link_libraries(${glfw_LIBRARIES})
 endif()
 
 if (MSVC)

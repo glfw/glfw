@@ -717,6 +717,11 @@ void _glfwPlatformPollEvents(void);
  */
 void _glfwPlatformWaitEvents(void);
 
+/*! @copydoc glfwWaitEventsTimeout
+ *  @ingroup platform
+ */
+void _glfwPlatformWaitEventsTimeout(double timeout);
+
 /*! @copydoc glfwPostEmptyEvent
  *  @ingroup platform
  */

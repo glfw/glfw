@@ -550,6 +550,24 @@ void _glfwPlatformWaitEvents(void)
     _glfwPlatformPollEvents();
 }
 
+void _glfwPlatformWaitEventsTimeout(double timeout)
+{
+    pthread_mutex_lock(&_glfw.mir.event_mutex);
+
+    if (emptyEventQueue(_glfw.mir.event_queue))
+    {
+        struct timespec time;
+        clock_gettime(CLOCK_REALTIME, &time);
+        time.tv_sec += (long) timeout;
+        time.tv_nsec += (long) ((timeout - (long) timeout) * 1e9);
+        pthread_cond_timedwait(&_glfw.mir.event_cond, &_glfw.mir.event_mutex, &time);
+    }
+
+    pthread_mutex_unlock(&_glfw.mir.event_mutex);
+
+    _glfwPlatformPollEvents();
+}
+
 void _glfwPlatformPostEmptyEvent(void)
 {
 }

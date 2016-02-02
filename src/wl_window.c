@@ -516,6 +516,11 @@ void _glfwPlatformWaitEvents(void)
     handleEvents(-1);
 }
 
+void _glfwPlatformWaitEventsTimeout(double timeout)
+{
+    handleEvents((int) (timeout * 1e3));
+}
+
 void _glfwPlatformPostEmptyEvent(void)
 {
     wl_display_sync(_glfw.wl.display);

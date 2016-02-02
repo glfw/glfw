@@ -2633,6 +2633,7 @@ GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window
  *
  *  @sa @ref events
  *  @sa glfwWaitEvents
+ *  @sa glfwWaitEventsTimeout
  *
  *  @since Added in version 1.0.
  *
@@ -2677,12 +2678,59 @@ GLFWAPI void glfwPollEvents(void);
  *
  *  @sa @ref events
  *  @sa glfwPollEvents
+ *  @sa glfwWaitEventsTimeout
  *
  *  @since Added in version 2.5.
  *
  *  @ingroup window
  */
 GLFWAPI void glfwWaitEvents(void);
+
+/*! @brief Waits with timeout until events are queued and processes them.
+ *
+ *  This function puts the calling thread to sleep until at least one event is
+ *  available in the event queue, or until the specified timeout is reached.  If
+ *  one or more events are available, it behaves exactly like @ref
+ *  glfwPollEvents, i.e. the events in the queue are processed and the function
+ *  then returns immediately.  Processing events will cause the window and input
+ *  callbacks associated with those events to be called.
+ *
+ *  The timeout value must be a positive finite number.
+ *
+ *  Since not all events are associated with callbacks, this function may return
+ *  without a callback having been called even if you are monitoring all
+ *  callbacks.
+ *
+ *  On some platforms, a window move, resize or menu operation will cause event
+ *  processing to block.  This is due to how event processing is designed on
+ *  those platforms.  You can use the
+ *  [window refresh callback](@ref window_refresh) to redraw the contents of
+ *  your window when necessary during such operations.
+ *
+ *  On some platforms, certain callbacks may be called outside of a call to one
+ *  of the event processing functions.
+ *
+ *  If no windows exist, this function returns immediately.  For synchronization
+ *  of threads in applications that do not create windows, use your threading
+ *  library of choice.
+ *
+ *  Event processing is not required for joystick input to work.
+ *
+ *  @param[in] timeout The maximum amount of time, in seconds, to wait.
+ *
+ *  @reentrancy This function must not be called from a callback.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref events
+ *  @sa glfwPollEvents
+ *  @sa glfwWaitEvents
+ *
+ *  @since Added in version 3.2.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwWaitEventsTimeout(double timeout);
 
 /*! @brief Posts an empty event to the event queue.
  *

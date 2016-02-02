@@ -43,6 +43,12 @@ GLFW now supports raw timer values with @ref glfwGetTimerValue and @ref
 glfwGetTimerFrequency.
 
 
+@subsection news_32_waittimeout Wait for events with timeout
+
+GLFW now supports waiting for events for a set amount of time with @ref
+glfwWaitEventsTimeout.
+
+
 @section news_31 New features in 3.1
 
 These are the release highlights.  For a full list of changes see the

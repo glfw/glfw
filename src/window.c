@@ -31,6 +31,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
+#include <float.h>
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -805,6 +806,19 @@ GLFWAPI void glfwWaitEvents(void)
         return;
 
     _glfwPlatformWaitEvents();
+}
+
+GLFWAPI void glfwWaitEventsTimeout(double timeout)
+{
+    _GLFW_REQUIRE_INIT();
+
+    if (timeout != timeout || timeout < 0.0 || timeout > DBL_MAX)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid time");
+        return;
+    }
+
+    _glfwPlatformWaitEventsTimeout(timeout);
 }
 
 GLFWAPI void glfwPostEmptyEvent(void)

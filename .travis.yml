@@ -1,0 +1,14 @@
+language: cpp
+
+os:
+- linux
+- osx
+
+sudo: true
+
+before_script:
+- sh install-deps.sh
+
+script:
+- cmake .
+- make

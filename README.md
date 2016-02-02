@@ -1,5 +1,6 @@
 # GLFW
-
+[![Build Status](https://travis-ci.org/boddicheg/glfw.svg?branch=multi-platform)](https://travis-ci.org/boddicheg/glfw)
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/boddicheg/glfw?branch=multi-platform&svg=true)](https://ci.appveyor.com/project/boddicheg/glfw)
 ## Introduction
 
 GLFW is a free, Open Source, multi-platform library for OpenGL and OpenGL ES

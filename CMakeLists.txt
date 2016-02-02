@@ -371,7 +371,6 @@ set(GLFW_CONFIG_PATH "lib${LIB_SUFFIX}/cmake/glfw3")
 configure_package_config_file("${GLFW_SOURCE_DIR}/src/glfw3Config.cmake.in"
                               "${GLFW_BINARY_DIR}/src/glfw3Config.cmake"
                               INSTALL_DESTINATION "${GLFW_CONFIG_PATH}"
-                              PATH_VARS CMAKE_INSTALL_PREFIX
                               NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
 write_basic_package_version_file("${GLFW_BINARY_DIR}/src/glfw3ConfigVersion.cmake" 
@@ -419,6 +418,7 @@ if (GLFW_INSTALL)
             DESTINATION "${GLFW_CONFIG_PATH}")
 
     install(EXPORT glfwTargets FILE glfw3Targets.cmake
+            EXPORT_LINK_INTERFACE_LIBRARIES
             DESTINATION "${GLFW_CONFIG_PATH}")
     install(FILES "${GLFW_BINARY_DIR}/src/glfw3.pc"
             DESTINATION "lib${LIB_SUFFIX}/pkgconfig")

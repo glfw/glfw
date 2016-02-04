@@ -16,7 +16,7 @@ build_script:
     - cmake --build .
 notifications:
     - provider: Email
-        to:
-            - ci@glfw.org
+      to:
+        - ci@glfw.org
     - on_build_status_failure: true
     - on_build_status_success: false

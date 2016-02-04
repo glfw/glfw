@@ -1,16 +1,25 @@
 language: c
 compiler: clang
-before_install:
-  - sudo apt-add-repository ppa:irie/cmake -y
-  - sudo apt-get update -q
-  - sudo apt-get install cmake xorg-dev libglu1-mesa-dev
 branches:
     only:
         - travis
         - master
+os:
+    - linux
+    - osx
+sudo: false
+addons:
+    apt:
+        sources:
+            - kubuntu-backports
+        packages:
+            - cmake
+env:
+    - BUILD_SHARED_LIBS=ON
+    - BUILD_SHARED_LIBS=OFF
 script:
-  - cmake .
-  - make
+    - cmake -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} .
+    - cmake --build .
 notifications:
   email:
     recipients:

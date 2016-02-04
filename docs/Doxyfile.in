@@ -199,6 +199,7 @@ ALIASES                = "thread_safety=@par Thread safety\n" \
                          "pointer_lifetime=@par Pointer lifetime\n" \
                          "analysis=@par Analysis\n" \
                          "reentrancy=@par Reentrancy\n" \
+                         "errors=@par Errors\n" \
                          "glfw3=@par\n__GLFW 3:__" \
                          "x11=__X11:__" \
                          "win32=__Windows:__" \

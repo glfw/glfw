@@ -2,7 +2,7 @@ language: c
 compiler: clang
 branches:
     only:
-        - travis
+        - ci
         - master
 os:
     - linux
@@ -21,8 +21,8 @@ script:
     - cmake -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} .
     - cmake --build .
 notifications:
-  email:
-    recipients:
-      - travis@glfw.org
+    email:
+        recipients:
+            - ci@glfw.org
     on_success: never
     on_failure: always

@@ -64,7 +64,9 @@ successful initialization, `GLFW_TRUE` is returned.  If an error occurred,
 
 @code
 if (!glfwInit())
-    exit(EXIT_FAILURE);
+{
+    // Initialization failed
+}
 @endcode
 
 Note that `GLFW_TRUE` and `GLFW_FALSE` are and will always be just one and zero.
@@ -112,22 +114,36 @@ glfwSetErrorCallback(error_callback);
 
 @subsection quick_create_window Creating a window and context
 
-The window and its OpenGL context are created with a single call, which returns
-a handle to the created combined window and context object.  For example, this
-creates a 640 by 480 windowed mode window with an OpenGL context:
+The window and its OpenGL context are created with a single call to @ref
+glfwCreateWindow, which returns a handle to the created combined window and
+context object
 
 @code
 GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
-@endcode
-
-If window or context creation fails, `NULL` will be returned, so it is necessary
-to check the return value.
-
-@code
 if (!window)
 {
-    glfwTerminate();
-    exit(EXIT_FAILURE);
+    // Window or OpenGL context creation failed
+}
+@endcode
+
+This creates a 640 by 480 windowed mode window with an OpenGL context.  If
+window or OpenGL context creation fails, `NULL` will be returned.  You should
+always check the return value.  While window creation rarely fails, context
+creation depends on properly installed drivers and may fail even on machines
+with the necessary hardware.
+
+By default, the OpenGL context GLFW creates may have any version.  You can
+require a minimum OpenGL version by setting the `GLFW_CONTEXT_VERSION_MAJOR` and
+`GLFW_CONTEXT_VERSION_MINOR` hints _before_ creation.  If the required minimum
+version is not supported on the machine, context (and window) creation fails.
+
+@code
+glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
+if (!window)
+{
+    // Window or context creation failed
 }
 @endcode
 
@@ -135,7 +151,7 @@ The window handle is passed to all window related functions and is provided to
 along to all window related callbacks, so they can tell which window received
 the event.
 
-When a window is no longer needed, destroy it.
+When a window and context is no longer needed, destroy it.
 
 @code
 glfwDestroyWindow(window);

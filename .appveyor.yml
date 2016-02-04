@@ -18,5 +18,5 @@ notifications:
     - provider: Email
       to:
         - ci@glfw.org
-    - on_build_status_failure: true
-    - on_build_status_success: false
+    - on_build_failure: true
+    - on_build_success: false

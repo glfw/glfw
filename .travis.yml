@@ -18,7 +18,9 @@ env:
     - BUILD_SHARED_LIBS=ON
     - BUILD_SHARED_LIBS=OFF
 script:
-    - cmake -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} .
+    - mkdir build
+    - cd build
+    - cmake -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} ..
     - cmake --build .
 notifications:
     email:

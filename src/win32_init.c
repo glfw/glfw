@@ -299,7 +299,7 @@ static HWND createHelperWindow(void)
                                   L"GLFW helper window",
                                   WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
                                   0, 0, 1, 1,
-                                  NULL, NULL,
+                                  HWND_MESSAGE, NULL,
                                   GetModuleHandleW(NULL),
                                   NULL);
     if (!window)

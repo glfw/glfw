@@ -88,6 +88,7 @@ used by the tests and examples and are not required to build the library.
                    when no windows existed
  - [Cocoa] Removed support for OS X 10.6
  - [Cocoa] Bugfix: Full screen windows on secondary monitors were mispositioned
+ - [Cocoa] Bugfix: Connecting a joystick that reports no name would segfault
  - [X11] Bugfix: Monitor connection and disconnection events were not reported
  - [X11] Bugfix: Decoding of UTF-8 text from XIM could continue past the end
  - [X11] Bugfix: An XKB structure was leaked during `glfwInit`

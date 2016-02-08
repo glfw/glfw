@@ -29,6 +29,7 @@
 
 #include <unistd.h>
 #include <ctype.h>
+#include <string.h>
 
 #include <mach/mach.h>
 #include <mach/mach_error.h>
@@ -287,11 +288,17 @@ static void matchCallback(void* context,
 
     CFStringRef name = IOHIDDeviceGetProperty(deviceRef,
                                               CFSTR(kIOHIDProductKey));
-    CFStringGetCString(name,
-                       joystick->name,
-                       sizeof(joystick->name),
-                       kCFStringEncodingUTF8);
-
+    if (name)
+    {
+        CFStringGetCString(name,
+                           joystick->name,
+                           sizeof(joystick->name),
+                           kCFStringEncodingUTF8);
+    }
+    else
+    {
+        strncpy(joystick->name, "Unknown", sizeof(joystick->name));
+    }
     joystick->axisElements = CFArrayCreateMutable(NULL, 0, NULL);
     joystick->buttonElements = CFArrayCreateMutable(NULL, 0, NULL);
     joystick->hatElements = CFArrayCreateMutable(NULL, 0, NULL);

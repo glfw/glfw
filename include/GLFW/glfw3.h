@@ -1644,6 +1644,10 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  glfwWindowHint or @ref glfwDefaultWindowHints, or until the library is
  *  terminated.
  *
+ *  This function does not check whether the specified hint values are valid.
+ *  If you set hints to invalid values this will instead be reported by the next
+ *  call to @ref glfwCreateWindow.
+ *
  *  @param[in] hint The [window hint](@ref window_hints) to set.
  *  @param[in] value The new value of the window hint.
  *

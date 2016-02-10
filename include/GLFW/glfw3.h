@@ -1260,13 +1260,14 @@ GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
  *  This function returns the compile-time generated
  *  [version string](@ref intro_version_string) of the GLFW library binary.  It
  *  describes the version, platform, compiler and any platform-specific
- *  compile-time options.
+ *  compile-time options.  It should not be confused with the OpenGL or OpenGL
+ *  ES version string, queried with `glGetString`.
  *
  *  __Do not use the version string__ to parse the GLFW library version.  The
- *  @ref glfwGetVersion function already provides the version of the running
- *  library binary.
+ *  @ref glfwGetVersion function provides the version of the running library
+ *  binary in numerical format.
  *
- *  @return The GLFW version string.
+ *  @return The ASCII encoded GLFW version string.
  *
  *  @errors None.
  *
@@ -3256,6 +3257,10 @@ GLFWAPI int glfwJoystickPresent(int joy);
  *  This function returns the values of all axes of the specified joystick.
  *  Each element in the array is a value between -1.0 and 1.0.
  *
+ *  Querying a joystick slot with no device present is not an error, but will
+ *  cause this function to return `NULL`.  Call @ref glfwJoystickPresent to
+ *  check device presence.
+ *
  *  @param[in] joy The [joystick](@ref joysticks) to query.
  *  @param[out] count Where to store the number of axis values in the returned
  *  array.  This is set to zero if an error occurred.
@@ -3283,6 +3288,10 @@ GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count);
  *
  *  This function returns the state of all buttons of the specified joystick.
  *  Each element in the array is either `GLFW_PRESS` or `GLFW_RELEASE`.
+ *
+ *  Querying a joystick slot with no device present is not an error, but will
+ *  cause this function to return `NULL`.  Call @ref glfwJoystickPresent to
+ *  check device presence.
  *
  *  @param[in] joy The [joystick](@ref joysticks) to query.
  *  @param[out] count Where to store the number of button states in the returned
@@ -3313,6 +3322,10 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int joy, int* count);
  *  This function returns the name, encoded as UTF-8, of the specified joystick.
  *  The returned string is allocated and freed by GLFW.  You should not free it
  *  yourself.
+ *
+ *  Querying a joystick slot with no device present is not an error, but will
+ *  cause this function to return `NULL`.  Call @ref glfwJoystickPresent to
+ *  check device presence.
  *
  *  @param[in] joy The [joystick](@ref joysticks) to query.
  *  @return The UTF-8 encoded name of the joystick, or `NULL` if the joystick

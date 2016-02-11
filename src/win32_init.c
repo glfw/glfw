@@ -387,6 +387,9 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
+    if (_glfw.win32.helperWindow)
+        DestroyWindow(_glfw.win32.helperWindow);
+
     _glfwUnregisterWindowClassWin32();
 
     // Restore previous foreground lock timeout system setting
@@ -404,9 +407,6 @@ void _glfwPlatformTerminate(void)
 
     _glfwTerminateJoysticksWin32();
     _glfwTerminateThreadLocalStorageWin32();
-
-    if (_glfw.win32.helperWindow)
-        DestroyWindow(_glfw.win32.helperWindow);
 
     freeLibraries();
 }

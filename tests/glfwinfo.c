@@ -156,14 +156,6 @@ static void list_extensions(int api, int major, int minor)
 
     if (api == GLFW_OPENGL_API && major > 2)
     {
-        PFNGLGETSTRINGIPROC glGetStringi =
-            (PFNGLGETSTRINGIPROC) glfwGetProcAddress("glGetStringi");
-        if (!glGetStringi)
-        {
-            glfwTerminate();
-            exit(EXIT_FAILURE);
-        }
-
         glGetIntegerv(GL_NUM_EXTENSIONS, &count);
 
         for (i = 0;  i < count;  i++)
@@ -572,16 +564,6 @@ int main(int argc, char** argv)
 
     if (api == GLFW_OPENGL_API && profile == GLFW_OPENGL_CORE_PROFILE)
     {
-        PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC
-            glGetFramebufferAttachmentParameteriv =
-            (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC)
-            glfwGetProcAddress("glGetFramebufferAttachmentParameteriv");
-        if (!glGetFramebufferAttachmentParameteriv)
-        {
-            glfwTerminate();
-            exit(EXIT_FAILURE);
-        }
-
         glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
                                               GL_BACK_LEFT,
                                               GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE,

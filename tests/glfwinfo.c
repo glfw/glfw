@@ -159,23 +159,27 @@ static void list_extensions(int api, int major, int minor)
         glGetIntegerv(GL_NUM_EXTENSIONS, &count);
 
         for (i = 0;  i < count;  i++)
-            puts((const char*) glGetStringi(GL_EXTENSIONS, i));
+            printf(" %s\n", (const char*) glGetStringi(GL_EXTENSIONS, i));
     }
     else
     {
         extensions = glGetString(GL_EXTENSIONS);
         while (*extensions != '\0')
         {
-            if (*extensions == ' ')
-                putchar('\n');
-            else
-                putchar(*extensions);
+            putchar(' ');
 
-            extensions++;
+            while (*extensions != '\0' && *extensions != ' ')
+            {
+                putchar(*extensions);
+                extensions++;
+            }
+
+            while (*extensions == ' ')
+                extensions++;
+
+            putchar('\n');
         }
     }
-
-    putchar('\n');
 }
 
 static int valid_version(void)

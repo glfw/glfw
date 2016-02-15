@@ -545,12 +545,24 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 {
     if (window)
     {
-        glXMakeCurrent(_glfw.x11.display,
-                       window->context.glx.window,
-                       window->context.glx.handle);
+        if (!glXMakeCurrent(_glfw.x11.display,
+                            window->context.glx.window,
+                            window->context.glx.handle))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "GLX: Failed to make context current");
+            return;
+        }
     }
     else
-        glXMakeCurrent(_glfw.x11.display, None, NULL);
+    {
+        if (!glXMakeCurrent(_glfw.x11.display, None, NULL))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "GLX: Failed to clear current context");
+            return;
+        }
+    }
 
     _glfwPlatformSetCurrentContext(window);
 }

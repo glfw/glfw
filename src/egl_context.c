@@ -583,17 +583,29 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 {
     if (window)
     {
-        eglMakeCurrent(_glfw.egl.display,
-                       window->context.egl.surface,
-                       window->context.egl.surface,
-                       window->context.egl.handle);
+        if (!eglMakeCurrent(_glfw.egl.display,
+                            window->context.egl.surface,
+                            window->context.egl.surface,
+                            window->context.egl.handle))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "EGL: Failed to make context current: %s",
+                            getErrorString(eglGetError()));
+            return;
+        }
     }
     else
     {
-        eglMakeCurrent(_glfw.egl.display,
-                       EGL_NO_SURFACE,
-                       EGL_NO_SURFACE,
-                       EGL_NO_CONTEXT);
+        if (!eglMakeCurrent(_glfw.egl.display,
+                            EGL_NO_SURFACE,
+                            EGL_NO_SURFACE,
+                            EGL_NO_CONTEXT))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "EGL: Failed to clear current context: %s",
+                            getErrorString(eglGetError()));
+            return;
+        }
     }
 
     _glfwPlatformSetCurrentContext(window);

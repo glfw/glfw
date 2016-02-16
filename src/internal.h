@@ -98,8 +98,8 @@ typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGIPROC)(GLenum,GLuint);
 
 #define VK_NULL_HANDLE 0
 
-typedef GLFWuint64 VkInstance;
-typedef GLFWuint64 VkPhysicalDevice;
+typedef void* VkInstance;
+typedef void* VkPhysicalDevice;
 typedef GLFWuint64 VkSurfaceKHR;
 typedef unsigned int VkFlags;
 typedef unsigned int VkBool32;

@@ -1995,6 +1995,12 @@ static void demo_init_device(struct demo *demo) {
 
     err = vkCreateDevice(demo->gpu, &device, NULL, &demo->device);
     assert(!err);
+
+    GET_DEVICE_PROC_ADDR(demo->device, CreateSwapchainKHR);
+    GET_DEVICE_PROC_ADDR(demo->device, DestroySwapchainKHR);
+    GET_DEVICE_PROC_ADDR(demo->device, GetSwapchainImagesKHR);
+    GET_DEVICE_PROC_ADDR(demo->device, AcquireNextImageKHR);
+    GET_DEVICE_PROC_ADDR(demo->device, QueuePresentKHR);
 }
 
 static void demo_init_vk_swapchain(struct demo *demo) {

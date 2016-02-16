@@ -17,6 +17,15 @@ GLFW now supports querying the localized name of printable keys with @ref
 glfwGetKeyName, either by key token or by scancode.
 
 
+@subsection news_32_vulkan Support for Vulkan
+
+GLFW now supports basic integration with Vulkan with @ref glfwVulkanSupported,
+@ref glfwGetRequiredInstanceExtensions, @ref glfwGetInstanceProcAddress, @ref
+glfwGetPhysicalDevicePresentationSupport and @ref glfwCreateWindowSurface.
+Vulkan header inclusion can be selected with
+[GLFW_INCLUDE_VULKAN](@ref build_macros).
+
+
 @section news_31 New features in 3.1
 
 These are the release highlights.  For a full list of changes see the

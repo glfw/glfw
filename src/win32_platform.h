@@ -138,7 +138,21 @@ typedef HRESULT (WINAPI * DWMFLUSH_T)(VOID);
 
 // shcore.dll function pointer typedefs
 typedef HRESULT (WINAPI * SETPROCESSDPIAWARENESS_T)(PROCESS_DPI_AWARENESS);
-#define _glfw_SetProcessDPIAwareness _glfw.win32.shcore.SetProcessDPIAwareness
+#define _glfw_SetProcessDpiAwareness _glfw.win32.shcore.SetProcessDpiAwareness
+
+typedef VkFlags VkWin32SurfaceCreateFlagsKHR;
+
+typedef struct VkWin32SurfaceCreateInfoKHR
+{
+    VkStructureType                 sType;
+    const void*                     pNext;
+    VkWin32SurfaceCreateFlagsKHR    flags;
+    HINSTANCE                       hinstance;
+    HWND                            hwnd;
+} VkWin32SurfaceCreateInfoKHR;
+
+typedef VkResult (APIENTRY *PFN_vkCreateWin32SurfaceKHR)(VkInstance,const VkWin32SurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
+typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(VkPhysicalDevice,uint32_t);
 
 #include "win32_joystick.h"
 
@@ -153,6 +167,10 @@ typedef HRESULT (WINAPI * SETPROCESSDPIAWARENESS_T)(PROCESS_DPI_AWARENESS);
 #endif
 
 #define _GLFW_WNDCLASSNAME L"GLFW30"
+
+#define _glfw_dlopen(name) LoadLibraryA(name)
+#define _glfw_dlclose(handle) FreeLibrary((HMODULE) handle)
+#define _glfw_dlsym(handle, name) GetProcAddress((HMODULE) handle, name)
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWin32  win32
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 win32
@@ -218,7 +236,7 @@ typedef struct _GLFWlibraryWin32
     // shcore.dll
     struct {
         HINSTANCE       instance;
-        SETPROCESSDPIAWARENESS_T SetProcessDPIAwareness;
+        SETPROCESSDPIAWARENESS_T SetProcessDpiAwareness;
     } shcore;
 
 } _GLFWlibraryWin32;

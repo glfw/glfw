@@ -28,6 +28,7 @@
 #define _glfw3_cocoa_platform_h_
 
 #include <stdint.h>
+#include <dlfcn.h>
 
 #if defined(__OBJC__)
 #import <Carbon/Carbon.h>
@@ -46,6 +47,10 @@ typedef void* id;
 #else
  #error "The Cocoa backend depends on NSGL platform support"
 #endif
+
+#define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
+#define _glfw_dlclose(handle) dlclose(handle)
+#define _glfw_dlsym(handle, name) dlsym(handle, name)
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  ns
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS ns

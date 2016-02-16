@@ -61,6 +61,9 @@ used from any thread and which must only be used from the main thread.
 `glfwUnlockMutex`, `glfwCreateCond`, `glfwDestroyCond`, `glfwWaitCond`,
 `glfwSignalCond`, `glfwBroadcastCond` and `glfwGetNumberOfProcessors`.
 
+@par Removed types
+`GLFWthreadfun`
+
 
 @subsection moving_image Removal of image and texture loading
 
@@ -466,6 +469,15 @@ defining `GLFW_INCLUDE_GLU` before the inclusion of the GLFW header.
 | `glfwGetGLVersion`          | @ref glfwGetWindowAttrib      | Use `GLFW_CONTEXT_VERSION_MAJOR`, `GLFW_CONTEXT_VERSION_MINOR` and `GLFW_CONTEXT_REVISION` |
 | `glfwGetDesktopMode`        | @ref glfwGetVideoMode         | Returns the current mode of a monitor |
 | `glfwGetJoystickParam`      | @ref glfwJoystickPresent      | The axis and button counts are provided by @ref glfwGetJoystickAxes and @ref glfwGetJoystickButtons |
+
+
+@subsection moving_renamed_types Renamed types
+
+| GLFW 2              | GLFW 3                | Notes |
+| ------------------- | --------------------- |       |
+| `GLFWmousewheelfun` | @ref GLFWscrollfun    |       |
+| `GLFWmouseposfun`   | @ref GLFWcursorposfun |       |
+
 
 @subsection moving_renamed_tokens Renamed tokens
 

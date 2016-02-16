@@ -3,7 +3,7 @@ set(common_HEADERS internal.h
                    "${GLFW_BINARY_DIR}/src/glfw_config.h"
                    "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"
                    "${GLFW_SOURCE_DIR}/include/GLFW/glfw3native.h")
-set(common_SOURCES context.c init.c input.c monitor.c window.c)
+set(common_SOURCES context.c init.c input.c monitor.c vulkan.c window.c)
 
 if (_GLFW_COCOA)
     set(glfw_HEADERS ${common_HEADERS} cocoa_platform.h cocoa_joystick.h
@@ -52,12 +52,16 @@ endif()
 
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
 set_target_properties(glfw PROPERTIES
+                      OUTPUT_NAME ${GLFW_LIB_NAME}
                       VERSION ${GLFW_VERSION}
                       SOVERSION ${GLFW_VERSION_MAJOR}
                       POSITION_INDEPENDENT_CODE ON
                       FOLDER "GLFW3")
 
 target_compile_definitions(glfw PRIVATE -D_GLFW_USE_CONFIG_H)
+target_include_directories(glfw PUBLIC
+                           $<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>
+                           $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>)
 target_include_directories(glfw PRIVATE
                            "${GLFW_SOURCE_DIR}/src"
                            "${GLFW_BINARY_DIR}/src"
@@ -92,24 +96,20 @@ if (BUILD_SHARED_LIBS)
         target_compile_options(glfw PRIVATE "-fno-common")
 
         set_target_properties(glfw PROPERTIES
-            INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}")
+                              INSTALL_NAME_DIR "lib${LIB_SUFFIX}")
     elseif (UNIX)
         # Hide symbols not explicitly tagged for export from the shared library
         target_compile_options(glfw PRIVATE "-fvisibility=hidden")
     endif()
 
-    target_link_libraries(glfw ${glfw_LIBRARIES})
+    target_compile_definitions(glfw INTERFACE -DGLFW_DLL)
+    target_link_libraries(glfw PRIVATE ${glfw_LIBRARIES})
+else()
+    target_link_libraries(glfw INTERFACE ${glfw_LIBRARIES})
 endif()
 
 if (MSVC)
     target_compile_definitions(glfw PRIVATE _CRT_SECURE_NO_WARNINGS)
-endif()
-
-if (BUILD_SHARED_LIBS AND UNIX)
-    # On Unix-like systems, shared libraries can use the soname system.
-    set_target_properties(glfw PROPERTIES OUTPUT_NAME glfw)
-else()
-    set_target_properties(glfw PROPERTIES OUTPUT_NAME glfw3)
 endif()
 
 if (GLFW_INSTALL)

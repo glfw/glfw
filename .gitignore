@@ -71,4 +71,5 @@ tests/tearing
 tests/threads
 tests/title
 tests/version
+tests/vulkan
 tests/windows

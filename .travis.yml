@@ -1,0 +1,30 @@
+language: c
+compiler: clang
+branches:
+    only:
+        - ci
+        - master
+os:
+    - linux
+    - osx
+sudo: false
+addons:
+    apt:
+        sources:
+            - kubuntu-backports
+        packages:
+            - cmake
+env:
+    - BUILD_SHARED_LIBS=ON
+    - BUILD_SHARED_LIBS=OFF
+script:
+    - mkdir build
+    - cd build
+    - cmake -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} ..
+    - cmake --build .
+notifications:
+    email:
+        recipients:
+            - ci@glfw.org
+    on_success: never
+    on_failure: always

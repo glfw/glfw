@@ -584,6 +584,13 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)
 {
+    if (window != _glfwPlatformGetCurrentContext())
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "EGL: The context must be current on the calling thread when swapping buffers");
+        return;
+    }
+
     eglSwapBuffers(_glfw.egl.display, window->context.egl.surface);
 }
 

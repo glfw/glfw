@@ -27,6 +27,7 @@
 
 #include "internal.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
@@ -572,6 +573,7 @@ GLFWAPI GLFWwindow* glfwGetCurrentContext(void)
 GLFWAPI void glfwSwapBuffers(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window);
 
     _GLFW_REQUIRE_INIT();
 
@@ -600,6 +602,8 @@ GLFWAPI void glfwSwapInterval(int interval)
 GLFWAPI int glfwExtensionSupported(const char* extension)
 {
     _GLFWwindow* window;
+
+    assert(extension);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
 
@@ -663,6 +667,8 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 
 GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname)
 {
+    assert(procname);
+
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (!_glfwPlatformGetCurrentContext())

@@ -36,6 +36,11 @@
 #include <wayland-cursor.h>
 
 
+static inline int min(int n1, int n2)
+{
+    return n1 < n2 ? n1 : n2;
+}
+
 static void pointerHandleEnter(void* data,
                                struct wl_pointer* pointer,
                                uint32_t serial,
@@ -380,8 +385,10 @@ static void registryHandleGlobal(void* data,
 {
     if (strcmp(interface, "wl_compositor") == 0)
     {
+        _glfw.wl.wl_compositor_version = min(3, version);
         _glfw.wl.compositor =
-            wl_registry_bind(registry, name, &wl_compositor_interface, 1);
+            wl_registry_bind(registry, name, &wl_compositor_interface,
+                             _glfw.wl.wl_compositor_version);
     }
     else if (strcmp(interface, "wl_shm") == 0)
     {

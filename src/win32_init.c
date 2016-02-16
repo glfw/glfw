@@ -102,8 +102,8 @@ static GLFWbool loadLibraries(void)
     _glfw.win32.shcore.instance = LoadLibraryA("shcore.dll");
     if (_glfw.win32.shcore.instance)
     {
-        _glfw.win32.shcore.SetProcessDPIAwareness = (SETPROCESSDPIAWARENESS_T)
-            GetProcAddress(_glfw.win32.shcore.instance, "SetProcessDPIAwareness");
+        _glfw.win32.shcore.SetProcessDpiAwareness = (SETPROCESSDPIAWARENESS_T)
+            GetProcAddress(_glfw.win32.shcore.instance, "SetProcessDpiAwareness");
     }
 
     return GLFW_TRUE;
@@ -357,8 +357,8 @@ int _glfwPlatformInit(void)
 
     createKeyTables();
 
-    if (_glfw_SetProcessDPIAwareness)
-        _glfw_SetProcessDPIAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
+    if (_glfw_SetProcessDpiAwareness)
+        _glfw_SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
     else if (_glfw_SetProcessDPIAware)
         _glfw_SetProcessDPIAware();
 
@@ -387,6 +387,9 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
+    if (_glfw.win32.helperWindow)
+        DestroyWindow(_glfw.win32.helperWindow);
+
     _glfwUnregisterWindowClassWin32();
 
     // Restore previous foreground lock timeout system setting
@@ -404,9 +407,6 @@ void _glfwPlatformTerminate(void)
 
     _glfwTerminateJoysticksWin32();
     _glfwTerminateThreadLocalStorageWin32();
-
-    if (_glfw.win32.helperWindow)
-        DestroyWindow(_glfw.win32.helperWindow);
 
     freeLibraries();
 }

@@ -706,6 +706,76 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return NULL;
 }
 
+char** _glfwPlatformGetRequiredInstanceExtensions(int* count)
+{
+    char** extensions;
+
+    *count = 0;
+
+    if (!_glfw.vk.KHR_mir_surface)
+        return NULL;
+
+    extensions = calloc(2, sizeof(char*));
+    extensions[0] = strdup("VK_KHR_surface");
+    extensions[1] = strdup("VK_KHR_mir_surface");
+
+    *count = 2;
+    return extensions;
+}
+
+int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
+                                                      VkPhysicalDevice device,
+                                                      unsigned int queuefamily)
+{
+    PFN_vkGetPhysicalDeviceMirPresentationSupportKHR vkGetPhysicalDeviceMirPresentationSupportKHR =
+        (PFN_vkGetPhysicalDeviceMirPresentationSupportKHR)
+        vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceMirPresentationSupportKHR");
+    if (!vkGetPhysicalDeviceMirPresentationSupportKHR)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "Mir: Vulkan instance missing VK_KHR_mir_surface extension");
+        return GLFW_FALSE;
+    }
+
+    return vkGetPhysicalDeviceMirPresentationSupportKHR(device,
+                                                        queuefamily,
+                                                        _glfw.mir.connection);
+}
+
+VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
+                                          _GLFWwindow* window,
+                                          const VkAllocationCallbacks* allocator,
+                                          VkSurfaceKHR* surface)
+{
+    VkResult err;
+    VkMirSurfaceCreateInfoKHR sci;
+    PFN_vkCreateMirSurfaceKHR vkCreateMirSurfaceKHR;
+
+    vkCreateMirSurfaceKHR = (PFN_vkCreateMirSurfaceKHR)
+        vkGetInstanceProcAddr(instance, "vkCreateMirSurfaceKHR");
+    if (!vkCreateMirSurfaceKHR)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "Mir: Vulkan instance missing VK_KHR_mir_surface extension");
+        return VK_ERROR_EXTENSION_NOT_PRESENT;
+    }
+
+    memset(&sci, 0, sizeof(sci));
+    sci.sType = VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR;
+    sci.display = _glfw.mir.connection;
+    sci.surface = window->mir.surface;
+
+    err = vkCreateMirSurfaceKHR(instance, &sci, allocator, surface);
+    if (err)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Mir: Failed to create Vulkan surface: %s",
+                        _glfwGetVulkanResultString(err));
+    }
+
+    return err;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

@@ -1,10 +1,13 @@
 # GLFW
 
+[![Build status](https://travis-ci.org/glfw/glfw.svg?branch=master)](https://travis-ci.org/glfw/glfw)
+[![Build status](https://ci.appveyor.com/api/projects/status/0kf0ct9831i5l6sp/branch/master?svg=true)](https://ci.appveyor.com/project/elmindreda/glfw)
+
 ## Introduction
 
-GLFW is a free, Open Source, multi-platform library for OpenGL and OpenGL ES
-application development.  It provides a simple, platform-independent API for
-creating windows and contexts, reading input, handling events, etc.
+GLFW is a free, Open Source, multi-platform library for OpenGL, OpenGL ES and
+Vulkan application development.  It provides a simple, platform-independent API
+for creating windows, contexts and surfaces, reading input, handling events, etc.
 
 Version 3.2 is _not yet described_.
 
@@ -47,7 +50,7 @@ This will help both us and other people experiencing the same bug.
 
 GLFW itself needs only the headers and libraries for your window system.  It
 does not need the headers for any context creation API (WGL, GLX, EGL, NSGL) or
-client API (OpenGL, OpenGL ES) to enable support for them.
+rendering API (OpenGL, OpenGL ES, Vulkan) to enable support for them.
 
 GLFW bundles a number of dependencies in the `deps/` directory.  These are only
 used by the tests and examples and are not required to build the library.
@@ -61,15 +64,22 @@ used by the tests and examples and are not required to build the library.
  - [linmath.h](https://github.com/datenwolf/linmath.h) for linear algebra in
    examples
 
+The Vulkan example additionally requires the Vulkan SDK to be installed, or it
+will not be included in the build.
+
 
 ## Changelog
 
+ - Added `glfwVulkanSupported`, `glfwGetRequiredInstanceExtensions`,
+   `glfwGetInstanceProcAddress`, `glfwGetPhysicalDevicePresentationSupport` and
+   `glfwCreateWindowSurface` for platform independent Vulkan support
  - Added `glfwSetWindowSizeLimits` and `glfwSetWindowAspectRatio` for setting
    absolute and relative window size limits
  - Added `glfwGetKeyName` for querying the layout-specific name of printable
    keys
  - Added `GLFW_NO_API` for creating window without contexts
  - Added `GLFW_CONTEXT_NO_ERROR` context hint for `GL_KHR_no_error` support
+ - Added `GLFW_INCLUDE_VULKAN` for including the Vulkan header
  - Added `GLFW_TRUE` and `GLFW_FALSE` as client API independent boolean values
  - Added `glfwGetGLXWindow` to query the `GLXWindow` of a window
  - Added icons to examples on Windows and OS X
@@ -85,8 +95,10 @@ used by the tests and examples and are not required to build the library.
                    when no windows existed
  - [Cocoa] Removed support for OS X 10.6
  - [Cocoa] Bugfix: Full screen windows on secondary monitors were mispositioned
+ - [Cocoa] Bugfix: Connecting a joystick that reports no name would segfault
  - [X11] Bugfix: Monitor connection and disconnection events were not reported
  - [X11] Bugfix: Decoding of UTF-8 text from XIM could continue past the end
+ - [X11] Bugfix: An XKB structure was leaked during `glfwInit`
  - [POSIX] Bugfix: An unrelated TLS key could be deleted by `glfwTerminate`
  - [WGL] Changed extension loading to only be performed once
  - [WGL] Removed dependency on external WGL headers
@@ -95,6 +107,8 @@ used by the tests and examples and are not required to build the library.
  - [GLX] Bugfix: NetBSD does not provide `libGL.so.1`
  - [EGL] Added `_GLFW_USE_EGLPLATFORM_H` configuration macro for controlling
          whether to use an existing `EGL/eglplatform.h` header
+ - [EGL] Added and documented test for if the context is current on the calling
+         thread during buffer swap
  - [EGL] Removed dependency on external EGL headers
 
 
@@ -161,6 +175,7 @@ skills.
  - Osman Keskin
  - Cameron King
  - Peter Knut
+ - Christoph Kubisch
  - Eric Larson
  - Robin Leffmann
  - Glenn Lewis
@@ -170,6 +185,7 @@ skills.
  - Martins Mozeiko
  - Tristam MacDonald
  - Hans Mackowiak
+ - Zbigniew Mandziejewicz
  - Kyle McDonald
  - David Medlock
  - Bryce Mehring
@@ -217,6 +233,7 @@ skills.
  - urraka
  - Jari Vetoniemi
  - Ricardo Vieira
+ - Nicholas Vitovitch
  - Simon Voordouw
  - Torsten Walluhn
  - Patrick Walton

@@ -4,9 +4,9 @@
 
 @section main_intro Introduction
 
-__GLFW__ is a free, Open Source, multi-platform library for creating windows
-with OpenGL or OpenGL ES contexts and receiving many kinds of input.  It is easy
-to integrate into existing applications and does not lay claim to the main loop.
+GLFW is a free, Open Source, multi-platform library for OpenGL, OpenGL ES and
+Vulkan application development.  It provides a simple, platform-independent API
+for creating windows, contexts and surfaces, reading input, handling events, etc.
 
 See @ref news_32 for release highlights or the
 [version history](http://www.glfw.org/changelog.html) for details.
@@ -31,6 +31,8 @@ about specific functions.
 
 There is a section on @ref guarantees_limitations for pointer lifetimes,
 reentrancy, thread safety, event order and backward and forward compatibility.
+
+The @ref vulkan guide fills in the gaps for how to use Vulkan with GLFW.
 
 The @ref rift fills in the gaps for how to use LibOVR with GLFW.
 

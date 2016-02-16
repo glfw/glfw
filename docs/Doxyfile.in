@@ -195,7 +195,15 @@ TAB_SIZE               = 8
 # will result in a user-defined paragraph with heading "Side Effects:".
 # You can put \n's in the value part of an alias to insert newlines.
 
-ALIASES                =
+ALIASES                = "thread_safety=@par Thread safety\n" \
+                         "pointer_lifetime=@par Pointer lifetime\n" \
+                         "analysis=@par Analysis\n" \
+                         "reentrancy=@par Reentrancy\n" \
+                         "errors=@par Errors\n" \
+                         "glfw3=@par\n__GLFW 3:__" \
+                         "x11=__X11:__" \
+                         "win32=__Windows:__" \
+                         "osx=__OS X:__"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding
@@ -666,6 +674,7 @@ INPUT                  = @GLFW_INTERNAL_DOCS@                         \
                          @GLFW_SOURCE_DIR@/docs/monitor.dox           \
                          @GLFW_SOURCE_DIR@/docs/window.dox            \
                          @GLFW_SOURCE_DIR@/docs/input.dox             \
+                         @GLFW_SOURCE_DIR@/docs/vulkan.dox            \
                          @GLFW_SOURCE_DIR@/docs/rift.dox              \
                          @GLFW_SOURCE_DIR@/docs/compat.dox
 
@@ -1582,7 +1591,8 @@ PREDEFINED             = GLFWAPI=                   \
                          GLFW_EXPOSE_NATIVE_GLX     \
                          GLFW_EXPOSE_NATIVE_COCOA   \
                          GLFW_EXPOSE_NATIVE_NSGL    \
-                         GLFW_EXPOSE_NATIVE_EGL
+                         GLFW_EXPOSE_NATIVE_EGL     \
+                         VK_VERSION_1_0
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then
 # this tag can be used to specify a list of macro names that should be expanded.

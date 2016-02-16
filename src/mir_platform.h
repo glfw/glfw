@@ -29,8 +29,23 @@
 
 #include <sys/queue.h>
 #include <pthread.h>
+#include <dlfcn.h>
 
 #include <mir_toolkit/mir_client_library.h>
+
+typedef VkFlags VkMirSurfaceCreateFlagsKHR;
+
+typedef struct VkMirSurfaceCreateInfoKHR
+{
+    VkStructureType             sType;
+    const void*                 pNext;
+    VkMirSurfaceCreateFlagsKHR  flags;
+    MirConnection*              connection;
+    MirSurface*                 mirSurface;
+} VkMirSurfaceCreateInfoKHR;
+
+typedef VkResult (APIENTRY *PFN_vkCreateMirSurfaceKHR)(VkInstance,const VkMirSurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
+typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceMirPresentationSupportKHR)(VkPhysicalDevice,uint32_t,MirConnection*);
 
 #include "posix_tls.h"
 #include "posix_time.h"
@@ -42,6 +57,10 @@
 #else
  #error "The Mir backend depends on EGL platform support"
 #endif
+
+#define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
+#define _glfw_dlclose(handle) dlclose(handle)
+#define _glfw_dlsym(handle, name) dlsym(handle, name)
 
 #define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->mir.window)
 #define _GLFW_EGL_NATIVE_DISPLAY ((EGLNativeDisplayType) _glfw.mir.display)

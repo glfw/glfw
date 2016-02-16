@@ -2,18 +2,14 @@
 link_libraries(glfw)
 
 if (BUILD_SHARED_LIBS)
-    add_definitions(-DGLFW_DLL)
     link_libraries("${MATH_LIBRARY}")
-else()
-    link_libraries(${glfw_LIBRARIES})
 endif()
 
 if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-include_directories("${GLFW_SOURCE_DIR}/include"
-                    "${GLFW_SOURCE_DIR}/deps")
+include_directories("${GLFW_SOURCE_DIR}/deps")
 
 set(GLAD "${GLFW_SOURCE_DIR}/deps/glad/glad.h"
          "${GLFW_SOURCE_DIR}/deps/glad.c")
@@ -47,6 +43,13 @@ target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 set(WINDOWS_BINARIES empty sharing tearing threads transparent_threads title windows)
 set(CONSOLE_BINARIES clipboard events msaa gamma glfwinfo
                      iconify joysticks monitors reopen cursor)
+
+if (VULKAN_FOUND)
+    add_executable(vulkan WIN32 vulkan.c ${ICON})
+    target_include_directories(vulkan PRIVATE "${VULKAN_INCLUDE_DIR}")
+    target_link_libraries(vulkan "${VULKAN_LIBRARY}")
+    list(APPEND WINDOWS_BINARIES vulkan)
+endif()
 
 set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
                       FOLDER "GLFW3/Tests")

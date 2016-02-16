@@ -72,12 +72,94 @@ static const struct wl_shell_surface_listener shellSurfaceListener = {
     handlePopupDone
 };
 
+static void checkScaleChange(_GLFWwindow* window)
+{
+    int scaledWidth, scaledHeight;
+    int scale = 1;
+    int i;
+    int monitorScale;
+
+    // Check if we will be able to set the buffer scale or not.
+    if (_glfw.wl.wl_compositor_version <
+        WL_SURFACE_SET_BUFFER_SCALE_SINCE_VERSION)
+        return;
+
+    // Get the scale factor from the highest scale monitor.
+    for (i = 0; i < window->wl.monitorsCount; ++i)
+    {
+        monitorScale = window->wl.monitors[i]->wl.scale;
+        if (scale < monitorScale)
+            scale = monitorScale;
+    }
+
+    // Only change the framebuffer size if the scale changed.
+    if (scale != window->wl.scale)
+    {
+        window->wl.scale = scale;
+        scaledWidth = window->wl.width * scale;
+        scaledHeight = window->wl.height * scale;
+        wl_surface_set_buffer_scale(window->wl.surface, scale);
+        wl_egl_window_resize(window->wl.native, scaledWidth, scaledHeight, 0, 0);
+        _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
+    }
+}
+
+static void handleEnter(void *data,
+                        struct wl_surface *surface,
+                        struct wl_output *output)
+{
+    _GLFWwindow* window = data;
+    _GLFWmonitor* monitor = wl_output_get_user_data(output);
+
+    if (window->wl.monitorsCount + 1 > window->wl.monitorsSize)
+    {
+        ++window->wl.monitorsSize;
+        window->wl.monitors =
+            realloc(window->wl.monitors,
+                    window->wl.monitorsSize * sizeof(_GLFWmonitor*));
+    }
+
+    window->wl.monitors[window->wl.monitorsCount++] = monitor;
+
+    checkScaleChange(window);
+}
+
+static void handleLeave(void *data,
+                        struct wl_surface *surface,
+                        struct wl_output *output)
+{
+    _GLFWwindow* window = data;
+    _GLFWmonitor* monitor = wl_output_get_user_data(output);
+    GLFWbool found;
+    int i;
+
+    for (i = 0, found = GLFW_FALSE; i < window->wl.monitorsCount - 1; ++i)
+    {
+        if (monitor == window->wl.monitors[i])
+            found = GLFW_TRUE;
+        if (found)
+            window->wl.monitors[i] = window->wl.monitors[i + 1];
+    }
+    window->wl.monitors[--window->wl.monitorsCount] = NULL;
+
+    checkScaleChange(window);
+}
+
+static const struct wl_surface_listener surfaceListener = {
+    handleEnter,
+    handleLeave
+};
+
 static GLFWbool createSurface(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig)
 {
     window->wl.surface = wl_compositor_create_surface(_glfw.wl.compositor);
     if (!window->wl.surface)
         return GLFW_FALSE;
+
+    wl_surface_add_listener(window->wl.surface,
+                            &surfaceListener,
+                            window);
 
     wl_surface_set_user_data(window->wl.surface, window);
 
@@ -98,6 +180,7 @@ static GLFWbool createSurface(_GLFWwindow* window,
 
     window->wl.width = wndconfig->width;
     window->wl.height = wndconfig->height;
+    window->wl.scale = 1;
 
     return GLFW_TRUE;
 }
@@ -262,6 +345,10 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     window->wl.currentCursor = NULL;
 
+    window->wl.monitors = calloc(1, sizeof(_GLFWmonitor*));
+    window->wl.monitorsCount = 0;
+    window->wl.monitorsSize = 1;
+
     return GLFW_TRUE;
 }
 
@@ -288,6 +375,8 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 
     if (window->wl.surface)
         wl_surface_destroy(window->wl.surface);
+
+    free(window->wl.monitors);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
@@ -322,9 +411,12 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    wl_egl_window_resize(window->wl.native, width, height, 0, 0);
+    int scaledWidth = width * window->wl.scale;
+    int scaledHeight = height * window->wl.scale;
     window->wl.width = width;
     window->wl.height = height;
+    wl_egl_window_resize(window->wl.native, scaledWidth, scaledHeight, 0, 0);
+    _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
 }
 
 void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
@@ -344,6 +436,8 @@ void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
     _glfwPlatformGetWindowSize(window, width, height);
+    *width *= window->wl.scale;
+    *height *= window->wl.scale;
 }
 
 void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
@@ -603,6 +697,76 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     // TODO
     fprintf(stderr, "_glfwPlatformGetClipboardString not implemented yet\n");
     return NULL;
+}
+
+char** _glfwPlatformGetRequiredInstanceExtensions(int* count)
+{
+    char** extensions;
+
+    *count = 0;
+
+    if (!_glfw.vk.KHR_wayland_surface)
+        return NULL;
+
+    extensions = calloc(2, sizeof(char*));
+    extensions[0] = strdup("VK_KHR_surface");
+    extensions[1] = strdup("VK_KHR_wayland_surface");
+
+    *count = 2;
+    return extensions;
+}
+
+int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
+                                                      VkPhysicalDevice device,
+                                                      unsigned int queuefamily)
+{
+    PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR vkGetPhysicalDeviceWaylandPresentationSupportKHR =
+        (PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR)
+        vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceWaylandPresentationSupportKHR");
+    if (!vkGetPhysicalDeviceWaylandPresentationSupportKHR)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "Wayland: Vulkan instance missing VK_KHR_wayland_surface extension");
+        return VK_NULL_HANDLE;
+    }
+
+    return vkGetPhysicalDeviceWaylandPresentationSupportKHR(device,
+                                                            queuefamily,
+                                                            _glfw.wl.display);
+}
+
+VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
+                                          _GLFWwindow* window,
+                                          const VkAllocationCallbacks* allocator,
+                                          VkSurfaceKHR* surface)
+{
+    VkResult err;
+    VkWaylandSurfaceCreateInfoKHR sci;
+    PFN_vkCreateWaylandSurfaceKHR vkCreateWaylandSurfaceKHR;
+
+    vkCreateWaylandSurfaceKHR = (PFN_vkCreateWaylandSurfaceKHR)
+        vkGetInstanceProcAddr(instance, "vkCreateWaylandSurfaceKHR");
+    if (!vkCreateWaylandSurfaceKHR)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "Wayland: Vulkan instance missing VK_KHR_wayland_surface extension");
+        return VK_ERROR_EXTENSION_NOT_PRESENT;
+    }
+
+    memset(&sci, 0, sizeof(sci));
+    sci.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+    sci.display = _glfw.wl.display;
+    sci.surface = window->wl.surface;
+
+    err = vkCreateWaylandSurfaceKHR(instance, &sci, allocator, surface);
+    if (err)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to create Vulkan surface: %s",
+                        _glfwGetVulkanResultString(err));
+    }
+
+    return err;
 }
 
 

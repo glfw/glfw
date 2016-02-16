@@ -29,6 +29,21 @@
 
 #include <wayland-client.h>
 #include <xkbcommon/xkbcommon.h>
+#include <dlfcn.h>
+
+typedef VkFlags VkWaylandSurfaceCreateFlagsKHR;
+
+typedef struct VkWaylandSurfaceCreateInfoKHR
+{
+    VkStructureType                 sType;
+    const void*                     pNext;
+    VkWaylandSurfaceCreateFlagsKHR  flags;
+    struct wl_display*              display;
+    struct wl_surface*              surface;
+} VkWaylandSurfaceCreateInfoKHR;
+
+typedef VkResult (APIENTRY *PFN_vkCreateWaylandSurfaceKHR)(VkInstance,const VkWaylandSurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
+typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR)(VkPhysicalDevice,uint32_t,struct wl_display*);
 
 #include "posix_tls.h"
 #include "posix_time.h"
@@ -40,6 +55,10 @@
 #else
  #error "The Wayland backend depends on EGL platform support"
 #endif
+
+#define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
+#define _glfw_dlclose(handle) dlclose(handle)
+#define _glfw_dlsym(handle, name) dlsym(handle, name)
 
 #define _GLFW_EGL_NATIVE_WINDOW         ((EGLNativeWindowType) window->wl.native)
 #define _GLFW_EGL_NATIVE_DISPLAY        ((EGLNativeDisplayType) _glfw.wl.display)
@@ -65,8 +84,17 @@ typedef struct _GLFWwindowWayland
     struct wl_egl_window*       native;
     struct wl_shell_surface*    shell_surface;
     struct wl_callback*         callback;
+
     _GLFWcursor*                currentCursor;
     double                      cursorPosX, cursorPosY;
+
+    // We need to track the monitors the window spans on to calculate the
+    // optimal scaling factor.
+    int                         scale;
+    _GLFWmonitor**              monitors;
+    int                         monitorsCount;
+    int                         monitorsSize;
+
 } _GLFWwindowWayland;
 
 
@@ -82,6 +110,8 @@ typedef struct _GLFWlibraryWayland
     struct wl_seat*             seat;
     struct wl_pointer*          pointer;
     struct wl_keyboard*         keyboard;
+
+    int                         wl_compositor_version;
 
     struct wl_cursor_theme*     cursorTheme;
     struct wl_surface*          cursorSurface;
@@ -123,7 +153,7 @@ typedef struct _GLFWmonitorWayland
 
     int                         x;
     int                         y;
-
+    int                         scale;
 } _GLFWmonitorWayland;
 
 

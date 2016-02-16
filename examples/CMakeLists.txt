@@ -59,6 +59,7 @@ if (APPLE)
     set_target_properties(filters PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Filters")
     set_target_properties(simple PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Simple")
     set_target_properties(splitview PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "SplitView")
+    set_target_properties(transparent PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Transparent")
     set_target_properties(wave PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Wave")
 
     set_target_properties(${WINDOWS_BINARIES} PROPERTIES

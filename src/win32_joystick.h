@@ -30,17 +30,29 @@
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE \
     _GLFWjoystickWin32 win32_js[GLFW_JOYSTICK_LAST + 1]
 
+// Spoo
+//
+typedef struct _GLFWjoyobjectWin32
+{
+    int                     offset;
+    int                     type;
+} _GLFWjoyobjectWin32;
+
 // Win32-specific per-joystick data
 //
 typedef struct _GLFWjoystickWin32
 {
-    GLFWbool        present;
-    float           axes[6];
-    int             axisCount;
-    unsigned char   buttons[14];
-    int             buttonCount;
-    char*           name;
-    DWORD           index;
+    GLFWbool                present;
+    float*                  axes;
+    int                     axisCount;
+    unsigned char*          buttons;
+    int                     buttonCount;
+    _GLFWjoyobjectWin32*    objects;
+    int                     objectCount;
+    char*                   name;
+    IDirectInputDevice8W*   device;
+    DWORD                   index;
+    GUID                    guid;
 } _GLFWjoystickWin32;
 
 

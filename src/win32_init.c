@@ -86,6 +86,13 @@ static GLFWbool loadLibraries(void)
     _glfw.win32.user32.ChangeWindowMessageFilterEx = (CHANGEWINDOWMESSAGEFILTEREX_T)
         GetProcAddress(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
 
+    _glfw.win32.dinput8.instance = LoadLibraryA("dinput8.dll");
+    if (_glfw.win32.dinput8.instance)
+    {
+        _glfw.win32.dinput8.DirectInput8Create = (DIRECTINPUT8CREATE_T)
+            GetProcAddress(_glfw.win32.dinput8.instance, "DirectInput8Create");
+    }
+
     {
         int i;
         const char* names[] =
@@ -138,6 +145,9 @@ static void freeLibraries(void)
 {
     if (_glfw.win32.xinput.instance)
         FreeLibrary(_glfw.win32.xinput.instance);
+
+    if (_glfw.win32.dinput8.instance)
+        FreeLibrary(_glfw.win32.dinput8.instance);
 
     if (_glfw.win32.winmm.instance)
         FreeLibrary(_glfw.win32.winmm.instance);

@@ -61,8 +61,12 @@
  #define _WIN32_WINNT 0x0501
 #endif
 
+// GLFW uses DirectInput8 interfaces
+#define DIRECTINPUT_VERSION 0x0800
+
 #include <windows.h>
 #include <mmsystem.h>
+#include <dinput.h>
 #include <xinput.h>
 #include <dbt.h>
 
@@ -71,7 +75,7 @@
  #define strdup _strdup
 #endif
 
-// HACK: Define macros that some older windows.h variants don't
+// HACK: Define macros that some windows.h variants don't
 #ifndef WM_MOUSEHWHEEL
  #define WM_MOUSEHWHEEL 0x020E
 #endif
@@ -121,7 +125,7 @@ typedef enum PROCESS_DPI_AWARENESS
 } PROCESS_DPI_AWARENESS;
 #endif /*DPI_ENUMS_DECLARED*/
 
-// HACK: Define macros that some older xinput.h variants don't
+// HACK: Define macros that some xinput.h variants don't
 #ifndef XINPUT_CAPS_WIRELESS
  #define XINPUT_CAPS_WIRELESS 0x0002
 #endif
@@ -147,6 +151,11 @@ typedef enum PROCESS_DPI_AWARENESS
  #define XINPUT_DEVSUBTYPE_ARCADE_PAD 0x13
 #endif
 
+// HACK: Define macros that some dinput.h variants don't
+#ifndef DIDFT_OPTIONAL
+ #define DIDFT_OPTIONAL	0x80000000
+#endif
+
 // winmm.dll function pointer typedefs
 typedef DWORD (WINAPI * TIMEGETTIME_T)(void);
 #define _glfw_timeGetTime _glfw.win32.winmm.timeGetTime
@@ -156,6 +165,10 @@ typedef DWORD (WINAPI * XINPUTGETCAPABILITIES_T)(DWORD,DWORD,XINPUT_CAPABILITIES
 typedef DWORD (WINAPI * XINPUTGETSTATE_T)(DWORD,XINPUT_STATE*);
 #define _glfw_XInputGetCapabilities _glfw.win32.xinput.XInputGetCapabilities
 #define _glfw_XInputGetState _glfw.win32.xinput.XInputGetState
+
+// dinput8.dll function pointer typedefs
+typedef HRESULT (WINAPI * DIRECTINPUT8CREATE_T)(HINSTANCE,DWORD,REFIID,LPVOID*,LPUNKNOWN);
+#define _glfw_DirectInput8Create _glfw.win32.dinput8.DirectInput8Create
 
 // user32.dll function pointer typedefs
 typedef BOOL (WINAPI * SETPROCESSDPIAWARE_T)(void);
@@ -241,13 +254,17 @@ typedef struct _GLFWlibraryWin32
     short int           publicKeys[512];
     short int           nativeKeys[GLFW_KEY_LAST + 1];
 
-    // winmm.dll
     struct {
         HINSTANCE       instance;
         TIMEGETTIME_T   timeGetTime;
     } winmm;
 
-    // user32.dll
+    struct {
+        HINSTANCE            instance;
+        DIRECTINPUT8CREATE_T DirectInput8Create;
+        IDirectInput8W*      api;
+    } dinput8;
+
     struct {
         HINSTANCE               instance;
         XINPUTGETCAPABILITIES_T XInputGetCapabilities;
@@ -260,14 +277,12 @@ typedef struct _GLFWlibraryWin32
         CHANGEWINDOWMESSAGEFILTEREX_T ChangeWindowMessageFilterEx;
     } user32;
 
-    // dwmapi.dll
     struct {
         HINSTANCE       instance;
         DWMISCOMPOSITIONENABLED_T DwmIsCompositionEnabled;
         DWMFLUSH_T      DwmFlush;
     } dwmapi;
 
-    // shcore.dll
     struct {
         HINSTANCE       instance;
         SETPROCESSDPIAWARENESS_T SetProcessDpiAwareness;

@@ -101,6 +101,7 @@ does not find Doxygen, the documentation will not be generated.
  - Removed `_GLFW_USE_OPENGL`, `_GLFW_USE_GLESV1` and `_GLFW_USE_GLESV2`
    configuration macros
  - [Win32] Added support for Windows 8.1 per-monitor DPI
+ - [Win32] Replaced winmm with XInput and DirectInput for joystick input
  - [Win32] Bugfix: Window creation would segfault if video mode setting required
                    the system to be restarted
  - [Win32] Bugfix: MinGW import library lacked the `lib` prefix

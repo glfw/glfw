@@ -45,6 +45,10 @@ of GLFW to work.  Define them only if you are using these extensions directly.
 
 @section vulkan_support Querying for Vulkan support
 
+If you are linking directly against the Vulkan loader then you can skip this
+section.  The canonical desktop loader library exports all Vulkan core and
+Khronos extension functions, allowing them to be called directly.
+
 If you are loading the Vulkan loader dynamically instead of linking directly
 against it, you can check for the availability of a loader with @ref
 glfwVulkanSupported.
@@ -66,14 +70,23 @@ generate a @ref GLFW_API_UNAVAILABLE error.
 @subsection vulkan_proc Querying Vulkan function pointers
 
 To load any Vulkan core or extension function from the found loader, call @ref
-glfwGetInstanceProcAddress.
+glfwGetInstanceProcAddress.  To load functions needed for instance creation,
+pass `NULL` as the instance.
+
+@code
+PFN_vkCreateInstance pfnCreateInstance = (PFN_vkCreateInstance)
+    glfwGetInstanceProcAddress(NULL, "vkCreateInstance");
+@endcode
+
+Once you have created an instance, you can load from it all other Vulkan core
+functions and functions from any instance extensions you enabled.
 
 @code
 PFN_vkCreateDevice pfnCreateDevice = (PFN_vkCreateDevice)
     glfwGetInstanceProcAddress(instance, "vkCreateDevice");
 @endcode
 
-This is equivalent to calling `vkGetInstanceProcAddr`.  If that fails, the
+This function in turn calls `vkGetInstanceProcAddr`.  If that fails, the
 function falls back to a platform-specific query of the Vulkan loader (i.e.
 `dlsym` or `GetProcAddress`).  If that also fails, the function returns `NULL`.
 For more information about `vkGetInstanceProcAddr`, see the Vulkan

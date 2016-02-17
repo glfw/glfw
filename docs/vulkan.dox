@@ -7,7 +7,8 @@
 This guide is intended to fill the gaps between the [Vulkan
 documentation](https://www.khronos.org/vulkan/) and the rest of the GLFW
 documentation and is not a replacement for either.  It assumes some familiarity
-with Vulkan concepts like loaders, devices, queues and surfaces.
+with Vulkan concepts like loaders, devices, queues and surfaces and leaves it to
+the Vulkan documentation to explain the details of Vulkan functions.
 
 To develop for Vulkan you should install an SDK for your platform, for example
 the [LunarG Vulkan SDK](https://vulkan.lunarg.com/).  Apart from the headers and
@@ -170,8 +171,8 @@ an existing Vulkan surface.
 @section vulkan_window Creating the window
 
 Unless you will be using OpenGL or OpenGL ES with the same window as Vulkan,
-there is no need to create a context.  You can disable context creation by
-setting the [GLFW_CLIENT_API](@ref window_hints_ctx) hint to `GLFW_NO_API`.
+there is no need to create a context.  You can disable context creation with the
+[GLFW_CLIENT_API](@ref window_hints_ctx) hint.
 
 @code
 glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);

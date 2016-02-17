@@ -181,7 +181,7 @@ const char* _glfwGetVulkanResultString(VkResult result)
         case VK_ERROR_VALIDATION_FAILED_EXT:
             return "A validation layer found an error";
         default:
-            return "ERROR: UNKNOWN VULKAN ERROR TOKEN";
+            return "ERROR: UNKNOWN VULKAN ERROR";
     }
 }
 

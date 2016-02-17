@@ -74,9 +74,9 @@ static const char* getErrorString(int error)
             return "The requested format is unavailable";
         case GLFW_NO_WINDOW_CONTEXT:
             return "The specified window has no context";
+        default:
+            return "ERROR: UNKNOWN GLFW ERROR";
     }
-
-    return "ERROR: UNKNOWN ERROR TOKEN PASSED TO glfwErrorString";
 }
 
 

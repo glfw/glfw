@@ -61,7 +61,7 @@ void _glfwInitVulkan(void)
     }
 
     _glfw.vk.EnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties)
-        vkGetInstanceProcAddr(0, "vkEnumerateInstanceExtensionProperties");
+        vkGetInstanceProcAddr(NULL, "vkEnumerateInstanceExtensionProperties");
     if (!_glfw.vk.EnumerateInstanceExtensionProperties)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,

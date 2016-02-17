@@ -224,8 +224,9 @@ position callback.
 glfwSetCursorPosCallback(window, cursor_pos_callback);
 @endcode
 
-The callback functions receives the cursor position.  On platforms that provide
-it, the full sub-pixel cursor position is passed on.
+The callback functions receives the cursor position, measured in screen
+coordinates but relative to the top-left corner of the window client area.  On
+platforms that provide it, the full sub-pixel cursor position is passed on.
 
 @code
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)

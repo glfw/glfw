@@ -956,8 +956,10 @@ typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int,int);
  *  This is the function signature for cursor position callback functions.
  *
  *  @param[in] window The window that received the event.
- *  @param[in] xpos The new x-coordinate, in screen coordinates, of the cursor.
- *  @param[in] ypos The new y-coordinate, in screen coordinates, of the cursor.
+ *  @param[in] xpos The new cursor x-coordinate, relative to the left edge of
+ *  the client area.
+ *  @param[in] ypos The new cursor y-coordinate, relative to the top edge of the
+ *  client area.
  *
  *  @sa @ref cursor_pos
  *  @sa glfwSetCursorPosCallback

@@ -104,6 +104,8 @@ typedef MirEGLNativeWindowType EGLNativeWindowType;
 #define EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR 0x30fd
 #define EGL_CONTEXT_FLAGS_KHR 0x30fc
 #define EGL_CONTEXT_OPENGL_NO_ERROR_KHR 0x31b3
+#define EGL_GL_COLORSPACE_KHR 0x309d
+#define EGL_GL_COLORSPACE_SRGB_KHR 0x3089
 
 typedef int EGLint;
 typedef unsigned int EGLBoolean;
@@ -174,6 +176,7 @@ typedef struct _GLFWlibraryEGL
 
     GLFWbool        KHR_create_context;
     GLFWbool        KHR_create_context_no_error;
+    GLFWbool        KHR_gl_colorspace;
 
     void*           handle;
 

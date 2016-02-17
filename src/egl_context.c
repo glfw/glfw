@@ -259,6 +259,8 @@ GLFWbool _glfwInitEGL(void)
         _glfwPlatformExtensionSupported("EGL_KHR_create_context");
     _glfw.egl.KHR_create_context_no_error =
         _glfwPlatformExtensionSupported("EGL_KHR_create_context_no_error");
+    _glfw.egl.KHR_gl_colorspace =
+        _glfwPlatformExtensionSupported("EGL_KHR_gl_colorspace");
 
     return GLFW_TRUE;
 }
@@ -288,7 +290,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig)
 {
-    int attribs[40];
+    EGLint attribs[40];
     EGLConfig config;
     EGLContext share = NULL;
 
@@ -401,11 +403,26 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
+    // Set up attributes for surface creation
+    {
+        int index = 0;
+
+        if (fbconfig->sRGB)
+        {
+            if (_glfw.egl.KHR_gl_colorspace)
+            {
+                setEGLattrib(EGL_GL_COLORSPACE_KHR, EGL_GL_COLORSPACE_SRGB_KHR);
+            }
+        }
+
+        setEGLattrib(EGL_NONE, EGL_NONE);
+    }
+
     window->context.egl.surface =
         eglCreateWindowSurface(_glfw.egl.display,
                                config,
                                _GLFW_EGL_NATIVE_WINDOW,
-                               NULL);
+                               attribs);
     if (window->context.egl.surface == EGL_NO_SURFACE)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,

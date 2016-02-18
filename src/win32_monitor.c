@@ -32,14 +32,6 @@
 #include <limits.h>
 #include <malloc.h>
 
-// These constants are missing on MinGW
-#ifndef EDS_ROTATEDMODE
- #define EDS_ROTATEDMODE 0x00000004
-#endif
-#ifndef DISPLAY_DEVICE_ACTIVE
- #define DISPLAY_DEVICE_ACTIVE 0x00000001
-#endif
-
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////

@@ -920,7 +920,7 @@ static void processEvent(XEvent *event)
                         while (c - chars < count)
                             _glfwInputChar(window, decodeUTF8(&c), mods, plain);
                     }
-#else
+#else /*X_HAVE_UTF8_STRING*/
                     wchar_t buffer[16];
                     wchar_t* chars = buffer;
 
@@ -944,7 +944,7 @@ static void processEvent(XEvent *event)
                         for (i = 0;  i < count;  i++)
                             _glfwInputChar(window, chars[i], mods, plain);
                     }
-#endif
+#endif /*X_HAVE_UTF8_STRING*/
 
                     if (chars != buffer)
                         free(chars);

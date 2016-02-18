@@ -762,8 +762,8 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
 
     memset(&sci, 0, sizeof(sci));
     sci.sType = VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR;
-    sci.display = _glfw.mir.connection;
-    sci.surface = window->mir.surface;
+    sci.connection = _glfw.mir.connection;
+    sci.mirSurface = window->mir.surface;
 
     err = vkCreateMirSurfaceKHR(instance, &sci, allocator, surface);
     if (err)

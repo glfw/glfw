@@ -250,6 +250,15 @@ version related functions may be called from any thread:
  - @ref glfwGetVersion
  - @ref glfwGetVersionString
 
+Vulkan objects may be created and information queried from any thread.  The
+following Vulkan related functions may be called from any thread:
+
+ - @ref glfwVulkanSupported
+ - @ref glfwGetRequiredInstanceExtensions
+ - @ref glfwGetInstanceProcAddress
+ - @ref glfwGetPhysicalDevicePresentationSupport
+ - @ref glfwCreateWindowSurface
+
 GLFW uses no synchronization objects internally except for thread-local storage
 to keep track of the current context for each thread.  Synchronization is left
 to the application.

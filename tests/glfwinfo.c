@@ -354,6 +354,7 @@ int main(int argc, char** argv)
     int ch, api, major, minor, revision, profile;
     GLint redbits, greenbits, bluebits, alphabits, depthbits, stencilbits;
     int list_extensions = GLFW_FALSE, list_layers = GLFW_FALSE;
+    GLenum error;
     GLFWwindow* window;
 
     enum { API, BEHAVIOR, DEBUG, FORWARD, HELP, EXTENSIONS, LAYERS,
@@ -608,6 +609,10 @@ int main(int argc, char** argv)
 
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+
+    error = glGetError();
+    if (error != GL_NO_ERROR)
+        printf("*** OpenGL error after make current: 0x%08x ***\n", error);
 
     // Report client API version
 

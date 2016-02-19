@@ -2148,7 +2148,7 @@ int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
     VisualID visualID = XVisualIDFromVisual(DefaultVisual(_glfw.x11.display,
                                                           _glfw.x11.screen));
 
-    if (_glfw.vk.KHR_xcb_surface)
+    if (_glfw.vk.KHR_xcb_surface && _glfw.x11.x11xcb.handle)
     {
         PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR vkGetPhysicalDeviceXcbPresentationSupportKHR =
             (PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)
@@ -2198,7 +2198,7 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
                                           const VkAllocationCallbacks* allocator,
                                           VkSurfaceKHR* surface)
 {
-    if (_glfw.vk.KHR_xcb_surface)
+    if (_glfw.vk.KHR_xcb_surface && _glfw.x11.x11xcb.handle)
     {
         VkResult err;
         VkXcbSurfaceCreateInfoKHR sci;

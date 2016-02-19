@@ -1,13 +1,13 @@
 /*!
 
-@page build Building applications
+@page build_guide Building applications
 
 @tableofcontents
 
 This is about compiling and linking applications that use GLFW.  For information on
-how to write such applications, start with the [introductory tutorial](@ref quick).
-For information on how to compile the GLFW library itself, see the @ref compile
-guide.
+how to write such applications, start with the
+[introductory tutorial](@ref quick_guide).  For information on how to compile
+the GLFW library itself, see @ref compile_guide.
 
 This is not a tutorial on compilation or linking.  It assumes basic
 understanding of how to compile and link a C program as well as how to use the

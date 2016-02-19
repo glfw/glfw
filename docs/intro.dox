@@ -1,18 +1,21 @@
 /*! 
 
-@page intro Introduction to the API
+@page intro_guide Introduction to the API
  
 @tableofcontents
 
-This guide introduces the basic concepts of GLFW and describes initialization,
+This guide introduces the basic concepts of GLFW and describes initialization reference
 error handling and API guarantees and limitations.  For a broad but shallow
-tutorial, see @ref quick instead.  There are also guides for the other areas of
-GLFW.
+tutorial, see @ref quick_guide instead.  For details on a specific function, see the
+[reference documentation](@ref init).
 
- - @ref window
- - @ref context
- - @ref monitor
- - @ref input
+There are also guides for the other areas of GLFW.
+
+ - @ref window_guide
+ - @ref context_guide
+ - @ref vulkan_guide
+ - @ref monitor_guide
+ - @ref input_guide
 
 
 @section intro_init Initialization and termination

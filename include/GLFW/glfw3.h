@@ -46,37 +46,37 @@ extern "C" {
  *
  *  For more information about how to use this file, see @ref build_include.
  */
-/*! @defgroup context Context handling
+/*! @defgroup context Context reference
  *
- *  This is the reference documentation for context related functions.  For more
- *  information, see the @ref context.
+ *  This is the reference documentation for OpenGL and OpenGL ES context related
+ *  functions.  For more task-oriented information, see the @ref context_guide.
  */
-/*! @defgroup vulkan Vulkan support
+/*! @defgroup vulkan Vulkan reference
  *
- *  This is the reference documentation for Vulkan related functions.  For more
- *  information, see the @ref vulkan.
+ *  This is the reference documentation for Vulkan related functions and types.
+ *  For more task-oriented information, see the @ref vulkan_guide.
  */
-/*! @defgroup init Initialization, version and errors
+/*! @defgroup init Initialization, version and error reference
  *
  *  This is the reference documentation for initialization and termination of
- *  the library, version management and error handling.  For more information,
- *  see the @ref intro.
+ *  the library, version management and error handling.  For more task-oriented
+ *  information, see the @ref intro_guide.
  */
-/*! @defgroup input Input handling
+/*! @defgroup input Input reference
  *
  *  This is the reference documentation for input related functions and types.
- *  For more information, see the @ref input.
+ *  For more task-oriented information, see the @ref input_guide.
  */
-/*! @defgroup monitor Monitor handling
+/*! @defgroup monitor Monitor reference
  *
  *  This is the reference documentation for monitor related functions and types.
- *  For more information, see the @ref monitor.
+ *  For more task-oriented information, see the @ref monitor_guide.
  */
-/*! @defgroup window Window handling
+/*! @defgroup window Window reference
  *
  *  This is the reference documentation for window related functions and types,
- *  including creation, deletion and event polling.  For more information, see
- *  the @ref window.
+ *  including creation, deletion and event polling.  For more task-oriented
+ *  information, see the @ref window_guide.
  */
 
 

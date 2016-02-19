@@ -96,7 +96,7 @@ and the cursor position directly instead of returning cached data.
 @subsection news_31_libovr Better interoperability with Oculus Rift
 
 GLFW now provides native access functions for the OS level handles corresponding
-to monitor objects, as well as a [brief guide](@ref rift).  It is also regularly
+to monitor objects, as well as the @ref rift_guide.  It is also regularly
 tested for compatibility with the latest version of LibOVR (0.4.4 on release).
 
 

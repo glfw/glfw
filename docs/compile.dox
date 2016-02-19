@@ -1,11 +1,11 @@
 /*!
 
-@page compile Compiling GLFW
+@page compile_guide Compiling GLFW
 
 @tableofcontents
 
 This is about compiling the GLFW library itself.  For information on how to
-build applications that use GLFW, see the @ref build guide.
+build applications that use GLFW, see @ref build_guide.
 
 
 @section compile_cmake Using CMake
@@ -156,7 +156,7 @@ necessary to compile GLFW.  Go ahead and compile the actual GLFW library with
 these files, as you would with any other project.
 
 Once the GLFW library is compiled, you are ready to build your applications,
-linking it to the GLFW library.  See the @ref build guide for more information.
+linking it to the GLFW library.  See @ref build_guide for more information.
 
 
 @subsection compile_options CMake options

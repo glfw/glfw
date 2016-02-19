@@ -1,6 +1,6 @@
 /*!
 
-@page quick Getting started
+@page quick_guide Getting started
 
 @tableofcontents
 
@@ -10,7 +10,7 @@ and exit when the user closes the window or presses _Escape_.  This guide will
 introduce a few of the most commonly used functions, but there are many more.
 
 This guide assumes no experience with earlier versions of GLFW.  If you
-have used GLFW 2 in the past, read the @ref moving guide, as some functions
+have used GLFW 2 in the past, read @ref moving_guide, as some functions
 behave differently in GLFW 3.
 
 
@@ -346,11 +346,11 @@ This tutorial used only a few of the many functions GLFW provides.  There are
 guides for each of the areas covered by GLFW.  Each guide will introduce all the
 functions for that category.
 
- - @ref intro
- - @ref window
- - @ref context
- - @ref monitor
- - @ref input
+ - @ref intro_guide
+ - @ref window_guide
+ - @ref context_guide
+ - @ref monitor_guide
+ - @ref input_guide
 
 You can access reference documentation for any GLFW function by clicking it and
 the reference for each function links to related functions and guide sections.
@@ -359,6 +359,6 @@ The tutorial ends here.  Once you have written a program that uses GLFW, you
 will need to compile and link it.  How to do that depends on the development
 environment you are using and is best explained by the documentation for that
 environment.  To learn about the details that are specific to GLFW, see
-@ref build.
+@ref build_guide.
 
 */

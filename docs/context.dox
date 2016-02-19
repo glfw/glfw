@@ -1,16 +1,19 @@
 /*!
 
-@page context Context guide
+@page context_guide Context guide
 
 @tableofcontents
 
 This guide introduces the OpenGL and OpenGL ES context related functions of
-GLFW.  There are also guides for the other areas of the GLFW API.
+GLFW.  For details on a specific function, see the
+[reference documentation](@ref context).  There are also guides for the other
+areas of the GLFW API.
 
- - @ref intro
- - @ref window
- - @ref monitor
- - @ref input
+ - @ref intro_guide
+ - @ref window_guide
+ - @ref vulkan_guide
+ - @ref monitor_guide
+ - @ref input_guide
 
 
 @section context_object Context objects
@@ -29,7 +32,7 @@ the `glfwinfo` test program.
 @note Vulkan does not have a context and the Vulkan instance is created via the
 Vulkan API itself.  If you will be using Vulkan to render to a window, disable
 context creation by setting the [GLFW_CLIENT_API](@ref window_hints_ctx) hint to
-`GLFW_NO_API`.  For more information, see the @ref vulkan.
+`GLFW_NO_API`.  For more information, see the @ref vulkan_guide.
 
 
 @subsection context_hints Context creation hints

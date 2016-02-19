@@ -3532,13 +3532,17 @@ GLFWAPI GLFWwindow* glfwGetCurrentContext(void);
 
 /*! @brief Swaps the front and back buffers of the specified window.
  *
- *  This function swaps the front and back buffers of the specified window.  If
- *  the swap interval is greater than zero, the GPU driver waits the specified
- *  number of screen updates before swapping the buffers.
+ *  This function swaps the front and back buffers of the specified window when
+ *  rendering with OpenGL or OpenGL ES.  If the swap interval is greater than
+ *  zero, the GPU driver waits the specified number of screen updates before
+ *  swapping the buffers.
  *
  *  The specified window must have an OpenGL or OpenGL ES context.  Specifying
  *  a window without a context will generate a @ref GLFW_NO_WINDOW_CONTEXT
  *  error.
+ *
+ *  This function does not apply to Vulkan.  If you are rendering with Vulkan,
+ *  see `vkQueuePresentKHR` instead.
  *
  *  @param[in] window The window whose buffers to swap.
  *
@@ -3562,11 +3566,11 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
 
 /*! @brief Sets the swap interval for the current context.
  *
- *  This function sets the swap interval for the current context, i.e. the
- *  number of screen updates to wait from the time @ref glfwSwapBuffers was
- *  called before swapping the buffers and returning.  This is sometimes called
- *  _vertical synchronization_, _vertical retrace synchronization_ or just
- *  _vsync_.
+ *  This function sets the swap interval for the current OpenGL or OpenGL ES
+ *  context, i.e. the number of screen updates to wait from the time @ref
+ *  glfwSwapBuffers was called before swapping the buffers and returning.  This
+ *  is sometimes called _vertical synchronization_, _vertical retrace
+ *  synchronization_ or just _vsync_.
  *
  *  Contexts that support either of the `WGL_EXT_swap_control_tear` and
  *  `GLX_EXT_swap_control_tear` extensions also accept negative swap intervals,
@@ -3577,6 +3581,9 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
  *
  *  A context must be current on the calling thread.  Calling this function
  *  without a current context will cause a @ref GLFW_NO_CURRENT_CONTEXT error.
+ *
+ *  This function does not apply to Vulkan.  If you are rendering with Vulkan,
+ *  see the present mode of your swapchain instead.
  *
  *  @param[in] interval The minimum number of screen updates to wait for
  *  until the buffers are swapped by @ref glfwSwapBuffers.
@@ -3607,9 +3614,9 @@ GLFWAPI void glfwSwapInterval(int interval);
 /*! @brief Returns whether the specified extension is available.
  *
  *  This function returns whether the specified
- *  [client API extension](@ref context_glext) is supported by the current
- *  OpenGL or OpenGL ES context.  It searches both for OpenGL and OpenGL ES
- *  extension and platform-specific context creation API extensions.
+ *  [API extension](@ref context_glext) is supported by the current OpenGL or
+ *  OpenGL ES context.  It searches both for client API extension and context
+ *  creation API extensions.
  *
  *  A context must be current on the calling thread.  Calling this function
  *  without a current context will cause a @ref GLFW_NO_CURRENT_CONTEXT error.
@@ -3618,6 +3625,10 @@ GLFWAPI void glfwSwapInterval(int interval);
  *  call, it is recommended that you cache its results if it is going to be used
  *  frequently.  The extension strings will not change during the lifetime of
  *  a context, so there is no danger in doing this.
+ *
+ *  This function does not apply to Vulkan.  If you are using Vulkan, see @ref
+ *  glfwGetRequiredInstanceExtensions, `vkEnumerateInstanceExtensionProperties`
+ *  and `vkEnumerateDeviceExtensionProperties` instead.
  *
  *  @param[in] extension The ASCII encoded name of the extension.
  *  @return `GLFW_TRUE` if the extension is available, or `GLFW_FALSE`
@@ -3641,12 +3652,16 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
 /*! @brief Returns the address of the specified function for the current
  *  context.
  *
- *  This function returns the address of the specified
+ *  This function returns the address of the specified OpenGL or OpenGL ES
  *  [core or extension function](@ref context_glext), if it is supported
  *  by the current context.
  *
  *  A context must be current on the calling thread.  Calling this function
  *  without a current context will cause a @ref GLFW_NO_CURRENT_CONTEXT error.
+ *
+ *  This function does not apply to Vulkan.  If you are rendering with Vulkan,
+ *  see @ref glfwGetInstanceProcAddress, `vkGetInstanceProcAddr` and
+ *  `vkGetDeviceProcAddr` instead.
  *
  *  @param[in] procname The ASCII encoded name of the function.
  *  @return The address of the function, or `NULL` if an

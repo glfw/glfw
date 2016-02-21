@@ -2142,7 +2142,7 @@ char** _glfwPlatformGetRequiredInstanceExtensions(int* count)
     extensions = calloc(2, sizeof(char*));
     extensions[0] = strdup("VK_KHR_surface");
 
-    if (_glfw.vk.KHR_xcb_surface)
+    if (_glfw.vk.KHR_xcb_surface && _glfw.x11.x11xcb.handle)
         extensions[1] = strdup("VK_KHR_xcb_surface");
     else
         extensions[1] = strdup("VK_KHR_xlib_surface");

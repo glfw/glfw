@@ -231,10 +231,9 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     {
         if (wndconfig.visible)
         {
+            _glfwPlatformShowWindow(window);
             if (wndconfig.focused)
-                _glfwPlatformShowWindow(window);
-            else
-                _glfwPlatformUnhideWindow(window);
+                _glfwPlatformFocusWindow(window);
         }
     }
 
@@ -627,6 +626,16 @@ GLFWAPI void glfwHideWindow(GLFWwindow* handle)
         return;
 
     _glfwPlatformHideWindow(window);
+}
+
+GLFWAPI void glfwFocusWindow(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window);
+
+    _GLFW_REQUIRE_INIT();
+
+    _glfwPlatformFocusWindow(window);
 }
 
 GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)

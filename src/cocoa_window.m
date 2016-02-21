@@ -84,6 +84,7 @@ static GLFWbool enterFullscreenMode(_GLFWwindow* window)
                                     bounds.size.height);
 
     [window->ns.object setFrame:frame display:YES];
+    _glfwPlatformFocusWindow(window);
     return status;
 }
 
@@ -1040,6 +1041,16 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
+    [window->ns.object orderFront:nil];
+}
+
+void _glfwPlatformHideWindow(_GLFWwindow* window)
+{
+    [window->ns.object orderOut:nil];
+}
+
+void _glfwPlatformFocusWindow(_GLFWwindow* window)
+{
     // Make us the active application
     // HACK: This has been moved here from initializeAppKit to prevent
     //       applications using only hidden windows from being activated, but
@@ -1047,16 +1058,6 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     [NSApp activateIgnoringOtherApps:YES];
 
     [window->ns.object makeKeyAndOrderFront:nil];
-}
-
-void _glfwPlatformUnhideWindow(_GLFWwindow* window)
-{
-    [window->ns.object orderFront:nil];
-}
-
-void _glfwPlatformHideWindow(_GLFWwindow* window)
-{
-    [window->ns.object orderOut:nil];
 }
 
 int _glfwPlatformWindowFocused(_GLFWwindow* window)

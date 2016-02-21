@@ -715,6 +715,13 @@ int visible = glfwGetWindowAttrib(window, GLFW_VISIBLE);
 
 @subsection window_focus Window input focus
 
+Windows can be given input focus and brought to the front with @ref
+glfwFocusWindow.
+
+@code
+glfwFocusWindow(window);
+@endcode
+
 If you wish to be notified when a window gains or loses input focus, whether by
 the user, system or your own code, set a focus callback.
 

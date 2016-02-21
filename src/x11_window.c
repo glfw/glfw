@@ -763,19 +763,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
                       0);
     }
 
-    if (_glfw.x11.NET_ACTIVE_WINDOW)
-    {
-        // Ask the window manager to raise and focus the GLFW window
-        // Only focused windows with the _NET_WM_STATE_FULLSCREEN state end up
-        // on top of all other windows ("Stacking order" in EWMH spec)
-        sendEventToWM(window, _glfw.x11.NET_ACTIVE_WINDOW, 1, 0, 0, 0, 0);
-    }
-    else
-    {
-        XRaiseWindow(_glfw.x11.display, window->x11.handle);
-        XSetInputFocus(_glfw.x11.display, window->x11.handle,
-                       RevertToParent, CurrentTime);
-    }
+    _glfwPlatformFocusWindow(window);
 
     if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_FULLSCREEN)
     {
@@ -1811,12 +1799,6 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
-    XMapRaised(_glfw.x11.display, window->x11.handle);
-    XFlush(_glfw.x11.display);
-}
-
-void _glfwPlatformUnhideWindow(_GLFWwindow* window)
-{
     XMapWindow(_glfw.x11.display, window->x11.handle);
     XFlush(_glfw.x11.display);
 }
@@ -1824,6 +1806,25 @@ void _glfwPlatformUnhideWindow(_GLFWwindow* window)
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     XUnmapWindow(_glfw.x11.display, window->x11.handle);
+    XFlush(_glfw.x11.display);
+}
+
+void _glfwPlatformFocusWindow(_GLFWwindow* window)
+{
+    if (_glfw.x11.NET_ACTIVE_WINDOW)
+    {
+        // Ask the window manager to raise and focus the GLFW window
+        // Only focused windows with the _NET_WM_STATE_FULLSCREEN state end up
+        // on top of all other windows ("Stacking order" in EWMH spec)
+        sendEventToWM(window, _glfw.x11.NET_ACTIVE_WINDOW, 1, 0, 0, 0, 0);
+    }
+    else
+    {
+        XRaiseWindow(_glfw.x11.display, window->x11.handle);
+        XSetInputFocus(_glfw.x11.display, window->x11.handle,
+                       RevertToParent, CurrentTime);
+    }
+
     XFlush(_glfw.x11.display);
 }
 

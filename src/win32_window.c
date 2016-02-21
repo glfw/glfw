@@ -1036,19 +1036,18 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
     ShowWindow(window->win32.handle, SW_SHOW);
-    BringWindowToTop(window->win32.handle);
-    SetForegroundWindow(window->win32.handle);
-    SetFocus(window->win32.handle);
-}
-
-void _glfwPlatformUnhideWindow(_GLFWwindow* window)
-{
-    ShowWindow(window->win32.handle, SW_SHOW);
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     ShowWindow(window->win32.handle, SW_HIDE);
+}
+
+void _glfwPlatformFocusWindow(_GLFWwindow* window)
+{
+    BringWindowToTop(window->win32.handle);
+    SetForegroundWindow(window->win32.handle);
+    SetFocus(window->win32.handle);
 }
 
 int _glfwPlatformWindowFocused(_GLFWwindow* window)

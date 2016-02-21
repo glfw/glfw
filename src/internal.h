@@ -684,14 +684,15 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window);
  */
 void _glfwPlatformShowWindow(_GLFWwindow* window);
 
-/*! @ingroup platform
- */
-void _glfwPlatformUnhideWindow(_GLFWwindow* window);
-
 /*! @copydoc glfwHideWindow
  *  @ingroup platform
  */
 void _glfwPlatformHideWindow(_GLFWwindow* window);
+
+/*! @copydoc glfwFocusWindow
+ *  @ingroup platform
+ */
+void _glfwPlatformFocusWindow(_GLFWwindow* window);
 
 /*! @brief Returns whether the window is focused.
  *  @ingroup platform

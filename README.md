@@ -104,6 +104,7 @@ does not find Doxygen, the documentation will not be generated.
  - [X11] Bugfix: Monitor connection and disconnection events were not reported
  - [X11] Bugfix: Decoding of UTF-8 text from XIM could continue past the end
  - [X11] Bugfix: An XKB structure was leaked during `glfwInit`
+ - [X11] Bugfix: XInput2 `XI_Motion` events interfered with the Steam overlay
  - [POSIX] Bugfix: An unrelated TLS key could be deleted by `glfwTerminate`
  - [WGL] Changed extension loading to only be performed once
  - [WGL] Removed dependency on external WGL headers

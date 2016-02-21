@@ -544,25 +544,6 @@ static GLFWbool initExtensions(void)
             _glfw.x11.xinerama.available = GLFW_TRUE;
     }
 
-#if defined(_GLFW_HAS_XINPUT)
-    if (XQueryExtension(_glfw.x11.display,
-                        "XInputExtension",
-                        &_glfw.x11.xi.majorOpcode,
-                        &_glfw.x11.xi.eventBase,
-                        &_glfw.x11.xi.errorBase))
-    {
-        _glfw.x11.xi.major = 2;
-        _glfw.x11.xi.minor = 0;
-
-        if (XIQueryVersion(_glfw.x11.display,
-                           &_glfw.x11.xi.major,
-                           &_glfw.x11.xi.minor) != BadRequest)
-        {
-            _glfw.x11.xi.available = GLFW_TRUE;
-        }
-    }
-#endif /*_GLFW_HAS_XINPUT*/
-
     // Check if Xkb is supported on this display
     _glfw.x11.xkb.major = 1;
     _glfw.x11.xkb.minor = 0;
@@ -855,9 +836,6 @@ const char* _glfwPlatformGetVersionString(void)
 #endif
 #if defined(__linux__)
         " /dev/js"
-#endif
-#if defined(_GLFW_HAS_XINPUT)
-        " XI"
 #endif
 #if defined(_GLFW_HAS_XF86VM)
         " Xf86vm"

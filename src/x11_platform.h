@@ -47,11 +47,6 @@
 // The Xinerama extension provides legacy monitor indices
 #include <X11/extensions/Xinerama.h>
 
-#if defined(_GLFW_HAS_XINPUT)
- // The XInput2 extension provides improved input events
- #include <X11/extensions/XInput2.h>
-#endif
-
 #if defined(_GLFW_HAS_XF86VM)
  // The Xf86VidMode extension provides fallback gamma control
  #include <X11/extensions/xf86vmode.h>
@@ -249,17 +244,6 @@ typedef struct _GLFWlibraryX11
         void*       handle;
         XGETXCBCONNECTION_T XGetXCBConnection;
     } x11xcb;
-
-#if defined(_GLFW_HAS_XINPUT)
-    struct {
-        GLFWbool    available;
-        int         majorOpcode;
-        int         eventBase;
-        int         errorBase;
-        int         major;
-        int         minor;
-    } xi;
-#endif /*_GLFW_HAS_XINPUT*/
 
 #if defined(_GLFW_HAS_XF86VM)
     struct {

@@ -469,23 +469,6 @@ static GLFWbool createWindow(_GLFWwindow* window,
         XFree(hint);
     }
 
-#if defined(_GLFW_HAS_XINPUT)
-    if (_glfw.x11.xi.available)
-    {
-        // Select for XInput2 events
-
-        XIEventMask eventmask;
-        unsigned char mask[] = { 0 };
-
-        eventmask.deviceid = 2;
-        eventmask.mask_len = sizeof(mask);
-        eventmask.mask = mask;
-        XISetMask(mask, XI_Motion);
-
-        XISelectEvents(_glfw.x11.display, window->x11.handle, &eventmask, 1);
-    }
-#endif /*_GLFW_HAS_XINPUT*/
-
     if (_glfw.x11.XdndAware)
     {
         // Announce support for Xdnd (drag and drop)
@@ -1388,54 +1371,6 @@ static void processEvent(XEvent *event)
 
         case DestroyNotify:
             return;
-
-#if defined(_GLFW_HAS_XINPUT)
-        case GenericEvent:
-        {
-            if (event->xcookie.extension == _glfw.x11.xi.majorOpcode &&
-                XGetEventData(_glfw.x11.display, &event->xcookie))
-            {
-                if (event->xcookie.evtype == XI_Motion)
-                {
-                    XIDeviceEvent* data = (XIDeviceEvent*) event->xcookie.data;
-
-                    window = findWindowByHandle(data->event);
-                    if (window)
-                    {
-                        if (data->event_x != window->x11.warpPosX ||
-                            data->event_y != window->x11.warpPosY)
-                        {
-                            // The cursor was moved by something other than GLFW
-
-                            double x, y;
-
-                            if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                            {
-                                if (_glfw.cursorWindow != window)
-                                    return;
-
-                                x = data->event_x - window->x11.cursorPosX;
-                                y = data->event_y - window->x11.cursorPosY;
-                            }
-                            else
-                            {
-                                x = data->event_x;
-                                y = data->event_y;
-                            }
-
-                            _glfwInputCursorMotion(window, x, y);
-                        }
-
-                        window->x11.cursorPosX = data->event_x;
-                        window->x11.cursorPosY = data->event_y;
-                    }
-                }
-            }
-
-            XFreeEventData(_glfw.x11.display, &event->xcookie);
-            return;
-        }
-#endif /*_GLFW_HAS_XINPUT*/
     }
 }
 

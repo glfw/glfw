@@ -234,21 +234,6 @@ if (_GLFW_X11)
     list(APPEND glfw_LIBRARIES "${X11_Xinerama_LIB}")
     list(APPEND glfw_PKG_DEPS "xinerama")
 
-    # Check for XInput (high-resolution cursor motion)
-    if (X11_Xinput_FOUND)
-        list(APPEND glfw_INCLUDE_DIRS "${X11_Xinput_INCLUDE_PATH}")
-        list(APPEND glfw_PKG_DEPS "xi")
-
-        if (X11_Xinput_LIB)
-            list(APPEND glfw_LIBRARIES "${X11_Xinput_LIB}")
-        else()
-            # Backwards compatibility (bug in CMake 2.8.7)
-            list(APPEND glfw_LIBRARIES Xi)
-        endif()
-
-        set(_GLFW_HAS_XINPUT TRUE)
-    endif()
-
     # Check for Xf86VidMode (fallback gamma control)
     if (X11_xf86vmode_FOUND)
         list(APPEND glfw_INCLUDE_DIRS "${X11_xf86vmode_INCLUDE_PATH}")

@@ -274,8 +274,6 @@ must also define `_GLFW_BUILD_DLL`.  Otherwise, you must not define it.
 If you are using the X11 window creation API, support for the following X11
 extensions can be enabled:
 
- - `_GLFW_HAS_XINPUT` to use XInput2 for high-resolution cursor motion
- (recommended)
  - `_GLFW_HAS_XF86VM` to use Xxf86vm as a fallback when RandR gamma is broken
  (recommended)
 

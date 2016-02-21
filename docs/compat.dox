@@ -63,10 +63,6 @@ GLFW uses the
 to provide file drop events.  If the application originating the drag does not
 support this protocol, drag and drop will not work.
 
-GLFW uses the XInput 2 extension to provide sub-pixel cursor motion events.  If
-the running X server does not support this version of this extension, cursor
-motion will be snapped to the pixel grid.
-
 GLFW uses the XRandR 1.3 extension to provide multi-monitor support.  If the
 running X server does not support this version of this extension, multi-monitor
 support will not function and only a single, desktop-spanning monitor will be

@@ -80,8 +80,6 @@ static GLFWbool chooseFBConfig(
     usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
     usableCount = 0;
     
-    XVisualInfo *visualinfo = NULL;
-    XRenderPictFormat *pictFormat = NULL;
 selectionloop:
     for (i = 0;  i < nativeCount;  i++)
     {
@@ -100,27 +98,24 @@ selectionloop:
         }
 
 	if( findTransparent ) {
-	    
-	    if( visualinfo ) {
-	        XFree( visualinfo );
-		visualinfo = NULL;
-	    }
+            XVisualInfo *visualinfo;
+            XRenderPictFormat *pictFormat;
 
 	    visualinfo = glXGetVisualFromFBConfig(_glfw.x11.display, n);
 	    if (!visualinfo)
 	        continue;
 
-	    if( pictFormat ) {
-	        XFree( pictFormat );
-		pictFormat = NULL;
+            pictFormat = XRenderFindVisualFormat(_glfw.x11.display, visualinfo->visual);
+            if( !pictFormat ) {
+	        XFree( visualinfo );
+	        continue;
 	    }
 
-            pictFormat = XRenderFindVisualFormat(_glfw.x11.display, visualinfo->visual);
-            if( !pictFormat )
+            if( !pictFormat->direct.alphaMask ) {
+	        XFree( visualinfo );
 	        continue;
-
-            if( !pictFormat->direct.alphaMask ) 
-	        continue;
+	    }
+	    XFree( visualinfo );
         }
 
         u->redBits = getFBConfigAttrib(n, GLX_RED_SIZE);
@@ -151,15 +146,6 @@ selectionloop:
 
         u->glx = n;
         usableCount++;
-	    
-        if( visualinfo ) {
-            XFree( visualinfo );
-	    visualinfo = NULL;
-        }
-	if( pictFormat ) {
-	    XFree( pictFormat );
-	    pictFormat = NULL;
-	}
     }
     // reiterate the selection loop without looking for transparency supporting
     // formats if no matchig FB configs for a transparent window were found. 
@@ -212,29 +198,11 @@ GLFWbool _glfwInitGLX(void)
         NULL
     };
 
-    const char* sonames_xrender[] =
-    {
-#if defined(__CYGWIN__)
-        "libXrender-1.so",
-#else
-        "libXrender.so.1",
-        "libXrender.so",
-#endif
-        NULL
-    };
-
 
     for (i = 0;  sonames_glx[i];  i++)
     {
         _glfw.glx.handle = dlopen(sonames_glx[i], RTLD_LAZY | RTLD_GLOBAL);
         if (_glfw.glx.handle)
-            break;
-    }
-
-    for (i = 0;  sonames_xrender[i];  i++)
-    {
-        _glfw.xrender.handle = dlopen(sonames_xrender[i], RTLD_LAZY | RTLD_GLOBAL);
-        if (_glfw.xrender.handle)
             break;
     }
 
@@ -296,37 +264,6 @@ GLFWbool _glfwInitGLX(void)
                         "GLX: GLX version 1.3 is required");
         return GLFW_FALSE;
     }
-
-    // Xrender support is optional and not a requirement for GLX
-    // to work. Xrender is required for selecting a FB config that
-    // supports a picture format with an alpha mask, which in turn
-    // is required for transparent windows. I Xrender is not supported
-    // the GLFW_TRANSPARENT window hint is ignored.
-    _glfw.xrender.errorBase = 0;
-    _glfw.xrender.eventBase = 0;
-    _glfw.xrender.major = 0;
-    _glfw.xrender.minor = 0;
-    if (_glfw.xrender.handle) do {
-    	int errorBase, eventBase, major, minor;
-        _glfw.xrender.QueryExtension =
-            dlsym(_glfw.xrender.handle, "XRenderQueryExtension");
-        _glfw.xrender.QueryVersion =
-            dlsym(_glfw.xrender.handle, "XRenderQueryVersion");
-        _glfw.xrender.FindVisualFormat =
-            dlsym(_glfw.xrender.handle, "XRenderFindVisualFormat");
-
-        if ( !XRenderQueryExtension(_glfw.x11.display, &errorBase, &eventBase)) {
-	    break;
-	}
-        if ( !XRenderQueryVersion(_glfw.x11.display, &major, &minor)) {
-	    break;
-	}
-
-        _glfw.xrender.errorBase = errorBase;
-        _glfw.xrender.eventBase = eventBase;
-        _glfw.xrender.major = major;
-        _glfw.xrender.minor = minor;
-    } while(0);
 
     if (_glfwPlatformExtensionSupported("GLX_EXT_swap_control"))
     {

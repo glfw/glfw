@@ -798,7 +798,7 @@ int main(int argc, char** argv)
         PFN_vkEnumeratePhysicalDevices vkEnumeratePhysicalDevices;
         PFN_vkGetPhysicalDeviceProperties vkGetPhysicalDeviceProperties;
 
-        re = glfwGetRequiredInstanceExtensions((int*) &re_count);
+        re = glfwGetRequiredInstanceExtensions(&re_count);
 
         printf("Vulkan required instance extensions:");
         for (i = 0;  i < re_count;  i++)

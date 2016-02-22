@@ -438,7 +438,7 @@ struct _GLFWlibrary
         GLFWbool        available;
         void*           handle;
         char**          extensions;
-        int             extensionCount;
+        unsigned int    extensionCount;
         PFN_vkEnumerateInstanceExtensionProperties EnumerateInstanceExtensionProperties;
         PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
         GLFWbool        KHR_surface;
@@ -784,7 +784,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor);
 
 /*! @ingroup platform
  */
-char** _glfwPlatformGetRequiredInstanceExtensions(int* count);
+char** _glfwPlatformGetRequiredInstanceExtensions(unsigned int* count);
 
 /*! @ingroup platform
  */

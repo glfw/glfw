@@ -710,7 +710,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return NULL;
 }
 
-char** _glfwPlatformGetRequiredInstanceExtensions(int* count)
+char** _glfwPlatformGetRequiredInstanceExtensions(unsigned int* count)
 {
     char** extensions;
 

@@ -196,7 +196,7 @@ GLFWAPI int glfwVulkanSupported(void)
     return _glfw.vk.available;
 }
 
-GLFWAPI const char** glfwGetRequiredInstanceExtensions(int* count)
+GLFWAPI const char** glfwGetRequiredInstanceExtensions(unsigned int* count)
 {
     *count = 0;
 

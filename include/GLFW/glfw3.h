@@ -3785,7 +3785,7 @@ GLFWAPI int glfwVulkanSupported(void);
  *
  *  @ingroup vulkan
  */
-GLFWAPI const char** glfwGetRequiredInstanceExtensions(int* count);
+GLFWAPI const char** glfwGetRequiredInstanceExtensions(unsigned int* count);
 
 #if defined(VK_VERSION_1_0)
 

@@ -1339,7 +1339,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return _glfw.ns.clipboardString;
 }
 
-char** _glfwPlatformGetRequiredInstanceExtensions(int* count)
+char** _glfwPlatformGetRequiredInstanceExtensions(unsigned int* count)
 {
     *count = 0;
     return NULL;

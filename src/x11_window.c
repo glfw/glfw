@@ -2127,7 +2127,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return _glfw.x11.clipboardString;
 }
 
-char** _glfwPlatformGetRequiredInstanceExtensions(int* count)
+char** _glfwPlatformGetRequiredInstanceExtensions(unsigned int* count)
 {
     char** extensions;
 

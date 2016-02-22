@@ -1732,7 +1732,7 @@ static void demo_init_vk(struct demo *demo) {
     }
 
     /* Look for instance extensions */
-    required_extensions = glfwGetRequiredInstanceExtensions((int*) &required_extension_count);
+    required_extensions = glfwGetRequiredInstanceExtensions(&required_extension_count);
     if (!required_extensions) {
         ERR_EXIT("glfwGetRequiredInstanceExtensions failed to find the "
                  "platform surface extensions.\n\nDo you have a compatible "

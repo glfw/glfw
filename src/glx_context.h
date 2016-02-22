@@ -109,19 +109,9 @@ typedef void (*PFNGLXDESTROYWINDOWPROC)(Display*,GLXWindow);
 #define glXCreateWindow _glfw.glx.CreateWindow
 #define glXDestroyWindow _glfw.glx.DestroyWindow
 
-// libXrender.so function pointer typedefs
-typedef Bool (*PFNXRENDERQUERYEXTENSIONPROC)(Display*,int*,int*);
-typedef Status (*PFNXRENDERQUERYVERSIONPROC)(Display*dpy,int*,int*);
-typedef XRenderPictFormat* (*PFNXRENDERFINDVISUALFORMATPROC)(Display*,Visual const *);
-
-// libXrender.so function identifier overlays
-#define XRenderQueryExtension   _glfw.xrender.QueryExtension
-#define XRenderQueryVersion     _glfw.xrender.QueryVersion
-#define XRenderFindVisualFormat _glfw.xrender.FindVisualFormat
-
 #define _GLFW_PLATFORM_FBCONFIG                 GLXFBConfig     glx
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextGLX glx
-#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryGLX glx ; _GLFWlibraryXrender xrender
+#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryGLX glx
 
 
 // GLX-specific per-context data
@@ -180,24 +170,6 @@ typedef struct _GLFWlibraryGLX
     GLFWbool        ARB_context_flush_control;
 
 } _GLFWlibraryGLX;
-
-// Xrender-specific global data
-//
-typedef struct _GLFWlibraryXrender
-{
-    int             major, minor;
-    int             eventBase;
-    int             errorBase;
-
-    // dlopen handle for libGL.so.1
-    void*           handle;
-
-    // Xrender functions (subset required for transparent window)
-    PFNXRENDERQUERYEXTENSIONPROC    QueryExtension;
-    PFNXRENDERQUERYVERSIONPROC      QueryVersion;
-    PFNXRENDERFINDVISUALFORMATPROC  FindVisualFormat;
-} _GLFWlibraryXrender;
-
 
 GLFWbool _glfwInitGLX(void);
 void _glfwTerminateGLX(void);

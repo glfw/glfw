@@ -2106,8 +2106,7 @@ static void demo_init_connection(struct demo *demo) {
     }
 
     if (!glfwVulkanSupported()) {
-        printf("Cannot find a compatible Vulkan installable client driver "
-               "(ICD).\nExiting ...\n");
+        printf("GLFW failed to find the Vulkan loader.\nExiting ...\n");
         fflush(stdout);
         exit(1);
     }

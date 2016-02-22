@@ -180,6 +180,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->monitor     = (_GLFWmonitor*) monitor;
     window->resizable   = wndconfig.resizable;
     window->decorated   = wndconfig.decorated;
+    window->transparent = wndconfig.transparent;
     window->autoIconify = wndconfig.autoIconify;
     window->floating    = wndconfig.floating;
     window->cursorMode  = GLFW_CURSOR_NORMAL;
@@ -249,6 +250,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.window.resizable   = GLFW_TRUE;
     _glfw.hints.window.visible     = GLFW_TRUE;
     _glfw.hints.window.decorated   = GLFW_TRUE;
+    _glfw.hints.window.transparent = GLFW_FALSE;
     _glfw.hints.window.focused     = GLFW_TRUE;
     _glfw.hints.window.autoIconify = GLFW_TRUE;
 
@@ -326,6 +328,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             return;
         case GLFW_DECORATED:
             _glfw.hints.window.decorated = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
+        case GLFW_TRANSPARENT:
+            _glfw.hints.window.transparent = value ? GLFW_TRUE : GLFW_FALSE;
             return;
         case GLFW_FOCUSED:
             _glfw.hints.window.focused = value ? GLFW_TRUE : GLFW_FALSE;
@@ -728,6 +733,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->resizable;
         case GLFW_DECORATED:
             return window->decorated;
+        case GLFW_TRANSPARENT:
+            return window->transparent;
         case GLFW_FLOATING:
             return window->floating;
         case GLFW_AUTO_ICONIFY:

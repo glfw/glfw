@@ -787,6 +787,7 @@ extern "C" {
  *  Cursor centering [window hint](@ref GLFW_CENTER_CURSOR_hint).
  */
 #define GLFW_CENTER_CURSOR          0x00020009
+#define GLFW_TRANSPARENT            0x0002000A
 
 /*! @brief Framebuffer bit depth hint.
  *

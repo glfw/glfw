@@ -627,6 +627,7 @@ extern "C" {
 #define GLFW_AUTO_ICONIFY           0x00020006
 #define GLFW_FLOATING               0x00020007
 #define GLFW_MAXIMIZED              0x00020008
+#define GLFW_TRANSPARENT            0x00020009
 
 #define GLFW_RED_BITS               0x00021001
 #define GLFW_GREEN_BITS             0x00021002

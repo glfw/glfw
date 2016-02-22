@@ -2741,13 +2741,42 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* window, int mode, int value);
 /*! @brief Returns the localized name of the specified printable key.
  *
  *  This function returns the localized name of the specified printable key.
+ *  This is intended for displaying key bindings to the user.
  *
- *  If the key is `GLFW_KEY_UNKNOWN`, the scancode is used, otherwise the
- *  scancode is ignored.
+ *  If the key is `GLFW_KEY_UNKNOWN`, the scancode is used instead, otherwise
+ *  the scancode is ignored.  If a non-printable key or (if the key is
+ *  `GLFW_KEY_UNKNOWN`) a scancode that maps to a non-printable key is
+ *  specified, this function returns `NULL`.          
+ *
+ *  This behavior allows you to pass in the arguments passed to the
+ *  [key callback](@ref input_key) without modification.
+ *
+ *  The printable keys are:
+ *  - `GLFW_KEY_APOSTROPHE`
+ *  - `GLFW_KEY_COMMA`
+ *  - `GLFW_KEY_MINUS`
+ *  - `GLFW_KEY_PERIOD`
+ *  - `GLFW_KEY_SLASH`
+ *  - `GLFW_KEY_SEMICOLON`
+ *  - `GLFW_KEY_EQUAL`
+ *  - `GLFW_KEY_LEFT_BRACKET`
+ *  - `GLFW_KEY_RIGHT_BRACKET`
+ *  - `GLFW_KEY_BACKSLASH`
+ *  - `GLFW_KEY_WORLD_1`
+ *  - `GLFW_KEY_WORLD_2`
+ *  - `GLFW_KEY_0` to `GLFW_KEY_9`
+ *  - `GLFW_KEY_A` to `GLFW_KEY_Z`
+ *  - `GLFW_KEY_KP_0` to `GLFW_KEY_KP_9`
+ *  - `GLFW_KEY_KP_DECIMAL`
+ *  - `GLFW_KEY_KP_DIVIDE`
+ *  - `GLFW_KEY_KP_MULTIPLY`
+ *  - `GLFW_KEY_KP_SUBTRACT`
+ *  - `GLFW_KEY_KP_ADD`
+ *  - `GLFW_KEY_KP_EQUAL`
  *
  *  @param[in] key The key to query, or `GLFW_KEY_UNKNOWN`.
  *  @param[in] scancode The scancode of the key to query.
- *  @return The localized name of the key.
+ *  @return The localized name of the key, or `NULL`.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.

@@ -717,6 +717,55 @@ static GLFWbool initExtensions(void)
     _glfw.x11.MOTIF_WM_HINTS =
         XInternAtom(_glfw.x11.display, "_MOTIF_WM_HINTS", False);
 
+    int i;
+    const char* sonames_xrender[] =
+    {
+#if defined(__CYGWIN__)
+        "libXrender-1.so",
+#else
+        "libXrender.so.1",
+        "libXrender.so",
+#endif
+        NULL
+    };
+
+    // Xrender support is optional and not a requirement for GLX/EGL
+    // to work. Xrender is required for selecting a FB config that
+    // supports a picture format with an alpha mask, which in turn
+    // is required for transparent windows. I Xrender is not supported
+    // the GLFW_TRANSPARENT window hint is ignored.
+    for (i = 0;  sonames_xrender[i];  i++)
+    {
+        _glfw.xrender.handle = dlopen(sonames_xrender[i], RTLD_LAZY | RTLD_GLOBAL);
+        if (_glfw.xrender.handle)
+            break;
+    }
+    _glfw.xrender.errorBase = 0;
+    _glfw.xrender.eventBase = 0;
+    _glfw.xrender.major = 0;
+    _glfw.xrender.minor = 0;
+    if (_glfw.xrender.handle) do {
+        int errorBase, eventBase, major, minor;
+        _glfw.xrender.QueryExtension =
+            dlsym(_glfw.xrender.handle, "XRenderQueryExtension");
+        _glfw.xrender.QueryVersion =
+            dlsym(_glfw.xrender.handle, "XRenderQueryVersion");
+        _glfw.xrender.FindVisualFormat =
+            dlsym(_glfw.xrender.handle, "XRenderFindVisualFormat");
+
+        if ( !XRenderQueryExtension(_glfw.x11.display, &errorBase, &eventBase)) {
+        break;
+    }
+        if ( !XRenderQueryVersion(_glfw.x11.display, &major, &minor)) {
+        break;
+    }
+
+        _glfw.xrender.errorBase = errorBase;
+        _glfw.xrender.eventBase = eventBase;
+        _glfw.xrender.major = major;
+        _glfw.xrender.minor = minor;
+    } while(0);
+
     return GLFW_TRUE;
 }
 

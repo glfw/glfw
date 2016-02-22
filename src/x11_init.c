@@ -620,7 +620,7 @@ static GLFWbool initExtensions(void)
 
 // Create a blank cursor for hidden and disabled cursor modes
 //
-static Cursor createNULLCursor(void)
+static Cursor createHiddenCursor(void)
 {
     unsigned char pixels[16 * 16 * 4];
     GLFWimage image = { 16, 16, pixels };
@@ -743,7 +743,7 @@ int _glfwPlatformInit(void)
     if (!initExtensions())
         return GLFW_FALSE;
 
-    _glfw.x11.cursor = createNULLCursor();
+    _glfw.x11.cursor = createHiddenCursor();
 
     if (XSupportsLocale())
     {

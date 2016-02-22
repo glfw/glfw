@@ -74,6 +74,7 @@ typedef struct __GLXFBConfig* GLXFBConfig;
 typedef struct __GLXcontext* GLXContext;
 typedef void (*__GLXextproc)(void);
 
+// libGL.so function pointer typedefs
 typedef int (*PFNGLXGETFBCONFIGATTRIBPROC)(Display*,GLXFBConfig,int,int*);
 typedef const char* (*PFNGLXGETCLIENTSTRINGPROC)(Display*,int);
 typedef Bool (*PFNGLXQUERYEXTENSIONPROC)(Display*,int*,int*);
@@ -93,7 +94,7 @@ typedef XVisualInfo* (*PFNGLXGETVISUALFROMFBCONFIGPROC)(Display*,GLXFBConfig);
 typedef GLXWindow (*PFNGLXCREATEWINDOWPROC)(Display*,GLXFBConfig,Window,const int*);
 typedef void (*PFNGLXDESTROYWINDOWPROC)(Display*,GLXWindow);
 
-// libGL.so function pointer typedefs
+// libGL.so function identifier overlays 
 #define glXGetFBConfigs _glfw.glx.GetFBConfigs
 #define glXGetFBConfigAttrib _glfw.glx.GetFBConfigAttrib
 #define glXGetClientString _glfw.glx.GetClientString
@@ -108,9 +109,19 @@ typedef void (*PFNGLXDESTROYWINDOWPROC)(Display*,GLXWindow);
 #define glXCreateWindow _glfw.glx.CreateWindow
 #define glXDestroyWindow _glfw.glx.DestroyWindow
 
+// libXrender.so function pointer typedefs
+typedef Bool (*PFNXRENDERQUERYEXTENSIONPROC)(Display*,int*,int*);
+typedef Status (*PFNXRENDERQUERYVERSIONPROC)(Display*dpy,int*,int*);
+typedef XRenderPictFormat* (*PFNXRENDERFINDVISUALFORMATPROC)(Display*,Visual const *);
+
+// libXrender.so function identifier overlays
+#define XRenderQueryExtension   _glfw.xrender.QueryExtension
+#define XRenderQueryVersion     _glfw.xrender.QueryVersion
+#define XRenderFindVisualFormat _glfw.xrender.FindVisualFormat
+
 #define _GLFW_PLATFORM_FBCONFIG                 GLXFBConfig     glx
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextGLX glx
-#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryGLX glx
+#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryGLX glx ; _GLFWlibraryXrender xrender
 
 
 // GLX-specific per-context data
@@ -170,6 +181,23 @@ typedef struct _GLFWlibraryGLX
 
 } _GLFWlibraryGLX;
 
+// Xrender-specific global data
+//
+typedef struct _GLFWlibraryXrender
+{
+    int             major, minor;
+    int             eventBase;
+    int             errorBase;
+
+    // dlopen handle for libGL.so.1
+    void*           handle;
+
+    // Xrender functions (subset required for transparent window)
+    PFNXRENDERQUERYEXTENSIONPROC    QueryExtension;
+    PFNXRENDERQUERYVERSIONPROC      QueryVersion;
+    PFNXRENDERFINDVISUALFORMATPROC  FindVisualFormat;
+} _GLFWlibraryXrender;
+
 
 GLFWbool _glfwInitGLX(void);
 void _glfwTerminateGLX(void);
@@ -177,7 +205,8 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContextGLX(_GLFWwindow* window);
-GLFWbool _glfwChooseVisualGLX(const _GLFWctxconfig* ctxconfig,
+GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
+                              const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig,
                               Visual** visual, int* depth);
 

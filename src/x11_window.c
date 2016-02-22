@@ -1431,7 +1431,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     else
     {
 #if defined(_GLFW_GLX)
-        if (!_glfwChooseVisualGLX(ctxconfig, fbconfig, &visual, &depth))
+        if (!_glfwChooseVisualGLX(wndconfig, ctxconfig, fbconfig, &visual, &depth))
             return GLFW_FALSE;
 #elif defined(_GLFW_EGL)
         if (!_glfwChooseVisualEGL(ctxconfig, fbconfig, &visual, &depth))

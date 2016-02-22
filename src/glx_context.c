@@ -59,7 +59,7 @@ static GLFWbool chooseFBConfig(
     const char* vendor;
     GLFWbool trustWindowBit = GLFW_TRUE;
 
-    if (findTransparent && !(_glfw.xrender.major || _glfw.xrender.minor)) {
+    if ( !(_glfw.xrender.major || _glfw.xrender.minor) ) {
         findTransparent = GLFW_FALSE;
     }
 

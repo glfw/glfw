@@ -79,7 +79,9 @@ static GLFWbool chooseFBConfig(
 
     usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
     usableCount = 0;
-
+    
+    XVisualInfo *visualinfo = NULL;
+    XRenderPictFormat *pictFormat = NULL;
 selectionloop:
     for (i = 0;  i < nativeCount;  i++)
     {
@@ -98,12 +100,20 @@ selectionloop:
         }
 
 	if( findTransparent ) {
-	    XVisualInfo *visualinfo;
-	    XRenderPictFormat *pictFormat;
 	    
+	    if( visualinfo ) {
+	        XFree( visualinfo );
+		visualinfo = NULL;
+	    }
+
 	    visualinfo = glXGetVisualFromFBConfig(_glfw.x11.display, n);
 	    if (!visualinfo)
 	        continue;
+
+	    if( pictFormat ) {
+	        XFree( pictFormat );
+		pictFormat = NULL;
+	    }
 
             pictFormat = XRenderFindVisualFormat(_glfw.x11.display, visualinfo->visual);
             if( !pictFormat )
@@ -141,6 +151,15 @@ selectionloop:
 
         u->glx = n;
         usableCount++;
+	    
+        if( visualinfo ) {
+            XFree( visualinfo );
+	    visualinfo = NULL;
+        }
+	if( pictFormat ) {
+	    XFree( pictFormat );
+	    pictFormat = NULL;
+	}
     }
     // reiterate the selection loop without looking for transparency supporting
     // formats if no matchig FB configs for a transparent window were found. 

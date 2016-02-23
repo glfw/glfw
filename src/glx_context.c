@@ -47,7 +47,10 @@ static int getFBConfigAttrib(GLXFBConfig fbconfig, int attrib)
 
 // Return a list of available and usable framebuffer configs
 //
-static GLFWbool chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* result)
+static GLFWbool chooseFBConfig(
+	const _GLFWfbconfig* desired,
+	GLXFBConfig* result,
+	GLFWbool findTransparent)
 {
     GLXFBConfig* nativeConfigs;
     _GLFWfbconfig* usableConfigs;
@@ -55,6 +58,10 @@ static GLFWbool chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* result
     int i, nativeCount, usableCount;
     const char* vendor;
     GLFWbool trustWindowBit = GLFW_TRUE;
+
+    if ( !(_glfw.xrender.major || _glfw.xrender.minor) ) {
+        findTransparent = GLFW_FALSE;
+    }
 
     // HACK: This is a (hopefully temporary) workaround for Chromium
     //       (VirtualBox GL) not setting the window bit on any GLXFBConfigs
@@ -72,7 +79,8 @@ static GLFWbool chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* result
 
     usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
     usableCount = 0;
-
+    
+selectionloop:
     for (i = 0;  i < nativeCount;  i++)
     {
         const GLXFBConfig n = nativeConfigs[i];
@@ -87,6 +95,27 @@ static GLFWbool chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* result
         {
             if (trustWindowBit)
                 continue;
+        }
+
+	if( findTransparent ) {
+            XVisualInfo *visualinfo;
+            XRenderPictFormat *pictFormat;
+
+	    visualinfo = glXGetVisualFromFBConfig(_glfw.x11.display, n);
+	    if (!visualinfo)
+	        continue;
+
+            pictFormat = XRenderFindVisualFormat(_glfw.x11.display, visualinfo->visual);
+            if( !pictFormat ) {
+	        XFree( visualinfo );
+	        continue;
+	    }
+
+            if( !pictFormat->direct.alphaMask ) {
+	        XFree( visualinfo );
+	        continue;
+	    }
+	    XFree( visualinfo );
         }
 
         u->redBits = getFBConfigAttrib(n, GLX_RED_SIZE);
@@ -117,6 +146,12 @@ static GLFWbool chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* result
 
         u->glx = n;
         usableCount++;
+    }
+    // reiterate the selection loop without looking for transparency supporting
+    // formats if no matchig FB configs for a transparent window were found. 
+    if( findTransparent && !usableCount ) {
+        findTransparent = GLFW_FALSE;
+	goto selectionloop;
     }
 
     closest = _glfwChooseFBConfig(desired, usableConfigs, usableCount);
@@ -152,7 +187,7 @@ static GLXContext createLegacyContext(_GLFWwindow* window,
 GLFWbool _glfwInitGLX(void)
 {
     int i;
-    const char* sonames[] =
+    const char* sonames_glx[] =
     {
 #if defined(__CYGWIN__)
         "libGL-1.so",
@@ -164,9 +199,9 @@ GLFWbool _glfwInitGLX(void)
     };
 
 
-    for (i = 0;  sonames[i];  i++)
+    for (i = 0;  sonames_glx[i];  i++)
     {
-        _glfw.glx.handle = dlopen(sonames[i], RTLD_LAZY | RTLD_GLOBAL);
+        _glfw.glx.handle = dlopen(sonames_glx[i], RTLD_LAZY | RTLD_GLOBAL);
         if (_glfw.glx.handle)
             break;
     }
@@ -324,7 +359,7 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
     if (ctxconfig->share)
         share = ctxconfig->share->context.glx.handle;
 
-    if (!chooseFBConfig(fbconfig, &native))
+    if (!chooseFBConfig(fbconfig, &native, window->transparent))
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "GLX: Failed to find a suitable GLXFBConfig");
@@ -507,14 +542,15 @@ void _glfwDestroyContextGLX(_GLFWwindow* window)
 
 // Returns the Visual and depth of the chosen GLXFBConfig
 //
-GLFWbool _glfwChooseVisualGLX(const _GLFWctxconfig* ctxconfig,
+GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
+			      const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig,
                               Visual** visual, int* depth)
 {
     GLXFBConfig native;
     XVisualInfo* result;
 
-    if (!chooseFBConfig(fbconfig, &native))
+    if (!chooseFBConfig(fbconfig, &native, wndconfig->transparent))
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "GLX: Failed to find a suitable GLXFBConfig");
@@ -530,7 +566,7 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWctxconfig* ctxconfig,
     }
 
     *visual = result->visual;
-    *depth = result->depth;
+    *depth  = result->depth;
 
     XFree(result);
     return GLFW_TRUE;

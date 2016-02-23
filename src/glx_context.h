@@ -74,6 +74,7 @@ typedef struct __GLXFBConfig* GLXFBConfig;
 typedef struct __GLXcontext* GLXContext;
 typedef void (*__GLXextproc)(void);
 
+// libGL.so function pointer typedefs
 typedef int (*PFNGLXGETFBCONFIGATTRIBPROC)(Display*,GLXFBConfig,int,int*);
 typedef const char* (*PFNGLXGETCLIENTSTRINGPROC)(Display*,int);
 typedef Bool (*PFNGLXQUERYEXTENSIONPROC)(Display*,int*,int*);
@@ -93,7 +94,7 @@ typedef XVisualInfo* (*PFNGLXGETVISUALFROMFBCONFIGPROC)(Display*,GLXFBConfig);
 typedef GLXWindow (*PFNGLXCREATEWINDOWPROC)(Display*,GLXFBConfig,Window,const int*);
 typedef void (*PFNGLXDESTROYWINDOWPROC)(Display*,GLXWindow);
 
-// libGL.so function pointer typedefs
+// libGL.so function identifier overlays 
 #define glXGetFBConfigs _glfw.glx.GetFBConfigs
 #define glXGetFBConfigAttrib _glfw.glx.GetFBConfigAttrib
 #define glXGetClientString _glfw.glx.GetClientString
@@ -170,14 +171,14 @@ typedef struct _GLFWlibraryGLX
 
 } _GLFWlibraryGLX;
 
-
 GLFWbool _glfwInitGLX(void);
 void _glfwTerminateGLX(void);
 GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContextGLX(_GLFWwindow* window);
-GLFWbool _glfwChooseVisualGLX(const _GLFWctxconfig* ctxconfig,
+GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
+                              const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig,
                               Visual** visual, int* depth);
 

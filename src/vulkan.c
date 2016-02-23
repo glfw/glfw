@@ -120,7 +120,7 @@ void _glfwInitVulkan(void)
 
 void _glfwTerminateVulkan(void)
 {
-    int i;
+    unsigned int i;
 
     for (i = 0;  i < _glfw.vk.extensionCount;  i++)
         free(_glfw.vk.extensions[i]);

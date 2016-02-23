@@ -588,12 +588,12 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     unsigned char* target = data;
     for (i = 0;  i < image->width * image->height;  i++, source += 4)
     {
-        unsigned char alpha = source[3];
+        unsigned int alpha = source[3];
 
-        *target++ = _glfwMultiplyAlpha(alpha, source[2]);
-        *target++ = _glfwMultiplyAlpha(alpha, source[1]);
-        *target++ = _glfwMultiplyAlpha(alpha, source[0]);
-        *target++ = alpha;
+        *target++ = (unsigned char) ((source[2] * alpha) / 255);
+        *target++ = (unsigned char) ((source[1] * alpha) / 255);
+        *target++ = (unsigned char) ((source[0] * alpha) / 255);
+        *target++ = (unsigned char) alpha;
     }
 
     cursor->wl.buffer =

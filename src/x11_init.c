@@ -690,12 +690,12 @@ Cursor _glfwCreateCursorX11(const GLFWimage* image, int xhot, int yhot)
 
     for (i = 0;  i < image->width * image->height;  i++, target++, source += 4)
     {
-        unsigned char alpha = source[3];
+        unsigned int alpha = source[3];
 
         *target = (alpha << 24) |
-                  (_glfwMultiplyAlpha(alpha, source[0]) << 16) |
-                  (_glfwMultiplyAlpha(alpha, source[1]) <<  8) |
-                  _glfwMultiplyAlpha(alpha, source[2]);
+                  ((unsigned char) ((source[0] * alpha) / 255) << 16) |
+                  ((unsigned char) ((source[1] * alpha) / 255) <<  8) |
+                  ((unsigned char) ((source[2] * alpha) / 255) <<  0);
     }
 
     cursor = XcursorImageLoadCursor(_glfw.x11.display, native);

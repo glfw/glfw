@@ -233,13 +233,6 @@ typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const c
         y = t;                    \
     }
 
-// Helper for non-premultiplied alpha to premultiplied alpha conversion
-static inline unsigned char _glfwMultiplyAlpha(unsigned char alpha,
-					       unsigned char value)
-{
-    return (unsigned char) ((value * (unsigned int) alpha) / 255);
-}
-
 
 //========================================================================
 // Platform-independent structures

@@ -339,6 +339,10 @@ struct _GLFWwindow
     _GLFWmonitor*       monitor;
     _GLFWcursor*        cursor;
 
+    int                 minwidth, minheight;
+    int                 maxwidth, maxheight;
+    int                 numer, denom;
+
     // Window input state
     GLFWbool            stickyKeys;
     GLFWbool            stickyMouseButtons;
@@ -694,6 +698,11 @@ void _glfwPlatformHideWindow(_GLFWwindow* window);
  */
 void _glfwPlatformFocusWindow(_GLFWwindow* window);
 
+/*! @copydoc glfwSetWindowMonitor
+ *  @ingroup platform
+ */
+void _glfwPlatformSetWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);
+
 /*! @brief Returns whether the window is focused.
  *  @ingroup platform
  */
@@ -855,6 +864,8 @@ void _glfwInputWindowDamage(_GLFWwindow* window);
  *  @ingroup event
  */
 void _glfwInputWindowCloseRequest(_GLFWwindow* window);
+
+void _glfwInputWindowMonitorChange(_GLFWwindow* window, _GLFWmonitor* monitor);
 
 /*! @brief Notifies shared code of a physical key event.
  *  @param[in] window The window that received the event.

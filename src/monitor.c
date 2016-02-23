@@ -126,7 +126,11 @@ void _glfwInputMonitorChange(void)
         for (window = _glfw.windowListHead;  window;  window = window->next)
         {
             if (window->monitor == monitors[i])
-                window->monitor = NULL;
+            {
+                int width, height;
+                _glfwPlatformGetWindowSize(window, &width, &height);
+                _glfwPlatformSetWindowMonitor(window, NULL, 0, 0, width, height, 0);
+            }
         }
 
         if (_glfw.callbacks.monitor)

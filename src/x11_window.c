@@ -199,6 +199,145 @@ static void sendEventToWM(_GLFWwindow* window, Atom type,
                &event);
 }
 
+// Updates the normal hints according to the window settings
+//
+static void updateNormalHints(_GLFWwindow* window)
+{
+    XSizeHints* hints = XAllocSizeHints();
+
+    if (!window->monitor)
+    {
+        if (window->resizable)
+        {
+            if (window->minwidth != GLFW_DONT_CARE &&
+                window->minwidth != GLFW_DONT_CARE &&
+                window->maxwidth != GLFW_DONT_CARE &&
+                window->maxwidth != GLFW_DONT_CARE)
+            {
+                hints->flags |= (PMinSize | PMaxSize);
+                hints->min_width  = window->minwidth;
+                hints->min_height = window->minheight;
+                hints->max_width  = window->maxwidth;
+                hints->max_height = window->maxheight;
+            }
+
+            if (window->numer != GLFW_DONT_CARE &&
+                window->denom != GLFW_DONT_CARE)
+            {
+                hints->flags |= PAspect;
+                hints->min_aspect.x = hints->max_aspect.x = window->numer;
+                hints->min_aspect.y = hints->max_aspect.y = window->denom;
+            }
+        }
+        else
+        {
+            int width, height;
+            _glfwPlatformGetWindowSize(window, &width, &height);
+
+            hints->flags |= (PMinSize | PMaxSize);
+            hints->min_width  = hints->max_width  = width;
+            hints->min_height = hints->max_height = height;
+        }
+    }
+
+    XSetWMNormalHints(_glfw.x11.display, window->x11.handle, hints);
+    XFree(hints);
+}
+
+// Updates the full screen status of the window
+//
+static void updateWindowMode(_GLFWwindow* window)
+{
+    updateNormalHints(window);
+
+    if (window->monitor)
+    {
+        if (_glfw.x11.xinerama.available &&
+            _glfw.x11.NET_WM_FULLSCREEN_MONITORS)
+        {
+            sendEventToWM(window,
+                          _glfw.x11.NET_WM_FULLSCREEN_MONITORS,
+                          window->monitor->x11.index,
+                          window->monitor->x11.index,
+                          window->monitor->x11.index,
+                          window->monitor->x11.index,
+                          0);
+        }
+
+        if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_FULLSCREEN)
+        {
+            sendEventToWM(window,
+                          _glfw.x11.NET_WM_STATE,
+                          _NET_WM_STATE_ADD,
+                          _glfw.x11.NET_WM_STATE_FULLSCREEN,
+                          0, 1, 0);
+        }
+        else
+        {
+            // This is the butcher's way of removing window decorations
+            // Setting the override-redirect attribute on a window makes the
+            // window manager ignore the window completely (ICCCM, section 4)
+            // The good thing is that this makes undecorated full screen windows
+            // easy to do; the bad thing is that we have to do everything
+            // manually and some things (like iconify/restore) won't work at
+            // all, as those are tasks usually performed by the window manager
+
+            XSetWindowAttributes attributes;
+            attributes.override_redirect = True;
+            XChangeWindowAttributes(_glfw.x11.display,
+                                    window->x11.handle,
+                                    CWOverrideRedirect,
+                                    &attributes);
+
+            window->x11.overrideRedirect = GLFW_TRUE;
+        }
+
+        if (_glfw.x11.NET_WM_BYPASS_COMPOSITOR)
+        {
+            const unsigned long value = 1;
+
+            XChangeProperty(_glfw.x11.display,  window->x11.handle,
+                            _glfw.x11.NET_WM_BYPASS_COMPOSITOR, XA_CARDINAL, 32,
+                            PropModeReplace, (unsigned char*) &value, 1);
+        }
+    }
+    else
+    {
+        if (_glfw.x11.xinerama.available &&
+            _glfw.x11.NET_WM_FULLSCREEN_MONITORS)
+        {
+            XDeleteProperty(_glfw.x11.display, window->x11.handle,
+                            _glfw.x11.NET_WM_FULLSCREEN_MONITORS);
+        }
+
+        if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_FULLSCREEN)
+        {
+            sendEventToWM(window,
+                          _glfw.x11.NET_WM_STATE,
+                          _NET_WM_STATE_REMOVE,
+                          _glfw.x11.NET_WM_STATE_FULLSCREEN,
+                          0, 1, 0);
+        }
+        else
+        {
+            XSetWindowAttributes attributes;
+            attributes.override_redirect = False;
+            XChangeWindowAttributes(_glfw.x11.display,
+                                    window->x11.handle,
+                                    CWOverrideRedirect,
+                                    &attributes);
+
+            window->x11.overrideRedirect = GLFW_FALSE;
+        }
+
+        if (_glfw.x11.NET_WM_BYPASS_COMPOSITOR)
+        {
+            XDeleteProperty(_glfw.x11.display, window->x11.handle,
+                            _glfw.x11.NET_WM_BYPASS_COMPOSITOR);
+        }
+    }
+}
+
 // Splits and translates a text/uri-list into separate file paths
 // NOTE: This function destroys the provided string
 //
@@ -300,83 +439,56 @@ static GLFWbool createWindow(_GLFWwindow* window,
                      (XPointer) window);
     }
 
-    if (window->monitor)
+    if (!wndconfig->decorated)
     {
-        if (!_glfw.x11.NET_WM_STATE || !_glfw.x11.NET_WM_STATE_FULLSCREEN)
+        struct
         {
-            // This is the butcher's way of removing window decorations
-            // Setting the override-redirect attribute on a window makes the
-            // window manager ignore the window completely (ICCCM, section 4)
-            // The good thing is that this makes undecorated full screen windows
-            // easy to do; the bad thing is that we have to do everything
-            // manually and some things (like iconify/restore) won't work at
-            // all, as those are tasks usually performed by the window manager
+            unsigned long flags;
+            unsigned long functions;
+            unsigned long decorations;
+            long input_mode;
+            unsigned long status;
+        } hints;
 
-            XSetWindowAttributes attributes;
-            attributes.override_redirect = True;
-            XChangeWindowAttributes(_glfw.x11.display,
-                                    window->x11.handle,
-                                    CWOverrideRedirect,
-                                    &attributes);
+        hints.flags = 2;       // Set decorations
+        hints.decorations = 0; // No decorations
 
-            window->x11.overrideRedirect = GLFW_TRUE;
+        XChangeProperty(_glfw.x11.display, window->x11.handle,
+                        _glfw.x11.MOTIF_WM_HINTS,
+                        _glfw.x11.MOTIF_WM_HINTS, 32,
+                        PropModeReplace,
+                        (unsigned char*) &hints,
+                        sizeof(hints) / sizeof(long));
+    }
+
+    if (wndconfig->floating)
+    {
+        if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_ABOVE)
+        {
+            Atom value = _glfw.x11.NET_WM_STATE_ABOVE;
+            XChangeProperty(_glfw.x11.display, window->x11.handle,
+                            _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
+                            PropModeReplace, (unsigned char*) &value, 1);
         }
     }
-    else
-    {
-        if (!wndconfig->decorated)
-        {
-            struct
-            {
-                unsigned long flags;
-                unsigned long functions;
-                unsigned long decorations;
-                long input_mode;
-                unsigned long status;
-            } hints;
 
-            hints.flags = 2;       // Set decorations
-            hints.decorations = 0; // No decorations
+    if (wndconfig->maximized && !window->monitor)
+    {
+        if (_glfw.x11.NET_WM_STATE &&
+            _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT &&
+            _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ)
+        {
+            const Atom states[2] =
+            {
+                _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT,
+                _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ
+            };
 
             XChangeProperty(_glfw.x11.display, window->x11.handle,
-                            _glfw.x11.MOTIF_WM_HINTS,
-                            _glfw.x11.MOTIF_WM_HINTS, 32,
-                            PropModeReplace,
-                            (unsigned char*) &hints,
-                            sizeof(hints) / sizeof(long));
-        }
-
-        if (wndconfig->floating)
-        {
-            if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_ABOVE)
-            {
-                sendEventToWM(window,
-                              _glfw.x11.NET_WM_STATE,
-                              _NET_WM_STATE_ADD,
-                              _glfw.x11.NET_WM_STATE_ABOVE,
-                              0, 1, 0);
-            }
-        }
-
-        if (wndconfig->maximized)
-        {
-            if (_glfw.x11.NET_WM_STATE &&
-                _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT &&
-                _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ)
-            {
-                const Atom states[2] =
-                {
-                    _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT,
-                    _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ
-                };
-
-                XChangeProperty(_glfw.x11.display, window->x11.handle,
-                                _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
-                                PropModeReplace, (unsigned char*) &states, 2);
-            }
+                            _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
+                            PropModeReplace, (unsigned char*) &states, 2);
         }
     }
-
 
     // Declare the WM protocols supported by GLFW
     {
@@ -436,27 +548,7 @@ static GLFWbool createWindow(_GLFWwindow* window,
         XFree(hints);
     }
 
-    // Set ICCCM WM_NORMAL_HINTS property (even if no parts are set)
-    {
-        XSizeHints* hints = XAllocSizeHints();
-        hints->flags = 0;
-
-        if (window->monitor)
-        {
-            hints->flags |= PPosition;
-            _glfwPlatformGetMonitorPos(window->monitor, &hints->x, &hints->y);
-        }
-
-        if (!wndconfig->resizable)
-        {
-            hints->flags |= (PMinSize | PMaxSize);
-            hints->min_width  = hints->max_width  = wndconfig->width;
-            hints->min_height = hints->max_height = wndconfig->height;
-        }
-
-        XSetWMNormalHints(_glfw.x11.display, window->x11.handle, hints);
-        XFree(hints);
-    }
+    updateNormalHints(window);
 
     // Set ICCCM WM_CLASS property
     // HACK: Until a mechanism for specifying the application name is added, the
@@ -731,54 +823,22 @@ static GLFWbool acquireMonitor(_GLFWwindow* window)
                         DefaultExposures);
     }
 
-    _glfw.x11.saver.count++;
+    if (!window->monitor->window)
+        _glfw.x11.saver.count++;
 
     status = _glfwSetVideoModeX11(window->monitor, &window->videoMode);
 
-    if (_glfw.x11.NET_WM_BYPASS_COMPOSITOR)
-    {
-        const unsigned long value = 1;
-
-        XChangeProperty(_glfw.x11.display,  window->x11.handle,
-                        _glfw.x11.NET_WM_BYPASS_COMPOSITOR, XA_CARDINAL, 32,
-                        PropModeReplace, (unsigned char*) &value, 1);
-    }
-
-    // Position the window over its monitor
+    if (window->x11.overrideRedirect)
     {
         int xpos, ypos;
         GLFWvidmode mode;
 
+        // Manually position the window over its monitor
         _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
         _glfwPlatformGetVideoMode(window->monitor, &mode);
 
         XMoveResizeWindow(_glfw.x11.display, window->x11.handle,
                           xpos, ypos, mode.width, mode.height);
-    }
-
-    if (_glfw.x11.xinerama.available && _glfw.x11.NET_WM_FULLSCREEN_MONITORS)
-    {
-        sendEventToWM(window,
-                      _glfw.x11.NET_WM_FULLSCREEN_MONITORS,
-                      window->monitor->x11.index,
-                      window->monitor->x11.index,
-                      window->monitor->x11.index,
-                      window->monitor->x11.index,
-                      0);
-    }
-
-    _glfwPlatformFocusWindow(window);
-
-    if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_FULLSCREEN)
-    {
-        // Ask the window manager to make the GLFW window a full screen window
-        // Full screen windows are undecorated and, when focused, are kept
-        // on top of all other windows
-        sendEventToWM(window,
-                      _glfw.x11.NET_WM_STATE,
-                      _NET_WM_STATE_ADD,
-                      _glfw.x11.NET_WM_STATE_FULLSCREEN,
-                      0, 1, 0);
     }
 
     _glfwInputMonitorWindowChange(window->monitor, window);
@@ -1124,9 +1184,6 @@ static void processEvent(XEvent *event)
 
         case ConfigureNotify:
         {
-            if (!window->x11.overrideRedirect && !event->xany.send_event)
-                return;
-
             if (event->xconfigure.width != window->x11.width ||
                 event->xconfigure.height != window->x11.height)
             {
@@ -1145,12 +1202,15 @@ static void processEvent(XEvent *event)
             if (event->xconfigure.x != window->x11.xpos ||
                 event->xconfigure.y != window->x11.ypos)
             {
-                _glfwInputWindowPos(window,
-                                    event->xconfigure.x,
-                                    event->xconfigure.y);
+                if (window->x11.overrideRedirect || event->xany.send_event)
+                {
+                    _glfwInputWindowPos(window,
+                                        event->xconfigure.x,
+                                        event->xconfigure.y);
 
-                window->x11.xpos = event->xconfigure.x;
-                window->x11.ypos = event->xconfigure.y;
+                    window->x11.xpos = event->xconfigure.x;
+                    window->x11.ypos = event->xconfigure.y;
+                }
             }
 
             return;
@@ -1459,6 +1519,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (window->monitor)
     {
         _glfwPlatformShowWindow(window);
+        updateWindowMode(window);
         if (!acquireMonitor(window))
             return GLFW_FALSE;
     }
@@ -1654,31 +1715,13 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     if (window->monitor)
     {
-        _glfwSetVideoModeX11(window->monitor, &window->videoMode);
-
-        if (!_glfw.x11.NET_WM_STATE || !_glfw.x11.NET_WM_STATE_FULLSCREEN)
-        {
-            GLFWvidmode mode;
-            _glfwPlatformGetVideoMode(window->monitor, &mode);
-            XResizeWindow(_glfw.x11.display, window->x11.handle,
-                          mode.width, mode.height);
-        }
+        if (window->monitor->window == window)
+            acquireMonitor(window);
     }
     else
     {
         if (!window->resizable)
-        {
-            // Update window size restrictions to match new window size
-
-            XSizeHints* hints = XAllocSizeHints();
-
-            hints->flags |= (PMinSize | PMaxSize);
-            hints->min_width  = hints->max_width  = width;
-            hints->min_height = hints->max_height = height;
-
-            XSetWMNormalHints(_glfw.x11.display, window->x11.handle, hints);
-            XFree(hints);
-        }
+            updateNormalHints(window);
 
         XResizeWindow(_glfw.x11.display, window->x11.handle, width, height);
     }
@@ -1690,55 +1733,14 @@ void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
                                       int minwidth, int minheight,
                                       int maxwidth, int maxheight)
 {
-    long supplied;
-    XSizeHints* hints = XAllocSizeHints();
-
-    if (XGetWMNormalHints(_glfw.x11.display, window->x11.handle, hints, &supplied))
-    {
-        if (minwidth == GLFW_DONT_CARE || minwidth == GLFW_DONT_CARE)
-            hints->flags &= ~PMinSize;
-        else
-        {
-            hints->flags |= PMinSize;
-            hints->min_width  = minwidth;
-            hints->min_height = minheight;
-        }
-
-        if (maxwidth == GLFW_DONT_CARE || maxwidth == GLFW_DONT_CARE)
-            hints->flags &= ~PMaxSize;
-        else
-        {
-            hints->flags |= PMaxSize;
-            hints->max_width  = maxwidth;
-            hints->max_height = maxheight;
-        }
-
-        XSetWMNormalHints(_glfw.x11.display, window->x11.handle, hints);
-    }
-
-    XFree(hints);
+    updateNormalHints(window);
+    XFlush(_glfw.x11.display);
 }
 
 void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom)
 {
-    long supplied;
-    XSizeHints* hints = XAllocSizeHints();
-
-    if (XGetWMNormalHints(_glfw.x11.display, window->x11.handle, hints, &supplied))
-    {
-        if (numer == GLFW_DONT_CARE || denom == GLFW_DONT_CARE)
-            hints->flags &= ~PAspect;
-        else
-        {
-            hints->flags |= PAspect;
-            hints->min_aspect.x = hints->max_aspect.x = numer;
-            hints->min_aspect.y = hints->max_aspect.y = denom;
-        }
-
-        XSetWMNormalHints(_glfw.x11.display, window->x11.handle, hints);
-    }
-
-    XFree(hints);
+    updateNormalHints(window);
+    XFlush(_glfw.x11.display);
 }
 
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
@@ -1902,6 +1904,48 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
         XRaiseWindow(_glfw.x11.display, window->x11.handle);
         XSetInputFocus(_glfw.x11.display, window->x11.handle,
                        RevertToParent, CurrentTime);
+    }
+
+    XFlush(_glfw.x11.display);
+}
+
+void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
+                                   _GLFWmonitor* monitor,
+                                   int xpos, int ypos,
+                                   int width, int height,
+                                   int refreshRate)
+{
+    if (window->monitor == monitor)
+    {
+        if (monitor)
+        {
+            if (monitor->window == window)
+                acquireMonitor(window);
+        }
+        else
+        {
+            XMoveResizeWindow(_glfw.x11.display, window->x11.handle,
+                              xpos, ypos, width, height);
+        }
+
+        return;
+    }
+
+    if (window->monitor)
+        releaseMonitor(window);
+
+    _glfwInputWindowMonitorChange(window, monitor);
+    updateWindowMode(window);
+
+    if (window->monitor)
+    {
+        XMapRaised(_glfw.x11.display, window->x11.handle);
+        acquireMonitor(window);
+    }
+    else
+    {
+        XMoveResizeWindow(_glfw.x11.display, window->x11.handle,
+                          xpos, ypos, width, height);
     }
 
     XFlush(_glfw.x11.display);

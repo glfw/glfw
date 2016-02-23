@@ -42,15 +42,20 @@ static DWORD getWindowStyle(const _GLFWwindow* window)
 {
     DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 
-    if (window->decorated && !window->monitor)
-    {
-        style |= WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
-
-        if (window->resizable)
-            style |= WS_MAXIMIZEBOX | WS_SIZEBOX;
-    }
-    else
+    if (window->monitor)
         style |= WS_POPUP;
+    else
+    {
+        if (window->decorated)
+        {
+            style |= WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+
+            if (window->resizable)
+                style |= WS_MAXIMIZEBOX | WS_THICKFRAME;
+        }
+        else
+            style |= WS_POPUP;
+    }
 
     return style;
 }
@@ -61,8 +66,8 @@ static DWORD getWindowExStyle(const _GLFWwindow* window)
 {
     DWORD style = WS_EX_APPWINDOW;
 
-    if (window->decorated && !window->monitor)
-        style |= WS_EX_WINDOWEDGE;
+    if (window->monitor || window->floating)
+        style |= WS_EX_TOPMOST;
 
     return style;
 }
@@ -190,8 +195,7 @@ static void getFullWindowSize(DWORD style, DWORD exStyle,
 static void applyAspectRatio(_GLFWwindow* window, int edge, RECT* area)
 {
     int xoff, yoff;
-    const float ratio = (float) window->win32.numer /
-                        (float) window->win32.denom;
+    const float ratio = (float) window->numer / (float) window->denom;
 
     getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
                       0, 0, &xoff, &yoff);
@@ -342,7 +346,8 @@ static GLFWbool acquireMonitor(_GLFWwindow* window)
     _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
 
     SetWindowPos(window->win32.handle, HWND_TOPMOST,
-                 xpos, ypos, mode.width, mode.height, SWP_NOCOPYBITS);
+                 xpos, ypos, mode.width, mode.height,
+                 SWP_NOACTIVATE | SWP_NOCOPYBITS);
 
     _glfwInputMonitorWindowChange(window->monitor, window);
     return status;
@@ -639,8 +644,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_SIZING:
         {
-            if (window->win32.numer == GLFW_DONT_CARE ||
-                window->win32.denom == GLFW_DONT_CARE)
+            if (window->numer == GLFW_DONT_CARE ||
+                window->denom == GLFW_DONT_CARE)
             {
                 break;
             }
@@ -654,21 +659,24 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             int xoff, yoff;
             MINMAXINFO* mmi = (MINMAXINFO*) lParam;
 
+            if (window->monitor)
+                break;
+
             getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
                               0, 0, &xoff, &yoff);
 
-            if (window->win32.minwidth != GLFW_DONT_CARE &&
-                window->win32.minheight != GLFW_DONT_CARE)
+            if (window->minwidth != GLFW_DONT_CARE &&
+                window->minheight != GLFW_DONT_CARE)
             {
-                mmi->ptMinTrackSize.x = window->win32.minwidth + xoff;
-                mmi->ptMinTrackSize.y = window->win32.minheight + yoff;
+                mmi->ptMinTrackSize.x = window->minwidth + xoff;
+                mmi->ptMinTrackSize.y = window->minheight + yoff;
             }
 
-            if (window->win32.maxwidth != GLFW_DONT_CARE &&
-                window->win32.maxheight != GLFW_DONT_CARE)
+            if (window->maxwidth != GLFW_DONT_CARE &&
+                window->maxheight != GLFW_DONT_CARE)
             {
-                mmi->ptMaxTrackSize.x = window->win32.maxwidth + xoff;
-                mmi->ptMaxTrackSize.y = window->win32.maxheight + yoff;
+                mmi->ptMaxTrackSize.x = window->maxwidth + xoff;
+                mmi->ptMaxTrackSize.y = window->maxheight + yoff;
             }
 
             return 0;
@@ -827,22 +835,7 @@ static int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
                                           WM_COPYGLOBALDATA, MSGFLT_ALLOW, NULL);
     }
 
-    if (wndconfig->floating && !window->monitor)
-    {
-        SetWindowPos(window->win32.handle,
-                     HWND_TOPMOST,
-                     0, 0, 0, 0,
-                     SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
-    }
-
     DragAcceptFiles(window->win32.handle, TRUE);
-
-    window->win32.minwidth  = GLFW_DONT_CARE;
-    window->win32.minheight = GLFW_DONT_CARE;
-    window->win32.maxwidth  = GLFW_DONT_CARE;
-    window->win32.maxheight = GLFW_DONT_CARE;
-    window->win32.numer     = GLFW_DONT_CARE;
-    window->win32.denom     = GLFW_DONT_CARE;
 
     return GLFW_TRUE;
 }
@@ -976,6 +969,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (window->monitor)
     {
         _glfwPlatformShowWindow(window);
+        _glfwPlatformFocusWindow(window);
         if (!acquireMonitor(window))
             return GLFW_FALSE;
     }
@@ -1093,15 +1087,17 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     if (window->monitor)
-        acquireMonitor(window);
+    {
+        if (window->monitor->window == window)
+            acquireMonitor(window);
+    }
     else
     {
-        int fullWidth, fullHeight;
-        getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
-                          width, height, &fullWidth, &fullHeight);
-
+        RECT rect = { 0, 0, width, height };
+        AdjustWindowRectEx(&rect, getWindowStyle(window),
+                           FALSE, getWindowExStyle(window));
         SetWindowPos(window->win32.handle, HWND_TOP,
-                     0, 0, fullWidth, fullHeight,
+                     0, 0, rect.right - rect.left, rect.bottom - rect.top,
                      SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
     }
 }
@@ -1111,11 +1107,6 @@ void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
                                       int maxwidth, int maxheight)
 {
     RECT area;
-
-    window->win32.minwidth  = minwidth;
-    window->win32.minheight = minheight;
-    window->win32.maxwidth  = maxwidth;
-    window->win32.maxheight = maxheight;
 
     if ((minwidth == GLFW_DONT_CARE || minheight == GLFW_DONT_CARE) &&
         (maxwidth == GLFW_DONT_CARE || maxheight == GLFW_DONT_CARE))
@@ -1133,9 +1124,6 @@ void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
 void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom)
 {
     RECT area;
-
-    window->win32.numer = numer;
-    window->win32.denom = denom;
 
     if (numer == GLFW_DONT_CARE || denom == GLFW_DONT_CARE)
         return;
@@ -1205,6 +1193,92 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
     BringWindowToTop(window->win32.handle);
     SetForegroundWindow(window->win32.handle);
     SetFocus(window->win32.handle);
+}
+
+void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
+                                   _GLFWmonitor* monitor,
+                                   int xpos, int ypos,
+                                   int width, int height,
+                                   int refreshRate)
+{
+    if (window->monitor == monitor)
+    {
+        if (monitor)
+        {
+            if (monitor->window == window)
+                acquireMonitor(window);
+        }
+        else
+        {
+            RECT rect = { xpos, ypos, xpos + width, ypos + height };
+            AdjustWindowRectEx(&rect, getWindowStyle(window),
+                               FALSE, getWindowExStyle(window));
+            SetWindowPos(window->win32.handle, HWND_TOP,
+                         rect.left, rect.top,
+                         rect.right - rect.left, rect.bottom - rect.top,
+                         SWP_NOCOPYBITS | SWP_NOACTIVATE | SWP_NOZORDER);
+        }
+
+        return;
+    }
+
+    if (window->monitor)
+        releaseMonitor(window);
+
+    _glfwInputWindowMonitorChange(window, monitor);
+
+    if (monitor)
+    {
+        GLFWvidmode mode;
+        DWORD style = GetWindowLongPtrW(window->win32.handle, GWL_STYLE);
+        UINT flags = SWP_SHOWWINDOW | SWP_NOACTIVATE | SWP_NOCOPYBITS;
+
+        if (window->decorated)
+        {
+            style &= ~WS_OVERLAPPEDWINDOW;
+            style |= getWindowStyle(window);
+            SetWindowLongPtrW(window->win32.handle, GWL_STYLE, style);
+
+            flags |= SWP_FRAMECHANGED;
+        }
+
+        _glfwPlatformGetVideoMode(monitor, &mode);
+        _glfwPlatformGetMonitorPos(monitor, &xpos, &ypos);
+
+        SetWindowPos(window->win32.handle, HWND_TOPMOST,
+                     xpos, ypos, mode.width, mode.height,
+                     flags);
+
+        acquireMonitor(window);
+    }
+    else
+    {
+        HWND after;
+        RECT rect = { xpos, ypos, xpos + width, ypos + height };
+        DWORD style = GetWindowLongPtrW(window->win32.handle, GWL_STYLE);
+        UINT flags = SWP_NOACTIVATE | SWP_NOCOPYBITS;
+
+        if (window->decorated)
+        {
+            style &= ~WS_POPUP;
+            style |= getWindowStyle(window);
+            SetWindowLongPtrW(window->win32.handle, GWL_STYLE, style);
+
+            flags |= SWP_FRAMECHANGED;
+        }
+
+        if (window->floating)
+            after = HWND_TOPMOST;
+        else
+            after = HWND_NOTOPMOST;
+
+        AdjustWindowRectEx(&rect, getWindowStyle(window),
+                           FALSE, getWindowExStyle(window));
+        SetWindowPos(window->win32.handle, after,
+                     rect.left, rect.top,
+                     rect.right - rect.left, rect.bottom - rect.top,
+                     flags);
+    }
 }
 
 int _glfwPlatformWindowFocused(_GLFWwindow* window)

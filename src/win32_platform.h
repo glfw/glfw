@@ -197,10 +197,6 @@ typedef struct _GLFWwindowWin32
     GLFWbool            cursorTracked;
     GLFWbool            iconified;
 
-    int                 minwidth, minheight;
-    int                 maxwidth, maxheight;
-    int                 numer, denom;
-
     // The last received cursor position, regardless of source
     int                 cursorPosX, cursorPosY;
 

@@ -26,6 +26,13 @@ Vulkan header inclusion can be selected with
 [GLFW_INCLUDE_VULKAN](@ref build_macros).
 
 
+@subsection news_32_setwindowmonitor Window mode switching
+
+GLFW now supports switching between windowed and full screen modes and updating
+the monitor and desired resolution and refresh rate of full screen windows with
+@ref glfwSetWindowMonitor.
+
+
 @subsection news_32_maximize Window maxmimization support
 
 GLFW now supports window maximization with @ref glfwMaximizeWindow and the

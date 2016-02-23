@@ -77,6 +77,8 @@ does not find Doxygen, the documentation will not be generated.
  - Added `glfwVulkanSupported`, `glfwGetRequiredInstanceExtensions`,
    `glfwGetInstanceProcAddress`, `glfwGetPhysicalDevicePresentationSupport` and
    `glfwCreateWindowSurface` for platform independent Vulkan support
+ - Added `glfwSetWindowMonitor` for switching between windowed and full screen
+   modes and updating the monitor and desired video mode of full screen windows
  - Added `glfwMaximizeWindow` and `GLFW_MAXIMIZED` for window maximization
  - Added `glfwFocusWindow` for giving windows input focus
  - Added `glfwSetWindowSizeLimits` and `glfwSetWindowAspectRatio` for setting

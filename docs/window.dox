@@ -56,6 +56,10 @@ GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", glfwGetPrimaryMonito
 Full screen windows cover the entire display area of a monitor, have no border
 or decorations.
 
+Windowed mode windows can be made full screen by setting a monitor with @ref
+glfwSetWindowMonitor, and full screen ones can be made windowed by unsetting it
+with the same function.
+
 Each field of the @ref GLFWvidmode structure corresponds to a function parameter
 or window hint and combine to form the _desired video mode_ for that window.
 The supported video mode most closely matching the desired video mode will be
@@ -71,9 +75,11 @@ GLFWvidmode.greenBits   | `GLFW_GREEN_BITS` hint
 GLFWvidmode.blueBits    | `GLFW_BLUE_BITS` hint
 GLFWvidmode.refreshRate | `GLFW_REFRESH_RATE` hint
 
-Once you have a full screen window, you can change its resolution with @ref
-glfwSetWindowSize.  The new video mode will be selected and set the same way as
-the video mode chosen by @ref glfwCreateWindow.
+Once you have a full screen window, you can change its resolution, refresh rate
+and monitor with @ref glfwSetWindowMonitor.  If you just need change its
+resolution you can also call @ref glfwSetWindowSize.  In all cases, the new
+video mode will be selected the same way as the video mode chosen by @ref
+glfwCreateWindow.
 
 By default, the original video mode of the monitor will be restored and the
 window iconified if it loses input focus, to allow the user to switch back to
@@ -100,6 +106,18 @@ glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
 GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "My Title", monitor, NULL);
 @endcode
+
+This also works for windowed mode windows that are made full screen.
+
+@code
+const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+@endcode
+
+Note that @ref glfwGetVideoMode returns the _current_ video mode of a monitor,
+so if you already have a full screen window on that monitor that you want to
+make windowed full screen, you need to have saved the desktop resolution before.
 
 
 @subsection window_destruction Window destruction
@@ -423,7 +441,7 @@ glfwSetWindowSize(window, 640, 480);
 @endcode
 
 For full screen windows, the specified size becomes the new resolution of the
-window's *desired video mode*.  The video mode most closely matching the new
+window's desired video mode.  The video mode most closely matching the new
 desired video mode is set immediately.  The window is resized to fit the
 resolution of the set video mode.
 
@@ -648,8 +666,31 @@ GLFWmonitor* monitor = glfwGetWindowMonitor(window);
 
 This monitor handle is one of those returned by @ref glfwGetMonitors.
 
-For windowed mode windows, this function returns `NULL`.  This is the
-recommended way to tell full screen windows from windowed mode windows.
+For windowed mode windows, this function returns `NULL`.  This is how to tell
+full screen windows from windowed mode windows.
+
+You can move windows between monitors or between full screen and windowed mode
+with @ref glfwSetWindowMonitor.  When making a window full screen on the same or
+on a different monitor, specify the desired monitor, resolution and refresh
+rate.  The position arguments are ignored.
+
+@code
+const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+@endcode
+
+When making the window windowed, specify the desired position and size.  The
+refresh rate argument is ignored.
+
+@code
+glfwSetWindowMonitor(window, NULL, xpos, ypos, width, height, 0);
+@endcode
+
+This restores any previous window settings such as whether it is decorated,
+floating, resizable, has size or aspect ratio limits, etc..  To restore a window
+that was originally windowed to its original size and position, save these
+before making it full screen and then pass them in as above.
 
 
 @subsection window_iconify Window iconification

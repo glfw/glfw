@@ -56,6 +56,26 @@ static NSCursor* getStandardCursor(int shape)
     return nil;
 }
 
+// Returns the style mask corresponding to the window settings
+//
+static NSUInteger getStyleMask(_GLFWwindow* window)
+{
+    NSUInteger styleMask = 0;
+
+    if (window->monitor || !window->decorated)
+        styleMask |= NSBorderlessWindowMask;
+    else
+    {
+        styleMask |= NSTitledWindowMask | NSClosableWindowMask |
+                     NSMiniaturizableWindowMask;
+
+        if (window->resizable)
+            styleMask |= NSResizableWindowMask;
+    }
+
+    return styleMask;
+}
+
 // Center the cursor in the view of the window
 //
 static void centerCursor(_GLFWwindow *window)
@@ -86,7 +106,6 @@ static GLFWbool acquireMonitor(_GLFWwindow* window)
 
     [window->ns.object setFrame:frame display:YES];
 
-    _glfwPlatformFocusWindow(window);
     _glfwInputMonitorWindowChange(window->monitor, window);
     return status;
 }
@@ -908,19 +927,6 @@ static GLFWbool createWindow(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    unsigned int styleMask = 0;
-
-    if (window->monitor || !wndconfig->decorated)
-        styleMask = NSBorderlessWindowMask;
-    else
-    {
-        styleMask = NSTitledWindowMask | NSClosableWindowMask |
-                    NSMiniaturizableWindowMask;
-
-        if (wndconfig->resizable)
-            styleMask |= NSResizableWindowMask;
-    }
-
     NSRect contentRect;
 
     if (window->monitor)
@@ -938,7 +944,7 @@ static GLFWbool createWindow(_GLFWwindow* window,
 
     window->ns.object = [[GLFWWindow alloc]
         initWithContentRect:contentRect
-                  styleMask:styleMask
+                  styleMask:getStyleMask(window)
                     backing:NSBackingStoreBuffered
                       defer:NO];
 
@@ -948,14 +954,14 @@ static GLFWbool createWindow(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    if (wndconfig->resizable)
-        [window->ns.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
-
     if (window->monitor)
         [window->ns.object setLevel:NSMainMenuWindowLevel + 1];
     else
     {
         [window->ns.object center];
+
+        if (wndconfig->resizable)
+            [window->ns.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
 
         if (wndconfig->floating)
             [window->ns.object setLevel:NSFloatingWindowLevel];
@@ -1005,6 +1011,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (window->monitor)
     {
         _glfwPlatformShowWindow(window);
+        _glfwPlatformFocusWindow(window);
         if (!acquireMonitor(window))
             return GLFW_FALSE;
     }
@@ -1076,7 +1083,10 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     if (window->monitor)
-        acquireMonitor(window);
+    {
+        if (window->monitor->window == window)
+            acquireMonitor(window);
+    }
     else
         [window->ns.object setContentSize:NSMakeSize(width, height)];
 }
@@ -1172,6 +1182,103 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
     [NSApp activateIgnoringOtherApps:YES];
 
     [window->ns.object makeKeyAndOrderFront:nil];
+}
+
+void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
+                                   _GLFWmonitor* monitor,
+                                   int xpos, int ypos,
+                                   int width, int height,
+                                   int refreshRate)
+{
+    if (window->monitor == monitor)
+    {
+        if (monitor)
+        {
+            if (monitor->window == window)
+                acquireMonitor(window);
+        }
+        else
+        {
+            const NSRect contentRect =
+                NSMakeRect(xpos, transformY(ypos + height), width, height);
+            const NSRect frameRect =
+                [window->ns.object frameRectForContentRect:contentRect
+                                                 styleMask:getStyleMask(window)];
+
+            [window->ns.object setFrame:frameRect display:YES];
+        }
+
+        return;
+    }
+
+    if (window->monitor)
+        releaseMonitor(window);
+
+    _glfwInputWindowMonitorChange(window, monitor);
+
+    const NSUInteger styleMask = getStyleMask(window);
+    [window->ns.object setStyleMask:styleMask];
+    [window->ns.object makeFirstResponder:window->ns.view];
+
+    NSRect contentRect;
+
+    if (monitor)
+    {
+        GLFWvidmode mode;
+
+        _glfwPlatformGetVideoMode(window->monitor, &mode);
+        _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
+
+        contentRect = NSMakeRect(xpos, transformY(ypos + mode.height),
+                                    mode.width, mode.height);
+    }
+    else
+    {
+        contentRect = NSMakeRect(xpos, transformY(ypos + height),
+                                    width, height);
+    }
+
+    NSRect frameRect = [window->ns.object frameRectForContentRect:contentRect
+                                                        styleMask:styleMask];
+    [window->ns.object setFrame:frameRect display:YES];
+
+    if (monitor)
+    {
+        [window->ns.object setLevel:NSMainMenuWindowLevel + 1];
+        [window->ns.object setHasShadow:NO];
+
+        acquireMonitor(window);
+    }
+    else
+    {
+        if (window->numer != GLFW_DONT_CARE &&
+            window->denom != GLFW_DONT_CARE)
+        {
+            [window->ns.object setContentAspectRatio:NSMakeSize(window->numer,
+                                                                window->denom)];
+        }
+
+        if (window->minwidth != GLFW_DONT_CARE &&
+            window->minheight != GLFW_DONT_CARE)
+        {
+            [window->ns.object setContentMinSize:NSMakeSize(window->minwidth,
+                                                            window->minheight)];
+        }
+
+        if (window->maxwidth != GLFW_DONT_CARE &&
+            window->maxheight != GLFW_DONT_CARE)
+        {
+            [window->ns.object setContentMaxSize:NSMakeSize(window->maxwidth,
+                                                            window->maxheight)];
+        }
+
+        if (window->floating)
+            [window->ns.object setLevel:NSFloatingWindowLevel];
+        else
+            [window->ns.object setLevel:NSNormalWindowLevel];
+
+        [window->ns.object setHasShadow:YES];
+    }
 }
 
 int _glfwPlatformWindowFocused(_GLFWwindow* window)

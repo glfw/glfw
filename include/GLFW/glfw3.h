@@ -1718,17 +1718,17 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  glfwGetWindowAttrib, @ref glfwGetWindowSize and @ref glfwGetFramebufferSize.
  *
  *  To create a full screen window, you need to specify the monitor the window
- *  will cover.  If no monitor is specified, windowed mode will be used.  Unless
- *  you have a way for the user to choose a specific monitor, it is recommended
- *  that you pick the primary monitor.  For more information on how to query
- *  connected monitors, see @ref monitor_monitors.
+ *  will cover.  If no monitor is specified, the window will be windowed mode.
+ *  Unless you have a way for the user to choose a specific monitor, it is
+ *  recommended that you pick the primary monitor.  For more information on how
+ *  to query connected monitors, see @ref monitor_monitors.
  *
  *  For full screen windows, the specified size becomes the resolution of the
- *  window's _desired video mode_.  As long as a full screen window has input
- *  focus, the supported video mode most closely matching the desired video mode
- *  is set for the specified monitor.  For more information about full screen
- *  windows, including the creation of so called _windowed full screen_ or
- *  _borderless full screen_ windows, see @ref window_windowed_full_screen.
+ *  window's _desired video mode_.  As long as a full screen window is not
+ *  iconified, the supported video mode most closely matching the desired video
+ *  mode is set for the specified monitor.  For more information about full
+ *  screen windows, including the creation of so called _windowed full screen_
+ *  or _borderless full screen_ windows, see @ref window_windowed_full_screen.
  *
  *  By default, newly created windows use the placement recommended by the
  *  window system.  To create the window at a specific position, make it
@@ -1736,8 +1736,8 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  hint, set its [position](@ref window_pos) and then [show](@ref window_hide)
  *  it.
  *
- *  If a full screen window has input focus, the screensaver is prohibited from
- *  starting.
+ *  As long as at least one full screen window is not iconified, the screensaver
+ *  is prohibited from starting.
  *
  *  Window systems put limits on window sizes.  Very large or very small window
  *  dimensions may be overridden by the window system on creation.  Check the
@@ -1751,7 +1751,7 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  @param[in] height The desired height, in screen coordinates, of the window.
  *  This must be greater than zero.
  *  @param[in] title The initial, UTF-8 encoded window title.
- *  @param[in] monitor The monitor to use for full screen mode, or `NULL` to use
+ *  @param[in] monitor The monitor to use for full screen mode, or `NULL` for
  *  windowed mode.
  *  @param[in] share The window whose context to share resources with, or `NULL`
  *  to not share resources.
@@ -2044,11 +2044,12 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
 /*! @brief Sets the size limits of the specified window.
  *
  *  This function sets the size limits of the client area of the specified
- *  window.  If the window is full screen or not resizable, this function does
- *  nothing.
+ *  window.  If the window is full screen, the size limits only take effect if
+ *  once it is made windowed.  If the window is not resizable, this function
+ *  does nothing.
  *
- *  The size limits are applied immediately and may cause the window to be
- *  resized.
+ *  The size limits are applied immediately to a windowed mode window and may
+ *  cause it to be resized.
  *
  *  @param[in] window The window to set limits for.
  *  @param[in] minwidth The minimum width, in screen coordinates, of the client
@@ -2080,7 +2081,8 @@ GLFWAPI void glfwSetWindowSizeLimits(GLFWwindow* window, int minwidth, int minhe
 /*! @brief Sets the aspect ratio of the specified window.
  *
  *  This function sets the required aspect ratio of the client area of the
- *  specified window.  If the window is full screen or not resizable, this
+ *  specified window.  If the window is full screen, the aspect ratio only takes
+ *  effect once it is made windowed.  If the window is not resizable, this
  *  function does nothing.
  *
  *  The aspect ratio is specified as a numerator and a denominator and both
@@ -2090,8 +2092,8 @@ GLFWAPI void glfwSetWindowSizeLimits(GLFWwindow* window, int minwidth, int minhe
  *  If the numerator and denominator is set to `GLFW_DONT_CARE` then the aspect
  *  ratio limit is disabled.
  *
- *  The aspect ratio is applied immediately and may cause the window to be
- *  resized.
+ *  The aspect ratio is applied immediately to a windowed mode window and may
+ *  cause it to be resized.
  *
  *  @param[in] window The window to set limits for.
  *  @param[in] numer The numerator of the desired aspect ratio, or
@@ -2121,17 +2123,22 @@ GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* window, int numer, int denom);
  *  This function sets the size, in screen coordinates, of the client area of
  *  the specified window.
  *
- *  For full screen windows, this function selects and switches to the resolution
- *  closest to the specified size, without affecting the window's context.  As
- *  the context is unaffected, the bit depths of the framebuffer remain
- *  unchanged.
+ *  For full screen windows, this function updates the resolution of its desired
+ *  video mode and switches to the video mode closest to it, without affecting
+ *  the window's context.  As the context is unaffected, the bit depths of the
+ *  framebuffer remain unchanged.
+ *
+ *  If you wish to update the refresh rate of the desired video mode in addition
+ *  to its resolution, see @ref glfwSetWindowMonitor.
  *
  *  The window manager may put limits on what sizes are allowed.  GLFW cannot
  *  and should not override these limits.
  *
  *  @param[in] window The window to resize.
- *  @param[in] width The desired width of the specified window.
- *  @param[in] height The desired height of the specified window.
+ *  @param[in] width The desired width, in screen coordinates, of the window
+ *  client area.
+ *  @param[in] height The desired height, in screen coordinates, of the window
+ *  client area.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
@@ -2140,6 +2147,7 @@ GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* window, int numer, int denom);
  *
  *  @sa @ref window_size
  *  @sa glfwGetWindowSize
+ *  @sa glfwSetWindowMonitor
  *
  *  @since Added in version 1.0.
  *  @glfw3 Added window handle parameter.
@@ -2376,12 +2384,61 @@ GLFWAPI void glfwFocusWindow(GLFWwindow* window);
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_monitor
+ *  @sa glfwSetWindowMonitor
  *
  *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
 GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
+
+/*! @brief Sets the mode, monitor, video mode and placement of a window.
+ *
+ *  This function sets the monitor that the window uses for full screen mode or,
+ *  if the monitor is `NULL`, makes it windowed mode.
+ *
+ *  When setting a monitor, this function updates the width, height and refresh
+ *  rate of the desired video mode and switches to the video mode closest to it.
+ *  The window position is ignored when setting a monitor.
+ *
+ *  When the monitor is `NULL`, the position, width and height are used to
+ *  place the window client area.  The refresh rate is ignored when no monitor
+ *  is specified.
+ *
+ *  If you only wish to update the resolution of a full screen window or the
+ *  size of a windowed mode window, see @ref glfwSetWindowSize.
+ *
+ *  When a window transitions from full screen to windowed mode, this function
+ *  restores any previous window settings such as whether it is decorated,
+ *  floating, resizable, has size or aspect ratio limits, etc..
+ *
+ *  @param[in] window The window whose monitor, size or video mode to set.
+ *  @param[in] monitor The desired monitor, or `NULL` to set windowed mode.
+ *  @param[in] xpos The desired x-coordinate of the upper-left corner of the
+ *  client area.
+ *  @param[in] ypos The desired y-coordinate of the upper-left corner of the
+ *  client area.
+ *  @param[in] width The desired with, in screen coordinates, of the client area
+ *  or video mode.
+ *  @param[in] height The desired height, in screen coordinates, of the client
+ *  area or video mode.
+ *  @param[in] refreshRate The desired refresh rate, in Hz, of the video mode.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_monitor
+ *  @sa @ref window_full_screen
+ *  @sa glfwGetWindowMonitor
+ *  @sa glfwSetWindowSize
+ *
+ *  @since Added in version 3.2.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowMonitor(GLFWwindow* window, GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);
 
 /*! @brief Returns an attribute of the specified window.
  *

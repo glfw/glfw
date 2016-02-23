@@ -489,6 +489,16 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
     fprintf(stderr, "_glfwPlatformFocusWindow not implemented yet\n");
 }
 
+void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
+                                   _GLFWmonitor* monitor,
+                                   int xpos, int ypos,
+                                   int width, int height,
+                                   int refreshRate)
+{
+    // TODO
+    fprintf(stderr, "_glfwPlatformSetWindowMonitor not implemented yet\n");
+}
+
 int _glfwPlatformWindowFocused(_GLFWwindow* window)
 {
     // TODO

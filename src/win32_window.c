@@ -255,6 +255,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
     _GLFWwindow* window = (_GLFWwindow*) GetWindowLongPtrW(hWnd, 0);
     if (!window)
     {
+        // This is the message handling for the hidden helper window
+
         switch (uMsg)
         {
             case WM_NCCREATE:

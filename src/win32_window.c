@@ -328,9 +328,9 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
     return _glfw.win32.publicKeys[HIWORD(lParam) & 0x1FF];
 }
 
-// Enter full screen mode
+// Make the specified window and its video mode active on its monitor
 //
-static GLFWbool enterFullscreenMode(_GLFWwindow* window)
+static GLFWbool acquireMonitor(_GLFWwindow* window)
 {
     GLFWvidmode mode;
     GLFWbool status;
@@ -344,13 +344,18 @@ static GLFWbool enterFullscreenMode(_GLFWwindow* window)
     SetWindowPos(window->win32.handle, HWND_TOPMOST,
                  xpos, ypos, mode.width, mode.height, SWP_NOCOPYBITS);
 
+    _glfwInputMonitorWindowChange(window->monitor, window);
     return status;
 }
 
-// Leave full screen mode
+// Remove the window and restore the original video mode
 //
-static void leaveFullscreenMode(_GLFWwindow* window)
+static void releaseMonitor(_GLFWwindow* window)
 {
+    if (window->monitor->window != window)
+        return;
+
+    _glfwInputMonitorWindowChange(window->monitor, NULL);
     _glfwRestoreVideoModeWin32(window->monitor);
 }
 
@@ -597,7 +602,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             {
                 window->win32.iconified = GLFW_TRUE;
                 if (window->monitor)
-                    leaveFullscreenMode(window);
+                    releaseMonitor(window);
 
                 _glfwInputWindowIconify(window, GLFW_TRUE);
             }
@@ -606,7 +611,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             {
                 window->win32.iconified = GLFW_FALSE;
                 if (window->monitor)
-                    enterFullscreenMode(window);
+                    acquireMonitor(window);
 
                 _glfwInputWindowIconify(window, GLFW_FALSE);
             }
@@ -971,7 +976,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (window->monitor)
     {
         _glfwPlatformShowWindow(window);
-        if (!enterFullscreenMode(window))
+        if (!acquireMonitor(window))
             return GLFW_FALSE;
     }
 
@@ -981,7 +986,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     if (window->monitor)
-        leaveFullscreenMode(window);
+        releaseMonitor(window);
 
     if (window->context.api != GLFW_NO_API)
     {
@@ -1088,7 +1093,7 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     if (window->monitor)
-        enterFullscreenMode(window);
+        acquireMonitor(window);
     else
     {
         int fullWidth, fullHeight;

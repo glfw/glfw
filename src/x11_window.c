@@ -711,10 +711,12 @@ static void pushSelectionToManager(_GLFWwindow* window)
     }
 }
 
-// Enter full screen mode
+// Make the specified window and its video mode active on its monitor
 //
-static void enterFullscreenMode(_GLFWwindow* window)
+static GLFWbool acquireMonitor(_GLFWwindow* window)
 {
+    GLFWbool status;
+
     if (_glfw.x11.saver.count == 0)
     {
         // Remember old screen saver settings
@@ -731,7 +733,7 @@ static void enterFullscreenMode(_GLFWwindow* window)
 
     _glfw.x11.saver.count++;
 
-    _glfwSetVideoModeX11(window->monitor, &window->videoMode);
+    status = _glfwSetVideoModeX11(window->monitor, &window->videoMode);
 
     if (_glfw.x11.NET_WM_BYPASS_COMPOSITOR)
     {
@@ -778,12 +780,19 @@ static void enterFullscreenMode(_GLFWwindow* window)
                       _glfw.x11.NET_WM_STATE_FULLSCREEN,
                       0, 1, 0);
     }
+
+    _glfwInputMonitorWindowChange(window->monitor, window);
+    return status;
 }
 
-// Leave full screen mode
+// Remove the window and restore the original video mode
 //
-static void leaveFullscreenMode(_GLFWwindow* window)
+static void releaseMonitor(_GLFWwindow* window)
 {
+    if (window->monitor->window != window)
+        return;
+
+    _glfwInputMonitorWindowChange(window->monitor, NULL);
     _glfwRestoreVideoModeX11(window->monitor);
 
     _glfw.x11.saver.count--;
@@ -1335,14 +1344,14 @@ static void processEvent(XEvent *event)
                 if (state == IconicState)
                 {
                     if (window->monitor)
-                        leaveFullscreenMode(window);
+                        releaseMonitor(window);
 
                     _glfwInputWindowIconify(window, GLFW_TRUE);
                 }
                 else if (state == NormalState)
                 {
                     if (window->monitor)
-                        enterFullscreenMode(window);
+                        acquireMonitor(window);
 
                     _glfwInputWindowIconify(window, GLFW_FALSE);
                 }
@@ -1450,7 +1459,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (window->monitor)
     {
         _glfwPlatformShowWindow(window);
-        enterFullscreenMode(window);
+        if (!acquireMonitor(window))
+            return GLFW_FALSE;
     }
 
     return GLFW_TRUE;
@@ -1459,7 +1469,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     if (window->monitor)
-        leaveFullscreenMode(window);
+        releaseMonitor(window);
 
     if (window->x11.ic)
     {

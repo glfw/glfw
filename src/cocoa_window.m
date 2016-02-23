@@ -73,9 +73,9 @@ static float transformY(float y)
     return CGDisplayBounds(CGMainDisplayID()).size.height - y;
 }
 
-// Enter full screen mode
+// Make the specified window and its video mode active on its monitor
 //
-static GLFWbool enterFullscreenMode(_GLFWwindow* window)
+static GLFWbool acquireMonitor(_GLFWwindow* window)
 {
     const GLFWbool status = _glfwSetVideoModeNS(window->monitor, &window->videoMode);
     const CGRect bounds = CGDisplayBounds(window->monitor->ns.displayID);
@@ -85,14 +85,20 @@ static GLFWbool enterFullscreenMode(_GLFWwindow* window)
                                     bounds.size.height);
 
     [window->ns.object setFrame:frame display:YES];
+
     _glfwPlatformFocusWindow(window);
+    _glfwInputMonitorWindowChange(window->monitor, window);
     return status;
 }
 
-// Leave full screen mode
+// Remove the window and restore the original video mode
 //
-static void leaveFullscreenMode(_GLFWwindow* window)
+static void releaseMonitor(_GLFWwindow* window)
 {
+    if (window->monitor->window != window)
+        return;
+
+    _glfwInputMonitorWindowChange(window->monitor, NULL);
     _glfwRestoreVideoModeNS(window->monitor);
 }
 
@@ -219,7 +225,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 - (void)windowDidMiniaturize:(NSNotification *)notification
 {
     if (window->monitor)
-        leaveFullscreenMode(window);
+        releaseMonitor(window);
 
     _glfwInputWindowIconify(window, GLFW_TRUE);
 }
@@ -227,7 +233,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 - (void)windowDidDeminiaturize:(NSNotification *)notification
 {
     if (window->monitor)
-        enterFullscreenMode(window);
+        acquireMonitor(window);
 
     _glfwInputWindowIconify(window, GLFW_FALSE);
 }
@@ -999,7 +1005,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (window->monitor)
     {
         _glfwPlatformShowWindow(window);
-        if (!enterFullscreenMode(window))
+        if (!acquireMonitor(window))
             return GLFW_FALSE;
     }
 
@@ -1011,7 +1017,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     [window->ns.object orderOut:nil];
 
     if (window->monitor)
-        leaveFullscreenMode(window);
+        releaseMonitor(window);
 
     if (window->context.api != GLFW_NO_API)
         _glfwDestroyContextNSGL(window);
@@ -1070,7 +1076,7 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     if (window->monitor)
-        enterFullscreenMode(window);
+        acquireMonitor(window);
     else
         [window->ns.object setContentSize:NSMakeSize(width, height)];
 }

@@ -381,6 +381,9 @@ struct _GLFWmonitor
     // Physical dimensions in millimeters.
     int             widthMM, heightMM;
 
+    // The window whose video mode is current on this monitor
+    _GLFWwindow*    window;
+
     GLFWvidmode*    modes;
     int             modeCount;
     GLFWvidmode     currentMode;
@@ -910,6 +913,10 @@ void _glfwInputCursorEnter(_GLFWwindow* window, GLFWbool entered);
 /*! @ingroup event
  */
 void _glfwInputMonitorChange(void);
+
+/*! @ingroup event
+ */
+void _glfwInputMonitorWindowChange(_GLFWmonitor* monitor, _GLFWwindow* window);
 
 /*! @brief Notifies shared code of an error.
  *  @param[in] error The error code most suitable for the error.

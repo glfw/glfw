@@ -98,6 +98,8 @@ does not find Doxygen, the documentation will not be generated.
  - [Win32] Bugfix: MinGW import library lacked the `lib` prefix
  - [Win32] Bugfix: Monitor connection and disconnection events were not reported
                    when no windows existed
+ - [Win32] Bugfix: Activating or deactivating displays in software did not
+                   trigger monitor callback
  - [Cocoa] Removed support for OS X 10.6
  - [Cocoa] Bugfix: Full screen windows on secondary monitors were mispositioned
  - [Cocoa] Bugfix: Connecting a joystick that reports no name would segfault

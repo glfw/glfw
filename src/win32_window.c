@@ -264,15 +264,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 break;
             }
 
-            case WM_DEVICECHANGE:
+            case WM_DISPLAYCHANGE:
             {
-                if (wParam == DBT_DEVNODES_CHANGED)
-                {
-                    _glfwInputMonitorChange();
-                    return TRUE;
-                }
-
-                break;
+                _glfwInputMonitorChange();
+                return 0;
             }
         }
 

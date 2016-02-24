@@ -131,6 +131,8 @@ static GLFWbool loadLibraries(void)
             GetProcAddress(_glfw.win32.dwmapi.instance, "DwmIsCompositionEnabled");
         _glfw.win32.dwmapi.Flush = (PFN_DwmFlush)
             GetProcAddress(_glfw.win32.dwmapi.instance, "DwmFlush");
+        _glfw.win32.dwmapi.DwmEnableBlurBehindWindow = (DWMENABLEBLURBEHINDWINDOW_T)
+            GetProcAddress(_glfw.win32.dwmapi.instance, "DwmEnableBlurBehindWindow");
     }
 
     _glfw.win32.shcore.instance = LoadLibraryA("shcore.dll");

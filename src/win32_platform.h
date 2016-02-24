@@ -122,6 +122,19 @@ typedef enum PROCESS_DPI_AWARENESS
 } PROCESS_DPI_AWARENESS;
 #endif /*DPI_ENUMS_DECLARED*/
 
+#if !defined(_DWMAPI_H_)
+#define DWM_BB_ENABLE                 0x00000001
+#define DWM_BB_BLURREGION             0x00000002
+
+typedef struct
+{
+    DWORD dwFlags;
+    BOOL fEnable;
+    HRGN hRgnBlur;
+    BOOL fTransitionOnMaximized;
+} DWM_BLURBEHIND;
+#endif
+
 // HACK: Define versionhelpers.h functions manually as MinGW lacks the header
 FORCEINLINE BOOL IsWindowsVersionOrGreater(WORD major, WORD minor, WORD sp)
 {
@@ -203,8 +216,10 @@ typedef BOOL (WINAPI * PFN_ChangeWindowMessageFilterEx)(HWND,UINT,DWORD,PCHANGEF
 // dwmapi.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_DwmIsCompositionEnabled)(BOOL*);
 typedef HRESULT (WINAPI * PFN_DwmFlush)(VOID);
+typedef HRESULT(WINAPI * DWMENABLEBLURBEHINDWINDOW_T)(HWND, const DWM_BLURBEHIND*);
 #define DwmIsCompositionEnabled _glfw.win32.dwmapi.IsCompositionEnabled
 #define DwmFlush _glfw.win32.dwmapi.Flush
+#define _glfw_DwmEnableBlurBehindWindow _glfw.win32.dwmapi.DwmEnableBlurBehindWindow
 
 // shcore.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_SetProcessDpiAwareness)(PROCESS_DPI_AWARENESS);
@@ -310,6 +325,7 @@ typedef struct _GLFWlibraryWin32
         HINSTANCE                       instance;
         PFN_DwmIsCompositionEnabled     IsCompositionEnabled;
         PFN_DwmFlush                    Flush;
+        DWMENABLEBLURBEHINDWINDOW_T DwmEnableBlurBehindWindow;
     } dwmapi;
 
     struct {

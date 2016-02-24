@@ -13,6 +13,7 @@ Debug
 Release
 MinSizeRel
 RelWithDebInfo
+*.VC.opendb
 
 # CMake files
 Makefile

@@ -71,10 +71,6 @@ find_package(Vulkan)
 if (GLFW_BUILD_DOCS)
     set(DOXYGEN_SKIP_DOT TRUE)
     find_package(Doxygen)
-
-    if (GLFW_DOCUMENT_INTERNALS)
-        set(GLFW_INTERNAL_DOCS "${GLFW_SOURCE_DIR}/src/internal.h ${GLFW_SOURCE_DIR}/docs/internal.dox")
-    endif()
 endif()
 
 #--------------------------------------------------------------------
@@ -368,10 +364,6 @@ configure_package_config_file(src/glfw3Config.cmake.in
 write_basic_package_version_file(src/glfw3ConfigVersion.cmake
                                  VERSION ${GLFW_VERSION_FULL}
                                  COMPATIBILITY SameMajorVersion)
-
-if (GLFW_BUILD_DOCS)
-    configure_file(docs/Doxyfile.in docs/Doxyfile @ONLY)
-endif()
 
 configure_file(src/glfw_config.h.in src/glfw_config.h @ONLY)
 

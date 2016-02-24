@@ -732,6 +732,19 @@ static int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
     window->win32.numer     = GLFW_DONT_CARE;
     window->win32.denom     = GLFW_DONT_CARE;
 
+    // Accelerated transparent windows
+    // It currently doesn't support decorated windows.
+    // If decorated is required we just return an opaque window.
+    // Since DwmEnableBlurBehindWindow is supported since Vista,
+    // previous versions will simply get an opaque window.
+    if (!window->decorated && _glfw_DwmEnableBlurBehindWindow && window->transparent) {
+        DWM_BLURBEHIND bb = { 0 };
+        bb.dwFlags = 3; // DWM_BB_ENABLE | DWM_BB_BLURREGION
+        bb.hRgnBlur = CreateRectRgn(0, 0, -1, -1); // an invalid hRgnBlur makes the the window transparent
+        bb.fEnable = TRUE;
+        _glfw_DwmEnableBlurBehindWindow(window->win32.handle, &bb);
+    }
+
     return GLFW_TRUE;
 }
 

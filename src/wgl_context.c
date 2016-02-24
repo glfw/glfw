@@ -83,6 +83,20 @@ static int choosePixelFormat(_GLFWwindow* window,
     {
         const int n = i + 1;
         _GLFWfbconfig* u = usableConfigs + usableCount;
+        PIXELFORMATDESCRIPTOR pfd;
+
+        if (window->transparent) {
+            if (!DescribePixelFormat(window->context.wgl.dc,
+                n,
+                sizeof(PIXELFORMATDESCRIPTOR),
+                &pfd))
+            {
+                continue;
+            }
+
+            if (!(pfd.dwFlags & PFD_SUPPORT_COMPOSITION))
+                continue;
+        }
 
         if (_glfw.wgl.ARB_pixel_format)
         {
@@ -152,11 +166,9 @@ static int choosePixelFormat(_GLFWwindow* window,
         }
         else
         {
-            PIXELFORMATDESCRIPTOR pfd;
-
             // Get pixel format attributes through legacy PFDs
 
-            if (!DescribePixelFormat(window->context.wgl.dc,
+            if (!window->transparent && DescribePixelFormat(window->context.wgl.dc,
                                      n,
                                      sizeof(PIXELFORMATDESCRIPTOR),
                                      &pfd))
@@ -202,6 +214,15 @@ static int choosePixelFormat(_GLFWwindow* window,
 
         u->handle = n;
         usableCount++;
+    }
+    // Reiterate the selection loop without looking for transparency supporting
+    // formats if no matching pixelformat for a transparent window were found.
+    if (window->transparent && !usableCount) {
+        window->transparent = GLFW_FALSE;
+        free(usableConfigs);
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+            "WGL: No pixel format found for transparent window. Ignoring transparency.");
+        return choosePixelFormat(window, ctxconfig, fbconfig);
     }
 
     if (!usableCount)
@@ -484,6 +505,75 @@ void _glfwTerminateWGL(void)
     attribs[index++] = v; \
 }
 
+static GLFWbool setupTransparentWindow(_GLFWwindow* window)
+{
+    if (!isCompositionEnabled) {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+            "WGL: Composition needed for transparent window is disabled");
+    }
+    if (!_glfw_DwmEnableBlurBehindWindow) {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+            "WGL: Unable to load DwmEnableBlurBehindWindow required for transparent window");
+        return GLFW_FALSE;
+    }
+
+    HRESULT hr = S_OK;
+    HWND handle = window->win32.handle;
+
+    DWM_BLURBEHIND bb = { 0 };
+    bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
+    bb.hRgnBlur = CreateRectRgn(0, 0, -1, -1);  // makes the window transparent
+    bb.fEnable = TRUE;
+    hr = _glfw_DwmEnableBlurBehindWindow(handle, &bb);
+
+    if (!SUCCEEDED(hr)) {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+            "WGL: Failed to enable blur behind window required for transparent window");
+        return GLFW_FALSE;
+    }
+
+    // Decorated windows on Windows 8+ don't repaint the transparent background
+    // leaving a trail behind animations.
+    // Hack: making the window layered with a transparency color key seems to fix this.
+    // Normally, when specifying a transparency color key to be used when composing
+    // the layered window, all pixels painted by the window in this color will be transparent.
+    // That doesn't seem to be the case anymore on Windows 8+, at least when used with
+    // DwmEnableBlurBehindWindow + negative region.
+    if (window->decorated && IsWindows8OrGreater())
+    {
+        long style = GetWindowLong(handle, GWL_EXSTYLE);
+        if (!style) {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                "WGL: Failed to retrieve extended styles. GetLastError: %d",
+                GetLastError());
+            return GLFW_FALSE;
+        }
+        style |= WS_EX_LAYERED;
+        if (!SetWindowLongPtr(handle, GWL_EXSTYLE, style))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                "WGL: Failed to add layered style. GetLastError: %d",
+                GetLastError());
+            return GLFW_FALSE;
+        }
+        if (!SetLayeredWindowAttributes(handle,
+            // Using a color key not equal to black to fix the trailing issue.
+            // When set to black, something is making the hit test not resize with the
+            // window frame.
+            RGB(0, 193, 48),
+            255,
+            LWA_COLORKEY))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                "WGL: Failed to set layered window. GetLastError: %d",
+                GetLastError());
+            return GLFW_FALSE;
+        }
+    }
+
+    return GLFW_TRUE;
+}
+
 // Create the OpenGL or OpenGL ES context
 //
 GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
@@ -711,6 +801,12 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                 return GLFW_FALSE;
             }
         }
+    }
+
+    if (window->transparent)
+    {
+        if (!setupTransparentWindow(window))
+            window->transparent = GLFW_FALSE;
     }
 
     window->context.makeCurrent = makeContextCurrentWGL;

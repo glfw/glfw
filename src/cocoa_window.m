@@ -148,7 +148,7 @@ static NSUInteger translateKeyToModifierFlag(int key)
 
 // Defines a constant for empty ranges in NSTextInputClient
 //
-static const NSRange kEmptyRange = {NSNotFound, 0};
+static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 
 //------------------------------------------------------------------------
@@ -612,14 +612,15 @@ static const NSRange kEmptyRange = {NSNotFound, 0};
 
 - (BOOL)hasMarkedText
 {
-    return (markedText.length > 0);
+    return [markedText length] > 0;
 }
 
 - (NSRange)markedRange
 {
-    return (markedText.length > 0) ?
-    NSMakeRange(0, markedText.length-1) :
-    kEmptyRange;
+    if ([markedText length] > 0)
+        return NSMakeRange(0, [markedText length] - 1);
+    else
+        return kEmptyRange;
 }
 
 - (NSRange)selectedRange
@@ -627,18 +628,14 @@ static const NSRange kEmptyRange = {NSNotFound, 0};
     return kEmptyRange;
 }
 
-- (void)setMarkedText:(id)aString
+- (void)setMarkedText:(id)string
         selectedRange:(NSRange)selectedRange
      replacementRange:(NSRange)replacementRange
 {
-    if( [aString isKindOfClass: [NSAttributedString class]] )
-    {
-        [markedText initWithAttributedString: aString];
-    }
+    if ([string isKindOfClass:[NSAttributedString class]])
+        [markedText initWithAttributedString:string];
     else
-    {
-        [markedText initWithString: aString];
-    }
+        [markedText initWithString:string];
 }
 
 - (void)unmarkText
@@ -651,37 +648,36 @@ static const NSRange kEmptyRange = {NSNotFound, 0};
     return [NSArray array];
 }
 
-- (NSAttributedString*)attributedSubstringForProposedRange:(NSRange)aRange
+- (NSAttributedString*)attributedSubstringForProposedRange:(NSRange)range
                                                actualRange:(NSRangePointer)actualRange
 {
     return nil;
 }
 
-- (NSUInteger)characterIndexForPoint:(NSPoint)aPoint
+- (NSUInteger)characterIndexForPoint:(NSPoint)point
 {
     return 0;
 }
 
-- (NSRect)firstRectForCharacterRange:(NSRange)aRange
+- (NSRect)firstRectForCharacterRange:(NSRange)range
                          actualRange:(NSRangePointer)actualRange
 {
     return NSMakeRect(0, 0, 0, 0);
 }
 
-- (void)insertText:(id)aString replacementRange:(NSRange)replacementRange
+- (void)insertText:(id)string replacementRange:(NSRange)replacementRange
 {
+    NSString* characters;
     NSEvent* event = [NSApp currentEvent];
     const int mods = translateFlags([event modifierFlags]);
+    const int plain = !(mods & GLFW_MOD_SUPER);
 
-    NSString* characters;
-    if ([aString isKindOfClass: [NSAttributedString class]]) {
-        characters = [aString string];
-    } else {
-        characters = (NSString*)aString;
-    }
+    if ([string isKindOfClass:[NSAttributedString class]])
+        characters = [string string];
+    else
+        characters = (NSString*) string;
 
     NSUInteger i, length = [characters length];
-    const int plain = !(mods & GLFW_MOD_SUPER);
 
     for (i = 0;  i < length;  i++)
     {

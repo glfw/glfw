@@ -662,10 +662,10 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 - (NSRect)firstRectForCharacterRange:(NSRange)range
                          actualRange:(NSRangePointer)actualRange
 {
-    int x, y;
-    _glfwPlatformGetWindowPos(window, &x, &y);
+    int xpos, ypos;
+    _glfwPlatformGetWindowPos(window, &xpos, &ypos);
     const NSRect contentRect = [window->ns.view frame];
-    return NSMakeRect(x, transformY(y+contentRect.size.height), 0, 0);
+    return NSMakeRect(xpos, transformY(ypos + contentRect.size.height), 0.0, 0.0);
 }
 
 - (void)insertText:(id)string replacementRange:(NSRange)replacementRange

@@ -230,6 +230,7 @@ skills.
  - SephiRok
  - Steve Sexton
  - Systemcluster
+ - Yoshiki Shibukawa
  - Dmitri Shuralyov
  - Daniel Skorupski
  - Bradley Smith

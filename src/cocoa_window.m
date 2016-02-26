@@ -206,6 +206,9 @@ static int translateKey(unsigned int key)
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
+    window->ns.modifierFlags =
+        [NSEvent modifierFlags] & NSDeviceIndependentModifierFlagsMask;
+
     if (_glfw.cursorWindow == window &&
         window->cursorMode == GLFW_CURSOR_DISABLED)
     {

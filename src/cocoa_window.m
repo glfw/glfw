@@ -123,6 +123,29 @@ static int translateKey(unsigned int key)
     return _glfw.ns.publicKeys[key];
 }
 
+// Translate a GLFW keycode to a mask for its GLFW modifier flag bit
+//
+static int translateKeyToFlagMask(int key)
+{
+    switch (key)
+    {
+        case GLFW_KEY_LEFT_SHIFT:
+        case GLFW_KEY_RIGHT_SHIFT:
+            return GLFW_MOD_SHIFT;
+        case GLFW_KEY_LEFT_CONTROL:
+        case GLFW_KEY_RIGHT_CONTROL:
+            return GLFW_MOD_CONTROL;
+        case GLFW_KEY_LEFT_ALT:
+        case GLFW_KEY_RIGHT_ALT:
+            return GLFW_MOD_ALT;
+        case GLFW_KEY_LEFT_SUPER:
+        case GLFW_KEY_RIGHT_SUPER:
+            return GLFW_MOD_SUPER;
+        default:
+            return 0;
+    }
+}
+
 
 //------------------------------------------------------------------------
 // Delegate for window related notifications
@@ -502,17 +525,26 @@ static int translateKey(unsigned int key)
         [event modifierFlags] & NSDeviceIndependentModifierFlagsMask;
     const int key = translateKey([event keyCode]);
     const int mods = translateFlags(modifierFlags);
+    // Process flag change as a key press only if the key and flag match
+    const int flagMask = translateKeyToFlagMask(key);
+    const int modsMasked = mods & flagMask;
+    const int prevModsMasked =
+        translateFlags(window->ns.modifierFlags) & flagMask;
 
-    if (modifierFlags == window->ns.modifierFlags)
+    if ((modsMasked & prevModsMasked) != 0)
     {
+        // Toggle key state if key is already held, to handle left and right
+        // modifier keys being held simultaneously
         if (window->keys[key] == GLFW_PRESS)
             action = GLFW_RELEASE;
         else
             action = GLFW_PRESS;
     }
-    else if (modifierFlags > window->ns.modifierFlags)
+    else if (modsMasked > prevModsMasked)
+        // The bit corresponding to the key is set in the new flags
         action = GLFW_PRESS;
     else
+        // Modifier key was released or the flag change was not for this key
         action = GLFW_RELEASE;
 
     window->ns.modifierFlags = modifierFlags;
@@ -861,6 +893,12 @@ static GLFWbool createWindow(_GLFWwindow* window,
     }
 
     window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1060
+    // Initialize modifiers state with any already held modifiers
+    window->ns.modifierFlags =
+        [NSEvent modifierFlags] & NSDeviceIndependentModifierFlagsMask;
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
 #if defined(_GLFW_USE_RETINA)
     [window->ns.view setWantsBestResolutionOpenGLSurface:YES];

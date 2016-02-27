@@ -12,7 +12,7 @@ for creating windows, contexts and surfaces, reading input, handling events, etc
 Version 3.2 is _not yet described_.
 
 If you are new to GLFW, you may find the
-[introductory tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW
+[tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW
 3 useful.  If you have used GLFW 2 in the past, there is a
 [transition guide](http://www.glfw.org/docs/latest/moving.html) for moving to
 the GLFW 3 API.

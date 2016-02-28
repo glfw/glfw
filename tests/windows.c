@@ -130,7 +130,7 @@ int main(int argc, char** argv)
                 running = GLFW_FALSE;
         }
 
-        glfwPollEvents();
+        glfwWaitEvents();
     }
 
     glfwTerminate();

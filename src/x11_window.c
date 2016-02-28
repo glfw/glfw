@@ -318,6 +318,8 @@ static GLFWbool createWindow(_GLFWwindow* window,
                                     window->x11.handle,
                                     CWOverrideRedirect,
                                     &attributes);
+
+            window->x11.overrideRedirect = GLFW_TRUE;
         }
     }
     else
@@ -1737,7 +1739,7 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
-    if (!_glfw.x11.NET_WM_STATE || !_glfw.x11.NET_WM_STATE_FULLSCREEN)
+    if (window->x11.overrideRedirect)
     {
         // Override-redirect windows cannot be iconified or restored, as those
         // tasks are performed by the window manager
@@ -1752,7 +1754,7 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
-    if (!_glfw.x11.NET_WM_STATE || !_glfw.x11.NET_WM_STATE_FULLSCREEN)
+    if (window->x11.overrideRedirect)
     {
         // Override-redirect windows cannot be iconified or restored, as those
         // tasks are performed by the window manager

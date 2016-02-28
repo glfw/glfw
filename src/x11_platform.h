@@ -116,6 +116,8 @@ typedef struct _GLFWwindowX11
     Window          handle;
     XIC             ic;
 
+    GLFWbool        overrideRedirect;
+
     // Cached position and size used to filter out duplicate events
     int             width, height;
     int             xpos, ypos;

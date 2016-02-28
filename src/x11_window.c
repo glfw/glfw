@@ -1114,6 +1114,9 @@ static void processEvent(XEvent *event)
 
         case ConfigureNotify:
         {
+            if (!window->x11.overrideRedirect && !event->xany.send_event)
+                return;
+
             if (event->xconfigure.width != window->x11.width ||
                 event->xconfigure.height != window->x11.height)
             {

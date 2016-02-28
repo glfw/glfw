@@ -692,6 +692,10 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     }
 }
 
+- (void)doCommandBySelector:(SEL)selector
+{
+}
+
 @end
 
 

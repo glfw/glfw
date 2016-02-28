@@ -506,11 +506,13 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 //
 void _glfwDestroyContextEGL(_GLFWwindow* window)
 {
+    int test = 1;
 #if defined(_GLFW_X11)
     // NOTE: Do not unload libGL.so.1 while the X11 display is still open,
     //       as it will make XCloseDisplay segfault
-    if (window->context.api != GLFW_OPENGL_API)
+    test = window->context.api != GLFW_OPENGL_API;
 #endif // _GLFW_X11
+    if (test)
     {
         if (window->context.egl.client)
         {

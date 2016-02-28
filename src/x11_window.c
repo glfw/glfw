@@ -1678,6 +1678,9 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
 {
     long* extents = NULL;
 
+    if (window->monitor || !window->decorated)
+        return;
+
     if (_glfw.x11.NET_FRAME_EXTENTS == None)
         return;
 

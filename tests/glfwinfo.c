@@ -806,9 +806,7 @@ int main(int argc, char** argv)
         putchar('\n');
 
         if (list_extensions)
-        {
             list_vulkan_instance_extensions();
-        }
 
         if (list_layers)
             list_vulkan_instance_layers();

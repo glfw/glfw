@@ -133,6 +133,20 @@ static GLFWbool choosePixelFormat(_GLFWwindow* window,
     {
         const int n = i + 1;
         _GLFWfbconfig* u = usableConfigs + usableCount;
+        PIXELFORMATDESCRIPTOR pfd;
+
+        if (window->transparent) {
+            if (!DescribePixelFormat(window->context.wgl.dc,
+                n,
+                sizeof(PIXELFORMATDESCRIPTOR),
+                &pfd))
+            {
+                continue;
+            }
+
+            if (!(pfd.dwFlags & PFD_SUPPORT_COMPOSITION))
+                continue;
+        }
 
         if (_glfw.wgl.ARB_pixel_format)
         {
@@ -188,11 +202,9 @@ static GLFWbool choosePixelFormat(_GLFWwindow* window,
         }
         else
         {
-            PIXELFORMATDESCRIPTOR pfd;
-
             // Get pixel format attributes through legacy PFDs
 
-            if (!DescribePixelFormat(window->context.wgl.dc,
+            if (!window->transparent && !DescribePixelFormat(window->context.wgl.dc,
                                      n,
                                      sizeof(PIXELFORMATDESCRIPTOR),
                                      &pfd))
@@ -238,6 +250,13 @@ static GLFWbool choosePixelFormat(_GLFWwindow* window,
 
         u->wgl = n;
         usableCount++;
+    }
+    // Reiterate the selection loop without looking for transparency supporting
+    // formats if no matching pixelformat for a transparent window were found.
+    if (window->transparent && !usableCount) {
+        window->transparent = GLFW_FALSE;
+        free(usableConfigs);
+        return choosePixelFormat(window, desired, result);
     }
 
     if (!usableCount)

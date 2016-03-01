@@ -493,6 +493,28 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         }
     }
 
+    if (window->transparent) {
+        if (!isCompositionEnabled || !_glfw_DwmEnableBlurBehindWindow) {
+            window->transparent = GLFW_FALSE;
+        }
+        else
+        {
+            HRESULT hr = S_OK;
+
+            DWM_BLURBEHIND bb = { 0 };
+            bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
+            bb.hRgnBlur = CreateRectRgn(0, 0, -1, -1);  // makes the window transparent
+            bb.fEnable = TRUE;
+            hr = _glfw_DwmEnableBlurBehindWindow(window->win32.handle, &bb);
+
+            if (!SUCCEEDED(hr)) {
+                window->transparent = GLFW_FALSE;
+                _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "WGL: Failed to enable blur behind window required for transparency");
+            }
+        }
+    }
+
     return GLFW_TRUE;
 }
 

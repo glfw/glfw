@@ -120,6 +120,12 @@ typedef enum PROCESS_DPI_AWARENESS
 } PROCESS_DPI_AWARENESS;
 #endif /*DPI_ENUMS_DECLARED*/
 
+#if !defined(_DWMAPI_H_)
+// Blur behind data structures
+#define DWM_BB_ENABLE                 0x00000001  // fEnable has been specified
+#define DWM_BB_BLURREGION             0x00000002  // hRgnBlur has been specified
+#define DWM_BB_TRANSITIONONMAXIMIZED  0x00000004  // fTransitionOnMaximized has been specified
+
 typedef struct _DWM_BLURBEHIND
 {
     DWORD dwFlags;
@@ -127,31 +133,31 @@ typedef struct _DWM_BLURBEHIND
     HRGN hRgnBlur;
     BOOL fTransitionOnMaximized;
 } DWM_BLURBEHIND, *PDWM_BLURBEHIND;
+#endif
 
 // winmm.dll function pointer typedefs
 typedef MMRESULT (WINAPI * JOYGETDEVCAPS_T)(UINT,LPJOYCAPS,UINT);
 typedef MMRESULT (WINAPI * JOYGETPOS_T)(UINT,LPJOYINFO);
 typedef MMRESULT (WINAPI * JOYGETPOSEX_T)(UINT,LPJOYINFOEX);
 typedef DWORD (WINAPI * TIMEGETTIME_T)(void);
-typedef HRESULT(WINAPI * DWMENABLEBLURBEHINDWINDOW_T)(HWND, const DWM_BLURBEHIND*);
 #define _glfw_joyGetDevCaps _glfw.win32.winmm.joyGetDevCaps
 #define _glfw_joyGetPos _glfw.win32.winmm.joyGetPos
 #define _glfw_joyGetPosEx _glfw.win32.winmm.joyGetPosEx
 #define _glfw_timeGetTime _glfw.win32.winmm.timeGetTime
-#define _glfw_DwmEnableBlurBehindWindow _glfw.win32.dwmapi.DwmEnableBlurBehindWindow
 
 // user32.dll function pointer typedefs
 typedef BOOL (WINAPI * SETPROCESSDPIAWARE_T)(void);
 typedef BOOL (WINAPI * CHANGEWINDOWMESSAGEFILTEREX_T)(HWND,UINT,DWORD,PCHANGEFILTERSTRUCT);
 #define _glfw_SetProcessDPIAware _glfw.win32.user32.SetProcessDPIAware
 #define _glfw_ChangeWindowMessageFilterEx _glfw.win32.user32.ChangeWindowMessageFilterEx
-#define _glfw_DwmEnableBlurBehindWindow _glfw.win32.dwmapi.DwmEnableBlurBehindWindow
 
 // dwmapi.dll function pointer typedefs
 typedef HRESULT (WINAPI * DWMISCOMPOSITIONENABLED_T)(BOOL*);
 typedef HRESULT (WINAPI * DWMFLUSH_T)(VOID);
+typedef HRESULT (WINAPI * DWMENABLEBLURBEHINDWINDOW_T)(HWND, const DWM_BLURBEHIND*);
 #define _glfw_DwmIsCompositionEnabled _glfw.win32.dwmapi.DwmIsCompositionEnabled
 #define _glfw_DwmFlush _glfw.win32.dwmapi.DwmFlush
+#define _glfw_DwmEnableBlurBehindWindow _glfw.win32.dwmapi.DwmEnableBlurBehindWindow
 
 // shcore.dll function pointer typedefs
 typedef HRESULT (WINAPI * SETPROCESSDPIAWARENESS_T)(PROCESS_DPI_AWARENESS);

@@ -976,12 +976,13 @@ static void processEvent(XEvent *event)
                         next.xkey.window == event->xkey.window &&
                         next.xkey.keycode == keycode)
                     {
-                        // HACK: Repeat events sometimes leak through due to
-                        //       some sort of time drift, so add an epsilon
-                        //       Toshiyuki Takahashi can press a button 16 times
-                        //       per second so it's fairly safe to assume that
-                        //       no human is pressing the key 50 times per
-                        //       second (value is ms)
+                        // HACK: The time of repeat events sometimes doesn't
+                        //       match that of the press event, so add an
+                        //       epsilon
+                        //       Toshiyuki Takahashi can press a button
+                        //       16 times per second so it's fairly safe to
+                        //       assume that no human is pressing the key 50
+                        //       times per second (value is ms)
                         if ((next.xkey.time - event->xkey.time) < 20)
                         {
                             // This is very likely a server-generated key repeat

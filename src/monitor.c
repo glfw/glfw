@@ -294,7 +294,7 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 
 GLFWAPI GLFWmonitor** glfwGetMonitors(int* count)
 {
-    assert(count);
+    assert(count != NULL);
     *count = 0;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
@@ -316,7 +316,7 @@ GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void)
 GLFWAPI void glfwGetMonitorPos(GLFWmonitor* handle, int* xpos, int* ypos)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-    assert(monitor);
+    assert(monitor != NULL);
 
     if (xpos)
         *xpos = 0;
@@ -331,7 +331,7 @@ GLFWAPI void glfwGetMonitorPos(GLFWmonitor* handle, int* xpos, int* ypos)
 GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* handle, int* widthMM, int* heightMM)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-    assert(monitor);
+    assert(monitor != NULL);
 
     if (widthMM)
         *widthMM = 0;
@@ -349,7 +349,7 @@ GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* handle, int* widthMM, int* 
 GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-    assert(monitor);
+    assert(monitor != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     return monitor->name;
@@ -365,9 +365,9 @@ GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-    assert(monitor);
+    assert(monitor != NULL);
 
-    assert(count);
+    assert(count != NULL);
     *count = 0;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
@@ -382,7 +382,7 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)
 GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-    assert(monitor);
+    assert(monitor != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
@@ -431,7 +431,7 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
 GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-    assert(monitor);
+    assert(monitor != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
@@ -444,9 +444,9 @@ GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* handle)
 GLFWAPI void glfwSetGammaRamp(GLFWmonitor* handle, const GLFWgammaramp* ramp)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-    assert(monitor);
+    assert(monitor != NULL);
 
-    assert(ramp);
+    assert(ramp != NULL);
 
     _GLFW_REQUIRE_INIT();
 

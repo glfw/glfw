@@ -262,9 +262,9 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance,
                                          VkSurfaceKHR* surface)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-    assert(window);
+    assert(window != NULL);
 
-    assert(surface);
+    assert(surface != NULL);
     *surface = VK_NULL_HANDLE;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(VK_ERROR_INITIALIZATION_FAILED);

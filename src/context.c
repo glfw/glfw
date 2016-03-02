@@ -567,7 +567,7 @@ GLFWAPI GLFWwindow* glfwGetCurrentContext(void)
 GLFWAPI void glfwSwapBuffers(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-    assert(window);
+    assert(window != NULL);
 
     _GLFW_REQUIRE_INIT();
 
@@ -597,7 +597,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 {
     _GLFWwindow* window;
 
-    assert(extension);
+    assert(extension != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
 
@@ -661,7 +661,7 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
 
 GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname)
 {
-    assert(procname);
+    assert(procname != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 

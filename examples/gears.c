@@ -298,10 +298,17 @@ static void init(void)
   glEnable(GL_NORMALIZE);
 }
 
+GLFWerrorfun ErrorFun(int i, const char* str) {
+    char buf[255];
+    sprintf(buf, "%d: %s", i, str);
+    MessageBoxA(0, buf, "Error", MB_ICONERROR | MB_OK);
+}
 
 /* program entry */
 int main(int argc, char *argv[])
 {
+    glfwSetErrorCallback(ErrorFun);
+
     GLFWwindow* window;
     int width, height;
 
@@ -314,7 +321,7 @@ int main(int argc, char *argv[])
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
     glfwWindowHint(GLFW_ALPHA_BITS, 8);
     glfwWindowHint(GLFW_TRANSPARENT, GLFW_TRUE);
-    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
 
     window = glfwCreateWindow( 300, 300, "Gears", NULL, NULL );
     if (!window)

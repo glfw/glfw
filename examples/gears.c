@@ -298,17 +298,9 @@ static void init(void)
   glEnable(GL_NORMALIZE);
 }
 
-GLFWerrorfun ErrorFun(int i, const char* str) {
-    char buf[255];
-    sprintf(buf, "%d: %s", i, str);
-    MessageBoxA(0, buf, "Error", MB_ICONERROR | MB_OK);
-}
-
 /* program entry */
 int main(int argc, char *argv[])
 {
-    glfwSetErrorCallback(ErrorFun);
-
     GLFWwindow* window;
     int width, height;
 

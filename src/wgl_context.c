@@ -366,12 +366,14 @@ isWindowsVersionOrGreater(WORD wMajorVersion, WORD wMinorVersion, WORD wServiceP
     return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
 }
 
-static GLFWbool isWindows8OrGreater() {
+static GLFWbool isWindows8OrGreater()
+{
     GLFWbool isWin8OrGreater = isWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN8), LOBYTE(_WIN32_WINNT_WIN8), 0) ? GLFW_TRUE: GLFW_FALSE;
     return isWin8OrGreater;
 }
 
-static GLFWbool setupTransparentWindow(HWND handle, GLFWbool isDecorated) {
+static GLFWbool setupTransparentWindow(_GLFWwindow* window)
+{
     if (!isCompositionEnabled) {
         _glfwInputError(GLFW_PLATFORM_ERROR,
             "WGL: Composition needed for transparent window is disabled");
@@ -383,6 +385,7 @@ static GLFWbool setupTransparentWindow(HWND handle, GLFWbool isDecorated) {
     }
 
     HRESULT hr = S_OK;
+    HWND handle = window->win32.handle;
 
     DWM_BLURBEHIND bb = { 0 };
     bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
@@ -403,7 +406,8 @@ static GLFWbool setupTransparentWindow(HWND handle, GLFWbool isDecorated) {
     // the layered window, all pixels painted by the window in this color will be transparent.
     // That doesn't seem to be the case anymore on Windows 8+, at least when used with
     // DwmEnableBlurBehindWindow + negative region.
-    if (isDecorated && isWindows8OrGreater()) {
+    if (window->decorated && isWindows8OrGreater())
+    {
         long style = GetWindowLong(handle, GWL_EXSTYLE);
         if (!style) {
             _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -433,6 +437,7 @@ static GLFWbool setupTransparentWindow(HWND handle, GLFWbool isDecorated) {
             return GLFW_FALSE;
         }
     }
+
     return GLFW_TRUE;
 }
 
@@ -585,10 +590,10 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         }
     }
 
-    if (window->transparent) {
-        if (!setupTransparentWindow(window->win32.handle, window->decorated)) {
+    if (window->transparent)
+    {
+        if (!setupTransparentWindow(window))
             window->transparent = GLFW_FALSE;
-        }
     }
 
     return GLFW_TRUE;

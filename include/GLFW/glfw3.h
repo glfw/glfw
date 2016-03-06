@@ -3573,8 +3573,9 @@ GLFWAPI void glfwSetTime(double time);
 
 /*! @brief Returns the current value of the raw timer.
  *
- *  This function returns the current value of the raw timer.  To get its
- *  frequency, call @ref glfwGetTimerFrequency.
+ *  This function returns the current value of the raw timer, measured in
+ *  1&nbsp;/&nbsp;frequency seconds.  To get the frequency, call @ref
+ *  glfwGetTimerFrequency.
  *
  *  @return The value of the timer, or zero if an 
  *  [error](@ref error_handling) occurred.

@@ -554,8 +554,8 @@ glfwSetTime(4.0);
 
 This sets the timer to the specified time, in seconds.
 
-You can also access the raw timer value, in 1&nbsp;/&nbsp;frequency seconds,
-with @ref glfwGetTimerValue.
+You can also access the raw timer value, measured in 1&nbsp;/&nbsp;frequency
+seconds, with @ref glfwGetTimerValue.
 
 @code
 GLFWuint64 value = glfwGetTimerValue();

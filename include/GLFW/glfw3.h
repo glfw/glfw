@@ -117,10 +117,9 @@ extern "C" {
 
 /* Most Windows GLU headers need wchar_t.
  * The OS X OpenGL header blocks the definition of ptrdiff_t by glext.h.
+ * Include it unconditionally to avoid surprising side-effects.
  */
-#if !defined(GLFW_INCLUDE_NONE)
- #include <stddef.h>
-#endif
+#include <stddef.h>
 
 /* Include the chosen client API headers.
  */

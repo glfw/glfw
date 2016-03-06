@@ -47,8 +47,6 @@
 #define GLFW_INCLUDE_NONE
 #include "../include/GLFW/glfw3.h"
 
-#include <stddef.h>
-
 #if defined(_MSC_VER) && (_MSC_VER < 1600)
 typedef unsigned __int64 GLFWuint64;
 #else

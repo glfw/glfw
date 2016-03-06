@@ -26,7 +26,7 @@ Vulkan header inclusion can be selected with
 [GLFW_INCLUDE_VULKAN](@ref build_macros).
 
 
-@subsection news_32_maximize Window maxmimization supprot
+@subsection news_32_maximize Window maxmimization support
 
 GLFW now supports window maximization with @ref glfwMaximizeWindow and the
 [GLFW_MAXIMIZED](@ref window_attribs_wnd) window hint and attribute.

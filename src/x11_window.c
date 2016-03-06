@@ -1688,7 +1688,7 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
     if (!_glfwPlatformWindowVisible(window) &&
         _glfw.x11.NET_REQUEST_FRAME_EXTENTS)
     {
-        double base;
+        GLFWuint64 base;
         XEvent event;
 
         // Ensure _NET_FRAME_EXTENTS is set, allowing glfwGetWindowFrameSize to
@@ -1696,13 +1696,14 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
         sendEventToWM(window, _glfw.x11.NET_REQUEST_FRAME_EXTENTS,
                       0, 0, 0, 0, 0);
 
+        base = _glfwPlatformGetTimerValue();
+
         // HACK: Poll with timeout for the required reply instead of blocking
         //       This is done because some window managers (at least Unity,
         //       Fluxbox and Xfwm) failed to send the required reply
         //       They have been fixed but broken versions are still in the wild
         //       If you are affected by this and your window manager is NOT
         //       listed above, PLEASE report it to their and our issue trackers
-        base = _glfwPlatformGetTime();
         while (!XCheckIfEvent(_glfw.x11.display,
                               &event,
                               isFrameExtentsEvent,
@@ -1711,7 +1712,8 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
             double remaining;
             struct timeval timeout;
 
-            remaining = 0.5 + base - _glfwPlatformGetTime();
+            remaining = 0.5 - (_glfwPlatformGetTimerValue() - base) /
+                (double) _glfwPlatformGetTimerFrequency();
             if (remaining <= 0.0)
             {
                 _glfwInputError(GLFW_PLATFORM_ERROR,

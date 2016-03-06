@@ -645,7 +645,8 @@ GLFWAPI const char* glfwGetClipboardString(GLFWwindow* handle)
 GLFWAPI double glfwGetTime(void)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(0.0);
-    return _glfwPlatformGetTime();
+    return (double) (_glfwPlatformGetTimerValue() - _glfw.timerOffset) /
+        _glfwPlatformGetTimerFrequency();
 }
 
 GLFWAPI void glfwSetTime(double time)
@@ -658,6 +659,19 @@ GLFWAPI void glfwSetTime(double time)
         return;
     }
 
-    _glfwPlatformSetTime(time);
+    _glfw.timerOffset = _glfwPlatformGetTimerValue() -
+        (GLFWuint64) (time * _glfwPlatformGetTimerFrequency());
+}
+
+GLFWAPI GLFWuint64 glfwGetTimerValue(void)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(0);
+    return _glfwPlatformGetTimerValue();
+}
+
+GLFWAPI GLFWuint64 glfwGetTimerFrequency(void)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(0);
+    return _glfwPlatformGetTimerFrequency();
 }
 

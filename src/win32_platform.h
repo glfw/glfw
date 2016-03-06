@@ -277,8 +277,7 @@ typedef struct _GLFWcursorWin32
 typedef struct _GLFWtimeWin32
 {
     GLFWbool            hasPC;
-    double              resolution;
-    unsigned __int64    base;
+    GLFWuint64          frequency;
 
 } _GLFWtimeWin32;
 

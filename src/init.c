@@ -135,6 +135,8 @@ GLFWAPI int glfwInit(void)
     _glfw.monitors = _glfwPlatformGetMonitors(&_glfw.monitorCount);
     _glfwInitialized = GLFW_TRUE;
 
+    _glfw.timerOffset = _glfwPlatformGetTimerValue();
+
     // Not all window hints have zero as their default value
     glfwDefaultWindowHints();
 

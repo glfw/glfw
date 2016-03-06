@@ -47,13 +47,6 @@
 #define GLFW_INCLUDE_NONE
 #include "../include/GLFW/glfw3.h"
 
-#if defined(_MSC_VER) && (_MSC_VER < 1600)
-typedef unsigned __int64 GLFWuint64;
-#else
- #include <stdint.h>
-typedef uint64_t GLFWuint64;
-#endif
-
 typedef int GLFWbool;
 
 typedef struct _GLFWwndconfig   _GLFWwndconfig;
@@ -432,6 +425,8 @@ struct _GLFWlibrary
     _GLFWmonitor**      monitors;
     int                 monitorCount;
 
+    GLFWuint64          timerOffset;
+
     struct {
         GLFWbool        available;
         void*           handle;
@@ -596,15 +591,15 @@ const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count);
  */
 const char* _glfwPlatformGetJoystickName(int joy);
 
-/*! @copydoc glfwGetTime
+/*! @copydoc glfwGetTimerValue
  *  @ingroup platform
  */
-double _glfwPlatformGetTime(void);
+GLFWuint64 _glfwPlatformGetTimerValue(void);
 
-/*! @copydoc glfwSetTime
+/*! @copydoc glfwGetTimerFrequency
  *  @ingroup platform
  */
-void _glfwPlatformSetTime(double time);
+GLFWuint64 _glfwPlatformGetTimerFrequency(void);
 
 /*! @ingroup platform
  */

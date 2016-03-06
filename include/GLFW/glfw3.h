@@ -728,6 +728,19 @@ extern "C" {
  * GLFW API types
  *************************************************************************/
 
+/*! @brief 64-bit unsigned integer.
+ *
+ *  64-bit unsigned integer.
+ *
+ *  @since Added in version 3.2.
+ */
+#if defined(_MSC_VER) && (_MSC_VER < 1600)
+typedef unsigned __int64 GLFWuint64;
+#else
+ #include <stdint.h>
+typedef uint64_t GLFWuint64;
+#endif
+
 /*! @brief Client API function pointer type.
  *
  *  Generic function pointer used for returning client API function pointers
@@ -3556,6 +3569,47 @@ GLFWAPI double glfwGetTime(void);
  *  @ingroup input
  */
 GLFWAPI void glfwSetTime(double time);
+
+/*! @brief Returns the current value of the raw timer.
+ *
+ *  This function returns the current value of the raw timer.  To get its
+ *  frequency, call @ref glfwGetTimerFrequency.
+ *
+ *  @return The value of the timer, or zero if an 
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_INVALID_VALUE.
+ *
+ *  @thread_safety This function may be called from any thread.
+ *
+ *  @sa @ref time
+ *  @sa glfwGetTimerFrequency
+ *
+ *  @since Added in version 3.2.
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWuint64 glfwGetTimerValue(void);
+
+/*! @brief Returns the frequency, in Hz, of the raw timer.
+ *
+ *  @return The frequency of the timer, in Hz, or zero if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_INVALID_VALUE.
+ *
+ *  @thread_safety This function may be called from any thread.
+ *
+ *  @sa @ref time
+ *  @sa glfwGetTimerValue
+ *
+ *  @since Added in version 3.2.
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWuint64 glfwGetTimerFrequency(void);
 
 /*! @brief Makes the context of the specified window current for the calling
  *  thread.

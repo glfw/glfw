@@ -37,6 +37,12 @@ GLFW now supports window maximization with @ref glfwMaximizeWindow and the
 GLFW now supports giving windows input focus with @ref glfwFocusWindow.
 
 
+@subsection news_32_timer Raw timer access
+
+GLFW now supports raw timer values with @ref glfwGetTimerValue and @ref
+glfwGetTimerFrequency.
+
+
 @section news_31 New features in 3.1
 
 These are the release highlights.  For a full list of changes see the

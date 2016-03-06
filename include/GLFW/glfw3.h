@@ -3534,8 +3534,8 @@ GLFWAPI const char* glfwGetClipboardString(GLFWwindow* window);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
- *  @thread_safety This function may be called from any thread.  Access is not
- *  synchronized.
+ *  @thread_safety This function may be called from any thread.  Reading of the
+ *  internal timer offset is not atomic.
  *
  *  @sa @ref time
  *
@@ -3560,7 +3560,8 @@ GLFWAPI double glfwGetTime(void);
  *  floor((2<sup>64</sup> - 1) / 10<sup>9</sup>) and is due to implementations
  *  storing nanoseconds in 64 bits.  The limit may be increased in the future.
  *
- *  @thread_safety This function must only be called from the main thread.
+ *  @thread_safety This function may be called from any thread.  Writing of the
+ *  internal timer offset is not atomic.
  *
  *  @sa @ref time
  *

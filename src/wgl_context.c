@@ -408,7 +408,7 @@ static GLFWbool setupTransparentWindow(_GLFWwindow* window)
     // DwmEnableBlurBehindWindow + negative region.
     if (window->decorated && isWindows8OrGreater())
     {
-        long style = GetWindowLong(handle, GWL_EXSTYLE);
+        long style = GetWindowLongPtrW(handle, GWL_EXSTYLE);
         if (!style) {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                 "WGL: Failed to retrieve extended styles. GetLastError: %d",
@@ -416,7 +416,7 @@ static GLFWbool setupTransparentWindow(_GLFWwindow* window)
             return GLFW_FALSE;
         }
         style |= WS_EX_LAYERED;
-        if (!SetWindowLongPtr(handle, GWL_EXSTYLE, style))
+        if (!SetWindowLongPtrW(handle, GWL_EXSTYLE, style))
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                 "WGL: Failed to add layered style. GetLastError: %d",

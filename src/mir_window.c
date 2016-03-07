@@ -403,6 +403,13 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     mir_surface_spec_release(spec);
 }
 
+void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
+                                int count, const GLFWimage* images)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
+}
+
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     MirSurfaceSpec* spec;

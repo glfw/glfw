@@ -617,6 +617,26 @@ glfwSetWindowTitle(window, u8"This is always a UTF-8 string");
 @endcode
 
 
+@subsection window_icon Window icon
+
+Decorated windows have icons on some platforms.  You can set this icon by
+specifying a list of candidate images with @ref glfwSetWindowIcon.
+
+@code
+GLFWimage images[2];
+images[0] = load_icon("my_icon.png");
+images[1] = load_icon("my_icon_small.png");
+
+glfwSetWindowIcon(window, 2, images);
+@endcode
+
+To revert to the default window icon, pass in an empty image array.
+
+@code
+glfwSetWindowIcon(window, 0, NULL);
+@endcode
+
+
 @subsection window_monitor Window monitor
 
 Full screen windows are associated with a specific monitor.  You can get the

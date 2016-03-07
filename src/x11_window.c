@@ -1536,6 +1536,51 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     XFlush(_glfw.x11.display);
 }
 
+void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
+                                int count, const GLFWimage* images)
+{
+    if (count)
+    {
+        int i, j, longCount = 0;
+
+        for (i = 0;  i < count;  i++)
+            longCount += 2 + images[i].width * images[i].height;
+
+        long* icon = calloc(longCount, sizeof(long));
+        long* target = icon;
+
+        for (i = 0;  i < count;  i++)
+        {
+            *target++ = images[i].width;
+            *target++ = images[i].height;
+
+            for (j = 0;  j < images[i].width * images[i].height;  i++)
+            {
+                *target++ = (images[i].pixels[i * 4 + 0] << 16) |
+                            (images[i].pixels[i * 4 + 1] <<  8) |
+                            (images[i].pixels[i * 4 + 2] <<  0) |
+                            (images[i].pixels[i * 4 + 3] << 24);
+            }
+        }
+
+        XChangeProperty(_glfw.x11.display, window->x11.handle,
+                        _glfw.x11.NET_WM_ICON,
+                        XA_CARDINAL, 32,
+                        PropModeReplace,
+                        (unsigned char*) icon,
+                        longCount);
+
+        free(icon);
+    }
+    else
+    {
+        XDeleteProperty(_glfw.x11.display, window->x11.handle,
+                        _glfw.x11.NET_WM_ICON);
+    }
+
+    XFlush(_glfw.x11.display);
+}
+
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 {
     Window child;

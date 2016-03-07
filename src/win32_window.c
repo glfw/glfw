@@ -27,6 +27,7 @@
 
 #include "internal.h"
 
+#include <limits.h>
 #include <stdlib.h>
 #include <malloc.h>
 #include <string.h>
@@ -64,6 +65,112 @@ static DWORD getWindowExStyle(const _GLFWwindow* window)
         style |= WS_EX_WINDOWEDGE;
 
     return style;
+}
+
+// Returns the image whose area most closely matches the desired one
+//
+static const GLFWimage* chooseImage(int count, const GLFWimage* images,
+                                    int width, int height)
+{
+    int i, leastDiff = INT_MAX;
+    const GLFWimage* closest = NULL;
+
+    for (i = 0;  i < count;  i++)
+    {
+        const int currDiff = abs(images[i].width * images[i].height -
+                                 width * height);
+        if (currDiff < leastDiff)
+        {
+            closest = images + i;
+            leastDiff = currDiff;
+        }
+    }
+
+    return closest;
+}
+
+// Creates an RGBA icon or cursor
+//
+static HICON createIcon(const GLFWimage* image,
+                        int xhot, int yhot, GLFWbool icon)
+{
+    int i;
+    HDC dc;
+    HICON handle;
+    HBITMAP color, mask;
+    BITMAPV5HEADER bi;
+    ICONINFO ii;
+    unsigned char* target = NULL;
+    unsigned char* source = image->pixels;
+
+    ZeroMemory(&bi, sizeof(bi));
+    bi.bV5Size        = sizeof(BITMAPV5HEADER);
+    bi.bV5Width       = image->width;
+    bi.bV5Height      = -image->height;
+    bi.bV5Planes      = 1;
+    bi.bV5BitCount    = 32;
+    bi.bV5Compression = BI_BITFIELDS;
+    bi.bV5RedMask     = 0x00ff0000;
+    bi.bV5GreenMask   = 0x0000ff00;
+    bi.bV5BlueMask    = 0x000000ff;
+    bi.bV5AlphaMask   = 0xff000000;
+
+    dc = GetDC(NULL);
+    color = CreateDIBSection(dc,
+                             (BITMAPINFO*) &bi,
+                             DIB_RGB_COLORS,
+                             (void**) &target,
+                             NULL,
+                             (DWORD) 0);
+    ReleaseDC(NULL, dc);
+
+    if (!color)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to create RGBA bitmap");
+        return NULL;
+    }
+
+    mask = CreateBitmap(image->width, image->height, 1, 1, NULL);
+    if (!mask)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to create mask bitmap");
+        DeleteObject(color);
+        return NULL;
+    }
+
+    for (i = 0;  i < image->width * image->height;  i++)
+    {
+        target[0] = source[2];
+        target[1] = source[1];
+        target[2] = source[0];
+        target[3] = source[3];
+        target += 4;
+        source += 4;
+    }
+
+    ZeroMemory(&ii, sizeof(ii));
+    ii.fIcon    = icon;
+    ii.xHotspot = xhot;
+    ii.yHotspot = yhot;
+    ii.hbmMask  = mask;
+    ii.hbmColor = color;
+
+    handle = CreateIconIndirect(&ii);
+
+    DeleteObject(color);
+    DeleteObject(mask);
+
+    if (!handle)
+    {
+        if (icon)
+            _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to create icon");
+        else
+            _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to create cursor");
+    }
+
+    return handle;
 }
 
 // Translate client window size to full window size according to styles
@@ -886,6 +993,12 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     }
 
     destroyWindow(window);
+
+    if (window->win32.bigIcon)
+        DestroyIcon(window->win32.bigIcon);
+
+    if (window->win32.smallIcon)
+        DestroyIcon(window->win32.smallIcon);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
@@ -900,6 +1013,37 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 
     SetWindowTextW(window->win32.handle, wideTitle);
     free(wideTitle);
+}
+
+void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
+                                int count, const GLFWimage* images)
+{
+    HICON bigIcon = NULL, smallIcon = NULL;
+
+    if (count)
+    {
+        const GLFWimage* bigImage = chooseImage(count, images,
+                                                GetSystemMetrics(SM_CXICON),
+                                                GetSystemMetrics(SM_CYICON));
+        const GLFWimage* smallImage = chooseImage(count, images,
+                                                  GetSystemMetrics(SM_CXSMICON),
+                                                  GetSystemMetrics(SM_CYSMICON));
+
+        bigIcon = createIcon(bigImage, 0, 0, GLFW_TRUE);
+        smallIcon = createIcon(smallImage, 0, 0, GLFW_TRUE);
+    }
+
+    SendMessage(window->win32.handle, WM_SETICON, ICON_BIG, (LPARAM) bigIcon);
+    SendMessage(window->win32.handle, WM_SETICON, ICON_SMALL, (LPARAM) smallIcon);
+
+    if (window->win32.bigIcon)
+        DestroyIcon(window->win32.bigIcon);
+
+    if (window->win32.smallIcon)
+        DestroyIcon(window->win32.smallIcon);
+
+    window->win32.bigIcon = bigIcon;
+    window->win32.smallIcon = smallIcon;
 }
 
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
@@ -1236,61 +1380,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                               const GLFWimage* image,
                               int xhot, int yhot)
 {
-    HDC dc;
-    HBITMAP bitmap, mask;
-    BITMAPV5HEADER bi;
-    ICONINFO ii;
-    DWORD* target = 0;
-    BYTE* source = (BYTE*) image->pixels;
-    int i;
-
-    ZeroMemory(&bi, sizeof(bi));
-    bi.bV5Size        = sizeof(BITMAPV5HEADER);
-    bi.bV5Width       = image->width;
-    bi.bV5Height      = -image->height;
-    bi.bV5Planes      = 1;
-    bi.bV5BitCount    = 32;
-    bi.bV5Compression = BI_BITFIELDS;
-    bi.bV5RedMask     = 0x00ff0000;
-    bi.bV5GreenMask   = 0x0000ff00;
-    bi.bV5BlueMask    = 0x000000ff;
-    bi.bV5AlphaMask   = 0xff000000;
-
-    dc = GetDC(NULL);
-    bitmap = CreateDIBSection(dc, (BITMAPINFO*) &bi, DIB_RGB_COLORS,
-                              (void**) &target, NULL, (DWORD) 0);
-    ReleaseDC(NULL, dc);
-
-    if (!bitmap)
-        return GLFW_FALSE;
-
-    mask = CreateBitmap(image->width, image->height, 1, 1, NULL);
-    if (!mask)
-    {
-        DeleteObject(bitmap);
-        return GLFW_FALSE;
-    }
-
-    for (i = 0;  i < image->width * image->height;  i++, target++, source += 4)
-    {
-        *target = (source[3] << 24) |
-                  (source[0] << 16) |
-                  (source[1] <<  8) |
-                   source[2];
-    }
-
-    ZeroMemory(&ii, sizeof(ii));
-    ii.fIcon    = FALSE;
-    ii.xHotspot = xhot;
-    ii.yHotspot = yhot;
-    ii.hbmMask  = mask;
-    ii.hbmColor = bitmap;
-
-    cursor->win32.handle = (HCURSOR) CreateIconIndirect(&ii);
-
-    DeleteObject(bitmap);
-    DeleteObject(mask);
-
+    cursor->win32.handle = (HCURSOR) createIcon(image, xhot, yhot, GLFW_FALSE);
     if (!cursor->win32.handle)
         return GLFW_FALSE;
 

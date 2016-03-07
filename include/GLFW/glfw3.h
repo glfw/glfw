@@ -1913,6 +1913,45 @@ GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int value);
  */
 GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
 
+/*! @brief Sets the icon for the specified window.
+ *
+ *  This function sets the icon of the specified window.  If passed an array of
+ *  candidate images, those of or closest to the sizes desired by the system are
+ *  selected.  If no images are specified, the window reverts to its default
+ *  icon.
+ *
+ *  The desired image sizes varies depending on platform and system settings.
+ *  The selected images will be rescaled as needed.  Good sizes include 16x16,
+ *  32x32 and 48x48.
+ *
+ *  @param[in] window The window whose icon to set.
+ *  @param[in] count The number of images in the specified array, or zero to
+ *  revert to the default window icon.
+ *  @param[in] images The images to create the icon from.  This is ignored if
+ *  count is zero.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @pointer_lifetime The specified image data is copied before this function
+ *  returns.
+ *
+ *  @remark @osx The GLFW window has no icon, as it is not a document
+ *  window, but the dock icon will be the same as the application bundle's icon.
+ *  For more information on bundles, see the
+ *  [Bundle Programming Guide](https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/)
+ *  in the Mac Developer Library.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_icon
+ *
+ *  @since Added in version 3.2.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowIcon(GLFWwindow* window, int count, const GLFWimage* images);
+
 /*! @brief Retrieves the position of the client area of the specified window.
  *
  *  This function retrieves the position, in screen coordinates, of the

@@ -1032,6 +1032,12 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)
     [window->ns.object setTitle:[NSString stringWithUTF8String:title]];
 }
 
+void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
+                                int count, const GLFWimage* images)
+{
+    // Regular windows do not have icons
+}
+
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 {
     const NSRect contentRect =

@@ -167,6 +167,7 @@ typedef struct _GLFWlibraryX11
     Atom            WM_DELETE_WINDOW;
     Atom            NET_WM_NAME;
     Atom            NET_WM_ICON_NAME;
+    Atom            NET_WM_ICON;
     Atom            NET_WM_PID;
     Atom            NET_WM_PING;
     Atom            NET_WM_STATE;

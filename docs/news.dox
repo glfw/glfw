@@ -32,6 +32,11 @@ GLFW now supports window maximization with @ref glfwMaximizeWindow and the
 [GLFW_MAXIMIZED](@ref window_attribs_wnd) window hint and attribute.
 
 
+@subsection news_32_icon Window icon support
+
+GLFW now supports setting the icon of windows with @ref glfwSetWindowIcon.
+
+
 @subsection news_32_focus Window input focus control
 
 GLFW now supports giving windows input focus with @ref glfwFocusWindow.

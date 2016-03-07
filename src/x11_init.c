@@ -454,6 +454,8 @@ static void detectEWMH(void)
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_NAME");
     _glfw.x11.NET_WM_ICON_NAME =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_ICON_NAME");
+    _glfw.x11.NET_WM_ICON =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_ICON");
     _glfw.x11.NET_WM_PID =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_PID");
     _glfw.x11.NET_WM_PING =

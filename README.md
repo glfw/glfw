@@ -84,6 +84,7 @@ does not find Doxygen, the documentation will not be generated.
  - Added `glfwGetKeyName` for querying the layout-specific name of printable
    keys
  - Added `glfwWaitEventsTimeout` for waiting for events for a set amount of time
+ - Added `glfwSetWindowIcon` for setting the icon of a window
  - Added `glfwGetTimerValue` and `glfwGetTimerFrequency` for raw timer access
  - Added `GLFWuint64` for platform-independent 64-bit unsigned values
  - Added `GLFW_NO_API` for creating window without contexts
@@ -221,6 +222,7 @@ skills.
  - Peoro
  - Braden Pellett
  - Arturo J. Pérez
+ - Orson Peters
  - Emmanuel Gil Peyrot
  - Cyril Pichard
  - Pieroman
@@ -246,6 +248,7 @@ skills.
  - TTK-Bandit
  - Sergey Tikhomirov
  - A. Tombs
+ - Ioannis Tsakpinis
  - Samuli Tuomola
  - urraka
  - Jari Vetoniemi

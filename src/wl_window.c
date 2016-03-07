@@ -383,6 +383,13 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     wl_shell_surface_set_title(window->wl.shell_surface, title);
 }
 
+void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
+                                int count, const GLFWimage* images)
+{
+    // TODO
+    fprintf(stderr, "_glfwPlatformSetWindowIcon not implemented yet\n");
+}
+
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 {
     // A Wayland client is not aware of its position, so just warn and leave it

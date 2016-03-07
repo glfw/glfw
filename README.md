@@ -117,7 +117,7 @@ does not find Doxygen, the documentation will not be generated.
  - [POSIX] Bugfix: An unrelated TLS key could be deleted by `glfwTerminate`
  - [WGL] Changed extension loading to only be performed once
  - [WGL] Removed dependency on external WGL headers
- - [GLX] Replaced legacy renderable with `GLXWindow`
+ - [GLX] Replaced legacy drawable with `GLXWindow`
  - [GLX] Removed dependency on external GLX headers
  - [GLX] Bugfix: NetBSD does not provide `libGL.so.1`
  - [EGL] Added `_GLFW_USE_EGLPLATFORM_H` configuration macro for controlling

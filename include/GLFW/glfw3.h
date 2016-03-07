@@ -3628,8 +3628,7 @@ GLFWAPI void glfwSetTime(double time);
  *  @return The value of the timer, or zero if an 
  *  [error](@ref error_handling) occurred.
  *
- *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
- *  GLFW_INVALID_VALUE.
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
  *  @thread_safety This function may be called from any thread.
  *
@@ -3647,8 +3646,7 @@ GLFWAPI GLFWuint64 glfwGetTimerValue(void);
  *  @return The frequency of the timer, in Hz, or zero if an
  *  [error](@ref error_handling) occurred.
  *
- *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
- *  GLFW_INVALID_VALUE.
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
  *  @thread_safety This function may be called from any thread.
  *

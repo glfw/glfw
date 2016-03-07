@@ -34,7 +34,7 @@ add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c ${GLAD})
 add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c ${GETOPT} ${GLAD})
 add_executable(threads WIN32 MACOSX_BUNDLE threads.c ${TINYCTHREAD} ${GLAD})
 add_executable(title WIN32 MACOSX_BUNDLE title.c ${GLAD})
-add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GLAD})
+add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GETOPT} ${GLAD})
 
 target_link_libraries(empty "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")

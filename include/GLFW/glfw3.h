@@ -3643,6 +3643,8 @@ GLFWAPI GLFWuint64 glfwGetTimerValue(void);
 
 /*! @brief Returns the frequency, in Hz, of the raw timer.
  *
+ *  This function returns the frequency, in Hz, of the raw timer.
+ *
  *  @return The frequency of the timer, in Hz, or zero if an
  *  [error](@ref error_handling) occurred.
  *

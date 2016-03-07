@@ -166,7 +166,7 @@ available on all supported platforms.  Some of these are de facto standards
 among projects using CMake and so have no `GLFW_` prefix.
 
 If you are using the GUI version of CMake, these are listed and can be changed
-from there.  If you are using the command-line versionof CMake you can use the
+from there.  If you are using the command-line version of CMake you can use the
 `ccmake` ncurses GUI to set options.  Some package systems like Ubuntu and other
 distributions based on Debian GNU/Linux have this tool in a separate
 `cmake-curses-gui` package.

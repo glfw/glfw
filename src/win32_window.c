@@ -1319,6 +1319,7 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 {
+    RECT area;
     POINT pos;
 
     if (_glfw.cursorWindow != window)
@@ -1331,6 +1332,13 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
         return;
 
     if (WindowFromPoint(pos) != window->win32.handle)
+        return;
+
+    GetClientRect(window->win32.handle, &area);
+    ClientToScreen(window->win32.handle, (POINT*) &area.left);
+    ClientToScreen(window->win32.handle, (POINT*) &area.right);
+
+    if (!PtInRect(&area, pos))
         return;
 
     if (cursor)

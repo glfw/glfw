@@ -267,8 +267,8 @@ to keep track of the current context for each thread.  Synchronization is left
 to the application.
 
 Functions that may currently be called from any thread will always remain so,
-but functions that are currently limited to the main may be updated to allow
-calls from any thread in future releases.
+but functions that are currently limited to the main thread may be updated to
+allow calls from any thread in future releases.
 
 
 @subsection compatibility Version compatibility

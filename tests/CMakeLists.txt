@@ -30,6 +30,7 @@ add_executable(reopen reopen.c ${GLAD})
 add_executable(cursor cursor.c ${GLAD})
 
 add_executable(empty WIN32 MACOSX_BUNDLE empty.c ${TINYCTHREAD} ${GLAD})
+add_executable(icon WIN32 MACOSX_BUNDLE icon.c ${GLAD})
 add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c ${GLAD})
 add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c ${GETOPT} ${GLAD})
 add_executable(threads WIN32 MACOSX_BUNDLE threads.c ${TINYCTHREAD} ${GLAD})
@@ -39,7 +40,7 @@ add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GETOPT} ${GLAD})
 target_link_libraries(empty "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 
-set(WINDOWS_BINARIES empty sharing tearing threads title windows)
+set(WINDOWS_BINARIES empty icon sharing tearing threads title windows)
 set(CONSOLE_BINARIES clipboard events msaa gamma glfwinfo
                      iconify joysticks monitors reopen cursor)
 

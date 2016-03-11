@@ -1032,6 +1032,11 @@ void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
         bigIcon = createIcon(bigImage, 0, 0, GLFW_TRUE);
         smallIcon = createIcon(smallImage, 0, 0, GLFW_TRUE);
     }
+    else
+    {
+        bigIcon = (HICON) GetClassLongPtrW(window->win32.handle, GCLP_HICON);
+        smallIcon = (HICON) GetClassLongPtrW(window->win32.handle, GCLP_HICONSM);
+    }
 
     SendMessage(window->win32.handle, WM_SETICON, ICON_BIG, (LPARAM) bigIcon);
     SendMessage(window->win32.handle, WM_SETICON, ICON_SMALL, (LPARAM) smallIcon);
@@ -1042,8 +1047,11 @@ void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
     if (window->win32.smallIcon)
         DestroyIcon(window->win32.smallIcon);
 
-    window->win32.bigIcon = bigIcon;
-    window->win32.smallIcon = smallIcon;
+    if (count)
+    {
+        window->win32.bigIcon = bigIcon;
+        window->win32.smallIcon = smallIcon;
+    }
 }
 
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)

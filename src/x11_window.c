@@ -1886,12 +1886,7 @@ void _glfwPlatformHideWindow(_GLFWwindow* window)
 void _glfwPlatformFocusWindow(_GLFWwindow* window)
 {
     if (_glfw.x11.NET_ACTIVE_WINDOW)
-    {
-        // Ask the window manager to raise and focus the GLFW window
-        // Only focused windows with the _NET_WM_STATE_FULLSCREEN state end up
-        // on top of all other windows ("Stacking order" in EWMH spec)
         sendEventToWM(window, _glfw.x11.NET_ACTIVE_WINDOW, 1, 0, 0, 0, 0);
-    }
     else
     {
         XRaiseWindow(_glfw.x11.display, window->x11.handle);

@@ -446,14 +446,6 @@ static GLFWbool createWindow(_GLFWwindow* window,
             hints->flags |= PPosition;
             _glfwPlatformGetMonitorPos(wndconfig->monitor, &hints->x, &hints->y);
         }
-        else
-        {
-            // HACK: Explicitly setting PPosition to any value causes some WMs,
-            //       notably Compiz and Metacity, to honor the position of
-            //       unmapped windows set by XMoveWindow
-            hints->flags |= PPosition;
-            hints->x = hints->y = 0;
-        }
 
         if (!wndconfig->resizable)
         {
@@ -1615,6 +1607,24 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
 {
+    // HACK: Explicitly setting PPosition to any value causes some WMs, notably
+    //       Compiz and Metacity, to honor the position of unmapped windows
+    if (!_glfwPlatformWindowVisible(window))
+    {
+        long supplied;
+        XSizeHints* hints = XAllocSizeHints();
+
+        if (XGetWMNormalHints(_glfw.x11.display, window->x11.handle, hints, &supplied))
+        {
+            hints->flags |= PPosition;
+            hints->x = hints->y = 0;
+
+            XSetWMNormalHints(_glfw.x11.display, window->x11.handle, hints);
+        }
+
+        XFree(hints);
+    }
+
     XMoveWindow(_glfw.x11.display, window->x11.handle, xpos, ypos);
     XFlush(_glfw.x11.display);
 }

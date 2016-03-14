@@ -143,7 +143,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     wndconfig.width   = width;
     wndconfig.height  = height;
     wndconfig.title   = title;
-    wndconfig.monitor = (_GLFWmonitor*) monitor;
     ctxconfig.share   = (_GLFWwindow*) share;
 
     if (ctxconfig.share)
@@ -155,7 +154,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
         }
     }
 
-    if (wndconfig.monitor)
+    if (monitor)
     {
         wndconfig.resizable = GLFW_TRUE;
         wndconfig.visible   = GLFW_TRUE;
@@ -176,7 +175,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->videoMode.blueBits    = fbconfig.blueBits;
     window->videoMode.refreshRate = _glfw.hints.refreshRate;
 
-    window->monitor     = wndconfig.monitor;
+    window->monitor     = (_GLFWmonitor*) monitor;
     window->resizable   = wndconfig.resizable;
     window->decorated   = wndconfig.decorated;
     window->autoIconify = wndconfig.autoIconify;
@@ -218,7 +217,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
         _glfwPlatformMakeContextCurrent(previous);
     }
 
-    if (wndconfig.monitor)
+    if (window->monitor)
     {
         int width, height;
         _glfwPlatformGetWindowSize(window, &width, &height);

@@ -760,15 +760,15 @@ static int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
     DWORD style = getWindowStyle(window);
     DWORD exStyle = getWindowExStyle(window);
 
-    if (wndconfig->monitor)
+    if (window->monitor)
     {
         GLFWvidmode mode;
 
         // NOTE: This window placement is temporary and approximate, as the
         //       correct position and size cannot be known until the monitor
         //       video mode has been set
-        _glfwPlatformGetMonitorPos(wndconfig->monitor, &xpos, &ypos);
-        _glfwPlatformGetVideoMode(wndconfig->monitor, &mode);
+        _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
+        _glfwPlatformGetVideoMode(window->monitor, &mode);
         fullWidth  = mode.width;
         fullHeight = mode.height;
     }
@@ -822,7 +822,7 @@ static int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
                                           WM_COPYGLOBALDATA, MSGFLT_ALLOW, NULL);
     }
 
-    if (wndconfig->floating && !wndconfig->monitor)
+    if (wndconfig->floating && !window->monitor)
     {
         SetWindowPos(window->win32.handle,
                      HWND_TOPMOST,

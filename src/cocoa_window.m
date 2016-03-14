@@ -904,7 +904,7 @@ static GLFWbool createWindow(_GLFWwindow* window,
 
     unsigned int styleMask = 0;
 
-    if (wndconfig->monitor || !wndconfig->decorated)
+    if (window->monitor || !wndconfig->decorated)
         styleMask = NSBorderlessWindowMask;
     else
     {
@@ -917,7 +917,7 @@ static GLFWbool createWindow(_GLFWwindow* window,
 
     NSRect contentRect;
 
-    if (wndconfig->monitor)
+    if (window->monitor)
     {
         GLFWvidmode mode;
         int xpos, ypos;
@@ -945,10 +945,8 @@ static GLFWbool createWindow(_GLFWwindow* window,
     if (wndconfig->resizable)
         [window->ns.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
 
-    if (wndconfig->monitor)
-    {
+    if (window->monitor)
         [window->ns.object setLevel:NSMainMenuWindowLevel + 1];
-    }
     else
     {
         [window->ns.object center];
@@ -998,7 +996,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             return GLFW_FALSE;
     }
 
-    if (wndconfig->monitor)
+    if (window->monitor)
     {
         _glfwPlatformShowWindow(window);
         if (!enterFullscreenMode(window))

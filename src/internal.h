@@ -247,7 +247,6 @@ struct _GLFWwndconfig
     GLFWbool      autoIconify;
     GLFWbool      floating;
     GLFWbool      maximized;
-    _GLFWmonitor* monitor;
 };
 
 

@@ -329,13 +329,13 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             return GLFW_FALSE;
     }
 
-    if (wndconfig->monitor)
+    if (window->monitor)
     {
         wl_shell_surface_set_fullscreen(
             window->wl.shell_surface,
             WL_SHELL_SURFACE_FULLSCREEN_METHOD_DEFAULT,
             0,
-            wndconfig->monitor->wl.output);
+            window->monitor->wl.output);
     }
     else
     {

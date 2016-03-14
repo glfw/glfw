@@ -351,10 +351,10 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             return GLFW_FALSE;
     }
 
-    if (wndconfig->monitor)
+    if (window->monitor)
     {
         GLFWvidmode mode;
-        _glfwPlatformGetVideoMode(wndconfig->monitor, &mode);
+        _glfwPlatformGetVideoMode(window->monitor, &mode);
 
         mir_surface_set_state(window->mir.surface, mir_surface_state_fullscreen);
 

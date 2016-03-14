@@ -300,7 +300,7 @@ static GLFWbool createWindow(_GLFWwindow* window,
                      (XPointer) window);
     }
 
-    if (wndconfig->monitor)
+    if (window->monitor)
     {
         if (!_glfw.x11.NET_WM_STATE || !_glfw.x11.NET_WM_STATE_FULLSCREEN)
         {
@@ -441,10 +441,10 @@ static GLFWbool createWindow(_GLFWwindow* window,
         XSizeHints* hints = XAllocSizeHints();
         hints->flags = 0;
 
-        if (wndconfig->monitor)
+        if (window->monitor)
         {
             hints->flags |= PPosition;
-            _glfwPlatformGetMonitorPos(wndconfig->monitor, &hints->x, &hints->y);
+            _glfwPlatformGetMonitorPos(window->monitor, &hints->x, &hints->y);
         }
 
         if (!wndconfig->resizable)
@@ -1447,7 +1447,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 #endif
     }
 
-    if (wndconfig->monitor)
+    if (window->monitor)
     {
         _glfwPlatformShowWindow(window);
         enterFullscreenMode(window);

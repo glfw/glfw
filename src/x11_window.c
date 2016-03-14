@@ -411,6 +411,14 @@ static GLFWbool createWindow(_GLFWwindow* window,
                         (unsigned char*) &pid, 1);
     }
 
+    if (_glfw.x11.NET_WM_WINDOW_TYPE && _glfw.x11.NET_WM_WINDOW_TYPE_NORMAL)
+    {
+        Atom type = _glfw.x11.NET_WM_WINDOW_TYPE_NORMAL;
+        XChangeProperty(_glfw.x11.display,  window->x11.handle,
+                        _glfw.x11.NET_WM_WINDOW_TYPE, XA_ATOM, 32,
+                        PropModeReplace, (unsigned char*) &type, 1);
+    }
+
     // Set ICCCM WM_HINTS property
     {
         XWMHints* hints = XAllocWMHints();

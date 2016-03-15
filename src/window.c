@@ -626,6 +626,7 @@ GLFWAPI void glfwShowWindow(GLFWwindow* handle)
         return;
 
     _glfwPlatformShowWindow(window);
+    _glfwPlatformFocusWindow(window);
 }
 
 GLFWAPI void glfwHideWindow(GLFWwindow* handle)

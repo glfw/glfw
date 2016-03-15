@@ -69,8 +69,8 @@ static int cur_icon_color = 0;
 static void set_icon(GLFWwindow* window, int icon_color)
 {
     int x, y;
-    char pixels[16 * 16 * 4];
-    char* target = pixels;
+    unsigned char pixels[16 * 16 * 4];
+    unsigned char* target = pixels;
     GLFWimage img = { 16, 16, pixels };
 
     for (y = 0;  y < img.width;  y++)

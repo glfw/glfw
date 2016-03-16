@@ -26,6 +26,7 @@
 
 #include "internal.h"
 
+#include <float.h>
 #include <string.h>
 
 // Needed for _NSGetProgname
@@ -1086,7 +1087,7 @@ void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
         [window->ns.object setContentMinSize:NSMakeSize(minwidth, minheight)];
 
     if (maxwidth == GLFW_DONT_CARE || maxheight == GLFW_DONT_CARE)
-        [window->ns.object setContentMaxSize:NSMakeSize(0, 0)];
+        [window->ns.object setContentMaxSize:NSMakeSize(DBL_MAX, DBL_MAX)];
     else
         [window->ns.object setContentMaxSize:NSMakeSize(maxwidth, maxheight)];
 }

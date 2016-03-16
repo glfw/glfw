@@ -34,13 +34,14 @@ add_executable(icon WIN32 MACOSX_BUNDLE icon.c ${GLAD})
 add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c ${GLAD})
 add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c ${GETOPT} ${GLAD})
 add_executable(threads WIN32 MACOSX_BUNDLE threads.c ${TINYCTHREAD} ${GLAD})
+add_executable(timeout WIN32 MACOSX_BUNDLE timeout.c ${GLAD})
 add_executable(title WIN32 MACOSX_BUNDLE title.c ${GLAD})
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GETOPT} ${GLAD})
 
 target_link_libraries(empty "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 
-set(WINDOWS_BINARIES empty icon sharing tearing threads title windows)
+set(WINDOWS_BINARIES empty icon sharing tearing threads timeout title windows)
 set(CONSOLE_BINARIES clipboard events msaa gamma glfwinfo
                      iconify joysticks monitors reopen cursor)
 
@@ -65,6 +66,7 @@ if (APPLE)
     set_target_properties(sharing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Sharing")
     set_target_properties(tearing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Tearing")
     set_target_properties(threads PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Threads")
+    set_target_properties(timeout PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Timeout")
     set_target_properties(title PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Title")
     set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 

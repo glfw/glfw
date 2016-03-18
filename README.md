@@ -113,6 +113,8 @@ does not find Doxygen, the documentation will not be generated.
  - [Cocoa] Bugfix: Connecting a joystick that reports no name would segfault
  - [Cocoa] Bugfix: Modifier flags cache was not updated when window became key
  - [Cocoa] Bugfix: Dead key character composition did not work
+ - [Cocoa] Bugfix: The CGL context was not released until the autorelease pool
+                   was drained by another function
  - [X11] Bugfix: Monitor connection and disconnection events were not reported
  - [X11] Bugfix: Decoding of UTF-8 text from XIM could continue past the end
  - [X11] Bugfix: An XKB structure was leaked during `glfwInit`

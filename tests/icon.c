@@ -97,7 +97,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     switch (key)
     {
         case GLFW_KEY_ESCAPE:
-            glfwDestroyWindow(window);
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
             break;
         case GLFW_KEY_SPACE:
             cur_icon_color = (cur_icon_color + 1) % 5;

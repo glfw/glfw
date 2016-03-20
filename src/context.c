@@ -370,6 +370,21 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
         return GLFW_FALSE;
     }
 
+    if (window->context.major < ctxconfig->major ||
+        (window->context.major == ctxconfig->major &&
+         window->context.minor < ctxconfig->minor))
+    {
+        // The desired OpenGL version is greater than the actual version
+        // This only happens if the machine lacks {GLX|WGL}_ARB_create_context
+        // /and/ the user has requested an OpenGL version greater than 1.0
+
+        // For API consistency, we emulate the behavior of the
+        // {GLX|WGL}_ARB_create_context extension and fail here
+
+        _glfwInputError(GLFW_VERSION_UNAVAILABLE, NULL);
+        return GLFW_FALSE;
+    }
+
     if (window->context.major >= 3)
     {
         // OpenGL 3.0+ uses a different function for extension string retrieval
@@ -485,28 +500,6 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
         PFNGLCLEARPROC glClear = (PFNGLCLEARPROC) glfwGetProcAddress("glClear");
         glClear(GL_COLOR_BUFFER_BIT);
         _glfwPlatformSwapBuffers(window);
-    }
-
-    return GLFW_TRUE;
-}
-
-GLFWbool _glfwIsValidContext(const _GLFWctxconfig* ctxconfig)
-{
-    _GLFWwindow* window = _glfwPlatformGetCurrentContext();
-
-    if (window->context.major < ctxconfig->major ||
-        (window->context.major == ctxconfig->major &&
-         window->context.minor < ctxconfig->minor))
-    {
-        // The desired OpenGL version is greater than the actual version
-        // This only happens if the machine lacks {GLX|WGL}_ARB_create_context
-        // /and/ the user has requested an OpenGL version greater than 1.0
-
-        // For API consistency, we emulate the behavior of the
-        // {GLX|WGL}_ARB_create_context extension and fail here
-
-        _glfwInputError(GLFW_VERSION_UNAVAILABLE, NULL);
-        return GLFW_FALSE;
     }
 
     return GLFW_TRUE;

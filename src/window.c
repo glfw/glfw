@@ -210,14 +210,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
             return NULL;
         }
 
-        // Verify the context against the requested parameters
-        if (!_glfwIsValidContext(&ctxconfig))
-        {
-            glfwDestroyWindow((GLFWwindow*) window);
-            _glfwPlatformMakeContextCurrent(previous);
-            return NULL;
-        }
-
         // Restore the previously current context (or NULL)
         _glfwPlatformMakeContextCurrent(previous);
     }

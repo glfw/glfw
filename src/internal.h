@@ -1009,15 +1009,6 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig);
  */
 GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig);
 
-/*! @brief Checks whether the current context fulfils the specified hard
- *  constraints.
- *  @param[in] ctxconfig The desired context attributes.
- *  @return `GLFW_TRUE` if the context fulfils the hard constraints, or
- *  `GLFW_FALSE` otherwise.
- *  @ingroup utility
- */
-GLFWbool _glfwIsValidContext(const _GLFWctxconfig* ctxconfig);
-
 /*! @ingroup utility
  */
 void _glfwAllocGammaArrays(GLFWgammaramp* ramp, unsigned int size);

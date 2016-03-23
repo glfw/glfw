@@ -192,9 +192,35 @@ static void removeJoystick(_GLFWjoydeviceNS* joystick)
     memset(joystick, 0, sizeof(_GLFWjoydeviceNS));
 }
 
-// Polls for joystick events and updates GLFW state
+// Polls for joystick axis events and updates GLFW state
 //
-static GLFWbool pollJoystickEvents(_GLFWjoydeviceNS* joystick)
+static GLFWbool pollJoystickAxisEvents(_GLFWjoydeviceNS* joystick)
+{
+    CFIndex i;
+
+    if (!joystick->present)
+        return GLFW_FALSE;
+
+    for (i = 0;  i < CFArrayGetCount(joystick->axisElements);  i++)
+    {
+        _GLFWjoyelementNS* axis = (_GLFWjoyelementNS*)
+            CFArrayGetValueAtIndex(joystick->axisElements, i);
+
+        long value = getElementValue(joystick, axis);
+        long readScale = axis->maxReport - axis->minReport;
+
+        if (readScale == 0)
+            joystick->axes[i] = value;
+        else
+            joystick->axes[i] = (2.f * (value - axis->minReport) / readScale) - 1.f;
+    }
+
+    return GLFW_TRUE;
+}
+
+// Polls for joystick button events and updates GLFW state
+//
+static GLFWbool pollJoystickButtonEvents(_GLFWjoydeviceNS* joystick)
 {
     CFIndex i;
     int buttonIndex = 0;
@@ -211,20 +237,6 @@ static GLFWbool pollJoystickEvents(_GLFWjoydeviceNS* joystick)
             joystick->buttons[buttonIndex++] = GLFW_PRESS;
         else
             joystick->buttons[buttonIndex++] = GLFW_RELEASE;
-    }
-
-    for (i = 0;  i < CFArrayGetCount(joystick->axisElements);  i++)
-    {
-        _GLFWjoyelementNS* axis = (_GLFWjoyelementNS*)
-            CFArrayGetValueAtIndex(joystick->axisElements, i);
-
-        long value = getElementValue(joystick, axis);
-        long readScale = axis->maxReport - axis->minReport;
-
-        if (readScale == 0)
-            joystick->axes[i] = value;
-        else
-            joystick->axes[i] = (2.f * (value - axis->minReport) / readScale) - 1.f;
     }
 
     for (i = 0;  i < CFArrayGetCount(joystick->hatElements);  i++)
@@ -469,13 +481,13 @@ void _glfwTerminateJoysticksNS(void)
 int _glfwPlatformJoystickPresent(int joy)
 {
     _GLFWjoydeviceNS* joystick = _glfw.ns_js.devices + joy;
-    return pollJoystickEvents(joystick);
+    return joystick->present ? GLFW_TRUE : GLFW_FALSE;
 }
 
 const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 {
     _GLFWjoydeviceNS* joystick = _glfw.ns_js.devices + joy;
-    if (!pollJoystickEvents(joystick))
+    if (!pollJoystickAxisEvents(joystick))
         return NULL;
 
     *count = (int) CFArrayGetCount(joystick->axisElements);
@@ -485,7 +497,7 @@ const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
 {
     _GLFWjoydeviceNS* joystick = _glfw.ns_js.devices + joy;
-    if (!pollJoystickEvents(joystick))
+    if (!pollJoystickButtonEvents(joystick))
         return NULL;
 
     *count = (int) CFArrayGetCount(joystick->buttonElements) +
@@ -496,9 +508,8 @@ const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
 const char* _glfwPlatformGetJoystickName(int joy)
 {
     _GLFWjoydeviceNS* joystick = _glfw.ns_js.devices + joy;
-    if (!pollJoystickEvents(joystick))
+    if (joystick->present)
+        return joystick->name;
+    else
         return NULL;
-
-    return joystick->name;
 }
-

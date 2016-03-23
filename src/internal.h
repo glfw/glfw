@@ -92,8 +92,8 @@ typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGIPROC)(GLenum,GLuint);
 typedef void* VkInstance;
 typedef void* VkPhysicalDevice;
 typedef uint64_t VkSurfaceKHR;
-typedef unsigned int VkFlags;
-typedef unsigned int VkBool32;
+typedef uint32_t VkFlags;
+typedef uint32_t VkBool32;
 
 typedef enum VkStructureType
 {
@@ -138,12 +138,12 @@ typedef struct VkAllocationCallbacks VkAllocationCallbacks;
 typedef struct VkExtensionProperties
 {
     char            extensionName[256];
-    unsigned int    specVersion;
+    uint32_t        specVersion;
 } VkExtensionProperties;
 
 typedef void (APIENTRY * PFN_vkVoidFunction)(void);
 typedef PFN_vkVoidFunction (APIENTRY * PFN_vkGetInstanceProcAddr)(VkInstance,const char*);
-typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const char*,unsigned int*,VkExtensionProperties*);
+typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const char*,uint32_t*,VkExtensionProperties*);
 
 #define vkEnumerateInstanceExtensionProperties _glfw.vk.EnumerateInstanceExtensionProperties
 #define vkGetInstanceProcAddr _glfw.vk.GetInstanceProcAddr
@@ -437,7 +437,7 @@ struct _GLFWlibrary
         GLFWbool        available;
         void*           handle;
         char**          extensions;
-        unsigned int    extensionCount;
+        uint32_t        extensionCount;
         PFN_vkEnumerateInstanceExtensionProperties EnumerateInstanceExtensionProperties;
         PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
         GLFWbool        KHR_surface;
@@ -799,11 +799,11 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor);
 
 /*! @ingroup platform
  */
-char** _glfwPlatformGetRequiredInstanceExtensions(unsigned int* count);
+char** _glfwPlatformGetRequiredInstanceExtensions(uint32_t* count);
 
 /*! @ingroup platform
  */
-int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhysicalDevice device, unsigned int queuefamily);
+int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
 
 /*! @ingroup platform
  */

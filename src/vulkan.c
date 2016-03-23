@@ -40,7 +40,7 @@ void _glfwInitVulkan(void)
 {
     VkResult err;
     VkExtensionProperties* ep;
-    unsigned int i, count;
+    uint32_t i, count;
 #if defined(_GLFW_WIN32)
     const char* name = "vulkan-1.dll";
 #else
@@ -120,7 +120,7 @@ void _glfwInitVulkan(void)
 
 void _glfwTerminateVulkan(void)
 {
-    unsigned int i;
+    uint32_t i;
 
     for (i = 0;  i < _glfw.vk.extensionCount;  i++)
         free(_glfw.vk.extensions[i]);
@@ -196,7 +196,7 @@ GLFWAPI int glfwVulkanSupported(void)
     return _glfw.vk.available;
 }
 
-GLFWAPI const char** glfwGetRequiredInstanceExtensions(unsigned int* count)
+GLFWAPI const char** glfwGetRequiredInstanceExtensions(uint32_t* count)
 {
     *count = 0;
 

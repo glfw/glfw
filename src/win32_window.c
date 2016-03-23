@@ -1601,7 +1601,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return _glfw.win32.clipboardString;
 }
 
-char** _glfwPlatformGetRequiredInstanceExtensions(unsigned int* count)
+char** _glfwPlatformGetRequiredInstanceExtensions(uint32_t* count)
 {
     char** extensions;
 
@@ -1620,7 +1620,7 @@ char** _glfwPlatformGetRequiredInstanceExtensions(unsigned int* count)
 
 int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
                                                       VkPhysicalDevice device,
-                                                      unsigned int queuefamily)
+                                                      uint32_t queuefamily)
 {
     PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR vkGetPhysicalDeviceWin32PresentationSupportKHR =
         (PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)

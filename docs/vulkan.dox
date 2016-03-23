@@ -127,7 +127,7 @@ To query the instance extensions required, call @ref
 glfwGetRequiredInstanceExtensions.
 
 @code
-unsigned int count;
+uint32_t count;
 const char** extensions = glfwGetRequiredInstanceExtensions(&count);
 @endcode
 

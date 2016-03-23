@@ -4029,7 +4029,7 @@ GLFWAPI int glfwVulkanSupported(void);
  *
  *  @ingroup vulkan
  */
-GLFWAPI const char** glfwGetRequiredInstanceExtensions(unsigned int* count);
+GLFWAPI const char** glfwGetRequiredInstanceExtensions(uint32_t* count);
 
 #if defined(VK_VERSION_1_0)
 

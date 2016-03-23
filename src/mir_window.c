@@ -754,7 +754,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return NULL;
 }
 
-char** _glfwPlatformGetRequiredInstanceExtensions(unsigned int* count)
+char** _glfwPlatformGetRequiredInstanceExtensions(uint32_t* count)
 {
     char** extensions;
 
@@ -773,7 +773,7 @@ char** _glfwPlatformGetRequiredInstanceExtensions(unsigned int* count)
 
 int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
                                                       VkPhysicalDevice device,
-                                                      unsigned int queuefamily)
+                                                      uint32_t queuefamily)
 {
     PFN_vkGetPhysicalDeviceMirPresentationSupportKHR vkGetPhysicalDeviceMirPresentationSupportKHR =
         (PFN_vkGetPhysicalDeviceMirPresentationSupportKHR)

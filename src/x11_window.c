@@ -2273,7 +2273,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return _glfw.x11.clipboardString;
 }
 
-char** _glfwPlatformGetRequiredInstanceExtensions(unsigned int* count)
+char** _glfwPlatformGetRequiredInstanceExtensions(uint32_t* count)
 {
     char** extensions;
 
@@ -2299,7 +2299,7 @@ char** _glfwPlatformGetRequiredInstanceExtensions(unsigned int* count)
 
 int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
                                                       VkPhysicalDevice device,
-                                                      unsigned int queuefamily)
+                                                      uint32_t queuefamily)
 {
     VisualID visualID = XVisualIDFromVisual(DefaultVisual(_glfw.x11.display,
                                                           _glfw.x11.screen));

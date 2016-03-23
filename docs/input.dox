@@ -571,7 +571,7 @@ You can also access the raw timer value, measured in 1&nbsp;/&nbsp;frequency
 seconds, with @ref glfwGetTimerValue.
 
 @code
-GLFWuint64 value = glfwGetTimerValue();
+uint64_t value = glfwGetTimerValue();
 @endcode
 
 The frequency of the raw timer varies depending on what time sources are
@@ -579,7 +579,7 @@ available on the machine.  You can query its frequency, in Hz, with @ref
 glfwGetTimerFrequency.
 
 @code
-GLFWuint64 freqency = glfwGetTimerFrequency();
+uint64_t freqency = glfwGetTimerFrequency();
 @endcode
 
 

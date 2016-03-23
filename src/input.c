@@ -660,16 +660,16 @@ GLFWAPI void glfwSetTime(double time)
     }
 
     _glfw.timerOffset = _glfwPlatformGetTimerValue() -
-        (GLFWuint64) (time * _glfwPlatformGetTimerFrequency());
+        (uint64_t) (time * _glfwPlatformGetTimerFrequency());
 }
 
-GLFWAPI GLFWuint64 glfwGetTimerValue(void)
+GLFWAPI uint64_t glfwGetTimerValue(void)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(0);
     return _glfwPlatformGetTimerValue();
 }
 
-GLFWAPI GLFWuint64 glfwGetTimerFrequency(void)
+GLFWAPI uint64_t glfwGetTimerFrequency(void)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(0);
     return _glfwPlatformGetTimerFrequency();

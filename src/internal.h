@@ -91,7 +91,7 @@ typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGIPROC)(GLenum,GLuint);
 
 typedef void* VkInstance;
 typedef void* VkPhysicalDevice;
-typedef GLFWuint64 VkSurfaceKHR;
+typedef uint64_t VkSurfaceKHR;
 typedef unsigned int VkFlags;
 typedef unsigned int VkBool32;
 
@@ -431,7 +431,7 @@ struct _GLFWlibrary
     _GLFWmonitor**      monitors;
     int                 monitorCount;
 
-    GLFWuint64          timerOffset;
+    uint64_t            timerOffset;
 
     struct {
         GLFWbool        available;
@@ -600,12 +600,12 @@ const char* _glfwPlatformGetJoystickName(int joy);
 /*! @copydoc glfwGetTimerValue
  *  @ingroup platform
  */
-GLFWuint64 _glfwPlatformGetTimerValue(void);
+uint64_t _glfwPlatformGetTimerValue(void);
 
 /*! @copydoc glfwGetTimerFrequency
  *  @ingroup platform
  */
-GLFWuint64 _glfwPlatformGetTimerFrequency(void);
+uint64_t _glfwPlatformGetTimerFrequency(void);
 
 /*! @ingroup platform
  */

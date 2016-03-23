@@ -48,12 +48,12 @@ void _glfwInitTimerNS(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWuint64 _glfwPlatformGetTimerValue(void)
+uint64_t _glfwPlatformGetTimerValue(void)
 {
     return mach_absolute_time();
 }
 
-GLFWuint64 _glfwPlatformGetTimerFrequency(void)
+uint64_t _glfwPlatformGetTimerFrequency(void)
 {
     return _glfw.ns_time.frequency;
 }

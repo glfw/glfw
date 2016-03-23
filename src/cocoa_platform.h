@@ -118,7 +118,7 @@ typedef struct _GLFWcursorNS
 //
 typedef struct _GLFWtimeNS
 {
-    GLFWuint64      frequency;
+    uint64_t        frequency;
 
 } _GLFWtimeNS;
 

@@ -1763,7 +1763,7 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
     if (!_glfwPlatformWindowVisible(window) &&
         _glfw.x11.NET_REQUEST_FRAME_EXTENTS)
     {
-        GLFWuint64 base;
+        uint64_t base;
         XEvent event;
 
         // Ensure _NET_FRAME_EXTENTS is set, allowing glfwGetWindowFrameSize to

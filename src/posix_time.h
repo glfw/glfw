@@ -38,7 +38,7 @@
 typedef struct _GLFWtimePOSIX
 {
     GLFWbool    monotonic;
-    GLFWuint64  frequency;
+    uint64_t    frequency;
 
 } _GLFWtimePOSIX;
 

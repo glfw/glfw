@@ -120,6 +120,7 @@ extern "C" {
  * Include it unconditionally to avoid surprising side-effects.
  */
 #include <stddef.h>
+#include <stdint.h>
 
 /* Include the chosen client API headers.
  */
@@ -727,19 +728,6 @@ extern "C" {
 /*************************************************************************
  * GLFW API types
  *************************************************************************/
-
-/*! @brief 64-bit unsigned integer.
- *
- *  64-bit unsigned integer.
- *
- *  @since Added in version 3.2.
- */
-#if defined(_MSC_VER) && (_MSC_VER < 1600)
-typedef unsigned __int64 GLFWuint64;
-#else
- #include <stdint.h>
-typedef uint64_t GLFWuint64;
-#endif
 
 /*! @brief Client API function pointer type.
  *
@@ -3735,7 +3723,7 @@ GLFWAPI void glfwSetTime(double time);
  *
  *  @ingroup input
  */
-GLFWAPI GLFWuint64 glfwGetTimerValue(void);
+GLFWAPI uint64_t glfwGetTimerValue(void);
 
 /*! @brief Returns the frequency, in Hz, of the raw timer.
  *
@@ -3755,7 +3743,7 @@ GLFWAPI GLFWuint64 glfwGetTimerValue(void);
  *
  *  @ingroup input
  */
-GLFWAPI GLFWuint64 glfwGetTimerFrequency(void);
+GLFWAPI uint64_t glfwGetTimerFrequency(void);
 
 /*! @brief Makes the context of the specified window current for the calling
  *  thread.

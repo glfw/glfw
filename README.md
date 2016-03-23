@@ -88,7 +88,6 @@ does not find Doxygen, the documentation will not be generated.
  - Added `glfwWaitEventsTimeout` for waiting for events for a set amount of time
  - Added `glfwSetWindowIcon` for setting the icon of a window
  - Added `glfwGetTimerValue` and `glfwGetTimerFrequency` for raw timer access
- - Added `GLFWuint64` for platform-independent 64-bit unsigned values
  - Added `GLFW_NO_API` for creating window without contexts
  - Added `GLFW_CONTEXT_NO_ERROR` context hint for `GL_KHR_no_error` support
  - Added `GLFW_INCLUDE_VULKAN` for including the Vulkan header

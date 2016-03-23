@@ -36,7 +36,7 @@
 //
 void _glfwInitTimerWin32(void)
 {
-    GLFWuint64 frequency;
+    uint64_t frequency;
 
     if (QueryPerformanceFrequency((LARGE_INTEGER*) &frequency))
     {
@@ -55,19 +55,19 @@ void _glfwInitTimerWin32(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWuint64 _glfwPlatformGetTimerValue(void)
+uint64_t _glfwPlatformGetTimerValue(void)
 {
     if (_glfw.win32_time.hasPC)
     {
-        GLFWuint64 value;
+        uint64_t value;
         QueryPerformanceCounter((LARGE_INTEGER*) &value);
         return value;
     }
     else
-        return (GLFWuint64) _glfw_timeGetTime();
+        return (uint64_t) _glfw_timeGetTime();
 }
 
-GLFWuint64 _glfwPlatformGetTimerFrequency(void)
+uint64_t _glfwPlatformGetTimerFrequency(void)
 {
     return _glfw.win32_time.frequency;
 }

@@ -210,9 +210,9 @@ static void updateNormalHints(_GLFWwindow* window)
         if (window->resizable)
         {
             if (window->minwidth != GLFW_DONT_CARE &&
-                window->minwidth != GLFW_DONT_CARE &&
+                window->minheight != GLFW_DONT_CARE &&
                 window->maxwidth != GLFW_DONT_CARE &&
-                window->maxwidth != GLFW_DONT_CARE)
+                window->maxheight != GLFW_DONT_CARE)
             {
                 hints->flags |= (PMinSize | PMaxSize);
                 hints->min_width  = window->minwidth;

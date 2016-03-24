@@ -196,6 +196,7 @@ static void createKeyTables(void)
     _glfw.win32.publicKeys[0x151] = GLFW_KEY_PAGE_DOWN;
     _glfw.win32.publicKeys[0x149] = GLFW_KEY_PAGE_UP;
     _glfw.win32.publicKeys[0x045] = GLFW_KEY_PAUSE;
+    _glfw.win32.publicKeys[0x146] = GLFW_KEY_PAUSE;
     _glfw.win32.publicKeys[0x039] = GLFW_KEY_SPACE;
     _glfw.win32.publicKeys[0x00F] = GLFW_KEY_TAB;
     _glfw.win32.publicKeys[0x03A] = GLFW_KEY_CAPS_LOCK;

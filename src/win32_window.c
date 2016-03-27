@@ -369,20 +369,13 @@ static void releaseMonitor(_GLFWwindow* window)
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                                    WPARAM wParam, LPARAM lParam)
 {
-    _GLFWwindow* window = (_GLFWwindow*) GetWindowLongPtrW(hWnd, 0);
+    _GLFWwindow* window = (_GLFWwindow*) GetPropW(hWnd, L"GLFW");
     if (!window)
     {
         // This is the message handling for the hidden helper window
 
         switch (uMsg)
         {
-            case WM_NCCREATE:
-            {
-                CREATESTRUCTW* cs = (CREATESTRUCTW*) lParam;
-                SetWindowLongPtrW(hWnd, 0, (LONG_PTR) cs->lpCreateParams);
-                break;
-            }
-
             case WM_DISPLAYCHANGE:
             {
                 _glfwInputMonitorChange();
@@ -815,7 +808,7 @@ static int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
                                            NULL, // No parent window
                                            NULL, // No window menu
                                            GetModuleHandleW(NULL),
-                                           window); // Pass object to WM_CREATE
+                                           NULL);
 
     free(wideTitle);
 
@@ -824,6 +817,8 @@ static int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
         _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to create window");
         return GLFW_FALSE;
     }
+
+    SetPropW(window->win32.handle, L"GLFW", window);
 
     if (_glfw_ChangeWindowMessageFilterEx)
     {
@@ -846,6 +841,7 @@ static void destroyWindow(_GLFWwindow* window)
 {
     if (window->win32.handle)
     {
+        RemovePropW(window->win32.handle, L"GLFW");
         DestroyWindow(window->win32.handle);
         window->win32.handle = NULL;
     }
@@ -866,7 +862,6 @@ GLFWbool _glfwRegisterWindowClassWin32(void)
     wc.cbSize        = sizeof(wc);
     wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
     wc.lpfnWndProc   = (WNDPROC) windowProc;
-    wc.cbWndExtra    = sizeof(void*) + sizeof(int); // Make room for one pointer
     wc.hInstance     = GetModuleHandleW(NULL);
     wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
     wc.lpszClassName = _GLFW_WNDCLASSNAME;

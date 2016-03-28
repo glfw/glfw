@@ -163,7 +163,6 @@ GLFWbool _glfwInitGLX(void)
         NULL
     };
 
-
     for (i = 0;  sonames[i];  i++)
     {
         _glfw.glx.handle = dlopen(sonames[i], RTLD_LAZY | RTLD_GLOBAL);

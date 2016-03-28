@@ -61,6 +61,12 @@ GLFW now supports waiting for events for a set amount of time with @ref
 glfwWaitEventsTimeout.
 
 
+@subsection news_32_contextapi Run-time context creation API selection
+
+GLFW now supports selecting the context creation API at run-time with
+[GLFW_CONTEXT_CREATION_API](@ref window_hints_ctx).
+
+
 @section news_31 New features in 3.1
 
 These are the release highlights.  For a full list of changes see the

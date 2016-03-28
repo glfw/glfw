@@ -159,6 +159,7 @@ The following hints are always hard constraints:
 - `GLFW_STEREO`
 - `GLFW_DOUBLEBUFFER`
 - `GLFW_CLIENT_API`
+- `GLFW_CONTEXT_CREATION_API`
 
 The following additional hints are hard constraints when requesting an OpenGL
 context, but are ignored when requesting an OpenGL ES context:
@@ -248,6 +249,24 @@ This hint is ignored for windowed mode windows.
 `GLFW_CLIENT_API` specifies which client API to create the context for.
 Possible values are `GLFW_OPENGL_API`, `GLFW_OPENGL_ES_API` and `GLFW_NO_API`.
 This is a hard constraint.
+
+`GLFW_CONTEXT_CREATION_API` specifies which context creation API to use to
+create the context.  Possible values are `GLFW_NATIVE_CONTEXT_API` and
+`GLFW_EGL_CONTEXT_API`.  This is a hard constraint.  If no client API is
+requested, this hint is ignored.
+
+@par
+__OS X:__ The EGL API is not available on this platform and requests to use it
+will fail.
+
+@par
+__Wayland, Mir:__ The EGL API _is_ the native context creation API, so this hint
+will have no effect.
+
+@note An OpenGL extension loader library that assumes it knows which context
+creation API is used on a given platform may fail if you change this hint.  This
+can be resolved by having it load via @ref glfwGetProcAddress, which always uses
+the selected API.
 
 `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` specify the client
 API version that the created context must be compatible with.  The exact
@@ -362,6 +381,7 @@ Window hint                     | Default value               | Supported values
 `GLFW_SRGB_CAPABLE`             | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 `GLFW_DOUBLEBUFFER`             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 `GLFW_CLIENT_API`               | `GLFW_OPENGL_API`           | `GLFW_OPENGL_API`, `GLFW_OPENGL_ES_API` or `GLFW_NO_API`
+`GLFW_CONTEXT_CREATION_API`     | `GLFW_NATIVE_CONTEXT_API`   | `GLFW_NATIVE_CONTEXT_API` or `GLFW_EGL_CONTEXT_API`
 `GLFW_CONTEXT_VERSION_MAJOR`    | 1                           | Any valid major version number of the chosen client API
 `GLFW_CONTEXT_VERSION_MINOR`    | 0                           | Any valid minor version number of the chosen client API
 `GLFW_CONTEXT_ROBUSTNESS`       | `GLFW_NO_ROBUSTNESS`        | `GLFW_NO_ROBUSTNESS`, `GLFW_NO_RESET_NOTIFICATION` or `GLFW_LOSE_CONTEXT_ON_RESET`
@@ -888,6 +908,10 @@ topmost or always-on-top.  This is controlled by the
 
 `GLFW_CLIENT_API` indicates the client API provided by the window's context;
 either `GLFW_OPENGL_API`, `GLFW_OPENGL_ES_API` or `GLFW_NO_API`.
+
+`GLFW_CONTEXT_CREATION_API` indicates the context creation API used to create
+the window's context; either `GLFW_NATIVE_CONTEXT_API` or
+`GLFW_EGL_CONTEXT_API`.
 
 `GLFW_CONTEXT_VERSION_MAJOR`, `GLFW_CONTEXT_VERSION_MINOR` and
 `GLFW_CONTEXT_REVISION` indicate the client API version of the window's context.

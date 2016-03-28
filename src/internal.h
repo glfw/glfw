@@ -58,6 +58,13 @@ typedef struct _GLFWlibrary     _GLFWlibrary;
 typedef struct _GLFWmonitor     _GLFWmonitor;
 typedef struct _GLFWcursor      _GLFWcursor;
 
+typedef void (* _GLFWmakecontextcurrentfun)(_GLFWwindow*);
+typedef void (* _GLFWswapbuffersfun)(_GLFWwindow*);
+typedef void (* _GLFWswapintervalfun)(int);
+typedef int (* _GLFWextensionsupportedfun)(const char*);
+typedef GLFWglproc (* _GLFWgetprocaddressfun)(const char*);
+typedef void (* _GLFWdestroycontextfun)(_GLFWwindow*);
+
 #define GL_VERSION 0x1f02
 #define GL_NONE	0
 #define GL_COLOR_BUFFER_BIT	0x00004000
@@ -258,7 +265,8 @@ struct _GLFWwndconfig
  */
 struct _GLFWctxconfig
 {
-    int           api;
+    int           client;
+    int           source;
     int           major;
     int           minor;
     GLFWbool      forward;
@@ -304,7 +312,8 @@ struct _GLFWfbconfig
  */
 struct _GLFWcontext
 {
-    int                 api;
+    int                 client;
+    int                 source;
     int                 major, minor, revision;
     GLFWbool            forward, debug, noerror;
     int                 profile;
@@ -315,8 +324,17 @@ struct _GLFWcontext
     PFNGLGETINTEGERVPROC GetIntegerv;
     PFNGLGETSTRINGPROC  GetString;
 
+    _GLFWmakecontextcurrentfun  makeContextCurrent;
+    _GLFWswapbuffersfun         swapBuffers;
+    _GLFWswapintervalfun        swapInterval;
+    _GLFWextensionsupportedfun  extensionSupported;
+    _GLFWgetprocaddressfun      getProcAddress;
+    _GLFWdestroycontextfun      destroyContext;
+
     // This is defined in the context API's context.h
     _GLFW_PLATFORM_CONTEXT_STATE;
+    // This is defined in egl_context.h
+    _GLFW_EGL_CONTEXT_STATE;
 };
 
 
@@ -461,6 +479,8 @@ struct _GLFWlibrary
     _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE;
     // This is defined in the platform's tls.h
     _GLFW_PLATFORM_LIBRARY_TLS_STATE;
+    // This is defined in egl_context.h
+    _GLFW_EGL_LIBRARY_CONTEXT_STATE;
 };
 
 
@@ -742,11 +762,6 @@ void _glfwPlatformWaitEventsTimeout(double timeout);
  */
 void _glfwPlatformPostEmptyEvent(void);
 
-/*! @copydoc glfwMakeContextCurrent
- *  @ingroup platform
- */
-void _glfwPlatformMakeContextCurrent(_GLFWwindow* window);
-
 /*! @ingroup platform
  */
 void _glfwPlatformSetCurrentContext(_GLFWwindow* context);
@@ -755,26 +770,6 @@ void _glfwPlatformSetCurrentContext(_GLFWwindow* context);
  *  @ingroup platform
  */
 _GLFWwindow* _glfwPlatformGetCurrentContext(void);
-
-/*! @copydoc glfwSwapBuffers
- *  @ingroup platform
- */
-void _glfwPlatformSwapBuffers(_GLFWwindow* window);
-
-/*! @copydoc glfwSwapInterval
- *  @ingroup platform
- */
-void _glfwPlatformSwapInterval(int interval);
-
-/*! @copydoc glfwExtensionSupported
- *  @ingroup platform
- */
-int _glfwPlatformExtensionSupported(const char* extension);
-
-/*! @copydoc glfwGetProcAddress
- *  @ingroup platform
- */
-GLFWglproc _glfwPlatformGetProcAddress(const char* procname);
 
 /*! @copydoc glfwCreateCursor
  *  @ingroup platform

@@ -209,7 +209,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-    if (window->context.api != GLFW_NO_API)
+    if (window->context.client != GLFW_NO_API)
         [window->context.nsgl.object update];
 
     if (_glfw.cursorWindow == window &&
@@ -227,7 +227,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)windowDidMove:(NSNotification *)notification
 {
-    if (window->context.api != GLFW_NO_API)
+    if (window->context.client != GLFW_NO_API)
         [window->context.nsgl.object update];
 
     if (_glfw.cursorWindow == window &&
@@ -1002,10 +1002,18 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (!createWindow(window, wndconfig))
         return GLFW_FALSE;
 
-    if (ctxconfig->api != GLFW_NO_API)
+    if (ctxconfig->client != GLFW_NO_API)
     {
-        if (!_glfwCreateContextNSGL(window, ctxconfig, fbconfig))
+        if (ctxconfig->source == GLFW_NATIVE_CONTEXT_API)
+        {
+            if (!_glfwCreateContextNSGL(window, ctxconfig, fbconfig))
+                return GLFW_FALSE;
+        }
+        else
+        {
+            _glfwInputError(GLFW_API_UNAVAILABLE, "Cocoa: EGL not available");
             return GLFW_FALSE;
+        }
     }
 
     if (window->monitor)
@@ -1026,8 +1034,8 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     if (window->monitor)
         releaseMonitor(window);
 
-    if (window->context.api != GLFW_NO_API)
-        _glfwDestroyContextNSGL(window);
+    if (window->context.client != GLFW_NO_API)
+        window->context.destroyContext(window);
 
     [window->ns.object setDelegate:nil];
     [window->ns.delegate release];

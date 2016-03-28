@@ -149,8 +149,8 @@ typedef GLFWglproc (EGLAPIENTRY * PFNEGLGETPROCADDRESSPROC)(const char*);
 #define eglQueryString _glfw.egl.QueryString
 #define eglGetProcAddress _glfw.egl.GetProcAddress
 
-#define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextEGL egl
-#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryEGL egl
+#define _GLFW_EGL_CONTEXT_STATE            _GLFWcontextEGL egl
+#define _GLFW_EGL_LIBRARY_CONTEXT_STATE    _GLFWlibraryEGL egl
 
 
 // EGL-specific per-context data
@@ -204,7 +204,6 @@ void _glfwTerminateEGL(void);
 GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig);
-void _glfwDestroyContextEGL(_GLFWwindow* window);
 #if defined(_GLFW_X11)
 GLFWbool _glfwChooseVisualEGL(const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig,

@@ -205,22 +205,17 @@ typedef VkResult (APIENTRY *PFN_vkCreateWin32SurfaceKHR)(VkInstance,const VkWin3
 typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(VkPhysicalDevice,uint32_t);
 
 #include "win32_joystick.h"
-
-#if defined(_GLFW_WGL)
- #include "wgl_context.h"
-#elif defined(_GLFW_EGL)
- #define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->win32.handle)
- #define _GLFW_EGL_NATIVE_DISPLAY EGL_DEFAULT_DISPLAY
- #include "egl_context.h"
-#else
- #error "No supported context creation API selected"
-#endif
+#include "wgl_context.h"
+#include "egl_context.h"
 
 #define _GLFW_WNDCLASSNAME L"GLFW30"
 
 #define _glfw_dlopen(name) LoadLibraryA(name)
 #define _glfw_dlclose(handle) FreeLibrary((HMODULE) handle)
 #define _glfw_dlsym(handle, name) GetProcAddress((HMODULE) handle, name)
+
+#define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->win32.handle)
+#define _GLFW_EGL_NATIVE_DISPLAY EGL_DEFAULT_DISPLAY
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWin32  win32
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 win32

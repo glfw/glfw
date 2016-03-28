@@ -378,7 +378,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     window->mir.window = mir_buffer_stream_get_egl_native_window(
                                    mir_surface_get_buffer_stream(window->mir.surface));
 
-    if (ctxconfig->api != GLFW_NO_API)
+    if (ctxconfig->client != GLFW_NO_API)
     {
         if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
             return GLFW_FALSE;
@@ -395,7 +395,8 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         window->mir.surface = NULL;
     }
 
-    _glfwDestroyContextEGL(window);
+    if (window->context.client != GLFW_NO_API)
+        window->context.destroyContext(window);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)

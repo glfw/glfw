@@ -280,10 +280,7 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    return _GLFW_VERSION_NUMBER " Cocoa"
-#if defined(_GLFW_NSGL)
-        " NSGL"
-#endif
+    return _GLFW_VERSION_NUMBER " Cocoa NSGL"
 #if defined(_GLFW_USE_CHDIR)
         " chdir"
 #endif

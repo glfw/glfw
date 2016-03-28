@@ -49,12 +49,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #include "posix_time.h"
 #include "linux_joystick.h"
 #include "xkb_unicode.h"
-
-#if defined(_GLFW_EGL)
- #include "egl_context.h"
-#else
- #error "The Wayland backend depends on EGL platform support"
-#endif
+#include "egl_context.h"
 
 #include "wayland-relative-pointer-unstable-v1-client-protocol.h"
 #include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
@@ -70,6 +65,9 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWayland wl
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWayland wl
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorWayland  wl
+
+#define _GLFW_PLATFORM_CONTEXT_STATE
+#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
 
 
 // Wayland-specific video mode data

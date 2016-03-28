@@ -421,14 +421,10 @@ int _glfwPlatformInit(void)
 
     _glfwPlatformPollEvents();
 
-#if defined(_GLFW_WGL)
     if (!_glfwInitWGL())
         return GLFW_FALSE;
-#elif defined(_GLFW_EGL)
-    if (!_glfwInitEGL())
-        return GLFW_FALSE;
-#endif
 
+    _glfwInitEGL();
     _glfwInitTimerWin32();
     _glfwInitJoysticksWin32();
 
@@ -449,11 +445,8 @@ void _glfwPlatformTerminate(void)
 
     free(_glfw.win32.clipboardString);
 
-#if defined(_GLFW_WGL)
     _glfwTerminateWGL();
-#elif defined(_GLFW_EGL)
     _glfwTerminateEGL();
-#endif
 
     _glfwTerminateJoysticksWin32();
     _glfwTerminateThreadLocalStorageWin32();
@@ -463,12 +456,7 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    return _GLFW_VERSION_NUMBER " Win32"
-#if defined(_GLFW_WGL)
-        " WGL"
-#elif defined(_GLFW_EGL)
-        " EGL"
-#endif
+    return _GLFW_VERSION_NUMBER " Win32 WGL EGL"
 #if defined(__MINGW32__)
         " MinGW"
 #elif defined(_MSC_VER)

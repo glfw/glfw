@@ -655,6 +655,7 @@ extern "C" {
 #define GLFW_OPENGL_PROFILE         0x00022008
 #define GLFW_CONTEXT_RELEASE_BEHAVIOR 0x00022009
 #define GLFW_CONTEXT_NO_ERROR       0x0002200A
+#define GLFW_CONTEXT_CREATION_API   0x0002200B
 
 #define GLFW_NO_API                          0
 #define GLFW_OPENGL_API             0x00030001
@@ -679,6 +680,9 @@ extern "C" {
 #define GLFW_ANY_RELEASE_BEHAVIOR            0
 #define GLFW_RELEASE_BEHAVIOR_FLUSH 0x00035001
 #define GLFW_RELEASE_BEHAVIOR_NONE  0x00035002
+
+#define GLFW_NATIVE_CONTEXT_API     0x00036001
+#define GLFW_EGL_CONTEXT_API        0x00036002
 
 /*! @defgroup shapes Standard cursor shapes
  *

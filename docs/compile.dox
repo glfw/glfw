@@ -225,29 +225,19 @@ need to be exported by the EXE to be detected by the driver, so the override
 will not work if GLFW is built as a DLL.
 
 
-@subsubsection compile_options_egl EGL specific CMake options
-
-`GLFW_USE_EGL` determines whether to use EGL instead of the platform-specific
-context creation API.  Note that EGL is not yet provided on all supported
-platforms.
-
-
 @section compile_manual Compiling GLFW manually
 
 If you wish to compile GLFW without its CMake build environment then you will
 have to do at least some of the platform detection yourself.  GLFW needs
-a number of configuration macros to be defined in order to know what it's being
-compiled for and has many optional, platform-specific ones for various features.
+a configuration macro to be defined in order to know what window system it's
+being compiled for and also has optional, platform-specific ones for various
+features.
 
 When building with CMake, the `glfw_config.h` configuration header is generated
 based on the current platform and CMake options.  The GLFW CMake environment
 defines `_GLFW_USE_CONFIG_H`, which causes this header to be included by
 `internal.h`.  Without this macro, GLFW will expect the necessary configuration
 macros to be defined on the command-line.
-
-Three macros _must_ be defined when compiling GLFW: one selecting the window
-creation API and one selecting the context creation API.  Exactly one of each
-kind must be defined for GLFW to compile and link.
 
 The window creation API is used to create windows, handle input, monitors, gamma
 ramps and clipboard.  The options are:
@@ -258,18 +248,13 @@ ramps and clipboard.  The options are:
  - `_GLFW_WAYLAND` to use the Wayland API (experimental and incomplete)
  - `_GLFW_MIR` to use the Mir API (experimental and incomplete)
 
-The context creation API is used to enumerate pixel formats / framebuffer
-configurations and to create contexts.  The options are:
-
- - `_GLFW_NSGL` to use the Cocoa OpenGL framework
- - `_GLFW_WGL` to use the Win32 WGL API
- - `_GLFW_GLX` to use the X11 GLX API
- - `_GLFW_EGL` to use the EGL API
-
-Wayland and Mir both require the EGL backend.
-
 If you are building GLFW as a shared library / dynamic library / DLL then you
 must also define `_GLFW_BUILD_DLL`.  Otherwise, you must not define it.
+
+For the EGL context creation API, the following options are available:
+
+ - `_GLFW_USE_EGLPLATFORM_H` to use `EGL/eglplatform.h` for native handle
+   definitions (fallback)
 
 If you are using the X11 window creation API, support for the following X11
 extensions can be enabled:
@@ -286,12 +271,6 @@ available:
    is created (recommended)
  - `_GLFW_USE_RETINA` to have windows use the full resolution of Retina displays
    (recommended)
-
-If you are using the EGL context creation API, the following options are
-available:
-
- - `_GLFW_USE_EGLPLATFORM_H` to use `EGL/eglplatform.h` for native handle
-   definitions (fallback)
 
 @note None of the @ref build_macros may be defined during the compilation of
 GLFW.  If you define any of these in your build files, make sure they are not

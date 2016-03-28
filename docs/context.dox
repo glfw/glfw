@@ -177,9 +177,10 @@ python main.py --generator c --no-loader --out-path output
 @endcode
 
 The `--no-loader` option is added because GLFW already provides a function for
-loading OpenGL and OpenGL ES function pointers and glad can call this instead of
-having to implement its own.  There are several other command-line options as
-well.  See the glad documentation for details.
+loading OpenGL and OpenGL ES function pointers, one that automatically uses the
+selected context creation API, and glad can call this instead of having to
+implement its own.  There are several other command-line options as well.  See
+the glad documentation for details.
 
 Add the generated `output/src/glad.c`, `output/include/glad/glad.h` and
 `output/include/KHR/khrplatform.h` files to your build.  Then you need to

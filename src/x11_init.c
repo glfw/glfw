@@ -766,17 +766,13 @@ int _glfwPlatformInit(void)
     if (!_glfwInitThreadLocalStoragePOSIX())
         return GLFW_FALSE;
 
-#if defined(_GLFW_GLX)
     if (!_glfwInitGLX())
         return GLFW_FALSE;
-#elif defined(_GLFW_EGL)
-    if (!_glfwInitEGL())
-        return GLFW_FALSE;
-#endif
 
     if (!_glfwInitJoysticksLinux())
         return GLFW_FALSE;
 
+    _glfwInitEGL();
     _glfwInitTimerPOSIX();
 
     return GLFW_TRUE;
@@ -804,9 +800,7 @@ void _glfwPlatformTerminate(void)
         _glfw.x11.im = NULL;
     }
 
-#if defined(_GLFW_EGL)
     _glfwTerminateEGL();
-#endif
 
     if (_glfw.x11.display)
     {
@@ -816,9 +810,7 @@ void _glfwPlatformTerminate(void)
 
     // NOTE: This needs to be done after XCloseDisplay, as libGL registers
     //       cleanup callbacks that get called by it
-#if defined(_GLFW_GLX)
     _glfwTerminateGLX();
-#endif
 
     _glfwTerminateJoysticksLinux();
     _glfwTerminateThreadLocalStoragePOSIX();
@@ -826,12 +818,7 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    return _GLFW_VERSION_NUMBER " X11"
-#if defined(_GLFW_GLX)
-        " GLX"
-#elif defined(_GLFW_EGL)
-        " EGL"
-#endif
+    return _GLFW_VERSION_NUMBER " X11 GLX EGL"
 #if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
         " clock_gettime"
 #else

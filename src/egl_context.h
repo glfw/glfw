@@ -149,7 +149,6 @@ typedef GLFWglproc (EGLAPIENTRY * PFNEGLGETPROCADDRESSPROC)(const char*);
 #define eglQueryString _glfw.egl.QueryString
 #define eglGetProcAddress _glfw.egl.GetProcAddress
 
-#define _GLFW_PLATFORM_FBCONFIG                 EGLConfig       egl
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextEGL egl
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryEGL egl
 

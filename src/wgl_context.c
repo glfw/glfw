@@ -236,7 +236,7 @@ static GLFWbool choosePixelFormat(_GLFWwindow* window,
                 u->doublebuffer = GLFW_TRUE;
         }
 
-        u->wgl = n;
+        u->handle = n;
         usableCount++;
     }
 
@@ -259,7 +259,7 @@ static GLFWbool choosePixelFormat(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    *result = closest->wgl;
+    *result = (int) closest->handle;
     free(usableConfigs);
 
     return GLFW_TRUE;

@@ -115,18 +115,18 @@ static GLFWbool chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* result
         if (_glfw.glx.ARB_framebuffer_sRGB || _glfw.glx.EXT_framebuffer_sRGB)
             u->sRGB = getFBConfigAttrib(n, GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB);
 
-        u->glx = n;
+        u->handle = (uintptr_t) n;
         usableCount++;
     }
 
     closest = _glfwChooseFBConfig(desired, usableConfigs, usableCount);
     if (closest)
-        *result = closest->glx;
+        *result = (GLXFBConfig) closest->handle;
 
     XFree(nativeConfigs);
     free(usableConfigs);
 
-    return closest ? GLFW_TRUE : GLFW_FALSE;
+    return closest != NULL;
 }
 
 // Create the OpenGL context using legacy API

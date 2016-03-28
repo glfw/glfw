@@ -155,18 +155,18 @@ static GLFWbool chooseFBConfigs(const _GLFWctxconfig* ctxconfig,
         u->samples = getConfigAttrib(n, EGL_SAMPLES);
         u->doublebuffer = GLFW_TRUE;
 
-        u->egl = n;
+        u->handle = (uintptr_t) n;
         usableCount++;
     }
 
     closest = _glfwChooseFBConfig(desired, usableConfigs, usableCount);
     if (closest)
-        *result = closest->egl;
+        *result = (EGLConfig) closest->handle;
 
     free(nativeConfigs);
     free(usableConfigs);
 
-    return closest ? GLFW_TRUE : GLFW_FALSE;
+    return closest != NULL;
 }
 
 

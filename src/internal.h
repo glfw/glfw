@@ -296,9 +296,7 @@ struct _GLFWfbconfig
     int         samples;
     GLFWbool    sRGB;
     GLFWbool    doublebuffer;
-
-    // This is defined in the context API's context.h
-    _GLFW_PLATFORM_FBCONFIG;
+    uintptr_t   handle;
 };
 
 

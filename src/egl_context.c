@@ -269,9 +269,14 @@ GLFWbool _glfwInitEGL(void)
 //
 void _glfwTerminateEGL(void)
 {
-    if (_glfw.egl.handle)
+    if (_glfw.egl.display)
     {
         eglTerminate(_glfw.egl.display);
+        _glfw.egl.display = EGL_NO_DISPLAY;
+    }
+
+    if (_glfw.egl.handle)
+    {
         _glfw_dlclose(_glfw.egl.handle);
         _glfw.egl.handle = NULL;
     }

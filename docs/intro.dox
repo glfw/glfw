@@ -197,6 +197,7 @@ function:
  - @ref glfwDestroyCursor
  - @ref glfwPollEvents
  - @ref glfwWaitEvents
+ - @ref glfwWaitEventsTimeout
  - @ref glfwTerminate
 
 These functions may be made reentrant in future minor or patch releases, but
@@ -242,8 +243,15 @@ may be called from any thread:
  - @ref glfwExtensionSupported
  - @ref glfwGetProcAddress
 
-The timer may be accessed from any thread, but this is not synchronized by GLFW.
-The following timer related functions may be called from any thread:        
+The raw timer may be queried from any thread.  The following raw timer related
+functions may be called from any thread:
+
+ - @ref glfwGetTimerFrequency
+ - @ref glfwGetTimerValue
+
+The regular timer may be queried from any thread, but this is not synchronized
+by GLFW with calls to @ref glfwSetTime.  The following timer related functions
+may be called from any thread:
 
  - @ref glfwGetTime
 

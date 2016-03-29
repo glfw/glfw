@@ -481,7 +481,7 @@ void _glfwTerminateJoysticksNS(void)
 int _glfwPlatformJoystickPresent(int joy)
 {
     _GLFWjoydeviceNS* joystick = _glfw.ns_js.devices + joy;
-    return joystick->present ? GLFW_TRUE : GLFW_FALSE;
+    return joystick->present;
 }
 
 const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
@@ -508,9 +508,9 @@ const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
 const char* _glfwPlatformGetJoystickName(int joy)
 {
     _GLFWjoydeviceNS* joystick = _glfw.ns_js.devices + joy;
-    if (joystick->present)
-        return joystick->name;
-    else
+    if (!joystick->present)
         return NULL;
+
+    return joystick->name;
 }
 

@@ -237,9 +237,13 @@ void reshape( GLFWwindow* window, int w, int h )
 
 void key_callback( GLFWwindow* window, int key, int scancode, int action, int mods )
 {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    if (action != GLFW_PRESS)
+        return;
+
+    if (key == GLFW_KEY_ESCAPE && mods == 0)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
-    if (key == GLFW_KEY_ENTER && action == GLFW_PRESS && mods == GLFW_MOD_ALT)
+    if ((key == GLFW_KEY_ENTER && mods == GLFW_MOD_ALT) ||
+        (key == GLFW_KEY_F11 && mods == GLFW_MOD_ALT))
     {
         if (glfwGetWindowMonitor(window))
         {

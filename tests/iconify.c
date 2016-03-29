@@ -76,6 +76,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         case GLFW_KEY_ESCAPE:
             glfwSetWindowShouldClose(window, GLFW_TRUE);
             break;
+        case GLFW_KEY_F11:
         case GLFW_KEY_ENTER:
         {
             if (mods != GLFW_MOD_ALT)

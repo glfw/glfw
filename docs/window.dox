@@ -912,9 +912,9 @@ window's context supports robustness, or `GLFW_NO_ROBUSTNESS` otherwise.
 
 @subsubsection window_attribs_fb Framebuffer related attributes
 
-The attributes of the default framebuffer (i.e. the framebuffer attached to the
-window) are not provided by this function but can be queried with both OpenGL
-and OpenGL ES.
+GLFW does not expose attributes of the default framebuffer (i.e. the framebuffer
+attached to the window) as these can be queried directly with either OpenGL,
+OpenGL ES or Vulkan.
 
 If you are using version 3.0 or later of OpenGL or OpenGL ES, the
 `glGetFramebufferAttachmentParameteriv` function can be used to retrieve the
@@ -936,8 +936,8 @@ Stencil bits | `GL_STENCIL_BITS` | `GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE`
 MSAA samples | `GL_SAMPLES`      | _Not provided by this function_
 
 When calling `glGetFramebufferAttachmentParameteriv`, the red, green, blue and
-alpha sizes can be queried from the `GL_BACK_LEFT`, while the depth and stencil
-sizes can be queried from the `GL_DEPTH` and `GL_STENCIL` attachments,
+alpha sizes are queried from the `GL_BACK_LEFT`, while the depth and stencil
+sizes are queried from the `GL_DEPTH` and `GL_STENCIL` attachments,
 respectively.
 
 

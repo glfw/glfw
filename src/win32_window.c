@@ -1225,14 +1225,14 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
     if (monitor)
     {
         GLFWvidmode mode;
-        DWORD style = GetWindowLongPtrW(window->win32.handle, GWL_STYLE);
+        DWORD style = GetWindowLongW(window->win32.handle, GWL_STYLE);
         UINT flags = SWP_SHOWWINDOW | SWP_NOACTIVATE | SWP_NOCOPYBITS;
 
         if (window->decorated)
         {
             style &= ~WS_OVERLAPPEDWINDOW;
             style |= getWindowStyle(window);
-            SetWindowLongPtrW(window->win32.handle, GWL_STYLE, style);
+            SetWindowLongW(window->win32.handle, GWL_STYLE, style);
 
             flags |= SWP_FRAMECHANGED;
         }
@@ -1250,14 +1250,14 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
     {
         HWND after;
         RECT rect = { xpos, ypos, xpos + width, ypos + height };
-        DWORD style = GetWindowLongPtrW(window->win32.handle, GWL_STYLE);
+        DWORD style = GetWindowLongW(window->win32.handle, GWL_STYLE);
         UINT flags = SWP_NOACTIVATE | SWP_NOCOPYBITS;
 
         if (window->decorated)
         {
             style &= ~WS_POPUP;
             style |= getWindowStyle(window);
-            SetWindowLongPtrW(window->win32.handle, GWL_STYLE, style);
+            SetWindowLongW(window->win32.handle, GWL_STYLE, style);
 
             flags |= SWP_FRAMECHANGED;
         }

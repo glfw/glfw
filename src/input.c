@@ -44,7 +44,7 @@ static void setCursorMode(_GLFWwindow* window, int newMode)
         newMode != GLFW_CURSOR_HIDDEN &&
         newMode != GLFW_CURSOR_DISABLED)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid cursor mode");
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid cursor mode %i", newMode);
         return;
     }
 
@@ -253,7 +253,7 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* handle, int mode)
         case GLFW_STICKY_MOUSE_BUTTONS:
             return window->stickyMouseButtons;
         default:
-            _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode");
+            _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode %i", mode);
             return 0;
     }
 }
@@ -277,7 +277,7 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
             setStickyMouseButtons(window, value ? GLFW_TRUE : GLFW_FALSE);
             break;
         default:
-            _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode");
+            _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode %i", mode);
             break;
     }
 }
@@ -297,7 +297,7 @@ GLFWAPI int glfwGetKey(GLFWwindow* handle, int key)
 
     if (key < 0 || key > GLFW_KEY_LAST)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid key");
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid key %i", key);
         return GLFW_RELEASE;
     }
 
@@ -320,8 +320,7 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* handle, int button)
 
     if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST)
     {
-        _glfwInputError(GLFW_INVALID_ENUM,
-                        "Invalid mouse button");
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid mouse button %i", button);
         return GLFW_RELEASE;
     }
 
@@ -415,7 +414,7 @@ GLFWAPI GLFWcursor* glfwCreateStandardCursor(int shape)
         shape != GLFW_HRESIZE_CURSOR &&
         shape != GLFW_VRESIZE_CURSOR)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid standard cursor");
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid standard cursor %i", shape);
         return NULL;
     }
 
@@ -570,7 +569,7 @@ GLFWAPI int glfwJoystickPresent(int joy)
 
     if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick");
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", joy);
         return 0;
     }
 
@@ -586,7 +585,7 @@ GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count)
 
     if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick");
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", joy);
         return NULL;
     }
 
@@ -602,7 +601,7 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int joy, int* count)
 
     if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick");
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", joy);
         return NULL;
     }
 
@@ -615,7 +614,7 @@ GLFWAPI const char* glfwGetJoystickName(int joy)
 
     if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick");
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", joy);
         return NULL;
     }
 
@@ -655,7 +654,7 @@ GLFWAPI void glfwSetTime(double time)
 
     if (time != time || time < 0.0 || time > 18446744073.0)
     {
-        _glfwInputError(GLFW_INVALID_VALUE, "Invalid time");
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid time %f", time);
         return;
     }
 

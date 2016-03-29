@@ -137,7 +137,10 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
 
     if (width <= 0 || height <= 0)
     {
-        _glfwInputError(GLFW_INVALID_VALUE, "Invalid window size");
+        _glfwInputError(GLFW_INVALID_VALUE,
+                        "Invalid window size %ix%i",
+                        width, height);
+
         return NULL;
     }
 
@@ -372,7 +375,7 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             _glfw.hints.refreshRate = value;
             break;
         default:
-            _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint");
+            _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint %i", hint);
             break;
     }
 }
@@ -477,11 +480,7 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow* handle, int xpos, int ypos)
     _GLFW_REQUIRE_INIT();
 
     if (window->monitor)
-    {
-        _glfwInputError(GLFW_INVALID_VALUE,
-                        "Full screen windows cannot be moved");
         return;
-    }
 
     _glfwPlatformSetWindowPos(window, xpos, ypos);
 }
@@ -698,7 +697,7 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->context.noerror;
     }
 
-    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute");
+    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute %i", attrib);
     return 0;
 }
 
@@ -849,7 +848,7 @@ GLFWAPI void glfwWaitEventsTimeout(double timeout)
 
     if (timeout != timeout || timeout < 0.0 || timeout > DBL_MAX)
     {
-        _glfwInputError(GLFW_INVALID_VALUE, "Invalid time");
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid time %f", timeout);
         return;
     }
 

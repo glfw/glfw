@@ -409,7 +409,7 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
 
     if (gamma != gamma || gamma <= 0.f || gamma > FLT_MAX)
     {
-        _glfwInputError(GLFW_INVALID_VALUE, "Invalid gamma value");
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid gamma value %f", gamma);
         return;
     }
 

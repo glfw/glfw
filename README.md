@@ -190,6 +190,7 @@ skills.
  - heromyth
  - Lucas Hinderberger
  - Paul Holden
+ - IntellectualKitty
  - Aaron Jacobs
  - Toni Jovanoski
  - Arseny Kapoulkine

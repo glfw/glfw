@@ -53,7 +53,6 @@ static float nrand(void)
 
 int main(void)
 {
-    int result;
     GLFWwindow* window;
 
     srand((unsigned int) time(NULL));

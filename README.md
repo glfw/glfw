@@ -111,6 +111,7 @@ does not find Doxygen, the documentation will not be generated.
                    trigger monitor callback
  - [Win32] Bugfix: No monitors were listed on headless and VMware guest systems
  - [Win32] Bugfix: Pressing Ctrl+Pause would report `GLFW_KEY_UNKNOWN`
+ - [Cocoa] Made joystick polling more efficient
  - [Cocoa] Removed support for OS X 10.6
  - [Cocoa] Bugfix: Full screen windows on secondary monitors were mispositioned
  - [Cocoa] Bugfix: Connecting a joystick that reports no name would segfault
@@ -123,6 +124,7 @@ does not find Doxygen, the documentation will not be generated.
  - [X11] Bugfix: An XKB structure was leaked during `glfwInit`
  - [X11] Bugfix: XInput2 `XI_Motion` events interfered with the Steam overlay
  - [POSIX] Bugfix: An unrelated TLS key could be deleted by `glfwTerminate`
+ - [Linux] Made joystick polling more efficient
  - [WGL] Changed extension loading to only be performed once
  - [WGL] Removed dependency on external WGL headers
  - [GLX] Replaced legacy drawable with `GLXWindow`

@@ -150,6 +150,9 @@ typedef enum PROCESS_DPI_AWARENESS
 #ifndef XINPUT_DEVSUBTYPE_ARCADE_PAD
  #define XINPUT_DEVSUBTYPE_ARCADE_PAD 0x13
 #endif
+#ifndef XUSER_MAX_COUNT
+ #define XUSER_MAX_COUNT 4
+#endif
 
 // HACK: Define macros that some dinput.h variants don't
 #ifndef DIDFT_OPTIONAL

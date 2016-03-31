@@ -94,7 +94,6 @@ does not find Doxygen, the documentation will not be generated.
  - Added `GLFW_CONTEXT_NO_ERROR` context hint for `GL_KHR_no_error` support
  - Added `GLFW_INCLUDE_VULKAN` for including the Vulkan header
  - Added `GLFW_TRUE` and `GLFW_FALSE` as client API independent boolean values
- - Added `glfwGetGLXWindow` to query the `GLXWindow` of a window
  - Added icons to examples on Windows and OS X
  - Relaxed rules for native access header macros
  - Removed dependency on external OpenGL or OpenGL ES headers
@@ -127,6 +126,7 @@ does not find Doxygen, the documentation will not be generated.
  - [Linux] Made joystick polling more efficient
  - [WGL] Changed extension loading to only be performed once
  - [WGL] Removed dependency on external WGL headers
+ - [GLX] Added `glfwGetGLXWindow` to query the `GLXWindow` of a window
  - [GLX] Replaced legacy drawable with `GLXWindow`
  - [GLX] Removed dependency on external GLX headers
  - [GLX] Bugfix: NetBSD does not provide `libGL.so.1`

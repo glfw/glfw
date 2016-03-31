@@ -64,6 +64,7 @@
 // GLFW uses DirectInput8 interfaces
 #define DIRECTINPUT_VERSION 0x0800
 
+#include <wctype.h>
 #include <windows.h>
 #include <mmsystem.h>
 #include <dinput.h>

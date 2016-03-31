@@ -763,6 +763,12 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         [super sendEvent:event];
 }
 
+
+// No-op thread entry point
+//
+- (void)doNothing:(id)object
+{
+}
 @end
 
 #if defined(_GLFW_USE_MENUBAR)
@@ -887,6 +893,11 @@ static GLFWbool initializeAppKit(void)
 
     // Implicitly create shared NSApplication instance
     [GLFWApplication sharedApplication];
+
+    // Make Cocoa enter multi-threaded mode
+    [NSThread detachNewThreadSelector:@selector(doNothing:)
+                             toTarget:NSApp
+                           withObject:nil];
 
     // In case we are unbundled, make us a proper UI application
     [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];

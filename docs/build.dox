@@ -241,7 +241,7 @@ target_link_libraries(myapp ${OPENGL_glu_LIBRARY})
 @subsection build_link_pkgconfig With makefiles and pkg-config on Unix
 
 GLFW supports [pkg-config](http://www.freedesktop.org/wiki/Software/pkg-config/),
-and the `glfw3.pc` pkf-config file is generated when the GLFW library is built
+and the `glfw3.pc` pkg-config file is generated when the GLFW library is built
 and is installed along with it.  A pkg-config file describes all necessary
 compile-time and link-time flags and dependencies needed to use a library.  When
 they are updated or if they differ between systems, you will get the correct

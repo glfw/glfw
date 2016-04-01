@@ -80,3 +80,5 @@ tests/version
 tests/vulkan
 tests/windows
 
+bii
+bin

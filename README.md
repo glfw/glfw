@@ -31,6 +31,13 @@ See the
 guide in the GLFW documentation.
 
 
+### Using GLFW with biicode
+
+GLFW is available at [biicode](http://www.biicode.com) C/C++ dependency
+manager, you can find the [block here](http://www.biicode.com/diego/glfw), and
+[examples of use here](http://docs.biicode.com/c++/examples/glfw.html)
+
+
 ## Reporting bugs
 
 Bugs are reported to our [issue tracker](https://github.com/glfw/glfw/issues).

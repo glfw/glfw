@@ -508,8 +508,8 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
                                      int* left, int* top,
                                      int* right, int* bottom)
 {
-    // TODO
-    fprintf(stderr, "_glfwPlatformGetWindowFrameSize not implemented yet\n");
+    // TODO: will need a proper implementation once decorations are
+    // implemented, but for now just leave everything as 0.
 }
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
@@ -592,13 +592,12 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
 
 int _glfwPlatformWindowFocused(_GLFWwindow* window)
 {
-    // TODO
-    return GLFW_FALSE;
+    return _glfw.wl.keyboardFocus == window;
 }
 
 int _glfwPlatformWindowIconified(_GLFWwindow* window)
 {
-    // TODO
+    // TODO: move to xdg_shell, wl_shell doesn't have any iconified concept.
     return GLFW_FALSE;
 }
 

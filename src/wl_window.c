@@ -444,8 +444,8 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
                                 int count, const GLFWimage* images)
 {
-    // TODO
-    fprintf(stderr, "_glfwPlatformSetWindowIcon not implemented yet\n");
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Wayland: Setting window icon not supported");
 }
 
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
@@ -514,8 +514,9 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
-    // TODO
-    fprintf(stderr, "_glfwPlatformIconifyWindow not implemented yet\n");
+    // TODO: move to xdg_shell instead of wl_shell.
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Wayland: Iconify window not supported");
 }
 
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
@@ -565,8 +566,8 @@ void _glfwPlatformHideWindow(_GLFWwindow* window)
 
 void _glfwPlatformFocusWindow(_GLFWwindow* window)
 {
-    // TODO
-    fprintf(stderr, "_glfwPlatformFocusWindow not implemented yet\n");
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Wayland: Focusing a window requires user interaction");
 }
 
 void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
@@ -677,7 +678,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     if (fd < 0)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Creating a buffer file for %d B failed: %m\n",
+                        "Wayland: Creating a buffer file for %d B failed: %m",
                         length);
         return GLFW_FALSE;
     }
@@ -686,7 +687,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     if (data == MAP_FAILED)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Cursor mmap failed: %m\n");
+                        "Wayland: Cursor mmap failed: %m");
         close(fd);
         return GLFW_FALSE;
     }
@@ -925,13 +926,15 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
     // TODO
-    fprintf(stderr, "_glfwPlatformSetClipboardString not implemented yet\n");
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Wayland: Clipboard setting not implemented yet");
 }
 
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {
     // TODO
-    fprintf(stderr, "_glfwPlatformGetClipboardString not implemented yet\n");
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Wayland: Clipboard getting not implemented yet");
     return NULL;
 }
 

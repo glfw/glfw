@@ -222,6 +222,10 @@ static GLFWbool createShellSurface(_GLFWwindow* window)
             0,
             window->monitor->wl.output);
     }
+    else if (window->wl.maximized)
+    {
+        wl_shell_surface_set_maximized(window->wl.shell_surface, NULL);
+    }
     else
     {
         wl_shell_surface_set_toplevel(window->wl.shell_surface);
@@ -516,14 +520,27 @@ void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
-    // TODO
-    fprintf(stderr, "_glfwPlatformRestoreWindow not implemented yet\n");
+    // TODO: also do the same for iconified.
+    if (window->monitor || window->wl.maximized)
+    {
+        if (window->wl.shell_surface)
+            wl_shell_surface_set_toplevel(window->wl.shell_surface);
+
+        window->wl.maximized = GLFW_FALSE;
+    }
 }
 
 void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 {
-    // TODO
-    fprintf(stderr, "_glfwPlatformMaximizeWindow not implemented yet\n");
+    if (!window->monitor && !window->wl.maximized)
+    {
+        if (window->wl.shell_surface)
+        {
+            // Let the compositor select the best output.
+            wl_shell_surface_set_maximized(window->wl.shell_surface, NULL);
+        }
+        window->wl.maximized = GLFW_TRUE;
+    }
 }
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
@@ -592,8 +609,7 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
 
 int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 {
-    // TODO
-    return GLFW_FALSE;
+    return window->wl.maximized;
 }
 
 void _glfwPlatformPollEvents(void)

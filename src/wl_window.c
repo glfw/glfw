@@ -558,8 +558,19 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
                                    int width, int height,
                                    int refreshRate)
 {
-    // TODO
-    fprintf(stderr, "_glfwPlatformSetWindowMonitor not implemented yet\n");
+    if (monitor)
+    {
+        wl_shell_surface_set_fullscreen(
+            window->wl.shell_surface,
+            WL_SHELL_SURFACE_FULLSCREEN_METHOD_DEFAULT,
+            refreshRate * 1000, // Convert Hz to mHz.
+            monitor->wl.output);
+    }
+    else
+    {
+        wl_shell_surface_set_toplevel(window->wl.shell_surface);
+    }
+    _glfwInputWindowMonitorChange(window, monitor);
 }
 
 int _glfwPlatformWindowFocused(_GLFWwindow* window)

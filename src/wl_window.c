@@ -193,6 +193,15 @@ static GLFWbool createSurface(_GLFWwindow* window,
     if (!window->wl.native)
         return GLFW_FALSE;
 
+    window->wl.width = wndconfig->width;
+    window->wl.height = wndconfig->height;
+    window->wl.scale = 1;
+
+    return GLFW_TRUE;
+}
+
+static GLFWbool createShellSurface(_GLFWwindow* window)
+{
     window->wl.shell_surface = wl_shell_get_shell_surface(_glfw.wl.shell,
                                                           window->wl.surface);
     if (!window->wl.shell_surface)
@@ -202,9 +211,21 @@ static GLFWbool createSurface(_GLFWwindow* window,
                                   &shellSurfaceListener,
                                   window);
 
-    window->wl.width = wndconfig->width;
-    window->wl.height = wndconfig->height;
-    window->wl.scale = 1;
+    if (window->wl.title)
+        wl_shell_surface_set_title(window->wl.shell_surface, window->wl.title);
+
+    if (window->monitor)
+    {
+        wl_shell_surface_set_fullscreen(
+            window->wl.shell_surface,
+            WL_SHELL_SURFACE_FULLSCREEN_METHOD_DEFAULT,
+            0,
+            window->monitor->wl.output);
+    }
+    else
+    {
+        wl_shell_surface_set_toplevel(window->wl.shell_surface);
+    }
 
     return GLFW_TRUE;
 }
@@ -354,17 +375,20 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             return GLFW_FALSE;
     }
 
-    if (window->monitor)
+    if (wndconfig->title)
+        window->wl.title = strdup(wndconfig->title);
+
+    if (wndconfig->visible)
     {
-        wl_shell_surface_set_fullscreen(
-            window->wl.shell_surface,
-            WL_SHELL_SURFACE_FULLSCREEN_METHOD_DEFAULT,
-            0,
-            window->monitor->wl.output);
+        if (!createShellSurface(window))
+            return GLFW_FALSE;
+
+        window->wl.visible = GLFW_TRUE;
     }
     else
     {
-        wl_shell_surface_set_toplevel(window->wl.shell_surface);
+        window->wl.shell_surface = NULL;
+        window->wl.visible = GLFW_FALSE;
     }
 
     window->wl.currentCursor = NULL;
@@ -400,12 +424,17 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     if (window->wl.surface)
         wl_surface_destroy(window->wl.surface);
 
+    free(window->wl.title);
     free(window->wl.monitors);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
-    wl_shell_surface_set_title(window->wl.shell_surface, title);
+    if (window->wl.title)
+        free(window->wl.title);
+    window->wl.title = strdup(title);
+    if (window->wl.shell_surface)
+        wl_shell_surface_set_title(window->wl.shell_surface, title);
 }
 
 void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
@@ -499,13 +528,22 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
-    wl_shell_surface_set_toplevel(window->wl.shell_surface);
+    if (!window->monitor)
+    {
+        if (!window->wl.shell_surface)
+            createShellSurface(window);
+        window->wl.visible = GLFW_TRUE;
+    }
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
-    wl_surface_attach(window->wl.surface, NULL, 0, 0);
-    wl_surface_commit(window->wl.surface);
+    if (!window->monitor)
+    {
+        if (window->wl.shell_surface)
+            wl_shell_surface_destroy(window->wl.shell_surface);
+        window->wl.visible = GLFW_FALSE;
+    }
 }
 
 void _glfwPlatformFocusWindow(_GLFWwindow* window)
@@ -538,8 +576,7 @@ int _glfwPlatformWindowIconified(_GLFWwindow* window)
 
 int _glfwPlatformWindowVisible(_GLFWwindow* window)
 {
-    // TODO
-    return GLFW_FALSE;
+    return window->wl.visible;
 }
 
 int _glfwPlatformWindowMaximized(_GLFWwindow* window)

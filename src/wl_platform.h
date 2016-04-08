@@ -91,6 +91,8 @@ typedef struct _GLFWwindowWayland
     _GLFWcursor*                currentCursor;
     double                      cursorPosX, cursorPosY;
 
+    char*                       title;
+
     // We need to track the monitors the window spans on to calculate the
     // optimal scaling factor.
     int                         scale;

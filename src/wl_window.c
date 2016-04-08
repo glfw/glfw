@@ -55,7 +55,32 @@ static void handleConfigure(void* data,
                             int32_t height)
 {
     _GLFWwindow* window = data;
-    _glfwInputFramebufferSize(window, width, height);
+    float aspectRatio;
+    float targetRatio;
+
+    if (!window->monitor)
+    {
+        if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
+        {
+            aspectRatio = (float)width / (float)height;
+            targetRatio = (float)window->numer / (float)window->denom;
+            if (aspectRatio < targetRatio)
+                height = width / targetRatio;
+            else if (aspectRatio > targetRatio)
+                width = height * targetRatio;
+        }
+
+        if (window->minwidth != GLFW_DONT_CARE && width < window->minwidth)
+            width = window->minwidth;
+        else if (window->maxwidth != GLFW_DONT_CARE && width > window->maxwidth)
+            width = window->maxwidth;
+
+        if (window->minheight != GLFW_DONT_CARE && height < window->minheight)
+            height = window->minheight;
+        else if (window->maxheight != GLFW_DONT_CARE && height > window->maxheight)
+            height = window->maxheight;
+    }
+
     _glfwInputWindowSize(window, width, height);
     _glfwPlatformSetWindowSize(window, width, height);
     _glfwInputWindowDamage(window);
@@ -429,14 +454,14 @@ void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
                                       int minwidth, int minheight,
                                       int maxwidth, int maxheight)
 {
-    // TODO
-    fprintf(stderr, "_glfwPlatformSetWindowSizeLimits not implemented yet\n");
+    // TODO: find out how to trigger a resize.
+    // The actual limits are checked in the wl_shell_surface::configure handler.
 }
 
 void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom)
 {
-    // TODO
-    fprintf(stderr, "_glfwPlatformSetWindowAspectRatio not implemented yet\n");
+    // TODO: find out how to trigger a resize.
+    // The actual limits are checked in the wl_shell_surface::configure handler.
 }
 
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)

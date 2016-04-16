@@ -345,12 +345,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    if (ctxconfig->api != GLFW_NO_API)
-    {
-        if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
-            return GLFW_FALSE;
-    }
-
     if (window->monitor)
     {
         GLFWvidmode mode;
@@ -376,6 +370,12 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     window->mir.window = mir_buffer_stream_get_egl_native_window(
                                    mir_surface_get_buffer_stream(window->mir.surface));
+
+    if (ctxconfig->api != GLFW_NO_API)
+    {
+        if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
+            return GLFW_FALSE;
+    }
 
     return GLFW_TRUE;
 }

@@ -339,7 +339,7 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             _glfw.hints.window.floating = value ? GLFW_TRUE : GLFW_FALSE;
             break;
         case GLFW_MAXIMIZED:
-            _glfw.hints.window.maximized = hint ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.window.maximized = value ? GLFW_TRUE : GLFW_FALSE;
             break;
         case GLFW_VISIBLE:
             _glfw.hints.window.visible = value ? GLFW_TRUE : GLFW_FALSE;

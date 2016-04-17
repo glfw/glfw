@@ -160,10 +160,15 @@ static void handlePointerButton(_GLFWwindow* window,
                               int pressed,
                               const MirPointerEvent* pointer_event)
 {
-    MirPointerButton button = mir_pointer_event_buttons  (pointer_event);
     int mods                = mir_pointer_event_modifiers(pointer_event);
     const int publicMods    = mirModToGLFWMod(mods);
-    int publicButton;
+    MirPointerButton button = mir_pointer_button_primary;
+    static uint32_t oldButtonStates = 0;
+    uint32_t newButtonStates        = mir_pointer_event_buttons(pointer_event);
+    int publicButton                = GLFW_MOUSE_BUTTON_LEFT;
+
+    // XOR our old button states our new states to figure out what was added or removed
+    button = newButtonStates ^ oldButtonStates;
 
     switch (button)
     {
@@ -187,6 +192,8 @@ static void handlePointerButton(_GLFWwindow* window,
         default:
             break;
     }
+
+    oldButtonStates = newButtonStates;
 
     _glfwInputMouseClick(window, publicButton, pressed, publicMods);
 }

@@ -637,8 +637,17 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 _glfwInputWindowIconify(window, GLFW_FALSE);
             }
 
-            _glfwInputFramebufferSize(window, LOWORD(lParam), HIWORD(lParam));
-            _glfwInputWindowSize(window, LOWORD(lParam), HIWORD(lParam));
+            // WM_SIZE params do not appear to catch display orientation
+            // changes correctly, so use Get functions to retreive.
+            // Both framebuffer and window sizes are the same, but get both
+            // here for potential future proofing.
+            int fbwidth, fbheight;
+            _glfwPlatformGetFramebufferSize(window, &fbwidth, &fbheight);
+            _glfwInputFramebufferSize(window, fbwidth, fbheight);
+
+            int wwidth, wheight;
+            _glfwPlatformGetWindowSize(window, &wwidth, &wheight);
+            _glfwInputWindowSize(window, wwidth, wheight);
             return 0;
         }
 

@@ -276,7 +276,7 @@ static void matchCallback(void* context,
 
     for (joy = GLFW_JOYSTICK_1;  joy <= GLFW_JOYSTICK_LAST;  joy++)
     {
-        if (!_glfw.ns_js.js[joy].present && _glfw.ns_js.js[joy].deviceRef == deviceRef)
+        if (_glfw.ns_js.js[joy].present && _glfw.ns_js.js[joy].deviceRef == deviceRef)
             return;
     }
 

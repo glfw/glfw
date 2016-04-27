@@ -322,7 +322,7 @@ static void matchCallback(void* context,
 
     js->axes = calloc(CFArrayGetCount(js->axisElements), sizeof(float));
     js->buttons = calloc(CFArrayGetCount(js->buttonElements) +
-                         CFArrayGetCount(js->hatElements) * 4, 1);
+                         CFArrayGetCount(js->hatElements) * 4, sizeof(unsigned char));
 
     _glfwInputJoystickChange(joy, GLFW_CONNECTED);
 }

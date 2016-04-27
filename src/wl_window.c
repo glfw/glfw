@@ -40,6 +40,7 @@
 #include <wayland-egl.h>
 #include <wayland-cursor.h>
 
+#define BUFFER_LEN 500
 
 static void handlePing(void* data,
                        struct wl_shell_surface* shellSurface,
@@ -147,6 +148,43 @@ static void handleLeave(void *data,
 static const struct wl_surface_listener surfaceListener = {
     handleEnter,
     handleLeave
+};
+
+static void dataSourceTarget(void* data,
+                             struct wl_data_source* source,
+                             const char* mimeType)
+{
+}
+
+static void dataSourceSend(void* data,
+                           struct wl_data_source* source,
+                           const char* mimeType,
+                           int32_t fd)
+{
+    ssize_t len;
+    char* string = wl_data_source_get_user_data(source);
+
+    do
+    {
+        len = write(fd, string, strlen(string));
+        string += len;
+    }
+    while(len < strlen(string));
+}
+
+static void dataSourceCancel(void* data,
+                             struct wl_data_source* source)
+{
+    if (_glfw.wl.dataSource == source)
+        _glfw.wl.dataSource = NULL;
+    free(wl_data_source_get_user_data(source));
+    wl_data_source_destroy(source);
+}
+
+static const struct wl_data_source_listener dataSourceListener = {
+    dataSourceTarget,
+    dataSourceSend,
+    dataSourceCancel
 };
 
 static GLFWbool createSurface(_GLFWwindow* window,
@@ -749,7 +787,7 @@ static void lockPointer(_GLFWwindow* window)
     window->wl.pointerLock.relativePointer = relativePointer;
     window->wl.pointerLock.lockedPointer = lockedPointer;
 
-    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
+    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.serial,
                           NULL, 0, 0);
 }
 
@@ -801,7 +839,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
             buffer = wl_cursor_image_get_buffer(image);
             if (!buffer)
                 return;
-            wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
+            wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.serial,
                                   surface,
                                   image->hotspot_x,
                                   image->hotspot_y);
@@ -812,7 +850,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
         }
         else
         {
-            wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
+            wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.serial,
                                   surface,
                                   cursor->wl.xhot,
                                   cursor->wl.yhot);
@@ -829,22 +867,82 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
     }
     else if (window->cursorMode == GLFW_CURSOR_HIDDEN)
     {
-        wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
-                              NULL, 0, 0);
+        wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.serial, NULL, 0, 0);
     }
 }
 
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
-    // TODO
-    fprintf(stderr, "_glfwPlatformSetClipboardString not implemented yet\n");
+    if (!_glfw.wl.dataDevice)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Clipboard could not be set."\
+                        "Data device was not initialized");
+        return;
+    }
+    if (_glfw.wl.dataSource)
+    {
+        free(wl_data_source_get_user_data(_glfw.wl.dataSource));
+        wl_data_source_destroy(_glfw.wl.dataSource);
+    }
+    _glfw.wl.dataSource =
+        wl_data_device_manager_create_data_source(_glfw.wl.dataDeviceManager);
+    wl_data_source_offer(_glfw.wl.dataSource,
+                         _glfw.wl.clipboardMimeType);
+    wl_data_source_add_listener(_glfw.wl.dataSource,
+                                &dataSourceListener,
+                                strdup(string));
+    wl_data_device_set_selection(_glfw.wl.dataDevice,
+                                 _glfw.wl.dataSource,
+                                 _glfw.wl.serial);
 }
 
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {
-    // TODO
-    fprintf(stderr, "_glfwPlatformGetClipboardString not implemented yet\n");
-    return NULL;
+    int32_t p[2];
+    int len, allocatedLen = 0;
+    char *aux;
+
+    if (!_glfw.wl.dataOffer)
+        return NULL;
+
+    if (pipe2(p, O_CLOEXEC) == -1)
+        return NULL;
+
+    wl_data_offer_receive(_glfw.wl.dataOffer,
+                          _glfw.wl.clipboardMimeType,
+                          p[1]);
+    close(p[1]);
+
+    _glfwPlatformWaitEvents();
+
+    if (_glfw.wl.clipboardString)
+    {
+        free(_glfw.wl.clipboardString);
+        _glfw.wl.clipboardString = NULL;
+    }
+
+    do
+    {
+        allocatedLen += BUFFER_LEN;
+        _glfw.wl.clipboardString =
+            realloc(_glfw.wl.clipboardString,
+                    allocatedLen * sizeof(*_glfw.wl.clipboardString));
+        aux = _glfw.wl.clipboardString + (allocatedLen - BUFFER_LEN);
+        memset(aux, 0, BUFFER_LEN);
+        len = read(p[0], aux, BUFFER_LEN);
+    }
+    while (len == BUFFER_LEN);
+
+    close(p[0]);
+
+    if (len < 0)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Clipboard read error: %d", errno);
+        return NULL;
+    }
+    return _glfw.wl.clipboardString;
 }
 
 char** _glfwPlatformGetRequiredInstanceExtensions(uint32_t* count)

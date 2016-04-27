@@ -115,6 +115,7 @@ typedef struct _GLFWlibraryWayland
     struct wl_shell*            shell;
     struct wl_shm*              shm;
     struct wl_seat*             seat;
+    struct wl_data_device_manager* dataDeviceManager;
     struct wl_pointer*          pointer;
     struct wl_keyboard*         keyboard;
     struct zwp_relative_pointer_manager_v1* relativePointerManager;
@@ -122,9 +123,10 @@ typedef struct _GLFWlibraryWayland
 
     int                         wl_compositor_version;
 
+    struct wl_data_device*      dataDevice;
     struct wl_cursor_theme*     cursorTheme;
     struct wl_surface*          cursorSurface;
-    uint32_t                    pointerSerial;
+    uint32_t                    serial;
 
     _GLFWmonitor**              monitors;
     int                         monitorsCount;
@@ -142,6 +144,11 @@ typedef struct _GLFWlibraryWayland
         xkb_mod_mask_t          super_mask;
         unsigned int            modifiers;
     } xkb;
+
+    struct wl_data_offer*       dataOffer;
+    struct wl_data_source*      dataSource;
+    char*                       clipboardString;
+    const char*                 clipboardMimeType;
 
     _GLFWwindow*                pointerFocus;
     _GLFWwindow*                keyboardFocus;

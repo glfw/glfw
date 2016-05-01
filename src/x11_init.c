@@ -356,16 +356,13 @@ static Atom getSupportedAtom(Atom* supportedAtoms,
                              unsigned long atomCount,
                              const char* atomName)
 {
-    Atom atom = XInternAtom(_glfw.x11.display, atomName, True);
-    if (atom != None)
-    {
-        unsigned long i;
+    unsigned long i;
+    const Atom atom = XInternAtom(_glfw.x11.display, atomName, False);
 
-        for (i = 0;  i < atomCount;  i++)
-        {
-            if (supportedAtoms[i] == atom)
-                return atom;
-        }
+    for (i = 0;  i < atomCount;  i++)
+    {
+        if (supportedAtoms[i] == atom)
+            return atom;
     }
 
     return None;
@@ -378,13 +375,11 @@ static void detectEWMH(void)
     Window* windowFromRoot = NULL;
     Window* windowFromChild = NULL;
 
-    // First we need a couple of atoms, which should already be there
-    Atom supportingWmCheck =
-        XInternAtom(_glfw.x11.display, "_NET_SUPPORTING_WM_CHECK", True);
-    Atom wmSupported =
-        XInternAtom(_glfw.x11.display, "_NET_SUPPORTED", True);
-    if (supportingWmCheck == None || wmSupported == None)
-        return;
+    // First we need a couple of atoms
+    const Atom supportingWmCheck =
+        XInternAtom(_glfw.x11.display, "_NET_SUPPORTING_WM_CHECK", False);
+    const Atom wmSupported =
+        XInternAtom(_glfw.x11.display, "_NET_SUPPORTED", False);
 
     // Then we look for the _NET_SUPPORTING_WM_CHECK property of the root window
     if (_glfwGetWindowPropertyX11(_glfw.x11.root,
@@ -611,15 +606,15 @@ static GLFWbool initExtensions(void)
         XInternAtom(_glfw.x11.display, "SAVE_TARGETS", False);
 
     // Find Xdnd (drag and drop) atoms, if available
-    _glfw.x11.XdndAware = XInternAtom(_glfw.x11.display, "XdndAware", True);
-    _glfw.x11.XdndEnter = XInternAtom(_glfw.x11.display, "XdndEnter", True);
-    _glfw.x11.XdndPosition = XInternAtom(_glfw.x11.display, "XdndPosition", True);
-    _glfw.x11.XdndStatus = XInternAtom(_glfw.x11.display, "XdndStatus", True);
-    _glfw.x11.XdndActionCopy = XInternAtom(_glfw.x11.display, "XdndActionCopy", True);
-    _glfw.x11.XdndDrop = XInternAtom(_glfw.x11.display, "XdndDrop", True);
-    _glfw.x11.XdndLeave = XInternAtom(_glfw.x11.display, "XdndLeave", True);
-    _glfw.x11.XdndFinished = XInternAtom(_glfw.x11.display, "XdndFinished", True);
-    _glfw.x11.XdndSelection = XInternAtom(_glfw.x11.display, "XdndSelection", True);
+    _glfw.x11.XdndAware = XInternAtom(_glfw.x11.display, "XdndAware", False);
+    _glfw.x11.XdndEnter = XInternAtom(_glfw.x11.display, "XdndEnter", False);
+    _glfw.x11.XdndPosition = XInternAtom(_glfw.x11.display, "XdndPosition", False);
+    _glfw.x11.XdndStatus = XInternAtom(_glfw.x11.display, "XdndStatus", False);
+    _glfw.x11.XdndActionCopy = XInternAtom(_glfw.x11.display, "XdndActionCopy", False);
+    _glfw.x11.XdndDrop = XInternAtom(_glfw.x11.display, "XdndDrop", False);
+    _glfw.x11.XdndLeave = XInternAtom(_glfw.x11.display, "XdndLeave", False);
+    _glfw.x11.XdndFinished = XInternAtom(_glfw.x11.display, "XdndFinished", False);
+    _glfw.x11.XdndSelection = XInternAtom(_glfw.x11.display, "XdndSelection", False);
 
     return GLFW_TRUE;
 }

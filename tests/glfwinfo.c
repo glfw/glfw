@@ -816,7 +816,7 @@ int main(int argc, char** argv)
         ai.applicationVersion = GLFW_VERSION_MAJOR;
         ai.pEngineName = "GLFW";
         ai.engineVersion = GLFW_VERSION_MAJOR;
-        ai.apiVersion = VK_API_VERSION;
+        ai.apiVersion = VK_API_VERSION_1_0;
 
         ici.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         ici.pApplicationInfo = &ai;

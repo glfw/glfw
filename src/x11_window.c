@@ -209,7 +209,7 @@ static void sendEventToWM(_GLFWwindow* window, Atom type,
 
 // Updates the normal hints according to the window settings
 //
-static void updateNormalHints(_GLFWwindow* window)
+static void updateNormalHints(_GLFWwindow* window, int width, int height)
 {
     XSizeHints* hints = XAllocSizeHints();
 
@@ -239,9 +239,6 @@ static void updateNormalHints(_GLFWwindow* window)
         }
         else
         {
-            int width, height;
-            _glfwPlatformGetWindowSize(window, &width, &height);
-
             hints->flags |= (PMinSize | PMaxSize);
             hints->min_width  = hints->max_width  = width;
             hints->min_height = hints->max_height = height;
@@ -256,8 +253,6 @@ static void updateNormalHints(_GLFWwindow* window)
 //
 static void updateWindowMode(_GLFWwindow* window)
 {
-    updateNormalHints(window);
-
     if (window->monitor)
     {
         if (_glfw.x11.xinerama.available &&
@@ -556,7 +551,7 @@ static GLFWbool createWindow(_GLFWwindow* window,
         XFree(hints);
     }
 
-    updateNormalHints(window);
+    updateNormalHints(window, wndconfig->width, wndconfig->height);
 
     // Set ICCCM WM_CLASS property
     // HACK: Until a mechanism for specifying the application name is added, the
@@ -1729,7 +1724,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     else
     {
         if (!window->resizable)
-            updateNormalHints(window);
+            updateNormalHints(window, width, height);
 
         XResizeWindow(_glfw.x11.display, window->x11.handle, width, height);
     }
@@ -1741,13 +1736,17 @@ void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
                                       int minwidth, int minheight,
                                       int maxwidth, int maxheight)
 {
-    updateNormalHints(window);
+    int width, height;
+    _glfwPlatformGetWindowSize(window, &width, &height);
+    updateNormalHints(window, width, height);
     XFlush(_glfw.x11.display);
 }
 
 void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom)
 {
-    updateNormalHints(window);
+    int width, height;
+    _glfwPlatformGetWindowSize(window, &width, &height);
+    updateNormalHints(window, width, height);
     XFlush(_glfw.x11.display);
 }
 
@@ -1943,6 +1942,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
         releaseMonitor(window);
 
     _glfwInputWindowMonitorChange(window, monitor);
+    updateNormalHints(window, width, height);
     updateWindowMode(window);
 
     if (window->monitor)

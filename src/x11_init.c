@@ -445,16 +445,6 @@ static void detectEWMH(void)
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_MAXIMIZED_HORZ");
     _glfw.x11.NET_WM_FULLSCREEN_MONITORS =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_FULLSCREEN_MONITORS");
-    _glfw.x11.NET_WM_NAME =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_NAME");
-    _glfw.x11.NET_WM_ICON_NAME =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_ICON_NAME");
-    _glfw.x11.NET_WM_ICON =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_ICON");
-    _glfw.x11.NET_WM_PID =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_PID");
-    _glfw.x11.NET_WM_PING =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_PING");
     _glfw.x11.NET_WM_WINDOW_TYPE =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_WINDOW_TYPE");
     _glfw.x11.NET_WM_WINDOW_TYPE_NORMAL =
@@ -465,8 +455,6 @@ static void detectEWMH(void)
         getSupportedAtom(supportedAtoms, atomCount, "_NET_FRAME_EXTENTS");
     _glfw.x11.NET_REQUEST_FRAME_EXTENTS =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_REQUEST_FRAME_EXTENTS");
-    _glfw.x11.NET_WM_BYPASS_COMPOSITOR =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_BYPASS_COMPOSITOR");
 
     XFree(supportedAtoms);
 }
@@ -475,7 +463,8 @@ static void detectEWMH(void)
 //
 static GLFWbool initExtensions(void)
 {
-    // Find or create window manager atoms
+    // ICCCM window property and protocol atoms
+    // Always intern these as they can be set safely even without WM support
     _glfw.x11.WM_PROTOCOLS = XInternAtom(_glfw.x11.display,
                                          "WM_PROTOCOLS",
                                          False);
@@ -486,6 +475,21 @@ static GLFWbool initExtensions(void)
     _glfw.x11.MOTIF_WM_HINTS = XInternAtom(_glfw.x11.display,
                                            "_MOTIF_WM_HINTS",
                                            False);
+
+    // EWMH window property and protocol atoms
+    // Always intern these as they can be set safely even without WM support
+    _glfw.x11.NET_WM_ICON =
+        XInternAtom(_glfw.x11.display, "_NET_WM_ICON", False);
+    _glfw.x11.NET_WM_PING =
+        XInternAtom(_glfw.x11.display, "_NET_WM_PING", False);
+    _glfw.x11.NET_WM_PID =
+        XInternAtom(_glfw.x11.display, "_NET_WM_PID", False);
+    _glfw.x11.NET_WM_NAME =
+        XInternAtom(_glfw.x11.display, "_NET_WM_NAME", False);
+    _glfw.x11.NET_WM_ICON_NAME =
+        XInternAtom(_glfw.x11.display, "_NET_WM_ICON_NAME", False);
+    _glfw.x11.NET_WM_BYPASS_COMPOSITOR =
+        XInternAtom(_glfw.x11.display, "_NET_WM_BYPASS_COMPOSITOR", False);
 
 #if defined(_GLFW_HAS_XF86VM)
     // Check for XF86VidMode extension

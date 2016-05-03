@@ -463,34 +463,6 @@ static void detectEWMH(void)
 //
 static GLFWbool initExtensions(void)
 {
-    // ICCCM window property and protocol atoms
-    // Always intern these as they can be set safely even without WM support
-    _glfw.x11.WM_PROTOCOLS = XInternAtom(_glfw.x11.display,
-                                         "WM_PROTOCOLS",
-                                         False);
-    _glfw.x11.WM_STATE = XInternAtom(_glfw.x11.display, "WM_STATE", False);
-    _glfw.x11.WM_DELETE_WINDOW = XInternAtom(_glfw.x11.display,
-                                             "WM_DELETE_WINDOW",
-                                             False);
-    _glfw.x11.MOTIF_WM_HINTS = XInternAtom(_glfw.x11.display,
-                                           "_MOTIF_WM_HINTS",
-                                           False);
-
-    // EWMH window property and protocol atoms
-    // Always intern these as they can be set safely even without WM support
-    _glfw.x11.NET_WM_ICON =
-        XInternAtom(_glfw.x11.display, "_NET_WM_ICON", False);
-    _glfw.x11.NET_WM_PING =
-        XInternAtom(_glfw.x11.display, "_NET_WM_PING", False);
-    _glfw.x11.NET_WM_PID =
-        XInternAtom(_glfw.x11.display, "_NET_WM_PID", False);
-    _glfw.x11.NET_WM_NAME =
-        XInternAtom(_glfw.x11.display, "_NET_WM_NAME", False);
-    _glfw.x11.NET_WM_ICON_NAME =
-        XInternAtom(_glfw.x11.display, "_NET_WM_ICON_NAME", False);
-    _glfw.x11.NET_WM_BYPASS_COMPOSITOR =
-        XInternAtom(_glfw.x11.display, "_NET_WM_BYPASS_COMPOSITOR", False);
-
 #if defined(_GLFW_HAS_XF86VM)
     // Check for XF86VidMode extension
     _glfw.x11.vidmode.available =
@@ -586,7 +558,7 @@ static GLFWbool initExtensions(void)
     // Detect whether an EWMH-conformant window manager is running
     detectEWMH();
 
-    // Find or create string format atoms
+    // String format atoms
     _glfw.x11.NULL_ = XInternAtom(_glfw.x11.display, "NULL", False);
     _glfw.x11.UTF8_STRING =
         XInternAtom(_glfw.x11.display, "UTF8_STRING", False);
@@ -594,22 +566,22 @@ static GLFWbool initExtensions(void)
         XInternAtom(_glfw.x11.display, "COMPOUND_STRING", False);
     _glfw.x11.ATOM_PAIR = XInternAtom(_glfw.x11.display, "ATOM_PAIR", False);
 
-    // Find or create selection property atom
+    // Custom selection property atom
     _glfw.x11.GLFW_SELECTION =
         XInternAtom(_glfw.x11.display, "GLFW_SELECTION", False);
 
-    // Find or create standard clipboard atoms
+    // ICCCM standard clipboard atoms
     _glfw.x11.TARGETS = XInternAtom(_glfw.x11.display, "TARGETS", False);
     _glfw.x11.MULTIPLE = XInternAtom(_glfw.x11.display, "MULTIPLE", False);
     _glfw.x11.CLIPBOARD = XInternAtom(_glfw.x11.display, "CLIPBOARD", False);
 
-    // Find or create clipboard manager atoms
+    // Clipboard manager atoms
     _glfw.x11.CLIPBOARD_MANAGER =
         XInternAtom(_glfw.x11.display, "CLIPBOARD_MANAGER", False);
     _glfw.x11.SAVE_TARGETS =
         XInternAtom(_glfw.x11.display, "SAVE_TARGETS", False);
 
-    // Find Xdnd (drag and drop) atoms, if available
+    // Xdnd (drag and drop) atoms
     _glfw.x11.XdndAware = XInternAtom(_glfw.x11.display, "XdndAware", False);
     _glfw.x11.XdndEnter = XInternAtom(_glfw.x11.display, "XdndEnter", False);
     _glfw.x11.XdndPosition = XInternAtom(_glfw.x11.display, "XdndPosition", False);
@@ -619,6 +591,30 @@ static GLFWbool initExtensions(void)
     _glfw.x11.XdndLeave = XInternAtom(_glfw.x11.display, "XdndLeave", False);
     _glfw.x11.XdndFinished = XInternAtom(_glfw.x11.display, "XdndFinished", False);
     _glfw.x11.XdndSelection = XInternAtom(_glfw.x11.display, "XdndSelection", False);
+
+    // ICCCM, EWMH and Motif window property atoms
+    // These can be set safely even without WM support
+    // The EWMH atoms that require WM support are handled in detectEWMH
+    _glfw.x11.WM_PROTOCOLS =
+        XInternAtom(_glfw.x11.display, "WM_PROTOCOLS", False);
+    _glfw.x11.WM_STATE =
+        XInternAtom(_glfw.x11.display, "WM_STATE", False);
+    _glfw.x11.WM_DELETE_WINDOW =
+        XInternAtom(_glfw.x11.display, "WM_DELETE_WINDOW", False);
+    _glfw.x11.NET_WM_ICON =
+        XInternAtom(_glfw.x11.display, "_NET_WM_ICON", False);
+    _glfw.x11.NET_WM_PING =
+        XInternAtom(_glfw.x11.display, "_NET_WM_PING", False);
+    _glfw.x11.NET_WM_PID =
+        XInternAtom(_glfw.x11.display, "_NET_WM_PID", False);
+    _glfw.x11.NET_WM_NAME =
+        XInternAtom(_glfw.x11.display, "_NET_WM_NAME", False);
+    _glfw.x11.NET_WM_ICON_NAME =
+        XInternAtom(_glfw.x11.display, "_NET_WM_ICON_NAME", False);
+    _glfw.x11.NET_WM_BYPASS_COMPOSITOR =
+        XInternAtom(_glfw.x11.display, "_NET_WM_BYPASS_COMPOSITOR", False);
+    _glfw.x11.MOTIF_WM_HINTS =
+        XInternAtom(_glfw.x11.display, "_MOTIF_WM_HINTS", False);
 
     return GLFW_TRUE;
 }

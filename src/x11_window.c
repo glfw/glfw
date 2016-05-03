@@ -464,32 +464,32 @@ static GLFWbool createWindow(_GLFWwindow* window,
                         sizeof(hints) / sizeof(long));
     }
 
-    if (wndconfig->floating)
+    if (_glfw.x11.NET_WM_STATE && !window->monitor)
     {
-        if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_ABOVE)
+        Atom states[3];
+        int count = 0;
+
+        if (wndconfig->floating)
         {
-            Atom value = _glfw.x11.NET_WM_STATE_ABOVE;
-            XChangeProperty(_glfw.x11.display, window->x11.handle,
-                            _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
-                            PropModeReplace, (unsigned char*) &value, 1);
+            if (_glfw.x11.NET_WM_STATE_ABOVE)
+                states[count++] = _glfw.x11.NET_WM_STATE_ABOVE;
         }
-    }
 
-    if (wndconfig->maximized && !window->monitor)
-    {
-        if (_glfw.x11.NET_WM_STATE &&
-            _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT &&
-            _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ)
+        if (wndconfig->maximized)
         {
-            const Atom states[2] =
+            if (_glfw.x11.NET_WM_STATE_MAXIMIZED_VERT &&
+                _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ)
             {
-                _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT,
-                _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ
-            };
+                states[count++] = _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT;
+                states[count++] = _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ;
+            }
+        }
 
+        if (count)
+        {
             XChangeProperty(_glfw.x11.display, window->x11.handle,
                             _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
-                            PropModeReplace, (unsigned char*) &states, 2);
+                            PropModeReplace, (unsigned char*) &states, count);
         }
     }
 

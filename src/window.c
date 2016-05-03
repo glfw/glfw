@@ -572,7 +572,7 @@ GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* handle, int numer, int denom)
 GLFWAPI void glfwGetFramebufferSize(GLFWwindow* handle, int* width, int* height)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-    assert(window);
+    assert(window != NULL);
 
     if (width)
         *width = 0;
@@ -733,7 +733,7 @@ GLFWAPI void glfwSetWindowMonitor(GLFWwindow* wh,
 {
     _GLFWwindow* window = (_GLFWwindow*) wh;
     _GLFWmonitor* monitor = (_GLFWmonitor*) mh;
-    assert(window);
+    assert(window != NULL);
 
     _GLFW_REQUIRE_INIT();
 

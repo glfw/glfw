@@ -45,9 +45,9 @@
 
 // Attempt to open the specified joystick device
 //
+#if defined(__linux__)
 static GLFWbool openJoystickDevice(const char* path)
 {
-#if defined(__linux__)
     char axisCount, buttonCount;
     char name[256];
     int joy, fd, version;
@@ -102,9 +102,9 @@ static GLFWbool openJoystickDevice(const char* path)
     js->buttons = calloc(buttonCount, 1);
 
     _glfwInputJoystickChange(joy, GLFW_CONNECTED);
-#endif // __linux__
     return GLFW_TRUE;
 }
+#endif // __linux__
 
 // Polls for and processes events the specified joystick
 //
@@ -155,12 +155,14 @@ static GLFWbool pollJoystickEvents(_GLFWjoystickLinux* js)
 
 // Lexically compare joysticks, used by quicksort
 //
+#if defined(__linux__)
 static int compareJoysticks(const void* fp, const void* sp)
 {
     const _GLFWjoystickLinux* fj = fp;
     const _GLFWjoystickLinux* sj = sp;
     return strcmp(fj->path, sj->path);
 }
+#endif // __linux__
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -274,6 +276,7 @@ void _glfwTerminateJoysticksLinux(void)
 
 void _glfwPollJoystickEvents(void)
 {
+#if defined(__linux__)
     ssize_t offset = 0;
     char buffer[16384];
 
@@ -293,6 +296,7 @@ void _glfwPollJoystickEvents(void)
 
         offset += sizeof(struct inotify_event) + e->len;
     }
+#endif
 }
 
 

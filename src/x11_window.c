@@ -57,16 +57,16 @@ void selectDisplayConnection(struct timeval* timeout)
     int result, count;
     const int fd = ConnectionNumber(_glfw.x11.display);
 
+    count = fd + 1;
+
     FD_ZERO(&fds);
     FD_SET(fd, &fds);
 #if defined(__linux__)
     FD_SET(_glfw.linux_js.inotify, &fds);
-#endif
 
-    if (fd > _glfw.linux_js.inotify)
-        count = fd + 1;
-    else
+    if (fd < _glfw.linux_js.inotify)
         count = _glfw.linux_js.inotify + 1;
+#endif
 
     // NOTE: We use select instead of an X function like XNextEvent, as the
     //       wait inside those are guarded by the mutex protecting the display

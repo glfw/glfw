@@ -110,6 +110,8 @@ does not find Doxygen, the documentation will not be generated.
                    trigger monitor callback
  - [Win32] Bugfix: No monitors were listed on headless and VMware guest systems
  - [Win32] Bugfix: Pressing Ctrl+Pause would report `GLFW_KEY_UNKNOWN`
+ - [Win32] Bugfix: Window size events would be reported in wrong order when
+                   restoring a full screen window
  - [Cocoa] Made joystick polling more efficient
  - [Cocoa] Removed support for OS X 10.6
  - [Cocoa] Bugfix: Full screen windows on secondary monitors were mispositioned

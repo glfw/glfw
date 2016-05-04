@@ -613,32 +613,39 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_SIZE:
         {
+            const GLFWbool iconified =
+                !window->win32.iconified && wParam == SIZE_MINIMIZED;
+            const GLFWbool restored =
+                window->win32.iconified &&
+                (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED);
+
             if (_glfw.cursorWindow == window)
             {
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)
                     updateClipRect(window);
             }
 
-            if (!window->win32.iconified && wParam == SIZE_MINIMIZED)
+            if (iconified)
+                _glfwInputWindowIconify(window, GLFW_TRUE);
+            else if (restored)
+                _glfwInputWindowIconify(window, GLFW_FALSE);
+
+            _glfwInputFramebufferSize(window, LOWORD(lParam), HIWORD(lParam));
+            _glfwInputWindowSize(window, LOWORD(lParam), HIWORD(lParam));
+
+            if (iconified)
             {
                 window->win32.iconified = GLFW_TRUE;
                 if (window->monitor)
                     releaseMonitor(window);
-
-                _glfwInputWindowIconify(window, GLFW_TRUE);
             }
-            else if (window->win32.iconified &&
-                     (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED))
+            else if (restored)
             {
                 window->win32.iconified = GLFW_FALSE;
                 if (window->monitor)
                     acquireMonitor(window);
-
-                _glfwInputWindowIconify(window, GLFW_FALSE);
             }
 
-            _glfwInputFramebufferSize(window, LOWORD(lParam), HIWORD(lParam));
-            _glfwInputWindowSize(window, LOWORD(lParam), HIWORD(lParam));
             return 0;
         }
 

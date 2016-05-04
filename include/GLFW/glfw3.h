@@ -2056,6 +2056,9 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
  *  The size limits are applied immediately to a windowed mode window and may
  *  cause it to be resized.
  *
+ *  The maximum dimensions must be greater than or equal to the minimum
+ *  dimensions and all must be greater than or equal to zero.
+ *
  *  @param[in] window The window to set limits for.
  *  @param[in] minwidth The minimum width, in screen coordinates, of the client
  *  area, or `GLFW_DONT_CARE`.
@@ -2066,8 +2069,8 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
  *  @param[in] maxheight The maximum height, in screen coordinates, of the
  *  client area, or `GLFW_DONT_CARE`.
  *
- *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
- *  GLFW_PLATFORM_ERROR.
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_INVALID_VALUE and @ref GLFW_PLATFORM_ERROR.
  *
  *  @remark If you set size limits and an aspect ratio that conflict, the
  *  results are undefined.

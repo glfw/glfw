@@ -521,6 +521,13 @@ GLFWAPI void glfwSetWindowSizeLimits(GLFWwindow* handle,
 
     _GLFW_REQUIRE_INIT();
 
+    if (minwidth < 0 || minheight < 0 ||
+        maxwidth < minwidth || maxheight < minheight)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid window size limits");
+        return;
+    }
+
     window->minwidth  = minwidth;
     window->minheight = minheight;
     window->maxwidth  = maxwidth;
@@ -541,17 +548,17 @@ GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* handle, int numer, int denom)
 
     _GLFW_REQUIRE_INIT();
 
+    if (numer <= 0 || denom <= 0)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid window aspect ratio");
+        return;
+    }
+
     window->numer = numer;
     window->denom = denom;
 
     if (window->monitor || !window->resizable)
         return;
-
-    if (!denom)
-    {
-        _glfwInputError(GLFW_INVALID_VALUE, "Denominator cannot be zero");
-        return;
-    }
 
     _glfwPlatformSetWindowAspectRatio(window, numer, denom);
 }

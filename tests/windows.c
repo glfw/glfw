@@ -33,6 +33,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "getopt.h"
+
 static const char* titles[] =
 {
     "Red",
@@ -51,6 +53,14 @@ static const struct
     {   0.f, 0.68f, 0.94f },
     { 0.98f, 0.74f, 0.04f }
 };
+
+static void usage(void)
+{
+    printf("Usage: windows [-h] [-b]\n");
+    printf("Options:\n");
+    printf("  -b create decorated windows\n");
+    printf("  -h show this help\n");
+}
 
 static void error_callback(int error, const char* description)
 {
@@ -80,16 +90,33 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 int main(int argc, char** argv)
 {
-    int i;
+    int i, ch;
+    int decorated = GLFW_FALSE;
     int running = GLFW_TRUE;
     GLFWwindow* windows[4];
+
+    while ((ch = getopt(argc, argv, "bh")) != -1)
+    {
+        switch (ch)
+        {
+            case 'b':
+                decorated = GLFW_TRUE;
+                break;
+            case 'h':
+                usage();
+                exit(EXIT_SUCCESS);
+            default:
+                usage();
+                exit(EXIT_FAILURE);
+        }
+    }
 
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+    glfwWindowHint(GLFW_DECORATED, decorated);
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     for (i = 0;  i < 4;  i++)
@@ -130,7 +157,7 @@ int main(int argc, char** argv)
                 running = GLFW_FALSE;
         }
 
-        glfwPollEvents();
+        glfwWaitEvents();
     }
 
     glfwTerminate();

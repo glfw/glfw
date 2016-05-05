@@ -26,6 +26,47 @@ Vulkan header inclusion can be selected with
 [GLFW_INCLUDE_VULKAN](@ref build_macros).
 
 
+@subsection news_32_setwindowmonitor Window mode switching
+
+GLFW now supports switching between windowed and full screen modes and updating
+the monitor and desired resolution and refresh rate of full screen windows with
+@ref glfwSetWindowMonitor.
+
+
+@subsection news_32_maximize Window maxmimization support
+
+GLFW now supports window maximization with @ref glfwMaximizeWindow and the
+[GLFW_MAXIMIZED](@ref window_attribs_wnd) window hint and attribute.
+
+
+@subsection news_32_icon Window icon support
+
+GLFW now supports setting the icon of windows with @ref glfwSetWindowIcon.
+
+
+@subsection news_32_focus Window input focus control
+
+GLFW now supports giving windows input focus with @ref glfwFocusWindow.
+
+
+@subsection news_32_timer Raw timer access
+
+GLFW now supports raw timer values with @ref glfwGetTimerValue and @ref
+glfwGetTimerFrequency.
+
+
+@subsection news_32_waittimeout Wait for events with timeout
+
+GLFW now supports waiting for events for a set amount of time with @ref
+glfwWaitEventsTimeout.
+
+
+@subsection news_32_contextapi Run-time context creation API selection
+
+GLFW now supports selecting the context creation API at run-time with
+[GLFW_CONTEXT_CREATION_API](@ref window_hints_ctx).
+
+
 @section news_31 New features in 3.1
 
 These are the release highlights.  For a full list of changes see the
@@ -96,7 +137,7 @@ and the cursor position directly instead of returning cached data.
 @subsection news_31_libovr Better interoperability with Oculus Rift
 
 GLFW now provides native access functions for the OS level handles corresponding
-to monitor objects, as well as a [brief guide](@ref rift).  It is also regularly
+to monitor objects, as well as the @ref rift_guide.  It is also regularly
 tested for compatibility with the latest version of LibOVR (0.4.4 on release).
 
 

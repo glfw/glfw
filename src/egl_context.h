@@ -104,6 +104,8 @@ typedef MirEGLNativeWindowType EGLNativeWindowType;
 #define EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR 0x30fd
 #define EGL_CONTEXT_FLAGS_KHR 0x30fc
 #define EGL_CONTEXT_OPENGL_NO_ERROR_KHR 0x31b3
+#define EGL_GL_COLORSPACE_KHR 0x309d
+#define EGL_GL_COLORSPACE_SRGB_KHR 0x3089
 
 typedef int EGLint;
 typedef unsigned int EGLBoolean;
@@ -147,9 +149,8 @@ typedef GLFWglproc (EGLAPIENTRY * PFNEGLGETPROCADDRESSPROC)(const char*);
 #define eglQueryString _glfw.egl.QueryString
 #define eglGetProcAddress _glfw.egl.GetProcAddress
 
-#define _GLFW_PLATFORM_FBCONFIG                 EGLConfig       egl
-#define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextEGL egl
-#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryEGL egl
+#define _GLFW_EGL_CONTEXT_STATE            _GLFWcontextEGL egl
+#define _GLFW_EGL_LIBRARY_CONTEXT_STATE    _GLFWlibraryEGL egl
 
 
 // EGL-specific per-context data
@@ -174,6 +175,7 @@ typedef struct _GLFWlibraryEGL
 
     GLFWbool        KHR_create_context;
     GLFWbool        KHR_create_context_no_error;
+    GLFWbool        KHR_gl_colorspace;
 
     void*           handle;
 
@@ -202,7 +204,6 @@ void _glfwTerminateEGL(void);
 GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig);
-void _glfwDestroyContextEGL(_GLFWwindow* window);
 #if defined(_GLFW_X11)
 GLFWbool _glfwChooseVisualEGL(const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig,

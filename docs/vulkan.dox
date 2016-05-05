@@ -1,25 +1,38 @@
 /*!
 
-@page vulkan Vulkan guide
+@page vulkan_guide Vulkan guide
  
 @tableofcontents
 
-This guide is intended to fill the gaps between the Vulkan documentation and the
-rest of the GLFW documentation and is not a replacement for either.
+This guide is intended to fill the gaps between the [Vulkan
+documentation](https://www.khronos.org/vulkan/) and the rest of the GLFW
+documentation and is not a replacement for either.  It assumes some familiarity
+with Vulkan concepts like loaders, devices, queues and surfaces and leaves it to
+the Vulkan documentation to explain the details of Vulkan functions.
 
 To develop for Vulkan you should install an SDK for your platform, for example
-the [LunarG Vulkan SDK](http://lunarg.com/vulkan-sdk/).  Apart from the headers
-and libraries, it also provides the validation layers necessary for development.
+the [LunarG Vulkan SDK](https://vulkan.lunarg.com/).  Apart from the headers and
+libraries, it also provides the validation layers necessary for development.
 
-GLFW itself does not need a Vulkan SDK to enable support for Vulkan.  However,
-any Vulkan-specific test and example programs are built only if the CMake files
-find the LunarG SDK.
+The GLFW library does not need the Vulkan SDK to enable support for Vulkan.
+However, any Vulkan-specific test and example programs are built only if the
+CMake files find a Vulkan SDK.
+
+For details on a specific function, see the
+[reference documentation](@ref vulkan).  There are also guides for the other
+areas of the GLFW API.
+
+ - @ref intro_guide
+ - @ref window_guide
+ - @ref context_guide
+ - @ref monitor_guide
+ - @ref input_guide
 
 
 @section vulkan_include Including the Vulkan and GLFW header files
 
-To include the Vulkan header, define `GLFW_INCLUDE_VULKAN` before including the
-GLFW header.
+To include the Vulkan header, define [GLFW_INCLUDE_VULKAN](@ref build_macros)
+before including the GLFW header.
 
 @code
 #define GLFW_INCLUDE_VULKAN
@@ -30,18 +43,22 @@ If you want to include the Vulkan header from a custom location or use your own
 custom Vulkan header then you need to include them before the GLFW header.
 
 @code
-#include <custom/path/vulkan.h>
+#include <path/to/vulkan.h>
 #include <GLFW/glfw3.h>
 @endcode
 
 Unless a Vulkan header is included, either by the GLFW header or above it, any
-GLFW functions that use Vulkan types will not be declared.
+GLFW functions that take or return Vulkan types will not be declared.
 
 The `VK_USE_PLATFORM_*_KHR` macros do not need to be defined for the Vulkan part
-of GLFW to work.
+of GLFW to work.  Define them only if you are using these extensions directly.
 
 
 @section vulkan_support Querying for Vulkan support
+
+If you are linking directly against the Vulkan loader then you can skip this
+section.  The canonical desktop loader library exports all Vulkan core and
+Khronos extension functions, allowing them to be called directly.
 
 If you are loading the Vulkan loader dynamically instead of linking directly
 against it, you can check for the availability of a loader with @ref
@@ -64,14 +81,23 @@ generate a @ref GLFW_API_UNAVAILABLE error.
 @subsection vulkan_proc Querying Vulkan function pointers
 
 To load any Vulkan core or extension function from the found loader, call @ref
-glfwGetInstanceProcAddress.
+glfwGetInstanceProcAddress.  To load functions needed for instance creation,
+pass `NULL` as the instance.
+
+@code
+PFN_vkCreateInstance pfnCreateInstance = (PFN_vkCreateInstance)
+    glfwGetInstanceProcAddress(NULL, "vkCreateInstance");
+@endcode
+
+Once you have created an instance, you can load from it all other Vulkan core
+functions and functions from any instance extensions you enabled.
 
 @code
 PFN_vkCreateDevice pfnCreateDevice = (PFN_vkCreateDevice)
     glfwGetInstanceProcAddress(instance, "vkCreateDevice");
 @endcode
 
-This is equivalent to calling `vkGetInstanceProcAddr`.  If that fails, the
+This function in turn calls `vkGetInstanceProcAddr`.  If that fails, the
 function falls back to a platform-specific query of the Vulkan loader (i.e.
 `dlsym` or `GetProcAddress`).  If that also fails, the function returns `NULL`.
 For more information about `vkGetInstanceProcAddr`, see the Vulkan
@@ -101,7 +127,7 @@ To query the instance extensions required, call @ref
 glfwGetRequiredInstanceExtensions.
 
 @code
-int count;
+uint32_t count;
 const char** extensions = glfwGetRequiredInstanceExtensions(&count);
 @endcode
 
@@ -110,8 +136,9 @@ be passed to @ref glfwGetPhysicalDevicePresentationSupport and @ref
 glfwCreateWindowSurface.  The set of extensions will vary depending on platform
 and may also vary depending on graphics drivers and other factors.
 
-If it fails it will return `NULL` and Vulkan window surface creation will not be
-possible.  You may still use Vulkan for off-screen rendering and compute work.
+If it fails it will return `NULL` and GLFW will not be able to create Vulkan
+window surfaces.  You can still use Vulkan for off-screen rendering and compute
+work.
 
 The returned array will always contain `VK_KHR_surface`, so if you don't
 require any additional extensions you can pass this list directly to the
@@ -134,7 +161,7 @@ array, as it is an error to specify an extension more than once in the
 
 @section vulkan_present Querying for Vulkan presentation support
 
-Not every Vulkan queue family of every device can present images to surfaces.
+Not every queue family of every Vulkan device can present images to surfaces.
 To check whether a specific queue family of a physical device supports image
 presentation without first having to create a window and surface, call @ref
 glfwGetPhysicalDevicePresentationSupport.
@@ -146,16 +173,16 @@ if (glfwGetPhysicalDevicePresentationSupport(instance, physical_device, queue_fa
 }
 @endcode
 
-The `VK_KHR_surface` extension also provides the 
+The `VK_KHR_surface` extension additionally provides the 
 `vkGetPhysicalDeviceSurfaceSupportKHR` function, which performs the same test on
 an existing Vulkan surface.
 
 
 @section vulkan_window Creating the window
 
-Unless you will be using OpenGL or OpenGL ES in addition to Vulkan, there is no
-need to create a context for that window.  You can disable context creation by
-setting the [GLFW_CLIENT_API](@ref window_hints_ctx) hint to `GLFW_NO_API`.
+Unless you will be using OpenGL or OpenGL ES with the same window as Vulkan,
+there is no need to create a context.  You can disable context creation with the
+[GLFW_CLIENT_API](@ref window_hints_ctx) hint.
 
 @code
 glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);

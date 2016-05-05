@@ -96,7 +96,6 @@ typedef BOOL (WINAPI * WGLSHARELISTS_T)(HGLRC,HGLRC);
 #define _GLFW_RECREATION_REQUIRED   1
 #define _GLFW_RECREATION_IMPOSSIBLE 2
 
-#define _GLFW_PLATFORM_FBCONFIG                 int             wgl
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextWGL wgl
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryWGL wgl
 
@@ -149,7 +148,6 @@ void _glfwTerminateWGL(void);
 GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig);
-void _glfwDestroyContextWGL(_GLFWwindow* window);
 int _glfwAnalyzeContextWGL(_GLFWwindow* window,
                            const _GLFWctxconfig* ctxconfig,
                            const _GLFWfbconfig* fbconfig);

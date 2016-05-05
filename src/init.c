@@ -74,9 +74,9 @@ static const char* getErrorString(int error)
             return "The requested format is unavailable";
         case GLFW_NO_WINDOW_CONTEXT:
             return "The specified window has no context";
+        default:
+            return "ERROR: UNKNOWN GLFW ERROR";
     }
-
-    return "ERROR: UNKNOWN ERROR TOKEN PASSED TO glfwErrorString";
 }
 
 
@@ -134,6 +134,8 @@ GLFWAPI int glfwInit(void)
 
     _glfw.monitors = _glfwPlatformGetMonitors(&_glfw.monitorCount);
     _glfwInitialized = GLFW_TRUE;
+
+    _glfw.timerOffset = _glfwPlatformGetTimerValue();
 
     // Not all window hints have zero as their default value
     glfwDefaultWindowHints();

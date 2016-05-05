@@ -40,7 +40,7 @@ void _glfwInitVulkan(void)
 {
     VkResult err;
     VkExtensionProperties* ep;
-    unsigned int i, count;
+    uint32_t i, count;
 #if defined(_GLFW_WIN32)
     const char* name = "vulkan-1.dll";
 #else
@@ -61,7 +61,7 @@ void _glfwInitVulkan(void)
     }
 
     _glfw.vk.EnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties)
-        vkGetInstanceProcAddr(0, "vkEnumerateInstanceExtensionProperties");
+        vkGetInstanceProcAddr(NULL, "vkEnumerateInstanceExtensionProperties");
     if (!_glfw.vk.EnumerateInstanceExtensionProperties)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
@@ -120,7 +120,7 @@ void _glfwInitVulkan(void)
 
 void _glfwTerminateVulkan(void)
 {
-    int i;
+    uint32_t i;
 
     for (i = 0;  i < _glfw.vk.extensionCount;  i++)
         free(_glfw.vk.extensions[i]);
@@ -181,7 +181,7 @@ const char* _glfwGetVulkanResultString(VkResult result)
         case VK_ERROR_VALIDATION_FAILED_EXT:
             return "A validation layer found an error";
         default:
-            return "ERROR: UNKNOWN VULKAN ERROR TOKEN";
+            return "ERROR: UNKNOWN VULKAN ERROR";
     }
 }
 
@@ -196,7 +196,7 @@ GLFWAPI int glfwVulkanSupported(void)
     return _glfw.vk.available;
 }
 
-GLFWAPI const char** glfwGetRequiredInstanceExtensions(int* count)
+GLFWAPI const char** glfwGetRequiredInstanceExtensions(uint32_t* count)
 {
     *count = 0;
 
@@ -262,9 +262,9 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance,
                                          VkSurfaceKHR* surface)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-    assert(window);
+    assert(window != NULL);
 
-    assert(surface);
+    assert(surface != NULL);
     *surface = VK_NULL_HANDLE;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(VK_ERROR_INITIALIZATION_FAILED);

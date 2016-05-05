@@ -41,12 +41,7 @@ typedef void* id;
 
 #include "posix_tls.h"
 #include "cocoa_joystick.h"
-
-#if defined(_GLFW_NSGL)
- #include "nsgl_context.h"
-#else
- #error "The Cocoa backend depends on NSGL platform support"
-#endif
+#include "nsgl_context.h"
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)
@@ -58,6 +53,9 @@ typedef void* id;
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorNS ns
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorNS  ns
 
+#define _GLFW_EGL_CONTEXT_STATE
+#define _GLFW_EGL_LIBRARY_CONTEXT_STATE
+
 
 // Cocoa-specific per-window data
 //
@@ -66,7 +64,6 @@ typedef struct _GLFWwindowNS
     id              object;
     id              delegate;
     id              view;
-    unsigned int    modifierFlags;
 
     // The total sum of the distances the cursor has been warped
     // since the last cursor motion event was processed
@@ -119,8 +116,7 @@ typedef struct _GLFWcursorNS
 //
 typedef struct _GLFWtimeNS
 {
-    double          base;
-    double          resolution;
+    uint64_t        frequency;
 
 } _GLFWtimeNS;
 

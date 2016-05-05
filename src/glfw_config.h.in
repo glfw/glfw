@@ -45,23 +45,12 @@
 // Define this to 1 if building GLFW for Mir
 #cmakedefine _GLFW_MIR
 
-// Define this to 1 if building GLFW for EGL
-#cmakedefine _GLFW_EGL
-// Define this to 1 if building GLFW for GLX
-#cmakedefine _GLFW_GLX
-// Define this to 1 if building GLFW for WGL
-#cmakedefine _GLFW_WGL
-// Define this to 1 if building GLFW for NSGL
-#cmakedefine _GLFW_NSGL
-
 // Define this to 1 if building as a shared library / dynamic library / DLL
 #cmakedefine _GLFW_BUILD_DLL
 
 // Define this to 1 to force use of high-performance GPU on hybrid systems
 #cmakedefine _GLFW_USE_HYBRID_HPG
 
-// Define this to 1 if the XInput X11 extension is available
-#cmakedefine _GLFW_HAS_XINPUT
 // Define this to 1 if the Xxf86vm X11 extension is available
 #cmakedefine _GLFW_HAS_XF86VM
 

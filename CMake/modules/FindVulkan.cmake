@@ -6,9 +6,17 @@
 
 if (WIN32)
     find_path(VULKAN_INCLUDE_DIR NAMES vulkan/vulkan.h HINTS
+        "$ENV{VULKAN_SDK}/Include"
         "$ENV{VK_SDK_PATH}/Include")
-    find_library(VULKAN_LIBRARY NAMES vulkan-1 HINTS
-        "$ENV{VK_SDK_PATH}/Bin")
+    if (CMAKE_CL_64)
+        find_library(VULKAN_LIBRARY NAMES vulkan-1 HINTS
+            "$ENV{VULKAN_SDK}/Bin"
+            "$ENV{VK_SDK_PATH}/Bin")
+    else()
+        find_library(VULKAN_LIBRARY NAMES vulkan-1 HINTS
+            "$ENV{VULKAN_SDK}/Bin32"
+            "$ENV{VK_SDK_PATH}/Bin32")
+    endif()
 else()
     find_path(VULKAN_INCLUDE_DIR NAMES vulkan/vulkan.h HINTS
         "$ENV{VULKAN_SDK}/include")

@@ -45,9 +45,9 @@
 
 // Attempt to open the specified joystick device
 //
+#if defined(__linux__)
 static GLFWbool openJoystickDevice(const char* path)
 {
-#if defined(__linux__)
     char axisCount, buttonCount;
     char name[256];
     int joy, fd, version;
@@ -100,34 +100,18 @@ static GLFWbool openJoystickDevice(const char* path)
     ioctl(fd, JSIOCGBUTTONS, &buttonCount);
     js->buttonCount = (int) buttonCount;
     js->buttons = calloc(buttonCount, 1);
-#endif // __linux__
+
+    _glfwInputJoystickChange(joy, GLFW_CONNECTED);
     return GLFW_TRUE;
 }
+#endif // __linux__
 
 // Polls for and processes events the specified joystick
 //
 static GLFWbool pollJoystickEvents(_GLFWjoystickLinux* js)
 {
 #if defined(__linux__)
-    ssize_t offset = 0;
-    char buffer[16384];
-
-    const ssize_t size = read(_glfw.linux_js.inotify, buffer, sizeof(buffer));
-
-    while (size > offset)
-    {
-        regmatch_t match;
-        const struct inotify_event* e = (struct inotify_event*) (buffer + offset);
-
-        if (regexec(&_glfw.linux_js.regex, e->name, 1, &match, 0) == 0)
-        {
-            char path[20];
-            snprintf(path, sizeof(path), "/dev/input/%s", e->name);
-            openJoystickDevice(path);
-        }
-
-        offset += sizeof(struct inotify_event) + e->len;
-    }
+    _glfwPollJoystickEvents();
 
     if (!js->present)
         return GLFW_FALSE;
@@ -149,6 +133,9 @@ static GLFWbool pollJoystickEvents(_GLFWjoystickLinux* js)
                 free(js->path);
 
                 memset(js, 0, sizeof(_GLFWjoystickLinux));
+
+                _glfwInputJoystickChange(js - _glfw.linux_js.js,
+                                         GLFW_DISCONNECTED);
             }
 
             break;
@@ -168,12 +155,14 @@ static GLFWbool pollJoystickEvents(_GLFWjoystickLinux* js)
 
 // Lexically compare joysticks, used by quicksort
 //
+#if defined(__linux__)
 static int compareJoysticks(const void* fp, const void* sp)
 {
     const _GLFWjoystickLinux* fj = fp;
     const _GLFWjoystickLinux* sj = sp;
     return strcmp(fj->path, sj->path);
 }
+#endif // __linux__
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -283,6 +272,31 @@ void _glfwTerminateJoysticksLinux(void)
         close(_glfw.linux_js.inotify);
     }
 #endif // __linux__
+}
+
+void _glfwPollJoystickEvents(void)
+{
+#if defined(__linux__)
+    ssize_t offset = 0;
+    char buffer[16384];
+
+    const ssize_t size = read(_glfw.linux_js.inotify, buffer, sizeof(buffer));
+
+    while (size > offset)
+    {
+        regmatch_t match;
+        const struct inotify_event* e = (struct inotify_event*) (buffer + offset);
+
+        if (regexec(&_glfw.linux_js.regex, e->name, 1, &match, 0) == 0)
+        {
+            char path[20];
+            snprintf(path, sizeof(path), "/dev/input/%s", e->name);
+            openJoystickDevice(path);
+        }
+
+        offset += sizeof(struct inotify_event) + e->len;
+    }
+#endif
 }
 
 

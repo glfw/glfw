@@ -265,9 +265,6 @@ void _glfwPlatformTerminate(void)
         _glfw.ns.delegate = nil;
     }
 
-    [_glfw.ns.autoreleasePool release];
-    _glfw.ns.autoreleasePool = nil;
-
     [_glfw.ns.cursor release];
     _glfw.ns.cursor = nil;
 
@@ -276,14 +273,14 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateNSGL();
     _glfwTerminateJoysticksNS();
     _glfwTerminateThreadLocalStoragePOSIX();
+
+    [_glfw.ns.autoreleasePool release];
+    _glfw.ns.autoreleasePool = nil;
 }
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    return _GLFW_VERSION_NUMBER " Cocoa"
-#if defined(_GLFW_NSGL)
-        " NSGL"
-#endif
+    return _GLFW_VERSION_NUMBER " Cocoa NSGL"
 #if defined(_GLFW_USE_CHDIR)
         " chdir"
 #endif

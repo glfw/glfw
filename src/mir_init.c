@@ -26,6 +26,7 @@
 
 #include "internal.h"
 
+#include <linux/input.h>
 #include <stdlib.h>
 #include <string.h>
 

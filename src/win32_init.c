@@ -30,6 +30,8 @@
 #include <stdlib.h>
 #include <malloc.h>
 
+#include <initguid.h>
+DEFINE_GUID(GUID_DEVINTERFACE_HID,0x4d1e55b2,0xf16f,0x11cf,0x88,0xcb,0x00,0x11,0x11,0x00,0x00,0x30);
 
 #if defined(_GLFW_USE_HYBRID_HPG) || defined(_GLFW_USE_OPTIMUS_HPG)
 
@@ -69,12 +71,6 @@ static GLFWbool loadLibraries(void)
         return GLFW_FALSE;
     }
 
-    _glfw.win32.winmm.joyGetDevCaps = (JOYGETDEVCAPS_T)
-        GetProcAddress(_glfw.win32.winmm.instance, "joyGetDevCapsW");
-    _glfw.win32.winmm.joyGetPos = (JOYGETPOS_T)
-        GetProcAddress(_glfw.win32.winmm.instance, "joyGetPos");
-    _glfw.win32.winmm.joyGetPosEx = (JOYGETPOSEX_T)
-        GetProcAddress(_glfw.win32.winmm.instance, "joyGetPosEx");
     _glfw.win32.winmm.timeGetTime = (TIMEGETTIME_T)
         GetProcAddress(_glfw.win32.winmm.instance, "timeGetTime");
 
@@ -89,6 +85,40 @@ static GLFWbool loadLibraries(void)
         GetProcAddress(_glfw.win32.user32.instance, "SetProcessDPIAware");
     _glfw.win32.user32.ChangeWindowMessageFilterEx = (CHANGEWINDOWMESSAGEFILTEREX_T)
         GetProcAddress(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
+
+    _glfw.win32.dinput8.instance = LoadLibraryA("dinput8.dll");
+    if (_glfw.win32.dinput8.instance)
+    {
+        _glfw.win32.dinput8.DirectInput8Create = (DIRECTINPUT8CREATE_T)
+            GetProcAddress(_glfw.win32.dinput8.instance, "DirectInput8Create");
+    }
+
+    {
+        int i;
+        const char* names[] =
+        {
+            "xinput1_4.dll",
+            "xinput1_3.dll",
+            "xinput9_1_0.dll",
+            "xinput1_2.dll",
+            "xinput1_1.dll",
+            NULL
+        };
+
+        for (i = 0;  names[i];  i++)
+        {
+            _glfw.win32.xinput.instance = LoadLibraryA(names[i]);
+            if (_glfw.win32.xinput.instance)
+            {
+                _glfw.win32.xinput.XInputGetCapabilities = (XINPUTGETCAPABILITIES_T)
+                    GetProcAddress(_glfw.win32.xinput.instance, "XInputGetCapabilities");
+                _glfw.win32.xinput.XInputGetState = (XINPUTGETSTATE_T)
+                    GetProcAddress(_glfw.win32.xinput.instance, "XInputGetState");
+
+                break;
+            }
+        }
+    }
 
     _glfw.win32.dwmapi.instance = LoadLibraryA("dwmapi.dll");
     if (_glfw.win32.dwmapi.instance)
@@ -113,6 +143,12 @@ static GLFWbool loadLibraries(void)
 //
 static void freeLibraries(void)
 {
+    if (_glfw.win32.xinput.instance)
+        FreeLibrary(_glfw.win32.xinput.instance);
+
+    if (_glfw.win32.dinput8.instance)
+        FreeLibrary(_glfw.win32.dinput8.instance);
+
     if (_glfw.win32.winmm.instance)
         FreeLibrary(_glfw.win32.winmm.instance);
 
@@ -196,6 +232,7 @@ static void createKeyTables(void)
     _glfw.win32.publicKeys[0x151] = GLFW_KEY_PAGE_DOWN;
     _glfw.win32.publicKeys[0x149] = GLFW_KEY_PAGE_UP;
     _glfw.win32.publicKeys[0x045] = GLFW_KEY_PAUSE;
+    _glfw.win32.publicKeys[0x146] = GLFW_KEY_PAUSE;
     _glfw.win32.publicKeys[0x039] = GLFW_KEY_SPACE;
     _glfw.win32.publicKeys[0x00F] = GLFW_KEY_TAB;
     _glfw.win32.publicKeys[0x03A] = GLFW_KEY_CAPS_LOCK;
@@ -272,7 +309,7 @@ static HWND createHelperWindow(void)
                                   L"GLFW helper window",
                                   WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
                                   0, 0, 1, 1,
-                                  NULL, NULL,
+                                  HWND_MESSAGE, NULL,
                                   GetModuleHandleW(NULL),
                                   NULL);
     if (!window)
@@ -282,7 +319,20 @@ static HWND createHelperWindow(void)
         return NULL;
     }
 
-    return window;
+    // Register for HID device notifications
+    {
+        DEV_BROADCAST_DEVICEINTERFACE_W dbi;
+        ZeroMemory(&dbi, sizeof(dbi));
+        dbi.dbcc_size = sizeof(dbi);
+        dbi.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
+        dbi.dbcc_classguid = GUID_DEVINTERFACE_HID;
+
+        RegisterDeviceNotificationW(window,
+                                    (DEV_BROADCAST_HDR*) &dbi,
+                                    DEVICE_NOTIFY_WINDOW_HANDLE);
+    }
+
+   return window;
 }
 
 
@@ -371,14 +421,10 @@ int _glfwPlatformInit(void)
 
     _glfwPlatformPollEvents();
 
-#if defined(_GLFW_WGL)
     if (!_glfwInitWGL())
         return GLFW_FALSE;
-#elif defined(_GLFW_EGL)
-    if (!_glfwInitEGL())
-        return GLFW_FALSE;
-#endif
 
+    _glfwInitEGL();
     _glfwInitTimerWin32();
     _glfwInitJoysticksWin32();
 
@@ -399,11 +445,8 @@ void _glfwPlatformTerminate(void)
 
     free(_glfw.win32.clipboardString);
 
-#if defined(_GLFW_WGL)
     _glfwTerminateWGL();
-#elif defined(_GLFW_EGL)
     _glfwTerminateEGL();
-#endif
 
     _glfwTerminateJoysticksWin32();
     _glfwTerminateThreadLocalStorageWin32();
@@ -413,12 +456,7 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    return _GLFW_VERSION_NUMBER " Win32"
-#if defined(_GLFW_WGL)
-        " WGL"
-#elif defined(_GLFW_EGL)
-        " EGL"
-#endif
+    return _GLFW_VERSION_NUMBER " Win32 WGL EGL"
 #if defined(__MINGW32__)
         " MinGW"
 #elif defined(_MSC_VER)

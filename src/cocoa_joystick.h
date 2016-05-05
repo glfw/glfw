@@ -56,7 +56,7 @@ typedef struct _GLFWjoydeviceNS
 //
 typedef struct _GLFWjoystickNS
 {
-    _GLFWjoydeviceNS devices[GLFW_JOYSTICK_LAST + 1];
+    _GLFWjoydeviceNS js[GLFW_JOYSTICK_LAST + 1];
 
     IOHIDManagerRef managerRef;
 } _GLFWjoystickNS;

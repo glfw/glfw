@@ -30,28 +30,6 @@
 #include <sys/time.h>
 #include <time.h>
 
-// Return raw time
-//
-static uint64_t getRawTime(void)
-{
-#if defined(CLOCK_MONOTONIC)
-    if (_glfw.posix_time.monotonic)
-    {
-        struct timespec ts;
-
-        clock_gettime(CLOCK_MONOTONIC, &ts);
-        return (uint64_t) ts.tv_sec * (uint64_t) 1000000000 + (uint64_t) ts.tv_nsec;
-    }
-    else
-#endif
-    {
-        struct timeval tv;
-
-        gettimeofday(&tv, NULL);
-        return (uint64_t) tv.tv_sec * (uint64_t) 1000000 + (uint64_t) tv.tv_usec;
-    }
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -67,15 +45,14 @@ void _glfwInitTimerPOSIX(void)
     if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0)
     {
         _glfw.posix_time.monotonic = GLFW_TRUE;
-        _glfw.posix_time.resolution = 1e-9;
+        _glfw.posix_time.frequency = 1000000000;
     }
     else
 #endif
     {
-        _glfw.posix_time.resolution = 1e-6;
+        _glfw.posix_time.monotonic = GLFW_FALSE;
+        _glfw.posix_time.frequency = 1000000;
     }
-
-    _glfw.posix_time.base = getRawTime();
 }
 
 
@@ -83,15 +60,26 @@ void _glfwInitTimerPOSIX(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-double _glfwPlatformGetTime(void)
+uint64_t _glfwPlatformGetTimerValue(void)
 {
-    return (double) (getRawTime() - _glfw.posix_time.base) *
-        _glfw.posix_time.resolution;
+#if defined(CLOCK_MONOTONIC)
+    if (_glfw.posix_time.monotonic)
+    {
+        struct timespec ts;
+        clock_gettime(CLOCK_MONOTONIC, &ts);
+        return (uint64_t) ts.tv_sec * (uint64_t) 1000000000 + (uint64_t) ts.tv_nsec;
+    }
+    else
+#endif
+    {
+        struct timeval tv;
+        gettimeofday(&tv, NULL);
+        return (uint64_t) tv.tv_sec * (uint64_t) 1000000 + (uint64_t) tv.tv_usec;
+    }
 }
 
-void _glfwPlatformSetTime(double time)
+uint64_t _glfwPlatformGetTimerFrequency(void)
 {
-    _glfw.posix_time.base = getRawTime() -
-        (uint64_t) (time / _glfw.posix_time.resolution);
+    return _glfw.posix_time.frequency;
 }
 

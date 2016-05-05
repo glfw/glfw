@@ -49,12 +49,10 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #include "posix_time.h"
 #include "linux_joystick.h"
 #include "xkb_unicode.h"
+#include "egl_context.h"
 
-#if defined(_GLFW_EGL)
- #include "egl_context.h"
-#else
- #error "The Wayland backend depends on EGL platform support"
-#endif
+#include "wayland-relative-pointer-unstable-v1-client-protocol.h"
+#include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)
@@ -68,6 +66,9 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWayland wl
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorWayland  wl
 
+#define _GLFW_PLATFORM_CONTEXT_STATE
+#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
+
 
 // Wayland-specific video mode data
 //
@@ -80,6 +81,7 @@ typedef struct _GLFWwindowWayland
 {
     int                         width, height;
     GLFWbool                    visible;
+    GLFWbool                    maximized;
     struct wl_surface*          surface;
     struct wl_egl_window*       native;
     struct wl_shell_surface*    shell_surface;
@@ -88,6 +90,8 @@ typedef struct _GLFWwindowWayland
     _GLFWcursor*                currentCursor;
     double                      cursorPosX, cursorPosY;
 
+    char*                       title;
+
     // We need to track the monitors the window spans on to calculate the
     // optimal scaling factor.
     int                         scale;
@@ -95,6 +99,10 @@ typedef struct _GLFWwindowWayland
     int                         monitorsCount;
     int                         monitorsSize;
 
+    struct {
+        struct zwp_relative_pointer_v1*    relativePointer;
+        struct zwp_locked_pointer_v1*      lockedPointer;
+    } pointerLock;
 } _GLFWwindowWayland;
 
 
@@ -110,6 +118,8 @@ typedef struct _GLFWlibraryWayland
     struct wl_seat*             seat;
     struct wl_pointer*          pointer;
     struct wl_keyboard*         keyboard;
+    struct zwp_relative_pointer_manager_v1* relativePointerManager;
+    struct zwp_pointer_constraints_v1*      pointerConstraints;
 
     int                         wl_compositor_version;
 

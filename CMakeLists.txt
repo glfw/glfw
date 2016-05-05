@@ -1,3 +1,5 @@
+set(CMAKE_LEGACY_CYGWIN_WIN32 OFF)
+
 project(GLFW C)
 
 cmake_minimum_required(VERSION 2.8.12)
@@ -33,13 +35,11 @@ if (APPLE)
     option(GLFW_USE_CHDIR "Make glfwInit chdir to Contents/Resources" ON)
     option(GLFW_USE_MENUBAR "Populate the menu bar on first window creation" ON)
     option(GLFW_USE_RETINA "Use the full resolution of Retina displays" ON)
-else()
-    option(GLFW_USE_EGL "Use EGL for context creation" OFF)
 endif()
 
 if (UNIX AND NOT APPLE)
-    option(GLFW_USE_WAYLAND "Use Wayland for context creation (implies EGL as well)" OFF)
-    option(GLFW_USE_MIR     "Use Mir for context creation (implies EGL as well)" OFF)
+    option(GLFW_USE_WAYLAND "Use Wayland for window creation" OFF)
+    option(GLFW_USE_MIR     "Use Mir for window creation" OFF)
 endif()
 
 if (MSVC)
@@ -57,12 +57,6 @@ else()
     set(GLFW_LIB_NAME glfw3)
 endif()
 
-if (GLFW_USE_WAYLAND)
-    set(GLFW_USE_EGL ON)
-elseif (GLFW_USE_MIR)
-    set(GLFW_USE_EGL ON)
-endif()
-
 set(CMAKE_MODULE_PATH "${GLFW_SOURCE_DIR}/CMake/modules")
 
 find_package(Threads REQUIRED)
@@ -71,10 +65,6 @@ find_package(Vulkan)
 if (GLFW_BUILD_DOCS)
     set(DOXYGEN_SKIP_DOT TRUE)
     find_package(Doxygen)
-
-    if (GLFW_DOCUMENT_INTERNALS)
-        set(GLFW_INTERNAL_DOCS "${GLFW_SOURCE_DIR}/src/internal.h ${GLFW_SOURCE_DIR}/docs/internal.dox")
-    endif()
 endif()
 
 #--------------------------------------------------------------------
@@ -131,19 +121,9 @@ endif()
 if (WIN32)
     set(_GLFW_WIN32 1)
     message(STATUS "Using Win32 for window creation")
-
-    if (GLFW_USE_EGL)
-        set(_GLFW_EGL 1)
-        message(STATUS "Using EGL for context creation")
-    else()
-        set(_GLFW_WGL 1)
-        message(STATUS "Using WGL for context creation")
-    endif()
 elseif (APPLE)
     set(_GLFW_COCOA 1)
     message(STATUS "Using Cocoa for window creation")
-    set(_GLFW_NSGL 1)
-    message(STATUS "Using NSGL for context creation")
 elseif (UNIX)
     if (GLFW_USE_WAYLAND)
         set(_GLFW_WAYLAND 1)
@@ -154,14 +134,6 @@ elseif (UNIX)
     else()
         set(_GLFW_X11 1)
         message(STATUS "Using X11 for window creation")
-    endif()
-
-    if (GLFW_USE_EGL)
-        set(_GLFW_EGL 1)
-        message(STATUS "Using EGL for context creation")
-    else()
-        set(_GLFW_GLX 1)
-        message(STATUS "Using GLX for context creation")
     endif()
 else()
     message(FATAL_ERROR "No supported platform was detected")
@@ -234,21 +206,6 @@ if (_GLFW_X11)
     list(APPEND glfw_LIBRARIES "${X11_Xinerama_LIB}")
     list(APPEND glfw_PKG_DEPS "xinerama")
 
-    # Check for XInput (high-resolution cursor motion)
-    if (X11_Xinput_FOUND)
-        list(APPEND glfw_INCLUDE_DIRS "${X11_Xinput_INCLUDE_PATH}")
-        list(APPEND glfw_PKG_DEPS "xi")
-
-        if (X11_Xinput_LIB)
-            list(APPEND glfw_LIBRARIES "${X11_Xinput_LIB}")
-        else()
-            # Backwards compatibility (bug in CMake 2.8.7)
-            list(APPEND glfw_LIBRARIES Xi)
-        endif()
-
-        set(_GLFW_HAS_XINPUT TRUE)
-    endif()
-
     # Check for Xf86VidMode (fallback gamma control)
     if (X11_xf86vmode_FOUND)
         list(APPEND glfw_INCLUDE_DIRS "${X11_xf86vmode_INCLUDE_PATH}")
@@ -286,11 +243,17 @@ endif()
 # Use Wayland for window creation
 #--------------------------------------------------------------------
 if (_GLFW_WAYLAND)
+    find_package(ECM REQUIRED NO_MODULE)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
+
     find_package(Wayland REQUIRED)
+    find_package(WaylandScanner REQUIRED)
+    find_package(WaylandProtocols 1.1 REQUIRED)
+
     list(APPEND glfw_PKG_DEPS "wayland-egl")
 
-    list(APPEND glfw_INCLUDE_DIRS "${WAYLAND_INCLUDE_DIR}")
-    list(APPEND glfw_LIBRARIES "${WAYLAND_LIBRARIES}" "${CMAKE_THREAD_LIBS_INIT}")
+    list(APPEND glfw_INCLUDE_DIRS "${Wayland_INCLUDE_DIR}")
+    list(APPEND glfw_LIBRARIES "${Wayland_LIBRARIES}" "${CMAKE_THREAD_LIBS_INIT}")
 
     find_package(XKBCommon REQUIRED)
     list(APPEND glfw_PKG_DEPS "xkbcommon")
@@ -317,7 +280,7 @@ endif()
 #--------------------------------------------------------------------
 # Use Cocoa for window creation and NSOpenGL for context creation
 #--------------------------------------------------------------------
-if (_GLFW_COCOA AND _GLFW_NSGL)
+if (_GLFW_COCOA)
 
     if (GLFW_USE_MENUBAR)
         set(_GLFW_USE_MENUBAR 1)
@@ -377,10 +340,6 @@ configure_package_config_file(src/glfw3Config.cmake.in
 write_basic_package_version_file(src/glfw3ConfigVersion.cmake
                                  VERSION ${GLFW_VERSION_FULL}
                                  COMPATIBILITY SameMajorVersion)
-
-if (GLFW_BUILD_DOCS)
-    configure_file(docs/Doxyfile.in docs/Doxyfile @ONLY)
-endif()
 
 configure_file(src/glfw_config.h.in src/glfw_config.h @ONLY)
 

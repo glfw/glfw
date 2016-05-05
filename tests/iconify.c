@@ -36,6 +36,8 @@
 
 #include "getopt.h"
 
+static int windowed_xpos, windowed_ypos, windowed_width, windowed_height;
+
 static void usage(void)
 {
     printf("Usage: iconify [-h] [-f [-a] [-n]]\n");
@@ -62,12 +64,47 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
     switch (key)
     {
-        case GLFW_KEY_SPACE:
+        case GLFW_KEY_I:
             glfwIconifyWindow(window);
+            break;
+        case GLFW_KEY_M:
+            glfwMaximizeWindow(window);
+            break;
+        case GLFW_KEY_R:
+            glfwRestoreWindow(window);
             break;
         case GLFW_KEY_ESCAPE:
             glfwSetWindowShouldClose(window, GLFW_TRUE);
             break;
+        case GLFW_KEY_F11:
+        case GLFW_KEY_ENTER:
+        {
+            if (mods != GLFW_MOD_ALT)
+                return;
+
+            if (glfwGetWindowMonitor(window))
+            {
+                glfwSetWindowMonitor(window, NULL,
+                                     windowed_xpos, windowed_ypos,
+                                     windowed_width, windowed_height,
+                                     0);
+            }
+            else
+            {
+                GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+                if (monitor)
+                {
+                    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+                    glfwGetWindowPos(window, &windowed_xpos, &windowed_ypos);
+                    glfwGetWindowSize(window, &windowed_width, &windowed_height);
+                    glfwSetWindowMonitor(window, monitor,
+                                         0, 0, mode->width, mode->height,
+                                         mode->refreshRate);
+                }
+            }
+
+            break;
+        }
     }
 }
 
@@ -240,7 +277,7 @@ int main(int argc, char** argv)
 
     for (;;)
     {
-        glfwPollEvents();
+        glfwWaitEvents();
 
         for (i = 0;  i < window_count;  i++)
         {

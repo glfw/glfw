@@ -108,7 +108,6 @@ typedef void (*PFNGLXDESTROYWINDOWPROC)(Display*,GLXWindow);
 #define glXCreateWindow _glfw.glx.CreateWindow
 #define glXDestroyWindow _glfw.glx.DestroyWindow
 
-#define _GLFW_PLATFORM_FBCONFIG                 GLXFBConfig     glx
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextGLX glx
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryGLX glx
 

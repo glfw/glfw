@@ -1,16 +1,19 @@
 /*!
 
-@page context Context guide
+@page context_guide Context guide
 
 @tableofcontents
 
 This guide introduces the OpenGL and OpenGL ES context related functions of
-GLFW.  There are also guides for the other areas of the GLFW API.
+GLFW.  For details on a specific function, see the
+[reference documentation](@ref context).  There are also guides for the other
+areas of the GLFW API.
 
- - @ref intro
- - @ref window
- - @ref monitor
- - @ref input
+ - @ref intro_guide
+ - @ref window_guide
+ - @ref vulkan_guide
+ - @ref monitor_guide
+ - @ref input_guide
 
 
 @section context_object Context objects
@@ -29,7 +32,7 @@ the `glfwinfo` test program.
 @note Vulkan does not have a context and the Vulkan instance is created via the
 Vulkan API itself.  If you will be using Vulkan to render to a window, disable
 context creation by setting the [GLFW_CLIENT_API](@ref window_hints_ctx) hint to
-`GLFW_NO_API`.  For more information, see the @ref vulkan.
+`GLFW_NO_API`.  For more information, see the @ref vulkan_guide.
 
 
 @subsection context_hints Context creation hints
@@ -174,9 +177,10 @@ python main.py --generator c --no-loader --out-path output
 @endcode
 
 The `--no-loader` option is added because GLFW already provides a function for
-loading OpenGL and OpenGL ES function pointers and glad can call this instead of
-having to implement its own.  There are several other command-line options as
-well.  See the glad documentation for details.
+loading OpenGL and OpenGL ES function pointers, one that automatically uses the
+selected context creation API, and glad can call this instead of having to
+implement its own.  There are several other command-line options as well.  See
+the glad documentation for details.
 
 Add the generated `output/src/glad.c`, `output/include/glad/glad.h` and
 `output/include/KHR/khrplatform.h` files to your build.  Then you need to

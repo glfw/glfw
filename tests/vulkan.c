@@ -1732,7 +1732,7 @@ static void demo_init_vk(struct demo *demo) {
     }
 
     /* Look for instance extensions */
-    required_extensions = glfwGetRequiredInstanceExtensions((int*) &required_extension_count);
+    required_extensions = glfwGetRequiredInstanceExtensions(&required_extension_count);
     if (!required_extensions) {
         ERR_EXIT("glfwGetRequiredInstanceExtensions failed to find the "
                  "platform surface extensions.\n\nDo you have a compatible "
@@ -1778,7 +1778,7 @@ static void demo_init_vk(struct demo *demo) {
         .applicationVersion = 0,
         .pEngineName = APP_SHORT_NAME,
         .engineVersion = 0,
-        .apiVersion = VK_API_VERSION,
+        .apiVersion = VK_API_VERSION_1_0,
     };
     VkInstanceCreateInfo inst_info = {
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
@@ -2106,8 +2106,7 @@ static void demo_init_connection(struct demo *demo) {
     }
 
     if (!glfwVulkanSupported()) {
-        printf("Cannot find a compatible Vulkan installable client driver "
-               "(ICD).\nExiting ...\n");
+        printf("GLFW failed to find the Vulkan loader.\nExiting ...\n");
         fflush(stdout);
         exit(1);
     }

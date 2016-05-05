@@ -28,21 +28,6 @@
 #include "internal.h"
 
 
-// Return raw time
-//
-static unsigned __int64 getRawTime(void)
-{
-    if (_glfw.win32_time.hasPC)
-    {
-        unsigned __int64 time;
-        QueryPerformanceCounter((LARGE_INTEGER*) &time);
-        return time;
-    }
-    else
-        return (unsigned __int64) _glfw_timeGetTime();
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -51,20 +36,18 @@ static unsigned __int64 getRawTime(void)
 //
 void _glfwInitTimerWin32(void)
 {
-    unsigned __int64 frequency;
+    uint64_t frequency;
 
     if (QueryPerformanceFrequency((LARGE_INTEGER*) &frequency))
     {
         _glfw.win32_time.hasPC = GLFW_TRUE;
-        _glfw.win32_time.resolution = 1.0 / (double) frequency;
+        _glfw.win32_time.frequency = frequency;
     }
     else
     {
         _glfw.win32_time.hasPC = GLFW_FALSE;
-        _glfw.win32_time.resolution = 0.001; // winmm resolution is 1 ms
+        _glfw.win32_time.frequency = 1000;
     }
-
-    _glfw.win32_time.base = getRawTime();
 }
 
 
@@ -72,15 +55,20 @@ void _glfwInitTimerWin32(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-double _glfwPlatformGetTime(void)
+uint64_t _glfwPlatformGetTimerValue(void)
 {
-    return (double) (getRawTime() - _glfw.win32_time.base) *
-        _glfw.win32_time.resolution;
+    if (_glfw.win32_time.hasPC)
+    {
+        uint64_t value;
+        QueryPerformanceCounter((LARGE_INTEGER*) &value);
+        return value;
+    }
+    else
+        return (uint64_t) _glfw_timeGetTime();
 }
 
-void _glfwPlatformSetTime(double time)
+uint64_t _glfwPlatformGetTimerFrequency(void)
 {
-    _glfw.win32_time.base = getRawTime() -
-        (unsigned __int64) (time / _glfw.win32_time.resolution);
+    return _glfw.win32_time.frequency;
 }
 

@@ -47,11 +47,6 @@
 // The Xinerama extension provides legacy monitor indices
 #include <X11/extensions/Xinerama.h>
 
-#if defined(_GLFW_HAS_XINPUT)
- // The XInput2 extension provides improved input events
- #include <X11/extensions/XInput2.h>
-#endif
-
 #if defined(_GLFW_HAS_XF86VM)
  // The Xf86VidMode extension provides fallback gamma control
  #include <X11/extensions/xf86vmode.h>
@@ -92,20 +87,15 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)(Vk
 #include "posix_time.h"
 #include "linux_joystick.h"
 #include "xkb_unicode.h"
-
-#if defined(_GLFW_GLX)
- #include "glx_context.h"
-#elif defined(_GLFW_EGL)
- #define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->x11.handle)
- #define _GLFW_EGL_NATIVE_DISPLAY ((EGLNativeDisplayType) _glfw.x11.display)
- #include "egl_context.h"
-#else
- #error "No supported context creation API selected"
-#endif
+#include "glx_context.h"
+#include "egl_context.h"
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)
 #define _glfw_dlsym(handle, name) dlsym(handle, name)
+
+#define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->x11.handle)
+#define _GLFW_EGL_NATIVE_DISPLAY ((EGLNativeDisplayType) _glfw.x11.display)
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  x11
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11
@@ -120,6 +110,8 @@ typedef struct _GLFWwindowX11
     Colormap        colormap;
     Window          handle;
     XIC             ic;
+
+    GLFWbool        overrideRedirect;
 
     // Cached position and size used to filter out duplicate events
     int             width, height;
@@ -170,11 +162,16 @@ typedef struct _GLFWlibraryX11
     Atom            WM_DELETE_WINDOW;
     Atom            NET_WM_NAME;
     Atom            NET_WM_ICON_NAME;
+    Atom            NET_WM_ICON;
     Atom            NET_WM_PID;
     Atom            NET_WM_PING;
+    Atom            NET_WM_WINDOW_TYPE;
+    Atom            NET_WM_WINDOW_TYPE_NORMAL;
     Atom            NET_WM_STATE;
     Atom            NET_WM_STATE_ABOVE;
     Atom            NET_WM_STATE_FULLSCREEN;
+    Atom            NET_WM_STATE_MAXIMIZED_VERT;
+    Atom            NET_WM_STATE_MAXIMIZED_HORZ;
     Atom            NET_WM_BYPASS_COMPOSITOR;
     Atom            NET_WM_FULLSCREEN_MONITORS;
     Atom            NET_ACTIVE_WINDOW;
@@ -247,17 +244,6 @@ typedef struct _GLFWlibraryX11
         void*       handle;
         XGETXCBCONNECTION_T XGetXCBConnection;
     } x11xcb;
-
-#if defined(_GLFW_HAS_XINPUT)
-    struct {
-        GLFWbool    available;
-        int         majorOpcode;
-        int         eventBase;
-        int         errorBase;
-        int         major;
-        int         minor;
-    } xi;
-#endif /*_GLFW_HAS_XINPUT*/
 
 #if defined(_GLFW_HAS_XF86VM)
     struct {

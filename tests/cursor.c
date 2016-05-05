@@ -195,6 +195,7 @@ int main(void)
     int i;
     GLFWwindow* window;
     GLFWcursor* star_cursors[CURSOR_FRAME_COUNT];
+    GLFWcursor* current_frame = NULL;
 
     glfwSetErrorCallback(error_callback);
 
@@ -279,11 +280,22 @@ int main(void)
         if (animate_cursor)
         {
             const int i = (int) (glfwGetTime() * 30.0) % CURSOR_FRAME_COUNT;
-            glfwSetCursor(window, star_cursors[i]);
+            if (current_frame != star_cursors[i])
+            {
+                glfwSetCursor(window, star_cursors[i]);
+                current_frame = star_cursors[i];
+            }
         }
+        else
+            current_frame = NULL;
 
         if (wait_events)
-            glfwWaitEvents();
+        {
+            if (animate_cursor)
+                glfwWaitEventsTimeout(1.0 / 30.0);
+            else
+                glfwWaitEvents();
+        }
         else
             glfwPollEvents();
 

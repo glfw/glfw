@@ -27,7 +27,6 @@
 #ifndef _glfw3_nsgl_context_h_
 #define _glfw3_nsgl_context_h_
 
-#define _GLFW_PLATFORM_FBCONFIG
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextNSGL nsgl
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryNSGL nsgl
 

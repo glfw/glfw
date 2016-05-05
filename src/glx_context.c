@@ -115,18 +115,18 @@ static GLFWbool chooseFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* result
         if (_glfw.glx.ARB_framebuffer_sRGB || _glfw.glx.EXT_framebuffer_sRGB)
             u->sRGB = getFBConfigAttrib(n, GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB);
 
-        u->glx = n;
+        u->handle = (uintptr_t) n;
         usableCount++;
     }
 
     closest = _glfwChooseFBConfig(desired, usableConfigs, usableCount);
     if (closest)
-        *result = closest->glx;
+        *result = (GLXFBConfig) closest->handle;
 
     XFree(nativeConfigs);
     free(usableConfigs);
 
-    return closest ? GLFW_TRUE : GLFW_FALSE;
+    return closest != NULL;
 }
 
 // Create the OpenGL context using legacy API
@@ -140,6 +140,96 @@ static GLXContext createLegacyContext(_GLFWwindow* window,
                                GLX_RGBA_TYPE,
                                share,
                                True);
+}
+
+static void makeContextCurrent(_GLFWwindow* window)
+{
+    if (window)
+    {
+        if (!glXMakeCurrent(_glfw.x11.display,
+                            window->context.glx.window,
+                            window->context.glx.handle))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "GLX: Failed to make context current");
+            return;
+        }
+    }
+    else
+    {
+        if (!glXMakeCurrent(_glfw.x11.display, None, NULL))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "GLX: Failed to clear current context");
+            return;
+        }
+    }
+
+    _glfwPlatformSetCurrentContext(window);
+}
+
+static void swapBuffers(_GLFWwindow* window)
+{
+    glXSwapBuffers(_glfw.x11.display, window->context.glx.window);
+}
+
+static void swapInterval(int interval)
+{
+    _GLFWwindow* window = _glfwPlatformGetCurrentContext();
+
+    if (_glfw.glx.EXT_swap_control)
+    {
+        _glfw.glx.SwapIntervalEXT(_glfw.x11.display,
+                                  window->context.glx.window,
+                                  interval);
+    }
+    else if (_glfw.glx.MESA_swap_control)
+        _glfw.glx.SwapIntervalMESA(interval);
+    else if (_glfw.glx.SGI_swap_control)
+    {
+        if (interval > 0)
+            _glfw.glx.SwapIntervalSGI(interval);
+    }
+}
+
+static int extensionSupported(const char* extension)
+{
+    const char* extensions =
+        glXQueryExtensionsString(_glfw.x11.display, _glfw.x11.screen);
+    if (extensions)
+    {
+        if (_glfwStringInExtensionString(extension, extensions))
+            return GLFW_TRUE;
+    }
+
+    return GLFW_FALSE;
+}
+
+static GLFWglproc getProcAddress(const char* procname)
+{
+    if (_glfw.glx.GetProcAddress)
+        return _glfw.glx.GetProcAddress((const GLubyte*) procname);
+    else if (_glfw.glx.GetProcAddressARB)
+        return _glfw.glx.GetProcAddressARB((const GLubyte*) procname);
+    else
+        return dlsym(_glfw.glx.handle, procname);
+}
+
+// Destroy the OpenGL context
+//
+static void destroyContext(_GLFWwindow* window)
+{
+    if (window->context.glx.window)
+    {
+        glXDestroyWindow(_glfw.x11.display, window->context.glx.window);
+        window->context.glx.window = None;
+    }
+
+    if (window->context.glx.handle)
+    {
+        glXDestroyContext(_glfw.x11.display, window->context.glx.handle);
+        window->context.glx.handle = NULL;
+    }
 }
 
 
@@ -162,7 +252,6 @@ GLFWbool _glfwInitGLX(void)
 #endif
         NULL
     };
-
 
     for (i = 0;  sonames[i];  i++)
     {
@@ -230,61 +319,61 @@ GLFWbool _glfwInitGLX(void)
         return GLFW_FALSE;
     }
 
-    if (_glfwPlatformExtensionSupported("GLX_EXT_swap_control"))
+    if (extensionSupported("GLX_EXT_swap_control"))
     {
         _glfw.glx.SwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC)
-            _glfwPlatformGetProcAddress("glXSwapIntervalEXT");
+            getProcAddress("glXSwapIntervalEXT");
 
         if (_glfw.glx.SwapIntervalEXT)
             _glfw.glx.EXT_swap_control = GLFW_TRUE;
     }
 
-    if (_glfwPlatformExtensionSupported("GLX_SGI_swap_control"))
+    if (extensionSupported("GLX_SGI_swap_control"))
     {
         _glfw.glx.SwapIntervalSGI = (PFNGLXSWAPINTERVALSGIPROC)
-            _glfwPlatformGetProcAddress("glXSwapIntervalSGI");
+            getProcAddress("glXSwapIntervalSGI");
 
         if (_glfw.glx.SwapIntervalSGI)
             _glfw.glx.SGI_swap_control = GLFW_TRUE;
     }
 
-    if (_glfwPlatformExtensionSupported("GLX_MESA_swap_control"))
+    if (extensionSupported("GLX_MESA_swap_control"))
     {
         _glfw.glx.SwapIntervalMESA = (PFNGLXSWAPINTERVALMESAPROC)
-            _glfwPlatformGetProcAddress("glXSwapIntervalMESA");
+            getProcAddress("glXSwapIntervalMESA");
 
         if (_glfw.glx.SwapIntervalMESA)
             _glfw.glx.MESA_swap_control = GLFW_TRUE;
     }
 
-    if (_glfwPlatformExtensionSupported("GLX_ARB_multisample"))
+    if (extensionSupported("GLX_ARB_multisample"))
         _glfw.glx.ARB_multisample = GLFW_TRUE;
 
-    if (_glfwPlatformExtensionSupported("GLX_ARB_framebuffer_sRGB"))
+    if (extensionSupported("GLX_ARB_framebuffer_sRGB"))
         _glfw.glx.ARB_framebuffer_sRGB = GLFW_TRUE;
 
-    if (_glfwPlatformExtensionSupported("GLX_EXT_framebuffer_sRGB"))
+    if (extensionSupported("GLX_EXT_framebuffer_sRGB"))
         _glfw.glx.EXT_framebuffer_sRGB = GLFW_TRUE;
 
-    if (_glfwPlatformExtensionSupported("GLX_ARB_create_context"))
+    if (extensionSupported("GLX_ARB_create_context"))
     {
         _glfw.glx.CreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC)
-            _glfwPlatformGetProcAddress("glXCreateContextAttribsARB");
+            getProcAddress("glXCreateContextAttribsARB");
 
         if (_glfw.glx.CreateContextAttribsARB)
             _glfw.glx.ARB_create_context = GLFW_TRUE;
     }
 
-    if (_glfwPlatformExtensionSupported("GLX_ARB_create_context_robustness"))
+    if (extensionSupported("GLX_ARB_create_context_robustness"))
         _glfw.glx.ARB_create_context_robustness = GLFW_TRUE;
 
-    if (_glfwPlatformExtensionSupported("GLX_ARB_create_context_profile"))
+    if (extensionSupported("GLX_ARB_create_context_profile"))
         _glfw.glx.ARB_create_context_profile = GLFW_TRUE;
 
-    if (_glfwPlatformExtensionSupported("GLX_EXT_create_context_es2_profile"))
+    if (extensionSupported("GLX_EXT_create_context_es2_profile"))
         _glfw.glx.EXT_create_context_es2_profile = GLFW_TRUE;
 
-    if (_glfwPlatformExtensionSupported("GLX_ARB_context_flush_control"))
+    if (extensionSupported("GLX_ARB_context_flush_control"))
         _glfw.glx.ARB_context_flush_control = GLFW_TRUE;
 
     return GLFW_TRUE;
@@ -331,7 +420,7 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    if (ctxconfig->api == GLFW_OPENGL_ES_API)
+    if (ctxconfig->client == GLFW_OPENGL_ES_API)
     {
         if (!_glfw.glx.ARB_create_context ||
             !_glfw.glx.ARB_create_context_profile ||
@@ -370,7 +459,7 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
     {
         int index = 0, mask = 0, flags = 0;
 
-        if (ctxconfig->api == GLFW_OPENGL_API)
+        if (ctxconfig->client == GLFW_OPENGL_API)
         {
             if (ctxconfig->forward)
                 flags |= GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
@@ -455,7 +544,7 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
         if (!window->context.glx.handle)
         {
             if (_glfw.x11.errorCode == _glfw.glx.errorBase + GLXBadProfileARB &&
-                ctxconfig->api == GLFW_OPENGL_API &&
+                ctxconfig->client == GLFW_OPENGL_API &&
                 ctxconfig->profile == GLFW_OPENGL_ANY_PROFILE &&
                 ctxconfig->forward == GLFW_FALSE)
             {
@@ -483,27 +572,17 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
+    window->context.makeContextCurrent = makeContextCurrent;
+    window->context.swapBuffers = swapBuffers;
+    window->context.swapInterval = swapInterval;
+    window->context.extensionSupported = extensionSupported;
+    window->context.getProcAddress = getProcAddress;
+    window->context.destroyContext = destroyContext;
+
     return GLFW_TRUE;
 }
 
 #undef setGLXattrib
-
-// Destroy the OpenGL context
-//
-void _glfwDestroyContextGLX(_GLFWwindow* window)
-{
-    if (window->context.glx.window)
-    {
-        glXDestroyWindow(_glfw.x11.display, window->context.glx.window);
-        window->context.glx.window = None;
-    }
-
-    if (window->context.glx.handle)
-    {
-        glXDestroyContext(_glfw.x11.display, window->context.glx.handle);
-        window->context.glx.handle = NULL;
-    }
-}
 
 // Returns the Visual and depth of the chosen GLXFBConfig
 //
@@ -538,72 +617,6 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWctxconfig* ctxconfig,
 
 
 //////////////////////////////////////////////////////////////////////////
-//////                       GLFW platform API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
-{
-    if (window)
-    {
-        glXMakeCurrent(_glfw.x11.display,
-                       window->context.glx.window,
-                       window->context.glx.handle);
-    }
-    else
-        glXMakeCurrent(_glfw.x11.display, None, NULL);
-
-    _glfwPlatformSetCurrentContext(window);
-}
-
-void _glfwPlatformSwapBuffers(_GLFWwindow* window)
-{
-    glXSwapBuffers(_glfw.x11.display, window->context.glx.window);
-}
-
-void _glfwPlatformSwapInterval(int interval)
-{
-    _GLFWwindow* window = _glfwPlatformGetCurrentContext();
-
-    if (_glfw.glx.EXT_swap_control)
-    {
-        _glfw.glx.SwapIntervalEXT(_glfw.x11.display,
-                                  window->context.glx.window,
-                                  interval);
-    }
-    else if (_glfw.glx.MESA_swap_control)
-        _glfw.glx.SwapIntervalMESA(interval);
-    else if (_glfw.glx.SGI_swap_control)
-    {
-        if (interval > 0)
-            _glfw.glx.SwapIntervalSGI(interval);
-    }
-}
-
-int _glfwPlatformExtensionSupported(const char* extension)
-{
-    const char* extensions =
-        glXQueryExtensionsString(_glfw.x11.display, _glfw.x11.screen);
-    if (extensions)
-    {
-        if (_glfwStringInExtensionString(extension, extensions))
-            return GLFW_TRUE;
-    }
-
-    return GLFW_FALSE;
-}
-
-GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
-{
-    if (_glfw.glx.GetProcAddress)
-        return _glfw.glx.GetProcAddress((const GLubyte*) procname);
-    else if (_glfw.glx.GetProcAddressARB)
-        return _glfw.glx.GetProcAddressARB((const GLubyte*) procname);
-    else
-        return dlsym(_glfw.glx.handle, procname);
-}
-
-
-//////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////
 
@@ -612,7 +625,7 @@ GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* handle)
     _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
-    if (window->context.api == GLFW_NO_API)
+    if (window->context.client == GLFW_NO_API)
     {
         _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
         return NULL;
@@ -626,7 +639,7 @@ GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* handle)
     _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(None);
 
-    if (window->context.api == GLFW_NO_API)
+    if (window->context.client == GLFW_NO_API)
     {
         _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
         return None;

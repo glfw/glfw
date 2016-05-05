@@ -174,6 +174,21 @@ static const struct wl_surface_listener surfaceListener = {
     handleLeave
 };
 
+// Makes the surface considered as XRGB instead of ARGB.
+static void setOpaqueRegion(_GLFWwindow* window)
+{
+    struct wl_region* region;
+
+    region = wl_compositor_create_region(_glfw.wl.compositor);
+    if (!region)
+        return;
+
+    wl_region_add(region, 0, 0, window->wl.width, window->wl.height);
+    wl_surface_set_opaque_region(window->wl.surface, region);
+    wl_surface_commit(window->wl.surface);
+    wl_region_destroy(region);
+}
+
 static GLFWbool createSurface(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig)
 {
@@ -196,6 +211,9 @@ static GLFWbool createSurface(_GLFWwindow* window,
     window->wl.width = wndconfig->width;
     window->wl.height = wndconfig->height;
     window->wl.scale = 1;
+
+    // TODO: make this optional once issue #197 is fixed.
+    setOpaqueRegion(window);
 
     return GLFW_TRUE;
 }
@@ -481,6 +499,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     window->wl.width = width;
     window->wl.height = height;
     wl_egl_window_resize(window->wl.native, scaledWidth, scaledHeight, 0, 0);
+    setOpaqueRegion(window);
     _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
 }
 

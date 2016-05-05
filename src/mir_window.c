@@ -709,11 +709,6 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
         mir_wait_for(mir_surface_configure_cursor(window->mir.surface, cursor->mir.conf));
         if (cursor->mir.custom_cursor)
         {
-            /* FIXME Bug https://bugs.launchpad.net/mir/+bug/1477285
-                     Requires a triple buffer swap to get the cursor buffer on top! (since mir is tripled buffered)
-            */
-            mir_buffer_stream_swap_buffers_sync(cursor->mir.custom_cursor);
-            mir_buffer_stream_swap_buffers_sync(cursor->mir.custom_cursor);
             mir_buffer_stream_swap_buffers_sync(cursor->mir.custom_cursor);
         }
     }

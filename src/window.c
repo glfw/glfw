@@ -527,11 +527,27 @@ GLFWAPI void glfwSetWindowSizeLimits(GLFWwindow* handle,
 
     _GLFW_REQUIRE_INIT();
 
-    if (minwidth < 0 || minheight < 0 ||
-        maxwidth < minwidth || maxheight < minheight)
+    if (minwidth != GLFW_DONT_CARE && minheight != GLFW_DONT_CARE)
     {
-        _glfwInputError(GLFW_INVALID_VALUE, "Invalid window size limits");
-        return;
+        if (minwidth < 0 || minheight < 0)
+        {
+            _glfwInputError(GLFW_INVALID_VALUE,
+                            "Invalid window minimum size %ix%i",
+                            minwidth, minheight);
+            return;
+        }
+    }
+
+    if (maxwidth != GLFW_DONT_CARE && maxheight != GLFW_DONT_CARE)
+    {
+        if (maxwidth < 0 || maxheight < 0 ||
+            maxwidth < minwidth || maxheight < minheight)
+        {
+            _glfwInputError(GLFW_INVALID_VALUE,
+                            "Invalid window maximum size %ix%i",
+                            maxwidth, maxheight);
+            return;
+        }
     }
 
     window->minwidth  = minwidth;
@@ -554,10 +570,15 @@ GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* handle, int numer, int denom)
 
     _GLFW_REQUIRE_INIT();
 
-    if (numer <= 0 || denom <= 0)
+    if (numer != GLFW_DONT_CARE && denom != GLFW_DONT_CARE)
     {
-        _glfwInputError(GLFW_INVALID_VALUE, "Invalid window aspect ratio");
-        return;
+        if (numer <= 0 || denom <= 0)
+        {
+            _glfwInputError(GLFW_INVALID_VALUE,
+                            "Invalid window aspect ratio %i:%i",
+                            numer, denom);
+            return;
+        }
     }
 
     window->numer = numer;

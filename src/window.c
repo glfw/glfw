@@ -737,6 +737,22 @@ GLFWAPI void glfwSetWindowMonitor(GLFWwindow* wh,
 
     _GLFW_REQUIRE_INIT();
 
+    if (width <= 0 || height <= 0)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE,
+                        "Invalid window size %ix%i",
+                        width, height);
+        return;
+    }
+
+    if (refreshRate < 0 && refreshRate != GLFW_DONT_CARE)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE,
+                        "Invalid refresh rate %i",
+                        refreshRate);
+        return;
+    }
+
     window->videoMode.width       = width;
     window->videoMode.height      = height;
     window->videoMode.refreshRate = refreshRate;

@@ -2434,7 +2434,8 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  or video mode.
  *  @param[in] height The desired height, in screen coordinates, of the client
  *  area or video mode.
- *  @param[in] refreshRate The desired refresh rate, in Hz, of the video mode.
+ *  @param[in] refreshRate The desired refresh rate, in Hz, of the video mode,
+ *  or `GLFW_DONT_CARE`.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.

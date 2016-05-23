@@ -28,6 +28,7 @@
 #include "internal.h"
 
 #include <assert.h>
+#include <float.h>
 #include <stdlib.h>
 
 // Internal key state used for sticky keys
@@ -301,7 +302,7 @@ GLFWAPI int glfwGetKey(GLFWwindow* handle, int key)
 
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_RELEASE);
 
-    if (key < 0 || key > GLFW_KEY_LAST)
+    if (key < GLFW_KEY_SPACE || key > GLFW_KEY_LAST)
     {
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid key %i", key);
         return GLFW_RELEASE;
@@ -324,7 +325,7 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* handle, int button)
 
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_RELEASE);
 
-    if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST)
+    if (button < GLFW_MOUSE_BUTTON_1 || button > GLFW_MOUSE_BUTTON_LAST)
     {
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid mouse button %i", button);
         return GLFW_RELEASE;
@@ -369,6 +370,15 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, double xpos, double ypos)
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT();
+
+    if (xpos != xpos || xpos < DBL_MIN || xpos > DBL_MAX ||
+        ypos != ypos || ypos < DBL_MIN || ypos > DBL_MAX)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE,
+                        "Invalid cursor position %fx%f",
+                        xpos, ypos);
+        return;
+    }
 
     if (_glfw.cursorWindow != window)
         return;
@@ -638,7 +648,6 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* handle, const char* string)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
     assert(window != NULL);
-
     assert(string != NULL);
 
     _GLFW_REQUIRE_INIT();

@@ -393,10 +393,7 @@ static GLFWbool createWindow(_GLFWwindow* window,
                              const _GLFWwndconfig* wndconfig,
                              Visual* visual, int depth)
 {
-    // Every window needs a colormap
-    // Create one based on the visual used by the current context
-    // TODO: Decouple this from context creation
-
+    // Create a colormap based on the visual used by the current context
     window->x11.colormap = XCreateColormap(_glfw.x11.display,
                                            _glfw.x11.root,
                                            visual,

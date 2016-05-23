@@ -56,6 +56,15 @@ typedef void* id;
 #define _GLFW_EGL_CONTEXT_STATE
 #define _GLFW_EGL_LIBRARY_CONTEXT_STATE
 
+// HIToolbox.framework pointer typedefs
+#define kTISPropertyUnicodeKeyLayoutData _glfw.ns.tis.kPropertyUnicodeKeyLayoutData
+typedef TISInputSourceRef (*PFN_TISCopyCurrentKeyboardLayoutInputSource)(void);
+#define TISCopyCurrentKeyboardLayoutInputSource _glfw.ns.tis.CopyCurrentKeyboardLayoutInputSource
+typedef void* (*PFN_TISGetInputSourceProperty)(TISInputSourceRef,CFStringRef);
+#define TISGetInputSourceProperty _glfw.ns.tis.GetInputSourceProperty
+typedef UInt8 (*PFN_LMGetKbdType)(void);
+#define LMGetKbdType _glfw.ns.tis.GetKbdType
+
 
 // Cocoa-specific per-window data
 //
@@ -88,6 +97,14 @@ typedef struct _GLFWlibraryNS
     short int           publicKeys[256];
     short int           nativeKeys[GLFW_KEY_LAST + 1];
     char*               clipboardString;
+
+    struct {
+        CFBundleRef     bundle;
+        PFN_TISCopyCurrentKeyboardLayoutInputSource CopyCurrentKeyboardLayoutInputSource;
+        PFN_TISGetInputSourceProperty GetInputSourceProperty;
+        PFN_LMGetKbdType GetKbdType;
+        CFStringRef     kPropertyUnicodeKeyLayoutData;
+    } tis;
 
 } _GLFWlibraryNS;
 

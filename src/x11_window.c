@@ -1149,7 +1149,7 @@ static void processEvent(XEvent *event)
             const int x = event->xmotion.x;
             const int y = event->xmotion.y;
 
-            if (x != window->x11.warpPosX || y != window->x11.warpPosY)
+            if (x != window->x11.warpCursorPosX || y != window->x11.warpCursorPosY)
             {
                 // The cursor was moved by something other than GLFW
 
@@ -1159,15 +1159,15 @@ static void processEvent(XEvent *event)
                         return;
 
                     _glfwInputCursorMotion(window,
-                                           x - window->x11.cursorPosX,
-                                           y - window->x11.cursorPosY);
+                                           x - window->x11.lastCursorPosX,
+                                           y - window->x11.lastCursorPosY);
                 }
                 else
                     _glfwInputCursorMotion(window, x, y);
             }
 
-            window->x11.cursorPosX = x;
-            window->x11.cursorPosY = y;
+            window->x11.lastCursorPosX = x;
+            window->x11.lastCursorPosY = y;
             return;
         }
 
@@ -2071,8 +2071,8 @@ void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
     // Store the new position so it can be recognized later
-    window->x11.warpPosX = (int) x;
-    window->x11.warpPosY = (int) y;
+    window->x11.warpCursorPosX = (int) x;
+    window->x11.warpCursorPosY = (int) y;
 
     XWarpPointer(_glfw.x11.display, None, window->x11.handle,
                  0,0,0,0, (int) x, (int) y);

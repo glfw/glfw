@@ -201,8 +201,8 @@ static void handlePointerButton(_GLFWwindow* window,
 static void handlePointerMotion(_GLFWwindow* window,
                                 const MirPointerEvent* pointer_event)
 {
-    int current_x = window->cursorPosX;
-    int current_y = window->cursorPosY;
+    int current_x = window->virtualCursorPosX;
+    int current_y = window->virtualCursorPosY;
     int x  = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_x);
     int y  = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_y);
     int dx = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_hscroll);

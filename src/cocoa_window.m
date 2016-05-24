@@ -423,8 +423,8 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         _glfwInputCursorMotion(window,
-                               [event deltaX] - window->ns.warpDeltaX,
-                               [event deltaY] - window->ns.warpDeltaY);
+                               [event deltaX] - window->ns.cursorWarpDeltaX,
+                               [event deltaY] - window->ns.cursorWarpDeltaY);
     }
     else
     {
@@ -434,8 +434,8 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         _glfwInputCursorMotion(window, pos.x, contentRect.size.height - pos.y);
     }
 
-    window->ns.warpDeltaX = 0;
-    window->ns.warpDeltaY = 0;
+    window->ns.cursorWarpDeltaX = 0;
+    window->ns.cursorWarpDeltaY = 0;
 }
 
 - (void)rightMouseDown:(NSEvent *)event
@@ -1402,8 +1402,8 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
     const NSRect contentRect = [window->ns.view frame];
     const NSPoint pos = [window->ns.object mouseLocationOutsideOfEventStream];
 
-    window->ns.warpDeltaX += x - pos.x;
-    window->ns.warpDeltaY += y - contentRect.size.height + pos.y;
+    window->ns.cursorWarpDeltaX += x - pos.x;
+    window->ns.cursorWarpDeltaY += y - contentRect.size.height + pos.y;
 
     if (window->monitor)
     {

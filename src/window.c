@@ -224,10 +224,12 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
         int width, height;
         _glfwPlatformGetWindowSize(window, &width, &height);
 
-        window->cursorPosX = width / 2;
-        window->cursorPosY = height / 2;
+        window->virtualCursorPosX = width / 2;
+        window->virtualCursorPosY = height / 2;
 
-        _glfwPlatformSetCursorPos(window, window->cursorPosX, window->cursorPosY);
+        _glfwPlatformSetCursorPos(window,
+                                  window->virtualCursorPosX,
+                                  window->virtualCursorPosY);
     }
     else
     {

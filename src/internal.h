@@ -359,13 +359,13 @@ struct _GLFWwindow
     int                 maxwidth, maxheight;
     int                 numer, denom;
 
-    // Window input state
     GLFWbool            stickyKeys;
     GLFWbool            stickyMouseButtons;
-    double              cursorPosX, cursorPosY;
     int                 cursorMode;
     char                mouseButtons[GLFW_MOUSE_BUTTON_LAST + 1];
     char                keys[GLFW_KEY_LAST + 1];
+    // Virtual cursor position when cursor is disabled
+    double              virtualCursorPosX, virtualCursorPosY;
 
     _GLFWcontext        context;
 
@@ -437,7 +437,8 @@ struct _GLFWlibrary
         int             refreshRate;
     } hints;
 
-    double              cursorPosX, cursorPosY;
+    // Where to place the cursor when re-enabled
+    double              restoreCursorPosX, restoreCursorPosY;
 
     _GLFWcursor*        cursorListHead;
 

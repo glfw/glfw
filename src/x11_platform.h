@@ -118,9 +118,9 @@ typedef struct _GLFWwindowX11
     int             xpos, ypos;
 
     // The last received cursor position, regardless of source
-    double          cursorPosX, cursorPosY;
+    double          lastCursorPosX, lastCursorPosY;
     // The last position the cursor was warped to by GLFW
-    int             warpPosX, warpPosY;
+    int             warpCursorPosX, warpCursorPosY;
 
     // The information from the last KeyPress event
     struct {

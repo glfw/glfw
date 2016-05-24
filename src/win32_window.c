@@ -572,14 +572,14 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     break;
 
                 _glfwInputCursorMotion(window,
-                                       x - window->win32.cursorPosX,
-                                       y - window->win32.cursorPosY);
+                                       x - window->win32.lastCursorPosX,
+                                       y - window->win32.lastCursorPosY);
             }
             else
                 _glfwInputCursorMotion(window, x, y);
 
-            window->win32.cursorPosX = x;
-            window->win32.cursorPosY = y;
+            window->win32.lastCursorPosX = x;
+            window->win32.lastCursorPosY = y;
 
             if (!window->win32.cursorTracked)
             {
@@ -1386,8 +1386,8 @@ void _glfwPlatformPollEvents(void)
 
             // NOTE: Re-center the cursor only if it has moved since the last
             //       call, to avoid breaking glfwWaitEvents with WM_MOUSEMOVE
-            if (window->win32.cursorPosX != width / 2 ||
-                window->win32.cursorPosY != height / 2)
+            if (window->win32.lastCursorPosX != width / 2 ||
+                window->win32.lastCursorPosY != height / 2)
             {
                 _glfwPlatformSetCursorPos(window, width / 2, height / 2);
             }
@@ -1435,8 +1435,8 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos)
     POINT pos = { (int) xpos, (int) ypos };
 
     // Store the new position so it can be recognized later
-    window->win32.cursorPosX = pos.x;
-    window->win32.cursorPosY = pos.y;
+    window->win32.lastCursorPosX = pos.x;
+    window->win32.lastCursorPosY = pos.y;
 
     ClientToScreen(window->win32.handle, &pos);
     SetCursorPos(pos.x, pos.y);

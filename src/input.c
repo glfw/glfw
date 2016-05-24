@@ -59,19 +59,19 @@ static void setCursorMode(_GLFWwindow* window, int newMode)
         if (oldMode == GLFW_CURSOR_DISABLED)
         {
             _glfwPlatformSetCursorPos(window,
-                                      _glfw.cursorPosX,
-                                      _glfw.cursorPosY);
+                                      _glfw.restoreCursorPosX,
+                                      _glfw.restoreCursorPosY);
         }
         else if (newMode == GLFW_CURSOR_DISABLED)
         {
             int width, height;
 
             _glfwPlatformGetCursorPos(window,
-                                      &_glfw.cursorPosX,
-                                      &_glfw.cursorPosY);
+                                      &_glfw.restoreCursorPosX,
+                                      &_glfw.restoreCursorPosY);
 
-            window->cursorPosX = _glfw.cursorPosX;
-            window->cursorPosY = _glfw.cursorPosY;
+            window->virtualCursorPosX = _glfw.restoreCursorPosX;
+            window->virtualCursorPosY = _glfw.restoreCursorPosY;
 
             _glfwPlatformGetWindowSize(window, &width, &height);
             _glfwPlatformSetCursorPos(window, width / 2, height / 2);
@@ -198,11 +198,11 @@ void _glfwInputCursorMotion(_GLFWwindow* window, double x, double y)
         if (x == 0.0 && y == 0.0)
             return;
 
-        window->cursorPosX += x;
-        window->cursorPosY += y;
+        window->virtualCursorPosX += x;
+        window->virtualCursorPosY += y;
 
-        x = window->cursorPosX;
-        y = window->cursorPosY;
+        x = window->virtualCursorPosX;
+        y = window->virtualCursorPosY;
     }
 
     if (window->callbacks.cursorPos)
@@ -356,9 +356,9 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* handle, double* xpos, double* ypos)
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         if (xpos)
-            *xpos = window->cursorPosX;
+            *xpos = window->virtualCursorPosX;
         if (ypos)
-            *ypos = window->cursorPosY;
+            *ypos = window->virtualCursorPosY;
     }
     else
         _glfwPlatformGetCursorPos(window, xpos, ypos);
@@ -386,8 +386,8 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, double xpos, double ypos)
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         // Only update the accumulated position if the cursor is disabled
-        window->cursorPosX = xpos;
-        window->cursorPosY = ypos;
+        window->virtualCursorPosX = xpos;
+        window->virtualCursorPosY = ypos;
     }
     else
     {

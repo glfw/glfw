@@ -200,6 +200,37 @@ static void createKeyTables(void)
     }
 }
 
+// Retrieve Unicode data for the current keyboard layout
+//
+static GLFWbool updateUnicodeDataNS(void)
+{
+    if (_glfw.ns.inputSource)
+    {
+        CFRelease(_glfw.ns.inputSource);
+        _glfw.ns.inputSource = NULL;
+        _glfw.ns.unicodeData = nil;
+    }
+
+    _glfw.ns.inputSource = TISCopyCurrentKeyboardLayoutInputSource();
+    if (!_glfw.ns.inputSource)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to retrieve keyboard layout input source");
+        return GLFW_FALSE;
+    }
+
+    _glfw.ns.unicodeData = TISGetInputSourceProperty(_glfw.ns.inputSource,
+                                                     kTISPropertyUnicodeKeyLayoutData);
+    if (!_glfw.ns.unicodeData)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to retrieve keyboard layout Unicode data");
+        return GLFW_FALSE;
+    }
+
+    return GLFW_TRUE;
+}
+
 // Load HIToolbox.framework and the TIS symbols we need from it
 // This works only because Cocoa has already loaded it properly
 //
@@ -216,6 +247,9 @@ static GLFWbool initializeTIS(void)
     CFStringRef* kPropertyUnicodeKeyLayoutData =
         CFBundleGetDataPointerForName(_glfw.ns.tis.bundle,
                                       CFSTR("kTISPropertyUnicodeKeyLayoutData"));
+    CFStringRef* kNotifySelectedKeyboardInputSourceChanged =
+        CFBundleGetDataPointerForName(_glfw.ns.tis.bundle,
+                                      CFSTR("kTISNotifySelectedKeyboardInputSourceChanged"));
     _glfw.ns.tis.CopyCurrentKeyboardLayoutInputSource =
         CFBundleGetFunctionPointerForName(_glfw.ns.tis.bundle,
                                           CFSTR("TISCopyCurrentKeyboardLayoutInputSource"));
@@ -227,6 +261,7 @@ static GLFWbool initializeTIS(void)
                                           CFSTR("LMGetKbdType"));
 
     if (!kPropertyUnicodeKeyLayoutData ||
+        !kNotifySelectedKeyboardInputSourceChanged ||
         !TISCopyCurrentKeyboardLayoutInputSource ||
         !TISGetInputSourceProperty ||
         !LMGetKbdType)
@@ -236,21 +271,25 @@ static GLFWbool initializeTIS(void)
         return GLFW_FALSE;
     }
 
-    _glfw.ns.tis.kPropertyUnicodeKeyLayoutData = *kPropertyUnicodeKeyLayoutData;
+    _glfw.ns.tis.kPropertyUnicodeKeyLayoutData =
+        *kPropertyUnicodeKeyLayoutData;
+    _glfw.ns.tis.kNotifySelectedKeyboardInputSourceChanged =
+        *kNotifySelectedKeyboardInputSourceChanged;
 
-    // TODO: Catch kTISNotifySelectedKeyboardInputSourceChanged and update
-
-    _glfw.ns.inputSource = TISCopyCurrentKeyboardLayoutInputSource();
-    if (!_glfw.ns.inputSource)
-        return GLFW_FALSE;
-
-    _glfw.ns.unicodeData = TISGetInputSourceProperty(_glfw.ns.inputSource,
-                                                     kTISPropertyUnicodeKeyLayoutData);
-    if (!_glfw.ns.unicodeData)
-        return GLFW_FALSE;
-
-    return GLFW_TRUE;
+    return updateUnicodeDataNS();
 }
+
+@interface GLFWLayoutListener : NSObject
+@end
+
+@implementation GLFWLayoutListener
+
+- (void)selectedKeyboardInputSourceChanged:(NSObject* )object
+{
+    updateUnicodeDataNS();
+}
+
+@end
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -260,6 +299,13 @@ static GLFWbool initializeTIS(void)
 int _glfwPlatformInit(void)
 {
     _glfw.ns.autoreleasePool = [[NSAutoreleasePool alloc] init];
+
+    _glfw.ns.listener = [[GLFWLayoutListener alloc] init];
+    [[NSDistributedNotificationCenter defaultCenter]
+        addObserver:_glfw.ns.listener
+           selector:@selector(selectedKeyboardInputSourceChanged:)
+               name:(__bridge NSString*)kTISNotifySelectedKeyboardInputSourceChanged
+             object:nil];
 
 #if defined(_GLFW_USE_CHDIR)
     changeToResourcesDirectory();
@@ -294,6 +340,7 @@ void _glfwPlatformTerminate(void)
     {
         CFRelease(_glfw.ns.inputSource);
         _glfw.ns.inputSource = NULL;
+        _glfw.ns.unicodeData = nil;
     }
 
     if (_glfw.ns.eventSource)
@@ -307,6 +354,16 @@ void _glfwPlatformTerminate(void)
         [NSApp setDelegate:nil];
         [_glfw.ns.delegate release];
         _glfw.ns.delegate = nil;
+    }
+
+    if (_glfw.ns.listener)
+    {
+        [[NSDistributedNotificationCenter defaultCenter]
+            removeObserver:_glfw.ns.listener
+                      name:(__bridge NSString*)kTISNotifySelectedKeyboardInputSourceChanged
+                    object:nil];
+        [_glfw.ns.listener release];
+        _glfw.ns.listener = nil;
     }
 
     [_glfw.ns.cursor release];

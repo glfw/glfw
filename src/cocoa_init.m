@@ -232,10 +232,10 @@ static GLFWbool updateUnicodeDataNS(void)
 }
 
 // Load HIToolbox.framework and the TIS symbols we need from it
-// This works only because Cocoa has already loaded it properly
 //
 static GLFWbool initializeTIS(void)
 {
+    // This works only because Cocoa has already loaded it properly
     _glfw.ns.tis.bundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.HIToolbox"));
     if (!_glfw.ns.tis.bundle)
     {

@@ -1066,7 +1066,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         releaseMonitor(window);
 
     if (window->context.client != GLFW_NO_API)
-        window->context.destroyContext(window);
+        window->context.destroy(window);
 
     [window->ns.object setDelegate:nil];
     [window->ns.delegate release];

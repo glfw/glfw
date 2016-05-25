@@ -395,7 +395,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     }
 
     if (window->context.client != GLFW_NO_API)
-        window->context.destroyContext(window);
+        window->context.destroy(window);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)

@@ -436,7 +436,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     }
 
     if (window->context.client != GLFW_NO_API)
-        window->context.destroyContext(window);
+        window->context.destroy(window);
 
     if (window->wl.native)
         wl_egl_window_destroy(window->wl.native);

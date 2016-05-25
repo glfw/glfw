@@ -576,11 +576,11 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
     if (previous)
     {
         if (!window || window->context.source != previous->context.source)
-            previous->context.makeContextCurrent(NULL);
+            previous->context.makeCurrent(NULL);
     }
 
     if (window)
-        window->context.makeContextCurrent(window);
+        window->context.makeCurrent(window);
 }
 
 GLFWAPI GLFWwindow* glfwGetCurrentContext(void)

@@ -1029,11 +1029,11 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                 // First we clear the current context (the one we just created)
                 // This is usually done by glfwDestroyWindow, but as we're not doing
                 // full GLFW window destruction, it's duplicated here
-                window->context.makeContextCurrent(NULL);
+                window->context.makeCurrent(NULL);
 
                 // Next destroy the Win32 window and WGL context (without resetting
                 // or destroying the GLFW window object)
-                window->context.destroyContext(window);
+                window->context.destroy(window);
                 destroyWindow(window);
 
                 // ...and then create them again, this time with better APIs
@@ -1069,7 +1069,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         releaseMonitor(window);
 
     if (window->context.client != GLFW_NO_API)
-        window->context.destroyContext(window);
+        window->context.destroy(window);
 
     destroyWindow(window);
 

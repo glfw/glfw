@@ -205,7 +205,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
 
     if (ctxconfig.client != GLFW_NO_API)
     {
-        window->context.makeContextCurrent(window);
+        window->context.makeCurrent(window);
 
         // Retrieve the actual (as opposed to requested) context attributes
         if (!_glfwRefreshContextAttribs(&ctxconfig))

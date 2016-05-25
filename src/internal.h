@@ -324,12 +324,12 @@ struct _GLFWcontext
     PFNGLGETINTEGERVPROC GetIntegerv;
     PFNGLGETSTRINGPROC  GetString;
 
-    _GLFWmakecontextcurrentfun  makeContextCurrent;
+    _GLFWmakecontextcurrentfun  makeCurrent;
     _GLFWswapbuffersfun         swapBuffers;
     _GLFWswapintervalfun        swapInterval;
     _GLFWextensionsupportedfun  extensionSupported;
     _GLFWgetprocaddressfun      getProcAddress;
-    _GLFWdestroycontextfun      destroyContext;
+    _GLFWdestroycontextfun      destroy;
 
     // This is defined in the context API's context.h
     _GLFW_PLATFORM_CONTEXT_STATE;
@@ -881,11 +881,11 @@ void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint, int mods, GLFWb
 
 /*! @brief Notifies shared code of a scroll event.
  *  @param[in] window The window that received the event.
- *  @param[in] x The scroll offset along the x-axis.
- *  @param[in] y The scroll offset along the y-axis.
+ *  @param[in] xoffset The scroll offset along the x-axis.
+ *  @param[in] yoffset The scroll offset along the y-axis.
  *  @ingroup event
  */
-void _glfwInputScroll(_GLFWwindow* window, double x, double y);
+void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset);
 
 /*! @brief Notifies shared code of a mouse button click event.
  *  @param[in] window The window that received the event.
@@ -897,13 +897,13 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
 
 /*! @brief Notifies shared code of a cursor motion event.
  *  @param[in] window The window that received the event.
- *  @param[in] x The new x-coordinate of the cursor, relative to the left edge
- *  of the client area of the window.
- *  @param[in] y The new y-coordinate of the cursor, relative to the top edge
+ *  @param[in] xpos The new x-coordinate of the cursor, relative to the left
+ *  edge of the client area of the window.
+ *  @param[in] ypos The new y-coordinate of the cursor, relative to the top edge
  *  of the client area of the window.
  *  @ingroup event
  */
-void _glfwInputCursorPos(_GLFWwindow* window, double x, double y);
+void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos);
 
 /*! @brief Notifies shared code of a cursor enter/leave event.
  *  @param[in] window The window that received the event.

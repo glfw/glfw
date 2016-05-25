@@ -576,12 +576,12 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         }
     }
 
-    window->context.makeContextCurrent = makeContextCurrent;
+    window->context.makeCurrent = makeContextCurrent;
     window->context.swapBuffers = swapBuffers;
     window->context.swapInterval = swapInterval;
     window->context.extensionSupported = extensionSupported;
     window->context.getProcAddress = getProcAddress;
-    window->context.destroyContext = destroyContext;
+    window->context.destroy = destroyContext;
 
     return GLFW_TRUE;
 }

@@ -784,9 +784,9 @@ static void handleRelativeMotion(void* data,
     if (window->cursorMode != GLFW_CURSOR_DISABLED)
         return;
 
-    _glfwInputCursorMotion(window,
-                           wl_fixed_to_double(dxUnaccel),
-                           wl_fixed_to_double(dyUnaccel));
+    _glfwInputCursorPos(window,
+                        window->virtualCursorPosX + wl_fixed_to_double(dxUnaccel),
+                        window->virtualCursorPosY + wl_fixed_to_double(dyUnaccel));
 }
 
 static const struct zwp_relative_pointer_v1_listener relativePointerListener = {

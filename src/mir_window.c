@@ -208,8 +208,7 @@ static void handlePointerMotion(_GLFWwindow* window,
     int dx = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_hscroll);
     int dy = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_vscroll);
 
-    if (current_x != x || current_y != y)
-      _glfwInputCursorMotion(window, x, y);
+    _glfwInputCursorPos(window, x, y);
     if (dx != 0 || dy != 0)
       _glfwInputScroll(window, dx, dy);
 }

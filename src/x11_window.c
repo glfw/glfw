@@ -387,6 +387,15 @@ static char** parseUriList(char* text, int* count)
     return paths;
 }
 
+// Centers the cursor over the window client area
+//
+static void centerCursor(_GLFWwindow* window)
+{
+    int width, height;
+    _glfwPlatformGetWindowSize(window, &width, &height);
+    _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
+}
+
 // Create the X11 window (and its colormap)
 //
 static GLFWbool createWindow(_GLFWwindow* window,
@@ -1158,12 +1167,15 @@ static void processEvent(XEvent *event)
                     if (_glfw.cursorWindow != window)
                         return;
 
-                    _glfwInputCursorMotion(window,
-                                           x - window->x11.lastCursorPosX,
-                                           y - window->x11.lastCursorPosY);
+                    const int dx = x - window->x11.lastCursorPosX;
+                    const int dy = y - window->x11.lastCursorPosY;
+
+                    _glfwInputCursorPos(window,
+                                        window->virtualCursorPosX + dx,
+                                        window->virtualCursorPosY + dy);
                 }
                 else
-                    _glfwInputCursorMotion(window, x, y);
+                    _glfwInputCursorPos(window, x, y);
             }
 
             window->x11.lastCursorPosX = x;
@@ -1265,7 +1277,7 @@ static void processEvent(XEvent *event)
                 int x, y;
 
                 _glfwPlatformGetWindowPos(window, &x, &y);
-                _glfwInputCursorMotion(window, absX - x, absY - y);
+                _glfwInputCursorPos(window, absX - x, absY - y);
 
                 // Reply that we are ready to copy the dragged data
                 XEvent reply;
@@ -1517,6 +1529,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         updateWindowMode(window);
         if (!acquireMonitor(window))
             return GLFW_FALSE;
+
+        centerCursor(window);
     }
 
     return GLFW_TRUE;
@@ -1999,11 +2013,7 @@ void _glfwPlatformPollEvents(void)
 
     _GLFWwindow* window = _glfw.cursorWindow;
     if (window && window->cursorMode == GLFW_CURSOR_DISABLED)
-    {
-        int width, height;
-        _glfwPlatformGetWindowSize(window, &width, &height);
-        _glfwPlatformSetCursorPos(window, width / 2, height / 2);
-    }
+        centerCursor(window);
 }
 
 void _glfwPlatformWaitEvents(void)
@@ -2082,31 +2092,35 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
     if (mode == GLFW_CURSOR_DISABLED)
     {
+        _glfwPlatformGetCursorPos(window,
+                                  &_glfw.x11.restoreCursorPosX,
+                                  &_glfw.x11.restoreCursorPosY);
+        centerCursor(window);
         XGrabPointer(_glfw.x11.display, window->x11.handle, True,
                      ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
                      GrabModeAsync, GrabModeAsync,
                      window->x11.handle, _glfw.x11.cursor, CurrentTime);
     }
-    else
+    else if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         XUngrabPointer(_glfw.x11.display, CurrentTime);
+        _glfwPlatformSetCursorPos(window,
+                                  _glfw.x11.restoreCursorPosX,
+                                  _glfw.x11.restoreCursorPosY);
+    }
 
-        if (mode == GLFW_CURSOR_NORMAL)
-        {
-            if (window->cursor)
-            {
-                XDefineCursor(_glfw.x11.display, window->x11.handle,
-                              window->cursor->x11.handle);
-            }
-            else
-                XUndefineCursor(_glfw.x11.display, window->x11.handle);
-        }
-        else
+    if (mode == GLFW_CURSOR_NORMAL)
+    {
+        if (window->cursor)
         {
             XDefineCursor(_glfw.x11.display, window->x11.handle,
-                          _glfw.x11.cursor);
+                          window->cursor->x11.handle);
         }
+        else
+            XUndefineCursor(_glfw.x11.display, window->x11.handle);
     }
+    else
+        XDefineCursor(_glfw.x11.display, window->x11.handle, _glfw.x11.cursor);
 }
 
 const char* _glfwPlatformGetKeyName(int key, int scancode)

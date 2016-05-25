@@ -85,6 +85,21 @@ static void centerCursor(_GLFWwindow *window)
     _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
 }
 
+// Updates the cursor image according to the specified cursor mode
+//
+static void updateCursorImage(_GLFWwindow* window, int mode)
+{
+    if (mode == GLFW_CURSOR_NORMAL)
+    {
+        if (window->cursor)
+            [(NSCursor*) window->cursor->ns.object set];
+        else
+            [[NSCursor arrowCursor] set];
+    }
+    else
+        [(NSCursor*) _glfw.ns.cursor set];
+}
+
 // Transforms the specified y-coordinate between the CG display and NS screen
 // coordinate systems
 //
@@ -394,7 +409,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)cursorUpdate:(NSEvent *)event
 {
-    _glfwPlatformSetCursorMode(window, window->cursorMode);
+    updateCursorImage(window, window->cursorMode);
 }
 
 - (void)mouseDown:(NSEvent *)event
@@ -422,16 +437,19 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 {
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
-        _glfwInputCursorMotion(window,
-                               [event deltaX] - window->ns.cursorWarpDeltaX,
-                               [event deltaY] - window->ns.cursorWarpDeltaY);
+        const double dx = [event deltaX] - window->ns.cursorWarpDeltaX;
+        const double dy = [event deltaY] - window->ns.cursorWarpDeltaY;
+
+        _glfwInputCursorPos(window,
+                            window->virtualCursorPosX + dx,
+                            window->virtualCursorPosY + dy);
     }
     else
     {
         const NSRect contentRect = [window->ns.view frame];
         const NSPoint pos = [event locationInWindow];
 
-        _glfwInputCursorMotion(window, pos.x, contentRect.size.height - pos.y);
+        _glfwInputCursorPos(window, pos.x, contentRect.size.height - pos.y);
     }
 
     window->ns.cursorWarpDeltaX = 0;
@@ -607,9 +625,9 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     NSArray* files = [pasteboard propertyListForType:NSFilenamesPboardType];
 
     const NSRect contentRect = [window->ns.view frame];
-    _glfwInputCursorMotion(window,
-                           [sender draggingLocation].x,
-                           contentRect.size.height - [sender draggingLocation].y);
+    _glfwInputCursorPos(window,
+                        [sender draggingLocation].x,
+                        contentRect.size.height - [sender draggingLocation].y);
 
     const int count = [files count];
     if (count)
@@ -1033,6 +1051,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         _glfwPlatformFocusWindow(window);
         if (!acquireMonitor(window))
             return GLFW_FALSE;
+
+        centerCursor(window);
     }
 
     return GLFW_TRUE;
@@ -1397,7 +1417,7 @@ void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
-    _glfwPlatformSetCursorMode(window, window->cursorMode);
+    updateCursorImage(window, window->cursorMode);
 
     const NSRect contentRect = [window->ns.view frame];
     const NSPoint pos = [window->ns.object mouseLocationOutsideOfEventStream];
@@ -1423,20 +1443,23 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
-    if (mode == GLFW_CURSOR_NORMAL)
-    {
-        if (window->cursor)
-            [(NSCursor*) window->cursor->ns.object set];
-        else
-            [[NSCursor arrowCursor] set];
-    }
-    else
-        [(NSCursor*) _glfw.ns.cursor set];
-
     if (mode == GLFW_CURSOR_DISABLED)
+    {
+        _glfwPlatformGetCursorPos(window,
+                                  &_glfw.ns.restoreCursorPosX,
+                                  &_glfw.ns.restoreCursorPosY);
+        centerCursor(window);
         CGAssociateMouseAndMouseCursorPosition(false);
-    else
+    }
+    else if (window->cursorMode == GLFW_CURSOR_DISABLED)
+    {
         CGAssociateMouseAndMouseCursorPosition(true);
+        _glfwPlatformSetCursorPos(window,
+                                  _glfw.ns.restoreCursorPosX,
+                                  _glfw.ns.restoreCursorPosY);
+    }
+
+    updateCursorImage(window, mode);
 }
 
 const char* _glfwPlatformGetKeyName(int key, int scancode)

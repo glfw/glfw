@@ -99,6 +99,8 @@ typedef struct _GLFWlibraryNS
     short int           publicKeys[256];
     short int           nativeKeys[GLFW_KEY_LAST + 1];
     char*               clipboardString;
+    // Where to place the cursor when re-enabled
+    double              restoreCursorPosX, restoreCursorPosY;
 
     struct {
         CFBundleRef     bundle;

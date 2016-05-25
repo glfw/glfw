@@ -219,19 +219,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
         glfwMakeContextCurrent((GLFWwindow*) previous);
     }
 
-    if (window->monitor)
-    {
-        int width, height;
-        _glfwPlatformGetWindowSize(window, &width, &height);
-
-        window->virtualCursorPosX = width / 2;
-        window->virtualCursorPosY = height / 2;
-
-        _glfwPlatformSetCursorPos(window,
-                                  window->virtualCursorPosX,
-                                  window->virtualCursorPosY);
-    }
-    else
+    if (!window->monitor)
     {
         if (wndconfig.visible)
         {

@@ -252,6 +252,8 @@ typedef struct _GLFWlibraryWin32
     char                keyName[64];
     short int           publicKeys[512];
     short int           nativeKeys[GLFW_KEY_LAST + 1];
+    // Where to place the cursor when re-enabled
+    double              restoreCursorPosX, restoreCursorPosY;
 
     struct {
         HINSTANCE       instance;

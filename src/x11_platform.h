@@ -118,7 +118,7 @@ typedef struct _GLFWwindowX11
     int             xpos, ypos;
 
     // The last received cursor position, regardless of source
-    double          lastCursorPosX, lastCursorPosY;
+    int             lastCursorPosX, lastCursorPosY;
     // The last position the cursor was warped to by GLFW
     int             warpCursorPosX, warpCursorPosY;
 
@@ -155,6 +155,8 @@ typedef struct _GLFWlibraryX11
     short int       publicKeys[256];
     // GLFW key to X11 keycode LUT
     short int       nativeKeys[GLFW_KEY_LAST + 1];
+    // Where to place the cursor when re-enabled
+    double          restoreCursorPosX, restoreCursorPosY;
 
     // Window manager atoms
     Atom            WM_PROTOCOLS;

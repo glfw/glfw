@@ -2296,6 +2296,9 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow* window);
  *
  *  @param[in] window The window to maximize.
  *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
  *

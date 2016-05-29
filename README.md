@@ -9,7 +9,15 @@ GLFW is a free, Open Source, multi-platform library for OpenGL, OpenGL ES and
 Vulkan application development.  It provides a simple, platform-independent API
 for creating windows, contexts and surfaces, reading input, handling events, etc.
 
-Version 3.2 is _not yet described_.
+Version 3.2 adds support for Vulkan surface creation, window mode switching,
+window maximization, window input focus control, window size and aspect ratio
+limits, human-readable key names, window icons, joystick connection events,
+XInput and DirectInput joystick input, event waiting with timeout, 64-bit
+integer raw timer, context-less window creation, error-less contexts via
+`GL_KHR_no_error` (where available), run-time context creation API selection,
+Windows 8.1 per-monitor DPI and the CMake config-file package system, adds
+simpler build-time configuration, improved documentation and fixes for a large
+number of bugs that together affect all supported platforms.
 
 If you are new to GLFW, you may find the
 [tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW
@@ -91,10 +99,10 @@ does not find Doxygen, the documentation will not be generated.
  - Added `glfwSetJoystickCallback` and `GLFWjoystickfun` for joystick connection
    and disconnection events
  - Added `GLFW_NO_API` for creating window without contexts
- - Added `GLFW_CONTEXT_NO_ERROR` context hint for `GL_KHR_no_error` support
  - Added `GLFW_INCLUDE_VULKAN` for including the Vulkan header
  - Added `GLFW_CONTEXT_CREATION_API`, `GLFW_NATIVE_CONTEXT_API` and
    `GLFW_EGL_CONTEXT_API` for run-time context creation API selection
+ - Added `GLFW_CONTEXT_NO_ERROR` context hint for `GL_KHR_no_error` support
  - Added `GLFW_TRUE` and `GLFW_FALSE` as client API independent boolean values
  - Added icons to examples on Windows and OS X
  - Relaxed rules for native access header macros

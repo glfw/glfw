@@ -227,7 +227,7 @@ static void centerCursor(_GLFWwindow* window)
     _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
 }
 
-// 
+// Returns whether the cursor is in the client area of the specified window
 //
 static GLFWbool cursorInClientArea(_GLFWwindow* window)
 {
@@ -247,11 +247,11 @@ static GLFWbool cursorInClientArea(_GLFWwindow* window)
     return PtInRect(&area, pos);
 }
 
-// Updates the cursor image according to the specified cursor mode
+// Updates the cursor image according to its cursor mode
 //
-static void updateCursorImage(_GLFWwindow* window, int mode)
+static void updateCursorImage(_GLFWwindow* window)
 {
-    if (mode == GLFW_CURSOR_NORMAL)
+    if (window->cursorMode == GLFW_CURSOR_NORMAL)
     {
         if (window->cursor)
             SetCursor(window->cursor->win32.handle);
@@ -259,12 +259,7 @@ static void updateCursorImage(_GLFWwindow* window, int mode)
             SetCursor(LoadCursorW(NULL, IDC_ARROW));
     }
     else
-    {
-        if (mode == GLFW_CURSOR_DISABLED && _glfw.cursorWindow != window)
-            SetCursor(LoadCursorW(NULL, IDC_ARROW));
-        else
-            SetCursor(NULL);
-    }
+        SetCursor(NULL);
 }
 
 // Updates the cursor clip rect
@@ -430,7 +425,7 @@ static void releaseMonitor(_GLFWwindow* window)
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                                    WPARAM wParam, LPARAM lParam)
 {
-    _GLFWwindow* window = (_GLFWwindow*) GetPropW(hWnd, L"GLFW");
+    _GLFWwindow* window = GetPropW(hWnd, L"GLFW");
     if (!window)
     {
         // This is the message handling for the hidden helper window
@@ -623,7 +618,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
             {
-                if (_glfw.cursorWindow != window)
+                if (_glfw.win32.disabledCursorWindow != window)
                     break;
 
                 const int dx = x - window->win32.lastCursorPosX;
@@ -684,11 +679,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 window->win32.iconified &&
                 (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED);
 
-            if (_glfw.cursorWindow == window)
-            {
-                if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                    updateClipRect(window);
-            }
+            if (_glfw.win32.disabledCursorWindow == window)
+                updateClipRect(window);
 
             if (iconified)
                 _glfwInputWindowIconify(window, GLFW_TRUE);
@@ -716,11 +708,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOVE:
         {
-            if (_glfw.cursorWindow == window)
-            {
-                if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                    updateClipRect(window);
-            }
+            if (_glfw.win32.disabledCursorWindow == window)
+                updateClipRect(window);
 
             // NOTE: This cannot use LOWORD/HIWORD recommended by MSDN, as
             // those macros do not handle negative window positions correctly
@@ -785,7 +774,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         {
             if (LOWORD(lParam) == HTCLIENT)
             {
-                updateCursorImage(window, window->cursorMode);
+                updateCursorImage(window);
                 return TRUE;
             }
 
@@ -925,6 +914,9 @@ static int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
 //
 static void destroyWindow(_GLFWwindow* window)
 {
+    if (_glfw.win32.disabledCursorWindow == window)
+        _glfw.win32.disabledCursorWindow = NULL;
+
     if (window->win32.handle)
     {
         RemovePropW(window->win32.handle, L"GLFW");
@@ -1384,6 +1376,8 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 void _glfwPlatformPollEvents(void)
 {
     MSG msg;
+    HWND handle;
+    _GLFWwindow* window;
 
     while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
     {
@@ -1393,7 +1387,7 @@ void _glfwPlatformPollEvents(void)
             // While GLFW does not itself post WM_QUIT, other processes may post
             // it to this one, for example Task Manager
 
-            _GLFWwindow* window = _glfw.windowListHead;
+            window = _glfw.windowListHead;
             while (window)
             {
                 _glfwInputWindowCloseRequest(window);
@@ -1407,13 +1401,14 @@ void _glfwPlatformPollEvents(void)
         }
     }
 
-    if (_glfw.cursorWindow)
+    handle = GetActiveWindow();
+    if (handle)
     {
-        _GLFWwindow* window = _glfw.cursorWindow;
-
         // LSHIFT/RSHIFT fixup (keys tend to "stick" without this fix)
         // This is the only async event handling in GLFW, but it solves some
         // nasty problems
+        window = GetPropW(handle, L"GLFW");
+        if (window)
         {
             const int mods = getAsyncKeyMods();
 
@@ -1429,19 +1424,20 @@ void _glfwPlatformPollEvents(void)
             if (!rshiftDown && window->keys[GLFW_KEY_RIGHT_SHIFT] == 1)
                 _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, 0, GLFW_RELEASE, mods);
         }
+    }
 
-        if (window->cursorMode == GLFW_CURSOR_DISABLED)
+    window = _glfw.win32.disabledCursorWindow;
+    if (window)
+    {
+        int width, height;
+        _glfwPlatformGetWindowSize(window, &width, &height);
+
+        // NOTE: Re-center the cursor only if it has moved since the last call,
+        //       to avoid breaking glfwWaitEvents with WM_MOUSEMOVE
+        if (window->win32.lastCursorPosX != width / 2 ||
+            window->win32.lastCursorPosY != height / 2)
         {
-            int width, height;
-            _glfwPlatformGetWindowSize(window, &width, &height);
-
-            // NOTE: Re-center the cursor only if it has moved since the last
-            //       call, to avoid breaking glfwWaitEvents with WM_MOUSEMOVE
-            if (window->win32.lastCursorPosX != width / 2 ||
-                window->win32.lastCursorPosY != height / 2)
-            {
-                _glfwPlatformSetCursorPos(window, width / 2, height / 2);
-            }
+            _glfwPlatformSetCursorPos(window, width / 2, height / 2);
         }
     }
 }
@@ -1497,14 +1493,16 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
     if (mode == GLFW_CURSOR_DISABLED)
     {
+        _glfw.win32.disabledCursorWindow = window;
         _glfwPlatformGetCursorPos(window,
                                   &_glfw.win32.restoreCursorPosX,
                                   &_glfw.win32.restoreCursorPosY);
         centerCursor(window);
         updateClipRect(window);
     }
-    else if (window->cursorMode == GLFW_CURSOR_DISABLED)
+    else if (_glfw.win32.disabledCursorWindow == window)
     {
+        _glfw.win32.disabledCursorWindow = NULL;
         updateClipRect(NULL);
         _glfwPlatformSetCursorPos(window,
                                   _glfw.win32.restoreCursorPosX,
@@ -1512,7 +1510,7 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
     }
 
     if (cursorInClientArea(window))
-        updateCursorImage(window, mode);
+        updateCursorImage(window);
 }
 
 const char* _glfwPlatformGetKeyName(int key, int scancode)
@@ -1573,7 +1571,7 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 {
     if (cursorInClientArea(window))
-        updateCursorImage(window, window->cursorMode);
+        updateCursorImage(window);
 }
 
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)

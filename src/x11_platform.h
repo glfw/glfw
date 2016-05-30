@@ -157,6 +157,8 @@ typedef struct _GLFWlibraryX11
     short int       nativeKeys[GLFW_KEY_LAST + 1];
     // Where to place the cursor when re-enabled
     double          restoreCursorPosX, restoreCursorPosY;
+    // The window whose disabled cursor mode is active
+    _GLFWwindow*    disabledCursorWindow;
 
     // Window manager atoms
     Atom            WM_PROTOCOLS;

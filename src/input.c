@@ -192,14 +192,15 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
             if (window->cursorMode == value)
                 return;
 
+            window->cursorMode = value;
+
             _glfwPlatformGetCursorPos(window,
                                       &window->virtualCursorPosX,
                                       &window->virtualCursorPosY);
 
-            if (_glfw.cursorWindow == window)
+            if (_glfwPlatformWindowFocused(window))
                 _glfwPlatformSetCursorMode(window, value);
 
-            window->cursorMode = value;
             return;
         }
 
@@ -340,7 +341,7 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, double xpos, double ypos)
         return;
     }
 
-    if (_glfw.cursorWindow != window)
+    if (!_glfwPlatformWindowFocused(window))
         return;
 
     if (window->cursorMode == GLFW_CURSOR_DISABLED)

@@ -396,6 +396,24 @@ static void centerCursor(_GLFWwindow* window)
     _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
 }
 
+// Updates the cursor image according to its cursor mode
+//
+static void updateCursorImage(_GLFWwindow* window)
+{
+    if (window->cursorMode == GLFW_CURSOR_NORMAL)
+    {
+        if (window->cursor)
+        {
+            XDefineCursor(_glfw.x11.display, window->x11.handle,
+                          window->cursor->x11.handle);
+        }
+        else
+            XUndefineCursor(_glfw.x11.display, window->x11.handle);
+    }
+    else
+        XDefineCursor(_glfw.x11.display, window->x11.handle, _glfw.x11.cursor);
+}
+
 // Create the X11 window (and its colormap)
 //
 static GLFWbool createWindow(_GLFWwindow* window,
@@ -1164,7 +1182,7 @@ static void processEvent(XEvent *event)
 
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 {
-                    if (_glfw.cursorWindow != window)
+                    if (_glfw.x11.disabledCursorWindow != window)
                         return;
 
                     const int dx = x - window->x11.lastCursorPosX;
@@ -1538,6 +1556,9 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
+    if (_glfw.x11.disabledCursorWindow == window)
+        _glfw.x11.disabledCursorWindow = NULL;
+
     if (window->monitor)
         releaseMonitor(window);
 
@@ -2011,9 +2032,8 @@ void _glfwPlatformPollEvents(void)
         processEvent(&event);
     }
 
-    _GLFWwindow* window = _glfw.cursorWindow;
-    if (window && window->cursorMode == GLFW_CURSOR_DISABLED)
-        centerCursor(window);
+    if (_glfw.x11.disabledCursorWindow)
+        centerCursor(_glfw.x11.disabledCursorWindow);
 }
 
 void _glfwPlatformWaitEvents(void)
@@ -2092,6 +2112,7 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
     if (mode == GLFW_CURSOR_DISABLED)
     {
+        _glfw.x11.disabledCursorWindow = window;
         _glfwPlatformGetCursorPos(window,
                                   &_glfw.x11.restoreCursorPosX,
                                   &_glfw.x11.restoreCursorPosY);
@@ -2101,26 +2122,16 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
                      GrabModeAsync, GrabModeAsync,
                      window->x11.handle, _glfw.x11.cursor, CurrentTime);
     }
-    else if (window->cursorMode == GLFW_CURSOR_DISABLED)
+    else if (_glfw.x11.disabledCursorWindow == window)
     {
+        _glfw.x11.disabledCursorWindow = NULL;
         XUngrabPointer(_glfw.x11.display, CurrentTime);
         _glfwPlatformSetCursorPos(window,
                                   _glfw.x11.restoreCursorPosX,
                                   _glfw.x11.restoreCursorPosY);
     }
 
-    if (mode == GLFW_CURSOR_NORMAL)
-    {
-        if (window->cursor)
-        {
-            XDefineCursor(_glfw.x11.display, window->x11.handle,
-                          window->cursor->x11.handle);
-        }
-        else
-            XUndefineCursor(_glfw.x11.display, window->x11.handle);
-    }
-    else
-        XDefineCursor(_glfw.x11.display, window->x11.handle, _glfw.x11.cursor);
+    updateCursorImage(window);
 }
 
 const char* _glfwPlatformGetKeyName(int key, int scancode)
@@ -2186,11 +2197,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 {
     if (window->cursorMode == GLFW_CURSOR_NORMAL)
     {
-        if (cursor)
-            XDefineCursor(_glfw.x11.display, window->x11.handle, cursor->x11.handle);
-        else
-            XUndefineCursor(_glfw.x11.display, window->x11.handle);
-
+        updateCursorImage(window);
         XFlush(_glfw.x11.display);
     }
 }

@@ -42,16 +42,12 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused)
 {
     if (focused)
     {
-        _glfw.cursorWindow = window;
-
         if (window->callbacks.focus)
             window->callbacks.focus((GLFWwindow*) window, focused);
     }
     else
     {
         int i;
-
-        _glfw.cursorWindow = NULL;
 
         if (window->callbacks.focus)
             window->callbacks.focus((GLFWwindow*) window, focused);
@@ -393,10 +389,6 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
     // window is destroyed
     if (window == _glfwPlatformGetCurrentContext())
         glfwMakeContextCurrent(NULL);
-
-    // Clear the focused window pointer if this is the focused window
-    if (_glfw.cursorWindow == window)
-        _glfw.cursorWindow = NULL;
 
     _glfwPlatformDestroyWindow(window);
 

@@ -1551,6 +1551,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         centerCursor(window);
     }
 
+    XFlush(_glfw.x11.display);
     return GLFW_TRUE;
 }
 
@@ -2034,6 +2035,8 @@ void _glfwPlatformPollEvents(void)
 
     if (_glfw.x11.disabledCursorWindow)
         centerCursor(_glfw.x11.disabledCursorWindow);
+
+    XFlush(_glfw.x11.display);
 }
 
 void _glfwPlatformWaitEvents(void)
@@ -2106,6 +2109,7 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 
     XWarpPointer(_glfw.x11.display, None, window->x11.handle,
                  0,0,0,0, (int) x, (int) y);
+    XFlush(_glfw.x11.display);
 }
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
@@ -2132,6 +2136,7 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
     }
 
     updateCursorImage(window);
+    XFlush(_glfw.x11.display);
 }
 
 const char* _glfwPlatformGetKeyName(int key, int scancode)

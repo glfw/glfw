@@ -1775,9 +1775,10 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  @remark @win32 Window creation will fail if the Microsoft GDI software
  *  OpenGL implementation is the only one available.
  *
- *  @remark @win32 If the executable has an icon resource named `GLFW_ICON,`
- *  it will be set as the icon for the window.  If no such icon is present, the
- *  `IDI_WINLOGO` icon will be used instead.
+ *  @remark @win32 If the executable has an icon resource named `GLFW_ICON,` it
+ *  will be set as the initial icon for the window.  If no such icon is present,
+ *  the `IDI_WINLOGO` icon will be used instead.  To set a different icon, see
+ *  @ref glfwSetWindowIcon.
  *
  *  @remark @win32 The context to share resources with must not be current on
  *  any other thread.
@@ -1802,8 +1803,6 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  in the Mac Developer Library.  The GLFW test and example programs use
  *  a custom `Info.plist` template for this, which can be found as
  *  `CMake/MacOSXBundleInfo.plist.in` in the source tree.
- *
- *  @remark @x11 There is no mechanism for setting the window icon yet.
  *
  *  @remark @x11 Some window managers will not respect the placement of
  *  initially hidden windows.
@@ -1946,8 +1945,8 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *  returns.
  *
  *  @remark @osx The GLFW window has no icon, as it is not a document
- *  window, but the dock icon will be the same as the application bundle's icon.
- *  For more information on bundles, see the
+ *  window, so this function does nothing.  The dock icon will be the same as
+ *  the application bundle's icon.  For more information on bundles, see the
  *  [Bundle Programming Guide](https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/)
  *  in the Mac Developer Library.
  *
@@ -3714,8 +3713,9 @@ GLFWAPI const char* glfwGetClipboardString(GLFWwindow* window);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
- *  @thread_safety This function may be called from any thread.  Reading of the
- *  internal timer offset is not atomic.
+ *  @thread_safety This function may be called from any thread.  Reading and
+ *  writing of the internal timer offset is not atomic, so it needs to be
+ *  externally synchronized with calls to @ref glfwSetTime.
  *
  *  @sa @ref time
  *
@@ -3740,8 +3740,9 @@ GLFWAPI double glfwGetTime(void);
  *  floor((2<sup>64</sup> - 1) / 10<sup>9</sup>) and is due to implementations
  *  storing nanoseconds in 64 bits.  The limit may be increased in the future.
  *
- *  @thread_safety This function may be called from any thread.  Writing of the
- *  internal timer offset is not atomic.
+ *  @thread_safety This function may be called from any thread.  Reading and
+ *  writing of the internal timer offset is not atomic, so it needs to be
+ *  externally synchronized with calls to @ref glfwGetTime.
  *
  *  @sa @ref time
  *

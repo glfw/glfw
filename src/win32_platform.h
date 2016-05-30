@@ -246,7 +246,7 @@ typedef struct _GLFWwindowWin32
 //
 typedef struct _GLFWlibraryWin32
 {
-    HWND                helperWindow;
+    HWND                helperWindowHandle;
     DWORD               foregroundLockTimeout;
     char*               clipboardString;
     char                keyName[64];

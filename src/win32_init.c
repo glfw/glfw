@@ -415,8 +415,8 @@ int _glfwPlatformInit(void)
     if (!_glfwRegisterWindowClassWin32())
         return GLFW_FALSE;
 
-    _glfw.win32.helperWindow = createHelperWindow();
-    if (!_glfw.win32.helperWindow)
+    _glfw.win32.helperWindowHandle = createHelperWindow();
+    if (!_glfw.win32.helperWindowHandle)
         return GLFW_FALSE;
 
     _glfwPlatformPollEvents();
@@ -433,8 +433,8 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
-    if (_glfw.win32.helperWindow)
-        DestroyWindow(_glfw.win32.helperWindow);
+    if (_glfw.win32.helperWindowHandle)
+        DestroyWindow(_glfw.win32.helperWindowHandle);
 
     _glfwUnregisterWindowClassWin32();
 

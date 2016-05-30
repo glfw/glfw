@@ -1605,7 +1605,7 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
     memcpy(GlobalLock(stringHandle), wideString, wideSize);
     GlobalUnlock(stringHandle);
 
-    if (!OpenClipboard(_glfw.win32.helperWindow))
+    if (!OpenClipboard(_glfw.win32.helperWindowHandle))
     {
         GlobalFree(stringHandle);
         free(wideString);
@@ -1625,7 +1625,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {
     HANDLE stringHandle;
 
-    if (!OpenClipboard(_glfw.win32.helperWindow))
+    if (!OpenClipboard(_glfw.win32.helperWindowHandle))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to open clipboard");
         return NULL;

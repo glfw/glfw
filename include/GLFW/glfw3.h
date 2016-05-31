@@ -3124,10 +3124,6 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
- *  @remark @x11 Due to the asynchronous nature of X11, it may take a moment for
- *  the window focus event to arrive.  This means you may not be able to set the
- *  cursor position directly after window creation.
- *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref cursor_pos

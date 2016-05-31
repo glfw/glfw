@@ -276,7 +276,7 @@ behavior of these hints depend on the requested client API.
 __OpenGL:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are not hard
 constraints, but creation will fail if the OpenGL version of the created context
 is less than the one requested.  It is therefore perfectly safe to use the
-default of version 1.0 for legacy code and you may still get
+default of version 1.0 for legacy code and you will still get
 backwards-compatible contexts of version 3.0 and above when available.
 
 @par

@@ -671,6 +671,24 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             return 0;
         }
 
+        case WM_ENTERSIZEMOVE:
+        case WM_ENTERMENULOOP:
+        {
+            if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_NORMAL);
+
+            break;
+        }
+
+        case WM_EXITSIZEMOVE:
+        case WM_EXITMENULOOP:
+        {
+            if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_DISABLED);
+
+            break;
+        }
+
         case WM_SIZE:
         {
             const GLFWbool iconified =

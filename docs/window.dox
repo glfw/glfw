@@ -273,10 +273,10 @@ API version that the created context must be compatible with.  The exact
 behavior of these hints depend on the requested client API.
 
 @par
-__OpenGL:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are not hard
-constraints, but creation will fail if the OpenGL version of the created context
-is less than the one requested.  It is therefore perfectly safe to use the
-default of version 1.0 for legacy code and you will still get
+__OpenGL:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are
+not hard constraints, but creation will fail if the OpenGL version of the
+created context is less than the one requested.  It is therefore perfectly safe
+to use the default of version 1.0 for legacy code and you will still get
 backwards-compatible contexts of version 3.0 and above when available.
 
 @par
@@ -285,12 +285,12 @@ version, GLFW will attempt to provide this when you ask for a version 1.0
 context, which is the default for these hints.
 
 @par
-__OpenGL ES:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are not hard
-constraints, but creation will fail if the OpenGL ES version of the created
-context is less than the one requested.  Additionally, OpenGL ES 1.x cannot be
-returned if 2.0 or later was requested, and vice versa.  This is because OpenGL
-ES 3.x is backward compatible with 2.0, but OpenGL ES 2.0 is not backward
-compatible with 1.x.
+__OpenGL ES:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are
+not hard constraints, but creation will fail if the OpenGL ES version of the
+created context is less than the one requested.  Additionally, OpenGL ES 1.x
+cannot be returned if 2.0 or later was requested, and vice versa.  This is
+because OpenGL ES 3.x is backward compatible with 2.0, but OpenGL ES 2.0 is not
+backward compatible with 1.x.
 
 `GLFW_OPENGL_FORWARD_COMPAT` specifies whether the OpenGL context should be
 forward-compatible, i.e. one where all functionality deprecated in the requested

@@ -1367,6 +1367,9 @@ static void processEvent(XEvent *event)
 
         case FocusIn:
         {
+            if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_DISABLED);
+
             if (event->xfocus.mode == NotifyGrab ||
                 event->xfocus.mode == NotifyUngrab)
             {
@@ -1378,15 +1381,15 @@ static void processEvent(XEvent *event)
             if (window->x11.ic)
                 XSetICFocus(window->x11.ic);
 
-            if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_DISABLED);
-
             _glfwInputWindowFocus(window, GLFW_TRUE);
             return;
         }
 
         case FocusOut:
         {
+            if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_NORMAL);
+
             if (event->xfocus.mode == NotifyGrab ||
                 event->xfocus.mode == NotifyUngrab)
             {
@@ -1397,9 +1400,6 @@ static void processEvent(XEvent *event)
 
             if (window->x11.ic)
                 XUnsetICFocus(window->x11.ic);
-
-            if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_NORMAL);
 
             if (window->monitor && window->autoIconify)
                 _glfwPlatformIconifyWindow(window);

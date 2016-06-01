@@ -1,7 +1,7 @@
 //========================================================================
 // GLFW 3.2 Cocoa - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2009-2016 Camilla Berglund <elmindreda@elmindreda.org>
 // Copyright (c) 2012 Torsten Walluhn <tw@mad-cad.net>
 //
 // This software is provided 'as-is', without any express or implied

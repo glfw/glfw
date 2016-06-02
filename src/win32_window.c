@@ -618,11 +618,11 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
             {
-                if (_glfw.win32.disabledCursorWindow != window)
-                    break;
-
                 const int dx = x - window->win32.lastCursorPosX;
                 const int dy = y - window->win32.lastCursorPosY;
+
+                if (_glfw.win32.disabledCursorWindow != window)
+                    break;
 
                 _glfwInputCursorPos(window,
                                     window->virtualCursorPosX + dx,

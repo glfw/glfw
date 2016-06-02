@@ -90,6 +90,15 @@ if (MSVC)
 endif()
 
 if (MINGW)
+    # Workaround for legacy MinGW not providing XInput and DirectInput
+    include(CheckIncludeFile)
+
+    check_include_file(dinput.h DINPUT_H_FOUND)
+    check_include_file(xinput.h XINPUT_H_FOUND)
+    if (NOT DINPUT_H_FOUND OR NOT XINPUT_H_FOUND)
+        list(APPEND glfw_INCLUDE_DIRS "${GLFW_SOURCE_DIR}/deps/mingw")
+    endif()
+
     # Enable link-time exploit mitigation features enabled by default on MSVC
     include(CheckCCompilerFlag)
 

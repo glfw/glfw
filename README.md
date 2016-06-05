@@ -79,6 +79,8 @@ does not find Doxygen, the documentation will not be generated.
 
 ## Changelog
 
+- Bugfix: The range checks for `glfwSetCursorPos` used the wrong minimum
+
 
 ## Contact
 

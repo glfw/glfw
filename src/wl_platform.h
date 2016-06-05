@@ -74,7 +74,6 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 //
 typedef struct _GLFWvidmodeWayland _GLFWvidmodeWayland;
 
-
 // Wayland-specific per-window data
 //
 typedef struct _GLFWwindowWayland
@@ -104,7 +103,6 @@ typedef struct _GLFWwindowWayland
         struct zwp_locked_pointer_v1*      lockedPointer;
     } pointerLock;
 } _GLFWwindowWayland;
-
 
 // Wayland-specific global data
 //
@@ -149,7 +147,6 @@ typedef struct _GLFWlibraryWayland
 
 } _GLFWlibraryWayland;
 
-
 // Wayland-specific per-monitor data
 //
 typedef struct _GLFWmonitorWayland
@@ -165,7 +162,6 @@ typedef struct _GLFWmonitorWayland
     int                         y;
     int                         scale;
 } _GLFWmonitorWayland;
-
 
 // Wayland-specific per-cursor data
 //

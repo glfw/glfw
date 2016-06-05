@@ -110,7 +110,6 @@ typedef struct _GLFWcontextWGL
 
 } _GLFWcontextWGL;
 
-
 // WGL-specific global data
 //
 typedef struct _GLFWlibraryWGL

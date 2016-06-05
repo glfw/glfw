@@ -130,7 +130,6 @@ typedef struct _GLFWwindowX11
 
 } _GLFWwindowX11;
 
-
 // X11-specific global data
 //
 typedef struct _GLFWlibraryX11
@@ -259,7 +258,6 @@ typedef struct _GLFWlibraryX11
 
 } _GLFWlibraryX11;
 
-
 // X11-specific per-monitor data
 //
 typedef struct _GLFWmonitorX11
@@ -273,7 +271,6 @@ typedef struct _GLFWmonitorX11
     int             index;
 
 } _GLFWmonitorX11;
-
 
 // X11-specific per-cursor data
 //

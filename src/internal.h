@@ -256,7 +256,6 @@ struct _GLFWwndconfig
     GLFWbool      maximized;
 };
 
-
 /*! @brief Context configuration.
  *
  *  Parameters relating to the creation of the context but not directly related
@@ -277,7 +276,6 @@ struct _GLFWctxconfig
     int           release;
     _GLFWwindow*  share;
 };
-
 
 /*! @brief Framebuffer configuration.
  *
@@ -307,7 +305,6 @@ struct _GLFWfbconfig
     uintptr_t   handle;
 };
 
-
 /*! @brief Context structure.
  */
 struct _GLFWcontext
@@ -336,7 +333,6 @@ struct _GLFWcontext
     // This is defined in egl_context.h
     _GLFW_EGL_CONTEXT_STATE;
 };
-
 
 /*! @brief Window and context structure.
  */
@@ -391,7 +387,6 @@ struct _GLFWwindow
     _GLFW_PLATFORM_WINDOW_STATE;
 };
 
-
 /*! @brief Monitor structure.
  */
 struct _GLFWmonitor
@@ -414,7 +409,6 @@ struct _GLFWmonitor
     // This is defined in the window API's platform.h
     _GLFW_PLATFORM_MONITOR_STATE;
 };
-
 
 /*! @brief Cursor structure
  */

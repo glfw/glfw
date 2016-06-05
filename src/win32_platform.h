@@ -241,7 +241,6 @@ typedef struct _GLFWwindowWin32
 
 } _GLFWwindowWin32;
 
-
 // Win32-specific global data
 //
 typedef struct _GLFWlibraryWin32
@@ -293,7 +292,6 @@ typedef struct _GLFWlibraryWin32
 
 } _GLFWlibraryWin32;
 
-
 // Win32-specific per-monitor data
 //
 typedef struct _GLFWmonitorWin32
@@ -308,7 +306,6 @@ typedef struct _GLFWmonitorWin32
 
 } _GLFWmonitorWin32;
 
-
 // Win32-specific per-cursor data
 //
 typedef struct _GLFWcursorWin32
@@ -316,7 +313,6 @@ typedef struct _GLFWcursorWin32
     HCURSOR handle;
 
 } _GLFWcursorWin32;
-
 
 // Win32-specific global timer data
 //
@@ -326,7 +322,6 @@ typedef struct _GLFWtimeWin32
     uint64_t            frequency;
 
 } _GLFWtimeWin32;
-
 
 // Win32-specific global TLS data
 //

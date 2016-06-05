@@ -165,7 +165,6 @@ typedef struct _GLFWcontextEGL
 
 } _GLFWcontextEGL;
 
-
 // EGL-specific global data
 //
 typedef struct _GLFWlibraryEGL

@@ -121,7 +121,6 @@ typedef struct _GLFWcontextGLX
 
 } _GLFWcontextGLX;
 
-
 // GLX-specific global data
 //
 typedef struct _GLFWlibraryGLX

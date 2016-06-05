@@ -87,7 +87,6 @@ typedef struct _GLFWwindowMir
 
 } _GLFWwindowMir;
 
-
 // Mir-specific per-monitor data
 //
 typedef struct _GLFWmonitorMir
@@ -98,7 +97,6 @@ typedef struct _GLFWmonitorMir
     int y;
 
 } _GLFWmonitorMir;
-
 
 // Mir-specific global data
 //
@@ -115,7 +113,6 @@ typedef struct _GLFWlibraryMir
     pthread_cond_t  event_cond;
 
 } _GLFWlibraryMir;
-
 
 // Mir-specific per-cursor data
 // TODO: Only system cursors are implemented in Mir atm. Need to wait for support.

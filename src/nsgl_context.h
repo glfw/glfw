@@ -40,7 +40,6 @@ typedef struct _GLFWcontextNSGL
 
 } _GLFWcontextNSGL;
 
-
 // NSGL-specific global data
 //
 typedef struct _GLFWlibraryNSGL

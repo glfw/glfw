@@ -43,7 +43,7 @@ static double frame_rate;
 
 static void usage(void)
 {
-    printf("Usage: iconify [-h] [-f]\n");
+    printf("Usage: tearing [-h] [-f]\n");
     printf("Options:\n");
     printf("  -f create full screen window\n");
     printf("  -h show this help\n");

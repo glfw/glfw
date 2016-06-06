@@ -43,6 +43,9 @@ static GLfloat gamma_value = 1.0f;
 static void usage(void)
 {
     printf("Usage: gamma [-h] [-f]\n");
+    printf("Options:\n");
+    printf("  -f create full screen window\n");
+    printf("  -h show this help\n");
 }
 
 static void set_gamma(GLFWwindow* window, float value)

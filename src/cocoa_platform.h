@@ -91,6 +91,7 @@ typedef struct _GLFWlibraryNS
     id                  autoreleasePool;
     id                  cursor;
     TISInputSourceRef   inputSource;
+    IOHIDManagerRef     hidManager;
     id                  unicodeData;
     id                  listener;
 

@@ -57,7 +57,7 @@ static void getElementsCFArrayHandler(const void* value, void* parameter);
 
 // Adds an element to the specified joystick
 //
-static void addJoystickElement(_GLFWjoydeviceNS* js,
+static void addJoystickElement(_GLFWjoystickNS* js,
                                IOHIDElementRef elementRef)
 {
     IOHIDElementType elementType;
@@ -126,14 +126,14 @@ static void getElementsCFArrayHandler(const void* value, void* parameter)
 {
     if (CFGetTypeID(value) == IOHIDElementGetTypeID())
     {
-        addJoystickElement((_GLFWjoydeviceNS*) parameter,
+        addJoystickElement((_GLFWjoystickNS*) parameter,
                            (IOHIDElementRef) value);
     }
 }
 
 // Returns the value of the specified element of the specified joystick
 //
-static long getElementValue(_GLFWjoydeviceNS* js, _GLFWjoyelementNS* element)
+static long getElementValue(_GLFWjoystickNS* js, _GLFWjoyelementNS* element)
 {
     IOReturn result = kIOReturnSuccess;
     IOHIDValueRef valueRef;
@@ -163,7 +163,7 @@ static long getElementValue(_GLFWjoydeviceNS* js, _GLFWjoyelementNS* element)
 
 // Removes the specified joystick
 //
-static void removeJoystick(_GLFWjoydeviceNS* js)
+static void removeJoystick(_GLFWjoystickNS* js)
 {
     int i;
 
@@ -188,14 +188,14 @@ static void removeJoystick(_GLFWjoydeviceNS* js)
     free(js->axes);
     free(js->buttons);
 
-    memset(js, 0, sizeof(_GLFWjoydeviceNS));
+    memset(js, 0, sizeof(_GLFWjoystickNS));
 
-    _glfwInputJoystickChange(js - _glfw.ns_js.js, GLFW_DISCONNECTED);
+    _glfwInputJoystickChange(js - _glfw.ns_js, GLFW_DISCONNECTED);
 }
 
 // Polls for joystick axis events and updates GLFW state
 //
-static GLFWbool pollJoystickAxisEvents(_GLFWjoydeviceNS* js)
+static GLFWbool pollJoystickAxisEvents(_GLFWjoystickNS* js)
 {
     CFIndex i;
 
@@ -221,7 +221,7 @@ static GLFWbool pollJoystickAxisEvents(_GLFWjoydeviceNS* js)
 
 // Polls for joystick button events and updates GLFW state
 //
-static GLFWbool pollJoystickButtonEvents(_GLFWjoydeviceNS* js)
+static GLFWbool pollJoystickButtonEvents(_GLFWjoystickNS* js)
 {
     CFIndex i;
     int buttonIndex = 0;
@@ -271,25 +271,25 @@ static void matchCallback(void* context,
                           void* sender,
                           IOHIDDeviceRef deviceRef)
 {
-    _GLFWjoydeviceNS* js;
+    _GLFWjoystickNS* js;
     int joy;
 
     for (joy = GLFW_JOYSTICK_1;  joy <= GLFW_JOYSTICK_LAST;  joy++)
     {
-        if (_glfw.ns_js.js[joy].present && _glfw.ns_js.js[joy].deviceRef == deviceRef)
+        if (_glfw.ns_js[joy].present && _glfw.ns_js[joy].deviceRef == deviceRef)
             return;
     }
 
     for (joy = GLFW_JOYSTICK_1;  joy <= GLFW_JOYSTICK_LAST;  joy++)
     {
-        if (!_glfw.ns_js.js[joy].present)
+        if (!_glfw.ns_js[joy].present)
             break;
     }
 
     if (joy > GLFW_JOYSTICK_LAST)
         return;
 
-    js = _glfw.ns_js.js + joy;
+    js = _glfw.ns_js + joy;
     js->present = GLFW_TRUE;
     js->deviceRef = deviceRef;
 
@@ -338,9 +338,9 @@ static void removeCallback(void* context,
 
     for (joy = GLFW_JOYSTICK_1;  joy <= GLFW_JOYSTICK_LAST;  joy++)
     {
-        if (_glfw.ns_js.js[joy].deviceRef == deviceRef)
+        if (_glfw.ns_js[joy].deviceRef == deviceRef)
         {
-            removeJoystick(_glfw.ns_js.js + joy);
+            removeJoystick(_glfw.ns_js + joy);
             break;
         }
     }
@@ -397,8 +397,8 @@ void _glfwInitJoysticksNS(void)
 {
     CFMutableArrayRef matchingCFArrayRef;
 
-    _glfw.ns_js.managerRef = IOHIDManagerCreate(kCFAllocatorDefault,
-                                                kIOHIDOptionsTypeNone);
+    _glfw.ns.hidManager = IOHIDManagerCreate(kCFAllocatorDefault,
+                                             kIOHIDOptionsTypeNone);
 
     matchingCFArrayRef = CFArrayCreateMutable(kCFAllocatorDefault,
                                               0,
@@ -431,21 +431,21 @@ void _glfwInitJoysticksNS(void)
             CFRelease(matchingCFDictRef);
         }
 
-        IOHIDManagerSetDeviceMatchingMultiple(_glfw.ns_js.managerRef,
+        IOHIDManagerSetDeviceMatchingMultiple(_glfw.ns.hidManager,
                                               matchingCFArrayRef);
         CFRelease(matchingCFArrayRef);
     }
 
-    IOHIDManagerRegisterDeviceMatchingCallback(_glfw.ns_js.managerRef,
+    IOHIDManagerRegisterDeviceMatchingCallback(_glfw.ns.hidManager,
                                                &matchCallback, NULL);
-    IOHIDManagerRegisterDeviceRemovalCallback(_glfw.ns_js.managerRef,
+    IOHIDManagerRegisterDeviceRemovalCallback(_glfw.ns.hidManager,
                                               &removeCallback, NULL);
 
-    IOHIDManagerScheduleWithRunLoop(_glfw.ns_js.managerRef,
+    IOHIDManagerScheduleWithRunLoop(_glfw.ns.hidManager,
                                     CFRunLoopGetMain(),
                                     kCFRunLoopDefaultMode);
 
-    IOHIDManagerOpen(_glfw.ns_js.managerRef, kIOHIDOptionsTypeNone);
+    IOHIDManagerOpen(_glfw.ns.hidManager, kIOHIDOptionsTypeNone);
 
     // Execute the run loop once in order to register any initially-attached
     // joysticks
@@ -460,12 +460,12 @@ void _glfwTerminateJoysticksNS(void)
 
     for (joy = GLFW_JOYSTICK_1;  joy <= GLFW_JOYSTICK_LAST;  joy++)
     {
-        _GLFWjoydeviceNS* js = _glfw.ns_js.js + joy;
+        _GLFWjoystickNS* js = _glfw.ns_js + joy;
         removeJoystick(js);
     }
 
-    CFRelease(_glfw.ns_js.managerRef);
-    _glfw.ns_js.managerRef = NULL;
+    CFRelease(_glfw.ns.hidManager);
+    _glfw.ns.hidManager = NULL;
 }
 
 
@@ -475,13 +475,13 @@ void _glfwTerminateJoysticksNS(void)
 
 int _glfwPlatformJoystickPresent(int joy)
 {
-    _GLFWjoydeviceNS* js = _glfw.ns_js.js + joy;
+    _GLFWjoystickNS* js = _glfw.ns_js + joy;
     return js->present;
 }
 
 const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 {
-    _GLFWjoydeviceNS* js = _glfw.ns_js.js + joy;
+    _GLFWjoystickNS* js = _glfw.ns_js + joy;
     if (!pollJoystickAxisEvents(js))
         return NULL;
 
@@ -491,7 +491,7 @@ const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 
 const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
 {
-    _GLFWjoydeviceNS* js = _glfw.ns_js.js + joy;
+    _GLFWjoystickNS* js = _glfw.ns_js + joy;
     if (!pollJoystickButtonEvents(js))
         return NULL;
 
@@ -502,7 +502,7 @@ const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
 
 const char* _glfwPlatformGetJoystickName(int joy)
 {
-    _GLFWjoydeviceNS* js = _glfw.ns_js.js + joy;
+    _GLFWjoystickNS* js = _glfw.ns_js + joy;
     if (!js->present)
         return NULL;
 

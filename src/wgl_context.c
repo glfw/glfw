@@ -231,7 +231,7 @@ static GLFWbool isCompositionEnabled(void)
     return enabled;
 }
 
-static void makeContextCurrent(_GLFWwindow* window)
+static void makeContextCurrentWGL(_GLFWwindow* window)
 {
     if (window)
     {
@@ -256,7 +256,7 @@ static void makeContextCurrent(_GLFWwindow* window)
     }
 }
 
-static void swapBuffers(_GLFWwindow* window)
+static void swapBuffersWGL(_GLFWwindow* window)
 {
     // HACK: Use DwmFlush when desktop composition is enabled
     if (isCompositionEnabled() && !window->monitor)
@@ -269,7 +269,7 @@ static void swapBuffers(_GLFWwindow* window)
     SwapBuffers(window->context.wgl.dc);
 }
 
-static void swapInterval(int interval)
+static void swapIntervalWGL(int interval)
 {
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
@@ -284,7 +284,7 @@ static void swapInterval(int interval)
         _glfw.wgl.SwapIntervalEXT(interval);
 }
 
-static int extensionSupported(const char* extension)
+static int extensionSupportedWGL(const char* extension)
 {
     const char* extensions;
 
@@ -313,7 +313,7 @@ static int extensionSupported(const char* extension)
     return GLFW_FALSE;
 }
 
-static GLFWglproc getProcAddress(const char* procname)
+static GLFWglproc getProcAddressWGL(const char* procname)
 {
     const GLFWglproc proc = (GLFWglproc) wglGetProcAddress(procname);
     if (proc)
@@ -324,7 +324,7 @@ static GLFWglproc getProcAddress(const char* procname)
 
 // Destroy the OpenGL context
 //
-static void destroyContext(_GLFWwindow* window)
+static void destroyContextWGL(_GLFWwindow* window)
 {
     if (window->context.wgl.handle)
     {
@@ -359,25 +359,25 @@ static void loadExtensions(void)
     // This needs to include every extension used below except for
     // WGL_ARB_extensions_string and WGL_EXT_extensions_string
     _glfw.wgl.ARB_multisample =
-        extensionSupported("WGL_ARB_multisample");
+        extensionSupportedWGL("WGL_ARB_multisample");
     _glfw.wgl.ARB_framebuffer_sRGB =
-        extensionSupported("WGL_ARB_framebuffer_sRGB");
+        extensionSupportedWGL("WGL_ARB_framebuffer_sRGB");
     _glfw.wgl.EXT_framebuffer_sRGB =
-        extensionSupported("WGL_EXT_framebuffer_sRGB");
+        extensionSupportedWGL("WGL_EXT_framebuffer_sRGB");
     _glfw.wgl.ARB_create_context =
-        extensionSupported("WGL_ARB_create_context");
+        extensionSupportedWGL("WGL_ARB_create_context");
     _glfw.wgl.ARB_create_context_profile =
-        extensionSupported("WGL_ARB_create_context_profile");
+        extensionSupportedWGL("WGL_ARB_create_context_profile");
     _glfw.wgl.EXT_create_context_es2_profile =
-        extensionSupported("WGL_EXT_create_context_es2_profile");
+        extensionSupportedWGL("WGL_EXT_create_context_es2_profile");
     _glfw.wgl.ARB_create_context_robustness =
-        extensionSupported("WGL_ARB_create_context_robustness");
+        extensionSupportedWGL("WGL_ARB_create_context_robustness");
     _glfw.wgl.EXT_swap_control =
-        extensionSupported("WGL_EXT_swap_control");
+        extensionSupportedWGL("WGL_EXT_swap_control");
     _glfw.wgl.ARB_pixel_format =
-        extensionSupported("WGL_ARB_pixel_format");
+        extensionSupportedWGL("WGL_ARB_pixel_format");
     _glfw.wgl.ARB_context_flush_control =
-        extensionSupported("WGL_ARB_context_flush_control");
+        extensionSupportedWGL("WGL_ARB_context_flush_control");
 
     _glfw.wgl.extensionsLoaded = GLFW_TRUE;
 }
@@ -576,12 +576,12 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         }
     }
 
-    window->context.makeCurrent = makeContextCurrent;
-    window->context.swapBuffers = swapBuffers;
-    window->context.swapInterval = swapInterval;
-    window->context.extensionSupported = extensionSupported;
-    window->context.getProcAddress = getProcAddress;
-    window->context.destroy = destroyContext;
+    window->context.makeCurrent = makeContextCurrentWGL;
+    window->context.swapBuffers = swapBuffersWGL;
+    window->context.swapInterval = swapIntervalWGL;
+    window->context.extensionSupported = extensionSupportedWGL;
+    window->context.getProcAddress = getProcAddressWGL;
+    window->context.destroy = destroyContextWGL;
 
     return GLFW_TRUE;
 }
@@ -599,7 +599,7 @@ int _glfwAnalyzeContextWGL(_GLFWwindow* window,
     if (_glfw.wgl.extensionsLoaded)
         return _GLFW_RECREATION_NOT_NEEDED;
 
-    makeContextCurrent(window);
+    makeContextCurrentWGL(window);
     loadExtensions();
 
     if (ctxconfig->client == GLFW_OPENGL_API)

@@ -46,6 +46,8 @@ typedef struct wl_egl_window* EGLNativeWindowType;
  #define EGLAPIENTRY
 typedef MirEGLNativeDisplayType EGLNativeDisplayType;
 typedef MirEGLNativeWindowType EGLNativeWindowType;
+#elif defined(_GLFW_EGLDEVICE)
+ #include <EGL/eglplatform.h>
 #else
  #error "No supported EGL platform selected"
 #endif

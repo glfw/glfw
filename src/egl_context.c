@@ -115,9 +115,17 @@ static GLFWbool chooseFBConfigs(const _GLFWctxconfig* ctxconfig,
         if (!(getConfigAttrib(n, EGL_COLOR_BUFFER_TYPE) & EGL_RGB_BUFFER))
             continue;
 
+#if defined(_GLFW_EGLDEVICE)
+        // Only consider stream EGLConfigs
+        if (!(getConfigAttrib(n, EGL_SURFACE_TYPE) & EGL_STREAM_BIT_KHR))
+            continue;
+
+#else
         // Only consider window EGLConfigs
         if (!(getConfigAttrib(n, EGL_SURFACE_TYPE) & EGL_WINDOW_BIT))
             continue;
+
+#endif
 
 #if defined(_GLFW_X11)
         // Only consider EGLConfigs with associated Visuals
@@ -339,6 +347,9 @@ GLFWbool _glfwInitEGL(void)
     _glfw.egl.GetProcAddress = (PFNEGLGETPROCADDRESSPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglGetProcAddress");
 
+// For EGLDevice backend the display gets initialized
+//  in _glfwPlatformInit()
+#if !defined(_GLFW_EGLDEVICE)
     _glfw.egl.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
     if (_glfw.egl.display == EGL_NO_DISPLAY)
     {
@@ -359,6 +370,7 @@ GLFWbool _glfwInitEGL(void)
         _glfwTerminateEGL();
         return GLFW_FALSE;
     }
+#endif
 
     _glfw.egl.KHR_create_context =
         extensionSupported("EGL_KHR_create_context");
@@ -534,6 +546,9 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         setEGLattrib(EGL_NONE, EGL_NONE);
     }
 
+// The surface for EGLDevice backened is created in _glfwPlatformCreateWindow
+//
+#if !defined (_GLFW_EGLDEVICE)
     window->context.egl.surface =
         eglCreateWindowSurface(_glfw.egl.display,
                                config,
@@ -546,6 +561,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
                         getErrorString(eglGetError()));
         return GLFW_FALSE;
     }
+#endif
 
     window->context.egl.config = config;
 

@@ -631,6 +631,10 @@ GLFWAPI void glfwMaximizeWindow(GLFWwindow* handle)
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT();
+
+    if (window->monitor)
+        return;
+
     _glfwPlatformMaximizeWindow(window);
 }
 

@@ -99,6 +99,8 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+- Bugfix: Calling `glfwMaximizeWindow` on a full screen window was not ignored
+
 
 ## Contact
 

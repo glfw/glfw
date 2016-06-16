@@ -102,6 +102,8 @@ information on what to include when reporting a bug.
 
 - Added `glfwGetKeyScancode` function that allows retrieving platform dependent
   scancodes for keys (#830)
+- Added `glfwSetWindowMaximizeCallback` and `GLFWwindowmaximizefun` for
+  receiving window maximization events (#778)
 - Bugfix: Calling `glfwMaximizeWindow` on a full screen window was not ignored
 - Bugfix: `GLFW_INCLUDE_VULKAN` could not be combined with the corresponding
           OpenGL and OpenGL ES header macros

@@ -131,7 +131,14 @@ static void window_iconify_callback(GLFWwindow* window, int iconified)
 {
     printf("%0.2f Window %s\n",
            glfwGetTime(),
-           iconified ? "iconified" : "restored");
+           iconified ? "iconified" : "uniconified");
+}
+
+static void window_maximize_callback(GLFWwindow* window, int maximized)
+{
+    printf("%0.2f Window %s\n",
+           glfwGetTime(),
+           maximized ? "maximized" : "unmaximized");
 }
 
 static void window_refresh_callback(GLFWwindow* window)
@@ -266,6 +273,7 @@ int main(int argc, char** argv)
         glfwSetWindowSizeCallback(windows[i], window_size_callback);
         glfwSetWindowFocusCallback(windows[i], window_focus_callback);
         glfwSetWindowIconifyCallback(windows[i], window_iconify_callback);
+        glfwSetWindowMaximizeCallback(windows[i], window_maximize_callback);
         glfwSetWindowRefreshCallback(windows[i], window_refresh_callback);
 
         window_refresh_callback(windows[i]);

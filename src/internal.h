@@ -378,6 +378,7 @@ struct _GLFWwindow
         GLFWwindowrefreshfun    refresh;
         GLFWwindowfocusfun      focus;
         GLFWwindowiconifyfun    iconify;
+        GLFWwindowmaximizefun   maximize;
         GLFWframebuffersizefun  fbsize;
         GLFWmousebuttonfun      mouseButton;
         GLFWcursorposfun        cursorPos;
@@ -855,6 +856,14 @@ void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height);
  *  @ingroup event
  */
 void _glfwInputWindowIconify(_GLFWwindow* window, GLFWbool iconified);
+
+/*! @brief Notifies shared code of a window maximization event.
+ *  @param[in] window The window that received the event.
+ *  @param[in] maximized `GLFW_TRUE` if the window was maximized, or
+ *  `GLFW_FALSE` if it was restored.
+ *  @ingroup event
+ */
+void _glfwInputWindowMaximize(_GLFWwindow* window, GLFWbool maximized);
 
 /*! @brief Notifies shared code of a window damage event.
  *  @param[in] window The window that received the event.

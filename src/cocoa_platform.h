@@ -75,6 +75,8 @@ typedef struct _GLFWwindowNS
     id              delegate;
     id              view;
 
+    GLFWbool        maximized;
+
     // The total sum of the distances the cursor has been warped
     // since the last cursor motion event was processed
     // This is kept to counteract Cocoa doing the same internally

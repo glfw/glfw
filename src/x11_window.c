@@ -559,6 +559,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
             {
                 states[count++] = _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT;
                 states[count++] = _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ;
+                window->x11.maximized = GLFW_TRUE;
             }
         }
 
@@ -1415,23 +1416,37 @@ static void processEvent(XEvent *event)
 
         case PropertyNotify:
         {
-            if (event->xproperty.atom == _glfw.x11.WM_STATE &&
-                event->xproperty.state == PropertyNewValue)
+            if (event->xproperty.state != PropertyNewValue)
+                return;
+
+            if (event->xproperty.atom == _glfw.x11.WM_STATE)
             {
                 const int state = getWindowState(window);
-                if (state == IconicState)
+                if (state != IconicState && state != NormalState)
+                    return;
+
+                const GLFWbool iconified = (state == IconicState);
+                if (window->x11.iconified != iconified)
                 {
                     if (window->monitor)
-                        releaseMonitor(window);
+                    {
+                        if (iconified)
+                            releaseMonitor(window);
+                        else
+                            acquireMonitor(window);
+                    }
 
-                    _glfwInputWindowIconify(window, GLFW_TRUE);
+                    window->x11.iconified = iconified;
+                    _glfwInputWindowIconify(window, iconified);
                 }
-                else if (state == NormalState)
+            }
+            else if (event->xproperty.atom == _glfw.x11.NET_WM_STATE)
+            {
+                const GLFWbool maximized = _glfwPlatformWindowMaximized(window);
+                if (window->x11.maximized != maximized)
                 {
-                    if (window->monitor)
-                        acquireMonitor(window);
-
-                    _glfwInputWindowIconify(window, GLFW_FALSE);
+                    window->x11.maximized = maximized;
+                    _glfwInputWindowMaximize(window, maximized);
                 }
             }
 

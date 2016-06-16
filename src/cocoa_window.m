@@ -238,6 +238,13 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     if (_glfw.ns.disabledCursorWindow == window)
         centerCursor(window);
 
+    const int maximized = [window->ns.object isZoomed];
+    if (window->ns.maximized != maximized)
+    {
+        window->ns.maximized = maximized;
+        _glfwInputWindowMaximize(window, maximized);
+    }
+
     const NSRect contentRect = [window->ns.view frame];
     const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
 

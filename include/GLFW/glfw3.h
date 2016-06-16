@@ -921,6 +921,24 @@ typedef void (* GLFWwindowfocusfun)(GLFWwindow*,int);
  */
 typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
 
+/*! @brief The function signature for window maximize/restore callbacks.
+ *
+ *  This is the function signature for window maximize/restore callback
+ *  functions.
+ *
+ *  @param[in] window The window that was maximized or restored.
+ *  @param[in] iconified `GLFW_TRUE` if the window was maximized, or
+ *  `GLFW_FALSE` if it was restored.
+ *
+ *  @sa @ref window_maximize
+ *  @sa glfwSetWindowMaximizeCallback
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup window
+ */
+typedef void (* GLFWwindowmaximizefun)(GLFWwindow*,int);
+
 /*! @brief The function signature for framebuffer resize callbacks.
  *
  *  This is the function signature for framebuffer resize callback
@@ -2704,6 +2722,29 @@ GLFWAPI GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwi
  *  @ingroup window
  */
 GLFWAPI GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow* window, GLFWwindowiconifyfun cbfun);
+
+/*! @brief Sets the maximize callback for the specified window.
+ *
+ *  This function sets the maximization callback of the specified window, which
+ *  is called when the window is maximized or restored.
+ *
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_maximize
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup window
+ */
+GLFWAPI GLFWwindowmaximizefun glfwSetWindowMaximizeCallback(GLFWwindow* window, GLFWwindowmaximizefun cbfun);
 
 /*! @brief Sets the framebuffer resize callback for the specified window.
  *

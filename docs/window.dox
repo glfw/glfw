@@ -730,7 +730,8 @@ glfwIconifyWindow(window);
 When a full screen window is iconified, the original video mode of its monitor
 is restored until the user or application restores the window.
 
-Iconified windows can be restored with @ref glfwRestoreWindow.
+Iconified windows can be restored with @ref glfwRestoreWindow.  This function
+also restores windows from maximization.
 
 @code
 glfwRestoreWindow(window);
@@ -766,6 +767,54 @@ You can also get the current iconification state with @ref glfwGetWindowAttrib.
 
 @code
 int iconified = glfwGetWindowAttrib(window, GLFW_ICONIFIED);
+@endcode
+
+
+@subsection window_maximize Window maximization
+
+Windows can be maximized (i.e. zoomed) with @ref glfwMaximizeWindow.
+
+@code
+glfwMaximizeWindow(window);
+@endcode
+
+Full screen windows cannot be maximized and passing a full screen window to this
+function does nothing.
+
+Maximized windows can be restored with @ref glfwRestoreWindow.  This function
+also restores windows from iconification.
+
+@code
+glfwRestoreWindow(window);
+@endcode
+
+If you wish to be notified when a window is maximized or restored, whether by
+the user, system or your own code, set a maximize callback.
+
+@code
+glfwSetWindowMaximizeCallback(window, window_maximize_callback);
+@endcode
+
+The callback function receives changes in the maximization state of the window.
+
+@code
+void window_maximize_callback(GLFWwindow* window, int maximized)
+{
+    if (maximized)
+    {
+        // The window was maximized
+    }
+    else
+    {
+        // The window was restored
+    }
+}
+@endcode
+
+You can also get the current maximization state with @ref glfwGetWindowAttrib.
+
+@code
+int maximized = glfwGetWindowAttrib(window, GLFW_MAXIMIZED);
 @endcode
 
 

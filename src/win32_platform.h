@@ -235,6 +235,7 @@ typedef struct _GLFWwindowWin32
 
     GLFWbool            cursorTracked;
     GLFWbool            iconified;
+    GLFWbool            maximized;
 
     // The last received cursor position, regardless of source
     int                 lastCursorPosX, lastCursorPosY;

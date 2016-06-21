@@ -36,8 +36,12 @@ the issue is labeled.
 __Note:__ GLFW needs many system APIs to do its job, which on some platforms
 means linking to many system libraries.  If you are using GLFW as a static
 library, that means your application needs to link to these in addition to GLFW.
-See the [Build guide](http://www.glfw.org/docs/latest/build.html) for more
-information.
+
+__Note:__ Check the [Compiling
+GLFW](http://www.glfw.org/docs/latest/compile.html) guide and or [Building
+applications](http://www.glfw.org/docs/latest/build.html) guide for before
+opening an issue of this kind.  Most issues are caused by a missing package or
+linker flag.
 
 Always include the __operating system name and version__ (i.e. `Windows
 7 64-bit` or `Ubuntu 15.10`) and the __compiler name and version__ (i.e. `Visual
@@ -165,8 +169,12 @@ monitors output:
 
 ### Reporting an input or event bug
 
-__Note:__ While GLFW tries to provide the same behavior across platforms, the
-exact ordering of related window events will sometimes differ.
+__Note:__ The exact ordering of related window events will sometimes differ.
+
+__Note:__ Window moving and resizing (by the user) will block the main thread on some
+platforms.  This is not a bug.  Set a [refresh
+callback](http://www.glfw.org/docs/latest/window.html#window_refresh) if you
+want to keep the window contents updated during a move or size operation.
 
 The `events` tool is included in the GLFW source tree as `tests/events.c` and is
 built along with the library.  It prints all information provided to every
@@ -244,10 +252,16 @@ planning to write code for the feature, see the section below.
 __Note:__ You _must_ mention if you have taken any code from outside sources,
 even if the licenses seem compatible.
 
-Adding a complete bug fix involves:
+There is no preferred patch size.  A one character fix is very welcome, as is
+a thousand line one, if that is the appropriate size for the fix.
 
-- Change log entry in `README.md`
-- Credits entries in `README.md` for all authors of the fix
+In addition to the code, a complete bug fix includes:
+
+- Change log entry in `README.md`, describing the incorrect behavior
+- Credits entries for all authors of the bug fix
+
+If the patch fixes a bug introduced after the last release, it should not get
+a change log entry.
 
 
 ## Contributing a feature
@@ -255,27 +269,24 @@ Adding a complete bug fix involves:
 __Note:__ You _must_ mention if you have taken any code from outside sources,
 even if the licenses seem compatible.
 
-Adding a complete feature involves:
+In addition to the code, a complete feature includes:
 
-- Change log entry in `README.md`
-- News entry in `docs/news.dox`
-- Guide documentation in `docs/window.dox`, `docs/input.dox`,
-    `docs/monitor.dox`, `docs/context.dox` or `docs/vulkan.dox`
-- Reference documentation in `include/GLFW/glfw3.h`
-- Credits entries in `README.md` for all authors of the feature
+- Change log entry in `README.md`, listing all new symbols
+- News page entry, briefly describing the feature
+- Guide documentation, with minimal examples, in the relevant guide
+- Reference documentation, with all applicable tags
+- Cross-references and mentions in appropriate places
+- Credits entries for all authors of the feature
 
 If it requires platform-specific code, add at minimum stubs for the new platform
 function to all supported platforms.
 
-If it's a new callback, add support for it to `tests/event.c`.
+If it adds a new callback, add support for it in `tests/event.c`.
 
-If it's a new monitor property, add support for it to `tests/monitor.c`.
+If it adds a new monitor property, add support for it in `tests/monitor.c`.
 
-If it's a new OpenGL, OpenGL ES or Vulkan option or extension, add support for
-it to `tests/glfwinfo.c` and describe its use in `docs/compat.dox`.
-
-If it requires calling non-default DLLs on Windows, load these at runtime in
-`src/win32_init.c`.
+If it adds a new OpenGL, OpenGL ES or Vulkan option or extension, add support
+for it in `tests/glfwinfo.c` and describe its use in `docs/compat.dox`.
 
 Please keep in mind that any part of the public API that has been included in
 a release cannot be changed until the next _major_ version.  Features can be

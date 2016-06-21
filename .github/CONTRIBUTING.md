@@ -123,7 +123,7 @@ OS and version:
 GPU and driver:
 Release or commit:
 Version string:
-`glfwinfo` output:
+glfwinfo output:
 ```
 
 
@@ -159,7 +159,7 @@ doesn't run on the machine, mention this instead.
 OS and version:
 Release or commit:
 Error messages:
-`monitors` output:
+monitors output:
 ```
 
 
@@ -192,7 +192,7 @@ this tool doesn't run on the machine, mention this instead.
 OS and version:
 Release or commit:
 Error messages:
-`events` output:
+events output:
 ```
 
 
@@ -240,6 +240,9 @@ planning to write code for the feature, see the section below.
 
 
 ## Contributing a bug fix
+
+__Note:__ You _must_ mention if you have taken any code from outside sources,
+even if the licenses seem compatible.
 
 Adding a complete bug fix involves:
 

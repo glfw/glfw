@@ -30,6 +30,9 @@ There are issue labels for both platforms and GPU manufacturers, so there is no
 need to mention these in the subject line.  If you do, it will be removed when
 the issue is labeled.
 
+If your bug is already reported, please add any new information you have, or if
+it already has everything, give it a :+1:.
+
 
 ### Reporting a compile or link bug
 

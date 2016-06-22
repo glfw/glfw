@@ -383,6 +383,8 @@ static void loadWGLExtensions(void)
 
     if (!wglMakeCurrent(dc, rc))
     {
+        wglDeleteContext(rc);
+
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "WGL: Failed to make context current for WGL extension loading");
         return;

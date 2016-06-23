@@ -176,7 +176,7 @@ static int compareJoystickObjects(const void* first, const void* second)
 //
 static GLFWbool supportsXInput(const GUID* guid)
 {
-    UINT i, count;
+    UINT i, count = 0;
     RAWINPUTDEVICELIST* ridl;
     GLFWbool result = GLFW_FALSE;
 

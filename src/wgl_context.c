@@ -335,12 +335,16 @@ static void destroyContextWGL(_GLFWwindow* window)
 //
 static void loadWGLExtensions(void)
 {
-    int pf;
     PIXELFORMATDESCRIPTOR pfd;
-    HDC dc;
     HGLRC rc;
+    HDC dc = GetDC(_glfw.win32.helperWindowHandle);;
 
     _glfw.wgl.extensionsLoaded = GLFW_TRUE;
+
+    // NOTE: A dummy context has to be created for opengl32.dll to load the
+    //       OpenGL ICD, from which we can then query WGL extensions
+    // NOTE: This code will accept the Microsoft GDI ICD; accelerated context
+    //       creation failure occurs during manual pixel format enumeration
 
     ZeroMemory(&pfd, sizeof(pfd));
     pfd.nSize = sizeof(pfd);
@@ -349,27 +353,10 @@ static void loadWGLExtensions(void)
     pfd.iPixelType = PFD_TYPE_RGBA;
     pfd.cColorBits = 24;
 
-    dc = GetDC(_glfw.win32.helperWindowHandle);
-
-    pf = ChoosePixelFormat(dc, &pfd);
-    if (!pf)
+    if (!SetPixelFormat(dc, ChoosePixelFormat(dc, &pfd), &pfd))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "WGL: Failed to choose pixel format for WGL extension loading");
-        return;
-    }
-
-    if (!DescribePixelFormat(dc, pf, sizeof(pfd), &pfd))
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "WGL: Failed to describe pixel format for WGL extension loading");
-        return;
-    }
-
-    if (!SetPixelFormat(dc, pf, &pfd))
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "WGL: Failed to set pixel format for WGL extension loading");
+                        "WGL: Failed to set pixel format for dummy context");
         return;
     }
 
@@ -377,7 +364,7 @@ static void loadWGLExtensions(void)
     if (!rc)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "WGL: Failed to create context for WGL extension loading");
+                        "WGL: Failed to create dummy context");
         return;
     }
 
@@ -386,31 +373,25 @@ static void loadWGLExtensions(void)
         wglDeleteContext(rc);
 
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "WGL: Failed to make context current for WGL extension loading");
+                        "WGL: Failed to make dummy context current");
         return;
     }
 
-    // Functions for WGL_EXT_extension_string
-    // NOTE: These are needed by extensionSupported
+    // NOTE: Functions must be loaded first as they're needed to retrieve the
+    //       extension string that tells us whether the functions are supported
     _glfw.wgl.GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)
         wglGetProcAddress("wglGetExtensionsStringEXT");
     _glfw.wgl.GetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)
         wglGetProcAddress("wglGetExtensionsStringARB");
-
-    // Functions for WGL_ARB_create_context
     _glfw.wgl.CreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)
         wglGetProcAddress("wglCreateContextAttribsARB");
-
-    // Functions for WGL_EXT_swap_control
     _glfw.wgl.SwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)
         wglGetProcAddress("wglSwapIntervalEXT");
-
-    // Functions for WGL_ARB_pixel_format
     _glfw.wgl.GetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)
         wglGetProcAddress("wglGetPixelFormatAttribivARB");
 
-    // This needs to include every extension used below except for
-    // WGL_ARB_extensions_string and WGL_EXT_extensions_string
+    // NOTE: WGL_ARB_extensions_string and WGL_EXT_extensions_string are not
+    //       checked below as we are already using them
     _glfw.wgl.ARB_multisample =
         extensionSupportedWGL("WGL_ARB_multisample");
     _glfw.wgl.ARB_framebuffer_sRGB =

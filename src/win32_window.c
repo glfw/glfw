@@ -1546,8 +1546,8 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
     int characterCount;
-    HANDLE stringHandle;
-    void* clipboardBuffer;
+    HANDLE object;
+    WCHAR* buffer;
 
     characterCount = MultiByteToWideChar(CP_UTF8, 0, string, -1, NULL, 0);
     if (!characterCount)
@@ -1557,42 +1557,43 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
         return;
     }
 
-    stringHandle = GlobalAlloc(GMEM_MOVEABLE, characterCount * sizeof(WCHAR));
-    if (!stringHandle)
+    object = GlobalAlloc(GMEM_MOVEABLE, characterCount * sizeof(WCHAR));
+    if (!object)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Win32: Failed to allocate global handle for clipboard");
         return;
     }
 
-    clipboardBuffer = GlobalLock(stringHandle);
-    if (!clipboardBuffer)
+    buffer = GlobalLock(object);
+    if (!buffer)
     {
-        GlobalFree(stringHandle);
+        GlobalFree(object);
 
         _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to lock global handle");
         return;
     }
 
-    MultiByteToWideChar(CP_UTF8, 0, string, -1, clipboardBuffer, characterCount);
-    GlobalUnlock(stringHandle);
+    MultiByteToWideChar(CP_UTF8, 0, string, -1, buffer, characterCount);
+    GlobalUnlock(object);
 
     if (!OpenClipboard(_glfw.win32.helperWindowHandle))
     {
-        GlobalFree(stringHandle);
+        GlobalFree(object);
 
         _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to open clipboard");
         return;
     }
 
     EmptyClipboard();
-    SetClipboardData(CF_UNICODETEXT, stringHandle);
+    SetClipboardData(CF_UNICODETEXT, object);
     CloseClipboard();
 }
 
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {
-    HANDLE stringHandle;
+    HANDLE object;
+    WCHAR* buffer;
 
     if (!OpenClipboard(_glfw.win32.helperWindowHandle))
     {
@@ -1600,8 +1601,8 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
         return NULL;
     }
 
-    stringHandle = GetClipboardData(CF_UNICODETEXT);
-    if (!stringHandle)
+    object = GetClipboardData(CF_UNICODETEXT);
+    if (!object)
     {
         CloseClipboard();
 
@@ -1610,11 +1611,20 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
         return NULL;
     }
 
+    buffer = GlobalLock(object);
+    if (!buffer)
+    {
+        CloseClipboard();
+
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to lock global handle");
+        return NULL;
+    }
+
     free(_glfw.win32.clipboardString);
     _glfw.win32.clipboardString =
-        _glfwCreateUTF8FromWideStringWin32(GlobalLock(stringHandle));
+        _glfwCreateUTF8FromWideStringWin32(buffer);
 
-    GlobalUnlock(stringHandle);
+    GlobalUnlock(object);
     CloseClipboard();
 
     if (!_glfw.win32.clipboardString)

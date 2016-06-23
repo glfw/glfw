@@ -1545,37 +1545,41 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
-    WCHAR* wideString;
+    int characterCount;
     HANDLE stringHandle;
-    size_t wideSize;
+    void* clipboardBuffer;
 
-    wideString = _glfwCreateWideStringFromUTF8Win32(string);
-    if (!wideString)
+    characterCount = MultiByteToWideChar(CP_UTF8, 0, string, -1, NULL, 0);
+    if (!characterCount)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to convert string to UTF-16");
+                        "Win32: Failed to convert clipboard string to UTF-16");
         return;
     }
 
-    wideSize = (wcslen(wideString) + 1) * sizeof(WCHAR);
-
-    stringHandle = GlobalAlloc(GMEM_MOVEABLE, wideSize);
+    stringHandle = GlobalAlloc(GMEM_MOVEABLE, characterCount * sizeof(WCHAR));
     if (!stringHandle)
     {
-        free(wideString);
-
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Win32: Failed to allocate global handle for clipboard");
         return;
     }
 
-    memcpy(GlobalLock(stringHandle), wideString, wideSize);
+    clipboardBuffer = GlobalLock(stringHandle);
+    if (!clipboardBuffer)
+    {
+        GlobalFree(stringHandle);
+
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to lock global handle");
+        return;
+    }
+
+    MultiByteToWideChar(CP_UTF8, 0, string, -1, clipboardBuffer, characterCount);
     GlobalUnlock(stringHandle);
 
     if (!OpenClipboard(_glfw.win32.helperWindowHandle))
     {
         GlobalFree(stringHandle);
-        free(wideString);
 
         _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to open clipboard");
         return;
@@ -1584,8 +1588,6 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
     EmptyClipboard();
     SetClipboardData(CF_UNICODETEXT, stringHandle);
     CloseClipboard();
-
-    free(wideString);
 }
 
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)

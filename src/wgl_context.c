@@ -55,19 +55,17 @@ static int getPixelFormatAttrib(_GLFWwindow* window, int pixelFormat, int attrib
 
 // Return a list of available and usable framebuffer configs
 //
-static GLFWbool choosePixelFormat(_GLFWwindow* window,
-                                  const _GLFWfbconfig* desired,
-                                  int* result)
+static int choosePixelFormat(_GLFWwindow* window, const _GLFWfbconfig* desired)
 {
     _GLFWfbconfig* usableConfigs;
     const _GLFWfbconfig* closest;
-    int i, nativeCount, usableCount;
+    int i, pixelFormat, nativeCount, usableCount;
 
     if (_glfw.wgl.ARB_pixel_format)
     {
         nativeCount = getPixelFormatAttrib(window,
-                                         1,
-                                         WGL_NUMBER_PIXEL_FORMATS_ARB);
+                                           1,
+                                           WGL_NUMBER_PIXEL_FORMATS_ARB);
     }
     else
     {
@@ -197,7 +195,7 @@ static GLFWbool choosePixelFormat(_GLFWwindow* window,
                         "WGL: The driver does not appear to support OpenGL");
 
         free(usableConfigs);
-        return GLFW_FALSE;
+        return 0;
     }
 
     closest = _glfwChooseFBConfig(desired, usableConfigs, usableCount);
@@ -207,13 +205,13 @@ static GLFWbool choosePixelFormat(_GLFWwindow* window,
                         "WGL: Failed to find a suitable pixel format");
 
         free(usableConfigs);
-        return GLFW_FALSE;
+        return 0;
     }
 
-    *result = (int) closest->handle;
+    pixelFormat = (int) closest->handle;
     free(usableConfigs);
 
-    return GLFW_TRUE;
+    return pixelFormat;
 }
 
 // Returns whether desktop compositing is enabled
@@ -471,7 +469,7 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                                const _GLFWfbconfig* fbconfig)
 {
     int attribs[40];
-    int pixelFormat = 0;
+    int pixelFormat;
     PIXELFORMATDESCRIPTOR pfd;
     HGLRC share = NULL;
 
@@ -489,7 +487,8 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    if (!choosePixelFormat(window, fbconfig, &pixelFormat))
+    pixelFormat = choosePixelFormat(window, fbconfig);
+    if (!pixelFormat)
         return GLFW_FALSE;
 
     if (!DescribePixelFormat(window->context.wgl.dc,

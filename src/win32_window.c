@@ -566,7 +566,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             else
                 _glfwInputKey(window, key, scancode, action, mods);
 
-            break;
+            if(wParam == VK_MENU) {
+                return 0;
+            }
+            break; // #fix: disable system default ALT process, solve dead block problem when glfw-window is a cross-thread child window.
         }
 
         case WM_LBUTTONDOWN:

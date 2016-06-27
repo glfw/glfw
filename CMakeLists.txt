@@ -140,6 +140,9 @@ elseif (UNIX)
     elseif (GLFW_USE_MIR)
         set(_GLFW_MIR 1)
         message(STATUS "Using Mir for window creation")
+    elseif (GLFW_USE_EGLDEVICE)
+        set(_GLFW_EGLDEVICE 1)
+        message(STATUS "Using EGLDevice for window creation")
     else()
         set(_GLFW_X11 1)
         message(STATUS "Using X11 for window creation")
@@ -268,6 +271,16 @@ if (_GLFW_WAYLAND)
     list(APPEND glfw_PKG_DEPS "xkbcommon")
     list(APPEND glfw_INCLUDE_DIRS "${XKBCOMMON_INCLUDE_DIRS}")
     list(APPEND glfw_LIBRARIES "${XKBCOMMON_LIBRARY}")
+endif()
+
+#--------------------------------------------------------------------
+# Use EGLDevice for window creation
+#--------------------------------------------------------------------
+if (_GLFW_EGLDEVICE)
+
+    list(APPEND glfw_LIBRARIES "-ldrm")
+    list(APPEND glfw_LIBRARIES "-lpthread")
+
 endif()
 
 #--------------------------------------------------------------------

@@ -339,6 +339,28 @@ GLFWbool _glfwInitEGL(void)
     _glfw.egl.GetProcAddress = (PFNEGLGETPROCADDRESSPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglGetProcAddress");
 
+    if (!_glfw.egl.GetConfigAttrib ||
+        !_glfw.egl.GetConfigs ||
+        !_glfw.egl.GetDisplay ||
+        !_glfw.egl.GetError ||
+        !_glfw.egl.Initialize ||
+        !_glfw.egl.Terminate ||
+        !_glfw.egl.BindAPI ||
+        !_glfw.egl.CreateContext ||
+        !_glfw.egl.DestroySurface ||
+        !_glfw.egl.DestroyContext ||
+        !_glfw.egl.CreateWindowSurface ||
+        !_glfw.egl.MakeCurrent ||
+        !_glfw.egl.SwapBuffers ||
+        !_glfw.egl.SwapInterval ||
+        !_glfw.egl.QueryString ||
+        !_glfw.egl.GetProcAddress)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "EGL: Failed to load required entry points");
+        return GLFW_FALSE;
+    }
+
     _glfw.egl.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
     if (_glfw.egl.display == EGL_NO_DISPLAY)
     {

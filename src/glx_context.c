@@ -297,6 +297,27 @@ GLFWbool _glfwInitGLX(void)
     _glfw.glx.GetVisualFromFBConfig =
         dlsym(_glfw.glx.handle, "glXGetVisualFromFBConfig");
 
+    if (!_glfw.glx.GetFBConfigs ||
+        !_glfw.glx.GetFBConfigAttrib ||
+        !_glfw.glx.GetClientString ||
+        !_glfw.glx.QueryExtension ||
+        !_glfw.glx.QueryVersion ||
+        !_glfw.glx.DestroyContext ||
+        !_glfw.glx.MakeCurrent ||
+        !_glfw.glx.SwapBuffers ||
+        !_glfw.glx.QueryExtensionsString ||
+        !_glfw.glx.CreateNewContext ||
+        !_glfw.glx.CreateWindow ||
+        !_glfw.glx.DestroyWindow ||
+        !_glfw.glx.GetProcAddress ||
+        !_glfw.glx.GetProcAddressARB ||
+        !_glfw.glx.GetVisualFromFBConfig)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "GLX: Failed to load required entry points");
+        return GLFW_FALSE;
+    }
+
     if (!glXQueryExtension(_glfw.x11.display,
                            &_glfw.glx.errorBase,
                            &_glfw.glx.eventBase))

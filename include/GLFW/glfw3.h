@@ -2846,7 +2846,7 @@ GLFWAPI void glfwWaitEventsTimeout(double timeout);
 /*! @brief Posts an empty event to the event queue.
  *
  *  This function posts an empty event from the current thread to the event
- *  queue, causing @ref glfwWaitEvents to return.
+ *  queue, causing @ref glfwWaitEvents or @ref glfwWaitEventsTimeout to return.
  *
  *  If no windows exist, this function returns immediately.  For synchronization
  *  of threads in applications that do not create windows, use your threading
@@ -2859,6 +2859,7 @@ GLFWAPI void glfwWaitEventsTimeout(double timeout);
  *
  *  @sa @ref events
  *  @sa glfwWaitEvents
+ *  @sa glfwWaitEventsTimeout
  *
  *  @since Added in version 3.1.
  *

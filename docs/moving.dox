@@ -1,6 +1,6 @@
 /*!
 
-@page moving Moving from GLFW 2 to 3
+@page moving_guide Moving from GLFW 2 to 3
 
 @tableofcontents
 
@@ -53,13 +53,16 @@ TinyCThread.
 However, GLFW 3 has better support for _use from multiple threads_ than GLFW
 2 had.  Contexts can be made current on any thread, although only a single
 thread at a time, and the documentation explicitly states which functions may be
-used from any thread and which may only be used from the main thread.
+used from any thread and which must only be used from the main thread.
 
 @par Removed functions
 `glfwSleep`, `glfwCreateThread`, `glfwDestroyThread`, `glfwWaitThread`,
 `glfwGetThreadID`, `glfwCreateMutex`, `glfwDestroyMutex`, `glfwLockMutex`,
 `glfwUnlockMutex`, `glfwCreateCond`, `glfwDestroyCond`, `glfwWaitCond`,
 `glfwSignalCond`, `glfwBroadcastCond` and `glfwGetNumberOfProcessors`.
+
+@par Removed types
+`GLFWthreadfun`
 
 
 @subsection moving_image Removal of image and texture loading
@@ -127,7 +130,7 @@ GLFW 3 provides support for multiple monitors.  To request a full screen mode wi
 instead of passing `GLFW_FULLSCREEN` you specify which monitor you wish the
 window to use.  The @ref glfwGetPrimaryMonitor function returns the monitor that
 GLFW 2 would have selected, but there are many other
-[monitor functions](@ref monitor).  Monitor handles are pointers to the
+[monitor functions](@ref monitor_guide).  Monitor handles are pointers to the
 [opaque](https://en.wikipedia.org/wiki/Opaque_data_type) type @ref GLFWmonitor.
 
 @par Old basic full screen
@@ -216,7 +219,7 @@ glfwTerminate, the window is "open".
 A user attempting to close a window is now just an event like any other.  Unlike
 GLFW 2, windows and contexts created with GLFW 3 will never be destroyed unless
 you choose them to be.  Each window now has a close flag that is set to
-`GL_TRUE` when the user attempts to close that window.  By default, nothing else
+`GLFW_TRUE` when the user attempts to close that window.  By default, nothing else
 happens and the window stays visible.  It is then up to you to either destroy
 the window, take some other action or simply ignore the request.
 
@@ -254,7 +257,7 @@ int GLFWCALL window_close_callback(void);
 void window_close_callback(GLFWwindow* window);
 @endcode
 
-@note GLFW never clears the close flag to `GL_FALSE`, meaning you can use it
+@note GLFW never clears the close flag to `GLFW_FALSE`, meaning you can use it
 for other reasons to close the window as well, for example the user choosing
 Quit from an in-game menu.
 
@@ -416,7 +419,7 @@ these hotkeys to function even when running in full screen mode.
 
 GLFW 3 does not register @ref glfwTerminate with `atexit` at initialization,
 because `exit` calls registered functions from the calling thread and while it
-is permitted to call `exit` from any thread, @ref glfwTerminate may only be
+is permitted to call `exit` from any thread, @ref glfwTerminate must only be
 called from the main thread.
 
 To release all resources allocated by GLFW, you should call @ref glfwTerminate
@@ -429,7 +432,7 @@ invalidating any window handles you may still have.
 
 GLFW 3 does not by default include the GLU header and GLU itself has been
 deprecated by [Khronos](https://en.wikipedia.org/wiki/Khronos_Group).  __New
-projects should avoid using GLU__, but if you need to compile legacy code that
+projects should not use GLU__, but if you need it for legacy code that
 has been moved to GLFW 3, you can request that the GLFW header includes it by
 defining `GLFW_INCLUDE_GLU` before the inclusion of the GLFW header.
 
@@ -466,6 +469,15 @@ defining `GLFW_INCLUDE_GLU` before the inclusion of the GLFW header.
 | `glfwGetGLVersion`          | @ref glfwGetWindowAttrib      | Use `GLFW_CONTEXT_VERSION_MAJOR`, `GLFW_CONTEXT_VERSION_MINOR` and `GLFW_CONTEXT_REVISION` |
 | `glfwGetDesktopMode`        | @ref glfwGetVideoMode         | Returns the current mode of a monitor |
 | `glfwGetJoystickParam`      | @ref glfwJoystickPresent      | The axis and button counts are provided by @ref glfwGetJoystickAxes and @ref glfwGetJoystickButtons |
+
+
+@subsection moving_renamed_types Renamed types
+
+| GLFW 2              | GLFW 3                | Notes |
+| ------------------- | --------------------- |       |
+| `GLFWmousewheelfun` | @ref GLFWscrollfun    |       |
+| `GLFWmouseposfun`   | @ref GLFWcursorposfun |       |
+
 
 @subsection moving_renamed_tokens Renamed tokens
 

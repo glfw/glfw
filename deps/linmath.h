@@ -37,7 +37,7 @@ static inline float vec##n##_mul_inner(vec##n const a, vec##n const b) \
 } \
 static inline float vec##n##_len(vec##n const v) \
 { \
-	return sqrtf(vec##n##_mul_inner(v,v)); \
+	return (float) sqrt(vec##n##_mul_inner(v,v)); \
 } \
 static inline void vec##n##_norm(vec##n r, vec##n const v) \
 { \
@@ -554,7 +554,7 @@ static inline void quat_from_mat4x4(quat q, mat4x4 M)
 		p = &perm[i];
 	}
 
-	r = sqrtf(1.f + M[p[0]][p[0]] - M[p[1]][p[1]] - M[p[2]][p[2]] );
+	r = (float) sqrt(1.f + M[p[0]][p[0]] - M[p[1]][p[1]] - M[p[2]][p[2]] );
 
 	if(r < 1e-6) {
 		q[0] = 1.f;

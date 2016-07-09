@@ -1,11 +1,11 @@
 /*!
 
-@page compile Compiling GLFW
+@page compile_guide Compiling GLFW
 
 @tableofcontents
 
 This is about compiling the GLFW library itself.  For information on how to
-build applications that use GLFW, see the @ref build guide.
+build applications that use GLFW, see @ref build_guide.
 
 
 @section compile_cmake Using CMake
@@ -87,13 +87,10 @@ Once you have Xcode installed, move on to @ref compile_generate.
 
 @subsubsection compile_deps_x11 Dependencies for Linux and X11
 
-To compile GLFW for X11, you need to have the X11 and OpenGL header packages
-installed, as well as the basic development tools like GCC and make.  For
-example, on Ubuntu and other distributions based on Debian GNU/Linux, you need
-to install the `xorg-dev` and `libgl1-mesa-dev` packages.  The former pulls in
-all X.org header packages and the latter pulls in the Mesa OpenGL development
-packages.  Note that using header files and libraries from Mesa during
-compilation _will not_ tie your binaries to the Mesa implementation of OpenGL.
+To compile GLFW for X11, you need to have the X11 packages installed, as well as
+the basic development tools like GCC and make.  For example, on Ubuntu and other
+distributions based on Debian GNU/Linux, you need to install the `xorg-dev`
+package, which pulls in all X.org header packages.
 
 Once you have installed the necessary packages, move on to @ref
 compile_generate.
@@ -159,7 +156,7 @@ necessary to compile GLFW.  Go ahead and compile the actual GLFW library with
 these files, as you would with any other project.
 
 Once the GLFW library is compiled, you are ready to build your applications,
-linking it to the GLFW library.  See the @ref build guide for more information.
+linking it to the GLFW library.  See @ref build_guide for more information.
 
 
 @subsection compile_options CMake options
@@ -169,9 +166,17 @@ available on all supported platforms.  Some of these are de facto standards
 among projects using CMake and so have no `GLFW_` prefix.
 
 If you are using the GUI version of CMake, these are listed and can be changed
-from there.  If you are using the command-line version, use the `ccmake` tool.
-Some package systems like Ubuntu and other distributions based on Debian
-GNU/Linux have this tool in a separate `cmake-curses-gui` package.
+from there.  If you are using the command-line version of CMake you can use the
+`ccmake` ncurses GUI to set options.  Some package systems like Ubuntu and other
+distributions based on Debian GNU/Linux have this tool in a separate
+`cmake-curses-gui` package.
+
+Finally, if you don't want to use any GUI, you can set options from the `cmake`
+command-line with the `-D` flag.
+
+@code{.sh}
+cmake -DBUILD_SHARED_LIBS=ON .
+@endcode
 
 
 @subsubsection compile_options_shared Shared CMake options
@@ -182,12 +187,6 @@ library or as a DLL / shared library / dynamic library.
 `LIB_SUFFIX` affects where the GLFW shared /dynamic library is installed.  If it
 is empty, it is installed to `${CMAKE_INSTALL_PREFIX}/lib`.  If it is set to
 `64`, it is installed to `${CMAKE_INSTALL_PREFIX}/lib64`.
-
-`GLFW_CLIENT_LIBRARY` determines which client API library to use.  If set to
-`opengl` the OpenGL library is used, if set to `glesv1` for the OpenGL ES 1.x
-library is used, or if set to `glesv2` the OpenGL ES 2.0 library is used.  The
-selected library and its header files must be present on the system for this to
-work.
 
 `GLFW_BUILD_EXAMPLES` determines whether the GLFW examples are built
 along with the library.
@@ -210,8 +209,6 @@ directory of bundled applications to the `Contents/Resources` directory.
 `GLFW_USE_RETINA` determines whether windows will use the full resolution of
 Retina displays.
 
-`GLFW_BUILD_UNIVERSAL` determines whether to build Universal Binaries.
-
 
 @subsubsection compile_options_win32 Windows specific CMake options
 
@@ -228,29 +225,19 @@ need to be exported by the EXE to be detected by the driver, so the override
 will not work if GLFW is built as a DLL.
 
 
-@subsubsection compile_options_egl EGL specific CMake options
-
-`GLFW_USE_EGL` determines whether to use EGL instead of the platform-specific
-context creation API.  Note that EGL is not yet provided on all supported
-platforms.
-
-
 @section compile_manual Compiling GLFW manually
 
 If you wish to compile GLFW without its CMake build environment then you will
 have to do at least some of the platform detection yourself.  GLFW needs
-a number of configuration macros to be defined in order to know what it's being
-compiled for and has many optional, platform-specific ones for various features.
+a configuration macro to be defined in order to know what window system it's
+being compiled for and also has optional, platform-specific ones for various
+features.
 
 When building with CMake, the `glfw_config.h` configuration header is generated
 based on the current platform and CMake options.  The GLFW CMake environment
 defines `_GLFW_USE_CONFIG_H`, which causes this header to be included by
 `internal.h`.  Without this macro, GLFW will expect the necessary configuration
 macros to be defined on the command-line.
-
-Three macros _must_ be defined when compiling GLFW: one selecting the window
-creation API, one selecting the context creation API and one client library.
-Exactly one of each kind must be defined for GLFW to compile and link.
 
 The window creation API is used to create windows, handle input, monitors, gamma
 ramps and clipboard.  The options are:
@@ -261,38 +248,17 @@ ramps and clipboard.  The options are:
  - `_GLFW_WAYLAND` to use the Wayland API (experimental and incomplete)
  - `_GLFW_MIR` to use the Mir API (experimental and incomplete)
 
-The context creation API is used to enumerate pixel formats / framebuffer
-configurations and to create contexts.  The options are:
-
- - `_GLFW_NSGL` to use the Cocoa OpenGL framework
- - `_GLFW_WGL` to use the Win32 WGL API
- - `_GLFW_GLX` to use the X11 GLX API
- - `_GLFW_EGL` to use the EGL API
-
-Wayland and Mir both require the EGL backend.
-
-The client library is the one providing the OpenGL or OpenGL ES API, which is
-used by GLFW to probe the created context.  This is not the same thing as the
-client API, as many desktop OpenGL client libraries now expose the OpenGL ES API
-through extensions.  The options are:
-
- - `_GLFW_USE_OPENGL` for the desktop OpenGL (opengl32.dll, libGL.so or
-   OpenGL.framework)
- - `_GLFW_USE_GLESV1` for OpenGL ES 1.x (experimental)
- - `_GLFW_USE_GLESV2` for OpenGL ES 2.x (experimental)
-
-Note that `_GLFW_USE_GLESV1` and `_GLFW_USE_GLESV2` may only be used with EGL,
-as the other context creation APIs do not interface with OpenGL ES client
-libraries.
-
 If you are building GLFW as a shared library / dynamic library / DLL then you
-must also define `_GLFW_BUILD_DLL`.  Otherwise, you may not define it.
+must also define `_GLFW_BUILD_DLL`.  Otherwise, you must not define it.
+
+For the EGL context creation API, the following options are available:
+
+ - `_GLFW_USE_EGLPLATFORM_H` to use `EGL/eglplatform.h` for native handle
+   definitions (fallback)
 
 If you are using the X11 window creation API, support for the following X11
 extensions can be enabled:
 
- - `_GLFW_HAS_XINPUT` to use XInput2 for high-resolution cursor motion
- (recommended)
  - `_GLFW_HAS_XF86VM` to use Xxf86vm as a fallback when RandR gamma is broken
  (recommended)
 

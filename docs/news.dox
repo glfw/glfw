@@ -2,6 +2,97 @@
 
 @page news New features
 
+@section news_32 New features in 3.2
+
+
+@subsection news_32_vulkan Support for Vulkan
+
+GLFW now supports basic integration with Vulkan with @ref glfwVulkanSupported,
+@ref glfwGetRequiredInstanceExtensions, @ref glfwGetInstanceProcAddress, @ref
+glfwGetPhysicalDevicePresentationSupport and @ref glfwCreateWindowSurface.
+Vulkan header inclusion can be selected with
+[GLFW_INCLUDE_VULKAN](@ref build_macros).
+
+
+@subsection news_32_setwindowmonitor Window mode switching
+
+GLFW now supports switching between windowed and full screen modes and updating
+the monitor and desired resolution and refresh rate of full screen windows with
+@ref glfwSetWindowMonitor.
+
+
+@subsection news_32_maximize Window maxmimization support
+
+GLFW now supports window maximization with @ref glfwMaximizeWindow and the
+[GLFW_MAXIMIZED](@ref window_attribs_wnd) window hint and attribute.
+
+
+@subsection news_32_focus Window input focus control
+
+GLFW now supports giving windows input focus with @ref glfwFocusWindow.
+
+
+@subsection news_32_sizelimits Window size limit support
+
+GLFW now supports setting both absolute and relative window size limits with
+@ref glfwSetWindowSizeLimits and @ref glfwSetWindowAspectRatio.
+
+
+@subsection news_32_keyname Localized key names
+
+GLFW now supports querying the localized name of printable keys with @ref
+glfwGetKeyName, either by key token or by scancode.
+
+
+@subsection news_32_waittimeout Wait for events with timeout
+
+GLFW now supports waiting for events for a set amount of time with @ref
+glfwWaitEventsTimeout.
+
+
+@subsection news_32_icon Window icon support
+
+GLFW now supports setting the icon of windows with @ref glfwSetWindowIcon.
+
+
+@subsection news_32_timer Raw timer access
+
+GLFW now supports raw timer values with @ref glfwGetTimerValue and @ref
+glfwGetTimerFrequency.
+
+
+@subsection news_32_joystick Joystick connection callback
+
+GLFW now supports notifying when a joystick has been connected or disconnected
+with @ref glfwSetJoystickCallback.
+
+
+@subsection news_32_noapi Context-less windows
+
+GLFW now supports creating windows without a OpenGL or OpenGL ES context with
+[GLFW_NO_API](@ref window_hints_ctx).
+
+
+@subsection news_32_contextapi Run-time context creation API selection
+
+GLFW now supports selecting the context creation API at run-time with the
+[GLFW_CONTEXT_CREATION_API](@ref window_hints_ctx) window hint value.
+
+
+@subsection news_32_noerror Error-free context creation
+
+GLFW now supports creating OpenGL and OpenGL ES contexts that do not emit errors
+with the [GLFW_CONTEXT_NO_ERROR](@ref window_hints_ctx) window hint, provided
+the machine supports the `GL_KHR_no_error` extension.
+
+
+@subsection news_32_cmake CMake config-file package support
+
+GLFW now supports being used as a
+[config-file package](@ref build_link_cmake_package) from other projects for
+easy linking with the library and its dependencies.
+
+
 @section news_31 New features in 3.1
 
 These are the release highlights.  For a full list of changes see the
@@ -67,13 +158,6 @@ creation, with the [GLFW_FOCUSED](@ref window_hints_wnd) window hint.
 
 GLFW now queries the window input focus, visibility and iconification attributes
 and the cursor position directly instead of returning cached data.
-
-
-@subsection news_31_libovr Better interoperability with Oculus Rift
-
-GLFW now provides native access functions for the OS level handles corresponding
-to monitor objects, as well as a [brief guide](@ref rift).  It is also regularly
-tested for compatibility with the latest version of LibOVR (0.4.4 on release).
 
 
 @subsection news_31_charmods Character with modifiers callback

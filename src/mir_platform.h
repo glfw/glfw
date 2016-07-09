@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.1 Mir - www.glfw.org
+// GLFW 3.2 Mir - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014-2015 Brandon Schaefer <brandon.schaefer@canonical.com>
 //
@@ -29,27 +29,44 @@
 
 #include <sys/queue.h>
 #include <pthread.h>
+#include <dlfcn.h>
 
 #include <mir_toolkit/mir_client_library.h>
+
+typedef VkFlags VkMirSurfaceCreateFlagsKHR;
+
+typedef struct VkMirSurfaceCreateInfoKHR
+{
+    VkStructureType             sType;
+    const void*                 pNext;
+    VkMirSurfaceCreateFlagsKHR  flags;
+    MirConnection*              connection;
+    MirSurface*                 mirSurface;
+} VkMirSurfaceCreateInfoKHR;
+
+typedef VkResult (APIENTRY *PFN_vkCreateMirSurfaceKHR)(VkInstance,const VkMirSurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
+typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceMirPresentationSupportKHR)(VkPhysicalDevice,uint32_t,MirConnection*);
 
 #include "posix_tls.h"
 #include "posix_time.h"
 #include "linux_joystick.h"
 #include "xkb_unicode.h"
+#include "egl_context.h"
 
-#if defined(_GLFW_EGL)
- #include "egl_context.h"
-#else
- #error "The Mir backend depends on EGL platform support"
-#endif
+#define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
+#define _glfw_dlclose(handle) dlclose(handle)
+#define _glfw_dlsym(handle, name) dlsym(handle, name)
 
-#define _GLFW_EGL_NATIVE_WINDOW  window->mir.window
-#define _GLFW_EGL_NATIVE_DISPLAY _glfw.mir.display
+#define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->mir.window)
+#define _GLFW_EGL_NATIVE_DISPLAY ((EGLNativeDisplayType) _glfw.mir.display)
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowMir  mir
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorMir mir
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryMir mir
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorMir  mir
+
+#define _GLFW_PLATFORM_CONTEXT_STATE
+#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
 
 
 // Mir-specific Event Queue
@@ -70,7 +87,6 @@ typedef struct _GLFWwindowMir
 
 } _GLFWwindowMir;
 
-
 // Mir-specific per-monitor data
 //
 typedef struct _GLFWmonitorMir
@@ -82,7 +98,6 @@ typedef struct _GLFWmonitorMir
 
 } _GLFWmonitorMir;
 
-
 // Mir-specific global data
 //
 typedef struct _GLFWlibraryMir
@@ -92,11 +107,12 @@ typedef struct _GLFWlibraryMir
     MirCursorConfiguration* default_conf;
     EventQueue* event_queue;
 
+    short int       publicKeys[256];
+
     pthread_mutex_t event_mutex;
     pthread_cond_t  event_cond;
 
 } _GLFWlibraryMir;
-
 
 // Mir-specific per-cursor data
 // TODO: Only system cursors are implemented in Mir atm. Need to wait for support.
@@ -108,7 +124,7 @@ typedef struct _GLFWcursorMir
 } _GLFWcursorMir;
 
 
-extern void _glfwInitEventQueue(EventQueue* queue);
-extern void _glfwDeleteEventQueue(EventQueue* queue);
+extern void _glfwInitEventQueueMir(EventQueue* queue);
+extern void _glfwDeleteEventQueueMir(EventQueue* queue);
 
 #endif // _glfw3_mir_platform_h_

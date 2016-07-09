@@ -1,6 +1,6 @@
 //========================================================================
 // Vsync enabling test
-// Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -28,6 +28,7 @@
 //
 //========================================================================
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -36,13 +37,13 @@
 
 #include "getopt.h"
 
-static GLboolean swap_tear;
+static int swap_tear;
 static int swap_interval;
 static double frame_rate;
 
 static void usage(void)
 {
-    printf("Usage: iconify [-h] [-f]\n");
+    printf("Usage: tearing [-h] [-f]\n");
     printf("Options:\n");
     printf("  -f create full screen window\n");
     printf("  -h show this help\n");
@@ -118,7 +119,7 @@ int main(int argc, char** argv)
     float position;
     unsigned long frame_count = 0;
     double last_time, current_time;
-    GLboolean fullscreen = GL_FALSE;
+    int fullscreen = GLFW_FALSE;
     GLFWmonitor* monitor = NULL;
     GLFWwindow* window;
 
@@ -131,7 +132,7 @@ int main(int argc, char** argv)
                 exit(EXIT_SUCCESS);
 
             case 'f':
-                fullscreen = GL_TRUE;
+                fullscreen = GLFW_TRUE;
                 break;
         }
     }
@@ -170,6 +171,7 @@ int main(int argc, char** argv)
     }
 
     glfwMakeContextCurrent(window);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     set_swap_interval(window, 0);
 
     last_time = glfwGetTime();

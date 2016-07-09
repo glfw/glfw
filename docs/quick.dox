@@ -1,16 +1,16 @@
 /*!
 
-@page quick Getting started
+@page quick_guide Getting started
 
 @tableofcontents
 
 This guide takes you through writing a simple application using GLFW 3.  The
 application will create a window and OpenGL context, render a rotating triangle
-and exit when the user closes the window or presses Escape.  This guide will
+and exit when the user closes the window or presses _Escape_.  This guide will
 introduce a few of the most commonly used functions, but there are many more.
 
 This guide assumes no experience with earlier versions of GLFW.  If you
-have used GLFW 2 in the past, read the @ref moving guide, as some functions
+have used GLFW 2 in the past, read @ref moving_guide, as some functions
 behave differently in GLFW 3.
 
 
@@ -26,32 +26,32 @@ to include the GLFW 3 header file.
 @endcode
 
 This defines all the constants, types and function prototypes of the GLFW API.
-It also includes the OpenGL header, and defines all the constants and types
-necessary for it to work on your platform.
-
-For example, under Windows you are normally required to include `windows.h`
-before including `GL/gl.h`.  This would make your source file tied to Windows
-and pollute your code's namespace with the whole Win32 API.
-
-Instead, the GLFW header takes care of this for you, not by including
-`windows.h`, but rather by itself duplicating only the necessary parts of it.
-It does this only where needed, so if `windows.h` _is_ included, the GLFW header
-does not try to redefine those symbols.
+It also includes the OpenGL header from your development environment and
+defines all the constants and types necessary for it to work on your platform
+without including any platform-specific headers.
 
 In other words:
 
-- Do _not_ include the OpenGL headers yourself, as GLFW does this for you
+- Do _not_ include the OpenGL header yourself, as GLFW does this for you in
+  a platform-independent way
 - Do _not_ include `windows.h` or other platform-specific headers unless
-  you plan on using those APIs directly
-- If you _do_ need to include such headers, do it _before_ including the
-  GLFW one and it will detect this
+  you plan on using those APIs yourself
+- If you _do_ need to include such headers, include them _before_ the GLFW
+  header and it will detect this
 
-Starting with version 3.0, the GLU header `glu.h` is no longer included by
-default.  If you wish to include it, define `GLFW_INCLUDE_GLU` before the
-inclusion of the GLFW header.
+On some platforms supported by GLFW the OpenGL header and link library only
+expose older versions of OpenGL.  The most extreme case is Windows, which only
+exposes OpenGL 1.2.  The easiest way to work around this is to use an
+[extension loader library](@ref context_glext_auto).
+
+If you are using such a library then you should include its header _before_ the
+GLFW header.  This lets it replace the OpenGL header included by GLFW without
+conflicts.  This example uses
+[glad](https://github.com/Dav1dde/glad), but the same rule applies to all such
+libraries.
 
 @code
-#define GLFW_INCLUDE_GLU
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 @endcode
 
@@ -59,13 +59,17 @@ inclusion of the GLFW header.
 @subsection quick_init_term Initializing and terminating GLFW
 
 Before you can use most GLFW functions, the library must be initialized.  On
-successful initialization, `GL_TRUE` is returned.  If an error occurred,
-`GL_FALSE` is returned.
+successful initialization, `GLFW_TRUE` is returned.  If an error occurred,
+`GLFW_FALSE` is returned.
 
 @code
 if (!glfwInit())
-    exit(EXIT_FAILURE);
+{
+    // Initialization failed
+}
 @endcode
+
+Note that `GLFW_TRUE` and `GLFW_FALSE` are and will always be just one and zero.
 
 When you are done using GLFW, typically just before the application exits, you
 need to terminate GLFW.
@@ -94,7 +98,7 @@ description to `stderr`.
 @code
 void error_callback(int error, const char* description)
 {
-    fputs(description, stderr);
+    fprintf(stderr, "Error: %s\n", description);
 }
 @endcode
 
@@ -110,22 +114,36 @@ glfwSetErrorCallback(error_callback);
 
 @subsection quick_create_window Creating a window and context
 
-The window and its OpenGL context are created with a single call, which returns
-a handle to the created combined window and context object.  For example, this
-creates a 640 by 480 windowed mode window with an OpenGL context:
+The window and its OpenGL context are created with a single call to @ref
+glfwCreateWindow, which returns a handle to the created combined window and
+context object
 
 @code
 GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
-@endcode
-
-If window or context creation fails, `NULL` will be returned, so it is necessary
-to check the return value.
-
-@code
 if (!window)
 {
-    glfwTerminate();
-    exit(EXIT_FAILURE);
+    // Window or OpenGL context creation failed
+}
+@endcode
+
+This creates a 640 by 480 windowed mode window with an OpenGL context.  If
+window or OpenGL context creation fails, `NULL` will be returned.  You should
+always check the return value.  While window creation rarely fails, context
+creation depends on properly installed drivers and may fail even on machines
+with the necessary hardware.
+
+By default, the OpenGL context GLFW creates may have any version.  You can
+require a minimum OpenGL version by setting the `GLFW_CONTEXT_VERSION_MAJOR` and
+`GLFW_CONTEXT_VERSION_MINOR` hints _before_ creation.  If the required minimum
+version is not supported on the machine, context (and window) creation fails.
+
+@code
+glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
+if (!window)
+{
+    // Window or context creation failed
 }
 @endcode
 
@@ -133,7 +151,7 @@ The window handle is passed to all window related functions and is provided to
 along to all window related callbacks, so they can tell which window received
 the event.
 
-When a window is no longer needed, destroy it.
+When a window and context is no longer needed, destroy it.
 
 @code
 glfwDestroyWindow(window);
@@ -153,6 +171,16 @@ glfwMakeContextCurrent(window);
 
 The context will remain current until you make another context current or until
 the window owning the current context is destroyed.
+
+If you are using an [extension loader library](@ref context_glext_auto) to
+access modern OpenGL then this is when to initialize it, as the loader needs
+a current context to load from.  This example uses
+[glad](https://github.com/Dav1dde/glad), but the same rule applies to all such
+libraries. 
+
+@code
+gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+@endcode
 
 
 @subsection quick_window_close Checking the window close flag
@@ -178,7 +206,7 @@ called immediately after the close flag has been set.
 
 You can also set it yourself with @ref glfwSetWindowShouldClose.  This can be
 useful if you want to interpret other kinds of input as closing the window, like
-for example pressing the escape key.
+for example pressing the _Escape_ key.
 
 
 @subsection quick_key_input Receiving input events
@@ -191,7 +219,7 @@ callback function.
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GL_TRUE);
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 @endcode
 
@@ -218,7 +246,14 @@ glViewport(0, 0, width, height);
 @endcode
 
 You can also set a framebuffer size callback using @ref
-glfwSetFramebufferSizeCallback and call `glViewport` from there.
+glfwSetFramebufferSizeCallback and be notified when the size changes.
+
+Actual rendering with OpenGL is outside the scope of this tutorial, but there
+are [many](https://open.gl/) [excellent](http://learnopengl.com/)
+[tutorial](http://openglbook.com/) [sites](http://ogldev.atspace.co.uk/) that
+teach modern OpenGL.  Some of them use GLFW to create the context and window
+while others use GLUT or SDL, but remember that OpenGL itself always works the
+same.
 
 
 @subsection quick_timer Reading the timer
@@ -295,34 +330,35 @@ for example, many kinds of editing tools.
 Now that you know how to initialize GLFW, create a window and poll for
 keyboard input, it's possible to create a simple program.
 
-@snippet simple.c code
-
 This program creates a 640 by 480 windowed mode window and starts a loop that
 clears the screen, renders a triangle and processes events until the user either
-presses Escape or closes the window.
+presses _Escape_ or closes the window.
 
-This program uses only a few of the many functions GLFW provides.  There are
+@snippet simple.c code
+
+The program above can be found in the
+[source package](http://www.glfw.org/download.html) as `examples/simple.c`
+and is compiled along with all other examples when you build GLFW.  If you
+built GLFW from the source package then already have this as `simple.exe` on
+Windows, `simple` on Linux or `simple.app` on OS X.
+
+This tutorial used only a few of the many functions GLFW provides.  There are
 guides for each of the areas covered by GLFW.  Each guide will introduce all the
 functions for that category.
 
- - @ref intro
- - @ref window
- - @ref context
- - @ref monitor
- - @ref input
+ - @ref intro_guide
+ - @ref window_guide
+ - @ref context_guide
+ - @ref monitor_guide
+ - @ref input_guide
 
+You can access reference documentation for any GLFW function by clicking it and
+the reference for each function links to related functions and guide sections.
 
-@section quick_build Compiling and linking the program
-
-The complete program above can be found in the source distribution as
-`examples/simple.c` and is compiled along with all other examples when you
-build GLFW.  That is, if you have compiled GLFW then you have already built this
-as `simple.exe` on Windows, `simple` on Linux or `simple.app` on OS X.
-
-This tutorial ends here.  Once you have written a program that uses GLFW, you
+The tutorial ends here.  Once you have written a program that uses GLFW, you
 will need to compile and link it.  How to do that depends on the development
 environment you are using and is best explained by the documentation for that
 environment.  To learn about the details that are specific to GLFW, see
-@ref build.
+@ref build_guide.
 
 */

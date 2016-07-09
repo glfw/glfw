@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.1 POSIX - www.glfw.org
+// GLFW 3.2 POSIX - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -37,13 +37,13 @@
 //
 typedef struct _GLFWtlsPOSIX
 {
+    GLFWbool        allocated;
     pthread_key_t   context;
 
 } _GLFWtlsPOSIX;
 
 
-int _glfwCreateContextTLS(void);
-void _glfwDestroyContextTLS(void);
-void _glfwSetContextTLS(_GLFWwindow* context);
+GLFWbool _glfwInitThreadLocalStoragePOSIX(void);
+void _glfwTerminateThreadLocalStoragePOSIX(void);
 
 #endif // _glfw3_posix_tls_h_

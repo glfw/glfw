@@ -1,6 +1,6 @@
 //========================================================================
 // Gamma correction test program
-// Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -28,6 +28,7 @@
 //
 //========================================================================
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -42,6 +43,9 @@ static GLfloat gamma_value = 1.0f;
 static void usage(void)
 {
     printf("Usage: gamma [-h] [-f]\n");
+    printf("Options:\n");
+    printf("  -f create full screen window\n");
+    printf("  -h show this help\n");
 }
 
 static void set_gamma(GLFWwindow* window, float value)
@@ -69,11 +73,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     {
         case GLFW_KEY_ESCAPE:
         {
-            glfwSetWindowShouldClose(window, GL_TRUE);
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
             break;
         }
 
         case GLFW_KEY_KP_ADD:
+        case GLFW_KEY_UP:
         case GLFW_KEY_Q:
         {
             set_gamma(window, gamma_value + STEP_SIZE);
@@ -81,6 +86,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         }
 
         case GLFW_KEY_KP_SUBTRACT:
+        case GLFW_KEY_DOWN:
         case GLFW_KEY_W:
         {
             if (gamma_value - STEP_SIZE > 0.f)
@@ -153,6 +159,7 @@ int main(int argc, char** argv)
     set_gamma(window, 1.f);
 
     glfwMakeContextCurrent(window);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
 
     glfwSetKeyCallback(window, key_callback);

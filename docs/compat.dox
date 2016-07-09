@@ -1,6 +1,6 @@
 /*!
 
-@page compat Standards conformance
+@page compat_guide Standards conformance
 
 @tableofcontents
 
@@ -63,10 +63,6 @@ GLFW uses the
 to provide file drop events.  If the application originating the drag does not
 support this protocol, drag and drop will not work.
 
-GLFW uses the XInput 2 extension to provide sub-pixel cursor motion events.  If
-the running X server does not support this version of this extension, cursor
-motion will be snapped to the pixel grid.
-
 GLFW uses the XRandR 1.3 extension to provide multi-monitor support.  If the
 running X server does not support this version of this extension, multi-monitor
 support will not function and only a single, desktop-spanning monitor will be
@@ -103,14 +99,14 @@ creating OpenGL contexts of version 2.1 and below.  Where this extension is
 unavailable, the `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR`
 hints will only be partially supported, the `GLFW_OPENGL_DEBUG_CONTEXT` hint
 will have no effect, and setting the `GLFW_OPENGL_PROFILE` or
-`GLFW_OPENGL_FORWARD_COMPAT` hints to `GL_TRUE` will cause @ref
+`GLFW_OPENGL_FORWARD_COMPAT` hints to `GLFW_TRUE` will cause @ref
 glfwCreateWindow to fail.
 
 GLFW uses the `GLX_ARB_create_context_profile` extension to provide support for
 context profiles.  Where this extension is unavailable, setting the
 `GLFW_OPENGL_PROFILE` hint to anything but `GLFW_OPENGL_ANY_PROFILE`, or setting
-`GLFW_CLIENT_API` to anything but `GLFW_OPENGL_API` will cause @ref
-glfwCreateWindow to fail.
+`GLFW_CLIENT_API` to anything but `GLFW_OPENGL_API` or `GLFW_NO_API` will cause
+@ref glfwCreateWindow to fail.
 
 GLFW uses the `GLX_ARB_context_flush_control` extension to provide control over
 whether a context is flushed when it is released (made non-current).  Where this
@@ -146,7 +142,7 @@ creating OpenGL contexts of version 2.1 and below.  Where this extension is
 unavailable, the `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR`
 hints will only be partially supported, the `GLFW_OPENGL_DEBUG_CONTEXT` hint
 will have no effect, and setting the `GLFW_OPENGL_PROFILE` or
-`GLFW_OPENGL_FORWARD_COMPAT` hints to `GL_TRUE` will cause @ref
+`GLFW_OPENGL_FORWARD_COMPAT` hints to `GLFW_TRUE` will cause @ref
 glfwCreateWindow to fail.
 
 GLFW uses the `WGL_ARB_create_context_profile` extension to provide support for
@@ -176,7 +172,7 @@ version 2.1.
 Because of this, on OS X 10.7 and later, the `GLFW_CONTEXT_VERSION_MAJOR` and
 `GLFW_CONTEXT_VERSION_MINOR` hints will cause @ref glfwCreateWindow to fail if
 given version 3.0 or 3.1, the `GLFW_OPENGL_FORWARD_COMPAT` hint must be set to
-`GL_TRUE` and the `GLFW_OPENGL_PROFILE` hint must be set to
+`GLFW_TRUE` and the `GLFW_OPENGL_PROFILE` hint must be set to
 `GLFW_OPENGL_CORE_PROFILE` when creating OpenGL 3.2 and later contexts and the
 `GLFW_OPENGL_DEBUG_CONTEXT` hint is ignored.
 
@@ -185,5 +181,44 @@ Also, on Mac OS X 10.6 and below, the `GLFW_CONTEXT_VERSION_MAJOR` and
 setting the `GLFW_OPENGL_PROFILE` or `GLFW_OPENGL_FORWARD_COMPAT` hints to
 a non-default value will cause @ref glfwCreateWindow to fail and the
 `GLFW_OPENGL_DEBUG_CONTEXT` hint is ignored.
+
+
+@section compat_vulkan Vulkan loader and API
+
+GLFW uses the standard system-wside Vulkan loader to access the Vulkan API.
+This should be installed by graphics drivers and Vulkan SDKs.  If this is not
+available, @ref glfwVulkanSupported will return `GLFW_FALSE` and all other
+Vulkan-related functions will fail with an @ref GLFW_API_UNAVAILABLE error.
+
+
+@section compat_wsi Vulkan WSI extensions
+
+The Vulkan WSI extensions are used to create Vulkan surfaces for GLFW windows on
+all supported platforms.
+
+GLFW uses the `VK_KHR_surface` and `VK_KHR_win32_surface` extensions to create
+surfaces on Microsoft Windows.  If any of these extensions are not available,
+@ref glfwGetRequiredInstanceExtensions will return an empty list and window
+surface creation will fail.
+
+GLFW uses the `VK_KHR_surface` and either the `VK_KHR_xlib_surface` or
+`VK_KHR_xcb_surface` extensions to create surfaces on X11.  If `VK_KHR_surface`
+or both `VK_KHR_xlib_surface` and `VK_KHR_xcb_surface` are not available, @ref
+glfwGetRequiredInstanceExtensions will return an empty list and window surface
+creation will fail.
+
+GLFW uses the `VK_KHR_surface` and `VK_KHR_wayland_surface` extensions to create
+surfaces on Wayland.  If any of these extensions are not available, @ref
+glfwGetRequiredInstanceExtensions will return an empty list and window surface
+creation will fail.
+
+GLFW uses the `VK_KHR_surface` and `VK_KHR_mir_surface` extensions to create
+surfaces on Mir.  If any of these extensions are not available, @ref
+glfwGetRequiredInstanceExtensions will return an empty list and window surface
+creation will fail.
+
+GLFW does not support any extensions for window surface creation on OS X,
+meaning@ref glfwGetRequiredInstanceExtensions will return an empty list and
+window surface creation will fail.
 
 */

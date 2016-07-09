@@ -1,18 +1,21 @@
 /*! 
 
-@page intro Introduction to the API
+@page intro_guide Introduction to the API
  
 @tableofcontents
 
-This guide introduces the basic concepts of GLFW and describes initialization,
+This guide introduces the basic concepts of GLFW and describes initialization reference
 error handling and API guarantees and limitations.  For a broad but shallow
-tutorial, see @ref quick instead.  There are also guides for the other areas of
-GLFW.
+tutorial, see @ref quick_guide instead.  For details on a specific function, see the
+[reference documentation](@ref init).
 
- - @ref window
- - @ref context
- - @ref monitor
- - @ref input
+There are also guides for the other areas of GLFW.
+
+ - @ref window_guide
+ - @ref context_guide
+ - @ref vulkan_guide
+ - @ref monitor_guide
+ - @ref input_guide
 
 
 @section intro_init Initialization and termination
@@ -37,7 +40,7 @@ GLFW_NOT_INITIALIZED error.
 
 @subsection intro_init_init Initializing GLFW
 
-The library is initialized with @ref glfwInit, which returns `GL_FALSE` if an
+The library is initialized with @ref glfwInit, which returns `GLFW_FALSE` if an
 error occurred.
 
 @code
@@ -50,7 +53,7 @@ if (!glfwInit())
 If any part of initialization fails, all remaining bits are terminated as if
 @ref glfwTerminate was called.  The library only needs to be initialized once
 and additional calls to an already initialized library will simply return
-`GL_TRUE` immediately.
+`GLFW_TRUE` immediately.
 
 Once the library has been successfully initialized, it should be terminated
 before the application exits.
@@ -184,7 +187,7 @@ releases.
 @subsection reentrancy Reentrancy
 
 GLFW event processing and object creation and destruction are not reentrant.
-This means that the following functions may not be called from any callback
+This means that the following functions must not be called from any callback
 function:
 
  - @ref glfwCreateWindow
@@ -194,6 +197,7 @@ function:
  - @ref glfwDestroyCursor
  - @ref glfwPollEvents
  - @ref glfwWaitEvents
+ - @ref glfwWaitEventsTimeout
  - @ref glfwTerminate
 
 These functions may be made reentrant in future minor or patch releases, but
@@ -202,10 +206,10 @@ functions not on this list will not be made non-reentrant.
 
 @subsection thread_safety Thread safety
 
-Most GLFW functions may only be called from the main thread, but some may be
-called from any thread.  However, no GLFW function may be called from any other
-thread until GLFW has been successfully initialized on the main thread,
-including functions that may called before initialization.
+Most GLFW functions must only be called from the main thread, but some may be
+called from any thread.  However, no GLFW function may be called from any thread
+but the main thread until GLFW has been successfully initialized, including
+functions that may called before initialization.
 
 The reference documentation for every GLFW function states whether it is limited
 to the main thread.                                                        
@@ -239,10 +243,18 @@ may be called from any thread:
  - @ref glfwExtensionSupported
  - @ref glfwGetProcAddress
 
-The timer may be accessed from any thread, but this is not synchronized by GLFW.
-The following timer related functions may be called from any thread:        
+The raw timer may be queried from any thread.  The following raw timer related
+functions may be called from any thread:
+
+ - @ref glfwGetTimerFrequency
+ - @ref glfwGetTimerValue
+
+The regular timer may be used from any thread, but the reading and writing of
+the timer offset is not synchronized by GLFW.  The following timer related
+functions may be called from any thread:
 
  - @ref glfwGetTime
+ - @ref glfwSetTime
 
 Library version information may be queried from any thread.  The following
 version related functions may be called from any thread:
@@ -250,13 +262,22 @@ version related functions may be called from any thread:
  - @ref glfwGetVersion
  - @ref glfwGetVersionString
 
+Vulkan objects may be created and information queried from any thread.  The
+following Vulkan related functions may be called from any thread:
+
+ - @ref glfwVulkanSupported
+ - @ref glfwGetRequiredInstanceExtensions
+ - @ref glfwGetInstanceProcAddress
+ - @ref glfwGetPhysicalDevicePresentationSupport
+ - @ref glfwCreateWindowSurface
+
 GLFW uses no synchronization objects internally except for thread-local storage
 to keep track of the current context for each thread.  Synchronization is left
 to the application.
 
 Functions that may currently be called from any thread will always remain so,
-but functions that are currently limited to the main may be updated to allow
-calls from any thread in future releases.
+but functions that are currently limited to the main thread may be updated to
+allow calls from any thread in future releases.
 
 
 @subsection compatibility Version compatibility

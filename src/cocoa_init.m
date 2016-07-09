@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.1 OS X - www.glfw.org
+// GLFW 3.2 OS X - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2009-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -72,7 +72,10 @@ static void changeToResourcesDirectory(void)
 //
 static void createKeyTables(void)
 {
+    int scancode;
+
     memset(_glfw.ns.publicKeys, -1, sizeof(_glfw.ns.publicKeys));
+    memset(_glfw.ns.nativeKeys, -1, sizeof(_glfw.ns.nativeKeys));
 
     _glfw.ns.publicKeys[0x1D] = GLFW_KEY_0;
     _glfw.ns.publicKeys[0x12] = GLFW_KEY_1;
@@ -188,7 +191,105 @@ static void createKeyTables(void)
     _glfw.ns.publicKeys[0x51] = GLFW_KEY_KP_EQUAL;
     _glfw.ns.publicKeys[0x43] = GLFW_KEY_KP_MULTIPLY;
     _glfw.ns.publicKeys[0x4E] = GLFW_KEY_KP_SUBTRACT;
+
+    for (scancode = 0;  scancode < 256;  scancode++)
+    {
+        // Store the reverse translation for faster key name lookup
+        if (_glfw.ns.publicKeys[scancode] >= 0)
+            _glfw.ns.nativeKeys[_glfw.ns.publicKeys[scancode]] = scancode;
+    }
 }
+
+// Retrieve Unicode data for the current keyboard layout
+//
+static GLFWbool updateUnicodeDataNS(void)
+{
+    if (_glfw.ns.inputSource)
+    {
+        CFRelease(_glfw.ns.inputSource);
+        _glfw.ns.inputSource = NULL;
+        _glfw.ns.unicodeData = nil;
+    }
+
+    _glfw.ns.inputSource = TISCopyCurrentKeyboardLayoutInputSource();
+    if (!_glfw.ns.inputSource)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to retrieve keyboard layout input source");
+        return GLFW_FALSE;
+    }
+
+    _glfw.ns.unicodeData = TISGetInputSourceProperty(_glfw.ns.inputSource,
+                                                     kTISPropertyUnicodeKeyLayoutData);
+    if (!_glfw.ns.unicodeData)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to retrieve keyboard layout Unicode data");
+        return GLFW_FALSE;
+    }
+
+    return GLFW_TRUE;
+}
+
+// Load HIToolbox.framework and the TIS symbols we need from it
+//
+static GLFWbool initializeTIS(void)
+{
+    // This works only because Cocoa has already loaded it properly
+    _glfw.ns.tis.bundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.HIToolbox"));
+    if (!_glfw.ns.tis.bundle)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to load HIToolbox.framework");
+        return GLFW_FALSE;
+    }
+
+    CFStringRef* kPropertyUnicodeKeyLayoutData =
+        CFBundleGetDataPointerForName(_glfw.ns.tis.bundle,
+                                      CFSTR("kTISPropertyUnicodeKeyLayoutData"));
+    CFStringRef* kNotifySelectedKeyboardInputSourceChanged =
+        CFBundleGetDataPointerForName(_glfw.ns.tis.bundle,
+                                      CFSTR("kTISNotifySelectedKeyboardInputSourceChanged"));
+    _glfw.ns.tis.CopyCurrentKeyboardLayoutInputSource =
+        CFBundleGetFunctionPointerForName(_glfw.ns.tis.bundle,
+                                          CFSTR("TISCopyCurrentKeyboardLayoutInputSource"));
+    _glfw.ns.tis.GetInputSourceProperty =
+        CFBundleGetFunctionPointerForName(_glfw.ns.tis.bundle,
+                                          CFSTR("TISGetInputSourceProperty"));
+    _glfw.ns.tis.GetKbdType =
+        CFBundleGetFunctionPointerForName(_glfw.ns.tis.bundle,
+                                          CFSTR("LMGetKbdType"));
+
+    if (!kPropertyUnicodeKeyLayoutData ||
+        !kNotifySelectedKeyboardInputSourceChanged ||
+        !TISCopyCurrentKeyboardLayoutInputSource ||
+        !TISGetInputSourceProperty ||
+        !LMGetKbdType)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to load TIS API symbols");
+        return GLFW_FALSE;
+    }
+
+    _glfw.ns.tis.kPropertyUnicodeKeyLayoutData =
+        *kPropertyUnicodeKeyLayoutData;
+    _glfw.ns.tis.kNotifySelectedKeyboardInputSourceChanged =
+        *kNotifySelectedKeyboardInputSourceChanged;
+
+    return updateUnicodeDataNS();
+}
+
+@interface GLFWLayoutListener : NSObject
+@end
+
+@implementation GLFWLayoutListener
+
+- (void)selectedKeyboardInputSourceChanged:(NSObject* )object
+{
+    updateUnicodeDataNS();
+}
+
+@end
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -199,6 +300,13 @@ int _glfwPlatformInit(void)
 {
     _glfw.ns.autoreleasePool = [[NSAutoreleasePool alloc] init];
 
+    _glfw.ns.listener = [[GLFWLayoutListener alloc] init];
+    [[NSDistributedNotificationCenter defaultCenter]
+        addObserver:_glfw.ns.listener
+           selector:@selector(selectedKeyboardInputSourceChanged:)
+               name:(__bridge NSString*)kTISNotifySelectedKeyboardInputSourceChanged
+             object:nil];
+
 #if defined(_GLFW_USE_CHDIR)
     changeToResourcesDirectory();
 #endif
@@ -207,21 +315,34 @@ int _glfwPlatformInit(void)
 
     _glfw.ns.eventSource = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
     if (!_glfw.ns.eventSource)
-        return GL_FALSE;
+        return GLFW_FALSE;
 
     CGEventSourceSetLocalEventsSuppressionInterval(_glfw.ns.eventSource, 0.0);
 
-    if (!_glfwInitContextAPI())
-        return GL_FALSE;
+    if (!initializeTIS())
+        return GLFW_FALSE;
 
-    _glfwInitTimer();
-    _glfwInitJoysticks();
+    if (!_glfwInitThreadLocalStoragePOSIX())
+        return GLFW_FALSE;
 
-    return GL_TRUE;
+    if (!_glfwInitNSGL())
+        return GLFW_FALSE;
+
+    _glfwInitTimerNS();
+    _glfwInitJoysticksNS();
+
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformTerminate(void)
 {
+    if (_glfw.ns.inputSource)
+    {
+        CFRelease(_glfw.ns.inputSource);
+        _glfw.ns.inputSource = NULL;
+        _glfw.ns.unicodeData = nil;
+    }
+
     if (_glfw.ns.eventSource)
     {
         CFRelease(_glfw.ns.eventSource);
@@ -235,24 +356,32 @@ void _glfwPlatformTerminate(void)
         _glfw.ns.delegate = nil;
     }
 
-    [_glfw.ns.autoreleasePool release];
-    _glfw.ns.autoreleasePool = nil;
+    if (_glfw.ns.listener)
+    {
+        [[NSDistributedNotificationCenter defaultCenter]
+            removeObserver:_glfw.ns.listener
+                      name:(__bridge NSString*)kTISNotifySelectedKeyboardInputSourceChanged
+                    object:nil];
+        [_glfw.ns.listener release];
+        _glfw.ns.listener = nil;
+    }
 
     [_glfw.ns.cursor release];
     _glfw.ns.cursor = nil;
 
     free(_glfw.ns.clipboardString);
 
-    _glfwTerminateJoysticks();
-    _glfwTerminateContextAPI();
+    _glfwTerminateNSGL();
+    _glfwTerminateJoysticksNS();
+    _glfwTerminateThreadLocalStoragePOSIX();
+
+    [_glfw.ns.autoreleasePool release];
+    _glfw.ns.autoreleasePool = nil;
 }
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    return _GLFW_VERSION_NUMBER " Cocoa"
-#if defined(_GLFW_NSGL)
-        " NSGL"
-#endif
+    return _GLFW_VERSION_NUMBER " Cocoa NSGL"
 #if defined(_GLFW_USE_CHDIR)
         " chdir"
 #endif

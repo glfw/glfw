@@ -1,6 +1,6 @@
 //========================================================================
 // Clipboard test program
-// Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -27,6 +27,7 @@
 //
 //========================================================================
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -58,7 +59,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     switch (key)
     {
         case GLFW_KEY_ESCAPE:
-            glfwSetWindowShouldClose(window, GL_TRUE);
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
             break;
 
         case GLFW_KEY_V:
@@ -127,6 +128,7 @@ int main(int argc, char** argv)
     }
 
     glfwMakeContextCurrent(window);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
 
     glfwSetKeyCallback(window, key_callback);

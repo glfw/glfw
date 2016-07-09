@@ -1,16 +1,19 @@
 /*!
 
-@page context Context guide
+@page context_guide Context guide
 
 @tableofcontents
 
 This guide introduces the OpenGL and OpenGL ES context related functions of
-GLFW.  There are also guides for the other areas of the GLFW API.
+GLFW.  For details on a specific function, see the
+[reference documentation](@ref context).  There are also guides for the other
+areas of the GLFW API.
 
- - @ref intro
- - @ref window
- - @ref monitor
- - @ref input
+ - @ref intro_guide
+ - @ref window_guide
+ - @ref vulkan_guide
+ - @ref monitor_guide
+ - @ref input_guide
 
 
 @section context_object Context objects
@@ -25,6 +28,11 @@ as the context handle.
 
 To test the creation of various kinds of contexts and see their properties, run
 the `glfwinfo` test program.
+
+@note Vulkan does not have a context and the Vulkan instance is created via the
+Vulkan API itself.  If you will be using Vulkan to render to a window, disable
+context creation by setting the [GLFW_CLIENT_API](@ref window_hints_ctx) hint to
+`GLFW_NO_API`.  For more information, see the @ref vulkan_guide.
 
 
 @subsection context_hints Context creation hints
@@ -64,7 +72,7 @@ contexts with hidden windows can be created with the
 [GLFW_VISIBLE](@ref window_hints_wnd) window hint.
 
 @code
-glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
 GLFWwindow* offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
 @endcode
@@ -74,10 +82,21 @@ offscreen context.  Depending on the window manager, the size of a hidden
 window's framebuffer may not be usable or modifiable, so framebuffer
 objects are recommended for rendering with such contexts.
 
+You should still [process events](@ref events) as long as you have at least one
+window, even if none of them are visible.
+
 __OS X:__ The first time a window is created the menu bar is populated with
 common commands like Hide, Quit and About.  This is not desirable for example
 when writing a command-line only application.  The menu bar setup can be
 disabled with a [compile-time option](@ref compile_options_osx).
+
+
+@subsection context_less Windows without contexts
+
+You can disable context creation by setting the
+[GLFW_CLIENT_API](@ref window_hints_ctx) hint to `GLFW_NO_API`.  Windows without
+contexts must not be passed to @ref glfwMakeContextCurrent or @ref
+glfwSwapBuffers.
 
 
 @section context_current Current context
@@ -115,7 +134,7 @@ Buffer swapping is part of the window and framebuffer, not the context.  See
 
 @section context_glext OpenGL and OpenGL ES extensions
 
-One of the benefits of OpenGL and OpenGL ES are their extensibility.
+One of the benefits of OpenGL and OpenGL ES is their extensibility.
 Hardware vendors may include extensions in their implementations that extend the
 API before that functionality is included in a new version of the OpenGL or
 OpenGL ES specification, and some extensions are never included and remain
@@ -158,9 +177,10 @@ python main.py --generator c --no-loader --out-path output
 @endcode
 
 The `--no-loader` option is added because GLFW already provides a function for
-loading OpenGL and OpenGL ES function pointers and glad can call this instead of
-having to implement its own.  There are several other command-line options as
-well.  See the glad documentation for details.
+loading OpenGL and OpenGL ES function pointers, one that automatically uses the
+selected context creation API, and glad can call this instead of having to
+implement its own.  There are several other command-line options as well.  See
+the glad documentation for details.
 
 Add the generated `output/src/glad.c`, `output/include/glad/glad.h` and
 `output/include/KHR/khrplatform.h` files to your build.  Then you need to
@@ -271,8 +291,8 @@ if (glfwExtensionSupported("GL_ARB_debug_output"))
 @endcode
 
 The argument is a null terminated ASCII string with the extension name.  If the
-extension is supported, @ref glfwExtensionSupported returns `GL_TRUE`, otherwise
-it returns `GL_FALSE`.
+extension is supported, @ref glfwExtensionSupported returns `GLFW_TRUE`,
+otherwise it returns `GLFW_FALSE`.
 
 
 @subsubsection context_glext_proc Fetching function pointers

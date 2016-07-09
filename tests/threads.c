@@ -1,6 +1,6 @@
 //========================================================================
 // Multi-threading test
-// Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -30,6 +30,7 @@
 
 #include "tinycthread.h"
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -44,7 +45,7 @@ typedef struct
     thrd_t id;
 } Thread;
 
-static volatile GLboolean running = GL_TRUE;
+static volatile int running = GLFW_TRUE;
 
 static void error_callback(int error, const char* description)
 {
@@ -87,7 +88,7 @@ int main(void)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     for (i = 0;  i < count;  i++)
     {
@@ -102,7 +103,14 @@ int main(void)
 
         glfwSetWindowPos(threads[i].window, 200 + 250 * i, 200);
         glfwShowWindow(threads[i].window);
+    }
 
+    glfwMakeContextCurrent(threads[0].window);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    glfwMakeContextCurrent(NULL);
+
+    for (i = 0;  i < count;  i++)
+    {
         if (thrd_create(&threads[i].id, thread_main, threads + i) !=
             thrd_success)
         {
@@ -120,7 +128,7 @@ int main(void)
         for (i = 0;  i < count;  i++)
         {
             if (glfwWindowShouldClose(threads[i].window))
-                running = GL_FALSE;
+                running = GLFW_FALSE;
         }
     }
 

@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.1 OS X - www.glfw.org
+// GLFW 3.2 OS X - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2009-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -27,7 +27,6 @@
 #ifndef _glfw3_nsgl_context_h_
 #define _glfw3_nsgl_context_h_
 
-#define _GLFW_PLATFORM_FBCONFIG
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextNSGL nsgl
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryNSGL nsgl
 
@@ -37,26 +36,25 @@
 typedef struct _GLFWcontextNSGL
 {
     id           pixelFormat;
-    id	         context;
+    id	         object;
 
 } _GLFWcontextNSGL;
-
 
 // NSGL-specific global data
 //
 typedef struct _GLFWlibraryNSGL
 {
     // dlopen handle for OpenGL.framework (for glfwGetProcAddress)
-    void*           framework;
+    CFBundleRef     framework;
 
 } _GLFWlibraryNSGL;
 
 
-int _glfwInitContextAPI(void);
-void _glfwTerminateContextAPI(void);
-int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWctxconfig* ctxconfig,
-                       const _GLFWfbconfig* fbconfig);
-void _glfwDestroyContext(_GLFWwindow* window);
+GLFWbool _glfwInitNSGL(void);
+void _glfwTerminateNSGL(void);
+GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
+                                const _GLFWctxconfig* ctxconfig,
+                                const _GLFWfbconfig* fbconfig);
+void _glfwDestroyContextNSGL(_GLFWwindow* window);
 
 #endif // _glfw3_nsgl_context_h_

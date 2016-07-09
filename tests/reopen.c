@@ -1,6 +1,6 @@
 //========================================================================
 // Window re-opener (open/close stress test)
-// Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -33,6 +33,7 @@
 //
 //========================================================================
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <time.h>
@@ -63,7 +64,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     {
         case GLFW_KEY_Q:
         case GLFW_KEY_ESCAPE:
-            glfwSetWindowShouldClose(window, GL_TRUE);
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
             break;
     }
 }
@@ -80,6 +81,7 @@ static GLFWwindow* open_window(int width, int height, GLFWmonitor* monitor)
         return NULL;
 
     glfwMakeContextCurrent(window);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -122,6 +124,7 @@ int main(int argc, char** argv)
 
     for (;;)
     {
+        int width, height;
         GLFWmonitor* monitor = NULL;
 
         if (count % 2 == 0)
@@ -131,7 +134,19 @@ int main(int argc, char** argv)
             monitor = monitors[rand() % monitorCount];
         }
 
-        window = open_window(640, 480, monitor);
+        if (monitor)
+        {
+            const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+            width = mode->width;
+            height = mode->height;
+        }
+        else
+        {
+            width = 640;
+            height = 480;
+        }
+
+        window = open_window(width, height, monitor);
         if (!window)
         {
             glfwTerminate();

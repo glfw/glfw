@@ -1,6 +1,6 @@
 //========================================================================
 // Iconify/restore test program
-// Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -28,12 +28,15 @@
 //
 //========================================================================
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "getopt.h"
+
+static int windowed_xpos, windowed_ypos, windowed_width, windowed_height;
 
 static void usage(void)
 {
@@ -61,12 +64,47 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
     switch (key)
     {
-        case GLFW_KEY_SPACE:
+        case GLFW_KEY_I:
             glfwIconifyWindow(window);
             break;
-        case GLFW_KEY_ESCAPE:
-            glfwSetWindowShouldClose(window, GL_TRUE);
+        case GLFW_KEY_M:
+            glfwMaximizeWindow(window);
             break;
+        case GLFW_KEY_R:
+            glfwRestoreWindow(window);
+            break;
+        case GLFW_KEY_ESCAPE:
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+            break;
+        case GLFW_KEY_F11:
+        case GLFW_KEY_ENTER:
+        {
+            if (mods != GLFW_MOD_ALT)
+                return;
+
+            if (glfwGetWindowMonitor(window))
+            {
+                glfwSetWindowMonitor(window, NULL,
+                                     windowed_xpos, windowed_ypos,
+                                     windowed_width, windowed_height,
+                                     0);
+            }
+            else
+            {
+                GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+                if (monitor)
+                {
+                    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+                    glfwGetWindowPos(window, &windowed_xpos, &windowed_ypos);
+                    glfwGetWindowSize(window, &windowed_width, &windowed_height);
+                    glfwSetWindowMonitor(window, monitor,
+                                         0, 0, mode->width, mode->height,
+                                         mode->refreshRate);
+                }
+            }
+
+            break;
+        }
     }
 }
 
@@ -149,13 +187,16 @@ static GLFWwindow* create_window(GLFWmonitor* monitor)
         exit(EXIT_FAILURE);
     }
 
+    glfwMakeContextCurrent(window);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+
     return window;
 }
 
 int main(int argc, char** argv)
 {
     int ch, i, window_count;
-    GLboolean auto_iconify = GL_TRUE, fullscreen = GL_FALSE, all_monitors = GL_FALSE;
+    int auto_iconify = GLFW_TRUE, fullscreen = GLFW_FALSE, all_monitors = GLFW_FALSE;
     GLFWwindow** windows;
 
     while ((ch = getopt(argc, argv, "afhn")) != -1)
@@ -163,7 +204,7 @@ int main(int argc, char** argv)
         switch (ch)
         {
             case 'a':
-                all_monitors = GL_TRUE;
+                all_monitors = GLFW_TRUE;
                 break;
 
             case 'h':
@@ -171,11 +212,11 @@ int main(int argc, char** argv)
                 exit(EXIT_SUCCESS);
 
             case 'f':
-                fullscreen = GL_TRUE;
+                fullscreen = GLFW_TRUE;
                 break;
 
             case 'n':
-                auto_iconify = GL_FALSE;
+                auto_iconify = GLFW_FALSE;
                 break;
 
             default:
@@ -236,7 +277,7 @@ int main(int argc, char** argv)
 
     for (;;)
     {
-        glfwPollEvents();
+        glfwWaitEvents();
 
         for (i = 0;  i < window_count;  i++)
         {

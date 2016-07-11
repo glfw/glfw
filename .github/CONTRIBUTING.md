@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [Asking a question](#asking-a-question)
 - [Reporting a bug](#reporting-a-bug)
     - [Reporting a compile or link bug](#reporting-a-compile-or-link-bug)
     - [Reporting a segfault or other crash bug](#reporting-a-segfault-or-other-crash-bug)
@@ -14,6 +15,17 @@
 - [Requesting a feature](#requesting-a-feature)
 - [Contributing a bug fix](#contributing-a-bug-fix)
 - [Contributing a feature](#contributing-a-feature)
+
+
+## Asking a question
+
+Questions about how to use GLFW should be asked in the [support
+section](http://discourse.glfw.org/c/support) of the forum or in the IRC channel
+`#glfw` on [Freenode](http://freenode.net/).
+
+Questions about the design or implementation of GLFW or about future plans
+should be asked in the [dev section](http://discourse.glfw.org/c/dev) of the
+forum or in the IRC channel `#glfw` on [Freenode](http://freenode.net/).
 
 
 ## Reporting a bug

@@ -80,9 +80,14 @@ does not find Doxygen, the documentation will not be generated.
 
 ## Changelog
 
-- Bugfix: The range checks for `glfwSetCursorPos` used the wrong minimum
-- [Win32] Bugfix: The first shown window ignored the `GLFW_MAXIMIZED` hint
-                  when the process was provided a `STARTUPINFO`
+ - Bugfix: Single compilation unit builds failed due to naming conflicts (#783)
+ - Bugfix: The range checks for `glfwSetCursorPos` used the wrong minimum (#773)
+ - [Win32] Bugfix: Examples failed to build on Visual C++ 2010 due to C99 in
+                   `linmath.h` (#785)
+ - [Win32] Bugfix: The first shown window ignored the `GLFW_MAXIMIZED` hint
+                   when the process was provided a `STARTUPINFO` (#780)
+ - [GLX] Bugfix: Dynamically loaded entry points were not verified
+ - [EGL] Bugfix: Dynamically loaded entry points were not verified
 
 
 ## Contact

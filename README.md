@@ -81,6 +81,8 @@ does not find Doxygen, the documentation will not be generated.
 ## Changelog
 
 - Bugfix: The range checks for `glfwSetCursorPos` used the wrong minimum
+- [Win32] Bugfix: The first shown window ignored the `GLFW_MAXIMIZED` hint
+                  when the process was provided a `STARTUPINFO`
 
 
 ## Contact

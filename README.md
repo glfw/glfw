@@ -40,16 +40,9 @@ guide in the GLFW documentation.
 ## Reporting bugs
 
 Bugs are reported to our [issue tracker](https://github.com/glfw/glfw/issues).
-Please always include the name and version of the OS where the bug occurs and
-the version of GLFW used.  If you have cloned it, include the commit ID used.
-
-If it's a build issue, please also include the build log and the name and
-version of your development environment.
-
-If it's a context creation issue, please also include the make and model of your
-graphics card and the version of your driver.
-
-This will help both us and other people experiencing the same bug.
+Please check the [Contribution
+guide](https://github.com/glfw/glfw/blob/master/.github/CONTRIBUTING.md) for
+information on what to include when reporting a bug.
 
 
 ## Dependencies

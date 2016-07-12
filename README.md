@@ -75,6 +75,8 @@ does not find Doxygen, the documentation will not be generated.
 
  - Bugfix: Single compilation unit builds failed due to naming conflicts (#783)
  - Bugfix: The range checks for `glfwSetCursorPos` used the wrong minimum (#773)
+ - [Win32] Bugfix: `glfwSetClipboardString` created an unneccessary intermediate
+                   copy of the string
  - [Win32] Bugfix: Examples failed to build on Visual C++ 2010 due to C99 in
                    `linmath.h` (#785)
  - [Win32] Bugfix: The first shown window ignored the `GLFW_MAXIMIZED` hint

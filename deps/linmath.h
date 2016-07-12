@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 #define inline __inline
 #endif
 
@@ -214,7 +214,7 @@ static inline void mat4x4_rotate(mat4x4 R, mat4x4 M, float x, float y, float z, 
 		mat4x4_add(T, T, C);
 		mat4x4_add(T, T, S);
 
-		T[3][3] = 1.;		
+		T[3][3] = 1.;
 		mat4x4_mul(R, M, T);
 	} else {
 		mat4x4_dup(R, M);
@@ -274,10 +274,10 @@ static inline void mat4x4_invert(mat4x4 T, mat4x4 M)
 	c[3] = M[2][1]*M[3][2] - M[3][1]*M[2][2];
 	c[4] = M[2][1]*M[3][3] - M[3][1]*M[2][3];
 	c[5] = M[2][2]*M[3][3] - M[3][2]*M[2][3];
-	
+
 	/* Assumes it is invertible */
 	idet = 1.0f/( s[0]*c[5]-s[1]*c[4]+s[2]*c[3]+s[3]*c[2]-s[4]*c[1]+s[5]*c[0] );
-	
+
 	T[0][0] = ( M[1][1] * c[5] - M[1][2] * c[4] + M[1][3] * c[3]) * idet;
 	T[0][1] = (-M[0][1] * c[5] + M[0][2] * c[4] - M[0][3] * c[3]) * idet;
 	T[0][2] = ( M[3][1] * s[5] - M[3][2] * s[4] + M[3][3] * s[3]) * idet;
@@ -305,7 +305,7 @@ static inline void mat4x4_orthonormalize(mat4x4 R, mat4x4 M)
 
 	mat4x4_dup(R, M);
 	vec3_norm(R[2], R[2]);
-	
+
 	s = vec3_mul_inner(R[1], R[2]);
 	vec3_scale(h, R[2], s);
 	vec3_sub(R[1], R[1], h);
@@ -326,7 +326,7 @@ static inline void mat4x4_frustum(mat4x4 M, float l, float r, float b, float t, 
 {
 	M[0][0] = 2.f*n/(r-l);
 	M[0][1] = M[0][2] = M[0][3] = 0.f;
-	
+
 	M[1][1] = 2.f*n/(t-b);
 	M[1][0] = M[1][2] = M[1][3] = 0.f;
 
@@ -334,7 +334,7 @@ static inline void mat4x4_frustum(mat4x4 M, float l, float r, float b, float t, 
 	M[2][1] = (t+b)/(t-b);
 	M[2][2] = -(f+n)/(f-n);
 	M[2][3] = -1.f;
-	
+
 	M[3][2] = -2.f*(f*n)/(f-n);
 	M[3][0] = M[3][1] = M[3][3] = 0.f;
 }
@@ -348,7 +348,7 @@ static inline void mat4x4_ortho(mat4x4 M, float l, float r, float b, float t, fl
 
 	M[2][2] = -2.f/(f-n);
 	M[2][0] = M[2][1] = M[2][3] = 0.f;
-	
+
 	M[3][0] = -(r+l)/(r-l);
 	M[3][1] = -(t+b)/(t-b);
 	M[3][2] = -(f+n)/(f-n);
@@ -392,9 +392,9 @@ static inline void mat4x4_look_at(mat4x4 m, vec3 eye, vec3 center, vec3 up)
 	vec3 s;
 	vec3 t;
 
-	vec3_sub(f, center, eye);	
-	vec3_norm(f, f);	
-	
+	vec3_sub(f, center, eye);
+	vec3_norm(f, f);
+
 	vec3_mul_cross(s, f, up);
 	vec3_norm(s, s);
 
@@ -510,7 +510,7 @@ static inline void mat4x4_from_quat(mat4x4 M, quat q)
 	float b2 = b*b;
 	float c2 = c*c;
 	float d2 = d*d;
-	
+
 	M[0][0] = a2 + b2 - c2 - d2;
 	M[0][1] = 2.f*(b*c + a*d);
 	M[0][2] = 2.f*(b*d - a*c);

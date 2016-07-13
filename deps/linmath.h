@@ -192,17 +192,17 @@ static inline void mat4x4_rotate(mat4x4 R, mat4x4 M, float x, float y, float z, 
 	vec3 u = {x, y, z};
 
 	if(vec3_len(u) > 1e-4) {
-		mat4x4 T;
-		mat4x4 C;
-		mat4x4 S = {
-			{    0,  u[2], -u[1], 0},
-			{-u[2],     0,  u[0], 0},
-			{ u[1], -u[0],     0, 0},
-			{    0,     0,     0, 0}
-		};
+		mat4x4 T, C, S;
 
 		vec3_norm(u, u);
 		mat4x4_from_vec3_mul_outer(T, u, u);
+
+		S[1][2] =  u[0];
+		S[2][1] = -u[0];
+		S[2][0] =  u[1];
+		S[0][2] = -u[1];
+		S[0][1] =  u[2];
+		S[1][0] = -u[2];
 
 		mat4x4_scale(S, S, s);
 

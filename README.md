@@ -105,6 +105,8 @@ information on what to include when reporting a bug.
  - [GLX] Bugfix: Dynamically loaded entry points were not verified
  - [EGL] Added `lib` prefix matching between EGL and OpenGL ES library binaries
  - [EGL] Bugfix: Dynamically loaded entry points were not verified
+ - [X11] Bugfix: Fixed window size limits being ignored if window minimums or
+                 maximums were set to GLFW_DONT_CARE
 
 
 ## Contact
@@ -244,6 +246,7 @@ skills.
  - Santi Zupancic
  - Jonas Ådahl
  - Lasse Öörni
+ - Warren Hu
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

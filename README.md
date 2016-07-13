@@ -81,6 +81,8 @@ does not find Doxygen, the documentation will not be generated.
                    when the process was provided a `STARTUPINFO` (#780)
  - [GLX] Bugfix: Dynamically loaded entry points were not verified
  - [EGL] Bugfix: Dynamically loaded entry points were not verified
+ - [X11] Bugfix: Fixed window size limits being ignored if window minimums or
+                 maximums were set to GLFW_DONT_CARE
 
 
 ## Contact

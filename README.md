@@ -26,6 +26,10 @@ the GLFW 3 API.
 
 ## Compiling GLFW
 
+GLFW itself needs only the headers and libraries for your window system.  It
+does not need the headers for any context creation API (WGL, GLX, EGL, NSGL) or
+rendering API (OpenGL, OpenGL ES, Vulkan) to enable support for them.
+
 GLFW supports compilation on Windows with Visual C++ 2010 and later, MinGW and
 MinGW-w64, on OS X with Clang and on Linux and other Unix-like systems with GCC
 and Clang.  It will likely compile in other environments as well, but this is
@@ -56,19 +60,7 @@ See the [compatibility guide](http://www.glfw.org/docs/latest/compat.html)
 in the documentation for more information.
 
 
-## Reporting bugs
-
-Bugs are reported to our [issue tracker](https://github.com/glfw/glfw/issues).
-Please check the [contribution
-guide](https://github.com/glfw/glfw/blob/master/.github/CONTRIBUTING.md) for
-information on what to include when reporting a bug.
-
-
 ## Dependencies
-
-GLFW itself needs only the headers and libraries for your window system.  It
-does not need the headers for any context creation API (WGL, GLX, EGL, NSGL) or
-rendering API (OpenGL, OpenGL ES, Vulkan) to enable support for them.
 
 The examples and test programs depend on a number of tiny libraries.  These are
 located in the `deps/` directory.
@@ -88,6 +80,14 @@ will not be included in the build.
 
 The documentation is generated with [Doxygen](http://doxygen.org/).  If CMake
 does not find Doxygen, the documentation will not be generated.
+
+
+## Reporting bugs
+
+Bugs are reported to our [issue tracker](https://github.com/glfw/glfw/issues).
+Please check the [contribution
+guide](https://github.com/glfw/glfw/blob/master/.github/CONTRIBUTING.md) for
+information on what to include when reporting a bug.
 
 
 ## Changelog

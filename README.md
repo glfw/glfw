@@ -26,13 +26,14 @@ the GLFW 3 API.
 
 ## Compiling GLFW
 
-GLFW supports compilation on Visual C++ 2010 and later, MinGW and MinGW-w64,
-Clang on OS X and GCC and Clang on Linux and other Unix-like systems.  It will
-likely compile in other environments as well, but this is not regularly tested.
+GLFW supports compilation on Windows with Visual C++ 2010 and later, MinGW and
+MinGW-w64, on OS X with Clang and on Linux and other Unix-like systems with GCC
+and Clang.  It will likely compile in other environments as well, but this is
+not regularly tested.
 
 There are also [pre-compiled Windows
-binaries](http://www.glfw.org/download.html) available for all supported
-compilers.
+binaries](http://www.glfw.org/download.html) available for all compilers
+supported on that platform.
 
 See the [compilation guide](http://www.glfw.org/docs/latest/compile.html) in the
 documentation for more information.
@@ -47,10 +48,9 @@ guide in the documentation for more information.
 ## System requirements
 
 GLFW supports Windows XP and later, OS X 10.7 Lion and later, and Linux and
-other Unix-like systems with the X Window System.
-
-Experimental implementations for the Wayland protocol and the Mir display
-server are available but not yet officially supported.
+other Unix-like systems with the X Window System.  Experimental implementations
+for the Wayland protocol and the Mir display server are available but not yet
+officially supported.
 
 See the [compatibility guide](http://www.glfw.org/docs/latest/compat.html)
 in the documentation for more information.

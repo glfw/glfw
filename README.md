@@ -205,7 +205,7 @@ skills.
  - Nathan Sweet
  - TTK-Bandit
  - Sergey Tikhomirov
- - A. Tombs
+ - Arthur Tombs
  - Ioannis Tsakpinis
  - Samuli Tuomola
  - urraka

@@ -35,14 +35,13 @@ binaries](http://www.glfw.org/download.html) available for all supported
 compilers.
 
 See the [compilation guide](http://www.glfw.org/docs/latest/compile.html) in the
-documentation for information on compiling GLFW.
+documentation for more information.
 
 
 ## Using GLFW
 
 See the [building application guide](http://www.glfw.org/docs/latest/build.html)
-guide in the GLFW documentation for information on how to compile and link
-programs using GLFW.
+guide in the documentation for more information.
 
 
 ## System requirements
@@ -54,8 +53,7 @@ Experimental implementations for the Wayland protocol and the Mir display
 server are available but not yet officially supported.
 
 See the [compatibility guide](http://www.glfw.org/docs/latest/compat.html)
-in the documentation for more information on various platform-specific APIs and
-extensions.
+in the documentation for more information.
 
 
 ## Reporting bugs

@@ -185,7 +185,7 @@ a non-default value will cause @ref glfwCreateWindow to fail and the
 
 @section compat_vulkan Vulkan loader and API
 
-GLFW uses the standard system-wside Vulkan loader to access the Vulkan API.
+GLFW uses the standard system-wide Vulkan loader to access the Vulkan API.
 This should be installed by graphics drivers and Vulkan SDKs.  If this is not
 available, @ref glfwVulkanSupported will return `GLFW_FALSE` and all other
 Vulkan-related functions will fail with an @ref GLFW_API_UNAVAILABLE error.

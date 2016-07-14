@@ -264,10 +264,12 @@ planning to write code for the feature, see the section below.
 
 ## Contributing a bug fix
 
-__Note:__ You _must_ mention if you have taken any code from outside sources,
-even if the licenses seem compatible.
+__Note:__ You must have all necessary rights to any code you contribute.  If you
+did not write the code yourself, you must explain where it came from and under
+what license.  Even code using the same license as GLFW may not be copied
+without attribution.
 
-There is no preferred patch size.  A one character fix is very welcome, as is
+__There is no preferred patch size__.  A one character fix is just as welcome as
 a thousand line one, if that is the appropriate size for the fix.
 
 In addition to the code, a complete bug fix includes:
@@ -275,14 +277,24 @@ In addition to the code, a complete bug fix includes:
 - Change log entry in `README.md`, describing the incorrect behavior
 - Credits entries for all authors of the bug fix
 
+Bug fixes will not be rejected because they don't include all the above parts,
+but please keep in mind that maintainer time is finite and that there are many
+other bugs and features to work on.
+
 If the patch fixes a bug introduced after the last release, it should not get
 a change log entry.
 
 
 ## Contributing a feature
 
-__Note:__ You _must_ mention if you have taken any code from outside sources,
-even if the licenses seem compatible.
+__Note:__ You must have all necessary rights to any code you contribute.  If you
+did not write the code yourself, you must explain where it came from and under
+what license.  Even code using the same license as GLFW may not be copied
+without attribution.
+
+__There is no preferred patch size__.  A one character change is just as welcome
+as one adding a thousand line one, if that is the appropriate size for the
+feature.
 
 In addition to the code, a complete feature includes:
 
@@ -293,18 +305,24 @@ In addition to the code, a complete feature includes:
 - Cross-references and mentions in appropriate places
 - Credits entries for all authors of the feature
 
-If it requires platform-specific code, add at minimum stubs for the new platform
-function to all supported platforms.
+If the feature requires platform-specific code, at minimum stubs must be added
+for the new platform function to all supported and experimental platforms.
 
-If it adds a new callback, add support for it in `tests/event.c`.
+If it adds a new callback, support for it must be added to `tests/event.c`.
 
-If it adds a new monitor property, add support for it in `tests/monitor.c`.
+If it adds a new monitor property, support for it must be added to
+`tests/monitor.c`.
 
-If it adds a new OpenGL, OpenGL ES or Vulkan option or extension, add support
-for it in `tests/glfwinfo.c` and describe its use in `docs/compat.dox`.
+If it adds a new OpenGL, OpenGL ES or Vulkan option or extension, support
+for it must be added to `tests/glfwinfo.c` and the behavior of the library when
+the extension is missing documented in `docs/compat.dox`.
 
-Please keep in mind that any part of the public API that has been included in
-a release cannot be changed until the next _major_ version.  Features can be
+Features will not be rejected because they don't include all the above parts,
+but please keep in mind that maintainer time is finite and that there are many
+other features and bugs to work on.
+
+Please also keep in mind that any part of the public API that has been included
+in a release cannot be changed until the next _major_ version.  Features can be
 added and existing parts can sometimes be overloaded (in the general sense of
 doing more things, not in the C++ sense), but code written to the API of one
 minor release should both compile and run on subsequent minor releases.

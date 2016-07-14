@@ -37,6 +37,28 @@ See the
 guide in the GLFW documentation.
 
 
+## Compile-time requirements
+
+GLFW supports compilation on Visual C++ 2010 and later, MinGW and MinGW-w64,
+Clang on OS X and GCC and Clang on Linux and other Unix-like systems.  It will
+likely compile in other environments as well, but this is not regularly tested.
+
+See the [compilation guide](http://www.glfw.org/docs/latest/compile.html) for
+more information.
+
+
+## Run-time requirements
+
+GLFW supports Windows XP and later, OS X 10.7 Lion and later, and Linux and
+other Unix-like systems with the X Window System.
+
+Experimental implementations for the Wayland protocol and the Mir display
+server are available but not yet officially supported.
+
+See the [compatibility guide](http://www.glfw.org/docs/latest/compat.html)
+for more information.
+
+
 ## Reporting bugs
 
 Bugs are reported to our [issue tracker](https://github.com/glfw/glfw/issues).
@@ -75,7 +97,7 @@ does not find Doxygen, the documentation will not be generated.
 
  - Bugfix: Single compilation unit builds failed due to naming conflicts (#783)
  - Bugfix: The range checks for `glfwSetCursorPos` used the wrong minimum (#773)
- - [Win32] Bugfix: `glfwSetClipboardString` created an unneccessary intermediate
+ - [Win32] Bugfix: `glfwSetClipboardString` created an unnecessary intermediate
                    copy of the string
  - [Win32] Bugfix: Examples failed to build on Visual C++ 2010 due to C99 in
                    `linmath.h` (#785)

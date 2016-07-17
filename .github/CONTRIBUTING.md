@@ -58,11 +58,11 @@ applications](http://www.glfw.org/docs/latest/build.html) guide for before
 opening an issue of this kind.  Most issues are caused by a missing package or
 linker flag.
 
-Always include the __operating system name and version__ (i.e. `Windows
-7 64-bit` or `Ubuntu 15.10`) and the __compiler name and version__ (i.e. `Visual
+Always include the __operating system name and version__ (e.g. `Windows
+7 64-bit` or `Ubuntu 15.10`) and the __compiler name and version__ (e.g. `Visual
 C++ 2015 Update 2`).  If you are using an official release of GLFW,
-include the __GLFW release version__ (i.e. `3.1.2`), otherwise include the
-__GLFW commit ID__ (i.e.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
+include the __GLFW release version__ (e.g. `3.1.2`), otherwise include the
+__GLFW commit ID__ (e.g.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
 
 Please also include the __complete build log__ from your compiler and linker,
 even if it's long.  It can always be shortened later, if necessary.
@@ -80,10 +80,10 @@ Build log:
 
 ### Reporting a segfault or other crash bug
 
-Always include the __operating system name and version__ (i.e. `Windows
+Always include the __operating system name and version__ (e.g. `Windows
 7 64-bit` or `Ubuntu 15.10`).  If you are using an official release of GLFW,
-include the __GLFW release version__ (i.e. `3.1.2`), otherwise include the
-__GLFW commit ID__ (i.e.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
+include the __GLFW release version__ (e.g. `3.1.2`), otherwise include the
+__GLFW commit ID__ (e.g.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
 
 Please also include any __error messages__ provided to your application via the
 [error
@@ -121,15 +121,15 @@ reporting it as a bug.  This tool is included in the GLFW source tree as
 `tests/glfwinfo.c` and is built along with the library.  It has switches for all
 GLFW context and framebuffer hints.  Run `glfwinfo -h` for a complete list.
 
-Always include the __operating system name and version__ (i.e. `Windows
+Always include the __operating system name and version__ (e.g. `Windows
 7 64-bit` or `Ubuntu 15.10`).  If you are using an official release of GLFW,
-include the __GLFW release version__ (i.e. `3.1.2`), otherwise include the
-__GLFW commit ID__ (i.e.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
+include the __GLFW release version__ (e.g. `3.1.2`), otherwise include the
+__GLFW commit ID__ (e.g.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
 
 Please also include the __GLFW version string__ (`3.2.0 X11 EGL clock_gettime
 /dev/js XI Xf86vm`), as described
 [here](http://www.glfw.org/docs/latest/intro.html#intro_version_string), the
-__GPU model and driver version__ (i.e. `GeForce GTX660 with 352.79`), and the
+__GPU model and driver version__ (e.g. `GeForce GTX660 with 352.79`), and the
 __output of `glfwinfo`__ (with switches matching any hints you set in your
 code) when reporting this kind of bug.  If this tool doesn't run on the machine,
 mention that instead.
@@ -160,10 +160,10 @@ The `monitors` tool is included in the GLFW source tree as `tests/monitors.c`
 and is built along with the library.  It lists all information GLFW provides
 about monitors it detects.
 
-Always include the __operating system name and version__ (i.e. `Windows
+Always include the __operating system name and version__ (e.g. `Windows
 7 64-bit` or `Ubuntu 15.10`).  If you are using an official release of GLFW,
-include the __GLFW release version__ (i.e. `3.1.2`), otherwise include the
-__GLFW commit ID__ (i.e.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
+include the __GLFW release version__ (e.g. `3.1.2`), otherwise include the
+__GLFW commit ID__ (e.g.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
 
 Please also include any __error messages__ provided to your application via the
 [error
@@ -197,10 +197,10 @@ callback supported by GLFW as events occur.  Each event is listed with the time
 and a unique number to make discussions about event logs easier.  The tool has
 command-line options for creating multiple windows and full screen windows.
 
-Always include the __operating system name and version__ (i.e. `Windows
+Always include the __operating system name and version__ (e.g. `Windows
 7 64-bit` or `Ubuntu 15.10`).  If you are using an official release of GLFW,
-include the __GLFW release version__ (i.e. `3.1.2`), otherwise include the
-__GLFW commit ID__ (i.e.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
+include the __GLFW release version__ (e.g. `3.1.2`), otherwise include the
+__GLFW commit ID__ (e.g.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
 
 Please also include any __error messages__ provided to your application via the
 [error
@@ -221,10 +221,10 @@ events output:
 
 ### Reporting some other library bug
 
-Always include the __operating system name and version__ (i.e. `Windows
+Always include the __operating system name and version__ (e.g. `Windows
 7 64-bit` or `Ubuntu 15.10`).  If you are using an official release of GLFW,
-include the __GLFW release version__ (i.e. `3.1.2`), otherwise include the
-__GLFW commit ID__ (i.e.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
+include the __GLFW release version__ (e.g. `3.1.2`), otherwise include the
+__GLFW commit ID__ (e.g.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
 
 Please also include any __error messages__ provided to your application via the
 [error

@@ -72,9 +72,8 @@ static int translateKeyCode(int scancode)
             default:                break;
         }
 
-        // Now try primary keysym for function keys (non-printable keys). These
-        // should not be layout dependent (i.e. US layout and international
-        // layouts should give the same result).
+        // Now try primary keysym for function keys (non-printable keys)
+        // These should not depend on the current keyboard layout
         keySym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, 0, 0);
     }
     else

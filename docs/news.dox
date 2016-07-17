@@ -345,7 +345,7 @@ well as moving a window to a specific position before showing it.
 
 @subsection news_30_undecorated Undecorated windows
 
-Windowed mode windows can now be created without decorations, i.e. things like
+Windowed mode windows can now be created without decorations, e.g. things like
 a frame, a title bar, with the `GLFW_DECORATED` window hint.  This allows for
 the creation of things like splash screens.
 

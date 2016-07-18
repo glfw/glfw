@@ -92,6 +92,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - [X11] Bugfix: Didn't wait until window was visible before setting focus (#789)
  - Bugfix: Single compilation unit builds failed due to naming conflicts (#783)
  - Bugfix: The range checks for `glfwSetCursorPos` used the wrong minimum (#773)
  - [Win32] Bugfix: `glfwSetClipboardString` created an unnecessary intermediate

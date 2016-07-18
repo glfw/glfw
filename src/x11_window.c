@@ -604,6 +604,7 @@ static GLFWbool createWindow(_GLFWwindow* window,
 
     _glfwPlatformGetWindowPos(window, &window->x11.xpos, &window->x11.ypos);
     _glfwPlatformGetWindowSize(window, &window->x11.width, &window->x11.height);
+    window->x11.visuallyMapped = GLFW_FALSE; // Assume window isn't mapped yet.
 
     return GLFW_TRUE;
 }
@@ -1365,6 +1366,29 @@ static void processEvent(XEvent *event)
             return;
         }
 
+        case VisibilityNotify:
+        {
+            int visibilityState = event->xvisibility.state;
+            // Some window managers (mostly non-reparenting
+            // like dwm, xmonad, ratpoision, openbox, cwm),
+            // don't set the visibility flag after mapping,
+            // a pre-condition for e.g. XSetInputFocus()...
+            // leads to BadMatch error as described in X11.
+            // Most of these will however notify with event
+            // VisibilityFullyObscured on visibility unset.
+            if (visibilityState != VisibilityFullyObscured)
+                window->x11.visuallyMapped = GLFW_TRUE;
+            return;
+        }
+
+        case UnmapNotify:
+        {
+            // Should be the only case when a window
+            // becomes completely visually unmapped.
+            window->x11.visuallyMapped = GLFW_FALSE;
+            return;
+        }
+
         case FocusIn:
         {
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
@@ -1925,6 +1949,11 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
     else
     {
         XRaiseWindow(_glfw.x11.display, window->x11.handle);
+        // Requested window might not have been completely initialized
+        // by the window manager at this point, need to wait until the
+        // window has both been mapped and also set a visibility flag.
+        // Wait for VisibilityNotify X11 event before setting a focus.
+        while (!window->x11.visuallyMapped) _glfwPlatformWaitEvents();
         XSetInputFocus(_glfw.x11.display, window->x11.handle,
                        RevertToParent, CurrentTime);
     }

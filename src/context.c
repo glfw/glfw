@@ -372,9 +372,9 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
     window->context.GetIntegerv = (PFNGLGETINTEGERVPROC)
-        glfwGetProcAddress("glGetIntegerv");
+        window->context.getProcAddress("glGetIntegerv");
     window->context.GetString = (PFNGLGETSTRINGPROC)
-        glfwGetProcAddress("glGetString");
+        window->context.getProcAddress("glGetString");
     if (!window->context.GetIntegerv || !window->context.GetString)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Entry point retrieval is broken");
@@ -416,7 +416,7 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
         // users as early as possible that their build may be broken
 
         window->context.GetStringi = (PFNGLGETSTRINGIPROC)
-            glfwGetProcAddress("glGetStringi");
+            window->context.getProcAddress("glGetStringi");
         if (!window->context.GetStringi)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -521,7 +521,8 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
     // Clearing the front buffer to black to avoid garbage pixels left over from
     // previous uses of our bit of VRAM
     {
-        PFNGLCLEARPROC glClear = (PFNGLCLEARPROC) glfwGetProcAddress("glClear");
+        PFNGLCLEARPROC glClear = (PFNGLCLEARPROC)
+            window->context.getProcAddress("glClear");
         glClear(GL_COLOR_BUFFER_BIT);
         window->context.swapBuffers(window);
     }

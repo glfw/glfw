@@ -115,11 +115,14 @@ extern "C" {
  #define GLFW_CALLBACK_DEFINED
 #endif /* CALLBACK */
 
-/* Most Windows GLU headers need wchar_t.
- * The OS X OpenGL header blocks the definition of ptrdiff_t by glext.h.
+/* Include because most Windows GLU headers need wchar_t and
+ * the OS X OpenGL header blocks the definition of ptrdiff_t by glext.h.
  * Include it unconditionally to avoid surprising side-effects.
  */
 #include <stddef.h>
+
+/* Include because it is needed by Vulkan and related functions.
+ */
 #include <stdint.h>
 
 /* Include the chosen client API headers.

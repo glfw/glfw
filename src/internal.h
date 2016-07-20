@@ -1034,7 +1034,7 @@ GLFWbool _glfwIsPrintable(int key);
 
 /*! @ingroup utility
  */
-void _glfwInitVulkan(void);
+GLFWbool _glfwInitVulkan(void);
 
 /*! @ingroup utility
  */

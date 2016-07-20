@@ -309,6 +309,8 @@ GLFWbool _glfwInitEGL(void)
     if (!_glfw.egl.handle)
         return GLFW_FALSE;
 
+    _glfw.egl.prefix = (strncmp(sonames[i], "lib", 3) == 0);
+
     _glfw.egl.GetConfigAttrib = (PFNEGLGETCONFIGATTRIBPROC)
         _glfw_dlsym(_glfw.egl.handle, "eglGetConfigAttrib");
     _glfw.egl.GetConfigs = (PFNEGLGETCONFIGSPROC)
@@ -627,6 +629,11 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 
         for (i = 0;  sonames[i];  i++)
         {
+            // HACK: Match presence of lib prefix to increase chance of finding
+            //       a matching pair in the jungle that is Win32 EGL/GLES
+            if (_glfw.egl.prefix != (strncmp(sonames[i], "lib", 3) == 0))
+                continue;
+
             window->context.egl.client = _glfw_dlopen(sonames[i]);
             if (window->context.egl.client)
                 break;

@@ -171,6 +171,7 @@ typedef struct _GLFWlibraryEGL
 {
     EGLDisplay      display;
     EGLint          major, minor;
+    GLFWbool        prefix;
 
     GLFWbool        KHR_create_context;
     GLFWbool        KHR_create_context_no_error;

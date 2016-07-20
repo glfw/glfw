@@ -92,6 +92,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - Added on-demand loading of Vulkan and context creation API libraries
  - Bugfix: Single compilation unit builds failed due to naming conflicts (#783)
  - Bugfix: The range checks for `glfwSetCursorPos` used the wrong minimum (#773)
  - [Win32] Bugfix: `glfwSetClipboardString` created an unnecessary intermediate
@@ -101,6 +102,7 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: The first shown window ignored the `GLFW_MAXIMIZED` hint
                    when the process was provided a `STARTUPINFO` (#780)
  - [GLX] Bugfix: Dynamically loaded entry points were not verified
+ - [EGL] Added `lib` prefix matching between EGL and OpenGL ES library binaries
  - [EGL] Bugfix: Dynamically loaded entry points were not verified
 
 

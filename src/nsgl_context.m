@@ -92,6 +92,9 @@ static void destroyContextNSGL(_GLFWwindow* window)
 //
 GLFWbool _glfwInitNSGL(void)
 {
+    if (_glfw.nsgl.framework)
+        return GLFW_TRUE;
+
     _glfw.nsgl.framework =
         CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
     if (_glfw.nsgl.framework == NULL)

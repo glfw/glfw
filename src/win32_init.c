@@ -425,10 +425,6 @@ int _glfwPlatformInit(void)
 
     _glfwPlatformPollEvents();
 
-    if (!_glfwInitWGL())
-        return GLFW_FALSE;
-
-    _glfwInitEGL();
     _glfwInitTimerWin32();
     _glfwInitJoysticksWin32();
 

@@ -296,6 +296,9 @@ GLFWbool _glfwInitEGL(void)
         NULL
     };
 
+    if (_glfw.egl.handle)
+        return GLFW_TRUE;
+
     for (i = 0;  sonames[i];  i++)
     {
         _glfw.egl.handle = _glfw_dlopen(sonames[i]);
@@ -358,6 +361,8 @@ GLFWbool _glfwInitEGL(void)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "EGL: Failed to load required entry points");
+
+        _glfwTerminateEGL();
         return GLFW_FALSE;
     }
 

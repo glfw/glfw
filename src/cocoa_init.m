@@ -325,9 +325,6 @@ int _glfwPlatformInit(void)
     if (!_glfwInitThreadLocalStoragePOSIX())
         return GLFW_FALSE;
 
-    if (!_glfwInitNSGL())
-        return GLFW_FALSE;
-
     _glfwInitTimerNS();
     _glfwInitJoysticksNS();
 

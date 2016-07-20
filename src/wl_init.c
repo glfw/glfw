@@ -600,9 +600,6 @@ int _glfwPlatformInit(void)
     if (!_glfwInitThreadLocalStoragePOSIX())
         return GLFW_FALSE;
 
-    if (!_glfwInitEGL())
-        return GLFW_FALSE;
-
     if (!_glfwInitJoysticksLinux())
         return GLFW_FALSE;
 

@@ -424,6 +424,9 @@ static void loadWGLExtensions(void)
 //
 GLFWbool _glfwInitWGL(void)
 {
+    if (_glfw.wgl.instance)
+        return GLFW_TRUE;
+
     _glfw.wgl.instance = LoadLibraryA("opengl32.dll");
     if (!_glfw.wgl.instance)
     {

@@ -307,7 +307,10 @@ GLFWbool _glfwInitEGL(void)
     }
 
     if (!_glfw.egl.handle)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE, "EGL: Library not found");
         return GLFW_FALSE;
+    }
 
     _glfw.egl.prefix = (strncmp(sonames[i], "lib", 3) == 0);
 

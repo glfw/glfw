@@ -101,12 +101,12 @@ information on what to include when reporting a bug.
                    `linmath.h` (#785)
  - [Win32] Bugfix: The first shown window ignored the `GLFW_MAXIMIZED` hint
                    when the process was provided a `STARTUPINFO` (#780)
+ - [X11] Bugfix: Window size limits were ignored if the minimum or maximum size
+                 was set to `GLFW_DONT_CARE` (#805)
  - [WGL] Added reporting of errors from `WGL_ARB_create_context` extension
  - [GLX] Bugfix: Dynamically loaded entry points were not verified
  - [EGL] Added `lib` prefix matching between EGL and OpenGL ES library binaries
  - [EGL] Bugfix: Dynamically loaded entry points were not verified
- - [X11] Bugfix: Fixed window size limits being ignored if window minimums or
-                 maximums were set to GLFW_DONT_CARE
 
 
 ## Contact
@@ -167,6 +167,7 @@ skills.
  - heromyth
  - Lucas Hinderberger
  - Paul Holden
+ - Warren Hu
  - IntellectualKitty
  - Aaron Jacobs
  - Toni Jovanoski
@@ -246,7 +247,6 @@ skills.
  - Santi Zupancic
  - Jonas Ådahl
  - Lasse Öörni
- - Warren Hu
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

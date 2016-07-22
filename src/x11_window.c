@@ -218,21 +218,9 @@ static void updateNormalHints(_GLFWwindow* window, int width, int height)
         if (window->resizable)
         {
             if (window->minwidth != GLFW_DONT_CARE &&
-                window->minheight != GLFW_DONT_CARE &&
-                window->maxwidth != GLFW_DONT_CARE &&
-                window->maxheight != GLFW_DONT_CARE)
-            {
-                hints->flags |= (PMinSize | PMaxSize);
-                hints->min_width  = window->minwidth;
-                hints->min_height = window->minheight;
-                hints->max_width  = window->maxwidth;
-                hints->max_height = window->maxheight;
-            }
-
-            if (window->minwidth != GLFW_DONT_CARE &&
                 window->minheight != GLFW_DONT_CARE)
             {
-                hints->flags |= (PMinSize);
+                hints->flags |= PMinSize;
                 hints->min_width = window->minwidth;
                 hints->min_height = window->minheight;
             }
@@ -240,7 +228,7 @@ static void updateNormalHints(_GLFWwindow* window, int width, int height)
             if (window->maxwidth != GLFW_DONT_CARE &&
                 window->maxheight != GLFW_DONT_CARE)
             {
-                hints->flags |= (PMaxSize);
+                hints->flags |= PMaxSize;
                 hints->max_width = window->maxwidth;
                 hints->max_height = window->maxheight;
             }

@@ -49,7 +49,9 @@
 #define Button7            7
 
 
-// Wait for data to arrive
+// Wait for data to arrive using select
+// This avoids blocking other threads via the per-display Xlib lock that also
+// covers GLX functions
 //
 void selectDisplayConnection(struct timeval* timeout)
 {
@@ -68,9 +70,6 @@ void selectDisplayConnection(struct timeval* timeout)
         count = _glfw.linux_js.inotify + 1;
 #endif
 
-    // NOTE: We use select instead of an X function like XNextEvent, as the
-    //       wait inside those are guarded by the mutex protecting the display
-    //       struct, locking out other threads from using X (including GLX)
     // NOTE: Only retry on EINTR if there is no timeout, as select is not
     //       required to update it for the time elapsed
     // TODO: Update timeout value manually
@@ -1804,9 +1803,8 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
 
         base = _glfwPlatformGetTimerValue();
 
-        // HACK: Poll with timeout for the required reply instead of blocking
-        //       This is done because some window managers (at least Unity,
-        //       Fluxbox and Xfwm) failed to send the required reply
+        // HACK: Use a timeout because earlier versions of some window managers
+        //       (at least Unity, Fluxbox and Xfwm) failed to send the reply
         //       They have been fixed but broken versions are still in the wild
         //       If you are affected by this and your window manager is NOT
         //       listed above, PLEASE report it to their and our issue trackers
@@ -2262,8 +2260,6 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
                           _glfw.x11.GLFW_SELECTION,
                           window->x11.handle, CurrentTime);
 
-        // XCheckTypedEvent is used instead of XIfEvent in order not to lock
-        // other threads out from the display during the entire wait period
         while (!XCheckTypedEvent(_glfw.x11.display, SelectionNotify, &event))
             selectDisplayConnection(NULL);
 

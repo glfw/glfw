@@ -852,7 +852,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
 // Creates the GLFW window
 //
-static int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
+static int createNativeWindow(_GLFWwindow* window,
+                              const _GLFWwndconfig* wndconfig)
 {
     int xpos, ypos, fullWidth, fullHeight;
     WCHAR* wideTitle;
@@ -986,7 +987,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    if (!createWindow(window, wndconfig))
+    if (!createNativeWindow(window, wndconfig))
         return GLFW_FALSE;
 
     if (ctxconfig->client != GLFW_NO_API)

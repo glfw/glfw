@@ -111,7 +111,7 @@ static Bool isSelectionEvent(Display* display, XEvent* event, XPointer pointer)
            event->type == SelectionClear;
 }
 
-// Returns whether the event is a selection event
+// Returns whether the event is a _NET_FRAME_EXTENTS event
 //
 static Bool isFrameExtentsEvent(Display* display, XEvent* event, XPointer pointer)
 {

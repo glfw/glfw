@@ -104,6 +104,15 @@ static int getWindowState(_GLFWwindow* window)
 
 // Returns whether the event is a selection event
 //
+static Bool isSelectionEvent(Display* display, XEvent* event, XPointer pointer)
+{
+    return event->type == SelectionRequest ||
+           event->type == SelectionNotify ||
+           event->type == SelectionClear;
+}
+
+// Returns whether the event is a selection event
+//
 static Bool isFrameExtentsEvent(Display* display, XEvent* event, XPointer pointer)
 {
     _GLFWwindow* window = (_GLFWwindow*) pointer;
@@ -609,15 +618,6 @@ static GLFWbool createWindow(_GLFWwindow* window,
     _glfwPlatformGetWindowSize(window, &window->x11.width, &window->x11.height);
 
     return GLFW_TRUE;
-}
-
-// Returns whether the event is a selection event
-//
-static Bool isSelectionEvent(Display* display, XEvent* event, XPointer pointer)
-{
-    return event->type == SelectionRequest ||
-           event->type == SelectionNotify ||
-           event->type == SelectionClear;
 }
 
 // Set the specified property to the selection converted to the requested target

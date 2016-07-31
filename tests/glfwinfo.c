@@ -357,7 +357,7 @@ static void print_version(void)
 
 int main(int argc, char** argv)
 {
-    int ch, client, context, major, minor, revision, profile;
+    int ch, client, major, minor, revision, profile;
     GLint redbits, greenbits, bluebits, alphabits, depthbits, stencilbits;
     int list_extensions = GLFW_FALSE, list_layers = GLFW_FALSE;
     GLenum error;
@@ -636,7 +636,6 @@ int main(int argc, char** argv)
     // Report client API version
 
     client = glfwGetWindowAttrib(window, GLFW_CLIENT_API);
-    context = glfwGetWindowAttrib(window, GLFW_CONTEXT_CREATION_API);
     major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
     minor = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR);
     revision = glfwGetWindowAttrib(window, GLFW_CONTEXT_REVISION);

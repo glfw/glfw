@@ -49,7 +49,7 @@
 static GLFWbool openJoystickDevice(const char* path)
 {
     char axisCount, buttonCount;
-    char name[256];
+    char name[256] = "";
     int joy, fd, version;
     _GLFWjoystickLinux* js;
 

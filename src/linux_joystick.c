@@ -153,7 +153,7 @@ static GLFWbool pollJoystickEvents(_GLFWjoystickLinux* js)
     return js->present;
 }
 
-// Lexically compare joysticks, used by quicksort
+// Lexically compare joysticks by name; used by qsort
 //
 #if defined(__linux__)
 static int compareJoysticks(const void* fp, const void* sp)

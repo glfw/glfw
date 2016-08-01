@@ -850,7 +850,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
 }
 
-// Creates the GLFW window and rendering context
+// Creates the GLFW window
 //
 static int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
 {

@@ -623,8 +623,44 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                                               share, attribs);
         if (!window->context.wgl.handle)
         {
-            _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                            "WGL: Failed to create OpenGL context");
+            const DWORD error = GetLastError();
+
+            if (error == (0xc0070000 | ERROR_INVALID_VERSION_ARB))
+            {
+                if (ctxconfig->client == GLFW_OPENGL_API)
+                {
+                    _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+                                    "WGL: Driver does not support OpenGL version %i.%i",
+                                    ctxconfig->major,
+                                    ctxconfig->minor);
+                }
+                else
+                {
+                    _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+                                    "WGL: Driver does not support OpenGL ES version %i.%i",
+                                    ctxconfig->major,
+                                    ctxconfig->minor);
+                }
+            }
+            else if (error == (0xc0070000 | ERROR_INVALID_PROFILE_ARB))
+            {
+                _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+                                "WGL: Driver does not support the requested OpenGL profile");
+            }
+            else
+            {
+                if (ctxconfig->client == GLFW_OPENGL_API)
+                {
+                    _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+                                    "WGL: Failed to create OpenGL context");
+                }
+                else
+                {
+                    _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+                                    "WGL: Failed to create OpenGL ES context");
+                }
+            }
+
             return GLFW_FALSE;
         }
     }

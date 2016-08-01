@@ -101,6 +101,7 @@ information on what to include when reporting a bug.
                    `linmath.h` (#785)
  - [Win32] Bugfix: The first shown window ignored the `GLFW_MAXIMIZED` hint
                    when the process was provided a `STARTUPINFO` (#780)
+ - [WGL] Added reporting of errors from `WGL_ARB_create_context` extension
  - [GLX] Bugfix: Dynamically loaded entry points were not verified
  - [EGL] Added `lib` prefix matching between EGL and OpenGL ES library binaries
  - [EGL] Bugfix: Dynamically loaded entry points were not verified

@@ -1185,6 +1185,7 @@ typedef struct GLFWgammaramp
 /*! @brief Image data.
  *
  *  @sa @ref cursor_custom
+ *  @sa @ref window_icon
  *
  *  @since Added in version 2.1.
  *  @glfw3 Removed format and bytes-per-pixel members.

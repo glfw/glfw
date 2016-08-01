@@ -348,8 +348,17 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
     version = (const char*) window->context.GetString(GL_VERSION);
     if (!version)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Client API version string retrieval is broken");
+        if (ctxconfig->client == GLFW_OPENGL_API)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "OpenGL version string retrieval is broken");
+        }
+        else
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "OpenGL ES version string retrieval is broken");
+        }
+
         return GLFW_FALSE;
     }
 
@@ -370,8 +379,17 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
                 &window->context.minor,
                 &window->context.revision))
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "No version found in client API version string");
+        if (window->context.client == GLFW_OPENGL_API)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "No version found in OpenGL version string");
+        }
+        else
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "No version found in OpenGL ES version string");
+        }
+
         return GLFW_FALSE;
     }
 
@@ -386,10 +404,21 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
         // For API consistency, we emulate the behavior of the
         // {GLX|WGL}_ARB_create_context extension and fail here
 
-        _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                        "Requested client API version %i.%i, got version %i.%i",
-                        ctxconfig->major, ctxconfig->minor,
-                        window->context.major, window->context.minor);
+        if (window->context.client == GLFW_OPENGL_API)
+        {
+            _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+                            "Requested OpenGL version %i.%i, got version %i.%i",
+                            ctxconfig->major, ctxconfig->minor,
+                            window->context.major, window->context.minor);
+        }
+        else
+        {
+            _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+                            "Requested OpenGL ES version %i.%i, got version %i.%i",
+                            ctxconfig->major, ctxconfig->minor,
+                            window->context.major, window->context.minor);
+        }
+
         return GLFW_FALSE;
     }
 

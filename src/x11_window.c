@@ -241,6 +241,22 @@ static void updateNormalHints(_GLFWwindow* window, int width, int height)
                 hints->max_height = window->maxheight;
             }
 
+            if (window->minwidth != GLFW_DONT_CARE &&
+                window->minheight != GLFW_DONT_CARE)
+            {
+                hints->flags |= (PMinSize);
+                hints->min_width = window->minwidth;
+                hints->min_height = window->minheight;
+            }
+
+            if (window->maxwidth != GLFW_DONT_CARE &&
+                window->maxheight != GLFW_DONT_CARE)
+            {
+                hints->flags |= (PMaxSize);
+                hints->max_width = window->maxwidth;
+                hints->max_height = window->maxheight;
+            }
+
             if (window->numer != GLFW_DONT_CARE &&
                 window->denom != GLFW_DONT_CARE)
             {

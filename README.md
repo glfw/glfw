@@ -111,9 +111,8 @@ information on what to include when reporting a bug.
 
 ## Contact
 
-The official website for GLFW is [glfw.org](http://www.glfw.org/).  There you
-can find the latest version of GLFW, as well as news, documentation and other
-information about the project.
+On [glfw.org](http://www.glfw.org/) you can find the latest version of GLFW, as
+well as news, documentation and other information about the project.
 
 If you have questions related to the use of GLFW, we have a
 [support forum](http://discourse.glfw.org/), and the IRC

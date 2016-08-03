@@ -41,6 +41,8 @@ GLFWbool _glfwInitVulkan(void)
     VkResult err;
     VkExtensionProperties* ep;
     uint32_t i, count;
+
+#if !defined(_GLFW_VULKAN_STATIC)
 #if defined(_GLFW_WIN32)
     const char* name = "vulkan-1.dll";
 #else
@@ -78,6 +80,8 @@ GLFWbool _glfwInitVulkan(void)
         _glfwTerminateVulkan();
         return GLFW_FALSE;
     }
+
+#endif // _GLFW_VULKAN_STATIC
 
     err = vkEnumerateInstanceExtensionProperties(NULL, &count, NULL);
     if (err)

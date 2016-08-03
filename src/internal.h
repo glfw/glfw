@@ -149,11 +149,16 @@ typedef struct VkExtensionProperties
 } VkExtensionProperties;
 
 typedef void (APIENTRY * PFN_vkVoidFunction)(void);
-typedef PFN_vkVoidFunction (APIENTRY * PFN_vkGetInstanceProcAddr)(VkInstance,const char*);
-typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const char*,uint32_t*,VkExtensionProperties*);
 
-#define vkEnumerateInstanceExtensionProperties _glfw.vk.EnumerateInstanceExtensionProperties
-#define vkGetInstanceProcAddr _glfw.vk.GetInstanceProcAddr
+#if defined(_GLFW_VULKAN_STATIC)
+  PFN_vkVoidFunction vkGetInstanceProcAddr(VkInstance,const char*);
+  VkResult vkEnumerateInstanceExtensionProperties(const char*,uint32_t*,VkExtensionProperties*);
+#else
+  typedef PFN_vkVoidFunction (APIENTRY * PFN_vkGetInstanceProcAddr)(VkInstance,const char*);
+  typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const char*,uint32_t*,VkExtensionProperties*);
+  #define vkEnumerateInstanceExtensionProperties _glfw.vk.EnumerateInstanceExtensionProperties
+  #define vkGetInstanceProcAddr _glfw.vk.GetInstanceProcAddr
+#endif
 
 #if defined(_GLFW_COCOA)
  #include "cocoa_platform.h"
@@ -445,8 +450,10 @@ struct _GLFWlibrary
         void*           handle;
         char**          extensions;
         uint32_t        extensionCount;
-        PFN_vkEnumerateInstanceExtensionProperties EnumerateInstanceExtensionProperties;
-        PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
+        #if !defined(_GLFW_VULKAN_STATIC)
+          PFN_vkEnumerateInstanceExtensionProperties EnumerateInstanceExtensionProperties;
+          PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
+        #endif
         GLFWbool        KHR_surface;
         GLFWbool        KHR_win32_surface;
         GLFWbool        KHR_xlib_surface;

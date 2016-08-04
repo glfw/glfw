@@ -25,6 +25,7 @@ option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" ON)
 option(GLFW_INSTALL "Generate installation target" ON)
+option(GLFW_VULKAN_STATIC "Use the Vulkan loader statically linked into application" OFF)
 option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
 if (WIN32)
@@ -55,6 +56,10 @@ if (BUILD_SHARED_LIBS AND UNIX)
     set(GLFW_LIB_NAME glfw)
 else()
     set(GLFW_LIB_NAME glfw3)
+endif()
+
+if (GLFW_VULKAN_STATIC)
+    set(_GLFW_VULKAN_STATIC 1)
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${GLFW_SOURCE_DIR}/CMake/modules")
@@ -146,6 +151,21 @@ elseif (UNIX)
     endif()
 else()
     message(FATAL_ERROR "No supported platform was detected")
+endif()
+
+#--------------------------------------------------------------------
+# Add Vulkan static library if requested
+#--------------------------------------------------------------------
+if (GLFW_VULKAN_STATIC)
+    if (VULKAN_FOUND AND VULKAN_STATIC_LIBRARY)
+        list(APPEND glfw_LIBRARIES ${VULKAN_STATIC_LIBRARY})
+    else()
+        if (BUILD_SHARED_LIBS OR GLFW_BUILD_EXAMPLES OR GLFW_BUILD_TESTS)
+            message(FATAL_ERROR "Vulkan loader static library not found")
+        else()
+            message(WARNING "Vulkan loader static library not found")
+        endif()
+    endif()
 endif()
 
 #--------------------------------------------------------------------

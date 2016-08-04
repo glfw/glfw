@@ -80,7 +80,6 @@ GLFWbool _glfwInitVulkan(void)
         _glfwTerminateVulkan();
         return GLFW_FALSE;
     }
-
 #endif // _GLFW_VULKAN_STATIC
 
     err = vkEnumerateInstanceExtensionProperties(NULL, &count, NULL);

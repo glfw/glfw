@@ -450,10 +450,10 @@ struct _GLFWlibrary
         void*           handle;
         char**          extensions;
         uint32_t        extensionCount;
-        #if !defined(_GLFW_VULKAN_STATIC)
-          PFN_vkEnumerateInstanceExtensionProperties EnumerateInstanceExtensionProperties;
-          PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
-        #endif
+#if !defined(_GLFW_VULKAN_STATIC)
+        PFN_vkEnumerateInstanceExtensionProperties EnumerateInstanceExtensionProperties;
+        PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
+#endif
         GLFWbool        KHR_surface;
         GLFWbool        KHR_win32_surface;
         GLFWbool        KHR_xlib_surface;

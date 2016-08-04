@@ -12,6 +12,9 @@ if (WIN32)
         find_library(VULKAN_LIBRARY NAMES vulkan-1 HINTS
             "$ENV{VULKAN_SDK}/Bin"
             "$ENV{VK_SDK_PATH}/Bin")
+        find_library(VULKAN_STATIC_LIBRARY NAMES vkstatic.1 HINTS
+            "$ENV{VULKAN_SDK}/Bin"
+            "$ENV{VK_SDK_PATH}/Bin")
     else()
         find_library(VULKAN_LIBRARY NAMES vulkan-1 HINTS
             "$ENV{VULKAN_SDK}/Bin32"
@@ -27,5 +30,5 @@ endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Vulkan DEFAULT_MSG VULKAN_LIBRARY VULKAN_INCLUDE_DIR)
 
-mark_as_advanced(VULKAN_INCLUDE_DIR VULKAN_LIBRARY)
+mark_as_advanced(VULKAN_INCLUDE_DIR VULKAN_LIBRARY VULKAN_STATIC_LIBRARY)
 

@@ -93,6 +93,8 @@ information on what to include when reporting a bug.
 ## Changelog
 
  - Added on-demand loading of Vulkan and context creation API libraries
+ - Added `_GLFW_VULKAN_STATIC` build macro to make the library use the Vulkan
+   loader linked statically into the application
  - Bugfix: Single compilation unit builds failed due to naming conflicts (#783)
  - Bugfix: The range checks for `glfwSetCursorPos` used the wrong minimum (#773)
  - [Win32] Bugfix: `glfwSetClipboardString` created an unnecessary intermediate
@@ -208,6 +210,7 @@ skills.
  - Emmanuel Gil Peyrot
  - Cyril Pichard
  - Pieroman
+ - Philip Rideout
  - Jorge Rodriguez
  - Ed Ropple
  - Aleksey Rybalkin

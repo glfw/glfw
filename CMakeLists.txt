@@ -57,7 +57,7 @@ else()
     set(GLFW_LIB_NAME glfw3)
 endif()
 
-set(CMAKE_MODULE_PATH "${GLFW_SOURCE_DIR}/CMake/modules")
+list(APPEND CMAKE_MODULE_PATH "${GLFW_SOURCE_DIR}/CMake/modules")
 
 find_package(Threads REQUIRED)
 find_package(Vulkan)
@@ -253,7 +253,7 @@ endif()
 #--------------------------------------------------------------------
 if (_GLFW_WAYLAND)
     find_package(ECM REQUIRED NO_MODULE)
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
+    list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
     find_package(Wayland REQUIRED)
     find_package(WaylandScanner REQUIRED)

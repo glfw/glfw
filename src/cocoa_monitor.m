@@ -66,7 +66,7 @@ static char* getDisplayName(CGDirectDisplayID displayID)
 
     size = CFStringGetMaximumSizeForEncoding(CFStringGetLength(value),
                                              kCFStringEncodingUTF8);
-    name = calloc(size + 1, sizeof(char));
+    name = calloc(size + 1, 1);
     CFStringGetCString(value, name, size, kCFStringEncodingUTF8);
 
     CFRelease(info);

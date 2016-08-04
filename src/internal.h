@@ -94,6 +94,7 @@ typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGPROC)(GLenum);
 typedef void (APIENTRY * PFNGLGETINTEGERVPROC)(GLenum,GLint*);
 typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGIPROC)(GLenum,GLuint);
 
+#if !defined(VULKAN_H_)
 #define VK_NULL_HANDLE 0
 
 typedef void* VkInstance;
@@ -154,6 +155,8 @@ typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const c
 
 #define vkEnumerateInstanceExtensionProperties _glfw.vk.EnumerateInstanceExtensionProperties
 #define vkGetInstanceProcAddr _glfw.vk.GetInstanceProcAddr
+
+#endif //VULKAN_H_
 
 #if defined(_GLFW_COCOA)
  #include "cocoa_platform.h"

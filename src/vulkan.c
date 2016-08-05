@@ -54,10 +54,7 @@ GLFWbool _glfwInitVulkan(void)
 
     _glfw.vk.handle = _glfw_dlopen(name);
     if (!_glfw.vk.handle)
-    {
-        _glfwInputError(GLFW_API_UNAVAILABLE, "Vulkan: Loader not found");
         return GLFW_FALSE;
-    }
 
     _glfw.vk.GetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)
         _glfw_dlsym(_glfw.vk.handle, "vkGetInstanceProcAddr");
@@ -221,7 +218,10 @@ GLFWAPI const char** glfwGetRequiredInstanceExtensions(uint32_t* count)
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (!_glfwInitVulkan())
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE, "Vulkan: API not available");
         return NULL;
+    }
 
     *count = _glfw.vk.extensionCount;
     return (const char**) _glfw.vk.extensions;
@@ -235,7 +235,10 @@ GLFWAPI GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance,
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (!_glfwInitVulkan())
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE, "Vulkan: API not available");
         return NULL;
+    }
 
     proc = (GLFWvkproc) vkGetInstanceProcAddr(instance, procname);
     if (!proc)
@@ -251,7 +254,10 @@ GLFWAPI int glfwGetPhysicalDevicePresentationSupport(VkInstance instance,
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
 
     if (!_glfwInitVulkan())
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE, "Vulkan: API not available");
         return GLFW_FALSE;
+    }
 
     if (!_glfw.vk.extensions)
     {
@@ -279,7 +285,10 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance,
     _GLFW_REQUIRE_INIT_OR_RETURN(VK_ERROR_INITIALIZATION_FAILED);
 
     if (!_glfwInitVulkan())
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE, "Vulkan: API not available");
         return VK_ERROR_INITIALIZATION_FAILED;
+    }
 
     if (!_glfw.vk.extensions)
     {

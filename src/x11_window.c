@@ -1576,7 +1576,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         window->x11.ic = NULL;
     }
 
-    if (window->context.client != GLFW_NO_API)
+    if (window->context.destroy)
         window->context.destroy(window);
 
     if (window->x11.handle)

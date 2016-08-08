@@ -105,6 +105,9 @@ information on what to include when reporting a bug.
                    `linmath.h` (#785)
  - [Win32] Bugfix: The first shown window ignored the `GLFW_MAXIMIZED` hint
                    when the process was provided a `STARTUPINFO` (#780)
+ - [Cocoa] Bugfix: Event processing would segfault on some machines due to
+                   a previous distributed notification listener not being fully
+                   removed (#817,#826)
  - [X11] Bugfix: Window size limits were ignored if the minimum or maximum size
                  was set to `GLFW_DONT_CARE` (#805)
  - [WGL] Added reporting of errors from `WGL_ARB_create_context` extension
@@ -227,6 +230,7 @@ skills.
  - Dmitri Shuralyov
  - Daniel Skorupski
  - Bradley Smith
+ - Patrick Snape
  - Julian Squires
  - Johannes Stein
  - Justin Stoecker

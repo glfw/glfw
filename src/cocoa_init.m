@@ -359,6 +359,8 @@ void _glfwPlatformTerminate(void)
             removeObserver:_glfw.ns.listener
                       name:(__bridge NSString*)kTISNotifySelectedKeyboardInputSourceChanged
                     object:nil];
+        [[NSDistributedNotificationCenter defaultCenter]
+            removeObserver:_glfw.ns.listener];
         [_glfw.ns.listener release];
         _glfw.ns.listener = nil;
     }

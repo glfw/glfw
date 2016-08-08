@@ -6,14 +6,15 @@
 
 ## Introduction
 
-GLFW is a free, Open Source, multi-platform library for OpenGL, OpenGL ES and
-Vulkan application development.  It provides a simple, platform-independent API
-for creating windows, contexts and surfaces, reading input, handling events, etc.
+GLFW is an Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan
+application development.  It provides a simple, platform-independent API for
+creating windows, contexts and surfaces, reading input, handling events, etc.
 
 The current stable release is version 3.2.  See the
 [downloads](http://www.glfw.org/download.html) page for details and files, or
 fetch the `latest` branch, which always points to the latest stable release.
-Each release starting with 3.0 also has a corresponding annotated tag.
+Each release starting with 3.0 also has a corresponding [annotated
+tag](https://github.com/glfw/glfw/releases) with source and binary archives.
 
 This is version 3.2.1, which is _not yet described_.
 
@@ -26,7 +27,7 @@ the GLFW 3 API.
 
 ## Compiling GLFW
 
-GLFW itself needs only the headers and libraries for your window system.  It
+GLFW itself requires only the headers and libraries for your window system.  It
 does not need the headers for any context creation API (WGL, GLX, EGL, NSGL) or
 rendering API (OpenGL, OpenGL ES, Vulkan) to enable support for them.
 
@@ -62,6 +63,8 @@ in the documentation for more information.
 
 ## Dependencies
 
+GLFW itself depends only on the headers and libraries for your window system.
+
 The examples and test programs depend on a number of tiny libraries.  These are
 located in the `deps/` directory.
 
@@ -79,7 +82,7 @@ The Vulkan example additionally requires the Vulkan SDK to be installed, or it
 will not be included in the build.
 
 The documentation is generated with [Doxygen](http://doxygen.org/).  If CMake
-does not find Doxygen, the documentation will not be generated.
+does not find Doxygen, the documentation will not be generated when you build.
 
 
 ## Reporting bugs

@@ -94,11 +94,12 @@ information on what to include when reporting a bug.
 
  - Added on-demand loading of Vulkan and context creation API libraries
  - Added `_GLFW_VULKAN_STATIC` build macro to make the library use the Vulkan
-   loader linked statically into the application
+   loader linked statically into the application (#820)
  - Bugfix: Single compilation unit builds failed due to naming conflicts (#783)
  - Bugfix: The range checks for `glfwSetCursorPos` used the wrong minimum (#773)
  - Bugfix: Defining `GLFW_INCLUDE_VULKAN` when compiling the library did not
            fail with the expected error message (#823)
+ - Bugfix: Inherited value of `CMAKE_MODULE_PATH` was clobbered (#822)
  - [Win32] Bugfix: `glfwSetClipboardString` created an unnecessary intermediate
                    copy of the string
  - [Win32] Bugfix: Examples failed to build on Visual C++ 2010 due to C99 in

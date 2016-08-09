@@ -53,13 +53,11 @@
 // This avoids blocking other threads via the per-display Xlib lock that also
 // covers GLX functions
 //
-void selectDisplayConnection(struct timeval* timeout)
+static GLFWbool waitForEvent(double* timeout)
 {
     fd_set fds;
-    int result, count;
     const int fd = ConnectionNumber(_glfw.x11.display);
-
-    count = fd + 1;
+    int count = fd + 1;
 
     FD_ZERO(&fds);
     FD_SET(fd, &fds);
@@ -69,15 +67,29 @@ void selectDisplayConnection(struct timeval* timeout)
     if (fd < _glfw.linux_js.inotify)
         count = _glfw.linux_js.inotify + 1;
 #endif
-
-    // NOTE: Only retry on EINTR if there is no timeout, as select is not
-    //       required to update it for the time elapsed
-    // TODO: Update timeout value manually
-    do
+    for (;;)
     {
-        result = select(count, &fds, NULL, NULL, timeout);
+        if (timeout)
+        {
+            const long seconds = (long) *timeout;
+            const long microseconds = (long) ((*timeout - seconds) * 1e6);
+            struct timeval tv = { seconds, microseconds };
+            const uint64_t base = _glfwPlatformGetTimerValue();
+
+            const int result = select(count, &fds, NULL, NULL, &tv);
+            const int error = errno;
+
+            *timeout -= (_glfwPlatformGetTimerValue() - base) /
+                (double) _glfwPlatformGetTimerFrequency();
+
+            if (result > 0)
+                return GLFW_TRUE;
+            if ((result == -1 && error == EINTR) || *timeout <= 0.0)
+                return GLFW_FALSE;
+        }
+        else if (select(count, &fds, NULL, NULL, NULL) != -1 || errno != EINTR)
+            return GLFW_TRUE;
     }
-    while (result == -1 && errno == EINTR && timeout == NULL);
 }
 
 // Returns whether the window is iconified
@@ -818,7 +830,7 @@ static void pushSelectionToManager(_GLFWwindow* window)
             }
         }
 
-        selectDisplayConnection(NULL);
+        waitForEvent(NULL);
     }
 }
 
@@ -1793,15 +1805,13 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
     if (!_glfwPlatformWindowVisible(window) &&
         _glfw.x11.NET_REQUEST_FRAME_EXTENTS)
     {
-        uint64_t base;
         XEvent event;
+        double timeout = 0.5;
 
         // Ensure _NET_FRAME_EXTENTS is set, allowing glfwGetWindowFrameSize to
         // function before the window is mapped
         sendEventToWM(window, _glfw.x11.NET_REQUEST_FRAME_EXTENTS,
                       0, 0, 0, 0, 0);
-
-        base = _glfwPlatformGetTimerValue();
 
         // HACK: Use a timeout because earlier versions of some window managers
         //       (at least Unity, Fluxbox and Xfwm) failed to send the reply
@@ -1813,21 +1823,12 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
                               isFrameExtentsEvent,
                               (XPointer) window))
         {
-            double remaining;
-            struct timeval timeout;
-
-            remaining = 0.5 - (_glfwPlatformGetTimerValue() - base) /
-                (double) _glfwPlatformGetTimerFrequency();
-            if (remaining <= 0.0)
+            if (!waitForEvent(&timeout))
             {
                 _glfwInputError(GLFW_PLATFORM_ERROR,
                                 "X11: The window manager has a broken _NET_REQUEST_FRAME_EXTENTS implementation; please report this issue");
                 return;
             }
-
-            timeout.tv_sec = 0;
-            timeout.tv_usec = (long) (remaining * 1e6);
-            selectDisplayConnection(&timeout);
         }
     }
 
@@ -2048,28 +2049,17 @@ void _glfwPlatformPollEvents(void)
 void _glfwPlatformWaitEvents(void)
 {
     while (!XPending(_glfw.x11.display))
-        selectDisplayConnection(NULL);
+        waitForEvent(NULL);
 
     _glfwPlatformPollEvents();
 }
 
 void _glfwPlatformWaitEventsTimeout(double timeout)
 {
-    const double deadline = timeout + _glfwPlatformGetTimerValue() /
-        (double) _glfwPlatformGetTimerFrequency();
-
     while (!XPending(_glfw.x11.display))
     {
-        const double remaining = deadline - _glfwPlatformGetTimerValue() /
-            (double) _glfwPlatformGetTimerFrequency();
-        if (remaining <= 0.0)
-            return;
-
-        const long seconds = (long) remaining;
-        const long microseconds = (long) ((remaining - seconds) * 1e6);
-        struct timeval tv = { seconds, microseconds };
-
-        selectDisplayConnection(&tv);
+        if (!waitForEvent(&timeout))
+            break;
     }
 
     _glfwPlatformPollEvents();
@@ -2261,7 +2251,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
                           window->x11.handle, CurrentTime);
 
         while (!XCheckTypedEvent(_glfw.x11.display, SelectionNotify, &event))
-            selectDisplayConnection(NULL);
+            waitForEvent(NULL);
 
         if (event.xselection.property == None)
             continue;

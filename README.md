@@ -99,6 +99,8 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+- [X11] Bugfix: The last interaction event time was not tracked
+
 
 ## Contact
 

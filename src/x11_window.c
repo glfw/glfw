@@ -819,7 +819,7 @@ static void pushSelectionToManager(_GLFWwindow* window)
                       _glfw.x11.SAVE_TARGETS,
                       None,
                       window->x11.handle,
-                      CurrentTime);
+                      _glfw.x11.lastEventTime);
 
     for (;;)
     {
@@ -986,6 +986,8 @@ static void processEvent(XEvent *event)
     {
         case KeyPress:
         {
+            _glfw.x11.lastEventTime = event->xkey.time;
+
             const int key = translateKey(keycode);
             const int mods = translateState(event->xkey.state);
             const int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
@@ -1081,6 +1083,8 @@ static void processEvent(XEvent *event)
 
         case KeyRelease:
         {
+            _glfw.x11.lastEventTime = event->xkey.time;
+
             const int key = translateKey(keycode);
             const int mods = translateState(event->xkey.state);
 
@@ -1122,6 +1126,8 @@ static void processEvent(XEvent *event)
 
         case ButtonPress:
         {
+            _glfw.x11.lastEventTime = event->xbutton.time;
+
             const int mods = translateState(event->xbutton.state);
 
             if (event->xbutton.button == Button1)
@@ -1156,6 +1162,8 @@ static void processEvent(XEvent *event)
 
         case ButtonRelease:
         {
+            _glfw.x11.lastEventTime = event->xbutton.time;
+
             const int mods = translateState(event->xbutton.state);
 
             if (event->xbutton.button == Button1)
@@ -1194,6 +1202,8 @@ static void processEvent(XEvent *event)
 
         case EnterNotify:
         {
+            _glfw.x11.lastEventTime = event->xcrossing.time;
+
             // HACK: This is a workaround for WMs (KWM, Fluxbox) that otherwise
             //       ignore the defined cursor for hidden cursor mode
             if (window->cursorMode == GLFW_CURSOR_HIDDEN)
@@ -1205,12 +1215,15 @@ static void processEvent(XEvent *event)
 
         case LeaveNotify:
         {
+            _glfw.x11.lastEventTime = event->xcrossing.time;
             _glfwInputCursorEnter(window, GLFW_FALSE);
             return;
         }
 
         case MotionNotify:
         {
+            _glfw.x11.lastEventTime = event->xmotion.time;
+
             const int x = event->xmotion.x;
             const int y = event->xmotion.y;
 
@@ -1323,7 +1336,8 @@ static void processEvent(XEvent *event)
                                   _glfw.x11.XdndSelection,
                                   _glfw.x11.UTF8_STRING,
                                   _glfw.x11.XdndSelection,
-                                  window->x11.handle, CurrentTime);
+                                  window->x11.handle,
+                                  _glfw.x11.lastEventTime);
             }
             else if (event->xclient.message_type == _glfw.x11.XdndPosition)
             {
@@ -1359,6 +1373,8 @@ static void processEvent(XEvent *event)
 
         case SelectionNotify:
         {
+            _glfw.x11.lastEventTime = event->xselection.time;
+
             if (event->xselection.property)
             {
                 // The converted data from the drag operation has arrived
@@ -1454,6 +1470,8 @@ static void processEvent(XEvent *event)
 
         case PropertyNotify:
         {
+            _glfw.x11.lastEventTime = event->xproperty.time;
+
             if (event->xproperty.atom == _glfw.x11.WM_STATE &&
                 event->xproperty.state == PropertyNewValue)
             {
@@ -1479,12 +1497,14 @@ static void processEvent(XEvent *event)
 
         case SelectionClear:
         {
+            _glfw.x11.lastEventTime = event->xselectionclear.time;
             handleSelectionClear(event);
             return;
         }
 
         case SelectionRequest:
         {
+            _glfw.x11.lastEventTime = event->xselectionrequest.time;
             handleSelectionRequest(event);
             return;
         }
@@ -1952,7 +1972,7 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
     {
         XRaiseWindow(_glfw.x11.display, window->x11.handle);
         XSetInputFocus(_glfw.x11.display, window->x11.handle,
-                       RevertToParent, CurrentTime);
+                       RevertToParent, _glfw.x11.lastEventTime);
     }
 
     XFlush(_glfw.x11.display);
@@ -2140,12 +2160,13 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
         XGrabPointer(_glfw.x11.display, window->x11.handle, True,
                      ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
                      GrabModeAsync, GrabModeAsync,
-                     window->x11.handle, _glfw.x11.cursor, CurrentTime);
+                     window->x11.handle, _glfw.x11.cursor,
+                     _glfw.x11.lastEventTime);
     }
     else if (_glfw.x11.disabledCursorWindow == window)
     {
         _glfw.x11.disabledCursorWindow = NULL;
-        XUngrabPointer(_glfw.x11.display, CurrentTime);
+        XUngrabPointer(_glfw.x11.display, _glfw.x11.lastEventTime);
         _glfwPlatformSetCursorPos(window,
                                   _glfw.x11.restoreCursorPosX,
                                   _glfw.x11.restoreCursorPosY);
@@ -2230,7 +2251,8 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 
     XSetSelectionOwner(_glfw.x11.display,
                        _glfw.x11.CLIPBOARD,
-                       window->x11.handle, CurrentTime);
+                       window->x11.handle,
+                       _glfw.x11.lastEventTime);
 
     if (XGetSelectionOwner(_glfw.x11.display, _glfw.x11.CLIPBOARD) !=
         window->x11.handle)
@@ -2268,7 +2290,8 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
                           _glfw.x11.CLIPBOARD,
                           formats[i],
                           _glfw.x11.GLFW_SELECTION,
-                          window->x11.handle, CurrentTime);
+                          window->x11.handle,
+                          _glfw.x11.lastEventTime);
 
         while (!XCheckTypedEvent(_glfw.x11.display, SelectionNotify, &event))
             waitForEvent(NULL);

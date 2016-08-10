@@ -156,6 +156,8 @@ typedef struct _GLFWlibraryX11
     double          restoreCursorPosX, restoreCursorPosY;
     // The window whose disabled cursor mode is active
     _GLFWwindow*    disabledCursorWindow;
+    // The last received event time
+    int             lastEventTime;
 
     // Window manager atoms
     Atom            WM_PROTOCOLS;

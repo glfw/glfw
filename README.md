@@ -114,6 +114,8 @@ information on what to include when reporting a bug.
                    removed (#817,#826)
  - [X11] Bugfix: Window size limits were ignored if the minimum or maximum size
                  was set to `GLFW_DONT_CARE` (#805)
+ - [X11] Bugfix: Input focus was set before window was visible, causing
+                 `BadMatch` on some non-reparenting WMs (#789,#798)
  - [WGL] Added reporting of errors from `WGL_ARB_create_context` extension
  - [GLX] Bugfix: Dynamically loaded entry points were not verified
  - [EGL] Added `lib` prefix matching between EGL and OpenGL ES library binaries
@@ -180,6 +182,7 @@ skills.
  - Warren Hu
  - IntellectualKitty
  - Aaron Jacobs
+ - Erik S. V. Jansson
  - Toni Jovanoski
  - Arseny Kapoulkine
  - Osman Keskin

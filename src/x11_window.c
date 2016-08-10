@@ -92,6 +92,26 @@ static GLFWbool waitForEvent(double* timeout)
     }
 }
 
+// Waits until a VisibilityNotify event arrives for the specified window or the
+// timeout period elapses (ICCCM section 4.2.2)
+//
+static GLFWbool waitForVisibilityNotify(_GLFWwindow* window)
+{
+    XEvent dummy;
+    double timeout = 0.1;
+
+    while (!XCheckTypedWindowEvent(_glfw.x11.display,
+                                   window->x11.handle,
+                                   VisibilityNotify,
+                                   &dummy))
+    {
+        if (!waitForEvent(&timeout))
+            return GLFW_FALSE;
+    }
+
+    return GLFW_TRUE;
+}
+
 // Returns whether the window is iconified
 //
 static int getWindowState(_GLFWwindow* window)
@@ -1878,7 +1898,10 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
     }
 
     if (_glfwPlatformWindowIconified(window))
+    {
         XMapWindow(_glfw.x11.display, window->x11.handle);
+        waitForVisibilityNotify(window);
+    }
     else if (_glfwPlatformWindowVisible(window))
     {
         if (_glfw.x11.NET_WM_STATE &&
@@ -1915,8 +1938,11 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
+    if (_glfwPlatformWindowVisible(window))
+        return;
+
     XMapWindow(_glfw.x11.display, window->x11.handle);
-    XFlush(_glfw.x11.display);
+    waitForVisibilityNotify(window);
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)
@@ -1971,7 +1997,8 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
     if (window->monitor)
     {
         XMapRaised(_glfw.x11.display, window->x11.handle);
-        acquireMonitor(window);
+        if (waitForVisibilityNotify(window))
+            acquireMonitor(window);
     }
     else
     {

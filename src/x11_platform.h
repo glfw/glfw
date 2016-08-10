@@ -123,10 +123,8 @@ typedef struct _GLFWwindowX11
     int             warpCursorPosX, warpCursorPosY;
 
     // The information from the last KeyPress event
-    struct {
-        unsigned int keycode;
-        Time         time;
-    } last;
+    unsigned int    lastKeyCode;
+    Time            lastKeyTime;
 
 } _GLFWwindowX11;
 

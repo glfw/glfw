@@ -95,6 +95,8 @@ information on what to include when reporting a bug.
  - Added on-demand loading of Vulkan and context creation API libraries
  - Added `_GLFW_VULKAN_STATIC` build macro to make the library use the Vulkan
    loader linked statically into the application (#820)
+ - Added `glfwGetKeyScancode` function that allows retrieving platform depen-
+   dent scancodes for keys
  - Bugfix: Single compilation unit builds failed due to naming conflicts (#783)
  - Bugfix: The range checks for `glfwSetCursorPos` used the wrong minimum (#773)
  - Bugfix: Defining `GLFW_INCLUDE_VULKAN` when compiling the library did not
@@ -256,6 +258,7 @@ skills.
  - Santi Zupancic
  - Jonas Ådahl
  - Lasse Öörni
+ - Michael Stocker
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

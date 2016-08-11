@@ -222,6 +222,20 @@ ignored.  This matches the behavior of the key callback, meaning the callback
 arguments can always be passed unmodified to this function.
 
 
+@subsection input_key_scancode Key scancodes
+
+If you need the platform dependent scancode for any given key, you can query
+it with @ref glfwGetKeyScancode.
+
+@code
+const short int scancode = glfwGetKeyScancode(GLFW_KEY_X);
+set_key_mapping(scancode, swap_weapons);
+@encode
+
+If the key is `GLFW_KEY_UNKNOWN` or does not exist on the keyboard this
+method will return `-1`.
+
+
 @section input_mouse Mouse input
 
 Mouse input comes in many forms, including cursor motion, button presses and

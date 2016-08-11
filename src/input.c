@@ -256,6 +256,12 @@ GLFWAPI const char* glfwGetKeyName(int key, int scancode)
     return _glfwPlatformGetKeyName(key, scancode);
 }
 
+GLFWAPI const short int glfwGetKeyScancode(int key)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(-1);
+    return _glfwPlatformGetKeyScancode(key);
+}
+
 GLFWAPI int glfwGetKey(GLFWwindow* handle, int key)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;

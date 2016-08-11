@@ -542,6 +542,11 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
  */
 const char* _glfwPlatformGetKeyName(int key, int scancode);
 
+/*! @copydoc glfwGetKeyScancode
+ *  @ingroup platform
+ */
+const short int _glfwPlatformGetKeyScancode(int key);
+
 /*! @copydoc glfwGetMonitors
  *  @ingroup platform
  */

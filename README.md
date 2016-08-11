@@ -99,6 +99,8 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+- Added `glfwGetKeyScancode` function that allows retrieving platform depen-
+  dent scancodes for keys
 - Bugfix: Calling `glfwMaximizeWindow` on a full screen window was not ignored
 
 
@@ -243,6 +245,7 @@ skills.
  - Santi Zupancic
  - Jonas Ådahl
  - Lasse Öörni
+ - Michael Stocker
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

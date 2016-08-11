@@ -686,6 +686,12 @@ const char* _glfwPlatformGetKeyName(int key, int scancode)
     return NULL;
 }
 
+const int _glfwPlatformGetKeyScancode(int key)
+{
+    // TODO
+	return -1;
+}
+
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                               const GLFWimage* image,
                               int xhot, int yhot)

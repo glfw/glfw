@@ -5,6 +5,12 @@
 @section news_33 New features in 3.3
 
 
+@subsection new_33_keyscancode Platform dependent scancodes
+
+GLFW now supports querying the platform dependent scancode of any key with
+@ref glfwGetKeyScancode.
+
+
 @section news_32 New features in 3.2
 
 

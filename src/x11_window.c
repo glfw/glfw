@@ -1878,7 +1878,7 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 
     if (_glfwPlatformWindowIconified(window))
         XMapWindow(_glfw.x11.display, window->x11.handle);
-    else
+    else if (_glfwPlatformWindowVisible(window))
     {
         if (_glfw.x11.NET_WM_STATE &&
             _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT &&

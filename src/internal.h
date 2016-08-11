@@ -546,7 +546,7 @@ const char* _glfwPlatformGetKeyName(int key, int scancode);
 /*! @copydoc glfwGetKeyScancode
  *  @ingroup platform
  */
-const int _glfwPlatformGetKeyScancode(int key);
+const short int _glfwPlatformGetKeyScancode(int key);
 
 /*! @copydoc glfwGetMonitors
  *  @ingroup platform

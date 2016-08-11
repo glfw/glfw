@@ -19,13 +19,17 @@
 
 ## Asking a question
 
-Questions about how to use GLFW should be asked in the [support
-section](http://discourse.glfw.org/c/support) of the forum or in the IRC channel
-`#glfw` on [Freenode](http://freenode.net/).
+Questions about how to use GLFW should be asked either in the [support
+section](http://discourse.glfw.org/c/support) of the forum, under the [Stack
+Overflow tag](https://stackoverflow.com/questions/tagged/glfw) or [Game
+Development tag](https://gamedev.stackexchange.com/questions/tagged/glfw) on
+Stack Exchange or in the IRC channel `#glfw` on
+[Freenode](http://freenode.net/).
 
 Questions about the design or implementation of GLFW or about future plans
 should be asked in the [dev section](http://discourse.glfw.org/c/dev) of the
-forum or in the IRC channel `#glfw` on [Freenode](http://freenode.net/).
+forum or in the IRC channel.  Please don't open a GitHub issue to discuss design
+questions without first checking with a maintainer.
 
 
 ## Reporting a bug
@@ -37,6 +41,15 @@ doesn't, that might be a separate bug.
 
 If GLFW is crashing or triggering asserts, make sure that all your object
 handles and other pointers are valid.
+
+For bugs where it makes sense, a [Short, Self Contained, Correct (Compilable),
+Example](http://www.sscce.org/) is absolutely invaluable.  Just put it inline in
+the body text.  Note that if the bug is reproducible with one of the test
+programs that come with GLFW, just mention that instead.
+
+__Don't worry about adding too much information__.  Unimportant information can
+be abbreviated or removed later, but missing information can stall bug fixing,
+especially when your schedule doesn't align with that of the maintainer.
 
 There are issue labels for both platforms and GPU manufacturers, so there is no
 need to mention these in the subject line.  If you do, it will be removed when
@@ -261,13 +274,17 @@ Please explain why you need the feature and how you intend to use it.  If you
 have a specific API design in mind, please add that as well.  If you have or are
 planning to write code for the feature, see the section below.
 
+If there already is a request for the feature you need, add your specific use
+case unless it is already mentioned.  If it is, give it a :+1:.
+
 
 ## Contributing a bug fix
 
-__Note:__ You must have all necessary rights to any code you contribute.  If you
-did not write the code yourself, you must explain where it came from and under
-what license.  Even code using the same license as GLFW may not be copied
-without attribution.
+__Note:__ You must have all necessary [intellectual
+property rights](https://en.wikipedia.org/wiki/Intellectual_property) to any
+code you contribute.  If you did not write the code yourself, you must explain
+where it came from and under what license you received it.  Even code using the
+same license as GLFW may not be copied without attribution.
 
 __There is no preferred patch size__.  A one character fix is just as welcome as
 a thousand line one, if that is the appropriate size for the fix.

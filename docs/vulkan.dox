@@ -18,9 +18,8 @@ The GLFW library does not need the Vulkan SDK to enable support for Vulkan.
 However, any Vulkan-specific test and example programs are built only if the
 CMake files find a Vulkan SDK.
 
-For details on a specific function, see the
-[reference documentation](@ref vulkan).  There are also guides for the other
-areas of the GLFW API.
+For details on a specific function in this category, see the @ref vulkan.  There
+are also guides for the other areas of the GLFW API.
 
  - @ref intro_guide
  - @ref window_guide

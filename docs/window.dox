@@ -5,11 +5,12 @@
 @tableofcontents
 
 This guide introduces the window related functions of GLFW.  For details on
-a specific function, see the [reference documentation](@ref window).  There are
-also guides for the other areas of GLFW.
+a specific function in this category, see the @ref window.  There are also
+guides for the other areas of GLFW.
 
  - @ref intro_guide
  - @ref context_guide
+ - @ref vulkan_guide
  - @ref monitor_guide
  - @ref input_guide
 
@@ -267,6 +268,10 @@ will have no effect.
 creation API is used on a given platform may fail if you change this hint.  This
 can be resolved by having it load via @ref glfwGetProcAddress, which always uses
 the selected API.
+
+@bug On some Linux systems, creating contexts via both the native and EGL APIs
+in a single process will cause the application to segfault.  Stick to one API or
+the other on Linux for now.
 
 `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` specify the client
 API version that the created context must be compatible with.  The exact

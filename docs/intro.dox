@@ -6,8 +6,8 @@
 
 This guide introduces the basic concepts of GLFW and describes initialization,
 error handling and API guarantees and limitations.  For a broad but shallow
-tutorial, see @ref quick_guide instead.  For details about a specific function,
-see the [reference documentation](@ref init).
+tutorial, see @ref quick_guide instead.  For details on a specific function in
+this category, see the @ref init.
 
 There are also guides for the other areas of GLFW.
 

@@ -217,9 +217,7 @@ Retina displays.
 
 `USE_MSVC_RUNTIME_LIBRARY_DLL` determines whether to use the DLL version or the
 static library version of the Visual C++ runtime library.  If set to `ON`, the
-DLL version of the Visual C++ library is used.  It is recommended to set this to
-`ON`, as this keeps the executable smaller and benefits from security and bug
-fix updates of the Visual C++ runtime.
+DLL version of the Visual C++ library is used.
 
 `GLFW_USE_HYBRID_HPG` determines whether to export the `NvOptimusEnablement` and
 `AmdPowerXpressRequestHighPerformance` symbols, which force the use of the

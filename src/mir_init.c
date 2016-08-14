@@ -35,7 +35,10 @@
 //
 static void createKeyTables(void)
 {
+    int scancode;
+
     memset(_glfw.mir.publicKeys, -1, sizeof(_glfw.mir.publicKeys));
+    memset(_glfw.mir.nativeKeys, -1, sizeof(_glfw.mir.nativeKeys));
 
     _glfw.mir.publicKeys[KEY_GRAVE]      = GLFW_KEY_GRAVE_ACCENT;
     _glfw.mir.publicKeys[KEY_1]          = GLFW_KEY_1;
@@ -153,6 +156,12 @@ static void createKeyTables(void)
     _glfw.mir.publicKeys[KEY_KPCOMMA]    = GLFW_KEY_KP_DECIMAL;
     _glfw.mir.publicKeys[KEY_KPEQUAL]    = GLFW_KEY_KP_EQUAL;
     _glfw.mir.publicKeys[KEY_KPENTER]    = GLFW_KEY_KP_ENTER;
+
+    for (scancode = 0;  scancode < 256;  scancode++)
+    {
+        if (_glfw.mir.publicKeys[scancode] > 0)
+            _glfw.mir.nativeKeys[_glfw.mir.publicKeys[scancode]] = scancode;
+    }
 }
 
 

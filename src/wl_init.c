@@ -440,7 +440,10 @@ static const struct wl_registry_listener registryListener = {
 //
 static void createKeyTables(void)
 {
+    int scancode;
+
     memset(_glfw.wl.publicKeys, -1, sizeof(_glfw.wl.publicKeys));
+    memset(_glfw.wl.nativeKeys, -1, sizeof(_glfw.wl.nativeKeys));
 
     _glfw.wl.publicKeys[KEY_GRAVE]      = GLFW_KEY_GRAVE_ACCENT;
     _glfw.wl.publicKeys[KEY_1]          = GLFW_KEY_1;
@@ -558,6 +561,12 @@ static void createKeyTables(void)
     _glfw.wl.publicKeys[KEY_KPCOMMA]    = GLFW_KEY_KP_DECIMAL;
     _glfw.wl.publicKeys[KEY_KPEQUAL]    = GLFW_KEY_KP_EQUAL;
     _glfw.wl.publicKeys[KEY_KPENTER]    = GLFW_KEY_KP_ENTER;
+
+    for (scancode = 0;  scancode < 256;  scancode++)
+    {
+        if (_glfw.wl.publicKeys[scancode] > 0)
+            _glfw.wl.nativeKeys[_glfw.wl.publicKeys[scancode]] = scancode;
+    }
 }
 
 

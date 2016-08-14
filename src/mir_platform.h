@@ -108,6 +108,7 @@ typedef struct _GLFWlibraryMir
     EventQueue* event_queue;
 
     short int       publicKeys[256];
+    short int       nativeKeys[GLFW_KEY_LAST + 1];
 
     pthread_mutex_t event_mutex;
     pthread_cond_t  event_cond;

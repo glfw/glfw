@@ -28,10 +28,8 @@
 #include "internal.h"
 
 #include <stdlib.h>
-#include <stdlib.h>
 #include <limits.h>
 
-#include <IOKit/graphics/IOGraphicsLib.h>
 #include <IOKit/graphics/IOGraphicsLib.h>
 #include <CoreVideo/CVBase.h>
 #include <CoreVideo/CVDisplayLink.h>

@@ -112,6 +112,7 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: Event processing would segfault on some machines due to
                    a previous distributed notification listener not being fully
                    removed (#817,#826)
+ - [Cocoa] Bugfix: Some include statements were duplicated (#838)
  - [X11] Bugfix: Window size limits were ignored if the minimum or maximum size
                  was set to `GLFW_DONT_CARE` (#805)
  - [X11] Bugfix: Input focus was set before window was visible, causing

@@ -289,6 +289,9 @@ static void updateNormalHints(_GLFWwindow* window, int width, int height)
         }
     }
 
+    hints->flags |= PWinGravity;
+    hints->win_gravity = StaticGravity;
+
     XSetWMNormalHints(_glfw.x11.display, window->x11.handle, hints);
     XFree(hints);
 }
@@ -1712,21 +1715,11 @@ void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
 
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 {
-    Window child;
+    Window dummy;
     int x, y;
 
     XTranslateCoordinates(_glfw.x11.display, window->x11.handle, _glfw.x11.root,
-                          0, 0, &x, &y, &child);
-
-    if (child)
-    {
-        int left, top;
-        XTranslateCoordinates(_glfw.x11.display, window->x11.handle, child,
-                              0, 0, &left, &top, &child);
-
-        x -= left;
-        y -= top;
-    }
+                          0, 0, &x, &y, &dummy);
 
     if (xpos)
         *xpos = x;

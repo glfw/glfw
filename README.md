@@ -117,6 +117,8 @@ information on what to include when reporting a bug.
                  was set to `GLFW_DONT_CARE` (#805)
  - [X11] Bugfix: Input focus was set before window was visible, causing
                  `BadMatch` on some non-reparenting WMs (#789,#798)
+ - [X11] Bugfix: `glfwGetWindowPos` and `glfwSetWindowPos` operated on the
+                 window frame instead of the client area (#800)
  - [WGL] Added reporting of errors from `WGL_ARB_create_context` extension
  - [GLX] Bugfix: Dynamically loaded entry points were not verified
  - [EGL] Added `lib` prefix matching between EGL and OpenGL ES library binaries

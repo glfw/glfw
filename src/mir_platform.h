@@ -84,6 +84,7 @@ typedef struct _GLFWwindowMir
     int                     width;
     int                     height;
     MirEGLNativeWindowType  window;
+    _GLFWcursor*            currentCursor;
 
 } _GLFWwindowMir;
 
@@ -91,8 +92,8 @@ typedef struct _GLFWwindowMir
 //
 typedef struct _GLFWmonitorMir
 {
-    int cur_mode;
-    int output_id;
+    int curMode;
+    int outputId;
     int x;
     int y;
 
@@ -104,14 +105,18 @@ typedef struct _GLFWlibraryMir
 {
     MirConnection*          connection;
     MirEGLNativeDisplayType display;
-    MirCursorConfiguration* default_conf;
-    EventQueue* event_queue;
+    MirCursorConfiguration* defaultConf;
+    MirCursorConfiguration* disabledConf;
+    EventQueue* eventQueue;
 
     short int       publicKeys[256];
     short int       nativeKeys[GLFW_KEY_LAST + 1];
 
-    pthread_mutex_t event_mutex;
-    pthread_cond_t  event_cond;
+    pthread_mutex_t eventMutex;
+    pthread_cond_t  eventCond;
+
+    // The window whose disabled cursor mode is active
+    _GLFWwindow*    disabledCursorWindow;
 
 } _GLFWlibraryMir;
 
@@ -121,7 +126,7 @@ typedef struct _GLFWlibraryMir
 typedef struct _GLFWcursorMir
 {
     MirCursorConfiguration* conf;
-    MirBufferStream*        custom_cursor;
+    MirBufferStream*        customCursor;
 } _GLFWcursorMir;
 
 

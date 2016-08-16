@@ -198,12 +198,13 @@ int _glfwPlatformInit(void)
     _glfwInitTimerPOSIX();
 
     // Need the default conf for when we set a NULL cursor
-    _glfw.mir.default_conf = mir_cursor_configuration_from_name(mir_arrow_cursor_name);
+    _glfw.mir.defaultConf  = mir_cursor_configuration_from_name(mir_default_cursor_name);
+    _glfw.mir.disabledConf = mir_cursor_configuration_from_name(mir_disabled_cursor_name);
 
-    _glfw.mir.event_queue = calloc(1, sizeof(EventQueue));
-    _glfwInitEventQueueMir(_glfw.mir.event_queue);
+    _glfw.mir.eventQueue = calloc(1, sizeof(EventQueue));
+    _glfwInitEventQueueMir(_glfw.mir.eventQueue);
 
-    error = pthread_mutex_init(&_glfw.mir.event_mutex, NULL);
+    error = pthread_mutex_init(&_glfw.mir.eventMutex, NULL);
     if (error)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -221,9 +222,9 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateJoysticksLinux();
     _glfwTerminateThreadLocalStoragePOSIX();
 
-    _glfwDeleteEventQueueMir(_glfw.mir.event_queue);
+    _glfwDeleteEventQueueMir(_glfw.mir.eventQueue);
 
-    pthread_mutex_destroy(&_glfw.mir.event_mutex);
+    pthread_mutex_destroy(&_glfw.mir.eventMutex);
 
     mir_connection_release(_glfw.mir.connection);
 }

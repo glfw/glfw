@@ -16,7 +16,9 @@ fetch the `latest` branch, which always points to the latest stable release.
 Each release starting with 3.0 also has a corresponding [annotated
 tag](https://github.com/glfw/glfw/releases) with source and binary archives.
 
-This is version 3.2.1, which is _not yet described_.
+This is version 3.2.1, which adds support for statically linking the Vulkan
+loader and fixes for a number of bugs that together affect all supported
+platforms.
 
 If you are new to GLFW, you may find the
 [tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW

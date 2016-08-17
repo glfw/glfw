@@ -103,7 +103,8 @@ and only for compatibility with legacy code.  GLU has been deprecated and should
 not be used in new code.
 
 @note GLFW does not provide any of the API headers mentioned above.  They must
-be provided by your development environment or your OpenGL or OpenGL ES SDK.
+be provided by your development environment or your OpenGL, OpenGL ES or Vulkan
+SDK.
 
 @note None of these macros may be defined during the compilation of GLFW itself.
 If your build includes GLFW and you define any these in your build files, make
@@ -184,20 +185,34 @@ the include directory for the GLFW header and, when applicable, the
 target_link_libraries(myapp glfw)
 @endcode
 
-Note that it does not include GLU, as GLFW does not use it.  If your application
-needs GLU, you can find it by requiring the OpenGL package.
+Note that the dependencies do not include OpenGL or GLU, as GLFW loads any
+OpenGL, OpenGL ES or Vulkan libraries it needs at runtime and does not use GLU.
+If your application calls OpenGL directly, instead of using a modern
+[extension loader library](@ref context_glext_auto) you can find it by requiring
+the OpenGL package.
 
 @code{.cmake}
 find_package(OpenGL REQUIRED)
 @endcode
 
-If GLU is found, the `OPENGL_GLU_FOUND` variable is true and the
-`OPENGL_INCLUDE_DIR` and `OPENGL_glu_LIBRARY` cache variables can be used.
+If OpenGL is found, the `OPENGL_FOUND` variable is true and the
+`OPENGL_INCLUDE_DIR` and `OPENGL_gl_LIBRARY` cache variables can be used.
 
 @code{.cmake}
 target_include_directories(myapp ${OPENGL_INCLUDE_DIR})
+target_link_libraries(myapp ${OPENGL_gl_LIBRARY})
+@endcode
+
+The OpenGL CMake package also looks for GLU.  If GLU is found, the
+`OPENGL_GLU_FOUND` variable is true and the `OPENGL_INCLUDE_DIR` and
+`OPENGL_glu_LIBRARY` cache variables can be used.
+
+@code{.cmake}
 target_link_libraries(myapp ${OPENGL_glu_LIBRARY})
 @endcode
+
+@note GLU has been deprecated and should not be used in new code, but some
+legacy code requires it.
 
 
 @subsection build_link_cmake_package With CMake and installed GLFW binaries
@@ -213,29 +228,34 @@ target files generated when GLFW is installed.
 find_package(glfw3 3.2 REQUIRED)
 @endcode
 
-Once GLFW has been located, link against it with the `glfw` target.  This adds
-all link-time dependencies of GLFW as it is currently configured, the include
-directory for the GLFW header and, when applicable, the
-[GLFW_DLL](@ref build_macros) macro.
-
-@code{.cmake}
-target_link_libraries(myapp glfw)
-@endcode
-
-Note that it does not include GLU, as GLFW does not use it.  If your application
-needs GLU, you can find it by requiring the OpenGL package.
+Note that the dependencies do not include OpenGL or GLU, as GLFW loads any
+OpenGL, OpenGL ES or Vulkan libraries it needs at runtime and does not use GLU.
+If your application calls OpenGL directly, instead of using a modern
+[extension loader library](@ref context_glext_auto) you can find it by requiring
+the OpenGL package.
 
 @code{.cmake}
 find_package(OpenGL REQUIRED)
 @endcode
 
-If GLU is found, the `OPENGL_GLU_FOUND` variable is true and the
-`OPENGL_INCLUDE_DIR` and `OPENGL_glu_LIBRARY` cache variables can be used.
+If OpenGL is found, the `OPENGL_FOUND` variable is true and the
+`OPENGL_INCLUDE_DIR` and `OPENGL_gl_LIBRARY` cache variables can be used.
 
 @code{.cmake}
 target_include_directories(myapp ${OPENGL_INCLUDE_DIR})
+target_link_libraries(myapp ${OPENGL_gl_LIBRARY})
+@endcode
+
+The OpenGL CMake package also looks for GLU.  If GLU is found, the
+`OPENGL_GLU_FOUND` variable is true and the `OPENGL_INCLUDE_DIR` and
+`OPENGL_glu_LIBRARY` cache variables can be used.
+
+@code{.cmake}
 target_link_libraries(myapp ${OPENGL_glu_LIBRARY})
 @endcode
+
+@note GLU has been deprecated and should not be used in new code, but some
+legacy code requires it.
 
 
 @subsection build_link_pkgconfig With makefiles and pkg-config on Unix
@@ -268,14 +288,18 @@ You can also use the `glfw3.pc` file without installing it first, by using the
 env PKG_CONFIG_PATH=path/to/glfw/src cc `pkg-config --cflags glfw3` -o myprog myprog.c `pkg-config --libs glfw3`
 @endcode
 
-The dependencies do not include GLU, as GLFW does not use it.  On OS X, GLU is
-built into the OpenGL framework, so if you need GLU you don't need to do
+The dependencies do not include OpenGL or GLU, as GLFW loads any OpenGL, OpenGL
+ES or Vulkan libraries it needs at runtime and does not use GLU.  On OS X, GLU
+is built into the OpenGL framework, so if you need GLU you don't need to do
 anything extra.  If you need GLU and are using Linux or BSD, you should add the
 `glu` pkg-config package.
 
 @code{.sh}
 cc `pkg-config --cflags glfw3 glu` -o myprog myprog.c `pkg-config --libs glfw3 glu`
 @endcode
+
+@note GLU has been deprecated and should not be used in new code, but some
+legacy code requires it.
 
 If you are using the static version of the GLFW library, make sure you don't
 link statically against GLU.

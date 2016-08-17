@@ -80,7 +80,8 @@ Once you have a full screen window, you can change its resolution, refresh rate
 and monitor with @ref glfwSetWindowMonitor.  If you just need change its
 resolution you can also call @ref glfwSetWindowSize.  In all cases, the new
 video mode will be selected the same way as the video mode chosen by @ref
-glfwCreateWindow.
+glfwCreateWindow.  If the window has an OpenGL or OpenGL ES context, it will be
+unaffected.
 
 By default, the original video mode of the monitor will be restored and the
 window iconified if it loses input focus, to allow the user to switch back to

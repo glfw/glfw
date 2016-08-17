@@ -10,15 +10,17 @@ GLFW is an Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan
 application development.  It provides a simple, platform-independent API for
 creating windows, contexts and surfaces, reading input, handling events, etc.
 
-The current stable release is version 3.2.  See the
-[downloads](http://www.glfw.org/download.html) page for details and files, or
-fetch the `latest` branch, which always points to the latest stable release.
-Each release starting with 3.0 also has a corresponding [annotated
-tag](https://github.com/glfw/glfw/releases) with source and binary archives.
+GLFW is licensed under the [zlib/libpng
+license](https://opensource.org/licenses/Zlib).
 
 This is version 3.2.1, which adds support for statically linking the Vulkan
 loader and fixes for a number of bugs that together affect all supported
 platforms.
+
+See the [downloads](http://www.glfw.org/download.html) page for details and
+files, or fetch the `latest` branch, which always points to the latest stable
+release.  Each release starting with 3.0 also has a corresponding [annotated
+tag](https://github.com/glfw/glfw/releases) with source and binary archives.
 
 If you are new to GLFW, you may find the
 [tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW
@@ -133,15 +135,15 @@ On [glfw.org](http://www.glfw.org/) you can find the latest version of GLFW, as
 well as news, documentation and other information about the project.
 
 If you have questions related to the use of GLFW, we have a
-[support forum](http://discourse.glfw.org/), and the IRC
-channel `#glfw` on [Freenode](http://freenode.net/).
+[forum](http://discourse.glfw.org/), and the `#glfw` IRC channel on
+[Freenode](http://freenode.net/).
 
 If you have a bug to report, a patch to submit or a feature you'd like to
 request, please file it in the
 [issue tracker](https://github.com/glfw/glfw/issues) on GitHub.
 
 Finally, if you're interested in helping out with the development of GLFW or
-porting it to your favorite platform, join us on GitHub or IRC.
+porting it to your favorite platform, join us on the forum, GitHub or IRC.
 
 
 ## Acknowledgements

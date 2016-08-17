@@ -1743,6 +1743,10 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  screen windows, including the creation of so called _windowed full screen_
  *  or _borderless full screen_ windows, see @ref window_windowed_full_screen.
  *
+ *  Once you have created the window, you can switch it between windowed and
+ *  full screen mode with @ref glfwSetWindowMonitor.  If the window has an
+ *  OpenGL or OpenGL ES context, it will be unaffected.
+ *
  *  By default, newly created windows use the placement recommended by the
  *  window system.  To create the window at a specific position, make it
  *  initially invisible using the [GLFW_VISIBLE](@ref window_hints_wnd) window
@@ -2394,8 +2398,8 @@ GLFWAPI void glfwFocusWindow(GLFWwindow* window);
  *  in full screen on.
  *
  *  @param[in] window The window to query.
- *  @return The monitor, or `NULL` if the window is in windowed mode or an error
- *  occurred.
+ *  @return The monitor, or `NULL` if the window is in windowed mode or an
+ *  [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
@@ -3359,7 +3363,7 @@ GLFWAPI GLFWcharfun glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *  @return The previously set callback, or `NULL` if no callback was set or an
- *  error occurred.
+ *  [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
@@ -3538,8 +3542,10 @@ GLFWAPI int glfwJoystickPresent(int joy);
  *
  *  @param[in] joy The [joystick](@ref joysticks) to query.
  *  @param[out] count Where to store the number of axis values in the returned
- *  array.  This is set to zero if an error occurred.
- *  @return An array of axis values, or `NULL` if the joystick is not present.
+ *  array.  This is set to zero if the joystick is not present or an error
+ *  occurred.
+ *  @return An array of axis values, or `NULL` if the joystick is not present or
+ *  an [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_INVALID_ENUM and @ref GLFW_PLATFORM_ERROR.
@@ -3570,8 +3576,10 @@ GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count);
  *
  *  @param[in] joy The [joystick](@ref joysticks) to query.
  *  @param[out] count Where to store the number of button states in the returned
- *  array.  This is set to zero if an error occurred.
- *  @return An array of button states, or `NULL` if the joystick is not present.
+ *  array.  This is set to zero if the joystick is not present or an error
+ *  occurred.
+ *  @return An array of button states, or `NULL` if the joystick is not present
+ *  or an [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_INVALID_ENUM and @ref GLFW_PLATFORM_ERROR.
@@ -3604,7 +3612,7 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int joy, int* count);
  *
  *  @param[in] joy The [joystick](@ref joysticks) to query.
  *  @return The UTF-8 encoded name of the joystick, or `NULL` if the joystick
- *  is not present.
+ *  is not present or an [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_INVALID_ENUM and @ref GLFW_PLATFORM_ERROR.

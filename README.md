@@ -13,14 +13,14 @@ creating windows, contexts and surfaces, reading input, handling events, etc.
 GLFW is licensed under the [zlib/libpng
 license](https://opensource.org/licenses/Zlib).
 
-This is version 3.2.1, which adds support for statically linking the Vulkan
-loader and fixes for a number of bugs that together affect all supported
-platforms.
+The latest stable release is version 3.2.1.
 
 See the [downloads](http://www.glfw.org/download.html) page for details and
 files, or fetch the `latest` branch, which always points to the latest stable
 release.  Each release starting with 3.0 also has a corresponding [annotated
 tag](https://github.com/glfw/glfw/releases) with source and binary archives.
+
+This is a development branch for version 3.3, which is _not yet described_.
 
 If you are new to GLFW, you may find the
 [tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW
@@ -98,35 +98,6 @@ information on what to include when reporting a bug.
 
 
 ## Changelog
-
- - Added on-demand loading of Vulkan and context creation API libraries
- - Added `_GLFW_VULKAN_STATIC` build macro to make the library use the Vulkan
-   loader linked statically into the application (#820)
- - Bugfix: Single compilation unit builds failed due to naming conflicts (#783)
- - Bugfix: The range checks for `glfwSetCursorPos` used the wrong minimum (#773)
- - Bugfix: Defining `GLFW_INCLUDE_VULKAN` when compiling the library did not
-           fail with the expected error message (#823)
- - Bugfix: Inherited value of `CMAKE_MODULE_PATH` was clobbered (#822)
- - [Win32] Bugfix: `glfwSetClipboardString` created an unnecessary intermediate
-                   copy of the string
- - [Win32] Bugfix: Examples failed to build on Visual C++ 2010 due to C99 in
-                   `linmath.h` (#785)
- - [Win32] Bugfix: The first shown window ignored the `GLFW_MAXIMIZED` hint
-                   when the process was provided a `STARTUPINFO` (#780)
- - [Cocoa] Bugfix: Event processing would segfault on some machines due to
-                   a previous distributed notification listener not being fully
-                   removed (#817,#826)
- - [Cocoa] Bugfix: Some include statements were duplicated (#838)
- - [X11] Bugfix: Window size limits were ignored if the minimum or maximum size
-                 was set to `GLFW_DONT_CARE` (#805)
- - [X11] Bugfix: Input focus was set before window was visible, causing
-                 `BadMatch` on some non-reparenting WMs (#789,#798)
- - [X11] Bugfix: `glfwGetWindowPos` and `glfwSetWindowPos` operated on the
-                 window frame instead of the client area (#800)
- - [WGL] Added reporting of errors from `WGL_ARB_create_context` extension
- - [GLX] Bugfix: Dynamically loaded entry points were not verified
- - [EGL] Added `lib` prefix matching between EGL and OpenGL ES library binaries
- - [EGL] Bugfix: Dynamically loaded entry points were not verified
 
 
 ## Contact

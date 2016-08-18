@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Cocoa - www.glfw.org
+// GLFW 3.3 Cocoa - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2016 Camilla Berglund <elmindreda@glfw.org>
 // Copyright (c) 2012 Torsten Walluhn <tw@mad-cad.net>

@@ -651,7 +651,7 @@ As long as your source file is encoded as UTF-8, you can use any Unicode
 characters directly in the source.
 
 @code
-glfwSetWindowTitle(window, "カウボーイビバップ");
+glfwSetWindowTitle(window, "ラストエグザイル");
 @endcode
 
 If you are using C++11 or C11, you can use a UTF-8 string literal.

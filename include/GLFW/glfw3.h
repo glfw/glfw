@@ -1,5 +1,5 @@
 /*************************************************************************
- * GLFW 3.2 - www.glfw.org
+ * GLFW 3.3 - www.glfw.org
  * A library for OpenGL, window and input
  *------------------------------------------------------------------------
  * Copyright (c) 2002-2006 Marcus Geelnard
@@ -222,14 +222,14 @@ extern "C" {
  *  backward-compatible.
  *  @ingroup init
  */
-#define GLFW_VERSION_MINOR          2
+#define GLFW_VERSION_MINOR          3
 /*! @brief The revision number of the GLFW library.
  *
  *  This is incremented when a bug fix release is made that does not contain any
  *  API changes.
  *  @ingroup init
  */
-#define GLFW_VERSION_REVISION       1
+#define GLFW_VERSION_REVISION       0
 /*! @} */
 
 /*! @name Boolean values

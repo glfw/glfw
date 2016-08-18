@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 WGL - www.glfw.org
+// GLFW 3.3 WGL - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>

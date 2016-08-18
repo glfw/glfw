@@ -1034,7 +1034,10 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         if (!acquireMonitor(window))
             return GLFW_FALSE;
 
-        centerCursor(window);
+        if (wndconfig->centerCursor)
+        {
+            centerCursor(window);
+        }
     }
 
     return GLFW_TRUE;
@@ -1506,7 +1509,6 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
         _glfwPlatformGetCursorPos(window,
                                   &_glfw.win32.restoreCursorPosX,
                                   &_glfw.win32.restoreCursorPosY);
-        centerCursor(window);
         updateClipRect(window);
     }
     else if (_glfw.win32.disabledCursorWindow == window)

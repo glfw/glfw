@@ -1594,7 +1594,10 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         if (!acquireMonitor(window))
             return GLFW_FALSE;
 
-        centerCursor(window);
+        if(wndconfig->centerCursor)
+        {
+            centerCursor(window);
+        }
     }
 
     XFlush(_glfw.x11.display);
@@ -2234,7 +2237,6 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
         _glfwPlatformGetCursorPos(window,
                                   &_glfw.x11.restoreCursorPosX,
                                   &_glfw.x11.restoreCursorPosY);
-        centerCursor(window);
         XGrabPointer(_glfw.x11.display, window->x11.handle, True,
                      ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
                      GrabModeAsync, GrabModeAsync,

@@ -345,6 +345,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_COCOA_FRAME_AUTOSAVE:
             _glfw.hints.window.ns.frame = value ? GLFW_TRUE : GLFW_FALSE;
             break;
+	case GLFW_CENTER_CURSOR:
+	    _glfw.hints.window.centerCursor = value ? GLFW_TRUE : GLFW_FALSE;
+	    break;
         case GLFW_CLIENT_API:
             _glfw.hints.context.client = value;
             break;

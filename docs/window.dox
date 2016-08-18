@@ -428,6 +428,7 @@ GLFW_FOCUSED                  | `GLFW_TRUE`                 | `GLFW_TRUE` or `GL
 GLFW_AUTO_ICONIFY             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_FLOATING                 | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_MAXIMIZED                | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_CENTER_CURSOR            | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_RED_BITS                 | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 GLFW_GREEN_BITS               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 GLFW_BLUE_BITS                | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
@@ -1040,6 +1041,10 @@ __GLFW_MAXIMIZED__ indicates whether the specified window is maximized.  See
 @anchor GLFW_VISIBLE_attrib
 __GLFW_VISIBLE__ indicates whether the specified window is visible.  See @ref
 window_hide for details.
+
+`GLFW_CENTER_CURSOR` indicates whether the cursor should be moved to the center
+of the full screen window during creation. This is ignored for windowed mode
+windows.
 
 @anchor GLFW_RESIZABLE_attrib
 __GLFW_RESIZABLE__ indicates whether the specified window is resizable _by the

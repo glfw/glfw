@@ -277,6 +277,7 @@ struct _GLFWwndconfig
     GLFWbool      autoIconify;
     GLFWbool      floating;
     GLFWbool      maximized;
+    GLFWbool      centerCursor;
     struct {
         GLFWbool  retina;
         GLFWbool  frame;

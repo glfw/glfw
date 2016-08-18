@@ -67,6 +67,7 @@ tests/empty
 tests/events
 tests/gamma
 tests/glfwinfo
+tests/icon
 tests/iconify
 tests/joysticks
 tests/monitors
@@ -75,6 +76,7 @@ tests/reopen
 tests/sharing
 tests/tearing
 tests/threads
+tests/timeout
 tests/title
 tests/version
 tests/vulkan

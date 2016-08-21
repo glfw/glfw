@@ -124,10 +124,10 @@ int main(void)
 
     glEnableVertexAttribArray(vpos_location);
     glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(float) * 5, (void*) 0);
+                          sizeof(vertices[0]), (void*) 0);
     glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
-                          sizeof(float) * 5, (void*) (sizeof(float) * 2));
+                          sizeof(vertices[0]), (void*) (sizeof(float) * 2));
 
     while (!glfwWindowShouldClose(window))
     {

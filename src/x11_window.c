@@ -2303,28 +2303,23 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return _glfw.x11.clipboardString;
 }
 
-char** _glfwPlatformGetRequiredInstanceExtensions(uint32_t* count)
+void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)
 {
-    char** extensions;
-
-    *count = 0;
+    if (!_glfw.vk.KHR_surface)
+        return;
 
     if (!_glfw.vk.KHR_xcb_surface || !_glfw.x11.x11xcb.handle)
     {
         if (!_glfw.vk.KHR_xlib_surface)
-            return NULL;
+            return;
     }
 
-    extensions = calloc(2, sizeof(char*));
-    extensions[0] = strdup("VK_KHR_surface");
+    extensions[0] = "VK_KHR_surface";
 
     if (_glfw.vk.KHR_xcb_surface && _glfw.x11.x11xcb.handle)
-        extensions[1] = strdup("VK_KHR_xcb_surface");
+        extensions[1] = "VK_KHR_xcb_surface";
     else
-        extensions[1] = strdup("VK_KHR_xlib_surface");
-
-    *count = 2;
-    return extensions;
+        extensions[1] = "VK_KHR_xlib_surface";
 }
 
 int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,

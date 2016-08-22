@@ -960,21 +960,13 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return NULL;
 }
 
-char** _glfwPlatformGetRequiredInstanceExtensions(uint32_t* count)
+void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)
 {
-    char** extensions;
+    if (!_glfw.vk.KHR_surface || !_glfw.vk.KHR_wayland_surface)
+        return;
 
-    *count = 0;
-
-    if (!_glfw.vk.KHR_wayland_surface)
-        return NULL;
-
-    extensions = calloc(2, sizeof(char*));
-    extensions[0] = strdup("VK_KHR_surface");
-    extensions[1] = strdup("VK_KHR_wayland_surface");
-
-    *count = 2;
-    return extensions;
+    extensions[0] = "VK_KHR_surface";
+    extensions[1] = "VK_KHR_wayland_surface";
 }
 
 int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,

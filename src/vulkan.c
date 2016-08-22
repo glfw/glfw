@@ -124,23 +124,13 @@ GLFWbool _glfwInitVulkan(void)
 
     _glfw.vk.available = GLFW_TRUE;
 
-    if (_glfw.vk.KHR_surface)
-    {
-        _glfw.vk.extensions =
-            _glfwPlatformGetRequiredInstanceExtensions(&_glfw.vk.extensionCount);
-    }
+    _glfwPlatformGetRequiredInstanceExtensions(_glfw.vk.extensions);
 
     return GLFW_TRUE;
 }
 
 void _glfwTerminateVulkan(void)
 {
-    uint32_t i;
-
-    for (i = 0;  i < _glfw.vk.extensionCount;  i++)
-        free(_glfw.vk.extensions[i]);
-    free(_glfw.vk.extensions);
-
     if (_glfw.vk.handle)
         _glfw_dlclose(_glfw.vk.handle);
 }
@@ -223,7 +213,7 @@ GLFWAPI const char** glfwGetRequiredInstanceExtensions(uint32_t* count)
         return NULL;
     }
 
-    *count = _glfw.vk.extensionCount;
+    *count = 2;
     return (const char**) _glfw.vk.extensions;
 }
 

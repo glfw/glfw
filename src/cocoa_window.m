@@ -1618,10 +1618,8 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return _glfw.ns.clipboardString;
 }
 
-char** _glfwPlatformGetRequiredInstanceExtensions(uint32_t* count)
+void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)
 {
-    *count = 0;
-    return NULL;
 }
 
 int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,

@@ -449,8 +449,7 @@ struct _GLFWlibrary
     struct {
         GLFWbool        available;
         void*           handle;
-        char**          extensions;
-        uint32_t        extensionCount;
+        char*           extensions[2];
 #if !defined(_GLFW_VULKAN_STATIC)
         PFN_vkEnumerateInstanceExtensionProperties EnumerateInstanceExtensionProperties;
         PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
@@ -792,7 +791,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor);
 
 /*! @ingroup platform
  */
-char** _glfwPlatformGetRequiredInstanceExtensions(uint32_t* count);
+void _glfwPlatformGetRequiredInstanceExtensions(char** extensions);
 
 /*! @ingroup platform
  */

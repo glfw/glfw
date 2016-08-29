@@ -178,7 +178,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->decorated   = wndconfig.decorated;
     window->autoIconify = wndconfig.autoIconify;
     window->floating    = wndconfig.floating;
-    window->transparent = wndconfig.transparent;
     window->cursorMode  = GLFW_CURSOR_NORMAL;
 
     window->minwidth    = GLFW_DONT_CARE;
@@ -258,7 +257,6 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.framebuffer.depthBits    = 24;
     _glfw.hints.framebuffer.stencilBits  = 8;
     _glfw.hints.framebuffer.doublebuffer = GLFW_TRUE;
-    _glfw.hints.framebuffer.transparent  = GLFW_FALSE;
 
     // The default is to select the highest available refresh rate
     _glfw.hints.refreshRate = GLFW_DONT_CARE;
@@ -308,9 +306,6 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             break;
         case GLFW_DOUBLEBUFFER:
             _glfw.hints.framebuffer.doublebuffer = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
-        case GLFW_TRANSPARENT:
-            _glfw.hints.framebuffer.transparent = hint ? GLFW_TRUE : GLFW_FALSE;
             break;
         case GLFW_SAMPLES:
             _glfw.hints.framebuffer.samples = value;

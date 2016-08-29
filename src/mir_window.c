@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Mir - www.glfw.org
+// GLFW 3.3 Mir - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014-2015 Brandon Schaefer <brandon.schaefer@canonical.com>
 //
@@ -201,15 +201,14 @@ static void handlePointerButton(_GLFWwindow* window,
 static void handlePointerMotion(_GLFWwindow* window,
                                 const MirPointerEvent* pointer_event)
 {
-    int current_x = window->cursorPosX;
-    int current_y = window->cursorPosY;
+    int current_x = window->virtualCursorPosX;
+    int current_y = window->virtualCursorPosY;
     int x  = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_x);
     int y  = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_y);
     int dx = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_hscroll);
     int dy = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_vscroll);
 
-    if (current_x != x || current_y != y)
-      _glfwInputCursorMotion(window, x, y);
+    _glfwInputCursorPos(window, x, y);
     if (dx != 0 || dy != 0)
       _glfwInputScroll(window, dx, dy);
 }
@@ -380,6 +379,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (ctxconfig->client != GLFW_NO_API)
     {
+        if (!_glfwInitEGL())
+            return GLFW_FALSE;
         if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
             return GLFW_FALSE;
     }
@@ -395,8 +396,8 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         window->mir.surface = NULL;
     }
 
-    if (window->context.client != GLFW_NO_API)
-        window->context.destroyContext(window);
+    if (window->context.destroy)
+        window->context.destroy(window);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)

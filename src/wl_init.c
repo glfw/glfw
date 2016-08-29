@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Wayland - www.glfw.org
+// GLFW 3.3 Wayland - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -91,9 +91,9 @@ static void pointerHandleMotion(void* data,
         window->wl.cursorPosY = wl_fixed_to_double(sy);
     }
 
-    _glfwInputCursorMotion(window,
-                           wl_fixed_to_double(sx),
-                           wl_fixed_to_double(sy));
+    _glfwInputCursorPos(window,
+                        wl_fixed_to_double(sx),
+                        wl_fixed_to_double(sy));
 }
 
 static void pointerHandleButton(void* data,
@@ -598,9 +598,6 @@ int _glfwPlatformInit(void)
     wl_display_roundtrip(_glfw.wl.display);
 
     if (!_glfwInitThreadLocalStoragePOSIX())
-        return GLFW_FALSE;
-
-    if (!_glfwInitEGL())
         return GLFW_FALSE;
 
     if (!_glfwInitJoysticksLinux())

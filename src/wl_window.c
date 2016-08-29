@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Wayland - www.glfw.org
+// GLFW 3.3 Wayland - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -393,6 +393,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (ctxconfig->client != GLFW_NO_API)
     {
+        if (!_glfwInitEGL())
+            return GLFW_FALSE;
         if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
             return GLFW_FALSE;
     }
@@ -435,8 +437,8 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         _glfwInputWindowFocus(window, GLFW_FALSE);
     }
 
-    if (window->context.client != GLFW_NO_API)
-        window->context.destroyContext(window);
+    if (window->context.destroy)
+        window->context.destroy(window);
 
     if (window->wl.native)
         wl_egl_window_destroy(window->wl.native);
@@ -784,9 +786,9 @@ static void handleRelativeMotion(void* data,
     if (window->cursorMode != GLFW_CURSOR_DISABLED)
         return;
 
-    _glfwInputCursorMotion(window,
-                           wl_fixed_to_double(dxUnaccel),
-                           wl_fixed_to_double(dyUnaccel));
+    _glfwInputCursorPos(window,
+                        window->virtualCursorPosX + wl_fixed_to_double(dxUnaccel),
+                        window->virtualCursorPosY + wl_fixed_to_double(dyUnaccel));
 }
 
 static const struct zwp_relative_pointer_v1_listener relativePointerListener = {

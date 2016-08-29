@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.2 OS X - www.glfw.org
+// GLFW 3.3 OS X - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2009-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -27,7 +27,7 @@
 #include "internal.h"
 
 
-static void makeContextCurrent(_GLFWwindow* window)
+static void makeContextCurrentNSGL(_GLFWwindow* window)
 {
     if (window)
         [window->context.nsgl.object makeCurrentContext];
@@ -37,13 +37,13 @@ static void makeContextCurrent(_GLFWwindow* window)
     _glfwPlatformSetCurrentContext(window);
 }
 
-static void swapBuffers(_GLFWwindow* window)
+static void swapBuffersNSGL(_GLFWwindow* window)
 {
     // ARP appears to be unnecessary, but this is future-proof
     [window->context.nsgl.object flushBuffer];
 }
 
-static void swapInterval(int interval)
+static void swapIntervalNSGL(int interval)
 {
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
@@ -52,13 +52,13 @@ static void swapInterval(int interval)
                               forParameter:NSOpenGLCPSwapInterval];
 }
 
-static int extensionSupported(const char* extension)
+static int extensionSupportedNSGL(const char* extension)
 {
     // There are no NSGL extensions
     return GLFW_FALSE;
 }
 
-static GLFWglproc getProcAddress(const char* procname)
+static GLFWglproc getProcAddressNSGL(const char* procname)
 {
     CFStringRef symbolName = CFStringCreateWithCString(kCFAllocatorDefault,
                                                        procname,
@@ -74,7 +74,7 @@ static GLFWglproc getProcAddress(const char* procname)
 
 // Destroy the OpenGL context
 //
-static void destroyContext(_GLFWwindow* window)
+static void destroyContextNSGL(_GLFWwindow* window)
 {
     [window->context.nsgl.pixelFormat release];
     window->context.nsgl.pixelFormat = nil;
@@ -92,6 +92,9 @@ static void destroyContext(_GLFWwindow* window)
 //
 GLFWbool _glfwInitNSGL(void)
 {
+    if (_glfw.nsgl.framework)
+        return GLFW_TRUE;
+
     _glfw.nsgl.framework =
         CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
     if (_glfw.nsgl.framework == NULL)
@@ -280,12 +283,12 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
 
     [window->context.nsgl.object setView:window->ns.view];
 
-    window->context.makeContextCurrent = makeContextCurrent;
-    window->context.swapBuffers = swapBuffers;
-    window->context.swapInterval = swapInterval;
-    window->context.extensionSupported = extensionSupported;
-    window->context.getProcAddress = getProcAddress;
-    window->context.destroyContext = destroyContext;
+    window->context.makeCurrent = makeContextCurrentNSGL;
+    window->context.swapBuffers = swapBuffersNSGL;
+    window->context.swapInterval = swapIntervalNSGL;
+    window->context.extensionSupported = extensionSupportedNSGL;
+    window->context.getProcAddress = getProcAddressNSGL;
+    window->context.destroy = destroyContextNSGL;
 
     return GLFW_TRUE;
 }

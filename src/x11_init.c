@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.2 X11 - www.glfw.org
+// GLFW 3.3 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -72,9 +72,8 @@ static int translateKeyCode(int scancode)
             default:                break;
         }
 
-        // Now try primary keysym for function keys (non-printable keys). These
-        // should not be layout dependent (i.e. US layout and international
-        // layouts should give the same result).
+        // Now try primary keysym for function keys (non-printable keys)
+        // These should not depend on the current keyboard layout
         keySym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, 0, 0);
     }
     else
@@ -766,13 +765,9 @@ int _glfwPlatformInit(void)
     if (!_glfwInitThreadLocalStoragePOSIX())
         return GLFW_FALSE;
 
-    if (!_glfwInitGLX())
-        return GLFW_FALSE;
-
     if (!_glfwInitJoysticksLinux())
         return GLFW_FALSE;
 
-    _glfwInitEGL();
     _glfwInitTimerPOSIX();
 
     return GLFW_TRUE;

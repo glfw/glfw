@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.2 Linux - www.glfw.org
+// GLFW 3.3 Linux - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -49,7 +49,7 @@
 static GLFWbool openJoystickDevice(const char* path)
 {
     char axisCount, buttonCount;
-    char name[256];
+    char name[256] = "";
     int joy, fd, version;
     _GLFWjoystickLinux* js;
 
@@ -153,7 +153,7 @@ static GLFWbool pollJoystickEvents(_GLFWjoystickLinux* js)
     return js->present;
 }
 
-// Lexically compare joysticks, used by quicksort
+// Lexically compare joysticks by name; used by qsort
 //
 #if defined(__linux__)
 static int compareJoysticks(const void* fp, const void* sp)

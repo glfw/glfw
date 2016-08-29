@@ -1,6 +1,6 @@
 //========================================================================
 // Vsync enabling test
-// Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -43,7 +43,7 @@ static double frame_rate;
 
 static void usage(void)
 {
-    printf("Usage: iconify [-h] [-f]\n");
+    printf("Usage: tearing [-h] [-f]\n");
     printf("Options:\n");
     printf("  -f create full screen window\n");
     printf("  -h show this help\n");

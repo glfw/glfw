@@ -48,7 +48,9 @@ set(CONSOLE_BINARIES clipboard events msaa gamma glfwinfo
 if (VULKAN_FOUND)
     add_executable(vulkan WIN32 vulkan.c ${ICON})
     target_include_directories(vulkan PRIVATE "${VULKAN_INCLUDE_DIR}")
-    target_link_libraries(vulkan "${VULKAN_LIBRARY}")
+    if (NOT GLFW_VULKAN_STATIC)
+        target_link_libraries(vulkan "${VULKAN_LIBRARY}")
+    endif()
     list(APPEND WINDOWS_BINARIES vulkan)
 endif()
 

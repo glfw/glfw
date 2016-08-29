@@ -11,7 +11,7 @@ if (NOT CMAKE_VERSION VERSION_LESS "3.0")
 endif()
 
 set(GLFW_VERSION_MAJOR "3")
-set(GLFW_VERSION_MINOR "2")
+set(GLFW_VERSION_MINOR "3")
 set(GLFW_VERSION_PATCH "0")
 set(GLFW_VERSION_EXTRA "")
 set(GLFW_VERSION "${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}")
@@ -25,6 +25,7 @@ option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" ON)
 option(GLFW_INSTALL "Generate installation target" ON)
+option(GLFW_VULKAN_STATIC "Use the Vulkan loader statically linked into application" OFF)
 option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
 if (WIN32)
@@ -57,7 +58,11 @@ else()
     set(GLFW_LIB_NAME glfw3)
 endif()
 
-set(CMAKE_MODULE_PATH "${GLFW_SOURCE_DIR}/CMake/modules")
+if (GLFW_VULKAN_STATIC)
+    set(_GLFW_VULKAN_STATIC 1)
+endif()
+
+list(APPEND CMAKE_MODULE_PATH "${GLFW_SOURCE_DIR}/CMake/modules")
 
 find_package(Threads REQUIRED)
 find_package(Vulkan)
@@ -90,6 +95,15 @@ if (MSVC)
 endif()
 
 if (MINGW)
+    # Workaround for legacy MinGW not providing XInput and DirectInput
+    include(CheckIncludeFile)
+
+    check_include_file(dinput.h DINPUT_H_FOUND)
+    check_include_file(xinput.h XINPUT_H_FOUND)
+    if (NOT DINPUT_H_FOUND OR NOT XINPUT_H_FOUND)
+        list(APPEND glfw_INCLUDE_DIRS "${GLFW_SOURCE_DIR}/deps/mingw")
+    endif()
+
     # Enable link-time exploit mitigation features enabled by default on MSVC
     include(CheckCCompilerFlag)
 
@@ -137,6 +151,21 @@ elseif (UNIX)
     endif()
 else()
     message(FATAL_ERROR "No supported platform was detected")
+endif()
+
+#--------------------------------------------------------------------
+# Add Vulkan static library if requested
+#--------------------------------------------------------------------
+if (GLFW_VULKAN_STATIC)
+    if (VULKAN_FOUND AND VULKAN_STATIC_LIBRARY)
+        list(APPEND glfw_LIBRARIES ${VULKAN_STATIC_LIBRARY})
+    else()
+        if (BUILD_SHARED_LIBS OR GLFW_BUILD_EXAMPLES OR GLFW_BUILD_TESTS)
+            message(FATAL_ERROR "Vulkan loader static library not found")
+        else()
+            message(WARNING "Vulkan loader static library not found")
+        endif()
+    endif()
 endif()
 
 #--------------------------------------------------------------------
@@ -244,7 +273,7 @@ endif()
 #--------------------------------------------------------------------
 if (_GLFW_WAYLAND)
     find_package(ECM REQUIRED NO_MODULE)
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
+    list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
     find_package(Wayland REQUIRED)
     find_package(WaylandScanner REQUIRED)
@@ -299,20 +328,17 @@ if (_GLFW_COCOA)
     find_library(IOKIT_FRAMEWORK IOKit)
     find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
     find_library(CORE_VIDEO_FRAMEWORK CoreVideo)
-    find_library(CARBON_FRAMEWORK Carbon)
     mark_as_advanced(COCOA_FRAMEWORK
                      IOKIT_FRAMEWORK
                      CORE_FOUNDATION_FRAMEWORK
-                     CORE_VIDEO_FRAMEWORK
-                     CARBON_FRAMEWORK)
+                     CORE_VIDEO_FRAMEWORK)
     list(APPEND glfw_LIBRARIES "${COCOA_FRAMEWORK}"
                                "${IOKIT_FRAMEWORK}"
                                "${CORE_FOUNDATION_FRAMEWORK}"
-                               "${CORE_VIDEO_FRAMEWORK}"
-                               "${CARBON_FRAMEWORK}")
+                               "${CORE_VIDEO_FRAMEWORK}")
 
     set(glfw_PKG_DEPS "")
-    set(glfw_PKG_LIBS "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo -framework Carbon")
+    set(glfw_PKG_LIBS "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
 endif()
 
 #--------------------------------------------------------------------

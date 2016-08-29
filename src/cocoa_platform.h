@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.2 OS X - www.glfw.org
+// GLFW 3.3 OS X - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2009-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -56,6 +56,16 @@ typedef void* id;
 #define _GLFW_EGL_CONTEXT_STATE
 #define _GLFW_EGL_LIBRARY_CONTEXT_STATE
 
+// HIToolbox.framework pointer typedefs
+#define kTISPropertyUnicodeKeyLayoutData _glfw.ns.tis.kPropertyUnicodeKeyLayoutData
+#define kTISNotifySelectedKeyboardInputSourceChanged _glfw.ns.tis.kNotifySelectedKeyboardInputSourceChanged
+typedef TISInputSourceRef (*PFN_TISCopyCurrentKeyboardLayoutInputSource)(void);
+#define TISCopyCurrentKeyboardLayoutInputSource _glfw.ns.tis.CopyCurrentKeyboardLayoutInputSource
+typedef void* (*PFN_TISGetInputSourceProperty)(TISInputSourceRef,CFStringRef);
+#define TISGetInputSourceProperty _glfw.ns.tis.GetInputSourceProperty
+typedef UInt8 (*PFN_LMGetKbdType)(void);
+#define LMGetKbdType _glfw.ns.tis.GetKbdType
+
 
 // Cocoa-specific per-window data
 //
@@ -68,10 +78,9 @@ typedef struct _GLFWwindowNS
     // The total sum of the distances the cursor has been warped
     // since the last cursor motion event was processed
     // This is kept to counteract Cocoa doing the same internally
-    double          warpDeltaX, warpDeltaY;
+    double          cursorWarpDeltaX, cursorWarpDeltaY;
 
 } _GLFWwindowNS;
-
 
 // Cocoa-specific global data
 //
@@ -82,15 +91,29 @@ typedef struct _GLFWlibraryNS
     id                  autoreleasePool;
     id                  cursor;
     TISInputSourceRef   inputSource;
+    IOHIDManagerRef     hidManager;
     id                  unicodeData;
+    id                  listener;
 
     char                keyName[64];
     short int           publicKeys[256];
     short int           nativeKeys[GLFW_KEY_LAST + 1];
     char*               clipboardString;
+    // Where to place the cursor when re-enabled
+    double              restoreCursorPosX, restoreCursorPosY;
+    // The window whose disabled cursor mode is active
+    _GLFWwindow*        disabledCursorWindow;
+
+    struct {
+        CFBundleRef     bundle;
+        PFN_TISCopyCurrentKeyboardLayoutInputSource CopyCurrentKeyboardLayoutInputSource;
+        PFN_TISGetInputSourceProperty GetInputSourceProperty;
+        PFN_LMGetKbdType GetKbdType;
+        CFStringRef     kPropertyUnicodeKeyLayoutData;
+        CFStringRef     kNotifySelectedKeyboardInputSourceChanged;
+    } tis;
 
 } _GLFWlibraryNS;
-
 
 // Cocoa-specific per-monitor data
 //
@@ -102,7 +125,6 @@ typedef struct _GLFWmonitorNS
 
 } _GLFWmonitorNS;
 
-
 // Cocoa-specific per-cursor data
 //
 typedef struct _GLFWcursorNS
@@ -110,7 +132,6 @@ typedef struct _GLFWcursorNS
     id              object;
 
 } _GLFWcursorNS;
-
 
 // Cocoa-specific global timer data
 //

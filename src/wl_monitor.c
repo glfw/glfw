@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Wayland - www.glfw.org
+// GLFW 3.3 Wayland - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -120,7 +120,7 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
     struct wl_output *output;
     char name_str[80];
 
-    memset(name_str, 0, 80 * sizeof(char));
+    memset(name_str, 0, sizeof(name_str));
     snprintf(name_str, 79, "wl_output@%u", name);
 
     if (version < 2)

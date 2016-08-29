@@ -18,9 +18,8 @@ The GLFW library does not need the Vulkan SDK to enable support for Vulkan.
 However, any Vulkan-specific test and example programs are built only if the
 CMake files find a Vulkan SDK.
 
-For details on a specific function, see the
-[reference documentation](@ref vulkan).  There are also guides for the other
-areas of the GLFW API.
+For details on a specific function in this category, see the @ref vulkan.  There
+are also guides for the other areas of the GLFW API.
 
  - @ref intro_guide
  - @ref window_guide
@@ -39,8 +38,8 @@ before including the GLFW header.
 #include <GLFW/glfw3.h>
 @endcode
 
-If you want to include the Vulkan header from a custom location or use your own
-custom Vulkan header then you need to include them before the GLFW header.
+If you instead want to include the Vulkan header from a custom location or use
+your own custom Vulkan header then do this before the GLFW header.
 
 @code
 #include <path/to/vulkan.h>

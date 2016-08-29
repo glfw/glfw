@@ -1,6 +1,6 @@
 //========================================================================
 // Context creation and information tool
-// Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -357,7 +357,7 @@ static void print_version(void)
 
 int main(int argc, char** argv)
 {
-    int ch, client, context, major, minor, revision, profile;
+    int ch, client, major, minor, revision, profile;
     GLint redbits, greenbits, bluebits, alphabits, depthbits, stencilbits;
     int list_extensions = GLFW_FALSE, list_layers = GLFW_FALSE;
     GLenum error;
@@ -412,7 +412,7 @@ int main(int argc, char** argv)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    while ((ch = getopt_long(argc, argv, "a:b:dfhlm:n:p:s:v", options, NULL)) != -1)
+    while ((ch = getopt_long(argc, argv, "a:b:c:dfhlm:n:p:s:v", options, NULL)) != -1)
     {
         switch (ch)
         {
@@ -636,7 +636,6 @@ int main(int argc, char** argv)
     // Report client API version
 
     client = glfwGetWindowAttrib(window, GLFW_CLIENT_API);
-    context = glfwGetWindowAttrib(window, GLFW_CONTEXT_CREATION_API);
     major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
     minor = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR);
     revision = glfwGetWindowAttrib(window, GLFW_CONTEXT_REVISION);

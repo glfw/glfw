@@ -197,6 +197,9 @@ built along with the library.
 `GLFW_BUILD_DOCS` determines whether the GLFW documentation is built along with
 the library.
 
+`GLFW_VULKAN_STATIC` determines whether to use the Vulkan loader linked
+statically into the application.
+
 
 @subsubsection compile_options_osx OS X specific CMake options
 
@@ -214,9 +217,7 @@ Retina displays.
 
 `USE_MSVC_RUNTIME_LIBRARY_DLL` determines whether to use the DLL version or the
 static library version of the Visual C++ runtime library.  If set to `ON`, the
-DLL version of the Visual C++ library is used.  It is recommended to set this to
-`ON`, as this keeps the executable smaller and benefits from security and bug
-fix updates of the Visual C++ runtime.
+DLL version of the Visual C++ library is used.
 
 `GLFW_USE_HYBRID_HPG` determines whether to export the `NvOptimusEnablement` and
 `AmdPowerXpressRequestHighPerformance` symbols, which force the use of the
@@ -250,6 +251,10 @@ ramps and clipboard.  The options are:
 
 If you are building GLFW as a shared library / dynamic library / DLL then you
 must also define `_GLFW_BUILD_DLL`.  Otherwise, you must not define it.
+
+If you are linking the Vulkan loader statically into your application then you
+must also define `_GLFW_VULKAN_STATIC`.  Otherwise, GLFW will attempt to use the
+external version.
 
 For the EGL context creation API, the following options are available:
 

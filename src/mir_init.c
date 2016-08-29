@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Mir - www.glfw.org
+// GLFW 3.3 Mir - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014-2015 Brandon Schaefer <brandon.schaefer@canonical.com>
 //
@@ -181,9 +181,6 @@ int _glfwPlatformInit(void)
     createKeyTables();
 
     if (!_glfwInitThreadLocalStoragePOSIX())
-        return GLFW_FALSE;
-
-    if (!_glfwInitEGL())
         return GLFW_FALSE;
 
     if (!_glfwInitJoysticksLinux())

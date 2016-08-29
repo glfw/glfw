@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.2 Win32 - www.glfw.org
+// GLFW 3.3 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -319,6 +319,10 @@ static HWND createHelperWindow(void)
         return NULL;
     }
 
+    // HACK: The first call to ShowWindow is ignored if the parent process
+    //       passed along a STARTUPINFO, so clear that flag with a no-op call
+    ShowWindow(window, SW_HIDE);
+
     // Register for HID device notifications
     {
         DEV_BROADCAST_DEVICEINTERFACE_W dbi;
@@ -373,7 +377,7 @@ char* _glfwCreateUTF8FromWideStringWin32(const WCHAR* source)
     if (!length)
         return NULL;
 
-    target = calloc(length, sizeof(char));
+    target = calloc(length, 1);
 
     if (!WideCharToMultiByte(CP_UTF8, 0, source, -1, target, length, NULL, NULL))
     {
@@ -415,16 +419,12 @@ int _glfwPlatformInit(void)
     if (!_glfwRegisterWindowClassWin32())
         return GLFW_FALSE;
 
-    _glfw.win32.helperWindow = createHelperWindow();
-    if (!_glfw.win32.helperWindow)
+    _glfw.win32.helperWindowHandle = createHelperWindow();
+    if (!_glfw.win32.helperWindowHandle)
         return GLFW_FALSE;
 
     _glfwPlatformPollEvents();
 
-    if (!_glfwInitWGL())
-        return GLFW_FALSE;
-
-    _glfwInitEGL();
     _glfwInitTimerWin32();
     _glfwInitJoysticksWin32();
 
@@ -433,8 +433,8 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
-    if (_glfw.win32.helperWindow)
-        DestroyWindow(_glfw.win32.helperWindow);
+    if (_glfw.win32.helperWindowHandle)
+        DestroyWindow(_glfw.win32.helperWindowHandle);
 
     _glfwUnregisterWindowClassWin32();
 

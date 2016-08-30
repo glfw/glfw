@@ -35,8 +35,16 @@ add_executable(particles WIN32 MACOSX_BUNDLE particles.c ${ICON} ${TINYCTHREAD} 
 add_executable(simple WIN32 MACOSX_BUNDLE simple.c ${ICON} ${GLAD})
 add_executable(splitview WIN32 MACOSX_BUNDLE splitview.c ${ICON} ${GLAD})
 add_executable(wave WIN32 MACOSX_BUNDLE wave.c ${ICON} ${GLAD})
+if (GLFW_USE_OSMESA)
+  add_executable(simple_osmesa WIN32 MACOSX_BUNDLE simple_osmesa.c ${ICON} ${GLAD})
+  add_executable(particles_osmesa WIN32 MACOSX_BUNDLE particles_osmesa.c ${ICON} ${TINYCTHREAD} ${GETOPT} ${GLAD})
+endif()
+
 
 target_link_libraries(particles "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
+if (GLFW_USE_OSMESA)
+  target_link_libraries(particles_osmesa "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
+endif()
 
 set(WINDOWS_BINARIES boing gears heightmap particles simple splitview wave)
 

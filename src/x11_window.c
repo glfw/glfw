@@ -2091,15 +2091,14 @@ void _glfwPlatformWaitEventsTimeout(double timeout)
 void _glfwPlatformPostEmptyEvent(void)
 {
     XEvent event;
-    _GLFWwindow* window = _glfw.windowListHead;
 
     memset(&event, 0, sizeof(event));
     event.type = ClientMessage;
-    event.xclient.window = window->x11.handle;
+    event.xclient.window = _glfw.x11.helper;
     event.xclient.format = 32; // Data is 32-bit longs
     event.xclient.message_type = _glfw.x11.NULL_;
 
-    XSendEvent(_glfw.x11.display, window->x11.handle, False, 0, &event);
+    XSendEvent(_glfw.x11.display, _glfw.x11.helper, False, 0, &event);
     XFlush(_glfw.x11.display);
 }
 

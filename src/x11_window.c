@@ -138,6 +138,9 @@ static int getWindowState(_GLFWwindow* window)
 //
 static Bool isSelectionEvent(Display* display, XEvent* event, XPointer pointer)
 {
+    if (event->xany.window != _glfw.x11.helperWindowHandle)
+        return False;
+
     return event->type == SelectionRequest ||
            event->type == SelectionNotify ||
            event->type == SelectionClear;
@@ -2272,8 +2275,13 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
                           _glfw.x11.helperWindowHandle,
                           CurrentTime);
 
-        while (!XCheckTypedEvent(_glfw.x11.display, SelectionNotify, &event))
+        while (!XCheckTypedWindowEvent(_glfw.x11.display,
+                                       _glfw.x11.helperWindowHandle,
+                                       SelectionNotify,
+                                       &event))
+        {
             waitForEvent(NULL);
+        }
 
         if (event.xselection.property == None)
             continue;

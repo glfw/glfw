@@ -3012,10 +3012,11 @@ GLFWAPI const char* glfwGetKeyName(int key, int scancode);
  *  method will return `-1`.
  *
  *  @param[in] key The key to query.
- *  @return The platform dependent scancode for the key, or `-1`.
+ *  @return The platform dependent scancode for the key, or `-1` if an
+ *  [error](@ref error_handling) occurred.
  *
- *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
- *  GLFW_PLATFORM_ERROR.
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_INVALID_ENUM and @ref GLFW_PLATFORM_ERROR.
  *
  *  @thread_safety This function may be called from any thread.
  *
@@ -3025,7 +3026,7 @@ GLFWAPI const char* glfwGetKeyName(int key, int scancode);
  *
  *  @ingroup input
  */
-GLFWAPI const short int glfwGetKeyScancode(int key);
+GLFWAPI int glfwGetKeyScancode(int key);
 
 /*! @brief Returns the last reported state of a keyboard key for the specified
  *  window.

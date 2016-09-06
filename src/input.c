@@ -256,9 +256,16 @@ GLFWAPI const char* glfwGetKeyName(int key, int scancode)
     return _glfwPlatformGetKeyName(key, scancode);
 }
 
-GLFWAPI const short int glfwGetKeyScancode(int key)
+GLFWAPI int glfwGetKeyScancode(int key)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(-1);
+
+    if (key < GLFW_KEY_SPACE || key > GLFW_KEY_LAST)
+    {
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid key %i", key);
+        return GLFW_RELEASE;
+    }
+
     return _glfwPlatformGetKeyScancode(key);
 }
 

@@ -225,16 +225,13 @@ arguments can always be passed unmodified to this function.
 
 @subsection input_key_scancode Key scancodes
 
-If you need the platform dependent scancode for any given key, you can query
-it with @ref glfwGetKeyScancode.
+If you need the platform dependent scancode for a [named key](@ref keys), you
+can query it with @ref glfwGetKeyScancode.
 
 @code
-const short int scancode = glfwGetKeyScancode(GLFW_KEY_X);
+const int scancode = glfwGetKeyScancode(GLFW_KEY_X);
 set_key_mapping(scancode, swap_weapons);
-@encode
-
-If the key is `GLFW_KEY_UNKNOWN` or does not exist on the keyboard this
-method will return `-1`.
+@endcode
 
 
 @section input_mouse Mouse input

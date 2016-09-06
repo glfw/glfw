@@ -744,11 +744,9 @@ const char* _glfwPlatformGetKeyName(int key, int scancode)
     return NULL;
 }
 
-const int _glfwPlatformGetKeyScancode(int key)
+int _glfwPlatformGetKeyScancode(int key)
 {
-    _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
-    return NULL;
+    return _glfw.mir.nativeKeys[key];
 }
 
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)

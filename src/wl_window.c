@@ -686,10 +686,9 @@ const char* _glfwPlatformGetKeyName(int key, int scancode)
     return NULL;
 }
 
-const int _glfwPlatformGetKeyScancode(int key)
+int _glfwPlatformGetKeyScancode(int key)
 {
-    // TODO
-	return -1;
+    return _glfw.wl.nativeKeys[key];
 }
 
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor,

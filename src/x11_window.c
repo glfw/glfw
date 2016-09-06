@@ -2186,13 +2186,8 @@ const char* _glfwPlatformGetKeyName(int key, int scancode)
     return _glfw.x11.keyName;
 }
 
-const short int _glfwPlatformGetKeyScancode(int key)
+int _glfwPlatformGetKeyScancode(int key)
 {
-    if(key <= -1 || key >= (sizeof(_glfw.x11.nativeKeys) / sizeof(_glfw.x11.nativeKeys[0])))
-    {
-        return -1;
-    }
-
     return _glfw.x11.nativeKeys[key];
 }
 

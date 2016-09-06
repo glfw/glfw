@@ -458,7 +458,10 @@ static void updateCursorImage(_GLFWwindow* window)
             XUndefineCursor(_glfw.x11.display, window->x11.handle);
     }
     else
-        XDefineCursor(_glfw.x11.display, window->x11.handle, _glfw.x11.cursor);
+    {
+        XDefineCursor(_glfw.x11.display, window->x11.handle,
+                      _glfw.x11.hiddenCursorHandle);
+    }
 }
 
 // Create the X11 window (and its colormap)
@@ -2140,7 +2143,9 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
         XGrabPointer(_glfw.x11.display, window->x11.handle, True,
                      ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
                      GrabModeAsync, GrabModeAsync,
-                     window->x11.handle, _glfw.x11.cursor, CurrentTime);
+                     window->x11.handle,
+                     _glfw.x11.hiddenCursorHandle,
+                     CurrentTime);
     }
     else if (_glfw.x11.disabledCursorWindow == window)
     {

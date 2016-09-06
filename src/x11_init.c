@@ -745,7 +745,7 @@ int _glfwPlatformInit(void)
     if (!initExtensions())
         return GLFW_FALSE;
 
-    _glfw.x11.cursor = createHiddenCursor();
+    _glfw.x11.hiddenCursorHandle = createHiddenCursor();
 
     if (XSupportsLocale())
     {
@@ -781,10 +781,10 @@ void _glfwPlatformTerminate(void)
         _glfw.x11.x11xcb.handle = NULL;
     }
 
-    if (_glfw.x11.cursor)
+    if (_glfw.x11.hiddenCursorHandle)
     {
-        XFreeCursor(_glfw.x11.display, _glfw.x11.cursor);
-        _glfw.x11.cursor = (Cursor) 0;
+        XFreeCursor(_glfw.x11.display, _glfw.x11.hiddenCursorHandle);
+        _glfw.x11.hiddenCursorHandle = (Cursor) 0;
     }
 
     free(_glfw.x11.clipboardString);

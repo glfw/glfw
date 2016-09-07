@@ -206,7 +206,7 @@ static int translateKey(int scancode)
     if (scancode < 0 || scancode > 255)
         return GLFW_KEY_UNKNOWN;
 
-    return _glfw.x11.publicKeys[scancode];
+    return _glfw.x11.keycodes[scancode];
 }
 
 // Return the GLFW window corresponding to the specified X11 window
@@ -2167,9 +2167,9 @@ const char* _glfwPlatformGetKeyName(int key, int scancode)
         return NULL;
 
     if (key != GLFW_KEY_UNKNOWN)
-        scancode = _glfw.x11.nativeKeys[key];
+        scancode = _glfw.x11.scancodes[key];
 
-    if (!_glfwIsPrintable(_glfw.x11.publicKeys[scancode]))
+    if (!_glfwIsPrintable(_glfw.x11.keycodes[scancode]))
         return NULL;
 
     keysym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, 0, 0);
@@ -2188,7 +2188,7 @@ const char* _glfwPlatformGetKeyName(int key, int scancode)
 
 int _glfwPlatformGetKeyScancode(int key)
 {
-    return _glfw.x11.nativeKeys[key];
+    return _glfw.x11.scancodes[key];
 }
 
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor,

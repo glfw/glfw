@@ -166,10 +166,10 @@ static int translateFlags(NSUInteger flags)
 //
 static int translateKey(unsigned int key)
 {
-    if (key >= sizeof(_glfw.ns.publicKeys) / sizeof(_glfw.ns.publicKeys[0]))
+    if (key >= sizeof(_glfw.ns.keycodes) / sizeof(_glfw.ns.keycodes[0]))
         return GLFW_KEY_UNKNOWN;
 
-    return _glfw.ns.publicKeys[key];
+    return _glfw.ns.keycodes[key];
 }
 
 // Translate a GLFW keycode to a Cocoa modifier flag
@@ -1472,9 +1472,9 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 const char* _glfwPlatformGetKeyName(int key, int scancode)
 {
     if (key != GLFW_KEY_UNKNOWN)
-        scancode = _glfw.ns.nativeKeys[key];
+        scancode = _glfw.ns.scancodes[key];
 
-    if (!_glfwIsPrintable(_glfw.ns.publicKeys[scancode]))
+    if (!_glfwIsPrintable(_glfw.ns.keycodes[scancode]))
         return NULL;
 
     UInt32 deadKeyState = 0;
@@ -1513,7 +1513,7 @@ const char* _glfwPlatformGetKeyName(int key, int scancode)
 
 int _glfwPlatformGetKeyScancode(int key)
 {
-    return _glfw.ns.nativeKeys[key];
+    return _glfw.ns.scancodes[key];
 }
 
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor,

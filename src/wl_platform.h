@@ -129,8 +129,8 @@ typedef struct _GLFWlibraryWayland
     int                         monitorsCount;
     int                         monitorsSize;
 
-    short int                   publicKeys[256];
-    short int                   nativeKeys[GLFW_KEY_LAST + 1];
+    short int                   keycodes[256];
+    short int                   scancodes[GLFW_KEY_LAST + 1];
 
     struct {
         struct xkb_context*     context;

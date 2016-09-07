@@ -151,9 +151,9 @@ typedef struct _GLFWlibraryX11
     // Key name string
     char            keyName[64];
     // X11 keycode to GLFW key LUT
-    short int       publicKeys[256];
+    short int       keycodes[256];
     // GLFW key to X11 keycode LUT
-    short int       nativeKeys[GLFW_KEY_LAST + 1];
+    short int       scancodes[GLFW_KEY_LAST + 1];
     // Where to place the cursor when re-enabled
     double          restoreCursorPosX, restoreCursorPosY;
     // The window whose disabled cursor mode is active

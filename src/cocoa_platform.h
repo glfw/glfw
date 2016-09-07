@@ -96,8 +96,8 @@ typedef struct _GLFWlibraryNS
     id                  listener;
 
     char                keyName[64];
-    short int           publicKeys[256];
-    short int           nativeKeys[GLFW_KEY_LAST + 1];
+    short int           keycodes[256];
+    short int           scancodes[GLFW_KEY_LAST + 1];
     char*               clipboardString;
     // Where to place the cursor when re-enabled
     double              restoreCursorPosX, restoreCursorPosY;

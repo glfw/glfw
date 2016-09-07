@@ -249,8 +249,8 @@ typedef struct _GLFWlibraryWin32
     DWORD               foregroundLockTimeout;
     char*               clipboardString;
     char                keyName[64];
-    short int           publicKeys[512];
-    short int           nativeKeys[GLFW_KEY_LAST + 1];
+    short int           keycodes[512];
+    short int           scancodes[GLFW_KEY_LAST + 1];
     // Where to place the cursor when re-enabled
     double              restoreCursorPosX, restoreCursorPosY;
     // The window whose disabled cursor mode is active

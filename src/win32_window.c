@@ -385,7 +385,7 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
         return _GLFW_KEY_INVALID;
     }
 
-    return _glfw.win32.publicKeys[HIWORD(lParam) & 0x1FF];
+    return _glfw.win32.keycodes[HIWORD(lParam) & 0x1FF];
 }
 
 // Make the specified window and its video mode active on its monitor
@@ -1492,9 +1492,9 @@ const char* _glfwPlatformGetKeyName(int key, int scancode)
     WCHAR name[16];
 
     if (key != GLFW_KEY_UNKNOWN)
-        scancode = _glfw.win32.nativeKeys[key];
+        scancode = _glfw.win32.scancodes[key];
 
-    if (!_glfwIsPrintable(_glfw.win32.publicKeys[scancode]))
+    if (!_glfwIsPrintable(_glfw.win32.keycodes[scancode]))
         return NULL;
 
     if (!GetKeyNameTextW(scancode << 16, name, sizeof(name) / sizeof(WCHAR)))
@@ -1513,7 +1513,7 @@ const char* _glfwPlatformGetKeyName(int key, int scancode)
 
 int _glfwPlatformGetKeyScancode(int key)
 {
-    return _glfw.win32.nativeKeys[key];
+    return _glfw.win32.scancodes[key];
 }
 
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor,

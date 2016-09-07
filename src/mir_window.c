@@ -132,8 +132,8 @@ static int mirModToGLFWMod(uint32_t mods)
 
 static int toGLFWKeyCode(uint32_t key)
 {
-    if (key < sizeof(_glfw.mir.publicKeys) / sizeof(_glfw.mir.publicKeys[0]))
-        return _glfw.mir.publicKeys[key];
+    if (key < sizeof(_glfw.mir.keycodes) / sizeof(_glfw.mir.keycodes[0]))
+        return _glfw.mir.keycodes[key];
 
     return GLFW_KEY_UNKNOWN;
 }
@@ -811,7 +811,7 @@ const char* _glfwPlatformGetKeyName(int key, int scancode)
 
 int _glfwPlatformGetKeyScancode(int key)
 {
-    return _glfw.mir.nativeKeys[key];
+    return _glfw.mir.scancodes[key];
 }
 
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)

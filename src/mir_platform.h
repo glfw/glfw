@@ -109,8 +109,8 @@ typedef struct _GLFWlibraryMir
     MirCursorConfiguration* disabledConf;
     EventQueue* eventQueue;
 
-    short int       publicKeys[256];
-    short int       nativeKeys[GLFW_KEY_LAST + 1];
+    short int       keycodes[256];
+    short int       scancodes[GLFW_KEY_LAST + 1];
 
     pthread_mutex_t eventMutex;
     pthread_cond_t  eventCond;

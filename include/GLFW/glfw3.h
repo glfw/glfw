@@ -1121,6 +1121,42 @@ typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
  */
 typedef void (* GLFWjoystickfun)(int,int);
 
+/*! @brief The function signature for joystick button callbacks.
+ *
+ *  This is the function signature for joystick button callback
+ *  functions.
+ *
+ *  @param[in] joy The joystick that had a button pressed or released.
+ *  @param[in] button The button that was pressed or released.
+ *  @param[in] action One of `GLFW_PRESS` or `GLFW_RELEASE`.
+ *
+ *  @sa @ref joystick_event
+ *  @sa glfwSetJoystickButtonCallback
+ *
+ *  @since Added in version 3.2.
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWjoystickbuttonfun)(int,int,int);
+
+/*! @brief The function signature for joystick axis callbacks.
+ *
+ *  This is the function signature for joystick axis callback
+ *  functions.
+ *
+ *  @param[in] joy The joystick that had an axis moved.
+ *  @param[in] axis The axis that was moved.
+ *  @param[in] value The axis value.
+ *
+ *  @sa @ref joystick_event
+ *  @sa glfwSetJoystickAxisCallback
+ *
+ *  @since Added in version 3.2.
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWjoystickaxisfun)(int,int,float);
+
 /*! @brief Video mode type.
  *
  *  This describes a single video mode.
@@ -3679,6 +3715,50 @@ GLFWAPI const char* glfwGetJoystickName(int joy);
  *  @ingroup input
  */
 GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun cbfun);
+
+/*! @brief Sets the joystick button callback.
+ *
+ *  This function sets the joystick button callback, or removes the currently
+ *  set callback.  This is called when a joystick button is pressed or released.
+ *
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref joystick_event
+ *
+ *  @since Added in version 3.2.
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWjoystickbuttonfun glfwSetJoystickButtonCallback(GLFWjoystickbuttonfun cbfun);
+
+/*! @brief Sets the joystick axis callback.
+ *
+ *  This function sets the joystick axis callback, or removes the currently
+ *  set callback.  This is called when a joystick axis is moved.
+ *
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref joystick_event
+ *
+ *  @since Added in version 3.2.
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWjoystickaxisfun glfwSetJoystickAxisCallback(GLFWjoystickaxisfun cbfun);
 
 /*! @brief Sets the clipboard to the specified string.
  *

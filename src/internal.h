@@ -463,8 +463,10 @@ struct _GLFWlibrary
     } vk;
 
     struct {
-        GLFWmonitorfun  monitor;
-        GLFWjoystickfun joystick;
+        GLFWmonitorfun          monitor;
+        GLFWjoystickfun         joystick;
+        GLFWjoystickbuttonfun   joystick_button;
+        GLFWjoystickaxisfun     joystick_axis;
     } callbacks;
 
     // This is defined in the window API's platform.h
@@ -952,6 +954,22 @@ void _glfwInputDrop(_GLFWwindow* window, int count, const char** names);
  *  @ingroup event
  */
 void _glfwInputJoystickChange(int joy, int event);
+
+/*! @brief Notifies shared code of a joystick button pressed/release action.
+ *  @param[in] joy The joystick that had a button pressed or released.
+ *  @param[in] button The button that was pressed or released.
+ *  @param[in] action One of `GLFW_PRESS` or `GLFW_RELEASE`.
+ *  @ingroup event
+ */
+void _glfwInputJoystickButtonState(int joy, int button, int action);
+
+/*! @brief Notifies shared code of joystick axis motion.
+ *  @param[in] joy The joystick that had an axis moved.
+ *  @param[in] axis The axis that was moved.
+ *  @param[in] value The current position of the axis.
+ *  @ingroup event
+ */
+void _glfwInputJoystickAxisMoved(int joy, int axis, float value);
 
 
 //========================================================================

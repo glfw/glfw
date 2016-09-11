@@ -258,29 +258,11 @@ static int toGLFWKeyCode(uint32_t key)
     return GLFW_KEY_UNKNOWN;
 }
 
-static void keyboardHandleKey(void* data,
-                              struct wl_keyboard* keyboard,
-                              uint32_t serial,
-                              uint32_t time,
-                              uint32_t key,
-                              uint32_t state)
+static void inputChar(_GLFWwindow* window, uint32_t key)
 {
     uint32_t code, num_syms;
     long cp;
-    int keyCode;
-    int action;
     const xkb_keysym_t *syms;
-    _GLFWwindow* window = _glfw.wl.keyboardFocus;
-
-    if (!window)
-        return;
-
-    keyCode = toGLFWKeyCode(key);
-    action = state == WL_KEYBOARD_KEY_STATE_PRESSED
-            ? GLFW_PRESS : GLFW_RELEASE;
-
-    _glfwInputKey(window, keyCode, key, action,
-                  _glfw.wl.xkb.modifiers);
 
     code = key + 8;
     num_syms = xkb_key_get_syms(_glfw.wl.xkb.state, code, &syms);
@@ -295,6 +277,31 @@ static void keyboardHandleKey(void* data,
             _glfwInputChar(window, cp, mods, plain);
         }
     }
+}
+
+static void keyboardHandleKey(void* data,
+                              struct wl_keyboard* keyboard,
+                              uint32_t serial,
+                              uint32_t time,
+                              uint32_t key,
+                              uint32_t state)
+{
+    int keyCode;
+    int action;
+    _GLFWwindow* window = _glfw.wl.keyboardFocus;
+
+    if (!window)
+        return;
+
+    keyCode = toGLFWKeyCode(key);
+    action = state == WL_KEYBOARD_KEY_STATE_PRESSED
+            ? GLFW_PRESS : GLFW_RELEASE;
+
+    _glfwInputKey(window, keyCode, key, action,
+                  _glfw.wl.xkb.modifiers);
+
+    if (action == GLFW_PRESS)
+        inputChar(window, key);
 }
 
 static void keyboardHandleModifiers(void* data,

@@ -104,20 +104,66 @@ GLFWbool _glfwInitVulkan(void)
         return GLFW_FALSE;
     }
 
-    for (i = 0;  i < count;  i++)
+    for (i = 0;  i < count;  i++) 
     {
-        if (strcmp(ep[i].extensionName, "VK_KHR_surface") == 0)
-            _glfw.vk.KHR_surface = GLFW_TRUE;
-        if (strcmp(ep[i].extensionName, "VK_KHR_win32_surface") == 0)
-            _glfw.vk.KHR_win32_surface = GLFW_TRUE;
-        if (strcmp(ep[i].extensionName, "VK_KHR_xlib_surface") == 0)
-            _glfw.vk.KHR_xlib_surface = GLFW_TRUE;
-        if (strcmp(ep[i].extensionName, "VK_KHR_xcb_surface") == 0)
-            _glfw.vk.KHR_xcb_surface = GLFW_TRUE;
-        if (strcmp(ep[i].extensionName, "VK_KHR_wayland_surface") == 0)
-            _glfw.vk.KHR_wayland_surface = GLFW_TRUE;
-        if (strcmp(ep[i].extensionName, "VK_KHR_mir_surface") == 0)
-            _glfw.vk.KHR_mir_surface = GLFW_TRUE;
+#if defined(_WIN32) || defined(WIN32)
+        if(_glfw.vk.KHR_surface && _glfw.vk.KHR_win32_surface)
+            break;
+#else
+        if(_glfw.vk.KHR_surface && (_glfw.vk.KHR_xlib_surface || _glfw.vk.KHR_xcb_surface || _glfw.vk.KHR_wayland_surface || _glfw.vk.KHR_mir_surface))
+            break;
+#endif
+        if(!_glfw.vk.KHR_surface)
+        {
+            if (strcmp(ep[i].extensionName, "VK_KHR_surface") == 0)
+            {
+                _glfw.vk.KHR_surface = GLFW_TRUE;
+                continue;
+            }
+        }
+#if defined(_WIN32) || defined(WIN32)
+        if(!_glfw.vk.KHR_win32_surface)
+        {
+            if (strcmp(ep[i].extensionName, "VK_KHR_win32_surface") == 0)
+            {
+                _glfw.vk.KHR_win32_surface = GLFW_TRUE;
+                continue;
+            }
+        }
+#else
+        if(!_glfw.vk.KHR_xlib_surface)
+        {
+            if (strcmp(ep[i].extensionName, "VK_KHR_xlib_surface") == 0)
+            {
+                _glfw.vk.KHR_xlib_surface = GLFW_TRUE;
+                continue;
+            }
+        }
+        if(!_glfw.vk.KHR_xcb_surface)
+        {
+            if (strcmp(ep[i].extensionName, "VK_KHR_xcb_surface") == 0)
+             {
+                _glfw.vk.KHR_xcb_surface = GLFW_TRUE;
+                continue;
+             }
+        }
+        if(!_glfw.vk.KHR_wayland_surface)
+        {
+            if (strcmp(ep[i].extensionName, "VK_KHR_wayland_surface") == 0)
+            {
+                _glfw.vk.KHR_wayland_surface = GLFW_TRUE;
+                continue;
+            }        
+        }
+        if(!_glfw.vk.KHR_mir_surface)
+        {
+            if (strcmp(ep[i].extensionName, "VK_KHR_mir_surface") == 0)
+            {
+                _glfw.vk.KHR_mir_surface = GLFW_TRUE;
+                continue;
+            }
+        }
+#endif
     }
 
     free(ep);

@@ -99,8 +99,8 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
-- Added `glfwGetKeyScancode` function that allows retrieving platform depen-
-  dent scancodes for keys (#830)
+- Added `glfwGetKeyScancode` function that allows retrieving platform dependent
+  scancodes for keys (#830)
 - Bugfix: Calling `glfwMaximizeWindow` on a full screen window was not ignored
 - [Win32] Bugfix: Undecorated windows could not be iconified by the user (#861)
 

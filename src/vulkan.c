@@ -108,15 +108,15 @@ GLFWbool _glfwInitVulkan(void)
     {
         if (strcmp(ep[i].extensionName, "VK_KHR_surface") == 0)
             _glfw.vk.KHR_surface = GLFW_TRUE;
-        if (strcmp(ep[i].extensionName, "VK_KHR_win32_surface") == 0)
+        else if (strcmp(ep[i].extensionName, "VK_KHR_win32_surface") == 0)
             _glfw.vk.KHR_win32_surface = GLFW_TRUE;
-        if (strcmp(ep[i].extensionName, "VK_KHR_xlib_surface") == 0)
+        else if (strcmp(ep[i].extensionName, "VK_KHR_xlib_surface") == 0)
             _glfw.vk.KHR_xlib_surface = GLFW_TRUE;
-        if (strcmp(ep[i].extensionName, "VK_KHR_xcb_surface") == 0)
+        else if (strcmp(ep[i].extensionName, "VK_KHR_xcb_surface") == 0)
             _glfw.vk.KHR_xcb_surface = GLFW_TRUE;
-        if (strcmp(ep[i].extensionName, "VK_KHR_wayland_surface") == 0)
+        else if (strcmp(ep[i].extensionName, "VK_KHR_wayland_surface") == 0)
             _glfw.vk.KHR_wayland_surface = GLFW_TRUE;
-        if (strcmp(ep[i].extensionName, "VK_KHR_mir_surface") == 0)
+        else if (strcmp(ep[i].extensionName, "VK_KHR_mir_surface") == 0)
             _glfw.vk.KHR_mir_surface = GLFW_TRUE;
     }
 

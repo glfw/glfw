@@ -455,11 +455,16 @@ struct _GLFWlibrary
         PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
 #endif
         GLFWbool        KHR_surface;
+#if defined(_GLFW_WIN32)
         GLFWbool        KHR_win32_surface;
+#elif defined(_GLFW_X11)
         GLFWbool        KHR_xlib_surface;
         GLFWbool        KHR_xcb_surface;
+#elif defined(_GLFW_WAYLAND)
         GLFWbool        KHR_wayland_surface;
+#elif defined(_GLFW_MIR)
         GLFWbool        KHR_mir_surface;
+#endif
     } vk;
 
     struct {

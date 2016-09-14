@@ -80,9 +80,6 @@ header instead of the regular OpenGL header.
 `GLFW_INCLUDE_ES31` makes the GLFW header include the OpenGL ES 3.1 `GLES3/gl31.h`
 header instead of the regular OpenGL header.
 
-`GLFW_INCLUDE_VULKAN` makes the GLFW header include the Vulkan `vulkan/vulkan.h`
-header instead of the regular OpenGL header.
-
 `GLFW_INCLUDE_NONE` makes the GLFW header not include any OpenGL or OpenGL ES API
 header.  This is useful in combination with an extension loading library.
 
@@ -92,6 +89,9 @@ header (`OpenGL/gl.h` on OS X) is included.
 The following macros control the inclusion of additional API headers.  Any
 number of these may be defined simultaneously, and/or together with one of the
 above macros.
+
+`GLFW_INCLUDE_VULKAN` makes the GLFW header include the Vulkan `vulkan/vulkan.h`
+header in addition to any selected OpenGL or OpenGL ES header.
 
 `GLFW_INCLUDE_GLEXT` makes the GLFW header include the appropriate extension
 header for the OpenGL or OpenGL ES header selected above after and in addition

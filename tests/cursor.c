@@ -42,7 +42,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "linmath.h"
+
 #define CURSOR_FRAME_COUNT 60
+
+static const char* vertex_shader_text =
+"uniform mat4 MVP;\n"
+"attribute vec2 vPos;\n"
+"void main()\n"
+"{\n"
+"    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
+"}\n";
+
+static const char* fragment_shader_text =
+"void main()\n"
+"{\n"
+"    gl_FragColor = vec4(1.0);\n"
+"}\n";
 
 static double cursor_x;
 static double cursor_y;
@@ -196,6 +212,8 @@ int main(void)
     GLFWwindow* window;
     GLFWcursor* star_cursors[CURSOR_FRAME_COUNT];
     GLFWcursor* current_frame = NULL;
+    GLuint vertex_buffer, vertex_shader, fragment_shader, program;
+    GLint mvp_location, vpos_location;
 
     glfwSetErrorCallback(error_callback);
 
@@ -231,6 +249,9 @@ int main(void)
         }
     }
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+
     window = glfwCreateWindow(640, 480, "Cursor Test", NULL, NULL);
     if (!window)
     {
@@ -240,6 +261,30 @@ int main(void)
 
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+
+    glGenBuffers(1, &vertex_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+
+    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
+    glCompileShader(vertex_shader);
+
+    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
+    glCompileShader(fragment_shader);
+
+    program = glCreateProgram();
+    glAttachShader(program, vertex_shader);
+    glAttachShader(program, fragment_shader);
+    glLinkProgram(program);
+
+    mvp_location = glGetUniformLocation(program, "MVP");
+    vpos_location = glGetAttribLocation(program, "vPos");
+
+    glEnableVertexAttribArray(vpos_location);
+    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
+                          sizeof(vec2), (void*) 0);
+    glUseProgram(program);
 
     glfwGetCursorPos(window, &cursor_x, &cursor_y);
     printf("Cursor position: %f %f\n", cursor_x, cursor_y);
@@ -255,24 +300,33 @@ int main(void)
         {
             int wnd_width, wnd_height, fb_width, fb_height;
             float scale;
+            vec2 vertices[4];
+            mat4x4 mvp;
 
             glfwGetWindowSize(window, &wnd_width, &wnd_height);
             glfwGetFramebufferSize(window, &fb_width, &fb_height);
 
-            scale = (float) fb_width / (float) wnd_width;
-
             glViewport(0, 0, fb_width, fb_height);
 
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            glOrtho(0.f, fb_width, 0.f, fb_height, 0.f, 1.f);
+            scale = (float) fb_width / (float) wnd_width;
+            vertices[0][0] = 0.f;
+            vertices[0][1] = fb_height - cursor_y * scale;
+            vertices[1][0] = (float) fb_width;
+            vertices[1][1] = fb_height - cursor_y * scale;
+            vertices[2][0] = cursor_x * scale;
+            vertices[2][1] = 0.f;
+            vertices[3][0] = cursor_x * scale;
+            vertices[3][1] = (float) fb_height;
 
-            glBegin(GL_LINES);
-            glVertex2f(0.f, (GLfloat) (fb_height - cursor_y * scale));
-            glVertex2f((GLfloat) fb_width, (GLfloat) (fb_height - cursor_y * scale));
-            glVertex2f((GLfloat) cursor_x * scale, 0.f);
-            glVertex2f((GLfloat) cursor_x * scale, (GLfloat) fb_height);
-            glEnd();
+            glBufferData(GL_ARRAY_BUFFER,
+                         sizeof(vertices),
+                         vertices,
+                         GL_STREAM_DRAW);
+
+            mat4x4_ortho(mvp, 0.f, fb_width, 0.f, fb_height, 0.f, 1.f);
+            glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
+
+            glDrawArrays(GL_LINES, 0, 4);
         }
 
         glfwSwapBuffers(window);

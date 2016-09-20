@@ -100,7 +100,7 @@ int main(int argc, char** argv)
     int ch, samples = 4;
     GLFWwindow* window;
     GLuint vertex_buffer, vertex_shader, fragment_shader, program;
-    GLint mvp_location, vpos_location, vcol_location;
+    GLint mvp_location, vpos_location;
 
     while ((ch = getopt(argc, argv, "hs:")) != -1)
     {

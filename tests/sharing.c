@@ -52,7 +52,7 @@ static const char* fragment_shader_text =
 "varying vec2 texcoord;\n"
 "void main()\n"
 "{\n"
-"    gl_FragColor = vec4(color * tex2D(texture, texcoord).rgb, 1.0);\n"
+"    gl_FragColor = vec4(color * texture2D(texture, texcoord).rgb, 1.0);\n"
 "}\n";
 
 static const vec2 vertices[4] =

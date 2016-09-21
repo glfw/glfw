@@ -142,14 +142,13 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 int main(int argc, char** argv)
 {
     int ch, width, height;
-    float position;
     unsigned long frame_count = 0;
     double last_time, current_time;
     int fullscreen = GLFW_FALSE;
     GLFWmonitor* monitor = NULL;
     GLFWwindow* window;
     GLuint vertex_buffer, vertex_shader, fragment_shader, program;
-    GLint mvp_location, vpos_location, vcol_location;
+    GLint mvp_location, vpos_location;
 
     while ((ch = getopt(argc, argv, "fh")) != -1)
     {

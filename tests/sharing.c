@@ -77,7 +77,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 int main(int argc, char** argv)
 {
     GLFWwindow* windows[2];
-    GLuint texture, vertex_shader, fragment_shader, program, vertex_buffer;
+    GLuint texture, program, vertex_buffer;
     GLint mvp_location, vpos_location, color_location, texture_location;
 
     srand((unsigned int) time(NULL));

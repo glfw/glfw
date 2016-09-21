@@ -310,12 +310,12 @@ int main(void)
 
             scale = (float) fb_width / (float) wnd_width;
             vertices[0][0] = 0.f;
-            vertices[0][1] = fb_height - cursor_y * scale;
+            vertices[0][1] = (float) (fb_height - cursor_y * scale);
             vertices[1][0] = (float) fb_width;
-            vertices[1][1] = fb_height - cursor_y * scale;
-            vertices[2][0] = cursor_x * scale;
+            vertices[1][1] = (float) (fb_height - cursor_y * scale);
+            vertices[2][0] = (float) (cursor_x * scale);
             vertices[2][1] = 0.f;
-            vertices[3][0] = cursor_x * scale;
+            vertices[3][0] = (float) (cursor_x * scale);
             vertices[3][1] = (float) fb_height;
 
             glBufferData(GL_ARRAY_BUFFER,
@@ -323,7 +323,7 @@ int main(void)
                          vertices,
                          GL_STREAM_DRAW);
 
-            mat4x4_ortho(mvp, 0.f, fb_width, 0.f, fb_height, 0.f, 1.f);
+            mat4x4_ortho(mvp, 0.f, (float) fb_width, 0.f, (float) fb_height, 0.f, 1.f);
             glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
 
             glDrawArrays(GL_LINES, 0, 4);

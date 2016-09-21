@@ -44,10 +44,7 @@
 
 #include "getopt.h"
 
-static const struct
-{
-    float x, y;
-} vertices[4] =
+static const vec2 vertices[4] =
 {
     { -0.6f, -0.6f },
     {  0.6f, -0.6f },

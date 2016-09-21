@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "getopt.h"
 #include "linmath.h"
 
 static const char* vertex_shader_text =
@@ -68,6 +69,17 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
+void APIENTRY debug_callback(GLenum source,
+                             GLenum type,
+                             GLuint id,
+                             GLenum severity,
+                             GLsizei length,
+                             const GLchar* message,
+                             const void* user)
+{
+    fprintf(stderr, "Error: %s\n", message);
+}
+
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
@@ -76,6 +88,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 int main(int argc, char** argv)
 {
+    int ch;
     GLFWwindow* windows[2];
     GLuint texture, program, vertex_buffer;
     GLint mvp_location, vpos_location, color_location, texture_location;
@@ -86,6 +99,16 @@ int main(int argc, char** argv)
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
+
+    while ((ch = getopt(argc, argv, "d")) != -1)
+    {
+        switch (ch)
+        {
+            case 'd':
+                glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+                break;
+        }
+    }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
@@ -108,6 +131,12 @@ int main(int argc, char** argv)
     // The contexts are created with the same APIs so the function
     // pointers should be re-usable between them
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+
+    if (GLAD_GL_ARB_debug_output)
+    {
+        glDebugMessageCallbackARB(debug_callback, NULL);
+        glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+    }
 
     // Create the OpenGL objects inside the first context, created above
     // All objects will be shared with the second context, created below

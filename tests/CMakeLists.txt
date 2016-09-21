@@ -31,7 +31,7 @@ add_executable(cursor cursor.c ${GLAD})
 
 add_executable(empty WIN32 MACOSX_BUNDLE empty.c ${TINYCTHREAD} ${GLAD})
 add_executable(icon WIN32 MACOSX_BUNDLE icon.c ${GLAD})
-add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c ${GLAD})
+add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c ${GETOPT} ${GLAD})
 add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c ${GETOPT} ${GLAD})
 add_executable(threads WIN32 MACOSX_BUNDLE threads.c ${TINYCTHREAD} ${GLAD})
 add_executable(timeout WIN32 MACOSX_BUNDLE timeout.c ${GLAD})

@@ -30,6 +30,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -79,6 +80,8 @@ int main(int argc, char** argv)
     GLuint texture, vertex_shader, fragment_shader, program, vertex_buffer;
     GLint mvp_location, vpos_location, color_location, texture_location;
 
+    srand((unsigned int) time(NULL));
+
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
@@ -110,21 +113,21 @@ int main(int argc, char** argv)
     // All objects will be shared with the second context, created below
     {
         int x, y;
-        char pixels[256 * 256];
+        char pixels[16 * 16];
         GLuint vertex_shader, fragment_shader;
 
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
 
-        for (y = 0;  y < 256;  y++)
+        for (y = 0;  y < 16;  y++)
         {
-            for (x = 0;  x < 256;  x++)
-                pixels[y * 256 + x] = rand() % 256;
+            for (x = 0;  x < 16;  x++)
+                pixels[y * 16 + x] = rand() % 256;
         }
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 256, 256, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pixels);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 16, 16, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pixels);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         vertex_shader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
@@ -201,8 +204,8 @@ int main(int argc, char** argv)
         int i;
         const vec3 colors[2] =
         {
-            { 0.6f, 0.6f, 0.f },
-            { 0.6f, 0.f, 0.6f }
+            { 0.3f, 0.4f, 1.f },
+            { 0.8f, 0.4f, 1.f }
         };
 
         for (i = 0;  i < 2;  i++)

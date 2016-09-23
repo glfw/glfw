@@ -132,10 +132,10 @@ int main(int argc, char** argv)
     // pointers should be re-usable between them
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 
-    if (GLAD_GL_ARB_debug_output)
+    if (GLAD_GL_KHR_debug)
     {
-        glDebugMessageCallbackARB(debug_callback, NULL);
-        glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+        glDebugMessageCallback(debug_callback, NULL);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
     }
 
     // Create the OpenGL objects inside the first context, created above

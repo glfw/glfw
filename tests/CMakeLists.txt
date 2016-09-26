@@ -21,7 +21,6 @@ set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
 add_executable(clipboard clipboard.c ${GETOPT} ${GLAD})
 add_executable(events events.c ${GETOPT} ${GLAD})
 add_executable(msaa msaa.c ${GETOPT} ${GLAD})
-add_executable(gamma gamma.c ${GETOPT} ${GLAD})
 add_executable(glfwinfo glfwinfo.c ${GETOPT} ${GLAD})
 add_executable(iconify iconify.c ${GETOPT} ${GLAD})
 add_executable(joysticks joysticks.c ${GLAD})
@@ -30,6 +29,7 @@ add_executable(reopen reopen.c ${GLAD})
 add_executable(cursor cursor.c ${GLAD})
 
 add_executable(empty WIN32 MACOSX_BUNDLE empty.c ${TINYCTHREAD} ${GLAD})
+add_executable(gamma WIN32 MACOSX_BUNDLE gamma.c ${GLAD})
 add_executable(icon WIN32 MACOSX_BUNDLE icon.c ${GLAD})
 add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c ${GETOPT} ${GLAD})
 add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c ${GETOPT} ${GLAD})
@@ -41,9 +41,10 @@ add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GETOPT} ${GLAD})
 target_link_libraries(empty "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 
-set(WINDOWS_BINARIES empty icon sharing tearing threads timeout title windows)
-set(CONSOLE_BINARIES clipboard events msaa gamma glfwinfo
-                     iconify joysticks monitors reopen cursor)
+set(WINDOWS_BINARIES empty gamma icon sharing tearing threads timeout title
+                     windows)
+set(CONSOLE_BINARIES clipboard events msaa glfwinfo iconify joysticks monitors
+                     reopen cursor)
 
 if (VULKAN_FOUND)
     add_executable(vulkan WIN32 vulkan.c ${ICON})
@@ -65,6 +66,7 @@ endif()
 
 if (APPLE)
     set_target_properties(empty PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Empty Event")
+    set_target_properties(gamma PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Gamma")
     set_target_properties(sharing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Sharing")
     set_target_properties(tearing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Tearing")
     set_target_properties(threads PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Threads")

@@ -698,7 +698,7 @@ int main(int argc, char** argv)
                    get_profile_name_glfw(profile));
         }
 
-        if (glfwExtensionSupported("GL_ARB_robustness"))
+        if (GLAD_GL_ARB_robustness)
         {
             const int robustness = glfwGetWindowAttrib(window, GLFW_CONTEXT_ROBUSTNESS);
             GLint strategy;
@@ -772,7 +772,7 @@ int main(int argc, char** argv)
            redbits, greenbits, bluebits, alphabits, depthbits, stencilbits);
 
     if (client == GLFW_OPENGL_ES_API ||
-        glfwExtensionSupported("GL_ARB_multisample") ||
+        GLAD_GL_ARB_multisample ||
         major > 1 || minor >= 3)
     {
         GLint samples, samplebuffers;

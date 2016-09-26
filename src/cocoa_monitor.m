@@ -77,12 +77,11 @@ static char* getDisplayName(CGDirectDisplayID displayID)
 static GLFWbool modeIsGood(CGDisplayModeRef mode)
 {
     uint32_t flags = CGDisplayModeGetIOFlags(mode);
+
     if (!(flags & kDisplayModeValidFlag) || !(flags & kDisplayModeSafeFlag))
         return GLFW_FALSE;
-
     if (flags & kDisplayModeInterlacedFlag)
         return GLFW_FALSE;
-
     if (flags & kDisplayModeStretchedFlag)
         return GLFW_FALSE;
 

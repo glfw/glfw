@@ -106,7 +106,7 @@ information on what to include when reporting a bug.
 - Bugfix: `GLFW_INCLUDE_VULKAN` could not be combined with the corresponding
           OpenGL and OpenGL ES header macros
 - [Win32] Bugfix: Undecorated windows could not be iconified by the user (#861)
-- [EGL] Added support for `EGL_KHR_get_all_proc_addresses`
+- [EGL] Added support for `EGL_KHR_get_all_proc_addresses` (#871)
 
 
 ## Contact

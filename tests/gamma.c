@@ -121,7 +121,7 @@ int main(int argc, char** argv)
         struct nk_panel layout;
         struct nk_rect area;
 
-        glfwGetFramebufferSize(window, &width, &height);
+        glfwGetWindowSize(window, &width, &height);
         area = nk_rect(0.f, 0.f, (float) width, (float) height);
 
         glClear(GL_COLOR_BUFFER_BIT);

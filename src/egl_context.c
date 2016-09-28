@@ -399,6 +399,8 @@ GLFWbool _glfwInitEGL(void)
         extensionSupportedEGL("EGL_KHR_create_context_no_error");
     _glfw.egl.KHR_gl_colorspace =
         extensionSupportedEGL("EGL_KHR_gl_colorspace");
+    _glfw.egl.KHR_get_all_proc_addresses =
+        extensionSupportedEGL("EGL_KHR_get_all_proc_addresses");
 
     return GLFW_TRUE;
 }
@@ -583,6 +585,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
     window->context.egl.config = config;
 
     // Load the appropriate client library
+    if (!_glfw.egl.KHR_get_all_proc_addresses)
     {
         int i;
         const char** sonames;

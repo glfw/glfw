@@ -176,6 +176,7 @@ typedef struct _GLFWlibraryEGL
     GLFWbool        KHR_create_context;
     GLFWbool        KHR_create_context_no_error;
     GLFWbool        KHR_gl_colorspace;
+    GLFWbool        KHR_get_all_proc_addresses;
 
     void*           handle;
 

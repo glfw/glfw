@@ -757,6 +757,21 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window);
  */
 int _glfwPlatformWindowMaximized(_GLFWwindow* window);
 
+/*! @brief Sets whether the window is resizable by the user.
+ *  @ingroup platform
+ */
+void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled);
+
+/*! @brief Sets whether the window is decorated.
+ *  @ingroup platform
+ */
+void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled);
+
+/*! @brief Sets whether the window is floating.
+ *  @ingroup platform
+ */
+void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled);
+
 /*! @copydoc glfwPollEvents
  *  @ingroup platform
  */

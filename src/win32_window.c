@@ -280,6 +280,26 @@ static void updateClipRect(_GLFWwindow* window)
         ClipCursor(NULL);
 }
 
+// Update native window styles to match attributes
+//
+static void updateWindowStyles(const _GLFWwindow* window)
+{
+    RECT rect;
+    DWORD style = GetWindowLongW(window->win32.handle, GWL_STYLE);
+    style &= ~(WS_OVERLAPPEDWINDOW | WS_POPUP);
+    style |= getWindowStyle(window);
+
+    GetClientRect(window->win32.handle, &rect);
+    AdjustWindowRectEx(&rect, style, FALSE, getWindowExStyle(window));
+    ClientToScreen(window->win32.handle, (POINT*) &rect.left);
+    ClientToScreen(window->win32.handle, (POINT*) &rect.right);
+    SetWindowLongW(window->win32.handle, GWL_STYLE, style);
+    SetWindowPos(window->win32.handle, HWND_TOP,
+                 rect.left, rect.top,
+                 rect.right - rect.left, rect.bottom - rect.top,
+                 SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOZORDER);
+}
+
 // Translates a GLFW standard cursor to a resource ID
 //
 static LPWSTR translateCursorShape(int shape)
@@ -1344,6 +1364,23 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
 int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 {
     return IsZoomed(window->win32.handle);
+}
+
+void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
+{
+    updateWindowStyles(window);
+}
+
+void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
+{
+    updateWindowStyles(window);
+}
+
+void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
+{
+    const HWND after = enabled ? HWND_TOPMOST : HWND_NOTOPMOST;
+    SetWindowPos(window->win32.handle, after, 0, 0, 0, 0,
+                 SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
 }
 
 void _glfwPlatformPollEvents(void)

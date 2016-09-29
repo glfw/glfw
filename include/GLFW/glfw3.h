@@ -663,9 +663,10 @@ extern "C" {
  *  [window attribute](@ref GLFW_DECORATED_attrib).
  */
 #define GLFW_DECORATED              0x00020005
-/*! @brief Window auto-iconification window hint
+/*! @brief Window auto-iconification window hint and attribute
  *
- *  Window auto-iconification [window hint](@ref GLFW_AUTO_ICONIFY_hint).
+ *  Window auto-iconification [window hint](@ref GLFW_AUTO_ICONIFY_hint) or
+ *  [window attribute](@ref GLFW_AUTO_ICONIFY_attrib).
  */
 #define GLFW_AUTO_ICONIFY           0x00020006
 /*! @brief Window decoration window hint and attribute
@@ -2710,6 +2711,7 @@ GLFWAPI void glfwSetWindowMonitor(GLFWwindow* window, GLFWmonitor* monitor, int 
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_attribs
+ *  @sa @ref glfwSetWindowAttrib
  *
  *  @since Added in version 3.0.  Replaces `glfwGetWindowParam` and
  *  `glfwGetGLVersion`.
@@ -2717,6 +2719,42 @@ GLFWAPI void glfwSetWindowMonitor(GLFWwindow* window, GLFWmonitor* monitor, int 
  *  @ingroup window
  */
 GLFWAPI int glfwGetWindowAttrib(GLFWwindow* window, int attrib);
+
+/*! @brief Sets an attribute of the specified window.
+ *
+ *  This function sets the value of an attribute of the specified window.
+ *
+ *  The supported attributes are [GLFW_DECORATED](@ref GLFW_DECORATED_attrib),
+ *  [GLFW_RESIZABLE](@ref GLFW_RESIZABLE_attrib),
+ *  [GLFW_FLOATING](@ref GLFW_FLOATING_attrib) and
+ *  [GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib).   
+ *
+ *  Some of these attributes are ignored for full screen windows.  The new
+ *  value will take effect if the window is later made windowed.
+ *
+ *  Some of these attributes are ignored for windowed mode windows.  The new
+ *  value will take effect if the window is later made full screen.
+ *
+ *  @param[in] window The window to set the attribute for.
+ *  @param[in] attrib A supported window attribute.
+ *  @param[in] value `GLFW_TRUE` or `GLFW_FALSE`.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_INVALID_ENUM, @ref GLFW_INVALID_VALUE and @ref GLFW_PLATFORM_ERROR.
+ *
+ *  @remark Calling @ref glfwGetWindowAttrib will always return the latest
+ *  value, even if that value is ignored by the current mode of the window.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_attribs
+ *  @sa @ref glfwGetWindowAttrib
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowAttrib(GLFWwindow* window, int attrib, int value);
 
 /*! @brief Sets the user pointer of the specified window.
  *

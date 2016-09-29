@@ -704,6 +704,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->decorated;
         case GLFW_FLOATING:
             return window->floating;
+        case GLFW_AUTO_ICONIFY:
+            return window->autoIconify;
         case GLFW_CLIENT_API:
             return window->context.client;
         case GLFW_CONTEXT_CREATION_API:
@@ -730,6 +732,52 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute %i", attrib);
     return 0;
+}
+
+GLFWAPI void glfwSetWindowAttrib(GLFWwindow* handle, int attrib, int value)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT();
+
+    value = value ? GLFW_TRUE : GLFW_FALSE;
+
+    switch (attrib)
+    {
+        case GLFW_RESIZABLE:
+            if (window->resizable != value)
+            {
+                window->resizable = value;
+                if (!window->monitor)
+                    _glfwPlatformSetWindowResizable(window, value);
+            }
+            return;
+
+        case GLFW_DECORATED:
+            if (window->decorated != value)
+            {
+                window->decorated = value;
+                if (!window->monitor)
+                    _glfwPlatformSetWindowDecorated(window, value);
+            }
+            return;
+
+        case GLFW_FLOATING:
+            if (window->floating != value)
+            {
+                window->floating = value;
+                if (!window->monitor)
+                    _glfwPlatformSetWindowFloating(window, value);
+            }
+            return;
+
+        case GLFW_AUTO_ICONIFY:
+            window->autoIconify = value;
+            return;
+    }
+
+    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute %i", attrib);
 }
 
 GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* handle)

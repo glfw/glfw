@@ -634,6 +634,27 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
     return window->wl.maximized;
 }
 
+void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
+{
+    // TODO
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Wayland: Window attribute setting not implemented yet");
+}
+
+void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
+{
+    // TODO
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Wayland: Window attribute setting not implemented yet");
+}
+
+void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
+{
+    // TODO
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Wayland: Window attribute setting not implemented yet");
+}
+
 void _glfwPlatformPollEvents(void)
 {
     handleEvents(0);

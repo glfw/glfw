@@ -980,10 +980,10 @@ the window or framebuffer is resized.
 @subsection window_attribs Window attributes
 
 Windows have a number of attributes that can be returned using @ref
-glfwGetWindowAttrib.  Some reflect state that may change during the lifetime of
-the window, while others reflect the corresponding hints and are fixed at the
-time of creation.  Some are related to the actual window and others to its
-context.
+glfwGetWindowAttrib.  Some reflect state that may change as a result of user
+interaction, (e.g. whether it has input focus), while others reflect inherent
+properties of the window (e.g. what kind of border it has).  Some are related to
+the window and others to its OpenGL or OpenGL ES context.
 
 @code
 if (glfwGetWindowAttrib(window, GLFW_FOCUSED))
@@ -991,6 +991,17 @@ if (glfwGetWindowAttrib(window, GLFW_FOCUSED))
     // window has input focus
 }
 @endcode
+
+The [GLFW_DECORATED](@ref GLFW_DECORATED_attrib),
+[GLFW_RESIZABLE](@ref GLFW_RESIZABLE_attrib),
+[GLFW_FLOATING](@ref GLFW_FLOATING_attrib) and
+[GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib) window attributes can be
+changed with @ref glfwSetWindowAttrib.
+
+@code
+glfwSetWindowAttrib(window, GLFW_RESIZABLE, GLFW_FALSE);
+@endcode
+
 
 
 @subsubsection window_attribs_wnd Window related attributes
@@ -1013,18 +1024,27 @@ window_hide for details.
 
 @anchor GLFW_RESIZABLE_attrib
 __GLFW_RESIZABLE__ indicates whether the specified window is resizable _by the
-user_.  This is set before creation with the
-[GLFW_RESIZABLE](@ref GLFW_RESIZABLE_hint) window hint.
+user_.  This can be set before creation with the
+[GLFW_RESIZABLE](@ref GLFW_RESIZABLE_hint) window hint or after with @ref
+glfwSetWindowAttrib.
 
 @anchor GLFW_DECORATED_attrib
-__GLFW_DECORATED__ indicates whether the specified window has decorations such as
-a border, a close widget, etc.  This is set before creation with the
-[GLFW_DECORATED](@ref GLFW_DECORATED_hint) window hint.
+__GLFW_DECORATED__ indicates whether the specified window has decorations such
+as a border, a close widget, etc.  This can be set before creation with the
+[GLFW_DECORATED](@ref GLFW_DECORATED_hint) window hint or after with @ref
+glfwSetWindowAttrib.
+
+@anchor GLFW_AUTO_ICONIFY_attrib
+__GLFW_AUTO_ICONIFY__ indicates whether the specified full screen window is
+iconified on focus loss, a close widget, etc.  This can be set before creation
+with the [GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_hint) window hint or after
+with @ref glfwSetWindowAttrib.
 
 @anchor GLFW_FLOATING_attrib
 __GLFW_FLOATING__ indicates whether the specified window is floating, also
-called topmost or always-on-top.  This is controlled by the
-[GLFW_FLOATING](@ref GLFW_FLOATING_hint) window hint.
+called topmost or always-on-top.  This can be set before creation with the
+[GLFW_FLOATING](@ref GLFW_FLOATING_hint) window hint or after with @ref
+glfwSetWindowAttrib.
 
 
 @subsubsection window_attribs_ctx Context related attributes

@@ -16,6 +16,15 @@ GLFW now supports querying the platform dependent scancode of any key with
 @ref glfwGetKeyScancode.
 
 
+@subsection news_33_setwindowattrib Support for updating window attributes
+
+GLFW now supports changing the [GLFW_DECORATED](@ref GLFW_DECORATED_attrib),
+[GLFW_RESIZABLE](@ref GLFW_RESIZABLE_attrib),
+[GLFW_FLOATING](@ref GLFW_FLOATING_attrib) and
+[GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib) attributes for existing
+windows with @ref glfwSetWindowAttrib.
+
+
 @subsection news_33_moltenvk Support for Vulkan on macOS via MoltenVK
 
 GLFW now supports the `VK_MVK_macos_surface` window surface creation extension

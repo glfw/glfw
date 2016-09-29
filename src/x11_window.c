@@ -520,26 +520,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     }
 
     if (!wndconfig->decorated)
-    {
-        struct
-        {
-            unsigned long flags;
-            unsigned long functions;
-            unsigned long decorations;
-            long input_mode;
-            unsigned long status;
-        } hints;
-
-        hints.flags = 2;       // Set decorations
-        hints.decorations = 0; // No decorations
-
-        XChangeProperty(_glfw.x11.display, window->x11.handle,
-                        _glfw.x11.MOTIF_WM_HINTS,
-                        _glfw.x11.MOTIF_WM_HINTS, 32,
-                        PropModeReplace,
-                        (unsigned char*) &hints,
-                        sizeof(hints) / sizeof(long));
-    }
+        _glfwPlatformSetWindowDecorated(window, GLFW_FALSE);
 
     if (_glfw.x11.NET_WM_STATE && !window->monitor)
     {
@@ -2063,6 +2044,107 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 
     XFree(states);
     return maximized;
+}
+
+void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
+{
+    int width, height;
+    _glfwPlatformGetWindowSize(window, &width, &height);
+    updateNormalHints(window, width, height);
+}
+
+void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
+{
+    if (enabled)
+    {
+        XDeleteProperty(_glfw.x11.display,
+                        window->x11.handle,
+                        _glfw.x11.MOTIF_WM_HINTS);
+    }
+    else
+    {
+        struct
+        {
+            unsigned long flags;
+            unsigned long functions;
+            unsigned long decorations;
+            long input_mode;
+            unsigned long status;
+        } hints;
+
+        hints.flags = 2;       // Set decorations
+        hints.decorations = 0; // No decorations
+
+        XChangeProperty(_glfw.x11.display, window->x11.handle,
+                        _glfw.x11.MOTIF_WM_HINTS,
+                        _glfw.x11.MOTIF_WM_HINTS, 32,
+                        PropModeReplace,
+                        (unsigned char*) &hints,
+                        sizeof(hints) / sizeof(long));
+    }
+}
+
+void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
+{
+    if (!_glfw.x11.NET_WM_STATE || !_glfw.x11.NET_WM_STATE_ABOVE)
+        return;
+
+    if (_glfwPlatformWindowVisible(window))
+    {
+        const Atom action = enabled ? _NET_WM_STATE_ADD : _NET_WM_STATE_REMOVE;
+        sendEventToWM(window,
+                      _glfw.x11.NET_WM_STATE,
+                      action,
+                      _glfw.x11.NET_WM_STATE_ABOVE,
+                      0, 1, 0);
+    }
+    else
+    {
+        Atom* states;
+        unsigned long i, count;
+
+        count = _glfwGetWindowPropertyX11(window->x11.handle,
+                                          _glfw.x11.NET_WM_STATE,
+                                          XA_ATOM,
+                                          (unsigned char**) &states);
+
+        if (enabled)
+        {
+            for (i = 0;  i < count;  i++)
+            {
+                if (states[i] == _glfw.x11.NET_WM_STATE_ABOVE)
+                    break;
+            }
+
+            if (i == count)
+            {
+                XChangeProperty(_glfw.x11.display, window->x11.handle,
+                                _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
+                                PropModeAppend,
+                                (unsigned char*) &_glfw.x11.NET_WM_STATE_ABOVE,
+                                1);
+            }
+        }
+        else
+        {
+            for (i = 0;  i < count;  i++)
+            {
+                if (states[i] == _glfw.x11.NET_WM_STATE_ABOVE)
+                {
+                    states[i] = states[count - 1];
+                    count--;
+                }
+            }
+
+            XChangeProperty(_glfw.x11.display, window->x11.handle,
+                            _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
+                            PropModeReplace, (unsigned char*) &states, count);
+        }
+
+        XFree(states);
+    }
+
+    XFlush(_glfw.x11.display);
 }
 
 void _glfwPlatformPollEvents(void)

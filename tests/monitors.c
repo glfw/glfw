@@ -49,14 +49,21 @@ static void usage(void)
     printf("       monitors -h\n");
 }
 
+static int euclid(int a, int b)
+{
+    return b ? euclid(b, a % b) : a;
+}
+
 static const char* format_mode(const GLFWvidmode* mode)
 {
     static char buffer[512];
+    const int gcd = euclid(mode->width, mode->height);
 
     sprintf(buffer,
-            "%i x %i x %i (%i %i %i) %i Hz",
+            "%i x %i x %i (%i:%i) (%i %i %i) %i Hz",
             mode->width, mode->height,
             mode->redBits + mode->greenBits + mode->blueBits,
+            mode->width / gcd, mode->height / gcd,
             mode->redBits, mode->greenBits, mode->blueBits,
             mode->refreshRate);
 

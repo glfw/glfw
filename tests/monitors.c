@@ -59,13 +59,14 @@ static const char* format_mode(const GLFWvidmode* mode)
     static char buffer[512];
     const int gcd = euclid(mode->width, mode->height);
 
-    sprintf(buffer,
-            "%i x %i x %i (%i:%i) (%i %i %i) %i Hz",
-            mode->width, mode->height,
-            mode->redBits + mode->greenBits + mode->blueBits,
-            mode->width / gcd, mode->height / gcd,
-            mode->redBits, mode->greenBits, mode->blueBits,
-            mode->refreshRate);
+    snprintf(buffer,
+             sizeof(buffer),
+             "%i x %i x %i (%i:%i) (%i %i %i) %i Hz",
+             mode->width, mode->height,
+             mode->redBits + mode->greenBits + mode->blueBits,
+             mode->width / gcd, mode->height / gcd,
+             mode->redBits, mode->greenBits, mode->blueBits,
+             mode->refreshRate);
 
     buffer[sizeof(buffer) - 1] = '\0';
     return buffer;

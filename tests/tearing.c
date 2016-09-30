@@ -79,10 +79,10 @@ static void update_window_title(GLFWwindow* window)
 {
     char title[256];
 
-    sprintf(title, "Tearing detector (interval %i%s, %0.1f Hz)",
-            swap_interval,
-            (swap_tear && swap_interval < 0) ? " (swap tear)" : "",
-            frame_rate);
+    snprintf(title, sizeof(title), "Tearing detector (interval %i%s, %0.1f Hz)",
+             swap_interval,
+             (swap_tear && swap_interval < 0) ? " (swap tear)" : "",
+             frame_rate);
 
     glfwSetWindowTitle(window, title);
 }

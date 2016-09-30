@@ -221,7 +221,7 @@ static const char* get_button_name(int button)
         default:
         {
             static char name[16];
-            sprintf(name, "%i", button);
+            snprintf(name, sizeof(name), "%i", button);
             return name;
         }
     }
@@ -555,7 +555,7 @@ int main(int argc, char** argv)
         slots[i].closeable = GLFW_TRUE;
         slots[i].number = i + 1;
 
-        sprintf(title, "Event Linter (Window %i)", slots[i].number);
+        snprintf(title, sizeof(title), "Event Linter (Window %i)", slots[i].number);
 
         if (monitor)
         {

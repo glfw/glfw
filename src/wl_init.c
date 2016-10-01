@@ -647,12 +647,29 @@ void _glfwPlatformTerminate(void)
         wl_cursor_theme_destroy(_glfw.wl.cursorTheme);
     if (_glfw.wl.cursorSurface)
         wl_surface_destroy(_glfw.wl.cursorSurface);
+    if (_glfw.wl.compositor)
+        wl_compositor_destroy(_glfw.wl.compositor);
+    if (_glfw.wl.shm)
+        wl_shm_destroy(_glfw.wl.shm);
+    if (_glfw.wl.shell)
+        wl_shell_destroy(_glfw.wl.shell);
+    if (_glfw.wl.pointer)
+        wl_pointer_destroy(_glfw.wl.pointer);
+    if (_glfw.wl.keyboard)
+        wl_keyboard_destroy(_glfw.wl.keyboard);
+    if (_glfw.wl.seat)
+        wl_seat_destroy(_glfw.wl.seat);
+    if (_glfw.wl.relativePointerManager)
+        zwp_relative_pointer_manager_v1_destroy(_glfw.wl.relativePointerManager);
+    if (_glfw.wl.pointerConstraints)
+        zwp_pointer_constraints_v1_destroy(_glfw.wl.pointerConstraints);
     if (_glfw.wl.registry)
         wl_registry_destroy(_glfw.wl.registry);
     if (_glfw.wl.display)
+    {
         wl_display_flush(_glfw.wl.display);
-    if (_glfw.wl.display)
         wl_display_disconnect(_glfw.wl.display);
+    }
 }
 
 const char* _glfwPlatformGetVersionString(void)

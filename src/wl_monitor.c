@@ -102,7 +102,7 @@ static void scale(void* data,
     monitor->wl.scale = factor;
 }
 
-static const struct wl_output_listener output_listener = {
+static const struct wl_output_listener outputListener = {
     geometry,
     mode,
     done,
@@ -118,10 +118,10 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
 {
     _GLFWmonitor *monitor;
     struct wl_output *output;
-    char name_str[80];
+    char nameStr[80];
 
-    memset(name_str, 0, sizeof(name_str));
-    snprintf(name_str, 79, "wl_output@%u", name);
+    memset(nameStr, 0, sizeof(nameStr));
+    snprintf(nameStr, 79, "wl_output@%u", name);
 
     if (version < 2)
     {
@@ -130,7 +130,7 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
         return;
     }
 
-    monitor = _glfwAllocMonitor(name_str, 0, 0);
+    monitor = _glfwAllocMonitor(nameStr, 0, 0);
 
     output = wl_registry_bind(_glfw.wl.registry,
                               name,
@@ -148,7 +148,7 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
     monitor->wl.scale = 1;
 
     monitor->wl.output = output;
-    wl_output_add_listener(output, &output_listener, monitor);
+    wl_output_add_listener(output, &outputListener, monitor);
 
     if (_glfw.wl.monitorsCount + 1 >= _glfw.wl.monitorsSize)
     {

@@ -128,7 +128,7 @@ static void pointerHandleAxis(void* data,
                               wl_fixed_t value)
 {
     _GLFWwindow* window = _glfw.wl.pointerFocus;
-    double scroll_factor;
+    double scrollFactor;
     double x, y;
 
     if (!window)
@@ -137,17 +137,17 @@ static void pointerHandleAxis(void* data,
     /* Wayland scroll events are in pointer motion coordinate space (think
      * two finger scroll). The factor 10 is commonly used to convert to
      * "scroll step means 1.0. */
-    scroll_factor = 1.0/10.0;
+    scrollFactor = 1.0/10.0;
 
     switch (axis)
     {
         case WL_POINTER_AXIS_HORIZONTAL_SCROLL:
-            x = wl_fixed_to_double(value) * scroll_factor;
+            x = wl_fixed_to_double(value) * scrollFactor;
             y = 0.0;
             break;
         case WL_POINTER_AXIS_VERTICAL_SCROLL:
             x = 0.0;
-            y = wl_fixed_to_double(value) * scroll_factor;
+            y = wl_fixed_to_double(value) * scrollFactor;
             break;
         default:
             break;
@@ -214,13 +214,13 @@ static void keyboardHandleKeymap(void* data,
     _glfw.wl.xkb.keymap = keymap;
     _glfw.wl.xkb.state = state;
 
-    _glfw.wl.xkb.control_mask =
+    _glfw.wl.xkb.controlMask =
         1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Control");
-    _glfw.wl.xkb.alt_mask =
+    _glfw.wl.xkb.altMask =
         1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod1");
-    _glfw.wl.xkb.shift_mask =
+    _glfw.wl.xkb.shiftMask =
         1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Shift");
-    _glfw.wl.xkb.super_mask =
+    _glfw.wl.xkb.superMask =
         1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod4");
 }
 
@@ -260,14 +260,14 @@ static int toGLFWKeyCode(uint32_t key)
 
 static void inputChar(_GLFWwindow* window, uint32_t key)
 {
-    uint32_t code, num_syms;
+    uint32_t code, numSyms;
     long cp;
     const xkb_keysym_t *syms;
 
     code = key + 8;
-    num_syms = xkb_state_key_get_syms(_glfw.wl.xkb.state, code, &syms);
+    numSyms = xkb_state_key_get_syms(_glfw.wl.xkb.state, code, &syms);
 
-    if (num_syms == 1)
+    if (numSyms == 1)
     {
         cp = _glfwKeySym2Unicode(syms[0]);
         if (cp != -1)
@@ -331,13 +331,13 @@ static void keyboardHandleModifiers(void* data,
                                     XKB_STATE_LAYOUT_DEPRESSED |
                                     XKB_STATE_MODS_LATCHED |
                                     XKB_STATE_LAYOUT_LATCHED);
-    if (mask & _glfw.wl.xkb.control_mask)
+    if (mask & _glfw.wl.xkb.controlMask)
         modifiers |= GLFW_MOD_CONTROL;
-    if (mask & _glfw.wl.xkb.alt_mask)
+    if (mask & _glfw.wl.xkb.altMask)
         modifiers |= GLFW_MOD_ALT;
-    if (mask & _glfw.wl.xkb.shift_mask)
+    if (mask & _glfw.wl.xkb.shiftMask)
         modifiers |= GLFW_MOD_SHIFT;
-    if (mask & _glfw.wl.xkb.super_mask)
+    if (mask & _glfw.wl.xkb.superMask)
         modifiers |= GLFW_MOD_SUPER;
     _glfw.wl.xkb.modifiers = modifiers;
 }
@@ -389,10 +389,10 @@ static void registryHandleGlobal(void* data,
 {
     if (strcmp(interface, "wl_compositor") == 0)
     {
-        _glfw.wl.wl_compositor_version = min(3, version);
+        _glfw.wl.compositorVersion = min(3, version);
         _glfw.wl.compositor =
             wl_registry_bind(registry, name, &wl_compositor_interface,
-                             _glfw.wl.wl_compositor_version);
+                             _glfw.wl.compositorVersion);
     }
     else if (strcmp(interface, "wl_shm") == 0)
     {

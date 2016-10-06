@@ -38,6 +38,7 @@
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
 #define NK_INCLUDE_STANDARD_VARARGS
+#define NK_BUTTON_TRIGGER_ON_RELEASE
 #include <nuklear.h>
 
 #define NK_GLFW_GL2_IMPLEMENTATION
@@ -80,6 +81,13 @@ static void joystick_callback(int joy, int event)
     }
 }
 
+static const char* joystick_label(int jid)
+{
+    static char label[1024];
+    snprintf(label, sizeof(label), "%i: %s", jid + 1, glfwGetJoystickName(jid));
+    return label;
+}
+
 int main(void)
 {
     int joy;
@@ -119,21 +127,43 @@ int main(void)
 
     while (!glfwWindowShouldClose(window))
     {
-        int i;
+        int i, width, height;
         struct nk_panel layout;
+
+        glfwGetWindowSize(window, &width, &height);
 
         glClear(GL_COLOR_BUFFER_BIT);
         nk_glfw3_new_frame();
 
+        if (nk_begin(nk, &layout,
+                     "Joysticks",
+                     nk_rect(0.f, 0.f, 0.f, 0.f),
+                     NK_WINDOW_MINIMIZABLE |
+                     NK_WINDOW_TITLE))
+        {
+            nk_window_set_bounds(nk, nk_rect(width - 200.f, 0.f,
+                                             200.f, (float) height));
+
+            nk_layout_row_dynamic(nk, 30, 1);
+
+            if (joystick_count)
+            {
+                for (i = 0;  i < joystick_count;  i++)
+                {
+                    if (nk_button_label(nk, joystick_label(joysticks[i])))
+                        nk_window_set_focus(nk, joystick_label(joysticks[i]));
+                }
+            }
+            else
+                nk_label(nk, "No joysticks connected", NK_TEXT_LEFT);
+        }
+
+        nk_end(nk);
+
         for (i = 0;  i < joystick_count;  i++)
         {
-            char name[1024];
-            snprintf(name, sizeof(name), "%i: %s",
-                     joysticks[i] + 1,
-                     glfwGetJoystickName(joysticks[i]));
-
             if (nk_begin(nk, &layout,
-                         name,
+                         joystick_label(joysticks[i]),
                          nk_rect(i * 20.f, i * 20.f, 400.f, 400.f),
                          NK_WINDOW_BORDER |
                          NK_WINDOW_MOVABLE |
@@ -161,6 +191,7 @@ int main(void)
                 {
                     for (j = 0;  j < button_count;  j++)
                     {
+                        char name[16];
                         snprintf(name, sizeof(name), "%i", j + 1);
                         nk_select_label(nk, name, NK_TEXT_CENTERED, buttons[j]);
                     }

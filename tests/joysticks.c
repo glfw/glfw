@@ -43,6 +43,7 @@
 #define NK_GLFW_GL2_IMPLEMENTATION
 #include <nuklear_glfw_gl2.h>
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 

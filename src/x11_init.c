@@ -458,6 +458,16 @@ static void detectEWMH(void)
     XFree(supportedAtoms);
 }
 
+XRRScreenResources* _glfwXRRGetScreenResources()
+{
+#if (RANDR_MAJOR > 1 || (RANDR_MAJOR == 1 && RANDR_MINOR >= 3))
+    if(_glfw.x11.randr.major > 1 || (_glfw.x11.randr.major == 1 && _glfw.x11.randr.minor >= 3))
+        return XRRGetScreenResourcesCurrent(_glfw.x11.display, _glfw.x11.root);
+    else
+#endif
+    return XRRGetScreenResources(_glfw.x11.display, _glfw.x11.root);
+}
+
 // Initialize X11 display and look for supported X11 extensions
 //
 static GLFWbool initExtensions(void)
@@ -492,8 +502,7 @@ static GLFWbool initExtensions(void)
 
     if (_glfw.x11.randr.available)
     {
-        XRRScreenResources* sr = XRRGetScreenResources(_glfw.x11.display,
-                                                       _glfw.x11.root);
+        XRRScreenResources* sr = _glfwXRRGetScreenResources();
 
         if (!sr->ncrtc || !XRRGetCrtcGammaSize(_glfw.x11.display, sr->crtcs[0]))
         {

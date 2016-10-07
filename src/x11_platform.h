@@ -299,4 +299,6 @@ void _glfwInputErrorX11(int error, const char* message);
 
 void _glfwPushSelectionToManagerX11(void);
 
+XRRScreenResources* _glfwXRRGetScreenResources();
+
 #endif // _glfw3_x11_platform_h_

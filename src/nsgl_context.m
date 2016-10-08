@@ -225,7 +225,15 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         ADD_ATTR2(NSOpenGLPFAStencilSize, fbconfig->stencilBits);
 
     if (fbconfig->stereo)
+    {
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101200
+        _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
+                        "NSGL: Stereo rendering is deprecated");
+        return GLFW_FALSE;
+#else
         ADD_ATTR(NSOpenGLPFAStereo);
+#endif
+    }
 
     if (fbconfig->doublebuffer)
         ADD_ATTR(NSOpenGLPFADoubleBuffer);

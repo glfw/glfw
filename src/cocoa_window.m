@@ -63,14 +63,15 @@ static NSUInteger getStyleMask(_GLFWwindow* window)
     NSUInteger styleMask = 0;
 
     if (window->monitor || !window->decorated)
-        styleMask |= NSBorderlessWindowMask;
+        styleMask |= NSWindowStyleMaskBorderless;
     else
     {
-        styleMask |= NSTitledWindowMask | NSClosableWindowMask |
-                     NSMiniaturizableWindowMask;
+        styleMask |= NSWindowStyleMaskTitled |
+                     NSWindowStyleMaskClosable |
+                     NSWindowStyleMaskMiniaturizable;
 
         if (window->resizable)
-            styleMask |= NSResizableWindowMask;
+            styleMask |= NSWindowStyleMaskResizable;
     }
 
     return styleMask;
@@ -150,13 +151,13 @@ static int translateFlags(NSUInteger flags)
 {
     int mods = 0;
 
-    if (flags & NSShiftKeyMask)
+    if (flags & NSEventModifierFlagShift)
         mods |= GLFW_MOD_SHIFT;
-    if (flags & NSControlKeyMask)
+    if (flags & NSEventModifierFlagControl)
         mods |= GLFW_MOD_CONTROL;
-    if (flags & NSAlternateKeyMask)
+    if (flags & NSEventModifierFlagOption)
         mods |= GLFW_MOD_ALT;
-    if (flags & NSCommandKeyMask)
+    if (flags & NSEventModifierFlagCommand)
         mods |= GLFW_MOD_SUPER;
 
     return mods;
@@ -180,16 +181,16 @@ static NSUInteger translateKeyToModifierFlag(int key)
     {
         case GLFW_KEY_LEFT_SHIFT:
         case GLFW_KEY_RIGHT_SHIFT:
-            return NSShiftKeyMask;
+            return NSEventModifierFlagShift;
         case GLFW_KEY_LEFT_CONTROL:
         case GLFW_KEY_RIGHT_CONTROL:
-            return NSControlKeyMask;
+            return NSEventModifierFlagControl;
         case GLFW_KEY_LEFT_ALT:
         case GLFW_KEY_RIGHT_ALT:
-            return NSAlternateKeyMask;
+            return NSEventModifierFlagOption;
         case GLFW_KEY_LEFT_SUPER:
         case GLFW_KEY_RIGHT_SUPER:
-            return NSCommandKeyMask;
+            return NSEventModifierFlagCommand;
     }
 
     return 0;
@@ -565,7 +566,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 {
     int action;
     const unsigned int modifierFlags =
-        [event modifierFlags] & NSDeviceIndependentModifierFlagsMask;
+        [event modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
     const int key = translateKey([event keyCode]);
     const int mods = translateFlags(modifierFlags);
     const NSUInteger keyFlag = translateKeyToModifierFlag(key);
@@ -760,7 +761,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (BOOL)canBecomeKeyWindow
 {
-    // Required for NSBorderlessWindowMask windows
+    // Required for NSWindowStyleMaskBorderless windows
     return YES;
 }
 
@@ -781,8 +782,11 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 // down the command key don't get sent to the key window.
 - (void)sendEvent:(NSEvent *)event
 {
-    if ([event type] == NSKeyUp && ([event modifierFlags] & NSCommandKeyMask))
+    if ([event type] == NSEventTypeKeyUp &&
+        ([event modifierFlags] & NSEventModifierFlagCommand))
+    {
         [[self keyWindow] sendEvent:event];
+    }
     else
         [super sendEvent:event];
 }
@@ -866,7 +870,7 @@ static void createMenuBar(void)
     [[appMenu addItemWithTitle:@"Hide Others"
                        action:@selector(hideOtherApplications:)
                 keyEquivalent:@"h"]
-        setKeyEquivalentModifierMask:NSAlternateKeyMask | NSCommandKeyMask];
+        setKeyEquivalentModifierMask:NSEventModifierFlagOption | NSEventModifierFlagCommand];
     [appMenu addItemWithTitle:@"Show All"
                        action:@selector(unhideAllApplications:)
                 keyEquivalent:@""];
@@ -898,7 +902,7 @@ static void createMenuBar(void)
     [[windowMenu addItemWithTitle:@"Enter Full Screen"
                            action:@selector(toggleFullScreen:)
                     keyEquivalent:@"f"]
-     setKeyEquivalentModifierMask:NSControlKeyMask | NSCommandKeyMask];
+     setKeyEquivalentModifierMask:NSEventModifierFlagControl | NSEventModifierFlagCommand];
 
     // Prior to Snow Leopard, we need to use this oddly-named semi-private API
     // to get the application menu working properly.
@@ -1358,7 +1362,7 @@ void _glfwPlatformPollEvents(void)
 {
     for (;;)
     {
-        NSEvent* event = [NSApp nextEventMatchingMask:NSAnyEventMask
+        NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
                                             untilDate:[NSDate distantPast]
                                                inMode:NSDefaultRunLoopMode
                                               dequeue:YES];
@@ -1377,7 +1381,7 @@ void _glfwPlatformWaitEvents(void)
     // I wanted to pass NO to dequeue:, and rely on PollEvents to
     // dequeue and send.  For reasons not at all clear to me, passing
     // NO to dequeue: causes this method never to return.
-    NSEvent *event = [NSApp nextEventMatchingMask:NSAnyEventMask
+    NSEvent *event = [NSApp nextEventMatchingMask:NSEventMaskAny
                                         untilDate:[NSDate distantFuture]
                                            inMode:NSDefaultRunLoopMode
                                           dequeue:YES];
@@ -1389,7 +1393,7 @@ void _glfwPlatformWaitEvents(void)
 void _glfwPlatformWaitEventsTimeout(double timeout)
 {
     NSDate* date = [NSDate dateWithTimeIntervalSinceNow:timeout];
-    NSEvent* event = [NSApp nextEventMatchingMask:NSAnyEventMask
+    NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
                                         untilDate:date
                                            inMode:NSDefaultRunLoopMode
                                           dequeue:YES];
@@ -1402,7 +1406,7 @@ void _glfwPlatformWaitEventsTimeout(double timeout)
 void _glfwPlatformPostEmptyEvent(void)
 {
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-    NSEvent* event = [NSEvent otherEventWithType:NSApplicationDefined
+    NSEvent* event = [NSEvent otherEventWithType:NSEventTypeApplicationDefined
                                         location:NSMakePoint(0, 0)
                                    modifierFlags:0
                                        timestamp:0

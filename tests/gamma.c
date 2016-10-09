@@ -46,8 +46,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static int windowed_xpos, windowed_ypos, windowed_width, windowed_height;
-
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);

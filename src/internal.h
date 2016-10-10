@@ -608,22 +608,22 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window);
 /*! @copydoc glfwJoystickPresent
  *  @ingroup platform
  */
-int _glfwPlatformJoystickPresent(int joy);
+int _glfwPlatformJoystickPresent(int jid);
 
 /*! @copydoc glfwGetJoystickAxes
  *  @ingroup platform
  */
-const float* _glfwPlatformGetJoystickAxes(int joy, int* count);
+const float* _glfwPlatformGetJoystickAxes(int jid, int* count);
 
 /*! @copydoc glfwGetJoystickButtons
  *  @ingroup platform
  */
-const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count);
+const unsigned char* _glfwPlatformGetJoystickButtons(int jid, int* count);
 
 /*! @copydoc glfwGetJoystickName
  *  @ingroup platform
  */
-const char* _glfwPlatformGetJoystickName(int joy);
+const char* _glfwPlatformGetJoystickName(int jid);
 
 /*! @copydoc glfwGetTimerValue
  *  @ingroup platform
@@ -961,11 +961,11 @@ void _glfwInputError(int error, const char* format, ...);
 void _glfwInputDrop(_GLFWwindow* window, int count, const char** names);
 
 /*! @brief Notifies shared code of a joystick connection/disconnection event.
- *  @param[in] joy The joystick that was connected or disconnected.
+ *  @param[in] jid The joystick that was connected or disconnected.
  *  @param[in] event One of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.
  *  @ingroup event
  */
-void _glfwInputJoystickChange(int joy, int event);
+void _glfwInputJoystickChange(int jid, int event);
 
 
 //========================================================================

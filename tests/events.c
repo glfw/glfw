@@ -459,26 +459,26 @@ static void monitor_callback(GLFWmonitor* monitor, int event)
     }
 }
 
-static void joystick_callback(int joy, int event)
+static void joystick_callback(int jid, int event)
 {
     if (event == GLFW_CONNECTED)
     {
         int axisCount, buttonCount;
 
-        glfwGetJoystickAxes(joy, &axisCount);
-        glfwGetJoystickButtons(joy, &buttonCount);
+        glfwGetJoystickAxes(jid, &axisCount);
+        glfwGetJoystickButtons(jid, &buttonCount);
 
         printf("%08x at %0.3f: Joystick %i (%s) was connected with %i axes and %i buttons\n",
                counter++, glfwGetTime(),
-               joy,
-               glfwGetJoystickName(joy),
+               jid,
+               glfwGetJoystickName(jid),
                axisCount,
                buttonCount);
     }
     else
     {
         printf("%08x at %0.3f: Joystick %i was disconnected\n",
-               counter++, glfwGetTime(), joy);
+               counter++, glfwGetTime(), jid);
     }
 }
 

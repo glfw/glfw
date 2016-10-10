@@ -572,7 +572,7 @@ The callback function receives the ID of the joystick that has been connected
 and disconnected and the event that occurred.
 
 @code
-void joystick_callback(int joy, int event)
+void joystick_callback(int jid, int event)
 {
     if (event == GLFW_CONNECTED)
     {

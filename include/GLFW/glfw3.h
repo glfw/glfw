@@ -1128,7 +1128,7 @@ typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
  *  This is the function signature for joystick configuration callback
  *  functions.
  *
- *  @param[in] joy The joystick that was connected or disconnected.
+ *  @param[in] jid The joystick that was connected or disconnected.
  *  @param[in] event One of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.
  *
  *  @sa @ref joystick_event
@@ -3584,7 +3584,7 @@ GLFWAPI GLFWdropfun glfwSetDropCallback(GLFWwindow* window, GLFWdropfun cbfun);
  *
  *  This function returns whether the specified joystick is present.
  *
- *  @param[in] joy The [joystick](@ref joysticks) to query.
+ *  @param[in] jid The [joystick](@ref joysticks) to query.
  *  @return `GLFW_TRUE` if the joystick is present, or `GLFW_FALSE` otherwise.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
@@ -3598,7 +3598,7 @@ GLFWAPI GLFWdropfun glfwSetDropCallback(GLFWwindow* window, GLFWdropfun cbfun);
  *
  *  @ingroup input
  */
-GLFWAPI int glfwJoystickPresent(int joy);
+GLFWAPI int glfwJoystickPresent(int jid);
 
 /*! @brief Returns the values of all axes of the specified joystick.
  *
@@ -3609,7 +3609,7 @@ GLFWAPI int glfwJoystickPresent(int joy);
  *  cause this function to return `NULL`.  Call @ref glfwJoystickPresent to
  *  check device presence.
  *
- *  @param[in] joy The [joystick](@ref joysticks) to query.
+ *  @param[in] jid The [joystick](@ref joysticks) to query.
  *  @param[out] count Where to store the number of axis values in the returned
  *  array.  This is set to zero if the joystick is not present or an error
  *  occurred.
@@ -3632,7 +3632,7 @@ GLFWAPI int glfwJoystickPresent(int joy);
  *
  *  @ingroup input
  */
-GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count);
+GLFWAPI const float* glfwGetJoystickAxes(int jid, int* count);
 
 /*! @brief Returns the state of all buttons of the specified joystick.
  *
@@ -3643,7 +3643,7 @@ GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count);
  *  cause this function to return `NULL`.  Call @ref glfwJoystickPresent to
  *  check device presence.
  *
- *  @param[in] joy The [joystick](@ref joysticks) to query.
+ *  @param[in] jid The [joystick](@ref joysticks) to query.
  *  @param[out] count Where to store the number of button states in the returned
  *  array.  This is set to zero if the joystick is not present or an error
  *  occurred.
@@ -3667,7 +3667,7 @@ GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count);
  *
  *  @ingroup input
  */
-GLFWAPI const unsigned char* glfwGetJoystickButtons(int joy, int* count);
+GLFWAPI const unsigned char* glfwGetJoystickButtons(int jid, int* count);
 
 /*! @brief Returns the name of the specified joystick.
  *
@@ -3679,7 +3679,7 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int joy, int* count);
  *  cause this function to return `NULL`.  Call @ref glfwJoystickPresent to
  *  check device presence.
  *
- *  @param[in] joy The [joystick](@ref joysticks) to query.
+ *  @param[in] jid The [joystick](@ref joysticks) to query.
  *  @return The UTF-8 encoded name of the joystick, or `NULL` if the joystick
  *  is not present or an [error](@ref error_handling) occurred.
  *
@@ -3699,7 +3699,7 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int joy, int* count);
  *
  *  @ingroup input
  */
-GLFWAPI const char* glfwGetJoystickName(int joy);
+GLFWAPI const char* glfwGetJoystickName(int jid);
 
 /*! @brief Sets the joystick configuration callback.
  *

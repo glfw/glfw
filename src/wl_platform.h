@@ -29,6 +29,7 @@
 
 #include <wayland-client.h>
 #include <xkbcommon/xkbcommon.h>
+#include <xkbcommon/xkbcommon-compose.h>
 #include <dlfcn.h>
 
 typedef VkFlags VkWaylandSurfaceCreateFlagsKHR;
@@ -136,6 +137,7 @@ typedef struct _GLFWlibraryWayland
         struct xkb_context*     context;
         struct xkb_keymap*      keymap;
         struct xkb_state*       state;
+        struct xkb_compose_state* composeState;
         xkb_mod_mask_t          controlMask;
         xkb_mod_mask_t          altMask;
         xkb_mod_mask_t          shiftMask;

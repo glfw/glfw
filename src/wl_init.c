@@ -172,7 +172,10 @@ static void keyboardHandleKeymap(void* data,
 {
     struct xkb_keymap* keymap;
     struct xkb_state* state;
+    struct xkb_compose_table* composeTable;
+    struct xkb_compose_state* composeState;
     char* mapStr;
+    const char* locale;
 
     if (format != WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1)
     {
@@ -207,6 +210,35 @@ static void keyboardHandleKeymap(void* data,
                         "Wayland: Failed to create XKB state");
         xkb_keymap_unref(keymap);
         return;
+    }
+
+    // Look up the preferred locale, falling back to "C" as default.
+    locale = getenv("LC_ALL");
+    if (!locale)
+        locale = getenv("LC_CTYPE");
+    if (!locale)
+        locale = getenv("LANG");
+    if (!locale)
+        locale = "C";
+
+    composeTable =
+        xkb_compose_table_new_from_locale(_glfw.wl.xkb.context, locale,
+                                          XKB_COMPOSE_COMPILE_NO_FLAGS);
+    if (composeTable)
+    {
+        composeState =
+            xkb_compose_state_new(composeTable, XKB_COMPOSE_STATE_NO_FLAGS);
+        xkb_compose_table_unref(composeTable);
+        if (composeState)
+            _glfw.wl.xkb.composeState = composeState;
+        else
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Wayland: Failed to create XKB compose state");
+    }
+    else
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to create XKB compose table");
     }
 
     xkb_keymap_unref(_glfw.wl.xkb.keymap);
@@ -258,18 +290,40 @@ static int toGLFWKeyCode(uint32_t key)
     return GLFW_KEY_UNKNOWN;
 }
 
+static xkb_keysym_t composeSymbol(xkb_keysym_t sym)
+{
+    if (sym == XKB_KEY_NoSymbol)
+        return sym;
+    if (xkb_compose_state_feed(_glfw.wl.xkb.composeState, sym)
+            != XKB_COMPOSE_FEED_ACCEPTED)
+        return sym;
+    switch (xkb_compose_state_get_status(_glfw.wl.xkb.composeState))
+    {
+        case XKB_COMPOSE_COMPOSED:
+            return xkb_compose_state_get_one_sym(_glfw.wl.xkb.composeState);
+        case XKB_COMPOSE_COMPOSING:
+        case XKB_COMPOSE_CANCELLED:
+            return XKB_KEY_NoSymbol;
+        case XKB_COMPOSE_NOTHING:
+        default:
+            return sym;
+    }
+}
+
 static void inputChar(_GLFWwindow* window, uint32_t key)
 {
     uint32_t code, numSyms;
     long cp;
     const xkb_keysym_t *syms;
+    xkb_keysym_t sym;
 
     code = key + 8;
     numSyms = xkb_state_key_get_syms(_glfw.wl.xkb.state, code, &syms);
 
     if (numSyms == 1)
     {
-        cp = _glfwKeySym2Unicode(syms[0]);
+        sym = composeSymbol(syms[0]);
+        cp = _glfwKeySym2Unicode(sym);
         if (cp != -1)
         {
             const int mods = _glfw.wl.xkb.modifiers;
@@ -645,6 +699,7 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateJoysticksLinux();
     _glfwTerminateThreadLocalStoragePOSIX();
 
+    xkb_compose_state_unref(_glfw.wl.xkb.composeState);
     xkb_keymap_unref(_glfw.wl.xkb.keymap);
     xkb_state_unref(_glfw.wl.xkb.state);
     xkb_context_unref(_glfw.wl.xkb.context);

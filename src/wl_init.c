@@ -186,10 +186,10 @@ static void keyboardHandleKeymap(void* data,
         return;
     }
 
-    keymap = xkb_map_new_from_string(_glfw.wl.xkb.context,
-                                     mapStr,
-                                     XKB_KEYMAP_FORMAT_TEXT_V1,
-                                     0);
+    keymap = xkb_keymap_new_from_string(_glfw.wl.xkb.context,
+                                        mapStr,
+                                        XKB_KEYMAP_FORMAT_TEXT_V1,
+                                        0);
     munmap(mapStr, size);
     close(fd);
 
@@ -205,7 +205,7 @@ static void keyboardHandleKeymap(void* data,
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Failed to create XKB state");
-        xkb_map_unref(keymap);
+        xkb_keymap_unref(keymap);
         return;
     }
 
@@ -215,13 +215,13 @@ static void keyboardHandleKeymap(void* data,
     _glfw.wl.xkb.state = state;
 
     _glfw.wl.xkb.control_mask =
-        1 << xkb_map_mod_get_index(_glfw.wl.xkb.keymap, "Control");
+        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Control");
     _glfw.wl.xkb.alt_mask =
-        1 << xkb_map_mod_get_index(_glfw.wl.xkb.keymap, "Mod1");
+        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod1");
     _glfw.wl.xkb.shift_mask =
-        1 << xkb_map_mod_get_index(_glfw.wl.xkb.keymap, "Shift");
+        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Shift");
     _glfw.wl.xkb.super_mask =
-        1 << xkb_map_mod_get_index(_glfw.wl.xkb.keymap, "Mod4");
+        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod4");
 }
 
 static void keyboardHandleEnter(void* data,
@@ -265,7 +265,7 @@ static void inputChar(_GLFWwindow* window, uint32_t key)
     const xkb_keysym_t *syms;
 
     code = key + 8;
-    num_syms = xkb_key_get_syms(_glfw.wl.xkb.state, code, &syms);
+    num_syms = xkb_state_key_get_syms(_glfw.wl.xkb.state, code, &syms);
 
     if (num_syms == 1)
     {
@@ -327,8 +327,10 @@ static void keyboardHandleModifiers(void* data,
                           group);
 
     mask = xkb_state_serialize_mods(_glfw.wl.xkb.state,
-                                    XKB_STATE_DEPRESSED |
-                                    XKB_STATE_LATCHED);
+                                    XKB_STATE_MODS_DEPRESSED |
+                                    XKB_STATE_LAYOUT_DEPRESSED |
+                                    XKB_STATE_MODS_LATCHED |
+                                    XKB_STATE_LAYOUT_LATCHED);
     if (mask & _glfw.wl.xkb.control_mask)
         modifiers |= GLFW_MOD_CONTROL;
     if (mask & _glfw.wl.xkb.alt_mask)

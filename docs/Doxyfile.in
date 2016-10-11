@@ -202,6 +202,7 @@ ALIASES                = "thread_safety=@par Thread safety\n" \
                          "errors=@par Errors\n" \
                          "glfw3=@par\n__GLFW 3:__" \
                          "x11=__X11:__" \
+                         "wayland=__Wayland:__" \
                          "win32=__Windows:__" \
                          "osx=__OS X:__"
 

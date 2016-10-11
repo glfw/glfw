@@ -50,11 +50,21 @@ static void geometry(void* data,
                      int32_t transform)
 {
     struct _GLFWmonitor *monitor = data;
+    char* name;
+    size_t nameLength;
 
     monitor->wl.x = x;
     monitor->wl.y = y;
     monitor->widthMM = physicalWidth;
     monitor->heightMM = physicalHeight;
+
+    nameLength = strlen(make) + 1 + strlen(model) + 1;
+    name = realloc(monitor->name, nameLength);
+    if (name)
+    {
+        sprintf(name, "%s %s", make, model);
+        monitor->name = name;
+    }
 }
 
 static void mode(void* data,
@@ -118,10 +128,6 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
 {
     _GLFWmonitor *monitor;
     struct wl_output *output;
-    char nameStr[80];
-
-    memset(nameStr, 0, sizeof(nameStr));
-    snprintf(nameStr, 79, "wl_output@%u", name);
 
     if (version < 2)
     {
@@ -130,7 +136,8 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
         return;
     }
 
-    monitor = _glfwAllocMonitor(nameStr, 0, 0);
+    // The actual name of this output will be set in the geometry handler.
+    monitor = _glfwAllocMonitor(NULL, 0, 0);
 
     output = wl_registry_bind(_glfw.wl.registry,
                               name,

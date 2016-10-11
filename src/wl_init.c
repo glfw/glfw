@@ -643,6 +643,10 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateJoysticksLinux();
     _glfwTerminateThreadLocalStoragePOSIX();
 
+    xkb_keymap_unref(_glfw.wl.xkb.keymap);
+    xkb_state_unref(_glfw.wl.xkb.state);
+    xkb_context_unref(_glfw.wl.xkb.context);
+
     if (_glfw.wl.cursorTheme)
         wl_cursor_theme_destroy(_glfw.wl.cursorTheme);
     if (_glfw.wl.cursorSurface)

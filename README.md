@@ -81,6 +81,7 @@ located in the `deps/` directory.
  - [linmath.h](https://github.com/datenwolf/linmath.h) for linear algebra in
    examples
  - [Nuklear](https://github.com/vurtun/nuklear) for test and example UI
+ - [stb\_image\_write](https://github.com/nothings/stb) for writing images to disk
  - [Vulkan headers](https://www.khronos.org/registry/vulkan/) for Vulkan tests
 
 The Vulkan example additionally requires the Vulkan SDK to be installed, or it

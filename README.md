@@ -104,6 +104,7 @@ information on what to include when reporting a bug.
   scancodes for keys (#830)
 - Added `glfwSetWindowMaximizeCallback` and `GLFWwindowmaximizefun` for
   receiving window maximization events (#778)
+- Added headless [OSMesa](http://mesa3d.org/osmesa.html) backend (#281,#850)
 - Added definition of `GLAPIENTRY` to public header
 - Bugfix: Calling `glfwMaximizeWindow` on a full screen window was not ignored
 - Bugfix: `GLFW_INCLUDE_VULKAN` could not be combined with the corresponding
@@ -155,6 +156,7 @@ skills.
  - Lambert Clara
  - Andrew Corrigan
  - Noel Cower
+ - Jason Daly
  - Jarrod Davis
  - Olivier Delannoy
  - Paul R. Deppe

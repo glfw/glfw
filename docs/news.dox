@@ -22,6 +22,12 @@ GLFW now supports the `VK_MVK_macos_surface` window surface creation extension
 provided by MoltenVK.
 
 
+@subsection news_33_osmesa OSMesa backend for headless software rendering
+
+GLFW now supports headless context creation and software rendering via OSMesa,
+intended for automated testing.  This backend does not provide input.
+
+
 @section news_32 New features in 3.2
 
 

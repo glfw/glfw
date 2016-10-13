@@ -1,9 +1,35 @@
+//========================================================================
+// GLFW 3.3 OSMesa - www.glfw.org
+//------------------------------------------------------------------------
+// Copyright (c) 2016 Google Inc.
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would
+//    be appreciated but is not required.
+//
+// 2. Altered source versions must be plainly marked as such, and must not
+//    be misrepresented as being the original software.
+//
+// 3. This notice may not be removed or altered from any source
+//    distribution.
+//
+//========================================================================
 
 #include "internal.h"
 
-#include <assert.h>
 
-int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
+static int createNativeWindow(_GLFWwindow* window,
+                              const _GLFWwndconfig* wndconfig)
 {
     window->osmesa.width = wndconfig->width;
     window->osmesa.height = wndconfig->height;
@@ -11,9 +37,6 @@ int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
     return GLFW_TRUE;
 }
 
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -27,10 +50,13 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (!_glfwInitOSMesa())
         return GLFW_FALSE;
 
-    if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
-        return GLFW_FALSE;
+    if (ctxconfig->client != GLFW_NO_API)
+    {
+        if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
+            return GLFW_FALSE;
+    }
 
-    if (!createWindow(window, wndconfig))
+    if (!createNativeWindow(window, wndconfig))
         return GLFW_FALSE;
 
     return GLFW_TRUE;
@@ -42,29 +68,37 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         window->context.destroy(window);
 }
 
-void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title) {}
+void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
+{
+}
 
 void _glfwPlatformSetWindowIcon(_GLFWwindow* window, int count,
-                                const GLFWimage* images) {}
+                                const GLFWimage* images)
+{
+}
 
 void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
                                    _GLFWmonitor* monitor,
                                    int xpos, int ypos,
                                    int width, int height,
-                                   int refreshRate) {}
+                                   int refreshRate)
+{
+}
 
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 {
-    if (xpos != NULL) *xpos = 0;
-    if (ypos != NULL) *ypos = 0;
 }
 
-void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos) {}
+void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
+{
+}
 
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 {
-    if (width != NULL) *width = window->osmesa.width;
-    if (height != NULL) *height = window->osmesa.height;
+    if (width)
+        *width = window->osmesa.width;
+    if (height)
+        *height = window->osmesa.height;
 }
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
@@ -75,70 +109,114 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 
 void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
                                       int minwidth, int minheight,
-                                      int maxwidth, int maxheight) {}
-
-void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int n, int d) {}
-
-void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width,
-                                     int* height)
+                                      int maxwidth, int maxheight)
 {
-    if (width != NULL) *width = window->osmesa.width;
-    if (height != NULL) *height = window->osmesa.height;
 }
 
-void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window, int* left, int* top,
+void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int n, int d)
+{
+}
+
+void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
+{
+    if (width)
+        *width = window->osmesa.width;
+    if (height)
+        *height = window->osmesa.height;
+}
+
+void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
+                                     int* left, int* top,
                                      int* right, int* bottom)
 {
-    if (left != NULL) *left = 0;
-    if (top != NULL) *top = 0;
-    if (right != NULL) *right = window->osmesa.width;
-    if (bottom != NULL) *top = window->osmesa.height;
+    if (right)
+        *right = window->osmesa.width;
+    if (bottom)
+        *top = window->osmesa.height;
 }
 
-void _glfwPlatformIconifyWindow(_GLFWwindow* window) {}
-
-void _glfwPlatformRestoreWindow(_GLFWwindow* window) {}
-
-void _glfwPlatformMaximizeWindow(_GLFWwindow* window) {}
-
-int _glfwPlatformWindowMaximized(_GLFWwindow* window) {
-  return 0;
+void _glfwPlatformIconifyWindow(_GLFWwindow* window)
+{
 }
 
-void _glfwPlatformShowWindow(_GLFWwindow* window) {}
-
-void _glfwPlatformUnhideWindow(_GLFWwindow* window) {}
-
-void _glfwPlatformHideWindow(_GLFWwindow* window) {}
-
-void _glfwPlatformFocusWindow(_GLFWwindow* window) {}
-
-int _glfwPlatformWindowFocused(_GLFWwindow* window) { return GLFW_FALSE; }
-
-int _glfwPlatformWindowIconified(_GLFWwindow* window) { return GLFW_FALSE; }
-
-int _glfwPlatformWindowVisible(_GLFWwindow* window) { return GLFW_FALSE; }
-
-void _glfwPlatformPollEvents(void) {}
-
-void _glfwPlatformWaitEvents(void) {}
-
-void _glfwPlatformWaitEventsTimeout(double timeout) {}
-
-void _glfwPlatformPostEmptyEvent(void) {}
-
-void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos) {
-    if (xpos != NULL) *xpos = 0;
-    if (ypos != NULL) *ypos = 0;
+void _glfwPlatformRestoreWindow(_GLFWwindow* window)
+{
 }
 
-void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y) {}
+void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
+{
+}
 
-void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode) {}
+int _glfwPlatformWindowMaximized(_GLFWwindow* window)
+{
+    return GLFW_FALSE;
+}
 
-void _glfwPlatformApplyCursorMode(_GLFWwindow* window) {}
+void _glfwPlatformShowWindow(_GLFWwindow* window)
+{
+}
 
-int _glfwPlatformCreateCursor(_GLFWcursor* cursor, const GLFWimage* image,
+void _glfwPlatformUnhideWindow(_GLFWwindow* window)
+{
+}
+
+void _glfwPlatformHideWindow(_GLFWwindow* window)
+{
+}
+
+void _glfwPlatformFocusWindow(_GLFWwindow* window)
+{
+}
+
+int _glfwPlatformWindowFocused(_GLFWwindow* window)
+{
+    return GLFW_FALSE;
+}
+
+int _glfwPlatformWindowIconified(_GLFWwindow* window)
+{
+    return GLFW_FALSE;
+}
+
+int _glfwPlatformWindowVisible(_GLFWwindow* window)
+{
+    return GLFW_FALSE;
+}
+
+void _glfwPlatformPollEvents(void)
+{
+}
+
+void _glfwPlatformWaitEvents(void)
+{
+}
+
+void _glfwPlatformWaitEventsTimeout(double timeout)
+{
+}
+
+void _glfwPlatformPostEmptyEvent(void)
+{
+}
+
+void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
+{
+}
+
+void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
+{
+}
+
+void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
+{
+}
+
+void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
+{
+}
+
+int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
+                              const GLFWimage* image,
                               int xhot, int yhot)
 {
     return GLFW_FALSE;
@@ -149,39 +227,55 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
     return GLFW_FALSE;
 }
 
-void _glfwPlatformDestroyCursor(_GLFWcursor* cursor) {}
+void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
+{
+}
 
-void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor) {}
+void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
+{
+}
 
-void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string) {}
+void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
+{
+}
 
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {
     return NULL;
 }
 
-const char* _glfwPlatformGetKeyName(int key, int scancode) { return ""; }
+const char* _glfwPlatformGetKeyName(int key, int scancode)
+{
+    return "";
+}
 
-int _glfwPlatformJoystickPresent(int joy) { return 0; }
+int _glfwPlatformGetKeyScancode(int key)
+{
+    return -1;
+}
+
+int _glfwPlatformJoystickPresent(int joy)
+{
+    return GLFW_FALSE;
+}
 
 const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
 {
-    if (count != NULL) *count = 0;
     return NULL;
 }
 
 const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
 {
-    if (count != NULL) *count = 0;
     return NULL;
 }
 
-const char* _glfwPlatformGetJoystickName(int joy) { return NULL; }
-
-char** _glfwPlatformGetRequiredInstanceExtensions(uint32_t* count)
+const char* _glfwPlatformGetJoystickName(int joy)
 {
-    if (count != NULL) *count = 0;
     return NULL;
+}
+
+void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)
+{
 }
 
 int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
@@ -196,64 +290,7 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
                                           const VkAllocationCallbacks* allocator,
                                           VkSurfaceKHR* surface)
 {
-    // This seems like the most appropriate error to return here.
+    // This seems like the most appropriate error to return here
     return VK_ERROR_INITIALIZATION_FAILED;
-}
-
-//////////////////////////////////////////////////////////////////////////
-//////                        GLFW native API                       //////
-//////////////////////////////////////////////////////////////////////////
-
-GLFWAPI int glfwGetOSMesaColorBuffer(GLFWwindow* window, int* width,
-                                     int* height, int* format, void** buffer)
-{
-    GLint mesaWidth;
-    GLint mesaHeight;
-    GLint mesaFormat;
-    void* mesaBuffer;
-
-    assert(window != NULL);
-
-    OSMesaContext ctx = ((_GLFWwindow*) window)->context.osmesa.handle;
-
-    // Query OSMesa for the color buffer data.
-    int result = OSMesaGetColorBuffer(
-        ctx, &mesaWidth, &mesaHeight, &mesaFormat, &mesaBuffer);
-    if (result) {
-        // Copy the values returned by OSMesa.
-        if (width != NULL) *width = mesaWidth;
-        if (height != NULL) *height = mesaHeight;
-        if (format != NULL) *format = mesaFormat;
-        if (buffer != NULL) *buffer = mesaBuffer;
-    }
-
-    return result;
-}
-
-GLFWAPI int glfwGetOSMesaDepthBuffer(GLFWwindow* window, int* width,
-                                     int* height, int* bytesPerValue,
-                                     void** buffer)
-{
-    GLint mesaWidth;
-    GLint mesaHeight;
-    GLint mesaBytes;
-    void* mesaBuffer;
-
-    assert(window != NULL);
-
-    OSMesaContext ctx = ((_GLFWwindow*) window)->context.osmesa.handle;
-
-    // Query OSMesa for the color buffer data.
-    int result = OSMesaGetDepthBuffer(
-        ctx, &mesaWidth, &mesaHeight, &mesaBytes, &mesaBuffer);
-    if (result) {
-        // Copy the values returned by OSMesa.
-        if (width != NULL) *width = mesaWidth;
-        if (height != NULL) *height = mesaHeight;
-        if (bytesPerValue != NULL) *bytesPerValue = mesaBytes;
-        if (buffer != NULL) *buffer = mesaBuffer;
-    }
-
-    return result;
 }
 

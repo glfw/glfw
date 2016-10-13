@@ -97,6 +97,17 @@ Once you have installed the necessary packages, move on to @ref
 compile_generate.
 
 
+@subsection compile_deps_osmesa Dependencies for Linux and OSMesa
+
+To compile GLFW for OSMesa, you need to install the OSMesa library and header
+packages.  For example, on Ubuntu and other distributions based on Debian
+GNU/Linux, you need to install the `libosmesa6-dev` package.  The OSMesa library
+is required at runtime for context creation and is loaded on demand.
+
+Once you have installed the necessary packages, move on to @ref
+compile_generate.
+
+
 @subsection compile_generate Generating build files with CMake
 
 Once you have all necessary dependencies it is time to generate the project
@@ -249,6 +260,7 @@ ramps and clipboard.  The options are:
  - `_GLFW_X11` to use the X Window System
  - `_GLFW_WAYLAND` to use the Wayland API (experimental and incomplete)
  - `_GLFW_MIR` to use the Mir API (experimental and incomplete)
+ - `_GLFW_OSMESA` to use the OSMesa API (headless and non-interactive)
 
 If you are building GLFW as a shared library / dynamic library / DLL then you
 must also define `_GLFW_BUILD_DLL`.  Otherwise, you must not define it.

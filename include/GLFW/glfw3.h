@@ -176,7 +176,11 @@ extern "C" {
  #endif
 #endif
 #if defined(GLFW_INCLUDE_VULKAN)
- #include <vulkan/vulkan.h>
+ #if defined(__APPLE__)
+  #include <MoltenVK/vulkan/vulkan.h>
+ #else
+  #include <vulkan/vulkan.h>
+ #endif
 #endif
 
 #if defined(GLFW_DLL) && defined(_GLFW_BUILD_DLL)
@@ -4225,6 +4229,9 @@ GLFWAPI int glfwVulkanSupported(void);
  *  returned array, as it is an error to specify an extension more than once in
  *  the `VkInstanceCreateInfo` struct.
  *
+ *  @remark @macos This function currently only supports the
+ *  `VK_MVK_macos_surface` extension from MoltenVK.
+ *
  *  @pointer_lifetime The returned array is allocated and freed by GLFW.  You
  *  should not free it yourself.  It is guaranteed to be valid only until the
  *  library is terminated.
@@ -4305,6 +4312,10 @@ GLFWAPI GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance, const char* p
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_API_UNAVAILABLE and @ref GLFW_PLATFORM_ERROR.
  *
+ *  @remark @macos This function currently always returns `GLFW_TRUE`, as the
+ *  `VK_MVK_macos_surface` extension does not provide
+ *  a `vkGetPhysicalDevice*PresentationSupport` type function.
+ *
  *  @thread_safety This function may be called from any thread.  For
  *  synchronization details of Vulkan objects, see the Vulkan specification.
  *
@@ -4353,6 +4364,12 @@ GLFWAPI int glfwGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhys
  *  the Vulkan error code most appropriate for the error.  Appropriate use of
  *  @ref glfwVulkanSupported and @ref glfwGetRequiredInstanceExtensions should
  *  eliminate almost all occurrences of these errors.
+ *
+ *  @remark @macos This function currently only supports the
+ *  `VK_MVK_macos_surface` extension from MoltenVK.
+ *
+ *  @remark @macos This function creates and sets a `CAMetalLayer` instance for
+ *  the window content view, which is required for MoltenVK to function.
  *
  *  @thread_safety This function may be called from any thread.  For
  *  synchronization details of Vulkan objects, see the Vulkan specification.

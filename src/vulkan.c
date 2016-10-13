@@ -45,17 +45,18 @@ GLFWbool _glfwInitVulkan(int mode)
     VkExtensionProperties* ep;
     uint32_t i, count;
 
-#if !defined(_GLFW_VULKAN_STATIC)
-#if defined(_GLFW_WIN32)
-    const char* name = "vulkan-1.dll";
-#else
-    const char* name = "libvulkan.so.1";
-#endif
-
     if (_glfw.vk.available)
         return GLFW_TRUE;
 
-    _glfw.vk.handle = _glfw_dlopen(name);
+#if !defined(_GLFW_VULKAN_STATIC)
+#if defined(_GLFW_WIN32)
+    _glfw.vk.handle = _glfw_dlopen("vulkan-1.dll");
+#elif defined(_GLFW_COCOA)
+    // NULL maps to RTLD_DEFAULT, which searches all loaded binaries
+    _glfw.vk.handle = _glfw_dlopen(NULL);
+#else
+    _glfw.vk.handle = _glfw_dlopen("libvulkan.so.1");
+#endif
     if (!_glfw.vk.handle)
     {
         if (mode == _GLFW_REQUIRE_LOADER)
@@ -68,8 +69,16 @@ GLFWbool _glfwInitVulkan(int mode)
         _glfw_dlsym(_glfw.vk.handle, "vkGetInstanceProcAddr");
     if (!_glfw.vk.GetInstanceProcAddr)
     {
+#if defined(_GLFW_COCOA)
+        if (mode == _GLFW_REQUIRE_LOADER)
+        {
+            _glfwInputError(GLFW_API_UNAVAILABLE,
+                            "Vulkan: vkGetInstanceProcAddr not found in process");
+        }
+#else
         _glfwInputError(GLFW_API_UNAVAILABLE,
                         "Vulkan: Loader does not export vkGetInstanceProcAddr");
+#endif
 
         _glfwTerminateVulkan();
         return GLFW_FALSE;
@@ -119,6 +128,9 @@ GLFWbool _glfwInitVulkan(int mode)
 #if defined(_GLFW_WIN32)
         else if (strcmp(ep[i].extensionName, "VK_KHR_win32_surface") == 0)
             _glfw.vk.KHR_win32_surface = GLFW_TRUE;
+#elif defined(_GLFW_COCOA)
+        else if (strcmp(ep[i].extensionName, "VK_MVK_macos_surface") == 0)
+            _glfw.vk.MVK_macos_surface = GLFW_TRUE;
 #elif defined(_GLFW_X11)
         else if (strcmp(ep[i].extensionName, "VK_KHR_xlib_surface") == 0)
             _glfw.vk.KHR_xlib_surface = GLFW_TRUE;

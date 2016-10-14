@@ -482,6 +482,18 @@ static void joystick_callback(int joy, int event)
     }
 }
 
+static void joystick_button_callback(int joy, int button, int action)
+{
+    printf("%08x at %0.3f: Joystick %i button %i was %s\n",
+           counter++, glfwGetTime(), joy, button, get_action_name(action));
+}
+
+static void joystick_axis_callback(int joy, int axis, float value)
+{
+    printf("%08x at %0.3f: Joystick %i axis %i was moved to %f\n",
+           counter++, glfwGetTime(), joy, axis, value);
+}
+
 int main(int argc, char** argv)
 {
     Slot* slots;
@@ -499,6 +511,8 @@ int main(int argc, char** argv)
 
     glfwSetMonitorCallback(monitor_callback);
     glfwSetJoystickCallback(joystick_callback);
+    glfwSetJoystickButtonCallback(joystick_button_callback);
+    glfwSetJoystickAxisCallback(joystick_axis_callback);
 
     while ((ch = getopt(argc, argv, "hfn:")) != -1)
     {

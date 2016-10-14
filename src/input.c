@@ -130,6 +130,18 @@ void _glfwInputJoystickChange(int joy, int event)
         _glfw.callbacks.joystick(joy, event);
 }
 
+void _glfwInputJoystickButtonState(int joy, int button, int action)
+{
+    if (_glfw.callbacks.joystick_button)
+        _glfw.callbacks.joystick_button(joy, button, action);
+}
+
+void _glfwInputJoystickAxisMoved(int joy, int axis, float value)
+{
+    if (_glfw.callbacks.joystick_axis)
+        _glfw.callbacks.joystick_axis(joy, axis, value);
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -615,6 +627,20 @@ GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun cbfun)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     _GLFW_SWAP_POINTERS(_glfw.callbacks.joystick, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWjoystickbuttonfun glfwSetJoystickButtonCallback(GLFWjoystickbuttonfun cbfun)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(_glfw.callbacks.joystick_button, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWjoystickaxisfun glfwSetJoystickAxisCallback(GLFWjoystickaxisfun cbfun)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(_glfw.callbacks.joystick_axis, cbfun);
     return cbfun;
 }
 

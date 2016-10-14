@@ -70,7 +70,6 @@ typedef VkResult (APIENTRY *PFN_vkCreateMacOSSurfaceMVK)(VkInstance,const VkMacO
 
 // HIToolbox.framework pointer typedefs
 #define kTISPropertyUnicodeKeyLayoutData _glfw.ns.tis.kPropertyUnicodeKeyLayoutData
-#define kTISNotifySelectedKeyboardInputSourceChanged _glfw.ns.tis.kNotifySelectedKeyboardInputSourceChanged
 typedef TISInputSourceRef (*PFN_TISCopyCurrentKeyboardLayoutInputSource)(void);
 #define TISCopyCurrentKeyboardLayoutInputSource _glfw.ns.tis.CopyCurrentKeyboardLayoutInputSource
 typedef void* (*PFN_TISGetInputSourceProperty)(TISInputSourceRef,CFStringRef);
@@ -125,7 +124,6 @@ typedef struct _GLFWlibraryNS
         PFN_TISGetInputSourceProperty GetInputSourceProperty;
         PFN_LMGetKbdType GetKbdType;
         CFStringRef     kPropertyUnicodeKeyLayoutData;
-        CFStringRef     kNotifySelectedKeyboardInputSourceChanged;
     } tis;
 
 } _GLFWlibraryNS;

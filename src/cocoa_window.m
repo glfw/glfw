@@ -1032,11 +1032,11 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
 #endif /*_GLFW_USE_RETINA*/
 
+    [window->ns.object setContentView:window->ns.view];
     [window->ns.object makeFirstResponder:window->ns.view];
     [window->ns.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
     [window->ns.object setDelegate:window->ns.delegate];
     [window->ns.object setAcceptsMouseMovedEvents:YES];
-    [window->ns.object setContentView:window->ns.view];
     [window->ns.object setRestorable:NO];
 
     return GLFW_TRUE;

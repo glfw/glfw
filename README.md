@@ -109,6 +109,7 @@ information on what to include when reporting a bug.
           OpenGL and OpenGL ES header macros
 - [Win32] Bugfix: Undecorated windows could not be iconified by the user (#861)
 - [Cocoa] Bugfix: Disabling window aspect ratio would assert (#852)
+- [Cocoa] Bugfix: Window creation failed to set first responder (#876,#883)
 - [EGL] Added support for `EGL_KHR_get_all_proc_addresses` (#871)
 
 

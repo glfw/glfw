@@ -1621,6 +1621,9 @@ GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_INVALID_VALUE and @ref GLFW_PLATFORM_ERROR.
  *
+ *  @remark @wayland Gamma handling is currently unavailable, this function will
+ *  always emit @ref GLFW_PLATFORM_ERROR.
+ *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref monitor_gamma
@@ -1641,6 +1644,9 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* monitor, float gamma);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
+ *
+ *  @remark @wayland Gamma handling is currently unavailable, this function will
+ *  always return `NULL` and emit @ref GLFW_PLATFORM_ERROR.
  *
  *  @pointer_lifetime The returned structure and its arrays are allocated and
  *  freed by GLFW.  You should not free them yourself.  They are valid until the
@@ -1673,6 +1679,9 @@ GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
  *  or graphics hardware.
  *
  *  @remark @win32 The gamma ramp size must be 256.
+ *
+ *  @remark @wayland Gamma handling is currently unavailable, this function will
+ *  always emit @ref GLFW_PLATFORM_ERROR.
  *
  *  @pointer_lifetime The specified gamma ramp is copied before this function
  *  returns.
@@ -1841,6 +1850,20 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  query the final size, position or other attributes directly after window
  *  creation.
  *
+ *  @remark @wayland The window frame is currently unimplemented, as if
+ *  `GLFW_DECORATED` was always set to `GLFW_FALSE`.  A compositor can still
+ *  emit close, resize or maximize events, using for example a keybind
+ *  mechanism.
+ *
+ *  @remark @wayland A full screen window will not attempt to change the mode,
+ *  no matter what the requested size or refresh rate.
+ *
+ *  @remark @wayland The wl_shell protocol does not support window
+ *  icons, the window will inherit the one defined in the application's
+ *  desktop file, so this function emits @ref GLFW_PLATFORM_ERROR.
+ *
+ *  @remark @wayland Screensaver inhibition is currently unimplemented.
+ *
  *  @reentrancy This function must not be called from a callback.
  *
  *  @thread_safety This function must only be called from the main thread.
@@ -1979,6 +2002,10 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *  [Bundle Programming Guide](https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/)
  *  in the Mac Developer Library.
  *
+ *  @remark @wayland The wl_shell protocol does not support icons, the window
+ *  will inherit the one defined in the application's desktop file, so this
+ *  function emits @ref GLFW_PLATFORM_ERROR.
+ *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_icon
@@ -2004,6 +2031,10 @@ GLFWAPI void glfwSetWindowIcon(GLFWwindow* window, int count, const GLFWimage* i
  *  the client area, or `NULL`.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @remark @wayland There is no way for an application to retrieve the global
+ *  position of its windows, this function will always emit @ref
  *  GLFW_PLATFORM_ERROR.
  *
  *  @thread_safety This function must only be called from the main thread.
@@ -2034,6 +2065,10 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
  *  @param[in] ypos The y-coordinate of the upper-left corner of the client area.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @remark @wayland There is no way for an application to set the global
+ *  position of its windows, this function will always emit @ref
  *  GLFW_PLATFORM_ERROR.
  *
  *  @thread_safety This function must only be called from the main thread.
@@ -2107,6 +2142,9 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
  *  @remark If you set size limits and an aspect ratio that conflict, the
  *  results are undefined.
  *
+ *  @remark @wayland The size limits will not be applied until the window is
+ *  actually resized, either by the user or by the compositor.
+ *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_sizelimits
@@ -2147,6 +2185,9 @@ GLFWAPI void glfwSetWindowSizeLimits(GLFWwindow* window, int minwidth, int minhe
  *  @remark If you set size limits and an aspect ratio that conflict, the
  *  results are undefined.
  *
+ *  @remark @wayland The aspect ratio will not be applied until the window is
+ *  actually resized, either by the user or by the compositor.
+ *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_sizelimits
@@ -2182,6 +2223,9 @@ GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* window, int numer, int denom);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
+ *
+ *  @remark @wayland A full screen window will not attempt to change the mode,
+ *  no matter what the requested size.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -2252,6 +2296,10 @@ GLFWAPI void glfwGetFramebufferSize(GLFWwindow* window, int* width, int* height)
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
+ *  @remark @wayland The window frame is currently unimplemented, as if
+ *  `GLFW_DECORATED` was always set to `GLFW_FALSE`, so the returned values
+ *  will always be zero.
+ *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_size
@@ -2275,6 +2323,9 @@ GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* window, int* left, int* top, int
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
+ *
+ *  @remark @wayland There is no concept of iconification in wl_shell, this
+ *  function will always emit @ref GLFW_PLATFORM_ERROR.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -2403,6 +2454,9 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
+ *  @remark @wayland It is not possible for an application to bring its windows
+ *  to front, this function will always emit @ref GLFW_PLATFORM_ERROR.
+ *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_focus
@@ -2453,7 +2507,7 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *
  *  When a window transitions from full screen to windowed mode, this function
  *  restores any previous window settings such as whether it is decorated,
- *  floating, resizable, has size or aspect ratio limits, etc..
+ *  floating, resizable, has size or aspect ratio limits, etc.
  *
  *  @param[in] window The window whose monitor, size or video mode to set.
  *  @param[in] monitor The desired monitor, or `NULL` to set windowed mode.
@@ -2470,6 +2524,12 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
+ *
+ *  @remark @wayland The desired window position is ignored, as there is no way
+ *  for an application to set this property.
+ *
+ *  @remark @wayland Setting the window to full screen will not attempt to
+ *  change the mode, no matter what the requested size or refresh rate.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -2575,6 +2635,9 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
+ *  @remark @wayland This callback will never be called, as there is no way for
+ *  an application to know its global position.
+ *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_pos
@@ -2649,9 +2712,9 @@ GLFWAPI GLFWwindowclosefun glfwSetWindowCloseCallback(GLFWwindow* window, GLFWwi
  *  called when the client area of the window needs to be redrawn, for example
  *  if the window has been exposed after having been covered by another window.
  *
- *  On compositing window systems such as Aero, Compiz or Aqua, where the window
- *  contents are saved off-screen, this callback may be called only very
- *  infrequently or never at all.
+ *  On compositing window systems such as Aero, Compiz, Aqua or Wayland, where
+ *  the window contents are saved off-screen, this callback may be called only
+ *  very infrequently or never at all.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
@@ -2712,6 +2775,9 @@ GLFWAPI GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwi
  *  library had not been [initialized](@ref intro_init).
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @remark @wayland The wl_shell protocol has no concept of iconification,
+ *  this callback will never be called.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -3205,6 +3271,9 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
+ *  @remark @wayland This function will only work when the cursor mode is
+ *  `GLFW_CURSOR_DISABLED`, otherwise it will do nothing.
+ *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref cursor_pos
@@ -3570,6 +3639,8 @@ GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun cb
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
+ *  @remark @wayland File drop is currently unimplemented.
+ *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref path_drop
@@ -3735,6 +3806,8 @@ GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun cbfun);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
+ *  @remark @wayland Clipboard is currently unimplemented.
+ *
  *  @pointer_lifetime The specified string is copied before this function
  *  returns.
  *
@@ -3762,6 +3835,8 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
+ *
+ *  @remark @wayland Clipboard is currently unimplemented.
  *
  *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
  *  should not free it yourself.  It is valid until the next call to @ref

@@ -14,7 +14,8 @@ GLFW uses [CMake](http://www.cmake.org/) to generate project files or makefiles
 for a particular development environment.  If you are on a Unix-like system such
 as Linux or FreeBSD or have a package system like Fink, MacPorts, Cygwin or
 Homebrew, you can simply install its CMake package.  If not, you can download
-installers for Windows and OS X from the [CMake website](http://www.cmake.org/).
+installers for Windows and macOS from the
+[CMake website](http://www.cmake.org/).
 
 @note CMake only generates project files or makefiles.  It does not compile the
 actual GLFW library.  To compile GLFW, first generate these files for your
@@ -76,11 +77,11 @@ the CMake wiki.
 Once you have this set up, move on to @ref compile_generate.
 
 
-@subsubsection compile_deps_xcode Dependencies for Xcode on OS X
+@subsubsection compile_deps_xcode Dependencies for Xcode on macOS
 
 Xcode comes with all necessary tools except for CMake.  The required headers
-and libraries are included in the core OS X frameworks.  Xcode can be downloaded
-from the Mac App Store or from the ADC Member Center.
+and libraries are included in the core macOS frameworks.  Xcode can be
+downloaded from the Mac App Store or from the ADC Member Center.
 
 Once you have Xcode installed, move on to @ref compile_generate.
 
@@ -201,7 +202,7 @@ the library.
 statically into the application.
 
 
-@subsubsection compile_options_osx OS X specific CMake options
+@subsubsection compile_options_osx macOS specific CMake options
 
 `GLFW_USE_CHDIR` determines whether `glfwInit` changes the current
 directory of bundled applications to the `Contents/Resources` directory.

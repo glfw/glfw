@@ -160,7 +160,7 @@ extensions to provide support for sRGB framebuffers.  Where both of these
 extension are unavailable, the `GLFW_SRGB_CAPABLE` hint will have no effect.
 
 
-@section compat_osx OpenGL 3.2 and later on OS X
+@section compat_osx OpenGL 3.2 and later on macOS
 
 Support for OpenGL 3.2 and above was introduced with OS X 10.7 and even then
 only forward-compatible, core profile contexts are supported.  Support for
@@ -217,7 +217,7 @@ surfaces on Mir.  If any of these extensions are not available, @ref
 glfwGetRequiredInstanceExtensions will return an empty list and window surface
 creation will fail.
 
-GLFW does not support any extensions for window surface creation on OS X,
+GLFW does not support any extensions for window surface creation on macOS,
 meaning@ref glfwGetRequiredInstanceExtensions will return an empty list and
 window surface creation will fail.
 

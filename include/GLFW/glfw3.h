@@ -116,7 +116,7 @@ extern "C" {
 #endif /* CALLBACK */
 
 /* Include because most Windows GLU headers need wchar_t and
- * the OS X OpenGL header blocks the definition of ptrdiff_t by glext.h.
+ * the macOS OpenGL header blocks the definition of ptrdiff_t by glext.h.
  * Include it unconditionally to avoid surprising side-effects.
  */
 #include <stddef.h>
@@ -561,7 +561,7 @@ extern "C" {
  *  @par
  *  Some pre-installed Windows graphics drivers do not support OpenGL.  AMD only
  *  supports OpenGL ES via EGL, while Nvidia and Intel only support it via
- *  a WGL or GLX extension.  OS X does not provide OpenGL ES at all.  The Mesa
+ *  a WGL or GLX extension.  macOS does not provide OpenGL ES at all.  The Mesa
  *  EGL, OpenGL and OpenGL ES libraries do not interface with the Nvidia binary
  *  driver.  Older graphics drivers do not support Vulkan.
  */
@@ -1247,7 +1247,7 @@ typedef struct GLFWimage
  *
  *  @errors Possible errors include @ref GLFW_PLATFORM_ERROR.
  *
- *  @remark @osx This function will change the current directory of the
+ *  @remark @macos This function will change the current directory of the
  *  application to the `Contents/Resources` subdirectory of the application's
  *  bundle, if present.  This can be disabled with a
  *  [compile-time option](@ref compile_options_osx).
@@ -1821,19 +1821,19 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  @remark @win32 The context to share resources with must not be current on
  *  any other thread.
  *
- *  @remark @osx The GLFW window has no icon, as it is not a document
+ *  @remark @macos The GLFW window has no icon, as it is not a document
  *  window, but the dock icon will be the same as the application bundle's icon.
  *  For more information on bundles, see the
  *  [Bundle Programming Guide](https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/)
  *  in the Mac Developer Library.
  *
- *  @remark @osx The first time a window is created the menu bar is populated
+ *  @remark @macos The first time a window is created the menu bar is populated
  *  with common commands like Hide, Quit and About.  The About entry opens
  *  a minimal about dialog with information from the application's bundle.  The
  *  menu bar can be disabled with a
  *  [compile-time option](@ref compile_options_osx).
  *
- *  @remark @osx On OS X 10.10 and later the window frame will not be rendered
+ *  @remark @macos On OS X 10.10 and later the window frame will not be rendered
  *  at full resolution on Retina displays unless the `NSHighResolutionCapable`
  *  key is enabled in the application bundle's `Info.plist`.  For more
  *  information, see
@@ -1959,7 +1959,7 @@ GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int value);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
- *  @remark @osx The window title will not be updated until the next time you
+ *  @remark @macos The window title will not be updated until the next time you
  *  process events.
  *
  *  @thread_safety This function must only be called from the main thread.
@@ -1996,7 +1996,7 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *  @pointer_lifetime The specified image data is copied before this function
  *  returns.
  *
- *  @remark @osx The GLFW window has no icon, as it is not a document
+ *  @remark @macos The GLFW window has no icon, as it is not a document
  *  window, so this function does nothing.  The dock icon will be the same as
  *  the application bundle's icon.  For more information on bundles, see the
  *  [Bundle Programming Guide](https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/)
@@ -2692,8 +2692,8 @@ GLFWAPI GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwind
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
- *  @remark @osx Selecting Quit from the application menu will trigger the close
- *  callback for all windows.
+ *  @remark @macos Selecting Quit from the application menu will trigger the
+ *  close callback for all windows.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -3458,7 +3458,7 @@ GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
  *
  *  The character callback behaves as system text input normally does and will
  *  not be called if modifier keys are held down that would prevent normal text
- *  input on that platform, for example a Super (Command) key on OS X or Alt key
+ *  input on that platform, for example a Super (Command) key on macOS or Alt key
  *  on Windows.  There is a
  *  [character with modifiers callback](@ref glfwSetCharModsCallback) that
  *  receives these events.

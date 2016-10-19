@@ -36,7 +36,7 @@ does not need the headers for any context creation API (WGL, GLX, EGL, NSGL) or
 rendering API (OpenGL, OpenGL ES, Vulkan) to enable support for them.
 
 GLFW supports compilation on Windows with Visual C++ 2010 and later, MinGW and
-MinGW-w64, on OS X with Clang and on Linux and other Unix-like systems with GCC
+MinGW-w64, on macOS with Clang and on Linux and other Unix-like systems with GCC
 and Clang.  It will likely compile in other environments as well, but this is
 not regularly tested.
 

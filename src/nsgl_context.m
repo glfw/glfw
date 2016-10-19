@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 OS X - www.glfw.org
+// GLFW 3.3 macOS - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2016 Camilla Berglund <elmindreda@glfw.org>
 //
@@ -124,14 +124,14 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     if (ctxconfig->client == GLFW_OPENGL_ES_API)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
-                        "NSGL: OpenGL ES is not available on OS X");
+                        "NSGL: OpenGL ES is not available on macOS");
         return GLFW_FALSE;
     }
 
     if (ctxconfig->major == 3 && ctxconfig->minor < 2)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                        "NSGL: The targeted version of OS X does not support OpenGL 3.0 or 3.1");
+                        "NSGL: The targeted version of macOS does not support OpenGL 3.0 or 3.1");
         return GLFW_FALSE;
     }
 
@@ -140,23 +140,23 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         if (!ctxconfig->forward)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                            "NSGL: The targeted version of OS X only supports forward-compatible contexts for OpenGL 3.2 and above");
+                            "NSGL: The targeted version of macOS only supports forward-compatible contexts for OpenGL 3.2 and above");
             return GLFW_FALSE;
         }
 
         if (ctxconfig->profile != GLFW_OPENGL_CORE_PROFILE)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                            "NSGL: The targeted version of OS X only supports core profile contexts for OpenGL 3.2 and above");
+                            "NSGL: The targeted version of macOS only supports core profile contexts for OpenGL 3.2 and above");
             return GLFW_FALSE;
         }
     }
 
     // Context robustness modes (GL_KHR_robustness) are not yet supported on
-    // OS X but are not a hard constraint, so ignore and continue
+    // macOS but are not a hard constraint, so ignore and continue
 
     // Context release behaviors (GL_KHR_context_flush_control) are not yet
-    // supported on OS X but are not a hard constraint, so ignore and continue
+    // supported on macOS but are not a hard constraint, so ignore and continue
 
 #define ADD_ATTR(x) { attributes[attributeCount++] = x; }
 #define ADD_ATTR2(x, y) { ADD_ATTR(x); ADD_ATTR(y); }
@@ -206,7 +206,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                         fbconfig->greenBits +
                         fbconfig->blueBits;
 
-        // OS X needs non-zero color size, so set reasonable values
+        // macOS needs non-zero color size, so set reasonable values
         if (colorBits == 0)
             colorBits = 24;
         else if (colorBits < 15)

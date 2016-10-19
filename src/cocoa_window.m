@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 OS X - www.glfw.org
+// GLFW 3.3 macOS - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2016 Camilla Berglund <elmindreda@glfw.org>
 //
@@ -162,7 +162,7 @@ static void releaseMonitor(_GLFWwindow* window)
     _glfwRestoreVideoModeNS(window->monitor);
 }
 
-// Translates OS X key modifiers into GLFW ones
+// Translates macOS key modifiers into GLFW ones
 //
 static int translateFlags(NSUInteger flags)
 {
@@ -180,7 +180,7 @@ static int translateFlags(NSUInteger flags)
     return mods;
 }
 
-// Translates a OS X keycode to a GLFW keycode
+// Translates a macOS keycode to a GLFW keycode
 //
 static int translateKey(unsigned int key)
 {

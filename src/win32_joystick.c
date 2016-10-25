@@ -362,14 +362,14 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
                                           &device,
                                           NULL)))
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "DI: Failed to create device");
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to create device");
         return DIENUM_CONTINUE;
     }
 
     if (FAILED(IDirectInputDevice8_SetDataFormat(device, &_glfwDataFormat)))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "DI: Failed to set device data format");
+                        "Win32: Failed to set device data format");
 
         IDirectInputDevice8_Release(device);
         return DIENUM_CONTINUE;
@@ -381,7 +381,7 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
     if (FAILED(IDirectInputDevice8_GetCapabilities(device, &dc)))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "DI: Failed to query device capabilities");
+                        "Win32: Failed to query device capabilities");
 
         IDirectInputDevice8_Release(device);
         return DIENUM_CONTINUE;
@@ -398,7 +398,7 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
                                                &dipd.diph)))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "DI: Failed to set device axis mode");
+                        "Win32: Failed to set device axis mode");
 
         IDirectInputDevice8_Release(device);
         return DIENUM_CONTINUE;
@@ -415,7 +415,7 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
                                                DIDFT_AXIS | DIDFT_BUTTON | DIDFT_POV)))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "DI: Failed to enumerate device objects");
+                        "Win32: Failed to enumerate device objects");
 
         IDirectInputDevice8_Release(device);
         free(data.objects);
@@ -664,7 +664,7 @@ void _glfwInitJoysticksWin32(void)
                                             NULL)))
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "DI: Failed to create interface");
+                            "Win32: Failed to create interface");
         }
     }
 

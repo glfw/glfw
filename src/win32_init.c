@@ -304,6 +304,7 @@ static void createKeyTables(void)
 //
 static HWND createHelperWindow(void)
 {
+    MSG msg;
     HWND window = CreateWindowExW(WS_EX_OVERLAPPEDWINDOW,
                                   _GLFW_WNDCLASSNAME,
                                   L"GLFW helper window",
@@ -334,6 +335,12 @@ static HWND createHelperWindow(void)
         RegisterDeviceNotificationW(window,
                                     (DEV_BROADCAST_HDR*) &dbi,
                                     DEVICE_NOTIFY_WINDOW_HANDLE);
+    }
+
+    while (PeekMessageW(&msg, _glfw.win32.helperWindowHandle, 0, 0, PM_REMOVE))
+    {
+        TranslateMessage(&msg);
+        DispatchMessageW(&msg);
     }
 
    return window;
@@ -422,8 +429,6 @@ int _glfwPlatformInit(void)
     _glfw.win32.helperWindowHandle = createHelperWindow();
     if (!_glfw.win32.helperWindowHandle)
         return GLFW_FALSE;
-
-    _glfwPlatformPollEvents();
 
     _glfwInitTimerWin32();
     _glfwInitJoysticksWin32();

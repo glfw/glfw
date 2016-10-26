@@ -4220,7 +4220,7 @@ GLFWAPI int glfwVulkanSupported(void);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_API_UNAVAILABLE.
  *
- *  @remarks Additional extensions may be required by future versions of GLFW.
+ *  @remark Additional extensions may be required by future versions of GLFW.
  *  You should check if any extensions you wish to enable are already in the
  *  returned array, as it is an error to specify an extension more than once in
  *  the `VkInstanceCreateInfo` struct.
@@ -4349,7 +4349,7 @@ GLFWAPI int glfwGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhys
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_API_UNAVAILABLE and @ref GLFW_PLATFORM_ERROR.
  *
- *  @remarks If an error occurs before the creation call is made, GLFW returns
+ *  @remark If an error occurs before the creation call is made, GLFW returns
  *  the Vulkan error code most appropriate for the error.  Appropriate use of
  *  @ref glfwVulkanSupported and @ref glfwGetRequiredInstanceExtensions should
  *  eliminate almost all occurrences of these errors.

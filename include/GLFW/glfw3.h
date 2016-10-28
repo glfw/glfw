@@ -2525,6 +2525,10 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
+ *  @remark The OpenGL or OpenGL ES context will not be destroyed or otherwise
+ *  affected by any resizing or mode switching, although you may need to update
+ *  your viewport if the framebuffer size has changed.
+ *
  *  @remark @wayland The desired window position is ignored, as there is no way
  *  for an application to set this property.
  *

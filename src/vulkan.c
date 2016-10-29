@@ -136,8 +136,10 @@ GLFWbool _glfwInitVulkan(void)
 
 void _glfwTerminateVulkan(void)
 {
+#if !defined(_GLFW_VULKAN_STATIC)
     if (_glfw.vk.handle)
         _glfw_dlclose(_glfw.vk.handle);
+#endif
 }
 
 const char* _glfwGetVulkanResultString(VkResult result)
@@ -236,8 +238,10 @@ GLFWAPI GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance,
     }
 
     proc = (GLFWvkproc) vkGetInstanceProcAddr(instance, procname);
+#if !defined(_GLFW_VULKAN_STATIC)
     if (!proc)
         proc = (GLFWvkproc) _glfw_dlsym(_glfw.vk.handle, procname);
+#endif
 
     return proc;
 }

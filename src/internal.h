@@ -1060,7 +1060,7 @@ GLFWbool _glfwIsPrintable(int key);
 
 /*! @ingroup utility
  */
-GLFWbool _glfwInitVulkan(void);
+GLFWbool _glfwInitVulkan(int mode);
 
 /*! @ingroup utility
  */

@@ -323,19 +323,11 @@ if (_GLFW_COCOA)
         set(_GLFW_USE_RETINA 1)
     endif()
 
-    # Set up library and include paths
-    find_library(COCOA_FRAMEWORK Cocoa)
-    find_library(IOKIT_FRAMEWORK IOKit)
-    find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
-    find_library(CORE_VIDEO_FRAMEWORK CoreVideo)
-    mark_as_advanced(COCOA_FRAMEWORK
-                     IOKIT_FRAMEWORK
-                     CORE_FOUNDATION_FRAMEWORK
-                     CORE_VIDEO_FRAMEWORK)
-    list(APPEND glfw_LIBRARIES "${COCOA_FRAMEWORK}"
-                               "${IOKIT_FRAMEWORK}"
-                               "${CORE_FOUNDATION_FRAMEWORK}"
-                               "${CORE_VIDEO_FRAMEWORK}")
+    list(APPEND glfw_LIBRARIES
+        "-framework Cocoa"
+        "-framework IOKit"
+        "-framework CoreFoundation"
+        "-framework CoreVideo")
 
     set(glfw_PKG_DEPS "")
     set(glfw_PKG_LIBS "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")

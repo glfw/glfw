@@ -107,6 +107,8 @@ information on what to include when reporting a bug.
 - Bugfix: Calling `glfwMaximizeWindow` on a full screen window was not ignored
 - Bugfix: `GLFW_INCLUDE_VULKAN` could not be combined with the corresponding
           OpenGL and OpenGL ES header macros
+- Bugfix: `glfwGetInstanceProcAddress` returned `NULL` for
+          `vkGetInstanceProcAddr` when `_GLFW_VULKAN_STATIC` was enabled
 - [Win32] Bugfix: Undecorated windows could not be iconified by the user (#861)
 - [Cocoa] Bugfix: Disabling window aspect ratio would assert (#852)
 - [Cocoa] Bugfix: Window creation failed to set first responder (#876,#883)

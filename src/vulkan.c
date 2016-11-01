@@ -240,7 +240,13 @@ GLFWAPI GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance,
         return NULL;
 
     proc = (GLFWvkproc) vkGetInstanceProcAddr(instance, procname);
-#if !defined(_GLFW_VULKAN_STATIC)
+#if defined(_GLFW_VULKAN_STATIC)
+    if (!proc)
+    {
+        if (strcmp(procname, "vkGetInstanceProcAddr") == 0)
+            return (GLFWvkproc) vkGetInstanceProcAddr;
+    }
+#else
     if (!proc)
         proc = (GLFWvkproc) _glfw_dlsym(_glfw.vk.handle, procname);
 #endif

@@ -1249,12 +1249,30 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
-    [window->ns.object orderFront:nil];
+    if (window->monitor)
+    {
+        [window->ns.object makeKeyAndOrderFront:window->ns.object];
+
+        NSApplicationPresentationOptions options =
+            NSApplicationPresentationHideDock +
+            NSApplicationPresentationHideMenuBar +
+            NSApplicationPresentationDisableProcessSwitching +
+            NSApplicationPresentationDisableHideApplication;
+        [NSApp setPresentationOptions:options];
+    }
+    else
+    {
+        [window->ns.object orderFront:window->ns.object];
+
+        NSApplicationPresentationOptions options =
+            NSApplicationPresentationDefault;
+        [NSApp setPresentationOptions:options];
+    }
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
-    [window->ns.object orderOut:nil];
+    [window->ns.object orderOut:window->ns.object];
 }
 
 void _glfwPlatformFocusWindow(_GLFWwindow* window)
@@ -1265,7 +1283,23 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
     //       should probably not be done every time any window is shown
     [NSApp activateIgnoringOtherApps:YES];
 
-    [window->ns.object makeKeyAndOrderFront:nil];
+    [window->ns.object makeKeyAndOrderFront:window->ns.object];
+
+    if (window->monitor)
+    {
+        NSApplicationPresentationOptions options =
+            NSApplicationPresentationHideDock +
+            NSApplicationPresentationHideMenuBar +
+            NSApplicationPresentationDisableProcessSwitching +
+            NSApplicationPresentationDisableHideApplication;
+        [NSApp setPresentationOptions:options];
+    }
+    else
+    {
+        NSApplicationPresentationOptions options =
+            NSApplicationPresentationDefault;
+        [NSApp setPresentationOptions:options];
+    }
 }
 
 void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
@@ -1362,6 +1396,22 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
             [window->ns.object setLevel:NSNormalWindowLevel];
 
         [window->ns.object setHasShadow:YES];
+    }
+
+    if (window->monitor)
+    {
+        NSApplicationPresentationOptions options =
+            NSApplicationPresentationHideDock +
+            NSApplicationPresentationHideMenuBar +
+            NSApplicationPresentationDisableProcessSwitching +
+            NSApplicationPresentationDisableHideApplication;
+        [NSApp setPresentationOptions:options];
+    }
+    else
+    {
+        NSApplicationPresentationOptions options =
+            NSApplicationPresentationDefault;
+        [NSApp setPresentationOptions:options];
     }
 }
 

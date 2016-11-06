@@ -50,7 +50,7 @@ extern "C" {
  *  doing and how to fix problems caused by using them.  If you don't, you
  *  shouldn't be using them.**
  *
- *  Before the inclusion of @ref glfw3native.h, you may define exactly one
+ *  Before the inclusion of @ref glfw3native.h, you may define zero or more
  *  window system API macro and zero or more context creation API macros.
  *
  *  The chosen backends must match those the library was compiled for.  Failure

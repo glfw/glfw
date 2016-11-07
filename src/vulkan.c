@@ -237,6 +237,9 @@ GLFWAPI const char** glfwGetRequiredInstanceExtensions(uint32_t* count)
     if (!_glfwInitVulkan(_GLFW_REQUIRE_LOADER))
         return NULL;
 
+    if (!_glfw.vk.extensions[0])
+        return NULL;
+
     *count = 2;
     return (const char**) _glfw.vk.extensions;
 }

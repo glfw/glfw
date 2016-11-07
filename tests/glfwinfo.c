@@ -820,9 +820,14 @@ int main(int argc, char** argv)
         re = glfwGetRequiredInstanceExtensions(&re_count);
 
         printf("Vulkan required instance extensions:");
-        for (i = 0;  i < re_count;  i++)
-            printf(" %s", re[i]);
-        putchar('\n');
+        if (re)
+        {
+            for (i = 0;  i < re_count;  i++)
+                printf(" %s", re[i]);
+            putchar('\n');
+        }
+        else
+            printf(" missing\n");
 
         if (list_extensions)
             list_vulkan_instance_extensions();

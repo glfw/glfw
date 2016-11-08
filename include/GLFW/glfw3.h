@@ -101,6 +101,12 @@ extern "C" {
  #endif
 #endif /* APIENTRY */
 
+/* Some OpenGL related headers use GLAPIENTRY instead.
+ */
+#ifndef GLAPIENTRY
+ #define GLAPIENTRY APIENTRY
+#endif /* GLAPIENTRY */
+
 /* Some Windows OpenGL headers need this.
  */
 #if !defined(WINGDIAPI) && defined(_WIN32)

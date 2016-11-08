@@ -43,11 +43,13 @@ typedef void* OSMesaContext;
 typedef void (*OSMESAproc)();
 
 typedef OSMesaContext (* PFNOSMESACREATECONTEXTATTRIBSPROC)(const int*,OSMesaContext);
+typedef OSMesaContext (* PFNOSMESACREATECONTEXTEXTPROC)(GLenum,GLint,GLint,GLint,OSMesaContext);
 typedef void (* PFNOSMESADESTROYCONTEXTPROC)(OSMesaContext);
 typedef int (* PFNOSMESAMAKECURRENTPROC)(OSMesaContext,void*,int,int,int);
 typedef int (* PFNOSMESAGETCOLORBUFFERPROC)(OSMesaContext,int*,int*,int*,void**);
 typedef int (* PFNOSMESAGETDEPTHBUFFERPROC)(OSMesaContext,int*,int*,int*,void**);
 typedef GLFWglproc (* PFNOSMESAGETPROCADDRESSPROC)(const char*);
+#define OSMesaCreateContextExt _glfw.osmesa.CreateContextExt
 #define OSMesaCreateContextAttribs _glfw.osmesa.CreateContextAttribs
 #define OSMesaDestroyContext _glfw.osmesa.DestroyContext
 #define OSMesaMakeCurrent _glfw.osmesa.MakeCurrent
@@ -76,6 +78,7 @@ typedef struct _GLFWlibraryOSMesa
 {
     void*           handle;
 
+    PFNOSMESACREATECONTEXTEXTPROC     CreateContextExt;
     PFNOSMESACREATECONTEXTATTRIBSPROC CreateContextAttribs;
     PFNOSMESADESTROYCONTEXTPROC       DestroyContext;
     PFNOSMESAMAKECURRENTPROC          MakeCurrent;

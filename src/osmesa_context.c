@@ -120,6 +120,7 @@ GLFWbool _glfwInitOSMesa(void)
 #elif defined(__CYGWIN__)
         "libOSMesa-8.so",
 #else
+        "libOSMesa.so.8",
         "libOSMesa.so.6",
 #endif
         NULL
@@ -141,6 +142,8 @@ GLFWbool _glfwInitOSMesa(void)
         return GLFW_FALSE;
     }
 
+    _glfw.osmesa.CreateContextExt = (PFNOSMESACREATECONTEXTEXTPROC)
+        _glfw_dlsym(_glfw.osmesa.handle, "OSMesaCreateContextExt");
     _glfw.osmesa.CreateContextAttribs = (PFNOSMESACREATECONTEXTATTRIBSPROC)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaCreateContextAttribs");
     _glfw.osmesa.DestroyContext = (PFNOSMESADESTROYCONTEXTPROC)
@@ -154,7 +157,7 @@ GLFWbool _glfwInitOSMesa(void)
     _glfw.osmesa.GetProcAddress = (PFNOSMESAGETPROCADDRESSPROC)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaGetProcAddress");
 
-    if (!_glfw.osmesa.CreateContextAttribs ||
+    if (!_glfw.osmesa.CreateContextExt ||
         !_glfw.osmesa.DestroyContext ||
         !_glfw.osmesa.MakeCurrent ||
         !_glfw.osmesa.GetColorBuffer ||
@@ -192,37 +195,60 @@ GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
                                   const _GLFWfbconfig* fbconfig)
 {
     OSMesaContext share = NULL;
-    int index = 0, attribs[40];
+    const int accumBits = fbconfig->accumRedBits +
+                          fbconfig->accumGreenBits +
+                          fbconfig->accumBlueBits +
+                          fbconfig->accumAlphaBits;
 
     if (ctxconfig->share)
         share = ctxconfig->share->context.osmesa.handle;
 
-    setAttrib(OSMESA_FORMAT, OSMESA_RGBA);
-    setAttrib(OSMESA_DEPTH_BITS, fbconfig->depthBits);
-    setAttrib(OSMESA_STENCIL_BITS, fbconfig->stencilBits);
-    setAttrib(OSMESA_ACCUM_BITS, fbconfig->accumRedBits +
-                                 fbconfig->accumGreenBits +
-                                 fbconfig->accumBlueBits +
-                                 fbconfig->accumAlphaBits);
-
-    if (ctxconfig->profile == GLFW_OPENGL_CORE_PROFILE)
+    if (OSMesaCreateContextAttribs)
     {
-        setAttrib(OSMESA_PROFILE, OSMESA_CORE_PROFILE);
+        int index = 0, attribs[40];
+
+        setAttrib(OSMESA_FORMAT, OSMESA_RGBA);
+        setAttrib(OSMESA_DEPTH_BITS, fbconfig->depthBits);
+        setAttrib(OSMESA_STENCIL_BITS, fbconfig->stencilBits);
+        setAttrib(OSMESA_ACCUM_BITS, accumBits);
+
+        if (ctxconfig->profile == GLFW_OPENGL_CORE_PROFILE)
+        {
+            setAttrib(OSMESA_PROFILE, OSMESA_CORE_PROFILE);
+        }
+        else if (ctxconfig->profile == GLFW_OPENGL_COMPAT_PROFILE)
+        {
+            setAttrib(OSMESA_PROFILE, OSMESA_COMPAT_PROFILE);
+        }
+
+        if (ctxconfig->major != 1 || ctxconfig->minor != 0)
+        {
+            setAttrib(OSMESA_CONTEXT_MAJOR_VERSION, ctxconfig->major);
+            setAttrib(OSMESA_CONTEXT_MINOR_VERSION, ctxconfig->minor);
+        }
+
+        setAttrib(0, 0);
+
+        window->context.osmesa.handle =
+            OSMesaCreateContextAttribs(attribs, share);
     }
-    else if (ctxconfig->profile == GLFW_OPENGL_COMPAT_PROFILE)
+    else
     {
-        setAttrib(OSMESA_PROFILE, OSMESA_COMPAT_PROFILE);
+        if (ctxconfig->profile)
+        {
+            _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+                            "OSMesa: OpenGL profiles unavailable");
+            return GLFW_FALSE;
+        }
+
+        window->context.osmesa.handle =
+            OSMesaCreateContextExt(OSMESA_RGBA,
+                                   fbconfig->depthBits,
+                                   fbconfig->stencilBits,
+                                   accumBits,
+                                   share);
     }
 
-    if (ctxconfig->major != 1 || ctxconfig->minor != 0)
-    {
-        setAttrib(OSMESA_CONTEXT_MAJOR_VERSION, ctxconfig->major);
-        setAttrib(OSMESA_CONTEXT_MINOR_VERSION, ctxconfig->minor);
-    }
-
-    setAttrib(0, 0);
-
-    window->context.osmesa.handle = OSMesaCreateContextAttribs(attribs, share);
     if (window->context.osmesa.handle == NULL)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,

@@ -226,12 +226,12 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                               const GLFWimage* image,
                               int xhot, int yhot)
 {
-    return GLFW_FALSE;
+    return GLFW_TRUE;
 }
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
-    return GLFW_FALSE;
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)

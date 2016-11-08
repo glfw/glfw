@@ -41,6 +41,7 @@ endif()
 if (UNIX AND NOT APPLE)
     option(GLFW_USE_WAYLAND "Use Wayland for window creation" OFF)
     option(GLFW_USE_MIR     "Use Mir for window creation" OFF)
+    option(GLFW_USE_OSMESA  "Use OSMesa for offscreen context creation" OFF)
 endif()
 
 if (MSVC)
@@ -154,6 +155,9 @@ elseif (UNIX)
     elseif (GLFW_USE_MIR)
         set(_GLFW_MIR 1)
         message(STATUS "Using Mir for window creation")
+    elseif (GLFW_USE_OSMESA)
+        set(_GLFW_OSMESA 1)
+        message(STATUS "Using OSMesa for windowless context creation")
     else()
         set(_GLFW_X11 1)
         message(STATUS "Using X11 for window creation")
@@ -316,6 +320,18 @@ if (_GLFW_MIR)
     list(APPEND glfw_PKG_DEPS "xkbcommon")
     list(APPEND glfw_INCLUDE_DIRS "${XKBCOMMON_INCLUDE_DIRS}")
     list(APPEND glfw_LIBRARIES "${XKBCOMMON_LIBRARY}")
+endif()
+
+#--------------------------------------------------------------------
+# Use OSMesa for offscreen context creation
+#--------------------------------------------------------------------
+if (_GLFW_OSMESA)
+    find_package(osmesa REQUIRED)
+    list(APPEND glfw_PKG_DEPS "osmesa")
+
+    list(APPEND glfw_INCLUDE_DIRS "${OSMESA_INCLUDE_DIR}")
+    list(APPEND glfw_LIBRARIES "${OSMESA_LIBRARIES}"
+                               "${CMAKE_THREAD_LIBS_INIT}")
 endif()
 
 #--------------------------------------------------------------------

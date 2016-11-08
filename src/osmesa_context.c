@@ -200,6 +200,13 @@ GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
                           fbconfig->accumBlueBits +
                           fbconfig->accumAlphaBits;
 
+    if (ctxconfig->client == GLFW_OPENGL_ES_API)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "OSMesa: OpenGL ES is not available on OSMesa");
+        return GLFW_FALSE;
+    }
+
     if (ctxconfig->share)
         share = ctxconfig->share->context.osmesa.handle;
 
@@ -225,6 +232,13 @@ GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
         {
             setAttrib(OSMESA_CONTEXT_MAJOR_VERSION, ctxconfig->major);
             setAttrib(OSMESA_CONTEXT_MINOR_VERSION, ctxconfig->minor);
+        }
+
+        if (ctxconfig->forward)
+        {
+            _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+                            "OSMesa: Foward-compatible contexts not supported");
+            return GLFW_FALSE;
         }
 
         setAttrib(0, 0);

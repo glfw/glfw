@@ -47,17 +47,24 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    if (!_glfwInitOSMesa())
+    if (!createNativeWindow(window, wndconfig))
         return GLFW_FALSE;
 
     if (ctxconfig->client != GLFW_NO_API)
     {
-        if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
+        if (ctxconfig->source == GLFW_NATIVE_CONTEXT_API)
+        {
+            if (!_glfwInitOSMesa())
+                return GLFW_FALSE;
+            if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
+                return GLFW_FALSE;
+        }
+        else
+        {
+            _glfwInputError(GLFW_API_UNAVAILABLE, "OSMesa: EGL not available");
             return GLFW_FALSE;
+        }
     }
-
-    if (!createNativeWindow(window, wndconfig))
-        return GLFW_FALSE;
 
     return GLFW_TRUE;
 }

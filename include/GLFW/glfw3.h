@@ -1778,8 +1778,8 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  or _borderless full screen_ windows, see @ref window_windowed_full_screen.
  *
  *  Once you have created the window, you can switch it between windowed and
- *  full screen mode with @ref glfwSetWindowMonitor.  If the window has an
- *  OpenGL or OpenGL ES context, it will be unaffected.
+ *  full screen mode with @ref glfwSetWindowMonitor.  This will not affect its
+ *  OpenGL or OpenGL ES context.
  *
  *  By default, newly created windows use the placement recommended by the
  *  window system.  To create the window at a specific position, make it

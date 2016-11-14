@@ -11,7 +11,7 @@ application development.  It provides a simple, platform-independent API for
 creating windows, contexts and surfaces, reading input, handling events, etc.
 
 GLFW is licensed under the [zlib/libpng
-license](https://opensource.org/licenses/Zlib).
+license](http://www.glfw.org/license.html).
 
 The latest stable release is version 3.2.1.
 
@@ -19,6 +19,8 @@ See the [downloads](http://www.glfw.org/download.html) page for details and
 files, or fetch the `latest` branch, which always points to the latest stable
 release.  Each release starting with 3.0 also has a corresponding [annotated
 tag](https://github.com/glfw/glfw/releases) with source and binary archives.
+The [version history](http://www.glfw.org/changelog.html) lists all user-visible
+changes for every release.
 
 This is a development branch for version 3.3, which is _not yet described_.
 

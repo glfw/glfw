@@ -22,7 +22,7 @@ if (WIN32)
 elseif (APPLE)
     set(ICON glfw.icns)
     set_source_files_properties(glfw.icns PROPERTIES
-        MAXOSX_PACKAGE_LOCATION "Resources")
+        MACOSX_PACKAGE_LOCATION "Resources")
 endif()
 
 set(GLAD "${GLFW_SOURCE_DIR}/deps/glad/glad.h"

@@ -65,7 +65,7 @@ The following macros control which OpenGL or OpenGL ES API header is included.
 Only one of these may be defined at a time.
 
 `GLFW_INCLUDE_GLCOREARB` makes the GLFW header include the modern
-`GL/glcorearb.h` header (`OpenGL/gl3.h` on OS X) instead of the regular OpenGL
+`GL/glcorearb.h` header (`OpenGL/gl3.h` on macOS) instead of the regular OpenGL
 header.
 
 `GLFW_INCLUDE_ES1` makes the GLFW header include the OpenGL ES 1.x `GLES/gl.h`
@@ -84,7 +84,7 @@ header instead of the regular OpenGL header.
 header.  This is useful in combination with an extension loading library.
 
 If none of the above inclusion macros are defined, the standard OpenGL `GL/gl.h`
-header (`OpenGL/gl.h` on OS X) is included.
+header (`OpenGL/gl.h` on macOS) is included.
 
 The following macros control the inclusion of additional API headers.  Any
 number of these may be defined simultaneously, and/or together with one of the
@@ -119,7 +119,7 @@ a shared library / dynamic library / DLL then it takes care of these links.
 However, if you are using GLFW as a static library then your executable will
 need to link against these libraries.
 
-On Windows and OS X, the list of system libraries is static and can be
+On Windows and macOS, the list of system libraries is static and can be
 hard-coded into your build environment.  See the section for your development
 environment below.  On Linux and other Unix-like operating systems, the list
 varies but can be retrieved in various ways as described below.
@@ -289,7 +289,7 @@ env PKG_CONFIG_PATH=path/to/glfw/src cc `pkg-config --cflags glfw3` -o myprog my
 @endcode
 
 The dependencies do not include OpenGL or GLU, as GLFW loads any OpenGL, OpenGL
-ES or Vulkan libraries it needs at runtime and does not use GLU.  On OS X, GLU
+ES or Vulkan libraries it needs at runtime and does not use GLU.  On macOS, GLU
 is built into the OpenGL framework, so if you need GLU you don't need to do
 anything extra.  If you need GLU and are using Linux or BSD, you should add the
 `glu` pkg-config package.
@@ -309,7 +309,7 @@ cc `pkg-config --cflags glfw3 glu` -o myprog myprog.c `pkg-config --static --lib
 @endcode
 
 
-@subsection build_link_xcode With Xcode on OS X
+@subsection build_link_xcode With Xcode on macOS
 
 If you are using the dynamic library version of GLFW, simply add it to the
 project dependencies.
@@ -319,10 +319,10 @@ OpenGL, IOKit and CoreVideo frameworks to the project as dependencies.  They can
 all be found in `/System/Library/Frameworks`.
 
 
-@subsection build_link_osx With command-line on OS X
+@subsection build_link_osx With command-line on macOS
 
 It is recommended that you use [pkg-config](@ref build_link_pkgconfig) when
-building from the command line on OS X.  That way you will get any new
+building from the command line on macOS.  That way you will get any new
 dependencies added automatically.  If you still wish to build manually, you need
 to add the required frameworks and libraries to your command-line yourself using
 the `-l` and `-framework` switches.
@@ -342,6 +342,6 @@ against it from the command-line.
 The OpenGL framework contains both the OpenGL and GLU APIs, so there is nothing
 special to do when using GLU.  Also note that even though your machine may have
 `libGL`-style OpenGL libraries, they are for use with the X Window System and
-will _not_ work with the OS X native version of GLFW.
+will _not_ work with the macOS native version of GLFW.
 
 */

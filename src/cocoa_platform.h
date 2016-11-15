@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 OS X - www.glfw.org
+// GLFW 3.3 macOS - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2016 Camilla Berglund <elmindreda@glfw.org>
 //
@@ -39,6 +39,18 @@
 typedef void* id;
 #endif
 
+typedef VkFlags VkMacOSSurfaceCreateFlagsMVK;
+
+typedef struct VkMacOSSurfaceCreateInfoMVK
+{
+    VkStructureType                 sType;
+    const void*                     pNext;
+    VkMacOSSurfaceCreateFlagsMVK    flags;
+    const void*                     pView;
+} VkMacOSSurfaceCreateInfoMVK;
+
+typedef VkResult (APIENTRY *PFN_vkCreateMacOSSurfaceMVK)(VkInstance,const VkMacOSSurfaceCreateInfoMVK*,const VkAllocationCallbacks*,VkSurfaceKHR*);
+
 #include "posix_tls.h"
 #include "cocoa_joystick.h"
 #include "nsgl_context.h"
@@ -74,6 +86,7 @@ typedef struct _GLFWwindowNS
     id              object;
     id              delegate;
     id              view;
+    id              layer;
 
     GLFWbool        maximized;
 

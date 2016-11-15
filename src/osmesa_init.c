@@ -1,7 +1,8 @@
 //========================================================================
-// GLFW 3.3 macOS - www.glfw.org
+// GLFW 3.3 OSMesa - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2016 Google Inc.
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -26,35 +27,28 @@
 
 #include "internal.h"
 
-#include <mach/mach_time.h>
-
-
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-// Initialise timer
-//
-void _glfwInitTimerNS(void)
-{
-    mach_timebase_info_data_t info;
-    mach_timebase_info(&info);
-
-    _glfw.ns_time.frequency = (info.denom * 1e9) / info.numer;
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-uint64_t _glfwPlatformGetTimerValue(void)
+int _glfwPlatformInit(void)
 {
-    return mach_absolute_time();
+    if (!_glfwInitThreadLocalStoragePOSIX())
+        return GLFW_FALSE;
+
+    _glfwInitTimerPOSIX();
+    return GLFW_TRUE;
 }
 
-uint64_t _glfwPlatformGetTimerFrequency(void)
+void _glfwPlatformTerminate(void)
 {
-    return _glfw.ns_time.frequency;
+    _glfwTerminateOSMesa();
+    _glfwTerminateThreadLocalStoragePOSIX();
+}
+
+const char* _glfwPlatformGetVersionString(void)
+{
+    return _GLFW_VERSION_NUMBER " none OSMesa";
 }
 

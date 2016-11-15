@@ -11,8 +11,10 @@ with Vulkan concepts like loaders, devices, queues and surfaces and leaves it to
 the Vulkan documentation to explain the details of Vulkan functions.
 
 To develop for Vulkan you should install an SDK for your platform, for example
-the [LunarG Vulkan SDK](https://vulkan.lunarg.com/).  Apart from the headers and
-libraries, it also provides the validation layers necessary for development.
+the [LunarG Vulkan SDK](https://vulkan.lunarg.com/) for Windows and Linux or
+[MoltenVK](https://moltengl.com/moltenvk/) for macOS.  Apart from headers and
+link libraries, they should also provide the validation layers necessary for
+development.
 
 The GLFW library does not need the Vulkan SDK to enable support for Vulkan.
 However, any Vulkan-specific test and example programs are built only if the
@@ -26,6 +28,26 @@ are also guides for the other areas of the GLFW API.
  - @ref context_guide
  - @ref monitor_guide
  - @ref input_guide
+
+
+@section vulkan_loader Linking against the Vulkan loader
+
+By default, GLFW will look for the Vulkan loader on demand at runtime via its
+standard name (`vulkan-1.dll` on Windows, `libvulkan.so.1` on Linux and other
+Unix-like systems).  This means that GLFW does not need to be linked against the
+loader.  However, it also means that if you are using the static library form of
+the Vulkan loader GLFW will either fail to find it or (worse) use the wrong one.
+
+The [GLFW_VULKAN_STATIC](@ref compile_options_shared) CMake option makes GLFW
+link directly against the static form.  Not linking against the Vulkan loader
+will then be a compile-time error.
+
+@macos MoltenVK only provides the static library form of the Vulkan loader, but
+GLFW is able to find it without
+[GLFW_VULKAN_STATIC](@ref compile_options_shared) as long as it is linked into
+any of the binaries already loaded into the process.  As it is a static library,
+you must also link against its dependencies: the `Cocoa`, `Metal` and
+`QuartzCore` frameworks and the `libc++` library.
 
 
 @section vulkan_include Including the Vulkan and GLFW header files

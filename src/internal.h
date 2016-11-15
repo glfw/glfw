@@ -69,6 +69,7 @@ typedef void (* _GLFWdestroycontextfun)(_GLFWwindow*);
 #define GL_VERSION 0x1f02
 #define GL_NONE	0
 #define GL_COLOR_BUFFER_BIT	0x00004000
+#define GL_UNSIGNED_BYTE 0x1401
 #define GL_EXTENSIONS 0x1f03
 #define GL_NUM_EXTENSIONS 0x821d
 #define GL_CONTEXT_FLAGS 0x821e
@@ -110,6 +111,7 @@ typedef enum VkStructureType
     VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR = 1000006000,
     VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR = 1000007000,
     VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR = 1000009000,
+    VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK = 1000053000,
     VK_STRUCTURE_TYPE_MAX_ENUM = 0x7FFFFFFF
 } VkStructureType;
 
@@ -171,6 +173,8 @@ typedef void (APIENTRY * PFN_vkVoidFunction)(void);
  #include "wl_platform.h"
 #elif defined(_GLFW_MIR)
  #include "mir_platform.h"
+#elif defined(_GLFW_OSMESA)
+ #include "osmesa_platform.h"
 #else
  #error "No supported window creation API selected"
 #endif
@@ -458,6 +462,8 @@ struct _GLFWlibrary
         GLFWbool        KHR_surface;
 #if defined(_GLFW_WIN32)
         GLFWbool        KHR_win32_surface;
+#elif defined(_GLFW_COCOA)
+        GLFWbool        MVK_macos_surface;
 #elif defined(_GLFW_X11)
         GLFWbool        KHR_xlib_surface;
         GLFWbool        KHR_xcb_surface;
@@ -608,22 +614,22 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window);
 /*! @copydoc glfwJoystickPresent
  *  @ingroup platform
  */
-int _glfwPlatformJoystickPresent(int joy);
+int _glfwPlatformJoystickPresent(int jid);
 
 /*! @copydoc glfwGetJoystickAxes
  *  @ingroup platform
  */
-const float* _glfwPlatformGetJoystickAxes(int joy, int* count);
+const float* _glfwPlatformGetJoystickAxes(int jid, int* count);
 
 /*! @copydoc glfwGetJoystickButtons
  *  @ingroup platform
  */
-const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count);
+const unsigned char* _glfwPlatformGetJoystickButtons(int jid, int* count);
 
 /*! @copydoc glfwGetJoystickName
  *  @ingroup platform
  */
-const char* _glfwPlatformGetJoystickName(int joy);
+const char* _glfwPlatformGetJoystickName(int jid);
 
 /*! @copydoc glfwGetTimerValue
  *  @ingroup platform
@@ -961,11 +967,11 @@ void _glfwInputError(int error, const char* format, ...);
 void _glfwInputDrop(_GLFWwindow* window, int count, const char** names);
 
 /*! @brief Notifies shared code of a joystick connection/disconnection event.
- *  @param[in] joy The joystick that was connected or disconnected.
+ *  @param[in] jid The joystick that was connected or disconnected.
  *  @param[in] event One of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.
  *  @ingroup event
  */
-void _glfwInputJoystickChange(int joy, int event);
+void _glfwInputJoystickChange(int jid, int event);
 
 
 //========================================================================
@@ -1060,7 +1066,7 @@ GLFWbool _glfwIsPrintable(int key);
 
 /*! @ingroup utility
  */
-GLFWbool _glfwInitVulkan(void);
+GLFWbool _glfwInitVulkan(int mode);
 
 /*! @ingroup utility
  */

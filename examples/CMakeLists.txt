@@ -11,6 +11,10 @@ if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
+if (GLFW_USE_OSMESA)
+    add_definitions(-DUSE_NATIVE_OSMESA)
+endif()
+
 include_directories("${GLFW_SOURCE_DIR}/deps")
 
 if (WIN32)
@@ -31,6 +35,7 @@ set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
 add_executable(boing WIN32 MACOSX_BUNDLE boing.c ${ICON} ${GLAD})
 add_executable(gears WIN32 MACOSX_BUNDLE gears.c ${ICON} ${GLAD})
 add_executable(heightmap WIN32 MACOSX_BUNDLE heightmap.c ${ICON} ${GLAD})
+add_executable(offscreen offscreen.c ${ICON} ${GLAD})
 add_executable(particles WIN32 MACOSX_BUNDLE particles.c ${ICON} ${TINYCTHREAD} ${GETOPT} ${GLAD})
 add_executable(simple WIN32 MACOSX_BUNDLE simple.c ${ICON} ${GLAD})
 add_executable(splitview WIN32 MACOSX_BUNDLE splitview.c ${ICON} ${GLAD})

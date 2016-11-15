@@ -128,7 +128,7 @@ static void pointerHandleAxis(void* data,
                               wl_fixed_t value)
 {
     _GLFWwindow* window = _glfw.wl.pointerFocus;
-    double scroll_factor;
+    double scrollFactor;
     double x, y;
 
     if (!window)
@@ -137,17 +137,17 @@ static void pointerHandleAxis(void* data,
     /* Wayland scroll events are in pointer motion coordinate space (think
      * two finger scroll). The factor 10 is commonly used to convert to
      * "scroll step means 1.0. */
-    scroll_factor = 1.0/10.0;
+    scrollFactor = 1.0/10.0;
 
     switch (axis)
     {
         case WL_POINTER_AXIS_HORIZONTAL_SCROLL:
-            x = wl_fixed_to_double(value) * scroll_factor;
+            x = wl_fixed_to_double(value) * scrollFactor;
             y = 0.0;
             break;
         case WL_POINTER_AXIS_VERTICAL_SCROLL:
             x = 0.0;
-            y = wl_fixed_to_double(value) * scroll_factor;
+            y = wl_fixed_to_double(value) * scrollFactor;
             break;
         default:
             break;
@@ -172,7 +172,10 @@ static void keyboardHandleKeymap(void* data,
 {
     struct xkb_keymap* keymap;
     struct xkb_state* state;
+    struct xkb_compose_table* composeTable;
+    struct xkb_compose_state* composeState;
     char* mapStr;
+    const char* locale;
 
     if (format != WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1)
     {
@@ -186,10 +189,10 @@ static void keyboardHandleKeymap(void* data,
         return;
     }
 
-    keymap = xkb_map_new_from_string(_glfw.wl.xkb.context,
-                                     mapStr,
-                                     XKB_KEYMAP_FORMAT_TEXT_V1,
-                                     0);
+    keymap = xkb_keymap_new_from_string(_glfw.wl.xkb.context,
+                                        mapStr,
+                                        XKB_KEYMAP_FORMAT_TEXT_V1,
+                                        0);
     munmap(mapStr, size);
     close(fd);
 
@@ -205,8 +208,37 @@ static void keyboardHandleKeymap(void* data,
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Failed to create XKB state");
-        xkb_map_unref(keymap);
+        xkb_keymap_unref(keymap);
         return;
+    }
+
+    // Look up the preferred locale, falling back to "C" as default.
+    locale = getenv("LC_ALL");
+    if (!locale)
+        locale = getenv("LC_CTYPE");
+    if (!locale)
+        locale = getenv("LANG");
+    if (!locale)
+        locale = "C";
+
+    composeTable =
+        xkb_compose_table_new_from_locale(_glfw.wl.xkb.context, locale,
+                                          XKB_COMPOSE_COMPILE_NO_FLAGS);
+    if (composeTable)
+    {
+        composeState =
+            xkb_compose_state_new(composeTable, XKB_COMPOSE_STATE_NO_FLAGS);
+        xkb_compose_table_unref(composeTable);
+        if (composeState)
+            _glfw.wl.xkb.composeState = composeState;
+        else
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Wayland: Failed to create XKB compose state");
+    }
+    else
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to create XKB compose table");
     }
 
     xkb_keymap_unref(_glfw.wl.xkb.keymap);
@@ -214,14 +246,14 @@ static void keyboardHandleKeymap(void* data,
     _glfw.wl.xkb.keymap = keymap;
     _glfw.wl.xkb.state = state;
 
-    _glfw.wl.xkb.control_mask =
-        1 << xkb_map_mod_get_index(_glfw.wl.xkb.keymap, "Control");
-    _glfw.wl.xkb.alt_mask =
-        1 << xkb_map_mod_get_index(_glfw.wl.xkb.keymap, "Mod1");
-    _glfw.wl.xkb.shift_mask =
-        1 << xkb_map_mod_get_index(_glfw.wl.xkb.keymap, "Shift");
-    _glfw.wl.xkb.super_mask =
-        1 << xkb_map_mod_get_index(_glfw.wl.xkb.keymap, "Mod4");
+    _glfw.wl.xkb.controlMask =
+        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Control");
+    _glfw.wl.xkb.altMask =
+        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod1");
+    _glfw.wl.xkb.shiftMask =
+        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Shift");
+    _glfw.wl.xkb.superMask =
+        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod4");
 }
 
 static void keyboardHandleEnter(void* data,
@@ -258,18 +290,40 @@ static int toGLFWKeyCode(uint32_t key)
     return GLFW_KEY_UNKNOWN;
 }
 
+static xkb_keysym_t composeSymbol(xkb_keysym_t sym)
+{
+    if (sym == XKB_KEY_NoSymbol)
+        return sym;
+    if (xkb_compose_state_feed(_glfw.wl.xkb.composeState, sym)
+            != XKB_COMPOSE_FEED_ACCEPTED)
+        return sym;
+    switch (xkb_compose_state_get_status(_glfw.wl.xkb.composeState))
+    {
+        case XKB_COMPOSE_COMPOSED:
+            return xkb_compose_state_get_one_sym(_glfw.wl.xkb.composeState);
+        case XKB_COMPOSE_COMPOSING:
+        case XKB_COMPOSE_CANCELLED:
+            return XKB_KEY_NoSymbol;
+        case XKB_COMPOSE_NOTHING:
+        default:
+            return sym;
+    }
+}
+
 static void inputChar(_GLFWwindow* window, uint32_t key)
 {
-    uint32_t code, num_syms;
+    uint32_t code, numSyms;
     long cp;
     const xkb_keysym_t *syms;
+    xkb_keysym_t sym;
 
     code = key + 8;
-    num_syms = xkb_key_get_syms(_glfw.wl.xkb.state, code, &syms);
+    numSyms = xkb_state_key_get_syms(_glfw.wl.xkb.state, code, &syms);
 
-    if (num_syms == 1)
+    if (numSyms == 1)
     {
-        cp = _glfwKeySym2Unicode(syms[0]);
+        sym = composeSymbol(syms[0]);
+        cp = _glfwKeySym2Unicode(sym);
         if (cp != -1)
         {
             const int mods = _glfw.wl.xkb.modifiers;
@@ -327,15 +381,17 @@ static void keyboardHandleModifiers(void* data,
                           group);
 
     mask = xkb_state_serialize_mods(_glfw.wl.xkb.state,
-                                    XKB_STATE_DEPRESSED |
-                                    XKB_STATE_LATCHED);
-    if (mask & _glfw.wl.xkb.control_mask)
+                                    XKB_STATE_MODS_DEPRESSED |
+                                    XKB_STATE_LAYOUT_DEPRESSED |
+                                    XKB_STATE_MODS_LATCHED |
+                                    XKB_STATE_LAYOUT_LATCHED);
+    if (mask & _glfw.wl.xkb.controlMask)
         modifiers |= GLFW_MOD_CONTROL;
-    if (mask & _glfw.wl.xkb.alt_mask)
+    if (mask & _glfw.wl.xkb.altMask)
         modifiers |= GLFW_MOD_ALT;
-    if (mask & _glfw.wl.xkb.shift_mask)
+    if (mask & _glfw.wl.xkb.shiftMask)
         modifiers |= GLFW_MOD_SHIFT;
-    if (mask & _glfw.wl.xkb.super_mask)
+    if (mask & _glfw.wl.xkb.superMask)
         modifiers |= GLFW_MOD_SUPER;
     _glfw.wl.xkb.modifiers = modifiers;
 }
@@ -387,10 +443,10 @@ static void registryHandleGlobal(void* data,
 {
     if (strcmp(interface, "wl_compositor") == 0)
     {
-        _glfw.wl.wl_compositor_version = min(3, version);
+        _glfw.wl.compositorVersion = min(3, version);
         _glfw.wl.compositor =
             wl_registry_bind(registry, name, &wl_compositor_interface,
-                             _glfw.wl.wl_compositor_version);
+                             _glfw.wl.compositorVersion);
     }
     else if (strcmp(interface, "wl_shm") == 0)
     {
@@ -643,16 +699,38 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateJoysticksLinux();
     _glfwTerminateThreadLocalStoragePOSIX();
 
+    xkb_compose_state_unref(_glfw.wl.xkb.composeState);
+    xkb_keymap_unref(_glfw.wl.xkb.keymap);
+    xkb_state_unref(_glfw.wl.xkb.state);
+    xkb_context_unref(_glfw.wl.xkb.context);
+
     if (_glfw.wl.cursorTheme)
         wl_cursor_theme_destroy(_glfw.wl.cursorTheme);
     if (_glfw.wl.cursorSurface)
         wl_surface_destroy(_glfw.wl.cursorSurface);
+    if (_glfw.wl.compositor)
+        wl_compositor_destroy(_glfw.wl.compositor);
+    if (_glfw.wl.shm)
+        wl_shm_destroy(_glfw.wl.shm);
+    if (_glfw.wl.shell)
+        wl_shell_destroy(_glfw.wl.shell);
+    if (_glfw.wl.pointer)
+        wl_pointer_destroy(_glfw.wl.pointer);
+    if (_glfw.wl.keyboard)
+        wl_keyboard_destroy(_glfw.wl.keyboard);
+    if (_glfw.wl.seat)
+        wl_seat_destroy(_glfw.wl.seat);
+    if (_glfw.wl.relativePointerManager)
+        zwp_relative_pointer_manager_v1_destroy(_glfw.wl.relativePointerManager);
+    if (_glfw.wl.pointerConstraints)
+        zwp_pointer_constraints_v1_destroy(_glfw.wl.pointerConstraints);
     if (_glfw.wl.registry)
         wl_registry_destroy(_glfw.wl.registry);
     if (_glfw.wl.display)
+    {
         wl_display_flush(_glfw.wl.display);
-    if (_glfw.wl.display)
         wl_display_disconnect(_glfw.wl.display);
+    }
 }
 
 const char* _glfwPlatformGetVersionString(void)

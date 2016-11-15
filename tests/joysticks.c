@@ -60,17 +60,17 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void joystick_callback(int joy, int event)
+static void joystick_callback(int jid, int event)
 {
     if (event == GLFW_CONNECTED)
-        joysticks[joystick_count++] = joy;
+        joysticks[joystick_count++] = jid;
     else if (event == GLFW_DISCONNECTED)
     {
         int i;
 
         for (i = 0;  i < joystick_count;  i++)
         {
-            if (joysticks[i] == joy)
+            if (joysticks[i] == jid)
                 break;
         }
 
@@ -90,7 +90,7 @@ static const char* joystick_label(int jid)
 
 int main(void)
 {
-    int joy;
+    int jid;
     GLFWwindow* window;
     struct nk_context* nk;
     struct nk_font_atlas* atlas;
@@ -102,10 +102,10 @@ int main(void)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    for (joy = GLFW_JOYSTICK_1;  joy <= GLFW_JOYSTICK_LAST;  joy++)
+    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
-        if (glfwJoystickPresent(joy))
-            joystick_callback(joy, GLFW_CONNECTED);
+        if (glfwJoystickPresent(jid))
+            joystick_callback(jid, GLFW_CONNECTED);
     }
 
     glfwSetJoystickCallback(joystick_callback);

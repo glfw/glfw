@@ -52,6 +52,12 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
+
 static int thread_main(void* data)
 {
     const Thread* thread = data;
@@ -100,6 +106,8 @@ int main(void)
             glfwTerminate();
             exit(EXIT_FAILURE);
         }
+
+        glfwSetKeyCallback(threads[i].window, key_callback);
 
         glfwSetWindowPos(threads[i].window, 200 + 250 * i, 200);
         glfwShowWindow(threads[i].window);

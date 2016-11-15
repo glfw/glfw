@@ -36,7 +36,7 @@ does not need the headers for any context creation API (WGL, GLX, EGL, NSGL) or
 rendering API (OpenGL, OpenGL ES, Vulkan) to enable support for them.
 
 GLFW supports compilation on Windows with Visual C++ 2010 and later, MinGW and
-MinGW-w64, on OS X with Clang and on Linux and other Unix-like systems with GCC
+MinGW-w64, on macOS with Clang and on Linux and other Unix-like systems with GCC
 and Clang.  It will likely compile in other environments as well, but this is
 not regularly tested.
 
@@ -81,6 +81,7 @@ located in the `deps/` directory.
  - [linmath.h](https://github.com/datenwolf/linmath.h) for linear algebra in
    examples
  - [Nuklear](https://github.com/vurtun/nuklear) for test and example UI
+ - [stb\_image\_write](https://github.com/nothings/stb) for writing images to disk
  - [Vulkan headers](https://www.khronos.org/registry/vulkan/) for Vulkan tests
 
 The Vulkan example additionally requires the Vulkan SDK to be installed, or it
@@ -104,10 +105,17 @@ information on what to include when reporting a bug.
   scancodes for keys (#830)
 - Added `glfwSetWindowMaximizeCallback` and `GLFWwindowmaximizefun` for
   receiving window maximization events (#778)
+- Added headless [OSMesa](http://mesa3d.org/osmesa.html) backend (#281,#850)
+- Added definition of `GLAPIENTRY` to public header
 - Bugfix: Calling `glfwMaximizeWindow` on a full screen window was not ignored
 - Bugfix: `GLFW_INCLUDE_VULKAN` could not be combined with the corresponding
           OpenGL and OpenGL ES header macros
+- Bugfix: `glfwGetInstanceProcAddress` returned `NULL` for
+          `vkGetInstanceProcAddr` when `_GLFW_VULKAN_STATIC` was enabled
 - [Win32] Bugfix: Undecorated windows could not be iconified by the user (#861)
+- [Cocoa] Added support for Vulkan window surface creation via MoltenVK (#870)
+- [Cocoa] Bugfix: Disabling window aspect ratio would assert (#852)
+- [Cocoa] Bugfix: Window creation failed to set first responder (#876,#883)
 - [EGL] Added support for `EGL_KHR_get_all_proc_addresses` (#871)
 
 
@@ -149,6 +157,7 @@ skills.
  - Lambert Clara
  - Andrew Corrigan
  - Noel Cower
+ - Jason Daly
  - Jarrod Davis
  - Olivier Delannoy
  - Paul R. Deppe
@@ -160,6 +169,7 @@ skills.
  - Siavash Eliasi
  - Michael Fogleman
  - Gerald Franz
+ - Mário Freitas
  - GeO4d
  - Marcus Geelnard
  - Eloi Marín Gratacós

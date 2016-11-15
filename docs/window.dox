@@ -258,7 +258,7 @@ create the context.  Possible values are `GLFW_NATIVE_CONTEXT_API` and
 requested, this hint is ignored.
 
 @par
-__OS X:__ The EGL API is not available on this platform and requests to use it
+@macos The EGL API is not available on this platform and requests to use it
 will fail.
 
 @par

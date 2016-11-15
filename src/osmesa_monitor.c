@@ -1,7 +1,8 @@
 //========================================================================
-// GLFW 3.3 macOS - www.glfw.org
+// GLFW 3.3 OSMesa - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2016 Google Inc.
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -26,35 +27,41 @@
 
 #include "internal.h"
 
-#include <mach/mach_time.h>
-
-
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-// Initialise timer
-//
-void _glfwInitTimerNS(void)
-{
-    mach_timebase_info_data_t info;
-    mach_timebase_info(&info);
-
-    _glfw.ns_time.frequency = (info.denom * 1e9) / info.numer;
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-uint64_t _glfwPlatformGetTimerValue(void)
+_GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
-    return mach_absolute_time();
+    // OSMesa is headless, so no monitors
+    *count = 0;
+    return NULL;
 }
 
-uint64_t _glfwPlatformGetTimerFrequency(void)
+int _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
 {
-    return _glfw.ns_time.frequency;
+    return GLFW_FALSE;
+}
+
+void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
+{
+}
+
+GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
+{
+    return NULL;
+}
+
+void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
+{
+}
+
+void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
+{
+}
+
+void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
+{
 }
 

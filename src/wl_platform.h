@@ -29,6 +29,7 @@
 
 #include <wayland-client.h>
 #include <xkbcommon/xkbcommon.h>
+#include <xkbcommon/xkbcommon-compose.h>
 #include <dlfcn.h>
 
 typedef VkFlags VkWaylandSurfaceCreateFlagsKHR;
@@ -83,7 +84,7 @@ typedef struct _GLFWwindowWayland
     GLFWbool                    maximized;
     struct wl_surface*          surface;
     struct wl_egl_window*       native;
-    struct wl_shell_surface*    shell_surface;
+    struct wl_shell_surface*    shellSurface;
     struct wl_callback*         callback;
 
     _GLFWcursor*                currentCursor;
@@ -119,7 +120,7 @@ typedef struct _GLFWlibraryWayland
     struct zwp_relative_pointer_manager_v1* relativePointerManager;
     struct zwp_pointer_constraints_v1*      pointerConstraints;
 
-    int                         wl_compositor_version;
+    int                         compositorVersion;
 
     struct wl_cursor_theme*     cursorTheme;
     struct wl_surface*          cursorSurface;
@@ -136,10 +137,11 @@ typedef struct _GLFWlibraryWayland
         struct xkb_context*     context;
         struct xkb_keymap*      keymap;
         struct xkb_state*       state;
-        xkb_mod_mask_t          control_mask;
-        xkb_mod_mask_t          alt_mask;
-        xkb_mod_mask_t          shift_mask;
-        xkb_mod_mask_t          super_mask;
+        struct xkb_compose_state* composeState;
+        xkb_mod_mask_t          controlMask;
+        xkb_mod_mask_t          altMask;
+        xkb_mod_mask_t          shiftMask;
+        xkb_mod_mask_t          superMask;
         unsigned int            modifiers;
     } xkb;
 

@@ -16,6 +16,18 @@ GLFW now supports querying the platform dependent scancode of any key with
 @ref glfwGetKeyScancode.
 
 
+@subsection news_33_moltenvk Support for Vulkan on macOS via MoltenVK
+
+GLFW now supports the `VK_MVK_macos_surface` window surface creation extension
+provided by MoltenVK.
+
+
+@subsection news_33_osmesa OSMesa backend for headless software rendering
+
+GLFW now supports headless context creation and software rendering via OSMesa,
+intended for automated testing.  This backend does not provide input.
+
+
 @section news_32 New features in 3.2
 
 
@@ -293,11 +305,12 @@ through CMake options.
 
 @subsection news_30_hidpi High-DPI support
 
-GLFW now supports high-DPI monitors on both Windows and OS X, giving windows full
-resolution framebuffers where other UI elements are scaled up.  To achieve this,
-@ref glfwGetFramebufferSize and @ref glfwSetFramebufferSizeCallback have been
-added.  These work with pixels, while the rest of the GLFW API works with screen
-coordinates.  This is important as OpenGL uses pixels, not screen coordinates.
+GLFW now supports high-DPI monitors on both Windows and macOS, giving windows
+full resolution framebuffers where other UI elements are scaled up.  To achieve
+this, @ref glfwGetFramebufferSize and @ref glfwSetFramebufferSizeCallback have
+been added.  These work with pixels, while the rest of the GLFW API works with
+screen coordinates.  This is important as OpenGL uses pixels, not screen
+coordinates.
 
 
 @subsection news_30_error Error callback

@@ -36,108 +36,82 @@
 #include <ApplicationServices/ApplicationServices.h>
 
 
-// Returns the io_service_t corresponding to a CG display ID, or 0 on failure.
-// The io_service_t should be released with IOObjectRelease when not needed.
-//
-static io_service_t IOServicePortFromCGDisplayID(CGDirectDisplayID displayID)
-{
-    io_iterator_t iter;
-    io_service_t serv, servicePort = 0;
-
-    CFMutableDictionaryRef matching = IOServiceMatching("IODisplayConnect");
-
-    // releases matching for us
-    kern_return_t err = IOServiceGetMatchingServices(kIOMasterPortDefault,
-                             matching,
-                             &iter);
-    if (err)
-    {
-        return 0;
-    }
-
-    while ((serv = IOIteratorNext(iter)) != 0)
-    {
-        CFDictionaryRef info;
-        CFIndex vendorID, productID;
-        CFNumberRef vendorIDRef, productIDRef;
-        Boolean success;
-
-        info = IODisplayCreateInfoDictionary(serv,
-                             kIODisplayOnlyPreferredName);
-
-        vendorIDRef = CFDictionaryGetValue(info,
-                           CFSTR(kDisplayVendorID));
-        productIDRef = CFDictionaryGetValue(info,
-                            CFSTR(kDisplayProductID));
-
-        success = CFNumberGetValue(vendorIDRef, kCFNumberCFIndexType,
-                                   &vendorID);
-        success &= CFNumberGetValue(productIDRef, kCFNumberCFIndexType,
-                                    &productID);
-
-        if (!success)
-        {
-            CFRelease(info);
-            continue;
-        }
-
-        if (CGDisplayVendorNumber(displayID) != vendorID ||
-            CGDisplayModelNumber(displayID) != productID)
-        {
-            CFRelease(info);
-            continue;
-        }
-
-        // we're a match
-        servicePort = serv;
-        CFRelease(info);
-        break;
-    }
-
-    IOObjectRelease(iter);
-    return servicePort;
-}
-
-// Get the name of the specified display
+// Get the name of the specified display, or NULL
 //
 static char* getDisplayName(CGDirectDisplayID displayID)
 {
-    char* name;
-    CFDictionaryRef info, names;
-    CFStringRef value;
-    CFIndex size;
+    io_iterator_t it;
+    io_service_t service;
+    CFDictionaryRef info;
 
-    io_service_t serv = IOServicePortFromCGDisplayID(displayID);
-    if (!serv)
+    if (IOServiceGetMatchingServices(kIOMasterPortDefault,
+                                     IOServiceMatching("IODisplayConnect"),
+                                     &it) != 0)
     {
-        return strdup("Unknown");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to get display service port iterator");
+        return 0;
     }
 
-    info = IODisplayCreateInfoDictionary(serv,
-                         kIODisplayOnlyPreferredName);
+    while ((service = IOIteratorNext(it)) != 0)
+    {
+        info = IODisplayCreateInfoDictionary(service, kIODisplayOnlyPreferredName);
 
-    IOObjectRelease(serv);
+        CFNumberRef vendorIDRef =
+            CFDictionaryGetValue(info, CFSTR(kDisplayVendorID));
+        CFNumberRef productIDRef =
+            CFDictionaryGetValue(info, CFSTR(kDisplayProductID));
+        if (!vendorIDRef || !productIDRef)
+        {
+            CFRelease(info);
+            continue;
+        }
 
-    names = CFDictionaryGetValue(info, CFSTR(kDisplayProductName));
+        unsigned int vendorID, productID;
+        CFNumberGetValue(vendorIDRef, kCFNumberIntType, &vendorID);
+        CFNumberGetValue(productIDRef, kCFNumberIntType, &productID);
+
+        if (CGDisplayVendorNumber(displayID) == vendorID &&
+            CGDisplayModelNumber(displayID) == productID)
+        {
+            // Info dictionary is used and freed below
+            break;
+        }
+
+        CFRelease(info);
+    }
+
+    IOObjectRelease(it);
+
+    if (!service)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to find service port for display");
+        return NULL;
+    }
+
+    CFDictionaryRef names =
+        CFDictionaryGetValue(info, CFSTR(kDisplayProductName));
+
+    CFStringRef nameRef;
 
     if (!names || !CFDictionaryGetValueIfPresent(names, CFSTR("en_US"),
-                                                 (const void**) &value))
+                                                 (const void**) &nameRef))
     {
         // This may happen if a desktop Mac is running headless
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Cocoa: Failed to retrieve display name");
-
         CFRelease(info);
-        return strdup("Unknown");
+        return NULL;
     }
 
-    size = CFStringGetMaximumSizeForEncoding(CFStringGetLength(value),
-                                             kCFStringEncodingUTF8);
-    name = calloc(size + 1, 1);
-    CFStringGetCString(value, name, size, kCFStringEncodingUTF8);
+    const CFIndex size =
+        CFStringGetMaximumSizeForEncoding(CFStringGetLength(nameRef),
+                                          kCFStringEncodingUTF8);
+    char* name = calloc(size + 1, 1);
+    CFStringGetCString(nameRef, name, size, kCFStringEncodingUTF8);
 
     CFRelease(info);
-
     return name;
 }
 
@@ -332,6 +306,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
         const CGSize size = CGDisplayScreenSize(displays[i]);
         char* name = getDisplayName(displays[i]);
+        if (!name)
+            name = strdup("Unknown");
 
         monitor = _glfwAllocMonitor(name, size.width, size.height);
         monitor->ns.displayID  = displays[i];

@@ -116,6 +116,8 @@ information on what to include when reporting a bug.
 - [Cocoa] Added support for Vulkan window surface creation via MoltenVK (#870)
 - [Cocoa] Bugfix: Disabling window aspect ratio would assert (#852)
 - [Cocoa] Bugfix: Window creation failed to set first responder (#876,#883)
+- [Cocoa] Bugfix: Removed use of deprecated `CGDisplayIOServicePort` function
+                  (#165,#192,#508,#511)
 - [EGL] Added support for `EGL_KHR_get_all_proc_addresses` (#871)
 
 

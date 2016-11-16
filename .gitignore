@@ -55,6 +55,7 @@ examples/*.exe
 examples/boing
 examples/gears
 examples/heightmap
+examples/offscreen
 examples/particles
 examples/splitview
 examples/simple
@@ -78,7 +79,6 @@ tests/tearing
 tests/threads
 tests/timeout
 tests/title
-tests/version
 tests/vulkan
 tests/windows
 

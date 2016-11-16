@@ -1,6 +1,8 @@
 
 link_libraries(glfw)
 
+include_directories(${glfw_INCLUDE_DIRS})
+
 if (BUILD_SHARED_LIBS)
     link_libraries("${MATH_LIBRARY}")
 endif()

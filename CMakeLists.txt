@@ -80,6 +80,17 @@ endif()
 # Set compiler specific flags
 #--------------------------------------------------------------------
 if (MSVC)
+    if (MSVC90)
+        # Workaround for VS 2008 not shipping with the DirectX 9 SDK
+        include(CheckIncludeFile)
+        check_include_file(dinput.h DINPUT_H_FOUND)
+        if (NOT DINPUT_H_FOUND)
+            message(FATAL_ERROR "DirectX 9 SDK not found")
+        endif()
+        # Workaround for VS 2008 not shipping with stdint.h
+        list(APPEND glfw_INCLUDE_DIRS "${GLFW_SOURCE_DIR}/deps/vs2008")
+    endif()
+
     if (NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
         foreach (flag CMAKE_C_FLAGS
                       CMAKE_C_FLAGS_DEBUG

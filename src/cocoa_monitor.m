@@ -128,6 +128,7 @@ static GLFWbool modeIsGood(CGDisplayModeRef mode)
     if (flags & kDisplayModeStretchedFlag)
         return GLFW_FALSE;
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED <= 101200
     CFStringRef format = CGDisplayModeCopyPixelEncoding(mode);
     if (CFStringCompare(format, CFSTR(IO16BitDirectPixels), 0) &&
         CFStringCompare(format, CFSTR(IO32BitDirectPixels), 0))
@@ -137,6 +138,7 @@ static GLFWbool modeIsGood(CGDisplayModeRef mode)
     }
 
     CFRelease(format);
+#endif /* MAC_OS_X_VERSION_MAX_ALLOWED */
     return GLFW_TRUE;
 }
 
@@ -157,8 +159,8 @@ static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode,
             result.refreshRate = (int) (time.timeScale / (double) time.timeValue);
     }
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED <= 101200
     CFStringRef format = CGDisplayModeCopyPixelEncoding(mode);
-
     if (CFStringCompare(format, CFSTR(IO16BitDirectPixels), 0) == 0)
     {
         result.redBits = 5;
@@ -166,13 +168,16 @@ static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode,
         result.blueBits = 5;
     }
     else
+#endif /* MAC_OS_X_VERSION_MAX_ALLOWED */
     {
         result.redBits = 8;
         result.greenBits = 8;
         result.blueBits = 8;
     }
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED <= 101200
     CFRelease(format);
+#endif /* MAC_OS_X_VERSION_MAX_ALLOWED */
     return result;
 }
 

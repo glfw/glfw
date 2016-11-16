@@ -118,6 +118,8 @@ information on what to include when reporting a bug.
 - [Cocoa] Bugfix: Window creation failed to set first responder (#876,#883)
 - [Cocoa] Bugfix: Removed use of deprecated `CGDisplayIOServicePort` function
                   (#165,#192,#508,#511)
+- [Cocoa] Bugfix: Disabled use of deprecated `CGDisplayModeCopyPixelEncoding`
+                  function on macOS 10.12+
 - [EGL] Added support for `EGL_KHR_get_all_proc_addresses` (#871)
 
 

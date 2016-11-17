@@ -1,7 +1,7 @@
 
 link_libraries(glfw)
 
-include_directories(${glfw_INCLUDE_DIRS})
+include_directories(${glfw_INCLUDE_DIRS} "${GLFW_SOURCE_DIR}/deps")
 
 if (BUILD_SHARED_LIBS)
     link_libraries("${MATH_LIBRARY}")
@@ -10,8 +10,6 @@ endif()
 if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
-
-include_directories("${GLFW_SOURCE_DIR}/deps")
 
 set(GLAD "${GLFW_SOURCE_DIR}/deps/glad/glad.h"
          "${GLFW_SOURCE_DIR}/deps/glad.c")

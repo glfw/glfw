@@ -1,7 +1,7 @@
 
 link_libraries(glfw)
 
-include_directories(${glfw_INCLUDE_DIRS})
+include_directories(${glfw_INCLUDE_DIRS} "${GLFW_SOURCE_DIR}/deps")
 
 if (BUILD_SHARED_LIBS)
     link_libraries("${MATH_LIBRARY}")
@@ -14,8 +14,6 @@ endif()
 if (GLFW_USE_OSMESA)
     add_definitions(-DUSE_NATIVE_OSMESA)
 endif()
-
-include_directories("${GLFW_SOURCE_DIR}/deps")
 
 if (WIN32)
     set(ICON glfw.rc)

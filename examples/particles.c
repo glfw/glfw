@@ -1,7 +1,7 @@
 //========================================================================
 // A simple particle engine with threaded physics
 // Copyright (c) Marcus Geelnard
-// Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -457,7 +457,9 @@ static void draw_particles(GLFWwindow* window, double t, float dt)
     {
         struct timespec ts;
         clock_gettime(CLOCK_REALTIME, &ts);
-        ts.tv_nsec += 100000000;
+        ts.tv_nsec += 100 * 1000 * 1000;
+        ts.tv_sec += ts.tv_nsec / (1000 * 1000 * 1000);
+        ts.tv_nsec %= 1000 * 1000 * 1000;
         cnd_timedwait(&thread_sync.p_done, &thread_sync.particles_lock, &ts);
     }
 
@@ -908,7 +910,9 @@ static int physics_thread_main(void* arg)
         {
             struct timespec ts;
             clock_gettime(CLOCK_REALTIME, &ts);
-            ts.tv_nsec += 100000000;
+            ts.tv_nsec += 100 * 1000 * 1000;
+            ts.tv_sec += ts.tv_nsec / (1000 * 1000 * 1000);
+            ts.tv_nsec %= 1000 * 1000 * 1000;
             cnd_timedwait(&thread_sync.d_done, &thread_sync.particles_lock, &ts);
         }
 

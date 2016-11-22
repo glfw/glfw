@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.2 WGL - www.glfw.org
+// GLFW 3.3 WGL - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -73,6 +73,9 @@
 #define WGL_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB 0
 #define WGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB 0x2098
 
+#define ERROR_INVALID_VERSION_ARB 0x2095
+#define ERROR_INVALID_PROFILE_ARB 0x2096
+
 typedef BOOL (WINAPI * PFNWGLSWAPINTERVALEXTPROC)(int);
 typedef BOOL (WINAPI * PFNWGLGETPIXELFORMATATTRIBIVARBPROC)(HDC,int,int,UINT,const int*,int*);
 typedef const char* (WINAPI * PFNWGLGETEXTENSIONSSTRINGEXTPROC)(void);
@@ -82,6 +85,7 @@ typedef HGLRC (WINAPI * PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC,HGLRC,const int*)
 typedef HGLRC (WINAPI * WGLCREATECONTEXT_T)(HDC);
 typedef BOOL (WINAPI * WGLDELETECONTEXT_T)(HGLRC);
 typedef PROC (WINAPI * WGLGETPROCADDRESS_T)(LPCSTR);
+typedef HDC (WINAPI * WGLGETCURRENTDC_T)(void);
 typedef BOOL (WINAPI * WGLMAKECURRENT_T)(HDC,HGLRC);
 typedef BOOL (WINAPI * WGLSHARELISTS_T)(HGLRC,HGLRC);
 
@@ -89,6 +93,7 @@ typedef BOOL (WINAPI * WGLSHARELISTS_T)(HGLRC,HGLRC);
 #define wglCreateContext _glfw.wgl.CreateContext
 #define wglDeleteContext _glfw.wgl.DeleteContext
 #define wglGetProcAddress _glfw.wgl.GetProcAddress
+#define wglGetCurrentDC _glfw.wgl.GetCurrentDC
 #define wglMakeCurrent _glfw.wgl.MakeCurrent
 #define wglShareLists _glfw.wgl.ShareLists
 
@@ -110,7 +115,6 @@ typedef struct _GLFWcontextWGL
 
 } _GLFWcontextWGL;
 
-
 // WGL-specific global data
 //
 typedef struct _GLFWlibraryWGL
@@ -119,6 +123,7 @@ typedef struct _GLFWlibraryWGL
     WGLCREATECONTEXT_T                  CreateContext;
     WGLDELETECONTEXT_T                  DeleteContext;
     WGLGETPROCADDRESS_T                 GetProcAddress;
+    WGLGETCURRENTDC_T                   GetCurrentDC;
     WGLMAKECURRENT_T                    MakeCurrent;
     WGLSHARELISTS_T                     ShareLists;
 
@@ -148,8 +153,5 @@ void _glfwTerminateWGL(void);
 GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig);
-int _glfwAnalyzeContextWGL(_GLFWwindow* window,
-                           const _GLFWctxconfig* ctxconfig,
-                           const _GLFWfbconfig* fbconfig);
 
 #endif // _glfw3_wgl_context_h_

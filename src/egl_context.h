@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.2 EGL - www.glfw.org
+// GLFW 3.3 EGL - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -165,17 +165,18 @@ typedef struct _GLFWcontextEGL
 
 } _GLFWcontextEGL;
 
-
 // EGL-specific global data
 //
 typedef struct _GLFWlibraryEGL
 {
     EGLDisplay      display;
     EGLint          major, minor;
+    GLFWbool        prefix;
 
     GLFWbool        KHR_create_context;
     GLFWbool        KHR_create_context_no_error;
     GLFWbool        KHR_gl_colorspace;
+    GLFWbool        KHR_get_all_proc_addresses;
 
     void*           handle;
 

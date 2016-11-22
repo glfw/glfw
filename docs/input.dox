@@ -5,12 +5,13 @@
 @tableofcontents
 
 This guide introduces the input related functions of GLFW.  For details on
-a specific function, see the [reference documentation](@ref input).  There are
-also guides for the other areas of GLFW.
+a specific function in this category, see the @ref input.  There are also guides
+for the other areas of GLFW.
 
  - @ref intro_guide
  - @ref window_guide
  - @ref context_guide
+ - @ref vulkan_guide
  - @ref monitor_guide
 
 GLFW provides many kinds of input.  While some can only be polled, like time, or
@@ -220,6 +221,17 @@ This function can handle both [keys and scancodes](@ref input_key).  If the
 specified key is `GLFW_KEY_UNKNOWN` then the scancode is used, otherwise it is
 ignored.  This matches the behavior of the key callback, meaning the callback
 arguments can always be passed unmodified to this function.
+
+
+@subsection input_key_scancode Key scancodes
+
+If you need the platform dependent scancode for a [named key](@ref keys), you
+can query it with @ref glfwGetKeyScancode.
+
+@code
+const int scancode = glfwGetKeyScancode(GLFW_KEY_X);
+set_key_mapping(scancode, swap_weapons);
+@endcode
 
 
 @section input_mouse Mouse input
@@ -560,7 +572,7 @@ The callback function receives the ID of the joystick that has been connected
 and disconnected and the event that occurred.
 
 @code
-void joystick_callback(int joy, int event)
+void joystick_callback(int jid, int event)
 {
     if (event == GLFW_CONNECTED)
     {

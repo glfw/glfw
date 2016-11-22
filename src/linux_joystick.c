@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.2 Linux - www.glfw.org
+// GLFW 3.3 Linux - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -49,26 +49,26 @@
 static GLFWbool openJoystickDevice(const char* path)
 {
     char axisCount, buttonCount;
-    char name[256];
-    int joy, fd, version;
+    char name[256] = "";
+    int jid, fd, version;
     _GLFWjoystickLinux* js;
 
-    for (joy = GLFW_JOYSTICK_1;  joy <= GLFW_JOYSTICK_LAST;  joy++)
+    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
-        if (!_glfw.linux_js.js[joy].present)
+        if (!_glfw.linux_js.js[jid].present)
             continue;
 
-        if (strcmp(_glfw.linux_js.js[joy].path, path) == 0)
+        if (strcmp(_glfw.linux_js.js[jid].path, path) == 0)
             return GLFW_FALSE;
     }
 
-    for (joy = GLFW_JOYSTICK_1;  joy <= GLFW_JOYSTICK_LAST;  joy++)
+    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
-        if (!_glfw.linux_js.js[joy].present)
+        if (!_glfw.linux_js.js[jid].present)
             break;
     }
 
-    if (joy > GLFW_JOYSTICK_LAST)
+    if (jid > GLFW_JOYSTICK_LAST)
         return GLFW_FALSE;
 
     fd = open(path, O_RDONLY | O_NONBLOCK);
@@ -87,7 +87,7 @@ static GLFWbool openJoystickDevice(const char* path)
     if (ioctl(fd, JSIOCGNAME(sizeof(name)), name) < 0)
         strncpy(name, "Unknown", sizeof(name));
 
-    js = _glfw.linux_js.js + joy;
+    js = _glfw.linux_js.js + jid;
     js->present = GLFW_TRUE;
     js->name = strdup(name);
     js->path = strdup(path);
@@ -101,7 +101,7 @@ static GLFWbool openJoystickDevice(const char* path)
     js->buttonCount = (int) buttonCount;
     js->buttons = calloc(buttonCount, 1);
 
-    _glfwInputJoystickChange(joy, GLFW_CONNECTED);
+    _glfwInputJoystickChange(jid, GLFW_CONNECTED);
     return GLFW_TRUE;
 }
 #endif // __linux__
@@ -153,7 +153,7 @@ static GLFWbool pollJoystickEvents(_GLFWjoystickLinux* js)
     return js->present;
 }
 
-// Lexically compare joysticks, used by quicksort
+// Lexically compare joysticks by name; used by qsort
 //
 #if defined(__linux__)
 static int compareJoysticks(const void* fp, const void* sp)
@@ -304,15 +304,15 @@ void _glfwPollJoystickEvents(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwPlatformJoystickPresent(int joy)
+int _glfwPlatformJoystickPresent(int jid)
 {
-    _GLFWjoystickLinux* js = _glfw.linux_js.js + joy;
+    _GLFWjoystickLinux* js = _glfw.linux_js.js + jid;
     return pollJoystickEvents(js);
 }
 
-const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
+const float* _glfwPlatformGetJoystickAxes(int jid, int* count)
 {
-    _GLFWjoystickLinux* js = _glfw.linux_js.js + joy;
+    _GLFWjoystickLinux* js = _glfw.linux_js.js + jid;
     if (!pollJoystickEvents(js))
         return NULL;
 
@@ -320,9 +320,9 @@ const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
     return js->axes;
 }
 
-const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
+const unsigned char* _glfwPlatformGetJoystickButtons(int jid, int* count)
 {
-    _GLFWjoystickLinux* js = _glfw.linux_js.js + joy;
+    _GLFWjoystickLinux* js = _glfw.linux_js.js + jid;
     if (!pollJoystickEvents(js))
         return NULL;
 
@@ -330,9 +330,9 @@ const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
     return js->buttons;
 }
 
-const char* _glfwPlatformGetJoystickName(int joy)
+const char* _glfwPlatformGetJoystickName(int jid)
 {
-    _GLFWjoystickLinux* js = _glfw.linux_js.js + joy;
+    _GLFWjoystickLinux* js = _glfw.linux_js.js + jid;
     if (!pollJoystickEvents(js))
         return NULL;
 

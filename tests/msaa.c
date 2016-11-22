@@ -1,6 +1,6 @@
 //========================================================================
 // Multisample anti-aliasing test
-// Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -32,19 +32,43 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#if defined(_MSC_VER)
+ // Make MS math.h define M_PI
+ #define _USE_MATH_DEFINES
+#endif
+
+#include "linmath.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "getopt.h"
 
+static const vec2 vertices[4] =
+{
+    { -0.6f, -0.6f },
+    {  0.6f, -0.6f },
+    {  0.6f,  0.6f },
+    { -0.6f,  0.6f }
+};
+
+static const char* vertex_shader_text =
+"uniform mat4 MVP;\n"
+"attribute vec2 vPos;\n"
+"void main()\n"
+"{\n"
+"    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
+"}\n";
+
+static const char* fragment_shader_text =
+"void main()\n"
+"{\n"
+"    gl_FragColor = vec4(1.0);\n"
+"}\n";
+
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
-}
-
-static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -56,6 +80,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     {
         case GLFW_KEY_SPACE:
             glfwSetTime(0.0);
+            break;
+        case GLFW_KEY_ESCAPE:
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
             break;
     }
 }
@@ -69,6 +96,8 @@ int main(int argc, char** argv)
 {
     int ch, samples = 4;
     GLFWwindow* window;
+    GLuint vertex_buffer, vertex_shader, fragment_shader, program;
+    GLint mvp_location, vpos_location;
 
     while ((ch = getopt(argc, argv, "hs:")) != -1)
     {
@@ -97,7 +126,8 @@ int main(int argc, char** argv)
         printf("Requesting that MSAA not be available\n");
 
     glfwWindowHint(GLFW_SAMPLES, samples);
-    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
     window = glfwCreateWindow(800, 400, "Aliasing Detector", NULL, NULL);
     if (!window)
@@ -107,21 +137,10 @@ int main(int argc, char** argv)
     }
 
     glfwSetKeyCallback(window, key_callback);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
-
-    if (!GLAD_GL_ARB_multisample && !GLAD_GL_VERSION_1_3)
-    {
-        printf("Multisampling is not supported\n");
-
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
-
-    glfwShowWindow(window);
 
     glGetIntegerv(GL_SAMPLES, &samples);
     if (samples)
@@ -129,33 +148,68 @@ int main(int argc, char** argv)
     else
         printf("Context reports MSAA is unavailable\n");
 
-    glMatrixMode(GL_PROJECTION);
-    glOrtho(0.f, 1.f, 0.f, 0.5f, 0.f, 1.f);
-    glMatrixMode(GL_MODELVIEW);
+    glGenBuffers(1, &vertex_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
+    glCompileShader(vertex_shader);
+
+    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
+    glCompileShader(fragment_shader);
+
+    program = glCreateProgram();
+    glAttachShader(program, vertex_shader);
+    glAttachShader(program, fragment_shader);
+    glLinkProgram(program);
+
+    mvp_location = glGetUniformLocation(program, "MVP");
+    vpos_location = glGetAttribLocation(program, "vPos");
+
+    glEnableVertexAttribArray(vpos_location);
+    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
+                          sizeof(vertices[0]), (void*) 0);
 
     while (!glfwWindowShouldClose(window))
     {
-        GLfloat time = (GLfloat) glfwGetTime();
+        float ratio;
+        int width, height;
+        mat4x4 m, p, mvp;
+        const double angle = glfwGetTime() * M_PI / 180.0;
 
+        glfwGetFramebufferSize(window, &width, &height);
+        ratio = width / (float) height;
+
+        glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glLoadIdentity();
-        glTranslatef(0.25f, 0.25f, 0.f);
-        glRotatef(time, 0.f, 0.f, 1.f);
+        glUseProgram(program);
 
-        glDisable(GL_MULTISAMPLE_ARB);
-        glRectf(-0.15f, -0.15f, 0.15f, 0.15f);
+        mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 0.f, 1.f);
 
-        glLoadIdentity();
-        glTranslatef(0.75f, 0.25f, 0.f);
-        glRotatef(time, 0.f, 0.f, 1.f);
+        mat4x4_translate(m, -1.f, 0.f, 0.f);
+        mat4x4_rotate_Z(m, m, (float) angle);
+        mat4x4_mul(mvp, p, m);
 
-        glEnable(GL_MULTISAMPLE_ARB);
-        glRectf(-0.15f, -0.15f, 0.15f, 0.15f);
+        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
+        glDisable(GL_MULTISAMPLE);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+        mat4x4_translate(m, 1.f, 0.f, 0.f);
+        mat4x4_rotate_Z(m, m, (float) angle);
+        mat4x4_mul(mvp, p, m);
+
+        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
+        glEnable(GL_MULTISAMPLE);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+    glfwDestroyWindow(window);
 
     glfwTerminate();
     exit(EXIT_SUCCESS);

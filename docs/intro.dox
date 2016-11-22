@@ -4,10 +4,10 @@
  
 @tableofcontents
 
-This guide introduces the basic concepts of GLFW and describes initialization reference
+This guide introduces the basic concepts of GLFW and describes initialization,
 error handling and API guarantees and limitations.  For a broad but shallow
-tutorial, see @ref quick_guide instead.  For details on a specific function, see the
-[reference documentation](@ref init).
+tutorial, see @ref quick_guide instead.  For details on a specific function in
+this category, see the @ref init.
 
 There are also guides for the other areas of GLFW.
 
@@ -34,8 +34,8 @@ successfully initialized, and only from the main thread.
  - @ref glfwInit
  - @ref glfwTerminate
 
-Calling any other function before that time will cause a @ref
-GLFW_NOT_INITIALIZED error. 
+Calling any other function before successful initialization will cause a @ref
+GLFW_NOT_INITIALIZED error.
 
 
 @subsection intro_init_init Initializing GLFW
@@ -50,13 +50,15 @@ if (!glfwInit())
 }
 @endcode
 
-If any part of initialization fails, all remaining bits are terminated as if
-@ref glfwTerminate was called.  The library only needs to be initialized once
-and additional calls to an already initialized library will simply return
+If any part of initialization fails, any parts that succeeded are terminated as
+if @ref glfwTerminate had been called.  The library only needs to be initialized
+once and additional calls to an already initialized library will simply return
 `GLFW_TRUE` immediately.
 
 Once the library has been successfully initialized, it should be terminated
-before the application exits.
+before the application exits.  Modern systems are very good at freeing resources
+allocated by programs that simply exit, but GLFW sometimes has to change global
+system settings and these might not be restored without termination.
 
 
 @subsection intro_init_terminate Terminating GLFW
@@ -70,7 +72,7 @@ glfwTerminate();
 
 This will destroy any remaining window, monitor and cursor objects, restore any
 modified gamma ramps, re-enable the screensaver if it had been disabled and free
-any resources allocated by GLFW.
+any other resources allocated by GLFW.
 
 Once the library is terminated, it is as if it had never been initialized and
 you will need to initialize it again before being able to use GLFW.  If the
@@ -249,11 +251,12 @@ functions may be called from any thread:
  - @ref glfwGetTimerFrequency
  - @ref glfwGetTimerValue
 
-The regular timer may be queried from any thread, but this is not synchronized
-by GLFW with calls to @ref glfwSetTime.  The following timer related functions
-may be called from any thread:
+The regular timer may be used from any thread, but the reading and writing of
+the timer offset is not synchronized by GLFW.  The following timer related
+functions may be called from any thread:
 
  - @ref glfwGetTime
+ - @ref glfwSetTime
 
 Library version information may be queried from any thread.  The following
 version related functions may be called from any thread:
@@ -281,9 +284,10 @@ allow calls from any thread in future releases.
 
 @subsection compatibility Version compatibility
 
-GLFW guarantees binary backward compatibility with earlier minor versions of the
-API.  This means that you can drop in a newer version of the GLFW DLL / shared
-library / dynamic library and existing applications will continue to run.
+GLFW guarantees source and binary backward compatibility with earlier minor
+versions of the API.  This means that you can drop in a newer version of the
+library and existing programs will continue to compile and existing binaries
+will continue to run.
 
 Once a function or constant has been added, the signature of that function or
 value of that constant will remain unchanged until the next major version of

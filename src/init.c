@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.2 - www.glfw.org
+// GLFW 3.3 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -65,9 +65,9 @@ static const char* getErrorString(int error)
         case GLFW_OUT_OF_MEMORY:
             return "Out of memory";
         case GLFW_API_UNAVAILABLE:
-            return "The requested client API is unavailable";
+            return "The requested API is unavailable";
         case GLFW_VERSION_UNAVAILABLE:
-            return "The requested client API version is unavailable";
+            return "The requested API version is unavailable";
         case GLFW_PLATFORM_ERROR:
             return "A platform-specific error occurred";
         case GLFW_FORMAT_UNAVAILABLE:
@@ -129,8 +129,6 @@ GLFWAPI int glfwInit(void)
         _glfwPlatformTerminate();
         return GLFW_FALSE;
     }
-
-    _glfwInitVulkan();
 
     _glfw.monitors = _glfwPlatformGetMonitors(&_glfw.monitorCount);
     _glfwInitialized = GLFW_TRUE;

@@ -12,10 +12,20 @@ if (WIN32)
         find_library(VULKAN_LIBRARY NAMES vulkan-1 HINTS
             "$ENV{VULKAN_SDK}/Bin"
             "$ENV{VK_SDK_PATH}/Bin")
+        find_library(VULKAN_STATIC_LIBRARY NAMES vkstatic.1 HINTS
+            "$ENV{VULKAN_SDK}/Bin"
+            "$ENV{VK_SDK_PATH}/Bin")
     else()
         find_library(VULKAN_LIBRARY NAMES vulkan-1 HINTS
             "$ENV{VULKAN_SDK}/Bin32"
             "$ENV{VK_SDK_PATH}/Bin32")
+    endif()
+elseif (APPLE)
+    find_library(VULKAN_LIBRARY MoltenVK)
+    if (VULKAN_LIBRARY)
+        set(VULKAN_STATIC_LIBRARY ${VULKAN_LIBRARY})
+        find_path(VULKAN_INCLUDE_DIR NAMES vulkan/vulkan.h HINTS
+            "${VULKAN_LIBRARY}/Headers")
     endif()
 else()
     find_path(VULKAN_INCLUDE_DIR NAMES vulkan/vulkan.h HINTS
@@ -27,5 +37,5 @@ endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Vulkan DEFAULT_MSG VULKAN_LIBRARY VULKAN_INCLUDE_DIR)
 
-mark_as_advanced(VULKAN_INCLUDE_DIR VULKAN_LIBRARY)
+mark_as_advanced(VULKAN_INCLUDE_DIR VULKAN_LIBRARY VULKAN_STATIC_LIBRARY)
 

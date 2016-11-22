@@ -1,9 +1,9 @@
 /*************************************************************************
- * GLFW 3.2 - www.glfw.org
+ * GLFW 3.3 - www.glfw.org
  * A library for OpenGL, window and input
  *------------------------------------------------------------------------
  * Copyright (c) 2002-2006 Marcus Geelnard
- * Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+ * Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
  *
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -50,7 +50,7 @@ extern "C" {
  *  doing and how to fix problems caused by using them.  If you don't, you
  *  shouldn't be using them.**
  *
- *  Before the inclusion of @ref glfw3native.h, you may define exactly one
+ *  Before the inclusion of @ref glfw3native.h, you may define zero or more
  *  window system API macro and zero or more context creation API macros.
  *
  *  The chosen backends must match those the library was compiled for.  Failure
@@ -68,6 +68,7 @@ extern "C" {
  *  * `GLFW_EXPOSE_NATIVE_NSGL`
  *  * `GLFW_EXPOSE_NATIVE_GLX`
  *  * `GLFW_EXPOSE_NATIVE_EGL`
+ *  * `GLFW_EXPOSE_NATIVE_OSMESA`
  *
  *  These macros select which of the native access functions that are declared
  *  and which platform-specific headers to include.  It is then up your (by
@@ -113,6 +114,9 @@ extern "C" {
 #endif
 #if defined(GLFW_EXPOSE_NATIVE_EGL)
  #include <EGL/egl.h>
+#endif
+#if defined(GLFW_EXPOSE_NATIVE_OSMESA)
+ #include <GL/osmesa.h>
 #endif
 
 
@@ -446,6 +450,62 @@ GLFWAPI EGLContext glfwGetEGLContext(GLFWwindow* window);
  *  @ingroup native
  */
 GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* window);
+#endif
+
+#if defined(GLFW_EXPOSE_NATIVE_OSMESA)
+/*! @brief Retrieves the color buffer associated with the specified window.
+ *
+ *  @param[out] width Where to store the width of the color buffer, or `NULL`.
+ *  @param[out] height Where to store the height of the color buffer, or `NULL`.
+ *  @param[out] format Where to store the OSMesa pixel format of the color
+ *  buffer, or `NULL`.
+ *  @param[out] buffer Where to store the address of the color buffer, or
+ *  `NULL`.
+ *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if an
+ *  [error](@ref error_handling) occurred.                
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup native
+ */
+GLFWAPI int glfwGetOSMesaColorBuffer(GLFWwindow* window, int* width, int* height, int* format, void** buffer);
+
+/*! @brief Retrieves the depth buffer associated with the specified window.
+ *
+ *  @param[out] width Where to store the width of the depth buffer, or `NULL`.
+ *  @param[out] height Where to store the height of the depth buffer, or `NULL`.
+ *  @param[out] bytesPerValue Where to store the number of bytes per depth
+ *  buffer element, or `NULL`.
+ *  @param[out] buffer Where to store the address of the depth buffer, or
+ *  `NULL`.
+ *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if an
+ *  [error](@ref error_handling) occurred.                
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup native
+ */
+GLFWAPI int glfwGetOSMesaDepthBuffer(GLFWwindow* window, int* width, int* height, int* bytesPerValue, void** buffer);
+
+/*! @brief Returns the `OSMesaContext` of the specified window.
+ *
+ *  @return The `OSMesaContext` of the specified window, or `NULL` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup native
+ */
+GLFWAPI OSMesaContext glfwGetOSMesaContext(GLFWwindow* window);
 #endif
 
 #ifdef __cplusplus

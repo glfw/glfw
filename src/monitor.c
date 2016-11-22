@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.2 - www.glfw.org
+// GLFW 3.3 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -175,9 +175,11 @@ void _glfwInputMonitorWindowChange(_GLFWmonitor* monitor, _GLFWwindow* window)
 _GLFWmonitor* _glfwAllocMonitor(const char* name, int widthMM, int heightMM)
 {
     _GLFWmonitor* monitor = calloc(1, sizeof(_GLFWmonitor));
-    monitor->name = strdup(name);
     monitor->widthMM = widthMM;
     monitor->heightMM = heightMM;
+
+    if (name)
+        monitor->name = strdup(name);
 
     return monitor;
 }
@@ -375,8 +377,8 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
     assert(monitor != NULL);
-
     assert(count != NULL);
+
     *count = 0;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
@@ -454,8 +456,18 @@ GLFWAPI void glfwSetGammaRamp(GLFWmonitor* handle, const GLFWgammaramp* ramp)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
     assert(monitor != NULL);
-
     assert(ramp != NULL);
+    assert(ramp->red != NULL);
+    assert(ramp->green != NULL);
+    assert(ramp->blue != NULL);
+
+    if (ramp->size <= 0)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE,
+                        "Invalid gamma ramp size %i",
+                        ramp->size);
+        return;
+    }
 
     _GLFW_REQUIRE_INIT();
 

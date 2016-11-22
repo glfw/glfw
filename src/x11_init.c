@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.2 X11 - www.glfw.org
+// GLFW 3.3 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -72,9 +72,8 @@ static int translateKeyCode(int scancode)
             default:                break;
         }
 
-        // Now try primary keysym for function keys (non-printable keys). These
-        // should not be layout dependent (i.e. US layout and international
-        // layouts should give the same result).
+        // Now try primary keysym for function keys (non-printable keys)
+        // These should not depend on the current keyboard layout
         keySym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, 0, 0);
     }
     else
@@ -233,8 +232,8 @@ static void createKeyTables(void)
 {
     int scancode, key;
 
-    memset(_glfw.x11.publicKeys, -1, sizeof(_glfw.x11.publicKeys));
-    memset(_glfw.x11.nativeKeys, -1, sizeof(_glfw.x11.nativeKeys));
+    memset(_glfw.x11.keycodes, -1, sizeof(_glfw.x11.keycodes));
+    memset(_glfw.x11.scancodes, -1, sizeof(_glfw.x11.scancodes));
 
     if (_glfw.x11.xkb.available)
     {
@@ -306,7 +305,7 @@ static void createKeyTables(void)
             else key = GLFW_KEY_UNKNOWN;
 
             if ((scancode >= 0) && (scancode < 256))
-                _glfw.x11.publicKeys[scancode] = key;
+                _glfw.x11.keycodes[scancode] = key;
         }
 
         XkbFreeNames(desc, XkbKeyNamesMask, True);
@@ -317,12 +316,12 @@ static void createKeyTables(void)
     {
         // Translate the un-translated key codes using traditional X11 KeySym
         // lookups
-        if (_glfw.x11.publicKeys[scancode] < 0)
-            _glfw.x11.publicKeys[scancode] = translateKeyCode(scancode);
+        if (_glfw.x11.keycodes[scancode] < 0)
+            _glfw.x11.keycodes[scancode] = translateKeyCode(scancode);
 
         // Store the reverse translation for faster key name lookup
-        if (_glfw.x11.publicKeys[scancode] > 0)
-            _glfw.x11.nativeKeys[_glfw.x11.publicKeys[scancode]] = scancode;
+        if (_glfw.x11.keycodes[scancode] > 0)
+            _glfw.x11.scancodes[_glfw.x11.keycodes[scancode]] = scancode;
     }
 }
 
@@ -631,6 +630,20 @@ static Cursor createHiddenCursor(void)
     return _glfwCreateCursorX11(&image, 0, 0);
 }
 
+// Create a helper window for IPC
+//
+static Window createHelperWindow(void)
+{
+    XSetWindowAttributes wa;
+    wa.event_mask = PropertyChangeMask;
+
+    return XCreateWindow(_glfw.x11.display, _glfw.x11.root,
+                         0, 0, 1, 1, 0, 0,
+                         InputOnly,
+                         DefaultVisual(_glfw.x11.display, _glfw.x11.screen),
+                         CWEventMask, &wa);
+}
+
 // X error handler
 //
 static int errorHandler(Display *display, XErrorEvent* event)
@@ -742,11 +755,11 @@ int _glfwPlatformInit(void)
     _glfw.x11.screen = DefaultScreen(_glfw.x11.display);
     _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
     _glfw.x11.context = XUniqueContext();
+    _glfw.x11.helperWindowHandle = createHelperWindow();
+    _glfw.x11.hiddenCursorHandle = createHiddenCursor();
 
     if (!initExtensions())
         return GLFW_FALSE;
-
-    _glfw.x11.cursor = createHiddenCursor();
 
     if (XSupportsLocale())
     {
@@ -766,13 +779,9 @@ int _glfwPlatformInit(void)
     if (!_glfwInitThreadLocalStoragePOSIX())
         return GLFW_FALSE;
 
-    if (!_glfwInitGLX())
-        return GLFW_FALSE;
-
     if (!_glfwInitJoysticksLinux())
         return GLFW_FALSE;
 
-    _glfwInitEGL();
     _glfwInitTimerPOSIX();
 
     return GLFW_TRUE;
@@ -786,10 +795,22 @@ void _glfwPlatformTerminate(void)
         _glfw.x11.x11xcb.handle = NULL;
     }
 
-    if (_glfw.x11.cursor)
+    if (_glfw.x11.helperWindowHandle)
     {
-        XFreeCursor(_glfw.x11.display, _glfw.x11.cursor);
-        _glfw.x11.cursor = (Cursor) 0;
+        if (XGetSelectionOwner(_glfw.x11.display, _glfw.x11.CLIPBOARD) ==
+            _glfw.x11.helperWindowHandle)
+        {
+            _glfwPushSelectionToManagerX11();
+        }
+
+        XDestroyWindow(_glfw.x11.display, _glfw.x11.helperWindowHandle);
+        _glfw.x11.helperWindowHandle = None;
+    }
+
+    if (_glfw.x11.hiddenCursorHandle)
+    {
+        XFreeCursor(_glfw.x11.display, _glfw.x11.hiddenCursorHandle);
+        _glfw.x11.hiddenCursorHandle = (Cursor) 0;
     }
 
     free(_glfw.x11.clipboardString);

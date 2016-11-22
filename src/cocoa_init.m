@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.2 OS X - www.glfw.org
+// GLFW 3.3 macOS - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2009-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -74,131 +74,222 @@ static void createKeyTables(void)
 {
     int scancode;
 
-    memset(_glfw.ns.publicKeys, -1, sizeof(_glfw.ns.publicKeys));
-    memset(_glfw.ns.nativeKeys, -1, sizeof(_glfw.ns.nativeKeys));
+    memset(_glfw.ns.keycodes, -1, sizeof(_glfw.ns.keycodes));
+    memset(_glfw.ns.scancodes, -1, sizeof(_glfw.ns.scancodes));
 
-    _glfw.ns.publicKeys[0x1D] = GLFW_KEY_0;
-    _glfw.ns.publicKeys[0x12] = GLFW_KEY_1;
-    _glfw.ns.publicKeys[0x13] = GLFW_KEY_2;
-    _glfw.ns.publicKeys[0x14] = GLFW_KEY_3;
-    _glfw.ns.publicKeys[0x15] = GLFW_KEY_4;
-    _glfw.ns.publicKeys[0x17] = GLFW_KEY_5;
-    _glfw.ns.publicKeys[0x16] = GLFW_KEY_6;
-    _glfw.ns.publicKeys[0x1A] = GLFW_KEY_7;
-    _glfw.ns.publicKeys[0x1C] = GLFW_KEY_8;
-    _glfw.ns.publicKeys[0x19] = GLFW_KEY_9;
-    _glfw.ns.publicKeys[0x00] = GLFW_KEY_A;
-    _glfw.ns.publicKeys[0x0B] = GLFW_KEY_B;
-    _glfw.ns.publicKeys[0x08] = GLFW_KEY_C;
-    _glfw.ns.publicKeys[0x02] = GLFW_KEY_D;
-    _glfw.ns.publicKeys[0x0E] = GLFW_KEY_E;
-    _glfw.ns.publicKeys[0x03] = GLFW_KEY_F;
-    _glfw.ns.publicKeys[0x05] = GLFW_KEY_G;
-    _glfw.ns.publicKeys[0x04] = GLFW_KEY_H;
-    _glfw.ns.publicKeys[0x22] = GLFW_KEY_I;
-    _glfw.ns.publicKeys[0x26] = GLFW_KEY_J;
-    _glfw.ns.publicKeys[0x28] = GLFW_KEY_K;
-    _glfw.ns.publicKeys[0x25] = GLFW_KEY_L;
-    _glfw.ns.publicKeys[0x2E] = GLFW_KEY_M;
-    _glfw.ns.publicKeys[0x2D] = GLFW_KEY_N;
-    _glfw.ns.publicKeys[0x1F] = GLFW_KEY_O;
-    _glfw.ns.publicKeys[0x23] = GLFW_KEY_P;
-    _glfw.ns.publicKeys[0x0C] = GLFW_KEY_Q;
-    _glfw.ns.publicKeys[0x0F] = GLFW_KEY_R;
-    _glfw.ns.publicKeys[0x01] = GLFW_KEY_S;
-    _glfw.ns.publicKeys[0x11] = GLFW_KEY_T;
-    _glfw.ns.publicKeys[0x20] = GLFW_KEY_U;
-    _glfw.ns.publicKeys[0x09] = GLFW_KEY_V;
-    _glfw.ns.publicKeys[0x0D] = GLFW_KEY_W;
-    _glfw.ns.publicKeys[0x07] = GLFW_KEY_X;
-    _glfw.ns.publicKeys[0x10] = GLFW_KEY_Y;
-    _glfw.ns.publicKeys[0x06] = GLFW_KEY_Z;
+    _glfw.ns.keycodes[0x1D] = GLFW_KEY_0;
+    _glfw.ns.keycodes[0x12] = GLFW_KEY_1;
+    _glfw.ns.keycodes[0x13] = GLFW_KEY_2;
+    _glfw.ns.keycodes[0x14] = GLFW_KEY_3;
+    _glfw.ns.keycodes[0x15] = GLFW_KEY_4;
+    _glfw.ns.keycodes[0x17] = GLFW_KEY_5;
+    _glfw.ns.keycodes[0x16] = GLFW_KEY_6;
+    _glfw.ns.keycodes[0x1A] = GLFW_KEY_7;
+    _glfw.ns.keycodes[0x1C] = GLFW_KEY_8;
+    _glfw.ns.keycodes[0x19] = GLFW_KEY_9;
+    _glfw.ns.keycodes[0x00] = GLFW_KEY_A;
+    _glfw.ns.keycodes[0x0B] = GLFW_KEY_B;
+    _glfw.ns.keycodes[0x08] = GLFW_KEY_C;
+    _glfw.ns.keycodes[0x02] = GLFW_KEY_D;
+    _glfw.ns.keycodes[0x0E] = GLFW_KEY_E;
+    _glfw.ns.keycodes[0x03] = GLFW_KEY_F;
+    _glfw.ns.keycodes[0x05] = GLFW_KEY_G;
+    _glfw.ns.keycodes[0x04] = GLFW_KEY_H;
+    _glfw.ns.keycodes[0x22] = GLFW_KEY_I;
+    _glfw.ns.keycodes[0x26] = GLFW_KEY_J;
+    _glfw.ns.keycodes[0x28] = GLFW_KEY_K;
+    _glfw.ns.keycodes[0x25] = GLFW_KEY_L;
+    _glfw.ns.keycodes[0x2E] = GLFW_KEY_M;
+    _glfw.ns.keycodes[0x2D] = GLFW_KEY_N;
+    _glfw.ns.keycodes[0x1F] = GLFW_KEY_O;
+    _glfw.ns.keycodes[0x23] = GLFW_KEY_P;
+    _glfw.ns.keycodes[0x0C] = GLFW_KEY_Q;
+    _glfw.ns.keycodes[0x0F] = GLFW_KEY_R;
+    _glfw.ns.keycodes[0x01] = GLFW_KEY_S;
+    _glfw.ns.keycodes[0x11] = GLFW_KEY_T;
+    _glfw.ns.keycodes[0x20] = GLFW_KEY_U;
+    _glfw.ns.keycodes[0x09] = GLFW_KEY_V;
+    _glfw.ns.keycodes[0x0D] = GLFW_KEY_W;
+    _glfw.ns.keycodes[0x07] = GLFW_KEY_X;
+    _glfw.ns.keycodes[0x10] = GLFW_KEY_Y;
+    _glfw.ns.keycodes[0x06] = GLFW_KEY_Z;
 
-    _glfw.ns.publicKeys[0x27] = GLFW_KEY_APOSTROPHE;
-    _glfw.ns.publicKeys[0x2A] = GLFW_KEY_BACKSLASH;
-    _glfw.ns.publicKeys[0x2B] = GLFW_KEY_COMMA;
-    _glfw.ns.publicKeys[0x18] = GLFW_KEY_EQUAL;
-    _glfw.ns.publicKeys[0x32] = GLFW_KEY_GRAVE_ACCENT;
-    _glfw.ns.publicKeys[0x21] = GLFW_KEY_LEFT_BRACKET;
-    _glfw.ns.publicKeys[0x1B] = GLFW_KEY_MINUS;
-    _glfw.ns.publicKeys[0x2F] = GLFW_KEY_PERIOD;
-    _glfw.ns.publicKeys[0x1E] = GLFW_KEY_RIGHT_BRACKET;
-    _glfw.ns.publicKeys[0x29] = GLFW_KEY_SEMICOLON;
-    _glfw.ns.publicKeys[0x2C] = GLFW_KEY_SLASH;
-    _glfw.ns.publicKeys[0x0A] = GLFW_KEY_WORLD_1;
+    _glfw.ns.keycodes[0x27] = GLFW_KEY_APOSTROPHE;
+    _glfw.ns.keycodes[0x2A] = GLFW_KEY_BACKSLASH;
+    _glfw.ns.keycodes[0x2B] = GLFW_KEY_COMMA;
+    _glfw.ns.keycodes[0x18] = GLFW_KEY_EQUAL;
+    _glfw.ns.keycodes[0x32] = GLFW_KEY_GRAVE_ACCENT;
+    _glfw.ns.keycodes[0x21] = GLFW_KEY_LEFT_BRACKET;
+    _glfw.ns.keycodes[0x1B] = GLFW_KEY_MINUS;
+    _glfw.ns.keycodes[0x2F] = GLFW_KEY_PERIOD;
+    _glfw.ns.keycodes[0x1E] = GLFW_KEY_RIGHT_BRACKET;
+    _glfw.ns.keycodes[0x29] = GLFW_KEY_SEMICOLON;
+    _glfw.ns.keycodes[0x2C] = GLFW_KEY_SLASH;
+    _glfw.ns.keycodes[0x0A] = GLFW_KEY_WORLD_1;
 
-    _glfw.ns.publicKeys[0x33] = GLFW_KEY_BACKSPACE;
-    _glfw.ns.publicKeys[0x39] = GLFW_KEY_CAPS_LOCK;
-    _glfw.ns.publicKeys[0x75] = GLFW_KEY_DELETE;
-    _glfw.ns.publicKeys[0x7D] = GLFW_KEY_DOWN;
-    _glfw.ns.publicKeys[0x77] = GLFW_KEY_END;
-    _glfw.ns.publicKeys[0x24] = GLFW_KEY_ENTER;
-    _glfw.ns.publicKeys[0x35] = GLFW_KEY_ESCAPE;
-    _glfw.ns.publicKeys[0x7A] = GLFW_KEY_F1;
-    _glfw.ns.publicKeys[0x78] = GLFW_KEY_F2;
-    _glfw.ns.publicKeys[0x63] = GLFW_KEY_F3;
-    _glfw.ns.publicKeys[0x76] = GLFW_KEY_F4;
-    _glfw.ns.publicKeys[0x60] = GLFW_KEY_F5;
-    _glfw.ns.publicKeys[0x61] = GLFW_KEY_F6;
-    _glfw.ns.publicKeys[0x62] = GLFW_KEY_F7;
-    _glfw.ns.publicKeys[0x64] = GLFW_KEY_F8;
-    _glfw.ns.publicKeys[0x65] = GLFW_KEY_F9;
-    _glfw.ns.publicKeys[0x6D] = GLFW_KEY_F10;
-    _glfw.ns.publicKeys[0x67] = GLFW_KEY_F11;
-    _glfw.ns.publicKeys[0x6F] = GLFW_KEY_F12;
-    _glfw.ns.publicKeys[0x69] = GLFW_KEY_F13;
-    _glfw.ns.publicKeys[0x6B] = GLFW_KEY_F14;
-    _glfw.ns.publicKeys[0x71] = GLFW_KEY_F15;
-    _glfw.ns.publicKeys[0x6A] = GLFW_KEY_F16;
-    _glfw.ns.publicKeys[0x40] = GLFW_KEY_F17;
-    _glfw.ns.publicKeys[0x4F] = GLFW_KEY_F18;
-    _glfw.ns.publicKeys[0x50] = GLFW_KEY_F19;
-    _glfw.ns.publicKeys[0x5A] = GLFW_KEY_F20;
-    _glfw.ns.publicKeys[0x73] = GLFW_KEY_HOME;
-    _glfw.ns.publicKeys[0x72] = GLFW_KEY_INSERT;
-    _glfw.ns.publicKeys[0x7B] = GLFW_KEY_LEFT;
-    _glfw.ns.publicKeys[0x3A] = GLFW_KEY_LEFT_ALT;
-    _glfw.ns.publicKeys[0x3B] = GLFW_KEY_LEFT_CONTROL;
-    _glfw.ns.publicKeys[0x38] = GLFW_KEY_LEFT_SHIFT;
-    _glfw.ns.publicKeys[0x37] = GLFW_KEY_LEFT_SUPER;
-    _glfw.ns.publicKeys[0x6E] = GLFW_KEY_MENU;
-    _glfw.ns.publicKeys[0x47] = GLFW_KEY_NUM_LOCK;
-    _glfw.ns.publicKeys[0x79] = GLFW_KEY_PAGE_DOWN;
-    _glfw.ns.publicKeys[0x74] = GLFW_KEY_PAGE_UP;
-    _glfw.ns.publicKeys[0x7C] = GLFW_KEY_RIGHT;
-    _glfw.ns.publicKeys[0x3D] = GLFW_KEY_RIGHT_ALT;
-    _glfw.ns.publicKeys[0x3E] = GLFW_KEY_RIGHT_CONTROL;
-    _glfw.ns.publicKeys[0x3C] = GLFW_KEY_RIGHT_SHIFT;
-    _glfw.ns.publicKeys[0x36] = GLFW_KEY_RIGHT_SUPER;
-    _glfw.ns.publicKeys[0x31] = GLFW_KEY_SPACE;
-    _glfw.ns.publicKeys[0x30] = GLFW_KEY_TAB;
-    _glfw.ns.publicKeys[0x7E] = GLFW_KEY_UP;
+    _glfw.ns.keycodes[0x33] = GLFW_KEY_BACKSPACE;
+    _glfw.ns.keycodes[0x39] = GLFW_KEY_CAPS_LOCK;
+    _glfw.ns.keycodes[0x75] = GLFW_KEY_DELETE;
+    _glfw.ns.keycodes[0x7D] = GLFW_KEY_DOWN;
+    _glfw.ns.keycodes[0x77] = GLFW_KEY_END;
+    _glfw.ns.keycodes[0x24] = GLFW_KEY_ENTER;
+    _glfw.ns.keycodes[0x35] = GLFW_KEY_ESCAPE;
+    _glfw.ns.keycodes[0x7A] = GLFW_KEY_F1;
+    _glfw.ns.keycodes[0x78] = GLFW_KEY_F2;
+    _glfw.ns.keycodes[0x63] = GLFW_KEY_F3;
+    _glfw.ns.keycodes[0x76] = GLFW_KEY_F4;
+    _glfw.ns.keycodes[0x60] = GLFW_KEY_F5;
+    _glfw.ns.keycodes[0x61] = GLFW_KEY_F6;
+    _glfw.ns.keycodes[0x62] = GLFW_KEY_F7;
+    _glfw.ns.keycodes[0x64] = GLFW_KEY_F8;
+    _glfw.ns.keycodes[0x65] = GLFW_KEY_F9;
+    _glfw.ns.keycodes[0x6D] = GLFW_KEY_F10;
+    _glfw.ns.keycodes[0x67] = GLFW_KEY_F11;
+    _glfw.ns.keycodes[0x6F] = GLFW_KEY_F12;
+    _glfw.ns.keycodes[0x69] = GLFW_KEY_F13;
+    _glfw.ns.keycodes[0x6B] = GLFW_KEY_F14;
+    _glfw.ns.keycodes[0x71] = GLFW_KEY_F15;
+    _glfw.ns.keycodes[0x6A] = GLFW_KEY_F16;
+    _glfw.ns.keycodes[0x40] = GLFW_KEY_F17;
+    _glfw.ns.keycodes[0x4F] = GLFW_KEY_F18;
+    _glfw.ns.keycodes[0x50] = GLFW_KEY_F19;
+    _glfw.ns.keycodes[0x5A] = GLFW_KEY_F20;
+    _glfw.ns.keycodes[0x73] = GLFW_KEY_HOME;
+    _glfw.ns.keycodes[0x72] = GLFW_KEY_INSERT;
+    _glfw.ns.keycodes[0x7B] = GLFW_KEY_LEFT;
+    _glfw.ns.keycodes[0x3A] = GLFW_KEY_LEFT_ALT;
+    _glfw.ns.keycodes[0x3B] = GLFW_KEY_LEFT_CONTROL;
+    _glfw.ns.keycodes[0x38] = GLFW_KEY_LEFT_SHIFT;
+    _glfw.ns.keycodes[0x37] = GLFW_KEY_LEFT_SUPER;
+    _glfw.ns.keycodes[0x6E] = GLFW_KEY_MENU;
+    _glfw.ns.keycodes[0x47] = GLFW_KEY_NUM_LOCK;
+    _glfw.ns.keycodes[0x79] = GLFW_KEY_PAGE_DOWN;
+    _glfw.ns.keycodes[0x74] = GLFW_KEY_PAGE_UP;
+    _glfw.ns.keycodes[0x7C] = GLFW_KEY_RIGHT;
+    _glfw.ns.keycodes[0x3D] = GLFW_KEY_RIGHT_ALT;
+    _glfw.ns.keycodes[0x3E] = GLFW_KEY_RIGHT_CONTROL;
+    _glfw.ns.keycodes[0x3C] = GLFW_KEY_RIGHT_SHIFT;
+    _glfw.ns.keycodes[0x36] = GLFW_KEY_RIGHT_SUPER;
+    _glfw.ns.keycodes[0x31] = GLFW_KEY_SPACE;
+    _glfw.ns.keycodes[0x30] = GLFW_KEY_TAB;
+    _glfw.ns.keycodes[0x7E] = GLFW_KEY_UP;
 
-    _glfw.ns.publicKeys[0x52] = GLFW_KEY_KP_0;
-    _glfw.ns.publicKeys[0x53] = GLFW_KEY_KP_1;
-    _glfw.ns.publicKeys[0x54] = GLFW_KEY_KP_2;
-    _glfw.ns.publicKeys[0x55] = GLFW_KEY_KP_3;
-    _glfw.ns.publicKeys[0x56] = GLFW_KEY_KP_4;
-    _glfw.ns.publicKeys[0x57] = GLFW_KEY_KP_5;
-    _glfw.ns.publicKeys[0x58] = GLFW_KEY_KP_6;
-    _glfw.ns.publicKeys[0x59] = GLFW_KEY_KP_7;
-    _glfw.ns.publicKeys[0x5B] = GLFW_KEY_KP_8;
-    _glfw.ns.publicKeys[0x5C] = GLFW_KEY_KP_9;
-    _glfw.ns.publicKeys[0x45] = GLFW_KEY_KP_ADD;
-    _glfw.ns.publicKeys[0x41] = GLFW_KEY_KP_DECIMAL;
-    _glfw.ns.publicKeys[0x4B] = GLFW_KEY_KP_DIVIDE;
-    _glfw.ns.publicKeys[0x4C] = GLFW_KEY_KP_ENTER;
-    _glfw.ns.publicKeys[0x51] = GLFW_KEY_KP_EQUAL;
-    _glfw.ns.publicKeys[0x43] = GLFW_KEY_KP_MULTIPLY;
-    _glfw.ns.publicKeys[0x4E] = GLFW_KEY_KP_SUBTRACT;
+    _glfw.ns.keycodes[0x52] = GLFW_KEY_KP_0;
+    _glfw.ns.keycodes[0x53] = GLFW_KEY_KP_1;
+    _glfw.ns.keycodes[0x54] = GLFW_KEY_KP_2;
+    _glfw.ns.keycodes[0x55] = GLFW_KEY_KP_3;
+    _glfw.ns.keycodes[0x56] = GLFW_KEY_KP_4;
+    _glfw.ns.keycodes[0x57] = GLFW_KEY_KP_5;
+    _glfw.ns.keycodes[0x58] = GLFW_KEY_KP_6;
+    _glfw.ns.keycodes[0x59] = GLFW_KEY_KP_7;
+    _glfw.ns.keycodes[0x5B] = GLFW_KEY_KP_8;
+    _glfw.ns.keycodes[0x5C] = GLFW_KEY_KP_9;
+    _glfw.ns.keycodes[0x45] = GLFW_KEY_KP_ADD;
+    _glfw.ns.keycodes[0x41] = GLFW_KEY_KP_DECIMAL;
+    _glfw.ns.keycodes[0x4B] = GLFW_KEY_KP_DIVIDE;
+    _glfw.ns.keycodes[0x4C] = GLFW_KEY_KP_ENTER;
+    _glfw.ns.keycodes[0x51] = GLFW_KEY_KP_EQUAL;
+    _glfw.ns.keycodes[0x43] = GLFW_KEY_KP_MULTIPLY;
+    _glfw.ns.keycodes[0x4E] = GLFW_KEY_KP_SUBTRACT;
 
     for (scancode = 0;  scancode < 256;  scancode++)
     {
         // Store the reverse translation for faster key name lookup
-        if (_glfw.ns.publicKeys[scancode] >= 0)
-            _glfw.ns.nativeKeys[_glfw.ns.publicKeys[scancode]] = scancode;
+        if (_glfw.ns.keycodes[scancode] >= 0)
+            _glfw.ns.scancodes[_glfw.ns.keycodes[scancode]] = scancode;
     }
 }
+
+// Retrieve Unicode data for the current keyboard layout
+//
+static GLFWbool updateUnicodeDataNS(void)
+{
+    if (_glfw.ns.inputSource)
+    {
+        CFRelease(_glfw.ns.inputSource);
+        _glfw.ns.inputSource = NULL;
+        _glfw.ns.unicodeData = nil;
+    }
+
+    _glfw.ns.inputSource = TISCopyCurrentKeyboardLayoutInputSource();
+    if (!_glfw.ns.inputSource)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to retrieve keyboard layout input source");
+        return GLFW_FALSE;
+    }
+
+    _glfw.ns.unicodeData = TISGetInputSourceProperty(_glfw.ns.inputSource,
+                                                     kTISPropertyUnicodeKeyLayoutData);
+    if (!_glfw.ns.unicodeData)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to retrieve keyboard layout Unicode data");
+        return GLFW_FALSE;
+    }
+
+    return GLFW_TRUE;
+}
+
+// Load HIToolbox.framework and the TIS symbols we need from it
+//
+static GLFWbool initializeTIS(void)
+{
+    // This works only because Cocoa has already loaded it properly
+    _glfw.ns.tis.bundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.HIToolbox"));
+    if (!_glfw.ns.tis.bundle)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to load HIToolbox.framework");
+        return GLFW_FALSE;
+    }
+
+    CFStringRef* kPropertyUnicodeKeyLayoutData =
+        CFBundleGetDataPointerForName(_glfw.ns.tis.bundle,
+                                      CFSTR("kTISPropertyUnicodeKeyLayoutData"));
+    CFStringRef* kNotifySelectedKeyboardInputSourceChanged =
+        CFBundleGetDataPointerForName(_glfw.ns.tis.bundle,
+                                      CFSTR("kTISNotifySelectedKeyboardInputSourceChanged"));
+    _glfw.ns.tis.CopyCurrentKeyboardLayoutInputSource =
+        CFBundleGetFunctionPointerForName(_glfw.ns.tis.bundle,
+                                          CFSTR("TISCopyCurrentKeyboardLayoutInputSource"));
+    _glfw.ns.tis.GetInputSourceProperty =
+        CFBundleGetFunctionPointerForName(_glfw.ns.tis.bundle,
+                                          CFSTR("TISGetInputSourceProperty"));
+    _glfw.ns.tis.GetKbdType =
+        CFBundleGetFunctionPointerForName(_glfw.ns.tis.bundle,
+                                          CFSTR("LMGetKbdType"));
+
+    if (!kPropertyUnicodeKeyLayoutData ||
+        !kNotifySelectedKeyboardInputSourceChanged ||
+        !TISCopyCurrentKeyboardLayoutInputSource ||
+        !TISGetInputSourceProperty ||
+        !LMGetKbdType)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to load TIS API symbols");
+        return GLFW_FALSE;
+    }
+
+    _glfw.ns.tis.kPropertyUnicodeKeyLayoutData =
+        *kPropertyUnicodeKeyLayoutData;
+    _glfw.ns.tis.kNotifySelectedKeyboardInputSourceChanged =
+        *kNotifySelectedKeyboardInputSourceChanged;
+
+    return updateUnicodeDataNS();
+}
+
+@interface GLFWLayoutListener : NSObject
+@end
+
+@implementation GLFWLayoutListener
+
+- (void)selectedKeyboardInputSourceChanged:(NSObject* )object
+{
+    updateUnicodeDataNS();
+}
+
+@end
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -208,6 +299,13 @@ static void createKeyTables(void)
 int _glfwPlatformInit(void)
 {
     _glfw.ns.autoreleasePool = [[NSAutoreleasePool alloc] init];
+
+    _glfw.ns.listener = [[GLFWLayoutListener alloc] init];
+    [[NSDistributedNotificationCenter defaultCenter]
+        addObserver:_glfw.ns.listener
+           selector:@selector(selectedKeyboardInputSourceChanged:)
+               name:(__bridge NSString*)kTISNotifySelectedKeyboardInputSourceChanged
+             object:nil];
 
 #if defined(_GLFW_USE_CHDIR)
     changeToResourcesDirectory();
@@ -221,21 +319,10 @@ int _glfwPlatformInit(void)
 
     CGEventSourceSetLocalEventsSuppressionInterval(_glfw.ns.eventSource, 0.0);
 
-    // TODO: Catch kTISNotifySelectedKeyboardInputSourceChanged and update
-
-    _glfw.ns.inputSource = TISCopyCurrentKeyboardLayoutInputSource();
-    if (!_glfw.ns.inputSource)
-        return GLFW_FALSE;
-
-    _glfw.ns.unicodeData = TISGetInputSourceProperty(_glfw.ns.inputSource,
-                                                     kTISPropertyUnicodeKeyLayoutData);
-    if (!_glfw.ns.unicodeData)
+    if (!initializeTIS())
         return GLFW_FALSE;
 
     if (!_glfwInitThreadLocalStoragePOSIX())
-        return GLFW_FALSE;
-
-    if (!_glfwInitNSGL())
         return GLFW_FALSE;
 
     _glfwInitTimerNS();
@@ -250,6 +337,7 @@ void _glfwPlatformTerminate(void)
     {
         CFRelease(_glfw.ns.inputSource);
         _glfw.ns.inputSource = NULL;
+        _glfw.ns.unicodeData = nil;
     }
 
     if (_glfw.ns.eventSource)
@@ -263,6 +351,18 @@ void _glfwPlatformTerminate(void)
         [NSApp setDelegate:nil];
         [_glfw.ns.delegate release];
         _glfw.ns.delegate = nil;
+    }
+
+    if (_glfw.ns.listener)
+    {
+        [[NSDistributedNotificationCenter defaultCenter]
+            removeObserver:_glfw.ns.listener
+                      name:(__bridge NSString*)kTISNotifySelectedKeyboardInputSourceChanged
+                    object:nil];
+        [[NSDistributedNotificationCenter defaultCenter]
+            removeObserver:_glfw.ns.listener];
+        [_glfw.ns.listener release];
+        _glfw.ns.listener = nil;
     }
 
     [_glfw.ns.cursor release];

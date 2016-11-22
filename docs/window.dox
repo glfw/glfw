@@ -5,11 +5,12 @@
 @tableofcontents
 
 This guide introduces the window related functions of GLFW.  For details on
-a specific function, see the [reference documentation](@ref window).  There are
-also guides for the other areas of GLFW.
+a specific function in this category, see the @ref window.  There are also
+guides for the other areas of GLFW.
 
  - @ref intro_guide
  - @ref context_guide
+ - @ref vulkan_guide
  - @ref monitor_guide
  - @ref input_guide
 
@@ -79,7 +80,8 @@ Once you have a full screen window, you can change its resolution, refresh rate
 and monitor with @ref glfwSetWindowMonitor.  If you just need change its
 resolution you can also call @ref glfwSetWindowSize.  In all cases, the new
 video mode will be selected the same way as the video mode chosen by @ref
-glfwCreateWindow.
+glfwCreateWindow.  If the window has an OpenGL or OpenGL ES context, it will be
+unaffected.
 
 By default, the original video mode of the monitor will be restored and the
 window iconified if it loses input focus, to allow the user to switch back to
@@ -256,7 +258,7 @@ create the context.  Possible values are `GLFW_NATIVE_CONTEXT_API` and
 requested, this hint is ignored.
 
 @par
-__OS X:__ The EGL API is not available on this platform and requests to use it
+@macos The EGL API is not available on this platform and requests to use it
 will fail.
 
 @par
@@ -268,15 +270,19 @@ creation API is used on a given platform may fail if you change this hint.  This
 can be resolved by having it load via @ref glfwGetProcAddress, which always uses
 the selected API.
 
+@bug On some Linux systems, creating contexts via both the native and EGL APIs
+in a single process will cause the application to segfault.  Stick to one API or
+the other on Linux for now.
+
 `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` specify the client
 API version that the created context must be compatible with.  The exact
 behavior of these hints depend on the requested client API.
 
 @par
-__OpenGL:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are not hard
-constraints, but creation will fail if the OpenGL version of the created context
-is less than the one requested.  It is therefore perfectly safe to use the
-default of version 1.0 for legacy code and you may still get
+__OpenGL:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are
+not hard constraints, but creation will fail if the OpenGL version of the
+created context is less than the one requested.  It is therefore perfectly safe
+to use the default of version 1.0 for legacy code and you will still get
 backwards-compatible contexts of version 3.0 and above when available.
 
 @par
@@ -285,12 +291,12 @@ version, GLFW will attempt to provide this when you ask for a version 1.0
 context, which is the default for these hints.
 
 @par
-__OpenGL ES:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are not hard
-constraints, but creation will fail if the OpenGL ES version of the created
-context is less than the one requested.  Additionally, OpenGL ES 1.x cannot be
-returned if 2.0 or later was requested, and vice versa.  This is because OpenGL
-ES 3.x is backward compatible with 2.0, but OpenGL ES 2.0 is not backward
-compatible with 1.x.
+__OpenGL ES:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are
+not hard constraints, but creation will fail if the OpenGL ES version of the
+created context is less than the one requested.  Additionally, OpenGL ES 1.x
+cannot be returned if 2.0 or later was requested, and vice versa.  This is
+because OpenGL ES 3.x is backward compatible with 2.0, but OpenGL ES 2.0 is not
+backward compatible with 1.x.
 
 `GLFW_OPENGL_FORWARD_COMPAT` specifies whether the OpenGL context should be
 forward-compatible, i.e. one where all functionality deprecated in the requested
@@ -645,7 +651,7 @@ As long as your source file is encoded as UTF-8, you can use any Unicode
 characters directly in the source.
 
 @code
-glfwSetWindowTitle(window, "星を追う子ども");
+glfwSetWindowTitle(window, "ラストエグザイル");
 @endcode
 
 If you are using C++11 or C11, you can use a UTF-8 string literal.
@@ -724,7 +730,8 @@ glfwIconifyWindow(window);
 When a full screen window is iconified, the original video mode of its monitor
 is restored until the user or application restores the window.
 
-Iconified windows can be restored with @ref glfwRestoreWindow.
+Iconified windows can be restored with @ref glfwRestoreWindow.  This function
+also restores windows from maximization.
 
 @code
 glfwRestoreWindow(window);
@@ -760,6 +767,54 @@ You can also get the current iconification state with @ref glfwGetWindowAttrib.
 
 @code
 int iconified = glfwGetWindowAttrib(window, GLFW_ICONIFIED);
+@endcode
+
+
+@subsection window_maximize Window maximization
+
+Windows can be maximized (i.e. zoomed) with @ref glfwMaximizeWindow.
+
+@code
+glfwMaximizeWindow(window);
+@endcode
+
+Full screen windows cannot be maximized and passing a full screen window to this
+function does nothing.
+
+Maximized windows can be restored with @ref glfwRestoreWindow.  This function
+also restores windows from iconification.
+
+@code
+glfwRestoreWindow(window);
+@endcode
+
+If you wish to be notified when a window is maximized or restored, whether by
+the user, system or your own code, set a maximize callback.
+
+@code
+glfwSetWindowMaximizeCallback(window, window_maximize_callback);
+@endcode
+
+The callback function receives changes in the maximization state of the window.
+
+@code
+void window_maximize_callback(GLFWwindow* window, int maximized)
+{
+    if (maximized)
+    {
+        // The window was maximized
+    }
+    else
+    {
+        // The window was restored
+    }
+}
+@endcode
+
+You can also get the current maximization state with @ref glfwGetWindowAttrib.
+
+@code
+int maximized = glfwGetWindowAttrib(window, GLFW_MAXIMIZED);
 @endcode
 
 

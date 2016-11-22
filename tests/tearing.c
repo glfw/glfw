@@ -1,6 +1,6 @@
 //========================================================================
 // Vsync enabling test
-// Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -35,7 +35,33 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "linmath.h"
 #include "getopt.h"
+
+static const struct
+{
+    float x, y;
+} vertices[4] =
+{
+    { -0.25f, -1.f },
+    {  0.25f, -1.f },
+    {  0.25f,  1.f },
+    { -0.25f,  1.f }
+};
+
+static const char* vertex_shader_text =
+"uniform mat4 MVP;\n"
+"attribute vec2 vPos;\n"
+"void main()\n"
+"{\n"
+"    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
+"}\n";
+
+static const char* fragment_shader_text =
+"void main()\n"
+"{\n"
+"    gl_FragColor = vec4(1.0);\n"
+"}\n";
 
 static int swap_tear;
 static int swap_interval;
@@ -43,7 +69,7 @@ static double frame_rate;
 
 static void usage(void)
 {
-    printf("Usage: iconify [-h] [-f]\n");
+    printf("Usage: tearing [-h] [-f]\n");
     printf("Options:\n");
     printf("  -f create full screen window\n");
     printf("  -h show this help\n");
@@ -53,10 +79,10 @@ static void update_window_title(GLFWwindow* window)
 {
     char title[256];
 
-    sprintf(title, "Tearing detector (interval %i%s, %0.1f Hz)",
-            swap_interval,
-            (swap_tear && swap_interval < 0) ? " (swap tear)" : "",
-            frame_rate);
+    snprintf(title, sizeof(title), "Tearing detector (interval %i%s, %0.1f Hz)",
+             swap_interval,
+             (swap_tear && swap_interval < 0) ? " (swap tear)" : "",
+             frame_rate);
 
     glfwSetWindowTitle(window, title);
 }
@@ -116,12 +142,13 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 int main(int argc, char** argv)
 {
     int ch, width, height;
-    float position;
     unsigned long frame_count = 0;
     double last_time, current_time;
     int fullscreen = GLFW_FALSE;
     GLFWmonitor* monitor = NULL;
     GLFWwindow* window;
+    GLuint vertex_buffer, vertex_shader, fragment_shader, program;
+    GLint mvp_location, vpos_location;
 
     while ((ch = getopt(argc, argv, "fh")) != -1)
     {
@@ -163,6 +190,9 @@ int main(int argc, char** argv)
         height = 480;
     }
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+
     window = glfwCreateWindow(width, height, "", monitor, NULL);
     if (!window)
     {
@@ -182,16 +212,44 @@ int main(int argc, char** argv)
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetKeyCallback(window, key_callback);
 
-    glMatrixMode(GL_PROJECTION);
-    glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);
-    glMatrixMode(GL_MODELVIEW);
+    glGenBuffers(1, &vertex_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
+    glCompileShader(vertex_shader);
+
+    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
+    glCompileShader(fragment_shader);
+
+    program = glCreateProgram();
+    glAttachShader(program, vertex_shader);
+    glAttachShader(program, fragment_shader);
+    glLinkProgram(program);
+
+    mvp_location = glGetUniformLocation(program, "MVP");
+    vpos_location = glGetAttribLocation(program, "vPos");
+
+    glEnableVertexAttribArray(vpos_location);
+    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
+                          sizeof(vertices[0]), (void*) 0);
 
     while (!glfwWindowShouldClose(window))
     {
+        mat4x4 m, p, mvp;
+        float position = cosf((float) glfwGetTime() * 4.f) * 0.75f;
+
         glClear(GL_COLOR_BUFFER_BIT);
 
-        position = cosf((float) glfwGetTime() * 4.f) * 0.75f;
-        glRectf(position - 0.25f, -1.f, position + 0.25f, 1.f);
+        mat4x4_ortho(p, -1.f, 1.f, -1.f, 1.f, 0.f, 1.f);
+        mat4x4_translate(m, position, 0.f, 0.f);
+        mat4x4_mul(mvp, p, m);
+
+        glUseProgram(program);
+        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

@@ -340,7 +340,7 @@ The program above can be found in the
 [source package](http://www.glfw.org/download.html) as `examples/simple.c`
 and is compiled along with all other examples when you build GLFW.  If you
 built GLFW from the source package then already have this as `simple.exe` on
-Windows, `simple` on Linux or `simple.app` on OS X.
+Windows, `simple` on Linux or `simple.app` on macOS.
 
 This tutorial used only a few of the many functions GLFW provides.  There are
 guides for each of the areas covered by GLFW.  Each guide will introduce all the

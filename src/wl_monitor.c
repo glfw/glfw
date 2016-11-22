@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Wayland - www.glfw.org
+// GLFW 3.3 Wayland - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -50,11 +50,21 @@ static void geometry(void* data,
                      int32_t transform)
 {
     struct _GLFWmonitor *monitor = data;
+    char* name;
+    size_t nameLength;
 
     monitor->wl.x = x;
     monitor->wl.y = y;
     monitor->widthMM = physicalWidth;
     monitor->heightMM = physicalHeight;
+
+    nameLength = strlen(make) + 1 + strlen(model) + 1;
+    name = realloc(monitor->name, nameLength);
+    if (name)
+    {
+        sprintf(name, "%s %s", make, model);
+        monitor->name = name;
+    }
 }
 
 static void mode(void* data,
@@ -102,7 +112,7 @@ static void scale(void* data,
     monitor->wl.scale = factor;
 }
 
-static const struct wl_output_listener output_listener = {
+static const struct wl_output_listener outputListener = {
     geometry,
     mode,
     done,
@@ -118,10 +128,6 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
 {
     _GLFWmonitor *monitor;
     struct wl_output *output;
-    char name_str[80];
-
-    memset(name_str, 0, 80 * sizeof(char));
-    snprintf(name_str, 79, "wl_output@%u", name);
 
     if (version < 2)
     {
@@ -130,7 +136,8 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
         return;
     }
 
-    monitor = _glfwAllocMonitor(name_str, 0, 0);
+    // The actual name of this output will be set in the geometry handler.
+    monitor = _glfwAllocMonitor(NULL, 0, 0);
 
     output = wl_registry_bind(_glfw.wl.registry,
                               name,
@@ -148,7 +155,7 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
     monitor->wl.scale = 1;
 
     monitor->wl.output = output;
-    wl_output_add_listener(output, &output_listener, monitor);
+    wl_output_add_listener(output, &outputListener, monitor);
 
     if (_glfw.wl.monitorsCount + 1 >= _glfw.wl.monitorsSize)
     {

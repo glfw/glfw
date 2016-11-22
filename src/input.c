@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.2 - www.glfw.org
+// GLFW 3.3 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -28,101 +28,11 @@
 #include "internal.h"
 
 #include <assert.h>
+#include <float.h>
 #include <stdlib.h>
 
 // Internal key state used for sticky keys
 #define _GLFW_STICK 3
-
-
-// Sets the cursor mode for the specified window
-//
-static void setCursorMode(_GLFWwindow* window, int newMode)
-{
-    const int oldMode = window->cursorMode;
-
-    if (newMode != GLFW_CURSOR_NORMAL &&
-        newMode != GLFW_CURSOR_HIDDEN &&
-        newMode != GLFW_CURSOR_DISABLED)
-    {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid cursor mode %i", newMode);
-        return;
-    }
-
-    if (oldMode == newMode)
-        return;
-
-    window->cursorMode = newMode;
-
-    if (_glfw.cursorWindow == window)
-    {
-        if (oldMode == GLFW_CURSOR_DISABLED)
-        {
-            _glfwPlatformSetCursorPos(window,
-                                      _glfw.cursorPosX,
-                                      _glfw.cursorPosY);
-        }
-        else if (newMode == GLFW_CURSOR_DISABLED)
-        {
-            int width, height;
-
-            _glfwPlatformGetCursorPos(window,
-                                      &_glfw.cursorPosX,
-                                      &_glfw.cursorPosY);
-
-            window->cursorPosX = _glfw.cursorPosX;
-            window->cursorPosY = _glfw.cursorPosY;
-
-            _glfwPlatformGetWindowSize(window, &width, &height);
-            _glfwPlatformSetCursorPos(window, width / 2, height / 2);
-        }
-
-        _glfwPlatformSetCursorMode(window, window->cursorMode);
-    }
-}
-
-// Set sticky keys mode for the specified window
-//
-static void setStickyKeys(_GLFWwindow* window, int enabled)
-{
-    if (window->stickyKeys == enabled)
-        return;
-
-    if (!enabled)
-    {
-        int i;
-
-        // Release all sticky keys
-        for (i = 0;  i <= GLFW_KEY_LAST;  i++)
-        {
-            if (window->keys[i] == _GLFW_STICK)
-                window->keys[i] = GLFW_RELEASE;
-        }
-    }
-
-    window->stickyKeys = enabled;
-}
-
-// Set sticky mouse buttons mode for the specified window
-//
-static void setStickyMouseButtons(_GLFWwindow* window, int enabled)
-{
-    if (window->stickyMouseButtons == enabled)
-        return;
-
-    if (!enabled)
-    {
-        int i;
-
-        // Release all sticky mouse buttons
-        for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
-        {
-            if (window->mouseButtons[i] == _GLFW_STICK)
-                window->mouseButtons[i] = GLFW_RELEASE;
-        }
-    }
-
-    window->stickyMouseButtons = enabled;
-}
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -190,22 +100,16 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
         window->callbacks.mouseButton((GLFWwindow*) window, button, action, mods);
 }
 
-void _glfwInputCursorMotion(_GLFWwindow* window, double x, double y)
+void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos)
 {
-    if (window->cursorMode == GLFW_CURSOR_DISABLED)
-    {
-        if (x == 0.0 && y == 0.0)
-            return;
+    if (window->virtualCursorPosX == xpos && window->virtualCursorPosY == ypos)
+        return;
 
-        window->cursorPosX += x;
-        window->cursorPosY += y;
-
-        x = window->cursorPosX;
-        y = window->cursorPosY;
-    }
+    window->virtualCursorPosX = xpos;
+    window->virtualCursorPosY = ypos;
 
     if (window->callbacks.cursorPos)
-        window->callbacks.cursorPos((GLFWwindow*) window, x, y);
+        window->callbacks.cursorPos((GLFWwindow*) window, xpos, ypos);
 }
 
 void _glfwInputCursorEnter(_GLFWwindow* window, GLFWbool entered)
@@ -220,10 +124,10 @@ void _glfwInputDrop(_GLFWwindow* window, int count, const char** paths)
         window->callbacks.drop((GLFWwindow*) window, count, paths);
 }
 
-void _glfwInputJoystickChange(int joy, int event)
+void _glfwInputJoystickChange(int jid, int event)
 {
     if (_glfw.callbacks.joystick)
-        _glfw.callbacks.joystick(joy, event);
+        _glfw.callbacks.joystick(jid, event);
 }
 
 
@@ -274,24 +178,95 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
     switch (mode)
     {
         case GLFW_CURSOR:
-            setCursorMode(window, value);
-            break;
+        {
+            if (value != GLFW_CURSOR_NORMAL &&
+                value != GLFW_CURSOR_HIDDEN &&
+                value != GLFW_CURSOR_DISABLED)
+            {
+                _glfwInputError(GLFW_INVALID_ENUM,
+                                "Invalid cursor mode %i",
+                                value);
+                return;
+            }
+
+            if (window->cursorMode == value)
+                return;
+
+            window->cursorMode = value;
+
+            _glfwPlatformGetCursorPos(window,
+                                      &window->virtualCursorPosX,
+                                      &window->virtualCursorPosY);
+
+            if (_glfwPlatformWindowFocused(window))
+                _glfwPlatformSetCursorMode(window, value);
+
+            return;
+        }
+
         case GLFW_STICKY_KEYS:
-            setStickyKeys(window, value ? GLFW_TRUE : GLFW_FALSE);
-            break;
+        {
+            if (window->stickyKeys == value)
+                return;
+
+            if (!value)
+            {
+                int i;
+
+                // Release all sticky keys
+                for (i = 0;  i <= GLFW_KEY_LAST;  i++)
+                {
+                    if (window->keys[i] == _GLFW_STICK)
+                        window->keys[i] = GLFW_RELEASE;
+                }
+            }
+
+            window->stickyKeys = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
+        }
+
         case GLFW_STICKY_MOUSE_BUTTONS:
-            setStickyMouseButtons(window, value ? GLFW_TRUE : GLFW_FALSE);
-            break;
-        default:
-            _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode %i", mode);
-            break;
+        {
+            if (window->stickyMouseButtons == value)
+                return;
+
+            if (!value)
+            {
+                int i;
+
+                // Release all sticky mouse buttons
+                for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
+                {
+                    if (window->mouseButtons[i] == _GLFW_STICK)
+                        window->mouseButtons[i] = GLFW_RELEASE;
+                }
+            }
+
+            window->stickyMouseButtons = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
+        }
     }
+
+    _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode %i", mode);
 }
 
 GLFWAPI const char* glfwGetKeyName(int key, int scancode)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     return _glfwPlatformGetKeyName(key, scancode);
+}
+
+GLFWAPI int glfwGetKeyScancode(int key)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(-1);
+
+    if (key < GLFW_KEY_SPACE || key > GLFW_KEY_LAST)
+    {
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid key %i", key);
+        return GLFW_RELEASE;
+    }
+
+    return _glfwPlatformGetKeyScancode(key);
 }
 
 GLFWAPI int glfwGetKey(GLFWwindow* handle, int key)
@@ -301,7 +276,7 @@ GLFWAPI int glfwGetKey(GLFWwindow* handle, int key)
 
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_RELEASE);
 
-    if (key < 0 || key > GLFW_KEY_LAST)
+    if (key < GLFW_KEY_SPACE || key > GLFW_KEY_LAST)
     {
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid key %i", key);
         return GLFW_RELEASE;
@@ -324,7 +299,7 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* handle, int button)
 
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_RELEASE);
 
-    if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST)
+    if (button < GLFW_MOUSE_BUTTON_1 || button > GLFW_MOUSE_BUTTON_LAST)
     {
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid mouse button %i", button);
         return GLFW_RELEASE;
@@ -355,9 +330,9 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* handle, double* xpos, double* ypos)
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         if (xpos)
-            *xpos = window->cursorPosX;
+            *xpos = window->virtualCursorPosX;
         if (ypos)
-            *ypos = window->cursorPosY;
+            *ypos = window->virtualCursorPosY;
     }
     else
         _glfwPlatformGetCursorPos(window, xpos, ypos);
@@ -370,14 +345,23 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, double xpos, double ypos)
 
     _GLFW_REQUIRE_INIT();
 
-    if (_glfw.cursorWindow != window)
+    if (xpos != xpos || xpos < -DBL_MAX || xpos > DBL_MAX ||
+        ypos != ypos || ypos < -DBL_MAX || ypos > DBL_MAX)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE,
+                        "Invalid cursor position %f %f",
+                        xpos, ypos);
+        return;
+    }
+
+    if (!_glfwPlatformWindowFocused(window))
         return;
 
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         // Only update the accumulated position if the cursor is disabled
-        window->cursorPosX = xpos;
-        window->cursorPosY = ypos;
+        window->virtualCursorPosX = xpos;
+        window->virtualCursorPosY = ypos;
     }
     else
     {
@@ -480,9 +464,9 @@ GLFWAPI void glfwSetCursor(GLFWwindow* windowHandle, GLFWcursor* cursorHandle)
 
     _GLFW_REQUIRE_INIT();
 
-    _glfwPlatformSetCursor(window, cursor);
-
     window->cursor = cursor;
+
+    _glfwPlatformSetCursor(window, cursor);
 }
 
 GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* handle, GLFWkeyfun cbfun)
@@ -569,62 +553,62 @@ GLFWAPI GLFWdropfun glfwSetDropCallback(GLFWwindow* handle, GLFWdropfun cbfun)
     return cbfun;
 }
 
-GLFWAPI int glfwJoystickPresent(int joy)
+GLFWAPI int glfwJoystickPresent(int jid)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(0);
 
-    if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
+    if (jid < 0 || jid > GLFW_JOYSTICK_LAST)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", joy);
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", jid);
         return 0;
     }
 
-    return _glfwPlatformJoystickPresent(joy);
+    return _glfwPlatformJoystickPresent(jid);
 }
 
-GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count)
+GLFWAPI const float* glfwGetJoystickAxes(int jid, int* count)
 {
     assert(count != NULL);
     *count = 0;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
-    if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
+    if (jid < 0 || jid > GLFW_JOYSTICK_LAST)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", joy);
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", jid);
         return NULL;
     }
 
-    return _glfwPlatformGetJoystickAxes(joy, count);
+    return _glfwPlatformGetJoystickAxes(jid, count);
 }
 
-GLFWAPI const unsigned char* glfwGetJoystickButtons(int joy, int* count)
+GLFWAPI const unsigned char* glfwGetJoystickButtons(int jid, int* count)
 {
     assert(count != NULL);
     *count = 0;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
-    if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
+    if (jid < 0 || jid > GLFW_JOYSTICK_LAST)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", joy);
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", jid);
         return NULL;
     }
 
-    return _glfwPlatformGetJoystickButtons(joy, count);
+    return _glfwPlatformGetJoystickButtons(jid, count);
 }
 
-GLFWAPI const char* glfwGetJoystickName(int joy)
+GLFWAPI const char* glfwGetJoystickName(int jid)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
-    if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
+    if (jid < 0 || jid > GLFW_JOYSTICK_LAST)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", joy);
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", jid);
         return NULL;
     }
 
-    return _glfwPlatformGetJoystickName(joy);
+    return _glfwPlatformGetJoystickName(jid);
 }
 
 GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun cbfun)
@@ -638,7 +622,6 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* handle, const char* string)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
     assert(window != NULL);
-
     assert(string != NULL);
 
     _GLFW_REQUIRE_INIT();

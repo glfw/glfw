@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Mir - www.glfw.org
+// GLFW 3.3 Mir - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014-2015 Brandon Schaefer <brandon.schaefer@canonical.com>
 //
@@ -84,21 +84,20 @@ typedef struct _GLFWwindowMir
     int                     width;
     int                     height;
     MirEGLNativeWindowType  window;
+    _GLFWcursor*            currentCursor;
 
 } _GLFWwindowMir;
-
 
 // Mir-specific per-monitor data
 //
 typedef struct _GLFWmonitorMir
 {
-    int cur_mode;
-    int output_id;
+    int curMode;
+    int outputId;
     int x;
     int y;
 
 } _GLFWmonitorMir;
-
 
 // Mir-specific global data
 //
@@ -106,16 +105,20 @@ typedef struct _GLFWlibraryMir
 {
     MirConnection*          connection;
     MirEGLNativeDisplayType display;
-    MirCursorConfiguration* default_conf;
-    EventQueue* event_queue;
+    MirCursorConfiguration* defaultConf;
+    MirCursorConfiguration* disabledConf;
+    EventQueue* eventQueue;
 
-    short int       publicKeys[256];
+    short int       keycodes[256];
+    short int       scancodes[GLFW_KEY_LAST + 1];
 
-    pthread_mutex_t event_mutex;
-    pthread_cond_t  event_cond;
+    pthread_mutex_t eventMutex;
+    pthread_cond_t  eventCond;
+
+    // The window whose disabled cursor mode is active
+    _GLFWwindow*    disabledCursorWindow;
 
 } _GLFWlibraryMir;
-
 
 // Mir-specific per-cursor data
 // TODO: Only system cursors are implemented in Mir atm. Need to wait for support.
@@ -123,7 +126,7 @@ typedef struct _GLFWlibraryMir
 typedef struct _GLFWcursorMir
 {
     MirCursorConfiguration* conf;
-    MirBufferStream*        custom_cursor;
+    MirBufferStream*        customCursor;
 } _GLFWcursorMir;
 
 

@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Mir - www.glfw.org
+// GLFW 3.3 Mir - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014-2015 Brandon Schaefer <brandon.schaefer@canonical.com>
 //
@@ -59,8 +59,8 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
             monitors[i]->mir.x         = out->position_x;
             monitors[i]->mir.y         = out->position_y;
-            monitors[i]->mir.output_id = out->output_id;
-            monitors[i]->mir.cur_mode  = out->current_mode;
+            monitors[i]->mir.outputId  = out->output_id;
+            monitors[i]->mir.curMode   = out->current_mode;
 
             monitors[i]->modes = _glfwPlatformGetVideoModes(monitors[i],
                                                             &monitors[i]->modeCount);
@@ -75,7 +75,7 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 
 GLFWbool _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
 {
-    return first->mir.output_id == second->mir.output_id;
+    return first->mir.outputId == second->mir.outputId;
 }
 
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
@@ -129,7 +129,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
     for (i = 0;  i < displayConfig->num_outputs;  i++)
     {
         const MirDisplayOutput* out = displayConfig->outputs + i;
-        if (out->output_id != monitor->mir.output_id)
+        if (out->output_id != monitor->mir.outputId)
             continue;
 
         modes = calloc(out->num_modes, sizeof(GLFWvidmode));
@@ -153,7 +153,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
-    *mode = monitor->modes[monitor->mir.cur_mode];
+    *mode = monitor->modes[monitor->mir.curMode];
 }
 
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
@@ -177,6 +177,6 @@ GLFWAPI int glfwGetMirMonitor(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(0);
-    return monitor->mir.output_id;
+    return monitor->mir.outputId;
 }
 

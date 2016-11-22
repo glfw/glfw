@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Mir - www.glfw.org
+// GLFW 3.3 Mir - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014-2015 Brandon Schaefer <brandon.schaefer@canonical.com>
 //
@@ -54,37 +54,37 @@ static GLFWbool emptyEventQueue(EventQueue* queue)
 //      for single threaded event handling.
 static EventNode* newEventNode(const MirEvent* event, _GLFWwindow* context)
 {
-    EventNode* new_node = calloc(1, sizeof(EventNode));
-    new_node->event     = mir_event_ref(event);
-    new_node->window    = context;
+    EventNode* newNode = calloc(1, sizeof(EventNode));
+    newNode->event     = mir_event_ref(event);
+    newNode->window    = context;
 
-    return new_node;
+    return newNode;
 }
 
 static void enqueueEvent(const MirEvent* event, _GLFWwindow* context)
 {
-    pthread_mutex_lock(&_glfw.mir.event_mutex);
+    pthread_mutex_lock(&_glfw.mir.eventMutex);
 
-    EventNode* new_node = newEventNode(event, context);
-    TAILQ_INSERT_TAIL(&_glfw.mir.event_queue->head, new_node, entries);
+    EventNode* newNode = newEventNode(event, context);
+    TAILQ_INSERT_TAIL(&_glfw.mir.eventQueue->head, newNode, entries);
 
-    pthread_cond_signal(&_glfw.mir.event_cond);
+    pthread_cond_signal(&_glfw.mir.eventCond);
 
-    pthread_mutex_unlock(&_glfw.mir.event_mutex);
+    pthread_mutex_unlock(&_glfw.mir.eventMutex);
 }
 
 static EventNode* dequeueEvent(EventQueue* queue)
 {
     EventNode* node = NULL;
 
-    pthread_mutex_lock(&_glfw.mir.event_mutex);
+    pthread_mutex_lock(&_glfw.mir.eventMutex);
 
     node = queue->head.tqh_first;
 
     if (node)
         TAILQ_REMOVE(&queue->head, node, entries);
 
-    pthread_mutex_unlock(&_glfw.mir.event_mutex);
+    pthread_mutex_unlock(&_glfw.mir.eventMutex);
 
     return node;
 }
@@ -132,8 +132,8 @@ static int mirModToGLFWMod(uint32_t mods)
 
 static int toGLFWKeyCode(uint32_t key)
 {
-    if (key < sizeof(_glfw.mir.publicKeys) / sizeof(_glfw.mir.publicKeys[0]))
-        return _glfw.mir.publicKeys[key];
+    if (key < sizeof(_glfw.mir.keycodes) / sizeof(_glfw.mir.keycodes[0]))
+        return _glfw.mir.keycodes[key];
 
     return GLFW_KEY_UNKNOWN;
 }
@@ -201,17 +201,31 @@ static void handlePointerButton(_GLFWwindow* window,
 static void handlePointerMotion(_GLFWwindow* window,
                                 const MirPointerEvent* pointer_event)
 {
-    int current_x = window->cursorPosX;
-    int current_y = window->cursorPosY;
-    int x  = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_x);
-    int y  = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_y);
-    int dx = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_hscroll);
-    int dy = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_vscroll);
+    const int hscroll = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_hscroll);
+    const int vscroll = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_vscroll);
 
-    if (current_x != x || current_y != y)
-      _glfwInputCursorMotion(window, x, y);
-    if (dx != 0 || dy != 0)
-      _glfwInputScroll(window, dx, dy);
+    if (window->cursorMode == GLFW_CURSOR_DISABLED)
+    {
+        if (_glfw.mir.disabledCursorWindow != window)
+            return;
+
+        const int dx = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_relative_x);
+        const int dy = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_relative_y);
+        const int current_x = window->virtualCursorPosX;
+        const int current_y = window->virtualCursorPosY;
+
+        _glfwInputCursorPos(window, dx + current_x, dy + current_y);
+    }
+    else
+    {
+        const int x = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_x);
+        const int y = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_y);
+
+        _glfwInputCursorPos(window, x, y);
+    }
+
+    if (hscroll != 0 || vscroll != 0)
+      _glfwInputScroll(window, hscroll, vscroll);
 }
 
 static void handlePointerEvent(const MirPointerEvent* pointer_event,
@@ -235,7 +249,6 @@ static void handlePointerEvent(const MirPointerEvent* pointer_event,
               break;
           default:
               break;
-
     }
 }
 
@@ -287,7 +300,7 @@ static GLFWbool createSurface(_GLFWwindow* window)
                         "Mir: Unable to find a correct pixel format");
         return GLFW_FALSE;
     }
- 
+
     spec = mir_connection_create_spec_for_normal_surface(_glfw.mir.connection,
                                                          window->mir.width,
                                                          window->mir.height,
@@ -311,6 +324,17 @@ static GLFWbool createSurface(_GLFWwindow* window)
     mir_surface_set_event_handler(window->mir.surface, addNewEvent, window);
 
     return GLFW_TRUE;
+}
+
+static void setSurfaceConfinement(_GLFWwindow* window, MirPointerConfinementState state)
+{
+    MirSurfaceSpec* spec;
+
+    spec = mir_connection_create_spec_for_changes(_glfw.mir.connection);
+    mir_surface_spec_set_pointer_confinement(spec, state);
+
+    mir_surface_apply_spec(window->mir.surface, spec);
+    mir_surface_spec_release(spec);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -371,6 +395,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     window->mir.width  = wndconfig->width;
     window->mir.height = wndconfig->height;
+    window->mir.currentCursor = NULL;
 
     if (!createSurface(window))
         return GLFW_FALSE;
@@ -380,6 +405,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (ctxconfig->client != GLFW_NO_API)
     {
+        if (!_glfwInitEGL())
+            return GLFW_FALSE;
         if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
             return GLFW_FALSE;
     }
@@ -389,14 +416,17 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
+    if (_glfw.mir.disabledCursorWindow == window)
+        _glfw.mir.disabledCursorWindow = NULL;
+
     if (mir_surface_is_valid(window->mir.surface))
     {
         mir_surface_release_sync(window->mir.surface);
         window->mir.surface = NULL;
     }
 
-    if (window->context.client != GLFW_NO_API)
-        window->context.destroyContext(window);
+    if (window->context.destroy)
+        window->context.destroy(window);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
@@ -474,18 +504,35 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
-    mir_surface_set_state(window->mir.surface, mir_surface_state_minimized);
+    MirSurfaceSpec* spec;
+
+    spec = mir_connection_create_spec_for_changes(_glfw.mir.connection);
+    mir_surface_spec_set_state(spec, mir_surface_state_minimized);
+
+    mir_surface_apply_spec(window->mir.surface, spec);
+    mir_surface_spec_release(spec);
 }
 
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
-    mir_surface_set_state(window->mir.surface, mir_surface_state_restored);
+    MirSurfaceSpec* spec;
+
+    spec = mir_connection_create_spec_for_changes(_glfw.mir.connection);
+    mir_surface_spec_set_state(spec, mir_surface_state_restored);
+
+    mir_surface_apply_spec(window->mir.surface, spec);
+    mir_surface_spec_release(spec);
 }
 
 void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 {
-    _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
+    MirSurfaceSpec* spec;
+
+    spec = mir_connection_create_spec_for_changes(_glfw.mir.connection);
+    mir_surface_spec_set_state(spec, mir_surface_state_maximized);
+
+    mir_surface_apply_spec(window->mir.surface, spec);
+    mir_surface_spec_release(spec);
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)
@@ -528,9 +575,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
 
 int _glfwPlatformWindowFocused(_GLFWwindow* window)
 {
-    _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
-    return GLFW_FALSE;
+    return mir_surface_get_focus(window->mir.surface) == mir_surface_focused;
 }
 
 int _glfwPlatformWindowIconified(_GLFWwindow* window)
@@ -547,48 +592,46 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
 
 int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 {
-    _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
-    return GLFW_FALSE;
+    return mir_surface_get_state(window->mir.surface) == mir_surface_state_maximized;
 }
 
 void _glfwPlatformPollEvents(void)
 {
     EventNode* node = NULL;
 
-    while ((node = dequeueEvent(_glfw.mir.event_queue)))
+    while ((node = dequeueEvent(_glfw.mir.eventQueue)))
     {
         handleEvent(node->event, node->window);
-        deleteNode(_glfw.mir.event_queue, node);
+        deleteNode(_glfw.mir.eventQueue, node);
     }
 }
 
 void _glfwPlatformWaitEvents(void)
 {
-    pthread_mutex_lock(&_glfw.mir.event_mutex);
+    pthread_mutex_lock(&_glfw.mir.eventMutex);
 
-    if (emptyEventQueue(_glfw.mir.event_queue))
-        pthread_cond_wait(&_glfw.mir.event_cond, &_glfw.mir.event_mutex);
+    if (emptyEventQueue(_glfw.mir.eventQueue))
+        pthread_cond_wait(&_glfw.mir.eventCond, &_glfw.mir.eventMutex);
 
-    pthread_mutex_unlock(&_glfw.mir.event_mutex);
+    pthread_mutex_unlock(&_glfw.mir.eventMutex);
 
     _glfwPlatformPollEvents();
 }
 
 void _glfwPlatformWaitEventsTimeout(double timeout)
 {
-    pthread_mutex_lock(&_glfw.mir.event_mutex);
+    pthread_mutex_lock(&_glfw.mir.eventMutex);
 
-    if (emptyEventQueue(_glfw.mir.event_queue))
+    if (emptyEventQueue(_glfw.mir.eventQueue))
     {
         struct timespec time;
         clock_gettime(CLOCK_REALTIME, &time);
         time.tv_sec += (long) timeout;
         time.tv_nsec += (long) ((timeout - (long) timeout) * 1e9);
-        pthread_cond_timedwait(&_glfw.mir.event_cond, &_glfw.mir.event_mutex, &time);
+        pthread_cond_timedwait(&_glfw.mir.eventCond, &_glfw.mir.eventMutex, &time);
     }
 
-    pthread_mutex_unlock(&_glfw.mir.event_mutex);
+    pthread_mutex_unlock(&_glfw.mir.eventMutex);
 
     _glfwPlatformPollEvents();
 }
@@ -605,7 +648,6 @@ void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* heigh
         *height = window->mir.height;
 }
 
-// FIXME implement
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                               const GLFWimage* image,
                               int xhot, int yhot)
@@ -653,7 +695,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
         pixels += r_stride;
     }
 
-    cursor->mir.custom_cursor = stream;
+    cursor->mir.customCursor = stream;
 
     return GLFW_TRUE;
 }
@@ -685,8 +727,8 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 
     if (cursor_name)
     {
-        cursor->mir.conf          = mir_cursor_configuration_from_name(cursor_name);
-        cursor->mir.custom_cursor = NULL;
+        cursor->mir.conf         = mir_cursor_configuration_from_name(cursor_name);
+        cursor->mir.customCursor = NULL;
 
         return GLFW_TRUE;
     }
@@ -698,23 +740,25 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 {
     if (cursor->mir.conf)
         mir_cursor_configuration_destroy(cursor->mir.conf);
-    if (cursor->mir.custom_cursor)
-        mir_buffer_stream_release_sync(cursor->mir.custom_cursor);
+    if (cursor->mir.customCursor)
+        mir_buffer_stream_release_sync(cursor->mir.customCursor);
 }
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 {
     if (cursor && cursor->mir.conf)
     {
+        window->mir.currentCursor = cursor;
+
         mir_wait_for(mir_surface_configure_cursor(window->mir.surface, cursor->mir.conf));
-        if (cursor->mir.custom_cursor)
+        if (cursor->mir.customCursor)
         {
-            mir_buffer_stream_swap_buffers_sync(cursor->mir.custom_cursor);
+            mir_buffer_stream_swap_buffers_sync(cursor->mir.customCursor);
         }
     }
     else
     {
-        mir_wait_for(mir_surface_configure_cursor(window->mir.surface, _glfw.mir.default_conf));
+        mir_wait_for(mir_surface_configure_cursor(window->mir.surface, _glfw.mir.defaultConf));
     }
 }
 
@@ -732,8 +776,30 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos)
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
-    _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
+    if (mode == GLFW_CURSOR_DISABLED)
+    {
+        _glfw.mir.disabledCursorWindow = window;
+        setSurfaceConfinement(window, mir_pointer_confined_to_surface);
+        mir_wait_for(mir_surface_configure_cursor(window->mir.surface, _glfw.mir.disabledConf));
+    }
+    else
+    {
+        // If we were disabled before lets undo that!
+        if (_glfw.mir.disabledCursorWindow == window)
+        {
+            _glfw.mir.disabledCursorWindow = NULL;
+            setSurfaceConfinement(window, mir_pointer_unconfined);
+        }
+
+        if (window->cursorMode == GLFW_CURSOR_NORMAL)
+        {
+            _glfwPlatformSetCursor(window, window->mir.currentCursor);
+        }
+        else if (window->cursorMode == GLFW_CURSOR_HIDDEN)
+        {
+            mir_wait_for(mir_surface_configure_cursor(window->mir.surface, _glfw.mir.disabledConf));
+        }
+    }
 }
 
 const char* _glfwPlatformGetKeyName(int key, int scancode)
@@ -741,6 +807,11 @@ const char* _glfwPlatformGetKeyName(int key, int scancode)
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
     return NULL;
+}
+
+int _glfwPlatformGetKeyScancode(int key)
+{
+    return _glfw.mir.scancodes[key];
 }
 
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
@@ -757,21 +828,13 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return NULL;
 }
 
-char** _glfwPlatformGetRequiredInstanceExtensions(uint32_t* count)
+void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)
 {
-    char** extensions;
+    if (!_glfw.vk.KHR_surface || !_glfw.vk.KHR_mir_surface)
+        return;
 
-    *count = 0;
-
-    if (!_glfw.vk.KHR_mir_surface)
-        return NULL;
-
-    extensions = calloc(2, sizeof(char*));
-    extensions[0] = strdup("VK_KHR_surface");
-    extensions[1] = strdup("VK_KHR_mir_surface");
-
-    *count = 2;
-    return extensions;
+    extensions[0] = "VK_KHR_surface";
+    extensions[1] = "VK_KHR_mir_surface";
 }
 
 int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,

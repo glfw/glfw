@@ -5,12 +5,13 @@
 @tableofcontents
 
 This guide introduces the monitor related functions of GLFW.  For details on
-a specific function, see the [reference documentation](@ref monitor).  There are
-also guides for the other areas of GLFW.
+a specific function in this category, see the @ref monitor.  There are also
+guides for the other areas of GLFW.
 
  - @ref intro_guide
  - @ref window_guide
  - @ref context_guide
+ - @ref vulkan_guide
  - @ref input_guide
 
 
@@ -83,6 +84,9 @@ void monitor_callback(GLFWmonitor* monitor, int event)
     }
 }
 @endcode
+
+If a monitor is disconnected, any windows that are full screen on it get forced
+into windowed mode.
 
 
 @section monitor_properties Monitor properties

@@ -1,6 +1,6 @@
 //========================================================================
 // Clipboard test program
-// Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -134,18 +134,11 @@ int main(int argc, char** argv)
     glfwSetKeyCallback(window, key_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    glMatrixMode(GL_PROJECTION);
-    glOrtho(-1.f, 1.f, -1.f, 1.f, -1.f, 1.f);
-    glMatrixMode(GL_MODELVIEW);
-
     glClearColor(0.5f, 0.5f, 0.5f, 0);
 
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
-
-        glColor3f(0.8f, 0.2f, 0.4f);
-        glRectf(-0.5f, -0.5f, 0.5f, 0.5f);
 
         glfwSwapBuffers(window);
         glfwWaitEvents();

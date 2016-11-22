@@ -1,6 +1,6 @@
 //========================================================================
 // Monitor information tool
-// Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -49,16 +49,24 @@ static void usage(void)
     printf("       monitors -h\n");
 }
 
+static int euclid(int a, int b)
+{
+    return b ? euclid(b, a % b) : a;
+}
+
 static const char* format_mode(const GLFWvidmode* mode)
 {
     static char buffer[512];
+    const int gcd = euclid(mode->width, mode->height);
 
-    sprintf(buffer,
-            "%i x %i x %i (%i %i %i) %i Hz",
-            mode->width, mode->height,
-            mode->redBits + mode->greenBits + mode->blueBits,
-            mode->redBits, mode->greenBits, mode->blueBits,
-            mode->refreshRate);
+    snprintf(buffer,
+             sizeof(buffer),
+             "%i x %i x %i (%i:%i) (%i %i %i) %i Hz",
+             mode->width, mode->height,
+             mode->redBits + mode->greenBits + mode->blueBits,
+             mode->width / gcd, mode->height / gcd,
+             mode->redBits, mode->greenBits, mode->blueBits,
+             mode->refreshRate);
 
     buffer[sizeof(buffer) - 1] = '\0';
     return buffer;

@@ -160,7 +160,7 @@ extensions to provide support for sRGB framebuffers.  Where both of these
 extension are unavailable, the `GLFW_SRGB_CAPABLE` hint will have no effect.
 
 
-@section compat_osx OpenGL 3.2 and later on OS X
+@section compat_osx OpenGL 3.2 and later on macOS
 
 Support for OpenGL 3.2 and above was introduced with OS X 10.7 and even then
 only forward-compatible, core profile contexts are supported.  Support for
@@ -185,10 +185,11 @@ a non-default value will cause @ref glfwCreateWindow to fail and the
 
 @section compat_vulkan Vulkan loader and API
 
-GLFW uses the standard system-wside Vulkan loader to access the Vulkan API.
-This should be installed by graphics drivers and Vulkan SDKs.  If this is not
-available, @ref glfwVulkanSupported will return `GLFW_FALSE` and all other
-Vulkan-related functions will fail with an @ref GLFW_API_UNAVAILABLE error.
+By default, GLFW uses the standard system-wide Vulkan loader to access the
+Vulkan API on all platforms except macOS.  This is installed by both graphics
+drivers and Vulkan SDKs.  If the loader is not found, @ref glfwVulkanSupported
+will return `GLFW_FALSE` and all other Vulkan-related functions will fail with
+an @ref GLFW_API_UNAVAILABLE error.
 
 
 @section compat_wsi Vulkan WSI extensions
@@ -200,6 +201,11 @@ GLFW uses the `VK_KHR_surface` and `VK_KHR_win32_surface` extensions to create
 surfaces on Microsoft Windows.  If any of these extensions are not available,
 @ref glfwGetRequiredInstanceExtensions will return an empty list and window
 surface creation will fail.
+
+GLFW uses the `VK_KHR_surface` and `VK_MVK_macos_surface` extensions to create
+surfaces on macOS.  If any of these extensions are not available, @ref
+glfwGetRequiredInstanceExtensions will return an empty list and window surface
+creation will fail.
 
 GLFW uses the `VK_KHR_surface` and either the `VK_KHR_xlib_surface` or
 `VK_KHR_xcb_surface` extensions to create surfaces on X11.  If `VK_KHR_surface`
@@ -216,9 +222,5 @@ GLFW uses the `VK_KHR_surface` and `VK_KHR_mir_surface` extensions to create
 surfaces on Mir.  If any of these extensions are not available, @ref
 glfwGetRequiredInstanceExtensions will return an empty list and window surface
 creation will fail.
-
-GLFW does not support any extensions for window surface creation on OS X,
-meaning@ref glfwGetRequiredInstanceExtensions will return an empty list and
-window surface creation will fail.
 
 */

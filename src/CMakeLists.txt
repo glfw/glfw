@@ -45,6 +45,12 @@ elseif (_GLFW_MIR)
     set(glfw_SOURCES ${common_SOURCES} mir_init.c mir_monitor.c mir_window.c
                      linux_joystick.c posix_time.c posix_tls.c xkb_unicode.c
                      egl_context.c)
+elseif (_GLFW_OSMESA)
+    set(glfw_HEADERS ${common_HEADERS} osmesa_platform.h
+                     posix_time.h posix_tls.h osmesa_context.h)
+    set(glfw_SOURCES ${common_SOURCES} osmesa_init.c osmesa_monitor.c
+                     osmesa_window.c posix_time.c posix_tls.c
+                     osmesa_context.c)
 endif()
 
 if (APPLE)

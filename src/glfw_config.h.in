@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.2 - www.glfw.org
+// GLFW 3.3 - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2010-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -44,9 +44,13 @@
 #cmakedefine _GLFW_WAYLAND
 // Define this to 1 if building GLFW for Mir
 #cmakedefine _GLFW_MIR
+// Define this to 1 if building GLFW for OSMesa
+#cmakedefine _GLFW_OSMESA
 
 // Define this to 1 if building as a shared library / dynamic library / DLL
 #cmakedefine _GLFW_BUILD_DLL
+// Define this to 1 to use Vulkan loader linked statically into application
+#cmakedefine _GLFW_VULKAN_STATIC
 
 // Define this to 1 to force use of high-performance GPU on hybrid systems
 #cmakedefine _GLFW_USE_HYBRID_HPG

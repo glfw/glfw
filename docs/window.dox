@@ -173,15 +173,16 @@ context, but are ignored when requesting an OpenGL ES context:
 
 `GLFW_RESIZABLE` specifies whether the windowed mode window will be resizable
 _by the user_.  The window will still be resizable using the @ref
-glfwSetWindowSize function.  This hint is ignored for full screen windows.
+glfwSetWindowSize function.  This hint is ignored for full screen and
+undecorated windows.
 
 `GLFW_VISIBLE` specifies whether the windowed mode window will be initially
 visible.  This hint is ignored for full screen windows.
 
 `GLFW_DECORATED` specifies whether the windowed mode window will have window
-decorations such as a border, a close widget, etc.  An undecorated window may
-still allow the user to generate close events on some platforms.  This hint is
-ignored for full screen windows.
+decorations such as a border, a close widget, etc.  An undecorated window will
+not be resizable by the user but will still allow the user to generate close
+events on some platforms.  This hint is ignored for full screen windows.
 
 `GLFW_FOCUSED` specifies whether the windowed mode window will be given input
 focus when created.  This hint is ignored for full screen and initially hidden

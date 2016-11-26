@@ -463,17 +463,19 @@ static void joystick_callback(int jid, int event)
 {
     if (event == GLFW_CONNECTED)
     {
-        int axisCount, buttonCount;
+        int axisCount, buttonCount, hatCount;
 
         glfwGetJoystickAxes(jid, &axisCount);
         glfwGetJoystickButtons(jid, &buttonCount);
+        glfwGetJoystickHats(jid, &hatCount);
 
-        printf("%08x at %0.3f: Joystick %i (%s) was connected with %i axes and %i buttons\n",
+        printf("%08x at %0.3f: Joystick %i (%s) was connected with %i axes, %i buttons, and %i hats\n",
                counter++, glfwGetTime(),
                jid,
                glfwGetJoystickName(jid),
                axisCount,
-               buttonCount);
+               buttonCount,
+               hatCount);
     }
     else
     {

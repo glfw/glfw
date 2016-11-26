@@ -286,6 +286,23 @@ extern "C" {
 #define GLFW_REPEAT                 2
 /*! @} */
 
+/*! @defgroup hat_directions Joystick hat directions
+ *
+ *  See [joystick hat input](@ref joystick_hat) for how these are used.
+ *
+ *  @ingroup input
+ *  @{ */
+#define GLFW_HAT_CENTERED           0
+#define GLFW_HAT_UP                 1
+#define GLFW_HAT_RIGHT              2
+#define GLFW_HAT_DOWN               4
+#define GLFW_HAT_LEFT               8
+#define GLFW_HAT_RIGHT_UP           (GLFW_HAT_RIGHT | GLFW_HAT_UP)
+#define GLFW_HAT_RIGHT_DOWN         (GLFW_HAT_RIGHT | GLFW_HAT_DOWN)
+#define GLFW_HAT_LEFT_UP            (GLFW_HAT_LEFT  | GLFW_HAT_UP)
+#define GLFW_HAT_LEFT_DOWN          (GLFW_HAT_LEFT  | GLFW_HAT_DOWN)
+/*! @} */
+
 /*! @defgroup keys Keyboard keys
  *
  *  See [key input](@ref input_key) for how these are used.
@@ -3753,6 +3770,60 @@ GLFWAPI const float* glfwGetJoystickAxes(int jid, int* count);
  *  @ingroup input
  */
 GLFWAPI const unsigned char* glfwGetJoystickButtons(int jid, int* count);
+
+/*! @brief Returns the state of all hats of the specified joystick.
+ *
+ *  This function returns the state of all hats of the specified joystick.
+ *  Each element in the array is one of the following:
+ *
+ *      GLFW_HAT_CENTERED
+ *      GLFW_HAT_UP
+ *      GLFW_HAT_RIGHT
+ *      GLFW_HAT_DOWN
+ *      GLFW_HAT_LEFT
+ *      GLFW_HAT_RIGHT_UP
+ *      GLFW_HAT_RIGHT_DOWN
+ *      GLFW_HAT_LEFT_UP
+ *      GLFW_HAT_LEFT_DOWN
+ *
+ *  For masking purposes, the hat state may be ANDed with the following primary
+ *  directions:
+ *
+ *      GLFW_HAT_UP
+ *      GLFW_HAT_RIGHT
+ *      GLFW_HAT_DOWN
+ *      GLFW_HAT_LEFT
+ *
+ *  Querying a joystick slot with no device present is not an error, but will
+ *  cause this function to return `NULL`.  Call @ref glfwJoystickPresent to
+ *  check device presence.
+ *
+ *  @param[in] jid The [joystick](@ref joysticks) to query.
+ *  @param[out] count Where to store the number of hat states in the returned
+ *  array.  This is set to zero if the joystick is not present or an error
+ *  occurred.
+ *  @return An array of hat states, or `NULL` if the joystick is not present
+ *  or an [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_INVALID_ENUM and @ref GLFW_PLATFORM_ERROR.
+ *
+ *  @remark @linux Linux does not currently support hats.
+ *
+ *  @pointer_lifetime The returned array is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is valid until the specified joystick is
+ *  disconnected, this function is called again for that joystick or the library
+ *  is terminated.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref joystick_hat
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup input
+ */
+GLFWAPI const unsigned char* glfwGetJoystickHats(int jid, int* count);
 
 /*! @brief Returns the name of the specified joystick.
  *

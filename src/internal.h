@@ -626,6 +626,11 @@ const float* _glfwPlatformGetJoystickAxes(int jid, int* count);
  */
 const unsigned char* _glfwPlatformGetJoystickButtons(int jid, int* count);
 
+/*! @copydoc glfwGetJoystickHats
+ *  @ingroup platform
+ */
+const unsigned char* _glfwPlatformGetJoystickHats(int jid, int* count);
+
 /*! @copydoc glfwGetJoystickName
  *  @ingroup platform
  */

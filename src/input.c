@@ -667,6 +667,22 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int jid, int* count)
     return _glfw.joysticks[jid].buttons;
 }
 
+GLFWAPI const unsigned char* glfwGetJoystickHats(int jid, int* count)
+{
+    assert(count != NULL);
+    *count = 0;
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+    if (jid < 0 || jid > GLFW_JOYSTICK_LAST)
+    {
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", jid);
+        return NULL;
+    }
+
+    return NULL;
+}
+
 GLFWAPI const char* glfwGetJoystickName(int jid)
 {
     assert(jid >= GLFW_JOYSTICK_1);

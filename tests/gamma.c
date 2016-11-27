@@ -116,7 +116,6 @@ int main(int argc, char** argv)
     while (!glfwWindowShouldClose(window))
     {
         int width, height;
-        struct nk_panel layout;
         struct nk_rect area;
 
         glfwGetWindowSize(window, &width, &height);
@@ -124,7 +123,7 @@ int main(int argc, char** argv)
 
         glClear(GL_COLOR_BUFFER_BIT);
         nk_glfw3_new_frame();
-        if (nk_begin(nk, &layout, "", area, 0))
+        if (nk_begin(nk, "", area, 0))
         {
             const GLFWgammaramp* ramp = glfwGetGammaRamp(monitor);
             nk_window_set_bounds(nk, area);

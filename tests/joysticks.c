@@ -128,14 +128,13 @@ int main(void)
     while (!glfwWindowShouldClose(window))
     {
         int i, width, height;
-        struct nk_panel layout;
 
         glfwGetWindowSize(window, &width, &height);
 
         glClear(GL_COLOR_BUFFER_BIT);
         nk_glfw3_new_frame();
 
-        if (nk_begin(nk, &layout,
+        if (nk_begin(nk,
                      "Joysticks",
                      nk_rect(0.f, 0.f, 0.f, 0.f),
                      NK_WINDOW_MINIMIZABLE |
@@ -162,7 +161,7 @@ int main(void)
 
         for (i = 0;  i < joystick_count;  i++)
         {
-            if (nk_begin(nk, &layout,
+            if (nk_begin(nk,
                          joystick_label(joysticks[i]),
                          nk_rect(i * 20.f, i * 20.f, 400.f, 400.f),
                          NK_WINDOW_BORDER |

@@ -1,5 +1,5 @@
 /*
- * Nuklear - v1.00 - public domain
+ * Nuklear - v1.17 - public domain
  * no warrenty implied; use at your own risk.
  * authored from 2015-2016 by Micha Mettke
  */
@@ -219,7 +219,7 @@ nk_glfw3_clipbard_copy(nk_handle usr, const char *text, int len)
     if (!len) return;
     str = (char*)malloc((size_t)len+1);
     if (!str) return;
-    NK_MEMCPY(str, text, (size_t)len);
+    memcpy(str, text, (size_t)len);
     str[len] = '\0';
     glfwSetClipboardString(glfw.win, str);
     free(str);
@@ -344,7 +344,7 @@ void nk_glfw3_shutdown(void)
     nk_free(&glfw.ctx);
     glDeleteTextures(1, &dev->font_tex);
     nk_buffer_free(&dev->cmds);
-    NK_MEMSET(&glfw, 0, sizeof(glfw));
+    memset(&glfw, 0, sizeof(glfw));
 }
 
 #endif

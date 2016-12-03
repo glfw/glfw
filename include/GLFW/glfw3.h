@@ -1831,6 +1831,13 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  @remark @win32 The context to share resources with must not be current on
  *  any other thread.
  *
+ *  @remark @macos The OS only supports forward-compatible core profile contexts
+ *  for OpenGL versions 3.2 and later.  Before creating an OpenGL context of
+ *  version 3.2 or later you must set the
+ *  [GLFW_OPENGL_FORWARD_COMPAT](@ref window_hints_ctx) and
+ *  [GLFW_OPENGL_PROFILE](@ref window_hints_ctx) accordingly.  OpenGL 3.0 and
+ *  3.1 contexts are not supported at all on macOS.
+ *
  *  @remark @macos The GLFW window has no icon, as it is not a document
  *  window, but the dock icon will be the same as the application bundle's icon.
  *  For more information on bundles, see the

@@ -128,26 +128,19 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    if (ctxconfig->major == 3 && ctxconfig->minor < 2)
-    {
-        _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                        "NSGL: The targeted version of macOS does not support OpenGL 3.0 or 3.1");
-        return GLFW_FALSE;
-    }
-
     if (ctxconfig->major > 2)
     {
-        if (!ctxconfig->forward)
+        if (ctxconfig->major == 3 && ctxconfig->minor < 2)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                            "NSGL: The targeted version of macOS only supports forward-compatible contexts for OpenGL 3.2 and above");
+                            "NSGL: The targeted version of macOS does not support OpenGL 3.0 or 3.1 (but may support 3.3 and above)");
             return GLFW_FALSE;
         }
 
-        if (ctxconfig->profile != GLFW_OPENGL_CORE_PROFILE)
+        if (!ctxconfig->forward || ctxconfig->profile != GLFW_OPENGL_CORE_PROFILE)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                            "NSGL: The targeted version of macOS only supports core profile contexts for OpenGL 3.2 and above");
+                            "NSGL: The targeted version of macOS only supports forward-compatible core profile contexts for OpenGL 3.2 and above");
             return GLFW_FALSE;
         }
     }

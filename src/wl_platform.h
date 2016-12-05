@@ -71,10 +71,6 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
 
 
-// Wayland-specific video mode data
-//
-typedef struct _GLFWvidmodeWayland _GLFWvidmodeWayland;
-
 // Wayland-specific per-window data
 //
 typedef struct _GLFWwindowWayland
@@ -126,10 +122,6 @@ typedef struct _GLFWlibraryWayland
     struct wl_surface*          cursorSurface;
     uint32_t                    pointerSerial;
 
-    _GLFWmonitor**              monitors;
-    int                         monitorsCount;
-    int                         monitorsSize;
-
     short int                   keycodes[256];
     short int                   scancodes[GLFW_KEY_LAST + 1];
 
@@ -155,15 +147,12 @@ typedef struct _GLFWlibraryWayland
 typedef struct _GLFWmonitorWayland
 {
     struct wl_output*           output;
-
-    _GLFWvidmodeWayland*        modes;
-    int                         modesCount;
-    int                         modesSize;
-    GLFWbool                    done;
+    int                         currentMode;
 
     int                         x;
     int                         y;
     int                         scale;
+
 } _GLFWmonitorWayland;
 
 // Wayland-specific per-cursor data

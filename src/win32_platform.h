@@ -345,6 +345,7 @@ char* _glfwCreateUTF8FromWideStringWin32(const WCHAR* source);
 
 void _glfwInitTimerWin32(void);
 
+void _glfwPollMonitorsWin32(void);
 GLFWbool _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoModeWin32(_GLFWmonitor* monitor);
 

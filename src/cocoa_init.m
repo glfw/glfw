@@ -322,6 +322,7 @@ int _glfwPlatformInit(void)
     _glfwInitTimerNS();
     _glfwInitJoysticksNS();
 
+    _glfwPollMonitorsNS();
     return GLFW_TRUE;
 }
 

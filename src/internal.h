@@ -48,6 +48,9 @@
 #define GLFW_INCLUDE_NONE
 #include "../include/GLFW/glfw3.h"
 
+#define _GLFW_INSERT_FIRST      0
+#define _GLFW_INSERT_LAST       1
+
 typedef int GLFWbool;
 
 typedef struct _GLFWwndconfig   _GLFWwndconfig;
@@ -563,21 +566,6 @@ const char* _glfwPlatformGetKeyName(int key, int scancode);
  */
 int _glfwPlatformGetKeyScancode(int key);
 
-/*! @copydoc glfwGetMonitors
- *  @ingroup platform
- */
-_GLFWmonitor** _glfwPlatformGetMonitors(int* count);
-
-/*! @brief Checks whether two monitor objects represent the same monitor.
- *
- *  @param[in] first The first monitor.
- *  @param[in] second The second monitor.
- *  @return @c GLFW_TRUE if the monitor objects represent the same monitor, or
- *  @c GLFW_FALSE otherwise.
- *  @ingroup platform
- */
-GLFWbool _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second);
-
 /*! @copydoc glfwGetMonitorPos
  *  @ingroup platform
  */
@@ -959,7 +947,7 @@ void _glfwInputCursorEnter(_GLFWwindow* window, GLFWbool entered);
 
 /*! @ingroup event
  */
-void _glfwInputMonitorChange(void);
+void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int type);
 
 /*! @ingroup event
  */

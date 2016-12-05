@@ -433,6 +433,7 @@ int _glfwPlatformInit(void)
     _glfwInitTimerWin32();
     _glfwInitJoysticksWin32();
 
+    _glfwPollMonitorsWin32();
     return GLFW_TRUE;
 }
 

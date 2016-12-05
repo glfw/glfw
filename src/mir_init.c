@@ -213,6 +213,7 @@ int _glfwPlatformInit(void)
         return GLFW_FALSE;
     }
 
+    _glfwPollMonitorsMir();
     return GLFW_TRUE;
 }
 

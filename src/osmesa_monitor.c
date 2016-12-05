@@ -32,18 +32,6 @@
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-_GLFWmonitor** _glfwPlatformGetMonitors(int* count)
-{
-    // OSMesa is headless, so no monitors
-    *count = 0;
-    return NULL;
-}
-
-int _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
-{
-    return GLFW_FALSE;
-}
-
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {
 }

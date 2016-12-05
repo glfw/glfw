@@ -458,7 +458,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             {
                 if (wParam == DBT_DEVNODES_CHANGED)
                 {
-                    _glfwInputMonitorChange();
+                    _glfwPollMonitorsWin32();
                     return TRUE;
                 }
                 else if (wParam == DBT_DEVICEARRIVAL)

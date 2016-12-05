@@ -340,7 +340,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)applicationDidChangeScreenParameters:(NSNotification *) notification
 {
-    _glfwInputMonitorChange();
+    _glfwPollMonitorsNS();
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification

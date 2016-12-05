@@ -3113,8 +3113,8 @@ template<typename T> struct nk_alignof{struct Big {T x; char c;}; enum {
 #define NK_USHORT_MAX 65535
 #define NK_SINT_MIN (-2147483647)
 #define NK_SINT_MAX 2147483647
-#define NK_UINT_MIN 0
-#define NK_UINT_MAX 4294967295
+#define NK_UINT_MIN 0u
+#define NK_UINT_MAX 4294967295u
 
 /* Make sure correct type size:
  * This will fire with a negative subscript error if the type sizes

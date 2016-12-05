@@ -44,6 +44,7 @@ static const struct
 };
 
 static const char* vertex_shader_text =
+"#version 110\n"
 "uniform mat4 MVP;\n"
 "attribute vec3 vCol;\n"
 "attribute vec2 vPos;\n"
@@ -55,6 +56,7 @@ static const char* vertex_shader_text =
 "}\n";
 
 static const char* fragment_shader_text =
+"#version 110\n"
 "varying vec3 color;\n"
 "void main()\n"
 "{\n"

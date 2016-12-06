@@ -133,7 +133,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         if (ctxconfig->major == 3 && ctxconfig->minor < 2)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                            "NSGL: The targeted version of macOS does not support OpenGL 3.0 or 3.1 (but may support 3.3 and above)");
+                            "NSGL: The targeted version of macOS does not support OpenGL 3.0 or 3.1 but may support 3.3 and above");
             return GLFW_FALSE;
         }
 

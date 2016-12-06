@@ -159,6 +159,18 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
     return GLFW_FALSE;
 }
 
+void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
+{
+}
+
+void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
+{
+}
+
+void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
+{
+}
+
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
 }

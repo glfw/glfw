@@ -213,6 +213,9 @@ glfwSetGammaRamp with the resulting ramp.
 glfwSetGamma(monitor, 1.0);
 @endcode
 
+To experiment with gamma correction via the @ref glfwSetGamma function, run the
+`gamma` test program.
+
 @note The software controlled gamma ramp is applied _in addition_ to the
 hardware gamma correction, which today is usually an approximation of sRGB
 gamma.  This means that setting a perfectly linear ramp, or gamma 1.0, will

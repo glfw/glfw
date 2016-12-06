@@ -15,10 +15,9 @@ for the other areas of GLFW.
  - @ref monitor_guide
 
 GLFW provides many kinds of input.  While some can only be polled, like time, or
-only received via callbacks, like scrolling, there are those that provide both
-callbacks and polling.  Where a callback is provided, that is the recommended
-way to receive that kind of input.  The more you can use callbacks the less time
-your users' machines will need to spend polling.
+only received via callbacks, like scrolling, many provide both callbacks and
+polling.  Callbacks are more work to use than polling but is less CPU intensive
+and guarantees that you do not miss state changes.
 
 All input callbacks receive a window handle.  By using the
 [window user pointer](@ref window_userptr), you can access non-global structures
@@ -32,14 +31,13 @@ information.
 
 @section events Event processing
 
-GLFW needs to communicate regularly with the window system both in order to
-receive events and to show that the application hasn't locked up.  Event
-processing must be done regularly while you have any windows and is normally
-done each frame after [buffer swapping](@ref buffer_swap).  Even when you have
-no windows, event polling needs to be done in order to receive monitor
-connection events.
+GLFW needs to poll the window system for events both to provide input to the
+application and to prove to the window system that the application hasn't locked
+up.  Event processing is normally done each frame after [buffer swapping](@ref
+buffer_swap).  Even when you have no windows, event polling needs to be done in
+order to receive monitor and joystick connection events.
 
-There are two functions for processing pending events.  @ref glfwPollEvents,
+There are three functions for processing pending events.  @ref glfwPollEvents,
 processes only those events that have already been received and then returns
 immediately.
 
@@ -47,7 +45,7 @@ immediately.
 glfwPollEvents();
 @endcode
 
-This is the best choice when rendering continually, like most games do.
+This is the best choice when rendering continuously, like most games do.
 
 If you only need to update the contents of the window when you receive new
 input, @ref glfwWaitEvents is a better choice.
@@ -61,8 +59,8 @@ processes all received events.  This saves a great deal of CPU cycles and is
 useful for, for example, editing tools.  There must be at least one GLFW window
 for this function to sleep.
 
-If you want to wait for events but have UI elements that need periodic updates,
-call @ref glfwWaitEventsTimeout.
+If you want to wait for events but have UI elements or other tasks that need
+periodic updates, @ref glfwWaitEventsTimeout lets you specify a timeout.
 
 @code
 glfwWaitEventsTimeout(0.7);
@@ -80,10 +78,17 @@ glfwPostEmptyEvent.
 glfwPostEmptyEvent();
 @endcode
 
-Do not assume that callbacks will _only_ be called through either of the above
-functions.  While it is necessary to process events in the event queue, some
-window systems will send some events directly to the application, which in turn
-causes callbacks to be called outside of regular event processing.
+Do not assume that callbacks will _only_ be called in response to the above
+functions.  While it is necessary to process events in one or more of the ways
+above, window systems that require GLFW to register callbacks of its own can
+pass events to GLFW in response to many window system function calls.  GLFW will
+pass those events on to the application callbacks before returning.
+
+For example, on Windows the system function that @ref glfwSetWindowSize is
+implemented with will send window size events directly to the event callback
+that every window has and that GLFW implements for its windows.  If you have set
+a [window size callback](@ref window_size) GLFW will call it in turn with the
+new size before everything returns back out of the @ref glfwSetWindowSize call.
 
 
 @section input_keyboard Keyboard input
@@ -125,9 +130,16 @@ _E-mail_ and _Play_ keys.
 The scancode is unique for every key, regardless of whether it has a key token.
 Scancodes are platform-specific but consistent over time, so keys will have
 different scancodes depending on the platform but they are safe to save to disk.
+You can query the scancode for any [named key](@ref keys) on the current
+platform with @ref glfwGetKeyScancode.
 
-Key states for [named keys](@ref keys) are also saved in per-window state arrays
-that can be polled with @ref glfwGetKey.
+@code
+const int scancode = glfwGetKeyScancode(GLFW_KEY_X);
+set_key_mapping(scancode, swap_weapons);
+@endcode
+
+The last reported state for every [named key](@ref keys) is also saved in
+per-window state arrays that can be polled with @ref glfwGetKey.
 
 @code
 int state = glfwGetKey(window, GLFW_KEY_E);
@@ -138,7 +150,7 @@ if (state == GLFW_PRESS)
 The returned state is one of `GLFW_PRESS` or `GLFW_RELEASE`.
 
 This function only returns cached key event state.  It does not poll the
-system for the current state of the key.
+system for the current physical state of the key.
 
 Whenever you poll state, you risk missing the state change you are looking for.
 If a pressed key is released again before you poll its state, you will have
@@ -221,17 +233,6 @@ This function can handle both [keys and scancodes](@ref input_key).  If the
 specified key is `GLFW_KEY_UNKNOWN` then the scancode is used, otherwise it is
 ignored.  This matches the behavior of the key callback, meaning the callback
 arguments can always be passed unmodified to this function.
-
-
-@subsection input_key_scancode Key scancodes
-
-If you need the platform dependent scancode for a [named key](@ref keys), you
-can query it with @ref glfwGetKeyScancode.
-
-@code
-const int scancode = glfwGetKeyScancode(GLFW_KEY_X);
-set_key_mapping(scancode, swap_weapons);
-@endcode
 
 
 @section input_mouse Mouse input
@@ -514,6 +515,9 @@ and disconnected, they will become spread out.
 Joystick state is updated as needed when a joystick function is called and does
 not require a window to be created or @ref glfwPollEvents or @ref glfwWaitEvents
 to be called.
+
+To see all the properties of all connected joysticks in real-time, run the
+`joysticks` test program.
 
 
 @subsection joystick_axis Joystick axis states

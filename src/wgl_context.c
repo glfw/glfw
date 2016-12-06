@@ -434,17 +434,17 @@ GLFWbool _glfwInitWGL(void)
         return GLFW_FALSE;
     }
 
-    _glfw.wgl.CreateContext = (WGLCREATECONTEXT_T)
+    _glfw.wgl.CreateContext = (PFN_wglCreateContext)
         GetProcAddress(_glfw.wgl.instance, "wglCreateContext");
-    _glfw.wgl.DeleteContext = (WGLDELETECONTEXT_T)
+    _glfw.wgl.DeleteContext = (PFN_wglDeleteContext)
         GetProcAddress(_glfw.wgl.instance, "wglDeleteContext");
-    _glfw.wgl.GetProcAddress = (WGLGETPROCADDRESS_T)
+    _glfw.wgl.GetProcAddress = (PFN_wglGetProcAddress)
         GetProcAddress(_glfw.wgl.instance, "wglGetProcAddress");
-    _glfw.wgl.GetCurrentDC = (WGLGETCURRENTDC_T)
+    _glfw.wgl.GetCurrentDC = (PFN_wglGetCurrentDC)
         GetProcAddress(_glfw.wgl.instance, "wglGetCurrentDC");
-    _glfw.wgl.MakeCurrent = (WGLMAKECURRENT_T)
+    _glfw.wgl.MakeCurrent = (PFN_wglMakeCurrent)
         GetProcAddress(_glfw.wgl.instance, "wglMakeCurrent");
-    _glfw.wgl.ShareLists = (WGLSHARELISTS_T)
+    _glfw.wgl.ShareLists = (PFN_wglShareLists)
         GetProcAddress(_glfw.wgl.instance, "wglShareLists");
 
     return GLFW_TRUE;

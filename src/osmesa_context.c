@@ -142,19 +142,19 @@ GLFWbool _glfwInitOSMesa(void)
         return GLFW_FALSE;
     }
 
-    _glfw.osmesa.CreateContextExt = (PFNOSMESACREATECONTEXTEXTPROC)
+    _glfw.osmesa.CreateContextExt = (PFN_OSMesaCreateContextExt)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaCreateContextExt");
-    _glfw.osmesa.CreateContextAttribs = (PFNOSMESACREATECONTEXTATTRIBSPROC)
+    _glfw.osmesa.CreateContextAttribs = (PFN_OSMesaCreateContextAttribs)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaCreateContextAttribs");
-    _glfw.osmesa.DestroyContext = (PFNOSMESADESTROYCONTEXTPROC)
+    _glfw.osmesa.DestroyContext = (PFN_OSMesaDestroyContext)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaDestroyContext");
-    _glfw.osmesa.MakeCurrent = (PFNOSMESAMAKECURRENTPROC)
+    _glfw.osmesa.MakeCurrent = (PFN_OSMesaMakeCurrent)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaMakeCurrent");
-    _glfw.osmesa.GetColorBuffer = (PFNOSMESAGETCOLORBUFFERPROC)
+    _glfw.osmesa.GetColorBuffer = (PFN_OSMesaGetColorBuffer)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaGetColorBuffer");
-    _glfw.osmesa.GetDepthBuffer = (PFNOSMESAGETDEPTHBUFFERPROC)
+    _glfw.osmesa.GetDepthBuffer = (PFN_OSMesaGetDepthBuffer)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaGetDepthBuffer");
-    _glfw.osmesa.GetProcAddress = (PFNOSMESAGETPROCADDRESSPROC)
+    _glfw.osmesa.GetProcAddress = (PFN_OSMesaGetProcAddress)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaGetProcAddress");
 
     if (!_glfw.osmesa.CreateContextExt ||

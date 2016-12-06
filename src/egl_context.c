@@ -315,37 +315,37 @@ GLFWbool _glfwInitEGL(void)
 
     _glfw.egl.prefix = (strncmp(sonames[i], "lib", 3) == 0);
 
-    _glfw.egl.GetConfigAttrib = (PFNEGLGETCONFIGATTRIBPROC)
+    _glfw.egl.GetConfigAttrib = (PFN_eglGetConfigAttrib)
         _glfw_dlsym(_glfw.egl.handle, "eglGetConfigAttrib");
-    _glfw.egl.GetConfigs = (PFNEGLGETCONFIGSPROC)
+    _glfw.egl.GetConfigs = (PFN_eglGetConfigs)
         _glfw_dlsym(_glfw.egl.handle, "eglGetConfigs");
-    _glfw.egl.GetDisplay = (PFNEGLGETDISPLAYPROC)
+    _glfw.egl.GetDisplay = (PFN_eglGetDisplay)
         _glfw_dlsym(_glfw.egl.handle, "eglGetDisplay");
-    _glfw.egl.GetError = (PFNEGLGETERRORPROC)
+    _glfw.egl.GetError = (PFN_eglGetError)
         _glfw_dlsym(_glfw.egl.handle, "eglGetError");
-    _glfw.egl.Initialize = (PFNEGLINITIALIZEPROC)
+    _glfw.egl.Initialize = (PFN_eglInitialize)
         _glfw_dlsym(_glfw.egl.handle, "eglInitialize");
-    _glfw.egl.Terminate = (PFNEGLTERMINATEPROC)
+    _glfw.egl.Terminate = (PFN_eglTerminate)
         _glfw_dlsym(_glfw.egl.handle, "eglTerminate");
-    _glfw.egl.BindAPI = (PFNEGLBINDAPIPROC)
+    _glfw.egl.BindAPI = (PFN_eglBindAPI)
         _glfw_dlsym(_glfw.egl.handle, "eglBindAPI");
-    _glfw.egl.CreateContext = (PFNEGLCREATECONTEXTPROC)
+    _glfw.egl.CreateContext = (PFN_eglCreateContext)
         _glfw_dlsym(_glfw.egl.handle, "eglCreateContext");
-    _glfw.egl.DestroySurface = (PFNEGLDESTROYSURFACEPROC)
+    _glfw.egl.DestroySurface = (PFN_eglDestroySurface)
         _glfw_dlsym(_glfw.egl.handle, "eglDestroySurface");
-    _glfw.egl.DestroyContext = (PFNEGLDESTROYCONTEXTPROC)
+    _glfw.egl.DestroyContext = (PFN_eglDestroyContext)
         _glfw_dlsym(_glfw.egl.handle, "eglDestroyContext");
-    _glfw.egl.CreateWindowSurface = (PFNEGLCREATEWINDOWSURFACEPROC)
+    _glfw.egl.CreateWindowSurface = (PFN_eglCreateWindowSurface)
         _glfw_dlsym(_glfw.egl.handle, "eglCreateWindowSurface");
-    _glfw.egl.MakeCurrent = (PFNEGLMAKECURRENTPROC)
+    _glfw.egl.MakeCurrent = (PFN_eglMakeCurrent)
         _glfw_dlsym(_glfw.egl.handle, "eglMakeCurrent");
-    _glfw.egl.SwapBuffers = (PFNEGLSWAPBUFFERSPROC)
+    _glfw.egl.SwapBuffers = (PFN_eglSwapBuffers)
         _glfw_dlsym(_glfw.egl.handle, "eglSwapBuffers");
-    _glfw.egl.SwapInterval = (PFNEGLSWAPINTERVALPROC)
+    _glfw.egl.SwapInterval = (PFN_eglSwapInterval)
         _glfw_dlsym(_glfw.egl.handle, "eglSwapInterval");
-    _glfw.egl.QueryString = (PFNEGLQUERYSTRINGPROC)
+    _glfw.egl.QueryString = (PFN_eglQueryString)
         _glfw_dlsym(_glfw.egl.handle, "eglQueryString");
-    _glfw.egl.GetProcAddress = (PFNEGLGETPROCADDRESSPROC)
+    _glfw.egl.GetProcAddress = (PFN_eglGetProcAddress)
         _glfw_dlsym(_glfw.egl.handle, "eglGetProcAddress");
 
     if (!_glfw.egl.GetConfigAttrib ||

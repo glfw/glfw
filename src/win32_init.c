@@ -71,7 +71,7 @@ static GLFWbool loadLibraries(void)
         return GLFW_FALSE;
     }
 
-    _glfw.win32.winmm.timeGetTime = (TIMEGETTIME_T)
+    _glfw.win32.winmm.timeGetTime = (PFN_timeGetTime)
         GetProcAddress(_glfw.win32.winmm.instance, "timeGetTime");
 
     _glfw.win32.user32.instance = LoadLibraryA("user32.dll");
@@ -81,15 +81,15 @@ static GLFWbool loadLibraries(void)
         return GLFW_FALSE;
     }
 
-    _glfw.win32.user32.SetProcessDPIAware = (SETPROCESSDPIAWARE_T)
+    _glfw.win32.user32.SetProcessDPIAware = (PFN_SetProcessDPIAware)
         GetProcAddress(_glfw.win32.user32.instance, "SetProcessDPIAware");
-    _glfw.win32.user32.ChangeWindowMessageFilterEx = (CHANGEWINDOWMESSAGEFILTEREX_T)
+    _glfw.win32.user32.ChangeWindowMessageFilterEx = (PFN_ChangeWindowMessageFilterEx)
         GetProcAddress(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
 
     _glfw.win32.dinput8.instance = LoadLibraryA("dinput8.dll");
     if (_glfw.win32.dinput8.instance)
     {
-        _glfw.win32.dinput8.DirectInput8Create = (DIRECTINPUT8CREATE_T)
+        _glfw.win32.dinput8.DirectInput8Create = (PFN_DirectInput8Create)
             GetProcAddress(_glfw.win32.dinput8.instance, "DirectInput8Create");
     }
 
@@ -110,9 +110,9 @@ static GLFWbool loadLibraries(void)
             _glfw.win32.xinput.instance = LoadLibraryA(names[i]);
             if (_glfw.win32.xinput.instance)
             {
-                _glfw.win32.xinput.XInputGetCapabilities = (XINPUTGETCAPABILITIES_T)
+                _glfw.win32.xinput.XInputGetCapabilities = (PFN_XInputGetCapabilities)
                     GetProcAddress(_glfw.win32.xinput.instance, "XInputGetCapabilities");
-                _glfw.win32.xinput.XInputGetState = (XINPUTGETSTATE_T)
+                _glfw.win32.xinput.XInputGetState = (PFN_XInputGetState)
                     GetProcAddress(_glfw.win32.xinput.instance, "XInputGetState");
 
                 break;
@@ -123,16 +123,16 @@ static GLFWbool loadLibraries(void)
     _glfw.win32.dwmapi.instance = LoadLibraryA("dwmapi.dll");
     if (_glfw.win32.dwmapi.instance)
     {
-        _glfw.win32.dwmapi.DwmIsCompositionEnabled = (DWMISCOMPOSITIONENABLED_T)
+        _glfw.win32.dwmapi.DwmIsCompositionEnabled = (PFN_DwmIsCompositionEnabled)
             GetProcAddress(_glfw.win32.dwmapi.instance, "DwmIsCompositionEnabled");
-        _glfw.win32.dwmapi.DwmFlush = (DWMFLUSH_T)
+        _glfw.win32.dwmapi.DwmFlush = (PFN_DwmFlush)
             GetProcAddress(_glfw.win32.dwmapi.instance, "DwmFlush");
     }
 
     _glfw.win32.shcore.instance = LoadLibraryA("shcore.dll");
     if (_glfw.win32.shcore.instance)
     {
-        _glfw.win32.shcore.SetProcessDpiAwareness = (SETPROCESSDPIAWARENESS_T)
+        _glfw.win32.shcore.SetProcessDpiAwareness = (PFN_SetProcessDpiAwareness)
             GetProcAddress(_glfw.win32.shcore.instance, "SetProcessDpiAwareness");
     }
 

@@ -161,33 +161,33 @@ typedef enum PROCESS_DPI_AWARENESS
 #endif
 
 // winmm.dll function pointer typedefs
-typedef DWORD (WINAPI * TIMEGETTIME_T)(void);
+typedef DWORD (WINAPI * PFN_timeGetTime)(void);
 #define _glfw_timeGetTime _glfw.win32.winmm.timeGetTime
 
 // xinput.dll function pointer typedefs
-typedef DWORD (WINAPI * XINPUTGETCAPABILITIES_T)(DWORD,DWORD,XINPUT_CAPABILITIES*);
-typedef DWORD (WINAPI * XINPUTGETSTATE_T)(DWORD,XINPUT_STATE*);
+typedef DWORD (WINAPI * PFN_XInputGetCapabilities)(DWORD,DWORD,XINPUT_CAPABILITIES*);
+typedef DWORD (WINAPI * PFN_XInputGetState)(DWORD,XINPUT_STATE*);
 #define _glfw_XInputGetCapabilities _glfw.win32.xinput.XInputGetCapabilities
 #define _glfw_XInputGetState _glfw.win32.xinput.XInputGetState
 
 // dinput8.dll function pointer typedefs
-typedef HRESULT (WINAPI * DIRECTINPUT8CREATE_T)(HINSTANCE,DWORD,REFIID,LPVOID*,LPUNKNOWN);
+typedef HRESULT (WINAPI * PFN_DirectInput8Create)(HINSTANCE,DWORD,REFIID,LPVOID*,LPUNKNOWN);
 #define _glfw_DirectInput8Create _glfw.win32.dinput8.DirectInput8Create
 
 // user32.dll function pointer typedefs
-typedef BOOL (WINAPI * SETPROCESSDPIAWARE_T)(void);
-typedef BOOL (WINAPI * CHANGEWINDOWMESSAGEFILTEREX_T)(HWND,UINT,DWORD,PCHANGEFILTERSTRUCT);
+typedef BOOL (WINAPI * PFN_SetProcessDPIAware)(void);
+typedef BOOL (WINAPI * PFN_ChangeWindowMessageFilterEx)(HWND,UINT,DWORD,PCHANGEFILTERSTRUCT);
 #define _glfw_SetProcessDPIAware _glfw.win32.user32.SetProcessDPIAware
 #define _glfw_ChangeWindowMessageFilterEx _glfw.win32.user32.ChangeWindowMessageFilterEx
 
 // dwmapi.dll function pointer typedefs
-typedef HRESULT (WINAPI * DWMISCOMPOSITIONENABLED_T)(BOOL*);
-typedef HRESULT (WINAPI * DWMFLUSH_T)(VOID);
+typedef HRESULT (WINAPI * PFN_DwmIsCompositionEnabled)(BOOL*);
+typedef HRESULT (WINAPI * PFN_DwmFlush)(VOID);
 #define _glfw_DwmIsCompositionEnabled _glfw.win32.dwmapi.DwmIsCompositionEnabled
 #define _glfw_DwmFlush _glfw.win32.dwmapi.DwmFlush
 
 // shcore.dll function pointer typedefs
-typedef HRESULT (WINAPI * SETPROCESSDPIAWARENESS_T)(PROCESS_DPI_AWARENESS);
+typedef HRESULT (WINAPI * PFN_SetProcessDpiAwareness)(PROCESS_DPI_AWARENESS);
 #define _glfw_SetProcessDpiAwareness _glfw.win32.shcore.SetProcessDpiAwareness
 
 typedef VkFlags VkWin32SurfaceCreateFlagsKHR;
@@ -259,36 +259,36 @@ typedef struct _GLFWlibraryWin32
 
     struct {
         HINSTANCE       instance;
-        TIMEGETTIME_T   timeGetTime;
+        PFN_timeGetTime timeGetTime;
     } winmm;
 
     struct {
         HINSTANCE            instance;
-        DIRECTINPUT8CREATE_T DirectInput8Create;
+        PFN_DirectInput8Create DirectInput8Create;
         IDirectInput8W*      api;
     } dinput8;
 
     struct {
         HINSTANCE               instance;
-        XINPUTGETCAPABILITIES_T XInputGetCapabilities;
-        XINPUTGETSTATE_T        XInputGetState;
+        PFN_XInputGetCapabilities XInputGetCapabilities;
+        PFN_XInputGetState      XInputGetState;
     } xinput;
 
     struct {
         HINSTANCE                     instance;
-        SETPROCESSDPIAWARE_T          SetProcessDPIAware;
-        CHANGEWINDOWMESSAGEFILTEREX_T ChangeWindowMessageFilterEx;
+        PFN_SetProcessDPIAware        SetProcessDPIAware;
+        PFN_ChangeWindowMessageFilterEx ChangeWindowMessageFilterEx;
     } user32;
 
     struct {
         HINSTANCE       instance;
-        DWMISCOMPOSITIONENABLED_T DwmIsCompositionEnabled;
-        DWMFLUSH_T      DwmFlush;
+        PFN_DwmIsCompositionEnabled DwmIsCompositionEnabled;
+        PFN_DwmFlush    DwmFlush;
     } dwmapi;
 
     struct {
         HINSTANCE       instance;
-        SETPROCESSDPIAWARENESS_T SetProcessDpiAwareness;
+        PFN_SetProcessDpiAwareness SetProcessDpiAwareness;
     } shcore;
 
 } _GLFWlibraryWin32;

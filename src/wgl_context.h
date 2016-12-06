@@ -82,12 +82,12 @@ typedef const char* (WINAPI * PFNWGLGETEXTENSIONSSTRINGEXTPROC)(void);
 typedef const char* (WINAPI * PFNWGLGETEXTENSIONSSTRINGARBPROC)(HDC);
 typedef HGLRC (WINAPI * PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC,HGLRC,const int*);
 
-typedef HGLRC (WINAPI * WGLCREATECONTEXT_T)(HDC);
-typedef BOOL (WINAPI * WGLDELETECONTEXT_T)(HGLRC);
-typedef PROC (WINAPI * WGLGETPROCADDRESS_T)(LPCSTR);
-typedef HDC (WINAPI * WGLGETCURRENTDC_T)(void);
-typedef BOOL (WINAPI * WGLMAKECURRENT_T)(HDC,HGLRC);
-typedef BOOL (WINAPI * WGLSHARELISTS_T)(HGLRC,HGLRC);
+typedef HGLRC (WINAPI * PFN_wglCreateContext)(HDC);
+typedef BOOL (WINAPI * PFN_wglDeleteContext)(HGLRC);
+typedef PROC (WINAPI * PFN_wglGetProcAddress)(LPCSTR);
+typedef HDC (WINAPI * PFN_wglGetCurrentDC)(void);
+typedef BOOL (WINAPI * PFN_wglMakeCurrent)(HDC,HGLRC);
+typedef BOOL (WINAPI * PFN_wglShareLists)(HGLRC,HGLRC);
 
 // opengl32.dll function pointer typedefs
 #define wglCreateContext _glfw.wgl.CreateContext
@@ -120,12 +120,12 @@ typedef struct _GLFWcontextWGL
 typedef struct _GLFWlibraryWGL
 {
     HINSTANCE                           instance;
-    WGLCREATECONTEXT_T                  CreateContext;
-    WGLDELETECONTEXT_T                  DeleteContext;
-    WGLGETPROCADDRESS_T                 GetProcAddress;
-    WGLGETCURRENTDC_T                   GetCurrentDC;
-    WGLMAKECURRENT_T                    MakeCurrent;
-    WGLSHARELISTS_T                     ShareLists;
+    PFN_wglCreateContext                CreateContext;
+    PFN_wglDeleteContext                DeleteContext;
+    PFN_wglGetProcAddress               GetProcAddress;
+    PFN_wglGetCurrentDC                 GetCurrentDC;
+    PFN_wglMakeCurrent                  MakeCurrent;
+    PFN_wglShareLists                   ShareLists;
 
     GLFWbool                            extensionsLoaded;
 

@@ -55,7 +55,7 @@
 typedef XID xcb_window_t;
 typedef XID xcb_visualid_t;
 typedef struct xcb_connection_t xcb_connection_t;
-typedef xcb_connection_t* (* XGETXCBCONNECTION_T)(Display*);
+typedef xcb_connection_t* (* PFN_XGetXCBConnection)(Display*);
 
 typedef VkFlags VkXlibSurfaceCreateFlagsKHR;
 typedef VkFlags VkXcbSurfaceCreateFlagsKHR;
@@ -247,7 +247,7 @@ typedef struct _GLFWlibraryX11
 
     struct {
         void*       handle;
-        XGETXCBCONNECTION_T XGetXCBConnection;
+        PFN_XGetXCBConnection XGetXCBConnection;
     } x11xcb;
 
 #if defined(_GLFW_HAS_XF86VM)

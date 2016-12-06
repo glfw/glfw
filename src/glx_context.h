@@ -85,13 +85,14 @@ typedef const char* (*PFNGLXQUERYEXTENSIONSSTRINGPROC)(Display*,int);
 typedef GLXFBConfig* (*PFNGLXGETFBCONFIGSPROC)(Display*,int,int*);
 typedef GLXContext (*PFNGLXCREATENEWCONTEXTPROC)(Display*,GLXFBConfig,int,GLXContext,Bool);
 typedef __GLXextproc (* PFNGLXGETPROCADDRESSPROC)(const GLubyte *procName);
-typedef int (*PFNGLXSWAPINTERVALMESAPROC)(int);
-typedef int (*PFNGLXSWAPINTERVALSGIPROC)(int);
 typedef void (*PFNGLXSWAPINTERVALEXTPROC)(Display*,GLXDrawable,int);
-typedef GLXContext (*PFNGLXCREATECONTEXTATTRIBSARBPROC)(Display*,GLXFBConfig,GLXContext,Bool,const int*);
 typedef XVisualInfo* (*PFNGLXGETVISUALFROMFBCONFIGPROC)(Display*,GLXFBConfig);
 typedef GLXWindow (*PFNGLXCREATEWINDOWPROC)(Display*,GLXFBConfig,Window,const int*);
 typedef void (*PFNGLXDESTROYWINDOWPROC)(Display*,GLXWindow);
+
+typedef int (*PFNGLXSWAPINTERVALMESAPROC)(int);
+typedef int (*PFNGLXSWAPINTERVALSGIPROC)(int);
+typedef GLXContext (*PFNGLXCREATECONTEXTATTRIBSARBPROC)(Display*,GLXFBConfig,GLXContext,Bool,const int*);
 
 // libGL.so function pointer typedefs
 #define glXGetFBConfigs _glfw.glx.GetFBConfigs

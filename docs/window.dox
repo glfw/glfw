@@ -71,10 +71,10 @@ Video mode field        | Corresponds to
 ----------------------- | ------------------------
 GLFWvidmode.width       | `width` parameter
 GLFWvidmode.height      | `height` parameter
-GLFWvidmode.redBits     | `GLFW_RED_BITS` hint
-GLFWvidmode.greenBits   | `GLFW_GREEN_BITS` hint
-GLFWvidmode.blueBits    | `GLFW_BLUE_BITS` hint
-GLFWvidmode.refreshRate | `GLFW_REFRESH_RATE` hint
+GLFWvidmode.redBits     | @ref GLFW_RED_BITS hint
+GLFWvidmode.greenBits   | @ref GLFW_GREEN_BITS hint
+GLFWvidmode.blueBits    | @ref GLFW_BLUE_BITS hint
+GLFWvidmode.refreshRate | @ref GLFW_REFRESH_RATE hint
 
 Once you have a full screen window, you can change its resolution, refresh rate
 and monitor with @ref glfwSetWindowMonitor.  If you just need change its
@@ -85,9 +85,9 @@ unaffected.
 
 By default, the original video mode of the monitor will be restored and the
 window iconified if it loses input focus, to allow the user to switch back to
-the desktop.  This behavior can be disabled with the `GLFW_AUTO_ICONIFY` window
-hint, for example if you wish to simultaneously cover multiple windows with full
-screen windows.
+the desktop.  This behavior can be disabled with the
+[GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_hint) window hint, for example if you
+wish to simultaneously cover multiple windows with full screen windows.
 
 
 @subsubsection window_windowed_full_screen "Windowed full screen" windows
@@ -158,102 +158,128 @@ that are not hard constraints are matched as closely as possible, but the
 resulting context and framebuffer may differ from what these hints requested.
 
 The following hints are always hard constraints:
-- `GLFW_STEREO`
-- `GLFW_DOUBLEBUFFER`
-- `GLFW_CLIENT_API`
-- `GLFW_CONTEXT_CREATION_API`
+- @ref GLFW_STEREO
+- @ref GLFW_DOUBLEBUFFER
+- [GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint)
+- [GLFW_CONTEXT_CREATION_API](@ref GLFW_CONTEXT_CREATION_API_hint)
 
 The following additional hints are hard constraints when requesting an OpenGL
 context, but are ignored when requesting an OpenGL ES context:
-- `GLFW_OPENGL_FORWARD_COMPAT`
-- `GLFW_OPENGL_PROFILE`
+- [GLFW_OPENGL_FORWARD_COMPAT](@ref GLFW_OPENGL_FORWARD_COMPAT_hint)
+- [GLFW_OPENGL_PROFILE](@ref GLFW_OPENGL_PROFILE_hint)
 
 
 @subsubsection window_hints_wnd Window related hints
 
-`GLFW_RESIZABLE` specifies whether the windowed mode window will be resizable
+@anchor GLFW_RESIZABLE_hint
+__GLFW_RESIZABLE__ specifies whether the windowed mode window will be resizable
 _by the user_.  The window will still be resizable using the @ref
 glfwSetWindowSize function.  This hint is ignored for full screen and
 undecorated windows.
 
-`GLFW_VISIBLE` specifies whether the windowed mode window will be initially
+@anchor GLFW_VISIBLE_hint
+__GLFW_VISIBLE__ specifies whether the windowed mode window will be initially
 visible.  This hint is ignored for full screen windows.
 
-`GLFW_DECORATED` specifies whether the windowed mode window will have window
+@anchor GLFW_DECORATED_hint
+__GLFW_DECORATED__ specifies whether the windowed mode window will have window
 decorations such as a border, a close widget, etc.  An undecorated window will
 not be resizable by the user but will still allow the user to generate close
 events on some platforms.  This hint is ignored for full screen windows.
 
-`GLFW_FOCUSED` specifies whether the windowed mode window will be given input
+@anchor GLFW_FOCUSED_hint
+__GLFW_FOCUSED__ specifies whether the windowed mode window will be given input
 focus when created.  This hint is ignored for full screen and initially hidden
 windows.
 
-`GLFW_AUTO_ICONIFY` specifies whether the full screen window will
+@anchor GLFW_AUTO_ICONIFY_hint
+__GLFW_AUTO_ICONIFY__ specifies whether the full screen window will
 automatically iconify and restore the previous video mode on input focus loss.
 This hint is ignored for windowed mode windows.
 
-`GLFW_FLOATING` specifies whether the windowed mode window will be floating
+@anchor GLFW_FLOATING_hint
+__GLFW_FLOATING__ specifies whether the windowed mode window will be floating
 above other regular windows, also called topmost or always-on-top.  This is
 intended primarily for debugging purposes and cannot be used to implement proper
 full screen windows.  This hint is ignored for full screen windows.
 
-`GLFW_MAXIMIZED` specifies whether the windowed mode window will be maximized
+@anchor GLFW_MAXIMIZED_hint
+__GLFW_MAXIMIZED__ specifies whether the windowed mode window will be maximized
 when created.  This hint is ignored for full screen windows.
 
 
 @subsubsection window_hints_fb Framebuffer related hints
 
-`GLFW_RED_BITS`, `GLFW_GREEN_BITS`, `GLFW_BLUE_BITS`, `GLFW_ALPHA_BITS`,
-`GLFW_DEPTH_BITS` and `GLFW_STENCIL_BITS` specify the desired bit depths of the
-various components of the default framebuffer.  `GLFW_DONT_CARE` means the
-application has no preference.
+@anchor GLFW_RED_BITS
+@anchor GLFW_GREEN_BITS
+@anchor GLFW_BLUE_BITS
+@anchor GLFW_ALPHA_BITS
+@anchor GLFW_DEPTH_BITS
+@anchor GLFW_STENCIL_BITS
+__GLFW_RED_BITS__, __GLFW_GREEN_BITS__, __GLFW_BLUE_BITS__, __GLFW_ALPHA_BITS__,
+__GLFW_DEPTH_BITS__ and __GLFW_STENCIL_BITS__ specify the desired bit depths of
+the various components of the default framebuffer.  A value of `GLFW_DONT_CARE`
+means the application has no preference.
 
-`GLFW_ACCUM_RED_BITS`, `GLFW_ACCUM_GREEN_BITS`, `GLFW_ACCUM_BLUE_BITS` and
-`GLFW_ACCUM_ALPHA_BITS` specify the desired bit depths of the various components
-of the accumulation buffer.  `GLFW_DONT_CARE` means the application has no
-preference.
+@anchor GLFW_ACCUM_RED_BITS
+@anchor GLFW_ACCUM_GREEN_BITS
+@anchor GLFW_ACCUM_BLUE_BITS
+@anchor GLFW_ACCUM_ALPHA_BITS
+__GLFW_ACCUM_RED_BITS__, __GLFW_ACCUM_GREEN_BITS__, __GLFW_ACCUM_BLUE_BITS__ and
+__GLFW_ACCUM_ALPHA_BITS__ specify the desired bit depths of the various
+components of the accumulation buffer.  A value of `GLFW_DONT_CARE` means the
+application has no preference.
 
 @par
 Accumulation buffers are a legacy OpenGL feature and should not be used in new
 code.
 
-`GLFW_AUX_BUFFERS` specifies the desired number of auxiliary buffers.
-`GLFW_DONT_CARE` means the application has no preference.
+@anchor GLFW_AUX_BUFFERS
+__GLFW_AUX_BUFFERS__ specifies the desired number of auxiliary buffers.  A value
+of `GLFW_DONT_CARE` means the application has no preference.
 
 @par
 Auxiliary buffers are a legacy OpenGL feature and should not be used in new
 code.
 
-`GLFW_STEREO` specifies whether to use stereoscopic rendering.  This is a hard
-constraint.
+@anchor GLFW_STEREO
+__GLFW_STEREO__ specifies whether to use OpenGL stereoscopic rendering.  This is
+a hard constraint.
 
-`GLFW_SAMPLES` specifies the desired number of samples to use for multisampling.
-Zero disables multisampling.  `GLFW_DONT_CARE` means the application has no
-preference.
+@anchor GLFW_SAMPLES
+__GLFW_SAMPLES__ specifies the desired number of samples to use for
+multisampling.  Zero disables multisampling.  A value of `GLFW_DONT_CARE` means
+the application has no preference.
 
-`GLFW_SRGB_CAPABLE` specifies whether the framebuffer should be sRGB capable.
+@anchor GLFW_SRGB_CAPABLE
+__GLFW_SRGB_CAPABLE__ specifies whether the framebuffer should be sRGB capable.
 If supported, a created OpenGL context will support the `GL_FRAMEBUFFER_SRGB`
 enable, also called `GL_FRAMEBUFFER_SRGB_EXT`) for controlling sRGB rendering
 and a created OpenGL ES context will always have sRGB rendering enabled.
 
-`GLFW_DOUBLEBUFFER` specifies whether the framebuffer should be double buffered.
-You nearly always want to use double buffering.  This is a hard constraint.
+@anchor GLFW_DOUBLEBUFFER
+__GLFW_DOUBLEBUFFER__ specifies whether the framebuffer should be double
+buffered.  You nearly always want to use double buffering.  This is a hard
+constraint.
 
 
 @subsubsection window_hints_mtr Monitor related hints
 
-`GLFW_REFRESH_RATE` specifies the desired refresh rate for full screen windows.
-If set to `GLFW_DONT_CARE`, the highest available refresh rate will be used.
-This hint is ignored for windowed mode windows.
+@anchor GLFW_REFRESH_RATE
+__GLFW_REFRESH_RATE__ specifies the desired refresh rate for full screen
+windows.  A value of `GLFW_DONT_CARE` means the highest available refresh rate
+will be used.  This hint is ignored for windowed mode windows.
 
 
 @subsubsection window_hints_ctx Context related hints
 
-`GLFW_CLIENT_API` specifies which client API to create the context for.
+@anchor GLFW_CLIENT_API_hint
+__GLFW_CLIENT_API__ specifies which client API to create the context for.
 Possible values are `GLFW_OPENGL_API`, `GLFW_OPENGL_ES_API` and `GLFW_NO_API`.
 This is a hard constraint.
 
-`GLFW_CONTEXT_CREATION_API` specifies which context creation API to use to
+@anchor GLFW_CONTEXT_CREATION_API_hint
+__GLFW_CONTEXT_CREATION_API__ specifies which context creation API to use to
 create the context.  Possible values are `GLFW_NATIVE_CONTEXT_API` and
 `GLFW_EGL_CONTEXT_API`.  This is a hard constraint.  If no client API is
 requested, this hint is ignored.
@@ -275,16 +301,18 @@ the selected API.
 in a single process will cause the application to segfault.  Stick to one API or
 the other on Linux for now.
 
-`GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` specify the client
-API version that the created context must be compatible with.  The exact
+@anchor GLFW_CONTEXT_VERSION_MAJOR_hint
+@anchor GLFW_CONTEXT_VERSION_MINOR_hint
+__GLFW_CONTEXT_VERSION_MAJOR__ and __GLFW_CONTEXT_VERSION_MINOR__ specify the
+client API version that the created context must be compatible with.  The exact
 behavior of these hints depend on the requested client API.
 
 @par
-__OpenGL:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are
-not hard constraints, but creation will fail if the OpenGL version of the
-created context is less than the one requested.  It is therefore perfectly safe
-to use the default of version 1.0 for legacy code and you will still get
-backwards-compatible contexts of version 3.0 and above when available.
+__OpenGL:__ These hints are not hard constraints, but creation will fail if the
+OpenGL version of the created context is less than the one requested.  It is
+therefore perfectly safe to use the default of version 1.0 for legacy code and
+you will still get backwards-compatible contexts of version 3.0 and above when
+available.
 
 @par
 While there is no way to ask the driver for a context of the highest supported
@@ -292,21 +320,21 @@ version, GLFW will attempt to provide this when you ask for a version 1.0
 context, which is the default for these hints.
 
 @par
-__OpenGL ES:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are
-not hard constraints, but creation will fail if the OpenGL ES version of the
-created context is less than the one requested.  Additionally, OpenGL ES 1.x
-cannot be returned if 2.0 or later was requested, and vice versa.  This is
-because OpenGL ES 3.x is backward compatible with 2.0, but OpenGL ES 2.0 is not
-backward compatible with 1.x.
+__OpenGL ES:__ These hints are not hard constraints, but creation will fail if
+the OpenGL ES version of the created context is less than the one requested.
+Additionally, OpenGL ES 1.x cannot be returned if 2.0 or later was requested,
+and vice versa.  This is because OpenGL ES 3.x is backward compatible with 2.0,
+but OpenGL ES 2.0 is not backward compatible with 1.x.
 
 @note @macos The OS only supports forward-compatible core profile contexts for
 OpenGL versions 3.2 and later.  Before creating an OpenGL context of version
-3.2 or later you must set the `GLFW_OPENGL_FORWARD_COMPAT` and
-`GLFW_OPENGL_PROFILE` hints accordingly.  OpenGL 3.0 and 3.1 contexts are not
-supported at all on macOS.
+3.2 or later you must set the
+[GLFW_OPENGL_FORWARD_COMPAT](@ref GLFW_OPENGL_FORWARD_COMPAT_hint) and
+[GLFW_OPENGL_PROFILE](@ref GLFW_OPENGL_PROFILE_hint) hints accordingly.  OpenGL
+3.0 and 3.1 contexts are not supported at all on macOS.
 
-
-`GLFW_OPENGL_FORWARD_COMPAT` specifies whether the OpenGL context should be
+@anchor GLFW_OPENGL_FORWARD_COMPAT_hint
+__GLFW_OPENGL_FORWARD_COMPAT__ specifies whether the OpenGL context should be
 forward-compatible, i.e. one where all functionality deprecated in the requested
 version of OpenGL is removed.  This must only be used if the requested OpenGL
 version is 3.0 or above.  If OpenGL ES is requested, this hint is ignored.
@@ -315,27 +343,31 @@ version is 3.0 or above.  If OpenGL ES is requested, this hint is ignored.
 Forward-compatibility is described in detail in the
 [OpenGL Reference Manual](https://www.opengl.org/registry/).
 
-`GLFW_OPENGL_DEBUG_CONTEXT` specifies whether to create a debug OpenGL context,
-which may have additional error and performance issue reporting functionality.
-If OpenGL ES is requested, this hint is ignored.
+@anchor GLFW_OPENGL_DEBUG_CONTEXT_hint
+__GLFW_OPENGL_DEBUG_CONTEXT__ specifies whether to create a debug OpenGL
+context, which may have additional error and performance issue reporting
+functionality.  If OpenGL ES is requested, this hint is ignored.
 
-`GLFW_OPENGL_PROFILE` specifies which OpenGL profile to create the context for.
-Possible values are one of `GLFW_OPENGL_CORE_PROFILE` or
+@anchor GLFW_OPENGL_PROFILE_hint
+__GLFW_OPENGL_PROFILE__ specifies which OpenGL profile to create the context
+for.  Possible values are one of `GLFW_OPENGL_CORE_PROFILE` or
 `GLFW_OPENGL_COMPAT_PROFILE`, or `GLFW_OPENGL_ANY_PROFILE` to not request
 a specific profile.  If requesting an OpenGL version below 3.2,
-`GLFW_OPENGL_ANY_PROFILE` must be used.  If OpenGL ES is requested,
-this hint is ignored.
+`GLFW_OPENGL_ANY_PROFILE` must be used.  If OpenGL ES is requested, this hint
+is ignored.
 
 @par
 OpenGL profiles are described in detail in the
 [OpenGL Reference Manual](https://www.opengl.org/registry/).
 
-`GLFW_CONTEXT_ROBUSTNESS` specifies the robustness strategy to be used by the
+@anchor GLFW_CONTEXT_ROBUSTNESS_hint
+__GLFW_CONTEXT_ROBUSTNESS__ specifies the robustness strategy to be used by the
 context.  This can be one of `GLFW_NO_RESET_NOTIFICATION` or
 `GLFW_LOSE_CONTEXT_ON_RESET`, or `GLFW_NO_ROBUSTNESS` to not request
 a robustness strategy.
 
-`GLFW_CONTEXT_RELEASE_BEHAVIOR` specifies the release behavior to be
+@anchor GLFW_CONTEXT_RELEASE_BEHAVIOR_hint
+__GLFW_CONTEXT_RELEASE_BEHAVIOR__ specifies the release behavior to be
 used by the context.  Possible values are one of `GLFW_ANY_RELEASE_BEHAVIOR`,
 `GLFW_RELEASE_BEHAVIOR_FLUSH` or `GLFW_RELEASE_BEHAVIOR_NONE`.  If the
 behavior is `GLFW_ANY_RELEASE_BEHAVIOR`, the default behavior of the context
@@ -349,7 +381,8 @@ Context release behaviors are described in detail by the
 [GL_KHR_context_flush_control](https://www.opengl.org/registry/specs/KHR/context_flush_control.txt)
 extension.
 
-`GLFW_CONTEXT_NO_ERROR` specifies whether errors should be generated by the
+@anchor GLFW_CONTEXT_NO_ERROR_hint
+__GLFW_CONTEXT_NO_ERROR__ specifies whether errors should be generated by the
 context.  If enabled, situations that would have generated errors instead cause
 undefined behavior.
 
@@ -369,40 +402,40 @@ being listed.
 
 @subsubsection window_hints_values Supported and default values
 
-Window hint                     | Default value               | Supported values
-------------------------------- | --------------------------- | ----------------
-`GLFW_RESIZABLE`                | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-`GLFW_VISIBLE`                  | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-`GLFW_DECORATED`                | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-`GLFW_FOCUSED`                  | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-`GLFW_AUTO_ICONIFY`             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-`GLFW_FLOATING`                 | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-`GLFW_MAXIMIZED`                | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-`GLFW_RED_BITS`                 | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-`GLFW_GREEN_BITS`               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-`GLFW_BLUE_BITS`                | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-`GLFW_ALPHA_BITS`               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-`GLFW_DEPTH_BITS`               | 24                          | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-`GLFW_STENCIL_BITS`             | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-`GLFW_ACCUM_RED_BITS`           | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-`GLFW_ACCUM_GREEN_BITS`         | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-`GLFW_ACCUM_BLUE_BITS`          | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-`GLFW_ACCUM_ALPHA_BITS`         | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-`GLFW_AUX_BUFFERS`              | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-`GLFW_SAMPLES`                  | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-`GLFW_REFRESH_RATE`             | `GLFW_DONT_CARE`            | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-`GLFW_STEREO`                   | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-`GLFW_SRGB_CAPABLE`             | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-`GLFW_DOUBLEBUFFER`             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-`GLFW_CLIENT_API`               | `GLFW_OPENGL_API`           | `GLFW_OPENGL_API`, `GLFW_OPENGL_ES_API` or `GLFW_NO_API`
-`GLFW_CONTEXT_CREATION_API`     | `GLFW_NATIVE_CONTEXT_API`   | `GLFW_NATIVE_CONTEXT_API` or `GLFW_EGL_CONTEXT_API`
-`GLFW_CONTEXT_VERSION_MAJOR`    | 1                           | Any valid major version number of the chosen client API
-`GLFW_CONTEXT_VERSION_MINOR`    | 0                           | Any valid minor version number of the chosen client API
-`GLFW_CONTEXT_ROBUSTNESS`       | `GLFW_NO_ROBUSTNESS`        | `GLFW_NO_ROBUSTNESS`, `GLFW_NO_RESET_NOTIFICATION` or `GLFW_LOSE_CONTEXT_ON_RESET`
-`GLFW_CONTEXT_RELEASE_BEHAVIOR` | `GLFW_ANY_RELEASE_BEHAVIOR` | `GLFW_ANY_RELEASE_BEHAVIOR`, `GLFW_RELEASE_BEHAVIOR_FLUSH` or `GLFW_RELEASE_BEHAVIOR_NONE`
-`GLFW_OPENGL_FORWARD_COMPAT`    | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-`GLFW_OPENGL_DEBUG_CONTEXT`     | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-`GLFW_OPENGL_PROFILE`           | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE`
+Window hint                   | Default value               | Supported values
+----------------------------- | --------------------------- | ----------------
+GLFW_RESIZABLE                | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_VISIBLE                  | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_DECORATED                | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_FOCUSED                  | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_AUTO_ICONIFY             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_FLOATING                 | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_MAXIMIZED                | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_RED_BITS                 | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_GREEN_BITS               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_BLUE_BITS                | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_ALPHA_BITS               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_DEPTH_BITS               | 24                          | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_STENCIL_BITS             | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_ACCUM_RED_BITS           | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_ACCUM_GREEN_BITS         | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_ACCUM_BLUE_BITS          | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_ACCUM_ALPHA_BITS         | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_AUX_BUFFERS              | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_SAMPLES                  | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_REFRESH_RATE             | `GLFW_DONT_CARE`            | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_STEREO                   | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_SRGB_CAPABLE             | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_DOUBLEBUFFER             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_CLIENT_API               | `GLFW_OPENGL_API`           | `GLFW_OPENGL_API`, `GLFW_OPENGL_ES_API` or `GLFW_NO_API`
+GLFW_CONTEXT_CREATION_API     | `GLFW_NATIVE_CONTEXT_API`   | `GLFW_NATIVE_CONTEXT_API` or `GLFW_EGL_CONTEXT_API`
+GLFW_CONTEXT_VERSION_MAJOR    | 1                           | Any valid major version number of the chosen client API
+GLFW_CONTEXT_VERSION_MINOR    | 0                           | Any valid minor version number of the chosen client API
+GLFW_CONTEXT_ROBUSTNESS       | `GLFW_NO_ROBUSTNESS`        | `GLFW_NO_ROBUSTNESS`, `GLFW_NO_RESET_NOTIFICATION` or `GLFW_LOSE_CONTEXT_ON_RESET`
+GLFW_CONTEXT_RELEASE_BEHAVIOR | `GLFW_ANY_RELEASE_BEHAVIOR` | `GLFW_ANY_RELEASE_BEHAVIOR`, `GLFW_RELEASE_BEHAVIOR_FLUSH` or `GLFW_RELEASE_BEHAVIOR_NONE`
+GLFW_OPENGL_FORWARD_COMPAT    | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_OPENGL_DEBUG_CONTEXT     | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_OPENGL_PROFILE           | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE`
 
 
 @section window_events Window event processing
@@ -825,6 +858,14 @@ You can also get the current maximization state with @ref glfwGetWindowAttrib.
 int maximized = glfwGetWindowAttrib(window, GLFW_MAXIMIZED);
 @endcode
 
+By default, newly created windows are not maximized.  You can change this
+behavior by setting the [GLFW_MAXIMIZED](@ref GLFW_MAXIMIZED_hint) window hint
+before creating the window.
+
+@code
+glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+@endcode
+
 
 @subsection window_hide Window visibility
 
@@ -844,17 +885,24 @@ Hidden windows can be shown with @ref glfwShowWindow.
 glfwShowWindow(window);
 @endcode
 
-Windowed mode windows can be created initially hidden with the `GLFW_VISIBLE`
-[window hint](@ref window_hints_wnd).  Windows created hidden are completely
-invisible to the user until shown.  This can be useful if you need to set up
-your window further before showing it, for example moving it to a specific
-location.
 
 You can also get the current visibility state with @ref glfwGetWindowAttrib.
 
 @code
 int visible = glfwGetWindowAttrib(window, GLFW_VISIBLE);
 @endcode
+
+By default, newly created windows are visible.  You can change this behavior by
+setting the [GLFW_VISIBLE](@ref GLFW_VISIBLE_hint) window hint before creating
+the window.
+
+@code
+glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+@endcode
+
+Windows created hidden are completely invisible to the user until shown.  This
+can be useful if you need to set up your window further before showing it, for
+example moving it to a specific location.
 
 
 @subsection window_focus Window input focus
@@ -893,6 +941,14 @@ You can also get the current input focus state with @ref glfwGetWindowAttrib.
 
 @code
 int focused = glfwGetWindowAttrib(window, GLFW_FOCUSED);
+@endcode
+
+By default, newly created windows are given input focus.  You can change this
+behavior by setting the [GLFW_FOCUSED](@ref GLFW_FOCUSED_hint) window hint
+before creating the window.
+
+@code
+glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
 @endcode
 
 
@@ -939,62 +995,76 @@ if (glfwGetWindowAttrib(window, GLFW_FOCUSED))
 
 @subsubsection window_attribs_wnd Window related attributes
 
-`GLFW_FOCUSED` indicates whether the specified window has input focus.  Initial
-input focus is controlled by the [window hint](@ref window_hints_wnd) with the
-same name.   
+@anchor GLFW_FOCUSED_attrib
+__GLFW_FOCUSED__ indicates whether the specified window has input focus.  See
+@ref window_focus for details.
 
-`GLFW_ICONIFIED` indicates whether the specified window is iconified, whether by
-the user or with @ref glfwIconifyWindow.
+@anchor GLFW_ICONIFIED_attrib
+__GLFW_ICONIFIED__ indicates whether the specified window is iconified.
+See @ref window_iconify for details.
 
-`GLFW_MAXIMIZED` indicates whether the specified window is maximized, whether by
-the user or with @ref glfwMaximizeWindow.
+@anchor GLFW_MAXIMIZED_attrib
+__GLFW_MAXIMIZED__ indicates whether the specified window is maximized.  See
+@ref window_maximize for details.
 
-`GLFW_VISIBLE` indicates whether the specified window is visible.  Window
-visibility can be controlled with @ref glfwShowWindow and @ref glfwHideWindow
-and initial visibility is controlled by the [window hint](@ref window_hints_wnd)
-with the same name.  
+@anchor GLFW_VISIBLE_attrib
+__GLFW_VISIBLE__ indicates whether the specified window is visible.  See @ref
+window_hide for details.
 
-`GLFW_RESIZABLE` indicates whether the specified window is resizable _by the
-user_.  This is set on creation with the [window hint](@ref window_hints_wnd)
-  with the same name.
+@anchor GLFW_RESIZABLE_attrib
+__GLFW_RESIZABLE__ indicates whether the specified window is resizable _by the
+user_.  This is set before creation with the
+[GLFW_RESIZABLE](@ref GLFW_RESIZABLE_hint) window hint.
 
-`GLFW_DECORATED` indicates whether the specified window has decorations such as
-a border, a close widget, etc.  This is set on creation with the
-[window hint](@ref window_hints_wnd) with the same name. 
+@anchor GLFW_DECORATED_attrib
+__GLFW_DECORATED__ indicates whether the specified window has decorations such as
+a border, a close widget, etc.  This is set before creation with the
+[GLFW_DECORATED](@ref GLFW_DECORATED_hint) window hint.
 
-`GLFW_FLOATING` indicates whether the specified window is floating, also called
-topmost or always-on-top.  This is controlled by the
-[window hint](@ref window_hints_wnd) with the same name. 
+@anchor GLFW_FLOATING_attrib
+__GLFW_FLOATING__ indicates whether the specified window is floating, also
+called topmost or always-on-top.  This is controlled by the
+[GLFW_FLOATING](@ref GLFW_FLOATING_hint) window hint.
 
 
 @subsubsection window_attribs_ctx Context related attributes
 
-`GLFW_CLIENT_API` indicates the client API provided by the window's context;
+@anchor GLFW_CLIENT_API_attrib
+__GLFW_CLIENT_API__ indicates the client API provided by the window's context;
 either `GLFW_OPENGL_API`, `GLFW_OPENGL_ES_API` or `GLFW_NO_API`.
 
-`GLFW_CONTEXT_CREATION_API` indicates the context creation API used to create
+@anchor GLFW_CONTEXT_CREATION_API_attrib
+__GLFW_CONTEXT_CREATION_API__ indicates the context creation API used to create
 the window's context; either `GLFW_NATIVE_CONTEXT_API` or
 `GLFW_EGL_CONTEXT_API`.
 
-`GLFW_CONTEXT_VERSION_MAJOR`, `GLFW_CONTEXT_VERSION_MINOR` and
-`GLFW_CONTEXT_REVISION` indicate the client API version of the window's context.
+@anchor GLFW_CONTEXT_VERSION_MAJOR_attrib
+@anchor GLFW_CONTEXT_VERSION_MINOR_attrib
+@anchor GLFW_CONTEXT_REVISION_attrib
+__GLFW_CONTEXT_VERSION_MAJOR__, __GLFW_CONTEXT_VERSION_MINOR__ and
+__GLFW_CONTEXT_REVISION__ indicate the client API version of the window's
+context.
 
-`GLFW_OPENGL_FORWARD_COMPAT` is `GLFW_TRUE` if the window's context is an OpenGL
-forward-compatible one, or `GLFW_FALSE` otherwise.
+@anchor GLFW_OPENGL_FORWARD_COMPAT_attrib
+__GLFW_OPENGL_FORWARD_COMPAT__ is `GLFW_TRUE` if the window's context is an
+OpenGL forward-compatible one, or `GLFW_FALSE` otherwise.
 
-`GLFW_OPENGL_DEBUG_CONTEXT` is `GLFW_TRUE` if the window's context is an OpenGL
-debug context, or `GLFW_FALSE` otherwise.
+@anchor GLFW_OPENGL_DEBUG_CONTEXT_attrib
+__GLFW_OPENGL_DEBUG_CONTEXT__ is `GLFW_TRUE` if the window's context is an
+OpenGL debug context, or `GLFW_FALSE` otherwise.
 
-`GLFW_OPENGL_PROFILE` indicates the OpenGL profile used by the context.  This is
-`GLFW_OPENGL_CORE_PROFILE` or `GLFW_OPENGL_COMPAT_PROFILE` if the context uses
-a known profile, or `GLFW_OPENGL_ANY_PROFILE` if the OpenGL profile is unknown
-or the context is an OpenGL ES context.  Note that the returned profile may not
-match the profile bits of the context flags, as GLFW will try other means of
-detecting the profile when no bits are set.
+@anchor GLFW_OPENGL_PROFILE_attrib
+__GLFW_OPENGL_PROFILE__ indicates the OpenGL profile used by the context.  This
+is `GLFW_OPENGL_CORE_PROFILE` or `GLFW_OPENGL_COMPAT_PROFILE` if the context
+uses a known profile, or `GLFW_OPENGL_ANY_PROFILE` if the OpenGL profile is
+unknown or the context is an OpenGL ES context.  Note that the returned profile
+may not match the profile bits of the context flags, as GLFW will try other
+means of detecting the profile when no bits are set.
 
-`GLFW_CONTEXT_ROBUSTNESS` indicates the robustness strategy used by the context.
-This is `GLFW_LOSE_CONTEXT_ON_RESET` or `GLFW_NO_RESET_NOTIFICATION` if the
-window's context supports robustness, or `GLFW_NO_ROBUSTNESS` otherwise.
+@anchor GLFW_CONTEXT_ROBUSTNESS_attrib
+__GLFW_CONTEXT_ROBUSTNESS__ indicates the robustness strategy used by the
+context.  This is `GLFW_LOSE_CONTEXT_ON_RESET` or `GLFW_NO_RESET_NOTIFICATION`
+if the window's context supports robustness, or `GLFW_NO_ROBUSTNESS` otherwise.
 
 
 @subsubsection window_attribs_fb Framebuffer related attributes

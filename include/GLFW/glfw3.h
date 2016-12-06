@@ -535,8 +535,7 @@ extern "C" {
 /*! @brief One of the arguments to the function was an invalid enum value.
  *
  *  One of the arguments to the function was an invalid enum value, for example
- *  requesting [GLFW_RED_BITS](@ref window_hints_fb) with @ref
- *  glfwGetWindowAttrib.
+ *  requesting @ref GLFW_RED_BITS with @ref glfwGetWindowAttrib.
  *
  *  @analysis Application programmer error.  Fix the offending call.
  */
@@ -633,31 +632,136 @@ extern "C" {
 #define GLFW_NO_WINDOW_CONTEXT      0x0001000A
 /*! @} */
 
+/*! @addtogroup window
+ *  @{ */
+/*! @brief Input focus window hint and attribute
+ *
+ *  Input focus [window hint](@ref GLFW_FOCUSED_hint) or
+ *  [window attribute](@ref GLFW_FOCUSED_attrib).
+ */
 #define GLFW_FOCUSED                0x00020001
+/*! @brief Window iconification window attribute
+ *
+ *  Window iconification [window attribute](@ref GLFW_ICONIFIED_attrib).
+ */
 #define GLFW_ICONIFIED              0x00020002
+/*! @brief Window resize-ability window hint and attribute
+ *
+ *  Window resize-ability [window hint](@ref GLFW_RESIZABLE_hint) or
+ *  [window attribute](@ref GLFW_RESIZABLE_attrib).
+ */
 #define GLFW_RESIZABLE              0x00020003
+/*! @brief Window visibility window hint and attribute
+ *
+ *  Window visibility [window hint](@ref GLFW_VISIBLE_hint) or
+ *  [window attribute](@ref GLFW_VISIBLE_attrib).
+ */
 #define GLFW_VISIBLE                0x00020004
+/*! @brief Window decoration window hint and attribute
+ *
+ *  Window decoration [window hint](@ref GLFW_DECORATED_hint) or
+ *  [window attribute](@ref GLFW_DECORATED_attrib).
+ */
 #define GLFW_DECORATED              0x00020005
+/*! @brief Window auto-iconification window hint
+ *
+ *  Window auto-iconification [window hint](@ref GLFW_AUTO_ICONIFY_hint).
+ */
 #define GLFW_AUTO_ICONIFY           0x00020006
+/*! @brief Window decoration window hint and attribute
+ *
+ *  Window decoration [window hint](@ref GLFW_FLOATING_hint) or
+ *  [window attribute](@ref GLFW_FLOATING_attrib).
+ */
 #define GLFW_FLOATING               0x00020007
+/*! @brief Window maximization window hint and attribute
+ *
+ *  Window maximization [window hint](@ref GLFW_MAXIMIZED_hint) or
+ *  [window attribute](@ref GLFW_MAXIMIZED_attrib).
+ */
 #define GLFW_MAXIMIZED              0x00020008
 
+/*! @brief Framebuffer bit depth hint.
+ *
+ *  Framebuffer bit depth [hint](@ref GLFW_RED_BITS).
+ */
 #define GLFW_RED_BITS               0x00021001
+/*! @brief Framebuffer bit depth hint.
+ *
+ *  Framebuffer bit depth [hint](@ref GLFW_GREEN_BITS).
+ */
 #define GLFW_GREEN_BITS             0x00021002
+/*! @brief Framebuffer bit depth hint.
+ *
+ *  Framebuffer bit depth [hint](@ref GLFW_BLUE_BITS).
+ */
 #define GLFW_BLUE_BITS              0x00021003
+/*! @brief Framebuffer bit depth hint.
+ *
+ *  Framebuffer bit depth [hint](@ref GLFW_ALPHA_BITS).
+ */
 #define GLFW_ALPHA_BITS             0x00021004
+/*! @brief Framebuffer bit depth hint.
+ *
+ *  Framebuffer bit depth [hint](@ref GLFW_DEPTH_BITS).
+ */
 #define GLFW_DEPTH_BITS             0x00021005
+/*! @brief Framebuffer bit depth hint.
+ *
+ *  Framebuffer bit depth [hint](@ref GLFW_STENCIL_BITS).
+ */
 #define GLFW_STENCIL_BITS           0x00021006
+/*! @brief Framebuffer bit depth hint.
+ *
+ *  Framebuffer bit depth [hint](@ref GLFW_ACCUM_RED_BITS).
+ */
 #define GLFW_ACCUM_RED_BITS         0x00021007
+/*! @brief Framebuffer bit depth hint.
+ *
+ *  Framebuffer bit depth [hint](@ref GLFW_ACCUM_GREEN_BITS).
+ */
 #define GLFW_ACCUM_GREEN_BITS       0x00021008
+/*! @brief Framebuffer bit depth hint.
+ *
+ *  Framebuffer bit depth [hint](@ref GLFW_ACCUM_BLUE_BITS).
+ */
 #define GLFW_ACCUM_BLUE_BITS        0x00021009
+/*! @brief Framebuffer bit depth hint.
+ *
+ *  Framebuffer bit depth [hint](@ref GLFW_ACCUM_ALPHA_BITS).
+ */
 #define GLFW_ACCUM_ALPHA_BITS       0x0002100A
+/*! @brief Framebuffer auxiliary buffer hint.
+ *
+ *  Framebuffer auxiliary buffer [hint](@ref GLFW_AUX_BUFFERS).
+ */
 #define GLFW_AUX_BUFFERS            0x0002100B
+/*! @brief OpenGL stereoscopic rendering hint.
+ *
+ *  OpenGL stereoscopic rendering [hint](@ref GLFW_STEREO).
+ */
 #define GLFW_STEREO                 0x0002100C
+/*! @brief Framebuffer MSAA samples hint.
+ *
+ *  Framebuffer MSAA samples [hint](@ref GLFW_SAMPLES).
+ */
 #define GLFW_SAMPLES                0x0002100D
+/*! @brief Framebuffer sRGB hint.
+ *
+ *  Framebuffer sRGB [hint](@ref GLFW_SRGB_CAPABLE).
+ */
 #define GLFW_SRGB_CAPABLE           0x0002100E
+/*! @brief Monitor refresh rate hint.
+ *
+ *  Monitor refresh rate [hint](@ref GLFW_REFRESH_RATE).
+ */
 #define GLFW_REFRESH_RATE           0x0002100F
+/*! @brief Framebuffer double buffering hint.
+ *
+ *  Framebuffer double buffering [hint](@ref GLFW_DOUBLEBUFFER).
+ */
 #define GLFW_DOUBLEBUFFER           0x00021010
+/*! @} */
 
 #define GLFW_CLIENT_API             0x00022001
 #define GLFW_CONTEXT_VERSION_MAJOR  0x00022002
@@ -1625,6 +1729,14 @@ GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor);
  *  and then calls @ref glfwSetGammaRamp with it.  The value must be a finite
  *  number greater than zero.
  *
+ *  The software controlled gamma ramp is applied _in addition_ to the hardware
+ *  gamma correction, which today is usually an approximation of sRGB gamma.
+ *  This means that setting a perfectly linear ramp, or gamma 1.0, will produce
+ *  the default (usually sRGB-like) behavior.
+ *
+ *  For gamma correct rendering with OpenGL or OpenGL ES, see the @ref
+ *  GLFW_SRGB_CAPABLE hint.
+ *
  *  @param[in] monitor The monitor whose gamma ramp to set.
  *  @param[in] gamma The desired exponent.
  *
@@ -1678,6 +1790,14 @@ GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
  *  This function sets the current gamma ramp for the specified monitor.  The
  *  original gamma ramp for that monitor is saved by GLFW the first time this
  *  function is called and is restored by @ref glfwTerminate.
+ *
+ *  The software controlled gamma ramp is applied _in addition_ to the hardware
+ *  gamma correction, which today is usually an approximation of sRGB gamma.
+ *  This means that setting a perfectly linear ramp, or gamma 1.0, will produce
+ *  the default (usually sRGB-like) behavior.
+ *
+ *  For gamma correct rendering with OpenGL or OpenGL ES, see the @ref
+ *  GLFW_SRGB_CAPABLE hint.
  *
  *  @param[in] monitor The monitor whose gamma ramp to set.
  *  @param[in] ramp The gamma ramp to use.
@@ -1789,7 +1909,7 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *
  *  By default, newly created windows use the placement recommended by the
  *  window system.  To create the window at a specific position, make it
- *  initially invisible using the [GLFW_VISIBLE](@ref window_hints_wnd) window
+ *  initially invisible using the [GLFW_VISIBLE](@ref GLFW_VISIBLE_hint) window
  *  hint, set its [position](@ref window_pos) and then [show](@ref window_hide)
  *  it.
  *
@@ -1834,9 +1954,9 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  @remark @macos The OS only supports forward-compatible core profile contexts
  *  for OpenGL versions 3.2 and later.  Before creating an OpenGL context of
  *  version 3.2 or later you must set the
- *  [GLFW_OPENGL_FORWARD_COMPAT](@ref window_hints_ctx) and
- *  [GLFW_OPENGL_PROFILE](@ref window_hints_ctx) accordingly.  OpenGL 3.0 and
- *  3.1 contexts are not supported at all on macOS.
+ *  [GLFW_OPENGL_FORWARD_COMPAT](@ref GLFW_OPENGL_FORWARD_COMPAT_hint) and
+ *  [GLFW_OPENGL_PROFILE](@ref GLFW_OPENGL_PROFILE_hint) hints accordingly.
+ *  OpenGL 3.0 and 3.1 contexts are not supported at all on macOS.
  *
  *  @remark @macos The GLFW window has no icon, as it is not a document
  *  window, but the dock icon will be the same as the application bundle's icon.
@@ -1868,9 +1988,9 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  creation.
  *
  *  @remark @wayland The window frame is currently unimplemented, as if
- *  `GLFW_DECORATED` was always set to `GLFW_FALSE`.  A compositor can still
- *  emit close, resize or maximize events, using for example a keybind
- *  mechanism.
+ *  [GLFW_DECORATED](@ref GLFW_DECORATED_hint) was always set to `GLFW_FALSE`.
+ *  A compositor can still emit close, resize or maximize events, using for
+ *  example a keybind mechanism.
  *
  *  @remark @wayland A full screen window will not attempt to change the mode,
  *  no matter what the requested size or refresh rate.
@@ -2314,8 +2434,8 @@ GLFWAPI void glfwGetFramebufferSize(GLFWwindow* window, int* width, int* height)
  *  GLFW_PLATFORM_ERROR.
  *
  *  @remark @wayland The window frame is currently unimplemented, as if
- *  `GLFW_DECORATED` was always set to `GLFW_FALSE`, so the returned values
- *  will always be zero.
+ *  [GLFW_DECORATED](@ref GLFW_DECORATED_hint) was always set to `GLFW_FALSE`,
+ *  so the returned values will always be zero.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -2459,8 +2579,8 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
  *  The window should already be visible and not iconified.
  *
  *  By default, both windowed and full screen mode windows are focused when
- *  initially created.  Set the [GLFW_FOCUSED](@ref window_hints_wnd) to disable
- *  this behavior.
+ *  initially created.  Set the [GLFW_FOCUSED](@ref GLFW_FOCUSED_hint) to
+ *  disable this behavior.
  *
  *  __Do not use this function__ to steal focus from other applications unless
  *  you are certain that is what the user wants.  Focus stealing can be
@@ -3982,7 +4102,8 @@ GLFWAPI uint64_t glfwGetTimerFrequency(void);
  *  By default, making a context non-current implicitly forces a pipeline flush.
  *  On machines that support `GL_KHR_context_flush_control`, you can control
  *  whether a context performs this flush by setting the
- *  [GLFW_CONTEXT_RELEASE_BEHAVIOR](@ref window_hints_ctx) window hint.
+ *  [GLFW_CONTEXT_RELEASE_BEHAVIOR](@ref GLFW_CONTEXT_RELEASE_BEHAVIOR_hint)
+ *  hint.
  *
  *  The specified window must have an OpenGL or OpenGL ES context.  Specifying
  *  a window without a context will generate a @ref GLFW_NO_WINDOW_CONTEXT

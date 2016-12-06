@@ -38,22 +38,21 @@ Unix-like systems).  This means that GLFW does not need to be linked against the
 loader.  However, it also means that if you are using the static library form of
 the Vulkan loader GLFW will either fail to find it or (worse) use the wrong one.
 
-The [GLFW_VULKAN_STATIC](@ref compile_options_shared) CMake option makes GLFW
-link directly against the static form.  Not linking against the Vulkan loader
-will then be a compile-time error.
+The @ref GLFW_VULKAN_STATIC CMake option makes GLFW link directly against the
+static form.  Not linking against the Vulkan loader will then be a compile-time
+error.
 
 @macos MoltenVK only provides the static library form of the Vulkan loader, but
-GLFW is able to find it without
-[GLFW_VULKAN_STATIC](@ref compile_options_shared) as long as it is linked into
-any of the binaries already loaded into the process.  As it is a static library,
-you must also link against its dependencies: the `Cocoa`, `Metal` and
+GLFW is able to find it without @ref GLFW_VULKAN_STATIC as long as it is linked
+into any of the binaries already loaded into the process.  As it is a static
+library, you must also link against its dependencies: the `Cocoa`, `Metal` and
 `QuartzCore` frameworks and the `libc++` library.
 
 
 @section vulkan_include Including the Vulkan and GLFW header files
 
-To include the Vulkan header, define [GLFW_INCLUDE_VULKAN](@ref build_macros)
-before including the GLFW header.
+To include the Vulkan header, define @ref GLFW_INCLUDE_VULKAN before including
+the GLFW header.
 
 @code
 #define GLFW_INCLUDE_VULKAN
@@ -203,7 +202,7 @@ an existing Vulkan surface.
 
 Unless you will be using OpenGL or OpenGL ES with the same window as Vulkan,
 there is no need to create a context.  You can disable context creation with the
-[GLFW_CLIENT_API](@ref window_hints_ctx) hint.
+[GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint) hint.
 
 @code
 glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);

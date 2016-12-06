@@ -19,7 +19,7 @@ GLFW now supports querying the platform dependent scancode of any key with
 @subsection news_33_moltenvk Support for Vulkan on macOS via MoltenVK
 
 GLFW now supports the `VK_MVK_macos_surface` window surface creation extension
-provided by MoltenVK.
+provided by [MoltenVK](https://moltengl.com/moltenvk/).
 
 
 @subsection news_33_osmesa OSMesa backend for headless software rendering
@@ -37,7 +37,7 @@ GLFW now supports basic integration with Vulkan with @ref glfwVulkanSupported,
 @ref glfwGetRequiredInstanceExtensions, @ref glfwGetInstanceProcAddress, @ref
 glfwGetPhysicalDevicePresentationSupport and @ref glfwCreateWindowSurface.
 Vulkan header inclusion can be selected with
-[GLFW_INCLUDE_VULKAN](@ref build_macros).
+@ref GLFW_INCLUDE_VULKAN.
 
 
 @subsection news_32_setwindowmonitor Window mode switching
@@ -50,7 +50,7 @@ the monitor and desired resolution and refresh rate of full screen windows with
 @subsection news_32_maximize Window maxmimization support
 
 GLFW now supports window maximization with @ref glfwMaximizeWindow and the
-[GLFW_MAXIMIZED](@ref window_attribs_wnd) window hint and attribute.
+@ref GLFW_MAXIMIZED window hint and attribute.
 
 
 @subsection news_32_focus Window input focus control
@@ -95,21 +95,21 @@ with @ref glfwSetJoystickCallback.
 
 @subsection news_32_noapi Context-less windows
 
-GLFW now supports creating windows without a OpenGL or OpenGL ES context with
-[GLFW_NO_API](@ref window_hints_ctx).
+GLFW now supports creating windows without a OpenGL or OpenGL ES context by
+setting the [GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint) hint to `GLFW_NO_API`.
 
 
 @subsection news_32_contextapi Run-time context creation API selection
 
-GLFW now supports selecting the context creation API at run-time with the
-[GLFW_CONTEXT_CREATION_API](@ref window_hints_ctx) window hint value.
+GLFW now supports selecting and querying the context creation API at run-time
+with the @ref GLFW_CONTEXT_CREATION_API hint and attribute.
 
 
 @subsection news_32_noerror Error-free context creation
 
-GLFW now supports creating OpenGL and OpenGL ES contexts that do not emit errors
-with the [GLFW_CONTEXT_NO_ERROR](@ref window_hints_ctx) window hint, provided
-the machine supports the `GL_KHR_no_error` extension.
+GLFW now supports creating and querying OpenGL and OpenGL ES contexts that do
+not emit errors with the @ref GLFW_CONTEXT_NO_ERROR hint, provided the machine
+supports the `GL_KHR_no_error` extension.
 
 
 @subsection news_32_cmake CMake config-file package support
@@ -163,21 +163,21 @@ client area of a window, with @ref glfwGetWindowFrameSize.
 @subsection news_31_autoiconify Simultaneous multi-monitor rendering
 
 GLFW now supports disabling auto-iconification of full screen windows with
-the [GLFW_AUTO_ICONIFY](@ref window_hints_wnd) window hint.  This is intended
-for people building multi-monitor installations, where you need windows to stay
-in full screen despite losing input focus.
+the [GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_hint) window hint.  This is
+intended for people building multi-monitor installations, where you need windows
+to stay in full screen despite losing input focus.
 
 
 @subsection news_31_floating Floating windows
 
 GLFW now supports floating windows, also called topmost or always on top, for
-easier debugging with the [GLFW_FLOATING](@ref window_hints_wnd) window hint.
+easier debugging with the @ref GLFW_FLOATING window hint and attribute.
 
 
 @subsection news_31_focused Initially unfocused windows
 
 GLFW now supports preventing a windowed mode window from gaining input focus on
-creation, with the [GLFW_FOCUSED](@ref window_hints_wnd) window hint.
+creation, with the [GLFW_FOCUSED](@ref GLFW_FOCUSED_hint) window hint.
 
 
 @subsection news_31_direct Direct access for window attributes and cursor position
@@ -198,24 +198,24 @@ being input, for example if the Control key is held down.
 
 @subsection news_31_single Single buffered framebuffers
 
-GLFW now supports the creation of single buffered windows, with the
-[GLFW_DOUBLEBUFFER](@ref window_hints_fb) window hint.
+GLFW now supports the creation of single buffered windows, with the @ref
+GLFW_DOUBLEBUFFER hint.
 
 
 @subsection news_31_glext Macro for including extension header
 
 GLFW now includes the extension header appropriate for the chosen OpenGL or
-OpenGL ES header when [GLFW_INCLUDE_GLEXT](@ref build_macros) is defined.  GLFW
-does not provide these headers.  They must be provided by your development
-environment or your OpenGL or OpenGL ES SDK.
+OpenGL ES header when @ref GLFW_INCLUDE_GLEXT is defined.  GLFW does not provide
+these headers.  They must be provided by your development environment or your
+OpenGL or OpenGL ES SDK.
 
 
 @subsection news_31_release Context release behaviors
 
-GLFW now supports controlling whether the pipeline is flushed when a context is
-made non-current, with the
-[GLFW_CONTEXT_RELEASE_BEHAVIOR](@ref window_hints_ctx) window hint, provided the
-machine supports the `GL_KHR_context_flush_control` extension.
+GLFW now supports controlling and querying whether the pipeline is flushed when
+a context is made non-current, with the @ref GLFW_CONTEXT_RELEASE_BEHAVIOR hint
+and attribute, provided the machine supports the `GL_KHR_context_flush_control`
+extension.
 
 
 @subsection news_31_wayland (Experimental) Wayland support
@@ -290,11 +290,11 @@ glfwSetGamma, which generates a ramp from a gamma value and then sets it.
 @subsection news_30_gles OpenGL ES support
 
 GLFW now supports the creation of OpenGL ES contexts, by setting the
-`GLFW_CLIENT_API` window hint to `GLFW_OPENGL_ES_API`, where creation of such
-contexts are supported.  Note that GLFW _does not implement_ OpenGL ES, so your
-driver must provide support in a way usable by GLFW.  Modern Nvidia and Intel
-drivers support creation of OpenGL ES context using the GLX and WGL APIs, while
-AMD provides an EGL implementation instead.
+[GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint) hint to `GLFW_OPENGL_ES_API`, where
+creation of such contexts are supported.  Note that GLFW _does not implement_
+OpenGL ES, so your driver must provide support in a way usable by GLFW.  Modern
+Nvidia and Intel drivers support creation of OpenGL ES context using the GLX and
+WGL APIs, while AMD provides an EGL implementation instead.
 
 
 @subsection news_30_egl (Experimental) EGL support
@@ -365,16 +365,17 @@ to @ref glfwCreateWindow.
 @subsection news_30_hidden Hidden windows
 
 Windows can now be hidden with @ref glfwHideWindow, shown using @ref
-glfwShowWindow and created initially hidden with the `GLFW_VISIBLE` window hint.
-This allows for off-screen rendering in a way compatible with most drivers, as
-well as moving a window to a specific position before showing it.
+glfwShowWindow and created initially hidden with the @ref GLFW_VISIBLE window
+hint and attribute.  This allows for off-screen rendering in a way compatible
+with most drivers, as well as moving a window to a specific position before
+showing it.
 
 
 @subsection news_30_undecorated Undecorated windows
 
 Windowed mode windows can now be created without decorations, e.g. things like
-a frame, a title bar, with the `GLFW_DECORATED` window hint.  This allows for
-the creation of things like splash screens.
+a frame, a title bar, with the @ref GLFW_DECORATED window hint and attribute.
+This allows for the creation of things like splash screens.
 
 
 @subsection news_30_keymods Modifier key bit masks

@@ -455,6 +455,7 @@ GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* window);
 #if defined(GLFW_EXPOSE_NATIVE_OSMESA)
 /*! @brief Retrieves the color buffer associated with the specified window.
  *
+ *  @param[in] window The window whose color buffer to retrieve.
  *  @param[out] width Where to store the width of the color buffer, or `NULL`.
  *  @param[out] height Where to store the height of the color buffer, or `NULL`.
  *  @param[out] format Where to store the OSMesa pixel format of the color
@@ -475,6 +476,7 @@ GLFWAPI int glfwGetOSMesaColorBuffer(GLFWwindow* window, int* width, int* height
 
 /*! @brief Retrieves the depth buffer associated with the specified window.
  *
+ *  @param[in] window The window whose depth buffer to retrieve.
  *  @param[out] width Where to store the width of the depth buffer, or `NULL`.
  *  @param[out] height Where to store the height of the depth buffer, or `NULL`.
  *  @param[out] bytesPerValue Where to store the number of bytes per depth

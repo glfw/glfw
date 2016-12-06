@@ -1038,9 +1038,8 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 
     window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
 
-#if defined(_GLFW_USE_RETINA)
-    [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
-#endif /*_GLFW_USE_RETINA*/
+    if (wndconfig->ns.retina)
+        [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
 
     [window->ns.object setContentView:window->ns.view];
     [window->ns.object makeFirstResponder:window->ns.view];

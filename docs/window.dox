@@ -146,6 +146,11 @@ context.  These hints are set to their default values each time the library is
 initialized with @ref glfwInit, can be set individually with @ref glfwWindowHint
 and reset all at once to their defaults with @ref glfwDefaultWindowHints.
 
+Some hints are platform specific.  These are always valid to set on any
+platform but they will only affect their specific platform.  Other platforms
+will simply ignore them.  Setting these hints requires no platform specific
+headers or calls.
+
 Note that hints need to be set _before_ the creation of the window and context
 you wish to have the specified attributes.
 
@@ -400,6 +405,13 @@ fail on early drivers where this flag is supported without those extensions
 being listed.
 
 
+@subsubsection window_hints_osx macOS specific hints
+
+@anchor GLFW_COCOA_RETINA_FRAMEBUFFER_hint
+__GLFW_COCOA_RETINA_FRAMEBUFFER__ specifies whether to use full resolution
+framebuffers on Retina displays.  This is ignored on other platforms.
+
+
 @subsubsection window_hints_values Supported and default values
 
 Window hint                   | Default value               | Supported values
@@ -436,6 +448,7 @@ GLFW_CONTEXT_RELEASE_BEHAVIOR | `GLFW_ANY_RELEASE_BEHAVIOR` | `GLFW_ANY_RELEASE_
 GLFW_OPENGL_FORWARD_COMPAT    | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_OPENGL_DEBUG_CONTEXT     | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_OPENGL_PROFILE           | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE`
+GLFW_COCOA_RETINA_FRAMEBUFFER | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 
 
 @section window_events Window event processing

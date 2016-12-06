@@ -229,10 +229,6 @@ directory of bundled applications to the `Contents/Resources` directory.
 __GLFW_USE_MENUBAR__ determines whether the first call to @ref glfwCreateWindow
 sets up a minimal menu bar.
 
-@anchor GLFW_USE_RETINA
-__GLFW_USE_RETINA__ determines whether windows will use the full resolution of
-Retina displays.
-
 
 @subsubsection compile_options_win32 Windows specific CMake options
 
@@ -298,8 +294,6 @@ available:
    application bundle during @ref glfwInit (recommended)
  - @b _GLFW_USE_MENUBAR to create and populate the menu bar when the first window
    is created (recommended)
- - @b _GLFW_USE_RETINA to have windows use the full resolution of Retina displays
-   (recommended)
 
 @note None of the @ref build_macros may be defined during the compilation of
 GLFW.  If you define any of these in your build files, make sure they are not

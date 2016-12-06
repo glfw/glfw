@@ -776,6 +776,8 @@ extern "C" {
 #define GLFW_CONTEXT_NO_ERROR       0x0002200A
 #define GLFW_CONTEXT_CREATION_API   0x0002200B
 
+#define GLFW_COCOA_RETINA_FRAMEBUFFER 0x00023001
+
 #define GLFW_NO_API                          0
 #define GLFW_OPENGL_API             0x00030001
 #define GLFW_OPENGL_ES_API          0x00030002
@@ -1972,9 +1974,10 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  [compile-time option](@ref compile_options_osx).
  *
  *  @remark @macos On OS X 10.10 and later the window frame will not be rendered
- *  at full resolution on Retina displays unless the `NSHighResolutionCapable`
- *  key is enabled in the application bundle's `Info.plist`.  For more
- *  information, see
+ *  at full resolution on Retina displays unless the
+ *  [GLFW_COCOA_RETINA_FRAMEBUFFER](@ref GLFW_COCOA_RETINA_FRAMEBUFFER_hint)
+ *  hint is `GLFW_TRUE` and the `NSHighResolutionCapable` key is enabled in the
+ *  application bundle's `Info.plist`.  For more information, see
  *  [High Resolution Guidelines for OS X](https://developer.apple.com/library/mac/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Explained/Explained.html)
  *  in the Mac Developer Library.  The GLFW test and example programs use
  *  a custom `Info.plist` template for this, which can be found as

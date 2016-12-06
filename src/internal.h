@@ -264,6 +264,9 @@ struct _GLFWwndconfig
     GLFWbool      autoIconify;
     GLFWbool      floating;
     GLFWbool      maximized;
+    struct {
+        GLFWbool  retina;
+    } ns;
 };
 
 /*! @brief Context configuration.

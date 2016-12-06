@@ -62,6 +62,4 @@
 #cmakedefine _GLFW_USE_CHDIR
 // Define this to 1 if glfwCreateWindow should populate the menu bar
 #cmakedefine _GLFW_USE_MENUBAR
-// Define this to 1 if windows should use full resolution on Retina displays
-#cmakedefine _GLFW_USE_RETINA
 

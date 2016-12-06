@@ -258,37 +258,37 @@ typedef struct _GLFWlibraryWin32
     _GLFWwindow*        disabledCursorWindow;
 
     struct {
-        HINSTANCE       instance;
-        PFN_timeGetTime timeGetTime;
+        HINSTANCE                       instance;
+        PFN_timeGetTime                 timeGetTime;
     } winmm;
 
     struct {
-        HINSTANCE            instance;
-        PFN_DirectInput8Create DirectInput8Create;
-        IDirectInput8W*      api;
+        HINSTANCE                       instance;
+        PFN_DirectInput8Create          DirectInput8Create;
+        IDirectInput8W*                 api;
     } dinput8;
 
     struct {
-        HINSTANCE               instance;
-        PFN_XInputGetCapabilities XInputGetCapabilities;
-        PFN_XInputGetState      XInputGetState;
+        HINSTANCE                       instance;
+        PFN_XInputGetCapabilities       XInputGetCapabilities;
+        PFN_XInputGetState              XInputGetState;
     } xinput;
 
     struct {
-        HINSTANCE                     instance;
-        PFN_SetProcessDPIAware        SetProcessDPIAware;
+        HINSTANCE                       instance;
+        PFN_SetProcessDPIAware          SetProcessDPIAware;
         PFN_ChangeWindowMessageFilterEx ChangeWindowMessageFilterEx;
     } user32;
 
     struct {
-        HINSTANCE       instance;
-        PFN_DwmIsCompositionEnabled DwmIsCompositionEnabled;
-        PFN_DwmFlush    DwmFlush;
+        HINSTANCE                       instance;
+        PFN_DwmIsCompositionEnabled     DwmIsCompositionEnabled;
+        PFN_DwmFlush                    DwmFlush;
     } dwmapi;
 
     struct {
-        HINSTANCE       instance;
-        PFN_SetProcessDpiAwareness SetProcessDpiAwareness;
+        HINSTANCE                       instance;
+        PFN_SetProcessDpiAwareness      SetProcessDpiAwareness;
     } shcore;
 
 } _GLFWlibraryWin32;
@@ -311,7 +311,7 @@ typedef struct _GLFWmonitorWin32
 //
 typedef struct _GLFWcursorWin32
 {
-    HCURSOR handle;
+    HCURSOR             handle;
 
 } _GLFWcursorWin32;
 
@@ -328,8 +328,8 @@ typedef struct _GLFWtimeWin32
 //
 typedef struct _GLFWtlsWin32
 {
-    GLFWbool        allocated;
-    DWORD           context;
+    GLFWbool            allocated;
+    DWORD               context;
 
 } _GLFWtlsWin32;
 

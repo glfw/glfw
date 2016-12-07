@@ -264,6 +264,7 @@ struct _GLFWwndconfig
     GLFWbool      autoIconify;
     GLFWbool      floating;
     GLFWbool      maximized;
+    GLFWbool      centerCursor;
 };
 
 /*! @brief Context configuration.

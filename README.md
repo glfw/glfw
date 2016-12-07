@@ -125,6 +125,7 @@ information on what to include when reporting a bug.
                   function on macOS 10.12+
 - [Cocoa] Bugfix: Running in AppSandbox would emit warnings (#816,#882)
 - [EGL] Added support for `EGL_KHR_get_all_proc_addresses` (#871)
+- Added 'GLFW_CENTER_CURSOR' window hint for controlling cursor centering
 
 
 ## Contact
@@ -272,6 +273,7 @@ skills.
  - Santi Zupancic
  - Jonas Ådahl
  - Lasse Öörni
+ - Liam Middlebrook
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

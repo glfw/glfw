@@ -566,10 +566,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             else
                 _glfwInputKey(window, key, scancode, action, mods);
 
-            if(wParam == VK_MENU) {
+            if(wParam == VK_MENU || wParam == VK_F10) {
                 return 0;
             }
-            break; // #fix: disable system default ALT process, solve dead block problem when glfw-window is a cross-thread child window.
+            break; // #fix: disable system default ALT/F10 process, solve dead block problem when glfw-window is a cross-thread child window.
         }
 
         case WM_LBUTTONDOWN:

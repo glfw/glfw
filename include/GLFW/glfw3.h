@@ -647,37 +647,37 @@ extern "C" {
 #define GLFW_ICONIFIED              0x00020002
 /*! @brief Window resize-ability window hint and attribute
  *
- *  Window resize-ability [window hint](@ref GLFW_RESIZABLE_hint) or
+ *  Window resize-ability [window hint](@ref GLFW_RESIZABLE_hint) and
  *  [window attribute](@ref GLFW_RESIZABLE_attrib).
  */
 #define GLFW_RESIZABLE              0x00020003
 /*! @brief Window visibility window hint and attribute
  *
- *  Window visibility [window hint](@ref GLFW_VISIBLE_hint) or
+ *  Window visibility [window hint](@ref GLFW_VISIBLE_hint) and
  *  [window attribute](@ref GLFW_VISIBLE_attrib).
  */
 #define GLFW_VISIBLE                0x00020004
 /*! @brief Window decoration window hint and attribute
  *
- *  Window decoration [window hint](@ref GLFW_DECORATED_hint) or
+ *  Window decoration [window hint](@ref GLFW_DECORATED_hint) and
  *  [window attribute](@ref GLFW_DECORATED_attrib).
  */
 #define GLFW_DECORATED              0x00020005
 /*! @brief Window auto-iconification window hint and attribute
  *
- *  Window auto-iconification [window hint](@ref GLFW_AUTO_ICONIFY_hint) or
+ *  Window auto-iconification [window hint](@ref GLFW_AUTO_ICONIFY_hint) and
  *  [window attribute](@ref GLFW_AUTO_ICONIFY_attrib).
  */
 #define GLFW_AUTO_ICONIFY           0x00020006
 /*! @brief Window decoration window hint and attribute
  *
- *  Window decoration [window hint](@ref GLFW_FLOATING_hint) or
+ *  Window decoration [window hint](@ref GLFW_FLOATING_hint) and
  *  [window attribute](@ref GLFW_FLOATING_attrib).
  */
 #define GLFW_FLOATING               0x00020007
 /*! @brief Window maximization window hint and attribute
  *
- *  Window maximization [window hint](@ref GLFW_MAXIMIZED_hint) or
+ *  Window maximization [window hint](@ref GLFW_MAXIMIZED_hint) and
  *  [window attribute](@ref GLFW_MAXIMIZED_attrib).
  */
 #define GLFW_MAXIMIZED              0x00020008
@@ -762,21 +762,75 @@ extern "C" {
  *  Framebuffer double buffering [hint](@ref GLFW_DOUBLEBUFFER).
  */
 #define GLFW_DOUBLEBUFFER           0x00021010
-/*! @} */
-
+/*! @brief Context client API hint and attribute.
+ *
+ *  Context client API [hint](@ref GLFW_CLIENT_API_hint) and
+ *  [attribute](@ref GLFW_CLIENT_API_attrib).
+ */
 #define GLFW_CLIENT_API             0x00022001
+/*! @brief Context client API major version hint and attribute.
+ *
+ *  Context client API major version [hint](@ref GLFW_CLIENT_API_hint) and
+ *  [attribute](@ref GLFW_CLIENT_API_attrib).
+ */
 #define GLFW_CONTEXT_VERSION_MAJOR  0x00022002
+/*! @brief Context client API minor version hint and attribute.
+ *
+ *  Context client API minor version [hint](@ref GLFW_CLIENT_API_hint) and
+ *  [attribute](@ref GLFW_CLIENT_API_attrib).
+ */
 #define GLFW_CONTEXT_VERSION_MINOR  0x00022003
+/*! @brief Context client API revision number hint and attribute.
+ *
+ *  Context client API revision number [hint](@ref GLFW_CLIENT_API_hint) and
+ *  [attribute](@ref GLFW_CLIENT_API_attrib).
+ */
 #define GLFW_CONTEXT_REVISION       0x00022004
+/*! @brief Context robustness hint and attribute.
+ *
+ *  Context client API revision number [hint](@ref GLFW_CLIENT_API_hint) and
+ *  [attribute](@ref GLFW_CLIENT_API_attrib).
+ */
 #define GLFW_CONTEXT_ROBUSTNESS     0x00022005
+/*! @brief OpenGL forward-compatibility hint and attribute.
+ *
+ *  OpenGL forward-compatibility [hint](@ref GLFW_CLIENT_API_hint) and
+ *  [attribute](@ref GLFW_CLIENT_API_attrib).
+ */
 #define GLFW_OPENGL_FORWARD_COMPAT  0x00022006
+/*! @brief OpenGL debug context hint and attribute.
+ *
+ *  OpenGL debug context [hint](@ref GLFW_CLIENT_API_hint) and
+ *  [attribute](@ref GLFW_CLIENT_API_attrib).
+ */
 #define GLFW_OPENGL_DEBUG_CONTEXT   0x00022007
+/*! @brief OpenGL profile hint and attribute.
+ *
+ *  OpenGL profile [hint](@ref GLFW_CLIENT_API_hint) and
+ *  [attribute](@ref GLFW_CLIENT_API_attrib).
+ */
 #define GLFW_OPENGL_PROFILE         0x00022008
+/*! @brief Context flush-on-release hint and attribute.
+ *
+ *  Context flush-on-release [hint](@ref GLFW_CLIENT_API_hint) and
+ *  [attribute](@ref GLFW_CLIENT_API_attrib).
+ */
 #define GLFW_CONTEXT_RELEASE_BEHAVIOR 0x00022009
+/*! @brief Context error suppression hint and attribute.
+ *
+ *  Context error suppression [hint](@ref GLFW_CLIENT_API_hint) and
+ *  [attribute](@ref GLFW_CLIENT_API_attrib).
+ */
 #define GLFW_CONTEXT_NO_ERROR       0x0002200A
+/*! @brief Context creation API hint and attribute.
+ *
+ *  Context creation API [hint](@ref GLFW_CLIENT_API_hint) and
+ *  [attribute](@ref GLFW_CLIENT_API_attrib).
+ */
 #define GLFW_CONTEXT_CREATION_API   0x0002200B
 
 #define GLFW_COCOA_RETINA_FRAMEBUFFER 0x00023001
+/*! @} */
 
 #define GLFW_NO_API                          0
 #define GLFW_OPENGL_API             0x00030001

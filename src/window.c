@@ -106,7 +106,7 @@ void _glfwInputWindowDamage(_GLFWwindow* window)
 
 void _glfwInputWindowCloseRequest(_GLFWwindow* window)
 {
-    window->closed = GLFW_TRUE;
+    window->shouldClose = GLFW_TRUE;
 
     if (window->callbacks.close)
         window->callbacks.close((GLFWwindow*) window);
@@ -418,7 +418,7 @@ GLFWAPI int glfwWindowShouldClose(GLFWwindow* handle)
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(0);
-    return window->closed;
+    return window->shouldClose;
 }
 
 GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* handle, int value)
@@ -427,7 +427,7 @@ GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* handle, int value)
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT();
-    window->closed = value;
+    window->shouldClose = value;
 }
 
 GLFWAPI void glfwSetWindowTitle(GLFWwindow* handle, const char* title)

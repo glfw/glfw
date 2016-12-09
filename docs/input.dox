@@ -33,9 +33,10 @@ information.
 
 GLFW needs to poll the window system for events both to provide input to the
 application and to prove to the window system that the application hasn't locked
-up.  Event processing is normally done each frame after [buffer swapping](@ref
-buffer_swap).  Even when you have no windows, event polling needs to be done in
-order to receive monitor and joystick connection events.
+up.  Event processing is normally done each frame after
+[buffer swapping](@ref buffer_swap).  Even when you have no windows, event
+polling needs to be done in order to receive monitor and joystick connection
+events.
 
 There are three functions for processing pending events.  @ref glfwPollEvents,
 processes only those events that have already been received and then returns

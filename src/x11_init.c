@@ -462,13 +462,23 @@ static void detectEWMH(void)
 //
 static GLFWbool initExtensions(void)
 {
-#if defined(_GLFW_HAS_XF86VM)
-    // Check for XF86VidMode extension
-    _glfw.x11.vidmode.available =
-        XF86VidModeQueryExtension(_glfw.x11.display,
-                                  &_glfw.x11.vidmode.eventBase,
-                                  &_glfw.x11.vidmode.errorBase);
-#endif /*_GLFW_HAS_XF86VM*/
+    _glfw.x11.vidmode.handle = dlopen("libXxf86vm.so", RTLD_LAZY | RTLD_GLOBAL);
+    if (_glfw.x11.vidmode.handle)
+    {
+        _glfw.x11.vidmode.QueryExtension = (PFN_XF86VidModeQueryExtension)
+            dlsym(_glfw.x11.vidmode.handle, "XF86VidModeQueryExtension");
+        _glfw.x11.vidmode.GetGammaRamp = (PFN_XF86VidModeGetGammaRamp)
+            dlsym(_glfw.x11.vidmode.handle, "XF86VidModeGetGammaRamp");
+        _glfw.x11.vidmode.SetGammaRamp = (PFN_XF86VidModeSetGammaRamp)
+            dlsym(_glfw.x11.vidmode.handle, "XF86VidModeSetGammaRamp");
+        _glfw.x11.vidmode.GetGammaRampSize = (PFN_XF86VidModeGetGammaRampSize)
+            dlsym(_glfw.x11.vidmode.handle, "XF86VidModeGetGammaRampSize");
+
+        _glfw.x11.vidmode.available =
+            XF86VidModeQueryExtension(_glfw.x11.display,
+                                      &_glfw.x11.vidmode.eventBase,
+                                      &_glfw.x11.vidmode.errorBase);
+    }
 
     // Check for RandR extension
     if (XRRQueryExtension(_glfw.x11.display,
@@ -847,9 +857,6 @@ const char* _glfwPlatformGetVersionString(void)
 #endif
 #if defined(__linux__)
         " /dev/js"
-#endif
-#if defined(_GLFW_HAS_XF86VM)
-        " Xf86vm"
 #endif
 #if defined(_GLFW_BUILD_DLL)
         " shared"

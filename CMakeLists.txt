@@ -262,21 +262,6 @@ if (_GLFW_X11)
     list(APPEND glfw_LIBRARIES "${X11_Xinerama_LIB}")
     list(APPEND glfw_PKG_DEPS "xinerama")
 
-    # Check for Xf86VidMode (fallback gamma control)
-    if (X11_xf86vmode_FOUND)
-        list(APPEND glfw_INCLUDE_DIRS "${X11_xf86vmode_INCLUDE_PATH}")
-        list(APPEND glfw_PKG_DEPS "xxf86vm")
-
-        if (X11_Xxf86vm_LIB)
-            list(APPEND glfw_LIBRARIES "${X11_Xxf86vm_LIB}")
-        else()
-            # Backwards compatibility (see CMake bug 0006976)
-            list(APPEND glfw_LIBRARIES Xxf86vm)
-        endif()
-
-        set(_GLFW_HAS_XF86VM TRUE)
-    endif()
-
     # Check for Xkb (X keyboard extension)
     if (NOT X11_Xkb_FOUND)
         message(FATAL_ERROR "The X keyboard extension headers were not found")

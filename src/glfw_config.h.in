@@ -55,9 +55,6 @@
 // Define this to 1 to force use of high-performance GPU on hybrid systems
 #cmakedefine _GLFW_USE_HYBRID_HPG
 
-// Define this to 1 if the Xxf86vm X11 extension is available
-#cmakedefine _GLFW_HAS_XF86VM
-
 // Define this to 1 if glfwInit should change the current directory
 #cmakedefine _GLFW_USE_CHDIR
 // Define this to 1 if glfwCreateWindow should populate the menu bar

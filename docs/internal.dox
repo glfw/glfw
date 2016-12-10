@@ -111,6 +111,6 @@ which is generated from the `glfw_config.h.in` file by CMake.
 Configuration macros the same style as tokens in the public interface, except
 with a leading underscore.
 
-Examples: `_GLFW_HAS_XF86VM` 
+Examples: `_GLFW_USE_HYBRID_HPG` 
 
 */

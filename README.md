@@ -118,6 +118,7 @@ information on what to include when reporting a bug.
 - Bugfix: `glfwGetInstanceProcAddress` returned `NULL` for
           `vkGetInstanceProcAddr` when `_GLFW_VULKAN_STATIC` was enabled
 - [Win32] Bugfix: Undecorated windows could not be iconified by the user (#861)
+- [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
 - [Cocoa] Added support for Vulkan window surface creation via MoltenVK (#870)
 - [Cocoa] Bugfix: Disabling window aspect ratio would assert (#852)
 - [Cocoa] Bugfix: Window creation failed to set first responder (#876,#883)

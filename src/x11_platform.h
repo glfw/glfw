@@ -47,15 +47,19 @@
 // The Xinerama extension provides legacy monitor indices
 #include <X11/extensions/Xinerama.h>
 
-#if defined(_GLFW_HAS_XF86VM)
- // The Xf86VidMode extension provides fallback gamma control
- #include <X11/extensions/xf86vmode.h>
-#endif
-
 typedef XID xcb_window_t;
 typedef XID xcb_visualid_t;
 typedef struct xcb_connection_t xcb_connection_t;
 typedef xcb_connection_t* (* PFN_XGetXCBConnection)(Display*);
+
+typedef Bool (* PFN_XF86VidModeQueryExtension)(Display*,int*,int*);
+typedef Bool (* PFN_XF86VidModeGetGammaRamp)(Display*,int,int,unsigned short*,unsigned short*,unsigned short*);
+typedef Bool (* PFN_XF86VidModeSetGammaRamp)(Display*,int,int,unsigned short*,unsigned short*,unsigned short*);
+typedef Bool (* PFN_XF86VidModeGetGammaRampSize)(Display*,int,int*);
+#define XF86VidModeQueryExtension _glfw.x11.vidmode.QueryExtension
+#define XF86VidModeGetGammaRamp _glfw.x11.vidmode.GetGammaRamp
+#define XF86VidModeSetGammaRamp _glfw.x11.vidmode.SetGammaRamp
+#define XF86VidModeGetGammaRampSize _glfw.x11.vidmode.GetGammaRampSize
 
 typedef VkFlags VkXlibSurfaceCreateFlagsKHR;
 typedef VkFlags VkXcbSurfaceCreateFlagsKHR;
@@ -250,13 +254,16 @@ typedef struct _GLFWlibraryX11
         PFN_XGetXCBConnection XGetXCBConnection;
     } x11xcb;
 
-#if defined(_GLFW_HAS_XF86VM)
     struct {
         GLFWbool    available;
+        void*       handle;
         int         eventBase;
         int         errorBase;
+        PFN_XF86VidModeQueryExtension QueryExtension;
+        PFN_XF86VidModeGetGammaRamp GetGammaRamp;
+        PFN_XF86VidModeSetGammaRamp SetGammaRamp;
+        PFN_XF86VidModeGetGammaRampSize GetGammaRampSize;
     } vidmode;
-#endif /*_GLFW_HAS_XF86VM*/
 
 } _GLFWlibraryX11;
 

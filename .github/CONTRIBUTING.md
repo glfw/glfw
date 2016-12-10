@@ -140,7 +140,7 @@ include the __GLFW release version__ (e.g. `3.1.2`), otherwise include the
 __GLFW commit ID__ (e.g.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
 
 Please also include the __GLFW version string__ (`3.2.0 X11 EGL clock_gettime
-/dev/js XI Xf86vm`), as described
+/dev/js`), as described
 [here](http://www.glfw.org/docs/latest/intro.html#intro_version_string), the
 __GPU model and driver version__ (e.g. `GeForce GTX660 with 352.79`), and the
 __output of `glfwinfo`__ (with switches matching any hints you set in your

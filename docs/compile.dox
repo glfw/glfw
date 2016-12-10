@@ -281,12 +281,6 @@ For the EGL context creation API, the following options are available:
  - @b _GLFW_USE_EGLPLATFORM_H to use `EGL/eglplatform.h` for native handle
    definitions (fallback)
 
-If you are using the X11 window creation API, support for the following X11
-extensions can be enabled:
-
- - @b _GLFW_HAS_XF86VM to use Xxf86vm as a fallback when RandR gamma is broken
- (recommended)
-
 If you are using the Cocoa window creation API, the following options are
 available:
 

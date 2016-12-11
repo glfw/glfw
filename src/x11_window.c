@@ -2428,6 +2428,8 @@ void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)
 
     extensions[0] = "VK_KHR_surface";
 
+    // NOTE: VK_KHR_xcb_surface is preferred due to some early ICDs exposing but
+    //       not correctly implementing VK_KHR_xlib_surface
     if (_glfw.vk.KHR_xcb_surface && _glfw.x11.x11xcb.handle)
         extensions[1] = "VK_KHR_xcb_surface";
     else

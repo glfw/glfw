@@ -35,15 +35,15 @@ DEFINE_GUID(GUID_DEVINTERFACE_HID,0x4d1e55b2,0xf16f,0x11cf,0x88,0xcb,0x00,0x11,0
 
 #if defined(_GLFW_USE_HYBRID_HPG) || defined(_GLFW_USE_OPTIMUS_HPG)
 
-// Applications exporting this symbol with this value will be automatically
-// directed to the high-performance GPU on Nvidia Optimus systems with
-// up-to-date drivers
+// Executables (but not DLLs) exporting this symbol with this value will be
+// automatically directed to the high-performance GPU on Nvidia Optimus systems
+// with up-to-date drivers
 //
 __declspec(dllexport) DWORD NvOptimusEnablement = 1;
 
-// Applications exporting this symbol with this value will be automatically
-// directed to the high-performance GPU on AMD PowerXpress systems with
-// up-to-date drivers
+// Executables (but not DLLs) exporting this symbol with this value will be
+// automatically directed to the high-performance GPU on AMD PowerXpress systems
+// with up-to-date drivers
 //
 __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 

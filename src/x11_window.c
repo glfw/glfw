@@ -1945,7 +1945,8 @@ void _glfwPlatformHideWindow(_GLFWwindow* window)
 void _glfwPlatformFocusWindow(_GLFWwindow* window)
 {
     if (_glfw.x11.NET_ACTIVE_WINDOW)
-        sendEventToWM(window, _glfw.x11.NET_ACTIVE_WINDOW, 1, 0, 0, 0, 0);
+        sendEventToWM(window, _glfw.x11.NET_ACTIVE_WINDOW,
+                      1, window->x11.lastKeyTime, 0, 0, 0);
     else
     {
         XRaiseWindow(_glfw.x11.display, window->x11.handle);

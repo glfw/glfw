@@ -120,6 +120,7 @@ information on what to include when reporting a bug.
 - [Win32] Bugfix: Undecorated windows could not be iconified by the user (#861)
 - [Win32] Bugfix: Deadzone logic could underflow with some controllers (#910)
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
+- [X11] Bugfix: X11: send timestamp of last key press to NET\_ACTIVE\_WINDOW
 - [Cocoa] Added support for Vulkan window surface creation via MoltenVK (#870)
 - [Cocoa] Bugfix: Disabling window aspect ratio would assert (#852)
 - [Cocoa] Bugfix: Window creation failed to set first responder (#876,#883)
@@ -277,6 +278,7 @@ skills.
  - Santi Zupancic
  - Jonas Ådahl
  - Lasse Öörni
+ - Tobias Markus
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

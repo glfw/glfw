@@ -603,9 +603,10 @@ static GLFWbool pollJoystickState(_GLFWjoystickWin32* js, int mode)
         if (mode == _GLFW_PRESENCE_ONLY)
             return GLFW_TRUE;
 
-        if (sqrt((double) (xis.Gamepad.sThumbLX * xis.Gamepad.sThumbLX +
-                           xis.Gamepad.sThumbLY * xis.Gamepad.sThumbLY)) >
-            (double) XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+        if ((float) xis.Gamepad.sThumbLX * xis.Gamepad.sThumbLX +
+            (float) xis.Gamepad.sThumbLY * xis.Gamepad.sThumbLY >
+            (float) XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE *
+                    XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
         {
             js->axes[0] = (xis.Gamepad.sThumbLX + 0.5f) / 32767.f;
             js->axes[1] = (xis.Gamepad.sThumbLY + 0.5f) / 32767.f;
@@ -616,9 +617,10 @@ static GLFWbool pollJoystickState(_GLFWjoystickWin32* js, int mode)
             js->axes[1] = 0.f;
         }
 
-        if (sqrt((double) (xis.Gamepad.sThumbRX * xis.Gamepad.sThumbRX +
-                           xis.Gamepad.sThumbRY * xis.Gamepad.sThumbRY)) >
-            (double) XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
+        if ((float) xis.Gamepad.sThumbRX * xis.Gamepad.sThumbRX +
+            (float) xis.Gamepad.sThumbRY * xis.Gamepad.sThumbRY >
+            (float) XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE *
+                    XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
         {
             js->axes[2] = (xis.Gamepad.sThumbRX + 0.5f) / 32767.f;
             js->axes[3] = (xis.Gamepad.sThumbRY + 0.5f) / 32767.f;

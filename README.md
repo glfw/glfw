@@ -128,6 +128,7 @@ information on what to include when reporting a bug.
 - [Cocoa] Bugfix: Disabled use of deprecated `CGDisplayModeCopyPixelEncoding`
                   function on macOS 10.12+
 - [Cocoa] Bugfix: Running in AppSandbox would emit warnings (#816,#882)
+- [Cocoa] Bugfix: Command-tabbing issues with fullscreen windows (#848)
 - [EGL] Added support for `EGL_KHR_get_all_proc_addresses` (#871)
 
 

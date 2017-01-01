@@ -1036,6 +1036,9 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
             [window->ns.object zoom:nil];
     }
 
+    if (wndconfig->ns.frame)
+        [window->ns.object setFrameAutosaveName:[NSString stringWithUTF8String:wndconfig->title]];
+
     window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
 
     if (wndconfig->ns.retina)

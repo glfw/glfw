@@ -411,6 +411,11 @@ being listed.
 __GLFW_COCOA_RETINA_FRAMEBUFFER__ specifies whether to use full resolution
 framebuffers on Retina displays.  This is ignored on other platforms.
 
+@anchor GLFW_COCOA_FRAME_AUTOSAVE_hint
+__GLFW_COCOA_FRAME_AUTOSAVE__ specifies whether to activate frame autosaving
+using the window title specified at window creation.  This is ignored on other
+platforms.
+
 
 @subsubsection window_hints_values Supported and default values
 
@@ -449,6 +454,7 @@ GLFW_OPENGL_FORWARD_COMPAT    | `GLFW_FALSE`                | `GLFW_TRUE` or `GL
 GLFW_OPENGL_DEBUG_CONTEXT     | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_OPENGL_PROFILE           | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE`
 GLFW_COCOA_RETINA_FRAMEBUFFER | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_COCOA_FRAME_AUTOSAVE     | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 
 
 @section window_events Window event processing

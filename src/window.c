@@ -346,6 +346,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_COCOA_RETINA_FRAMEBUFFER:
             _glfw.hints.window.ns.retina = value ? GLFW_TRUE : GLFW_FALSE;
             break;
+        case GLFW_COCOA_FRAME_AUTOSAVE:
+            _glfw.hints.window.ns.frame = value ? GLFW_TRUE : GLFW_FALSE;
+            break;
         case GLFW_CLIENT_API:
             _glfw.hints.context.client = value;
             break;

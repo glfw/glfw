@@ -266,6 +266,7 @@ struct _GLFWwndconfig
     GLFWbool      maximized;
     struct {
         GLFWbool  retina;
+        GLFWbool  frame;
     } ns;
 };
 

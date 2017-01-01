@@ -1025,6 +1025,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     else
     {
         [window->ns.object center];
+        _glfw.ns.cascadePoint = [window->ns.object cascadeTopLeftFromPoint:_glfw.ns.cascadePoint];
 
         if (wndconfig->resizable)
             [window->ns.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];

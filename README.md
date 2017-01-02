@@ -112,6 +112,7 @@ information on what to include when reporting a bug.
 - Added definition of `GLAPIENTRY` to public header
 - Added macOS specific `GLFW_COCOA_RETINA_FRAMEBUFFER` window hint
 - Added macOS specific `GLFW_COCOA_FRAME_AUTOSAVE` window hint (#195)
+- Added `GLFW_INCLUDE_ES32` for including the OpenGL ES 3.2 header
 - Removed `GLFW_USE_RETINA` compile-time option
 - Bugfix: Calling `glfwMaximizeWindow` on a full screen window was not ignored
 - Bugfix: `GLFW_INCLUDE_VULKAN` could not be combined with the corresponding

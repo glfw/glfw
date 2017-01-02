@@ -37,6 +37,8 @@
     defined(GLFW_INCLUDE_ES1)       || \
     defined(GLFW_INCLUDE_ES2)       || \
     defined(GLFW_INCLUDE_ES3)       || \
+    defined(GLFW_INCLUDE_ES31)      || \
+    defined(GLFW_INCLUDE_ES32)      || \
     defined(GLFW_INCLUDE_NONE)      || \
     defined(GLFW_INCLUDE_GLEXT)     || \
     defined(GLFW_INCLUDE_GLU)       || \

@@ -171,6 +171,11 @@ extern "C" {
   #if defined(GLFW_INCLUDE_GLEXT)
    #include <GLES2/gl2ext.h>
   #endif
+ #elif defined(GLFW_INCLUDE_ES32)
+  #include <GLES3/gl32.h>
+  #if defined(GLFW_INCLUDE_GLEXT)
+   #include <GLES2/gl2ext.h>
+  #endif
  #elif !defined(GLFW_INCLUDE_NONE)
   #include <GL/gl.h>
   #if defined(GLFW_INCLUDE_GLEXT)

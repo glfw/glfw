@@ -86,6 +86,10 @@ __GLFW_INCLUDE_ES3__ makes the GLFW header include the OpenGL ES 3.0
 __GLFW_INCLUDE_ES31__ makes the GLFW header include the OpenGL ES 3.1
 `GLES3/gl31.h` header instead of the regular OpenGL header.
 
+@anchor GLFW_INCLUDE_ES32
+__GLFW_INCLUDE_ES31__ makes the GLFW header include the OpenGL ES 3.2
+`GLES3/gl32.h` header instead of the regular OpenGL header.
+
 @anchor GLFW_INCLUDE_NONE
 __GLFW_INCLUDE_NONE__ makes the GLFW header not include any OpenGL or OpenGL ES
 API header.  This is useful in combination with an extension loading library.

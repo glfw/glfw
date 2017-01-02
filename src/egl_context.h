@@ -34,6 +34,10 @@
  #define EGLAPIENTRY __stdcall
 typedef HDC EGLNativeDisplayType;
 typedef HWND EGLNativeWindowType;
+#elif defined(_GLFW_COCOA)
+ #define EGLAPIENTRY
+typedef void* EGLNativeDisplayType;
+typedef id EGLNativeWindowType;
 #elif defined(_GLFW_X11)
  #define EGLAPIENTRY
 typedef Display* EGLNativeDisplayType;

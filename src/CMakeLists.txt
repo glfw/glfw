@@ -7,10 +7,10 @@ set(common_SOURCES context.c init.c input.c monitor.c vulkan.c window.c)
 
 if (_GLFW_COCOA)
     set(glfw_HEADERS ${common_HEADERS} cocoa_platform.h cocoa_joystick.h
-                     posix_tls.h nsgl_context.h)
+                     posix_tls.h nsgl_context.h egl_context.h)
     set(glfw_SOURCES ${common_SOURCES} cocoa_init.m cocoa_joystick.m
                      cocoa_monitor.m cocoa_window.m cocoa_time.c posix_tls.c
-                     nsgl_context.m)
+                     nsgl_context.m egl_context.c)
 elseif (_GLFW_WIN32)
     set(glfw_HEADERS ${common_HEADERS} win32_platform.h win32_joystick.h
                      wgl_context.h egl_context.h)

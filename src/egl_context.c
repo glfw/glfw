@@ -113,7 +113,7 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
         _GLFWfbconfig* u = usableConfigs + usableCount;
 
         // Only consider RGB(A) EGLConfigs
-        if (!(getEGLConfigAttrib(n, EGL_COLOR_BUFFER_TYPE) & EGL_RGB_BUFFER))
+        if (getEGLConfigAttrib(n, EGL_COLOR_BUFFER_TYPE) != EGL_RGB_BUFFER)
             continue;
 
         // Only consider window EGLConfigs

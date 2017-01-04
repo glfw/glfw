@@ -121,6 +121,8 @@ information on what to include when reporting a bug.
           `vkGetInstanceProcAddr` when `_GLFW_VULKAN_STATIC` was enabled
 - [Win32] Bugfix: Undecorated windows could not be iconified by the user (#861)
 - [Win32] Bugfix: Deadzone logic could underflow with some controllers (#910)
+- [Win32] Bugfix: Using CMake with compilers besides Visual Studio would
+                  always link 32bit vulkan, even for 64bit builds
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
 - [Cocoa] Added support for Vulkan window surface creation via
           [MoltenVK](https://moltengl.com/moltenvk/) (#870)

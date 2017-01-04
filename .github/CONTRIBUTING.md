@@ -42,10 +42,10 @@ doesn't, that might be a separate bug.
 If GLFW is crashing or triggering asserts, make sure that all your object
 handles and other pointers are valid.
 
-For bugs where it makes sense, a [Short, Self Contained, Correct (Compilable),
-Example](http://www.sscce.org/) is absolutely invaluable.  Just put it inline in
-the body text.  Note that if the bug is reproducible with one of the test
-programs that come with GLFW, just mention that instead.
+For bugs where it makes sense, a short, self contained example is absolutely
+invaluable.  Just put it inline in the body text.  Note that if the bug is
+reproducible with one of the test programs that come with GLFW, just mention
+that instead.
 
 __Don't worry about adding too much information__.  Unimportant information can
 be abbreviated or removed later, but missing information can stall bug fixing,

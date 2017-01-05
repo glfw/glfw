@@ -53,6 +53,10 @@
 #define _GLFW_INSERT_FIRST      0
 #define _GLFW_INSERT_LAST       1
 
+#define _GLFW_POLL_PRESENCE     0
+#define _GLFW_POLL_AXES         1
+#define _GLFW_POLL_BUTTONS      2
+
 typedef int GLFWbool;
 
 typedef struct _GLFWwndconfig   _GLFWwndconfig;
@@ -63,6 +67,7 @@ typedef struct _GLFWwindow      _GLFWwindow;
 typedef struct _GLFWlibrary     _GLFWlibrary;
 typedef struct _GLFWmonitor     _GLFWmonitor;
 typedef struct _GLFWcursor      _GLFWcursor;
+typedef struct _GLFWjoystick    _GLFWjoystick;
 
 typedef void (* _GLFWmakecontextcurrentfun)(_GLFWwindow*);
 typedef void (* _GLFWswapbuffersfun)(_GLFWwindow*);
@@ -245,6 +250,9 @@ typedef void (APIENTRY * PFN_vkVoidFunction)(void);
         x = y;                    \
         y = t;                    \
     }
+
+// Maps a joystick pointer to an ID
+#define _GLFW_JOYSTICK_ID(js) ((int) ((js) - _glfw.joysticks))
 
 
 //========================================================================
@@ -440,6 +448,21 @@ struct _GLFWcursor
     _GLFW_PLATFORM_CURSOR_STATE;
 };
 
+/*! @brief Joystick structure
+ */
+struct _GLFWjoystick
+{
+    GLFWbool        present;
+    float*          axes;
+    int             axisCount;
+    unsigned char*  buttons;
+    int             buttonCount;
+    char*           name;
+
+    // This is defined in the joystick API's joystick.h
+    _GLFW_PLATFORM_JOYSTICK_STATE;
+};
+
 /*! @brief Library global data.
  */
 struct _GLFWlibrary
@@ -457,6 +480,8 @@ struct _GLFWlibrary
 
     _GLFWmonitor**      monitors;
     int                 monitorCount;
+
+    _GLFWjoystick       joysticks[GLFW_JOYSTICK_LAST + 1];
 
     uint64_t            timerOffset;
 
@@ -605,25 +630,9 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string);
  */
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window);
 
-/*! @copydoc glfwJoystickPresent
- *  @ingroup platform
+/*! @ingroup platform
  */
-int _glfwPlatformJoystickPresent(int jid);
-
-/*! @copydoc glfwGetJoystickAxes
- *  @ingroup platform
- */
-const float* _glfwPlatformGetJoystickAxes(int jid, int* count);
-
-/*! @copydoc glfwGetJoystickButtons
- *  @ingroup platform
- */
-const unsigned char* _glfwPlatformGetJoystickButtons(int jid, int* count);
-
-/*! @copydoc glfwGetJoystickName
- *  @ingroup platform
- */
-const char* _glfwPlatformGetJoystickName(int jid);
+int _glfwPlatformPollJoystick(int jid, int mode);
 
 /*! @copydoc glfwGetTimerValue
  *  @ingroup platform
@@ -980,7 +989,21 @@ void _glfwInputDrop(_GLFWwindow* window, int count, const char** names);
  *  @param[in] event One of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.
  *  @ingroup event
  */
-void _glfwInputJoystickChange(int jid, int event);
+void _glfwInputJoystick(int jid, int event);
+
+/*! @brief Notifies shared code of the new value of a joystick axis.
+ *  @param[in] jid The joystick whose axis to update.
+ *  @param[in] axis The index of the axis to update.
+ *  @param[in] value The new value of the axis.
+ */
+void _glfwInputJoystickAxis(int jid, int axis, float value);
+
+/*! @brief Notifies shared code of the new value of a joystick button.
+ *  @param[in] jid The joystick whose button to update.
+ *  @param[in] button The index of the button to update.
+ *  @param[in] value The new value of the button.
+ */
+void _glfwInputJoystickButton(int jid, int button, char value);
 
 
 //========================================================================
@@ -1064,6 +1087,14 @@ _GLFWmonitor* _glfwAllocMonitor(const char* name, int widthMM, int heightMM);
  *  @ingroup utility
   */
 void _glfwFreeMonitor(_GLFWmonitor* monitor);
+
+/*! @ingroup utility
+  */
+_GLFWjoystick* _glfwAllocJoystick(const char* name, int axisCount, int buttonCount);
+
+/*! @ingroup utility
+  */
+void _glfwFreeJoystick(_GLFWjoystick* js);
 
 /*! @ingroup utility
  */

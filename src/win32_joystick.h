@@ -27,8 +27,9 @@
 #ifndef _glfw3_win32_joystick_h_
 #define _glfw3_win32_joystick_h_
 
-#define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE \
-    _GLFWjoystickWin32 win32_js[GLFW_JOYSTICK_LAST + 1]
+#define _GLFW_PLATFORM_JOYSTICK_STATE         _GLFWjoystickWin32 win32
+#define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE int dummy
+
 
 // Joystick element (axis, button or slider)
 //
@@ -42,14 +43,8 @@ typedef struct _GLFWjoyobjectWin32
 //
 typedef struct _GLFWjoystickWin32
 {
-    GLFWbool                present;
-    float*                  axes;
-    int                     axisCount;
-    unsigned char*          buttons;
-    int                     buttonCount;
     _GLFWjoyobjectWin32*    objects;
     int                     objectCount;
-    char*                   name;
     IDirectInputDevice8W*   device;
     DWORD                   index;
     GUID                    guid;

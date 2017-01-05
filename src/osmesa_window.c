@@ -269,24 +269,9 @@ int _glfwPlatformGetKeyScancode(int key)
     return -1;
 }
 
-int _glfwPlatformJoystickPresent(int joy)
+int _glfwPlatformPollJoystick(int jid, int mode)
 {
     return GLFW_FALSE;
-}
-
-const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
-{
-    return NULL;
-}
-
-const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
-{
-    return NULL;
-}
-
-const char* _glfwPlatformGetJoystickName(int joy)
-{
-    return NULL;
 }
 
 void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)

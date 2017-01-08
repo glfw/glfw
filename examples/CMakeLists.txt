@@ -3,7 +3,7 @@ link_libraries(glfw)
 
 include_directories(${glfw_INCLUDE_DIRS} "${GLFW_SOURCE_DIR}/deps")
 
-if (BUILD_SHARED_LIBS)
+if (MATH_LIBRARY)
     link_libraries("${MATH_LIBRARY}")
 endif()
 
@@ -39,7 +39,10 @@ add_executable(simple WIN32 MACOSX_BUNDLE simple.c ${ICON} ${GLAD})
 add_executable(splitview WIN32 MACOSX_BUNDLE splitview.c ${ICON} ${GLAD})
 add_executable(wave WIN32 MACOSX_BUNDLE wave.c ${ICON} ${GLAD})
 
-target_link_libraries(particles "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
+target_link_libraries(particles "${CMAKE_THREAD_LIBS_INIT}")
+if (RT_LIBRARY)
+    target_link_libraries(particles "${RT_LIBRARY}")
+endif()
 
 set(WINDOWS_BINARIES boing gears heightmap particles simple splitview wave)
 set(CONSOLE_BINARIES offscreen)

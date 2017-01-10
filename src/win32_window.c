@@ -427,7 +427,7 @@ static GLFWbool acquireMonitor(_GLFWwindow* window)
                  xpos, ypos, mode.width, mode.height,
                  SWP_NOACTIVATE | SWP_NOCOPYBITS);
 
-    _glfwInputMonitorWindowChange(window->monitor, window);
+    _glfwInputMonitorWindow(window->monitor, window);
     return status;
 }
 
@@ -438,7 +438,7 @@ static void releaseMonitor(_GLFWwindow* window)
     if (window->monitor->window != window)
         return;
 
-    _glfwInputMonitorWindowChange(window->monitor, NULL);
+    _glfwInputMonitorWindow(window->monitor, NULL);
     _glfwRestoreVideoModeWin32(window->monitor);
 }
 

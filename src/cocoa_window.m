@@ -147,7 +147,7 @@ static GLFWbool acquireMonitor(_GLFWwindow* window)
 
     [window->ns.object setFrame:frame display:YES];
 
-    _glfwInputMonitorWindowChange(window->monitor, window);
+    _glfwInputMonitorWindow(window->monitor, window);
     return status;
 }
 
@@ -158,7 +158,7 @@ static void releaseMonitor(_GLFWwindow* window)
     if (window->monitor->window != window)
         return;
 
-    _glfwInputMonitorWindowChange(window->monitor, NULL);
+    _glfwInputMonitorWindow(window->monitor, NULL);
     _glfwRestoreVideoModeNS(window->monitor);
 }
 

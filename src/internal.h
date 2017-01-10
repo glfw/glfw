@@ -949,11 +949,11 @@ void _glfwInputCursorEnter(_GLFWwindow* window, GLFWbool entered);
 
 /*! @ingroup event
  */
-void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int type);
+void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement);
 
 /*! @ingroup event
  */
-void _glfwInputMonitorWindowChange(_GLFWmonitor* monitor, _GLFWwindow* window);
+void _glfwInputMonitorWindow(_GLFWmonitor* monitor, _GLFWwindow* window);
 
 /*! @brief Notifies shared code of an error.
  *  @param[in] error The error code most suitable for the error.

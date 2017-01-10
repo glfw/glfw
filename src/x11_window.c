@@ -838,7 +838,7 @@ static GLFWbool acquireMonitor(_GLFWwindow* window)
                           xpos, ypos, mode.width, mode.height);
     }
 
-    _glfwInputMonitorWindowChange(window->monitor, window);
+    _glfwInputMonitorWindow(window->monitor, window);
     return status;
 }
 
@@ -849,7 +849,7 @@ static void releaseMonitor(_GLFWwindow* window)
     if (window->monitor->window != window)
         return;
 
-    _glfwInputMonitorWindowChange(window->monitor, NULL);
+    _glfwInputMonitorWindow(window->monitor, NULL);
     _glfwRestoreVideoModeX11(window->monitor);
 
     _glfw.x11.saver.count--;

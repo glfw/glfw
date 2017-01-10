@@ -86,7 +86,7 @@ static GLFWbool refreshVideoModes(_GLFWmonitor* monitor)
 //////                         GLFW event API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int type)
+void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement)
 {
     if (action == GLFW_CONNECTED)
     {
@@ -94,7 +94,7 @@ void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int type)
         _glfw.monitors =
             realloc(_glfw.monitors, sizeof(_GLFWmonitor*) * _glfw.monitorCount);
 
-        if (type == _GLFW_INSERT_FIRST)
+        if (placement == _GLFW_INSERT_FIRST)
         {
             memmove(_glfw.monitors + 1,
                     _glfw.monitors,
@@ -128,7 +128,7 @@ void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int type)
         _glfwFreeMonitor(monitor);
 }
 
-void _glfwInputMonitorWindowChange(_GLFWmonitor* monitor, _GLFWwindow* window)
+void _glfwInputMonitorWindow(_GLFWmonitor* monitor, _GLFWwindow* window)
 {
     monitor->window = window;
 }

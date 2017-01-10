@@ -136,10 +136,6 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
                                      int* left, int* top,
                                      int* right, int* bottom)
 {
-    if (right)
-        *right = window->osmesa.width;
-    if (bottom)
-        *top = window->osmesa.height;
 }
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)

@@ -180,16 +180,6 @@ void _glfwFreeGammaArrays(GLFWgammaramp* ramp)
     memset(ramp, 0, sizeof(GLFWgammaramp));
 }
 
-void _glfwFreeMonitors(_GLFWmonitor** monitors, int count)
-{
-    int i;
-
-    for (i = 0;  i < count;  i++)
-        _glfwFreeMonitor(monitors[i]);
-
-    free(monitors);
-}
-
 const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
                                         const GLFWvidmode* desired)
 {

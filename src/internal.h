@@ -1066,10 +1066,6 @@ _GLFWmonitor* _glfwAllocMonitor(const char* name, int widthMM, int heightMM);
 void _glfwFreeMonitor(_GLFWmonitor* monitor);
 
 /*! @ingroup utility
-  */
-void _glfwFreeMonitors(_GLFWmonitor** monitors, int count);
-
-/*! @ingroup utility
  */
 GLFWbool _glfwIsPrintable(int key);
 

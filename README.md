@@ -144,6 +144,7 @@ information on what to include when reporting a bug.
 - Bugfix: Invalid library paths were used in test and example CMake files (#930)
 - Bugfix: The scancode for synthetic key release events was always zero
 - [Win32] Added system error strings to relevant GLFW error descriptions (#733)
+- [Win32] Moved to `WM_INPUT` for disabled cursor mode motion input (#125)
 - [Win32] Bugfix: Undecorated windows could not be iconified by the user (#861)
 - [Win32] Bugfix: Deadzone logic could underflow with some controllers (#910)
 - [Win32] Bugfix: Bitness test in `FindVulkan.cmake` was VS specific (#928)

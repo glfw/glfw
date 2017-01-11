@@ -736,8 +736,11 @@ Cursor _glfwCreateCursorX11(const GLFWimage* image, int xhot, int yhot)
 int _glfwPlatformInit(void)
 {
 #if !defined(X_HAVE_UTF8_STRING)
-    // HACK: If the current locale is C, apply the environment's locale
-    //       This is done because the C locale breaks wide character input
+    // HACK: If the current locale is "C" and the Xlib UTF-8 functions are
+    //       unavailable, apply the environment's locale in the hope that it's
+    //       both available and not "C"
+    //       This is done because the "C" locale breaks wide character input,
+    //       which is what we fall back on when UTF-8 support is missing
     if (strcmp(setlocale(LC_CTYPE, NULL), "C") == 0)
         setlocale(LC_CTYPE, "");
 #endif

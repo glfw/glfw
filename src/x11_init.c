@@ -477,6 +477,32 @@ static GLFWbool initExtensions(void)
                                       &_glfw.x11.vidmode.errorBase);
     }
 
+    _glfw.x11.xi.handle = dlopen("libXi.so", RTLD_LAZY | RTLD_GLOBAL);
+    if (_glfw.x11.xi.handle)
+    {
+        _glfw.x11.xi.QueryVersion = (PFN_XIQueryVersion)
+            dlsym(_glfw.x11.xi.handle, "XIQueryVersion");
+        _glfw.x11.xi.SelectEvents = (PFN_XISelectEvents)
+            dlsym(_glfw.x11.xi.handle, "XISelectEvents");
+
+        if (XQueryExtension(_glfw.x11.display,
+                            "XInputExtension",
+                            &_glfw.x11.xi.majorOpcode,
+                            &_glfw.x11.xi.eventBase,
+                            &_glfw.x11.xi.errorBase))
+        {
+            _glfw.x11.xi.major = 2;
+            _glfw.x11.xi.minor = 0;
+
+            if (XIQueryVersion(_glfw.x11.display,
+                               &_glfw.x11.xi.major,
+                               &_glfw.x11.xi.minor) == Success)
+            {
+                _glfw.x11.xi.available = GLFW_TRUE;
+            }
+        }
+    }
+
     // Check for RandR extension
     if (XRRQueryExtension(_glfw.x11.display,
                           &_glfw.x11.randr.eventBase,

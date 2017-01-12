@@ -920,14 +920,48 @@ static void processEvent(XEvent *event)
         }
     }
 
-    if (event->type != GenericEvent)
+    if (event->type == GenericEvent)
     {
-        window = findWindowByHandle(event->xany.window);
-        if (window == NULL)
+        if (_glfw.x11.xi.available)
         {
-            // This is an event for a window that has already been destroyed
-            return;
+            _GLFWwindow* window = _glfw.x11.disabledCursorWindow;
+
+            if (window &&
+                event->xcookie.extension == _glfw.x11.xi.majorOpcode &&
+                XGetEventData(_glfw.x11.display, &event->xcookie) &&
+                event->xcookie.evtype == XI_RawMotion)
+            {
+                XIRawEvent* re = event->xcookie.data;
+                if (re->valuators.mask_len)
+                {
+                    const double* values = re->raw_values;
+                    double xpos = window->virtualCursorPosX;
+                    double ypos = window->virtualCursorPosY;
+
+                    if (XIMaskIsSet(re->valuators.mask, 0))
+                    {
+                        xpos += *values;
+                        values++;
+                    }
+
+                    if (XIMaskIsSet(re->valuators.mask, 1))
+                        ypos += *values;
+
+                    _glfwInputCursorPos(window, xpos, ypos);
+                }
+            }
+
+            XFreeEventData(_glfw.x11.display, &event->xcookie);
         }
+
+        return;
+    }
+
+    window = findWindowByHandle(event->xany.window);
+    if (window == NULL)
+    {
+        // This is an event for a window that has already been destroyed
+        return;
     }
 
     switch (event->type)
@@ -1169,6 +1203,8 @@ static void processEvent(XEvent *event)
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 {
                     if (_glfw.x11.disabledCursorWindow != window)
+                        return;
+                    if (_glfw.x11.xi.available)
                         return;
 
                     const int dx = x - window->x11.lastCursorPosX;
@@ -2157,6 +2193,8 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
 
 void _glfwPlatformPollEvents(void)
 {
+    _GLFWwindow* window;
+
 #if defined(__linux__)
     _glfwDetectJoystickConnectionLinux();
 #endif
@@ -2168,8 +2206,20 @@ void _glfwPlatformPollEvents(void)
         processEvent(&event);
     }
 
-    if (_glfw.x11.disabledCursorWindow)
-        centerCursor(_glfw.x11.disabledCursorWindow);
+    window = _glfw.x11.disabledCursorWindow;
+    if (window)
+    {
+        int width, height;
+        _glfwPlatformGetWindowSize(window, &width, &height);
+
+        // NOTE: Re-center the cursor only if it has moved since the last call,
+        //       to avoid breaking glfwWaitEvents with MotionNotify
+        if (window->x11.lastCursorPosX != width / 2 ||
+            window->x11.lastCursorPosY != height / 2)
+        {
+            _glfwPlatformSetCursorPos(window, width / 2, height / 2);
+        }
+    }
 
     XFlush(_glfw.x11.display);
 }
@@ -2239,6 +2289,19 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
     if (mode == GLFW_CURSOR_DISABLED)
     {
+        if (_glfw.x11.xi.available)
+        {
+            XIEventMask em;
+            unsigned char mask[XIMaskLen(XI_RawMotion)] = { 0 };
+
+            em.deviceid = XIAllMasterDevices;
+            em.mask_len = sizeof(mask);
+            em.mask = mask;
+            XISetMask(mask, XI_RawMotion);
+
+            XISelectEvents(_glfw.x11.display, _glfw.x11.root, &em, 1);
+        }
+
         _glfw.x11.disabledCursorWindow = window;
         _glfwPlatformGetCursorPos(window,
                                   &_glfw.x11.restoreCursorPosX,
@@ -2253,6 +2316,18 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
     }
     else if (_glfw.x11.disabledCursorWindow == window)
     {
+        if (_glfw.x11.xi.available)
+        {
+            XIEventMask em;
+            unsigned char mask[] = { 0 };
+
+            em.deviceid = XIAllMasterDevices;
+            em.mask_len = sizeof(mask);
+            em.mask = mask;
+
+            XISelectEvents(_glfw.x11.display, _glfw.x11.root, &em, 1);
+        }
+
         _glfw.x11.disabledCursorWindow = NULL;
         XUngrabPointer(_glfw.x11.display, CurrentTime);
         _glfwPlatformSetCursorPos(window,

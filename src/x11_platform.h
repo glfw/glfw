@@ -47,6 +47,9 @@
 // The Xinerama extension provides legacy monitor indices
 #include <X11/extensions/Xinerama.h>
 
+// The XInput extension provides raw mouse motion input
+#include <X11/extensions/XInput2.h>
+
 typedef XID xcb_window_t;
 typedef XID xcb_visualid_t;
 typedef struct xcb_connection_t xcb_connection_t;
@@ -60,6 +63,11 @@ typedef Bool (* PFN_XF86VidModeGetGammaRampSize)(Display*,int,int*);
 #define XF86VidModeGetGammaRamp _glfw.x11.vidmode.GetGammaRamp
 #define XF86VidModeSetGammaRamp _glfw.x11.vidmode.SetGammaRamp
 #define XF86VidModeGetGammaRampSize _glfw.x11.vidmode.GetGammaRampSize
+
+typedef Status (* PFN_XIQueryVersion)(Display*,int*,int*);
+typedef int (* PFN_XISelectEvents)(Display*,Window,XIEventMask*,int);
+#define XIQueryVersion _glfw.x11.xi.QueryVersion
+#define XISelectEvents _glfw.x11.xi.SelectEvents
 
 typedef VkFlags VkXlibSurfaceCreateFlagsKHR;
 typedef VkFlags VkXcbSurfaceCreateFlagsKHR;
@@ -268,6 +276,18 @@ typedef struct _GLFWlibraryX11
         PFN_XF86VidModeSetGammaRamp SetGammaRamp;
         PFN_XF86VidModeGetGammaRampSize GetGammaRampSize;
     } vidmode;
+
+    struct {
+        GLFWbool    available;
+        void*       handle;
+        int         majorOpcode;
+        int         eventBase;
+        int         errorBase;
+        int         major;
+        int         minor;
+        PFN_XIQueryVersion QueryVersion;
+        PFN_XISelectEvents SelectEvents;
+    } xi;
 
 } _GLFWlibraryX11;
 

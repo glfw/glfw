@@ -168,6 +168,7 @@ information on what to include when reporting a bug.
                   function on macOS 10.12+
 - [Cocoa] Bugfix: Running in AppSandbox would emit warnings (#816,#882)
 - [Cocoa] Bugfix: Windows created after the first were not cascaded (#195)
+- [X11] Moved to XI2 `XI_RawMotion` for disable cursor mode motion input (#125)
 - [EGL] Added support for `EGL_KHR_get_all_proc_addresses` (#871)
 - [EGL] Bugfix: The test for `EGL_RGB_BUFFER` was invalid
 

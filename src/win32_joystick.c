@@ -339,13 +339,13 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
     _GLFWobjenumWin32 data;
     _GLFWjoystickWin32* js;
 
-    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         if (memcmp(&_glfw.win32_js[jid].guid, &di->guidInstance, sizeof(GUID)) == 0)
             return DIENUM_CONTINUE;
     }
 
-    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         if (!_glfw.win32_js[jid].present)
             break;
@@ -451,7 +451,7 @@ static GLFWbool openXinputDevice(DWORD index)
     XINPUT_CAPABILITIES xic;
     _GLFWjoystickWin32* js;
 
-    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         if (_glfw.win32_js[jid].present &&
             _glfw.win32_js[jid].device == NULL &&
@@ -461,7 +461,7 @@ static GLFWbool openXinputDevice(DWORD index)
         }
     }
 
-    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         if (!_glfw.win32_js[jid].present)
             break;
@@ -679,7 +679,7 @@ void _glfwTerminateJoysticksWin32(void)
 {
     int jid;
 
-    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
         closeJoystick(_glfw.win32_js + jid);
 
     if (_glfw.win32.dinput8.api)
@@ -719,7 +719,7 @@ void _glfwDetectJoystickDisconnectionWin32(void)
 {
     int jid;
 
-    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
         pollJoystickState(_glfw.win32_js + jid, _GLFW_PRESENCE_ONLY);
 }
 

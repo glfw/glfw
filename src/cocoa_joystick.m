@@ -274,13 +274,13 @@ static void matchCallback(void* context,
     _GLFWjoystickNS* js;
     int jid;
 
-    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         if (_glfw.ns_js[jid].present && _glfw.ns_js[jid].deviceRef == deviceRef)
             return;
     }
 
-    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         if (!_glfw.ns_js[jid].present)
             break;
@@ -336,7 +336,7 @@ static void removeCallback(void* context,
 {
     int jid;
 
-    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         if (_glfw.ns_js[jid].deviceRef == deviceRef)
         {
@@ -458,7 +458,7 @@ void _glfwTerminateJoysticksNS(void)
 {
     int jid;
 
-    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         _GLFWjoystickNS* js = _glfw.ns_js + jid;
         removeJoystick(js);

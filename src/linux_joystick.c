@@ -53,7 +53,7 @@ static GLFWbool openJoystickDevice(const char* path)
     int jid, fd, version;
     _GLFWjoystickLinux* js;
 
-    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         if (!_glfw.linux_js.js[jid].present)
             continue;
@@ -62,7 +62,7 @@ static GLFWbool openJoystickDevice(const char* path)
             return GLFW_FALSE;
     }
 
-    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         if (!_glfw.linux_js.js[jid].present)
             break;

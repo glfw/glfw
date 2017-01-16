@@ -513,6 +513,15 @@ static GLFWbool initExtensions(void)
             _glfw.x11.randr.gammaBroken = GLFW_TRUE;
         }
 
+        if (!sr->ncrtc || !sr->noutput || !sr->nmode)
+        {
+            // This is either a headless system or broken Cygwin/X RandR
+            // Flag it as useless and fall back to Xlib display functions
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: RandR monitor support seems broken");
+            _glfw.x11.randr.monitorBroken = GLFW_TRUE;
+        }
+
         XRRFreeScreenResources(sr);
 
         XRRSelectInput(_glfw.x11.display, _glfw.x11.root,

@@ -123,6 +123,7 @@ information on what to include when reporting a bug.
 - [Win32] Bugfix: Deadzone logic could underflow with some controllers (#910)
 - [Win32] Bugfix: Bitness test in `FindVulkan.cmake` was VS specific (#928)
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
+- [X11] Bugfix: `glfwGetVideoMode` would segfault on Cygwin/X
 - [Cocoa] Added support for Vulkan window surface creation via
           [MoltenVK](https://moltengl.com/moltenvk/) (#870)
 - [Cocoa] Bugfix: Disabling window aspect ratio would assert (#852)

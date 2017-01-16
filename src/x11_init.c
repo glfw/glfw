@@ -509,7 +509,7 @@ static GLFWbool initExtensions(void)
             // Flag it as useless and fall back to Xf86VidMode gamma, if
             // available
             _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "X11: RandR gamma ramp support seems broken");
+                            "X11: Detected broken RandR gamma ramp support");
             _glfw.x11.randr.gammaBroken = GLFW_TRUE;
         }
 
@@ -518,7 +518,7 @@ static GLFWbool initExtensions(void)
             // This is either a headless system or broken Cygwin/X RandR
             // Flag it as useless and fall back to Xlib display functions
             _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "X11: RandR monitor support seems broken");
+                            "X11: Detected broken RandR monitor support");
             _glfw.x11.randr.monitorBroken = GLFW_TRUE;
         }
 

@@ -381,13 +381,11 @@ static void detectEWMH(void)
         XInternAtom(_glfw.x11.display, "_NET_SUPPORTED", False);
 
     // Then we look for the _NET_SUPPORTING_WM_CHECK property of the root window
-    if (_glfwGetWindowPropertyX11(_glfw.x11.root,
-                                  supportingWmCheck,
-                                  XA_WINDOW,
-                                  (unsigned char**) &windowFromRoot) != 1)
+    if (!_glfwGetWindowPropertyX11(_glfw.x11.root,
+                                   supportingWmCheck,
+                                   XA_WINDOW,
+                                   (unsigned char**) &windowFromRoot))
     {
-        if (windowFromRoot)
-            XFree(windowFromRoot);
         return;
     }
 
@@ -395,14 +393,12 @@ static void detectEWMH(void)
 
     // It should be the ID of a child window (of the root)
     // Then we look for the same property on the child window
-    if (_glfwGetWindowPropertyX11(*windowFromRoot,
-                                  supportingWmCheck,
-                                  XA_WINDOW,
-                                  (unsigned char**) &windowFromChild) != 1)
+    if (!_glfwGetWindowPropertyX11(*windowFromRoot,
+                                   supportingWmCheck,
+                                   XA_WINDOW,
+                                   (unsigned char**) &windowFromChild))
     {
         XFree(windowFromRoot);
-        if (windowFromChild)
-            XFree(windowFromChild);
         return;
     }
 
@@ -455,7 +451,8 @@ static void detectEWMH(void)
     _glfw.x11.NET_REQUEST_FRAME_EXTENTS =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_REQUEST_FRAME_EXTENTS");
 
-    XFree(supportedAtoms);
+    if (supportedAtoms)
+        XFree(supportedAtoms);
 }
 
 // Initialize X11 display and look for supported X11 extensions

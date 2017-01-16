@@ -130,7 +130,9 @@ static int getWindowState(_GLFWwindow* window)
         result = state->state;
     }
 
-    XFree(state);
+    if (state)
+        XFree(state);
+
     return result;
 }
 
@@ -1324,7 +1326,8 @@ static void processEvent(XEvent *event)
                     free(paths);
                 }
 
-                XFree(data);
+                if (data)
+                    XFree(data);
 
                 XEvent reply;
                 memset(&reply, 0, sizeof(reply));
@@ -1480,9 +1483,6 @@ unsigned long _glfwGetWindowPropertyX11(Window window,
                        &itemCount,
                        &bytesAfter,
                        value);
-
-    if (type != AnyPropertyType && actualType != type)
-        return 0;
 
     return itemCount;
 }
@@ -2042,7 +2042,9 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
         }
     }
 
-    XFree(states);
+    if (states)
+        XFree(states);
+
     return maximized;
 }
 
@@ -2107,6 +2109,8 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
                                           _glfw.x11.NET_WM_STATE,
                                           XA_ATOM,
                                           (unsigned char**) &states);
+        if (!states)
+            return;
 
         if (enabled)
         {
@@ -2396,7 +2400,8 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
             _glfw.x11.clipboardString = strdup(data);
         }
 
-        XFree(data);
+        if (data)
+            XFree(data);
 
         XDeleteProperty(_glfw.x11.display,
                         event.xselection.requestor,

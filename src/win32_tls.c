@@ -37,8 +37,8 @@ GLFWbool _glfwInitThreadLocalStorageWin32(void)
     _glfw.win32_tls.context = TlsAlloc();
     if (_glfw.win32_tls.context == TLS_OUT_OF_INDEXES)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to allocate TLS index");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to allocate TLS index");
         return GLFW_FALSE;
     }
 

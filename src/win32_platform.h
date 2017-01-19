@@ -342,6 +342,7 @@ void _glfwTerminateThreadLocalStorageWin32(void);
 
 WCHAR* _glfwCreateWideStringFromUTF8Win32(const char* source);
 char* _glfwCreateUTF8FromWideStringWin32(const WCHAR* source);
+void _glfwInputErrorWin32(int error, const char* description);
 
 void _glfwInitTimerWin32(void);
 

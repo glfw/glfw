@@ -44,9 +44,8 @@ static int getPixelFormatAttrib(_GLFWwindow* window, int pixelFormat, int attrib
                                              pixelFormat,
                                              0, 1, &attrib, &value))
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "WGL: Failed to retrieve pixel format attribute %i",
-                        attrib);
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "WGL: Failed to retrieve pixel format attribute");
         return 0;
     }
 
@@ -237,8 +236,8 @@ static void makeContextCurrentWGL(_GLFWwindow* window)
             _glfwPlatformSetCurrentContext(window);
         else
         {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "WGL: Failed to make context current");
+            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                 "WGL: Failed to make context current");
             _glfwPlatformSetCurrentContext(NULL);
         }
     }
@@ -246,8 +245,8 @@ static void makeContextCurrentWGL(_GLFWwindow* window)
     {
         if (!wglMakeCurrent(NULL, NULL))
         {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "WGL: Failed to clear current context");
+            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                 "WGL: Failed to clear current context");
         }
 
         _glfwPlatformSetCurrentContext(NULL);
@@ -353,25 +352,24 @@ static void loadWGLExtensions(void)
 
     if (!SetPixelFormat(dc, ChoosePixelFormat(dc, &pfd), &pfd))
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "WGL: Failed to set pixel format for dummy context");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "WGL: Failed to set pixel format for dummy context");
         return;
     }
 
     rc = wglCreateContext(dc);
     if (!rc)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "WGL: Failed to create dummy context");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "WGL: Failed to create dummy context");
         return;
     }
 
     if (!wglMakeCurrent(dc, rc))
     {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "WGL: Failed to make dummy context current");
         wglDeleteContext(rc);
-
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "WGL: Failed to make dummy context current");
         return;
     }
 
@@ -430,7 +428,8 @@ GLFWbool _glfwInitWGL(void)
     _glfw.wgl.instance = LoadLibraryA("opengl32.dll");
     if (!_glfw.wgl.instance)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "WGL: Failed to load opengl32.dll");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "WGL: Failed to load opengl32.dll");
         return GLFW_FALSE;
     }
 
@@ -497,15 +496,15 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
     if (!DescribePixelFormat(window->context.wgl.dc,
                              pixelFormat, sizeof(pfd), &pfd))
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "WGL: Failed to retrieve PFD for selected pixel format");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "WGL: Failed to retrieve PFD for selected pixel format");
         return GLFW_FALSE;
     }
 
     if (!SetPixelFormat(window->context.wgl.dc, pixelFormat, &pfd))
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "WGL: Failed to set selected pixel format");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "WGL: Failed to set selected pixel format");
         return GLFW_FALSE;
     }
 
@@ -669,8 +668,8 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         window->context.wgl.handle = wglCreateContext(window->context.wgl.dc);
         if (!window->context.wgl.handle)
         {
-            _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                            "WGL: Failed to create OpenGL context");
+            _glfwInputErrorWin32(GLFW_VERSION_UNAVAILABLE,
+                                 "WGL: Failed to create OpenGL context");
             return GLFW_FALSE;
         }
 
@@ -678,8 +677,8 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         {
             if (!wglShareLists(share, window->context.wgl.handle))
             {
-                _glfwInputError(GLFW_PLATFORM_ERROR,
-                                "WGL: Failed to enable sharing with specified OpenGL context");
+                _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                     "WGL: Failed to enable sharing with specified OpenGL context");
                 return GLFW_FALSE;
             }
         }

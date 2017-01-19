@@ -67,7 +67,7 @@ static GLFWbool loadLibraries(void)
     _glfw.win32.winmm.instance = LoadLibraryA("winmm.dll");
     if (!_glfw.win32.winmm.instance)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to load winmm.dll");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to load winmm.dll");
         return GLFW_FALSE;
     }
 
@@ -77,7 +77,7 @@ static GLFWbool loadLibraries(void)
     _glfw.win32.user32.instance = LoadLibraryA("user32.dll");
     if (!_glfw.win32.user32.instance)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to load user32.dll");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to load user32.dll");
         return GLFW_FALSE;
     }
 
@@ -315,8 +315,8 @@ static HWND createHelperWindow(void)
                                   NULL);
     if (!window)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to create helper window");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to create helper window");
         return NULL;
     }
 
@@ -360,12 +360,18 @@ WCHAR* _glfwCreateWideStringFromUTF8Win32(const char* source)
 
     length = MultiByteToWideChar(CP_UTF8, 0, source, -1, NULL, 0);
     if (!length)
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to convert string from UTF-8");
         return NULL;
+    }
 
     target = calloc(length, sizeof(WCHAR));
 
     if (!MultiByteToWideChar(CP_UTF8, 0, source, -1, target, length))
     {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to convert string from UTF-8");
         free(target);
         return NULL;
     }
@@ -382,17 +388,44 @@ char* _glfwCreateUTF8FromWideStringWin32(const WCHAR* source)
 
     length = WideCharToMultiByte(CP_UTF8, 0, source, -1, NULL, 0, NULL, NULL);
     if (!length)
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to convert string to UTF-8");
         return NULL;
+    }
 
     target = calloc(length, 1);
 
     if (!WideCharToMultiByte(CP_UTF8, 0, source, -1, target, length, NULL, NULL))
     {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to convert string to UTF-8");
         free(target);
         return NULL;
     }
 
     return target;
+}
+
+// Reports the specified error, appending information about the last Win32 error
+//
+void _glfwInputErrorWin32(int error, const char* description)
+{
+    WCHAR buffer[1024] = L"";
+    char message[2048] = "";
+
+    FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
+                       FORMAT_MESSAGE_IGNORE_INSERTS |
+                       FORMAT_MESSAGE_MAX_WIDTH_MASK,
+                   NULL,
+                   GetLastError() & 0xffff,
+                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                   buffer,
+                   sizeof(buffer),
+                   NULL);
+    WideCharToMultiByte(CP_UTF8, 0, buffer, -1, message, sizeof(message), NULL, NULL);
+
+    _glfwInputError(error, "%s: %s", description, message);
 }
 
 

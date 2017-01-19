@@ -47,11 +47,7 @@ static _GLFWmonitor* createMonitor(DISPLAY_DEVICEW* adapter,
     else
         name = _glfwCreateUTF8FromWideStringWin32(adapter->DeviceString);
     if (!name)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to convert string to UTF-8");
         return NULL;
-    }
 
     dc = CreateDCW(L"DISPLAY", adapter->DeviceName, NULL, NULL);
 
@@ -213,6 +209,7 @@ GLFWbool _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desire
     GLFWvidmode current;
     const GLFWvidmode* best;
     DEVMODEW dm;
+    LONG result;
 
     best = _glfwChooseVideoMode(monitor, desired);
     _glfwPlatformGetVideoMode(monitor, &current);
@@ -231,13 +228,34 @@ GLFWbool _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desire
     if (dm.dmBitsPerPel < 15 || dm.dmBitsPerPel >= 24)
         dm.dmBitsPerPel = 32;
 
-    if (ChangeDisplaySettingsExW(monitor->win32.adapterName,
-                                 &dm,
-                                 NULL,
-                                 CDS_FULLSCREEN,
-                                 NULL) != DISP_CHANGE_SUCCESSFUL)
+    result = ChangeDisplaySettingsExW(monitor->win32.adapterName,
+                                      &dm,
+                                      NULL,
+                                      CDS_FULLSCREEN,
+                                      NULL);
+    if (result != DISP_CHANGE_SUCCESSFUL)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to set video mode");
+        const char* description = "Unknown error";
+
+        if (result == DISP_CHANGE_BADDUALVIEW)
+            description = "The system uses DualView";
+        else if (result == DISP_CHANGE_BADFLAGS)
+            description = "Invalid flags";
+        else if (result == DISP_CHANGE_BADMODE)
+            description = "Graphics mode not supported";
+        else if (result == DISP_CHANGE_BADPARAM)
+            description = "Invalid parameter";
+        else if (result == DISP_CHANGE_FAILED)
+            description = "Graphics mode failed";
+        else if (result == DISP_CHANGE_NOTUPDATED)
+            description = "Failed to write to registry";
+        else if (result == DISP_CHANGE_RESTART)
+            description = "Computer restart required";
+
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to set video mode: %s",
+                        description);
+
         return GLFW_FALSE;
     }
 

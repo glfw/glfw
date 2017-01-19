@@ -133,16 +133,16 @@ static HICON createIcon(const GLFWimage* image,
 
     if (!color)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to create RGBA bitmap");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to create RGBA bitmap");
         return NULL;
     }
 
     mask = CreateBitmap(image->width, image->height, 1, 1, NULL);
     if (!mask)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to create mask bitmap");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to create mask bitmap");
         DeleteObject(color);
         return NULL;
     }
@@ -172,9 +172,15 @@ static HICON createIcon(const GLFWimage* image,
     if (!handle)
     {
         if (icon)
-            _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to create icon");
+        {
+            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                 "Win32: Failed to create icon");
+        }
         else
-            _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to create cursor");
+        {
+            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                 "Win32: Failed to create cursor");
+        }
     }
 
     return handle;
@@ -906,11 +912,7 @@ static int createNativeWindow(_GLFWwindow* window,
 
     wideTitle = _glfwCreateWideStringFromUTF8Win32(wndconfig->title);
     if (!wideTitle)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to convert window title to UTF-16");
         return GLFW_FALSE;
-    }
 
     window->win32.handle = CreateWindowExW(exStyle,
                                            _GLFW_WNDCLASSNAME,
@@ -927,7 +929,8 @@ static int createNativeWindow(_GLFWwindow* window,
 
     if (!window->win32.handle)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to create window");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to create window");
         return GLFW_FALSE;
     }
 
@@ -981,8 +984,8 @@ GLFWbool _glfwRegisterWindowClassWin32(void)
 
     if (!RegisterClassExW(&wc))
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to register window class");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to register window class");
         return GLFW_FALSE;
     }
 
@@ -1069,11 +1072,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
     WCHAR* wideTitle = _glfwCreateWideStringFromUTF8Win32(title);
     if (!wideTitle)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to convert window title to UTF-16");
         return;
-    }
 
     SetWindowTextW(window->win32.handle, wideTitle);
     free(wideTitle);
@@ -1568,8 +1567,8 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
         CopyCursor(LoadCursorW(NULL, translateCursorShape(shape)));
     if (!cursor->win32.handle)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to create standard cursor");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to create standard cursor");
         return GLFW_FALSE;
     }
 
@@ -1596,26 +1595,22 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 
     characterCount = MultiByteToWideChar(CP_UTF8, 0, string, -1, NULL, 0);
     if (!characterCount)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to convert clipboard string to UTF-16");
         return;
-    }
 
     object = GlobalAlloc(GMEM_MOVEABLE, characterCount * sizeof(WCHAR));
     if (!object)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to allocate global handle for clipboard");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to allocate global handle for clipboard");
         return;
     }
 
     buffer = GlobalLock(object);
     if (!buffer)
     {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to lock global handle");
         GlobalFree(object);
-
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to lock global handle");
         return;
     }
 
@@ -1624,9 +1619,9 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 
     if (!OpenClipboard(_glfw.win32.helperWindowHandle))
     {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to open clipboard");
         GlobalFree(object);
-
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to open clipboard");
         return;
     }
 
@@ -1642,42 +1637,34 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 
     if (!OpenClipboard(_glfw.win32.helperWindowHandle))
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to open clipboard");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to open clipboard");
         return NULL;
     }
 
     object = GetClipboardData(CF_UNICODETEXT);
     if (!object)
     {
+        _glfwInputErrorWin32(GLFW_FORMAT_UNAVAILABLE,
+                             "Win32: Failed to convert clipboard to string");
         CloseClipboard();
-
-        _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
-                        "Win32: Failed to convert clipboard to string");
         return NULL;
     }
 
     buffer = GlobalLock(object);
     if (!buffer)
     {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to lock global handle");
         CloseClipboard();
-
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to lock global handle");
         return NULL;
     }
 
     free(_glfw.win32.clipboardString);
-    _glfw.win32.clipboardString =
-        _glfwCreateUTF8FromWideStringWin32(buffer);
+    _glfw.win32.clipboardString = _glfwCreateUTF8FromWideStringWin32(buffer);
 
     GlobalUnlock(object);
     CloseClipboard();
-
-    if (!_glfw.win32.clipboardString)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to convert wide string to UTF-8");
-        return NULL;
-    }
 
     return _glfw.win32.clipboardString;
 }

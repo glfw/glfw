@@ -226,7 +226,8 @@ target_link_libraries(myapp ${OPENGL_glu_LIBRARY})
 @endcode
 
 @note GLU has been deprecated and should not be used in new code, but some
-legacy code requires it.
+legacy code requires it.  See the [section on GLU](@ref moving_glu) in the
+transition guide for suggested replacements.
 
 
 @subsection build_link_cmake_package With CMake and installed GLFW binaries
@@ -269,7 +270,8 @@ target_link_libraries(myapp ${OPENGL_glu_LIBRARY})
 @endcode
 
 @note GLU has been deprecated and should not be used in new code, but some
-legacy code requires it.
+legacy code requires it.  See the [section on GLU](@ref moving_glu) in the
+transition guide for suggested replacements.
 
 
 @subsection build_link_pkgconfig With makefiles and pkg-config on Unix
@@ -313,7 +315,8 @@ cc `pkg-config --cflags glfw3 glu` -o myprog myprog.c `pkg-config --libs glfw3 g
 @endcode
 
 @note GLU has been deprecated and should not be used in new code, but some
-legacy code requires it.
+legacy code requires it.  See the [section on GLU](@ref moving_glu) in the
+transition guide for suggested replacements.
 
 If you are using the static version of the GLFW library, make sure you don't
 link statically against GLU.

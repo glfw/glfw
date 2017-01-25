@@ -231,6 +231,9 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     if (fbconfig->doublebuffer)
         ADD_ATTR(kCGLPFADoubleBuffer);
 
+    if (fbconfig->graphicsSwitching)
+        ADD_ATTR(kCGLPFASupportsAutomaticGraphicsSwitching);
+
     if (fbconfig->samples != GLFW_DONT_CARE)
     {
         if (fbconfig->samples == 0)

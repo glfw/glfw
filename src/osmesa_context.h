@@ -65,10 +65,10 @@ typedef GLFWglproc (GLAPIENTRY * PFN_OSMesaGetProcAddress)(const char*);
 //
 typedef struct _GLFWcontextOSMesa
 {
-   OSMesaContext       handle;
-   int                 width;
-   int                 height;
-   void*               buffer;
+    OSMesaContext       handle;
+    int                 width;
+    int                 height;
+    void*               buffer;
 
 } _GLFWcontextOSMesa;
 

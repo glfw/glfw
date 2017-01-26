@@ -519,6 +519,7 @@ static void createKeyTables(void)
     _glfw.wl.keycodes[KEY_8]          = GLFW_KEY_8;
     _glfw.wl.keycodes[KEY_9]          = GLFW_KEY_9;
     _glfw.wl.keycodes[KEY_0]          = GLFW_KEY_0;
+    _glfw.wl.keycodes[KEY_SPACE]      = GLFW_KEY_SPACE;
     _glfw.wl.keycodes[KEY_MINUS]      = GLFW_KEY_MINUS;
     _glfw.wl.keycodes[KEY_EQUAL]      = GLFW_KEY_EQUAL;
     _glfw.wl.keycodes[KEY_Q]          = GLFW_KEY_Q;

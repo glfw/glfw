@@ -249,6 +249,8 @@ static GLFWbool createShellSurface(_GLFWwindow* window)
         wl_shell_surface_set_toplevel(window->wl.shellSurface);
     }
 
+    wl_surface_commit(window->wl.surface);
+
     return GLFW_TRUE;
 }
 

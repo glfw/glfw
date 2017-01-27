@@ -133,6 +133,7 @@ information on what to include when reporting a bug.
   (#749,#842)
 - Added macOS specific `GLFW_COCOA_RETINA_FRAMEBUFFER` window hint
 - Added macOS specific `GLFW_COCOA_FRAME_AUTOSAVE` window hint (#195)
+- Added macOS specific `GLFW_COCOA_GRAPHICS_SWITCHING` window hint (#377,#935)
 - Added `GLFW_INCLUDE_ES32` for including the OpenGL ES 3.2 header
 - Removed `GLFW_USE_RETINA` compile-time option
 - Bugfix: Calling `glfwMaximizeWindow` on a full screen window was not ignored
@@ -236,6 +237,7 @@ skills.
  - Cameron King
  - Peter Knut
  - Christoph Kubisch
+ - Konstantin Käfer
  - Eric Larson
  - Robin Leffmann
  - Glenn Lewis

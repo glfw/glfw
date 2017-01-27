@@ -852,6 +852,7 @@ extern "C" {
 
 #define GLFW_COCOA_RETINA_FRAMEBUFFER 0x00023001
 #define GLFW_COCOA_FRAME_AUTOSAVE     0x00023002
+#define GLFW_COCOA_GRAPHICS_SWITCHING 0x00023003
 /*! @} */
 
 #define GLFW_NO_API                          0

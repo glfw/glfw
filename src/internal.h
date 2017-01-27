@@ -303,6 +303,9 @@ struct _GLFWctxconfig
     int           robustness;
     int           release;
     _GLFWwindow*  share;
+    struct {
+        GLFWbool  offline;
+    } nsgl;
 };
 
 /*! @brief Framebuffer configuration.

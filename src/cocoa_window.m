@@ -340,6 +340,14 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)applicationDidChangeScreenParameters:(NSNotification *) notification
 {
+    _GLFWwindow* window;
+
+    for (window = _glfw.windowListHead;  window;  window = window->next)
+    {
+        if (window->context.client != GLFW_NO_API)
+            [window->context.nsgl.object update];
+    }
+
     _glfwPollMonitorsNS();
 }
 

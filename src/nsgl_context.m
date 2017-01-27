@@ -160,6 +160,18 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     ADD_ATTR(NSOpenGLPFAAccelerated);
     ADD_ATTR(NSOpenGLPFAClosestPolicy);
 
+    if (ctxconfig->nsgl.offline)
+    {
+        ADD_ATTR(NSOpenGLPFAAllowOfflineRenderers);
+        // NOTE: This replaces the NSSupportsAutomaticGraphicsSwitching key in
+        //       Info.plist for unbundled applications
+        // HACK: This assumes that NSOpenGLPixelFormat will remain
+        //       a straightforward wrapper of its CGL counterpart
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 100800
+        ADD_ATTR(kCGLPFASupportsAutomaticGraphicsSwitching);
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+    }
+
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
     if (ctxconfig->major >= 4)
     {

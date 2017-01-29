@@ -90,7 +90,6 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
     if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST)
         return;
 
-    // Register mouse button action
     if (action == GLFW_RELEASE && window->stickyMouseButtons)
         window->mouseButtons[button] = _GLFW_STICK;
     else

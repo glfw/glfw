@@ -52,14 +52,12 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused)
         if (window->callbacks.focus)
             window->callbacks.focus((GLFWwindow*) window, focused);
 
-        // Release all pressed keyboard keys
         for (i = 0;  i <= GLFW_KEY_LAST;  i++)
         {
             if (window->keys[i] == GLFW_PRESS)
                 _glfwInputKey(window, i, 0, GLFW_RELEASE, 0);
         }
 
-        // Release all pressed mouse buttons
         for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
         {
             if (window->mouseButtons[i] == GLFW_PRESS)

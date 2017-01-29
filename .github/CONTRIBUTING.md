@@ -309,6 +309,10 @@ did not write the code yourself, you must explain where it came from and under
 what license.  Even code using the same license as GLFW may not be copied
 without attribution.
 
+__Note:__ If you haven't already implemented the feature, check first if there
+already is an open issue for it and if it's already being developed in an
+[experimental branch](https://github.com/glfw/glfw/branches/all).
+
 __There is no preferred patch size__.  A one character change is just as welcome
 as one adding a thousand line one, if that is the appropriate size for the
 feature.

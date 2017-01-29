@@ -10,6 +10,10 @@ GLFW is an Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan
 application development.  It provides a simple, platform-independent API for
 creating windows, contexts and surfaces, reading input, handling events, etc.
 
+GLFW natively supports Windows, macOS and Linux and other Unix-like systems.
+Experimental implementations for the Wayland protocol and the Mir display server
+are available but not yet officially supported.                             
+
 GLFW is licensed under the [zlib/libpng
 license](http://www.glfw.org/license.html).
 
@@ -23,6 +27,13 @@ The [version history](http://www.glfw.org/changelog.html) lists all user-visible
 changes for every release.
 
 This is a development branch for version 3.3, which is _not yet described_.
+Pre-release documentation is available [here](http://www.glfw.org/docs/3.3/).
+
+The `master` branch is the stable integration branch and _should_ always compile
+and run on all supported platforms, although details of newly added features may
+change until they have been included in a release.  New features and many bug
+fixes live in [other branches](https://github.com/glfw/glfw/branches/all) until
+they are stable enough to merge.
 
 If you are new to GLFW, you may find the
 [tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW
@@ -46,22 +57,29 @@ There are also [pre-compiled Windows
 binaries](http://www.glfw.org/download.html) available for all compilers
 supported on that platform.
 
-See the [compilation guide](http://www.glfw.org/docs/latest/compile.html) in the
-documentation for more information.
+See the [compilation guide](http://www.glfw.org/docs/latest/compile.html) for
+more information about how to compile GLFW.
 
 
 ## Using GLFW
 
-See the [building application guide](http://www.glfw.org/docs/latest/build.html)
-guide in the documentation for more information.
+See the [documentation](http://www.glfw.org/docs/latest/) for tutorials, guides
+and the API reference.
+
+
+## Contributing to GLFW
+
+See the [contribution
+guide](https://github.com/glfw/glfw/blob/master/.github/CONTRIBUTING.md) for
+more information.
 
 
 ## System requirements
 
-GLFW supports Windows XP and later, OS X 10.7 Lion and later, and Linux and
-other Unix-like systems with the X Window System.  Experimental implementations
-for the Wayland protocol and the Mir display server are available but not yet
-officially supported.
+GLFW supports Windows XP and later and macOS 10.7 and later.  Linux and other
+Unix-like systems running the X Window System are supported even without
+a desktop environment or modern extensions, although some features require
+a running window or clipboard manager.  The OSMesa backend requires Mesa 6.3.
 
 See the [compatibility guide](http://www.glfw.org/docs/latest/compat.html)
 in the documentation for more information.
@@ -87,7 +105,8 @@ located in the `deps/` directory.
  - [Vulkan headers](https://www.khronos.org/registry/vulkan/) for Vulkan tests
 
 The Vulkan example additionally requires the Vulkan SDK to be installed, or it
-will not be included in the build.
+will not be included in the build.  On macOS you need to set the path to the
+MoltenVK SDK manually as it has no standard location.
 
 The documentation is generated with [Doxygen](http://doxygen.org/).  If CMake
 does not find Doxygen, the documentation will not be generated when you build.

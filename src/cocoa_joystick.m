@@ -246,7 +246,7 @@ static GLFWbool pollJoystickButtonEvents(_GLFWjoystickNS* js)
             CFArrayGetValueAtIndex(js->hatElements, i);
 
         // Bit fields of button presses for each direction, including nil
-        const int directions[9] = { 1, 3, 2, 6, 4, 12, 8, 9, 0 };
+        const int directions[9] = { 0, 1, 3, 2, 6, 4, 12, 8, 9 };
 
         long j, value = getElementValue(js, hat);
         if (value < 0 || value > 8)

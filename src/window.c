@@ -40,28 +40,23 @@
 
 void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused)
 {
-    if (focused)
-    {
-        if (window->callbacks.focus)
-            window->callbacks.focus((GLFWwindow*) window, focused);
-    }
-    else
-    {
-        int i;
+    if (window->callbacks.focus)
+        window->callbacks.focus((GLFWwindow*) window, focused);
 
-        if (window->callbacks.focus)
-            window->callbacks.focus((GLFWwindow*) window, focused);
+    if (!focused)
+    {
+        int key, button;
 
-        for (i = 0;  i <= GLFW_KEY_LAST;  i++)
+        for (key = 0;  key <= GLFW_KEY_LAST;  key++)
         {
-            if (window->keys[i] == GLFW_PRESS)
-                _glfwInputKey(window, i, 0, GLFW_RELEASE, 0);
+            if (window->keys[key] == GLFW_PRESS)
+                _glfwInputKey(window, key, 0, GLFW_RELEASE, 0);
         }
 
-        for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
+        for (button = 0;  button <= GLFW_MOUSE_BUTTON_LAST;  button++)
         {
-            if (window->mouseButtons[i] == GLFW_PRESS)
-                _glfwInputMouseClick(window, i, GLFW_RELEASE, 0);
+            if (window->mouseButtons[button] == GLFW_PRESS)
+                _glfwInputMouseClick(window, button, GLFW_RELEASE, 0);
         }
     }
 }

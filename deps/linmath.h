@@ -197,12 +197,10 @@ static inline void mat4x4_rotate(mat4x4 R, mat4x4 M, float x, float y, float z, 
 		vec3_norm(u, u);
 		mat4x4_from_vec3_mul_outer(T, u, u);
 
-		S[1][2] =  u[0];
-		S[2][1] = -u[0];
-		S[2][0] =  u[1];
-		S[0][2] = -u[1];
-		S[0][1] =  u[2];
-		S[1][0] = -u[2];
+		S[0][0]=   0.f;  S[0][1]=  u[2];  S[0][2]= -u[1];  S[0][3]= 0.f;
+		S[1][0]= -u[2];  S[1][1]=   0.f;  S[1][2]=  u[0];  S[1][3]= 0.f;
+		S[2][0]=  u[1];  S[2][1]= -u[0];  S[2][2]=   0.f;  S[2][3]= 0.f;
+		S[3][0]=   0.f;  S[3][1]=   0.f;  S[3][2]=   0.f;  S[3][3]= 0.f;
 
 		mat4x4_scale(S, S, s);
 

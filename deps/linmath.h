@@ -192,7 +192,7 @@ static inline void mat4x4_rotate(mat4x4 R, mat4x4 M, float x, float y, float z, 
 	vec3 u = {x, y, z};
 
 	if(vec3_len(u) > 1e-4) {
-		mat4x4 T, C, S;
+		mat4x4 T, C, S = {0};
 
 		vec3_norm(u, u);
 		mat4x4_from_vec3_mul_outer(T, u, u);

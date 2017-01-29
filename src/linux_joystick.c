@@ -43,12 +43,17 @@
 #endif // __linux__
 
 
+// Since Linux does not seem to provide support for hat or POV switches in
+// <linux/joystick.h> currently, future support for hat events has been stubbed
+// in using the #defines JSIOCGHATS and JS_EVENT_HAT to follow the existing
+// paradigm.
+
 // Attempt to open the specified joystick device
 //
 #if defined(__linux__)
 static GLFWbool openJoystickDevice(const char* path)
 {
-    char axisCount, buttonCount;
+    char axisCount, buttonCount, hatCount;
     char name[256] = "";
     int jid, fd, version;
     _GLFWjoystickLinux* js;
@@ -101,6 +106,14 @@ static GLFWbool openJoystickDevice(const char* path)
     js->buttonCount = (int) buttonCount;
     js->buttons = calloc(buttonCount, 1);
 
+#if defined(JSIOCGHATS)
+    ioctl(fd, JSIOCGHATS, &hatCount);
+#else
+    hatCount = 0;
+#endif
+    js->hatCount = (int) hatCount;
+    js->hats = calloc(hatCount, 1);
+
     _glfwInputJoystickChange(jid, GLFW_CONNECTED);
     return GLFW_TRUE;
 }
@@ -129,6 +142,7 @@ static GLFWbool pollJoystickEvents(_GLFWjoystickLinux* js)
             {
                 free(js->axes);
                 free(js->buttons);
+                free(js->hats);
                 free(js->name);
                 free(js->path);
 
@@ -148,6 +162,24 @@ static GLFWbool pollJoystickEvents(_GLFWjoystickLinux* js)
             js->axes[e.number] = (float) e.value / 32767.0f;
         else if (e.type == JS_EVENT_BUTTON)
             js->buttons[e.number] = e.value ? GLFW_PRESS : GLFW_RELEASE;
+#if defined(JS_EVENT_HAT)
+        else if (e.type == JS_EVENT_HAT)
+        {
+            const unsigned char directions[9] = { 1, 3, 2, 6, 4, 12, 8, 9, 0 };
+            int j;
+            short value = e.value;
+            if (value < 0 || value > 8)
+                value = 8;
+
+            js->hats[e.number] = 0;
+            for (j = 0;  j < 4;  j++)
+            {
+                unsigned char bit_value = 1 << j;
+                if (directions[value] & bit_value)
+                    js->hats[e.number] |= bit_value;
+            }
+        }
+#endif
     }
 #endif // __linux__
     return js->present;
@@ -328,6 +360,16 @@ const unsigned char* _glfwPlatformGetJoystickButtons(int jid, int* count)
 
     *count = js->buttonCount;
     return js->buttons;
+}
+
+const unsigned char* _glfwPlatformGetJoystickHats(int jid, int* count)
+{
+    _GLFWjoystickLinux* js = _glfw.linux_js.js + jid;
+    if (!pollJoystickEvents(js))
+        return NULL;
+
+    *count = js->hatCount;
+    return js->hats;
 }
 
 const char* _glfwPlatformGetJoystickName(int jid)

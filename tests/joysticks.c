@@ -170,9 +170,10 @@ int main(void)
                          NK_WINDOW_MINIMIZABLE |
                          NK_WINDOW_TITLE))
             {
-                int j, axis_count, button_count;
+                int j, axis_count, button_count, hat_count;
                 const float* axes;
                 const unsigned char* buttons;
+                const unsigned char* hats;
 
                 nk_layout_row_dynamic(nk, 30, 1);
 
@@ -193,6 +194,46 @@ int main(void)
                         char name[16];
                         snprintf(name, sizeof(name), "%i", j + 1);
                         nk_select_label(nk, name, NK_TEXT_CENTERED, buttons[j]);
+                    }
+                }
+
+                nk_layout_row_dynamic(nk, 60, 4);
+
+                hats = glfwGetJoystickHats(joysticks[i], &hat_count);
+                if (hat_count)
+                {
+                    for (j = 0;  j < hat_count;  j++)
+                    {
+                        switch(hats[j])
+                        {
+                        case GLFW_HAT_CENTERED:
+                            nk_select_label(nk, "centered", NK_TEXT_CENTERED, 0);
+                            break;
+                        case GLFW_HAT_UP:
+                            nk_select_label(nk, "up", NK_TEXT_CENTERED, 1);
+                            break;
+                        case GLFW_HAT_RIGHT:
+                            nk_select_label(nk, "right", NK_TEXT_CENTERED, 1);
+                            break;
+                        case GLFW_HAT_DOWN:
+                            nk_select_label(nk, "down", NK_TEXT_CENTERED, 1);
+                            break;
+                        case GLFW_HAT_LEFT:
+                            nk_select_label(nk, "left", NK_TEXT_CENTERED, 1);
+                            break;
+                        case GLFW_HAT_RIGHT_UP:
+                            nk_select_label(nk, "right_up", NK_TEXT_CENTERED, 1);
+                            break;
+                        case GLFW_HAT_RIGHT_DOWN:
+                            nk_select_label(nk, "right_down", NK_TEXT_CENTERED, 1);
+                            break;
+                        case GLFW_HAT_LEFT_UP:
+                            nk_select_label(nk, "left_up", NK_TEXT_CENTERED, 1);
+                            break;
+                        case GLFW_HAT_LEFT_DOWN:
+                            nk_select_label(nk, "left_down", NK_TEXT_CENTERED, 1);
+                            break;
+                        }
                     }
                 }
 

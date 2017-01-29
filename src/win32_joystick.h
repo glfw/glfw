@@ -47,6 +47,8 @@ typedef struct _GLFWjoystickWin32
     int                     axisCount;
     unsigned char*          buttons;
     int                     buttonCount;
+    unsigned char*          hats;
+    int                     hatCount;
     _GLFWjoyobjectWin32*    objects;
     int                     objectCount;
     char*                   name;

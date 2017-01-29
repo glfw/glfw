@@ -42,6 +42,8 @@ typedef struct _GLFWjoystickLinux
     int             axisCount;
     unsigned char*  buttons;
     int             buttonCount;
+    unsigned char*  hats;
+    int             hatCount;
     char*           name;
     char*           path;
 } _GLFWjoystickLinux;

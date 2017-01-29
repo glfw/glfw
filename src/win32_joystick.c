@@ -249,6 +249,7 @@ static void closeJoystick(_GLFWjoystickWin32* js)
     free(js->name);
     free(js->axes);
     free(js->buttons);
+    free(js->hats);
     free(js->objects);
     memset(js, 0, sizeof(_GLFWjoystickWin32));
 
@@ -431,8 +432,10 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
     js->guid = di->guidInstance;
     js->axisCount = data.axisCount + data.sliderCount;
     js->axes = calloc(js->axisCount, sizeof(float));
-    js->buttonCount += data.buttonCount + data.povCount * 4;
+    js->buttonCount = data.buttonCount;
     js->buttons = calloc(js->buttonCount, 1);
+    js->hatCount = data.povCount;
+    js->hats = calloc(js->hatCount, 1);
     js->objects = data.objects;
     js->objectCount = data.objectCount;
     js->name = _glfwCreateUTF8FromWideStringWin32(di->tszInstanceName);
@@ -476,8 +479,10 @@ static GLFWbool openXinputDevice(DWORD index)
     js = _glfw.win32_js + jid;
     js->axisCount = 6;
     js->axes = calloc(js->axisCount, sizeof(float));
-    js->buttonCount = 14;
+    js->buttonCount = 10;
     js->buttons = calloc(js->buttonCount, 1);
+    js->hatCount = 1;
+    js->hats = calloc(js->hatCount, 1);
     js->present = GLFW_TRUE;
     js->name = strdup(getDeviceDescription(&xic));
     js->index = index;
@@ -496,7 +501,7 @@ static GLFWbool pollJoystickState(_GLFWjoystickWin32* js, int mode)
 
     if (js->device)
     {
-        int i, j, ai = 0, bi = 0;
+        int i, j, ai = 0, bi = 0, hi = 0;
         HRESULT result;
         DIJOYSTATE state;
 
@@ -547,19 +552,20 @@ static GLFWbool pollJoystickState(_GLFWjoystickWin32* js, int mode)
 
                 case _GLFW_TYPE_POV:
                 {
-                    const int directions[9] = { 1, 3, 2, 6, 4, 12, 8, 9, 0 };
+                    const unsigned char directions[9] = { 1, 3, 2, 6, 4, 12, 8, 9, 0 };
                     // Screams of horror are appropriate at this point
                     int value = LOWORD(*(DWORD*) data) / (45 * DI_DEGREES);
                     if (value < 0 || value > 8)
                         value = 8;
 
+                    js->hats[hi] = 0;
                     for (j = 0;  j < 4;  j++)
                     {
-                        if (directions[value] & (1 << j))
-                            js->buttons[bi++] = GLFW_PRESS;
-                        else
-                            js->buttons[bi++] = GLFW_RELEASE;
+                        unsigned char bit_value = 1 << j;
+                        if (directions[value] & bit_value)
+                            js->hats[hi] |= bit_value;
                     }
+                    hi++;
 
                     break;
                 }
@@ -573,7 +579,7 @@ static GLFWbool pollJoystickState(_GLFWjoystickWin32* js, int mode)
         int i;
         DWORD result;
         XINPUT_STATE xis;
-        const WORD buttons[14] =
+        const WORD buttons[10] =
         {
             XINPUT_GAMEPAD_A,
             XINPUT_GAMEPAD_B,
@@ -584,7 +590,10 @@ static GLFWbool pollJoystickState(_GLFWjoystickWin32* js, int mode)
             XINPUT_GAMEPAD_BACK,
             XINPUT_GAMEPAD_START,
             XINPUT_GAMEPAD_LEFT_THUMB,
-            XINPUT_GAMEPAD_RIGHT_THUMB,
+            XINPUT_GAMEPAD_RIGHT_THUMB
+        };
+        const WORD hat_buttons[4] =
+        {
             XINPUT_GAMEPAD_DPAD_UP,
             XINPUT_GAMEPAD_DPAD_RIGHT,
             XINPUT_GAMEPAD_DPAD_DOWN,
@@ -641,8 +650,13 @@ static GLFWbool pollJoystickState(_GLFWjoystickWin32* js, int mode)
         else
             js->axes[5] = -1.f;
 
-        for (i = 0;  i < 14;  i++)
+        for (i = 0;  i < 10;  i++)
             js->buttons[i] = (xis.Gamepad.wButtons & buttons[i]) ? 1 : 0;
+
+        js->hats[0] = 0;
+        for (i = 0;  i < 4;  i++)
+            if (xis.Gamepad.wButtons & hat_buttons[i])
+                js->hats[0] |= 1 << i;
 
         return GLFW_TRUE;
     }
@@ -752,6 +766,16 @@ const unsigned char* _glfwPlatformGetJoystickButtons(int jid, int* count)
 
     *count = js->buttonCount;
     return js->buttons;
+}
+
+const unsigned char* _glfwPlatformGetJoystickHats(int jid, int* count)
+{
+    _GLFWjoystickWin32* js = _glfw.win32_js + jid;
+    if (!pollJoystickState(js, _GLFW_UPDATE_STATE))
+        return NULL;
+
+    *count = js->hatCount;
+    return js->hats;
 }
 
 const char* _glfwPlatformGetJoystickName(int jid)

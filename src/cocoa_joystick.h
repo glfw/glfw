@@ -51,6 +51,7 @@ typedef struct _GLFWjoystickNS
 
     float*          axes;
     unsigned char*  buttons;
+    unsigned char*  hats;
 } _GLFWjoystickNS;
 
 

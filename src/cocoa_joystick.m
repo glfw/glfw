@@ -187,6 +187,7 @@ static void removeJoystick(_GLFWjoystickNS* js)
 
     free(js->axes);
     free(js->buttons);
+    free(js->hats);
 
     memset(js, 0, sizeof(_GLFWjoystickNS));
 
@@ -224,7 +225,6 @@ static GLFWbool pollJoystickAxisEvents(_GLFWjoystickNS* js)
 static GLFWbool pollJoystickButtonEvents(_GLFWjoystickNS* js)
 {
     CFIndex i;
-    int buttonIndex = 0;
 
     if (!js->present)
         return GLFW_FALSE;
@@ -235,10 +235,22 @@ static GLFWbool pollJoystickButtonEvents(_GLFWjoystickNS* js)
             CFArrayGetValueAtIndex(js->buttonElements, i);
 
         if (getElementValue(js, button))
-            js->buttons[buttonIndex++] = GLFW_PRESS;
+            js->buttons[i] = GLFW_PRESS;
         else
-            js->buttons[buttonIndex++] = GLFW_RELEASE;
+            js->buttons[i] = GLFW_RELEASE;
     }
+
+    return GLFW_TRUE;
+}
+
+// Polls for joystick hat events and updates GLFW state
+//
+static GLFWbool pollJoystickHatEvents(_GLFWjoystickNS* js)
+{
+    CFIndex i;
+
+    if (!js->present)
+        return GLFW_FALSE;
 
     for (i = 0;  i < CFArrayGetCount(js->hatElements);  i++)
     {
@@ -246,18 +258,18 @@ static GLFWbool pollJoystickButtonEvents(_GLFWjoystickNS* js)
             CFArrayGetValueAtIndex(js->hatElements, i);
 
         // Bit fields of button presses for each direction, including nil
-        const int directions[9] = { 1, 3, 2, 6, 4, 12, 8, 9, 0 };
+        const unsigned char directions[9] = { 1, 3, 2, 6, 4, 12, 8, 9, 0 };
 
         long j, value = getElementValue(js, hat);
         if (value < 0 || value > 8)
             value = 8;
 
+        js->hats[i] = 0;
         for (j = 0;  j < 4;  j++)
         {
-            if (directions[value] & (1 << j))
-                js->buttons[buttonIndex++] = GLFW_PRESS;
-            else
-                js->buttons[buttonIndex++] = GLFW_RELEASE;
+            unsigned char bit_value = 1 << j;
+            if (directions[value] & bit_value)
+                js->hats[i] |= bit_value;
         }
     }
 
@@ -321,8 +333,8 @@ static void matchCallback(void* context,
     CFRelease(arrayRef);
 
     js->axes = calloc(CFArrayGetCount(js->axisElements), sizeof(float));
-    js->buttons = calloc(CFArrayGetCount(js->buttonElements) +
-                         CFArrayGetCount(js->hatElements) * 4, 1);
+    js->buttons = calloc(CFArrayGetCount(js->buttonElements), 1);
+    js->hats = calloc(CFArrayGetCount(js->hatElements), 1);
 
     _glfwInputJoystickChange(jid, GLFW_CONNECTED);
 }
@@ -495,9 +507,18 @@ const unsigned char* _glfwPlatformGetJoystickButtons(int jid, int* count)
     if (!pollJoystickButtonEvents(js))
         return NULL;
 
-    *count = (int) CFArrayGetCount(js->buttonElements) +
-             (int) CFArrayGetCount(js->hatElements) * 4;
+    *count = (int) CFArrayGetCount(js->buttonElements);
     return js->buttons;
+}
+
+const unsigned char* _glfwPlatformGetJoystickHats(int jid, int* count)
+{
+    _GLFWjoystickNS* js = _glfw.ns_js + jid;
+    if (!pollJoystickHatEvents(js))
+        return NULL;
+
+    *count = (int) CFArrayGetCount(js->hatElements);
+    return js->hats;
 }
 
 const char* _glfwPlatformGetJoystickName(int jid)

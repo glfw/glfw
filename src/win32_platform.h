@@ -162,17 +162,17 @@ typedef enum PROCESS_DPI_AWARENESS
 
 // winmm.dll function pointer typedefs
 typedef DWORD (WINAPI * PFN_timeGetTime)(void);
-#define _glfw_timeGetTime _glfw.win32.winmm.timeGetTime
+#define timeGetTime _glfw.win32.winmm.GetTime
 
 // xinput.dll function pointer typedefs
 typedef DWORD (WINAPI * PFN_XInputGetCapabilities)(DWORD,DWORD,XINPUT_CAPABILITIES*);
 typedef DWORD (WINAPI * PFN_XInputGetState)(DWORD,XINPUT_STATE*);
-#define _glfw_XInputGetCapabilities _glfw.win32.xinput.XInputGetCapabilities
-#define _glfw_XInputGetState _glfw.win32.xinput.XInputGetState
+#define XInputGetCapabilities _glfw.win32.xinput.GetCapabilities
+#define XInputGetState _glfw.win32.xinput.GetState
 
 // dinput8.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_DirectInput8Create)(HINSTANCE,DWORD,REFIID,LPVOID*,LPUNKNOWN);
-#define _glfw_DirectInput8Create _glfw.win32.dinput8.DirectInput8Create
+#define DirectInput8Create _glfw.win32.dinput8.Create
 
 // user32.dll function pointer typedefs
 typedef BOOL (WINAPI * PFN_SetProcessDPIAware)(void);
@@ -259,19 +259,19 @@ typedef struct _GLFWlibraryWin32
 
     struct {
         HINSTANCE                       instance;
-        PFN_timeGetTime                 timeGetTime;
+        PFN_timeGetTime                 GetTime;
     } winmm;
 
     struct {
         HINSTANCE                       instance;
-        PFN_DirectInput8Create          DirectInput8Create;
+        PFN_DirectInput8Create          Create;
         IDirectInput8W*                 api;
     } dinput8;
 
     struct {
         HINSTANCE                       instance;
-        PFN_XInputGetCapabilities       XInputGetCapabilities;
-        PFN_XInputGetState              XInputGetState;
+        PFN_XInputGetCapabilities       GetCapabilities;
+        PFN_XInputGetState              GetState;
     } xinput;
 
     struct {

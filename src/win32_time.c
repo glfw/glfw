@@ -64,7 +64,7 @@ uint64_t _glfwPlatformGetTimerValue(void)
         return value;
     }
     else
-        return (uint64_t) _glfw_timeGetTime();
+        return (uint64_t) timeGetTime();
 }
 
 uint64_t _glfwPlatformGetTimerFrequency(void)

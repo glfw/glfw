@@ -71,7 +71,7 @@ static GLFWbool loadLibraries(void)
         return GLFW_FALSE;
     }
 
-    _glfw.win32.winmm.timeGetTime = (PFN_timeGetTime)
+    _glfw.win32.winmm.GetTime = (PFN_timeGetTime)
         GetProcAddress(_glfw.win32.winmm.instance, "timeGetTime");
 
     _glfw.win32.user32.instance = LoadLibraryA("user32.dll");
@@ -89,7 +89,7 @@ static GLFWbool loadLibraries(void)
     _glfw.win32.dinput8.instance = LoadLibraryA("dinput8.dll");
     if (_glfw.win32.dinput8.instance)
     {
-        _glfw.win32.dinput8.DirectInput8Create = (PFN_DirectInput8Create)
+        _glfw.win32.dinput8.Create = (PFN_DirectInput8Create)
             GetProcAddress(_glfw.win32.dinput8.instance, "DirectInput8Create");
     }
 
@@ -110,9 +110,9 @@ static GLFWbool loadLibraries(void)
             _glfw.win32.xinput.instance = LoadLibraryA(names[i]);
             if (_glfw.win32.xinput.instance)
             {
-                _glfw.win32.xinput.XInputGetCapabilities = (PFN_XInputGetCapabilities)
+                _glfw.win32.xinput.GetCapabilities = (PFN_XInputGetCapabilities)
                     GetProcAddress(_glfw.win32.xinput.instance, "XInputGetCapabilities");
-                _glfw.win32.xinput.XInputGetState = (PFN_XInputGetState)
+                _glfw.win32.xinput.GetState = (PFN_XInputGetState)
                     GetProcAddress(_glfw.win32.xinput.instance, "XInputGetState");
 
                 break;

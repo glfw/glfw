@@ -470,7 +470,7 @@ static GLFWbool openXinputDevice(DWORD index)
     if (jid > GLFW_JOYSTICK_LAST)
         return GLFW_FALSE;
 
-    if (_glfw_XInputGetCapabilities(index, 0, &xic) != ERROR_SUCCESS)
+    if (XInputGetCapabilities(index, 0, &xic) != ERROR_SUCCESS)
         return GLFW_FALSE;
 
     js = _glfw.win32_js + jid;
@@ -591,7 +591,7 @@ static GLFWbool pollJoystickState(_GLFWjoystickWin32* js, int mode)
             XINPUT_GAMEPAD_DPAD_LEFT
         };
 
-        result = _glfw_XInputGetState(js->index, &xis);
+        result = XInputGetState(js->index, &xis);
         if (result != ERROR_SUCCESS)
         {
             if (result == ERROR_DEVICE_NOT_CONNECTED)
@@ -659,11 +659,11 @@ void _glfwInitJoysticksWin32(void)
 {
     if (_glfw.win32.dinput8.instance)
     {
-        if (FAILED(_glfw_DirectInput8Create(GetModuleHandle(NULL),
-                                            DIRECTINPUT_VERSION,
-                                            &IID_IDirectInput8W,
-                                            (void**) &_glfw.win32.dinput8.api,
-                                            NULL)))
+        if (FAILED(DirectInput8Create(GetModuleHandle(NULL),
+                                      DIRECTINPUT_VERSION,
+                                      &IID_IDirectInput8W,
+                                      (void**) &_glfw.win32.dinput8.api,
+                                      NULL)))
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Win32: Failed to create interface");

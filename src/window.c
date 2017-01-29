@@ -50,7 +50,10 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused)
         for (key = 0;  key <= GLFW_KEY_LAST;  key++)
         {
             if (window->keys[key] == GLFW_PRESS)
-                _glfwInputKey(window, key, 0, GLFW_RELEASE, 0);
+            {
+                const int scancode = _glfwPlatformGetKeyScancode(key);
+                _glfwInputKey(window, key, scancode, GLFW_RELEASE, 0);
+            }
         }
 
         for (button = 0;  button <= GLFW_MOUSE_BUTTON_LAST;  button++)

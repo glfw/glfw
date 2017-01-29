@@ -1428,10 +1428,16 @@ void _glfwPlatformPollEvents(void)
             // See if this differs from our belief of what has happened
             // (we only have to check for lost key up events)
             if (!lshiftDown && window->keys[GLFW_KEY_LEFT_SHIFT] == 1)
-                _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, 0, GLFW_RELEASE, mods);
+            {
+                const int scancode = _glfw.win32.scancodes[GLFW_KEY_LEFT_SHIFT];
+                _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, scancode, GLFW_RELEASE, mods);
+            }
 
             if (!rshiftDown && window->keys[GLFW_KEY_RIGHT_SHIFT] == 1)
-                _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, 0, GLFW_RELEASE, mods);
+            {
+                const int scancode = _glfw.win32.scancodes[GLFW_KEY_RIGHT_SHIFT];
+                _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, scancode, GLFW_RELEASE, mods);
+            }
         }
     }
 

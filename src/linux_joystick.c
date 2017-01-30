@@ -146,7 +146,7 @@ GLFWbool _glfwInitJoysticksLinux(void)
 
     _glfw.linjs.watch = inotify_add_watch(_glfw.linjs.inotify,
                                           dirname,
-                                          IN_CREATE | IN_ATTRIB);
+                                          IN_CREATE | IN_ATTRIB | IN_DELETE);
     if (_glfw.linjs.watch == -1)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -240,7 +240,22 @@ void _glfwDetectJoystickConnectionLinux(void)
         {
             char path[20];
             snprintf(path, sizeof(path), "/dev/input/%s", e->name);
-            openJoystickDevice(path);
+
+            if (e->mask & (IN_CREATE | IN_ATTRIB))
+                openJoystickDevice(path);
+            else if (e->mask & IN_DELETE)
+            {
+                int jid;
+
+                for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+                {
+                    if (strcmp(_glfw.joysticks[jid].linjs.path, path) == 0)
+                    {
+                        closeJoystick(_glfw.joysticks + jid);
+                        break;
+                    }
+                }
+            }
         }
 
         offset += sizeof(struct inotify_event) + e->len;

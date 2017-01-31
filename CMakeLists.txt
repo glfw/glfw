@@ -10,6 +10,10 @@ if (NOT CMAKE_VERSION VERSION_LESS "3.0")
     cmake_policy(SET CMP0042 OLD)
 endif()
 
+if (NOT CMAKE_VERSION VERSION_LESS "3.1")
+    cmake_policy(SET CMP0054 NEW)
+endif()
+
 set(GLFW_VERSION_MAJOR "3")
 set(GLFW_VERSION_MINOR "3")
 set(GLFW_VERSION_PATCH "0")

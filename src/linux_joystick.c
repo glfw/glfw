@@ -27,7 +27,6 @@
 
 #include "internal.h"
 
-#if defined(__linux__)
 #include <linux/joystick.h>
 
 #include <sys/types.h>
@@ -40,12 +39,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#endif // __linux__
 
 
 // Attempt to open the specified joystick device
 //
-#if defined(__linux__)
 static GLFWbool openJoystickDevice(const char* path)
 {
     char axisCount, buttonCount;
@@ -93,11 +90,9 @@ static GLFWbool openJoystickDevice(const char* path)
     _glfwInputJoystick(_GLFW_JOYSTICK_ID(js), GLFW_CONNECTED);
     return GLFW_TRUE;
 }
-#endif // __linux__
 
 // Frees all resources associated with the specified joystick
 //
-#if defined(__linux__)
 static void closeJoystick(_GLFWjoystick* js)
 {
     close(js->linjs.fd);
@@ -105,18 +100,15 @@ static void closeJoystick(_GLFWjoystick* js)
     _glfwFreeJoystick(js);
     _glfwInputJoystick(_GLFW_JOYSTICK_ID(js), GLFW_DISCONNECTED);
 }
-#endif // __linux__
 
 // Lexically compare joysticks by name; used by qsort
 //
-#if defined(__linux__)
 static int compareJoysticks(const void* fp, const void* sp)
 {
     const _GLFWjoystick* fj = fp;
     const _GLFWjoystick* sj = sp;
     return strcmp(fj->linjs.path, sj->linjs.path);
 }
-#endif // __linux__
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -127,7 +119,6 @@ static int compareJoysticks(const void* fp, const void* sp)
 //
 GLFWbool _glfwInitJoysticksLinux(void)
 {
-#if defined(__linux__)
     DIR* dir;
     int count = 0;
     const char* dirname = "/dev/input";
@@ -192,8 +183,6 @@ GLFWbool _glfwInitJoysticksLinux(void)
     }
 
     qsort(_glfw.joysticks, count, sizeof(_GLFWjoystick), compareJoysticks);
-#endif // __linux__
-
     return GLFW_TRUE;
 }
 
@@ -201,7 +190,6 @@ GLFWbool _glfwInitJoysticksLinux(void)
 //
 void _glfwTerminateJoysticksLinux(void)
 {
-#if defined(__linux__)
     int jid;
 
     for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
@@ -220,12 +208,10 @@ void _glfwTerminateJoysticksLinux(void)
 
         close(_glfw.linjs.inotify);
     }
-#endif // __linux__
 }
 
 void _glfwDetectJoystickConnectionLinux(void)
 {
-#if defined(__linux__)
     ssize_t offset = 0;
     char buffer[16384];
 
@@ -260,7 +246,6 @@ void _glfwDetectJoystickConnectionLinux(void)
 
         offset += sizeof(struct inotify_event) + e->len;
     }
-#endif
 }
 
 
@@ -270,7 +255,6 @@ void _glfwDetectJoystickConnectionLinux(void)
 
 int _glfwPlatformPollJoystick(int jid, int mode)
 {
-#if defined(__linux__)
     _GLFWjoystick* js = _glfw.joysticks + jid;
 
     // Read all queued events (non-blocking)
@@ -296,7 +280,7 @@ int _glfwPlatformPollJoystick(int jid, int mode)
         else if (e.type == JS_EVENT_BUTTON)
             _glfwInputJoystickButton(jid, e.number, e.value ? 1 : 0);
     }
-#endif // __linux__
+
     return js->present;
 }
 

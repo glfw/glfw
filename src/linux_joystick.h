@@ -45,11 +45,9 @@ typedef struct _GLFWjoystickLinux
 //
 typedef struct _GLFWlibraryLinux
 {
-#if defined(__linux__)
     int             inotify;
     int             watch;
     regex_t         regex;
-#endif /*__linux__*/
 } _GLFWlibraryLinux;
 
 

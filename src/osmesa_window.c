@@ -269,11 +269,6 @@ int _glfwPlatformGetKeyScancode(int key)
     return -1;
 }
 
-int _glfwPlatformPollJoystick(int jid, int mode)
-{
-    return GLFW_FALSE;
-}
-
 void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)
 {
 }

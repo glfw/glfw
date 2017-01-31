@@ -239,9 +239,7 @@ const char* _glfwPlatformGetVersionString(void)
 #else
         " gettimeofday"
 #endif
-#if defined(__linux__)
         " /dev/js"
-#endif
 #if defined(_GLFW_BUILD_DLL)
         " shared"
 #endif

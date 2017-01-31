@@ -35,13 +35,13 @@
 #define _GLFW_PLATFORM_MONITOR_STATE
 #define _GLFW_PLATFORM_CURSOR_STATE
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE
-#define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE
 #define _GLFW_EGL_CONTEXT_STATE
 #define _GLFW_EGL_LIBRARY_CONTEXT_STATE
 
 #include "osmesa_context.h"
 #include "posix_time.h"
 #include "posix_tls.h"
+#include "null_joystick.h"
 
 #if defined(_GLFW_WIN32)
  #define _glfw_dlopen(name) LoadLibraryA(name)

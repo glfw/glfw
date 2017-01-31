@@ -18,12 +18,19 @@ elseif (_GLFW_WIN32)
                      win32_monitor.c win32_time.c win32_tls.c win32_window.c
                      wgl_context.c egl_context.c)
 elseif (_GLFW_X11)
-    set(glfw_HEADERS ${common_HEADERS} x11_platform.h xkb_unicode.h
-                     linux_joystick.h posix_time.h posix_tls.h glx_context.h
-                     egl_context.h)
+    set(glfw_HEADERS ${common_HEADERS} x11_platform.h xkb_unicode.h posix_time.h
+                     posix_tls.h glx_context.h egl_context.h)
     set(glfw_SOURCES ${common_SOURCES} x11_init.c x11_monitor.c x11_window.c
-                     xkb_unicode.c linux_joystick.c posix_time.c posix_tls.c
-                     glx_context.c egl_context.c)
+                     xkb_unicode.c posix_time.c posix_tls.c glx_context.c
+                     egl_context.c)
+
+    if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+        set(glfw_HEADERS ${glfw_HEADERS} linux_joystick.h)
+        set(glfw_SOURCES ${glfw_SOURCES} linux_joystick.c)
+    else()
+        set(glfw_HEADERS ${glfw_HEADERS} null_joystick.h)
+        set(glfw_SOURCES ${glfw_SOURCES} null_joystick.c)
+    endif()
 elseif (_GLFW_WAYLAND)
     set(glfw_HEADERS ${common_HEADERS} wl_platform.h linux_joystick.h
                      posix_time.h posix_tls.h xkb_unicode.h egl_context.h)
@@ -46,10 +53,10 @@ elseif (_GLFW_MIR)
                      linux_joystick.c posix_time.c posix_tls.c xkb_unicode.c
                      egl_context.c)
 elseif (_GLFW_OSMESA)
-    set(glfw_HEADERS ${common_HEADERS} osmesa_platform.h
+    set(glfw_HEADERS ${common_HEADERS} osmesa_platform.h null_joystick.h
                      posix_time.h posix_tls.h osmesa_context.h)
     set(glfw_SOURCES ${common_SOURCES} osmesa_init.c osmesa_monitor.c
-                     osmesa_window.c posix_time.c posix_tls.c
+                     osmesa_window.c null_joystick.c posix_time.c posix_tls.c
                      osmesa_context.c)
 endif()
 

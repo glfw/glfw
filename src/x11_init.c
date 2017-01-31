@@ -798,8 +798,10 @@ int _glfwPlatformInit(void)
     if (!_glfwInitThreadLocalStoragePOSIX())
         return GLFW_FALSE;
 
+#if defined(__linux__)
     if (!_glfwInitJoysticksLinux())
         return GLFW_FALSE;
+#endif
 
     _glfwInitTimerPOSIX();
 
@@ -853,7 +855,9 @@ void _glfwPlatformTerminate(void)
     //       cleanup callbacks that get called by it
     _glfwTerminateGLX();
 
+#if defined(__linux__)
     _glfwTerminateJoysticksLinux();
+#endif
     _glfwTerminateThreadLocalStoragePOSIX();
 }
 

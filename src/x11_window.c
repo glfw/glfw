@@ -2153,8 +2153,9 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
 
 void _glfwPlatformPollEvents(void)
 {
+#if defined(__linux__)
     _glfwDetectJoystickConnectionLinux();
-
+#endif
     int count = XPending(_glfw.x11.display);
     while (count--)
     {

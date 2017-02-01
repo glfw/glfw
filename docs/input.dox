@@ -590,6 +590,12 @@ void joystick_callback(int jid, int event)
 }
 @endcode
 
+For joystick connection and disconnection events to be delivered on all
+platforms, you need to call one of the [event processing](@ref events)
+functions.  Joystick disconnection may also be detected and the callback
+called by joystick functions.  The function will then return whatever it
+returns for a disconnected joystick.
+
 
 @section time Time input
 

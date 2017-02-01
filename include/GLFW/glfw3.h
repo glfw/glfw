@@ -4032,6 +4032,12 @@ GLFWAPI const char* glfwGetJoystickName(int jid);
  *  currently set callback.  This is called when a joystick is connected to or
  *  disconnected from the system.
  *
+ *  For joystick connection and disconnection events to be delivered on all
+ *  platforms, you need to call one of the [event processing](@ref events)
+ *  functions.  Joystick disconnection may also be detected and the callback
+ *  called by joystick functions.  The function will then return whatever it
+ *  returns for a disconnected joystick.
+ *
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *  @return The previously set callback, or `NULL` if no callback was set or the

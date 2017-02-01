@@ -3949,8 +3949,7 @@ GLFWAPI int glfwJoystickPresent(int jid);
  *
  *  @pointer_lifetime The returned array is allocated and freed by GLFW.  You
  *  should not free it yourself.  It is valid until the specified joystick is
- *  disconnected, this function is called again for that joystick or the library
- *  is terminated.
+ *  disconnected or the library is terminated.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -3983,8 +3982,7 @@ GLFWAPI const float* glfwGetJoystickAxes(int jid, int* count);
  *
  *  @pointer_lifetime The returned array is allocated and freed by GLFW.  You
  *  should not free it yourself.  It is valid until the specified joystick is
- *  disconnected, this function is called again for that joystick or the library
- *  is terminated.
+ *  disconnected or the library is terminated.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -4016,8 +4014,7 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int jid, int* count);
  *
  *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
  *  should not free it yourself.  It is valid until the specified joystick is
- *  disconnected, this function is called again for that joystick or the library
- *  is terminated.
+ *  disconnected or the library is terminated.
  *
  *  @thread_safety This function must only be called from the main thread.
  *

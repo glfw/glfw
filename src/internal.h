@@ -838,7 +838,7 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance, _GLFWwindow* wind
 // Event API functions
 //========================================================================
 
-/*! @brief Notifies shared code of a window focus event.
+/*! @brief Notifies shared code that a window has lost or received input focus.
  *  @param[in] window The window that received the event.
  *  @param[in] focused `GLFW_TRUE` if the window received focus, or `GLFW_FALSE`
  *  if it lost focus.
@@ -846,7 +846,7 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance, _GLFWwindow* wind
  */
 void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused);
 
-/*! @brief Notifies shared code of a window movement event.
+/*! @brief Notifies shared code that a window has moved.
  *  @param[in] window The window that received the event.
  *  @param[in] xpos The new x-coordinate of the client area of the window.
  *  @param[in] ypos The new y-coordinate of the client area of the window.
@@ -854,7 +854,7 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused);
  */
 void _glfwInputWindowPos(_GLFWwindow* window, int xpos, int ypos);
 
-/*! @brief Notifies shared code of a window resize event.
+/*! @brief Notifies shared code that a window has been resized.
  *  @param[in] window The window that received the event.
  *  @param[in] width The new width of the client area of the window.
  *  @param[in] height The new height of the client area of the window.
@@ -862,7 +862,7 @@ void _glfwInputWindowPos(_GLFWwindow* window, int xpos, int ypos);
  */
 void _glfwInputWindowSize(_GLFWwindow* window, int width, int height);
 
-/*! @brief Notifies shared code of a framebuffer resize event.
+/*! @brief Notifies shared code that a window framebuffer has been resized.
  *  @param[in] window The window that received the event.
  *  @param[in] width The new width, in pixels, of the framebuffer.
  *  @param[in] height The new height, in pixels, of the framebuffer.
@@ -870,7 +870,7 @@ void _glfwInputWindowSize(_GLFWwindow* window, int width, int height);
  */
 void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height);
 
-/*! @brief Notifies shared code of a window iconification event.
+/*! @brief Notifies shared code that a window has been iconified or restored.
  *  @param[in] window The window that received the event.
  *  @param[in] iconified `GLFW_TRUE` if the window was iconified, or
  *  `GLFW_FALSE` if it was restored.
@@ -878,7 +878,7 @@ void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height);
  */
 void _glfwInputWindowIconify(_GLFWwindow* window, GLFWbool iconified);
 
-/*! @brief Notifies shared code of a window maximization event.
+/*! @brief Notifies shared code that a window has been maximized or restored.
  *  @param[in] window The window that received the event.
  *  @param[in] maximized `GLFW_TRUE` if the window was maximized, or
  *  `GLFW_FALSE` if it was restored.
@@ -886,17 +886,22 @@ void _glfwInputWindowIconify(_GLFWwindow* window, GLFWbool iconified);
  */
 void _glfwInputWindowMaximize(_GLFWwindow* window, GLFWbool maximized);
 
-/*! @brief Notifies shared code of a window damage event.
+/*! @brief Notifies shared code that a window's contents needs updating.
  *  @param[in] window The window that received the event.
  */
 void _glfwInputWindowDamage(_GLFWwindow* window);
 
-/*! @brief Notifies shared code of a window close request event
+/*! @brief Notifies shared code that the user wishes to close a window.
  *  @param[in] window The window that received the event.
  *  @ingroup event
  */
 void _glfwInputWindowCloseRequest(_GLFWwindow* window);
 
+/*! @brief Notifies shared code that a window has changed its desired monitor.
+ *  @param[in] window The window that received the event.
+ *  @param[in] monitor The new desired monitor, or `NULL`.
+ *  @ingroup event
+ */
 void _glfwInputWindowMonitorChange(_GLFWwindow* window, _GLFWmonitor* monitor);
 
 /*! @brief Notifies shared code of a physical key event.
@@ -931,6 +936,7 @@ void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset);
  *  @param[in] window The window that received the event.
  *  @param[in] button The button that was pressed or released.
  *  @param[in] action @ref GLFW_PRESS or @ref GLFW_RELEASE.
+ *  @param[in] mods The modifiers pressed when the event was generated.
  *  @ingroup event
  */
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods);
@@ -953,11 +959,19 @@ void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos);
  */
 void _glfwInputCursorEnter(_GLFWwindow* window, GLFWbool entered);
 
-/*! @ingroup event
+/*! @brief Notifies shared code of a monitor connection or disconnection.
+ *  @param[in] monitor The monitor that was connected or disconnected.
+ *  @param[in] action One of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.
+ *  @param[in] placement `_GLFW_INSERT_FIRST` or `_GLFW_INSERT_LAST`.
+ *  @ingroup event
  */
 void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement);
 
-/*! @ingroup event
+/*! @brief Notifies shared code that a full screen window has acquired or
+ *  released a monitor.
+ *  @param[in] monitor The monitor that was acquired or released.
+ *  @param[in] window The window that acquired the monitor, or `NULL`.
+ *  @ingroup event
  */
 void _glfwInputMonitorWindow(_GLFWmonitor* monitor, _GLFWwindow* window);
 
@@ -973,7 +987,7 @@ void _glfwInputError(int error, const char* format, ...) __attribute__((format(p
 void _glfwInputError(int error, const char* format, ...);
 #endif
 
-/*! @brief Notifies dropped object over window.
+/*! @brief Notifies shared code of files or directories dropped on a window.
  *  @param[in] window The window that received the event.
  *  @param[in] count The number of dropped objects.
  *  @param[in] names The names of the dropped objects.
@@ -981,7 +995,7 @@ void _glfwInputError(int error, const char* format, ...);
  */
 void _glfwInputDrop(_GLFWwindow* window, int count, const char** names);
 
-/*! @brief Notifies shared code of a joystick connection/disconnection event.
+/*! @brief Notifies shared code of a joystick connection or disconnection.
  *  @param[in] jid The joystick that was connected or disconnected.
  *  @param[in] event One of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.
  *  @ingroup event

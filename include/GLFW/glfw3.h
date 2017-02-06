@@ -47,32 +47,38 @@ extern "C" {
  *  For more information about how to use this file, see @ref build_include.
  */
 /*! @defgroup context Context reference
+ *  @brief Functions and types related to OpenGL and OpenGL ES contexts.
  *
  *  This is the reference documentation for OpenGL and OpenGL ES context related
  *  functions.  For more task-oriented information, see the @ref context_guide.
  */
 /*! @defgroup vulkan Vulkan reference
+ *  @brief Functions and types related to Vulkan.
  *
  *  This is the reference documentation for Vulkan related functions and types.
  *  For more task-oriented information, see the @ref vulkan_guide.
  */
 /*! @defgroup init Initialization, version and error reference
+ *  @brief Functions and types related to initialization and error handling.
  *
  *  This is the reference documentation for initialization and termination of
  *  the library, version management and error handling.  For more task-oriented
  *  information, see the @ref intro_guide.
  */
 /*! @defgroup input Input reference
+ *  @brief Functions and types related to input handling.
  *
  *  This is the reference documentation for input related functions and types.
  *  For more task-oriented information, see the @ref input_guide.
  */
 /*! @defgroup monitor Monitor reference
+ *  @brief Functions and types related to monitors.
  *
  *  This is the reference documentation for monitor related functions and types.
  *  For more task-oriented information, see the @ref monitor_guide.
  */
 /*! @defgroup window Window reference
+ *  @brief Functions and types related to windows.
  *
  *  This is the reference documentation for window related functions and types,
  *  including creation, deletion and event polling.  For more task-oriented
@@ -292,6 +298,7 @@ extern "C" {
 /*! @} */
 
 /*! @defgroup keys Keyboard keys
+ *  @brief Keyboard key IDs.
  *
  *  See [key input](@ref input_key) for how these are used.
  *
@@ -446,6 +453,7 @@ extern "C" {
 /*! @} */
 
 /*! @defgroup mods Modifier key flags
+ *  @brief Modifier key flags.
  *
  *  See [key input](@ref input_key) for how these are used.
  *
@@ -468,6 +476,7 @@ extern "C" {
 /*! @} */
 
 /*! @defgroup buttons Mouse buttons
+ *  @brief Mouse button IDs.
  *
  *  See [mouse button input](@ref input_mouse_button) for how these are used.
  *
@@ -488,6 +497,7 @@ extern "C" {
 /*! @} */
 
 /*! @defgroup joysticks Joysticks
+ *  @brief Joystick IDs.
  *
  *  See [joystick input](@ref joystick) for how these are used.
  *
@@ -513,6 +523,7 @@ extern "C" {
 /*! @} */
 
 /*! @defgroup errors Error codes
+ *  @brief Error codes.
  *
  *  See [error handling](@ref error_handling) for how these are used.
  *
@@ -871,6 +882,7 @@ extern "C" {
 #define GLFW_EGL_CONTEXT_API        0x00036002
 
 /*! @defgroup shapes Standard cursor shapes
+ *  @brief Standard system cursor shapes.
  *
  *  See [standard cursor creation](@ref cursor_standard) for how these are used.
  *

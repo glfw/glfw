@@ -45,6 +45,7 @@ extern "C" {
  *  more information.
  */
 /*! @defgroup native Native access
+ *  @brief Functions related to accessing native handles.
  *
  *  **By using the native access functions you assert that you know what you're
  *  doing and how to fix problems caused by using them.  If you don't, you

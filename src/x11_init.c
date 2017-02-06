@@ -459,7 +459,7 @@ static void detectEWMH(void)
 //
 static GLFWbool initExtensions(void)
 {
-    _glfw.x11.vidmode.handle = dlopen("libXxf86vm.so", RTLD_LAZY | RTLD_GLOBAL);
+    _glfw.x11.vidmode.handle = dlopen("libXxf86vm.so.1", RTLD_LAZY | RTLD_GLOBAL);
     if (_glfw.x11.vidmode.handle)
     {
         _glfw.x11.vidmode.QueryExtension = (PFN_XF86VidModeQueryExtension)
@@ -558,7 +558,7 @@ static GLFWbool initExtensions(void)
         }
     }
 
-    _glfw.x11.x11xcb.handle = dlopen("libX11-xcb.so", RTLD_LAZY | RTLD_GLOBAL);
+    _glfw.x11.x11xcb.handle = dlopen("libX11-xcb.so.1", RTLD_LAZY | RTLD_GLOBAL);
     if (_glfw.x11.x11xcb.handle)
     {
         _glfw.x11.x11xcb.XGetXCBConnection = (PFN_XGetXCBConnection)

@@ -230,13 +230,13 @@ typedef void (APIENTRY * PFN_vkVoidFunction)(void);
 
 // Checks for whether the library has been initialized
 #define _GLFW_REQUIRE_INIT()                         \
-    if (!_glfwInitialized)                           \
+    if (!_glfw.initialized)                          \
     {                                                \
         _glfwInputError(GLFW_NOT_INITIALIZED, NULL); \
         return;                                      \
     }
 #define _GLFW_REQUIRE_INIT_OR_RETURN(x)              \
-    if (!_glfwInitialized)                           \
+    if (!_glfw.initialized)                          \
     {                                                \
         _glfwInputError(GLFW_NOT_INITIALIZED, NULL); \
         return x;                                    \
@@ -468,6 +468,8 @@ struct _GLFWjoystick
  */
 struct _GLFWlibrary
 {
+    GLFWbool            initialized;
+
     struct {
         _GLFWfbconfig   framebuffer;
         _GLFWwndconfig  window;
@@ -533,13 +535,7 @@ struct _GLFWlibrary
 // Global state shared between compilation units of GLFW
 //========================================================================
 
-/*! @brief Flag indicating whether GLFW has been successfully initialized.
- */
-extern GLFWbool _glfwInitialized;
-
-/*! @brief All global data protected by @ref _glfwInitialized.
- *  This should only be touched after a call to @ref glfwInit that has not been
- *  followed by a call to @ref glfwTerminate.
+/*! @brief All global data shared between compilation units.
  */
 extern _GLFWlibrary _glfw;
 

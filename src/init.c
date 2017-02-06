@@ -33,14 +33,12 @@
 #include <stdarg.h>
 
 
-// The three global variables below comprise all global data in GLFW.
+// The global variables below comprise all global data in GLFW.
 // Any other global variable is a bug.
 
 // Global state shared between compilation units of GLFW
-// These are documented in internal.h
 //
-GLFWbool _glfwInitialized = GLFW_FALSE;
-_GLFWlibrary _glfw;
+_GLFWlibrary _glfw = { GLFW_FALSE };
 
 // This is outside of _glfw so it can be initialized and usable before
 // glfwInit is called, which lets that function report errors
@@ -119,7 +117,7 @@ void _glfwInputError(int error, const char* format, ...)
 
 GLFWAPI int glfwInit(void)
 {
-    if (_glfwInitialized)
+    if (_glfw.initialized)
         return GLFW_TRUE;
 
     memset(&_glfw, 0, sizeof(_glfw));
@@ -130,8 +128,7 @@ GLFWAPI int glfwInit(void)
         return GLFW_FALSE;
     }
 
-    _glfwInitialized = GLFW_TRUE;
-
+    _glfw.initialized = GLFW_TRUE;
     _glfw.timerOffset = _glfwPlatformGetTimerValue();
 
     // Not all window hints have zero as their default value
@@ -144,7 +141,7 @@ GLFWAPI void glfwTerminate(void)
 {
     int i;
 
-    if (!_glfwInitialized)
+    if (!_glfw.initialized)
         return;
 
     memset(&_glfw.callbacks, 0, sizeof(_glfw.callbacks));
@@ -171,7 +168,6 @@ GLFWAPI void glfwTerminate(void)
     _glfwPlatformTerminate();
 
     memset(&_glfw, 0, sizeof(_glfw));
-    _glfwInitialized = GLFW_FALSE;
 }
 
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)

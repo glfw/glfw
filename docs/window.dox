@@ -212,6 +212,11 @@ full screen windows.  This hint is ignored for full screen windows.
 __GLFW_MAXIMIZED__ specifies whether the windowed mode window will be maximized
 when created.  This hint is ignored for full screen windows.
 
+@anchor GLFW_CENTER_CURSOR_hint
+__GLFW_CENTER_CURSOR__ specifies whether the cursor should be centered over
+newly created full screen windows.  This hint is ignored for windowed mode
+windows.
+
 
 @subsubsection window_hints_fb Framebuffer related hints
 
@@ -1041,10 +1046,6 @@ __GLFW_MAXIMIZED__ indicates whether the specified window is maximized.  See
 @anchor GLFW_VISIBLE_attrib
 __GLFW_VISIBLE__ indicates whether the specified window is visible.  See @ref
 window_hide for details.
-
-`GLFW_CENTER_CURSOR` indicates whether the cursor should be moved to the center
-of the full screen window during creation. This is ignored for windowed mode
-windows.
 
 @anchor GLFW_RESIZABLE_attrib
 __GLFW_RESIZABLE__ indicates whether the specified window is resizable _by the

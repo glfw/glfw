@@ -129,6 +129,8 @@ information on what to include when reporting a bug.
 - Added `glfwSetWindowAttrib` function for changing window attributes (#537)
 - Added headless [OSMesa](http://mesa3d.org/osmesa.html) backend (#281,#850)
 - Added definition of `GLAPIENTRY` to public header
+- Added `GLFW_CENTER_CURSOR` window hint for controlling cursor centering
+  (#749,#842)
 - Added macOS specific `GLFW_COCOA_RETINA_FRAMEBUFFER` window hint
 - Added macOS specific `GLFW_COCOA_FRAME_AUTOSAVE` window hint (#195)
 - Added `GLFW_INCLUDE_ES32` for including the OpenGL ES 3.2 header
@@ -159,7 +161,6 @@ information on what to include when reporting a bug.
 - [Cocoa] Bugfix: Windows created after the first were not cascaded (#195)
 - [EGL] Added support for `EGL_KHR_get_all_proc_addresses` (#871)
 - [EGL] Bugfix: The test for `EGL_RGB_BUFFER` was invalid
-- Added 'GLFW_CENTER_CURSOR' window hint for controlling cursor centering
 
 
 ## Contact
@@ -247,6 +248,7 @@ skills.
  - Bryce Mehring
  - Jonathan Mercier
  - Marcel Metz
+ - Liam Middlebrook
  - Jonathan Miller
  - Kenneth Miller
  - Bruce Mitchener
@@ -308,7 +310,6 @@ skills.
  - Santi Zupancic
  - Jonas Ådahl
  - Lasse Öörni
- - Liam Middlebrook
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

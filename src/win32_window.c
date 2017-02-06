@@ -1038,9 +1038,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             return GLFW_FALSE;
 
         if (wndconfig->centerCursor)
-        {
             centerCursor(window);
-        }
     }
 
     return GLFW_TRUE;

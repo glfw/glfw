@@ -686,6 +686,10 @@ extern "C" {
  *  [window attribute](@ref GLFW_MAXIMIZED_attrib).
  */
 #define GLFW_MAXIMIZED              0x00020008
+/*! @brief Cursor centering window hint
+ *
+ *  Cursor centering [window hint](@ref GLFW_CENTER_CURSOR_hint).
+ */
 #define GLFW_CENTER_CURSOR          0x00020009
 
 /*! @brief Framebuffer bit depth hint.

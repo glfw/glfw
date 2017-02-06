@@ -25,6 +25,13 @@ GLFW now supports changing the [GLFW_DECORATED](@ref GLFW_DECORATED_attrib),
 windows with @ref glfwSetWindowAttrib.
 
 
+@subsection news_33_centercursor Cursor centering window hint
+
+GLFW now supports controlling whether the cursor is centered over newly created
+full screen windows with the [GLFW_CENTER_CURSOR](@ref GLFW_CENTER_CURSOR_hint)
+window hint.
+
+
 @subsection news_33_moltenvk Support for Vulkan on macOS via MoltenVK
 
 GLFW now supports the `VK_MVK_macos_surface` window surface creation extension

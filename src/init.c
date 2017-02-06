@@ -77,6 +77,38 @@ static const char* getErrorString(int error)
     }
 }
 
+// Terminate the library
+//
+static void terminate(void)
+{
+    int i;
+
+    memset(&_glfw.callbacks, 0, sizeof(_glfw.callbacks));
+
+    while (_glfw.windowListHead)
+        glfwDestroyWindow((GLFWwindow*) _glfw.windowListHead);
+
+    while (_glfw.cursorListHead)
+        glfwDestroyCursor((GLFWcursor*) _glfw.cursorListHead);
+
+    for (i = 0;  i < _glfw.monitorCount;  i++)
+    {
+        _GLFWmonitor* monitor = _glfw.monitors[i];
+        if (monitor->originalRamp.size)
+            _glfwPlatformSetGammaRamp(monitor, &monitor->originalRamp);
+        _glfwFreeMonitor(monitor);
+    }
+
+    free(_glfw.monitors);
+    _glfw.monitors = NULL;
+    _glfw.monitorCount = 0;
+
+    _glfwTerminateVulkan();
+    _glfwPlatformTerminate();
+
+    memset(&_glfw, 0, sizeof(_glfw));
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                         GLFW event API                       //////
@@ -124,7 +156,7 @@ GLFWAPI int glfwInit(void)
 
     if (!_glfwPlatformInit())
     {
-        _glfwPlatformTerminate();
+        terminate();
         return GLFW_FALSE;
     }
 
@@ -139,35 +171,10 @@ GLFWAPI int glfwInit(void)
 
 GLFWAPI void glfwTerminate(void)
 {
-    int i;
-
     if (!_glfw.initialized)
         return;
 
-    memset(&_glfw.callbacks, 0, sizeof(_glfw.callbacks));
-
-    while (_glfw.windowListHead)
-        glfwDestroyWindow((GLFWwindow*) _glfw.windowListHead);
-
-    while (_glfw.cursorListHead)
-        glfwDestroyCursor((GLFWcursor*) _glfw.cursorListHead);
-
-    for (i = 0;  i < _glfw.monitorCount;  i++)
-    {
-        _GLFWmonitor* monitor = _glfw.monitors[i];
-        if (monitor->originalRamp.size)
-            _glfwPlatformSetGammaRamp(monitor, &monitor->originalRamp);
-        _glfwFreeMonitor(monitor);
-    }
-
-    free(_glfw.monitors);
-    _glfw.monitors = NULL;
-    _glfw.monitorCount = 0;
-
-    _glfwTerminateVulkan();
-    _glfwPlatformTerminate();
-
-    memset(&_glfw, 0, sizeof(_glfw));
+    terminate();
 }
 
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)

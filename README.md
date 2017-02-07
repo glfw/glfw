@@ -146,6 +146,8 @@ information on what to include when reporting a bug.
 - [Win32] Bugfix: Undecorated windows could not be iconified by the user (#861)
 - [Win32] Bugfix: Deadzone logic could underflow with some controllers (#910)
 - [Win32] Bugfix: Bitness test in `FindVulkan.cmake` was VS specific (#928)
+- [Win32] Bugfix: `glfwVulkanSupported` emitted an error on systems with
+                  a loader but no ICD (#916)
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
 - [X11] Bugfix: `glfwGetVideoMode` would segfault on Cygwin/X
 - [Linux] Bugfix: Event processing did not detect joystick disconnection (#932)

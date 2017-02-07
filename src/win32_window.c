@@ -584,6 +584,12 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             return 0;
         }
 
+        case WM_INPUTLANGCHANGE:
+        {
+            _glfwUpdateKeyNamesWin32();
+            break;
+        }
+
         case WM_CHAR:
         case WM_SYSCHAR:
         case WM_UNICHAR:
@@ -1652,20 +1658,7 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 
 const char* _glfwPlatformGetScancodeName(int scancode)
 {
-    WCHAR name[16];
-
-    if (!GetKeyNameTextW(scancode << 16, name, sizeof(name) / sizeof(WCHAR)))
-        return NULL;
-
-    if (!WideCharToMultiByte(CP_UTF8, 0, name, -1,
-                             _glfw.win32.keyName,
-                             sizeof(_glfw.win32.keyName),
-                             NULL, NULL))
-    {
-        return NULL;
-    }
-
-    return _glfw.win32.keyName;
+    return _glfw.win32.keynames[_glfw.win32.keycodes[scancode]];
 }
 
 int _glfwPlatformGetKeyScancode(int key)

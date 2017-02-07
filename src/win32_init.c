@@ -429,6 +429,60 @@ void _glfwInputErrorWin32(int error, const char* description)
     _glfwInputError(error, "%s: %s", description, message);
 }
 
+// Updates key names according to the current keyboard layout
+//
+void _glfwUpdateKeyNamesWin32(void)
+{
+    int key;
+    BYTE state[256] = {0};
+
+    memset(_glfw.win32.keynames, 0, sizeof(_glfw.win32.keynames));
+
+    for (key = GLFW_KEY_SPACE;  key <= GLFW_KEY_LAST;  key++)
+    {
+        UINT vk;
+        int scancode, length;
+        WCHAR chars[16];
+
+        scancode = _glfw.win32.scancodes[key];
+        if (scancode == -1)
+            continue;
+
+        if (key >= GLFW_KEY_KP_0 && key <= GLFW_KEY_KP_ADD)
+        {
+            const UINT vks[] = {
+                VK_NUMPAD0,  VK_NUMPAD1,  VK_NUMPAD2, VK_NUMPAD3,
+                VK_NUMPAD4,  VK_NUMPAD5,  VK_NUMPAD6, VK_NUMPAD7,
+                VK_NUMPAD8,  VK_NUMPAD9,  VK_DECIMAL, VK_DIVIDE,
+                VK_MULTIPLY, VK_SUBTRACT, VK_ADD
+            };
+
+            vk = vks[key - GLFW_KEY_KP_0];
+        }
+        else
+            vk = MapVirtualKey(scancode, MAPVK_VSC_TO_VK);
+
+        length = ToUnicode(vk, scancode, state,
+                           chars, sizeof(chars) / sizeof(WCHAR),
+                           0);
+
+        if (length == -1)
+        {
+            length = ToUnicode(vk, scancode, state,
+                               chars, sizeof(chars) / sizeof(WCHAR),
+                               0);
+        }
+
+        if (length < 1)
+            continue;
+
+        WideCharToMultiByte(CP_UTF8, 0, chars, 1,
+                            _glfw.win32.keynames[key],
+                            sizeof(_glfw.win32.keynames[key]),
+                            NULL, NULL);
+    }
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -448,6 +502,7 @@ int _glfwPlatformInit(void)
         return GLFW_FALSE;
 
     createKeyTables();
+    _glfwUpdateKeyNamesWin32();
 
     if (_glfw_SetProcessDpiAwareness)
         _glfw_SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);

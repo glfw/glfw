@@ -81,7 +81,7 @@ section.  The canonical desktop loader library exports all Vulkan core and
 Khronos extension functions, allowing them to be called directly.
 
 If you are loading the Vulkan loader dynamically instead of linking directly
-against it, you can check for the availability of a loader with @ref
+against it, you can check for the availability of a loader and ICD with @ref
 glfwVulkanSupported.
 
 @code
@@ -91,11 +91,11 @@ if (glfwVulkanSupported())
 }
 @endcode
 
-This function returns `GLFW_TRUE` if the Vulkan loader was found.  This check is
-performed by @ref glfwInit.
+This function returns `GLFW_TRUE` if the Vulkan loader and any minimally
+functional ICD was found.
 
-If no loader was found, calling any other Vulkan related GLFW function will
-generate a @ref GLFW_API_UNAVAILABLE error.
+If if one or both were not found, calling any other Vulkan related GLFW function
+will generate a @ref GLFW_API_UNAVAILABLE error.
 
 
 @subsection vulkan_proc Querying Vulkan function pointers

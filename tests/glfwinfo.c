@@ -800,7 +800,7 @@ int main(int argc, char** argv)
     if (list_extensions)
         list_context_extensions(client, major, minor);
 
-    printf("Vulkan loader: %s\n",
+    printf("Vulkan support: %s\n",
            glfwVulkanSupported() ? "available" : "missing");
 
     if (glfwVulkanSupported())

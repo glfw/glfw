@@ -102,7 +102,7 @@ GLFWbool _glfwInitVulkan(int mode)
         // NOTE: This happens on systems with a loader but without any Vulkan ICD
         if (mode == _GLFW_REQUIRE_LOADER)
         {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
+            _glfwInputError(GLFW_API_UNAVAILABLE,
                             "Vulkan: Failed to query instance extension count: %s",
                             _glfwGetVulkanResultString(err));
         }
@@ -116,7 +116,7 @@ GLFWbool _glfwInitVulkan(int mode)
     err = vkEnumerateInstanceExtensionProperties(NULL, &count, ep);
     if (err)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
+        _glfwInputError(GLFW_API_UNAVAILABLE,
                         "Vulkan: Failed to query instance extensions: %s",
                         _glfwGetVulkanResultString(err));
 

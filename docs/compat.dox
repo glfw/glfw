@@ -187,9 +187,10 @@ a non-default value will cause @ref glfwCreateWindow to fail and the
 
 By default, GLFW uses the standard system-wide Vulkan loader to access the
 Vulkan API on all platforms except macOS.  This is installed by both graphics
-drivers and Vulkan SDKs.  If the loader is not found, @ref glfwVulkanSupported
-will return `GLFW_FALSE` and all other Vulkan-related functions will fail with
-an @ref GLFW_API_UNAVAILABLE error.
+drivers and Vulkan SDKs.  If either the loader or at least one minimally
+functional ICD is missing, @ref glfwVulkanSupported will return `GLFW_FALSE` and
+all other Vulkan-related functions will fail with an @ref GLFW_API_UNAVAILABLE
+error.
 
 
 @section compat_wsi Vulkan WSI extensions

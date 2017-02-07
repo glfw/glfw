@@ -4432,19 +4432,21 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
  */
 GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);
 
-/*! @brief Returns whether the Vulkan loader has been found.
+/*! @brief Returns whether the Vulkan loader and an ICD have been found.
  *
- *  This function returns whether the Vulkan loader has been found.  This check
- *  is performed by @ref glfwInit.
+ *  This function returns whether the Vulkan loader and any minimally functional
+ *  ICD have been found.
  *
- *  The availability of a Vulkan loader does not by itself guarantee that window
- *  surface creation or even device creation is possible.  Call @ref
- *  glfwGetRequiredInstanceExtensions to check whether the extensions necessary
- *  for Vulkan surface creation are available and @ref
- *  glfwGetPhysicalDevicePresentationSupport to check whether a queue family of
- *  a physical device supports image presentation.
+ *  The availability of a Vulkan loader and even an ICD does not by itself
+ *  guarantee that surface creation or even instance creation is possible.
+ *  For example, on Fermi systems Nvidia will install an ICD that provides no
+ *  actual Vulkan support.  Call @ref glfwGetRequiredInstanceExtensions to check
+ *  whether the extensions necessary for Vulkan surface creation are available
+ *  and @ref glfwGetPhysicalDevicePresentationSupport to check whether a queue
+ *  family of a physical device supports image presentation.
  *
- *  @return `GLFW_TRUE` if Vulkan is available, or `GLFW_FALSE` otherwise.
+ *  @return `GLFW_TRUE` if Vulkan is minimally available, or `GLFW_FALSE`
+ *  otherwise.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
@@ -4468,7 +4470,7 @@ GLFWAPI int glfwVulkanSupported(void);
  *
  *  If Vulkan is not available on the machine, this function returns `NULL` and
  *  generates a @ref GLFW_API_UNAVAILABLE error.  Call @ref glfwVulkanSupported
- *  to check whether Vulkan is available.
+ *  to check whether Vulkan is at least minimally available.
  *
  *  If Vulkan is available but no set of extensions allowing window surface
  *  creation was found, this function returns `NULL`.  You may still use Vulkan
@@ -4521,7 +4523,7 @@ GLFWAPI const char** glfwGetRequiredInstanceExtensions(uint32_t* count);
  *
  *  If Vulkan is not available on the machine, this function returns `NULL` and
  *  generates a @ref GLFW_API_UNAVAILABLE error.  Call @ref glfwVulkanSupported
- *  to check whether Vulkan is available.
+ *  to check whether Vulkan is at least minimally available.
  *
  *  This function is equivalent to calling `vkGetInstanceProcAddr` with
  *  a platform-specific query of the Vulkan loader as a fallback.
@@ -4557,7 +4559,7 @@ GLFWAPI GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance, const char* p
  *  not available on the machine, or if the specified instance was not created
  *  with the required extensions, this function returns `GLFW_FALSE` and
  *  generates a @ref GLFW_API_UNAVAILABLE error.  Call @ref glfwVulkanSupported
- *  to check whether Vulkan is available and @ref
+ *  to check whether Vulkan is at least minimally available and @ref
  *  glfwGetRequiredInstanceExtensions to check what instance extensions are
  *  required.
  *
@@ -4589,10 +4591,10 @@ GLFWAPI int glfwGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhys
  *
  *  This function creates a Vulkan surface for the specified window.
  *
- *  If the Vulkan loader was not found at initialization, this function returns
- *  `VK_ERROR_INITIALIZATION_FAILED` and generates a @ref GLFW_API_UNAVAILABLE
- *  error.  Call @ref glfwVulkanSupported to check whether the Vulkan loader was
- *  found.
+ *  If the Vulkan loader or at least one minimally functional ICD were not found,
+ *  this function returns `VK_ERROR_INITIALIZATION_FAILED` and generates a @ref
+ *  GLFW_API_UNAVAILABLE error.  Call @ref glfwVulkanSupported to check whether
+ *  Vulkan is at least minimally available.
  *
  *  If the required window surface creation instance extensions are not
  *  available or if the specified instance was not created with these extensions

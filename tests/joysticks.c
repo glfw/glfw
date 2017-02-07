@@ -136,13 +136,10 @@ int main(void)
 
         if (nk_begin(nk,
                      "Joysticks",
-                     nk_rect(0.f, 0.f, 0.f, 0.f),
+                     nk_rect(width - 200.f, 0.f, 200.f, (float) height),
                      NK_WINDOW_MINIMIZABLE |
                      NK_WINDOW_TITLE))
         {
-            nk_window_set_bounds(nk, nk_rect(width - 200.f, 0.f,
-                                             200.f, (float) height));
-
             nk_layout_row_dynamic(nk, 30, 1);
 
             if (joystick_count)

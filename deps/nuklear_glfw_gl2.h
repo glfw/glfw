@@ -219,7 +219,7 @@ nk_glfw3_clipbard_copy(nk_handle usr, const char *text, int len)
     if (!len) return;
     str = (char*)malloc((size_t)len+1);
     if (!str) return;
-    NK_MEMCPY(str, text, (size_t)len);
+    memcpy(str, text, (size_t)len);
     str[len] = '\0';
     glfwSetClipboardString(glfw.win, str);
     free(str);
@@ -302,7 +302,7 @@ nk_glfw3_new_frame(void)
     if (glfwGetKey(win, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ||
         glfwGetKey(win, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS) {
         nk_input_key(ctx, NK_KEY_COPY, glfwGetKey(win, GLFW_KEY_C) == GLFW_PRESS);
-        nk_input_key(ctx, NK_KEY_PASTE, glfwGetKey(win, GLFW_KEY_P) == GLFW_PRESS);
+        nk_input_key(ctx, NK_KEY_PASTE, glfwGetKey(win, GLFW_KEY_V) == GLFW_PRESS);
         nk_input_key(ctx, NK_KEY_CUT, glfwGetKey(win, GLFW_KEY_X) == GLFW_PRESS);
         nk_input_key(ctx, NK_KEY_TEXT_UNDO, glfwGetKey(win, GLFW_KEY_Z) == GLFW_PRESS);
         nk_input_key(ctx, NK_KEY_TEXT_REDO, glfwGetKey(win, GLFW_KEY_R) == GLFW_PRESS);
@@ -344,7 +344,7 @@ void nk_glfw3_shutdown(void)
     nk_free(&glfw.ctx);
     glDeleteTextures(1, &dev->font_tex);
     nk_buffer_free(&dev->cmds);
-    NK_MEMSET(&glfw, 0, sizeof(glfw));
+    memset(&glfw, 0, sizeof(glfw));
 }
 
 #endif

@@ -127,7 +127,7 @@ information on what to include when reporting a bug.
 - Added `glfwSetWindowMaximizeCallback` and `GLFWwindowmaximizefun` for
   receiving window maximization events (#778)
 - Added `glfwSetWindowAttrib` function for changing window attributes (#537)
-- Added headless [OSMesa](http://mesa3d.org/osmesa.html) backend (#281,#850)
+- Added headless [OSMesa](http://mesa3d.org/osmesa.html) backend (#850)
 - Added definition of `GLAPIENTRY` to public header
 - Added `GLFW_CENTER_CURSOR` window hint for controlling cursor centering
   (#749,#842)

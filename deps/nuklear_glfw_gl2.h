@@ -15,6 +15,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include <string.h>
+
 enum nk_glfw_init_state{
     NK_GLFW3_DEFAULT = 0,
     NK_GLFW3_INSTALL_CALLBACKS

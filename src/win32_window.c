@@ -422,6 +422,11 @@ static GLFWbool acquireMonitor(_GLFWwindow* window)
     GLFWbool status;
     int xpos, ypos;
 
+    if (!_glfw.win32.acquiredMonitorCount)
+        SetThreadExecutionState(ES_CONTINUOUS | ES_DISPLAY_REQUIRED);
+    if (!window->monitor->window)
+        _glfw.win32.acquiredMonitorCount++;
+
     status = _glfwSetVideoModeWin32(window->monitor, &window->videoMode);
 
     _glfwPlatformGetVideoMode(window->monitor, &mode);
@@ -441,6 +446,10 @@ static void releaseMonitor(_GLFWwindow* window)
 {
     if (window->monitor->window != window)
         return;
+
+    _glfw.win32.acquiredMonitorCount--;
+    if (!_glfw.win32.acquiredMonitorCount)
+        SetThreadExecutionState(ES_CONTINUOUS);
 
     _glfwInputMonitorWindow(window->monitor, NULL);
     _glfwRestoreVideoModeWin32(window->monitor);

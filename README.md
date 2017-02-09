@@ -149,6 +149,8 @@ information on what to include when reporting a bug.
 - [Win32] Bugfix: Bitness test in `FindVulkan.cmake` was VS specific (#928)
 - [Win32] Bugfix: `glfwVulkanSupported` emitted an error on systems with
                   a loader but no ICD (#916)
+- [Win32] Bugfix: Non-iconified full sreeen windows did not prevent screen
+                  blanking or password enabled screensavers (#851)
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
 - [X11] Bugfix: `glfwGetVideoMode` would segfault on Cygwin/X
 - [X11] Bugfix: Dynamic X11 library loading did not use full sonames (#941)

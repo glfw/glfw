@@ -8,7 +8,7 @@
     - [Reporting a segfault or other crash bug](#reporting-a-segfault-or-other-crash-bug)
     - [Reporting a context creation bug](#reporting-a-context-creation-bug)
     - [Reporting a monitor or video mode bug](#reporting-a-monitor-or-video-mode-bug)
-    - [Reporting an input or event bug](#reporting-an-input-or-event-bug)
+    - [Reporting a window, input or event bug](#reporting-a-window-input-or-event-bug)
     - [Reporting some other library bug](#reporting-some-other-library-bug)
     - [Reporting a documentation bug](#reporting-a-documentation-bug)
     - [Reporting a website bug](#reporting-a-website-bug)
@@ -195,12 +195,12 @@ monitors output:
 ```
 
 
-### Reporting an input or event bug
+### Reporting a window, input or event bug
 
 __Note:__ The exact ordering of related window events will sometimes differ.
 
-__Note:__ Window moving and resizing (by the user) will block the main thread on some
-platforms.  This is not a bug.  Set a [refresh
+__Note:__ Window moving and resizing (by the user) will block the main thread on
+some platforms.  This is not a bug.  Set a [refresh
 callback](http://www.glfw.org/docs/latest/window.html#window_refresh) if you
 want to keep the window contents updated during a move or size operation.
 
@@ -220,6 +220,11 @@ Please also include any __error messages__ provided to your application via the
 callback](http://www.glfw.org/docs/latest/intro_guide.html#error_handling) and
 if relevant, the __output of `events`__ when reporting this kind of bug.  If
 this tool doesn't run on the machine, mention this instead.
+
+__X11:__ If possible, please include what desktop environment (e.g. GNOME,
+Unity, KDE) and/or window manager (e.g. Openbox, dwm, Window Maker) you are
+running.  If the bug is related to keyboard input, please include any input
+method (e.g. ibus, SCIM) you are using.
 
 
 #### Quick template

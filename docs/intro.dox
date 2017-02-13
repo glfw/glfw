@@ -83,9 +83,9 @@ immediately.
 @section error_handling Error handling
 
 Some GLFW functions have return values that indicate an error, but this is often
-not very helpful when trying to figure out _why_ the error occurred.  Some
-functions also return otherwise valid values on error.  Finally, far from all
-GLFW functions have return values.
+not very helpful when trying to figure out _why_ the error occurred.  Other
+functions have no return value reserved for errors, so error notification needs
+a separate channel.  Finally, far from all GLFW functions have return values.
 
 This is where the error callback comes in.  This callback is called whenever an
 error occurs.  It is set with @ref glfwSetErrorCallback, a function that may be
@@ -109,6 +109,12 @@ void error_callback(int error, const char* description)
 The error code indicates the general category of the error.  Some error codes,
 such as @ref GLFW_NOT_INITIALIZED has only a single meaning, whereas others like
 @ref GLFW_PLATFORM_ERROR are used for many different errors.
+
+Reported errors are never fatal.  As long as GLFW was successfully initialized,
+it will remain initialized and in a safe state until terminated regardless of
+how many errors occur.  If an error occurs during initialization that causes
+@ref glfwInit to fail, any part of the library that was initialized will be
+safely terminated.
 
 The description string is only valid until the error callback returns, as it may
 have been generated specifically for that error.  This lets GLFW provide much

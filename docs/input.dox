@@ -145,7 +145,9 @@ per-window state arrays that can be polled with @ref glfwGetKey.
 @code
 int state = glfwGetKey(window, GLFW_KEY_E);
 if (state == GLFW_PRESS)
+{
     activate_airship();
+}
 @endcode
 
 The returned state is one of `GLFW_PRESS` or `GLFW_RELEASE`.
@@ -449,7 +451,9 @@ per-window state arrays that can be polled with @ref glfwGetMouseButton.
 @code
 int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
 if (state == GLFW_PRESS)
+{
     upgrade_cow();
+}
 @endcode
 
 The returned state is one of `GLFW_PRESS` or `GLFW_RELEASE`.
@@ -642,7 +646,9 @@ reference documentation for the lifetime of the returned string.
 @code
 const char* text = glfwGetClipboardString(window);
 if (text)
+{
     insert_text(text);
+}
 @endcode
 
 If the clipboard is empty or if its contents could not be converted, `NULL` is

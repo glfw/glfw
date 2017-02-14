@@ -59,6 +59,7 @@
 
 typedef int GLFWbool;
 
+typedef struct _GLFWinitconfig  _GLFWinitconfig;
 typedef struct _GLFWwndconfig   _GLFWwndconfig;
 typedef struct _GLFWctxconfig   _GLFWctxconfig;
 typedef struct _GLFWfbconfig    _GLFWfbconfig;
@@ -258,6 +259,18 @@ typedef void (APIENTRY * PFN_vkVoidFunction)(void);
 //========================================================================
 // Platform-independent structures
 //========================================================================
+
+/*! @brief Initialization configuration.
+ *
+ *  Parameters relating to the initialization of the library.
+ */
+struct _GLFWinitconfig
+{
+    struct {
+        GLFWbool  menubar;
+        GLFWbool  chdir;
+    } ns;
+};
 
 /*! @brief Window configuration.
  *
@@ -476,6 +489,7 @@ struct _GLFWlibrary
     GLFWbool            initialized;
 
     struct {
+        _GLFWinitconfig init;
         _GLFWfbconfig   framebuffer;
         _GLFWwndconfig  window;
         _GLFWctxconfig  context;

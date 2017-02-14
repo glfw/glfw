@@ -87,6 +87,8 @@ int main(void)
 
     glfwSetErrorCallback(error_callback);
 
+    glfwInitHint(GLFW_COCOA_MENUBAR, GLFW_FALSE);
+
     if (!glfwInit())
         exit(EXIT_FAILURE);
 

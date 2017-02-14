@@ -926,6 +926,12 @@ extern "C" {
 #define GLFW_CONNECTED              0x00040001
 #define GLFW_DISCONNECTED           0x00040002
 
+/*! @addtogroup init
+ *  @{ */
+#define GLFW_COCOA_CHDIR_RESOURCES  0x00051001
+#define GLFW_COCOA_MENUBAR          0x00051002
+/*! @} */
+
 #define GLFW_DONT_CARE              -1
 
 
@@ -1445,8 +1451,8 @@ typedef struct GLFWimage
  *
  *  @remark @macos This function will change the current directory of the
  *  application to the `Contents/Resources` subdirectory of the application's
- *  bundle, if present.  This can be disabled with a
- *  [compile-time option](@ref compile_options_osx).
+ *  bundle, if present.  This can be disabled with the @ref
+ *  GLFW_COCOA_CHDIR_RESOURCES init hint.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -1490,6 +1496,39 @@ GLFWAPI int glfwInit(void);
  *  @ingroup init
  */
 GLFWAPI void glfwTerminate(void);
+
+/*! @brief Sets the specified init hint to the desired value.
+ *
+ *  This function sets hints for the next initialization of GLFW.
+ *
+ *  The values you set are not affected by initialization or termination, but
+ *  they are only read during initialization.  Once GLFW has been initialized,
+ *  setting new hint values will not affect behavior until the next time the
+ *  library is terminated and initialized.
+ *
+ *  Some hints are platform specific.  These are always valid to set on any
+ *  platform but they will only affect their specific platform.  Other platforms
+ *  will simply ignore them.  Setting these hints requires no platform specific
+ *  headers or calls.
+ *
+ *  @param[in] hint The [init hint](@ref init_hints) to set.
+ *  @param[in] value The new value of the init hint.
+ *
+ *  @errors Possible errors include @ref GLFW_INVALID_ENUM and @ref
+ *  GLFW_INVALID_VALUE.
+ *
+ *  @remarks This function may be called before @ref glfwInit.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa init_hints
+ *  @sa glfwInit
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup init
+ */
+GLFWAPI void glfwInitHint(int hint, int value);
 
 /*! @brief Retrieves the version of the GLFW library.
  *
@@ -2049,8 +2088,7 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  @remark @macos The first time a window is created the menu bar is populated
  *  with common commands like Hide, Quit and About.  The About entry opens
  *  a minimal about dialog with information from the application's bundle.  The
- *  menu bar can be disabled with a
- *  [compile-time option](@ref compile_options_osx).
+ *  menu bar can be disabled with the @ref GLFW_COCOA_MENUBAR init hint.
  *
  *  @remark @macos On OS X 10.10 and later the window frame will not be rendered
  *  at full resolution on Retina displays unless the

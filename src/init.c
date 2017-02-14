@@ -40,11 +40,17 @@
 //
 _GLFWlibrary _glfw = { GLFW_FALSE };
 
-// This is outside of _glfw so it can be initialized and usable before
-// glfwInit is called, which lets that function report errors
+// These are outside of _glfw so they can be used before initialization and
+// after termination
 //
-static GLFWerrorfun _glfwErrorCallback = NULL;
-
+static GLFWerrorfun _glfwErrorCallback;
+static _GLFWinitconfig _glfwInitHints =
+{
+    {
+        GLFW_TRUE, // menubar
+        GLFW_TRUE  // chdir
+    }
+};
 
 // Returns a generic string representation of the specified error
 //
@@ -153,6 +159,7 @@ GLFWAPI int glfwInit(void)
         return GLFW_TRUE;
 
     memset(&_glfw, 0, sizeof(_glfw));
+    _glfw.hints.init = _glfwInitHints;
 
     if (!_glfwPlatformInit())
     {
@@ -175,6 +182,21 @@ GLFWAPI void glfwTerminate(void)
         return;
 
     terminate();
+}
+
+GLFWAPI void glfwInitHint(int hint, int value)
+{
+    switch (hint)
+    {
+        case GLFW_COCOA_CHDIR_RESOURCES:
+            _glfwInitHints.ns.chdir = value;
+            return;
+        case GLFW_COCOA_MENUBAR:
+            _glfwInitHints.ns.menubar = value;
+            return;
+    }
+
+    _glfwInputError(GLFW_INVALID_ENUM, "Invalid init hint %i", hint);
 }
 
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)

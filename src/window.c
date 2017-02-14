@@ -237,15 +237,15 @@ void glfwDefaultWindowHints(void)
 {
     _GLFW_REQUIRE_INIT();
 
-    memset(&_glfw.hints, 0, sizeof(_glfw.hints));
-
     // The default is OpenGL with minimum version 1.0
+    memset(&_glfw.hints.context, 0, sizeof(_glfw.hints.context));
     _glfw.hints.context.client = GLFW_OPENGL_API;
     _glfw.hints.context.source = GLFW_NATIVE_CONTEXT_API;
     _glfw.hints.context.major  = 1;
     _glfw.hints.context.minor  = 0;
 
     // The default is a focused, visible, resizable window with decorations
+    memset(&_glfw.hints.window, 0, sizeof(_glfw.hints.window));
     _glfw.hints.window.resizable   = GLFW_TRUE;
     _glfw.hints.window.visible     = GLFW_TRUE;
     _glfw.hints.window.decorated   = GLFW_TRUE;
@@ -254,6 +254,7 @@ void glfwDefaultWindowHints(void)
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
     // double buffered
+    memset(&_glfw.hints.framebuffer, 0, sizeof(_glfw.hints.framebuffer));
     _glfw.hints.framebuffer.redBits      = 8;
     _glfw.hints.framebuffer.greenBits    = 8;
     _glfw.hints.framebuffer.blueBits     = 8;

@@ -25,6 +25,14 @@ GLFW now supports changing the [GLFW_DECORATED](@ref GLFW_DECORATED_attrib),
 windows with @ref glfwSetWindowAttrib.
 
 
+@subsection news_33_inithint Support for initialization hints
+
+GLFW now supports setting library initialization hints with @ref glfwInitHint.
+Currently the macOS specific @ref
+GLFW_COCOA_CHDIR_RESOURCES and @ref GLFW_COCOA_MENUBAR init hints are supported,
+replacing the corresponding compile-time options.
+
+
 @subsection news_33_centercursor Cursor centering window hint
 
 GLFW now supports controlling whether the cursor is centered over newly created

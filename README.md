@@ -127,6 +127,7 @@ information on what to include when reporting a bug.
 - Added `glfwSetWindowMaximizeCallback` and `GLFWwindowmaximizefun` for
   receiving window maximization events (#778)
 - Added `glfwSetWindowAttrib` function for changing window attributes (#537)
+- Added `glfwInitHint` function for setting library initialization hints
 - Added headless [OSMesa](http://mesa3d.org/osmesa.html) backend (#850)
 - Added definition of `GLAPIENTRY` to public header
 - Added `GLFW_CENTER_CURSOR` window hint for controlling cursor centering
@@ -134,10 +135,14 @@ information on what to include when reporting a bug.
 - Added macOS specific `GLFW_COCOA_RETINA_FRAMEBUFFER` window hint
 - Added macOS specific `GLFW_COCOA_FRAME_AUTOSAVE` window hint (#195)
 - Added macOS specific `GLFW_COCOA_GRAPHICS_SWITCHING` window hint (#377,#935)
+- Added macOS specific `GLFW_COCOA_CHDIR_RESOURCES` init hint
+- Added macOS specific `GLFW_COCOA_MENUBAR` init hint
 - Added `GLFW_INCLUDE_ES32` for including the OpenGL ES 3.2 header
 - Added `GLFW_OSMESA_CONTEXT_API` for creating OpenGL contexts with
   [OSMesa](https://www.mesa3d.org/osmesa.html) (#281)
 - Removed `GLFW_USE_RETINA` compile-time option
+- Removed `GLFW_USE_CHDIR` compile-time option
+- Removed `GLFW_USE_MENUBAR` compile-time option
 - Bugfix: Calling `glfwMaximizeWindow` on a full screen window was not ignored
 - Bugfix: `GLFW_INCLUDE_VULKAN` could not be combined with the corresponding
           OpenGL and OpenGL ES header macros

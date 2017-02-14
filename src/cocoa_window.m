@@ -811,8 +811,6 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 }
 @end
 
-#if defined(_GLFW_USE_MENUBAR)
-
 // Try to figure out what the calling application is called
 //
 static NSString* findAppName(void)
@@ -922,8 +920,6 @@ static void createMenuBar(void)
     [NSApp performSelector:setAppleMenuSelector withObject:appMenu];
 }
 
-#endif /* _GLFW_USE_MENUBAR */
-
 // Initialize the Cocoa Application Kit
 //
 static GLFWbool initializeAppKit(void)
@@ -939,15 +935,16 @@ static GLFWbool initializeAppKit(void)
                              toTarget:NSApp
                            withObject:nil];
 
-    // In case we are unbundled, make us a proper UI application
-    [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+    if (_glfw.hints.init.ns.menubar)
+    {
+        // In case we are unbundled, make us a proper UI application
+        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
-#if defined(_GLFW_USE_MENUBAR)
-    // Menu bar setup must go between sharedApplication above and
-    // finishLaunching below, in order to properly emulate the behavior
-    // of NSApplicationMain
-    createMenuBar();
-#endif
+        // Menu bar setup must go between sharedApplication above and
+        // finishLaunching below, in order to properly emulate the behavior
+        // of NSApplicationMain
+        createMenuBar();
+    }
 
     // There can only be one application delegate, but we allocate it the
     // first time a window is created to keep all window code in this file

@@ -215,15 +215,20 @@ void _glfwPollMonitorsNS(void)
 {
     uint32_t i, j, displayCount, disconnectedCount;
     CGDirectDisplayID* displays;
-    _GLFWmonitor** disconnected;
+    _GLFWmonitor** disconnected = NULL;
 
     CGGetOnlineDisplayList(0, NULL, &displayCount);
     displays = calloc(displayCount, sizeof(CGDirectDisplayID));
     CGGetOnlineDisplayList(displayCount, displays, &displayCount);
 
     disconnectedCount = _glfw.monitorCount;
-    disconnected = calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
-    memcpy(disconnected, _glfw.monitors, _glfw.monitorCount * sizeof(_GLFWmonitor*));
+    if (disconnectedCount)
+    {
+        disconnected = calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
+        memcpy(disconnected,
+               _glfw.monitors,
+               _glfw.monitorCount * sizeof(_GLFWmonitor*));
+    }
 
     for (i = 0;  i < displayCount;  i++)
     {

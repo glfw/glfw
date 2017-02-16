@@ -102,7 +102,7 @@ void _glfwPollMonitorsX11(void)
     if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
     {
         int i, j, disconnectedCount, screenCount = 0;
-        _GLFWmonitor** disconnected;
+        _GLFWmonitor** disconnected = NULL;
         XineramaScreenInfo* screens = NULL;
         XRRScreenResources* sr = XRRGetScreenResourcesCurrent(_glfw.x11.display,
                                                               _glfw.x11.root);
@@ -113,10 +113,13 @@ void _glfwPollMonitorsX11(void)
             screens = XineramaQueryScreens(_glfw.x11.display, &screenCount);
 
         disconnectedCount = _glfw.monitorCount;
-        disconnected = calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
-        memcpy(disconnected,
-               _glfw.monitors,
-               _glfw.monitorCount * sizeof(_GLFWmonitor*));
+        if (disconnectedCount)
+        {
+            disconnected = calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
+            memcpy(disconnected,
+                   _glfw.monitors,
+                   _glfw.monitorCount * sizeof(_GLFWmonitor*));
+        }
 
         for (i = 0;  i < sr->noutput;  i++)
         {

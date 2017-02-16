@@ -91,16 +91,19 @@ static _GLFWmonitor* createMonitor(DISPLAY_DEVICEW* adapter,
 void _glfwPollMonitorsWin32(void)
 {
     int i, disconnectedCount;
-    _GLFWmonitor** disconnected;
+    _GLFWmonitor** disconnected = NULL;
     DWORD adapterIndex, displayIndex;
     DISPLAY_DEVICEW adapter, display;
     GLFWbool hasDisplays = GLFW_FALSE;
 
     disconnectedCount = _glfw.monitorCount;
-    disconnected = calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
-    memcpy(disconnected,
-           _glfw.monitors,
-           _glfw.monitorCount * sizeof(_GLFWmonitor*));
+    if (disconnectedCount)
+    {
+        disconnected = calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
+        memcpy(disconnected,
+               _glfw.monitors,
+               _glfw.monitorCount * sizeof(_GLFWmonitor*));
+    }
 
     // HACK: Check if any active adapters have connected displays
     //       If not, this is a headless system or a VMware guest

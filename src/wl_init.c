@@ -501,6 +501,13 @@ static void registryHandleGlobal(void* data,
                              &zwp_pointer_constraints_v1_interface,
                              1);
     }
+    else if (strcmp(interface, "zwp_idle_inhibit_manager_v1") == 0)
+    {
+        _glfw.wl.idleInhibitManager =
+            wl_registry_bind(registry, name,
+                             &zwp_idle_inhibit_manager_v1_interface,
+                             1);
+    }
 }
 
 static void registryHandleGlobalRemove(void *data,
@@ -786,6 +793,8 @@ void _glfwPlatformTerminate(void)
         zwp_relative_pointer_manager_v1_destroy(_glfw.wl.relativePointerManager);
     if (_glfw.wl.pointerConstraints)
         zwp_pointer_constraints_v1_destroy(_glfw.wl.pointerConstraints);
+    if (_glfw.wl.idleInhibitManager)
+        zwp_idle_inhibit_manager_v1_destroy(_glfw.wl.idleInhibitManager);
     if (_glfw.wl.registry)
         wl_registry_destroy(_glfw.wl.registry);
     if (_glfw.wl.display)

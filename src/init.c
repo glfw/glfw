@@ -67,7 +67,7 @@ static const char* getErrorString(int error)
         case GLFW_VERSION_UNAVAILABLE:
             return "The requested API version is unavailable";
         case GLFW_PLATFORM_ERROR:
-            return "A platform-specific error occurred";
+            return "An undocumented platform-specific error occurred";
         case GLFW_FORMAT_UNAVAILABLE:
             return "The requested format is unavailable";
         case GLFW_NO_WINDOW_CONTEXT:

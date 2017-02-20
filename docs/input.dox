@@ -155,6 +155,7 @@ The returned state is one of `GLFW_PRESS` or `GLFW_RELEASE`.
 This function only returns cached key event state.  It does not poll the
 system for the current physical state of the key.
 
+@anchor GLFW_STICKY_KEYS
 Whenever you poll state, you risk missing the state change you are looking for.
 If a pressed key is released again before you poll its state, you will have
 missed the key press.  The recommended solution for this is to use a
@@ -273,8 +274,9 @@ glfwGetCursorPos(window, &xpos, &ypos);
 @endcode
 
 
-@subsection cursor_mode Cursor modes
+@subsection cursor_mode Cursor mode
 
+@anchor GLFW_CURSOR
 The `GLFW_CURSOR` input mode provides several cursor modes for special forms of
 mouse motion input.  By default, the cursor mode is `GLFW_CURSOR_NORMAL`,
 meaning the regular arrow cursor (or another cursor set with @ref glfwSetCursor)
@@ -369,8 +371,10 @@ When a cursor is no longer needed, destroy it with @ref glfwDestroyCursor.
 glfwDestroyCursor(cursor);
 @endcode
 
-Cursor destruction always succeeds.  All cursors remaining when @ref
-glfwTerminate is called are destroyed as well.
+Cursor destruction always succeeds.  If the cursor is current for any window,
+that window will revert to the default cursor.  This does not affect the cursor
+mode.  All remaining cursors remaining are destroyed when @ref glfwTerminate is
+called.
 
 
 @subsubsection cursor_set Cursor setting
@@ -387,14 +391,14 @@ to `GLFW_CURSOR_NORMAL`.
 
 A single cursor may be set for any number of windows.
 
-To remove a cursor from a window, set the cursor of that window to `NULL`.
+To revert to the default cursor, set the cursor of that window to `NULL`.
 
 @code
 glfwSetCursor(window, NULL);
 @endcode
 
-When a cursor is destroyed, it is removed from any window where it is set.  This
-does not affect the cursor modes of those windows.
+When a cursor is destroyed, any window that has it set will revert to the
+default cursor.  This does not affect the cursor mode.
 
 
 @subsection cursor_enter Cursor enter/leave events
@@ -461,6 +465,7 @@ The returned state is one of `GLFW_PRESS` or `GLFW_RELEASE`.
 This function only returns cached mouse button event state.  It does not poll
 the system for the current state of the mouse button.
 
+@anchor GLFW_STICKY_MOUSE_BUTTONS
 Whenever you poll state, you risk missing the state change you are looking for.
 If a pressed mouse button is released again before you poll its state, you will have
 missed the button press.  The recommended solution for this is to use a

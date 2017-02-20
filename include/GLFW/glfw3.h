@@ -3264,8 +3264,8 @@ GLFWAPI void glfwPostEmptyEvent(void);
 /*! @brief Returns the value of an input option for the specified window.
  *
  *  This function returns the value of an input option for the specified window.
- *  The mode must be one of `GLFW_CURSOR`, `GLFW_STICKY_KEYS` or
- *  `GLFW_STICKY_MOUSE_BUTTONS`.
+ *  The mode must be one of @ref GLFW_CURSOR, @ref GLFW_STICKY_KEYS or
+ *  @ref GLFW_STICKY_MOUSE_BUTTONS.
  *
  *  @param[in] window The window to query.
  *  @param[in] mode One of `GLFW_CURSOR`, `GLFW_STICKY_KEYS` or
@@ -3287,8 +3287,8 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
 /*! @brief Sets an input option for the specified window.
  *
  *  This function sets an input mode option for the specified window.  The mode
- *  must be one of `GLFW_CURSOR`, `GLFW_STICKY_KEYS` or
- *  `GLFW_STICKY_MOUSE_BUTTONS`.
+ *  must be one of @ref GLFW_CURSOR, @ref GLFW_STICKY_KEYS or
+ *  @ref GLFW_STICKY_MOUSE_BUTTONS.
  *
  *  If the mode is `GLFW_CURSOR`, the value must be one of the following cursor
  *  modes:
@@ -3421,7 +3421,7 @@ GLFWAPI int glfwGetKeyScancode(int key);
  *  `GLFW_RELEASE`.  The higher-level action `GLFW_REPEAT` is only reported to
  *  the key callback.
  *
- *  If the `GLFW_STICKY_KEYS` input mode is enabled, this function returns
+ *  If the @ref GLFW_STICKY_KEYS input mode is enabled, this function returns
  *  `GLFW_PRESS` the first time you call it for a key that was pressed, even if
  *  that key has already been released.
  *
@@ -3460,7 +3460,7 @@ GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
  *  to the specified window.  The returned state is one of `GLFW_PRESS` or
  *  `GLFW_RELEASE`.
  *
- *  If the `GLFW_STICKY_MOUSE_BUTTONS` input mode is enabled, this function
+ *  If the @ref GLFW_STICKY_MOUSE_BUTTONS input mode is enabled, this function
  *  `GLFW_PRESS` the first time you call it for a mouse button that was pressed,
  *  even if that mouse button has already been released.
  *
@@ -3630,6 +3630,9 @@ GLFWAPI GLFWcursor* glfwCreateStandardCursor(int shape);
  *  This function destroys a cursor previously created with @ref
  *  glfwCreateCursor.  Any remaining cursors will be destroyed by @ref
  *  glfwTerminate.
+ *
+ *  If the specified cursor is current for any window, that window will be
+ *  reverted to the default cursor.  This does not affect the cursor mode.
  *
  *  @param[in] cursor The cursor object to destroy.
  *

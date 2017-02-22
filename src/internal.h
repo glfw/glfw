@@ -927,13 +927,11 @@ void _glfwInputCursorEnter(_GLFWwindow* window, GLFWbool entered);
 
 /*! @brief Notifies shared code of a touch start/end event.
 *  @param[in] window The window that received the event.
-*  @param[in] id Touch point id
-*  @param[in] action One of @c GLFW_PRESS, @c GLFW_MOVE or @c GLFW_RELEASE.
-*  @param[in] xpos The new x-coordinate of the touch.
-*  @param[in] ypos The new y-coordinate of the touch.
+*  @param[in] touchPoints All valid touch points
+*  @param[in] count The numer of valid touch points
 *  @ingroup event
 */
-void _glfwInputTouch(_GLFWwindow* window, int id, int action, double xpos, double ypos);
+void _glfwInputTouch(_GLFWwindow* window, GLFWtouch* touchPoints, int count);
 
 /*! @ingroup event
  */

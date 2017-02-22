@@ -1093,18 +1093,6 @@ typedef void (* GLFWcharmodsfun)(GLFWwindow*,unsigned int,int);
  */
 typedef void (* GLFWdropfun)(GLFWwindow*,int,const char**);
 
-/*! @brief The function signature for touch callbacks.
- *  @param[in] window The window that received the event.
- *  @param[in] touch The touch that triggered the event.
- *  @param[in] action One of @ref GLFW_PRESS, @c GLFW_MOVE or @ref GLFW_RELEASE.
- *  @param[in] xpos The new x-coordinate of the touch.
- *  @param[in] ypos The new y-coordinate of the touch.
- *  @ingroup input
- *
- *  @sa glfwSetTouchCallback
- */
-typedef void (* GLFWtouchfun)(GLFWwindow*, int, int, double, double);
-
 /*! @brief Touch point info.
 *
 *  This describes the touch point info.
@@ -1130,6 +1118,16 @@ typedef struct GLFWtouch
 	*/
 	double y;
 } GLFWtouch;
+
+/*! @brief The function signature for touch callbacks.
+*  @param[in] window The window that received the event.
+*  @param[in] touchPoints All valid touch points
+*  @param[in] count The number of valid touch points
+*  @ingroup event
+*
+*  @sa glfwSetTouchCallback
+*/
+typedef void(*GLFWtouchfun)(GLFWwindow*, GLFWtouch*, int);
 
 /*! @brief The function signature for monitor configuration callbacks.
  *

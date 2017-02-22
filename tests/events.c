@@ -486,14 +486,17 @@ static void joystick_callback(int joy, int event)
     }
 }
 
-static void touch_callback(GLFWwindow* window, int id, int action, double x, double y)
+static void touch_callback(GLFWwindow* window, GLFWtouch* touchPoints, int count)
 {
-    printf("%08x at %0.3f: Touch %i %s at position %0.3f %0.3f\n",
-           counter++,
-           glfwGetTime(),
-           id,
-           get_action_name(action),
-           x, y);
+	printf("Priting info about all touch points");
+	for (int i = 0; i < count; ++i) {
+		printf("%08x at %0.3f: Touch %i %s at position %0.3f %0.3f\n",
+			counter++,
+			glfwGetTime(),
+			touchPoints[i].id,
+			get_action_name(touchPoints[i].action),
+			touchPoints[i].x, touchPoints[i].y);
+	}
 }
 
 int main(int argc, char** argv)

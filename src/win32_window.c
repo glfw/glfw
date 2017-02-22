@@ -841,7 +841,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 				GLFWtouch* touchPoints = calloc(count, sizeof(GLFWtouch));
 
 				//Count valid points
-				int valid_count = 0;
+				int validCount = 0;
 
                 for (i = 0;  i < count;  i++)
                 {
@@ -867,19 +867,16 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 					else
 						action = GLFW_REPEAT;
 
-					touchPoints[valid_count].id = (int)inputs[i].dwID;
-					touchPoints[valid_count].action = action;
-					touchPoints[valid_count].x = inputs[i].x / 100.0 - xpos;
-					touchPoints[valid_count].y = inputs[i].y / 100.0 - ypos;
+					touchPoints[validCount].id = (int)inputs[i].dwID;
+					touchPoints[validCount].action = action;
+					touchPoints[validCount].x = inputs[i].x / 100.0 - xpos;
+					touchPoints[validCount].y = inputs[i].y / 100.0 - ypos;
 
-					valid_count++;
-
-                    _glfwInputTouch(window,
-                                    (int) inputs[i].dwID, 
-									action,
-                                    inputs[i].x / 100.0 - xpos,
-                                    inputs[i].y / 100.0 - ypos);
+					validCount++;
                 }
+
+				if(validCount > 0)
+					_glfwInputTouch(window, touchPoints, validCount);
 
                 _glfw_CloseTouchInputHandle((HTOUCHINPUT) lParam);
 

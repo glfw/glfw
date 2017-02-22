@@ -135,10 +135,10 @@ void _glfwInputDrop(_GLFWwindow* window, int count, const char** paths)
         window->callbacks.drop((GLFWwindow*) window, count, paths);
 }
 
-void _glfwInputTouch(_GLFWwindow* window, int id, int action, double xpos, double ypos)
+void _glfwInputTouch(_GLFWwindow* window, GLFWtouch* touchPoints, int count)
 {
 	if (window->callbacks.touch)
-		window->callbacks.touch((GLFWwindow*)window, id, action, xpos, ypos);
+		window->callbacks.touch((GLFWwindow*)window, touchPoints, count);
 }
 
 void _glfwInputJoystickChange(int joy, int event)

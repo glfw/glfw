@@ -837,6 +837,12 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 _glfwPlatformGetWindowSize(window, &width, &height);
                 _glfwPlatformGetWindowPos(window, &xpos, &ypos);
 
+				//Create storage
+				GLFWtouch* touchPoints = calloc(count, sizeof(GLFWtouch));
+
+				//Count valid points
+				int valid_count = 0;
+
                 for (i = 0;  i < count;  i++)
                 {
                     int action;
@@ -856,16 +862,28 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                         action = GLFW_PRESS;
                     else if (inputs[i].dwFlags & TOUCHEVENTF_UP)
                         action = GLFW_RELEASE;
-                    else
-                        action = GLFW_MOVE;
+					else if (inputs[i].dwFlags & TOUCHEVENTF_MOVE)
+						action = GLFW_MOVE;
+					else
+						action = GLFW_REPEAT;
+
+					touchPoints[valid_count].id = (int)inputs[i].dwID;
+					touchPoints[valid_count].action = action;
+					touchPoints[valid_count].x = inputs[i].x / 100.0 - xpos;
+					touchPoints[valid_count].y = inputs[i].y / 100.0 - ypos;
+
+					valid_count++;
 
                     _glfwInputTouch(window,
-                                    (int) inputs[i].dwID, action,
+                                    (int) inputs[i].dwID, 
+									action,
                                     inputs[i].x / 100.0 - xpos,
                                     inputs[i].y / 100.0 - ypos);
                 }
 
                 _glfw_CloseTouchInputHandle((HTOUCHINPUT) lParam);
+
+				free(touchPoints);
             }
 
             free(inputs);

@@ -1103,7 +1103,33 @@ typedef void (* GLFWdropfun)(GLFWwindow*,int,const char**);
  *
  *  @sa glfwSetTouchCallback
  */
-typedef void (* GLFWtouchfun)(GLFWwindow*,int,int,double,double);
+typedef void (* GLFWtouchfun)(GLFWwindow*, int, int, double, double);
+
+/*! @brief Touch point info.
+*
+*  This describes the touch point info.
+*
+*  @sa @ref touch
+*
+*  @since Added in version 3.2.1 (touch branch)
+*
+*  @ingroup touch
+*/
+typedef struct GLFWtouch
+{
+	/*! Touch id
+	*/
+	int id;
+	/*! Touch action
+	*/
+	int action;
+	/*! X position
+	*/
+	double x;
+	/*! Y position
+	*/
+	double y;
+} GLFWtouch;
 
 /*! @brief The function signature for monitor configuration callbacks.
  *

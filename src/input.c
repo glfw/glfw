@@ -135,11 +135,12 @@ void _glfwInputDrop(_GLFWwindow* window, int count, const char** paths)
         window->callbacks.drop((GLFWwindow*) window, count, paths);
 }
 
-void _glfwInputTouch(_GLFWwindow* window, int touch, int action, double xpos, double ypos)
+void _glfwInputTouch(_GLFWwindow* window, int id, int action, double xpos, double ypos)
 {
-    if (window->callbacks.touch)
-        window->callbacks.touch((GLFWwindow*) window, touch, action, xpos, ypos);
+	if (window->callbacks.touch)
+		window->callbacks.touch((GLFWwindow*)window, id, action, xpos, ypos);
 }
+
 void _glfwInputJoystickChange(int joy, int event)
 {
     if (_glfw.callbacks.joystick)
@@ -621,6 +622,7 @@ GLFWAPI GLFWtouchfun glfwSetTouchCallback(GLFWwindow* handle, GLFWtouchfun cbfun
     _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     _GLFW_SWAP_POINTERS(window->callbacks.touch, cbfun);
+	setTouchInput(window, 1);
     return cbfun;
 }
 

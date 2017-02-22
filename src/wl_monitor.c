@@ -69,7 +69,7 @@ static void mode(void* data,
 
     mode.base.width = width;
     mode.base.height = height;
-    mode.base.refreshRate = refresh;
+    mode.base.refreshRate = refresh / 1000;
     mode.flags = flags;
 
     if (monitor->wl.modesCount + 1 >= monitor->wl.modesSize)
@@ -97,6 +97,9 @@ static void scale(void* data,
                   struct wl_output* output,
                   int32_t factor)
 {
+    struct _GLFWmonitor *monitor = data;
+
+    monitor->wl.scale = factor;
 }
 
 static const struct wl_output_listener output_listener = {
@@ -111,13 +114,13 @@ static const struct wl_output_listener output_listener = {
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-void _glfwAddOutput(uint32_t name, uint32_t version)
+void _glfwAddOutputWayland(uint32_t name, uint32_t version)
 {
     _GLFWmonitor *monitor;
     struct wl_output *output;
     char name_str[80];
 
-    memset(name_str, 0, 80 * sizeof(char));
+    memset(name_str, 0, sizeof(name_str));
     snprintf(name_str, 79, "wl_output@%u", name);
 
     if (version < 2)
@@ -141,6 +144,8 @@ void _glfwAddOutput(uint32_t name, uint32_t version)
 
     monitor->wl.modes = calloc(4, sizeof(_GLFWvidmodeWayland));
     monitor->wl.modesSize = 4;
+
+    monitor->wl.scale = 1;
 
     monitor->wl.output = output;
     wl_output_add_listener(output, &output_listener, monitor);
@@ -239,13 +244,15 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
     // TODO
-    fprintf(stderr, "_glfwPlatformGetGammaRamp not implemented yet\n");
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Wayland: Gamma ramp getting not supported yet");
 }
 
 void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 {
     // TODO
-    fprintf(stderr, "_glfwPlatformSetGammaRamp not implemented yet\n");
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Wayland: Gamma ramp setting not supported yet");
 }
 
 

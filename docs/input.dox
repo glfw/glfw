@@ -1,16 +1,18 @@
 /*!
 
-@page input Input guide
+@page input_guide Input guide
  
 @tableofcontents
 
-This guide introduces the input related functions of GLFW.  There are also
-guides for the other areas of GLFW.
+This guide introduces the input related functions of GLFW.  For details on
+a specific function in this category, see the @ref input.  There are also guides
+for the other areas of GLFW.
 
- - @ref intro
- - @ref window
- - @ref context
- - @ref monitor
+ - @ref intro_guide
+ - @ref window_guide
+ - @ref context_guide
+ - @ref vulkan_guide
+ - @ref monitor_guide
 
 GLFW provides many kinds of input.  While some can only be polled, like time, or
 only received via callbacks, like scrolling, there are those that provide both
@@ -32,8 +34,10 @@ information.
 
 GLFW needs to communicate regularly with the window system both in order to
 receive events and to show that the application hasn't locked up.  Event
-processing must be done regularly while you have visible windows and is normally
-done each frame after [buffer swapping](@ref buffer_swap).
+processing must be done regularly while you have any windows and is normally
+done each frame after [buffer swapping](@ref buffer_swap).  Even when you have
+no windows, event polling needs to be done in order to receive monitor
+connection events.
 
 There are two functions for processing pending events.  @ref glfwPollEvents,
 processes only those events that have already been received and then returns
@@ -56,6 +60,17 @@ It puts the thread to sleep until at least one event has been received and then
 processes all received events.  This saves a great deal of CPU cycles and is
 useful for, for example, editing tools.  There must be at least one GLFW window
 for this function to sleep.
+
+If you want to wait for events but have UI elements that need periodic updates,
+call @ref glfwWaitEventsTimeout.
+
+@code
+glfwWaitEventsTimeout(0.7);
+@endcode
+
+It puts the thread to sleep until at least one event has been received, or until
+the specified number of seconds have elapsed.  It then processes any received
+events.
 
 If the main thread is sleeping in @ref glfwWaitEvents, you can wake it from
 another thread by posting an empty event to the event queue with @ref
@@ -192,6 +207,22 @@ void charmods_callback(GLFWwindow* window, unsigned int codepoint, int mods)
 @endcode
 
 
+@subsection input_key_name Key names
+
+If you wish to refer to keys by name, you can query the keyboard layout
+dependent name of printable keys with @ref glfwGetKeyName.
+
+@code
+const char* key_name = glfwGetKeyName(GLFW_KEY_W, 0);
+show_tutorial_hint("Press %s to move forward", key_name);
+@endcode
+
+This function can handle both [keys and scancodes](@ref input_key).  If the
+specified key is `GLFW_KEY_UNKNOWN` then the scancode is used, otherwise it is
+ignored.  This matches the behavior of the key callback, meaning the callback
+arguments can always be passed unmodified to this function.
+
+
 @section input_mouse Mouse input
 
 Mouse input comes in many forms, including cursor motion, button presses and
@@ -208,8 +239,9 @@ position callback.
 glfwSetCursorPosCallback(window, cursor_pos_callback);
 @endcode
 
-The callback functions receives the cursor position.  On platforms that provide
-it, the full sub-pixel cursor position is passed on.
+The callback functions receives the cursor position, measured in screen
+coordinates but relative to the top-left corner of the window client area.  On
+platforms that provide it, the full sub-pixel cursor position is passed on.
 
 @code
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
@@ -516,6 +548,33 @@ and make may have the same name.  Only the [joystick token](@ref joysticks) is
 guaranteed to be unique, and only until that joystick is disconnected.
 
 
+@subsection joystick_event Joystick configuration changes
+
+If you wish to be notified when a joystick is connected or disconnected, set
+a joystick callback.
+
+@code
+glfwSetJoystickCallback(joystick_callback);
+@endcode
+
+The callback function receives the ID of the joystick that has been connected
+and disconnected and the event that occurred.
+
+@code
+void joystick_callback(int joy, int event)
+{
+    if (event == GLFW_CONNECTED)
+    {
+        // The joystick was connected
+    }
+    else if (event == GLFW_DISCONNECTED)
+    {
+        // The joystick was disconnected
+    }
+}
+@endcode
+
+
 @section time Time input
 
 GLFW provides high-resolution time input, in seconds, with @ref glfwGetTime.
@@ -535,6 +594,21 @@ glfwSetTime(4.0);
 @endcode
 
 This sets the timer to the specified time, in seconds.
+
+You can also access the raw timer value, measured in 1&nbsp;/&nbsp;frequency
+seconds, with @ref glfwGetTimerValue.
+
+@code
+uint64_t value = glfwGetTimerValue();
+@endcode
+
+The frequency of the raw timer varies depending on what time sources are
+available on the machine.  You can query its frequency, in Hz, with @ref
+glfwGetTimerFrequency.
+
+@code
+uint64_t freqency = glfwGetTimerFrequency();
+@endcode
 
 
 @section clipboard Clipboard input and output

@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 #define inline __inline
 #endif
 
@@ -37,7 +37,7 @@ static inline float vec##n##_mul_inner(vec##n const a, vec##n const b) \
 } \
 static inline float vec##n##_len(vec##n const v) \
 { \
-	return sqrtf(vec##n##_mul_inner(v,v)); \
+	return (float) sqrt(vec##n##_mul_inner(v,v)); \
 } \
 static inline void vec##n##_norm(vec##n r, vec##n const v) \
 { \
@@ -192,19 +192,20 @@ static inline void mat4x4_rotate(mat4x4 R, mat4x4 M, float x, float y, float z, 
 	vec3 u = {x, y, z};
 
 	if(vec3_len(u) > 1e-4) {
+		mat4x4 T, C, S;
+
 		vec3_norm(u, u);
-		mat4x4 T;
 		mat4x4_from_vec3_mul_outer(T, u, u);
 
-		mat4x4 S = {
-			{    0,  u[2], -u[1], 0},
-			{-u[2],     0,  u[0], 0},
-			{ u[1], -u[0],     0, 0},
-			{    0,     0,     0, 0}
-		};
+		S[1][2] =  u[0];
+		S[2][1] = -u[0];
+		S[2][0] =  u[1];
+		S[0][2] = -u[1];
+		S[0][1] =  u[2];
+		S[1][0] = -u[2];
+
 		mat4x4_scale(S, S, s);
 
-		mat4x4 C;
 		mat4x4_identity(C);
 		mat4x4_sub(C, C, T);
 
@@ -213,7 +214,7 @@ static inline void mat4x4_rotate(mat4x4 R, mat4x4 M, float x, float y, float z, 
 		mat4x4_add(T, T, C);
 		mat4x4_add(T, T, S);
 
-		T[3][3] = 1.;		
+		T[3][3] = 1.;
 		mat4x4_mul(R, M, T);
 	} else {
 		mat4x4_dup(R, M);
@@ -257,6 +258,7 @@ static inline void mat4x4_rotate_Z(mat4x4 Q, mat4x4 M, float angle)
 }
 static inline void mat4x4_invert(mat4x4 T, mat4x4 M)
 {
+	float idet;
 	float s[6];
 	float c[6];
 	s[0] = M[0][0]*M[1][1] - M[1][0]*M[0][1];
@@ -272,10 +274,10 @@ static inline void mat4x4_invert(mat4x4 T, mat4x4 M)
 	c[3] = M[2][1]*M[3][2] - M[3][1]*M[2][2];
 	c[4] = M[2][1]*M[3][3] - M[3][1]*M[2][3];
 	c[5] = M[2][2]*M[3][3] - M[3][2]*M[2][3];
-	
+
 	/* Assumes it is invertible */
-	float idet = 1.0f/( s[0]*c[5]-s[1]*c[4]+s[2]*c[3]+s[3]*c[2]-s[4]*c[1]+s[5]*c[0] );
-	
+	idet = 1.0f/( s[0]*c[5]-s[1]*c[4]+s[2]*c[3]+s[3]*c[2]-s[4]*c[1]+s[5]*c[0] );
+
 	T[0][0] = ( M[1][1] * c[5] - M[1][2] * c[4] + M[1][3] * c[3]) * idet;
 	T[0][1] = (-M[0][1] * c[5] + M[0][2] * c[4] - M[0][3] * c[3]) * idet;
 	T[0][2] = ( M[3][1] * s[5] - M[3][2] * s[4] + M[3][3] * s[3]) * idet;
@@ -298,12 +300,12 @@ static inline void mat4x4_invert(mat4x4 T, mat4x4 M)
 }
 static inline void mat4x4_orthonormalize(mat4x4 R, mat4x4 M)
 {
-	mat4x4_dup(R, M);
 	float s = 1.;
 	vec3 h;
 
+	mat4x4_dup(R, M);
 	vec3_norm(R[2], R[2]);
-	
+
 	s = vec3_mul_inner(R[1], R[2]);
 	vec3_scale(h, R[2], s);
 	vec3_sub(R[1], R[1], h);
@@ -324,7 +326,7 @@ static inline void mat4x4_frustum(mat4x4 M, float l, float r, float b, float t, 
 {
 	M[0][0] = 2.f*n/(r-l);
 	M[0][1] = M[0][2] = M[0][3] = 0.f;
-	
+
 	M[1][1] = 2.f*n/(t-b);
 	M[1][0] = M[1][2] = M[1][3] = 0.f;
 
@@ -332,7 +334,7 @@ static inline void mat4x4_frustum(mat4x4 M, float l, float r, float b, float t, 
 	M[2][1] = (t+b)/(t-b);
 	M[2][2] = -(f+n)/(f-n);
 	M[2][3] = -1.f;
-	
+
 	M[3][2] = -2.f*(f*n)/(f-n);
 	M[3][0] = M[3][1] = M[3][3] = 0.f;
 }
@@ -346,7 +348,7 @@ static inline void mat4x4_ortho(mat4x4 M, float l, float r, float b, float t, fl
 
 	M[2][2] = -2.f/(f-n);
 	M[2][0] = M[2][1] = M[2][3] = 0.f;
-	
+
 	M[3][0] = -(r+l)/(r-l);
 	M[3][1] = -(t+b)/(t-b);
 	M[3][2] = -(f+n)/(f-n);
@@ -387,14 +389,15 @@ static inline void mat4x4_look_at(mat4x4 m, vec3 eye, vec3 center, vec3 up)
 	/* TODO: The negation of of can be spared by swapping the order of
 	 *       operands in the following cross products in the right way. */
 	vec3 f;
-	vec3_sub(f, center, eye);	
-	vec3_norm(f, f);	
-	
 	vec3 s;
+	vec3 t;
+
+	vec3_sub(f, center, eye);
+	vec3_norm(f, f);
+
 	vec3_mul_cross(s, f, up);
 	vec3_norm(s, s);
 
-	vec3 t;
 	vec3_mul_cross(t, s, f);
 
 	m[0][0] =  s[0];
@@ -470,9 +473,9 @@ static inline void quat_conj(quat r, quat q)
 	r[3] = q[3];
 }
 static inline void quat_rotate(quat r, float angle, vec3 axis) {
+	int i;
 	vec3 v;
 	vec3_scale(v, axis, sinf(angle / 2));
-	int i;
 	for(i=0; i<3; ++i)
 		r[i] = v[i];
 	r[3] = cosf(angle / 2);
@@ -507,7 +510,7 @@ static inline void mat4x4_from_quat(mat4x4 M, quat q)
 	float b2 = b*b;
 	float c2 = c*c;
 	float d2 = d*d;
-	
+
 	M[0][0] = a2 + b2 - c2 - d2;
 	M[0][1] = 2.f*(b*c + a*d);
 	M[0][2] = 2.f*(b*d - a*c);
@@ -554,7 +557,7 @@ static inline void quat_from_mat4x4(quat q, mat4x4 M)
 		p = &perm[i];
 	}
 
-	r = sqrtf(1.f + M[p[0]][p[0]] - M[p[1]][p[1]] - M[p[2]][p[2]] );
+	r = (float) sqrt(1.f + M[p[0]][p[0]] - M[p[1]][p[1]] - M[p[2]][p[2]] );
 
 	if(r < 1e-6) {
 		q[0] = 1.f;

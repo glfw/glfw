@@ -1,16 +1,18 @@
 /*!
 
-@page monitor Monitor guide
+@page monitor_guide Monitor guide
 
 @tableofcontents
 
-This guide introduces the monitor related functions of GLFW.  There are also
+This guide introduces the monitor related functions of GLFW.  For details on
+a specific function in this category, see the @ref monitor.  There are also
 guides for the other areas of GLFW.
 
- - @ref intro
- - @ref window
- - @ref context
- - @ref input
+ - @ref intro_guide
+ - @ref window_guide
+ - @ref context_guide
+ - @ref vulkan_guide
+ - @ref input_guide
 
 
 @section monitor_object Monitor objects
@@ -67,15 +69,24 @@ glfwSetMonitorCallback(monitor_callback);
 @endcode
 
 The callback function receives the handle for the monitor that has been
-connected or disconnected and a monitor action.
+connected or disconnected and the event that occurred.
 
 @code
 void monitor_callback(GLFWmonitor* monitor, int event)
 {
+    if (event == GLFW_CONNECTED)
+    {
+        // The monitor was connected
+    }
+    else if (event == GLFW_DISCONNECTED)
+    {
+        // The monitor was disconnected
+    }
 }
 @endcode
 
-The action is one of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.
+If a monitor is disconnected, any windows that are full screen on it get forced
+into windowed mode.
 
 
 @section monitor_properties Monitor properties
@@ -88,8 +99,9 @@ a gamma ramp.
 @subsection monitor_modes Video modes
 
 GLFW generally does a good job selecting a suitable video mode when you create
-a full screen window, but it is sometimes useful to know exactly which video
-modes are supported.
+a full screen window, change its video mode or or make a windowed one full
+screen, but it is sometimes useful to know exactly which video modes are
+supported.
 
 Video modes are represented as @ref GLFWvidmode structures.  You can get an
 array of the video modes supported by a monitor with @ref glfwGetVideoModes.

@@ -2,7 +2,7 @@
 // GLFW 3.2 GLX - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -49,6 +49,7 @@
 #define GLX_ACCUM_ALPHA_SIZE 17
 #define GLX_SAMPLES 0x186a1
 #define GLX_VISUAL_ID 0x800b
+
 #define GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB 0x20b2
 #define GLX_CONTEXT_DEBUG_BIT_ARB 0x00000001
 #define GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB 0x00000002
@@ -67,6 +68,7 @@
 #define GLX_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB 0
 #define GLX_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB 0x2098
 
+typedef XID GLXWindow;
 typedef XID GLXDrawable;
 typedef struct __GLXFBConfig* GLXFBConfig;
 typedef struct __GLXcontext* GLXContext;
@@ -82,27 +84,30 @@ typedef void (*PFNGLXSWAPBUFFERSPROC)(Display*,GLXDrawable);
 typedef const char* (*PFNGLXQUERYEXTENSIONSSTRINGPROC)(Display*,int);
 typedef GLXFBConfig* (*PFNGLXGETFBCONFIGSPROC)(Display*,int,int*);
 typedef GLXContext (*PFNGLXCREATENEWCONTEXTPROC)(Display*,GLXFBConfig,int,GLXContext,Bool);
-typedef __GLXextproc (* PFNGLXGETPROCADDRESSPROC) (const GLubyte *procName);
+typedef __GLXextproc (* PFNGLXGETPROCADDRESSPROC)(const GLubyte *procName);
 typedef int (*PFNGLXSWAPINTERVALMESAPROC)(int);
 typedef int (*PFNGLXSWAPINTERVALSGIPROC)(int);
 typedef void (*PFNGLXSWAPINTERVALEXTPROC)(Display*,GLXDrawable,int);
 typedef GLXContext (*PFNGLXCREATECONTEXTATTRIBSARBPROC)(Display*,GLXFBConfig,GLXContext,Bool,const int*);
 typedef XVisualInfo* (*PFNGLXGETVISUALFROMFBCONFIGPROC)(Display*,GLXFBConfig);
+typedef GLXWindow (*PFNGLXCREATEWINDOWPROC)(Display*,GLXFBConfig,Window,const int*);
+typedef void (*PFNGLXDESTROYWINDOWPROC)(Display*,GLXWindow);
 
 // libGL.so function pointer typedefs
-#define _glfw_glXGetFBConfigs _glfw.glx.GetFBConfigs
-#define _glfw_glXGetFBConfigAttrib _glfw.glx.GetFBConfigAttrib
-#define _glfw_glXGetClientString _glfw.glx.GetClientString
-#define _glfw_glXQueryExtension _glfw.glx.QueryExtension
-#define _glfw_glXQueryVersion _glfw.glx.QueryVersion
-#define _glfw_glXDestroyContext _glfw.glx.DestroyContext
-#define _glfw_glXMakeCurrent _glfw.glx.MakeCurrent
-#define _glfw_glXSwapBuffers _glfw.glx.SwapBuffers
-#define _glfw_glXQueryExtensionsString _glfw.glx.QueryExtensionsString
-#define _glfw_glXCreateNewContext _glfw.glx.CreateNewContext
-#define _glfw_glXGetVisualFromFBConfig _glfw.glx.GetVisualFromFBConfig
+#define glXGetFBConfigs _glfw.glx.GetFBConfigs
+#define glXGetFBConfigAttrib _glfw.glx.GetFBConfigAttrib
+#define glXGetClientString _glfw.glx.GetClientString
+#define glXQueryExtension _glfw.glx.QueryExtension
+#define glXQueryVersion _glfw.glx.QueryVersion
+#define glXDestroyContext _glfw.glx.DestroyContext
+#define glXMakeCurrent _glfw.glx.MakeCurrent
+#define glXSwapBuffers _glfw.glx.SwapBuffers
+#define glXQueryExtensionsString _glfw.glx.QueryExtensionsString
+#define glXCreateNewContext _glfw.glx.CreateNewContext
+#define glXGetVisualFromFBConfig _glfw.glx.GetVisualFromFBConfig
+#define glXCreateWindow _glfw.glx.CreateWindow
+#define glXDestroyWindow _glfw.glx.DestroyWindow
 
-#define _GLFW_PLATFORM_FBCONFIG                 GLXFBConfig     glx
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextGLX glx
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryGLX glx
 
@@ -111,13 +116,10 @@ typedef XVisualInfo* (*PFNGLXGETVISUALFROMFBCONFIGPROC)(Display*,GLXFBConfig);
 //
 typedef struct _GLFWcontextGLX
 {
-    // Rendering context
-    GLXContext      context;
-    // Visual of selected GLXFBConfig
-    XVisualInfo*    visual;
+    GLXContext      handle;
+    GLXWindow       window;
 
 } _GLFWcontextGLX;
-
 
 // GLX-specific global data
 //
@@ -142,6 +144,8 @@ typedef struct _GLFWlibraryGLX
     PFNGLXQUERYEXTENSIONSSTRINGPROC     QueryExtensionsString;
     PFNGLXCREATENEWCONTEXTPROC          CreateNewContext;
     PFNGLXGETVISUALFROMFBCONFIGPROC     GetVisualFromFBConfig;
+    PFNGLXCREATEWINDOWPROC              CreateWindow;
+    PFNGLXDESTROYWINDOWPROC             DestroyWindow;
 
     // GLX 1.4 and extension functions
     PFNGLXGETPROCADDRESSPROC            GetProcAddress;
@@ -165,11 +169,14 @@ typedef struct _GLFWlibraryGLX
 } _GLFWlibraryGLX;
 
 
-int _glfwInitContextAPI(void);
-void _glfwTerminateContextAPI(void);
-int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWctxconfig* ctxconfig,
-                       const _GLFWfbconfig* fbconfig);
-void _glfwDestroyContext(_GLFWwindow* window);
+GLFWbool _glfwInitGLX(void);
+void _glfwTerminateGLX(void);
+GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
+                               const _GLFWctxconfig* ctxconfig,
+                               const _GLFWfbconfig* fbconfig);
+void _glfwDestroyContextGLX(_GLFWwindow* window);
+GLFWbool _glfwChooseVisualGLX(const _GLFWctxconfig* ctxconfig,
+                              const _GLFWfbconfig* fbconfig,
+                              Visual** visual, int* depth);
 
 #endif // _glfw3_glx_context_h_

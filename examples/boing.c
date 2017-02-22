@@ -89,6 +89,7 @@ typedef enum { DRAW_BALL, DRAW_BALL_SHADOW } DRAW_BALL_ENUM;
 typedef struct {float x; float y; float z;} vertex_t;
 
 /* Global vars */
+int windowed_xpos, windowed_ypos, windowed_width, windowed_height;
 int width, height;
 GLfloat deg_rot_y       = 0.f;
 GLfloat deg_rot_y_inc   = 2.f;
@@ -236,8 +237,32 @@ void reshape( GLFWwindow* window, int w, int h )
 
 void key_callback( GLFWwindow* window, int key, int scancode, int action, int mods )
 {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    if (action != GLFW_PRESS)
+        return;
+
+    if (key == GLFW_KEY_ESCAPE && mods == 0)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+    if ((key == GLFW_KEY_ENTER && mods == GLFW_MOD_ALT) ||
+        (key == GLFW_KEY_F11 && mods == GLFW_MOD_ALT))
+    {
+        if (glfwGetWindowMonitor(window))
+        {
+            glfwSetWindowMonitor(window, NULL,
+                                 windowed_xpos, windowed_ypos,
+                                 windowed_width, windowed_height, 0);
+        }
+        else
+        {
+            GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+            if (monitor)
+            {
+                const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+                glfwGetWindowPos(window, &windowed_xpos, &windowed_ypos);
+                glfwGetWindowSize(window, &windowed_width, &windowed_height);
+                glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+            }
+        }
+    }
 }
 
 static void set_ball_pos ( GLfloat x, GLfloat y )
@@ -601,8 +626,6 @@ int main( void )
    /* Init GLFW */
    if( !glfwInit() )
       exit( EXIT_FAILURE );
-
-   glfwWindowHint(GLFW_DEPTH_BITS, 16);
 
    window = glfwCreateWindow( 400, 400, "Boing (classic Amiga demo)", NULL, NULL );
    if (!window)

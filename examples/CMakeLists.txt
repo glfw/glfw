@@ -1,15 +1,17 @@
 
 link_libraries(glfw)
 
+include_directories(${glfw_INCLUDE_DIRS})
+
 if (BUILD_SHARED_LIBS)
-    add_definitions(-DGLFW_DLL)
     link_libraries("${MATH_LIBRARY}")
-else()
-    link_libraries(${glfw_LIBRARIES})
 endif()
 
-include_directories("${GLFW_SOURCE_DIR}/include"
-                    "${GLFW_SOURCE_DIR}/deps")
+if (MSVC)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
+
+include_directories("${GLFW_SOURCE_DIR}/deps")
 
 if (WIN32)
     set(ICON glfw.rc)

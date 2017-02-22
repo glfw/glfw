@@ -1,16 +1,18 @@
 /*!
 
-@page window Window guide
+@page window_guide Window guide
  
 @tableofcontents
 
-This guide introduces the window related functions of GLFW.  There are also
+This guide introduces the window related functions of GLFW.  For details on
+a specific function in this category, see the @ref window.  There are also
 guides for the other areas of GLFW.
 
- - @ref intro
- - @ref context
- - @ref monitor
- - @ref input
+ - @ref intro_guide
+ - @ref context_guide
+ - @ref vulkan_guide
+ - @ref monitor_guide
+ - @ref input_guide
 
 
 @section window_object Window objects
@@ -55,6 +57,10 @@ GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", glfwGetPrimaryMonito
 Full screen windows cover the entire display area of a monitor, have no border
 or decorations.
 
+Windowed mode windows can be made full screen by setting a monitor with @ref
+glfwSetWindowMonitor, and full screen ones can be made windowed by unsetting it
+with the same function.
+
 Each field of the @ref GLFWvidmode structure corresponds to a function parameter
 or window hint and combine to form the _desired video mode_ for that window.
 The supported video mode most closely matching the desired video mode will be
@@ -70,9 +76,12 @@ GLFWvidmode.greenBits   | `GLFW_GREEN_BITS` hint
 GLFWvidmode.blueBits    | `GLFW_BLUE_BITS` hint
 GLFWvidmode.refreshRate | `GLFW_REFRESH_RATE` hint
 
-Once you have a full screen window, you can change its resolution with @ref
-glfwSetWindowSize.  The new video mode will be selected and set the same way as
-the video mode chosen by @ref glfwCreateWindow.
+Once you have a full screen window, you can change its resolution, refresh rate
+and monitor with @ref glfwSetWindowMonitor.  If you just need change its
+resolution you can also call @ref glfwSetWindowSize.  In all cases, the new
+video mode will be selected the same way as the video mode chosen by @ref
+glfwCreateWindow.  If the window has an OpenGL or OpenGL ES context, it will be
+unaffected.
 
 By default, the original video mode of the monitor will be restored and the
 window iconified if it loses input focus, to allow the user to switch back to
@@ -99,6 +108,18 @@ glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
 GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "My Title", monitor, NULL);
 @endcode
+
+This also works for windowed mode windows that are made full screen.
+
+@code
+const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+@endcode
+
+Note that @ref glfwGetVideoMode returns the _current_ video mode of a monitor,
+so if you already have a full screen window on that monitor that you want to
+make windowed full screen, you need to have saved the desktop resolution before.
 
 
 @subsection window_destruction Window destruction
@@ -140,6 +161,7 @@ The following hints are always hard constraints:
 - `GLFW_STEREO`
 - `GLFW_DOUBLEBUFFER`
 - `GLFW_CLIENT_API`
+- `GLFW_CONTEXT_CREATION_API`
 
 The following additional hints are hard constraints when requesting an OpenGL
 context, but are ignored when requesting an OpenGL ES context:
@@ -174,6 +196,9 @@ above other regular windows, also called topmost or always-on-top.  This is
 intended primarily for debugging purposes and cannot be used to implement proper
 full screen windows.  This hint is ignored for full screen windows.
 
+`GLFW_MAXIMIZED` specifies whether the windowed mode window will be maximized
+when created.  This hint is ignored for full screen windows.
+
 
 @subsubsection window_hints_fb Framebuffer related hints
 
@@ -206,8 +231,9 @@ Zero disables multisampling.  `GLFW_DONT_CARE` means the application has no
 preference.
 
 `GLFW_SRGB_CAPABLE` specifies whether the framebuffer should be sRGB capable.
-If supported, the created context will provide `GL_ARB_framebuffer_sRGB` or
-`GL_EXT_framebuffer_sRGB`.
+If supported, a created OpenGL context will support the `GL_FRAMEBUFFER_SRGB`
+enable, also called `GL_FRAMEBUFFER_SRGB_EXT`) for controlling sRGB rendering
+and a created OpenGL ES context will always have sRGB rendering enabled.
 
 `GLFW_DOUBLEBUFFER` specifies whether the framebuffer should be double buffered.
 You nearly always want to use double buffering.  This is a hard constraint.
@@ -223,18 +249,40 @@ This hint is ignored for windowed mode windows.
 @subsubsection window_hints_ctx Context related hints
 
 `GLFW_CLIENT_API` specifies which client API to create the context for.
-Possible values are `GLFW_OPENGL_API` and `GLFW_OPENGL_ES_API`.  This is a hard
-constraint.
+Possible values are `GLFW_OPENGL_API`, `GLFW_OPENGL_ES_API` and `GLFW_NO_API`.
+This is a hard constraint.
+
+`GLFW_CONTEXT_CREATION_API` specifies which context creation API to use to
+create the context.  Possible values are `GLFW_NATIVE_CONTEXT_API` and
+`GLFW_EGL_CONTEXT_API`.  This is a hard constraint.  If no client API is
+requested, this hint is ignored.
+
+@par
+__OS X:__ The EGL API is not available on this platform and requests to use it
+will fail.
+
+@par
+__Wayland, Mir:__ The EGL API _is_ the native context creation API, so this hint
+will have no effect.
+
+@note An OpenGL extension loader library that assumes it knows which context
+creation API is used on a given platform may fail if you change this hint.  This
+can be resolved by having it load via @ref glfwGetProcAddress, which always uses
+the selected API.
+
+@bug On some Linux systems, creating contexts via both the native and EGL APIs
+in a single process will cause the application to segfault.  Stick to one API or
+the other on Linux for now.
 
 `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` specify the client
 API version that the created context must be compatible with.  The exact
 behavior of these hints depend on the requested client API.
 
 @par
-__OpenGL:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are not hard
-constraints, but creation will fail if the OpenGL version of the created context
-is less than the one requested.  It is therefore perfectly safe to use the
-default of version 1.0 for legacy code and you may still get
+__OpenGL:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are
+not hard constraints, but creation will fail if the OpenGL version of the
+created context is less than the one requested.  It is therefore perfectly safe
+to use the default of version 1.0 for legacy code and you will still get
 backwards-compatible contexts of version 3.0 and above when available.
 
 @par
@@ -243,16 +291,16 @@ version, GLFW will attempt to provide this when you ask for a version 1.0
 context, which is the default for these hints.
 
 @par
-__OpenGL ES:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are not hard
-constraints, but creation will fail if the OpenGL ES version of the created
-context is less than the one requested.  Additionally, OpenGL ES 1.x cannot be
-returned if 2.0 or later was requested, and vice versa.  This is because OpenGL
-ES 3.x is backward compatible with 2.0, but OpenGL ES 2.0 is not backward
-compatible with 1.x.
+__OpenGL ES:__ `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR` are
+not hard constraints, but creation will fail if the OpenGL ES version of the
+created context is less than the one requested.  Additionally, OpenGL ES 1.x
+cannot be returned if 2.0 or later was requested, and vice versa.  This is
+because OpenGL ES 3.x is backward compatible with 2.0, but OpenGL ES 2.0 is not
+backward compatible with 1.x.
 
 `GLFW_OPENGL_FORWARD_COMPAT` specifies whether the OpenGL context should be
 forward-compatible, i.e. one where all functionality deprecated in the requested
-version of OpenGL is removed.  This may only be used if the requested OpenGL
+version of OpenGL is removed.  This must only be used if the requested OpenGL
 version is 3.0 or above.  If OpenGL ES is requested, this hint is ignored.
 
 @par
@@ -293,6 +341,23 @@ Context release behaviors are described in detail by the
 [GL_KHR_context_flush_control](https://www.opengl.org/registry/specs/KHR/context_flush_control.txt)
 extension.
 
+`GLFW_CONTEXT_NO_ERROR` specifies whether errors should be generated by the
+context.  If enabled, situations that would have generated errors instead cause
+undefined behavior.
+
+@par
+The no error mode for OpenGL and OpenGL ES is described in detail by the
+[GL_KHR_no_error](https://www.opengl.org/registry/specs/KHR/no_error.txt)
+extension.
+
+@note This hint is experimental in its current state.  There are currently
+(October 2015) no corresponding WGL or GLX extensions.  That makes this hint
+a [hard constraint](@ref window_hints_hard) for those backends, as creation will
+fail if unsupported context flags are requested.  Once the extensions are
+available, they will be required and creation of `GL_KHR_no_error` contexts may
+fail on early drivers where this flag is supported without those extensions
+being listed.
+
 
 @subsubsection window_hints_values Supported and default values
 
@@ -304,6 +369,7 @@ Window hint                     | Default value               | Supported values
 `GLFW_FOCUSED`                  | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 `GLFW_AUTO_ICONIFY`             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 `GLFW_FLOATING`                 | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+`GLFW_MAXIMIZED`                | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 `GLFW_RED_BITS`                 | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 `GLFW_GREEN_BITS`               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 `GLFW_BLUE_BITS`                | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
@@ -320,7 +386,8 @@ Window hint                     | Default value               | Supported values
 `GLFW_STEREO`                   | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 `GLFW_SRGB_CAPABLE`             | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 `GLFW_DOUBLEBUFFER`             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-`GLFW_CLIENT_API`               | `GLFW_OPENGL_API`           | `GLFW_OPENGL_API` or `GLFW_OPENGL_ES_API`
+`GLFW_CLIENT_API`               | `GLFW_OPENGL_API`           | `GLFW_OPENGL_API`, `GLFW_OPENGL_ES_API` or `GLFW_NO_API`
+`GLFW_CONTEXT_CREATION_API`     | `GLFW_NATIVE_CONTEXT_API`   | `GLFW_NATIVE_CONTEXT_API` or `GLFW_EGL_CONTEXT_API`
 `GLFW_CONTEXT_VERSION_MAJOR`    | 1                           | Any valid major version number of the chosen client API
 `GLFW_CONTEXT_VERSION_MINOR`    | 0                           | Any valid minor version number of the chosen client API
 `GLFW_CONTEXT_ROBUSTNESS`       | `GLFW_NO_ROBUSTNESS`        | `GLFW_NO_ROBUSTNESS`, `GLFW_NO_RESET_NOTIFICATION` or `GLFW_LOSE_CONTEXT_ON_RESET`
@@ -400,7 +467,7 @@ glfwSetWindowSize(window, 640, 480);
 @endcode
 
 For full screen windows, the specified size becomes the new resolution of the
-window's *desired video mode*.  The video mode most closely matching the new
+window's desired video mode.  The video mode most closely matching the new
 desired video mode is set immediately.  The window is resized to fit the
 resolution of the set video mode.
 
@@ -488,37 +555,44 @@ example if the window is dragged between a regular monitor and a high-DPI one.
 @subsection window_sizelimits Window size limits
 
 The minimum and maximum size of the client area of a windowed mode window can be
-set with @ref glfwSetWindowSizeLimits.  The user may resize the window to any
-size and aspect ratio within the specified limits, unless the aspect ratio is
-also set.
+enforced with @ref glfwSetWindowSizeLimits.  The user may resize the window to
+any size and aspect ratio within the specified limits, unless the aspect ratio
+is also set.
 
 @code
 glfwSetWindowSizeLimits(window, 200, 200, 400, 400);
 @endcode
 
-To disable size limits for a window, set them to `GLFW_DONT_CARE`.
+To specify only a minimum size or only a maximum one, set the other pair to
+`GLFW_DONT_CARE`.
 
 @code
-glfwSetWindowSizeLimits(window, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE);
+glfwSetWindowSizeLimits(window, 640, 480, GLFW_DONT_CARE, GLFW_DONT_CARE);
 @endcode
 
-The aspect ratio of the client area of a windowed mode window can be set with
-@ref glfwSetWindowAspectRatio.  The user may resize the window freely unless
-size limits are also set, but the size will be constrained to maintain the
-aspect ratio.
+To disable size limits for a window, set them all to `GLFW_DONT_CARE`.
 
-The aspect ratio is specified as a numerator and denominator, corresponding to
-the width and height, respectively.
+The aspect ratio of the client area of a windowed mode window can be enforced
+with @ref glfwSetWindowAspectRatio.  The user may resize the window freely
+unless size limits are also set, but the size will be constrained to maintain
+the aspect ratio.
 
 @code
 glfwSetWindowAspectRatio(window, 16, 9);
 @endcode
 
-To disable aspect ratio for a window, set it to `GLFW_DONT_CARE`.
+The aspect ratio is specified as a numerator and denominator, corresponding to
+the width and height, respectively.  If you want a window to maintain its
+current aspect ratio, simply use its current size as the ratio.
 
 @code
-glfwSetWindowAspectRatio(window, GLFW_DONT_CARE, GLFW_DONT_CARE);
+int width, height;
+glfwGetWindowSize(window, &width, &height);
+glfwSetWindowAspectRatio(window, width, height);
 @endcode
+
+To disable the aspect ratio limit for a window, set both terms to
+`GLFW_DONT_CARE`.
 
 You can have both size limits and aspect ratio set for a window, but the results
 are undefined if they conflict.
@@ -577,7 +651,33 @@ As long as your source file is encoded as UTF-8, you can use any Unicode
 characters directly in the source.
 
 @code
-glfwSetWindowTitle(window, "プラネテス");
+glfwSetWindowTitle(window, "カウボーイビバップ");
+@endcode
+
+If you are using C++11 or C11, you can use a UTF-8 string literal.
+
+@code
+glfwSetWindowTitle(window, u8"This is always a UTF-8 string");
+@endcode
+
+
+@subsection window_icon Window icon
+
+Decorated windows have icons on some platforms.  You can set this icon by
+specifying a list of candidate images with @ref glfwSetWindowIcon.
+
+@code
+GLFWimage images[2];
+images[0] = load_icon("my_icon.png");
+images[1] = load_icon("my_icon_small.png");
+
+glfwSetWindowIcon(window, 2, images);
+@endcode
+
+To revert to the default window icon, pass in an empty image array.
+
+@code
+glfwSetWindowIcon(window, 0, NULL);
 @endcode
 
 
@@ -592,8 +692,31 @@ GLFWmonitor* monitor = glfwGetWindowMonitor(window);
 
 This monitor handle is one of those returned by @ref glfwGetMonitors.
 
-For windowed mode windows, this function returns `NULL`.  This is the
-recommended way to tell full screen windows from windowed mode windows.
+For windowed mode windows, this function returns `NULL`.  This is how to tell
+full screen windows from windowed mode windows.
+
+You can move windows between monitors or between full screen and windowed mode
+with @ref glfwSetWindowMonitor.  When making a window full screen on the same or
+on a different monitor, specify the desired monitor, resolution and refresh
+rate.  The position arguments are ignored.
+
+@code
+const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+@endcode
+
+When making the window windowed, specify the desired position and size.  The
+refresh rate argument is ignored.
+
+@code
+glfwSetWindowMonitor(window, NULL, xpos, ypos, width, height, 0);
+@endcode
+
+This restores any previous window settings such as whether it is decorated,
+floating, resizable, has size or aspect ratio limits, etc..  To restore a window
+that was originally windowed to its original size and position, save these
+before making it full screen and then pass them in as above.
 
 
 @subsection window_iconify Window iconification
@@ -679,6 +802,13 @@ int visible = glfwGetWindowAttrib(window, GLFW_VISIBLE);
 
 @subsection window_focus Window input focus
 
+Windows can be given input focus and brought to the front with @ref
+glfwFocusWindow.
+
+@code
+glfwFocusWindow(window);
+@endcode
+
 If you wish to be notified when a window gains or loses input focus, whether by
 the user, system or your own code, set a focus callback.
 
@@ -759,6 +889,9 @@ same name.
 `GLFW_ICONIFIED` indicates whether the specified window is iconified, whether by
 the user or with @ref glfwIconifyWindow.
 
+`GLFW_MAXIMIZED` indicates whether the specified window is maximized, whether by
+the user or with @ref glfwMaximizeWindow.
+
 `GLFW_VISIBLE` indicates whether the specified window is visible.  Window
 visibility can be controlled with @ref glfwShowWindow and @ref glfwHideWindow
 and initial visibility is controlled by the [window hint](@ref window_hints_wnd)
@@ -780,7 +913,11 @@ topmost or always-on-top.  This is controlled by the
 @subsubsection window_attribs_ctx Context related attributes
 
 `GLFW_CLIENT_API` indicates the client API provided by the window's context;
-either `GLFW_OPENGL_API` or `GLFW_OPENGL_ES_API`.
+either `GLFW_OPENGL_API`, `GLFW_OPENGL_ES_API` or `GLFW_NO_API`.
+
+`GLFW_CONTEXT_CREATION_API` indicates the context creation API used to create
+the window's context; either `GLFW_NATIVE_CONTEXT_API` or
+`GLFW_EGL_CONTEXT_API`.
 
 `GLFW_CONTEXT_VERSION_MAJOR`, `GLFW_CONTEXT_VERSION_MINOR` and
 `GLFW_CONTEXT_REVISION` indicate the client API version of the window's context.
@@ -805,9 +942,9 @@ window's context supports robustness, or `GLFW_NO_ROBUSTNESS` otherwise.
 
 @subsubsection window_attribs_fb Framebuffer related attributes
 
-The attributes of the default framebuffer (i.e. the framebuffer attached to the
-window) are not provided by this function but can be queried with both OpenGL
-and OpenGL ES.
+GLFW does not expose attributes of the default framebuffer (i.e. the framebuffer
+attached to the window) as these can be queried directly with either OpenGL,
+OpenGL ES or Vulkan.
 
 If you are using version 3.0 or later of OpenGL or OpenGL ES, the
 `glGetFramebufferAttachmentParameteriv` function can be used to retrieve the
@@ -829,8 +966,8 @@ Stencil bits | `GL_STENCIL_BITS` | `GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE`
 MSAA samples | `GL_SAMPLES`      | _Not provided by this function_
 
 When calling `glGetFramebufferAttachmentParameteriv`, the red, green, blue and
-alpha sizes can be queried from the `GL_BACK_LEFT`, while the depth and stencil
-sizes can be queried from the `GL_DEPTH` and `GL_STENCIL` attachments,
+alpha sizes are queried from the `GL_BACK_LEFT`, while the depth and stencil
+sizes are queried from the `GL_DEPTH` and `GL_STENCIL` attachments,
 respectively.
 
 

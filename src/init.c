@@ -2,7 +2,7 @@
 // GLFW 3.2 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -65,16 +65,18 @@ static const char* getErrorString(int error)
         case GLFW_OUT_OF_MEMORY:
             return "Out of memory";
         case GLFW_API_UNAVAILABLE:
-            return "The requested client API is unavailable";
+            return "The requested API is unavailable";
         case GLFW_VERSION_UNAVAILABLE:
-            return "The requested client API version is unavailable";
+            return "The requested API version is unavailable";
         case GLFW_PLATFORM_ERROR:
             return "A platform-specific error occurred";
         case GLFW_FORMAT_UNAVAILABLE:
             return "The requested format is unavailable";
+        case GLFW_NO_WINDOW_CONTEXT:
+            return "The specified window has no context";
+        default:
+            return "ERROR: UNKNOWN GLFW ERROR";
     }
-
-    return "ERROR: UNKNOWN ERROR TOKEN PASSED TO glfwErrorString";
 }
 
 
@@ -131,6 +133,8 @@ GLFWAPI int glfwInit(void)
     _glfw.monitors = _glfwPlatformGetMonitors(&_glfw.monitorCount);
     _glfwInitialized = GLFW_TRUE;
 
+    _glfw.timerOffset = _glfwPlatformGetTimerValue();
+
     // Not all window hints have zero as their default value
     glfwDefaultWindowHints();
 
@@ -158,6 +162,8 @@ GLFWAPI void glfwTerminate(void)
         if (monitor->originalRamp.size)
             _glfwPlatformSetGammaRamp(monitor, &monitor->originalRamp);
     }
+
+    _glfwTerminateVulkan();
 
     _glfwFreeMonitors(_glfw.monitors, _glfw.monitorCount);
     _glfw.monitors = NULL;

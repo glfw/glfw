@@ -1,15 +1,29 @@
 # GLFW
 
+[![Build status](https://travis-ci.org/glfw/glfw.svg?branch=master)](https://travis-ci.org/glfw/glfw)
+[![Build status](https://ci.appveyor.com/api/projects/status/0kf0ct9831i5l6sp/branch/master?svg=true)](https://ci.appveyor.com/project/elmindreda/glfw)
+[![Coverity Scan](https://scan.coverity.com/projects/4884/badge.svg)](https://scan.coverity.com/projects/glfw-glfw)
+
 ## Introduction
 
-GLFW is a free, Open Source, multi-platform library for OpenGL and OpenGL ES
+GLFW is an Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan
 application development.  It provides a simple, platform-independent API for
-creating windows and contexts, reading input, handling events, etc.
+creating windows, contexts and surfaces, reading input, handling events, etc.
 
-Version 3.2 is _not yet described_.
+GLFW is licensed under the [zlib/libpng
+license](https://opensource.org/licenses/Zlib).
+
+This is version 3.2.1, which adds support for statically linking the Vulkan
+loader and fixes for a number of bugs that together affect all supported
+platforms.
+
+See the [downloads](http://www.glfw.org/download.html) page for details and
+files, or fetch the `latest` branch, which always points to the latest stable
+release.  Each release starting with 3.0 also has a corresponding [annotated
+tag](https://github.com/glfw/glfw/releases) with source and binary archives.
 
 If you are new to GLFW, you may find the
-[introductory tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW
+[tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW
 3 useful.  If you have used GLFW 2 in the past, there is a
 [transition guide](http://www.glfw.org/docs/latest/moving.html) for moving to
 the GLFW 3 API.
@@ -17,38 +31,47 @@ the GLFW 3 API.
 
 ## Compiling GLFW
 
-See the [Compiling GLFW](http://www.glfw.org/docs/latest/compile.html) guide in
-the GLFW documentation.
+GLFW itself requires only the headers and libraries for your window system.  It
+does not need the headers for any context creation API (WGL, GLX, EGL, NSGL) or
+rendering API (OpenGL, OpenGL ES, Vulkan) to enable support for them.
+
+GLFW supports compilation on Windows with Visual C++ 2010 and later, MinGW and
+MinGW-w64, on OS X with Clang and on Linux and other Unix-like systems with GCC
+and Clang.  It will likely compile in other environments as well, but this is
+not regularly tested.
+
+There are also [pre-compiled Windows
+binaries](http://www.glfw.org/download.html) available for all compilers
+supported on that platform.
+
+See the [compilation guide](http://www.glfw.org/docs/latest/compile.html) in the
+documentation for more information.
 
 
 ## Using GLFW
 
-See the
-[Building programs that use GLFW](http://www.glfw.org/docs/latest/build.html)
-guide in the GLFW documentation.
+See the [building application guide](http://www.glfw.org/docs/latest/build.html)
+guide in the documentation for more information.
 
 
-## Reporting bugs
+## System requirements
 
-Bugs are reported to our [issue tracker](https://github.com/glfw/glfw/issues).
-Please always include the name and version of the OS where the bug occurs and
-the version of GLFW used.  If you have cloned it, include the commit ID used.
+GLFW supports Windows XP and later, OS X 10.7 Lion and later, and Linux and
+other Unix-like systems with the X Window System.  Experimental implementations
+for the Wayland protocol and the Mir display server are available but not yet
+officially supported.
 
-If it's a build issue, please also include the build log and the name and
-version of your development environment.
-
-If it's a context creation issue, please also include the make and model of your
-graphics card and the version of your driver.
-
-This will help both us and other people experiencing the same bug.
+See the [compatibility guide](http://www.glfw.org/docs/latest/compat.html)
+in the documentation for more information.
 
 
 ## Dependencies
 
-GLFW bundles a number of dependencies in the `deps/` directory.
+GLFW itself depends only on the headers and libraries for your window system.
 
- - [Khronos extension headers](https://www.opengl.org/registry/) for API
-   extension symbols used by GLFW
+The examples and test programs depend on a number of tiny libraries.  These are
+located in the `deps/` directory.
+
  - [getopt\_port](https://github.com/kimgr/getopt_port/) for examples
    with command-line options
  - [TinyCThread](https://github.com/tinycthread/tinycthread) for threaded
@@ -57,35 +80,70 @@ GLFW bundles a number of dependencies in the `deps/` directory.
    [glad](https://github.com/Dav1dde/glad) for examples using modern OpenGL
  - [linmath.h](https://github.com/datenwolf/linmath.h) for linear algebra in
    examples
+ - [Vulkan headers](https://www.khronos.org/registry/vulkan/) for Vulkan tests
+
+The Vulkan example additionally requires the Vulkan SDK to be installed, or it
+will not be included in the build.
+
+The documentation is generated with [Doxygen](http://doxygen.org/).  If CMake
+does not find Doxygen, the documentation will not be generated when you build.
+
+
+## Reporting bugs
+
+Bugs are reported to our [issue tracker](https://github.com/glfw/glfw/issues).
+Please check the [contribution
+guide](https://github.com/glfw/glfw/blob/master/.github/CONTRIBUTING.md) for
+information on what to include when reporting a bug.
 
 
 ## Changelog
 
- - Added `glfwSetWindowSizeLimits` and `glfwSetWindowAspectRatio` for setting
-   absolute and relative window size limits
- - Added `GLFW_TRUE` and `GLFW_FALSE` as client API independent boolean values
- - Removed dependency on external OpenGL or OpenGL ES headers
- - [WGL] Removed dependency on external WGL headers
- - [GLX] Removed dependency on external GLX headers
- - [EGL] Removed dependency on external EGL headers
+ - Added on-demand loading of Vulkan and context creation API libraries
+ - Added `_GLFW_VULKAN_STATIC` build macro to make the library use the Vulkan
+   loader linked statically into the application (#820)
+ - Bugfix: Single compilation unit builds failed due to naming conflicts (#783)
+ - Bugfix: The range checks for `glfwSetCursorPos` used the wrong minimum (#773)
+ - Bugfix: Defining `GLFW_INCLUDE_VULKAN` when compiling the library did not
+           fail with the expected error message (#823)
+ - Bugfix: Inherited value of `CMAKE_MODULE_PATH` was clobbered (#822)
+ - [Win32] Bugfix: `glfwSetClipboardString` created an unnecessary intermediate
+                   copy of the string
+ - [Win32] Bugfix: Examples failed to build on Visual C++ 2010 due to C99 in
+                   `linmath.h` (#785)
+ - [Win32] Bugfix: The first shown window ignored the `GLFW_MAXIMIZED` hint
+                   when the process was provided a `STARTUPINFO` (#780)
+ - [Cocoa] Bugfix: Event processing would segfault on some machines due to
+                   a previous distributed notification listener not being fully
+                   removed (#817,#826)
+ - [Cocoa] Bugfix: Some include statements were duplicated (#838)
+ - [X11] Bugfix: Window size limits were ignored if the minimum or maximum size
+                 was set to `GLFW_DONT_CARE` (#805)
+ - [X11] Bugfix: Input focus was set before window was visible, causing
+                 `BadMatch` on some non-reparenting WMs (#789,#798)
+ - [X11] Bugfix: `glfwGetWindowPos` and `glfwSetWindowPos` operated on the
+                 window frame instead of the client area (#800)
+ - [WGL] Added reporting of errors from `WGL_ARB_create_context` extension
+ - [GLX] Bugfix: Dynamically loaded entry points were not verified
+ - [EGL] Added `lib` prefix matching between EGL and OpenGL ES library binaries
+ - [EGL] Bugfix: Dynamically loaded entry points were not verified
 
 
 ## Contact
 
-The official website for GLFW is [glfw.org](http://www.glfw.org/).  There you
-can find the latest version of GLFW, as well as news, documentation and other
-information about the project.
+On [glfw.org](http://www.glfw.org/) you can find the latest version of GLFW, as
+well as news, documentation and other information about the project.
 
 If you have questions related to the use of GLFW, we have a
-[support forum](https://sourceforge.net/p/glfw/discussion/247562/), and the IRC
-channel `#glfw` on [Freenode](http://freenode.net/).
+[forum](http://discourse.glfw.org/), and the `#glfw` IRC channel on
+[Freenode](http://freenode.net/).
 
 If you have a bug to report, a patch to submit or a feature you'd like to
 request, please file it in the
 [issue tracker](https://github.com/glfw/glfw/issues) on GitHub.
 
 Finally, if you're interested in helping out with the development of GLFW or
-porting it to your favorite platform, join us on GitHub or IRC.
+porting it to your favorite platform, join us on the forum, GitHub or IRC.
 
 
 ## Acknowledgements
@@ -112,6 +170,8 @@ skills.
  - Olivier Delannoy
  - Paul R. Deppe
  - Michael Dickens
+ - Роман Донченко
+ - Mario Dorn
  - Jonathan Dummer
  - Ralph Eastwood
  - Siavash Eliasi
@@ -126,12 +186,16 @@ skills.
  - heromyth
  - Lucas Hinderberger
  - Paul Holden
+ - Warren Hu
+ - IntellectualKitty
  - Aaron Jacobs
+ - Erik S. V. Jansson
  - Toni Jovanoski
  - Arseny Kapoulkine
  - Osman Keskin
  - Cameron King
  - Peter Knut
+ - Christoph Kubisch
  - Eric Larson
  - Quinten Lansu
  - Robin Leffmann
@@ -142,6 +206,7 @@ skills.
  - Martins Mozeiko
  - Tristam MacDonald
  - Hans Mackowiak
+ - Zbigniew Mandziejewicz
  - Kyle McDonald
  - David Medlock
  - Bryce Mehring
@@ -161,9 +226,11 @@ skills.
  - Peoro
  - Braden Pellett
  - Arturo J. Pérez
+ - Orson Peters
  - Emmanuel Gil Peyrot
  - Cyril Pichard
  - Pieroman
+ - Philip Rideout
  - Jorge Rodriguez
  - Ed Ropple
  - Aleksey Rybalkin
@@ -174,9 +241,11 @@ skills.
  - SephiRok
  - Steve Sexton
  - Systemcluster
+ - Yoshiki Shibukawa
  - Dmitri Shuralyov
  - Daniel Skorupski
  - Bradley Smith
+ - Patrick Snape
  - Julian Squires
  - Johannes Stein
  - Justin Stoecker
@@ -184,14 +253,17 @@ skills.
  - Nathan Sweet
  - TTK-Bandit
  - Sergey Tikhomirov
- - A. Tombs
+ - Arthur Tombs
+ - Ioannis Tsakpinis
  - Samuli Tuomola
  - urraka
  - Jari Vetoniemi
  - Ricardo Vieira
+ - Nicholas Vitovitch
  - Simon Voordouw
  - Torsten Walluhn
  - Patrick Walton
+ - Xo Wang
  - Jay Weisskopf
  - Frank Wille
  - yuriks

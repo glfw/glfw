@@ -2,14 +2,14 @@
 link_libraries(glfw)
 
 if (BUILD_SHARED_LIBS)
-    add_definitions(-DGLFW_DLL)
     link_libraries("${MATH_LIBRARY}")
-else()
-    link_libraries(${glfw_LIBRARIES})
 endif()
 
-include_directories("${GLFW_SOURCE_DIR}/include"
-                    "${GLFW_SOURCE_DIR}/deps")
+if (MSVC)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
+
+include_directories("${GLFW_SOURCE_DIR}/deps")
 
 set(GLAD "${GLFW_SOURCE_DIR}/deps/glad/glad.h"
          "${GLFW_SOURCE_DIR}/deps/glad.c")
@@ -30,29 +30,29 @@ add_executable(reopen reopen.c ${GLAD})
 add_executable(cursor cursor.c ${GLAD})
 
 add_executable(empty WIN32 MACOSX_BUNDLE empty.c ${TINYCTHREAD} ${GLAD})
-set_target_properties(empty PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Empty Event")
-
+add_executable(icon WIN32 MACOSX_BUNDLE icon.c ${GLAD})
 add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c ${GLAD})
-set_target_properties(sharing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Sharing")
-
 add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c ${GETOPT} ${GLAD})
-set_target_properties(tearing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Tearing")
-
 add_executable(threads WIN32 MACOSX_BUNDLE threads.c ${TINYCTHREAD} ${GLAD})
-set_target_properties(threads PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Threads")
-
+add_executable(timeout WIN32 MACOSX_BUNDLE timeout.c ${GLAD})
 add_executable(title WIN32 MACOSX_BUNDLE title.c ${GLAD})
-set_target_properties(title PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Title")
-
-add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GLAD})
-set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
+add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GETOPT} ${GLAD})
 
 target_link_libraries(empty "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 
-set(WINDOWS_BINARIES empty sharing tearing threads title windows)
+set(WINDOWS_BINARIES empty icon sharing tearing threads timeout title windows)
 set(CONSOLE_BINARIES clipboard events msaa gamma glfwinfo
                      iconify joysticks monitors reopen cursor)
+
+if (VULKAN_FOUND)
+    add_executable(vulkan WIN32 vulkan.c ${ICON})
+    target_include_directories(vulkan PRIVATE "${VULKAN_INCLUDE_DIR}")
+    if (NOT GLFW_VULKAN_STATIC)
+        target_link_libraries(vulkan "${VULKAN_LIBRARY}")
+    endif()
+    list(APPEND WINDOWS_BINARIES vulkan)
+endif()
 
 set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
                       FOLDER "GLFW3/Tests")
@@ -64,6 +64,14 @@ if (MSVC)
 endif()
 
 if (APPLE)
+    set_target_properties(empty PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Empty Event")
+    set_target_properties(sharing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Sharing")
+    set_target_properties(tearing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Tearing")
+    set_target_properties(threads PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Threads")
+    set_target_properties(timeout PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Timeout")
+    set_target_properties(title PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Title")
+    set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
+
     set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
                           MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}
                           MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION_FULL}

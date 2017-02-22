@@ -1,18 +1,21 @@
 /*! 
 
-@page intro Introduction to the API
+@page intro_guide Introduction to the API
  
 @tableofcontents
 
 This guide introduces the basic concepts of GLFW and describes initialization,
 error handling and API guarantees and limitations.  For a broad but shallow
-tutorial, see @ref quick instead.  There are also guides for the other areas of
-GLFW.
+tutorial, see @ref quick_guide instead.  For details on a specific function in
+this category, see the @ref init.
 
- - @ref window
- - @ref context
- - @ref monitor
- - @ref input
+There are also guides for the other areas of GLFW.
+
+ - @ref window_guide
+ - @ref context_guide
+ - @ref vulkan_guide
+ - @ref monitor_guide
+ - @ref input_guide
 
 
 @section intro_init Initialization and termination
@@ -31,8 +34,8 @@ successfully initialized, and only from the main thread.
  - @ref glfwInit
  - @ref glfwTerminate
 
-Calling any other function before that time will cause a @ref
-GLFW_NOT_INITIALIZED error. 
+Calling any other function before successful initialization will cause a @ref
+GLFW_NOT_INITIALIZED error.
 
 
 @subsection intro_init_init Initializing GLFW
@@ -47,13 +50,15 @@ if (!glfwInit())
 }
 @endcode
 
-If any part of initialization fails, all remaining bits are terminated as if
-@ref glfwTerminate was called.  The library only needs to be initialized once
-and additional calls to an already initialized library will simply return
+If any part of initialization fails, any parts that succeeded are terminated as
+if @ref glfwTerminate had been called.  The library only needs to be initialized
+once and additional calls to an already initialized library will simply return
 `GLFW_TRUE` immediately.
 
 Once the library has been successfully initialized, it should be terminated
-before the application exits.
+before the application exits.  Modern systems are very good at freeing resources
+allocated by programs that simply exit, but GLFW sometimes has to change global
+system settings and these might not be restored without termination.
 
 
 @subsection intro_init_terminate Terminating GLFW
@@ -67,7 +72,7 @@ glfwTerminate();
 
 This will destroy any remaining window, monitor and cursor objects, restore any
 modified gamma ramps, re-enable the screensaver if it had been disabled and free
-any resources allocated by GLFW.
+any other resources allocated by GLFW.
 
 Once the library is terminated, it is as if it had never been initialized and
 you will need to initialize it again before being able to use GLFW.  If the
@@ -184,7 +189,7 @@ releases.
 @subsection reentrancy Reentrancy
 
 GLFW event processing and object creation and destruction are not reentrant.
-This means that the following functions may not be called from any callback
+This means that the following functions must not be called from any callback
 function:
 
  - @ref glfwCreateWindow
@@ -194,6 +199,7 @@ function:
  - @ref glfwDestroyCursor
  - @ref glfwPollEvents
  - @ref glfwWaitEvents
+ - @ref glfwWaitEventsTimeout
  - @ref glfwTerminate
 
 These functions may be made reentrant in future minor or patch releases, but
@@ -202,10 +208,10 @@ functions not on this list will not be made non-reentrant.
 
 @subsection thread_safety Thread safety
 
-Most GLFW functions may only be called from the main thread, but some may be
-called from any thread.  However, no GLFW function may be called from any other
-thread until GLFW has been successfully initialized on the main thread,
-including functions that may called before initialization.
+Most GLFW functions must only be called from the main thread, but some may be
+called from any thread.  However, no GLFW function may be called from any thread
+but the main thread until GLFW has been successfully initialized, including
+functions that may called before initialization.
 
 The reference documentation for every GLFW function states whether it is limited
 to the main thread.                                                        
@@ -239,10 +245,18 @@ may be called from any thread:
  - @ref glfwExtensionSupported
  - @ref glfwGetProcAddress
 
-The timer may be accessed from any thread, but this is not synchronized by GLFW.
-The following timer related functions may be called from any thread:        
+The raw timer may be queried from any thread.  The following raw timer related
+functions may be called from any thread:
+
+ - @ref glfwGetTimerFrequency
+ - @ref glfwGetTimerValue
+
+The regular timer may be used from any thread, but the reading and writing of
+the timer offset is not synchronized by GLFW.  The following timer related
+functions may be called from any thread:
 
  - @ref glfwGetTime
+ - @ref glfwSetTime
 
 Library version information may be queried from any thread.  The following
 version related functions may be called from any thread:
@@ -250,20 +264,30 @@ version related functions may be called from any thread:
  - @ref glfwGetVersion
  - @ref glfwGetVersionString
 
+Vulkan objects may be created and information queried from any thread.  The
+following Vulkan related functions may be called from any thread:
+
+ - @ref glfwVulkanSupported
+ - @ref glfwGetRequiredInstanceExtensions
+ - @ref glfwGetInstanceProcAddress
+ - @ref glfwGetPhysicalDevicePresentationSupport
+ - @ref glfwCreateWindowSurface
+
 GLFW uses no synchronization objects internally except for thread-local storage
 to keep track of the current context for each thread.  Synchronization is left
 to the application.
 
 Functions that may currently be called from any thread will always remain so,
-but functions that are currently limited to the main may be updated to allow
-calls from any thread in future releases.
+but functions that are currently limited to the main thread may be updated to
+allow calls from any thread in future releases.
 
 
 @subsection compatibility Version compatibility
 
-GLFW guarantees binary backward compatibility with earlier minor versions of the
-API.  This means that you can drop in a newer version of the GLFW DLL / shared
-library / dynamic library and existing applications will continue to run.
+GLFW guarantees source and binary backward compatibility with earlier minor
+versions of the API.  This means that you can drop in a newer version of the
+library and existing programs will continue to compile and existing binaries
+will continue to run.
 
 Once a function or constant has been added, the signature of that function or
 value of that constant will remain unchanged until the next major version of

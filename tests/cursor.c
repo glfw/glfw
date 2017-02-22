@@ -1,6 +1,6 @@
 //========================================================================
 // Cursor & input mode tests
-// Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -47,7 +47,7 @@
 static double cursor_x;
 static double cursor_y;
 static int swap_interval = 1;
-static int wait_events = GLFW_FALSE;
+static int wait_events = GLFW_TRUE;
 static int animate_cursor = GLFW_FALSE;
 static int track_cursor = GLFW_FALSE;
 static GLFWcursor* standard_cursors[6];
@@ -195,6 +195,7 @@ int main(void)
     int i;
     GLFWwindow* window;
     GLFWcursor* star_cursors[CURSOR_FRAME_COUNT];
+    GLFWcursor* current_frame = NULL;
 
     glfwSetErrorCallback(error_callback);
 
@@ -279,11 +280,22 @@ int main(void)
         if (animate_cursor)
         {
             const int i = (int) (glfwGetTime() * 30.0) % CURSOR_FRAME_COUNT;
-            glfwSetCursor(window, star_cursors[i]);
+            if (current_frame != star_cursors[i])
+            {
+                glfwSetCursor(window, star_cursors[i]);
+                current_frame = star_cursors[i];
+            }
         }
+        else
+            current_frame = NULL;
 
         if (wait_events)
-            glfwWaitEvents();
+        {
+            if (animate_cursor)
+                glfwWaitEventsTimeout(1.0 / 30.0);
+            else
+                glfwWaitEvents();
+        }
         else
             glfwPollEvents();
 

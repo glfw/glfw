@@ -130,6 +130,8 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     _GLFWwindow* previous;
 
     assert(title != NULL);
+    assert(width >= 0);
+    assert(height >= 0);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
@@ -508,6 +510,8 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* handle, int width, int height)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
     assert(window != NULL);
+    assert(width >= 0);
+    assert(height >= 0);
 
     _GLFW_REQUIRE_INIT();
 
@@ -566,6 +570,8 @@ GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* handle, int numer, int denom)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
     assert(window != NULL);
+    assert(numer != 0);
+    assert(denom != 0);
 
     _GLFW_REQUIRE_INIT();
 
@@ -808,6 +814,8 @@ GLFWAPI void glfwSetWindowMonitor(GLFWwindow* wh,
     _GLFWwindow* window = (_GLFWwindow*) wh;
     _GLFWmonitor* monitor = (_GLFWmonitor*) mh;
     assert(window != NULL);
+    assert(width >= 0);
+    assert(height >= 0);
 
     _GLFW_REQUIRE_INIT();
 
@@ -961,6 +969,9 @@ GLFWAPI void glfwWaitEvents(void)
 GLFWAPI void glfwWaitEventsTimeout(double timeout)
 {
     _GLFW_REQUIRE_INIT();
+    assert(timeout == timeout);
+    assert(timeout >= 0.0);
+    assert(timeout <= DBL_MAX);
 
     if (timeout != timeout || timeout < 0.0 || timeout > DBL_MAX)
     {

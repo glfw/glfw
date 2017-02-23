@@ -234,6 +234,8 @@ GLFWAPI int glfwVulkanSupported(void)
 
 GLFWAPI const char** glfwGetRequiredInstanceExtensions(uint32_t* count)
 {
+    assert(count != NULL);
+
     *count = 0;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
@@ -252,6 +254,7 @@ GLFWAPI GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance,
                                               const char* procname)
 {
     GLFWvkproc proc;
+    assert(procname != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
@@ -277,6 +280,9 @@ GLFWAPI int glfwGetPhysicalDevicePresentationSupport(VkInstance instance,
                                                      VkPhysicalDevice device,
                                                      uint32_t queuefamily)
 {
+    assert(instance != VK_NULL_HANDLE);
+    assert(device != VK_NULL_HANDLE);
+
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
 
     if (!_glfwInitVulkan(_GLFW_REQUIRE_LOADER))
@@ -300,6 +306,7 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance,
                                          VkSurfaceKHR* surface)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(instance != VK_NULL_HANDLE);
     assert(window != NULL);
     assert(surface != NULL);
 

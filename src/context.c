@@ -638,7 +638,6 @@ GLFWAPI void glfwSwapInterval(int interval)
 GLFWAPI int glfwExtensionSupported(const char* extension)
 {
     _GLFWwindow* window;
-
     assert(extension != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);

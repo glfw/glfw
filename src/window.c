@@ -445,7 +445,6 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* handle, const char* title)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
     assert(window != NULL);
-
     assert(title != NULL);
 
     _GLFW_REQUIRE_INIT();

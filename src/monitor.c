@@ -262,6 +262,7 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 GLFWAPI GLFWmonitor** glfwGetMonitors(int* count)
 {
     assert(count != NULL);
+
     *count = 0;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);

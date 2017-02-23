@@ -132,13 +132,11 @@ int main(int argc, char** argv)
             if (nk_slider_float(nk, 0.1f, &gamma_value, 5.f, 0.1f))
                 glfwSetGamma(monitor, gamma_value);
             nk_labelf(nk, NK_TEXT_LEFT, "%0.1f", gamma_value);
-            nk_layout_row_end(nk);
 
             nk_layout_row_dynamic(nk, height - 60.f, 3);
             chart_ramp_array(nk, nk_rgb(255, 0, 0), ramp->size, ramp->red);
             chart_ramp_array(nk, nk_rgb(0, 255, 0), ramp->size, ramp->green);
             chart_ramp_array(nk, nk_rgb(0,0,  255), ramp->size, ramp->blue);
-            nk_layout_row_end(nk);
         }
 
         nk_end(nk);

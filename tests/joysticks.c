@@ -192,8 +192,6 @@ int main(void)
                         nk_select_label(nk, name, NK_TEXT_CENTERED, buttons[j]);
                     }
                 }
-
-                nk_layout_row_end(nk);
             }
 
             nk_end(nk);

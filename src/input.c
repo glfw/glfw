@@ -35,6 +35,17 @@
 // Internal key state used for sticky keys
 #define _GLFW_STICK 3
 
+// Set touch input for the specified window
+//
+static void setTouchInput(_GLFWwindow* window, int enabled)
+{
+	if (window->touchInput == enabled)
+		return;
+
+	_glfwPlatformSetTouchInput(window, enabled);
+
+	window->touchInput = enabled;
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                         GLFW event API                       //////
@@ -124,6 +135,12 @@ void _glfwInputDrop(_GLFWwindow* window, int count, const char** paths)
         window->callbacks.drop((GLFWwindow*) window, count, paths);
 }
 
+void _glfwInputTouch(_GLFWwindow* window, GLFWtouch* touchPoints, int count)
+{
+	if (window->callbacks.touch)
+		window->callbacks.touch((GLFWwindow*)window, touchPoints, count);
+}
+
 void _glfwInputJoystick(int jid, int event)
 {
     if (_glfw.callbacks.joystick)
@@ -205,6 +222,8 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* handle, int mode)
             return window->stickyKeys;
         case GLFW_STICKY_MOUSE_BUTTONS:
             return window->stickyMouseButtons;
+        case GLFW_TOUCH:
+            return window->touchInput;
         default:
             _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode %i", mode);
             return 0;
@@ -687,6 +706,15 @@ GLFWAPI const char* glfwGetJoystickName(int jid)
         return NULL;
 
     return _glfw.joysticks[jid].name;
+}
+
+GLFWAPI GLFWtouchfun glfwSetTouchCallback(GLFWwindow* handle, GLFWtouchfun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(window->callbacks.touch, cbfun);
+	setTouchInput(window, 1);
+    return cbfun;
 }
 
 GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun cbfun)

@@ -160,6 +160,34 @@ typedef enum PROCESS_DPI_AWARENESS
  #define DIDFT_OPTIONAL	0x80000000
 #endif
 
+#if WINVER < 0x0601
+
+#define WM_TOUCH 0x0240
+
+DECLARE_HANDLE(HTOUCHINPUT);
+
+typedef struct tagTOUCHINPUT
+{
+    LONG x;
+    LONG y;
+    HANDLE hSource;
+    DWORD dwID;
+    DWORD dwFlags;
+    DWORD dwMask;
+    DWORD dwTime;
+    ULONG_PTR dwExtraInfo;
+    DWORD cxContact;
+    DWORD cyContext;
+} TOUCHINPUT, *PTOUCHINPUT;
+
+#define TOUCH_COORD_TO_PIXEL(x) ((x) / 100)
+
+#define TOUCHEVENTF_MOVE    0x0001
+#define TOUCHEVENTF_DOWN    0x0002
+#define TOUCHEVENTF_UP      0x0004
+
+#endif /*WINVER < 0x0601*/
+
 // winmm.dll function pointer typedefs
 typedef DWORD (WINAPI * PFN_timeGetTime)(void);
 #define timeGetTime _glfw.win32.winmm.GetTime
@@ -177,8 +205,16 @@ typedef HRESULT (WINAPI * PFN_DirectInput8Create)(HINSTANCE,DWORD,REFIID,LPVOID*
 // user32.dll function pointer typedefs
 typedef BOOL (WINAPI * PFN_SetProcessDPIAware)(void);
 typedef BOOL (WINAPI * PFN_ChangeWindowMessageFilterEx)(HWND,UINT,DWORD,PCHANGEFILTERSTRUCT);
+typedef BOOL (WINAPI * PFN_GetTouchInputInfo)(HTOUCHINPUT,UINT,PTOUCHINPUT,int);
+typedef BOOL (WINAPI * PFN_CloseTouchInputHandle)(HTOUCHINPUT);
+typedef BOOL (WINAPI * PFN_RegisterTouchWindow)(HWND,LONG);
+typedef BOOL (WINAPI * PFN_UnregisterTouchWindow)(HWND);
 #define _glfw_SetProcessDPIAware _glfw.win32.user32.SetProcessDPIAware
 #define _glfw_ChangeWindowMessageFilterEx _glfw.win32.user32.ChangeWindowMessageFilterEx
+#define _glfw_GetTouchInputInfo     _glfw.win32.user32.GetTouchInputInfo
+#define _glfw_CloseTouchInputHandle _glfw.win32.user32.CloseTouchInputHandle
+#define _glfw_RegisterTouchWindow   _glfw.win32.user32.RegisterTouchWindow
+#define _glfw_UnregisterTouchWindow _glfw.win32.user32.UnregisterTouchWindow
 
 // dwmapi.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_DwmIsCompositionEnabled)(BOOL*);
@@ -279,8 +315,17 @@ typedef struct _GLFWlibraryWin32
         HINSTANCE                       instance;
         PFN_SetProcessDPIAware          SetProcessDPIAware;
         PFN_ChangeWindowMessageFilterEx ChangeWindowMessageFilterEx;
+		PFN_GetTouchInputInfo     GetTouchInputInfo;
+        PFN_CloseTouchInputHandle CloseTouchInputHandle;
+        PFN_RegisterTouchWindow   RegisterTouchWindow;
+        PFN_UnregisterTouchWindow UnregisterTouchWindow;
     } user32;
 
+    struct {
+        GLFWbool        available;
+    } touch;
+
+    // dwmapi.dll
     struct {
         HINSTANCE                       instance;
         PFN_DwmIsCompositionEnabled     DwmIsCompositionEnabled;

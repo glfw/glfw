@@ -241,6 +241,7 @@ skills.
  - Christoph Kubisch
  - Konstantin Käfer
  - Eric Larson
+ - Quinten Lansu
  - Robin Leffmann
  - Glenn Lewis
  - Shane Liesegang

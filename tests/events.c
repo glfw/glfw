@@ -50,6 +50,7 @@ typedef struct
     GLFWwindow* window;
     int number;
     int closeable;
+    int touch;
 } Slot;
 
 static void usage(void)
@@ -203,6 +204,8 @@ static const char* get_action_name(int action)
             return "released";
         case GLFW_REPEAT:
             return "repeated";
+        case GLFW_MOVE:
+            return "moved";
     }
 
     return "caused unknown action";
@@ -393,6 +396,15 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
     switch (key)
     {
+        case GLFW_KEY_T:
+        {
+            slot->touch = !slot->touch;
+            glfwSetInputMode(window, GLFW_TOUCH, slot->touch);
+
+            printf("(( touch %s ))\n", slot->touch ? "enabled" : "disabled");
+            break;
+        }
+
         case GLFW_KEY_C:
         {
             slot->closeable = !slot->closeable;
@@ -482,6 +494,20 @@ static void joystick_callback(int jid, int event)
     }
 }
 
+static void touch_callback(GLFWwindow* window, GLFWtouch* touchPoints, int count)
+{
+	printf("Priting info about all touch points");
+	int i;
+	for (i = 0; i < count; ++i) {
+		printf("%08x at %0.3f: Touch %i %s at position %0.3f %0.3f\n",
+			counter++,
+			glfwGetTime(),
+			touchPoints[i].id,
+			get_action_name(touchPoints[i].action),
+			touchPoints[i].x, touchPoints[i].y);
+	}
+}
+
 int main(int argc, char** argv)
 {
     Slot* slots;
@@ -553,6 +579,7 @@ int main(int argc, char** argv)
         char title[128];
 
         slots[i].closeable = GLFW_TRUE;
+        slots[i].touch = GLFW_FALSE;
         slots[i].number = i + 1;
 
         snprintf(title, sizeof(title), "Event Linter (Window %i)", slots[i].number);
@@ -597,6 +624,7 @@ int main(int argc, char** argv)
         glfwSetCharCallback(slots[i].window, char_callback);
         glfwSetCharModsCallback(slots[i].window, char_mods_callback);
         glfwSetDropCallback(slots[i].window, drop_callback);
+        glfwSetTouchCallback(slots[i].window, touch_callback);
 
         glfwMakeContextCurrent(slots[i].window);
         gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);

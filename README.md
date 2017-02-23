@@ -154,6 +154,7 @@ information on what to include when reporting a bug.
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
 - [X11] Bugfix: `glfwGetVideoMode` would segfault on Cygwin/X
 - [X11] Bugfix: Dynamic X11 library loading did not use full sonames (#941)
+- [X11] Bugfix: Window creation on 64-bit would read past top of stack (#951)
 - [Linux] Bugfix: Event processing did not detect joystick disconnection (#932)
 - [Cocoa] Added support for Vulkan window surface creation via
           [MoltenVK](https://moltengl.com/moltenvk/) (#870)

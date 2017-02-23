@@ -571,7 +571,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 
     // Declare our PID
     {
-        const pid_t pid = getpid();
+        const long pid = getpid();
 
         XChangeProperty(_glfw.x11.display,  window->x11.handle,
                         _glfw.x11.NET_WM_PID, XA_CARDINAL, 32,

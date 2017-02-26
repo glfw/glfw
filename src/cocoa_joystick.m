@@ -233,46 +233,6 @@ static void removeCallback(void* context,
     }
 }
 
-// Creates a dictionary to match against devices with the specified usage page
-// and usage
-//
-static CFMutableDictionaryRef createMatchingDictionary(long usagePage,
-                                                       long usage)
-{
-    CFMutableDictionaryRef result =
-        CFDictionaryCreateMutable(kCFAllocatorDefault,
-                                  0,
-                                  &kCFTypeDictionaryKeyCallBacks,
-                                  &kCFTypeDictionaryValueCallBacks);
-
-    if (result)
-    {
-        CFNumberRef pageRef = CFNumberCreate(kCFAllocatorDefault,
-                                             kCFNumberLongType,
-                                             &usagePage);
-        if (pageRef)
-        {
-            CFDictionarySetValue(result,
-                                 CFSTR(kIOHIDDeviceUsagePageKey),
-                                 pageRef);
-            CFRelease(pageRef);
-
-            CFNumberRef usageRef = CFNumberCreate(kCFAllocatorDefault,
-                                                  kCFNumberLongType,
-                                                  &usage);
-            if (usageRef)
-            {
-                CFDictionarySetValue(result,
-                                     CFSTR(kIOHIDDeviceUsageKey),
-                                     usageRef);
-                CFRelease(usageRef);
-            }
-        }
-    }
-
-    return result;
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -282,56 +242,73 @@ static CFMutableDictionaryRef createMatchingDictionary(long usagePage,
 //
 void _glfwInitJoysticksNS(void)
 {
-    CFMutableArrayRef matchingCFArrayRef;
+    CFMutableArrayRef matching;
+    const long usages[] =
+    {
+        kHIDUsage_GD_Joystick,
+        kHIDUsage_GD_GamePad,
+        kHIDUsage_GD_MultiAxisController
+    };
 
     _glfw.ns.hidManager = IOHIDManagerCreate(kCFAllocatorDefault,
                                              kIOHIDOptionsTypeNone);
 
-    matchingCFArrayRef = CFArrayCreateMutable(kCFAllocatorDefault,
-                                              0,
-                                              &kCFTypeArrayCallBacks);
-    if (matchingCFArrayRef)
+    matching = CFArrayCreateMutable(kCFAllocatorDefault,
+                                    0,
+                                    &kCFTypeArrayCallBacks);
+    if (!matching)
     {
-        CFDictionaryRef matchingCFDictRef =
-            createMatchingDictionary(kHIDPage_GenericDesktop,
-                                     kHIDUsage_GD_Joystick);
-        if (matchingCFDictRef)
-        {
-            CFArrayAppendValue(matchingCFArrayRef, matchingCFDictRef);
-            CFRelease(matchingCFDictRef);
-        }
-
-        matchingCFDictRef = createMatchingDictionary(kHIDPage_GenericDesktop,
-                                                     kHIDUsage_GD_GamePad);
-        if (matchingCFDictRef)
-        {
-            CFArrayAppendValue(matchingCFArrayRef, matchingCFDictRef);
-            CFRelease(matchingCFDictRef);
-        }
-
-        matchingCFDictRef =
-            createMatchingDictionary(kHIDPage_GenericDesktop,
-                                     kHIDUsage_GD_MultiAxisController);
-        if (matchingCFDictRef)
-        {
-            CFArrayAppendValue(matchingCFArrayRef, matchingCFDictRef);
-            CFRelease(matchingCFDictRef);
-        }
-
-        IOHIDManagerSetDeviceMatchingMultiple(_glfw.ns.hidManager,
-                                              matchingCFArrayRef);
-        CFRelease(matchingCFArrayRef);
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Cocoa: Failed to create array");
+        return;
     }
+
+    for (int i = 0;  i < sizeof(usages) / sizeof(long);  i++)
+    {
+        const long page = kHIDPage_GenericDesktop;
+
+        CFMutableDictionaryRef dict =
+            CFDictionaryCreateMutable(kCFAllocatorDefault,
+                                      0,
+                                      &kCFTypeDictionaryKeyCallBacks,
+                                      &kCFTypeDictionaryValueCallBacks);
+        if (!dict)
+            continue;
+
+        CFNumberRef pageRef = CFNumberCreate(kCFAllocatorDefault,
+                                             kCFNumberLongType,
+                                             &page);
+        CFNumberRef usageRef = CFNumberCreate(kCFAllocatorDefault,
+                                              kCFNumberLongType,
+                                              &usages[i]);
+        if (pageRef && usageRef)
+        {
+            CFDictionarySetValue(dict,
+                                 CFSTR(kIOHIDDeviceUsagePageKey),
+                                 pageRef);
+            CFDictionarySetValue(dict,
+                                 CFSTR(kIOHIDDeviceUsageKey),
+                                 usageRef);
+            CFArrayAppendValue(matching, dict);
+        }
+
+        if (pageRef)
+            CFRelease(pageRef);
+        if (usageRef)
+            CFRelease(usageRef);
+
+        CFRelease(dict);
+    }
+
+    IOHIDManagerSetDeviceMatchingMultiple(_glfw.ns.hidManager, matching);
+    CFRelease(matching);
 
     IOHIDManagerRegisterDeviceMatchingCallback(_glfw.ns.hidManager,
                                                &matchCallback, NULL);
     IOHIDManagerRegisterDeviceRemovalCallback(_glfw.ns.hidManager,
                                               &removeCallback, NULL);
-
     IOHIDManagerScheduleWithRunLoop(_glfw.ns.hidManager,
                                     CFRunLoopGetMain(),
                                     kCFRunLoopDefaultMode);
-
     IOHIDManagerOpen(_glfw.ns.hidManager, kIOHIDOptionsTypeNone);
 
     // Execute the run loop once in order to register any initially-attached

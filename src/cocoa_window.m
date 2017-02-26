@@ -50,29 +50,6 @@
 #endif
 
 
-// Returns the specified standard cursor
-//
-static NSCursor* getStandardCursor(int shape)
-{
-    switch (shape)
-    {
-        case GLFW_ARROW_CURSOR:
-            return [NSCursor arrowCursor];
-        case GLFW_IBEAM_CURSOR:
-            return [NSCursor IBeamCursor];
-        case GLFW_CROSSHAIR_CURSOR:
-            return [NSCursor crosshairCursor];
-        case GLFW_HAND_CURSOR:
-            return [NSCursor pointingHandCursor];
-        case GLFW_HRESIZE_CURSOR:
-            return [NSCursor resizeLeftRightCursor];
-        case GLFW_VRESIZE_CURSOR:
-            return [NSCursor resizeUpDownCursor];
-    }
-
-    return nil;
-}
-
 // Returns the style mask corresponding to the window settings
 //
 static NSUInteger getStyleMask(_GLFWwindow* window)
@@ -1635,7 +1612,19 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
     if (!initializeAppKit())
         return GLFW_FALSE;
 
-    cursor->ns.object = getStandardCursor(shape);
+    if (shape == GLFW_ARROW_CURSOR)
+        cursor->ns.object = [NSCursor arrowCursor];
+    else if (shape == GLFW_IBEAM_CURSOR)
+        cursor->ns.object = [NSCursor IBeamCursor];
+    else if (shape == GLFW_CROSSHAIR_CURSOR)
+        cursor->ns.object = [NSCursor crosshairCursor];
+    else if (shape == GLFW_HAND_CURSOR)
+        cursor->ns.object = [NSCursor pointingHandCursor];
+    else if (shape == GLFW_HRESIZE_CURSOR)
+        cursor->ns.object = [NSCursor resizeLeftRightCursor];
+    else if (shape == GLFW_VRESIZE_CURSOR)
+        cursor->ns.object = [NSCursor resizeUpDownCursor];
+
     if (!cursor->ns.object)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,

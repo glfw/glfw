@@ -614,7 +614,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_MBUTTONUP:
         case WM_XBUTTONUP:
         {
-            int button, action;
+            int i, button, action;
 
             if (uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP)
                 button = GLFW_MOUSE_BUTTON_LEFT;
@@ -631,15 +631,29 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 uMsg == WM_MBUTTONDOWN || uMsg == WM_XBUTTONDOWN)
             {
                 action = GLFW_PRESS;
-                SetCapture(hWnd);
             }
             else
-            {
                 action = GLFW_RELEASE;
-                ReleaseCapture();
+
+            for (i = 0;  i < GLFW_MOUSE_BUTTON_LAST;  i++)
+            {
+                if (window->mouseButtons[i] == GLFW_PRESS)
+                    break;
             }
 
+            if (i == GLFW_MOUSE_BUTTON_LAST)
+                SetCapture(hWnd);
+
             _glfwInputMouseClick(window, button, action, getKeyMods());
+
+            for (i = 0;  i < GLFW_MOUSE_BUTTON_LAST;  i++)
+            {
+                if (window->mouseButtons[i] == GLFW_PRESS)
+                    break;
+            }
+
+            if (i == GLFW_MOUSE_BUTTON_LAST)
+                ReleaseCapture();
 
             if (uMsg == WM_XBUTTONDOWN || uMsg == WM_XBUTTONUP)
                 return TRUE;

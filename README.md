@@ -151,6 +151,7 @@ information on what to include when reporting a bug.
                   a loader but no ICD (#916)
 - [Win32] Bugfix: Non-iconified full sreeen windows did not prevent screen
                   blanking or password enabled screensavers (#851)
+- [Win32] Bugfix: Mouse capture logic lost secondary release messages (#954)
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
 - [X11] Bugfix: `glfwGetVideoMode` would segfault on Cygwin/X
 - [X11] Bugfix: Dynamic X11 library loading did not use full sonames (#941)

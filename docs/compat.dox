@@ -76,6 +76,10 @@ GLFW uses the Xkb extension and detectable auto-repeat to provide keyboard
 input.  If the running X server does not support this extension, a non-Xkb
 fallback path is used.
 
+GLFW uses the XInput2 extension to provide raw, non-accelerated mouse motion
+when the cursor is disabled.  If the running X server does not support this
+extension, regular accelerated mouse motion will be used. 
+
 
 @section compat_glx GLX extensions
 

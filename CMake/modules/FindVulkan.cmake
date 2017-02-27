@@ -19,6 +19,9 @@ if (WIN32)
         find_library(VULKAN_LIBRARY NAMES vulkan-1 HINTS
             "$ENV{VULKAN_SDK}/Bin32"
             "$ENV{VK_SDK_PATH}/Bin32")
+        find_library(VULKAN_STATIC_LIBRARY NAMES vkstatic.1 HINTS
+            "$ENV{VULKAN_SDK}/Bin32"
+            "$ENV{VK_SDK_PATH}/Bin32")
     endif()
 elseif (APPLE)
     find_library(VULKAN_LIBRARY MoltenVK)

@@ -703,7 +703,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 break;
 
             GetRawInputData(ri, RID_INPUT, NULL, &size, sizeof(RAWINPUTHEADER));
-            if (size > _glfw.win32.rawInputSize)
+            if (size > (UINT) _glfw.win32.rawInputSize)
             {
                 free(_glfw.win32.rawInput);
                 _glfw.win32.rawInput = calloc(size, 1);

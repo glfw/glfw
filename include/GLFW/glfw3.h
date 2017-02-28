@@ -3335,15 +3335,19 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* window, int mode, int value);
 
 /*! @brief Returns the localized name of the specified printable key.
  *
- *  This function returns the localized name of the specified printable key.
- *  This is intended for displaying key bindings to the user.
+ *  This function returns the name of the specified printable key.  This is
+ *  typically the character that key would produce without any modifier keys,
+ *  intended for displaying key bindings to the user.
  *
- *  If the key is `GLFW_KEY_UNKNOWN`, the scancode is used instead, otherwise
- *  the scancode is ignored.  If a non-printable key or (if the key is
- *  `GLFW_KEY_UNKNOWN`) a scancode that maps to a non-printable key is
- *  specified, this function returns `NULL`.          
+ *  __Do not use this function__ for [text input](@ref input_char).  You will
+ *  break text input for many languages even if it happens to work for yours.
  *
- *  This behavior allows you to pass in the arguments passed to the
+ *  If the key is `GLFW_KEY_UNKNOWN`, the scancode is used to identify the key,
+ *  otherwise the scancode is ignored.  If you specify a non-printable key, or
+ *  `GLFW_KEY_UNKNOWN` and a scancode that maps to a non-printable key, this
+ *  function returns `NULL` but does not emit an error.
+ *
+ *  This behavior allows you to always pass in the arguments in the
  *  [key callback](@ref input_key) without modification.
  *
  *  The printable keys are:
@@ -3368,6 +3372,10 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* window, int mode, int value);
  *  - `GLFW_KEY_KP_SUBTRACT`
  *  - `GLFW_KEY_KP_ADD`
  *  - `GLFW_KEY_KP_EQUAL`
+ *
+ *  Names for printable keys depend on keyboard layout, while names for
+ *  non-printable keys are the same across layouts but depend on the application
+ *  language and should be localized along with other user interface text.
  *
  *  @param[in] key The key to query, or `GLFW_KEY_UNKNOWN`.
  *  @param[in] scancode The scancode of the key to query.

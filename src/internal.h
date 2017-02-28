@@ -814,7 +814,8 @@ void _glfwInputJoystickButton(int jid, int button, char value);
 // Utility functions
 //========================================================================
 
-/*! @ingroup utility
+/*! @brief Chooses the video mode most closely matching the desired one.
+ *  @ingroup utility
  */
 const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
                                         const GLFWvidmode* desired);
@@ -869,11 +870,13 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig);
  */
 GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig);
 
-/*! @ingroup utility
+/*! @brief Allocates red, green and blue value arrays of the specified size.
+ *  @ingroup utility
  */
 void _glfwAllocGammaArrays(GLFWgammaramp* ramp, unsigned int size);
 
-/*! @ingroup utility
+/*! @brief Frees the red, green and blue value arrays and clears the struct.
+ *  @ingroup utility
  */
 void _glfwFreeGammaArrays(GLFWgammaramp* ramp);
 
@@ -892,11 +895,13 @@ _GLFWmonitor* _glfwAllocMonitor(const char* name, int widthMM, int heightMM);
   */
 void _glfwFreeMonitor(_GLFWmonitor* monitor);
 
-/*! @ingroup utility
+/*! @brief Returns an available joystick object with arrays and name allocated.
+ *  @ingroup utility
   */
 _GLFWjoystick* _glfwAllocJoystick(const char* name, int axisCount, int buttonCount);
 
-/*! @ingroup utility
+/*! @brief Frees arrays and name and flags the joystick object as unused.
+ *  @ingroup utility
   */
 void _glfwFreeJoystick(_GLFWjoystick* js);
 

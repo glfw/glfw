@@ -36,25 +36,26 @@ static void makeContextCurrentOSMesa(_GLFWwindow* window)
 {
     if (window)
     {
+        int width, height;
+        _glfwPlatformGetWindowSize(window, &width, &height);
+
         // Check to see if we need to allocate a new buffer
         if ((window->context.osmesa.buffer == NULL) ||
-            (window->osmesa.width != window->context.osmesa.width) ||
-            (window->osmesa.height != window->context.osmesa.height))
+            (width != window->context.osmesa.width) ||
+            (height != window->context.osmesa.height))
         {
             free(window->context.osmesa.buffer);
 
             // Allocate the new buffer (width * height * 8-bit RGBA)
-            window->context.osmesa.buffer =
-                calloc(4, window->osmesa.width * window->osmesa.height);
-
-            window->context.osmesa.width = window->osmesa.width;
-            window->context.osmesa.height = window->osmesa.height;
+            window->context.osmesa.buffer = calloc(4, width * height);
+            window->context.osmesa.width  = width;
+            window->context.osmesa.height = height;
         }
 
         if (!OSMesaMakeCurrent(window->context.osmesa.handle,
-                            window->context.osmesa.buffer,
-                            GL_UNSIGNED_BYTE,
-                            window->osmesa.width, window->osmesa.height))
+                               window->context.osmesa.buffer,
+                               GL_UNSIGNED_BYTE,
+                               width, height))
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "OSMesa: Failed to make context current");

@@ -46,8 +46,14 @@ provided by [MoltenVK](https://moltengl.com/moltenvk/).
 
 @subsection news_33_osmesa OSMesa backend for headless software rendering
 
-GLFW now supports headless context creation and software rendering via OSMesa,
-intended for automated testing.  This backend does not provide input.
+GLFW now supports creating offscreen OpenGL contexts using
+[OSMesa](https://www.mesa3d.org/osmesa.html) by setting
+[GLFW_CONTEXT_CREATION_API](@ref GLFW_CONTEXT_CREATION_API_hint) to
+`GLFW_OSMESA_CONTEXT_API`.
+
+There is also a new headless backend that uses OSMesa as its native context
+creation API, intended for automated testing.  This backend does not provide
+input.
 
 
 @section news_32 New features in 3.2

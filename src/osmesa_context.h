@@ -57,8 +57,8 @@ typedef GLFWglproc (GLAPIENTRY * PFN_OSMesaGetProcAddress)(const char*);
 #define OSMesaGetDepthBuffer _glfw.osmesa.GetDepthBuffer
 #define OSMesaGetProcAddress _glfw.osmesa.GetProcAddress
 
-#define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextOSMesa osmesa
-#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryOSMesa osmesa
+#define _GLFW_OSMESA_CONTEXT_STATE              _GLFWcontextOSMesa osmesa
+#define _GLFW_OSMESA_LIBRARY_CONTEXT_STATE      _GLFWlibraryOSMesa osmesa
 
 
 // OSMesa-specific per-context data

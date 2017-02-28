@@ -363,6 +363,8 @@ struct _GLFWcontext
     _GLFW_PLATFORM_CONTEXT_STATE;
     // This is defined in egl_context.h
     _GLFW_EGL_CONTEXT_STATE;
+    // This is defined in osmesa_context.h
+    _GLFW_OSMESA_CONTEXT_STATE;
 };
 
 /*! @brief Window and context structure.
@@ -531,6 +533,8 @@ struct _GLFWlibrary
     _GLFW_PLATFORM_LIBRARY_TLS_STATE;
     // This is defined in egl_context.h
     _GLFW_EGL_LIBRARY_CONTEXT_STATE;
+    // This is defined in osmesa_context.h
+    _GLFW_OSMESA_LIBRARY_CONTEXT_STATE;
 };
 
 

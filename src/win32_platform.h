@@ -207,6 +207,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(
 #include "win32_joystick.h"
 #include "wgl_context.h"
 #include "egl_context.h"
+#include "osmesa_context.h"
 
 #define _GLFW_WNDCLASSNAME L"GLFW30"
 

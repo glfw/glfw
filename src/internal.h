@@ -551,294 +551,80 @@ extern _GLFWlibrary _glfw;
 // Platform API functions
 //========================================================================
 
-/*! @brief Initializes the platform-specific part of the library.
- *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if an error occurred.
- *  @ingroup platform
- */
+/*! @addtogroup platform @{ */
+
 int _glfwPlatformInit(void);
-
-/*! @brief Terminates the platform-specific part of the library.
- *  @ingroup platform
- */
 void _glfwPlatformTerminate(void);
-
-/*! @copydoc glfwGetVersionString
- *  @ingroup platform
- *
- *  @note The returned string must be available for the duration of the program.
- *
- *  @note The returned string must not change for the duration of the program.
- */
 const char* _glfwPlatformGetVersionString(void);
 
-/*! @copydoc glfwGetCursorPos
- *  @ingroup platform
- */
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos);
-
-/*! @copydoc glfwSetCursorPos
- *  @ingroup platform
- */
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos);
-
-/*! @brief Sets the specified cursor mode of the specified window.
- *  @param[in] window The window whose cursor mode to set.
- *  @ingroup platform
- */
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
+int _glfwPlatformCreateCursor(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot);
+int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape);
+void _glfwPlatformDestroyCursor(_GLFWcursor* cursor);
+void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor);
 
-/*! @copydoc glfwGetKeyName
- *  @ingroup platform
- */
 const char* _glfwPlatformGetKeyName(int key, int scancode);
-
-/*! @copydoc glfwGetKeyScancode
- *  @ingroup platform
- */
 int _glfwPlatformGetKeyScancode(int key);
 
-/*! @copydoc glfwGetMonitorPos
- *  @ingroup platform
- */
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos);
-
-/*! @copydoc glfwGetVideoModes
- *  @ingroup platform
- */
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count);
-
-/*! @ingroup platform
- */
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode);
-
-/*! @copydoc glfwGetGammaRamp
- *  @ingroup platform
- */
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
-
-/*! @copydoc glfwSetGammaRamp
- *  @ingroup platform
- */
 void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
-/*! @copydoc glfwSetClipboardString
- *  @ingroup platform
- */
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string);
-
-/*! @copydoc glfwGetClipboardString
- *  @ingroup platform
- *
- *  @note The returned string must be valid until the next call to @ref
- *  _glfwPlatformGetClipboardString or @ref _glfwPlatformSetClipboardString.
- */
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window);
 
-/*! @ingroup platform
- */
 int _glfwPlatformPollJoystick(int jid, int mode);
 
-/*! @copydoc glfwGetTimerValue
- *  @ingroup platform
- */
 uint64_t _glfwPlatformGetTimerValue(void);
-
-/*! @copydoc glfwGetTimerFrequency
- *  @ingroup platform
- */
 uint64_t _glfwPlatformGetTimerFrequency(void);
 
-/*! @ingroup platform
- */
 int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig);
-
-/*! @ingroup platform
- */
 void _glfwPlatformDestroyWindow(_GLFWwindow* window);
-
-/*! @copydoc glfwSetWindowTitle
- *  @ingroup platform
- */
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title);
-
-/*! @copydoc glfwSetWindowIcon
- *  @ingroup platform
- */
 void _glfwPlatformSetWindowIcon(_GLFWwindow* window, int count, const GLFWimage* images);
-
-/*! @copydoc glfwGetWindowPos
- *  @ingroup platform
- */
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos);
-
-/*! @copydoc glfwSetWindowPos
- *  @ingroup platform
- */
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos);
-
-/*! @copydoc glfwGetWindowSize
- *  @ingroup platform
- */
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height);
-
-/*! @copydoc glfwSetWindowSize
- *  @ingroup platform
- */
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height);
-
-/*! @copydoc glfwSetWindowSizeLimits
- *  @ingroup platform
- */
 void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window, int minwidth, int minheight, int maxwidth, int maxheight);
-
-/*! @copydoc glfwSetWindowAspectRatio
- *  @ingroup platform
- */
 void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom);
-
-/*! @copydoc glfwGetFramebufferSize
- *  @ingroup platform
- */
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height);
-
-/*! @copydoc glfwGetWindowFrameSize
- *  @ingroup platform
- */
 void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window, int* left, int* top, int* right, int* bottom);
-
-/*! @copydoc glfwIconifyWindow
- *  @ingroup platform
- */
 void _glfwPlatformIconifyWindow(_GLFWwindow* window);
-
-/*! @copydoc glfwRestoreWindow
- *  @ingroup platform
- */
 void _glfwPlatformRestoreWindow(_GLFWwindow* window);
-
-/*! @copydoc glfwMaximizeWindow
- *  @ingroup platform
- */
 void _glfwPlatformMaximizeWindow(_GLFWwindow* window);
-
-/*! @copydoc glfwShowWindow
- *  @ingroup platform
- */
 void _glfwPlatformShowWindow(_GLFWwindow* window);
-
-/*! @copydoc glfwHideWindow
- *  @ingroup platform
- */
 void _glfwPlatformHideWindow(_GLFWwindow* window);
-
-/*! @copydoc glfwFocusWindow
- *  @ingroup platform
- */
 void _glfwPlatformFocusWindow(_GLFWwindow* window);
-
-/*! @copydoc glfwSetWindowMonitor
- *  @ingroup platform
- */
 void _glfwPlatformSetWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);
-
-/*! @brief Returns whether the window is focused.
- *  @ingroup platform
- */
 int _glfwPlatformWindowFocused(_GLFWwindow* window);
-
-/*! @brief Returns whether the window is iconified.
- *  @ingroup platform
- */
 int _glfwPlatformWindowIconified(_GLFWwindow* window);
-
-/*! @brief Returns whether the window is visible.
- *  @ingroup platform
- */
 int _glfwPlatformWindowVisible(_GLFWwindow* window);
-
-/*! @brief Returns whether the window is maximized.
- *  @ingroup platform
- */
 int _glfwPlatformWindowMaximized(_GLFWwindow* window);
-
-/*! @brief Sets whether the window is resizable by the user.
- *  @ingroup platform
- */
 void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled);
-
-/*! @brief Sets whether the window is decorated.
- *  @ingroup platform
- */
 void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled);
-
-/*! @brief Sets whether the window is floating.
- *  @ingroup platform
- */
 void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled);
 
-/*! @copydoc glfwPollEvents
- *  @ingroup platform
- */
 void _glfwPlatformPollEvents(void);
-
-/*! @copydoc glfwWaitEvents
- *  @ingroup platform
- */
 void _glfwPlatformWaitEvents(void);
-
-/*! @copydoc glfwWaitEventsTimeout
- *  @ingroup platform
- */
 void _glfwPlatformWaitEventsTimeout(double timeout);
-
-/*! @copydoc glfwPostEmptyEvent
- *  @ingroup platform
- */
 void _glfwPlatformPostEmptyEvent(void);
 
-/*! @ingroup platform
- */
 void _glfwPlatformSetCurrentContext(_GLFWwindow* context);
-
-/*! @copydoc glfwGetCurrentContext
- *  @ingroup platform
- */
 _GLFWwindow* _glfwPlatformGetCurrentContext(void);
 
-/*! @copydoc glfwCreateCursor
- *  @ingroup platform
- */
-int _glfwPlatformCreateCursor(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot);
-
-/*! @copydoc glfwCreateStandardCursor
- *  @ingroup platform
- */
-int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape);
-
-/*! @copydoc glfwDestroyCursor
- *  @ingroup platform
- */
-void _glfwPlatformDestroyCursor(_GLFWcursor* cursor);
-
-/*! @copydoc glfwSetCursor
- *  @ingroup platform
- */
-void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor);
-
-/*! @ingroup platform
- */
 void _glfwPlatformGetRequiredInstanceExtensions(char** extensions);
-
-/*! @ingroup platform
- */
 int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
-
-/*! @ingroup platform
- */
 VkResult _glfwPlatformCreateWindowSurface(VkInstance instance, _GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
+
+/*! @} */
 
 
 //========================================================================

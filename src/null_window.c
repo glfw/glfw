@@ -227,10 +227,6 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
 }
 
-void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
-{
-}
-
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                               const GLFWimage* image,
                               int xhot, int yhot)

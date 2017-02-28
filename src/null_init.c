@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 OSMesa - www.glfw.org
+// GLFW 3.3 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2016 Google Inc.
 // Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
@@ -49,6 +49,6 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    return _GLFW_VERSION_NUMBER " none OSMesa";
+    return _GLFW_VERSION_NUMBER " null OSMesa";
 }
 

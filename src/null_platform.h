@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 OSMesa - www.glfw.org
+// GLFW 3.3 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2016 Google Inc.
 // Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
@@ -25,12 +25,12 @@
 //
 //========================================================================
 
-#ifndef _glfw3_osmesa_platform_h_
-#define _glfw3_osmesa_platform_h_
+#ifndef _glfw3_null_platform_h_
+#define _glfw3_null_platform_h_
 
 #include <dlfcn.h>
 
-#define _GLFW_PLATFORM_WINDOW_STATE _GLFWwindowOSMesa osmesa
+#define _GLFW_PLATFORM_WINDOW_STATE _GLFWwindowNull null
 
 #define _GLFW_PLATFORM_CONTEXT_STATE
 #define _GLFW_PLATFORM_MONITOR_STATE
@@ -55,13 +55,13 @@
  #define _glfw_dlsym(handle, name) dlsym(handle, name)
 #endif
 
-// OSMesa-specific per-window data
+// Null-specific per-window data
 //
-typedef struct _GLFWwindowOSMesa
+typedef struct _GLFWwindowNull
 {
     int width;
     int height;
-} _GLFWwindowOSMesa;
+} _GLFWwindowNull;
 
 
-#endif // _glfw3_osmesa_platform_h_
+#endif // _glfw3_null_platform_h_

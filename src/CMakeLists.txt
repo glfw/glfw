@@ -53,11 +53,10 @@ elseif (_GLFW_MIR)
                      linux_joystick.c posix_time.c posix_tls.c xkb_unicode.c
                      egl_context.c)
 elseif (_GLFW_OSMESA)
-    set(glfw_HEADERS ${common_HEADERS} osmesa_platform.h null_joystick.h
+    set(glfw_HEADERS ${common_HEADERS} null_platform.h null_joystick.h
                      posix_time.h posix_tls.h osmesa_context.h)
-    set(glfw_SOURCES ${common_SOURCES} osmesa_init.c osmesa_monitor.c
-                     osmesa_window.c null_joystick.c posix_time.c posix_tls.c
-                     osmesa_context.c)
+    set(glfw_SOURCES ${common_SOURCES} null_init.c null_monitor.c null_window.c
+                     null_joystick.c posix_time.c posix_tls.c osmesa_context.c)
 endif()
 
 if (APPLE)

@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 OSMesa - www.glfw.org
+// GLFW 3.3 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2016 Google Inc.
 // Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
@@ -31,8 +31,8 @@
 static int createNativeWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig)
 {
-    window->osmesa.width = wndconfig->width;
-    window->osmesa.height = wndconfig->height;
+    window->null.width = wndconfig->width;
+    window->null.height = wndconfig->height;
 
     return GLFW_TRUE;
 }
@@ -62,7 +62,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         }
         else
         {
-            _glfwInputError(GLFW_API_UNAVAILABLE, "OSMesa: EGL not available");
+            _glfwInputError(GLFW_API_UNAVAILABLE, "Null: EGL not available");
             return GLFW_FALSE;
         }
     }
@@ -104,15 +104,15 @@ void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 {
     if (width)
-        *width = window->osmesa.width;
+        *width = window->null.width;
     if (height)
-        *height = window->osmesa.height;
+        *height = window->null.height;
 }
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    window->osmesa.width = width;
-    window->osmesa.height = height;
+    window->null.width = width;
+    window->null.height = height;
 }
 
 void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
@@ -128,9 +128,9 @@ void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int n, int d)
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
     if (width)
-        *width = window->osmesa.width;
+        *width = window->null.width;
     if (height)
-        *height = window->osmesa.height;
+        *height = window->null.height;
 }
 
 void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,

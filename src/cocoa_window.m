@@ -826,40 +826,6 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 }
 @end
 
-// Try to figure out what the calling application is called
-//
-static NSString* findAppName(void)
-{
-    size_t i;
-    NSDictionary* infoDictionary = [[NSBundle mainBundle] infoDictionary];
-
-    // Keys to search for as potential application names
-    NSString* GLFWNameKeys[] =
-    {
-        @"CFBundleDisplayName",
-        @"CFBundleName",
-        @"CFBundleExecutable",
-    };
-
-    for (i = 0;  i < sizeof(GLFWNameKeys) / sizeof(GLFWNameKeys[0]);  i++)
-    {
-        id name = [infoDictionary objectForKey:GLFWNameKeys[i]];
-        if (name &&
-            [name isKindOfClass:[NSString class]] &&
-            ![name isEqualToString:@""])
-        {
-            return name;
-        }
-    }
-
-    char** progname = _NSGetProgname();
-    if (progname && *progname)
-        return [NSString stringWithUTF8String:*progname];
-
-    // Really shouldn't get here
-    return @"GLFW Application";
-}
-
 // Set up the menu bar (manually)
 // This is nasty, nasty stuff -- calls to undocumented semi-private APIs that
 // could go away at any moment, lots of stuff that really should be
@@ -867,7 +833,38 @@ static NSString* findAppName(void)
 //
 static void createMenuBar(void)
 {
-    NSString* appName = findAppName();
+    size_t i;
+    NSString* appName = nil;
+    NSDictionary* bundleInfo = [[NSBundle mainBundle] infoDictionary];
+    NSString* nameKeys[] =
+    {
+        @"CFBundleDisplayName",
+        @"CFBundleName",
+        @"CFBundleExecutable",
+    };
+
+    // Try to figure out what the calling application is called
+
+    for (i = 0;  i < sizeof(nameKeys) / sizeof(nameKeys[0]);  i++)
+    {
+        id name = [bundleInfo objectForKey:nameKeys[i]];
+        if (name &&
+            [name isKindOfClass:[NSString class]] &&
+            ![name isEqualToString:@""])
+        {
+            appName = name;
+            break;
+        }
+    }
+
+    if (!appName)
+    {
+        char** progname = _NSGetProgname();
+        if (progname && *progname)
+            appName = [NSString stringWithUTF8String:*progname];
+        else
+            appName = @"GLFW Application";
+    }
 
     NSMenu* bar = [[NSMenu alloc] init];
     [NSApp setMainMenu:bar];

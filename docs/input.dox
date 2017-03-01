@@ -510,21 +510,24 @@ A simple mouse wheel, being vertical, provides offsets along the Y-axis.
 
 The joystick functions expose connected joysticks and controllers, with both
 referred to as joysticks.  It supports up to sixteen joysticks, ranging from
-`GLFW_JOYSTICK_1`, `GLFW_JOYSTICK_2` up to `GLFW_JOYSTICK_LAST`.  You can test
-whether a [joystick](@ref joysticks) is present with @ref glfwJoystickPresent.
+`GLFW_JOYSTICK_1`, `GLFW_JOYSTICK_2` up to and including `GLFW_JOYSTICK_16` or
+`GLFW_JOYSTICK_LAST`.  You can test whether a [joystick](@ref joysticks) is
+present with @ref glfwJoystickPresent.
 
 @code
 int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
 @endcode
 
 When GLFW is initialized, detected joysticks are added to to the beginning of
-the array, starting with `GLFW_JOYSTICK_1`.  Once a joystick is detected, it
-keeps its assigned index until it is disconnected, so as joysticks are connected
-and disconnected, they will become spread out.
+the array.  Once a joystick is detected, it keeps its assigned ID until it is
+disconnected or the library is terminated, so as joysticks are connected and
+disconnected, there may appear gaps in the IDs.
 
-Joystick state is updated as needed when a joystick function is called and does
-not require a window to be created or @ref glfwPollEvents or @ref glfwWaitEvents
-to be called.
+Joystick axis, button and hat state is updated when polled and does not require
+a window to be created or events to be processed.  However, if you want joystick
+connection and disconnection events reliably delivered to the
+[joystick callback](@ref joystick_event) then you must
+[process events](@ref events).
 
 To see all the properties of all connected joysticks in real-time, run the
 `joysticks` test program.
@@ -538,7 +541,7 @@ returned array.
 
 @code
 int count;
-const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &count);
+const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_5, &count);
 @endcode
 
 Each element in the returned array is a value between -1.0 and 1.0.
@@ -552,10 +555,54 @@ returned array.
 
 @code
 int count;
-const unsigned char* axes = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
+const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_3, &count);
 @endcode
 
 Each element in the returned array is either `GLFW_PRESS` or `GLFW_RELEASE`.
+
+For backward compatibility with earlier versions that did not have @ref
+glfwGetJoystickHats, the button array by default also includes all hats.  See
+the reference documentation for @ref glfwGetJoystickButtons for details.
+
+
+@subsection joystick_hat Joystick hat states
+
+The states of all hats are returned by @ref glfwGetJoystickHats.  See the
+reference documentation for the lifetime of the returned array.
+
+@code
+int count;
+const unsigned char* hats = glfwGetJoystickHats(GLFW_JOYSTICK_7, &count);
+@endcode
+
+Each element in the returned array is one of the following:
+
+Name                  | Value
+--------------------- | --------------------------------
+`GLFW_HAT_CENTERED`   | 0
+`GLFW_HAT_UP`         | 1
+`GLFW_HAT_RIGHT`      | 2
+`GLFW_HAT_DOWN`       | 4
+`GLFW_HAT_LEFT`       | 8
+`GLFW_HAT_RIGHT_UP`   | `GLFW_HAT_RIGHT` \| `GLFW_HAT_UP`
+`GLFW_HAT_RIGHT_DOWN` | `GLFW_HAT_RIGHT` \| `GLFW_HAT_DOWN`
+`GLFW_HAT_LEFT_UP`    | `GLFW_HAT_LEFT` \| `GLFW_HAT_UP`
+`GLFW_HAT_LEFT_DOWN`  | `GLFW_HAT_LEFT` \| `GLFW_HAT_DOWN`
+
+The diagonal directions are bitwise combinations of the primary (up, right, down
+and left) directions and you can test for these individually by ANDing it with
+the corresponding direction.
+
+@code
+if (hats[2] & GLFW_HAT_RIGHT)
+{
+    // State of hat 2 could be right-up, right or right-down
+}
+@endcode
+
+For backward compatibility with earlier versions that did not have @ref
+glfwGetJoystickHats, all hats are by default also included in the button array.
+See the reference documentation for @ref glfwGetJoystickButtons for details.
 
 
 @subsection joystick_name Joystick name
@@ -565,7 +612,7 @@ glfwGetJoystickName.  See the reference documentation for the lifetime of the
 returned string.           
 
 @code
-const char* name = glfwGetJoystickName(GLFW_JOYSTICK_1);
+const char* name = glfwGetJoystickName(GLFW_JOYSTICK_4);
 @endcode
 
 Joystick names are not guaranteed to be unique.  Two joysticks of the same model

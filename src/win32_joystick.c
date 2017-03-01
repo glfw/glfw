@@ -427,7 +427,8 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
 
     js = _glfwAllocJoystick(name,
                             data.axisCount + data.sliderCount,
-                            data.buttonCount + data.povCount * 4);
+                            data.buttonCount,
+                            data.povCount);
     if (!js)
     {
         IDirectInputDevice8_Release(device);
@@ -512,7 +513,7 @@ void _glfwDetectJoystickConnectionWin32(void)
             if (XInputGetCapabilities(index, 0, &xic) != ERROR_SUCCESS)
                 continue;
 
-            js = _glfwAllocJoystick(getDeviceDescription(&xic), 6, 14);
+            js = _glfwAllocJoystick(getDeviceDescription(&xic), 6, 10, 1);
             if (!js)
                 continue;
 
@@ -561,7 +562,7 @@ int _glfwPlatformPollJoystick(int jid, int mode)
 
     if (js->win32.device)
     {
-        int i, j, ai = 0, bi = 0;
+        int i, ai = 0, bi = 0, pi = 0;
         HRESULT result;
         DIJOYSTATE state;
 
@@ -612,19 +613,26 @@ int _glfwPlatformPollJoystick(int jid, int mode)
 
                 case _GLFW_TYPE_POV:
                 {
-                    const int directions[9] = { 1, 3, 2, 6, 4, 12, 8, 9, 0 };
+                    const int states[9] =
+                    {
+                        GLFW_HAT_UP,
+                        GLFW_HAT_RIGHT_UP,
+                        GLFW_HAT_RIGHT,
+                        GLFW_HAT_RIGHT_DOWN,
+                        GLFW_HAT_DOWN,
+                        GLFW_HAT_LEFT_DOWN,
+                        GLFW_HAT_LEFT,
+                        GLFW_HAT_LEFT_UP,
+                        GLFW_HAT_CENTERED
+                    };
+
                     // Screams of horror are appropriate at this point
                     int state = LOWORD(*(DWORD*) data) / (45 * DI_DEGREES);
                     if (state < 0 || state > 8)
                         state = 8;
 
-                    for (j = 0;  j < 4;  j++)
-                    {
-                        const char value = (directions[state] & (1 << j)) != 0;
-                        _glfwInputJoystickButton(jid, bi, value);
-                        bi++;
-                    }
-
+                    _glfwInputJoystickHat(jid, pi, states[state]);
+                    pi++;
                     break;
                 }
             }
@@ -632,7 +640,7 @@ int _glfwPlatformPollJoystick(int jid, int mode)
     }
     else
     {
-        int i;
+        int i, dpad = 0;
         DWORD result;
         XINPUT_STATE xis;
         float axes[6] = { 0.f, 0.f, 0.f, 0.f, -1.f, -1.f };
@@ -647,11 +655,7 @@ int _glfwPlatformPollJoystick(int jid, int mode)
             XINPUT_GAMEPAD_BACK,
             XINPUT_GAMEPAD_START,
             XINPUT_GAMEPAD_LEFT_THUMB,
-            XINPUT_GAMEPAD_RIGHT_THUMB,
-            XINPUT_GAMEPAD_DPAD_UP,
-            XINPUT_GAMEPAD_DPAD_RIGHT,
-            XINPUT_GAMEPAD_DPAD_DOWN,
-            XINPUT_GAMEPAD_DPAD_LEFT
+            XINPUT_GAMEPAD_RIGHT_THUMB
         };
 
         result = XInputGetState(js->win32.index, &xis);
@@ -693,11 +697,22 @@ int _glfwPlatformPollJoystick(int jid, int mode)
         for (i = 0;  i < 6;  i++)
             _glfwInputJoystickAxis(jid, i, axes[i]);
 
-        for (i = 0;  i < 14;  i++)
+        for (i = 0;  i < 10;  i++)
         {
             const char value = (xis.Gamepad.wButtons & buttons[i]) ? 1 : 0;
             _glfwInputJoystickButton(jid, i, value);
         }
+
+        if (xis.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
+            dpad |= GLFW_HAT_UP;
+        if (xis.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
+            dpad |= GLFW_HAT_RIGHT;
+        if (xis.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
+            dpad |= GLFW_HAT_DOWN;
+        if (xis.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
+            dpad |= GLFW_HAT_LEFT;
+
+        _glfwInputJoystickHat(jid, 0, dpad);
     }
 
     return GLFW_TRUE;

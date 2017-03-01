@@ -25,6 +25,13 @@ GLFW now supports changing the [GLFW_DECORATED](@ref GLFW_DECORATED_attrib),
 windows with @ref glfwSetWindowAttrib.
 
 
+@subsection news_33_joyhats Support for joystick hats
+
+GLFW now supports querying the hats of a joystick with @ref glfwGetJoystickHats
+and controlling whether hats are also exposed as buttons with the @ref
+GLFW_JOYSTICK_HAT_BUTTONS init hint.
+
+
 @subsection news_33_inithint Support for initialization hints
 
 GLFW now supports setting library initialization hints with @ref glfwInitHint.

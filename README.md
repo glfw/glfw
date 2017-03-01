@@ -127,11 +127,14 @@ information on what to include when reporting a bug.
 - Added `glfwSetWindowMaximizeCallback` and `GLFWwindowmaximizefun` for
   receiving window maximization events (#778)
 - Added `glfwSetWindowAttrib` function for changing window attributes (#537)
+- Added `glfwGetJoystickHats` function for querying joystick hats
+  (#889,#906,#934)
 - Added `glfwInitHint` function for setting library initialization hints
 - Added headless [OSMesa](http://mesa3d.org/osmesa.html) backend (#850)
 - Added definition of `GLAPIENTRY` to public header
 - Added `GLFW_CENTER_CURSOR` window hint for controlling cursor centering
   (#749,#842)
+- Added `GLFW_JOYSTICK_HAT_BUTTONS` init hint (#889)
 - Added macOS specific `GLFW_COCOA_RETINA_FRAMEBUFFER` window hint
 - Added macOS specific `GLFW_COCOA_FRAME_AUTOSAVE` window hint (#195)
 - Added macOS specific `GLFW_COCOA_GRAPHICS_SWITCHING` window hint (#377,#935)

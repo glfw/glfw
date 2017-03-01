@@ -204,7 +204,8 @@ static void matchCallback(void* context,
 
     js = _glfwAllocJoystick(name,
                             CFArrayGetCount(axes),
-                            CFArrayGetCount(buttons) + CFArrayGetCount(hats) * 4);
+                            CFArrayGetCount(buttons),
+                            CFArrayGetCount(hats));
 
     js->ns.device  = device;
     js->ns.axes    = axes;
@@ -358,33 +359,38 @@ int _glfwPlatformPollJoystick(int jid, int mode)
     }
     else if (mode == _GLFW_POLL_BUTTONS)
     {
-        CFIndex i, bi = 0;
+        CFIndex i;
 
         for (i = 0;  i < CFArrayGetCount(js->ns.buttons);  i++)
         {
             _GLFWjoyelementNS* button = (_GLFWjoyelementNS*)
                 CFArrayGetValueAtIndex(js->ns.buttons, i);
             const char value = getElementValue(js, button) ? 1 : 0;
-            _glfwInputJoystickButton(jid, bi++, value);
+            _glfwInputJoystickButton(jid, i, value);
         }
 
         for (i = 0;  i < CFArrayGetCount(js->ns.hats);  i++)
         {
+            const int states[9] =
+            {
+                GLFW_HAT_UP,
+                GLFW_HAT_RIGHT_UP,
+                GLFW_HAT_RIGHT,
+                GLFW_HAT_RIGHT_DOWN,
+                GLFW_HAT_DOWN,
+                GLFW_HAT_LEFT_DOWN,
+                GLFW_HAT_LEFT,
+                GLFW_HAT_LEFT_UP,
+                GLFW_HAT_CENTERED
+            };
+
             _GLFWjoyelementNS* hat = (_GLFWjoyelementNS*)
                 CFArrayGetValueAtIndex(js->ns.hats, i);
-
-            // Bit fields of button presses for each direction, including nil
-            const int directions[9] = { 1, 3, 2, 6, 4, 12, 8, 9, 0 };
-
-            long j, state = getElementValue(js, hat);
+            long state = getElementValue(js, hat);
             if (state < 0 || state > 8)
                 state = 8;
 
-            for (j = 0;  j < 4;  j++)
-            {
-                const char value = directions[state] & (1 << j) ? 1 : 0;
-                _glfwInputJoystickButton(jid, bi++, value);
-            }
+            _glfwInputJoystickHat(jid, i, states[state]);
         }
     }
 

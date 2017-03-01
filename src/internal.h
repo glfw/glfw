@@ -266,6 +266,7 @@ typedef void (APIENTRY * PFN_vkVoidFunction)(void);
  */
 struct _GLFWinitconfig
 {
+    GLFWbool      hatButtons;
     struct {
         GLFWbool  menubar;
         GLFWbool  chdir;
@@ -476,6 +477,8 @@ struct _GLFWjoystick
     int             axisCount;
     unsigned char*  buttons;
     int             buttonCount;
+    unsigned char*  hats;
+    int             hatCount;
     char*           name;
 
     // This is defined in the joystick API's joystick.h
@@ -823,6 +826,13 @@ void _glfwInputJoystickAxis(int jid, int axis, float value);
  */
 void _glfwInputJoystickButton(int jid, int button, char value);
 
+/*! @brief Notifies shared code of the new value of a joystick hat.
+ *  @param[in] jid The joystick whose hat to update.
+ *  @param[in] button The index of the hat to update.
+ *  @param[in] value The new value of the hat.
+ */
+void _glfwInputJoystickHat(int jid, int hat, char value);
+
 
 //========================================================================
 // Utility functions
@@ -912,7 +922,7 @@ void _glfwFreeMonitor(_GLFWmonitor* monitor);
 /*! @brief Returns an available joystick object with arrays and name allocated.
  *  @ingroup utility
   */
-_GLFWjoystick* _glfwAllocJoystick(const char* name, int axisCount, int buttonCount);
+_GLFWjoystick* _glfwAllocJoystick(const char* name, int axisCount, int buttonCount, int hatCount);
 
 /*! @brief Frees arrays and name and flags the joystick object as unused.
  *  @ingroup utility

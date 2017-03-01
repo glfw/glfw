@@ -46,6 +46,7 @@ _GLFWlibrary _glfw = { GLFW_FALSE };
 static GLFWerrorfun _glfwErrorCallback;
 static _GLFWinitconfig _glfwInitHints =
 {
+    GLFW_TRUE, // hat buttons
     {
         GLFW_TRUE, // menubar
         GLFW_TRUE  // chdir
@@ -188,6 +189,9 @@ GLFWAPI void glfwInitHint(int hint, int value)
 {
     switch (hint)
     {
+        case GLFW_JOYSTICK_HAT_BUTTONS:
+            _glfwInitHints.hatButtons = value;
+            return;
         case GLFW_COCOA_CHDIR_RESOURCES:
             _glfwInitHints.ns.chdir = value;
             return;

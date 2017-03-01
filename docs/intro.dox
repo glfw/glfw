@@ -86,8 +86,9 @@ the application to the `Contents/Resources` subdirectory of the application's
 bundle, if present. 
 
 @anchor GLFW_COCOA_MENUBAR
-__GLFW_COCOA_MENUBAR__ specifies whether to create a basic menu bar when the
-first window is created, which is when AppKit is initialized.
+__GLFW_COCOA_MENUBAR__ specifies whether to create a basic menu bar, either from
+a nib or manually, when the first window is created, which is when AppKit is
+initialized.
 
 
 @subsubsection init_hints_values Supported and default values

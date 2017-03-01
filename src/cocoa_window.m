@@ -785,6 +785,10 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 //------------------------------------------------------------------------
 
 @interface GLFWApplication : NSApplication
+{
+    NSArray* nibObjects;
+}
+
 @end
 
 @implementation GLFWApplication
@@ -808,6 +812,17 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 //
 - (void)doNothing:(id)object
 {
+}
+
+- (void)loadMainMenu
+{
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 100800
+    [[NSBundle mainBundle] loadNibNamed:@"MainMenu"
+                                  owner:NSApp
+                        topLevelObjects:&nibObjects];
+#else
+    [[NSBundle mainBundle] loadNibNamed:@"MainMenu" owner:NSApp];
+#endif
 }
 @end
 
@@ -848,8 +863,7 @@ static NSString* findAppName(void)
 // Set up the menu bar (manually)
 // This is nasty, nasty stuff -- calls to undocumented semi-private APIs that
 // could go away at any moment, lots of stuff that really should be
-// localize(d|able), etc.  Loading a nib would save us this horror, but that
-// doesn't seem like a good thing to require of GLFW users.
+// localize(d|able), etc.  Add a nib to save us this horror.
 //
 static void createMenuBar(void)
 {
@@ -943,7 +957,11 @@ static GLFWbool initializeAppKit(void)
         // Menu bar setup must go between sharedApplication above and
         // finishLaunching below, in order to properly emulate the behavior
         // of NSApplicationMain
-        createMenuBar();
+
+        if ([[NSBundle mainBundle] pathForResource:@"MainMenu" ofType:@"nib"])
+            [NSApp loadMainMenu];
+        else
+            createMenuBar();
     }
 
     // There can only be one application delegate, but we allocate it the

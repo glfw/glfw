@@ -169,6 +169,7 @@ information on what to include when reporting a bug.
 - [Linux] Bugfix: Event processing did not detect joystick disconnection (#932)
 - [Cocoa] Added support for Vulkan window surface creation via
           [MoltenVK](https://moltengl.com/moltenvk/) (#870)
+- [Cocoa] Added support for loading a `MainMenu.nib` when available
 - [Cocoa] Bugfix: Disabling window aspect ratio would assert (#852)
 - [Cocoa] Bugfix: Window creation failed to set first responder (#876,#883)
 - [Cocoa] Bugfix: Removed use of deprecated `CGDisplayIOServicePort` function

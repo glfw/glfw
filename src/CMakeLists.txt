@@ -48,10 +48,11 @@ elseif (_GLFW_WAYLAND)
         BASENAME pointer-constraints-unstable-v1)
 elseif (_GLFW_MIR)
     set(glfw_HEADERS ${common_HEADERS} mir_platform.h linux_joystick.h
-                     posix_time.h posix_tls.h xkb_unicode.h egl_context.h)
+                     posix_time.h posix_tls.h xkb_unicode.h egl_context.h
+                     osmesa_context.h)
     set(glfw_SOURCES ${common_SOURCES} mir_init.c mir_monitor.c mir_window.c
                      linux_joystick.c posix_time.c posix_tls.c xkb_unicode.c
-                     egl_context.c)
+                     egl_context.c osmesa_context.c)
 elseif (_GLFW_OSMESA)
     set(glfw_HEADERS ${common_HEADERS} null_platform.h null_joystick.h
                      posix_time.h posix_tls.h osmesa_context.h)

@@ -443,10 +443,9 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
     MirSurfaceSpec* spec;
-    const char* e_title = title ? title : "";
 
     spec = mir_connection_create_spec_for_changes(_glfw.mir.connection);
-    mir_surface_spec_set_name(spec, e_title);
+    mir_surface_spec_set_name(spec, title);
 
     mir_surface_apply_spec(window->mir.surface, spec);
     mir_surface_spec_release(spec);

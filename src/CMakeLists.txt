@@ -33,10 +33,11 @@ elseif (_GLFW_X11)
     endif()
 elseif (_GLFW_WAYLAND)
     set(glfw_HEADERS ${common_HEADERS} wl_platform.h linux_joystick.h
-                     posix_time.h posix_tls.h xkb_unicode.h egl_context.h)
+                     posix_time.h posix_tls.h xkb_unicode.h egl_context.h
+                     osmesa_context.h)
     set(glfw_SOURCES ${common_SOURCES} wl_init.c wl_monitor.c wl_window.c
                      linux_joystick.c posix_time.c posix_tls.c xkb_unicode.c
-                     egl_context.c)
+                     egl_context.c osmesa_context.c)
 
     ecm_add_wayland_client_protocol(glfw_SOURCES
         PROTOCOL

@@ -51,6 +51,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #include "linux_joystick.h"
 #include "xkb_unicode.h"
 #include "egl_context.h"
+#include "osmesa_context.h"
 
 #include "wayland-relative-pointer-unstable-v1-client-protocol.h"
 #include "wayland-pointer-constraints-unstable-v1-client-protocol.h"

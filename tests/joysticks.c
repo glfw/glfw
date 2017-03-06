@@ -90,7 +90,7 @@ static const char* joystick_label(int jid)
 
 int main(void)
 {
-    int jid;
+    int jid, hat_buttons = GLFW_FALSE;
     GLFWwindow* window;
     struct nk_context* nk;
     struct nk_font_atlas* atlas;
@@ -98,7 +98,6 @@ int main(void)
     memset(joysticks, 0, sizeof(joysticks));
 
     glfwSetErrorCallback(error_callback);
-    glfwInitHint(GLFW_JOYSTICK_HAT_BUTTONS, GLFW_FALSE);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
@@ -143,7 +142,7 @@ int main(void)
         {
             nk_layout_row_dynamic(nk, 30, 1);
 
-            nk_label(nk, "Hat buttons disabled", NK_TEXT_LEFT);
+            nk_checkbox_label(nk, "Hat buttons", &hat_buttons);
 
             if (joystick_count)
             {
@@ -178,12 +177,17 @@ int main(void)
                 nk_layout_row_dynamic(nk, 30, 1);
 
                 axes = glfwGetJoystickAxes(joysticks[i], &axis_count);
+                buttons = glfwGetJoystickButtons(joysticks[i], &button_count);
+                hats = glfwGetJoystickHats(joysticks[i], &hat_count);
+
+                if (!hat_buttons)
+                    button_count -= hat_count * 4;
+
                 for (j = 0;  j < axis_count;  j++)
                     nk_slide_float(nk, -1.f, axes[j], 1.f, 0.1f);
 
                 nk_layout_row_dynamic(nk, 30, 8);
 
-                buttons = glfwGetJoystickButtons(joysticks[i], &button_count);
                 for (j = 0;  j < button_count;  j++)
                 {
                     char name[16];
@@ -193,7 +197,6 @@ int main(void)
 
                 nk_layout_row_dynamic(nk, 30, 8);
 
-                hats = glfwGetJoystickHats(joysticks[i], &hat_count);
                 for (j = 0;  j < hat_count;  j++)
                 {
                     float radius;

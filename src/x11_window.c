@@ -957,6 +957,17 @@ static void processEvent(XEvent *event)
         return;
     }
 
+    if (event->type == SelectionClear)
+    {
+        handleSelectionClear(event);
+        return;
+    }
+    else if (event->type == SelectionRequest)
+    {
+        handleSelectionRequest(event);
+        return;
+    }
+
     window = findWindowByHandle(event->xany.window);
     if (window == NULL)
     {
@@ -1473,18 +1484,6 @@ static void processEvent(XEvent *event)
                 }
             }
 
-            return;
-        }
-
-        case SelectionClear:
-        {
-            handleSelectionClear(event);
-            return;
-        }
-
-        case SelectionRequest:
-        {
-            handleSelectionRequest(event);
             return;
         }
 

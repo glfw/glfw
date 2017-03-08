@@ -311,9 +311,6 @@ int _glfwPlatformInit(void)
     if (!initializeTIS())
         return GLFW_FALSE;
 
-    if (!_glfwInitThreadLocalStoragePOSIX())
-        return GLFW_FALSE;
-
     _glfwInitTimerNS();
     _glfwInitJoysticksNS();
 
@@ -362,7 +359,6 @@ void _glfwPlatformTerminate(void)
 
     _glfwTerminateNSGL();
     _glfwTerminateJoysticksNS();
-    _glfwTerminateThreadLocalStoragePOSIX();
 
     [_glfw.ns.autoreleasePool release];
     _glfw.ns.autoreleasePool = nil;

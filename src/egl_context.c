@@ -199,12 +199,12 @@ static void makeContextCurrentEGL(_GLFWwindow* window)
         }
     }
 
-    _glfwPlatformSetCurrentContext(window);
+    _glfwPlatformSetTls(&_glfw.context, window);
 }
 
 static void swapBuffersEGL(_GLFWwindow* window)
 {
-    if (window != _glfwPlatformGetCurrentContext())
+    if (window != _glfwPlatformGetTls(&_glfw.context))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "EGL: The context must be current on the calling thread when swapping buffers");
@@ -233,7 +233,7 @@ static int extensionSupportedEGL(const char* extension)
 
 static GLFWglproc getProcAddressEGL(const char* procname)
 {
-    _GLFWwindow* window = _glfwPlatformGetCurrentContext();
+    _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.context);
 
     if (window->context.egl.client)
     {

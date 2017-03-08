@@ -435,9 +435,6 @@ void _glfwInputErrorWin32(int error, const char* description)
 
 int _glfwPlatformInit(void)
 {
-    if (!_glfwInitThreadLocalStorageWin32())
-        return GLFW_FALSE;
-
     // To make SetForegroundWindow work as we want, we need to fiddle
     // with the FOREGROUNDLOCKTIMEOUT system setting (we do this as early
     // as possible in the hope of still being the foreground process)
@@ -489,7 +486,6 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateEGL();
 
     _glfwTerminateJoysticksWin32();
-    _glfwTerminateThreadLocalStorageWin32();
 
     freeLibraries();
 }

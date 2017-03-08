@@ -113,6 +113,8 @@ static void terminate(void)
     _glfwTerminateVulkan();
     _glfwPlatformTerminate();
 
+    _glfwPlatformDestroyTls(&_glfw.context);
+
     memset(&_glfw, 0, sizeof(_glfw));
 }
 
@@ -161,6 +163,9 @@ GLFWAPI int glfwInit(void)
 
     memset(&_glfw, 0, sizeof(_glfw));
     _glfw.hints.init = _glfwInitHints;
+
+    if (!_glfwPlatformCreateTls(&_glfw.context))
+        return GLFW_FALSE;
 
     if (!_glfwPlatformInit())
     {

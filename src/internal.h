@@ -69,6 +69,7 @@ typedef struct _GLFWlibrary     _GLFWlibrary;
 typedef struct _GLFWmonitor     _GLFWmonitor;
 typedef struct _GLFWcursor      _GLFWcursor;
 typedef struct _GLFWjoystick    _GLFWjoystick;
+typedef struct _GLFWtls         _GLFWtls;
 
 typedef void (* _GLFWmakecontextcurrentfun)(_GLFWwindow*);
 typedef void (* _GLFWswapbuffersfun)(_GLFWwindow*);
@@ -485,6 +486,14 @@ struct _GLFWjoystick
     _GLFW_PLATFORM_JOYSTICK_STATE;
 };
 
+/*! @brief Thread local storage structure.
+ */
+struct _GLFWtls
+{
+    // This is defined in the platform's tls.h
+    _GLFW_PLATFORM_TLS_STATE;
+};
+
 /*! @brief Library global data.
  */
 struct _GLFWlibrary
@@ -509,6 +518,8 @@ struct _GLFWlibrary
     _GLFWjoystick       joysticks[GLFW_JOYSTICK_LAST + 1];
 
     uint64_t            timerOffset;
+
+    _GLFWtls            context;
 
     struct {
         GLFWbool        available;
@@ -546,8 +557,6 @@ struct _GLFWlibrary
     _GLFW_PLATFORM_LIBRARY_TIME_STATE;
     // This is defined in the platform's joystick.h
     _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE;
-    // This is defined in the platform's tls.h
-    _GLFW_PLATFORM_LIBRARY_TLS_STATE;
     // This is defined in egl_context.h
     _GLFW_EGL_LIBRARY_CONTEXT_STATE;
     // This is defined in osmesa_context.h
@@ -634,12 +643,14 @@ void _glfwPlatformWaitEvents(void);
 void _glfwPlatformWaitEventsTimeout(double timeout);
 void _glfwPlatformPostEmptyEvent(void);
 
-void _glfwPlatformSetCurrentContext(_GLFWwindow* context);
-_GLFWwindow* _glfwPlatformGetCurrentContext(void);
-
 void _glfwPlatformGetRequiredInstanceExtensions(char** extensions);
 int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
 VkResult _glfwPlatformCreateWindowSurface(VkInstance instance, _GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
+
+GLFWbool _glfwPlatformCreateTls(_GLFWtls* tls);
+void _glfwPlatformDestroyTls(_GLFWtls* tls);
+void* _glfwPlatformGetTls(_GLFWtls* tls);
+void _glfwPlatformSetTls(_GLFWtls* tls, void* value);
 
 /*! @} */
 

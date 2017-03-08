@@ -822,9 +822,6 @@ int _glfwPlatformInit(void)
         }
     }
 
-    if (!_glfwInitThreadLocalStoragePOSIX())
-        return GLFW_FALSE;
-
 #if defined(__linux__)
     if (!_glfwInitJoysticksLinux())
         return GLFW_FALSE;
@@ -885,7 +882,6 @@ void _glfwPlatformTerminate(void)
 #if defined(__linux__)
     _glfwTerminateJoysticksLinux();
 #endif
-    _glfwTerminateThreadLocalStoragePOSIX();
 }
 
 const char* _glfwPlatformGetVersionString(void)

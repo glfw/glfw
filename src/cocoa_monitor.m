@@ -48,9 +48,8 @@ static char* getDisplayName(CGDirectDisplayID displayID)
                                      IOServiceMatching("IODisplayConnect"),
                                      &it) != 0)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Failed to get display service port iterator");
-        return 0;
+        // This may happen if a desktop Mac is running headless
+        return NULL;
     }
 
     while ((service = IOIteratorNext(it)) != 0)
@@ -99,8 +98,6 @@ static char* getDisplayName(CGDirectDisplayID displayID)
                                                  (const void**) &nameRef))
     {
         // This may happen if a desktop Mac is running headless
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Failed to retrieve display name");
         CFRelease(info);
         return NULL;
     }

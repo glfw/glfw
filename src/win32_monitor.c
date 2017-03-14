@@ -94,7 +94,6 @@ void _glfwPollMonitorsWin32(void)
     _GLFWmonitor** disconnected = NULL;
     DWORD adapterIndex, displayIndex;
     DISPLAY_DEVICEW adapter, display;
-    GLFWbool hasDisplays = GLFW_FALSE;
 
     disconnectedCount = _glfw.monitorCount;
     if (disconnectedCount)
@@ -103,30 +102,6 @@ void _glfwPollMonitorsWin32(void)
         memcpy(disconnected,
                _glfw.monitors,
                _glfw.monitorCount * sizeof(_GLFWmonitor*));
-    }
-
-    // HACK: Check if any active adapters have connected displays
-    //       If not, this is a headless system or a VMware guest
-
-    for (adapterIndex = 0;  ;  adapterIndex++)
-    {
-        ZeroMemory(&adapter, sizeof(DISPLAY_DEVICEW));
-        adapter.cb = sizeof(DISPLAY_DEVICEW);
-
-        if (!EnumDisplayDevicesW(NULL, adapterIndex, &adapter, 0))
-            break;
-
-        if (!(adapter.StateFlags & DISPLAY_DEVICE_ACTIVE))
-            continue;
-
-        ZeroMemory(&display, sizeof(DISPLAY_DEVICEW));
-        display.cb = sizeof(DISPLAY_DEVICEW);
-
-        if (EnumDisplayDevicesW(adapter.DeviceName, 0, &display, 0))
-        {
-            hasDisplays = GLFW_TRUE;
-            break;
-        }
     }
 
     for (adapterIndex = 0;  ;  adapterIndex++)
@@ -145,37 +120,40 @@ void _glfwPollMonitorsWin32(void)
         if (adapter.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE)
             type = _GLFW_INSERT_FIRST;
 
-        if (hasDisplays)
+        for (displayIndex = 0;  ;  displayIndex++)
         {
-            for (displayIndex = 0;  ;  displayIndex++)
+            ZeroMemory(&display, sizeof(DISPLAY_DEVICEW));
+            display.cb = sizeof(DISPLAY_DEVICEW);
+
+            if (!EnumDisplayDevicesW(adapter.DeviceName, displayIndex, &display, 0))
+                break;
+
+            if (!(display.StateFlags & DISPLAY_DEVICE_ACTIVE))
+                continue;
+
+            for (i = 0;  i < disconnectedCount;  i++)
             {
-                ZeroMemory(&display, sizeof(DISPLAY_DEVICEW));
-                display.cb = sizeof(DISPLAY_DEVICEW);
-
-                if (!EnumDisplayDevicesW(adapter.DeviceName, displayIndex, &display, 0))
-                    break;
-
-                for (i = 0;  i < disconnectedCount;  i++)
+                if (disconnected[i] &&
+                    wcscmp(disconnected[i]->win32.displayName,
+                           display.DeviceName) == 0)
                 {
-                    if (disconnected[i] &&
-                        wcscmp(disconnected[i]->win32.displayName,
-                               display.DeviceName) == 0)
-                    {
-                        disconnected[i] = NULL;
-                        break;
-                    }
+                    disconnected[i] = NULL;
+                    break;
                 }
-
-                if (i < disconnectedCount)
-                    continue;
-
-                _glfwInputMonitor(createMonitor(&adapter, &display),
-                                  GLFW_CONNECTED, type);
-
-                type = _GLFW_INSERT_LAST;
             }
+
+            if (i < disconnectedCount)
+                continue;
+
+            _glfwInputMonitor(createMonitor(&adapter, &display),
+                              GLFW_CONNECTED, type);
+
+            type = _GLFW_INSERT_LAST;
         }
-        else
+
+        // HACK: If an active adapter does not have any display devices
+        //       (as sometimes happens), add it directly as a monitor
+        if (displayIndex == 0)
         {
             for (i = 0;  i < disconnectedCount;  i++)
             {

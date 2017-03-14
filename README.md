@@ -166,6 +166,7 @@ information on what to include when reporting a bug.
 - [Win32] Bugfix: The 32-bit Vulkan loader library static was not searched for
 - [Win32] Bugfix: Vulkan libraries have a new path as of SDK 1.0.42.0 (#956)
 - [Win32] Bugfix: Monitors with no display devices were not enumerated (#960)
+- [Win32] Bugfix: Monitor events were not emitted (#784)
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
 - [X11] Bugfix: `glfwGetVideoMode` would segfault on Cygwin/X
 - [X11] Bugfix: Dynamic X11 library loading did not use full sonames (#941)

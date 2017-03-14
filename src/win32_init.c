@@ -307,10 +307,10 @@ static HWND createHelperWindow(void)
     MSG msg;
     HWND window = CreateWindowExW(WS_EX_OVERLAPPEDWINDOW,
                                   _GLFW_WNDCLASSNAME,
-                                  L"GLFW helper window",
+                                  L"GLFW message window",
                                   WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
                                   0, 0, 1, 1,
-                                  HWND_MESSAGE, NULL,
+                                  NULL, NULL,
                                   GetModuleHandleW(NULL),
                                   NULL);
     if (!window)

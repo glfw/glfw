@@ -110,6 +110,9 @@ typedef MirEGLNativeWindowType EGLNativeWindowType;
 #define EGL_CONTEXT_OPENGL_NO_ERROR_KHR 0x31b3
 #define EGL_GL_COLORSPACE_KHR 0x309d
 #define EGL_GL_COLORSPACE_SRGB_KHR 0x3089
+#define EGL_CONTEXT_RELEASE_BEHAVIOR_KHR 0x2097
+#define EGL_CONTEXT_RELEASE_BEHAVIOR_NONE_KHR 0
+#define EGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR 0x2098
 
 typedef int EGLint;
 typedef unsigned int EGLBoolean;
@@ -181,6 +184,7 @@ typedef struct _GLFWlibraryEGL
     GLFWbool        KHR_create_context_no_error;
     GLFWbool        KHR_gl_colorspace;
     GLFWbool        KHR_get_all_proc_addresses;
+    GLFWbool        KHR_context_flush_control;
 
     void*           handle;
 

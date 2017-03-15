@@ -403,6 +403,8 @@ GLFWbool _glfwInitEGL(void)
         extensionSupportedEGL("EGL_KHR_gl_colorspace");
     _glfw.egl.KHR_get_all_proc_addresses =
         extensionSupportedEGL("EGL_KHR_get_all_proc_addresses");
+    _glfw.egl.KHR_context_flush_control =
+        extensionSupportedEGL("EGL_KHR_context_flush_control");
 
     return GLFW_TRUE;
 }
@@ -440,6 +442,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
     EGLint attribs[40];
     EGLConfig config;
     EGLContext share = NULL;
+    int index = 0;
 
     if (!_glfw.egl.display)
     {
@@ -480,7 +483,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 
     if (_glfw.egl.KHR_create_context)
     {
-        int index = 0, mask = 0, flags = 0;
+        int mask = 0, flags = 0;
 
         if (ctxconfig->client == GLFW_OPENGL_API)
         {
@@ -529,21 +532,28 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 
         if (flags)
             setEGLattrib(EGL_CONTEXT_FLAGS_KHR, flags);
-
-        setEGLattrib(EGL_NONE, EGL_NONE);
     }
     else
     {
-        int index = 0;
-
         if (ctxconfig->client == GLFW_OPENGL_ES_API)
             setEGLattrib(EGL_CONTEXT_CLIENT_VERSION, ctxconfig->major);
-
-        setEGLattrib(EGL_NONE, EGL_NONE);
     }
 
-    // Context release behaviors (GL_KHR_context_flush_control) are not yet
-    // supported on EGL but are not a hard constraint, so ignore and continue
+    if (_glfw.egl.KHR_context_flush_control)
+    {
+        if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_NONE)
+        {
+            setEGLattrib(EGL_CONTEXT_RELEASE_BEHAVIOR_KHR,
+                         EGL_CONTEXT_RELEASE_BEHAVIOR_NONE_KHR);
+        }
+        else if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_FLUSH)
+        {
+            setEGLattrib(EGL_CONTEXT_RELEASE_BEHAVIOR_KHR,
+                         EGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR);
+        }
+    }
+
+    setEGLattrib(EGL_NONE, EGL_NONE);
 
     window->context.egl.handle = eglCreateContext(_glfw.egl.display,
                                                   config, share, attribs);

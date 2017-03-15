@@ -22,7 +22,7 @@
  * Author: Jon Ashburn <jon@lunarg.com>
  * Author: Piers Daniell <pdaniell@nvidia.com>
  * Author: Gwan-gyeong Mun <elongbug@gmail.com>
- * Porter: Camilla Berglund <elmindreda@glfw.org>
+ * Porter: Camilla Löwy <elmindreda@glfw.org>
  */
 /*
  * Draw a textured triangle with depth testing.  This is written against Intel

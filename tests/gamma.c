@@ -1,6 +1,6 @@
 //========================================================================
 // Gamma correction test program
-// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -116,7 +116,6 @@ int main(int argc, char** argv)
     while (!glfwWindowShouldClose(window))
     {
         int width, height;
-        struct nk_panel layout;
         struct nk_rect area;
 
         glfwGetWindowSize(window, &width, &height);
@@ -124,7 +123,7 @@ int main(int argc, char** argv)
 
         glClear(GL_COLOR_BUFFER_BIT);
         nk_glfw3_new_frame();
-        if (nk_begin(nk, &layout, "", area, 0))
+        if (nk_begin(nk, "", area, 0))
         {
             const GLFWgammaramp* ramp = glfwGetGammaRamp(monitor);
             nk_window_set_bounds(nk, area);
@@ -133,13 +132,11 @@ int main(int argc, char** argv)
             if (nk_slider_float(nk, 0.1f, &gamma_value, 5.f, 0.1f))
                 glfwSetGamma(monitor, gamma_value);
             nk_labelf(nk, NK_TEXT_LEFT, "%0.1f", gamma_value);
-            nk_layout_row_end(nk);
 
             nk_layout_row_dynamic(nk, height - 60.f, 3);
             chart_ramp_array(nk, nk_rgb(255, 0, 0), ramp->size, ramp->red);
             chart_ramp_array(nk, nk_rgb(0, 255, 0), ramp->size, ramp->green);
             chart_ramp_array(nk, nk_rgb(0,0,  255), ramp->size, ramp->blue);
-            nk_layout_row_end(nk);
         }
 
         nk_end(nk);

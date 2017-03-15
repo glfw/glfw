@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.3 OSMesa - www.glfw.org
+// GLFW 3.3 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2016 Google Inc.
-// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -31,8 +31,8 @@
 static int createNativeWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig)
 {
-    window->osmesa.width = wndconfig->width;
-    window->osmesa.height = wndconfig->height;
+    window->null.width = wndconfig->width;
+    window->null.height = wndconfig->height;
 
     return GLFW_TRUE;
 }
@@ -52,7 +52,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (ctxconfig->client != GLFW_NO_API)
     {
-        if (ctxconfig->source == GLFW_NATIVE_CONTEXT_API)
+        if (ctxconfig->source == GLFW_NATIVE_CONTEXT_API ||
+            ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
         {
             if (!_glfwInitOSMesa())
                 return GLFW_FALSE;
@@ -61,7 +62,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         }
         else
         {
-            _glfwInputError(GLFW_API_UNAVAILABLE, "OSMesa: EGL not available");
+            _glfwInputError(GLFW_API_UNAVAILABLE, "Null: EGL not available");
             return GLFW_FALSE;
         }
     }
@@ -103,15 +104,15 @@ void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 {
     if (width)
-        *width = window->osmesa.width;
+        *width = window->null.width;
     if (height)
-        *height = window->osmesa.height;
+        *height = window->null.height;
 }
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    window->osmesa.width = width;
-    window->osmesa.height = height;
+    window->null.width = width;
+    window->null.height = height;
 }
 
 void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
@@ -127,19 +128,15 @@ void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int n, int d)
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
     if (width)
-        *width = window->osmesa.width;
+        *width = window->null.width;
     if (height)
-        *height = window->osmesa.height;
+        *height = window->null.height;
 }
 
 void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
                                      int* left, int* top,
                                      int* right, int* bottom)
 {
-    if (right)
-        *right = window->osmesa.width;
-    if (bottom)
-        *top = window->osmesa.height;
 }
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
@@ -157,6 +154,18 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 {
     return GLFW_FALSE;
+}
+
+void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
+{
+}
+
+void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
+{
+}
+
+void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
+{
 }
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
@@ -218,10 +227,6 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
 }
 
-void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
-{
-}
-
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                               const GLFWimage* image,
                               int xhot, int yhot)
@@ -259,26 +264,6 @@ const char* _glfwPlatformGetKeyName(int key, int scancode)
 int _glfwPlatformGetKeyScancode(int key)
 {
     return -1;
-}
-
-int _glfwPlatformJoystickPresent(int joy)
-{
-    return GLFW_FALSE;
-}
-
-const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
-{
-    return NULL;
-}
-
-const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)
-{
-    return NULL;
-}
-
-const char* _glfwPlatformGetJoystickName(int joy)
-{
-    return NULL;
 }
 
 void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)

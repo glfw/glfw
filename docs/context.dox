@@ -30,8 +30,8 @@ the `glfwinfo` test program.
 
 @note Vulkan does not have a context and the Vulkan instance is created via the
 Vulkan API itself.  If you will be using Vulkan to render to a window, disable
-context creation by setting the [GLFW_CLIENT_API](@ref window_hints_ctx) hint to
-`GLFW_NO_API`.  For more information, see the @ref vulkan_guide.
+context creation by setting the [GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint)
+hint to `GLFW_NO_API`.  For more information, see the @ref vulkan_guide.
 
 
 @subsection context_hints Context creation hints
@@ -68,7 +68,7 @@ GLFW comes with a simple object sharing test program called `sharing`.
 
 GLFW doesn't support creating contexts without an associated window.  However,
 contexts with hidden windows can be created with the
-[GLFW_VISIBLE](@ref window_hints_wnd) window hint.
+[GLFW_VISIBLE](@ref GLFW_VISIBLE_hint) window hint.
 
 @code
 glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -84,17 +84,16 @@ objects are recommended for rendering with such contexts.
 You should still [process events](@ref events) as long as you have at least one
 window, even if none of them are visible.
 
-@macos The first time a window is created the menu bar is populated with
-common commands like Hide, Quit and About.  This is not desirable for example
-when writing a command-line only application.  The menu bar setup can be
-disabled with a [compile-time option](@ref compile_options_osx).
+@macos The first time a window is created the menu bar is created.  This is not
+desirable for example when writing a command-line only application.  Menu bar
+creation can be disabled with the @ref GLFW_COCOA_MENUBAR init hint.
 
 
 @subsection context_less Windows without contexts
 
 You can disable context creation by setting the
-[GLFW_CLIENT_API](@ref window_hints_ctx) hint to `GLFW_NO_API`.  Windows without
-contexts must not be passed to @ref glfwMakeContextCurrent or @ref
+[GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint) hint to `GLFW_NO_API`.  Windows
+without contexts must not be passed to @ref glfwMakeContextCurrent or @ref
 glfwSwapBuffers.
 
 
@@ -266,8 +265,8 @@ supports.  These have names like `PFNGLGETDEBUGMESSAGELOGARBPROC` (for
 `glGetDebugMessageLogARB`), i.e. the name is made uppercase and `PFN` (pointer
 to function) and `PROC` (procedure) are added to the ends.
 
-To include the extension header, define [GLFW_INCLUDE_GLEXT](@ref build_macros)
-before including the GLFW header.
+To include the extension header, define @ref GLFW_INCLUDE_GLEXT before including
+the GLFW header.
 
 @code
 #define GLFW_INCLUDE_GLEXT

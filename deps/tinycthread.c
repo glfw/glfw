@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution.
 */
 
-/* 2013-01-06 Camilla Berglund <elmindreda@glfw.org>
+/* 2013-01-06 Camilla Löwy <elmindreda@glfw.org>
  *
  * Added casts from time_t to DWORD to avoid warnings on VC++.
  * Fixed time retrieval on POSIX systems.

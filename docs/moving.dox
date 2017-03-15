@@ -434,7 +434,7 @@ GLFW 3 does not by default include the GLU header and GLU itself has been
 deprecated by [Khronos](https://en.wikipedia.org/wiki/Khronos_Group).  __New
 projects should not use GLU__, but if you need it for legacy code that
 has been moved to GLFW 3, you can request that the GLFW header includes it by
-defining `GLFW_INCLUDE_GLU` before the inclusion of the GLFW header.
+defining @ref GLFW_INCLUDE_GLU before the inclusion of the GLFW header.
 
 @par Old syntax
 @code
@@ -446,6 +446,13 @@ defining `GLFW_INCLUDE_GLU` before the inclusion of the GLFW header.
 #define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
 @endcode
+
+There are many libraries that offer replacements for the functionality offered
+by GLU.  For the matrix helper functions, see math libraries like
+[GLM](https://github.com/g-truc/glm) (for C++),
+[linmath.h](https://github.com/datenwolf/linmath.h) (for C) and others.  For the
+tessellation functions, see for example
+[libtess2](https://github.com/memononen/libtess2).
 
 
 @section moving_tables Name change tables

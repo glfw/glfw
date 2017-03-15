@@ -1,15 +1,15 @@
 
 link_libraries(glfw)
 
-if (BUILD_SHARED_LIBS)
+include_directories(${glfw_INCLUDE_DIRS} "${GLFW_SOURCE_DIR}/deps")
+
+if (MATH_LIBRARY)
     link_libraries("${MATH_LIBRARY}")
 endif()
 
 if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
-
-include_directories("${GLFW_SOURCE_DIR}/deps")
 
 set(GLAD "${GLFW_SOURCE_DIR}/deps/glad/glad.h"
          "${GLFW_SOURCE_DIR}/deps/glad.c")
@@ -38,8 +38,12 @@ add_executable(timeout WIN32 MACOSX_BUNDLE timeout.c ${GLAD})
 add_executable(title WIN32 MACOSX_BUNDLE title.c ${GLAD})
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GETOPT} ${GLAD})
 
-target_link_libraries(empty "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
-target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
+target_link_libraries(empty "${CMAKE_THREAD_LIBS_INIT}")
+target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}")
+if (RT_LIBRARY)
+    target_link_libraries(empty "${RT_LIBRARY}")
+    target_link_libraries(threads "${RT_LIBRARY}")
+endif()
 
 set(WINDOWS_BINARIES empty gamma icon joysticks sharing tearing threads timeout
                      title windows)

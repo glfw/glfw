@@ -2,7 +2,7 @@
 // GLFW 3.3 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -86,83 +86,49 @@ static GLFWbool refreshVideoModes(_GLFWmonitor* monitor)
 //////                         GLFW event API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-void _glfwInputMonitorChange(void)
+void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement)
 {
-    int i, j, monitorCount = _glfw.monitorCount;
-    _GLFWmonitor** monitors = _glfw.monitors;
-
-    _glfw.monitors = _glfwPlatformGetMonitors(&_glfw.monitorCount);
-
-    // Re-use still connected monitor objects
-
-    for (i = 0;  i < _glfw.monitorCount;  i++)
+    if (action == GLFW_CONNECTED)
     {
-        for (j = 0;  j < monitorCount;  j++)
+        _glfw.monitorCount++;
+        _glfw.monitors =
+            realloc(_glfw.monitors, sizeof(_GLFWmonitor*) * _glfw.monitorCount);
+
+        if (placement == _GLFW_INSERT_FIRST)
         {
-            if (_glfwPlatformIsSameMonitor(_glfw.monitors[i], monitors[j]))
+            memmove(_glfw.monitors + 1,
+                    _glfw.monitors,
+                    (_glfw.monitorCount - 1) * sizeof(_GLFWmonitor*));
+            _glfw.monitors[0] = monitor;
+        }
+        else
+            _glfw.monitors[_glfw.monitorCount - 1] = monitor;
+    }
+    else if (action == GLFW_DISCONNECTED)
+    {
+        int i;
+
+        for (i = 0;  i < _glfw.monitorCount;  i++)
+        {
+            if (_glfw.monitors[i] == monitor)
             {
-                _glfwFreeMonitor(_glfw.monitors[i]);
-                _glfw.monitors[i] = monitors[j];
+                _glfw.monitorCount--;
+                memmove(_glfw.monitors + i,
+                        _glfw.monitors + i + 1,
+                        (_glfw.monitorCount - i) * sizeof(_GLFWmonitor*));
                 break;
             }
         }
     }
 
-    // Find and report disconnected monitors (not in the new list)
+    if (_glfw.callbacks.monitor)
+        _glfw.callbacks.monitor((GLFWmonitor*) monitor, action);
 
-    for (i = 0;  i < monitorCount;  i++)
-    {
-        _GLFWwindow* window;
-
-        for (j = 0;  j < _glfw.monitorCount;  j++)
-        {
-            if (monitors[i] == _glfw.monitors[j])
-                break;
-        }
-
-        if (j < _glfw.monitorCount)
-            continue;
-
-        for (window = _glfw.windowListHead;  window;  window = window->next)
-        {
-            if (window->monitor == monitors[i])
-            {
-                int width, height;
-                _glfwPlatformGetWindowSize(window, &width, &height);
-                _glfwPlatformSetWindowMonitor(window, NULL, 0, 0, width, height, 0);
-            }
-        }
-
-        if (_glfw.callbacks.monitor)
-            _glfw.callbacks.monitor((GLFWmonitor*) monitors[i], GLFW_DISCONNECTED);
-    }
-
-    // Find and report newly connected monitors (not in the old list)
-    // Re-used monitor objects are then removed from the old list to avoid
-    // having them destroyed at the end of this function
-
-    for (i = 0;  i < _glfw.monitorCount;  i++)
-    {
-        for (j = 0;  j < monitorCount;  j++)
-        {
-            if (_glfw.monitors[i] == monitors[j])
-            {
-                monitors[j] = NULL;
-                break;
-            }
-        }
-
-        if (j < monitorCount)
-            continue;
-
-        if (_glfw.callbacks.monitor)
-            _glfw.callbacks.monitor((GLFWmonitor*) _glfw.monitors[i], GLFW_CONNECTED);
-    }
-
-    _glfwFreeMonitors(monitors, monitorCount);
+    if (action == GLFW_DISCONNECTED)
+        _glfwFreeMonitor(monitor);
 }
 
-void _glfwInputMonitorWindowChange(_GLFWmonitor* monitor, _GLFWwindow* window)
+void _glfwInputMonitorWindow(_GLFWmonitor* monitor, _GLFWwindow* window)
 {
     monitor->window = window;
 }
@@ -212,16 +178,6 @@ void _glfwFreeGammaArrays(GLFWgammaramp* ramp)
     free(ramp->blue);
 
     memset(ramp, 0, sizeof(GLFWgammaramp));
-}
-
-void _glfwFreeMonitors(_GLFWmonitor** monitors, int count)
-{
-    int i;
-
-    for (i = 0;  i < count;  i++)
-        _glfwFreeMonitor(monitors[i]);
-
-    free(monitors);
 }
 
 const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
@@ -306,6 +262,7 @@ void _glfwSplitBPP(int bpp, int* red, int* green, int* blue)
 GLFWAPI GLFWmonitor** glfwGetMonitors(int* count)
 {
     assert(count != NULL);
+
     *count = 0;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
@@ -406,6 +363,10 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
     int i;
     unsigned short values[256];
     GLFWgammaramp ramp;
+    assert(handle != NULL);
+    assert(gamma == gamma);
+    assert(gamma >= 0.f);
+    assert(gamma <= FLT_MAX);
 
     _GLFW_REQUIRE_INIT();
 
@@ -457,6 +418,7 @@ GLFWAPI void glfwSetGammaRamp(GLFWmonitor* handle, const GLFWgammaramp* ramp)
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
     assert(monitor != NULL);
     assert(ramp != NULL);
+    assert(ramp->size > 0);
     assert(ramp->red != NULL);
     assert(ramp->green != NULL);
     assert(ramp->blue != NULL);

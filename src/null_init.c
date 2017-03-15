@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.3 POSIX - www.glfw.org
+// GLFW 3.3 - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2002-2006 Marcus Geelnard
+// Copyright (c) 2016 Google Inc.
 // Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
@@ -25,24 +25,30 @@
 //
 //========================================================================
 
-#ifndef _glfw3_posix_time_h_
-#define _glfw3_posix_time_h_
-
-#define _GLFW_PLATFORM_LIBRARY_TIME_STATE _GLFWtimePOSIX posix_time
-
-#include <stdint.h>
+#include "internal.h"
 
 
-// POSIX-specific global timer data
-//
-typedef struct _GLFWtimePOSIX
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+int _glfwPlatformInit(void)
 {
-    GLFWbool    monotonic;
-    uint64_t    frequency;
+    if (!_glfwInitThreadLocalStoragePOSIX())
+        return GLFW_FALSE;
 
-} _GLFWtimePOSIX;
+    _glfwInitTimerPOSIX();
+    return GLFW_TRUE;
+}
 
+void _glfwPlatformTerminate(void)
+{
+    _glfwTerminateOSMesa();
+    _glfwTerminateThreadLocalStoragePOSIX();
+}
 
-void _glfwInitTimerPOSIX(void);
+const char* _glfwPlatformGetVersionString(void)
+{
+    return _GLFW_VERSION_NUMBER " null OSMesa";
+}
 
-#endif // _glfw3_posix_time_h_

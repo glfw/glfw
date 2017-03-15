@@ -15,7 +15,7 @@
  *   - Slightly modified camera that should work better for stereo viewing
  *
  *
- * Camilla Berglund:
+ * Camilla Löwy:
  *   - Removed FPS counter (this is not a benchmark)
  *   - Added a few comments
  *   - Enabled vsync

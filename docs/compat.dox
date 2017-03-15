@@ -76,6 +76,10 @@ GLFW uses the Xkb extension and detectable auto-repeat to provide keyboard
 input.  If the running X server does not support this extension, a non-Xkb
 fallback path is used.
 
+GLFW uses the XInput2 extension to provide raw, non-accelerated mouse motion
+when the cursor is disabled.  If the running X server does not support this
+extension, regular accelerated mouse motion will be used. 
+
 
 @section compat_glx GLX extensions
 
@@ -187,9 +191,10 @@ a non-default value will cause @ref glfwCreateWindow to fail and the
 
 By default, GLFW uses the standard system-wide Vulkan loader to access the
 Vulkan API on all platforms except macOS.  This is installed by both graphics
-drivers and Vulkan SDKs.  If the loader is not found, @ref glfwVulkanSupported
-will return `GLFW_FALSE` and all other Vulkan-related functions will fail with
-an @ref GLFW_API_UNAVAILABLE error.
+drivers and Vulkan SDKs.  If either the loader or at least one minimally
+functional ICD is missing, @ref glfwVulkanSupported will return `GLFW_FALSE` and
+all other Vulkan-related functions will fail with an @ref GLFW_API_UNAVAILABLE
+error.
 
 
 @section compat_wsi Vulkan WSI extensions

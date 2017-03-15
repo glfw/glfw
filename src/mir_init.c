@@ -51,6 +51,7 @@ static void createKeyTables(void)
     _glfw.mir.keycodes[KEY_8]          = GLFW_KEY_8;
     _glfw.mir.keycodes[KEY_9]          = GLFW_KEY_9;
     _glfw.mir.keycodes[KEY_0]          = GLFW_KEY_0;
+    _glfw.mir.keycodes[KEY_SPACE]      = GLFW_KEY_SPACE;
     _glfw.mir.keycodes[KEY_MINUS]      = GLFW_KEY_MINUS;
     _glfw.mir.keycodes[KEY_EQUAL]      = GLFW_KEY_EQUAL;
     _glfw.mir.keycodes[KEY_Q]          = GLFW_KEY_Q;
@@ -213,6 +214,7 @@ int _glfwPlatformInit(void)
         return GLFW_FALSE;
     }
 
+    _glfwPollMonitorsMir();
     return GLFW_TRUE;
 }
 
@@ -237,9 +239,7 @@ const char* _glfwPlatformGetVersionString(void)
 #else
         " gettimeofday"
 #endif
-#if defined(__linux__)
         " /dev/js"
-#endif
 #if defined(_GLFW_BUILD_DLL)
         " shared"
 #endif

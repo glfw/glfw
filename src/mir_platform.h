@@ -52,6 +52,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceMirPresentationSupportKHR)(Vk
 #include "linux_joystick.h"
 #include "xkb_unicode.h"
 #include "egl_context.h"
+#include "osmesa_context.h"
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)

@@ -1,8 +1,7 @@
 //========================================================================
-// GLFW 3.3 OSMesa - www.glfw.org
+// GLFW 3.3 - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2016 Google Inc.
-// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -25,30 +24,11 @@
 //
 //========================================================================
 
-#include "internal.h"
+#ifndef _glfw3_null_joystick_h_
+#define _glfw3_null_joystick_h_
+
+#define _GLFW_PLATFORM_JOYSTICK_STATE         int nulljs
+#define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE int nulljs
 
 
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW platform API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-int _glfwPlatformInit(void)
-{
-    if (!_glfwInitThreadLocalStoragePOSIX())
-        return GLFW_FALSE;
-
-    _glfwInitTimerPOSIX();
-    return GLFW_TRUE;
-}
-
-void _glfwPlatformTerminate(void)
-{
-    _glfwTerminateOSMesa();
-    _glfwTerminateThreadLocalStoragePOSIX();
-}
-
-const char* _glfwPlatformGetVersionString(void)
-{
-    return _GLFW_VERSION_NUMBER " none OSMesa";
-}
-
+#endif // _glfw3_null_joystick_h_

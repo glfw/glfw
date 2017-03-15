@@ -2,7 +2,7 @@
 // GLFW 3.3 macOS - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -48,9 +48,8 @@ static char* getDisplayName(CGDirectDisplayID displayID)
                                      IOServiceMatching("IODisplayConnect"),
                                      &it) != 0)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Failed to get display service port iterator");
-        return 0;
+        // This may happen if a desktop Mac is running headless
+        return NULL;
     }
 
     while ((service = IOIteratorNext(it)) != 0)
@@ -99,8 +98,6 @@ static char* getDisplayName(CGDirectDisplayID displayID)
                                                  (const void**) &nameRef))
     {
         // This may happen if a desktop Mac is running headless
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Failed to retrieve display name");
         CFRelease(info);
         return NULL;
     }
@@ -128,7 +125,7 @@ static GLFWbool modeIsGood(CGDisplayModeRef mode)
     if (flags & kDisplayModeStretchedFlag)
         return GLFW_FALSE;
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED <= 101200
+#if MAC_OS_X_VERSION_MAX_ALLOWED <= 101100
     CFStringRef format = CGDisplayModeCopyPixelEncoding(mode);
     if (CFStringCompare(format, CFSTR(IO16BitDirectPixels), 0) &&
         CFStringCompare(format, CFSTR(IO32BitDirectPixels), 0))
@@ -159,7 +156,7 @@ static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode,
             result.refreshRate = (int) (time.timeScale / (double) time.timeValue);
     }
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED <= 101200
+#if MAC_OS_X_VERSION_MAX_ALLOWED <= 101100
     CFStringRef format = CGDisplayModeCopyPixelEncoding(mode);
     if (CFStringCompare(format, CFSTR(IO16BitDirectPixels), 0) == 0)
     {
@@ -175,7 +172,7 @@ static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode,
         result.blueBits = 8;
     }
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED <= 101200
+#if MAC_OS_X_VERSION_MAX_ALLOWED <= 101100
     CFRelease(format);
 #endif /* MAC_OS_X_VERSION_MAX_ALLOWED */
     return result;
@@ -208,6 +205,71 @@ static void endFadeReservation(CGDisplayFadeReservationToken token)
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
+
+// Poll for changes in the set of connected monitors
+//
+void _glfwPollMonitorsNS(void)
+{
+    uint32_t i, j, displayCount, disconnectedCount;
+    CGDirectDisplayID* displays;
+    _GLFWmonitor** disconnected = NULL;
+
+    CGGetOnlineDisplayList(0, NULL, &displayCount);
+    displays = calloc(displayCount, sizeof(CGDirectDisplayID));
+    CGGetOnlineDisplayList(displayCount, displays, &displayCount);
+
+    disconnectedCount = _glfw.monitorCount;
+    if (disconnectedCount)
+    {
+        disconnected = calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
+        memcpy(disconnected,
+               _glfw.monitors,
+               _glfw.monitorCount * sizeof(_GLFWmonitor*));
+    }
+
+    for (i = 0;  i < displayCount;  i++)
+    {
+        _GLFWmonitor* monitor;
+        const uint32_t unitNumber = CGDisplayUnitNumber(displays[i]);
+
+        if (CGDisplayIsAsleep(displays[i]))
+            continue;
+
+        for (j = 0;  j < disconnectedCount;  j++)
+        {
+            // HACK: Compare unit numbers instead of display IDs to work around
+            //       display replacement on machines with automatic graphics
+            //       switching
+            if (disconnected[j] && disconnected[j]->ns.unitNumber == unitNumber)
+            {
+                disconnected[j] = NULL;
+                break;
+            }
+        }
+
+        const CGSize size = CGDisplayScreenSize(displays[i]);
+        char* name = getDisplayName(displays[i]);
+        if (!name)
+            name = strdup("Unknown");
+
+        monitor = _glfwAllocMonitor(name, size.width, size.height);
+        monitor->ns.displayID  = displays[i];
+        monitor->ns.unitNumber = unitNumber;
+
+        free(name);
+
+        _glfwInputMonitor(monitor, GLFW_CONNECTED, _GLFW_INSERT_LAST);
+    }
+
+    for (i = 0;  i < disconnectedCount;  i++)
+    {
+        if (disconnected[i])
+            _glfwInputMonitor(disconnected[i], GLFW_DISCONNECTED, 0);
+    }
+
+    free(disconnected);
+    free(displays);
+}
 
 // Change the current video mode
 //
@@ -287,55 +349,6 @@ void _glfwRestoreVideoModeNS(_GLFWmonitor* monitor)
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
-
-_GLFWmonitor** _glfwPlatformGetMonitors(int* count)
-{
-    uint32_t i, found = 0, displayCount;
-    _GLFWmonitor** monitors;
-    CGDirectDisplayID* displays;
-
-    *count = 0;
-
-    CGGetOnlineDisplayList(0, NULL, &displayCount);
-    displays = calloc(displayCount, sizeof(CGDirectDisplayID));
-    monitors = calloc(displayCount, sizeof(_GLFWmonitor*));
-
-    CGGetOnlineDisplayList(displayCount, displays, &displayCount);
-
-    for (i = 0;  i < displayCount;  i++)
-    {
-        _GLFWmonitor* monitor;
-
-        if (CGDisplayIsAsleep(displays[i]))
-            continue;
-
-        const CGSize size = CGDisplayScreenSize(displays[i]);
-        char* name = getDisplayName(displays[i]);
-        if (!name)
-            name = strdup("Unknown");
-
-        monitor = _glfwAllocMonitor(name, size.width, size.height);
-        monitor->ns.displayID  = displays[i];
-        monitor->ns.unitNumber = CGDisplayUnitNumber(displays[i]);
-
-        free(name);
-
-        found++;
-        monitors[found - 1] = monitor;
-    }
-
-    free(displays);
-
-    *count = found;
-    return monitors;
-}
-
-GLFWbool _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
-{
-    // HACK: Compare unit numbers instead of display IDs to work around display
-    //       replacement on machines with automatic graphics switching
-    return first->ns.unitNumber == second->ns.unitNumber;
-}
 
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {

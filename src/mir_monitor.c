@@ -30,17 +30,16 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-//////                       GLFW platform API                      //////
+//////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-_GLFWmonitor** _glfwPlatformGetMonitors(int* count)
+// Poll for changes in the set of connected monitors
+//
+void _glfwPollMonitorsMir(void)
 {
-    int i, found = 0;
-    _GLFWmonitor** monitors = NULL;
+    int i;
     MirDisplayConfiguration* displayConfig =
         mir_connection_create_display_config(_glfw.mir.connection);
-
-    *count = 0;
 
     for (i = 0;  i < displayConfig->num_outputs;  i++)
     {
@@ -51,32 +50,27 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
             out->num_modes &&
             out->current_mode < out->num_modes)
         {
-            found++;
-            monitors        = realloc(monitors, sizeof(_GLFWmonitor*) * found);
-            monitors[i]     = _glfwAllocMonitor("Unknown",
-                                                out->physical_width_mm,
-                                                out->physical_height_mm);
+            _GLFWmonitor* monitor = _glfwAllocMonitor("Unknown",
+                                                      out->physical_width_mm,
+                                                      out->physical_height_mm);
 
-            monitors[i]->mir.x         = out->position_x;
-            monitors[i]->mir.y         = out->position_y;
-            monitors[i]->mir.outputId  = out->output_id;
-            monitors[i]->mir.curMode   = out->current_mode;
+            monitor->mir.x        = out->position_x;
+            monitor->mir.y        = out->position_y;
+            monitor->mir.outputId = out->output_id;
+            monitor->mir.curMode  = out->current_mode;
+            monitor->modes = _glfwPlatformGetVideoModes(monitor, &monitor->modeCount);
 
-            monitors[i]->modes = _glfwPlatformGetVideoModes(monitors[i],
-                                                            &monitors[i]->modeCount);
+            _glfwInputMonitor(monitor, GLFW_CONNECTED, _GLFW_INSERT_LAST);
         }
     }
 
     mir_display_config_destroy(displayConfig);
-
-    *count = found;
-    return monitors;
 }
 
-GLFWbool _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
-{
-    return first->mir.outputId == second->mir.outputId;
-}
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
 
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {

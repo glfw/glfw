@@ -3,7 +3,7 @@
  * A library for OpenGL, window and input
  *------------------------------------------------------------------------
  * Copyright (c) 2002-2006 Marcus Geelnard
- * Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+ * Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
  *
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -45,6 +45,7 @@ extern "C" {
  *  more information.
  */
 /*! @defgroup native Native access
+ *  @brief Functions related to accessing native handles.
  *
  *  **By using the native access functions you assert that you know what you're
  *  doing and how to fix problems caused by using them.  If you don't, you
@@ -455,6 +456,7 @@ GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* window);
 #if defined(GLFW_EXPOSE_NATIVE_OSMESA)
 /*! @brief Retrieves the color buffer associated with the specified window.
  *
+ *  @param[in] window The window whose color buffer to retrieve.
  *  @param[out] width Where to store the width of the color buffer, or `NULL`.
  *  @param[out] height Where to store the height of the color buffer, or `NULL`.
  *  @param[out] format Where to store the OSMesa pixel format of the color
@@ -475,6 +477,7 @@ GLFWAPI int glfwGetOSMesaColorBuffer(GLFWwindow* window, int* width, int* height
 
 /*! @brief Retrieves the depth buffer associated with the specified window.
  *
+ *  @param[in] window The window whose depth buffer to retrieve.
  *  @param[out] width Where to store the width of the depth buffer, or `NULL`.
  *  @param[out] height Where to store the height of the depth buffer, or `NULL`.
  *  @param[out] bytesPerValue Where to store the number of bytes per depth

@@ -49,7 +49,7 @@ In other words:
 
 If you are using an OpenGL extension loading library such as
 [glad](https://github.com/Dav1dde/glad), the extension loader header should
-either be included _before_ the GLFW one, or the `GLFW_INCLUDE_NONE` macro
+either be included _before_ the GLFW one, or the @ref GLFW_INCLUDE_NONE macro
 (described below) should be defined.
 
 
@@ -58,30 +58,41 @@ either be included _before_ the GLFW one, or the `GLFW_INCLUDE_NONE` macro
 These macros may be defined before the inclusion of the GLFW header and affect
 its behavior.
 
-`GLFW_DLL` is required on Windows when using the GLFW DLL, to tell the compiler
-that the GLFW functions are defined in a DLL.
+@anchor GLFW_DLL
+__GLFW_DLL__ is required on Windows when using the GLFW DLL, to tell the
+compiler that the GLFW functions are defined in a DLL.
 
 The following macros control which OpenGL or OpenGL ES API header is included.
 Only one of these may be defined at a time.
 
-`GLFW_INCLUDE_GLCOREARB` makes the GLFW header include the modern
+@anchor GLFW_INCLUDE_GLCOREARB
+__GLFW_INCLUDE_GLCOREARB__ makes the GLFW header include the modern
 `GL/glcorearb.h` header (`OpenGL/gl3.h` on macOS) instead of the regular OpenGL
 header.
 
-`GLFW_INCLUDE_ES1` makes the GLFW header include the OpenGL ES 1.x `GLES/gl.h`
+@anchor GLFW_INCLUDE_ES1
+__GLFW_INCLUDE_ES1__ makes the GLFW header include the OpenGL ES 1.x `GLES/gl.h`
 header instead of the regular OpenGL header.
 
-`GLFW_INCLUDE_ES2` makes the GLFW header include the OpenGL ES 2.0 `GLES2/gl2.h`
-header instead of the regular OpenGL header.
+@anchor GLFW_INCLUDE_ES2
+__GLFW_INCLUDE_ES2__ makes the GLFW header include the OpenGL ES 2.0
+`GLES2/gl2.h` header instead of the regular OpenGL header.
 
-`GLFW_INCLUDE_ES3` makes the GLFW header include the OpenGL ES 3.0 `GLES3/gl3.h`
-header instead of the regular OpenGL header.
+@anchor GLFW_INCLUDE_ES3
+__GLFW_INCLUDE_ES3__ makes the GLFW header include the OpenGL ES 3.0
+`GLES3/gl3.h` header instead of the regular OpenGL header.
 
-`GLFW_INCLUDE_ES31` makes the GLFW header include the OpenGL ES 3.1 `GLES3/gl31.h`
-header instead of the regular OpenGL header.
+@anchor GLFW_INCLUDE_ES31
+__GLFW_INCLUDE_ES31__ makes the GLFW header include the OpenGL ES 3.1
+`GLES3/gl31.h` header instead of the regular OpenGL header.
 
-`GLFW_INCLUDE_NONE` makes the GLFW header not include any OpenGL or OpenGL ES API
-header.  This is useful in combination with an extension loading library.
+@anchor GLFW_INCLUDE_ES32
+__GLFW_INCLUDE_ES31__ makes the GLFW header include the OpenGL ES 3.2
+`GLES3/gl32.h` header instead of the regular OpenGL header.
+
+@anchor GLFW_INCLUDE_NONE
+__GLFW_INCLUDE_NONE__ makes the GLFW header not include any OpenGL or OpenGL ES
+API header.  This is useful in combination with an extension loading library.
 
 If none of the above inclusion macros are defined, the standard OpenGL `GL/gl.h`
 header (`OpenGL/gl.h` on macOS) is included.
@@ -90,14 +101,17 @@ The following macros control the inclusion of additional API headers.  Any
 number of these may be defined simultaneously, and/or together with one of the
 above macros.
 
-`GLFW_INCLUDE_VULKAN` makes the GLFW header include the Vulkan `vulkan/vulkan.h`
-header in addition to any selected OpenGL or OpenGL ES header.
+@anchor GLFW_INCLUDE_VULKAN
+__GLFW_INCLUDE_VULKAN__ makes the GLFW header include the Vulkan
+`vulkan/vulkan.h` header in addition to any selected OpenGL or OpenGL ES header.
 
-`GLFW_INCLUDE_GLEXT` makes the GLFW header include the appropriate extension
+@anchor GLFW_INCLUDE_GLEXT
+__GLFW_INCLUDE_GLEXT__ makes the GLFW header include the appropriate extension
 header for the OpenGL or OpenGL ES header selected above after and in addition
 to that header.
 
-`GLFW_INCLUDE_GLU` makes the header include the GLU header in addition to the
+@anchor GLFW_INCLUDE_GLU
+__GLFW_INCLUDE_GLU__ makes the header include the GLU header in addition to the
 header selected above.  This should only be used with the standard OpenGL header
 and only for compatibility with legacy code.  GLU has been deprecated and should
 not be used in new code.
@@ -141,9 +155,9 @@ set of default libraries along with other dependencies like `user32` and
 `kernel32`.  If you are using GLU, you must also link with `glu32`.
 
 The link library for the GLFW DLL is named `glfw3dll`.  When compiling an
-application that uses the DLL version of GLFW, you need to define the `GLFW_DLL`
-macro _before_ any inclusion of the GLFW header.  This can be done either with
-a compiler switch or by defining it in your source code.
+application that uses the DLL version of GLFW, you need to define the @ref
+GLFW_DLL macro _before_ any inclusion of the GLFW header.  This can be done
+either with a compiler switch or by defining it in your source code.
 
 An application using the GLFW DLL does not need to link against any of its
 dependencies, but you still have to link against `opengl32` if your application
@@ -178,8 +192,8 @@ add_subdirectory(path/to/glfw)
 
 Once GLFW has been added to the project, link against it with the `glfw` target.
 This adds all link-time dependencies of GLFW as it is currently configured,
-the include directory for the GLFW header and, when applicable, the
-[GLFW_DLL](@ref build_macros) macro.
+the include directory for the GLFW header and, when applicable, the @ref
+GLFW_DLL macro.
 
 @code{.cmake}
 target_link_libraries(myapp glfw)
@@ -212,7 +226,8 @@ target_link_libraries(myapp ${OPENGL_glu_LIBRARY})
 @endcode
 
 @note GLU has been deprecated and should not be used in new code, but some
-legacy code requires it.
+legacy code requires it.  See the [section on GLU](@ref moving_glu) in the
+transition guide for suggested replacements.
 
 
 @subsection build_link_cmake_package With CMake and installed GLFW binaries
@@ -255,7 +270,8 @@ target_link_libraries(myapp ${OPENGL_glu_LIBRARY})
 @endcode
 
 @note GLU has been deprecated and should not be used in new code, but some
-legacy code requires it.
+legacy code requires it.  See the [section on GLU](@ref moving_glu) in the
+transition guide for suggested replacements.
 
 
 @subsection build_link_pkgconfig With makefiles and pkg-config on Unix
@@ -299,7 +315,8 @@ cc `pkg-config --cflags glfw3 glu` -o myprog myprog.c `pkg-config --libs glfw3 g
 @endcode
 
 @note GLU has been deprecated and should not be used in new code, but some
-legacy code requires it.
+legacy code requires it.  See the [section on GLU](@ref moving_glu) in the
+transition guide for suggested replacements.
 
 If you are using the static version of the GLFW library, make sure you don't
 link statically against GLU.

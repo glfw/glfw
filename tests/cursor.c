@@ -1,6 +1,6 @@
 //========================================================================
 // Cursor & input mode tests
-// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -47,6 +47,7 @@
 #define CURSOR_FRAME_COUNT 60
 
 static const char* vertex_shader_text =
+"#version 110\n"
 "uniform mat4 MVP;\n"
 "attribute vec2 vPos;\n"
 "void main()\n"
@@ -55,6 +56,7 @@ static const char* vertex_shader_text =
 "}\n";
 
 static const char* fragment_shader_text =
+"#version 110\n"
 "void main()\n"
 "{\n"
 "    gl_FragColor = vec4(1.0);\n"

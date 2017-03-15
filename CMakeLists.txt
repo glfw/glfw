@@ -10,6 +10,10 @@ if (NOT CMAKE_VERSION VERSION_LESS "3.0")
     cmake_policy(SET CMP0042 OLD)
 endif()
 
+if (NOT CMAKE_VERSION VERSION_LESS "3.1")
+    cmake_policy(SET CMP0054 NEW)
+endif()
+
 set(GLFW_VERSION_MAJOR "3")
 set(GLFW_VERSION_MINOR "3")
 set(GLFW_VERSION_PATCH "0")
@@ -34,12 +38,6 @@ endif()
 
 if (WIN32)
     option(GLFW_USE_HYBRID_HPG "Force use of high-performance GPU on hybrid systems" OFF)
-endif()
-
-if (APPLE)
-    option(GLFW_USE_CHDIR "Make glfwInit chdir to Contents/Resources" ON)
-    option(GLFW_USE_MENUBAR "Populate the menu bar on first window creation" ON)
-    option(GLFW_USE_RETINA "Use the full resolution of Retina displays" ON)
 endif()
 
 if (UNIX AND NOT APPLE)
@@ -80,6 +78,17 @@ endif()
 # Set compiler specific flags
 #--------------------------------------------------------------------
 if (MSVC)
+    if (MSVC90)
+        # Workaround for VS 2008 not shipping with the DirectX 9 SDK
+        include(CheckIncludeFile)
+        check_include_file(dinput.h DINPUT_H_FOUND)
+        if (NOT DINPUT_H_FOUND)
+            message(FATAL_ERROR "DirectX 9 SDK not found")
+        endif()
+        # Workaround for VS 2008 not shipping with stdint.h
+        list(APPEND glfw_INCLUDE_DIRS "${GLFW_SOURCE_DIR}/deps/vs2008")
+    endif()
+
     if (NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
         foreach (flag CMAKE_C_FLAGS
                       CMAKE_C_FLAGS_DEBUG
@@ -252,21 +261,6 @@ if (_GLFW_X11)
     list(APPEND glfw_LIBRARIES "${X11_Xinerama_LIB}")
     list(APPEND glfw_PKG_DEPS "xinerama")
 
-    # Check for Xf86VidMode (fallback gamma control)
-    if (X11_xf86vmode_FOUND)
-        list(APPEND glfw_INCLUDE_DIRS "${X11_xf86vmode_INCLUDE_PATH}")
-        list(APPEND glfw_PKG_DEPS "xxf86vm")
-
-        if (X11_Xxf86vm_LIB)
-            list(APPEND glfw_LIBRARIES "${X11_Xxf86vm_LIB}")
-        else()
-            # Backwards compatibility (see CMake bug 0006976)
-            list(APPEND glfw_LIBRARIES Xxf86vm)
-        endif()
-
-        set(_GLFW_HAS_XF86VM TRUE)
-    endif()
-
     # Check for Xkb (X keyboard extension)
     if (NOT X11_Xkb_FOUND)
         message(FATAL_ERROR "The X keyboard extension headers were not found")
@@ -335,18 +329,6 @@ endif()
 # Use Cocoa for window creation and NSOpenGL for context creation
 #--------------------------------------------------------------------
 if (_GLFW_COCOA)
-
-    if (GLFW_USE_MENUBAR)
-        set(_GLFW_USE_MENUBAR 1)
-    endif()
-
-    if (GLFW_USE_CHDIR)
-        set(_GLFW_USE_CHDIR 1)
-    endif()
-
-    if (GLFW_USE_RETINA)
-        set(_GLFW_USE_RETINA 1)
-    endif()
 
     list(APPEND glfw_LIBRARIES
         "-framework Cocoa"

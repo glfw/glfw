@@ -2,7 +2,7 @@
 // GLFW 3.3 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -99,9 +99,13 @@ GLFWbool _glfwInitVulkan(int mode)
     err = vkEnumerateInstanceExtensionProperties(NULL, &count, NULL);
     if (err)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Vulkan: Failed to query instance extension count: %s",
-                        _glfwGetVulkanResultString(err));
+        // NOTE: This happens on systems with a loader but without any Vulkan ICD
+        if (mode == _GLFW_REQUIRE_LOADER)
+        {
+            _glfwInputError(GLFW_API_UNAVAILABLE,
+                            "Vulkan: Failed to query instance extension count: %s",
+                            _glfwGetVulkanResultString(err));
+        }
 
         _glfwTerminateVulkan();
         return GLFW_FALSE;
@@ -112,7 +116,7 @@ GLFWbool _glfwInitVulkan(int mode)
     err = vkEnumerateInstanceExtensionProperties(NULL, &count, ep);
     if (err)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
+        _glfwInputError(GLFW_API_UNAVAILABLE,
                         "Vulkan: Failed to query instance extensions: %s",
                         _glfwGetVulkanResultString(err));
 
@@ -230,6 +234,8 @@ GLFWAPI int glfwVulkanSupported(void)
 
 GLFWAPI const char** glfwGetRequiredInstanceExtensions(uint32_t* count)
 {
+    assert(count != NULL);
+
     *count = 0;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
@@ -248,6 +254,7 @@ GLFWAPI GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance,
                                               const char* procname)
 {
     GLFWvkproc proc;
+    assert(procname != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
@@ -273,6 +280,9 @@ GLFWAPI int glfwGetPhysicalDevicePresentationSupport(VkInstance instance,
                                                      VkPhysicalDevice device,
                                                      uint32_t queuefamily)
 {
+    assert(instance != VK_NULL_HANDLE);
+    assert(device != VK_NULL_HANDLE);
+
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
 
     if (!_glfwInitVulkan(_GLFW_REQUIRE_LOADER))
@@ -296,6 +306,7 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance,
                                          VkSurfaceKHR* surface)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(instance != VK_NULL_HANDLE);
     assert(window != NULL);
     assert(surface != NULL);
 

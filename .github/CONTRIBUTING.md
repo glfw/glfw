@@ -8,7 +8,7 @@
     - [Reporting a segfault or other crash bug](#reporting-a-segfault-or-other-crash-bug)
     - [Reporting a context creation bug](#reporting-a-context-creation-bug)
     - [Reporting a monitor or video mode bug](#reporting-a-monitor-or-video-mode-bug)
-    - [Reporting an input or event bug](#reporting-an-input-or-event-bug)
+    - [Reporting a window, input or event bug](#reporting-a-window-input-or-event-bug)
     - [Reporting some other library bug](#reporting-some-other-library-bug)
     - [Reporting a documentation bug](#reporting-a-documentation-bug)
     - [Reporting a website bug](#reporting-a-website-bug)
@@ -42,14 +42,35 @@ doesn't, that might be a separate bug.
 If GLFW is crashing or triggering asserts, make sure that all your object
 handles and other pointers are valid.
 
-For bugs where it makes sense, a [Short, Self Contained, Correct (Compilable),
-Example](http://www.sscce.org/) is absolutely invaluable.  Just put it inline in
-the body text.  Note that if the bug is reproducible with one of the test
-programs that come with GLFW, just mention that instead.
+For bugs where it makes sense, a short, self contained example is absolutely
+invaluable.  Just put it inline in the body text.  Note that if the bug is
+reproducible with one of the test programs that come with GLFW, just mention
+that instead.
 
 __Don't worry about adding too much information__.  Unimportant information can
 be abbreviated or removed later, but missing information can stall bug fixing,
 especially when your schedule doesn't align with that of the maintainer.
+
+__Please provide text as text, not as images__.  This includes code, error
+messages and any other text.  Text in images cannot be found by other users
+searching for the same problem and may have to be re-typed by maintainers when
+debugging.
+
+You don't need to manually indent your code or other text to quote it with
+GitHub Markdown; just surround it with triple backticks:
+
+    ```
+    Some quoted text.
+    ```
+
+You can also add syntax highlighting by appending the common file extension:
+
+    ```c
+    int five(void)
+    {
+        return 5;
+    }
+    ```
 
 There are issue labels for both platforms and GPU manufacturers, so there is no
 need to mention these in the subject line.  If you do, it will be removed when
@@ -139,8 +160,11 @@ Always include the __operating system name and version__ (e.g. `Windows
 include the __GLFW release version__ (e.g. `3.1.2`), otherwise include the
 __GLFW commit ID__ (e.g.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
 
+If you are running your program in a virtual machine, please mention this and
+include the __VM name and version__ (e.g. `VirtualBox 5.1`).
+
 Please also include the __GLFW version string__ (`3.2.0 X11 EGL clock_gettime
-/dev/js XI Xf86vm`), as described
+/dev/js`), as described
 [here](http://www.glfw.org/docs/latest/intro.html#intro_version_string), the
 __GPU model and driver version__ (e.g. `GeForce GTX660 with 352.79`), and the
 __output of `glfwinfo`__ (with switches matching any hints you set in your
@@ -178,6 +202,9 @@ Always include the __operating system name and version__ (e.g. `Windows
 include the __GLFW release version__ (e.g. `3.1.2`), otherwise include the
 __GLFW commit ID__ (e.g.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
 
+If you are running your program in a virtual machine, please mention this and
+include the __VM name and version__ (e.g. `VirtualBox 5.1`).
+
 Please also include any __error messages__ provided to your application via the
 [error
 callback](http://www.glfw.org/docs/latest/intro_guide.html#error_handling) and
@@ -195,12 +222,12 @@ monitors output:
 ```
 
 
-### Reporting an input or event bug
+### Reporting a window, input or event bug
 
 __Note:__ The exact ordering of related window events will sometimes differ.
 
-__Note:__ Window moving and resizing (by the user) will block the main thread on some
-platforms.  This is not a bug.  Set a [refresh
+__Note:__ Window moving and resizing (by the user) will block the main thread on
+some platforms.  This is not a bug.  Set a [refresh
 callback](http://www.glfw.org/docs/latest/window.html#window_refresh) if you
 want to keep the window contents updated during a move or size operation.
 
@@ -215,11 +242,19 @@ Always include the __operating system name and version__ (e.g. `Windows
 include the __GLFW release version__ (e.g. `3.1.2`), otherwise include the
 __GLFW commit ID__ (e.g.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
 
+If you are running your program in a virtual machine, please mention this and
+include the __VM name and version__ (e.g. `VirtualBox 5.1`).
+
 Please also include any __error messages__ provided to your application via the
 [error
 callback](http://www.glfw.org/docs/latest/intro_guide.html#error_handling) and
 if relevant, the __output of `events`__ when reporting this kind of bug.  If
 this tool doesn't run on the machine, mention this instead.
+
+__X11:__ If possible, please include what desktop environment (e.g. GNOME,
+Unity, KDE) and/or window manager (e.g. Openbox, dwm, Window Maker) you are
+running.  If the bug is related to keyboard input, please include any input
+method (e.g. ibus, SCIM) you are using.
 
 
 #### Quick template
@@ -308,6 +343,10 @@ __Note:__ You must have all necessary rights to any code you contribute.  If you
 did not write the code yourself, you must explain where it came from and under
 what license.  Even code using the same license as GLFW may not be copied
 without attribution.
+
+__Note:__ If you haven't already implemented the feature, check first if there
+already is an open issue for it and if it's already being developed in an
+[experimental branch](https://github.com/glfw/glfw/branches/all).
 
 __There is no preferred patch size__.  A one character change is just as welcome
 as one adding a thousand line one, if that is the appropriate size for the

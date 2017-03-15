@@ -2,7 +2,7 @@
 // GLFW 3.3 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -59,16 +59,19 @@ static GLFWbool waitForEvent(double* timeout)
     const int fd = ConnectionNumber(_glfw.x11.display);
     int count = fd + 1;
 
-    FD_ZERO(&fds);
-    FD_SET(fd, &fds);
 #if defined(__linux__)
-    FD_SET(_glfw.linux_js.inotify, &fds);
-
-    if (fd < _glfw.linux_js.inotify)
-        count = _glfw.linux_js.inotify + 1;
+    if (_glfw.linjs.inotify > fd)
+        count = _glfw.linjs.inotify + 1;
 #endif
     for (;;)
     {
+        FD_ZERO(&fds);
+        FD_SET(fd, &fds);
+#if defined(__linux__)
+        if (_glfw.linjs.inotify > 0)
+            FD_SET(_glfw.linjs.inotify, &fds);
+#endif
+
         if (timeout)
         {
             const long seconds = (long) *timeout;
@@ -130,7 +133,9 @@ static int getWindowState(_GLFWwindow* window)
         result = state->state;
     }
 
-    XFree(state);
+    if (state)
+        XFree(state);
+
     return result;
 }
 
@@ -520,26 +525,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     }
 
     if (!wndconfig->decorated)
-    {
-        struct
-        {
-            unsigned long flags;
-            unsigned long functions;
-            unsigned long decorations;
-            long input_mode;
-            unsigned long status;
-        } hints;
-
-        hints.flags = 2;       // Set decorations
-        hints.decorations = 0; // No decorations
-
-        XChangeProperty(_glfw.x11.display, window->x11.handle,
-                        _glfw.x11.MOTIF_WM_HINTS,
-                        _glfw.x11.MOTIF_WM_HINTS, 32,
-                        PropModeReplace,
-                        (unsigned char*) &hints,
-                        sizeof(hints) / sizeof(long));
-    }
+        _glfwPlatformSetWindowDecorated(window, GLFW_FALSE);
 
     if (_glfw.x11.NET_WM_STATE && !window->monitor)
     {
@@ -585,7 +571,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 
     // Declare our PID
     {
-        const pid_t pid = getpid();
+        const long pid = getpid();
 
         XChangeProperty(_glfw.x11.display,  window->x11.handle,
                         _glfw.x11.NET_WM_PID, XA_CARDINAL, 32,
@@ -857,7 +843,7 @@ static GLFWbool acquireMonitor(_GLFWwindow* window)
                           xpos, ypos, mode.width, mode.height);
     }
 
-    _glfwInputMonitorWindowChange(window->monitor, window);
+    _glfwInputMonitorWindow(window->monitor, window);
     return status;
 }
 
@@ -868,7 +854,7 @@ static void releaseMonitor(_GLFWwindow* window)
     if (window->monitor->window != window)
         return;
 
-    _glfwInputMonitorWindowChange(window->monitor, NULL);
+    _glfwInputMonitorWindow(window->monitor, NULL);
     _glfwRestoreVideoModeX11(window->monitor);
 
     _glfw.x11.saver.count--;
@@ -929,19 +915,64 @@ static void processEvent(XEvent *event)
         if (event->type == _glfw.x11.randr.eventBase + RRNotify)
         {
             XRRUpdateConfiguration(event);
-            _glfwInputMonitorChange();
+            _glfwPollMonitorsX11();
             return;
         }
     }
 
-    if (event->type != GenericEvent)
+    if (event->type == GenericEvent)
     {
-        window = findWindowByHandle(event->xany.window);
-        if (window == NULL)
+        if (_glfw.x11.xi.available)
         {
-            // This is an event for a window that has already been destroyed
-            return;
+            _GLFWwindow* window = _glfw.x11.disabledCursorWindow;
+
+            if (window &&
+                event->xcookie.extension == _glfw.x11.xi.majorOpcode &&
+                XGetEventData(_glfw.x11.display, &event->xcookie) &&
+                event->xcookie.evtype == XI_RawMotion)
+            {
+                XIRawEvent* re = event->xcookie.data;
+                if (re->valuators.mask_len)
+                {
+                    const double* values = re->raw_values;
+                    double xpos = window->virtualCursorPosX;
+                    double ypos = window->virtualCursorPosY;
+
+                    if (XIMaskIsSet(re->valuators.mask, 0))
+                    {
+                        xpos += *values;
+                        values++;
+                    }
+
+                    if (XIMaskIsSet(re->valuators.mask, 1))
+                        ypos += *values;
+
+                    _glfwInputCursorPos(window, xpos, ypos);
+                }
+            }
+
+            XFreeEventData(_glfw.x11.display, &event->xcookie);
         }
+
+        return;
+    }
+
+    if (event->type == SelectionClear)
+    {
+        handleSelectionClear(event);
+        return;
+    }
+    else if (event->type == SelectionRequest)
+    {
+        handleSelectionRequest(event);
+        return;
+    }
+
+    window = findWindowByHandle(event->xany.window);
+    if (window == NULL)
+    {
+        // This is an event for a window that has already been destroyed
+        return;
     }
 
     switch (event->type)
@@ -1184,6 +1215,8 @@ static void processEvent(XEvent *event)
                 {
                     if (_glfw.x11.disabledCursorWindow != window)
                         return;
+                    if (_glfw.x11.xi.available)
+                        return;
 
                     const int dx = x - window->x11.lastCursorPosX;
                     const int dy = y - window->x11.lastCursorPosY;
@@ -1343,7 +1376,8 @@ static void processEvent(XEvent *event)
                     free(paths);
                 }
 
-                XFree(data);
+                if (data)
+                    XFree(data);
 
                 XEvent reply;
                 memset(&reply, 0, sizeof(reply));
@@ -1453,18 +1487,6 @@ static void processEvent(XEvent *event)
             return;
         }
 
-        case SelectionClear:
-        {
-            handleSelectionClear(event);
-            return;
-        }
-
-        case SelectionRequest:
-        {
-            handleSelectionRequest(event);
-            return;
-        }
-
         case DestroyNotify:
             return;
     }
@@ -1499,9 +1521,6 @@ unsigned long _glfwGetWindowPropertyX11(Window window,
                        &itemCount,
                        &bytesAfter,
                        value);
-
-    if (type != AnyPropertyType && actualType != type)
-        return 0;
 
     return itemCount;
 }
@@ -1566,12 +1585,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     Visual* visual;
     int depth;
 
-    if (ctxconfig->client == GLFW_NO_API)
-    {
-        visual = DefaultVisual(_glfw.x11.display, _glfw.x11.screen);
-        depth = DefaultDepth(_glfw.x11.display, _glfw.x11.screen);
-    }
-    else
+    if (ctxconfig->client != GLFW_NO_API)
     {
         if (ctxconfig->source == GLFW_NATIVE_CONTEXT_API)
         {
@@ -1580,13 +1594,25 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             if (!_glfwChooseVisualGLX(ctxconfig, fbconfig, &visual, &depth))
                 return GLFW_FALSE;
         }
-        else
+        else if (ctxconfig->source == GLFW_EGL_CONTEXT_API)
         {
             if (!_glfwInitEGL())
                 return GLFW_FALSE;
             if (!_glfwChooseVisualEGL(ctxconfig, fbconfig, &visual, &depth))
                 return GLFW_FALSE;
         }
+        else if (ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
+        {
+            if (!_glfwInitOSMesa())
+                return GLFW_FALSE;
+        }
+    }
+
+    if (ctxconfig->client == GLFW_NO_API ||
+        ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
+    {
+        visual = DefaultVisual(_glfw.x11.display, _glfw.x11.screen);
+        depth = DefaultDepth(_glfw.x11.display, _glfw.x11.screen);
     }
 
     if (!createNativeWindow(window, wndconfig, visual, depth))
@@ -1599,9 +1625,14 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             if (!_glfwCreateContextGLX(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }
-        else
+        else if (ctxconfig->source == GLFW_EGL_CONTEXT_API)
         {
             if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
+                return GLFW_FALSE;
+        }
+        else if (ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
+        {
+            if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }
     }
@@ -1613,7 +1644,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         if (!acquireMonitor(window))
             return GLFW_FALSE;
 
-        centerCursor(window);
+        if (wndconfig->centerCursor)
+            centerCursor(window);
     }
 
     XFlush(_glfw.x11.display);
@@ -2061,14 +2093,122 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
         }
     }
 
-    XFree(states);
+    if (states)
+        XFree(states);
+
     return maximized;
+}
+
+void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
+{
+    int width, height;
+    _glfwPlatformGetWindowSize(window, &width, &height);
+    updateNormalHints(window, width, height);
+}
+
+void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
+{
+    if (enabled)
+    {
+        XDeleteProperty(_glfw.x11.display,
+                        window->x11.handle,
+                        _glfw.x11.MOTIF_WM_HINTS);
+    }
+    else
+    {
+        struct
+        {
+            unsigned long flags;
+            unsigned long functions;
+            unsigned long decorations;
+            long input_mode;
+            unsigned long status;
+        } hints;
+
+        hints.flags = 2;       // Set decorations
+        hints.decorations = 0; // No decorations
+
+        XChangeProperty(_glfw.x11.display, window->x11.handle,
+                        _glfw.x11.MOTIF_WM_HINTS,
+                        _glfw.x11.MOTIF_WM_HINTS, 32,
+                        PropModeReplace,
+                        (unsigned char*) &hints,
+                        sizeof(hints) / sizeof(long));
+    }
+}
+
+void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
+{
+    if (!_glfw.x11.NET_WM_STATE || !_glfw.x11.NET_WM_STATE_ABOVE)
+        return;
+
+    if (_glfwPlatformWindowVisible(window))
+    {
+        const Atom action = enabled ? _NET_WM_STATE_ADD : _NET_WM_STATE_REMOVE;
+        sendEventToWM(window,
+                      _glfw.x11.NET_WM_STATE,
+                      action,
+                      _glfw.x11.NET_WM_STATE_ABOVE,
+                      0, 1, 0);
+    }
+    else
+    {
+        Atom* states;
+        unsigned long i, count;
+
+        count = _glfwGetWindowPropertyX11(window->x11.handle,
+                                          _glfw.x11.NET_WM_STATE,
+                                          XA_ATOM,
+                                          (unsigned char**) &states);
+        if (!states)
+            return;
+
+        if (enabled)
+        {
+            for (i = 0;  i < count;  i++)
+            {
+                if (states[i] == _glfw.x11.NET_WM_STATE_ABOVE)
+                    break;
+            }
+
+            if (i == count)
+            {
+                XChangeProperty(_glfw.x11.display, window->x11.handle,
+                                _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
+                                PropModeAppend,
+                                (unsigned char*) &_glfw.x11.NET_WM_STATE_ABOVE,
+                                1);
+            }
+        }
+        else
+        {
+            for (i = 0;  i < count;  i++)
+            {
+                if (states[i] == _glfw.x11.NET_WM_STATE_ABOVE)
+                {
+                    states[i] = states[count - 1];
+                    count--;
+                }
+            }
+
+            XChangeProperty(_glfw.x11.display, window->x11.handle,
+                            _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
+                            PropModeReplace, (unsigned char*) &states, count);
+        }
+
+        XFree(states);
+    }
+
+    XFlush(_glfw.x11.display);
 }
 
 void _glfwPlatformPollEvents(void)
 {
-    _glfwPollJoystickEvents();
+    _GLFWwindow* window;
 
+#if defined(__linux__)
+    _glfwDetectJoystickConnectionLinux();
+#endif
     int count = XPending(_glfw.x11.display);
     while (count--)
     {
@@ -2077,8 +2217,20 @@ void _glfwPlatformPollEvents(void)
         processEvent(&event);
     }
 
-    if (_glfw.x11.disabledCursorWindow)
-        centerCursor(_glfw.x11.disabledCursorWindow);
+    window = _glfw.x11.disabledCursorWindow;
+    if (window)
+    {
+        int width, height;
+        _glfwPlatformGetWindowSize(window, &width, &height);
+
+        // NOTE: Re-center the cursor only if it has moved since the last call,
+        //       to avoid breaking glfwWaitEvents with MotionNotify
+        if (window->x11.lastCursorPosX != width / 2 ||
+            window->x11.lastCursorPosY != height / 2)
+        {
+            _glfwPlatformSetCursorPos(window, width / 2, height / 2);
+        }
+    }
 
     XFlush(_glfw.x11.display);
 }
@@ -2148,6 +2300,19 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
     if (mode == GLFW_CURSOR_DISABLED)
     {
+        if (_glfw.x11.xi.available)
+        {
+            XIEventMask em;
+            unsigned char mask[XIMaskLen(XI_RawMotion)] = { 0 };
+
+            em.deviceid = XIAllMasterDevices;
+            em.mask_len = sizeof(mask);
+            em.mask = mask;
+            XISetMask(mask, XI_RawMotion);
+
+            XISelectEvents(_glfw.x11.display, _glfw.x11.root, &em, 1);
+        }
+
         _glfw.x11.disabledCursorWindow = window;
         _glfwPlatformGetCursorPos(window,
                                   &_glfw.x11.restoreCursorPosX,
@@ -2162,6 +2327,18 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
     }
     else if (_glfw.x11.disabledCursorWindow == window)
     {
+        if (_glfw.x11.xi.available)
+        {
+            XIEventMask em;
+            unsigned char mask[] = { 0 };
+
+            em.deviceid = XIAllMasterDevices;
+            em.mask_len = sizeof(mask);
+            em.mask = mask;
+
+            XISelectEvents(_glfw.x11.display, _glfw.x11.root, &em, 1);
+        }
+
         _glfw.x11.disabledCursorWindow = NULL;
         XUngrabPointer(_glfw.x11.display, CurrentTime);
         _glfwPlatformSetCursorPos(window,
@@ -2314,7 +2491,8 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
             _glfw.x11.clipboardString = strdup(data);
         }
 
-        XFree(data);
+        if (data)
+            XFree(data);
 
         XDeleteProperty(_glfw.x11.display,
                         event.xselection.requestor,
@@ -2346,6 +2524,8 @@ void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)
 
     extensions[0] = "VK_KHR_surface";
 
+    // NOTE: VK_KHR_xcb_surface is preferred due to some early ICDs exposing but
+    //       not correctly implementing VK_KHR_xlib_surface
     if (_glfw.vk.KHR_xcb_surface && _glfw.x11.x11xcb.handle)
         extensions[1] = "VK_KHR_xcb_surface";
     else

@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.3 OSMesa - www.glfw.org
+// GLFW 3.3 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2016 Google Inc.
-// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -25,23 +25,25 @@
 //
 //========================================================================
 
-#ifndef _glfw3_osmesa_platform_h_
-#define _glfw3_osmesa_platform_h_
+#ifndef _glfw3_null_platform_h_
+#define _glfw3_null_platform_h_
 
 #include <dlfcn.h>
 
-#define _GLFW_PLATFORM_WINDOW_STATE _GLFWwindowOSMesa osmesa
+#define _GLFW_PLATFORM_WINDOW_STATE _GLFWwindowNull null
 
+#define _GLFW_PLATFORM_CONTEXT_STATE
 #define _GLFW_PLATFORM_MONITOR_STATE
 #define _GLFW_PLATFORM_CURSOR_STATE
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE
-#define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE
+#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
 #define _GLFW_EGL_CONTEXT_STATE
 #define _GLFW_EGL_LIBRARY_CONTEXT_STATE
 
 #include "osmesa_context.h"
 #include "posix_time.h"
 #include "posix_tls.h"
+#include "null_joystick.h"
 
 #if defined(_GLFW_WIN32)
  #define _glfw_dlopen(name) LoadLibraryA(name)
@@ -53,13 +55,13 @@
  #define _glfw_dlsym(handle, name) dlsym(handle, name)
 #endif
 
-// OSMesa-specific per-window data
+// Null-specific per-window data
 //
-typedef struct _GLFWwindowOSMesa
+typedef struct _GLFWwindowNull
 {
     int width;
     int height;
-} _GLFWwindowOSMesa;
+} _GLFWwindowNull;
 
 
-#endif // _glfw3_osmesa_platform_h_
+#endif // _glfw3_null_platform_h_

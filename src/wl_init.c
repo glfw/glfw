@@ -519,6 +519,7 @@ static void createKeyTables(void)
     _glfw.wl.keycodes[KEY_8]          = GLFW_KEY_8;
     _glfw.wl.keycodes[KEY_9]          = GLFW_KEY_9;
     _glfw.wl.keycodes[KEY_0]          = GLFW_KEY_0;
+    _glfw.wl.keycodes[KEY_SPACE]      = GLFW_KEY_SPACE;
     _glfw.wl.keycodes[KEY_MINUS]      = GLFW_KEY_MINUS;
     _glfw.wl.keycodes[KEY_EQUAL]      = GLFW_KEY_EQUAL;
     _glfw.wl.keycodes[KEY_Q]          = GLFW_KEY_Q;
@@ -650,9 +651,6 @@ int _glfwPlatformInit(void)
     _glfw.wl.registry = wl_display_get_registry(_glfw.wl.display);
     wl_registry_add_listener(_glfw.wl.registry, &registryListener, NULL);
 
-    _glfw.wl.monitors = calloc(4, sizeof(_GLFWmonitor*));
-    _glfw.wl.monitorsSize = 4;
-
     createKeyTables();
 
     _glfw.wl.xkb.context = xkb_context_new(0);
@@ -741,9 +739,7 @@ const char* _glfwPlatformGetVersionString(void)
 #else
         " gettimeofday"
 #endif
-#if defined(__linux__)
         " /dev/js"
-#endif
 #if defined(_GLFW_BUILD_DLL)
         " shared"
 #endif

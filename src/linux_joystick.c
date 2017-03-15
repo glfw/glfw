@@ -2,7 +2,7 @@
 // GLFW 3.3 Linux - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -27,7 +27,6 @@
 
 #include "internal.h"
 
-#if defined(__linux__)
 #include <linux/joystick.h>
 
 #include <sys/types.h>
@@ -40,36 +39,24 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#endif // __linux__
 
 
 // Attempt to open the specified joystick device
 //
-#if defined(__linux__)
 static GLFWbool openJoystickDevice(const char* path)
 {
     char axisCount, buttonCount;
     char name[256] = "";
     int jid, fd, version;
-    _GLFWjoystickLinux* js;
+    _GLFWjoystick* js;
 
-    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
-        if (!_glfw.linux_js.js[jid].present)
+        if (!_glfw.joysticks[jid].present)
             continue;
-
-        if (strcmp(_glfw.linux_js.js[jid].path, path) == 0)
+        if (strcmp(_glfw.joysticks[jid].linjs.path, path) == 0)
             return GLFW_FALSE;
     }
-
-    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
-    {
-        if (!_glfw.linux_js.js[jid].present)
-            break;
-    }
-
-    if (jid > GLFW_JOYSTICK_LAST)
-        return GLFW_FALSE;
 
     fd = open(path, O_RDONLY | O_NONBLOCK);
     if (fd == -1)
@@ -87,82 +74,41 @@ static GLFWbool openJoystickDevice(const char* path)
     if (ioctl(fd, JSIOCGNAME(sizeof(name)), name) < 0)
         strncpy(name, "Unknown", sizeof(name));
 
-    js = _glfw.linux_js.js + jid;
-    js->present = GLFW_TRUE;
-    js->name = strdup(name);
-    js->path = strdup(path);
-    js->fd = fd;
-
     ioctl(fd, JSIOCGAXES, &axisCount);
-    js->axisCount = (int) axisCount;
-    js->axes = calloc(axisCount, sizeof(float));
-
     ioctl(fd, JSIOCGBUTTONS, &buttonCount);
-    js->buttonCount = (int) buttonCount;
-    js->buttons = calloc(buttonCount, 1);
 
-    _glfwInputJoystickChange(jid, GLFW_CONNECTED);
+    js = _glfwAllocJoystick(name, axisCount, buttonCount, 0);
+    if (!js)
+    {
+        close(fd);
+        return GLFW_FALSE;
+    }
+
+    js->linjs.path = strdup(path);
+    js->linjs.fd = fd;
+
+    _glfwInputJoystick(_GLFW_JOYSTICK_ID(js), GLFW_CONNECTED);
     return GLFW_TRUE;
 }
-#endif // __linux__
 
-// Polls for and processes events the specified joystick
+// Frees all resources associated with the specified joystick
 //
-static GLFWbool pollJoystickEvents(_GLFWjoystickLinux* js)
+static void closeJoystick(_GLFWjoystick* js)
 {
-#if defined(__linux__)
-    _glfwPollJoystickEvents();
-
-    if (!js->present)
-        return GLFW_FALSE;
-
-    // Read all queued events (non-blocking)
-    for (;;)
-    {
-        struct js_event e;
-
-        errno = 0;
-        if (read(js->fd, &e, sizeof(e)) < 0)
-        {
-            // Reset the joystick slot if the device was disconnected
-            if (errno == ENODEV)
-            {
-                free(js->axes);
-                free(js->buttons);
-                free(js->name);
-                free(js->path);
-
-                memset(js, 0, sizeof(_GLFWjoystickLinux));
-
-                _glfwInputJoystickChange(js - _glfw.linux_js.js,
-                                         GLFW_DISCONNECTED);
-            }
-
-            break;
-        }
-
-        // Clear the initial-state bit
-        e.type &= ~JS_EVENT_INIT;
-
-        if (e.type == JS_EVENT_AXIS)
-            js->axes[e.number] = (float) e.value / 32767.0f;
-        else if (e.type == JS_EVENT_BUTTON)
-            js->buttons[e.number] = e.value ? GLFW_PRESS : GLFW_RELEASE;
-    }
-#endif // __linux__
-    return js->present;
+    close(js->linjs.fd);
+    free(js->linjs.path);
+    _glfwFreeJoystick(js);
+    _glfwInputJoystick(_GLFW_JOYSTICK_ID(js), GLFW_DISCONNECTED);
 }
 
 // Lexically compare joysticks by name; used by qsort
 //
-#if defined(__linux__)
 static int compareJoysticks(const void* fp, const void* sp)
 {
-    const _GLFWjoystickLinux* fj = fp;
-    const _GLFWjoystickLinux* sj = sp;
-    return strcmp(fj->path, sj->path);
+    const _GLFWjoystick* fj = fp;
+    const _GLFWjoystick* sj = sp;
+    return strcmp(fj->linjs.path, sj->linjs.path);
 }
-#endif // __linux__
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -173,13 +119,12 @@ static int compareJoysticks(const void* fp, const void* sp)
 //
 GLFWbool _glfwInitJoysticksLinux(void)
 {
-#if defined(__linux__)
     DIR* dir;
     int count = 0;
     const char* dirname = "/dev/input";
 
-    _glfw.linux_js.inotify = inotify_init1(IN_NONBLOCK | IN_CLOEXEC);
-    if (_glfw.linux_js.inotify == -1)
+    _glfw.linjs.inotify = inotify_init1(IN_NONBLOCK | IN_CLOEXEC);
+    if (_glfw.linjs.inotify == -1)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Linux: Failed to initialize inotify: %s",
@@ -190,10 +135,10 @@ GLFWbool _glfwInitJoysticksLinux(void)
     // HACK: Register for IN_ATTRIB as well to get notified when udev is done
     //       This works well in practice but the true way is libudev
 
-    _glfw.linux_js.watch = inotify_add_watch(_glfw.linux_js.inotify,
-                                             dirname,
-                                             IN_CREATE | IN_ATTRIB);
-    if (_glfw.linux_js.watch == -1)
+    _glfw.linjs.watch = inotify_add_watch(_glfw.linjs.inotify,
+                                          dirname,
+                                          IN_CREATE | IN_ATTRIB | IN_DELETE);
+    if (_glfw.linjs.watch == -1)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Linux: Failed to watch for joystick connections in %s: %s",
@@ -202,7 +147,7 @@ GLFWbool _glfwInitJoysticksLinux(void)
         // Continue without device connection notifications
     }
 
-    if (regcomp(&_glfw.linux_js.regex, "^js[0-9]\\+$", 0) != 0)
+    if (regcomp(&_glfw.linjs.regex, "^js[0-9]\\+$", 0) != 0)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Linux: Failed to compile regex");
         return GLFW_FALSE;
@@ -218,7 +163,7 @@ GLFWbool _glfwInitJoysticksLinux(void)
             char path[20];
             regmatch_t match;
 
-            if (regexec(&_glfw.linux_js.regex, entry->d_name, 1, &match, 0) != 0)
+            if (regexec(&_glfw.linjs.regex, entry->d_name, 1, &match, 0) != 0)
                 continue;
 
             snprintf(path, sizeof(path), "%s/%s", dirname, entry->d_name);
@@ -237,9 +182,7 @@ GLFWbool _glfwInitJoysticksLinux(void)
         // Continue with no joysticks detected
     }
 
-    qsort(_glfw.linux_js.js, count, sizeof(_GLFWjoystickLinux), compareJoysticks);
-#endif // __linux__
-
+    qsort(_glfw.joysticks, count, sizeof(_GLFWjoystick), compareJoysticks);
     return GLFW_TRUE;
 }
 
@@ -247,56 +190,62 @@ GLFWbool _glfwInitJoysticksLinux(void)
 //
 void _glfwTerminateJoysticksLinux(void)
 {
-#if defined(__linux__)
-    int i;
+    int jid;
 
-    for (i = 0;  i <= GLFW_JOYSTICK_LAST;  i++)
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
-        if (_glfw.linux_js.js[i].present)
-        {
-            close(_glfw.linux_js.js[i].fd);
-            free(_glfw.linux_js.js[i].axes);
-            free(_glfw.linux_js.js[i].buttons);
-            free(_glfw.linux_js.js[i].name);
-            free(_glfw.linux_js.js[i].path);
-        }
+        _GLFWjoystick* js = _glfw.joysticks + jid;
+        if (js->present)
+            closeJoystick(js);
     }
 
-    regfree(&_glfw.linux_js.regex);
+    regfree(&_glfw.linjs.regex);
 
-    if (_glfw.linux_js.inotify > 0)
+    if (_glfw.linjs.inotify > 0)
     {
-        if (_glfw.linux_js.watch > 0)
-            inotify_rm_watch(_glfw.linux_js.inotify, _glfw.linux_js.watch);
+        if (_glfw.linjs.watch > 0)
+            inotify_rm_watch(_glfw.linjs.inotify, _glfw.linjs.watch);
 
-        close(_glfw.linux_js.inotify);
+        close(_glfw.linjs.inotify);
     }
-#endif // __linux__
 }
 
-void _glfwPollJoystickEvents(void)
+void _glfwDetectJoystickConnectionLinux(void)
 {
-#if defined(__linux__)
     ssize_t offset = 0;
     char buffer[16384];
 
-    const ssize_t size = read(_glfw.linux_js.inotify, buffer, sizeof(buffer));
+    const ssize_t size = read(_glfw.linjs.inotify, buffer, sizeof(buffer));
 
     while (size > offset)
     {
         regmatch_t match;
         const struct inotify_event* e = (struct inotify_event*) (buffer + offset);
 
-        if (regexec(&_glfw.linux_js.regex, e->name, 1, &match, 0) == 0)
+        if (regexec(&_glfw.linjs.regex, e->name, 1, &match, 0) == 0)
         {
             char path[20];
             snprintf(path, sizeof(path), "/dev/input/%s", e->name);
-            openJoystickDevice(path);
+
+            if (e->mask & (IN_CREATE | IN_ATTRIB))
+                openJoystickDevice(path);
+            else if (e->mask & IN_DELETE)
+            {
+                int jid;
+
+                for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+                {
+                    if (strcmp(_glfw.joysticks[jid].linjs.path, path) == 0)
+                    {
+                        closeJoystick(_glfw.joysticks + jid);
+                        break;
+                    }
+                }
+            }
         }
 
         offset += sizeof(struct inotify_event) + e->len;
     }
-#endif
 }
 
 
@@ -304,38 +253,34 @@ void _glfwPollJoystickEvents(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwPlatformJoystickPresent(int jid)
+int _glfwPlatformPollJoystick(int jid, int mode)
 {
-    _GLFWjoystickLinux* js = _glfw.linux_js.js + jid;
-    return pollJoystickEvents(js);
-}
+    _GLFWjoystick* js = _glfw.joysticks + jid;
 
-const float* _glfwPlatformGetJoystickAxes(int jid, int* count)
-{
-    _GLFWjoystickLinux* js = _glfw.linux_js.js + jid;
-    if (!pollJoystickEvents(js))
-        return NULL;
+    // Read all queued events (non-blocking)
+    for (;;)
+    {
+        struct js_event e;
 
-    *count = js->axisCount;
-    return js->axes;
-}
+        errno = 0;
+        if (read(js->linjs.fd, &e, sizeof(e)) < 0)
+        {
+            // Reset the joystick slot if the device was disconnected
+            if (errno == ENODEV)
+                closeJoystick(js);
 
-const unsigned char* _glfwPlatformGetJoystickButtons(int jid, int* count)
-{
-    _GLFWjoystickLinux* js = _glfw.linux_js.js + jid;
-    if (!pollJoystickEvents(js))
-        return NULL;
+            break;
+        }
 
-    *count = js->buttonCount;
-    return js->buttons;
-}
+        // Clear the initial-state bit
+        e.type &= ~JS_EVENT_INIT;
 
-const char* _glfwPlatformGetJoystickName(int jid)
-{
-    _GLFWjoystickLinux* js = _glfw.linux_js.js + jid;
-    if (!pollJoystickEvents(js))
-        return NULL;
+        if (e.type == JS_EVENT_AXIS)
+            _glfwInputJoystickAxis(jid, e.number, e.value / 32767.0f);
+        else if (e.type == JS_EVENT_BUTTON)
+            _glfwInputJoystickButton(jid, e.number, e.value ? 1 : 0);
+    }
 
-    return js->name;
+    return js->present;
 }
 

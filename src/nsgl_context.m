@@ -1,7 +1,7 @@
 //========================================================================
 // GLFW 3.3 macOS - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2009-2016 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -128,26 +128,19 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    if (ctxconfig->major == 3 && ctxconfig->minor < 2)
-    {
-        _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                        "NSGL: The targeted version of macOS does not support OpenGL 3.0 or 3.1");
-        return GLFW_FALSE;
-    }
-
     if (ctxconfig->major > 2)
     {
-        if (!ctxconfig->forward)
+        if (ctxconfig->major == 3 && ctxconfig->minor < 2)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                            "NSGL: The targeted version of macOS only supports forward-compatible contexts for OpenGL 3.2 and above");
+                            "NSGL: The targeted version of macOS does not support OpenGL 3.0 or 3.1 but may support 3.2 and above");
             return GLFW_FALSE;
         }
 
-        if (ctxconfig->profile != GLFW_OPENGL_CORE_PROFILE)
+        if (!ctxconfig->forward || ctxconfig->profile != GLFW_OPENGL_CORE_PROFILE)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                            "NSGL: The targeted version of macOS only supports core profile contexts for OpenGL 3.2 and above");
+                            "NSGL: The targeted version of macOS only supports forward-compatible core profile contexts for OpenGL 3.2 and above");
             return GLFW_FALSE;
         }
     }
@@ -166,6 +159,18 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
 
     ADD_ATTR(NSOpenGLPFAAccelerated);
     ADD_ATTR(NSOpenGLPFAClosestPolicy);
+
+    if (ctxconfig->nsgl.offline)
+    {
+        ADD_ATTR(NSOpenGLPFAAllowOfflineRenderers);
+        // NOTE: This replaces the NSSupportsAutomaticGraphicsSwitching key in
+        //       Info.plist for unbundled applications
+        // HACK: This assumes that NSOpenGLPixelFormat will remain
+        //       a straightforward wrapper of its CGL counterpart
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 100800
+        ADD_ATTR(kCGLPFASupportsAutomaticGraphicsSwitching);
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+    }
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
     if (ctxconfig->major >= 4)

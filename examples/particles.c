@@ -1,7 +1,7 @@
 //========================================================================
 // A simple particle engine with threaded physics
 // Copyright (c) Marcus Geelnard
-// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages

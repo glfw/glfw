@@ -2,7 +2,7 @@
 // GLFW 3.3 OSMesa - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2016 Google Inc.
-// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -36,25 +36,26 @@ static void makeContextCurrentOSMesa(_GLFWwindow* window)
 {
     if (window)
     {
+        int width, height;
+        _glfwPlatformGetFramebufferSize(window, &width, &height);
+
         // Check to see if we need to allocate a new buffer
         if ((window->context.osmesa.buffer == NULL) ||
-            (window->osmesa.width != window->context.osmesa.width) ||
-            (window->osmesa.height != window->context.osmesa.height))
+            (width != window->context.osmesa.width) ||
+            (height != window->context.osmesa.height))
         {
             free(window->context.osmesa.buffer);
 
             // Allocate the new buffer (width * height * 8-bit RGBA)
-            window->context.osmesa.buffer =
-                calloc(4, window->osmesa.width * window->osmesa.height);
-
-            window->context.osmesa.width = window->osmesa.width;
-            window->context.osmesa.height = window->osmesa.height;
+            window->context.osmesa.buffer = calloc(4, width * height);
+            window->context.osmesa.width  = width;
+            window->context.osmesa.height = height;
         }
 
         if (!OSMesaMakeCurrent(window->context.osmesa.handle,
-                            window->context.osmesa.buffer,
-                            GL_UNSIGNED_BYTE,
-                            window->osmesa.width, window->osmesa.height))
+                               window->context.osmesa.buffer,
+                               GL_UNSIGNED_BYTE,
+                               width, height))
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "OSMesa: Failed to make context current");
@@ -142,19 +143,19 @@ GLFWbool _glfwInitOSMesa(void)
         return GLFW_FALSE;
     }
 
-    _glfw.osmesa.CreateContextExt = (PFNOSMESACREATECONTEXTEXTPROC)
+    _glfw.osmesa.CreateContextExt = (PFN_OSMesaCreateContextExt)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaCreateContextExt");
-    _glfw.osmesa.CreateContextAttribs = (PFNOSMESACREATECONTEXTATTRIBSPROC)
+    _glfw.osmesa.CreateContextAttribs = (PFN_OSMesaCreateContextAttribs)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaCreateContextAttribs");
-    _glfw.osmesa.DestroyContext = (PFNOSMESADESTROYCONTEXTPROC)
+    _glfw.osmesa.DestroyContext = (PFN_OSMesaDestroyContext)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaDestroyContext");
-    _glfw.osmesa.MakeCurrent = (PFNOSMESAMAKECURRENTPROC)
+    _glfw.osmesa.MakeCurrent = (PFN_OSMesaMakeCurrent)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaMakeCurrent");
-    _glfw.osmesa.GetColorBuffer = (PFNOSMESAGETCOLORBUFFERPROC)
+    _glfw.osmesa.GetColorBuffer = (PFN_OSMesaGetColorBuffer)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaGetColorBuffer");
-    _glfw.osmesa.GetDepthBuffer = (PFNOSMESAGETDEPTHBUFFERPROC)
+    _glfw.osmesa.GetDepthBuffer = (PFN_OSMesaGetDepthBuffer)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaGetDepthBuffer");
-    _glfw.osmesa.GetProcAddress = (PFNOSMESAGETPROCADDRESSPROC)
+    _glfw.osmesa.GetProcAddress = (PFN_OSMesaGetProcAddress)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaGetProcAddress");
 
     if (!_glfw.osmesa.CreateContextExt ||

@@ -405,10 +405,21 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (ctxconfig->client != GLFW_NO_API)
     {
-        if (!_glfwInitEGL())
-            return GLFW_FALSE;
-        if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
-            return GLFW_FALSE;
+        if (ctxconfig->source == GLFW_EGL_CONTEXT_API ||
+            ctxconfig->source == GLFW_NATIVE_CONTEXT_API)
+        {
+            if (!_glfwInitEGL())
+                return GLFW_FALSE;
+            if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
+                return GLFW_FALSE;
+        }
+        else if (ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
+        {
+            if (!_glfwInitOSMesa())
+                return GLFW_FALSE;
+            if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
+                return GLFW_FALSE;
+        }
     }
 
     return GLFW_TRUE;
@@ -432,10 +443,9 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
     MirSurfaceSpec* spec;
-    const char* e_title = title ? title : "";
 
     spec = mir_connection_create_spec_for_changes(_glfw.mir.connection);
-    mir_surface_spec_set_name(spec, e_title);
+    mir_surface_spec_set_name(spec, title);
 
     mir_surface_apply_spec(window->mir.surface, spec);
     mir_surface_spec_release(spec);
@@ -593,6 +603,24 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
 int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 {
     return mir_surface_get_state(window->mir.surface) == mir_surface_state_maximized;
+}
+
+void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
+}
+
+void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
+}
+
+void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
 }
 
 void _glfwPlatformPollEvents(void)

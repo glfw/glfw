@@ -2,7 +2,7 @@
 // GLFW 3.3 OSMesa - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2016 Google Inc.
-// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -42,13 +42,13 @@
 typedef void* OSMesaContext;
 typedef void (*OSMESAproc)();
 
-typedef OSMesaContext (* PFNOSMESACREATECONTEXTATTRIBSPROC)(const int*,OSMesaContext);
-typedef OSMesaContext (* PFNOSMESACREATECONTEXTEXTPROC)(GLenum,GLint,GLint,GLint,OSMesaContext);
-typedef void (* PFNOSMESADESTROYCONTEXTPROC)(OSMesaContext);
-typedef int (* PFNOSMESAMAKECURRENTPROC)(OSMesaContext,void*,int,int,int);
-typedef int (* PFNOSMESAGETCOLORBUFFERPROC)(OSMesaContext,int*,int*,int*,void**);
-typedef int (* PFNOSMESAGETDEPTHBUFFERPROC)(OSMesaContext,int*,int*,int*,void**);
-typedef GLFWglproc (* PFNOSMESAGETPROCADDRESSPROC)(const char*);
+typedef OSMesaContext (GLAPIENTRY * PFN_OSMesaCreateContextExt)(GLenum,GLint,GLint,GLint,OSMesaContext);
+typedef OSMesaContext (GLAPIENTRY * PFN_OSMesaCreateContextAttribs)(const int*,OSMesaContext);
+typedef void (GLAPIENTRY * PFN_OSMesaDestroyContext)(OSMesaContext);
+typedef int (GLAPIENTRY * PFN_OSMesaMakeCurrent)(OSMesaContext,void*,int,int,int);
+typedef int (GLAPIENTRY * PFN_OSMesaGetColorBuffer)(OSMesaContext,int*,int*,int*,void**);
+typedef int (GLAPIENTRY * PFN_OSMesaGetDepthBuffer)(OSMesaContext,int*,int*,int*,void**);
+typedef GLFWglproc (GLAPIENTRY * PFN_OSMesaGetProcAddress)(const char*);
 #define OSMesaCreateContextExt _glfw.osmesa.CreateContextExt
 #define OSMesaCreateContextAttribs _glfw.osmesa.CreateContextAttribs
 #define OSMesaDestroyContext _glfw.osmesa.DestroyContext
@@ -57,18 +57,18 @@ typedef GLFWglproc (* PFNOSMESAGETPROCADDRESSPROC)(const char*);
 #define OSMesaGetDepthBuffer _glfw.osmesa.GetDepthBuffer
 #define OSMesaGetProcAddress _glfw.osmesa.GetProcAddress
 
-#define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextOSMesa osmesa
-#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryOSMesa osmesa
+#define _GLFW_OSMESA_CONTEXT_STATE              _GLFWcontextOSMesa osmesa
+#define _GLFW_OSMESA_LIBRARY_CONTEXT_STATE      _GLFWlibraryOSMesa osmesa
 
 
 // OSMesa-specific per-context data
 //
 typedef struct _GLFWcontextOSMesa
 {
-   OSMesaContext       handle;
-   int                 width;
-   int                 height;
-   void*               buffer;
+    OSMesaContext       handle;
+    int                 width;
+    int                 height;
+    void*               buffer;
 
 } _GLFWcontextOSMesa;
 
@@ -78,13 +78,13 @@ typedef struct _GLFWlibraryOSMesa
 {
     void*           handle;
 
-    PFNOSMESACREATECONTEXTEXTPROC     CreateContextExt;
-    PFNOSMESACREATECONTEXTATTRIBSPROC CreateContextAttribs;
-    PFNOSMESADESTROYCONTEXTPROC       DestroyContext;
-    PFNOSMESAMAKECURRENTPROC          MakeCurrent;
-    PFNOSMESAGETCOLORBUFFERPROC       GetColorBuffer;
-    PFNOSMESAGETDEPTHBUFFERPROC       GetDepthBuffer;
-    PFNOSMESAGETPROCADDRESSPROC       GetProcAddress;
+    PFN_OSMesaCreateContextExt      CreateContextExt;
+    PFN_OSMesaCreateContextAttribs  CreateContextAttribs;
+    PFN_OSMesaDestroyContext        DestroyContext;
+    PFN_OSMesaMakeCurrent           MakeCurrent;
+    PFN_OSMesaGetColorBuffer        GetColorBuffer;
+    PFN_OSMesaGetDepthBuffer        GetDepthBuffer;
+    PFN_OSMesaGetProcAddress        GetProcAddress;
 
 } _GLFWlibraryOSMesa;
 

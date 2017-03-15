@@ -1,7 +1,7 @@
 //========================================================================
 // GLFW 3.3 macOS - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2009-2016 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -54,10 +54,15 @@ typedef VkResult (APIENTRY *PFN_vkCreateMacOSSurfaceMVK)(VkInstance,const VkMacO
 #include "posix_tls.h"
 #include "cocoa_joystick.h"
 #include "nsgl_context.h"
+#include "egl_context.h"
+#include "osmesa_context.h"
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)
 #define _glfw_dlsym(handle, name) dlsym(handle, name)
+
+#define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->ns.view)
+#define _GLFW_EGL_NATIVE_DISPLAY EGL_DEFAULT_DISPLAY
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  ns
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS ns
@@ -65,12 +70,8 @@ typedef VkResult (APIENTRY *PFN_vkCreateMacOSSurfaceMVK)(VkInstance,const VkMacO
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorNS ns
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorNS  ns
 
-#define _GLFW_EGL_CONTEXT_STATE
-#define _GLFW_EGL_LIBRARY_CONTEXT_STATE
-
 // HIToolbox.framework pointer typedefs
 #define kTISPropertyUnicodeKeyLayoutData _glfw.ns.tis.kPropertyUnicodeKeyLayoutData
-#define kTISNotifySelectedKeyboardInputSourceChanged _glfw.ns.tis.kNotifySelectedKeyboardInputSourceChanged
 typedef TISInputSourceRef (*PFN_TISCopyCurrentKeyboardLayoutInputSource)(void);
 #define TISCopyCurrentKeyboardLayoutInputSource _glfw.ns.tis.CopyCurrentKeyboardLayoutInputSource
 typedef void* (*PFN_TISGetInputSourceProperty)(TISInputSourceRef,CFStringRef);
@@ -114,6 +115,7 @@ typedef struct _GLFWlibraryNS
     short int           keycodes[256];
     short int           scancodes[GLFW_KEY_LAST + 1];
     char*               clipboardString;
+    CGPoint             cascadePoint;
     // Where to place the cursor when re-enabled
     double              restoreCursorPosX, restoreCursorPosY;
     // The window whose disabled cursor mode is active
@@ -125,7 +127,6 @@ typedef struct _GLFWlibraryNS
         PFN_TISGetInputSourceProperty GetInputSourceProperty;
         PFN_LMGetKbdType GetKbdType;
         CFStringRef     kPropertyUnicodeKeyLayoutData;
-        CFStringRef     kNotifySelectedKeyboardInputSourceChanged;
     } tis;
 
 } _GLFWlibraryNS;
@@ -159,6 +160,7 @@ typedef struct _GLFWtimeNS
 
 void _glfwInitTimerNS(void);
 
+void _glfwPollMonitorsNS(void);
 GLFWbool _glfwSetVideoModeNS(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoModeNS(_GLFWmonitor* monitor);
 

@@ -17,7 +17,9 @@ set(glfw_DOCS_SOURCES
     "${GLFW_SOURCE_DIR}/docs/compat.dox")
 
 if (GLFW_DOCUMENT_INTERNALS)
-    list(APPEND glfw_DOCS_SOURCES "${GLFW_SOURCE_DIR}/src/internal.h")
+    list(APPEND glfw_DOCS_SOURCES
+        "${GLFW_SOURCE_DIR}/docs/internal.dox"
+        "${GLFW_SOURCE_DIR}/src/internal.h")
 endif()
 
 foreach(arg ${glfw_DOCS_SOURCES})

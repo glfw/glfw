@@ -2,7 +2,7 @@
 // GLFW 3.3 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -35,15 +35,15 @@ DEFINE_GUID(GUID_DEVINTERFACE_HID,0x4d1e55b2,0xf16f,0x11cf,0x88,0xcb,0x00,0x11,0
 
 #if defined(_GLFW_USE_HYBRID_HPG) || defined(_GLFW_USE_OPTIMUS_HPG)
 
-// Applications exporting this symbol with this value will be automatically
-// directed to the high-performance GPU on Nvidia Optimus systems with
-// up-to-date drivers
+// Executables (but not DLLs) exporting this symbol with this value will be
+// automatically directed to the high-performance GPU on Nvidia Optimus systems
+// with up-to-date drivers
 //
 __declspec(dllexport) DWORD NvOptimusEnablement = 1;
 
-// Applications exporting this symbol with this value will be automatically
-// directed to the high-performance GPU on AMD PowerXpress systems with
-// up-to-date drivers
+// Executables (but not DLLs) exporting this symbol with this value will be
+// automatically directed to the high-performance GPU on AMD PowerXpress systems
+// with up-to-date drivers
 //
 __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
@@ -67,29 +67,29 @@ static GLFWbool loadLibraries(void)
     _glfw.win32.winmm.instance = LoadLibraryA("winmm.dll");
     if (!_glfw.win32.winmm.instance)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to load winmm.dll");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to load winmm.dll");
         return GLFW_FALSE;
     }
 
-    _glfw.win32.winmm.timeGetTime = (TIMEGETTIME_T)
+    _glfw.win32.winmm.GetTime = (PFN_timeGetTime)
         GetProcAddress(_glfw.win32.winmm.instance, "timeGetTime");
 
     _glfw.win32.user32.instance = LoadLibraryA("user32.dll");
     if (!_glfw.win32.user32.instance)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to load user32.dll");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to load user32.dll");
         return GLFW_FALSE;
     }
 
-    _glfw.win32.user32.SetProcessDPIAware = (SETPROCESSDPIAWARE_T)
+    _glfw.win32.user32.SetProcessDPIAware = (PFN_SetProcessDPIAware)
         GetProcAddress(_glfw.win32.user32.instance, "SetProcessDPIAware");
-    _glfw.win32.user32.ChangeWindowMessageFilterEx = (CHANGEWINDOWMESSAGEFILTEREX_T)
+    _glfw.win32.user32.ChangeWindowMessageFilterEx = (PFN_ChangeWindowMessageFilterEx)
         GetProcAddress(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
 
     _glfw.win32.dinput8.instance = LoadLibraryA("dinput8.dll");
     if (_glfw.win32.dinput8.instance)
     {
-        _glfw.win32.dinput8.DirectInput8Create = (DIRECTINPUT8CREATE_T)
+        _glfw.win32.dinput8.Create = (PFN_DirectInput8Create)
             GetProcAddress(_glfw.win32.dinput8.instance, "DirectInput8Create");
     }
 
@@ -110,9 +110,9 @@ static GLFWbool loadLibraries(void)
             _glfw.win32.xinput.instance = LoadLibraryA(names[i]);
             if (_glfw.win32.xinput.instance)
             {
-                _glfw.win32.xinput.XInputGetCapabilities = (XINPUTGETCAPABILITIES_T)
+                _glfw.win32.xinput.GetCapabilities = (PFN_XInputGetCapabilities)
                     GetProcAddress(_glfw.win32.xinput.instance, "XInputGetCapabilities");
-                _glfw.win32.xinput.XInputGetState = (XINPUTGETSTATE_T)
+                _glfw.win32.xinput.GetState = (PFN_XInputGetState)
                     GetProcAddress(_glfw.win32.xinput.instance, "XInputGetState");
 
                 break;
@@ -123,16 +123,16 @@ static GLFWbool loadLibraries(void)
     _glfw.win32.dwmapi.instance = LoadLibraryA("dwmapi.dll");
     if (_glfw.win32.dwmapi.instance)
     {
-        _glfw.win32.dwmapi.DwmIsCompositionEnabled = (DWMISCOMPOSITIONENABLED_T)
+        _glfw.win32.dwmapi.DwmIsCompositionEnabled = (PFN_DwmIsCompositionEnabled)
             GetProcAddress(_glfw.win32.dwmapi.instance, "DwmIsCompositionEnabled");
-        _glfw.win32.dwmapi.DwmFlush = (DWMFLUSH_T)
+        _glfw.win32.dwmapi.DwmFlush = (PFN_DwmFlush)
             GetProcAddress(_glfw.win32.dwmapi.instance, "DwmFlush");
     }
 
     _glfw.win32.shcore.instance = LoadLibraryA("shcore.dll");
     if (_glfw.win32.shcore.instance)
     {
-        _glfw.win32.shcore.SetProcessDpiAwareness = (SETPROCESSDPIAWARENESS_T)
+        _glfw.win32.shcore.SetProcessDpiAwareness = (PFN_SetProcessDpiAwareness)
             GetProcAddress(_glfw.win32.shcore.instance, "SetProcessDpiAwareness");
     }
 
@@ -307,16 +307,16 @@ static HWND createHelperWindow(void)
     MSG msg;
     HWND window = CreateWindowExW(WS_EX_OVERLAPPEDWINDOW,
                                   _GLFW_WNDCLASSNAME,
-                                  L"GLFW helper window",
+                                  L"GLFW message window",
                                   WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
                                   0, 0, 1, 1,
-                                  HWND_MESSAGE, NULL,
+                                  NULL, NULL,
                                   GetModuleHandleW(NULL),
                                   NULL);
     if (!window)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to create helper window");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to create helper window");
         return NULL;
     }
 
@@ -360,12 +360,18 @@ WCHAR* _glfwCreateWideStringFromUTF8Win32(const char* source)
 
     length = MultiByteToWideChar(CP_UTF8, 0, source, -1, NULL, 0);
     if (!length)
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to convert string from UTF-8");
         return NULL;
+    }
 
     target = calloc(length, sizeof(WCHAR));
 
     if (!MultiByteToWideChar(CP_UTF8, 0, source, -1, target, length))
     {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to convert string from UTF-8");
         free(target);
         return NULL;
     }
@@ -382,17 +388,44 @@ char* _glfwCreateUTF8FromWideStringWin32(const WCHAR* source)
 
     length = WideCharToMultiByte(CP_UTF8, 0, source, -1, NULL, 0, NULL, NULL);
     if (!length)
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to convert string to UTF-8");
         return NULL;
+    }
 
     target = calloc(length, 1);
 
     if (!WideCharToMultiByte(CP_UTF8, 0, source, -1, target, length, NULL, NULL))
     {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to convert string to UTF-8");
         free(target);
         return NULL;
     }
 
     return target;
+}
+
+// Reports the specified error, appending information about the last Win32 error
+//
+void _glfwInputErrorWin32(int error, const char* description)
+{
+    WCHAR buffer[1024] = L"";
+    char message[2048] = "";
+
+    FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
+                       FORMAT_MESSAGE_IGNORE_INSERTS |
+                       FORMAT_MESSAGE_MAX_WIDTH_MASK,
+                   NULL,
+                   GetLastError() & 0xffff,
+                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                   buffer,
+                   sizeof(buffer),
+                   NULL);
+    WideCharToMultiByte(CP_UTF8, 0, buffer, -1, message, sizeof(message), NULL, NULL);
+
+    _glfwInputError(error, "%s: %s", description, message);
 }
 
 
@@ -433,6 +466,7 @@ int _glfwPlatformInit(void)
     _glfwInitTimerWin32();
     _glfwInitJoysticksWin32();
 
+    _glfwPollMonitorsWin32();
     return GLFW_TRUE;
 }
 
@@ -449,6 +483,7 @@ void _glfwPlatformTerminate(void)
                           SPIF_SENDCHANGE);
 
     free(_glfw.win32.clipboardString);
+    free(_glfw.win32.rawInput);
 
     _glfwTerminateWGL();
     _glfwTerminateEGL();

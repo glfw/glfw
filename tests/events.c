@@ -1,6 +1,6 @@
 //========================================================================
 // Event linter (event spewer)
-// Copyright (c) Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -463,17 +463,19 @@ static void joystick_callback(int jid, int event)
 {
     if (event == GLFW_CONNECTED)
     {
-        int axisCount, buttonCount;
+        int axisCount, buttonCount, hatCount;
 
         glfwGetJoystickAxes(jid, &axisCount);
         glfwGetJoystickButtons(jid, &buttonCount);
+        glfwGetJoystickHats(jid, &hatCount);
 
-        printf("%08x at %0.3f: Joystick %i (%s) was connected with %i axes and %i buttons\n",
+        printf("%08x at %0.3f: Joystick %i (%s) was connected with %i axes, %i buttons, and %i hats\n",
                counter++, glfwGetTime(),
                jid,
                glfwGetJoystickName(jid),
                axisCount,
-               buttonCount);
+               buttonCount,
+               hatCount);
     }
     else
     {

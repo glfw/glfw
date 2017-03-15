@@ -291,6 +291,8 @@ GLFWbool _glfwInitEGL(void)
         "EGL.dll",
 #elif defined(_GLFW_COCOA)
         "libEGL.dylib",
+#elif defined(__CYGWIN__)
+        "libEGL-1.so",
 #else
         "libEGL.so.1",
 #endif
@@ -609,6 +611,8 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
             "libGLESv2.dll",
 #elif defined(_GLFW_COCOA)
             "libGLESv2.dylib",
+#elif defined(__CYGWIN__)
+            "libGLESv2-2.so",
 #else
             "libGLESv2.so.2",
 #endif

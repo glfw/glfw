@@ -208,9 +208,10 @@ typedef struct _GLFWlibraryX11
     Atom            XdndStatus;
     Atom            XdndActionCopy;
     Atom            XdndDrop;
-    Atom            XdndLeave;
     Atom            XdndFinished;
     Atom            XdndSelection;
+    Atom            XdndTypeList;
+    Atom            text_uri_list;
 
     // Selection (clipboard) atoms
     Atom            TARGETS;
@@ -253,7 +254,9 @@ typedef struct _GLFWlibraryX11
     } saver;
 
     struct {
+        int         version;
         Window      source;
+        Atom        format;
     } xdnd;
 
     struct {

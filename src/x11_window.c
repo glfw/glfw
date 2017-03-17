@@ -1400,8 +1400,8 @@ static void processEvent(XEvent *event)
                     return;
 
                 XTranslateCoordinates(_glfw.x11.display,
-                                      window->x11.handle,
                                       _glfw.x11.root,
+                                      window->x11.handle,
                                       xabs, yabs,
                                       &xpos, &ypos,
                                       &dummy);

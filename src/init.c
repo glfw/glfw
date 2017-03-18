@@ -174,7 +174,7 @@ GLFWAPI int glfwInit(void)
     }
 
     _glfw.initialized = GLFW_TRUE;
-    _glfw.timerOffset = _glfwPlatformGetTimerValue();
+    _glfw.timer.offset = _glfwPlatformGetTimerValue();
 
     // Not all window hints have zero as their default value
     glfwDefaultWindowHints();

@@ -517,9 +517,13 @@ struct _GLFWlibrary
 
     _GLFWjoystick       joysticks[GLFW_JOYSTICK_LAST + 1];
 
-    uint64_t            timerOffset;
-
     _GLFWtls            context;
+
+    struct {
+        uint64_t        offset;
+        // This is defined in the platform's time.h
+        _GLFW_PLATFORM_LIBRARY_TIMER_STATE;
+    } timer;
 
     struct {
         GLFWbool        available;
@@ -553,8 +557,6 @@ struct _GLFWlibrary
     _GLFW_PLATFORM_LIBRARY_WINDOW_STATE;
     // This is defined in the context API's context.h
     _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE;
-    // This is defined in the platform's time.h
-    _GLFW_PLATFORM_LIBRARY_TIME_STATE;
     // This is defined in the platform's joystick.h
     _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE;
     // This is defined in egl_context.h

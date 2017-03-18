@@ -66,7 +66,7 @@ typedef VkResult (APIENTRY *PFN_vkCreateMacOSSurfaceMVK)(VkInstance,const VkMacO
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  ns
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS ns
-#define _GLFW_PLATFORM_LIBRARY_TIME_STATE   _GLFWtimeNS    ns_time
+#define _GLFW_PLATFORM_LIBRARY_TIMER_STATE  _GLFWtimerNS   ns
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorNS ns
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorNS  ns
 
@@ -151,11 +151,11 @@ typedef struct _GLFWcursorNS
 
 // Cocoa-specific global timer data
 //
-typedef struct _GLFWtimeNS
+typedef struct _GLFWtimerNS
 {
     uint64_t        frequency;
 
-} _GLFWtimeNS;
+} _GLFWtimerNS;
 
 
 void _glfwInitTimerNS(void);

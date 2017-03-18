@@ -67,8 +67,8 @@ void sample_input(GLFWwindow* window)
     if (cursor_method == cursor_sync_query) {
         double x, y;
         glfwGetCursorPos(window, &x, &y);
-        cursor_new.x = x;
-        cursor_new.y = y;
+        cursor_new.x = (float) x;
+        cursor_new.y = (float) y;
     }
 
     cursor_vel.x = (cursor_new.x - cursor_pos.x) * a + cursor_vel.x * (1 - a);
@@ -78,8 +78,8 @@ void sample_input(GLFWwindow* window)
 
 void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    cursor_new.x = xpos;
-    cursor_new.y = ypos;
+    cursor_new.x = (float) xpos;
+    cursor_new.y = (float) ypos;
 }
 
 int enable_vsync = nk_true;
@@ -270,7 +270,7 @@ int main(int argc, char** argv)
 
             nk_label(nk, "", 0); // separator
 
-            nk_value_float(nk, "FPS", frame_rate);
+            nk_value_float(nk, "FPS", (float) frame_rate);
             if (nk_checkbox_label(nk, "Enable vsync", &enable_vsync))
                 update_vsync();
 

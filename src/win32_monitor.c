@@ -94,6 +94,7 @@ void _glfwPollMonitorsWin32(void)
     _GLFWmonitor** disconnected = NULL;
     DWORD adapterIndex, displayIndex;
     DISPLAY_DEVICEW adapter, display;
+    _GLFWmonitor* monitor;
 
     disconnectedCount = _glfw.monitorCount;
     if (disconnectedCount)
@@ -145,8 +146,14 @@ void _glfwPollMonitorsWin32(void)
             if (i < disconnectedCount)
                 continue;
 
-            _glfwInputMonitor(createMonitor(&adapter, &display),
-                              GLFW_CONNECTED, type);
+            monitor = createMonitor(&adapter, &display);
+            if (!monitor)
+            {
+                free(disconnected);
+                return;
+            }
+
+            _glfwInputMonitor(monitor, GLFW_CONNECTED, type);
 
             type = _GLFW_INSERT_LAST;
         }
@@ -169,8 +176,14 @@ void _glfwPollMonitorsWin32(void)
             if (i < disconnectedCount)
                 continue;
 
-            _glfwInputMonitor(createMonitor(&adapter, NULL),
-                              GLFW_CONNECTED, type);
+            monitor = createMonitor(&adapter, NULL);
+            if (!monitor)
+            {
+                free(disconnected);
+                return;
+            }
+
+            _glfwInputMonitor(monitor, GLFW_CONNECTED, type);
         }
     }
 

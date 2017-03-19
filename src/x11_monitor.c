@@ -430,9 +430,9 @@ void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 
         _glfwAllocGammaArrays(ramp, size);
 
-        memcpy(ramp->red, gamma->red, size * sizeof(unsigned short));
+        memcpy(ramp->red,   gamma->red,   size * sizeof(unsigned short));
         memcpy(ramp->green, gamma->green, size * sizeof(unsigned short));
-        memcpy(ramp->blue, gamma->blue, size * sizeof(unsigned short));
+        memcpy(ramp->blue,  gamma->blue,  size * sizeof(unsigned short));
 
         XRRFreeGamma(gamma);
     }
@@ -455,9 +455,9 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
     {
         XRRCrtcGamma* gamma = XRRAllocGamma(ramp->size);
 
-        memcpy(gamma->red, ramp->red, ramp->size * sizeof(unsigned short));
+        memcpy(gamma->red,   ramp->red,   ramp->size * sizeof(unsigned short));
         memcpy(gamma->green, ramp->green, ramp->size * sizeof(unsigned short));
-        memcpy(gamma->blue, ramp->blue, ramp->size * sizeof(unsigned short));
+        memcpy(gamma->blue,  ramp->blue,  ramp->size * sizeof(unsigned short));
 
         XRRSetCrtcGamma(_glfw.x11.display, monitor->x11.crtc, gamma);
         XRRFreeGamma(gamma);

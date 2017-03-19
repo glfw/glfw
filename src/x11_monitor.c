@@ -202,13 +202,6 @@ void _glfwPollMonitorsX11(void)
         }
 
         free(disconnected);
-
-        if (!_glfw.monitorCount)
-        {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "X11: RandR monitor support seems broken");
-            _glfw.x11.randr.monitorBroken = GLFW_TRUE;
-        }
     }
 
     if (!_glfw.monitorCount)

@@ -530,26 +530,23 @@ static GLFWbool initExtensions(void)
 
         if (!sr->ncrtc || !XRRGetCrtcGammaSize(_glfw.x11.display, sr->crtcs[0]))
         {
-            // This is either a headless system or an older Nvidia binary driver
-            // with broken gamma support
-            // Flag it as useless and fall back to Xf86VidMode gamma, if
-            // available
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "X11: Detected broken RandR gamma ramp support");
+            // This is likely an older Nvidia driver with broken gamma support
+            // Flag it as useless and fall back to xf86vm gamma, if available
             _glfw.x11.randr.gammaBroken = GLFW_TRUE;
         }
 
-        if (!sr->ncrtc || !sr->noutput || !sr->nmode)
+        if (!sr->ncrtc)
         {
-            // This is either a headless system or broken Cygwin/X RandR
-            // Flag it as useless and fall back to Xlib display functions
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "X11: Detected broken RandR monitor support");
+            // A system without CRTCs is likely a system with broken RandR
+            // Disable the RandR monitor path and fall back to core functions
             _glfw.x11.randr.monitorBroken = GLFW_TRUE;
         }
 
         XRRFreeScreenResources(sr);
+    }
 
+    if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
+    {
         XRRSelectInput(_glfw.x11.display, _glfw.x11.root,
                        RROutputChangeNotifyMask);
     }

@@ -172,6 +172,7 @@ information on what to include when reporting a bug.
 - [X11] Bugfix: Dynamic X11 library loading did not use full sonames (#941)
 - [X11] Bugfix: Window creation on 64-bit would read past top of stack (#951)
 - [X11] Bugfix: XDND support had multiple non-conformance issues (#968)
+- [X11] Bugfix: The RandR monitor path was disabled despite working RandR (#972)
 - [Linux] Bugfix: Event processing did not detect joystick disconnection (#932)
 - [Cocoa] Added support for Vulkan window surface creation via
           [MoltenVK](https://moltengl.com/moltenvk/) (#870)

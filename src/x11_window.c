@@ -1078,18 +1078,20 @@ static const char* getSelectionString(Atom selection)
 //
 static void acquireMonitor(_GLFWwindow* window)
 {
-    if (_glfw.x11.saver.count == 0)
+    if (_glfw.x11.acquiredMonitorCount == 0)
     {
-        // Remember old screen saver settings
-        XGetScreenSaver(_glfw.x11.display,
-                        &_glfw.x11.saver.timeout,
-                        &_glfw.x11.saver.interval,
-                        &_glfw.x11.saver.blanking,
-                        &_glfw.x11.saver.exposure);
-
-        // Disable screen saver
-        XSetScreenSaver(_glfw.x11.display, 0, 0, DontPreferBlanking,
-                        DefaultExposures);
+        if (_glfw.x11.xss.available)
+	        XScreenSaverSuspend(_glfw.x11.display, True);
+        else
+        {
+            XGetScreenSaver(_glfw.x11.display,
+                            &_glfw.x11.saver.timeout,
+                            &_glfw.x11.saver.interval,
+                            &_glfw.x11.saver.blanking,
+                            &_glfw.x11.saver.exposure);
+            XSetScreenSaver(_glfw.x11.display, 0, 0, DontPreferBlanking,
+                            DefaultExposures);
+        }
 
         if (_glfw.x11.dbus.session)
         {
@@ -1124,7 +1126,7 @@ static void acquireMonitor(_GLFWwindow* window)
     }
 
     if (!window->monitor->window)
-        _glfw.x11.saver.count++;
+        _glfw.x11.acquiredMonitorCount++;
 
     _glfwSetVideoModeX11(window->monitor, &window->videoMode);
 
@@ -1154,16 +1156,19 @@ static void releaseMonitor(_GLFWwindow* window)
     _glfwInputMonitorWindow(window->monitor, NULL);
     _glfwRestoreVideoModeX11(window->monitor);
 
-    _glfw.x11.saver.count--;
-
-    if (_glfw.x11.saver.count == 0)
+    _glfw.x11.acquiredMonitorCount--;
+    if (_glfw.x11.acquiredMonitorCount == 0)
     {
-        // Restore old screen saver settings
-        XSetScreenSaver(_glfw.x11.display,
-                        _glfw.x11.saver.timeout,
-                        _glfw.x11.saver.interval,
-                        _glfw.x11.saver.blanking,
-                        _glfw.x11.saver.exposure);
+        if (_glfw.x11.xss.available)
+	        XScreenSaverSuspend(_glfw.x11.display, False);
+        else
+        {
+            XSetScreenSaver(_glfw.x11.display,
+                            _glfw.x11.saver.timeout,
+                            _glfw.x11.saver.interval,
+                            _glfw.x11.saver.blanking,
+                            _glfw.x11.saver.exposure);
+        }
 
         if (_glfw.x11.dbus.session)
         {

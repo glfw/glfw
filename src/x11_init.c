@@ -623,6 +623,23 @@ static GLFWbool initExtensions(void)
         }
     }
 
+    _glfw.x11.xss.handle = _glfw_dlopen("libXss.so.1");
+    if (_glfw.x11.xss.handle)
+    {
+        _glfw.x11.xss.QueryExtension = (PFN_XScreenSaverQueryExtension)
+            dlsym(_glfw.x11.xss.handle, "XScreenSaverQueryExtension");
+        _glfw.x11.xss.Suspend = (PFN_XScreenSaverSuspend)
+            dlsym(_glfw.x11.xss.handle, "XScreenSaverSuspend");
+
+        if (XScreenSaverQueryExtension(_glfw.x11.display,
+                                       &_glfw.x11.xss.eventBase,
+                                       &_glfw.x11.xss.errorBase))
+        {
+            _glfw.x11.xss.available = GLFW_TRUE;
+        }
+    }
+
+    // Check if Xkb is supported on this display
     _glfw.x11.xkb.major = 1;
     _glfw.x11.xkb.minor = 0;
     _glfw.x11.xkb.available =

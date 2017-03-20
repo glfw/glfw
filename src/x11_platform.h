@@ -126,6 +126,11 @@ typedef XRenderPictFormat* (* PFN_XRenderFindVisualFormat)(Display*,Visual const
 #define XRenderQueryVersion _glfw.x11.xrender.QueryVersion
 #define XRenderFindVisualFormat _glfw.x11.xrender.FindVisualFormat
 
+typedef Bool (* PFN_XScreenSaverQueryExtension)(Display*,int*,int*);
+typedef void (* PFN_XScreenSaverSuspend)(Display*,Bool);
+#define XScreenSaverQueryExtension _glfw.x11.xss.QueryExtension
+#define XScreenSaverSuspend _glfw.x11.xss.Suspend
+
 typedef void (*PFN_dbus_error_init)(DBusError*);
 typedef dbus_bool_t (*PFN_dbus_error_is_set)(const DBusError*);
 typedef DBusConnection* (*PFN_dbus_bus_get_private)(DBusBusType,DBusError*);
@@ -263,6 +268,8 @@ typedef struct _GLFWlibraryX11
     double          restoreCursorPosX, restoreCursorPosY;
     // The window whose disabled cursor mode is active
     _GLFWwindow*    disabledCursorWindow;
+    // The number of full screen windows active on their monitors
+    int             acquiredMonitorCount;
 
     // Window manager atoms
     Atom            WM_PROTOCOLS;
@@ -355,7 +362,6 @@ typedef struct _GLFWlibraryX11
     } xkb;
 
     struct {
-        int         count;
         int         timeout;
         int         interval;
         int         blanking;
@@ -384,6 +390,15 @@ typedef struct _GLFWlibraryX11
         PFN_XineramaQueryExtension QueryExtension;
         PFN_XineramaQueryScreens QueryScreens;
     } xinerama;
+
+    struct {
+        GLFWbool    available;
+        void*       handle;
+        int         eventBase;
+        int         errorBase;
+        PFN_XScreenSaverQueryExtension QueryExtension;
+        PFN_XScreenSaverSuspend Suspend;
+    } xss;
 
     struct {
         void*       handle;

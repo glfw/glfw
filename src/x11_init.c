@@ -455,7 +455,7 @@ static void detectEWMH(void)
         XFree(supportedAtoms);
 }
 
-// Initialize X11 display and look for supported X11 extensions
+// Look for and initialize supported X11 extensions
 //
 static GLFWbool initExtensions(void)
 {

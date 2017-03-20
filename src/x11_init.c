@@ -503,7 +503,6 @@ static GLFWbool initExtensions(void)
         }
     }
 
-    // Check for RandR extension
     if (XRRQueryExtension(_glfw.x11.display,
                           &_glfw.x11.randr.eventBase,
                           &_glfw.x11.randr.errorBase))
@@ -559,7 +558,6 @@ static GLFWbool initExtensions(void)
             _glfw.x11.xinerama.available = GLFW_TRUE;
     }
 
-    // Check if Xkb is supported on this display
     _glfw.x11.xkb.major = 1;
     _glfw.x11.xkb.minor = 0;
     _glfw.x11.xkb.available =

@@ -660,11 +660,8 @@ static GLFWbool initExtensions(void)
 //
 static Cursor createHiddenCursor(void)
 {
-    unsigned char pixels[16 * 16 * 4];
+    unsigned char pixels[16 * 16 * 4] = { 0 };
     GLFWimage image = { 16, 16, pixels };
-
-    memset(pixels, 0, sizeof(pixels));
-
     return _glfwCreateCursorX11(&image, 0, 0);
 }
 

@@ -336,6 +336,9 @@ other bugs and features to work on.
 If the patch fixes a bug introduced after the last release, it should not get
 a change log entry.
 
+If you haven't already, read the excellent article [How to Write a Git Commit
+Message](https://chris.beams.io/posts/git-commit/).
+
 
 ## Contributing a feature
 
@@ -372,6 +375,9 @@ If it adds a new monitor property, support for it must be added to
 If it adds a new OpenGL, OpenGL ES or Vulkan option or extension, support
 for it must be added to `tests/glfwinfo.c` and the behavior of the library when
 the extension is missing documented in `docs/compat.dox`.
+
+If you haven't already, read the excellent article [How to Write a Git Commit
+Message](https://chris.beams.io/posts/git-commit/).
 
 Features will not be rejected because they don't include all the above parts,
 but please keep in mind that maintainer time is finite and that there are many

@@ -2698,6 +2698,8 @@ GLFWAPI void glfwMaximizeWindow(GLFWwindow* window);
  */
 GLFWAPI void glfwShowWindow(GLFWwindow* window);
 
+GLFWAPI void glfwRequestWindowAttention(GLFWwindow* window);
+
 /*! @brief Hides the specified window.
  *
  *  This function hides the specified window if it was previously visible.  If

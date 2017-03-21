@@ -2072,6 +2072,24 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     waitForVisibilityNotify(window);
 }
 
+void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
+{
+    XEvent xev;
+
+    Atom wm_state = XInternAtom(_glfw.x11.display, "_NET_WM_STATE", False);
+    Atom wm_attention = XInternAtom(_glfw.x11.display, "_NET_WM_STATE_DEMANDS_ATTENTION", False);
+
+    memset(&xev, 0, sizeof(xev));
+    xev.type = ClientMessage;
+    xev.xclient.window = window->x11.handle;
+    xev.xclient.message_type = wm_state;
+    xev.xclient.format = 32;
+    xev.xclient.data.l[0] = 1; /* _NET_WM_STATE_ADD */
+    xev.xclient.data.l[1] = wm_attention;
+
+    XSendEvent(_glfw.x11.display, DefaultRootWindow(_glfw.x11.display), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
+}
+
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     XUnmapWindow(_glfw.x11.display, window->x11.handle);

@@ -570,6 +570,10 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     mir_window_spec_release(spec);
 }
 
+void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
+{
+}
+
 void _glfwPlatformFocusWindow(_GLFWwindow* window)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,

@@ -675,6 +675,16 @@ GLFWAPI void glfwShowWindow(GLFWwindow* handle)
     _glfwPlatformFocusWindow(window);
 }
 
+GLFWAPI void glfwRequestWindowAttention(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT();
+
+    _glfwPlatformRequestWindowAttention(window);
+}
+
 GLFWAPI void glfwHideWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;

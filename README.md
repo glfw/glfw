@@ -123,6 +123,8 @@ information on what to include when reporting a bug.
 ## Changelog
 
 - Added `glfwGetError` function for querying the last error code (#970)
+- Added `glfwRequestWindowAttention` function that request attention to the
+  non-focused or minimized window
 - Added `glfwGetKeyScancode` function that allows retrieving platform dependent
   scancodes for keys (#830)
 - Added `glfwSetWindowMaximizeCallback` and `GLFWwindowmaximizefun` for

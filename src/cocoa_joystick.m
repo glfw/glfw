@@ -338,18 +338,21 @@ int _glfwPlatformPollJoystick(int jid, int mode)
             _GLFWjoyelementNS* axis = (_GLFWjoyelementNS*)
                 CFArrayGetValueAtIndex(js->ns.axes, i);
 
-            const long value = getElementValue(js, axis);
+            const long raw = getElementValue(js, axis);
             // Perform auto calibration
-            if (value < axis->minimum)
-                axis->minimum = value;
-            if (value > axis->maximum)
-                axis->maximum = value;
+            if (raw < axis->minimum)
+                axis->minimum = raw;
+            if (raw > axis->maximum)
+                axis->maximum = raw;
 
             const long delta = axis->maximum - axis->minimum;
             if (delta == 0)
-                _glfwInputJoystickAxis(jid, i, value);
+                _glfwInputJoystickAxis(jid, i, 0.f);
             else
-                _glfwInputJoystickAxis(jid, i, (2.f * (value - axis->minimum) / delta) - 1.f);
+            {
+                const float value = (2.f * (raw - axis->minimum) / delta) - 1.f;
+                _glfwInputJoystickAxis(jid, i, value);
+            }
         }
     }
     else if (mode == _GLFW_POLL_BUTTONS)

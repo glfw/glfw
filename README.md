@@ -187,6 +187,7 @@ information on what to include when reporting a bug.
 - [Cocoa] Bugfix: Leaving video mode with `glfwSetWindowMonitor` would set
                   incorrect position and size (#748)
 - [Cocoa] Bugfix: Iconified full screen windows could not be restored (#848)
+- [Cocoa] Bugfix: Value range was ignored for joystick hats and buttons (#888)
 - [X11] Moved to XI2 `XI_RawMotion` for disable cursor mode motion input (#125)
 - [EGL] Added support for `EGL_KHR_get_all_proc_addresses` (#871)
 - [EGL] Added support for `EGL_KHR_context_flush_control`

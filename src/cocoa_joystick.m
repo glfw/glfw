@@ -53,29 +53,19 @@ typedef struct _GLFWjoyelementNS
 //
 static long getElementValue(_GLFWjoystick* js, _GLFWjoyelementNS* element)
 {
-    IOReturn result = kIOReturnSuccess;
     IOHIDValueRef valueRef;
     long value = 0;
 
-    if (js && element && js->ns.device)
+    if (js->ns.device)
     {
-        result = IOHIDDeviceGetValue(js->ns.device,
-                                     element->native,
-                                     &valueRef);
-
-        if (kIOReturnSuccess == result)
+        if (IOHIDDeviceGetValue(js->ns.device,
+                                element->native,
+                                &valueRef) == kIOReturnSuccess)
         {
             value = IOHIDValueGetIntegerValue(valueRef);
-
-            // Record min and max for auto calibration
-            if (value < element->minimum)
-                element->minimum = value;
-            if (value > element->maximum)
-                element->maximum = value;
         }
     }
 
-    // Auto user scale
     return value;
 }
 
@@ -349,8 +339,13 @@ int _glfwPlatformPollJoystick(int jid, int mode)
                 CFArrayGetValueAtIndex(js->ns.axes, i);
 
             const long value = getElementValue(js, axis);
-            const long delta = axis->maximum - axis->minimum;
+            // Perform auto calibration
+            if (value < axis->minimum)
+                axis->minimum = value;
+            if (value > axis->maximum)
+                axis->maximum = value;
 
+            const long delta = axis->maximum - axis->minimum;
             if (delta == 0)
                 _glfwInputJoystickAxis(jid, i, value);
             else
@@ -365,7 +360,7 @@ int _glfwPlatformPollJoystick(int jid, int mode)
         {
             _GLFWjoyelementNS* button = (_GLFWjoyelementNS*)
                 CFArrayGetValueAtIndex(js->ns.buttons, i);
-            const char value = getElementValue(js, button) ? 1 : 0;
+            const char value = getElementValue(js, button) - button->minimum;
             _glfwInputJoystickButton(jid, i, value);
         }
 
@@ -386,7 +381,7 @@ int _glfwPlatformPollJoystick(int jid, int mode)
 
             _GLFWjoyelementNS* hat = (_GLFWjoyelementNS*)
                 CFArrayGetValueAtIndex(js->ns.hats, i);
-            long state = getElementValue(js, hat);
+            long state = getElementValue(js, hat) - hat->minimum;
             if (state < 0 || state > 8)
                 state = 8;
 

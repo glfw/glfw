@@ -231,8 +231,6 @@ typedef struct _GLFWlibraryX11
         int         errorBase;
         int         major;
         int         minor;
-        GLFWbool    gammaBroken;
-        GLFWbool    monitorBroken;
     } randr;
 
     struct {

@@ -464,7 +464,7 @@ GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* window);
  *  @param[out] buffer Where to store the address of the color buffer, or
  *  `NULL`.
  *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if an
- *  [error](@ref error_handling) occurred.                
+ *  [error](@ref error_handling) occurred.
  *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
@@ -485,7 +485,7 @@ GLFWAPI int glfwGetOSMesaColorBuffer(GLFWwindow* window, int* width, int* height
  *  @param[out] buffer Where to store the address of the depth buffer, or
  *  `NULL`.
  *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if an
- *  [error](@ref error_handling) occurred.                
+ *  [error](@ref error_handling) occurred.
  *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.

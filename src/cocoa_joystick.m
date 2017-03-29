@@ -53,29 +53,19 @@ typedef struct _GLFWjoyelementNS
 //
 static long getElementValue(_GLFWjoystick* js, _GLFWjoyelementNS* element)
 {
-    IOReturn result = kIOReturnSuccess;
     IOHIDValueRef valueRef;
     long value = 0;
 
-    if (js && element && js->ns.device)
+    if (js->ns.device)
     {
-        result = IOHIDDeviceGetValue(js->ns.device,
-                                     element->native,
-                                     &valueRef);
-
-        if (kIOReturnSuccess == result)
+        if (IOHIDDeviceGetValue(js->ns.device,
+                                element->native,
+                                &valueRef) == kIOReturnSuccess)
         {
             value = IOHIDValueGetIntegerValue(valueRef);
-
-            // Record min and max for auto calibration
-            if (value < element->minimum)
-                element->minimum = value;
-            if (value > element->maximum)
-                element->maximum = value;
         }
     }
 
-    // Auto user scale
     return value;
 }
 
@@ -204,7 +194,8 @@ static void matchCallback(void* context,
 
     js = _glfwAllocJoystick(name,
                             CFArrayGetCount(axes),
-                            CFArrayGetCount(buttons) + CFArrayGetCount(hats) * 4);
+                            CFArrayGetCount(buttons),
+                            CFArrayGetCount(hats));
 
     js->ns.device  = device;
     js->ns.axes    = axes;
@@ -347,44 +338,57 @@ int _glfwPlatformPollJoystick(int jid, int mode)
             _GLFWjoyelementNS* axis = (_GLFWjoyelementNS*)
                 CFArrayGetValueAtIndex(js->ns.axes, i);
 
-            const long value = getElementValue(js, axis);
-            const long delta = axis->maximum - axis->minimum;
+            const long raw = getElementValue(js, axis);
+            // Perform auto calibration
+            if (raw < axis->minimum)
+                axis->minimum = raw;
+            if (raw > axis->maximum)
+                axis->maximum = raw;
 
+            const long delta = axis->maximum - axis->minimum;
             if (delta == 0)
-                _glfwInputJoystickAxis(jid, i, value);
+                _glfwInputJoystickAxis(jid, i, 0.f);
             else
-                _glfwInputJoystickAxis(jid, i, (2.f * (value - axis->minimum) / delta) - 1.f);
+            {
+                const float value = (2.f * (raw - axis->minimum) / delta) - 1.f;
+                _glfwInputJoystickAxis(jid, i, value);
+            }
         }
     }
     else if (mode == _GLFW_POLL_BUTTONS)
     {
-        CFIndex i, bi = 0;
+        CFIndex i;
 
         for (i = 0;  i < CFArrayGetCount(js->ns.buttons);  i++)
         {
             _GLFWjoyelementNS* button = (_GLFWjoyelementNS*)
                 CFArrayGetValueAtIndex(js->ns.buttons, i);
-            const char value = getElementValue(js, button) ? 1 : 0;
-            _glfwInputJoystickButton(jid, bi++, value);
+            const char value = getElementValue(js, button) - button->minimum;
+            _glfwInputJoystickButton(jid, i, value);
         }
 
         for (i = 0;  i < CFArrayGetCount(js->ns.hats);  i++)
         {
+            const int states[9] =
+            {
+                GLFW_HAT_UP,
+                GLFW_HAT_RIGHT_UP,
+                GLFW_HAT_RIGHT,
+                GLFW_HAT_RIGHT_DOWN,
+                GLFW_HAT_DOWN,
+                GLFW_HAT_LEFT_DOWN,
+                GLFW_HAT_LEFT,
+                GLFW_HAT_LEFT_UP,
+                GLFW_HAT_CENTERED
+            };
+
             _GLFWjoyelementNS* hat = (_GLFWjoyelementNS*)
                 CFArrayGetValueAtIndex(js->ns.hats, i);
-
-            // Bit fields of button presses for each direction, including nil
-            const int directions[9] = { 1, 3, 2, 6, 4, 12, 8, 9, 0 };
-
-            long j, state = getElementValue(js, hat);
+            long state = getElementValue(js, hat) - hat->minimum;
             if (state < 0 || state > 8)
                 state = 8;
 
-            for (j = 0;  j < 4;  j++)
-            {
-                const char value = directions[state] & (1 << j) ? 1 : 0;
-                _glfwInputJoystickButton(jid, bi++, value);
-            }
+            _glfwInputJoystickHat(jid, i, states[state]);
         }
     }
 

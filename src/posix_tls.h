@@ -30,20 +30,17 @@
 
 #include <pthread.h>
 
-#define _GLFW_PLATFORM_LIBRARY_TLS_STATE _GLFWtlsPOSIX posix_tls
+#define _GLFW_PLATFORM_TLS_STATE _GLFWtlsPOSIX posix
 
 
-// POSIX-specific global TLS data
+// POSIX-specific thread local storage data
 //
 typedef struct _GLFWtlsPOSIX
 {
     GLFWbool        allocated;
-    pthread_key_t   context;
+    pthread_key_t   key;
 
 } _GLFWtlsPOSIX;
 
-
-GLFWbool _glfwInitThreadLocalStoragePOSIX(void);
-void _glfwTerminateThreadLocalStoragePOSIX(void);
 
 #endif // _glfw3_posix_tls_h_

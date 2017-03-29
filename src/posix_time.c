@@ -44,14 +44,14 @@ void _glfwInitTimerPOSIX(void)
 
     if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0)
     {
-        _glfw.posix_time.monotonic = GLFW_TRUE;
-        _glfw.posix_time.frequency = 1000000000;
+        _glfw.timer.posix.monotonic = GLFW_TRUE;
+        _glfw.timer.posix.frequency = 1000000000;
     }
     else
 #endif
     {
-        _glfw.posix_time.monotonic = GLFW_FALSE;
-        _glfw.posix_time.frequency = 1000000;
+        _glfw.timer.posix.monotonic = GLFW_FALSE;
+        _glfw.timer.posix.frequency = 1000000;
     }
 }
 
@@ -63,7 +63,7 @@ void _glfwInitTimerPOSIX(void)
 uint64_t _glfwPlatformGetTimerValue(void)
 {
 #if defined(CLOCK_MONOTONIC)
-    if (_glfw.posix_time.monotonic)
+    if (_glfw.timer.posix.monotonic)
     {
         struct timespec ts;
         clock_gettime(CLOCK_MONOTONIC, &ts);
@@ -80,6 +80,6 @@ uint64_t _glfwPlatformGetTimerValue(void)
 
 uint64_t _glfwPlatformGetTimerFrequency(void)
 {
-    return _glfw.posix_time.frequency;
+    return _glfw.timer.posix.frequency;
 }
 

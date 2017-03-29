@@ -127,11 +127,14 @@ information on what to include when reporting a bug.
 - Added `glfwSetWindowMaximizeCallback` and `GLFWwindowmaximizefun` for
   receiving window maximization events (#778)
 - Added `glfwSetWindowAttrib` function for changing window attributes (#537)
+- Added `glfwGetJoystickHats` function for querying joystick hats
+  (#889,#906,#934)
 - Added `glfwInitHint` function for setting library initialization hints
 - Added headless [OSMesa](http://mesa3d.org/osmesa.html) backend (#850)
 - Added definition of `GLAPIENTRY` to public header
 - Added `GLFW_CENTER_CURSOR` window hint for controlling cursor centering
   (#749,#842)
+- Added `GLFW_JOYSTICK_HAT_BUTTONS` init hint (#889)
 - Added macOS specific `GLFW_COCOA_RETINA_FRAMEBUFFER` window hint
 - Added macOS specific `GLFW_COCOA_FRAME_AUTOSAVE` window hint (#195)
 - Added macOS specific `GLFW_COCOA_GRAPHICS_SWITCHING` window hint (#377,#935)
@@ -162,10 +165,15 @@ information on what to include when reporting a bug.
 - [Win32] Bugfix: Mouse capture logic lost secondary release messages (#954)
 - [Win32] Bugfix: The 32-bit Vulkan loader library static was not searched for
 - [Win32] Bugfix: Vulkan libraries have a new path as of SDK 1.0.42.0 (#956)
+- [Win32] Bugfix: Monitors with no display devices were not enumerated (#960)
+- [Win32] Bugfix: Monitor events were not emitted (#784)
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
 - [X11] Bugfix: `glfwGetVideoMode` would segfault on Cygwin/X
 - [X11] Bugfix: Dynamic X11 library loading did not use full sonames (#941)
 - [X11] Bugfix: Window creation on 64-bit would read past top of stack (#951)
+- [X11] Bugfix: XDND support had multiple non-conformance issues (#968)
+- [X11] Bugfix: The RandR monitor path was disabled despite working RandR (#972)
+- [X11] Bugfix: IM-duplicated key events would leak at low polling rates (#747)
 - [Linux] Bugfix: Event processing did not detect joystick disconnection (#932)
 - [Cocoa] Added support for Vulkan window surface creation via
           [MoltenVK](https://moltengl.com/moltenvk/) (#870)
@@ -178,8 +186,15 @@ information on what to include when reporting a bug.
                   function on macOS 10.12+
 - [Cocoa] Bugfix: Running in AppSandbox would emit warnings (#816,#882)
 - [Cocoa] Bugfix: Windows created after the first were not cascaded (#195)
+- [Cocoa] Bugfix: Leaving video mode with `glfwSetWindowMonitor` would set
+                  incorrect position and size (#748)
+- [Cocoa] Bugfix: Iconified full screen windows could not be restored (#848)
+- [Cocoa] Bugfix: Value range was ignored for joystick hats and buttons (#888)
+- [Cocoa] Bugfix: Full screen framebuffer was incorrectly sized for some video
+                  modes (#682)
 - [X11] Moved to XI2 `XI_RawMotion` for disable cursor mode motion input (#125)
 - [EGL] Added support for `EGL_KHR_get_all_proc_addresses` (#871)
+- [EGL] Added support for `EGL_KHR_context_flush_control`
 - [EGL] Bugfix: The test for `EGL_RGB_BUFFER` was invalid
 
 

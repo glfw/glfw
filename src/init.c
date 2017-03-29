@@ -46,6 +46,7 @@ _GLFWlibrary _glfw = { GLFW_FALSE };
 static GLFWerrorfun _glfwErrorCallback;
 static _GLFWinitconfig _glfwInitHints =
 {
+    GLFW_TRUE, // hat buttons
     {
         GLFW_TRUE, // menubar
         GLFW_TRUE  // chdir
@@ -112,6 +113,8 @@ static void terminate(void)
     _glfwTerminateVulkan();
     _glfwPlatformTerminate();
 
+    _glfwPlatformDestroyTls(&_glfw.context);
+
     memset(&_glfw, 0, sizeof(_glfw));
 }
 
@@ -161,6 +164,9 @@ GLFWAPI int glfwInit(void)
     memset(&_glfw, 0, sizeof(_glfw));
     _glfw.hints.init = _glfwInitHints;
 
+    if (!_glfwPlatformCreateTls(&_glfw.context))
+        return GLFW_FALSE;
+
     if (!_glfwPlatformInit())
     {
         terminate();
@@ -168,7 +174,7 @@ GLFWAPI int glfwInit(void)
     }
 
     _glfw.initialized = GLFW_TRUE;
-    _glfw.timerOffset = _glfwPlatformGetTimerValue();
+    _glfw.timer.offset = _glfwPlatformGetTimerValue();
 
     // Not all window hints have zero as their default value
     glfwDefaultWindowHints();
@@ -188,6 +194,9 @@ GLFWAPI void glfwInitHint(int hint, int value)
 {
     switch (hint)
     {
+        case GLFW_JOYSTICK_HAT_BUTTONS:
+            _glfwInitHints.hatButtons = value;
+            return;
         case GLFW_COCOA_CHDIR_RESOURCES:
             _glfwInitHints.ns.chdir = value;
             return;

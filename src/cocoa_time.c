@@ -40,7 +40,7 @@ void _glfwInitTimerNS(void)
     mach_timebase_info_data_t info;
     mach_timebase_info(&info);
 
-    _glfw.ns_time.frequency = (info.denom * 1e9) / info.numer;
+    _glfw.timer.ns.frequency = (info.denom * 1e9) / info.numer;
 }
 
 
@@ -55,6 +55,6 @@ uint64_t _glfwPlatformGetTimerValue(void)
 
 uint64_t _glfwPlatformGetTimerFrequency(void)
 {
-    return _glfw.ns_time.frequency;
+    return _glfw.timer.ns.frequency;
 }
 

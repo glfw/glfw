@@ -141,8 +141,7 @@ typedef struct _GLFWwindowX11
     // The last position the cursor was warped to by GLFW
     int             warpCursorPosX, warpCursorPosY;
 
-    // The information from the last KeyPress event
-    unsigned int    lastKeyCode;
+    // The time of the last KeyPress event
     Time            lastKeyTime;
 
 } _GLFWwindowX11;
@@ -208,9 +207,10 @@ typedef struct _GLFWlibraryX11
     Atom            XdndStatus;
     Atom            XdndActionCopy;
     Atom            XdndDrop;
-    Atom            XdndLeave;
     Atom            XdndFinished;
     Atom            XdndSelection;
+    Atom            XdndTypeList;
+    Atom            text_uri_list;
 
     // Selection (clipboard) atoms
     Atom            TARGETS;
@@ -253,7 +253,9 @@ typedef struct _GLFWlibraryX11
     } saver;
 
     struct {
+        int         version;
         Window      source;
+        Atom        format;
     } xdnd;
 
     struct {

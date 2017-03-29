@@ -69,6 +69,7 @@ typedef struct _GLFWlibrary     _GLFWlibrary;
 typedef struct _GLFWmonitor     _GLFWmonitor;
 typedef struct _GLFWcursor      _GLFWcursor;
 typedef struct _GLFWjoystick    _GLFWjoystick;
+typedef struct _GLFWtls         _GLFWtls;
 
 typedef void (* _GLFWmakecontextcurrentfun)(_GLFWwindow*);
 typedef void (* _GLFWswapbuffersfun)(_GLFWwindow*);
@@ -266,6 +267,7 @@ typedef void (APIENTRY * PFN_vkVoidFunction)(void);
  */
 struct _GLFWinitconfig
 {
+    GLFWbool      hatButtons;
     struct {
         GLFWbool  menubar;
         GLFWbool  chdir;
@@ -476,10 +478,20 @@ struct _GLFWjoystick
     int             axisCount;
     unsigned char*  buttons;
     int             buttonCount;
+    unsigned char*  hats;
+    int             hatCount;
     char*           name;
 
     // This is defined in the joystick API's joystick.h
     _GLFW_PLATFORM_JOYSTICK_STATE;
+};
+
+/*! @brief Thread local storage structure.
+ */
+struct _GLFWtls
+{
+    // This is defined in the platform's tls.h
+    _GLFW_PLATFORM_TLS_STATE;
 };
 
 /*! @brief Library global data.
@@ -505,7 +517,13 @@ struct _GLFWlibrary
 
     _GLFWjoystick       joysticks[GLFW_JOYSTICK_LAST + 1];
 
-    uint64_t            timerOffset;
+    _GLFWtls            context;
+
+    struct {
+        uint64_t        offset;
+        // This is defined in the platform's time.h
+        _GLFW_PLATFORM_LIBRARY_TIMER_STATE;
+    } timer;
 
     struct {
         GLFWbool        available;
@@ -539,12 +557,8 @@ struct _GLFWlibrary
     _GLFW_PLATFORM_LIBRARY_WINDOW_STATE;
     // This is defined in the context API's context.h
     _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE;
-    // This is defined in the platform's time.h
-    _GLFW_PLATFORM_LIBRARY_TIME_STATE;
     // This is defined in the platform's joystick.h
     _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE;
-    // This is defined in the platform's tls.h
-    _GLFW_PLATFORM_LIBRARY_TLS_STATE;
     // This is defined in egl_context.h
     _GLFW_EGL_LIBRARY_CONTEXT_STATE;
     // This is defined in osmesa_context.h
@@ -631,12 +645,14 @@ void _glfwPlatformWaitEvents(void);
 void _glfwPlatformWaitEventsTimeout(double timeout);
 void _glfwPlatformPostEmptyEvent(void);
 
-void _glfwPlatformSetCurrentContext(_GLFWwindow* context);
-_GLFWwindow* _glfwPlatformGetCurrentContext(void);
-
 void _glfwPlatformGetRequiredInstanceExtensions(char** extensions);
 int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
 VkResult _glfwPlatformCreateWindowSurface(VkInstance instance, _GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
+
+GLFWbool _glfwPlatformCreateTls(_GLFWtls* tls);
+void _glfwPlatformDestroyTls(_GLFWtls* tls);
+void* _glfwPlatformGetTls(_GLFWtls* tls);
+void _glfwPlatformSetTls(_GLFWtls* tls, void* value);
 
 /*! @} */
 
@@ -823,6 +839,13 @@ void _glfwInputJoystickAxis(int jid, int axis, float value);
  */
 void _glfwInputJoystickButton(int jid, int button, char value);
 
+/*! @brief Notifies shared code of the new value of a joystick hat.
+ *  @param[in] jid The joystick whose hat to update.
+ *  @param[in] button The index of the hat to update.
+ *  @param[in] value The new value of the hat.
+ */
+void _glfwInputJoystickHat(int jid, int hat, char value);
+
 
 //========================================================================
 // Utility functions
@@ -912,7 +935,7 @@ void _glfwFreeMonitor(_GLFWmonitor* monitor);
 /*! @brief Returns an available joystick object with arrays and name allocated.
  *  @ingroup utility
   */
-_GLFWjoystick* _glfwAllocJoystick(const char* name, int axisCount, int buttonCount);
+_GLFWjoystick* _glfwAllocJoystick(const char* name, int axisCount, int buttonCount, int hatCount);
 
 /*! @brief Frees arrays and name and flags the joystick object as unused.
  *  @ingroup utility

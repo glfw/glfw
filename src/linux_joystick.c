@@ -77,7 +77,7 @@ static GLFWbool openJoystickDevice(const char* path)
     ioctl(fd, JSIOCGAXES, &axisCount);
     ioctl(fd, JSIOCGBUTTONS, &buttonCount);
 
-    js = _glfwAllocJoystick(name, axisCount, buttonCount);
+    js = _glfwAllocJoystick(name, axisCount, buttonCount, 0);
     if (!js)
     {
         close(fd);

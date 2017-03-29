@@ -307,10 +307,10 @@ static HWND createHelperWindow(void)
     MSG msg;
     HWND window = CreateWindowExW(WS_EX_OVERLAPPEDWINDOW,
                                   _GLFW_WNDCLASSNAME,
-                                  L"GLFW helper window",
+                                  L"GLFW message window",
                                   WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
                                   0, 0, 1, 1,
-                                  HWND_MESSAGE, NULL,
+                                  NULL, NULL,
                                   GetModuleHandleW(NULL),
                                   NULL);
     if (!window)
@@ -435,9 +435,6 @@ void _glfwInputErrorWin32(int error, const char* description)
 
 int _glfwPlatformInit(void)
 {
-    if (!_glfwInitThreadLocalStorageWin32())
-        return GLFW_FALSE;
-
     // To make SetForegroundWindow work as we want, we need to fiddle
     // with the FOREGROUNDLOCKTIMEOUT system setting (we do this as early
     // as possible in the hope of still being the foreground process)
@@ -489,7 +486,6 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateEGL();
 
     _glfwTerminateJoysticksWin32();
-    _glfwTerminateThreadLocalStorageWin32();
 
     freeLibraries();
 }

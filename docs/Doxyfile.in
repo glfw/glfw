@@ -204,7 +204,8 @@ ALIASES                = "thread_safety=@par Thread safety\n" \
                          "x11=__X11:__" \
                          "wayland=__Wayland:__" \
                          "win32=__Windows:__" \
-                         "macos=__macOS:__"
+                         "macos=__macOS:__" \
+                         "linux=__Linux:__"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding

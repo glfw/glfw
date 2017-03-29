@@ -90,7 +90,7 @@ static const char* joystick_label(int jid)
 
 int main(void)
 {
-    int jid;
+    int jid, hat_buttons = GLFW_FALSE;
     GLFWwindow* window;
     struct nk_context* nk;
     struct nk_font_atlas* atlas;
@@ -142,6 +142,8 @@ int main(void)
         {
             nk_layout_row_dynamic(nk, 30, 1);
 
+            nk_checkbox_label(nk, "Hat buttons", &hat_buttons);
+
             if (joystick_count)
             {
                 for (i = 0;  i < joystick_count;  i++)
@@ -167,29 +169,81 @@ int main(void)
                          NK_WINDOW_MINIMIZABLE |
                          NK_WINDOW_TITLE))
             {
-                int j, axis_count, button_count;
+                int j, axis_count, button_count, hat_count;
                 const float* axes;
                 const unsigned char* buttons;
+                const unsigned char* hats;
 
                 nk_layout_row_dynamic(nk, 30, 1);
 
                 axes = glfwGetJoystickAxes(joysticks[i], &axis_count);
-                if (axis_count)
+                buttons = glfwGetJoystickButtons(joysticks[i], &button_count);
+                hats = glfwGetJoystickHats(joysticks[i], &hat_count);
+
+                if (!hat_buttons)
+                    button_count -= hat_count * 4;
+
+                for (j = 0;  j < axis_count;  j++)
+                    nk_slide_float(nk, -1.f, axes[j], 1.f, 0.1f);
+
+                nk_layout_row_dynamic(nk, 30, 8);
+
+                for (j = 0;  j < button_count;  j++)
                 {
-                    for (j = 0;  j < axis_count;  j++)
-                        nk_slide_float(nk, -1.f, axes[j], 1.f, 0.1f);
+                    char name[16];
+                    snprintf(name, sizeof(name), "%i", j + 1);
+                    nk_select_label(nk, name, NK_TEXT_CENTERED, buttons[j]);
                 }
 
                 nk_layout_row_dynamic(nk, 30, 8);
 
-                buttons = glfwGetJoystickButtons(joysticks[i], &button_count);
-                if (button_count)
+                for (j = 0;  j < hat_count;  j++)
                 {
-                    for (j = 0;  j < button_count;  j++)
+                    float radius;
+                    struct nk_rect area;
+                    struct nk_vec2 center;
+
+                    if (nk_widget(&area, nk) != NK_WIDGET_VALID)
+                        continue;
+
+                    center = nk_vec2(area.x + area.w / 2.f,
+                                     area.y + area.h / 2.f);
+                    radius = NK_MIN(area.w, area.h) / 2.f;
+
+                    nk_stroke_circle(nk_window_get_canvas(nk),
+                                     nk_rect(center.x - radius,
+                                             center.y - radius,
+                                             radius * 2.f,
+                                             radius * 2.f),
+                                     1.f,
+                                     nk_rgb(175, 175, 175));
+
+                    if (hats[j])
                     {
-                        char name[16];
-                        snprintf(name, sizeof(name), "%i", j + 1);
-                        nk_select_label(nk, name, NK_TEXT_CENTERED, buttons[j]);
+                        const float angles[] =
+                        {
+                            0.f,           0.f,
+                            NK_PI * 1.5f,  NK_PI * 1.75f,
+                            NK_PI,         0.f,
+                            NK_PI * 1.25f, 0.f,
+                            NK_PI * 0.5f,  NK_PI * 0.25f,
+                            0.f,           0.f,
+                            NK_PI * 0.75f, 0.f,
+                        };
+                        const float cosa = nk_cos(angles[hats[j]]);
+                        const float sina = nk_sin(angles[hats[j]]);
+                        const struct nk_vec2 p0 = nk_vec2(0.f, -radius);
+                        const struct nk_vec2 p1 = nk_vec2( radius / 2.f, -radius / 3.f);
+                        const struct nk_vec2 p2 = nk_vec2(-radius / 2.f, -radius / 3.f);
+
+                        nk_fill_triangle(nk_window_get_canvas(nk),
+                                         center.x + cosa * p0.x + sina * p0.y,
+                                         center.y + cosa * p0.y - sina * p0.x,
+                                         center.x + cosa * p1.x + sina * p1.y,
+                                         center.y + cosa * p1.y - sina * p1.x,
+                                         center.x + cosa * p2.x + sina * p2.y,
+                                         center.y + cosa * p2.y - sina * p2.x,
+                                         nk_rgb(175, 175, 175));
                     }
                 }
             }

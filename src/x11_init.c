@@ -455,7 +455,7 @@ static void detectEWMH(void)
         XFree(supportedAtoms);
 }
 
-// Initialize X11 display and look for supported X11 extensions
+// Look for and initialize supported X11 extensions
 //
 static GLFWbool initExtensions(void)
 {
@@ -477,7 +477,7 @@ static GLFWbool initExtensions(void)
                                       &_glfw.x11.vidmode.errorBase);
     }
 
-    _glfw.x11.xi.handle = dlopen("libXi.so", RTLD_LAZY | RTLD_GLOBAL);
+    _glfw.x11.xi.handle = dlopen("libXi.so.6", RTLD_LAZY | RTLD_GLOBAL);
     if (_glfw.x11.xi.handle)
     {
         _glfw.x11.xi.QueryVersion = (PFN_XIQueryVersion)
@@ -503,7 +503,6 @@ static GLFWbool initExtensions(void)
         }
     }
 
-    // Check for RandR extension
     if (XRRQueryExtension(_glfw.x11.display,
                           &_glfw.x11.randr.eventBase,
                           &_glfw.x11.randr.errorBase))
@@ -530,26 +529,23 @@ static GLFWbool initExtensions(void)
 
         if (!sr->ncrtc || !XRRGetCrtcGammaSize(_glfw.x11.display, sr->crtcs[0]))
         {
-            // This is either a headless system or an older Nvidia binary driver
-            // with broken gamma support
-            // Flag it as useless and fall back to Xf86VidMode gamma, if
-            // available
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "X11: Detected broken RandR gamma ramp support");
+            // This is likely an older Nvidia driver with broken gamma support
+            // Flag it as useless and fall back to xf86vm gamma, if available
             _glfw.x11.randr.gammaBroken = GLFW_TRUE;
         }
 
-        if (!sr->ncrtc || !sr->noutput || !sr->nmode)
+        if (!sr->ncrtc)
         {
-            // This is either a headless system or broken Cygwin/X RandR
-            // Flag it as useless and fall back to Xlib display functions
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "X11: Detected broken RandR monitor support");
+            // A system without CRTCs is likely a system with broken RandR
+            // Disable the RandR monitor path and fall back to core functions
             _glfw.x11.randr.monitorBroken = GLFW_TRUE;
         }
 
         XRRFreeScreenResources(sr);
+    }
 
+    if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
+    {
         XRRSelectInput(_glfw.x11.display, _glfw.x11.root,
                        RROutputChangeNotifyMask);
     }
@@ -562,7 +558,6 @@ static GLFWbool initExtensions(void)
             _glfw.x11.xinerama.available = GLFW_TRUE;
     }
 
-    // Check if Xkb is supported on this display
     _glfw.x11.xkb.major = 1;
     _glfw.x11.xkb.minor = 0;
     _glfw.x11.xkb.available =
@@ -629,9 +624,10 @@ static GLFWbool initExtensions(void)
     _glfw.x11.XdndStatus = XInternAtom(_glfw.x11.display, "XdndStatus", False);
     _glfw.x11.XdndActionCopy = XInternAtom(_glfw.x11.display, "XdndActionCopy", False);
     _glfw.x11.XdndDrop = XInternAtom(_glfw.x11.display, "XdndDrop", False);
-    _glfw.x11.XdndLeave = XInternAtom(_glfw.x11.display, "XdndLeave", False);
     _glfw.x11.XdndFinished = XInternAtom(_glfw.x11.display, "XdndFinished", False);
     _glfw.x11.XdndSelection = XInternAtom(_glfw.x11.display, "XdndSelection", False);
+    _glfw.x11.XdndTypeList = XInternAtom(_glfw.x11.display, "XdndTypeList", False);
+    _glfw.x11.text_uri_list = XInternAtom(_glfw.x11.display, "text/uri-list", False);
 
     // ICCCM, EWMH and Motif window property atoms
     // These can be set safely even without WM support
@@ -664,11 +660,8 @@ static GLFWbool initExtensions(void)
 //
 static Cursor createHiddenCursor(void)
 {
-    unsigned char pixels[16 * 16 * 4];
+    unsigned char pixels[16 * 16 * 4] = { 0 };
     GLFWimage image = { 16, 16, pixels };
-
-    memset(pixels, 0, sizeof(pixels));
-
     return _glfwCreateCursorX11(&image, 0, 0);
 }
 
@@ -821,9 +814,6 @@ int _glfwPlatformInit(void)
         }
     }
 
-    if (!_glfwInitThreadLocalStoragePOSIX())
-        return GLFW_FALSE;
-
 #if defined(__linux__)
     if (!_glfwInitJoysticksLinux())
         return GLFW_FALSE;
@@ -884,7 +874,6 @@ void _glfwPlatformTerminate(void)
 #if defined(__linux__)
     _glfwTerminateJoysticksLinux();
 #endif
-    _glfwTerminateThreadLocalStoragePOSIX();
 }
 
 const char* _glfwPlatformGetVersionString(void)

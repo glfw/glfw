@@ -1,7 +1,7 @@
 //========================================================================
 // GLFW 3.3 Mir - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2014-2015 Brandon Schaefer <brandon.schaefer@canonical.com>
+// Copyright (c) 2014-2017 Brandon Schaefer <brandon.schaefer@canonical.com>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -197,10 +197,6 @@ int _glfwPlatformInit(void)
         return GLFW_FALSE;
 
     _glfwInitTimerPOSIX();
-
-    // Need the default conf for when we set a NULL cursor
-    _glfw.mir.defaultConf  = mir_cursor_configuration_from_name(mir_default_cursor_name);
-    _glfw.mir.disabledConf = mir_cursor_configuration_from_name(mir_disabled_cursor_name);
 
     _glfw.mir.eventQueue = calloc(1, sizeof(EventQueue));
     _glfwInitEventQueueMir(_glfw.mir.eventQueue);

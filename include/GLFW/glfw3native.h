@@ -394,9 +394,9 @@ GLFWAPI MirConnection* glfwGetMirDisplay(void);
  */
 GLFWAPI int glfwGetMirMonitor(GLFWmonitor* monitor);
 
-/*! @brief Returns the `MirSurface*` of the specified window.
+/*! @brief Returns the `MirWindow*` of the specified window.
  *
- *  @return The `MirSurface*` of the specified window, or `NULL` if an
+ *  @return The `MirWindow*` of the specified window, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
  *  @thread_safety This function may be called from any thread.  Access is not
@@ -406,7 +406,7 @@ GLFWAPI int glfwGetMirMonitor(GLFWmonitor* monitor);
  *
  *  @ingroup native
  */
-GLFWAPI MirSurface* glfwGetMirWindow(GLFWwindow* window);
+GLFWAPI MirWindow* glfwGetMirWindow(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_EGL)

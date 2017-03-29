@@ -1,7 +1,7 @@
 //========================================================================
 // GLFW 3.3 Mir - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2014-2015 Brandon Schaefer <brandon.schaefer@canonical.com>
+// Copyright (c) 2014-2017 Brandon Schaefer <brandon.schaefer@canonical.com>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages

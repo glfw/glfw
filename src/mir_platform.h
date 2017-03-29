@@ -130,6 +130,7 @@ typedef struct _GLFWcursorMir
 } _GLFWcursorMir;
 
 
+extern void _glfwPollMonitorsMir(void);
 extern void _glfwInitEventQueueMir(EventQueue* queue);
 extern void _glfwDeleteEventQueueMir(EventQueue* queue);
 

@@ -308,7 +308,7 @@ if (_GLFW_MIR)
     find_package(Mir REQUIRED)
     list(APPEND glfw_PKG_DEPS "mirclient")
 
-    list(APPEND glfw_INCLUDE_DIRS "${MIR_INCLUDE_DIR}")
+    list(APPEND glfw_INCLUDE_DIRS "${MIR_INCLUDE_DIRS}")
     list(APPEND glfw_LIBRARIES "${MIR_LIBRARIES}" "${CMAKE_THREAD_LIBS_INIT}")
 
     find_package(XKBCommon REQUIRED)

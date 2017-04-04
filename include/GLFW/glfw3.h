@@ -3392,11 +3392,12 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  */
 GLFWAPI void glfwSetInputMode(GLFWwindow* window, int mode, int value);
 
-/*! @brief Returns the localized name of the specified printable key.
+/*! @brief Returns the layout-specific name of the specified printable key.
  *
- *  This function returns the name of the specified printable key.  This is
- *  typically the character that key would produce without any modifier keys,
- *  intended for displaying key bindings to the user.
+ *  This function returns the name of the specified printable key, encoded as
+ *  UTF-8.  This is typically the character that key would produce without any
+ *  modifier keys, intended for displaying key bindings to the user.  For dead
+ *  keys, it is typically the diacritic it would add to a character.
  *
  *  __Do not use this function__ for [text input](@ref input_char).  You will
  *  break text input for many languages even if it happens to work for yours.
@@ -3438,7 +3439,7 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* window, int mode, int value);
  *
  *  @param[in] key The key to query, or `GLFW_KEY_UNKNOWN`.
  *  @param[in] scancode The scancode of the key to query.
- *  @return The localized name of the key, or `NULL`.
+ *  @return The UTF-8 encoded, layout-specific name of the key, or `NULL`.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.

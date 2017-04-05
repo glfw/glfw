@@ -167,6 +167,7 @@ information on what to include when reporting a bug.
 - [Win32] Bugfix: Vulkan libraries have a new path as of SDK 1.0.42.0 (#956)
 - [Win32] Bugfix: Monitors with no display devices were not enumerated (#960)
 - [Win32] Bugfix: Monitor events were not emitted (#784)
+- [X11] Moved to XI2 `XI_RawMotion` for disable cursor mode motion input (#125)
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
 - [X11] Bugfix: `glfwGetVideoMode` would segfault on Cygwin/X
 - [X11] Bugfix: Dynamic X11 library loading did not use full sonames (#941)
@@ -192,7 +193,6 @@ information on what to include when reporting a bug.
 - [Cocoa] Bugfix: Value range was ignored for joystick hats and buttons (#888)
 - [Cocoa] Bugfix: Full screen framebuffer was incorrectly sized for some video
                   modes (#682)
-- [X11] Moved to XI2 `XI_RawMotion` for disable cursor mode motion input (#125)
 - [EGL] Added support for `EGL_KHR_get_all_proc_addresses` (#871)
 - [EGL] Added support for `EGL_KHR_context_flush_control`
 - [EGL] Bugfix: The test for `EGL_RGB_BUFFER` was invalid

@@ -453,6 +453,13 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 {
     if (_glfw.x11.randr.available && !_glfw.x11.randr.gammaBroken)
     {
+        if (XRRGetCrtcGammaSize(_glfw.x11.display, monitor->x11.crtc) != ramp->size)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Gamma ramp size must match current ramp size");
+            return;
+        }
+
         XRRCrtcGamma* gamma = XRRAllocGamma(ramp->size);
 
         memcpy(gamma->red,   ramp->red,   ramp->size * sizeof(unsigned short));

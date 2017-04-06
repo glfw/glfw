@@ -1328,6 +1328,12 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
     SetFocus(window->win32.handle);
 }
 
+void _glfwPlatformDragWindow(_GLFWwindow* window)
+{
+    ReleaseCapture();
+    SendMessage(window->win32.handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+}
+
 void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
                                    _GLFWmonitor* monitor,
                                    int xpos, int ypos,

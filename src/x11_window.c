@@ -2084,7 +2084,7 @@ void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
     xev.xclient.window = window->x11.handle;
     xev.xclient.message_type = wm_state;
     xev.xclient.format = 32;
-    xev.xclient.data.l[0] = 1; /* _NET_WM_STATE_ADD */
+    xev.xclient.data.l[0] = _NET_WM_STATE_ADD;
     xev.xclient.data.l[1] = wm_attention;
 
     XSendEvent(_glfw.x11.display, DefaultRootWindow(_glfw.x11.display), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);

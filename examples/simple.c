@@ -79,6 +79,7 @@ int main(void)
     GLFWwindow* window;
     GLuint vertex_buffer, vertex_shader, fragment_shader, program;
     GLint mvp_location, vpos_location, vcol_location;
+    double start;
 
     glfwSetErrorCallback(error_callback);
 
@@ -131,11 +132,17 @@ int main(void)
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
                           sizeof(vertices[0]), (void*) (sizeof(float) * 2));
 
+    start = glfwGetTime();
     while (!glfwWindowShouldClose(window))
     {
         float ratio;
         int width, height;
         mat4x4 m, p, mvp;
+
+        if (glfwGetTime() - start > 10.0) {
+            glfwRequestWindowAttention(window);
+            start = glfwGetTime();
+        }
 
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float) height;

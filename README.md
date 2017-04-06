@@ -141,6 +141,7 @@ information on what to include when reporting a bug.
   (#235,#439,#677,#845,#898)
 - Added `glfwRequestWindowAttention` function for requesting attention from the
   user (#732,#988)
+- Added `glfwGetMonitorWorkarea` function for querying the monitor work area
 - Added `glfwGetKeyScancode` function that allows retrieving platform dependent
   scancodes for keys (#830)
 - Added `glfwSetWindowMaximizeCallback` and `GLFWwindowmaximizefun` for

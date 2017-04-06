@@ -361,6 +361,37 @@ void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
     _glfwGetMonitorContentScaleWin32(monitor->win32.handle, xscale, yscale);
 }
 
+static BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+{
+    RECT *workarea = (RECT *)dwData;
+    MONITORINFO monitorInfo;
+    monitorInfo.cbSize = sizeof(MONITORINFO);
+    GetMonitorInfo(hMonitor, &monitorInfo);
+    workarea->left = monitorInfo.rcWork.left;
+    workarea->top = monitorInfo.rcWork.top;
+    workarea->right = monitorInfo.rcWork.right;
+    workarea->bottom = monitorInfo.rcWork.bottom;
+    return TRUE;
+}
+
+void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor, int* xpos, int* ypos, int *width, int *height)
+{
+    HDC dc;
+    RECT workarea;
+
+    dc = CreateDCW(L"DISPLAY", monitor->win32.adapterName, NULL, NULL);
+
+    if (!EnumDisplayMonitors(dc, NULL, MonitorEnumProc, (LPARAM)&workarea))
+        return;
+
+    DeleteDC(dc);
+
+    *xpos = workarea.left;
+    *ypos = workarea.top;
+    *width = workarea.right;
+    *height = workarea.bottom;
+}
+
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
 {
     int modeIndex = 0, size = 0;

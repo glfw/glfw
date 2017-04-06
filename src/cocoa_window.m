@@ -423,6 +423,9 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (id)makeBackingLayer
 {
+    if (!window->ns.layer) {
+        window->ns.layer = [super makeBackingLayer];
+    }
     return window->ns.layer;
 }
 

@@ -243,6 +243,15 @@ target files generated when GLFW is installed.
 find_package(glfw3 3.3 REQUIRED)
 @endcode
 
+Once GLFW has been added to the project, link against it with the `glfw` target.
+This adds all link-time dependencies of GLFW as it is currently configured,
+the include directory for the GLFW header and, when applicable, the @ref
+GLFW_DLL macro.
+
+@code{.cmake}
+target_link_libraries(myapp glfw)
+@endcode
+
 Note that the dependencies do not include OpenGL or GLU, as GLFW loads any
 OpenGL, OpenGL ES or Vulkan libraries it needs at runtime and does not use GLU.
 If your application calls OpenGL directly, instead of using a modern

@@ -195,8 +195,8 @@ glfwSetGammaRamp(monitor, &ramp);
 The gamma ramp data is copied before the function returns, so there is no need
 to keep it around once the ramp has been set.
 
-@note It is recommended to use gamma ramps of size 256, as that is the size
-supported by all graphics cards on all platforms.
+It is recommended that your gamma ramp have the same size as the current gamma
+ramp for that monitor.
 
 The current gamma ramp for a monitor is returned by @ref glfwGetGammaRamp.  See
 the reference documentation for the lifetime of the returned structure.

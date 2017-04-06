@@ -338,6 +338,38 @@ void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
     }
 }
 
+void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor, int* xpos, int* ypos, int *width, int *height)
+{
+    if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
+    {
+        Atom workarea = XInternAtom(_glfw.x11.display, "_NET_WORKAREA", True);
+        Atom type;
+        int format;
+        unsigned long num;
+        unsigned long bytesLeft;
+        unsigned long *workareaValues;
+        unsigned char *data = NULL;
+
+        if(workarea == None)
+            return;
+
+        if (XGetWindowProperty(_glfw.x11.display, _glfw.x11.root, workarea, 0,
+                               4 * 32, False, AnyPropertyType, &type, &format,
+                               &num, &bytesLeft, &data) != Success) {
+            return;
+        }
+
+        if(type == None || format == 0 || bytesLeft || num % 4)
+            return;
+
+        workareaValues = (unsigned long*)data;
+        *xpos = workareaValues[0];
+        *ypos = workareaValues[1];
+        *width = workareaValues[2];
+        *height = workareaValues[3];
+    }
+}
+
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
 {
     GLFWvidmode* result;

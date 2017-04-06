@@ -342,31 +342,15 @@ void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor, int* xpos, int* ypos
 {
     if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
     {
-        Atom workarea = XInternAtom(_glfw.x11.display, "_NET_WORKAREA", True);
-        Atom type;
-        int format;
-        unsigned long num;
-        unsigned long bytesLeft;
-        unsigned long *workareaValues;
-        unsigned char *data = NULL;
+        Atom* extents = NULL;
 
-        if(workarea == None)
-            return;
+        _glfwGetWindowPropertyX11(_glfw.x11.root, _glfw.x11.NET_WORKAREA, XA_CARDINAL, (unsigned char**) &extents);
 
-        if (XGetWindowProperty(_glfw.x11.display, _glfw.x11.root, workarea, 0,
-                               4 * 32, False, AnyPropertyType, &type, &format,
-                               &num, &bytesLeft, &data) != Success) {
-            return;
-        }
-
-        if(type == None || format == 0 || bytesLeft || num % 4)
-            return;
-
-        workareaValues = (unsigned long*)data;
-        *xpos = workareaValues[0];
-        *ypos = workareaValues[1];
-        *width = workareaValues[2];
-        *height = workareaValues[3];
+        *xpos = extents[0];
+        *ypos = extents[1];
+        *width = extents[2];
+        *height = extents[3];
+        XFree(extents);
     }
 }
 

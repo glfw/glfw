@@ -139,7 +139,32 @@ extern "C" {
 
 /* Include the chosen client API headers.
  */
-#if defined(__APPLE__)
+#if defined(GLFW_INCLUDE_ES1)
+ #include <GLES/gl.h>
+ #if defined(GLFW_INCLUDE_GLEXT)
+  #include <GLES/glext.h>
+ #endif
+#elif defined(GLFW_INCLUDE_ES2)
+ #include <GLES2/gl2.h>
+ #if defined(GLFW_INCLUDE_GLEXT)
+  #include <GLES2/gl2ext.h>
+ #endif
+#elif defined(GLFW_INCLUDE_ES3)
+ #include <GLES3/gl3.h>
+ #if defined(GLFW_INCLUDE_GLEXT)
+  #include <GLES2/gl2ext.h>
+ #endif
+#elif defined(GLFW_INCLUDE_ES31)
+ #include <GLES3/gl31.h>
+ #if defined(GLFW_INCLUDE_GLEXT)
+  #include <GLES2/gl2ext.h>
+ #endif
+#elif defined(GLFW_INCLUDE_ES32)
+ #include <GLES3/gl32.h>
+ #if defined(GLFW_INCLUDE_GLEXT)
+  #include <GLES2/gl2ext.h>
+ #endif
+#elif defined(__APPLE__)
  #if defined(GLFW_INCLUDE_GLCOREARB)
   #include <OpenGL/gl3.h>
   #if defined(GLFW_INCLUDE_GLEXT)
@@ -157,31 +182,6 @@ extern "C" {
 #else
  #if defined(GLFW_INCLUDE_GLCOREARB)
   #include <GL/glcorearb.h>
- #elif defined(GLFW_INCLUDE_ES1)
-  #include <GLES/gl.h>
-  #if defined(GLFW_INCLUDE_GLEXT)
-   #include <GLES/glext.h>
-  #endif
- #elif defined(GLFW_INCLUDE_ES2)
-  #include <GLES2/gl2.h>
-  #if defined(GLFW_INCLUDE_GLEXT)
-   #include <GLES2/gl2ext.h>
-  #endif
- #elif defined(GLFW_INCLUDE_ES3)
-  #include <GLES3/gl3.h>
-  #if defined(GLFW_INCLUDE_GLEXT)
-   #include <GLES2/gl2ext.h>
-  #endif
- #elif defined(GLFW_INCLUDE_ES31)
-  #include <GLES3/gl31.h>
-  #if defined(GLFW_INCLUDE_GLEXT)
-   #include <GLES2/gl2ext.h>
-  #endif
- #elif defined(GLFW_INCLUDE_ES32)
-  #include <GLES3/gl32.h>
-  #if defined(GLFW_INCLUDE_GLEXT)
-   #include <GLES2/gl2ext.h>
-  #endif
  #elif !defined(GLFW_INCLUDE_NONE)
   #include <GL/gl.h>
   #if defined(GLFW_INCLUDE_GLEXT)

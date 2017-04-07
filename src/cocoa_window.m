@@ -1274,6 +1274,7 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
 
 void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
 {
+    [window->ns.object requestUserAttention:NSInformationalRequest];
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)

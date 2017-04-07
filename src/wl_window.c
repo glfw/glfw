@@ -589,6 +589,10 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     }
 }
 
+void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
+{
+}
+
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     if (!window->monitor)

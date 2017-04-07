@@ -1272,6 +1272,10 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     [window->ns.object orderFront:nil];
 }
 
+void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
+{
+}
+
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     [window->ns.object orderOut:nil];

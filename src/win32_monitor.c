@@ -295,6 +295,7 @@ static BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT l
 {
     RECT *workarea = (RECT *)dwData;
     MONITORINFO monitorInfo;
+    monitorInfo.cbSize = sizeof(MONITORINFO);
     GetMonitorInfo(hMonitor, &monitorInfo);
     workarea->left = monitorInfo.rcWork.left;
     workarea->top = monitorInfo.rcWork.top;

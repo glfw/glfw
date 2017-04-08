@@ -1323,6 +1323,10 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
     SetFocus(window->win32.handle);
 }
 
+void _glfwPlatformResizeWindow(_GLFWwindow* window, int border)
+{
+}
+
 void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
                                    _GLFWmonitor* monitor,
                                    int xpos, int ypos,

@@ -576,6 +576,10 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
                     "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
 }
 
+void _glfwPlatformResizeWindow(_GLFWwindow* window, int border)
+{
+}
+
 void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
                                    _GLFWmonitor* monitor,
                                    int xpos, int ypos,

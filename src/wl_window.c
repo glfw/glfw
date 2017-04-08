@@ -605,6 +605,10 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
                     "Wayland: Focusing a window requires user interaction");
 }
 
+void _glfwPlatformResizeWindow(_GLFWwindow* window, int border)
+{
+}
+
 void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
                                    _GLFWmonitor* monitor,
                                    int xpos, int ypos,

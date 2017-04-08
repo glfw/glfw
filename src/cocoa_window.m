@@ -1272,14 +1272,14 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     [window->ns.object orderFront:nil];
 }
 
-void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
-{
-    [window->ns.object requestUserAttention:NSInformationalRequest];
-}
-
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     [window->ns.object orderOut:nil];
+}
+
+void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
+{
+    [NSApp requestUserAttention:NSInformationalRequest];
 }
 
 void _glfwPlatformFocusWindow(_GLFWwindow* window)

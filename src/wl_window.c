@@ -589,10 +589,6 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     }
 }
 
-void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
-{
-}
-
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     if (!window->monitor)
@@ -601,6 +597,10 @@ void _glfwPlatformHideWindow(_GLFWwindow* window)
             wl_shell_surface_destroy(window->wl.shellSurface);
         window->wl.visible = GLFW_FALSE;
     }
+}
+
+void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
+{
 }
 
 void _glfwPlatformFocusWindow(_GLFWwindow* window)

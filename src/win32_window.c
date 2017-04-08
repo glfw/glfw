@@ -1311,14 +1311,14 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     ShowWindow(window->win32.handle, SW_SHOW);
 }
 
-void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
-{
-    FlashWindow(window->win32.handle, TRUE);
-}
-
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
     ShowWindow(window->win32.handle, SW_HIDE);
+}
+
+void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
+{
+    FlashWindow(window->win32.handle, TRUE);
 }
 
 void _glfwPlatformFocusWindow(_GLFWwindow* window)

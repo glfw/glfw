@@ -2072,6 +2072,12 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     waitForVisibilityNotify(window);
 }
 
+void _glfwPlatformHideWindow(_GLFWwindow* window)
+{
+    XUnmapWindow(_glfw.x11.display, window->x11.handle);
+    XFlush(_glfw.x11.display);
+}
+
 void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
 {
     XEvent xev;
@@ -2085,12 +2091,6 @@ void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
     xev.xclient.data.l[1] = _glfw.x11.NET_WM_STATE_DEMANDS_ATTENTION;
 
     XSendEvent(_glfw.x11.display, DefaultRootWindow(_glfw.x11.display), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
-}
-
-void _glfwPlatformHideWindow(_GLFWwindow* window)
-{
-    XUnmapWindow(_glfw.x11.display, window->x11.handle);
-    XFlush(_glfw.x11.display);
 }
 
 void _glfwPlatformFocusWindow(_GLFWwindow* window)

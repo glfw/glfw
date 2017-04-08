@@ -109,6 +109,8 @@ static void pointerHandleButton(void* data,
     if (!window)
         return;
 
+    _glfw.wl.pointerSerial = serial;
+
     /* Makes left, right and middle 0, 1 and 2. Overall order follows evdev
      * codes. */
     glfwButton = button - BTN_LEFT;

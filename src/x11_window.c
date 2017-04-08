@@ -2094,16 +2094,20 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
 
 void _glfwPlatformDragWindow(_GLFWwindow* window)
 {
+    int winXpos, winYpos;
+    double curXpos, curYpos;
     XClientMessageEvent xclient;
     memset(&xclient, 0, sizeof(XClientMessageEvent));
     XUngrabPointer(_glfw.x11.display, 0);
     XFlush(_glfw.x11.display);
+    _glfwPlatformGetCursorPos(window, &curXpos, &curYpos);
+    _glfwPlatformGetWindowPos(window, &winXpos, &winYpos);
     xclient.type = ClientMessage;
     xclient.window = window->x11.handle;
     xclient.message_type = XInternAtom(_glfw.x11.display, "_NET_WM_MOVERESIZE", False);
     xclient.format = 32;
-    xclient.data.l[0] = window->x11.xpos + window->x11.lastCursorPosX;
-    xclient.data.l[1] = window->x11.ypos + window->x11.lastCursorPosY;
+    xclient.data.l[0] = winXpos + curXpos;
+    xclient.data.l[1] = winYpos + curYpos;
     xclient.data.l[2] = _NET_WM_MOVERESIZE_MOVE;
     xclient.data.l[3] = 0;
     xclient.data.l[4] = 0;

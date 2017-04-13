@@ -184,6 +184,10 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
 {
 }
 
+void _glfwPlatformDragWindow(_GLFWwindow* window)
+{
+}
+
 int _glfwPlatformWindowFocused(_GLFWwindow* window)
 {
     return GLFW_FALSE;

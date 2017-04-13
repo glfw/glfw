@@ -122,6 +122,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+- Added `glfwDragWindow` function for starting a drag operation on a window
 - Added `glfwGetKeyScancode` function that allows retrieving platform dependent
   scancodes for keys (#830)
 - Added `glfwSetWindowMaximizeCallback` and `GLFWwindowmaximizefun` for

@@ -2751,6 +2751,25 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
  */
 GLFWAPI void glfwFocusWindow(GLFWwindow* window);
 
+/*! @brief Starts drag operation to the specified window.
+ *
+ *  This function starts the drag operation of the specified window.
+ *
+ *  @param[in] window The window to start the dragging operation.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_drag
+ *
+ *  @since Added in version 3.2.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwDragWindow(GLFWwindow* handle);
+
 /*! @brief Returns the monitor that the window uses for full screen mode.
  *
  *  This function returns the handle of the monitor that the specified window is

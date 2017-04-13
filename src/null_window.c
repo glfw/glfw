@@ -172,6 +172,11 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
 }
 
+
+void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
+{
+}
+
 void _glfwPlatformUnhideWindow(_GLFWwindow* window)
 {
 }

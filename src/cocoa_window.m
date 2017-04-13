@@ -1277,6 +1277,11 @@ void _glfwPlatformHideWindow(_GLFWwindow* window)
     [window->ns.object orderOut:nil];
 }
 
+void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
+{
+    [NSApp requestUserAttention:NSInformationalRequest];
+}
+
 void _glfwPlatformFocusWindow(_GLFWwindow* window)
 {
     // Make us the active application

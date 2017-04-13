@@ -2751,6 +2751,26 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
  */
 GLFWAPI void glfwFocusWindow(GLFWwindow* window);
 
+/*! @brief Request attention to the specified window.
+ *
+ *  This function makes the specified window to request attention.
+ *
+ *  @param[in] window The window to request attention.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @remark @macos The attention request will be made for the application and 
+ *  not the window passed in the argument.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwRequestWindowAttention(GLFWwindow* window);
+
 /*! @brief Returns the monitor that the window uses for full screen mode.
  *
  *  This function returns the handle of the monitor that the specified window is

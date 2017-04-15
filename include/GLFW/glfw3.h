@@ -146,10 +146,13 @@ extern "C" {
    #include <OpenGL/gl3ext.h>
   #endif
  #elif !defined(GLFW_INCLUDE_NONE)
-  #if !defined(GLFW_INCLUDE_GLEXT)
+  #if defined(GLFW_INCLUDE_GLEXT)
    #define GL_GLEXT_LEGACY
   #endif
   #include <OpenGL/gl.h>
+  #if defined(GLFW_INCLUDE_GLEXT)
+    #include<GL/glext.h>
+  #endif
  #endif
  #if defined(GLFW_INCLUDE_GLU)
   #include <OpenGL/glu.h>

@@ -122,6 +122,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+- Added `glfwGetError` function for querying the last error code (#970)
 - Added `glfwGetKeyScancode` function that allows retrieving platform dependent
   scancodes for keys (#830)
 - Added `glfwSetWindowMaximizeCallback` and `GLFWwindowmaximizefun` for

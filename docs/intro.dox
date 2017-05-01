@@ -30,6 +30,7 @@ successfully initialized, and only from the main thread.
 
  - @ref glfwGetVersion
  - @ref glfwGetVersionString
+ - @ref glfwGetError
  - @ref glfwSetErrorCallback
  - @ref glfwInitHint
  - @ref glfwInit
@@ -131,9 +132,25 @@ not very helpful when trying to figure out _why_ the error occurred.  Other
 functions have no return value reserved for errors, so error notification needs
 a separate channel.  Finally, far from all GLFW functions have return values.
 
-This is where the error callback comes in.  This callback is called whenever an
-error occurs.  It is set with @ref glfwSetErrorCallback, a function that may be
-called regardless of whether GLFW is initialized.
+The last error code for the calling thread can be queried at any time with @ref
+glfwGetError.
+
+@code
+int error = glfwGetError();
+@endcode
+
+If no error has occurred since the last call, @ref GLFW_NO_ERROR is returned.
+The error is cleared before the function returns.
+
+The error code indicates the general category of the error.  Some error codes,
+such as @ref GLFW_NOT_INITIALIZED has only a single meaning, whereas others like
+@ref GLFW_PLATFORM_ERROR are used for many different errors.
+
+GLFW usually has much more information about the error than its general category
+at the point where it occurred.  This is where the error callback comes in.
+This callback is called whenever an error occurs.  It is set with @ref
+glfwSetErrorCallback, a function that may be called regardless of whether GLFW
+is initialized.
 
 @code
 glfwSetErrorCallback(error_callback);
@@ -150,24 +167,23 @@ void error_callback(int error, const char* description)
 }
 @endcode
 
-The error code indicates the general category of the error.  Some error codes,
-such as @ref GLFW_NOT_INITIALIZED has only a single meaning, whereas others like
-@ref GLFW_PLATFORM_ERROR are used for many different errors.
+The error callback is called after the error code is set, so calling @ref
+glfwGetError from within the error callback returns the same value as the
+callback argument.
 
-Reported errors are never fatal.  As long as GLFW was successfully initialized,
-it will remain initialized and in a safe state until terminated regardless of
-how many errors occur.  If an error occurs during initialization that causes
-@ref glfwInit to fail, any part of the library that was initialized will be
-safely terminated.
+__Reported errors are never fatal.__  As long as GLFW was successfully
+initialized, it will remain initialized and in a safe state until terminated
+regardless of how many errors occur.  If an error occurs during initialization
+that causes @ref glfwInit to fail, any part of the library that was initialized
+will be safely terminated.
 
 The description string is only valid until the error callback returns, as it may
 have been generated specifically for that error.  This lets GLFW provide much
 more specific error descriptions but means you must make a copy if you want to
 keep the description string.
 
-@note Relying on erroneous behavior is not forward compatible.  In other words,
-do not rely on a currently invalid call to generate a specific error, as that
-same call may in future versions generate a different error or become valid.
+Do not rely on a currently invalid call to generate a specific error, as in the
+future that same call may generate a different error or become valid.
 
 
 @section coordinate_systems Coordinate systems

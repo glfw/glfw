@@ -4,6 +4,15 @@
 
 @section news_33 New features in 3.3
 
+
+@subsection news_33_geterror Error query
+
+GLFW now supports querying the last error code for the calling thread with @ref
+glfwGetError.
+
+@see @ref error_handling
+
+
 @subsection news_33_maximize Window maximization callback
 
 GLFW now supports window maximization notifications with @ref

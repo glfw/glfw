@@ -517,6 +517,7 @@ struct _GLFWlibrary
 
     _GLFWjoystick       joysticks[GLFW_JOYSTICK_LAST + 1];
 
+    _GLFWtls            error;
     _GLFWtls            context;
 
     struct {
@@ -653,6 +654,7 @@ GLFWbool _glfwPlatformCreateTls(_GLFWtls* tls);
 void _glfwPlatformDestroyTls(_GLFWtls* tls);
 void* _glfwPlatformGetTls(_GLFWtls* tls);
 void _glfwPlatformSetTls(_GLFWtls* tls, void* value);
+GLFWbool _glfwPlatformIsValidTls(_GLFWtls* tls);
 
 /*! @} */
 

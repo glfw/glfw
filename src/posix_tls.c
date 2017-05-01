@@ -52,7 +52,6 @@ GLFWbool _glfwPlatformCreateTls(_GLFWtls* tls)
 
 void _glfwPlatformDestroyTls(_GLFWtls* tls)
 {
-    assert(tls->posix.allocated == GLFW_TRUE);
     if (tls->posix.allocated)
         pthread_key_delete(tls->posix.key);
     memset(tls, 0, sizeof(_GLFWtls));
@@ -68,5 +67,10 @@ void _glfwPlatformSetTls(_GLFWtls* tls, void* value)
 {
     assert(tls->posix.allocated == GLFW_TRUE);
     pthread_setspecific(tls->posix.key, value);
+}
+
+GLFWbool _glfwPlatformIsValidTls(_GLFWtls* tls)
+{
+    return tls->posix.allocated;
 }
 

@@ -52,7 +52,6 @@ GLFWbool _glfwPlatformCreateTls(_GLFWtls* tls)
 
 void _glfwPlatformDestroyTls(_GLFWtls* tls)
 {
-    assert(tls->win32.allocated == GLFW_TRUE);
     if (tls->win32.allocated)
         TlsFree(tls->win32.index);
     memset(tls, 0, sizeof(_GLFWtls));
@@ -68,5 +67,10 @@ void _glfwPlatformSetTls(_GLFWtls* tls, void* value)
 {
     assert(tls->win32.allocated == GLFW_TRUE);
     TlsSetValue(tls->win32.index, value);
+}
+
+GLFWbool _glfwPlatformIsValidTls(_GLFWtls* tls)
+{
+    return tls->win32.allocated;
 }
 

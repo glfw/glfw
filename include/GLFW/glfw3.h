@@ -546,6 +546,13 @@ extern "C" {
  *
  *  @ingroup init
  *  @{ */
+/*! @brief No error has occurred.
+ *
+ *  No error has occurred.
+ *
+ *  @analysis Yay.
+ */
+#define GLFW_NO_ERROR               0
 /*! @brief GLFW has not been initialized.
  *
  *  This occurs if a GLFW function was called that must not be called unless the
@@ -1607,10 +1614,37 @@ GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
  */
 GLFWAPI const char* glfwGetVersionString(void);
 
+/*! @brief Returns and clears the last error for the calling thread.
+ *
+ *  This function returns and clears the [error code](@ref error) of the last
+ *  error that occurred on the calling thread.  If no error has occurred since
+ *  the last call, it returns @ref GLFW_NO_ERROR.
+ *
+ *  @return The last error code for the calling thread, or @ref GLFW_NO_ERROR.
+ *
+ *  @errors None.
+ *
+ *  @remark This function may be called before @ref glfwInit.
+ *
+ *  @thread_safety This function may be called from any thread.
+ *
+ *  @sa @ref error_handling
+ *  @sa @ref glfwSetErrorCallback
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup init
+ */
+GLFWAPI int glfwGetError(void);
+
 /*! @brief Sets the error callback.
  *
  *  This function sets the error callback, which is called with an error code
  *  and a human-readable description each time a GLFW error occurs.
+ *
+ *  The error code is set before the callback is called.  Calling @ref
+ *  glfwGetError from the error callback will return the same value as the error
+ *  code argument.
  *
  *  The error callback is called on the thread where the error occurred.  If you
  *  are using GLFW from multiple threads, your error callback needs to be
@@ -1634,6 +1668,7 @@ GLFWAPI const char* glfwGetVersionString(void);
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref error_handling
+ *  @sa @ref glfwGetError
  *
  *  @since Added in version 3.0.
  *

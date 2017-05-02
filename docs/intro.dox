@@ -238,14 +238,10 @@ releases.
 
 @subsection reentrancy Reentrancy
 
-GLFW event processing and object creation and destruction are not reentrant.
-This means that the following functions must not be called from any callback
-function:
+GLFW event processing and object destruction are not reentrant.  This means that
+the following functions must not be called from any callback function:
 
- - @ref glfwCreateWindow
  - @ref glfwDestroyWindow
- - @ref glfwCreateCursor
- - @ref glfwCreateStandardCursor
  - @ref glfwDestroyCursor
  - @ref glfwPollEvents
  - @ref glfwWaitEvents

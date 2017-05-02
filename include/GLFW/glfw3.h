@@ -2148,8 +2148,6 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *
  *  @remark @wayland Screensaver inhibition is currently unimplemented.
  *
- *  @reentrancy This function must not be called from a callback.
- *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_creation
@@ -3655,8 +3653,6 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
  *  @pointer_lifetime The specified image data is copied before this function
  *  returns.
  *
- *  @reentrancy This function must not be called from a callback.
- *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref cursor_object
@@ -3680,8 +3676,6 @@ GLFWAPI GLFWcursor* glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_INVALID_ENUM and @ref GLFW_PLATFORM_ERROR.
- *
- *  @reentrancy This function must not be called from a callback.
  *
  *  @thread_safety This function must only be called from the main thread.
  *

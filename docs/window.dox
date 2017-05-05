@@ -332,6 +332,9 @@ __GLFW_CONTEXT_VERSION_MAJOR__ and __GLFW_CONTEXT_VERSION_MINOR__ specify the
 client API version that the created context must be compatible with.  The exact
 behavior of these hints depend on the requested client API.
 
+@note Do not confuse these hints with `GLFW_VERSION_MAJOR` and
+`GLFW_VERSION_MINOR`, which provide the API version of the GLFW header.
+
 @par
 __OpenGL:__ These hints are not hard constraints, but creation will fail if the
 OpenGL version of the created context is less than the one requested.  It is
@@ -1125,6 +1128,10 @@ or `GLFW_OSMESA_CONTEXT_API`.
 __GLFW_CONTEXT_VERSION_MAJOR__, __GLFW_CONTEXT_VERSION_MINOR__ and
 __GLFW_CONTEXT_REVISION__ indicate the client API version of the window's
 context.
+
+@note Do not confuse these attributes with `GLFW_VERSION_MAJOR`,
+`GLFW_VERSION_MINOR` and `GLFW_VERSION_REVISION` which provide the API version
+of the GLFW header.
 
 @anchor GLFW_OPENGL_FORWARD_COMPAT_attrib
 __GLFW_OPENGL_FORWARD_COMPAT__ is `GLFW_TRUE` if the window's context is an

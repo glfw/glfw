@@ -1,8 +1,8 @@
-set(CMAKE_LEGACY_CYGWIN_WIN32 OFF)
+cmake_minimum_required(VERSION 2.8.12)
 
 project(GLFW C)
 
-cmake_minimum_required(VERSION 2.8.12)
+set(CMAKE_LEGACY_CYGWIN_WIN32 OFF)
 
 if (NOT CMAKE_VERSION VERSION_LESS "3.0")
     # Until all major package systems have moved to CMake 3,

@@ -72,6 +72,8 @@
 #define WGL_CONTEXT_RELEASE_BEHAVIOR_ARB 0x2097
 #define WGL_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB 0
 #define WGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB 0x2098
+#define WGL_COLORSPACE_EXT 0x309d
+#define WGL_COLORSPACE_SRGB_EXT 0x3089
 
 #define ERROR_INVALID_VERSION_ARB 0x2095
 #define ERROR_INVALID_PROFILE_ARB 0x2096
@@ -135,6 +137,7 @@ typedef struct _GLFWlibraryWGL
     PFNWGLGETEXTENSIONSSTRINGARBPROC    GetExtensionsStringARB;
     PFNWGLCREATECONTEXTATTRIBSARBPROC   CreateContextAttribsARB;
     GLFWbool                            EXT_swap_control;
+    GLFWbool                            EXT_colorspace;
     GLFWbool                            ARB_multisample;
     GLFWbool                            ARB_framebuffer_sRGB;
     GLFWbool                            EXT_framebuffer_sRGB;

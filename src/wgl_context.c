@@ -54,7 +54,9 @@ static int getPixelFormatAttrib(_GLFWwindow* window, int pixelFormat, int attrib
 
 // Return a list of available and usable framebuffer configs
 //
-static int choosePixelFormat(_GLFWwindow* window, const _GLFWfbconfig* desired)
+static int choosePixelFormat(_GLFWwindow* window,
+                             const _GLFWctxconfig* ctxconfig,
+                             const _GLFWfbconfig* fbconfig)
 {
     _GLFWfbconfig* usableConfigs;
     const _GLFWfbconfig* closest;
@@ -127,11 +129,25 @@ static int choosePixelFormat(_GLFWwindow* window, const _GLFWfbconfig* desired)
             if (_glfw.wgl.ARB_multisample)
                 u->samples = getPixelFormatAttrib(window, n, WGL_SAMPLES_ARB);
 
-            if (_glfw.wgl.ARB_framebuffer_sRGB ||
-                _glfw.wgl.EXT_framebuffer_sRGB)
+            if (ctxconfig->client == GLFW_OPENGL_API)
             {
-                if (getPixelFormatAttrib(window, n, WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB))
-                    u->sRGB = GLFW_TRUE;
+                if (_glfw.wgl.ARB_framebuffer_sRGB ||
+                    _glfw.wgl.EXT_framebuffer_sRGB)
+                {
+                    if (getPixelFormatAttrib(window, n, WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB))
+                        u->sRGB = GLFW_TRUE;
+                }
+            }
+            else
+            {
+                if (_glfw.wgl.EXT_colorspace)
+                {
+                    if (getPixelFormatAttrib(window, n, WGL_COLORSPACE_EXT) ==
+                        WGL_COLORSPACE_SRGB_EXT)
+                    {
+                        u->sRGB = GLFW_TRUE;
+                    }
+                }
             }
         }
         else
@@ -197,7 +213,7 @@ static int choosePixelFormat(_GLFWwindow* window, const _GLFWfbconfig* desired)
         return 0;
     }
 
-    closest = _glfwChooseFBConfig(desired, usableConfigs, usableCount);
+    closest = _glfwChooseFBConfig(fbconfig, usableConfigs, usableCount);
     if (!closest)
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
@@ -404,6 +420,8 @@ static void loadWGLExtensions(void)
         extensionSupportedWGL("WGL_ARB_create_context_robustness");
     _glfw.wgl.EXT_swap_control =
         extensionSupportedWGL("WGL_EXT_swap_control");
+    _glfw.wgl.EXT_colorspace =
+        extensionSupportedWGL("WGL_EXT_colorspace");
     _glfw.wgl.ARB_pixel_format =
         extensionSupportedWGL("WGL_ARB_pixel_format");
     _glfw.wgl.ARB_context_flush_control =
@@ -489,7 +507,7 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    pixelFormat = choosePixelFormat(window, fbconfig);
+    pixelFormat = choosePixelFormat(window, ctxconfig, fbconfig);
     if (!pixelFormat)
         return GLFW_FALSE;
 

@@ -13,6 +13,12 @@ glfwGetError.
 @see @ref error_handling
 
 
+@subsection news_33_attention User attention request
+
+GLFW now supports requesting user attention with @ref
+glfwRequestWindowAttention.
+
+
 @subsection news_33_maximize Window maximization callback
 
 GLFW now supports window maximization notifications with @ref

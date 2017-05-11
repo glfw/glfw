@@ -2766,6 +2766,9 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
  *  you are certain that is what the user wants.  Focus stealing can be
  *  extremely disruptive.
  *
+ *  For a less disruptive way of getting the user's attention, see
+ *  [attention requests](@ref window_attention).
+ *
  *  @param[in] window The window to give input focus.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
@@ -2777,6 +2780,7 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_focus
+ *  @sa @ref window_attention
  *
  *  @since Added in version 3.2.
  *
@@ -2784,19 +2788,26 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
  */
 GLFWAPI void glfwFocusWindow(GLFWwindow* window);
 
-/*! @brief Request attention to the specified window.
+/*! @brief Requests user attention to the specified window.
  *
- *  This function makes the specified window to request attention.
+ *  This function requests user attention to the specified window.  On
+ *  platforms where this is not supported, attention is requested to the
+ *  application as a whole.
  *
- *  @param[in] window The window to request attention.
+ *  Once the user has given attention, usually by focusing the window or
+ *  application, the system will end the request automatically.
+ *
+ *  @param[in] window The window to request attention to.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
- *  @remark @macos The attention request will be made for the application and 
- *  not the window passed in the argument.
+ *  @remark @macos Attention is requested to the application as a whole, not the
+ *  specific window.
  *
  *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_attention
  *
  *  @since Added in version 3.3.
  *

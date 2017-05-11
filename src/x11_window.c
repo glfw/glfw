@@ -2079,17 +2079,11 @@ void _glfwPlatformHideWindow(_GLFWwindow* window)
 
 void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
 {
-    XEvent xev;
-
-    memset(&xev, 0, sizeof(xev));
-    xev.type = ClientMessage;
-    xev.xclient.window = window->x11.handle;
-    xev.xclient.message_type = _glfw.x11.NET_WM_STATE;
-    xev.xclient.format = 32;
-    xev.xclient.data.l[0] = _NET_WM_STATE_ADD;
-    xev.xclient.data.l[1] = _glfw.x11.NET_WM_STATE_DEMANDS_ATTENTION;
-
-    XSendEvent(_glfw.x11.display, DefaultRootWindow(_glfw.x11.display), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
+    sendEventToWM(window,
+                  _glfw.x11.NET_WM_STATE,
+                  _NET_WM_STATE_ADD,
+                  _glfw.x11.NET_WM_STATE_DEMANDS_ATTENTION,
+                  0, 1, 0);
 }
 
 void _glfwPlatformFocusWindow(_GLFWwindow* window)

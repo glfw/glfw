@@ -984,6 +984,10 @@ glfwFocusWindow.
 glfwFocusWindow(window);
 @endcode
 
+Keep in mind that it can be very disruptive to the user when a window is forced
+to the top.  For a less disruptive way of getting the user's attention, see
+[attention requests](@ref window_attention).
+
 If you wish to be notified when a window gains or loses input focus, whether by
 the user, system or your own code, set a focus callback.
 
@@ -1020,6 +1024,20 @@ before creating the window.
 @code
 glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
 @endcode
+
+
+@subsection window_attention Window attention request
+
+If you wish to notify the user of an event without interrupting, you can request
+attention with @ref glfwRequestWindowAttention.
+
+@code
+glfwRequestWindowAttention(window);
+@endcode
+
+The system will highlight the specified window, or on platforms where this is
+not supported, the application as a whole.  Once the user has given it
+attention, the system will automatically end the request.
 
 
 @subsection window_refresh Window damage and refresh

@@ -3224,6 +3224,28 @@ GLFWAPI GLFWwindowmaximizefun glfwSetWindowMaximizeCallback(GLFWwindow* window, 
  */
 GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window, GLFWframebuffersizefun cbfun);
 
+/*! @brief Returns the time of the last input event.
+ *
+ *  This function returns the time, in seconds, of the last event occurence. The
+ *  only events queried are the input events button-press, button-release,
+ *  key-press, key-release and cursor motion, and the proper place to call this
+ *  function is in one of the input callbacks.
+ *
+ *  @param[in] window The window to check for the input event.
+ *  @return The value, in seconds, of the last input event occurence.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref events
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup window
+ */
+GLFWAPI double glfwGetEventTime(GLFWwindow* window);
+
 /*! @brief Processes all pending events.
  *
  *  This function processes only those events that are already in the event

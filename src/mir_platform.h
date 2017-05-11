@@ -87,6 +87,7 @@ typedef struct _GLFWwindowMir
     MirEGLNativeWindowType  nativeWindow;
     _GLFWcursor*            currentCursor;
 
+    int64_t lastEventTime;
 } _GLFWwindowMir;
 
 // Mir-specific per-monitor data

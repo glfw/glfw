@@ -100,6 +100,8 @@ typedef struct _GLFWwindowWayland
         struct zwp_relative_pointer_v1*    relativePointer;
         struct zwp_locked_pointer_v1*      lockedPointer;
     } pointerLock;
+
+    unsigned int lastEventTime;
 } _GLFWwindowWayland;
 
 // Wayland-specific global data

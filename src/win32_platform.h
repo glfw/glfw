@@ -241,6 +241,7 @@ typedef struct _GLFWwindowWin32
     // The last received cursor position, regardless of source
     int                 lastCursorPosX, lastCursorPosY;
 
+    LONG lastEventTime;
 } _GLFWwindowWin32;
 
 // Win32-specific global data

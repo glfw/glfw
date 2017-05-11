@@ -204,6 +204,11 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
     return GLFW_FALSE;
 }
 
+double _glfwPlatformGetEventTime(_GLFWwindow* window)
+{
+    return 0.0;
+}
+
 void _glfwPlatformPollEvents(void)
 {
 }

@@ -226,6 +226,9 @@ typedef struct _GLFWlibraryX11
     // The window whose disabled cursor mode is active
     _GLFWwindow*    disabledCursorWindow;
 
+    // The time of the last event
+    Time            lastEventTime;
+
     // Window manager atoms
     Atom            WM_PROTOCOLS;
     Atom            WM_STATE;

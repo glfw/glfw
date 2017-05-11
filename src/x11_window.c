@@ -1121,6 +1121,7 @@ static void processEvent(XEvent *event)
             const int key = translateKey(keycode);
             const int mods = translateState(event->xkey.state);
             const int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
+            _glfw.x11.lastEventTime = event->xkey.time;
 
             if (window->x11.ic)
             {
@@ -1214,6 +1215,7 @@ static void processEvent(XEvent *event)
         {
             const int key = translateKey(keycode);
             const int mods = translateState(event->xkey.state);
+            _glfw.x11.lastEventTime = event->xkey.time;
 
             if (!_glfw.x11.xkb.detectable)
             {
@@ -1254,6 +1256,7 @@ static void processEvent(XEvent *event)
         case ButtonPress:
         {
             const int mods = translateState(event->xbutton.state);
+            _glfw.x11.lastEventTime = event->xbutton.time;
 
             if (event->xbutton.button == Button1)
                 _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS, mods);
@@ -1288,6 +1291,7 @@ static void processEvent(XEvent *event)
         case ButtonRelease:
         {
             const int mods = translateState(event->xbutton.state);
+            _glfw.x11.lastEventTime = event->xbutton.time;
 
             if (event->xbutton.button == Button1)
             {
@@ -1344,6 +1348,7 @@ static void processEvent(XEvent *event)
         {
             const int x = event->xmotion.x;
             const int y = event->xmotion.y;
+            _glfw.x11.lastEventTime = event->xmotion.time;
 
             if (x != window->x11.warpCursorPosX || y != window->x11.warpCursorPosY)
             {
@@ -2426,6 +2431,12 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
     }
 
     XFlush(_glfw.x11.display);
+}
+
+double _glfwPlatformGetEventTime(void)
+{
+    /* X11 events are stored in milliseconds */
+    return (double) _glfw.x11.lastEventTime / 1000.0;
 }
 
 void _glfwPlatformPollEvents(void)

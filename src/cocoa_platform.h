@@ -118,6 +118,9 @@ typedef struct _GLFWlibraryNS
     // The window whose disabled cursor mode is active
     _GLFWwindow*        disabledCursorWindow;
 
+    // The time of the last event
+    double              lastEventTime;
+
     struct {
         CFBundleRef     bundle;
         PFN_TISCopyCurrentKeyboardLayoutInputSource CopyCurrentKeyboardLayoutInputSource;

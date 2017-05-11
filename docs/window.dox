@@ -271,10 +271,16 @@ the application has no preference.
 
 @anchor GLFW_SRGB_CAPABLE
 __GLFW_SRGB_CAPABLE__ specifies whether the framebuffer should be sRGB capable.
-If supported, a created OpenGL context will support the `GL_FRAMEBUFFER_SRGB`
-enable, also called `GL_FRAMEBUFFER_SRGB_EXT`) for controlling sRGB rendering
-and a created OpenGL ES context will always have sRGB rendering enabled.
 Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+
+@par
+__OpenGL:__ If enabled and supported by the system, the `GL_FRAMEBUFFER_SRGB`
+enable will control sRGB rendering.  By default, sRGB rendering will be
+disabled.
+
+@par
+__OpenGL ES:__ If enabled and supported by the system, the context will always
+have sRGB rendering enabled.
 
 @anchor GLFW_DOUBLEBUFFER
 __GLFW_DOUBLEBUFFER__ specifies whether the framebuffer should be double

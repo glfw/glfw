@@ -52,6 +52,7 @@
 #define strdup(x) _strdup(x)
 #endif
 
+static GLFWwindow* window;
 static int joysticks[GLFW_JOYSTICK_LAST + 1];
 static int joystick_count = 0;
 
@@ -79,6 +80,9 @@ static void joystick_callback(int jid, int event)
 
         joystick_count--;
     }
+
+    if (!glfwGetWindowAttrib(window, GLFW_FOCUSED))
+        glfwRequestWindowAttention(window);
 }
 
 static const char* joystick_label(int jid)
@@ -91,7 +95,6 @@ static const char* joystick_label(int jid)
 int main(void)
 {
     int jid, hat_buttons = GLFW_FALSE;
-    GLFWwindow* window;
     struct nk_context* nk;
     struct nk_font_atlas* atlas;
 

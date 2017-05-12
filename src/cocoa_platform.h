@@ -96,7 +96,6 @@ typedef struct _GLFWwindowNS
     // This is kept to counteract Cocoa doing the same internally
     double          cursorWarpDeltaX, cursorWarpDeltaY;
 
-    double          lastEventTime;
 } _GLFWwindowNS;
 
 // Cocoa-specific global data
@@ -121,6 +120,9 @@ typedef struct _GLFWlibraryNS
     double              restoreCursorPosX, restoreCursorPosY;
     // The window whose disabled cursor mode is active
     _GLFWwindow*        disabledCursorWindow;
+
+    // The time of the last event
+    double              lastEventTime;
 
     struct {
         CFBundleRef     bundle;

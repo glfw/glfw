@@ -961,14 +961,11 @@ GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* handle
     return cbfun;
 }
 
-GLFWAPI double glfwGetEventTime(GLFWwindow* handle)
+GLFWAPI double glfwGetEventTime(void)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-    assert(window != NULL);
-
     _GLFW_REQUIRE_INIT_OR_RETURN(0.0);
 
-    return _glfwPlatformGetEventTime(window);
+    return _glfwPlatformGetEventTime();
 }
 
 GLFWAPI void glfwPollEvents(void)

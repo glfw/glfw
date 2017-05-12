@@ -204,7 +204,7 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
     return GLFW_FALSE;
 }
 
-double _glfwPlatformGetEventTime(_GLFWwindow* window)
+double _glfwPlatformGetEventTime(void)
 {
     return 0.0;
 }

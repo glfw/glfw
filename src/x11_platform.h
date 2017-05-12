@@ -144,8 +144,6 @@ typedef struct _GLFWwindowX11
     // The time of the last KeyPress event
     Time            lastKeyTime;
 
-    // The time of the last event
-    Time            lastEventTime;
 } _GLFWwindowX11;
 
 // X11-specific global data
@@ -178,6 +176,9 @@ typedef struct _GLFWlibraryX11
     double          restoreCursorPosX, restoreCursorPosY;
     // The window whose disabled cursor mode is active
     _GLFWwindow*    disabledCursorWindow;
+
+    // The time of the last event
+    Time            lastEventTime;
 
     // Window manager atoms
     Atom            WM_PROTOCOLS;

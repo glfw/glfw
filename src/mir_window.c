@@ -147,7 +147,7 @@ static void handleKeyEvent(const MirKeyboardEvent* key_event, _GLFWwindow* windo
     const long text    = _glfwKeySym2Unicode(key_code);
     const int  plain   = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
 
-    window->mir.lastEventTime = mir_input_event_get_event_time((MirInputEvent *) key_event);
+    _glfw.mir.lastEventTime = mir_input_event_get_event_time((MirInputEvent *) key_event);
 
     _glfwInputKey(window, toGLFWKeyCode(scan_code), scan_code, pressed, mods);
 
@@ -166,7 +166,7 @@ static void handlePointerButton(_GLFWwindow* window,
     uint32_t newButtonStates        = mir_pointer_event_buttons(pointer_event);
     int publicButton                = GLFW_MOUSE_BUTTON_LEFT;
 
-    window->mir.lastEventTime = mir_input_event_get_event_time((MirEvent *) pointer_event);
+    _glfw.mir.lastEventTime = mir_input_event_get_event_time((MirEvent *) pointer_event);
 
     // XOR our old button states our new states to figure out what was added or removed
     button = newButtonStates ^ oldButtonStates;
@@ -205,7 +205,7 @@ static void handlePointerMotion(_GLFWwindow* window,
     const int hscroll = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_hscroll);
     const int vscroll = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_vscroll);
 
-    window->mir.lastEventTime = mir_input_event_get_event_time((MirEvent *) pointer_event);
+    _glfw.mir.lastEventTime = mir_input_event_get_event_time((MirEvent *) pointer_event);
 
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
@@ -638,10 +638,10 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
                     "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
 }
 
-double _glfwPlatformGetEventTime(_GLFWwindow* window)
+double _glfwPlatformGetEventTime(void)
 {
     /* Mir events are stored in nanoseconds */
-    return (double) window->mir.lastEventTime / 1000000000.0;
+    return (double) _glfw.mir.lastEventTime / 1000000000.0;
 }
 
 void _glfwPlatformPollEvents(void)

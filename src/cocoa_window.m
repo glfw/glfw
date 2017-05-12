@@ -433,7 +433,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)mouseDown:(NSEvent *)event
 {
-    window->ns.lastEventTime = [event timestamp];
+    _glfw.ns.lastEventTime = [event timestamp];
 
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_LEFT,
@@ -443,14 +443,14 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)mouseDragged:(NSEvent *)event
 {
-    window->ns.lastEventTime = [event timestamp];
+    _glfw.ns.lastEventTime = [event timestamp];
 
     [self mouseMoved:event];
 }
 
 - (void)mouseUp:(NSEvent *)event
 {
-    window->ns.lastEventTime = [event timestamp];
+    _glfw.ns.lastEventTime = [event timestamp];
 
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_LEFT,
@@ -460,7 +460,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)mouseMoved:(NSEvent *)event
 {
-    window->ns.lastEventTime = [event timestamp];
+    _glfw.ns.lastEventTime = [event timestamp];
 
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
@@ -485,7 +485,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)rightMouseDown:(NSEvent *)event
 {
-    window->ns.lastEventTime = [event timestamp];
+    _glfw.ns.lastEventTime = [event timestamp];
 
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_RIGHT,
@@ -495,14 +495,14 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)rightMouseDragged:(NSEvent *)event
 {
-    window->ns.lastEventTime = [event timestamp];
+    _glfw.ns.lastEventTime = [event timestamp];
 
     [self mouseMoved:event];
 }
 
 - (void)rightMouseUp:(NSEvent *)event
 {
-    window->ns.lastEventTime = [event timestamp];
+    _glfw.ns.lastEventTime = [event timestamp];
 
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_RIGHT,
@@ -512,7 +512,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)otherMouseDown:(NSEvent *)event
 {
-    window->ns.lastEventTime = [event timestamp];
+    _glfw.ns.lastEventTime = [event timestamp];
 
     _glfwInputMouseClick(window,
                          (int) [event buttonNumber],
@@ -522,14 +522,14 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)otherMouseDragged:(NSEvent *)event
 {
-    window->ns.lastEventTime = [event timestamp];
+    _glfw.ns.lastEventTime = [event timestamp];
 
     [self mouseMoved:event];
 }
 
 - (void)otherMouseUp:(NSEvent *)event
 {
-    window->ns.lastEventTime = [event timestamp];
+    _glfw.ns.lastEventTime = [event timestamp];
 
     _glfwInputMouseClick(window,
                          (int) [event buttonNumber],
@@ -589,7 +589,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     const int key = translateKey([event keyCode]);
     const int mods = translateFlags([event modifierFlags]);
 
-    window->ns.lastEventTime = [event timestamp];
+    _glfw.ns.lastEventTime = [event timestamp];
 
     _glfwInputKey(window, key, [event keyCode], GLFW_PRESS, mods);
 
@@ -623,7 +623,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     const int key = translateKey([event keyCode]);
     const int mods = translateFlags([event modifierFlags]);
 
-    window->ns.lastEventTime = [event timestamp];
+    _glfw.ns.lastEventTime = [event timestamp];
 
     _glfwInputKey(window, key, [event keyCode], GLFW_RELEASE, mods);
 }
@@ -1458,10 +1458,10 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
         [window->ns.object setLevel:NSNormalWindowLevel];
 }
 
-double _glfwPlatformGetEventTime(_GLFWwindow* window)
+double _glfwPlatformGetEventTime(void)
 {
     /* Windows events are stored in seconds */
-    return window->ns.lastEventTime;
+    return _glfw.ns.lastEventTime;
 }
 
 void _glfwPlatformPollEvents(void)

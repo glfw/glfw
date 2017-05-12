@@ -87,7 +87,6 @@ typedef struct _GLFWwindowMir
     MirEGLNativeWindowType  nativeWindow;
     _GLFWcursor*            currentCursor;
 
-    int64_t lastEventTime;
 } _GLFWwindowMir;
 
 // Mir-specific per-monitor data
@@ -117,6 +116,9 @@ typedef struct _GLFWlibraryMir
 
     // The window whose disabled cursor mode is active
     _GLFWwindow* disabledCursorWindow;
+
+    // The time of the last event
+    int64_t                 lastEventTime;
 
 } _GLFWlibraryMir;
 

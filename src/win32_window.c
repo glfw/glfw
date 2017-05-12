@@ -552,7 +552,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_UNICHAR:
         {
             const GLFWbool plain = (uMsg != WM_SYSCHAR);
-            window->win32.lastEventTime = GetMessageTime();
+            _glfw.win32.lastEventTime = GetMessageTime();
 
             if (uMsg == WM_UNICHAR && wParam == UNICODE_NOCHAR)
             {
@@ -575,7 +575,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             const int scancode = (lParam >> 16) & 0x1ff;
             const int action = ((lParam >> 31) & 1) ? GLFW_RELEASE : GLFW_PRESS;
             const int mods = getKeyMods();
-            window->win32.lastEventTime = GetMessageTime();
+            _glfw.win32.lastEventTime = GetMessageTime();
 
             if (key == _GLFW_KEY_INVALID)
                 break;
@@ -610,7 +610,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_XBUTTONUP:
         {
             int i, button, action;
-            window->win32.lastEventTime = GetMessageTime();
+            _glfw.win32.lastEventTime = GetMessageTime();
 
             if (uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP)
                 button = GLFW_MOUSE_BUTTON_LEFT;
@@ -661,7 +661,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         {
             const int x = GET_X_LPARAM(lParam);
             const int y = GET_Y_LPARAM(lParam);
-            window->win32.lastEventTime = GetMessageTime();
+            _glfw.win32.lastEventTime = GetMessageTime();
 
             // Disabled cursor motion input is provided by WM_INPUT
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
@@ -1455,10 +1455,10 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
                  SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
 }
 
-double _glfwPlatformGetEventTime(_GLFWwindow* window)
+double _glfwPlatformGetEventTime(void)
 {
     /* Windows events are stored in milliseconds */
-    return (double) window->win32.lastEventTime / 1000.0;
+    return (double) _glfw.win32.lastEventTime / 1000.0;
 }
 
 void _glfwPlatformPollEvents(void)

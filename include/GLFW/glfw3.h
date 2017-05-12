@@ -3231,7 +3231,6 @@ GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window
  *  key-press, key-release and cursor motion, and the proper place to call this
  *  function is in one of the input callbacks.
  *
- *  @param[in] window The window to check for the input event.
  *  @return The value, in seconds, of the last input event occurence.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
@@ -3244,7 +3243,7 @@ GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window
  *
  *  @ingroup window
  */
-GLFWAPI double glfwGetEventTime(GLFWwindow* window);
+GLFWAPI double glfwGetEventTime(void);
 
 /*! @brief Processes all pending events.
  *

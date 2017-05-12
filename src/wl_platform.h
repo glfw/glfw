@@ -101,7 +101,6 @@ typedef struct _GLFWwindowWayland
         struct zwp_locked_pointer_v1*      lockedPointer;
     } pointerLock;
 
-    unsigned int lastEventTime;
 } _GLFWwindowWayland;
 
 // Wayland-specific global data
@@ -142,6 +141,9 @@ typedef struct _GLFWlibraryWayland
 
     _GLFWwindow*                pointerFocus;
     _GLFWwindow*                keyboardFocus;
+
+    // The time of the last event
+    unsigned int                lastEventTime;
 
 } _GLFWlibraryWayland;
 

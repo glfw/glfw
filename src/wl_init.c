@@ -83,7 +83,7 @@ static void pointerHandleMotion(void* data,
     if (!window)
         return;
 
-    window->wl.lastEventTime = time;
+    _glfw.wl.lastEventTime = time;
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
         return;
     else
@@ -110,7 +110,7 @@ static void pointerHandleButton(void* data,
     if (!window)
         return;
 
-    window->wl.lastEventTime = time;
+    _glfw.wl.lastEventTime = time;
     _glfw.wl.pointerSerial = serial;
 
     /* Makes left, right and middle 0, 1 and 2. Overall order follows evdev
@@ -138,7 +138,7 @@ static void pointerHandleAxis(void* data,
     if (!window)
         return;
 
-    window->wl.lastEventTime = time;
+    _glfw.wl.lastEventTime = time;
     /* Wayland scroll events are in pointer motion coordinate space (think
      * two finger scroll). The factor 10 is commonly used to convert to
      * "scroll step means 1.0. */
@@ -352,7 +352,7 @@ static void keyboardHandleKey(void* data,
     if (!window)
         return;
 
-    window->wl.lastEventTime = time;
+    _glfw.wl.lastEventTime = time;
     keyCode = toGLFWKeyCode(key);
     action = state == WL_KEYBOARD_KEY_STATE_PRESSED
             ? GLFW_PRESS : GLFW_RELEASE;

@@ -96,6 +96,7 @@ typedef struct _GLFWwindowNS
     // This is kept to counteract Cocoa doing the same internally
     double          cursorWarpDeltaX, cursorWarpDeltaY;
 
+    double          lastEventTime;
 } _GLFWwindowNS;
 
 // Cocoa-specific global data

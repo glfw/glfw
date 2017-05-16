@@ -244,7 +244,7 @@ GLFWAPI int glfwGetError(void)
     if (_glfw.initialized)
     {
         error = (int) (intptr_t) _glfwPlatformGetTls(&_glfw.error);
-        _glfwPlatformSetTls(&_glfw.error, (intptr_t) GLFW_NO_ERROR);
+        _glfwPlatformSetTls(&_glfw.error, (void*) (intptr_t) GLFW_NO_ERROR);
     }
     else
     {

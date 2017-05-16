@@ -876,6 +876,36 @@ static void releaseMonitor(_GLFWwindow* window)
     }
 }
 
+// Encode a Unicode code point to a UTF-8 stream
+// Based on cutef8 by Jeff Bezanson (Public Domain)
+//
+static size_t encodeUTF8(char *dest, uint32_t ch)
+{
+    if (ch < 0x80) {
+        dest[0] = (char)ch;
+        return 1;
+    }
+    if (ch < 0x800) {
+        dest[0] = (ch>>6) | 0xC0;
+        dest[1] = (ch & 0x3F) | 0x80;
+        return 2;
+    }
+    if (ch < 0x10000) {
+        dest[0] = (ch>>12) | 0xE0;
+        dest[1] = ((ch>>6) & 0x3F) | 0x80;
+        dest[2] = (ch & 0x3F) | 0x80;
+        return 3;
+    }
+    if (ch < 0x110000) {
+        dest[0] = (ch>>18) | 0xF0;
+        dest[1] = ((ch>>12) & 0x3F) | 0x80;
+        dest[2] = ((ch>>6) & 0x3F) | 0x80;
+        dest[3] = (ch & 0x3F) | 0x80;
+        return 4;
+    }
+    return 0;
+}
+
 // Decode a Unicode code point from a UTF-8 stream
 // Based on cutef8 by Jeff Bezanson (Public Domain)
 //
@@ -2446,7 +2476,8 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 const char* _glfwPlatformGetKeyName(int key, int scancode)
 {
     KeySym keysym;
-    int extra;
+    long ch;
+    size_t sz;
 
     if (!_glfw.x11.xkb.available)
         return NULL;
@@ -2459,14 +2490,16 @@ const char* _glfwPlatformGetKeyName(int key, int scancode)
 
     keysym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, 0, 0);
     if (keysym == NoSymbol)
-      return NULL;
-
-    XkbTranslateKeySym(_glfw.x11.display, &keysym, 0,
-                       _glfw.x11.keyName, sizeof(_glfw.x11.keyName),
-                       &extra);
-
-    if (!strlen(_glfw.x11.keyName))
         return NULL;
+
+    ch = _glfwKeySym2Unicode(keysym);
+    if (ch == -1)
+        return NULL;
+
+    sz = encodeUTF8(_glfw.x11.keyName, (uint32_t)ch);
+    if (sz == 0)
+        return NULL;
+    _glfw.x11.keyName[sz] = '\0';
 
     return _glfw.x11.keyName;
 }

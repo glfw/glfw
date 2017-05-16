@@ -8,12 +8,17 @@ os:
     - linux
     - osx
 sudo: false
+dist: trusty
 addons:
     apt:
         sources:
             - kubuntu-backports
         packages:
             - cmake
+            - libxrandr-dev
+            - libxinerama-dev
+            - libxcursor-dev
+            - libxi-dev
 env:
     - BUILD_SHARED_LIBS=ON
     - BUILD_SHARED_LIBS=OFF

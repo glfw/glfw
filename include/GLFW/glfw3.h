@@ -134,71 +134,97 @@ extern "C" {
 #include <stddef.h>
 
 /* Include because it is needed by Vulkan and related functions.
+ * Include it unconditionally to avoid surprising side-effects.
  */
 #include <stdint.h>
 
-/* Include the chosen client API headers.
+/* Include the chosen OpenGL or OpenGL ES headers.
  */
 #if defined(GLFW_INCLUDE_ES1)
+
  #include <GLES/gl.h>
  #if defined(GLFW_INCLUDE_GLEXT)
   #include <GLES/glext.h>
  #endif
+
 #elif defined(GLFW_INCLUDE_ES2)
+
  #include <GLES2/gl2.h>
  #if defined(GLFW_INCLUDE_GLEXT)
   #include <GLES2/gl2ext.h>
  #endif
+
 #elif defined(GLFW_INCLUDE_ES3)
+
  #include <GLES3/gl3.h>
  #if defined(GLFW_INCLUDE_GLEXT)
   #include <GLES2/gl2ext.h>
  #endif
+
 #elif defined(GLFW_INCLUDE_ES31)
+
  #include <GLES3/gl31.h>
  #if defined(GLFW_INCLUDE_GLEXT)
   #include <GLES2/gl2ext.h>
  #endif
+
 #elif defined(GLFW_INCLUDE_ES32)
+
  #include <GLES3/gl32.h>
  #if defined(GLFW_INCLUDE_GLEXT)
   #include <GLES2/gl2ext.h>
  #endif
-#elif defined(__APPLE__)
- #if defined(GLFW_INCLUDE_GLCOREARB)
+
+#elif defined(GLFW_INCLUDE_GLCOREARB)
+
+ #if defined(__APPLE__)
+
   #include <OpenGL/gl3.h>
   #if defined(GLFW_INCLUDE_GLEXT)
    #include <OpenGL/gl3ext.h>
-  #endif
- #elif !defined(GLFW_INCLUDE_NONE)
+  #endif /*GLFW_INCLUDE_GLEXT*/
+
+ #else /*__APPLE__*/
+
+  #include <GL/glcorearb.h>
+
+ #endif /*__APPLE__*/
+
+#elif !defined(GLFW_INCLUDE_NONE)
+
+ #if defined(__APPLE__)
+
   #if !defined(GLFW_INCLUDE_GLEXT)
    #define GL_GLEXT_LEGACY
   #endif
   #include <OpenGL/gl.h>
- #endif
- #if defined(GLFW_INCLUDE_GLU)
-  #include <OpenGL/glu.h>
- #endif
-#else
- #if defined(GLFW_INCLUDE_GLCOREARB)
-  #include <GL/glcorearb.h>
- #elif !defined(GLFW_INCLUDE_NONE)
+  #if defined(GLFW_INCLUDE_GLU)
+   #include <OpenGL/glu.h>
+  #endif
+
+ #else /*__APPLE__*/
+
   #include <GL/gl.h>
   #if defined(GLFW_INCLUDE_GLEXT)
    #include <GL/glext.h>
   #endif
- #endif
- #if defined(GLFW_INCLUDE_GLU)
-  #include <GL/glu.h>
- #endif
-#endif
+  #if defined(GLFW_INCLUDE_GLU)
+   #include <GL/glu.h>
+  #endif
+
+ #endif /*__APPLE__*/
+
+#endif /* OpenGL and OpenGL ES headers */
+
 #if defined(GLFW_INCLUDE_VULKAN)
+
  #if defined(__APPLE__)
   #include <MoltenVK/vulkan/vulkan.h>
  #else
   #include <vulkan/vulkan.h>
  #endif
-#endif
+
+#endif /* Vulkan header */
 
 #if defined(GLFW_DLL) && defined(_GLFW_BUILD_DLL)
  /* GLFW_DLL must be defined by applications that are linking against the DLL

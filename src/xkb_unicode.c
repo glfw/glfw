@@ -881,6 +881,16 @@ static const struct codepair {
   // { 0xfe93,     0x0338 }, // XK_dead_longsolidusoverlay
   // Numeric keypad with numlock on
   { 0xff80 /*XKB_KEY_KP_Space*/,     ' ' },
+  { 0xff95 /*XKB_KEY_KP_7*/, 0x0037 },
+  { 0xff96 /*XKB_KEY_KP_4*/, 0x0034 },
+  { 0xff97 /*XKB_KEY_KP_8*/, 0x0038 },
+  { 0xff98 /*XKB_KEY_KP_6*/, 0x0036 },
+  { 0xff99 /*XKB_KEY_KP_2*/, 0x0032 },
+  { 0xff9a /*XKB_KEY_KP_9*/, 0x0039 },
+  { 0xff9b /*XKB_KEY_KP_3*/, 0x0033 },
+  { 0xff9c /*XKB_KEY_KP_1*/, 0x0031 },
+  { 0xff9d /*XKB_KEY_KP_5*/, 0x0035 },
+  { 0xff9e /*XKB_KEY_KP_0*/, 0x0030 },
   { 0xffaa /*XKB_KEY_KP_Multiply*/,  '*' },
   { 0xffab /*XKB_KEY_KP_Add*/,       '+' },
   { 0xffac /*XKB_KEY_KP_Separator*/, ',' },

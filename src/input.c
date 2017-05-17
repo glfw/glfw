@@ -624,7 +624,7 @@ GLFWAPI int glfwJoystickPresent(int jid)
 
     if (jid < 0 || jid > GLFW_JOYSTICK_LAST)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", jid);
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick ID %i", jid);
         return GLFW_FALSE;
     }
 
@@ -646,7 +646,7 @@ GLFWAPI const float* glfwGetJoystickAxes(int jid, int* count)
 
     if (jid < 0 || jid > GLFW_JOYSTICK_LAST)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", jid);
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick ID %i", jid);
         return NULL;
     }
 
@@ -672,7 +672,7 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int jid, int* count)
 
     if (jid < 0 || jid > GLFW_JOYSTICK_LAST)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", jid);
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick ID %i", jid);
         return NULL;
     }
 
@@ -705,7 +705,7 @@ GLFWAPI const unsigned char* glfwGetJoystickHats(int jid, int* count)
 
     if (jid < 0 || jid > GLFW_JOYSTICK_LAST)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", jid);
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick ID %i", jid);
         return NULL;
     }
 
@@ -728,7 +728,7 @@ GLFWAPI const char* glfwGetJoystickName(int jid)
 
     if (jid < 0 || jid > GLFW_JOYSTICK_LAST)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick %i", jid);
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick ID %i", jid);
         return NULL;
     }
 

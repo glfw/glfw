@@ -826,7 +826,6 @@ static const struct codepair {
   { 0x13bd, 0x0153 },
   { 0x13be, 0x0178 },
   { 0x20ac, 0x20ac },
-  // dead keys
   { 0xfe50,    '`' },
   { 0xfe51, 0x00b4 },
   { 0xfe52,    '^' },
@@ -843,9 +842,6 @@ static const struct codepair {
   { 0xfe5d, 0x037a },
   { 0xfe5e, 0x309b },
   { 0xfe5f, 0x309c },
-  // { 0xfe60, 0x0323 }, // XK_dead_belowdot
-  // { 0xfe61, 0x0309 }, // XK_dead_hook
-  // { 0xfe62, 0x031b }, // XK_dead_horn
   { 0xfe63,    '/' },
   { 0xfe64, 0x02bc },
   { 0xfe65, 0x02bd },
@@ -854,12 +850,8 @@ static const struct codepair {
   { 0xfe68, 0x02cd },
   { 0xfe69, 0xa788 },
   { 0xfe6a, 0x02f7 },
-  // { 0xfe6b, 0x032e }, // XK_dead_belowbreve
-  // { 0xfe6c, 0x0324 }, // XK_dead_belowdiaeresis
-  // { 0xfe6d, 0x0311 }, // XK_dead_invertedbreve
   { 0xfe6e,    ',' },
   { 0xfe6f, 0x00a4 },
-  // dead vowels for universal syllable entry
   { 0xfe80,    'a' }, // XK_dead_a
   { 0xfe81,    'A' }, // XK_dead_A
   { 0xfe82,    'e' }, // XK_dead_e
@@ -872,14 +864,10 @@ static const struct codepair {
   { 0xfe89,    'U' }, // XK_dead_U
   { 0xfe8a, 0x0259 },
   { 0xfe8b, 0x018f },
-  // other
   { 0xfe8c, 0x00b5 },
-  // extra dead elements for German T3 layout
   { 0xfe90,    '_' },
   { 0xfe91, 0x02c8 },
   { 0xfe92, 0x02cc },
-  // { 0xfe93,     0x0338 }, // XK_dead_longsolidusoverlay
-  // Numeric keypad with numlock on
   { 0xff80 /*XKB_KEY_KP_Space*/,     ' ' },
   { 0xff95 /*XKB_KEY_KP_7*/, 0x0037 },
   { 0xff96 /*XKB_KEY_KP_4*/, 0x0034 },

@@ -560,6 +560,25 @@ void _glfwDetectJoystickDisconnectionWin32(void)
 	}
 }
 
+// Applies radial deadzone to a circular input
+static void applySignedRadialDeadzone(SHORT x, SHORT y, SHORT deadzone, float* dest)
+{
+    float invShort = 1.f / 32767.f;
+    float nd = (float)deadzone * invShort;  // normalized deadzone
+    float nx = (float)x * invShort;         // normalized X
+    float ny = (float)y * invShort;         // normalize Y
+    float magnitudeSquared = nx * nx + ny * ny;
+    if(magnitudeSquared >= nd * nd)
+    {
+        float magnitude = sqrtf(magnitudeSquared);
+        
+        // clamp output magnitude to make sure it never goes above 1
+        float newMagnitude = (min(magnitude, 1.f) - nd) / (1.f - nd);
+
+        dest[0] = (nx / magnitude) * newMagnitude;
+        dest[1] = (ny / magnitude) * newMagnitude;
+    }
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -679,23 +698,15 @@ int _glfwPlatformPollJoystick(int jid, int mode)
         if (mode == _GLFW_POLL_PRESENCE)
             return GLFW_TRUE;
 
-        if ((float) xis.Gamepad.sThumbLX * xis.Gamepad.sThumbLX +
-            (float) xis.Gamepad.sThumbLY * xis.Gamepad.sThumbLY >
-            (float) XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE *
-                    XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
-        {
-            axes[0] = (xis.Gamepad.sThumbLX + 0.5f) / 32767.f;
-            axes[1] = (xis.Gamepad.sThumbLY + 0.5f) / 32767.f;
-        }
+        applySignedRadialDeadzone(xis.Gamepad.sThumbLX,
+                                  xis.Gamepad.sThumbLY,
+                                  XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE,
+                                  &axes[0]);
 
-        if ((float) xis.Gamepad.sThumbRX * xis.Gamepad.sThumbRX +
-            (float) xis.Gamepad.sThumbRY * xis.Gamepad.sThumbRY >
-            (float) XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE *
-                    XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
-        {
-            axes[2] = (xis.Gamepad.sThumbRX + 0.5f) / 32767.f;
-            axes[3] = (xis.Gamepad.sThumbRY + 0.5f) / 32767.f;
-        }
+        applySignedRadialDeadzone(xis.Gamepad.sThumbRX,
+                                  xis.Gamepad.sThumbRY,
+                                  XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE,
+                                  &axes[2]);
 
         if (xis.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
             axes[4] = xis.Gamepad.bLeftTrigger / 127.5f - 1.f;

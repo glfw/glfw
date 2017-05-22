@@ -105,14 +105,6 @@ int main(void)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
-    {
-        if (glfwJoystickPresent(jid))
-            joystick_callback(jid, GLFW_CONNECTED);
-    }
-
-    glfwSetJoystickCallback(joystick_callback);
-
     window = glfwCreateWindow(640, 480, "Joystick Test", NULL, NULL);
     if (!window)
     {
@@ -127,6 +119,14 @@ int main(void)
     nk = nk_glfw3_init(window, NK_GLFW3_INSTALL_CALLBACKS);
     nk_glfw3_font_stash_begin(&atlas);
     nk_glfw3_font_stash_end();
+
+    for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    {
+        if (glfwJoystickPresent(jid))
+            joysticks[joystick_count++] = jid;
+    }
+
+    glfwSetJoystickCallback(joystick_callback);
 
     while (!glfwWindowShouldClose(window))
     {

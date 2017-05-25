@@ -48,7 +48,7 @@ typedef struct VkMacOSSurfaceCreateInfoMVK
 
 typedef VkResult (APIENTRY *PFN_vkCreateMacOSSurfaceMVK)(VkInstance,const VkMacOSSurfaceCreateInfoMVK*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 
-#include "posix_tls.h"
+#include "posix_thread.h"
 #include "cocoa_joystick.h"
 #include "nsgl_context.h"
 #include "egl_context.h"

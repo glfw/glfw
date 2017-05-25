@@ -495,7 +495,7 @@ struct _GLFWjoystick
  */
 struct _GLFWtls
 {
-    // This is defined in the platform's tls.h
+    // This is defined in the platform's thread.h
     _GLFW_PLATFORM_TLS_STATE;
 };
 
@@ -503,7 +503,7 @@ struct _GLFWtls
  */
 struct _GLFWmutex
 {
-    // This is defined in the platform's tls.h
+    // This is defined in the platform's thread.h
     _GLFW_PLATFORM_MUTEX_STATE;
 };
 

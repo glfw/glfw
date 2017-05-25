@@ -44,7 +44,7 @@ typedef struct VkMirWindowCreateInfoKHR
 typedef VkResult (APIENTRY *PFN_vkCreateMirWindowKHR)(VkInstance,const VkMirWindowCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceMirPresentationSupportKHR)(VkPhysicalDevice,uint32_t,MirConnection*);
 
-#include "posix_tls.h"
+#include "posix_thread.h"
 #include "posix_time.h"
 #include "linux_joystick.h"
 #include "xkb_unicode.h"

@@ -39,7 +39,7 @@
 
 #include "osmesa_context.h"
 #include "posix_time.h"
-#include "posix_tls.h"
+#include "posix_thread.h"
 #include "null_joystick.h"
 
 #if defined(_GLFW_WIN32)

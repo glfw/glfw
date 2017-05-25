@@ -192,7 +192,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->denom       = GLFW_DONT_CARE;
 
     // Save the currently current context so it can be restored later
-    previous = _glfwPlatformGetTls(&_glfw.context);
+    previous = _glfwPlatformGetTls(&_glfw.contextSlot);
     if (ctxconfig.client != GLFW_NO_API)
         glfwMakeContextCurrent(NULL);
 
@@ -408,7 +408,7 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
 
     // The window's context must not be current on another thread when the
     // window is destroyed
-    if (window == _glfwPlatformGetTls(&_glfw.context))
+    if (window == _glfwPlatformGetTls(&_glfw.contextSlot))
         glfwMakeContextCurrent(NULL);
 
     _glfwPlatformDestroyWindow(window);

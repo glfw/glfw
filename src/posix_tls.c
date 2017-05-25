@@ -69,8 +69,35 @@ void _glfwPlatformSetTls(_GLFWtls* tls, void* value)
     pthread_setspecific(tls->posix.key, value);
 }
 
-GLFWbool _glfwPlatformIsValidTls(_GLFWtls* tls)
+GLFWbool _glfwPlatformCreateMutex(_GLFWmutex* mutex)
 {
-    return tls->posix.allocated;
+    assert(mutex->posix.allocated == GLFW_FALSE);
+
+    if (pthread_mutex_init(&mutex->posix.handle, NULL) != 0)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "POSIX: Failed to create mutex");
+        return GLFW_FALSE;
+    }
+
+    return mutex->posix.allocated = GLFW_TRUE;
+}
+
+void _glfwPlatformDestroyMutex(_GLFWmutex* mutex)
+{
+    if (mutex->posix.allocated)
+        pthread_mutex_destroy(&mutex->posix.handle);
+    memset(mutex, 0, sizeof(_GLFWmutex));
+}
+
+void _glfwPlatformLockMutex(_GLFWmutex* mutex)
+{
+    assert(mutex->posix.allocated == GLFW_TRUE);
+    pthread_mutex_lock(&mutex->posix.handle);
+}
+
+void _glfwPlatformUnlockMutex(_GLFWmutex* mutex)
+{
+    assert(mutex->posix.allocated == GLFW_TRUE);
+    pthread_mutex_unlock(&mutex->posix.handle);
 }
 

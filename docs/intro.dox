@@ -128,15 +128,19 @@ immediately.
 @section error_handling Error handling
 
 Some GLFW functions have return values that indicate an error, but this is often
-not very helpful when trying to figure out _why_ the error occurred.  Other
-functions have no return value reserved for errors, so error notification needs
-a separate channel.  Finally, far from all GLFW functions have return values.
+not very helpful when trying to figure out what happened or why it occurred.
+Other functions have no return value reserved for errors, so error notification
+needs a separate channel.  Finally, far from all GLFW functions have return
+values.
 
-The last error code for the calling thread can be queried at any time with @ref
-glfwGetError.
+The last [error code](@ref errors) for the calling thread can be queried at any
+time with @ref glfwGetError.
 
 @code
-int error = glfwGetError();
+int code = glfwGetError(NULL);
+
+if (code != GLFW_NO_ERROR)
+    handle_error(code);
 @endcode
 
 If no error has occurred since the last call, @ref GLFW_NO_ERROR is returned.
@@ -146,41 +150,51 @@ The error code indicates the general category of the error.  Some error codes,
 such as @ref GLFW_NOT_INITIALIZED has only a single meaning, whereas others like
 @ref GLFW_PLATFORM_ERROR are used for many different errors.
 
-GLFW usually has much more information about the error than its general category
-at the point where it occurred.  This is where the error callback comes in.
-This callback is called whenever an error occurs.  It is set with @ref
-glfwSetErrorCallback, a function that may be called regardless of whether GLFW
-is initialized.
+GLFW often has more information about an error than its general category.  You
+can retrieve a UTF-8 encoded human-readable description along with the error
+code.  If no error has occurred since the last call, the description is set to
+`NULL`.
+
+@code
+const char* description;
+int code = glfwGetError(&description);
+
+if (description)
+    display_error_message(code, description);
+@endcode
+
+The retrieved description string is only valid until the next error occurs.
+This means you must make a copy of it if you want to keep it.
+
+You can also set an error callback, which will be called each time an error
+occurs.  It is set with @ref glfwSetErrorCallback.
 
 @code
 glfwSetErrorCallback(error_callback);
 @endcode
 
-The error callback receives a human-readable description of the error and (when
-possible) its cause.  The description encoded as UTF-8.  The callback is also
-provided with an [error code](@ref errors). 
+The error callback receives the same error code and human-readable description
+returned by @ref glfwGetError.
 
 @code
-void error_callback(int error, const char* description)
+void error_callback(int code, const char* description)
 {
-    puts(description);
+    display_error_message(code, description);
 }
 @endcode
 
-The error callback is called after the error code is set, so calling @ref
-glfwGetError from within the error callback returns the same value as the
+The error callback is called after the error is stored, so calling @ref
+glfwGetError from within the error callback returns the same values as the
 callback argument.
+
+The description string passed to the callback is only valid until the error
+callback returns.  This means you must make a copy of it if you want to keep it.
 
 __Reported errors are never fatal.__  As long as GLFW was successfully
 initialized, it will remain initialized and in a safe state until terminated
 regardless of how many errors occur.  If an error occurs during initialization
 that causes @ref glfwInit to fail, any part of the library that was initialized
 will be safely terminated.
-
-The description string is only valid until the error callback returns, as it may
-have been generated specifically for that error.  This lets GLFW provide much
-more specific error descriptions but means you must make a copy if you want to
-keep the description string.
 
 Do not rely on a currently invalid call to generate a specific error, as in the
 future that same call may generate a different error or become valid.

@@ -221,6 +221,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWin32 win32
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorWin32  win32
 #define _GLFW_PLATFORM_TLS_STATE            _GLFWtlsWin32     win32
+#define _GLFW_PLATFORM_MUTEX_STATE          _GLFWmutexWin32   win32
 
 
 // Win32-specific per-window data
@@ -333,6 +334,15 @@ typedef struct _GLFWtlsWin32
     DWORD               index;
 
 } _GLFWtlsWin32;
+
+// Win32-specific mutex data
+//
+typedef struct _GLFWmutexWin32
+{
+    GLFWbool            allocated;
+    CRITICAL_SECTION    section;
+
+} _GLFWmutexWin32;
 
 
 GLFWbool _glfwRegisterWindowClassWin32(void);

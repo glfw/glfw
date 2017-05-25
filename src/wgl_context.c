@@ -249,12 +249,12 @@ static void makeContextCurrentWGL(_GLFWwindow* window)
     if (window)
     {
         if (wglMakeCurrent(window->context.wgl.dc, window->context.wgl.handle))
-            _glfwPlatformSetTls(&_glfw.context, window);
+            _glfwPlatformSetTls(&_glfw.contextSlot, window);
         else
         {
             _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
                                  "WGL: Failed to make context current");
-            _glfwPlatformSetTls(&_glfw.context, NULL);
+            _glfwPlatformSetTls(&_glfw.contextSlot, NULL);
         }
     }
     else
@@ -265,7 +265,7 @@ static void makeContextCurrentWGL(_GLFWwindow* window)
                                  "WGL: Failed to clear current context");
         }
 
-        _glfwPlatformSetTls(&_glfw.context, NULL);
+        _glfwPlatformSetTls(&_glfw.contextSlot, NULL);
     }
 }
 
@@ -284,7 +284,7 @@ static void swapBuffersWGL(_GLFWwindow* window)
 
 static void swapIntervalWGL(int interval)
 {
-    _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.context);
+    _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
 
     window->context.wgl.interval = interval;
 

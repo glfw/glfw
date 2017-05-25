@@ -43,7 +43,7 @@ _GLFWlibrary _glfw = { GLFW_FALSE };
 // These are outside of _glfw so they can be used before initialization and
 // after termination
 //
-static int _glfwErrorCode;
+static _GLFWerror _glfwMainThreadError;
 static GLFWerrorfun _glfwErrorCallback;
 static _GLFWinitconfig _glfwInitHints =
 {
@@ -56,9 +56,9 @@ static _GLFWinitconfig _glfwInitHints =
 
 // Returns a generic string representation of the specified error
 //
-static const char* getErrorString(int error)
+static const char* getErrorString(int code)
 {
-    switch (error)
+    switch (code)
     {
         case GLFW_NOT_INITIALIZED:
             return "The GLFW library is not initialized";
@@ -114,11 +114,18 @@ static void terminate(void)
     _glfwTerminateVulkan();
     _glfwPlatformTerminate();
 
-    if (_glfwPlatformIsValidTls(&_glfw.error))
-        _glfwErrorCode = (int) (intptr_t) _glfwPlatformGetTls(&_glfw.error);
+    _glfw.initialized = GLFW_FALSE;
 
-    _glfwPlatformDestroyTls(&_glfw.context);
-    _glfwPlatformDestroyTls(&_glfw.error);
+    while (_glfw.errorListHead)
+    {
+        _GLFWerror* error = _glfw.errorListHead;
+        _glfw.errorListHead = error->next;
+        free(error);
+    }
+
+    _glfwPlatformDestroyTls(&_glfw.contextSlot);
+    _glfwPlatformDestroyTls(&_glfw.errorSlot);
+    _glfwPlatformDestroyMutex(&_glfw.errorLock);
 
     memset(&_glfw, 0, sizeof(_glfw));
 }
@@ -128,37 +135,47 @@ static void terminate(void)
 //////                         GLFW event API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-void _glfwInputError(int error, const char* format, ...)
+void _glfwInputError(int code, const char* format, ...)
 {
-    if (_glfw.initialized)
-        _glfwPlatformSetTls(&_glfw.error, (void*) (intptr_t) error);
+    _GLFWerror* error;
+    char description[1024];
+
+    if (format)
+    {
+        int count;
+        va_list vl;
+
+        va_start(vl, format);
+        count = vsnprintf(description, sizeof(description), format, vl);
+        va_end(vl);
+
+        if (count < 0)
+            description[sizeof(description) - 1] = '\0';
+    }
     else
-        _glfwErrorCode = error;
+        strcpy(description, getErrorString(code));
+
+    if (_glfw.initialized)
+    {
+        error = _glfwPlatformGetTls(&_glfw.errorSlot);
+        if (!error)
+        {
+            error = calloc(1, sizeof(_GLFWerror));
+            _glfwPlatformSetTls(&_glfw.errorSlot, error);
+            _glfwPlatformLockMutex(&_glfw.errorLock);
+            error->next = _glfw.errorListHead;
+            _glfw.errorListHead = error;
+            _glfwPlatformUnlockMutex(&_glfw.errorLock);
+        }
+    }
+    else
+        error = &_glfwMainThreadError;
+
+    error->code = code;
+    strcpy(error->description, description);
 
     if (_glfwErrorCallback)
-    {
-        char buffer[8192];
-        const char* description;
-
-        if (format)
-        {
-            int count;
-            va_list vl;
-
-            va_start(vl, format);
-            count = vsnprintf(buffer, sizeof(buffer), format, vl);
-            va_end(vl);
-
-            if (count < 0)
-                buffer[sizeof(buffer) - 1] = '\0';
-
-            description = buffer;
-        }
-        else
-            description = getErrorString(error);
-
-        _glfwErrorCallback(error, description);
-    }
+        _glfwErrorCallback(code, description);
 }
 
 
@@ -180,12 +197,14 @@ GLFWAPI int glfwInit(void)
         return GLFW_FALSE;
     }
 
-    if (!_glfwPlatformCreateTls(&_glfw.error))
+    if (!_glfwPlatformCreateMutex(&_glfw.errorLock))
         return GLFW_FALSE;
-    if (!_glfwPlatformCreateTls(&_glfw.context))
+    if (!_glfwPlatformCreateTls(&_glfw.errorSlot))
+        return GLFW_FALSE;
+    if (!_glfwPlatformCreateTls(&_glfw.contextSlot))
         return GLFW_FALSE;
 
-    _glfwPlatformSetTls(&_glfw.error, (void*) (intptr_t) _glfwErrorCode);
+    _glfwPlatformSetTls(&_glfw.errorSlot, &_glfwMainThreadError);
 
     _glfw.initialized = GLFW_TRUE;
     _glfw.timer.offset = _glfwPlatformGetTimerValue();
@@ -237,22 +256,28 @@ GLFWAPI const char* glfwGetVersionString(void)
     return _glfwPlatformGetVersionString();
 }
 
-GLFWAPI int glfwGetError(void)
+GLFWAPI int glfwGetError(const char** description)
 {
-    int error;
+    _GLFWerror* error;
+    int code = GLFW_NO_ERROR;
+
+    if (description)
+        *description = NULL;
 
     if (_glfw.initialized)
-    {
-        error = (int) (intptr_t) _glfwPlatformGetTls(&_glfw.error);
-        _glfwPlatformSetTls(&_glfw.error, (void*) (intptr_t) GLFW_NO_ERROR);
-    }
+        error = _glfwPlatformGetTls(&_glfw.errorSlot);
     else
+        error = &_glfwMainThreadError;
+
+    if (error)
     {
-        error = _glfwErrorCode;
-        _glfwErrorCode = GLFW_NO_ERROR;
+        code = error->code;
+        error->code = GLFW_NO_ERROR;
+        if (description && code)
+            *description = error->description;
     }
 
-    return error;
+    return code;
 }
 
 GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun)

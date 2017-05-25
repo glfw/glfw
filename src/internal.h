@@ -55,6 +55,7 @@
 
 typedef int GLFWbool;
 
+typedef struct _GLFWerror       _GLFWerror;
 typedef struct _GLFWinitconfig  _GLFWinitconfig;
 typedef struct _GLFWwndconfig   _GLFWwndconfig;
 typedef struct _GLFWctxconfig   _GLFWctxconfig;
@@ -66,6 +67,7 @@ typedef struct _GLFWmonitor     _GLFWmonitor;
 typedef struct _GLFWcursor      _GLFWcursor;
 typedef struct _GLFWjoystick    _GLFWjoystick;
 typedef struct _GLFWtls         _GLFWtls;
+typedef struct _GLFWmutex       _GLFWmutex;
 
 typedef void (* _GLFWmakecontextcurrentfun)(_GLFWwindow*);
 typedef void (* _GLFWswapbuffersfun)(_GLFWwindow*);
@@ -256,6 +258,13 @@ typedef void (APIENTRY * PFN_vkVoidFunction)(void);
 //========================================================================
 // Platform-independent structures
 //========================================================================
+
+struct _GLFWerror
+{
+    _GLFWerror*     next;
+    int             code;
+    char            description[1024];
+};
 
 /*! @brief Initialization configuration.
  *
@@ -490,6 +499,14 @@ struct _GLFWtls
     _GLFW_PLATFORM_TLS_STATE;
 };
 
+/*! @brief Mutex structure.
+ */
+struct _GLFWmutex
+{
+    // This is defined in the platform's tls.h
+    _GLFW_PLATFORM_MUTEX_STATE;
+};
+
 /*! @brief Library global data.
  */
 struct _GLFWlibrary
@@ -504,8 +521,8 @@ struct _GLFWlibrary
         int             refreshRate;
     } hints;
 
+    _GLFWerror*         errorListHead;
     _GLFWcursor*        cursorListHead;
-
     _GLFWwindow*        windowListHead;
 
     _GLFWmonitor**      monitors;
@@ -513,8 +530,9 @@ struct _GLFWlibrary
 
     _GLFWjoystick       joysticks[GLFW_JOYSTICK_LAST + 1];
 
-    _GLFWtls            error;
-    _GLFWtls            context;
+    _GLFWtls            errorSlot;
+    _GLFWtls            contextSlot;
+    _GLFWmutex          errorLock;
 
     struct {
         uint64_t        offset;
@@ -651,7 +669,11 @@ GLFWbool _glfwPlatformCreateTls(_GLFWtls* tls);
 void _glfwPlatformDestroyTls(_GLFWtls* tls);
 void* _glfwPlatformGetTls(_GLFWtls* tls);
 void _glfwPlatformSetTls(_GLFWtls* tls, void* value);
-GLFWbool _glfwPlatformIsValidTls(_GLFWtls* tls);
+
+GLFWbool _glfwPlatformCreateMutex(_GLFWmutex* mutex);
+void _glfwPlatformDestroyMutex(_GLFWmutex* mutex);
+void _glfwPlatformLockMutex(_GLFWmutex* mutex);
+void _glfwPlatformUnlockMutex(_GLFWmutex* mutex);
 
 /*! @} */
 
@@ -798,15 +820,15 @@ void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement);
 void _glfwInputMonitorWindow(_GLFWmonitor* monitor, _GLFWwindow* window);
 
 /*! @brief Notifies shared code of an error.
- *  @param[in] error The error code most suitable for the error.
+ *  @param[in] code The error code most suitable for the error.
  *  @param[in] format The `printf` style format string of the error
  *  description.
  *  @ingroup event
  */
 #if defined(__GNUC__)
-void _glfwInputError(int error, const char* format, ...) __attribute__((format(printf, 2, 3)));
+void _glfwInputError(int code, const char* format, ...) __attribute__((format(printf, 2, 3)));
 #else
-void _glfwInputError(int error, const char* format, ...);
+void _glfwInputError(int code, const char* format, ...);
 #endif
 
 /*! @brief Notifies shared code of files or directories dropped on a window.

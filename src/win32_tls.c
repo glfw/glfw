@@ -69,8 +69,29 @@ void _glfwPlatformSetTls(_GLFWtls* tls, void* value)
     TlsSetValue(tls->win32.index, value);
 }
 
-GLFWbool _glfwPlatformIsValidTls(_GLFWtls* tls)
+GLFWbool _glfwPlatformCreateMutex(_GLFWmutex* mutex)
 {
-    return tls->win32.allocated;
+    assert(mutex->win32.allocated == GLFW_FALSE);
+    InitializeCriticalSection(&mutex->win32.section);
+    return mutex->win32.allocated = GLFW_TRUE;
+}
+
+void _glfwPlatformDestroyMutex(_GLFWmutex* mutex)
+{
+    if (mutex->win32.allocated)
+        DeleteCriticalSection(&mutex->win32.section);
+    memset(mutex, 0, sizeof(_GLFWmutex));
+}
+
+void _glfwPlatformLockMutex(_GLFWmutex* mutex)
+{
+    assert(mutex->win32.allocated == GLFW_TRUE);
+    EnterCriticalSection(&mutex->win32.section);
+}
+
+void _glfwPlatformUnlockMutex(_GLFWmutex* mutex)
+{
+    assert(mutex->win32.allocated == GLFW_TRUE);
+    LeaveCriticalSection(&mutex->win32.section);
 }
 

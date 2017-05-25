@@ -7,8 +7,8 @@
 
 @subsection news_33_geterror Error query
 
-GLFW now supports querying the last error code for the calling thread with @ref
-glfwGetError.
+GLFW now supports querying the last error code for the calling thread and its
+human-readable description with @ref glfwGetError.
 
 @see @ref error_handling
 

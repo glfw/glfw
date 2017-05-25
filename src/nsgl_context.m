@@ -34,7 +34,7 @@ static void makeContextCurrentNSGL(_GLFWwindow* window)
     else
         [NSOpenGLContext clearCurrentContext];
 
-    _glfwPlatformSetTls(&_glfw.context, window);
+    _glfwPlatformSetTls(&_glfw.contextSlot, window);
 }
 
 static void swapBuffersNSGL(_GLFWwindow* window)
@@ -45,7 +45,7 @@ static void swapBuffersNSGL(_GLFWwindow* window)
 
 static void swapIntervalNSGL(int interval)
 {
-    _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.context);
+    _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
 
     GLint sync = interval;
     [window->context.nsgl.object setValues:&sync

@@ -122,7 +122,8 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
-- Added `glfwGetError` function for querying the last error code (#970)
+- Added `glfwGetError` function for querying the last error code and its
+  description (#970)
 - Added `glfwRequestWindowAttention` function for requesting attention from the
   user (#732,#988)
 - Added `glfwGetKeyScancode` function that allows retrieving platform dependent

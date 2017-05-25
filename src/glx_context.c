@@ -165,7 +165,7 @@ static void makeContextCurrentGLX(_GLFWwindow* window)
         }
     }
 
-    _glfwPlatformSetTls(&_glfw.context, window);
+    _glfwPlatformSetTls(&_glfw.contextSlot, window);
 }
 
 static void swapBuffersGLX(_GLFWwindow* window)
@@ -175,7 +175,7 @@ static void swapBuffersGLX(_GLFWwindow* window)
 
 static void swapIntervalGLX(int interval)
 {
-    _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.context);
+    _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
 
     if (_glfw.glx.EXT_swap_control)
     {

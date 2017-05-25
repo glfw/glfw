@@ -63,7 +63,7 @@ static void makeContextCurrentOSMesa(_GLFWwindow* window)
         }
     }
 
-    _glfwPlatformSetTls(&_glfw.context, window);
+    _glfwPlatformSetTls(&_glfw.contextSlot, window);
 }
 
 static GLFWglproc getProcAddressOSMesa(const char* procname)

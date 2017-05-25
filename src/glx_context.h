@@ -25,9 +25,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_glx_context_h_
-#define _glfw3_glx_context_h_
-
 #define GLX_VENDOR 1
 #define GLX_RGBA_BIT 0x00000001
 #define GLX_WINDOW_BIT 0x00000001
@@ -180,4 +177,3 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig,
                               Visual** visual, int* depth);
 
-#endif // _glfw3_glx_context_h_

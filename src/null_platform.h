@@ -25,9 +25,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_null_platform_h_
-#define _glfw3_null_platform_h_
-
 #include <dlfcn.h>
 
 #define _GLFW_PLATFORM_WINDOW_STATE _GLFWwindowNull null
@@ -63,5 +60,3 @@ typedef struct _GLFWwindowNull
     int height;
 } _GLFWwindowNull;
 
-
-#endif // _glfw3_null_platform_h_

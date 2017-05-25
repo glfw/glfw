@@ -24,9 +24,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_mir_platform_h_
-#define _glfw3_mir_platform_h_
-
 #include <sys/queue.h>
 #include <pthread.h>
 #include <dlfcn.h>
@@ -134,4 +131,3 @@ extern void _glfwPollMonitorsMir(void);
 extern void _glfwInitEventQueueMir(EventQueue* queue);
 extern void _glfwDeleteEventQueueMir(EventQueue* queue);
 
-#endif // _glfw3_mir_platform_h_

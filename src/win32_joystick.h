@@ -24,9 +24,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_win32_joystick_h_
-#define _glfw3_win32_joystick_h_
-
 #define _GLFW_PLATFORM_JOYSTICK_STATE         _GLFWjoystickWin32 win32
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE int dummy
 
@@ -56,4 +53,3 @@ void _glfwTerminateJoysticksWin32(void);
 void _glfwDetectJoystickConnectionWin32(void);
 void _glfwDetectJoystickDisconnectionWin32(void);
 
-#endif // _glfw3_win32_joystick_h_

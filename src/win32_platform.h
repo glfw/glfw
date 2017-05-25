@@ -25,9 +25,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_win32_platform_h_
-#define _glfw3_win32_platform_h_
-
 // We don't need all the fancy stuff
 #ifndef NOMINMAX
  #define NOMINMAX
@@ -351,4 +348,3 @@ void _glfwPollMonitorsWin32(void);
 GLFWbool _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoModeWin32(_GLFWmonitor* monitor);
 
-#endif // _glfw3_win32_platform_h_

@@ -25,9 +25,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_osmesa_context_h_
-#define _glfw3_osmesa_context_h_
-
 #define OSMESA_RGBA 0x1908
 #define OSMESA_FORMAT 0x22
 #define OSMESA_DEPTH_BITS 0x30
@@ -95,4 +92,3 @@ GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
                                   const _GLFWctxconfig* ctxconfig,
                                   const _GLFWfbconfig* fbconfig);
 
-#endif // _glfw3_osmesa_context_h_

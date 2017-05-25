@@ -25,10 +25,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_wgl_context_h_
-#define _glfw3_wgl_context_h_
-
-
 #define WGL_NUMBER_PIXEL_FORMATS_ARB 0x2000
 #define WGL_SUPPORT_OPENGL_ARB 0x2010
 #define WGL_DRAW_TO_WINDOW_ARB 0x2001
@@ -157,4 +153,3 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig);
 
-#endif // _glfw3_wgl_context_h_

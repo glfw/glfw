@@ -25,9 +25,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_x11_platform_h_
-#define _glfw3_x11_platform_h_
-
 #include <unistd.h>
 #include <signal.h>
 #include <stdint.h>
@@ -335,4 +332,3 @@ void _glfwInputErrorX11(int error, const char* message);
 
 void _glfwPushSelectionToManagerX11(void);
 
-#endif // _glfw3_x11_platform_h_

@@ -24,11 +24,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_null_joystick_h_
-#define _glfw3_null_joystick_h_
-
 #define _GLFW_PLATFORM_JOYSTICK_STATE         int nulljs
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE int nulljs
 
-
-#endif // _glfw3_null_joystick_h_

@@ -24,9 +24,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_linux_joystick_h_
-#define _glfw3_linux_joystick_h_
-
 #include <regex.h>
 
 #define _GLFW_PLATFORM_JOYSTICK_STATE         _GLFWjoystickLinux linjs
@@ -55,4 +52,3 @@ GLFWbool _glfwInitJoysticksLinux(void);
 void _glfwTerminateJoysticksLinux(void);
 void _glfwDetectJoystickConnectionLinux(void);
 
-#endif // _glfw3_linux_joystick_h_

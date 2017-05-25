@@ -24,9 +24,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_nsgl_context_h_
-#define _glfw3_nsgl_context_h_
-
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextNSGL nsgl
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryNSGL nsgl
 
@@ -57,4 +54,3 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                 const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContextNSGL(_GLFWwindow* window);
 
-#endif // _glfw3_nsgl_context_h_

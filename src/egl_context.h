@@ -25,9 +25,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_egl_context_h_
-#define _glfw3_egl_context_h_
-
 #if defined(_GLFW_USE_EGLPLATFORM_H)
  #include <EGL/eglplatform.h>
 #elif defined(_GLFW_WIN32)
@@ -219,4 +216,3 @@ GLFWbool _glfwChooseVisualEGL(const _GLFWctxconfig* ctxconfig,
                               Visual** visual, int* depth);
 #endif /*_GLFW_X11*/
 
-#endif // _glfw3_egl_context_h_

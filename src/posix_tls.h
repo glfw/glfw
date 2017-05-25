@@ -25,9 +25,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_posix_tls_h_
-#define _glfw3_posix_tls_h_
-
 #include <pthread.h>
 
 #define _GLFW_PLATFORM_TLS_STATE _GLFWtlsPOSIX posix
@@ -42,5 +39,3 @@ typedef struct _GLFWtlsPOSIX
 
 } _GLFWtlsPOSIX;
 
-
-#endif // _glfw3_posix_tls_h_

@@ -25,10 +25,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_internal_h_
-#define _glfw3_internal_h_
-
-
 #if defined(_GLFW_USE_CONFIG_H)
  #include "glfw_config.h"
 #endif
@@ -961,4 +957,3 @@ void _glfwTerminateVulkan(void);
  */
 const char* _glfwGetVulkanResultString(VkResult result);
 
-#endif // _glfw3_internal_h_

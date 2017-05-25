@@ -24,9 +24,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_cocoa_joystick_h_
-#define _glfw3_cocoa_joystick_h_
-
 #include <IOKit/IOKitLib.h>
 #include <IOKit/IOCFPlugIn.h>
 #include <IOKit/hid/IOHIDLib.h>
@@ -50,4 +47,3 @@ typedef struct _GLFWjoystickNS
 void _glfwInitJoysticksNS(void);
 void _glfwTerminateJoysticksNS(void);
 
-#endif // _glfw3_cocoa_joystick_h_

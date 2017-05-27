@@ -354,6 +354,7 @@ skills.
  - Jay Weisskopf
  - Frank Wille
  - yuriks
+ - Ryogo Yoshimura
  - Santi Zupancic
  - Jonas Ådahl
  - Lasse Öörni

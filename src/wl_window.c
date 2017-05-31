@@ -763,16 +763,20 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     pool = wl_shm_create_pool(_glfw.wl.shm, fd, length);
 
     close(fd);
-    unsigned char* source = (unsigned char*) image->pixels;
-    unsigned char* target = data;
-    for (i = 0;  i < image->width * image->height;  i++, source += 4)
-    {
-        unsigned int alpha = source[3];
 
-        *target++ = (unsigned char) ((source[2] * alpha) / 255);
-        *target++ = (unsigned char) ((source[1] * alpha) / 255);
-        *target++ = (unsigned char) ((source[0] * alpha) / 255);
-        *target++ = (unsigned char) alpha;
+    {
+        unsigned char* source = (unsigned char*) image->pixels;
+        unsigned char* target = data;
+
+        for (i = 0;  i < image->width * image->height;  i++, source += 4)
+        {
+            unsigned int alpha = source[3];
+
+            *target++ = (unsigned char) ((source[2] * alpha) / 255);
+            *target++ = (unsigned char) ((source[1] * alpha) / 255);
+            *target++ = (unsigned char) ((source[0] * alpha) / 255);
+            *target++ = (unsigned char) alpha;
+        }
     }
 
     cursor->wl.buffer =

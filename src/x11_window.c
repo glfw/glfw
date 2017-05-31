@@ -426,23 +426,25 @@ static char** parseUriList(char* text, int* count)
 
         (*count)++;
 
-        char* path = calloc(strlen(line) + 1, 1);
-        paths = realloc(paths, *count * sizeof(char*));
-        paths[*count - 1] = path;
-
-        while (*line)
         {
-            if (line[0] == '%' && line[1] && line[2])
-            {
-                const char digits[3] = { line[1], line[2], '\0' };
-                *path = strtol(digits, NULL, 16);
-                line += 2;
-            }
-            else
-                *path = *line;
+            char* path = calloc(strlen(line) + 1, 1);
+            paths = realloc(paths, *count * sizeof(char*));
+            paths[*count - 1] = path;
 
-            path++;
-            line++;
+            while (*line)
+            {
+                if (line[0] == '%' && line[1] && line[2])
+                {
+                    const char digits[3] = { line[1], line[2], '\0' };
+                    *path = strtol(digits, NULL, 16);
+                    line += 2;
+                }
+                else
+                    *path = *line;
+
+                path++;
+                line++;
+            }
         }
     }
 
@@ -1096,13 +1098,16 @@ static void processEvent(XEvent *event)
             else
             {
                 KeySym keysym;
+
                 XLookupString(&event->xkey, NULL, 0, &keysym, NULL);
 
                 _glfwInputKey(window, key, keycode, GLFW_PRESS, mods);
 
-                const long character = _glfwKeySym2Unicode(keysym);
-                if (character != -1)
-                    _glfwInputChar(window, character, mods, plain);
+                {
+                    long character = _glfwKeySym2Unicode(keysym);
+                    if (character != -1)
+                        _glfwInputChar(window, character, mods, plain);
+                }
             }
 
             return;
@@ -1249,17 +1254,20 @@ static void processEvent(XEvent *event)
 
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 {
+
                     if (_glfw.x11.disabledCursorWindow != window)
                         return;
                     if (_glfw.x11.xi.available)
                         return;
 
-                    const int dx = x - window->x11.lastCursorPosX;
-                    const int dy = y - window->x11.lastCursorPosY;
+                    {
+                        int dx = x - window->x11.lastCursorPosX;
+                        int dy = y - window->x11.lastCursorPosY;
 
-                    _glfwInputCursorPos(window,
-                                        window->virtualCursorPosX + dx,
-                                        window->virtualCursorPosY + dy);
+                        _glfwInputCursorPos(window,
+                                            window->virtualCursorPosX + dx,
+                                            window->virtualCursorPosY + dy);
+                    }
                 }
                 else
                     _glfwInputCursorPos(window, x, y);
@@ -1438,28 +1446,30 @@ static void processEvent(XEvent *event)
 
                 _glfwInputCursorPos(window, xpos, ypos);
 
-                XEvent reply;
-                memset(&reply, 0, sizeof(reply));
-
-                reply.type = ClientMessage;
-                reply.xclient.window = _glfw.x11.xdnd.source;
-                reply.xclient.message_type = _glfw.x11.XdndStatus;
-                reply.xclient.format = 32;
-                reply.xclient.data.l[0] = window->x11.handle;
-                reply.xclient.data.l[2] = 0; // Specify an empty rectangle
-                reply.xclient.data.l[3] = 0;
-
-                if (_glfw.x11.xdnd.format)
                 {
-                    // Reply that we are ready to copy the dragged data
-                    reply.xclient.data.l[1] = 1; // Accept with no rectangle
-                    if (_glfw.x11.xdnd.version >= 2)
-                        reply.xclient.data.l[4] = _glfw.x11.XdndActionCopy;
-                }
+                    XEvent reply;
+                    memset(&reply, 0, sizeof(reply));
 
-                XSendEvent(_glfw.x11.display, _glfw.x11.xdnd.source,
-                           False, NoEventMask, &reply);
-                XFlush(_glfw.x11.display);
+                    reply.type = ClientMessage;
+                    reply.xclient.window = _glfw.x11.xdnd.source;
+                    reply.xclient.message_type = _glfw.x11.XdndStatus;
+                    reply.xclient.format = 32;
+                    reply.xclient.data.l[0] = window->x11.handle;
+                    reply.xclient.data.l[2] = 0; // Specify an empty rectangle
+                    reply.xclient.data.l[3] = 0;
+
+                    if (_glfw.x11.xdnd.format)
+                    {
+                        // Reply that we are ready to copy the dragged data
+                        reply.xclient.data.l[1] = 1; // Accept with no rectangle
+                        if (_glfw.x11.xdnd.version >= 2)
+                            reply.xclient.data.l[4] = _glfw.x11.XdndActionCopy;
+                    }
+
+                    XSendEvent(_glfw.x11.display, _glfw.x11.xdnd.source,
+                               False, NoEventMask, &reply);
+                    XFlush(_glfw.x11.display);
+                }
             }
 
             return;
@@ -1571,22 +1581,25 @@ static void processEvent(XEvent *event)
             if (event->xproperty.atom == _glfw.x11.WM_STATE)
             {
                 const int state = getWindowState(window);
+
                 if (state != IconicState && state != NormalState)
                     return;
 
-                const GLFWbool iconified = (state == IconicState);
-                if (window->x11.iconified != iconified)
                 {
-                    if (window->monitor)
+                    GLFWbool iconified = (state == IconicState);
+                    if (window->x11.iconified != iconified)
                     {
-                        if (iconified)
-                            releaseMonitor(window);
-                        else
-                            acquireMonitor(window);
-                    }
+                        if (window->monitor)
+                        {
+                            if (iconified)
+                                releaseMonitor(window);
+                            else
+                                acquireMonitor(window);
+                        }
 
-                    window->x11.iconified = iconified;
-                    _glfwInputWindowIconify(window, iconified);
+                        window->x11.iconified = iconified;
+                        _glfwInputWindowIconify(window, iconified);
+                    }
                 }
             }
             else if (event->xproperty.atom == _glfw.x11.NET_WM_STATE)
@@ -1842,31 +1855,33 @@ void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
         for (i = 0;  i < count;  i++)
             longCount += 2 + images[i].width * images[i].height;
 
-        long* icon = calloc(longCount, sizeof(long));
-        long* target = icon;
-
-        for (i = 0;  i < count;  i++)
         {
-            *target++ = images[i].width;
-            *target++ = images[i].height;
+            long* icon = calloc(longCount, sizeof(long));
+            long* target = icon;
 
-            for (j = 0;  j < images[i].width * images[i].height;  j++)
+            for (i = 0;  i < count;  i++)
             {
-                *target++ = (images[i].pixels[j * 4 + 0] << 16) |
-                            (images[i].pixels[j * 4 + 1] <<  8) |
-                            (images[i].pixels[j * 4 + 2] <<  0) |
-                            (images[i].pixels[j * 4 + 3] << 24);
+                *target++ = images[i].width;
+                *target++ = images[i].height;
+
+                for (j = 0;  j < images[i].width * images[i].height;  j++)
+                {
+                    *target++ = (images[i].pixels[j * 4 + 0] << 16) |
+                                (images[i].pixels[j * 4 + 1] <<  8) |
+                                (images[i].pixels[j * 4 + 2] <<  0) |
+                                (images[i].pixels[j * 4 + 3] << 24);
+                }
             }
+
+            XChangeProperty(_glfw.x11.display, window->x11.handle,
+                            _glfw.x11.NET_WM_ICON,
+                            XA_CARDINAL, 32,
+                            PropModeReplace,
+                            (unsigned char*) icon,
+                            longCount);
+
+            free(icon);
         }
-
-        XChangeProperty(_glfw.x11.display, window->x11.handle,
-                        _glfw.x11.NET_WM_ICON,
-                        XA_CARDINAL, 32,
-                        PropModeReplace,
-                        (unsigned char*) icon,
-                        longCount);
-
-        free(icon);
     }
     else
     {
@@ -2333,12 +2348,15 @@ void _glfwPlatformPollEvents(void)
 #if defined(__linux__)
     _glfwDetectJoystickConnectionLinux();
 #endif
-    int count = XPending(_glfw.x11.display);
-    while (count--)
+
     {
-        XEvent event;
-        XNextEvent(_glfw.x11.display, &event);
-        processEvent(&event);
+        int count = XPending(_glfw.x11.display);
+        while (count--)
+        {
+            XEvent event;
+            XNextEvent(_glfw.x11.display, &event);
+            processEvent(&event);
+        }
     }
 
     window = _glfw.x11.disabledCursorWindow;
@@ -2476,6 +2494,7 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 
 const char* _glfwPlatformGetKeyName(int key, int scancode)
 {
+
     if (!_glfw.x11.xkb.available)
         return NULL;
 
@@ -2485,19 +2504,28 @@ const char* _glfwPlatformGetKeyName(int key, int scancode)
     if (!_glfwIsPrintable(_glfw.x11.keycodes[scancode]))
         return NULL;
 
-    const KeySym keysym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, 0, 0);
-    if (keysym == NoSymbol)
-        return NULL;
+    {
+        long ch;
 
-    const long ch = _glfwKeySym2Unicode(keysym);
-    if (ch == -1)
-        return NULL;
+        {
+            KeySym keysym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, 0, 0);
+            if (keysym == NoSymbol)
+                return NULL;
 
-    const size_t count = encodeUTF8(_glfw.x11.keyName, (unsigned int) ch);
-    if (count == 0)
-        return NULL;
+            ch = _glfwKeySym2Unicode(keysym);
+            if (ch == -1)
+                return NULL;
+        }
 
-    _glfw.x11.keyName[count] = '\0';
+        {
+            size_t count = encodeUTF8(_glfw.x11.keyName, (unsigned int) ch);
+            if (count == 0)
+                return NULL;
+
+            _glfw.x11.keyName[count] = '\0';
+        }
+    }
+
     return _glfw.x11.keyName;
 }
 
@@ -2664,6 +2692,7 @@ int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
 
     if (_glfw.vk.KHR_xcb_surface && _glfw.x11.x11xcb.handle)
     {
+
         PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR vkGetPhysicalDeviceXcbPresentationSupportKHR =
             (PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)
             vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceXcbPresentationSupportKHR");
@@ -2674,19 +2703,20 @@ int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
             return GLFW_FALSE;
         }
 
-        xcb_connection_t* connection =
-            _glfw.x11.x11xcb.XGetXCBConnection(_glfw.x11.display);
-        if (!connection)
         {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "X11: Failed to retrieve XCB connection");
-            return GLFW_FALSE;
-        }
+            xcb_connection_t* connection = _glfw.x11.x11xcb.XGetXCBConnection(_glfw.x11.display);
+            if (!connection)
+            {
+                _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "X11: Failed to retrieve XCB connection");
+                return GLFW_FALSE;
+            }
 
-        return vkGetPhysicalDeviceXcbPresentationSupportKHR(device,
-                                                            queuefamily,
-                                                            connection,
-                                                            visualID);
+            return vkGetPhysicalDeviceXcbPresentationSupportKHR(device,
+                                                                queuefamily,
+                                                                connection,
+                                                                visualID);
+            }
     }
     else
     {

@@ -88,19 +88,35 @@ static GLFWbool cursorInClientArea(_GLFWwindow* window)
     return [window->ns.view mouse:pos inRect:[window->ns.view frame]];
 }
 
+// Updates cursor visibility
+//
+static void setCursorVisibility(_GLFWwindow* window, BOOL makeVisible)
+{
+    static BOOL isCursorVisible = YES;
+
+    if (makeVisible && !isCursorVisible)
+        [NSCursor unhide];
+    else if (!makeVisible && isCursorVisible)
+        [NSCursor hide];
+
+    isCursorVisible = makeVisible;
+}
+
 // Updates the cursor image according to its cursor mode
 //
 static void updateCursorImage(_GLFWwindow* window)
 {
     if (window->cursorMode == GLFW_CURSOR_NORMAL)
     {
+        setCursorVisibility(window, YES);
+
         if (window->cursor)
             [(NSCursor*) window->cursor->ns.object set];
         else
             [[NSCursor arrowCursor] set];
     }
     else
-        [(NSCursor*) _glfw.ns.cursor set];
+        setCursorVisibility(window, NO);
 }
 
 // Transforms the specified y-coordinate between the CG display and NS screen
@@ -363,20 +379,6 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 @implementation GLFWContentView
 
-+ (void)initialize
-{
-    if (self == [GLFWContentView class])
-    {
-        if (_glfw.ns.cursor == nil)
-        {
-            NSImage* data = [[NSImage alloc] initWithSize:NSMakeSize(16, 16)];
-            _glfw.ns.cursor = [[NSCursor alloc] initWithImage:data
-                                                      hotSpot:NSZeroPoint];
-            [data release];
-        }
-    }
-}
-
 - (id)initWithGlfwWindow:(_GLFWwindow *)initWindow
 {
     self = [super init];
@@ -522,11 +524,17 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)mouseExited:(NSEvent *)event
 {
+    if (window->cursorMode == GLFW_CURSOR_HIDDEN)
+        setCursorVisibility(window, YES);
+
     _glfwInputCursorEnter(window, GLFW_FALSE);
 }
 
 - (void)mouseEntered:(NSEvent *)event
 {
+    if (window->cursorMode == GLFW_CURSOR_HIDDEN)
+        setCursorVisibility(window, NO);
+
     _glfwInputCursorEnter(window, GLFW_TRUE);
 }
 

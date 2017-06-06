@@ -76,8 +76,17 @@
 	border:2px solid desaturate(darken(@base-color, 10%), 20%);
 }
 
+.sm-dox,.sm-dox a,.sm-dox a:focus,.sm-dox a:active,.sm-dox a:hover,.sm-dox a.highlighted,.sm-dox ul a:hover {
+    background:none;
+    text-shadow:none;
+}
 
-#navrow1,#navrow2,#navrow3,#navrow4,.tablist a,.tablist a:visited,.tablist a:hover,.tablist li,.tablist li.current a,.memdoc,dl.reflist dd,div.toc li,.ah,span.lineno,span.lineno a,span.lineno a:hover,.note code,.pre code,.post code,.invariant code,.warning code,.attention code,.deprecated code,.bug code,.todo code,.test code,.doxtable code {
+.sm-dox ul a:hover {
+    background:@header-footer-link-color;
+    text-shadow:none;
+}
+
+#main-nav,#navrow1,#navrow2,#navrow3,#navrow4,.tablist a,.tablist a:visited,.tablist a:hover,.tablist li,.tablist li.current a,.memdoc,dl.reflist dd,div.toc li,.ah,span.lineno,span.lineno a,span.lineno a:hover,.note code,.pre code,.post code,.invariant code,.warning code,.attention code,.deprecated code,.bug code,.todo code,.test code,.doxtable code {
 	background:none;
 }
 
@@ -183,11 +192,27 @@ address.footer {
 	background:@header-footer-link-color;
 }
 
+#main-nav {
+	max-width:960px;
+	min-width:800px;
+	margin:0 auto;
+	font-size:13px;
+}
+
 #navrow1,#navrow2,#navrow3,#navrow4 {
 	max-width:920px;
 	min-width:800px;
 	margin:0 auto;
 	font-size:13px;
+}
+
+.memtitle {
+    display:none;
+}
+
+.memproto,.memname {
+    font-weight:bold;
+    text-shadow:none;
 }
 
 .tablist {

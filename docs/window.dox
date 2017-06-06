@@ -785,6 +785,10 @@ images[1] = load_icon("my_icon_small.png");
 glfwSetWindowIcon(window, 2, images);
 @endcode
 
+The image data is 32-bit, little-endian, non-premultiplied RGBA, i.e. eight bits
+per channel with the red channel first.  The pixels are arranged canonically as
+sequential rows, starting from the top-left corner.
+
 To revert to the default window icon, pass in an empty image array.
 
 @code

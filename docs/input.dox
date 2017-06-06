@@ -346,8 +346,8 @@ If cursor creation fails, `NULL` will be returned, so it is necessary to check
 the return value.
 
 The image data is 32-bit, little-endian, non-premultiplied RGBA, i.e. eight bits
-per channel.  The pixels are arranged canonically as sequential rows, starting
-from the top-left corner.
+per channel with the red channel first.  The pixels are arranged canonically as
+sequential rows, starting from the top-left corner.
 
 
 @subsubsection cursor_standard Standard cursor creation

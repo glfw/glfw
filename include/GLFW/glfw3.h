@@ -1459,6 +1459,9 @@ typedef struct GLFWgammaramp
 
 /*! @brief Image data.
  *
+ *  This describes a single 2D image.  See the documentation for each related
+ *  function what the expected pixel format is.
+ *
  *  @sa @ref cursor_custom
  *  @sa @ref window_icon
  *
@@ -2322,6 +2325,10 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *  candidate images, those of or closest to the sizes desired by the system are
  *  selected.  If no images are specified, the window reverts to its default
  *  icon.
+ *
+ *  The pixels are 32-bit, little-endian, non-premultiplied RGBA, i.e. eight
+ *  bits per channel with the red channel first.  They are arranged canonically
+ *  as packed sequential rows, starting from the top-left corner.
  *
  *  The desired image sizes varies depending on platform and system settings.
  *  The selected images will be rescaled as needed.  Good sizes include 16x16,
@@ -3726,8 +3733,8 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
  *  Any remaining cursors are destroyed by @ref glfwTerminate.
  *
  *  The pixels are 32-bit, little-endian, non-premultiplied RGBA, i.e. eight
- *  bits per channel.  They are arranged canonically as packed sequential rows,
- *  starting from the top-left corner.
+ *  bits per channel with the red channel first.  They are arranged canonically
+ *  as packed sequential rows, starting from the top-left corner.
  *
  *  The cursor hotspot is specified in pixels, relative to the upper-left corner
  *  of the cursor image.  Like all other coordinate systems in GLFW, the X-axis

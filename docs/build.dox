@@ -15,27 +15,27 @@ specific compiler of your chosen development environment.  The compilation
 and linking process should be explained in your C programming material and in
 the documentation for your development environment.
 
+
 @section build_include Including the GLFW header file
 
-In the source files of your application where you use OpenGL or GLFW, you should
-include the GLFW header file, i.e.:
+You should include the GLFW header in the source files where you use OpenGL or
+GLFW.
 
 @code
 #include <GLFW/glfw3.h>
 @endcode
 
-The GLFW header declares the GLFW API and by default also includes the OpenGL
-header of your development environment, which in turn defines all the constants,
-types and function prototypes of the OpenGL API.
+This header declares the GLFW API and by default also includes the OpenGL header
+from your development environment.  See below for how to control this.
 
-The GLFW header also defines everything necessary for your OpenGL header to
-function.  For example, under Windows you are normally required to include
-`windows.h` before the OpenGL header, which would pollute your code namespace
-with the entire Win32 API.
+The GLFW header also defines any platform-specific macros needed by your OpenGL
+header, so it can be included without needing any window system headers.
 
-Instead, the GLFW header takes care of this for you, not by including
-`windows.h`, but by duplicating only the very few necessary parts of it.  It
-does this only when needed, so if `windows.h` _is_ included, the GLFW header
+For example, under Windows you are normally required to include `windows.h`
+before the OpenGL header, which would bring in the whole Win32 API.  The GLFW
+header duplicates the small number of macros needed.
+
+It does this only when needed, so if `windows.h` _is_ included, the GLFW header
 does not try to redefine those symbols.  The reverse is not true, i.e.
 `windows.h` cannot cope if any of its symbols have already been defined.
 
@@ -49,8 +49,21 @@ In other words:
 
 If you are using an OpenGL extension loading library such as
 [glad](https://github.com/Dav1dde/glad), the extension loader header should
-either be included _before_ the GLFW one, or the @ref GLFW_INCLUDE_NONE macro
-(described below) should be defined.
+be included _before_ the GLFW one.
+
+@code
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+@endcode
+
+Alternatively the @ref GLFW_INCLUDE_NONE macro (described below) can be used to
+prevent the GLFW header from including the OpenGL header.
+
+@code
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+@endcode
 
 
 @subsection build_macros GLFW header option macros

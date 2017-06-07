@@ -262,6 +262,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.framebuffer.depthBits    = 24;
     _glfw.hints.framebuffer.stencilBits  = 8;
     _glfw.hints.framebuffer.doublebuffer = GLFW_TRUE;
+    _glfw.hints.framebuffer.graphicsSwitching = GLFW_FALSE;
 
     // The default is to select the highest available refresh rate
     _glfw.hints.refreshRate = GLFW_DONT_CARE;
@@ -314,6 +315,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             break;
         case GLFW_DOUBLEBUFFER:
             _glfw.hints.framebuffer.doublebuffer = value ? GLFW_TRUE : GLFW_FALSE;
+            break;
+        case GLFW_ALLOW_GRAPHICS_SWITCHING:
+            _glfw.hints.framebuffer.graphicsSwitching = value ? GLFW_TRUE : GLFW_FALSE;
             break;
         case GLFW_SAMPLES:
             _glfw.hints.framebuffer.samples = value;

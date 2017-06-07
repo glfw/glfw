@@ -344,6 +344,7 @@ struct _GLFWfbconfig
     int         samples;
     GLFWbool    sRGB;
     GLFWbool    doublebuffer;
+    GLFWbool    graphicsSwitching;
     uintptr_t   handle;
 };
 

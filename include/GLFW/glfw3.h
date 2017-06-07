@@ -833,6 +833,11 @@ extern "C" {
  *  Framebuffer double buffering [hint](@ref GLFW_DOUBLEBUFFER).
  */
 #define GLFW_DOUBLEBUFFER           0x00021010
+/*! @brief Graphics switching hint.
+ *
+ *  Graphics switching [hint](@ref GLFW_ALLOW_GRAPHICS_SWITCHING).
+ */
+#define GLFW_ALLOW_GRAPHICS_SWITCHING   0x00021011
 /*! @brief Context client API hint and attribute.
  *
  *  Context client API [hint](@ref GLFW_CLIENT_API_hint) and

@@ -182,6 +182,7 @@ information on what to include when reporting a bug.
 - [X11] Bugfix: Gamma ramp setting via RandR did not validate ramp size
 - [X11] Bugfix: Key name string encoding depended on current locale (#981,#983)
 - [Linux] Bugfix: Event processing did not detect joystick disconnection (#932)
+- [Linux] Bugfix: The joystick device path could be truncated (#1025)
 - [Cocoa] Added support for Vulkan window surface creation via
           [MoltenVK](https://moltengl.com/moltenvk/) (#870)
 - [Cocoa] Added support for loading a `MainMenu.nib` when available

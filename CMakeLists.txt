@@ -198,11 +198,13 @@ endif()
 # Find and add Unix math and time libraries
 #--------------------------------------------------------------------
 if (UNIX AND NOT APPLE)
-    find_library(RT_LIBRARY rt)
-    mark_as_advanced(RT_LIBRARY)
-    if (RT_LIBRARY)
-        list(APPEND glfw_LIBRARIES "${RT_LIBRARY}")
-        list(APPEND glfw_PKG_LIBS "-lrt")
+    if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
+	find_library(RT_LIBRARY rt)
+	mark_as_advanced(RT_LIBRARY)
+	if (RT_LIBRARY)
+            list(APPEND glfw_LIBRARIES "${RT_LIBRARY}")
+            list(APPEND glfw_PKG_LIBS "-lrt")
+	endif()
     endif()
 
     find_library(MATH_LIBRARY m)

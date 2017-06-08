@@ -418,6 +418,8 @@ static void loadWGLExtensions(void)
         extensionSupportedWGL("WGL_EXT_create_context_es2_profile");
     _glfw.wgl.ARB_create_context_robustness =
         extensionSupportedWGL("WGL_ARB_create_context_robustness");
+    _glfw.wgl.ARB_create_context_no_error =
+        extensionSupportedWGL("WGL_ARB_create_context_no_error");
     _glfw.wgl.EXT_swap_control =
         extensionSupportedWGL("WGL_EXT_swap_control");
     _glfw.wgl.EXT_colorspace =
@@ -579,8 +581,6 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
 
         if (ctxconfig->debug)
             flags |= WGL_CONTEXT_DEBUG_BIT_ARB;
-        if (ctxconfig->noerror)
-            flags |= GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR;
 
         if (ctxconfig->robustness)
         {
@@ -615,6 +615,14 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                     setWGLattrib(WGL_CONTEXT_RELEASE_BEHAVIOR_ARB,
                                  WGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB);
                 }
+            }
+        }
+
+        if (ctxconfig->noerror)
+        {
+            if (_glfw.wgl.ARB_create_context_no_error)
+            {
+                setWGLattrib(WGL_CONTEXT_OPENGL_NO_ERROR_ARB, GLFW_TRUE);
             }
         }
 
@@ -663,6 +671,11 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
             {
                 _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                                 "WGL: Driver does not support the requested OpenGL profile");
+            }
+            else if (error == (0xc0070000 | ERROR_INCOMPATIBLE_DEVICE_CONTEXTS_ARB))
+            {
+                _glfwInputError(GLFW_INVALID_VALUE,
+                                "WGL: The share context is not compatible with the requested context");
             }
             else
             {

@@ -200,6 +200,7 @@ information on what to include when reporting a bug.
 - [Cocoa] Bugfix: Full screen framebuffer was incorrectly sized for some video
                   modes (#682)
 - [WGL] Added support for `WGL_EXT_colorspace` for OpenGL ES contexts
+- [WGL] Added support for `WGL_ARB_create_context_no_error`
 - [EGL] Added support for `EGL_KHR_get_all_proc_addresses` (#871)
 - [EGL] Added support for `EGL_KHR_context_flush_control`
 - [EGL] Bugfix: The test for `EGL_RGB_BUFFER` was invalid

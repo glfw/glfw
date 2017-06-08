@@ -68,11 +68,13 @@
 #define WGL_CONTEXT_RELEASE_BEHAVIOR_ARB 0x2097
 #define WGL_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB 0
 #define WGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB 0x2098
+#define WGL_CONTEXT_OPENGL_NO_ERROR_ARB 0x31b3
 #define WGL_COLORSPACE_EXT 0x309d
 #define WGL_COLORSPACE_SRGB_EXT 0x3089
 
 #define ERROR_INVALID_VERSION_ARB 0x2095
 #define ERROR_INVALID_PROFILE_ARB 0x2096
+#define ERROR_INCOMPATIBLE_DEVICE_CONTEXTS_ARB 0x2054
 
 typedef BOOL (WINAPI * PFNWGLSWAPINTERVALEXTPROC)(int);
 typedef BOOL (WINAPI * PFNWGLGETPIXELFORMATATTRIBIVARBPROC)(HDC,int,int,UINT,const int*,int*);
@@ -142,6 +144,7 @@ typedef struct _GLFWlibraryWGL
     GLFWbool                            ARB_create_context_profile;
     GLFWbool                            EXT_create_context_es2_profile;
     GLFWbool                            ARB_create_context_robustness;
+    GLFWbool                            ARB_create_context_no_error;
     GLFWbool                            ARB_context_flush_control;
 
 } _GLFWlibraryWGL;

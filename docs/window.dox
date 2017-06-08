@@ -426,14 +426,6 @@ The no error mode for OpenGL and OpenGL ES is described in detail by the
 [GL_KHR_no_error](https://www.opengl.org/registry/specs/KHR/no_error.txt)
 extension.
 
-@note This hint is experimental in its current state.  There are currently
-(October 2015) no corresponding WGL or GLX extensions.  That makes this hint
-a [hard constraint](@ref window_hints_hard) for those backends, as creation will
-fail if unsupported context flags are requested.  Once the extensions are
-available, they will be required and creation of `GL_KHR_no_error` contexts may
-fail on early drivers where this flag is supported without those extensions
-being listed.
-
 
 @subsubsection window_hints_osx macOS specific hints
 

@@ -145,11 +145,17 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         }
     }
 
-    // Context robustness modes (GL_KHR_robustness) are not yet supported on
+    // Context robustness modes (GL_KHR_robustness) are not yet supported by
     // macOS but are not a hard constraint, so ignore and continue
 
     // Context release behaviors (GL_KHR_context_flush_control) are not yet
-    // supported on macOS but are not a hard constraint, so ignore and continue
+    // supported by macOS but are not a hard constraint, so ignore and continue
+
+    // Debug contexts (GL_KHR_debug) are not yet supported by macOS but are not
+    // a hard constraint, so ignore and continue
+
+    // No-error contexts (GL_KHR_no_error) are not yet supported by macOS but
+    // are not a hard constraint, so ignore and continue
 
 #define ADD_ATTR(x) { attributes[attributeCount++] = x; }
 #define ADD_ATTR2(x, y) { ADD_ATTR(x); ADD_ATTR(y); }

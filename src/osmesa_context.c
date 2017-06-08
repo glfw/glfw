@@ -184,11 +184,11 @@ void _glfwTerminateOSMesa(void)
     }
 }
 
-#define setAttrib(attribName, attribValue) \
+#define setAttrib(a, v) \
 { \
-    attribs[index++] = attribName; \
-    attribs[index++] = attribValue; \
-    assert((size_t) index < sizeof(attribs) / sizeof(attribs[0])); \
+    assert((size_t) (index + 1) < sizeof(attribs) / sizeof(attribs[0])); \
+    attribs[index++] = a; \
+    attribs[index++] = v; \
 }
 
 GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,

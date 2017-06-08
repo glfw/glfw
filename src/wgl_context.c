@@ -477,11 +477,11 @@ void _glfwTerminateWGL(void)
         FreeLibrary(_glfw.wgl.instance);
 }
 
-#define setWGLattrib(attribName, attribValue) \
+#define setAttrib(a, v) \
 { \
-    attribs[index++] = attribName; \
-    attribs[index++] = attribValue; \
-    assert((size_t) index < sizeof(attribs) / sizeof(attribs[0])); \
+    assert((size_t) (index + 1) < sizeof(attribs) / sizeof(attribs[0])); \
+    attribs[index++] = a; \
+    attribs[index++] = v; \
 }
 
 // Create the OpenGL or OpenGL ES context
@@ -588,13 +588,13 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
             {
                 if (ctxconfig->robustness == GLFW_NO_RESET_NOTIFICATION)
                 {
-                    setWGLattrib(WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
-                                 WGL_NO_RESET_NOTIFICATION_ARB);
+                    setAttrib(WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
+                              WGL_NO_RESET_NOTIFICATION_ARB);
                 }
                 else if (ctxconfig->robustness == GLFW_LOSE_CONTEXT_ON_RESET)
                 {
-                    setWGLattrib(WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
-                                 WGL_LOSE_CONTEXT_ON_RESET_ARB);
+                    setAttrib(WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
+                              WGL_LOSE_CONTEXT_ON_RESET_ARB);
                 }
 
                 flags |= WGL_CONTEXT_ROBUST_ACCESS_BIT_ARB;
@@ -607,13 +607,13 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
             {
                 if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_NONE)
                 {
-                    setWGLattrib(WGL_CONTEXT_RELEASE_BEHAVIOR_ARB,
-                                 WGL_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB);
+                    setAttrib(WGL_CONTEXT_RELEASE_BEHAVIOR_ARB,
+                              WGL_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB);
                 }
                 else if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_FLUSH)
                 {
-                    setWGLattrib(WGL_CONTEXT_RELEASE_BEHAVIOR_ARB,
-                                 WGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB);
+                    setAttrib(WGL_CONTEXT_RELEASE_BEHAVIOR_ARB,
+                              WGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB);
                 }
             }
         }
@@ -621,9 +621,7 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         if (ctxconfig->noerror)
         {
             if (_glfw.wgl.ARB_create_context_no_error)
-            {
-                setWGLattrib(WGL_CONTEXT_OPENGL_NO_ERROR_ARB, GLFW_TRUE);
-            }
+                setAttrib(WGL_CONTEXT_OPENGL_NO_ERROR_ARB, GLFW_TRUE);
         }
 
         // NOTE: Only request an explicitly versioned context when necessary, as
@@ -631,17 +629,17 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         //       highest version supported by the driver
         if (ctxconfig->major != 1 || ctxconfig->minor != 0)
         {
-            setWGLattrib(WGL_CONTEXT_MAJOR_VERSION_ARB, ctxconfig->major);
-            setWGLattrib(WGL_CONTEXT_MINOR_VERSION_ARB, ctxconfig->minor);
+            setAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, ctxconfig->major);
+            setAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, ctxconfig->minor);
         }
 
         if (flags)
-            setWGLattrib(WGL_CONTEXT_FLAGS_ARB, flags);
+            setAttrib(WGL_CONTEXT_FLAGS_ARB, flags);
 
         if (mask)
-            setWGLattrib(WGL_CONTEXT_PROFILE_MASK_ARB, mask);
+            setAttrib(WGL_CONTEXT_PROFILE_MASK_ARB, mask);
 
-        setWGLattrib(0, 0);
+        setAttrib(0, 0);
 
         window->context.wgl.handle =
             _glfw.wgl.CreateContextAttribsARB(window->context.wgl.dc,
@@ -725,7 +723,7 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
-#undef setWGLattrib
+#undef setAttrib
 
 
 //////////////////////////////////////////////////////////////////////////

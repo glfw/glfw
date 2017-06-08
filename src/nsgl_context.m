@@ -119,8 +119,6 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                 const _GLFWctxconfig* ctxconfig,
                                 const _GLFWfbconfig* fbconfig)
 {
-    unsigned int attributeCount = 0;
-
     if (ctxconfig->client == GLFW_OPENGL_ES_API)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
@@ -157,43 +155,47 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     // No-error contexts (GL_KHR_no_error) are not yet supported by macOS but
     // are not a hard constraint, so ignore and continue
 
-#define ADD_ATTR(x) { attributes[attributeCount++] = x; }
-#define ADD_ATTR2(x, y) { ADD_ATTR(x); ADD_ATTR(y); }
+#define addAttrib(a) \
+{ \
+    assert((size_t) index < sizeof(attribs) / sizeof(attribs[0])); \
+    attribs[index++] = a; \
+}
+#define setAttrib(a, v) { addAttrib(a); addAttrib(v); }
 
-    // Arbitrary array size here
-    NSOpenGLPixelFormatAttribute attributes[40];
+    NSOpenGLPixelFormatAttribute attribs[40];
+    int index = 0;
 
-    ADD_ATTR(NSOpenGLPFAAccelerated);
-    ADD_ATTR(NSOpenGLPFAClosestPolicy);
+    addAttrib(NSOpenGLPFAAccelerated);
+    addAttrib(NSOpenGLPFAClosestPolicy);
 
     if (ctxconfig->nsgl.offline)
     {
-        ADD_ATTR(NSOpenGLPFAAllowOfflineRenderers);
+        addAttrib(NSOpenGLPFAAllowOfflineRenderers);
         // NOTE: This replaces the NSSupportsAutomaticGraphicsSwitching key in
         //       Info.plist for unbundled applications
         // HACK: This assumes that NSOpenGLPixelFormat will remain
         //       a straightforward wrapper of its CGL counterpart
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 100800
-        ADD_ATTR(kCGLPFASupportsAutomaticGraphicsSwitching);
+        addAttrib(kCGLPFASupportsAutomaticGraphicsSwitching);
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
     }
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
     if (ctxconfig->major >= 4)
     {
-        ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion4_1Core);
+        setAttrib(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion4_1Core);
     }
     else
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
     if (ctxconfig->major >= 3)
     {
-        ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);
+        setAttrib(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);
     }
 
     if (ctxconfig->major <= 2)
     {
         if (fbconfig->auxBuffers != GLFW_DONT_CARE)
-            ADD_ATTR2(NSOpenGLPFAAuxBuffers, fbconfig->auxBuffers);
+            setAttrib(NSOpenGLPFAAuxBuffers, fbconfig->auxBuffers);
 
         if (fbconfig->accumRedBits != GLFW_DONT_CARE &&
             fbconfig->accumGreenBits != GLFW_DONT_CARE &&
@@ -205,7 +207,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                   fbconfig->accumBlueBits +
                                   fbconfig->accumAlphaBits;
 
-            ADD_ATTR2(NSOpenGLPFAAccumSize, accumBits);
+            setAttrib(NSOpenGLPFAAccumSize, accumBits);
         }
     }
 
@@ -223,17 +225,17 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         else if (colorBits < 15)
             colorBits = 15;
 
-        ADD_ATTR2(NSOpenGLPFAColorSize, colorBits);
+        setAttrib(NSOpenGLPFAColorSize, colorBits);
     }
 
     if (fbconfig->alphaBits != GLFW_DONT_CARE)
-        ADD_ATTR2(NSOpenGLPFAAlphaSize, fbconfig->alphaBits);
+        setAttrib(NSOpenGLPFAAlphaSize, fbconfig->alphaBits);
 
     if (fbconfig->depthBits != GLFW_DONT_CARE)
-        ADD_ATTR2(NSOpenGLPFADepthSize, fbconfig->depthBits);
+        setAttrib(NSOpenGLPFADepthSize, fbconfig->depthBits);
 
     if (fbconfig->stencilBits != GLFW_DONT_CARE)
-        ADD_ATTR2(NSOpenGLPFAStencilSize, fbconfig->stencilBits);
+        setAttrib(NSOpenGLPFAStencilSize, fbconfig->stencilBits);
 
     if (fbconfig->stereo)
     {
@@ -242,36 +244,36 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                         "NSGL: Stereo rendering is deprecated");
         return GLFW_FALSE;
 #else
-        ADD_ATTR(NSOpenGLPFAStereo);
+        addAttrib(NSOpenGLPFAStereo);
 #endif
     }
 
     if (fbconfig->doublebuffer)
-        ADD_ATTR(NSOpenGLPFADoubleBuffer);
+        addAttrib(NSOpenGLPFADoubleBuffer);
 
     if (fbconfig->samples != GLFW_DONT_CARE)
     {
         if (fbconfig->samples == 0)
         {
-            ADD_ATTR2(NSOpenGLPFASampleBuffers, 0);
+            setAttrib(NSOpenGLPFASampleBuffers, 0);
         }
         else
         {
-            ADD_ATTR2(NSOpenGLPFASampleBuffers, 1);
-            ADD_ATTR2(NSOpenGLPFASamples, fbconfig->samples);
+            setAttrib(NSOpenGLPFASampleBuffers, 1);
+            setAttrib(NSOpenGLPFASamples, fbconfig->samples);
         }
     }
 
     // NOTE: All NSOpenGLPixelFormats on the relevant cards support sRGB
     //       framebuffer, so there's no need (and no way) to request it
 
-    ADD_ATTR(0);
+    addAttrib(0);
 
-#undef ADD_ATTR
-#undef ADD_ATTR2
+#undef addAttrib
+#undef setAttrib
 
     window->context.nsgl.pixelFormat =
-        [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
+        [[NSOpenGLPixelFormat alloc] initWithAttributes:attribs];
     if (window->context.nsgl.pixelFormat == nil)
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,

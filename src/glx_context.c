@@ -397,6 +397,9 @@ GLFWbool _glfwInitGLX(void)
     if (extensionSupportedGLX("GLX_EXT_create_context_es2_profile"))
         _glfw.glx.EXT_create_context_es2_profile = GLFW_TRUE;
 
+    if (extensionSupportedGLX("GLX_ARB_create_context_no_error"))
+        _glfw.glx.ARB_create_context_no_error = GLFW_TRUE;
+
     if (extensionSupportedGLX("GLX_ARB_context_flush_control"))
         _glfw.glx.ARB_context_flush_control = GLFW_TRUE;
 
@@ -498,8 +501,6 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
 
         if (ctxconfig->debug)
             flags |= GLX_CONTEXT_DEBUG_BIT_ARB;
-        if (ctxconfig->noerror)
-            flags |= GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR;
 
         if (ctxconfig->robustness)
         {
@@ -534,6 +535,14 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
                     setGLXattrib(GLX_CONTEXT_RELEASE_BEHAVIOR_ARB,
                                  GLX_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB);
                 }
+            }
+        }
+
+        if (ctxconfig->noerror)
+        {
+            if (_glfw.glx.ARB_create_context_no_error)
+            {
+                setGLXattrib(GLX_CONTEXT_OPENGL_NO_ERROR_ARB, GLFW_TRUE);
             }
         }
 

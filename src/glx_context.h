@@ -64,6 +64,7 @@
 #define GLX_CONTEXT_RELEASE_BEHAVIOR_ARB 0x2097
 #define GLX_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB 0
 #define GLX_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB 0x2098
+#define GLX_CONTEXT_OPENGL_NO_ERROR_ARB 0x31b3
 
 typedef XID GLXWindow;
 typedef XID GLXDrawable;
@@ -162,6 +163,7 @@ typedef struct _GLFWlibraryGLX
     GLFWbool        ARB_create_context_profile;
     GLFWbool        ARB_create_context_robustness;
     GLFWbool        EXT_create_context_es2_profile;
+    GLFWbool        ARB_create_context_no_error;
     GLFWbool        ARB_context_flush_control;
 
 } _GLFWlibraryGLX;

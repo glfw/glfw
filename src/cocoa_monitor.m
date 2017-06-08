@@ -393,7 +393,7 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
         if (i < *count)
             continue;
 
-        (*count)++;
+        *count++;
         result[*count - 1] = mode;
     }
 

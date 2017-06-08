@@ -494,12 +494,6 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
                 mask |= EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR;
             else if (ctxconfig->profile == GLFW_OPENGL_COMPAT_PROFILE)
                 mask |= EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR;
-
-            if (_glfw.egl.KHR_create_context_no_error)
-            {
-                if (ctxconfig->noerror)
-                    flags |= EGL_CONTEXT_OPENGL_NO_ERROR_KHR;
-            }
         }
 
         if (ctxconfig->debug)
@@ -519,6 +513,12 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
             }
 
             flags |= EGL_CONTEXT_OPENGL_ROBUST_ACCESS_BIT_KHR;
+        }
+
+        if (ctxconfig->noerror)
+        {
+            if (_glfw.egl.KHR_create_context_no_error)
+                setEGLattrib(EGL_CONTEXT_OPENGL_NO_ERROR_KHR, GLFW_TRUE);
         }
 
         if (ctxconfig->major != 1 || ctxconfig->minor != 0)

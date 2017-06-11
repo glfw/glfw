@@ -1648,11 +1648,12 @@ GLFWAPI const char* glfwGetVersionString(void);
  *  This function returns and clears the [error code](@ref error) of the last
  *  error that occurred on the calling thread, and optionally a UTF-8 encoded
  *  human-readable description of it.  If no error has occurred since the last
- *  call, it returns @ref GLFW_NO_ERROR and the description pointer is set to
- *  `NULL`.
+ *  call, it returns @ref GLFW_NO_ERROR (zero) and the description pointer is
+ *  set to `NULL`.
  *
  *  @param[in] description Where to store the error description pointer, or `NULL`.
- *  @return The last error code for the calling thread, or @ref GLFW_NO_ERROR.
+ *  @return The last error code for the calling thread, or @ref GLFW_NO_ERROR
+ *  (zero).
  *
  *  @errors None.
  *

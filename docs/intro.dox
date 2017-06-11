@@ -84,7 +84,7 @@ buttons, for compatibility with earlier versions of GLFW that did not have @ref
 glfwGetJoystickHats.
 
 
-@subsubsection init_hints_osx macOS specific hints
+@subsubsection init_hints_osx macOS specific init hints
 
 @anchor GLFW_COCOA_CHDIR_RESOURCES
 __GLFW_COCOA_CHDIR_RESOURCES__ specifies whether to set the current directory to
@@ -143,8 +143,8 @@ if (code != GLFW_NO_ERROR)
     handle_error(code);
 @endcode
 
-If no error has occurred since the last call, @ref GLFW_NO_ERROR is returned.
-The error is cleared before the function returns.
+If no error has occurred since the last call, @ref GLFW_NO_ERROR (zero) is
+returned.  The error is cleared before the function returns.
 
 The error code indicates the general category of the error.  Some error codes,
 such as @ref GLFW_NOT_INITIALIZED has only a single meaning, whereas others like

@@ -427,7 +427,7 @@ The no error mode for OpenGL and OpenGL ES is described in detail by the
 extension.
 
 
-@subsubsection window_hints_osx macOS specific hints
+@subsubsection window_hints_osx macOS specific window hints
 
 @anchor GLFW_COCOA_RETINA_FRAMEBUFFER_hint
 __GLFW_COCOA_RETINA_FRAMEBUFFER__ specifies whether to use full resolution

@@ -399,12 +399,24 @@ int _glfwPlatformPollJoystick(int jid, int mode)
             break;
         }
 
+        if (e.type == EV_SYN)
+        {
+            if (e.code == SYN_DROPPED)
+                _glfw.linjs.dropped = GLFW_TRUE;
+            else if (e.code == SYN_REPORT)
+            {
+                _glfw.linjs.dropped = GLFW_FALSE;
+                pollAbsState(js);
+            }
+        }
+
+        if (_glfw.linjs.dropped)
+            continue;
+
         if (e.type == EV_KEY)
             handleKeyEvent(js, e.code, e.value);
         else if (e.type == EV_ABS)
             handleAbsEvent(js, e.code, e.value);
-        else if (e.type == EV_SYN && e.code == SYN_DROPPED)
-            pollAbsState(js);
     }
 
     return js->present;

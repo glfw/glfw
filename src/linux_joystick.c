@@ -287,15 +287,12 @@ GLFWbool _glfwInitJoysticksLinux(void)
             if (regexec(&_glfw.linjs.regex, entry->d_name, 1, &match, 0) != 0)
                 continue;
 
-            const size_t length = strlen(dirname) + strlen(entry->d_name) + 1;
-            char* path = calloc(length + 1, 1);
+            char path[PATH_MAX];
 
-            snprintf(path, length + 1, "%s/%s", dirname, entry->d_name);
+            snprintf(path, sizeof(path), "%s/%s", dirname, entry->d_name);
 
             if (openJoystickDevice(path))
                 count++;
-
-            free(path);
         }
 
         closedir(dir);
@@ -349,29 +346,29 @@ void _glfwDetectJoystickConnectionLinux(void)
         regmatch_t match;
         const struct inotify_event* e = (struct inotify_event*) (buffer + offset);
 
-        if (regexec(&_glfw.linjs.regex, e->name, 1, &match, 0) == 0)
+        offset += sizeof(struct inotify_event) + e->len;
+
+        if (regexec(&_glfw.linjs.regex, e->name, 1, &match, 0) != 0)
+            continue;
+
+        char path[PATH_MAX];
+        snprintf(path, sizeof(path), "/dev/input/%s", e->name);
+
+        if (e->mask & (IN_CREATE | IN_ATTRIB))
+            openJoystickDevice(path);
+        else if (e->mask & IN_DELETE)
         {
-            char path[20];
-            snprintf(path, sizeof(path), "/dev/input/%s", e->name);
+            int jid;
 
-            if (e->mask & (IN_CREATE | IN_ATTRIB))
-                openJoystickDevice(path);
-            else if (e->mask & IN_DELETE)
+            for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
             {
-                int jid;
-
-                for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+                if (strcmp(_glfw.joysticks[jid].linjs.path, path) == 0)
                 {
-                    if (strcmp(_glfw.joysticks[jid].linjs.path, path) == 0)
-                    {
-                        closeJoystick(_glfw.joysticks + jid);
-                        break;
-                    }
+                    closeJoystick(_glfw.joysticks + jid);
+                    break;
                 }
             }
         }
-
-        offset += sizeof(struct inotify_event) + e->len;
     }
 }
 

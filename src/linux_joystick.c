@@ -38,7 +38,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#define NUM_BITS(size)     ((size) / 8)
 #define TEST_BIT(bit, arr) (arr[(bit) / 8] & (1 << ((bit) % 8)))
 
 static void handleKeyEvent(_GLFWjoystick* js, int code, int value)
@@ -100,8 +99,11 @@ static void pollJoystick(_GLFWjoystick* js)
 {
     int i;
 
-    for (i = ABS_X;  i < ABS_MAX;  i++)
+    for (i = 0;  i < ABS_CNT;  i++)
     {
+        if (js->linjs.absMap[i] < 0)
+            continue;
+
         struct input_absinfo *info = &js->linjs.absInfo[i];
 
         if (ioctl(js->linjs.fd, EVIOCGABS(i), info) < 0)
@@ -117,9 +119,9 @@ static GLFWbool openJoystickDevice(const char* path)
 {
     int jid, fd, i;
     char name[256] = "";
-    char evBits[NUM_BITS(EV_MAX)] = {0};
-    char keyBits[NUM_BITS(KEY_MAX)] = {0};
-    char absBits[NUM_BITS(ABS_MAX)] = {0};
+    char evBits[(EV_CNT + 7) / 8] = {0};
+    char keyBits[(KEY_CNT + 7) / 8] = {0};
+    char absBits[(ABS_CNT + 7) / 8] = {0};
     int axisCount = 0;
     int buttonCount = 0;
     int hatCount = 0;
@@ -151,7 +153,7 @@ static GLFWbool openJoystickDevice(const char* path)
     if (ioctl(fd, EVIOCGNAME(sizeof(name)), name) < 0)
         strncpy(name, "Unknown", sizeof(name));
 
-    for (i = BTN_MISC;  i < KEY_MAX;  i++)
+    for (i = BTN_MISC;  i < KEY_CNT;  i++)
     {
         if (!TEST_BIT(i, keyBits))
             continue;
@@ -159,8 +161,9 @@ static GLFWbool openJoystickDevice(const char* path)
         linjs.keyMap[i] = buttonCount++;
     }
 
-    for (i = ABS_X;  i < ABS_MAX;  i++)
+    for (i = 0;  i < ABS_CNT;  i++)
     {
+        linjs.absMap[i] = -1;
         if (!TEST_BIT(i, absBits))
             continue;
 

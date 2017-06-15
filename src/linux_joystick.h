@@ -31,18 +31,16 @@
 #define _GLFW_PLATFORM_JOYSTICK_STATE         _GLFWjoystickLinux linjs
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE _GLFWlibraryLinux  linjs
 
-#define HATS_MAX ((ABS_HAT3Y - ABS_HAT0X) / 2)
-
 // Linux-specific joystick data
 //
 typedef struct _GLFWjoystickLinux
 {
     int                  fd;
     char                 path[PATH_MAX];
-    int                  keyMap[KEY_MAX];
-    int                  absMap[ABS_MAX];
-    struct input_absinfo absInfo[ABS_MAX];
-    int                  hats[HATS_MAX][2];
+    int                  keyMap[KEY_CNT];
+    int                  absMap[ABS_CNT];
+    struct input_absinfo absInfo[ABS_CNT];
+    int                  hats[4][2];
 } _GLFWjoystickLinux;
 
 // Linux-specific joystick API data

@@ -4234,8 +4234,6 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int jid, int* count);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_INVALID_ENUM and @ref GLFW_PLATFORM_ERROR.
  *
- *  @bug @linux Joystick hats are currently unimplemented.
- *
  *  @pointer_lifetime The returned array is allocated and freed by GLFW.  You
  *  should not free it yourself.  It is valid until the specified joystick is
  *  disconnected, this function is called again for that joystick or the library

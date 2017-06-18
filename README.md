@@ -127,6 +127,14 @@ information on what to include when reporting a bug.
 
 - Added `glfwGetError` function for querying the last error code and its
   description (#970)
+- Added `glfwUpdateGamepadMappings` function for importing gamepad mappings in
+  SDL\_GameControllerDB format (#900)
+- Added `glfwJoystickIsGamepad` function for querying whether a joystick has
+  a gamepad mapping (#900)
+- Added `glfwGetGamepadName` function for querying the name provided by the
+  gamepad mapping (#900)
+- Added `glfwGetGamepadState` function, `GLFW_GAMEPAD_*` and `GLFWgamepadstate`
+  for retrieving gamepad input state (#900)
 - Added `glfwRequestWindowAttention` function for requesting attention from the
   user (#732,#988)
 - Added `glfwGetKeyScancode` function that allows retrieving platform dependent

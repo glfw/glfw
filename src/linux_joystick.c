@@ -124,10 +124,12 @@ static GLFWbool openJoystickDevice(const char* path)
 {
     int jid, code;
     char name[256] = "";
+    char guid[33] = "";
     char evBits[(EV_CNT + 7) / 8] = {0};
     char keyBits[(KEY_CNT + 7) / 8] = {0};
     char absBits[(ABS_CNT + 7) / 8] = {0};
     int axisCount = 0, buttonCount = 0, hatCount = 0;
+    struct input_id id;
     _GLFWjoystickLinux linjs = {0};
     _GLFWjoystick* js = NULL;
 
@@ -145,10 +147,11 @@ static GLFWbool openJoystickDevice(const char* path)
 
     if (ioctl(linjs.fd, EVIOCGBIT(0, sizeof(evBits)), evBits) < 0 ||
         ioctl(linjs.fd, EVIOCGBIT(EV_KEY, sizeof(keyBits)), keyBits) < 0 ||
-        ioctl(linjs.fd, EVIOCGBIT(EV_ABS, sizeof(absBits)), absBits) < 0)
+        ioctl(linjs.fd, EVIOCGBIT(EV_ABS, sizeof(absBits)), absBits) < 0 ||
+        ioctl(linjs.fd, EVIOCGID, &id) < 0)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Linux: Failed to query input device elements: %s",
+                        "Linux: Failed to query input device: %s",
                         strerror(errno));
         close(linjs.fd);
         return GLFW_FALSE;
@@ -163,6 +166,24 @@ static GLFWbool openJoystickDevice(const char* path)
 
     if (ioctl(linjs.fd, EVIOCGNAME(sizeof(name)), name) < 0)
         strncpy(name, "Unknown", sizeof(name));
+
+    // Generate a joystick GUID that matches the SDL 2.0.5+ one
+    if (id.vendor && id.product && id.version)
+    {
+        sprintf(guid, "%02x%02x0000%02x%02x0000%02x%02x0000%02x%02x0000",
+                id.bustype & 0xff, id.bustype >> 8,
+                id.vendor & 0xff,  id.vendor >> 8,
+                id.product & 0xff, id.product >> 8,
+                id.version & 0xff, id.version >> 8);
+    }
+    else
+    {
+        sprintf(guid, "%02x%02x0000%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x00",
+                id.bustype & 0xff, id.bustype >> 8,
+                name[0], name[1], name[2], name[3],
+                name[4], name[5], name[6], name[7],
+                name[8], name[9], name[10]);
+    }
 
     for (code = BTN_MISC;  code < KEY_CNT;  code++)
     {
@@ -196,7 +217,7 @@ static GLFWbool openJoystickDevice(const char* path)
         }
     }
 
-    js = _glfwAllocJoystick(name, axisCount, buttonCount, hatCount);
+    js = _glfwAllocJoystick(name, guid, axisCount, buttonCount, hatCount);
     if (!js)
     {
         close(linjs.fd);
@@ -417,5 +438,9 @@ int _glfwPlatformPollJoystick(int jid, int mode)
     }
 
     return js->present;
+}
+
+void _glfwPlatformUpdateGamepadGUID(char* guid)
+{
 }
 

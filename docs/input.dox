@@ -653,6 +653,143 @@ called by joystick functions.  The function will then return whatever it
 returns for a disconnected joystick.
 
 
+@subsection gamepad Gamepad input
+
+The joystick functions provide unlabeled axes, buttons and hats, with no
+indication of where they are located on the device.  Their order may also vary
+between platforms even with the same device.
+
+To solve this problem the SDL community crowdsourced the
+[SDL_GameControllerDB](https://github.com/gabomdq/SDL_GameControllerDB) project,
+a database of mappings from many different devices to an Xbox-like gamepad.
+
+GLFW supports this mapping format and contains a copy of the mappings
+available at the time of release.  See @ref gamepad_mapping for how to update
+this at runtime.  Mappings will be assigned to joysticks automatically any time
+a joystick is connected or the mappings are updated.
+
+You can check whether a joystick is both present and has a gamepad mapping with
+@ref glfwJoystickIsGamepad.
+
+@code
+if (glfwJoystickIsGamepad(GLFW_JOYSTICK_2))
+{
+    // Use as gamepad
+}
+@endcode
+
+If you are only interested in gamepad input you can use this function instead of
+@ref glfwJoystickPresent.
+
+You can query the human-readable name provided by the gamepad mapping with @ref
+glfwGetGamepadName.  This may or may not be the same as the
+[joystick name](@ref joystick_name).
+
+@code
+const char* name = glfwGetGamepadName(GLFW_JOYSTICK_7);
+@endcode
+
+To retrieve the gamepad state of a joystick, call @ref glfwGetGamepadState.
+
+@code
+GLFWgamepadstate state;
+
+if (glfwGetGamepadState(GLFW_JOYSTICK_3, &state))
+{
+    if (state.buttons[GLFW_GAMEPAD_BUTTON_A])
+    {
+        input_jump();
+    }
+
+    input_speed(state.axes[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER]);
+}
+@endcode
+
+The @ref GLFWgamepadstate struct has two arrays; one for button states and one
+for axis states.  The values for each button and axis are the same as for the
+@ref glfwGetJoystickButtons and @ref glfwGetJoystickAxes functions, i.e.
+`GLFW_PRESS` or `GLFW_RELEASE` for buttons and -1.0 to 1.0 inclusive for axes.
+
+The sizes of the arrays and the positions within each array are fixed.
+
+The [button indices](@ref gamepad_buttons) are `GLFW_GAMEPAD_BUTTON_A`,
+`GLFW_GAMEPAD_BUTTON_B`, `GLFW_GAMEPAD_BUTTON_X`, `GLFW_GAMEPAD_BUTTON_Y`,
+`GLFW_GAMEPAD_BUTTON_LEFT_BUMPER`, `GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER`,
+`GLFW_GAMEPAD_BUTTON_BACK`, `GLFW_GAMEPAD_BUTTON_START`,
+`GLFW_GAMEPAD_BUTTON_GUIDE`, `GLFW_GAMEPAD_BUTTON_LEFT_THUMB`,
+`GLFW_GAMEPAD_BUTTON_RIGHT_THUMB`, `GLFW_GAMEPAD_BUTTON_DPAD_UP`,
+`GLFW_GAMEPAD_BUTTON_DPAD_RIGHT`, `GLFW_GAMEPAD_BUTTON_DPAD_DOWN` and
+`GLFW_GAMEPAD_BUTTON_DPAD_LEFT`.
+
+For those who prefer, there are also the `GLFW_GAMEPAD_BUTTON_CROSS`,
+`GLFW_GAMEPAD_BUTTON_CIRCLE`, `GLFW_GAMEPAD_BUTTON_SQUARE` and
+`GLFW_GAMEPAD_BUTTON_TRIANGLE` aliases for the A, B, X and Y button indices.
+
+The [axis indices](@ref gamepad_axes) are `GLFW_GAMEPAD_AXIS_LEFT_X`,
+`GLFW_GAMEPAD_AXIS_LEFT_Y`, `GLFW_GAMEPAD_AXIS_RIGHT_X`,
+`GLFW_GAMEPAD_AXIS_RIGHT_Y`, `GLFW_GAMEPAD_AXIS_LEFT_TRIGGER` and
+`GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER`.
+
+The `GLFW_GAMEPAD_BUTTON_LAST` and `GLFW_GAMEPAD_AXIS_LAST` constants equal
+the largest available index for each array.
+
+
+@subsection gamepad_mapping Gamepad mappings
+
+Newer ones can be added with @ref glfwUpdateGamepadMappings.  This function
+supports everything from single lines up to the entire unmodified contents of
+the `gamecontrollerdb.txt` file.
+
+@code
+const char* mappings = load_file_contents("gamecontrollerdb.txt");
+
+glfwUpdateGamepadMappings(mappings);
+@endcode
+
+Below is a description of the mapping format.  Please keep in mind that __this
+description is not authoritative__.  The format is defined by the SDL and
+SDL_GameControllerDB projects and their documentation and code takes precedence.
+
+Each mapping is a single line of comma-separated values describing the GUID,
+name and layout of the gamepad.  Lines that do not begin with a hexadecimal
+digit are ignored.
+
+The first value is always the gamepad GUID, a 32 character long hexadecimal
+string that typically identifies its make, model, revision and the type of
+connection to the computer.  When this information is not available, the GUID is
+generated using the gamepad name.  GLFW uses the SDL 2.0.5+ GUID format but can
+convert from the older formats.
+
+The second value is always the human-readable name of the gamepad.
+
+All subsequent values are in the form `<field>:<value>` and describe the layout
+of the mapping.  These fields may not all be present and may occur in any order.
+
+The button fields are `a`, `b`, `c`, `d`, `back`, `start`, `guide`, `dpup`,
+`dpright`, `dpdown`, `dpleft`, `leftshoulder`, `rightshoulder`, `leftstick` and
+`rightstick`.
+
+The axis fields are `leftx`, `lefty`, `rightx`, `righty`, `lefttrigger` and
+`righttrigger`.
+
+The value of an axis or button field can be a joystick button, a joystick axis,
+a hat bitmask or empty.  Joystick buttons are specified as `bN`, for example
+`b2` for the third button.  Joystick axes are specified as `aN`, for example
+`a7` for the eighth button.  Joystick hat bit masks are specified as `hN.N`, for
+example `h0.8` for left on the first hat.  More than one bit may be set in the
+mask.
+
+The hat bit mask match the [hat states](@ref hat_state) in the joystick
+functions.
+
+There is also the special `platform` field that specifies which platform the
+mapping is valid for.  Possible values are `Windows`, `Mac OS X` and `Linux`.
+Mappings without this field will always be considered valid.
+
+@note GLFW does not yet support the range and inversion modifiers `+`, `-` and
+`~`.
+
+
 @section time Time input
 
 GLFW provides high-resolution time input, in seconds, with @ref glfwGetTime.

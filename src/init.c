@@ -26,6 +26,7 @@
 //========================================================================
 
 #include "internal.h"
+#include "mappings.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -110,6 +111,10 @@ static void terminate(void)
     free(_glfw.monitors);
     _glfw.monitors = NULL;
     _glfw.monitorCount = 0;
+
+    free(_glfw.mappings);
+    _glfw.mappings = NULL;
+    _glfw.mappingCount = 0;
 
     _glfwTerminateVulkan();
     _glfwPlatformTerminate();
@@ -209,8 +214,8 @@ GLFWAPI int glfwInit(void)
     _glfw.initialized = GLFW_TRUE;
     _glfw.timer.offset = _glfwPlatformGetTimerValue();
 
-    // Not all window hints have zero as their default value
     glfwDefaultWindowHints();
+    glfwUpdateGamepadMappings(_glfwDefaultMappings);
 
     return GLFW_TRUE;
 }

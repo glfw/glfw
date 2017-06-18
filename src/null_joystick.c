@@ -36,3 +36,7 @@ int _glfwPlatformPollJoystick(int jid, int mode)
     return GLFW_FALSE;
 }
 
+void _glfwPlatformUpdateGamepadGUID(char* guid)
+{
+}
+

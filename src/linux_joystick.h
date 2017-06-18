@@ -31,6 +31,8 @@
 #define _GLFW_PLATFORM_JOYSTICK_STATE         _GLFWjoystickLinux linjs
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE _GLFWlibraryLinux  linjs
 
+#define _GLFW_PLATFORM_MAPPING_NAME "Linux"
+
 // Linux-specific joystick data
 //
 typedef struct _GLFWjoystickLinux

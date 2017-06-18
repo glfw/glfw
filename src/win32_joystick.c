@@ -27,6 +27,7 @@
 
 #include "internal.h"
 
+#include <stdio.h>
 #include <math.h>
 
 #define _GLFW_TYPE_AXIS     0
@@ -155,9 +156,9 @@ static const char* getDeviceDescription(const XINPUT_CAPABILITIES* xic)
         case XINPUT_DEVSUBTYPE_GAMEPAD:
         {
             if (xic->Flags & XINPUT_CAPS_WIRELESS)
-                return "Wireless Xbox 360 Controller";
+                return "Wireless Xbox Controller";
             else
-                return "Xbox 360 Controller";
+                return "Xbox Controller";
         }
     }
 
@@ -257,7 +258,7 @@ static void closeJoystick(_GLFWjoystick* js)
 }
 
 // DirectInput device object enumeration callback
-// Insights gleaned from SDL2
+// Insights gleaned from SDL
 //
 static BOOL CALLBACK deviceObjectCallback(const DIDEVICEOBJECTINSTANCEW* doi,
                                           void* user)
@@ -339,6 +340,7 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
     IDirectInputDevice8* device;
     _GLFWobjenumWin32 data;
     _GLFWjoystick* js;
+    char guid[33];
     char name[256];
 
     for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
@@ -434,7 +436,24 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
         return DIENUM_STOP;
     }
 
-    js = _glfwAllocJoystick(name,
+    // Generate a joystick GUID that matches the SDL 2.0.5+ one
+    if (memcmp(&di->guidProduct.Data4[2], "PIDVID", 6) == 0)
+    {
+        sprintf(guid, "03000000%02x%02x0000%02x%02x000000000000",
+                (uint8_t) di->guidProduct.Data1,
+                (uint8_t) (di->guidProduct.Data1 >> 8),
+                (uint8_t) (di->guidProduct.Data1 >> 16),
+                (uint8_t) (di->guidProduct.Data1 >> 24));
+    }
+    else
+    {
+        sprintf(guid, "05000000%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x00",
+                name[0], name[1], name[2], name[3],
+                name[4], name[5], name[6], name[7],
+                name[8], name[9], name[10]);
+    }
+
+    js = _glfwAllocJoystick(name, guid,
                             data.axisCount + data.sliderCount,
                             data.buttonCount,
                             data.povCount);
@@ -503,6 +522,7 @@ void _glfwDetectJoystickConnectionWin32(void)
         for (index = 0;  index < XUSER_MAX_COUNT;  index++)
         {
             int jid;
+            char guid[33];
             XINPUT_CAPABILITIES xic;
             _GLFWjoystick* js;
 
@@ -522,7 +542,11 @@ void _glfwDetectJoystickConnectionWin32(void)
             if (XInputGetCapabilities(index, 0, &xic) != ERROR_SUCCESS)
                 continue;
 
-            js = _glfwAllocJoystick(getDeviceDescription(&xic), 6, 10, 1);
+            // Generate a joystick GUID that matches the SDL 2.0.5+ one
+            sprintf(guid, "78696e707574%02x000000000000000000",
+                    xic.SubType & 0xff);
+
+            js = _glfwAllocJoystick(getDeviceDescription(&xic), guid, 6, 10, 1);
             if (!js)
                 continue;
 
@@ -725,5 +749,16 @@ int _glfwPlatformPollJoystick(int jid, int mode)
     }
 
     return GLFW_TRUE;
+}
+
+void _glfwPlatformUpdateGamepadGUID(char* guid)
+{
+    if (strcmp(guid + 20, "504944564944") == 0)
+    {
+        char original[33];
+        strcpy(original, guid);
+        sprintf(guid, "03000000%.4s0000%.4s000000000000",
+                original, original + 4);
+    }
 }
 

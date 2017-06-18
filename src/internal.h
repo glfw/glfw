@@ -52,6 +52,7 @@
 #define _GLFW_POLL_PRESENCE     0
 #define _GLFW_POLL_AXES         1
 #define _GLFW_POLL_BUTTONS      2
+#define _GLFW_POLL_ALL          (_GLFW_POLL_AXES | _GLFW_POLL_BUTTONS)
 
 typedef int GLFWbool;
 
@@ -65,6 +66,8 @@ typedef struct _GLFWwindow      _GLFWwindow;
 typedef struct _GLFWlibrary     _GLFWlibrary;
 typedef struct _GLFWmonitor     _GLFWmonitor;
 typedef struct _GLFWcursor      _GLFWcursor;
+typedef struct _GLFWmapelement  _GLFWmapelement;
+typedef struct _GLFWmapping     _GLFWmapping;
 typedef struct _GLFWjoystick    _GLFWjoystick;
 typedef struct _GLFWtls         _GLFWtls;
 typedef struct _GLFWmutex       _GLFWmutex;
@@ -474,6 +477,24 @@ struct _GLFWcursor
     _GLFW_PLATFORM_CURSOR_STATE;
 };
 
+/*! @brief Gamepad mapping element structure
+ */
+struct _GLFWmapelement
+{
+    uint8_t         type;
+    uint8_t         value;
+};
+
+/*! @brief Gamepad mapping structure
+ */
+struct _GLFWmapping
+{
+    char            name[128];
+    char            guid[33];
+    _GLFWmapelement buttons[15];
+    _GLFWmapelement axes[6];
+};
+
 /*! @brief Joystick structure
  */
 struct _GLFWjoystick
@@ -486,6 +507,8 @@ struct _GLFWjoystick
     unsigned char*  hats;
     int             hatCount;
     char*           name;
+    char            guid[33];
+    _GLFWmapping*   mapping;
 
     // This is defined in the joystick API's joystick.h
     _GLFW_PLATFORM_JOYSTICK_STATE;
@@ -529,6 +552,8 @@ struct _GLFWlibrary
     int                 monitorCount;
 
     _GLFWjoystick       joysticks[GLFW_JOYSTICK_LAST + 1];
+    _GLFWmapping*       mappings;
+    int                 mappingCount;
 
     _GLFWtls            errorSlot;
     _GLFWtls            contextSlot;
@@ -621,6 +646,7 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string);
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window);
 
 int _glfwPlatformPollJoystick(int jid, int mode);
+void _glfwPlatformUpdateGamepadGUID(char* guid);
 
 uint64_t _glfwPlatformGetTimerValue(void);
 uint64_t _glfwPlatformGetTimerFrequency(void);
@@ -956,7 +982,11 @@ void _glfwFreeMonitor(_GLFWmonitor* monitor);
 /*! @brief Returns an available joystick object with arrays and name allocated.
  *  @ingroup utility
   */
-_GLFWjoystick* _glfwAllocJoystick(const char* name, int axisCount, int buttonCount, int hatCount);
+_GLFWjoystick* _glfwAllocJoystick(const char* name,
+                                  const char* guid,
+                                  int axisCount,
+                                  int buttonCount,
+                                  int hatCount);
 
 /*! @brief Frees arrays and name and flags the joystick object as unused.
  *  @ingroup utility

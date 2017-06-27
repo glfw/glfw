@@ -225,7 +225,7 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* handle, int mode)
         case GLFW_STICKY_MOUSE_BUTTONS:
             return window->stickyMouseButtons;
         default:
-            _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode %i", mode);
+            _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode 0x%08X", mode);
             return 0;
     }
 }
@@ -246,7 +246,7 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
                 value != GLFW_CURSOR_DISABLED)
             {
                 _glfwInputError(GLFW_INVALID_ENUM,
-                                "Invalid cursor mode %i",
+                                "Invalid cursor mode 0x%08X",
                                 value);
                 return;
             }
@@ -309,7 +309,7 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
         }
     }
 
-    _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode %i", mode);
+    _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode 0x%08X", mode);
 }
 
 GLFWAPI const char* glfwGetKeyName(int key, int scancode)
@@ -466,7 +466,7 @@ GLFWAPI GLFWcursor* glfwCreateStandardCursor(int shape)
         shape != GLFW_HRESIZE_CURSOR &&
         shape != GLFW_VRESIZE_CURSOR)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid standard cursor %i", shape);
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid standard cursor 0x%08X", shape);
         return NULL;
     }
 

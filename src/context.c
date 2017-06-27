@@ -45,7 +45,7 @@ GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
         ctxconfig->source != GLFW_OSMESA_CONTEXT_API)
     {
         _glfwInputError(GLFW_INVALID_ENUM,
-                        "Invalid context creation API %i",
+                        "Invalid context creation API 0x%08X",
                         ctxconfig->source);
         return GLFW_FALSE;
     }
@@ -55,7 +55,7 @@ GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
         ctxconfig->client != GLFW_OPENGL_ES_API)
     {
         _glfwInputError(GLFW_INVALID_ENUM,
-                        "Invalid client API %i",
+                        "Invalid client API 0x%08X",
                         ctxconfig->client);
         return GLFW_FALSE;
     }
@@ -85,7 +85,7 @@ GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
                 ctxconfig->profile != GLFW_OPENGL_COMPAT_PROFILE)
             {
                 _glfwInputError(GLFW_INVALID_ENUM,
-                                "Invalid OpenGL profile %i",
+                                "Invalid OpenGL profile 0x%08X",
                                 ctxconfig->profile);
                 return GLFW_FALSE;
             }
@@ -134,7 +134,7 @@ GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
             ctxconfig->robustness != GLFW_LOSE_CONTEXT_ON_RESET)
         {
             _glfwInputError(GLFW_INVALID_ENUM,
-                            "Invalid context robustness mode %i",
+                            "Invalid context robustness mode 0x%08X",
                             ctxconfig->robustness);
             return GLFW_FALSE;
         }
@@ -146,7 +146,7 @@ GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
             ctxconfig->release != GLFW_RELEASE_BEHAVIOR_FLUSH)
         {
             _glfwInputError(GLFW_INVALID_ENUM,
-                            "Invalid context release behavior %i",
+                            "Invalid context release behavior 0x%08X",
                             ctxconfig->release);
             return GLFW_FALSE;
         }

@@ -388,7 +388,7 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             _glfw.hints.refreshRate = value;
             break;
         default:
-            _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint %i", hint);
+            _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint 0x%08X", hint);
             break;
     }
 }
@@ -757,7 +757,7 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->context.noerror;
     }
 
-    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute %i", attrib);
+    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute 0x%08X", attrib);
     return 0;
 }
 
@@ -804,7 +804,7 @@ GLFWAPI void glfwSetWindowAttrib(GLFWwindow* handle, int attrib, int value)
             return;
     }
 
-    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute %i", attrib);
+    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute 0x%08X", attrib);
 }
 
 GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* handle)

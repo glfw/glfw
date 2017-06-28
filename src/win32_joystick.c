@@ -653,7 +653,7 @@ int _glfwPlatformPollJoystick(int jid, int mode)
         DWORD result;
         XINPUT_STATE xis;
         float axes[6] = { 0.f, 0.f, 0.f, 0.f, -1.f, -1.f };
-        const WORD buttons[14] =
+        const WORD buttons[10] =
         {
             XINPUT_GAMEPAD_A,
             XINPUT_GAMEPAD_B,

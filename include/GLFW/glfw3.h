@@ -209,9 +209,6 @@ extern "C" {
  #endif /*__APPLE__*/
 
 #endif /* OpenGL and OpenGL ES headers */
-#ifndef GLAPIENTRY
- #define GLAPIENTRY APIENTRY
-#endif /* GLAPIENT
 
 #if defined(GLFW_INCLUDE_VULKAN)
 
@@ -4907,6 +4904,13 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window
 #ifdef GLFW_CALLBACK_DEFINED
  #undef CALLBACK
  #undef GLFW_CALLBACK_DEFINED
+#endif
+
+/* Some OpenGL related headers need GLAPIENTRY, but it is unconditionally
+ * defined by some gl.h variants (OpenBSD) so define it after if needed.
+ */
+#ifndef GLAPIENTRY
+ #define GLAPIENTRY APIENTRY
 #endif
 
 /* -------------------- END SYSTEM/COMPILER SPECIFIC --------------------- */

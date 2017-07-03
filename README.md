@@ -248,6 +248,7 @@ skills.
  - blanco
  - Kyle Brenneman
  - Martin Capitanio
+ - David Carlier
  - Chi-kwan Chan
  - Lambert Clara
  - Andrew Corrigan

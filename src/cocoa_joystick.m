@@ -196,39 +196,31 @@ static void matchCallback(void* context,
         }
 
         CFMutableArrayRef target = NULL;
+
         const uint32_t usage = IOHIDElementGetUsage(native);
-
-        switch (IOHIDElementGetUsagePage(native))
+        const uint32_t page = IOHIDElementGetUsagePage(native);
+        if (page == kHIDPage_GenericDesktop)
         {
-            case kHIDPage_GenericDesktop:
+            switch (usage)
             {
-                switch (usage)
-                {
-                    case kHIDUsage_GD_X:
-                    case kHIDUsage_GD_Y:
-                    case kHIDUsage_GD_Z:
-                    case kHIDUsage_GD_Rx:
-                    case kHIDUsage_GD_Ry:
-                    case kHIDUsage_GD_Rz:
-                    case kHIDUsage_GD_Slider:
-                    case kHIDUsage_GD_Dial:
-                    case kHIDUsage_GD_Wheel:
-                        target = axes;
-                        break;
-                    case kHIDUsage_GD_Hatswitch:
-                        target = hats;
-                        break;
-                }
-
-                break;
+                case kHIDUsage_GD_X:
+                case kHIDUsage_GD_Y:
+                case kHIDUsage_GD_Z:
+                case kHIDUsage_GD_Rx:
+                case kHIDUsage_GD_Ry:
+                case kHIDUsage_GD_Rz:
+                case kHIDUsage_GD_Slider:
+                case kHIDUsage_GD_Dial:
+                case kHIDUsage_GD_Wheel:
+                    target = axes;
+                    break;
+                case kHIDUsage_GD_Hatswitch:
+                    target = hats;
+                    break;
             }
-
-            case kHIDPage_Button:
-                target = buttons;
-                break;
-            default:
-                break;
         }
+        else if (page == kHIDPage_Button)
+            target = buttons;
 
         if (target)
         {

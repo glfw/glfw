@@ -110,7 +110,7 @@ static void closeJoystick(_GLFWjoystick* js)
     CFRelease(js->ns.hats);
 
     _glfwFreeJoystick(js);
-    _glfwInputJoystick(_GLFW_JOYSTICK_ID(js), GLFW_DISCONNECTED);
+    _glfwInputJoystick(js, GLFW_DISCONNECTED);
 }
 
 // Callback for user-initiated joystick addition
@@ -261,7 +261,7 @@ static void matchCallback(void* context,
     js->ns.buttons = buttons;
     js->ns.hats    = hats;
 
-    _glfwInputJoystick(_GLFW_JOYSTICK_ID(js), GLFW_CONNECTED);
+    _glfwInputJoystick(js, GLFW_CONNECTED);
 }
 
 // Callback for user-initiated joystick removal
@@ -384,10 +384,8 @@ void _glfwTerminateJoysticksNS(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwPlatformPollJoystick(int jid, int mode)
+int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
 {
-    _GLFWjoystick* js = _glfw.joysticks + jid;
-
     if (mode & _GLFW_POLL_AXES)
     {
         CFIndex i;
@@ -406,11 +404,11 @@ int _glfwPlatformPollJoystick(int jid, int mode)
 
             const long delta = axis->maximum - axis->minimum;
             if (delta == 0)
-                _glfwInputJoystickAxis(jid, i, 0.f);
+                _glfwInputJoystickAxis(js, i, 0.f);
             else
             {
                 const float value = (2.f * (raw - axis->minimum) / delta) - 1.f;
-                _glfwInputJoystickAxis(jid, i, value);
+                _glfwInputJoystickAxis(js, i, value);
             }
         }
     }
@@ -424,7 +422,7 @@ int _glfwPlatformPollJoystick(int jid, int mode)
             _GLFWjoyelementNS* button = (_GLFWjoyelementNS*)
                 CFArrayGetValueAtIndex(js->ns.buttons, i);
             const char value = getElementValue(js, button) - button->minimum;
-            _glfwInputJoystickButton(jid, i, value);
+            _glfwInputJoystickButton(js, i, value);
         }
 
         for (i = 0;  i < CFArrayGetCount(js->ns.hats);  i++)
@@ -448,7 +446,7 @@ int _glfwPlatformPollJoystick(int jid, int mode)
             if (state < 0 || state > 8)
                 state = 8;
 
-            _glfwInputJoystickHat(jid, i, states[state]);
+            _glfwInputJoystickHat(js, i, states[state]);
         }
     }
 

@@ -254,7 +254,7 @@ static void closeJoystick(_GLFWjoystick* js)
     }
 
     _glfwFreeJoystick(js);
-    _glfwInputJoystick(_GLFW_JOYSTICK_ID(js), GLFW_DISCONNECTED);
+    _glfwInputJoystick(js, GLFW_DISCONNECTED);
 }
 
 // DirectInput device object enumeration callback
@@ -469,7 +469,7 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
     js->win32.objects = data.objects;
     js->win32.objectCount = data.objectCount;
 
-    _glfwInputJoystick(_GLFW_JOYSTICK_ID(js), GLFW_CONNECTED);
+    _glfwInputJoystick(js, GLFW_CONNECTED);
     return DIENUM_CONTINUE;
 }
 
@@ -552,7 +552,7 @@ void _glfwDetectJoystickConnectionWin32(void)
 
             js->win32.index = index;
 
-            _glfwInputJoystick(_GLFW_JOYSTICK_ID(js), GLFW_CONNECTED);
+            _glfwInputJoystick(js, GLFW_CONNECTED);
         }
     }
 
@@ -589,10 +589,8 @@ void _glfwDetectJoystickDisconnectionWin32(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwPlatformPollJoystick(int jid, int mode)
+int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
 {
-    _GLFWjoystick* js = _glfw.joysticks + jid;
-
     if (js->win32.device)
     {
         int i, ai = 0, bi = 0, pi = 0;
@@ -631,7 +629,7 @@ int _glfwPlatformPollJoystick(int jid, int mode)
                 case _GLFW_TYPE_SLIDER:
                 {
                     const float value = (*((LONG*) data) + 0.5f) / 32767.5f;
-                    _glfwInputJoystickAxis(jid, ai, value);
+                    _glfwInputJoystickAxis(js, ai, value);
                     ai++;
                     break;
                 }
@@ -639,7 +637,7 @@ int _glfwPlatformPollJoystick(int jid, int mode)
                 case _GLFW_TYPE_BUTTON:
                 {
                     const char value = (*((BYTE*) data) & 0x80) != 0;
-                    _glfwInputJoystickButton(jid, bi, value);
+                    _glfwInputJoystickButton(js, bi, value);
                     bi++;
                     break;
                 }
@@ -664,7 +662,7 @@ int _glfwPlatformPollJoystick(int jid, int mode)
                     if (state < 0 || state > 8)
                         state = 8;
 
-                    _glfwInputJoystickHat(jid, pi, states[state]);
+                    _glfwInputJoystickHat(js, pi, states[state]);
                     pi++;
                     break;
                 }
@@ -728,12 +726,12 @@ int _glfwPlatformPollJoystick(int jid, int mode)
             axes[5] = xis.Gamepad.bRightTrigger / 127.5f - 1.f;
 
         for (i = 0;  i < 6;  i++)
-            _glfwInputJoystickAxis(jid, i, axes[i]);
+            _glfwInputJoystickAxis(js, i, axes[i]);
 
         for (i = 0;  i < 10;  i++)
         {
             const char value = (xis.Gamepad.wButtons & buttons[i]) ? 1 : 0;
-            _glfwInputJoystickButton(jid, i, value);
+            _glfwInputJoystickButton(js, i, value);
         }
 
         if (xis.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
@@ -745,7 +743,7 @@ int _glfwPlatformPollJoystick(int jid, int mode)
         if (xis.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
             dpad |= GLFW_HAT_LEFT;
 
-        _glfwInputJoystickHat(jid, 0, dpad);
+        _glfwInputJoystickHat(js, 0, dpad);
     }
 
     return GLFW_TRUE;

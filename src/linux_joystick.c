@@ -42,7 +42,7 @@
 //
 static void handleKeyEvent(_GLFWjoystick* js, int code, int value)
 {
-    _glfwInputJoystickButton(_GLFW_JOYSTICK_ID(js),
+    _glfwInputJoystickButton(js,
                              js->linjs.keyMap[code - BTN_MISC],
                              value ? GLFW_PRESS : GLFW_RELEASE);
 }
@@ -51,7 +51,6 @@ static void handleKeyEvent(_GLFWjoystick* js, int code, int value)
 //
 static void handleAbsEvent(_GLFWjoystick* js, int code, int value)
 {
-    const int jid = _GLFW_JOYSTICK_ID(js);
     const int index = js->linjs.absMap[code];
 
     if (code >= ABS_HAT0X && code <= ABS_HAT3Y)
@@ -76,7 +75,7 @@ static void handleAbsEvent(_GLFWjoystick* js, int code, int value)
         else if (value > 0)
             state[axis] = 2;
 
-        _glfwInputJoystickHat(jid, index, stateMap[state[0]][state[1]]);
+        _glfwInputJoystickHat(js, index, stateMap[state[0]][state[1]]);
     }
     else
     {
@@ -92,7 +91,7 @@ static void handleAbsEvent(_GLFWjoystick* js, int code, int value)
             normalized = normalized * 2.0f - 1.0f;
         }
 
-        _glfwInputJoystickAxis(jid, index, normalized);
+        _glfwInputJoystickAxis(js, index, normalized);
     }
 }
 
@@ -229,7 +228,7 @@ static GLFWbool openJoystickDevice(const char* path)
 
     pollAbsState(js);
 
-    _glfwInputJoystick(_GLFW_JOYSTICK_ID(js), GLFW_CONNECTED);
+    _glfwInputJoystick(js, GLFW_CONNECTED);
     return GLFW_TRUE;
 }
 
@@ -241,7 +240,7 @@ static void closeJoystick(_GLFWjoystick* js)
 {
     close(js->linjs.fd);
     _glfwFreeJoystick(js);
-    _glfwInputJoystick(_GLFW_JOYSTICK_ID(js), GLFW_DISCONNECTED);
+    _glfwInputJoystick(js, GLFW_DISCONNECTED);
 }
 
 // Lexically compare joysticks by name; used by qsort
@@ -398,10 +397,8 @@ void _glfwDetectJoystickConnectionLinux(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwPlatformPollJoystick(int jid, int mode)
+int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
 {
-    _GLFWjoystick* js = _glfw.joysticks + jid;
-
     // Read all queued events (non-blocking)
     for (;;)
     {

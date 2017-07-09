@@ -254,9 +254,6 @@ typedef void (APIENTRY * PFN_vkVoidFunction)(void);
         y = t;                    \
     }
 
-// Maps a joystick pointer to an ID
-#define _GLFW_JOYSTICK_ID(js) ((int) ((js) - _glfw.joysticks))
-
 
 //========================================================================
 // Platform-independent structures
@@ -645,7 +642,7 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string);
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window);
 
-int _glfwPlatformPollJoystick(int jid, int mode);
+int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode);
 void _glfwPlatformUpdateGamepadGUID(char* guid);
 
 uint64_t _glfwPlatformGetTimerValue(void);
@@ -866,32 +863,32 @@ void _glfwInputError(int code, const char* format, ...);
 void _glfwInputDrop(_GLFWwindow* window, int count, const char** names);
 
 /*! @brief Notifies shared code of a joystick connection or disconnection.
- *  @param[in] jid The joystick that was connected or disconnected.
+ *  @param[in] js The joystick that was connected or disconnected.
  *  @param[in] event One of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.
  *  @ingroup event
  */
-void _glfwInputJoystick(int jid, int event);
+void _glfwInputJoystick(_GLFWjoystick* js, int event);
 
 /*! @brief Notifies shared code of the new value of a joystick axis.
- *  @param[in] jid The joystick whose axis to update.
+ *  @param[in] js The joystick whose axis to update.
  *  @param[in] axis The index of the axis to update.
  *  @param[in] value The new value of the axis.
  */
-void _glfwInputJoystickAxis(int jid, int axis, float value);
+void _glfwInputJoystickAxis(_GLFWjoystick* js, int axis, float value);
 
 /*! @brief Notifies shared code of the new value of a joystick button.
- *  @param[in] jid The joystick whose button to update.
+ *  @param[in] js The joystick whose button to update.
  *  @param[in] button The index of the button to update.
  *  @param[in] value The new value of the button.
  */
-void _glfwInputJoystickButton(int jid, int button, char value);
+void _glfwInputJoystickButton(_GLFWjoystick* js, int button, char value);
 
 /*! @brief Notifies shared code of the new value of a joystick hat.
- *  @param[in] jid The joystick whose hat to update.
+ *  @param[in] js The joystick whose hat to update.
  *  @param[in] button The index of the hat to update.
  *  @param[in] value The new value of the hat.
  */
-void _glfwInputJoystickHat(int jid, int hat, char value);
+void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value);
 
 
 //========================================================================

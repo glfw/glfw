@@ -181,12 +181,10 @@ GLFW supports text input in the form of a stream of
 operating system text input system.  Unlike key input, text input obeys keyboard
 layouts and modifier keys and supports composing characters using
 [dead keys](https://en.wikipedia.org/wiki/Dead_key).  Once received, you can
-encode the code points into
-[UTF-8](https://en.wikipedia.org/wiki/UTF-8) or any other encoding you prefer.
+encode the code points into UTF-8 or any other encoding you prefer.
 
 Because an `unsigned int` is 32 bits long on all platforms supported by GLFW,
-you can treat the code point argument as native endian
-[UTF-32](https://en.wikipedia.org/wiki/UTF-32).
+you can treat the code point argument as native endian UTF-32.
 
 There are two callbacks for receiving Unicode code points.  If you wish to
 offer regular text input, set a character callback.

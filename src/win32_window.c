@@ -628,24 +628,24 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             else
                 action = GLFW_RELEASE;
 
-            for (i = 0;  i < GLFW_MOUSE_BUTTON_LAST;  i++)
+            for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
             {
                 if (window->mouseButtons[i] == GLFW_PRESS)
                     break;
             }
 
-            if (i == GLFW_MOUSE_BUTTON_LAST)
+            if (i > GLFW_MOUSE_BUTTON_LAST)
                 SetCapture(hWnd);
 
             _glfwInputMouseClick(window, button, action, getKeyMods());
 
-            for (i = 0;  i < GLFW_MOUSE_BUTTON_LAST;  i++)
+            for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
             {
                 if (window->mouseButtons[i] == GLFW_PRESS)
                     break;
             }
 
-            if (i == GLFW_MOUSE_BUTTON_LAST)
+            if (i > GLFW_MOUSE_BUTTON_LAST)
                 ReleaseCapture();
 
             if (uMsg == WM_XBUTTONDOWN || uMsg == WM_XBUTTONUP)

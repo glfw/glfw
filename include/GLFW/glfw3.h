@@ -211,13 +211,7 @@ extern "C" {
 #endif /* OpenGL and OpenGL ES headers */
 
 #if defined(GLFW_INCLUDE_VULKAN)
-
- #if defined(__APPLE__)
-  #include <MoltenVK/vulkan/vulkan.h>
- #else
   #include <vulkan/vulkan.h>
- #endif
-
 #endif /* Vulkan header */
 
 #if defined(GLFW_DLL) && defined(_GLFW_BUILD_DLL)

@@ -108,8 +108,9 @@ located in the `deps/` directory.
  - [Vulkan headers](https://www.khronos.org/registry/vulkan/) for Vulkan tests
 
 The Vulkan example additionally requires the Vulkan SDK to be installed, or it
-will not be included in the build.  On macOS you need to set the path to the
-MoltenVK SDK manually as it has no standard location.
+will not be included in the build.  On macOS you need to
+[provide the path](@ref vulkan_loader) to the MoltenVK SDK manually as it has no
+standard installation location.
 
 The documentation is generated with [Doxygen](http://doxygen.org/).  If CMake
 does not find Doxygen, the documentation will not be generated when you build.

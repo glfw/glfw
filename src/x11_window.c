@@ -2474,15 +2474,9 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
     XFlush(_glfw.x11.display);
 }
 
-const char* _glfwPlatformGetKeyName(int key, int scancode)
+const char* _glfwPlatformGetScancodeName(int scancode)
 {
     if (!_glfw.x11.xkb.available)
-        return NULL;
-
-    if (key != GLFW_KEY_UNKNOWN)
-        scancode = _glfw.x11.scancodes[key];
-
-    if (!_glfwIsPrintable(_glfw.x11.keycodes[scancode]))
         return NULL;
 
     const KeySym keysym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, 0, 0);

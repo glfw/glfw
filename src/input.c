@@ -289,13 +289,6 @@ void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWbool _glfwIsPrintable(int key)
-{
-    return (key >= GLFW_KEY_APOSTROPHE && key <= GLFW_KEY_WORLD_2) ||
-           (key >= GLFW_KEY_KP_0 && key <= GLFW_KEY_KP_ADD) ||
-           key == GLFW_KEY_KP_EQUAL;
-}
-
 _GLFWjoystick* _glfwAllocJoystick(const char* name,
                                   const char* guid,
                                   int axisCount,
@@ -450,7 +443,20 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
 GLFWAPI const char* glfwGetKeyName(int key, int scancode)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    return _glfwPlatformGetKeyName(key, scancode);
+
+    if (key != GLFW_KEY_UNKNOWN)
+    {
+        if (key != GLFW_KEY_KP_EQUAL &&
+            (key < GLFW_KEY_KP_0 || key > GLFW_KEY_KP_ADD) &&
+            (key < GLFW_KEY_APOSTROPHE || key > GLFW_KEY_WORLD_2))
+        {
+            return NULL;
+        }
+
+        scancode = _glfwPlatformGetKeyScancode(key);
+    }
+
+    return _glfwPlatformGetScancodeName(scancode);
 }
 
 GLFWAPI int glfwGetKeyScancode(int key)

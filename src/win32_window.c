@@ -1609,15 +1609,9 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
         updateCursorImage(window);
 }
 
-const char* _glfwPlatformGetKeyName(int key, int scancode)
+const char* _glfwPlatformGetScancodeName(int scancode)
 {
     WCHAR name[16];
-
-    if (key != GLFW_KEY_UNKNOWN)
-        scancode = _glfw.win32.scancodes[key];
-
-    if (!_glfwIsPrintable(_glfw.win32.keycodes[scancode]))
-        return NULL;
 
     if (!GetKeyNameTextW(scancode << 16, name, sizeof(name) / sizeof(WCHAR)))
         return NULL;

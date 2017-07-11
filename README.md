@@ -36,10 +36,10 @@ fixes live in [other branches](https://github.com/glfw/glfw/branches/all) until
 they are stable enough to merge.
 
 If you are new to GLFW, you may find the
-[tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW
-3 useful.  If you have used GLFW 2 in the past, there is a
-[transition guide](http://www.glfw.org/docs/latest/moving.html) for moving to
-the GLFW 3 API.
+[tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW 3 useful.  If
+you have used GLFW 2 in the past, there is a [transition
+guide](http://www.glfw.org/docs/latest/moving.html) for moving to the GLFW
+3 API.
 
 
 ## Compiling GLFW
@@ -53,12 +53,11 @@ MinGW-w64, on macOS with Clang and on Linux and other Unix-like systems with GCC
 and Clang.  It will likely compile in other environments as well, but this is
 not regularly tested.
 
-There are also [pre-compiled Windows
-binaries](http://www.glfw.org/download.html) available for all compilers
-supported on that platform.
+There are [pre-compiled Windows binaries](http://www.glfw.org/download.html)
+available for all supported compilers.
 
 See the [compilation guide](http://www.glfw.org/docs/latest/compile.html) for
-more information about how to compile GLFW.
+more information about how to compile GLFW yourself.
 
 
 ## Using GLFW
@@ -108,12 +107,11 @@ located in the `deps/` directory.
  - [Vulkan headers](https://www.khronos.org/registry/vulkan/) for Vulkan tests
 
 The Vulkan example additionally requires the Vulkan SDK to be installed, or it
-will not be included in the build.  On macOS you need to
-[provide the path](@ref vulkan_loader) to the MoltenVK SDK manually as it has no
-standard installation location.
+will not be included in the build.  On macOS you need to provide the path to the
+MoltenVK SDK manually as it has no standard installation location.
 
-The documentation is generated with [Doxygen](http://doxygen.org/).  If CMake
-does not find Doxygen, the documentation will not be generated when you build.
+The documentation is generated with [Doxygen](http://doxygen.org/) if CMake can
+find that tool.
 
 
 ## Reporting bugs

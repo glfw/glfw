@@ -259,6 +259,7 @@ skills.
  - Martin Capitanio
  - David Carlier
  - Chi-kwan Chan
+ - Michał Cichoń
  - Lambert Clara
  - Andrew Corrigan
  - Noel Cower

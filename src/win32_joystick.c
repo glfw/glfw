@@ -576,15 +576,13 @@ void _glfwDetectJoystickConnectionWin32(void)
 void _glfwDetectJoystickDisconnectionWin32(void)
 {
     int jid;
-    _GLFWjoystick* js;
 
-	for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
-	{
-        js = &_glfw.joysticks[jid];
-
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    {
+        _GLFWjoystick* js = _glfw.joysticks + jid;
         if (js->present)
-		    _glfwPlatformPollJoystick(js, _GLFW_POLL_PRESENCE);
-	}
+            _glfwPlatformPollJoystick(js, _GLFW_POLL_PRESENCE);
+    }
 }
 
 

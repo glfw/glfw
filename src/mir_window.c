@@ -205,13 +205,15 @@ static void handlePointerMotion(_GLFWwindow* window,
     {
         if (_glfw.mir.disabledCursorWindow != window)
             return;
+        else
+        {
+            int dx = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_relative_x);
+            int dy = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_relative_y);
+            int current_x = window->virtualCursorPosX;
+            int current_y = window->virtualCursorPosY;
 
-        const int dx = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_relative_x);
-        const int dy = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_relative_y);
-        const int current_x = window->virtualCursorPosX;
-        const int current_y = window->virtualCursorPosY;
-
-        _glfwInputCursorPos(window, dx + current_x, dy + current_y);
+            _glfwInputCursorPos(window, dx + current_x, dy + current_y);
+        }
     }
     else
     {
@@ -701,20 +703,23 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
     cursor->mir.conf = mir_cursor_configuration_from_buffer_stream(stream, xhot, yhot);
 
-    MirGraphicsRegion region;
-    mir_buffer_stream_get_graphics_region(stream, &region);
-
-    unsigned char* pixels = image->pixels;
-    char* dest = region.vaddr;
-    int i;
-
-    for (i = 0; i < i_w * i_h; i++, pixels += 4)
     {
-        unsigned int alpha = pixels[3];
-        *dest++ = (char)(pixels[2] * alpha / 255);
-        *dest++ = (char)(pixels[1] * alpha / 255);
-        *dest++ = (char)(pixels[0] * alpha / 255);
-        *dest++ = (char)alpha;
+        MirGraphicsRegion region;
+        unsigned char* pixels = image->pixels;
+        char* dest;
+        int i;
+
+        mir_buffer_stream_get_graphics_region(stream, &region);
+        dest = region.vaddr;
+
+        for (i = 0; i < i_w * i_h; i++, pixels += 4)
+        {
+            unsigned int alpha = pixels[3];
+            *dest++ = (char)(pixels[2] * alpha / 255);
+            *dest++ = (char)(pixels[1] * alpha / 255);
+            *dest++ = (char)(pixels[0] * alpha / 255);
+            *dest++ = (char)alpha;
+        }
     }
 
     mir_buffer_stream_swap_buffers_sync(stream);

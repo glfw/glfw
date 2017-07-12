@@ -138,33 +138,38 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
         if (id != monitor->mir.outputId)
             continue;
 
-        MirOutputConnectionState state = mir_output_get_connection_state(output);
-        bool enabled = mir_output_is_enabled(output);
-
-        // We must have been disconnected
-        if (!enabled || state != mir_output_connection_state_connected)
         {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Mir: Monitor no longer connected");
-            return NULL;
+            MirOutputConnectionState state = mir_output_get_connection_state(output);
+            bool enabled = mir_output_is_enabled(output);
+
+            // We must have been disconnected
+            if (!enabled || state != mir_output_connection_state_connected)
+            {
+                _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "Mir: Monitor no longer connected");
+                return NULL;
+            }
         }
 
-        int numModes = mir_output_get_num_modes(output);
-        modes = calloc(numModes, sizeof(GLFWvidmode));
 
-        for (*found = 0;  *found < numModes;  (*found)++)
         {
-            const MirOutputMode* mode = mir_output_get_mode(output, *found);
-            int width  = mir_output_mode_get_width(mode);
-            int height = mir_output_mode_get_height(mode);
-            double refreshRate = mir_output_mode_get_refresh_rate(mode);
-            MirPixelFormat currentFormat = mir_output_get_current_pixel_format(output);
+            int numModes = mir_output_get_num_modes(output);
+            modes = calloc(numModes, sizeof(GLFWvidmode));
 
-            modes[*found].width  = width;
-            modes[*found].height = height;
-            modes[*found].refreshRate = refreshRate;
+            for (*found = 0;  *found < numModes;  (*found)++)
+            {
+                const MirOutputMode* mode = mir_output_get_mode(output, *found);
+                int width  = mir_output_mode_get_width(mode);
+                int height = mir_output_mode_get_height(mode);
+                double refreshRate = mir_output_mode_get_refresh_rate(mode);
+                MirPixelFormat currentFormat = mir_output_get_current_pixel_format(output);
 
-            FillInRGBBitsFromPixelFormat(&modes[*found], currentFormat);
+                modes[*found].width  = width;
+                modes[*found].height = height;
+                modes[*found].refreshRate = refreshRate;
+
+                FillInRGBBitsFromPixelFormat(&modes[*found], currentFormat);
+            }
         }
 
         break;

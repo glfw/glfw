@@ -13,7 +13,7 @@ matrix:
 build_script:
     - mkdir build
     - cd build
-    - cmake -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% ..
+    - cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% ..
     - cmake --build .
 notifications:
     - provider: Email

@@ -20,8 +20,11 @@ addons:
             - libxcursor-dev
             - libxi-dev
 env:
-    - BUILD_SHARED_LIBS=ON
-    - BUILD_SHARED_LIBS=OFF
+    global:
+        - CFLAGS=-Werror
+    matrix:
+        - BUILD_SHARED_LIBS=ON
+        - BUILD_SHARED_LIBS=OFF
 script:
     - mkdir build
     - cd build

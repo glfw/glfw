@@ -258,8 +258,10 @@ void _glfwInputDrop(_GLFWwindow* window, int count, const char** paths)
 
 void _glfwInputJoystick(_GLFWjoystick* js, int event)
 {
+    const int jid = (int) (js - _glfw.joysticks);
+
     if (_glfw.callbacks.joystick)
-        _glfw.callbacks.joystick(js - _glfw.joysticks, event);
+        _glfw.callbacks.joystick(jid, event);
 }
 
 void _glfwInputJoystickAxis(_GLFWjoystick* js, int axis, float value)

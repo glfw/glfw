@@ -1529,7 +1529,7 @@ typedef struct GLFWgamepadstate
     /*! The states of each [gamepad button](@ref gamepad_buttons), `GLFW_PRESS`
      *  or `GLFW_RELEASE`.
      */
-    char buttons[15];
+    unsigned char buttons[15];
     /*! The states of each [gamepad axis](@ref gamepad_axes), in the range -1.0
      *  to 1.0 inclusive.
      */

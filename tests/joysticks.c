@@ -228,6 +228,8 @@ int main(void)
                 GLFWgamepadstate state;
 
                 nk_layout_row_dynamic(nk, 30, 1);
+                nk_labelf(nk, NK_TEXT_LEFT, "Hardware GUID %s",
+                          glfwGetJoystickGUID(joysticks[i]));
                 nk_label(nk, "Joystick state", NK_TEXT_LEFT);
 
                 axes = glfwGetJoystickAxes(joysticks[i], &axis_count);

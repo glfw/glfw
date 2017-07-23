@@ -896,6 +896,31 @@ GLFWAPI const char* glfwGetJoystickName(int jid)
     return js->name;
 }
 
+GLFWAPI const char* glfwGetJoystickGUID(int jid)
+{
+    _GLFWjoystick* js;
+
+    assert(jid >= GLFW_JOYSTICK_1);
+    assert(jid <= GLFW_JOYSTICK_LAST);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+    if (jid < 0 || jid > GLFW_JOYSTICK_LAST)
+    {
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid joystick ID %i", jid);
+        return NULL;
+    }
+
+    js = _glfw.joysticks + jid;
+    if (!js->present)
+        return NULL;
+
+    if (!_glfwPlatformPollJoystick(js, _GLFW_POLL_PRESENCE))
+        return NULL;
+
+    return js->guid;
+}
+
 GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun cbfun)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);

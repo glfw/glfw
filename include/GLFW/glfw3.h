@@ -4381,6 +4381,43 @@ GLFWAPI const unsigned char* glfwGetJoystickHats(int jid, int* count);
  */
 GLFWAPI const char* glfwGetJoystickName(int jid);
 
+/*! @brief Returns the SDL comaptible GUID of the specified joystick.
+ *
+ *  This function returns the SDL compatible GUID, as a UTF-8 encoded
+ *  hexadecimal string, of the specified joystick.  The returned string is
+ *  allocated and freed by GLFW.  You should not free it yourself.
+ *
+ *  If the specified joystick is not present this function will return `NULL`
+ *  but will not generate an error.  Call @ref glfwJoystickPresent to check
+ *  device presence.
+ *
+ *  The GUID uses the format introduced in SDL 2.0.5.  This GUID tries to
+ *  uniquely identify the make and model of a joystick but does not identify
+ *  a specific unit, e.g. all wired Xbox 360 controllers will have the same
+ *  GUID on that platform.  The GUID for a unit may vary between platforms
+ *  depending on what hardware information the platform specific APIs provide.
+ *
+ *  @param[in] jid The [joystick](@ref joysticks) to query.
+ *  @return The UTF-8 encoded GUID of the joystick, or `NULL` if the joystick
+ *  is not present or an [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_INVALID_ENUM and @ref GLFW_PLATFORM_ERROR.
+ *
+ *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is valid until the specified joystick is
+ *  disconnected or the library is terminated.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref gamepad
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup input
+ */
+GLFWAPI const char* glfwGetJoystickGUID(int jid);
+
 /*! @brief Returns whether the specified joystick has a gamepad mapping.
  *
  *  This function returns whether the specified joystick is both present and has

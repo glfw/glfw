@@ -130,6 +130,8 @@ information on what to include when reporting a bug.
   SDL\_GameControllerDB format (#900)
 - Added `glfwJoystickIsGamepad` function for querying whether a joystick has
   a gamepad mapping (#900)
+- Added `glfwGetJoystickGUID` function for querying the SDL compatible GUID of
+  a joystick (#900)
 - Added `glfwGetGamepadName` function for querying the name provided by the
   gamepad mapping (#900)
 - Added `glfwGetGamepadState` function, `GLFW_GAMEPAD_*` and `GLFWgamepadstate`

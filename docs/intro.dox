@@ -33,6 +33,7 @@ successfully initialized, and only from the main thread.
  - @ref glfwGetError
  - @ref glfwSetErrorCallback
  - @ref glfwInitHint
+ - @ref glfwInitHintString
  - @ref glfwInit
  - @ref glfwTerminate
 
@@ -65,23 +66,26 @@ system settings and these might not be restored without termination.
 
 @subsection init_hints Initialization hints
 
-There are a number of hints that can be set before initialization, that affect
-how the library behaves.
+Initialization hints are set before @ref glfwInit and affect how the library
+behaves until termination.  Integer type hints are set with @ref glfwInitHint
+and string type hints with @ref glfwInitHintString.
 
-The values you set are not affected by initialization or termination, but they
-are only read during initialization.  Once GLFW has been initialized, setting
-new hint values will not affect behavior until the next time it is terminated
-and initialized.
+@code
+glfwInitHint(GLFW_JOYSTICK_HAT_BUTTONS, GLFW_FALSE);
+@endcode
 
-Some hints are platform specific.  These are always valid to set on any
-platform but they will only affect their specific platform.  Other platforms
-will simply ignore them.  Setting these hints requires no platform specific
-headers or calls.
+The values you set hints to are never reset by GLFW, but they only take effect
+during initialization.  Once GLFW has been initialized, any values you set will
+be ignored until the library is terminated and initialized again.
+
+Some hints are platform specific.  These may be set on any platform but they
+will only affect their specific platform.  Other platforms will simply ignore
+them.  Setting these hints requires no platform specific headers or functions.
 
 @anchor GLFW_JOYSTICK_HAT_BUTTONS
 __GLFW_JOYSTICK_HAT_BUTTONS__ specifies whether to also expose joystick hats as
 buttons, for compatibility with earlier versions of GLFW that did not have @ref
-glfwGetJoystickHats.
+glfwGetJoystickHats.  Set this with @ref glfwInitHint.
 
 
 @subsubsection init_hints_osx macOS specific init hints
@@ -89,12 +93,21 @@ glfwGetJoystickHats.
 @anchor GLFW_COCOA_CHDIR_RESOURCES
 __GLFW_COCOA_CHDIR_RESOURCES__ specifies whether to set the current directory to
 the application to the `Contents/Resources` subdirectory of the application's
-bundle, if present. 
+bundle, if present.  Set this with @ref glfwInitHint.
 
 @anchor GLFW_COCOA_MENUBAR
 __GLFW_COCOA_MENUBAR__ specifies whether to create a basic menu bar, either from
 a nib or manually, when the first window is created, which is when AppKit is
-initialized.
+initialized.  Set this with @ref glfwInitHint.
+
+
+@subsubsection init_hints_x11 X11 specific init hints
+
+@anchor GLFW_X11_WM_CLASS_NAME
+@anchor GLFW_X11_WM_CLASS_CLASS
+__GLFW_X11_WM_CLASS_NAME__ and __GLFW_X11_WM_CLASS_CLASS__ specifies the desired
+ASCII encoded name and class parts of the ICCCM `WM_CLASS` hint for all windows.
+Set this with @ref glfwInitHintString.
 
 
 @subsubsection init_hints_values Supported and default values
@@ -104,6 +117,8 @@ Init hint                       | Default value | Supported values
 @ref GLFW_JOYSTICK_HAT_BUTTONS  | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_COCOA_CHDIR_RESOURCES | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_COCOA_MENUBAR         | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_X11_WM_CLASS_NAME     | `""`          | An ASCII encoded `WM_CLASS` name
+@ref GLFW_X11_WM_CLASS_CLASS    | `""`          | An ASCII encoded `WM_CLASS` class
 
 
 @subsection intro_init_terminate Terminating GLFW

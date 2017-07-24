@@ -614,13 +614,25 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     updateNormalHints(window, wndconfig->width, wndconfig->height);
 
     // Set ICCCM WM_CLASS property
-    // HACK: Until a mechanism for specifying the application name is added, the
-    //       initial window title is used as the window class name
-    if (strlen(wndconfig->title))
     {
         XClassHint* hint = XAllocClassHint();
-        hint->res_name = (char*) wndconfig->title;
-        hint->res_class = (char*) wndconfig->title;
+
+        if (strlen(_glfw.hints.init.x11.className) &&
+            strlen(_glfw.hints.init.x11.classClass))
+        {
+            hint->res_name = (char*) _glfw.hints.init.x11.className;
+            hint->res_class = (char*) _glfw.hints.init.x11.classClass;
+        }
+        else if (strlen(wndconfig->title))
+        {
+            hint->res_name = (char*) wndconfig->title;
+            hint->res_class = (char*) wndconfig->title;
+        }
+        else
+        {
+            hint->res_name = (char*) "glfw-application";
+            hint->res_class = (char*) "GLFW-Application";
+        }
 
         XSetClassHint(_glfw.x11.display, window->x11.handle, hint);
         XFree(hint);

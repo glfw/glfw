@@ -143,7 +143,7 @@ information on what to include when reporting a bug.
 - Added `glfwSetWindowAttrib` function for changing window attributes (#537)
 - Added `glfwGetJoystickHats` function for querying joystick hats
   (#889,#906,#934)
-- Added `glfwInitHint` function for setting library initialization hints
+- Added `glfwInitHint` and `glfwInitHintString` for setting initialization hints
 - Added headless [OSMesa](http://mesa3d.org/osmesa.html) backend (#850)
 - Added definition of `GLAPIENTRY` to public header
 - Added `GLFW_CENTER_CURSOR` window hint for controlling cursor centering
@@ -154,6 +154,8 @@ information on what to include when reporting a bug.
 - Added macOS specific `GLFW_COCOA_GRAPHICS_SWITCHING` window hint (#377,#935)
 - Added macOS specific `GLFW_COCOA_CHDIR_RESOURCES` init hint
 - Added macOS specific `GLFW_COCOA_MENUBAR` init hint
+- Added X11 specific `GLFW_X11_WM_CLASS_NAME` and `GLFW_X11_WM_CLASS_CLASS` init
+  hints (#893)
 - Added `GLFW_INCLUDE_ES32` for including the OpenGL ES 3.2 header
 - Added `GLFW_OSMESA_CONTEXT_API` for creating OpenGL contexts with
   [OSMesa](https://www.mesa3d.org/osmesa.html) (#281)

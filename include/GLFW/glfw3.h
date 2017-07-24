@@ -1016,6 +1016,9 @@ extern "C" {
 
 #define GLFW_COCOA_CHDIR_RESOURCES  0x00051001
 #define GLFW_COCOA_MENUBAR          0x00051002
+
+#define GLFW_X11_WM_CLASS_NAME      0x00052001
+#define GLFW_X11_WM_CLASS_CLASS     0x00052002
 /*! @} */
 
 #define GLFW_DONT_CARE              -1
@@ -1609,17 +1612,18 @@ GLFWAPI void glfwTerminate(void);
 
 /*! @brief Sets the specified init hint to the desired value.
  *
- *  This function sets hints for the next initialization of GLFW.
+ *  This function sets hints for the next initialization of GLFW.  Only integer
+ *  type hints can be set with this function.
  *
- *  The values you set are not affected by initialization or termination, but
- *  they are only read during initialization.  Once GLFW has been initialized,
- *  setting new hint values will not affect behavior until the next time the
- *  library is terminated and initialized.
+ *  The values you set hints to are never reset by GLFW, but they only take
+ *  effect during initialization.  Once GLFW has been initialized, any values
+ *  you set will be ignored until the library is terminated and initialized
+ *  again.
  *
- *  Some hints are platform specific.  These are always valid to set on any
- *  platform but they will only affect their specific platform.  Other platforms
- *  will simply ignore them.  Setting these hints requires no platform specific
- *  headers or calls.
+ *  Some hints are platform specific.  These may be set on any platform but they
+ *  will only affect their specific platform.  Other platforms will simply
+ *  ignore them.  Setting these hints requires no platform specific headers or
+ *  functions. 
  *
  *  @param[in] hint The [init hint](@ref init_hints) to set.
  *  @param[in] value The new value of the init hint.
@@ -1633,12 +1637,48 @@ GLFWAPI void glfwTerminate(void);
  *
  *  @sa init_hints
  *  @sa glfwInit
+ *  @sa glfwInitHintString
  *
  *  @since Added in version 3.3.
  *
  *  @ingroup init
  */
 GLFWAPI void glfwInitHint(int hint, int value);
+
+/*! @brief Sets the specified init hint to the desired value.
+ *
+ *  This function sets hints for the next initialization of GLFW.  Only string
+ *  type hints can be set with this function.
+ *
+ *  The values you set hints to are never reset by GLFW, but they only take
+ *  effect during initialization.  Once GLFW has been initialized, any values
+ *  you set will be ignored until the library is terminated and initialized
+ *  again.
+ *
+ *  Some hints are platform specific.  These may be set on any platform but they
+ *  will only affect their specific platform.  Other platforms will simply
+ *  ignore them.  Setting these hints requires no platform specific headers or
+ *  functions. 
+ *
+ *  @param[in] hint The [init hint](@ref init_hints) to set.
+ *  @param[in] value The new value of the init hint.
+ *
+ *  @errors Possible errors include @ref GLFW_INVALID_ENUM and @ref
+ *  GLFW_INVALID_VALUE.
+ *
+ *  @remarks This function may be called before @ref glfwInit.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa init_hints
+ *  @sa glfwInit
+ *  @sa glfwInitHint
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup init
+ */
+GLFWAPI void glfwInitHintString(int hint, const char* value);
 
 /*! @brief Retrieves the version of the GLFW library.
  *
@@ -2260,6 +2300,11 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  a window to reach its requested state.  This means you may not be able to
  *  query the final size, position or other attributes directly after window
  *  creation.
+ *
+ *  @remark @x11 The name and class of the `WM_CLASS` window property will by
+ *  default be set to the window title passed to this function.  Set the @ref
+ *  GLFW_X11_WM_CLASS_NAME and @ref GLFW_X11_WM_CLASS_CLASS init hints before
+ *  initialization to override this.
  *
  *  @remark @wayland The window frame is currently unimplemented, as if
  *  [GLFW_DECORATED](@ref GLFW_DECORATED_hint) was always set to `GLFW_FALSE`.

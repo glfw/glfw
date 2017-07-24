@@ -277,6 +277,10 @@ struct _GLFWinitconfig
         GLFWbool  menubar;
         GLFWbool  chdir;
     } ns;
+    struct {
+        char      className[256];
+        char      classClass[256];
+    } x11;
 };
 
 /*! @brief Window configuration.

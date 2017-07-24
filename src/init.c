@@ -220,6 +220,11 @@ GLFWAPI int glfwInit(void)
     return GLFW_TRUE;
 }
 
+GLFWAPI GLFWbool glfwIsInit(void)
+{
+	return _glfw.initialized;
+}
+
 GLFWAPI void glfwTerminate(void)
 {
     if (!_glfw.initialized)

@@ -1594,7 +1594,7 @@ GLFWAPI int glfwInit(void);
  *
  *	@ingroup init
 */
-GLFWAPI GLFWbool glfwIsInit(void);
+GLFWAPI int glfwIsInit(void);
 
 /*! @brief Terminates the GLFW library.
  *

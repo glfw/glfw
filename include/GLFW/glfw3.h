@@ -1553,8 +1553,8 @@ typedef struct GLFWgamepadstate
  *
  *  Additional calls to this function after successful initialization but before
  *  termination will return `GLFW_TRUE` immediately.
- *	
- *	To check whether GLFW has been initialized, call @ref glfwIsInit.
+ *
+ *  To check whether GLFW has been initialized, call @ref glfwIsInit.
  *
  *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if an
  *  [error](@ref error_handling) occurred.
@@ -1581,9 +1581,9 @@ GLFWAPI int glfwInit(void);
 
 /*! @brief Checks if GLFW has been initialized
  *	
- *	This function checks the state of GLFW and returns whether it is initalized.
- *	Before most GLFW functions, GLFW must be initialized via @ref glfwInit. @ref glfwTerminate
- *	frees any remaining resources by GLFW and should be called at the end of the application.
+ *  This function checks the state of GLFW and returns whether it is initalized.
+ *  Before most GLFW functions, GLFW must be initialized via @ref glfwInit. @ref glfwTerminate
+ *  frees any remaining resources by GLFW and should be called at the end of the application.
  *
  *  @return `GLFW_TRUE` if initialized, `GLFW_FALSE` otherwise
  *

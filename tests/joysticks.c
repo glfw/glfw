@@ -298,7 +298,7 @@ int main(void)
             nk_end(nk);
         }
 
-        nk_glfw3_render(NK_ANTI_ALIASING_ON, 10000, 1000);
+        nk_glfw3_render(NK_ANTI_ALIASING_ON);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

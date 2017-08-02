@@ -30,6 +30,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+// Can use cmake -DCMAKE_C_FLAGS=-DGLFW_EXPOSE_NATIVE_X11 to test X11 native
+// interface for primary selection.
+#ifdef GLFW_EXPOSE_NATIVE_X11
+ #include <GLFW/glfw3native.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -86,6 +92,30 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     }
 }
 
+#ifdef GLFW_EXPOSE_NATIVE_X11
+static void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
+{
+    if (action != GLFW_PRESS)
+        return;
+    if (button == GLFW_MOUSE_BUTTON_LEFT)
+    {
+        const char* string = "GLFW Selection";
+        glfwSetX11SelectionString(string);
+        printf("Setting selection to \"%s\"\n", string);
+    }
+    if (button == GLFW_MOUSE_BUTTON_MIDDLE)
+    {
+        const char* string;
+
+        string = glfwGetX11SelectionString();
+        if (string)
+            printf("Selection contains \"%s\"\n", string);
+        else
+            printf("Selection does not contain a string\n");
+    }
+}
+#endif
+
 static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -132,6 +162,9 @@ int main(int argc, char** argv)
     glfwSwapInterval(1);
 
     glfwSetKeyCallback(window, key_callback);
+#ifdef GLFW_EXPOSE_NATIVE_X11
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+#endif
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     glClearColor(0.5f, 0.5f, 0.5f, 0);

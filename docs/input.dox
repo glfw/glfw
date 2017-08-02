@@ -868,6 +868,12 @@ The clipboard functions take a window handle argument because some window
 systems require a window to communicate with the system clipboard.  Any valid
 window may be used.
 
+X11 also has the concept of primary selection, which is similar to,
+but distinct from, the clipboard. If this is needed on X11, it can be
+accessed from the X11 native interface with the functions @ref
+glfwGetX11SelectionString and @ref glfwSetX11SelectionString. See
+@ref native.
+
 
 @section path_drop Path drop input
 

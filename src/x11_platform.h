@@ -161,6 +161,8 @@ typedef struct _GLFWlibraryX11
     XIM             im;
     // Most recent error code received by X error handler
     int             errorCode;
+    // Primary selection string (while the primary selection is owned)
+    char*           primarySelectionString;
     // Clipboard string (while the selection is owned)
     char*           clipboardString;
     // Key name string
@@ -214,6 +216,7 @@ typedef struct _GLFWlibraryX11
     Atom            TARGETS;
     Atom            MULTIPLE;
     Atom            CLIPBOARD;
+    Atom            PRIMARY;
     Atom            CLIPBOARD_MANAGER;
     Atom            SAVE_TARGETS;
     Atom            NULL_;

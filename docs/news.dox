@@ -5,6 +5,15 @@
 @section news_33 Release notes for 3.3
 
 
+@subsection news_33_native_x11_selection X11 native Primary Selection access
+
+GLFW now supports X11 platform specific native functions for accessing
+the X11 primary selection, as a supplement to the clipboard on this
+platform. See @ref clipboard.
+
+@see @ref error_handling
+
+
 @subsection news_33_geterror Error query
 
 GLFW now supports querying the last error code for the calling thread and its

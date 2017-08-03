@@ -4203,6 +4203,10 @@ GLFWAPI GLFWdropfun glfwSetDropCallback(GLFWwindow* window, GLFWdropfun cbfun);
  *
  *  This function returns whether the specified joystick is present.
  *
+ *  There is no need to call this function before other functions that accept
+ *  a joystick ID, as they all check for presence before performing any other
+ *  work.
+ *
  *  @param[in] jid The [joystick](@ref joysticks) to query.
  *  @return `GLFW_TRUE` if the joystick is present, or `GLFW_FALSE` otherwise.
  *
@@ -4225,8 +4229,8 @@ GLFWAPI int glfwJoystickPresent(int jid);
  *  Each element in the array is a value between -1.0 and 1.0.
  *
  *  If the specified joystick is not present this function will return `NULL`
- *  but will not generate an error.  Call @ref glfwJoystickPresent to check
- *  device presence.
+ *  but will not generate an error.  This can be used instead of first calling
+ *  @ref glfwJoystickPresent.
  *
  *  @param[in] jid The [joystick](@ref joysticks) to query.
  *  @param[out] count Where to store the number of axis values in the returned
@@ -4265,8 +4269,8 @@ GLFWAPI const float* glfwGetJoystickAxes(int jid, int* count);
  *  GLFW_JOYSTICK_HAT_BUTTONS init hint before initialization.
  *
  *  If the specified joystick is not present this function will return `NULL`
- *  but will not generate an error.  Call @ref glfwJoystickPresent to check
- *  device presence.
+ *  but will not generate an error.  This can be used instead of first calling
+ *  @ref glfwJoystickPresent.
  *
  *  @param[in] jid The [joystick](@ref joysticks) to query.
  *  @param[out] count Where to store the number of button states in the returned
@@ -4322,8 +4326,8 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int jid, int* count);
  *  @endcode
  *
  *  If the specified joystick is not present this function will return `NULL`
- *  but will not generate an error.  Call @ref glfwJoystickPresent to check
- *  device presence.
+ *  but will not generate an error.  This can be used instead of first calling
+ *  @ref glfwJoystickPresent.
  *
  *  @param[in] jid The [joystick](@ref joysticks) to query.
  *  @param[out] count Where to store the number of hat states in the returned
@@ -4357,8 +4361,8 @@ GLFWAPI const unsigned char* glfwGetJoystickHats(int jid, int* count);
  *  yourself.
  *
  *  If the specified joystick is not present this function will return `NULL`
- *  but will not generate an error.  Call @ref glfwJoystickPresent to check
- *  device presence.
+ *  but will not generate an error.  This can be used instead of first calling
+ *  @ref glfwJoystickPresent.
  *
  *  @param[in] jid The [joystick](@ref joysticks) to query.
  *  @return The UTF-8 encoded name of the joystick, or `NULL` if the joystick
@@ -4387,9 +4391,13 @@ GLFWAPI const char* glfwGetJoystickName(int jid);
  *  hexadecimal string, of the specified joystick.  The returned string is
  *  allocated and freed by GLFW.  You should not free it yourself.
  *
+ *  The GUID is what connects a joystick to a gamepad mapping.  A connected
+ *  joystick will always have a GUID even if there is no gamepad mapping
+ *  assigned to it.
+ *
  *  If the specified joystick is not present this function will return `NULL`
- *  but will not generate an error.  Call @ref glfwJoystickPresent to check
- *  device presence.
+ *  but will not generate an error.  This can be used instead of first calling
+ *  @ref glfwJoystickPresent.
  *
  *  The GUID uses the format introduced in SDL 2.0.5.  This GUID tries to
  *  uniquely identify the make and model of a joystick but does not identify
@@ -4425,7 +4433,8 @@ GLFWAPI const char* glfwGetJoystickGUID(int jid);
  *
  *  If the specified joystick is present but does not have a gamepad mapping
  *  this function will return `GLFW_FALSE` but will not generate an error.  Call
- *  @ref glfwJoystickPresent to only check device presence.
+ *  @ref glfwJoystickPresent to check if a joystick is present regardless of
+ *  whether it has a mapping.
  *
  *  @param[in] jid The [joystick](@ref joysticks) to query.
  *  @return `GLFW_TRUE` if a joystick is both present and has a gamepad mapping,
@@ -4514,8 +4523,9 @@ GLFWAPI int glfwUpdateGamepadMappings(const char* string);
  *  gamepad mapping assigned to the specified joystick.
  *
  *  If the specified joystick is not present or does not have a gamepad mapping
- *  this function will return `NULL` but will not generate an error.  Call @ref
- *  glfwJoystickIsGamepad to check whether it is present and has a gamepad mapping.
+ *  this function will return `NULL` but will not generate an error.  Call
+ *  @ref glfwJoystickPresent to check whether it is present regardless of
+ *  whether it has a mapping.
  *
  *  @param[in] jid The [joystick](@ref joysticks) to query.
  *  @return The UTF-8 encoded name of the gamepad, or `NULL` if the
@@ -4542,10 +4552,10 @@ GLFWAPI const char* glfwGetGamepadName(int jid);
  *  This function retrives the state of the specified joystick remapped to
  *  an Xbox-like gamepad.
  *
- *  If the specified joystick is not present this function will return
- *  `GLFW_FALSE` but will not generate an error.  Call @ref
- *  glfwJoystickIsGamepad to check whether it is present and has a gamepad
- *  mapping.
+ *  If the specified joystick is not present or does not have a gamepad mapping
+ *  this function will return `GLFW_FALSE` but will not generate an error.  Call
+ *  @ref glfwJoystickPresent to check whether it is present regardless of
+ *  whether it has a mapping.
  *
  *  The Guide button may not be available for input as it is often hooked by the
  *  system or the Steam client.

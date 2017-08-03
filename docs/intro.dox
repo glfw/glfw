@@ -112,7 +112,7 @@ Set this with @ref glfwInitHintString.
 
 @subsubsection init_hints_values Supported and default values
 
-Init hint                       | Default value | Supported values
+Initialization hint             | Default value | Supported values
 ------------------------------- | ------------- | ----------------
 @ref GLFW_JOYSTICK_HAT_BUTTONS  | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_COCOA_CHDIR_RESOURCES | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
@@ -388,8 +388,9 @@ Undocumented behavior, i.e. behavior that is not described in the documentation,
 may change at any time until it is documented.
 
 If the reference documentation and the implementation differ, the reference
-documentation is correct and the implementation will be fixed in the next
-release.
+documentation will almost always take precedence and the implementation will be
+fixed in the next release.  The reference documentation will also take
+precedence over anything stated in a guide.
 
 
 @subsection event_order Event order

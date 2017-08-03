@@ -675,7 +675,6 @@ int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
         int i, dpad = 0;
         DWORD result;
         XINPUT_STATE xis;
-        float axes[6] = { 0.f, 0.f, 0.f, 0.f, -1.f, -1.f };
         const WORD buttons[10] =
         {
             XINPUT_GAMEPAD_A,
@@ -702,32 +701,12 @@ int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
         if (mode == _GLFW_POLL_PRESENCE)
             return GLFW_TRUE;
 
-        if ((float) xis.Gamepad.sThumbLX * xis.Gamepad.sThumbLX +
-            (float) xis.Gamepad.sThumbLY * xis.Gamepad.sThumbLY >
-            (float) XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE *
-                    XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
-        {
-            axes[0] = (xis.Gamepad.sThumbLX + 0.5f) / 32767.f;
-            axes[1] = (xis.Gamepad.sThumbLY + 0.5f) / 32767.f;
-        }
-
-        if ((float) xis.Gamepad.sThumbRX * xis.Gamepad.sThumbRX +
-            (float) xis.Gamepad.sThumbRY * xis.Gamepad.sThumbRY >
-            (float) XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE *
-                    XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
-        {
-            axes[2] = (xis.Gamepad.sThumbRX + 0.5f) / 32767.f;
-            axes[3] = (xis.Gamepad.sThumbRY + 0.5f) / 32767.f;
-        }
-
-        if (xis.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
-            axes[4] = xis.Gamepad.bLeftTrigger / 127.5f - 1.f;
-
-        if (xis.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
-            axes[5] = xis.Gamepad.bRightTrigger / 127.5f - 1.f;
-
-        for (i = 0;  i < 6;  i++)
-            _glfwInputJoystickAxis(js, i, axes[i]);
+        _glfwInputJoystickAxis(js, 0, (xis.Gamepad.sThumbLX + 0.5f) / 32767.f);
+        _glfwInputJoystickAxis(js, 1, (xis.Gamepad.sThumbLY + 0.5f) / 32767.f);
+        _glfwInputJoystickAxis(js, 2, (xis.Gamepad.sThumbRX + 0.5f) / 32767.f);
+        _glfwInputJoystickAxis(js, 3, (xis.Gamepad.sThumbRY + 0.5f) / 32767.f);
+        _glfwInputJoystickAxis(js, 4, xis.Gamepad.bLeftTrigger / 127.5f - 1.f);
+        _glfwInputJoystickAxis(js, 5, xis.Gamepad.bRightTrigger / 127.5f - 1.f);
 
         for (i = 0;  i < 10;  i++)
         {

@@ -2938,7 +2938,7 @@ GLFWAPI void glfwFocusWindow(GLFWwindow* window);
  *
  *  @sa @ref window_drag
  *
- *  @since Added in version 3.2.
+ *  @since Added in version 3.3.
  *
  *  @ingroup window
  */

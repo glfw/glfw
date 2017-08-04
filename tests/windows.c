@@ -88,6 +88,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     }
 }
 
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+        glfwDragWindow(window);
+}
+
 int main(int argc, char** argv)
 {
     int i, ch;
@@ -131,6 +137,7 @@ int main(int argc, char** argv)
         }
 
         glfwSetKeyCallback(windows[i], key_callback);
+        glfwSetMouseButtonCallback(windows[i], mouse_button_callback);
 
         glfwMakeContextCurrent(windows[i]);
         gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);

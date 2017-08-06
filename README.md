@@ -216,6 +216,7 @@ information on what to include when reporting a bug.
 - [Cocoa] Bugfix: Value range was ignored for joystick hats and buttons (#888)
 - [Cocoa] Bugfix: Full screen framebuffer was incorrectly sized for some video
                   modes (#682)
+- [Cocoa] Bugfix: A string object for IME was updated non-idiomatically (#1050)
 - [WGL] Added support for `WGL_EXT_colorspace` for OpenGL ES contexts
 - [WGL] Added support for `WGL_ARB_create_context_no_error`
 - [GLX] Added support for `GLX_ARB_create_context_no_error`

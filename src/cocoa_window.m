@@ -698,10 +698,11 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         selectedRange:(NSRange)selectedRange
      replacementRange:(NSRange)replacementRange
 {
+    [markedText release];
     if ([string isKindOfClass:[NSAttributedString class]])
-        [markedText initWithAttributedString:string];
+        markedText = [[NSMutableAttributedString alloc] initWithAttributedString:string];
     else
-        [markedText initWithString:string];
+        markedText = [[NSMutableAttributedString alloc] initWithString:string];
 }
 
 - (void)unmarkText

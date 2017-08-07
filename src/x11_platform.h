@@ -265,6 +265,7 @@ typedef struct _GLFWlibraryX11
     // Selection (clipboard) atoms
     Atom            TARGETS;
     Atom            MULTIPLE;
+    Atom            INCR;
     Atom            CLIPBOARD;
     Atom            PRIMARY;
     Atom            CLIPBOARD_MANAGER;

@@ -675,6 +675,7 @@ static GLFWbool initExtensions(void)
     _glfw.x11.TARGETS = XInternAtom(_glfw.x11.display, "TARGETS", False);
     _glfw.x11.MULTIPLE = XInternAtom(_glfw.x11.display, "MULTIPLE", False);
     _glfw.x11.PRIMARY = XInternAtom(_glfw.x11.display, "PRIMARY", False);
+    _glfw.x11.INCR = XInternAtom(_glfw.x11.display, "INCR", False);
     _glfw.x11.CLIPBOARD = XInternAtom(_glfw.x11.display, "CLIPBOARD", False);
 
     // Clipboard manager atoms

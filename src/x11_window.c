@@ -164,6 +164,17 @@ static Bool isFrameExtentsEvent(Display* display, XEvent* event, XPointer pointe
            event->xproperty.atom == _glfw.x11.NET_FRAME_EXTENTS;
 }
 
+// Returns whether it is a property event for the specified selection transfer
+//
+static Bool isSelPropNewValueNotify(Display* display, XEvent* event, XPointer pointer)
+{
+    XEvent* notification = (XEvent*) pointer;
+    return event->type == PropertyNotify &&
+           event->xproperty.state == PropertyNewValue &&
+           event->xproperty.window == notification->xselection.requestor &&
+           event->xproperty.atom == notification->xselection.property;
+}
+
 // Translates a GLFW standard cursor to a font cursor shape
 //
 static int translateCursorShape(int shape)
@@ -841,10 +852,10 @@ static const char* getSelectionString(Atom selection)
 {
     size_t i;
     char** selectionString = NULL;
-    const Atom formats[] = { _glfw.x11.UTF8_STRING,
+    const Atom targets[] = { _glfw.x11.UTF8_STRING,
                              _glfw.x11.COMPOUND_STRING,
                              XA_STRING };
-    const size_t formatCount = sizeof(formats) / sizeof(formats[0]);
+    const size_t targetCount = sizeof(targets) / sizeof(targets[0]);
 
     if (selection == _glfw.x11.PRIMARY)
         selectionString = &_glfw.x11.primarySelectionString;
@@ -862,14 +873,17 @@ static const char* getSelectionString(Atom selection)
     free(*selectionString);
     *selectionString = NULL;
 
-    for (i = 0;  i < formatCount;  i++)
+    for (i = 0;  i < targetCount;  i++)
     {
         char* data;
-        XEvent event;
+        Atom actualType;
+        int actualFormat;
+        unsigned long itemCount, bytesAfter;
+        XEvent notification, dummy;
 
         XConvertSelection(_glfw.x11.display,
                           selection,
-                          formats[i],
+                          targets[i],
                           _glfw.x11.GLFW_SELECTION,
                           _glfw.x11.helperWindowHandle,
                           CurrentTime);
@@ -877,28 +891,76 @@ static const char* getSelectionString(Atom selection)
         while (!XCheckTypedWindowEvent(_glfw.x11.display,
                                        _glfw.x11.helperWindowHandle,
                                        SelectionNotify,
-                                       &event))
+                                       &notification))
         {
             waitForEvent(NULL);
         }
 
-        if (event.xselection.property == None)
+        if (notification.xselection.property == None)
             continue;
 
-        if (_glfwGetWindowPropertyX11(event.xselection.requestor,
-                                      event.xselection.property,
-                                      event.xselection.target,
-                                      (unsigned char**) &data))
+        XCheckIfEvent(_glfw.x11.display,
+                      &dummy,
+                      isSelPropNewValueNotify,
+                      (XPointer) &notification);
+
+        XGetWindowProperty(_glfw.x11.display,
+                           notification.xselection.requestor,
+                           notification.xselection.property,
+                           0,
+                           LONG_MAX,
+                           True,
+                           AnyPropertyType,
+                           &actualType,
+                           &actualFormat,
+                           &itemCount,
+                           &bytesAfter,
+                           (unsigned char**) &data);
+
+        if (actualType == _glfw.x11.INCR)
         {
-            *selectionString = strdup(data);
+            size_t size = 1;
+
+            for (;;)
+            {
+                while (!XCheckIfEvent(_glfw.x11.display,
+                                      &dummy,
+                                      isSelPropNewValueNotify,
+                                      (XPointer) &notification))
+                {
+                    waitForEvent(NULL);
+                }
+
+                XFree(data);
+                XGetWindowProperty(_glfw.x11.display,
+                                   notification.xselection.requestor,
+                                   notification.xselection.property,
+                                   0,
+                                   LONG_MAX,
+                                   True,
+                                   AnyPropertyType,
+                                   &actualType,
+                                   &actualFormat,
+                                   &itemCount,
+                                   &bytesAfter,
+                                   (unsigned char**) &data);
+
+                if (itemCount)
+                {
+                    size += itemCount;
+                    *selectionString = realloc(*selectionString, size);
+                    (*selectionString)[size - itemCount - 1] = '\0';
+                    strcat(*selectionString, data);
+                }
+
+                if (!itemCount)
+                    break;
+            }
         }
+        else if (actualType == targets[i])
+            *selectionString = strdup(data);
 
-        if (data)
-            XFree(data);
-
-        XDeleteProperty(_glfw.x11.display,
-                        event.xselection.requestor,
-                        event.xselection.property);
+        XFree(data);
 
         if (*selectionString)
             break;

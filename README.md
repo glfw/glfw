@@ -206,6 +206,7 @@ information on what to include when reporting a bug.
 - [X11] Bugfix: Gamma ramp setting via RandR did not validate ramp size
 - [X11] Bugfix: Key name string encoding depended on current locale (#981,#983)
 - [X11] Bugfix: Incremental reading of selections was not supported (#275)
+- [X11] Bugfix: Selection I/O reported but did not support `COMPOUND_TEXT`
 - [Linux] Moved to evdev for joystick input (#906,#1005)
 - [Linux] Bugfix: Event processing did not detect joystick disconnection (#932)
 - [Linux] Bugfix: The joystick device path could be truncated (#1025)

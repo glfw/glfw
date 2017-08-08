@@ -661,10 +661,7 @@ static GLFWbool initExtensions(void)
 
     // String format atoms
     _glfw.x11.NULL_ = XInternAtom(_glfw.x11.display, "NULL", False);
-    _glfw.x11.UTF8_STRING =
-        XInternAtom(_glfw.x11.display, "UTF8_STRING", False);
-    _glfw.x11.COMPOUND_STRING =
-        XInternAtom(_glfw.x11.display, "COMPOUND_STRING", False);
+    _glfw.x11.UTF8_STRING = XInternAtom(_glfw.x11.display, "UTF8_STRING", False);
     _glfw.x11.ATOM_PAIR = XInternAtom(_glfw.x11.display, "ATOM_PAIR", False);
 
     // Custom selection property atom

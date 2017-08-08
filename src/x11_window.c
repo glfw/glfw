@@ -683,9 +683,7 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
 {
     int i;
     char* selectionString = NULL;
-    const Atom formats[] = { _glfw.x11.UTF8_STRING,
-                             _glfw.x11.COMPOUND_STRING,
-                             XA_STRING };
+    const Atom formats[] = { _glfw.x11.UTF8_STRING, XA_STRING };
     const int formatCount = sizeof(formats) / sizeof(formats[0]);
 
     if (request->selection == _glfw.x11.PRIMARY)
@@ -707,7 +705,6 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
         const Atom targets[] = { _glfw.x11.TARGETS,
                                  _glfw.x11.MULTIPLE,
                                  _glfw.x11.UTF8_STRING,
-                                 _glfw.x11.COMPOUND_STRING,
                                  XA_STRING };
 
         XChangeProperty(_glfw.x11.display,
@@ -852,9 +849,7 @@ static const char* getSelectionString(Atom selection)
 {
     size_t i;
     char** selectionString = NULL;
-    const Atom targets[] = { _glfw.x11.UTF8_STRING,
-                             _glfw.x11.COMPOUND_STRING,
-                             XA_STRING };
+    const Atom targets[] = { _glfw.x11.UTF8_STRING, XA_STRING };
     const size_t targetCount = sizeof(targets) / sizeof(targets[0]);
 
     if (selection == _glfw.x11.PRIMARY)

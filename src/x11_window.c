@@ -460,6 +460,81 @@ static char** parseUriList(char* text, int* count)
     return paths;
 }
 
+// Encode a Unicode code point to a UTF-8 stream
+// Based on cutef8 by Jeff Bezanson (Public Domain)
+//
+static size_t encodeUTF8(char* s, unsigned int ch)
+{
+    size_t count = 0;
+
+    if (ch < 0x80)
+        s[count++] = (char) ch;
+    else if (ch < 0x800)
+    {
+        s[count++] = (ch >> 6) | 0xc0;
+        s[count++] = (ch & 0x3f) | 0x80;
+    }
+    else if (ch < 0x10000)
+    {
+        s[count++] = (ch >> 12) | 0xe0;
+        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
+        s[count++] = (ch & 0x3f) | 0x80;
+    }
+    else if (ch < 0x110000)
+    {
+        s[count++] = (ch >> 18) | 0xf0;
+        s[count++] = ((ch >> 12) & 0x3f) | 0x80;
+        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
+        s[count++] = (ch & 0x3f) | 0x80;
+    }
+
+    return count;
+}
+
+// Decode a Unicode code point from a UTF-8 stream
+// Based on cutef8 by Jeff Bezanson (Public Domain)
+//
+#if defined(X_HAVE_UTF8_STRING)
+static unsigned int decodeUTF8(const char** s)
+{
+    unsigned int ch = 0, count = 0;
+    static const unsigned int offsets[] =
+    {
+        0x00000000u, 0x00003080u, 0x000e2080u,
+        0x03c82080u, 0xfa082080u, 0x82082080u
+    };
+
+    do
+    {
+        ch = (ch << 6) + (unsigned char) **s;
+        (*s)++;
+        count++;
+    } while ((**s & 0xc0) == 0x80);
+
+    assert(count <= 6);
+    return ch - offsets[count - 1];
+}
+#endif /*X_HAVE_UTF8_STRING*/
+
+// Convert the specified Latin-1 string to UTF-8
+//
+static char* convertLatin1toUTF8(const char* source)
+{
+    size_t size = 1;
+    const char* sp;
+
+    for (sp = source;  *sp;  sp++)
+        size += (*sp & 0x80) ? 2 : 1;
+
+    char* target = calloc(size, 1);
+    char* tp = target;
+
+    for (sp = source;  *sp;  sp++)
+        tp += encodeUTF8(tp, *sp);
+
+    return target;
+}
+
 // Centers the cursor over the window client area
 //
 static void centerCursor(_GLFWwindow* window)
@@ -915,6 +990,7 @@ static const char* getSelectionString(Atom selection)
         if (actualType == _glfw.x11.INCR)
         {
             size_t size = 1;
+            char* string = NULL;
 
             for (;;)
             {
@@ -943,17 +1019,32 @@ static const char* getSelectionString(Atom selection)
                 if (itemCount)
                 {
                     size += itemCount;
-                    *selectionString = realloc(*selectionString, size);
-                    (*selectionString)[size - itemCount - 1] = '\0';
-                    strcat(*selectionString, data);
+                    string = realloc(string, size);
+                    string[size - itemCount - 1] = '\0';
+                    strcat(string, data);
                 }
 
                 if (!itemCount)
+                {
+                    if (targets[i] == XA_STRING)
+                    {
+                        *selectionString = convertLatin1toUTF8(string);
+                        free(string);
+                    }
+                    else
+                        *selectionString = string;
+
                     break;
+                }
             }
         }
         else if (actualType == targets[i])
-            *selectionString = strdup(data);
+        {
+            if (targets[i] == XA_STRING)
+                *selectionString = convertLatin1toUTF8(data);
+            else
+                *selectionString = strdup(data);
+        }
 
         XFree(data);
 
@@ -1034,62 +1125,6 @@ static void releaseMonitor(_GLFWwindow* window)
                         _glfw.x11.saver.exposure);
     }
 }
-
-// Encode a Unicode code point to a UTF-8 stream
-// Based on cutef8 by Jeff Bezanson (Public Domain)
-//
-static size_t encodeUTF8(char* s, unsigned int ch)
-{
-    size_t count = 0;
-
-    if (ch < 0x80)
-        s[count++] = (char) ch;
-    else if (ch < 0x800)
-    {
-        s[count++] = (ch >> 6) | 0xc0;
-        s[count++] = (ch & 0x3f) | 0x80;
-    }
-    else if (ch < 0x10000)
-    {
-        s[count++] = (ch >> 12) | 0xe0;
-        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
-        s[count++] = (ch & 0x3f) | 0x80;
-    }
-    else if (ch < 0x110000)
-    {
-        s[count++] = (ch >> 18) | 0xf0;
-        s[count++] = ((ch >> 12) & 0x3f) | 0x80;
-        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
-        s[count++] = (ch & 0x3f) | 0x80;
-    }
-
-    return count;
-}
-
-// Decode a Unicode code point from a UTF-8 stream
-// Based on cutef8 by Jeff Bezanson (Public Domain)
-//
-#if defined(X_HAVE_UTF8_STRING)
-static unsigned int decodeUTF8(const char** s)
-{
-    unsigned int ch = 0, count = 0;
-    static const unsigned int offsets[] =
-    {
-        0x00000000u, 0x00003080u, 0x000e2080u,
-        0x03c82080u, 0xfa082080u, 0x82082080u
-    };
-
-    do
-    {
-        ch = (ch << 6) + (unsigned char) **s;
-        (*s)++;
-        count++;
-    } while ((**s & 0xc0) == 0x80);
-
-    assert(count <= 6);
-    return ch - offsets[count - 1];
-}
-#endif /*X_HAVE_UTF8_STRING*/
 
 // Process the specified X event
 //

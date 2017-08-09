@@ -266,28 +266,17 @@ GLFWbool _glfwInitJoysticksLinux(void)
     const char* dirname = "/dev/input";
 
     _glfw.linjs.inotify = inotify_init1(IN_NONBLOCK | IN_CLOEXEC);
-    if (_glfw.linjs.inotify == -1)
+    if (_glfw.linjs.inotify > 0)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Linux: Failed to initialize inotify: %s",
-                        strerror(errno));
-        return GLFW_FALSE;
+        // HACK: Register for IN_ATTRIB to get notified when udev is done
+        //       This works well in practice but the true way is libudev
+
+        _glfw.linjs.watch = inotify_add_watch(_glfw.linjs.inotify,
+                                              dirname,
+                                              IN_CREATE | IN_ATTRIB | IN_DELETE);
     }
 
-    // HACK: Register for IN_ATTRIB as well to get notified when udev is done
-    //       This works well in practice but the true way is libudev
-
-    _glfw.linjs.watch = inotify_add_watch(_glfw.linjs.inotify,
-                                          dirname,
-                                          IN_CREATE | IN_ATTRIB | IN_DELETE);
-    if (_glfw.linjs.watch == -1)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Linux: Failed to watch for joystick connections in %s: %s",
-                        dirname,
-                        strerror(errno));
-        // Continue without device connection notifications
-    }
+    // Continue without device connection notifications if inotify fails
 
     if (regcomp(&_glfw.linjs.regex, "^event[0-9]\\+$", 0) != 0)
     {
@@ -318,13 +307,8 @@ GLFWbool _glfwInitJoysticksLinux(void)
         closedir(dir);
     }
     else
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Linux: Failed to open joystick device directory %s: %s",
-                        dirname,
-                        strerror(errno));
-        // Continue with no joysticks detected
-    }
+
+    // Continue with no joysticks if enumeration fails
 
     qsort(_glfw.joysticks, count, sizeof(_GLFWjoystick), compareJoysticks);
     return GLFW_TRUE;
@@ -358,6 +342,9 @@ void _glfwDetectJoystickConnectionLinux(void)
 {
     ssize_t offset = 0;
     char buffer[16384];
+
+    if (_glfw.linjs.inotify <= 0)
+        return;
 
     const ssize_t size = read(_glfw.linjs.inotify, buffer, sizeof(buffer));
 

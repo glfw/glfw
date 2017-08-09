@@ -199,6 +199,7 @@ information on what to include when reporting a bug.
 - [Linux] Moved to evdev for joystick input (#906,#1005)
 - [Linux] Bugfix: Event processing did not detect joystick disconnection (#932)
 - [Linux] Bugfix: The joystick device path could be truncated (#1025)
+- [Linux] Bugfix: `glfwInit` would fail if inotify creation failed (#833)
 - [Cocoa] Added support for Vulkan window surface creation via
           [MoltenVK](https://moltengl.com/moltenvk/) (#870)
 - [Cocoa] Added support for loading a `MainMenu.nib` when available

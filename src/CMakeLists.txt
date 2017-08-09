@@ -75,7 +75,7 @@ set_target_properties(glfw PROPERTIES
                       FOLDER "GLFW3")
 
 target_compile_definitions(glfw PRIVATE
-                           -D_GLFW_USE_CONFIG_H
+                           _GLFW_USE_CONFIG_H
                            $<$<BOOL:${UNIX}>:_XOPEN_SOURCE=500>)
 target_include_directories(glfw PUBLIC
                            $<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>
@@ -120,7 +120,7 @@ if (BUILD_SHARED_LIBS)
         target_compile_options(glfw PRIVATE "-fvisibility=hidden")
     endif()
 
-    target_compile_definitions(glfw INTERFACE -DGLFW_DLL)
+    target_compile_definitions(glfw INTERFACE GLFW_DLL)
     target_link_libraries(glfw PRIVATE ${glfw_LIBRARIES})
 else()
     target_link_libraries(glfw INTERFACE ${glfw_LIBRARIES})

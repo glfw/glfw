@@ -202,6 +202,7 @@ information on what to include when reporting a bug.
 - [Linux] Bugfix: Event processing did not detect joystick disconnection (#932)
 - [Linux] Bugfix: The joystick device path could be truncated (#1025)
 - [Linux] Bugfix: `glfwInit` would fail if inotify creation failed (#833)
+- [Linux] Bugfix: `strdup` was used without any required feature macro (#1055)
 - [Cocoa] Added support for Vulkan window surface creation via
           [MoltenVK](https://moltengl.com/moltenvk/) (#870)
 - [Cocoa] Added support for loading a `MainMenu.nib` when available

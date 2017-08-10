@@ -611,6 +611,7 @@ static GLFWbool initExtensions(void)
     // ICCCM standard clipboard atoms
     _glfw.x11.TARGETS = XInternAtom(_glfw.x11.display, "TARGETS", False);
     _glfw.x11.MULTIPLE = XInternAtom(_glfw.x11.display, "MULTIPLE", False);
+    _glfw.x11.PRIMARY = XInternAtom(_glfw.x11.display, "PRIMARY", False);
     _glfw.x11.CLIPBOARD = XInternAtom(_glfw.x11.display, "CLIPBOARD", False);
 
     // Clipboard manager atoms
@@ -853,6 +854,7 @@ void _glfwPlatformTerminate(void)
         _glfw.x11.hiddenCursorHandle = (Cursor) 0;
     }
 
+    free(_glfw.x11.primarySelectionString);
     free(_glfw.x11.clipboardString);
 
     if (_glfw.x11.im)

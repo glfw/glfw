@@ -124,6 +124,9 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+- Added `glfwSetX11SelectionString` and `glfwGetX11SelectionString`
+  native functions for accessing X11 primary selection as a supplement to
+  the clipboard on the X11 platform (#894)
 - Added `glfwGetError` function for querying the last error code and its
   description (#970)
 - Added `glfwUpdateGamepadMappings` function for importing gamepad mappings in

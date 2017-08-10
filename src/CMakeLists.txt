@@ -76,7 +76,7 @@ set_target_properties(glfw PROPERTIES
 
 target_compile_definitions(glfw PRIVATE
                            _GLFW_USE_CONFIG_H
-                           $<$<BOOL:${UNIX}>:_XOPEN_SOURCE=500>)
+                           $<$<BOOL:${UNIX}>:_XOPEN_SOURCE=600>)
 target_include_directories(glfw PUBLIC
                            $<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>
                            $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>)

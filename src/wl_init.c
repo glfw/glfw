@@ -294,7 +294,7 @@ static int toGLFWKeyCode(uint32_t key)
 
 static xkb_keysym_t composeSymbol(xkb_keysym_t sym)
 {
-    if (sym == XKB_KEY_NoSymbol)
+    if (sym == XKB_KEY_NoSymbol || !_glfw.wl.xkb.composeState)
         return sym;
     if (xkb_compose_state_feed(_glfw.wl.xkb.composeState, sym)
             != XKB_COMPOSE_FEED_ACCEPTED)

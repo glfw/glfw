@@ -124,9 +124,6 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
-- Added `glfwSetX11SelectionString` and `glfwGetX11SelectionString`
-  native functions for accessing X11 primary selection as a supplement to
-  the clipboard on the X11 platform (#894)
 - Added `glfwGetError` function for querying the last error code and its
   description (#970)
 - Added `glfwUpdateGamepadMappings` function for importing gamepad mappings in
@@ -149,6 +146,8 @@ information on what to include when reporting a bug.
 - Added `glfwGetJoystickHats` function for querying joystick hats
   (#889,#906,#934)
 - Added `glfwInitHint` and `glfwInitHintString` for setting initialization hints
+- Added `glfwGetX11SelectionString` and `glfwSetX11SelectionString`
+  functions for accessing X11 primary selection (#894,#1056)
 - Added headless [OSMesa](http://mesa3d.org/osmesa.html) backend (#850)
 - Added definition of `GLAPIENTRY` to public header
 - Added `GLFW_CENTER_CURSOR` window hint for controlling cursor centering
@@ -333,6 +332,7 @@ skills.
  - Jon Morton
  - Pierre Moulon
  - Julian Møller
+ - Kristian Nielsen
  - Kamil Nowakowski
  - Ozzy
  - Andri Pálsson

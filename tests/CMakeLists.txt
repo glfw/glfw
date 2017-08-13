@@ -30,6 +30,7 @@ add_executable(cursor cursor.c ${GLAD})
 add_executable(empty WIN32 MACOSX_BUNDLE empty.c ${TINYCTHREAD} ${GLAD})
 add_executable(gamma WIN32 MACOSX_BUNDLE gamma.c ${GLAD})
 add_executable(icon WIN32 MACOSX_BUNDLE icon.c ${GLAD})
+add_executable(inputlag WIN32 MACOSX_BUNDLE inputlag.c ${GETOPT} ${GLAD})
 add_executable(joysticks WIN32 MACOSX_BUNDLE joysticks.c ${GLAD})
 add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c ${GETOPT} ${GLAD})
 add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c ${GETOPT} ${GLAD})
@@ -45,8 +46,8 @@ if (RT_LIBRARY)
     target_link_libraries(threads "${RT_LIBRARY}")
 endif()
 
-set(WINDOWS_BINARIES empty gamma icon joysticks sharing tearing threads timeout
-                     title windows)
+set(WINDOWS_BINARIES empty gamma icon inputlag joysticks sharing tearing threads
+                     timeout title windows)
 set(CONSOLE_BINARIES clipboard events msaa glfwinfo iconify monitors reopen
                      cursor)
 
@@ -73,6 +74,7 @@ endif()
 if (APPLE)
     set_target_properties(empty PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Empty Event")
     set_target_properties(gamma PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Gamma")
+    set_target_properties(inputlag PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Input Lag")
     set_target_properties(joysticks PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Joysticks")
     set_target_properties(sharing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Sharing")
     set_target_properties(tearing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Tearing")

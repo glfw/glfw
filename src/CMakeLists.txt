@@ -66,6 +66,18 @@ if (APPLE)
     set_source_files_properties(${glfw_SOURCES} PROPERTIES LANGUAGE C)
 endif()
 
+# Make GCC and Clang warn about declarations that VS 2010 and 2012 won't accept
+# for all source files that VS will build
+if (${CMAKE_C_COMPILER_ID} STREQUAL GNU OR ${CMAKE_C_COMPILER_ID} STREQUAL Clang)
+    if (WIN32)
+        set(windows_SOURCES ${glfw_SOURCES})
+    else()
+        set(windows_SOURCES ${common_SOURCES})
+    endif()
+    set_source_files_properties(${windows_SOURCES} PROPERTIES
+        COMPILE_FLAGS -Wdeclaration-after-statement)
+endif()
+
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
 set_target_properties(glfw PROPERTIES
                       OUTPUT_NAME ${GLFW_LIB_NAME}

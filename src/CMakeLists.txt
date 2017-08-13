@@ -7,7 +7,7 @@ set(common_SOURCES context.c init.c input.c monitor.c vulkan.c window.c)
 
 if (_GLFW_COCOA)
     set(glfw_HEADERS ${common_HEADERS} cocoa_platform.h cocoa_joystick.h
-                     posix_thread.h nsgl_context.h egl_context.h osmesa_context.c)
+                     posix_thread.h nsgl_context.h egl_context.h osmesa_context.h)
     set(glfw_SOURCES ${common_SOURCES} cocoa_init.m cocoa_joystick.m
                      cocoa_monitor.m cocoa_window.m cocoa_time.c posix_thread.c
                      nsgl_context.m egl_context.c osmesa_context.c)

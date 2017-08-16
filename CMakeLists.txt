@@ -252,12 +252,10 @@ if (_GLFW_X11)
 
     # Check for Xinerama (legacy multi-monitor support)
     if (NOT X11_Xinerama_FOUND)
-        message(FATAL_ERROR "The Xinerama library and headers were not found")
+        message(FATAL_ERROR "The Xinerama headers were not found")
     endif()
 
     list(APPEND glfw_INCLUDE_DIRS "${X11_Xinerama_INCLUDE_PATH}")
-    list(APPEND glfw_LIBRARIES "${X11_Xinerama_LIB}")
-    list(APPEND glfw_PKG_DEPS "xinerama")
 
     # Check for Xkb (X keyboard extension)
     if (NOT X11_Xkb_FOUND)

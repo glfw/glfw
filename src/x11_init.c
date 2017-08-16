@@ -593,12 +593,23 @@ static GLFWbool initExtensions(void)
                        RROutputChangeNotifyMask);
     }
 
-    if (XineramaQueryExtension(_glfw.x11.display,
-                               &_glfw.x11.xinerama.major,
-                               &_glfw.x11.xinerama.minor))
+    _glfw.x11.xinerama.handle = dlopen("libXinerama.so.1", RTLD_LAZY | RTLD_GLOBAL);
+    if (_glfw.x11.xinerama.handle)
     {
-        if (XineramaIsActive(_glfw.x11.display))
-            _glfw.x11.xinerama.available = GLFW_TRUE;
+        _glfw.x11.xinerama.IsActive = (PFN_XineramaIsActive)
+            dlsym(_glfw.x11.xinerama.handle, "XineramaIsActive");
+        _glfw.x11.xinerama.QueryExtension = (PFN_XineramaQueryExtension)
+            dlsym(_glfw.x11.xinerama.handle, "XineramaQueryExtension");
+        _glfw.x11.xinerama.QueryScreens = (PFN_XineramaQueryScreens)
+            dlsym(_glfw.x11.xinerama.handle, "XineramaQueryScreens");
+
+        if (XineramaQueryExtension(_glfw.x11.display,
+                                   &_glfw.x11.xinerama.major,
+                                   &_glfw.x11.xinerama.minor))
+        {
+            if (XineramaIsActive(_glfw.x11.display))
+                _glfw.x11.xinerama.available = GLFW_TRUE;
+        }
     }
 
     _glfw.x11.xkb.major = 1;
@@ -881,6 +892,12 @@ void _glfwPlatformTerminate(void)
     {
         dlclose(_glfw.x11.randr.handle);
         _glfw.x11.randr.handle = NULL;
+    }
+
+    if (_glfw.x11.xinerama.handle)
+    {
+        dlclose(_glfw.x11.xinerama.handle);
+        _glfw.x11.xinerama.handle = NULL;
     }
 
     if (_glfw.x11.helperWindowHandle)

@@ -82,6 +82,13 @@ typedef int (* PFN_XRRUpdateConfiguration)(XEvent*);
 #define XRRSetCrtcGamma _glfw.x11.randr.SetCrtcGamma
 #define XRRUpdateConfiguration _glfw.x11.randr.UpdateConfiguration
 
+typedef Bool (* PFN_XineramaIsActive)(Display*);
+typedef Bool (* PFN_XineramaQueryExtension)(Display*,int*,int*);
+typedef XineramaScreenInfo* (* PFN_XineramaQueryScreens)(Display*,int*);
+#define XineramaIsActive _glfw.x11.xinerama.IsActive
+#define XineramaQueryExtension _glfw.x11.xinerama.QueryExtension
+#define XineramaQueryScreens _glfw.x11.xinerama.QueryScreens
+
 typedef XID xcb_window_t;
 typedef XID xcb_visualid_t;
 typedef struct xcb_connection_t xcb_connection_t;
@@ -314,8 +321,12 @@ typedef struct _GLFWlibraryX11
 
     struct {
         GLFWbool    available;
+        void*       handle;
         int         major;
         int         minor;
+        PFN_XineramaIsActive IsActive;
+        PFN_XineramaQueryExtension QueryExtension;
+        PFN_XineramaQueryScreens QueryScreens;
     } xinerama;
 
     struct {

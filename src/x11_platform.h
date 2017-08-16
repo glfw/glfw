@@ -82,6 +82,13 @@ typedef int (* PFN_XRRUpdateConfiguration)(XEvent*);
 #define XRRSetCrtcGamma _glfw.x11.randr.SetCrtcGamma
 #define XRRUpdateConfiguration _glfw.x11.randr.UpdateConfiguration
 
+typedef XcursorImage* (* PFN_XcursorImageCreate)(int,int);
+typedef void (* PFN_XcursorImageDestroy)(XcursorImage*);
+typedef Cursor (* PFN_XcursorImageLoadCursor)(Display*,const XcursorImage*);
+#define XcursorImageCreate _glfw.x11.xcursor.ImageCreate
+#define XcursorImageDestroy _glfw.x11.xcursor.ImageDestroy
+#define XcursorImageLoadCursor _glfw.x11.xcursor.ImageLoadCursor
+
 typedef Bool (* PFN_XineramaIsActive)(Display*);
 typedef Bool (* PFN_XineramaQueryExtension)(Display*,int*,int*);
 typedef XineramaScreenInfo* (* PFN_XineramaQueryScreens)(Display*,int*);
@@ -318,6 +325,13 @@ typedef struct _GLFWlibraryX11
         Window      source;
         Atom        format;
     } xdnd;
+
+    struct {
+        void*       handle;
+        PFN_XcursorImageCreate ImageCreate;
+        PFN_XcursorImageDestroy ImageDestroy;
+        PFN_XcursorImageLoadCursor ImageLoadCursor;
+    } xcursor;
 
     struct {
         GLFWbool    available;

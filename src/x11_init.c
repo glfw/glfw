@@ -593,6 +593,17 @@ static GLFWbool initExtensions(void)
                        RROutputChangeNotifyMask);
     }
 
+    _glfw.x11.xcursor.handle = dlopen("libXcursor.so.1", RTLD_LAZY | RTLD_GLOBAL);
+    if (_glfw.x11.xcursor.handle)
+    {
+        _glfw.x11.xcursor.ImageCreate = (PFN_XcursorImageCreate)
+            dlsym(_glfw.x11.xcursor.handle, "XcursorImageCreate");
+        _glfw.x11.xcursor.ImageDestroy = (PFN_XcursorImageDestroy)
+            dlsym(_glfw.x11.xcursor.handle, "XcursorImageDestroy");
+        _glfw.x11.xcursor.ImageLoadCursor = (PFN_XcursorImageLoadCursor)
+            dlsym(_glfw.x11.xcursor.handle, "XcursorImageLoadCursor");
+    }
+
     _glfw.x11.xinerama.handle = dlopen("libXinerama.so.1", RTLD_LAZY | RTLD_GLOBAL);
     if (_glfw.x11.xinerama.handle)
     {
@@ -782,6 +793,9 @@ Cursor _glfwCreateCursorX11(const GLFWimage* image, int xhot, int yhot)
     int i;
     Cursor cursor;
 
+    if (!_glfw.x11.xcursor.handle)
+        return None;
+
     XcursorImage* native = XcursorImageCreate(image->width, image->height);
     if (native == NULL)
         return None;
@@ -892,6 +906,12 @@ void _glfwPlatformTerminate(void)
     {
         dlclose(_glfw.x11.randr.handle);
         _glfw.x11.randr.handle = NULL;
+    }
+
+    if (_glfw.x11.xcursor.handle)
+    {
+        dlclose(_glfw.x11.xcursor.handle);
+        _glfw.x11.xcursor.handle = NULL;
     }
 
     if (_glfw.x11.xinerama.handle)

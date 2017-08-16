@@ -248,29 +248,25 @@ if (_GLFW_X11)
         message(FATAL_ERROR "The RandR headers were not found")
     endif()
 
-    list(APPEND glfw_INCLUDE_DIRS "${X11_Xrandr_INCLUDE_PATH}")
-
     # Check for Xinerama (legacy multi-monitor support)
     if (NOT X11_Xinerama_FOUND)
         message(FATAL_ERROR "The Xinerama headers were not found")
     endif()
-
-    list(APPEND glfw_INCLUDE_DIRS "${X11_Xinerama_INCLUDE_PATH}")
 
     # Check for Xkb (X keyboard extension)
     if (NOT X11_Xkb_FOUND)
         message(FATAL_ERROR "The X keyboard extension headers were not found")
     endif()
 
-    list(APPEND glfw_INCLUDE_DIR "${X11_Xkb_INCLUDE_PATH}")
-
-    # Check for Xcursor
+    # Check for Xcursor (cursor creation from RGBA images)
     if (NOT X11_Xcursor_FOUND)
         message(FATAL_ERROR "The Xcursor headers were not found")
     endif()
 
-    list(APPEND glfw_INCLUDE_DIR "${X11_Xcursor_INCLUDE_PATH}")
-
+    list(APPEND glfw_INCLUDE_DIRS "${X11_Xrandr_INCLUDE_PATH}"
+                                  "${X11_Xinerama_INCLUDE_PATH}"
+                                  "${X11_Xkb_INCLUDE_PATH}"
+                                  "${X11_Xcursor_INCLUDE_PATH}")
 endif()
 
 #--------------------------------------------------------------------

@@ -896,30 +896,6 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
-    if (_glfw.x11.x11xcb.handle)
-    {
-        dlclose(_glfw.x11.x11xcb.handle);
-        _glfw.x11.x11xcb.handle = NULL;
-    }
-
-    if (_glfw.x11.randr.handle)
-    {
-        dlclose(_glfw.x11.randr.handle);
-        _glfw.x11.randr.handle = NULL;
-    }
-
-    if (_glfw.x11.xcursor.handle)
-    {
-        dlclose(_glfw.x11.xcursor.handle);
-        _glfw.x11.xcursor.handle = NULL;
-    }
-
-    if (_glfw.x11.xinerama.handle)
-    {
-        dlclose(_glfw.x11.xinerama.handle);
-        _glfw.x11.xinerama.handle = NULL;
-    }
-
     if (_glfw.x11.helperWindowHandle)
     {
         if (XGetSelectionOwner(_glfw.x11.display, _glfw.x11.CLIPBOARD) ==
@@ -953,6 +929,30 @@ void _glfwPlatformTerminate(void)
     {
         XCloseDisplay(_glfw.x11.display);
         _glfw.x11.display = NULL;
+    }
+
+    if (_glfw.x11.x11xcb.handle)
+    {
+        dlclose(_glfw.x11.x11xcb.handle);
+        _glfw.x11.x11xcb.handle = NULL;
+    }
+
+    if (_glfw.x11.xcursor.handle)
+    {
+        dlclose(_glfw.x11.xcursor.handle);
+        _glfw.x11.xcursor.handle = NULL;
+    }
+
+    if (_glfw.x11.randr.handle)
+    {
+        dlclose(_glfw.x11.randr.handle);
+        _glfw.x11.randr.handle = NULL;
+    }
+
+    if (_glfw.x11.xinerama.handle)
+    {
+        dlclose(_glfw.x11.xinerama.handle);
+        _glfw.x11.xinerama.handle = NULL;
     }
 
     // NOTE: This needs to be done after XCloseDisplay, as libGL registers

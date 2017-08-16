@@ -47,6 +47,41 @@
 // The XInput extension provides raw mouse motion input
 #include <X11/extensions/XInput2.h>
 
+typedef XRRCrtcGamma* (* PFN_XRRAllocGamma)(int);
+typedef void (* PFN_XRRFreeCrtcInfo)(XRRCrtcInfo*);
+typedef void (* PFN_XRRFreeGamma)(XRRCrtcGamma*);
+typedef void (* PFN_XRRFreeOutputInfo)(XRROutputInfo*);
+typedef void (* PFN_XRRFreeScreenResources)(XRRScreenResources*);
+typedef XRRCrtcGamma* (* PFN_XRRGetCrtcGamma)(Display*,RRCrtc);
+typedef int (* PFN_XRRGetCrtcGammaSize)(Display*,RRCrtc);
+typedef XRRCrtcInfo* (* PFN_XRRGetCrtcInfo) (Display*,XRRScreenResources*,RRCrtc);
+typedef XRROutputInfo* (* PFN_XRRGetOutputInfo)(Display*,XRRScreenResources*,RROutput);
+typedef RROutput (* PFN_XRRGetOutputPrimary)(Display*,Window);
+typedef XRRScreenResources* (* PFN_XRRGetScreenResourcesCurrent)(Display*,Window);
+typedef Bool (* PFN_XRRQueryExtension)(Display*,int*,int*);
+typedef Status (* PFN_XRRQueryVersion)(Display*,int*,int*);
+typedef void (* PFN_XRRSelectInput)(Display*,Window,int);
+typedef Status (* PFN_XRRSetCrtcConfig)(Display*,XRRScreenResources*,RRCrtc,Time,int,int,RRMode,Rotation,RROutput*,int);
+typedef void (* PFN_XRRSetCrtcGamma)(Display*,RRCrtc,XRRCrtcGamma*);
+typedef int (* PFN_XRRUpdateConfiguration)(XEvent*);
+#define XRRAllocGamma _glfw.x11.randr.AllocGamma
+#define XRRFreeCrtcInfo _glfw.x11.randr.FreeCrtcInfo
+#define XRRFreeGamma _glfw.x11.randr.FreeGamma
+#define XRRFreeOutputInfo _glfw.x11.randr.FreeOutputInfo
+#define XRRFreeScreenResources _glfw.x11.randr.FreeScreenResources
+#define XRRGetCrtcGamma _glfw.x11.randr.GetCrtcGamma
+#define XRRGetCrtcGammaSize _glfw.x11.randr.GetCrtcGammaSize
+#define XRRGetCrtcInfo _glfw.x11.randr.GetCrtcInfo
+#define XRRGetOutputInfo _glfw.x11.randr.GetOutputInfo
+#define XRRGetOutputPrimary _glfw.x11.randr.GetOutputPrimary
+#define XRRGetScreenResourcesCurrent _glfw.x11.randr.GetScreenResourcesCurrent
+#define XRRQueryExtension _glfw.x11.randr.QueryExtension
+#define XRRQueryVersion _glfw.x11.randr.QueryVersion
+#define XRRSelectInput _glfw.x11.randr.SelectInput
+#define XRRSetCrtcConfig _glfw.x11.randr.SetCrtcConfig
+#define XRRSetCrtcGamma _glfw.x11.randr.SetCrtcGamma
+#define XRRUpdateConfiguration _glfw.x11.randr.UpdateConfiguration
+
 typedef XID xcb_window_t;
 typedef XID xcb_visualid_t;
 typedef struct xcb_connection_t xcb_connection_t;
@@ -227,12 +262,30 @@ typedef struct _GLFWlibraryX11
 
     struct {
         GLFWbool    available;
+        void*       handle;
         int         eventBase;
         int         errorBase;
         int         major;
         int         minor;
         GLFWbool    gammaBroken;
         GLFWbool    monitorBroken;
+        PFN_XRRAllocGamma AllocGamma;
+        PFN_XRRFreeCrtcInfo FreeCrtcInfo;
+        PFN_XRRFreeGamma FreeGamma;
+        PFN_XRRFreeOutputInfo FreeOutputInfo;
+        PFN_XRRFreeScreenResources FreeScreenResources;
+        PFN_XRRGetCrtcGamma GetCrtcGamma;
+        PFN_XRRGetCrtcGammaSize GetCrtcGammaSize;
+        PFN_XRRGetCrtcInfo GetCrtcInfo;
+        PFN_XRRGetOutputInfo GetOutputInfo;
+        PFN_XRRGetOutputPrimary GetOutputPrimary;
+        PFN_XRRGetScreenResourcesCurrent GetScreenResourcesCurrent;
+        PFN_XRRQueryExtension QueryExtension;
+        PFN_XRRQueryVersion QueryVersion;
+        PFN_XRRSelectInput SelectInput;
+        PFN_XRRSetCrtcConfig SetCrtcConfig;
+        PFN_XRRSetCrtcGamma SetCrtcGamma;
+        PFN_XRRUpdateConfiguration UpdateConfiguration;
     } randr;
 
     struct {

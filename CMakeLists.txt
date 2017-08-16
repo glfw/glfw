@@ -245,12 +245,10 @@ if (_GLFW_X11)
 
     # Check for XRandR (modern resolution switching and gamma control)
     if (NOT X11_Xrandr_FOUND)
-        message(FATAL_ERROR "The RandR library and headers were not found")
+        message(FATAL_ERROR "The RandR headers were not found")
     endif()
 
     list(APPEND glfw_INCLUDE_DIRS "${X11_Xrandr_INCLUDE_PATH}")
-    list(APPEND glfw_LIBRARIES "${X11_Xrandr_LIB}")
-    list(APPEND glfw_PKG_DEPS "xrandr")
 
     # Check for Xinerama (legacy multi-monitor support)
     if (NOT X11_Xinerama_FOUND)

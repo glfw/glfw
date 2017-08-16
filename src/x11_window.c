@@ -2705,8 +2705,7 @@ int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
             return GLFW_FALSE;
         }
 
-        xcb_connection_t* connection =
-            _glfw.x11.x11xcb.XGetXCBConnection(_glfw.x11.display);
+        xcb_connection_t* connection = XGetXCBConnection(_glfw.x11.display);
         if (!connection)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -2749,8 +2748,7 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
         VkXcbSurfaceCreateInfoKHR sci;
         PFN_vkCreateXcbSurfaceKHR vkCreateXcbSurfaceKHR;
 
-        xcb_connection_t* connection =
-            _glfw.x11.x11xcb.XGetXCBConnection(_glfw.x11.display);
+        xcb_connection_t* connection = XGetXCBConnection(_glfw.x11.display);
         if (!connection)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,

@@ -647,7 +647,7 @@ static GLFWbool initExtensions(void)
     _glfw.x11.x11xcb.handle = dlopen("libX11-xcb.so.1", RTLD_LAZY | RTLD_GLOBAL);
     if (_glfw.x11.x11xcb.handle)
     {
-        _glfw.x11.x11xcb.XGetXCBConnection = (PFN_XGetXCBConnection)
+        _glfw.x11.x11xcb.GetXCBConnection = (PFN_XGetXCBConnection)
             dlsym(_glfw.x11.x11xcb.handle, "XGetXCBConnection");
     }
 

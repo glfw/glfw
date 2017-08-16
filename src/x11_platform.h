@@ -100,6 +100,7 @@ typedef XID xcb_window_t;
 typedef XID xcb_visualid_t;
 typedef struct xcb_connection_t xcb_connection_t;
 typedef xcb_connection_t* (* PFN_XGetXCBConnection)(Display*);
+#define XGetXCBConnection _glfw.x11.x11xcb.GetXCBConnection
 
 typedef Bool (* PFN_XF86VidModeQueryExtension)(Display*,int*,int*);
 typedef Bool (* PFN_XF86VidModeGetGammaRamp)(Display*,int,int,unsigned short*,unsigned short*,unsigned short*);
@@ -345,7 +346,7 @@ typedef struct _GLFWlibraryX11
 
     struct {
         void*       handle;
-        PFN_XGetXCBConnection XGetXCBConnection;
+        PFN_XGetXCBConnection GetXCBConnection;
     } x11xcb;
 
     struct {

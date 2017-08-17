@@ -779,7 +779,7 @@ void _glfwReleaseErrorHandlerX11(void)
 //
 void _glfwInputErrorX11(int error, const char* message)
 {
-    char buffer[8192];
+    char buffer[_GLFW_MESSAGE_SIZE];
     XGetErrorText(_glfw.x11.display, _glfw.x11.errorCode,
                   buffer, sizeof(buffer));
 

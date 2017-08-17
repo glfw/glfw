@@ -148,7 +148,7 @@ static void terminate(void)
 void _glfwInputError(int code, const char* format, ...)
 {
     _GLFWerror* error;
-    char description[1024];
+    char description[_GLFW_MESSAGE_SIZE];
 
     if (format)
     {

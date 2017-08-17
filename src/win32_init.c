@@ -412,8 +412,8 @@ char* _glfwCreateUTF8FromWideStringWin32(const WCHAR* source)
 //
 void _glfwInputErrorWin32(int error, const char* description)
 {
-    WCHAR buffer[1024] = L"";
-    char message[2048] = "";
+    WCHAR buffer[_GLFW_MESSAGE_SIZE] = L"";
+    char message[_GLFW_MESSAGE_SIZE] = "";
 
     FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
                        FORMAT_MESSAGE_IGNORE_INSERTS |

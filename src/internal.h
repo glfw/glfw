@@ -54,6 +54,8 @@
 #define _GLFW_POLL_BUTTONS      2
 #define _GLFW_POLL_ALL          (_GLFW_POLL_AXES | _GLFW_POLL_BUTTONS)
 
+#define _GLFW_MESSAGE_SIZE      1024
+
 typedef int GLFWbool;
 
 typedef struct _GLFWerror       _GLFWerror;
@@ -263,7 +265,7 @@ struct _GLFWerror
 {
     _GLFWerror*     next;
     int             code;
-    char            description[1024];
+    char            description[_GLFW_MESSAGE_SIZE];
 };
 
 /*! @brief Initialization configuration.

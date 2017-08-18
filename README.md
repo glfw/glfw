@@ -385,6 +385,7 @@ skills.
  - Frank Wille
  - yuriks
  - Ryogo Yoshimura
+ - Andrey Zholos
  - Santi Zupancic
  - Jonas Ådahl
  - Lasse Öörni

@@ -181,7 +181,7 @@ endif()
 #--------------------------------------------------------------------
 if (GLFW_VULKAN_STATIC)
     if (VULKAN_FOUND AND VULKAN_STATIC_LIBRARY)
-        list(APPEND glfw_LIBRARIES ${VULKAN_STATIC_LIBRARY} ${GLFW_VULKAN_DEPS})
+        list(APPEND glfw_LIBRARIES "${VULKAN_STATIC_LIBRARY}" ${GLFW_VULKAN_DEPS})
         if (BUILD_SHARED_LIBS)
             message(WARNING "Linking Vulkan loader static library into GLFW")
         endif()
@@ -274,7 +274,7 @@ endif()
 #--------------------------------------------------------------------
 if (_GLFW_WAYLAND)
     find_package(ECM REQUIRED NO_MODULE)
-    list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+    list(APPEND CMAKE_MODULE_PATH "${ECM_MODULE_PATH}")
 
     find_package(Wayland REQUIRED)
     find_package(WaylandScanner REQUIRED)

@@ -180,8 +180,8 @@ typedef BOOL (WINAPI * PFN_ChangeWindowMessageFilterEx)(HWND,UINT,DWORD,PCHANGEF
 // dwmapi.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_DwmIsCompositionEnabled)(BOOL*);
 typedef HRESULT (WINAPI * PFN_DwmFlush)(VOID);
-#define _glfw_DwmIsCompositionEnabled _glfw.win32.dwmapi.DwmIsCompositionEnabled
-#define _glfw_DwmFlush _glfw.win32.dwmapi.DwmFlush
+#define DwmIsCompositionEnabled _glfw.win32.dwmapi.IsCompositionEnabled
+#define DwmFlush _glfw.win32.dwmapi.Flush
 
 // shcore.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_SetProcessDpiAwareness)(PROCESS_DPI_AWARENESS);
@@ -284,8 +284,8 @@ typedef struct _GLFWlibraryWin32
 
     struct {
         HINSTANCE                       instance;
-        PFN_DwmIsCompositionEnabled     DwmIsCompositionEnabled;
-        PFN_DwmFlush                    DwmFlush;
+        PFN_DwmIsCompositionEnabled     IsCompositionEnabled;
+        PFN_DwmFlush                    Flush;
     } dwmapi;
 
     struct {

@@ -105,6 +105,7 @@ extern "C" {
  #else
   #define APIENTRY
  #endif
+ #define GLFW_APIENTRY_DEFINED
 #endif /* APIENTRY */
 
 /* Some Windows OpenGL headers need this.

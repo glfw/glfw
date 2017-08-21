@@ -86,7 +86,10 @@ extern "C" {
  // This is a workaround for the fact that glfw3.h needs to export APIENTRY (for
  // example to allow applications to correctly declare a GL_ARB_debug_output
  // callback) but windows.h assumes no one will define APIENTRY before it does
- #undef APIENTRY
+ #if defined(GLFW_APIENTRY_DEFINED)
+  #undef APIENTRY
+  #undef GLFW_APIENTRY_DEFINED
+ #endif
  #include <windows.h>
 #elif defined(GLFW_EXPOSE_NATIVE_COCOA)
  #include <ApplicationServices/ApplicationServices.h>

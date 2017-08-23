@@ -226,6 +226,7 @@ information on what to include when reporting a bug.
 - [Cocoa] Bugfix: A string object for IME was updated non-idiomatically (#1050)
 - [Cocoa] Bugfix: A hidden or disabled cursor would become visible when a user
                   notification was shown (#971,#1028)
+- [Cocoa] Bugfix: Some characters did not repeat due to Press and Hold (#1010)
 - [WGL] Added support for `WGL_EXT_colorspace` for OpenGL ES contexts
 - [WGL] Added support for `WGL_ARB_create_context_no_error`
 - [GLX] Added support for `GLX_ARB_create_context_no_error`

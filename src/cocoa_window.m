@@ -999,6 +999,13 @@ static GLFWbool initializeAppKit(void)
     [NSApp setDelegate:_glfw.ns.delegate];
     [NSApp run];
 
+    // Press and Hold prevents some keys from emitting repeated characters
+    NSDictionary* defaults =
+        [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO],
+                                                   @"ApplePressAndHoldEnabled",
+                                                   nil];
+    [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
+
     return GLFW_TRUE;
 }
 

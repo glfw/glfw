@@ -259,9 +259,8 @@ GLFW exists because people around the world donated their time and lent their
 skills.
 
  - Bobyshev Alexander
- - artblanc
- - arturo
  - Matt Arsenault
+ - David Avedissian
  - Keith Bauer
  - John Bartholomew
  - Niklas Behrens
@@ -270,11 +269,16 @@ skills.
  - Doug Binks
  - blanco
  - Kyle Brenneman
+ - Rok Breulj
  - Martin Capitanio
  - David Carlier
+ - Arturo Castro
  - Chi-kwan Chan
+ - Ian Clarkson
  - Michał Cichoń
  - Lambert Clara
+ - Yaron Cohen-Tal
+ - Omar Cornut
  - Andrew Corrigan
  - Noel Cower
  - Jason Daly
@@ -286,6 +290,8 @@ skills.
  - Mario Dorn
  - Jonathan Dummer
  - Ralph Eastwood
+ - Fredrik Ehnbom
+ - Robin Eklind
  - Siavash Eliasi
  - Felipe Ferreira
  - Michael Fogleman
@@ -295,6 +301,7 @@ skills.
  - Marcus Geelnard
  - Eloi Marín Gratacós
  - Stefan Gustavson
+ - Jonathan Hale
  - Sylvain Hellegouarch
  - Matthew Henry
  - heromyth
@@ -307,20 +314,22 @@ skills.
  - Toni Jovanoski
  - Arseny Kapoulkine
  - Osman Keskin
+ - Josh Kilmer
  - Cameron King
  - Peter Knut
  - Christoph Kubisch
+ - Yuri Kunde Schlesner
  - Konstantin Käfer
  - Eric Larson
  - Robin Leffmann
  - Glenn Lewis
  - Shane Liesegang
  - Eyal Lotem
- - Дмитри Малышев
- - Martins Mozeiko
  - Tristam MacDonald
  - Hans Mackowiak
+ - Дмитри Малышев
  - Zbigniew Mandziejewicz
+ - Célestin Marot
  - Kyle McDonald
  - David Medlock
  - Bryce Mehring
@@ -332,11 +341,15 @@ skills.
  - Bruce Mitchener
  - Jack Moffitt
  - Jeff Molofee
+ - Pierre Morel
  - Jon Morton
  - Pierre Moulon
+ - Martins Mozeiko
  - Julian Møller
+ - ndogxj
  - Kristian Nielsen
  - Kamil Nowakowski
+ - Denis Ovod
  - Ozzy
  - Andri Pálsson
  - Peoro
@@ -346,28 +359,34 @@ skills.
  - Orson Peters
  - Emmanuel Gil Peyrot
  - Cyril Pichard
- - Pieroman
+ - Keith Pitt
+ - Stanislav Podgorskiy
+ - Alexandre Pretyman
  - Philip Rideout
+ - Eddie Ringle
  - Jorge Rodriguez
  - Ed Ropple
  - Aleksey Rybalkin
  - Riku Salminen
  - Brandon Schaefer
  - Sebastian Schuberth
+ - Christian Sdunek
  - Matt Sealey
- - SephiRok
  - Steve Sexton
- - Systemcluster
+ - Arkady Shapkin
  - Yoshiki Shibukawa
  - Dmitri Shuralyov
  - Daniel Skorupski
  - Bradley Smith
  - Patrick Snape
+ - Erlend Sogge Heggen
  - Julian Squires
  - Johannes Stein
+ - Pontus Stenetorp
  - Michael Stocker
  - Justin Stoecker
  - Elviss Strazdins
+ - Paul Sultana
  - Nathan Sweet
  - TTK-Bandit
  - Sergey Tikhomirov
@@ -377,6 +396,7 @@ skills.
  - Matthew Turner
  - urraka
  - Elias Vanderstuyft
+ - Stef Velzel
  - Jari Vetoniemi
  - Ricardo Vieira
  - Nicholas Vitovitch
@@ -386,7 +406,6 @@ skills.
  - Xo Wang
  - Jay Weisskopf
  - Frank Wille
- - yuriks
  - Ryogo Yoshimura
  - Andrey Zholos
  - Santi Zupancic

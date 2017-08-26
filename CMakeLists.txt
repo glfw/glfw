@@ -286,9 +286,7 @@ if (_GLFW_WAYLAND)
     list(APPEND glfw_LIBRARIES "${Wayland_LIBRARIES}" "${CMAKE_THREAD_LIBS_INIT}")
 
     find_package(XKBCommon REQUIRED)
-    list(APPEND glfw_PKG_DEPS "xkbcommon")
     list(APPEND glfw_INCLUDE_DIRS "${XKBCOMMON_INCLUDE_DIRS}")
-    list(APPEND glfw_LIBRARIES "${XKBCOMMON_LIBRARY}")
 endif()
 
 #--------------------------------------------------------------------

@@ -299,6 +299,7 @@ typedef struct _GLFWlibraryWin32
 //
 typedef struct _GLFWmonitorWin32
 {
+    HMONITOR            handle;
     // This size matches the static size of DISPLAY_DEVICE.DeviceName
     WCHAR               adapterName[32];
     WCHAR               displayName[32];

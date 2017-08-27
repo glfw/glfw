@@ -33,6 +33,27 @@
 #include <malloc.h>
 
 
+// Callback for EnumDisplayMonitors in createMonitor
+//
+static BOOL CALLBACK monitorCallback(HMONITOR handle,
+                                     HDC dc,
+                                     RECT* rect,
+                                     LPARAM data)
+{
+    MONITORINFOEXW mi;
+    ZeroMemory(&mi, sizeof(mi));
+    mi.cbSize = sizeof(mi);
+
+    if (GetMonitorInfoW(handle, (MONITORINFO*) &mi))
+    {
+        _GLFWmonitor* monitor = (_GLFWmonitor*) data;
+        if (wcscmp(mi.szDevice, monitor->win32.adapterName) == 0)
+            monitor->win32.handle = handle;
+    }
+
+    return TRUE;
+}
+
 // Create monitor from an adapter and (optionally) a display
 //
 static _GLFWmonitor* createMonitor(DISPLAY_DEVICEW* adapter,
@@ -41,6 +62,8 @@ static _GLFWmonitor* createMonitor(DISPLAY_DEVICEW* adapter,
     _GLFWmonitor* monitor;
     char* name;
     HDC dc;
+    DEVMODEW dm;
+    RECT rect;
 
     if (display)
         name = _glfwCreateUTF8FromWideStringWin32(display->DeviceString);
@@ -78,6 +101,16 @@ static _GLFWmonitor* createMonitor(DISPLAY_DEVICEW* adapter,
                             NULL, NULL);
     }
 
+    ZeroMemory(&dm, sizeof(dm));
+    dm.dmSize = sizeof(dm);
+    EnumDisplaySettingsW(adapter->DeviceName, ENUM_CURRENT_SETTINGS, &dm);
+
+    rect.left   = dm.dmPosition.x;
+    rect.top    = dm.dmPosition.y;
+    rect.right  = dm.dmPosition.x + dm.dmPelsWidth;
+    rect.bottom = dm.dmPosition.y + dm.dmPelsHeight;
+
+    EnumDisplayMonitors(NULL, &rect, monitorCallback, (LPARAM) monitor);
     return monitor;
 }
 

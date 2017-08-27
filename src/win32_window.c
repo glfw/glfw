@@ -111,7 +111,7 @@ static HICON createIcon(const GLFWimage* image,
     unsigned char* source = image->pixels;
 
     ZeroMemory(&bi, sizeof(bi));
-    bi.bV5Size        = sizeof(BITMAPV5HEADER);
+    bi.bV5Size        = sizeof(bi);
     bi.bV5Width       = image->width;
     bi.bV5Height      = -image->height;
     bi.bV5Planes      = 1;

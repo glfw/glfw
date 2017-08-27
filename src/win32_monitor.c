@@ -142,8 +142,8 @@ void _glfwPollMonitorsWin32(void)
     {
         int type = _GLFW_INSERT_LAST;
 
-        ZeroMemory(&adapter, sizeof(DISPLAY_DEVICEW));
-        adapter.cb = sizeof(DISPLAY_DEVICEW);
+        ZeroMemory(&adapter, sizeof(adapter));
+        adapter.cb = sizeof(adapter);
 
         if (!EnumDisplayDevicesW(NULL, adapterIndex, &adapter, 0))
             break;
@@ -156,8 +156,8 @@ void _glfwPollMonitorsWin32(void)
 
         for (displayIndex = 0;  ;  displayIndex++)
         {
-            ZeroMemory(&display, sizeof(DISPLAY_DEVICEW));
-            display.cb = sizeof(DISPLAY_DEVICEW);
+            ZeroMemory(&display, sizeof(display));
+            display.cb = sizeof(display);
 
             if (!EnumDisplayDevicesW(adapter.DeviceName, displayIndex, &display, 0))
                 break;
@@ -244,7 +244,7 @@ GLFWbool _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desire
         return GLFW_TRUE;
 
     ZeroMemory(&dm, sizeof(dm));
-    dm.dmSize = sizeof(DEVMODEW);
+    dm.dmSize = sizeof(dm);
     dm.dmFields           = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL |
                             DM_DISPLAYFREQUENCY;
     dm.dmPelsWidth        = best->width;
@@ -309,19 +309,19 @@ void _glfwRestoreVideoModeWin32(_GLFWmonitor* monitor)
 
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {
-    DEVMODEW settings;
-    ZeroMemory(&settings, sizeof(DEVMODEW));
-    settings.dmSize = sizeof(DEVMODEW);
+    DEVMODEW dm;
+    ZeroMemory(&dm, sizeof(dm));
+    dm.dmSize = sizeof(dm);
 
     EnumDisplaySettingsExW(monitor->win32.adapterName,
                            ENUM_CURRENT_SETTINGS,
-                           &settings,
+                           &dm,
                            EDS_ROTATEDMODE);
 
     if (xpos)
-        *xpos = settings.dmPosition.x;
+        *xpos = dm.dmPosition.x;
     if (ypos)
-        *ypos = settings.dmPosition.y;
+        *ypos = dm.dmPosition.y;
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
@@ -337,8 +337,8 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
         GLFWvidmode mode;
         DEVMODEW dm;
 
-        ZeroMemory(&dm, sizeof(DEVMODEW));
-        dm.dmSize = sizeof(DEVMODEW);
+        ZeroMemory(&dm, sizeof(dm));
+        dm.dmSize = sizeof(dm);
 
         if (!EnumDisplaySettingsW(monitor->win32.adapterName, modeIndex, &dm))
             break;
@@ -404,9 +404,8 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
     DEVMODEW dm;
-
-    ZeroMemory(&dm, sizeof(DEVMODEW));
-    dm.dmSize = sizeof(DEVMODEW);
+    ZeroMemory(&dm, sizeof(dm));
+    dm.dmSize = sizeof(dm);
 
     EnumDisplaySettingsW(monitor->win32.adapterName, ENUM_CURRENT_SETTINGS, &dm);
 

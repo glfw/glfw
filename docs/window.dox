@@ -663,6 +663,26 @@ The size of a framebuffer may change independently of the size of a window, for
 example if the window is dragged between a regular monitor and a high-DPI one.
 
 
+@subsection window_scale Window content scale
+
+The content scale for a window can be retrieved with @ref
+glfwGetWindowContentScale.
+
+@code
+float xscale, yscale;
+glfwGetWindowContentScale(window, &xscale, &yscale);
+@endcode
+
+The content scale of a window is the ratio between the current DPI and the
+platform's default DPI.  If you scale all pixel dimensions by this scale then
+your content should appear at an appropriate size.  This is especially important
+for text and any UI elements.
+
+On systems where each monitors can have its own content scale, the window
+content scale will depend on which monitor the system considers the window to be
+on.
+
+
 @subsection window_sizelimits Window size limits
 
 The minimum and maximum size of the client area of a windowed mode window can be

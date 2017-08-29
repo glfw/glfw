@@ -153,6 +153,15 @@ void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
         *ypos = monitor->wl.y;
 }
 
+void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
+                                         float* xscale, float* yscale)
+{
+    if (xscale)
+        *xscale = (float) monitor->wl.scale;
+    if (yscale)
+        *yscale = (float) monitor->wl.scale;
+}
+
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 {
     *found = monitor->modeCount;

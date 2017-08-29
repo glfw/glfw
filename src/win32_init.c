@@ -151,6 +151,8 @@ static GLFWbool loadLibraries(void)
     {
         _glfw.win32.shcore.SetProcessDpiAwareness_ = (PFN_SetProcessDpiAwareness)
             GetProcAddress(_glfw.win32.shcore.instance, "SetProcessDpiAwareness");
+        _glfw.win32.shcore.GetDpiForMonitor_ = (PFN_GetDpiForMonitor)
+            GetProcAddress(_glfw.win32.shcore.instance, "GetDpiForMonitor");
     }
 
     return GLFW_TRUE;

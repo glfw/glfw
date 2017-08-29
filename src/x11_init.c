@@ -743,6 +743,43 @@ static GLFWbool initExtensions(void)
     return GLFW_TRUE;
 }
 
+// Retrieve system content scale via folklore heuristics
+//
+static void getSystemContentScale(float* xscale, float* yscale)
+{
+    // NOTE: Default to the display-wide DPI as we don't currently have a policy
+    //       for which monitor a window is considered to be on
+    float xdpi = DisplayWidth(_glfw.x11.display, _glfw.x11.screen) *
+        25.4f / DisplayWidthMM(_glfw.x11.display, _glfw.x11.screen);
+    float ydpi = DisplayHeight(_glfw.x11.display, _glfw.x11.screen) *
+        25.4f / DisplayHeightMM(_glfw.x11.display, _glfw.x11.screen);
+
+    // NOTE: Basing the scale on Xft.dpi where available should provide the most
+    //       consistent user experience (matches Qt, Gtk, etc), although not
+    //       always the most accurate one
+    char* rms = XResourceManagerString(_glfw.x11.display);
+    if (rms)
+    {
+        XrmDatabase db = XrmGetStringDatabase(rms);
+        if (db)
+        {
+            XrmValue value;
+            char* type = NULL;
+
+            if (XrmGetResource(db, "Xft.dpi", "Xft.Dpi", &type, &value))
+            {
+                if (type && strcmp(type, "String") == 0)
+                    xdpi = ydpi = atof(value.addr);
+            }
+
+            XrmDestroyDatabase(db);
+        }
+    }
+
+    *xscale = xdpi / 96.f;
+    *yscale = ydpi / 96.f;
+}
+
 // Create a blank cursor for hidden and disabled cursor modes
 //
 static Cursor createHiddenCursor(void)
@@ -861,6 +898,7 @@ int _glfwPlatformInit(void)
 #endif
 
     XInitThreads();
+    XrmInitialize();
 
     _glfw.x11.display = XOpenDisplay(NULL);
     if (!_glfw.x11.display)
@@ -883,6 +921,8 @@ int _glfwPlatformInit(void)
     _glfw.x11.screen = DefaultScreen(_glfw.x11.display);
     _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
     _glfw.x11.context = XUniqueContext();
+
+    getSystemContentScale(&_glfw.x11.contentScaleX, &_glfw.x11.contentScaleY);
 
     if (!initExtensions())
         return GLFW_FALSE;

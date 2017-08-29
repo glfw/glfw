@@ -131,16 +131,33 @@ current _resolution_, i.e. the width and height of its current
 [video mode](@ref monitor_modes).
 
 @code
-int widthMM, heightMM;
-glfwGetMonitorPhysicalSize(monitor, &widthMM, &heightMM);
+int width_mm, height_mm;
+glfwGetMonitorPhysicalSize(monitor, &width_mm, &height_mm);
 @endcode
 
-This can, for example, be used together with the current video mode to calculate
-the DPI of a monitor. 
+While this can be used to calculate the raw DPI of a monitor, this is often not
+useful.  Instead use the [monitor content scale](@ref monitor_scale) and
+[window content scale](@ref window_scale) to scale your content.
+
+
+@subsection monitor_scale Content scale
+
+The content scale for a monitor can be retrieved with @ref
+glfwGetMonitorContentScale.
 
 @code
-const double dpi = mode->width / (widthMM / 25.4);
+float xscale, yscale;
+glfwGetMonitorContentScale(monitor, &xscale, &yscale);
 @endcode
+
+The content scale is the ratio between the current DPI and the platform's
+default DPI.  If you scale all pixel dimensions by this scale then your content
+should appear at an appropriate size.  This is especially important for text and
+any UI elements.
+
+The content scale may depend on both the monitor resolution and pixel density
+and on user settings.  It may be very different from the raw DPI calculated from
+the physical size and current resolution.    
 
 
 @subsection monitor_pos Virtual position

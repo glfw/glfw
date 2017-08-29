@@ -136,6 +136,8 @@ information on what to include when reporting a bug.
   gamepad mapping (#900)
 - Added `glfwGetGamepadState` function, `GLFW_GAMEPAD_*` and `GLFWgamepadstate`
   for retrieving gamepad input state (#900)
+- Added `glfwGetWindowContentScale` and `glfwGetMonitorContentScale` for
+  DPI-aware rendering (#235,#439,#677,#845,#898)
 - Added `glfwRequestWindowAttention` function for requesting attention from the
   user (#732,#988)
 - Added `glfwGetKeyScancode` function that allows retrieving platform dependent

@@ -632,6 +632,21 @@ GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* handle,
     _glfwPlatformGetWindowFrameSize(window, left, top, right, bottom);
 }
 
+GLFWAPI void glfwGetWindowContentScale(GLFWwindow* handle,
+                                       float* xscale, float* yscale)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    if (xscale)
+        *xscale = 0.f;
+    if (yscale)
+        *yscale = 0.f;
+
+    _GLFW_REQUIRE_INIT();
+    _glfwPlatformGetWindowContentScale(window, xscale, yscale);
+}
+
 GLFWAPI void glfwIconifyWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;

@@ -1039,14 +1039,14 @@ static int createNativeWindow(_GLFWwindow* window,
 
     SetPropW(window->win32.handle, L"GLFW", window);
 
-    if (_glfw_ChangeWindowMessageFilterEx)
+    if (IsWindows7OrGreater())
     {
-        _glfw_ChangeWindowMessageFilterEx(window->win32.handle,
-                                          WM_DROPFILES, MSGFLT_ALLOW, NULL);
-        _glfw_ChangeWindowMessageFilterEx(window->win32.handle,
-                                          WM_COPYDATA, MSGFLT_ALLOW, NULL);
-        _glfw_ChangeWindowMessageFilterEx(window->win32.handle,
-                                          WM_COPYGLOBALDATA, MSGFLT_ALLOW, NULL);
+        ChangeWindowMessageFilterEx(window->win32.handle,
+                                    WM_DROPFILES, MSGFLT_ALLOW, NULL);
+        ChangeWindowMessageFilterEx(window->win32.handle,
+                                    WM_COPYDATA, MSGFLT_ALLOW, NULL);
+        ChangeWindowMessageFilterEx(window->win32.handle,
+                                    WM_COPYGLOBALDATA, MSGFLT_ALLOW, NULL);
     }
 
     DragAcceptFiles(window->win32.handle, TRUE);

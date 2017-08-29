@@ -122,6 +122,30 @@ typedef enum PROCESS_DPI_AWARENESS
 } PROCESS_DPI_AWARENESS;
 #endif /*DPI_ENUMS_DECLARED*/
 
+// HACK: Define versionhelpers.h functions manually as MinGW lacks the header
+FORCEINLINE BOOL IsWindowsVersionOrGreater(WORD major, WORD minor, WORD sp)
+{
+    OSVERSIONINFOEXW osvi = { sizeof(osvi), major, minor, 0, 0, {0}, sp };
+    DWORD mask = VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR;
+    ULONGLONG cond = VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL);
+    cond = VerSetConditionMask(cond, VER_MINORVERSION, VER_GREATER_EQUAL);
+    cond = VerSetConditionMask(cond, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
+    return VerifyVersionInfoW(&osvi, mask, cond);
+}
+
+#define IsWindowsVistaOrGreater()                              \
+    IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_VISTA),      \
+                              LOBYTE(_WIN32_WINNT_VISTA), 0)
+#define IsWindows7OrGreater()                                  \
+    IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN7),       \
+                              LOBYTE(_WIN32_WINNT_WIN7), 0)
+#define IsWindows8OrGreater()                                  \
+    IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN8),       \
+                              LOBYTE(_WIN32_WINNT_WIN8), 0)
+#define IsWindows8Point1OrGreater()                            \
+    IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINBLUE),    \
+                              LOBYTE(_WIN32_WINNT_WINBLUE), 0)
+
 // HACK: Define macros that some xinput.h variants don't
 #ifndef XINPUT_CAPS_WIRELESS
  #define XINPUT_CAPS_WIRELESS 0x0002
@@ -173,8 +197,8 @@ typedef HRESULT (WINAPI * PFN_DirectInput8Create)(HINSTANCE,DWORD,REFIID,LPVOID*
 // user32.dll function pointer typedefs
 typedef BOOL (WINAPI * PFN_SetProcessDPIAware)(void);
 typedef BOOL (WINAPI * PFN_ChangeWindowMessageFilterEx)(HWND,UINT,DWORD,PCHANGEFILTERSTRUCT);
-#define _glfw_SetProcessDPIAware _glfw.win32.user32.SetProcessDPIAware
-#define _glfw_ChangeWindowMessageFilterEx _glfw.win32.user32.ChangeWindowMessageFilterEx
+#define SetProcessDPIAware _glfw.win32.user32.SetProcessDPIAware_
+#define ChangeWindowMessageFilterEx _glfw.win32.user32.ChangeWindowMessageFilterEx_
 
 // dwmapi.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_DwmIsCompositionEnabled)(BOOL*);
@@ -184,7 +208,7 @@ typedef HRESULT (WINAPI * PFN_DwmFlush)(VOID);
 
 // shcore.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_SetProcessDpiAwareness)(PROCESS_DPI_AWARENESS);
-#define _glfw_SetProcessDpiAwareness _glfw.win32.shcore.SetProcessDpiAwareness
+#define SetProcessDpiAwareness _glfw.win32.shcore.SetProcessDpiAwareness_
 
 typedef VkFlags VkWin32SurfaceCreateFlagsKHR;
 
@@ -278,8 +302,8 @@ typedef struct _GLFWlibraryWin32
 
     struct {
         HINSTANCE                       instance;
-        PFN_SetProcessDPIAware          SetProcessDPIAware;
-        PFN_ChangeWindowMessageFilterEx ChangeWindowMessageFilterEx;
+        PFN_SetProcessDPIAware          SetProcessDPIAware_;
+        PFN_ChangeWindowMessageFilterEx ChangeWindowMessageFilterEx_;
     } user32;
 
     struct {
@@ -290,7 +314,7 @@ typedef struct _GLFWlibraryWin32
 
     struct {
         HINSTANCE                       instance;
-        PFN_SetProcessDpiAwareness      SetProcessDpiAwareness;
+        PFN_SetProcessDpiAwareness      SetProcessDpiAwareness_;
     } shcore;
 
 } _GLFWlibraryWin32;

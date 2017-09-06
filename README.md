@@ -45,8 +45,8 @@ guide](http://www.glfw.org/docs/latest/moving.html) for moving to the GLFW
 ## Compiling GLFW
 
 GLFW itself requires only the headers and libraries for your window system.  It
-does not need the headers for any context creation API (WGL, GLX, EGL, NSGL) or
-rendering API (OpenGL, OpenGL ES, Vulkan) to enable support for them.
+does not need the headers for any context creation API (WGL, GLX, EGL, NSGL,
+OSMesa) or rendering API (OpenGL, OpenGL ES, Vulkan) to enable support for them.
 
 GLFW supports compilation on Windows with Visual C++ 2010 and later, MinGW and
 MinGW-w64, on macOS with Clang and on Linux and other Unix-like systems with GCC

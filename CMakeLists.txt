@@ -41,8 +41,9 @@ if (WIN32)
 endif()
 
 if (UNIX AND NOT APPLE)
-    option(GLFW_USE_WAYLAND "Use Wayland for window creation" OFF)
-    option(GLFW_USE_MIR     "Use Mir for window creation" OFF)
+    option(GLFW_USE_WAYLAND   "Use Wayland for window creation" OFF)
+    option(GLFW_USE_MIR       "Use Mir for window creation" OFF)
+    option(GLFW_USE_EGLDEVICE "Use EGLDevice for window creation" OFF)
 endif()
 
 if (MSVC)
@@ -299,8 +300,15 @@ endif()
 #--------------------------------------------------------------------
 if (_GLFW_EGLDEVICE)
 
+    find_path(DRM_INCLUDE_DIR NAMES drm.h PATH_SUFFIXES drm libdrm)
+    if (NOT DRM_INCLUDE_DIR)
+        message(FATAL_ERROR "The libdrm headers were not found")
+    endif()
+
+    list(APPEND glfw_INCLUDE_DIRS "${DRM_INCLUDE_DIR}")
+
     list(APPEND glfw_LIBRARIES "-ldrm")
-    list(APPEND glfw_LIBRARIES "-lpthread")
+    list(APPEND glfw_LIBRARIES "${CMAKE_THREAD_LIBS_INIT}")
 
 endif()
 

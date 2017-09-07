@@ -49,9 +49,9 @@ elseif (_GLFW_WAYLAND)
         BASENAME pointer-constraints-unstable-v1)
 elseif(_GLFW_EGLDEVICE)
     set(glfw_HEADERS ${common_HEADERS} egldevice_platform.h linux_joystick.h
-                     posix_time.h posix_tls.h xkb_unicode.h egl_context.h)
+                     posix_time.h posix_thread.h xkb_unicode.h egl_context.h)
     set(glfw_SOURCES ${common_SOURCES} egldevice_init.c egldevice_monitor.c egldevice_window.c
-                     linux_joystick.c posix_time.c posix_tls.c xkb_unicode.c
+                     linux_joystick.c posix_time.c posix_thread.c xkb_unicode.c
                      egl_context.c)
 elseif (_GLFW_MIR)
     set(glfw_HEADERS ${common_HEADERS} mir_platform.h linux_joystick.h
@@ -94,7 +94,7 @@ set_target_properties(glfw PROPERTIES
 
 target_compile_definitions(glfw PRIVATE
                            _GLFW_USE_CONFIG_H
-                           $<$<BOOL:${UNIX}>:_XOPEN_SOURCE=600>)
+                           $<$<BOOL:${UNIX}>:_POSIX_C_SOURCE=200809L>)
 target_include_directories(glfw PUBLIC
                            "$<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>"
                            "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>")

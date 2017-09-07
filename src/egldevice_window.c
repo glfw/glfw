@@ -222,6 +222,30 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
                     "EGLDevice: _glfwPlatformMaximizeWindow not implemented");
 }
 
+void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "EGLDevice: _glfwPlatformSetWindowResizable not implemented");
+}
+
+void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "EGLDevice: _glfwPlatformSetWindowDecorated not implemented");
+}
+
+void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "EGLDevice: _glfwPlatformSetWindowFloating not implemented");
+}
+
+void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "EGLDevice: _glfwPlatformRequestWindowAttention not implemented");
+}
+
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
     return;
@@ -369,11 +393,24 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return NULL;
 }
 
-char** _glfwPlatformGetRequiredInstanceExtensions(uint32_t* count)
+const char* _glfwPlatformGetScancodeName(int scancode)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "EGLDevice: _glfwPlatformGetScancodeName not supported");
+    return "";
+}
+
+int _glfwPlatformGetKeyScancode(int key)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "EGLDevice: _glfwPlatformGetKeyScancode not supported");
+    return -1;
+}
+
+void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "EGLDevice: _glfwPlatformGetRequiredInstanceExtensions not supported");
-    return NULL;
 }
 
 int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,

@@ -27,7 +27,6 @@
 #include "internal.h"
 
 #include <linux/limits.h>
-#include "egl_context.h"
 
 static GLFWbool initializeExtensions()
 {
@@ -187,10 +186,7 @@ static GLFWbool initEGLDisplay(EGLDeviceEXT egl_dev, int drm_fd)
 
     if (!eglInitialize(_glfw.egl.display, &_glfw.egl.major, &_glfw.egl.minor))
     {
-        _glfwInputError(GLFW_API_UNAVAILABLE,
-                        "EGL: Failed to initialize EGL: %s",
-                        eglGetError());
-
+        _glfwInputError(GLFW_API_UNAVAILABLE, "EGL: Failed to initialize EGL");
         return GLFW_FALSE;
     }
 
@@ -252,9 +248,6 @@ int _glfwPlatformInit(void)
     EGLDeviceEXT egl_dev;
     int drm_fd;
 
-    if (!_glfwInitThreadLocalStoragePOSIX())
-        return GLFW_FALSE;
-
     // Initialize EGL
     if (!_glfwInitEGL())
         return GLFW_FALSE;
@@ -278,6 +271,8 @@ int _glfwPlatformInit(void)
 
    _glfwInitTimerPOSIX();
 
+   _glfwPollMonitorsEGLDevice();
+
     return GLFW_TRUE;
 }
 
@@ -285,15 +280,11 @@ void _glfwPlatformTerminate(void)
 {
     _glfwTerminateEGL();
     _glfwTerminateJoysticksLinux();
-    _glfwTerminateThreadLocalStoragePOSIX();
 }
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    return _GLFW_VERSION_NUMBER "EGLDEVICE"
-#if defined(_GLFW_EGL)
-        " EGL"
-#endif
+    return _GLFW_VERSION_NUMBER "EGLDevice EGL"
 #if defined(_GLFW_BUILD_DLL)
         " shared"
 #endif

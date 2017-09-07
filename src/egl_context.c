@@ -118,7 +118,7 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
 
 #if defined(_GLFW_EGLDEVICE)
         // Only consider stream EGLConfigs
-        if (!(getConfigAttrib(n, EGL_SURFACE_TYPE) & EGL_STREAM_BIT_KHR))
+        if (!(getEGLConfigAttrib(n, EGL_SURFACE_TYPE) & EGL_STREAM_BIT_KHR))
             continue;
 
 #else

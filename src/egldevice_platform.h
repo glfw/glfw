@@ -43,18 +43,40 @@
 #include <math.h>
 #include <stdbool.h>
 
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
-
 #include <dlfcn.h>
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 #include <drm_fourcc.h>
+
 #include "posix_time.h"
 #include "linux_joystick.h"
-#include "posix_tls.h"
-
+#include "posix_thread.h"
 #include "egl_context.h"
+#include "osmesa_context.h"
+
+#define EGL_NO_DEVICE_EXT ((EGLDeviceEXT) 0)
+#define EGL_DRM_DEVICE_FILE_EXT 0x3233
+#define EGL_PLATFORM_DEVICE_EXT 0x313f
+#define EGL_DRM_MASTER_FD_EXT 0x333c
+#define EGL_STREAM_FIFO_LENGTH_KHR 0x31fc
+#define EGL_DRM_CRTC_EXT 0x3234
+#define EGL_NO_STREAM_KHR ((EGLStreamKHR) 0)
+#define EGL_STREAM_BIT_KHR 0x0800
+
+typedef void* EGLOutputLayerEXT;
+typedef void* EGLStreamKHR;
+typedef void* EGLDeviceEXT;
+
+typedef EGLBoolean (EGLAPIENTRY * PFNEGLQUERYDEVICESEXTPROC)(EGLint,EGLDeviceEXT*,EGLint*);
+typedef const char *(EGLAPIENTRY * PFNEGLQUERYDEVICESTRINGEXTPROC)(EGLDeviceEXT,EGLint);
+typedef EGLDisplay (EGLAPIENTRY * PFNEGLGETPLATFORMDISPLAYEXTPROC)(EGLenum,void*,const EGLint*);
+typedef EGLBoolean (EGLAPIENTRY * PFNEGLGETOUTPUTLAYERSEXTPROC)(EGLDisplay,const EGLAttrib*,EGLOutputLayerEXT*,EGLint,EGLint*);
+typedef EGLStreamKHR (EGLAPIENTRY * PFNEGLCREATESTREAMKHRPROC)(EGLDisplay,const EGLint*);
+typedef EGLBoolean (EGLAPIENTRY * PFNEGLDESTROYSTREAMKHRPROC)(EGLDisplay,EGLStreamKHR);
+typedef EGLBoolean (EGLAPIENTRY * PFNEGLSTREAMCONSUMEROUTPUTEXTPROC)(EGLDisplay,EGLStreamKHR,EGLOutputLayerEXT);
+typedef EGLSurface (EGLAPIENTRY * PFNEGLCREATESTREAMPRODUCERSURFACEKHRPROC)(EGLDisplay,EGLConfig,EGLStreamKHR,const EGLint*);
+typedef EGLBoolean (EGLAPIENTRY * PFNEGLSTREAMATTRIBKHRPROC)(EGLDisplay,EGLStreamKHR,EGLenum,EGLint);
+typedef EGLBoolean (EGLAPIENTRY * PFNEGLSTREAMCONSUMERACQUIREATTRIBKHRPROC)(EGLDisplay,EGLStreamKHR,const EGLAttrib*);
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)
@@ -101,7 +123,7 @@ typedef struct _GLFWlibraryEgldevice
     PFNEGLSTREAMCONSUMEROUTPUTEXTPROC        eglStreamConsumerOutputEXT;
     PFNEGLCREATESTREAMPRODUCERSURFACEKHRPROC eglCreateStreamProducerSurfaceKHR;
     PFNEGLSTREAMATTRIBKHRPROC                eglStreamAttribKHR;
-    PFNEGLSTREAMCONSUMERACQUIREATTRIBEXTPROC eglStreamConsumerAcquireAttribEXT;
+    PFNEGLSTREAMCONSUMERACQUIREATTRIBKHRPROC eglStreamConsumerAcquireAttribKHR;
 } _GLFWlibraryEgldevice;
 
 // EGLDEVICE-specific per-monitor data
@@ -115,5 +137,7 @@ typedef struct _GLFWmonitorEgldevice {
 //
 typedef struct _GLFWcursorEgldevice {
 } _GLFWcursorEgldevice;
+
+void _glfwPollMonitorsEGLDevice(void);
 
 #endif // _glfw3_egldevice_platform_h_

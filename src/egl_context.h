@@ -48,7 +48,9 @@ typedef struct wl_egl_window* EGLNativeWindowType;
 typedef MirEGLNativeDisplayType EGLNativeDisplayType;
 typedef MirEGLNativeWindowType EGLNativeWindowType;
 #elif defined(_GLFW_EGLDEVICE)
- #include <EGL/eglplatform.h>
+ #define EGLAPIENTRY
+typedef void* EGLNativeDisplayType;
+typedef int EGLNativeWindowType;
 #else
  #error "No supported EGL platform selected"
 #endif
@@ -86,6 +88,8 @@ typedef MirEGLNativeWindowType EGLNativeWindowType;
 #define EGL_OPENGL_ES_API 0x30a0
 #define EGL_OPENGL_API 0x30a2
 #define EGL_NONE 0x3038
+#define EGL_WIDTH 0x3057
+#define EGL_HEIGHT 0x3056
 #define EGL_EXTENSIONS 0x3055
 #define EGL_CONTEXT_CLIENT_VERSION 0x3098
 #define EGL_NATIVE_VISUAL_ID 0x302e
@@ -120,6 +124,7 @@ typedef void* EGLConfig;
 typedef void* EGLContext;
 typedef void* EGLDisplay;
 typedef void* EGLSurface;
+typedef intptr_t EGLAttrib;
 
 // EGL function pointer typedefs
 typedef EGLBoolean (EGLAPIENTRY * PFN_eglGetConfigAttrib)(EGLDisplay,EGLConfig,EGLint,EGLint*);

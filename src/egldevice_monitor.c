@@ -117,30 +117,18 @@ static GLFWbool initDRMResources(_GLFWmonitor* monitor, int drm_fd)
 ///////////               GLFW platform API                    //////////////
 /////////////////////////////////////////////////////////////////////////////
 
-_GLFWmonitor** _glfwPlatformGetMonitors(int* count)
+void _glfwPollMonitorsEGLDevice(void)
 {
-    _GLFWmonitor** monitors;
-    _GLFWmonitor* monitor;
-    int monitorsCount = 1;
+    _GLFWmonitor* monitor = _glfwAllocMonitor("Monitor", 0, 0);
 
-    monitors = calloc(monitorsCount, sizeof(_GLFWmonitor*));
-    monitor = calloc(1, sizeof(_GLFWmonitor));
-
-    *count = 1;
      // Obtain DRM resource info
     if (!initDRMResources(monitor, _glfw.egldevice.drmFd))
-        return GLFW_FALSE;
+    {
+        _glfwFreeMonitor(monitor);
+        return;
+    }
 
-    monitors[0] = monitor;
-
-    return monitors;
-}
-
-GLFWbool _glfwPlatformIsSameMonitor(_GLFWmonitor* first, _GLFWmonitor* second)
-{
-    _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "EGLDevice: _glfwPlatformIsSameMonitor not implemented");
-    return 0;
+    _glfwInputMonitor(monitor, GLFW_CONNECTED, _GLFW_INSERT_FIRST);
 }
 
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)

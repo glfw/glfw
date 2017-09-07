@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 EGLDevice - www.glfw.org
+// GLFW 3.3 EGLDevice - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2016, NVIDIA CORPORATION. All rights reserved.
 //
@@ -57,9 +57,9 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     layerAttribs[0] = EGL_DRM_CRTC_EXT;
     layerAttribs[1] = (EGLAttrib)monitor->egldevice.crtcId;
 
-    if (!_glfw.egldevice.eglGetOutputLayersEXT(_glfw.egl.display, layerAttribs,
-                                               &window->egldevice.eglLayer,
-                                               1, &n) || !n)
+    if (!eglGetOutputLayersEXT(_glfw.egl.display, layerAttribs,
+                               &window->egldevice.eglLayer,
+                               1, &n) || !n)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "EGLDevice: Unable to obtain EGLOutputLayer");
@@ -68,7 +68,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     // Create a stream and connect to the output
     window->egldevice.eglStream =
-        _glfw.egldevice.eglCreateStreamKHR(_glfw.egl.display, streamAttribs);
+        eglCreateStreamKHR(_glfw.egl.display, streamAttribs);
     if (window->egldevice.eglStream == EGL_NO_STREAM_KHR)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -76,9 +76,9 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                         eglGetError());
         return GLFW_FALSE;
     }
-    if (!_glfw.egldevice.eglStreamConsumerOutputEXT(_glfw.egl.display,
-                                                    window->egldevice.eglStream,
-                                                    window->egldevice.eglLayer))
+    if (!eglStreamConsumerOutputEXT(_glfw.egl.display,
+                                    window->egldevice.eglStream,
+                                    window->egldevice.eglLayer))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "EGLDevice: Unable to connect stream (error 0x%x)",
@@ -90,15 +90,14 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     surfaceAttribs[1] = window->egldevice.xsurfsize;
     surfaceAttribs[3] = window->egldevice.ysurfsize;
     window->context.egl.surface =
-        _glfw.egldevice.eglCreateStreamProducerSurfaceKHR(_glfw.egl.display,
-                                                          window->context.egl.config,
-                                                          window->egldevice.eglStream,
-                                                          surfaceAttribs);
+        eglCreateStreamProducerSurfaceKHR(_glfw.egl.display,
+                                          window->context.egl.config,
+                                          window->egldevice.eglStream,
+                                          surfaceAttribs);
     if (window->context.egl.surface == EGL_NO_SURFACE)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "EGLDevice: Unable to create rendering"
-                        " surface (error 0x%x)", eglGetError());
+                        "EGLDevice: Unable to create rendering surface (error 0x%x)", eglGetError());
         return GLFW_FALSE;
     }
 
@@ -111,10 +110,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         window->context.destroy(window);
 
     if (window->egldevice.eglStream != EGL_NO_STREAM_KHR)
-    {
-        _glfw.egldevice.eglDestroyStreamKHR(_glfw.egl.display,
-                                            window->egldevice.eglStream);
-    }
+        eglDestroyStreamKHR(_glfw.egl.display, window->egldevice.eglStream);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
@@ -307,7 +303,7 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 
 void _glfwPlatformPollEvents(void)
 {
-    return;
+    _glfwDetectJoystickConnectionLinux();
 }
 
 void _glfwPlatformWaitEvents(void)
@@ -419,7 +415,7 @@ int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "EGLDevice: _glfwPlatformGetPhysicalDevicePresentationSupport not supported");
-    return 0;
+    return GLFW_FALSE;
 }
 
 VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
@@ -429,5 +425,6 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "EGLDevice: _glfwPlatformCreateWindowSurface not supported");
-    return (VkResult)NULL;
+    return VK_ERROR_INITIALIZATION_FAILED;
 }
+

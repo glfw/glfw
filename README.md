@@ -11,8 +11,9 @@ application development.  It provides a simple, platform-independent API for
 creating windows, contexts and surfaces, reading input, handling events, etc.
 
 GLFW natively supports Windows, macOS and Linux and other Unix-like systems.
-Experimental implementations for the Wayland protocol and the Mir display server
-are available but not yet officially supported.                             
+Experimental implementations for the Wayland protocol, the Mir display server
+and direct rendering via EGLDevice are available but not yet officially
+supported.
 
 GLFW is licensed under the [zlib/libpng
 license](http://www.glfw.org/license.html).
@@ -90,6 +91,9 @@ GLFW itself depends only on the headers and libraries for your window system.
 
 The (experimental) Wayland backend also depends on the `extra-cmake-modules`
 package, which is used to generated Wayland protocol headers.
+
+The (experimental) EGLDevice backend also depends on the `libdrm-dev`
+development package.
 
 The examples and test programs depend on a number of tiny libraries.  These are
 located in the `deps/` directory.
@@ -208,6 +212,7 @@ information on what to include when reporting a bug.
 - [X11] Bugfix: Incremental reading of selections was not supported (#275)
 - [X11] Bugfix: Selection I/O reported but did not support `COMPOUND_TEXT`
 - [X11] Bugfix: Latin-1 text read from selections was not converted to UTF-8
+- [Linux] Added experimental support for direct rendering via EGLDevice (#786)
 - [Linux] Moved to evdev for joystick input (#906,#1005)
 - [Linux] Bugfix: Event processing did not detect joystick disconnection (#932)
 - [Linux] Bugfix: The joystick device path could be truncated (#1025)
@@ -282,6 +287,7 @@ skills.
  - David Carlier
  - Arturo Castro
  - Chi-kwan Chan
+ - Kamal Chandra
  - Ian Clarkson
  - Michał Cichoń
  - Lambert Clara

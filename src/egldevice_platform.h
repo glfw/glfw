@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 EGLDevice - www.glfw.org
+// GLFW 3.3 EGLDevice - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2016, NVIDIA CORPORATION. All rights reserved.
 //
@@ -23,9 +23,6 @@
 //    distribution.
 //
 //========================================================================
-
-#ifndef _glfw3_egldevice_h_
-#define _glfw3_egldevice_h_
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -77,6 +74,16 @@ typedef EGLBoolean (EGLAPIENTRY * PFNEGLSTREAMCONSUMEROUTPUTEXTPROC)(EGLDisplay,
 typedef EGLSurface (EGLAPIENTRY * PFNEGLCREATESTREAMPRODUCERSURFACEKHRPROC)(EGLDisplay,EGLConfig,EGLStreamKHR,const EGLint*);
 typedef EGLBoolean (EGLAPIENTRY * PFNEGLSTREAMATTRIBKHRPROC)(EGLDisplay,EGLStreamKHR,EGLenum,EGLint);
 typedef EGLBoolean (EGLAPIENTRY * PFNEGLSTREAMCONSUMERACQUIREATTRIBKHRPROC)(EGLDisplay,EGLStreamKHR,const EGLAttrib*);
+#define eglQueryDevicesEXT _glfw.egldevice.QueryDevicesEXT
+#define eglQueryDeviceStringEXT _glfw.egldevice.QueryDeviceStringEXT
+#define eglGetPlatformDisplayEXT _glfw.egldevice.GetPlatformDisplayEXT
+#define eglGetOutputLayersEXT _glfw.egldevice.GetOutputLayersEXT
+#define eglCreateStreamKHR _glfw.egldevice.CreateStreamKHR
+#define eglDestroyStreamKHR _glfw.egldevice.DestroyStreamKHR
+#define eglStreamConsumerOutputEXT _glfw.egldevice.StreamConsumerOutputEXT
+#define eglCreateStreamProducerSurfaceKHR _glfw.egldevice.CreateStreamProducerSurfaceKHR
+#define eglStreamAttribKHR _glfw.egldevice.StreamAttribKHR
+#define eglStreamConsumerAcquireAttribKHR _glfw.egldevice.StreamConsumerAcquireAttribKHR
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)
@@ -85,17 +92,17 @@ typedef EGLBoolean (EGLAPIENTRY * PFNEGLSTREAMCONSUMERACQUIREATTRIBKHRPROC)(EGLD
 #define _GLFW_EGL_NATIVE_DISPLAY EGL_DEFAULT_DISPLAY
 #define _GLFW_EGL_NATIVE_WINDOW ((EGLNativeWindowType)window->egldevice.handle)
 
-#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowEgldevice egldevice
-#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryEgldevice egldevice
-#define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorEgldevice egldevice
-#define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorEgldevice egldevice
+#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowEGLDevice egldevice
+#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryEGLDevice egldevice
+#define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorEGLDevice egldevice
+#define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorEGLDevice egldevice
 
 #define _GLFW_PLATFORM_CONTEXT_STATE
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
 
-// EGLDEVICE-specific per-window data
+// EGLDevice-specific per-window data
 //
-typedef struct _GLFWwindowEgldevice
+typedef struct _GLFWwindowEGLDevice
 {
     int xsurfsize, ysurfsize;
     int xoffset, yoffset;
@@ -106,38 +113,39 @@ typedef struct _GLFWwindowEgldevice
     EGLDisplay handle;
     EGLOutputLayerEXT eglLayer;
     EGLStreamKHR eglStream;
-} _GLFWwindowEgldevice;
+} _GLFWwindowEGLDevice;
 
-// EGLDEVICE-specific global data
+// EGLDevice-specific global data
 //
-typedef struct _GLFWlibraryEgldevice
+typedef struct _GLFWlibraryEGLDevice
 {
     int drmFd;
 
-    PFNEGLQUERYDEVICESEXTPROC                eglQueryDevicesEXT;
-    PFNEGLQUERYDEVICESTRINGEXTPROC           eglQueryDeviceStringEXT;
-    PFNEGLGETPLATFORMDISPLAYEXTPROC          eglGetPlatformDisplayEXT;
-    PFNEGLGETOUTPUTLAYERSEXTPROC             eglGetOutputLayersEXT;
-    PFNEGLCREATESTREAMKHRPROC                eglCreateStreamKHR;
-    PFNEGLDESTROYSTREAMKHRPROC               eglDestroyStreamKHR;
-    PFNEGLSTREAMCONSUMEROUTPUTEXTPROC        eglStreamConsumerOutputEXT;
-    PFNEGLCREATESTREAMPRODUCERSURFACEKHRPROC eglCreateStreamProducerSurfaceKHR;
-    PFNEGLSTREAMATTRIBKHRPROC                eglStreamAttribKHR;
-    PFNEGLSTREAMCONSUMERACQUIREATTRIBKHRPROC eglStreamConsumerAcquireAttribKHR;
-} _GLFWlibraryEgldevice;
+    PFNEGLQUERYDEVICESEXTPROC                QueryDevicesEXT;
+    PFNEGLQUERYDEVICESTRINGEXTPROC           QueryDeviceStringEXT;
+    PFNEGLGETPLATFORMDISPLAYEXTPROC          GetPlatformDisplayEXT;
+    PFNEGLGETOUTPUTLAYERSEXTPROC             GetOutputLayersEXT;
+    PFNEGLCREATESTREAMKHRPROC                CreateStreamKHR;
+    PFNEGLDESTROYSTREAMKHRPROC               DestroyStreamKHR;
+    PFNEGLSTREAMCONSUMEROUTPUTEXTPROC        StreamConsumerOutputEXT;
+    PFNEGLCREATESTREAMPRODUCERSURFACEKHRPROC CreateStreamProducerSurfaceKHR;
+    PFNEGLSTREAMATTRIBKHRPROC                StreamAttribKHR;
+    PFNEGLSTREAMCONSUMERACQUIREATTRIBKHRPROC StreamConsumerAcquireAttribKHR;
+} _GLFWlibraryEGLDevice;
 
-// EGLDEVICE-specific per-monitor data
+// EGLDevice-specific per-monitor data
 //
-typedef struct _GLFWmonitorEgldevice {
+typedef struct _GLFWmonitorEGLDevice
+{
     int crtcIndex;
     uint32_t connId, encId, crtcId;
-} _GLFWmonitorEgldevice;
+} _GLFWmonitorEGLDevice;
 
-// EGLDEVICE-specific per-cursor data
+// EGLDevice-specific per-cursor data
 //
-typedef struct _GLFWcursorEgldevice {
-} _GLFWcursorEgldevice;
+typedef struct _GLFWcursorEGLDevice
+{
+} _GLFWcursorEGLDevice;
 
 void _glfwPollMonitorsEGLDevice(void);
 
-#endif // _glfw3_egldevice_platform_h_

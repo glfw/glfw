@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 EGLDevice - www.glfw.org
+// GLFW 3.3 EGLDevice - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2016, NVIDIA CORPORATION. All rights reserved.
 //
@@ -58,8 +58,7 @@ static GLFWbool pickConnector(_GLFWmonitor* monitor, int drm_fd, drmModeRes* res
                     drmModeGetEncoder(drm_fd, monitor->egldevice.encId);
                 if (!enc_info) {
                     _glfwInputError(GLFW_PLATFORM_ERROR,
-                                    "EGLDevice: Unable to query DRM-KMS"
-                                    " information for connector index %d", i);
+                                    "EGLDevice: Unable to query DRM-KMS information for connector index %d", i);
                 }
 
                 // Select the modesize
@@ -163,3 +162,4 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "EGLDevice: _glfwPlatformSetGammaRamp not implemented");
 }
+

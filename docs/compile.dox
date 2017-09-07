@@ -257,6 +257,7 @@ ramps and clipboard.  The options are:
  - @b _GLFW_WAYLAND to use the Wayland API (experimental and incomplete)
  - @b _GLFW_MIR to use the Mir API (experimental and incomplete)
  - @b _GLFW_OSMESA to use the OSMesa API (headless and non-interactive)
+ - @b _GLFW_EGLDEVICE to use the EGLDevice API (experimental and incomplete)
 
 If you are building GLFW as a shared library / dynamic library / DLL then you
 must also define @b _GLFW_BUILD_DLL.  Otherwise, you must not define it.

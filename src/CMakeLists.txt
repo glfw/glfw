@@ -59,6 +59,11 @@ elseif (_GLFW_OSMESA)
                      posix_time.h posix_thread.h osmesa_context.h)
     set(glfw_SOURCES ${common_SOURCES} null_init.c null_monitor.c null_window.c
                      null_joystick.c posix_time.c posix_thread.c osmesa_context.c)
+elseif (_GLFW_ANDROID)
+    set(glfw_HEADERS ${common_HEADERS} android_platform.h android_joystick.h
+                     posix_time.h posix_thread.h)
+    set(glfw_SOURCES ${common_SOURCES} android_init.c android_monitor.c android_window.c
+                     android_joystick.c posix_time.c posix_thread.c)
 endif()
 
 if (APPLE)

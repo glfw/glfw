@@ -190,6 +190,8 @@ typedef void (APIENTRY * PFN_vkVoidFunction)(void);
  #include "mir_platform.h"
 #elif defined(_GLFW_OSMESA)
  #include "null_platform.h"
+#elif defined(_GLFW_ANDROID)
+ #include "android_platform.h"
 #else
  #error "No supported window creation API selected"
 #endif

@@ -233,6 +233,7 @@ typedef struct _GLFWwindowWin32
     HICON               smallIcon;
 
     GLFWbool            cursorTracked;
+    GLFWbool            frameAction;
     GLFWbool            iconified;
     GLFWbool            maximized;
 

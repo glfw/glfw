@@ -191,6 +191,8 @@ information on what to include when reporting a bug.
 - [Win32] Bugfix: The Cygwin DLL was installed to the wrong directory (#1035)
 - [Win32] Bugfix: Normalization of axis data via XInput was incorrect (#1045)
 - [Win32] Bugfix: `glfw3native.h` would undefine a foreign `APIENTRY` (#1062)
+- [Win32] Bugfix: Disabled cursor mode prevented use of caption buttons
+                  (#650,#1071)
 - [X11] Moved to XI2 `XI_RawMotion` for disable cursor mode motion input (#125)
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
 - [X11] Bugfix: `glfwGetVideoMode` would segfault on Cygwin/X

@@ -137,6 +137,9 @@ GLFWbool _glfwInitVulkan(int mode)
 #elif defined(_GLFW_MIR)
         else if (strcmp(ep[i].extensionName, "VK_KHR_mir_surface") == 0)
             _glfw.vk.KHR_mir_surface = GLFW_TRUE;
+#elif defined(_GLFW_ANDROID)
+        else if (strcmp(ep[i].extensionName, "VK_KHR_android_surface") == 0)
+            _glfw.vk.KHR_android_surface = GLFW_TRUE;
 #endif
     }
 

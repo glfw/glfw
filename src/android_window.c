@@ -31,8 +31,8 @@
 static int createNativeWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig)
 {
-    window->null.width = wndconfig->width;
-    window->null.height = wndconfig->height;
+    window->android.width = wndconfig->width;
+    window->android.height = wndconfig->height;
 
     return GLFW_TRUE;
 }
@@ -104,15 +104,15 @@ void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 {
     if (width)
-        *width = window->null.width;
+        *width = window->android.width;
     if (height)
-        *height = window->null.height;
+        *height = window->android.height;
 }
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    window->null.width = width;
-    window->null.height = height;
+    window->android.width = width;
+    window->android.height = height;
 }
 
 void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
@@ -128,9 +128,9 @@ void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int n, int d)
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
     if (width)
-        *width = window->null.width;
+        *width = window->android.width;
     if (height)
-        *height = window->null.height;
+        *height = window->android.height;
 }
 
 void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
@@ -273,13 +273,18 @@ int _glfwPlatformGetKeyScancode(int key)
 
 void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)
 {
+    if (!_glfw.vk.KHR_surface || !_glfw.vk.KHR_android_surface)
+    return;
+
+    extensions[0] = "VK_KHR_surface";
+    extensions[1] = "VK_KHR_android_surface";
 }
 
 int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
                                                       VkPhysicalDevice device,
                                                       uint32_t queuefamily)
 {
-    return GLFW_FALSE;
+    return GLFW_TRUE;
 }
 
 VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
@@ -287,7 +292,31 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
                                           const VkAllocationCallbacks* allocator,
                                           VkSurfaceKHR* surface)
 {
-    // This seems like the most appropriate error to return here
-    return VK_ERROR_INITIALIZATION_FAILED;
+    VkResult err;
+    VkAndroidSurfaceCreateInfoKHR sci;
+    PFN_vkCreateAndroidSurfaceKHR vkCreateAndroidSurfaceKHR;
+
+    vkCreateAndroidSurfaceKHR = (PFN_vkCreateAndroidSurfaceKHR)
+        vkGetInstanceProcAddr(instance, "vkCreateAndroidSurfaceKHR");
+    if (!vkCreateAndroidSurfaceKHR)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "Android: Vulkan instance missing VK_KHR_android_surface extension");
+        return VK_ERROR_EXTENSION_NOT_PRESENT;
+    }
+
+    memset(&sci, 0, sizeof(sci));
+    sci.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+    sci.surface = window->android.window;
+
+    err = vkCreateAndroidSurfaceKHR(instance, &sci, allocator, surface);
+    if (err)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Android: Failed to create Vulkan surface: %s",
+                        _glfwGetVulkanResultString(err));
+    }
+
+    return err;
 }
 

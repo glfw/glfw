@@ -27,8 +27,6 @@
 
 #include <dlfcn.h>
 
-#define _GLFW_PLATFORM_WINDOW_STATE _GLFWwindowNull null
-
 #define _GLFW_PLATFORM_CONTEXT_STATE
 #define _GLFW_PLATFORM_MONITOR_STATE
 #define _GLFW_PLATFORM_CURSOR_STATE
@@ -40,16 +38,31 @@
 #include "posix_time.h"
 #include "posix_thread.h"
 #include "android_joystick.h"
+#include <android/native_window.h>
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)
 #define _glfw_dlsym(handle, name) dlsym(handle, name)
 
+#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowAndroid  android
+
 // Null-specific per-window data
 //
-typedef struct _GLFWwindowNull
+typedef struct _GLFWwindowAndroid
 {
     int width;
     int height;
-} _GLFWwindowNull;
+    ANativeWindow *window;
+} _GLFWwindowAndroid;
+
+typedef VkFlags VkAndroidSurfaceCreateFlagsKHR;
+
+typedef struct VkAndroidSurfaceCreateInfoKHR {
+    VkStructureType                   sType;
+    const void*                       pNext;
+    VkAndroidSurfaceCreateFlagsKHR    flags;
+    ANativeWindow*                    surface;
+} VkAndroidSurfaceCreateInfoKHR;
+
+typedef VkResult (APIENTRY *PFN_vkCreateAndroidSurfaceKHR)(VkInstance,const VkAndroidSurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 

@@ -49,7 +49,9 @@ GLFWbool _glfwInitVulkan(int mode)
         return GLFW_TRUE;
 
 #if !defined(_GLFW_VULKAN_STATIC)
-#if defined(_GLFW_WIN32)
+#if defined(_GLFW_VULKAN_LIBRARY)
+    _glfw.vk.handle = _glfw_dlopen(_GLFW_VULKAN_LIBRARY);
+#elif defined(_GLFW_WIN32)
     _glfw.vk.handle = _glfw_dlopen("vulkan-1.dll");
 #elif defined(_GLFW_COCOA)
     _glfw.vk.handle = _glfw_dlopen("libMoltenVK.dylib");

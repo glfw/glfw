@@ -265,6 +265,12 @@ If you are linking the Vulkan loader statically into your application then you
 must also define @b _GLFW_VULKAN_STATIC.  Otherwise, GLFW will attempt to use the
 external version.
 
+If you are using a custom name for the Vulkan, EGL, GLX, OSMesa, OpenGL, GLESv1
+or GLESv2 library, you can override the default names by defining those you need
+of @b _GLFW_VULKAN_LIBRARY, @b _GLFW_EGL_LIBRARY, @b _GLFW_GLX_LIBRARY, @b
+_GLFW_OSMESA_LIBRARY, @b _GLFW_OPENGL_LIBRARY, @b _GLFW_GLESV1_LIBRARY and @b
+_GLFW_GLESV2_LIBRARY.  Otherwise, GLFW will use the built-in default names.
+
 For the EGL context creation API, the following options are available:
 
  - @b _GLFW_USE_EGLPLATFORM_H to use `EGL/eglplatform.h` for native handle

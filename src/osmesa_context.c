@@ -113,7 +113,9 @@ GLFWbool _glfwInitOSMesa(void)
     int i;
     const char* sonames[] =
     {
-#if defined(_WIN32)
+#if defined(_GLFW_OSMESA_LIBRARY)
+        _GLFW_OSMESA_LIBRARY,
+#elif defined(_WIN32)
         "libOSMesa.dll",
         "OSMesa.dll",
 #elif defined(__APPLE__)

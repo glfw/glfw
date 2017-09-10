@@ -278,119 +278,118 @@ GLFWAPI void glfwWindowHint(int hint, int value)
     {
         case GLFW_RED_BITS:
             _glfw.hints.framebuffer.redBits = value;
-            break;
+            return;
         case GLFW_GREEN_BITS:
             _glfw.hints.framebuffer.greenBits = value;
-            break;
+            return;
         case GLFW_BLUE_BITS:
             _glfw.hints.framebuffer.blueBits = value;
-            break;
+            return;
         case GLFW_ALPHA_BITS:
             _glfw.hints.framebuffer.alphaBits = value;
-            break;
+            return;
         case GLFW_DEPTH_BITS:
             _glfw.hints.framebuffer.depthBits = value;
-            break;
+            return;
         case GLFW_STENCIL_BITS:
             _glfw.hints.framebuffer.stencilBits = value;
-            break;
+            return;
         case GLFW_ACCUM_RED_BITS:
             _glfw.hints.framebuffer.accumRedBits = value;
-            break;
+            return;
         case GLFW_ACCUM_GREEN_BITS:
             _glfw.hints.framebuffer.accumGreenBits = value;
-            break;
+            return;
         case GLFW_ACCUM_BLUE_BITS:
             _glfw.hints.framebuffer.accumBlueBits = value;
-            break;
+            return;
         case GLFW_ACCUM_ALPHA_BITS:
             _glfw.hints.framebuffer.accumAlphaBits = value;
-            break;
+            return;
         case GLFW_AUX_BUFFERS:
             _glfw.hints.framebuffer.auxBuffers = value;
-            break;
+            return;
         case GLFW_STEREO:
             _glfw.hints.framebuffer.stereo = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_DOUBLEBUFFER:
             _glfw.hints.framebuffer.doublebuffer = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_SAMPLES:
             _glfw.hints.framebuffer.samples = value;
-            break;
+            return;
         case GLFW_SRGB_CAPABLE:
             _glfw.hints.framebuffer.sRGB = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_RESIZABLE:
             _glfw.hints.window.resizable = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_DECORATED:
             _glfw.hints.window.decorated = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_FOCUSED:
             _glfw.hints.window.focused = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_AUTO_ICONIFY:
             _glfw.hints.window.autoIconify = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_FLOATING:
             _glfw.hints.window.floating = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_MAXIMIZED:
             _glfw.hints.window.maximized = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_VISIBLE:
             _glfw.hints.window.visible = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_COCOA_RETINA_FRAMEBUFFER:
             _glfw.hints.window.ns.retina = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_COCOA_FRAME_AUTOSAVE:
             _glfw.hints.window.ns.frame = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_COCOA_GRAPHICS_SWITCHING:
             _glfw.hints.context.nsgl.offline = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_CENTER_CURSOR:
             _glfw.hints.window.centerCursor = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_CLIENT_API:
             _glfw.hints.context.client = value;
-            break;
+            return;
         case GLFW_CONTEXT_CREATION_API:
             _glfw.hints.context.source = value;
-            break;
+            return;
         case GLFW_CONTEXT_VERSION_MAJOR:
             _glfw.hints.context.major = value;
-            break;
+            return;
         case GLFW_CONTEXT_VERSION_MINOR:
             _glfw.hints.context.minor = value;
-            break;
+            return;
         case GLFW_CONTEXT_ROBUSTNESS:
             _glfw.hints.context.robustness = value;
-            break;
+            return;
         case GLFW_OPENGL_FORWARD_COMPAT:
             _glfw.hints.context.forward = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_OPENGL_DEBUG_CONTEXT:
             _glfw.hints.context.debug = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_CONTEXT_NO_ERROR:
             _glfw.hints.context.noerror = value ? GLFW_TRUE : GLFW_FALSE;
-            break;
+            return;
         case GLFW_OPENGL_PROFILE:
             _glfw.hints.context.profile = value;
-            break;
+            return;
         case GLFW_CONTEXT_RELEASE_BEHAVIOR:
             _glfw.hints.context.release = value;
-            break;
+            return;
         case GLFW_REFRESH_RATE:
             _glfw.hints.refreshRate = value;
-            break;
-        default:
-            _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint 0x%08X", hint);
-            break;
+            return;
     }
+
+    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint 0x%08X", hint);
 }
 
 GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
@@ -770,41 +769,37 @@ GLFWAPI void glfwSetWindowAttrib(GLFWwindow* handle, int attrib, int value)
 
     value = value ? GLFW_TRUE : GLFW_FALSE;
 
-    switch (attrib)
+    if (attrib == GLFW_AUTO_ICONIFY)
+        window->autoIconify = value;
+    else if (attrib == GLFW_RESIZABLE)
     {
-        case GLFW_RESIZABLE:
-            if (window->resizable != value)
-            {
-                window->resizable = value;
-                if (!window->monitor)
-                    _glfwPlatformSetWindowResizable(window, value);
-            }
+        if (window->resizable == value)
             return;
 
-        case GLFW_DECORATED:
-            if (window->decorated != value)
-            {
-                window->decorated = value;
-                if (!window->monitor)
-                    _glfwPlatformSetWindowDecorated(window, value);
-            }
-            return;
-
-        case GLFW_FLOATING:
-            if (window->floating != value)
-            {
-                window->floating = value;
-                if (!window->monitor)
-                    _glfwPlatformSetWindowFloating(window, value);
-            }
-            return;
-
-        case GLFW_AUTO_ICONIFY:
-            window->autoIconify = value;
-            return;
+        window->resizable = value;
+        if (!window->monitor)
+            _glfwPlatformSetWindowResizable(window, value);
     }
+    else if (attrib == GLFW_DECORATED)
+    {
+        if (window->decorated == value)
+            return;
 
-    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute 0x%08X", attrib);
+        window->decorated = value;
+        if (!window->monitor)
+            _glfwPlatformSetWindowDecorated(window, value);
+    }
+    else if (attrib == GLFW_FLOATING)
+    {
+        if (window->floating == value)
+            return;
+
+        window->floating = value;
+        if (!window->monitor)
+            _glfwPlatformSetWindowFloating(window, value);
+    }
+    else
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute 0x%08X", attrib);
 }
 
 GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* handle)

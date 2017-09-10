@@ -82,6 +82,9 @@ Some hints are platform specific.  These may be set on any platform but they
 will only affect their specific platform.  Other platforms will simply ignore
 them.  Setting these hints requires no platform specific headers or functions.
 
+
+@subsubsection init_hints_shared Shared init hints
+
 @anchor GLFW_JOYSTICK_HAT_BUTTONS
 __GLFW_JOYSTICK_HAT_BUTTONS__ specifies whether to also expose joystick hats as
 buttons, for compatibility with earlier versions of GLFW that did not have @ref
@@ -299,35 +302,39 @@ functions not on this list will not be made non-reentrant.
 
 @subsection thread_safety Thread safety
 
-Most GLFW functions must only be called from the main thread, but some may be
-called from any thread.  However, no GLFW function may be called from any thread
-but the main thread until GLFW has been successfully initialized, including
-functions that may called before initialization.
+Most GLFW functions must only be called from the main thread (the thread that
+calls main), but some may be called from any thread once the library has been
+initialized.  Before initialization the whole library is thread-unsafe.
 
 The reference documentation for every GLFW function states whether it is limited
 to the main thread.                                                        
 
-Initialization and termination, event processing and the creation and
-destruction of windows, contexts and cursors are all limited to the main thread
-due to limitations of one or several platforms.
+Initialization, termination, event processing and the creation and
+destruction of windows, cursors and OpenGL and OpenGL ES contexts are all
+restricted to the main thread due to limitations of one or several platforms.
 
 Because event processing must be performed on the main thread, all callbacks
 except for the error callback will only be called on that thread.  The error
 callback may be called on any thread, as any GLFW function may generate errors.
 
-The posting of empty events may be done from any thread.  The window user
-pointer and close flag may also be accessed and modified from any thread, but
-this is not synchronized by GLFW.  The following window related functions may
-be called from any thread:
+The error code and description may be queried from any thread.
+
+ - @ref glfwGetError
+
+Empty events may be posted from any thread.
 
  - @ref glfwPostEmptyEvent
+
+The window user pointer and close flag may be read and written from any thread,
+but this is not synchronized by GLFW.
+
  - @ref glfwGetWindowUserPointer
  - @ref glfwSetWindowUserPointer
  - @ref glfwWindowShouldClose
  - @ref glfwSetWindowShouldClose
 
-Rendering may be done on any thread.  The following context related functions
-may be called from any thread:
+These functions for working with OpenGL and OpenGL ES contexts may be called
+from any thread, but the window object is not synchronized by GLFW.
 
  - @ref glfwMakeContextCurrent
  - @ref glfwGetCurrentContext
@@ -336,27 +343,23 @@ may be called from any thread:
  - @ref glfwExtensionSupported
  - @ref glfwGetProcAddress
 
-The raw timer may be queried from any thread.  The following raw timer related
-functions may be called from any thread:
+The raw timer functions may be called from any thread.
 
  - @ref glfwGetTimerFrequency
  - @ref glfwGetTimerValue
 
-The regular timer may be used from any thread, but the reading and writing of
-the timer offset is not synchronized by GLFW.  The following timer related
-functions may be called from any thread:
+The regular timer may be used from any thread, but reading and writing the timer
+offset is not synchronized by GLFW.
 
  - @ref glfwGetTime
  - @ref glfwSetTime
 
-Library version information may be queried from any thread.  The following
-version related functions may be called from any thread:
+Library version information may be queried from any thread.
 
  - @ref glfwGetVersion
  - @ref glfwGetVersionString
 
-Vulkan objects may be created and information queried from any thread.  The
-following Vulkan related functions may be called from any thread:
+All Vulkan related functions may be called from any thread.
 
  - @ref glfwVulkanSupported
  - @ref glfwGetRequiredInstanceExtensions
@@ -364,9 +367,9 @@ following Vulkan related functions may be called from any thread:
  - @ref glfwGetPhysicalDevicePresentationSupport
  - @ref glfwCreateWindowSurface
 
-GLFW uses no synchronization objects internally except for thread-local storage
-to keep track of the current context for each thread.  Synchronization is left
-to the application.
+GLFW uses synchronization objects internally only to manage the per-thread
+context and error states.  Additional synchronization is left to the
+application.
 
 Functions that may currently be called from any thread will always remain so,
 but functions that are currently limited to the main thread may be updated to

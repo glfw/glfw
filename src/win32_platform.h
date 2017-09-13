@@ -63,7 +63,6 @@
 
 #include <wctype.h>
 #include <windows.h>
-#include <mmsystem.h>
 #include <dinput.h>
 #include <xinput.h>
 #include <dbt.h>

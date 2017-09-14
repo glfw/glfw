@@ -1034,6 +1034,14 @@ static unsigned int decodeUTF8(const char** s)
 }
 #endif /*X_HAVE_UTF8_STRING*/
 
+// Updates the event time with the specified timestamp
+//
+static void updateEventTime(Time timestamp)
+{
+    _glfw.x11.eventTime += timestamp - _glfw.x11.lastTimestamp;
+    _glfw.x11.lastTimestamp = timestamp;
+}
+
 // Process the specified X event
 //
 static void processEvent(XEvent *event)
@@ -1076,6 +1084,7 @@ static void processEvent(XEvent *event)
                     const double* values = re->raw_values;
                     double xpos = window->virtualCursorPosX;
                     double ypos = window->virtualCursorPosY;
+                    updateEventTime(re->time);
 
                     if (XIMaskIsSet(re->valuators.mask, 0))
                     {
@@ -1121,7 +1130,7 @@ static void processEvent(XEvent *event)
             const int key = translateKey(keycode);
             const int mods = translateState(event->xkey.state);
             const int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
-            _glfw.x11.lastEventTime = event->xkey.time;
+            updateEventTime(event->xkey.time);
 
             if (window->x11.ic)
             {
@@ -1215,7 +1224,7 @@ static void processEvent(XEvent *event)
         {
             const int key = translateKey(keycode);
             const int mods = translateState(event->xkey.state);
-            _glfw.x11.lastEventTime = event->xkey.time;
+            updateEventTime(event->xkey.time);
 
             if (!_glfw.x11.xkb.detectable)
             {
@@ -1256,7 +1265,7 @@ static void processEvent(XEvent *event)
         case ButtonPress:
         {
             const int mods = translateState(event->xbutton.state);
-            _glfw.x11.lastEventTime = event->xbutton.time;
+            updateEventTime(event->xbutton.time);
 
             if (event->xbutton.button == Button1)
                 _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS, mods);
@@ -1291,7 +1300,7 @@ static void processEvent(XEvent *event)
         case ButtonRelease:
         {
             const int mods = translateState(event->xbutton.state);
-            _glfw.x11.lastEventTime = event->xbutton.time;
+            updateEventTime(event->xbutton.time);
 
             if (event->xbutton.button == Button1)
             {
@@ -1329,6 +1338,8 @@ static void processEvent(XEvent *event)
 
         case EnterNotify:
         {
+            updateEventTime(event->xcrossing.time);
+
             // HACK: This is a workaround for WMs (KWM, Fluxbox) that otherwise
             //       ignore the defined cursor for hidden cursor mode
             if (window->cursorMode == GLFW_CURSOR_HIDDEN)
@@ -1340,6 +1351,7 @@ static void processEvent(XEvent *event)
 
         case LeaveNotify:
         {
+            updateEventTime(event->xcrossing.time);
             _glfwInputCursorEnter(window, GLFW_FALSE);
             return;
         }
@@ -1348,7 +1360,7 @@ static void processEvent(XEvent *event)
         {
             const int x = event->xmotion.x;
             const int y = event->xmotion.y;
-            _glfw.x11.lastEventTime = event->xmotion.time;
+            updateEventTime(event->xmotion.time);
 
             if (x != window->x11.warpCursorPosX || y != window->x11.warpCursorPosY)
             {
@@ -2435,8 +2447,7 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
 
 double _glfwPlatformGetEventTime(void)
 {
-    /* X11 events are stored in milliseconds */
-    return (double) _glfw.x11.lastEventTime / 1000.0;
+    return (double) _glfw.x11.eventTime / 1000.0;
 }
 
 void _glfwPlatformPollEvents(void)

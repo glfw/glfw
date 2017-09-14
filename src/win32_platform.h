@@ -259,8 +259,9 @@ typedef struct _GLFWlibraryWin32
     RAWINPUT*           rawInput;
     int                 rawInputSize;
 
-    // The time of the last event
-    LONG                lastEventTime;
+    // State for accumulating a non-wrapping event time
+    uint32_t            lastTimestamp;
+    uint64_t            eventTime;
 
     struct {
         HINSTANCE                       instance;

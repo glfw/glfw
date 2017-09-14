@@ -347,6 +347,14 @@ static int getKeyMods(void)
     return mods;
 }
 
+// Updates the event time with the specified timestamp
+//
+static void updateEventTime(LONG timestamp)
+{
+    _glfw.win32.eventTime += (uint32_t) timestamp - _glfw.win32.lastTimestamp;
+    _glfw.win32.lastTimestamp = timestamp;
+}
+
 // Retrieves and translates modifier keys
 //
 static int getAsyncKeyMods(void)
@@ -595,7 +603,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_UNICHAR:
         {
             const GLFWbool plain = (uMsg != WM_SYSCHAR);
-            _glfw.win32.lastEventTime = GetMessageTime();
+            updateEventTime(GetMessageTime());
 
             if (uMsg == WM_UNICHAR && wParam == UNICODE_NOCHAR)
             {
@@ -618,7 +626,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             const int scancode = (lParam >> 16) & 0x1ff;
             const int action = ((lParam >> 31) & 1) ? GLFW_RELEASE : GLFW_PRESS;
             const int mods = getKeyMods();
-            _glfw.win32.lastEventTime = GetMessageTime();
+            updateEventTime(GetMessageTime());
 
             if (key == _GLFW_KEY_INVALID)
                 break;
@@ -653,7 +661,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_XBUTTONUP:
         {
             int i, button, action;
-            _glfw.win32.lastEventTime = GetMessageTime();
+            updateEventTime(GetMessageTime());
 
             if (uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP)
                 button = GLFW_MOUSE_BUTTON_LEFT;
@@ -704,7 +712,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         {
             const int x = GET_X_LPARAM(lParam);
             const int y = GET_Y_LPARAM(lParam);
-            _glfw.win32.lastEventTime = GetMessageTime();
+            updateEventTime(GetMessageTime());
 
             // Disabled cursor motion input is provided by WM_INPUT
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
@@ -783,6 +791,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOUSELEAVE:
         {
+            updateEventTime(GetMessageTime());
             window->win32.cursorTracked = GLFW_FALSE;
             _glfwInputCursorEnter(window, GLFW_FALSE);
             return 0;
@@ -790,6 +799,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOUSEWHEEL:
         {
+            updateEventTime(GetMessageTime());
             _glfwInputScroll(window, 0.0, (SHORT) HIWORD(wParam) / (double) WHEEL_DELTA);
             return 0;
         }
@@ -797,6 +807,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_MOUSEHWHEEL:
         {
             // This message is only sent on Windows Vista and later
+            updateEventTime(GetMessageTime());
             // NOTE: The X-axis is inverted for consistency with macOS and X11
             _glfwInputScroll(window, -((SHORT) HIWORD(wParam) / (double) WHEEL_DELTA), 0.0);
             return 0;
@@ -1504,8 +1515,7 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
 
 double _glfwPlatformGetEventTime(void)
 {
-    /* Windows events are stored in milliseconds */
-    return (double) _glfw.win32.lastEventTime / 1000.0;
+    return (double) _glfw.win32.eventTime / 1000.0;
 }
 
 void _glfwPlatformPollEvents(void)

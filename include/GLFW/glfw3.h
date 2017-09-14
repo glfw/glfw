@@ -3368,14 +3368,18 @@ GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window
 
 /*! @brief Returns the time of the last input event.
  *
- *  This function returns the time, in seconds, of the last event occurence. The
- *  only events queried are the input events button-press, button-release,
- *  key-press, key-release and cursor motion, and the proper place to call this
- *  function is in one of the input callbacks.
+ *  This function returns the time, in seconds, that the last input event
+ *  occurred.  The time is collected for key, mouse button, scrolling and cursor
+ *  position events including enter and leave.  The function is intended to be
+ *  called from the relevant event callback.
  *
- *  @return The value, in seconds, of the last input event occurence.
+ *  @return The time of the input event, in seconds, or zero if an
+ *  [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @remarks The event timestamps provided by most platforms have much lower
+ *  resolution than the GLFW timer.
  *
  *  @thread_safety This function must only be called from the main thread.
  *

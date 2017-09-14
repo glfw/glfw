@@ -138,6 +138,8 @@ information on what to include when reporting a bug.
   for retrieving gamepad input state (#900)
 - Added `glfwRequestWindowAttention` function for requesting attention from the
   user (#732,#988)
+- Added `glfwGetEventTime` function for querying the time of the last input
+  event (#1012)
 - Added `glfwGetKeyScancode` function that allows retrieving platform dependent
   scancodes for keys (#830)
 - Added `glfwSetWindowMaximizeCallback` and `GLFWwindowmaximizefun` for

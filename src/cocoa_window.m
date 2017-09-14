@@ -413,7 +413,11 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (BOOL)isOpaque
 {
-    return YES;
+    // Set to NO even if alphaMask is not used;
+    //   The NSView/GLFWContentView does not need to be opaque anyway,
+    //   and to avoid keeping track of alphaMask inside the NSView we
+    //   just return NO here instead.
+    return NO;
 }
 
 - (BOOL)canBecomeKeyView
@@ -1080,6 +1084,12 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 
     if (wndconfig->ns.retina)
         [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
+
+    if (wndconfig->alphaMask)
+    {
+        [window->ns.object setOpaque:NO];
+        [window->ns.object setBackgroundColor:[NSColor clearColor]];
+    }
 
     [window->ns.object setContentView:window->ns.view];
     [window->ns.object makeFirstResponder:window->ns.view];

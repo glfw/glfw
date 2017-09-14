@@ -868,6 +868,12 @@ extern "C" {
  *  Framebuffer double buffering [hint](@ref GLFW_DOUBLEBUFFER).
  */
 #define GLFW_DOUBLEBUFFER           0x00021010
+/*! @brief Context ALPHA Mask hint and attribute.
+ *
+ *  Context window alpha [hint](@ref GLFW_ALPHA_MASK_hint) and
+ *  [attribute](@ref GLFW_ALPHA_MASK_attrib).
+ */
+#define GLFW_ALPHA_MASK             0x00021011
 /*! @brief Context client API hint and attribute.
  *
  *  Context client API [hint](@ref GLFW_CLIENT_API_hint) and

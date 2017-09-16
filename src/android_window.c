@@ -26,18 +26,24 @@
 //========================================================================
 
 #include "internal.h"
+#include <android_native_app_glue.h>
+#include <android/log.h>
 
 
-static int createNativeWindow(_GLFWwindow* window,
-                              const _GLFWwndconfig* wndconfig)
-{
-    window->android.width = wndconfig->width;
-    window->android.height = wndconfig->height;
+struct engine {
+    struct android_app* app;
+};
+struct engine engine;
 
-    return GLFW_TRUE;
+// Android Entry Point
+void android_main(struct android_app *app) {    
+    memset(&engine, 0, sizeof(engine));
+    app->userData = &engine;
+    engine.app = app;
+
+    glfwMain();
+
 }
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -47,23 +53,22 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    if (!createNativeWindow(window, wndconfig))
-        return GLFW_FALSE;
-
+    window->android.app = engine.app;
     if (ctxconfig->client != GLFW_NO_API)
     {
-        if (ctxconfig->source == GLFW_NATIVE_CONTEXT_API ||
-            ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
+        if (ctxconfig->source == GLFW_EGL_CONTEXT_API)
+        {
+            if (!_glfwInitEGL())
+                return GLFW_FALSE;
+            if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
+                return GLFW_FALSE;
+        }
+        else if (ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
         {
             if (!_glfwInitOSMesa())
                 return GLFW_FALSE;
             if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
-        }
-        else
-        {
-            _glfwInputError(GLFW_API_UNAVAILABLE, "Null: EGL not available");
-            return GLFW_FALSE;
         }
     }
 
@@ -307,7 +312,7 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
 
     memset(&sci, 0, sizeof(sci));
     sci.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
-    sci.surface = window->android.window;
+    sci.surface = window->android.app->window;
 
     err = vkCreateAndroidSurfaceKHR(instance, &sci, allocator, surface);
     if (err)

@@ -197,7 +197,7 @@ extern "C" {
    #include <OpenGL/glu.h>
   #endif
 
- #else /*__APPLE__*/
+ #elif !defined(ANDROID) /*__APPLE__*/
 
   #include <GL/gl.h>
   #if defined(GLFW_INCLUDE_GLEXT)
@@ -5202,3 +5202,4 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window
 
 #endif /* _glfw3_h_ */
 
+extern void glfwMain();

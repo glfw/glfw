@@ -27,24 +27,26 @@
 
 #include <dlfcn.h>
 
-#define _GLFW_PLATFORM_CONTEXT_STATE
-#define _GLFW_PLATFORM_MONITOR_STATE
-#define _GLFW_PLATFORM_CURSOR_STATE
-#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE
-#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
-#define _GLFW_EGL_CONTEXT_STATE
-#define _GLFW_EGL_LIBRARY_CONTEXT_STATE
+#include "egl_context.h"
 #include "osmesa_context.h"
 #include "posix_time.h"
 #include "posix_thread.h"
 #include "android_joystick.h"
 #include <android/native_window.h>
+#include <android_native_app_glue.h>
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)
 #define _glfw_dlsym(handle, name) dlsym(handle, name)
 
+#define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->android.app->window)
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowAndroid  android
+#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE
+#define _GLFW_PLATFORM_MONITOR_STATE
+#define _GLFW_PLATFORM_CURSOR_STATE
+
+#define _GLFW_PLATFORM_CONTEXT_STATE
+#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
 
 // Null-specific per-window data
 //
@@ -52,7 +54,7 @@ typedef struct _GLFWwindowAndroid
 {
     int width;
     int height;
-    ANativeWindow *window;
+    struct android_app *app;
 } _GLFWwindowAndroid;
 
 typedef VkFlags VkAndroidSurfaceCreateFlagsKHR;

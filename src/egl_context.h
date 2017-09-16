@@ -25,31 +25,7 @@
 //
 //========================================================================
 
-#if defined(_GLFW_USE_EGLPLATFORM_H)
- #include <EGL/eglplatform.h>
-#elif defined(_GLFW_WIN32)
- #define EGLAPIENTRY __stdcall
-typedef HDC EGLNativeDisplayType;
-typedef HWND EGLNativeWindowType;
-#elif defined(_GLFW_COCOA)
- #define EGLAPIENTRY
-typedef void* EGLNativeDisplayType;
-typedef id EGLNativeWindowType;
-#elif defined(_GLFW_X11)
- #define EGLAPIENTRY
-typedef Display* EGLNativeDisplayType;
-typedef Window EGLNativeWindowType;
-#elif defined(_GLFW_WAYLAND)
- #define EGLAPIENTRY
-typedef struct wl_display* EGLNativeDisplayType;
-typedef struct wl_egl_window* EGLNativeWindowType;
-#elif defined(_GLFW_MIR)
- #define EGLAPIENTRY
-typedef MirEGLNativeDisplayType EGLNativeDisplayType;
-typedef MirEGLNativeWindowType EGLNativeWindowType;
-#else
- #error "No supported EGL platform selected"
-#endif
+#include <EGL/eglplatform.h>
 
 #define EGL_SUCCESS	0x3000
 #define EGL_NOT_INITIALIZED	0x3001

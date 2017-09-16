@@ -63,7 +63,7 @@ elseif (_GLFW_ANDROID)
     set(glfw_HEADERS ${common_HEADERS} android_platform.h android_joystick.h
                      posix_time.h posix_thread.h)
     set(glfw_SOURCES ${common_SOURCES} android_init.c android_monitor.c android_window.c
-                     android_joystick.c posix_time.c posix_thread.c)
+                     android_joystick.c posix_time.c posix_thread.c egl_context.c osmesa_context.c ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
 endif()
 
 if (APPLE)
@@ -100,7 +100,8 @@ target_include_directories(glfw PUBLIC
 target_include_directories(glfw PRIVATE
                            "${GLFW_SOURCE_DIR}/src"
                            "${GLFW_BINARY_DIR}/src"
-                           ${glfw_INCLUDE_DIRS})
+                           ${glfw_INCLUDE_DIRS}
+                           ${ANDROID_NDK}/sources/android/native_app_glue/)
 
 # HACK: When building on MinGW, WINVER and UNICODE need to be defined before
 # the inclusion of stddef.h (by glfw3.h), which is itself included before

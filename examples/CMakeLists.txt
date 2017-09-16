@@ -45,7 +45,7 @@ if (RT_LIBRARY)
     target_link_libraries(particles "${RT_LIBRARY}")
 endif()
 
-set(WINDOWS_BINARIES boing gears heightmap particles simple splitview wave)
+set(WINDOWS_BINARIES boing gears heightmap particles simple splitview wave transparent)
 set(CONSOLE_BINARIES offscreen)
 
 set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES

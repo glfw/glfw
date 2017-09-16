@@ -72,7 +72,8 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-int main(void)
+/* program entry */
+int main(int argc, char *argv[])
 {
     GLFWwindow* window;
     GLuint vertex_buffer, vertex_shader, fragment_shader, program;

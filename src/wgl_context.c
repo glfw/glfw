@@ -202,7 +202,7 @@ static int choosePixelFormat(_GLFWwindow* window,
 
         u->handle = n;
         // always able to create alpha mask on win
-        u->alphaMask = desired->alphaMask;
+        u->alphaMask = 1;
         usableCount++;
     }
 

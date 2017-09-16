@@ -107,24 +107,20 @@ selectionloop:
 
             visualinfo = glXGetVisualFromFBConfig(_glfw.x11.display, n);
             if (!visualinfo) {
-                printf("!visualinfo: bail\n");
                 continue;
             }
 
             pictFormat = XRenderFindVisualFormat(_glfw.x11.display, visualinfo->visual);
             if( !pictFormat ) {
-                printf("!pictFormat: bail\n");
                 XFree( visualinfo );
                 continue;
             }
 
             if( !pictFormat->direct.alphaMask ) {
-                printf("!pictFormat->direct alphaMask: bail\n");
                 XFree( visualinfo );
                 continue;
             }
 
-            printf("looking for transparent visual: didn't find\n");
             XFree( visualinfo );
         }
 

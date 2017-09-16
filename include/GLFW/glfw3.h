@@ -869,9 +869,9 @@ extern "C" {
  *  Framebuffer double buffering [hint](@ref GLFW_DOUBLEBUFFER).
  */
 #define GLFW_DOUBLEBUFFER           0x00021010
-/*! @brief Context ALPHA Mask hint and attribute.
+/*! @brief Window transparency hint and attribute.
  *
- *  Context window alpha [hint](@ref GLFW_TRANSPARENT_hint) and
+ *  Context window transparency [hint](@ref GLFW_TRANSPARENT_hint) and
  *  [attribute](@ref GLFW_TRANSPARENT_attrib).
  */
 #define GLFW_TRANSPARENT            0x00021011

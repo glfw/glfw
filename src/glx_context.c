@@ -55,6 +55,8 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* res
     int i, nativeCount, usableCount;
     const char* vendor;
     GLFWbool trustWindowBit = GLFW_TRUE;
+    XVisualInfo *visual;
+    XRenderPictFormat *pict_format;
 
     // HACK: This is a (hopefully temporary) workaround for Chromium
     //       (VirtualBox GL) not setting the window bit on any GLXFBConfigs
@@ -64,6 +66,7 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* res
 
     nativeConfigs =
         glXGetFBConfigs(_glfw.x11.display, _glfw.x11.screen, &nativeCount);
+
     if (!nativeConfigs || !nativeCount)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE, "GLX: No GLXFBConfigs returned");
@@ -89,6 +92,10 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* res
                 continue;
         }
 
+        visual = glXGetVisualFromFBConfig(_glfw.x11.display, n);
+        pict_format = XRenderFindVisualFormat(_glfw.x11.display, visual->visual);
+        u->alphaMask = pict_format->direct.alphaMask > 0;
+
         u->redBits = getGLXFBConfigAttrib(n, GLX_RED_SIZE);
         u->greenBits = getGLXFBConfigAttrib(n, GLX_GREEN_SIZE);
         u->blueBits = getGLXFBConfigAttrib(n, GLX_BLUE_SIZE);
@@ -96,8 +103,6 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* res
         u->alphaBits = getGLXFBConfigAttrib(n, GLX_ALPHA_SIZE);
         u->depthBits = getGLXFBConfigAttrib(n, GLX_DEPTH_SIZE);
         u->stencilBits = getGLXFBConfigAttrib(n, GLX_STENCIL_SIZE);
-
-        u->alphaMask = getGLXFBConfigAttrib(n, GLX_RGBA);
 
         u->accumRedBits = getGLXFBConfigAttrib(n, GLX_ACCUM_RED_SIZE);
         u->accumGreenBits = getGLXFBConfigAttrib(n, GLX_ACCUM_GREEN_SIZE);

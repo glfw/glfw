@@ -492,7 +492,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
     if (ctxconfig->share)
         share = ctxconfig->share->context.egl.handle;
 
-    if (!chooseEGLConfig(ctxconfig, fbconfig, &config, fbconfig->alphaMask))
+    if (!chooseEGLConfig(ctxconfig, fbconfig, &config, fbconfig->transparent))
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "EGL: Failed to find a suitable EGLConfig");
@@ -738,7 +738,7 @@ GLFWbool _glfwChooseVisualEGL(const _GLFWwndconfig* wndconfig,
     const long vimask = VisualScreenMask | VisualIDMask;
 
 
-    if (!chooseEGLConfig(ctxconfig, fbconfig, &native, wndconfig->alphaMask))
+    if (!chooseEGLConfig(ctxconfig, fbconfig, &native, wndconfig->transparent))
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "EGL: Failed to find a suitable EGLConfig");

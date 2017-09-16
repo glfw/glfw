@@ -64,6 +64,8 @@ static GLFWbool chooseGLXFBConfig(
         findTransparent = GLFW_FALSE;
     }
 
+    findTransparent = GLFW_TRUE;
+
     // HACK: This is a (hopefully temporary) workaround for Chromium
     //       (VirtualBox GL) not setting the window bit on any GLXFBConfigs
     vendor = glXGetClientString(_glfw.x11.display, GLX_VENDOR);
@@ -81,7 +83,7 @@ static GLFWbool chooseGLXFBConfig(
 
     usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
     usableCount = 0;
-    
+
 selectionloop:
     for (i = 0;  i < nativeCount;  i++)
     {
@@ -99,25 +101,31 @@ selectionloop:
                 continue;
         }
 
-	if( findTransparent ) {
+        if( findTransparent ) {
             XVisualInfo *visualinfo;
             XRenderPictFormat *pictFormat;
 
-	    visualinfo = glXGetVisualFromFBConfig(_glfw.x11.display, n);
-	    if (!visualinfo)
-	        continue;
+            visualinfo = glXGetVisualFromFBConfig(_glfw.x11.display, n);
+            if (!visualinfo) {
+                printf("!visualinfo: bail\n");
+                continue;
+            }
 
             pictFormat = XRenderFindVisualFormat(_glfw.x11.display, visualinfo->visual);
             if( !pictFormat ) {
-	        XFree( visualinfo );
-	        continue;
-	    }
+                printf("!pictFormat: bail\n");
+                XFree( visualinfo );
+                continue;
+            }
 
             if( !pictFormat->direct.alphaMask ) {
-	        XFree( visualinfo );
-	        continue;
-	    }
-	    XFree( visualinfo );
+                printf("!pictFormat->direct alphaMask: bail\n");
+                XFree( visualinfo );
+                continue;
+            }
+
+            printf("looking for transparent visual: didn't find\n");
+            XFree( visualinfo );
         }
 
         u->redBits = getGLXFBConfigAttrib(n, GLX_RED_SIZE);
@@ -150,7 +158,7 @@ selectionloop:
         usableCount++;
     }
     // reiterate the selection loop without looking for transparency supporting
-    // formats if no matchig FB configs for a transparent window were found. 
+    // formats if no matchig FB configs for a transparent window were found.
     if( findTransparent && !usableCount ) {
         findTransparent = GLFW_FALSE;
 	goto selectionloop;
@@ -722,4 +730,3 @@ GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* handle)
 
     return window->context.glx.window;
 }
-

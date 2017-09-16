@@ -213,8 +213,10 @@ static int choosePixelFormat(_GLFWwindow* window,
         }
 
         u->handle = n;
-        // always able to create alpha mask on win
-        u->alphaMask = 1;
+
+        // always able to go transparent on win dwmapi
+        u->transparent = 1;
+
         usableCount++;
     }
     // Reiterate the selection loop without looking for transparency supporting

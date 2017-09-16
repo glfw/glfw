@@ -305,7 +305,6 @@ struct _GLFWwndconfig
     GLFWbool      floating;
     GLFWbool      maximized;
     GLFWbool      centerCursor;
-    GLFWbool      alphaMask;
     struct {
         GLFWbool  retina;
         GLFWbool  frame;
@@ -349,7 +348,7 @@ struct _GLFWfbconfig
     int         redBits;
     int         greenBits;
     int         blueBits;
-    int         alphaMask;
+    int         transparent;
     int         alphaBits;
     int         depthBits;
     int         stencilBits;

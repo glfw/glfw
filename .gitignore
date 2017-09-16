@@ -15,6 +15,7 @@ MinSizeRel
 RelWithDebInfo
 *.xcodeproj
 .vs
+*.VC.opendb
 
 # CMake files
 Makefile

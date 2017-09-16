@@ -83,6 +83,20 @@ static int choosePixelFormat(_GLFWwindow* window,
     {
         const int n = i + 1;
         _GLFWfbconfig* u = usableConfigs + usableCount;
+        PIXELFORMATDESCRIPTOR pfd;
+
+        if (window->transparent) {
+            if (!DescribePixelFormat(window->context.wgl.dc,
+                n,
+                sizeof(PIXELFORMATDESCRIPTOR),
+                &pfd))
+            {
+                continue;
+            }
+
+            if (!(pfd.dwFlags & PFD_SUPPORT_COMPOSITION))
+                continue;
+        }
 
         if (_glfw.wgl.ARB_pixel_format)
         {
@@ -152,11 +166,9 @@ static int choosePixelFormat(_GLFWwindow* window,
         }
         else
         {
-            PIXELFORMATDESCRIPTOR pfd;
-
             // Get pixel format attributes through legacy PFDs
 
-            if (!DescribePixelFormat(window->context.wgl.dc,
+            if (!window->transparent && !DescribePixelFormat(window->context.wgl.dc,
                                      n,
                                      sizeof(PIXELFORMATDESCRIPTOR),
                                      &pfd))
@@ -204,6 +216,15 @@ static int choosePixelFormat(_GLFWwindow* window,
         // always able to create alpha mask on win
         u->alphaMask = 1;
         usableCount++;
+    }
+    // Reiterate the selection loop without looking for transparency supporting
+    // formats if no matching pixelformat for a transparent window were found.
+    if (window->transparent && !usableCount) {
+        window->transparent = GLFW_FALSE;
+        free(usableConfigs);
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+            "WGL: No pixel format found for transparent window. Ignoring transparency.");
+        return choosePixelFormat(window, desired, result);
     }
 
     if (!usableCount)
@@ -486,6 +507,101 @@ void _glfwTerminateWGL(void)
     attribs[index++] = v; \
 }
 
+// Reliably check windows version as done in VersionHelpers.h
+// needed for transparent window
+static inline GLFWbool
+isWindowsVersionOrGreater(WORD wMajorVersion, WORD wMinorVersion, WORD wServicePackMajor)
+{
+    OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0,{ 0 }, 0, 0 };
+    DWORDLONG        const dwlConditionMask = VerSetConditionMask(
+        VerSetConditionMask(
+            VerSetConditionMask(
+                0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+            VER_MINORVERSION, VER_GREATER_EQUAL),
+        VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
+
+    osvi.dwMajorVersion = wMajorVersion;
+    osvi.dwMinorVersion = wMinorVersion;
+    osvi.wServicePackMajor = wServicePackMajor;
+
+    return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
+}
+
+static GLFWbool isWindows8OrGreater()
+{
+    GLFWbool isWin8OrGreater = isWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN8), LOBYTE(_WIN32_WINNT_WIN8), 0) ? GLFW_TRUE: GLFW_FALSE;
+    return isWin8OrGreater;
+}
+
+static GLFWbool setupTransparentWindow(_GLFWwindow* window)
+{
+    if (!isCompositionEnabled) {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+            "WGL: Composition needed for transparent window is disabled");
+    }
+    if (!DwmEnableBlurBehindWindow) {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+            "WGL: Unable to load DwmEnableBlurBehindWindow required for transparent window");
+        return GLFW_FALSE;
+    }
+
+    HRESULT hr = S_OK;
+    HWND handle = window->win32.handle;
+
+    DWM_BLURBEHIND bb = { 0 };
+    bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
+    bb.hRgnBlur = CreateRectRgn(0, 0, -1, -1);  // makes the window transparent
+    bb.fEnable = TRUE;
+    hr = DwmEnableBlurBehindWindow(handle, &bb);
+
+    if (!SUCCEEDED(hr)) {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+            "WGL: Failed to enable blur behind window required for transparent window");
+        return GLFW_FALSE;
+    }
+
+    // Decorated windows on Windows 8+ don't repaint the transparent background
+    // leaving a trail behind animations.
+    // Hack: making the window layered with a transparency color key seems to fix this.
+    // Normally, when specifying a transparency color key to be used when composing
+    // the layered window, all pixels painted by the window in this color will be transparent.
+    // That doesn't seem to be the case anymore on Windows 8+, at least when used with
+    // DwmEnableBlurBehindWindow + negative region.
+    if (window->decorated && isWindows8OrGreater())
+    {
+        long style = GetWindowLongPtrW(handle, GWL_EXSTYLE);
+        if (!style) {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                "WGL: Failed to retrieve extended styles. GetLastError: %d",
+                GetLastError());
+            return GLFW_FALSE;
+        }
+        style |= WS_EX_LAYERED;
+        if (!SetWindowLongPtrW(handle, GWL_EXSTYLE, style))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                "WGL: Failed to add layered style. GetLastError: %d",
+                GetLastError());
+            return GLFW_FALSE;
+        }
+        if (!SetLayeredWindowAttributes(handle,
+            // Using a color key not equal to black to fix the trailing issue.
+            // When set to black, something is making the hit test not resize with the
+            // window frame.
+            RGB(0, 193, 48),
+            255,
+            LWA_COLORKEY))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                "WGL: Failed to set layered window. GetLastError: %d",
+                GetLastError());
+            return GLFW_FALSE;
+        }
+    }
+
+    return GLFW_TRUE;
+}
+
 // Create the OpenGL or OpenGL ES context
 //
 GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
@@ -666,8 +782,54 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                                     ctxconfig->major,
                                     ctxconfig->minor);
                 }
-            }
-            else if (error == (0xc0070000 | ERROR_INVALID_PROFILE_ARB))
+			}
+			else if (error == (0xc0070000 | ERROR_INVALID_PROFILE_ARB)) {
+				// TODO: _glfwInputError
+			}
+        }
+    }
+
+    if (window->transparent)
+    {
+        if (!setupTransparentWindow(window))
+            window->transparent = GLFW_FALSE;
+    }
+
+    return GLFW_TRUE;
+}
+
+#undef setWGLattrib
+
+// Destroy the OpenGL context
+//
+void _glfwDestroyContextWGL(_GLFWwindow* window)
+{
+    if (window->context.wgl.handle)
+    {
+        wglDeleteContext(window->context.wgl.handle);
+        window->context.wgl.handle = NULL;
+    }
+}
+
+// Analyzes the specified context for possible recreation
+//
+int _glfwAnalyzeContextWGL(_GLFWwindow* window,
+                           const _GLFWctxconfig* ctxconfig,
+                           const _GLFWfbconfig* fbconfig)
+{
+    GLFWbool required = GLFW_FALSE;
+
+    if (_glfw.wgl.extensionsLoaded)
+        return _GLFW_RECREATION_NOT_NEEDED;
+
+    _glfwPlatformMakeContextCurrent(window);
+    loadExtensions();
+
+    if (ctxconfig->api == GLFW_OPENGL_API)
+    {
+        if (ctxconfig->forward)
+        {
+            if (!_glfw.wgl.ARB_create_context)
             {
                 _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                                 "WGL: Driver does not support the requested OpenGL profile");

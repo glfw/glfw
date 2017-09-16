@@ -172,6 +172,7 @@ static GLfloat angle = 0.f;
 /* OpenGL draw function & timing */
 static void draw(void)
 {
+  glClearColor(0., 0., 0., 0.);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glPushMatrix();
@@ -297,7 +298,6 @@ static void init(void)
   glEnable(GL_NORMALIZE);
 }
 
-
 /* program entry */
 int main(int argc, char *argv[])
 {
@@ -311,6 +311,9 @@ int main(int argc, char *argv[])
     }
 
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
+    glfwWindowHint(GLFW_ALPHA_BITS, 8);
+    glfwWindowHint(GLFW_TRANSPARENT, GLFW_TRUE);
+    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
 
     window = glfwCreateWindow( 300, 300, "Gears", NULL, NULL );
     if (!window)

@@ -788,6 +788,7 @@ extern "C" {
  */
 #define GLFW_CENTER_CURSOR          0x00020009
 
+
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_RED_BITS).

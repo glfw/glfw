@@ -870,10 +870,10 @@ extern "C" {
 #define GLFW_DOUBLEBUFFER           0x00021010
 /*! @brief Context ALPHA Mask hint and attribute.
  *
- *  Context window alpha [hint](@ref GLFW_ALPHA_MASK_hint) and
- *  [attribute](@ref GLFW_ALPHA_MASK_attrib).
+ *  Context window alpha [hint](@ref GLFW_TRANSPARENT_hint) and
+ *  [attribute](@ref GLFW_TRANSPARENT_attrib).
  */
-#define GLFW_ALPHA_MASK             0x00021011
+#define GLFW_TRANSPARENT            0x00021011
 /*! @brief Context client API hint and attribute.
  *
  *  Context client API [hint](@ref GLFW_CLIENT_API_hint) and

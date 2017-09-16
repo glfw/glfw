@@ -1828,14 +1828,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (ctxconfig->client == GLFW_NO_API ||
         ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
     {
-	
-#if defined(_GLFW_GLX)
-        if (!_glfwChooseVisualGLX(wndconfig, ctxconfig, fbconfig, &visual, &depth))
-            return GLFW_FALSE;
-#elif defined(_GLFW_EGL)
-        if (!_glfwChooseVisualEGL(wndconfig, ctxconfig, fbconfig, &visual, &depth))
-            return GLFW_FALSE;
-#endif
+        visual = DefaultVisual(_glfw.x11.display, _glfw.x11.screen);
+        depth = DefaultDepth(_glfw.x11.display, _glfw.x11.screen);
     }
 
     if (!createNativeWindow(window, wndconfig, visual, depth))

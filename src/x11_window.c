@@ -1808,14 +1808,14 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         {
             if (!_glfwInitGLX())
                 return GLFW_FALSE;
-            if (!_glfwChooseVisualGLX(ctxconfig, fbconfig, &visual, &depth))
+            if (!_glfwChooseVisualGLX(wndconfig, ctxconfig, fbconfig, &visual, &depth))
                 return GLFW_FALSE;
         }
         else if (ctxconfig->source == GLFW_EGL_CONTEXT_API)
         {
             if (!_glfwInitEGL())
                 return GLFW_FALSE;
-            if (!_glfwChooseVisualEGL(ctxconfig, fbconfig, &visual, &depth))
+            if (!_glfwChooseVisualEGL(wndconfig, ctxconfig, fbconfig, &visual, &depth))
                 return GLFW_FALSE;
         }
         else if (ctxconfig->source == GLFW_OSMESA_CONTEXT_API)

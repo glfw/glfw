@@ -120,9 +120,9 @@ selectionloop:
 	    XFree( visualinfo );
         }
 
-        u->redBits = getFBConfigAttrib(n, GLX_RED_SIZE);
-        u->greenBits = getFBConfigAttrib(n, GLX_GREEN_SIZE);
-        u->blueBits = getFBConfigAttrib(n, GLX_BLUE_SIZE);
+        u->redBits = getGLXFBConfigAttrib(n, GLX_RED_SIZE);
+        u->greenBits = getGLXFBConfigAttrib(n, GLX_GREEN_SIZE);
+        u->blueBits = getGLXFBConfigAttrib(n, GLX_BLUE_SIZE);
 
         u->alphaBits = getGLXFBConfigAttrib(n, GLX_ALPHA_SIZE);
         u->depthBits = getGLXFBConfigAttrib(n, GLX_DEPTH_SIZE);

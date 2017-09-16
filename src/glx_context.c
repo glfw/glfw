@@ -97,6 +97,8 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* res
         u->depthBits = getGLXFBConfigAttrib(n, GLX_DEPTH_SIZE);
         u->stencilBits = getGLXFBConfigAttrib(n, GLX_STENCIL_SIZE);
 
+        u->alphaMask = getGLXFBConfigAttrib(n, GLX_RGBA);
+
         u->accumRedBits = getGLXFBConfigAttrib(n, GLX_ACCUM_RED_SIZE);
         u->accumGreenBits = getGLXFBConfigAttrib(n, GLX_ACCUM_GREEN_SIZE);
         u->accumBlueBits = getGLXFBConfigAttrib(n, GLX_ACCUM_BLUE_SIZE);

@@ -224,7 +224,7 @@ static int choosePixelFormat(_GLFWwindow* window,
         free(usableConfigs);
         _glfwInputError(GLFW_PLATFORM_ERROR,
             "WGL: No pixel format found for transparent window. Ignoring transparency.");
-        return choosePixelFormat(window, desired, result);
+        return choosePixelFormat(window, ctxconfig, fbconfig);
     }
 
     if (!usableCount)
@@ -535,7 +535,7 @@ static GLFWbool isWindows8OrGreater()
 
 static GLFWbool setupTransparentWindow(_GLFWwindow* window)
 {
-    if (!isCompositionEnabled) {
+    if (!DwmIsCompositionEnabled) {
         _glfwInputError(GLFW_PLATFORM_ERROR,
             "WGL: Composition needed for transparent window is disabled");
     }
@@ -783,53 +783,8 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                                     ctxconfig->minor);
                 }
 			}
-			else if (error == (0xc0070000 | ERROR_INVALID_PROFILE_ARB)) {
-				// TODO: _glfwInputError
-			}
-        }
-    }
+			else if (error == (0xc0070000 | ERROR_INVALID_PROFILE_ARB))
 
-    if (window->transparent)
-    {
-        if (!setupTransparentWindow(window))
-            window->transparent = GLFW_FALSE;
-    }
-
-    return GLFW_TRUE;
-}
-
-#undef setWGLattrib
-
-// Destroy the OpenGL context
-//
-void _glfwDestroyContextWGL(_GLFWwindow* window)
-{
-    if (window->context.wgl.handle)
-    {
-        wglDeleteContext(window->context.wgl.handle);
-        window->context.wgl.handle = NULL;
-    }
-}
-
-// Analyzes the specified context for possible recreation
-//
-int _glfwAnalyzeContextWGL(_GLFWwindow* window,
-                           const _GLFWctxconfig* ctxconfig,
-                           const _GLFWfbconfig* fbconfig)
-{
-    GLFWbool required = GLFW_FALSE;
-
-    if (_glfw.wgl.extensionsLoaded)
-        return _GLFW_RECREATION_NOT_NEEDED;
-
-    _glfwPlatformMakeContextCurrent(window);
-    loadExtensions();
-
-    if (ctxconfig->api == GLFW_OPENGL_API)
-    {
-        if (ctxconfig->forward)
-        {
-            if (!_glfw.wgl.ARB_create_context)
             {
                 _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                                 "WGL: Driver does not support the requested OpenGL profile");
@@ -876,6 +831,12 @@ int _glfwAnalyzeContextWGL(_GLFWwindow* window,
             }
         }
     }
+
+	if (window->transparent)
+	{
+		if (!setupTransparentWindow(window))
+			window->transparent = GLFW_FALSE;
+	}
 
     window->context.makeCurrent = makeContextCurrentWGL;
     window->context.swapBuffers = swapBuffersWGL;

@@ -1085,7 +1085,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     if (wndconfig->ns.retina)
         [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
 
-    if (wndconfig->transparent)
+    if (_glfw.hints.framebuffer->transparent)
     {
         [window->ns.object setOpaque:NO];
         [window->ns.object setBackgroundColor:[NSColor clearColor]];

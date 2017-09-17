@@ -85,7 +85,7 @@ static int choosePixelFormat(_GLFWwindow* window,
         _GLFWfbconfig* u = usableConfigs + usableCount;
         PIXELFORMATDESCRIPTOR pfd;
 
-        if (window->transparent) {
+        if (fbconfig->transparent) {
             if (!DescribePixelFormat(window->context.wgl.dc,
                 n,
                 sizeof(PIXELFORMATDESCRIPTOR),
@@ -168,7 +168,7 @@ static int choosePixelFormat(_GLFWwindow* window,
         {
             // Get pixel format attributes through legacy PFDs
 
-            if (!window->transparent && !DescribePixelFormat(window->context.wgl.dc,
+            if (!fbconfig->transparent && !DescribePixelFormat(window->context.wgl.dc,
                                      n,
                                      sizeof(PIXELFORMATDESCRIPTOR),
                                      &pfd))
@@ -221,8 +221,8 @@ static int choosePixelFormat(_GLFWwindow* window,
     }
     // Reiterate the selection loop without looking for transparency supporting
     // formats if no matching pixelformat for a transparent window were found.
-    if (window->transparent && !usableCount) {
-        window->transparent = GLFW_FALSE;
+    if (fbconfig->transparent && !usableCount) {
+        fbconfig->transparent = GLFW_FALSE;
         free(usableConfigs);
         _glfwInputError(GLFW_PLATFORM_ERROR,
             "WGL: No pixel format found for transparent window. Ignoring transparency.");
@@ -834,10 +834,10 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         }
     }
 
-	if (window->transparent)
+	if (fbconfig->transparent)
 	{
 		if (!setupTransparentWindow(window))
-			window->transparent = GLFW_FALSE;
+			fbconfig->transparent = GLFW_FALSE;
 	}
 
     window->context.makeCurrent = makeContextCurrentWGL;

@@ -153,7 +153,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     wndconfig.height  = height;
     wndconfig.title   = title;
     ctxconfig.share   = (_GLFWwindow*) share;
-    wndconfig.transparent = _glfw.hints.framebuffer.transparent ? GLFW_TRUE : GLFW_FALSE;
 
     if (ctxconfig.share)
     {
@@ -182,7 +181,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->monitor     = (_GLFWmonitor*) monitor;
     window->resizable   = wndconfig.resizable;
     window->decorated   = wndconfig.decorated;
-    window->transparent = wndconfig.transparent;
     window->autoIconify = wndconfig.autoIconify;
     window->floating    = wndconfig.floating;
     window->cursorMode  = GLFW_CURSOR_NORMAL;
@@ -252,7 +250,6 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.window.resizable   = GLFW_TRUE;
     _glfw.hints.window.visible     = GLFW_TRUE;
     _glfw.hints.window.decorated   = GLFW_TRUE;
-    _glfw.hints.window.transparent = GLFW_FALSE;
     _glfw.hints.window.focused     = GLFW_TRUE;
     _glfw.hints.window.autoIconify = GLFW_TRUE;
 

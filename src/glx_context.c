@@ -283,7 +283,7 @@ static void destroyContextGLX(_GLFWwindow* window)
 GLFWbool _glfwInitGLX(void)
 {
     int i;
-    const char* sonames_glx[] =
+    const char* sonames[] =
     {
 #if defined(_GLFW_GLX_LIBRARY)
         _GLFW_GLX_LIBRARY,
@@ -299,9 +299,9 @@ GLFWbool _glfwInitGLX(void)
     if (_glfw.glx.handle)
         return GLFW_TRUE;
 
-    for (i = 0;  sonames_glx[i];  i++)
+    for (i = 0;  sonames[i];  i++)
     {
-        _glfw.glx.handle = dlopen(sonames_glx[i], RTLD_LAZY | RTLD_GLOBAL);
+        _glfw.glx.handle = dlopen(sonames[i], RTLD_LAZY | RTLD_GLOBAL);
         if (_glfw.glx.handle)
             break;
     }
@@ -664,15 +664,14 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
 
 // Returns the Visual and depth of the chosen GLXFBConfig
 //
-GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
-			      const _GLFWctxconfig* ctxconfig,
+GLFWbool _glfwChooseVisualGLX(const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig,
                               Visual** visual, int* depth)
 {
     GLXFBConfig native;
     XVisualInfo* result;
 
-    if (!chooseGLXFBConfig(fbconfig, &native, wndconfig->transparent))
+    if (!chooseGLXFBConfig(fbconfig, &native, fbconfig->transparent))
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "GLX: Failed to find a suitable GLXFBConfig");
@@ -688,7 +687,7 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
     }
 
     *visual = result->visual;
-    *depth  = result->depth;
+    *depth = result->depth;
 
     XFree(result);
     return GLFW_TRUE;

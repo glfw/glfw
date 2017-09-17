@@ -726,8 +726,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 // Returns the Visual and depth of the chosen EGLConfig
 //
 #if defined(_GLFW_X11)
-GLFWbool _glfwChooseVisualEGL(const _GLFWwndconfig* wndconfig,
-                              const _GLFWctxconfig* ctxconfig,
+GLFWbool _glfwChooseVisualEGL(const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig,
                               Visual** visual, int* depth)
 {
@@ -738,7 +737,7 @@ GLFWbool _glfwChooseVisualEGL(const _GLFWwndconfig* wndconfig,
     const long vimask = VisualScreenMask | VisualIDMask;
 
 
-    if (!chooseEGLConfig(ctxconfig, fbconfig, &native, wndconfig->transparent))
+    if (!chooseEGLConfig(ctxconfig, fbconfig, &native, fbconfig->transparent))
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "EGL: Failed to find a suitable EGLConfig");

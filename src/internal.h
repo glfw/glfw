@@ -299,7 +299,6 @@ struct _GLFWwndconfig
     GLFWbool      resizable;
     GLFWbool      visible;
     GLFWbool      decorated;
-    GLFWbool      transparent;
     GLFWbool      focused;
     GLFWbool      autoIconify;
     GLFWbool      floating;

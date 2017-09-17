@@ -47,11 +47,7 @@ static int getGLXFBConfigAttrib(GLXFBConfig fbconfig, int attrib)
 
 // Return the GLXFBConfig most closely matching the specified hints
 //
-static GLFWbool chooseGLXFBConfig(
-	const _GLFWfbconfig* desired,
-	GLXFBConfig* result,
-	GLFWbool findTransparent)
-
+static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* result)
 {
     GLXFBConfig* nativeConfigs;
     _GLFWfbconfig* usableConfigs;
@@ -59,6 +55,7 @@ static GLFWbool chooseGLXFBConfig(
     int i, nativeCount, usableCount;
     const char* vendor;
     GLFWbool trustWindowBit = GLFW_TRUE;
+    GLFWbool findTransparent = desired->transparent;
 
     if ( !(_glfw.xrender.major || _glfw.xrender.minor) ) {
         findTransparent = GLFW_FALSE;
@@ -155,7 +152,7 @@ selectionloop:
     // formats if no matchig FB configs for a transparent window were found.
     if( findTransparent && !usableCount ) {
         findTransparent = GLFW_FALSE;
-	goto selectionloop;
+        goto selectionloop;
     }
 
     closest = _glfwChooseFBConfig(desired, usableConfigs, usableCount);
@@ -481,8 +478,7 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
     if (ctxconfig->share)
         share = ctxconfig->share->context.glx.handle;
 
-    if (!chooseGLXFBConfig(fbconfig, &native, fbconfig->transparent))
-
+    if (!chooseGLXFBConfig(fbconfig, &native))
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "GLX: Failed to find a suitable GLXFBConfig");
@@ -669,7 +665,7 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWctxconfig* ctxconfig,
     GLXFBConfig native;
     XVisualInfo* result;
 
-    if (!chooseGLXFBConfig(fbconfig, &native, fbconfig->transparent))
+    if (!chooseGLXFBConfig(fbconfig, &native))
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "GLX: Failed to find a suitable GLXFBConfig");

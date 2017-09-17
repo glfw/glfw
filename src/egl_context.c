@@ -87,13 +87,13 @@ static int getEGLConfigAttrib(EGLConfig config, int attrib)
 //
 static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
                                 const _GLFWfbconfig* desired,
-                                EGLConfig* result,
-				GLFWbool findTransparent)
+                                EGLConfig* result)
 {
     EGLConfig* nativeConfigs;
     _GLFWfbconfig* usableConfigs;
     const _GLFWfbconfig* closest;
     int i, nativeCount, usableCount;
+    GLFWbool findTransparent = desired->transparent;
 
 #if defined(_GLFW_X11)
     XVisualInfo visualTemplate = {0};
@@ -138,7 +138,7 @@ selectionloop:
 	    int n_vi;
             XVisualInfo *visualinfo;
             XRenderPictFormat *pictFormat;
-	    
+
 	    visualinfo = XGetVisualInfo(_glfw.x11.display, VisualIDMask, &visualTemplate, &n_vi);
 	    if (!visualinfo)
 	        continue;
@@ -191,10 +191,10 @@ selectionloop:
         usableCount++;
     }
     // reiterate the selection loop without looking for transparency supporting
-    // formats if no matchig FB configs for a transparent window were found. 
+    // formats if no matchig FB configs for a transparent window were found.
     if( findTransparent && !usableCount ) {
         findTransparent = GLFW_FALSE;
-	goto selectionloop;
+        goto selectionloop;
     }
 
     closest = _glfwChooseFBConfig(desired, usableConfigs, usableCount);
@@ -492,7 +492,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
     if (ctxconfig->share)
         share = ctxconfig->share->context.egl.handle;
 
-    if (!chooseEGLConfig(ctxconfig, fbconfig, &config, fbconfig->transparent))
+    if (!chooseEGLConfig(ctxconfig, fbconfig, &config))
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "EGL: Failed to find a suitable EGLConfig");
@@ -737,7 +737,7 @@ GLFWbool _glfwChooseVisualEGL(const _GLFWctxconfig* ctxconfig,
     const long vimask = VisualScreenMask | VisualIDMask;
 
 
-    if (!chooseEGLConfig(ctxconfig, fbconfig, &native, fbconfig->transparent))
+    if (!chooseEGLConfig(ctxconfig, fbconfig, &native))
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "EGL: Failed to find a suitable EGLConfig");
@@ -804,4 +804,3 @@ GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* handle)
 
     return window->context.egl.surface;
 }
-

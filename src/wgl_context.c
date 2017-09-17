@@ -57,7 +57,7 @@ static int getPixelFormatAttrib(_GLFWwindow* window, int pixelFormat, int attrib
 static int choosePixelFormat(_GLFWwindow* window,
                              const _GLFWctxconfig* ctxconfig,
                              const _GLFWfbconfig* fbconfig,
-	                         const int transparent)
+	                         const GLFWbool transparent)
 {
     _GLFWfbconfig* usableConfigs;
     const _GLFWfbconfig* closest;

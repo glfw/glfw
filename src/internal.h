@@ -347,7 +347,6 @@ struct _GLFWfbconfig
     int         redBits;
     int         greenBits;
     int         blueBits;
-    int         transparent;
     int         alphaBits;
     int         depthBits;
     int         stencilBits;
@@ -358,7 +357,8 @@ struct _GLFWfbconfig
     int         auxBuffers;
     GLFWbool    stereo;
     int         samples;
-    GLFWbool    sRGB;
+	GLFWbool    sRGB;
+	GLFWbool    transparent;
     GLFWbool    doublebuffer;
     uintptr_t   handle;
 };
@@ -403,7 +403,6 @@ struct _GLFWwindow
     // Window settings and state
     GLFWbool            resizable;
     GLFWbool            decorated;
-    GLFWbool            transparent;
     GLFWbool            autoIconify;
     GLFWbool            floating;
     GLFWbool            shouldClose;

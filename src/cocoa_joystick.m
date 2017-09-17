@@ -73,7 +73,9 @@ static long getElementValue(_GLFWjoystick* js, _GLFWjoyelementNS* element)
 
 // Comparison function for matching the SDL element order
 //
-static CFComparisonResult compareElements(const void* fp, const void* sp, void* user)
+static CFComparisonResult compareElements(const void* fp,
+                                          const void* sp,
+                                          void* user)
 {
     const _GLFWjoyelementNS* fe = fp;
     const _GLFWjoyelementNS* se = sp;
@@ -183,7 +185,8 @@ static void matchCallback(void* context,
 
     for (i = 0;  i < CFArrayGetCount(elements);  i++)
     {
-        IOHIDElementRef native = (IOHIDElementRef) CFArrayGetValueAtIndex(elements, i);
+        IOHIDElementRef native = (IOHIDElementRef)
+            CFArrayGetValueAtIndex(elements, i);
         if (CFGetTypeID(native) != IOHIDElementGetTypeID())
             continue;
 

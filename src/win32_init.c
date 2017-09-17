@@ -30,7 +30,8 @@
 #include <stdlib.h>
 #include <malloc.h>
 
-static const GUID _glfw_GUID_DEVINTERFACE_HID = {0x4d1e55b2,0xf16f,0x11cf,{0x88,0xcb,0x00,0x11,0x11,0x00,0x00,0x30}};
+static const GUID _glfw_GUID_DEVINTERFACE_HID =
+    {0x4d1e55b2,0xf16f,0x11cf,{0x88,0xcb,0x00,0x11,0x11,0x00,0x00,0x30}};
 
 #define GUID_DEVINTERFACE_HID _glfw_GUID_DEVINTERFACE_HID
 
@@ -68,7 +69,8 @@ static GLFWbool loadLibraries(void)
     _glfw.win32.winmm.instance = LoadLibraryA("winmm.dll");
     if (!_glfw.win32.winmm.instance)
     {
-        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to load winmm.dll");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to load winmm.dll");
         return GLFW_FALSE;
     }
 
@@ -78,7 +80,8 @@ static GLFWbool loadLibraries(void)
     _glfw.win32.user32.instance = LoadLibraryA("user32.dll");
     if (!_glfw.win32.user32.instance)
     {
-        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to load user32.dll");
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to load user32.dll");
         return GLFW_FALSE;
     }
 

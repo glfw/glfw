@@ -215,8 +215,9 @@ static GLFWbool updateUnicodeDataNS(void)
         return GLFW_FALSE;
     }
 
-    _glfw.ns.unicodeData = TISGetInputSourceProperty(_glfw.ns.inputSource,
-                                                     kTISPropertyUnicodeKeyLayoutData);
+    _glfw.ns.unicodeData =
+        TISGetInputSourceProperty(_glfw.ns.inputSource,
+                                  kTISPropertyUnicodeKeyLayoutData);
     if (!_glfw.ns.unicodeData)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -232,7 +233,8 @@ static GLFWbool updateUnicodeDataNS(void)
 static GLFWbool initializeTIS(void)
 {
     // This works only because Cocoa has already loaded it properly
-    _glfw.ns.tis.bundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.HIToolbox"));
+    _glfw.ns.tis.bundle =
+        CFBundleGetBundleWithIdentifier(CFSTR("com.apple.HIToolbox"));
     if (!_glfw.ns.tis.bundle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,

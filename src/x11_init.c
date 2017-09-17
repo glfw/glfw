@@ -237,8 +237,8 @@ static void createKeyTables(void)
 
     if (_glfw.x11.xkb.available)
     {
-        // Use XKB to determine physical key locations independently of the current
-        // keyboard layout
+        // Use XKB to determine physical key locations independently of the
+        // current keyboard layout
 
         char name[XkbKeyNameLength + 1];
         XkbDescPtr desc = XkbGetMap(_glfw.x11.display, 0, XkbUseCoreKbd);

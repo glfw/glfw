@@ -54,7 +54,8 @@ static char* getDisplayName(CGDirectDisplayID displayID)
 
     while ((service = IOIteratorNext(it)) != 0)
     {
-        info = IODisplayCreateInfoDictionary(service, kIODisplayOnlyPreferredName);
+        info = IODisplayCreateInfoDictionary(service,
+                                             kIODisplayOnlyPreferredName);
 
         CFNumberRef vendorIDRef =
             CFDictionaryGetValue(info, CFSTR(kDisplayVendorID));
@@ -185,7 +186,13 @@ static CGDisplayFadeReservationToken beginFadeReservation(void)
     CGDisplayFadeReservationToken token = kCGDisplayFadeReservationInvalidToken;
 
     if (CGAcquireDisplayFadeReservation(5, &token) == kCGErrorSuccess)
-        CGDisplayFade(token, 0.3, kCGDisplayBlendNormal, kCGDisplayBlendSolidColor, 0.0, 0.0, 0.0, TRUE);
+    {
+        CGDisplayFade(token, 0.3,
+                      kCGDisplayBlendNormal,
+                      kCGDisplayBlendSolidColor,
+                      0.0, 0.0, 0.0,
+                      TRUE);
+    }
 
     return token;
 }
@@ -196,7 +203,11 @@ static void endFadeReservation(CGDisplayFadeReservationToken token)
 {
     if (token != kCGDisplayFadeReservationInvalidToken)
     {
-        CGDisplayFade(token, 0.5, kCGDisplayBlendSolidColor, kCGDisplayBlendNormal, 0.0, 0.0, 0.0, FALSE);
+        CGDisplayFade(token, 0.5,
+                      kCGDisplayBlendSolidColor,
+                      kCGDisplayBlendNormal,
+                      0.0, 0.0, 0.0,
+                      FALSE);
         CGReleaseDisplayFadeReservation(token);
     }
 }

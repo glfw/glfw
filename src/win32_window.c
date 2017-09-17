@@ -1798,7 +1798,8 @@ int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
                                                       VkPhysicalDevice device,
                                                       uint32_t queuefamily)
 {
-    PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR vkGetPhysicalDeviceWin32PresentationSupportKHR =
+    PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR
+        vkGetPhysicalDeviceWin32PresentationSupportKHR =
         (PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)
         vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceWin32PresentationSupportKHR");
     if (!vkGetPhysicalDeviceWin32PresentationSupportKHR)

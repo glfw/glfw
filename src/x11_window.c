@@ -1263,8 +1263,10 @@ static void processEvent(XEvent *event)
 
                     count = XwcLookupString(window->x11.ic,
                                             &event->xkey,
-                                            buffer, sizeof(buffer) / sizeof(wchar_t),
-                                            NULL, &status);
+                                            buffer,
+                                            sizeof(buffer) / sizeof(wchar_t),
+                                            NULL,
+                                            &status);
 
                     if (status == XBufferOverflow)
                     {
@@ -1437,7 +1439,8 @@ static void processEvent(XEvent *event)
             const int x = event->xmotion.x;
             const int y = event->xmotion.y;
 
-            if (x != window->x11.warpCursorPosX || y != window->x11.warpCursorPosY)
+            if (x != window->x11.warpCursorPosX ||
+                y != window->x11.warpCursorPosY)
             {
                 // The cursor was moved by something other than GLFW
 
@@ -1516,14 +1519,15 @@ static void processEvent(XEvent *event)
 
                 if (protocol == _glfw.x11.WM_DELETE_WINDOW)
                 {
-                    // The window manager was asked to close the window, for example by
-                    // the user pressing a 'close' window decoration button
+                    // The window manager was asked to close the window, for
+                    // example by the user pressing a 'close' window decoration
+                    // button
                     _glfwInputWindowCloseRequest(window);
                 }
                 else if (protocol == _glfw.x11.NET_WM_PING)
                 {
-                    // The window manager is pinging the application to ensure it's
-                    // still responding to events
+                    // The window manager is pinging the application to ensure
+                    // it's still responding to events
 
                     XEvent reply = *event;
                     reply.xclient.window = _glfw.x11.root;
@@ -1865,9 +1869,10 @@ void _glfwPushSelectionToManagerX11(void)
                 {
                     if (event.xselection.target == _glfw.x11.SAVE_TARGETS)
                     {
-                        // This means one of two things; either the selection was
-                        // not owned, which means there is no clipboard manager, or
-                        // the transfer to the clipboard manager has completed
+                        // This means one of two things; either the selection
+                        // was not owned, which means there is no clipboard
+                        // manager, or the transfer to the clipboard manager has
+                        // completed
                         // In either case, it means we are done here
                         return;
                     }
@@ -2787,7 +2792,8 @@ int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
 
     if (_glfw.vk.KHR_xcb_surface && _glfw.x11.x11xcb.handle)
     {
-        PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR vkGetPhysicalDeviceXcbPresentationSupportKHR =
+        PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR
+            vkGetPhysicalDeviceXcbPresentationSupportKHR =
             (PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)
             vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceXcbPresentationSupportKHR");
         if (!vkGetPhysicalDeviceXcbPresentationSupportKHR)
@@ -2812,7 +2818,8 @@ int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
     }
     else
     {
-        PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR vkGetPhysicalDeviceXlibPresentationSupportKHR =
+        PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR
+            vkGetPhysicalDeviceXlibPresentationSupportKHR =
             (PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR)
             vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceXlibPresentationSupportKHR");
         if (!vkGetPhysicalDeviceXlibPresentationSupportKHR)

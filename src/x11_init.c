@@ -480,6 +480,7 @@ static GLFWbool initExtensions(void)
     }
 
     _glfw.x11.xi.handle = dlopen("libXi.so.6", RTLD_LAZY | RTLD_GLOBAL);
+
     if (_glfw.x11.xi.handle)
     {
         _glfw.x11.xi.QueryVersion = (PFN_XIQueryVersion)
@@ -505,7 +506,9 @@ static GLFWbool initExtensions(void)
         }
     }
 
+    // Check for RandR extension
     _glfw.x11.randr.handle = dlopen("libXrandr.so.2", RTLD_LAZY | RTLD_GLOBAL);
+
     if (_glfw.x11.randr.handle)
     {
         _glfw.x11.randr.AllocGamma = (PFN_XRRAllocGamma)
@@ -716,6 +719,76 @@ static GLFWbool initExtensions(void)
         XInternAtom(_glfw.x11.display, "_NET_WM_BYPASS_COMPOSITOR", False);
     _glfw.x11.MOTIF_WM_HINTS =
         XInternAtom(_glfw.x11.display, "_MOTIF_WM_HINTS", False);
+
+
+	const char* sonames_xrender[] =
+	{
+#if defined(__CYGWIN__)
+		"libXrender-1.so",
+#else
+		"libXrender.so.1",
+		"libXrender.so",
+#endif
+		NULL
+	};
+
+	// Find or create window manager atoms
+	_glfw.x11.WM_PROTOCOLS = XInternAtom(_glfw.x11.display,
+		"WM_PROTOCOLS",
+		False);
+	_glfw.x11.WM_STATE = XInternAtom(_glfw.x11.display, "WM_STATE", False);
+	_glfw.x11.WM_DELETE_WINDOW = XInternAtom(_glfw.x11.display,
+		"WM_DELETE_WINDOW",
+		False);
+	_glfw.x11.MOTIF_WM_HINTS = XInternAtom(_glfw.x11.display,
+		"_MOTIF_WM_HINTS",
+		False);
+
+#if defined(_GLFW_HAS_XF86VM)
+	// Check for XF86VidMode extension
+	_glfw.x11.vidmode.available =
+		XF86VidModeQueryExtension(_glfw.x11.display,
+			&_glfw.x11.vidmode.eventBase,
+			&_glfw.x11.vidmode.errorBase);
+#endif /*_GLFW_HAS_XF86VM*/
+
+    // Xrender support is optional and not a requirement for GLX/EGL
+    // to work. Xrender is required for selecting a FB config that
+    // supports a picture format with an alpha mask, which in turn
+    // is required for transparent windows. I Xrender is not supported
+    // the GLFW_TRANSPARENT window hint is ignored.
+	int i;
+    for (i = 0;  sonames_xrender[i];  i++)
+    {
+        _glfw.xrender.handle = dlopen(sonames_xrender[i], RTLD_LAZY | RTLD_GLOBAL);
+        if (_glfw.xrender.handle)
+            break;
+    }
+    _glfw.xrender.errorBase = 0;
+    _glfw.xrender.eventBase = 0;
+    _glfw.xrender.major = 0;
+    _glfw.xrender.minor = 0;
+    if (_glfw.xrender.handle) do {
+    	int errorBase, eventBase, major, minor;
+        _glfw.xrender.QueryExtension =
+            dlsym(_glfw.xrender.handle, "XRenderQueryExtension");
+        _glfw.xrender.QueryVersion =
+            dlsym(_glfw.xrender.handle, "XRenderQueryVersion");
+        _glfw.xrender.FindVisualFormat =
+            dlsym(_glfw.xrender.handle, "XRenderFindVisualFormat");
+
+        if ( !XRenderQueryExtension(_glfw.x11.display, &errorBase, &eventBase)) {
+	    break;
+	}
+        if ( !XRenderQueryVersion(_glfw.x11.display, &major, &minor)) {
+	    break;
+	}
+
+        _glfw.xrender.errorBase = errorBase;
+        _glfw.xrender.eventBase = eventBase;
+        _glfw.xrender.major = major;
+        _glfw.xrender.minor = minor;
+    } while(0);
 
     return GLFW_TRUE;
 }
@@ -979,4 +1052,3 @@ const char* _glfwPlatformGetVersionString(void)
 #endif
         ;
 }
-

@@ -153,7 +153,22 @@ typedef enum PROCESS_DPI_AWARENESS
 
 // HACK: Define macros that some dinput.h variants don't
 #ifndef DIDFT_OPTIONAL
- #define DIDFT_OPTIONAL	0x80000000
+#define DIDFT_OPTIONAL	0x80000000
+#endif
+
+#if !defined(_DWMAPI_H_)
+// Blur behind data structures
+#define DWM_BB_ENABLE                 0x00000001  // fEnable has been specified
+#define DWM_BB_BLURREGION             0x00000002  // hRgnBlur has been specified
+#define DWM_BB_TRANSITIONONMAXIMIZED  0x00000004  // fTransitionOnMaximized has been specified
+
+typedef struct _DWM_BLURBEHIND
+{
+    DWORD dwFlags;
+    BOOL fEnable;
+    HRGN hRgnBlur;
+    BOOL fTransitionOnMaximized;
+} DWM_BLURBEHIND, *PDWM_BLURBEHIND;
 #endif
 
 // winmm.dll function pointer typedefs
@@ -179,8 +194,12 @@ typedef BOOL (WINAPI * PFN_ChangeWindowMessageFilterEx)(HWND,UINT,DWORD,PCHANGEF
 // dwmapi.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_DwmIsCompositionEnabled)(BOOL*);
 typedef HRESULT (WINAPI * PFN_DwmFlush)(VOID);
+
 #define DwmIsCompositionEnabled _glfw.win32.dwmapi.IsCompositionEnabled
 #define DwmFlush _glfw.win32.dwmapi.Flush
+
+typedef HRESULT(WINAPI * PFN_DwmEnableBlurBehindWindow)(HWND, const DWM_BLURBEHIND*);
+#define DwmEnableBlurBehindWindow _glfw.win32.dwmapi.EnableBlurBehindWindow
 
 // shcore.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_SetProcessDpiAwareness)(PROCESS_DPI_AWARENESS);
@@ -286,6 +305,7 @@ typedef struct _GLFWlibraryWin32
         HINSTANCE                       instance;
         PFN_DwmIsCompositionEnabled     IsCompositionEnabled;
         PFN_DwmFlush                    Flush;
+		PFN_DwmEnableBlurBehindWindow   EnableBlurBehindWindow;
     } dwmapi;
 
     struct {

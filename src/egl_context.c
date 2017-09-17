@@ -93,6 +93,14 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
     _GLFWfbconfig* usableConfigs;
     const _GLFWfbconfig* closest;
     int i, nativeCount, usableCount;
+    GLFWbool findTransparent = desired->transparent;
+
+#if defined(_GLFW_X11)
+    XVisualInfo visualTemplate = {0};
+    if ( !(_glfw.xrender.major || _glfw.xrender.minor) ) {
+        findTransparent = GLFW_FALSE;
+    }
+#endif // _GLFW_X11
 
     eglGetConfigs(_glfw.egl.display, NULL, 0, &nativeCount);
     if (!nativeCount)
@@ -107,6 +115,7 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
     usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
     usableCount = 0;
 
+selectionloop:
     for (i = 0;  i < nativeCount;  i++)
     {
         const EGLConfig n = nativeConfigs[i];
@@ -124,6 +133,28 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
         // Only consider EGLConfigs with associated Visuals
         if (!getEGLConfigAttrib(n, EGL_NATIVE_VISUAL_ID))
             continue;
+
+	if( findTransparent ) {
+	    int n_vi;
+            XVisualInfo *visualinfo;
+            XRenderPictFormat *pictFormat;
+
+	    visualinfo = XGetVisualInfo(_glfw.x11.display, VisualIDMask, &visualTemplate, &n_vi);
+	    if (!visualinfo)
+	        continue;
+
+            pictFormat = XRenderFindVisualFormat(_glfw.x11.display, visualinfo->visual);
+            if( !pictFormat ) {
+	        XFree( visualinfo );
+	        continue;
+	    }
+
+            if( !pictFormat->direct.alphaMask ) {
+	        XFree( visualinfo );
+	        continue;
+	    }
+	    XFree( visualinfo );
+        }
 #endif // _GLFW_X11
 
         if (ctxconfig->client == GLFW_OPENGL_ES_API)
@@ -158,6 +189,12 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
 
         u->handle = (uintptr_t) n;
         usableCount++;
+    }
+    // reiterate the selection loop without looking for transparency supporting
+    // formats if no matchig FB configs for a transparent window were found.
+    if( findTransparent && !usableCount ) {
+        findTransparent = GLFW_FALSE;
+        goto selectionloop;
     }
 
     closest = _glfwChooseFBConfig(desired, usableConfigs, usableCount);
@@ -699,6 +736,7 @@ GLFWbool _glfwChooseVisualEGL(const _GLFWctxconfig* ctxconfig,
     EGLint visualID = 0, count = 0;
     const long vimask = VisualScreenMask | VisualIDMask;
 
+
     if (!chooseEGLConfig(ctxconfig, fbconfig, &native))
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
@@ -766,4 +804,3 @@ GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* handle)
 
     return window->context.egl.surface;
 }
-

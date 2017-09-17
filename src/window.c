@@ -147,6 +147,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     fbconfig  = _glfw.hints.framebuffer;
     ctxconfig = _glfw.hints.context;
     wndconfig = _glfw.hints.window;
+    fbconfig.transparent  = _glfw.hints.framebuffer.transparent ? GLFW_TRUE : GLFW_FALSE;
 
     wndconfig.width   = width;
     wndconfig.height  = height;
@@ -262,6 +263,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.framebuffer.depthBits    = 24;
     _glfw.hints.framebuffer.stencilBits  = 8;
     _glfw.hints.framebuffer.doublebuffer = GLFW_TRUE;
+    _glfw.hints.framebuffer.transparent  = GLFW_FALSE;
 
     // The default is to select the highest available refresh rate
     _glfw.hints.refreshRate = GLFW_DONT_CARE;
@@ -314,6 +316,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             return;
         case GLFW_DOUBLEBUFFER:
             _glfw.hints.framebuffer.doublebuffer = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
+        case GLFW_TRANSPARENT:
+            _glfw.hints.framebuffer.transparent = value;
             return;
         case GLFW_SAMPLES:
             _glfw.hints.framebuffer.samples = value;

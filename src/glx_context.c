@@ -55,6 +55,11 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* res
     int i, nativeCount, usableCount;
     const char* vendor;
     GLFWbool trustWindowBit = GLFW_TRUE;
+    GLFWbool findTransparent = desired->transparent;
+
+    if ( !(_glfw.xrender.major || _glfw.xrender.minor) ) {
+        findTransparent = GLFW_FALSE;
+    }
 
     // HACK: This is a (hopefully temporary) workaround for Chromium
     //       (VirtualBox GL) not setting the window bit on any GLXFBConfigs
@@ -64,6 +69,7 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* res
 
     nativeConfigs =
         glXGetFBConfigs(_glfw.x11.display, _glfw.x11.screen, &nativeCount);
+
     if (!nativeConfigs || !nativeCount)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE, "GLX: No GLXFBConfigs returned");
@@ -73,6 +79,7 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* res
     usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
     usableCount = 0;
 
+selectionloop:
     for (i = 0;  i < nativeCount;  i++)
     {
         const GLXFBConfig n = nativeConfigs[i];
@@ -87,6 +94,29 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* res
         {
             if (trustWindowBit)
                 continue;
+        }
+
+        if( findTransparent ) {
+            XVisualInfo *visualinfo;
+            XRenderPictFormat *pictFormat;
+
+            visualinfo = glXGetVisualFromFBConfig(_glfw.x11.display, n);
+            if (!visualinfo) {
+                continue;
+            }
+
+            pictFormat = XRenderFindVisualFormat(_glfw.x11.display, visualinfo->visual);
+            if( !pictFormat ) {
+                XFree( visualinfo );
+                continue;
+            }
+
+            if( !pictFormat->direct.alphaMask ) {
+                XFree( visualinfo );
+                continue;
+            }
+
+            XFree( visualinfo );
         }
 
         u->redBits = getGLXFBConfigAttrib(n, GLX_RED_SIZE);
@@ -117,6 +147,12 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired, GLXFBConfig* res
 
         u->handle = (uintptr_t) n;
         usableCount++;
+    }
+    // reiterate the selection loop without looking for transparency supporting
+    // formats if no matchig FB configs for a transparent window were found.
+    if( findTransparent && !usableCount ) {
+        findTransparent = GLFW_FALSE;
+        goto selectionloop;
     }
 
     closest = _glfwChooseFBConfig(desired, usableConfigs, usableCount);
@@ -683,4 +719,3 @@ GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* handle)
 
     return window->context.glx.window;
 }
-

@@ -357,7 +357,8 @@ struct _GLFWfbconfig
     int         auxBuffers;
     GLFWbool    stereo;
     int         samples;
-    GLFWbool    sRGB;
+	GLFWbool    sRGB;
+	GLFWbool    transparent;
     GLFWbool    doublebuffer;
     uintptr_t   handle;
 };

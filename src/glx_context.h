@@ -72,6 +72,7 @@ typedef struct __GLXFBConfig* GLXFBConfig;
 typedef struct __GLXcontext* GLXContext;
 typedef void (*__GLXextproc)(void);
 
+// libGL.so function pointer typedefs
 typedef int (*PFNGLXGETFBCONFIGATTRIBPROC)(Display*,GLXFBConfig,int,int*);
 typedef const char* (*PFNGLXGETCLIENTSTRINGPROC)(Display*,int);
 typedef Bool (*PFNGLXQUERYEXTENSIONPROC)(Display*,int*,int*);
@@ -92,7 +93,6 @@ typedef int (*PFNGLXSWAPINTERVALMESAPROC)(int);
 typedef int (*PFNGLXSWAPINTERVALSGIPROC)(int);
 typedef GLXContext (*PFNGLXCREATECONTEXTATTRIBSARBPROC)(Display*,GLXFBConfig,GLXContext,Bool,const int*);
 
-// libGL.so function pointer typedefs
 #define glXGetFBConfigs _glfw.glx.GetFBConfigs
 #define glXGetFBConfigAttrib _glfw.glx.GetFBConfigAttrib
 #define glXGetClientString _glfw.glx.GetClientString
@@ -167,7 +167,6 @@ typedef struct _GLFWlibraryGLX
     GLFWbool        ARB_context_flush_control;
 
 } _GLFWlibraryGLX;
-
 
 GLFWbool _glfwInitGLX(void);
 void _glfwTerminateGLX(void);

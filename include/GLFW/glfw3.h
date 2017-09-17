@@ -788,6 +788,7 @@ extern "C" {
  */
 #define GLFW_CENTER_CURSOR          0x00020009
 
+
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_RED_BITS).
@@ -868,6 +869,11 @@ extern "C" {
  *  Framebuffer double buffering [hint](@ref GLFW_DOUBLEBUFFER).
  */
 #define GLFW_DOUBLEBUFFER           0x00021010
+/*! @brief Framebuffer transparency hint.
+ *
+ *  Framebuffer transparency [hint](@ref GLFW_TRANSPARENT_hint).
+ */
+#define GLFW_TRANSPARENT            0x00021011
 /*! @brief Context client API hint and attribute.
  *
  *  Context client API [hint](@ref GLFW_CLIENT_API_hint) and

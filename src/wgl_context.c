@@ -56,7 +56,8 @@ static int getPixelFormatAttrib(_GLFWwindow* window, int pixelFormat, int attrib
 //
 static int choosePixelFormat(_GLFWwindow* window,
                              const _GLFWctxconfig* ctxconfig,
-                             const _GLFWfbconfig* fbconfig)
+                             const _GLFWfbconfig* fbconfig,
+	                         const int transparent)
 {
     _GLFWfbconfig* usableConfigs;
     const _GLFWfbconfig* closest;
@@ -215,18 +216,17 @@ static int choosePixelFormat(_GLFWwindow* window,
         u->handle = n;
 
         // always able to go transparent on win dwmapi
-        u->transparent = 1;
+        u->transparent = GLFW_TRUE;
 
         usableCount++;
     }
     // Reiterate the selection loop without looking for transparency supporting
     // formats if no matching pixelformat for a transparent window were found.
     if (fbconfig->transparent && !usableCount) {
-        fbconfig->transparent = GLFW_FALSE;
         free(usableConfigs);
         _glfwInputError(GLFW_PLATFORM_ERROR,
             "WGL: No pixel format found for transparent window. Ignoring transparency.");
-        return choosePixelFormat(window, ctxconfig, fbconfig);
+        return choosePixelFormat(window, ctxconfig, fbconfig, GLFW_FALSE);
     }
 
     if (!usableCount)
@@ -629,7 +629,7 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    pixelFormat = choosePixelFormat(window, ctxconfig, fbconfig);
+    pixelFormat = choosePixelFormat(window, ctxconfig, fbconfig, fbconfig->transparent);
     if (!pixelFormat)
         return GLFW_FALSE;
 
@@ -837,7 +837,8 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
 	if (fbconfig->transparent)
 	{
 		if (!setupTransparentWindow(window))
-			fbconfig->transparent = GLFW_FALSE;
+			_glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+				"WGL: Failed to setup window as transparent as requested");
 	}
 
     window->context.makeCurrent = makeContextCurrentWGL;

@@ -511,7 +511,7 @@ void _glfwTerminateWGL(void)
 
 // Reliably check windows version as done in VersionHelpers.h
 // needed for transparent window
-static inline GLFWbool
+static GLFWbool
 isWindowsVersionOrGreater(WORD wMajorVersion, WORD wMinorVersion, WORD wServicePackMajor)
 {
     OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0,{ 0 }, 0, 0 };

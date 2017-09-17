@@ -37,7 +37,6 @@ add_executable(offscreen offscreen.c ${ICON} ${GLAD})
 add_executable(particles WIN32 MACOSX_BUNDLE particles.c ${ICON} ${TINYCTHREAD} ${GETOPT} ${GLAD})
 add_executable(simple WIN32 MACOSX_BUNDLE simple.c ${ICON} ${GLAD})
 add_executable(splitview WIN32 MACOSX_BUNDLE splitview.c ${ICON} ${GLAD})
-add_executable(transparent WIN32 MACOSX_BUNDLE transparent.c ${ICON} ${GLAD})
 add_executable(wave WIN32 MACOSX_BUNDLE wave.c ${ICON} ${GLAD})
 
 target_link_libraries(particles "${CMAKE_THREAD_LIBS_INIT}")
@@ -45,7 +44,7 @@ if (RT_LIBRARY)
     target_link_libraries(particles "${RT_LIBRARY}")
 endif()
 
-set(WINDOWS_BINARIES boing gears heightmap particles simple splitview wave transparent)
+set(WINDOWS_BINARIES boing gears heightmap particles simple splitview wave)
 set(CONSOLE_BINARIES offscreen)
 
 set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES

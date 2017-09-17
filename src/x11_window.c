@@ -1055,7 +1055,7 @@ static const char* getSelectionString(Atom selection)
     if (!*selectionString)
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
-                        "X11: Failed to convert clipboard to string");
+                        "X11: Failed to convert selection to string");
     }
 
     return *selectionString;

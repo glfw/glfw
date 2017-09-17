@@ -228,6 +228,10 @@ newly created full screen windows.  Possible values are `GLFW_TRUE` and
 
 @subsubsection window_hints_fb Framebuffer related hints
 
+@anchor GLFW_TRANSPARENT_hint
+__GLFW_TRANSPARENT__ specifies whether the framebuffer will support transparency
+in the background. Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+
 @anchor GLFW_RED_BITS
 @anchor GLFW_GREEN_BITS
 @anchor GLFW_BLUE_BITS

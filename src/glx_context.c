@@ -483,7 +483,7 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
     if (ctxconfig->share)
         share = ctxconfig->share->context.glx.handle;
 
-    if (!chooseGLXFBConfig(fbconfig, &native, window->transparent))
+    if (!chooseGLXFBConfig(fbconfig, &native, fbconfig->transparent))
 
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,

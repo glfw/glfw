@@ -860,11 +860,12 @@ int _glfwPlatformInit(void)
     _glfw.x11.screen = DefaultScreen(_glfw.x11.display);
     _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
     _glfw.x11.context = XUniqueContext();
-    _glfw.x11.helperWindowHandle = createHelperWindow();
-    _glfw.x11.hiddenCursorHandle = createHiddenCursor();
 
     if (!initExtensions())
         return GLFW_FALSE;
+
+    _glfw.x11.helperWindowHandle = createHelperWindow();
+    _glfw.x11.hiddenCursorHandle = createHiddenCursor();
 
     if (XSupportsLocale())
     {

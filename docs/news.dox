@@ -85,6 +85,12 @@ be disabled with the @ref GLFW_JOYSTICK_HAT_BUTTONS init hint.
 @see @ref joystick_hat
 
 
+@subsection news_33_transparent Support for transparent windows
+
+GLFW now supports the creation of tranparent windows on platforms where this is
+available with the [GLFW_TRANSPARENT](@ref GLFW_TRANSPARENT) window hint.
+
+
 @subsection news_33_centercursor Cursor centering window hint
 
 GLFW now supports controlling whether the cursor is centered over newly created

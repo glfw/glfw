@@ -113,6 +113,18 @@ typedef struct tagCHANGEFILTERSTRUCT
 #endif
 #endif /*Windows 7*/
 
+#if WINVER < 0x0600
+#define DWM_BB_ENABLE 0x00000001
+#define DWM_BB_BLURREGION 0x00000002
+typedef struct
+{
+    DWORD dwFlags;
+    BOOL fEnable;
+    HRGN hRgnBlur;
+    BOOL fTransitionOnMaximized;
+} DWM_BLURBEHIND;
+#endif /*Windows Vista*/
+
 #ifndef DPI_ENUMS_DECLARED
 typedef enum PROCESS_DPI_AWARENESS
 {
@@ -121,19 +133,6 @@ typedef enum PROCESS_DPI_AWARENESS
     PROCESS_PER_MONITOR_DPI_AWARE = 2
 } PROCESS_DPI_AWARENESS;
 #endif /*DPI_ENUMS_DECLARED*/
-
-#if !defined(_DWMAPI_H_)
-#define DWM_BB_ENABLE                 0x00000001
-#define DWM_BB_BLURREGION             0x00000002
-
-typedef struct
-{
-    DWORD dwFlags;
-    BOOL fEnable;
-    HRGN hRgnBlur;
-    BOOL fTransitionOnMaximized;
-} DWM_BLURBEHIND;
-#endif
 
 // HACK: Define versionhelpers.h functions manually as MinGW lacks the header
 FORCEINLINE BOOL IsWindowsVersionOrGreater(WORD major, WORD minor, WORD sp)
@@ -216,10 +215,10 @@ typedef BOOL (WINAPI * PFN_ChangeWindowMessageFilterEx)(HWND,UINT,DWORD,PCHANGEF
 // dwmapi.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_DwmIsCompositionEnabled)(BOOL*);
 typedef HRESULT (WINAPI * PFN_DwmFlush)(VOID);
-typedef HRESULT(WINAPI * DWMENABLEBLURBEHINDWINDOW_T)(HWND, const DWM_BLURBEHIND*);
+typedef HRESULT(WINAPI * PFN_DwmEnableBlurBehindWindow)(HWND,const DWM_BLURBEHIND*);
 #define DwmIsCompositionEnabled _glfw.win32.dwmapi.IsCompositionEnabled
 #define DwmFlush _glfw.win32.dwmapi.Flush
-#define _glfw_DwmEnableBlurBehindWindow _glfw.win32.dwmapi.DwmEnableBlurBehindWindow
+#define DwmEnableBlurBehindWindow _glfw.win32.dwmapi.EnableBlurBehindWindow
 
 // shcore.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_SetProcessDpiAwareness)(PROCESS_DPI_AWARENESS);
@@ -325,7 +324,7 @@ typedef struct _GLFWlibraryWin32
         HINSTANCE                       instance;
         PFN_DwmIsCompositionEnabled     IsCompositionEnabled;
         PFN_DwmFlush                    Flush;
-        DWMENABLEBLURBEHINDWINDOW_T DwmEnableBlurBehindWindow;
+        PFN_DwmEnableBlurBehindWindow   EnableBlurBehindWindow;
     } dwmapi;
 
     struct {
@@ -388,6 +387,7 @@ typedef struct _GLFWmutexWin32
 
 GLFWbool _glfwRegisterWindowClassWin32(void);
 void _glfwUnregisterWindowClassWin32(void);
+GLFWbool _glfwIsCompositionEnabledWin32(void);
 
 WCHAR* _glfwCreateWideStringFromUTF8Win32(const char* source);
 char* _glfwCreateUTF8FromWideStringWin32(const WCHAR* source);

@@ -981,7 +981,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 // Creates the GLFW window
 //
 static int createNativeWindow(_GLFWwindow* window,
-                              const _GLFWwndconfig* wndconfig)
+                              const _GLFWwndconfig* wndconfig,
+                              const _GLFWfbconfig* fbconfig)
 {
     int xpos, ypos, fullWidth, fullHeight;
     WCHAR* wideTitle;
@@ -1051,6 +1052,41 @@ static int createNativeWindow(_GLFWwindow* window,
 
     DragAcceptFiles(window->win32.handle, TRUE);
 
+    if (fbconfig->transparent &&
+        IsWindowsVistaOrGreater() &&
+        _glfwIsCompositionEnabledWin32())
+    {
+        DWM_BLURBEHIND bb = {0};
+        bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
+        bb.hRgnBlur = CreateRectRgn(0, 0, -1, -1);
+        bb.fEnable = TRUE;
+
+        if (SUCCEEDED(DwmEnableBlurBehindWindow(window->win32.handle, &bb)))
+        {
+            // Decorated windows on Windows 8 and later don't repaint the
+            // transparent background leaving a trail behind animations
+            // HACK: Making the window layered with a transparency color key
+            //       seems to fix this.  Normally, when specifying
+            //       a transparency color key to be used when composing the
+            //       layered window, all pixels painted by the window in this
+            //       color will be transparent.  That doesn't seem to be the
+            //       case anymore on Windows 8 and later, at least when used
+            //       with DwmEnableBlurBehindWindow plus negative region.
+            if (wndconfig->decorated && IsWindows8OrGreater())
+            {
+                long style = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
+                style |= WS_EX_LAYERED;
+                SetWindowLongW(window->win32.handle, GWL_EXSTYLE, style);
+
+                // Using a color key not equal to black to fix the trailing
+                // issue.  When set to black, something is making the hit test
+                // not resize with the window frame.
+                SetLayeredWindowAttributes(window->win32.handle,
+                                           RGB(0, 193, 48), 255, LWA_COLORKEY);
+            }
+        }
+    }
+
     return GLFW_TRUE;
 }
 
@@ -1102,6 +1138,21 @@ void _glfwUnregisterWindowClassWin32(void)
     UnregisterClassW(_GLFW_WNDCLASSNAME, GetModuleHandleW(NULL));
 }
 
+// Returns whether desktop compositing is enabled
+//
+GLFWbool _glfwIsCompositionEnabledWin32(void)
+{
+    if (_glfw.win32.dwmapi.instance)
+    {
+        BOOL enabled;
+
+        if (DwmIsCompositionEnabled(&enabled) == S_OK)
+            return enabled;
+    }
+
+    return FALSE;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -1112,7 +1163,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    if (!createNativeWindow(window, wndconfig))
+    if (!createNativeWindow(window, wndconfig, fbconfig))
         return GLFW_FALSE;
 
     if (ctxconfig->client != GLFW_NO_API)

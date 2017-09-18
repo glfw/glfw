@@ -215,14 +215,6 @@ static int choosePixelFormat(_GLFWwindow* window,
         u->handle = n;
         usableCount++;
     }
-    // Reiterate the selection loop without looking for transparency supporting
-    // formats if no matching pixelformat for a transparent window were found.
-    if (fbconfig->transparent && !usableCount) {
-        free(usableConfigs);
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-            "WGL: No pixel format found for transparent window. Ignoring transparency.");
-        return choosePixelFormat(window, ctxconfig, fbconfig);
-    }
 
     if (!usableCount)
     {
@@ -247,21 +239,6 @@ static int choosePixelFormat(_GLFWwindow* window,
     free(usableConfigs);
 
     return pixelFormat;
-}
-
-// Returns whether desktop compositing is enabled
-//
-static GLFWbool isCompositionEnabled(void)
-{
-    if (_glfw.win32.dwmapi.instance)
-    {
-        BOOL enabled;
-
-        if (DwmIsCompositionEnabled(&enabled) == S_OK)
-            return enabled;
-    }
-
-    return FALSE;
 }
 
 static void makeContextCurrentWGL(_GLFWwindow* window)
@@ -292,7 +269,7 @@ static void makeContextCurrentWGL(_GLFWwindow* window)
 static void swapBuffersWGL(_GLFWwindow* window)
 {
     // HACK: Use DwmFlush when desktop composition is enabled
-    if (isCompositionEnabled() && !window->monitor)
+    if (_glfwIsCompositionEnabledWin32() && !window->monitor)
     {
         int count = abs(window->context.wgl.interval);
         while (count--)
@@ -310,7 +287,7 @@ static void swapIntervalWGL(int interval)
 
     // HACK: Disable WGL swap interval when desktop composition is enabled to
     //       avoid interfering with DWM vsync
-    if (isCompositionEnabled() && !window->monitor)
+    if (_glfwIsCompositionEnabledWin32() && !window->monitor)
         interval = 0;
 
     if (_glfw.wgl.EXT_swap_control)
@@ -502,75 +479,6 @@ void _glfwTerminateWGL(void)
     assert((size_t) (index + 1) < sizeof(attribs) / sizeof(attribs[0])); \
     attribs[index++] = a; \
     attribs[index++] = v; \
-}
-
-static GLFWbool setupTransparentWindow(_GLFWwindow* window)
-{
-    if (!isCompositionEnabled) {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-            "WGL: Composition needed for transparent window is disabled");
-    }
-    if (!_glfw_DwmEnableBlurBehindWindow) {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-            "WGL: Unable to load DwmEnableBlurBehindWindow required for transparent window");
-        return GLFW_FALSE;
-    }
-
-    HRESULT hr = S_OK;
-    HWND handle = window->win32.handle;
-
-    DWM_BLURBEHIND bb = { 0 };
-    bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
-    bb.hRgnBlur = CreateRectRgn(0, 0, -1, -1);  // makes the window transparent
-    bb.fEnable = TRUE;
-    hr = _glfw_DwmEnableBlurBehindWindow(handle, &bb);
-
-    if (!SUCCEEDED(hr)) {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-            "WGL: Failed to enable blur behind window required for transparent window");
-        return GLFW_FALSE;
-    }
-
-    // Decorated windows on Windows 8+ don't repaint the transparent background
-    // leaving a trail behind animations.
-    // Hack: making the window layered with a transparency color key seems to fix this.
-    // Normally, when specifying a transparency color key to be used when composing
-    // the layered window, all pixels painted by the window in this color will be transparent.
-    // That doesn't seem to be the case anymore on Windows 8+, at least when used with
-    // DwmEnableBlurBehindWindow + negative region.
-    if (window->decorated && IsWindows8OrGreater())
-    {
-        long style = GetWindowLong(handle, GWL_EXSTYLE);
-        if (!style) {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                "WGL: Failed to retrieve extended styles. GetLastError: %d",
-                GetLastError());
-            return GLFW_FALSE;
-        }
-        style |= WS_EX_LAYERED;
-        if (!SetWindowLongPtr(handle, GWL_EXSTYLE, style))
-        {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                "WGL: Failed to add layered style. GetLastError: %d",
-                GetLastError());
-            return GLFW_FALSE;
-        }
-        if (!SetLayeredWindowAttributes(handle,
-            // Using a color key not equal to black to fix the trailing issue.
-            // When set to black, something is making the hit test not resize with the
-            // window frame.
-            RGB(0, 193, 48),
-            255,
-            LWA_COLORKEY))
-        {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                "WGL: Failed to set layered window. GetLastError: %d",
-                GetLastError());
-            return GLFW_FALSE;
-        }
-    }
-
-    return GLFW_TRUE;
 }
 
 // Create the OpenGL or OpenGL ES context
@@ -800,14 +708,6 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                 return GLFW_FALSE;
             }
         }
-    }
-
-    if (fbconfig->transparent)
-    {
-        if (!setupTransparentWindow(window))
-            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                    "WGL: Failed to setup window as transparent as requested");
-
     }
 
     window->context.makeCurrent = makeContextCurrentWGL;

@@ -287,7 +287,7 @@ __GLFW_DOUBLEBUFFER__ specifies whether the framebuffer should be double
 buffered.  You nearly always want to use double buffering.  This is a hard
 constraint.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 
-@anchor GLFW_TRANSPARENT_hint
+@anchor GLFW_TRANSPARENT
 __GLFW_TRANSPARENT__ specifies whether the framebuffer will support transparency
 in the background. Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 
@@ -490,6 +490,7 @@ GLFW_REFRESH_RATE             | `GLFW_DONT_CARE`            | 0 to `INT_MAX` or 
 GLFW_STEREO                   | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_SRGB_CAPABLE             | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_DOUBLEBUFFER             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_TRANSPARENT              | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_CLIENT_API               | `GLFW_OPENGL_API`           | `GLFW_OPENGL_API`, `GLFW_OPENGL_ES_API` or `GLFW_NO_API`
 GLFW_CONTEXT_CREATION_API     | `GLFW_NATIVE_CONTEXT_API`   | `GLFW_NATIVE_CONTEXT_API`, `GLFW_EGL_CONTEXT_API` or `GLFW_OSMESA_CONTEXT_API`
 GLFW_CONTEXT_VERSION_MAJOR    | 1                           | Any valid major version number of the chosen client API

@@ -116,6 +116,13 @@ typedef int (* PFN_XISelectEvents)(Display*,Window,XIEventMask*,int);
 #define XIQueryVersion _glfw.x11.xi.QueryVersion
 #define XISelectEvents _glfw.x11.xi.SelectEvents
 
+typedef Bool (* PFN_XRenderQueryExtension)(Display*,int*,int*);
+typedef Status (* PFN_XRenderQueryVersion)(Display*dpy,int*,int*);
+typedef XRenderPictFormat* (* PFN_XRenderFindVisualFormat)(Display*,Visual const*);
+#define XRenderQueryExtension _glfw.x11.xrender.QueryExtension
+#define XRenderQueryVersion _glfw.x11.xrender.QueryVersion
+#define XRenderFindVisualFormat _glfw.x11.xrender.FindVisualFormat
+
 typedef VkFlags VkXlibSurfaceCreateFlagsKHR;
 typedef VkFlags VkXcbSurfaceCreateFlagsKHR;
 
@@ -162,19 +169,9 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)(Vk
 #define _GLFW_EGL_NATIVE_DISPLAY ((EGLNativeDisplayType) _glfw.x11.display)
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  x11
-#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11 ; _GLFWlibraryXrender xrender
+#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorX11 x11
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorX11  x11
-
-// libXrender.so function pointer typedefs
-typedef Bool (*PFNXRENDERQUERYEXTENSIONPROC)(Display*,int*,int*);
-typedef Status (*PFNXRENDERQUERYVERSIONPROC)(Display*dpy,int*,int*);
-typedef XRenderPictFormat* (*PFNXRENDERFINDVISUALFORMATPROC)(Display*,Visual const *);
-
-// libXrender.so function identifier overlays
-#define XRenderQueryExtension   _glfw.xrender.QueryExtension
-#define XRenderQueryVersion     _glfw.xrender.QueryVersion
-#define XRenderFindVisualFormat _glfw.xrender.FindVisualFormat
 
 
 // X11-specific per-window data
@@ -383,23 +380,19 @@ typedef struct _GLFWlibraryX11
         PFN_XISelectEvents SelectEvents;
     } xi;
 
+    struct {
+        GLFWbool    available;
+        void*       handle;
+        int         major;
+        int         minor;
+        int         eventBase;
+        int         errorBase;
+        PFN_XRenderQueryExtension QueryExtension;
+        PFN_XRenderQueryVersion QueryVersion;
+        PFN_XRenderFindVisualFormat FindVisualFormat;
+    } xrender;
+
 } _GLFWlibraryX11;
-
-// Xrender-specific global data
-typedef struct _GLFWlibraryXrender
-{
-    int             major, minor;
-    int             eventBase;
-    int             errorBase;
-
-    // dlopen handle for libGL.so.1
-    void*           handle;
-
-    // Xrender functions (subset required for transparent window)
-    PFNXRENDERQUERYEXTENSIONPROC    QueryExtension;
-    PFNXRENDERQUERYVERSIONPROC      QueryVersion;
-    PFNXRENDERFINDVISUALFORMATPROC  FindVisualFormat;
-} _GLFWlibraryXrender;
 
 // X11-specific per-monitor data
 //

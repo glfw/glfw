@@ -870,7 +870,7 @@ extern "C" {
 #define GLFW_DOUBLEBUFFER           0x00021010
 /*! @brief Framebuffer transparency hint.
  *
- *  Framebuffer transparency [hint](@ref GLFW_TRANSPARENT_hint).
+ *  Framebuffer transparency [hint](@ref GLFW_TRANSPARENT).
  */
 #define GLFW_TRANSPARENT            0x00021011
 

@@ -413,11 +413,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (BOOL)isOpaque
 {
-    // Set to NO even if alphaMask is not used;
-    //   The NSView/GLFWContentView does not need to be opaque anyway,
-    //   and to avoid keeping track of alphaMask inside the NSView we
-    //   just return NO here instead.
-    return NO;
+    return [window->ns.object isOpaque];
 }
 
 - (BOOL)canBecomeKeyView
@@ -1016,7 +1012,8 @@ static GLFWbool initializeAppKit(void)
 // Create the Cocoa window
 //
 static GLFWbool createNativeWindow(_GLFWwindow* window,
-                                   const _GLFWwndconfig* wndconfig)
+                                   const _GLFWwndconfig* wndconfig,
+                                   const _GLFWfbconfig* fbconfig)
 {
     window->ns.delegate = [[GLFWWindowDelegate alloc] initWithGlfwWindow:window];
     if (window->ns.delegate == nil)
@@ -1085,7 +1082,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     if (wndconfig->ns.retina)
         [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
 
-    if (_glfw.hints.framebuffer.transparent)
+    if (fbconfig->transparent)
     {
         [window->ns.object setOpaque:NO];
         [window->ns.object setBackgroundColor:[NSColor clearColor]];
@@ -1114,7 +1111,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (!initializeAppKit())
         return GLFW_FALSE;
 
-    if (!createNativeWindow(window, wndconfig))
+    if (!createNativeWindow(window, wndconfig, fbconfig))
         return GLFW_FALSE;
 
     if (ctxconfig->client != GLFW_NO_API)

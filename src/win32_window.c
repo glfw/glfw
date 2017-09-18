@@ -306,6 +306,55 @@ static void updateWindowStyles(const _GLFWwindow* window)
                  SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOZORDER);
 }
 
+// Update window framebuffer transparency
+//
+static void updateFramebufferTransparency(const _GLFWwindow* window)
+{
+    if (!IsWindowsVistaOrGreater())
+        return;
+
+    if (_glfwIsCompositionEnabledWin32())
+    {
+        HRGN region = CreateRectRgn(0, 0, -1, -1);
+        DWM_BLURBEHIND bb = {0};
+        bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
+        bb.hRgnBlur = region;
+        bb.fEnable = TRUE;
+
+        if (SUCCEEDED(DwmEnableBlurBehindWindow(window->win32.handle, &bb)))
+        {
+            // Decorated windows don't repaint the transparent background
+            // leaving a trail behind animations
+            // HACK: Making the window layered with a transparency color key
+            //       seems to fix this.  Normally, when specifying
+            //       a transparency color key to be used when composing the
+            //       layered window, all pixels painted by the window in this
+            //       color will be transparent.  That doesn't seem to be the
+            //       case anymore, at least when used with blur behind window
+            //       plus negative region.
+            LONG style = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
+            style |= WS_EX_LAYERED;
+            SetWindowLongW(window->win32.handle, GWL_EXSTYLE, style);
+
+            // Using a color key not equal to black to fix the trailing
+            // issue.  When set to black, something is making the hit test
+            // not resize with the window frame.
+            SetLayeredWindowAttributes(window->win32.handle,
+                                       RGB(0, 193, 48), 255, LWA_COLORKEY);
+        }
+
+        DeleteObject(region);
+    }
+    else
+    {
+        LONG style = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
+        style &= ~WS_EX_LAYERED;
+        SetWindowLongW(window->win32.handle, GWL_EXSTYLE, style);
+        RedrawWindow(window->win32.handle, NULL, NULL,
+                     RDW_ERASE | RDW_INVALIDATE | RDW_FRAME);
+    }
+}
+
 // Translates a GLFW standard cursor to a resource ID
 //
 static LPWSTR translateCursorShape(int shape)
@@ -916,6 +965,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             return TRUE;
         }
 
+        case WM_DWMCOMPOSITIONCHANGED:
+        {
+            if (window->win32.transparent)
+                updateFramebufferTransparency(window);
+            return 0;
+        }
+
         case WM_SETCURSOR:
         {
             if (LOWORD(lParam) == HTCLIENT)
@@ -981,7 +1037,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 // Creates the GLFW window
 //
 static int createNativeWindow(_GLFWwindow* window,
-                              const _GLFWwndconfig* wndconfig)
+                              const _GLFWwndconfig* wndconfig,
+                              const _GLFWfbconfig* fbconfig)
 {
     int xpos, ypos, fullWidth, fullHeight;
     WCHAR* wideTitle;
@@ -1051,6 +1108,12 @@ static int createNativeWindow(_GLFWwindow* window,
 
     DragAcceptFiles(window->win32.handle, TRUE);
 
+    if (fbconfig->transparent)
+    {
+        updateFramebufferTransparency(window);
+        window->win32.transparent = GLFW_TRUE;
+    }
+
     return GLFW_TRUE;
 }
 
@@ -1102,6 +1165,20 @@ void _glfwUnregisterWindowClassWin32(void)
     UnregisterClassW(_GLFW_WNDCLASSNAME, GetModuleHandleW(NULL));
 }
 
+// Returns whether desktop compositing is enabled
+//
+GLFWbool _glfwIsCompositionEnabledWin32(void)
+{
+    if (IsWindowsVistaOrGreater())
+    {
+        BOOL enabled;
+        if (SUCCEEDED(DwmIsCompositionEnabled(&enabled)))
+            return enabled;
+    }
+
+    return FALSE;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -1112,7 +1189,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    if (!createNativeWindow(window, wndconfig))
+    if (!createNativeWindow(window, wndconfig, fbconfig))
         return GLFW_FALSE;
 
     if (ctxconfig->client != GLFW_NO_API)
@@ -1479,6 +1556,11 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
 int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 {
     return IsZoomed(window->win32.handle);
+}
+
+int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
+{
+    return window->win32.transparent && _glfwIsCompositionEnabledWin32();
 }
 
 void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)

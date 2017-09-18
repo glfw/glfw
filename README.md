@@ -150,6 +150,8 @@ information on what to include when reporting a bug.
   functions for accessing X11 primary selection (#894,#1056)
 - Added headless [OSMesa](http://mesa3d.org/osmesa.html) backend (#850)
 - Added definition of `GLAPIENTRY` to public header
+- Added `GLFW_TRANSPARENT` window hint for enabling window framebuffer
+  transparency (#197,#663,#715,#723,#1078)
 - Added `GLFW_CENTER_CURSOR` window hint for controlling cursor centering
   (#749,#842)
 - Added `GLFW_JOYSTICK_HAT_BUTTONS` init hint (#889)
@@ -289,6 +291,7 @@ skills.
  - Yaron Cohen-Tal
  - Omar Cornut
  - Andrew Corrigan
+ - Bailey Cosier
  - Noel Cower
  - Jason Daly
  - Jarrod Davis
@@ -297,6 +300,7 @@ skills.
  - Michael Dickens
  - Роман Донченко
  - Mario Dorn
+ - Wolfgang Draxinger
  - Jonathan Dummer
  - Ralph Eastwood
  - Fredrik Ehnbom
@@ -322,6 +326,7 @@ skills.
  - Erik S. V. Jansson
  - Toni Jovanoski
  - Arseny Kapoulkine
+ - Cem Karan
  - Osman Keskin
  - Josh Kilmer
  - Cameron King
@@ -363,6 +368,7 @@ skills.
  - Andri Pálsson
  - Peoro
  - Braden Pellett
+ - Christopher Pelloux
  - Arturo J. Pérez
  - Anthony Pesch
  - Orson Peters

@@ -147,7 +147,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     fbconfig  = _glfw.hints.framebuffer;
     ctxconfig = _glfw.hints.context;
     wndconfig = _glfw.hints.window;
-    fbconfig.transparent  = _glfw.hints.framebuffer.transparent ? GLFW_TRUE : GLFW_FALSE;
 
     wndconfig.width   = width;
     wndconfig.height  = height;
@@ -728,6 +727,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return _glfwPlatformWindowVisible(window);
         case GLFW_MAXIMIZED:
             return _glfwPlatformWindowMaximized(window);
+        case GLFW_TRANSPARENT:
+            return _glfwPlatformFramebufferTransparent(window);
         case GLFW_RESIZABLE:
             return window->resizable;
         case GLFW_DECORATED:

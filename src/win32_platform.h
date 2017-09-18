@@ -100,6 +100,9 @@
 #ifndef DISPLAY_DEVICE_ACTIVE
  #define DISPLAY_DEVICE_ACTIVE 0x00000001
 #endif
+#ifndef _WIN32_WINNT_WINBLUE
+ #define _WIN32_WINNT_WINBLUE 0x0602
+#endif
 
 #if WINVER < 0x0601
 typedef struct tagCHANGEFILTERSTRUCT
@@ -113,6 +116,18 @@ typedef struct tagCHANGEFILTERSTRUCT
 #endif
 #endif /*Windows 7*/
 
+#if WINVER < 0x0600
+#define DWM_BB_ENABLE 0x00000001
+#define DWM_BB_BLURREGION 0x00000002
+typedef struct
+{
+    DWORD dwFlags;
+    BOOL fEnable;
+    HRGN hRgnBlur;
+    BOOL fTransitionOnMaximized;
+} DWM_BLURBEHIND;
+#endif /*Windows Vista*/
+
 #ifndef DPI_ENUMS_DECLARED
 typedef enum PROCESS_DPI_AWARENESS
 {
@@ -122,30 +137,8 @@ typedef enum PROCESS_DPI_AWARENESS
 } PROCESS_DPI_AWARENESS;
 #endif /*DPI_ENUMS_DECLARED*/
 
-#if !defined(_DWMAPI_H_)
-#define DWM_BB_ENABLE                 0x00000001
-#define DWM_BB_BLURREGION             0x00000002
-
-typedef struct
-{
-    DWORD dwFlags;
-    BOOL fEnable;
-    HRGN hRgnBlur;
-    BOOL fTransitionOnMaximized;
-} DWM_BLURBEHIND;
-#endif
-
 // HACK: Define versionhelpers.h functions manually as MinGW lacks the header
-FORCEINLINE BOOL IsWindowsVersionOrGreater(WORD major, WORD minor, WORD sp)
-{
-    OSVERSIONINFOEXW osvi = { sizeof(osvi), major, minor, 0, 0, {0}, sp };
-    DWORD mask = VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR;
-    ULONGLONG cond = VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL);
-    cond = VerSetConditionMask(cond, VER_MINORVERSION, VER_GREATER_EQUAL);
-    cond = VerSetConditionMask(cond, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
-    return VerifyVersionInfoW(&osvi, mask, cond);
-}
-
+BOOL IsWindowsVersionOrGreater(WORD major, WORD minor, WORD sp);
 #define IsWindowsVistaOrGreater()                              \
     IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_VISTA),      \
                               LOBYTE(_WIN32_WINNT_VISTA), 0)
@@ -216,10 +209,10 @@ typedef BOOL (WINAPI * PFN_ChangeWindowMessageFilterEx)(HWND,UINT,DWORD,PCHANGEF
 // dwmapi.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_DwmIsCompositionEnabled)(BOOL*);
 typedef HRESULT (WINAPI * PFN_DwmFlush)(VOID);
-typedef HRESULT(WINAPI * DWMENABLEBLURBEHINDWINDOW_T)(HWND, const DWM_BLURBEHIND*);
+typedef HRESULT(WINAPI * PFN_DwmEnableBlurBehindWindow)(HWND,const DWM_BLURBEHIND*);
 #define DwmIsCompositionEnabled _glfw.win32.dwmapi.IsCompositionEnabled
 #define DwmFlush _glfw.win32.dwmapi.Flush
-#define _glfw_DwmEnableBlurBehindWindow _glfw.win32.dwmapi.DwmEnableBlurBehindWindow
+#define DwmEnableBlurBehindWindow _glfw.win32.dwmapi.EnableBlurBehindWindow
 
 // shcore.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_SetProcessDpiAwareness)(PROCESS_DPI_AWARENESS);
@@ -274,6 +267,8 @@ typedef struct _GLFWwindowWin32
     GLFWbool            frameAction;
     GLFWbool            iconified;
     GLFWbool            maximized;
+    // Whether to enable framebuffer transparency on DWM
+    GLFWbool            transparent;
 
     // The last received cursor position, regardless of source
     int                 lastCursorPosX, lastCursorPosY;
@@ -325,7 +320,7 @@ typedef struct _GLFWlibraryWin32
         HINSTANCE                       instance;
         PFN_DwmIsCompositionEnabled     IsCompositionEnabled;
         PFN_DwmFlush                    Flush;
-        DWMENABLEBLURBEHINDWINDOW_T DwmEnableBlurBehindWindow;
+        PFN_DwmEnableBlurBehindWindow   EnableBlurBehindWindow;
     } dwmapi;
 
     struct {
@@ -388,6 +383,7 @@ typedef struct _GLFWmutexWin32
 
 GLFWbool _glfwRegisterWindowClassWin32(void);
 void _glfwUnregisterWindowClassWin32(void);
+GLFWbool _glfwIsCompositionEnabledWin32(void);
 
 WCHAR* _glfwCreateWideStringFromUTF8Win32(const char* source);
 char* _glfwCreateUTF8FromWideStringWin32(const WCHAR* source);

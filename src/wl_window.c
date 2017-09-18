@@ -654,6 +654,13 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
     return window->wl.maximized;
 }
 
+int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Wayland: Framebuffer transparency attribute not implemented yet");
+    return GLFW_FALSE;
+}
+
 void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
 {
     // TODO

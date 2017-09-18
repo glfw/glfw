@@ -364,6 +364,7 @@ static void updateWindowMode(_GLFWwindow* window)
         }
 
         // Enable compositor bypass
+        if (!window->x11.transparent)
         {
             const unsigned long value = 1;
 
@@ -402,6 +403,7 @@ static void updateWindowMode(_GLFWwindow* window)
         }
 
         // Disable compositor bypass
+        if (!window->x11.transparent)
         {
             XDeleteProperty(_glfw.x11.display, window->x11.handle,
                             _glfw.x11.NET_WM_BYPASS_COMPOSITOR);
@@ -576,6 +578,8 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                                            _glfw.x11.root,
                                            visual,
                                            AllocNone);
+
+    window->x11.transparent = _glfwIsVisualTransparentX11(visual);
 
     // Create the actual window
     {
@@ -1838,6 +1842,15 @@ unsigned long _glfwGetWindowPropertyX11(Window window,
     return itemCount;
 }
 
+GLFWbool _glfwIsVisualTransparentX11(Visual* visual)
+{
+    if (!_glfw.x11.xrender.available)
+        return GLFW_FALSE;
+
+    XRenderPictFormat* pf = XRenderFindVisualFormat(_glfw.x11.display, visual);
+    return pf && pf->direct.alphaMask;
+}
+
 // Push contents of our selection to clipboard manager
 //
 void _glfwPushSelectionToManagerX11(void)
@@ -2420,6 +2433,18 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
         XFree(states);
 
     return maximized;
+}
+
+int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
+{
+    if (!window->x11.transparent)
+        return GLFW_FALSE;
+
+    // Check whether a compositing manager is running
+    char name[32];
+    snprintf(name, sizeof(name), "_NET_WM_CM_S%u", _glfw.x11.screen);
+    const Atom selection = XInternAtom(_glfw.x11.display, name, False);
+    return XGetSelectionOwner(_glfw.x11.display, selection) != None;
 }
 
 void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)

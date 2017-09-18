@@ -787,6 +787,12 @@ extern "C" {
  *  Cursor centering [window hint](@ref GLFW_CENTER_CURSOR_hint).
  */
 #define GLFW_CENTER_CURSOR          0x00020009
+/*! @brief Window framebuffer transparency hint and attribute
+ *
+ *  Window framebuffer transparency [window hint](@ref GLFW_TRANSPARENT_hint)
+ *  and [window attribute](@ref GLFW_TRANSPARENT_attrib).
+ */
+#define GLFW_TRANSPARENT            0x0002000A
 
 /*! @brief Framebuffer bit depth hint.
  *
@@ -868,11 +874,6 @@ extern "C" {
  *  Framebuffer double buffering [hint](@ref GLFW_DOUBLEBUFFER).
  */
 #define GLFW_DOUBLEBUFFER           0x00021010
-/*! @brief Framebuffer transparency hint.
- *
- *  Framebuffer transparency [hint](@ref GLFW_TRANSPARENT_hint).
- */
-#define GLFW_TRANSPARENT            0x00021011
 
 /*! @brief Context client API hint and attribute.
  *

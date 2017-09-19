@@ -287,6 +287,10 @@ __GLFW_DOUBLEBUFFER__ specifies whether the framebuffer should be double
 buffered.  You nearly always want to use double buffering.  This is a hard
 constraint.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 
+@anchor GLFW_TRANSPARENT_hint
+__GLFW_TRANSPARENT__ specifies whether the framebuffer will support transparency
+in the background. Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+
 
 @subsubsection window_hints_mtr Monitor related hints
 

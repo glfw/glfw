@@ -477,7 +477,7 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
     if (ctxconfig->share)
         share = ctxconfig->share->context.glx.handle;
 
-    if (!chooseGLXFBConfig(fbconfig, &native, window->transparent))
+    if (!chooseGLXFBConfig(fbconfig, &native, fbconfig->transparent))
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "GLX: Failed to find a suitable GLXFBConfig");
@@ -665,7 +665,7 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
     GLXFBConfig native;
     XVisualInfo* result;
 
-    if (!chooseGLXFBConfig(fbconfig, &native, wndconfig->transparent))
+    if (!chooseGLXFBConfig(fbconfig, &native, fbconfig->transparent))
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "GLX: Failed to find a suitable GLXFBConfig");

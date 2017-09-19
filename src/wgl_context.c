@@ -83,20 +83,6 @@ static int choosePixelFormat(_GLFWwindow* window,
     {
         const int n = i + 1;
         _GLFWfbconfig* u = usableConfigs + usableCount;
-        PIXELFORMATDESCRIPTOR pfd;
-
-        if (fbconfig->transparent) {
-            if (!DescribePixelFormat(window->context.wgl.dc,
-                n,
-                sizeof(PIXELFORMATDESCRIPTOR),
-                &pfd))
-            {
-                continue;
-            }
-
-            if (!(pfd.dwFlags & PFD_SUPPORT_COMPOSITION))
-                continue;
-        }
 
         if (_glfw.wgl.ARB_pixel_format)
         {
@@ -168,7 +154,9 @@ static int choosePixelFormat(_GLFWwindow* window,
         {
             // Get pixel format attributes through legacy PFDs
 
-            if (!fbconfig->transparent && DescribePixelFormat(window->context.wgl.dc,
+            PIXELFORMATDESCRIPTOR pfd;
+
+            if (!DescribePixelFormat(window->context.wgl.dc,
                                      n,
                                      sizeof(PIXELFORMATDESCRIPTOR),
                                      &pfd))

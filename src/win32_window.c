@@ -1056,23 +1056,24 @@ static int createNativeWindow(_GLFWwindow* window,
         IsWindowsVistaOrGreater() &&
         _glfwIsCompositionEnabledWin32())
     {
+        HRGN region = CreateRectRgn(0, 0, -1, -1);
         DWM_BLURBEHIND bb = {0};
         bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
-        bb.hRgnBlur = CreateRectRgn(0, 0, -1, -1);
+        bb.hRgnBlur = region;
         bb.fEnable = TRUE;
 
         if (SUCCEEDED(DwmEnableBlurBehindWindow(window->win32.handle, &bb)))
         {
-            // Decorated windows on Windows 8 and later don't repaint the
-            // transparent background leaving a trail behind animations
+            // Decorated windows don't repaint the transparent background
+            // leaving a trail behind animations
             // HACK: Making the window layered with a transparency color key
             //       seems to fix this.  Normally, when specifying
             //       a transparency color key to be used when composing the
             //       layered window, all pixels painted by the window in this
             //       color will be transparent.  That doesn't seem to be the
-            //       case anymore on Windows 8 and later, at least when used
-            //       with DwmEnableBlurBehindWindow plus negative region.
-            if (wndconfig->decorated && IsWindows8OrGreater())
+            //       case anymore, at least when used with blur behind window
+            //       plus negative region.
+            if (wndconfig->decorated)
             {
                 long style = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
                 style |= WS_EX_LAYERED;
@@ -1085,6 +1086,8 @@ static int createNativeWindow(_GLFWwindow* window,
                                            RGB(0, 193, 48), 255, LWA_COLORKEY);
             }
         }
+
+        DeleteObject(region);
     }
 
     return GLFW_TRUE;

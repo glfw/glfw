@@ -62,6 +62,17 @@ BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
 
 #endif // _GLFW_BUILD_DLL
 
+// HACK: Define versionhelpers.h functions manually as MinGW lacks the header
+BOOL IsWindowsVersionOrGreater(WORD major, WORD minor, WORD sp)
+{
+    OSVERSIONINFOEXW osvi = { sizeof(osvi), major, minor, 0, 0, {0}, sp };
+    DWORD mask = VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR;
+    ULONGLONG cond = VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL);
+    cond = VerSetConditionMask(cond, VER_MINORVERSION, VER_GREATER_EQUAL);
+    cond = VerSetConditionMask(cond, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
+    return VerifyVersionInfoW(&osvi, mask, cond);
+}
+
 // Load necessary libraries (DLLs)
 //
 static GLFWbool loadLibraries(void)

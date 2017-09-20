@@ -100,6 +100,9 @@
 #ifndef DISPLAY_DEVICE_ACTIVE
  #define DISPLAY_DEVICE_ACTIVE 0x00000001
 #endif
+#ifndef _WIN32_WINNT_WINBLUE
+ #define _WIN32_WINNT_WINBLUE 0x0602
+#endif
 
 #if WINVER < 0x0601
 typedef struct tagCHANGEFILTERSTRUCT
@@ -135,16 +138,7 @@ typedef enum PROCESS_DPI_AWARENESS
 #endif /*DPI_ENUMS_DECLARED*/
 
 // HACK: Define versionhelpers.h functions manually as MinGW lacks the header
-FORCEINLINE BOOL IsWindowsVersionOrGreater(WORD major, WORD minor, WORD sp)
-{
-    OSVERSIONINFOEXW osvi = { sizeof(osvi), major, minor, 0, 0, {0}, sp };
-    DWORD mask = VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR;
-    ULONGLONG cond = VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL);
-    cond = VerSetConditionMask(cond, VER_MINORVERSION, VER_GREATER_EQUAL);
-    cond = VerSetConditionMask(cond, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
-    return VerifyVersionInfoW(&osvi, mask, cond);
-}
-
+BOOL IsWindowsVersionOrGreater(WORD major, WORD minor, WORD sp);
 #define IsWindowsVistaOrGreater()                              \
     IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_VISTA),      \
                               LOBYTE(_WIN32_WINNT_VISTA), 0)

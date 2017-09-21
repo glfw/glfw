@@ -988,6 +988,7 @@ static int createNativeWindow(_GLFWwindow* window,
     WCHAR* wideTitle;
     DWORD style = getWindowStyle(window);
     DWORD exStyle = getWindowExStyle(window);
+    GLFWbool transparent = GLFW_FALSE;
 
     if (window->monitor)
     {
@@ -1061,6 +1062,7 @@ static int createNativeWindow(_GLFWwindow* window,
         bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
         bb.hRgnBlur = region;
         bb.fEnable = TRUE;
+        transparent = GLFW_TRUE;
 
         if (SUCCEEDED(DwmEnableBlurBehindWindow(window->win32.handle, &bb)))
         {
@@ -1089,6 +1091,9 @@ static int createNativeWindow(_GLFWwindow* window,
 
         DeleteObject(region);
     }
+
+    // Need to let the framebuffer hint aware of the composition results.
+    _glfw.hints.framebuffer.transparent = transparent;
 
     return GLFW_TRUE;
 }

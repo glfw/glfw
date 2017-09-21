@@ -141,6 +141,9 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired,
     if (closest)
         *result = (GLXFBConfig) closest->handle;
 
+    if (desired->transparent && closest->transparent != GLFW_TRUE)
+        _glfw.hints.framebuffer.transparent = GLFW_FALSE;
+
     XFree(nativeConfigs);
     free(usableConfigs);
 

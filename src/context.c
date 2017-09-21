@@ -318,6 +318,12 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
         }
     }
 
+    if (desired->transparent && closest->transparent != GLFW_TRUE)
+    {
+        // If we couldn't find a transparency match,
+        // update the fb hint for client checking.
+        _glfw.hints.framebuffer.transparent = GLFW_FALSE;
+    }
     return closest;
 }
 

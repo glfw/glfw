@@ -322,6 +322,11 @@ int main(int argc, char *argv[])
         exit( EXIT_FAILURE );
     }
 
+    if (!glfwGetWindowAttrib(window, GLFW_TRANSPARENT))
+    {
+        fprintf( stderr, "Failed to set GLFW_TRANSPARENT flag\n" );
+    }
+
     // Set callback functions
     glfwSetFramebufferSizeCallback(window, reshape);
     glfwSetKeyCallback(window, key);

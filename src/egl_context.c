@@ -188,6 +188,9 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
     if (closest)
         *result = (EGLConfig) closest->handle;
 
+    if (desired->transparent && closest->transparent != GLFW_TRUE)
+        _glfw.hints.framebuffer.transparent = GLFW_FALSE;
+
     free(nativeConfigs);
     free(usableConfigs);
 

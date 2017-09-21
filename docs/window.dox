@@ -289,7 +289,9 @@ constraint.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 
 @anchor GLFW_TRANSPARENT
 __GLFW_TRANSPARENT__ specifies whether the framebuffer will support transparency
-in the background. Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+in the background. If transparency is not provided by your driver, GLFW will
+gracefully fallback to opaque. It is possible to check for this outcome
+with `glfwGetWindowAttrib()`. Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 
 
 @subsubsection window_hints_mtr Monitor related hints

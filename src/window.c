@@ -732,6 +732,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->resizable;
         case GLFW_DECORATED:
             return window->decorated;
+        case GLFW_TRANSPARENT:
+            return _glfw.hints.framebuffer.transparent;
         case GLFW_FLOATING:
             return window->floating;
         case GLFW_AUTO_ICONIFY:

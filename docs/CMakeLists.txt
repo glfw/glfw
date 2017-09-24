@@ -23,7 +23,7 @@ if (GLFW_DOCUMENT_INTERNALS)
 endif()
 
 foreach(arg ${glfw_DOCS_SOURCES})
-    set(GLFW_DOCS_SOURCES "${GLFW_DOCS_SOURCES} ${arg}")
+    set(GLFW_DOCS_SOURCES "${GLFW_DOCS_SOURCES} \\\n\"${arg}\"")
 endforeach()
 
 configure_file(Doxyfile.in Doxyfile @ONLY)

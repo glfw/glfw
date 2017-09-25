@@ -1091,6 +1091,14 @@ the window or framebuffer is resized.
 
 @subsection window_transparency Window transparency
 
+GLFW supports two kinds of transparency for windows; framebuffer transparency
+and whole window transparency.  A single window may not use both methods.  The
+results of doing this are undefined.
+
+Both methods require the platform to support it and not every version of every
+platform GLFW supports does this, so there are mechanisms to check whether the
+window really is transparent.
+
 Window framebuffers can be made transparent on a per-pixel per-frame basis with
 the [GLFW_TRANSPARENT_FRAMEBUFFER](@ref GLFW_TRANSPARENT_FRAMEBUFFER_hint)
 window hint.
@@ -1114,6 +1122,31 @@ if (glfwGetWindowAttrib(window, GLFW_TRANSPARENT_FRAMEBUFFER))
     // window framebuffer is currently transparent
 }
 @endcode
+
+GLFW comes with an example that enabled framebuffer transparency called `gears`.
+
+The opacity of the whole window, including any decorations, can be set with @ref
+glfwSetWindowOpacity.
+
+@code
+glfwSetWindowOpacity(window, 0.5f);
+@endcode
+
+The opacity (or alpha) value is a positive finite number between zero and one,
+where 0 (zero) is fully transparent and 1 (one) is fully opaque.  The initial
+opacity value for newly created windows is 1.
+
+The current opacity of a window can be queried with @ref glfwGetWindowOpacity.
+
+@code
+float opacity = glfwGetWindowOpacity(window);
+@endcode
+
+If the system does not support whole window transparency, this function always
+returns one.
+
+GLFW comes with a test program that lets you control whole window transparency
+at run-time called `opacity`.
 
 
 @subsection window_attribs Window attributes

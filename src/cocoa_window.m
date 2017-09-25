@@ -1493,6 +1493,16 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
         [window->ns.object setLevel:NSNormalWindowLevel];
 }
 
+float _glfwPlatformGetWindowOpacity(_GLFWwindow* window)
+{
+    return (float) [window->ns.object alphaValue];
+}
+
+void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
+{
+    [window->ns.object setAlphaValue:opacity];
+}
+
 void _glfwPlatformPollEvents(void)
 {
     for (;;)

@@ -1130,6 +1130,14 @@ static void releaseMonitor(_GLFWwindow* window)
     }
 }
 
+static void _glfwInputCharX11(_GLFWwindow* window, unsigned int codepoint, int mods, GLFWbool plain)
+{
+    /* Reverse the Ctl+[A-Z] bit-shifting that XLookupString has applied */
+    if (codepoint < 32 && (mods & GLFW_MOD_CONTROL))
+        codepoint += '@';
+    _glfwInputChar(window, codepoint, mods, plain);
+}
+
 // Process the specified X event
 //
 static void processEvent(XEvent *event)
@@ -1259,7 +1267,7 @@ static void processEvent(XEvent *event)
                         const char* c = chars;
                         chars[count] = '\0';
                         while (c - chars < count)
-                            _glfwInputChar(window, decodeUTF8(&c), mods, plain);
+                            _glfwInputCharX11(window, decodeUTF8(&c), mods, plain);
                     }
 #else /*X_HAVE_UTF8_STRING*/
                     wchar_t buffer[16];
@@ -1285,7 +1293,7 @@ static void processEvent(XEvent *event)
                     {
                         int i;
                         for (i = 0;  i < count;  i++)
-                            _glfwInputChar(window, chars[i], mods, plain);
+                            _glfwInputCharX11(window, chars[i], mods, plain);
                     }
 #endif /*X_HAVE_UTF8_STRING*/
 
@@ -1302,7 +1310,7 @@ static void processEvent(XEvent *event)
 
                 const long character = _glfwKeySym2Unicode(keysym);
                 if (character != -1)
-                    _glfwInputChar(window, character, mods, plain);
+                    _glfwInputCharX11(window, character, mods, plain);
             }
 
             return;

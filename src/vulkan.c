@@ -53,6 +53,8 @@ GLFWbool _glfwInitVulkan(int mode)
     _glfw.vk.handle = _glfw_dlopen("vulkan-1.dll");
 #elif defined(_GLFW_COCOA)
     _glfw.vk.handle = _glfw_dlopen("libMoltenVK.dylib");
+#elif defined(_GLFW_ANDROID)
+    _glfw.vk.handle = _glfw_dlopen("libvulkan.so");
 #else
     _glfw.vk.handle = _glfw_dlopen("libvulkan.so.1");
 #endif

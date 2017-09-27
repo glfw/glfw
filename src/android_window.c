@@ -29,19 +29,45 @@
 #include <android_native_app_glue.h>
 #include <android/log.h>
 
+struct android_app* app;
 
-struct engine {
-    struct android_app* app;
-};
-struct engine engine;
+void handle_cmd(struct android_app* _app, int32_t cmd) {
+    switch (cmd) {
+        case APP_CMD_INIT_WINDOW:
+            // The window is being shown, get it ready.
+            app = _app;
+            __android_log_print(ANDROID_LOG_INFO, "GLFW",
+                                "Window initialized", cmd);
+        default:
+            __android_log_print(ANDROID_LOG_INFO, "GLFW",
+                                "event not handled: %d", cmd);
+    }
+}
 
 // Android Entry Point
-void android_main(struct android_app *app) {    
-    memset(&engine, 0, sizeof(engine));
-    app->userData = &engine;
-    engine.app = &app;
+void android_main(struct android_app *app) {
+    app->onAppCmd = handle_cmd;
+    pthread_t my_thread;
+    pthread_create(&my_thread, NULL, &glfwMain, NULL);
 
-    glfwMain();
+    while (1) {
+        int ident;
+        int events;
+        struct android_poll_source* source;
+
+        while ((ident=ALooper_pollAll(0, NULL, &events,(void**)&source)) >= 0) {
+
+            // Process this event.
+            if (source != NULL) {
+                source->process(app, source);
+            }
+
+            // Check if we are exiting.
+            if (app->destroyRequested != 0) {
+                return;
+            }
+        }
+    }
 
 }
 //////////////////////////////////////////////////////////////////////////
@@ -53,7 +79,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    window->android.app = &engine.app;
     if (ctxconfig->client != GLFW_NO_API)
     {
         if (ctxconfig->source == GLFW_EGL_CONTEXT_API)
@@ -279,7 +304,7 @@ int _glfwPlatformGetKeyScancode(int key)
 void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)
 {
     if (!_glfw.vk.KHR_surface || !_glfw.vk.KHR_android_surface)
-    return;
+        return;
 
     extensions[0] = "VK_KHR_surface";
     extensions[1] = "VK_KHR_android_surface";
@@ -302,7 +327,7 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
     PFN_vkCreateAndroidSurfaceKHR vkCreateAndroidSurfaceKHR;
 
     vkCreateAndroidSurfaceKHR = (PFN_vkCreateAndroidSurfaceKHR)
-        vkGetInstanceProcAddr(instance, "vkCreateAndroidSurfaceKHR");
+            vkGetInstanceProcAddr(instance, "vkCreateAndroidSurfaceKHR");
     if (!vkCreateAndroidSurfaceKHR)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
@@ -312,7 +337,7 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
 
     memset(&sci, 0, sizeof(sci));
     sci.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
-    sci.window = &window->android.app->window;
+    sci.window = app->window;
 
     err = vkCreateAndroidSurfaceKHR(instance, &sci, allocator, surface);
     if (err)
@@ -333,6 +358,5 @@ GLFWAPI struct android_app * glfwGetAndroidApp(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    return window->android.app;
+    return app;
 }
-

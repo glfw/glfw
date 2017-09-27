@@ -63,7 +63,7 @@ typedef struct VkAndroidSurfaceCreateInfoKHR {
     VkStructureType                   sType;
     const void*                       pNext;
     VkAndroidSurfaceCreateFlagsKHR    flags;
-    ANativeWindow*                    surface;
+    ANativeWindow*                    window;
 } VkAndroidSurfaceCreateInfoKHR;
 
 typedef VkResult (APIENTRY *PFN_vkCreateAndroidSurfaceKHR)(VkInstance,const VkAndroidSurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);

@@ -39,7 +39,7 @@ struct engine engine;
 void android_main(struct android_app *app) {    
     memset(&engine, 0, sizeof(engine));
     app->userData = &engine;
-    engine.app = app;
+    engine.app = &app;
 
     glfwMain();
 
@@ -53,7 +53,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    window->android.app = engine.app;
+    window->android.app = &engine.app;
     if (ctxconfig->client != GLFW_NO_API)
     {
         if (ctxconfig->source == GLFW_EGL_CONTEXT_API)
@@ -312,7 +312,7 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
 
     memset(&sci, 0, sizeof(sci));
     sci.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
-    sci.surface = window->android.app->window;
+    sci.window = &window->android.app->window;
 
     err = vkCreateAndroidSurfaceKHR(instance, &sci, allocator, surface);
     if (err)
@@ -323,5 +323,16 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
     }
 
     return err;
+}
+
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW native API                       //////
+//////////////////////////////////////////////////////////////////////////
+
+GLFWAPI struct android_app * glfwGetAndroidApp(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    return window->android.app;
 }
 

@@ -37,7 +37,7 @@ void handle_cmd(struct android_app* _app, int32_t cmd) {
             // The window is being shown, get it ready.
             app = _app;
             __android_log_print(ANDROID_LOG_INFO, "GLFW",
-                                "Window initialized", cmd);
+                                "Window initialized");
         default:
             __android_log_print(ANDROID_LOG_INFO, "GLFW",
                                 "event not handled: %d", cmd);
@@ -47,8 +47,7 @@ void handle_cmd(struct android_app* _app, int32_t cmd) {
 // Android Entry Point
 void android_main(struct android_app *app) {
     app->onAppCmd = handle_cmd;
-    pthread_t my_thread;
-    pthread_create(&my_thread, NULL, &glfwMain, NULL);
+    pthread_t t;pthread_create(&t, NULL, &main, NULL); // Call the main entry point
 
     while (1) {
         int ident;
@@ -79,6 +78,9 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
+    while (app == NULL); // Wait for the app to be initialized or the app will crash occasionally
+    window->android.app = app;
+
     if (ctxconfig->client != GLFW_NO_API)
     {
         if (ctxconfig->source == GLFW_EGL_CONTEXT_API)
@@ -337,7 +339,7 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
 
     memset(&sci, 0, sizeof(sci));
     sci.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
-    sci.window = app->window;
+    sci.window = window->android.app->window;
 
     err = vkCreateAndroidSurfaceKHR(instance, &sci, allocator, surface);
     if (err)
@@ -356,7 +358,7 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
 
 GLFWAPI struct android_app * glfwGetAndroidApp(GLFWwindow* handle)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFWwindow* window = (_GLFWwindow*)handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    return app;
+    return window->android.app;
 }

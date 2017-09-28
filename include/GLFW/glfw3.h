@@ -5202,4 +5202,4 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window
 
 #endif /* _glfw3_h_ */
 
-extern void glfwMain();
+extern int main();

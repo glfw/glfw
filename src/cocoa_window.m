@@ -1182,7 +1182,11 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)
 {
-    [window->ns.object setTitle:[NSString stringWithUTF8String:title]];
+    NSString* string = [NSString stringWithUTF8String:title];
+    [window->ns.object setTitle:string];
+    // HACK: Set the miniwindow title explicitly as setTitle: doesn't update it
+    //       if the window lacks NSWindowStyleMaskTitled
+    [window->ns.object setMiniwindowTitle:string];
 }
 
 void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
@@ -1427,6 +1431,9 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
             [window->ns.object setLevel:NSNormalWindowLevel];
 
         [window->ns.object setHasShadow:YES];
+        // HACK: Clearing NSWindowStyleMaskTitled resets and disables the window
+        //       title property but the miniwindow title property is unaffected
+        [window->ns.object setTitle:[window->ns.object miniwindowTitle]];
     }
 }
 

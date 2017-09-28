@@ -1300,6 +1300,7 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
 
 void _glfwPlatformDragWindow(_GLFWwindow* window)
 {
+    [window->ns.object performWindowDragWithEvent:[NSApp currentEvent]];
 }
 
 void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,

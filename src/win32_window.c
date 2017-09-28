@@ -332,9 +332,9 @@ static void updateFramebufferTransparency(const _GLFWwindow* window)
             //       color will be transparent.  That doesn't seem to be the
             //       case anymore, at least when used with blur behind window
             //       plus negative region.
-            LONG style = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
-            style |= WS_EX_LAYERED;
-            SetWindowLongW(window->win32.handle, GWL_EXSTYLE, style);
+            LONG exStyle = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
+            exStyle |= WS_EX_LAYERED;
+            SetWindowLongW(window->win32.handle, GWL_EXSTYLE, exStyle);
 
             // Using a color key not equal to black to fix the trailing
             // issue.  When set to black, something is making the hit test
@@ -347,9 +347,9 @@ static void updateFramebufferTransparency(const _GLFWwindow* window)
     }
     else
     {
-        LONG style = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
-        style &= ~WS_EX_LAYERED;
-        SetWindowLongW(window->win32.handle, GWL_EXSTYLE, style);
+        LONG exStyle = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
+        exStyle &= ~WS_EX_LAYERED;
+        SetWindowLongW(window->win32.handle, GWL_EXSTYLE, exStyle);
         RedrawWindow(window->win32.handle, NULL, NULL,
                      RDW_ERASE | RDW_INVALIDATE | RDW_FRAME);
     }

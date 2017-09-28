@@ -178,6 +178,12 @@ static const struct wl_surface_listener surfaceListener = {
 static void setOpaqueRegion(_GLFWwindow* window)
 {
     struct wl_region* region;
+    int alphaBits;
+
+    eglGetConfigAttrib(_glfw.egl.display, window->context.egl.config,
+                       EGL_ALPHA_SIZE, &alphaBits);
+    if (alphaBits > 0)
+        return;
 
     region = wl_compositor_create_region(_glfw.wl.compositor);
     if (!region)

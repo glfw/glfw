@@ -52,7 +52,7 @@ PROJECT_LOGO           =
 # If a relative path is entered, it will be relative to the location
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = @GLFW_BINARY_DIR@/docs
+OUTPUT_DIRECTORY       = "@GLFW_BINARY_DIR@/docs"
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create
 # 4096 sub-directories (in 2 levels) under the output directory of each output
@@ -651,7 +651,7 @@ WARN_FORMAT            = "$file:$line: $text"
 # and error messages should be written. If left blank the output is written
 # to stderr.
 
-WARN_LOGFILE           = @GLFW_BINARY_DIR@/docs/warnings.txt
+WARN_LOGFILE           = "@GLFW_BINARY_DIR@/docs/warnings.txt"
 
 #---------------------------------------------------------------------------
 # configuration options related to the input files
@@ -722,7 +722,7 @@ EXCLUDE_SYMBOLS        = APIENTRY GLFWAPI
 # directories that contain example code fragments that are included (see
 # the \include command).
 
-EXAMPLE_PATH           = @GLFW_SOURCE_DIR@/examples
+EXAMPLE_PATH           = "@GLFW_SOURCE_DIR@/examples"
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -898,13 +898,13 @@ HTML_FILE_EXTENSION    = .html
 # have to redo this when upgrading to a newer version of doxygen or when
 # changing the value of configuration settings such as GENERATE_TREEVIEW!
 
-HTML_HEADER            = @GLFW_SOURCE_DIR@/docs/header.html
+HTML_HEADER            = "@GLFW_SOURCE_DIR@/docs/header.html"
 
 # The HTML_FOOTER tag can be used to specify a personal HTML footer for
 # each generated HTML page. If it is left blank doxygen will generate a
 # standard footer.
 
-HTML_FOOTER            = @GLFW_SOURCE_DIR@/docs/footer.html
+HTML_FOOTER            = "@GLFW_SOURCE_DIR@/docs/footer.html"
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading
 # style sheet that is used by each HTML page. It can be used to
@@ -923,7 +923,7 @@ HTML_STYLESHEET        =
 # robust against future updates. Doxygen will copy the style sheet file to
 # the output directory.
 
-HTML_EXTRA_STYLESHEET  = @GLFW_SOURCE_DIR@/docs/extra.css
+HTML_EXTRA_STYLESHEET  = "@GLFW_SOURCE_DIR@/docs/extra.css"
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -932,7 +932,7 @@ HTML_EXTRA_STYLESHEET  = @GLFW_SOURCE_DIR@/docs/extra.css
 # files. In the HTML_STYLESHEET file, use the file name only. Also note that
 # the files will be copied as-is; there are no commands or markers available.
 
-HTML_EXTRA_FILES       = @GLFW_SOURCE_DIR@/docs/spaces.svg
+HTML_EXTRA_FILES       = "@GLFW_SOURCE_DIR@/docs/spaces.svg"
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output.
 # Doxygen will adjust the colors in the style sheet and background images

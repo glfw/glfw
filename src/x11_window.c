@@ -164,6 +164,17 @@ static Bool isFrameExtentsEvent(Display* display, XEvent* event, XPointer pointe
            event->xproperty.atom == _glfw.x11.NET_FRAME_EXTENTS;
 }
 
+// Returns whether it is a property event for the specified selection transfer
+//
+static Bool isSelPropNewValueNotify(Display* display, XEvent* event, XPointer pointer)
+{
+    XEvent* notification = (XEvent*) pointer;
+    return event->type == PropertyNotify &&
+           event->xproperty.state == PropertyNewValue &&
+           event->xproperty.window == notification->xselection.requestor &&
+           event->xproperty.atom == notification->xselection.property;
+}
+
 // Translates a GLFW standard cursor to a font cursor shape
 //
 static int translateCursorShape(int shape)
@@ -353,6 +364,7 @@ static void updateWindowMode(_GLFWwindow* window)
         }
 
         // Enable compositor bypass
+        if (!window->x11.transparent)
         {
             const unsigned long value = 1;
 
@@ -391,6 +403,7 @@ static void updateWindowMode(_GLFWwindow* window)
         }
 
         // Disable compositor bypass
+        if (!window->x11.transparent)
         {
             XDeleteProperty(_glfw.x11.display, window->x11.handle,
                             _glfw.x11.NET_WM_BYPASS_COMPOSITOR);
@@ -449,6 +462,81 @@ static char** parseUriList(char* text, int* count)
     return paths;
 }
 
+// Encode a Unicode code point to a UTF-8 stream
+// Based on cutef8 by Jeff Bezanson (Public Domain)
+//
+static size_t encodeUTF8(char* s, unsigned int ch)
+{
+    size_t count = 0;
+
+    if (ch < 0x80)
+        s[count++] = (char) ch;
+    else if (ch < 0x800)
+    {
+        s[count++] = (ch >> 6) | 0xc0;
+        s[count++] = (ch & 0x3f) | 0x80;
+    }
+    else if (ch < 0x10000)
+    {
+        s[count++] = (ch >> 12) | 0xe0;
+        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
+        s[count++] = (ch & 0x3f) | 0x80;
+    }
+    else if (ch < 0x110000)
+    {
+        s[count++] = (ch >> 18) | 0xf0;
+        s[count++] = ((ch >> 12) & 0x3f) | 0x80;
+        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
+        s[count++] = (ch & 0x3f) | 0x80;
+    }
+
+    return count;
+}
+
+// Decode a Unicode code point from a UTF-8 stream
+// Based on cutef8 by Jeff Bezanson (Public Domain)
+//
+#if defined(X_HAVE_UTF8_STRING)
+static unsigned int decodeUTF8(const char** s)
+{
+    unsigned int ch = 0, count = 0;
+    static const unsigned int offsets[] =
+    {
+        0x00000000u, 0x00003080u, 0x000e2080u,
+        0x03c82080u, 0xfa082080u, 0x82082080u
+    };
+
+    do
+    {
+        ch = (ch << 6) + (unsigned char) **s;
+        (*s)++;
+        count++;
+    } while ((**s & 0xc0) == 0x80);
+
+    assert(count <= 6);
+    return ch - offsets[count - 1];
+}
+#endif /*X_HAVE_UTF8_STRING*/
+
+// Convert the specified Latin-1 string to UTF-8
+//
+static char* convertLatin1toUTF8(const char* source)
+{
+    size_t size = 1;
+    const char* sp;
+
+    for (sp = source;  *sp;  sp++)
+        size += (*sp & 0x80) ? 2 : 1;
+
+    char* target = calloc(size, 1);
+    char* tp = target;
+
+    for (sp = source;  *sp;  sp++)
+        tp += encodeUTF8(tp, *sp);
+
+    return target;
+}
+
 // Centers the cursor over the window client area
 //
 static void centerCursor(_GLFWwindow* window)
@@ -490,6 +578,8 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                                            _glfw.x11.root,
                                            visual,
                                            AllocNone);
+
+    window->x11.transparent = _glfwIsVisualTransparentX11(visual);
 
     // Create the actual window
     {
@@ -672,9 +762,7 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
 {
     int i;
     char* selectionString = NULL;
-    const Atom formats[] = { _glfw.x11.UTF8_STRING,
-                             _glfw.x11.COMPOUND_STRING,
-                             XA_STRING };
+    const Atom formats[] = { _glfw.x11.UTF8_STRING, XA_STRING };
     const int formatCount = sizeof(formats) / sizeof(formats[0]);
 
     if (request->selection == _glfw.x11.PRIMARY)
@@ -696,7 +784,6 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
         const Atom targets[] = { _glfw.x11.TARGETS,
                                  _glfw.x11.MULTIPLE,
                                  _glfw.x11.UTF8_STRING,
-                                 _glfw.x11.COMPOUND_STRING,
                                  XA_STRING };
 
         XChangeProperty(_glfw.x11.display,
@@ -841,10 +928,8 @@ static const char* getSelectionString(Atom selection)
 {
     size_t i;
     char** selectionString = NULL;
-    const Atom formats[] = { _glfw.x11.UTF8_STRING,
-                             _glfw.x11.COMPOUND_STRING,
-                             XA_STRING };
-    const size_t formatCount = sizeof(formats) / sizeof(formats[0]);
+    const Atom targets[] = { _glfw.x11.UTF8_STRING, XA_STRING };
+    const size_t targetCount = sizeof(targets) / sizeof(targets[0]);
 
     if (selection == _glfw.x11.PRIMARY)
         selectionString = &_glfw.x11.primarySelectionString;
@@ -862,14 +947,17 @@ static const char* getSelectionString(Atom selection)
     free(*selectionString);
     *selectionString = NULL;
 
-    for (i = 0;  i < formatCount;  i++)
+    for (i = 0;  i < targetCount;  i++)
     {
         char* data;
-        XEvent event;
+        Atom actualType;
+        int actualFormat;
+        unsigned long itemCount, bytesAfter;
+        XEvent notification, dummy;
 
         XConvertSelection(_glfw.x11.display,
                           selection,
-                          formats[i],
+                          targets[i],
                           _glfw.x11.GLFW_SELECTION,
                           _glfw.x11.helperWindowHandle,
                           CurrentTime);
@@ -877,28 +965,92 @@ static const char* getSelectionString(Atom selection)
         while (!XCheckTypedWindowEvent(_glfw.x11.display,
                                        _glfw.x11.helperWindowHandle,
                                        SelectionNotify,
-                                       &event))
+                                       &notification))
         {
             waitForEvent(NULL);
         }
 
-        if (event.xselection.property == None)
+        if (notification.xselection.property == None)
             continue;
 
-        if (_glfwGetWindowPropertyX11(event.xselection.requestor,
-                                      event.xselection.property,
-                                      event.xselection.target,
-                                      (unsigned char**) &data))
+        XCheckIfEvent(_glfw.x11.display,
+                      &dummy,
+                      isSelPropNewValueNotify,
+                      (XPointer) &notification);
+
+        XGetWindowProperty(_glfw.x11.display,
+                           notification.xselection.requestor,
+                           notification.xselection.property,
+                           0,
+                           LONG_MAX,
+                           True,
+                           AnyPropertyType,
+                           &actualType,
+                           &actualFormat,
+                           &itemCount,
+                           &bytesAfter,
+                           (unsigned char**) &data);
+
+        if (actualType == _glfw.x11.INCR)
         {
-            *selectionString = strdup(data);
+            size_t size = 1;
+            char* string = NULL;
+
+            for (;;)
+            {
+                while (!XCheckIfEvent(_glfw.x11.display,
+                                      &dummy,
+                                      isSelPropNewValueNotify,
+                                      (XPointer) &notification))
+                {
+                    waitForEvent(NULL);
+                }
+
+                XFree(data);
+                XGetWindowProperty(_glfw.x11.display,
+                                   notification.xselection.requestor,
+                                   notification.xselection.property,
+                                   0,
+                                   LONG_MAX,
+                                   True,
+                                   AnyPropertyType,
+                                   &actualType,
+                                   &actualFormat,
+                                   &itemCount,
+                                   &bytesAfter,
+                                   (unsigned char**) &data);
+
+                if (itemCount)
+                {
+                    size += itemCount;
+                    string = realloc(string, size);
+                    string[size - itemCount - 1] = '\0';
+                    strcat(string, data);
+                }
+
+                if (!itemCount)
+                {
+                    if (targets[i] == XA_STRING)
+                    {
+                        *selectionString = convertLatin1toUTF8(string);
+                        free(string);
+                    }
+                    else
+                        *selectionString = string;
+
+                    break;
+                }
+            }
+        }
+        else if (actualType == targets[i])
+        {
+            if (targets[i] == XA_STRING)
+                *selectionString = convertLatin1toUTF8(data);
+            else
+                *selectionString = strdup(data);
         }
 
-        if (data)
-            XFree(data);
-
-        XDeleteProperty(_glfw.x11.display,
-                        event.xselection.requestor,
-                        event.xselection.property);
+        XFree(data);
 
         if (*selectionString)
             break;
@@ -907,7 +1059,7 @@ static const char* getSelectionString(Atom selection)
     if (!*selectionString)
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
-                        "X11: Failed to convert clipboard to string");
+                        "X11: Failed to convert selection to string");
     }
 
     return *selectionString;
@@ -977,62 +1129,6 @@ static void releaseMonitor(_GLFWwindow* window)
                         _glfw.x11.saver.exposure);
     }
 }
-
-// Encode a Unicode code point to a UTF-8 stream
-// Based on cutef8 by Jeff Bezanson (Public Domain)
-//
-static size_t encodeUTF8(char* s, unsigned int ch)
-{
-    size_t count = 0;
-
-    if (ch < 0x80)
-        s[count++] = (char) ch;
-    else if (ch < 0x800)
-    {
-        s[count++] = (ch >> 6) | 0xc0;
-        s[count++] = (ch & 0x3f) | 0x80;
-    }
-    else if (ch < 0x10000)
-    {
-        s[count++] = (ch >> 12) | 0xe0;
-        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
-        s[count++] = (ch & 0x3f) | 0x80;
-    }
-    else if (ch < 0x110000)
-    {
-        s[count++] = (ch >> 18) | 0xf0;
-        s[count++] = ((ch >> 12) & 0x3f) | 0x80;
-        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
-        s[count++] = (ch & 0x3f) | 0x80;
-    }
-
-    return count;
-}
-
-// Decode a Unicode code point from a UTF-8 stream
-// Based on cutef8 by Jeff Bezanson (Public Domain)
-//
-#if defined(X_HAVE_UTF8_STRING)
-static unsigned int decodeUTF8(const char** s)
-{
-    unsigned int ch = 0, count = 0;
-    static const unsigned int offsets[] =
-    {
-        0x00000000u, 0x00003080u, 0x000e2080u,
-        0x03c82080u, 0xfa082080u, 0x82082080u
-    };
-
-    do
-    {
-        ch = (ch << 6) + (unsigned char) **s;
-        (*s)++;
-        count++;
-    } while ((**s & 0xc0) == 0x80);
-
-    assert(count <= 6);
-    return ch - offsets[count - 1];
-}
-#endif /*X_HAVE_UTF8_STRING*/
 
 // Process the specified X event
 //
@@ -1171,8 +1267,10 @@ static void processEvent(XEvent *event)
 
                     count = XwcLookupString(window->x11.ic,
                                             &event->xkey,
-                                            buffer, sizeof(buffer) / sizeof(wchar_t),
-                                            NULL, &status);
+                                            buffer,
+                                            sizeof(buffer) / sizeof(wchar_t),
+                                            NULL,
+                                            &status);
 
                     if (status == XBufferOverflow)
                     {
@@ -1345,7 +1443,8 @@ static void processEvent(XEvent *event)
             const int x = event->xmotion.x;
             const int y = event->xmotion.y;
 
-            if (x != window->x11.warpCursorPosX || y != window->x11.warpCursorPosY)
+            if (x != window->x11.warpCursorPosX ||
+                y != window->x11.warpCursorPosY)
             {
                 // The cursor was moved by something other than GLFW
 
@@ -1424,14 +1523,15 @@ static void processEvent(XEvent *event)
 
                 if (protocol == _glfw.x11.WM_DELETE_WINDOW)
                 {
-                    // The window manager was asked to close the window, for example by
-                    // the user pressing a 'close' window decoration button
+                    // The window manager was asked to close the window, for
+                    // example by the user pressing a 'close' window decoration
+                    // button
                     _glfwInputWindowCloseRequest(window);
                 }
                 else if (protocol == _glfw.x11.NET_WM_PING)
                 {
-                    // The window manager is pinging the application to ensure it's
-                    // still responding to events
+                    // The window manager is pinging the application to ensure
+                    // it's still responding to events
 
                     XEvent reply = *event;
                     reply.xclient.window = _glfw.x11.root;
@@ -1742,6 +1842,15 @@ unsigned long _glfwGetWindowPropertyX11(Window window,
     return itemCount;
 }
 
+GLFWbool _glfwIsVisualTransparentX11(Visual* visual)
+{
+    if (!_glfw.x11.xrender.available)
+        return GLFW_FALSE;
+
+    XRenderPictFormat* pf = XRenderFindVisualFormat(_glfw.x11.display, visual);
+    return pf && pf->direct.alphaMask;
+}
+
 // Push contents of our selection to clipboard manager
 //
 void _glfwPushSelectionToManagerX11(void)
@@ -1773,9 +1882,10 @@ void _glfwPushSelectionToManagerX11(void)
                 {
                     if (event.xselection.target == _glfw.x11.SAVE_TARGETS)
                     {
-                        // This means one of two things; either the selection was
-                        // not owned, which means there is no clipboard manager, or
-                        // the transfer to the clipboard manager has completed
+                        // This means one of two things; either the selection
+                        // was not owned, which means there is no clipboard
+                        // manager, or the transfer to the clipboard manager has
+                        // completed
                         // In either case, it means we are done here
                         return;
                     }
@@ -1808,14 +1918,14 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         {
             if (!_glfwInitGLX())
                 return GLFW_FALSE;
-            if (!_glfwChooseVisualGLX(ctxconfig, fbconfig, &visual, &depth))
+            if (!_glfwChooseVisualGLX(wndconfig, ctxconfig, fbconfig, &visual, &depth))
                 return GLFW_FALSE;
         }
         else if (ctxconfig->source == GLFW_EGL_CONTEXT_API)
         {
             if (!_glfwInitEGL())
                 return GLFW_FALSE;
-            if (!_glfwChooseVisualEGL(ctxconfig, fbconfig, &visual, &depth))
+            if (!_glfwChooseVisualEGL(wndconfig, ctxconfig, fbconfig, &visual, &depth))
                 return GLFW_FALSE;
         }
         else if (ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
@@ -2325,6 +2435,18 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
     return maximized;
 }
 
+int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
+{
+    if (!window->x11.transparent)
+        return GLFW_FALSE;
+
+    // Check whether a compositing manager is running
+    char name[32];
+    snprintf(name, sizeof(name), "_NET_WM_CM_S%u", _glfw.x11.screen);
+    const Atom selection = XInternAtom(_glfw.x11.display, name, False);
+    return XGetSelectionOwner(_glfw.x11.display, selection) != None;
+}
+
 void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
 {
     int width, height;
@@ -2695,7 +2817,8 @@ int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
 
     if (_glfw.vk.KHR_xcb_surface && _glfw.x11.x11xcb.handle)
     {
-        PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR vkGetPhysicalDeviceXcbPresentationSupportKHR =
+        PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR
+            vkGetPhysicalDeviceXcbPresentationSupportKHR =
             (PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)
             vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceXcbPresentationSupportKHR");
         if (!vkGetPhysicalDeviceXcbPresentationSupportKHR)
@@ -2720,7 +2843,8 @@ int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
     }
     else
     {
-        PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR vkGetPhysicalDeviceXlibPresentationSupportKHR =
+        PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR
+            vkGetPhysicalDeviceXlibPresentationSupportKHR =
             (PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR)
             vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceXlibPresentationSupportKHR");
         if (!vkGetPhysicalDeviceXlibPresentationSupportKHR)

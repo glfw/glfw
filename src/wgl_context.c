@@ -152,9 +152,9 @@ static int choosePixelFormat(_GLFWwindow* window,
         }
         else
         {
-            PIXELFORMATDESCRIPTOR pfd;
-
             // Get pixel format attributes through legacy PFDs
+
+            PIXELFORMATDESCRIPTOR pfd;
 
             if (!DescribePixelFormat(window->context.wgl.dc,
                                      n,
@@ -229,21 +229,6 @@ static int choosePixelFormat(_GLFWwindow* window,
     return pixelFormat;
 }
 
-// Returns whether desktop compositing is enabled
-//
-static GLFWbool isCompositionEnabled(void)
-{
-    if (_glfw.win32.dwmapi.instance)
-    {
-        BOOL enabled;
-
-        if (DwmIsCompositionEnabled(&enabled) == S_OK)
-            return enabled;
-    }
-
-    return FALSE;
-}
-
 static void makeContextCurrentWGL(_GLFWwindow* window)
 {
     if (window)
@@ -272,7 +257,7 @@ static void makeContextCurrentWGL(_GLFWwindow* window)
 static void swapBuffersWGL(_GLFWwindow* window)
 {
     // HACK: Use DwmFlush when desktop composition is enabled
-    if (isCompositionEnabled() && !window->monitor)
+    if (_glfwIsCompositionEnabledWin32() && !window->monitor)
     {
         int count = abs(window->context.wgl.interval);
         while (count--)
@@ -290,7 +275,7 @@ static void swapIntervalWGL(int interval)
 
     // HACK: Disable WGL swap interval when desktop composition is enabled to
     //       avoid interfering with DWM vsync
-    if (isCompositionEnabled() && !window->monitor)
+    if (_glfwIsCompositionEnabledWin32() && !window->monitor)
         interval = 0;
 
     if (_glfw.wgl.EXT_swap_control)

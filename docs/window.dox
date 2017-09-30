@@ -225,6 +225,13 @@ __GLFW_CENTER_CURSOR__ specifies whether the cursor should be centered over
 newly created full screen windows.  Possible values are `GLFW_TRUE` and
 `GLFW_FALSE`.  This hint is ignored for windowed mode windows.
 
+@anchor GLFW_TRANSPARENT_hint
+__GLFW_TRANSPARENT__ specifies whether the window framebuffer will be
+transparent.  If enabled and supported by the system, the window framebuffer
+alpha channel will be used to combine the framebuffer with the background.  This
+does not affect window decorations.  Possible values are `GLFW_TRUE` and
+`GLFW_FALSE`.
+
 
 @subsubsection window_hints_fb Framebuffer related hints
 
@@ -470,6 +477,7 @@ GLFW_AUTO_ICONIFY             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GL
 GLFW_FLOATING                 | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_MAXIMIZED                | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_CENTER_CURSOR            | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_TRANSPARENT              | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_RED_BITS                 | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 GLFW_GREEN_BITS               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 GLFW_BLUE_BITS                | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
@@ -1061,6 +1069,30 @@ window contents are saved off-screen, this callback might only be called when
 the window or framebuffer is resized.
 
 
+@subsection window_transparency Window transparency
+
+Window framebuffers can be made transparent on a per-pixel per-frame basis with
+the [GLFW_TRANSPARENT](@ref GLFW_TRANSPARENT_hint) window hint.
+
+@code
+glfwWindowHint(GLFW_TRANSPARENT, GLFW_TRUE);
+@endcode
+
+If supported by the system, the window framebuffer will be composited with the
+background using the framebuffer per-pixel alpha channel.  This requires desktop
+compositing to be enabled on the system.  It does not affect window decorations.
+
+You can check whether the window framebuffer was successfully made transparent
+with the [GLFW_TRANSPARENT](@ref GLFW_TRANSPARENT_attrib) window attribute.
+
+@code
+if (glfwGetWindowAttrib(window, GLFW_TRANSPARENT))
+{
+    // window framebuffer is currently transparent
+}
+@endcode
+
+
 @subsection window_attribs Window attributes
 
 Windows have a number of attributes that can be returned using @ref
@@ -1129,6 +1161,11 @@ __GLFW_FLOATING__ indicates whether the specified window is floating, also
 called topmost or always-on-top.  This can be set before creation with the
 [GLFW_FLOATING](@ref GLFW_FLOATING_hint) window hint or after with @ref
 glfwSetWindowAttrib.
+
+@anchor GLFW_TRANSPARENT_attrib
+__GLFW_TRANSPARENT__ indicates whether the specified window has a transparent
+framebuffer, i.e. the window contents is composited with the background using
+the window framebuffer alpha channel.  See @ref window_transparency for details.
 
 
 @subsubsection window_attribs_ctx Context related attributes

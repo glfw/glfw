@@ -237,8 +237,8 @@ static void createKeyTables(void)
 
     if (_glfw.x11.xkb.available)
     {
-        // Use XKB to determine physical key locations independently of the current
-        // keyboard layout
+        // Use XKB to determine physical key locations independently of the
+        // current keyboard layout
 
         char name[XkbKeyNameLength + 1];
         XkbDescPtr desc = XkbGetMap(_glfw.x11.display, 0, XkbUseCoreKbd);
@@ -651,6 +651,29 @@ static GLFWbool initExtensions(void)
             dlsym(_glfw.x11.x11xcb.handle, "XGetXCBConnection");
     }
 
+    _glfw.x11.xrender.handle = dlopen("libXrender.so.1", RTLD_LAZY | RTLD_GLOBAL);
+    if (_glfw.x11.xrender.handle)
+    {
+        _glfw.x11.xrender.QueryExtension = (PFN_XRenderQueryExtension)
+            dlsym(_glfw.x11.xrender.handle, "XRenderQueryExtension");
+        _glfw.x11.xrender.QueryVersion = (PFN_XRenderQueryVersion)
+            dlsym(_glfw.x11.xrender.handle, "XRenderQueryVersion");
+        _glfw.x11.xrender.FindVisualFormat = (PFN_XRenderFindVisualFormat)
+            dlsym(_glfw.x11.xrender.handle, "XRenderFindVisualFormat");
+
+        if (XRenderQueryExtension(_glfw.x11.display,
+                                  &_glfw.x11.xrender.errorBase,
+                                  &_glfw.x11.xrender.eventBase))
+        {
+            if (XRenderQueryVersion(_glfw.x11.display,
+                                    &_glfw.x11.xrender.major,
+                                    &_glfw.x11.xrender.minor))
+            {
+                _glfw.x11.xrender.available = GLFW_TRUE;
+            }
+        }
+    }
+
     // Update the key code LUT
     // FIXME: We should listen to XkbMapNotify events to track changes to
     // the keyboard mapping.
@@ -661,10 +684,7 @@ static GLFWbool initExtensions(void)
 
     // String format atoms
     _glfw.x11.NULL_ = XInternAtom(_glfw.x11.display, "NULL", False);
-    _glfw.x11.UTF8_STRING =
-        XInternAtom(_glfw.x11.display, "UTF8_STRING", False);
-    _glfw.x11.COMPOUND_STRING =
-        XInternAtom(_glfw.x11.display, "COMPOUND_STRING", False);
+    _glfw.x11.UTF8_STRING = XInternAtom(_glfw.x11.display, "UTF8_STRING", False);
     _glfw.x11.ATOM_PAIR = XInternAtom(_glfw.x11.display, "ATOM_PAIR", False);
 
     // Custom selection property atom
@@ -675,6 +695,7 @@ static GLFWbool initExtensions(void)
     _glfw.x11.TARGETS = XInternAtom(_glfw.x11.display, "TARGETS", False);
     _glfw.x11.MULTIPLE = XInternAtom(_glfw.x11.display, "MULTIPLE", False);
     _glfw.x11.PRIMARY = XInternAtom(_glfw.x11.display, "PRIMARY", False);
+    _glfw.x11.INCR = XInternAtom(_glfw.x11.display, "INCR", False);
     _glfw.x11.CLIPBOARD = XInternAtom(_glfw.x11.display, "CLIPBOARD", False);
 
     // Clipboard manager atoms
@@ -862,11 +883,12 @@ int _glfwPlatformInit(void)
     _glfw.x11.screen = DefaultScreen(_glfw.x11.display);
     _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
     _glfw.x11.context = XUniqueContext();
-    _glfw.x11.helperWindowHandle = createHelperWindow();
-    _glfw.x11.hiddenCursorHandle = createHiddenCursor();
 
     if (!initExtensions())
         return GLFW_FALSE;
+
+    _glfw.x11.helperWindowHandle = createHelperWindow();
+    _glfw.x11.hiddenCursorHandle = createHiddenCursor();
 
     if (XSupportsLocale())
     {

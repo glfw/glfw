@@ -85,6 +85,13 @@ be disabled with the @ref GLFW_JOYSTICK_HAT_BUTTONS init hint.
 @see @ref joystick_hat
 
 
+@subsection news_33_transparent Support for transparent window framebuffer
+
+GLFW now supports the creation of windows with transparent framebuffers on
+systems with desktop compositing enabled with the @ref GLFW_TRANSPARENT window
+hint and attribute.  Any window decorations will still be opaque.
+
+
 @subsection news_33_centercursor Cursor centering window hint
 
 GLFW now supports controlling whether the cursor is centered over newly created

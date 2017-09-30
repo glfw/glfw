@@ -121,9 +121,25 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
             continue;
 
 #if defined(_GLFW_X11)
+        XVisualInfo vi = {0};
+
         // Only consider EGLConfigs with associated Visuals
-        if (!getEGLConfigAttrib(n, EGL_NATIVE_VISUAL_ID))
+        vi.visualid = getEGLConfigAttrib(n, EGL_NATIVE_VISUAL_ID);
+        if (!vi.visualid)
             continue;
+
+        if (desired->transparent)
+        {
+            int count;
+            XVisualInfo* vis = XGetVisualInfo(_glfw.x11.display,
+                                              VisualIDMask, &vi,
+                                              &count);
+            if (vis)
+            {
+                u->transparent = _glfwIsVisualTransparentX11(vis[0].visual);
+                XFree(vis);
+            }
+        }
 #endif // _GLFW_X11
 
         if (ctxconfig->client == GLFW_OPENGL_ES_API)
@@ -286,7 +302,9 @@ GLFWbool _glfwInitEGL(void)
     int i;
     const char* sonames[] =
     {
-#if defined(_GLFW_WIN32)
+#if defined(_GLFW_EGL_LIBRARY)
+        _GLFW_EGL_LIBRARY,
+#elif defined(_GLFW_WIN32)
         "libEGL.dll",
         "EGL.dll",
 #elif defined(_GLFW_COCOA)
@@ -605,7 +623,9 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         const char** sonames;
         const char* es1sonames[] =
         {
-#if defined(_GLFW_WIN32)
+#if defined(_GLFW_GLESV1_LIBRARY)
+            _GLFW_GLESV1_LIBRARY,
+#elif defined(_GLFW_WIN32)
             "GLESv1_CM.dll",
             "libGLES_CM.dll",
 #elif defined(_GLFW_COCOA)
@@ -618,7 +638,9 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         };
         const char* es2sonames[] =
         {
-#if defined(_GLFW_WIN32)
+#if defined(_GLFW_GLESV2_LIBRARY)
+            _GLFW_GLESV2_LIBRARY,
+#elif defined(_GLFW_WIN32)
             "GLESv2.dll",
             "libGLESv2.dll",
 #elif defined(_GLFW_COCOA)
@@ -632,7 +654,9 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         };
         const char* glsonames[] =
         {
-#if defined(_GLFW_WIN32)
+#if defined(_GLFW_OPENGL_LIBRARY)
+            _GLFW_OPENGL_LIBRARY,
+#elif defined(_GLFW_WIN32)
 #elif defined(_GLFW_COCOA)
 #else
             "libGL.so.1",
@@ -685,7 +709,8 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 // Returns the Visual and depth of the chosen EGLConfig
 //
 #if defined(_GLFW_X11)
-GLFWbool _glfwChooseVisualEGL(const _GLFWctxconfig* ctxconfig,
+GLFWbool _glfwChooseVisualEGL(const _GLFWwndconfig* wndconfig,
+                              const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig,
                               Visual** visual, int* depth)
 {

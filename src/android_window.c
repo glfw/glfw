@@ -83,7 +83,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (ctxconfig->client != GLFW_NO_API)
     {
-        if (ctxconfig->source == GLFW_EGL_CONTEXT_API)
+        if (ctxconfig->source == GLFW_NATIVE_CONTEXT_API | GLFW_EGL_CONTEXT_API)
         {
             if (!_glfwInitEGL())
                 return GLFW_FALSE;
@@ -317,6 +317,11 @@ int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
                                                       uint32_t queuefamily)
 {
     return GLFW_TRUE;
+}
+
+int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
+{
+    return GLFW_FALSE;
 }
 
 VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,

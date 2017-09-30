@@ -630,9 +630,11 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
             "libGLES_CM.dll",
 #elif defined(_GLFW_COCOA)
             "libGLESv1_CM.dylib",
+#elif defined(_GLFW_ANDROID)
+            "libGLESv1_CM.so",
+            "libGLES_CM.so",
 #else
             "libGLESv1_CM.so.1",
-            "libGLES_CM.so.1",
 #endif
             NULL
         };
@@ -647,6 +649,8 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
             "libGLESv2.dylib",
 #elif defined(__CYGWIN__)
             "libGLESv2-2.so",
+#elif defined(_GLFW_ANDROID)
+            "libGLESv2.so",
 #else
             "libGLESv2.so.2",
 #endif

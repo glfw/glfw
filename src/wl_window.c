@@ -212,8 +212,8 @@ static GLFWbool createSurface(_GLFWwindow* window,
     window->wl.height = wndconfig->height;
     window->wl.scale = 1;
 
-    // TODO: make this optional once issue #197 is fixed.
-    setOpaqueRegion(window);
+    if (!window->wl.transparent)
+        setOpaqueRegion(window);
 
     return GLFW_TRUE;
 }
@@ -390,6 +390,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
+    window->wl.transparent = fbconfig->transparent;
+
     if (!createSurface(window, wndconfig))
         return GLFW_FALSE;
 
@@ -514,7 +516,8 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     window->wl.width = width;
     window->wl.height = height;
     wl_egl_window_resize(window->wl.native, scaledWidth, scaledHeight, 0, 0);
-    setOpaqueRegion(window);
+    if (!window->wl.transparent)
+        setOpaqueRegion(window);
     _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
 }
 
@@ -656,9 +659,7 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 
 int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
 {
-    _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Wayland: Framebuffer transparency attribute not implemented yet");
-    return GLFW_FALSE;
+    return window->wl.transparent;
 }
 
 void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)

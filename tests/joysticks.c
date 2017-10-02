@@ -98,7 +98,7 @@ static void hat_widget(struct nk_context* nk, unsigned char state)
     struct nk_rect area;
     struct nk_vec2 center;
 
-    if (nk_widget(&area, nk) != NK_WIDGET_VALID)
+    if (nk_widget(&area, nk) == NK_WIDGET_INVALID)
         return;
 
     center = nk_vec2(area.x + area.w / 2.f, area.y + area.h / 2.f);

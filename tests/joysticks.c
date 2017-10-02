@@ -269,7 +269,9 @@ int main(void)
                         "LT", "RT",
                     };
 
-                    nk_label(nk, "Gamepad state", NK_TEXT_LEFT);
+                    nk_labelf(nk, NK_TEXT_LEFT,
+                              "Gamepad state: %s",
+                              glfwGetGamepadName(joysticks[i]));
 
                     nk_layout_row_dynamic(nk, 30, 2);
 

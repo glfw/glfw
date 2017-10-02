@@ -311,6 +311,8 @@ GLFWbool _glfwInitEGL(void)
         "libEGL.dylib",
 #elif defined(__CYGWIN__)
         "libEGL-1.so",
+#elif defined(_GLFW_ANDROID)
+        "libEGL.so",
 #else
         "libEGL.so.1",
 #endif
@@ -465,7 +467,6 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
     EGLConfig config;
     EGLContext share = NULL;
     int index = 0;
-
     if (!_glfw.egl.display)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE, "EGL: API not available");
@@ -635,6 +636,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
             "libGLES_CM.so",
 #else
             "libGLESv1_CM.so.1",
+            "libGLES_CM.so.1"
 #endif
             NULL
         };

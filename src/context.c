@@ -585,12 +585,6 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
 
     _GLFW_REQUIRE_INIT();
 
-    if (window && window->context.client == GLFW_NO_API)
-    {
-        _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
-        return;
-    }
-
     if (previous)
     {
         if (!window || window->context.source != previous->context.source)

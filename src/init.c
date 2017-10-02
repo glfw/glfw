@@ -152,15 +152,13 @@ void _glfwInputError(int code, const char* format, ...)
 
     if (format)
     {
-        int count;
         va_list vl;
 
         va_start(vl, format);
-        count = vsnprintf(description, sizeof(description), format, vl);
+        vsnprintf(description, sizeof(description), format, vl);
         va_end(vl);
 
-        if (count < 0)
-            description[sizeof(description) - 1] = '\0';
+        description[sizeof(description) - 1] = '\0';
     }
     else
         strcpy(description, getErrorString(code));

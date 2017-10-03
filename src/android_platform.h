@@ -48,8 +48,9 @@
 #define _GLFW_PLATFORM_CONTEXT_STATE
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
 
-// Null-specific per-window data
-//
+struct android_app* app;
+
+// Android-specific per-window data
 typedef struct _GLFWwindowAndroid
 {
     int width;

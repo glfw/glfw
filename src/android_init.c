@@ -25,9 +25,47 @@
 //
 //========================================================================
 
+#include <android/log.h>
 #include "internal.h"
 
+extern int main();
+void handle_cmd(struct android_app* _app, int32_t cmd) {
+    switch (cmd) {
+        case APP_CMD_INIT_WINDOW:
+            // The window is being shown so the initialization is finished.
+            app = _app;
+            break;
+        default:
+            __android_log_print(ANDROID_LOG_INFO, "GLFW",
+                                "event not handled: %d", cmd);
+    }
+}
 
+// Android Entry Point
+void android_main(struct android_app *app) {
+    app->onAppCmd = handle_cmd;
+    pthread_t t;pthread_create(&t, NULL, &main, NULL); // Call the main entry point
+
+    while (1) {
+        int ident;
+        int events;
+        struct android_poll_source* source;
+
+        while ((ident=ALooper_pollAll(0, NULL, &events,(void**)&source)) >= 0) {
+
+            // Process this event.
+            if (source != NULL) {
+                source->process(app, source);
+            }
+
+            // Check if we are exiting.
+            if (app->destroyRequested != 0) {
+                return;
+            }
+        }
+    }
+
+}
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -35,6 +73,7 @@
 int _glfwPlatformInit(void)
 {
     _glfwInitTimerPOSIX();
+    while (app == NULL); // Wait for the app to be initialized or the app will crash occasionally
     return GLFW_TRUE;
 }
 

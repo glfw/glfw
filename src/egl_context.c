@@ -636,7 +636,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
             "libGLES_CM.so",
 #else
             "libGLESv1_CM.so.1",
-            "libGLES_CM.so.1"
+            "libGLES_CM.so.1",
 #endif
             NULL
         };

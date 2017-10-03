@@ -98,7 +98,7 @@ static void hat_widget(struct nk_context* nk, unsigned char state)
     struct nk_rect area;
     struct nk_vec2 center;
 
-    if (nk_widget(&area, nk) != NK_WIDGET_VALID)
+    if (nk_widget(&area, nk) == NK_WIDGET_INVALID)
         return;
 
     center = nk_vec2(area.x + area.w / 2.f, area.y + area.h / 2.f);
@@ -269,7 +269,9 @@ int main(void)
                         "LT", "RT",
                     };
 
-                    nk_label(nk, "Gamepad state", NK_TEXT_LEFT);
+                    nk_labelf(nk, NK_TEXT_LEFT,
+                              "Gamepad state: %s",
+                              glfwGetGamepadName(joysticks[i]));
 
                     nk_layout_row_dynamic(nk, 30, 2);
 

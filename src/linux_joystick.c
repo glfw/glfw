@@ -306,7 +306,6 @@ GLFWbool _glfwInitJoysticksLinux(void)
 
         closedir(dir);
     }
-    else
 
     // Continue with no joysticks if enumeration fails
 

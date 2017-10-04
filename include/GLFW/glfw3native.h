@@ -564,8 +564,9 @@ GLFWAPI int glfwGetOSMesaDepthBuffer(GLFWwindow* window, int* width, int* height
 GLFWAPI OSMesaContext glfwGetOSMesaContext(GLFWwindow* window);
 #endif
 
-#ifdef defined(GLFW_EXPOSE_NATIVE_ANDROID)
-GLFWAPI HWND glfwGetAndroidApp(GLFWwindow* window);
+#if defined(GLFW_EXPOSE_NATIVE_ANDROID)
+#include <android_native_app_glue.h>
+GLFWAPI struct android_app * glfwGetAndroidApp(GLFWwindow* window);
 #endif
 
 #ifdef __cplusplus

@@ -30,21 +30,15 @@
 
 extern int main();
 void handle_cmd(struct android_app* _app, int32_t cmd) {
-    switch (cmd) {
+    switch (cmd)
         case APP_CMD_INIT_WINDOW:
-            // The window is being shown so the initialization is finished.
-            app = _app;
-            break;
-        default:
-            __android_log_print(ANDROID_LOG_INFO, "GLFW",
-                                "event not handled: %d", cmd);
-    }
+            app = _app; // The window is being shown so the initialization is finished.
 }
 
 // Android Entry Point
 void android_main(struct android_app *app) {
     app->onAppCmd = handle_cmd;
-    pthread_t t;pthread_create(&t, NULL, &main, NULL); // Call the main entry point
+    pthread_create(&(pthread_t){0}, NULL, (void*)&main, NULL); // Call the main entry point
 
     while (1) {
         int ident;

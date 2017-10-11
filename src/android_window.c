@@ -26,8 +26,20 @@
 //========================================================================
 
 #include "internal.h"
-#include <android_native_app_glue.h>
-#include <android/log.h>
+
+float x,y;
+
+static int32_t handle_input(struct android_app* app, AInputEvent* event)
+{
+    if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION)
+        for (size_t i = 0; i < AMotionEvent_getPointerCount(event); ++i) {
+            x = AMotionEvent_getX(event, i);
+            y = AMotionEvent_getY(event, i);
+        }
+    if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_KEY)
+        _glfwInputKey(_glfw.windowListHead, 0 , AKeyEvent_getKeyCode(event), GLFW_PRESS,0);
+    return 0;
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -38,33 +50,36 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    window->android.app = app;
+    window->android = app;
+    window->android->onInputEvent = handle_input;
 
-    if (ctxconfig->client != GLFW_NO_API)
-    {
-        if ((ctxconfig->source == GLFW_NATIVE_CONTEXT_API) | (ctxconfig->source == GLFW_EGL_CONTEXT_API))
-        {
+    ANativeWindow_setBuffersGeometry(window->android->window, wndconfig->width, wndconfig->height, 0);
+
+    if (ctxconfig->client != GLFW_NO_API) {
+        if ((ctxconfig->source == GLFW_NATIVE_CONTEXT_API) |
+            (ctxconfig->source == GLFW_EGL_CONTEXT_API)) {
             if (!_glfwInitEGL())
                 return GLFW_FALSE;
             if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
-        }
-        else if (ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
-        {
+        } else if (ctxconfig->source == GLFW_OSMESA_CONTEXT_API) {
             if (!_glfwInitOSMesa())
                 return GLFW_FALSE;
             if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }
+
     }
 
     return GLFW_TRUE;
 }
 
+
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     if (window->context.destroy)
         window->context.destroy(window);
+    ANativeActivity_finish(window->android->activity);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
@@ -86,6 +101,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
 
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 {
+
 }
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
@@ -94,22 +110,19 @@ void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
 
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 {
-    if (width)
-        *width = window->android.width;
-    if (height)
-        *height = window->android.height;
+    *height = ANativeWindow_getHeight(window->android->window);
+    *width = ANativeWindow_getWidth(window->android->window);
 }
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    window->android.width = width;
-    window->android.height = height;
 }
 
 void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
                                       int minwidth, int minheight,
                                       int maxwidth, int maxheight)
 {
+
 }
 
 void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int n, int d)
@@ -118,10 +131,7 @@ void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int n, int d)
 
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
-    if (width)
-        *width = window->android.width;
-    if (height)
-        *height = window->android.height;
+
 }
 
 void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
@@ -197,10 +207,12 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
 
 void _glfwPlatformPollEvents(void)
 {
+    _glfwInputCursorPos(_glfw.windowListHead, x ,y);
 }
 
 void _glfwPlatformWaitEvents(void)
 {
+    _glfwPlatformPollEvents();
 }
 
 void _glfwPlatformWaitEventsTimeout(double timeout)
@@ -213,6 +225,8 @@ void _glfwPlatformPostEmptyEvent(void)
 
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
 {
+    *xpos = x;
+    *ypos = y;
 }
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
@@ -303,7 +317,7 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
 
     memset(&sci, 0, sizeof(sci));
     sci.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
-    sci.window = window->android.app->window;
+    sci.window = window->android->window;
 
     err = vkCreateAndroidSurfaceKHR(instance, &sci, allocator, surface);
     if (err)
@@ -324,5 +338,5 @@ GLFWAPI struct android_app * glfwGetAndroidApp(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*)handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    return window->android.app;
+    return window->android;
 }

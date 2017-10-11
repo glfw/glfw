@@ -590,6 +590,7 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
         _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
         return;
     }
+
     if (previous)
     {
         if (!window || window->context.source != previous->context.source)

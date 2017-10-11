@@ -30,9 +30,21 @@
 
 extern int main();
 void handle_cmd(struct android_app* _app, int32_t cmd) {
-    switch (cmd)
-        case APP_CMD_INIT_WINDOW:
-            app = _app; // The window is being shown so the initialization is finished.
+    switch (cmd) {
+    case APP_CMD_INIT_WINDOW: {
+        app = _app; // The window is being shown so the initialization is finished.
+        break;
+    }
+    case APP_CMD_LOST_FOCUS: {
+        break;
+    }
+    case APP_CMD_GAINED_FOCUS: {
+        break;
+    }
+    case  APP_CMD_TERM_WINDOW: {
+        glfwDestroyWindow((GLFWwindow *) _glfw.windowListHead);
+    }
+}
 }
 
 // Android Entry Point
@@ -45,18 +57,10 @@ void android_main(struct android_app *app) {
         int events;
         struct android_poll_source* source;
 
-        while ((ident=ALooper_pollAll(0, NULL, &events,(void**)&source)) >= 0) {
-
-            // Process this event.
-            if (source != NULL) {
+        // Process events
+        while ((ident=ALooper_pollAll(0, NULL, &events,(void**)&source)) >= 0)
+            if (source != NULL)
                 source->process(app, source);
-            }
-
-            // Check if we are exiting.
-            if (app->destroyRequested != 0) {
-                return;
-            }
-        }
     }
 
 }

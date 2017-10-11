@@ -39,8 +39,8 @@
 #define _glfw_dlclose(handle) dlclose(handle)
 #define _glfw_dlsym(handle, name) dlsym(handle, name)
 
-#define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->android.app->window)
-#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowAndroid  android
+#define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->android->window)
+#define _GLFW_PLATFORM_WINDOW_STATE         struct android_app*  android
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE
 #define _GLFW_PLATFORM_MONITOR_STATE
 #define _GLFW_PLATFORM_CURSOR_STATE
@@ -48,15 +48,8 @@
 #define _GLFW_PLATFORM_CONTEXT_STATE
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
 
-struct android_app* app;
+struct android_app *app;
 
-// Android-specific per-window data
-typedef struct _GLFWwindowAndroid
-{
-    int width;
-    int height;
-    struct android_app *app;
-} _GLFWwindowAndroid;
 
 typedef VkFlags VkAndroidSurfaceCreateFlagsKHR;
 

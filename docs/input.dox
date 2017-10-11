@@ -786,7 +786,6 @@ functions.
 
 There is also the special `platform` field that specifies which platform the
 mapping is valid for.  Possible values are `Windows`, `Mac OS X` and `Linux`.
-Mappings without this field will always be considered valid.
 
 Below is an example of what a gamepad mapping might look like.  It is the
 one built into GLFW for Xbox controllers accessed via the XInput API on Windows.

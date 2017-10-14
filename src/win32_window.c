@@ -1080,7 +1080,7 @@ static int createNativeWindow(_GLFWwindow* window,
                                            style,
                                            xpos, ypos,
                                            fullWidth, fullHeight,
-                                           NULL, // No parent window
+											wndconfig->parent ? wndconfig->parent->win32.handle : NULL,
                                            NULL, // No window menu
                                            GetModuleHandleW(NULL),
                                            NULL);

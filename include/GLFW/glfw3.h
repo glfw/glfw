@@ -942,6 +942,17 @@ extern "C" {
  */
 #define GLFW_CONTEXT_CREATION_API   0x0002200B
 
+ /*! @brief Window that will share context with new one
+ *
+ *  Window shared context [window hint]
+ */
+#define GLFW_SHARE_CONTEXT			0x00000001
+ /*! @brief Window that is parent in hierarchy to new one
+ *
+ *  Parent window [window hint]
+ */
+#define GLFW_PARENT_WINDOW			0x00000002
+
 #define GLFW_COCOA_RETINA_FRAMEBUFFER 0x00023001
 #define GLFW_COCOA_FRAME_AUTOSAVE     0x00023002
 #define GLFW_COCOA_GRAPHICS_SWITCHING 0x00023003
@@ -2187,6 +2198,30 @@ GLFWAPI void glfwDefaultWindowHints(void);
  */
 GLFWAPI void glfwWindowHint(int hint, int value);
 
+/*! @brief Sets the specified window hint to the desired value.
+*
+*  This function sets hints for the next call to @ref glfwCreateWindow.  The
+*  hints, once set, retain their values until changed by a call to @ref
+*  glfwWindowHint or @ref glfwDefaultWindowHints, or until the library is
+*  terminated.
+*
+*  @param[in] hint The [window hint](@ref window_hints) to set.
+*  @param[in] value The new value of the window hint.
+*
+*  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+*  GLFW_INVALID_ENUM.
+*
+*  @thread_safety This function must only be called from the main thread.
+*
+*  @sa @ref window_hints
+*  @sa @ref glfwDefaultWindowHints
+*
+*  @since Added in version 3.3.
+*
+*  @ingroup window
+*/
+GLFWAPI void glfwChildWindowHint( int hint, const GLFWwindow* value );
+
 /*! @brief Creates a window and its associated context.
  *
  *  This function creates a window and its associated OpenGL or OpenGL ES
@@ -2337,7 +2372,9 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *
  *  @ingroup window
  */
-GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share);
+
+
+GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height, const char* title, GLFWmonitor* monitor );
 
 /*! @brief Destroys the specified window and its context.
  *

@@ -120,8 +120,7 @@ void _glfwInputWindowMonitorChange(_GLFWwindow* window, _GLFWmonitor* monitor)
 
 GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
                                      const char* title,
-                                     GLFWmonitor* monitor,
-                                     GLFWwindow* share)
+                                     GLFWmonitor* monitor )
 {
     _GLFWfbconfig fbconfig;
     _GLFWctxconfig ctxconfig;
@@ -151,7 +150,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     wndconfig.width   = width;
     wndconfig.height  = height;
     wndconfig.title   = title;
-    ctxconfig.share   = (_GLFWwindow*) share;
 
     if (ctxconfig.share)
     {
@@ -243,6 +241,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.context.source = GLFW_NATIVE_CONTEXT_API;
     _glfw.hints.context.major  = 1;
     _glfw.hints.context.minor  = 0;
+	_glfw.hints.context.share  = NULL;
 
     // The default is a focused, visible, resizable window with decorations
     memset(&_glfw.hints.window, 0, sizeof(_glfw.hints.window));
@@ -251,6 +250,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.window.decorated   = GLFW_TRUE;
     _glfw.hints.window.focused     = GLFW_TRUE;
     _glfw.hints.window.autoIconify = GLFW_TRUE;
+	_glfw.hints.window.parent	   = NULL;
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
     // double buffered
@@ -268,6 +268,24 @@ void glfwDefaultWindowHints(void)
 
     // The default is to use full Retina resolution framebuffers
     _glfw.hints.window.ns.retina = GLFW_TRUE;
+}
+
+GLFWAPI void glfwChildWindowHint( int hint, const GLFWwindow* value )
+{
+	_GLFW_REQUIRE_INIT();
+
+	switch( hint )
+	{
+	case GLFW_SHARE_CONTEXT:
+		_glfw.hints.context.share = (const _GLFWwindow*)value;
+		return;
+
+	case GLFW_PARENT_WINDOW:
+		_glfw.hints.window.parent = (const _GLFWwindow*)value;
+		return;
+	}
+
+	_glfwInputError( GLFW_INVALID_ENUM, "Invalid window hint 0x%08X", hint );
 }
 
 GLFWAPI void glfwWindowHint(int hint, int value)

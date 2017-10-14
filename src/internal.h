@@ -304,6 +304,7 @@ struct _GLFWwndconfig
     GLFWbool      floating;
     GLFWbool      maximized;
     GLFWbool      centerCursor;
+	const _GLFWwindow*  parent;
     struct {
         GLFWbool  retina;
         GLFWbool  frame;
@@ -328,7 +329,7 @@ struct _GLFWctxconfig
     int           profile;
     int           robustness;
     int           release;
-    _GLFWwindow*  share;
+	const _GLFWwindow*  share;
     struct {
         GLFWbool  offline;
     } nsgl;

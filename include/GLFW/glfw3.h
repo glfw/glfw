@@ -197,7 +197,7 @@ extern "C" {
    #include <OpenGL/glu.h>
   #endif
 
- #elif !defined(ANDROID) /*__APPLE__*/
+ #else /*__APPLE__*/
 
   #include <GL/gl.h>
   #if defined(GLFW_INCLUDE_GLEXT)

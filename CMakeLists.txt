@@ -334,6 +334,13 @@ if (_GLFW_COCOA)
 endif()
 
 #--------------------------------------------------------------------
+# Use Android APIs for window creation
+#--------------------------------------------------------------------
+if (_GLFW_ANDROID)
+    list(APPEND glfw_INCLUDE_DIRS "${ANDROID_NDK}/sources/android/native_app_glue/")
+endif()
+
+#--------------------------------------------------------------------
 # Export GLFW library dependencies
 #--------------------------------------------------------------------
 foreach(arg ${glfw_PKG_DEPS})

@@ -82,6 +82,6 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    return _GLFW_VERSION_NUMBER " Android";
+    return _GLFW_VERSION_NUMBER " Android EGL";
 }
 

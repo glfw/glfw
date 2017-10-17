@@ -123,6 +123,9 @@ extern "C" {
  #include <GL/osmesa.h>
 #endif
 
+#if defined(GLFW_EXPOSE_NATIVE_ANDROID)
+ #include <android_native_app_glue.h>
+#endif
 
 /*************************************************************************
  * Functions

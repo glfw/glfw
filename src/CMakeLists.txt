@@ -100,8 +100,7 @@ target_include_directories(glfw PUBLIC
 target_include_directories(glfw PRIVATE
                            "${GLFW_SOURCE_DIR}/src"
                            "${GLFW_BINARY_DIR}/src"
-                           ${glfw_INCLUDE_DIRS}
-                           ${ANDROID_NDK}/sources/android/native_app_glue/)
+                           ${glfw_INCLUDE_DIRS})
 
 # HACK: When building on MinGW, WINVER and UNICODE need to be defined before
 # the inclusion of stddef.h (by glfw3.h), which is itself included before

@@ -47,9 +47,9 @@
 
 #define _GLFW_PLATFORM_CONTEXT_STATE
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
+#define _GLFW_EGL_NATIVE_DISPLAY EGL_DEFAULT_DISPLAY
 
 struct android_app *app;
-
 
 typedef VkFlags VkAndroidSurfaceCreateFlagsKHR;
 

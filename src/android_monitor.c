@@ -1,7 +1,7 @@
 //========================================================================
 // GLFW 3.3 - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2016 Google Inc.
+// Copyright (c) 2017 Curi0 <curi0minecraft@gmail.com>
 // Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
@@ -24,6 +24,7 @@
 //    distribution.
 //
 //========================================================================
+
 
 #include "internal.h"
 

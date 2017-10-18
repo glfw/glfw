@@ -49,13 +49,13 @@
 #endif
 
 // GLFW requires Windows XP or later
-#if WINVER < 0x0501
+#if WINVER < 0x0604
  #undef WINVER
- #define WINVER 0x0501
+ #define WINVER 0x0604
 #endif
-#if _WIN32_WINNT < 0x0501
+#if _WIN32_WINNT < 0x0604
  #undef _WIN32_WINNT
- #define _WIN32_WINNT 0x0501
+ #define _WIN32_WINNT 0x0604
 #endif
 
 // GLFW uses DirectInput8 interfaces
@@ -104,7 +104,7 @@
  #define _WIN32_WINNT_WINBLUE 0x0602
 #endif
 
-#if WINVER < 0x0601
+#if WINVER < 0x0400
 typedef struct tagCHANGEFILTERSTRUCT
 {
     DWORD cbSize;
@@ -116,7 +116,7 @@ typedef struct tagCHANGEFILTERSTRUCT
 #endif
 #endif /*Windows 7*/
 
-#if WINVER < 0x0600
+#if WINVER > 0x0400 //Changed from 0x0600 to 0x0400
 #define DWM_BB_ENABLE 0x00000001
 #define DWM_BB_BLURREGION 0x00000002
 typedef struct

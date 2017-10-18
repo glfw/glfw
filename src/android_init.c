@@ -32,7 +32,7 @@ extern int main();
 void handle_cmd(struct android_app* _app, int32_t cmd) {
     switch (cmd) {
     case APP_CMD_INIT_WINDOW: {
-        app = _app; // The window is being shown so the initialization is finished.
+        _glfw.app = _app; // The window is being shown so the initialization is finished.
         break;
     }
     case APP_CMD_LOST_FOCUS: {
@@ -53,12 +53,9 @@ void android_main(struct android_app *app) {
     pthread_create(&(pthread_t){0}, NULL, (void*)&main, NULL); // Call the main entry point
 
     while (1) {
-        int ident;
-        int events;
         struct android_poll_source* source;
-
         // Process events
-        while ((ident=ALooper_pollAll(0, NULL, &events,(void**)&source)) >= 0)
+        while ((ALooper_pollAll(0, NULL, NULL,(void**)&source)) >= 0)
             if (source != NULL)
                 source->process(app, source);
     }
@@ -71,7 +68,7 @@ void android_main(struct android_app *app) {
 int _glfwPlatformInit(void)
 {
     _glfwInitTimerPOSIX();
-    while (app == NULL); // Wait for the app to be initialized or the app will crash occasionally
+    while (_glfw.app == NULL); // Wait for the app to be initialized or the app will crash occasionally
     return GLFW_TRUE;
 }
 

@@ -41,7 +41,7 @@
 
 #define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->android->window)
 #define _GLFW_PLATFORM_WINDOW_STATE         struct android_app*  android
-#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE
+#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE struct android_app* app
 #define _GLFW_PLATFORM_MONITOR_STATE
 #define _GLFW_PLATFORM_CURSOR_STATE
 
@@ -49,7 +49,7 @@
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
 #define _GLFW_EGL_NATIVE_DISPLAY EGL_DEFAULT_DISPLAY
 
-struct android_app *app;
+float x,y;
 
 typedef VkFlags VkAndroidSurfaceCreateFlagsKHR;
 

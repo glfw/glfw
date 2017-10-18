@@ -27,8 +27,6 @@
 
 #include "internal.h"
 
-float x,y;
-
 static int32_t handle_input(struct android_app* app, AInputEvent* event)
 {
     if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION)
@@ -39,6 +37,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* event)
         }
     if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_KEY)
         _glfwInputKey(_glfw.windowListHead, 0 , AKeyEvent_getKeyCode(event), GLFW_PRESS,0);
+
     return 0;
 }
 
@@ -51,7 +50,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    window->android = app;
+    window->android = _glfw.app;
     window->android->onInputEvent = handle_input;
 
     ANativeWindow_setBuffersGeometry(window->android->window, wndconfig->width, wndconfig->height, 0);
@@ -213,7 +212,7 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
 
 void _glfwPlatformPollEvents(void)
 {
-    _glfwInputCursorPos(_glfw.windowListHead, x ,y);
+    _glfwInputCursorPos(_glfw.windowListHead, x, y);
 }
 
 void _glfwPlatformWaitEvents(void)

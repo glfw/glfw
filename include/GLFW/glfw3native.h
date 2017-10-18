@@ -568,7 +568,6 @@ GLFWAPI OSMesaContext glfwGetOSMesaContext(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_ANDROID)
-#include <android_native_app_glue.h>
 GLFWAPI struct android_app * glfwGetAndroidApp(GLFWwindow* window);
 #endif
 

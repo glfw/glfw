@@ -69,7 +69,7 @@ if (!glfwInit())
 }
 @endcode
 
-Note that `GLFW_TRUE` and `GLFW_FALSE` are and will always be just one and zero.
+Note that `GLFW_TRUE` and `GLFW_FALSE` are and will always be one and zero.
 
 When you are done using GLFW, typically just before the application exits, you
 need to terminate GLFW.
@@ -86,14 +86,12 @@ functions that require it.
 @subsection quick_capture_error Setting an error callback
 
 Most events are reported through callbacks, whether it's a key being pressed,
-a GLFW window being moved, or an error occurring.  Callbacks are simply
-C functions (or C++ static methods) that are called by GLFW with arguments
-describing the event.
+a GLFW window being moved, or an error occurring.  Callbacks are C functions (or
+C++ static methods) that are called by GLFW with arguments describing the event.
 
 In case a GLFW function fails, an error is reported to the GLFW error callback.
 You can receive these reports with an error callback.  This function must have
-the signature below.  This simple error callback just prints the error
-description to `stderr`.
+the signature below but may do anything permitted in other callbacks.
 
 @code
 void error_callback(int error, const char* description)
@@ -249,7 +247,7 @@ You can also set a framebuffer size callback using @ref
 glfwSetFramebufferSizeCallback and be notified when the size changes.
 
 Actual rendering with OpenGL is outside the scope of this tutorial, but there
-are [many](https://open.gl/) [excellent](http://learnopengl.com/)
+are [many](https://open.gl/) [excellent](https://learnopengl.com/)
 [tutorial](http://openglbook.com/) [sites](http://ogldev.atspace.co.uk/) that
 teach modern OpenGL.  Some of them use GLFW to create the context and window
 while others use GLUT or SDL, but remember that OpenGL itself always works the

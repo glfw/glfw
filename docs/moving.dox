@@ -221,7 +221,7 @@ GLFW 2, windows and contexts created with GLFW 3 will never be destroyed unless
 you choose them to be.  Each window now has a close flag that is set to
 `GLFW_TRUE` when the user attempts to close that window.  By default, nothing else
 happens and the window stays visible.  It is then up to you to either destroy
-the window, take some other action or simply ignore the request.
+the window, take some other action or ignore the request.
 
 You can query the close flag at any time with @ref glfwWindowShouldClose and set
 it at any time with @ref glfwSetWindowShouldClose.

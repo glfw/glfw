@@ -274,14 +274,14 @@ extern "C" {
 /*! @brief One.
  *
  *  One.  Seriously.  You don't _need_ to use this symbol in your code.  It's
- *  just semantic sugar for the number 1.  You can use `1` or `true` or `_True`
+ *  semantic sugar for the number 1.  You can also use `1` or `true` or `_True`
  *  or `GL_TRUE` or whatever you want.
  */
 #define GLFW_TRUE                   1
 /*! @brief Zero.
  *
  *  Zero.  Seriously.  You don't _need_ to use this symbol in your code.  It's
- *  just just semantic sugar for the number 0.  You can use `0` or `false` or
+ *  semantic sugar for the number 0.  You can also use `0` or `false` or
  *  `_False` or `GL_FALSE` or whatever you want.
  */
 #define GLFW_FALSE                  0
@@ -1629,9 +1629,8 @@ GLFWAPI void glfwTerminate(void);
  *  again.
  *
  *  Some hints are platform specific.  These may be set on any platform but they
- *  will only affect their specific platform.  Other platforms will simply
- *  ignore them.  Setting these hints requires no platform specific headers or
- *  functions. 
+ *  will only affect their specific platform.  Other platforms will ignore them.
+ *  Setting these hints requires no platform specific headers or functions. 
  *
  *  @param[in] hint The [init hint](@ref init_hints) to set.
  *  @param[in] value The new value of the init hint.
@@ -1664,9 +1663,8 @@ GLFWAPI void glfwInitHint(int hint, int value);
  *  again.
  *
  *  Some hints are platform specific.  These may be set on any platform but they
- *  will only affect their specific platform.  Other platforms will simply
- *  ignore them.  Setting these hints requires no platform specific headers or
- *  functions. 
+ *  will only affect their specific platform.  Other platforms will ignore them.
+ *  Setting these hints requires no platform specific headers or functions. 
  *
  *  @param[in] hint The [init hint](@ref init_hints) to set.
  *  @param[in] value The new value of the init hint.

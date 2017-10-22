@@ -77,7 +77,7 @@ GLFWvidmode.blueBits    | @ref GLFW_BLUE_BITS hint
 GLFWvidmode.refreshRate | @ref GLFW_REFRESH_RATE hint
 
 Once you have a full screen window, you can change its resolution, refresh rate
-and monitor with @ref glfwSetWindowMonitor.  If you just need change its
+and monitor with @ref glfwSetWindowMonitor.  If you only need change its
 resolution you can also call @ref glfwSetWindowSize.  In all cases, the new
 video mode will be selected the same way as the video mode chosen by @ref
 glfwCreateWindow.  If the window has an OpenGL or OpenGL ES context, it will be
@@ -99,7 +99,7 @@ If the closest match for the desired video mode is the current one, the video
 mode will not be changed, making window creation faster and application
 switching much smoother.  This is sometimes called _windowed full screen_ or
 _borderless full screen_ window and counts as a full screen window.  To create
-such a window, simply request the current video mode.
+such a window, request the current video mode.
 
 @code
 const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -151,8 +151,8 @@ and reset all at once to their defaults with @ref glfwDefaultWindowHints.
 
 Some hints are platform specific.  These are always valid to set on any
 platform but they will only affect their specific platform.  Other platforms
-will simply ignore them.  Setting these hints requires no platform specific
-headers or calls.
+will ignore them.  Setting these hints requires no platform specific headers or
+calls.
 
 Note that hints need to be set _before_ the creation of the window and context
 you wish to have the specified attributes.
@@ -694,7 +694,7 @@ glfwSetWindowAspectRatio(window, 16, 9);
 
 The aspect ratio is specified as a numerator and denominator, corresponding to
 the width and height, respectively.  If you want a window to maintain its
-current aspect ratio, simply use its current size as the ratio.
+current aspect ratio, use its current size as the ratio.
 
 @code
 int width, height;

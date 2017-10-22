@@ -183,8 +183,8 @@ This section is about using CMake to compile and link GLFW along with your
 application.  If you want to use an installed binary instead, see @ref
 build_link_cmake_package.
 
-With just a few changes to your `CMakeLists.txt` you can have the GLFW source
-tree built along with your application.
+With a few changes to your `CMakeLists.txt` you can have the GLFW source tree
+built along with your application.
 
 When including GLFW as part of your build, you probably don't want to build the
 GLFW tests, examples and documentation.  To disable these, set the corresponding
@@ -249,7 +249,7 @@ This section is about using CMake to link GLFW after it has been built and
 installed.  If you want to build it along with your application instead, see
 @ref build_link_cmake_source.
 
-With just a few changes to your `CMakeLists.txt`, you can locate the package and
+With a few changes to your `CMakeLists.txt` you can locate the package and
 target files generated when GLFW is installed.
 
 @code{.cmake}
@@ -312,8 +312,8 @@ GLFW library may look like this:
 cc `pkg-config --cflags glfw3` -o myprog myprog.c `pkg-config --static --libs glfw3`
 @endcode
 
-If you are using the shared version of the GLFW library, simply omit the
-`--static` flag.
+If you are using the shared version of the GLFW library, omit the `--static`
+flag.
 
 @code{.sh}
 cc `pkg-config --cflags glfw3` -o myprog myprog.c `pkg-config --libs glfw3`
@@ -350,8 +350,8 @@ cc `pkg-config --cflags glfw3 glu` -o myprog myprog.c `pkg-config --static --lib
 
 @subsection build_link_xcode With Xcode on macOS
 
-If you are using the dynamic library version of GLFW, simply add it to the
-project dependencies.
+If you are using the dynamic library version of GLFW, add it to the project
+dependencies.
 
 If you are using the static library version of GLFW, add it and the Cocoa,
 OpenGL, IOKit and CoreVideo frameworks to the project as dependencies.  They can

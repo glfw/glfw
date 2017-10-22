@@ -55,13 +55,13 @@ if (!glfwInit())
 
 If any part of initialization fails, any parts that succeeded are terminated as
 if @ref glfwTerminate had been called.  The library only needs to be initialized
-once and additional calls to an already initialized library will simply return
+once and additional calls to an already initialized library will return
 `GLFW_TRUE` immediately.
 
 Once the library has been successfully initialized, it should be terminated
 before the application exits.  Modern systems are very good at freeing resources
-allocated by programs that simply exit, but GLFW sometimes has to change global
-system settings and these might not be restored without termination.
+allocated by programs that exit, but GLFW sometimes has to change global system
+settings and these might not be restored without termination.
 
 
 @subsection init_hints Initialization hints
@@ -79,8 +79,8 @@ during initialization.  Once GLFW has been initialized, any values you set will
 be ignored until the library is terminated and initialized again.
 
 Some hints are platform specific.  These may be set on any platform but they
-will only affect their specific platform.  Other platforms will simply ignore
-them.  Setting these hints requires no platform specific headers or functions.
+will only affect their specific platform.  Other platforms will ignore them.
+Setting these hints requires no platform specific headers or functions.
 
 
 @subsubsection init_hints_shared Shared init hints

@@ -107,6 +107,17 @@ void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement)
     else if (action == GLFW_DISCONNECTED)
     {
         int i;
+        _GLFWwindow* window;
+
+        for (window = _glfw.windowListHead;  window;  window = window->next)
+        {
+            if (window->monitor == monitor)
+            {
+                int width, height;
+                _glfwPlatformGetWindowSize(window, &width, &height);
+                _glfwPlatformSetWindowMonitor(window, NULL, 0, 0, width, height, 0);
+            }
+        }
 
         for (i = 0;  i < _glfw.monitorCount;  i++)
         {

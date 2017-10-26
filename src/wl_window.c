@@ -642,7 +642,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
     {
         wl_shell_surface_set_toplevel(window->wl.shellSurface);
     }
-    _glfwInputWindowMonitorChange(window, monitor);
+    _glfwInputWindowMonitor(window, monitor);
 }
 
 int _glfwPlatformWindowFocused(_GLFWwindow* window)

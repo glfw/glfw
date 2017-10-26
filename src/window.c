@@ -108,7 +108,7 @@ void _glfwInputWindowCloseRequest(_GLFWwindow* window)
         window->callbacks.close((GLFWwindow*) window);
 }
 
-void _glfwInputWindowMonitorChange(_GLFWwindow* window, _GLFWmonitor* monitor)
+void _glfwInputWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor)
 {
     window->monitor = monitor;
 }

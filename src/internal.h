@@ -779,7 +779,7 @@ void _glfwInputWindowCloseRequest(_GLFWwindow* window);
  *  @param[in] monitor The new desired monitor, or `NULL`.
  *  @ingroup event
  */
-void _glfwInputWindowMonitorChange(_GLFWwindow* window, _GLFWmonitor* monitor);
+void _glfwInputWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor);
 
 /*! @brief Notifies shared code of a physical key event.
  *  @param[in] window The window that received the event.

@@ -246,11 +246,12 @@ void glfwDefaultWindowHints(void)
 
     // The default is a focused, visible, resizable window with decorations
     memset(&_glfw.hints.window, 0, sizeof(_glfw.hints.window));
-    _glfw.hints.window.resizable   = GLFW_TRUE;
-    _glfw.hints.window.visible     = GLFW_TRUE;
-    _glfw.hints.window.decorated   = GLFW_TRUE;
-    _glfw.hints.window.focused     = GLFW_TRUE;
-    _glfw.hints.window.autoIconify = GLFW_TRUE;
+    _glfw.hints.window.resizable    = GLFW_TRUE;
+    _glfw.hints.window.visible      = GLFW_TRUE;
+    _glfw.hints.window.decorated    = GLFW_TRUE;
+    _glfw.hints.window.focused      = GLFW_TRUE;
+    _glfw.hints.window.autoIconify  = GLFW_TRUE;
+    _glfw.hints.window.centerCursor = GLFW_TRUE;
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
     // double buffered

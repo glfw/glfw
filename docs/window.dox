@@ -582,15 +582,15 @@ window's desired video mode.  The video mode most closely matching the new
 desired video mode is set immediately.  The window is resized to fit the
 resolution of the set video mode.
 
-If you wish to be notified when a window is resized, whether by the user or
-the system, set a size callback.
+If you wish to be notified when a window is resized, whether by the user, the
+system or your own code, set a size callback.
 
 @code
 glfwSetWindowSizeCallback(window, window_size_callback);
 @endcode
 
 The callback function receives the new size, in screen coordinates, of the
-client area of the window when it is resized.
+client area of the window when the window is resized.
 
 @code
 void window_size_callback(GLFWwindow* window, int width, int height)
@@ -740,15 +740,15 @@ The window system may put limitations on window placement.
 glfwSetWindowPos(window, 100, 100);
 @endcode
 
-If you wish to be notified when a window is moved, whether by the user, system
-or your own code, set a position callback.
+If you wish to be notified when a window is moved, whether by the user, the
+system or your own code, set a position callback.
 
 @code
 glfwSetWindowPosCallback(window, window_pos_callback);
 @endcode
 
-The callback function receives the new position of the upper-left corner of the 
-client area when the window is moved.
+The callback function receives the new position, in screen coordinates, of the
+upper-left corner of the client area when the window is moved.
 
 @code
 void window_pos_callback(GLFWwindow* window, int xpos, int ypos)

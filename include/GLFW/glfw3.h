@@ -3220,8 +3220,9 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
 /*! @brief Sets the position callback for the specified window.
  *
  *  This function sets the position callback of the specified window, which is
- *  called when the window is moved.  The callback is provided with the screen
- *  position of the upper-left corner of the client area of the window.
+ *  called when the window is moved.  The callback is provided with the
+ *  position, in screen coordinates, of the upper-left corner of the client area
+ *  of the window.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set

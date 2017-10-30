@@ -290,7 +290,7 @@ static GLFWbool initializeTIS(void)
 
 int _glfwPlatformInit(void)
 {
-    _glfw.ns.autoreleasePool = [[NSAutoreleasePool alloc] init];
+    _glfwCreateAutoreleasePool();
 
     if (_glfw.hints.init.ns.chdir)
         changeToResourcesDirectory();
@@ -359,8 +359,7 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateNSGL();
     _glfwTerminateJoysticksNS();
 
-    [_glfw.ns.autoreleasePool release];
-    _glfw.ns.autoreleasePool = nil;
+    _glfwDestroyAutorealeasePool();
 }
 
 const char* _glfwPlatformGetVersionString(void)
@@ -370,5 +369,45 @@ const char* _glfwPlatformGetVersionString(void)
         " dynamic"
 #endif
         ;
+}
+
+static BOOL isNSApplicationRunning()
+{
+    BOOL isRunning = NO;
+    NSApplication *sharedNSApp = [NSApplication sharedApplication];
+    if(sharedNSApp)
+    {
+        isRunning = [sharedNSApp isRunning];
+    }
+    return isRunning;
+}
+
+void _glfwCreateAutoreleasePool()
+{
+    if(!isNSApplicationRunning())
+    {
+        _glfw.ns.autoreleasePool = [[NSAutoreleasePool alloc] init];
+    }
+}
+
+// Clears and resets the autorealease pool if GLFW is managing it's own even loop,
+// and not using the built-in NSApplication event loop. GLFW creates it's own
+// autorelease pool only if it is running it's own event loop
+void _glfwResetAutoreleasePool()
+{
+    if(!isNSApplicationRunning())
+    {
+        [_glfw.ns.autoreleasePool drain];
+        _glfw.ns.autoreleasePool = [[NSAutoreleasePool alloc] init];
+    }
+}
+
+void _glfwDestroyAutorealeasePool()
+{
+    if(!isNSApplicationRunning())
+    {
+        [_glfw.ns.autoreleasePool release];
+        _glfw.ns.autoreleasePool = nil;
+    }
 }
 

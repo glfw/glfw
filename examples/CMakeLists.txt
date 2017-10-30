@@ -73,3 +73,33 @@ if (APPLE)
                           MACOSX_BUNDLE_INFO_PLIST "${GLFW_SOURCE_DIR}/CMake/MacOSXBundleInfo.plist.in")
 endif()
 
+if (APPLE)
+
+  add_executable(
+    Cocoa
+    MACOSX_BUNDLE
+    cocoa/AppDelegate.h
+    cocoa/AppDelegate.m
+    cocoa/main.m
+    cocoa/MainMenu.xib
+    glfw.icns
+    ${GLAD}
+    )
+
+  set_source_files_properties(
+    cocoa/MainMenu.xib
+    PROPERTIES
+    MACOSX_PACKAGE_LOCATION Resources
+    )
+
+  set_target_properties(
+    Cocoa
+    PROPERTIES
+    RESOURCE glfw.icns
+    MACOSX_BUNDLE_ICON_FILE glfw.icns
+    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/cocoa/plist.in
+    )
+
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework AppKit")
+
+endif()

@@ -390,9 +390,9 @@ void _glfwCreateAutoreleasePool()
     }
 }
 
-// Clears and resets the autorealease pool if GLFW is managing it's own even loop,
-// and not using the built-in NSApplication event loop. GLFW creates it's own
-// autorelease pool only if it is running it's own event loop
+// Clears and resets the autorealease pool if GLFW is managing its own even loop,
+// and not using the built-in NSApplication event loop. GLFW creates its own
+// autorelease pool only if it is running its own event loop
 void _glfwResetAutoreleasePool()
 {
     if(!isNSApplicationRunning())

@@ -1,4 +1,5 @@
 #import <AppKit/NSApplication.h> // NSApplicationDelegate
+#import <AppKit/NSWindow.h>
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 

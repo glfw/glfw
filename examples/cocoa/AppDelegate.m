@@ -31,11 +31,7 @@
 #include <stdio.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-#define GLFW_EXPOSE_NATIVE_COCOA
-#include <GLFW/glfw3native.h>
-
-#include "linmath.h"
+#include <linmath.h>
 
 static void createCocoaGlfwWindow(int width, int height, int xpos, int ypos);
 static void cocoaGlfwStep();
@@ -237,6 +233,8 @@ static void cocoaGlfwCloseWindow() {
 }
 
 static void cocoaGlfwStep() {
-    angle += 0.1;
-    window_refresh_callback(win);
+    if(win) {
+        angle += 0.1;
+        window_refresh_callback(win);
+    }
 }

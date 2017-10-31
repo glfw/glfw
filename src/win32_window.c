@@ -951,6 +951,22 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 mmi->ptMaxTrackSize.y = window->maxheight + yoff;
             }
 
+            if (!window->decorated)
+            {
+                MONITORINFO mi;
+                const HMONITOR mh = MonitorFromWindow(window->win32.handle,
+                                                      MONITOR_DEFAULTTONEAREST);
+
+                ZeroMemory(&mi, sizeof(mi));
+                mi.cbSize = sizeof(mi);
+                GetMonitorInfo(mh, &mi);
+
+                mmi->ptMaxPosition.x = mi.rcWork.left - mi.rcMonitor.left;
+                mmi->ptMaxPosition.y = mi.rcWork.top - mi.rcMonitor.top;
+                mmi->ptMaxSize.x = mi.rcWork.right - mi.rcWork.left;
+                mmi->ptMaxSize.y = mi.rcWork.bottom - mi.rcWork.top;
+            }
+
             return 0;
         }
 

@@ -85,8 +85,8 @@ void monitor_callback(GLFWmonitor* monitor, int event)
 }
 @endcode
 
-If a monitor is disconnected, any windows that are full screen on it get forced
-into windowed mode.
+If a monitor is disconnected, all windows that are full screen on it will be
+switched to windowed mode.
 
 
 @section monitor_properties Monitor properties

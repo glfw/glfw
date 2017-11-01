@@ -89,8 +89,8 @@ the desktop.  This behavior can be disabled with the
 [GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_hint) window hint, for example if you
 wish to simultaneously cover multiple monitors with full screen windows.
 
-If a monitor is disconnected, any window that is full screen on that monitor
-will be forced into windowed mode.  See @ref monitor_event for more information.
+If a monitor is disconnected, all windows that are full screen on that monitor
+will be switched to windowed mode.  See @ref monitor_event for more information.
 
 
 @subsubsection window_windowed_full_screen "Windowed full screen" windows

@@ -98,6 +98,8 @@ static GLFWbool loadLibraries(void)
 
     _glfw.win32.user32.SetProcessDPIAware_ = (PFN_SetProcessDPIAware)
         GetProcAddress(_glfw.win32.user32.instance, "SetProcessDPIAware");
+    _glfw.win32.user32.EnableNonClientDpiScaling_ = (PFN_EnableNonClientDpiScaling)
+        GetProcAddress(_glfw.win32.user32.instance, "EnableNonClientDpiScaling");
     _glfw.win32.user32.ChangeWindowMessageFilterEx_ = (PFN_ChangeWindowMessageFilterEx)
         GetProcAddress(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
 

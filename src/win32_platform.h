@@ -209,8 +209,10 @@ typedef HRESULT (WINAPI * PFN_DirectInput8Create)(HINSTANCE,DWORD,REFIID,LPVOID*
 
 // user32.dll function pointer typedefs
 typedef BOOL (WINAPI * PFN_SetProcessDPIAware)(void);
+typedef BOOL (WINAPI * PFN_EnableNonClientDpiScaling)(HWND);
 typedef BOOL (WINAPI * PFN_ChangeWindowMessageFilterEx)(HWND,UINT,DWORD,PCHANGEFILTERSTRUCT);
 #define SetProcessDPIAware _glfw.win32.user32.SetProcessDPIAware_
+#define EnableNonClientDpiScaling _glfw.win32.user32.EnableNonClientDpiScaling_
 #define ChangeWindowMessageFilterEx _glfw.win32.user32.ChangeWindowMessageFilterEx_
 
 // dwmapi.dll function pointer typedefs
@@ -322,6 +324,7 @@ typedef struct _GLFWlibraryWin32
     struct {
         HINSTANCE                       instance;
         PFN_SetProcessDPIAware          SetProcessDPIAware_;
+        PFN_EnableNonClientDpiScaling   EnableNonClientDpiScaling_;
         PFN_ChangeWindowMessageFilterEx ChangeWindowMessageFilterEx_;
     } user32;
 

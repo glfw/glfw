@@ -537,6 +537,16 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
                 break;
             }
+
+            case WM_NCCREATE:
+            {
+                // Windows 10: enable automatic non-client area scaling
+                if (EnableNonClientDpiScaling)
+                {
+                    EnableNonClientDpiScaling(hWnd);
+                }
+                break;
+            }
         }
 
         return DefWindowProcW(hWnd, uMsg, wParam, lParam);
@@ -985,6 +995,19 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         {
             if (window->win32.transparent)
                 updateFramebufferTransparency(window);
+            return 0;
+        }
+
+        case WM_DPICHANGED:
+        {
+            // Resize and reposition the window to match the new DPI
+            RECT* const suggestedRect = (RECT*)lParam;
+            SetWindowPos(hWnd, NULL,
+                         suggestedRect->left,
+                         suggestedRect->top,
+                         suggestedRect->right - suggestedRect->left,
+                         suggestedRect->bottom - suggestedRect->top,
+                         SWP_NOZORDER | SWP_NOACTIVATE);
             return 0;
         }
 

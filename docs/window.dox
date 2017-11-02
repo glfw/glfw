@@ -77,7 +77,7 @@ GLFWvidmode.blueBits    | @ref GLFW_BLUE_BITS hint
 GLFWvidmode.refreshRate | @ref GLFW_REFRESH_RATE hint
 
 Once you have a full screen window, you can change its resolution, refresh rate
-and monitor with @ref glfwSetWindowMonitor.  If you just need change its
+and monitor with @ref glfwSetWindowMonitor.  If you only need change its
 resolution you can also call @ref glfwSetWindowSize.  In all cases, the new
 video mode will be selected the same way as the video mode chosen by @ref
 glfwCreateWindow.  If the window has an OpenGL or OpenGL ES context, it will be
@@ -87,10 +87,10 @@ By default, the original video mode of the monitor will be restored and the
 window iconified if it loses input focus, to allow the user to switch back to
 the desktop.  This behavior can be disabled with the
 [GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_hint) window hint, for example if you
-wish to simultaneously cover multiple windows with full screen windows.
+wish to simultaneously cover multiple monitors with full screen windows.
 
-If a monitor is disconnected, any window that is full screen on that monitor
-will be forced into windowed mode.  See @ref monitor_event for more information.
+If a monitor is disconnected, all windows that are full screen on that monitor
+will be switched to windowed mode.  See @ref monitor_event for more information.
 
 
 @subsubsection window_windowed_full_screen "Windowed full screen" windows
@@ -99,7 +99,7 @@ If the closest match for the desired video mode is the current one, the video
 mode will not be changed, making window creation faster and application
 switching much smoother.  This is sometimes called _windowed full screen_ or
 _borderless full screen_ window and counts as a full screen window.  To create
-such a window, simply request the current video mode.
+such a window, request the current video mode.
 
 @code
 const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -151,8 +151,8 @@ and reset all at once to their defaults with @ref glfwDefaultWindowHints.
 
 Some hints are platform specific.  These are always valid to set on any
 platform but they will only affect their specific platform.  Other platforms
-will simply ignore them.  Setting these hints requires no platform specific
-headers or calls.
+will ignore them.  Setting these hints requires no platform specific headers or
+calls.
 
 Note that hints need to be set _before_ the creation of the window and context
 you wish to have the specified attributes.
@@ -582,15 +582,15 @@ window's desired video mode.  The video mode most closely matching the new
 desired video mode is set immediately.  The window is resized to fit the
 resolution of the set video mode.
 
-If you wish to be notified when a window is resized, whether by the user or
-the system, set a size callback.
+If you wish to be notified when a window is resized, whether by the user, the
+system or your own code, set a size callback.
 
 @code
 glfwSetWindowSizeCallback(window, window_size_callback);
 @endcode
 
 The callback function receives the new size, in screen coordinates, of the
-client area of the window when it is resized.
+client area of the window when the window is resized.
 
 @code
 void window_size_callback(GLFWwindow* window, int width, int height)
@@ -663,6 +663,26 @@ The size of a framebuffer may change independently of the size of a window, for
 example if the window is dragged between a regular monitor and a high-DPI one.
 
 
+@subsection window_scale Window content scale
+
+The content scale for a window can be retrieved with @ref
+glfwGetWindowContentScale.
+
+@code
+float xscale, yscale;
+glfwGetWindowContentScale(window, &xscale, &yscale);
+@endcode
+
+The content scale of a window is the ratio between the current DPI and the
+platform's default DPI.  If you scale all pixel dimensions by this scale then
+your content should appear at an appropriate size.  This is especially important
+for text and any UI elements.
+
+On systems where each monitors can have its own content scale, the window
+content scale will depend on which monitor the system considers the window to be
+on.
+
+
 @subsection window_sizelimits Window size limits
 
 The minimum and maximum size of the client area of a windowed mode window can be
@@ -694,7 +714,7 @@ glfwSetWindowAspectRatio(window, 16, 9);
 
 The aspect ratio is specified as a numerator and denominator, corresponding to
 the width and height, respectively.  If you want a window to maintain its
-current aspect ratio, simply use its current size as the ratio.
+current aspect ratio, use its current size as the ratio.
 
 @code
 int width, height;
@@ -720,15 +740,15 @@ The window system may put limitations on window placement.
 glfwSetWindowPos(window, 100, 100);
 @endcode
 
-If you wish to be notified when a window is moved, whether by the user, system
-or your own code, set a position callback.
+If you wish to be notified when a window is moved, whether by the user, the
+system or your own code, set a position callback.
 
 @code
 glfwSetWindowPosCallback(window, window_pos_callback);
 @endcode
 
-The callback function receives the new position of the upper-left corner of the 
-client area when the window is moved.
+The callback function receives the new position, in screen coordinates, of the
+upper-left corner of the client area when the window is moved.
 
 @code
 void window_pos_callback(GLFWwindow* window, int xpos, int ypos)

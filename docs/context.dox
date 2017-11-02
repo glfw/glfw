@@ -61,7 +61,7 @@ information.  The name and number of this chapter unfortunately varies between
 versions and APIs, but has at times been named _Shared Objects and Multiple
 Contexts_.
 
-GLFW comes with a simple object sharing test program called `sharing`.
+GLFW comes with a barebones object sharing test program called `sharing`.
 
 
 @subsection context_offscreen Offscreen contexts

@@ -203,9 +203,9 @@ void character_callback(GLFWwindow* window, unsigned int codepoint)
 }
 @endcode
 
-If you wish to receive even those Unicode code points generated with modifier
-key combinations that a plain text field would ignore, or just want to know
-exactly what modifier keys were used, set a character with modifiers callback.
+If you also wish to receive those Unicode code points generated with modifier
+key combinations that a plain text field would ignore, or want to know exactly
+what modifier keys were used, set a character with modifiers callback.
 
 @code
 glfwSetCharModsCallback(window, charmods_callback);
@@ -297,8 +297,8 @@ is provided normally via both the cursor position callback and through polling.
 other features of GLFW.  It is not supported and will not work as robustly as
 `GLFW_CURSOR_DISABLED`.
 
-If you just wish the cursor to become hidden when it is over a window, set
-the cursor mode to `GLFW_CURSOR_HIDDEN`.
+If you only wish the cursor to become hidden when it is over a window but still
+want it to behave normally, set the cursor mode to `GLFW_CURSOR_HIDDEN`.
 
 @code
 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
@@ -501,7 +501,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 }
 @endcode
 
-A simple mouse wheel, being vertical, provides offsets along the Y-axis.
+A normal mouse wheel, being vertical, provides offsets along the Y-axis.
 
 
 @section joystick Joystick input
@@ -786,7 +786,6 @@ functions.
 
 There is also the special `platform` field that specifies which platform the
 mapping is valid for.  Possible values are `Windows`, `Mac OS X` and `Linux`.
-Mappings without this field will always be considered valid.
 
 Below is an example of what a gamepad mapping might look like.  It is the
 one built into GLFW for Xbox controllers accessed via the XInput API on Windows.

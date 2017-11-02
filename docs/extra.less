@@ -81,12 +81,29 @@
     text-shadow:none;
 }
 
+.sm-dox a span.sub-arrow {
+	border-color:@navbar-link-color transparent transparent transparent;
+}
+
+.sm-dox a span.sub-arrow:active,.sm-dox a span.sub-arrow:focus,.sm-dox a span.sub-arrow:hover,.sm-dox a:hover span.sub-arrow {
+	border-color:@default-link-color transparent transparent transparent;
+}
+
+.sm-dox ul a span.sub-arrow:active,.sm-dox ul a span.sub-arrow:focus,.sm-dox ul a span.sub-arrow:hover,.sm-dox ul a:hover span.sub-arrow {
+	border-color:transparent transparent transparent @default-link-color;
+}
+
 .sm-dox ul a:hover {
     background:@header-footer-link-color;
     text-shadow:none;
 }
 
-#main-nav,#navrow1,#navrow2,#navrow3,#navrow4,.tablist a,.tablist a:visited,.tablist a:hover,.tablist li,.tablist li.current a,.memdoc,dl.reflist dd,div.toc li,.ah,span.lineno,span.lineno a,span.lineno a:hover,.note code,.pre code,.post code,.invariant code,.warning code,.attention code,.deprecated code,.bug code,.todo code,.test code,.doxtable code {
+.sm-dox ul.sm-nowrap a {
+	color:@default-text-color;
+    text-shadow:none;
+}
+
+#main-nav,#main-menu,#main-menu a,#main-menu a:visited,#main-menu a:hover,#main-menu li,.memdoc,dl.reflist dd,div.toc li,.ah,span.lineno,span.lineno a,span.lineno a:hover,.note code,.pre code,.post code,.invariant code,.warning code,.attention code,.deprecated code,.bug code,.todo code,.test code,.doxtable code {
 	background:none;
 }
 
@@ -94,7 +111,7 @@
 	border:none;
 }
 
-.tablist a,.tablist a:visited,.tablist a:hover,.tablist li,.tablist li.current a,.reflist dt a.el,.levels span,.directory .levels span {
+#main-menu a,#main-menu a:visited,#main-menu a:hover,#main-menu li,.reflist dt a.el,.levels span,.directory .levels span {
 	text-shadow:none;
 }
 
@@ -199,7 +216,7 @@ address.footer {
 	font-size:13px;
 }
 
-#navrow1,#navrow2,#navrow3,#navrow4 {
+#main-menu {
 	max-width:920px;
 	min-width:800px;
 	margin:0 auto;
@@ -215,21 +232,22 @@ address.footer {
     text-shadow:none;
 }
 
-.tablist {
+#main-menu {
 	height:36px;
 	display:block;
 	position:relative;
 }
 
-.tablist a,.tablist a:visited,.tablist a:hover,.tablist li,.tablist li.current a {
+#main-menu a,#main-menu a:visited,#main-menu a:hover,#main-menu li {
 	color:@navbar-link-color;
 }
 
-.tablist li.current a {
-	background:linear-gradient(to bottom,@tab-background-color2 0%,@tab-background-color1 100%);
-	box-shadow:inset 0 0 32px @tab-background-color1;
-	text-shadow:0 -1px 1px darken(@tab-background-color1, 15%);
-	color:@tab-text-color;
+#main-menu li ul.sm-nowrap li a {
+	color:@default-text-color;
+}
+
+#main-menu li ul.sm-nowrap li a:hover {
+	color:@default-link-color;
 }
 
 .contents {
@@ -311,7 +329,7 @@ table.doxtable {
 	border-radius:4px;
 }
 
-a,a:hover,a:visited,a:visited:hover,.contents a:visited,.el,a.el:visited,#glfwhome:hover,.tablist a:hover,span.lineno a:hover {
+a,a:hover,a:visited,a:visited:hover,.contents a:visited,.el,a.el:visited,#glfwhome:hover,#main-menu a:hover,span.lineno a:hover {
 	color:@default-link-color;
 	text-decoration:none;
 }

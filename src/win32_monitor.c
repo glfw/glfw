@@ -60,6 +60,7 @@ static _GLFWmonitor* createMonitor(DISPLAY_DEVICEW* adapter,
                                    DISPLAY_DEVICEW* display)
 {
     _GLFWmonitor* monitor;
+    int widthMM, heightMM;
     char* name;
     HDC dc;
     DEVMODEW dm;
@@ -72,13 +73,26 @@ static _GLFWmonitor* createMonitor(DISPLAY_DEVICEW* adapter,
     if (!name)
         return NULL;
 
+    ZeroMemory(&dm, sizeof(dm));
+    dm.dmSize = sizeof(dm);
+    EnumDisplaySettingsW(adapter->DeviceName, ENUM_CURRENT_SETTINGS, &dm);
+
     dc = CreateDCW(L"DISPLAY", adapter->DeviceName, NULL, NULL);
 
-    monitor = _glfwAllocMonitor(name,
-                                GetDeviceCaps(dc, HORZSIZE),
-                                GetDeviceCaps(dc, VERTSIZE));
+    if (IsWindows8Point1OrGreater())
+    {
+        widthMM  = GetDeviceCaps(dc, HORZSIZE);
+        heightMM = GetDeviceCaps(dc, VERTSIZE);
+    }
+    else
+    {
+        widthMM  = (int) (dm.dmPelsWidth * 25.4f / GetDeviceCaps(dc, LOGPIXELSX));
+        heightMM = (int) (dm.dmPelsHeight * 25.4f / GetDeviceCaps(dc, LOGPIXELSY));
+    }
 
     DeleteDC(dc);
+
+    monitor = _glfwAllocMonitor(name, widthMM, heightMM);
     free(name);
 
     if (adapter->StateFlags & DISPLAY_DEVICE_MODESPRUNED)
@@ -100,10 +114,6 @@ static _GLFWmonitor* createMonitor(DISPLAY_DEVICEW* adapter,
                             sizeof(monitor->win32.publicDisplayName),
                             NULL, NULL);
     }
-
-    ZeroMemory(&dm, sizeof(dm));
-    dm.dmSize = sizeof(dm);
-    EnumDisplaySettingsW(adapter->DeviceName, ENUM_CURRENT_SETTINGS, &dm);
 
     rect.left   = dm.dmPosition.x;
     rect.top    = dm.dmPosition.y;
@@ -302,6 +312,26 @@ void _glfwRestoreVideoModeWin32(_GLFWmonitor* monitor)
     }
 }
 
+void _glfwGetMonitorContentScaleWin32(HMONITOR handle, float* xscale, float* yscale)
+{
+    UINT xdpi, ydpi;
+
+    if (IsWindows8Point1OrGreater())
+        GetDpiForMonitor(handle, MDT_EFFECTIVE_DPI, &xdpi, &ydpi);
+    else
+    {
+        const HDC dc = GetDC(NULL);
+        xdpi = GetDeviceCaps(dc, LOGPIXELSX);
+        ydpi = GetDeviceCaps(dc, LOGPIXELSY);
+        ReleaseDC(NULL, dc);
+    }
+
+    if (xscale)
+        *xscale = xdpi / 96.f;
+    if (yscale)
+        *yscale = ydpi / 96.f;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -322,6 +352,12 @@ void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
         *xpos = dm.dmPosition.x;
     if (ypos)
         *ypos = dm.dmPosition.y;
+}
+
+void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
+                                         float* xscale, float* yscale)
+{
+    _glfwGetMonitorContentScaleWin32(monitor->win32.handle, xscale, yscale);
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)

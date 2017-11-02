@@ -108,7 +108,7 @@ void _glfwInputWindowCloseRequest(_GLFWwindow* window)
         window->callbacks.close((GLFWwindow*) window);
 }
 
-void _glfwInputWindowMonitorChange(_GLFWwindow* window, _GLFWmonitor* monitor)
+void _glfwInputWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor)
 {
     window->monitor = monitor;
 }
@@ -245,12 +245,13 @@ void glfwDefaultWindowHints(void)
 
     // The default is a focused, visible, resizable window with decorations
     memset(&_glfw.hints.window, 0, sizeof(_glfw.hints.window));
-    _glfw.hints.window.resizable   = GLFW_TRUE;
-    _glfw.hints.window.visible     = GLFW_TRUE;
-    _glfw.hints.window.decorated   = GLFW_TRUE;
-    _glfw.hints.window.focused     = GLFW_TRUE;
-    _glfw.hints.window.autoIconify = GLFW_TRUE;
-	_glfw.hints.window.parent	   = NULL;
+    _glfw.hints.window.resizable    = GLFW_TRUE;
+    _glfw.hints.window.visible      = GLFW_TRUE;
+    _glfw.hints.window.decorated    = GLFW_TRUE;
+    _glfw.hints.window.focused      = GLFW_TRUE;
+    _glfw.hints.window.autoIconify  = GLFW_TRUE;
+    _glfw.hints.window.centerCursor = GLFW_TRUE;
+	  _glfw.hints.window.parent	      = NULL;
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
     // double buffered
@@ -648,6 +649,21 @@ GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* handle,
 
     _GLFW_REQUIRE_INIT();
     _glfwPlatformGetWindowFrameSize(window, left, top, right, bottom);
+}
+
+GLFWAPI void glfwGetWindowContentScale(GLFWwindow* handle,
+                                       float* xscale, float* yscale)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    if (xscale)
+        *xscale = 0.f;
+    if (yscale)
+        *yscale = 0.f;
+
+    _GLFW_REQUIRE_INIT();
+    _glfwPlatformGetWindowContentScale(window, xscale, yscale);
 }
 
 GLFWAPI void glfwIconifyWindow(GLFWwindow* handle)

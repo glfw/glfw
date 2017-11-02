@@ -13,7 +13,7 @@ build applications that use GLFW, see @ref build_guide.
 GLFW uses [CMake](http://www.cmake.org/) to generate project files or makefiles
 for a particular development environment.  If you are on a Unix-like system such
 as Linux or FreeBSD or have a package system like Fink, MacPorts, Cygwin or
-Homebrew, you can simply install its CMake package.  If not, you can download
+Homebrew, you can install its CMake package.  If not, you can download
 installers for Windows and macOS from the
 [CMake website](http://www.cmake.org/).
 
@@ -33,9 +33,9 @@ below.
 
 @subsubsection compile_deps_msvc Dependencies for Visual C++ on Windows
 
-The Microsoft Platform SDK that is installed along with Visual C++ already
-contains all the necessary headers, link libraries and tools except for CMake.
-Move on to @ref compile_generate.
+The Windows SDK bundled with Visual C++ already contains all the necessary
+headers, link libraries and tools except for CMake.  Move on to @ref
+compile_generate.
 
 
 @subsubsection compile_deps_mingw Dependencies for MinGW or MinGW-w64 on Windows

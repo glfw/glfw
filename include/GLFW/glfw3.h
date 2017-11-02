@@ -274,14 +274,14 @@ extern "C" {
 /*! @brief One.
  *
  *  One.  Seriously.  You don't _need_ to use this symbol in your code.  It's
- *  just semantic sugar for the number 1.  You can use `1` or `true` or `_True`
+ *  semantic sugar for the number 1.  You can also use `1` or `true` or `_True`
  *  or `GL_TRUE` or whatever you want.
  */
 #define GLFW_TRUE                   1
 /*! @brief Zero.
  *
  *  Zero.  Seriously.  You don't _need_ to use this symbol in your code.  It's
- *  just just semantic sugar for the number 0.  You can use `0` or `false` or
+ *  semantic sugar for the number 0.  You can also use `0` or `false` or
  *  `_False` or `GL_FALSE` or whatever you want.
  */
 #define GLFW_FALSE                  0
@@ -1640,9 +1640,8 @@ GLFWAPI void glfwTerminate(void);
  *  again.
  *
  *  Some hints are platform specific.  These may be set on any platform but they
- *  will only affect their specific platform.  Other platforms will simply
- *  ignore them.  Setting these hints requires no platform specific headers or
- *  functions. 
+ *  will only affect their specific platform.  Other platforms will ignore them.
+ *  Setting these hints requires no platform specific headers or functions. 
  *
  *  @param[in] hint The [init hint](@ref init_hints) to set.
  *  @param[in] value The new value of the init hint.
@@ -1675,9 +1674,8 @@ GLFWAPI void glfwInitHint(int hint, int value);
  *  again.
  *
  *  Some hints are platform specific.  These may be set on any platform but they
- *  will only affect their specific platform.  Other platforms will simply
- *  ignore them.  Setting these hints requires no platform specific headers or
- *  functions. 
+ *  will only affect their specific platform.  Other platforms will ignore them.
+ *  Setting these hints requires no platform specific headers or functions. 
  *
  *  @param[in] hint The [init hint](@ref init_hints) to set.
  *  @param[in] value The new value of the init hint.
@@ -1938,6 +1936,36 @@ GLFWAPI void glfwGetMonitorPos(GLFWmonitor* monitor, int* xpos, int* ypos);
  *  @ingroup monitor
  */
 GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* monitor, int* widthMM, int* heightMM);
+
+/*! @brief Retrieves the content scale for the specified monitor.
+ *
+ *  This function retrieves the content scale for the specified monitor.  The
+ *  content scale is the ratio between the current DPI and the platform's
+ *  default DPI.  If you scale all pixel dimensions by this scale then your
+ *  content should appear at an appropriate size.  This is especially important
+ *  for text and any UI elements.
+ *
+ *  The content scale may depend on both the monitor resolution and pixel
+ *  density and on user settings.  It may be very different from the raw DPI
+ *  calculated from the physical size and current resolution.
+ *
+ *  @param[in] monitor The monitor to query.
+ *  @param[out] xscale Where to store the x-axis content scale, or `NULL`.
+ *  @param[out] yscale Where to store the y-axis content scale, or `NULL`.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref monitor_scale
+ *  @sa @ref glfwGetWindowContentScale
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup monitor
+ */
+GLFWAPI void glfwGetMonitorContentScale(GLFWmonitor* monitor, float* xscale, float* yscale);
 
 /*! @brief Returns the name of the specified monitor.
  *
@@ -2813,6 +2841,36 @@ GLFWAPI void glfwGetFramebufferSize(GLFWwindow* window, int* width, int* height)
  */
 GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* window, int* left, int* top, int* right, int* bottom);
 
+/*! @brief Retrieves the content scale for the specified window.
+ *
+ *  This function retrieves the content scale for the specified window.  The
+ *  content scale is the ratio between the current DPI and the platform's
+ *  default DPI.  If you scale all pixel dimensions by this scale then your
+ *  content should appear at an appropriate size.  This is especially important
+ *  for text and any UI elements.
+ *
+ *  On systems where each monitors can have its own content scale, the window
+ *  content scale will depend on which monitor the system considers the window
+ *  to be on.
+ *
+ *  @param[in] window The window to query.
+ *  @param[out] xscale Where to store the x-axis content scale, or `NULL`.
+ *  @param[out] yscale Where to store the y-axis content scale, or `NULL`.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_scale
+ *  @sa @ref glfwGetMonitorContentScale
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwGetWindowContentScale(GLFWwindow* window, float* xscale, float* yscale);
+
 /*! @brief Iconifies the specified window.
  *
  *  This function iconifies (minimizes) the specified window if it was
@@ -3199,8 +3257,9 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
 /*! @brief Sets the position callback for the specified window.
  *
  *  This function sets the position callback of the specified window, which is
- *  called when the window is moved.  The callback is provided with the screen
- *  position of the upper-left corner of the client area of the window.
+ *  called when the window is moved.  The callback is provided with the
+ *  position, in screen coordinates, of the upper-left corner of the client area
+ *  of the window.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set

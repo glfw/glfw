@@ -58,6 +58,15 @@ windows with @ref glfwSetWindowAttrib.
 @see @ref window_attribs
 
 
+@subsection news_33_contentscale Content scale queries for DPI-aware rendering
+
+GLFW now supports querying the window and monitor content scale, i.e. the ratio
+between the current DPI and the platform's default DPI, with @ref
+glfwGetWindowContentScale and @ref glfwGetMonitorContentScale.
+
+@see @ref window_scale
+
+
 @subsection news_33_inithint Support for initialization hints
 
 GLFW now supports setting library initialization hints with @ref glfwInitHint

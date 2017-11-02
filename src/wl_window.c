@@ -550,6 +550,15 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
     // implemented, but for now just leave everything as 0.
 }
 
+void _glfwPlatformGetWindowContentScale(_GLFWwindow* window,
+                                        float* xscale, float* yscale)
+{
+    if (xscale)
+        *xscale = (float) window->wl.scale;
+    if (yscale)
+        *yscale = (float) window->wl.scale;
+}
+
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
     // TODO: move to xdg_shell instead of wl_shell.
@@ -633,7 +642,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
     {
         wl_shell_surface_set_toplevel(window->wl.shellSurface);
     }
-    _glfwInputWindowMonitorChange(window, monitor);
+    _glfwInputWindowMonitor(window, monitor);
 }
 
 int _glfwPlatformWindowFocused(_GLFWwindow* window)

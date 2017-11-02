@@ -68,6 +68,41 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #define _GLFW_PLATFORM_CONTEXT_STATE
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
 
+typedef struct xkb_context* (* PFN_xkb_context_new)(enum xkb_context_flags);
+typedef void (* PFN_xkb_context_unref)(struct xkb_context*);
+typedef struct xkb_keymap* (* PFN_xkb_keymap_new_from_string)(struct xkb_context*, const char*, enum xkb_keymap_format, enum xkb_keymap_compile_flags);
+typedef void (* PFN_xkb_keymap_unref)(struct xkb_keymap*);
+typedef xkb_mod_index_t (* PFN_xkb_keymap_mod_get_index)(struct xkb_keymap*, const char*);
+typedef struct xkb_state* (* PFN_xkb_state_new)(struct xkb_keymap*);
+typedef void (* PFN_xkb_state_unref)(struct xkb_state*);
+typedef int (* PFN_xkb_state_key_get_syms)(struct xkb_state*, xkb_keycode_t, const xkb_keysym_t**);
+typedef enum xkb_state_component (* PFN_xkb_state_update_mask)(struct xkb_state*, xkb_mod_mask_t, xkb_mod_mask_t, xkb_mod_mask_t, xkb_layout_index_t, xkb_layout_index_t, xkb_layout_index_t);
+typedef xkb_mod_mask_t (* PFN_xkb_state_serialize_mods)(struct xkb_state*, enum xkb_state_component);
+typedef struct xkb_compose_table* (* PFN_xkb_compose_table_new_from_locale)(struct xkb_context*, const char*, enum xkb_compose_compile_flags);
+typedef void (* PFN_xkb_compose_table_unref)(struct xkb_compose_table*);
+typedef struct xkb_compose_state* (* PFN_xkb_compose_state_new)(struct xkb_compose_table*, enum xkb_compose_state_flags);
+typedef void (* PFN_xkb_compose_state_unref)(struct xkb_compose_state*);
+typedef enum xkb_compose_feed_result (* PFN_xkb_compose_state_feed)(struct xkb_compose_state*, xkb_keysym_t);
+typedef enum xkb_compose_status (* PFN_xkb_compose_state_get_status)(struct xkb_compose_state*);
+typedef xkb_keysym_t (* PFN_xkb_compose_state_get_one_sym)(struct xkb_compose_state*);
+#define xkb_context_new _glfw.wl.xkb.context_new
+#define xkb_context_unref _glfw.wl.xkb.context_unref
+#define xkb_keymap_new_from_string _glfw.wl.xkb.keymap_new_from_string
+#define xkb_keymap_unref _glfw.wl.xkb.keymap_unref
+#define xkb_keymap_mod_get_index _glfw.wl.xkb.keymap_mod_get_index
+#define xkb_state_new _glfw.wl.xkb.state_new
+#define xkb_state_unref _glfw.wl.xkb.state_unref
+#define xkb_state_key_get_syms _glfw.wl.xkb.state_key_get_syms
+#define xkb_state_update_mask _glfw.wl.xkb.state_update_mask
+#define xkb_state_serialize_mods _glfw.wl.xkb.state_serialize_mods
+#define xkb_compose_table_new_from_locale _glfw.wl.xkb.compose_table_new_from_locale
+#define xkb_compose_table_unref _glfw.wl.xkb.compose_table_unref
+#define xkb_compose_state_new _glfw.wl.xkb.compose_state_new
+#define xkb_compose_state_unref _glfw.wl.xkb.compose_state_unref
+#define xkb_compose_state_feed _glfw.wl.xkb.compose_state_feed
+#define xkb_compose_state_get_status _glfw.wl.xkb.compose_state_get_status
+#define xkb_compose_state_get_one_sym _glfw.wl.xkb.compose_state_get_one_sym
+
 
 // Wayland-specific per-window data
 //
@@ -125,6 +160,7 @@ typedef struct _GLFWlibraryWayland
     short int                   scancodes[GLFW_KEY_LAST + 1];
 
     struct {
+        void*                   handle;
         struct xkb_context*     context;
         struct xkb_keymap*      keymap;
         struct xkb_state*       state;
@@ -134,6 +170,24 @@ typedef struct _GLFWlibraryWayland
         xkb_mod_mask_t          shiftMask;
         xkb_mod_mask_t          superMask;
         unsigned int            modifiers;
+
+        PFN_xkb_context_new context_new;
+        PFN_xkb_context_unref context_unref;
+        PFN_xkb_keymap_new_from_string keymap_new_from_string;
+        PFN_xkb_keymap_unref keymap_unref;
+        PFN_xkb_keymap_mod_get_index keymap_mod_get_index;
+        PFN_xkb_state_new state_new;
+        PFN_xkb_state_unref state_unref;
+        PFN_xkb_state_key_get_syms state_key_get_syms;
+        PFN_xkb_state_update_mask state_update_mask;
+        PFN_xkb_state_serialize_mods state_serialize_mods;
+        PFN_xkb_compose_table_new_from_locale compose_table_new_from_locale;
+        PFN_xkb_compose_table_unref compose_table_unref;
+        PFN_xkb_compose_state_new compose_state_new;
+        PFN_xkb_compose_state_unref compose_state_unref;
+        PFN_xkb_compose_state_feed compose_state_feed;
+        PFN_xkb_compose_state_get_status compose_state_get_status;
+        PFN_xkb_compose_state_get_one_sym compose_state_get_one_sym;
     } xkb;
 
     _GLFWwindow*                pointerFocus;

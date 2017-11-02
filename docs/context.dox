@@ -103,6 +103,9 @@ Before you can make OpenGL or OpenGL ES calls, you need to have a current
 context of the correct type.  A context can only be current for a single thread
 at a time, and a thread can only have a single context current at a time.
 
+When moving a context between threads, you must make it non-current on the old
+thread before making it current on the new one.
+
 The context of a window is made current with @ref glfwMakeContextCurrent.
 
 @code

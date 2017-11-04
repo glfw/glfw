@@ -647,8 +647,8 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode);
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
 void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
-void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string);
-const char* _glfwPlatformGetClipboardString(_GLFWwindow* window);
+void _glfwPlatformSetClipboardString(const char* string);
+const char* _glfwPlatformGetClipboardString(void);
 
 int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode);
 void _glfwPlatformUpdateGamepadGUID(char* guid);

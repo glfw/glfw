@@ -2773,7 +2773,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
     }
 }
 
-void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
+void _glfwPlatformSetClipboardString(const char* string)
 {
     free(_glfw.x11.clipboardString);
     _glfw.x11.clipboardString = strdup(string);
@@ -2791,7 +2791,7 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
     }
 }
 
-const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
+const char* _glfwPlatformGetClipboardString(void)
 {
     return getSelectionString(_glfw.x11.CLIPBOARD);
 }

@@ -1740,7 +1740,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
         updateCursorImage(window);
 }
 
-void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
+void _glfwPlatformSetClipboardString(const char* string)
 {
     NSArray* types = [NSArray arrayWithObjects:NSStringPboardType, nil];
 
@@ -1750,7 +1750,7 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
                   forType:NSStringPboardType];
 }
 
-const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
+const char* _glfwPlatformGetClipboardString(void)
 {
     NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
 

@@ -597,11 +597,14 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 			else
 			{
 				// success, process penInfo
+				//We change the pen pressure which is given normalized to a range between 0 and 1024
+				//to a normalized value in [0..1]
+				double pressure = (double)penInfo.pressure /(double) 1024;
 				int xPos = GET_X_LPARAM(lParam);
 				int yPos = GET_Y_LPARAM(lParam);
 				if (IS_POINTER_INCONTACT_WPARAM(wParam))
 				{
-					_glfwInputPenPressure(window, penInfo.pressure);
+					_glfwInputPenPressure(window, pressure, xPos, yPos);
 				}
 				// mark as handled to skip call to DefWindowProc
 				fHandled = TRUE;

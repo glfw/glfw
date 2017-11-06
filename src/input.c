@@ -233,12 +233,14 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
 }
 
 /*************************PEN**************************************************/
-void _glfwInputPenPressure(_GLFWwindow* window, int pressure)
+void _glfwInputPenPressure(_GLFWwindow* window, int pressure, int x, int y)
 {
 	window->penPressure = pressure;
+	window->penXposition = x;
+	window->penYposition = y;
 
 	if (window->callbacks.penPressure)
-		window->callbacks.penPressure((GLFWwindow*)window, pressure);
+		window->callbacks.penPressure((GLFWwindow*)window, pressure, x, y);
 }
 /***********************************PEN*************************************/
 

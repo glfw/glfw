@@ -1279,27 +1279,21 @@ typedef void (* GLFWframebuffersizefun)(GLFWwindow*,int,int);
  */
 typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int,int);
 
-/*! @brief The function signature for pen --button-- callbacks.
+/*! @brief The function signature for pen --pressure-- callbacks.
 *
-*  This is the function signature for pen --button-- callback functions.
+*  This is the function signature for pen --pressure-- callback functions.
 *
 *  @param[in] window The window that received the event.
-*  @param[in] button The [pen button](@ref buttons) that was pressed or
+*  @param[in] pressure The [pen pressure](@ref pressure) that was pressed or
 *  released.
-*  @param[in] action One of `GLFW_PRESS` or `GLFW_RELEASE`.
-*  @param[in] mods Bit field describing which [modifier keys](@ref mods) were
-*  held down.
-*
+*  *
 *  @sa @ref input_pen_button
-*  @sa @ref glfwSetPenButtonCallback
-*
-* ---- @since Added in version 1.0.
-*  @glfw3 Added window handle and modifier mask parameters.------
+*  @sa @ref glfwSetPenPressureCallback
 *
 *  @ingroup input
 */
 
-typedef void(*GLFWpenpressurefun)(GLFWwindow*, int);
+typedef void(*GLFWpenpressurefun)(GLFWwindow*, int, int, int);
 
 /*! @brief The function signature for cursor position callbacks.
  *

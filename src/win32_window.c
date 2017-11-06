@@ -564,6 +564,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 	}
 
 	case WM_POINTERDOWN:
+	case WM_POINTERUPDATE:
+	case WM_POINTERUP:
 	{
 		POINTER_TOUCH_INFO   touchInfo;
 		POINTER_PEN_INFO	 penInfo;
@@ -599,7 +601,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 				int yPos = GET_Y_LPARAM(lParam);
 				if (IS_POINTER_INCONTACT_WPARAM(wParam))
 				{
-					printf("The pen pressure is = %d", penInfo.pressure);
+					_glfwInputPenPressure(window, penInfo.pressure);
 				}
 				// mark as handled to skip call to DefWindowProc
 				fHandled = TRUE;

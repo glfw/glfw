@@ -232,6 +232,16 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
         window->callbacks.mouseButton((GLFWwindow*) window, button, action, mods);
 }
 
+/*************************PEN**************************************************/
+void _glfwInputPenPressure(_GLFWwindow* window, int pressure)
+{
+	window->penPressure = pressure;
+
+	if (window->callbacks.penPressure)
+		window->callbacks.penPressure((GLFWwindow*)window, pressure);
+}
+/***********************************PEN*************************************/
+
 void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos)
 {
     if (window->virtualCursorPosX == xpos && window->virtualCursorPosY == ypos)
@@ -513,6 +523,19 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* handle, int button)
     return (int) window->mouseButtons[button];
 }
 
+
+/***************************PEN**************************************************/
+GLFWAPI int glfwGetPenPressure(GLFWwindow* handle)
+{
+	_GLFWwindow* window = (_GLFWwindow*)handle;
+	assert(window != NULL);
+
+	_GLFW_REQUIRE_INIT_OR_RETURN(0);
+
+	return window->penPressure;
+}
+/**************************PEN***************************************************/
+
 GLFWAPI void glfwGetCursorPos(GLFWwindow* handle, double* xpos, double* ypos)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -707,6 +730,19 @@ GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* handle,
     _GLFW_SWAP_POINTERS(window->callbacks.mouseButton, cbfun);
     return cbfun;
 }
+
+/*********PEN************************************/
+GLFWAPI GLFWpenpressurefun glfwSetPenPressureCallback(GLFWwindow* handle,
+	GLFWpenpressurefun cbfun)
+{
+	_GLFWwindow* window = (_GLFWwindow*)handle;
+	assert(window != NULL);
+
+	_GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+	_GLFW_SWAP_POINTERS(window->callbacks.penPressure, cbfun);
+	return cbfun;
+}
+/************************************************/
 
 GLFWAPI GLFWcursorposfun glfwSetCursorPosCallback(GLFWwindow* handle,
                                                   GLFWcursorposfun cbfun)

@@ -417,6 +417,7 @@ struct _GLFWwindow
 
     GLFWbool            stickyKeys;
     GLFWbool            stickyMouseButtons;
+	int					penPressure;
     int                 cursorMode;
     char                mouseButtons[GLFW_MOUSE_BUTTON_LAST + 1];
     char                keys[GLFW_KEY_LAST + 1];
@@ -434,7 +435,8 @@ struct _GLFWwindow
         GLFWwindowiconifyfun    iconify;
         GLFWwindowmaximizefun   maximize;
         GLFWframebuffersizefun  fbsize;
-        GLFWmousebuttonfun      mouseButton;
+        GLFWmousebuttonfun	    mouseButton;
+		GLFWpenpressurefun		penPressure;
         GLFWcursorposfun        cursorPos;
         GLFWcursorenterfun      cursorEnter;
         GLFWscrollfun           scroll;
@@ -815,6 +817,15 @@ void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset);
  *  @ingroup event
  */
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods);
+
+/*! @brief Notifies shared code of a pen button click event.
+*  @param[in] window The window that received the event.
+*  @param[in] button The button that was pressed or released.
+*  @param[in] action @ref GLFW_PRESS or @ref GLFW_RELEASE.
+*  @param[in] mods The modifiers pressed when the event was generated.
+*  @ingroup event
+*/
+void _glfwInputPenPressure(_GLFWwindow* window, int pressure);
 
 /*! @brief Notifies shared code of a cursor motion event.
  *  @param[in] window The window that received the event.

@@ -82,3 +82,4 @@ tests/title
 tests/vulkan
 tests/windows
 
+/build

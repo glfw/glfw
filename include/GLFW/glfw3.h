@@ -789,10 +789,11 @@ extern "C" {
 #define GLFW_CENTER_CURSOR          0x00020009
 /*! @brief Window framebuffer transparency hint and attribute
  *
- *  Window framebuffer transparency [window hint](@ref GLFW_TRANSPARENT_hint)
- *  and [window attribute](@ref GLFW_TRANSPARENT_attrib).
+ *  Window framebuffer transparency
+ *  [window hint](@ref GLFW_TRANSPARENT_FRAMEBUFFER_hint) and
+ *  [window attribute](@ref GLFW_TRANSPARENT_FRAMEBUFFER_attrib).
  */
-#define GLFW_TRANSPARENT            0x0002000A
+#define GLFW_TRANSPARENT_FRAMEBUFFER 0x0002000A
 
 /*! @brief Framebuffer bit depth hint.
  *

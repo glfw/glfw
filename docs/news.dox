@@ -97,8 +97,9 @@ be disabled with the @ref GLFW_JOYSTICK_HAT_BUTTONS init hint.
 @subsection news_33_transparent Support for transparent window framebuffer
 
 GLFW now supports the creation of windows with transparent framebuffers on
-systems with desktop compositing enabled with the @ref GLFW_TRANSPARENT window
-hint and attribute.  Any window decorations will still be opaque.
+systems with desktop compositing enabled with the @ref
+GLFW_TRANSPARENT_FRAMEBUFFER window hint and attribute.  Any window decorations
+will still be opaque.
 
 
 @subsection news_33_centercursor Cursor centering window hint

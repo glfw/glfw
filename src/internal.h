@@ -417,7 +417,7 @@ struct _GLFWwindow
 
     GLFWbool            stickyKeys;
     GLFWbool            stickyMouseButtons;
-	int					penPressure;
+	double				penPressure;
 	int                 penXposition;
 	int                 penYposition;
     int                 cursorMode;
@@ -820,14 +820,14 @@ void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset);
  */
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods);
 
-/*! @brief Notifies shared code of a pen button click event.
+/*! @brief Notifies shared code of a pen click event.
 *  @param[in] window The window that received the event.
-*  @param[in] button The button that was pressed or released.
-*  @param[in] action @ref GLFW_PRESS or @ref GLFW_RELEASE.
-*  @param[in] mods The modifiers pressed when the event was generated.
+*  @param[in] pressure when the pen was pressed.
+*  @param[in] x (horizontal point) coordinate of the point location of the pen.
+*  @param[in] y (vertical point) coordinate of the point location of the pen.
 *  @ingroup event
 */
-void _glfwInputPenPressure(_GLFWwindow* window, int pressure, int x, int y);
+void _glfwInputPenPressure(_GLFWwindow* window, double pressure, int x, int y);
 
 /*! @brief Notifies shared code of a cursor motion event.
  *  @param[in] window The window that received the event.

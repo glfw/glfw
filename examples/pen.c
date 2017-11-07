@@ -74,9 +74,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-static void pen_callback(GLFWwindow* window, int pressure, int x, int y)
+static void pen_callback(GLFWwindow* window, double pressure, int x, int y)
 {
-	fprintf(stderr, "pressure -- %d --\n", pressure);
+	fprintf(stderr, "pressure -- %f --\n", pressure);
 	fprintf (stderr, "xPosition -- %d --\n", x);
 	fprintf(stderr, "yPosition -- %d --\n", y);
 }

@@ -1279,21 +1279,23 @@ typedef void (* GLFWframebuffersizefun)(GLFWwindow*,int,int);
  */
 typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int,int);
 
-/*! @brief The function signature for pen --pressure-- callbacks.
+/*! @brief The function signature for pen callbacks.
 *
-*  This is the function signature for pen --pressure-- callback functions.
+*  This is the function signature for pen callback functions.
 *
 *  @param[in] window The window that received the event.
 *  @param[in] pressure The [pen pressure](@ref pressure) that was pressed or
 *  released.
+*  @param[in] the x (horizontal point) coordinate of the point location of the pen.
+*  @param[in] the y (vertical point) coordinate of the point location of the pen.
 *  *
-*  @sa @ref input_pen_button
+*  @sa @ref input_pen_pressure
 *  @sa @ref glfwSetPenPressureCallback
 *
 *  @ingroup input
 */
 
-typedef void(*GLFWpenpressurefun)(GLFWwindow*, int, int, int);
+typedef void(*GLFWpenpressurefun)(GLFWwindow*, double, int, int);
 
 /*! @brief The function signature for cursor position callbacks.
  *
@@ -4144,17 +4146,11 @@ GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmods
  *  @ingroup input
  */
 GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmousebuttonfun cbfun);
-/*! @brief Sets the pen --button-- callback.
+/*! @brief Sets the pen callback.
 *
-*  This function sets the pen --button-- callback of the specified window, which
-*  is called when a pen --button-- is pressed or released.
-*
-*  When a window loses input focus, it will generate synthetic pen --button--
-*  release events for all pressed pen buttons.  You can tell these events
-*  from user-generated events by the fact that the synthetic ones are generated
-*  after the focus loss event has been processed, i.e. after the
-*  [window focus callback](@ref glfwSetWindowFocusCallback) has been called.
-*
+*  This function sets the pen callback of the specified window, which
+*  is called when a pen is pressed or released.
+**
 *  @param[in] window The window whose callback to set.
 *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
 *  callback.
@@ -4165,10 +4161,8 @@ GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmo
 *
 *  @thread_safety This function must only be called from the main thread.
 *
-*  @sa @ref input_pen_button
+*  @sa @ref input_pen_pressure
 *
-*  @since Added in version 1.0.
-*  @glfw3 Added window handle parameter and return value.
 *
 *  @ingroup input
 */

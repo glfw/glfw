@@ -66,6 +66,14 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused)
     }
 }
 
+// Notifies shared code that a window's occlusion state has changed
+//
+void _glfwInputWindowOcclusion(_GLFWwindow* window, GLFWbool occluded)
+{
+    if (window->callbacks.occlusion)
+        window->callbacks.occlusion((GLFWwindow*) window, occluded);
+}
+
 // Notifies shared code that a window has moved
 // The position is specified in client-area relative screen coordinates
 //
@@ -1022,6 +1030,17 @@ GLFWAPI GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* handle,
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     _GLFW_SWAP_POINTERS(window->callbacks.focus, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWwindowocclusionfun glfwSetWindowOcclusionCallback(GLFWwindow* handle,
+                                                              GLFWwindowocclusionfun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(window->callbacks.occlusion, cbfun);
     return cbfun;
 }
 

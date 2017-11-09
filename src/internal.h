@@ -399,6 +399,7 @@ struct _GLFWwindow
         GLFWwindowclosefun      close;
         GLFWwindowrefreshfun    refresh;
         GLFWwindowfocusfun      focus;
+        GLFWwindowocclusionfun  occlusion;
         GLFWwindowiconifyfun    iconify;
         GLFWwindowmaximizefun   maximize;
         GLFWframebuffersizefun  fbsize;
@@ -697,6 +698,7 @@ void _glfwPlatformUnlockMutex(_GLFWmutex* mutex);
 //////////////////////////////////////////////////////////////////////////
 
 void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused);
+void _glfwInputWindowOcclusion(_GLFWwindow* window, GLFWbool occluded);
 void _glfwInputWindowPos(_GLFWwindow* window, int xpos, int ypos);
 void _glfwInputWindowSize(_GLFWwindow* window, int width, int height);
 void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height);

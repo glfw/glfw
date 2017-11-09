@@ -326,6 +326,14 @@ static void window_focus_callback(GLFWwindow* window, int focused)
            focused ? "focused" : "defocused");
 }
 
+static void window_occlusion_callback(GLFWwindow* window, int occluded)
+{
+    Slot* slot = glfwGetWindowUserPointer(window);
+    printf("%08x to %i at %0.3f: Window %s\n",
+           counter++, slot->number, glfwGetTime(),
+           occluded ? "occluded" : "not occluded");
+}
+
 static void window_iconify_callback(GLFWwindow* window, int iconified)
 {
     Slot* slot = glfwGetWindowUserPointer(window);
@@ -608,6 +616,7 @@ int main(int argc, char** argv)
         glfwSetWindowCloseCallback(slots[i].window, window_close_callback);
         glfwSetWindowRefreshCallback(slots[i].window, window_refresh_callback);
         glfwSetWindowFocusCallback(slots[i].window, window_focus_callback);
+        glfwSetWindowOcclusionCallback(slots[i].window, window_occlusion_callback);
         glfwSetWindowIconifyCallback(slots[i].window, window_iconify_callback);
         glfwSetWindowMaximizeCallback(slots[i].window, window_maximize_callback);
         glfwSetMouseButtonCallback(slots[i].window, mouse_button_callback);

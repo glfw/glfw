@@ -1120,6 +1120,39 @@ not supported, the application as a whole.  Once the user has given it
 attention, the system will automatically end the request.
 
 
+@subsection window_occlusion Window occlusion state
+
+A window may not be visible to the user because it is occluded by other windows.
+In contrast to a hidden window it will still be shown in the task bar, dock or
+window list. The occluded state can change without any direct interaction with
+the window, e.g. if the user moves an overlapping window out of the way.
+
+If you wish to be notified when a window becomes occluded or when a part of it
+becomes visible again, set an occlusion callback.
+
+@code
+glfwSetWindowOcclusionCallback(window, window_occlusion_callback);
+@endcode
+
+The callback function receives changes in the occlusion state of the window.
+
+@code
+void window_occlusion_callback(GLFWwindow* window, int occluded)
+{
+    if (occluded)
+    {
+        // The window became fully occluded by other windows
+    }
+    else
+    {
+        // The window is no longer fully occluded
+    }
+}
+@endcode
+
+@note This is currently implemented on macOS only.
+
+
 @subsection window_refresh Window damage and refresh
 
 If you wish to be notified when the contents of a window is damaged and needs

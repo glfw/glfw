@@ -1150,6 +1150,12 @@ void window_occlusion_callback(GLFWwindow* window, int occluded)
 }
 @endcode
 
+You can also get the current occlusion state with @ref glfwGetWindowAttrib.
+
+@code
+int occluded = glfwGetWindowAttrib(window, GLFW_OCCLUDED);
+@endcode
+
 @note This is currently implemented on macOS only.
 
 
@@ -1288,6 +1294,10 @@ for details.
 @anchor GLFW_VISIBLE_attrib
 __GLFW_VISIBLE__ indicates whether the specified window is visible.  See @ref
 window_hide for details.
+
+@anchor GLFW_OCCLUDED_attrib
+__GLFW_OCCLUDED__ indicates whether the specified window is occluded.
+See @ref window_occlusion for details.
 
 @anchor GLFW_RESIZABLE_attrib
 __GLFW_RESIZABLE__ indicates whether the specified window is resizable _by the

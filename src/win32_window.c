@@ -1760,6 +1760,11 @@ int _glfwPlatformWindowFocused(_GLFWwindow* window)
     return window->win32.handle == GetActiveWindow();
 }
 
+int _glfwPlatformWindowOccluded(_GLFWwindow* window)
+{
+    return GLFW_FALSE;
+}
+
 int _glfwPlatformWindowIconified(_GLFWwindow* window)
 {
     return IsIconic(window->win32.handle);

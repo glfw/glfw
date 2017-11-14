@@ -1384,6 +1384,8 @@ typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
  *  @sa @ref input_char
  *  @sa @ref glfwSetCharModsCallback
  *
+ *  @deprecated Scheduled for removal in version 4.0.
+ *
  *  @since Added in version 3.1.
  *
  *  @ingroup input
@@ -4118,6 +4120,8 @@ GLFWAPI GLFWcharfun glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
  *  callback.
  *  @return The previously set callback, or `NULL` if no callback was set or an
  *  [error](@ref error_handling) occurred.
+ *
+ *  @deprecated Scheduled for removal in version 4.0.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *

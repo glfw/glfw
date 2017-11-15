@@ -692,6 +692,11 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
                     "Wayland: Window attribute setting not implemented yet");
 }
 
+double _glfwPlatformGetEventTime(void)
+{
+    return (double) _glfw.wl.lastEventTime / 1000.0;
+}
+
 void _glfwPlatformPollEvents(void)
 {
     handleEvents(0);

@@ -302,6 +302,9 @@ typedef struct _GLFWlibraryWin32
     RAWINPUT*           rawInput;
     int                 rawInputSize;
 
+    // The time of the last event
+    LONG                lastEventTime;
+
     struct {
         HINSTANCE                       instance;
         PFN_timeGetTime                 GetTime;

@@ -25,6 +25,8 @@
 //
 //========================================================================
 
+#pragma once
+
 #if defined(_GLFW_USE_CONFIG_H)
  #include "glfw_config.h"
 #endif

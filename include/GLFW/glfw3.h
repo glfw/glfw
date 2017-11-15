@@ -507,6 +507,8 @@ extern "C" {
 
 /*! @} */
 
+/*! @} */
+
 /*! @defgroup buttons Mouse buttons
  *  @brief Mouse button IDs.
  *
@@ -1277,6 +1279,24 @@ typedef void (* GLFWframebuffersizefun)(GLFWwindow*,int,int);
  */
 typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int,int);
 
+/*! @brief The function signature for pen callbacks.
+*
+*  This is the function signature for pen callback functions.
+*
+*  @param[in] window The window that received the event.
+*  @param[in] pressure The [pen pressure](@ref pressure) that was pressed or
+*  released.
+*  @param[in] the x (horizontal point) coordinate of the point location of the pen.
+*  @param[in] the y (vertical point) coordinate of the point location of the pen.
+*  *
+*  @sa @ref input_pen_pressure
+*  @sa @ref glfwSetPenPressureCallback
+*
+*  @ingroup input
+*/
+
+typedef void(*GLFWpenpressurefun)(GLFWwindow*, double, int, int);
+
 /*! @brief The function signature for cursor position callbacks.
  *
  *  This is the function signature for cursor position callback functions.
@@ -1349,6 +1369,7 @@ typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
  *
  *  @ingroup input
  */
+
 typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int);
 
 /*! @brief The function signature for Unicode character callbacks.
@@ -3821,7 +3842,32 @@ GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
  *
  *  @ingroup input
  */
-GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
+GLFWAPI int glfwGetMouseButton(GLFWwindow* handle, int button);
+
+/*! @brief Returns the last reported state of a pen button for the specified
+*  window.
+*
+*  This function returns the last state reported for the specified pen button
+*  to the specified window.  The returned state is one of `GLFW_PRESS` or
+*  `GLFW_RELEASE`.
+*
+*  @param[in] window The desired window.
+*  @param[in] button The desired [pen button](@ref pen buttons).
+*  @return One of `GLFW_PRESS` or `GLFW_RELEASE`.
+*
+*  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+*  GLFW_INVALID_ENUM.
+*
+*  @thread_safety This function must only be called from the main thread.
+*
+*  @sa @ref input_pen_button
+*
+*  @since Added in version 1.0.
+*  @glfw3 Added window handle parameter.
+*
+*  @ingroup input
+*/
+GLFWAPI int glfwGetPenPressure(GLFWwindow* handle);
 
 /*! @brief Retrieves the position of the cursor relative to the client area of
  *  the window.
@@ -4159,6 +4205,27 @@ GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmods
  *  @ingroup input
  */
 GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmousebuttonfun cbfun);
+/*! @brief Sets the pen callback.
+*
+*  This function sets the pen callback of the specified window, which
+*  is called when a pen is pressed or released.
+**
+*  @param[in] window The window whose callback to set.
+*  @param[in] cbfun The new callback, or `NULL` to remove the currently set
+*  callback.
+*  @return The previously set callback, or `NULL` if no callback was set or the
+*  library had not been [initialized](@ref intro_init).
+*
+*  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+*
+*  @thread_safety This function must only be called from the main thread.
+*
+*  @sa @ref input_pen_pressure
+*
+*
+*  @ingroup input
+*/
+GLFWAPI GLFWpenpressurefun glfwSetPenPressureCallback(GLFWwindow* window, GLFWpenpressurefun cbfun);
 
 /*! @brief Sets the cursor position callback.
  *

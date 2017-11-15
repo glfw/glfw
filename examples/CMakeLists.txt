@@ -38,13 +38,14 @@ add_executable(particles WIN32 MACOSX_BUNDLE particles.c ${ICON} ${TINYCTHREAD} 
 add_executable(simple WIN32 MACOSX_BUNDLE simple.c ${ICON} ${GLAD})
 add_executable(splitview WIN32 MACOSX_BUNDLE splitview.c ${ICON} ${GLAD})
 add_executable(wave WIN32 MACOSX_BUNDLE wave.c ${ICON} ${GLAD})
+add_executable(pen WIN32 MACOSX_BUNDLE pen.c ${ICON} ${GLAD})
 
 target_link_libraries(particles "${CMAKE_THREAD_LIBS_INIT}")
 if (RT_LIBRARY)
     target_link_libraries(particles "${RT_LIBRARY}")
 endif()
 
-set(WINDOWS_BINARIES boing gears heightmap particles simple splitview wave)
+set(WINDOWS_BINARIES boing gears heightmap particles simple splitview wave pen)
 set(CONSOLE_BINARIES offscreen)
 
 set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
@@ -64,6 +65,7 @@ if (APPLE)
     set_target_properties(simple PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Simple")
     set_target_properties(splitview PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "SplitView")
     set_target_properties(wave PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Wave")
+    set_target_properties(pen PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Pen")
 
     set_target_properties(${WINDOWS_BINARIES} PROPERTIES
                           RESOURCE glfw.icns

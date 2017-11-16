@@ -846,7 +846,7 @@ converted to one, you can retrieve it with @ref glfwGetClipboardString.  See the
 reference documentation for the lifetime of the returned string.
 
 @code
-const char* text = glfwGetClipboardString(window);
+const char* text = glfwGetClipboardString(NULL);
 if (text)
 {
     insert_text(text);
@@ -860,12 +860,8 @@ The contents of the system clipboard can be set to a UTF-8 encoded string with
 @ref glfwSetClipboardString.
 
 @code
-glfwSetClipboardString(window, "A string with words in it");
+glfwSetClipboardString(NULL, "A string with words in it");
 @endcode
-
-The clipboard functions take a window handle argument because some window
-systems require a window to communicate with the system clipboard.  Any valid
-window may be used.
 
 
 @section path_drop Path drop input

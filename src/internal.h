@@ -25,6 +25,8 @@
 //
 //========================================================================
 
+#pragma once
+
 #if defined(_GLFW_USE_CONFIG_H)
  #include "glfw_config.h"
 #endif
@@ -647,8 +649,8 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode);
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
 void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
-void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string);
-const char* _glfwPlatformGetClipboardString(_GLFWwindow* window);
+void _glfwPlatformSetClipboardString(const char* string);
+const char* _glfwPlatformGetClipboardString(void);
 
 int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode);
 void _glfwPlatformUpdateGamepadGUID(char* guid);
@@ -685,9 +687,11 @@ int _glfwPlatformWindowIconified(_GLFWwindow* window);
 int _glfwPlatformWindowVisible(_GLFWwindow* window);
 int _glfwPlatformWindowMaximized(_GLFWwindow* window);
 int _glfwPlatformFramebufferTransparent(_GLFWwindow* window);
+float _glfwPlatformGetWindowOpacity(_GLFWwindow* window);
 void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled);
 void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled);
 void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled);
+void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity);
 
 void _glfwPlatformPollEvents(void);
 void _glfwPlatformWaitEvents(void);

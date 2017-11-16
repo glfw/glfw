@@ -789,10 +789,11 @@ extern "C" {
 #define GLFW_CENTER_CURSOR          0x00020009
 /*! @brief Window framebuffer transparency hint and attribute
  *
- *  Window framebuffer transparency [window hint](@ref GLFW_TRANSPARENT_hint)
- *  and [window attribute](@ref GLFW_TRANSPARENT_attrib).
+ *  Window framebuffer transparency
+ *  [window hint](@ref GLFW_TRANSPARENT_FRAMEBUFFER_hint) and
+ *  [window attribute](@ref GLFW_TRANSPARENT_FRAMEBUFFER_attrib).
  */
-#define GLFW_TRANSPARENT            0x0002000A
+#define GLFW_TRANSPARENT_FRAMEBUFFER 0x0002000A
 
 /*! @brief Framebuffer bit depth hint.
  *
@@ -1382,6 +1383,8 @@ typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
  *
  *  @sa @ref input_char
  *  @sa @ref glfwSetCharModsCallback
+ *
+ *  @deprecated Scheduled for removal in version 4.0.
  *
  *  @since Added in version 3.1.
  *
@@ -2288,8 +2291,8 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *
  *  @remark @win32 If the executable has an icon resource named `GLFW_ICON,` it
  *  will be set as the initial icon for the window.  If no such icon is present,
- *  the `IDI_WINLOGO` icon will be used instead.  To set a different icon, see
- *  @ref glfwSetWindowIcon.
+ *  the `IDI_APPLICATION` icon will be used instead.  To set a different icon,
+ *  see @ref glfwSetWindowIcon.
  *
  *  @remark @win32 The context to share resources with must not be current on
  *  any other thread.
@@ -2833,6 +2836,62 @@ GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* window, int* left, int* top, int
  *  @ingroup window
  */
 GLFWAPI void glfwGetWindowContentScale(GLFWwindow* window, float* xscale, float* yscale);
+
+/*! @brief Returns the opacity of the whole window.
+ *
+ *  This function returns the opacity of the window, including any decorations.
+ *
+ *  The opacity (or alpha) value is a positive finite number between zero and
+ *  one, where zero is fully transparent and one is fully opaque.  If the system
+ *  does not support whole window transparency, this function always returns one.
+ *
+ *  The initial opacity value for newly created windows is one.
+ *
+ *  @param[in] window The window to query.
+ *  @return The opacity value of the specified window.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_transparency
+ *  @sa @ref glfwSetWindowOpacity
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup window
+ */
+GLFWAPI float glfwGetWindowOpacity(GLFWwindow* window);
+
+/*! @brief Sets the opacity of the whole window.
+ *
+ *  This function sets the opacity of the window, including any decorations.
+ *
+ *  The opacity (or alpha) value is a positive finite number between zero and
+ *  one, where zero is fully transparent and one is fully opaque.
+ *
+ *  The initial opacity value for newly created windows is one.
+ *
+ *  A window created with framebuffer transparency may not use whole window
+ *  transparency.  The results of doing this are undefined.
+ *
+ *  @param[in] window The window to set the opacity for.
+ *  @param[in] opacity The desired opacity of the specified window.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_transparency
+ *  @sa @ref glfwGetWindowOpacity
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowOpacity(GLFWwindow* window, float opacity);
 
 /*! @brief Iconifies the specified window.
  *
@@ -4118,6 +4177,8 @@ GLFWAPI GLFWcharfun glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
  *  @return The previously set callback, or `NULL` if no callback was set or an
  *  [error](@ref error_handling) occurred.
  *
+ *  @deprecated Scheduled for removal in version 4.0.
+ *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
  *  @thread_safety This function must only be called from the main thread.
@@ -4655,7 +4716,7 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state);
  *  This function sets the system clipboard to the specified, UTF-8 encoded
  *  string.
  *
- *  @param[in] window The window that will own the clipboard contents.
+ *  @param[in] window Deprecated.  Any valid window or `NULL`.
  *  @param[in] string A UTF-8 encoded string.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
@@ -4684,7 +4745,7 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  *  if its contents cannot be converted, `NULL` is returned and a @ref
  *  GLFW_FORMAT_UNAVAILABLE error is generated.
  *
- *  @param[in] window The window that will request the clipboard contents.
+ *  @param[in] window Deprecated.  Any valid window or `NULL`.
  *  @return The contents of the clipboard as a UTF-8 encoded string, or `NULL`
  *  if an [error](@ref error_handling) occurred.
  *
@@ -4809,9 +4870,12 @@ GLFWAPI uint64_t glfwGetTimerFrequency(void);
  *  thread.
  *
  *  This function makes the OpenGL or OpenGL ES context of the specified window
- *  current on the calling thread.  A context can only be made current on
+ *  current on the calling thread.  A context must only be made current on
  *  a single thread at a time and each thread can have only a single current
  *  context at a time.
+ *
+ *  When moving a context between threads, you must make it non-current on the
+ *  old thread before making it current on the new one.
  *
  *  By default, making a context non-current implicitly forces a pipeline flush.
  *  On machines that support `GL_KHR_context_flush_control`, you can control

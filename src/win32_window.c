@@ -1497,25 +1497,18 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
 
     if (monitor)
     {
-        GLFWvidmode mode;
-        DWORD style = GetWindowLongW(window->win32.handle, GWL_STYLE);
-        UINT flags = SWP_SHOWWINDOW | SWP_NOACTIVATE | SWP_NOCOPYBITS;
-
         if (window->decorated)
         {
+            DWORD style = GetWindowLongW(window->win32.handle, GWL_STYLE);
+            UINT flags = SWP_FRAMECHANGED | SWP_SHOWWINDOW |
+                         SWP_NOACTIVATE | SWP_NOCOPYBITS |
+                         SWP_NOZORDER | SWP_NOMOVE | SWP_NOSIZE;
+
             style &= ~WS_OVERLAPPEDWINDOW;
             style |= getWindowStyle(window);
             SetWindowLongW(window->win32.handle, GWL_STYLE, style);
-
-            flags |= SWP_FRAMECHANGED;
+            SetWindowPos(window->win32.handle, HWND_TOPMOST, 0, 0, 0, 0, flags);
         }
-
-        _glfwPlatformGetVideoMode(monitor, &mode);
-        _glfwPlatformGetMonitorPos(monitor, &xpos, &ypos);
-
-        SetWindowPos(window->win32.handle, HWND_TOPMOST,
-                     xpos, ypos, mode.width, mode.height,
-                     flags);
 
         acquireMonitor(window);
     }
@@ -1589,6 +1582,39 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
     const HWND after = enabled ? HWND_TOPMOST : HWND_NOTOPMOST;
     SetWindowPos(window->win32.handle, after, 0, 0, 0, 0,
                  SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
+}
+
+float _glfwPlatformGetWindowOpacity(_GLFWwindow* window)
+{
+    BYTE alpha;
+    DWORD flags;
+
+    if ((GetWindowLongW(window->win32.handle, GWL_EXSTYLE) & WS_EX_LAYERED) &&
+        GetLayeredWindowAttributes(window->win32.handle, NULL, &alpha, &flags))
+    {
+        if (flags & LWA_ALPHA)
+            return alpha / 255.f;
+    }
+
+    return 1.f;
+}
+
+void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
+{
+    if (opacity < 1.f)
+    {
+        const BYTE alpha = (BYTE) (255 * opacity);
+        DWORD style = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
+        style |= WS_EX_LAYERED;
+        SetWindowLongW(window->win32.handle, GWL_EXSTYLE, style);
+        SetLayeredWindowAttributes(window->win32.handle, 0, alpha, LWA_ALPHA);
+    }
+    else
+    {
+        DWORD style = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
+        style &= ~WS_EX_LAYERED;
+        SetWindowLongW(window->win32.handle, GWL_EXSTYLE, style);
+    }
 }
 
 void _glfwPlatformPollEvents(void)
@@ -1796,7 +1822,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
         updateCursorImage(window);
 }
 
-void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
+void _glfwPlatformSetClipboardString(const char* string)
 {
     int characterCount;
     HANDLE object;
@@ -1839,7 +1865,7 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
     CloseClipboard();
 }
 
-const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
+const char* _glfwPlatformGetClipboardString(void)
 {
     HANDLE object;
     WCHAR* buffer;

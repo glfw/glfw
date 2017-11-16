@@ -1099,21 +1099,16 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state)
 
 GLFWAPI void glfwSetClipboardString(GLFWwindow* handle, const char* string)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-    assert(window != NULL);
     assert(string != NULL);
 
     _GLFW_REQUIRE_INIT();
-    _glfwPlatformSetClipboardString(window, string);
+    _glfwPlatformSetClipboardString(string);
 }
 
 GLFWAPI const char* glfwGetClipboardString(GLFWwindow* handle)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-    assert(window != NULL);
-
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    return _glfwPlatformGetClipboardString(window);
+    return _glfwPlatformGetClipboardString();
 }
 
 GLFWAPI double glfwGetTime(void)

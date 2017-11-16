@@ -348,8 +348,8 @@ typedef struct _GLFWmonitorWin32
     // This size matches the static size of DISPLAY_DEVICE.DeviceName
     WCHAR               adapterName[32];
     WCHAR               displayName[32];
-    char                publicAdapterName[64];
-    char                publicDisplayName[64];
+    char                publicAdapterName[32];
+    char                publicDisplayName[32];
     GLFWbool            modesPruned;
     GLFWbool            modeChanged;
 

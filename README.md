@@ -244,6 +244,7 @@ information on what to include when reporting a bug.
                   notification was shown (#971,#1028)
 - [Cocoa] Bugfix: Some characters did not repeat due to Press and Hold (#1010)
 - [Cocoa] Bugfix: Window title was lost when full screen or undecorated (#1082)
+- [Cocoa] Bugfix: Window was resized twice when entering full screen (#1085)
 - [WGL] Added support for `WGL_EXT_colorspace` for OpenGL ES contexts
 - [WGL] Added support for `WGL_ARB_create_context_no_error`
 - [GLX] Added support for `GLX_ARB_create_context_no_error`

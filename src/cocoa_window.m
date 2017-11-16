@@ -1385,28 +1385,6 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
     [window->ns.object setStyleMask:styleMask];
     [window->ns.object makeFirstResponder:window->ns.view];
 
-    NSRect contentRect;
-
-    if (monitor)
-    {
-        GLFWvidmode mode;
-
-        _glfwPlatformGetVideoMode(window->monitor, &mode);
-        _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
-
-        contentRect = NSMakeRect(xpos, transformY(ypos + mode.height),
-                                    mode.width, mode.height);
-    }
-    else
-    {
-        contentRect = NSMakeRect(xpos, transformY(ypos + height),
-                                    width, height);
-    }
-
-    NSRect frameRect = [window->ns.object frameRectForContentRect:contentRect
-                                                        styleMask:styleMask];
-    [window->ns.object setFrame:frameRect display:YES];
-
     if (monitor)
     {
         [window->ns.object setLevel:NSMainMenuWindowLevel + 1];
@@ -1416,6 +1394,12 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
     }
     else
     {
+        NSRect contentRect = NSMakeRect(xpos, transformY(ypos + height),
+                                        width, height);
+        NSRect frameRect = [window->ns.object frameRectForContentRect:contentRect
+                                                            styleMask:styleMask];
+        [window->ns.object setFrame:frameRect display:YES];
+
         if (window->numer != GLFW_DONT_CARE &&
             window->denom != GLFW_DONT_CARE)
         {

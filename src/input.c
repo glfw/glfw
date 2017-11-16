@@ -138,7 +138,7 @@ static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
                 {
                     const unsigned long hat = strtoul(c + 1, (char**) &c, 10);
                     const unsigned long bit = strtoul(c + 1, (char**) &c, 10);
-                    fields[i].element->value = (hat << 4) | bit;
+                    fields[i].element->value = (uint8_t) (hat << 4) | bit;
                 }
                 else
                     fields[i].element->value = (uint8_t) strtoul(c + 1, (char**) &c, 10);

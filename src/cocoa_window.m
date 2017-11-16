@@ -267,8 +267,21 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     const NSRect contentRect = [window->ns.view frame];
     const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
 
-    _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
-    _glfwInputWindowSize(window, contentRect.size.width, contentRect.size.height);
+    if (fbRect.size.width != window->ns.fbWidth ||
+        fbRect.size.height != window->ns.fbHeight)
+    {
+        window->ns.fbWidth  = fbRect.size.width;
+        window->ns.fbHeight = fbRect.size.height;
+        _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
+    }
+
+    if (contentRect.size.width != window->ns.width ||
+        contentRect.size.height != window->ns.height)
+    {
+        window->ns.width  = contentRect.size.width;
+        window->ns.height = contentRect.size.height;
+        _glfwInputWindowSize(window, contentRect.size.width, contentRect.size.height);
+    }
 }
 
 - (void)windowDidMove:(NSNotification *)notification
@@ -551,7 +564,13 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     const NSRect contentRect = [window->ns.view frame];
     const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
 
-    _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
+    if (fbRect.size.width != window->ns.fbWidth ||
+        fbRect.size.height != window->ns.fbHeight)
+    {
+        window->ns.fbWidth  = fbRect.size.width;
+        window->ns.fbHeight = fbRect.size.height;
+        _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
+    }
 }
 
 - (void)drawRect:(NSRect)rect
@@ -1094,6 +1113,9 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     [window->ns.object setDelegate:window->ns.delegate];
     [window->ns.object setAcceptsMouseMovedEvents:YES];
     [window->ns.object setRestorable:NO];
+
+    _glfwPlatformGetWindowSize(window, &window->ns.width, &window->ns.height);
+    _glfwPlatformGetFramebufferSize(window, &window->ns.fbWidth, &window->ns.fbHeight);
 
     return GLFW_TRUE;
 }

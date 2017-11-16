@@ -26,6 +26,7 @@
 
 #include "internal.h"
 
+#include <assert.h>
 #include <linux/input.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -152,6 +153,7 @@ static void pointerHandleAxis(void* data,
             y = wl_fixed_to_double(value) * scrollFactor;
             break;
         default:
+            assert(GLFW_FALSE);
             break;
     }
 

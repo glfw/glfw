@@ -1497,25 +1497,18 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
 
     if (monitor)
     {
-        GLFWvidmode mode;
-        DWORD style = GetWindowLongW(window->win32.handle, GWL_STYLE);
-        UINT flags = SWP_SHOWWINDOW | SWP_NOACTIVATE | SWP_NOCOPYBITS;
-
         if (window->decorated)
         {
+            DWORD style = GetWindowLongW(window->win32.handle, GWL_STYLE);
+            UINT flags = SWP_FRAMECHANGED | SWP_SHOWWINDOW |
+                         SWP_NOACTIVATE | SWP_NOCOPYBITS |
+                         SWP_NOZORDER | SWP_NOMOVE | SWP_NOSIZE;
+
             style &= ~WS_OVERLAPPEDWINDOW;
             style |= getWindowStyle(window);
             SetWindowLongW(window->win32.handle, GWL_STYLE, style);
-
-            flags |= SWP_FRAMECHANGED;
+            SetWindowPos(window->win32.handle, HWND_TOPMOST, 0, 0, 0, 0, flags);
         }
-
-        _glfwPlatformGetVideoMode(monitor, &mode);
-        _glfwPlatformGetMonitorPos(monitor, &xpos, &ypos);
-
-        SetWindowPos(window->win32.handle, HWND_TOPMOST,
-                     xpos, ypos, mode.width, mode.height,
-                     flags);
 
         acquireMonitor(window);
     }

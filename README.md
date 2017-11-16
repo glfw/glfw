@@ -204,6 +204,7 @@ information on what to include when reporting a bug.
                   (#650,#1071)
 - [Win32] Bugfix: Returned key names did not match other platforms (#943)
 - [Win32] Bugfix: Undecorated windows did not maximize to workarea (#899)
+- [Win32] Bugfix: Window was resized twice when entering full screen (#1085)
 - [X11] Moved to XI2 `XI_RawMotion` for disable cursor mode motion input (#125)
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
 - [X11] Bugfix: `glfwGetVideoMode` would segfault on Cygwin/X

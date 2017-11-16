@@ -399,9 +399,7 @@ int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
 
             const long delta = axis->maximum - axis->minimum;
             if (delta == 0)
-            {
                 _glfwInputJoystickAxis(js, (int) i, 0.f);
-            }
             else
             {
                 const float value = (2.f * (raw - axis->minimum) / delta) - 1.f;

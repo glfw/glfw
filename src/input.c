@@ -136,8 +136,8 @@ static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
 
                 if (fields[i].element->type == _GLFW_JOYSTICK_HATBIT)
                 {
-                    const unsigned int hat = (unsigned int) strtoul(c + 1, (char**) &c, 10);
-                    const unsigned int bit = (unsigned int) strtoul(c + 1, (char**) &c, 10);
+                    const unsigned long hat = strtoul(c + 1, (char**) &c, 10);
+                    const unsigned long bit = strtoul(c + 1, (char**) &c, 10);
                     fields[i].element->value = (hat << 4) | bit;
                 }
                 else

@@ -2291,8 +2291,8 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *
  *  @remark @win32 If the executable has an icon resource named `GLFW_ICON,` it
  *  will be set as the initial icon for the window.  If no such icon is present,
- *  the `IDI_WINLOGO` icon will be used instead.  To set a different icon, see
- *  @ref glfwSetWindowIcon.
+ *  the `IDI_APPLICATION` icon will be used instead.  To set a different icon,
+ *  see @ref glfwSetWindowIcon.
  *
  *  @remark @win32 The context to share resources with must not be current on
  *  any other thread.

@@ -686,7 +686,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
                         [sender draggingLocation].x,
                         contentRect.size.height - [sender draggingLocation].y);
 
-    const int count = [files count];
+    const int count = (int) [files count];
     if (count)
     {
         NSEnumerator* e = [files objectEnumerator];

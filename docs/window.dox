@@ -1,7 +1,7 @@
 /*!
 
 @page window_guide Window guide
- 
+
 @tableofcontents
 
 This guide introduces the window related functions of GLFW.  For details on
@@ -48,7 +48,7 @@ the event.
 
 To create a full screen window, you need to specify which monitor the window
 should use.  In most cases, the user's primary monitor is a good choice.
-For more information about retrieving monitors, see @ref monitor_monitors. 
+For more information about retrieving monitors, see @ref monitor_monitors.
 
 @code
 GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", glfwGetPrimaryMonitor(), NULL);

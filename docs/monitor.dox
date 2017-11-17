@@ -157,7 +157,7 @@ any UI elements.
 
 The content scale may depend on both the monitor resolution and pixel density
 and on user settings.  It may be very different from the raw DPI calculated from
-the physical size and current resolution.    
+the physical size and current resolution.
 
 
 @subsection monitor_pos Virtual position

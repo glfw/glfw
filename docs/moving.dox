@@ -40,7 +40,7 @@ time away from the focus of GLFW (i.e.  context, input and window).  There are
 better threading libraries available and native threading support is available
 in both [C++11](http://en.cppreference.com/w/cpp/thread) and
 [C11](http://en.cppreference.com/w/c/thread), both of which are gaining
-traction. 
+traction.
 
 If you wish to use the C++11 or C11 facilities but your compiler doesn't yet
 support them, see the
@@ -73,7 +73,7 @@ To become of sufficiently high quality to warrant keeping them in GLFW 3, they
 would need not only to support other formats, but also modern extensions to
 OpenGL texturing.  This would either add a number of external
 dependencies (libjpeg, libpng, etc.), or force GLFW to ship with inline versions
-of these libraries. 
+of these libraries.
 
 As there already are libraries doing this, it is unnecessary both to duplicate
 the work and to tie the duplicate to GLFW.  The resulting library would also be
@@ -92,7 +92,7 @@ has been removed.  GLFW is written in C, not Pascal.  Removing this macro means
 there's one less thing for application programmers to remember, i.e. the
 requirement to mark all callback functions with `GLFWCALL`.  It also simplifies
 the creation of DLLs and DLL link libraries, as there's no need to explicitly
-disable `@n` entry point suffixes. 
+disable `@n` entry point suffixes.
 
 @par Old syntax
 @code

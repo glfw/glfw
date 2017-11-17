@@ -422,12 +422,25 @@ static void keyboardHandleModifiers(void* data,
     _glfw.wl.xkb.modifiers = modifiers;
 }
 
+static void keyboardHandleRepeatInfo(void* data,
+                                     struct wl_keyboard* keyboard,
+                                     int32_t rate,
+                                     int32_t delay)
+{
+    if (keyboard != _glfw.wl.keyboard)
+        return;
+
+    _glfw.wl.keyboardRepeatRate = rate;
+    _glfw.wl.keyboardRepeatDelay = delay;
+}
+
 static const struct wl_keyboard_listener keyboardListener = {
     keyboardHandleKeymap,
     keyboardHandleEnter,
     keyboardHandleLeave,
     keyboardHandleKey,
     keyboardHandleModifiers,
+    keyboardHandleRepeatInfo,
 };
 
 static void seatHandleCapabilities(void* data,
@@ -457,8 +470,15 @@ static void seatHandleCapabilities(void* data,
     }
 }
 
+static void seatHandleName(void* data,
+                           struct wl_seat* seat,
+                           const char* name)
+{
+}
+
 static const struct wl_seat_listener seatListener = {
-    seatHandleCapabilities
+    seatHandleCapabilities,
+    seatHandleName,
 };
 
 static void wmBaseHandlePing(void* data,
@@ -503,8 +523,10 @@ static void registryHandleGlobal(void* data,
     {
         if (!_glfw.wl.seat)
         {
+            _glfw.wl.seatVersion = min(4, version);
             _glfw.wl.seat =
-                wl_registry_bind(registry, name, &wl_seat_interface, 1);
+                wl_registry_bind(registry, name, &wl_seat_interface,
+                                 _glfw.wl.seatVersion);
             wl_seat_add_listener(_glfw.wl.seat, &seatListener, NULL);
         }
     }

@@ -50,6 +50,7 @@ matrix:
         - os: osx
           env: BUILD_SHARED_LIBS=OFF
 script:
+    - if grep -Inr '\s$' src include docs tests examples CMake *.md .gitattributes .gitignore; then echo Trailing whitespace found, aborting.; exit 1; fi
     - mkdir build
     - cd build
     - if test -n "${USE_WAYLAND}"; then wget https://mirrors.kernel.org/ubuntu/pool/universe/e/extra-cmake-modules/extra-cmake-modules_5.38.0a-0ubuntu1_amd64.deb; fi

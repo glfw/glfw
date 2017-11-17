@@ -1,7 +1,7 @@
-/*! 
+/*!
 
 @page intro_guide Introduction to the API
- 
+
 @tableofcontents
 
 This guide introduces the basic concepts of GLFW and describes initialization,
@@ -140,7 +140,7 @@ any other resources allocated by GLFW.
 Once the library is terminated, it is as if it had never been initialized and
 you will need to initialize it again before being able to use GLFW.  If the
 library was not initialized or had already been terminated, it return
-immediately. 
+immediately.
 
 
 @section error_handling Error handling
@@ -307,7 +307,7 @@ calls main), but some may be called from any thread once the library has been
 initialized.  Before initialization the whole library is thread-unsafe.
 
 The reference documentation for every GLFW function states whether it is limited
-to the main thread.                                                        
+to the main thread.
 
 Initialization, termination, event processing and the creation and
 destruction of windows, cursors and OpenGL and OpenGL ES contexts are all

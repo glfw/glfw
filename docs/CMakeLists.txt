@@ -27,7 +27,7 @@ foreach(arg ${glfw_DOCS_SOURCES})
 endforeach()
 
 configure_file(Doxyfile.in Doxyfile @ONLY)
-                     
+
 add_custom_target(docs ALL "${DOXYGEN_EXECUTABLE}"
                   WORKING_DIRECTORY "${GLFW_BINARY_DIR}/docs"
                   COMMENT "Generating HTML documentation" VERBATIM)

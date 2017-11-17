@@ -161,7 +161,7 @@ An extension loader library is the easiest and best way to access both OpenGL an
 OpenGL ES extensions and modern versions of the core OpenGL or OpenGL ES APIs.
 They will take care of all the details of declaring and loading everything you
 need.  One such library is [glad](https://github.com/Dav1dde/glad) and there are
-several others.  
+several others.
 
 The following example will use glad but all extension loader libraries work
 similarly.

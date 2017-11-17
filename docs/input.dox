@@ -1,7 +1,7 @@
 /*!
 
 @page input_guide Input guide
- 
+
 @tableofcontents
 
 This guide introduces the input related functions of GLFW.  For details on
@@ -602,7 +602,7 @@ See the reference documentation for @ref glfwGetJoystickButtons for details.
 
 The human-readable, UTF-8 encoded name of a joystick is returned by @ref
 glfwGetJoystickName.  See the reference documentation for the lifetime of the
-returned string.           
+returned string.
 
 @code
 const char* name = glfwGetJoystickName(GLFW_JOYSTICK_4);

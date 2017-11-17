@@ -2089,8 +2089,8 @@ GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_INVALID_VALUE and @ref GLFW_PLATFORM_ERROR.
  *
- *  @remark @wayland Gamma handling is currently unavailable, this function will
- *  always emit @ref GLFW_PLATFORM_ERROR.
+ *  @remark @wayland Gamma handling is a priviledged protocol, this function
+ *  will thus never be implemented and emits @ref GLFW_PLATFORM_ERROR.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -2113,8 +2113,9 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* monitor, float gamma);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
- *  @remark @wayland Gamma handling is currently unavailable, this function will
- *  always return `NULL` and emit @ref GLFW_PLATFORM_ERROR.
+ *  @remark @wayland Gamma handling is a priviledged protocol, this function
+ *  will thus never be implemented and emits @ref GLFW_PLATFORM_ERROR while
+ *  returning `NULL`.
  *
  *  @pointer_lifetime The returned structure and its arrays are allocated and
  *  freed by GLFW.  You should not free them yourself.  They are valid until the
@@ -2156,8 +2157,8 @@ GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
  *
  *  @remark @win32 The gamma ramp size must be 256.
  *
- *  @remark @wayland Gamma handling is currently unavailable, this function will
- *  always emit @ref GLFW_PLATFORM_ERROR.
+ *  @remark @wayland Gamma handling is a priviledged protocol, this function
+ *  will thus never be implemented and emits @ref GLFW_PLATFORM_ERROR.
  *
  *  @pointer_lifetime The specified gamma ramp is copied before this function
  *  returns.

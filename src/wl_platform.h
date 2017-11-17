@@ -200,11 +200,14 @@ typedef struct _GLFWlibraryWayland
     struct zwp_idle_inhibit_manager_v1*     idleInhibitManager;
 
     int                         compositorVersion;
+    int                         seatVersion;
 
     struct wl_cursor_theme*     cursorTheme;
     struct wl_surface*          cursorSurface;
     uint32_t                    pointerSerial;
 
+    int32_t                     keyboardRepeatRate;
+    int32_t                     keyboardRepeatDelay;
     short int                   keycodes[256];
     short int                   scancodes[GLFW_KEY_LAST + 1];
 

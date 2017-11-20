@@ -3926,7 +3926,7 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* handle, int button);
 *
 *  @ingroup input
 */
-GLFWAPI int glfwGetPenPressure(GLFWwindow* handle);
+GLFWAPI double glfwGetPenPressure(GLFWwindow* handle);
 
 /*! @brief Retrieves the position of the cursor relative to the client area of
  *  the window.

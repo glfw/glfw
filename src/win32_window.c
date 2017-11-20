@@ -567,7 +567,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 	case WM_POINTERUPDATE:
 	case WM_POINTERUP:
 	{
-		POINTER_TOUCH_INFO   touchInfo;
 		POINTER_PEN_INFO	 penInfo;
 		POINTER_INFO		 pointerInfo;
 		UINT32				 pointerId = GET_POINTERID_WPARAM(wParam);

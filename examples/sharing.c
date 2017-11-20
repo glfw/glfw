@@ -1,5 +1,5 @@
 //========================================================================
-// Context sharing test program
+// Context sharing example
 // Copyright (c) Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
@@ -22,15 +22,10 @@
 //    distribution.
 //
 //========================================================================
-//
-// This program is used to test sharing of objects between contexts
-//
-//========================================================================
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -71,17 +66,6 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-void APIENTRY debug_callback(GLenum source,
-                             GLenum type,
-                             GLuint id,
-                             GLenum severity,
-                             GLsizei length,
-                             const GLchar* message,
-                             const void* user)
-{
-    fprintf(stderr, "Error: %s\n", message);
-}
-
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
@@ -90,27 +74,14 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 int main(int argc, char** argv)
 {
-    int ch;
     GLFWwindow* windows[2];
     GLuint texture, program, vertex_buffer;
     GLint mvp_location, vpos_location, color_location, texture_location;
-
-    srand((unsigned int) time(NULL));
 
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
-
-    while ((ch = getopt(argc, argv, "d")) != -1)
-    {
-        switch (ch)
-        {
-            case 'd':
-                glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
-                break;
-        }
-    }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
@@ -134,12 +105,6 @@ int main(int argc, char** argv)
     // pointers should be re-usable between them
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 
-    if (GLAD_GL_KHR_debug)
-    {
-        glDebugMessageCallback(debug_callback, NULL);
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
-    }
-
     // Create the OpenGL objects inside the first context, created above
     // All objects will be shared with the second context, created below
     {
@@ -149,6 +114,8 @@ int main(int argc, char** argv)
 
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
+
+        srand((unsigned int) glfwGetTimerValue());
 
         for (y = 0;  y < 16;  y++)
         {
@@ -235,8 +202,8 @@ int main(int argc, char** argv)
         int i;
         const vec3 colors[2] =
         {
-            { 0.3f, 0.4f, 1.f },
-            { 0.8f, 0.4f, 1.f }
+            { 0.8f, 0.4f, 1.f },
+            { 0.3f, 0.4f, 1.f }
         };
 
         for (i = 0;  i < 2;  i++)

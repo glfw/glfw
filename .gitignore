@@ -58,6 +58,7 @@ examples/heightmap
 examples/offscreen
 examples/particles
 examples/splitview
+examples/sharing
 examples/simple
 examples/wave
 tests/*.app
@@ -74,7 +75,6 @@ tests/joysticks
 tests/monitors
 tests/msaa
 tests/reopen
-tests/sharing
 tests/tearing
 tests/threads
 tests/timeout

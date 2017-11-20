@@ -82,8 +82,8 @@ extension, regular accelerated mouse motion will be used.
 
 GLFW uses both the XRender extension and the compositing manager to support
 transparent window framebuffers.  If the running X server does not support this
-extension or there is no running compositing manager, the `GLFW_TRANSPARENT`
-framebuffer hint will have no effect.
+extension or there is no running compositing manager, the
+`GLFW_TRANSPARENT_FRAMEBUFFER` framebuffer hint will have no effect.
 
 
 @section compat_glx GLX extensions

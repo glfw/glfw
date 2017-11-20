@@ -205,12 +205,13 @@ GLFWAPI int glfwInit(void)
         return GLFW_FALSE;
     }
 
-    if (!_glfwPlatformCreateMutex(&_glfw.errorLock))
+    if (!_glfwPlatformCreateMutex(&_glfw.errorLock) ||
+        !_glfwPlatformCreateTls(&_glfw.errorSlot) ||
+        !_glfwPlatformCreateTls(&_glfw.contextSlot))
+    {
+        terminate();
         return GLFW_FALSE;
-    if (!_glfwPlatformCreateTls(&_glfw.errorSlot))
-        return GLFW_FALSE;
-    if (!_glfwPlatformCreateTls(&_glfw.contextSlot))
-        return GLFW_FALSE;
+    }
 
     _glfwPlatformSetTls(&_glfw.errorSlot, &_glfwMainThreadError);
 
@@ -218,7 +219,12 @@ GLFWAPI int glfwInit(void)
     _glfw.timer.offset = _glfwPlatformGetTimerValue();
 
     glfwDefaultWindowHints();
-    glfwUpdateGamepadMappings(_glfwDefaultMappings);
+
+    if (!glfwUpdateGamepadMappings(_glfwDefaultMappings))
+    {
+        terminate();
+        return GLFW_FALSE;
+    }
 
     return GLFW_TRUE;
 }

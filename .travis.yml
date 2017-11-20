@@ -4,15 +4,10 @@ branches:
     only:
         - ci
         - master
-os:
-    - linux
-    - osx
 sudo: false
 dist: trusty
 addons:
     apt:
-        sources:
-            - kubuntu-backports
         packages:
             - cmake
             - libxrandr-dev
@@ -22,13 +17,46 @@ addons:
 env:
     global:
         - CFLAGS=-Werror
-    matrix:
-        - BUILD_SHARED_LIBS=ON
-        - BUILD_SHARED_LIBS=OFF
+matrix:
+    include:
+        - os: linux
+          env: BUILD_SHARED_LIBS=ON
+        - os: linux
+          env: BUILD_SHARED_LIBS=OFF
+        - os: linux
+          sudo: required
+          addons:
+              apt:
+                  packages:
+                      - libwayland-dev
+                      - libxkbcommon-dev
+                      - libegl1-mesa-dev
+          env:
+              - USE_WAYLAND=ON
+              - BUILD_SHARED_LIBS=ON
+        - os: linux
+          sudo: required
+          addons:
+              apt:
+                  packages:
+                      - libwayland-dev
+                      - libxkbcommon-dev
+                      - libegl1-mesa-dev
+          env:
+              - USE_WAYLAND=ON
+              - BUILD_SHARED_LIBS=OFF
+        - os: osx
+          env: BUILD_SHARED_LIBS=ON
+        - os: osx
+          env: BUILD_SHARED_LIBS=OFF
 script:
     - mkdir build
     - cd build
-    - cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} ..
+    - if test -n "${USE_WAYLAND}"; then wget https://mirrors.kernel.org/ubuntu/pool/universe/e/extra-cmake-modules/extra-cmake-modules_5.38.0a-0ubuntu1_amd64.deb; fi
+    - if test -n "${USE_WAYLAND}"; then sudo dpkg -i extra-cmake-modules_5.38.0a-0ubuntu1_amd64.deb; fi
+    - if test -n "${USE_WAYLAND}"; then git clone git://anongit.freedesktop.org/wayland/wayland-protocols; fi
+    - if test -n "${USE_WAYLAND}"; then pushd wayland-protocols; ./autogen.sh --prefix=/usr; make -j; sudo make install; popd; fi
+    - cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} -DGLFW_USE_WAYLAND=${USE_WAYLAND} ..
     - cmake --build .
 notifications:
     email:

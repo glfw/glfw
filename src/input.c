@@ -525,7 +525,7 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* handle, int button)
 
 
 /***************************PEN**************************************************/
-GLFWAPI int glfwGetPenPressure(GLFWwindow* handle)
+GLFWAPI double glfwGetPenPressure(GLFWwindow* handle)
 {
 	_GLFWwindow* window = (_GLFWwindow*)handle;
 	assert(window != NULL);

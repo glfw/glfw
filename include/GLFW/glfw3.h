@@ -2358,7 +2358,8 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  icons, the window will inherit the one defined in the application's
  *  desktop file, so this function emits @ref GLFW_PLATFORM_ERROR.
  *
- *  @remark @wayland Screensaver inhibition is currently unimplemented.
+ *  @remark @wayland Screensaver inhibition requires the idle-inhibit protocol
+ *  to be implemented in the user's compositor.
  *
  *  @thread_safety This function must only be called from the main thread.
  *

@@ -3185,6 +3185,29 @@ GLFWAPI void glfwFocusWindow(GLFWwindow* window);
  */
 GLFWAPI void glfwRequestWindowAttention(GLFWwindow* window);
 
+/*! @brief Sounds an audible bell associated with the window
+ *
+ *  This function sounds an audible bell, on platforms where it is
+ *  supported. Currently (macOS, Windows, X11 and Wayland).
+ *
+ *  @param[in] window The window with which the bell is associated.
+ *  @return GLFW_TRUE if the bell succeeded otherwise GLFW_FALSE
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @remark @macos Bell is associated to the application as a whole, not the
+ *  specific window.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup window
+ */
+GLFWAPI int glfwWindowBell(GLFWwindow* window);
+
+
 /*! @brief Returns the monitor that the window uses for full screen mode.
  *
  *  This function returns the handle of the monitor that the specified window is
@@ -5519,4 +5542,3 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window
 #endif
 
 #endif /* _glfw3_h_ */
-

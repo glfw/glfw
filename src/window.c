@@ -768,6 +768,16 @@ GLFWAPI void glfwRequestWindowAttention(GLFWwindow* handle)
     _glfwPlatformRequestWindowAttention(window);
 }
 
+GLFWAPI int glfwWindowBell(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
+
+    return _glfwPlatformWindowBell(window);
+}
+
 GLFWAPI void glfwHideWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -1096,4 +1106,3 @@ GLFWAPI void glfwPostEmptyEvent(void)
 
     _glfwPlatformPostEmptyEvent();
 }
-

@@ -42,7 +42,7 @@
 //
 static DWORD getWindowStyle(const _GLFWwindow* window)
 {
-	DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+    DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 
 	if (window->monitor)
 		style |= WS_POPUP;

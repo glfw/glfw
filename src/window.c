@@ -27,8 +27,6 @@
 //========================================================================
 
 #include "internal.h"
-#include <WinUser.h>
-#include <windowsx.h>
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>

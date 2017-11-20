@@ -69,7 +69,7 @@ and the API reference.
 ## Contributing to GLFW
 
 See the [contribution
-guide](https://github.com/glfw/glfw/blob/master/.github/CONTRIBUTING.md) for
+guide](https://github.com/glfw/glfw/blob/master/docs/CONTRIBUTING.md) for
 more information.
 
 
@@ -118,7 +118,7 @@ find that tool.
 
 Bugs are reported to our [issue tracker](https://github.com/glfw/glfw/issues).
 Please check the [contribution
-guide](https://github.com/glfw/glfw/blob/master/.github/CONTRIBUTING.md) for
+guide](https://github.com/glfw/glfw/blob/master/docs/CONTRIBUTING.md) for
 information on what to include when reporting a bug.
 
 

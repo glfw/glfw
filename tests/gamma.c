@@ -38,6 +38,7 @@
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
 #define NK_INCLUDE_STANDARD_VARARGS
+#define NK_BUTTON_TRIGGER_ON_RELEASE
 #include <nuklear.h>
 
 #define NK_GLFW_GL2_IMPLEMENTATION
@@ -85,6 +86,7 @@ int main(int argc, char** argv)
 {
     GLFWmonitor* monitor = NULL;
     GLFWwindow* window;
+    GLFWgammaramp orig_ramp;
     struct nk_context* nk;
     struct nk_font_atlas* atlas;
     float gamma_value = 1.f;
@@ -101,6 +103,18 @@ int main(int argc, char** argv)
     {
         glfwTerminate();
         exit(EXIT_FAILURE);
+    }
+
+    {
+        const GLFWgammaramp* ramp = glfwGetGammaRamp(monitor);
+        const size_t array_size = ramp->size * sizeof(short);
+        orig_ramp.size = ramp->size;
+        orig_ramp.red = malloc(array_size);
+        orig_ramp.green = malloc(array_size);
+        orig_ramp.blue = malloc(array_size);
+        memcpy(orig_ramp.red, ramp->red, array_size);
+        memcpy(orig_ramp.green, ramp->green, array_size);
+        memcpy(orig_ramp.blue, ramp->blue, array_size);
     }
 
     glfwMakeContextCurrent(window);
@@ -125,13 +139,17 @@ int main(int argc, char** argv)
         nk_glfw3_new_frame();
         if (nk_begin(nk, "", area, 0))
         {
-            const GLFWgammaramp* ramp = glfwGetGammaRamp(monitor);
+            const GLFWgammaramp* ramp;
             nk_window_set_bounds(nk, area);
 
-            nk_layout_row_dynamic(nk, 30, 2);
+            nk_layout_row_dynamic(nk, 30, 3);
             if (nk_slider_float(nk, 0.1f, &gamma_value, 5.f, 0.1f))
                 glfwSetGamma(monitor, gamma_value);
             nk_labelf(nk, NK_TEXT_LEFT, "%0.1f", gamma_value);
+            if (nk_button_label(nk, "Revert"))
+                glfwSetGammaRamp(monitor, &orig_ramp);
+
+            ramp = glfwGetGammaRamp(monitor);
 
             nk_layout_row_dynamic(nk, height - 60.f, 3);
             chart_ramp_array(nk, nk_rgb(255, 0, 0), ramp->size, ramp->red);
@@ -145,6 +163,10 @@ int main(int argc, char** argv)
         glfwSwapBuffers(window);
         glfwWaitEventsTimeout(1.0);
     }
+
+    free(orig_ramp.red);
+    free(orig_ramp.green);
+    free(orig_ramp.blue);
 
     nk_glfw3_shutdown();
     glfwTerminate();

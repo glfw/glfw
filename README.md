@@ -218,6 +218,7 @@ information on what to include when reporting a bug.
 - [X11] Bugfix: Incremental reading of selections was not supported (#275)
 - [X11] Bugfix: Selection I/O reported but did not support `COMPOUND_TEXT`
 - [X11] Bugfix: Latin-1 text read from selections was not converted to UTF-8
+- [X11] Bugfix: NVidia EGL would segfault if unloaded before closing the display
 - [Linux] Moved to evdev for joystick input (#906,#1005)
 - [Linux] Bugfix: Event processing did not detect joystick disconnection (#932)
 - [Linux] Bugfix: The joystick device path could be truncated (#1025)

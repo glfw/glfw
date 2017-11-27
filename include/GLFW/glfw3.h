@@ -507,8 +507,6 @@ extern "C" {
 
 /*! @} */
 
-/*! @} */
-
 /*! @defgroup buttons Mouse buttons
  *  @brief Mouse button IDs.
  *

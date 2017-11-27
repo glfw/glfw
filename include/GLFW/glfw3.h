@@ -4969,7 +4969,7 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
  *  is sometimes called _vertical synchronization_, _vertical retrace
  *  synchronization_ or just _vsync_.
  *
- *  A context that support either of the `WGL_EXT_swap_control_tear` and
+ *  A context that supports either of the `WGL_EXT_swap_control_tear` and
  *  `GLX_EXT_swap_control_tear` extensions also accepts _negative_ swap
  *  intervals, which allows the driver to swap immediately even if a frame
  *  arrives a little bit late.  You can check for these extensions with @ref

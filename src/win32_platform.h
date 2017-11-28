@@ -285,7 +285,7 @@ BOOL IsWindowsVersionOrGreater(WORD major, WORD minor, WORD sp);
 
 // HACK: Define macros that some dinput.h variants don't
 #ifndef DIDFT_OPTIONAL
- #define DIDFT_OPTIONAL	0x80000000
+ #define DIDFT_OPTIONAL 0x80000000
 #endif
 
 // winmm.dll function pointer typedefs

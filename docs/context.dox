@@ -129,8 +129,7 @@ error.
 
 @section context_swap Buffer swapping
 
-Buffer swapping is part of the window and framebuffer, not the context.  See
-@ref buffer_swap.
+See @ref buffer_swap in the window guide.
 
 
 @section context_glext OpenGL and OpenGL ES extensions

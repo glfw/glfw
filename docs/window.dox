@@ -1334,4 +1334,10 @@ Note that this may not work on all machines, as some drivers have
 user-controlled settings that override any swap interval the application
 requests.
 
+A context that supports either the `WGL_EXT_swap_control_tear` or the
+`GLX_EXT_swap_control_tear` extension also accepts _negative_ swap intervals,
+which allows the driver to swap immediately even if a frame arrives a little bit
+late.  This trades the risk of visible tears for greater framerate stability.
+You can check for these extensions with @ref glfwExtensionSupported.
+
 */

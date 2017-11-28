@@ -343,6 +343,17 @@ static void mouse_button_callback(GLFWwindow* window, int button, int action, in
            get_action_name(action));
 }
 
+static void pen_callback(GLFWwindow* window, double pressure, int x, int y)
+{
+    Slot* slot = glfwGetWindowUserPointer(window);
+    printf("%08x to %i at %0.3f: Pen position: %i %i Pressure: %f\n", 
+           counter++, slot->number, glfwGetTime(), x, y, pressure);
+    /*
+    fprintf(stderr, "pressure -- %f --\n", pressure);
+    fprintf(stderr, "xPosition -- %d --\n", x);
+    fprintf(stderr, "yPosition -- %d --\n", y);*/
+}
+
 static void cursor_position_callback(GLFWwindow* window, double x, double y)
 {
     Slot* slot = glfwGetWindowUserPointer(window);
@@ -592,6 +603,7 @@ int main(int argc, char** argv)
         glfwSetWindowIconifyCallback(slots[i].window, window_iconify_callback);
         glfwSetWindowMaximizeCallback(slots[i].window, window_maximize_callback);
         glfwSetMouseButtonCallback(slots[i].window, mouse_button_callback);
+        glfwSetPenPressureCallback(slots[i].window, pen_callback);
         glfwSetCursorPosCallback(slots[i].window, cursor_position_callback);
         glfwSetCursorEnterCallback(slots[i].window, cursor_enter_callback);
         glfwSetScrollCallback(slots[i].window, scroll_callback);

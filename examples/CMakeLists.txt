@@ -66,7 +66,6 @@ if (APPLE)
     set_target_properties(simple PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Simple")
     set_target_properties(splitview PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "SplitView")
     set_target_properties(wave PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Wave")
-    set_target_properties(pen PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Pen")
 
     set_target_properties(${WINDOWS_BINARIES} PROPERTIES
                           RESOURCE glfw.icns

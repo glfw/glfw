@@ -493,17 +493,37 @@ extern "C" {
  *  @{ */
 
 /*! @brief If this bit is set one or more Shift keys were held down.
+ *
+ *  If this bit is set one or more Shift keys were held down.
  */
 #define GLFW_MOD_SHIFT           0x0001
 /*! @brief If this bit is set one or more Control keys were held down.
+ *
+ *  If this bit is set one or more Control keys were held down.
  */
 #define GLFW_MOD_CONTROL         0x0002
 /*! @brief If this bit is set one or more Alt keys were held down.
+ *
+ *  If this bit is set one or more Alt keys were held down.
  */
 #define GLFW_MOD_ALT             0x0004
 /*! @brief If this bit is set one or more Super keys were held down.
+ *
+ *  If this bit is set one or more Super keys were held down.
  */
 #define GLFW_MOD_SUPER           0x0008
+/*! @brief If this bit is set the Caps Lock key is enabled.
+ *
+ *  If this bit is set the Caps Lock key is enabled and the @ref
+ *  GLFW_LOCK_KEY_MODS input mode is set.
+ */
+#define GLFW_MOD_CAPS_LOCK       0x0010
+/*! @brief If this bit is set the Num Lock key is enabled.
+ *
+ *  If this bit is set the Num Lock key is enabled and the @ref
+ *  GLFW_LOCK_KEY_MODS input mode is set.
+ */
+#define GLFW_MOD_NUM_LOCK        0x0020
 
 /*! @} */
 
@@ -963,6 +983,7 @@ extern "C" {
 #define GLFW_CURSOR                 0x00033001
 #define GLFW_STICKY_KEYS            0x00033002
 #define GLFW_STICKY_MOUSE_BUTTONS   0x00033003
+#define GLFW_LOCK_KEY_MODS          0x00033004
 
 #define GLFW_CURSOR_NORMAL          0x00034001
 #define GLFW_CURSOR_HIDDEN          0x00034002
@@ -3657,12 +3678,12 @@ GLFWAPI void glfwPostEmptyEvent(void);
 /*! @brief Returns the value of an input option for the specified window.
  *
  *  This function returns the value of an input option for the specified window.
- *  The mode must be one of @ref GLFW_CURSOR, @ref GLFW_STICKY_KEYS or
- *  @ref GLFW_STICKY_MOUSE_BUTTONS.
+ *  The mode must be one of @ref GLFW_CURSOR, @ref GLFW_STICKY_KEYS,
+ *  @ref GLFW_STICKY_MOUSE_BUTTONS or @ref GLFW_LOCK_KEY_MODS.
  *
  *  @param[in] window The window to query.
- *  @param[in] mode One of `GLFW_CURSOR`, `GLFW_STICKY_KEYS` or
- *  `GLFW_STICKY_MOUSE_BUTTONS`.
+ *  @param[in] mode One of `GLFW_CURSOR`, `GLFW_STICKY_KEYS`,
+ *  `GLFW_STICKY_MOUSE_BUTTONS` or `GLFW_LOCK_KEY_MODS`.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_INVALID_ENUM.
@@ -3680,8 +3701,8 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
 /*! @brief Sets an input option for the specified window.
  *
  *  This function sets an input mode option for the specified window.  The mode
- *  must be one of @ref GLFW_CURSOR, @ref GLFW_STICKY_KEYS or
- *  @ref GLFW_STICKY_MOUSE_BUTTONS.
+ *  must be one of @ref GLFW_CURSOR, @ref GLFW_STICKY_KEYS,
+ *  @ref GLFW_STICKY_MOUSE_BUTTONS or @ref GLFW_LOCK_KEY_MODS.
  *
  *  If the mode is `GLFW_CURSOR`, the value must be one of the following cursor
  *  modes:
@@ -3707,9 +3728,15 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  you are only interested in whether mouse buttons have been pressed but not
  *  when or in which order.
  *
+ *  If the mode is `GLFW_LOCK_KEY_MODS`, the value must be either `GLFW_TRUE` to
+ *  enable lock key modifier bits, or `GLFW_FALSE` to disable them.  If enabled,
+ *  callbacks that receive modifier bits will also have the @ref
+ *  GLFW_MOD_CAPS_LOCK bit set when the event was generated with Caps Lock on,
+ *  and the @ref GLFW_MOD_NUM_LOCK bit when Num Lock was on.
+ *
  *  @param[in] window The window whose input mode to set.
- *  @param[in] mode One of `GLFW_CURSOR`, `GLFW_STICKY_KEYS` or
- *  `GLFW_STICKY_MOUSE_BUTTONS`.
+ *  @param[in] mode One of `GLFW_CURSOR`, `GLFW_STICKY_KEYS`,
+ *  `GLFW_STICKY_MOUSE_BUTTONS` or `GLFW_LOCK_KEY_MODS`.
  *  @param[in] value The new value of the specified input mode.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref

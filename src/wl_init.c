@@ -264,6 +264,10 @@ static void keyboardHandleKeymap(void* data,
         1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Shift");
     _glfw.wl.xkb.superMask =
         1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod4");
+    _glfw.wl.xkb.capsLockMask =
+        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Lock");
+    _glfw.wl.xkb.numLockMask =
+        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod2");
 }
 
 static void keyboardHandleEnter(void* data,
@@ -409,6 +413,10 @@ static void keyboardHandleModifiers(void* data,
         modifiers |= GLFW_MOD_SHIFT;
     if (mask & _glfw.wl.xkb.superMask)
         modifiers |= GLFW_MOD_SUPER;
+    if (mask & _glfw.wl.xkb.capsLockMask)
+        modifiers |= GLFW_MOD_CAPS_LOCK;
+    if (mask & _glfw.wl.xkb.numLockMask)
+        modifiers |= GLFW_MOD_NUM_LOCK;
     _glfw.wl.xkb.modifiers = modifiers;
 }
 

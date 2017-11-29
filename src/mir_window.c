@@ -123,6 +123,10 @@ static int mirModToGLFWMod(uint32_t mods)
         publicMods |= GLFW_MOD_CONTROL;
     if (mods & mir_input_event_modifier_meta)
         publicMods |= GLFW_MOD_SUPER;
+    if (mods & mir_input_event_modifier_caps_lock)
+        publicMods |= GLFW_MOD_CAPS_LOCK;
+    if (mods & mir_input_event_modifier_num_lock)
+        publicMods |= GLFW_MOD_NUM_LOCK;
 
     return publicMods;
 }

@@ -43,6 +43,7 @@
  #define NSEventModifierFlagControl NSControlKeyMask
  #define NSEventModifierFlagOption NSAlternateKeyMask
  #define NSEventModifierFlagShift NSShiftKeyMask
+ #define NSEventModifierFlagCapsLock NSAlphaShiftKeyMask
  #define NSEventModifierFlagDeviceIndependentFlagsMask NSDeviceIndependentModifierFlagsMask
  #define NSEventMaskAny NSAnyEventMask
  #define NSEventTypeApplicationDefined NSApplicationDefined
@@ -177,6 +178,8 @@ static int translateFlags(NSUInteger flags)
         mods |= GLFW_MOD_ALT;
     if (flags & NSEventModifierFlagCommand)
         mods |= GLFW_MOD_SUPER;
+    if (flags & NSEventModifierFlagCapsLock)
+        mods |= GLFW_MOD_CAPS_LOCK;
 
     return mods;
 }

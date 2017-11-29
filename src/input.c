@@ -245,6 +245,9 @@ void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int m
             action = GLFW_REPEAT;
     }
 
+    if (!window->lockKeyMods)
+        mods &= ~(GLFW_MOD_CAPS_LOCK | GLFW_MOD_NUM_LOCK);
+
     if (window->callbacks.key)
         window->callbacks.key((GLFWwindow*) window, key, scancode, action, mods);
 }
@@ -253,6 +256,9 @@ void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint, int mods, GLFWb
 {
     if (codepoint < 32 || (codepoint > 126 && codepoint < 160))
         return;
+
+    if (!window->lockKeyMods)
+        mods &= ~(GLFW_MOD_CAPS_LOCK | GLFW_MOD_NUM_LOCK);
 
     if (window->callbacks.charmods)
         window->callbacks.charmods((GLFWwindow*) window, codepoint, mods);
@@ -274,6 +280,9 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
 {
     if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST)
         return;
+
+    if (!window->lockKeyMods)
+        mods &= ~(GLFW_MOD_CAPS_LOCK | GLFW_MOD_NUM_LOCK);
 
     if (action == GLFW_RELEASE && window->stickyMouseButtons)
         window->mouseButtons[button] = _GLFW_STICK;
@@ -406,6 +415,8 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* handle, int mode)
             return window->stickyKeys;
         case GLFW_STICKY_MOUSE_BUTTONS:
             return window->stickyMouseButtons;
+        case GLFW_LOCK_KEY_MODS:
+            return window->lockKeyMods;
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode 0x%08X", mode);
@@ -461,7 +472,7 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
             }
         }
 
-        window->stickyKeys = value ? GLFW_TRUE : GLFW_FALSE;
+        window->stickyKeys = value;
     }
     else if (mode == GLFW_STICKY_MOUSE_BUTTONS)
     {
@@ -481,8 +492,10 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
             }
         }
 
-        window->stickyMouseButtons = value ? GLFW_TRUE : GLFW_FALSE;
+        window->stickyMouseButtons = value;
     }
+    else if (mode == GLFW_LOCK_KEY_MODS)
+        window->lockKeyMods = value ? GLFW_TRUE : GLFW_FALSE;
     else
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode 0x%08X", mode);
 }

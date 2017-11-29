@@ -170,6 +170,19 @@ When sticky keys mode is enabled, the pollable state of a key will remain
 it has been polled, if a key release event had been processed in the meantime,
 the state will reset to `GLFW_RELEASE`, otherwise it will remain `GLFW_PRESS`.
 
+@anchor GLFW_LOCK_KEY_MODS
+If you wish to know what the state of the Caps Lock and Num Lock keys was when
+input events were generated, set the `GLFW_LOCK_KEY_MODS` input mode.
+
+@code
+glfwSetInputMode(window, GLFW_LOCK_KEY_MODS, 1);
+@endcode
+
+When this input mode is enabled, any callback that receives
+[modifier bits](@ref mods) will have the @ref GLFW_MOD_CAPS_LOCK bit set if Caps
+Lock was on when the event occurred and the @ref GLFW_MOD_NUM_LOCK bit set if
+Num Lock was on.
+
 The `GLFW_KEY_LAST` constant holds the highest value of any
 [named key](@ref keys).
 

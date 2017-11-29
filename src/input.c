@@ -57,6 +57,58 @@ static _GLFWmapping* findMapping(const char* guid)
     return NULL;
 }
 
+// Checks whether a gamepad mapping element is present in the hardware
+//
+static GLFWbool isValidElementForJoystick(const _GLFWmapelement* e,
+                                          const _GLFWjoystick* js)
+{
+    if (e->type == _GLFW_JOYSTICK_HATBIT && (e->value >> 4) >= js->hatCount)
+        return GLFW_FALSE;
+    else if (e->type == _GLFW_JOYSTICK_BUTTON && e->value >= js->buttonCount)
+        return GLFW_FALSE;
+    else if (e->type == _GLFW_JOYSTICK_AXIS && e->value >= js->axisCount)
+        return GLFW_FALSE;
+
+    return GLFW_TRUE;
+}
+
+// Finds a mapping based on joystick GUID and verifies element indices
+//
+static _GLFWmapping* findValidMapping(const _GLFWjoystick* js)
+{
+    _GLFWmapping* mapping = findMapping(js->guid);
+    if (mapping)
+    {
+        int i;
+
+        for (i = 0;  i <= GLFW_GAMEPAD_BUTTON_LAST;  i++)
+        {
+            if (!isValidElementForJoystick(mapping->buttons + i, js))
+            {
+                _glfwInputError(GLFW_INVALID_VALUE,
+                                "Invalid button in gamepad mapping %s (%s)",
+                                mapping->guid,
+                                mapping->name);
+                return NULL;
+            }
+        }
+
+        for (i = 0;  i <= GLFW_GAMEPAD_AXIS_LAST;  i++)
+        {
+            if (!isValidElementForJoystick(mapping->axes + i, js))
+            {
+                _glfwInputError(GLFW_INVALID_VALUE,
+                                "Invalid axis in gamepad mapping %s (%s)",
+                                mapping->guid,
+                                mapping->name);
+                return NULL;
+            }
+        }
+    }
+
+    return mapping;
+}
+
 // Parses an SDL_GameControllerDB line and adds it to the mapping list
 //
 static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
@@ -318,9 +370,9 @@ _GLFWjoystick* _glfwAllocJoystick(const char* name,
     js->axisCount   = axisCount;
     js->buttonCount = buttonCount;
     js->hatCount    = hatCount;
-    js->mapping     = findMapping(guid);
 
     strcpy(js->guid, guid);
+    js->mapping = findValidMapping(js);
 
     return js;
 }
@@ -973,7 +1025,7 @@ GLFWAPI int glfwUpdateGamepadMappings(const char* string)
     {
         _GLFWjoystick* js = _glfw.joysticks + jid;
         if (js->present)
-            js->mapping = findMapping(js->guid);
+            js->mapping = findValidMapping(js);
     }
 
     return GLFW_TRUE;

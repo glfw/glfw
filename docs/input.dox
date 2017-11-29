@@ -186,8 +186,7 @@ encode the code points into UTF-8 or any other encoding you prefer.
 Because an `unsigned int` is 32 bits long on all platforms supported by GLFW,
 you can treat the code point argument as native endian UTF-32.
 
-There are two callbacks for receiving Unicode code points.  If you wish to
-offer regular text input, set a character callback.
+If you wish to offer regular text input, set a character callback.
 
 @code
 glfwSetCharCallback(window, character_callback);
@@ -199,23 +198,6 @@ that platform.
 
 @code
 void character_callback(GLFWwindow* window, unsigned int codepoint)
-{
-}
-@endcode
-
-If you also wish to receive those Unicode code points generated with modifier
-key combinations that a plain text field would ignore, or want to know exactly
-what modifier keys were used, set a character with modifiers callback.
-
-@code
-glfwSetCharModsCallback(window, charmods_callback);
-@endcode
-
-The callback function receives Unicode code points and
-[modifier bits](@ref mods).
-
-@code
-void charmods_callback(GLFWwindow* window, unsigned int codepoint, int mods)
 {
 }
 @endcode

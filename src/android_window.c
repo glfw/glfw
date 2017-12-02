@@ -136,7 +136,10 @@ void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int n, int d)
 
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
-
+    // the underlying buffergeometry is currently being initialized from the
+    // window width and height...so high resolution displays are currently
+    // not supported...so it is safe to just call GetWindowSize() for now
+    _glfwPlatformGetWindowSize(window, width, height);
 }
 
 void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,

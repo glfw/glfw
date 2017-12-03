@@ -284,6 +284,141 @@ static GLFWbool createShellSurface(_GLFWwindow* window)
     return GLFW_TRUE;
 }
 
+static void xdgToplevelHandleConfigure(void* data,
+                                       struct xdg_toplevel* toplevel,
+                                       int32_t width,
+                                       int32_t height,
+                                       struct wl_array* states)
+{
+    _GLFWwindow* window = data;
+    float aspectRatio;
+    float targetRatio;
+    uint32_t* state;
+    GLFWbool maximized = GLFW_FALSE;
+    GLFWbool fullscreen = GLFW_FALSE;
+    GLFWbool resizing = GLFW_FALSE;
+    GLFWbool activated = GLFW_FALSE;
+
+    wl_array_for_each(state, states)
+    {
+        switch (*state)
+        {
+            case XDG_TOPLEVEL_STATE_MAXIMIZED:
+                maximized = GLFW_TRUE;
+                break;
+            case XDG_TOPLEVEL_STATE_FULLSCREEN:
+                fullscreen = GLFW_TRUE;
+                break;
+            case XDG_TOPLEVEL_STATE_RESIZING:
+                resizing = GLFW_TRUE;
+                break;
+            case XDG_TOPLEVEL_STATE_ACTIVATED:
+                activated = GLFW_TRUE;
+                break;
+        }
+    }
+
+    if (!maximized && !fullscreen)
+    {
+        if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
+        {
+            aspectRatio = (float)width / (float)height;
+            targetRatio = (float)window->numer / (float)window->denom;
+            if (aspectRatio < targetRatio)
+                height = width / targetRatio;
+            else if (aspectRatio > targetRatio)
+                width = height * targetRatio;
+        }
+    }
+
+    _glfwInputWindowSize(window, width, height);
+    _glfwPlatformSetWindowSize(window, width, height);
+    _glfwInputWindowDamage(window);
+
+    if (!activated && window->autoIconify)
+        _glfwPlatformIconifyWindow(window);
+    _glfwInputWindowFocus(window, activated);
+}
+
+static void xdgToplevelHandleClose(void* data,
+                                   struct xdg_toplevel* toplevel)
+{
+    _GLFWwindow* window = data;
+    _glfwInputWindowCloseRequest(window);
+}
+
+static const struct xdg_toplevel_listener xdgToplevelListener = {
+    xdgToplevelHandleConfigure,
+    xdgToplevelHandleClose
+};
+
+static void xdgSurfaceHandleConfigure(void* data,
+                                      struct xdg_surface* surface,
+                                      uint32_t serial)
+{
+    xdg_surface_ack_configure(surface, serial);
+}
+
+static const struct xdg_surface_listener xdgSurfaceListener = {
+    xdgSurfaceHandleConfigure
+};
+
+static GLFWbool createXdgSurface(_GLFWwindow* window)
+{
+    window->wl.xdg.surface = xdg_wm_base_get_xdg_surface(_glfw.wl.wmBase,
+                                                         window->wl.surface);
+    if (!window->wl.xdg.surface)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: xdg-surface creation failed");
+        return GLFW_FALSE;
+    }
+
+    xdg_surface_add_listener(window->wl.xdg.surface,
+                             &xdgSurfaceListener,
+                             window);
+
+    window->wl.xdg.toplevel = xdg_surface_get_toplevel(window->wl.xdg.surface);
+    if (!window->wl.xdg.toplevel)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: xdg-toplevel creation failed");
+        return GLFW_FALSE;
+    }
+
+    xdg_toplevel_add_listener(window->wl.xdg.toplevel,
+                              &xdgToplevelListener,
+                              window);
+
+    if (window->wl.title)
+        xdg_toplevel_set_title(window->wl.xdg.toplevel, window->wl.title);
+
+    xdg_toplevel_set_min_size(window->wl.xdg.toplevel,
+                              window->minwidth, window->minheight);
+    xdg_toplevel_set_max_size(window->wl.xdg.toplevel,
+                              window->maxwidth, window->maxheight);
+
+    if (window->monitor)
+    {
+        xdg_toplevel_set_fullscreen(window->wl.xdg.toplevel,
+                                    window->monitor->wl.output);
+        setIdleInhibitor(window, GLFW_TRUE);
+    }
+    else if (window->wl.maximized)
+    {
+        xdg_toplevel_set_maximized(window->wl.xdg.toplevel);
+        setIdleInhibitor(window, GLFW_FALSE);
+    }
+    else
+    {
+        setIdleInhibitor(window, GLFW_FALSE);
+    }
+
+    wl_surface_commit(window->wl.surface);
+
+    return GLFW_TRUE;
+}
+
 static int
 createTmpfileCloexec(char* tmpname)
 {
@@ -449,13 +584,23 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (wndconfig->visible)
     {
-        if (!createShellSurface(window))
-            return GLFW_FALSE;
+        if (_glfw.wl.wmBase)
+        {
+            if (!createXdgSurface(window))
+                return GLFW_FALSE;
+        }
+        else
+        {
+            if (!createShellSurface(window))
+                return GLFW_FALSE;
+        }
 
         window->wl.visible = GLFW_TRUE;
     }
     else
     {
+        window->wl.xdg.surface = NULL;
+        window->wl.xdg.toplevel = NULL;
         window->wl.shellSurface = NULL;
         window->wl.visible = GLFW_FALSE;
     }
@@ -494,6 +639,12 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     if (window->wl.shellSurface)
         wl_shell_surface_destroy(window->wl.shellSurface);
 
+    if (window->wl.xdg.toplevel)
+        xdg_toplevel_destroy(window->wl.xdg.toplevel);
+
+    if (window->wl.xdg.surface)
+        xdg_surface_destroy(window->wl.xdg.surface);
+
     if (window->wl.surface)
         wl_surface_destroy(window->wl.surface);
 
@@ -506,7 +657,9 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     if (window->wl.title)
         free(window->wl.title);
     window->wl.title = _glfw_strdup(title);
-    if (window->wl.shellSurface)
+    if (window->wl.xdg.toplevel)
+        xdg_toplevel_set_title(window->wl.xdg.toplevel, title);
+    else if (window->wl.shellSurface)
         wl_shell_surface_set_title(window->wl.shellSurface, title);
 }
 
@@ -558,8 +711,24 @@ void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
                                       int minwidth, int minheight,
                                       int maxwidth, int maxheight)
 {
-    // TODO: find out how to trigger a resize.
-    // The actual limits are checked in the wl_shell_surface::configure handler.
+    if (_glfw.wl.wmBase)
+    {
+        if (window->wl.xdg.toplevel)
+        {
+            if (minwidth == GLFW_DONT_CARE || minheight == GLFW_DONT_CARE)
+                minwidth = minheight = 0;
+            if (maxwidth == GLFW_DONT_CARE || maxheight == GLFW_DONT_CARE)
+                maxwidth = maxheight = 0;
+            xdg_toplevel_set_min_size(window->wl.xdg.toplevel, minwidth, minheight);
+            xdg_toplevel_set_max_size(window->wl.xdg.toplevel, maxwidth, maxheight);
+            wl_surface_commit(window->wl.surface);
+        }
+    }
+    else
+    {
+        // TODO: find out how to trigger a resize.
+        // The actual limits are checked in the wl_shell_surface::configure handler.
+    }
 }
 
 void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom)
@@ -594,54 +763,76 @@ void _glfwPlatformGetWindowContentScale(_GLFWwindow* window,
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
-    // TODO: move to xdg_shell instead of wl_shell.
-    _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Wayland: Iconify window not supported");
+    if (_glfw.wl.wmBase)
+    {
+        if (window->wl.xdg.toplevel)
+            xdg_toplevel_set_minimized(window->wl.xdg.toplevel);
+    }
+    else
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Iconify window not supported on wl_shell");
+    }
 }
 
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
-    // TODO: also do the same for iconified.
-    if (window->monitor || window->wl.maximized)
+    if (window->wl.xdg.toplevel)
     {
-        if (window->wl.shellSurface)
-            wl_shell_surface_set_toplevel(window->wl.shellSurface);
-
-        window->wl.maximized = GLFW_FALSE;
+        if (window->monitor)
+            xdg_toplevel_unset_fullscreen(window->wl.xdg.toplevel);
+        if (window->wl.maximized)
+            xdg_toplevel_unset_maximized(window->wl.xdg.toplevel);
+        // There is no way to unset minimized, or even to know if we are
+        // minimized, so there is nothing to do here.
     }
+    else if (window->wl.shellSurface)
+    {
+        if (window->monitor || window->wl.maximized)
+            wl_shell_surface_set_toplevel(window->wl.shellSurface);
+    }
+    _glfwInputWindowMonitor(window, NULL);
+    window->wl.maximized = GLFW_FALSE;
 }
 
 void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 {
-    if (!window->monitor && !window->wl.maximized)
+    if (window->wl.xdg.toplevel)
     {
-        if (window->wl.shellSurface)
-        {
-            // Let the compositor select the best output.
-            wl_shell_surface_set_maximized(window->wl.shellSurface, NULL);
-        }
-        window->wl.maximized = GLFW_TRUE;
+        xdg_toplevel_set_maximized(window->wl.xdg.toplevel);
     }
+    else if (window->wl.shellSurface)
+    {
+        // Let the compositor select the best output.
+        wl_shell_surface_set_maximized(window->wl.shellSurface, NULL);
+    }
+    window->wl.maximized = GLFW_TRUE;
 }
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
-    if (!window->monitor)
-    {
-        if (!window->wl.shellSurface)
-            createShellSurface(window);
-        window->wl.visible = GLFW_TRUE;
-    }
+    if (_glfw.wl.wmBase && !window->wl.xdg.toplevel)
+        createXdgSurface(window);
+    else if (!window->wl.shellSurface)
+        createShellSurface(window);
+    window->wl.visible = GLFW_TRUE;
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
-    if (!window->monitor)
+    if (window->wl.xdg.toplevel)
     {
-        if (window->wl.shellSurface)
-            wl_shell_surface_destroy(window->wl.shellSurface);
-        window->wl.visible = GLFW_FALSE;
+        xdg_toplevel_destroy(window->wl.xdg.toplevel);
+        xdg_surface_destroy(window->wl.xdg.surface);
+        window->wl.xdg.toplevel = NULL;
+        window->wl.xdg.surface = NULL;
     }
+    else if (window->wl.shellSurface)
+    {
+        wl_shell_surface_destroy(window->wl.shellSurface);
+        window->wl.shellSurface = NULL;
+    }
+    window->wl.visible = GLFW_FALSE;
 }
 
 void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
@@ -663,20 +854,35 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
                                    int width, int height,
                                    int refreshRate)
 {
-    if (monitor)
+    if (window->wl.xdg.toplevel)
     {
-        wl_shell_surface_set_fullscreen(
-            window->wl.shellSurface,
-            WL_SHELL_SURFACE_FULLSCREEN_METHOD_DEFAULT,
-            refreshRate * 1000, // Convert Hz to mHz.
-            monitor->wl.output);
-        setIdleInhibitor(window, GLFW_TRUE);
+        if (monitor)
+        {
+            xdg_toplevel_set_fullscreen(
+                window->wl.xdg.toplevel,
+                monitor->wl.output);
+        }
+        else
+        {
+            xdg_toplevel_unset_fullscreen(window->wl.xdg.toplevel);
+        }
     }
-    else
+    else if (window->wl.shellSurface)
     {
-        wl_shell_surface_set_toplevel(window->wl.shellSurface);
-        setIdleInhibitor(window, GLFW_FALSE);
+        if (monitor)
+        {
+            wl_shell_surface_set_fullscreen(
+                window->wl.shellSurface,
+                WL_SHELL_SURFACE_FULLSCREEN_METHOD_DEFAULT,
+                refreshRate * 1000, // Convert Hz to mHz.
+                monitor->wl.output);
+        }
+        else
+        {
+            wl_shell_surface_set_toplevel(window->wl.shellSurface);
+        }
     }
+    setIdleInhibitor(window, monitor ? GLFW_TRUE : GLFW_FALSE);
     _glfwInputWindowMonitor(window, monitor);
 }
 
@@ -687,7 +893,8 @@ int _glfwPlatformWindowFocused(_GLFWwindow* window)
 
 int _glfwPlatformWindowIconified(_GLFWwindow* window)
 {
-    // TODO: move to xdg_shell, wl_shell doesn't have any iconified concept.
+    // wl_shell doesn't have any iconified concept, and xdg-shell doesn’t give
+    // any way to request whether a surface is iconified.
     return GLFW_FALSE;
 }
 

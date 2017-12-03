@@ -2459,10 +2459,6 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *  @remark @wayland A full screen window will not attempt to change the mode,
  *  no matter what the requested size or refresh rate.
  *
- *  @remark @wayland The wl_shell protocol does not support window
- *  icons, the window will inherit the one defined in the application's
- *  desktop file, so this function emits @ref GLFW_PLATFORM_ERROR.
- *
  *  @remark @wayland Screensaver inhibition requires the idle-inhibit protocol
  *  to be implemented in the user's compositor.
  *
@@ -2606,9 +2602,9 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *  [Bundle Programming Guide](https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/)
  *  in the Mac Developer Library.
  *
- *  @remark @wayland The wl_shell protocol does not support icons, the window
- *  will inherit the one defined in the application's desktop file, so this
- *  function emits @ref GLFW_PLATFORM_ERROR.
+ *  @remark @wayland There is no existing protocol to change an icon, the
+ *  window will thus inherit the one defined in the application's desktop file.
+ *  This function always emits @ref GLFW_PLATFORM_ERROR.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -3016,7 +3012,8 @@ GLFWAPI void glfwSetWindowOpacity(GLFWwindow* window, float opacity);
  *  GLFW_PLATFORM_ERROR.
  *
  *  @remark @wayland There is no concept of iconification in wl_shell, this
- *  function will always emit @ref GLFW_PLATFORM_ERROR.
+ *  function will emit @ref GLFW_PLATFORM_ERROR when using this deprecated
+ *  protocol.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -3541,7 +3538,7 @@ GLFWAPI GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwi
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
  *  @remark @wayland The wl_shell protocol has no concept of iconification,
- *  this callback will never be called.
+ *  this callback will never be called when using this deprecated protocol.
  *
  *  @thread_safety This function must only be called from the main thread.
  *

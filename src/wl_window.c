@@ -236,10 +236,21 @@ static GLFWbool createSurface(_GLFWwindow* window,
 
 static GLFWbool createShellSurface(_GLFWwindow* window)
 {
+    if (!_glfw.wl.shell)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: wl_shell protocol not available");
+        return GLFW_FALSE;
+    }
+
     window->wl.shellSurface = wl_shell_get_shell_surface(_glfw.wl.shell,
                                                          window->wl.surface);
     if (!window->wl.shellSurface)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Shell surface creation failed");
         return GLFW_FALSE;
+    }
 
     wl_shell_surface_add_listener(window->wl.shellSurface,
                                   &shellSurfaceListener,

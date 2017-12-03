@@ -470,6 +470,17 @@ static const struct wl_seat_listener seatListener = {
     seatHandleCapabilities
 };
 
+static void wmBaseHandlePing(void* data,
+                             struct xdg_wm_base* wmBase,
+                             uint32_t serial)
+{
+    xdg_wm_base_pong(wmBase, serial);
+}
+
+static const struct xdg_wm_base_listener wmBaseListener = {
+    wmBaseHandlePing
+};
+
 static void registryHandleGlobal(void* data,
                                  struct wl_registry* registry,
                                  uint32_t name,
@@ -505,6 +516,12 @@ static void registryHandleGlobal(void* data,
                 wl_registry_bind(registry, name, &wl_seat_interface, 1);
             wl_seat_add_listener(_glfw.wl.seat, &seatListener, NULL);
         }
+    }
+    else if (strcmp(interface, "xdg_wm_base") == 0)
+    {
+        _glfw.wl.wmBase =
+            wl_registry_bind(registry, name, &xdg_wm_base_interface, 1);
+        xdg_wm_base_add_listener(_glfw.wl.wmBase, &wmBaseListener, NULL);
     }
     else if (strcmp(interface, "zwp_relative_pointer_manager_v1") == 0)
     {
@@ -851,6 +868,8 @@ void _glfwPlatformTerminate(void)
         wl_shm_destroy(_glfw.wl.shm);
     if (_glfw.wl.shell)
         wl_shell_destroy(_glfw.wl.shell);
+    if (_glfw.wl.wmBase)
+        xdg_wm_base_destroy(_glfw.wl.wmBase);
     if (_glfw.wl.pointer)
         wl_pointer_destroy(_glfw.wl.pointer);
     if (_glfw.wl.keyboard)

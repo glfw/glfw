@@ -41,6 +41,10 @@ elseif (_GLFW_WAYLAND)
 
     ecm_add_wayland_client_protocol(glfw_SOURCES
         PROTOCOL
+        "${WAYLAND_PROTOCOLS_PKGDATADIR}/stable/xdg-shell/xdg-shell.xml"
+        BASENAME xdg-shell)
+    ecm_add_wayland_client_protocol(glfw_SOURCES
+        PROTOCOL
         "${WAYLAND_PROTOCOLS_PKGDATADIR}/unstable/relative-pointer/relative-pointer-unstable-v1.xml"
         BASENAME relative-pointer-unstable-v1)
     ecm_add_wayland_client_protocol(glfw_SOURCES

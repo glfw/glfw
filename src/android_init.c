@@ -28,11 +28,12 @@
 #include <android/log.h>
 #include "internal.h"
 
+struct android_app* _globalApp;
+
 extern int main();
 void handle_cmd(struct android_app* _app, int32_t cmd) {
     switch (cmd) {
     case APP_CMD_INIT_WINDOW: {
-        _glfw.app = _app; // The window is being shown so the initialization is finished.
         break;
     }
     case APP_CMD_LOST_FOCUS: {
@@ -50,16 +51,9 @@ void handle_cmd(struct android_app* _app, int32_t cmd) {
 // Android Entry Point
 void android_main(struct android_app *app) {
     app->onAppCmd = handle_cmd;
-    pthread_create(&(pthread_t){0}, NULL, (void*)&main, NULL); // Call the main entry point
-
-    while (1) {
-        struct android_poll_source* source;
-        // Process events
-        while ((ALooper_pollAll(0, NULL, NULL,(void**)&source)) >= 0)
-            if (source != NULL)
-                source->process(app, source);
-    }
-
+    // hmmm...global....eek
+    _globalApp = app;
+    main();
 }
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -67,8 +61,8 @@ void android_main(struct android_app *app) {
 
 int _glfwPlatformInit(void)
 {
+    _glfw.gstate.app = _globalApp;
     _glfwInitTimerPOSIX();
-    while (_glfw.app == NULL); // Wait for the app to be initialized or the app will crash occasionally
     return GLFW_TRUE;
 }
 

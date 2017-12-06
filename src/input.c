@@ -1150,8 +1150,8 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state)
             state->axes[i] = js->axes[js->mapping->axes[i].value];
         else if (js->mapping->buttons[i].type == _GLFW_JOYSTICK_HATBIT)
         {
-            const unsigned int hat = js->mapping->buttons[i].value >> 4;
-            const unsigned int bit = js->mapping->buttons[i].value & 0xf;
+            const unsigned int hat = js->mapping->axes[i].value >> 4;
+            const unsigned int bit = js->mapping->axes[i].value & 0xf;
             if (js->hats[hat] & bit)
                 state->axes[i] = 1.f;
         }

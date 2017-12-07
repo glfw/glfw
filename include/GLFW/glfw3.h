@@ -962,6 +962,7 @@ extern "C" {
  *  [attribute](@ref GLFW_CLIENT_API_attrib).
  */
 #define GLFW_CONTEXT_CREATION_API   0x0002200B
+#define GLFW_CONTEXT_RENDERER       0x0002200C
 
 #define GLFW_COCOA_RETINA_FRAMEBUFFER 0x00023001
 #define GLFW_COCOA_FRAME_AUTOSAVE     0x00023002
@@ -996,6 +997,9 @@ extern "C" {
 #define GLFW_NATIVE_CONTEXT_API     0x00036001
 #define GLFW_EGL_CONTEXT_API        0x00036002
 #define GLFW_OSMESA_CONTEXT_API     0x00036003
+
+#define GLFW_HARDWARE_RENDERER      0x00037001
+#define GLFW_SOFTWARE_RENDERER      0x00037002
 
 /*! @defgroup shapes Standard cursor shapes
  *  @brief Standard system cursor shapes.

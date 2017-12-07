@@ -100,10 +100,21 @@ static int choosePixelFormat(_GLFWwindow* window,
                 continue;
             }
 
-            if (getPixelFormatAttrib(window, n, WGL_ACCELERATION_ARB) ==
-                 WGL_NO_ACCELERATION_ARB)
+            if (ctxconfig->renderer == GLFW_HARDWARE_RENDERER)
             {
-                continue;
+                if (getPixelFormatAttrib(window, n, WGL_ACCELERATION_ARB) ==
+                    WGL_NO_ACCELERATION_ARB)
+                {
+                    continue;
+                }
+            }
+            else if (ctxconfig->renderer == GLFW_SOFTWARE_RENDERER)
+            {
+                if (getPixelFormatAttrib(window, n, WGL_ACCELERATION_ARB) !=
+                    WGL_NO_ACCELERATION_ARB)
+                {
+                    continue;
+                }
             }
 
             u->redBits = getPixelFormatAttrib(window, n, WGL_RED_BITS_ARB);
@@ -170,10 +181,21 @@ static int choosePixelFormat(_GLFWwindow* window,
                 continue;
             }
 
-            if (!(pfd.dwFlags & PFD_GENERIC_ACCELERATED) &&
-                (pfd.dwFlags & PFD_GENERIC_FORMAT))
+            if (ctxconfig->renderer == GLFW_HARDWARE_RENDERER)
             {
-                continue;
+                if (!(pfd.dwFlags & PFD_GENERIC_ACCELERATED) &&
+                    (pfd.dwFlags & PFD_GENERIC_FORMAT))
+                {
+                    continue;
+                }
+            }
+            else if (ctxconfig->renderer == GLFW_SOFTWARE_RENDERER)
+            {
+                if ((pfd.dwFlags & PFD_GENERIC_ACCELERATED) &&
+                    !(pfd.dwFlags & PFD_GENERIC_FORMAT))
+                {
+                    continue;
+                }
             }
 
             if (pfd.iPixelType != PFD_TYPE_RGBA)

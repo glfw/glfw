@@ -26,6 +26,8 @@
 
 #include "internal.h"
 
+#include <OpenGL/CGLRenderers.h>
+
 
 static void makeContextCurrentNSGL(_GLFWwindow* window)
 {
@@ -165,8 +167,16 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     NSOpenGLPixelFormatAttribute attribs[40];
     int index = 0;
 
-    addAttrib(NSOpenGLPFAAccelerated);
     addAttrib(NSOpenGLPFAClosestPolicy);
+
+    if (ctxconfig->renderer == GLFW_HARDWARE_RENDERER)
+    {
+        addAttrib(NSOpenGLPFAAccelerated);
+    }
+    else if (ctxconfig->renderer == GLFW_SOFTWARE_RENDERER)
+    {
+        setAttrib(NSOpenGLPFARendererID, kCGLRendererGenericFloatID);
+    }
 
     if (ctxconfig->nsgl.offline)
     {

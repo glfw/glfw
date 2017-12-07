@@ -511,6 +511,9 @@ present with @ref glfwJoystickPresent.
 int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
 @endcode
 
+Each joystick has zero or more axes, zero or more buttons, zero or more hats,
+a human-readable name, a user pointer and an SDL compatible GUID.
+
 When GLFW is initialized, detected joysticks are added to to the beginning of
 the array.  Once a joystick is detected, it keeps its assigned ID until it is
 disconnected or the library is terminated, so as joysticks are connected and
@@ -613,6 +616,17 @@ and make may have the same name.  Only the [joystick token](@ref joysticks) is
 guaranteed to be unique, and only until that joystick is disconnected.
 
 
+@subsection joystick_userptr Joystick user pointer
+
+Each joystick has a user pointer that can be set with @ref
+glfwSetJoystickUserPointer and queried with @ref glfwGetJoystickUserPointer.
+This can be used for any purpose you need and will not be modified by GLFW.  The
+value will be kept until the joystick is disconnected or until the library is
+terminated.
+
+The initial value of the pointer is `NULL`.
+
+
 @subsection joystick_event Joystick configuration changes
 
 If you wish to be notified when a joystick is connected or disconnected, set
@@ -644,6 +658,10 @@ platforms, you need to call one of the [event processing](@ref events)
 functions.  Joystick disconnection may also be detected and the callback
 called by joystick functions.  The function will then return whatever it
 returns for a disconnected joystick.
+
+Only @ref glfwGetJoystickName and @ref glfwGetJoystickUserPointer will return
+useful values for a disconnected joystick and only before the monitor callback
+returns.
 
 
 @subsection gamepad Gamepad input

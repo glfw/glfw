@@ -531,7 +531,7 @@ See @ref events.
 @subsection window_userptr User pointer
 
 Each window has a user pointer that can be set with @ref
-glfwSetWindowUserPointer and fetched with @ref glfwGetWindowUserPointer.  This
+glfwSetWindowUserPointer and queried with @ref glfwGetWindowUserPointer.  This
 can be used for any purpose you need and will not be modified by GLFW throughout
 the life-time of the window.
 

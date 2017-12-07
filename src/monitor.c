@@ -351,6 +351,24 @@ GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* handle)
     return monitor->name;
 }
 
+GLFWAPI void glfwSetMonitorUserPointer(GLFWmonitor* handle, void* pointer)
+{
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    assert(monitor != NULL);
+
+    _GLFW_REQUIRE_INIT();
+    monitor->userPointer = pointer;
+}
+
+GLFWAPI void* glfwGetMonitorUserPointer(GLFWmonitor* handle)
+{
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    assert(monitor != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    return monitor->userPointer;
+}
+
 GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);

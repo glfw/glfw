@@ -1970,6 +1970,56 @@ GLFWAPI void glfwGetMonitorContentScale(GLFWmonitor* monitor, float* xscale, flo
  */
 GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* monitor);
 
+/*! @brief Sets the user pointer of the specified monitor.
+ *
+ *  This function sets the user-defined pointer of the specified monitor.  The
+ *  current value is retained until the monitor is disconnected.  The initial
+ *  value is `NULL`.
+ *
+ *  This function may be called from the monitor callback, even for a monitor
+ *  that is being disconnected.
+ *
+ *  @param[in] monitor The monitor whose pointer to set.
+ *  @param[in] pointer The new value.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @sa @ref monitor_userptr
+ *  @sa @ref glfwGetMonitorUserPointer
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup monitor
+ */
+GLFWAPI void glfwSetMonitorUserPointer(GLFWmonitor* monitor, void* pointer);
+
+/*! @brief Returns the user pointer of the specified monitor.
+ *
+ *  This function returns the current value of the user-defined pointer of the
+ *  specified monitor.  The initial value is `NULL`.
+ *
+ *  This function may be called from the monitor callback, even for a monitor
+ *  that is being disconnected.
+ *
+ *  @param[in] monitor The monitor whose pointer to return.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @sa @ref monitor_userptr
+ *  @sa @ref glfwSetMonitorUserPointer
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup monitor
+ */
+GLFWAPI void* glfwGetMonitorUserPointer(GLFWmonitor* monitor);
+
 /*! @brief Sets the monitor configuration callback.
  *
  *  This function sets the monitor configuration callback, or removes the
@@ -4593,6 +4643,56 @@ GLFWAPI const char* glfwGetJoystickName(int jid);
  *  @ingroup input
  */
 GLFWAPI const char* glfwGetJoystickGUID(int jid);
+
+/*! @brief Sets the user pointer of the specified joystick.
+ *
+ *  This function sets the user-defined pointer of the specified joystick.  The
+ *  current value is retained until the joystick is disconnected.  The initial
+ *  value is `NULL`.
+ *
+ *  This function may be called from the joystick callback, even for a joystick
+ *  that is being disconnected.
+ *
+ *  @param[in] joystick The joystick whose pointer to set.
+ *  @param[in] pointer The new value.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @sa @ref joystick_userptr
+ *  @sa @ref glfwGetJoystickUserPointer
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup input
+ */
+GLFWAPI void glfwSetJoystickUserPointer(int jid, void* pointer);
+
+/*! @brief Returns the user pointer of the specified joystick.
+ *
+ *  This function returns the current value of the user-defined pointer of the
+ *  specified joystick.  The initial value is `NULL`.
+ *
+ *  This function may be called from the joystick callback, even for a joystick
+ *  that is being disconnected.
+ *
+ *  @param[in] joystick The joystick whose pointer to return.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @sa @ref joystick_userptr
+ *  @sa @ref glfwSetJoystickUserPointer
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup input
+ */
+GLFWAPI void* glfwGetJoystickUserPointer(int jid);
 
 /*! @brief Returns whether the specified joystick has a gamepad mapping.
  *

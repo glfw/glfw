@@ -151,6 +151,10 @@ information on what to include when reporting a bug.
 - Added `glfwWindowHintString` for setting string type window hints (#893,#1139)
 - Added `glfwGetWindowOpacity` and `glfwSetWindowOpacity` for controlling whole
   window transparency (#1089)
+- Added `glfwSetMonitorUserPointer` and `glfwGetMonitorUserPointer` for
+  per-monitor user pointers
+- Added `glfwSetJoystickUserPointer` and `glfwGetJoystickUserPointer` for
+  per-joystick user pointers
 - Added `glfwGetX11SelectionString` and `glfwSetX11SelectionString`
   functions for accessing X11 primary selection (#894,#1056)
 - Added headless [OSMesa](http://mesa3d.org/osmesa.html) backend (#850)

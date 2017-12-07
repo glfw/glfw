@@ -139,6 +139,13 @@ creation API, intended for automated testing.  This backend does not provide
 input.
 
 
+@subsection news_33_userptr Monitor and joystick user pointers
+
+GLFW now supports setting and querying user pointers for connected monitors and
+joysticks with @ref glfwSetMonitorUserPointer, @ref glfwGetMonitorUserPointer,
+@ref glfwSetJoystickUserPointer and @ref glfwGetJoystickUserPointer.
+
+
 @subsection news_33_primary X11 primary selection access
 
 GLFW now supports querying and setting the X11 primary selection via the native

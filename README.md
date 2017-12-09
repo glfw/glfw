@@ -124,6 +124,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+- [GLES] Include proper `glext` headers when required with OpenGL ES 3.x
 - Added `glfwGetError` function for querying the last error code and its
   description (#970)
 - Added `glfwUpdateGamepadMappings` function for importing gamepad mappings in

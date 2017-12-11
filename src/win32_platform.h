@@ -114,15 +114,8 @@
 #define IS_POINTER_INCONTACT_WPARAM(wParam)         IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_INCONTACT)
 #define IS_POINTER_FLAG_SET_WPARAM(wParam, flag)    (((DWORD)HIWORD(wParam) & (flag)) == (flag))
 
-
-typedef DWORD POINTER_INPUT_TYPE;
-typedef UINT32 POINTER_FLAGS;
-typedef UINT32 PEN_FLAGS;
-typedef UINT32 PEN_MASK;
-typedef UINT32 TOUCH_FLAGS;
-typedef UINT32 TOUCH_MASK;
-
-typedef enum tagPOINTER_BUTTON_CHANGE_TYPE {
+typedef enum
+{
     POINTER_CHANGE_NONE,
     POINTER_CHANGE_FIRSTBUTTON_DOWN,
     POINTER_CHANGE_FIRSTBUTTON_UP,
@@ -136,11 +129,12 @@ typedef enum tagPOINTER_BUTTON_CHANGE_TYPE {
     POINTER_CHANGE_FIFTHBUTTON_UP,
 } POINTER_BUTTON_CHANGE_TYPE;
 
-typedef struct tagPOINTER_INFO {
-    POINTER_INPUT_TYPE    pointerType;
+typedef struct
+{
+    DWORD           pointerType;
     UINT32          pointerId;
     UINT32          frameId;
-    POINTER_FLAGS   pointerFlags;
+    UINT32          pointerFlags;
     HANDLE          sourceDevice;
     HWND            hwndTarget;
     POINT           ptPixelLocation;
@@ -155,47 +149,41 @@ typedef struct tagPOINTER_INFO {
     POINTER_BUTTON_CHANGE_TYPE ButtonChangeType;
 } POINTER_INFO;
 
-typedef struct tagPOINTER_PEN_INFO {
+typedef struct
+{
     POINTER_INFO    pointerInfo;
-    PEN_FLAGS       penFlags;
-    PEN_MASK        penMask;
+    UINT32          penFlags;
+    UINT32          penMask;
     UINT32          pressure;
     UINT32          rotation;
     INT32           tiltX;
     INT32           tiltY;
 } POINTER_PEN_INFO;
 
-typedef struct tagPOINTER_TOUCH_INFO {
+typedef struct
+{
     POINTER_INFO    pointerInfo;
-    TOUCH_FLAGS     touchFlags;
-    TOUCH_MASK      touchMask;
+    UINT32          touchFlags;
+    UINT32          touchMask;
     RECT            rcContact;
     RECT            rcContactRaw;
     UINT32          orientation;
     UINT32          pressure;
 } POINTER_TOUCH_INFO;
 
-enum tagPOINTER_INPUT_TYPE {
-    PT_POINTER = 0x00000001,   // Generic pointer
-    PT_TOUCH = 0x00000002,   // Touch
-    PT_PEN = 0x00000003,   // Pen
-    PT_MOUSE = 0x00000004,   // Mouse
-#if(WINVER >= 0x0603)
+enum {
+    PT_POINTER  = 0x00000001,   // Generic pointer
+    PT_TOUCH    = 0x00000002,   // Touch
+    PT_PEN      = 0x00000003,   // Pen
+    PT_MOUSE    = 0x00000004,   // Mouse
+#if WINVER >= 0x0603
     PT_TOUCHPAD = 0x00000005,   // Touchpad
 #endif /* WINVER >= 0x0603 */
 };
 
-typedef struct tagPOINTER_TYPE_INFO {
-    POINTER_INPUT_TYPE  type;
-    union {
-        POINTER_TOUCH_INFO touchInfo;
-        POINTER_PEN_INFO   penInfo;
-    } DUMMYUNIONNAME;
-} POINTER_TYPE_INFO, *PPOINTER_TYPE_INFO;
-
-WINUSERAPI BOOL WINAPI GetPointerType(_In_ UINT32 pointerId, _Out_ POINTER_INPUT_TYPE *pointerType);
-WINUSERAPI BOOL WINAPI GetPointerPenInfo(_In_ UINT32 pointerId, _Out_writes_(1) POINTER_PEN_INFO *penInfo);
-WINUSERAPI BOOL WINAPI GetPointerInfo(_In_ UINT32 pointerId, _Out_writes_(1) POINTER_INFO *pointerInfo);
+WINUSERAPI BOOL WINAPI GetPointerType(UINT32,DWORD*);
+WINUSERAPI BOOL WINAPI GetPointerPenInfo(UINT32,POINTER_PEN_INFO*);
+WINUSERAPI BOOL WINAPI GetPointerInfo(UINT32,POINTER_INFO*);
 
 #endif /*Windows 8 and above*/
 

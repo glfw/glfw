@@ -570,11 +570,11 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         POINTER_PEN_INFO     penInfo;
         POINTER_INFO         pointerInfo;
         UINT32               pointerId = GET_POINTERID_WPARAM(wParam);
-        POINTER_INPUT_TYPE   pointerType = PT_POINTER;
+        DWORD                pointerType = PT_POINTER;
 
         // default to unhandled to enable call to DefWindowProc
         BOOL fHandled = FALSE;
-        
+
         // Retrieve common pointer information
         if (!GetPointerType(pointerId, &pointerType))
         {
@@ -583,7 +583,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             // set PT_POINTER to fall to default case below
             pointerType = PT_POINTER;
         }
-        
+
         switch (pointerType)
         {
         case (PT_PEN):
@@ -619,485 +619,485 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         else
         {
             // success, proceed with pointerInfo.
-//          fHandled = HandleGenericPointerMessage(&pointerInfo);
+            //          fHandled = HandleGenericPointerMessage(&pointerInfo);
         }
         break;
     }
 
     case WM_CAPTURECHANGED:
+    {
+        // HACK: Disable the cursor once the caption button action has been
+        //       completed or cancelled
+        if (lParam == 0 && window->win32.frameAction)
         {
-            // HACK: Disable the cursor once the caption button action has been
-            //       completed or cancelled
-            if (lParam == 0 && window->win32.frameAction)
-            {
-                if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                    _glfwPlatformSetCursorMode(window, GLFW_CURSOR_DISABLED);
-
-                window->win32.frameAction = GLFW_FALSE;
-            }
-
-            break;
-        }
-
-        case WM_SETFOCUS:
-        {
-            _glfwInputWindowFocus(window, GLFW_TRUE);
-
-            // HACK: Do not disable cursor while the user is interacting with
-            //       a caption button
-            if (window->win32.frameAction)
-                break;
-
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 _glfwPlatformSetCursorMode(window, GLFW_CURSOR_DISABLED);
 
-            return 0;
+            window->win32.frameAction = GLFW_FALSE;
         }
 
-        case WM_KILLFOCUS:
+        break;
+    }
+
+    case WM_SETFOCUS:
+    {
+        _glfwInputWindowFocus(window, GLFW_TRUE);
+
+        // HACK: Do not disable cursor while the user is interacting with
+        //       a caption button
+        if (window->win32.frameAction)
+            break;
+
+        if (window->cursorMode == GLFW_CURSOR_DISABLED)
+            _glfwPlatformSetCursorMode(window, GLFW_CURSOR_DISABLED);
+
+        return 0;
+    }
+
+    case WM_KILLFOCUS:
+    {
+        if (window->cursorMode == GLFW_CURSOR_DISABLED)
+            _glfwPlatformSetCursorMode(window, GLFW_CURSOR_NORMAL);
+
+        if (window->monitor && window->autoIconify)
+            _glfwPlatformIconifyWindow(window);
+
+        _glfwInputWindowFocus(window, GLFW_FALSE);
+        return 0;
+    }
+
+    case WM_SYSCOMMAND:
+    {
+        switch (wParam & 0xfff0)
         {
-            if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_NORMAL);
-
-            if (window->monitor && window->autoIconify)
-                _glfwPlatformIconifyWindow(window);
-
-            _glfwInputWindowFocus(window, GLFW_FALSE);
-            return 0;
-        }
-
-        case WM_SYSCOMMAND:
+        case SC_SCREENSAVE:
+        case SC_MONITORPOWER:
         {
-            switch (wParam & 0xfff0)
+            if (window->monitor)
             {
-            case SC_SCREENSAVE:
-            case SC_MONITORPOWER:
-            {
-                if (window->monitor)
-                {
-                    // We are running in full screen mode, so disallow
-                    // screen saver and screen blanking
-                    return 0;
-                }
-                else
-                    break;
-            }
-
-            // User trying to access application menu using ALT?
-            case SC_KEYMENU:
+                // We are running in full screen mode, so disallow
+                // screen saver and screen blanking
                 return 0;
             }
-            break;
-        }
-
-        case WM_CLOSE:
-        {
-            _glfwInputWindowCloseRequest(window);
-            return 0;
-        }
-
-        case WM_INPUTLANGCHANGE:
-        {
-            _glfwUpdateKeyNamesWin32();
-            break;
-        }
-
-        case WM_CHAR:
-        case WM_SYSCHAR:
-        case WM_UNICHAR:
-        {
-            const GLFWbool plain = (uMsg != WM_SYSCHAR);
-
-            if (uMsg == WM_UNICHAR && wParam == UNICODE_NOCHAR)
-            {
-                // WM_UNICHAR is not sent by Windows, but is sent by some
-                // third-party input method engine
-                // Returning TRUE here announces support for this message
-                return TRUE;
-            }
-
-            _glfwInputChar(window, (unsigned int)wParam, getKeyMods(), plain);
-            return 0;
-        }
-
-        case WM_KEYDOWN:
-        case WM_SYSKEYDOWN:
-        case WM_KEYUP:
-        case WM_SYSKEYUP:
-        {
-            const int key = translateKey(wParam, lParam);
-            const int scancode = (lParam >> 16) & 0x1ff;
-            const int action = ((lParam >> 31) & 1) ? GLFW_RELEASE : GLFW_PRESS;
-            const int mods = getKeyMods();
-
-            if (key == _GLFW_KEY_INVALID)
-                break;
-
-            if (action == GLFW_RELEASE && wParam == VK_SHIFT)
-            {
-                // HACK: Release both Shift keys on Shift up event, as when both
-                //       are pressed the first release does not emit any event
-                // NOTE: The other half of this is in _glfwPlatformPollEvents
-                _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, scancode, action, mods);
-                _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, scancode, action, mods);
-            }
-            else if (wParam == VK_SNAPSHOT)
-            {
-                // HACK: Key down is not reported for the Print Screen key
-                _glfwInputKey(window, key, scancode, GLFW_PRESS, mods);
-                _glfwInputKey(window, key, scancode, GLFW_RELEASE, mods);
-            }
             else
-                _glfwInputKey(window, key, scancode, action, mods);
-
-            break;
-        }
-
-        case WM_LBUTTONDOWN:
-        case WM_RBUTTONDOWN:
-        case WM_MBUTTONDOWN:
-        case WM_XBUTTONDOWN:
-        case WM_LBUTTONUP:
-        case WM_RBUTTONUP:
-        case WM_MBUTTONUP:
-        case WM_XBUTTONUP:
-        {
-            int i, button, action;
-
-            if (uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP)
-                button = GLFW_MOUSE_BUTTON_LEFT;
-            else if (uMsg == WM_RBUTTONDOWN || uMsg == WM_RBUTTONUP)
-                button = GLFW_MOUSE_BUTTON_RIGHT;
-            else if (uMsg == WM_MBUTTONDOWN || uMsg == WM_MBUTTONUP)
-                button = GLFW_MOUSE_BUTTON_MIDDLE;
-            else if (GET_XBUTTON_WPARAM(wParam) == XBUTTON1)
-                button = GLFW_MOUSE_BUTTON_4;
-            else
-                button = GLFW_MOUSE_BUTTON_5;
-
-            if (uMsg == WM_LBUTTONDOWN || uMsg == WM_RBUTTONDOWN ||
-                uMsg == WM_MBUTTONDOWN || uMsg == WM_XBUTTONDOWN)
-            {
-                action = GLFW_PRESS;
-            }
-            else
-                action = GLFW_RELEASE;
-
-            for (i = 0; i <= GLFW_MOUSE_BUTTON_LAST; i++)
-            {
-                if (window->mouseButtons[i] == GLFW_PRESS)
-                    break;
-            }
-
-            if (i > GLFW_MOUSE_BUTTON_LAST)
-                SetCapture(hWnd);
-
-            _glfwInputMouseClick(window, button, action, getKeyMods());
-
-            for (i = 0; i <= GLFW_MOUSE_BUTTON_LAST; i++)
-            {
-                if (window->mouseButtons[i] == GLFW_PRESS)
-                    break;
-            }
-
-            if (i > GLFW_MOUSE_BUTTON_LAST)
-                ReleaseCapture();
-
-            if (uMsg == WM_XBUTTONDOWN || uMsg == WM_XBUTTONUP)
-                return TRUE;
-
-            return 0;
-        }
-
-        case WM_MOUSEMOVE:
-        {
-            const int x = GET_X_LPARAM(lParam);
-            const int y = GET_Y_LPARAM(lParam);
-
-            // Disabled cursor motion input is provided by WM_INPUT
-            if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 break;
+        }
 
-            _glfwInputCursorPos(window, x, y);
-
-            window->win32.lastCursorPosX = x;
-            window->win32.lastCursorPosY = y;
-
-            if (!window->win32.cursorTracked)
-            {
-                TRACKMOUSEEVENT tme;
-                ZeroMemory(&tme, sizeof(tme));
-                tme.cbSize = sizeof(tme);
-                tme.dwFlags = TME_LEAVE;
-                tme.hwndTrack = window->win32.handle;
-                TrackMouseEvent(&tme);
-
-                window->win32.cursorTracked = GLFW_TRUE;
-                _glfwInputCursorEnter(window, GLFW_TRUE);
-            }
-
+        // User trying to access application menu using ALT?
+        case SC_KEYMENU:
             return 0;
         }
+        break;
+    }
 
-        case WM_INPUT:
+    case WM_CLOSE:
+    {
+        _glfwInputWindowCloseRequest(window);
+        return 0;
+    }
+
+    case WM_INPUTLANGCHANGE:
+    {
+        _glfwUpdateKeyNamesWin32();
+        break;
+    }
+
+    case WM_CHAR:
+    case WM_SYSCHAR:
+    case WM_UNICHAR:
+    {
+        const GLFWbool plain = (uMsg != WM_SYSCHAR);
+
+        if (uMsg == WM_UNICHAR && wParam == UNICODE_NOCHAR)
         {
-            UINT size;
-            HRAWINPUT ri = (HRAWINPUT)lParam;
-            RAWINPUT* data;
-            int dx, dy;
-
-            // Only process input when disabled cursor mode is applied
-            if (_glfw.win32.disabledCursorWindow != window)
-                break;
-
-            GetRawInputData(ri, RID_INPUT, NULL, &size, sizeof(RAWINPUTHEADER));
-            if (size > (UINT)_glfw.win32.rawInputSize)
-            {
-                free(_glfw.win32.rawInput);
-                _glfw.win32.rawInput = calloc(size, 1);
-                _glfw.win32.rawInputSize = size;
-            }
-
-            size = _glfw.win32.rawInputSize;
-            if (GetRawInputData(ri, RID_INPUT,
-                _glfw.win32.rawInput, &size,
-                sizeof(RAWINPUTHEADER)) == (UINT)-1)
-            {
-                _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Win32: Failed to retrieve raw input data");
-                break;
-            }
-
-            data = _glfw.win32.rawInput;
-            if (data->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
-            {
-                dx = data->data.mouse.lLastX - window->win32.lastCursorPosX;
-                dy = data->data.mouse.lLastY - window->win32.lastCursorPosY;
-            }
-            else
-            {
-                dx = data->data.mouse.lLastX;
-                dy = data->data.mouse.lLastY;
-            }
-
-            _glfwInputCursorPos(window,
-                window->virtualCursorPosX + dx,
-                window->virtualCursorPosY + dy);
-
-            window->win32.lastCursorPosX += dx;
-            window->win32.lastCursorPosY += dy;
-            break;
-        }
-
-        case WM_MOUSELEAVE:
-        {
-            window->win32.cursorTracked = GLFW_FALSE;
-            _glfwInputCursorEnter(window, GLFW_FALSE);
-            return 0;
-        }
-
-        case WM_MOUSEWHEEL:
-        {
-            _glfwInputScroll(window, 0.0, (SHORT)HIWORD(wParam) / (double)WHEEL_DELTA);
-            return 0;
-        }
-
-        case WM_MOUSEHWHEEL:
-        {
-            // This message is only sent on Windows Vista and later
-            // NOTE: The X-axis is inverted for consistency with macOS and X11
-            _glfwInputScroll(window, -((SHORT)HIWORD(wParam) / (double)WHEEL_DELTA), 0.0);
-            return 0;
-        }
-
-        case WM_ENTERSIZEMOVE:
-        case WM_ENTERMENULOOP:
-        {
-            // HACK: Postpone cursor disabling while the user is moving or
-            //       resizing the window or using the menu
-            if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_NORMAL);
-
-            break;
-        }
-
-        case WM_EXITSIZEMOVE:
-        case WM_EXITMENULOOP:
-        {
-            // HACK: Disable the cursor once the user is done moving or
-            //       resizing the window or using the menu
-            if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_DISABLED);
-
-            break;
-        }
-
-        case WM_SIZE:
-        {
-            const GLFWbool iconified = wParam == SIZE_MINIMIZED;
-            const GLFWbool maximized = wParam == SIZE_MAXIMIZED ||
-                (window->win32.maximized &&
-                    wParam != SIZE_RESTORED);
-
-            if (_glfw.win32.disabledCursorWindow == window)
-                updateClipRect(window);
-
-            if (window->win32.iconified != iconified)
-                _glfwInputWindowIconify(window, iconified);
-
-            if (window->win32.maximized != maximized)
-                _glfwInputWindowMaximize(window, maximized);
-
-            _glfwInputFramebufferSize(window, LOWORD(lParam), HIWORD(lParam));
-            _glfwInputWindowSize(window, LOWORD(lParam), HIWORD(lParam));
-
-            if (window->monitor && window->win32.iconified != iconified)
-            {
-                if (iconified)
-                    releaseMonitor(window);
-                else
-                    acquireMonitor(window);
-            }
-
-            window->win32.iconified = iconified;
-            window->win32.maximized = maximized;
-            return 0;
-        }
-
-        case WM_MOVE:
-        {
-            if (_glfw.win32.disabledCursorWindow == window)
-                updateClipRect(window);
-
-            // NOTE: This cannot use LOWORD/HIWORD recommended by MSDN, as
-            // those macros do not handle negative window positions correctly
-            _glfwInputWindowPos(window,
-                GET_X_LPARAM(lParam),
-                GET_Y_LPARAM(lParam));
-            return 0;
-        }
-
-        case WM_SIZING:
-        {
-            if (window->numer == GLFW_DONT_CARE ||
-                window->denom == GLFW_DONT_CARE)
-            {
-                break;
-            }
-
-            applyAspectRatio(window, (int)wParam, (RECT*)lParam);
+            // WM_UNICHAR is not sent by Windows, but is sent by some
+            // third-party input method engine
+            // Returning TRUE here announces support for this message
             return TRUE;
         }
 
-        case WM_GETMINMAXINFO:
+        _glfwInputChar(window, (unsigned int)wParam, getKeyMods(), plain);
+        return 0;
+    }
+
+    case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
+    case WM_KEYUP:
+    case WM_SYSKEYUP:
+    {
+        const int key = translateKey(wParam, lParam);
+        const int scancode = (lParam >> 16) & 0x1ff;
+        const int action = ((lParam >> 31) & 1) ? GLFW_RELEASE : GLFW_PRESS;
+        const int mods = getKeyMods();
+
+        if (key == _GLFW_KEY_INVALID)
+            break;
+
+        if (action == GLFW_RELEASE && wParam == VK_SHIFT)
         {
-            int xoff, yoff;
-            MINMAXINFO* mmi = (MINMAXINFO*)lParam;
+            // HACK: Release both Shift keys on Shift up event, as when both
+            //       are pressed the first release does not emit any event
+            // NOTE: The other half of this is in _glfwPlatformPollEvents
+            _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, scancode, action, mods);
+            _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, scancode, action, mods);
+        }
+        else if (wParam == VK_SNAPSHOT)
+        {
+            // HACK: Key down is not reported for the Print Screen key
+            _glfwInputKey(window, key, scancode, GLFW_PRESS, mods);
+            _glfwInputKey(window, key, scancode, GLFW_RELEASE, mods);
+        }
+        else
+            _glfwInputKey(window, key, scancode, action, mods);
 
-            if (window->monitor)
+        break;
+    }
+
+    case WM_LBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+    case WM_MBUTTONDOWN:
+    case WM_XBUTTONDOWN:
+    case WM_LBUTTONUP:
+    case WM_RBUTTONUP:
+    case WM_MBUTTONUP:
+    case WM_XBUTTONUP:
+    {
+        int i, button, action;
+
+        if (uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP)
+            button = GLFW_MOUSE_BUTTON_LEFT;
+        else if (uMsg == WM_RBUTTONDOWN || uMsg == WM_RBUTTONUP)
+            button = GLFW_MOUSE_BUTTON_RIGHT;
+        else if (uMsg == WM_MBUTTONDOWN || uMsg == WM_MBUTTONUP)
+            button = GLFW_MOUSE_BUTTON_MIDDLE;
+        else if (GET_XBUTTON_WPARAM(wParam) == XBUTTON1)
+            button = GLFW_MOUSE_BUTTON_4;
+        else
+            button = GLFW_MOUSE_BUTTON_5;
+
+        if (uMsg == WM_LBUTTONDOWN || uMsg == WM_RBUTTONDOWN ||
+            uMsg == WM_MBUTTONDOWN || uMsg == WM_XBUTTONDOWN)
+        {
+            action = GLFW_PRESS;
+        }
+        else
+            action = GLFW_RELEASE;
+
+        for (i = 0; i <= GLFW_MOUSE_BUTTON_LAST; i++)
+        {
+            if (window->mouseButtons[i] == GLFW_PRESS)
                 break;
-
-            getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
-                0, 0, &xoff, &yoff);
-
-            if (window->minwidth != GLFW_DONT_CARE &&
-                window->minheight != GLFW_DONT_CARE)
-            {
-                mmi->ptMinTrackSize.x = window->minwidth + xoff;
-                mmi->ptMinTrackSize.y = window->minheight + yoff;
-            }
-
-            if (window->maxwidth != GLFW_DONT_CARE &&
-                window->maxheight != GLFW_DONT_CARE)
-            {
-                mmi->ptMaxTrackSize.x = window->maxwidth + xoff;
-                mmi->ptMaxTrackSize.y = window->maxheight + yoff;
-            }
-
-            if (!window->decorated)
-            {
-                MONITORINFO mi;
-                const HMONITOR mh = MonitorFromWindow(window->win32.handle,
-                                                      MONITOR_DEFAULTTONEAREST);
-
-                ZeroMemory(&mi, sizeof(mi));
-                mi.cbSize = sizeof(mi);
-                GetMonitorInfo(mh, &mi);
-
-                mmi->ptMaxPosition.x = mi.rcWork.left - mi.rcMonitor.left;
-                mmi->ptMaxPosition.y = mi.rcWork.top - mi.rcMonitor.top;
-                mmi->ptMaxSize.x = mi.rcWork.right - mi.rcWork.left;
-                mmi->ptMaxSize.y = mi.rcWork.bottom - mi.rcWork.top;
-            }
-
-            return 0;
         }
 
-        case WM_PAINT:
+        if (i > GLFW_MOUSE_BUTTON_LAST)
+            SetCapture(hWnd);
+
+        _glfwInputMouseClick(window, button, action, getKeyMods());
+
+        for (i = 0; i <= GLFW_MOUSE_BUTTON_LAST; i++)
         {
-            _glfwInputWindowDamage(window);
+            if (window->mouseButtons[i] == GLFW_PRESS)
+                break;
+        }
+
+        if (i > GLFW_MOUSE_BUTTON_LAST)
+            ReleaseCapture();
+
+        if (uMsg == WM_XBUTTONDOWN || uMsg == WM_XBUTTONUP)
+            return TRUE;
+
+        return 0;
+    }
+
+    case WM_MOUSEMOVE:
+    {
+        const int x = GET_X_LPARAM(lParam);
+        const int y = GET_Y_LPARAM(lParam);
+
+        // Disabled cursor motion input is provided by WM_INPUT
+        if (window->cursorMode == GLFW_CURSOR_DISABLED)
+            break;
+
+        _glfwInputCursorPos(window, x, y);
+
+        window->win32.lastCursorPosX = x;
+        window->win32.lastCursorPosY = y;
+
+        if (!window->win32.cursorTracked)
+        {
+            TRACKMOUSEEVENT tme;
+            ZeroMemory(&tme, sizeof(tme));
+            tme.cbSize = sizeof(tme);
+            tme.dwFlags = TME_LEAVE;
+            tme.hwndTrack = window->win32.handle;
+            TrackMouseEvent(&tme);
+
+            window->win32.cursorTracked = GLFW_TRUE;
+            _glfwInputCursorEnter(window, GLFW_TRUE);
+        }
+
+        return 0;
+    }
+
+    case WM_INPUT:
+    {
+        UINT size;
+        HRAWINPUT ri = (HRAWINPUT)lParam;
+        RAWINPUT* data;
+        int dx, dy;
+
+        // Only process input when disabled cursor mode is applied
+        if (_glfw.win32.disabledCursorWindow != window)
+            break;
+
+        GetRawInputData(ri, RID_INPUT, NULL, &size, sizeof(RAWINPUTHEADER));
+        if (size > (UINT)_glfw.win32.rawInputSize)
+        {
+            free(_glfw.win32.rawInput);
+            _glfw.win32.rawInput = calloc(size, 1);
+            _glfw.win32.rawInputSize = size;
+        }
+
+        size = _glfw.win32.rawInputSize;
+        if (GetRawInputData(ri, RID_INPUT,
+            _glfw.win32.rawInput, &size,
+            sizeof(RAWINPUTHEADER)) == (UINT)-1)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                "Win32: Failed to retrieve raw input data");
             break;
         }
 
-        case WM_ERASEBKGND:
+        data = _glfw.win32.rawInput;
+        if (data->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
         {
+            dx = data->data.mouse.lLastX - window->win32.lastCursorPosX;
+            dy = data->data.mouse.lLastY - window->win32.lastCursorPosY;
+        }
+        else
+        {
+            dx = data->data.mouse.lLastX;
+            dy = data->data.mouse.lLastY;
+        }
+
+        _glfwInputCursorPos(window,
+            window->virtualCursorPosX + dx,
+            window->virtualCursorPosY + dy);
+
+        window->win32.lastCursorPosX += dx;
+        window->win32.lastCursorPosY += dy;
+        break;
+    }
+
+    case WM_MOUSELEAVE:
+    {
+        window->win32.cursorTracked = GLFW_FALSE;
+        _glfwInputCursorEnter(window, GLFW_FALSE);
+        return 0;
+    }
+
+    case WM_MOUSEWHEEL:
+    {
+        _glfwInputScroll(window, 0.0, (SHORT)HIWORD(wParam) / (double)WHEEL_DELTA);
+        return 0;
+    }
+
+    case WM_MOUSEHWHEEL:
+    {
+        // This message is only sent on Windows Vista and later
+        // NOTE: The X-axis is inverted for consistency with macOS and X11
+        _glfwInputScroll(window, -((SHORT)HIWORD(wParam) / (double)WHEEL_DELTA), 0.0);
+        return 0;
+    }
+
+    case WM_ENTERSIZEMOVE:
+    case WM_ENTERMENULOOP:
+    {
+        // HACK: Postpone cursor disabling while the user is moving or
+        //       resizing the window or using the menu
+        if (window->cursorMode == GLFW_CURSOR_DISABLED)
+            _glfwPlatformSetCursorMode(window, GLFW_CURSOR_NORMAL);
+
+        break;
+    }
+
+    case WM_EXITSIZEMOVE:
+    case WM_EXITMENULOOP:
+    {
+        // HACK: Disable the cursor once the user is done moving or
+        //       resizing the window or using the menu
+        if (window->cursorMode == GLFW_CURSOR_DISABLED)
+            _glfwPlatformSetCursorMode(window, GLFW_CURSOR_DISABLED);
+
+        break;
+    }
+
+    case WM_SIZE:
+    {
+        const GLFWbool iconified = wParam == SIZE_MINIMIZED;
+        const GLFWbool maximized = wParam == SIZE_MAXIMIZED ||
+            (window->win32.maximized &&
+                wParam != SIZE_RESTORED);
+
+        if (_glfw.win32.disabledCursorWindow == window)
+            updateClipRect(window);
+
+        if (window->win32.iconified != iconified)
+            _glfwInputWindowIconify(window, iconified);
+
+        if (window->win32.maximized != maximized)
+            _glfwInputWindowMaximize(window, maximized);
+
+        _glfwInputFramebufferSize(window, LOWORD(lParam), HIWORD(lParam));
+        _glfwInputWindowSize(window, LOWORD(lParam), HIWORD(lParam));
+
+        if (window->monitor && window->win32.iconified != iconified)
+        {
+            if (iconified)
+                releaseMonitor(window);
+            else
+                acquireMonitor(window);
+        }
+
+        window->win32.iconified = iconified;
+        window->win32.maximized = maximized;
+        return 0;
+    }
+
+    case WM_MOVE:
+    {
+        if (_glfw.win32.disabledCursorWindow == window)
+            updateClipRect(window);
+
+        // NOTE: This cannot use LOWORD/HIWORD recommended by MSDN, as
+        // those macros do not handle negative window positions correctly
+        _glfwInputWindowPos(window,
+            GET_X_LPARAM(lParam),
+            GET_Y_LPARAM(lParam));
+        return 0;
+    }
+
+    case WM_SIZING:
+    {
+        if (window->numer == GLFW_DONT_CARE ||
+            window->denom == GLFW_DONT_CARE)
+        {
+            break;
+        }
+
+        applyAspectRatio(window, (int)wParam, (RECT*)lParam);
+        return TRUE;
+    }
+
+    case WM_GETMINMAXINFO:
+    {
+        int xoff, yoff;
+        MINMAXINFO* mmi = (MINMAXINFO*)lParam;
+
+        if (window->monitor)
+            break;
+
+        getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
+            0, 0, &xoff, &yoff);
+
+        if (window->minwidth != GLFW_DONT_CARE &&
+            window->minheight != GLFW_DONT_CARE)
+        {
+            mmi->ptMinTrackSize.x = window->minwidth + xoff;
+            mmi->ptMinTrackSize.y = window->minheight + yoff;
+        }
+
+        if (window->maxwidth != GLFW_DONT_CARE &&
+            window->maxheight != GLFW_DONT_CARE)
+        {
+            mmi->ptMaxTrackSize.x = window->maxwidth + xoff;
+            mmi->ptMaxTrackSize.y = window->maxheight + yoff;
+        }
+
+        if (!window->decorated)
+        {
+            MONITORINFO mi;
+            const HMONITOR mh = MonitorFromWindow(window->win32.handle,
+                MONITOR_DEFAULTTONEAREST);
+
+            ZeroMemory(&mi, sizeof(mi));
+            mi.cbSize = sizeof(mi);
+            GetMonitorInfo(mh, &mi);
+
+            mmi->ptMaxPosition.x = mi.rcWork.left - mi.rcMonitor.left;
+            mmi->ptMaxPosition.y = mi.rcWork.top - mi.rcMonitor.top;
+            mmi->ptMaxSize.x = mi.rcWork.right - mi.rcWork.left;
+            mmi->ptMaxSize.y = mi.rcWork.bottom - mi.rcWork.top;
+        }
+
+        return 0;
+    }
+
+    case WM_PAINT:
+    {
+        _glfwInputWindowDamage(window);
+        break;
+    }
+
+    case WM_ERASEBKGND:
+    {
+        return TRUE;
+    }
+
+    case WM_DWMCOMPOSITIONCHANGED:
+    {
+        if (window->win32.transparent)
+            updateFramebufferTransparency(window);
+        return 0;
+    }
+
+    case WM_SETCURSOR:
+    {
+        if (LOWORD(lParam) == HTCLIENT)
+        {
+            updateCursorImage(window);
             return TRUE;
         }
 
-        case WM_DWMCOMPOSITIONCHANGED:
+        break;
+    }
+
+    case WM_DROPFILES:
+    {
+        HDROP drop = (HDROP)wParam;
+        POINT pt;
+        int i;
+
+        const int count = DragQueryFileW(drop, 0xffffffff, NULL, 0);
+        char** paths = calloc(count, sizeof(char*));
+
+        // Move the mouse to the position of the drop
+        DragQueryPoint(drop, &pt);
+        _glfwInputCursorPos(window, pt.x, pt.y);
+
+        for (i = 0; i < count; i++)
         {
-            if (window->win32.transparent)
-                updateFramebufferTransparency(window);
-            return 0;
+            const UINT length = DragQueryFileW(drop, i, NULL, 0);
+            WCHAR* buffer = calloc(length + 1, sizeof(WCHAR));
+
+            DragQueryFileW(drop, i, buffer, length + 1);
+            paths[i] = _glfwCreateUTF8FromWideStringWin32(buffer);
+
+            free(buffer);
         }
 
-        case WM_SETCURSOR:
-        {
-            if (LOWORD(lParam) == HTCLIENT)
-            {
-                updateCursorImage(window);
-                return TRUE;
-            }
+        _glfwInputDrop(window, count, (const char**)paths);
 
-            break;
-        }
+        for (i = 0; i < count; i++)
+            free(paths[i]);
+        free(paths);
 
-        case WM_DROPFILES:
-        {
-            HDROP drop = (HDROP) wParam;
-            POINT pt;
-            int i;
+        DragFinish(drop);
+        return 0;
+    }
+    }
 
-            const int count = DragQueryFileW(drop, 0xffffffff, NULL, 0);
-            char** paths = calloc(count, sizeof(char*));
-
-            // Move the mouse to the position of the drop
-            DragQueryPoint(drop, &pt);
-            _glfwInputCursorPos(window, pt.x, pt.y);
-
-            for (i = 0; i < count; i++)
-            {
-                const UINT length = DragQueryFileW(drop, i, NULL, 0);
-                WCHAR* buffer = calloc(length + 1, sizeof(WCHAR));
-
-                DragQueryFileW(drop, i, buffer, length + 1);
-                paths[i] = _glfwCreateUTF8FromWideStringWin32(buffer);
-
-                free(buffer);
-            }
-
-            _glfwInputDrop(window, count, (const char**)paths);
-
-            for (i = 0; i < count; i++)
-                free(paths[i]);
-            free(paths);
-
-            DragFinish(drop);
-            return 0;
-        }
-}
-
-return DefWindowProcW(hWnd, uMsg, wParam, lParam);
+    return DefWindowProcW(hWnd, uMsg, wParam, lParam);
 }
 
 // Creates the GLFW window
@@ -1482,10 +1482,10 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
 }
 
 void _glfwPlatformGetWindowContentScale(_GLFWwindow* window,
-                                        float* xscale, float* yscale)
+    float* xscale, float* yscale)
 {
     const HANDLE handle = MonitorFromWindow(window->win32.handle,
-                                            MONITOR_DEFAULTTONEAREST);
+        MONITOR_DEFAULTTONEAREST);
     _glfwGetMonitorContentScaleWin32(handle, xscale, yscale);
 }
 
@@ -1564,8 +1564,8 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
         {
             DWORD style = GetWindowLongW(window->win32.handle, GWL_STYLE);
             UINT flags = SWP_FRAMECHANGED | SWP_SHOWWINDOW |
-                         SWP_NOACTIVATE | SWP_NOCOPYBITS |
-                         SWP_NOZORDER | SWP_NOMOVE | SWP_NOSIZE;
+                SWP_NOACTIVATE | SWP_NOCOPYBITS |
+                SWP_NOZORDER | SWP_NOMOVE | SWP_NOSIZE;
 
             style &= ~WS_OVERLAPPEDWINDOW;
             style |= getWindowStyle(window);
@@ -1597,11 +1597,11 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
             after = HWND_NOTOPMOST;
 
         AdjustWindowRectEx(&rect, getWindowStyle(window),
-                           FALSE, getWindowExStyle(window));
+            FALSE, getWindowExStyle(window));
         SetWindowPos(window->win32.handle, after,
-                     rect.left, rect.top,
-                     rect.right - rect.left, rect.bottom - rect.top,
-                     flags);
+            rect.left, rect.top,
+            rect.right - rect.left, rect.bottom - rect.top,
+            flags);
     }
 }
 
@@ -1666,7 +1666,7 @@ void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
 {
     if (opacity < 1.f)
     {
-        const BYTE alpha = (BYTE) (255 * opacity);
+        const BYTE alpha = (BYTE)(255 * opacity);
         DWORD style = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
         style |= WS_EX_LAYERED;
         SetWindowLongW(window->win32.handle, GWL_EXSTYLE, style);

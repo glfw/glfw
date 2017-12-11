@@ -1278,6 +1278,24 @@ typedef void (* GLFWwindowmaximizefun)(GLFWwindow*,int);
  */
 typedef void (* GLFWframebuffersizefun)(GLFWwindow*,int,int);
 
+/*! @brief The function signature for window content scale callbacks.
+ *
+ *  This is the function signature for window content scale callback
+ *  functions.
+ *
+ *  @param[in] window The window whose content scale changed.
+ *  @param[in] xscale The new x-axis content scale of the window.
+ *  @param[in] yscale The new y-axis content scale of the window.
+ *
+ *  @sa @ref window_scale
+ *  @sa @ref glfwSetWindowContentScaleCallback
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup window
+ */
+typedef void (* GLFWwindowcontentscalefun)(GLFWwindow*,float,float);
+
 /*! @brief The function signature for mouse button callbacks.
  *
  *  This is the function signature for mouse button callback functions.
@@ -2913,6 +2931,7 @@ GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* window, int* left, int* top, int
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_scale
+ *  @sa @ref glfwSetWindowContentScaleCallback
  *  @sa @ref glfwGetMonitorContentScale
  *
  *  @since Added in version 3.3.
@@ -3574,6 +3593,30 @@ GLFWAPI GLFWwindowmaximizefun glfwSetWindowMaximizeCallback(GLFWwindow* window, 
  *  @ingroup window
  */
 GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window, GLFWframebuffersizefun cbfun);
+
+/*! @brief Sets the window content scale callback for the specified window.
+ *
+ *  This function sets the window content scale callback of the specified window,
+ *  which is called when the content scale of the specified window changes.
+ *
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_scale
+ *  @sa @ref glfwGetWindowContentScale
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup window
+ */
+GLFWAPI GLFWwindowcontentscalefun glfwSetWindowContentScaleCallback(GLFWwindow* window, GLFWwindowcontentscalefun cbfun);
 
 /*! @brief Processes all pending events.
  *

@@ -94,6 +94,12 @@ void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height)
         window->callbacks.fbsize((GLFWwindow*) window, width, height);
 }
 
+void _glfwInputWindowContentScale(_GLFWwindow* window, float xscale, float yscale)
+{
+    if (window->callbacks.scale)
+        window->callbacks.scale((GLFWwindow*) window, xscale, yscale);
+}
+
 void _glfwInputWindowDamage(_GLFWwindow* window)
 {
     if (window->callbacks.refresh)
@@ -1010,6 +1016,17 @@ GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* handle
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     _GLFW_SWAP_POINTERS(window->callbacks.fbsize, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWwindowcontentscalefun glfwSetWindowContentScaleCallback(GLFWwindow* handle,
+                                                                    GLFWwindowcontentscalefun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(window->callbacks.scale, cbfun);
     return cbfun;
 }
 

@@ -437,6 +437,7 @@ struct _GLFWwindow
         GLFWwindowiconifyfun    iconify;
         GLFWwindowmaximizefun   maximize;
         GLFWframebuffersizefun  fbsize;
+        GLFWwindowcontentscalefun scale;
         GLFWmousebuttonfun      mouseButton;
         GLFWcursorposfun        cursorPos;
         GLFWcursorenterfun      cursorEnter;
@@ -753,6 +754,14 @@ void _glfwInputWindowSize(_GLFWwindow* window, int width, int height);
  *  @ingroup event
  */
 void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height);
+
+/*! @brief Notifies shared code that a window content scale has changed.
+ *  @param[in] window The window that received the event.
+ *  @param[in] xscale The new x-axis content scale of the window.
+ *  @param[in] yscale The new y-axis content scale of the window.
+ *  @ingroup event
+ */
+void _glfwInputWindowContentScale(_GLFWwindow* window, float xscale, float yscale);
 
 /*! @brief Notifies shared code that a window has been iconified or restored.
  *  @param[in] window The window that received the event.

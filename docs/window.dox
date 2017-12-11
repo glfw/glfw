@@ -695,6 +695,23 @@ On systems where each monitors can have its own content scale, the window
 content scale will depend on which monitor the system considers the window to be
 on.
 
+If you wish to be notified when the content scale of a window changes, whether
+because of a system setting change or because it was moved to a monitor with
+a different scale, set a content scale callback.
+
+@code
+glfwSetWindowContentScaleCallback(window, window_content_scale_callback);
+@endcode
+
+The callback function receives the new content scale of the window.
+
+@code
+void window_content_scale_callback(GLFWwindow* window, float xscale, float yscale)
+{
+    set_interface_scale(xscale, yscale);
+}
+@endcode
+
 
 @subsection window_sizelimits Window size limits
 

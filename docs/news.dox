@@ -64,6 +64,9 @@ GLFW now supports querying the window and monitor content scale, i.e. the ratio
 between the current DPI and the platform's default DPI, with @ref
 glfwGetWindowContentScale and @ref glfwGetMonitorContentScale.
 
+Changes of the content scale of a window can be received with the window content
+scale callback, set with @ref glfwSetWindowCloseCallback.
+
 @see @ref window_scale
 
 

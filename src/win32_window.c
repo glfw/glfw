@@ -996,6 +996,14 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             return 0;
         }
 
+        case WM_DPICHANGED:
+        {
+            const float xscale = HIWORD(wParam) / 96.f;
+            const float yscale = LOWORD(wParam) / 96.f;
+            _glfwInputWindowContentScale(window, xscale, yscale);
+            break;
+        }
+
         case WM_SETCURSOR:
         {
             if (LOWORD(lParam) == HTCLIENT)

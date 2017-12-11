@@ -574,6 +574,16 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         window->ns.fbHeight = fbRect.size.height;
         _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
     }
+
+    const float xscale = fbRect.size.width / contentRect.size.width;
+    const float yscale = fbRect.size.height / contentRect.size.height;
+
+    if (xscale != window->ns.xscale || yscale != window->ns.yscale)
+    {
+        window->ns.xscale = xscale;
+        window->ns.yscale = yscale;
+        _glfwInputWindowContentScale(window, xscale, yscale);
+    }
 }
 
 - (void)drawRect:(NSRect)rect

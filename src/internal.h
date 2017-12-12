@@ -281,10 +281,6 @@ struct _GLFWinitconfig
         GLFWbool  menubar;
         GLFWbool  chdir;
     } ns;
-    struct {
-        char      className[256];
-        char      classClass[256];
-    } x11;
 };
 
 /*! @brief Window configuration.
@@ -310,6 +306,10 @@ struct _GLFWwndconfig
         GLFWbool  retina;
         GLFWbool  frame;
     } ns;
+    struct {
+        char      className[256];
+        char      instanceName[256];
+    } x11;
 };
 
 /*! @brief Context configuration.

@@ -396,6 +396,27 @@ GLFWAPI void glfwWindowHint(int hint, int value)
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint 0x%08X", hint);
 }
 
+GLFWAPI void glfwWindowHintString(int hint, const char* value)
+{
+    assert(value != NULL);
+
+    _GLFW_REQUIRE_INIT();
+
+    switch (hint)
+    {
+        case GLFW_X11_CLASS_NAME:
+            strncpy(_glfw.hints.window.x11.className, value,
+                    sizeof(_glfw.hints.window.x11.className) - 1);
+            return;
+        case GLFW_X11_INSTANCE_NAME:
+            strncpy(_glfw.hints.window.x11.instanceName, value,
+                    sizeof(_glfw.hints.window.x11.instanceName) - 1);
+            return;
+    }
+
+    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint string 0x%08X", hint);
+}
+
 GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;

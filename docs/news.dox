@@ -69,9 +69,8 @@ glfwGetWindowContentScale and @ref glfwGetMonitorContentScale.
 
 @subsection news_33_inithint Support for initialization hints
 
-GLFW now supports setting library initialization hints with @ref glfwInitHint
-or @ref glfwInitHintString.  These must be set before initialization to take
-effect.
+GLFW now supports setting library initialization hints with @ref glfwInitHint.
+These must be set before initialization to take effect.
 
 @see @ref init_hints
 

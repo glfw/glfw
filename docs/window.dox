@@ -146,16 +146,18 @@ is restored, but the gamma ramp is left untouched.
 There are a number of hints that can be set before the creation of a window and
 context.  Some affect the window itself, others affect the framebuffer or
 context.  These hints are set to their default values each time the library is
-initialized with @ref glfwInit, can be set individually with @ref glfwWindowHint
-and reset all at once to their defaults with @ref glfwDefaultWindowHints.
+initialized with @ref glfwInit.  Integer value hints can be set individually
+with @ref glfwWindowHint and string value hints with @ref glfwWindowHintString.
+You can reset all at once to their defaults with @ref glfwDefaultWindowHints.
 
 Some hints are platform specific.  These are always valid to set on any
 platform but they will only affect their specific platform.  Other platforms
 will ignore them.  Setting these hints requires no platform specific headers or
 calls.
 
-Note that hints need to be set _before_ the creation of the window and context
-you wish to have the specified attributes.
+@note Window hints need to be set before the creation of the window and context
+you wish to have the specified attributes.  They function as additional
+arguments to @ref glfwCreateWindow.
 
 
 @subsubsection window_hints_hard Hard and soft constraints
@@ -465,6 +467,15 @@ should also declare this in its `Info.plist` by setting the
 `NSSupportsAutomaticGraphicsSwitching` key to `true`.
 
 
+@subsubsection window_hints_x11 X11 specific window hints
+
+@anchor GLFW_X11_CLASS_NAME
+@anchor GLFW_X11_INSTANCE_NAME
+__GLFW_X11_CLASS_NAME__ and __GLFW_X11_INSTANCE_NAME__ specifies the desired
+ASCII encoded class and instance parts of the ICCCM `WM_CLASS` window property.
+These are set with @ref glfwWindowHintString.
+
+
 @subsubsection window_hints_values Supported and default values
 
 Window hint                   | Default value               | Supported values
@@ -506,6 +517,8 @@ GLFW_OPENGL_PROFILE           | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_P
 GLFW_COCOA_RETINA_FRAMEBUFFER | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_COCOA_FRAME_AUTOSAVE     | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_COCOA_GRAPHICS_SWITCHING | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_X11_CLASS_NAME           | `""`                        | An ASCII encoded `WM_CLASS` class name
+GLFW_X11_INSTANCE_NAME        | `""`                        | An ASCII encoded `WM_CLASS` instance name
 
 
 @section window_events Window event processing

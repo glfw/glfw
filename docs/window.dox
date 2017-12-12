@@ -443,10 +443,10 @@ __GLFW_COCOA_RETINA_FRAMEBUFFER__ specifies whether to use full resolution
 framebuffers on Retina displays.  Possible values are `GLFW_TRUE` and
 `GLFW_FALSE`.  This is ignored on other platforms.
 
-@anchor GLFW_COCOA_FRAME_AUTOSAVE_hint
-__GLFW_COCOA_FRAME_AUTOSAVE__ specifies whether to activate frame autosaving
-using the window title specified at window creation.  Possible values are
-`GLFW_TRUE` and `GLFW_FALSE`.  This is ignored on other platforms.
+@anchor GLFW_COCOA_FRAME_NAME_hint
+__GLFW_COCOA_FRAME_NAME__ specifies the UTF-8 encoded name to use for autosaving
+the window frame, or if empty disables frame autosaving for the window.  This is
+ignored on other platforms.  This is set with @ref glfwWindowHintString.
 
 @anchor GLFW_COCOA_GRAPHICS_SWITCHING_hint
 __GLFW_COCOA_GRAPHICS_SWITCHING__ specifies whether to in Automatic Graphics
@@ -515,7 +515,7 @@ GLFW_OPENGL_FORWARD_COMPAT    | `GLFW_FALSE`                | `GLFW_TRUE` or `GL
 GLFW_OPENGL_DEBUG_CONTEXT     | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_OPENGL_PROFILE           | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE`
 GLFW_COCOA_RETINA_FRAMEBUFFER | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_COCOA_FRAME_AUTOSAVE     | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_COCOA_FRAME_NAME         | `""`                        | A UTF-8 encoded frame autosave name
 GLFW_COCOA_GRAPHICS_SWITCHING | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_X11_CLASS_NAME           | `""`                        | An ASCII encoded `WM_CLASS` class name
 GLFW_X11_INSTANCE_NAME        | `""`                        | An ASCII encoded `WM_CLASS` instance name

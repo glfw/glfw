@@ -349,9 +349,6 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_COCOA_RETINA_FRAMEBUFFER:
             _glfw.hints.window.ns.retina = value ? GLFW_TRUE : GLFW_FALSE;
             return;
-        case GLFW_COCOA_FRAME_AUTOSAVE:
-            _glfw.hints.window.ns.frame = value ? GLFW_TRUE : GLFW_FALSE;
-            return;
         case GLFW_COCOA_GRAPHICS_SWITCHING:
             _glfw.hints.context.nsgl.offline = value ? GLFW_TRUE : GLFW_FALSE;
             return;
@@ -404,6 +401,10 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value)
 
     switch (hint)
     {
+        case GLFW_COCOA_FRAME_NAME:
+            strncpy(_glfw.hints.window.ns.frameName, value,
+                    sizeof(_glfw.hints.window.ns.frameName) - 1);
+            return;
         case GLFW_X11_CLASS_NAME:
             strncpy(_glfw.hints.window.x11.className, value,
                     sizeof(_glfw.hints.window.x11.className) - 1);

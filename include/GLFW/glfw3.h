@@ -964,7 +964,7 @@ extern "C" {
 #define GLFW_CONTEXT_CREATION_API   0x0002200B
 
 #define GLFW_COCOA_RETINA_FRAMEBUFFER 0x00023001
-#define GLFW_COCOA_FRAME_AUTOSAVE     0x00023002
+#define GLFW_COCOA_FRAME_NAME         0x00023002
 #define GLFW_COCOA_GRAPHICS_SWITCHING 0x00023003
 
 #define GLFW_X11_CLASS_NAME         0x00024001
@@ -2360,9 +2360,8 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *  `CMake/MacOSXBundleInfo.plist.in` in the source tree.
  *
  *  @remark @macos When activating frame autosaving with
- *  [GLFW_COCOA_FRAME_AUTOSAVE](@ref GLFW_COCOA_FRAME_AUTOSAVE_hint), the
- *  specified window size may be overriden by a previously saved size and
- *  position.
+ *  [GLFW_COCOA_FRAME_NAME](@ref GLFW_COCOA_FRAME_NAME_hint), the specified
+ *  window size and position may be overriden by previously saved values.
  *
  *  @remark @x11 Some window managers will not respect the placement of
  *  initially hidden windows.

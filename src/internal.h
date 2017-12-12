@@ -304,7 +304,7 @@ struct _GLFWwndconfig
     GLFWbool      centerCursor;
     struct {
         GLFWbool  retina;
-        GLFWbool  frame;
+        char      frameName[256];
     } ns;
     struct {
         char      className[256];

@@ -162,7 +162,7 @@ information on what to include when reporting a bug.
 - Added `GLFW_JOYSTICK_HAT_BUTTONS` init hint (#889)
 - Added `GLFW_LOCK_KEY_MODS` input mode and `GLFW_MOD_*_LOCK` mod bits (#946)
 - Added macOS specific `GLFW_COCOA_RETINA_FRAMEBUFFER` window hint
-- Added macOS specific `GLFW_COCOA_FRAME_AUTOSAVE` window hint (#195)
+- Added macOS specific `GLFW_COCOA_FRAME_NAME` window hint (#195)
 - Added macOS specific `GLFW_COCOA_GRAPHICS_SWITCHING` window hint (#377,#935)
 - Added macOS specific `GLFW_COCOA_CHDIR_RESOURCES` init hint
 - Added macOS specific `GLFW_COCOA_MENUBAR` init hint

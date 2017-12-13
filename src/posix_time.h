@@ -25,24 +25,20 @@
 //
 //========================================================================
 
-#ifndef _glfw3_posix_time_h_
-#define _glfw3_posix_time_h_
-
-#define _GLFW_PLATFORM_LIBRARY_TIME_STATE _GLFWtimePOSIX posix_time
+#define _GLFW_PLATFORM_LIBRARY_TIMER_STATE _GLFWtimerPOSIX posix
 
 #include <stdint.h>
 
 
 // POSIX-specific global timer data
 //
-typedef struct _GLFWtimePOSIX
+typedef struct _GLFWtimerPOSIX
 {
     GLFWbool    monotonic;
     uint64_t    frequency;
 
-} _GLFWtimePOSIX;
+} _GLFWtimerPOSIX;
 
 
 void _glfwInitTimerPOSIX(void);
 
-#endif // _glfw3_posix_time_h_

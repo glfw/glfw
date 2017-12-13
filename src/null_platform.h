@@ -25,9 +25,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_null_platform_h_
-#define _glfw3_null_platform_h_
-
 #include <dlfcn.h>
 
 #define _GLFW_PLATFORM_WINDOW_STATE _GLFWwindowNull null
@@ -42,7 +39,7 @@
 
 #include "osmesa_context.h"
 #include "posix_time.h"
-#include "posix_tls.h"
+#include "posix_thread.h"
 #include "null_joystick.h"
 
 #if defined(_GLFW_WIN32)
@@ -63,5 +60,3 @@ typedef struct _GLFWwindowNull
     int height;
 } _GLFWwindowNull;
 
-
-#endif // _glfw3_null_platform_h_

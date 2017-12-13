@@ -26,6 +26,7 @@
 
 #include "internal.h"
 
+#include <assert.h>
 #include <linux/input.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -109,6 +110,8 @@ static void pointerHandleButton(void* data,
     if (!window)
         return;
 
+    _glfw.wl.pointerSerial = serial;
+
     /* Makes left, right and middle 0, 1 and 2. Overall order follows evdev
      * codes. */
     glfwButton = button - BTN_LEFT;
@@ -150,6 +153,7 @@ static void pointerHandleAxis(void* data,
             y = wl_fixed_to_double(value) * scrollFactor;
             break;
         default:
+            assert(GLFW_FALSE);
             break;
     }
 
@@ -172,8 +176,12 @@ static void keyboardHandleKeymap(void* data,
 {
     struct xkb_keymap* keymap;
     struct xkb_state* state;
+
+#ifdef HAVE_XKBCOMMON_COMPOSE_H
     struct xkb_compose_table* composeTable;
     struct xkb_compose_state* composeState;
+#endif
+
     char* mapStr;
     const char* locale;
 
@@ -221,6 +229,7 @@ static void keyboardHandleKeymap(void* data,
     if (!locale)
         locale = "C";
 
+#ifdef HAVE_XKBCOMMON_COMPOSE_H
     composeTable =
         xkb_compose_table_new_from_locale(_glfw.wl.xkb.context, locale,
                                           XKB_COMPOSE_COMPILE_NO_FLAGS);
@@ -240,6 +249,7 @@ static void keyboardHandleKeymap(void* data,
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Failed to create XKB compose table");
     }
+#endif
 
     xkb_keymap_unref(_glfw.wl.xkb.keymap);
     xkb_state_unref(_glfw.wl.xkb.state);
@@ -254,6 +264,10 @@ static void keyboardHandleKeymap(void* data,
         1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Shift");
     _glfw.wl.xkb.superMask =
         1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod4");
+    _glfw.wl.xkb.capsLockMask =
+        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Lock");
+    _glfw.wl.xkb.numLockMask =
+        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod2");
 }
 
 static void keyboardHandleEnter(void* data,
@@ -290,9 +304,10 @@ static int toGLFWKeyCode(uint32_t key)
     return GLFW_KEY_UNKNOWN;
 }
 
+#ifdef HAVE_XKBCOMMON_COMPOSE_H
 static xkb_keysym_t composeSymbol(xkb_keysym_t sym)
 {
-    if (sym == XKB_KEY_NoSymbol)
+    if (sym == XKB_KEY_NoSymbol || !_glfw.wl.xkb.composeState)
         return sym;
     if (xkb_compose_state_feed(_glfw.wl.xkb.composeState, sym)
             != XKB_COMPOSE_FEED_ACCEPTED)
@@ -309,6 +324,7 @@ static xkb_keysym_t composeSymbol(xkb_keysym_t sym)
             return sym;
     }
 }
+#endif
 
 static void inputChar(_GLFWwindow* window, uint32_t key)
 {
@@ -322,7 +338,11 @@ static void inputChar(_GLFWwindow* window, uint32_t key)
 
     if (numSyms == 1)
     {
+#ifdef HAVE_XKBCOMMON_COMPOSE_H
         sym = composeSymbol(syms[0]);
+#else
+        sym = syms[0];
+#endif
         cp = _glfwKeySym2Unicode(sym);
         if (cp != -1)
         {
@@ -393,6 +413,10 @@ static void keyboardHandleModifiers(void* data,
         modifiers |= GLFW_MOD_SHIFT;
     if (mask & _glfw.wl.xkb.superMask)
         modifiers |= GLFW_MOD_SUPER;
+    if (mask & _glfw.wl.xkb.capsLockMask)
+        modifiers |= GLFW_MOD_CAPS_LOCK;
+    if (mask & _glfw.wl.xkb.numLockMask)
+        modifiers |= GLFW_MOD_NUM_LOCK;
     _glfw.wl.xkb.modifiers = modifiers;
 }
 
@@ -483,6 +507,13 @@ static void registryHandleGlobal(void* data,
         _glfw.wl.pointerConstraints =
             wl_registry_bind(registry, name,
                              &zwp_pointer_constraints_v1_interface,
+                             1);
+    }
+    else if (strcmp(interface, "zwp_idle_inhibit_manager_v1") == 0)
+    {
+        _glfw.wl.idleInhibitManager =
+            wl_registry_bind(registry, name,
+                             &zwp_idle_inhibit_manager_v1_interface,
                              1);
     }
 }
@@ -640,6 +671,52 @@ static void createKeyTables(void)
 
 int _glfwPlatformInit(void)
 {
+    _glfw.wl.xkb.handle = dlopen("libxkbcommon.so.0", RTLD_LAZY | RTLD_GLOBAL);
+    if (!_glfw.wl.xkb.handle)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to open libxkbcommon.");
+        return GLFW_FALSE;
+    }
+
+    _glfw.wl.xkb.context_new = (PFN_xkb_context_new)
+        dlsym(_glfw.wl.xkb.handle, "xkb_context_new");
+    _glfw.wl.xkb.context_unref = (PFN_xkb_context_unref)
+        dlsym(_glfw.wl.xkb.handle, "xkb_context_unref");
+    _glfw.wl.xkb.keymap_new_from_string = (PFN_xkb_keymap_new_from_string)
+        dlsym(_glfw.wl.xkb.handle, "xkb_keymap_new_from_string");
+    _glfw.wl.xkb.keymap_unref = (PFN_xkb_keymap_unref)
+        dlsym(_glfw.wl.xkb.handle, "xkb_keymap_unref");
+    _glfw.wl.xkb.keymap_mod_get_index = (PFN_xkb_keymap_mod_get_index)
+        dlsym(_glfw.wl.xkb.handle, "xkb_keymap_mod_get_index");
+    _glfw.wl.xkb.state_new = (PFN_xkb_state_new)
+        dlsym(_glfw.wl.xkb.handle, "xkb_state_new");
+    _glfw.wl.xkb.state_unref = (PFN_xkb_state_unref)
+        dlsym(_glfw.wl.xkb.handle, "xkb_state_unref");
+    _glfw.wl.xkb.state_key_get_syms = (PFN_xkb_state_key_get_syms)
+        dlsym(_glfw.wl.xkb.handle, "xkb_state_key_get_syms");
+    _glfw.wl.xkb.state_update_mask = (PFN_xkb_state_update_mask)
+        dlsym(_glfw.wl.xkb.handle, "xkb_state_update_mask");
+    _glfw.wl.xkb.state_serialize_mods = (PFN_xkb_state_serialize_mods)
+        dlsym(_glfw.wl.xkb.handle, "xkb_state_serialize_mods");
+
+#ifdef HAVE_XKBCOMMON_COMPOSE_H
+    _glfw.wl.xkb.compose_table_new_from_locale = (PFN_xkb_compose_table_new_from_locale)
+        dlsym(_glfw.wl.xkb.handle, "xkb_compose_table_new_from_locale");
+    _glfw.wl.xkb.compose_table_unref = (PFN_xkb_compose_table_unref)
+        dlsym(_glfw.wl.xkb.handle, "xkb_compose_table_unref");
+    _glfw.wl.xkb.compose_state_new = (PFN_xkb_compose_state_new)
+        dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_new");
+    _glfw.wl.xkb.compose_state_unref = (PFN_xkb_compose_state_unref)
+        dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_unref");
+    _glfw.wl.xkb.compose_state_feed = (PFN_xkb_compose_state_feed)
+        dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_feed");
+    _glfw.wl.xkb.compose_state_get_status = (PFN_xkb_compose_state_get_status)
+        dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_get_status");
+    _glfw.wl.xkb.compose_state_get_one_sym = (PFN_xkb_compose_state_get_one_sym)
+        dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_get_one_sym");
+#endif
+
     _glfw.wl.display = wl_display_connect(NULL);
     if (!_glfw.wl.display)
     {
@@ -667,9 +744,6 @@ int _glfwPlatformInit(void)
     // Sync so we got all initial output events
     wl_display_roundtrip(_glfw.wl.display);
 
-    if (!_glfwInitThreadLocalStoragePOSIX())
-        return GLFW_FALSE;
-
     if (!_glfwInitJoysticksLinux())
         return GLFW_FALSE;
 
@@ -695,12 +769,17 @@ void _glfwPlatformTerminate(void)
 {
     _glfwTerminateEGL();
     _glfwTerminateJoysticksLinux();
-    _glfwTerminateThreadLocalStoragePOSIX();
 
+#ifdef HAVE_XKBCOMMON_COMPOSE_H
     xkb_compose_state_unref(_glfw.wl.xkb.composeState);
+#endif
+
     xkb_keymap_unref(_glfw.wl.xkb.keymap);
     xkb_state_unref(_glfw.wl.xkb.state);
     xkb_context_unref(_glfw.wl.xkb.context);
+
+    dlclose(_glfw.wl.xkb.handle);
+    _glfw.wl.xkb.handle = NULL;
 
     if (_glfw.wl.cursorTheme)
         wl_cursor_theme_destroy(_glfw.wl.cursorTheme);
@@ -722,6 +801,8 @@ void _glfwPlatformTerminate(void)
         zwp_relative_pointer_manager_v1_destroy(_glfw.wl.relativePointerManager);
     if (_glfw.wl.pointerConstraints)
         zwp_pointer_constraints_v1_destroy(_glfw.wl.pointerConstraints);
+    if (_glfw.wl.idleInhibitManager)
+        zwp_idle_inhibit_manager_v1_destroy(_glfw.wl.idleInhibitManager);
     if (_glfw.wl.registry)
         wl_registry_destroy(_glfw.wl.registry);
     if (_glfw.wl.display)
@@ -739,7 +820,7 @@ const char* _glfwPlatformGetVersionString(void)
 #else
         " gettimeofday"
 #endif
-        " /dev/js"
+        " evdev"
 #if defined(_GLFW_BUILD_DLL)
         " shared"
 #endif

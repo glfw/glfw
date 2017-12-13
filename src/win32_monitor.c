@@ -33,14 +33,38 @@
 #include <malloc.h>
 
 
+// Callback for EnumDisplayMonitors in createMonitor
+//
+static BOOL CALLBACK monitorCallback(HMONITOR handle,
+                                     HDC dc,
+                                     RECT* rect,
+                                     LPARAM data)
+{
+    MONITORINFOEXW mi;
+    ZeroMemory(&mi, sizeof(mi));
+    mi.cbSize = sizeof(mi);
+
+    if (GetMonitorInfoW(handle, (MONITORINFO*) &mi))
+    {
+        _GLFWmonitor* monitor = (_GLFWmonitor*) data;
+        if (wcscmp(mi.szDevice, monitor->win32.adapterName) == 0)
+            monitor->win32.handle = handle;
+    }
+
+    return TRUE;
+}
+
 // Create monitor from an adapter and (optionally) a display
 //
 static _GLFWmonitor* createMonitor(DISPLAY_DEVICEW* adapter,
                                    DISPLAY_DEVICEW* display)
 {
     _GLFWmonitor* monitor;
+    int widthMM, heightMM;
     char* name;
     HDC dc;
+    DEVMODEW dm;
+    RECT rect;
 
     if (display)
         name = _glfwCreateUTF8FromWideStringWin32(display->DeviceString);
@@ -49,13 +73,26 @@ static _GLFWmonitor* createMonitor(DISPLAY_DEVICEW* adapter,
     if (!name)
         return NULL;
 
+    ZeroMemory(&dm, sizeof(dm));
+    dm.dmSize = sizeof(dm);
+    EnumDisplaySettingsW(adapter->DeviceName, ENUM_CURRENT_SETTINGS, &dm);
+
     dc = CreateDCW(L"DISPLAY", adapter->DeviceName, NULL, NULL);
 
-    monitor = _glfwAllocMonitor(name,
-                                GetDeviceCaps(dc, HORZSIZE),
-                                GetDeviceCaps(dc, VERTSIZE));
+    if (IsWindows8Point1OrGreater())
+    {
+        widthMM  = GetDeviceCaps(dc, HORZSIZE);
+        heightMM = GetDeviceCaps(dc, VERTSIZE);
+    }
+    else
+    {
+        widthMM  = (int) (dm.dmPelsWidth * 25.4f / GetDeviceCaps(dc, LOGPIXELSX));
+        heightMM = (int) (dm.dmPelsHeight * 25.4f / GetDeviceCaps(dc, LOGPIXELSY));
+    }
 
     DeleteDC(dc);
+
+    monitor = _glfwAllocMonitor(name, widthMM, heightMM);
     free(name);
 
     if (adapter->StateFlags & DISPLAY_DEVICE_MODESPRUNED)
@@ -78,6 +115,12 @@ static _GLFWmonitor* createMonitor(DISPLAY_DEVICEW* adapter,
                             NULL, NULL);
     }
 
+    rect.left   = dm.dmPosition.x;
+    rect.top    = dm.dmPosition.y;
+    rect.right  = dm.dmPosition.x + dm.dmPelsWidth;
+    rect.bottom = dm.dmPosition.y + dm.dmPelsHeight;
+
+    EnumDisplayMonitors(NULL, &rect, monitorCallback, (LPARAM) monitor);
     return monitor;
 }
 
@@ -94,6 +137,7 @@ void _glfwPollMonitorsWin32(void)
     _GLFWmonitor** disconnected = NULL;
     DWORD adapterIndex, displayIndex;
     DISPLAY_DEVICEW adapter, display;
+    _GLFWmonitor* monitor;
 
     disconnectedCount = _glfw.monitorCount;
     if (disconnectedCount)
@@ -108,8 +152,8 @@ void _glfwPollMonitorsWin32(void)
     {
         int type = _GLFW_INSERT_LAST;
 
-        ZeroMemory(&adapter, sizeof(DISPLAY_DEVICEW));
-        adapter.cb = sizeof(DISPLAY_DEVICEW);
+        ZeroMemory(&adapter, sizeof(adapter));
+        adapter.cb = sizeof(adapter);
 
         if (!EnumDisplayDevicesW(NULL, adapterIndex, &adapter, 0))
             break;
@@ -122,8 +166,8 @@ void _glfwPollMonitorsWin32(void)
 
         for (displayIndex = 0;  ;  displayIndex++)
         {
-            ZeroMemory(&display, sizeof(DISPLAY_DEVICEW));
-            display.cb = sizeof(DISPLAY_DEVICEW);
+            ZeroMemory(&display, sizeof(display));
+            display.cb = sizeof(display);
 
             if (!EnumDisplayDevicesW(adapter.DeviceName, displayIndex, &display, 0))
                 break;
@@ -145,8 +189,14 @@ void _glfwPollMonitorsWin32(void)
             if (i < disconnectedCount)
                 continue;
 
-            _glfwInputMonitor(createMonitor(&adapter, &display),
-                              GLFW_CONNECTED, type);
+            monitor = createMonitor(&adapter, &display);
+            if (!monitor)
+            {
+                free(disconnected);
+                return;
+            }
+
+            _glfwInputMonitor(monitor, GLFW_CONNECTED, type);
 
             type = _GLFW_INSERT_LAST;
         }
@@ -169,8 +219,14 @@ void _glfwPollMonitorsWin32(void)
             if (i < disconnectedCount)
                 continue;
 
-            _glfwInputMonitor(createMonitor(&adapter, NULL),
-                              GLFW_CONNECTED, type);
+            monitor = createMonitor(&adapter, NULL);
+            if (!monitor)
+            {
+                free(disconnected);
+                return;
+            }
+
+            _glfwInputMonitor(monitor, GLFW_CONNECTED, type);
         }
     }
 
@@ -198,7 +254,7 @@ GLFWbool _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desire
         return GLFW_TRUE;
 
     ZeroMemory(&dm, sizeof(dm));
-    dm.dmSize = sizeof(DEVMODEW);
+    dm.dmSize = sizeof(dm);
     dm.dmFields           = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL |
                             DM_DISPLAYFREQUENCY;
     dm.dmPelsWidth        = best->width;
@@ -256,6 +312,26 @@ void _glfwRestoreVideoModeWin32(_GLFWmonitor* monitor)
     }
 }
 
+void _glfwGetMonitorContentScaleWin32(HMONITOR handle, float* xscale, float* yscale)
+{
+    UINT xdpi, ydpi;
+
+    if (IsWindows8Point1OrGreater())
+        GetDpiForMonitor(handle, MDT_EFFECTIVE_DPI, &xdpi, &ydpi);
+    else
+    {
+        const HDC dc = GetDC(NULL);
+        xdpi = GetDeviceCaps(dc, LOGPIXELSX);
+        ydpi = GetDeviceCaps(dc, LOGPIXELSY);
+        ReleaseDC(NULL, dc);
+    }
+
+    if (xscale)
+        *xscale = xdpi / 96.f;
+    if (yscale)
+        *yscale = ydpi / 96.f;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -263,19 +339,25 @@ void _glfwRestoreVideoModeWin32(_GLFWmonitor* monitor)
 
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {
-    DEVMODEW settings;
-    ZeroMemory(&settings, sizeof(DEVMODEW));
-    settings.dmSize = sizeof(DEVMODEW);
+    DEVMODEW dm;
+    ZeroMemory(&dm, sizeof(dm));
+    dm.dmSize = sizeof(dm);
 
     EnumDisplaySettingsExW(monitor->win32.adapterName,
                            ENUM_CURRENT_SETTINGS,
-                           &settings,
+                           &dm,
                            EDS_ROTATEDMODE);
 
     if (xpos)
-        *xpos = settings.dmPosition.x;
+        *xpos = dm.dmPosition.x;
     if (ypos)
-        *ypos = settings.dmPosition.y;
+        *ypos = dm.dmPosition.y;
+}
+
+void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
+                                         float* xscale, float* yscale)
+{
+    _glfwGetMonitorContentScaleWin32(monitor->win32.handle, xscale, yscale);
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
@@ -291,8 +373,8 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
         GLFWvidmode mode;
         DEVMODEW dm;
 
-        ZeroMemory(&dm, sizeof(DEVMODEW));
-        dm.dmSize = sizeof(DEVMODEW);
+        ZeroMemory(&dm, sizeof(dm));
+        dm.dmSize = sizeof(dm);
 
         if (!EnumDisplaySettingsW(monitor->win32.adapterName, modeIndex, &dm))
             break;
@@ -358,9 +440,8 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
     DEVMODEW dm;
-
-    ZeroMemory(&dm, sizeof(DEVMODEW));
-    dm.dmSize = sizeof(DEVMODEW);
+    ZeroMemory(&dm, sizeof(dm));
+    dm.dmSize = sizeof(dm);
 
     EnumDisplaySettingsW(monitor->win32.adapterName, ENUM_CURRENT_SETTINGS, &dm);
 

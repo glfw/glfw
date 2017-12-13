@@ -49,11 +49,12 @@ GLFWbool _glfwInitVulkan(int mode)
         return GLFW_TRUE;
 
 #if !defined(_GLFW_VULKAN_STATIC)
-#if defined(_GLFW_WIN32)
+#if defined(_GLFW_VULKAN_LIBRARY)
+    _glfw.vk.handle = _glfw_dlopen(_GLFW_VULKAN_LIBRARY);
+#elif defined(_GLFW_WIN32)
     _glfw.vk.handle = _glfw_dlopen("vulkan-1.dll");
 #elif defined(_GLFW_COCOA)
-    // NULL maps to RTLD_DEFAULT, which searches all loaded binaries
-    _glfw.vk.handle = _glfw_dlopen(NULL);
+    _glfw.vk.handle = _glfw_dlopen("libMoltenVK.dylib");
 #else
     _glfw.vk.handle = _glfw_dlopen("libvulkan.so.1");
 #endif
@@ -69,16 +70,8 @@ GLFWbool _glfwInitVulkan(int mode)
         _glfw_dlsym(_glfw.vk.handle, "vkGetInstanceProcAddr");
     if (!_glfw.vk.GetInstanceProcAddr)
     {
-#if defined(_GLFW_COCOA)
-        if (mode == _GLFW_REQUIRE_LOADER)
-        {
-            _glfwInputError(GLFW_API_UNAVAILABLE,
-                            "Vulkan: vkGetInstanceProcAddr not found in process");
-        }
-#else
         _glfwInputError(GLFW_API_UNAVAILABLE,
                         "Vulkan: Loader does not export vkGetInstanceProcAddr");
-#endif
 
         _glfwTerminateVulkan();
         return GLFW_FALSE;

@@ -25,44 +25,27 @@
 //
 //========================================================================
 
-#include "internal.h"
+#include <pthread.h>
+
+#define _GLFW_PLATFORM_TLS_STATE    _GLFWtlsPOSIX   posix
+#define _GLFW_PLATFORM_MUTEX_STATE  _GLFWmutexPOSIX posix
 
 
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-GLFWbool _glfwInitThreadLocalStoragePOSIX(void)
+// POSIX-specific thread local storage data
+//
+typedef struct _GLFWtlsPOSIX
 {
-    if (pthread_key_create(&_glfw.posix_tls.context, NULL) != 0)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "POSIX: Failed to create context TLS");
-        return GLFW_FALSE;
-    }
+    GLFWbool        allocated;
+    pthread_key_t   key;
 
-    _glfw.posix_tls.allocated = GLFW_TRUE;
-    return GLFW_TRUE;
-}
+} _GLFWtlsPOSIX;
 
-void _glfwTerminateThreadLocalStoragePOSIX(void)
+// POSIX-specific mutex data
+//
+typedef struct _GLFWmutexPOSIX
 {
-    if (_glfw.posix_tls.allocated)
-        pthread_key_delete(_glfw.posix_tls.context);
-}
+    GLFWbool        allocated;
+    pthread_mutex_t handle;
 
-
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW platform API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-void _glfwPlatformSetCurrentContext(_GLFWwindow* context)
-{
-    pthread_setspecific(_glfw.posix_tls.context, context);
-}
-
-_GLFWwindow* _glfwPlatformGetCurrentContext(void)
-{
-    return pthread_getspecific(_glfw.posix_tls.context);
-}
+} _GLFWmutexPOSIX;
 

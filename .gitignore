@@ -5,8 +5,6 @@ _ReSharper*
 *.sdf
 *.suo
 *.dir
-*.vcxproj*
-*.sln
 Win32
 x64
 Debug
@@ -82,3 +80,5 @@ tests/title
 tests/vulkan
 tests/windows
 
+*.opendb
+*.db

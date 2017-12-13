@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{64F112EE-E6D6-3BAA-8A8F-E5D34EF84DF5}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>uninstall</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\github\glfw\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule D:/github/glfw/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+D:\programe\cmake\bin\cmake.exe -HD:/github/glfw -BD:/github/glfw/build --check-stamp-file D:\github\glfw\build\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:/github/glfw/CMakeLists.txt;D:\github\glfw\CMakeLists.txt;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineSystem.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeSystem.cmake.in;D:\github\glfw\build\CMakeFiles\3.7.0\CMakeSystem.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCompilerId.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCompilerIdDetection.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\ADSP-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\ARMCC-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\AppleClang-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Borland-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Clang-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Cray-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\GHS-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\GNU-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\HP-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\IAR-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Intel-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\MIPSpro-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\MSVC-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\PGI-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\PathScale-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\SCO-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\TI-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Watcom-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\XL-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\zOS-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CompilerId\VS-10.vcxproj.in;D:\programe\cmake\share\cmake-3.7\Modules\CMakeFindBinUtils.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCCompiler.cmake.in;D:\github\glfw\build\CMakeFiles\3.7.0\CMakeCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Platform\Windows.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCInformation.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineRCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeRCCompiler.cmake.in;D:\github\glfw\build\CMakeFiles\3.7.0\CMakeRCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeTestRCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeTestCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeTestCompilerCommon.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCompilerABI.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseImplicitLinkInfo.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCCompilerABI.c;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCompileFeatures.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCCompiler.cmake.in;D:\github\glfw\build\CMakeFiles\3.7.0\CMakeCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindThreads.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CheckLibraryExists.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CheckSymbolExists.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CheckIncludeFile.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageMessage.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\github\glfw\CMake\modules\FindVulkan.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageMessage.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindDoxygen.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageMessage.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakePackageConfigHelpers.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\programe\cmake\share\cmake-3.7\Modules\WriteBasicConfigVersionFile.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\github\glfw\src\glfw3Config.cmake.in;D:\programe\cmake\share\cmake-3.7\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;D:\github\glfw\src\glfw_config.h.in;D:\github\glfw\src\glfw3.pc.in;D:\github\glfw\cmake_uninstall.cmake.in;D:\github\glfw\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\github\glfw\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule D:/github/glfw/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+D:\programe\cmake\bin\cmake.exe -HD:/github/glfw -BD:/github/glfw/build --check-stamp-file D:\github\glfw\build\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:/github/glfw/CMakeLists.txt;D:\github\glfw\CMakeLists.txt;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineSystem.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeSystem.cmake.in;D:\github\glfw\build\CMakeFiles\3.7.0\CMakeSystem.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCompilerId.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCompilerIdDetection.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\ADSP-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\ARMCC-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\AppleClang-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Borland-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Clang-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Cray-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\GHS-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\GNU-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\HP-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\IAR-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Intel-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\MIPSpro-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\MSVC-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\PGI-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\PathScale-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\SCO-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\TI-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Watcom-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\XL-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\zOS-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CompilerId\VS-10.vcxproj.in;D:\programe\cmake\share\cmake-3.7\Modules\CMakeFindBinUtils.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCCompiler.cmake.in;D:\github\glfw\build\CMakeFiles\3.7.0\CMakeCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Platform\Windows.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCInformation.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineRCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeRCCompiler.cmake.in;D:\github\glfw\build\CMakeFiles\3.7.0\CMakeRCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeTestRCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeTestCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeTestCompilerCommon.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCompilerABI.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseImplicitLinkInfo.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCCompilerABI.c;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCompileFeatures.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCCompiler.cmake.in;D:\github\glfw\build\CMakeFiles\3.7.0\CMakeCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindThreads.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CheckLibraryExists.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CheckSymbolExists.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CheckIncludeFile.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageMessage.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\github\glfw\CMake\modules\FindVulkan.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageMessage.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindDoxygen.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageMessage.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakePackageConfigHelpers.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\programe\cmake\share\cmake-3.7\Modules\WriteBasicConfigVersionFile.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\github\glfw\src\glfw3Config.cmake.in;D:\programe\cmake\share\cmake-3.7\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;D:\github\glfw\src\glfw_config.h.in;D:\github\glfw\src\glfw3.pc.in;D:\github\glfw\cmake_uninstall.cmake.in;D:\github\glfw\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\github\glfw\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule D:/github/glfw/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+D:\programe\cmake\bin\cmake.exe -HD:/github/glfw -BD:/github/glfw/build --check-stamp-file D:\github\glfw\build\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:/github/glfw/CMakeLists.txt;D:\github\glfw\CMakeLists.txt;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineSystem.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeSystem.cmake.in;D:\github\glfw\build\CMakeFiles\3.7.0\CMakeSystem.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCompilerId.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCompilerIdDetection.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\ADSP-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\ARMCC-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\AppleClang-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Borland-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Clang-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Cray-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\GHS-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\GNU-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\HP-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\IAR-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Intel-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\MIPSpro-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\MSVC-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\PGI-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\PathScale-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\SCO-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\TI-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Watcom-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\XL-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\zOS-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CompilerId\VS-10.vcxproj.in;D:\programe\cmake\share\cmake-3.7\Modules\CMakeFindBinUtils.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCCompiler.cmake.in;D:\github\glfw\build\CMakeFiles\3.7.0\CMakeCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Platform\Windows.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCInformation.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineRCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeRCCompiler.cmake.in;D:\github\glfw\build\CMakeFiles\3.7.0\CMakeRCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeTestRCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeTestCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeTestCompilerCommon.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCompilerABI.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseImplicitLinkInfo.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCCompilerABI.c;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCompileFeatures.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCCompiler.cmake.in;D:\github\glfw\build\CMakeFiles\3.7.0\CMakeCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindThreads.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CheckLibraryExists.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CheckSymbolExists.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CheckIncludeFile.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageMessage.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\github\glfw\CMake\modules\FindVulkan.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageMessage.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindDoxygen.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageMessage.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakePackageConfigHelpers.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\programe\cmake\share\cmake-3.7\Modules\WriteBasicConfigVersionFile.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\github\glfw\src\glfw3Config.cmake.in;D:\programe\cmake\share\cmake-3.7\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;D:\github\glfw\src\glfw_config.h.in;D:\github\glfw\src\glfw3.pc.in;D:\github\glfw\cmake_uninstall.cmake.in;D:\github\glfw\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:\github\glfw\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule D:/github/glfw/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+D:\programe\cmake\bin\cmake.exe -HD:/github/glfw -BD:/github/glfw/build --check-stamp-file D:\github\glfw\build\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:/github/glfw/CMakeLists.txt;D:\github\glfw\CMakeLists.txt;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineSystem.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeSystem.cmake.in;D:\github\glfw\build\CMakeFiles\3.7.0\CMakeSystem.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCompilerId.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCompilerIdDetection.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\ADSP-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\ARMCC-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\AppleClang-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Borland-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Clang-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Cray-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\GHS-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\GNU-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\HP-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\IAR-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Intel-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\MIPSpro-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\MSVC-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\PGI-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\PathScale-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\SCO-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\TI-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\Watcom-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\XL-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\zOS-C-DetermineCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CompilerId\VS-10.vcxproj.in;D:\programe\cmake\share\cmake-3.7\Modules\CMakeFindBinUtils.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCCompiler.cmake.in;D:\github\glfw\build\CMakeFiles\3.7.0\CMakeCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Platform\Windows.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCInformation.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;D:\programe\cmake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineRCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeRCCompiler.cmake.in;D:\github\glfw\build\CMakeFiles\3.7.0\CMakeRCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeTestRCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeTestCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeTestCompilerCommon.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCompilerABI.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseImplicitLinkInfo.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCCompilerABI.c;D:\programe\cmake\share\cmake-3.7\Modules\CMakeDetermineCompileFeatures.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeCCompiler.cmake.in;D:\github\glfw\build\CMakeFiles\3.7.0\CMakeCCompiler.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindThreads.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CheckLibraryExists.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CheckSymbolExists.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CheckIncludeFile.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageMessage.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\github\glfw\CMake\modules\FindVulkan.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageMessage.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindDoxygen.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;D:\programe\cmake\share\cmake-3.7\Modules\FindPackageMessage.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakePackageConfigHelpers.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\programe\cmake\share\cmake-3.7\Modules\WriteBasicConfigVersionFile.cmake;D:\programe\cmake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\github\glfw\src\glfw3Config.cmake.in;D:\programe\cmake\share\cmake-3.7\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;D:\github\glfw\src\glfw_config.h.in;D:\github\glfw\src\glfw3.pc.in;D:\github\glfw\cmake_uninstall.cmake.in;D:\github\glfw\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:\github\glfw\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\github\glfw\build\CMakeFiles\1a3960091d3f61bf824655462795e110\uninstall.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+D:\programe\cmake\bin\cmake.exe -P D:/github/glfw/build/cmake_uninstall.cmake
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:/github/glfw/build/CMakeFiles/1a3960091d3f61bf824655462795e110/uninstall.rule;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\github\glfw\build\CMakeFiles\uninstall</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+D:\programe\cmake\bin\cmake.exe -P D:/github/glfw/build/cmake_uninstall.cmake
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:/github/glfw/build/CMakeFiles/1a3960091d3f61bf824655462795e110/uninstall.rule;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\github\glfw\build\CMakeFiles\uninstall</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+D:\programe\cmake\bin\cmake.exe -P D:/github/glfw/build/cmake_uninstall.cmake
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:/github/glfw/build/CMakeFiles/1a3960091d3f61bf824655462795e110/uninstall.rule;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:\github\glfw\build\CMakeFiles\uninstall</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+D:\programe\cmake\bin\cmake.exe -P D:/github/glfw/build/cmake_uninstall.cmake
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:/github/glfw/build/CMakeFiles/1a3960091d3f61bf824655462795e110/uninstall.rule;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:\github\glfw\build\CMakeFiles\uninstall</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\github\glfw\build\CMakeFiles\uninstall" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:/github/glfw/build/ZERO_CHECK.vcxproj">
+      <Project>B9366857-E269-38DD-930D-FCA81100FA2A</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

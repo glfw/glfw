@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Model">
+      <UniqueIdentifier>{194f9210-1c9b-4617-94f4-1db0f1ab129c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DeferredRendering">
+      <UniqueIdentifier>{197942dc-0c5d-4dc1-8509-94bbec59e11b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{68752574-5107-46f3-9ad7-28e9d41efab8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GLApplication.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Model\CubeModel.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\GLSLShaderData.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\IModel.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\PlaneModel.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\SphereModel.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredRendering\DeferredRendering.cpp">
+      <Filter>DeferredRendering</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredRendering\FBORenderTexture.cpp">
+      <Filter>DeferredRendering</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GLApplication.h" />
+    <ClInclude Include="Model\CubeModel.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\GLSLShaderData.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\IModel.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\PlaneModel.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\SphereModel.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="DeferredRendering\DeferredRendering.h">
+      <Filter>DeferredRendering</Filter>
+    </ClInclude>
+    <ClInclude Include="DeferredRendering\FBORenderTexture.h">
+      <Filter>DeferredRendering</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\deferredRendering.frag">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\deferredRendering.vert">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\deferredShading.frag">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\deferredShading.vert">
+      <Filter>data</Filter>
+    </None>
+  </ItemGroup>
+</Project>

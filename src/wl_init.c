@@ -137,6 +137,9 @@ static void pointerHandleAxis(void* data,
     if (!window)
         return;
 
+    assert(axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL ||
+           axis == WL_POINTER_AXIS_VERTICAL_SCROLL);
+
     /* Wayland scroll events are in pointer motion coordinate space (think
      * two finger scroll). The factor 10 is commonly used to convert to
      * "scroll step means 1.0. */
@@ -151,9 +154,6 @@ static void pointerHandleAxis(void* data,
         case WL_POINTER_AXIS_VERTICAL_SCROLL:
             x = 0.0;
             y = wl_fixed_to_double(value) * scrollFactor;
-            break;
-        default:
-            assert(GLFW_FALSE);
             break;
     }
 

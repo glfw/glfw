@@ -406,16 +406,16 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
 
     for (i = 0;  i < 256;  i++)
     {
-        double value;
+        float value;
 
         // Calculate intensity
-        value = i / 255.0;
+        value = i / 255.f;
         // Apply gamma curve
-        value = pow(value, 1.0 / gamma) * 65535.0 + 0.5;
+        value = powf(value, 1.f / gamma) * 65535.f + 0.5f;
 
         // Clamp to value range
-        if (value > 65535.0)
-            value = 65535.0;
+        if (value > 65535.f)
+            value = 65535.f;
 
         values[i] = (unsigned short) value;
     }

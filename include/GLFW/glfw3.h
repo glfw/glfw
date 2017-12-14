@@ -1067,7 +1067,7 @@ extern "C" {
  *  @sa @ref glfwGetProcAddress
  *
  *  @since Added in version 3.0.
- 
+ *
  *  @ingroup context
  */
 typedef void (*GLFWglproc)(void);
@@ -1654,7 +1654,7 @@ GLFWAPI void glfwTerminate(void);
  *
  *  Some hints are platform specific.  These may be set on any platform but they
  *  will only affect their specific platform.  Other platforms will ignore them.
- *  Setting these hints requires no platform specific headers or functions. 
+ *  Setting these hints requires no platform specific headers or functions.
  *
  *  @param[in] hint The [init hint](@ref init_hints) to set.
  *  @param[in] value The new value of the init hint.
@@ -1688,7 +1688,7 @@ GLFWAPI void glfwInitHint(int hint, int value);
  *
  *  Some hints are platform specific.  These may be set on any platform but they
  *  will only affect their specific platform.  Other platforms will ignore them.
- *  Setting these hints requires no platform specific headers or functions. 
+ *  Setting these hints requires no platform specific headers or functions.
  *
  *  @param[in] hint The [init hint](@ref init_hints) to set.
  *  @param[in] value The new value of the init hint.
@@ -3226,7 +3226,7 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* window, int attrib);
  *  The supported attributes are [GLFW_DECORATED](@ref GLFW_DECORATED_attrib),
  *  [GLFW_RESIZABLE](@ref GLFW_RESIZABLE_attrib),
  *  [GLFW_FLOATING](@ref GLFW_FLOATING_attrib) and
- *  [GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib).   
+ *  [GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib).
  *
  *  Some of these attributes are ignored for full screen windows.  The new
  *  value will take effect if the window is later made windowed.
@@ -4476,10 +4476,10 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int jid, int* count);
  *  it with the corresponding direction.
  *
  *  @code
- *  if (hats[2] & GLFW_HAT_RIGHT)                                
- *  {                                                            
- *      // State of hat 2 could be right-up, right or right-down 
- *  }                                                            
+ *  if (hats[2] & GLFW_HAT_RIGHT)
+ *  {
+ *      // State of hat 2 could be right-up, right or right-down
+ *  }
  *  @endcode
  *
  *  If the specified joystick is not present this function will return `NULL`
@@ -4859,7 +4859,7 @@ GLFWAPI void glfwSetTime(double time);
  *  1&nbsp;/&nbsp;frequency seconds.  To get the frequency, call @ref
  *  glfwGetTimerFrequency.
  *
- *  @return The value of the timer, or zero if an 
+ *  @return The value of the timer, or zero if an
  *  [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.

@@ -103,7 +103,7 @@ CREDITS:
       Jonas Karlsson
       Filip Wasil
       Thatcher Ulrich
-      
+
 LICENSE
 
 This software is dual-licensed to the public domain and under the following

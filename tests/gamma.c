@@ -135,13 +135,13 @@ int main(int argc, char** argv)
 
         glfwGetWindowSize(window, &width, &height);
         area = nk_rect(0.f, 0.f, (float) width, (float) height);
+        nk_window_set_bounds(nk, "", area);
 
         glClear(GL_COLOR_BUFFER_BIT);
         nk_glfw3_new_frame();
         if (nk_begin(nk, "", area, 0))
         {
             const GLFWgammaramp* ramp;
-            nk_window_set_bounds(nk, area);
 
             nk_layout_row_dynamic(nk, 30, 3);
             if (nk_slider_float(nk, 0.1f, &gamma_value, 5.f, 0.1f))

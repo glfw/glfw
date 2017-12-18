@@ -325,6 +325,8 @@ skills.
  - Mário Freitas
  - GeO4d
  - Marcus Geelnard
+ - Stephen Gowen
+ - Kovid Goyal
  - Eloi Marín Gratacós
  - Stefan Gustavson
  - Jonathan Hale

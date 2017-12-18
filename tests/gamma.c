@@ -155,7 +155,7 @@ int main(int argc, char** argv)
             nk_layout_row_dynamic(nk, height - 60.f, 3);
             chart_ramp_array(nk, nk_rgb(255, 0, 0), ramp->size, ramp->red);
             chart_ramp_array(nk, nk_rgb(0, 255, 0), ramp->size, ramp->green);
-            chart_ramp_array(nk, nk_rgb(0,0,  255), ramp->size, ramp->blue);
+            chart_ramp_array(nk, nk_rgb(0, 0, 255), ramp->size, ramp->blue);
         }
 
         nk_end(nk);

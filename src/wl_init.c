@@ -527,6 +527,11 @@ static void registryHandleGlobal(void* data,
             wl_registry_bind(registry, name, &wl_compositor_interface,
                              _glfw.wl.compositorVersion);
     }
+    else if (strcmp(interface, "wl_subcompositor") == 0)
+    {
+        _glfw.wl.subcompositor =
+            wl_registry_bind(registry, name, &wl_subcompositor_interface, 1);
+    }
     else if (strcmp(interface, "wl_shm") == 0)
     {
         _glfw.wl.shm =

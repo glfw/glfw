@@ -558,6 +558,11 @@ static void registryHandleGlobal(void* data,
             wl_registry_bind(registry, name, &xdg_wm_base_interface, 1);
         xdg_wm_base_add_listener(_glfw.wl.wmBase, &wmBaseListener, NULL);
     }
+    else if (strcmp(interface, "wp_viewporter") == 0)
+    {
+        _glfw.wl.viewporter =
+            wl_registry_bind(registry, name, &wp_viewporter_interface, 1);
+    }
     else if (strcmp(interface, "zwp_relative_pointer_manager_v1") == 0)
     {
         _glfw.wl.relativePointerManager =

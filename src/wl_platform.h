@@ -53,6 +53,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #include "osmesa_context.h"
 
 #include "wayland-xdg-shell-client-protocol.h"
+#include "wayland-viewporter-client-protocol.h"
 #include "wayland-relative-pointer-unstable-v1-client-protocol.h"
 #include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
 #include "wayland-idle-inhibit-unstable-v1-client-protocol.h"
@@ -197,6 +198,7 @@ typedef struct _GLFWlibraryWayland
     struct wl_pointer*          pointer;
     struct wl_keyboard*         keyboard;
     struct xdg_wm_base*         wmBase;
+    struct wp_viewporter*       viewporter;
     struct zwp_relative_pointer_manager_v1* relativePointerManager;
     struct zwp_pointer_constraints_v1*      pointerConstraints;
     struct zwp_idle_inhibit_manager_v1*     idleInhibitManager;

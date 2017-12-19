@@ -54,6 +54,8 @@ static void pointerHandleEnter(void* data,
         return;
 
     _GLFWwindow* window = wl_surface_get_user_data(surface);
+    if (!window)
+        return;
 
     _glfw.wl.pointerSerial = serial;
     _glfw.wl.pointerFocus = window;
@@ -280,6 +282,8 @@ static void keyboardHandleEnter(void* data,
         return;
 
     _GLFWwindow* window = wl_surface_get_user_data(surface);
+    if (!window)
+        return;
 
     _glfw.wl.keyboardFocus = window;
     _glfwInputWindowFocus(window, GLFW_TRUE);

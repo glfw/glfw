@@ -552,6 +552,59 @@ createAnonymousFile(off_t size)
     return fd;
 }
 
+static struct wl_buffer* createShmBuffer(const GLFWimage* image)
+{
+    struct wl_shm_pool* pool;
+    struct wl_buffer* buffer;
+    int stride = image->width * 4;
+    int length = image->width * image->height * 4;
+    void* data;
+    int fd, i;
+
+    fd = createAnonymousFile(length);
+    if (fd < 0)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Creating a buffer file for %d B failed: %m",
+                        length);
+        return GLFW_FALSE;
+    }
+
+    data = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    if (data == MAP_FAILED)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Cursor mmap failed: %m");
+        close(fd);
+        return GLFW_FALSE;
+    }
+
+    pool = wl_shm_create_pool(_glfw.wl.shm, fd, length);
+
+    close(fd);
+    unsigned char* source = (unsigned char*) image->pixels;
+    unsigned char* target = data;
+    for (i = 0;  i < image->width * image->height;  i++, source += 4)
+    {
+        unsigned int alpha = source[3];
+
+        *target++ = (unsigned char) ((source[2] * alpha) / 255);
+        *target++ = (unsigned char) ((source[1] * alpha) / 255);
+        *target++ = (unsigned char) ((source[0] * alpha) / 255);
+        *target++ = (unsigned char) alpha;
+    }
+
+    buffer =
+        wl_shm_pool_create_buffer(pool, 0,
+                                  image->width,
+                                  image->height,
+                                  stride, WL_SHM_FORMAT_ARGB8888);
+    munmap(data, length);
+    wl_shm_pool_destroy(pool);
+
+    return buffer;
+}
+
 // Translates a GLFW standard cursor to a theme cursor name
 //
 static char *translateCursorShape(int shape)
@@ -1041,53 +1094,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                               const GLFWimage* image,
                               int xhot, int yhot)
 {
-    struct wl_shm_pool* pool;
-    int stride = image->width * 4;
-    int length = image->width * image->height * 4;
-    void* data;
-    int fd, i;
-
-    fd = createAnonymousFile(length);
-    if (fd < 0)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Creating a buffer file for %d B failed: %m",
-                        length);
-        return GLFW_FALSE;
-    }
-
-    data = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (data == MAP_FAILED)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Cursor mmap failed: %m");
-        close(fd);
-        return GLFW_FALSE;
-    }
-
-    pool = wl_shm_create_pool(_glfw.wl.shm, fd, length);
-
-    close(fd);
-    unsigned char* source = (unsigned char*) image->pixels;
-    unsigned char* target = data;
-    for (i = 0;  i < image->width * image->height;  i++, source += 4)
-    {
-        unsigned int alpha = source[3];
-
-        *target++ = (unsigned char) ((source[2] * alpha) / 255);
-        *target++ = (unsigned char) ((source[1] * alpha) / 255);
-        *target++ = (unsigned char) ((source[0] * alpha) / 255);
-        *target++ = (unsigned char) alpha;
-    }
-
-    cursor->wl.buffer =
-        wl_shm_pool_create_buffer(pool, 0,
-                                  image->width,
-                                  image->height,
-                                  stride, WL_SHM_FORMAT_ARGB8888);
-    munmap(data, length);
-    wl_shm_pool_destroy(pool);
-
+    cursor->wl.buffer = createShmBuffer(image);
     cursor->wl.width = image->width;
     cursor->wl.height = image->height;
     cursor->wl.xhot = xhot;

@@ -141,6 +141,26 @@ typedef xkb_keysym_t (* PFN_xkb_compose_state_get_one_sym)(struct xkb_compose_st
 #define xkb_compose_state_get_one_sym _glfw.wl.xkb.compose_state_get_one_sym
 #endif
 
+#define _GLFW_DECORATION_WIDTH 4
+#define _GLFW_DECORATION_TOP 24
+
+typedef enum _GLFWdecorationSideWayland
+{
+    mainWindow,
+    topDecoration,
+    leftDecoration,
+    rightDecoration,
+    bottomDecoration,
+
+} _GLFWdecorationSideWayland;
+
+typedef struct _GLFWdecorationWayland
+{
+    struct wl_surface*          surface;
+    struct wl_subsurface*       subsurface;
+    struct wp_viewport*         viewport;
+
+} _GLFWdecorationWayland;
 
 // Wayland-specific per-window data
 //
@@ -182,6 +202,12 @@ typedef struct _GLFWwindowWayland
 
     // This is a hack to prevent auto-iconification on creation.
     GLFWbool                    justCreated;
+
+    struct {
+        struct wl_buffer*                  buffer;
+        _GLFWdecorationWayland             top, left, right, bottom;
+        int                                focus;
+    } decorations;
 
 } _GLFWwindowWayland;
 

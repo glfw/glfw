@@ -95,6 +95,193 @@ static const struct wl_shell_surface_listener shellSurfaceListener = {
     handlePopupDone
 };
 
+static int
+createTmpfileCloexec(char* tmpname)
+{
+    int fd;
+
+    fd = mkostemp(tmpname, O_CLOEXEC);
+    if (fd >= 0)
+        unlink(tmpname);
+
+    return fd;
+}
+
+/*
+ * Create a new, unique, anonymous file of the given size, and
+ * return the file descriptor for it. The file descriptor is set
+ * CLOEXEC. The file is immediately suitable for mmap()'ing
+ * the given size at offset zero.
+ *
+ * The file should not have a permanent backing store like a disk,
+ * but may have if XDG_RUNTIME_DIR is not properly implemented in OS.
+ *
+ * The file name is deleted from the file system.
+ *
+ * The file is suitable for buffer sharing between processes by
+ * transmitting the file descriptor over Unix sockets using the
+ * SCM_RIGHTS methods.
+ *
+ * posix_fallocate() is used to guarantee that disk space is available
+ * for the file at the given size. If disk space is insufficent, errno
+ * is set to ENOSPC. If posix_fallocate() is not supported, program may
+ * receive SIGBUS on accessing mmap()'ed file contents instead.
+ */
+static int
+createAnonymousFile(off_t size)
+{
+    static const char template[] = "/glfw-shared-XXXXXX";
+    const char* path;
+    char* name;
+    int fd;
+    int ret;
+
+    path = getenv("XDG_RUNTIME_DIR");
+    if (!path)
+    {
+        errno = ENOENT;
+        return -1;
+    }
+
+    name = calloc(strlen(path) + sizeof(template), 1);
+    strcpy(name, path);
+    strcat(name, template);
+
+    fd = createTmpfileCloexec(name);
+
+    free(name);
+
+    if (fd < 0)
+        return -1;
+    ret = posix_fallocate(fd, 0, size);
+    if (ret != 0)
+    {
+        close(fd);
+        errno = ret;
+        return -1;
+    }
+    return fd;
+}
+
+static struct wl_buffer* createShmBuffer(const GLFWimage* image)
+{
+    struct wl_shm_pool* pool;
+    struct wl_buffer* buffer;
+    int stride = image->width * 4;
+    int length = image->width * image->height * 4;
+    void* data;
+    int fd, i;
+
+    fd = createAnonymousFile(length);
+    if (fd < 0)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Creating a buffer file for %d B failed: %m",
+                        length);
+        return GLFW_FALSE;
+    }
+
+    data = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    if (data == MAP_FAILED)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: mmap failed: %m");
+        close(fd);
+        return GLFW_FALSE;
+    }
+
+    pool = wl_shm_create_pool(_glfw.wl.shm, fd, length);
+
+    close(fd);
+    unsigned char* source = (unsigned char*) image->pixels;
+    unsigned char* target = data;
+    for (i = 0;  i < image->width * image->height;  i++, source += 4)
+    {
+        unsigned int alpha = source[3];
+
+        *target++ = (unsigned char) ((source[2] * alpha) / 255);
+        *target++ = (unsigned char) ((source[1] * alpha) / 255);
+        *target++ = (unsigned char) ((source[0] * alpha) / 255);
+        *target++ = (unsigned char) alpha;
+    }
+
+    buffer =
+        wl_shm_pool_create_buffer(pool, 0,
+                                  image->width,
+                                  image->height,
+                                  stride, WL_SHM_FORMAT_ARGB8888);
+    munmap(data, length);
+    wl_shm_pool_destroy(pool);
+
+    return buffer;
+}
+
+static void createDecoration(_GLFWdecorationWayland* decoration,
+                             struct wl_surface* parent,
+                             struct wl_buffer* buffer, int x, int y,
+                             int width, int height)
+{
+    decoration->surface = wl_compositor_create_surface(_glfw.wl.compositor);
+    decoration->subsurface =
+        wl_subcompositor_get_subsurface(_glfw.wl.subcompositor,
+                                        decoration->surface, parent);
+    wl_subsurface_set_position(decoration->subsurface, x, y);
+    decoration->viewport = wp_viewporter_get_viewport(_glfw.wl.viewporter,
+                                                      decoration->surface);
+    wp_viewport_set_destination(decoration->viewport, width, height);
+    wl_surface_attach(decoration->surface, buffer, 0, 0);
+    wl_surface_commit(decoration->surface);
+}
+
+static void createDecorations(_GLFWwindow* window)
+{
+    unsigned char data[] = { 224, 224, 224, 255 };
+    const GLFWimage image = { 1, 1, data };
+
+    struct wl_buffer* buffer = createShmBuffer(&image);
+
+    createDecoration(&window->wl.decorations.top, window->wl.surface, buffer,
+                     0, -_GLFW_DECORATION_TOP,
+                     window->wl.width, _GLFW_DECORATION_TOP);
+    createDecoration(&window->wl.decorations.left, window->wl.surface, buffer,
+                     -_GLFW_DECORATION_WIDTH, -_GLFW_DECORATION_TOP,
+                     _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
+    createDecoration(&window->wl.decorations.right, window->wl.surface, buffer,
+                     window->wl.width, -_GLFW_DECORATION_TOP,
+                     _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
+    createDecoration(&window->wl.decorations.bottom, window->wl.surface, buffer,
+                     -_GLFW_DECORATION_WIDTH, window->wl.height,
+                     window->wl.width + 2 * _GLFW_DECORATION_WIDTH, _GLFW_DECORATION_WIDTH);
+}
+
+static void resizeWindow(_GLFWwindow* window, int width, int height)
+{
+    wl_egl_window_resize(window->wl.native, width, height, 0, 0);
+
+    // Top decoration.
+    wp_viewport_set_destination(window->wl.decorations.top.viewport, width, _GLFW_DECORATION_TOP);
+    wl_surface_commit(window->wl.decorations.top.surface);
+
+    // Left decoration.
+    wp_viewport_set_destination(window->wl.decorations.left.viewport,
+                                _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
+    wl_surface_commit(window->wl.decorations.left.surface);
+
+    // Right decoration.
+    wl_subsurface_set_position(window->wl.decorations.right.subsurface,
+                               window->wl.width, -_GLFW_DECORATION_TOP);
+    wp_viewport_set_destination(window->wl.decorations.right.viewport,
+                                _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
+    wl_surface_commit(window->wl.decorations.right.surface);
+
+    // Bottom decoration.
+    wl_subsurface_set_position(window->wl.decorations.bottom.subsurface,
+                               -_GLFW_DECORATION_WIDTH, window->wl.height);
+    wp_viewport_set_destination(window->wl.decorations.bottom.viewport,
+                                width + 2 * _GLFW_DECORATION_WIDTH, _GLFW_DECORATION_WIDTH);
+    wl_surface_commit(window->wl.decorations.bottom.surface);
+}
+
 static void checkScaleChange(_GLFWwindow* window)
 {
     int scaledWidth, scaledHeight;
@@ -121,7 +308,7 @@ static void checkScaleChange(_GLFWwindow* window)
         scaledWidth = window->wl.width * scale;
         scaledHeight = window->wl.height * scale;
         wl_surface_set_buffer_scale(window->wl.surface, scale);
-        wl_egl_window_resize(window->wl.native, scaledWidth, scaledHeight, 0, 0);
+        resizeWindow(window, scaledWidth, scaledHeight);
         _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
         _glfwInputWindowContentScale(window, scale, scale);
     }
@@ -231,6 +418,8 @@ static GLFWbool createSurface(_GLFWwindow* window,
 
     if (!window->wl.transparent)
         setOpaqueRegion(window);
+
+    createDecorations(window);
 
     return GLFW_TRUE;
 }
@@ -425,18 +614,6 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
     return GLFW_TRUE;
 }
 
-static int
-createTmpfileCloexec(char* tmpname)
-{
-    int fd;
-
-    fd = mkostemp(tmpname, O_CLOEXEC);
-    if (fd >= 0)
-        unlink(tmpname);
-
-    return fd;
-}
-
 static void
 handleEvents(int timeout)
 {
@@ -494,115 +671,6 @@ handleEvents(int timeout)
     {
         wl_display_cancel_read(display);
     }
-}
-
-/*
- * Create a new, unique, anonymous file of the given size, and
- * return the file descriptor for it. The file descriptor is set
- * CLOEXEC. The file is immediately suitable for mmap()'ing
- * the given size at offset zero.
- *
- * The file should not have a permanent backing store like a disk,
- * but may have if XDG_RUNTIME_DIR is not properly implemented in OS.
- *
- * The file name is deleted from the file system.
- *
- * The file is suitable for buffer sharing between processes by
- * transmitting the file descriptor over Unix sockets using the
- * SCM_RIGHTS methods.
- *
- * posix_fallocate() is used to guarantee that disk space is available
- * for the file at the given size. If disk space is insufficent, errno
- * is set to ENOSPC. If posix_fallocate() is not supported, program may
- * receive SIGBUS on accessing mmap()'ed file contents instead.
- */
-static int
-createAnonymousFile(off_t size)
-{
-    static const char template[] = "/glfw-shared-XXXXXX";
-    const char* path;
-    char* name;
-    int fd;
-    int ret;
-
-    path = getenv("XDG_RUNTIME_DIR");
-    if (!path)
-    {
-        errno = ENOENT;
-        return -1;
-    }
-
-    name = calloc(strlen(path) + sizeof(template), 1);
-    strcpy(name, path);
-    strcat(name, template);
-
-    fd = createTmpfileCloexec(name);
-
-    free(name);
-
-    if (fd < 0)
-        return -1;
-    ret = posix_fallocate(fd, 0, size);
-    if (ret != 0)
-    {
-        close(fd);
-        errno = ret;
-        return -1;
-    }
-    return fd;
-}
-
-static struct wl_buffer* createShmBuffer(const GLFWimage* image)
-{
-    struct wl_shm_pool* pool;
-    struct wl_buffer* buffer;
-    int stride = image->width * 4;
-    int length = image->width * image->height * 4;
-    void* data;
-    int fd, i;
-
-    fd = createAnonymousFile(length);
-    if (fd < 0)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Creating a buffer file for %d B failed: %m",
-                        length);
-        return GLFW_FALSE;
-    }
-
-    data = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (data == MAP_FAILED)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Cursor mmap failed: %m");
-        close(fd);
-        return GLFW_FALSE;
-    }
-
-    pool = wl_shm_create_pool(_glfw.wl.shm, fd, length);
-
-    close(fd);
-    unsigned char* source = (unsigned char*) image->pixels;
-    unsigned char* target = data;
-    for (i = 0;  i < image->width * image->height;  i++, source += 4)
-    {
-        unsigned int alpha = source[3];
-
-        *target++ = (unsigned char) ((source[2] * alpha) / 255);
-        *target++ = (unsigned char) ((source[1] * alpha) / 255);
-        *target++ = (unsigned char) ((source[0] * alpha) / 255);
-        *target++ = (unsigned char) alpha;
-    }
-
-    buffer =
-        wl_shm_pool_create_buffer(pool, 0,
-                                  image->width,
-                                  image->height,
-                                  stride, WL_SHM_FORMAT_ARGB8888);
-    munmap(data, length);
-    wl_shm_pool_destroy(pool);
-
-    return buffer;
 }
 
 // Translates a GLFW standard cursor to a theme cursor name
@@ -783,7 +851,7 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     int scaledHeight = height * window->wl.scale;
     window->wl.width = width;
     window->wl.height = height;
-    wl_egl_window_resize(window->wl.native, scaledWidth, scaledHeight, 0, 0);
+    resizeWindow(window, scaledWidth, scaledHeight);
     if (!window->wl.transparent)
         setOpaqueRegion(window);
     _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);

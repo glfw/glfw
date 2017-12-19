@@ -516,7 +516,7 @@ handleEvents(int timeout)
  * is set to ENOSPC. If posix_fallocate() is not supported, program may
  * receive SIGBUS on accessing mmap()'ed file contents instead.
  */
-int
+static int
 createAnonymousFile(off_t size)
 {
     static const char template[] = "/glfw-shared-XXXXXX";

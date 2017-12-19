@@ -898,8 +898,14 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
                                      int* left, int* top,
                                      int* right, int* bottom)
 {
-    // TODO: will need a proper implementation once decorations are
-    // implemented, but for now just leave everything as 0.
+    if (top)
+        *top = _GLFW_DECORATION_TOP;
+    if (left)
+        *left = _GLFW_DECORATION_WIDTH;
+    if (right)
+        *right = _GLFW_DECORATION_WIDTH;
+    if (bottom)
+        *bottom = _GLFW_DECORATION_WIDTH;
 }
 
 void _glfwPlatformGetWindowContentScale(_GLFWwindow* window,

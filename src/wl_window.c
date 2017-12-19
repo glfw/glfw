@@ -254,6 +254,24 @@ static void createDecorations(_GLFWwindow* window)
                      window->wl.width + 2 * _GLFW_DECORATION_WIDTH, _GLFW_DECORATION_WIDTH);
 }
 
+static void destroyDecoration(_GLFWdecorationWayland* decoration)
+{
+    if (decoration->surface)
+        wl_surface_destroy(decoration->surface);
+    if (decoration->subsurface)
+        wl_subsurface_destroy(decoration->subsurface);
+    if (decoration->viewport)
+        wp_viewport_destroy(decoration->viewport);
+}
+
+static void destroyDecorations(_GLFWwindow* window)
+{
+    destroyDecoration(&window->wl.decorations.top);
+    destroyDecoration(&window->wl.decorations.left);
+    destroyDecoration(&window->wl.decorations.right);
+    destroyDecoration(&window->wl.decorations.bottom);
+}
+
 static void resizeWindow(_GLFWwindow* window, int width, int height)
 {
     wl_egl_window_resize(window->wl.native, width, height, 0, 0);
@@ -782,6 +800,8 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 
     if (window->context.destroy)
         window->context.destroy(window);
+
+    destroyDecorations(window);
 
     if (window->wl.native)
         wl_egl_window_destroy(window->wl.native);

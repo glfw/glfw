@@ -42,6 +42,39 @@ static inline int min(int n1, int n2)
     return n1 < n2 ? n1 : n2;
 }
 
+static _GLFWwindow* findWindowFromDecorationSurface(struct wl_surface* surface, int* which)
+{
+    int focus;
+    _GLFWwindow* window = _glfw.windowListHead;
+    if (!which)
+        which = &focus;
+    while (window)
+    {
+        if (surface == window->wl.decorations.top.surface)
+        {
+            *which = topDecoration;
+            break;
+        }
+        if (surface == window->wl.decorations.left.surface)
+        {
+            *which = leftDecoration;
+            break;
+        }
+        if (surface == window->wl.decorations.right.surface)
+        {
+            *which = rightDecoration;
+            break;
+        }
+        if (surface == window->wl.decorations.bottom.surface)
+        {
+            *which = bottomDecoration;
+            break;
+        }
+        window = window->next;
+    }
+    return window;
+}
+
 static void pointerHandleEnter(void* data,
                                struct wl_pointer* pointer,
                                uint32_t serial,
@@ -53,10 +86,16 @@ static void pointerHandleEnter(void* data,
     if (!surface)
         return;
 
+    int focus = 0;
     _GLFWwindow* window = wl_surface_get_user_data(surface);
     if (!window)
-        return;
+    {
+        window = findWindowFromDecorationSurface(surface, &focus);
+        if (!window)
+            return;
+    }
 
+    window->wl.decorations.focus = focus;
     _glfw.wl.pointerSerial = serial;
     _glfw.wl.pointerFocus = window;
 
@@ -83,6 +122,39 @@ static void pointerHandleLeave(void* data,
     _glfwInputCursorEnter(window, GLFW_FALSE);
 }
 
+static void setCursor(const char* name)
+{
+    struct wl_buffer* buffer;
+    struct wl_cursor* cursor;
+    struct wl_cursor_image* image;
+    struct wl_surface* surface = _glfw.wl.cursorSurface;
+
+    cursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme,
+                                        name);
+    if (!cursor)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Standard cursor not found");
+        return;
+    }
+    image = cursor->images[0];
+
+    if (!image)
+        return;
+
+    buffer = wl_cursor_image_get_buffer(image);
+    if (!buffer)
+        return;
+    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
+                          surface,
+                          image->hotspot_x,
+                          image->hotspot_y);
+    wl_surface_attach(surface, buffer, 0, 0);
+    wl_surface_damage(surface, 0, 0,
+                      image->width, image->height);
+    wl_surface_commit(surface);
+}
+
 static void pointerHandleMotion(void* data,
                                 struct wl_pointer* pointer,
                                 uint32_t time,
@@ -90,6 +162,7 @@ static void pointerHandleMotion(void* data,
                                 wl_fixed_t sy)
 {
     _GLFWwindow* window = _glfw.wl.pointerFocus;
+    const char* cursorName;
 
     if (!window)
         return;
@@ -102,9 +175,43 @@ static void pointerHandleMotion(void* data,
         window->wl.cursorPosY = wl_fixed_to_double(sy);
     }
 
-    _glfwInputCursorPos(window,
-                        wl_fixed_to_double(sx),
-                        wl_fixed_to_double(sy));
+    switch (window->wl.decorations.focus)
+    {
+        case mainWindow:
+            _glfwInputCursorPos(window,
+                                wl_fixed_to_double(sx),
+                                wl_fixed_to_double(sy));
+            return;
+        case topDecoration:
+            if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
+                cursorName = "n-resize";
+            else
+                cursorName = "left_ptr";
+            break;
+        case leftDecoration:
+            if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
+                cursorName = "nw-resize";
+            else
+                cursorName = "w-resize";
+            break;
+        case rightDecoration:
+            if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
+                cursorName = "ne-resize";
+            else
+                cursorName = "e-resize";
+            break;
+        case bottomDecoration:
+            if (window->wl.cursorPosX < _GLFW_DECORATION_WIDTH)
+                cursorName = "sw-resize";
+            else if (window->wl.cursorPosX > window->wl.width + _GLFW_DECORATION_WIDTH)
+                cursorName = "se-resize";
+            else
+                cursorName = "s-resize";
+            break;
+        default:
+            assert(0);
+    }
+    setCursor(cursorName);
 }
 
 static void pointerHandleButton(void* data,
@@ -119,6 +226,47 @@ static void pointerHandleButton(void* data,
 
     if (!window)
         return;
+    switch (window->wl.decorations.focus)
+    {
+        case mainWindow:
+            break;
+        case topDecoration:
+            if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
+                wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
+                                        serial, WL_SHELL_SURFACE_RESIZE_TOP);
+            else
+                wl_shell_surface_move(window->wl.shellSurface, _glfw.wl.seat, serial);
+            return;
+        case leftDecoration:
+            if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
+                wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
+                                        serial, WL_SHELL_SURFACE_RESIZE_TOP_LEFT);
+            else
+                wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
+                                        serial, WL_SHELL_SURFACE_RESIZE_LEFT);
+            return;
+        case rightDecoration:
+            if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
+                wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
+                                        serial, WL_SHELL_SURFACE_RESIZE_TOP_RIGHT);
+            else
+                wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
+                                        serial, WL_SHELL_SURFACE_RESIZE_RIGHT);
+            return;
+        case bottomDecoration:
+            if (window->wl.cursorPosX < _GLFW_DECORATION_WIDTH)
+                wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
+                                        serial, WL_SHELL_SURFACE_RESIZE_BOTTOM_LEFT);
+            else if (window->wl.cursorPosX > window->wl.width + _GLFW_DECORATION_WIDTH)
+                wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
+                                        serial, WL_SHELL_SURFACE_RESIZE_BOTTOM_RIGHT);
+            else
+                wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
+                                        serial, WL_SHELL_SURFACE_RESIZE_BOTTOM);
+            return;
+        default:
+            assert(0);
+    }
 
     _glfw.wl.pointerSerial = serial;
 
@@ -283,7 +431,11 @@ static void keyboardHandleEnter(void* data,
 
     _GLFWwindow* window = wl_surface_get_user_data(surface);
     if (!window)
-        return;
+    {
+        window = findWindowFromDecorationSurface(surface, NULL);
+        if (!window)
+            return;
+    }
 
     _glfw.wl.keyboardFocus = window;
     _glfwInputWindowFocus(window, GLFW_TRUE);

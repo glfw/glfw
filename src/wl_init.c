@@ -108,7 +108,7 @@ static void pointerHandleMotion(void* data,
 }
 
 static void pointerHandleButton(void* data,
-                                struct wl_pointer* wl_pointer,
+                                struct wl_pointer* pointer,
                                 uint32_t serial,
                                 uint32_t time,
                                 uint32_t button,
@@ -135,7 +135,7 @@ static void pointerHandleButton(void* data,
 }
 
 static void pointerHandleAxis(void* data,
-                              struct wl_pointer* wl_pointer,
+                              struct wl_pointer* pointer,
                               uint32_t time,
                               uint32_t axis,
                               wl_fixed_t value)

@@ -238,6 +238,9 @@ static void createDecorations(_GLFWwindow* window)
     unsigned char data[] = { 224, 224, 224, 255 };
     const GLFWimage image = { 1, 1, data };
 
+    if (!_glfw.wl.viewporter)
+        return;
+
     struct wl_buffer* buffer = createShmBuffer(&image);
 
     createDecoration(&window->wl.decorations.top, window->wl.surface, buffer,
@@ -275,6 +278,9 @@ static void destroyDecorations(_GLFWwindow* window)
 static void resizeWindow(_GLFWwindow* window, int width, int height)
 {
     wl_egl_window_resize(window->wl.native, width, height, 0, 0);
+
+    if (!_glfw.wl.viewporter)
+        return;
 
     // Top decoration.
     wp_viewport_set_destination(window->wl.decorations.top.viewport, width, _GLFW_DECORATION_TOP);

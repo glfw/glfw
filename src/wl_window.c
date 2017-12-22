@@ -60,8 +60,8 @@ static void handleConfigure(void* data,
     {
         if (window->decorated)
         {
-            width -= 2 * _GLFW_DECORATION_WIDTH;
-            height -= _GLFW_DECORATION_TOP + _GLFW_DECORATION_WIDTH;
+            width -= _GLFW_DECORATION_HORIZONTAL;
+            height -= _GLFW_DECORATION_VERTICAL;
         }
 
         if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
@@ -260,7 +260,7 @@ static void createDecorations(_GLFWwindow* window)
                      _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
     createDecoration(&window->wl.decorations.bottom, window->wl.surface, buffer,
                      -_GLFW_DECORATION_WIDTH, window->wl.height,
-                     window->wl.width + 2 * _GLFW_DECORATION_WIDTH, _GLFW_DECORATION_WIDTH);
+                     window->wl.width + _GLFW_DECORATION_HORIZONTAL, _GLFW_DECORATION_WIDTH);
 }
 
 static void destroyDecoration(_GLFWdecorationWayland* decoration)
@@ -281,15 +281,39 @@ static void destroyDecorations(_GLFWwindow* window)
     destroyDecoration(&window->wl.decorations.bottom);
 }
 
-static void resizeWindow(_GLFWwindow* window, int width, int height)
+// Makes the surface considered as XRGB instead of ARGB.
+static void setOpaqueRegion(_GLFWwindow* window)
 {
-    wl_egl_window_resize(window->wl.native, width, height, 0, 0);
+    struct wl_region* region;
+
+    region = wl_compositor_create_region(_glfw.wl.compositor);
+    if (!region)
+        return;
+
+    wl_region_add(region, 0, 0, window->wl.width, window->wl.height);
+    wl_surface_set_opaque_region(window->wl.surface, region);
+    wl_surface_commit(window->wl.surface);
+    wl_region_destroy(region);
+}
+
+
+static void resizeWindow(_GLFWwindow* window)
+{
+    int scale = window->wl.scale;
+    int scaledWidth = window->wl.width * scale;
+    int scaledHeight = window->wl.height * scale;
+    wl_egl_window_resize(window->wl.native, scaledWidth, scaledHeight, 0, 0);
+    if (!window->wl.transparent)
+        setOpaqueRegion(window);
+    _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
+    _glfwInputWindowContentScale(window, scale, scale);
 
     if (!_glfw.wl.viewporter || !window->wl.decorations.top.surface)
         return;
 
     // Top decoration.
-    wp_viewport_set_destination(window->wl.decorations.top.viewport, width, _GLFW_DECORATION_TOP);
+    wp_viewport_set_destination(window->wl.decorations.top.viewport,
+                                window->wl.width, _GLFW_DECORATION_TOP);
     wl_surface_commit(window->wl.decorations.top.surface);
 
     // Left decoration.
@@ -308,13 +332,12 @@ static void resizeWindow(_GLFWwindow* window, int width, int height)
     wl_subsurface_set_position(window->wl.decorations.bottom.subsurface,
                                -_GLFW_DECORATION_WIDTH, window->wl.height);
     wp_viewport_set_destination(window->wl.decorations.bottom.viewport,
-                                width + 2 * _GLFW_DECORATION_WIDTH, _GLFW_DECORATION_WIDTH);
+                                window->wl.width + _GLFW_DECORATION_HORIZONTAL, _GLFW_DECORATION_WIDTH);
     wl_surface_commit(window->wl.decorations.bottom.surface);
 }
 
 static void checkScaleChange(_GLFWwindow* window)
 {
-    int scaledWidth, scaledHeight;
     int scale = 1;
     int i;
     int monitorScale;
@@ -335,12 +358,8 @@ static void checkScaleChange(_GLFWwindow* window)
     if (scale != window->wl.scale)
     {
         window->wl.scale = scale;
-        scaledWidth = window->wl.width * scale;
-        scaledHeight = window->wl.height * scale;
         wl_surface_set_buffer_scale(window->wl.surface, scale);
-        resizeWindow(window, scaledWidth, scaledHeight);
-        _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
-        _glfwInputWindowContentScale(window, scale, scale);
+        resizeWindow(window);
     }
 }
 
@@ -389,21 +408,6 @@ static const struct wl_surface_listener surfaceListener = {
     handleEnter,
     handleLeave
 };
-
-// Makes the surface considered as XRGB instead of ARGB.
-static void setOpaqueRegion(_GLFWwindow* window)
-{
-    struct wl_region* region;
-
-    region = wl_compositor_create_region(_glfw.wl.compositor);
-    if (!region)
-        return;
-
-    wl_region_add(region, 0, 0, window->wl.width, window->wl.height);
-    wl_surface_set_opaque_region(window->wl.surface, region);
-    wl_surface_commit(window->wl.surface);
-    wl_region_destroy(region);
-}
 
 static void setIdleInhibitor(_GLFWwindow* window, GLFWbool enable)
 {
@@ -894,14 +898,9 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    int scaledWidth = width * window->wl.scale;
-    int scaledHeight = height * window->wl.scale;
     window->wl.width = width;
     window->wl.height = height;
-    resizeWindow(window, scaledWidth, scaledHeight);
-    if (!window->wl.transparent)
-        setOpaqueRegion(window);
-    _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
+    resizeWindow(window);
 }
 
 void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,

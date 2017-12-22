@@ -143,6 +143,8 @@ typedef xkb_keysym_t (* PFN_xkb_compose_state_get_one_sym)(struct xkb_compose_st
 
 #define _GLFW_DECORATION_WIDTH 4
 #define _GLFW_DECORATION_TOP 24
+#define _GLFW_DECORATION_VERTICAL (_GLFW_DECORATION_TOP + _GLFW_DECORATION_WIDTH)
+#define _GLFW_DECORATION_HORIZONTAL (2 * _GLFW_DECORATION_WIDTH)
 
 typedef enum _GLFWdecorationSideWayland
 {

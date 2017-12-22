@@ -58,6 +58,12 @@ static void handleConfigure(void* data,
 
     if (!window->monitor)
     {
+        if (window->decorated)
+        {
+            width -= 2 * _GLFW_DECORATION_WIDTH;
+            height -= _GLFW_DECORATION_TOP + _GLFW_DECORATION_WIDTH;
+        }
+
         if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
         {
             aspectRatio = (float)width / (float)height;

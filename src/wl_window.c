@@ -279,7 +279,7 @@ static void resizeWindow(_GLFWwindow* window, int width, int height)
 {
     wl_egl_window_resize(window->wl.native, width, height, 0, 0);
 
-    if (!_glfw.wl.viewporter)
+    if (!_glfw.wl.viewporter || !window->wl.decorations.top.surface)
         return;
 
     // Top decoration.
@@ -443,7 +443,8 @@ static GLFWbool createSurface(_GLFWwindow* window,
     if (!window->wl.transparent)
         setOpaqueRegion(window);
 
-    createDecorations(window);
+    if (window->decorated && !window->monitor)
+        createDecorations(window);
 
     return GLFW_TRUE;
 }
@@ -938,14 +939,17 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
                                      int* left, int* top,
                                      int* right, int* bottom)
 {
-    if (top)
-        *top = _GLFW_DECORATION_TOP;
-    if (left)
-        *left = _GLFW_DECORATION_WIDTH;
-    if (right)
-        *right = _GLFW_DECORATION_WIDTH;
-    if (bottom)
-        *bottom = _GLFW_DECORATION_WIDTH;
+    if (window->decorated && !window->monitor)
+    {
+        if (top)
+            *top = _GLFW_DECORATION_TOP;
+        if (left)
+            *left = _GLFW_DECORATION_WIDTH;
+        if (right)
+            *right = _GLFW_DECORATION_WIDTH;
+        if (bottom)
+            *bottom = _GLFW_DECORATION_WIDTH;
+    }
 }
 
 void _glfwPlatformGetWindowContentScale(_GLFWwindow* window,
@@ -1109,10 +1113,13 @@ void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
 
 void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
 {
-    if (enabled)
-        createDecorations(window);
-    else
-        destroyDecorations(window);
+    if (!window->monitor)
+    {
+        if (enabled)
+            createDecorations(window);
+        else
+            destroyDecorations(window);
+    }
 }
 
 void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)

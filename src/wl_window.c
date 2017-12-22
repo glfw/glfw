@@ -448,6 +448,25 @@ static GLFWbool createSurface(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
+static void setFullscreen(_GLFWwindow* window, _GLFWmonitor* monitor, int refreshRate)
+{
+    if (window->wl.xdg.toplevel)
+    {
+        xdg_toplevel_set_fullscreen(
+            window->wl.xdg.toplevel,
+            monitor->wl.output);
+    }
+    else if (window->wl.shellSurface)
+    {
+        wl_shell_surface_set_fullscreen(
+            window->wl.shellSurface,
+            WL_SHELL_SURFACE_FULLSCREEN_METHOD_DEFAULT,
+            refreshRate * 1000, // Convert Hz to mHz.
+            monitor->wl.output);
+    }
+    setIdleInhibitor(window, GLFW_TRUE);
+}
+
 static GLFWbool createShellSurface(_GLFWwindow* window)
 {
     if (!_glfw.wl.shell)
@@ -475,12 +494,7 @@ static GLFWbool createShellSurface(_GLFWwindow* window)
 
     if (window->monitor)
     {
-        wl_shell_surface_set_fullscreen(
-            window->wl.shellSurface,
-            WL_SHELL_SURFACE_FULLSCREEN_METHOD_DEFAULT,
-            0,
-            window->monitor->wl.output);
-        setIdleInhibitor(window, GLFW_TRUE);
+        setFullscreen(window, window->monitor, 0);
     }
     else if (window->wl.maximized)
     {
@@ -1039,35 +1053,18 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
                                    int width, int height,
                                    int refreshRate)
 {
-    if (window->wl.xdg.toplevel)
+    if (monitor)
     {
-        if (monitor)
-        {
-            xdg_toplevel_set_fullscreen(
-                window->wl.xdg.toplevel,
-                monitor->wl.output);
-        }
-        else
-        {
+        setFullscreen(window, monitor, refreshRate);
+    }
+    else
+    {
+        if (window->wl.xdg.toplevel)
             xdg_toplevel_unset_fullscreen(window->wl.xdg.toplevel);
-        }
-    }
-    else if (window->wl.shellSurface)
-    {
-        if (monitor)
-        {
-            wl_shell_surface_set_fullscreen(
-                window->wl.shellSurface,
-                WL_SHELL_SURFACE_FULLSCREEN_METHOD_DEFAULT,
-                refreshRate * 1000, // Convert Hz to mHz.
-                monitor->wl.output);
-        }
-        else
-        {
+        else if (window->wl.shellSurface)
             wl_shell_surface_set_toplevel(window->wl.shellSurface);
-        }
+        setIdleInhibitor(window, GLFW_FALSE);
     }
-    setIdleInhibitor(window, monitor ? GLFW_TRUE : GLFW_FALSE);
     _glfwInputWindowMonitor(window, monitor);
 }
 

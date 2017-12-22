@@ -58,7 +58,7 @@ static void handleConfigure(void* data,
 
     if (!window->monitor)
     {
-        if (window->decorated)
+        if (_glfw.wl.viewporter && window->decorated)
         {
             width -= _GLFW_DECORATION_HORIZONTAL;
             height -= _GLFW_DECORATION_VERTICAL;
@@ -308,7 +308,7 @@ static void resizeWindow(_GLFWwindow* window)
     _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
     _glfwInputWindowContentScale(window, scale, scale);
 
-    if (!_glfw.wl.viewporter || !window->wl.decorations.top.surface)
+    if (!window->wl.decorations.top.surface)
         return;
 
     // Top decoration.

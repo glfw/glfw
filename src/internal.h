@@ -954,7 +954,8 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
  *  unusable.
  *  @ingroup utility
  */
-GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig);
+GLFWbool _glfwRefreshContextAttribs(_GLFWwindow* window,
+                                    const _GLFWctxconfig* ctxconfig);
 
 /*! @brief Checks whether the desired context attributes are valid.
  *  @param[in] ctxconfig The context attributes to check.

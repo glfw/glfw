@@ -127,7 +127,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     _GLFWctxconfig ctxconfig;
     _GLFWwndconfig wndconfig;
     _GLFWwindow* window;
-    _GLFWwindow* previous;
 
     assert(title != NULL);
     assert(width >= 0);
@@ -191,33 +190,20 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->numer       = GLFW_DONT_CARE;
     window->denom       = GLFW_DONT_CARE;
 
-    // Save the currently current context so it can be restored later
-    previous = _glfwPlatformGetTls(&_glfw.contextSlot);
-    if (ctxconfig.client != GLFW_NO_API)
-        glfwMakeContextCurrent(NULL);
-
     // Open the actual window and create its context
     if (!_glfwPlatformCreateWindow(window, &wndconfig, &ctxconfig, &fbconfig))
     {
-        glfwMakeContextCurrent((GLFWwindow*) previous);
         glfwDestroyWindow((GLFWwindow*) window);
         return NULL;
     }
 
     if (ctxconfig.client != GLFW_NO_API)
     {
-        window->context.makeCurrent(window);
-
-        // Retrieve the actual (as opposed to requested) context attributes
-        if (!_glfwRefreshContextAttribs(&ctxconfig))
+        if (!_glfwRefreshContextAttribs(window, &ctxconfig))
         {
-            glfwMakeContextCurrent((GLFWwindow*) previous);
             glfwDestroyWindow((GLFWwindow*) window);
             return NULL;
         }
-
-        // Restore the previously current context (or NULL)
-        glfwMakeContextCurrent((GLFWwindow*) previous);
     }
 
     if (!window->monitor)

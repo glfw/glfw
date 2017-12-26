@@ -271,6 +271,9 @@ static void destroyDecoration(_GLFWdecorationWayland* decoration)
         wl_subsurface_destroy(decoration->subsurface);
     if (decoration->viewport)
         wp_viewport_destroy(decoration->viewport);
+    decoration->surface = NULL;
+    decoration->subsurface = NULL;
+    decoration->viewport = NULL;
 }
 
 static void destroyDecorations(_GLFWwindow* window)
@@ -476,6 +479,7 @@ static void setFullscreen(_GLFWwindow* window, _GLFWmonitor* monitor, int refres
             monitor->wl.output);
     }
     setIdleInhibitor(window, GLFW_TRUE);
+    destroyDecorations(window);
 }
 
 static GLFWbool createShellSurface(_GLFWwindow* window)
@@ -1073,6 +1077,8 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
         else if (window->wl.shellSurface)
             wl_shell_surface_set_toplevel(window->wl.shellSurface);
         setIdleInhibitor(window, GLFW_FALSE);
+        if (window->decorated)
+            createDecorations(window);
     }
     _glfwInputWindowMonitor(window, monitor);
 }

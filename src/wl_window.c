@@ -247,18 +247,23 @@ static void createDecorations(_GLFWwindow* window)
     if (!_glfw.wl.viewporter)
         return;
 
-    struct wl_buffer* buffer = createShmBuffer(&image);
+    if (!window->wl.decorations.buffer)
+        window->wl.decorations.buffer = createShmBuffer(&image);
 
-    createDecoration(&window->wl.decorations.top, window->wl.surface, buffer,
+    createDecoration(&window->wl.decorations.top, window->wl.surface,
+                     window->wl.decorations.buffer,
                      0, -_GLFW_DECORATION_TOP,
                      window->wl.width, _GLFW_DECORATION_TOP);
-    createDecoration(&window->wl.decorations.left, window->wl.surface, buffer,
+    createDecoration(&window->wl.decorations.left, window->wl.surface,
+                     window->wl.decorations.buffer,
                      -_GLFW_DECORATION_WIDTH, -_GLFW_DECORATION_TOP,
                      _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
-    createDecoration(&window->wl.decorations.right, window->wl.surface, buffer,
+    createDecoration(&window->wl.decorations.right, window->wl.surface,
+                     window->wl.decorations.buffer,
                      window->wl.width, -_GLFW_DECORATION_TOP,
                      _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
-    createDecoration(&window->wl.decorations.bottom, window->wl.surface, buffer,
+    createDecoration(&window->wl.decorations.bottom, window->wl.surface,
+                     window->wl.decorations.buffer,
                      -_GLFW_DECORATION_WIDTH, window->wl.height,
                      window->wl.width + _GLFW_DECORATION_HORIZONTAL, _GLFW_DECORATION_WIDTH);
 }
@@ -837,6 +842,8 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         window->context.destroy(window);
 
     destroyDecorations(window);
+    if (window->wl.decorations.buffer)
+        wl_buffer_destroy(window->wl.decorations.buffer);
 
     if (window->wl.native)
         wl_egl_window_destroy(window->wl.native);
